@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.17 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: memfile.c,v 1.18 2004-03-24 14:10:22 mikeaubury Exp $
 #
 */
 
@@ -52,7 +52,7 @@ void A4GL_remove_comments_in_memfile(FILE *f) ;
 //#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
 
 int opened = 0;
-char *buff;
+static char *buff;
 long buff_len;
 FILE *in;
 long pos = 0;
