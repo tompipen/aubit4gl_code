@@ -825,9 +825,22 @@ exact_numeric_type:
 	| DECIMAL 
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
-	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| MONEY 
+	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+		if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+			sprintf($<str>$," DECIMAL %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5);
+		} else {
+			sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+		}
+	}
+
+
+	| MONEY  {
+		if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+			strcpy($<str>$,"DECIMAL");
+		} else {
+			strcpy($<str>$,"MONEY");
+		}
+	}
         | DATE
 	| INTEGER
 	| SMALLINT

@@ -529,6 +529,10 @@ A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
 =YES|NO
 	This is solely for backward compatibilty with older Aubit4GL versions.
 	It should be set to N in all other cases..
+A4GL_NO_ORDBY_INTO_TEMP COMPILE Remove any 'ORDER BY' clause when selecting into a temp table
+=YES|NO
+	The ORDER BY is redundant when selecting into a temporary table (and some
+	database engines don't support it). This option silently drops the ORDER BY clause
 RM_COMMENTS_FIRST COMPILE remove any comments before compiling the 4GL code
 =YES|NO
 	This defaults to Yes, if you have problems with compilation - it may be
