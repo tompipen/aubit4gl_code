@@ -64,8 +64,8 @@
 
 	int 	mja_fgetc 			(FILE * f);
 	void 	turn_state 			(int kw, int v);
-	int 	yylex 				(void);
-	//int 	yylex 				(YYSTYPE *p1,int n);
+	//int 	yylex 				(void);
+	int 	yylex 				(void *pyylval, int yystate);
 
 	/* ========================== Implemented in list.c ================== */
 	char *	list_prompt 		(char *s);
@@ -263,6 +263,10 @@
 	void 	dim_set_name 		(char *a);
 	void 	push_dim 			(char *a);
 
+	/* =========================== wantkw.c ================================= */
+
+	int		wants_kw_token		(int state, int kw);
+
 	/* ==================== rules/generated/states.c ==================== */
 	void 	start_state			(char *s,int on_off);
 	void	init_states			(void);
@@ -282,7 +286,8 @@
 		#endif
     #endif
 
-	void    set_str				(char *s);
+	//void    set_str				(char *s);
+	void    set_str			(void *y, char *s);
 	void    set_hdrdbname		(char *s);
 	char *  get_hdrdbname		(void);
 

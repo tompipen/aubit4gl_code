@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.50 2003-01-04 01:58:29 afalout Exp $
+# $Id: Makefile.in,v 1.51 2003-01-06 06:15:30 psterry Exp $
 #
 
 ROOT		=../..
@@ -55,6 +55,7 @@ CMODS_LIB       =\
 				dim.c \
 				list.c lexer.c \
 				mod.c map.c \
+ 				wantkw.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \
                 ${Y_TAB_C}
@@ -174,7 +175,9 @@ ${GENRULES}/y.tab.o: 			../fcompile/form_x.h
 lexer.o: 						${GENRULES}/kw.h
 lexer.o: 						${GENRULES}/y.tab.h
 
-
+wantkw.c: rules/generated/y.output
+	perl wantkw_gen.pl
+wantkw.o: wantkw.c
 
 ## ==================================================================
 ##                            Other Targets
@@ -200,4 +203,5 @@ clean.rules:
 	(cd rules; ${RM} .\#* *.bak .*.bak)
 	(cd rules/data; ${RM} .\#* *.bak .*.bak)
 
-#--------------------------------- EOF -----------------------------
+# --------------------------------- EOF -----------------------------
+

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.88 2002-12-16 16:42:35 mikeaubury Exp $
+# $Id: mod.c,v 1.89 2003-01-06 06:15:30 psterry Exp $
 #
 */
 
@@ -1591,6 +1591,8 @@ open_db (char *s)
 char db[132];
 char buff[256];
 
+debug("open_db %s", s);
+
   strcpy (db, s);
   A4GLSQL_set_status (0, 1);
   A4GLSQL_init_connection (db);
@@ -1739,7 +1741,7 @@ pushLikeAllTableColumns(char *tableName)
   char csize[20];
   char cdtype[20];
   char buff[300];
-  char ccol[256];
+  char *ccol;
 
   debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
@@ -1754,11 +1756,10 @@ pushLikeAllTableColumns(char *tableName)
   while (1)
   {
     colname[0] = 0;
-    debug ("Looking for table '%s' col '%s'", tableName, colname);
 
     /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
     rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
-
+    debug ("next column for table '%s' is '%s'", tableName, ccol);
 
     strcpy(colname,ccol);
 
