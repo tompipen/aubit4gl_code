@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.51 2004-12-15 06:40:32 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.52 2004-12-17 05:23:45 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -267,6 +267,15 @@ else
 	#On Windows, do we build MinGW
 	BUILD_MINGW=1
 
+	if test "$BUILD_MINGW" = "1" ; then
+		#Note that CygWin needs paths in CygWin format, and will automatically
+		#convert them for native Windows apps
+		#This is essentially what we do in /cygwin-mingw.bat
+		#set PATH=/cygdrive/f/MinGW/bin:%PATH%:/cygdrive/d/WINNT/system32:
+		export PATH="/cygdrive/f/MinGW/bin:$PATH"
+	fi
+	
+	
 	#####################
 	#Local paths
     #Directory where Aubit source code can be found:
@@ -1248,6 +1257,14 @@ the_file="$1"
 
 #winsetup took 6769.1 seconds to upload	
 		the_script="`type auto_sf_scp | awk '{print $3}'`"
+		if ! test -f $the_script ; then
+			the_script="`type auto_sf_scp | awk '{print $4}'`"
+			if ! test -f $the_script ; then
+				echo "cant get filename for auto_sf_scp" 
+				type auto_sf_scp
+				return
+			fi
+		fi
 		timeout="`grep timeout $the_script | awk '{print $3}'`"
 		echo "Upload took $TOOK_TIME seconds (timeout=$timeout)."
 		#if test "$timeout" -lt "$TOOK_TIME" -o 

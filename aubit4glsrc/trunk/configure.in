@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.268 2004-12-15 07:50:53 afalout Exp $
+dnl # $Id: configure.in,v 1.269 2004-12-17 05:21:49 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -6770,17 +6770,23 @@ fi
 			#withval is 'yes', assign default
 			withval=/usr
 		fi
+		
 		echo "withval=$withval"
 		#cr** - how do this paths work anyway?
 		#AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no, "$withval/bin" $PATH )
 		export PATH="$withval/bin:$PATH"
 		AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no )
 		AC_MSG_CHECKING(Xcurses)
-		if test "$XCURSES_CONFIG" != "no"; then 
-			XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
-			XCURSES_LIBS=`$XCURSES_CONFIG --libs`
-			HAVE_XCURSES=1
-			AC_MSG_RESULT(yes)
+		if test "$XCURSES_CONFIG" != "no"; then
+			if test "$COMSPEC" = ""; then 
+				XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
+				XCURSES_LIBS=`$XCURSES_CONFIG --libs`
+				HAVE_XCURSES=1
+				AC_MSG_RESULT(yes)
+			else
+				#No X on Windows - what would we do with Xcurses...
+				AC_MSG_RESULT(no-no Xcurses on Windows)
+			fi
 		else
 			AC_MSG_RESULT(no)
 		fi
@@ -8545,7 +8551,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.268 2004-12-15 07:50:53 afalout Exp $
+| $Id: configure.in,v 1.269 2004-12-17 05:21:49 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

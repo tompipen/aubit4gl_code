@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.42 2004-12-16 09:11:52 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.43 2004-12-17 05:23:49 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -83,7 +83,7 @@ Looks like it was removed in Curses 5.3???!
 #endif
 
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.42 2004-12-16 09:11:52 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.43 2004-12-17 05:23:49 afalout Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -294,7 +294,14 @@ static int A4GL_curses_to_aubit_int (int a)
   return a;
 }
 
-static int A4GL_curses_to_aubit (int a)
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+static int 
+A4GL_curses_to_aubit (int a)
 {
   int orig_a;
   orig_a = a;
@@ -309,10 +316,12 @@ static int A4GL_curses_to_aubit (int a)
 
 
 
-
-
-//-----------------------
-
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_switch_to_line_mode (void)
 {
@@ -324,6 +333,12 @@ A4GL_LL_switch_to_line_mode (void)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_create_window (int h, int w, int y, int x, int border)
 {
@@ -409,6 +424,12 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_remove_window (void *x)
 {
@@ -422,7 +443,14 @@ A4GL_LL_remove_window (void *x)
  	A4GL_debug("delwin %p",w);
 }
 
-void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+void 
+A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
 {
   int ch2;
   int attr;
@@ -445,7 +473,14 @@ void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
 	}
 }
 
-void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch)
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+void 
+A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch)
 {
   int ch2;
   int attr;
@@ -474,7 +509,14 @@ void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch)
 
 
 
-void A4GL_LL_screen_update (void)
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+void 
+A4GL_LL_screen_update (void)
 {
 A4GL_debug("CURSES : update");
 // Update the physical screen
@@ -485,6 +527,12 @@ A4GL_debug("CURSES : update");
     }
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_screen_redraw (void)
 {
@@ -494,6 +542,12 @@ A4GL_debug("CURSES : refresh");
   A4GL_LL_screen_update ();
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_colour_code (int a)
 {
@@ -555,6 +609,12 @@ A4GL_LL_colour_code (int a)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_error_box (char *str, int attr)
 {
@@ -586,6 +646,12 @@ A4GL_LL_error_box (char *str, int attr)
   //A4GL_mja_setcolor (NORMAL_TEXT);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_display_form (void *vf, int attrib)
 {
@@ -799,6 +865,12 @@ A4GL_LL_display_form (void *vf, int attrib)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_out_linemode (char *s)
 {
@@ -806,6 +878,12 @@ A4GL_LL_out_linemode (char *s)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_sleep (int n)
 {
@@ -813,6 +891,12 @@ A4GL_LL_sleep (int n)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_make_window_top (void *w)
 {
@@ -822,6 +906,12 @@ A4GL_LL_make_window_top (void *w)
 int scr_width = -1;
 int scr_height = -1;
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_screen_width (void)
 {
@@ -839,6 +929,12 @@ A4GL_LL_screen_width (void)
   return scr_width;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_screen_height (void)
 {
@@ -856,6 +952,12 @@ A4GL_LL_screen_height (void)
   return scr_height;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_bkg (void *win, int attr)
 {
@@ -867,7 +969,14 @@ A4GL_LL_set_bkg (void *win, int attr)
 }
 
 
-int A4GL_LL_decode_aubit_attr (int a, char s)
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+int 
+A4GL_LL_decode_aubit_attr (int a, char s)
 {
   char colour[20];
   char attr[256];
@@ -953,6 +1062,12 @@ int A4GL_LL_decode_aubit_attr (int a, char s)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int A4GL_LL_decode_colour_attr_aubit(int a) {
   char colour[20];
   char attr[256];
@@ -993,6 +1108,12 @@ A4GL_debug("No match for colour...");
 
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_make_field (void *prop,int frow, int fcol, int rows, int cols)
 {
@@ -1026,6 +1147,12 @@ A4GL_LL_make_field (void *prop,int frow, int fcol, int rows, int cols)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_make_label (int frow, int fcol, char *label)
 {
@@ -1198,6 +1325,12 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
   return (f);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_set_new_page (void *field, int n)
 {
@@ -1205,18 +1338,36 @@ A4GL_LL_set_new_page (void *field, int n)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_field_userptr (void *field, void *ptr)
 {
   A4GL_form_set_field_userptr (field, ptr);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_get_field_userptr (void *field)
 {
   return A4GL_form_field_userptr (field);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_field_attr (void *field)
 {
@@ -1304,6 +1455,12 @@ A4GL_LL_set_field_attr (void *field)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_new_form (void *vfd)
 {
@@ -1313,12 +1470,24 @@ fd=vfd;
   return A4GL_form_new_form ((FIELD **) fd->form_fields);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_form_userptr (void *form, void *data)
 {
   A4GL_form_set_form_userptr (form, data);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_get_form_userptr (void *form)
 {
@@ -1327,6 +1496,12 @@ A4GL_LL_get_form_userptr (void *form)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 char *
 A4GL_LL_field_buffer (void *field, int n)
 {
@@ -1347,6 +1522,12 @@ A4GL_debug_print_field_opts(field);
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_field_opts (void *field)
 {
@@ -1354,6 +1535,12 @@ A4GL_LL_field_opts (void *field)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_set_field_opts (void *field, int oopt)
 {
@@ -1363,6 +1550,12 @@ return A4GL_LL_field_opts(field);
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_field_fore (void *field, int attr)
 {
@@ -1370,6 +1563,12 @@ A4GL_LL_set_field_fore (void *field, int attr)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_field_back (void *field, int attr)
 {
@@ -1377,6 +1576,12 @@ A4GL_LL_set_field_back (void *field, int attr)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_current_field (void *form, void *field)
 {
@@ -1384,6 +1589,12 @@ A4GL_LL_set_current_field (void *form, void *field)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_carat (void *form)
 {
@@ -1399,6 +1610,12 @@ PANEL *w;
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_getch_swin (void *window_ptr)
 {
@@ -1453,6 +1670,12 @@ if (a==3) abort_pressed=1;
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_get_carat (void *form)
 {
@@ -1462,6 +1685,12 @@ A4GL_LL_get_carat (void *form)
   return mform->curcol;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_int_form_driver (void *mform, int mode)
 {
@@ -1498,18 +1727,36 @@ switch(mode) {
 	//return 1;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_current_field (void *form)
 {
   return A4GL_form_current_field (form);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_set_form_page (void *form, int page)
 {
   A4GL_form_set_form_page (form, page);
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_form_page (void *form)
 {
@@ -1517,6 +1764,12 @@ A4GL_LL_form_page (void *form)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void *
 A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
 {
@@ -1546,6 +1799,12 @@ char buff[255];
   return p;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_delete_errorwindow (void *curr_error_window)
 {
@@ -1553,6 +1812,12 @@ A4GL_LL_delete_errorwindow (void *curr_error_window)
 
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_field_status (void *field)
 {
@@ -1560,6 +1825,12 @@ A4GL_LL_field_status (void *field)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_dump_screen (int n)
 {
@@ -1572,29 +1843,29 @@ A4GL_LL_dump_screen (int n)
   WINDOW *w;
   int mode = 1;
   char *buff;
-
+  int is_line_drawing;
+  
+  
 	#ifdef DEBUG
 		A4GL_debug ("Begin dump screen");
 	#endif
   
-//w=find_pointer ("screen", WINCODE);
-  w = curscr;
+	//w=find_pointer ("screen", WINCODE);
+	w = curscr;
 
-  if (n == 1)
-    {
-      ptr = A4GL_char_pop ();
+	if (n == 1) {
+		ptr = A4GL_char_pop ();
     }
 
-  if (n == 2)
-    {
-      mode = A4GL_pop_int ();
-      ptr = A4GL_char_pop ();
+	if (n == 2) {
+		mode = A4GL_pop_int ();
+		ptr = A4GL_char_pop ();
     }
 
-  if (n != 0)
-    {
-      A4GL_trim (ptr);
+	if (n != 0) {
+		A4GL_trim (ptr);
     }
+
 
   if (mode == 3)
     {
@@ -1606,137 +1877,128 @@ A4GL_LL_dump_screen (int n)
  		mode=1;
 	#endif
       return 0;
+
     }
 
-	
-	
-  sh = A4GL_LL_screen_height ();
-  sw = A4GL_LL_screen_width ();
+	sh = A4GL_LL_screen_height ();
+	sw = A4GL_LL_screen_width ();
 
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0)
-    {
-      if (sh > 24)
-	sh = 24;
-      if (sw > 80)
-	sw = 80;
+	if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0) {
+		if (sh > 24)
+			sh = 24;
+		if (sw > 80)
+			sw = 80;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0)
-    {
-      if (sh > 24)
-	sh = 25;
-      if (sw > 80)
-	sw = 80;
+	if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0) {
+		if (sh > 24)
+			sh = 25;
+		if (sw > 80)
+			sw = 80;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0)
-    {
-      if (sh > 24)
-	sh = 24;
-      if (sw > 132)
-	sw = 132;
+	if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0) {
+		if (sh > 24)
+			sh = 24;
+		if (sw > 132)
+			sw = 132;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0)
-    {
-      if (sh > 24)
-	sh = 25;
-      if (sw > 132)
-	sw = 132;
+	if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0) {
+		if (sh > 24)
+			sh = 25;
+		if (sw > 132)
+			sw = 132;
     }
 
-  if (n == 0)
-    {
-      A4GL_debug ("AUTO PRINT...");
-      // We want to dump to to PRINTSCRFILE
-      ptr = acl_getenv ("PRINTSCRFILE");
-      if (ptr)
-	{
-	  if (strlen (ptr) == 0)
-	    ptr = 0;
-	}
-      if (ptr == 0)
-	{
-	  A4GL_debug ("No PRINTSCRFILE - ignored print dump request");
-	  return 0;
-	}
-      if (ptr[0] == '|')
-	{
-	  f = popen (&ptr[1], "w");
-	}
-      else
-	{
-      	if (ptr[0] == '+') {
-	  f = fopen (&ptr[1], "a");
-	} else {
-	  f = fopen (ptr, "w");
-	}
-	}
-    }
-  else
-    {
-      f = fopen (ptr, "w");
-    }
-  if (f == 0)
-    {
-      A4GL_debug ("Unable to open A4GL_dump file");
-      return 0;
-    }
-
-  for (y = 0; y < sh; y++)
-    {
-      for (x = 0; x < sw; x++)
-	{
-
-	  attr = mvwinch (w, y, x);
-
-	  if (mode == 0)
-	    {
-	      buff = (char *) &attr;
-	      /* @todo - Fix for different ENDISMS */
-	      fprintf (f, "%c%c", buff[2], attr & 255);
-	    }
-
-	  if (mode == 1)
-	    {
-
-
-	      if ((attr & 0xff) == (ACS_VLINE & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '|';
+	if (n == 0) {
+		A4GL_debug ("AUTO PRINT...");
+		// We want to dump to to PRINTSCRFILE
+		ptr = acl_getenv ("PRINTSCRFILE");
+		if (ptr) {
+			if (strlen (ptr) == 0)
+				ptr = 0;
 		}
-	      if ((attr & 0xff) == (ACS_HLINE & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '-';
+		if (ptr == 0) {
+			A4GL_debug ("No PRINTSCRFILE - ignored print dump request");
+			return 0;
 		}
-	      if ((attr & 0xff) == (ACS_LLCORNER & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '+';
+		if (ptr[0] == '|') {
+			f = popen (&ptr[1], "w");
+		} else {
+			if (ptr[0] == '+') {
+				f = fopen (&ptr[1], "a");
+			} else {
+				f = fopen (ptr, "w");
+			}
 		}
-	      if ((attr & 0xff) == (ACS_LRCORNER & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '+';
-		}
-	      if ((attr & 0xff) == (ACS_URCORNER & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '+';
-		}
-	      if ((attr & 0xff) == (ACS_ULCORNER & 0xff)
-		  && (attr & A_ALTCHARSET))
-		{
-		  attr = (int) '+';
-		}
-	      fprintf (f, "%c", attr & 255);
-	    }
-	}
-      fprintf (f, "\n");
+    } else {
+		f = fopen (ptr, "w");
     }
-  fclose (f);
-  return 0;
+	if (f == 0) {
+		A4GL_debug ("Unable to open A4GL_dump file");
+		return 0;
+    }
+
+	for (y = 0; y < sh; y++) {
+		for (x = 0; x < sw; x++) {
+			attr = mvwinch (w, y, x);
+			if (mode == 0) {
+				buff = (char *) &attr;
+				/* @todo - Fix for different ENDISMS */
+				fprintf (f, "%c%c", buff[2], attr & 255);
+			}
+
+			if (mode == 1) {
+				// Translate line drawings chars into printable ones
+				if ((attr & 0xff) == (ACS_VLINE & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET)
+					#endif
+						) {	attr = (int) '|'; }
+						 
+				if ((attr & 0xff) == (ACS_HLINE & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET)
+					#endif
+						) {	attr = (int) '-'; }
+						 
+				if ((attr & 0xff) == (ACS_LLCORNER & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET)
+					#endif 
+						) { attr = (int) '+'; }
+						 
+				if ((attr & 0xff) == (ACS_LRCORNER & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET)
+					#endif
+						) { attr = (int) '+'; }
+						 
+				if ((attr & 0xff) == (ACS_URCORNER & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET)
+					#endif
+						) { attr = (int) '+'; }
+
+				if ((attr & 0xff) == (ACS_ULCORNER & 0xff)
+					#ifndef __PDCURSES__
+						&& (attr & A_ALTCHARSET) 
+					#endif
+					) { attr = (int) '+'; }
+
+				fprintf (f, "%c", attr & 255);
+			}
+		}
+		fprintf (f, "\n");
+	}
+	fclose (f);
+	return 0;
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_set_field_status (void *f, int stat)
 {
@@ -1744,6 +2006,12 @@ A4GL_LL_set_field_status (void *f, int stat)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_move_window (void *w, int y, int x)
 {
@@ -1751,6 +2019,12 @@ A4GL_LL_move_window (void *w, int y, int x)
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_hide_window (void *w)
 {
@@ -1759,6 +2033,12 @@ A4GL_LL_hide_window (void *w)
 
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_show_window (void *w)
 {
@@ -1766,6 +2046,12 @@ A4GL_LL_show_window (void *w)
 
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_gui_run_til_no_more ()
 {
@@ -1773,6 +2059,12 @@ A4GL_LL_gui_run_til_no_more ()
 }
 
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_screen_mode ()
 {
@@ -1797,6 +2089,12 @@ A4GL_LL_screen_mode ()
 
 }
 
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 void
 A4GL_LL_initialize_display ()
 {
@@ -1969,7 +2267,6 @@ A4GL_LL_initialize_display ()
 		}
 	#endif
 #endif
-
 	refresh ();
   
 #ifdef DEBUG	
@@ -1982,7 +2279,12 @@ A4GL_LL_initialize_display ()
 
 int prompt_last_key = 0;
 
-
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
 int
 A4GL_LL_prompt_loop (void *vprompt, int timeout,void *vevt)
 {
@@ -2072,21 +2374,17 @@ int rblock;
     
     a = A4GL_proc_key_prompt (a, mform, prompt);
 
-
-  if (a == 0)
-    {
-#ifdef DEBUG
-      {
-	A4GL_debug ("a==0");
-      }
-#endif
-      return 0;
+  	if (a == 0) {
+		#ifdef DEBUG
+	  		A4GL_debug ("a==0");
+		#endif
+		return 0;
     }
 #ifdef DEBUG
-  {
-    A4GL_debug ("a==%d", a);
-  }
+	A4GL_debug ("a==%d", a);
 #endif
+
+
 
   if (a < 0)
     return a;

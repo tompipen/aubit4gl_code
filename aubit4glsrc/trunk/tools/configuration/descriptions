@@ -601,5 +601,5 @@ SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) tra
 A4GL_SYSCOL_VAL UNKNOWN a4gl_syscolval
 A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
 A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
-
+A4GL_CLASSPATH UNKNOWN Pat to search for import packages
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2004-12-14 08:03:40 afalout Exp $
+# $Id: Makefile,v 1.2 2004-12-17 05:21:00 afalout Exp $
 #
 
 ## ==================================================================
@@ -298,18 +298,21 @@ test.perl:
 
 doxy: docs/doxy/html/index.html
 docs/doxy/html/index.html:
+#FIXME - Use Autoconf @DOXYGEN@ here
 ifneq "/usr/bin/doxygen" "no"
 	${MAKE} doxy.make
+#FIXME: use Autoconf variable here:
 ifneq "/var/www/html" ""
 	${MAKE} doxy.install.www
 endif
+#FIXME: this is wrong - check if cgi-bin dir exists
 ifneq "/var/www/cgi-bin/" ""
 	${MAKE} doxy.install.search
 endif
 	@echo DoxyGen source code documentation generated.
 	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
 else
-	@echo "Sorry DOXYGEN not detected"
+	@echo "Sorry, DOXYGEN not detected"
 endif
 
 doxy.make:
@@ -327,10 +330,12 @@ doxy.install.www:
 	@echo Point your web browser to www.falout.com/${DOXY_WWWPATH}/html/index.html
 
 doxy.install.search:
+	${MKPATH} /var/www/cgi-bin/
 	${CP} docs/doxy/html/doxysearch.cgi /var/www/cgi-bin/
 #run docs/doxy/html/installdox to replace any dummy links:
 	@docs/doxy/html/installdox
 
+	
 
 ## ==================================================================
 ##                              Strip

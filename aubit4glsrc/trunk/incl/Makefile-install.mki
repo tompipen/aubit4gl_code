@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.89 2004-12-15 06:40:34 afalout Exp $
+# $Id: Makefile-install.mki,v 1.90 2004-12-17 05:23:48 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -336,18 +336,28 @@ endif
 
 
 ######################################
+#Copy our cron script to cron directory
+copy.aubitbuild:
+ifdef COMSPEC
+	${CP} ./etc/aubitbuild.cron.sh /etc/cron.d/
+#Make it executable	
+	chmod a+x /etc/cron.d/*
+	@echo "./etc/aubitbuild.cron.sh copied to /etc/cron.d/"	
+else	
+	${CP} ./etc/aubitbuild.cron.sh /etc/cron.daily/
+	@echo "./etc/aubitbuild.cron.sh copied to /etc/cron.daily/"	
+	chmod a+x /etc/cron.daily/
+endif	
+
+
+	
+######################################
 #Put Aubit nihgtly cron script unser daily cron directory
 install.cron: OUT2 = ${HOME}/aubitbuild.cron
 install.cron:
 ifdef COMSPEC
-#Note - it appears that even after the service is "removed" it is just 
-#"marked to be removed" and it actually takes a reboot for it to dissapear
-#from services list, so that a new one can be installed?
-#
 #Copy our cron script to cron directory
-	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
-#Make it executable	
-	chmod a+x /etc/cron.d/*
+	${MAKE} copy.aubitbuild
 #prepare the crontab file to install:
 	@echo "" > ${OUT2}
 	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
@@ -356,15 +366,10 @@ ifdef COMSPEC
 	@echo "" >> ${OUT2}
 #Activate the crontab using prepared crontab script
 	crontab ${OUT2}
-#show what crontab now has installed:
-	crontab -l
-	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"
-#Query the crontab Windows service:	
-	cygrunsrv.exe -Q cron
-#Stop Windows service:
-	cygrunsrv -E cron
-#Remove Windows service:
-	cygrunsrv -R cron
+	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"	
+	${MAKE} show.cron
+#We dont want to deinstall as part of install - let user deinstall:	
+#	${MAKE} deinstall.cron
 #Install cron as Windows service:
 #	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o -e"CYGWIN=tty ntsec"
 	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o
@@ -375,10 +380,7 @@ ifdef COMSPEC
 	chmod 1777 /var/cron/tabs
 	chmod 640 /var/cron/tabs/*
 	chgrp SYSTEM /var/cron/tabs/*
-#Is cron running?
-	ps -ef | grep cron
-#Query the crontab Windows service again:
-	cygrunsrv.exe -Q cron	
+	${MAKE} show.cron	
 #CygWin diagnostic:
 #	cygcheck -s -r -v
 	@echo "You will need ssmtp.exe IN THE PATH to get mail from cron."
@@ -388,8 +390,7 @@ ifdef COMSPEC
 #	mailhub=aptiva
 #	hostname=istation.falout.com
 else
-	${CP} etc/aubitbuild.cron.sh /etc/cron.daily/
-	chmod a+x /etc/cron.daily/
+	${MAKE} copy.aubitbuild
 endif
 	@echo "aubitbuild cron script installed."
 
@@ -397,13 +398,35 @@ endif
 #Remove aubitbuild from cron
 deinstall.cron:
 ifdef COMSPEC
-	${RM} /etc/cron.d/aubitbuild.cron.sh 
+	${RM} /etc/cron.d/aubitbuild.cron.sh
+#remove current crontab:	
 	crontab -r
-	crontab -l
+#Stop Windows service:
+	-cygrunsrv -E cron
+#Remove Windows service:
+	-cygrunsrv -R cron
+#Note - it appears that even after the service is "removed" it is just 
+#"marked to be removed" and it actually takes a reboot for it to dissapear
+#from services list, so that a new one can be installed?
 else
 	${RM} /etc/cron.daily/aubitbuild.cron.sh 
 endif
 	@echo "aubitbuild cron script removed."
+
+#####################################
+#Show status of crontab and Windows service
+show.cron:	
+#show what crontab now has installed:
+	crontab -l
+#Is cron running?
+	ps -ef | grep cron
+ifdef COMSPEC	
+#Query the crontab Windows service:	
+	-cygrunsrv.exe -Q cron
+endif
+	
+
+
 
 show.gcc.define:
 	${CC} -E -dM - </dev/null
@@ -455,8 +478,8 @@ IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
 PDFLIB_INFO			=http://www.pdflib.com
 
 #Unix source code:
-PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/503src
-PDFLIB_SRC          =PDFlib-Lite-5.0.3-Unix-src
+PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/601src
+PDFLIB_SRC          =PDFlib-Lite-6.0.1
 PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 
 #Linux binary:
@@ -466,11 +489,9 @@ PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 PDFLIB_BIN_PATH		=http://www.pdflib.com/products/pdflib/download/503
 PDFLIB_BIN_TGZ		=PDFlib-5.0.3-Linux.tar.gz
 
-#Windows (source?):
-#PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
-#PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
-PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download/601src
-PDFLIB_WIN_NAME     =PDFlib-Lite-6.0.1
+#Windows (source):
+PDFLIB_WIN_PATH     =${PDFLIB_PATH}
+PDFLIB_WIN_NAME     =${PDFLIB_SRC}
 PDFLIB_WIN_ZIP		=${PDFLIB_WIN_NAME}.zip
 
 

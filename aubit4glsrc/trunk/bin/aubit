@@ -12,9 +12,12 @@
 #This is Aubit 4gl compiler warper script
 
 function dummy {
-	echo "Your shell does not understand functions - please use"
-	echo "'bash aubit' instead of just 'aubit'"
-	exit 5
+	echo "Your default shell does not understand functions - please use"
+	echo "'bash aubit ...' instead of just 'aubit ...'"
+	echo "Will try to do this myself:"
+	bash aubit $@
+	RET=$?
+	exit $RET
 }
 
 function show_help {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.25 2004-12-16 09:25:03 mikeaubury Exp $
+# $Id: io.c,v 1.26 2004-12-17 05:23:49 afalout Exp $
 #
 */
 
@@ -171,13 +171,11 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 {
 char buff[2048];
 FILE *f;
- //printf("path=%s name=%s\n",path,name);
- A4GL_debug("path=%s name=%s",path,name);
-  if (strlen (name) == 0)
-    return 0;
+	//A4GL_debug("A4GL_try_to_open() path=%s name=%s",path,name);
+	if (strlen (name) == 0)
+		return 0;
 
-  if (strlen (path))
-    {
+	if (strlen (path)) {
 		//Forward slash should work on Windows just fine...
 		//#ifndef WIN32 - we need __MINGW32__ or __CYGWIN__
 	      sprintf (buff, "%s/%s", path, name);
@@ -185,11 +183,10 @@ FILE *f;
 		//  sprintf (buff, "%s\\%s", path, name);
 		//#endif
     } else {
-      sprintf (buff, name);
+		sprintf (buff, name);
     }
 
-	A4GL_debug ("Opening path '%s'", buff);
-	/* Does it exist and can we read it ? */
+	//A4GL_debug ("Opening path '%s'", buff);
 	
 	//FIXME: apparently does not wok with relative paths?
 	
@@ -200,18 +197,18 @@ FILE *f;
 	but XML packer does - did not help (try test #242)
 	*/
 
-	A4GL_debug("Opening %s",buff);
+	/* Does it exist and can we read it ? */
 	f = fopen (buff, "rb");
 	if (f == 0) {
-		A4GL_debug("Unable to open %s %s (%s)",path,name,buff);
+		A4GL_debug("Cant open '%s'",buff);
 		return (FILE *) 0;
 	}
+	A4GL_debug("Opened '%s'",buff);	
 	if (!keepopen) {				/* We just wanted to check.. */
-	  fclose (f);
-	  A4GL_debug("open %s %s (%s) was successful",path,name,buff);
-	  return (FILE *) 1;
+		fclose (f);
+		A4GL_debug("...and closed it");
+		return (FILE *) 1;
 	}
-	A4GL_debug ("opened file %s in path %s", name, path);
 	return f;			/* We want it opened.. */
 }
 
@@ -252,20 +249,29 @@ char *ptr;
 
 char *A4GL_fullpath_classpath (char *fname) {
 char buff[1024];
-#ifdef _WIN32_
-if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
-	sprintf(buff,"%s;%s\\import;%s\\etc\\import",acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
-} else {
-	sprintf(buff,"%s\\import;%s\\import",acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
-}
-#else
-if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
-	sprintf(buff,"%s:%s/import:%s/import:%s/etc/import",acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"),acl_getenv("AUBITDIR"));
-} else {
-	sprintf(buff,"%s/import:%s/import:%s/etc/import",acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"),acl_getenv("AUBITDIR"));
-}
-#endif
-	//printf("A4GL_Fullpath_xpath:%s %s",fname,buff);
+	//#ifdef _WIN32_ 4444444
+	#if ((defined __WIN32__ ) && (! defined __CYGWIN__))
+		//note that CygWin (which alos have _WIN32_ defined needs 
+		//unix-like paths
+		if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
+			sprintf(buff,"%s;%s/etc/import;%s/import",
+				acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),
+				acl_getenv("AUBITETC"));
+		} else {
+			sprintf(buff,"%s/etc/import;%s/import",
+				acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
+		}
+	#else
+		if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
+			sprintf(buff,"%s:%s/etc/import:%s/import",
+				acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),
+				acl_getenv("AUBITETC"));
+		} else {
+			sprintf(buff,"%s/etc/import:%s/import",
+			acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
+		}
+	#endif
+	A4GL_debug("A4GL_fullpath_classpath:%s %s",fname,buff);
 	return A4GL_fullpath_xpath(fname,buff);
 }
 
@@ -287,108 +293,90 @@ A4GL_fullpath_xpath (char *fname, char *path)
   char *ptr2 = 0;
   int str_len;			//, curr_str_len;
 
-  memset (str_path, 0, 2048);
-  memset (str_path2, 0, 2048);
+  	memset (str_path, 0, 2048);
+  	memset (str_path2, 0, 2048);
 
-  if (A4GL_try_to_open ("", fname, 0))
-    {
-      return fname;
+	if (A4GL_try_to_open ("", fname, 0)) {
+		return fname;
+    }
+	//Are not this two (above and below) efectively the same?
+	//is it not a 'filename' always same as './filename' when trying to 
+	//open file for writing or reading?
+	if (A4GL_try_to_open (".", fname, 0)) {
+		strcpy (ptr2, "./");
+		strcat (ptr2, fname);
+		return ptr2;
     }
 
-  if (A4GL_try_to_open (".", fname, 0))
-    {
-      strcpy (ptr2, "./");
-      strcat (ptr2, fname);
-      return ptr2;
-    }
-
-
-  if (path != 0)
-    {
-      if (strlen (path))
-	{
-	  strcpy (str_path, path);
-	}
-      else
-	{
-	  strcpy (str_path, "");
-	}
-    }
-
-  str_len = strlen (str_path);
-  ptr = str_path;
-
-  A4GL_debug ("ptr path='%s'", ptr);
-
-  for (cnt = 0; cnt < str_len; cnt++)
-    {
-
-#ifdef __MINGW32__
-      if (str_path[cnt] == ';')
-	{
-#else
-      if (str_path[cnt] == ':')
-	{
-#endif
-	  A4GL_debug ("Found separator at %d", cnt);
-	  str_path[cnt] = 0;
-	  if (strlen (ptr))
-	    {
-	      //A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
-	      strcpy (str_path2, ptr);
-	      //A4GL_debug ("str_path2=%s",str_path2);
-	      // Let's assume no-one will stuff DBPATH with more then 5
-	      // consecutive separators... :-)
-	      for (cnt2 = 0; cnt2 < 5; cnt2++)
-		{
-#ifdef __MINGW32__
-		  if (str_path2[cnt2] == ';')
-		    {
-#else
-		  if (str_path2[cnt2] == ':')
-		    {
-#endif
-		      A4GL_debug ("Skipping one more separator");
-		      ptr = &str_path2[cnt2 + 1];
-		    }
-		  else
-		    {
-		      break;
-		    }
+	if (path != 0) {
+		if (strlen (path)) {
+			strcpy (str_path, path);
+		} else {
+			strcpy (str_path, "");
 		}
+    }
 
-	      //A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
+	str_len = strlen (str_path);
+	ptr = str_path;
 
-	      if (A4GL_try_to_open (ptr, fname, 0))	{
-			//printf("ptr=%s\n",ptr);
+	A4GL_debug ("ptr path='%s'", ptr);
+
+	for (cnt = 0; cnt < str_len; cnt++)  {
+		#ifdef __MINGW32__
+			if (str_path[cnt] == ';') {
+		#else
+			if (str_path[cnt] == ':') {
+		#endif
+		A4GL_debug ("Found separator at %d", cnt);
+		str_path[cnt] = 0;
+		if (strlen (ptr)) {
+			//A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
+			strcpy (str_path2, ptr);
+			//A4GL_debug ("str_path2=%s",str_path2);
+			// Let's assume no-one will stuff DBPATH with more then 5
+			// consecutive separators... :-)
+			for (cnt2 = 0; cnt2 < 5; cnt2++) {
+				#ifdef __MINGW32__
+					if (str_path2[cnt2] == ';') {
+				#else
+					if (str_path2[cnt2] == ':') {
+				#endif
+						A4GL_debug ("Skipping one more separator");
+						ptr = &str_path2[cnt2 + 1];
+					} else {
+						break;
+					}
+				}
+
+				//A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
+
+				if (A4GL_try_to_open (ptr, fname, 0))	{
+					//printf("ptr=%s\n",ptr);
+					sprintf(str_path,"%s/%s",ptr,fname);
+					return str_path;
+				} else {
+					cnt++;
+					ptr = &str_path[cnt];
+				}
+			} else {
+				//A4GL_debug ("strlen (ptr) = 0");
+				cnt++;
+				ptr = &str_path[cnt];
+			}
+		}
+    }
+
+	//catch cases when DBPATH contained only one path and no separator:
+	if (strlen (ptr)) {
+		A4GL_debug ("One last time...");
+		if (A4GL_try_to_open (ptr, fname, 0)) {
 			sprintf(str_path,"%s/%s",ptr,fname);
 			return str_path;
-		  } else {
-			 cnt++;
-			 ptr = &str_path[cnt];
-		  }
-	    }
-	  else
-	    {
-	      //A4GL_debug ("strlen (ptr) = 0");
-	      cnt++;
-	      ptr = &str_path[cnt];
-	    }
-	}
+		}
     }
 
-  //catch cases when DBPATH contained only one path and no separator:
-  if (strlen (ptr))
-    {
-      A4GL_debug ("One last time...");
-      if (A4GL_try_to_open (ptr, fname, 0))
-	{
-	sprintf(str_path,"%s/%s",ptr,fname);
-	  return str_path;
-	}
-    }
-
-  return (char *) 0;
+	return (char *) 0;
+	
 }
 
 /* ============================= EOF =============================== */
