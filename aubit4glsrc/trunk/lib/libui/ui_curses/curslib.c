@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.64 2003-11-12 17:35:03 mikeaubury Exp $
+# $Id: curslib.c,v 1.65 2003-11-14 17:27:26 mikeaubury Exp $
 #*/
 
 /**
@@ -4134,7 +4134,10 @@ int px;
 int py;
 
 
-if (A4GL_isyes(acl_getenv("HIDE_MENU"))) return;
+if (A4GL_isyes(acl_getenv("HIDE_MENU"))) {
+ 	A4GL_debug("No Flattened menu");
+	return;
+}
 
  px=menu->gw_x;
  py=menu->gw_y;
@@ -4143,24 +4146,33 @@ if (A4GL_isyes(acl_getenv("HIDE_MENU"))) return;
 		px-=1;
 		py-=1;
  } else {
-	px-=2;
-	py-=2;
+
+	//px-=2;
+	//py-=2;
+
+	px=0; // I'm sure this is gonna come back and bite me...
+	py=0;
  }
  m=menu->menu_win ;
  p = A4GL_find_pointer (menu->window_name, MNPARCODE);
+
+
  if (p&&m) ;
  else return;
+
+
  for (y=0;y<=1;y++) {
  	for (x=0;x<menu->w;x++) {
 		a=mvwinch(m,y,x);
 		if (a&A_BOLD) a-=A_BOLD;
 		if (a&A_NORMAL) a-=A_NORMAL;
 		a|=A_DIM;
-		//A4GL_debug("%d,%d %04x",x,y,a);
+		A4GL_debug("%d - %d,%d %04x %c",x,x+px,y+py,a,a&0xff);
 		mvwaddch(p,y+py,x+px,a);
 	}
  }
- 
+ A4GL_debug("Flattened menu %d ",menu->w);
+ //A4GL_zrefresh();
 }
 
 /* ============================== EOF ============================== */
