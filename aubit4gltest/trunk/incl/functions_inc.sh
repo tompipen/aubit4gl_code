@@ -2,6 +2,172 @@
 #							Functions
 ##############################################################################
 
+count_rows () {
+tablename=$1
+dbname=$2
+
+	SQL="select count(*) from $tablename"
+	CNT=`echo "$SQL" | $DBACCESS $dbname 2>/dev/null | grep -v count`
+	#Trim it:
+	CNT=`echo $CNT`
+}
+
+drop_db () {
+db_name=$1
+
+        echo "Droping Informix database $db_name"
+        $DBACCESS - - > /tmp/dropdbtmp.log 2>&1 <<!
+        drop database '$db_name'
+!
+        RET=$?
+        if test "$RET" != "0"; then
+			echo "Failed (code $RET). See /tmp/dropdbtmp.log"
+            exit 2
+        else
+    	    echo "Droped Informix database $db_name"
+        fi
+}
+
+create_db () {
+new_db=$1	
+	
+		echo "Creating Informix database $new_db"
+        $DBACCESS - - > /tmp/credbtmp.log 2>&1 <<!
+        create database '$new_db' with log
+!
+        RET=$?
+        if test "$RET" != "0"; then
+            echo "Failed (code $RET). See /tmp/credbtmp.log"
+            exit 19
+        else
+            TMP=`cat /tmp/credbtmp.log | grep "Database created"`
+            if test "$TMP" != ""; then
+                echo "Database $new_db Created"
+            else
+                echo "Database creation failed. See /tmp/credbtmp.log"
+                exit 8
+            fi
+        fi
+}
+
+test_db_exist () {
+test_db=$1
+
+	if test "$DBACCESS" = ""; then 
+		echo "ERROR: DBACCESS not defined. Stop."
+		exit 5
+	fi
+
+	$DBACCESS $test_db -e > /tmp/tmp.dbaccess 2>&1
+	RET=$?
+   	TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
+	
+	#echo $RET
+	#echo $TEST
+
+}	
+
+check_informix () {
+	if test "`dbaccess -V 2>/dev/null`" = ""; then
+		if test "$VERBOSE" = "1" ; then	
+	    	echo "WARNING: dbaccess not found - Informix engine missing or remote?"
+		fi
+		#CSDK on Windows does not include ANY command line tools :-(
+		if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
+			make -C $AUBITDIR_UNIX/tools/asql asql_i.4ae
+			make -C $AUBITDIR_UNIX/tools/asql install
+			if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
+				echo "Attempt to make asql_i failed. Stop"
+				exit 56
+			else
+				IFX_ENG_REMOTE=1
+				DBACCESS="$SH aubit asql_i.4ae"
+			fi
+		else
+			IFX_ENG_REMOTE=1
+			DBACCESS="$SH aubit asql_i.4ae"
+		fi
+	else
+		IFX_ENG_REMOTE="unknown"
+		DBACCESS=dbaccess	
+    fi
+
+	if test "$DBACCESS" = "$SH aubit asql_i.4ae"; then
+		if test "$A4GL_UI" = "HL_TUIN"; then 
+			echo "WARNING: Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
+			#we are uisng it in command line mode anyway...
+			#exit 3
+		fi
+	fi
+	
+	test_db_exist $TEST_DB
+
+	if test "$NEW_IFMX" = "1" -a "$TEST" = ""; then
+		drop_db $TEST_DB
+    fi
+
+    if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
+	
+		create_db $TEST_DB
+	
+		new_testdb informix
+    else
+		#if test "$NO_ECHO" != "1"; then
+		if test "$VERBOSE" = "1"; then
+			echo "Found Informix database $TEST_DB"
+        fi
+		SQL="select is_logging from sysdatabases where name = '$TEST_DB'"
+        DB_HAS_TRANSACTION=`echo "$SQL" | $DBACCESS sysmaster 2>/dev/null | grep -v is_logging`
+		#Trim it:
+		DB_HAS_TRANSACTION=`echo $DB_HAS_TRANSACTION`
+		if test "$VERBOSE" = "1" ; then
+			echo "DB_HAS_TRANSACTION=$DB_HAS_TRANSACTION"		
+			if test "$DB_HAS_TRANSACTION" != "1" -a "$DB_HAS_TRANSACTION" != "0"; then 
+				echo "WARNING: failed to determine Informix database transaction support state"
+			fi
+		fi
+    fi
+	if test "$USEERNAME" != "informix" -a "$VERBOSE" = "1"; then
+		echo "WARNING: you are not logged in as Informix super user (informix) but"
+		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"
+		echo "WARNING: to execute 'ontape' utility program (for switching logging mode)"
+	fi
+	if test "$INFORMIXDIR" != "" -a "$ONCONFIG" != ""; then 
+		if test -f "$INFORMIXDIR/etc/$ONCONFIG"; then 
+			LTAPEDEV_LINE=`grep LTAPEDEV "$INFORMIXDIR/etc/$ONCONFIG"`
+			if test "$LTAPEDEV_LINE" != ""; then 
+				LTAPEDEV_VALUE=`echo $LTAPEDEV_LINE | grep null`
+				if test "$LTAPEDEV_VALUE" = ""; then
+					echo "WARNING: in Informix config file $INFORMIXDIR/etc/$ONCONFIG"			
+					echo "WARNING: $LTAPEDEV_LINE"
+					echo "WARNING: should be 'LTAPEDEV=/dev/null')"
+					echo "WARNING: switching transaction logging mode will probably fail"
+				fi
+			else
+				echo "WARNING: Informix config file $INFORMIXDIR/etc/$ONCONFIG"
+				echo "WARNING: does not contain LTAPEDEV setting"
+				echo "WARNING: should be 'LTAPEDEV=/dev/null')"
+				echo "WARNING: switching transaction logging mode will probably fail"
+			fi
+		else
+			echo "WARNING: cannot find file $INFORMIXDIR/etc/$ONCONFIG"
+			echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"			
+		fi
+	else
+		echo "WARNING: INFORMIXDIR and/or ONCONFIG are empty"
+		echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"
+	fi
+	
+	#TODO: determine actual DB_TYPE
+	#DB_TYPE="IFX-SE"
+	DB_TYPE="IFX-OL"
+	
+	
+    if test "$NEW_IFMX" = "1"; then
+        exit
+    fi
+}
+
 #Loop trough all tests and check them for ANSI SQL 92 compatibility
 check_ansi_all () {
 ALL_DIRS=[0-9]*
@@ -397,13 +563,249 @@ FGLCOMP_CMD="export A4GL_ANSI_WARN=Yes; $AUBIT_DB aubit 4glc --verbose"
 }
 
 
+create_unl_db_tables () {
+db="aubit_tests"
+tablename="catalogue"
+script="$tablename.sql"
+logfile="$tablename.log"
+if test "$RDBMS" = ""; then 
+	RDBMS="informix"
+	check_informix
+fi
+	test_db_exist $db
+	if test "$TEST" != ""; then 
+		create_db $db
+	else
+		echo "Database $db exists"
+		drop_db $db	
+		create_db $db
+	fi
+
+cat > $script <<X
+	create table catalogue (
+		timestamp char (19),   -- 22-10-2004_01-34-24
+		test_no smallint,
+		invalid smallint,
+		is_db smallint,
+		is_ec smallint,
+		is_nosilent smallint,
+		is_tui smallint,
+		is_form smallint,
+		is_report smallint,
+		is_graphics smallint,
+		is_prompt smallint,
+		is_dump_screen smallint,
+		is_long smallint,
+		is_unknown smallint,
+		is_cert smallint,
+		is_obsolete smallint,
+		is_described smallint,
+		test_desc_txt varchar,
+		test_compat_test smallint,
+		expect_code char(3),
+		se_required smallint,
+		compile_only smallint,
+		need_ifx_ver char(10),
+		need_trans smallint,
+		no_prefix smallint,
+		need_compat smallint,
+		old_makefile smallint,
+		is_pcode_enabled smallint,
+		is_no_cron smallint,
+		scripted smallint,
+		is_window smallint,
+		test_ver decimal,
+		run_tests_ver decimal,
+		last_update date,
+		expect_fail_cert  smallint,
+		expect_fail_esqli smallint,
+		expect_fail_ecp smallint,
+		expect_fail_ifx_p smallint,
+		expect_fail_4js smallint,
+		expect_fail_querix smallint,
+		sql_features_used varchar,
+		ansi_sql smallint
+	);
+X
+
+	#echo "Converting script..."
+	#convert_sql ddl $RDBMS $script
+	echo "Creating table $tablename..."
+	run_sql_script $RDBMS $db $script $logfile
+	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
+	if test "$TMP_TMP" = ""; then 
+		echo "Failed - see $logfile"
+		exit 5
+	fi
+	
+
+tablename="results"
+script="$tablename.sql"
+logfile="$tablename.log"
+#15-10-2004_18-23-02|34|1||0||NULL|1.49|0.30|0:01.85|96%|0|0|0|0|3773|0|
+cat > $script <<X
+	create table results (
+		timestamp char (19),   -- 22-10-2004_01-34-24
+		test_no smallint,
+		result smallint,
+		skip_reason char (20),
+		expect_fail smallint,
+		test_version decimal,
+		db_has_trans char(4),
+		t_user decimal,
+		t_system decimal,
+		t_elapsed char(8),
+		t_CPU char(4),
+		t_text decimal,
+		t_data decimal,
+		t_inputs decimal,
+		t_outputs decimal,
+		t_major integer,
+		t_swaps integer
+		);
+X
+
+
+	#echo "Converting script..."
+	#convert_sql ddl $RDBMS $script
+	echo "Creating table $tablename..."
+	run_sql_script $RDBMS $db $script $logfile
+	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
+	if test "$TMP_TMP" = ""; then 
+		echo "Failed - see $logfile"
+		exit 5
+	fi
+
+tablename="test_run"
+script="$tablename.sql"
+logfile="$tablename.log"
+#16-10-2004_12-49-24|aptiva|root|UNIX|i386-redhat-linux-gnu|
+#Linux aptiva 2.4.7-10 #1 Thu Sep 6 17:21:28 EDT 2001 i586 unknown|
+#-esqli -nospace -described -nolong -err-with-log -defaults -esqli -silent -log-unl -verbose-results|
+#0.48|65||4689|2.96|9.51.UC1|9.21.UC4|3.79.1|2.05.8(1)-release||
+cat > $script <<X
+	create table test_run (
+		timestamp char (19),   -- 22-10-2004_01-34-24
+		host char(30),
+		user char (14),
+		platform char (10),
+		os_name char (20),
+		os_version char(80),
+		flags char (200),
+		aubit_version decimal,
+		aubit_build smallint,
+		comp_version char(40),
+		total_time integer,
+		c_ver char(40),
+		esql_ver char(40),
+		db_ver char(40),
+		make_ver char(40),
+		sh_ver char(40),
+		log_text varchar
+		);
+X
+
+	#echo "Converting script..."
+	#convert_sql ddl $RDBMS $script
+	echo "Creating table $tablename..."
+	run_sql_script $RDBMS $db $script $logfile
+	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
+	if test "$TMP_TMP" = ""; then 
+		echo "Failed - see $logfile"
+		exit 5
+	fi
+
+	load_unl_tables
+	
+	echo "Done"
+}
+
+load_unl_tables () {
+dl="|"
+#ALL_RESULTS="aptiva_16-10-2004_12-49-24"
+ALL_RESULTS=results_*.unl
+
+
+	echo "Loading catalogue..."
+	load_table "aubit_tests" "catalogue" "$CURR_DIR/docs/catalogue.unl" "42" "$dl"
+
+	for FILE in $ALL_RESULTS; do 
+		STAMP=`echo $FILE | sed -e 's/results_//' -e 's/.unl//'`
+		results_unl_file="results_$STAMP.unl"
+		test_run_unl_file="test_run_$STAMP.unl"
+		
+		if ! test -f $results_unl_file || ! test -f $test_run_unl_file; then
+			#This happens when run_tests is interupted before reaching the 
+			#end, and creating test_run_ unl file
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping $STAMP - missing pair"
+			fi
+		else
+			echo "Loading results from $results_unl_file..."
+			load_table "aubit_tests" "results" "$CURR_DIR/$results_unl_file" "17" "$dl"
+			
+			echo "Loading test_run from $test_run_unl_file..."	
+			load_table "aubit_tests" "test_run" "$CURR_DIR/$test_run_unl_file" "17" "$dl"
+		fi
+	done
+
+	count_rows catalogue aubit_tests
+	echo "Total $CNT rows loaded into catalogue"
+	count_rows test_run aubit_tests
+	echo "Total $CNT rows loaded into test_run"
+	count_rows results aubit_tests
+	echo "Total $CNT rows loaded into results"
+
+	
+}
+
+load_table () {
+db=$1
+loadname=$2
+logfile=$3
+col_no=$4
+dl=$5
+
+	echo "file \"$logfile\" delimiter \"$dl\" $col_no;" > $loadname.dbl
+	echo "insert into $loadname;" >> $loadname.dbl
+	
+	if test "$VERBOSE" = "1"; then
+		count_rows $loadname $db
+		BEFORE_LOAD=$CNT
+	fi
+	
+	dbload -d $db -c $loadname.dbl -l $loadname.err > /tmp/dbload.log 2>&1
+	RET=$?
+
+	if test "$VERBOSE" = "1"; then 
+		count_rows $loadname $db
+		THIS_LOAD=`(expr $CNT - $BEFORE_LOAD) 2>/dev/null`
+		echo "$THIS_LOAD rows loaded into $loadname"
+	fi
+	
+	if test "$RET" != "0"; then 
+		echo "dbload failed."
+		if test -f /tmp/dbload.log; then 
+			cat /tmp/dbload.log
+		fi
+		exit $RET
+	fi
+	
+	if test "$VERBOSE" = "1"; then
+		if test -f $loadname.err; then 
+			cat $loadname.err
+		fi
+	fi
+
+}
+
+
 ##
 # Log test descriptiont into Informix-style .unl file
 #
 ##
 catalogue_unl() {
-#time=$date_stamp
-time=`date +%d-%m-%Y_%H-%M-%S`
+time=$date_stamp
 test_no=$TEST_NO
 invalid=$IS_INVALID_TEST
 is_db=$IS_DB_TEST
@@ -421,7 +823,8 @@ is_cert=$IS_CERT_TEST
 is_obsolete=$IS_OBSOLETE_TEST
 is_described=$IS_DESCRIBED
 #echo ">$desc_txt<"
-test_desc_txt=`echo $desc_txt | tr "\n" " " | tr "|" " "`
+#test 724 has asterix in description
+test_desc_txt=`echo $desc_txt | tr "\n" " " | tr "|" " " | tr '*' '<astrerix>'  | tr '?' '<question>'`
 #echo ">$test_desc_txt<"
 #exit
 test_compat_test=$compat_test

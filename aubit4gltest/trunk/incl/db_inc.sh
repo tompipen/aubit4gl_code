@@ -3,6 +3,7 @@
 #                           Check if we have the database required
 ##############################################################################
 
+
 ######################
 #Check and create SQLite db
 SQLITE_DB="$AUBITDIR_UNIX/$TEST_DB.db"
@@ -40,132 +41,8 @@ fi
 #Check and create Informix database
 
 if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
-	if test "`dbaccess -V 2>/dev/null`" = ""; then
-		if test "$VERBOSE" = "1" ; then	
-	    	echo "WARNING: dbaccess not found - Informix engine missing or remote?"
-		fi
-		#CSDK on Windows does not include ANY command line tools :-(
-		if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
-			make -C $AUBITDIR_UNIX/tools/asql asql_i.4ae
-			make -C $AUBITDIR_UNIX/tools/asql install
-			if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
-				echo "Attempt to make asql_i failed. Stop"
-				exit 56
-			else
-				IFX_ENG_REMOTE=1
-				DBACCESS="$SH aubit asql_i.4ae"
-			fi
-		else
-			IFX_ENG_REMOTE=1
-			DBACCESS="$SH aubit asql_i.4ae"
-		fi
-	else
-		IFX_ENG_REMOTE="unknown"
-		DBACCESS=dbaccess	
-    fi
-
-	if test "$DBACCESS" = "$SH aubit asql_i.4ae"; then
-		if test "$A4GL_UI" = "HL_TUIN"; then 
-			echo "WARNING: Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
-			#we are uisng it in command line mode anyway...
-			#exit 3
-		fi
-	fi
-	$DBACCESS $TEST_DB -e > /tmp/tmp.dbaccess 2>&1
-   	TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
-
-	if test "$NEW_IFMX" = "1" -a "$TEST" = ""; then
-        echo "Droping Informix database $TEST_DB"
-        $DBACCESS - - > /tmp/dropdbtmp.log 2>&1 <<!
-        drop database '$TEST_DB'
-!
-        RET=$?
-        if test "$RET" != "0"; then
-			echo "Failed (code $RET). See /tmp/dropdbtmp.log"
-            exit 2
-        else
-    	    echo "Droped Informix database $TEST_DB"
-        fi
-    fi
-
-    if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
-        echo "Creating Informix database $TEST_DB"
-        $DBACCESS - - > /tmp/credbtmp.log 2>&1 <<!
-        create database '$TEST_DB' with log
-!
-        RET=$?
-        if test "$RET" != "0"; then
-            echo "Failed (code $RET). See /tmp/credbtmp.log"
-            exit 19
-        else
-            TMP=`cat /tmp/credbtmp.log | grep "Database created"`
-            if test "$TMP" != ""; then
-                echo "Database Created"
-            else
-                echo "Database creation failed. See /tmp/credbtmp.log"
-                exit 8
-            fi
-        fi
-		new_testdb informix
-    else
-		#if test "$NO_ECHO" != "1"; then
-		if test "$VERBOSE" = "1"; then
-			echo "Found Informix database $TEST_DB"
-        fi
-		SQL="select is_logging from sysdatabases where name = '$TEST_DB'"
-        DB_HAS_TRANSACTION=`echo "$SQL" | $DBACCESS sysmaster 2>/dev/null | grep -v is_logging`
-		#Trim it:
-		DB_HAS_TRANSACTION=`echo $DB_HAS_TRANSACTION`
-		if test "$VERBOSE" = "1" ; then
-			echo "DB_HAS_TRANSACTION=$DB_HAS_TRANSACTION"		
-			if test "$DB_HAS_TRANSACTION" != "1" -a "$DB_HAS_TRANSACTION" != "0"; then 
-				echo "WARNING: failed to determine Informix database transaction support state"
-			fi
-		fi
-    fi
-	if test "$USEERNAME" != "informix" -a "$VERBOSE" = "1"; then
-		echo "WARNING: you are not logged in as Informix super user (informix) but"
-		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"
-		echo "WARNING: to execute 'ontape' utility program (for switching logging mode)"
-	fi
-	if test "$INFORMIXDIR" != "" -a "$ONCONFIG" != ""; then 
-		if test -f "$INFORMIXDIR/etc/$ONCONFIG"; then 
-			LTAPEDEV_LINE=`grep LTAPEDEV "$INFORMIXDIR/etc/$ONCONFIG"`
-			if test "$LTAPEDEV_LINE" != ""; then 
-				LTAPEDEV_VALUE=`echo $LTAPEDEV_LINE | grep null`
-				if test "$LTAPEDEV_VALUE" = ""; then
-					echo "WARNING: in Informix config file $INFORMIXDIR/etc/$ONCONFIG"			
-					echo "WARNING: $LTAPEDEV_LINE"
-					echo "WARNING: should be 'LTAPEDEV=/dev/null')"
-					echo "WARNING: switching transaction logging mode will probably fail"
-				fi
-			else
-				echo "WARNING: Informix config file $INFORMIXDIR/etc/$ONCONFIG"
-				echo "WARNING: does not contain LTAPEDEV setting"
-				echo "WARNING: should be 'LTAPEDEV=/dev/null')"
-				echo "WARNING: switching transaction logging mode will probably fail"
-			fi
-		else
-			echo "WARNING: cannot find file $INFORMIXDIR/etc/$ONCONFIG"
-			echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"			
-		fi
-	else
-		echo "WARNING: INFORMIXDIR and/or ONCONFIG are empty"
-		echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"
-	fi
-	
-	#TODO: determine actual DB_TYPE
-	#DB_TYPE="IFX-SE"
-	DB_TYPE="IFX-OL"
-	
-	
-    if test "$NEW_IFMX" = "1"; then
-        exit
-    fi
+	check_informix
 fi
-
-
-
 
 ######################
 #Check and create PostgreSQL database

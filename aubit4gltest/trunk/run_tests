@@ -257,7 +257,10 @@ for a in $FLAGS; do
     -verbose-results | --verbose-results)   #Show more information about results
         #we already got this one set
         ;;
-
+	-new-unl-db)
+		create_unl_db_tables
+		exit 0
+		;;
 	-log-text*) #custom text to log to unl file
 		LOG_TEXT=`echo $a | sed -e 's/-log-text=//' | tr "_" " "`
 		;;
@@ -2224,12 +2227,25 @@ do
 			SQL_INCOMPAT_NON_IFX="ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM \
 				CREATE_TEMP_TABLE CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM \
 				GRANT RECOVER_TABLE RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE \
-				SELECT_INTO_TEMP SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS"
+				SELECT_INTO_TEMP SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS \
+				FREE_CURSOR DATABASE_EXCLUSIVE ALTER_TABLE CHECK CLOSE_DATABASE \
+				PRIMARY_KEY DISTINCT REFERENCES FOREIGN_KEY DROP_TRIGGER \
+				SET_CONSTRAINT DEFAULT DROP_DATABASE CLUSTER_INDEX LOCK_TABLE"
 
-#Free cursor: 587 589
+#DISTINCT=ANSI UNIQUE is not!
+#Update (..)=(..) -- not ANSI
+#Look for text "Corrected ANSI violation" in 4glc
+				
+#FREE_CURSOR: 587 589
 #Set explain : 590 591
-#Database exclusive: 550 
-#Tests that use Alter table, Drop table, check, close database, primary key, distinct, references, create synonim, foreign key, rename column, drop trigger, set constraint, start database, set log, rollforward database, default, create/drop database, cluster index, lock table: 536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 597 599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797
+#DATABASE_EXCLUSIVE: 550
+
+#Tests that use ALTER_TABLE, DROP_TABLE, CHECK, CLOSE_DATABASE, PRIMARY_KEY, 
+#DISTINCT, REFERENCES, create synonim, FOREIGN_KEY, rename column, DROP_TRIGGER, 
+#SET_CONSTRAINT, start database, set log, rollforward database, DEFAULT, 
+#create/drop database, CLUSTER_INDEX, LOCK_TABLE: 
+#536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 597 
+#599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797
 				
 				
 			#What about:

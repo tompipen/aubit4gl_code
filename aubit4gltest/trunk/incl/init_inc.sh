@@ -432,6 +432,7 @@ for a in $FLAGS; do
 			;;
 			
         -info) #Show information about the test
+			date_stamp=`date +%d-%m-%Y_%H-%M-%S`
 			if [ $# -gt 2 ]; then
 				#More flags on cmd line, process everything, but 
 				#also show info
@@ -444,7 +445,7 @@ for a in $FLAGS; do
 			fi
             ;;
 		-catalogue) 
-			#create catalogue.txt file using -info flag
+			#create catalogue.txt and .unl file using -info flag
 			rm -f $CURR_DIR/docs/catalogue.unl
 			export CATALOGUE_UNL=1
 			echo "Creating tests catalogue file ... this will take a while, please wait..."			
