@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-01-09 04:05:10 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-01-13 14:47:44 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -61,7 +61,7 @@ endif
 #endif
 
 SCRIPT 			=
-SOURCES.c 		= fcompile.c formwrite2.c  form_x_xdr.c
+SOURCES.c 		= fcompile.c formwrite2.c  form_x_xdr.c where.c
 SOURCES.h 		=
 SOURCES.yacc 	=screen.yacc
 SOURCES.lex 	= screen.lex
@@ -108,6 +108,10 @@ rpc: form_x_xdr.c
 form_x_xdr.c: form_x.x
 	${RPCGEN}
 
+formwrite2.o :  form_x.h
+fcompile.o :  form_x.h
+where.o : form_x.h
+
 
 ## ==================================================================
 ##                          Install targets
@@ -141,5 +145,10 @@ fdecompile : decompile.c form_x_xdr.c dump.c
 	cc decompile.c form_x_xdr.c dump.c -o $@
 	cp $@ ../../bin
 
+fshow : fshow.4gl
+	4glpc -nogtk fshow.4gl -o fshow
+
+fshow-gtk : fshow.4gl
+	4glpc -gtk -DGTK fshow.4gl -o fshow-gtk
 
 #-----------------------------------------------------------------------

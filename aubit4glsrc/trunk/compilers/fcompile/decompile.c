@@ -24,17 +24,39 @@ int a;
 		exit(2);
 	}
 
+	xdrstdio_create(&xdrp,f,XDR_DECODE);
+	xdr_int(&xdrp,&a);
+
+	printf("Magic number : %x\n",a);
+	rewind(f);
+
+
+	if (a != FCOMILE_XDR_MAGIC) {
+		printf("This does not appear to be a valid form\n(Bad magic number - got %x rather than %x)\n",a,FCOMILE_XDR_MAGIC);
+		exit(0);
+	}
 	memset(&the_form,0,sizeof(struct_form));
 
 	xdrstdio_create(&xdrp,f,XDR_DECODE);
 
 
 	a=xdr_struct_form(&xdrp,&the_form);
+
 	if (!a) {
 		printf("Bad format\n");
-	} else {
-		dump_form_desc(&the_form);
+		exit(1);
 	}
+
+	if (the_form.fcompile_version!=FCOMILE_XDR_VERSION) {
+		printf("Error - fdecompiler is compiled for XDR version %d forms\n",
+			FCOMILE_XDR_VERSION);
+		printf("This form appears to be version %d\n",the_form.fcompile_version);
+		exit(1);
+	}
+
+
+	dump_form_desc(&the_form);
+	
 }
 
 

@@ -37,7 +37,7 @@
 
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
-"attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
+"ATTRIBUTES"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
 "screen"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN);}
 "title"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TITLE);}
 screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
@@ -66,6 +66,25 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
+">" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"!=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"<" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+">=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"<=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"LIKE" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"WHERE" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
+"AND" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
+"OR" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWOR;}
+
+"IS[ ]+NULL" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
+"IS[ ]+NOT[ ]+NULL" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
+"true" 		{if (ignorekw) REJECT;strcpy(yylval.str,"TRUE"); return XVAL;}
+"false" 		{if (ignorekw) REJECT;strcpy(yylval.str,"FALSE"); return XVAL;}
+"IN" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWIN;}
+"BETWEEN" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWBETWEEN;}
+"NOT" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
+
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
 "|" 		{ strcpy(yylval.str,yytext); colno++; if (graphics_mode==0) return PIPE; else return NAMED; }
 "=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
@@ -109,15 +128,15 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "white" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WHITE;}
 "yellow" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return YELLOW;}
 "red" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return RED;}
-"green" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GREEN;}
+"green" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GREEN;}
 "cyan" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CYAN;}
 
-"magenta" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MAGENTA;}
+"magenta" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MAGENTA;}
 
-"autonext"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AUTONEXT;}
+"autonext"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AUTONEXT;}
 "color"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLOR;}
-"comments"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
-"default"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DEFAULT;}
+"comments"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
+"default"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DEFAULT;}
 "display"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAY;}
 "downshift"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOWNSHIFT;}
 "upshift"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UPSHIFT;}
@@ -134,20 +153,14 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "wordwrap"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WORDWRAP;}
 "compress"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPRESS;}
 "noncompress"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NONCOMPRESS;}
-
 "today"		{if (ignorekw) REJECT;strcpy(yylval.str,"TODAY"); return SQL_VAR;}
 "user"		{if (ignorekw) REJECT;strcpy(yylval.str,"USER"); return SQL_VAR;}
-
-
 "to"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TO;}
 "as"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
 "noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 "zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 "left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
 "right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
-
-
-
 "listbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}

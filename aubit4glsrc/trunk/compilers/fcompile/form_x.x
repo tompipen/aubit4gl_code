@@ -1,3 +1,5 @@
+const FCOMILE_XDR_VERSION = 102;
+const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
   {
@@ -63,6 +65,12 @@ struct struct_field_attr_string {
 	string value<>;
 };
 
+struct colours {
+	enum FA_COLOUR colour;
+        struct u_expression *whereexpr;
+};
+
+
 struct struct_scr_field
   {
     int field_no;
@@ -75,6 +83,7 @@ struct struct_scr_field
     struct struct_field_attr_string str_attribs<>;
     enum FIELD_ATTRIBUTES_BOOL bool_attribs<>;
     enum FA_COLOUR colour;
+    struct colours colours<>;
   };
 
 struct struct_tables
@@ -106,7 +115,10 @@ struct struct_labels
 
 struct struct_form
 	{
+	long magic;
 	string magic1<>;
+	long fcompile_version;
+ 	long compiled_time;
 	string dbname<>;
 	string delim<>;
 	int maxcol;
@@ -121,7 +133,42 @@ struct struct_form
 };
 
 
+enum ITEMTYPES {
+	ITEMTYPE_INT=1,
+	ITEMTYPE_CHAR=2,
+	ITEMTYPE_FIELD=3,
+	ITEMTYPE_COMPLEX=4,
+
+	ITEMTYPE_SPECIAL=5,
+	ITEMTYPE_LIST=6,
+	ITEMTYPE_NOT=7
+};
+
+enum EXPRESSIONTYPES {
+	EXPRTYPE_COMPLEX,
+	EXPRTYPE_ITEM
+};
 
 
+struct s_complex_expr {
+	struct u_expression *item1;
+	string comparitor<>;
+	struct u_expression *item2;
+};
 
+
+typedef struct u_expression *listitem;
+
+union u_expression switch (int itemtype) {
+	case ITEMTYPE_INT     : int intval;
+	case ITEMTYPE_CHAR    : string charval<>;
+	case ITEMTYPE_FIELD   : string field<>;
+	case ITEMTYPE_COMPLEX : struct s_complex_expr *complex_expr;
+	case ITEMTYPE_SPECIAL : string special<>;
+	case ITEMTYPE_LIST    : listitem list<>;
+	case ITEMTYPE_NOT     : u_expression *notexpr;
+};
+
+typedef struct s_complex_expr t_complex_expr; 
+typedef union u_expression t_expression; 
 

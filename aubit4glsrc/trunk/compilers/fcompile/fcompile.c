@@ -9,7 +9,7 @@
  */
 
  /* 
-  * $Id: fcompile.c,v 1.9 2001-12-10 20:04:52 saferreira Exp $
+  * $Id: fcompile.c,v 1.10 2002-01-13 14:47:44 mikeaubury Exp $
   */
 
 #include "../../lib/libincl/compiler.h"
@@ -194,7 +194,7 @@ void yyerror(char *s)
   f=write_errfile(yyin,errfile,ld-1,yylineno);
   fprintf (f, "| %s", s);
   write_cont(yyin);
-  printf("Error compiling %s.per - check %s.err (%d %d)\n",
+  printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
 	  outputfile,outputfile,lineno,yylineno
   );
   exit (2);

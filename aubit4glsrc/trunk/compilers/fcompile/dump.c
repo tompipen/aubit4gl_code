@@ -45,6 +45,8 @@ int a;
 	printf("Delimiters : '%s'\n",f->delim);
 	printf("maxcol     : %d\n",f->maxcol);
 	printf("maxline    : %d\n",f->maxline);
+	printf("XDR Version: %d\n",f->fcompile_version);
+	printf("Compiled   : %s\n",ctime(&f->compiled_time));
 	
 printf("Screens :%d\n",f->snames.snames_len);
 	for (a=0;a<f->snames.snames_len;a++) {
@@ -90,7 +92,16 @@ desc_bool[f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]]
 );
 	}
 		printf("   colour : %d\n",f->attributes.attributes_val[a].colour);
+		if (f->attributes.attributes_val[a].colours.colours_len) {
+			int b;
+			printf("   Additional colours \n",f->attributes.attributes_val[a].colours.colours_len);
+			for (b=0;b<f->attributes.attributes_val[a].colours.colours_len;b++) {
+				printf("        colour=%d WHERE ",f->attributes.attributes_val[a].colours.colours_val[b].colour);
+dump_expr(f->attributes.attributes_val[a].colours.colours_val[b].whereexpr,0);
+			}
+			
 }
+		}
 }
 
 /**
@@ -161,3 +172,70 @@ int a;
 
 
 
+
+
+//----------------------
+
+
+
+dump_expr(t_expression *expr,int lvl) {
+	t_complex_expr *ptr2;
+	int a;
+
+	if (expr->itemtype==ITEMTYPE_INT) {
+		print_lvl(lvl);
+		printf("%%%d",expr->u_expression_u.intval);
+	}
+
+	if (expr->itemtype==ITEMTYPE_SPECIAL) {
+		print_lvl(lvl);
+		printf("*%d",expr->u_expression_u.special);
+	}
+
+	if (expr->itemtype==ITEMTYPE_LIST) {
+		print_lvl(lvl);
+		printf("[");
+		for (a=0;a<expr->u_expression_u.list.list_len;a++) {
+			dump_expr(expr->u_expression_u.list.list_val[a],lvl+1);
+		}
+		printf("]");
+	}
+
+	if (expr->itemtype==ITEMTYPE_FIELD) {
+		print_lvl(lvl);
+		printf("$%s",expr->u_expression_u.field);
+	}
+
+	if (expr->itemtype==ITEMTYPE_CHAR) {
+		print_lvl(lvl);
+		printf("'%s'",expr->u_expression_u.charval);
+	}
+
+	if (expr->itemtype==ITEMTYPE_NOT) {
+		printf("!(");
+		dump_expr(expr->u_expression_u.notexpr,lvl+1);
+		printf(")");
+
+	}
+
+	if (expr->itemtype==ITEMTYPE_COMPLEX) {
+		print_lvl(lvl);
+		printf("(");
+		ptr2=expr->u_expression_u.complex_expr;
+		dump_expr(ptr2->item1,lvl+1);
+		print_lvl(lvl);
+		printf(" %s ",ptr2->comparitor);
+		dump_expr(ptr2->item2,lvl+1);
+		printf(")");
+
+	}
+
+if (lvl==0) printf("\n");
+
+}
+
+print_lvl(int lvl) {
+int a;
+	return;
+	for (a=0;a<lvl;a++) { printf("   "); }
+}

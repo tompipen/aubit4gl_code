@@ -6,6 +6,7 @@
 #include <string.h>
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/debug.h"
+#include "where.h"
 extern struct struct_scr_field *fld;
 int graphics_mode=0;
 extern int ignorekw;
@@ -33,6 +34,7 @@ int in_screen_section=0;
 %start form_def
 %union	  {
 	char	str[1024];
+	u_expression *expr;
 }
 %token <str> 
 %token CH
@@ -47,6 +49,7 @@ FORMONLY COMMENT
 REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR
 %token SQLONLY  WIDGET CONFIG
+%token COMPARISON KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
 
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
@@ -254,17 +257,15 @@ table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
 | named_or_kw DOT named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
 ;
 
-opowner : {strcpy($<str>$,"");}
-| named_or_kw DOT {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
-| CHAR_VALUE DOT {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
-;
 
 
 attribute_section :  
-ATTRIBUTES field_tag_list op_end;
+	ATTRIBUTES field_tag_list op_end
+;
 
 field_tag_list : 
-field_tag | field_tag_list field_tag;
+field_tag | field_tag_list field_tag
+;
 
 field_tag : 
 field_tag_name {
@@ -287,6 +288,8 @@ field_type op_att {
 	make_downshift(fld->colname);
 
 	fld->colour=FA_C_WHITE;
+	fld->colours.colours_len=0;
+	fld->colours.colours_val=0;
 	debug("add color %d\n",FA_C_WHITE);
 }
 op_field_desc 
@@ -354,58 +357,37 @@ op_desc_list :
 desc | op_desc_list COMMA desc;
 
 desc :  
-AUTONEXT {
-	add_bool_attr(fld,FA_B_AUTONEXT);
-}
-| COLOR EQUAL colors {
-	fld->colour=atoi($<str>3);
-}
-| COMMENTS EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_COMMENTS,$<str>3);
-}
-| DEFAULT EQUAL def_val {
-	add_str_attr(fld,FA_S_DEFAULT,$<str>3);
-}
+AUTONEXT { add_bool_attr(fld,FA_B_AUTONEXT); }
+| COLOR EQUAL colors  op_where { 
+		if ($<expr>4==0) 
+			fld->colour=atoi($<str>3); 
+		else  {
+			int a;
+			fld->colours.colours_len++;
+			a=fld->colours.colours_len;
+			fld->colours.colours_val=realloc(fld->colours.colours_val,a);
+			fld->colours.colours_val[a-1].colour=atoi($<str>3);
+			fld->colours.colours_val[a-1].whereexpr=$<expr>4;
+		}
+} 
+| COMMENTS EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
+| DEFAULT EQUAL def_val { add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
 | DISPLAY LIKE named_or_kw
 | DISPLAY LIKE named_or_kw DOT named_or_kw
-| DOWNSHIFT {
-	add_bool_attr(fld,FA_B_DOWNSHIFT);
-}
-| UPSHIFT {
-	add_bool_attr(fld,FA_B_UPSHIFT);
-}
-| FORMAT EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_FORMAT,$<str>3);
-}
-| INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET {
-	sprintf($<str>$,"\n%s",$<str>4);
-	add_str_attr(fld,FA_S_INCLUDE,$<str>$);
-}
-| WIDGET EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_WIDGET,$<str>3);
-}
-| CONFIG EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_CONFIG,$<str>3);
-}
-| INVISIBLE {
-	add_bool_attr(fld,FA_B_INVISIBLE);
-}
+| DOWNSHIFT { add_bool_attr(fld,FA_B_DOWNSHIFT); }
+| UPSHIFT { add_bool_attr(fld,FA_B_UPSHIFT); }
+| FORMAT EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_FORMAT,$<str>3); }
+| INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); add_str_attr(fld,FA_S_INCLUDE,$<str>$); }
+| WIDGET EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_WIDGET,$<str>3); }
+| CONFIG EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_CONFIG,$<str>3); }
+| INVISIBLE { add_bool_attr(fld,FA_B_INVISIBLE); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
-debug("fld->dynamic=%d",fld->dynamic);
- }
+debug("fld->dynamic=%d",fld->dynamic); }
 | DYNAMIC  { fld->dynamic=-1; debug("dynamic=-1"); }
-| SQLONLY  {
-printf("Warining %s is not implemented for 4GL\n",$<str>1);
-}
-| NOENTRY {
-	add_bool_attr(fld,FA_B_NOENTRY);
-}
-| PICTURE EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_PICTURE,$<str>3);
-}
-| PROGRAM EQUAL CHAR_VALUE {
-	add_str_attr(fld,FA_S_PROGRAM,$<str>3);
-}
+| SQLONLY  { printf("Warining %s is not implemented for 4GL\n",$<str>1); }
+| NOENTRY { add_bool_attr(fld,FA_B_NOENTRY); }
+| PICTURE EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_PICTURE,$<str>3); }
+| PROGRAM EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_PROGRAM,$<str>3); }
 | REQUIRED {
 	add_bool_attr(fld,FA_B_REQUIRED);
 }
@@ -628,12 +610,79 @@ opt_dec_ext : {strcpy($<str>$,"");}
 ;
 
 
+op_where: {$<expr>$=0;} | where_clause ;
+
+where_clause : KWWHERE clauses {
+		$<expr>$=$<expr>2
+	}
+		;
+
+clauses : 
+	clause 
+	| clause KWAND clause {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  
+	}
+	| clause KWOR clause {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  
+	}
+;
+
+clause: 
+	value COMPARISON value {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
+		}
+	| value EQUAL value {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
+	}
+	| value  {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
+	}
+	| value KWBETWEEN value KWAND value {
+		$<expr>$=create_list_expr();
+		add_list_expr($<expr>$,$<expr>3);
+		add_list_expr($<expr>$,$<expr>5);
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN");
+	}
+	| value KWIN OPEN_BRACKET value_list CLOSE_BRACKET {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN");
+	}
+	| NOT clause {
+		$<expr>$=create_not_expr($<expr>2);
+	}
+	| OPEN_BRACKET clause CLOSE_BRACKET {
+		$<expr>$=$<expr>2;
+	}
+;
+
+value : fieldidentifier  {$<expr>$=create_field_expr($<str>1);}
+| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1));}
+| CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
+| XVAL          {$<expr>$=create_special_expr($<str>1);}
+; 
+
+fieldidentifier : NAMED 
+;
+
+value_list : value {
+		$<expr>$=create_list_expr();
+		add_list_expr($<expr>$,$<expr>1);
+	}
+| value_list COMMA value {
+		add_list_expr($<expr>1,$<expr>3);
+		$<expr>$=$<expr>1;
+	}
+
+;
+
 any_kword : 
  AS
 | AUTONEXT
 | BLACK
 | BLINK
 | BLUE
+| KWOR
+| KWAND
+| COMPARISON
 | BUTTON
 | BY
 | COLOR
