@@ -117,6 +117,17 @@ if ( $fmt  =~ m/[mdy]/ ) {
 	#//return $result;
   #//}
 
+ ($maxval = $fmt) =~ s/^[\-+\$(]//g;	# strip first char if $ or + or - or (
+ $maxval =~ s/[,)]//g; 		 	# remove additional format chars
+ $maxval =~ s/[\$\-\#+<0&]/9/g; 	# change all format chars to 9
+
+ if ($num>=$maxval) {
+  	$result="*" x length($fmt);
+  return $result;
+ }
+
+
+
 
 
   $cval=1;
