@@ -176,12 +176,12 @@ void LR_setup_block(void *report, int b, void *evt, void *label) {
 	//
 }
 
-int LR_save_file(void *report, FILE *fin) {
+int LR_save_file(void *report, FILE *fin,void *rbx,int rbs) {
 	cp_boxes_to_data();
 	return pdf_save_file(fin);
 }
 
-int LR_load_file(void *report, FILE *fin) {
+int LR_load_file(void *report, FILE *fin,void *rbx,int rbs) {
 	return pdf_load_file(fin);
 	show_layout();
 }

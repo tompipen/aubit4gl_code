@@ -278,7 +278,7 @@ void save_file (void)
       fprintf (fout, "A4GL_LOGICAL_REPORT %s\n", acl_getenv ("LOGREP"));
       fprintf (fout, "%s %s\n", report_internal->repName, report_internal->modName);
       fprintf (fout, "%s\n", input_fname);
-      ok=LR_save_file (report_internal,fout);
+      ok=LR_save_file (report_internal,fout,rbx,rbs);
       if (!ok) {
 		msgbox ("Some error during save", "Warning - No save performed...");
 	}
@@ -306,7 +306,7 @@ void load_file (void)
   if (fname) {
 	ok=0;
   	if (load_filter_file_header(fname,&fin,buff)) {
-      		ok=LR_load_file (report_internal, fin);
+      		ok=LR_load_file (report_internal, fin,rbx,rbs);
   	}
 	fclose(fin);
 

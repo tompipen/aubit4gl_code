@@ -37,7 +37,7 @@ struct r_report *rep;
 #define XWIDTH 10
 #define YHEIGHT 15
 
-GtkWidget *create_block (int n);
+GtkWidget *create_block (int n,void *rbx, int rbs);
 
 void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 			      GtkSelectionData * selection_data, guint info,
@@ -47,15 +47,15 @@ void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 GtkWidget **block_tables = 0;
 int nblock_tables = 0;
 
-extern int rbs;
-extern struct s_rbx *rbx;
+//extern int rbs;
+//extern struct s_rbx *rbx;
 
 char *style_cell =
   "style \"CELL\" {font_name=\"monospace 10\" bg[NORMAL] = \"#a0a0a0\"} widget \"*.CELL\" style \"CELL\"";
 char *style_cell_disable =
   "style \"CELL_DISABLE\" {font_name=\"monospace 10\" bg[NORMAL] = \"#ffffff\"} widget \"*.CELL_DISABLE\" style \"CELL_DISABLE\"";
 extern void edit_lle (void);
-int remake_table_from_layout(struct csv_report_layout *in) ;
+int remake_table_from_layout(struct csv_report_layout *in,void *rbx,int rbs) ;
 
 /* ******************************************************************************** */
 
@@ -100,7 +100,7 @@ vbox_in_sw=vvbox_in_sw;
 
   for (block = 0; block < rbs; block++)
     {
-      gtk_container_add (GTK_CONTAINER (vbox_in_sw), create_block (block));
+      gtk_container_add (GTK_CONTAINER (vbox_in_sw), create_block (block,rbx,rbs));
     }
 }
 
@@ -428,7 +428,7 @@ sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
 }
 
 GtkWidget *
-create_block (int n)
+create_block (int n,void *vrbx,int rbs)
 {
   GtkWidget *vbox;
   GtkWidget *label;
@@ -437,7 +437,7 @@ create_block (int n)
   GtkWidget *hbox;
   GtkWidget *hsep;
   GtkWidget *table;
-
+  struct s_rbx *rbx;
   char buff[256];
 // separator & hbox & grid in a vbox
 // labels + sb in hbox
@@ -445,6 +445,7 @@ create_block (int n)
   vbox = gtk_vbox_new (0, 0);
   hbox = gtk_hbox_new (0, 0);
   hsep = gtk_hseparator_new ();
+  rbx=vrbx;
 
 
   gtk_container_add (GTK_CONTAINER (vbox), hsep);
@@ -594,13 +595,13 @@ label=lb;
 
 
 void
-LR_default_file (void *report,void *rvx, int rbs)
+LR_default_file (void *report,void *rbx, int rbs)
 {
   struct csv_report_layout *d;
   char buff[2048];
   d=default_csv(buff,rbx,rbs);
   if (d) {
-	remake_table_from_layout(d);
+	remake_table_from_layout(d,rbx,rbs);
   } else {
 	msgbox("Failed to create default layout",buff);
   }
@@ -614,7 +615,7 @@ LR_preview_file (void *report)
 }
 
 
-int LR_save_file(void *report,FILE *fout) {
+int LR_save_file(void *report,FILE *fout,void *vrbx, int rbs) {
 int a;
 GtkWidget *table;
 int x;
@@ -629,7 +630,8 @@ int entry;
 struct csv_entry *centry;
 struct csv_report_layout out;
 struct csv_report_layout *csv_report_layout;
-
+struct s_rbx *rbx;
+rbx=vrbx;
 
 
 
@@ -701,7 +703,7 @@ return 1;
 
 
 
-int LR_load_file(void *report,FILE *fin) {
+int LR_load_file(void *report,FILE *fin,void *rbx, int rbs) {
 struct csv_report_layout *in;
 
 in=read_csv(fin);
@@ -714,12 +716,12 @@ if (in->nblocks!=rbs) {
 	msgbox("Unable to load","Report layout appears bad");
 	return 0;
 }
-return remake_table_from_layout(in);
+return remake_table_from_layout(in,rbx,rbs);
 }
 
 
 
-int remake_table_from_layout(struct csv_report_layout *in) {
+int remake_table_from_layout(struct csv_report_layout *in,void *rbx,int rbs) {
 GtkWidget *table;
 int x;
 int y;

@@ -31,12 +31,12 @@ void LR_setup_block(void *report, int b, void *evt, void *label) {
 	//
 }
 
-int LR_save_file(void *report, FILE *fin) {
+int LR_save_file(void *report, FILE *fin,void *rbx, int rbs) {
 	// We don't need to add anything to the output file
 	return 1;
 }
 
-int LR_load_file(void *report, FILE *fin) {
+int LR_load_file(void *report, FILE *fin,void *rbx, int rbs) {
 	// We don't need to add anything to the output file
 	return 1;
 }
