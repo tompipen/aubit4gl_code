@@ -18,7 +18,7 @@ fi
 
 
 cd /home/aubit4gl/aubit4glsrc
-make log
+make -j3 log
 
 if [ $? != 0 ]
 then

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.87 2004-09-29 15:09:03 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.88 2004-10-18 15:59:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.87 2004-09-29 15:09:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.88 2004-10-18 15:59:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1540,6 +1540,7 @@ void
 print_foreach_end (char *cname)
 {
   printc ("}");
+  print_foreach_close(cname);
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
   printc ("}\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.100 2004-09-24 08:59:18 mikeaubury Exp $
+# $Id: esql.ec,v 1.101 2004-10-18 15:59:52 mikeaubury Exp $
 #
 */
 
@@ -152,7 +152,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.100 2004-09-24 08:59:18 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.101 2004-10-18 15:59:52 mikeaubury Exp $";
 #endif
 
 
@@ -2119,7 +2119,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   cursorIdentification = malloc (sizeof (struct s_cid));
   cursorIdentification->statement = sid;
   statementName = sid->statementName;
-  A4GL_debug ("obind count=%d", sid->no);
+  A4GL_debug ("declare obind count=%d", sid->no);
 
       switch (getCursorType (upd_hold, scroll))
 	{
