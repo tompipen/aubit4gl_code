@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,60 +24,51 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-08-19 07:58:18 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-08-19 07:58:18 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
-override NOINCL=0
-
-## ==================================================================
-##                              Source files
-## ==================================================================
-
-CMODS           =aubit-config.c resource.c
-OBJS      		=${CMODS:.c=.o}
+include ../../../incl/Makefile-common
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-#CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
-EXE_CFLAGS      +=-I../libincl
-CFLAGS          +=-I../libincl -I../../compilers/fcompile -I../libaubit4gl
+CFLAGS+=-I..
+
+ifeq "${COMSPEC}" ""
+    ALL=libSQL_nosql.so
+else
+    ALL=nosql.dll
+endif
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-aubit-config: ${OBJS}
-	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
-	${CP} $@ ../../bin
+ALL: ${ALL}
+
+nosql.so: libSQL_nosql.so
+
+libSQL_nosql.so: nosql.o
+	${LD} ${SO_LDFLAGS} $^ -o $@
+	${CP} $@ ${LIBROOT}
+
+nosql.dll: nosql.o
+	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L../.."
+	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 
 ## ==================================================================
-##                           Dependencies
+##                              Clean
 ## ==================================================================
 
-resource.o: ../../compilers/fcompile/form_x.h
 
-../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../compilers/fcompile rpc
+clean:
+	${RM} *.o *.so *.bak *.base *.dll *.def *.exp *.a
 
-
-## ==================================================================
-##                        Clean Targets
-## ==================================================================
-
-clean :
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c project.c \
-    loadmap loadmap.c loadmap.h core aubit-config *.out *.glb *.so *.a  \
-	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp libaubit4gl.def
-
-
-#----------------------------------- EOF -------------------------------
-
-
-
-
-
+#-------------------------------- EOF -------------------------------

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.8 2002-08-18 05:00:27 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.9 2002-08-19 07:58:18 afalout Exp $
 */
 
 /**
@@ -45,6 +45,18 @@
 
 #ifndef FGLDEF_INCL
 #define FGLDEF_INCL
+
+	/**
+	 * Binding information structure definition.
+	 * Used to bind values to and from SQL.
+	 * Need to be here because a4gl_API_sql.h needs it
+	 */
+	struct BINDING {
+		void *ptr; /**< A pointer to the variable bounded */
+		int dtype; /**< The data type of the variable bounded */
+		long size; /**< The size in bytes of the variable bounded */
+	};
+
 
 	/** SQLCA structure definition */
 	typedef struct {

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.78 2002-08-13 11:56:32 afalout Exp $
+# $Id: Makefile.in,v 1.79 2002-08-19 07:58:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -441,6 +441,8 @@ doxy.install.search:
 clean:
 	@echo FIXME: only cleanall works
 
+distclean: clean.all clean.config
+
 clean.all: cleanall
 
 #will clean EVERYTHING that is not source file from CVS
@@ -509,7 +511,8 @@ clean.makefiles:
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
 	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
-	lib/libui/ui_gtk/Makefile Makefile
+	lib/libui/ui_gtk/Makefile Makefile \
+	lib/libexdata/Makefile lib/libsql/postgresql/Makefile
 
 
 clean.root:
@@ -536,7 +539,7 @@ clean.rpc:
 clean.bin:
 	(cd bin;${RM} 4glc${EXE} fcompile${EXE} mcompile${EXE} mkmess${EXE} \
 	mcompile-noodbc${EXE} loadmap${EXE} \
-	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
+	*.bak .*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	aace adecompile xgen \
@@ -562,7 +565,7 @@ clean.swig:
 	(cd lib/swig; ${RM} lib_wrap.c *.old *.bak aubit4gl_pl.pm domake)
 
 clean.project:
-	(cd tools/project; ${RM} *.bak)
+	(cd tools/project; ${RM} *.bak .\#*)
 	(cd tools/cygwin; ${RM} *.bak)
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.19 2002-07-07 04:28:10 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-08-19 07:58:18 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -124,10 +124,14 @@ help:
 ## ==================================================================
 
 
-clean:
-	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae
-	${RM} hello hello2 hello_db test_build filetest *.hlp *.exe
-	$(RM) *.stackdump *.exe *.err *.c
-	${RM} torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl
-	${RM} *.42r gui/*.err pdf_report rr1.pdf gui/*.glb
-	${RM} *.ao *.log *.4ge *.pl *.pm test_build.c .\#*
+clean: clean.sub
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
+	hello hello2 hello_db test_build filetest *.hlp *.exe *.stackdump *.exe \
+	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
+	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.ao *.log *.4ge *.pl *.pm \
+	test_build.c .\#* .*.bak
+
+clean.sub:
+	${MAKE} -C regression clean
+
+# ============================== EOF ================================

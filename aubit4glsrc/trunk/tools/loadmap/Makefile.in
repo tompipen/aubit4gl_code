@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-04-22 00:32:24 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-08-19 07:58:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -52,7 +52,7 @@ loadmap:
 
 clean :
 	${RM} loadmap loadmap.c loadmap.h core *.out *.glb *.so *.a  \
-	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp
+	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp
 
 #----------------------------------- EOF -------------------------------
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2002-06-29 13:12:01 afalout Exp $
+# $Id: Makefile.in,v 1.30 2002-08-19 07:58:17 afalout Exp $
 #
 
 ROOT        =../..
@@ -143,7 +143,7 @@ mcompile.o: menu_x.h
 clean:
 	$(RM) mcompile mcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta core *~ *.ln \
 	*.output lex.yy.c *.err *.out decompiler menu_x_xdr.c menu_x.h \
-	*.bak *.exe mdecompile *.o *.dll *.a
+	*.bak .*.bak *.exe mdecompile *.o *.dll *.a
 
 ## ==================================================================
 ##                           Other targets

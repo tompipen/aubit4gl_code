@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-07-07 04:28:10 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-08-19 07:58:18 afalout Exp $
 #
 
 include ../../incl/Makefile-common
@@ -89,7 +89,7 @@ test: exec4glim
 ## ==================================================================
 
 clean: clean.test
-	-rm -f *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log
+	${RM} *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log *.so *.dll
 
 clean.test:
 	${SH} ${AMAKE} test_im clean

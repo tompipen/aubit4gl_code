@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.59 2002-08-18 05:00:27 afalout Exp $
+# $Id: Makefile.in,v 1.60 2002-08-19 07:58:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -256,11 +256,12 @@ libEXDTYPE_mpz${SO_EXT}:
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
 	clean.other clean.libui
-	${RM} core *.out *.glb *.so *.a  *.bak *.dll *.stackdump *.err *.base *.exp
+	${RM} core *.out *.glb *.so *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
+    bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h \
-	generated/project.c generated/project.o
+	generated/project.c generated/project.o generated/.*.bak
 
 clean.all: clean
 
@@ -276,6 +277,7 @@ clean.libsql:
 	${MAKE} -C libsql/nosql clean
 	${MAKE} -C libsql/odbc clean
 	${MAKE} -C libsql/esqlc clean
+	${MAKE} -C libsql/postgresql clean
 
 clean.libpdf:
 	${MAKE} -C libpdf clean

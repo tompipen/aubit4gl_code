@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.23 2002-08-13 11:56:47 afalout Exp $
+# $Id: Makefile-install.mki,v 1.24 2002-08-19 07:58:18 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -123,13 +123,17 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/bin/loadmap${EXEEXT} $(INSTALL_DIR)/bin/aubit $(INSTALL_DIR)/bin/aubit-config${EXEEXT} \
 		$(INSTALL_DIR)/bin/genmake $(INSTALL_DIR)/bin/mdecompile${EXEEXT} $(INSTALL_DIR)/bin/prepmake \
 		$(INSTALL_DIR)/bin/fdecompile${EXEEXT} $(INSTALL_DIR)/bin/fshow${EXEEXT} \
-		$(INSTALL_DIR)/bin/fshow-gtk${EXEEXT} $(INSTALL_DIR)/bin/4glp${EXEEXT}
+		$(INSTALL_DIR)/bin/fshow-gtk${EXEEXT} $(INSTALL_DIR)/bin/4glp${EXEEXT} \
+        $(INSTALL_DIR)/bin/xgen${EXEEXT}
 
 	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
 		$(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h \
 		$(INSTALL_DIR)/incl/4gldef.h $(INSTALL_DIR)/incl/*.mk \
 		$(INSTALL_DIR)/incl/a4gl_incl_4gldef.h  $(INSTALL_DIR)/incl/a4gl_incl_4glhdr.h  \
 		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common \
+		$(INSTALL_DIR)/incl/a4gl_API_form.h  $(INSTALL_DIR)/incl/a4gl_API_msg.h  $(INSTALL_DIR)/incl/a4gl_libaubit4gl.h \
+		$(INSTALL_DIR)/incl/a4gl_API_lex.h   $(INSTALL_DIR)/incl/a4gl_API_sql.h  $(INSTALL_DIR)/incl/form_x.x.h \
+		$(INSTALL_DIR)/incl/a4gl_API_menu.h  $(INSTALL_DIR)/incl/a4gl_incl_acl4glgui.h  $(INSTALL_DIR)/incl/form_x.xs.h \
 		$(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
 		$(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \
 		$(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libSQL_nosql${SO_EXT} \

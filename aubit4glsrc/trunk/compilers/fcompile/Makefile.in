@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.35 2002-06-29 13:12:01 afalout Exp $
+# $Id: Makefile.in,v 1.36 2002-08-19 07:58:17 afalout Exp $
 #
 
 ROOT        =../..
@@ -159,7 +159,7 @@ where.o : 		form_x.h
 clean:
 #do NOT remove lex.yy.c and y.tab.c
 	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
-	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
+	core *~ *.ln *.output *.bak .*.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
 	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c *.out \
     *.o *.glb fshow.h
 
