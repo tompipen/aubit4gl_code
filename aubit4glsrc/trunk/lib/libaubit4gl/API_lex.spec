@@ -129,6 +129,9 @@ print_field_func char type,char* name,char* var -> void
 /* void print_func_call (char *identifier, struct expr_str *args, int args_cnt) */
 print_func_call char* identifier,void* args,int args_cnt -> void
 
+/* void print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt) */
+print_class_func_call char* var,char* identifier,void* args,int args_cnt -> void
+
 /* void print_pdf_call (char *a1, struct expr_str *args, char *a3) */
 print_pdf_call char* a1,void* args,char* a3 -> void
 

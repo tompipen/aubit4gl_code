@@ -43,6 +43,38 @@ void init_mpz(mpz_t *mpz) {
 }
 
 
+
+/* This is an example of an 'Inplace' function, nothing is pushed onto the stack */
+a4gl_mpz_setfib(mpz_t *ptr,int nparam) {
+	static mpz_t pout;
+	unsigned long a;
+	a=pop_int();
+
+	debug("mpz_setfib ptr=%p nparam=%d a=%d\n",ptr,nparam,a);
+	mpz_init(*ptr);
+	mpz_fib_ui(*ptr,a);
+
+	return 0;
+}
+
+
+/* 
+This is an example of a stack function - the value is returned onto the stack to be pop'd off
+using a 'returning' clause
+*/
+
+a4gl_mpz_nextprime(mpz_t *ptr,int nparam) {
+	static mpz_t pout;
+	debug("ptr=%p nparam=%d\n",ptr,nparam);
+	mpz_init(pout);
+	mpz_nextprime(pout,*ptr);
+	push_variable(&pout,dtype_mpz);
+	return 1;
+}
+
+
+
+
 void *mpz_alloc() {
 mpz_t *ptr;
 	ptr=(mpz_t *)malloc(sizeof(mpz_t));
@@ -321,6 +353,13 @@ int EXDTYPE_initlib() {
 // Not sure if we need this one yet
 	add_datatype_function_n(MPZ_DTYPE_NAME,"<STRING",mpz_from_str);
 
+
+
+// These functions are 'class' functions
+// a ':' function is callable from 4gl via
+// the variable:function() syntax...
+	add_datatype_function_n(MPZ_DTYPE_NAME,":nextprime",a4gl_mpz_nextprime);
+	add_datatype_function_n(MPZ_DTYPE_NAME,":setfib",a4gl_mpz_setfib);
 
 
 

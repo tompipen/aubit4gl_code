@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.28 2002-07-16 20:40:59 mikeaubury Exp $
+# $Id: compile_c.c,v 1.29 2002-07-29 18:18:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -197,6 +197,7 @@ void internal_lex_printh(char *fmt, va_list *ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
+static void real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 
@@ -1638,6 +1639,16 @@ print_func_call(char *identifier, void* args, int args_cnt)
 	debug("via print_func_call in lib");
 	real_print_func_call(identifier,args,args_cnt);
 }
+
+void
+print_class_func_call(char *var,char *identifier, void* args, int args_cnt)
+{
+	debug("via print_func_call in lib");
+	real_print_class_func_call(var,identifier,args,args_cnt);
+}
+
+
+
 static void
 real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
@@ -1646,6 +1657,22 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
+}
+
+static void
+real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt)
+{
+  printc ("/* printing parameters */");
+  real_print_expr (args);
+  printc ("/* done printing parameters */");
+  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+
+  printc ("_retvars=call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
+		var,
+		scan_variable(var),
+		identifier,args_cnt);
+
 }
 
 /**

@@ -28,13 +28,31 @@ ibind_var_list {
 	print_field_func('I',$<str>3,$<str>6);
    }
    | pdf_functions
-   | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
-   { 
+   | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable { 
 	print_field_func('T',$<str>3,$<str>6);
- }
+     }
+   | variable COLON identifier OPEN_BRACKET   {
+	new_counter();
+   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   }
+   opt_func_call_args 
+   CLOSE_BRACKET 
+   {
+	int a;
+	dump_expr($<ptr>6);
+	a=get_counter_val();
+	drop_counter();
+	debug("Printing call_func_call...");
+  	print_class_func_call($<str>1,$<str>3,$<ptr>6,a);
+   }
+   opt_return 
+   {
+	print_returning();
+	strcpy($<str>$,$<str>5); /* ? */
+   }
    | identifier OPEN_BRACKET {
 	new_counter();
-   addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
    } 
    opt_func_call_args 
    {
@@ -51,8 +69,8 @@ ibind_var_list {
    opt_return 
    {
 	print_returning();
-	strcpy($<str>$,$<str>5);
-	}
+	strcpy($<str>$,$<str>5); /* ? */
+   }
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
 	A4GLSQL_set_status(0,0);
 	new_counter();
