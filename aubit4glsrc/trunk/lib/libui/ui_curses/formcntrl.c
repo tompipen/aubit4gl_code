@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.22 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.23 2003-08-05 13:58:27 mikeaubury Exp $
 #*/
 
 /**
@@ -382,7 +382,7 @@ process_control_stack (struct s_screenio *sio)
       if (sio->fcntrl[a].state == 50)
 	{
       	  struct struct_scr_field *fprop;
-	  new_state=0;
+	  new_state=10;
 
       		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 	  	A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
@@ -411,6 +411,47 @@ process_control_stack (struct s_screenio *sio)
 		rval=-1;
 	  //mja_wrefresh(currwin);
 	}
+
+
+      if (sio->fcntrl[a].state == 10)
+        {
+          struct struct_scr_field *fprop;
+          new_state = 5;
+
+        rval=-1;
+
+
+          if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
+            {
+              fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+
+              if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) 
+                {
+                  FORM *curses_form;
+                  //int width;
+                  //char buff[256];
+                  curses_form = sio->currform->form;
+                  //width = A4GL_get_field_width (sio->currentfield);
+                  if (current_field (curses_form) != sio->currentfield)
+                    {
+                      set_current_field (curses_form, sio->currentfield);
+		      A4GL_newMovement(sio,sio->curr_attrib+1);
+                    }
+
+                }
+            }
+
+        }
+
+        if (sio->fcntrl[a].state==5) {
+                new_state=0;
+                rval=-1;
+        }
+
+
+
+
+
     }
 
 
