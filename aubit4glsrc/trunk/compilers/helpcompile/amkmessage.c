@@ -1,6 +1,40 @@
-/********************************************************
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: amkmessage.c,v 1.3 2003-04-13 06:46:50 afalout Exp $
+#*/
+
+/**
+ * @file
+ * message help file compiler, Informix 4gl style formated.
  *
- * Program to act as a drop in replacement 
+ * Compile a message file (.msg), and generates a help compiled file
+ * for use in Aubit 4gl programs
+ *
+ * Program to act as a drop in replacement
  *	for Informix  mkmessage
  * 2003-3-25 John O'Gorman john.ogorman@zombie.co.nz
  *
@@ -26,41 +60,68 @@
  * 2. Max len of any message: 32767
  * 3. Max file size: 2^31 (2GB)
  *
- *TODO
- *	1. Check null terminating logic for 1 message only
- *	2. Add errno arg to chckerr()
- *	3. investigate whether strtol() is preferable to atoi
- ********************************************************/
+ * @todo 1. Check null terminating logic for 1 message only
+ * @todo 2. Add errno arg to chckerr()
+ * @todo 3. investigate whether strtol() is preferable to atoi
+ *
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include "a4gl_mkmess_int.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 #define HELPMAXLEN 78
-
-/*******  Function Prototypes ********************/
-
-void mychkerr( FILE *f, char *s);
-int outindex(int msgno, int len, int offset, FILE *f);
-int out4( int n, FILE *f);
-int out2( int n, FILE *f);
-int fwrite2(char *s, FILE *f);
-
-/**************************************************/
-
 static char progname[128];	//use this to pass argv[0] to functions
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void 	mychkerr	( FILE *f, char *s);
+int 	outindex	(int msgno, int len, int offset, FILE *f);
+int 	out4		(int n, FILE *f);
+int 	out2		(int n, FILE *f);
+int 	fwrite2		(char *s, FILE *f);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ * The main entry function to amkmessage compiler
+ *
+ * @param argc The arg count
+ * @param argv The arguments values
+ */
 int
 main(int argc, char *argv[])
 {
-	FILE *infile, *outfile;
-	char *s;
-	char line[HELPMAXLEN];
-	int msgno=0;
-	int lwm=0;		//low  water mark (beginning of message block)
-	int hwm=0;		//high water mark (offset to next message)
-	int len=0;  //count of (possibly multiline) message chars
-	int current=0; //current count of messages found
-	int count=0; //full count of messages found
+FILE *infile, *outfile;
+char *s;
+char line[HELPMAXLEN];
+int msgno=0;
+int lwm=0;		//low  water mark (beginning of message block)
+int hwm=0;		//high water mark (offset to next message)
+int len=0;  	//count of (possibly multiline) message chars
+int current=0; 	//current count of messages found
+int count=0; 	//full count of messages found
 
 	if( argc < 2 )
 	{
@@ -68,10 +129,12 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 	strcpy(progname, argv[0]);
-	infile = fopen( argv[1], "r" );  mychkerr(infile,argv[1]);
+	infile = fopen( argv[1], "r" );  
+	mychkerr(infile,argv[1]);
 	if( argc >= 3 )
 	{
-		outfile = fopen(argv[2], "w+b"); mychkerr(outfile,argv[2]);
+		outfile = fopen(argv[2], "w+b"); 
+		mychkerr(outfile,argv[2]);
 	}
 	else
 	{
@@ -98,7 +161,8 @@ main(int argc, char *argv[])
 				argv[0], argv[1]);
 		exit(2);
 	}
-	printf( "%d messages found\n", count);
+	
+	debug( "%d messages found\n", count);
 
 	//fputs("FE68\n",outfile);
 	fwrite2("\xFE\x68", outfile);
@@ -107,7 +171,7 @@ main(int argc, char *argv[])
 
 /****************************** 
 	Pass 2
-	Now reread the input file 
+	Now reread the input file
 	 build the index array
 	 copy the messages (minus their .nnn headers) after the index block
 *******************************/
@@ -261,4 +325,7 @@ fwrite2(char *s, FILE *f)
 	n = fwrite(s, 1, 2, f);
 	return (int) n;
 }
+
+
+/* ============================= EOF =============================== */
 
