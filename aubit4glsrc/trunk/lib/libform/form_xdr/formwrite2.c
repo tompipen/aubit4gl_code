@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.35 2004-02-10 19:06:59 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.36 2005-01-31 10:35:35 mikeaubury Exp $
 #*/
 
 /**
@@ -893,10 +893,9 @@ A4GL_write_form (void)
 
   A4GL_bname (outputfilename, ext, base);
 
-  if (ext[0] == 0)
-    {
+  /* if (ext[0] == 0) { */
       strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
-    }
+    /* } */
 
   strcpy (fname2, outputfilename);
   strcat (fname2, ".c");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.26 2004-02-10 19:06:58 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.27 2005-01-31 10:32:53 mikeaubury Exp $
 #*/
 
 /**
@@ -887,16 +887,21 @@ A4GL_write_form (void)
 
   strcpy (fname, outputfilename);
 
+
+#ifdef NDEF
+
+/* WHY IS THIS HERE - WHAT DOES IT DO ? */
+
   A4GL_bname (outputfilename, ext, base);
 
+  if (ext[0] == 0 || strchr (&fname[3], '.')==0) {
+      		strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
+	}
 
-  A4GL_debug ("Fname = %s\n", fname);
-  if (ext[0] == 0 || strchr (&fname[3], '.') == 0)
-    {
-      A4GL_debug ("Setting base...");
-      strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
+#endif
 
+  strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
   chk_for_wordwrap();
   translate_form ();
 
