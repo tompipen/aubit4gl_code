@@ -8053,8 +8053,8 @@ LIBFILE_30=
 #Install location - must install first:
 #IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
 #Source code location:
-IS_SOURCE="$HOMEDRIVE\\cygwin$aubitdir"
-IS_SOURCE_GTK="$HOMEDRIVE\\cygwin\\lib"
+IS_SOURCE="$HOMEDRIVE/cygwin$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE/cygwin/lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -16256,6 +16256,8 @@ echo $ECHO_N "checking for Java header files for JNI... $ECHO_C" >&6
 
 #This whole block is not even entered:
 
+#OH MY GOD! it is entered on CygWin !!!!!
+
     # try without any precautions
     cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16288,16 +16290,16 @@ else
         if test "$JAVAPACKAGE" != ""; then
             dirs="$JAVAPACKAGE $dirs"
 		fi
-echo dirs = $dirs
+echo "dirs = $dirs"
         # now try to find jni.h
         for i in "$dirs" ; do
-echo i=$i
+echo "i=$i"
 			if test -r $i/jni.h; then
                 JAVAINCLUDE="$i"
-echo yes1
+echo "yes1"
 				break
             elif test -r $i/include/jni.h; then
-echo yes2
+echo "yes2"
 				JAVAINCLUDE="$i/include"
                 break
             fi
@@ -19976,7 +19978,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 19979 "configure"' > conftest.$ac_ext
+  echo '#line 19981 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -20444,7 +20446,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 20447 "configure"
+#line 20449 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -20542,7 +20544,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 20545 "configure"
+#line 20547 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -22277,7 +22279,38 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iksemel"
 	fi
 
-	RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+
+#On CygWin/MinGW:
+
+#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
+#/usr/bin/bash 4glpc -as-dll libfile.4gl -o libA4GL_file.dll
+#============ FIRST ERROR: ==============
+#libfile.4gl: In function `aclfgl_ferror':
+#libfile.4gl:21: invalid type argument of `->'
+#libfile.4gl: In function `aclfgl_popen':
+#libfile.4gl:34: warning: assignment makes integer from pointer without a cast
+#libfile.4gl: In function `aclfgl_fopen':
+#libfile.4gl:54: warning: assignment makes integer from pointer without a cast
+#libfile.4gl: In function `aclfgl_ftell':
+#libfile.4gl:76: warning: passing arg 1 of `ftell' makes pointer from integer without a cast
+#libfile.4gl: In function `aclfgl_fseek':
+#libfile.4gl:96: warning: passing arg 1 of `fseek' makes pointer from integer without a cast
+#========================================
+#See file  libA4GL_file.dll.err
+#Error compiling... check  libA4GL_file.dll.err
+
+    if test "$GCC_MINGW" != "yes" -a test "$cygwin" != "1"; then
+		RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+    else
+        #we must set it to something, because of InnoSetup, and InnoSetup will
+        #eliminate dupicates automatically:
+		#RPMFILE_21=$LIB_PREFIX/libaubit4gl$SO_EXT
+		RPMFILE_21=$IS_SOURCE/lib/libaubit4gl$SO_EXT
+	fi
+
+
+
+
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"

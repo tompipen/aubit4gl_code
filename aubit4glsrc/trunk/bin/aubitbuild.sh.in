@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.13 2003-01-21 08:25:48 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.14 2003-01-29 02:57:09 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -133,6 +133,10 @@ UPBUILD=1
 #####################
 #Location of log file to log this process to:
 LOGFILE=/tmp/aubitbuild.log
+MAINLOG=$LOGFILE
+CLEANLOG=/tmp/clean.log
+CONFIGLOG=/tmp/config.log
+TARLOG=/tmp/tar.log
 
 #####################
 #temp file names to use when creating download HTML page
@@ -259,11 +263,23 @@ function runexec {
         then
 			echo "Executing: $EXEC"
         fi
-        echo "#####################################################" >> $LOGFILE 2>&1
-		echo "Executing: $EXEC" >> $LOGFILE 2>&1
-        echo "#####################################################" >> $LOGFILE 2>&1
+
+		if [ "$LOGFILE" != "$MAINLOG" ]
+        then
+	        if [ "$VERBOSE" = "1" ]
+	        then
+				echo "Log redirected to $LOGFILE"
+	        fi
+        fi
+
+		echo "#####################################################" >> $MAINLOG 2>&1
+		echo "Executing: $EXEC" >> $MAINLOG 2>&1
+        echo "#####################################################" >> $MAINLOG 2>&1
 		$EXEC >> $LOGFILE 2>&1
 		RET=$?
+		
+        #reset log file:
+		LOGFILE=$MAINLOG
 		if test $RET != "0"
 		then
 		    echo "$EXEC failed with code $RET. See $LOGFILE"
@@ -409,9 +425,17 @@ fi
 
 echo "******* aubitbuild.sh start: ********" > $LOGFILE
 echo "******* `date` ********" >> $LOGFILE
+echo "******* aubitbuild.sh start: ********" > $CLEANLOG
+echo "******* `date` ********" >> $CLEANLOG
+echo "******* aubitbuild.sh start: ********" > $CONFIGLOG
+echo "******* `date` ********" >> $CONFIGLOG
+echo "******* aubitbuild.sh start: ********" > $TARLOG
+echo "******* `date` ********" >> $TARLOG
+
+
 if [ "$VERBOSE" = "1" ]
 then
-    echo "Initialized log file: $LOGFILE"
+    echo "Initialized log files: $LOGFILE $CLEANLOG $CONFIGLOG $TARLOG"
 fi
 
 
@@ -430,6 +454,7 @@ if test "$MAKE" = "1"; then
         then
 			#pasing parameters to configure from here will only work if aubitconf script is
             #not in the path
+			LOGFILE=$CONFIGLOG
 			EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
         fi
 
@@ -437,6 +462,7 @@ if test "$MAKE" = "1"; then
 		#libaubit4gl still in the path:
 		EXEC="make deinstall"; runexec
 
+        LOGFILE=$CLEANLOG
 		EXEC="make clean.all"; runexec
 
 		STOPONERROR=0   #Continue even if next statemets fails
@@ -482,11 +508,13 @@ if test "$MAKE" = "1"; then
 		#configure will use aubitconf if it exists to provide switches:
 		#pasing parameters to configure from here will only work if aubitconf script is
         #not in the path
+		LOGFILE=$CONFIGLOG
 		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
 		#cannot do this, if I do, there won't be a makefile left to do "make tar"
 		#EXEC="make clean.configure"; runexec #to remove makefiles before tar
 		#must use 'tar' target in makefile, since I don't have versions and platform info
 	    #here that is created by configure:
+		LOGFILE=$TARLOG
 		EXEC="make tar"; runexec
 
 		#cvs commit to check in build number
@@ -541,7 +569,9 @@ if test "$MAKE" = "1"; then
 		EXEC="make deinstall"; runexec
 		EXEC="make install prefix=$AUBITBINDIR"; runexec
 		EXEC="cd $AUBITBINDIR"; runexec
-	    EXEC="make clean"; runexec
+		LOGFILE=$CLEANLOG
+		EXEC="make clean"; runexec
+		LOGFILE=$TARLOG
 		EXEC="make tar.bin"; runexec
 
 fi
@@ -624,21 +654,36 @@ if test "$WINSETUP" = "1"; then
     	#For Windows setup installer we need Windows native version,
         #but we so far compiled only Cygwin version
 
-        #deinall first, so that we don't accidentally link with CygWin dependent
-		#libaubit4gl still in the path"
-		EXEC="make deinstall"; runexec
-
         NEWPATH=`echo $PATH | sed -e 's/M-i-n-G-W/MinGW/'g`
+
+        echo "Re-enabled MinGW in the PATH"
+    else
+        #ther was no M-i-n-G-W in the path
+		TMP=`echo $PATH | grep MinGW`
+        if test "$TMP" != ""; then
+            #there is no MinGW in the path at all, add it:
+			NEWPATH="D:/MinGW/bin:$PATH"
+            echo "Added MinGW to the PATH"
+        fi
+    fi
+
         PATH=$NEWPATH
         export PATH
 		if test "$VERBOSE" = "1"; then
 			echo "PATH changed to $PATH"
         fi
 
+
+        #deinall first, so that we don't accidentally link with CygWin dependent
+		#libaubit4gl still in the path"
+		EXEC="make deinstall"; runexec
+
         #now we need to configure and build it from source code again:
 		STOPONERROR=1
 	    EXEC="cd $AUBITSRCDIR"; runexec
+		LOGFILE=$CLEANLOG
 		EXEC="make clean.all"; runexec
+		LOGFILE=$CONFIGLOG
 		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
 		EXEC="make log"; runexec
 
@@ -652,9 +697,6 @@ if test "$WINSETUP" = "1"; then
         if test "$TMP" != ""; then
             echo "ERROR: 4glc.exe depends on cygwin1.dll"
         fi
-
-
-	fi
 
 	STOPONERROR=0   #Continue even if next statemets fails
 	EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec

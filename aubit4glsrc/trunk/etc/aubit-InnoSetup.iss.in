@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.5 2002-12-08 06:34:36 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.6 2003-01-29 02:57:09 afalout Exp $
 ;
 
 
@@ -116,7 +116,9 @@ Source: @IS_SOURCE@\docs\changelog.txt; DestDir: {app}\docs; Components: runtime
 Source: @IS_SOURCE@\docs\COPYING; DestDir: {app}\docs; Components: runtime
 Source: @IS_SOURCE@\docs\CREDITS; DestDir: {app}\docs; Components: runtime
 Source: @IS_SOURCE@\docs\LICENSE; DestDir: {app}\docs; Components: runtime
-Source: @IS_SOURCE@\lib\libA4GL_file.dll; DestDir: {app}\lib; Components: runtime
+;Source: @IS_SOURCE@\lib\libA4GL_file.dll; DestDir: {app}\lib; Components: runtime
+Source: @RPMFILE_21@; DestDir: {app}\lib; Components: runtime
+
 Source: @IS_SOURCE@\lib\libA4GL_HTML.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libA4GL_string.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libaubit4gl.dll; DestDir: {app}\bin; Components: runtime
@@ -182,7 +184,7 @@ Source: @IS_SOURCE@\Makefile; DestDir: {app}; Components: Make
 Source: @IS_SOURCE@\tools\test\gui\Makefile; DestDir: {app}\tools\test\gui; Components: Make
 Source: @IS_SOURCE@\tools\test\Makefile; DestDir: {app}\tools\test; Components: Make
 Source: @IS_SOURCE@\incl\i4gl.mk; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\a4gl-rules.mki; DestDir: {app}\incl; Components: Make
+;Source: @IS_SOURCE@\incl\a4gl-rules.mki; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\d4gl.mk; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\footer.mki; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\footer-c.mki; DestDir: {app}\incl; Components: Make

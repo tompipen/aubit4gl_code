@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.150 2003-01-27 05:47:00 afalout Exp $
+dnl # $Id: configure.in,v 1.151 2003-01-29 02:56:32 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -605,8 +605,8 @@ LIBFILE_30=
 #Install location - must install first:
 #IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
 #Source code location:
-IS_SOURCE="$HOMEDRIVE\\cygwin$aubitdir"
-IS_SOURCE_GTK="$HOMEDRIVE\\cygwin\\lib"
+IS_SOURCE="$HOMEDRIVE/cygwin$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE/cygwin/lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -2687,6 +2687,8 @@ if test "$WITH_JAVA" != "no" ; then
 
 #This whole block is not even entered:
 
+#OH MY GOD! it is entered on CygWin !!!!!
+
     # try without any precautions
     AC_TRY_CPP([#include <jni.h>], WITH_JAVA=yes,
         [ dirs="$prefix /usr/local/src/j2sdk1.3.1 /usr/lib/java /usr/java /usr/java/jdk1.4 /usr/lib/jdk1.4 /opt/java1.4 /usr/lpp/java/J1.4 /usr/java/jdk1.4 /usr/lib/jdk1.4 /usr/jdk14 /jdk1.4 /usr/java/jdk1.3 /usr/include/java /usr/local/java /usr/local/include/kaffe /usr/include/kaffe /usr/lib/jdk1.3 /opt/java1.3 /usr/lpp/java/J1.3 /usr/java/jdk1.2 /usr/lib/jdk1.2.2 /usr/lib/jdk1.2.1 /usr/jdk122 /usr/lib/jdk122 /usr/lib/jdk1.2.1 /opt/java1.2 /usr/lpp/java/J1.2 /usr/lib/jdk1.1.8 /usr/jdk118 /usr/lib/jdk118 /usr/lpp/java/J1.1 /opt/java1.1 /usr /opt/local /jdk1.3 /jdk1.2.3 /jdk1.2.2 /jdk1.2.1 /System/Library/Frameworks/JavaVM.framework/Headers /usr/jdk_base/include"
@@ -2694,16 +2696,16 @@ if test "$WITH_JAVA" != "no" ; then
         if test "$JAVAPACKAGE" != ""; then
             dirs="$JAVAPACKAGE $dirs"
 		fi
-echo dirs = $dirs
+echo "dirs = $dirs"
         # now try to find jni.h
         for i in "$dirs" ; do
-echo i=$i
+echo "i=$i"
 			if test -r $i/jni.h; then
                 JAVAINCLUDE="$i"
-echo yes1
+echo "yes1"
 				break
             elif test -r $i/include/jni.h; then
-echo yes2
+echo "yes2"
 				JAVAINCLUDE="$i/include"
                 break
             fi
@@ -3354,7 +3356,38 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iksemel"
 	fi
 
-	RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+
+#On CygWin/MinGW:
+
+#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
+#/usr/bin/bash 4glpc -as-dll libfile.4gl -o libA4GL_file.dll
+#============ FIRST ERROR: ==============
+#libfile.4gl: In function `aclfgl_ferror':
+#libfile.4gl:21: invalid type argument of `->'
+#libfile.4gl: In function `aclfgl_popen':
+#libfile.4gl:34: warning: assignment makes integer from pointer without a cast
+#libfile.4gl: In function `aclfgl_fopen':
+#libfile.4gl:54: warning: assignment makes integer from pointer without a cast
+#libfile.4gl: In function `aclfgl_ftell':
+#libfile.4gl:76: warning: passing arg 1 of `ftell' makes pointer from integer without a cast
+#libfile.4gl: In function `aclfgl_fseek':
+#libfile.4gl:96: warning: passing arg 1 of `fseek' makes pointer from integer without a cast
+#========================================
+#See file  libA4GL_file.dll.err
+#Error compiling... check  libA4GL_file.dll.err
+
+    if test "$GCC_MINGW" != "yes" -a test "$cygwin" != "1"; then
+		RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+    else
+        #we must set it to something, because of InnoSetup, and InnoSetup will
+        #eliminate dupicates automatically:
+		#RPMFILE_21=$LIB_PREFIX/libaubit4gl$SO_EXT
+		RPMFILE_21=$IS_SOURCE/lib/libaubit4gl$SO_EXT
+	fi
+
+
+
+
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
