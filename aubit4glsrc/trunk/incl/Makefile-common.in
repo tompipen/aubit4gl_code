@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.157 2004-06-28 12:33:49 afalout Exp $
+# $Id: Makefile-common.in,v 1.158 2004-07-01 11:51:38 afalout Exp $
 #
 
 
@@ -35,14 +35,14 @@ CFLAGS=
 LIBS=
 
 #MUST be here - it will be used by make "shell" commands
-SH					=@SH@
+SH				=@SH@
 SHELL				:=${SH}
 
 #Workarounf for Informix installers messing up libphtread:
-LD_LIBRARY_PATH				:=/lib:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH			:=/lib:${LD_LIBRARY_PATH}
 
 #Name we will use in many places, for consistency:
-AUBITNAME					=@SHORTNAME@
+AUBITNAME			=@SHORTNAME@
 
 #If we later need to know if this makefile was included or not:
 MAKEFILE_COMMON_INCLUDED	=1
@@ -50,12 +50,12 @@ MAKEFILE_COMMON_INCLUDED	=1
 #############
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/${AUBITNAME}
-AUBITETC					=@AUBITETC@
+AUBITETC			=@AUBITETC@
 
 #############
 #While compiling source code, force priority of 'aubitrc' present in this 
 #source code tree. Also applies to aubit-config calls made from makefles 
-A4GL_INIFILE				=@aubitdir@/etc/aubitrc
+A4GL_INIFILE			=@aubitdir@/etc/aubitrc
 
 #WARNING! configure is not creating this file when in binary tree,
 #it is copied in state as configured for source code distribution,
@@ -64,11 +64,11 @@ A4GL_INIFILE				=@aubitdir@/etc/aubitrc
 #with binary distro only to install/deinstall and compile stuff in tools/test
 #so I guess it's OK - if not, we will have to pack Makefile-common.in with
 #binary distro and modify configure to create it for binary build too.
-AUBIT_SRC_ROOT				=@aubitdir@
-AUBIT_VERSION				=@AUBIT_VERSION@
-AUBIT_BUILD					=@AUBIT_BUILD@
-COMPILE_DATE				=@COMPILE_DATE@
-TARGET						=@target@
+AUBIT_SRC_ROOT			=@aubitdir@
+AUBIT_VERSION			=@AUBIT_VERSION@
+AUBIT_BUILD			=@AUBIT_BUILD@
+COMPILE_DATE			=@COMPILE_DATE@
+TARGET				=@target@
 
 ifeq "${TARGET_OS}" ""
 	TARGET_OS=$(findstring solaris,${TARGET})
@@ -859,6 +859,8 @@ HAVE_PDCURSES   	=@HAVE_PDCURSES@
 PD_CURSES_LIB_PATH	=@PD_CURSES_LIB_PATH@
 PD_CURSES_INC_PATH	=@PD_CURSES_INC_PATH@
 PD_CURSES_LIB_NAME	=@PD_CURSES_LIB_NAME@
+PD_CURSES_DRIVE		=@PD_CURSES_DRIVE@
+PD_CURSES_CYGDRIVE	=@PD_CURSES_CYGDRIVE@
 
 
 ## ==================================================================

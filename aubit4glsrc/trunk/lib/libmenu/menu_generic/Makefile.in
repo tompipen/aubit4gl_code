@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# | Aubit 4gl Language Compiler Version $.0   lib makefile               |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2003-03-07 04:37:35 afalout Exp $
+# $Id: Makefile.in,v 1.10 2004-07-01 11:51:41 afalout Exp $
 #
 
 LIBROOT	=../..
@@ -56,33 +56,40 @@ GTK_LIB_PATH	=@GTK_LIB_PATH@
 GTKLIBS			=@GTKLIBS@
 
 ifeq "${WIN_PATH}" "1"
+#ifeq "" "$(findstring cygdrive,${GTK_INC_PATH})"
+ifeq "" "$(findstring :,${GTK_INC_PATH})"
 	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
-    #app (like MingGW) don't know anythign about links! So for now we will add path to
-    #there.   -ID:/cygwin/usr/lib/glib-2.0/include
-    ADD_ME=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
+	#app (like MingGW) don't know anythign about links! So for now we will add path to
+	#there.   -ID:/cygwin/usr/lib/glib-2.0/include
+	ADD_ME=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
 	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
 	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
 endif
+endif
 
 GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 
 #Need to find better sollution for this:
-GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#dropline.net has -lintl, not -lintl-1 
+#GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
 CFLAGS			+=-I.. -I. -I${ROOT}/incl -I${ROOT}/common/dataio ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
 #CFLAGS	:=-I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus -I${ROOT}/common/dataio
 
 CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
-GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
+GTK_LIB_PATH		:=$(subst /target/build,/usr,${GTK_LIB_PATH})
 
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
-GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
+GTK_LIB_PATH 		:=$(subst /target,/usr,${GTK_LIB_PATH})
 
 
 ifeq "${WIN_PATH}" "1"
+#ifeq "" "$(findstring cygdrive,${GTK_LIB_PATH})"
+ifeq "" "$(findstring :,${GTK_LIB_PATH})"
 	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib
+endif
 endif
 
 ALL			+=${LIBROOT}/libMENU_GENERIC${SO_EXT}

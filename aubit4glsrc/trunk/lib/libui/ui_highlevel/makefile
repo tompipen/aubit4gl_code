@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.24 2004-06-28 12:33:50 afalout Exp $
+# $Id: makefile,v 1.25 2004-07-01 11:51:41 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -38,38 +38,44 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 CFLAGS+=${GTK_INC_PATH} ${GTK_LIB_PATH}
 
-
-
 ifeq "${WIN_PATH}" "1"
+#ifeq "" "$(findstring cygdrive,${GTK_INC_PATH})"
+ifeq "" "$(findstring :,${GTK_INC_PATH})"
+#GTK installed inside CygWin tree - need to translate to Windows path
 	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
-    #app (like MingGW) don't know anythign about links! So for now we will add path to
-    #there.   -ID:/cygwin/usr/lib/glib-2.0/include
-    ADD_ME		=-I${WIN_CYGPATH}/lib/glib-2.0/include \
-					-I${WIN_CYGPATH}/lib/gtk-2.0/include
+	#app (like MingGW) don't know anythign about links! So for now we will add path to
+	#there.   -ID:/cygwin/usr/lib/glib-2.0/include
+	ADD_ME		=-I${WIN_CYGPATH}/lib/glib-2.0/include \
+			-I${WIN_CYGPATH}/lib/gtk-2.0/include
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
-	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
-	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+	GTK_INC_PATH	:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
+	GTK_LIB_PATH	:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+endif
+#endif
 endif
 
 GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS}) 
 
 #Need to find better sollution for this:
-GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#dropline.net has -lintl, not -lintl-1 
+#GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
 CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH} -I/usr/local/include/ncurses
 
 CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
-GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
+GTK_LIB_PATH    	:=$(subst /target/build,/usr,${GTK_LIB_PATH})
 
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
 CFLAGS			+=-fPIC
-GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
+GTK_LIB_PATH 		:=$(subst /target,/usr,${GTK_LIB_PATH})
 
 #-mms-bitfields or -fnative-struct
 
 ifeq "${WIN_PATH}" "1"
+ifeq "" "$(findstring :,${GTK_LIB_PATH})"
 	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib
+endif
 endif
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
@@ -116,9 +122,14 @@ else
 		CURSES_LIB_NAME	=${PD_CURSES_LIB_NAME}
 
 		ifeq "${WIN_PATH}" "1"
-			CURSES_LIB_PATH 	:=$(subst -L/cygdrive/d,-Ld:,${CURSES_LIB_PATH})
-			CURSES_INC_PATH 	:=$(subst -I/cygdrive/d,-Id:,${CURSES_INC_PATH})
-			CURSES_LIB_NAME 	:=$(subst /cygdrive/d,d:,${CURSES_LIB_NAME})
+		
+		
+			#CURSES_LIB_PATH 	:=$(subst -L/cygdrive/d,-Ld:,${CURSES_LIB_PATH})
+			#CURSES_INC_PATH 	:=$(subst -I/cygdrive/d,-Id:,${CURSES_INC_PATH})
+			#CURSES_LIB_NAME 	:=$(subst /cygdrive/d,d:,${CURSES_LIB_NAME})
+			CURSES_LIB_PATH 	:=$(subst -L${PD_CURSES_CYGDRIVE},-L${PD_CURSES_DRIVE}:,${CURSES_LIB_PATH})
+			CURSES_INC_PATH 	:=$(subst -I${PD_CURSES_CYGDRIVE},-I${PD_CURSES_DRIVE}:,${CURSES_INC_PATH})
+			CURSES_LIB_NAME 	:=$(subst ${PD_CURSES_CYGDRIVE},${PD_CURSES_DRIVE}:,${CURSES_LIB_NAME})
 			#CURSES_LIB_NAME 	:=$(subst /cygdrive/d,d:,${CURSES_LIB_NAME}) d:/pdc25_vc_w32/panel.lib
 			#CURSES_LIB_NAME=d:/pdc25_vc_w32/curses.dll d:/pdc25_vc_w32/panel.lib
 		endif
@@ -252,6 +263,8 @@ show:
 	@echo "PD_CURSES_INC_PATH=${PD_CURSES_INC_PATH}"
 	@echo "PD_CURSES_LIB_NAME=${PD_CURSES_LIB_NAME}"
 	@echo "WIN_PATH=${WIN_PATH}"
+	@echo "PD_CURSES_CYGDRIVE=${PD_CURSES_CYGDRIVE}"
+	@echo "PD_CURSES_DRIVE=${PD_CURSES_DRIVE}"
 	
 ## ==================================================================
 ##                              Clean

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.74 2004-03-22 00:15:53 afalout Exp $
+# $Id: Makefile-install.mki,v 1.75 2004-07-01 11:51:39 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -619,8 +619,13 @@ SUNRPC_INFO         =
 
 ##################
 # 18: GTK+ - GUI
-GTK_INFO			=http://www.gtk.org/
-
+#TODO-merge with item 21
+ifdef COMSPEC
+	#abandoned - GTK_INFO		=http://www.dropline.net/gtk
+	GTK_INFO			=www.gimp.org/win32 or http://gladewin32.sourceforge.net/
+else
+	GTK_INFO			=http://www.gtk.org/
+endif
 ##################
 # 19: curses - TUI
 CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
@@ -715,6 +720,11 @@ CINT_PATH=ftp://root.cern.ch/root/
 CINT_SRC=cint5.15
 CINT_TAR_GZ_SRC=${CINT_SRC}.tar.gz
 
+##################
+# 29: PDcurses - TUI
+PDCURSES_INFO			=http://pdcurses.sourceforge.net/
+PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
+PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
 
 ## ==================================================================
 ##                    Third-party products installation

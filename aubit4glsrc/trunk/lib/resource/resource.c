@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.76 2004-06-25 18:25:38 mikeaubury Exp $
+# $Id: resource.c,v 1.77 2004-07-01 11:51:41 afalout Exp $
 #
 */
 
@@ -120,9 +120,12 @@ struct str_resource builtin_resource[] = {
      It can increase compile time significantly, so the default should be "no"
    */
   {"INCLINES", "no"},		///"yes" or "no"
+  
 #if (defined (__MINGW32__))
 //FIXME: do not hard-code D:/cygwin
-  {"AUBITETC", "D:/cygwin/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
+// {"AUBITETC", "D:/cygwin/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
+//  {"AUBITETC", "_WINDOWS_DRIVE_ _CYGWIN_PATH_/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
+  {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files */
   {"A4GL_MV_CMD", "move"},
 #else
   {"AUBITETC", "/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */

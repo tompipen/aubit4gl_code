@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.27 2004-04-21 19:24:25 mikeaubury Exp $
+# $Id: pointers.c,v 1.28 2004-07-01 11:51:40 afalout Exp $
 #
 */
 
@@ -86,43 +86,49 @@ struct s_node
 =====================================================================
 */
 
-//#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
-//actually, should use  #if HAVE_SEARCH_H
-#if HAVE_SEARCH_H
-#  include <search.h>
+#if HAVE_SEARCH_H && ! defined(__MINGW32__)
+//#if HAVE_SEARCH_H
+	// MinGW 3.1.0 introduced search.h, but it's not complete
+	#  include <search.h>
 #else
+	/* search internal node for windows and platforms without this 
+	library function (like Darwin) */
 
-
-	/* search internal node for windows and platforms without this library function */
-
-typedef struct entry
-{
-  char *key, *data;
-}
-ENTRY;
-typedef enum
-{ FIND, ENTER }
-ACTION;
-
-	/* TSEARCH(3C) */
-	/** The type of the visit made to an element of the tree */
-	//why are this two lines commented out:
-	//typedef enum { preorder, postorder, endorder, leaf } VISIT;
+	typedef struct entry
+	{
+	  char *key, *data;
+	}
+	ENTRY;
+	
+	typedef enum
+	{ FIND, ENTER }
+	ACTION;
+	
+		/* TSEARCH(3C) */
+		/** The type of the visit made to an element of the tree */
+	
+	
+	#if defined(__MINGW32__)
+		//why was this line commented out?
+		typedef enum { preorder, postorder, endorder, leaf } VISIT;
+	#endif
+	
+	//why is this line commented out?
 	//void A4GL_action (const void *nodep, const VISIT which, const int depth);
-
-	/** A node tree information */
-typedef struct node_t
-{
-  char *key;
-  struct node_t *left, *right;
-}
-node;
-
-node *tsearch (char *key, node ** rootp, int (*compar) (const void *l,const void *r));
-node *tdelete (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
-void twalk (node * root, void *act);
-	// void twalk(node *root, VISIT action);
-node *tfind (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
+	
+		/** A node tree information */
+	typedef struct node_t
+	{
+	  char *key;
+	  struct node_t *left, *right;
+	}
+	node;
+	
+	node *tsearch (char *key, node ** rootp, int (*compar) (const void *l,const void *r));
+	node *tdelete (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
+	void twalk (node * root, void *act);
+		// void twalk(node *root, VISIT action);
+	node *tfind (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
 #endif
 
 /*
@@ -445,10 +451,9 @@ A4GL_has_pointer (char *pname, char t)
  * Totally public domain.
  */
  /*LINTLIBRARY*/
-//#if defined(__DARWIN__) || defined (WIN32) || defined (__CYGWIN__)
-//actually, should use  #if HAVE_SEARCH_H
-#if HAVE_SEARCH_H
 
+#if HAVE_SEARCH_H  && ! defined(__MINGW32__)
+	//MinGW 3.1.0 introduced search.h, but where are this functions?
 #else
 /**
  * find or insert datum into search tree

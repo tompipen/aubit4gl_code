@@ -576,6 +576,7 @@ A4GL_DIALOG_IGNORE LANG Text to display on IGNORE button
 A4GL_DIALOG_YES LANG Text to display on YES button
 A4GL_DIALOG_NO LANG Text to display on NO button
 A4GL_DIALOG_ERROR LANG Text to display for ERROR window
+TUICANCELKEY TUI Allows the assigning of interrupt key.  For example in aterm's I set it to 263
 A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels 
 =YES|NO
 	When set to Yes, any form label can use the pango-markup-language:

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.228 2004-06-28 12:32:59 afalout Exp $
+dnl # $Id: configure.in,v 1.229 2004-07-01 11:51:05 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -249,7 +249,7 @@ AC_CYGWIN
 #configure.in:151: warning: AC_ARG_PROGRAM was called before AC_ CANONICAL_ TARGET
 #but if I uncomment it, it complains that it was invoked multiple times!
 #AC_ CANONICAL_ TARGET
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_SYSTEM 
 
 #prevent libtool from trying to build static libraries
 AC_DISABLE_STATIC
@@ -523,7 +523,9 @@ AC_SUBST(HAVE_PDCURSES)
 AC_SUBST(PD_CURSES_LIB_PATH)
 AC_SUBST(PD_CURSES_INC_PATH)
 AC_SUBST(PD_CURSES_LIB_NAME)
-
+AC_SUBST(PD_CURSES_DRIVE)
+AC_SUBST(PD_CURSES_CYGDRIVE)
+		
 
 #debug
 AC_SUBST(DEBUG_BISON)
@@ -1393,11 +1395,11 @@ case $host in
 		if test "$TMP_TMP" != ""; then
 			set `echo $TMP_TMP`
 			if test "$1" != ""; then
-                if test "$3" = "mingw" -o "$4" = "mingw"; then
+				if test "$3" = "mingw" -o "$4" = "mingw"; then
 					GCC_MINGW=yes
-                fi
-            fi
-        fi
+				fi
+			fi
+		fi
 
 		;;
 
@@ -1511,9 +1513,12 @@ if test "$withval" != "no"; then
 	if test "$with_curses" = "" -a "$GCC_MINGW" != "yes"; then
 		with_curses=yes
 	fi
-	if test "$with_pdcurses" = "" -a "$GCC_MINGW" = "yes"; then
-		with_pdcurses=yes
-	fi
+	
+	#can't do that - we don't actually test for it, we just accept
+	#whatever user specifies
+	#if test "$with_pdcurses" = "" -a "$GCC_MINGW" = "yes"; then
+	#	with_pdcurses=yes
+	#fi
 
 	if test "$with_cint" = ""; then          	with_cint=yes 		;fi
 	if test "$with_mpz" = ""; then				with_mpz=yes 		;fi
@@ -5153,9 +5158,7 @@ fi
 	#of Aubit compielr compiled natively (using MinGW GCC) - if we make
     #cygwin1.dll accessible at run-time.
 
-	#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go 
-	#- no forms support - check again in some time
-	#We have TUIN now !!!!!
+	#there is not ncurses on Win32 - but we can try Pdcurses for UI_TUIN
 		
 	PHP_CONFIGURE_PART(Checking for PDcurses:)
 	AC_ARG_WITH(pdcurses,
@@ -5167,12 +5170,40 @@ fi
 	    withval=/cygdrive/d/pdc25_vc_w32
 	  fi
 	  if test "$withval" != "no"; then
-		PD_CURSES_LIB_PATH="-L$withval"
+	  #TODO: we need to actually test this, not just blindly accept it
+	  	PD_CURSES_LIB_PATH="-L$withval"
 		PD_CURSES_INC_PATH="-I$withval"
 		PD_CURSES_LIB_NAME="$withval/curses.dll $withval/panel.lib"
-        HAVE_PDCURSES=1
+		HAVE_PDCURSES=1
 		AC_DEFINE(HAVE_PDCURSES,1,[ ])
-	    AC_MSG_RESULT(yes)
+		AC_MSG_RESULT(yes)
+		#echo 1
+		#echo $withval
+		TMP_TMP=`echo $withval | sed -e 's/\// /g'`
+		#echo 2
+		#echo $TMP_TMP
+		TMP_TMP=`echo $TMP_TMP | sed -e 's/\\\\/ /g'`
+		#echo 2a
+		#echo $TMP_TMP
+		TMP_TMP=`echo $TMP_TMP | sed -e 's/cygdrive//' -e 's/\:/ /'`
+		#echo 3
+		#echo $TMP_TMP
+		if test "$TMP_TMP" != ""; then
+			set `echo $TMP_TMP`
+			#echo 4
+			if test "$1" = "c" -o "$1" = "d" -o "$1" = "e" \
+			-o "$1" = "C" -o "$1" = "D" -o "$1" = "E"; then
+				#echo 5
+				PD_CURSES_DRIVE=$1
+			else
+				#echo 6
+				#No drive leter - so same as CygWin drive
+				#HOMEDRIVE is CygWin created environment variable
+				PD_CURSES_DRIVE=`echo $HOMEDRIVE | sed -e 's/\://'`
+			fi
+			PD_CURSES_CYGDRIVE="/cygdrive/$PD_CURSES_DRIVE"
+		fi
+		
 	  else
 		AC_MSG_RESULT(disabled)
 	  fi
@@ -6660,7 +6691,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.228 2004-06-28 12:32:59 afalout Exp $
+| $Id: configure.in,v 1.229 2004-07-01 11:51:05 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
