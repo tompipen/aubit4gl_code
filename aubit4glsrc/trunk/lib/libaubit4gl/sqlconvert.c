@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.36 2004-12-07 15:28:01 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.37 2004-12-08 12:50:23 mikeaubury Exp $
 #
 */
 
@@ -582,7 +582,8 @@ int sq=0;
 int dq=0;
 l=strlen(buff)*2+1000;
 buff2=realloc(buff2,l);
-A4GL_debug("replace_str");
+A4GL_debug("replace_str from :%s to %s",from,to);
+strcpy(buff2,"");
 for (a=0;a<=strlen(buff);a++) {
 	int ok_to_replace; // We only want to replace whole words...
 	ok_to_replace=0;
@@ -610,7 +611,7 @@ for (a=0;a<=strlen(buff);a++) {
 if (cnt>=l) {
 	A4GL_assertion(1,"Not allocated enough space for replace_str");
 }
-
+A4GL_debug("New string : %s\n",buff2);
 strcpy(buff,buff2);
 
 }
@@ -642,7 +643,6 @@ return buff;
 
 char *A4GLSQLCV_generate_current(char *from,char *to) {
 static char buff[256];
-char *ptr;
 int hr;
 if (from==0) from="YEAR";
 if (to==0)   to="SECOND";
@@ -739,9 +739,9 @@ static char buff[256];
 int rule;
 rule=A4GLSQLCV_check_requirement("SUBSTRING_FUNCTION");
 
-
+strcpy(buff,colname);
 if (!rule || n==0) {
-	if (n==0) return colname; 
+	if (n==0) return buff; 
 	if (n==1) { sprintf(buff,"%s[%s]",colname,l); return buff; }  
 	if (n==2) { sprintf(buff,"%s[%s,%s]",colname,l,r); return buff; } 
 } else {
@@ -757,8 +757,6 @@ return "???";
 
 
 char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) {
-//static char buff[256]; 
-//int rule;
 static char l[256]="";
 static char r[256]="";
 char *s;
@@ -766,7 +764,6 @@ char *s;
 if (i0) sprintf(l,"%d",i1);
 if (i0>=2) sprintf(r,"%d",i2);
 s= A4GLSQLCV_make_substr_s(colname,i0,l,r);
-//printf("s=%s\n",s);
 return s;
 }
 
@@ -1985,7 +1982,7 @@ char *ptr;
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
 	ptr=malloc(strlen(sel)+2000);
 	A4GL_debug("Creating temp table called %s",tabname);
-	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,1); }
+	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
 	return ptr;
 }
@@ -2011,7 +2008,7 @@ ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
-	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,1); }
+	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,elements);
 	return ptr;
 } 
