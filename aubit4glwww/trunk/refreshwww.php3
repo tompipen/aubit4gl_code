@@ -12,7 +12,7 @@ $execline = "sh $WWW/refreshwww.sh -anon";
 			echo "<BR>Error refreshing Aubit 4gl WWW site from CVS, status = $return_status<BR>";
         } else {
 			echo "<BR>Success, status = $return_status<BR>";
-			echo "Aubit 4gl WWW site refresshed from CVS \n\n";
+			echo "Aubit 4gl WWW site refresshed from CVS <BR>\n\n";
 		}
 			echo "<BR> Last line=".$string."<BR>";
 
@@ -21,9 +21,9 @@ $execline = "sh $WWW/refreshwww.sh -anon";
 			while (list($key, $val) = each($retvar)) {
 			   echo "$key => $val<br>";
 	        }
-	        echo "----end array-----<br>";
+	        echo "----end array-----<br><BR>";
 			flush();
 
-	echo "<center><a href='http://aubit4gl.sourceforge.net'>Click here to go to Aubit compiler web site home page</a> ";
+	echo "<BR><center><a href='http://aubit4gl.sourceforge.net'>Click here to go to Aubit compiler web site home page</a> ";
 
 </script>

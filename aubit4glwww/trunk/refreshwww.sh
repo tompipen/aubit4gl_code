@@ -50,6 +50,12 @@ else
 fi
 
 cd $HOME
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on cd HOME ($HOME)"
+    exit $RET
+fi
 
 if [ "$1" = "-anon" ]
 then
@@ -59,13 +65,48 @@ else
 	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
 fi
 
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on checkout aubit4glwww"
+    exit $RET
+fi
+
+
+
 rm -rf $WWW/*
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on rm -rf $WWW/*"
+    exit $RET
+fi
+
 cd aubit4glwww
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on cd aubit4glwww"
+    exit $RET
+fi
+
 cp -r * $WWW
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on cp -r * $WWW"
+    exit $RET
+fi
 
 echo "Aubit web site pages (aubit4glwww) refreshed from CVS"
 
 cd $WWW
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on cd WWW ($WWW)"
+    exit $RET
+fi
 
 if [ "$1" = "-anon" ]
 then
@@ -74,7 +115,20 @@ else
 	#this needs password
 	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
 fi
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on 	checkout aubit4gldoc"
+    exit $RET
+fi
 
 echo "Aubit web site doccumentation (aubit4gldoc) refreshed from CVS"
+
 sh refresh_hy4gl.sh $1
+RET=$?
+if test "$RET" != "0"
+then
+    echo "Error on 	sh refresh_hy4gl.sh $1"
+    exit $RET
+fi
 
