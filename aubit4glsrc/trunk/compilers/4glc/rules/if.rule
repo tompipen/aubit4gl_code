@@ -13,5 +13,13 @@ if_cmd	:
 
 op_else : | ELSE {
 		print_if_else();
-	} commands ;
+	} commands 
+	| ELIF {
+		print_if_else();
+		} fgl_expr THEN {
+
+		print_if_start();
+	} commands op_else {
+		print_if_end();
+	};
 
