@@ -175,7 +175,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:

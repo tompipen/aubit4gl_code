@@ -1,10 +1,14 @@
-
 MAIN
-	DEFINE file_name CHAR(10)
-	DEFINE more_command CHAR(10)
+DEFINE file_name CHAR(10)
+DEFINE more_command CHAR(10)
 
 	LET file_name = "xpta.rep"
-	LET more_command = "more"
+	
+	#LET more_command = "more"
+	#Using -ifx-p 'more' waits for user input
+	LET more_command = "cat"
+	
+	
   START REPORT simpleReport
 	OUTPUT TO REPORT simpleReport()
 	FINISH REPORT simpleReport
@@ -21,7 +25,7 @@ MAIN
 	OUTPUT TO REPORT simpleReport()
 	FINISH REPORT simpleReport
 
-  START REPORT simpleReport TO PIPE "more"
+  START REPORT simpleReport TO PIPE "cat" #"more"
 	OUTPUT TO REPORT simpleReport()
 	FINISH REPORT simpleReport
 

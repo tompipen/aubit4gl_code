@@ -6,6 +6,8 @@
 #
 ###########################################################################
 
+#check 252 and -ifx-p
+
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 EXPECT_TO_FAIL_TESTS="240 670 706"
@@ -32,14 +34,17 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 	636 637 638 639 640 645 646 647 648 649 650 651 652 653 654 655 656 657 \
 	658 659 660 664 665 666 667 668 669 675 676 677 678 679 680 681 682 683 \
 	685 686 687 689 690 691 693 694 697 698 699 700 701 702 703 704 710 711 \
-	712 713 714 715 716 717 718 \
-	"
-#Expected to fail using Informix p-code compiler
+	712 713 714 715 716 717 718 "
+
+	#Expected to fail using Informix/4Js/Querix compiler
 EXPECT_TO_FAIL_IFX="102 225 227 228 234 248 251 254 319 487 531 536 537 540 \
 	541 542 543 554 555 558 560 561 562 569 571 572 585 590 600"
 #102 - dump_screen empty
-
-#more - arround 350 make sure you are running LDP server
+EXPECT_TO_FAIL_4JS=""
+EXPECT_TO_FAIL_QUERIX="225 227 228 234 248 251 254 351 359 362 363 364 365 \
+	366 372 373 374 376 380 381 383 385 402 404 408 421 422 461 470 471 473 \
+	475 487 516 531 538 539 544 554 555 556 558 560 569 572 582 583 584 585 \
+	586 587 590 597 599 600 607 629 683 702"
 
 ######################
 #Tests that currently fail because of the errors in the test itself
@@ -52,6 +57,66 @@ INVALID_TESTS="375 377 684 105 705 253"
 ##############################################################################
 #							Functions
 ##############################################################################
+
+##
+# Change setting in makefile
+#
+##
+change_setting() {
+look_for="$1:"
+change_to=$2
+test_no=$3
+makefile=`ls $CURR_DIR/$test_no/?akefile`
+if test "$makefile" = ""; then 
+	echo "ERROR: can't get makefile name"
+	pwd
+	echo "$CURR_DIR/$test_no/?akefile"
+	exit 5
+fi
+tmp_out="$makefile.tmp"
+
+	if test "$VERBOSE" = "1" ; then
+		echo "Changing value of $look_for to $change_to in $makefile..."
+	fi
+
+	awk -v look_for="$look_for" -v change_to="$change_to" '
+	BEGIN {
+	}
+	{
+		if (skip_next==1) {
+			skip_next=0
+			next
+		} else {
+			if (look_for==$1) {
+				print
+				print "	@echo \"" change_to "\""
+				skip_next=1
+			} else {
+				print
+			}
+		}
+	}
+	' < $makefile > $tmp_out
+	
+	if test "$VERBOSE" = "1" ; then
+		diff $makefile $tmp_out
+		RET=$?
+	else
+		diff $makefile $tmp_out > /dev/null
+		RET=$?
+	fi
+	if test "$RET" = "0"; then 
+		if test "$VERBOSE" = "1" ; then
+			echo "Nothing changed"
+		fi
+	else
+		if test "$VERBOSE" = "1" ; then
+			echo "Changed."
+		fi
+		mv $tmp_out $makefile
+	fi
+
+}
 
 ##
 # Create API code for Four J's custom runner
@@ -91,7 +156,7 @@ cfunc_t usrcfuncs[] =
 {
 	"aclfgl_dump_screen", aclfgl_dump_screen, 1,
 	0, 0, 0
-}; 
+}
 EOF
 }
 
@@ -199,7 +264,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 			echo "ERROR: creation of Four J's custom runner failed"
 			exit $RET
 		else
-			echo "Four J's custom runner ($FJSRUNNER) created" 
+			echo "Four J's custom runner ($FJSRUNNER) created"
 			rm -f tmp.log
 		fi
 		;;
@@ -630,6 +695,11 @@ for a in $FLAGS; do
    fi
 
    case $a in
+   
+   		-xxx)
+			VERBOSE=1
+   			change_setting "compat_test" "1" "351"
+			;;
 		-defaults)
             #If there is a conflict, USER flags will win
 			FLAGS="$DEFAULT_FLAGS $FLAGS"
@@ -1534,6 +1604,7 @@ for a in $FLAGS; do
 		;;
 	-4js-p)				#Use FourJs P-code compiler instead of Aubit compiler
 		USE_COMP=4js-p
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_4JS"
 		if test -f "$FJSRUNNER" ; then
 			if test "$VERBOSE" = "1"; then		
 				echo "Note: using custom runner"
@@ -1542,13 +1613,18 @@ for a in $FLAGS; do
 			FGLRUN=$FJSRUNNER
 			export FGLRUN RUNNER
 		fi
+		#Indicate that we will use Informix RDBMS
+		USE_SQLITE=0; USE_ESQLI=1
 		;;
 	-querix)				#Use Querix compiler instead of Aubit compiler
 		USE_COMP=querix
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_QUERIX"
 		#Force Querix compiler to check SQL fro ANSI compliance
 		#Q4GL_CC_FLAGS variable used in q4gl.mk
 		Q4GL_CC_FLAGS="$Q4GL_CC_FLAGS -ansi"
 		export Q4GL_CC_FLAGS
+		#Indicate that we will use Informix RDBMS
+		USE_SQLITE=0; USE_ESQLI=1
 		;;
 
     -nographic)         #skip tests that use platform specific characters
@@ -3346,9 +3422,8 @@ do
 				SKIP_KEYS_IN_LIST="$SKIP_KEYS_IN_LIST $a"
 				continue
 			fi
-#temp disabled
-			#if test "$compat_test" != "1"; then
-			if test "1" = "2"; then
+			if test "$compat_test" != "1"; then
+			#if test "1" = "2"; then
 				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 				if test "$VERBOSE" = "1"; then
 					echo "$a Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
@@ -3430,6 +3505,7 @@ do
     fi
 
 	if test "$SILENT" != "1"; then
+		echo " "
 		echo "------------------------- Running test #$a ---------------------------"
 	else
 		echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."	
@@ -3550,8 +3626,16 @@ do
 		echo "$MAKE returned code $RET"	
 	fi
 	
-	if test "$RET" = "$MAKE_EXPECT_CODE"
-	then
+	if test "$RET" = "$MAKE_EXPECT_CODE"; then
+		#Test passed
+		
+		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
+			#test is not described as compatible, but even using no-aubit compiler 
+			#it passed, so it should be described as compatible
+			NOT_COMPAT_BUT_PASSED="$NOT_COMPAT_BUT_PASSED $a"
+			change_setting "compat_test" "1" "$a"
+		fi
+	
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then 
 				#echo " "
@@ -3696,6 +3780,9 @@ fi
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 if test "$SKIP_OTHER_LIST" != "" ; then 
 	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+fi
+if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
+	echo "TODO-add compat descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
 fi
 if test "$PASS_LIST" != "" -a "$SHOW_PASSED" = "1"; then 
 	echo "Passed: $PASS_LIST" >> $LOGFILE

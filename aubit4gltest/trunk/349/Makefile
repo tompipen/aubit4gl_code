@@ -18,7 +18,7 @@ include ../Makefile-common
 #List of all 4GL modules that need to be compiled to objects. This is already set
 #from included makefile, but you can overide it here if needed. By default, all
 #.4gl files in current directory are automatically listed, and therfore compiled
-FGL= start_report_kinds.4gl
+#FGL= start_report_kinds.4gl
 
 ################
 #You can add additional files to be cleand with "clean" target to the default
@@ -174,7 +174,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:
