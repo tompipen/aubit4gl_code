@@ -45,12 +45,15 @@ do
 done
 tool=c4gl
 ver=`$tool -V 2>&-`
-if [ -z "$tool" ]
+
+#if [ -z "$tool" ]
+if [ -z "$ver" ]
 then
     tool=fglpc
     ver=`$tool -V 2>&-`
 fi
 ver=`echo "$ver" | $AWK '/Version/ { print substr($NF, 1, 1); exit }'`
+echo "Version reported: $ver"
 case "$ver" in
   6|7)
 	echo 'Adjusting code for 4gl 6.00 & above'
@@ -77,7 +80,7 @@ then
     exit
 elif [ "$tool" = "fglpc" -o "$1" = "-force" ]
 then
-    echo 'Adjusting sql interpreter for rds'
+    echo 'Adjusting sql interpreter for P-code compiler'
     dir=rds
 elif [ "$ver" = 4 ]
 then
@@ -87,7 +90,16 @@ else
     echo 'Adjusting sql interpreter for c4gl 6.00 & above'
     dir=4gl6
 fi
+
 for file in $framepath/source/$dir/*
 do
-    ln $file $framepath/source
+	case "$file" in
+    *CVS)
+        #echo skip
+        ;;
+    *)
+		ln $file $framepath/source
+        #echo "ln $file $framepath/source"
+        ;;
+    esac
 done

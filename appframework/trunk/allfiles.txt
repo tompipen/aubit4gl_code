@@ -1,0 +1,455 @@
+This file describes directory structure and purpose of each file in
+4glworks application framework.
+
+
+===============================================================
+
+Directory ./4glworks:       - Root directory of 4glworks framework
+---------------------------
+
+./4glworks/configure.sh     - Configures source code prior to compilation
+./4glworks/cbuild
+./4glworks/ctest
+./4glworks/fglpp
+./4glworks/mkfgwgo
+./4glworks/pbuild
+./4glworks/ptest
+
+Directory ./4glworks/c4gl   - Contains all Informix 4gl C compiler specific
+---------------------------   files
+
+./4glworks/c4gl/cptrc.c
+
+Directory ./4glworks/eng    - Contains all English language specific files
+---------------------------   and form files
+
+./4glworks/eng/cdbm.txt
+./4glworks/eng/4gw.msh
+./4glworks/eng/cptr.txt
+./4glworks/eng/ctbl.txt
+./4glworks/eng/dtbf.per
+./4glworks/eng/f2pf.per
+./4glworks/eng/frmf.per
+./4glworks/eng/hl1w.per
+./4glworks/eng/hl2w.per
+./4glworks/eng/hl3w.per
+./4glworks/eng/hl4w.per
+./4glworks/eng/i4gw.txh
+./4glworks/eng/ierrl.4gh
+./4glworks/eng/imdl.lst
+./4glworks/eng/ishl.txt
+./4glworks/eng/mdlf.per
+./4glworks/eng/mnuw.per
+./4glworks/eng/ptrf.per
+./4glworks/eng/ptrwe.per
+./4glworks/eng/ptrws.per
+./4glworks/eng/shlw.per
+./4glworks/eng/sqlf.per
+./4glworks/eng/stbf.per
+./4glworks/eng/txtf.per
+
+Directory ./4glworks/ita    - Contains indentical files as eng/, in Italian
+---------------------------
+./4glworks/ita/cdbm.txt
+./4glworks/ita/4gw.msh
+./4glworks/ita/cptr.txt
+./4glworks/ita/ctbl.txt
+./4glworks/ita/dtbf.per
+./4glworks/ita/f2pf.per
+./4glworks/ita/frmf.per
+./4glworks/ita/hl1w.per
+./4glworks/ita/hl2w.per
+./4glworks/ita/hl3w.per
+./4glworks/ita/hl4w.per
+./4glworks/ita/i4gw.txh
+./4glworks/ita/ierrl.4gh
+./4glworks/ita/imdl.lst
+./4glworks/ita/ishl.txt
+./4glworks/ita/mdlf.per
+./4glworks/ita/mnuw.per
+./4glworks/ita/ptrf.per
+./4glworks/ita/ptrwe.per
+./4glworks/ita/ptrws.per
+./4glworks/ita/shlw.per
+./4glworks/ita/sqlf.per
+./4glworks/ita/stbf.per
+./4glworks/ita/txtf.per
+
+Directory ./4glworks/etc
+---------------------------
+
+./4glworks/etc/4glworks.sql
+./4glworks/etc/fglpp.txt
+./4glworks/etc/history
+./4glworks/etc/readme
+./4glworks/etc/todo
+
+Directory ./4glworks/rds
+---------------------------
+
+./4glworks/rds/sqlstype.h
+./4glworks/rds/cfuncs
+./4glworks/rds/cptrc.c
+./4glworks/rds/sqlca.h
+./4glworks/rds/sqlda.h
+./4glworks/rds/sqltypes.h
+
+Directory ./4glworks/source
+---------------------------
+
+./4glworks/source/cexpl.4gl
+./4glworks/source/cascc.c
+./4glworks/source/cascc.h
+./4glworks/source/ccmnc.c
+./4glworks/source/ccmnc.h
+./4glworks/source/ccnvc.c
+./4glworks/source/cptrl.4gl
+./4glworks/source/cfioc.c
+./4glworks/source/cfioc.h
+./4glworks/source/chstc.c
+./4glworks/source/chstc.h
+./4glworks/source/cmatc.c
+./4glworks/source/cshll.4gl
+./4glworks/source/crndc.c
+./4glworks/source/cshlc.c
+./4glworks/source/csqll.4gh
+./4glworks/source/csqec.h
+./4glworks/source/cstrl.4gl
+./4glworks/source/csqoc.c
+./4glworks/source/csqoc.h
+./4glworks/source/csqpc.c
+./4glworks/source/csqpc.h
+./4glworks/source/csqpy.y
+./4glworks/source/cstrc.c
+./4glworks/source/ctbll.4gl
+./4glworks/source/ctxtl.4gl
+./4glworks/source/iafil.4gl
+./4glworks/source/idefl.4gh
+./4glworks/source/idtbs.4gl
+./4glworks/source/ierrl.4gl
+./4glworks/source/iexpl.4gl
+./4glworks/source/if2pi.4gl
+./4glworks/source/ifrmi.4gl
+./4glworks/source/ilogv.4gl
+./4glworks/source/imdli.4gl
+./4glworks/source/iml2h.4gl
+./4glworks/source/imltg.4gl
+./4glworks/source/imlth.4gl
+./4glworks/source/imltr.4gl
+./4glworks/source/imlts.4gl
+./4glworks/source/imnhl.4gl
+./4glworks/source/imnuc.c
+./4glworks/source/imnul.4gl
+./4glworks/source/imnvl.4gl
+./4glworks/source/inulv.4gl
+./4glworks/source/ipanl.4gl
+./4glworks/source/iptri.4gl
+./4glworks/source/iptrl.4gl
+./4glworks/source/ishll.4gl
+./4glworks/source/isqlr.4gl
+./4glworks/source/isqlv.4gl
+./4glworks/source/istbg.4gl
+./4glworks/source/istbs.4gl
+./4glworks/source/itbll.4gl
+./4glworks/source/itedg.4gl
+./4glworks/source/itedl.4gl
+./4glworks/source/itiml.4gh
+./4glworks/source/itiml.4gl
+./4glworks/source/iun2h.4gl
+./4glworks/source/iunih.4gl
+./4glworks/source/iunis.4gl
+./4glworks/source/iusrc.c
+./4glworks/source/iusrl.4gl
+./4glworks/source/oafil.4gl
+./4glworks/source/oerrl.4gl
+./4glworks/source/oexpl.4gl
+./4glworks/source/optrl.4gl
+./4glworks/source/ousrc.c
+./4glworks/source/ousrl.4gl
+./4glworks/source/csqdc.c
+./4glworks/source/csqdc.h
+./4glworks/source/csqdl.4gl
+
+Directory ./4glworks/source/rds
+---------------------------
+
+./4glworks/source/rds/csqdl.4gl
+./4glworks/source/rds/csqdc.c
+./4glworks/source/rds/csqdc.h
+
+Directory ./4glworks/source/4gl4
+---------------------------
+
+./4glworks/source/4gl4/csqdc.c
+./4glworks/source/4gl4/csqdc.h
+
+Directory ./4glworks/source/4gl6
+---------------------------
+
+./4glworks/source/4gl6/csqdc.ec
+./4glworks/source/4gl6/csqdc.h
+
+
+===============================================================
+
+Directory ./4gwapps
+---------------------------
+
+Directory ./4gwapps/4gwdemo
+---------------------------
+
+./4gwapps/4gwdemo/buildfile
+
+Directory ./4gwapps/4gwdemo/eng
+---------------------------
+
+./4gwapps/4gwdemo/eng/4gwdemo.msg
+./4gwapps/4gwdemo/eng/4gwdemo.txt
+./4gwapps/4gwdemo/eng/ivwr.txt
+
+Directory ./4gwapps/4gwdemo/ita
+---------------------------
+
+./4gwapps/4gwdemo/ita/4gwdemo.msg
+./4gwapps/4gwdemo/ita/4gwdemo.txt
+./4gwapps/4gwdemo/ita/ivwr.txt
+
+Directory ./4gwapps/4gwdemo/etc
+---------------------------
+
+./4gwapps/4gwdemo/etc/4gwdemo.sql
+./4gwapps/4gwdemo/etc/demo1.fgw
+./4gwapps/4gwdemo/etc/demo2.fgw
+./4gwapps/4gwdemo/etc/frm.unl
+./4gwapps/4gwdemo/etc/frm2ptr.unl
+./4gwapps/4gwdemo/etc/install.sh
+./4gwapps/4gwdemo/etc/mdl.unl
+./4gwapps/4gwdemo/etc/mdl_rows.unl
+./4gwapps/4gwdemo/etc/ptr.unl
+./4gwapps/4gwdemo/etc/readme
+
+Directory ./4gwapps/4gwdemo/source
+---------------------------
+
+./4gwapps/4gwdemo/source/ifstm.4gl
+./4gwapps/4gwdemo/source/ihorm.4gl
+./4gwapps/4gwdemo/source/iinil.4gl
+./4gwapps/4gwdemo/source/iminv.4gl
+./4gwapps/4gwdemo/source/iptrx.4gl
+./4gwapps/4gwdemo/source/isndm.4gl
+./4gwapps/4gwdemo/source/ivwrl.4gh
+
+Directory ./4gwapps/4gwed
+---------------------------
+
+./4gwapps/4gwed/buildfile
+
+Directory ./4gwapps/4gwed/eng
+---------------------------
+
+./4gwapps/4gwed/eng/4gwed.msg
+./4gwapps/4gwed/eng/4gwed.txt
+./4gwapps/4gwed/eng/ivwr.txt
+
+Directory ./4gwapps/4gwed/ita
+---------------------------
+
+./4gwapps/4gwed/ita/4gwed.msg
+./4gwapps/4gwed/ita/4gwed.txt
+./4gwapps/4gwed/ita/ivwr.txt
+
+Directory ./4gwapps/4gwed/etc
+---------------------------
+
+./4gwapps/4gwed/etc/install.sh
+./4gwapps/4gwed/etc/readme
+
+Directory ./4gwapps/4gwed/source
+---------------------------
+
+./4gwapps/4gwed/source/ihorm.4gl
+./4gwapps/4gwed/source/iinil.4gl
+./4gwapps/4gwed/source/iminv.4gl
+./4gwapps/4gwed/source/iptrx.4gl
+./4gwapps/4gwed/source/ivwrl.4gh
+./4gwapps/4gwed/source/ovwrt.4gl
+
+Directory ./4gwapps/maildemo
+---------------------------
+
+./4gwapps/maildemo/buildfile
+
+Directory ./4gwapps/maildemo/eng
+---------------------------
+
+./4gwapps/maildemo/eng/ivwr.txt
+./4gwapps/maildemo/eng/maildemo.msg
+./4gwapps/maildemo/eng/maildemo.txt
+
+Directory ./4gwapps/maildemo/ita
+---------------------------
+
+./4gwapps/maildemo/ita/ivwr.txt
+./4gwapps/maildemo/ita/maildemo.msg
+./4gwapps/maildemo/ita/maildemo.txt
+
+Directory ./4gwapps/maildemo/etc
+---------------------------
+
+./4gwapps/maildemo/etc/install.sh
+./4gwapps/maildemo/etc/readme
+
+Directory ./4gwapps/maildemo/source
+---------------------------
+
+./4gwapps/maildemo/source/ihorm.4gl
+./4gwapps/maildemo/source/iinil.4gl
+./4gwapps/maildemo/source/iminv.4gl
+./4gwapps/maildemo/source/iptrx.4gl
+./4gwapps/maildemo/source/iverm.4gl
+./4gwapps/maildemo/source/ivwrl.4gh
+
+Directory ./4gwapps/menusdemo
+---------------------------
+
+./4gwapps/menusdemo/buildfile
+
+Directory ./4gwapps/menusdemo/eng
+---------------------------
+
+./4gwapps/menusdemo/eng/ivwr.txt
+./4gwapps/menusdemo/eng/menusdemo.msg
+./4gwapps/menusdemo/eng/menusdemo.txt
+
+Directory ./4gwapps/menusdemo/ita
+---------------------------
+./4gwapps/menusdemo/ita/ivwr.txt
+./4gwapps/menusdemo/ita/menusdemo.msg
+./4gwapps/menusdemo/ita/menusdemo.txt
+
+Directory ./4gwapps/menusdemo/etc
+---------------------------
+
+./4gwapps/menusdemo/etc/app2usr.unl
+./4gwapps/menusdemo/etc/application_rows.unl
+./4gwapps/menusdemo/etc/applications.unl
+./4gwapps/menusdemo/etc/install.sh
+./4gwapps/menusdemo/etc/menusdemo.sql
+./4gwapps/menusdemo/etc/mnu.unl
+./4gwapps/menusdemo/etc/mnu_comment.unl
+./4gwapps/menusdemo/etc/readme
+
+Directory ./4gwapps/menusdemo/source
+---------------------------
+
+./4gwapps/menusdemo/source/ifstm.4gl
+./4gwapps/menusdemo/source/ihorm.4gl
+./4gwapps/menusdemo/source/iinil.4gl
+./4gwapps/menusdemo/source/iminv.4gl
+./4gwapps/menusdemo/source/iptrx.4gl
+./4gwapps/menusdemo/source/isndm.4gl
+./4gwapps/menusdemo/source/ivwrl.4gh
+./4gwapps/menusdemo/source/ovwrt.4gl
+
+===============================================================
+
+Directory ./4gwmods
+---------------------------
+
+Directory ./4gwmods/mail
+---------------------------
+
+./4gwmods/mail/buildfile.in
+./4gwmods/mail/configure
+
+Directory ./4gwmods/mail/eng
+---------------------------
+
+./4gwmods/mail/eng/dpnf.per
+./4gwmods/mail/eng/folf.per
+./4gwmods/mail/eng/ihea.txt
+./4gwmods/mail/eng/imil.txt
+./4gwmods/mail/eng/milfi.per
+./4gwmods/mail/eng/milfp.per
+./4gwmods/mail/eng/milfv.per
+./4gwmods/mail/eng/nwsw.per
+
+Directory ./4gwmods/mail/ita
+---------------------------
+
+./4gwmods/mail/ita/imil.txt
+./4gwmods/mail/ita/milfi.per
+./4gwmods/mail/ita/milfp.per
+./4gwmods/mail/ita/nwsw.per
+
+Directory ./4gwmods/mail/etc
+---------------------------
+
+./4gwmods/mail/etc/history
+./4gwmods/mail/etc/readme
+./4gwmods/mail/etc/todo
+
+Directory ./4gwmods/mail/rds
+---------------------------
+
+./4gwmods/mail/rds/cfuncs
+
+Directory ./4gwmods/mail/source
+---------------------------
+
+./4gwmods/mail/source/gd-osdep.h.in
+./4gwmods/mail/source/getdate.h
+./4gwmods/mail/source/id-osdep.h.in
+./4gwmods/mail/source/idatc.c
+./4gwmods/mail/source/idaty.y
+./4gwmods/mail/source/idirc.c
+./4gwmods/mail/source/idpng.4gl
+./4gwmods/mail/source/idpns.4gl
+./4gwmods/mail/source/ifolc.c
+./4gwmods/mail/source/ifolh.4gl
+./4gwmods/mail/source/ifolv.4gl
+./4gwmods/mail/source/iheal.4gl
+./4gwmods/mail/source/imilg.4gl
+./4gwmods/mail/source/imili.4gl
+./4gwmods/mail/source/imill.4gh
+./4gwmods/mail/source/imilt.4gl
+./4gwmods/mail/source/imilv.4gl
+./4gwmods/mail/source/inlsl.4gl
+./4gwmods/mail/source/iossc.c
+./4gwmods/mail/source/iprft.4gl
+./4gwmods/mail/source/is-osdep.h.in
+./4gwmods/mail/source/isokc.c
+
+Directory ./4gwmods/menus
+---------------------------
+
+Directory ./4gwmods/menus/eng
+---------------------------
+
+./4gwmods/menus/eng/appf.per
+./4gwmods/menus/eng/iapp.lst
+./4gwmods/menus/eng/iapp.txt
+
+Directory ./4gwmods/menus/ita
+---------------------------
+
+./4gwmods/menus/ita/appf.per
+./4gwmods/menus/ita/iapp.lst
+./4gwmods/menus/ita/iapp.txt
+
+Directory ./4gwmods/menus/etc
+---------------------------
+
+./4gwmods/menus/etc/4gwmenus.sql
+./4gwmods/menus/etc/cmnul.sql
+./4gwmods/menus/etc/history
+./4gwmods/menus/etc/readme
+
+Directory ./4gwmods/menus/source
+---------------------------
+
+./4gwmods/menus/source/iappi.4gl
+./4gwmods/menus/source/iappl.4gl
+./4gwmods/menus/source/iapvv.4gl
+
+===============================================================
