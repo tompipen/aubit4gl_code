@@ -51,7 +51,7 @@ extern int lineno;             /* 4GL Source current line */
 
 %token  CALL CASCADE CASE CHAR CHECK CLEAR CLIPPED CLOSE CLUSTER COLUMN
 %token  COLUMNS COMMAND COMMENT COMMIT COMMITTED COMPRESS 
-%token  CONSTRAINED CONSTRAINT CONSTRAINTS CONSTRUCT CONTINUE
+%token  CONNECT CONSTRAINED CONSTRAINT CONSTRAINTS CONSTRUCT CONTINUE
 %token  CONTROL COUNT CREATE CURRENT CURSOR 
 
 /* To remove */
@@ -323,10 +323,13 @@ globals_list
 	| globals
 
 globals
-	: op_define_globals
+	: define_globals
 	| op_inc_globals
 
-op_define_globals
+/**
+ * Global variables definition between GLOBALS ... END GLOBALS
+ */
+define_globals
 	 : GLOBALS_TOK                         { InGlobals = 1; InLimbo=0;   }
 		op_define_list END_TOK GLOBALS_TOK
 			{ InGlobals = 0; InLimbo=1; }
@@ -348,7 +351,7 @@ op_inc_globals
 		back_lineno = lineno-2;           
 	}
 		op_database
-		op_define_globals
+		define_globals
 		op_define_list
 
 		// Do --NOT-- process functions that might be present in included file
@@ -587,11 +590,25 @@ function
 		function_def
 	;
 
+/* @todo : Fix the function names */
+
 function_def
 	: IDENTIFIER '(' op_argument_list ')' 
 			op_local_variables 
 			fgl_statement_list
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
+	| UNLOAD '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("UNLOAD"),lineno+1,$3);InLimbo=1; }
+	| HEADER '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("HEADER"),lineno+1,$3);InLimbo=1; }
+	| VERIFY '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("VERIFY"),lineno+1,$3);InLimbo=1; }
 	| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
 			 op_local_variables 
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
@@ -600,9 +617,14 @@ function_def
 op_argument_list
 	:                          {$$ = (NAME_LIST *)0;}
 	| op_argument_list ',' 
+			var_name            {InsertNameList(&$$,$1,$3,lineno+1);}
+	| var_name              {InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1);}
+	;
+
+			/*
 			IDENTIFIER            {InsertNameList(&$$,$1,$3,lineno+1);}
 	| IDENTIFIER              {InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1);}
-	;
+	*/
 
 op_local_variables
 	:
@@ -630,6 +652,7 @@ fgl_statement
 	| construct_action  /* Como estamos a fazer um xref nao e preciso validar*/
 	| display_action    /* Como estamos a fazer um xref nao e preciso validar*/
 	| report_statement
+	| PUT cursor_name 
 	| PUT cursor_name FROM fgl_expression
 													 { StInsertCursorUsage($2,lineno+1,CURSOR_PUT);}
 	| FLUSH cursor_name 
@@ -1159,6 +1182,7 @@ literal_integer
 fgl_expression
 	: fgl_expression op_spaces fgl_operator_list fgl_operand  { char *x; x=$4; }
 	| fgl_expression op_spaces fgl_operator_list fgl_expression 
+	| NUMBER SPACES { char *x; }/* Just to fix andrej problems */
 	| fgl_operand  { char *x; x=$1; }
 	| NOT fgl_expression
 	| op_signal '(' fgl_expression ')' 
@@ -1267,6 +1291,7 @@ fgl_basic_operand
 
 wordwrap
 	: WORDWRAP RIGHT MARGIN NUMBER
+	| WORDWRAP RIGHT MARGIN fgl_expression
 	| WORDWRAP 
 	;
 
@@ -1338,6 +1363,7 @@ var_name
   /*| ACCEPT                                     { strcpy($$,"ACCEPT");}*/
   | AUDIT         { strcpy($$,"AUDIT");} 
   | CHAR          { strcpy($$,"CHARACTER");} 
+  | COMMENT       { strcpy($$,"COMMENT");}
   | CONTROL       { strcpy($$,"CONTROL");}
   | CONSTRUCT     { strcpy($$,"CONSTRUCT");}
   | COUNT                                      { strcpy($$,"COUNT");}
@@ -1357,6 +1383,7 @@ var_name
   | FROM          { strcpy($$,"FROM");}
   | GROUP                                      { strcpy($$,"GROUP");}
   | HOLD          { strcpy($$,"HOLD");}
+  | INTEGER       { strcpy($$,"INTEGER");}
   | LAST          { strcpy($$,"LAST");}
   | LENGTH        { strcpy($$,"LENGTH");}
   | LINE           complete_array_usage        { strcpy($$,"LINE");}
@@ -1373,11 +1400,13 @@ var_name
   | PAGE          { strcpy($$,"PAGE");}
   | PRINTER                                    { strcpy($$,"PRINTER");}
   | PRIMARY                                    { strcpy($$,"PRIMARY");}
+  | PROMPT                                    { strcpy($$,"PROMPT");}
   | REMOVE        { strcpy($$,"REMOVE");}
   | ROW           { strcpy($$,"ROW");}
   /* Isto estraga os sub-query(s) e portanto optei por retirar */
   /*| SELECT                                     { strcpy($$,"SELECT");} */
   | SERIAL        { strcpy($$,"SERIAL");}
+  | SMALLINT      { strcpy($$,"SMALLINT");}
   | SHARE   complete_array_usage               { strcpy($$,"SHARE");}
   | TABLE         { strcpy($$,"TABLE");}
   | TRAILER       { strcpy($$,"TRAILER");}
@@ -1535,12 +1564,16 @@ function_call
   : IDENTIFIER '(' op_call_parameters ')'
                                { StInsertFunctionCall($1,lineno+1); 
                                  $$=CpStr("%s(%s)",$1,$3);           }
+  | HEADER '(' op_call_parameters ')' { $$=CpStr("HEADER()"); }
+  | UNLOAD '(' op_call_parameters ')' { $$=CpStr("UNLOAD()"); }
+  | VERIFY '(' op_call_parameters ')' { $$=CpStr("VERIFY()"); }
   | LENGTH '(' fgl_operand ')' { $$=CpStr("LENGTH(%s)",$3); }
   | DATE '(' fgl_operand ')'   { $$=CpStr("DATE(%s)",$3); }
   /*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    */
                                { $$=CpStr("EXTEND()"); }
   | set_function_specification
   ;
+
 
 
 /*  ============================ Reports                */
@@ -1617,7 +1650,6 @@ report_statement
   | NEED named_value LINES  /* Isto pode dar um grande granel */
        { StInsertVariableUsage($2,lineno+1,READ_VAR); }
   | PAUSE STRING
-  /*| print_statement */
   | SKIP TO TOP OF PAGE
   | SKIP NUMBER LINE    /* Passar para lexxer o reconhecimento de LINE */
   | SKIP NUMBER LINES
@@ -1645,12 +1677,12 @@ screen_interaction
   | CURRENT WINDOW IS SCREEN
   | display
   | display_array
-  | DISPLAY FORM IDENTIFIER attribute_clause
-  | ERROR string_exp  attribute_clause
+  | DISPLAY FORM IDENTIFIER op_attribute_clause
+  | ERROR string_exp  op_attribute_clause
   | input
   | input_array 
   | menu
-  | MESSAGE string_exp  attribute_clause
+  | MESSAGE string_exp  op_attribute_clause
   | OPEN FORM IDENTIFIER FROM form_origin
   | open_window
   | options
@@ -1676,7 +1708,7 @@ clear
 construct
   : CONSTRUCT 
     construct_variable_clause 
-    attribute_clause 
+    op_attribute_clause 
     help_clause
     construct_management
 
@@ -1693,7 +1725,7 @@ help_clause
   :
   | HELP NUMBER
 
-attribute_clause
+op_attribute_clause
   :
   | ATTRIBUTE '(' attribute_list ')'
 
@@ -1815,13 +1847,13 @@ field_name
   | TEXT
   | TOTAL
   | UNITS
-   | SELECT    
-   | FINISH
+  | SELECT    
+  | FINISH
   ;
 
 display
-  : DISPLAY fgl_expression display_where_to attribute_clause
-  | DISPLAY BY NAME named_value_list attribute_clause
+  : DISPLAY fgl_expression display_where_to op_attribute_clause
+  | DISPLAY BY NAME named_value_list op_attribute_clause
     { StInsertVariableListUsage($4,READ_VAR); }
   ;
 
@@ -1835,11 +1867,11 @@ display_where_to
 
 display_array
   : DISPLAY ARRAY named_value TO IDENTIFIER '.' '*' 
-      attribute_clause on_key_list
+      op_attribute_clause on_key_list
     END_TOK DISPLAY
                            { StInsertVariableUsage($3,lineno+1,READ_VAR); }
   | DISPLAY ARRAY named_value TO IDENTIFIER '.' '*' 
-      attribute_clause 
+      op_attribute_clause 
                            { StInsertVariableUsage($3,lineno+1,READ_VAR); }
    ;
 
@@ -1850,7 +1882,7 @@ display_array
 input
   : INPUT 
     input_binding_clause 
-    attribute_clause
+    op_attribute_clause
     help_clause
     input_management
 
@@ -1874,11 +1906,13 @@ input_management_block_list
 /* Isto da conflitos - Tem 4 shift reduce que podem ter a ver com field clause*/
 /* Para poupar regras juntou-se o input com input array */
 input_management_block
-  : BEFORE FIELD field_clause_list fgl_statement_list 
+  : BEFORE FIELD field_clause_list op_fgl_statement_list 
   | BEFORE INPUT                   fgl_statement_list
             /* Just for trying to use state machine */
   | AFTER FIELD  field_clause_list fgl_statement_list 
+  | AFTER FIELD  field_clause_list 
   | AFTER INPUT  fgl_statement_list 
+  | AFTER INPUT  
   | on_key_input op_fgl_statement_list 
   /* So do input array */
   | AFTER DELETE fgl_statement_list 
@@ -1903,7 +1937,7 @@ input_action
 input_array
   : INPUT ARRAY
     input_array_binding_clause 
-    attribute_clause
+    op_attribute_clause
     help_clause
     input_management
   ;
@@ -1999,9 +2033,9 @@ display_action
 
 open_window
   : OPEN WINDOW IDENTIFIER AT coord ',' coord 
-       WITH fgl_expression ROWS ',' fgl_expression COLUMNS attribute_clause
+       WITH fgl_expression ROWS ',' fgl_expression COLUMNS op_attribute_clause
   | OPEN WINDOW IDENTIFIER AT coord ',' coord 
-       WITH FORM string_or_var attribute_clause
+       WITH FORM string_or_var op_attribute_clause
      { StInsertVariableUsage($10,lineno+1,READ_VAR);} 
   ;
 
@@ -2051,11 +2085,11 @@ option
   ;
 
 prompt
-  : PROMPT fgl_expression attribute_clause FOR IDENTIFIER help_clause
-    attribute_clause prompt_on_key_list
+  : PROMPT fgl_expression op_attribute_clause FOR named_value help_clause
+    op_attribute_clause prompt_on_key_list
      /* VARIABLE ASSIGNMENT */
-  | PROMPT fgl_expression attribute_clause FOR CHAR IDENTIFIER help_clause
-    attribute_clause prompt_on_key_list
+  | PROMPT fgl_expression op_attribute_clause FOR CHAR IDENTIFIER help_clause
+    op_attribute_clause prompt_on_key_list
      /* VARIABLE ASSIGNMENT */
   ;
 
@@ -2335,12 +2369,16 @@ execute_statement
 declare_cursor:
   DECLARE cursor_name cursor_type 
      FOR cursor_specification  
-        /* Declare for update */
       { StInsertCursorDeclaration($2,$3,$5); }
+  /* Declare for update */
   | DECLARE cursor_name cursor_type 
      FOR cursor_specification  FOR UPDATE op_for_update_list
-        /* Declare seguido de for */
       { StInsertCursorDeclaration($2,$3,$5); }
+  /* Declare for insert */
+  | DECLARE cursor_name cursor_type 
+     FOR insert_statement
+      { StInsertCursorDeclaration($2,$3,$5); }
+  /* Declare folowed by for */
   | DECLARE cursor_name cursor_type 
      FOR cursor_specification  
      FOR IDENTIFIER '=' fgl_expression TO fgl_expression op_step 
@@ -2420,6 +2458,7 @@ close_statement:
 sql_statement:
     close_statement
   | CLOSE DATABASE
+	| CONNECT TO IDENTIFIER USER IDENTIFIER USING IDENTIFIER
   | begin_statement
   | commit_statement
   | delete_statement_position                /* Delete where current of */
@@ -3121,6 +3160,8 @@ distinct_set_function
                                      { $$=CpStr("%s(DISTINCT %s)",$1,$4); }
   | COUNT '(' DISTINCT column_specification ')'
                                      { $$=CpStr("COUNT(DISTINCT %s)",$4); }
+  | COUNT '(' UNIQUE column_specification ')'
+                                     { $$=CpStr("COUNT(DISTINCT %s)",$4); }
   ;
 
 all_set_function
@@ -3253,6 +3294,8 @@ table_identifier
      { strcpy($$,"TABLE"); }
   | USER        /* ??? Isto devia dar um errozito */
      { strcpy($$,"USER"); }
+  | COMMENT        /* ??? Isto devia dar um errozito */
+     { strcpy($$,"COMMENT"); }
   ;
 
 column_identifier

@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-12-15 05:17:36 $
- *   $Id: p4gl_lex.l,v 1.7 2003-12-15 05:17:36 afalout Exp $
+ *   $Date: 2003-12-17 10:31:53 $
+ *   $Id: p4gl_lex.l,v 1.8 2003-12-17 10:31:53 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.7 2003-12-15 05:17:36 afalout Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.8 2003-12-17 10:31:53 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -25,8 +25,8 @@ int lineno=1;         /* Source line number counter */
 alpha                           [a-zA-Z_]
 alnum                           [a-zA-Z_0-9]
 separator                       [ \t]+
-double_quoted_string            \"([^"\n]|\\["\n])*\"
-quoted_string                   \'([^'\n]|\\['\n])*\'
+double_quoted_string            \"([^"\n,]|\\["\n])*\"
+quoted_string                   \'([^'\n,]|\\['\n])*\'
 
 %%
 "\n"                        { lineno++; }

@@ -1,6 +1,7 @@
 %{
-/***************************************************************************
- *
+/**
+ * @file
+
  *   4gl language pre-processor
  *   
  *   It resolves includes for a 4gl source.
@@ -10,11 +11,15 @@
  *
  * Author : Sérgio Ferreira
  *
+ * @todo : Isto come a palavra GLOBALS depois do END GLOBALS
+ *
  ***************************************************************************/
 
 extern int  Functions;          /* Number of Functions Found     */
 extern FILE *param_out;
 int    lineno=1;
+static int printed_globals = 0;
+static int end = 0;
 
 /* Agora passa os comentários ao p4gl
 "{"                            { ReadBlockComment(); }
@@ -70,25 +75,66 @@ numero                          [0-9]+
 
 
 
-<INITIAL>{letra}{letra_ou_digito}*  {
-		if (IsGlobals()) {
-		    BEGIN GLOBALS;
-		} else {
-			ECHO;
-        }
+<INITIAL>{letra}{letra_ou_digito}*  { 
+	  if (IsGlobals())
+		{
+		  printed_globals = 0;
+		  BEGIN GLOBALS;
+		}
+		else
+		  ECHO;
 		IncrementFunction();
-     }
+  }
+
+<GLOBALS>{letra}{letra_ou_digito}*  {
+		if (printed_globals == 0)
+		{
+	    fprintf(yyout," GLOBALS ");
+		  printed_globals = 1;
+		}
+	  if (isEnd())
+		{ 
+		  end = 1;
+		}
+		else
+		{
+		  if (end == 1 ) 
+			{
+		      //BEGIN INITIAL;
+	        //fprintf(yyout," GLOBALS ");
+				//else
+	      if ( IsGlobals())
+				{
+		      BEGIN INITIAL;
+			    end = 0;
+				}
+		  }
+		}
+	  ECHO;
+	}
 
 <GLOBALS>{separator}+               { ECHO ;                            }
-<GLOBALS>.                        { fprintf(yyout," GLOBALS ");
-												  ECHO; BEGIN INITIAL;              }
+<GLOBALS>.                        { 
+	  //fprintf(yyout," GLOBALS ");
+		ECHO; /*BEGIN INITIAL;              */
+	}
 "."                                 { ECHO; }
 
 %%
 
 
-/*
- * Verifica se a palavra encontrada eh GLOBALS
+/**
+ * Check if the word found is the keyword END.
+ */
+isEnd()
+{
+	if (strcasecmp(yytext,"end")==0)
+		return 1;
+	return 0;
+}
+
+/**
+ * Check if the word found is the keyword GLOBALS.
  */
 IsGlobals()
 {

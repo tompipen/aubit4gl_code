@@ -97,6 +97,7 @@ static struct ReservedWords {
 		"COMMIT",            COMMIT,
 		"COMMITTED",         COMMITTED,
 		"COMPRESS",          COMPRESS,
+		"CONNECT",           CONNECT,
 		"CONSTRAINED",       CONSTRAINED,
 		"CONSTRAINT",        CONSTRAINT,
 		"CONSTRAINTS",       CONSTRAINTS,
