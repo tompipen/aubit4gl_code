@@ -108,15 +108,17 @@ insert_value:
 
 fetch_statement:
 	FETCH 
-{
-print_fetch_1();
-} 
-fetch_part {
-print_fetch_2();
-} opt_into_fetch_part
-{
-print_fetch_3($<str>3,$<str>5);
-}
+    {
+      print_fetch_1();
+    } 
+  fetch_part 
+    {
+      print_fetch_2();
+    } 
+	opt_into_fetch_part
+    {
+      print_fetch_3($<str>3,$<str>5);
+    }
 ;
 
 fetch_part: 
