@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2005-03-25 12:48:31 afalout Exp $
+# $Id: Makefile,v 1.2 2005-03-26 23:31:19 afalout Exp $
 #
 
 ROOT        =../..
@@ -41,11 +41,12 @@ override NOINCL=0
 ALL				=${ROOT}/bin/mcompile ${ROOT}/bin/mdecompile
 
 #Should be obsolete - using xgen instead of rpcgen
-#ifeq "${USE_RPCGEN}" "0"
-#	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
-#else
-#	RPCGEN      =${RPCGEN} menu_x.x
-#endif
+#still needed for 'rpc' target (see below)
+ifeq "${USE_RPCGEN}" "0"
+	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
+else
+	RPCGEN      :=${RPCGEN} menu_x.x
+endif
 
 C_LOCAL_IFLAGS  =-I. -I${ROOT}/lib/libincl -I../fcompile
 #FIXME: this compiler should not depend on RPC:
@@ -116,8 +117,12 @@ else
 	${LEX} $(SOURCES.lex)
 endif
 
-#rpc:
-#	${RPCGEN}
+#This target is invoked form lib/libmenu/menu_xdr/Makefile to create 
+#headers files for use with XDR version of libmenu. Now we have generic
+#libmenu that uses PACKER, making XDR specific version (and this target)
+#is probably obsolete?
+rpc:
+	${RPCGEN}
 
 XGENEXE    		=${ROOT}/bin/xgen
 	
