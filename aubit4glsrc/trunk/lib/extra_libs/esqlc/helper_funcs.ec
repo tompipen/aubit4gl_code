@@ -157,6 +157,7 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 	
 		}
 		strcpy((char *)(infx),(char *)(a4gl));
+		A4GL_trim(infx); // @todo -  what about varchars ... ?
 	}
 	if (mode=='o') {
 		if (indicat==-1||risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
