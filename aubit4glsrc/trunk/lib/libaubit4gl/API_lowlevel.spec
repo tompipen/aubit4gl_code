@@ -42,7 +42,7 @@ A4GL_LL_field_opts void* field -> int
 A4GL_LL_field_status void* field -> int 
 
 /* void A4GL_LL_form_page void* form */
-A4GL_LL_form_page void* form -> void
+A4GL_LL_form_page void* form -> int
 
 /* int A4GL_LL_get_carat void* form */
 A4GL_LL_get_carat void* form -> int

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.89 2004-01-17 11:10:31 mikeaubury Exp $
+# $Id: ioform.c,v 1.90 2004-01-23 10:06:31 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.89 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.90 2004-01-23 10:06:31 mikeaubury Exp $";
 /**
  * @file
  *
@@ -476,7 +476,7 @@ int done=0;
   if (fprop) {
   	if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) {
 		A4GL_debug("ZZZZ - SET OPTS");
-      		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC);
+      		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT );
 		done=1;
     	} 
   }
@@ -489,12 +489,12 @@ int done=0;
 
       if ((dtype&255) == 0) {
 		A4GL_debug("ZZZZ - SET OPTS");
-		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC);
+		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT );
 		field_opts_off(f,O_BLANK);
 	} else {
 		A4GL_debug("ZZZZ - SET OPTS");
 		A4GL_debug("BLANK BLANK");
-		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC | O_BLANK);
+		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT |  O_BLANK);
 	}
     }
 
@@ -617,7 +617,7 @@ void
 A4GL_set_field_attr_with_attr_already_determined (FIELD * field, int attr, int cmd_type)
 {
   int r;
-  int nattr;
+  //int nattr;
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
@@ -1299,6 +1299,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 {
 
   struct struct_scr_field *fprop;
+int xx;
   A4GL_assertion (f == 0, "Field is zero in turn_field_on2");
   A4GL_debug ("Turn field on %p %d", f, a);
   fprop = (struct struct_scr_field *) (field_userptr (f));
@@ -1311,20 +1312,44 @@ A4GL_turn_field_on2 (FIELD * f, int a)
   field_opts_on (f, O_EDIT);
   if ((fprop->datatype&255)!=0) { field_opts_on (f, O_BLANK); }
 
-  if (a)
-    {
-      A4GL_debug ("STATIC");
-      field_opts_on (f, O_STATIC);
-      set_max_field (f, 0);
-    }
-  else
-    {
-      A4GL_debug ("NOT STATIC");
-      field_opts_off (f, O_STATIC);
-    }
   A4GL_set_field_attr (f);
+
+  xx=set_max_field(f,A4GL_get_field_width_w(f));
+  if (xx<0) {
+		f->dcols=a;
+  		xx=set_max_field(f,A4GL_get_field_width_w(f));
+  }
+
+  if (xx<0) {
+		A4GL_debug("Unable to change field width\n");
+		A4GL_exitwith("Internal error - unable to change field width");
+		return;
+  }
+
+  if (!a) {
+      set_max_field (f, 0);
+  }
+
 }
 
+
+int
+A4GL_get_field_width_w (void *f)
+{
+  int x, y, a;
+        int w;
+  struct s_form_dets *formdets;
+  struct s_scr_field *fprop;
+  fprop = (struct s_scr_field *) (field_userptr (f));
+  formdets = A4GL_get_curr_form (0);
+  if (formdets==0||fprop==0) {
+        return A4GL_get_field_width(f);
+  }
+
+  w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
+
+  return w;
+}
 
 /**
  *
@@ -1361,7 +1386,9 @@ int
   FIELD *firstfield = 0;
   int nofields;
   struct s_screenio *sio;
+  FORM *mform;
   int attr;
+  FIELD *was_current;
 
   sio = vsio;
 
@@ -1381,6 +1408,8 @@ int
   flg = 0;
 
   A4GL_debug ("Turning off all");
+  A4GL_debug("Mform=%p\n",sio->currform->form);
+  mform=sio->currform->form;
 
   for (a = 0; formdets->form_fields[a] != 0; a++)
     {
@@ -1438,6 +1467,9 @@ int
 
 
 
+  was_current=mform->current;
+  mform->current=0;
+  mform->curcol=0;
 
 
   for (a = 0; a < nv; a++)
@@ -1502,6 +1534,7 @@ int
 
       if (flg == 0)
 	{
+  	  mform->current=was_current;
 	  set_current_field (formdets->form, field_list[a]);
 	  /*formdets->form_fields[z]); */
 	  flg = 1;
@@ -2443,9 +2476,11 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
     {
       form->currentfield = 0;
       form->currentmetrics = 0;
+	A4GL_debug("ZZ9PA - CHECK CHECK - returning 0");
       return 0;
     }
 
+	A4GL_debug("ZZ9PA - CHECK CHECK - continuing");
 
   if (form->currentfield != current_field (mform))
     {
@@ -2556,17 +2591,17 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   int a;
   int b;
   int errno;
-  b = A4GL_get_field_width (field);
+  b = A4GL_get_field_width_w (field);
   strcpy (buff2, buff);
   a = strlen (buff2);
-  b = A4GL_get_field_width (field);
+  b = A4GL_get_field_width_w (field);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff,
 	      buff2, a, b);
   A4GL_gui_setbuff (field, buff);
-  if (a < A4GL_get_field_width (field))
+  if (a < A4GL_get_field_width_w (field))
     {
       A4GL_debug ("Adding padding");
-      A4GL_pad_string (buff2, A4GL_get_field_width (field));
+      A4GL_pad_string (buff2, A4GL_get_field_width_w (field));
     }
   else
     {

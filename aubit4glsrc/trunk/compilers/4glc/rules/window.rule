@@ -5,7 +5,9 @@
 */
 
 
-op_clr_fields : | KWFIELD fld_list
+op_clr_fields : {$<field_list>$=0;}| KWFIELD fld_list_as_struct {
+	$<field_list>$=$<field_list>2;
+}
 ;
 
 op_to_defs : 
@@ -19,14 +21,22 @@ clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"s
 		|	CLEARFORM { print_clr_form(0,0,"0"); }
 		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
 		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
-		|	CLEAR fld_list op_to_defs {
-	print_clr_fields($<str>2,$<str>3);
+		|	CLEAR fld_list_as_struct op_to_defs {
+	print_clr_fields(field_name_list_as_char($<field_list>2),$<str>3);
 }
 ;
 
-fld_list	:	field_name  {sprintf($<str>$,"%s",$<str>1);}
+
+fld_list_as_struct : field_name_list_as_struct {$<field_list>$=$<field_list>1;}
+
+/*
+fld_list	:	field_name  { sprintf($<str>$,"%s",$<str>1); }
 		|	fld_list COMMA field_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
+*/
+
+
+
 
 
 current_win_cmd	:	CWIS {

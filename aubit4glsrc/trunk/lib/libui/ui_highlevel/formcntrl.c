@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.4 2004-01-18 12:57:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.5 2004-01-23 10:10:35 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.4 2004-01-18 12:57:40 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.5 2004-01-23 10:10:35 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -394,13 +394,20 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
   if (fcntrl.op == FORMCONTROL_EXIT_INPUT_ABORT)
     {
       //extern int int_flag;
-	A4GL_comments (0);
-      A4GL_debug ("FORM ABORT..");
-      int_flag = 1;
-      A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-	  A4GL_debug("SETTING RVAL TO ZERO");
-      rval = 0;
-      new_state = 0;
+	if (fcntrl.state==99) {
+		A4GL_comments (0);
+      		A4GL_debug ("FORM ABORT..");
+      		int_flag = 1;
+      		A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+	  	A4GL_debug("SETTING RVAL TO ZERO");
+      		rval = -1;
+      		new_state = 10;
+	}
+
+	if (fcntrl.state==10) {
+		new_state=0;
+	}
+
     }
 
   if (fcntrl.op == FORMCONTROL_KEY_PRESS)
@@ -428,9 +435,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	  int ok = 0;
 	  new_state = 10;
 
-	  fprop =
-	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
 	  A4GL_debug ("Checking key state.. %d", fcntrl.extent);
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	    {
@@ -566,10 +571,39 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 
       if (fcntrl.state == 5)
 	{
-	  new_state = 0;
+
+	  if (sio->mode == MODE_CONSTRUCT) {
+			struct s_form_dets *form;
+			char rbuff[1024];
+			int w;
+			strcpy(rbuff,A4GL_LL_field_buffer(sio->currentfield,0));
+			A4GL_trim(rbuff);
+			form=sio->currform;
+                        w=form->fileform->metrics. metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
+			A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
+			if (strlen(rbuff)>=w) {
+	  			struct struct_scr_field *fprop;
+				int k;
+				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
+				k=A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form));
+	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+      				if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = tolower (a); }
+      				if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = toupper (a); }
+  				A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
+				A4GL_LL_set_field_buffer (sio->currentfield,0,rbuff);
+			}
+	  }
+
+	  new_state = 2;
 	  rval = -1;
 	}
 
+
+      if (fcntrl.state == 2)
+	{
+		rval=-1;
+		new_state=0;
+	}
 
 
 
@@ -690,6 +724,15 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 		}
 
 
+	    } else {
+			//char rbuff[1024];
+			//strcpy(rbuff,A4GL_LL_field_buffer(sio->currentfield,0));
+			//A4GL_trim(rbuff);
+			//if (strlen(rbuff)>=A4GL_get_field_width(sio->currentfield)) {
+				//A4GL_error_nobox("CONSTRUCT BY BEFORE FIELD",0);
+				//A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form));
+			//}
+
 	    }
 
 	  A4GL_comments (fprop);
@@ -699,9 +742,6 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	  A4GL_debug ("Setting rval to -1");
 	  //rval=-99;
 	}
-
-
-
     }
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.68 2004-01-06 15:54:45 mikeaubury Exp $
+# $Id: Makefile.in,v 1.69 2004-01-23 09:53:23 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -69,7 +69,7 @@ CMODS_EXE       =4glc.c
 CMODS_LIB       =\
 				compile.c \
 				dim.c \
-				list.c lexer.c memfile.c ../../lib/generated/std_funcs.c \
+				list.c lexer.c memfile.c ../../lib/generated/std_funcs.c field_handling.c \
 				mod.c map.c variables.c globals.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \

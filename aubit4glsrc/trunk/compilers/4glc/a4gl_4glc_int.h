@@ -327,5 +327,20 @@ void set_str (void *y, char *s);
 void set_hdrdbname (char *s);
 char *get_hdrdbname (void);
 char *fix_update_expr (int mode);
-
+void A4GL_new_events(void) ;
+void A4GL_drop_events(void) ;
+void A4GL_add_event(int n,char *s) ;
+void A4GL_add_onkey_key(char *s) ;
+char get_curr_report_stack_whytype (void);
+int is_builtin_func (char *s);
+int get_blk_no(void) ;
+void do_print_menu_1(void) ;
+void set_rep_no_orderby(int n) ;
+void clr_validate_list(void) ;
+void A4GL_remove_comments_in_memfile(void *yyin);
+void do_print_menu_block_end(void) ;
+int A4GL_escape_quote_owner(void) ;
+void push_validate (char *t2);
+int gen_cnt (int a);
+struct expr_str *A4GL_get_validate_expr(int n);
 /* ============================= EOF ================================= */

@@ -80,6 +80,15 @@ struct generic_entry_list
 };
 
 
+struct field_entry {
+	char *field_name;
+	char *field_sub;
+};
+
+struct field_list {
+	struct field_entry *fields;
+	int nfields;
+};
 
 struct generic_entry_ident *new_ident (char *identifier);
 struct generic_entry_variable *new_variable (void);
@@ -95,5 +104,5 @@ struct generic_entry_expression_f *new_functioncall (char *functionname,
 struct generic_entry_expression *new_expression (char type, void *expr);
 struct generic_entry *new_entry (char type, void *entry);
 struct generic_entry_list *new_list (struct generic_entry *entry);
-void append_list (struct generic_entry_list *orig,
-		  struct generic_entry *entry);
+void append_list (struct generic_entry_list *orig, struct generic_entry *entry);
+

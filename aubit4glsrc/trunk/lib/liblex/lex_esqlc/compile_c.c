@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.124 2004-01-18 12:55:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.125 2004-01-23 10:03:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.124 2004-01-18 12:55:12 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.125 2004-01-23 10:03:39 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1942,7 +1942,7 @@ real_print_class_func_call (char *var, char *identifier,
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 
-  printc ("_retvars=call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
+  printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
 	  var, scan_variable (var), identifier, args_cnt);
 
 }

@@ -5,12 +5,13 @@
 # integer type from the gmp package...
 #
 import datatype mpz
+
 main	
 define a mpz
 define b integer
 call load_datatype("mpz")
 
-let a=100
+let a="400000000001"
 
 for b=1 to 10
 	# This one returns a value...

@@ -9,7 +9,6 @@ var_ident :  var2
 {
 	if (scan_variable($<str>1)!=-1)
 	{
-		char c;
 		char buff[1024];
 			sprintf(buff,"%s",fgl_add_scope($<str>1,0));
 
@@ -78,18 +77,9 @@ var_ident_ibind_ss :  var2
 }
 | var2 THRU var2 
 {
-char r1[256];
-//char r2[256];
 char buff[256];
 char was_str[40000];
-//char *ptr1;
-//char *ptr2;
-//int aa;
 int z = 0,a = 0;
-struct variable *v_r;
-struct variable *v_1;
-struct variable *v_2;
-struct variable *v_loop;
 strcpy(was_str,"");
 printf("THRU : %s %s\n",$<str>1,$<str>3);
 

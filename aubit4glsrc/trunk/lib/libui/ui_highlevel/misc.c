@@ -2,9 +2,11 @@
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
+#include "a4gl_API_lowlevel_lib.h"
+#include "a4gl_API_ui_lib.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.5 2004-01-18 18:12:54 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.6 2004-01-23 10:11:54 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 
@@ -75,7 +77,7 @@ UILIB_aclfgl_a4gl_get_page (int n)
 {
   struct s_form_dets *f;
   f = UILIB_A4GL_get_curr_form (1);
-  A4GL_push_int (A4GL_LL_form_page (f->form));
+  A4GL_push_int (1); //A4GL_LL_form_page (f->form));
   return 1;
 }
 
@@ -1031,8 +1033,7 @@ A4GL_default_attributes (void *f, int dtype)
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_LL_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT |
-				  AUBIT_O_STATIC);
+				  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
 	  done = 1;
 	}
     }
@@ -1048,9 +1049,7 @@ A4GL_default_attributes (void *f, int dtype)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_STATIC |
-				  AUBIT_O_EDIT);
+				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
 	  A4GL_field_opts_off (f, AUBIT_O_BLANK);
 	}
       else
@@ -1059,8 +1058,7 @@ A4GL_default_attributes (void *f, int dtype)
 	  A4GL_debug ("BLANK BLANK");
 	  A4GL_LL_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_STATIC |
-				  AUBIT_O_EDIT | AUBIT_O_BLANK);
+				  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
 	}
 
     }
@@ -1068,6 +1066,7 @@ A4GL_default_attributes (void *f, int dtype)
   A4GL_debug ("STATIC");
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
 
 }
 
@@ -1324,19 +1323,54 @@ int
 }
 
 
-int UILIB_A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat, char *like,
-               int disable, void *handler_e, void *phandler_c) {
-A4GL_chkwin();
-	return A4GL_LL_open_gui_form(name_orig,absolute,nat,like,disable,handler_e,phandler_c);
+int UILIB_A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void* handler_c) {
+int n;
+	A4GL_chkwin();
+	n=A4GL_LL_open_gui_form(name_orig,absolute,nat,like,disable,handler_e,handler_c);
+	A4GL_LL_screen_update();
 
 }
 
 
 
-void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) { }
+void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) {
+	A4GL_chkwin();
+	A4GL_LL_clr_form_fields(to_defaults,defs);
+}
+
+
 void UILIB_A4GL_init_color(int n,int r,int g,int b) { }
-int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {}
-int UILIB_aclfgl_set_window_title(int nargs) {}
-int UILIB_A4GL_widget_name_match(void* w,char* name) {}
-int UILIB_aclfgl_a4gl_run_gui(int nargs) {}
-int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {}
+
+
+int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
+	A4GL_chkwin();
+	A4GL_LL_disp_form_field_ap(n,attr,formname,ap);
+}
+
+
+int UILIB_aclfgl_set_window_title(int nargs) {
+	A4GL_chkwin();
+	return A4GL_LL_set_window_title(nargs);
+}
+
+
+
+
+int UILIB_A4GL_widget_name_match(void* w,char* name) {
+	A4GL_chkwin();
+	return A4GL_LL_widget_name_match(w,name);
+}
+
+
+int UILIB_aclfgl_a4gl_run_gui(int nargs) {
+	while (1) A4GL_LL_screen_update();
+}
+
+
+int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
+	A4GL_LL_fieldnametoid(f,s,n);
+}
+
+
+
+

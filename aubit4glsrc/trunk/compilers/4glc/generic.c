@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.3 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: generic.c,v 1.4 2004-01-23 09:53:43 mikeaubury Exp $
 #*/
 
 /**
@@ -203,4 +203,65 @@ append_list (struct generic_entry_list *orig, struct generic_entry *entry)
   i->entry = entry;
   i->next = 0;
   ptr->next = i;
+}
+
+
+struct field_entry *new_field_entry(char *f,char *n,int needs_quoting) {
+	struct field_entry *field;
+	char buff[256];
+	field=malloc(sizeof(struct field_entry));
+	if (needs_quoting) {
+		sprintf(buff,"\"%s\"",f);
+	} else {
+		sprintf(buff,"%s",f);
+	}
+	field_entry.field_name=strdup(buff);
+	field_entry.field_sub=strdup(n);
+	return field_entry;
+}
+
+void free_field(struct field_entry *field) {
+	free(field_entry.field_name);
+	free(field_entry.field_sub);
+	free(field_entry);
+}
+
+struct field_list *new_field_list() {
+	struct field_list *field_list;
+	field_list=malloc(sizeof(struct field_list));
+	field_list.fields=0;
+	field_list.nfields=0;
+	return field_list;
+};
+
+
+struct field_list *append_field_to_list(struct field_list *field_list, struct field_entry *field) {
+	field_list.nfields++;
+	field_list.fields=realloc(field_list.fields,sizeof(struct field_entry)*field_list.nfields);
+	return field_list;
+}
+
+
+struct field_list *append_field_name_to_list (struct field_list *field_list,char *n,char *s) {
+	struct field_entry *field;
+	if (field_list==0) {
+		field_list=new_field_list();
+	}
+	field=new_field(n,s);
+	append_field_to_list(field_list,field);
+	return field_list;
+}
+
+char *field_name_as_char(struct field_entry *f) {
+return "";
+}
+
+
+char *field_name_list_as_char(struct field_list *fl) {
+return "";
+}
+
+
+char *field_name_list_as_or_char(struct field_list *fl) {
+return "";
 }

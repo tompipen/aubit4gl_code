@@ -1,6 +1,6 @@
 main
 	#set pause mode on
-	#hide window _variable("screen")
+	hide window _variable("screen")
 	#set pause mode off
 
 
@@ -26,11 +26,15 @@ define lv_doing char(1)
 define lv_num1 float
 define lv_num2 float
 
+
 BEFORE OPEN FORM
 	let lv_line=" "
 	initialize lv_entered to null
 	enable b1,b2,b3,b4,b5,b6,b7,b8,b9,b0
 	enable bplus, bminus, bdot,bdiv,btimes,bequals
+	set pause mode on
+	set pause mode off
+
 
 input lv_line from entered
 	on b0 
@@ -121,7 +125,7 @@ input lv_line from entered
 		end case
 
 		let lv_doing=""
-		let lv_line=lv_num1  using "<<<<<<<<.<<<<"
+		let lv_line=lv_num1  using "-<<<<<<<<.<<<<"
 
 		#current window is calc
 		display lv_line clipped to form calc field entered

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.7 2004-01-17 05:49:30 afalout Exp $
+# $Id: giarray.c,v 1.8 2004-01-23 10:08:59 mikeaubury Exp $
 #*/
 
 /**
@@ -3257,7 +3257,7 @@ int
 A4GL_getcomment_line (void)
 {
 GtkObject *win;
-win=A4GL_get_curr_win_gtk();
+win=A4GL_get_curr_win();
   gtk_object_get_data (GTK_OBJECT (win), "COMMENT_LINE");
   //if (windows[currwinno].winattr.comment_line!=0xff) {
         //return A4GL_decode_line_ib (windows[currwinno].winattr.comment_line);

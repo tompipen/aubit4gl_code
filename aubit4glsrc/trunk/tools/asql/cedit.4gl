@@ -254,7 +254,7 @@ code
 //c=getch();
 c=A4GL_get_key(-1);
 
-if (c==A4GLKEY_DC) c=24;
+if (c==A4GLKEY_DC) c=key_left;
 if (c==A4GLKEY_ENTER)  c=13;
 c_as_char[0]=c;
 endcode
@@ -380,7 +380,7 @@ call display()
 end function
 
 function display_header()
-display edit_mode,": ESC    = Done editing      CTRL-A = Typeover/Insert     CTRL-R = Redraw" at 1,1
+display edit_mode,": ESC    = Done editing      CTRL-A = Typeover/Insert    CTRL-R = Redraw" at 1,1
 display "        CTRL-X = Delete character  CTRL-D = Delete rest of line" at 2,1
 call display_banner()
 end function

@@ -13,12 +13,12 @@ call_ext :
 		print_expr($<ptr>1);
 		print_pop_variable($<str>3);
 	}
-   | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING  {
+   | GET_FLDBUF OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET RETURNING  {
         if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
                 a4gl_yyerror("get_fldbuf can only be used in an input or construct");
                 YYERROR;
         }
-	print_getfldbuf($<str>3);
+	print_getfldbuf(field_name_list_as_char($<field_list>3));
 	}
 	ibind_var_list {
 		print_returning();
@@ -27,16 +27,16 @@ call_ext :
 	print_form_is_compiled($<str>3,$<str>5,$<str>7);
 	}
 
-   | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable {
-		print_field_func('I',$<str>3,$<str>6);
+   | INFIELD OPEN_BRACKET field_name_as_struct CLOSE_BRACKET RETURNING variable {
+		print_field_func('I',field_name_as_char($<field_entry>3),$<str>6);
    }
    | pdf_functions
-   | FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET RETURNING variable { 
+   | FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET RETURNING variable { 
         if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
                 a4gl_yyerror("get_fldbuf can only be used in an input or construct");
                 YYERROR;
         }
-	print_field_func('T',$<str>3,$<str>6);
+	print_field_func('T',field_name_list_as_char($<field_list>3),$<str>6);
    } 
    | variable COLON identifier OPEN_BRACKET   {
 	new_counter();

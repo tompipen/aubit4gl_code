@@ -9,7 +9,6 @@ if_cmd	:
 		print_if_start();
 	}
 		commands {
-		int a;
 		if_print_section[if_print_stack_cnt]=1;
 	} op_else END_IF {
 		char wt;

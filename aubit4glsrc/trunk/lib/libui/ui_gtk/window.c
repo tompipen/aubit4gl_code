@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.11 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: window.c,v 1.12 2004-01-23 10:09:42 mikeaubury Exp $
 #*/
 
 /**
@@ -265,7 +265,7 @@ int
 {
   GtkWidget *cwin;
   int width;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   width = (int) gtk_object_get_data (GTK_OBJECT (cwin), "WIDTH");
   return width;
 }
@@ -279,7 +279,7 @@ int
 A4GL_getprompt_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
       return A4GL_decode_line_gtk (std_dbscr.prompt_line);
@@ -298,7 +298,7 @@ int
 A4GL_geterr_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
       return A4GL_decode_line_gtk (std_dbscr.error_line);
@@ -315,7 +315,7 @@ int
 A4GL_getmsg_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
       return (int) std_dbscr.message_line;
@@ -335,7 +335,7 @@ int
 A4GL_get_curr_border_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   return (int) gtk_object_get_data (GTK_OBJECT (cwin), "BORDER");
 
 }
@@ -358,7 +358,7 @@ int
 A4GL_get_curr_height_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   return (int) gtk_object_get_data (GTK_OBJECT (cwin), "HEIGHT");
 }
 
@@ -445,4 +445,7 @@ int
   return 0;
 }
 
+void *A4GL_get_curr_win() {
+        return UILIB_A4GL_get_curr_win();
+}
 /* =============================== EOF ============================= */

@@ -1,6 +1,8 @@
-static char *module_id="$Id: forms.c,v 1.6 2004-01-18 12:57:40 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.7 2004-01-23 10:10:45 mikeaubury Exp $";
 
 #include "forms.h"
+#include "a4gl_API_ui_lib.h"
+#include "a4gl_API_lowlevel_lib.h"
 
 void *A4GL_create_window (char *name, int x, int y, int w, int h,
 			  int iswindow,
@@ -15,6 +17,10 @@ void *A4GL_create_window (char *name, int x, int y, int w, int h,
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_ui.h"
 #include "forms.h"
+int A4GL_decode_line_ib (int l);
+void A4GL_dump_winstack (void);
+void * A4GL_window_on_top (void);
+void * A4GL_window_on_top_ign_menu (void);
 
 #define MAXWIN 200
 #define MAXPOINTERS 2000
@@ -643,8 +649,7 @@ A4GL_glob_window (int x, int y, int w, int h, int border)
 }
 #endif
 
-int
-A4GL_decode_line_ib (int l)
+int A4GL_decode_line_ib (int l)
 {
   if (l > 0)
     {
@@ -783,6 +788,8 @@ A4GL_get_curr_border (void)
 char *
 UILIB_A4GL_get_currwin_name (void)
 {
+
+  //printf("get currwin= %s\n",windows[A4GL_get_currwinno ()].name);
   return windows[A4GL_get_currwinno ()].name;
 }
 
@@ -1115,6 +1122,20 @@ A4GL_find_win (void *w)
   return 0;
 }
 
+void *
+A4GL_find_form_for_win (void *w)
+{
+  int a;
+  for (a = 0; a < MAXWIN; a++)
+    {
+      if (windows[a].win == w)
+	{
+	  return windows[a].form;
+	}
+    }
+  return 0;
+}
+
 
 
 
@@ -1123,10 +1144,13 @@ UILIB_A4GL_current_window (char *win_name)
 {
   int a = 0;
   void *w;
-
+A4GL_debug("Current window : %s",win_name);
   A4GL_chkwin ();
 
+//printf("CURRENT WINDOW : %s\n",win_name);
+  
   w = A4GL_find_pointer (win_name, WINCODE);
+  if (A4GL_get_currwin()==w)  return 0;
 
   if (!(w))
     {
@@ -1139,10 +1163,10 @@ UILIB_A4GL_current_window (char *win_name)
   A4GL_win_stack (&windows[A4GL_find_win (w)], '^');
   A4GL_LL_make_window_top (w);
 
-  if (A4GL_screen_mode (-1))
-    {
-      A4GL_LL_screen_update ();
-    }
+  //if (A4GL_screen_mode (-1))
+    //{
+      //A4GL_LL_screen_update ();
+    //}
 
   return 0;
 
@@ -1154,7 +1178,7 @@ LIBEXPORT void
 UILIB_A4GL_hide_window (char *winname)
 {
   void *w;
-  int a;
+  int a=0;
   A4GL_chkwin();
   w = A4GL_find_pointer (winname, WINCODE);
 
@@ -1167,13 +1191,8 @@ UILIB_A4GL_hide_window (char *winname)
 #endif
   if (w)
     {
-      a = A4GL_LL_hide_window (w);
+       A4GL_LL_hide_window (w);
       A4GL_win_stack (w, 'v');
-#ifdef DEBUG
-      {
-	A4GL_debug ("a=%d", a);
-      }
-#endif
     }
 
 }
@@ -1243,8 +1262,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       //win=newwin(0,0,0,0);
       win = (void *) A4GL_LL_create_window (0, 0, 0, 0, 0);
       A4GL_debug ("Creating win.. %p", win);
-      if (win)
-	A4GL_add_pointer (name, WINCODE, win);
+      if (win) A4GL_add_pointer (name, WINCODE, win);
 
     }
   else
@@ -1419,8 +1437,7 @@ A4GL_win_stack (struct s_windows *w, int op)
 }
 
 
-void
-A4GL_dump_winstack (void)
+void A4GL_dump_winstack (void)
 {
   int a;
   for (a = 0; a < win_stack_cnt; a++)
@@ -1447,15 +1464,13 @@ A4GL_get_currwinno (void)
 
 
 
-void *
-A4GL_window_on_top (void)
+void * A4GL_window_on_top (void)
 {
   return A4GL_get_currwin ();
 }
 
 
-void *
-A4GL_window_on_top_ign_menu (void)
+void * A4GL_window_on_top_ign_menu (void)
 {
   int a;
   for (a = win_stack_cnt - 1; a >= 0; a--)
@@ -1656,7 +1671,7 @@ UILIB_A4GL_movewin (char *winname, int absol)
 	    A4GL_debug ("Moving absolute to %d %d", y - 1, x - 1);
 	  }
 #endif
-	  r = A4GL_LL_move_window (p, y - 1, x - 1);
+	   A4GL_LL_move_window (p, y - 1, x - 1);
 	  nx = x;
 	  ny = y;
 	}
@@ -1667,7 +1682,7 @@ UILIB_A4GL_movewin (char *winname, int absol)
 	    A4GL_debug ("Moving relative by %d %d", y, x);
 	  }
 #endif
-	  r = A4GL_LL_move_window (p, w->y + y - 1, w->x + x - 1);
+	   A4GL_LL_move_window (p, w->y + y - 1, w->x + x - 1);
 	  nx = w->x + x + 1;
 	  ny = w->y + y + 1;
 	}
@@ -1682,11 +1697,6 @@ UILIB_A4GL_movewin (char *winname, int absol)
     A4GL_debug ("r=%d", r);
   }
 #endif
-  if (r != 0)
-    {
-      A4GL_exitwith ("Couldnt move window");
-      return 0;
-    }
 
 
   w->x = nx;
@@ -1747,4 +1757,44 @@ for (a=0;a<MAXWIN;a++) {
         }
 }
 
+}
+
+
+
+A4GL_add_window(int x,int y,int w,int h,char *name,void *fd, void *win) {
+int a;
+void *ww=0;
+
+
+//printf("Add window : %s %p %p",name,fd,win);
+
+
+  for (a = 0; a < MAXWIN; a++)
+    {
+      if (windows[a].name[0] == 0)
+        {
+          strcpy (windows[a].name, name);
+          A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
+	printf("Setting form to %p\n",fd);
+          windows[a].form = fd;
+          windows[a].winattr.comment_line = 0; //comment_line;
+          windows[a].winattr.menu_line = 0; //menu_line;
+          windows[a].winattr.prompt_line = 0;  //prompt_line;
+          windows[a].winattr.form_line = 0; //form_line;
+          windows[a].winattr.message_line = 0; //message_line;
+          windows[a].winattr.error_line = 0; //error_line;
+          windows[a].winattr.border = 0; //border;
+          windows[a].winattr.colour = 0; //attrib;
+          windows[a].x = x;
+          windows[a].y = y;
+          windows[a].w = w;
+          windows[a].h = h;
+          windows[a].win = win;
+	ww=&windows[a];
+
+          break;
+        }
+    }
+      A4GL_add_pointer (name, WINCODE, win);
+return ww;
 }

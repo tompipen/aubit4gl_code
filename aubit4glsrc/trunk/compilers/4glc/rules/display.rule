@@ -16,8 +16,8 @@ opt_at : {
 	strcpy($<str>$,"#error not implemented yet");
 	}
 	| TO_MAIN_CAPTION { strcpy($<str>$, A4GL_get_display_str(4,0,0)); }
-	| TO fld_list { strcpy($<str>$, A4GL_get_display_str(2,$<str>2,0)); }
-	| TO KWFORM identifier KWFIELD fld_list { strcpy($<str>$, A4GL_get_display_str(3,$<str>5,$<str>3)); }
+	| TO fld_list_as_struct { strcpy($<str>$, A4GL_get_display_str(2,field_name_list_as_char($<field_list>2),0)); }
+	| TO KWFORM identifier KWFIELD fld_list_as_struct { strcpy($<str>$, A4GL_get_display_str(3,field_name_list_as_char($<field_list>5),$<str>3)); }
 	| TO KWFORM identifier CAPTION { strcpy($<str>$, A4GL_get_display_str(5,$<str>3,0)); }
 	| TO_STATUSBOX identifier { 
 	strcpy($<str>$,"#error not implemented yet");
@@ -62,8 +62,8 @@ display_array_cmd : DISPLAY_ARRAY {
 opt_scroll: 
 {
 strcpy($<str>$,"0,0");
-} | SCROLL_USING field_name {
-	strcpy($<str>$,$<str>2);
+} | SCROLL_USING field_name_as_struct {
+	strcpy($<str>$,field_name_as_char($<field_entry>2));
 }
 ;
 

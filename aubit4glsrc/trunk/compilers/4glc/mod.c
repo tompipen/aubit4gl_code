@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.149 2004-01-16 18:37:35 mikeaubury Exp $
+# $Id: mod.c,v 1.150 2004-01-23 09:53:51 mikeaubury Exp $
 #
 */
 
@@ -100,22 +100,23 @@ int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
 
 int A4GL_findex (char *str, char c);
-void push_validate (char *t2);
+//void push_validate (char *t2);
 int A4GL_get_attr_from_string (char *s);
-char get_curr_report_stack_whytype (void);
+//char get_curr_report_stack_whytype (void);
 char find_variable_scope (char *s_in);
-void set_rep_no_orderby(int n) ;
+
+//void set_rep_no_orderby(int n) ;
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
-void clr_validate_list(void) ;
-struct expr_str *A4GL_get_validate_expr(int n) ;
-int A4GL_escape_quote_owner(void) ;
+//void clr_validate_list(void) ;
+//struct expr_str *A4GL_get_validate_expr(int n) ;
+//int A4GL_escape_quote_owner(void) ;
 struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
 
-void A4GL_add_event(int n,char *s) ;
-void A4GL_add_onkey_key(char *s) ;
-void A4GL_drop_events(void) ;
-void A4GL_new_events(void) ;
+//void A4GL_add_event(int n,char *s) ;
+//void A4GL_add_onkey_key(char *s) ;
+//void A4GL_drop_events(void) ;
+//void A4GL_new_events(void) ;
 
 /*
 =====================================================================
@@ -134,7 +135,7 @@ long fpos;
 
 void dump_updvals (void);
 char *pop_gen (int a);
-int gen_cnt (int a);
+//int gen_cnt (int a);
 void copy_gen (int a, int b);
 extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
@@ -282,9 +283,9 @@ static void push_validate_column(char *tabname,char *colname) ;
 
 char *get_namespace (char *s);
 char *make_sql_string (char *first, ...);
-void do_print_menu_1(void) ;
-void do_print_menu_block_end(void) ;
-int get_blk_no(void) ;
+//void do_print_menu_1(void) ;
+//void do_print_menu_block_end(void) ;
+//int get_blk_no(void) ;
 char *do_clobbering(char *f,char *s) ;
 
 /*

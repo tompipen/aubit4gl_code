@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.7 2003-10-08 17:09:52 mikeaubury Exp $
+# $Id: handler.c,v 1.8 2004-01-23 10:09:06 mikeaubury Exp $
 #*/
 
 /**
@@ -226,7 +226,7 @@ void
 A4GL_func (GtkWidget * w, char *mode)
 {
 
-  A4GL_debug ("MJAMJA (func)- widget=%p\n", w);
+  printf("MJAMJA (func)- widget=%p\n", w);
   if (gtk_object_get_data (GTK_OBJECT (w), "HANDLER") != 0)
     {
       /* void (*hand)(); */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.8 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: error.c,v 1.9 2004-01-23 10:08:59 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@ A4GL_error_window_gtk (char *s)
   rc_style->color_flags[GTK_STATE_NORMAL] |= GTK_RC_BG;
 
 
-  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
 
   if (win)
@@ -111,7 +111,7 @@ A4GL_clr_error_gtk (void)
   GtkWidget *cw;
   GtkWidget *win;
 
-  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
   if (win)
     {
@@ -155,7 +155,7 @@ A4GL_msg_window_gtk (char *s)
   GtkWidget *win;
   int msgline;
   A4GL_debug ("A0");
-  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win ();
   A4GL_debug ("A0.1");
   win = gtk_object_get_data (GTK_OBJECT (cw), "MESSAGELABELWIN");
 

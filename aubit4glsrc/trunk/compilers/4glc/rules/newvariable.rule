@@ -26,7 +26,6 @@ variable: var_int
 {
 char buff[256];
 char buff2[256];
-char c;
 int n;
 
 if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
@@ -371,7 +370,6 @@ num_list_element: arr_expr
 let_variable: let_var
 {
 char buff[256];
-char c;
 if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
 if (strncmp($<str>1,"sqlca.",6)==0) {
         char xbuff[256];

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.18 2004-01-18 12:51:46 mikeaubury Exp $
+# $Id: Makefile,v 1.19 2004-01-23 10:13:41 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -102,7 +102,7 @@ endif
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
 #4GLPCFLAGS		=-g
-4GLPCFLAGS		= -g -O2 
+4GLPCFLAGS		= -g -O2  -pg
 
 ################
 #Full make line to use when compiling 4gl objects

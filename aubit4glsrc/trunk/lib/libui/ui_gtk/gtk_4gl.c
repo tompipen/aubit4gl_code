@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.28 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.29 2004-01-23 10:09:00 mikeaubury Exp $
 #*/
 
 /**
@@ -937,7 +937,7 @@ int
  * @return The current window
  */
 void *
- UILIB_A4GL_get_curr_win_gtk (void)
+ UILIB_A4GL_get_curr_win (void)
 {
   A4GL_debug ("Current window : %p", currwindow);
   return (void *) currwindow;
@@ -967,7 +967,7 @@ void
 	A4GL_make_and_display_labels(x,y,s,a,clr_line);
 
 /*
-      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win_gtk ();
+      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
 
@@ -1020,7 +1020,7 @@ int a;
   GtkFixed *cwin;
   GtkLabel *lab;
   char buff[256];
-  cwin = (GtkFixed *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkFixed *) UILIB_A4GL_get_curr_win ();
   for (a=0;a<strlen(s);a++) {
 		A4GL_make_and_display_label(x+a,y,s[a],attr);
   }
@@ -1052,7 +1052,7 @@ A4GL_make_and_display_label(int x,int y,char c,int attr)
   cbuff[0]=c;
   cbuff[1]=0;
 
-      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win_gtk ();
+      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
       if (!lab) {
@@ -1115,7 +1115,7 @@ A4GL_display_at (int n, int a)
     {
       x--;
       y--;
-      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win_gtk ();
+      cwin = (GtkFixed *) UILIB_A4GL_get_curr_win ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
 
@@ -1476,7 +1476,7 @@ A4GL_get_srec_gtk (char *name)
   void *fd1;
   void *cwin;
 
-  cwin = (GtkFixed *) UILIB_A4GL_get_curr_win_gtk ();
+  cwin = (GtkFixed *) UILIB_A4GL_get_curr_win ();
   fd1 = gtk_object_get_data (GTK_OBJECT (cwin), "currform");
   A4GL_debug ("fd1=%p\n", fd1);
   formdets = gtk_object_get_data (fd1, "xdr_form");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.19 2003-09-06 08:44:25 mikeaubury Exp $
+# $Id: rexp2.c,v 1.20 2004-01-23 10:03:04 mikeaubury Exp $
 #
 */
 
@@ -280,6 +280,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	      else
 		{
 		  /* error in numeric */
+		
 		  return 0;
 		}
 	    }

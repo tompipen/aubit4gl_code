@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $
+# $Id: input_array.c,v 1.5 2004-01-23 10:11:08 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.5 2004-01-23 10:11:08 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -3287,19 +3287,29 @@ A4GL_turn_field_on2 (void *f, int a)
 
   //if ((fprop->datatype&255)!=0) { field_opts_on (f, AUBIT_O_BLANK); }
 
-  if (a)
-    {
-      A4GL_debug ("STATIC");
-      A4GL_field_opts_on (f, AUBIT_O_STATIC);
-      A4GL_LL_set_max_field (f, 0);
-    }
-  else
-    {
-      A4GL_debug ("NOT STATIC");
-      A4GL_field_opts_off (f, AUBIT_O_STATIC);
-    }
-
   A4GL_LL_set_field_attr (f);
+  //if (a)
+    //{
+
+
+
+  A4GL_debug ("STATIC");
+  //A4GL_field_opts_on (f, AUBIT_O_STATIC);
+
+  A4GL_LL_set_max_field (f, A4GL_get_field_width(f));
+
+ if (!a) {
+	A4GL_debug("CONSTRUCT - SET NO MAX on field...");
+  	A4GL_LL_set_max_field (f, 0);
+	}
+
+    //}
+  //else
+    //{
+      //A4GL_debug ("NOT STATIC");
+      //A4GL_field_opts_off (f, AUBIT_O_STATIC);
+    //}
+
 }
 
 

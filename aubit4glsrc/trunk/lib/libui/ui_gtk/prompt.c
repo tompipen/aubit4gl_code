@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.19 2004-01-16 19:03:53 mikeaubury Exp $
+# $Id: prompt.c,v 1.20 2004-01-23 10:09:41 mikeaubury Exp $
 #*/
 
 /**
@@ -107,7 +107,7 @@ int
     {
       promptline = A4GL_getprompt_line_gtk ();
       width = UILIB_A4GL_get_curr_width ();
-      cw = GTK_WIDGET (A4GL_get_curr_win_gtk ());
+      cw = GTK_WIDGET (A4GL_get_curr_win ());
     }
   else
     {

@@ -587,51 +587,51 @@ op_extend_i: interval_qual
 
 function_call_expr:
 function_callb
-| GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET {
+| GET_FLDBUF OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET {
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("get_fldbuf can only be used in an input or construct");
    		YYERROR;
 	}
 sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_fgl_getfldbuf(_sio,_inp_io_type,%s,0,0);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n",
-	$<str>3, lastlineno,infilename); 
+	field_name_list_as_char($<field_list>3), lastlineno,infilename); 
 	$<ptr>$=A4GL_new_expr($<str>$);	
 	inc_counter();
 
 } 
-| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); }
-| ID_TO_INT OPEN_BRACKET field_name CLOSE_BRACKET {
-sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); 
-addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
+| FIELDTOWIDGET OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); }
+| ID_TO_INT OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
+sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); 
+addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infilename);
 	inc_counter();
 }
 
-| INFIELD OPEN_BRACKET fld_list CLOSE_BRACKET {
+| INFIELD OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET {
 /* Informix allows this outside of a input/construct... */
 	if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
-		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_sio,_inp_io_type,%s,0,0));",$<str>3); 
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_sio,_inp_io_type,%s,0,0));",field_name_list_as_char($<field_list>3)); 
 	} else {
-		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",$<str>3); 
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",field_name_list_as_char($<field_list>3)); 
 	}
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }
-| FIELD_TOUCHED OPEN_BRACKET fld_list CLOSE_BRACKET 
+| FIELD_TOUCHED OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET 
 	{ 
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("field_touched can only be used in an input or construct");
    		YYERROR;
 	}
-	sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldtouched(_sio,_inp_io_type,%s,0,0));",$<str>3); 
+	sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldtouched(_sio,_inp_io_type,%s,0,0));",field_name_list_as_char($<field_list>3)); 
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }
-| NOT_FIELD_TOUCHED OPEN_BRACKET fld_list CLOSE_BRACKET 
+| NOT_FIELD_TOUCHED OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET 
 	{ 
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("field_touched can only be used in an input or construct");
    		YYERROR;
 	}
-	sprintf($<str>$,"A4GL_push_int(!A4GL_fgl_fieldtouched(_sio,_inp_io_type,%s,0,0));",$<str>3); 
+	sprintf($<str>$,"A4GL_push_int(!A4GL_fgl_fieldtouched(_sio,_inp_io_type,%s,0,0));",field_name_list_as_char($<field_list>3)); 
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }
@@ -726,8 +726,14 @@ numeric_time_unit_big:
 ;
 
 
-field_name_list: field_name |
-	field_name_list COMMA field_name {
+field_name_list_as_struct : field_name_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+		} |
+	field_name_list_as_struct COMMA field_name_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+
+
 	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 	}
 /* ============================ expr.rule =========================== */

@@ -54,7 +54,7 @@ void *
 find_curr_window(void) 
 {
 void *w;
-	w=A4GL_get_curr_win_gtk();
+	w=A4GL_get_curr_win();
 	if (gtk_object_get_data(w,"TOP")) {
 		A4GL_debug("Has parent...");
 		w=gtk_object_get_data(w,"TOP");
@@ -138,7 +138,7 @@ static char *_functionName = "get_window_title";
    A4GL_pop_params(fbind,1);
    CHK_UI
    	A4GL_trim(s);
-   	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win_gtk()),s);
+   	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win()),s);
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -762,7 +762,7 @@ static char *_functionName = "form_caption_get";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	//gtk_window_get_title(A4GL_get_curr_win_gtk());
+   	//gtk_window_get_title(A4GL_get_curr_win());
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -781,7 +781,7 @@ static char *_functionName = "form_hide";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	gtk_widget_hide(GTK_WIDGET(A4GL_get_curr_win_gtk()));
+   	gtk_widget_hide(GTK_WIDGET(A4GL_get_curr_win()));
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -800,7 +800,7 @@ static char *_functionName = "form_show";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	gtk_widget_show(GTK_WIDGET(A4GL_get_curr_win_gtk()));
+   	gtk_widget_show(GTK_WIDGET(A4GL_get_curr_win()));
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -1070,7 +1070,7 @@ static char *_functionName = "splat_with_image";
    A4GL_trim(lv_config);
    widget=A4GL_make_widget("pixmap",lv_config,w);
    gtk_widget_show(widget);
-   cw=GTK_WIDGET(A4GL_get_curr_win_gtk());
+   cw=GTK_WIDGET(A4GL_get_curr_win());
    gtk_fixed_put (GTK_FIXED (cw), widget, 0, 20);
    gtk_widget_show(cw);
    }
@@ -1085,3 +1085,5 @@ static char *_functionName = "splat_with_image";
    A4GLSTK_popFunction();
    return 0;
 }/* END OF FUNCTION */
+
+
