@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.39 2003-01-06 06:15:30 psterry Exp $
+# $Id: lexer.c,v 1.40 2003-01-19 23:49:57 psterry Exp $
 #*/
 
 /**
@@ -82,7 +82,7 @@ int 			word_cnt 	= 0;
 
 char   yyline[256]   ="";  /* Current line read so far, incl. CR/LF */
 int    yyline_len    = 0;  /* Length of current line */
-int    in_look_ahead = 0;  /* set if looking ahead for keyword tokens */
+long   yyline_fpos   = 0;  /* FIle position of start of current line */
 
 
 char *			lastword;
@@ -146,22 +146,20 @@ int a;
     }
 
 // maintain a buffer (yyline) holding current line being scanned
-   if ( in_look_ahead == 0 )
+   if ( (yyline_len == 0) || (yyline[yyline_len-1] == '\n') )
+    // we're starting a new line - clear and reset
    {
-     if ( (yyline_len == 0) || (yyline[yyline_len-1] == '\n') )
-       // we're starting a new line - clear and reset
-     {
        yyline[0] = a;
        yyline_len = 1;
-     }
-     else
-       // append char to line buffer - avoid overflow by shifting left
-     {
+       yyline_fpos = ftell(f);
+   }
+   else
+    // append char to line buffer - avoid overflow by shifting left
+   {
        if ( yyline_len > 255 ) { memmove(yyline, &yyline[1], --yyline_len); }
        yyline[yyline_len++] = a;
-     }
-     yyline[yyline_len] = '\0';
    }
+   yyline[yyline_len] = '\0';
 
   return a;
 }
@@ -183,10 +181,7 @@ mja_ungetc (int a, FILE * f)
     }
 
  // remove from current line buffer
-   if ( (in_look_ahead == 0) && (yyline_len > 0) )
-   {
-       yyline[--yyline_len] = '\0';
-   }
+   if ( yyline_len > 0 ) yyline[--yyline_len] = '\0';
 
 }
 
@@ -630,11 +625,9 @@ int states = -1;
       return 1;
     }
 
-  in_look_ahead = 1;
   p = read_word (f, &t);
 
   z = words (cnt, pos + 1, f, p);
-  in_look_ahead = 0;
 
   if (z == 0)
     {
@@ -792,9 +785,22 @@ cnt = 0;
 		}
 
 		/* restore current input file position, in case of read-ahead */
-    	fseek (f, a, SEEK_SET);
+		/* also, restore current line buffer */
 		yylineno = oline;
 		cnt++;
+        yyline[0]='\0';
+        yyline_len=0;
+        if (yyline_fpos < a ) {
+          fseek (f, yyline_fpos, SEEK_SET);
+          while (ftell(f) < a ) {
+            yyline[yyline_len++]= getc(f);
+            yyline[yyline_len]='\0';
+          }
+        }
+        else {
+          fseek (f, a, SEEK_SET);
+        }
+
 	}
 
   /* check for literal numbers - these cannot be key words or identifiers */
