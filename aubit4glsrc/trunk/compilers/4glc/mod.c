@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.141 2003-12-30 11:38:08 mikeaubury Exp $
+# $Id: mod.c,v 1.142 2003-12-30 11:57:11 mikeaubury Exp $
 #
 */
 
@@ -3631,7 +3631,7 @@ int dim;
          char arrbuff[256];
 
 
-	printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); 
+	//printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); 
 
         get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
 	for (b1=0;b1<arrsize;b1++) {
