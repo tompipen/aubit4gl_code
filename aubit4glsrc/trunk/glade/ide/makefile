@@ -1,27 +1,95 @@
-CFLAGS+=-I${AUBITDIR}/incl
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 
-ide1: ide1.ao common/pick.ao common/about.ao edtprog.ao options.ao
-	4glpc ide1.ao common/pick.ao common/about.ao edtprog.ao options.ao -o ide1
+#
+# $Id: makefile,v 1.2 2004-07-04 23:59:52 afalout Exp $
+#
 
+ROOT			=../..
+LIBROOT			=${ROOT}/lib
 
-common/pick.ao: common/pick.4gl
-	(cd common; 4glpc pick.4gl -c -o pick.ao )
+#All stuff common to more then one Aubit compiler make file is there:
+include 		${ROOT}/incl/Makefile-common
 
-options.ao: options.4gl
-	4glpc options.4gl -c -o options.ao 
+#Include rules for compiling 4GL source code using Aubit compiler
+include 		${ROOT}/incl/a4gl.mk
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CFLAGS			+=-I${ROOT}/incl
+4GLPC			=${SH} ${ROOT}/bin/4glpc
+
+ALL				=${ROOT}/bin/ide1.4ae ${ROOT}/bin/sqleditor.4ae
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default targets (${ALL}) successfuly compiled"
+	@echo "+--------------------------------------------------------------------+"	
+
+${ROOT}/bin/ide1.4ae: ide1.ao common/pick.ao common/about.ao edtprog.ao options.ao
+	${4GLPC} $^ -o $@
+
+${ROOT}/bin/sqleditor.4ae:
+	${MAKE} -C sqleditor
 	
-ide1.ao: ide1.4gl
-	4glpc ide1.4gl -c -o ide1.ao 
+#FIXME: no target to compile ide.glade
+	
+## ==================================================================
+##                              Sub-targets
+## ==================================================================
 
-common/about.ao: common/about.4gl
-	(cd common; 4glpc about.4gl -c -o about.ao )
+#Amake will do this automatically:
 
-edtprog.ao: edtprog.4gl
-	4glpc edtprog.4gl -c -o edtprog.ao
+#common/pick.ao: common/pick.4gl
+#	${4GLPC} $^ -c -o $@
 
+#common/about.ao: common/about.4gl
+#	${4GLPC} $^ -c -o $@
+	
+#options.ao: options.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#ide1.ao: ide1.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#edtprog.ao: edtprog.4gl
+#	${4GLPC} $^ -c -o $@
+
+## ==================================================================
+##                              Clean
+## ==================================================================
 
 clean:
-	rm about.ao editor.ao edtprog.ao execute.ao ide1.ao infx.ao pick.ao about.ec editor.ec edtprog.ec execute.ec ide1.ec infx.ec pick.ec *.glb *.o lex.yy.c about.c about.h editor.c editor.h edtprog.c edtprog.h execute.c execute.h ide1.c ide1.h infx.c infx.h lex.yy.c pick.c pick.h
-
-
+	${RM} *.ao *.ec *.glb *.o *.c *.h *.err *.warn debug.out *~ *.bak ${ALL}
+	${MAKE} -C sqleditor clean
+	cd common; ${RM} *.ao *.c *.glb *.h *.err *.warn debug.out *~ *.bak
+	
 

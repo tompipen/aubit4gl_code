@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.229 2004-07-01 11:51:05 afalout Exp $
+dnl # $Id: configure.in,v 1.230 2004-07-04 23:59:23 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3148,20 +3148,26 @@ AC_ARG_WITH(pgsql,
 	#Store witval for use in ecpg section
 	PGSQL_WITHVAL=$withval
 
-	#Find PG include dir
-	PGSQL_INCDIR=$withval/include
+	#Find PG include dir under $withval
+	test -d $withval/include && PGSQL_INCDIR=$withval/include
     test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
     test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
     test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
+	if test "$PGSQL_INCDIR" = "" ; then 
+		AC_MSG_WARN(cannot determine include path)
+	fi
 
-	#Find PG lib dir
-	PGSQL_LIBDIR=$withval/lib
+	#Find PG lib dir under $withval
+	test -d $withval/lib && PGSQL_LIBDIR=$withval/lib
     test -d $withval/lib/pgsql && PGSQL_LIBDIR=$withval/lib/pgsql
     test -d $withval/pgsql/lib && PGSQL_LIBDIR=$withval/pgsql/lib
     test -d $withval/lib/postgresql && PGSQL_LIBDIR=$withval/lib/postgresql
-
-    PGSQL_INCLUDE=-I$PGSQL_INCDIR
-    PGSQL_LFLAGS=-L$PGSQL_LIBDIR
+	if test "$PGSQL_LIBDIR" = "" ; then 
+		AC_MSG_WARN(cannot determine library path)
+	fi
+	
+    PGSQL_INCLUDE="-I$PGSQL_INCDIR"
+    PGSQL_LFLAGS="-L$PGSQL_LIBDIR"
     PGSQL_LIBS=-lpq
 #configure.fin:309: error: possibly undefined macro: AC_ADD_LIBRARY_WITH_PATH
 #configure.in:310: error: possibly undefined macro: AC_ADD_INCLUDE
@@ -3186,23 +3192,22 @@ AC_ARG_WITH(pgsql,
 
 	    #AC_CHECK_FUNC(PQresultErrorField,AC_DEFINE(HAVE_PQresultErrorField))
 
-    fi
-
-    #needed by native PG connector:
-	AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
-
-	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
-		-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
-		-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
-	then
-		#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
-		HAVE_PG_ESQL_HEADERS_LIB=yes
-    else
-        HAVE_PG_ESQL_HEADERS_LIB=no
-    fi
+		#needed by native PG connector:
+		AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
+	
+		if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
+			-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
+			-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
+		then
+			#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+			HAVE_PG_ESQL_HEADERS_LIB=yes
+		else
+			HAVE_PG_ESQL_HEADERS_LIB=no
+		fi
+	fi
 
 	AC_MSG_CHECKING(PG ESQL connector support)
-	if test "$ac_cv_lib_pq_main" = "yes" ; then
+	if test "$HAS_LIB_PQ" = "1" ; then
 		if test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes"; then
 			AC_DEFINE(HAVE_PGSQL)
     	    HAVE_PGSQL_LIB=yes
@@ -3236,7 +3241,7 @@ AC_ARG_WITH(ecpg,
                           DIR is the PostgresSQL ecpg base install directory,
                           defaults to /usr.],
 [
-
+echo 0
 if test "$HAS_LIB_PQ" != "1"; then
     withval="no"
 	AC_MSG_WARN(Disabled testing for PG ESQL compiler - libpg was not detected)
@@ -3248,10 +3253,18 @@ fi
     fi
 
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
-
-	ECPG_INCDIR="$withval/include"
-	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"
-	ECPG_LIBDIR="$withval/lib"
+echo 1
+	test -d "$withval/include" && ECPG_INCDIR="$withval/include"
+	if test "$ECPG_INCDIR" = "" ; then 
+		AC_MSG_WARN(cannot determine include path under $withval)
+	fi	
+	
+	test -d "$withval/lib" && ECPG_LIBDIR="$withval/lib"
+	if test "$ECPG_LIBDIR" = "" ; then 
+		AC_MSG_WARN(cannot determine library path under $withval)
+	fi	
+echo 2	
+	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"	
 	#In case we are working from not installed CVS code:
 	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
 
@@ -3284,7 +3297,7 @@ fi
 	    	AC_MSG_RESULT(No-Cannot read version number)
 			PG_ESQLC_IFXCOMPAT=no
         fi
-
+echo 3
 		#we at least need to know if we have headers
 		#for compiling things like SQL_c_ecpg that do not need IFX compatibility
 		
@@ -3334,20 +3347,27 @@ fi
 				AC_MSG_WARN(No locally installed postmaster detected)
 			fi
             
+			#Make sure we have libpq - 
 			#we can't depend on the same checks in Pglib section, becaue it may be disabled
-
-            if test "$PGSQL_WITHVAL" = ""; then
+echo 4
+            if test "$PGSQL_WITHVAL" = "" -o "$PGSQL_WITHVAL" = "yes" ; then
 				PGSQL_WITHVAL=/usr/local
             fi
 
-			#Find PG include dir
-			PGSQL_INCDIR=$PGSQL_WITHVAL/include
-		    test -d $PGSQL_WITHVAL/include/pgsql && PGSQL_INCDIR=$PGSQL_WITHVAL/include/pgsql
-		    test -d $PGSQL_WITHVAL/pgsql/include && PGSQL_INCDIR=$PGSQL_WITHVAL/pgsql/include
-		    test -d $PGSQL_WITHVAL/include/postgresql && PGSQL_INCDIR=$PGSQL_WITHVAL/include/postgresql
-            #RH 7.2: /usr/include/pgsql/libpq-fe.h
-			test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
-
+			#See if we allready found this earlier
+			if test "$PGSQL_INCDIR" = "" ; then
+				#No, find PG include dir now
+				test -d "$PGSQL_WITHVAL/include" && PGSQL_INCDIR=$PGSQL_WITHVAL/include
+				test -d "$PGSQL_WITHVAL/include/pgsql" && PGSQL_INCDIR=$PGSQL_WITHVAL/include/pgsql
+				test -d "$PGSQL_WITHVAL/pgsql/include" && PGSQL_INCDIR=$PGSQL_WITHVAL/pgsql/include
+				test -d "$PGSQL_WITHVAL/include/postgresql" && PGSQL_INCDIR=$PGSQL_WITHVAL/include/postgresql
+				#RH 7.2: /usr/include/pgsql/libpq-fe.h
+				test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+				if test "PGSQL_INCDIR" = "" ; then 
+					AC_MSG_WARN(cannot determine include path under $PGSQL_WITHVAL)
+				fi
+			fi
+			
 			#Finally, the one in CVS code installed by our install.xxx target:
 			#/opt/aubit/aubit4glsrc/pgsql-server/src/interfaces/libpq/libpq-fe.h
 			#NOTE: can't use this one, all other PG headers we need are not there...
@@ -3381,7 +3401,7 @@ fi
 			else
 				HAVE_PG_ESQL_HEADERS_LIB=no
 			fi
-			
+echo 5			
 			if test "$ac_cv_header_libpq_fe_h" = "yes" \
 				&& test "$ac_cv_header_ecpgtype_h" = "yes" \
 				&& test "$ac_cv_header_ecpglib_h" = "yes" \
@@ -3394,7 +3414,6 @@ fi
             else
 		        HAVE_PG_ESQL_HEADERS=no
             fi
-
 
 			if test "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 				ECPG_IFLAGS="$ECPG_IFLAGS -I$PGSQL_INCDIR"
@@ -3430,17 +3449,16 @@ fi
                 PG_ESQLC=no
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
 		    fi
-
+echo 6
 			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
-
-
-    fi
   else
     AC_MSG_RESULT(disabled)
   fi
 ],[
   AC_MSG_RESULT(--with-ecpg not specified)
 ])
+
+exit
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -6691,7 +6709,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.229 2004-07-01 11:51:05 afalout Exp $
+| $Id: configure.in,v 1.230 2004-07-04 23:59:23 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

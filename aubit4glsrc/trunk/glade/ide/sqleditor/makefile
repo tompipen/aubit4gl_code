@@ -1,36 +1,111 @@
-CFLAGS+=-g -I${AUBITDIR}/incl
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 
+#
+# $Id: makefile,v 1.2 2004-07-04 23:59:57 afalout Exp $
+#
 
-sqleditor: editor.ao infx.ao ../common/pick.ao ../common/about.ao execute.ao simple_parse.o lex.yy.o main.ao
-	4glpc -debug  editor.ao infx.ao ../common/pick.ao ../common/about.ao execute.ao main.ao simple_parse.o lex.yy.o -o sqleditor
+ROOT					=../../..
+LIBROOT					=${ROOT}/lib
 
-editor.ao: editor.4gl
-	4glpc -debug  editor.4gl -c -o editor.ao 
+#All stuff common to more then one Aubit compiler make file is there:
+include 				${ROOT}/incl/Makefile-common
 
-infx.ao: infx.4gl
-	4glpc -debug  infx.4gl -c -o infx.ao 
+#Include rules for compiling 4GL source code using Aubit compiler
+include 				${ROOT}/incl/a4gl.mk
 
+## ==================================================================
+##                              Options
+## ==================================================================
 
-../common/pick.ao: ../common/pick.4gl 
-	(cd ../common; 4glpc pick.4gl -c -o pick.ao)
+CFLAGS					+=-g -I${ROOT}/incl
+4GLPC					=${SH} ${ROOT}/bin/4glpc -debug
 
-main.ao: main.4gl
-	4glpc -debug  main.4gl -c -o main.ao 
+################
+#Aubit compiler settings. infx.4gl contains Informix ESQL/C code
+A4GL_LEXTYPE			=EC
+A4GL_USE_DATABASE_STMT	=Y
+A4GL_LEXDIALECT			=INFORMIX
 
-../common/about.ao: ../common/about.4gl
-	(cd ../common; 4glpc about.4gl -c -o ../common/about.ao )
+OBJ						= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
+						execute.ao simple_parse.o lex.yy.o main.ao
 
-edtprog.ao: edtprog.4gl
-	4glpc -debug  edtprog.4gl -c -o edtprog.ao
+ALL						=${ROOT}/bin/sqleditor.4ae
 
-execute.ao: execute.4gl
-	4glpc -debug  execute.4gl -c -o execute.ao
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default target (${ALL}) succesfully compiled"
+	@echo "+--------------------------------------------------------------------+"	
+	
+${ROOT}/bin/sqleditor.4ae: ${OBJ}
+	${4GLPC} $^ -o $@
+	
+## ==================================================================
+##                              Sub-targets
+## ==================================================================
+
+#FIXME: not targets to compile ide.glade
+#ide.glade also in ..
+
+#Amake will do this automatically:
+
+#../common/pick.ao: ../common/pick.4gl 
+#	${4GLPC} $^ -c -o $@
+
+#../common/about.ao: ../common/about.4gl
+#	${4GLPC} $^ -c -o $@
+	
+#editor.ao: editor.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#infx.ao: infx.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#main.ao: main.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#edtprog.ao: edtprog.4gl
+#	${4GLPC} $^ -c -o $@
+
+#execute.ao: execute.4gl
+#	${4GLPC} $^ -c -o $@
 
 lex.yy.c: parse.l
-	flex -i parse.l
+	${LEX} -i $^
+
+## ==================================================================
+##                              Clean
+## ==================================================================
 
 clean:
-	rm about.ao editor.ao edtprog.ao execute.ao ide1.ao infx.ao pick.ao about.ec editor.ec edtprog.ec execute.ec ide1.ec infx.ec pick.ec *.glb *.o lex.yy.c about.c about.h editor.c editor.h edtprog.c edtprog.h execute.c execute.h ide1.c ide1.h infx.c infx.h lex.yy.c pick.c pick.h
-
+	${RM} *.ec *.ao *.glb *.o lex.yy.c about.c about.h editor.c editor.h edtprog.c \
+	edtprog.h execute.c execute.h ide1.c ide1.h infx.c infx.h lex.yy.c pick.c \
+	pick.h ${ALL} *.warn *.err debug.out *.bak *~ ${OBJ} main.c main.h
 
 
