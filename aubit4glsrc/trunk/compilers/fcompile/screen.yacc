@@ -244,6 +244,7 @@ field_tag | field_tag_list field_tag;
 
 field_tag : 
 field_tag_name {
+	make_downshift($<str>1);
 	strcpy(currftag,$<str>1);
 	fldno=find_field($<str>1);
 } 
@@ -516,7 +517,11 @@ field_name :
 named_or_kw;
 
 field_tag_name : 
-named_or_kw;
+named_or_kw {
+	strcpy($<str>$,$<str>1);
+	make_downshift($<str>$);
+	}
+	;
 
 datatype : 
 KW_CHAR {
