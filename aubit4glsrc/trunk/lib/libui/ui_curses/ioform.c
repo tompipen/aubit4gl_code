@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.65 2003-08-19 18:41:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.66 2003-08-20 18:28:43 mikeaubury Exp $
 #*/
 
 /**
@@ -549,7 +549,7 @@ A4GL_set_field_attr (FIELD * field)
 
   if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
     {
-      A4GL_debug ("Invisible");
+      A4GL_debug ("Invisible ***");
       field_opts_off (field, O_PUBLIC);
     }
 
@@ -897,17 +897,34 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    A4GL_trim (buff2);
 		    getsyx (y, x);
 		    A4GL_trim (buff2);
+
 		    if (strlen (buff2) == 0)
 		      {
+
 			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 			  {
-			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
-					      0);
-			    set_current_field (mform, form->currentfield);
-			    return -4;
+				int allow_it_anyway=0;
+
+				// We'll still allow it - so long as there is null in the include list
+				if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))  {
+                			if (A4GL_check_field_for_include ("",A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype))  {
+						allow_it_anyway=1;
+					}
+				} 
+
+			    	if (!allow_it_anyway) {
+					// Well there wasn't - so it is required....
+			    		A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+			    		set_current_field (mform, form->currentfield);
+			    		return -4;
+				}
+
+
 			  }
 			return 0;
 		      }
+
+
 		    A4GL_push_param (buff2, DTYPE_CHAR);
 
 		    if (!A4GL_pop_param
@@ -922,8 +939,11 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		      }
 		  }
 
-		if (A4GL_check_field_for_include
-		    (field_buffer (sio->currform->currentfield, 0),
+
+
+
+
+		if (A4GL_check_field_for_include (field_buffer (sio->currform->currentfield, 0),
 		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 		     fprop->datatype) == 0)
 		  {
@@ -936,15 +956,25 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 		  {
 		    char buff[8024];
-		    strcpy (buff,
-			    field_buffer (sio->currform->currentfield, 0));
+		    strcpy (buff, field_buffer (sio->currform->currentfield, 0));
 		    A4GL_trim (buff);
 		    // 
+
 		    if (strlen (buff) == 0)
 		      {
-			A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
-			set_current_field (mform, form->currentfield);
-			return -4;
+				int allow_it_anyway=0;
+
+				// We'll still allow it - so long as there is null in the include list
+				if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))  {
+                			if (A4GL_check_field_for_include ("",A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype))  {
+						allow_it_anyway=1;
+					}
+				} 
+			if (!allow_it_anyway) {
+				A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+				set_current_field (mform, form->currentfield);
+				return -4;
+			}
 
 		      }
 		  }

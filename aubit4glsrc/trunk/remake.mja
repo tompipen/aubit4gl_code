@@ -5,7 +5,7 @@ if [ "$1" != "" ]
 then
 	cvs update -d 
 	make cleanall
-	./configure  --with-pgsql=/usr/local/pgsql
+	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql
 fi
 
 

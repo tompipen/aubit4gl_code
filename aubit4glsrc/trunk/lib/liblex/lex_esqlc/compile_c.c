@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.84 2003-08-19 08:37:42 mikeaubury Exp $
+# $Id: compile_c.c,v 1.85 2003-08-20 18:28:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -78,7 +78,6 @@ char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
 int is_builtin_func (char *s);
-
 */
 int doing_cs(void );
 /*
@@ -88,6 +87,9 @@ int doing_cs(void );
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
+
+#define ONE_NOT_ZERO(x) (x?x:1)
+
 
 int last_orderby_type=-1;
 void print_report_table(char *repname,char type, int c);
@@ -1454,7 +1456,7 @@ print_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ibindcnt,ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ONE_NOT_ZERO(ibindcnt),ibindcnt);
       if (ibindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1480,7 +1482,7 @@ print_bind (char i)
     {
       expand_bind (&nullbind[0], 'N', nullbindcnt);
       printc ("\n");
-      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/", nullbindcnt,nullbindcnt);
+      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/", ONE_NOT_ZERO(nullbindcnt),nullbindcnt);
       if (nullbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1502,7 +1504,7 @@ print_bind (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[%d]={\n",obindcnt);
+      printc ("struct BINDING obind[%d]={\n",ONE_NOT_ZERO(obindcnt));
       if (obindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1536,7 +1538,7 @@ print_bind (char i)
        */
 
 
-      printc ("static struct BINDING _ordbind[%d]={\n",ordbindcnt);
+      printc ("static struct BINDING _ordbind[%d]={\n",ONE_NOT_ZERO(ordbindcnt));
       if (ordbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1570,7 +1572,7 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-	sprintf(buff,"struct BINDING ibind[%d]",ibindcnt);
+	sprintf(buff,"struct BINDING ibind[%d]",ONE_NOT_ZERO(ibindcnt));
       A4GL_append_expr (ptr, buff);
       if (ibindcnt == 0)
 	{
