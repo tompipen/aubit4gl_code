@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>PAUSE</TITLE>
+</HEAD><BODY>
+<B>PAUSE
+<P></P>
+</B>The PAUSE statement temporarily suspends the Application window during the
+screen output from a 4GL report, until the user chooses the Resume option of the
+Report window menu. The PAUSE statement can only appear in the FORMAT section of
+a REPORT program block.     
+<P></P>
+<IMG SRC="4GLREF00000022.gif" ALT="4GLREF00000022.gif" BORDER="0" WIDTH="464" HEIGHT="52">
+<P></P>
+<B>string</B>  is a quoted string. (This specification has no effect on Windows systems, but
+is supported for compatibility with INFORMIX-4GL programs that are developed
+for character environments.)
+<P></P>
+The PAUSE statement affects the behavior of the Report window and the
+Application window. It has no effect on the formatted report output:
+<P></P>
+In the absence of a PAUSE statement, the Report window is modeless, like the
+Help window; the user has simultaneous access to all graphical and 4GL windows.
+<P></P>
+If a PAUSE statement appears in the REPORT definition, the Report window
+becomes modal, taking exclusive control of the 4GL application until the user closes
+it by choosing Resume from its menu. (Users can access other DOS windows, but
+they cannot access the Application window, nor any of its 4GL windows, until
+after the Report window closes.)
+<P></P>
+Your users should be advised that an application can appear suspended if the
+user closes a modal Report window by using the System menu button on its window
+frame, rather than the Resume menu option.
+<P></P>
+The PAUSE statement has no effect if you include a REPORT TO clause in the
+OUTPUT section, or a TO clause in the START REPORT statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFNEED00000457.htm"></A></B><A HREF="4GLREFNEED00000457.htm">NEED</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000463.htm">PRINT</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+<A HREF="4GLREFSCROLL.htm">SCROLL</A> 
+<P></P>
+<A HREF="4GLREFSKIP00000469.htm">SKIP</A> 
+<P></P>
+<A HREF="4GLREFSTART_REPORT.htm">START REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

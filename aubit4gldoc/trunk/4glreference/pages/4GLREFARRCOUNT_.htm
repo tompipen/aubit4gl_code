@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+</HEAD><BODY>
+<B>ARR_COUNT( )
+<P></P>
+</B>The ARR_COUNT( ) function returns a positive whole number, typically
+representing how many records were entered in a program array during or after execution
+of the INPUT ARRAY statement. 
+<P></P>
+<IMG SRC="4GLREF00000064.gif" ALT="4GLREF00000064.gif" BORDER="0" WIDTH="450" HEIGHT="30">
+<P></P>
+You can use ARR_COUNT( ) to determine the number of program records that are
+currently stored in a program array. In typical 4GL applications, these records
+correspond to values from the active set of retrieved database rows from the
+most recent query. By first calling the SET_COUNT( ) function, you can set an
+upper limit on the value that ARR_COUNT( ) returns.
+<P></P>
+ARR_COUNT( ) returns a positive integer, corresponding to the index of the
+furthest record within the program array that the screen cursor accessed. Not all
+the rows counted by ARR_COUNT( ) necessarily contain data (for example, if the
+user presses the Down arrow key more times than there are rows of data). If
+SET_COUNT( ) was explicitly called, ARR_COUNT( ) returns the greater of these two
+values: the argument of SET_COUNT( ), or the highest value attained by the
+array index. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFARRCURR_.htm"></A></B><A HREF="4GLREFARRCURR_.htm">ARR_CURR( )</A> 
+<P></P>
+<A HREF="4GLREFSCRLINE_.htm">SCR_LINE( )</A> 
+<P></P>
+<A HREF="4GLREFSETCOUNT_.htm">SET_COUNT( )</A> 
+<P></P>
+</BODY>
+</HTML>

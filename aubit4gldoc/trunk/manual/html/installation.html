@@ -1,0 +1,206 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Installation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6"><a name="Top of page - Installation">Installation</a></font></p>
+<hr>
+<ul>
+  <li>
+    <p align="left"><a href="#Prerequisites for both source and binary distributions">Prerequisites</a></li>
+  <li>
+    <p align="left"><a href="#Source distribution installation">Source distribution installation</a></li>
+  <li>
+    <p align="left"><a href="#Binary distribution installation">Binary distribution installation</a></li>
+  <li>
+    <p align="left"><a href="#Testing the installation of compiler">Testing the installation of compiler</a></li>
+</ul>
+<hr>
+<h3><a name="Prerequisites for both source and binary distributions">Prerequisites for both source and binary distributions</a>
+</h3>
+
+<blockquote>
+
+<p>ODBC compatible database (recommended: Informix IDS or SE)<br>
+ODBC driver for selected database: (recommended: Openlink)<br>
+NCURSES libraries V 1.78 or up<br>
+GCC C compiler
+</p>
+
+</blockquote>
+
+<p><i>Full GNU configuration (tested):</i>
+</p>
+
+<blockquote>
+
+<p>PostgreSQL database<br>
+iODBC or unixODBC ODBC connection manager
+</p>
+
+</blockquote>
+
+<p>In theory, you can use any SQL database that have scroll cursor support in
+ODBC drivers, but be aware that not all Informix-SQL syntax is supported by all
+database engine. Also, you should be able to use any ODBC connection manager
+with all ODBC drivers, but I see no reason not to use iODBC. If you successfully
+installed Aubit 4GL with other tools, please let us know.
+</p>
+
+<p><a href="#Top of page - Installation">Back to top</a>
+</p>
+
+<hr>
+<h3 align="left"><a name="Source distribution installation">Source distribution installation</a>
+</h3>
+
+<p><u><i>Prerequisites:</i></u><font color="#00FF00"> </font>same
+</p>
+
+<p><i><u>Installation:</u></i>
+</p>
+
+<p><span style="background-color: #00FF00">a) </span> Make sure you have all the prerequisites listed at the top of this page!
+</p>
+
+<p><span style="background-color: #00FF00">b) </span> If you are getting sources via CVS clients check-out function, and create
+and select directory like /usr/aubit for checkout, two directories will be
+created under /usr/aubit: Aubit4gl and CVS. All directories named CVS are not to
+be modified, they are only for CVS control. See more about CVS options on <a href="http://www.falout.com">www.falout.com</a>
+under Version Control. If you do not plan to work on compiler source files to be
+returned to central repository, you can delete all CVS directories. IF you want
+to contribute to the development, but do not want to use CVS, you can always
+contribute diff's from current file in CVS.
+</p>
+
+<p>If you are downloading sources from ftp(N/A at the moment), HTTP (N/A at the
+moment), or jCVS servlet &quot;Download&quot; option, uncompress the downloaded
+file in new directory you created for Aubit 4gl
+</p>
+
+<p><span style="background-color: #00FF00">c)</span> Make sure you have <a href="http://www.iodbc.org" target="_blank">iODBC</a>
+manager (you could possibly use direct linking of ODBC drivers or other
+managers, but at the moment make files in distribution support only iODBC
+manager, without need for modifications) and ODBC drivers for your database
+installed and working. iODBC comes with little test program, 'odbctest'. Use it.
+Initially we recommend <a href="http://www.openlinksw.com">OpenLink</a>  ODBC
+drivers that are distributed with iODBC manager included.
+</p>
+
+<p><span style="background-color: #00FF00">d)</span> Set your environment. Take a look at 'aubitenv' file in Aubit directory
+you have created. Include a call to this file in /etc/profile, or other startup
+scripts, so that your environment is set every time you log in. Don't forget
+that to get this settings EXPORTED into your environment, you need to execute
+the file with dot-space before file name, like &quot;. aubitenv&quot;
+</p>
+
+<p><span style="background-color: #00FF00">e)</span> configure your .a4glrc defaults; they are used in the compiling of the
+compiler, and later when the 4glpc script is invoked. Especially be careful to
+point ODBC_LIB_DIR to location of your libiodbc.so file. That would for Openlink
+be openlink_inst_dir/lib. The one in $AUBITDIR is read first. If you have one in
+$HOME, it will override the one in $AUBITDIR
+</p>
+
+<p><span style="background-color: #00FF00">f)</span> cd to $AUBITDIR; type 'make'; don't look at all this warnings, they are
+not important at the moment.&nbsp;
+</p>
+
+<p><span style="background-color: #00FF00">g)</span> If your make process exited with message &quot;Aubit 4gl compiler is now
+compiled&quot;,&nbsp;go to section &quot;Testing the installation&quot;. Please
+be aware that to perform database related operations, you will need not only the
+database engine installed, database created, and ODBC manager and ODBC driver
+installed, but also configured 'odbc.ini' file appropriate for your database,
+database engine and ODBC manager. You can use odbc.ini.example file in
+&quot;test&quot; directory as example. This will unfortunately not eliminate the
+need to read the documentation for this products.
+</p>
+
+<p><a href="#Top of page - Installation">Back to top</a>
+</p>
+
+<hr>
+<h3 align="left"><a name="Binary distribution installation">Binary distribution installation</a>
+</h3>
+
+<p align="left"><u><i>Prerequisites:</i></u> same
+</p>
+
+<p><u><i>Installation:</i></u>
+</p>
+
+<p><font color="#FF0000">Please not: the binary only distribution is not
+available at the moment. Please contact the development team if you can assist
+in making RPM distribution</font>
+</p>
+
+<p>cd to the 'bin' directory and run ./install_4gl<br>
+copy the a4glrc.sample to $HOME/.a4glrc<br>
+</p>
+
+<p>When your compiler is installed, read &quot;Testing the installation of
+compiler&quot;
+</p>
+
+<p>Please see Aubit 4gl download page for available binary builds.
+</p>
+
+<p>I Plan to provide both tar.gz and RPM, and make this scriptable using main makefile, and stuff it in corn, so I can provide nightly
+builds...
+</p>
+
+<p><a href="#Top of page - Installation">Back to top</a>
+</p>
+
+<hr>
+<h3 align="left"><a name="Testing the installation of compiler">Testing the installation of compiler</a></h3>
+
+<p>cd to $AUBITDIR/test directory, and execute:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; 4glpc hello.4gl -o hello
+</p>
+
+<p>You can now test form compiler with:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; fcompile form
+</p>
+
+<p>now, type:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; hello
+</p>
+
+<p>and you should see a little program with with three options in the menu on
+the top:&nbsp;
+</p>
+
+<p>Hello test:&nbsp;&nbsp;&nbsp; window&nbsp;&nbsp;&nbsp; form&nbsp;&nbsp; exit
+</p>
+
+<p>If you do, congratulations, you have just compiled your first 4gl program
+using Aubit 4gl!
+</p>
+
+<p>There are few more test files there. Most important is hello_db.4gl, that is connecting
+to the database. For it to compile and run, you will need to have a database,
+and ODBC DSN configured.
+</p>
+
+<p><a href="#Top of page - Installation">Back to top</a>
+</p>
+
+<hr>
+
+</body>
+
+</html>
+

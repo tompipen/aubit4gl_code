@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>VARCHAR</TITLE>
+</HEAD><BODY>
+<B>VARCHAR
+<P></P>
+</B>The VARCHAR data type stores character strings of varying length. You can
+optionally specify the maximum size of data string, and the minimum storage
+reserved in memory. The INFORMIX-SE engine does not support this data type, but you
+can declare 4GL VARCHAR variables.
+<P></P>
+The declared maximum size of VARCHAR data types can range from 1 to 255. If
+you specify no maximum size, the default is 1. You can store shorter character
+strings than the maximum size, but not longer strings. In a form specification
+file, you cannot specify size parameters for a FORMONLY VARCHAR field; here the
+maximum size defaults to the field length in the screen layout.
+<P></P>
+The minimum reserved size can range from 0 to 255 bytes, but this cannot be
+greater than the declared maximum size. (Like the precision specification in
+FLOAT  or DOUBLE PRECISION data type declarations, 4GL accepts this value for
+compatibility with SQL syntax, but does not use this value.)
+<P></P>
+When you assign a value to a VARCHAR variable, only the data characters are
+stored. Neither INFORMIX-4GL nor the database engine strip a VARCHAR value of
+user-entered trailing blanks. Unlike CHAR values, VARCHAR values are not padded
+with blanks to the declared maximum size.
+<P></P>
+VARCHAR values are compared to CHAR values and to other VARCHAR values in 4GL
+Boolean expressions in the same way that CHAR values are compared: the shorter
+value is padded on the right with spaces until the values have equal lengths.
+Then they are compared for the full length. 
+<P></P>
+</BODY>
+</HTML>

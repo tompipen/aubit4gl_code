@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>DECIMAL</TITLE>
+</HEAD><BODY>
+<B>DECIMAL
+<P></P>
+</B>The DECIMAL data type stores values as decimal numbers, up to 32 significant
+digits. You can optionally specify the precision (the number of significant
+digits) and the scale (the number of digits to the right of the decimal point). For
+example, DECIMAL (14,2) specifies a total of 14 significant digits, two of
+which describe the fractional part of the value.
+<P></P>
+When you specify both the precision and scale, the 4GL program can manipulate
+the DECIMAL variable or constant with fixed-point arithmetic. 
+<P></P>
+If the data type declaration specifies neither the precision nor the scale,
+the default is DECIMAL(16), a floating-point decimal with a precision of 16
+digits. If you specify only one parameter, this is interpreted as the precision of a
+floating-point number that can range in absolute value from 10**-128 to
+10**126. 
+<P></P>
+The largest absolute value that you can store without an error in a DECIMAL
+variable is 
+<BR>10**p-s -10**-s. Here p is the precision, and s is the scale. Values with an
+absolute value less than 0.5 x 10**-s are stored as zero. You cannot specify p
+nor s for a FORMONLY DECIMAL field in a form; its precision is the smaller of 32
+and (length - 2), where length is the field width in the screen layout.
+<P></P>
+DECIMAL (p,s) data types are useful for storing numbers with fractional parts
+that must be calculated exactly, such as rates or percentages. Unless you are
+developing a scientific or engineering application that explicitly controls for
+measurement error, store floating-point numbers as DECIMAL(p,s) values.
+<P></P>
+When a user enters data in a SMALLFLOAT or FLOAT field, 4GL converts the
+base-10 value to binary format for storage. Likewise, to display a FLOAT or
+SMALLFLOAT number, 4GL reformats it from binary to base-10. Both conversions can lead
+to inaccuracy. Thus, if a user enters 10.7 into a FLOAT field, it might actually
+be stored as 10.699999 or as 10.700001, depending on the magnitude and the
+sign of the binary-to-decimal conversion error. This limitation is a feature of
+digital computers, rather than of 4GL.
+<P></P>
+</BODY>
+</HTML>

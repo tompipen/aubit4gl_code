@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>VALIDATE</TITLE>
+</HEAD><BODY>
+<B>VALIDATE
+<P></P>
+</B>The VALIDATE statement tests whether the value of a variable is within the
+range of values for a corresponding column in the syscolval table.
+<P></P>
+<IMG SRC="4GLREF00000189.gif" ALT="4GLREF00000189.gif" BORDER="0" USEMAP="#map115" WIDTH="621" HEIGHT="323"><MAP NAME="map115"><AREA COORDS="228,270,307,315" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="339,47,403,97" HREF="4GLREFTable_Qualifiers.htm"></MAP>
+<P></P>
+<B>array </B> is the name of a variable of the ARRAY data type to be validated. 
+<P></P>
+<B>first</B> is the name of a member variable of record to be validated.
+<P></P>
+<B>last</B> is another member that was declared later than first in record.
+<P></P>
+<B>record </B> is the name of a program record to be validated.
+<P></P>
+<B><UL><LI>ariable</B>  is the name of a program variable to be validated. 
+<P></P>
+</UL>If your program inserts data from a screen form, then 4GL automatically checks
+for validation criteria. If your program inserts data into the database from
+sources other than a screen form, you can apply validation criteria by using the
+VALIDATE statement.  
+<P></P>
+This statement has no effect unless INCLUDE values exist in the syscolval
+table for at least one of the database columns that you specify in the column list
+of the VALIDATE statement.
+<P></P>
+If the value of a variable does not conform with the INCLUDE value in the
+syscolval table, 4GL sets the status variable to a negative value. If you specify a
+list of variables and receive a negative status value, you must test the
+variables individually to detect the non-conforming value.
+<P></P>
+<B>The Validate LIKE Clause
+<P></P>
+</B>The LIKE clause specifies the database columns with which to validate the
+variables. It has the syntax of the LIKE clause of the INITIALIZE statement:
+<P></P>
+<IMG SRC="4GLREF00000190.gif" ALT="4GLREF00000190.gif" BORDER="0" WIDTH="586" HEIGHT="162">
+<P></P>
+<B>column</B> is the name of a column of table for which an INCLUDE value exists in the
+syscolval table.
+<P></P>
+<B>database</B> is the name of the database in which the column resides.
+<P></P>
+<B>owner </B>is the user name of the owner of the table that contains the column. 
+<P></P>
+<B>server </B>is the name of the OnLine server. The @ symbol is required.
+<P></P>
+<B>table </B>is the name or synonym of the table or view that contains column.
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm">DEFINE</A> 
+<P></P>
+<A HREF="4GLREFINITIALIZE.htm">INITIALIZE</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

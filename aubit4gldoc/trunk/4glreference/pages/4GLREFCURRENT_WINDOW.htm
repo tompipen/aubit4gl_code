@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>CURRENT WINDOW</TITLE>
+</HEAD><BODY>
+<B>CURRENT WINDOW
+<P></P>
+</B>The CURRENT WINDOW statement makes a specified <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A> the current window (that is, the topmost 4GL window in the window stack).    
+<P></P>
+<IMG SRC="4GLREF00000123.gif" ALT="4GLREF00000123.gif" BORDER="0" WIDTH="452" HEIGHT="49">
+<P></P>
+<B>window</B>  is the name of the open 4GL window to be made current.
+<P></P>
+<OL START="4"><LI>GL maintains a list or stack of all open 4GL windows in the <A HREF="4GLREFApplication_window.htm">Application window</A>. The OPEN WINDOW statement creates a new 4GL window that is added to the top
+of this window stack, becoming the current window. When you <A HREF="4GLREFclose.htm">close</A> a 4GL window, that 4GL window is removed from the stack. The topmost 4GL
+window among those that remain open becomes the new current window. Its values take
+effect for the positions of reserved lines like Prompt, Message, Form, and
+Comment lines.
+<P></P>
+</OL>The current 4GL window is always completely visible, and can obscure all or
+part of any inactive 4GL windows. When you specify a new current window, 4GL
+adjusts the window stack by moving the new current 4GL window to the top, and
+closing the gap in the stack left by this 4GL window. 
+<P></P>
+Programs with multiple 4GL windows may need to switch to a different current
+window so that input and output occur in the appropriate 4GL window. To make a
+4GL window the current window, specify its name in the CURRENT WINDOW statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCLEAR.htm"></A></B><A HREF="4GLREFCLEAR.htm">CLEAR</A> 
+<P></P>
+<A HREF="4GLREFCLOSE_WINDOW.htm">CLOSE WINDOW</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFMENU00000455.htm">MENU</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

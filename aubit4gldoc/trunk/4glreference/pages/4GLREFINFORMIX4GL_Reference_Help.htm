@@ -1,0 +1,188 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>X-4GL Reference</TITLE>
+</HEAD><BODY>
+<H1 align="center"><a name="Top of page - X-4GL Reference manual">X-4GL Reference manual</a></H1>
+<hr>
+<p>On this page:</p>
+<ul>
+  <li><a href="#Manual Introduction">Manual introduction</a></li>
+  <li><a href="#Manual Conventions">Manual conventions</a></li>
+  <li><a href="#Manual Navigation">Manual navigation</a></li>
+  <li><a href="#Overview of x4GL programming language">Overview of X-4GL
+    programming language</a>:
+    <ul>
+      <li><a href="#Statements">Statements</a></li>
+      <li><a href="#Functions &amp; Operators">Functions &amp; Operators</a></li>
+      <li><a href="#Screen Forms">Screen forms</a></li>
+      <li><a href="#Reports">Reports</a></li>
+    </ul>
+  </li>
+</ul>
+<h3 align="left"><a name="Manual Introduction">Manual Introduction</a></h3>
+<p align="left">Intention of this document is to provide definitive point of reference
+to all Informix-4gl compatible compilers. It is based on <a href="http://www.informix.com" target="_blank"> Informix</a> 4gl
+documentation, standards, and behavior,
+which is considered to be &quot;always right&quot;, as far as compatibility
+between compilers is concerned. All <a href="http://www.falout.com/aubit" target="_blank"> Aubit
+4gl</a>, <a href="http://www.4js.com" target="_blank">4Js BDL</a> / Informix
+D4GL, or <a href="http://www.querix.com" target="_blank"> Querix</a> specific
+statements or behaviors will be clearly marked, together with compiler version number statement was
+introduced, if relevant. If the statement or syntax is not marked as compiler
+specific, it is considered to be common to all 4gl compilers, and to behave in
+described manner in all of them.</p>
+<p align="left">This reference is not intended to replace compilers manuals, but
+to document 4gl language syntax. It should be used together with compiler
+manual.</p>
+<p align="left">Consider this reference to be work in progress. Trust it only if
+it don't contradict particular product's manual.</p>
+<p align="left"><a href="#Top of page - X-4GL Reference manual">Back to top</a></p>
+<h3 align="left"><a name="Manual Conventions">Manual Conventions</a></h3>
+<p align="left">In this manual terms &quot;4gl&quot; and &quot;x4gl&quot; are
+used in following way:</p>
+<p align="left">&quot;x4gl&quot; having a explicit meaning of &quot;all
+Informix-4gl compatible compilers programming language syntax superset&quot;
+and,&nbsp;</p>
+<p align="left">&quot;4gl&quot; of &quot;all Informix-4gl compatible compilers
+programming language common syntax compatible subset&quot;. So by definition,
+&quot;4GL&quot; and &quot;Informix-4GL&quot; terms are interchangeable.</p>
+<p align="left">Therefore, 4Js compiler specific statement &quot;CHANNEL::&quot;
+is part of x4gl language definition and 4Js-4gl definition (and automatically
+Informix-D4GL definition), but NOT generic 4gl language. But Informix-4gl
+statement &quot;MENU&quot;, present and compatible in definition and behavior in
+all X4gl compilers, belongs to 4gl language definition.&nbsp;</p>
+<p align="left">When using name of particular implementation of 4GL compiler,
+like &quot;Informix-4gl&quot; (TM), reference in this manual is NOT to the particular
+product(s) or vendor(s), but is used to identify particular syntax and behavior
+of programming language used by product or vendor, marked in following way in
+this manaul:</p>
+<p align="left"><span style="background-color: #C0C0C0">A-4GL V x.y</span> -
+Described feature/behavior is available in Aubit 4gl, version x.y an above</p>
+<p align="left"><span style="background-color: #C0C0C0">4Js-4GL V x.y</span> -
+Described feature/behavior is available in 4Js 4GL product, version x.y an above.
+This includes Informix branded D4GL.</p>
+<p align="left"><span style="background-color: #C0C0C0">Q-4GL V x.y</span> -
+Described feature/behavior is available in Querix 4gl product, version x.y an above</p>
+<p align="left"><i>No product specific label</i> - Described feature/behavior is
+available in all above&nbsp; 4gl, products, regardless of version. All features
+of I-4GL by definition of compatibility belong in this group.&nbsp;</p>
+<p align="left"><i>No version indicator</i> - Feature is present in all versions
+of specific product.</p>
+<p align="left"><a href="#Top of page - X-4GL Reference manual">Back to top</a></p>
+<h3 align="left"><a name="Manual Navigation">Manual Navigation</a></h3>
+<p align="left">When you open this document for the first time, left navigation
+frame contains by default list of all 4gl statements, and links to other indexed
+resources, that when displayed in left navigation frame, will open selected hyperlink
+in main frame. They are:</p>
+<ul>
+  <li>
+    <p align="left">4GL statements - hyperlinked list of all 4gl language statement
+    keywords</li>
+  <li>
+    <p align="left">Index - hyperlinked list of all 4gl reference topics, in
+    context of there syntax usage</li>
+  <li>
+    <p align="left">Glossary - hyperlinked list of all 4gl related terms used in
+    this reference</li>
+</ul>
+<p align="left">Additionally, link to Home page (this page) is always present in
+left navigation frame, allowing you to quickly return to this Reference manual
+starting point.</p>
+<p align="left"><a href="#Top of page - X-4GL Reference manual">Back to top</a></p>
+<hr>
+<h2 align="center"><a name="Overview of x4GL programming language">Overview of x4GL programming language</a></h2>
+<h3 align="left"><a name="Statements">Statements</a></h3>
+<ul>
+  <li>
+    <p align="left"><A HREF="4GLREF4GL_Statements_Overview.htm">4GL Statements
+    overview</A> 
+  </li>
+  <li>
+    <p align="left"><B>Statement Segments:</B>
+  </li>
+</ul>
+<blockquote>
+  <ul>
+    <li>
+      <p align="left"><A HREF="4GLREFATTRIBUTE00000476.htm">Attribute Clause</A> 
+    </li>
+    <li>
+      <p align="left"><A HREF="4GLREFData_Types_of_INFORMIX4GL.htm">Data Types</A> 
+    </li>
+    <li>
+      <p align="left"><A HREF="4GLREFExpressions_of_4GL.htm">4GL Expressions</A> 
+    </li>
+    <li>
+      <p align="left"><A HREF="4GLREFField_Clause.htm">Field Clause</A> 
+    </li>
+    <li>
+      <p align="left"><A HREF="4GLREFTable_Qualifiers.htm">Table Qualifier</A> 
+    </li>
+    <li>
+      <p align="left"><A HREF="4GLREFTHRU_or_THROUGH_Keywords_and__No.htm">THROUGH, THRU, and .* Notation</A> 
+    </li>
+  </ul>
+</blockquote>
+<h3><a name="Functions &amp; Operators">Functions &amp; Operators</a></h3>
+<ul>
+  <li><A HREF="4GLREFBuiltIn_Functions_and_Operators_.htm">4GL Functions &amp;
+    Operators overview</A><B>&nbsp;</B> 
+  </li>
+  <li><A HREF="4GLREFuntitled00000323.htm">Built-In Functions &amp; Operators</A> 
+  </li>
+  <li><A HREF="4GLREFArithmetic_Operators00000378.htm">Arithmetic Operators</A>
+  </li>
+  <li><A HREF="4GLREFBoolean_Operators.htm">Boolean Operators</A>
+  </li>
+  <li><A HREF="4GLREFBoolean_Operators.htm#eb6ee245">Relational Operators</A>
+  </li>
+</ul>
+<h3><a name="Screen Forms">Screen Forms</a></h3>
+<ul>
+  <li><A HREF="4GLREFOverview_of_INFORMIX4GL_Forms.htm">4GL Forms overview</A></li>
+  <li><A HREF="4GLREFForm_Fields.htm">Form Fields</A> 
+  </li>
+  <li><A HREF="4GLREFDATABASE_Section.htm">DATABASE Section</A> 
+  </li>
+  <li><A HREF="4GLREFuntitled00000320.htm">SCREEN Section</A> 
+  </li>
+  <li><A HREF="4GLREFTABLES_Section.htm">TABLES Section</A> 
+  </li>
+  <li><A HREF="4GLREFuntitled00000321.htm">ATTRIBUTES Section</A> 
+  </li>
+  <li><A HREF="4GLREFuntitled00000322.htm">INSTRUCTIONS Section</A> 
+  </li>
+</ul>
+<h3><a name="Reports">Reports</a></h3>
+<ul>
+  <li><A HREF="4GLREFuntitled00000317.htm">4GL Reports overview</A></li>
+  <li><A HREF="4GLREFDEFINE_Section.htm">DEFINE Section</A> 
+  </li>
+  <li><A HREF="4GLREFuntitled.htm">OUTPUT Section</A> 
+  </li>
+  <li><A HREF="4GLREFORDER_BY_Section.htm">ORDER BY Section</A> 
+  </li>
+  <li><A HREF="4GLREFuntitled00000319.htm">FORMAT Section</A> 
+  </li>
+</ul>
+<p>&nbsp;</p>
+<p><a href="http://babel.altavista.com/translate.dyn?doit=done&amp;bblType=url&amp;url=http%3A//www.falout.com/projects/Aubit4GL/Aubit4gl/docs/4glref/index.htm" target="_blank">Translate
+online version of this manual</a></p>
+<p><a href="#Top of page - X-4GL Reference manual">Back to top</a></p>
+<hr>
+<p><font size="1">All trademarks mentioned in this manual are property of there
+respective owners. &quot;Aubit 4gl&quot; project is not associated&nbsp; in any
+way with any commercial vendors mentioned. This document does not endorse any of
+mentioned products, commercial or otherwise. All suggestions and corrections to
+this manual are <a href="mailto:afalout@ihug.co.nz">grateful received</a>.</font></p>
+<p><font size="1">Document version 0.1, 13.07.2001, by Aubit 4gl team, released
+under GNU and Aubit licenses (see Aubit 4gl Compiler licensing information)</font></p>
+<hr>
+<p align="center"><a href="http://www.falout.com/aubit" target="_blank">Aubit
+4gl project home</a> <a href="http://www.falout.com/projects/Aubit4GL/Aubit4gl/docs/manual" target="_blank">Aubit
+4gl online manual</a></p>
+</BODY>
+</HTML>

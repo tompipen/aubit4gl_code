@@ -1,0 +1,309 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Compiling a program</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6"><a name="Top of page - Compiling a program">Compiling a program</a></font></p>
+<hr>
+<p align="left">In this chapter:</p>
+<ul>
+  <li>
+    <p align="left"><a href="#Aubit 4gl main compiler script">Aubit 4gl main
+    compiler script</a></li>
+  <li>
+    <p align="left"><a href="#Compiling 4gl module">Compiling 4gl module and
+    linking 4gl executable program</a></li>
+  <li>
+    <p align="left">
+<a href="#Compiling forms">
+Compiling forms</a></li>
+  <li>
+    <p align="left"><a href="#Compiling help files">Compiling help files</a></li>
+  <li>
+    <p align="left"><a href="#Compiling menu files">FIXME: Compiling menu files</a></li>
+  <li>
+    <p align="left"><a href="#Debugging and reporting bugs">Debugging and
+    reporting bugs</a></li>
+</ul>
+<hr>
+
+<h3>
+<a name="Aubit 4gl main compiler script">Aubit 4gl main compiler script</a>
+</h3>
+
+<p>Compiling source files, and linking executables, is in Aubit 4gl generally
+done using compiler script, &quot;4glpc&quot;. You should not need to invoke
+Aubit 4gl compiler, &quot;4glc&quot;, directly.
+</p>
+
+<p>Please see 4glpc help (&quot;4glpc --help&quot;) for full list of options
+(FIXME: this should me in manual)
+</p>
+
+<p>4glpc reads .a4glrc compiler configuration file before it executes any
+command. This file if first read from Aubit 4gl installation directory, as
+specified by $AUBITDIR, and then, if it exists, from users home directory, as
+specified by $HOME, effectively overriding settings from $AUBITDIR/.a4glrc that
+exist in both places. It also accepts number of command line switches, and
+environment variables.
+</p>
+
+<p>
+4glpc is also used to compile per, menu, c, but we should add mkmess too (FIXME)?
+</p>
+
+<p>
+<a href="#Top of page - Compiling a program">Back to top</a>
+</p>
+
+<h3>
+<a name="Compiling 4gl module">
+Compiling 4gl module</a>
+</h3>
+
+<p align="left">
+    Aubit 4gl source compiler (&quot;4glc&quot;) is generaly invoked using main
+    compiler script, &quot;4glpc&quot;, that is alo scapable of linking compiled
+    object into executable program.
+</p>
+
+<blockquote>
+
+<p>
+	4glpc &lt;filename&gt;.4gl -o &lt;executablename&gt;
+</p>
+
+</blockquote>
+
+<p>
+The compiler script uses the normal C compiler and passes unknown options on&nbsp;
+</p>
+
+<p>
+Eg:&nbsp;
+</p>
+
+<blockquote>
+
+<p>
+	4glpc file.4gl -c -o file.o
+</p>
+
+</blockquote>
+
+<p>
+compile to an object file rather than a linked executable
+</p>
+
+<p>
+The compiler uses the following environment variables (command line equivs.):
+</p>
+
+<blockquote>
+
+<p>
+USE_SHARED -
+</p>
+
+</blockquote>
+
+<p>
+&nbsp;if set to 'Yes' always compiles with shared libraries
+	(-shared/-static)
+</p>
+
+<blockquote>
+
+<p>
+DOIT       -&nbsp;
+</p>
+
+</blockquote>
+
+<p>
+ set to 'echo' to display the CC command rather than execute it
+	(-echo) This only inhibits the C compiler not the 4gl compiler
+</p>
+
+<blockquote>
+
+<p>
+INCLLINES  -&nbsp;
+</p>
+
+</blockquote>
+
+<p>
+ Include extra debugging code
+	(-debug)
+</p>
+
+<blockquote>
+
+<p>
+MAP4GL     -&nbsp;
+</p>
+
+</blockquote>
+
+<p>
+ Generate additional map file code (-map/-nomap)
+</p>
+
+<p>
+Eg:
+</p>
+
+<blockquote>
+
+<p>
+	4glpc -shared file.4gl -o file.4ge<br>
+	4glpc -static -echo file.4gl -o file.4ge<br>
+	4glpc -debug file.4gl -o file.debug<br>
+	4glpc -map -echo file.4gl<br>
+</p>
+
+</blockquote>
+
+<p>
+<a href="#Top of page - Compiling a program">Back to top</a>
+</p>
+
+<h3>
+<a name="Compiling forms">
+Compiling forms</a>
+</h3>
+
+<blockquote>
+
+<p>
+	fcompile file.per
+</p>
+
+</blockquote>
+
+<p>
+You can also use 4glpc to compile forms.
+</p>
+
+<p>
+FIXME Note: wordwrap does not work properly yet.
+</p>
+
+<p>fcompile compiles form compatible with both GUI and CUI run-time modes.&nbsp;
+</p>
+
+<p><a href="#Top of page - Compiling a program">Back to top</a>
+</p>
+
+<h3>
+<a name="Compiling help files">
+Compiling help files</a>
+</h3>
+
+<p>
+Compile these using mkmess (exclude the extension)
+</p>
+
+<blockquote>
+<p>
+$ mkmess helpfilename (without .msg extension)
+</p>
+
+</blockquote>
+<p>
+This will generate the compiled help message file with a .hlp extension. Please
+not that many Informix-4gl programs assume that compiled help file will have
+extension &quot;.iem&quot;. You can just rename created .hlp file to .iem if
+needed.
+</p>
+
+<p>For format and syntax of help files, please see example file in test/
+directory. It is fully compatible with Informix standard definition.
+</p>
+
+<p><a href="#Top of page - Compiling a program">Back to top</a>
+</p>
+
+<h3>
+<a name="Compiling menu files">Compiling menu files</a>
+</h3>
+
+<p>FIXME</p>
+<p><a href="#Top of page - Compiling a program">Back to top</a></p>
+<h3><a name="Debugging and reporting bugs">Debugging and reporting bugs</a></h3>
+<p><i><u>Core dumps:</u></i></p>
+<p>To fins the reason for core dumps, create debug files, first make sure your
+Aubit compiler itself (4glc) is compiled with this option (set the CFLAGS in lib/makefile to have a -g, and compile
+Aubit compiler with 4glpc -g .... but this should be default) then run through gdb, when it dumps core do a 'bt' in
+gdb..</p>
+<p>&nbsp;&nbsp;&nbsp; "4glpc -g hello.4gl"<br>
+&nbsp;&nbsp;&nbsp; &quot;gdb 4glc core"</p>
+<p>Now type 'bt' inside gdb - that will give you a backtrace (with any luck).</p>
+<p>Failing that -</p>
+<p>&nbsp;&nbsp;&nbsp; $ export DEBUG=ALL<br>
+&nbsp;&nbsp;&nbsp; 4glpc ....</p>
+<p>then examine the debug.out file - find the last thing in it and set a breakpoint...</p>
+<p>&nbsp;&nbsp;&nbsp; 4glc hello.4gl</p>
+<p>This should generate hello.c and a debug.out file. Have a look see what gets generated in your case.</p>
+<p>With a simple hello.4gl :</p>
+<blockquote>
+  <p>main<br>
+  &nbsp;&nbsp;&nbsp; display "Hello"<br>
+  end main</p>
+</blockquote>
+<p>Generates :</p>
+<blockquote>
+  <p>#define fgldate long<br>
+  #include "4glhdr.h"<br>
+  #include "hello.h"<br>
+  static char _compiler_ser[]="XXXXXXXXXX";<br>
+  static char _module_name[]="hello.4gl";<br>
+   main(int argc,char *argv[]) {<br>
+   fgl_start(argc,argv);<br>
+   push_char("Hello");<br>
+   push_int(-1);push_int(-1);<br>
+   display_at(1,0x0);<br>
+   if (sqlca.sqlcode !=0 || status !=0 || 0) {<br>
+      if (sqlca.sqlcode&lt;0&amp;&amp;status==sqlca.sqlcode) chk_err(2,_module_name);<br>
+      if (status&lt;0) chk_err(2,_module_name);<br>
+   }<br>
+  fgl_end();<br>
+  }</p>
+</blockquote>
+<p>&nbsp;</p>
+<p>FIXME: explain how to set breakpoint in gdb</p>
+<p><i><u>Warning about core dumps coming from ODBC manager:</u></i></p>
+<p>Do you have SQLUID and SQLPWD ser? If not so - I've had Openlink bomb out if the SQLUID and SQLPWD are not set.</p>
+<p>Nothing that 4glc can pick up on easily as its calling ODBC functions which are
+core-dumping... (At least on my machine).</p>
+<p>if I unset SQLUID on mine :</p>
+<p>&nbsp;&nbsp;&nbsp; 4glpc report2.4gl -o report2<br>
+&nbsp;&nbsp;&nbsp; Error compiling report2.4gl<br>
+&nbsp;&nbsp;&nbsp; (nothing in the .err file)</p>
+<p>last line of debug.out :</p>
+<p>&nbsp;&nbsp;&nbsp; sql.c 1251 status=0 sqlca.sqlcode=0<br>
+&nbsp;&nbsp;&nbsp; Connecting to stores7 as None/None</p>
+<p>Then nothing!</p>
+<p><i><u>All other errors:</u></i></p>
+<p>FIXME: describe .err files in case of 4glc compiler error, and in case of C
+compiler errors</p>
+<p><i><u>How to report bugs:</u></i></p>
+<p>FIXME: syntax errors when compiling (regression-test, regression-fails) , other bugs
+(use email sent to list)</p>
+<p><a href="#Top of page - Compiling a program">Back to top</a></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
+

@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>REPORT</TITLE>
+</HEAD><BODY>
+<B>REPORT
+<P></P>
+</B>The REPORT statement declares the identifier and defines the format of a 4GL
+report.
+<P></P>
+<IMG SRC="4GLREF00000182.gif" ALT="4GLREF00000182.gif" BORDER="0" USEMAP="#map111" WIDTH="453" HEIGHT="159"><MAP NAME="map111"><AREA COORDS="277,27,335,66" HREF="4GLREFFORMAT_Section.htm"><AREA COORDS="237,99,306,135" HREF="4GLREFORDER_BY_Section.htm"><AREA COORDS="126,102,183,135" HREF="4GLREFOUTPUT_Section.htm"><AREA COORDS="26,101,79,136" HREF="4GLREFDEFINE_Section.htm"></MAP>
+<P></P>
+<B>argument </B> is the name of a formal argument (also called a parameter) corresponding to a
+value that the calling routine passes to the report. 
+<P></P>
+<B>report </B> is the name that you assign to the report. 
+<P></P>
+This statement defines a REPORT program block, just as the FUNCTION statement
+defines a function. You can execute a report from the MAIN program block or
+from a function, but the REPORT statement cannot appear within the MAIN statement,
+nor in a FUNCTION definition, nor in another REPORT statement. To create a 4GL
+report, you must do the following:
+<P></P>
+<OL><LI> Use the REPORT statement to describe how to format data in the report.
+<P></P>
+<LI> Write a report driver that passes data to the report. 
+<P></P>
+</OL>The report driver typically uses a loop (such as WHILE or FOREACH) in
+conjunction with the following 4GL statements to process the report:
+<P></P>
+START REPORT (to invoke the REPORT routine)
+<P></P>
+OUTPUT TO REPORT (to send data to the REPORT routine for formatting)
+<P></P>
+FINISH REPORT (to complete execution of the REPORT routine).
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm">DEFINE</A> 
+<P></P>
+<A HREF="4GLREFFINISH_REPORT.htm">FINISH REPORT</A> 
+<P></P>
+<A HREF="4GLREFOUTPUT_TO_REPORT.htm">OUTPUT TO REPORT</A> 
+<P></P>
+<A HREF="4GLREFSTART_REPORT.htm">START REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,311 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Aubit 4gl To-Do</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6"><a name="Top of page - A4GL GNU development project information">A4GL GNU development project information</a></font></p>
+<hr>
+<p align="left">In this chapter:</p>
+<ul>
+  <li>
+    <p align="left"><a href="#Aubit 4GL compiler GNU project">Aubit 4GL compiler GNU project</a></li>
+  <li>
+    <p align="left"><a href="#Links to other resources">Links to other resources</a></li>
+  <li>
+    <p align="left"><a href="#Version history and fixes">Version history and fixes</a></li>
+  <li>
+    <p align="left"><a href="#Limitations and known issues">Limitations and known issues</a></li>
+  <li>
+    <p align="left"><a href="#To-Do and future versions">To-Do and future versions</a></li>
+</ul>
+<hr>
+<h3 align="left"><a name="Aubit 4GL compiler GNU project">Aubit 4GL compiler GNU
+project</a></h3>
+<p align="left"><font color="#FF0000">Please also see updated project
+information available on <a href="http://www.falout.com/aubit" target="_blank">http://www.falout.com/aubit</a></font></p>
+<p align="left"><i><u>What is it?</u></i></p>
+<p align="left">Long time ago, Informix made a Fourth Generation Language (4GL),
+called Informix 4GL. It was intended to be nice language for making business
+process, database oriented programming easy and productive. Some people agreed
+with this, and started making applications in that language. And over the time,
+they made a lot of 4gl applications.&nbsp;</p>
+<p align="left">In the process, a lot of programmers find it easy to use,
+stabile, fast, easy to manage, and most of all, productive. So the number of
+people with I-4GL skills continued growing. But, Informix was slow to respond to
+increased demand for feature enhancements, most notably, GUI, or reacted in a
+way that was not well accepted by users, like making a completely new product
+with limited 4GL compatibility, called New Era.</p>
+<p align="left">Several companies seized the opportunity, and started making
+compatible compilers, and extending functionality. And Informix 4GL was no
+longer in hands of one company, competition increased, feature where added at
+increasing pace, and this is where we are now.&nbsp;</p>
+<p align="left">Aubit 4GL project is a project to make free, GPL, OpenSource,
+Informix-4GL compatible compiler, and continue to extend functionality needed to
+write most efficient, stabile and productive applications in business related,
+database oriented applications.</p>
+<p align="left"><u><i>Why is it?</i></u></p>
+<p align="left">It is, because despite increasing number of commercial I-4GL
+compiler makers, Informix professionals was increasingly frustrated by lack of
+mainly professional and timely support from most of commercial vendors.&nbsp;</p>
+<p align="left">It is, because we discovered advantages of OpenSource model
+development using other OpenSource software needed to make things work in our
+daily work, and the disadvantages in getting our job done, when having to
+literally beg on our knees for anything that we need from commercial companies.&nbsp;</p>
+<p align="left">It is, because Internet enabled us to share not only knowledge,
+but provide a way for us to work together over it, using version control tools
+like CVS, change control tools like Keystone, and discussion tools like Phorum.</p>
+<p align="left">It it, because we believe in it, since trough all this years, we
+have yet to discover more productive ways to make database oriented business
+applications.</p>
+<p align="left">Please visit Aubit 4gl home page at <a href="http://www.falout.com/aubit" target="_blank">www.falout.com/aubit</a>
+for more information.</p>
+<p align="left"><a href="#Top of page - A4GL GNU development project information">Back
+to top</a></p>
+<hr>
+<h3 align="left"><a name="Links to other resources">Links to other resources</a>:</h3>
+<p align="left">Please visit Aubit 4gl home page at <a href="http://www.falout.com/aubit" target="_blank">www.falout.com/aubit</a>
+for more information.</p>
+<p align="left"><a href="#Top of page - A4GL GNU development project information">Back
+to top</a></p>
+<hr>
+
+<h3 align="left"><font size="6"><a name="Version history and fixes">Version history and fixes</a></font></h3>
+<p><font color="#FF0000">Please use CVS and Keystone system on <a href="http://www.falout.com">www.falout.com</a>
+for changes after 01/02/2000</font>
+</p>
+
+<p>There is also useful information in file &quot;changelog.txt&quot;
+</p>
+
+<p>&nbsp;
+</p>
+
+<p>Thu Jan 28 23:31:33 GMT 1999<br>
+Version U1.69<br>
+New Change Control System
+</p>
+
+<p>Thu Jan 28 23:33:39 GMT 1999<br>
+Version U1.70<br>
+sql.c<br>
+Nothing significant changed - test of changes system<br>
+Small changes in array.c<br>
+Changed header file includes in all library modules<br>
+Added static and shared functions
+</p>
+
+<p>Sat Jul 10 16:03:25 GMT 1999<br>
+Version U1.73<br>
+Lots - removed lex generated parser and replaced with straight C<br>
+added local functions<br>
+added calls to shared libraries<br>
+removed some .h file requirements for the generated files
+</p>
+
+<p>Thu Sep 16 12:13:07 GMT 1999<br>
+Version U1.74
+</p>
+
+<p>Thu Sep 16 12:56:01 GMT 1999<br>
+Version U1.75
+</p>
+
+<p>Old entryes:</p>
+<p>Comparisons should now work properly<br>
+Globals should now work properly<br>
+Better menu window handling<br>
+Better support for windows with no colors<br>
+</p>
+
+<p><a href="#Top of page - A4GL GNU development project information">Back to top</a>
+</p>
+
+<hr>
+
+<p align="center"><font size="6"><a name="Limitations and known issues">Limitations and known issues</a></font></p>
+<p><font color="#FF0000">Please use Keystone system on <a href="http://www.falout.com">www.falout.com</a>
+for bugs and issues changes after 01/02/2000</font>
+</p>
+<p>The application compiler generates ANSI-C code which you will need a
+C-compiler in order to compile. The libraries are currently only generated/verified
+to work for GNU C for Windows (GNU C-Win32 which is available free from <a href="http://www.cygnus.com">Cygnus
+Software</a>) and GNU C for Linux.</p>
+<h3>Not implemented
+</h3>
+
+<p>
+Input array is currently considered BETA code. It works, there is an option 'NO NEW LINES', but the
+color attributes are
+not working yet.
+</p>
+
+<p>
+eg.
+</p>
+
+<p>
+input array aa from srec1.* attribute(NO NEW LINES,CYAN)<br>
+NO NEW LINES should work, CYAN will not...
+</p>
+
+<p>
+ attributes are not used from the input array statement.
+</p>
+
+<p>
+Null's as passed parameters in SQL  (Keyword is OK but not variables)
+</p>
+
+<p>
+Interrupt key may not work properly
+</p>
+
+<p>
+Some memory leaks
+</p>
+
+<p>
+some EXIT .... are not fully implemented
+</p>
+
+<p>
+OpenLink ODBC has no SQLExtendedFetch which is required for Scroll Cursors.
+</p>
+
+<p>
+wordwrap does not work properly
+</p>
+
+<p>
+not all .h files in the include directory are used/required&nbsp;
+</p>
+
+<p>
+DBDATE works only in dmy mode at the moment.
+</p>
+
+<p>
+problem with include= in form fixed (still no include=null)
+</p>
+
+<p>
+ quite a few errors with datetime/interval datatypes - these are still experimental. '+ 2 units months' is not currently supported.
+(It will be - its just not yet)
+</p>
+
+<p>
+I don't think insert cursors are coded either - so PUT won't work yet either.
+</p>
+
+<p>
+LET variable = -something - known problem - no fix yet.	workaround : LET variable = 0 - something
+</p>
+
+<p>
+ if pa_prodinfo[idx].info_ind not matches'[1234]' - needs a space between matches and '[..]'
+</p>
+
+<p>
+<a href="#Top of page - A4GL GNU development project information">Back to top</a>
+</p>
+
+<hr>
+
+<p align="center"><font size="6"><a name="To-Do and future versions">To-Do and future versions</a></font></p>
+<p><font color="#FF0000">Please use Keystone change control system for current
+to-do, and Phorum discussion group dedicated to Aubit 4GL at <a href="http://www.falout.com">www.falout.com</a>
+for this information after 01/02/2000</font>
+</p>
+
+<p><i><u>GUI</u></i>
+</p>
+
+<ul>
+  <li>Java GUI</li>
+  <li>Much more access to native GTK functions</li>
+</ul>
+
+<p><u><i>menus</i></u>
+</p>
+
+<p><u><i>keys</i></u>
+</p>
+
+<p><u><i>forms</i></u>
+</p>
+
+<ul>
+  <li>put cursor in first field properly</li>
+  <li>
+wordwrap</li>
+  <li>
+multi line fields</li>
+</ul>
+
+<p><i><u>
+reports</u></i>
+</p>
+
+<ul>
+  <li>
+max/min on char fields</li>
+  <li>
+print file</li>
+</ul>
+
+<p><i><u>SQL</u></i>
+</p>
+
+<ul>
+  <li>
+Outer joins ?</li>
+  <li>
+binding of dates</li>
+</ul>
+
+<p><u><i>
+general</i></u>
+</p>
+
+<ul>
+  <li>
+check form line, menuline etc etc</li>
+  <li>
+key codes (next page, previous page etc)</li>
+  <li>
+abort key</li>
+  <li>
+whenever ....</li>
+  <li>
+built in variables ?</li>
+  <li>
+templates</li>
+  <li>datetime/interval&nbsp;</li>
+  <li>
+blobs</li>
+  <li>#IFDEF in 4gl code</li>
+  <li>#INCLUDE file.4gl</li>
+  <li>Compatibility with 4Js/D4GL</li>
+  <li>Use GNU <a href="http://sources.redhat.com/autobook" target="_blank">AutoTools</a>
+    (AutoConf, AutoMake, LibTool - <a href="http://sources.redhat.com/projects.html" target="_blank">Download</a>)</li>
+  <li>build <a href="http://www.redhat.com/support/books/max-rpm-html/index.html" target="_blank">RPM</a>
+    source and binary packages</li>
+</ul>
+
+<p>
+<a href="#Top of page - A4GL GNU development project information">Back to top</a>
+</p>
+
+<hr>
+
+</body>
+
+</html>
+

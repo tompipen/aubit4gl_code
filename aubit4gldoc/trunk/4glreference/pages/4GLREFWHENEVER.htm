@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>WHENEVER</TITLE>
+</HEAD><BODY>
+<B>WHENEVER
+<P></P>
+</B>The WHENEVER statement traps SQL and 4GL errors, warnings, and end-of-data
+conditions that may occur during program execution.  
+<P></P>
+<IMG SRC="4GLREF00000191.gif" ALT="4GLREF00000191.gif" BORDER="0" WIDTH="576" HEIGHT="139">
+<P></P>
+<B>function</B>  is a function name (without parentheses or argument list) to be invoked if the
+specified exceptional condition occurs.
+<P></P>
+<B>label </B> is a statement label (in the same program block) to which 4GL transfers
+program control when the specified exceptional condition occurs. (Statement labels
+must be declared with the LABEL statement.)
+<P></P>
+This statement can appear only within a MAIN, REPORT, or FUNCTION program
+block. It can trap errors, warnings, and the NOT FOUND condition at run time. 
+<P></P>
+<B>The WHENEVER statement must include two items of information: 
+<P></P>
+</B>Some type of exceptional condition 
+<P></P>
+An action to take if the specified exceptional condition is detected
+<P></P>
+These specifications correspond respectively to the left-hand (conditions) and
+right-hand (actions) portions of the preceding syntax diagram. 
+<P></P>
+Using WHENEVER is equivalent to including code after every SQL statement, and
+(optionally) after certain other 4GL statements to take the specified action if
+the exceptional condition is detected. Without WHENEVER, program execution
+immediately stops when a run-time error occurs, unless the database is
+ANSI-compliant. 
+<P></P>
+If you use WHENEVER ERROR with any option but STOP or CONTINUE, 4GL tests for
+errors by polling the global variable status.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCALL.htm"></A></B><A HREF="4GLREFCALL.htm">CALL</A> 
+<P></P>
+<A HREF="4GLREFDEFER.htm">DEFER</A> 
+<P></P>
+<A HREF="4GLREFFOREACH.htm">FOREACH</A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFGOTO.htm">GOTO</A> 
+<P></P>
+<A HREF="4GLREFIF.htm">IF</A> 
+<P></P>
+<A HREF="4GLREFLABEL00000450.htm">LABEL</A> 
+<P></P>
+<A HREF="4GLREFVALIDATE.htm">VALIDATE</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>DATE</TITLE>
+</HEAD><BODY>
+<B>DATE
+<P></P>
+</B>The DATE data type stores calendar dates. A calendar date is stored internally
+as an integer that evaluates to the number of days since December 31, 1899. 
+<P></P>
+The default display format of a DATE value is:
+<P></P>
+<B>mm/dd/yyyy
+<P></P>
+</B>for mm a month (1 to 12), dd a day of the month (1 to 31), and yyyy a year
+(0001 to 9999). The DBDATE environment variable can change the separator symbol
+and the default order of day, month, and year time units. The FORMAT attribute
+specifies DATE display formats in forms. For month, 4GL accepts the value 1 or 01
+for January, 2 or 02 for February, and so on. For days, it accepts a value 1
+or 01 for the first day of the month, 2 or 02 for the second, and so on, up to
+the maximum number of days in a given month.
+<P></P>
+If the user of your application enters from the keyboard a two-digit value for
+the year, as in 89 or 93, then 4GL assumes that the year is in the range
+1900-1999, and assigns 1 and 9 as the first two digits (19) of the year. (Users must
+pad the year value with one or two leading zeros to specify years in the First
+Century; for example, 093 or 0093 for the year 93 A.D.)
+<P></P>
+Because DATE values are stored as integers in the range 693,594 to 2,958,464,
+you can use them in arithmetic expressions, such as the difference between two
+DATE values. The result, a positive or negative INT value, is the number of
+days that have elapsed between the two dates. The UNITS DAY operator can convert
+this to an INTERVAL. (The use of DATE operands in division, multiplication, or
+exponentiation cannot produce meaningful results.)
+<P></P>
+</BODY>
+</HTML>

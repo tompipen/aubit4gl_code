@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>INFORMIX-4GL Reports Overview</TITLE>
+</HEAD><BODY>
+<B>INFORMIX-4GL Reports Overview
+<P></P>
+</B>Many relational database management applications are designed to produce a
+report that contains information from the database. A 4GL report can arrange and
+format the data according to your instructions, and display the output on the
+screen, or send it to a printer, or store it as a file for future use. 
+<P></P>
+<B>To write a report, a 4GL program must include two distinct components:
+<P></P>
+</B>A report driver specifying what data the report includes
+<P></P>
+A REPORT routine (also called the report definition) that formats the data
+<P></P>
+The report driver (also called the calling routine) retrieves the specified
+rows from a database, stores their values in program variables, and sends these,
+one input record at a time, to the REPORT routine. After the last input record
+has been received and formatted, 4GL calculates any aggregate values (such as
+frequency counts, sums, or averages) that are based on all the data, and then
+sends the entire report to some output device.
+<P></P>
+<A NAME="804c3110"></A><B>The Report Driver 
+<P></P>
+</B>The report driver invokes the report, retrieves data, and sends the data (as
+input records) to be formatted by the REPORT routine. The report driver can be
+part of the MAIN program block or can be a <A HREF="4GLREF4GL_function.htm">4GL function</A>. 
+<P></P>
+<B>It requires three special-purpose statements to interface with the REPORT
+routine:
+<P></P>
+</B>START REPORT
+<P></P>
+OUTPUT TO REPORT
+<P></P>
+FINISH REPORT.
+<P></P>
+These elements of the report driver can appear in different program blocks,
+but they are typically embedded within a FOR, FOREACH, or WHILE loop: 
+<P></P>
+<IMG SRC="4GLREF00000000.gif" ALT="4GLREF00000000.gif" BORDER="0" USEMAP="#map0" WIDTH="457" HEIGHT="215"><MAP NAME="map0"><AREA COORDS="9,19,109,44" HREF="4GLREFSTART_REPORT.htm"><AREA COORDS="22,130,121,155" HREF="4GLREFWHILE.htm"><AREA COORDS="170,178,282,202" HREF="4GLREFOUTPUT_TO_REPORT.htm"><AREA COORDS="167,129,285,155" HREF="4GLREFOUTPUT_TO_REPORT.htm"><AREA COORDS="167,79,284,105" HREF="4GLREFOUTPUT_TO_REPORT.htm"><AREA COORDS="169,18,283,44" HREF="4GLREFOUTPUT_TO_REPORT.htm"><AREA COORDS="20,178,131,202" HREF="4GLREFFOREACH.htm"><AREA COORDS="21,79,109,104" HREF="4GLREFFOR.htm"><AREA COORDS="335,17,429,45" HREF="4GLREFFINISH_REPORT.htm"></MAP>
+<P></P>
+<B>The typical report driver performs the following actions:
+<P></P>
+</B>Declares a cursor (associated with a SELECT statement of SQL) to retrieve the
+necessary rows from a database, and to sort them in a useful order.
+<P></P>
+Uses START REPORT to initialize the report.
+<P></P>
+Begins a FOR, FOREACH, or WHILE loop to control the repeated fetching of rows,
+and the creation of input records for storing the retrieved data.
+<P></P>
+Uses OUTPUT TO REPORT to pass input records to the REPORT routine.
+<P></P>
+Terminates the loop (with the END FOR, END FOREACH, or END WHILE keywords)
+after all the desired values have been passed to the report.
+<P></P>
+Uses FINISH REPORT to execute any statements in ON LAST ROW control block and
+calculate any aggregate values for the entire report. 
+<P></P>
+<A NAME="a6b7b6cf"></A><B>Structure of the REPORT Definition
+<P></P>
+</B>The REPORT routine specifies how to format input records. Like the MAIN or a
+FUNCTION routine, it is a program block. It can contain control blocks with
+statements for producing headers, footers, and calculating aggregate values.
+<P></P>
+From the <A HREF="4GLREFINFORMIX4GL_Reports_Overview.htm#804c3110">report driver</A>, the REPORT routine receives data in sets called input records. These can
+include program records, but other data types are also supported. Each input
+record is formatted and printed, as specified by control blocks and statements
+within the REPORT routine. Most 4GL statements and functions can be included within
+a REPORT routine, and certain specialized statements and operators for
+formatting output can appear only in a REPORT routine.  
+<P></P>
+<IMG SRC="4GLREF00000001.gif" ALT="4GLREF00000001.gif" BORDER="0" USEMAP="#map1" WIDTH="693" HEIGHT="169"><MAP NAME="map1"><AREA COORDS="264,58,340,106" HREF="4GLREFDEFINE_Section.htm"><AREA COORDS="428,119,500,163" HREF="4GLREFOUTPUT_Section.htm"><AREA COORDS="554,118,639,162" HREF="4GLREFORDER_BY_Section.htm"><AREA COORDS="492,8,565,54" HREF="4GLREFFORMAT_Section.htm"></MAP>
+<P></P>
+<B>argument</B>  is the name of a formal argument that the driver passes to the report. The
+list of identifiers is called the argument list. (You can include arguments of the
+RECORD data type in this list, but you cannot append the .* symbols here to
+the name of the record.)
+<P></P>
+<B>report</B>  is the 4GL identifier that you declare here for the report.
+<P></P>
+The report name and the argument list (enclosed in parentheses) are called the
+report prototype. In its syntax, this resembles the prototype of a function.
+<P></P>
+<B>To format input records, the typical REPORT routine performs these actions:
+<P></P>
+</B>Specifies a REPORT prototype to declare the report name and the names of the
+formal arguments of the input records that the report will format.
+<P></P>
+Uses a <A HREF="4GLREFDEFINE_Section.htm">DEFINE section</A> to declare formal arguments and local variables.
+<P></P>
+Uses control blocks within the <A HREF="4GLREFFORMAT_Section.htm">FORMAT section</A> to produce headers, 
+<P></P>
+footers, and formatted output of the data in the input records.
+<P></P>
+Terminates processing the data with the END REPORT keywords.
+</BODY>
+</HTML>

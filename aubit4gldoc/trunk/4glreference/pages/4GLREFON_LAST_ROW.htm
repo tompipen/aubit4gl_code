@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>ON LAST ROW</TITLE>
+</HEAD><BODY>
+<B>ON LAST ROW
+<P></P>
+</B>The ON LAST ROW control block specifies the action that INFORMIX-4GL is to
+take after it processes the last input record that was passed to the REPORT
+routine and encounters the FINISH REPORT statement.  
+<P></P>
+<IMG SRC="4GLREF00000018.gif" ALT="4GLREF00000018.gif" BORDER="0" WIDTH="451" HEIGHT="44">
+<P></P>
+<B>statement</B> is a Report execution statement or other 4GL statement. 
+<P></P>
+The statements in the ON LAST ROW control block are executed after the
+statements in the ON EVERY ROW and AFTER GROUP OF control blocks. 
+<P></P>
+When INFORMIX-4GL processes the statements in an ON LAST ROW control block,
+the variables that the report is processing still have the values from the final
+record that the report processed. The ON LAST ROW control block can use <A HREF="4GLREFaggregate_function.htm">aggregate function</A>s to display report totals.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFAFTER_GROUP_OF.htm"></A></B><A HREF="4GLREFAFTER_GROUP_OF.htm">AFTER GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFBEFORE_GROUP_OF.htm">BEFORE GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFEVERY_ROW.htm">EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFFIRST_PAGE_HEADER.htm">FIRST PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFON_EVERY_ROW.htm">ON EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFPAGE_HEADER00000343.htm">PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFPAGE_TRAILER00000344.htm">PAGE TRAILER</A> 
+<P></P>
+<A HREF="4GLREFAggregate_Report_Functions.htm">Aggregate Report Functions</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>4GL Help system</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6">4GL Help system</font></p>
+<hr>
+<ul>
+  <li>
+    <p align="left">Help message source file</li>
+  <li>
+    <p align="left">Compiling help message file</li>
+  <li>
+    <p align="left">Using help in programs</li>
+</ul>
+<hr>
+<h3>Help message source file
+</h3>
+
+<p>Only limited help support currently exists.&nbsp;
+</p>
+
+<p>
+Create your help files in the normal way with a .msg extension
+</p>
+
+<blockquote>
+<p>
+.1<br>
+This is help message 1<br>
+.2&nbsp;<br>
+This is help message 2
+</p>
+
+</blockquote>
+<hr>
+<h3>Compiling help message file
+</h3>
+
+<p>Please see chapter &quot;Using compilers&quot;</p>
+
+<hr>
+<h3>Using help in programs
+</h3>
+
+<p>
+To use the help system:
+</p>
+
+<blockquote>
+<p>
+call show_help(number)
+</p>
+
+</blockquote>
+<p>or press the help key (default= ctrl-w) in any implemented command&nbsp;(Currently on menus have help support)
+</p>
+
+<p>
+The environment variable "HELPTEXT" sets the title for the help window
+</p>
+
+<hr>
+
+</body>
+
+</html>
+

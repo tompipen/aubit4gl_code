@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>START REPORT</TITLE>
+</HEAD><BODY>
+<B>START REPORT
+<P></P>
+</B>The START REPORT statement begins processing a 4GL report.
+<P></P>
+<IMG SRC="4GLREF00000187.gif" ALT="4GLREF00000187.gif" BORDER="0" WIDTH="460" HEIGHT="118">
+<P></P>
+<B>command</B> is a quoted string, containing a command to receive report output. 
+<P></P>
+<B>filename</B> is a quoted string, containing the name of the file to receive the report
+output. The filename can include a pathname.
+<P></P>
+<B>report  </B>is the name of a report, as declared in a REPORT statement.
+<P></P>
+<B><UL><LI>ariable </B> is a character variable, containing a command to receive output. 
+<P></P>
+</UL>Use the START REPORT statement in a report driver to begin processing a
+report. This statement does the following:
+<P></P>
+Identifies a REPORT routine to format the input records.
+<P></P>
+Specifies where to send the formatted output from the REPORT routine.
+<P></P>
+Initializes any page headers in the FORMAT section of the report.
+<P></P>
+The START REPORT statement typically occurs just before a FOR, FOREACH, or
+WHILE loop in which you use the OUTPUT TO REPORT statement to send input records
+to the report. After the loop has terminated, you can execute the FINISH REPORT
+statement to complete the report.
+<P></P>
+Do not use the START REPORT statement to reference a report that is already
+running; if you do, any output will be unpredictable but probably useless.
+<P></P>
+If the START REPORT statement contains no TO clause to specify a destination
+for output from the report, the REPORT TO clause of the REPORT definition
+specifies the destination. Output goes to the Report window, if neither START REPORT
+nor the REPORT definition specifies a destination.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFFINISH_REPORT.htm"></A></B><A HREF="4GLREFFINISH_REPORT.htm">FINISH REPORT</A> 
+<P></P>
+<A HREF="4GLREFOUTPUT_TO_REPORT.htm">OUTPUT TO REPORT</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>INSTRUCTIONS Section</TITLE>
+</HEAD><BODY>
+<B>INSTRUCTIONS Section
+<P></P>
+</B>The INSTRUCTIONS section is the optional final section of a form specification
+file. You can use this section to declare non-default screen records and
+screen arrays. The INSTRUCTIONS section appears after the last field description (or
+after the optional END keyword) of the <A HREF="4GLREFATTRIBUTES_Section.htm">ATTRIBUTES section</A>. 
+<P></P>
+<IMG SRC="4GLREF00000055.gif" ALT="4GLREF00000055.gif" BORDER="0" USEMAP="#map29" WIDTH="536" HEIGHT="118"><MAP NAME="map29"><AREA COORDS="357,67,407,93" HREF="4GLREFINSTRUCTIONS_Section.htm#133b675c"></MAP>
+<P></P>
+<B>array</B>  is the 4GL identifier for the screen array. (It is also the name of the screen
+record that comprises each line of the array.)
+<P></P>
+<B>record</B> is the 4GL identifier that you declare for the screen record.  
+<P></P>
+<B>size</B>  is a literal integer, enclosed in square ( [ ] ) brackets, to specify the
+number of screen records in the screen array.
+<P></P>
+<A NAME="2c9516bf"></A><B>Screen Records
+<P></P>
+</B>A screen record is a group of fields that screen-interaction statements of the
+INFORMIX-4GL program can reference as a single object. By establishing a
+correspondence between a set of screen fields (the screen record) and a set of 4GL
+variables (typically a program record), you can pass values between the program
+and the fields of the screen record. In many applications, it is convenient to
+define a screen record that corresponds to a row of a database table.
+<P></P>
+<B>Default Screen Records
+<P></P>
+</B>INFORMIX-4GL recognizes default screen records that consist of all the screen
+fields linked to the same database table within a given form. The Form Compiler
+automatically creates a default record for each table that is used to
+reference a field in the ATTRIBUTES Section. The components of the default record
+correspond to the set of display fields that are linked to columns in that table.
+<P></P>
+The name of the default screen record is the table name (or the alias, if you
+declared an <A HREF="4GLREFalias.htm">alias</A> for that table in the <A HREF="4GLREFTABLES_Section.htm">TABLES section</A>). For example, all the fields linked to columns of the customer table
+constitute a default screen record whose name is customer. If a form includes one or
+more FORMONLY fields, those fields comprise a default screen record called
+formonly.
+<P></P>
+<B>Non-Default Screen Records
+<P></P>
+</B>The INSTRUCTIONS section of a form specification file can declare non-default
+screen records. You use the SCREEN RECORD keywords of the INSTRUCTIONS section
+to declare a name for the screen record, and to specify a list of fields that
+are members of the screen record. A record declaration has this syntax
+<P></P>
+<IMG SRC="4GLREF00000056.gif" ALT="4GLREF00000056.gif" BORDER="0" WIDTH="580" HEIGHT="162">
+<P></P>
+<B>first </B>is a field name that you declared in the ATTRIBUTES section.
+<P></P>
+<B>last </B>is a field name that you declared later than first.
+<P></P>
+<B>record </B>is the 4GL identifier that you declare for the screen record. 
+<P></P>
+<B>table reference</B> is a table name, alias, or synonym (or FORMONLY keyword). 
+<P></P>
+The field name is the SQL identifier of a database column linked to the field,
+unless you specify FORMONLY as the table reference). 
+<P></P>
+The record name of a non-default screen record can have up to 50 characters,
+and must comply with the rules for 4GL identifiers.
+<P></P>
+<A NAME="aa546c21"></A><B>Screen Arrays 
+<P></P>
+</B>A screen array is usually a repetitive array of fields in the screen layout,
+each containing identical groups of screen fields. Each &quot;row&quot; of a screen array
+is a screen record. Each &quot;column&quot; of a screen array consists of fields with the
+same <A HREF="4GLREFfield_tag.htm">field tag</A> in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A> of the form specification file. 
+<P></P>
+You must declare screen arrays in the INSTRUCTIONS section, using syntax like
+the syntax described for a screen record in the previous section, but with an
+additional parameter to specify the number of screen records in the array:
+<P></P>
+<IMG SRC="4GLREF00000057.gif" ALT="4GLREF00000057.gif" BORDER="0" USEMAP="#map30" WIDTH="575" HEIGHT="80"><MAP NAME="map30"><AREA COORDS="332,48,381,76" HREF="4GLREFINSTRUCTIONS_Section.htm#133b675c"></MAP>
+<P></P>
+<B>array</B> is the 4GL identifier for the screen array. (It is also the identifier of the
+screen record that comprises each line of the array.)
+<P></P>
+<B>size</B> is a literal integer, enclosed in square ( [ ] ) brackets, to specify how many
+screen records are in the screen array. 
+<P></P>
+The size should be the number of lines in the logical form where the set of
+fields that comprise each screen record is repeated within the screen array.
+<P></P>
+</BODY>
+</HTML>

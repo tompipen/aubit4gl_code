@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>WORDWRAP Attribute</TITLE>
+</HEAD><BODY>
+<B>WORDWRAP
+<P></P>
+</B>In a multiple-segment field, the WORDWRAP attribute enables a multiple-line
+editor. This can wrap long character strings to the next line of a
+multiple-segment field for data entry, data-editing, and data-display. 
+<P></P>
+<IMG SRC="4GLREF00000054.gif" ALT="4GLREF00000054.gif" BORDER="0" USEMAP="#map28" WIDTH="459" HEIGHT="51"><MAP NAME="map28"><AREA COORDS="71,10,132,37" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>, where it appears in two or more field segments. 
+<P></P>
+If the same field tag is repeated in two or more locations in the screen
+layout, this attribute instructs INFORMIX-4GL to treat all the instances of that
+field tag as successive segments of a multiple-segment field. These can display
+data strings that are too long to fit on a single line of the screen form.
+<P></P>
+4GL for Windows replaces each set of multiple-segment fields with a single
+WORDWRAP field of a rectangular shape. The WORDWRAP field has the same width as
+the multiple-segment field in the form specification file, but can be more
+compact vertically, since the GUI does not require as much vertical space to display
+the same number of characters as a character-based form file. The COMPRESS
+keyword option is applied to this field automatically, and the delimiters are
+replaced with blank spaces.
+<P></P>
+If the lines of the multiple-segment field are not contiguous, or if the field
+has an irregular shape, as in the previous example, the WORDWRAP field that
+results is based on the maximum height and width of the multiple-segment field as
+a unit. The resulting WORDWRAP field can overlap or be overlapped by labels or
+individual form fields. To prevent such unpredictable effects, consolidate the
+segments of multiple-segment fields into rectangular shapes. 
+<P></P>
+When a variable is <A HREF="4GLREFbinding.htm">bound</A> to the WORDWRAP field during INPUT, only the number of characters allowed by
+the bound variable can be entered. If necessary, text in the field scrolls to
+allow the full number of characters to be entered. Data compression takes place
+before storage in the bound variable.
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>

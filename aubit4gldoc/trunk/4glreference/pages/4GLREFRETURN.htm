@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>RETURN</TITLE>
+</HEAD><BODY>
+<B>RETURN
+<P></P>
+</B>The RETURN statement transfers control of execution from a FUNCTION program
+block. It can also return values to the calling routine. (This statement can
+appear only within a FUNCTION program block.) 
+<P></P>
+<IMG SRC="4GLREF00000183.gif" ALT="4GLREF00000183.gif" BORDER="0" USEMAP="#map112" WIDTH="453" HEIGHT="80"><MAP NAME="map112"><AREA COORDS="158,49,247,76" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+The RETURN statement can occur only in the definition of a function. This
+statement tells 4GL to exit from the function, and to return program control to the
+calling routine. (The calling routine is the MAIN, FUNCTION, or REPORT program
+block that contains the statement that invoked the function.)
+<P></P>
+<B>You can use the RETURN statement in either of two ways:
+<P></P>
+</B>Without values, to control the flow of program execution.
+<P></P>
+With a list of one or more values, to control the flow of program execution,
+and to return values to the calling statement.
+<P></P>
+If 4GL does not encounter a RETURN statement, it exits from the function after
+encountering the END FUNCTION keywords.
+<P></P>
+When the function is invoked by the CALL statement, an error results if the
+values listed in the RETURN statement and the variables listed in the RETURNING
+clause of the CALL statement differ in number, or are not of compatible data
+types.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCALL.htm"></A></B><A HREF="4GLREFCALL.htm">CALL</A> 
+<P></P>
+<A HREF="4GLREFEXIT.htm">EXIT </A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

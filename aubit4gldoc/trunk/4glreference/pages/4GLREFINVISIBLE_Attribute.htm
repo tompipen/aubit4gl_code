@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>INVISIBLE Attribute</TITLE>
+</HEAD><BODY>
+<B>INVISIBLE
+<P></P>
+</B>The INVISIBLE attribute prevents user-entered data from being echoed on the
+screen during CONSTRUCT, INPUT, INPUT ARRAY, or PROMPT statement. 
+<P></P>
+<IMG SRC="4GLREF00000045.gif" ALT="4GLREF00000045.gif" BORDER="0" USEMAP="#map19" WIDTH="450" HEIGHT="40"><MAP NAME="map19"><AREA COORDS="65,7,127,36" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>. 
+<P></P>
+Characters that the user enters in a field with this attribute are not
+displayed during data entry, but the cursor moves through the field as the user types.
+<P></P>
+No other aspects of data entry are affected by the INVISIBLE attribute.
+<P></P>
+If you specify INVISIBLE and any other display attribute for a field, then 4GL
+ignores the INVISIBLE attribute.
+<P></P>
+The INVISIBLE attribute has no effect on editing BYTE or TEXT fields.
+<P></P>
+This attribute does not prevent a DISPLAY, DISPLAY ARRAY, DISPLAY FORM,
+MESSAGE, or OPEN WINDOW statement from displaying data in the field.
+<P></P>
+Specify the INVISIBLE attribute, rather than COLOR = BLACK, if you do not want
+the field to display what the user types during data entry. (The BLACK color
+attribute displays black characters on a color or monochrome terminal.)
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A> 
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>

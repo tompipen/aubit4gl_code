@@ -1,0 +1,27 @@
+<HTML>
+<HEAD>
+<TITLE>LINENO</TITLE>
+</HEAD><BODY>
+<B>LINENO
+<P></P>
+</B>The LINENO operator returns the number of the line within the page that is
+currently printing. (This operator can appear only in the FORMAT section of a
+REPORT program block.)
+<P></P>
+<IMG SRC="4GLREF00000093.gif" ALT="4GLREF00000093.gif" BORDER="0" WIDTH="454" HEIGHT="34">
+<P></P>
+This returns the value of the line number of the report line that is currently
+printing. 4GL computes the line number by calculating the number of lines from
+the top of the current page, including the TOP MARGIN. 
+<P></P>
+INFORMIX-4GL cannot evaluate the LINENO operator outside the FORMAT section of
+a REPORT program block. The value that LINENO returns must be assigned to a
+variable that is not local to the report, if you need to reference this value
+within some other program block of your 4GL application.
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFPAGENO.htm"></A></B><A HREF="4GLREFPAGENO.htm">PAGENO</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>Form Fields</TITLE>
+</HEAD><BODY>
+</UL><B>Form Fields
+<P></P>
+</B>In a 4GL form, a field (sometimes called a screen field or form field) is an
+area where the user of the application can view, enter, or edit data, depending
+on its description in the form specification file and statements in the form
+driver. 
+<P></P>
+<B>Form Specification File 
+<P></P>
+</B>A 4GL form specification file is an <A HREF="4GLREFASCII00000025.htm">ASCII</A> file (with file extension .PER) that you can create with a text editor or
+with the Form Compiler utility. This file consists of three required sections
+(DATABASE, SCREEN, and ATTRIBUTES) and it can also include two optional sections
+(TABLES and INSTRUCTIONS). If present, these five sections must appear in the
+following order: 
+<P></P>
+<A HREF="4GLREFDATABASE_Section.htm"><B>DATABASE Section</B></A><B></B>:Each form specification file must begin with a DATABASE section identifying
+the database (if any) on which the form is based. This can be any database that
+your database engine can access, including a remote database. 
+<P></P>
+<A HREF="4GLREFSCREEN_Section.htm"><B>SCREEN Section</B></A><B></B>:The SCREEN section must appear next, showing the dimensions and the exact
+layout of the logical elements of the form. You must specify the position of one
+or more screen fields for data entry or display, and any additional text or
+ornamental characters. 
+<P></P>
+<A HREF="4GLREFTABLES_Section.htm"><B>TABLES Section</B></A><B></B>:The TABLES section must follow the SCREEN section of any form that references
+the identifier of a database column. This section lists every table or view
+that contains columns that are referenced in the ATTRIBUTES or INSTRUCTIONS
+sections. The TABLES section must also declare an <A HREF="4GLREFalias.htm">alias</A> for any table name or synonym that requires an owner qualifier, or that is an
+external table, or an external, distributed table.
+<P></P>
+<A HREF="4GLREFATTRIBUTES_Section.htm"><B>ATTRIBUTES Section</B></A><B></B>:The ATTRIBUTES section describes each field on the form and assigns names to
+fields. Field descriptions can optionally include field attributes to specify,
+for example, the appearance, acceptable input values, on-screen comments, and
+default values for each field.
+<P></P>
+<A HREF="4GLREFINSTRUCTIONS_Section.htm"><B>INSTRUCTIONS Section</B></A><B></B>:The INSTRUCTIONS section is optional. It can specify <A HREF="4GLREFscreen_array.htm">screen array</A>s, and non-default <A HREF="4GLREFscreen_record.htm">screen record</A>s. 
+<P></P>
+Each section must begin with the keyword for which it is named. After you
+create a form specification file, you can use the Form Compiler to compile it. The
+form driver of your 4GL application can then use 4GL variables to transfer
+information between the database and the fields of the screen form.
+<P></P>
+This is the syntax of a 4GL form specification file: 
+<P></P>
+<IMG SRC="4GLREF00000026.gif" ALT="4GLREF00000026.gif" BORDER="0" USEMAP="#map6" WIDTH="459" HEIGHT="490"><MAP NAME="map6"><AREA COORDS="316,459,363,479" HREF="4GLREFINSTRUCTIONS_Section.htm#133b675c"><AREA COORDS="251,374,327,397" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"><AREA COORDS="291,180,355,204" HREF="4GLREFSCREEN_Section.htm#074959e1"><AREA COORDS="344,31,413,62" HREF="4GLREFINSTRUCTIONS_Section.htm"><AREA COORDS="260,12,316,43" HREF="4GLREFATTRIBUTES_Section.htm"><AREA COORDS="189,33,236,64" HREF="4GLREFTABLES_Section.htm"><AREA COORDS="94,13,146,43" HREF="4GLREFSCREEN_Section.htm"><AREA COORDS="13,13,65,44" HREF="4GLREFDATABASE_Section.htm"></MAP>
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>PAUSE</TITLE>
+</HEAD><BODY>
+<B>PAUSE
+<P></P>
+</B>The PAUSE statement temporarily suspends screen output from a 4GL report,
+until the user chooses the Resume option at the Report window. The PAUSE statement
+can only appear in the <A HREF="4GLREFFORMAT_Section.htm">FORMAT section</A> of a REPORT routine.
+<P></P>
+<IMG SRC="4GLREF00000022.gif" ALT="4GLREF00000022.gif" BORDER="0" WIDTH="464" HEIGHT="52">
+<P></P>
+<B>string</B>  is a quoted string. (This specification has no effect on Windows systems, but
+is supported for compatibility with INFORMIX-4GL for character environments.)
+<P></P>
+Unless the START REPORT statement or the <A HREF="4GLREFOUTPUT_Section.htm">OUTPUT section</A>  specifies a destination for report output, output is sent by default to the
+Report window. The PAUSE statement can be executed only if the report sends its
+output to the Report window. It has no effect if you include a TO clause in
+the OUTPUT section of the <A HREF="4GLREFINFORMIX4GL_Reports_Overview.htm#a6b7b6cf">REPORT definition</A>, or in the START REPORT statement of the <A HREF="4GLREFINFORMIX4GL_Reports_Overview.htm#804c3110">report driver</A>.
+<P></P>
+<B>The presence or absence of the PAUSE statement affects the Report window:
+<P></P>
+</B>In the absence of a PAUSE statement, the Report window is modeless, like the
+Help window; the user has simultaneous access to all windows.
+<P></P>
+In the presence of a PAUSE statement, the Report window becomes modal, taking
+exclusive control of the 4GL application until the user dismisses it. The user
+can dismiss the Report window by choosing Resume from its menu.
+<P></P>
+The Report window does not display the string message that PAUSE displays in a
+character window.
+<P></P>
+Your users should be advised that an application can appear suspended if the
+user closes a modal Report window by using the System menu button on the Report
+window frame, rather than by choosing the Resume menu option.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFNEED00000346.htm"></A></B><A HREF="4GLREFNEED00000346.htm">NEED</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000348.htm">PRINT</A> 
+<P></P>
+<A HREF="4GLREFSKIP00000349.htm">SKIP</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>FIELD_TOUCHED( )</TITLE>
+</HEAD><BODY>
+<B>FIELD_TOUCHED( )
+<P></P>
+</B>The FIELD_TOUCHED( ) operator tests whether the user has made any change in a
+specified field (or list of fields) of the current 4GL form. (This operator can
+only appear within CONSTRUCT, INPUT, or INPUT ARRAY statements.)
+<P></P>
+<IMG SRC="4GLREF00000089.gif" ALT="4GLREF00000089.gif" BORDER="0" USEMAP="#map55" WIDTH="463" HEIGHT="196"><MAP NAME="map55"><AREA COORDS="10,80,83,112" HREF="4GLREFField_Clause.htm"><AREA COORDS="181,28,254,58" HREF="4GLREFField_Clause.htm"></MAP>
+<P></P>
+<B>field</B> is a field identifier (from the ATTRIBUTES section of the form specification
+file).
+<P></P>
+<B>screen array</B> is the 4GL identifier that you declared for a screen array in the INSTRUCTIONS
+section of the form specification file. 
+<P></P>
+<B>screen record</B> is the 4GL identifier that you declared for a screen record.
+<P></P>
+<B>table reference</B> is a table name, alias, or synonym (or FORMONLY keyword). 
+<P></P>
+The FIELD_TOUCHED( ) operator returns a Boolean value TRUE (meaning that the
+user made a change to the field) when a DISPLAY statement displays data in any
+of the specified fields, or the user presses any of the following keys:
+<P></P>
+A printable character (including the Spacebar)
+<P></P>
+CONTROL-X (character delete)
+<P></P>
+CONTROL-D (clear to end of field)
+<P></P>
+After any of these keystrokes, the FIELD_TOUCHED( ) operator returns TRUE,
+regardless of whether the keystroke has changed the value in the field. 
+<P></P>
+Otherwise, the FIELD_TOUCHED( ) operator returns FALSE if none of the
+specified fields are edited. Moving through a field (by pressing Enter, Tab, or the
+Arrow keys, or by using the mouse without entering anything) does not mark a field
+as &quot;touched.&quot;
+<P></P>
+<B>References 
+<P></P>
+<A HREF="4GLREFBoolean_Operators.htm"></A></B><A HREF="4GLREFBoolean_Operators.htm">Boolean Operators</A> 
+<P></P>
+<A HREF="4GLREFFGLKEYVAL_.htm">FGL_KEYVAL( )</A> 
+<P></P>
+<A HREF="4GLREFFGLLASTKEY__.htm">FGL_LASTKEY( )</A> 
+<P></P>
+<A HREF="4GLREFGETFLDBUF_.htm">GET_FLDBUF( )</A> 
+<P></P>
+<A HREF="4GLREFINFIELD_.htm">INFIELD( )</A> 
+<P></P>
+</BODY>
+</HTML>

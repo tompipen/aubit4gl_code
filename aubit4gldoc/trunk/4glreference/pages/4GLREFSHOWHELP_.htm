@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>SHOWHELP( )</TITLE>
+</HEAD><BODY>
+<B>SHOWHELP( )
+<P></P>
+</B>The SHOWHELP( ) function displays a Help message, corresponding to its
+specified SMALLINT argument, from the current Help file. 
+<P></P>
+<IMG SRC="4GLREF00000100.gif" ALT="4GLREF00000100.gif" BORDER="0" USEMAP="#map61" WIDTH="459" HEIGHT="43"><MAP NAME="map61"><AREA COORDS="159,8,265,35" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+The argument of SHOWHELP( ) identifies the number (between 1 and 32,767) of a
+message in the Help file that was specified in the OPTIONS statement.
+<P></P>
+When it is called, SHOWHELP( ) opens the Help window, and displays the first
+(or only) page of the Help message text below a ring menu of Help options. This
+menu is called the Help menu. 
+<P></P>
+If the Help message is too long to fit on one page, the Screen or Next option
+of the Help menu can display the next page of the message. The Previous option
+re displays the previous page. The Resume option closes the Help window, and
+returns focus to the Application window.
+<P></P>
+In interactive statements like CONSTRUCT, INPUT, INPUT ARRAY, PROMPT, or the
+COMMAND clause of a MENU statement, the effect of SHOWHELP( ) resembles that of
+the Help key. The Help key, however, displays only the message specified in the
+current HELP clause.
+<P></P>
+<B>Reference 
+<P></P>
+<A HREF="4GLREFINFIELD_.htm"></A></B><A HREF="4GLREFINFIELD_.htm">INFIELD( )</A> 
+<P></P>
+</BODY>
+</HTML>

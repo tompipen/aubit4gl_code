@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>CLOSE WINDOW</TITLE>
+</HEAD><BODY>
+<B>CLOSE WINDOW
+<P></P>
+</B>The CLOSE WINDOW statement <A HREF="4GLREFclose.htm">close</A>s a specified <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A>.
+<P></P>
+<IMG SRC="4GLREF00000118.gif" ALT="4GLREF00000118.gif" BORDER="0" WIDTH="455" HEIGHT="29">
+<P></P>
+<B>window</B> is the identifier of the 4GL window to be closed.
+<P></P>
+<B>The CLOSE WINDOW statement causes 4GL to take the following actions:
+<P></P>
+</B>Clears the specified 4GL window from the <A HREF="4GLREFApplication_window.htm">Application window</A>, and restores any underlying display.
+<P></P>
+Frees all resources used by the 4GL window, and deletes it from the 4GL window
+stack.
+<P></P>
+If the OPEN WINDOW statement included the WITH FORM clause, the CLOSE WINDOW
+statement closes both the form and the 4GL window.
+<P></P>
+4GL maintains an ordered list of open 4GL windows, called the window stack.
+When you open a new 4GL window, the new window is added to the stack and becomes
+the current window, meaning that it occupies the top of the stack. If you close
+the current window, the next 4GL window on the stack becomes the new current
+window. If you close any other window, 4GL deletes it from the window stack,
+leaving the current window unchanged. 
+<P></P>
+Closing a window has no effect on values of variables that were set while the
+window was open.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCLEAR.htm"></A></B><A HREF="4GLREFCLEAR.htm">CLEAR</A> 
+<P></P>
+<A HREF="4GLREFCLOSE_FORM.htm">CLOSE FORM</A> 
+<P></P>
+<A HREF="4GLREFCURRENT_WINDOW.htm">CURRENT WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

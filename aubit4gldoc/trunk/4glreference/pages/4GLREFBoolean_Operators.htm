@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>Boolean Operators</TITLE>
+</HEAD><BODY>
+<B>Boolean Operators
+<P></P>
+</B>A 4GL Boolean operator returns TRUE (= 1), FALSE (= 0) or NULL. They closely
+resemble the set of SQL Boolean operators, but some are not identical. 
+<P></P>
+<IMG SRC="4GLREF00000067.gif" ALT="4GLREF00000067.gif" BORDER="0" USEMAP="#map37" WIDTH="451" HEIGHT="408"><MAP NAME="map37"><AREA COORDS="200,373,309,402" HREF="4GLREFBoolean_Operators.htm#0716bfaf"><AREA COORDS="242,292,310,328" HREF="4GLREFBoolean_Operators.htm#d7cf1d68"><AREA COORDS="164,334,226,358" HREF="4GLREFBoolean_Operators.htm#d7cf1d68"><AREA COORDS="165,254,234,288" HREF="4GLREFBoolean_Operators.htm#eb6ee245"><AREA COORDS="234,143,308,168" HREF="4GLREFExpressions_of_4GL.htm#0f2fb87c"><AREA COORDS="222,87,320,112" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<A NAME="eb6ee245"></A><B>Relational Operators
+<P></P>
+</B>This is the syntax for relational comparisons in 4GL Boolean expressions: 
+<P></P>
+<IMG SRC="4GLREF00000068.gif" ALT="4GLREF00000068.gif" BORDER="0" USEMAP="#map38" WIDTH="452" HEIGHT="170"><MAP NAME="map38"><AREA COORDS="313,55,403,81" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="83,55,175,80" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<A NAME="d7cf1d68"></A><B>The NULL Test
+<P></P>
+</B>If any operand of a 4GL Boolean comparison or is NULL, then the value of the
+comparison is FALSE (rather than NULL), unless the IS NULL keywords are also
+included in the expression. Applying the NOT operator to a NULL value does not
+change its FALSE evaluation.  
+<P></P>
+If you need to process expressions with NULL values in a different way from
+other values, you can use the IS NULL keywords to test for NULL value.
+<P></P>
+<IMG SRC="4GLREF00000069.gif" ALT="4GLREF00000069.gif" BORDER="0" USEMAP="#map39" WIDTH="454" HEIGHT="109"><MAP NAME="map39"><AREA COORDS="117,54,207,81" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<A NAME="a0c0dabd"></A><B>LIKE and MATCHES Operators
+<P></P>
+</B>The LIKE or MATCHES operators test whether a character value matches a quoted
+string that can include wild card characters. If an operand has a NULL value,
+then the entire string comparison returns NULL. Use a NULL test if you want to
+detect and exclude NULL values.
+<P></P>
+<IMG SRC="4GLREF00000070.gif" ALT="4GLREF00000070.gif" BORDER="0" USEMAP="#map40" WIDTH="578" HEIGHT="106"><MAP NAME="map40"><AREA COORDS="64,47,126,84" HREF="4GLREFCharacter_Expressions.htm"></MAP>
+<P></P>
+<A NAME="0716bfaf"></A><B>Set Membership and Range Tests
+<P></P>
+</B>The BETWEEN . . . AND and IN( ) operators that test for set membership or
+range are supported in three contexts:
+<P></P>
+SQL statements 
+<P></P>
+The WHERE clause of the COLOR attribute in 4GL form specifications 
+<P></P>
+The condition column of the syscolatt table 
+<P></P>
+They are not valid in 4GL statements that are not also SQL statements. 
+<P></P>
+This is the syntax for using the IN( ) operator to test for set membership.
+<P></P>
+<IMG SRC="4GLREF00000071.gif" ALT="4GLREF00000071.gif" BORDER="0" USEMAP="#map41" WIDTH="533" HEIGHT="85"><MAP NAME="map41"><AREA COORDS="354,47,444,71" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="73,47,163,73" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+If you omit the NOT keyword, this returns TRUE if any expression in the list
+(within parentheses) at the right matches the expression on the left. 
+<P></P>
+If you include the NOT keyword, the test evaluates as FALSE if no expression
+in the list matches the expression on the left.
+<P></P>
+This is the syntax for the BETWEEN . . . AND operators to test whether a value
+is included within a specified range (or an inclusive interval on the real
+line):
+<P></P>
+<IMG SRC="4GLREF00000072.gif" ALT="4GLREF00000072.gif" BORDER="0" USEMAP="#map42" WIDTH="576" HEIGHT="77"><MAP NAME="map42"><AREA COORDS="460,41,544,68" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="326,40,414,67" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="76,41,166,70" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFFIELDTOUCHED_.htm"></A></B><A HREF="4GLREFFIELDTOUCHED_.htm">FIELD_TOUCHED( )</A>
+<P></P>
+<A HREF="4GLREFINFIELD_.htm">INFIELD( )</A>
+<P></P>
+</BODY>
+</HTML>

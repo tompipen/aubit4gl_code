@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>RIGHT MARGIN Clause</TITLE>
+</HEAD><BODY>
+<B>RIGHT MARGIN Clause
+<P></P>
+</B>This sets the right margin for each line of a default report (one that
+specifies EVERY ROW in the FORMAT section) or of a PRINT WORDWRAP statement.
+<P></P>
+<IMG SRC="4GLREF00000008.gif" ALT="4GLREF00000008.gif" BORDER="0" WIDTH="451" HEIGHT="35">
+<P></P>
+<B>size</B> is a literal integer that specifies the maximum number of characters on each
+line, including the left margin.
+<P></P>
+This clause sets the right margin by specifying a line width, in characters.
+The size is not dependent on the LEFT MARGIN, but starts its count from the left
+edge of the page, so that the width of the LEFT MARGIN is included in the size
+of RIGHT MARGIN. 
+<P></P>
+<B>The 132-character default size is effective only when the:
+<P></P>
+</B>RIGHT MARGIN clause is omitted from the <A HREF="4GLREFOUTPUT_Section.htm">OUTPUT section</A>, and the <A HREF="4GLREFFORMAT_Section.htm">FORMAT section</A> contains the EVERY ROW specification for a default report format, or else a
+PRINT statement with WORDWRAP is executing.
+<P></P>
+A default EVERY ROW report lists the variable names across the top of the
+page, and presents the data in columns beneath these headings. If there is not
+sufficient room between left- and right-margins to do this, INFORMIX-4GL produces a
+two-column output format that lists the variable name and the data value of
+each output record on each line of output.
+<P></P>
+The PRINT statement in the FORMAT section can also include a WORDWRAP RIGHT
+MARGIN clause. This sets a temporary right margin that cannot be larger than the
+explicit or default right margin of the OUTPUT section. 
+<P></P>
+While its PRINT statement is executing, this temporary line width overrides 
+<P></P>
+the explicit or default right margin from the OUTPUT section. After the PRINT
+statement completes execution, the explicit or default RIGHT MARGIN size from
+the OUTPUT section is restored as the maximum line width.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFBOTTOM_MARGIN_Clause.htm"></A></B><A HREF="4GLREFBOTTOM_MARGIN_Clause.htm">BOTTOM MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFLEFT_MARGIN_Clause.htm">LEFT MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFPAGE_LENGTH_Clause.htm">PAGE LENGTH Clause</A> 
+<P></P>
+<A HREF="4GLREFREPORT_TO_Clause.htm">REPORT TO Clause</A> 
+<P></P>
+<A HREF="4GLREFTOP_MARGIN_Clause.htm">TOP MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFTOP_OF_PAGE_Clause.htm">TOP OF PAGE Clause</A>  
+<P></P>
+</BODY>
+</HTML>

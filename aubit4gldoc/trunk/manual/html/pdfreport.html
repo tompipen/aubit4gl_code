@@ -1,0 +1,187 @@
+
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title></title>
+<base target="_self">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1 align="center"><a name="Top of page - Reports">Reports</a></h1>
+<hr>
+<p>In this chapter:</p>
+<ul>
+  <li><a href="#Generating PDF formatted reports">Generating PDF formatted
+    reports</a></li>
+  <li><a href="#Printing generated reports">Printing generated reports</a></li>
+</ul>
+<hr>
+<h3><i><a name="Generating PDF formatted reports">Generating PDF formatted
+reports</a></i></h3>
+<ul>
+  <li><a href="#Before you start">Before you start</a></li>
+  <li><a href="#Introduction">Introduction</a></li>
+  <li><a href="#Output Section">Output section</a></li>
+  <li><a href="#Fonts">Fonts</a></li>
+  <li><a href="#Report Structure">Report structure</a></li>
+  <li><a href="#Extras">Extras</a></li>
+  <li><a href="#Positioning">Positioning</a></li>
+  <li><a href="#Using pdf_function()">using pdf_function()</a></li>
+  <li><a href="#Images">Images</a></li>
+  <li><a href="#Example program">Example program</a></li>
+</ul>
+<p>&nbsp;</p>
+<h4><a name="Before you start">Before you start</a></h4>
+<p>Aubit 4GL uses PDFLib to help generate the PDF output, you'll need a copy of this.
+NOTE : You must use a recent release of PDFLIB (available from <a href="http://www.pdflib.com" target="_blank">http://www.pdflib.com</a>).</p>
+<p>You'll need to add '-DUSE_PDF_REPORTS' to the CFLAGS line at the top of lib/makefile.&nbsp;</p>
+<p>Regenerate the files in lib (touch lib/pdf_reports.c;make) to include PDF generating
+capabilities.</p>
+<h4><a name="Introduction">Introduction</a></h4>
+<p>PDF reports are very similar to normal 4GL reports, but with added functionality.
+PDF reports are usually started with the</p>
+<p>	&nbsp;&nbsp;&nbsp; START REPORT repname TO &quot;somefile.pdf&quot;</p>
+<p>This is because PDFs are read using Acrobat or some other pdf reader that requires a file.</p>
+<p>To define a report as being a PDF report, you must use&nbsp;</p>
+<p>	&nbsp;&nbsp;&nbsp; PDFREPORT report_name(...)</p>
+<p>instead of</p>
+<p>&nbsp;&nbsp;&nbsp; REPORT report_name(...)</p>
+<h4><a name="Output Section">Output Section</a></h4>
+<p>The output section of a 4GL PDF report is slightly different to a normal report.
+It can have any of the following  :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>	LEFT MARGIN nval&nbsp;<br>
+	RIGHT MARGIN nval&nbsp;<br>
+	TOP MARGIN nval&nbsp;<br>
+	BOTTOM MARGIN nval&nbsp;<br>
+	PAGE LENGTH nval&nbsp;<br>
+	PAGE WIDTH nval&nbsp;<br>
+	FONT NAME "font"<br>
+	FONT SIZE integer<br>
+	PAPER SIZE IS A4<br>
+	PAPER SIZE IS LETTER&nbsp;<br>
+	PAPER SIZE IS LEGAL&nbsp;<br>
+	REPORT TO "filename"<br>
+	REPORT TO PIPE "progname"</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>nval can be any of the following :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>  n POINTS - PDF points 1/72 of an inch<br>
+  n INCHES - Inches<br>
+  n MM     - metric mm<br>
+  n        - Lines or characters (as applicable)</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>eg.</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>	LEFT MARGIN  0.25 INCHES<br>
+	RIGHT MARGIN 20 MM<br>
+	PAGE LENGTH  60</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<h4><a name="Fonts">Fonts</a></h4>
+<p>The 4GL program will use the PDFLIB fonts, if the required fonts do not exist
+then the program will abort with a PDFLIB error.&nbsp;</p>
+<p>NOTE : Case is sensitive for these font names!</p>
+<p>Eg.</p>
+<p>	&nbsp;&nbsp;&nbsp; FONT NAME "Times-Roman"</p>
+<p>	or</p>
+<p>	&nbsp;&nbsp;&nbsp; FONT NAME "Helvetica"</p>
+<h4><a name="Report Structure">Report Structure</a></h4>
+<p>The report structure will be identical to that of a normal 4GL report.</p>
+<h4><a name="Extras">Extras</a></h4>
+<p>In order to generate 'nice' reports - there are a couple of extra features available.</p>
+<h4><a name="Positioning">Positioning</a></h4>
+<p>You can use the normal column and skip positioning mechanisms. You can use the nval values for column&nbsp;</p>
+<p>eg</p>
+<p>	&nbsp;&nbsp;&nbsp; print column 1.1 inches,"Hello World"</p>
+<p>but you have to use 'skip by' for nval movements :</p>
+<p>Eg.</p>
+<p>	&nbsp;&nbsp;&nbsp; skip by 2 inches</p>
+<p>Also you now have a 'skip to' which allows you to move to an absolute position within the current page (including backwards).</p>
+<p>Eg.</p>
+<p>	&nbsp;&nbsp;&nbsp; skip to 2 inches</p>
+<h4><a name="Using pdf_function()">Using pdf_function()</a></h4>
+<p>This allows you to control certain aspects of the PDF report, changing fonts etc.
+The first argument is the operation type, this will be :</p>
+<p>                   Argument     Indirectly calls</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>		set_font_name -> PDF_setfont<br>
+		set_font_size -> PDF_setfont<br>
+		set_parameter -> PDF_set_parameter **<br>
+		set_value     -> PDF_set_value     **</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>** Check the PDFlib manual for these</p>
+<p>Eg.</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>                call pdf_function("set_font_name","Times-Roman")<br>
+                call pdf_function("set_font_size",30)<br>
+		call pdf_function("set_parameter","underline","true");</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<h4><a name="Images">Images</a></h4>
+<p>It is also possible to include an image within the PDF report, this is done using the 'PRINT IMAGE' statement with a blob variable containing an image.</p>
+<p>The image must be a GIF,PNG, TIFF or JPEG and this type must be specified when
+displaying the image, this is done using the 'AS ...' keyword, ie "AS GIF", "AS TIFF", "AS PNG", "AS JPEG".</p>
+<p>Finally - the image can be scaled when it is displayed. This can be either a single value (ie scaling x &amp; y by the same value) or two (specifying the scaling for x &amp; y separately)</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>                print image some_blob_var as png<br>
+                print image some_blob_var as gif scaled by 0.5<br>
+                print image some_blob_var as tiff scaled by 0.7,0.8</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<h4>                <a name="Example program">Example program</a></h4>
+<p>                Please see pfd_example.4gl in test/</p>
+<p>                <a href="#Top of page - Reports">Back to top</a></p>
+<hr>
+<h3><a name="Printing generated reports"><i>Printing generated reports</i></a></h3>
+<p>What's really nice is that with most Linux distributions include the ability to print
+PDF / PS files direct to the printer!</p>
+<p>From <a href="http://www.apsfilter.org/">http://www.apsfilter.org/</a> :</p>
+<p>&quot;Apsfilter supports PS (Postscript) printer and non-PS capable printer by using Ghostscript as PS emulator. So if you have a non-expensive color DeskJet printer, Apsfilter and Ghostscript enhance your printers capabilities, that you'll get a Color Postscript Printer in return for free ! "</p>
+<p>This one is especially important for running Aubit on any kind of remote display:</p>
+<p>"Printing on locally connected, network printer, as well as on Unix-, Windows- and AppleTalk remote printer is supported. "</p>
+<p>From <a href="http://www.linuxprinting.org/howto/setup.html">http://www.linuxprinting.org/howto/setup.html</a></p>
+<p>&quot;apsfilter is a filter designed for use on a wide variety of Unices. It supports essentially all Ghostscript drivers. It, too, works with various strains of LPD, including stock BSD and LPRng. At the moment, this is probably the best third-party system around for non-PostScript printers"</p>
+<p>Apsfilter V 6.0 Filetype Support lists PDF, and many other file types supported:
+<a href="http://www.apsfilter.org/filetypes.html">http://www.apsfilter.org/filetypes.html</a></p>
+<p>Also see <a href="http://www.cups.org/">http://www.cups.org/</a> :</p>
+<p>"A UNIX printing system (with sample drivers for HP, EPSON, and OKIDATA printers) based on the Internet Printing Protocol. CUPS is the basis for ESP Print Pro and is being considered as the standard printing system for a number of commercial and free UNIX operating systems. CUPS is provided under GNU GPL and LGPL. "</p>
+<p><a href="#Top of page - Reports">Back to top</a></p>
+<hr>
+<p>&nbsp;</p>

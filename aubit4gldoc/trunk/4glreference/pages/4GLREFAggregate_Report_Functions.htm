@@ -1,0 +1,49 @@
+<HTML>
+
+<HEAD>
+<TITLE>Aggregate Report Functions</TITLE>
+</HEAD><BODY>
+<B>Aggregate Report Functions
+<P></P>
+</B>Each aggregate report function of 4GL returns a value summarizing data from
+all the input records, or from a specified group of input records. The 4GL report
+aggregates are not valid outside of a REPORT program block.  
+<P></P>
+<IMG SRC="4GLREF00000024.gif" ALT="4GLREF00000024.gif" BORDER="0" USEMAP="#map32" WIDTH="672" HEIGHT="188"><MAP NAME="map32"><AREA COORDS="269,144,383,178" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="519,52,608,99" HREF="4GLREF4GL_Boolean_Expressions.htm"><AREA COORDS="268,104,385,137" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="268,63,388,96" HREF="4GLREFNumber_Expressions.htm"></MAP>
+<P></P>
+The 4GL report aggregates resemble the SQL aggregates that can appear in
+SELECT or DELETE statements, but their syntax is not identical. Aggregate report
+functions cannot appear as operands of 4GL expressions, and cannot be nested. That
+is, no expression within a report aggregate can include a report aggregate.
+<P></P>
+Their names are reserved words of 4GL. Other functions that you define to
+calculate the same statistics can be invoked from within or outside of REPORT
+definitions, but you must declare other names for such functions.
+<P></P>
+Variables of large or structured data types cannot be arguments to these
+functions. You can, however, specify the name of a simple variable that is a member
+of a record, or that is an element of an array.
+<P></P>
+AVG( ), SUM( ), MIN( ), and MAX( ) ignore records with NULL values for their
+argument, but each returns NULL if all records have a NULL value. 
+<P></P>
+If an aggregate value that depends on all records of the report appears
+anywhere except in the ON LAST ROW control block, then each variable in that
+aggregate or WHERE clause must also appear in the list of formal arguments of the
+report. (Examples of aggregates that depend on all records include using GROUP
+COUNT(*) anywhere in a report, or using any aggregate without the GROUP keyword
+anywhere outside the ON LAST ROW control block.)
+<P></P>
+4GL stores intermediate results for aggregates in temporary tables. An error
+results if no database is open, because the temporary table cannot be created.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFLINENO.htm"></A></B><A HREF="4GLREFLINENO.htm">LINENO</A> 
+<P></P>
+<A HREF="4GLREFPAGENO.htm">PAGENO</A> 
+<P></P>
+<A HREF="4GLREFWORDWRAP_Operator.htm">WORDWRAP</A> 
+<P></P>
+</BODY>
+</HTML>

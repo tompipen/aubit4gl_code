@@ -1,0 +1,135 @@
+<HTML>
+<HEAD>
+<TITLE>INPUT ARRAY</TITLE>
+</HEAD><BODY>
+<B>INPUT ARRAY
+<P></P>
+</B>The INPUT ARRAY statement supports data entry by users into a screen <A HREF="4GLREFarray00000023.htm">array</A>, and stores the entered data in a program array of records. 
+<P></P>
+<IMG SRC="4GLREF00000158.gif" ALT="4GLREF00000158.gif" BORDER="0" USEMAP="#map98" WIDTH="583" HEIGHT="107"><MAP NAME="map98"><AREA COORDS="394,43,471,101" HREF="4GLREFINPUT.htm#4fed618e"><AREA COORDS="153,33,214,71" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="81,9,128,45" HREF="4GLREFINPUT_ARRAY.htm#ad6c1832"></MAP>
+<P></P>
+<B>number</B> is a literal integer to specify a Help message number.
+<P></P>
+The INPUT ARRAY statement <A HREF="4GLREFassign.htm">assign</A>s to variables in one or more program records the values that the user enters
+into the fields of a screen array. This statement can include statement blocks
+to be executed under conditions that you specify, such as screen cursor
+movement, or other user actions. 
+<P></P>
+<B>To use the INPUT ARRAY statement, you must do the following: 
+<P></P>
+</B><OL><LI> Specify a screen array in the form specification file, and compile the form.
+<P></P>
+<LI> Declare an ARRAY OF RECORD with the DEFINE statement.
+<P></P>
+<LI> Open and display the screen form in either of the following ways:
+<P></P>
+</OL>The OPEN FORM and DISPLAY FORM statements.
+<P></P>
+An OPEN WINDOW statement with the WITH FORM clause.
+<P></P>
+<OL START="4"><LI> Use the INPUT ARRAY statement to assign values to the program array from data
+that the user enters into fields of the screen array.
+<P></P>
+</OL><B>When the INPUT ARRAY statement is encountered, 4GL does the following:
+<P></P>
+</B><OL><LI> Displays any default values in the screen fields, unless you specify the
+WITHOUT DEFAULTS keywords. 
+<P></P>
+<LI> Moves the cursor to the first field and waits for input from the user.
+<P></P>
+<LI> Assigns the user-entered field value to a corresponding program variable when
+the user moves the cursor from the field or presses the <A HREF="4GLREFAccept_key.htm">Accept key</A>.
+<P></P>
+</OL>The INPUT ARRAY statement activates the current form (the form that was most
+recently displayed, or the form in the current <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A>). When the INPUT ARRAY statement completes execution, the form is
+deactivated. After the user presses Accept, the INSERT statement of SQL can insert the
+values of the program variables into the appropriate database tables.    
+<P></P>
+<B>The Input Array Binding Clause
+<P></P>
+</B>The <A HREF="4GLREFbinding.htm">binding</A> clause temporarily associates the member variables in an array of program
+records with fields in the member records of a screen array, so the 4GL program
+can manipulate values that the user enters in the screen array:
+<P></P>
+<IMG SRC="4GLREF00000159.gif" ALT="4GLREF00000159.gif" BORDER="0" WIDTH="574" HEIGHT="80">
+<P></P>
+<B>program array</B> is the name of an array of program records.
+<P></P>
+<B>screen array </B> is the name of an array of screen records.
+<P></P>
+You must declare the program array in your program, and the screen array in
+the form specification file.
+<P></P>
+<B>The INPUT ARRAY Form Management Blocks
+<P></P>
+</B>Each INPUT ARRAY Form Management block includes a statement block of at least
+one statement, and an activation clause that specifies when to execute the
+statement block. 
+<P></P>
+<B>An INPUT ARRAY Form Management block can specify any of the following:
+<P></P>
+</B>The statements to execute before or after visiting specific screen fields.
+<P></P>
+The statements to execute when the user presses a key sequence.
+<P></P>
+The statements to execute before or after the INPUT ARRAY statement.
+<P></P>
+The next field to which to move the screen cursor.
+<P></P>
+When to terminate execution of the INPUT ARRAY statement.
+<P></P>
+<B>The activation clause can specify any one of the following:
+<P></P>
+</B>Pre- and post-INPUT actions (the BEFORE or AFTER INPUT clause)
+<P></P>
+Pre- and post-INSERT actions (the BEFORE or AFTER INSERT clause)
+<P></P>
+Pre- and post-DELETE actions (the BEFORE or AFTER DELETE clause)
+<P></P>
+Keyboard sequence conditions (the ON KEY clause)
+<P></P>
+Cursor movement conditions (the BEFORE or AFTER FIELD clause, and
+<P></P>
+the BEFORE or AFTER ROW clause)
+<P></P>
+<B>The statement block can include any SQL or 4GL statements, as well as:
+<P></P>
+</B>Cursor movement instructions (the NEXT FIELD or NEXT ROW clause)
+<P></P>
+Termination of the INPUT ARRAY statement (the EXIT INPUT statement)
+<P></P>
+Returning control to the user, without terminating the INPUT ARRAY statement
+(the CONTINUE INPUT statement).
+<P></P>
+If you include one or more form management blocks, the END INPUT keywords must
+terminate the INPUT ARRAY statement. If no form management block is included,
+4GL waits while the user enters values into the fields. When the user presses
+the Accept key, the INPUT ARRAY statement terminates.
+<P></P>
+The activation clause and the statement block correspond respectively to the
+left-hand and right-hand elements in the following syntax diagram:
+<P></P>
+<IMG SRC="4GLREF00000160.gif" ALT="4GLREF00000160.gif" BORDER="0" USEMAP="#map99" WIDTH="573" HEIGHT="219"><MAP NAME="map99"><AREA COORDS="446,84,509,112" HREF="4GLREFField_Clause.htm"><AREA COORDS="206,61,269,86" HREF="4GLREFField_Clause.htm"></MAP>
+<P></P>
+<B>keyname </B>is one or more keywords to specify physical or logical keys. 
+<P></P>
+<B>statement</B> is an SQL or other 4GL statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDEFER.htm"></A></B><A HREF="4GLREFDEFER.htm">DEFER</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+<A HREF="4GLREFRUN00000467.htm">SCROLL</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

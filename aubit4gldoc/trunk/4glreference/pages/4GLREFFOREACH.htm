@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>FOREACH</TITLE>
+</HEAD><BODY>
+<B>FOREACH
+<P></P>
+</B>The FOREACH statement applies a series of actions to each row of data that is
+returned from a query by a cursor. 
+<P></P>
+<IMG SRC="4GLREF00000144.gif" ALT="4GLREF00000144.gif" BORDER="0" USEMAP="#map86" WIDTH="588" HEIGHT="115"><MAP NAME="map86"><AREA COORDS="231,73,289,111" HREF="4GLREFFOREACH.htm#f8f48350"></MAP>
+<P></P>
+<B>cursor  </B>is the name of a previously declared SQL cursor. 
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+Use the FOREACH statement to retrieve and process rows selected by a query.
+The FOREACH statement is equivalent to using the OPEN, FETCH and CLOSE
+statements. 
+<P></P>
+<B>The FOREACH statement has these effects:
+<P></P>
+</B>Opens the specified cursor
+<P></P>
+Fetches the rows selected
+<P></P>
+<A HREF="4GLREFclose.htm">Close</A>s the cursor
+<P></P>
+You must declare the cursor (by using the DECLARE statement) before the
+FOREACH statement can retrieve the rows. A compile-time error occurs unless the
+cursor was declared prior to this point in the source module. You can reference a
+sequential cursor, a SCROLL cursor, a cursor WITH HOLD, or FOR UPDATE, but
+FOREACH only processes rows in sequential order.
+<P></P>
+FOREACH does not have the equivalent of the USING clause that the OPEN
+statement of SQL supports. The FOREACH statement can only open cursors for SELECT
+statements that do not contain unknown parameters.
+<P></P>
+The FOREACH statement performs successive fetches until all rows specified by
+the SELECT statement are retrieved. Then the cursor is automatically closed. It
+is also closed if a WHENEVER NOT FOUND statement within the FOREACH loop
+detects a NOTFOUND condition (that is, status = 100).
+<P></P>
+Implicit FETCH statements that FOREACH executes with an Update cursor can
+support promotable locks.
+<P></P>
+<B>The INTO Clause
+<P></P>
+</B>The INTO clause specifies a variable or a comma-separated list of variables in
+which to store  values from each row that is returned by the query:
+<P></P>
+<IMG SRC="4GLREF00000145.gif" ALT="4GLREF00000145.gif" BORDER="0" USEMAP="#map87" WIDTH="490" HEIGHT="236"><MAP NAME="map87"><AREA COORDS="201,194,267,234" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+<B>array </B>is the name of a program <A HREF="4GLREFarray00000023.htm">array</A>.
+<P></P>
+<B>first  </B>is the name of a member variable in which to store a value.
+<P></P>
+<B>last </B>is another member of record that was declared later than member.
+<P></P>
+<B>record</B> is the name of a variable of the RECORD data type. 
+<P></P>
+<B><UL><LI>ariable </B> is the name of a simple variable to store the retrieved value.
+<P></P>
+</UL><B>The FOREACH Statement Block
+<P></P>
+</B>These statements are executed after each row of the <A HREF="4GLREFactive_set.htm">active set</A> is fetched:
+<P></P>
+<IMG SRC="4GLREF00000146.gif" ALT="4GLREF00000146.gif" BORDER="0" WIDTH="450" HEIGHT="86">
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+This block is sometimes called &quot;the FOREACH loop.&quot; If the cursor returns no
+rows, then no statements in this loop are executed, and program control passes to
+the first statement that follows the END FOREACH keywords.
+<P></P>
+If the specified cursor is an Update cursor, the statement block can include
+statements to modify retrieved rows.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCONTINUE.htm"></A></B><A HREF="4GLREFCONTINUE.htm">CONTINUE</A> 
+<P></P>
+<A HREF="4GLREFFOR.htm">FOR</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+<A HREF="4GLREFWHILE.htm">WHILE</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

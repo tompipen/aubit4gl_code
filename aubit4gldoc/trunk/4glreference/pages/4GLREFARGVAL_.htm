@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>ARG_VAL( )</TITLE>
+</HEAD><BODY>
+<B>ARG_VAL( )
+<P></P>
+</B>The ARG_VAL( ) function returns a specified argument from the command line
+that invoked the current 4GL application program. It can also return the name of
+the current program. 
+<P></P>
+<IMG SRC="4GLREF00000059.gif" ALT="4GLREF00000059.gif" BORDER="0" WIDTH="458" HEIGHT="35">
+<P></P>
+<B>ordinal</B> is an integer expression that evaluates to a non-negative whole number no
+larger than the number of arguments of the program. 
+<P></P>
+This function provides a mechanism for passing values to the 4GL program
+through the command line that invokes the program. You can design a 4GL program to
+expect or to allow arguments after the name of the program in the command line.
+<P></P>
+Use the ARG_VAL( ) function to retrieve individual arguments during program
+execution. (You can also use the NUM_ARGS( ) function to determine how many
+arguments follow the program name on the command line.)
+<P></P>
+If 1 =&lt; ordinal = n, then ARG_VAL(n) returns the nth command-line argument as
+a character string. The value of ordinal must be between 0 and the value
+returned by NUM_ARGS ( ), the number of command-line arguments.
+<P></P>
+The expression ARG_VAL(0) returns the name of the 4GL application program. 
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFNUMARGS_.htm"></A></B><A HREF="4GLREFNUMARGS_.htm">NUM_ARGS( )</A> 
+<P></P>
+</BODY>
+</HTML>
