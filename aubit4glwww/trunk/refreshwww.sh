@@ -36,7 +36,7 @@ cd $HOME
 cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
 rm -rf $WWW/*
 cd aubit4glwww
-cp * $WWW
+cp -r * $WWW
 cd $WWW
 cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
 echo "Aubit web site refreshed from CVS"
