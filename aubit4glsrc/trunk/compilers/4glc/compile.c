@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.8 2003-02-23 08:04:37 afalout Exp $
+# $Id: compile.c,v 1.9 2003-02-24 07:52:51 afalout Exp $
 #*/
 
 /**
@@ -70,7 +70,7 @@ extern int 	yylineno;
 /* -------- unknown --------- */
 char 		gcc_exec[128];
 char 		pass_options[1024]="";
-int         clean_aftercomp = 1; /* clean intermediate files after compilation */
+int         clean_aftercomp = 0; /* clean intermediate files after compilation */
 char 		currinfile_dirname[1024]="";   //path to 4gl file we are currently compiling - used when compiling global files
 char 		errbuff[1024] = "";
 char 		yytext[1024] = "";
@@ -136,16 +136,16 @@ int silent = 0;
 int verbose = 0;
 int todo = 0;
 
-char opt_list[40];
-char a[128];
-char b[128];
-char c[128];
-char ext[128];
-char incl_path[128];
-char l_path[128];
-char l_libs[128];
-char buff[1028];
-char all_objects[456]="";
+char opt_list[40]="";
+char a[128]="";
+char b[128]="";
+char c[128]="";
+char ext[128]="";
+char incl_path[1028]="";
+char l_path[1028]="";
+char l_libs[1028]="";
+char buff[4000]="";
+char all_objects[4000]="";
 static char output_object[128]="";
 static struct option long_options[] =
   {
@@ -157,6 +157,8 @@ static struct option long_options[] =
     {"version", 		0, 0, 'v'},
     {"version_full",	0, 0, 'f'},
     {"lextype",			0, 0, 't'},
+    {"keep",			0, 0, 'k'},
+    {"clean",			0, 0, 'K'},
     {0, 0, 0, 0},
   };
 
@@ -168,7 +170,7 @@ static struct option long_options[] =
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
   {
     //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-    strcpy(opt_list,"Gs:co::l::?hSVvft");
+    strcpy(opt_list,"Gs:kKco::l::?hSVvft");
   }
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
@@ -192,7 +194,7 @@ static struct option long_options[] =
     {
 
 	  case 'c':              // Compile resulting C file(s) to object
-        /* this is more or less meaningless, and is here for compatibility with 
+        /* this is more or less meaningless, and is here for compatibility with
 		C compiler style flags */
 
 		compile_object = 1;
@@ -200,23 +202,33 @@ static struct option long_options[] =
 
       case 'o':              /* compile and optionally Link resulting object(s) */
 		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
-		bname (output_object, a, b);
-        strcpy (ext,".");
-		strcat (ext,b);
-        debug ("%s %s %s",b, acl_getenv ("A4GL_EXE_EXT"),ext);
 
-		if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
-			compile_object = 1;
-        }
+		if (strcmp (output_object, "") != 0) {
 
-		if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
-			compile_object = 1;
-			compile_exec = 1;
-        }
+			bname (output_object, a, b);
+	        strcpy (ext,".");
+			strcat (ext,b);
+	        debug ("%s %s %s",b, acl_getenv ("A4GL_EXE_EXT"),ext);
 
-		if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
-			compile_object = 1;
-			compile_lib = 1;
+			if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
+				compile_object = 1;
+	        }
+
+			if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
+				compile_object = 1;
+				compile_exec = 1;
+	        }
+
+			if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
+				compile_object = 1;
+				compile_lib = 1;
+	        }
+        } else {
+            printf ("Error: -o flag specified with no parameter\n");
+			printf("optind=%s\n", argv[optind]);
+			printf("option_index=%s\n", argv[option_index]);
+
+			exit (5);
         }
 
         //FIXME: and what about shared library, or when extension is not Aubit one?
@@ -251,9 +263,14 @@ static struct option long_options[] =
 		printUsage_help(argv);
         exit(0);
 
-      case 'i':             /* do not clean intermedate files */
+      case 'k':             /* do not clean intermedate files (--keep) */
 		clean_aftercomp = 0;
 		break;
+
+      case 'K':             /* clean intermedate files when done (--clean) */
+		clean_aftercomp = 1;
+		break;
+
 
       case 'S':             /* Silent */
         silent = 1;
@@ -372,7 +389,10 @@ static struct option long_options[] =
             x = compile_4gl(compile_object,a,incl_path,silent,verbose,output_object);
 			if ( x )
 	        {
-	            exit (x);
+				printf ("Exit code is: %d\n",x);
+				//FIXME: if I use x, I get 0 on the shell?????
+				//exit (x);
+				exit (99);
 	        }
 
         } else {
@@ -455,14 +475,35 @@ static struct option long_options[] =
 		if (ret) {
 			printf ("Error compiling %s - check %s.err\n",output_object,output_object);
 			printf ("Failed command was: %s\n",buff);
+			printf ("Exit code is: %d\n",ret);
 			//fixme: show err file
-            return ret;
+            //FIXME: if I exit with x, I get 0 code on the shell:
+			exit (99);
 	    }
         else
         {
-    		if (clean_aftercomp)
+			//Since there was no error code returned from C compiler/linker,
+			// *.xxx.err file (if it exist) will contain linker warnings only
+			sprintf (buff,"mv %s.err %s.warn",output_object,output_object);
+			#ifdef DEBUG
+				debug("Runnung %s",buff);
+	        #endif
+			ret=system (buff);
+
+
+
+			if (clean_aftercomp)
 			{
-				sprintf (buff,"%s %s",acl_getenv("A4GL_RM_CMD"),all_objects);
+	            /*
+				FIXME:
+				do we really want to remove all objects?, that includes libraries,
+    	        and objects that might be needed for other programs, forcing common
+				shared objects to be compiled over and over again...
+                Maybe just make sure you clean only in current directory?
+                */
+
+				//sprintf (buff,"%s %s",acl_getenv("A4GL_RM_CMD"),all_objects);
+                sprintf (buff,"%s %s.err",acl_getenv("A4GL_RM_CMD"),output_object);
 				#ifdef DEBUG
 					debug("Runnung %s\n",buff);
 		        #endif
@@ -608,11 +649,30 @@ char *ptr;
 	{
 
         //FIXME: we can compile shared or static here
-            
+
+
+	   {
+       /* strip path from input file name, so our object allways and up in 
+	   current directory - otherwise make file will not be able to find it using
+       VPATH when making objects for current explicit target.
+	   FIXME: this should be done ONLY when -o option on command line did not have
+       pbject extension - if it did, and this included path, then this path should
+       be used when making object
+	   */
+	   char** ppsz;
+       char* psz;
+
+		   ppsz = &psz;
+    	   *ppsz = a;
+           a4gl_basename(ppsz);
+    	   strcpy(single_output_object,*ppsz);
+       }
+
+
 		//Ouptout name of the single file object allways must be same as
-        //the 4gl file we are compiling, regardless of waht might be set
+        //the 4gl file we are compiling, regardless of what might be set
         //on command line with -o
-		sprintf (single_output_object,"%s%s",a,acl_getenv ("A4GL_OBJ_EXT"));
+		sprintf (single_output_object,"%s%s",single_output_object,acl_getenv ("A4GL_OBJ_EXT"));
 
    		#ifndef __MINGW32__
 			sprintf (buff, "%s %s.c -c -o %s %s %s",
@@ -631,13 +691,23 @@ char *ptr;
 		ret=system (buff);
         //see function system_run() in fglwrap.c
 		if (ret) {
-			printf ("Error compiling %s.c - check %s.err\n",a,a);
+			printf ("Error compiling %s.c - check %s.c.err\n",a,a);
 			printf ("Failed command was: %s\n",buff);
+			//printf ("Exit code is: %d\n",ret);
 			//fixme: show err file
             return ret;
         }
 		else
 		{
+			//Since there was no error code returned from C compiler,
+			// *.c.err file (if it exist) will contain C compiler warnings only
+			sprintf (buff,"mv %s.c.err %s.c.warn",a,a);
+			#ifdef DEBUG
+				debug("Runnung %s",buff);
+	        #endif
+			ret=system (buff);
+
+
 			if (clean_aftercomp)
 			{
 				//is it smart to delete .glb files?
@@ -649,7 +719,7 @@ char *ptr;
 				ret=system (buff);
 				if (ret) {
 					printf ("Clean of %s intermediate files failed\n",a);
-					printf ("Cpmmand was: %s\n",buff);
+					printf ("Failed command was: %s\n",buff);
 	            }
             }
 		}
@@ -711,6 +781,8 @@ printUsage_help(char *argv[])
   printf("  -f     | --version_full    : Show full compiler version and details\n");
   printf("  -h|-?  | --help            : Show this help and exit\n");
   printf("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
+  printf("  -k     | --keep            : keep intermediate files (defailt)\n");
+  printf("  -K     | --clean           : clean intermediate files when done\n");
   printf("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
   printf("                             : 0-Don't generate  1-Generate(Default)\n");
   printf("If 'outfile' was not specified, it is generated from first 4gl file name\n");

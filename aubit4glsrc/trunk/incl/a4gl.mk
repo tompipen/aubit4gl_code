@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.27 2003-02-22 01:52:21 afalout Exp $
+#	 $Id: a4gl.mk,v 1.28 2003-02-24 07:53:06 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.27 2003-02-22 01:52:21 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.28 2003-02-24 07:53:06 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -90,7 +90,7 @@ AUCC_FLAGS			=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ifeq "${USE_4GLPC}" "1"
 	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
 else
-	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc
+	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc --clean
 endif
 A4GL_CC_ENV     =
 A4GL_CC_FLAGS   = #-verbose
@@ -199,9 +199,10 @@ else
 		echo "${A4GL_CC} $< -c -o${OBJSTORE}$@"; \
 		${A4GL_CC} $< -c -o${OBJSTORE}$@; \
 	else \
-		echo "adding $(<D)  ${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@"; \
+		echo "${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@"; \
 		${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@; \
-	fi
+	fi; \
+	exit $$?;
 endif
 
 ####################################

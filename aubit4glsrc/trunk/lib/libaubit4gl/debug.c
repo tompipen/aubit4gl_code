@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.18 2003-02-19 22:28:39 afalout Exp $
+# $Id: debug.c,v 1.19 2003-02-24 07:53:06 afalout Exp $
 #
 */
 
@@ -259,6 +259,22 @@ const char *
 getarg0(void)
 {
 	return(arg0);
+}
+
+
+/*
+Return file name without the path
+Yes, it is a mess, but this works
+*/
+void a4gl_basename(char** ppsz)
+{
+char* pszslash;
+
+   for (pszslash = *ppsz; *pszslash; pszslash++)
+      if ((*pszslash == '\\') || (*pszslash == '/'))
+      {
+    	 *ppsz = pszslash + 1;
+      }
 }
 
 

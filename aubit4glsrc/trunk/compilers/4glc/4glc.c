@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.44 2003-02-17 12:03:10 mikeaubury Exp $
+# $Id: 4glc.c,v 1.45 2003-02-24 07:52:51 afalout Exp $
 #
 */
 
@@ -81,7 +81,7 @@ extern int 	initArguments(int argc, char *argv[]);
 int
 main(int argc, char *argv[])
 {
-int x;
+int x=0;
 struct str_resource *user_resource = 0;
 
 

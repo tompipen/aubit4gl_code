@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.26 2003-02-23 08:04:45 afalout Exp $
+#	 $Id: footer.mki,v 1.27 2003-02-24 07:53:06 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -293,10 +293,6 @@ plexus:
 #                            Aubit Targets
 # =======================================================================
 
-#############################
-#FIXME: this shell stuff is preventin make form setecting when error occured!
-############################
-
 #This is an explicit rule - vpath will not be searched - use implicit rule instead?
 #${PROG.4ae}:${AUBIT_DEPS}
 ${PROG.4ae}:${AUBIT_LINK_DEPS}
@@ -315,7 +311,8 @@ ifeq "${A4GL_USE_LD}" "yes" #using ld
         fi ; \
     done; \
 	echo "ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@"; \
-	ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@
+	ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@; \
+	exit $$?;
 else                        #using 4glc
 	@${FAIL_LINK}for afile in $^ ; do \
         x=`dirname $$afile`; \
@@ -326,7 +323,8 @@ else                        #using 4glc
         fi ; \
     done; \
 	echo "${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
-	${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@  ${FILES.aubit.link}
+	${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@  ${FILES.aubit.link} ; \
+	exit $$?;
 endif
 else 						#------------------ linking executable ---------------------
 ifeq "${USE_4GLPC}" "1"
@@ -341,7 +339,8 @@ else
         fi ; \
     done; \
 	echo "${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}" ;\
-    ${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
+    ${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}; \
+	exit $$?;
 endif
 endif
 #	@echo CHANGED: $?

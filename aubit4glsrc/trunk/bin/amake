@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.18 2003-02-22 01:52:19 afalout Exp $
+# $Id: amake,v 1.19 2003-02-24 07:51:54 afalout Exp $
 
 #####################################################################
 
@@ -388,7 +388,11 @@ fi
 			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
         fi
 
-		RET=$?
+        #Strange: make exits with 99 like this:
+		#make[1]: *** [AZ4.ao] Error 99
+        #but I get number 2 here. Maybe Make does not exit with error code
+        #returned by failed command, and sets it's own error cod instad?
+		let RET=$?
 
 		if [ "$COMPOSITE_IS_TMP" = "1" ]; then
 			if [ "$VERBOSE" = "1" ]
@@ -401,24 +405,37 @@ fi
 
 		if test $RET != "0"
 		then
-		    echo "ERROR: amake failed."
+			if [ "$VERBOSE" = "1" ]
+	        then
+				#user will see error messages comming from make already:
+				echo "ERROR: amake failed with code $RET."
+            fi
+
 			if [ "$LOG" = "1" ]
 			then
 				echo "See $LOGFILE"
             fi
-		    
-			ls *.err > /dev/null 2>&1
-			RET=$?
-			if test $RET = "0"
-			then
-                echo "See .err files generated"
-            fi
+
+			#this is silly: if we want to check for error files,
+            #we should check for the ones we really created by this run
+            #of amake, not for any err files in current durectory, that may
+            #belong to unrelated programs.
+			#ls *.err > /dev/null 2>&1
+			#RET2=$?
+			#if test $RET2 = "0"
+			#then
+			#	if [ "$VERBOSE" = "1" ]
+		    #    then
+			#		echo "See .err files generated"
+            #    fi
+            #fi
+
 			if ! [ "$IGNOREERROR" = "1" ]
             then
 				if [ "$PARAM_PATH" != "" ]; then
 		            cd -
         		fi
-				exit 1
+				exit $RET
             fi
 		fi
 
