@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.13 2003-04-07 16:26:37 mikeaubury Exp $
+# $Id: helper.c,v 1.14 2003-04-09 06:54:23 mikeaubury Exp $
 #
 */
 
@@ -508,7 +508,7 @@ int_get_info(char *type,char *ptr,char *info)
  * remove it and all the tree of functions not used
  */
 LIBEXPORT int
-aclfgl_get_info(int np)
+aclfgl_a4gl_get_info(int np)
 {
   char *d,*p,*i;
   int a;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.11 2003-04-07 16:26:33 mikeaubury Exp $
+# $Id: extfile.c,v 1.12 2003-04-09 06:54:23 mikeaubury Exp $
 #
 */
 
@@ -143,10 +143,10 @@ char *fname;
  * @todo Describe function
  */
 int
-aclfgl_fgl_show_help(int a)
+aclfgl_a4gl_show_help(int a)
 {
-    a=pop_int();
-    aclfgl_show_help(a);
+    	a=pop_int();
+    	aclfgli_show_help(a);
 	return 0;
 }
 
@@ -224,14 +224,14 @@ has_helpfile(void)
  * This is the main show_help function...
  * 
 */
-int aclfgl_show_help(int n) {
+int aclfgli_show_help(int n) {
 	long a;
 		a=pop_long();
-	if (has_helpfile()) {
-		push_char((char *)get_helpfilename());
-		push_long(a);
-		aclfgli_libhelp_showhelp(2);
-	}
+		if (has_helpfile()) {
+			push_char((char *)get_helpfilename());
+			push_long(a);
+			aclfgli_libhelp_showhelp(2);
+		}
 }
 
 
