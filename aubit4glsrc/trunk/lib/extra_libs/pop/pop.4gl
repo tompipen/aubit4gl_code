@@ -51,18 +51,21 @@ end function
 
 
 function popbytes()
+define lv_bytes integer
 code
-A4GL_push_int(popbytes(lv_mysession));
-return 1;
+lv_bytes=popbytes(lv_mysession);
 endcode
+return lv_bytes
+
 end function
 
 function popmsgsize(lv_msg)
 define lv_msg integer
+define lv_size integer
 code
-A4GL_push_int(popmsgsize(lv_mysession,lv_msg));
-return 1;
+lv_size=popmsgsize(lv_mysession,lv_msg);
 endcode
+return lv_size
 end function
 
 function popmsguid(lv_msg)
@@ -77,11 +80,27 @@ end function
 
 function popgetmsg(lv_msg)
 define lv_msg integer
+define lv_msgtxt char(255);
 code
 {
 char *ptr;
 ptr=popgetmsg(lv_mysession,lv_msg);
 A4GL_push_param(ptr,256);
+A4GLSTK_popFunction();
+return 1;
+}
+endcode
+return lv_msgtxt
+end function
+
+function popgethead(lv_msg)
+define lv_msg integer
+code
+{
+char *ptr;
+ptr=popgethead(lv_mysession,lv_msg);
+A4GL_push_param(ptr,256);
+A4GLSTK_popFunction();
 return 1;
 }
 endcode
