@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-09-23 00:54:54 afalout Exp $
+# $Id: Makefile.in,v 1.29 2002-09-23 04:48:33 afalout Exp $
 #
 
 ROOT    	=../..
@@ -105,7 +105,7 @@ LCLINT_CFLAGS   	=${C_IFLAGS}
 LINK_LIBS           =-ldl -lm
 
 ifeq "${TARGET_OS}" "solaris"
-	LINK_LIBS		+=-lc
+	LINK_LIBS		+=-lsocket
 endif
 
 

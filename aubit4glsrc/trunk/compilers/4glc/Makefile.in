@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.41 2002-09-22 23:33:39 afalout Exp $
+# $Id: Makefile.in,v 1.42 2002-09-23 04:48:33 afalout Exp $
 #
 
 ROOT		=../..
@@ -64,12 +64,6 @@ ifneq "${GETOPT_LONG}" "yes"
         CMODS   +=${ROOT}/tools/getopt/getopt.c ${ROOT}/tools/getopt/getopt1.c
     endif
 endif
-
-#checking for strtol... yes
-#checking for getopt_long... no
-#checking for getopt_long in -liberty... yes
-#using iberty getopt_long
-#configure: creating ./config.status
 
 4GLCAOBJ		=${CMODS:.c=.o}
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.95 2002-09-23 01:02:47 afalout Exp $
+# $Id: configure.in,v 1.96 2002-09-23 04:48:19 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2440,7 +2440,11 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
     #all used in lib/libaubit4gl.so:
+    #On Solaris, all this are in -lsocket
 	AC_CHECK_FUNCS([socket recv accept bind setsockopt getservbyname listen])
+    #So if any of abowe is not found, we should check something like this:
+ 	#AC_CHECK_LIB([socket], [socket recv accept bind setsockopt getservbyname listen])
+
 
 	#4glc (mod.c)
 	#AC_CHECK_FUNC(setenv,AC_MSG_RESULT(Yes),AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
