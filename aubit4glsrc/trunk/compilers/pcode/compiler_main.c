@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.8 2004-05-13 12:45:52 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.9 2004-06-13 08:51:15 mikeaubury Exp $
 #*/
 
 /**
@@ -61,7 +61,7 @@ extern int yydebug;
 
 int debug_mode = 0;
 
-char fout[256] = "a.4pe";
+static char fout[256] = "a.4pe";
 
 struct module this_module;
 

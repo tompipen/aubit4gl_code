@@ -17,7 +17,7 @@ int while_stack_cnt=0;
 int if_stack[256];
 int if_stack_cnt=0;
 
-char buff[20];
+static char buff[20];
 
 
 %}

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.18 2004-05-15 12:43:06 mikeaubury Exp $
+# $Id: Makefile,v 1.19 2004-06-13 08:49:09 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS			=-Wall  -g
+CFLAGS			=-Wall  -g -I../../incl
 
 ifneq "${COMSPEC}" ""
 	#for features.h
@@ -118,6 +118,10 @@ ifneq "${COMSPEC}" ""
 	#-lcygwin
 endif
 
+ifeq "${TARGET_OS}" "solaris"
+	RPCLINKLIBS=-lnsl
+endif
+
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
 		ifneq "${GCC_MINGW}" "yes"
@@ -168,10 +172,10 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) -export-dynamic  -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS}
+	$(CC) --export-dynamic  -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS}
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
-	$(CC) -export-dynamic  -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} ${DL_LINK_LIBS}
+	$(CC) --export-dynamic  -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} ${DL_LINK_LIBS}
 
 
 ## ==================================================================

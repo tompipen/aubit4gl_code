@@ -1,3 +1,5 @@
+#include "a4gl_incl_config.h"
+
 struct define_variables {
         int var_len;
         struct variable_element *var_val;
