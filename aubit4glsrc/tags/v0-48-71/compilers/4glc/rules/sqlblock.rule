@@ -1,0 +1,40 @@
+sql_block_cmd : SQL {
+		sql_mode=1;
+		start_bind('i',0);
+		start_bind('o',0);
+	} sql_block END_SQL {
+			sql_mode=0;
+			print_sql_block_cmd($<str>3);
+	}
+;
+
+sqlblock_kw : 
+	KW_COMMA
+	| OPEN_SQUARE
+	| CLOSE_SQUARE
+	| OPEN_BRACKET
+	| CLOSE_BRACKET
+	| DOLLAR
+	| NAMED_GEN
+	| CONCAT_PIPES  {strcpy($<str>$,"||");}
+	| LESS_THAN_EQ  {strcpy($<str>$,"<=");}
+	| GREATER_THAN_EQ  {strcpy($<str>$,">=");}
+	| NOT_EQUAL {char buff[255];sprintf(buff,$<str>1); if (buff[0]=='<') {strcpy($<str>$,"<>");} else {strcpy($<str>$,"!=");} }
+;
+
+
+sql_block :
+	sql_block_entry 
+	| sql_block sql_block_entry  {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+;
+
+sql_block_entry:
+	SQL_TEXT  
+	| INTO obind_var_list { strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o'))); }
+	| DOLLAR var_ident_ibind_ss {
+		strcpy($<str>$,$<sql_string>2);
+	}
+	| sqlblock_kw
+	
+;
+

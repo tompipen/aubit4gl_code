@@ -1,0 +1,23 @@
+.SUFFIXES: .ec .o .c
+
+CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I../../../incl -I..
+CC=gcc
+ESQL=esql
+ESQL_FLAGS= -thread
+LDFLAGS=
+
+INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+
+XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
+	"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+
+LINKLIBS=-L../../ -laubit4gl
+
+.ec.o:
+	$(ESQL) $(ESQL_FLAGS) -e $<
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $*.c -o $*.o
+	-@rm $*.c $*.c_*
+
+libSQL_ESQL.dll:  esql.o
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LINKLIBS} -o $@
+

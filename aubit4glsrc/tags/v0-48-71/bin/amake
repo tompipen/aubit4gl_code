@@ -1,0 +1,499 @@
+#!/bin/sh
+#####################################################################
+#           Aubit 4gl make files execution script
+#
+#This script will use specified .mk files as base for building makefile
+#that will be processed by make command, by adding default or specified
+#header makefile (containing program's global make definitions and including
+#rules for building 4gl compiler specific targets) and footer makefile
+#(defining program's targets).
+#
+#.mk files are expected to contain only definitions of source files
+#that make a program, one program per .mk file. See examples in $AUBITDIR/incl
+#and $AUBITDIT/tools/test
+#
+# $Id: amake,v 1.30 2004-10-04 13:49:58 afalout Exp $
+#
+#####################################################################
+
+#`--include-dir=dir'
+#Specifies a directory dir to search for included makefiles. See section
+#Including Other Makefiles. If several `-I' options are used to specify
+#several directories, the directories are searched in the order specified.
+
+if [ "$AUBITDIR" = "" ]; then
+    AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+	RET=$?
+	if [ "$RET" != "0" ]; then
+        echo "ERROR: aubit-config returned error code $RET. Stop."
+        exit 42
+    fi
+	if [ "$AUBITDIR" = "" ]; then
+        echo "ERROR: AUBITDIR not set. Stop."
+        exit 43
+    else
+        export AUBITDIR
+	fi
+fi
+
+#echo "hello from amake"
+
+
+#defaults:
+LOG="0"
+LOGFILE=amake.log
+OVERRIDEINCLUDE=0
+#HEADER="./header.mki"
+#FOOTER="./footer.mki"
+HEADER="$AUBITDIR/incl/header.mki"
+FOOTER="$AUBITDIR/incl/footer.mki"
+
+#if you export MAKERULES, it will override 4gl make rules included in
+#standard header.mki:
+RULESDIR=$AUBITDIR/incl
+#export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
+#export MAKERULES="$RULESDIR/a4gl.mk"
+#export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
+
+if test "$MAKE" = ""; then
+	#Amake can't use non-GNU make anyhow
+	if test "$COMSPEC" != ""; then
+		#CygWin does not install gmake link, make is gmake
+		MAKE=make
+	else
+		MAKE=gmake
+	fi
+	
+	#echo "NOTE: MAKE was not set - defaulting to $MAKE" 
+fi
+if test "$MAKE" != "gmake" -a "$COMSPEC" = ""; then 
+	echo "WARNING: Amake requires GNU make (gmake) - current MAKE is set to $MAKE"
+fi
+MK=".mk"
+
+rm -f *.err
+
+if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "help" ]
+then
+    echo
+	echo Aubit 4gl make tool
+    echo
+	echo ussage: amake progname/makefilename target options
+    echo
+    echo params :
+	echo " -all = process all .mk files in current directory"
+	echo " -log = log make processing to make.log file"
+    echo " -defaultinclude = use includes as specified in .mk file, default is"
+    echo "  to use make includes specified in this script"
+    echo " -header xxx = use xxx file for header include, overrides -defaultinclude"
+    echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
+    echo " -i : ignore errors in amake and continue (adds -k to make call)"
+	echo " everything else will be passed to make"
+	echo " -verbose = show what script is doing, and also pass -verbose to 4glpc"
+	echo
+	echo Examples:
+    echo
+    echo "'amake' - build default targets of all .mk files in ./"
+	echo "'amake -k -all install' - install all programs, ignore errors"
+    echo "'amake P11 aubit -k' - build aubit target defined in P11.mk, ignore errors"
+    echo "'amake P11 aubit -defaultinclude' - build P11 target for Aubit compiler, use"
+	echo "                 includes defined in P11"
+    echo "'amake P11 -header myhead.mk' - default P11 target, use myhead.mk for header"
+	echp "'amake max_db.mk querix clean' - invoke clean target of max_db.mk using Querix compiler"
+
+	echo
+	exit 1
+fi
+
+#initialise variables:
+PROGS=
+PARAMS=
+MKFLAGS=
+NEXT=
+CLEANOBJECTS=0
+CLEANTARGET=0
+
+if [ $# -lt 1 ]
+then
+	ls *.mk > /dev/null 2>&1
+	RET=$?
+	if test $RET = "0"
+	then
+		PROGS=`ls *$MK`
+    else
+        echo "ERROR: No .mk files in $PWD"
+        exit 34
+    fi
+else
+	cnt=0
+	###########
+	for a in $@
+    ###########
+	do
+		FULLPARAM=$a
+		a=`basename $FULLPARAM $MK`
+        NOPATH=`basename $FULLPARAM`
+
+#        echo FULLPARAM=$FULLPARAM
+#		echo a=$a
+#        echo NOPATH=$NOPATH
+
+#FULLPARAM=./src/gl/GXX.mk
+#a=GXX
+#NOPATH=GXX.mk
+
+		if [ "$FULLPARAM" != "$a" ]; then
+            #param had a path, a .mk extension, or both
+            if [ "$NOPATH" != "$FULLPARAM" ]; then
+				#echo "param had a path"
+                HAS_PATH=1
+				PARAM_PATH=`echo $FULLPARAM | sed -e "s/$NOPATH//"`
+                #strip trailing slash:
+				#PARAM_PATH=`basename $PARAM_PATH`
+                #PARAM_PATH=`echo $PARAM_PATH | sed -e "s/&\///"`
+				if [ "$VERBOSE" = "1" ]; then
+					echo "PATH is $PARAM_PATH"
+                fi
+			fi
+            if [ "$NOPATH" != "$a" ]; then
+                #echo "param had a .mk extension"
+                HAS_MK_EXT=1
+            fi
+		fi
+
+		#cannot use "let" because on CygWin sh is default - not bash, and sh does not support
+        #arigmetrics - uinless we want to use "bash" as prefix to all calls to amake ...
+		#let cnt=cnt+1
+
+        #############
+        case $NEXT in
+        #############
+
+        HEADER) HEADER=$a
+            	if ! [ -f $HEADER ]
+				then
+                    echo "Cannot find HEADER $HEADER. Stop."
+                    exit 3
+				fi
+				NEXT=
+                ;;
+
+        FOOTER) FOOTER=$a
+            	if ! [ -f $FOOTER ]
+				then
+                    echo "Cannot find FOOTER $FOOTER. Stop."
+                    exit 3
+				fi
+
+				NEXT=
+                ;;
+
+
+		*)  if [ -f "$PARAM_PATH$a$MK" ]
+			then
+                #this is a .mk file name:
+
+                if [ "$PROGS" = "" ]
+                then
+					#PROGS="$PARAM_PATH$a$MK"
+                    PROGS="$a$MK"
+                else
+					PROGS="$PARAM_PATH$a$MK $PROGS"
+					PROGS="$a$MK $PROGS"
+                fi
+			else
+	           ##########
+			   case $a in
+	           ##########
+
+			   #################this are parameters to this script:##########
+			   -all)
+					ls *.mk > /dev/null 2>&1
+					RET=$?
+					if test $RET = "0"
+					then
+						PROGS=`ls *$MK`
+				    else
+				        echo "ERROR: No .mk files in $PWD"
+				        exit 34
+				    fi
+
+			   ;;
+
+			   -log) 		LOG="1"
+			   ;;
+
+			   -i) 			IGNOREERROR="1"
+                    		MAKE="$MAKE -k"
+			   ;;
+
+			   -defaultinclude) OVERRIDEINCLUDE=0
+			   ;;
+
+			   -verbose | --verbose) 	
+			   				VERBOSE="1"
+							#FIXME: does make support -verbose flag?
+							#MKFLAGS="$MKFLAGS -verbose"
+			   ;;
+
+			   -header) 	OVERRIDEINCLUDE=1
+	                		#HEADER=<next parameter>
+							#let next=cnt+1
+	                		NEXT=HEADER
+
+			   ;;
+
+			   -footer) 	OVERRIDEINCLUDE=1
+	                		#FOOTER=<next parameter>
+                    		NEXT=FOOTER
+               ;;
+
+			   -cleantarget) 	CLEANTARGET="1"
+			   ;;
+
+			   -cleanobjects) 	CLEANOBJECTS="1"
+			   ;;
+
+			   -cleanall) 		CLEANOBJECTS="1"
+								CLEANTARGET="1"
+			   ;;
+
+#error:
+#amake AS1b  -verbose
+#Command is: make -f AS1b.mk
+#4glpc   -o AS1b.4ae AS1b.ao
+
+#OK:
+#amake AS1b  -verbose
+#Command is: make -f AS1b.mk
+#4glpc   -o AS1b.4ae AS1b.ao
+
+
+			   #########anything else that starts with "-" is make flag:#####
+			   -*) 			MKFLAGS="$MKFLAGS $a"
+			   ;;
+
+
+               d4gl-pcode) DEFAULT=d4gl-pcode
+               ;;
+               d4gl-ccode) DEFAULT=d4gl-ccode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-pcode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-ccode
+               ;;
+               aubit) DEFAULT=aubit
+               ;;
+               querix) DEFAULT=querix
+               ;;
+
+			   ################anything else is make parameter:##############
+			   *)   		PARAMS="$a $PARAMS"
+
+
+			  ;;
+			  ####
+			  esac
+	          ####
+	        fi
+            ;;
+
+        ####
+		esac
+        ####
+
+	####
+	done
+    ####
+fi
+
+	if [ "$DEFAULT" = "" ]
+    then
+        #we need to explicitly sent this as variable to makefiele, because
+        #make don't store targets in MAKEFLAGS, so we would have no way
+        #to recognise which compielr we are using:
+		DEFAULT=aubit
+    fi
+
+
+	if [ "$PROGS" = "" ]
+	then
+
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"
+		then
+			PROGS=`ls *$MK`
+	    else
+	        echo "ERROR: No .mk files in $PWD"
+	        exit 34
+	    fi
+	fi
+
+	if [ "$LOG" = "1" ]
+	then
+		echo "Logging make to $LOGFILE"
+	fi
+
+	#####################
+	for ONEPROG in $PROGS
+    #####################
+    do
+        echo "aMaking $ONEPROG"
+
+		#assume make file will be an composite
+		COMPOSITE_IS_TMP=1
+
+		if [ "$PARAM_PATH" != "" ]; then
+            cd $PARAM_PATH
+        fi
+
+        if [ "$USER" = "" ]
+        then
+			USER=unknown
+        fi
+
+		COMPOSITE=/tmp/$USER-$ONEPROG
+
+		if test "$CLEANOBJECTS" = "1"
+	    then
+            $MAKE -f $ONEPROG clean DEFAULT=$DEFAULT
+        fi
+
+		if test "$CLEANTARGET" = "1"
+	    then
+            $MAKE -f $ONEPROG clean.target DEFAULT=$DEFAULT
+        fi
+
+		if [ "$ONEPROG" = "allsinglelibs.mk" ]
+        then
+			if [ "$ONEPROG" != "$PROGS" ]
+            then
+				#echo x"$ONEPROG"x != x"$PROGS"x
+				echo "Ignoring $ONEPROG"
+				continue
+            fi
+		fi
+
+        #If mk file has no insludes, add them
+		HAS_INCLUDE=`grep 'include ' $ONEPROG`
+        if [ "$HAS_INCLUDE" = "" ]; then
+		#RET=$?
+		#if test $RET != "0"
+			if [ "$VERBOSE" = "1" ]
+            then
+					echo "Adding include..."
+            fi
+			OVERRIDEINCLUDE=1
+        fi
+
+		if test "$OVERRIDEINCLUDE" = "1"
+        then
+			if [ "$VERBOSE" = "1" ]
+            then
+					echo "Overriding include..."
+            fi
+
+			INCLCMT="#include "
+			sed -e "s%include %$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
+	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
+
+		else
+			COMPOSITE=$ONEPROG
+			COMPOSITE_IS_TMP=0
+		fi
+
+		if [ "$VERBOSE" = "1" ]
+        then
+            echo Command is: $MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
+        fi
+
+		if [ "$LOG" = "1" ]
+		then
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT > $LOGFILE 2>&1
+        else
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
+        fi
+
+        #Strange: make exits with 99 like this:
+		#make[1]: *** [AZ4.ao] Error 99
+        #but I get number 2 here. Maybe Make does not exit with error code
+        #returned by failed command, and sets it's own error cod instad?
+		RET=$?
+
+		if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+			if [ "$VERBOSE" = "1" ]
+	        then
+	            echo "Removing temp $COMPOSITE"
+	        fi
+			rm $COMPOSITE
+        fi
+
+
+		if test $RET != "0"
+		then
+			if [ "$VERBOSE" = "1" ]
+	        then
+				#user will see error messages comming from make already:
+				echo "ERROR: amake failed with code $RET."
+            fi
+
+			if [ "$LOG" = "1" ]
+			then
+				echo "See $LOGFILE"
+            fi
+
+			#this is silly: if we want to check for error files,
+            #we should check for the ones we really created by this run
+            #of amake, not for any err files in current durectory, that may
+            #belong to unrelated programs.
+			#ls *.err > /dev/null 2>&1
+			#RET2=$?
+			#if test $RET2 = "0"
+			#then
+			#	if [ "$VERBOSE" = "1" ]
+		    #    then
+			#		echo "See .err files generated"
+            #    fi
+            #fi
+
+			if ! [ "$IGNOREERROR" = "1" ]
+            then
+				if [ "$PARAM_PATH" != "" ]; then
+		            cd -
+        		fi
+				break
+				#exit $RET
+            fi
+		fi
+
+    ####
+	done
+    ####
+
+
+if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+	#otherwise we would remove the "real" .mk file!
+	if test -f $COMPOSITE; then
+		if [ "$VERBOSE" = "1" ]; then
+			echo "Removing temp $COMPOSITE"
+		fi
+		rm $COMPOSITE
+    fi
+fi
+
+if test -f $COMPOSITE.tmp; then
+	if [ "$VERBOSE" = "1" ]; then
+		echo "Removing temp $COMPOSITE.tmp"
+	fi
+	rm $COMPOSITE.tmp
+fi
+
+if [ "$PARAM_PATH" != "" ]; then
+    cd -
+fi
+
+exit $RET
+
+#------------------------------- EOF ----------------------------------
+

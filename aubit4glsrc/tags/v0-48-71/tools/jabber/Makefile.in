@@ -1,0 +1,104 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   Jabber makefile	   		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.11 2004-10-04 13:50:05 afalout Exp $
+#
+
+ROOT        =../..
+LIBROOT		=${ROOT}/lib
+
+include ../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Settings
+## ==================================================================
+
+AMAKE		=../../bin/amake
+AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
+#AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
+
+ifneq "@JABBERBUILD@" "no"
+    ALL 	=test_im
+else
+    ALL 	=no_libs
+endif
+
+CFLAGS		+=@IKSEMEL_I_FLAGS@
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+
+test_im:
+	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
+
+#lib4glim.o:
+#	${CC} lib4glim.c -c -o $@
+
+libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
+${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel @IKSEMEL_L_FLAGS@
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} ${LIBROOT}/$@.a
+endif
+
+
+no_libs:
+	@echo "IksEmEl library was not detected on your system. Stop."
+
+## ==================================================================
+##                              Testing
+## ==================================================================
+
+#lib4glim can be compiled as executable for testing:
+exec4glim: lib4glim.c
+	${CC} lib4glim.c -o exec4glim -liksemel -D__ASEXEC__
+
+#if you compile lib4glim.c as executable, then you can run it from command
+#line, like this. (note: in that case you will need configuration file,
+#"4glim.conf" that lokks like this:
+#	LOG mylogfile.log
+#	DEBUG
+#	USER myusername@jabber.org
+#	PASS mypassword
+test: exec4glim
+	echo "This is my message to you" | exec4glim
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+clean: clean.test
+	${RM} *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log *${SO_EXT} *.dll
+
+clean.test:
+	${SH} ${AMAKE} test_im clean
+
+
+#------------------------------ EOF ---------------------------------

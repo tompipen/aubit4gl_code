@@ -1,0 +1,1534 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   binary install make include|
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile-install.mki,v 1.84 2004-10-29 14:09:20 afalout Exp $
+#
+
+#This file is included from both source distribution root make file and
+#root makefile disrtibuted with binary distribution
+
+
+#FIXME: use install tool:
+#	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+#	${INSTALL} -m 755 -s ${FGLRUN}    ${D4GL_D4GL}
+#	@for file in ${FILES.42m}; do (set -x; ${INSTALL} -m 644 $$file ${D4GL_D4GL} ) done
+#	${INSTALL} -m 644    ${FILE1.42f} ${D4GL_D4GL}
+
+#<block for binary install Makefile ======================================>
+
+## ==================================================================
+##                    install targets
+## ==================================================================
+
+#######################################
+#Prepare and install global aubitrc
+install.aubitrc:
+ifneq "${INFILE}" ""
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
+else
+	${CP} ${INFILE} /tmp/aubitrc.tmp
+endif
+ifeq "${AUBITRCFILEEXISTS}" ""
+	${MKPATH} ${AUBITETC}
+#FIXME: following test will fail if performed on the same run when directory is created,
+#since make will evaluate it BEFORE mkdir is executed:
+ifeq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
+	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
+	chmod a+r ${AUBITETC}/aubitrc
+	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
+else 
+	@echo "======== WARNING: ${AUBITETC} is not writable. ==========="
+endif
+else
+	@echo " "
+	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
+	@echo "====================== WILL NOT OVERWRITE ======================"
+	@echo "use 'make install.aubitrc aubitrc=new' if you want to do that "
+	@echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
+	@echo " "
+endif
+else
+	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
+endif
+
+#######################################
+#allow user to install amake without compiling aubit. All files installed
+#here are also included in default "install" target.
+install.amake: install.tree install.amake.files install.aubit-config.link
+	@echo "Amake installed"
+
+install.amake.files:
+	${CP} ${AMAKE_TOBIN} $(BIN_DEST)
+	${CP} ${AMAKE_TOINCL} $(INCL_DEST)
+
+install.aubit-config.link: install.bin.install.link.dir
+#   -w file True if file exists and is writable.
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
+	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
+	${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake
+else
+	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
+endif
+
+install.bin.install.link.dir:
+	${MKPATH} ${BIN_INSTALL_LINK}
+
+#######################################
+#Create links for bin programs to location of Aubit bynary installation:
+install.links: deinstall.bin.links install.aubit-config.link install.bin.install.link.dir
+#   -w file True if file exists and is writable.
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
+	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
+	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
+else
+	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
+endif
+
+
+#This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
+#But NOT libs that are linked and not dlopen()-ed (like libESQL_ and file...)
+#Same target is in Makefile-install makefile (for binary distros)
+#Can't put targets in MAkefile-common - I should create one include makefile 
+#for targets needed by both binary and source distros 
+install.libs.conf:
+ifneq "${LDCONFIG}" "no"
+ifeq "${GREP_LD_SO_CONF}" ""
+	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
+	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+else
+	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
+endif
+else
+	@echo "ldocnfig not found on your system"
+endif
+
+#######################################
+install.libs.links: deinstall.libs.links
+	${MKPATH} ${LIB_INSTALL_LINK}
+ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+else
+	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable."
+endif
+	@echo "Links to Aubit libraries installed to ${LIB_INSTALL_LINK}/ "
+
+## ==================================================================
+##                    deinstall targets
+## ==================================================================
+
+#######################################
+#we could just drop the whole $(INSTALL_DIR) tree, but this is not very safe;
+#in the case user placed some files there (stupido!) he will hate us
+#nevertheless, so we will remove file-by-file:
+deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build \
+				deinstall.files deinstall.tree deinstall.ldconfig
+	@echo ""
+	@echo "Aubit compiler de-installed."
+	@echo "Config file in ${AUBITETC} was NOT deleted."
+
+
+#######################################
+#Deinstall all installed files:
+deinstall.files:
+#Run clean from makefiles first:
+	-${MAKE} -C $(INSTALL_DIR)/tools/test clean
+	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
+#Remove files as they are installed - Do not remove files from ${FROMHOME}
+	${RM} ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
+	${FROMROOT} ${FROMINCL} ${FROMIDE} ${FROMCONVSQL} ${FROMIMPORT}
+#Drop Autoconf support directory:
+	rm -rf $(INSTALL_DIR)/etc/config
+#files created after installation, and by Autoconf:
+	${RM} $(INSTALL_DIR)/*.${ARCHEXT} $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
+	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
+	${RM} $(addprefix $(INSTALL_DIR)/,${ALL_MAKEFILE})
+
+#######################################
+#delete installation tree (only if directories are now empty):
+deinstall.tree:
+	-rmdir $(INSTALL_DIR)/bin
+	-rmdir $(INSTALL_DIR)/lib
+	-rmdir $(INSTALL_DIR)/etc/convertsql
+	-rmdir $(INSTALL_DIR)/etc/import
+	-rmdir $(INSTALL_DIR)/etc
+	-rmdir $(INSTALL_DIR)/incl
+	-rmdir $(INSTALL_DIR)/tools/test/gui
+	-rmdir $(INSTALL_DIR)/tools/test
+	-rmdir $(INSTALL_DIR)/tools
+	-rmdir $(INSTALL_DIR)/docs
+	-rmdir $(INSTALL_DIR)
+
+#######################################
+#Whay do we need LD_LIBRARY_PATH any more? For external libs out of path, like
+#Informix ESQL/C, ODBC, GTK...
+#Remove entries added to system configuration for libraries paths
+deinstall.ldconfig:
+ifneq "${LDCONFIG}" "no"
+#remove entry from library path config file:
+ifeq "${GREP_LD_SO_CONF}" ""
+	@echo "$(INSTALL_DIR)/lib entry in ${LD_SO_CONF} does not exist."
+else
+	sed -e "/${GREP_LD_SO_CONF_REMOVE}/s/${GREP_LD_SO_CONF_REMOVE}//" ${LD_SO_CONF} > /tmp/ld_so_conf.tmp
+	mv /tmp/ld_so_conf.tmp ${LD_SO_CONF}
+	@echo "Removed ${GREP_LD_SO_CONF} entry from ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+endif
+else
+	@echo FIXME: remove stuff from .bashrc
+endif
+
+#######################################
+#remove links to libraries:
+deinstall.libs.links:
+	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+
+#######################################
+#remove links to binaries:
+deinstall.bin.links:
+	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
+
+#######################################
+#stuff left over from automatic nightly builds (aubitbuild.sh):
+deinstall.build:
+	${RM} $(INSTALL_DIR)/*.htm $(INSTALL_DIR)/*.tmp $(INSTALL_DIR)/*.html
+
+
+## ==================================================================
+##                    other targets
+## ==================================================================
+
+tt:
+	(export DEBUG=ALL; cd tools/test; sh aubit 4glc test_build.4gl)
+	(export DEBUG=ALL; cd tools/test; sh aubit 4glc -o test_build.4gl)
+
+#######################################
+#test: tt
+test:
+	${MAKE} -C tools/test test.build
+	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
+	@echo "+------------------ Runing Aubit compiled program: ------------------+"
+	A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; tools/test/test_build
+	@echo "+--------------------------------------------------------------------+"
+
+#######################################
+ldconfig:
+ifneq "${ADD_LD_LIBRARY_PATH}" ""
+ifneq "${LDCONFIG}" "no"
+	@echo "+--------------------------------------------------------------------+"
+		@echo "| Adding to ${LD_SO_CONF} :                                        |"
+	@echo "|                                                                    |"
+#the dollar sign at the end of apath:		X=`grep $$apath$$ ${LD_SO_CONF}`;\
+#means "at the end of the line", to catter for the cases when ently like
+#/opt/informix/lib/cli is already in ld.so.conf file, but we want to add
+#/opt/informix/lib, and grep thinks it's already in there
+#WARNING - THIS WILL NOT WORL IF THERE ARE SPACES IN PATHS - WHICH SHOULD
+#HOPEFULLY HAPPEN ONLY ON WINDOWS - WHERE THERE IS NO LD_LIBRARY_PATH
+#SO WE SHOULD NOT RUN THIS BLOCK ANYWAY
+#WE DO NOT RUN THIS IF LDCONFIG IS no - WHICH IT IS ON WINDOWS - BUT MAKE STILL
+#EVALUATES THIS CODE ANYWAY
+	@\
+	ADDED=0;\
+	for apath in '${ADD_LD_LIBRARY_PATH_SPACE}' ; do \
+		X=`grep "$$apath$$" "${LD_SO_CONF}"`;\
+		if test "$$X" = ""; then \
+			ADDED=1;\
+			echo "$$apath" ; \
+			echo "$$apath" >> ${LD_SO_CONF}; \
+		fi; \
+	done;\
+	if test "$$ADDED" = "0"; then \
+        echo "| Nothing added: All paths already present in ld.so.conf             |";\
+    fi;
+	@echo "|                                                                    |"
+	@ldconfig
+	@echo "| Refreshed ldconfig cache.                                          |"
+#	@echo "+--------------------------------------------------------------------+
+else
+#FIXME: and what if user is not using Bash, but some other shell?
+ifeq "$(shell  if test -f ${HOME}/.bashrc ; then echo 1; fi)" "1"
+#WARNING - must quote because of Windows, but will it expand with single quotes?
+#SHOULD NOT RUN THIS ON WINDOWS ANYWAY - NO LD_LIBRARY_PATH on Windows
+#But it will get evaluated by Make anyway
+ifeq "$(shell  grep '${ADD_LD_LIBRARY_PATH}' ${HOME}/.bashrc)" ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Adding to ${HOME}/.bashrc :                                        |"
+	@echo ' ' >> ${HOME}/.bashrc
+	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
+	@echo 'export LD_LIBRARY_PATH="$$LD_LIBRARY_PATH:${ADD_LD_LIBRARY_PATH}"' >> ${HOME}/.bashrc
+	@echo "| Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:   |"
+	@echo "${ADD_LD_LIBRARY_PATH}"
+	@echo "| Please source this file, by typing:                                |"
+	@echo "|    . ${HOME}/.bashrc                                               |"
+	@echo "| BEFORE you attempt to compile Aubit source code, or run Aubit      |"
+	@echo "| programs.                                                          |"
+#	@echo ""
+else
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| ADD_LD_LIBRARY_PATH already present in ${HOME}/.bashrc |"
+endif
+else
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| File ${HOME}/.bashrc does not exist. Please add library paths      |"
+	@echo "| manually.                                                          |"
+endif
+endif
+endif
+
+
+######################################
+#Put Aubit nihgtly cron script unser daily cron directory
+install.cron: OUT2 = ${HOME}/aubitbuild.cron
+install.cron:
+ifdef COMSPEC
+	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
+	chmod a+x /etc/cron.d/*
+#prepare the crontab to install:
+	@echo "" > ${OUT2}
+	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
+	@echo "SHELL=${SH}" >> ${OUT2}
+	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
+	@echo "" >> ${OUT2}
+	crontab ${OUT2}
+#show whats installed:
+	crontab -l
+	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"
+#Activate cron daemon as Windows service:
+	cygrunsrv -E cron
+	cygrunsrv -R cron
+	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o -e"CYGWIN=tty ntsec"
+	cygrunsrv -S cron
+	chmod 1777 /var/cron
+	chmod 1777 /var/cron/tabs
+	chmod 640 /var/cron/tabs/*
+	chgrp SYSTEM /var/cron/tabs/*
+#IS cron running?
+	ps -ef | grep cron
+#CygWin diagnostic:
+#	cygcheck -s -r -v
+	@echo "You will need ssmtp.exe IN THE PATH to get mail from cron."
+	@echo "Check your /etc/ssmtp/ssmtp.conf for 'root' 'mailhub' and 'hostname' entries."
+#	root=postmaster
+#	mailhub=aptiva
+#	hostname=istation.falout.com
+else
+	${CP} etc/aubitbuild.cron.sh /etc/cron.daily/
+	chmod a+x /etc/cron.daily/
+endif
+	@echo "aubitbuild cron script installed."
+
+####################################
+#Remove aubitbuild from cron
+deinstall.cron:
+ifdef COMSPEC
+	${RM} /etc/cron.d/aubitbuild.cron.sh 
+	crontab -r
+	crontab -l
+else
+	${RM} /etc/cron.daily/aubitbuild.cron.sh 
+endif
+	@echo "aubitbuild cron script removed."
+
+show.gcc.define:
+	${CC} -E -dM - </dev/null
+
+libltdl:
+	(cd libltdl; configure  --enable-ltdl-install --with-auxdir=../etc/config)
+	${MAKE} -C libltdl
+
+#Create Windows setup wizzard executable:
+winsetup:
+ifndef NOREFRESH
+	(cd ${AUBITDIR}; config.status --file etc/aubit-InnoSetup.iss)
+endif
+	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
+#	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
+	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")
+#Setup program should now be at ${AUBITDIR}\etc\Output\setup.exe
+
+#</block for binary install Makefile ===================================>
+
+
+## ==================================================================
+##                    Third-party products installation settings
+## ==================================================================
+
+##################
+# 1: iODBC ODBC manager
+IODBC_INFO          =http://www.iodbc.org
+IODBC_PATH			=http://www.iodbc.org/dist
+#Archive contains Driver Manager Runtime (iODBC Shared Libraries &
+#Template ".odbc.ini" file) in a RPM (release 3.0.6)
+IODBC_RUNTIME_RPM   =libiodbc-3.0.6-2.i386-glibc21.rpm
+#Archive contains Driver Manager Development (iODBC Static Libraries &
+#Header files) in a RPM Package (release 3.0.6)
+IODBC_SDK_RPM       =libiodbc-devel-3.0.6-2.i386-glibc21.rpm
+#Archive contains graphical administrator and plugins in a RPM
+#package (release 3.0.6)
+IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
+
+
+##################
+# 2: PDF pdflib
+PDFLIB_INFO			=http://www.pdflib.com
+
+#Unix source code:
+PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/503src
+PDFLIB_SRC          =PDFlib-Lite-5.0.3-Unix-src
+PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
+
+#Linux binary:
+#NOTE: Binary packages of PDFlib will require commertial licensing, otherwise they will print
+#stuff on your pages! We are installing SRC package by default - not binary
+PDFLIB_BIN_PATH		=http://www.pdflib.com/products/pdflib/download/503
+PDFLIB_BIN_TGZ		=PDFlib-5.0.3-Linux.tar.gz
+
+#Windows (source?):
+PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
+PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
+PDFLIB_WIN_ZIP		=${PDFLIB_WIN_NAME}.zip
+
+
+##################
+# 3: XML-RPC
+XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
+XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
+XMLRPC_RPM          =xmlrpc-c-0.9.9-1.i386.rpm
+XMLRPC_DEV_RPM      =xmlrpc-c-devel-0.9.9-1.i386.rpm
+#        xmlrpc-c is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_client.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmlparse.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+
+
+#Looks like RH no longer has ftp of this - try Fedora maybe?
+LIBWWW_PATH         =${RH_RPM_PATH}
+
+ifeq "${RH_RPM_VER}" "7.3"
+	LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
+endif
+ifeq "${LIBWWW_RPM}" ""
+	#default
+	LIBWWW_PATH         =ftp://rpmfind.net/linux/redhat/beta/taroon/en/as/i386/RedHat/RPMS
+	LIBWWW_RPM			=w3c-libwww-5.4.0-5.i386.rpm
+endif
+
+
+##################
+# 4: JABBER eksemel
+IKSEMEL_INFO		=http://iksemel.jabberstudio.org
+IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
+IKSEMEL_SRC         =iksemel-0.0.1
+IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
+
+##################
+# 5: swig
+SWIG_INFO           =http://www.swig.org
+SWIG_PATH           =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	SWIG_RPM			=swig-1.1p5-12.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	SWIG_RPM			=swig-1.1p5-20.i386.rpm
+endif
+ifeq "${SWIG_RPM}" ""
+	#default
+	SWIG_RPM			=swig-1.1p5-20.i386.rpm
+endif
+
+##################
+# 6: doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
+GRAPHVIZ_INFO		=http://www.research.att.com/sw/tools/graphviz/
+GRAPHVIZ_PATH       =http://www.graphviz.org/pub/graphviz
+GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
+
+##################
+# 7: SAPODBC
+SAPODBC_INFO        =http://www.sapdb.org
+SAPODBC_PATH		=ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
+
+##################
+# 8: DoxyGen
+DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
+DOXYGEN_PATH		=${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	DOXYGEN_RPM			=doxygen-1.2.14-4.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	DOXYGEN_RPM			=doxygen-1.2.14-8.i386.rpm
+endif
+ifeq "${DOXYGEN_RPM}" ""
+	#default
+	DOXYGEN_RPM			=doxygen-1.2.14-8.i386.rpm
+endif
+
+
+##################
+# 9: IFX ESQL/C and ODBC
+IFXESQLC_INFO       =http://www.ibm.com/informix
+#CSDK includes ESQL/C compiler
+IFXESQLC_PATH       =ftp://ftp.software.ibm.com/software/data/informix/downloads
+IFXESQLC_BIN_ZIP	=csdk280_uc21lin_ux.zip
+ifeq "${INFORMIXDIR}" ""
+	INFORMIXDIR=/opt/informix
+endif
+
+##################
+# 10: PGODBC
+PGODBC_INFO         =http://gborg.postgresql.org/project/psqlodbc
+PGODBC_PATH         =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
+endif
+ifeq "${PGODBC_RPM}" ""
+    #default
+	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
+endif
+PGODBC_SRC_PATH     =ftp://ftp.us.postgresql.org/odbc/versions/src
+PGODBC_SRC_SRC      =psqlodbc-7.2.5
+PGODBC_SRC_TGZ      =${PGODBC_SRC_SRC}.tar.gz
+
+##################
+# 11: unixODBC DEV headers
+#We will often find unixODBC already installed, but without header files...
+UNIXODBCDEV_INFO	=http://www.unixodbc.org
+UNIXODBCDEV_PATH    =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.2-3.i386.rpm
+endif
+ifeq "${UNIXODBCDEV_RPM}" ""
+    #default
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.2-3.i386.rpm
+endif
+
+
+##################
+# 12: unixODBC
+UNIXODBC_INFO		=http://www.unixodbc.org
+UNIXODBC_PATH       =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBC_RPM		=unixODBC-2.2.2-3.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.2-3.i386.rpm
+endif
+ifeq "${UNIXODBC_RPM}" ""
+    #default
+	UNIXODBC_RPM		=unixODBC-2.2.2-3.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.2-3.i386.rpm
+endif
+
+##################
+# 13: MPZ - gnu mp
+MPZ_INFO            =http://swox.com/gmp
+MPZ_MANUAL			=http://www.gnu.org/manual/gmp/html_mono/gmp.html
+MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
+MPZ_SRC             =gmp-4.1.2
+MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
+
+##################
+# 14: PG ESQL, also (USED TO) contain ODBC headers
+PGESQLC_INFO        =http://www.postgresql.org
+PGESQLC_PATH        =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	PGESQLC_RPM         =postgresql-devel-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGESQLC_RPM         =postgresql-devel-7.2.2-1.i386.rpm
+endif
+ifeq "${PGESQLC_RPM}" ""
+	#default
+	PGESQLC_RPM         =postgresql-devel-7.2.2-1.i386.rpm
+endif
+
+##################
+# 15: libcheck
+CHECK_INFO			=http://check.sourceforge.net/
+CHECK_PATH			=http://download.sourceforge.net/check
+CHECK_RPM			=check-0.8.3-1.i386.rpm
+
+##################
+# 16: SAPDB ESQL/C, also needed by ODBC drivers
+SAPDBESQL_INFO      =http://www.sapdb.org
+SAPDBESQL_PATH      =ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
+
+##################
+# 17: Sun RPC - XDR and Sun RPC
+SUNRPC_INFO         =
+
+##################
+# 18: GTK+ - GUI
+#TODO-merge with item 21
+ifdef COMSPEC
+	#abandoned - GTK_INFO		=http://www.dropline.net/gtk
+	GTK_INFO			=www.gimp.org/win32 or http://gladewin32.sourceforge.net/
+else
+	GTK_INFO			=http://www.gtk.org/
+endif
+##################
+# 19: curses - TUI
+CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
+
+##################
+# 20: SAP DB environment, neeed by ESQLC precompiler
+SAPDBENV_INFO       =http://www.sapdb.org
+SAPDBENV_PATH       =ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPDBENV_RPM        =sapdb-ind-7.3.0.29-1.i386.rpm
+
+#################
+# 21: GTK+ development packages - pkg-config info and headers
+GTK_DEV_INFO		=http://www.gtk.org/
+GTK_DEV_PATH        =${RH_RPM_PATH}
+
+ifeq "${RH_RPM_VER}" "8.0"
+	GTK_GTK_DEV_RPM		=gtk2-devel-2.0.6-8.i386.rpm
+	GTK_GDK_DEV_RPM		=gdk-pixbuf-devel-0.18.0-4.i386.rpm
+	GTK_GLIB_DEV_RPM	=glib2-devel-2.0.6-2.i386.rpm
+
+	GTK_PANGO_DEV_RPM   =pango-devel-1.1.1-1.i386.rpm
+	GTK_ATK_DEV_RPM     =atk-devel-1.0.3-1.i386.rpm
+	XFREE86_DEV_RPM     =XFree86-devel-4.2.0-72.i386.rpm
+	GNOME_LIBS_DEVEL    =gnome-libs-devel-1.4.1.2.90-22.i386.rpm
+
+	FREETYPE_DEV_RPM    =freetype-devel-2.1.2-7.i386.rpm
+	FONTCONFIG_DEV_RPM	=fontconfig-devel-2.0-3.i386.rpm
+	XFT_DEV_RPM         =Xft-devel-2.0-1.i386.rpm
+    GTKPLUS_DEV_RPM     =gtk+-devel-1.2.10-22.i386.rpm
+	ORBIT_DEV_RPM       =ORBit-devel-0.5.13-5.i386.rpm
+	IMLIB_DEV_RPM		=imlib-devel-1.9.13-9.i386.rpm
+	ESOUND_DEV_RPM      =esound-devel-0.2.28-1.i386.rpm
+
+	GLIB_DEV_RPM		=glib-devel-1.2.10-8.i386.rpm
+	LIBTIFF_DEV_RPM		=libtiff-devel-3.5.7-7.i386.rpm
+	LIBJPEG_DEV_RPM		=libjpeg-devel-6b-21.i386.rpm
+	LIBUNGIF_DEV_RPM	=libungif-devel-4.1.0-13.i386.rpm
+	AUDIOFILE_DEV_RPM	=audiofile-devel-0.2.3-3.i386.rpm
+endif
+ifeq "${GTK_GTK_DEV_RPM}" ""
+	#default
+	GTK_GTK_DEV_RPM=notset
+endif
+
+#################
+# 22: Yacc (Bison)
+#ftp://ftp.gnu.org/gnu/bison/bison-1.875.tar.gz
+
+
+#################
+# 23: Lclint (Splint) C code checker:
+#See http://www.splint.org
+
+
+##################
+# 24: Electric Fence
+#info: http://perens.com/FreeSoftware/ and http://freshmeat.net/projects/efence/?topic_id=47
+#ftp://ftp.perens.com/pub/ElectricFence/
+
+#################
+# 26: SQLite
+SQLITE_INFO=http://www.hwaci.com/sw/sqlite/index.html
+SQLITE_PATH=http://www.hwaci.com/sw/sqlite/
+#RPM containing documentation, header files, and static library:
+SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
+#RPM containing shared libraries and the sqlite command-line program.
+SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
+
+SQLITE_WIN_PATH=http://sqlite.org
+SQLITE_WIN_LIB=sqlitedll.zip
+SQLITE_WIN_EXE=sqlite.zip
+
+#ODBC driver for SQLite:
+SQLITE_ODBC_INFO=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_PATH=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_SRC=sqliteodbc-0.53
+SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
+SQLITE_ODBC_WIN=sqliteodbc-win32.zip
+
+
+#################
+# 27: libspopc
+SPOPC_INFO=http://brouits.free.fr/libspopc/
+SPOPC_PATH=http://brouits.free.fr/libspopc
+SPOPC_SRC=libspopc-0.5.7
+SPOPC_TGZ_SRC=${SPOPC_SRC}.tgz
+
+##################
+# 28: cint
+CINT_INFO=http://root.cern.ch/root/Cint.html
+#ifdef COMSPEC
+#	#This is MSVC version and creates nmake makefile - no good
+#	CINT_BIN_WIN=cintwin
+#	CINT_PATH=ftp://root.cern.ch/root/
+#	CINT_TAR_GZ_BIN_WIN=${CINT_BIN_WIN}.tar.gz
+#	#See:
+#	#http://darbujan.fzu.cz/~cint/03/msg00425.html
+#	#We have to get source code and compile it with patches available at:
+#	#
+#	
+#else
+#http://www-d0.fnal.gov/D0Code/source/CINT/platform/mingw
+#http://www-d0.fnal.gov/cgi-bin/cvsweb.cgi/CINT/
+	CINT_SRC=cint5.15
+	CINT_PATH=ftp://root.cern.ch/root/
+	CINT_TAR_GZ_SRC=${CINT_SRC}.tar.gz	
+#endif
+
+
+##################
+# 29: PDcurses - TUI
+PDCURSES_INFO			=http://pdcurses.sourceforge.net/
+PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
+PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
+PDCURSES_SRC			=pdcurs26
+PDCURSES_SRC_ZIP		=${PDCURSES_SRC}.zip
+
+##################
+# 30: PCRE - Perl Compatible Regular Expressions 
+PCRE_INFO				=http://www.pcre.org/
+PCRE_SRC_PATH			=ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre
+PCRE_SRC				=pcre-5.0
+PCRE_SRC_GZ				=${PCRE_SRC}.tar.gz
+#Windows installer (with all dependencies)
+#PCRE_WIN_PATH			=http://gnuwin32.sourceforge.net/downlinks/pcre-bin.php
+PCRE_WIN_PATH			=http://unc.dl.sourceforge.net/sourceforge/gnuwin32
+PCRE_WIN_INSTALLER		=pcre-4.4-bin.exe
+
+
+##################
+# 31: SXML
+SXML_INFO				=http://freshmeat.net/projects/sxml
+SXML_SRC_PATH			=http://scain.firenze.net
+SXML_SRC				=sxml
+SXML_SRC_GZ				=${SXML_SRC}.tar.gz
+
+#################
+# 32: Valgrind
+#Valgrind is Linux only - no Windows port
+VALGRING_INFO			=http://valgrind.kde.org
+
+
+
+
+
+
+
+
+
+
+##################
+# 33: PostgreSQL with Informix compatibility patches
+PGIFX_INFO				=http://gborg.postgresql.org/project/pginformix/projdisplay.php
+PGIFX_SRC_PATH			=http://informix.fastcrypt.com
+PGIFX_SRC				=postgresql081704
+PGIFX_SRC_GZ			=${PGIFX_SRC}.tar.gz
+PGIFX_INSTPATH			=/opt/pg-ifx/${PGIFX_SRC}
+PGIFX_CTL				=${PGIFX_INSTPATH}/pg-ifx-ctl-${PGIFX_SRC}
+
+
+## ==================================================================
+##                    Third-party products installation
+## ==================================================================
+
+#NOTE: settings are in Makefiele-common.in
+
+install.optional: missing.optional
+install.missing: missing.optional
+missing.optional: ${INSTALL_MISSING_OPTIONAL}
+	@echo " "
+	@echo "All missing optional components installed. Please re-run 'configure' to detect changes."
+	@echo " "
+
+show.missing:
+	@echo "List of missing optional components not detected by Autoconf:"
+	@echo ""
+	@echo "${INSTALL_MISSING_OPTIONAL}"
+	@echo ""
+	@echo "Use 'make install.missing' to install them all, or invoke individual targets."
+	@echo ""
+
+########################
+# 1: Install iODBC ODBC manager
+install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
+#Conflicts with unixODBC:
+	-cp /etc/odbc.ini /etc/odbc.ini.${TIME}.bak
+	-cp /etc/odbcinst.ini /etc/odbcinst.ini.${TIME}.bak
+#with unixODBC-devel
+	-cp /usr/include/sql.h /usr/include/sql.h.${TIME}.bak
+	-cp /usr/include/sqlext.h /usr/include/sqlext.h.${TIME}.bak
+	-cp /usr/include/sqltypes.h /usr/include/sqltypes.h.${TIME}.bak
+	${RPM} -i --replacefiles $^
+	@echo " "
+	@echo "Created backup copies of following files, if they existed:"
+	@echo "   /etc/odbc.ini /etc/odbcinst.ini /usr/include/sql.h"
+	@echo "   /usr/include/sqlext.h /usr/include/sqltypes.h"
+	@echo "by adding extension <current_time>.bak to them."
+	@echo "Please review, and edit if appropriate."
+	@echo "Package info & manuals: ${IODBC_INFO}"
+	@echo " "
+	@echo "iODBC ODBC manager installed. Please re-run 'configure' to detect changes."
+	@echo " "
+
+########################
+# 2: Install PDFlib:
+
+
+ifdef COMSPEC
+install.pdflib: ${PDFLIB_WIN_ZIP}
+	unzip $^ -d ${SYSTEMDRIVE}/tmp
+#Copy and rename only dll/h/lib files (must add lib prefix for Autoconf to find them)
+	${MKPATH} /usr/local/lib/
+	${MKPATH} /usr/local/include
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.dll /usr/local/lib/libpdf.dll
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.lib /usr/local/lib/libpdf.lib
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.h /usr/local/include
+else
+install.pdflib: ${PDFLIB_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${PDFLIB_SRC}; ./configure; make; make install
+endif
+	@echo "Package info & manuals: ${PDFLIB_INFO}"
+	@echo " "
+	@echo "PDFlib compiled and installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#   - add LIBDIR to the `LD_RUN_PATH' environment variable
+#     during linking
+#   - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+
+######################
+# 3: install XML-RPC and libWWW
+install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
+	${RPM} -Uvh $^
+	@echo "Package info & manuals: ${XMLRPC_INFO}"
+	@echo " "
+	@echo " **************** WARNING ! ********************"
+	@echo " In some packages of libwwwxml, there is no link between "
+	@echo "	libwwwxml.so.0.1.0 and libwwwxml.so - if Aubit configure script fails to "
+	@echo " detect XML_RPC libraries, check this, and if needed creat it manually:"
+	-ln -s /usr/lib/libmd5.so.0.1.0       /usr/lib/libmd5.so
+	-ln -s /usr/lib/libxmltok.so.0.1.0    /usr/lib/libxmltok.so
+	-ln -s /usr/lib/libxmlparse.so.0.1.0  /usr/lib/libxmlparse.so
+	-ln -s /usr/lib/libwwwxml.so.0.1.0    /usr/lib/libwwwxml.so
+	-ln -s /usr/lib/libwwwinit.so.0.1.0   /usr/lib/libwwwinit.so
+	-ln -s /usr/lib/libwwwapp.so.0.1.0    /usr/lib/libwwwapp.so
+	-ln -s /usr/lib/libwwwhtml.so.0.1.0   /usr/lib/libwwwhtml.so
+	-ln -s /usr/lib/libwwwtelnet.so.0.1.0 /usr/lib/libwwwtelnet.so
+	-ln -s /usr/lib/libwwwnews.so.0.1.0   /usr/lib/libwwwnews.so
+	-ln -s /usr/lib/libwwwhttp.so.0.1.0   /usr/lib/libwwwhttp.so
+	-ln -s /usr/lib/libwwwmime.so.0.1.0   /usr/lib/libwwwmime.so
+	-ln -s /usr/lib/libwwwgopher.so.0.1.0 /usr/lib/libwwwgopher.so
+	-ln -s /usr/lib/libwwwftp.so.0.1.0    /usr/lib/libwwwftp.so
+	-ln -s /usr/lib/libwwwfile.so.0.1.0   /usr/lib/libwwwfile.so
+	-ln -s /usr/lib/libwwwdir.so.0.1.0    /usr/lib/libwwwdir.so
+	-ln -s /usr/lib/libwwwcache.so.0.1.0  /usr/lib/libwwwcache.so
+	-ln -s /usr/lib/libwwwstream.so.0.1.0 /usr/lib/libwwwstream.so
+	-ln -s /usr/lib/libwwwmux.so.0.1.0    /usr/lib/libwwwmux.so
+	-ln -s /usr/lib/libwwwtrans.so.0.1.0  /usr/lib/libwwwtrans.so
+	-ln -s /usr/lib/libwwwcore.so.0.1.0   /usr/lib/libwwwcore.so
+	-ln -s /usr/lib/libwwwutils.so.0.1.0  /usr/lib/libwwwutils.so
+	-ln -s /usr/lib/libwwwzip.so.0.1.0    /usr/lib/libwwwzip.so
+	@echo " "
+	@echo "libWWW and XML-RPC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 4: Install IksEmEl Jabber lib:
+install.iksemel: ${IKSEMEL_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
+	@echo "Package info & manuals: ${IKSEMEL_INFO}"
+	@echo " "
+	@echo "IksEmEl compiled and installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#####################
+# 5: Install SWIG library wraper:
+install.swig: ${SWIG_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SWIG_INFO}"
+	@echo " "
+	@echo "SWIG installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 6: install GRAPHVIZ that contains Dot tool
+install.dot: ${GRAPHVIZ_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${GRAPHVIZ_INFO}"
+	@echo " "
+	@echo "Graphviz and Dot tool installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 7: Install SAP DB ODBC driver
+install.sapdb.odbc: install.sapdb.odbc.first install.sapdb.env
+install.sapdb.odbc.first: ${SAPODBC_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SAPODBC_INFO}"
+	@echo " "
+	@echo "SAP DB ODBC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#####################
+# 8: Install DoxyGen documentation tool
+install.doxygen: ${DOXYGEN_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${DOXYGEN_INFO}"
+	@echo " "
+	@echo "DOXYGEN installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 9: Install Informix ESQL/C compiler and ODBC libraries
+install.ifx.esql: ${IFXESQLC_BIN_ZIP}
+	mkdir -p /tmp/ifxcsdk
+	unzip $^ -d /tmp/ifxcsdk
+	mkdir -p ${INFORMIXDIR}
+#this will automatically create group 'informix':
+	-useradd informix
+	export INFORMIXDIR=${INFORMIXDIR};	rpm -i --relocate /opt/informix=${INFORMIXDIR} csdk.rpm
+#ERROR: INFORMIXDIR does not match the target directory name provided in
+#the rpm command.  If you are not installing this product in the
+#default INFORMIXDIR name for Linux (/opt/informix), you MUST provide
+#your INFORMIXDIR directory name with the --prefix (RPM 2.X syntax)
+#or --relocate (RPM 3.X syntax) parameter in your rpm -i command line.
+	@echo "Package info & manuals: ${IFXESQLC_INFO}"
+	@echo " "
+	@echo "Informix CSDK (contains ESQL/C and ODBC) installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 10: Install PostgreSQL ODBC libraries:
+install.pg.odbc: install.pg.src install.pg.odbc.first
+install.pg.odbc.first: ${PGODBC_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${PGODBC_INFO}"
+	@echo " "
+	@echo "PostreSQL ODBC libraries installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#we need the source code to extract iodbc.h and other headers, missing in other PG distributions:
+install.pg.src: ${PGODBC_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+#	cd /tmp/${PGODBC_SRC_SRC}; ${SH} autogen.sh; ./configure; make; make install
+	mkdir -p /usr/include/pgsql/iodbc
+	cp /tmp/${PGODBC_SRC_SRC}/iodbc.h /tmp/${PGODBC_SRC_SRC}/isql.h /tmp/${PGODBC_SRC_SRC}/isqlext.h /usr/include/pgsql/iodbc
+	@echo " "
+	@echo "Package info & manuals: ${PGODBC_INFO}"
+	@echo " "
+	@echo "PostgreSQL ODBC source code extracted, header files installed."
+	@echo "Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 11: install unixODBC development package, including header files
+install.unixodbcdev: ${UNIXODBCDEV_RPM}
+#Conflicts with iODBC:
+	-cp /usr/include/sql.h /usr/include/sql.h.${TIME}.bak
+	-cp /usr/include/sqlext.h /usr/include/sqlext.h.${TIME}.bak
+	-cp /usr/include/sqltypes.h /usr/include/sqltypes.h.${TIME}.bak
+	${RPM} -i --replacefiles $^
+	@echo " "
+	@echo "Created backup copies of following files, if they existed:"
+	@echo "   /usr/include/sql.h"
+	@echo "   /usr/include/sqlext.h /usr/include/sqltypes.h"
+	@echo "by adding extension <current_time>.bak to them."
+	@echo "Please review, and edit if appropriate."
+	@echo " "
+	@echo "Package info & manuals: ${UNIXODBCDEV_INFO}"
+	@echo " "
+	@echo "unixODBC DEV package installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 12: Install unixODBC libraries, development and GUI manager packages
+install.unixodbc: install.unixodbc.first install.unixodbcdev
+install.unixodbc.first: ${UNIXODBC_RPM} ${UNIXODBCDEV_GUI_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${UNIXODBC_INFO}"
+	@echo " "
+	@echo "unixODBC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 13: Install MPZ GNU Multiple precision library:
+install.mpz: ${MPZ_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${MPZ_SRC}; ./configure; make; make install
+	@echo "Package info & manuals: ${MPZ_INFO}"
+	@echo " "
+	@echo "MPZ library compiled and installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# 14: Install PostgreSQL ESQL/C pre-compiler:
+#install.pg.esql: ${PGESQLC_RPM}
+#	${RPM} -i $^
+#install.pg.esql: get.pg.esql.cvs
+install.pg.esql: get.pg.esql.cvs
+#PostgreSQL needs Bison version 1.875 or later.
+#	export YACC=/opt/bison-1.875-inst/bin/bison; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
+	export YACC=${YACC}; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
+	-cd /usr/src/pgsql-server/src/interfaces/ecpg; make
+#First make will fail with:
+#mv -f y.tab.c ./preproc.c
+#mv: cannot stat `y.tab.c': No such file or directory
+	cp /usr/src/pgsql-server/src/interfaces/ecpg/preproc/preproc.tab.c 	/usr/src/pgsql-server/src/interfaces/ecpg/preproc/y.tab.c
+	cp /usr/src/pgsql-server/src/interfaces/ecpg/preproc/preproc.tab.h  /usr/src/pgsql-server/src/interfaces/ecpg/preproc/y.tab.h
+#one more time...
+	cd /usr/src/pgsql-server/src/interfaces/ecpg; make
+#do the installation as per --prefix
+	cd /usr/src/pgsql-server/src/interfaces/ecpg; make install
+#See if it runs:
+#	/usr/src/pgsql-server/src/interfaces/ecpg/preproc/ecpg --version
+	/opt/ecpg-cvs/bin/ecpg --version
+	@echo "Package info & manuals: ${PGESQLC_INFO}"
+	@echo " "
+	@echo "PostreSQL ESQL/C compiler installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#Get PG ecpg from CVS:
+get.pg.esql.cvs:
+	@echo "NOTE: enter 'xxx' when prompted for password:"
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot login;
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/ecpg
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.global.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/access/common/heaptuple.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/config
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/template/linux
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/GNUmakefile.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/pg_config.h.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/tas/dummy.s
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_sema.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_shmem.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.h
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/port/linux.h
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/makefiles/Makefile.linux
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.shlib
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/libpq
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/port
+
+#Apply Informix compatibility patch
+#info=http://gborg.postgresql.org/project/pginformix/projdisplay.php
+#file=ftp://gborg.postgresql.org/pub/pginformix/stable/informix.patch.tar.gz
+#or
+#ftp://gborg.postgresql.org/pub/pginformix/stable/informix.patch.gz
+#this patch was made against a REL7_4 tag of cvs, untar this into the source directory 
+#of postgres and run cat informix.diff | patch -p0 -c and then configure and build as normal
+
+	
+	
+#####################
+# 15: Install Check unit testing libraries
+install.libcheck: ${CHECK_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${CHECK_INFO}"
+	@echo " "
+	@echo "Check libraries installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+####################
+# 16: Install SADB ESQL/C:
+install.sapdb.esql: ${SAPDBESQL_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SAPDBESQL_INFO}"
+	@echo " "
+	@echo "SAP DB ESQL/C pre-compiler installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+# 17:
+install.sunrpc:
+	@echo "Package info & manuals: ${SUNRPC_INFO}"
+	@echo "FIXME: TO-DO"
+
+# 18: GTK+ libraries
+install.gtk: install.gtk.first install.gtk.dev
+install.gtk.first:
+	@echo "Package info & manuals: ${GTK_INFO}"
+	@echo "FIXME: TO-DO"
+
+# 19:
+install.curses:
+	@echo "Package info & manuals: ${CURSES_INFO}"
+	@echo "FIXME: TO-DO"
+
+# 20: SAP DB Environment, needed by ODBC driver
+install.sapdb.env: ${SAPDBENV_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SAPDBENV_INFO}"
+	@echo " "
+	@echo "SAP DB Environment installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#########################
+# 21: GTK+ dev packages:
+install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
+	${GTK_PANGO_DEV_RPM} ${GTK_ATK_DEV_RPM} ${XFREE86_DEV_RPM} ${GNOME_LIBS_DEVEL} \
+	${FREETYPE_DEV_RPM} ${FONTCONFIG_DEV_RPM} ${XFT_DEV_RPM} ${GTKPLUS_DEV_RPM} \
+	${ORBIT_DEV_RPM} ${IMLIB_DEV_RPM} ${ESOUND_DEV_RPM} ${GLIB_DEV_RPM} \
+	${LIBTIFF_DEV_RPM} ${LIBJPEG_DEV_RPM} ${LIBUNGIF_DEV_RPM} ${AUDIOFILE_DEV_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${GTK_DEV_INFO}"
+	@echo " "
+	@echo "GTK+ development packages installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#########################
+# 22: DBIx::Informix::Perform has been added to the CPAN module taxonomy and the
+#file DBIx-Informix-Perform-0.01.tar.gz will be available therein on or about 2 Apr. 2003.
+#
+#Tim Bunce has convinced the other interested person(s) in the CPAN Module
+#Namespace group that the proper name is DBIx::Perform. The original downloads
+#file is restored (was just hidden anyway) and the change to DBIx::Informix::Perform
+#will become a branch on the CVS tree, which can be merged to the trunk if we ever need it
+
+#################
+# 26: SQLite
+
+ifdef COMSPEC
+install.sqlite: ${SQLITE_WIN_LIB} ${SQLITE_WIN_EXE}
+	unzip ${SQLITE_WIN_LIB} -d ${SYSTEMDRIVE}/tmp
+	unzip ${SQLITE_WIN_EXE} -d ${SYSTEMDRIVE}/WINNT
+#	@echo ${SYSTEMROOT} #='D:\WINNT'
+#	@echo ${WINDIR}	#='D:\WINNT'
+#	cp /tmp/sqlite.exe ${SYSTEMDRIVE}/WINNT
+#We need this two so sqlite.exe can work:
+	cp ${SYSTEMDRIVE}/tmp/sqlite.def ${SYSTEMDRIVE}/WINNT/sqlite.def
+	cp ${SYSTEMDRIVE}/tmp/sqlite.dll ${SYSTEMDRIVE}/WINNT/sqlite.dll
+#We need this two so we can link Aubit
+	cp ${SYSTEMDRIVE}/tmp/sqlite.def /lib/libsqlite.def
+	cp ${SYSTEMDRIVE}/tmp/sqlite.dll /lib/libsqlite.dll
+else
+install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
+	${RPM} -i $^
+endif
+#/cygdrive/d/MinGW/bin:
+#/cygdrive/d/WINNT/system32:
+#/cygdrive/d/WINNT
+#/usr/bin:
+#/usr/local/bin:/usr/bin:/bin::/lib:
+	@echo " "
+	@echo "Package info & manuals: ${SQLITE_INFO}"
+	@echo " "
+	@echo "SQLite installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#SQLite ODBC driver:
+ifdef COMSPEC
+install.sqlite.odbc: ${SQLITE_ODBC_WIN}
+	unzip ${SQLITE_ODBC_WIN} -d ${SYSTEMDRIVE}/tmp/sqliteodbc
+	cd ${SYSTEMDRIVE}/tmp/sqliteodbc; inst.exe
+#There is no .a/.def file there, so we can't link with this anyway...
+#	cp ${SYSTEMDRIVE}/tmp/sqliteodbc/sqliteodbc.dll /lib/libsqliteodbc.dll
+else
+install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SQLITE_ODBC_SRC}; ./configure; make; make install
+endif
+	@echo " "
+	@echo "Package info & manuals: ${SQLITE_ODBC_INFO}"
+	@echo " "
+	@echo "SQLite ODBC driver installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+##################
+# 27: libspopc
+install.libspopc: ${SPOPC_TGZ_SRC}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SPOPC_SRC}; ./configure; make; make install
+	@echo " "
+	@echo "Package info & manuals: ${SPOPC_INFO}"
+	@echo " "
+	@echo "POP library installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+###################
+# 28: Cint
+#######################
+#WARNING - Cint needs -ltermcap and -lbsd
+#######################
+
+#ifdef COMSPEC
+#install.cint: ${CINT_TAR_GZ_BIN_WIN}
+#else
+install.cint: ${CINT_TAR_GZ_SRC}
+#endif
+ifdef COMSPEC
+	#must NOT be installed under cygwin, because makecint is Windows native
+	#executable and knows nothing about CygWin path mapping (cygdrive)
+	${MKPATH} /cygdrive/d/${CINT_SRC}-src
+	cd /cygdrive/d/${CINT_SRC}-src; tar -xvzf ${CYG_AUBITDIR}/$^
+	@echo "Unpacked to /cygdrive/d/${CINT_SRC}-src"
+#Not sure about this comments, should work automatically:
+#remove comments if it does.
+	@echo "Open MSYS shell and execute following commands:"	
+	@echo "cd D:\${CINT_SRC}-src"
+	@echo "Edit platform/mingw, add -D_MAX_PATH=512 to SYSMACRO and OTHMACRO lines"
+	@echo "Add -L/d/MinGW/lib to LDOPT in same file"
+	@echo "copy gcc to cc in MinGW/bin"
+	@echo "MAKE SURE YOU ARE USING MINGW GCC - AND NOT CYGWIN!!!!"	
+	@echo "Then, execute:"
+	@echo "bash ./setup platform/mingw"
+	@echo "bash ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint
+#Not sure about this:
+#Can't be compiled from CygWin because of path mangling (cygdrive)
+#So will need MinGW MSYS to compile it since .bat files provided work only
+#for MSVC and shell scripts need, well... shell!
+	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./setup platform/mingw
+	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint	
+else
+	${MKPATH} /tmp/${CINT_SRC}
+	cd /tmp/${CINT_SRC}; tar -xvzf ${AUBIT_SRC_ROOT}/$^
+#NOTE: platforms gcc_max, linux2.0_ansi, gcc_min, linux2.0, linux_RH7.3_so 
+#and linux_RH7.3_gcc3 fail on SuSE 9. Cannot use linux2.0_so_only_C becuse 
+#generated makefile for Aubit NEEDS C++ too.
+#linux_RH7.3_gcc3 works on SuSE (after installing -ltermcap and linking 
+#libbsd-compat.a to libbsd.a)
+	cd /tmp/${CINT_SRC}; ${SH} ./setup platform/linux_RH7.3_gcc3
+#With GCC 2.96 (on Aptiva) use:	
+#	cd /tmp/${CINT_SRC}; ${SH} ./setup platform/linux_RH7.3
+#NOTE: bin and lib MUST be installed in same directory, since many scripts refer
+#to $CINTSYSDIR and expect both executables AND libraries there.
+#But Cint installation script will put cint and makecint executables into
+#--bindir and EVERYTHING ELSE under --libdir, under lib and include sub-dirs.
+	cd /tmp/${CINT_SRC}; ${SH} ./INSTALLBIN --bindir=/usr/local/cint --libdir=/usr/local/cint
+endif	
+	@echo " "
+	@echo "Package info & manuals: ${CINT_INFO}"
+	@echo " "
+	@echo "CINT installed.  Please re-run 'configure' to detect changes."
+	@echo "WARNING: you MUST use './configure --with-cint=/usr/local/cint'"
+	@echo " "
+
+##################
+# 29: PDcurses
+install.pdcurses: ${PDCURSES_SRC_ZIP}
+ifdef COMSPEC
+	@echo "COMSPEC=${COMSPEC}"
+	-mkdir /tmp/${PDCURSES_SRC}
+	cd /tmp/${PDCURSES_SRC}; /bin/unzip ${CYG_AUBITDIR}/$^ -d /tmp/${PDCURSES_SRC}
+#	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
+	cd /tmp/${PDCURSES_SRC}/win32; make -f mingwin32.mak \
+		PDCURSES_HOME=d:/cygwin/tmp/pdcurs26 CC_HOME=d:/MinGW
+#There is no install target there, have to install it manually:
+	-mkdir /cygdrive/d/${PDCURSES_SRC}-mingw
+	cp panel.a pdcurses.a /cygdrive/d/${PDCURSES_SRC}-mingw
+#TODO - also need headers!	
+#Demos:
+#newdemo.exe  testcurs.exe firework.exe tuidemo.exe xmas.exe
+#Other files of possible interest:
+#pdcurses.ico pdcurses.rc w95-bcc.rsp wccwin32.lrf bccwin32.lrf
+#curses.def curses_lcc.def  
+else
+#	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	unzip $^ -d /tmp
+	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
+endif	
+	@echo " "
+	@echo "Package info & manuals: ${PDCURSES_INFO}"
+	@echo " "
+	@echo "PDcurses library installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+	
+##################
+# 30: PCRE - Perl Compatible Regular Expressions 
+ifdef COMSPEC
+install.pcre: ${PCRE_WIN_INSTALLER}
+	chmod a+x ${PCRE_WIN_INSTALLER}
+	${PCRE_WIN_INSTALLER}
+else
+install.pcre: ${PCRE_SRC_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${PCRE_SRC}; ./configure; make; make install
+endif
+	@echo " "
+	@echo "Package info & manuals: ${PCRE_INFO}"
+	@echo " "
+	@echo "PCRE installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+##################
+# 31: SXML  
+install.sxml: ${SXML_SRC_GZ}
+ifdef COMSPEC
+	cd /tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+	cd /tmp/${SXML_SRC}; ./configure; make
+#install target fails on Windows because it has hard-coded username 'root'
+#which does not exost on Windows
+#	cd /tmp/${SXML_SRC}; install -o ${USER} -g ${USER} -m 0644 libsxml.a /usr/lib
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 libsxml.a /usr/lib
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0755 libsxml.so /usr/lib/libsxml.dll
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 sxml.h /usr/include	
+	
+else
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SXML_SRC}; ./configure; make; make install	
+endif	
+
+	
+	@echo " "
+	@echo "Package info & manuals: ${SXML_INFO}"
+	@echo " "
+	@echo "SXML installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+	
+	
+##################
+# 33: PostgreSQL with Informix compatibility patches
+install.pgifx: install.pgifx.install install.pgifx.ctl install.pgifx.activate
+	@echo " "
+	@echo "Package info & manuals: ${PGIFX_INFO}"
+	@echo " "
+	@echo "PostgreSQL engine & ecpg compiler patched for Informix compatibility installed."
+	@echo "Please re-run 'configure' to detect changes, with this ./configure flags:"
+	@echo " --with-pgcompat --with-ecpg=${PGIFX_INSTPATH}"
+	@echo " --with-pgsql=${PGIFX_INSTPATH} --with-pgsqleng=${PGIFX_INSTPATH}"
+	@echo "You can now remove source code from /tmp/pghead and downloaded"
+	@echo "archive ${AUBIT_SRC_ROOT}/$^	if you wish to save disk space."
+	@echo "To change location where PG-IFX is installed, use:"
+	@echo "make install.pgifx PGIFX_INSTPATH=/some/where/to/install"
+	@echo "Add PGIFX_ACFLAGS='<configure flags>' to above command if you need to."
+	@echo ""	
+
+#Download, compile and install
+install.pgifx.install: ${PGIFX_SRC_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+#	cd /tmp/${PGIFX_SRC}/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}	
+	cd /tmp/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}
+	cd /tmp/pghead; make
+	su; cd /tmp/pghead; make install
+
+#Intialise database
+install.pgifx.activate:
+	-adduser postgres
+	mkdir -p ${PGIFX_INSTPATH}/data
+	chown postgres ${PGIFX_INSTPATH}/data
+	su -l postgres -s ${SH} -c "${PGIFX_INSTPATH}/bin/initdb -D ${PGIFX_INSTPATH}/data"
+#add stuff to config file
+	@echo "datestyle = 'informix, mdy'" >> ${PGIFX_INSTPATH}/data/postgresql.conf
+	@echo "default_delim = '|'" >> ${PGIFX_INSTPATH}/data/postgresql.conf 
+#	-${PGIFX_CTL} start
+	-${PGIFX_CTL} status
+#  	${PGIFX_INSTPATH}/bin/createdb test
+#	${PGIFX_INSTPATH}/bin/psql test
+
+#Create controll script
+install.pgifx.ctl:
+	@echo "PG_BIN='${PGIFX_INSTPATH}/bin'" > ${PGIFX_CTL}
+	@echo "PG_DATA='${PGIFX_INSTPATH}/data'" >> ${PGIFX_CTL}
+	@echo "PG_LOG='${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log'" >> ${PGIFX_CTL}
+	@echo 'case $$1 in' >> ${PGIFX_CTL}
+	@echo "start)  su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA -o ' -i' start  > \$$PG_LOG 2>&1 & \" " >> ${PGIFX_CTL}
+	@echo ";;" >> ${PGIFX_CTL}
+	@echo "stop)   su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA stop\"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "status) su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA status\"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "*)      echo "Usage: start/stop/status"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "esac" >> ${PGIFX_CTL}
+	chmod a+x ${PGIFX_CTL}
+	@echo "Use script ${PGIFX_CTL}"
+	@echo "to start/stop/status PG engine"
+	
+########################
+#Targets for downloading installation files:
+${IODBC_RUNTIME_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
+${IODBC_SDK_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_SDK_RPM}
+${IODBC_GUI_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_GUI_RPM}
+${PDFLIB_SRC_TGZ}:
+	${WGET} ${PDFLIB_PATH}/${PDFLIB_SRC_TGZ}
+${PDFLIB_WIN_ZIP}:
+	${WGET} ${PDFLIB_WIN_PATH}/$@
+${IKSEMEL_TGZ}:
+	${WGET} ${IKSEMEL_PATH}/${IKSEMEL_TGZ}
+${GRAPHVIZ_RPM}:
+	${WGET} ${GRAPHVIZ_PATH}/${GRAPHVIZ_RPM}
+${IFXESQLC_BIN_ZIP}:
+	${WGET} ${IFXESQLC_PATH}/${IFXESQLC_BIN_ZIP}
+${XMLRPC_RPM}:
+	${WGET} ${XMLRPC_PATH}/${XMLRPC_RPM}
+${XMLRPC_DEV_RPM}:
+	${WGET} ${XMLRPC_PATH}/$@
+${LIBWWW_RPM}:
+	${WGET} ${LIBWWW_PATH}/${LIBWWW_RPM}
+${SAPODBC_RPM}:
+	${WGET}  ${SAPODBC_PATH}/${SAPODBC_RPM}
+${UNIXODBCDEV_RPM}:
+	${WGET} ${UNIXODBCDEV_PATH}/${UNIXODBCDEV_RPM}
+${PGESQLC_RPM}:
+	${WGET} ${PGESQLC_PATH}/${PGESQLC_RPM}
+${PGODBC_RPM}:
+	${WGET} ${PGODBC_PATH}/${PGODBC_RPM}
+${MPZ_SRC_TGZ}:
+	${WGET} ${MPZ_PATH}/${MPZ_SRC_TGZ}
+${SWIG_RPM}:
+	${WGET} ${SWIG_PATH}/${SWIG_RPM}
+${DOXYGEN_RPM}:
+    ${WGET} ${DOXYGEN_PATH}/${DOXYGEN_RPM}
+${CHECK_RPM}:
+#NOTE: ?download
+	${WGET} ${CHECK_PATH}/${CHECK_RPM}?download
+${SAPDBESQL_RPM}:
+	${WGET} ${SAPDBESQL_PATH}/${SAPDBESQL_RPM}
+${SAPDBENV_RPM}:
+	${WGET} ${SAPDBENV_PATH}/${SAPDBENV_RPM}
+${GTK_GTK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GTK_DEV_RPM}
+${GTK_GDK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GDK_DEV_RPM}
+${GTK_GLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GLIB_DEV_RPM}
+${PGODBC_SRC_TGZ}:
+	${WGET} ${PGODBC_SRC_PATH}/$@
+${GTK_PANGO_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_PANGO_DEV_RPM}
+${GTK_ATK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_ATK_DEV_RPM}
+${XFREE86_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${XFREE86_DEV_RPM}
+${GNOME_LIBS_DEVEL}:
+	${WGET} ${GTK_DEV_PATH}/${GNOME_LIBS_DEVEL}
+${FREETYPE_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${FREETYPE_DEV_RPM}
+${FONTCONFIG_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${FONTCONFIG_DEV_RPM}
+${XFT_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${XFT_DEV_RPM}
+${GTKPLUS_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTKPLUS_DEV_RPM}
+${ORBIT_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${ORBIT_DEV_RPM}
+${IMLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${IMLIB_DEV_RPM}
+${ESOUND_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${GLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBTIFF_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBJPEG_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBUNGIF_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${AUDIOFILE_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${SQLITE_RPM_LIB}:
+	${WGET} ${SQLITE_PATH}/$@
+${SQLITE_RPM_DEV}:
+	${WGET} ${SQLITE_PATH}/$@
+${SQLITE_ODBC_TGZ_SRC}:
+	${WGET} ${SQLITE_ODBC_PATH}/$@
+${SQLITE_ODBC_WIN}:
+	${WGET} ${SQLITE_ODBC_PATH}/$@
+${SQLITE_WIN_LIB}:
+	${WGET} ${SQLITE_WIN_PATH}/$@
+${SQLITE_WIN_EXE}:
+	${WGET} ${SQLITE_WIN_PATH}/$@
+${SPOPC_TGZ_SRC}:
+	${WGET} ${SPOPC_PATH}/$@
+${CINT_TAR_GZ_SRC}:
+	${WGET} ${CINT_PATH}/$@
+${CINT_TAR_GZ_BIN_WIN}:
+	${WGET} ${CINT_PATH}/$@
+${PCRE_WIN_INSTALLER}:
+	${WGET} ${PCRE_WIN_PATH}/${PCRE_WIN_INSTALLER}
+${PCRE_SRC_GZ}:
+	${WGET} ${PCRE_SRC_PATH}/$@
+${SXML_SRC_GZ}:
+	${WGET} ${SXML_SRC_PATH}/$@
+${PDCURSES_SRC_ZIP}:
+	${WGET} ${PDCURSES_WIN_PATH}/$@
+${PGIFX_SRC_GZ}:
+	${WGET} ${PGIFX_SRC_PATH}/$@
+
+
+#############################################
+#       SQLite tests
+#############################################
+
+test.sqlite.odbc: test_sqlite_odbc test_sqlite
+	export A4GL_LEXTYPE=C; aubit 4glc test_sqlite_odbc.4gl -o test_sqlite_odbc.4ae
+	@echo "export A4GL_SQLTYPE=sqliteodbc; export A4GL_UI=TUI; export DEBUG=ALL; test_sqlite_odbc.4ae"
+	@echo " "
+	@export A4GL_SQLTYPE=sqliteodbc; export A4GL_UI=TUI; export DEBUG=ALL; xx=`test_sqlite_odbc.4ae | head -1`; if test "$$xx" = "        987"; then echo "Aubit connection to SQLite via ODBC successful."; rm test_sqlite_odbc.* ; else echo "Aubit connection to SQLite via ODBC FAILED...$$xx.."; fi
+
+test.sqlite: test_sqlite_native test_sqlite
+	export A4GL_LEXTYPE=C; aubit 4glc test_sqlite_odbc.4gl -o test_sqlite_odbc.4ae
+	@echo "export A4GL_SQLTYPE=sqlite; export A4GL_UI=TUI; export DEBUG=ALL; test_sqlite_odbc.4ae"
+	@echo " "
+	@export A4GL_SQLTYPE=sqlite; export A4GL_UI=TUI; export DEBUG=ALL; xx=`test_sqlite_odbc.4ae | head -1`; if test "$$xx" = "        987"; then echo "Aubit native connection to SQLite successful."; rm test_sqlite_odbc.* ; else echo "Aubit native connection to SQLite FAILED...$$xx.."; fi
+
+test_sqlite_odbc: clean.test.sqlite
+	@echo "main" > test_sqlite_odbc.4gl
+	@echo "define dummy integer" >> test_sqlite_odbc.4gl
+	@echo "	database mysqlitedb " >> test_sqlite_odbc.4gl
+
+test_sqlite_native: clean.test.sqlite
+	@echo "main" > test_sqlite_odbc.4gl
+	@echo "define dummy integer" >> test_sqlite_odbc.4gl
+	@echo "	database '${AUBIT_SRC_ROOT}/tools/aubit.db' " >> test_sqlite_odbc.4gl
+
+test_sqlite:
+	@echo "	declare sc1 cursor for select test from testing" >> test_sqlite_odbc.4gl
+	@echo "	foreach sc1 into dummy" >> test_sqlite_odbc.4gl
+	@echo "		display dummy" >> test_sqlite_odbc.4gl
+	@echo "	end foreach" >> test_sqlite_odbc.4gl
+	@echo "end main" >> test_sqlite_odbc.4gl
+	@echo " " >> test_sqlite_odbc.4gl
+
+clean.test.sqlite:
+	rm -f test_sqlite_odbc.*
+
+# ============================== EOF ================================
+

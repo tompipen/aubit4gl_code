@@ -1,0 +1,63 @@
+/*
+=====================================================================
+                        Source: last.reqd
+=====================================================================
+*/
+
+;
+%%
+/* programmer routines */
+/*
+# include "lex.yy.c"
+# include "lexify.c"
+*/
+
+void
+set_clobber(char *c)
+{
+	char *ptr;
+	//char *ptr2;
+	ptr=strrchr(c,'/');
+	if (ptr) { strcpy(clobber,ptr+1); return; }
+
+/* Do dos mode ? */
+	ptr=strrchr(c,'\\');
+	if (ptr) { strcpy(clobber,ptr+1); return; }
+
+	strcpy(clobber,c);
+}
+
+char *
+get_hdrdbname(void)
+{
+	return hdr_dbname;
+}
+
+void
+set_hdrdbname(char *s)
+{
+	strcpy(hdr_dbname,s);
+}
+
+//use this set_str() if YYPURE and YYLEX_PARAM are not set
+//void
+//set_str(char *s)
+//	strcpy(yylval.str,s);
+//}
+
+//use this set_str() if YYPURE and YYLEX_PARAM are set
+void
+set_str(void *p, char *s)
+{
+	YYSTYPE *y;
+	y = (YYSTYPE *) p;
+	strcpy( y->str, s );
+}
+
+
+/* ====================== last.reqd =============================== */
+
+
+/* ===================== EOF (fgl.yacc) =========================== */
+
+

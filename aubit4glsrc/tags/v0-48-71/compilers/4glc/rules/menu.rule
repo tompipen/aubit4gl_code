@@ -1,0 +1,113 @@
+/*
+=====================================================================
+                        Source: menu.rule
+=====================================================================
+*/
+
+menu_cmd	:	MENU {
+	//start_state("menu",1);
+   	menu_cnt=npush_menu();
+   	menu_cmd_cnt[menu_cnt]=1;
+   	push_blockcommand("MENU");
+        menu_blk[menu_cnt]=get_blk_no();
+	do_print_menu_1();
+	}
+	menu_title menu_commands end_menu_command {
+	//start_state("menu",0);
+	}
+;
+
+
+end_menu_command  : END_MENU {
+   print_end_menu_1(menu_blk[menu_cnt]);
+   add_continue_blockcommand ("MENU");
+print_end_menu_2(menu_blk[menu_cnt]);
+   pop_blockcommand("MENU");
+   pop_menu();
+}
+;
+
+menu_block_command : 
+	BEFORE_MENU 
+		{
+	 A4GL_lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
+		print_menu_block(menu_blk[menu_cnt],-2) ;
+                  }  
+	commands {
+		do_print_menu_block_end();
+	}
+| COMMAND 
+        opt_key 
+        menu_opt_name menu_optional_desc 
+	opt_help_no
+		{
+A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
+		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
+	 A4GL_lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
+		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
+		menu_cmd_cnt[menu_cnt]++;
+		} 
+	commands {
+		do_print_menu_block_end();
+}
+| COMMAND 
+        opt_key 
+	opt_help_no
+		{
+		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,"\"\"","\"\"",0);
+		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
+		menu_cmd_cnt[menu_cnt]++;
+		} 
+	commands {
+		do_print_menu_block_end();
+}
+;
+
+menu_commands : menu_block_command | menu_commands menu_block_command;
+
+opt_key	:	{strcpy($<str>$,"\"EMPTY\"");}
+	| key_val {sprintf($<str>$,"\"%s\"",$<str>1);};
+
+menu_opt_name	:	CHAR_VALUE {strcpy($<str>$,$<str>1); }
+| variable {strcpy($<str>$,$<str>1);}
+;
+
+menu_optional_desc	:      {strcpy($<str>$,"\"\"");}
+                        | variable {strcpy($<str>$,$<str>1);}
+                        | CHAR_VALUE {strcpy($<str>$,$<str>1);};
+
+next_option_cmd : NEXT_OPTION opt_name {
+	print_option_op('N',$<str>2,menu_blk[menu_cnt]);
+}
+;
+
+show_option_cmd : SHOW_OPTION opt_name_list {
+	print_option_op('S',$<str>2,menu_blk[menu_cnt]);
+}
+;
+
+hide_option_cmd : HIDE_OPTION opt_name_list {
+	print_option_op('H',$<str>2,menu_blk[menu_cnt]);
+}
+;
+
+opt_name	:	 
+ALL 
+{sprintf($<str>$,"MENU_ALL");}
+| CHAR_VALUE 
+| variable 
+;
+
+opt_name_list	:	opt_name
+		| 	opt_name_list KW_COMMA opt_name 
+			{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);};
+
+menu_title 	:	variable {strcpy($<str>$,$<str>1);  
+push_menu_title($<str>$);} | 
+                        CHAR_VALUE{strcpy($<str>$,$<str>1); 
+push_menu_title($<str>$);} 
+;
+
+
+/* =========================== menu.rule ============================= */
+

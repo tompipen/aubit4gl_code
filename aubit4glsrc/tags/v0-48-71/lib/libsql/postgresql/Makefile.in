@@ -1,0 +1,87 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.9 2004-10-01 14:46:44 afalout Exp $
+#
+
+ROOT    =../../..
+LIBROOT =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CPPSRC	=ConnectionException.cpp PreparedStatement.cpp \
+		postgresql.cpp PgConnection.cpp PgDriver.cpp
+
+SRC		=simple.c
+
+OBJS	=${SRC:.c=.o}
+CPPOBJS	=${CPPSRC:.cpp=.o}
+CFLAGS	+=-I.. @PGSQL_INCLUDE@ 
+#-I/usr/include/pgsql/libpq++ -I/usr/include/pgsql
+CXXFLAGS=$(CFLAGS)
+
+ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+ALL: ${ALL}
+
+#This "simple" PG plug-in with limited functionality was written by Mike
+libSQL_pg${SO_EXT}: ${LIBROOT}/libSQL_pg${SO_EXT}
+${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
+#	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@ -L/usr/local/pgsql/lib
+	${LD} ${SO_LDFLAGS} $^ @PGSQL_LFLAGS@ @PGSQL_LIBS@ -o $@
+
+#This "real" fully functional driver written in C++ was never 
+#finished by Sergio... :-(
+libSQL_pgDEVEL${SO_EXT}:${LIBROOT}/libSQL_pgDEVEL${SO_EXT}
+${LIBROOT}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
+	${LD} ${SO_LDFLAGS} $^ @PGSQL_LFLAGS@ @PGSQL_LIBS@ -o $@
+
+	
+show:
+	@echo "LD=${LD}" 
+	@echo "SO_LDFLAGS=${SO_LDFLAGS}"
+	@echo "PGSQL_LFLAGS=@PGSQL_LFLAGS@" 
+	@echo "PGSQL_LIBS=@PGSQL_LIBS@"
+	@echo "CFLAGS=${CFLAGS}"
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+
+clean:
+	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+
+#-------------------------------- EOF -------------------------------

@@ -1,0 +1,65 @@
+/*
+=====================================================================
+                        Source: prompt.rule
+=====================================================================
+*/
+
+prompt_cmd	:
+	PROMPT prompt_title opt_attributes FOR opt_char
+        variable opt_timeout opt_help_no
+        opt_attributes {
+                push_blockcommand("PROMPT");
+	A4GL_new_events();
+	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,atoi($<str>7)) ;
+}
+        prompt_key_sec {
+		if (strcmp($<str>5,"1")==0) {
+			print_prompt_forchar();
+                }
+		add_continue_blockcommand ("PROMPT");
+		print_prompt_end($<str>6);
+                pop_blockcommand("PROMPT");
+		A4GL_drop_events();
+                A4GL_lex_printcomment("/* END OF PROMPT */");
+                }
+
+;
+
+opt_timeout:  {sprintf($<str>$,"0");}
+| TIMEOUT INT_VALUE {sprintf($<str>$,$<str>2);}
+;
+
+gui_prompt_cmd :
+	PROMPT prompt_title opt_attributes  RETURNING variable {
+		print_niy("GUI PROMPT");
+	}
+;
+
+opt_char : /* empty */ {strcpy($<str>$,"0");}
+| KW_CHAR {strcpy($<str>$,"1");}
+;
+
+
+prompt_key_sec :  /* empty */ {strcpy($<str>$,"");}
+	| prompt_key_clause END_PROMPT;
+
+prompt_key_clause : on_key_command_prompt
+	| prompt_key_clause on_key_command_prompt ;
+
+on_key_command_prompt : on_key_command {
+	A4GL_add_onkey_key($<str>1);
+	print_onkey_1($<str>1);
+} commands {
+	print_onkey_2_prompt();
+}
+;
+
+
+prompt_title : fgl_expr_concat;
+
+
+
+/* ========================= prompt.rule ============================ */
+
+
+

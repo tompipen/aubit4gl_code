@@ -1,0 +1,29 @@
+/*
+=====================================================================
+                        Source: close.rule
+=====================================================================
+*/
+
+
+close_cmd	:	CLOSE_FORM form_name {
+  print_close('F',$<str>2);
+ }
+		|	CLOSE_WINDOW win_name {
+  print_close('W',$<str>2);
+}
+		|	CLOSE_STATUSBOX win_name {
+  print_close('W',$<str>2);
+}
+		|	CLOSE_DATABASE {
+  print_close('D',0);
+}
+		|	CLOSE_SESSION conn_id {
+  print_close('S',$<str>2);
+}
+		|	CLOSE fetch_cursor_name {
+  print_close('C',$<str>2);
+}
+;
+
+
+

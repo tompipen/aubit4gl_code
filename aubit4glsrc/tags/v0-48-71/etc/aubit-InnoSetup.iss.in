@@ -1,0 +1,1381 @@
+; +----------------------------------------------------------------------+
+; | Aubit 4gl Language Compiler Version $.0                              |
+; +----------------------------------------------------------------------+
+; | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+; +----------------------------------------------------------------------+
+; | This program is free software; you can redistribute it and/or modify |
+; | it under the terms of one of the following licenses:                 |
+; |                                                                      |
+; |  A) the GNU General Public License as published by the Free Software |
+; |     Foundation; either version 2 of the License, or (at your option) |
+; |     any later version.                                               |
+; |                                                                      |
+; |  B) the Aubit License as published by the Aubit Development Team and |
+; |     included in the distribution in the file: LICENSE                |
+; |                                                                      |
+; | This program is distributed in the hope that it will be useful,      |
+; | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+; | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+; | GNU General Public License for more details.                         |
+; |                                                                      |
+; | You should have received a copy of both licenses referred to here.   |
+; | If you did not, or have any questions about Aubit licensing, please  |
+; | contact afalout@ihug.co.nz                                           |
+; +----------------------------------------------------------------------+
+;
+; $Id: aubit-InnoSetup.iss.in,v 1.17 2004-10-04 13:49:59 afalout Exp $
+;
+
+
+;/**
+; * @file
+; *
+; * Script for creating "Inno Setup" Windows Wizzard install program for Aubit 4gl.
+; * To compile it, you will need "My Inno Setup Extensions" with support for Pascal scripting.
+; * See http://www.wintax.nl/isx/ and http://www.jrsoftware.org/isinfo.php
+; *
+; * @todo Resolve environment update on W2K
+; * @todo Verify if user has admin privilege before writing to HKLM (added noerror - enough?)
+; * @todo Make SQLite default if installed
+; * @todo Add Manual
+; * @todo Verify that there is no non-MinGW gcc in path before MinGW one, hiding it (or use mingw-gcc.exe in 4glc.exe instead of gcc.exe).
+; * @todo Update readme
+; * @todo shortcut to hello.exe via run.exe not working any more?
+; * @todo Don't require MinGW is installing only run-time
+; * @todo Find out why installer takes forever to create shortcuts in start menu
+; * @todo Convert readme to DOS format or HTML
+; * @todo Check if SQLite ODBC drivers are installed first, before offering to install them
+; *
+; * Maybe-todo:
+; *
+; * @todo Create shortcut to make.bat
+; * @todo Download & Install MinGW/GTK+/GWD automatically using isxdl.dll?
+; * @todo Offer to run deinstaller first, if find Aubit already installed ?
+; * @todo Add GTK+ themes files
+; */
+
+;usefull:
+;function IsAdminLoggedOn: Boolean;
+;function IsAdminLoggedOn: Boolean;
+
+;procedure StringChange(var S: String; const FromStr, ToStr: String);
+;Description: Change all occurances in S of FromStr to ToStr.
+
+
+;============================================================================================
+;                                   GENERAL SETUP SETTINGS
+;============================================================================================
+
+[Setup]
+AppName=@FULLNAME@
+AppVerName=@FULLNAME@ @AUBIT_VERSION@.@AUBIT_BUILD@
+AppPublisher=@AUBIT_PUBLISHER@
+AppPublisherURL=http://@AUBIT_WEBSITE@
+AppSupportURL=http://@AUBIT_WEBSITE@
+AppUpdatesURL=http://@AUBIT_WEBSITE@
+AppVersion=@AUBIT_VERSION@.@AUBIT_BUILD@
+AppCopyright=Copyright (C) 2003 Aubit development team
+
+;DefaultDirName={sd}\@SHORTNAME@
+DefaultDirName={pf}\@SHORTNAME@
+DefaultGroupName=@FULLNAME@
+AllowNoIcons=true
+;Aubit license:
+;LicenseFile=@IS_SOURCE@\docs\LICENSE
+;GPL:
+LicenseFile=@IS_SOURCE@\docs\COPYING
+InfoBeforeFile=@IS_SOURCE@\docs\README-Windows.txt
+;InfoAfterFile=@IS_SOURCE@\docs\changelog.txt
+;OutputBaseFilename=@FULLNAME@ @AUBIT_VERSION@.@AUBIT_BUILD@
+;where to put resulting setup exe:
+;OutputDir=c:\tmp
+;WizardImageFile=myimage.bmp
+
+
+;DisableStartupPrompt=yes
+;WindowShowCaption=yes
+;WindowVisible=no
+;BackColor=$FF8200
+;BackColor=clPurple
+;BackColor2=clBlack
+Compression=bzip/9
+;SourceDir=.
+;OutputDir=.
+;ChangesAssociations=no
+
+[_ISTool]
+EnableISX=true
+
+;============================================================================================
+;                            Installation components, types and tasks
+;============================================================================================
+
+[Components]
+Name: runtime; Description: Aubit 4GL runtime libraries; Types: full standard compact custom runtime; Flags: fixed
+Name: compiler; Description: Aubit 4GL compiler; Types: full standard compact custom
+Name: help; Description: Help and manual files; Types: full standard
+Name: 4GLexamples; Description: 4GL source code example files; Types: full standard
+Name: Shell; Description: Shell scripts files; Types: full
+Name: Make; Description: Make files (Amake and examples); Types: full
+;Name: GTK; Description: GTK+ GUI libraries; Types: full standard runtime
+Name: util; Description: "Utilities "; Types: full standard runtime
+Name: GWD; Description: GWD editor and IDE 4GL support files; Types: full
+Name: TUI; Description: Character UI support (includes CygWin library); Types: full
+Name: SQLITE; Description: SQLite RDBMS engine, demo db, GUI tool; Types: full standard
+Name: SQLITEODBC; Description: SQLite ODBC driver; Types: full
+Name: PDFLIB; Description: PDFlib library (evaluation); Types: full
+
+[Types]
+Name: standard; Description: Standard installation
+Name: runtime; Description: Run-time libraries
+Name: full; Description: Full installation
+Name: compact; Description: Compact installation
+Name: custom; Description: Custom installation; Flags: iscustom
+
+[Tasks]
+;screen to prompt user to run this taskes will appear before actual installation begins
+;task flag not valid here
+Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
+Name: "autoexec"; Description: "Add &PATH to autoexec.bat"; GroupDescription: "Other tasks:"; Flags: restart; Check: NeedToAddPathAutoexec
+;Name: "sqliteodbcinstaller"; Description: "Run &SQLite ODBC driver installer"; GroupDescription: "Other tasks:"; Check: GetSQLiteODBCinstalled
+
+[Run]
+;screen to prompt user to run this taskes will appear AFTER actual installation begins on "Complete the installation" page
+; NOTE: there seems to be a bug in InnoSetup, where when Flags: restart is encountered, "Complete the installation"
+; page will ONLY prompt for restart, and not show other items it should from this section... try invoking restart
+; some other way... or explicitly run this from DeInitializeSetup()
+
+;task flag not valid here
+;Filename: "{app}\INIT.EXE"; Parameters: "/x"
+;FIXME: convert do DOS format first:
+Filename: "{app}\README.txt"; Description: "View the README file"; Flags: postinstall shellexec skipifsilent unchecked
+;Filename: "{app}\MYPROG.EXE"; Description: "Launch application"; Flags: postinstall nowait skipifsilent unchecked
+;Components: SQLITEODBC;
+Filename: "{app}\bin\inst.exe"; Description: "Run SQLite ODBC installer"; StatusMsg: "Installing SQLite ODBC driver..."; Flags: postinstall; Check: GetSQLiteODBCinstalled
+
+;============================================================================================
+;                                   Files creation
+;============================================================================================
+
+;=========================
+;Create files (.ini, shortcuts...)
+[INI]
+Filename: {app}\@FULLNAME@ on the Web.url; Section: InternetShortcut; Key: URL; String: http://@AUBIT_WEBSITE@; Flags: uninsdeleteentry
+
+;We don't want to de-install PATH entry in autoexec.bat (Flags: uninsdeletesection;)
+;This will cause a "bad command or file name" message when autoexec.bat is run, since it will create
+;entry [Aubit4gl] in there, but all will work fine and there is no other way to add to the PATH so
+;we have to use this method:
+;Note that if NeedToAddPathAutoexec check returns True, ALL of the PATH= value will be replaced,
+;andif that happened for any reason that doe snot include ALL paths needed (GTK+, MinGW, Aubit), we will
+;end up with missing paths there....FIX THAT ! (read value of curent PATH from .ini/autoexec.bat)
+Filename: "c:\AUTOEXEC.BAT"; Section: "Aubit4gl"; Tasks: autoexec; Check: NeedToAddPathAutoexec;
+Filename: "c:\AUTOEXEC.BAT"; Section: "Aubit4gl"; Key: "set PATH"; String: """%PATH%;{code:GetAddSYSPath}"""; Tasks: autoexec; Check: NeedToAddPathAutoexec;
+
+;=========================
+;Create icons
+[Icons]
+; in Aubit programs group:
+Name: "{group}\@FULLNAME@ on the Web"; Filename: "{app}\@FULLNAME@ on the Web.url";  Comment: "Foo!"; Components: runtime
+Name: {group}\Uninstall @FULLNAME@; Filename: {uninstallexe}; Components: runtime
+Name: {group}\@FULLNAME@ Hello World; Filename: {app}\bin\run.exe; Parameters: hello.exe; WorkingDir: {app}\tools\test; IconFilename: {app}\docs\aubit4gl.ico; IconIndex: 1; Components: runtime
+Name: "{group}\Aubit Support Website"; Filename: "http://www.sf.net/projects/aubit4gl";
+Name: {group}\SQLite Explorer; Filename: {app}\bin\sqliteExplorer.exe; WorkingDir: {app}\tools; Components: SQLITE
+Name: {group}\@FULLNAME@ DOS prompt; Filename: {cmd}; WorkingDir: {app}\tools\test; IconFilename: {app}\docs\aubit4gl.ico; IconIndex: 1; Components: runtime
+; On desktop:
+Name: "{userdesktop}\Aubit"; Filename: "http://www.aubit4gl.sf.net"; Tasks: desktopicon; Comment: "Aubit project web site";
+
+;=========================
+; Create additional directory for SQLite database
+;[Dirs]
+;Name: {code:GetDataDir}; Flags: uninsneveruninstall
+
+;=============================================================================================
+;                               REGISTRY SETTINGS
+;=============================================================================================
+
+[Registry]
+;=========================
+;For current user:
+Root: HKCU; Subkey: Software\Aubit project; Flags: uninsdeletekeyifempty
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; Flags: uninsdeletekey
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: AUBITDIR; ValueData: {app}
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: GTK
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: Version; ValueData: @AUBIT_VERSION@.@AUBIT_BUILD@; Flags: uninsdeletekey
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: sqlite; Components: SQLITE; Flags: uninsdeletekey
+
+;=========================
+;All again for HKLM
+Root: HKLM; Subkey: Software\Aubit project; Flags: uninsdeletekeyifempty noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; Flags: uninsdeletekey noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: AUBITDIR; ValueData: {app}; Flags: noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: GTK; Flags: noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: Version; ValueData: @AUBIT_VERSION@.@AUBIT_BUILD@; Flags: uninsdeletekey noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: sqlite; Components: SQLITE; Flags: uninsdeletekey noerror
+
+;=========================
+;Environment:
+;On Windows 95/98/Me, you'll need to modify AUTOEXEC.BAT to set environment variables.
+;Inno Setup does not include any built-in feature for that, however you could write a
+;small program to do that and execute it via the [Run] section.
+
+;====User-specific environment variables:
+Root: HKCU; Subkey: Environment; ValueType: expandsz; ValueName: Path; ValueData: "{code:GetUserPath}{code:GetAddUSERPath}"
+;HOME is needed _ONLY_ when using CygWin Curses, to find terminfo
+Root: HKCU; Subkey: Environment; ValueType: expandsz; ValueName: HOME; ValueData: "{app}"
+
+;====Now same for system-wide environment:
+Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Session Manager\Environment; ValueType: expandsz; ValueName: Path; ValueData: "{code:GetSystemPath}{code:GetAddSYSPath}"; Flags: noerror
+;HOME is needed _ONLY_ when using CygWin Curses, to find terminfo
+Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Session Manager\Environment; ValueType: expandsz; ValueName: HOME; ValueData: "{app}"; Flags: noerror
+
+;This fake key is added just to invoke EnvUpdate function, since I did not find
+;a better way to invoke it:
+;Moved to deinit finction - Root: HKCU; Subkey: Environment; ValueType: string; ValueName: DUMMY; ValueData: {code:EnvUpdate}
+
+;NOTE: settings in "App Paths" key apply ONLY when running executable from GUI by clicking on the
+;executable, and NOT when running from DOS prompt via cmd.exe. Therefore it is pointless to
+;set this unless program will allways be executed via GUI
+
+;this will make GTK+ libraries accessible to libUI_GTK.dll plug-in
+;Key name MUST be the same as executable name:
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\libUI_GTK.dll"; Flags: uninsdeletekeyifempty
+;default key (Default) This is apparently irrelevant:
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\libUI_GTK.dll"; ValueType: string; ValueData: "{app}\lib\libUI_GTK.dll"; Flags: uninsdeletevalue
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\libUI_GTK.dll"; ValueType: string; ValueName: "Path"; ValueData: "{app};{code:GetGtkPath}\lib"; Flags: uninsdeletevalue
+
+;add MinGW (GCC, mingw32-make.exe, ...) to 4glc.exe path
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\4glc.exe"; Flags: uninsdeletekeyifempty
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\4glc.exe"; ValueType: string; ValueData: "{app}\bin\4glc.exe"; Flags: uninsdeletevalue
+;Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\4glc.exe"; ValueType: string; ValueName: "Path"; ValueData: "{app};{code:GetMinGWPath}\bin"; Flags: uninsdeletevalue
+
+;============================================================================================
+;                                   Unistall settings
+;============================================================================================
+
+[UninstallDelete]
+Type: files; Name: {app}\@FULLNAME@ on the Web.url
+Type: files; Name: {app}\tools\test\*.frm.xml
+Type: files; Name: {app}\tools\test\*.c
+Type: files; Name: {app}\tools\test\*.exe
+Type: files; Name: {app}\tools\test\*.err
+Type: files; Name: {app}\tools\test\*.glb
+Type: files; Name: {app}\tools\test\*.h
+Type: files; Name: {app}\tools\test\*.hlp
+Type: files; Name: {app}\tools\test\*.o
+Type: files; Name: {app}\tools\test\*.out
+Type: files; Name: {app}\tools\test\*.afr.xml
+Type: files; Name: {app}\tools\test\*.afr.dat
+Type: files; Name: {app}\tools\test\*.ao
+Type: files; Name: {app}\tools\test\*.warn
+
+;============================================================================================
+;                                   FILES
+;============================================================================================
+
+[Files]
+
+; download dll needed by example code showing how to call DLL functions at runtime from a [Code] section.
+Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontcopy
+
+
+;=========================
+; Compiler files
+@ISEXEFILE_1@
+@ISEXEFILE_2@
+@ISEXEFILE_3@
+@ISEXEFILE_4@
+@ISEXEFILE_5@
+@ISEXEFILE_6@
+@ISEXEFILE_7@
+@ISEXEFILE_8@
+@ISEXEFILE_9@
+@ISEXEFILE_10@
+@ISEXEFILE_11@
+@ISEXEFILE_12@
+@ISEXEFILE_13@
+@ISEXEFILE_14@
+@ISEXEFILE_15@
+@ISEXEFILE_16@
+@ISEXEFILE_17@
+@ISEXEFILE_18@
+@ISEXEFILE_19@
+@ISEXEFILE_20@
+@ISEXEFILE_21@
+@ISEXEFILE_22@
+@ISEXEFILE_23@
+@ISEXEFILE_24@
+@ISEXEFILE_25@
+@ISEXEFILE_26@
+@ISEXEFILE_27@
+@ISEXEFILE_28@
+@ISEXEFILE_29@
+@ISEXEFILE_30@
+
+;headers:
+@ISINCFILE_1@
+@ISINCFILE_2@
+@ISINCFILE_3@
+@ISINCFILE_4@
+@ISINCFILE_5@
+@ISINCFILE_6@
+@ISINCFILE_7@
+@ISINCFILE_8@
+@ISINCFILE_9@
+@ISINCFILE_10@
+@ISINCFILE_11@
+@ISINCFILE_12@
+@ISINCFILE_13@
+@ISINCFILE_14@
+@ISINCFILE_15@
+@ISINCFILE_16@
+@ISINCFILE_17@
+@ISINCFILE_18@
+@ISINCFILE_19@
+@ISINCFILE_20@
+
+
+;=========================
+; doc (runtime) files
+@ISDOCFILE_1@
+@ISDOCFILE_2@
+@ISDOCFILE_3@
+@ISDOCFILE_4@
+@ISDOCFILE_5@
+@ISDOCFILE_6@
+@ISDOCFILE_7@
+@ISDOCFILE_8@
+@ISDOCFILE_9@
+@ISDOCFILE_10@
+@ISDOCFILE_11@
+@ISDOCFILE_12@
+@ISDOCFILE_13@
+@ISDOCFILE_14@
+@ISDOCFILE_15@
+@ISDOCFILE_16@
+@ISDOCFILE_17@
+@ISDOCFILE_18@
+@ISDOCFILE_19@
+@ISDOCFILE_20@
+
+;==========================
+; List of libraries and plug-ins we allways make. Set by configure script:
+;most of them are Components: runtime but some will be Components: compiler (libLEX_xxx.dll)
+@ISLIBFILE_1@
+@ISLIBFILE_2@
+@ISLIBFILE_3@
+@ISLIBFILE_4@
+@ISLIBFILE_5@
+@ISLIBFILE_6@
+@ISLIBFILE_7@
+@ISLIBFILE_8@
+@ISLIBFILE_9@
+@ISLIBFILE_10@
+@ISLIBFILE_11@
+@ISLIBFILE_12@
+@ISLIBFILE_13@
+@ISLIBFILE_14@
+@ISLIBFILE_15@
+@ISLIBFILE_16@
+@ISLIBFILE_17@
+@ISLIBFILE_18@
+@ISLIBFILE_19@
+@ISLIBFILE_20@
+@ISLIBFILE_21@
+@ISLIBFILE_22@
+@ISLIBFILE_23@
+@ISLIBFILE_24@
+@ISLIBFILE_25@
+@ISLIBFILE_26@
+@ISLIBFILE_27@
+@ISLIBFILE_28@
+@ISLIBFILE_29@
+@ISLIBFILE_30@
+
+;=========================
+; Optional plug-ins, depending on configuration of build machine. Set by configure script:
+; most if not all will be Components: runtime
+@ISFILE_1@
+@ISFILE_2@
+@ISFILE_3@
+@ISFILE_4@
+@ISFILE_5@
+@ISFILE_6@
+@ISFILE_7@
+@ISFILE_8@
+@ISFILE_9@
+@ISFILE_10@
+@ISFILE_11@
+@ISFILE_12@
+@ISFILE_13@
+@ISFILE_14@
+@ISFILE_15@
+@ISFILE_16@
+@ISFILE_17@
+@ISFILE_18@
+@ISFILE_19@
+@ISFILE_20@
+@ISFILE_21@
+@ISFILE_22@
+@ISFILE_23@
+@ISFILE_24@
+@ISFILE_25@
+@ISFILE_26@
+@ISFILE_27@
+@ISFILE_28@
+@ISFILE_29@
+@ISFILE_30@
+@ISFILE_31@
+@ISFILE_32@
+@ISFILE_33@
+@ISFILE_34@
+@ISFILE_35@
+@ISFILE_36@
+@ISFILE_37@
+@ISFILE_38@
+@ISFILE_39@
+@ISFILE_40@
+@ISFILE_41@
+@ISFILE_42@
+@ISFILE_43@
+@ISFILE_44@
+@ISFILE_45@
+@ISFILE_46@
+@ISFILE_47@
+@ISFILE_48@
+@ISFILE_49@
+@ISFILE_50@
+
+
+
+;=========================
+;Example code:
+@ISEXAMPFILE_1@
+@ISEXAMPFILE_2@
+@ISEXAMPFILE_3@
+@ISEXAMPFILE_4@
+@ISEXAMPFILE_5@
+@ISEXAMPFILE_6@
+@ISEXAMPFILE_7@
+@ISEXAMPFILE_8@
+@ISEXAMPFILE_9@
+@ISEXAMPFILE_10@
+@ISEXAMPFILE_11@
+@ISEXAMPFILE_12@
+@ISEXAMPFILE_13@
+@ISEXAMPFILE_14@
+@ISEXAMPFILE_15@
+@ISEXAMPFILE_16@
+@ISEXAMPFILE_17@
+@ISEXAMPFILE_18@
+@ISEXAMPFILE_19@
+@ISEXAMPFILE_20@
+@ISEXAMPFILE_21@
+@ISEXAMPFILE_22@
+@ISEXAMPFILE_23@
+@ISEXAMPFILE_24@
+@ISEXAMPFILE_25@
+@ISEXAMPFILE_26@
+@ISEXAMPFILE_27@
+@ISEXAMPFILE_28@
+@ISEXAMPFILE_29@
+@ISEXAMPFILE_30@
+@ISEXAMPFILE_31@
+@ISEXAMPFILE_32@
+@ISEXAMPFILE_33@
+@ISEXAMPFILE_34@
+@ISEXAMPFILE_35@
+@ISEXAMPFILE_36@
+@ISEXAMPFILE_37@
+@ISEXAMPFILE_38@
+@ISEXAMPFILE_39@
+@ISEXAMPFILE_40@
+@ISEXAMPFILE_41@
+@ISEXAMPFILE_42@
+@ISEXAMPFILE_43@
+@ISEXAMPFILE_44@
+@ISEXAMPFILE_45@
+@ISEXAMPFILE_46@
+@ISEXAMPFILE_47@
+@ISEXAMPFILE_48@
+@ISEXAMPFILE_49@
+@ISEXAMPFILE_50@
+@ISEXAMPFILE_51@
+@ISEXAMPFILE_52@
+@ISEXAMPFILE_53@
+@ISEXAMPFILE_54@
+@ISEXAMPFILE_55@
+@ISEXAMPFILE_56@
+@ISEXAMPFILE_57@
+@ISEXAMPFILE_58@
+@ISEXAMPFILE_59@
+@ISEXAMPFILE_60@
+
+;=========================
+; Shell files (useless without bash!):
+;FIXME: create executables of amake and aubit, so we can use Amake without Bash:
+
+@ISSHFILE_1@
+@ISSHFILE_2@
+@ISSHFILE_3@
+@ISSHFILE_4@
+@ISSHFILE_5@
+@ISSHFILE_6@
+@ISSHFILE_7@
+@ISSHFILE_8@
+@ISSHFILE_9@
+@ISSHFILE_10@
+@ISSHFILE_11@
+@ISSHFILE_12@
+@ISSHFILE_13@
+@ISSHFILE_14@
+@ISSHFILE_15@
+@ISSHFILE_16@
+@ISSHFILE_17@
+@ISSHFILE_18@
+@ISSHFILE_19@
+@ISSHFILE_20@
+
+
+
+;=========================
+; Make files (MinGW includes mingw-make.exe):
+@ISMAKEFILE_1@
+@ISMAKEFILE_2@
+@ISMAKEFILE_3@
+@ISMAKEFILE_4@
+@ISMAKEFILE_5@
+@ISMAKEFILE_6@
+@ISMAKEFILE_7@
+@ISMAKEFILE_8@
+@ISMAKEFILE_9@
+@ISMAKEFILE_10@
+@ISMAKEFILE_11@
+@ISMAKEFILE_12@
+@ISMAKEFILE_13@
+@ISMAKEFILE_14@
+@ISMAKEFILE_15@
+@ISMAKEFILE_16@
+@ISMAKEFILE_17@
+@ISMAKEFILE_18@
+@ISMAKEFILE_19@
+@ISMAKEFILE_20@
+
+
+; SQL conversion files:
+@ISCONVFILE_1@
+@ISCONVFILE_2@
+@ISCONVFILE_3@
+@ISCONVFILE_4@
+@ISCONVFILE_5@
+@ISCONVFILE_6@
+@ISCONVFILE_7@
+@ISCONVFILE_8@
+@ISCONVFILE_9@
+@ISCONVFILE_10@
+@ISCONVFILE_11@
+@ISCONVFILE_12@
+@ISCONVFILE_13@
+@ISCONVFILE_14@
+@ISCONVFILE_15@
+@ISCONVFILE_16@
+@ISCONVFILE_17@
+@ISCONVFILE_18@
+@ISCONVFILE_19@
+@ISCONVFILE_20@
+
+; Import files:
+@ISIMPORTFILE_1@
+@ISIMPORTFILE_2@
+@ISIMPORTFILE_3@
+@ISIMPORTFILE_4@
+@ISIMPORTFILE_5@
+@ISIMPORTFILE_6@
+@ISIMPORTFILE_7@
+@ISIMPORTFILE_8@
+@ISIMPORTFILE_9@
+@ISIMPORTFILE_10@
+@ISIMPORTFILE_11@
+@ISIMPORTFILE_12@
+@ISIMPORTFILE_13@
+@ISIMPORTFILE_14@
+@ISIMPORTFILE_15@
+@ISIMPORTFILE_16@
+@ISIMPORTFILE_17@
+@ISIMPORTFILE_18@
+@ISIMPORTFILE_19@
+@ISIMPORTFILE_20@
+
+;Amake files:
+@ISAMAKEFILE_1@
+@ISAMAKEFILE_2@
+@ISAMAKEFILE_3@
+@ISAMAKEFILE_4@
+@ISAMAKEFILE_5@
+@ISAMAKEFILE_6@
+@ISAMAKEFILE_7@
+@ISAMAKEFILE_8@
+@ISAMAKEFILE_9@
+@ISAMAKEFILE_10@
+@ISAMAKEFILE_11@
+@ISAMAKEFILE_12@
+@ISAMAKEFILE_13@
+@ISAMAKEFILE_14@
+@ISAMAKEFILE_15@
+@ISAMAKEFILE_16@
+@ISAMAKEFILE_17@
+@ISAMAKEFILE_18@
+@ISAMAKEFILE_19@
+@ISAMAKEFILE_20@
+
+;=========================
+;Config files (to etc/ )
+@ISCONFFILE_1@
+@ISCONFFILE_2@
+@ISCONFFILE_3@
+@ISCONFFILE_4@
+@ISCONFFILE_5@
+@ISCONFFILE_6@
+@ISCONFFILE_7@
+@ISCONFFILE_8@
+@ISCONFFILE_9@
+@ISCONFFILE_10@
+@ISCONFFILE_11@
+@ISCONFFILE_12@
+@ISCONFFILE_13@
+@ISCONFFILE_14@
+@ISCONFFILE_15@
+@ISCONFFILE_16@
+@ISCONFFILE_17@
+@ISCONFFILE_18@
+@ISCONFFILE_19@
+@ISCONFFILE_20@
+
+;=========================
+;GTK libs: (add GTK themes here:)
+
+;=========================
+;SQLite
+Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
+; We need sqlite.dll for sqlite.exe and SQLite GUI tool (we added lib prefix)
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+
+;=========================
+;SQLite database
+Source: @IS_SOURCE@\tools\aubit.db; DestDir: {app}\tools; Components: SQLITE
+
+;=========================
+; SQLite GUI tool:
+; easysqlite2.zip - 825 kb very good, Delphi, Freevare, report, form, help files
+;               import/export from/to tab-delimited files, tables and views list, data grid,
+;				table designer/editor, JScript based  html reports.
+
+; sqliteex.zip - 653 KB "SQLite Explorer" - schema browswe, query builder, no author/copyright
+;                runs as exe only (439 kb not compresed), no help, does not remember last db, explain
+Source: @SYSDRIVE@\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLITE
+
+; Discarded:
+; Tadpole - very simple, has installer, 2.88 MB BDS style license
+; sqlitea_v2.zip - 430 kb iBasic, Freeware, spartan
+; sqlanlz101.zip 809 kb - 14 day eval,
+
+;=========================
+;SQLite ODBC Windows driver
+Source: @SYSDRIVE@\tmp\sqliteodbc\inst.exe; DestDir: {app}\bin; Components: SQLITEODBC; Check: SetSQLiteODBCinstalled
+Source: @SYSDRIVE@\tmp\sqliteodbc\uninst.exe; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\license.terms; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
+
+
+;=========================
+;PDFlib (evaluation version)
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
+;apparently it stores the name of the original dll somewhere?
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
+
+;=========================
+;Helpers:
+Source: @IS_SOURCE@\tools\cygwin\run.exe; DestDir: {app}\bin; Components: util
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygcheck.exe; DestDir: {app}\bin; Components: util
+
+;=========================
+; Curses UI
+; no longer needed - we have UI_TUIN using PDcurses now
+; Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
+
+;=========================
+; CygWin Curses libs
+;used to be 6, but now is 7 - need to find a way to automate this (using chgcheck?)
+; Not needed anymore - using UI_TUIN now (PDcurses)
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses7.dll; DestDir: {app}\bin; Components: TUI
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform7.dll; DestDir: {app}\bin; Components: TUI
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
+
+
+;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
+;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
+
+;=========================
+; CygWin support
+; Not needed anymore - using UI_TUIN now (PDcurses) so we dont need cygwin1.dll
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygwin1.dll; DestDir: {app}\bin; Components: TUI
+
+;=========================
+; GWD::4GL
+; must use explicit DestName: or files go into wrong places!
+
+;to bat:
+Source: @IS_SOURCE@/tools/gwd/client/bat/geterfil.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "geterfil.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/gettoc.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "gettoc.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/makeErr.ini; DestDir: {code:GetGWD4GLpath}\bat; DestName: "makeErr.ini"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/putback.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "putback.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rcompile.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rcompile.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rd4gl.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rd4gl.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rdebug.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rdebug.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rmake.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rmake.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rmax.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rmax.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/ropen.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "ropen.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rrun.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rrun.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rsave.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "rsave.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/settoc.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "settoc.bat"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/takeout.bat; DestDir: {code:GetGWD4GLpath}\bat; DestName: "takeout.bat"; Components: GWD
+
+; to script/remote:
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/config.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "config.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/next_err.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "next_err.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/putback.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "putback.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rcompile.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "rcompile.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rdebug.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "rdebug.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/re.sh; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "re.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/return_re.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "return_re.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rmake.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "rmake.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/ropen.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "ropen.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rrun.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "rrun.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rsave.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "rsave.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/strip_err.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "strip_err.c"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/takeout.c; DestDir: {code:GetGWD4GLpath}\script\remote; DestName: "takeout.c"; Components: GWD
+
+; to GWD root:
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro4.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "macro4.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro5.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "macro5.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro6.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "macro6.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro9.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "macro9.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool1.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "tool1.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool11.bmp; DestDir: {code:GetGWD4GLpath}; DestName: "tool11.bmp"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/syntax.hgl; DestDir: {code:GetGWD4GLpath}; DestName: "syntax.hgl"; Components: GWD
+
+;to gwd-4gl
+;on w98: error creating C:\program files/gwd/gwd-4gl\\cygwin
+;full file: C:/program files/gwd/gwd-4gl/\cygwin\usr\src\aubit\aubit4glsrc\tools\gwd\client\i-gwd\get.ini
+;xxxxfixmexxxx
+
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/get.ini; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "get.ini"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/gwd.ini; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "gwd.ini"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/plwin.ini; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "plwin.ini"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/remote.ini; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "remote.ini"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/README.html; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "README.html"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/bin/README.txt; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "README.txt"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/bin/rcp.pif; DestDir: {code:GetGWD4GLpath}\gwd-4gl; DestName: "rcp.pif"; Components: GWD
+
+;to gwd-4gl\GWDagents
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/gettoc.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "gettoc.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rcompile.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "rcompile.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rd4gl.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "rd4gl.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rgrep.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "rgrep.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rmake.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "rmake.sh"; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rrun.sh; DestDir: {code:GetGWD4GLpath}\gwd-4gl\GWDagents; DestName: "rrun.sh"; Components: GWD
+
+;=============================================================================================
+;                               FUNCTIONS
+;=============================================================================================
+[Code]
+
+{=========================}
+{ GLOBAL VARIABLES }
+const
+  xxWnd = $FFFF;
+
+var
+	Exists: Boolean;
+    Abort: Boolean;
+	GtkPath: String;
+	MinGWPath: String;
+	GWDPath: String; //Path where GWD is installed
+	FinishedInstall: Boolean;
+	DebugPaths: Boolean;
+    DebugOptions: Boolean;
+	InstalledSQLITEODBC: Boolean;
+    ToAddToSYSpath: String;
+    ToAddToUSERpath: String;
+    GWD4GLpath: String; //path to install GWD 4GL files under
+
+{=========================}
+function MyConst(Default: String): String;
+begin
+  Result := ExpandConstant('{pf}');
+end;
+
+
+{=========================}
+function GetautoexecChecked(Default: String): String;
+begin
+  Result := 'unchecked';
+end;
+
+
+{=========================}
+{ Check if GWD editor is installed }
+function GetGWDInstalled (): Boolean;
+begin
+{HKEY_CLASSES_ROOT\Applications\gte.exe\shell\open\comand - path with .exe}
+{HCU\Software\GWD\GWD Text Editor\... no path here }
+{ HKLM, 'Software\GWD, '3.0', GWDPath - only version number there, as key not value }
+    Exists := RegQueryStringValue (HKLM, 'Software\Microsoft\Windows\CurrentVersion\App Paths\gte.exe', 'Path', GWDPath);
+   Result := Exists
+end;
+
+
+{=========================}
+{ Check if GTK libraries are installed }
+function GetGtkInstalled (): Boolean;
+begin
+  
+  Exists := RegQueryStringValue (HKLM, 'Software\GTK\2.0', 'Path', GtkPath);
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKCU, 'Software\GTK\2.0', 'Path', GtkPath);
+  end;
+
+
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKLM, 'Software\GTK+ Development Environment\2.0', 'Path', GtkPath);
+  end;
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKCU, 'Software\GTK+ Development Environment\2.0', 'Path', GtkPath);
+  end;
+
+   Result := Exists
+end;
+
+{=========================}
+{ Check if MinGW (GCC compiler) is installed }
+function GetMinGWInstalled (): Boolean;
+begin
+{ current MinGW installer does not register itselt in Windows registry as application, but it }
+{ does register the uninstaller... }
+  Exists := RegQueryStringValue (HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\MinGW_is1', 'Inno Setup: App Path', MinGWPath);
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\MinGW_is1', 'Inno Setup: App Path', MinGWPath);
+  end;
+   Result := Exists
+end;
+
+{=========================}
+{ Get current MinGW installation path}
+function old_GetMinGWPath(S: String): String;
+var
+  	CurrentPath: String;
+begin
+	{FIXME: do not add to path if MinGW if allready in Path}
+	RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MinGW_is1', 'Inno Setup: App Path', CurrentPath);
+  	Result := CurrentPath;
+end;
+
+{=========================}
+function GetMinGWPath (S: String): String;
+begin
+    Result := MinGWPath;
+end;
+
+
+{=========================}
+function GetGWD4GLpath (S: String): String;
+begin
+    Result := GWD4GLpath;
+end;
+
+{=========================}
+{ Get path to GTK installation }
+function GetGtkPath (S: String): String;
+begin
+    Result := GtkPath;
+end;
+
+{=========================}
+{ Get current system PATH}
+function GetSystemPath(S: String): String;
+var
+  	CurrentPath: String;
+begin
+
+	if UsingWinNT = True then begin
+		RegQueryStringValue(HKLM, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment', 'Path', CurrentPath);
+    end else begin
+		CurrentPath := GetEnv('PATH');
+    end;
+
+	Result := CurrentPath;
+end;
+
+{=========================}
+{ Get current user's PATH}
+function GetUserPath(S: String): String;
+var
+  	CurrentPath: String;
+begin
+
+	if UsingWinNT = True then begin
+		RegQueryStringValue(HKCU, 'Environment', 'Path', CurrentPath);
+    end else begin
+		CurrentPath := GetEnv('PATH');
+    end;
+
+	Result := CurrentPath;
+end;
+
+{=========================}
+{ Send notification to running programs, that Environment settings changed (PATH)}
+function EnvUpdate(S: String): String;
+var
+  	Wnd, Msg, WParam, LParam: Longint;
+begin
+	{
+	See:
+	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/windowing/messagesandmessagequeues/messagesandmessagequeuesreference/messagesandmessagequeuesfunctions/sendmessage.asp
+	function SendMessage(const Wnd, Msg, WParam, LParam: Longint): Longint;
+	Sends the specified message to the specified window. Does not return until the window
+	procedure has processed the message.
+	}
+	{ -------------- example from InstaqllShield ---------------
+	#define HWND_BROADCAST 0xFFFF;
+	#define WM_SETTINGCHANGE 0x001A;
+    HWND    hWnd;
+    LONG    lParam;
+    LONG    wParam;
+    SHORT   shMsg;
+    STRING  szParam;
+    hWnd    = HWND_BROADCAST;
+    shMsg   = WM_SETTINGCHANGE;
+    wParam  = 0;
+    szParam = "Environment";
+    lParam  = &szParam;
+    SendMessage(hWnd, shMsg, wParam, lParam);
+	-------------------------------------------------------------}
+
+	Wnd := 0;
+	Msg := 0;
+	WParam := 0;
+	LParam := 0;
+
+	SendMessage(Wnd, Msg, WParam, LParam);
+
+    if DebugPaths = True then begin
+		MsgBox ('Invoked EnvUpdate().',mbInformation,MB_OK);
+	end;
+
+
+
+    Result := '';
+
+end;
+
+{=========================}
+{ Perform checks when initialising setup. This is invoked automatically }
+function InitializeSetup(): Boolean;
+var
+	CurrSYSpath: String;
+	CurrUSERpath: String;
+    CheckPath: String;
+    Test: String;
+	PathExists: Integer;
+begin
+
+{
+function ParamStr(Index: Integer): String;
+Returns the Index-th command line parameter passed to Setup.
+
+function ParamCount: Integer;
+Returns the number of command line parameters passed to Setup.
+}
+    Test :=ExpandConstant('{param:help|no}'); 	//Help option ( /help )
+	if Test = 'yes' then begin
+		MsgBox ('/DebugPaths=yes' #13 '''' +
+				'/DebugOptions=yes' #13 '''' +
+				'/help', mbInformation, MB_OK);
+        //FIXME: exit installation here...
+	end;
+
+
+	DebugPaths := False;
+    Test :=ExpandConstant('{param:DebugPaths|no}');
+	if Test = 'yes' then begin
+		DebugPaths := True; 	//Debuggung of the installer script paths ( /DebugPaths=yes )
+	end;
+
+	DebugOptions := False;
+    Test :=ExpandConstant('{param:DebugOptions|no}');
+	if Test = 'yes' then begin
+		DebugOptions := True; 	//Debuggung of the installer script options ( /DebugOptions=yes )
+	end;
+
+	Abort := False; //Initialise Abort flag
+
+	Result := GetGWDInstalled ();
+	if not Result then begin
+		Result := MsgBox('It is reccomended that you install the GWD editor before installing Aubit 4GL. You can obtain GWD from http://www.gwdsoft.com. ' #13#13 ' Do you want to continue setup?', mbConfirmation, MB_YESNO) = idYes;
+		if Result = False then begin
+			Abort := True;
+	    end else begin
+			//GWD not installed, so install GWD files under Aubit tree
+			GWD4GLpath := AddBackslash(ExpandConstant('{app}')) + 'tools\GWD';
+		end;
+	end else begin
+        //GWD is installed, so install GWD files under GWD tree
+        // 'gwd4gl-installer' is here while we testing, remove it later
+		GWD4GLpath := AddBackslash(GWDPath) + 'gwd4gl-installer';
+	end;
+
+	if DebugPaths = True then begin
+		MsgBox ('GWD4GLpath set to :' #13#13 '''' + GWD4GLpath + '''.', mbInformation, MB_OK);
+	end;
+
+
+  Result := GetMinGWInstalled ();
+  if not Result then begin
+    MsgBox ('Please install the MinGW before installing Aubit 4GL. You can obtain MinGW from http://www.mingw.org.', mbError, MB_OK);
+  end;
+
+  Result := GetGtkInstalled ();
+  if not Result then begin
+    MsgBox ('Please install the GTK+ 2.0 Runtime Environment before installing Aubit 4GL.  You can obtain GTK+ from http://www.dropline.net/gtk.', mbError, MB_OK);
+  end;
+
+  if Abort = True then begin
+	  Result := False;
+  end;
+
+	if Result = True then begin
+        //We got all we need, so prepare string to add to path
+
+		CurrSYSpath := GetSystemPath ('');
+		CurrUSERpath := GetUserPath ('');
+
+        {=================================================== MinGW path}
+		//app constant does not exixt at initialization time:
+		//CheckPath := AddBackslash(ExpandConstant('{app}')) + 'bin';
+		CheckPath := AddBackslash(GetMinGWPath('')) + 'bin';
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+				MsgBox ('Current SYS path is: ' #13#13 '''' + CurrSYSpath + '''.', mbInformation, MB_OK);
+            end;
+            ToAddToSYSpath := ToAddToSYSpath + ';' + CheckPath;
+		end else begin
+			if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToUSERpath := ToAddToUSERpath + ';' + CheckPath;
+		end else begin
+			if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+        {=================================================== GTK bin path}
+		CheckPath := AddBackslash(GetGtkPath('')) + 'bin';
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToSYSpath := ToAddToSYSpath + ';' + CheckPath;
+		end else begin
+			if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end
+
+
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToUSERpath := ToAddToUSERpath + ';' + CheckPath;
+		end else begin
+			if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+        {=================================================== GTK lib path}
+		CheckPath := AddBackslash(GetGtkPath('')) + 'lib';
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToSYSpath := ToAddToSYSpath + ';' + CheckPath;
+		end else begin
+			if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToUSERpath := ToAddToUSERpath + ';' + CheckPath;
+		end else begin
+            if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+        {=================================================== debug}
+		if DebugPaths = True then begin
+			if ToAddToUSERpath = '' then begin
+    	        MsgBox ('Nothing to add to USER Path.',mbInformation,MB_OK);
+        	end else
+				MsgBox ('Will add to USER path: ' #13#13 '''' + ToAddToUSERpath + '''.',mbInformation,MB_OK);
+
+			if ToAddToSYSpath = '' then begin
+				MsgBox ('Nothing to add to SYS Path.',mbInformation,MB_OK);
+        	end else
+				MsgBox ('Will add to SYS path: ' #13#13 '''' + ToAddToSYSpath + '''.',mbInformation,MB_OK);
+        end;
+
+    end;
+
+
+  {if value of variable 'Result' is FALSE at this point, installation will abort}
+end;
+
+
+
+{=========================}
+{ Prepare all paths we need to add to SYS path }
+function GetAddSYSPath (S: String): String;
+var
+	CurrSYSpath: String;
+    CheckPath: String;
+	PathExists: Integer;
+begin
+
+		CurrSYSpath := GetSystemPath ('');
+
+		// app constant does not exixt at initialization time, but now it does:
+		CheckPath := AddBackslash(ExpandConstant('{app}')) + 'bin';
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToSYSpath := ToAddToSYSpath + ';' + CheckPath;
+		end else begin
+	        if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end
+
+        if DebugPaths = True then begin
+			if ToAddToSYSpath = '' then begin
+				MsgBox ('Nothing to add to SYS Path.',mbInformation,MB_OK);
+			end else begin
+            	//ToAddToSYSpath := ';' + ToAddToSYSpath;
+				MsgBox ('Will add to SYS path: ' #13#13 '''' + ToAddToSYSpath + '''.',mbInformation,MB_OK);
+			end;
+        end;
+
+	Result := ToAddToSYSpath;
+end;
+
+{=========================}
+{ Prepare all paths we need to add to USER path }
+function GetAddUSERPath (S: String): String;
+var
+	CurrUSERpath: String;
+    CheckPath: String;
+	PathExists: Integer;
+begin
+
+		CurrUSERpath := GetUserPath ('');
+
+		// app constant does not exixt at initialization time, but now it does:
+		CheckPath := AddBackslash(ExpandConstant('{app}')) + 'bin';
+		
+		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
+		if PathExists = 0 then begin
+			if DebugPaths = True then begin
+				MsgBox ('Path not found: ' #13#13 '''' + CheckPath + '''.', mbError, MB_OK);
+            end;
+            ToAddToUSERpath := ToAddToUSERpath + ';' + CheckPath;
+		end else begin
+            if DebugPaths = True then begin
+				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
+            end;
+        end;
+
+		if DebugPaths = True then begin
+			if ToAddToUSERpath = '' then begin
+				MsgBox ('Nothing to add to USER Path.',mbInformation,MB_OK);
+			end else begin
+    	        //ToAddToUSERpath := ';' + ToAddToUSERpath;
+				MsgBox ('Will add to USER path: ' #13#13 '''' + ToAddToUSERpath + '''.',mbInformation,MB_OK);
+	        end;
+        end;
+
+	Result := ToAddToUSERpath;
+end;
+
+
+//==========================
+//Executed automatically at the end of setup - even if user cancel the setup before it completes
+procedure DeInitializeSetup();
+var
+  //FileName: String;
+  //ErrorCode: Integer;
+  dummy: String;
+begin
+
+  FinishedInstall := True;
+
+  //FileName := AddBackslash(ExpandConstant('{app}')) + 'bin\inst.exe';
+  {
+  //Prompt user to run SQLite ODBC installer: - now in RUN section
+  if InstalledSQLITEODBC then begin
+    if MsgBox('Setup of Aubit 4GL finished.' #13#13 'Do you want to run SQLite ODBC installer now?', mbConfirmation, MB_YESNO) = idYes then begin
+      if not InstShellExec(FileName, '', '', SW_SHOWNORMAL, ErrorCode) then
+        MsgBox('Script.DeInitializeSetup:' #13#13 'Execution of ''' + FileName + ''' failed. ' + SysErrorMessage(ErrorCode) + '.', mbError, MB_OK);
+    end else
+      MsgBox('To enable SQLite ODBC conectivity, please run: ' #13#13 '''' + FileName + '''.', mbInformation, MB_OK);
+  end;
+  }
+
+	//invoke function to update environment
+	dummy := EnvUpdate('');
+
+end;
+
+//====================== check functions ======================
+
+function SetSQLiteODBCinstalled(): Boolean;
+begin
+	InstalledSQLITEODBC := True;
+    Result := True;
+end;
+
+function GetSQLiteODBCinstalled(): Boolean;
+begin
+
+	if DebugOptions = True then begin
+		if InstalledSQLITEODBC = True then begin
+			MsgBox ('GetSQLiteODBCinstalled=TRUE',mbInformation,MB_OK);
+	    end else begin
+			MsgBox ('GetSQLiteODBCinstalled=FALSE',mbInformation,MB_OK);
+	    end;
+    end;
+
+	Result := InstalledSQLITEODBC;
+end;
+
+function NeedToAddPathAutoexec(): Boolean;
+var
+	Need: Boolean;
+begin
+    Need := False;
+	if UsingWinNT = False then begin
+		if ToAddToSYSpath = '' then begin
+			if DebugPaths = True then begin
+				MsgBox ('Nothing to add to SYS Path.',mbInformation,MB_OK);
+			end;
+		end else begin
+            Need := True;
+        end;
+    end;
+
+	Result := Need;
+end;
+
+{=============================================================================================}
+
+{ Folowing code shows how to call DLL functions at runtime from a [Code] section. It needs isxdl.dll
+	added to [Files] section
+
+    from isx3demo.iss file
+}
+
+{
+// Download a single file
+function Download(hWnd: Integer; URL: PChar; Filename: PChar): Integer;
+external 'files:isxdl.dll' name 'Download'; stdcall;
+
+// Add a file to be downloaded
+procedure AddFile(URL: PChar; Filename: PChar);
+external 'files:isxdl.dll' name 'AddFile'; stdcall;
+
+// Download all files added with AddFile
+function DownloadFiles(hWnd: Integer): Integer;
+external 'files:isxdl.dll' name 'DownloadFiles'; stdcall;
+
+// Clear internal file list
+procedure ClearFiles;
+external 'files:isxdl.dll' name 'ClearFiles'; stdcall;
+
+const url = 'http://www.bhenden.org/getfile.asp?file=15';
+
+}
+
+function NextButtonClick(CurPage: Integer): Boolean;
+//var
+//  hWnd: Integer;
+//  sFileName: String;
+//  nCode: Integer;
+begin
+  Result := true;
+
+//  if CurPage = wpReady then begin
+//    hWnd := 0;
+//	//hWnd := StrToInt(ChangeDirConst('{wizardhwnd}'));
+//	  sFileName := ChangeDirConst('{tmp}\istool.exe');
+//    ClearFiles;
+//    AddFile(url,sFileName);
+//    if DownloadFiles(hWnd) <> 0 then begin
+//      InstExec(sFileName,'','',true,false,0,nCode)
+//      BringToFrontAndRestore;
+//    end else
+//      MsgBox('ISTool was not downloaded.',mbInformation,MB_OK);
+//
+//  end;
+
+end;
+
+{
+function UpdateReadyMemo(Space, NewLine, MemoDirInfo, MemoTypeInfo, MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
+begin
+  Result := 'Setup will now download and install the latest version of ISTool.';
+end;
+}
+
+function MyDirCheck(DirName: String): Boolean;
+begin
+  Result := DirExists(DirName);
+end;
+
+{ ======================================== EOF ====================================== }
+
