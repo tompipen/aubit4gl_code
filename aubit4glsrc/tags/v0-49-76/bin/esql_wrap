@@ -1,0 +1,257 @@
+#!/bin/sh
+#
+# FIXME: this script don't know how to make a shared library (.so/.dll)
+#
+
+ALL_FLAGS=$@
+SCRIPT_NAME=esql_wrap
+
+if test "$DEBUG" = "ALL"; then
+	#Force verbose mode for debugging when Aubit DEBUG is set
+	ALL_FLAGS="$ALL_FLAGS --verbose"
+	#SH_DEBUG="1"
+fi
+
+###################
+for a in $ALL_FLAGS
+###################
+do
+	case $a in
+	-noecho)    #Don't show any non-critical messages while running
+		NO_ECHO=1
+		;;
+	-verbose | --verbose)
+	   A4GLVERBOSE="yes"
+	   #SH_DEBUG=1
+	   ;;
+	-script-debug)
+		SH_DEBUG="1"
+		;;
+	   
+	esac
+#######
+done
+#######
+
+if test "$A4GLVERBOSE" = "1"; then
+	echo "$SCRIPT_NAME: Verbose mode ON"
+fi
+if test "$SH_DEBUG" = "1"; then
+	echo "$SCRIPT_NAME: Script debug mode ON - invoked with :"
+	echo "$ALL_FLAGS"
+fi
+
+#######################################################################
+#				Set environment 
+#######################################################################
+
+if [ "$AUBITDIR" = "" ]; then
+    AUBITDIR=`aubit-config AUBITDIR`
+	if [ "$AUBITDIR" = "" ]; then
+        echo "ERROR: AUBITDIR unknown. Stop."
+        exit 5
+    fi
+fi
+
+#Contains values determined by Autoconf for INFORMIXDIR, IFX libs, etc.
+if test -f "$AUBITDIR/etc/aubitrc"; then 
+	. "$AUBITDIR/etc/aubitrc"
+else
+	if test -f "$HOME/.aubitrc"; then
+		. "$HOME/.aubitrc"
+	else
+		if test -f /etc/opt/aubit4gl/aubitrc; then
+			. /etc/opt/aubit4gl/aubitrc
+		else
+			echo "WARNING: cannot find aubitrc"
+		fi
+	fi
+fi
+
+if [ "$INFORMIXDIR" = "" ]; then
+	echo "ERROR: INFORMIXDIR not set"
+	#export INFORMIXDIR="c:/informix"
+	exit 4
+fi
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
+
+ESQL_EXT=cpc
+COMPILE_OBJ=0
+output=""
+
+# If we have a .ec on the command line -
+# assume they have .ec as the extension instead
+
+echo $* | grep "\.ec" >/dev/null 2>&1
+[ $? -eq 0 ] &&	ESQL_EXT=ec
+
+while [ "$1" != "" ]
+do
+	a=$1
+
+	if [ "$a" = -c ]
+	then
+		COMPILE_OBJ=1
+		shift
+		continue
+	fi
+
+
+
+
+	d=`dirname $a`
+
+	if [ "$d" != "" -a "$d" != "." ]; then
+		c=$d/`basename "$a" `
+		b=$d/`basename "$c" ".$ESQL_EXT"`
+	else
+		c=`basename "$a" `
+		b=`basename "$c" ".$ESQL_EXT"`
+		b2=./`basename "$c" ".$ESQL_EXT"`
+	fi
+
+	if [ $b.$ESQL_EXT = $a -o $b2.$ESQL_EXT = $a ]; then
+		srcs="$srcs $a"
+		shift
+		continue
+	fi
+	case $a in
+		*.c)
+			srcs="$srcs $a"
+			shift
+			continue
+		;;
+	esac
+
+	if [ $a = "-o" ]; then
+		shift
+		output="-o $1"
+		case $1 in
+            *.ao)
+                OUTPUT_IS_OBJECT="1"
+                ;;
+			*.o)
+                OUTPUT_IS_OBJECT="1"
+				;;
+        esac
+		shift
+		continue
+	fi
+
+	other_args="$other_args $a"
+	shift
+done
+
+if test "$SH_DEBUG" = "1"; then
+	echo "SOURCES : " $srcs
+fi
+if test "$COMPILE_OBJ" = "1" -a "$srcs" = ""; then
+	echo "ERROR: no source files and no linking?"
+	exit 1
+fi
+
+for a in $srcs
+do
+	case $a in
+		*.ec)
+			if test "$COMSPEC" = ""; then 
+				ESQL_RUN="esql -e $a"
+			else
+				ESQL_RUN="esql -thread -e $a"     #-C INFORMIX_SE	
+			fi
+			echo $ESQL_RUN
+			eval $ESQL_RUN
+			RET=$?
+			if test "$RET" != "0"; then
+				exit $RET
+			fi
+		;;
+	esac
+	
+    out=`basename $a ".$ESQL_EXT"`
+	case $a in
+		*.ec)
+			cfiles="$cfiles $out.c"
+			outfile="$out.c"
+		;;
+		*)
+			outfile="$out"		
+		;;
+	esac
+	
+    GCC_COMPILE="gcc -c $outfile $other_args \
+		-I\"$INFORMIXDIR/incl/esql\" -I\"$INFORMIXDIR/incl\" \
+		-I\"$INFORMIXDIR/CSDK/incl/esql\" -I\"$INFORMIXDIR/CSDK/incl\" \
+		-I$AUBITDIR/incl "
+
+	if test "$OUTPUT_IS_OBJECT" = "1"; then
+	    GCC_COMPILE="$GCC_COMPILE $output"
+	    echo "Compiling $out.c to object $output"
+
+		for a in $output; do
+			case $a in
+			-o) #skip it
+				;;
+			*)
+				LOGFILE="$a.log"			
+				;;
+			esac
+		done
+	else
+	    echo "Compiling $out.c to object"
+		LOGFILE="$out.log"
+	fi
+	
+	if test "$SH_DEBUG" = "1"; then	
+		echo "$GCC_COMPILE > $LOGFILE 2>&1"
+	fi
+	eval "$GCC_COMPILE > $LOGFILE 2>&1"
+    RET=$?
+	if test "$RET" != "0"; then
+		echo "$SCRIPT_NAME faled. GCC exit code was $RET - see $LOGFILE"
+		if test "$SH_DEBUG" != "1"; then
+			echo "Failed command was:"
+			echo "$GCC_COMPILE > $LOGFILE 2>&1"		
+		fi
+        exit $RET
+    fi
+	rm -f $LOGFILE $out.c $out.c_
+    ofiles="$ofiles $out.o"
+done
+
+if [ $COMPILE_OBJ = 1 ]; then
+	exit 0
+fi
+
+if test "$COMSPEC" != "" ; then 
+	#NOTE: On Windows, dll's must be in the PATH to be loadabe at run-time
+	#(There is no LD_LIBRARAY_PATH - system loader looks only in PATH)
+	if test -d "$INFORMIXDIR/CSDK"; then
+		LIB=CSDK/bin
+	else
+		LIB=bin
+	fi
+	GCC_INFX="-mms-bitfields \
+		\"$INFORMIXDIR/$LIB/isqlt09a.dll\" \"$INFORMIXDIR/$LIB/igl4n304.dll\" \
+		\"$INFORMIXDIR/$LIB/iglxn304.dll\" \"$INFORMIXDIR/$LIB/igo4n304.dll\" "
+else
+	GCC_INFX="$IFX_LIBS -L$INFORMIXDIR/lib/esql -L$INFORMIXDIR/lib"
+fi
+
+#DO NOT link in -lESQL_INFORMIX - it is dlopen()ed
+LFLAGS="-L$AUBITDIR/lib -laubit4gl"
+
+GCC_RUN="gcc $ofiles $other_args $GCC_INFX $LFLAGS $output"
+echo $GCC_RUN
+eval $GCC_RUN
+RET=$?
+if test "$RET" != "0"; then 
+	if test -f $LOGFILE; then 
+		cat $LOGFILE
+	fi
+fi
+exit $RET
+
+

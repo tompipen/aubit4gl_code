@@ -1,0 +1,101 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.7 2004-09-28 09:49:21 afalout Exp $
+#
+
+ROOT        =../../..
+LIBROOT     =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    		Settings
+## ==================================================================
+
+CMODS   	=pack_packed.c
+OBJS		=${CMODS:.c=.o}
+ALL 		=${LIBROOT}/libPACKER_PACKED${SO_EXT}
+
+LOCAL_IFLAGS=-I..
+
+CFLAGS      +=${LOCAL_IFLAGS}
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+
+## ==================================================================
+##                          Targets
+## ==================================================================
+
+ALL: ${ALL}
+
+#On HP-UX:
+#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I.. -b -o ../../libPACKER_PACKED.sl pack_packed.c
+#gcc: ../../libPACKER_PACKED.sl: No such file or directory
+#gcc: installation problem, cannot exec `cc1': No such file or directory
+#make[2]: *** [../../libPACKER_PACKED.sl] Error 1
+#make[2]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib/libpacker/packed'
+#make[1]: *** [libPACKER_PACKED.sl] Error 2
+#make[1]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib'
+#make: *** [corecompile] Error 2
+#
+#did this to fix
+#
+#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I../../compilers/fcompile -I../libaubit4gl -I..  -c -o pack_packed.o pack_packed.c
+#ld -b -o ../../libPACKER_PACKED.sl  pack_packed.o
+
+
+#${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${CMODS}
+#	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${OBJS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
+
+## ==================================================================
+##                          Clean
+## ==================================================================
+
+clean:
+	${RM} *${SO_EXT} *.bak *.o
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
+
+#=============================== EOF ================================
+

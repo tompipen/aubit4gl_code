@@ -1,0 +1,1368 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   common makefile include    |
+# | This file should be included in ALL Aubit 4gl compiler make files    |
+# | that are used to compile Aubit compiler itself                       |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-5 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile-common.in,v 1.185 2005-03-09 15:14:33 mikeaubury Exp $
+#
+
+#WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
+#esql compiler will use it without checking to put it's temp files there
+#and fail!
+
+
+#Make sure we are not picking things from environment that make uses
+#automatcally:
+CFLAGS=
+LIBS=
+
+#MUST be here - it will be used by make "shell" commands
+SH				=@SH@
+SHELL			:=${SH}
+
+#Workarounf for Informix installers messing up libphtread:
+LD_LIBRARY_PATH			:=/lib:${LD_LIBRARY_PATH}
+
+#Name we will use in many places, for consistency:
+AUBITNAME			=@SHORTNAME@
+
+#If we later need to know if this makefile was included or not:
+MAKEFILE_COMMON_INCLUDED	=1
+
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/${AUBITNAME}
+AUBITETC			=@AUBITETC@
+
+#WARNING! configure is not creating this file when in binary tree,
+#it is copied in state as configured for source code distribution,
+#so in binary tree AUBIT_SRC_ROOT cannot be used since it's wrong,
+#together with most other @xxx@ stuff - but we are using makefiles installed
+#with binary distro only to install/deinstall and compile stuff in tools/test
+#so I guess it's OK - if not, we will have to pack Makefile-common.in with
+#binary distro and modify configure to create it for binary build too.
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	AUBIT_SRC_ROOT		=@aubitdir@
+endif
+AUBIT_VERSION		=@AUBIT_VERSION@
+AUBIT_BUILD			=@AUBIT_BUILD@
+COMPILE_DATE		=@COMPILE_DATE@
+AC_TARGET			=@target@
+AC_TARGET_OS		=@target_os@
+
+#############
+#While compiling source code, force priority of 'aubitrc' present in this 
+#source code tree. Also applies to aubit-config calls made from makefles 
+A4GL_INIFILE			=${AUBIT_SRC_ROOT}/etc/aubitrc
+
+ifeq "${AC_TARGET_OS}" "mingw"
+	#override TARGET, because when using CygWin tools with MinGW GCC
+	#AC will report:
+	#AC_TARGET               =i686-pc-cygwin
+	#AC_TARGET_OS            =mingw	
+	TARGET			=i686-pc-mingw
+else
+	TARGET			=${AC_TARGET}
+endif
+
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring solaris,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring linux,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring aix,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring cygwin,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring mingw,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring darwin,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring hpux,${TARGET})
+endif
+
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=unknown
+endif
+
+SUBDIR:=$(shell pwd)
+
+## ==================================================================
+##                    Read configuration file(s)
+## ==================================================================
+
+
+ifndef NOINCL
+	NOINCL=0
+endif
+
+#    if expression ; \
+#     then command ; \
+#          ... ; \
+#     else command ; \
+#          ... ; \
+#     fi
+
+
+#save current stuff in environment so we can override configuration files
+ENV_A4GL_SQLTYPE:=${A4GL_SQLTYPE}
+ENV_A4GL_LEXTYPE:=${A4GL_LEXTYPE}
+ENV_A4GL_LEXDIALECT:=${A4GL_LEXDIALECT}
+
+ifeq "$(NOINCL)" "0"
+
+	NOERR=2>/dev/null
+
+	AUBITRCFILE:=$(shell ls ${AUBITETC}/aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A1:=${AUBITRCFILE}
+	endif
+
+	#override AUBITDIR set in gloabal aubitrc, in case it is pointing
+	#to some other location then this source code tree; there is no point
+	#to have AUBITDIR set in any other way then by "configure", when
+    #compiling Aibt compiler source code; it can cause bad combination of
+    #libraries, and in this place, it may cause completely wron include
+    #of aubitrc configured different then we want it while compiling
+
+	#check if this file is included from make file in Aubit source tree or
+	#not. If we are not, we should not override AUBITDIR
+    ifneq "${AUBIT_BIN_INSTALL}" "1"
+        AUBITDIR=${AUBIT_SRC_ROOT}
+    else
+		ifeq "${AUBITDIR}" ""
+			#this should happen ONLY when initially installing binary build,
+            #unless install of aubitrc to /etc/opt/${AUBITNAME}/aubitrc fails:
+			AUBITRCFILE:=$(shell ls ./etc/aubitrc-bin ${NOERR})
+			ifneq "${AUBITRCFILE}" ""
+				include ${AUBITRCFILE}
+				A2:=${AUBITRCFILE}
+			endif
+        endif
+	endif
+
+	ifneq "${AUBITDIR}" ""
+		AUBITRCFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
+		ifneq "${AUBITRCFILE}" ""
+			include ${AUBITRCFILE}
+			A2:=${AUBITRCFILE}
+		endif
+    endif
+
+    #check if now AUBITDIR points to Aubit source tree or not. We will have
+    #${AUBITDIR}/compilers directory only if it points to source code tree:
+	TMP_VAR:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
+	ifeq "${TMP_VAR}" ""
+        AUBITDIR_SRC=0
+    else
+        AUBITDIR_SRC=1
+		C_DFLAGS        +=-DSRC_TREE
+	endif
+
+    export AUBITDIR_SRC
+
+	AUBITRCFILE:=$(shell ls ~/.${AUBITNAME}/aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A5:=${AUBITRCFILE}
+    endif
+
+	AUBITRCFILE:=$(shell ls ./.aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A6:=${AUBITRCFILE}
+    endif
+
+	ifdef A4GL_INIFILE
+		#In binary install, this will point to wrong place,
+		#so we better first check if we have it
+		IS_THERE:=$(shell ls ${A4GL_INIFILE} ${NOERR})
+		ifneq "${IS_THERE}" ""
+			include $(A4GL_INIFILE)
+			A7:=$(A4GL_INIFILE)
+		endif
+	endif
+
+endif
+
+#in all cases, override AUBITDIR set in any other way then by "configure"
+#for compiling Aubit compiler from source code
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	AUBITDIR=${AUBIT_SRC_ROOT}
+endif
+
+#optionally, override things set in environment:
+ifneq "${ENVOVERRIDE}" "NO"
+	#if ENVOVERRIDE is not set to NO, then...
+	ifneq "${ENV_A4GL_SQLTYPE}" ""
+		A4GL_SQLTYPE=${ENV_A4GL_SQLTYPE}
+    endif
+	ifneq "${ENV_A4GL_LEXTYPE}" ""
+		A4GL_LEXTYPE=${ENV_A4GL_LEXTYPE}
+    endif
+	ifneq "${ENV_A4GL_LEXDIALECT}" ""
+		A4GL_LEXDIALECT=${ENV_A4GL_LEXDIALECT}
+    endif
+	
+	A4GL_UI=CONSOLE
+    export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT A4GL_UI
+endif
+
+ifneq "${ENVOVERRIDE}" "YES"
+	#We should ignore A4GL_LEXTYPE while compiling the compiler
+	A4GL_LEXTYPE=C
+	export A4GL_LEXTYPE 
+endif
+
+
+#this is needed when not using LEXTYPE=C, but do we really want to 
+#use any other LEXTYPE when building Aubit?
+#ifeq "${A4GL_LEXTYPE}" "EC"
+#	ifeq "$A4GL_LEXDIALECT" "POSTGRES"
+#		FGLC_OUTPUT_EXT=cpc
+#        NCC="ecpg_wrap"
+#	else
+#		FGLC_OUTPUT_EXT=ec
+#        NCC="esql"
+#    endif
+#endif
+
+
+
+WINDOWS_DRIVE   =@WINDOWS_DRIVE@
+CYGWIN_PATH     =@CYGWIN_PATH@
+
+#Substitute Windows drive notation (C: D: E: etc.) with CygWin path mapping
+ifneq "${COMSPEC}" ""
+	CYG_AUBITDIR	:=$(shell cygpath -u ${AUBITDIR})
+endif
+
+## ==================================================================
+##                   Global Makefile variables
+## ==================================================================
+
+
+GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
+
+#Version of GCC to treat specially:
+ifeq "${GCC_VER}" "3.2"
+	GCC_NEW_STYLE=1
+endif
+ifeq "${GCC_VER}" "3.3"
+	GCC_NEW_STYLE=1
+endif
+
+ifeq "${GCC_NEW_STYLE}" "1"
+    GCC_NO_rdynamic=1
+    GCC_NO_PIC=1
+    GCC_NO_native-struct=1
+endif
+
+
+GCC_MINGW=@GCC_MINGW@
+
+#Needed for fixing include paths in UI_GTK:
+#FIXME: find a way to get this from Autoconf:
+WIN_CYGPATH	=${WINDOWS_DRIVE}${CYGWIN_PATH}
+
+
+ifeq "${GCC_MINGW}" "yes"
+    WIN_PATH	=1
+    #AUBITDIR	:=${WIN_CYGPATH}${AUBITDIR}
+	#this would incalidate all LINK_LIBS+=-laubit4gl that we need:
+	#TARGET_OS	=mingw
+endif
+
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	PATH:=${AUBITDIR}/bin:${PATH}
+endif
+
+
+CONFIGURE_COMMAND=@CONFIGURE_COMMAND@
+
+#######################################
+#Lclint (Splint) C code checker flags:
+#See http://www.splint.org/manual/manual.html
+
+#LCLINTFLAGS		=-weak +posixlib
+#When using -skipansiheaders:
+#stddef.h needs -I/usr/include/linux
+#stdarg.h needs -I/usr/lib/gcc-lib/i386-glibc21-linux/egcs-2.91.66/include
+LCLINTFLAGS			=-f .splintrc -I/usr/include/linux -I/usr/lib/gcc-lib/i386-glibc21-linux/egcs-2.91.66/include
+#name for log created for each module:
+LCLINTLOG  			=lclint.log
+#name for cumulative log created in AUBITDIR root:
+LCLINT_GLOBAL_LOG	=lclint.log
+#Command to use for log file creation:
+LCLINTLOGCMD		=2>&1
+#This will soon change to "splint":
+LCLINTEXE           =@LCLINTEXE@
+#Should we ignore if lclint checking fails, or stop:
+LCLINTERR           =-
+
+####################
+#commands to use:
+MAKE				=@MAKE@
+MKDIR 				=mkdir
+CD 					=cd
+CP 					=cp
+MV                  =mv
+CAT                 =cat
+RM 					=rm -f
+RMDIR				=rm -rf
+#CC	 				=c++
+CC 					=@CC@
+#/bin/sh /usr/local/src/php/php-4.2.3/libtool --silent --mode=compile gcc
+#LINK.c				=${CC}
+#LN_S 				=ln --symbolic --force
+LN_S 				=ln -s -f
+LN_H                =ln -f
+AR 					=ar rc
+
+#BISON will contatin full path to bison executable. It will already include
+#-y flag set from autoconf, or "no" if not found or disabled:
+BISON               =@BISON@
+#YACC is variable name we use all over the make files, for Bison command
+YACC                =$(strip ${BISON} @DEBUG_BISON@)
+
+LEX					=@LEX@
+ifneq "${LEX}" "no"
+	#-i needed to create case insensitive scanner:
+	LEX				:=${LEX} -i
+endif
+
+NICE                =nice -20
+INSTALL_USR			=nobody
+INSTALL_GRP 		=nobody
+INSTALL_CMD 		=install
+INSTALL     		=${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
+MKPATH      		=mkdir -p
+CPPFLAGS 			=
+LDFLAGS             =@LDFLAGS@
+LDFLAGS_SHARED		=@LDFLAGS_SHARED@
+AWK                 =@AWK@
+STRIP               =@STRIP@
+FIND				=find
+UNZIP				=unzip
+
+#Default strip difference :
+#-rwxr-xr-x    1 root     root       701702 Jan 28 18:25 bin/4glc
+#-rwxr-xr-x    1 root     root       424636 Jan 28 18:25 bin/4glc-strip
+
+#Do we want to strip executables: yes/no
+STRIP_EXECUTABLES   =@STRIP_EXECUTABLES@
+
+#-rdynamic is needed when calling functions that are defineds in
+#executable, from shared libraries that are dlopen at run-time,
+#otherwise we get this function calls as undefined symbols. as in:
+#4glc: relocation error: /opt/aubit/${AUBITNAME}src/lib/libLEX_C.so: undefined symbol: set_clobber
+#-rdynamic basically makes all symbols in a program public to a dlopen() shared lib.
+#thsi is a LINKER, not compiler option, and it's not in GCC documentation.
+#The -rdynamic option seems to have been
+#introduced as a high-level interface to the linker, to (a) force the
+#allocation of a global symbol table in the final executable, even if it's
+#not strictly needed, and (b) cause the inclusion of the global symbols in
+#that symbol table.
+#
+#        o  Under linux, gcc interprets it by setting the
+#           "-export-dynamic" option for ld, which has that effect, according
+#           to the linux ld manpage.
+#
+#        o Under IRIX it's ignored, and the program's happy as a clam.
+#
+#        o Under SunOS-4.1, gcc interprets it by setting the -dc -dp
+#          options for ld, which again forces the allocation of the symbol
+#          table in the code produced (see ld(1) on a Sun).
+
+#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+ifneq "${GCC_NO_rdynamic}" "1"
+	#gcc: unrecognized option `-rdynamic'
+	RDYNAMIC            =-rdynamic
+endif
+
+ifeq "${TARGET_OS}" "solaris"
+	#On Solaris: gcc: unrecognized option `-rdynamic'
+	#Apprently, this is when Sun native LD is used:	
+	#RDYNAMIC		=
+	
+	#Requested by Phillip Heller:
+	#Note that this assumes GNU ld
+	RDYNAMIC		=--export-dynamic
+
+	#Solaris 8 (??!!)
+	#-export-dynamic worked.  The compiler complaining about the existence of
+	# libaubit4gl.so seems to be related to the use of the -Xlinker directive.
+ 	
+	#Solaris ld:
+	#   In static mode, -dn, relocatable object files given as argu-
+	#     ments are combined to produce an executable object file.  If
+	#     the  -r  option  is  specified, relocatable object files are
+	#     combined to produce one relocatable object file
+		
+	#On Solaris:
+	#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+	#ld: fatal: option -h and building a dynamic executable are incompatible
+	#ld: fatal: Flags processing errors
+	
+	#Solaris:
+	#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+	#ld: fatal: option -h and building a dynamic executable are incompatible
+	#ld: fatal: Flags processing errors
+	
+endif
+ifeq "${TARGET_OS}" "darwin"
+	#On Darwin:
+	#cc: unrecognized option `-rdynamic'
+	RDYNAMIC		=
+endif
+ifeq "${TARGET_OS}" "hpux"
+	#On HPUX: gcc: unrecognized option `-rdynamic'
+	RDYNAMIC=-a1 -z -Wl,+s -Wl,-E
+	CFLAGS+=-fPIC -D__hpux__
+endif
+
+
+#FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
+#use 'gcc -shared'.  If you MUST pass linker specific options to ld, use
+#'-Wl,--my-ld-option' in your gcc. On Cygwin, using 'ld' directly will not
+#automatically pick up the w32api libraries, even if they are installed.
+#command line.
+#even better, use libtool (once it is working on CygWin)
+
+#LD Command to use for linking libraries:
+ifeq "${TARGET_OS}" "darwin"
+	#LD                  =ld
+	LD              =${CC}
+else
+	LD              =${CC}
+endif
+
+#ifeq "${TARGET_OS}" "hpux"
+#	LD              =ld
+#endif
+
+#LD Command to use for linking executables:
+LD_EXE              =${CC} ${RDYNAMIC}
+
+ifeq "${TARGET_OS}" "solaris"
+	#LD_EXE         =ld
+	LD_EXE			=${CC} ${RDYNAMIC}
+endif
+ifeq "${TARGET_OS}" "darwin"
+	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
+endif
+
+
+
+ALL_LIBS			=@LIBS@
+AUTOCONF_CFLAGS     =@CFLAGS@
+DDEBUG				=-DDEBUG
+#tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
+#fixme: set -DDEBUG and -g from configure:
+
+NON_PEDANTIC_OK		=1
+#cannot use -pedantic, too much warnings, using Splint instead
+
+ifeq "${TARGET_OS}" "linux"
+	CWARN    		=-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+else
+	CWARN			=
+endif
+
+ifeq "${WIN_PATH}" "1"
+	C_IFLAGS            =-I$(AUBITDIR)/incl
+else
+	C_IFLAGS            =-I$(AUBITDIR)/incl
+	#with GCC 3.2 including system include paths manually generates a warning:
+	#-I/usr/local/include
+endif
+
+
+ifeq "${TARGET_OS}" "darwin"
+	C_IFLAGS 			+=-I$(AUBITDIR)/tools
+endif
+ifeq "@GETOPT_LONG@" "no"
+	C_IFLAGS 			+=-I$(AUBITDIR)/tools/getopt
+endif
+
+YYDEBUG             =@YYDEBUG@
+C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
+CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
+#we are overriding LD_LIBRARY_PATH that might existed in environment:
+LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
+
+#To let know 4glpc we are in process of making compiler, and not
+#compiling 4gl programs
+MAKINGAUBIT			=1
+
+
+#There are sutuations in which it's OK for some targets to fail to build.
+#Under normal circumstances, we would leave FAIL_OK empty
+FAIL_OK             =-
+
+#  -fPIC  If supported for the target machine, emit position-
+#         independent code,  suitable  for  dynamic  linking,
+#         even if branches need large displacements.
+#FIXME: is it OK to have -fPIC when creating executables, not libraries?
+
+#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+ifneq "${GCC_NO_PIC}" "1"
+	#cc1: warning: -fPIC ignored for target (all code is position independent)
+	PIC					=@PIC@
+endif
+
+ifeq "${TARGET_OS}" "darwin"
+	#On Darwin Autoconf will set PIC = -fno-common
+	#The generation of position-independent code (PIC) is the default is the
+	#default on Darwin. Actually, PowerPC code is position-independent by design,
+	#so there is no performance or space penalty involved. So, you don't need to
+	#specify a PIC option when compiling code for a shared library or module.
+	#However, the linker doesn't allow "common" symbols in shared libraries,
+	#so you must use the -fno-common compiler option.
+	#PIC				=@PIC@ -fPIC
+endif
+USE_RPCGEN			=@USE_RPCGEN@
+HAVE_RPCLIB			=@HAVE_RPCLIB@
+RPCGEN				=@RPCGEN@
+RPCLIB_NAME			=@RPCLIB_NAME@
+
+#How do we wanat compilers (4glc, mcompile, mkmess, fcompile) linked. this
+#flag is forwarded to 4glpc:
+#LINK_COMPILERS      =-static
+LINK_COMPILERS      =-dynamic
+#got core dumps when trying this:
+#LINK_COMPILERS      =-shared
+#which Aubit library we want to link Aubit executables/compiler with. This
+#flag is forwarded to C linker:
+AUBIT_LIB			=-laubit4gl
+ifeq "${TARGET_OS}" "solaris"
+	AUBIT_LIB			+=-lc
+endif
+
+
+########################
+#Define compilers to use for compiling Aubit compiler generated code
+#NCC=gcc
+FGLC_OUTPUT_EXT=c
+
+########################
+#do not install static libraries on CygWin:
+#we no longer compile static libs on any platform - remove this
+#STATICLIB_INST=no
+
+########################
+#This is extension for LOADABLE libraries - using dlopen():
+SO_EXT=@SO_EXT@
+
+########################
+#This is extension for LINKABLE libraries - linked at compile time. In Aubit
+#this is (or should be) only libaubit4gl:
+SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
+
+ARCHEXT			=@ARCHEXT@
+DIRSEP          =/
+#on unix, we expect to have WWW set in environment
+#WWW            =/data2/htdocs
+GTKCONFIGTEXT   =echo "----- gtk-config --version ---------"
+GTKCONFIGCMD    =gtk-config --version
+LDDCMD          =ldd
+
+########################
+#FIXME: add -g from configure
+#FIXME: verify that we need -fPIC in CFLAGS
+CFLAGS      +=${PIC}
+
+########################
+#flags to linker, when making shared libraries:
+SO_LDFLAGS  =-shared
+
+########################
+#list of Aubit plug-ins (loadable modules) that are to be linked statically
+#with all external libraries (eg. libUI_TUI with Curses libraries)
+#PLUGIN_STATIC=esql
+
+########################
+#flags to CC when making and linking executables:
+EXE_CFLAGS  =${RDYNAMIC}
+EXEEXT      =
+LN          =${LN_H}
+
+########################
+#we should not use hard links when we are installing, because this
+#can cause errors like "Invalid cross-device link" when source
+#and destination is on different deveices:
+LN_S_LIB    =${LN_S}
+CPEXE       =${LN_H}
+
+
+## ==================================================================
+##                    Platform dependent Settings
+## ==================================================================
+
+ifdef COMSPEC #############Windows platform - CygWin/MinGW related:################
+
+	#Only for CygWin - Windows 'find' is useless anyway
+	FIND=/bin/find
+	UNZIP=/bin/unzip
+	
+	#dll on Windows are loaded by standard Windows loader, that don't
+	#understand CygWin symbolic links:
+	SOEXP_EXT   	=${SO_EXT}.a
+    DLL_EXPORTLIB_EXT=${SOEXP_EXT}
+	DIRSEP			=\\
+	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
+	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
+	GTKCONFIGCMD	=echo ${LIBVER}
+    LDDCMD          =cygcheck
+    #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
+
+	PATH		:=${CYG_AUBITDIR}/lib:${CYG_AUBITDIR}/bin:${AUBITDIR}/lib:/usr/local/lib:${PATH}
+
+	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
+    #error with GCC 3.2 on CygWin
+	#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+    ifneq "${GCC_NO_native-struct}" "1"
+		CFLAGS		+=-fnative-struct
+    else
+		CFLAGS		+=-mms-bitfields
+	endif
+    EXEEXT		=.exe
+	EXE			=${EXEEXT}
+
+	DLL_CFLAGS=-shared -Wl,--out-implib=TMP${SOEXP_EXT} -Wl,--export-all-symbols
+	SO_LDFLAGS	=${DLL_CFLAGS}
+	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
+
+	LN			=cp
+	LN_S_LIB    =cp
+	CPEXE		=cp
+
+	#ifeq "${GCC_MINGW}" "yes"
+		#Native Windows - perform file format conversion:
+		#FCONVERT=yes
+    #
+	#Output will be in DOS format:
+	#FCONVERT_CMD=unix2dos -D
+	#Output will be in UNIX format:
+	#FCONVERT_CMD=unix2dos -U
+
+endif
+
+ifeq "${TARGET_OS}" "darwin"
+		#SO_LDFLAGS	=-r ${LDFLAGS}
+		#This is to make ONLY dlopen() loadable library, not a standard
+        #shared one, ("bundle") so we will need separate setting for
+		#libaubit4gl.dynlib
+		SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
+
+        #Darwin
+		#-Wl,-force_flat_namespace is needed to get all the programs
+		#to link correctly. (huh?)
+endif
+
+ifeq "${TARGET_OS}" "hpux"
+	#SO_LDFLAGS	=-b
+	SO_LDFLAGS	+=-fPIC
+endif
+
+## ==================================================================
+##                              Libtool configuration
+## ==================================================================
+
+
+ifeq "@EFENCE@" "yes"
+#enable memeory debugging with Electric Fence
+	SO_LDFLAGS		+=-lefence
+	LD_EXE			+=-lefence
+endif
+
+
+
+#/bin/sh ../../libtool --mode=link gcc  -g -O2  -o mkmess  mkmess.o -laubit4gl -lcheck -lpanel -lform -ldl -lcurses -lc -lgmp
+
+#From Makefie:
+#LIBTOOL = $(SHELL) $(top_builddir)/libtool
+#LIBTOOL_DEPS = etc/config/ltmain.sh
+#...
+#LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+#CCLD = $(CC)
+#LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+
+
+#<options needed also for binary distro makefile========================>
+
+ifeq "${FGLPC}" "new"
+	FGLPC_NAME=4glpc_new
+	FGLPC_SH=
+else
+	FGLPC_NAME=4glc
+	FGLPC_SH=
+
+	#FGLPC_NAME=4glpc
+	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script	
+	#FGLPC_SH=${SH}
+endif
+#Option we need to pass to 4gl compiler used (4glc/4glpc/4glpc_new) to
+#make shared library WARNING: 4glpc -sahred option is not same as what traditionaly
+#it is for C compilers; in 4glpc it menas "use shared libraries for linking) and
+#--as-dll option is used to make shared library. Also, 4glpc accepts "-as-dll" and
+#--as-dll but 4glc accepts --as-dll or --shared, and NOT -as-dll. 4glpc_new takes 
+#--as-dll, but not --shared
+AS_DLL=--as-dll
+ifdef VERBOSE
+	VERBOSE_FLAG=--verbose
+endif
+
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
+	#MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
+    MKMESS      =${AUBIT_SRC_ROOT}/bin/amkmessage
+	FGLPCEXEC	:=${FGLPC_SH} ${AUBIT_SRC_ROOT}/bin/${FGLPC_NAME}
+	MCOMPILE	=${AUBIT_SRC_ROOT}/bin/mcompile
+else
+	FCOMPILE	=aubit fcompile
+	#MKMESS      =aubit mkmess
+	MKMESS      =aubit amkmessage
+	FGLPCEXEC	=${FGLPC_SH} aubit ${FGLPC_SH} ${FGLPC_NAME}
+	MCOMPILE	=aubit mcompile
+endif
+
+
+#install location:
+ifdef COMSPEC
+	#on Windows, dll libraries need to be in the path
+	LIB_INSTALL_LINK=/usr/local/bin
+else
+	#FSH and RPM rules say we should install binaries (links) in
+	#${PREFIX}/${AUBITNAME} and libraries (links) in ${PREFIX}/lib. But this will
+	#in our case be /opt, and on 99% of the systems we will not have /opt/bin
+	#already in the path, and /opt/lib will not be in libraries search path.
+	#This conflicts with RPM rule that say that installed programs "must be
+	#operational" after RPM install is finished. Therefore, we have to use
+	#/usr/lib and /usr/bin:
+
+	#/usr/local/lib is not in default lib load path on RedHat, so we MUST use
+	#/usr/lib to get things working immediately after installation, without the
+	#need to edit system files manualy
+
+	LIB_INSTALL_LINK=/usr/lib
+endif
+
+PREFIX=@prefix@
+BIN_INSTALL_LINK=/usr/bin
+#INSTALL_DIR=${PREFIX}/${AUBITNAME}
+INSTALL_DIR=${PREFIX}
+
+#Set AUBITDIR in aubitrc settings:
+	TOREPLACE=^AUBITDIR
+
+	ifeq "${AUBIT_BIN_INSTALL}" "1"
+		LOOKFOR_INFILE:=${AUBITDIR}/etc/aubitrc-bin
+    else
+		LOOKFOR_INFILE:=${AUBITDIR}/etc/aubitrc
+    endif
+
+	INFILE:=$(shell ls ${LOOKFOR_INFILE} ${NOERR})
+
+	ifneq "${INFILE}" ""
+		OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
+		ifeq "${GCC_MINGW}" "yes"
+			NEWVALUE:=$(shell echo "AUBITDIR=${WIN_CYGPATH}$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+        else
+			NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+        endif
+		STARTWITH=^${OLDVALUE}
+		REPLACEWITH=${NEWVALUE}
+    endif
+
+	#this DIRECTORY is created in configure
+	#ifneq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
+	#	DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+    #endif
+
+	#command line parameter to make : "make aubitrc=new"
+    #this will force ${AUBITETC}/aubitrc to be overwriten with new one
+	ifneq "${aubitrc}" "new"
+		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+    endif
+
+	#This DIRECTORY is created from configure
+	#ifeq "${AUBITRCFILEEXISTS}" ""
+	#	#create path
+	#	DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+	#	#AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+	#endif
+
+LDCONFIG=@LDCONFIG@
+ifneq "${LDCONFIG}" "no"
+	LD_SO_CONF=/etc/ld.so.conf
+	GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
+	GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
+endif
+
+#All paths to libraries, that configure script detected outside standard
+#library paths. We can use them when compiling, we can use them even in
+#4glpc, but when user try to run compiled program, they will unlimately
+#fail unless this paths are in LD_LIBRARY_PATH, or in Lunix, optionally in
+#/etc/ld.so.conf (don't forget ro run "ldconfig" is you change ld.so.conf
+#file manually!)
+#We have 2 choices to make user's life easier:
+#1) On linux only, we can stuff them in ld.so.conf, and re-run ldconfig.
+#   this will be done with "make ldconfig". This will work immediately,
+#   but it depenfd on user's rights to write to this file, and works only
+#   on Linux.
+#   NOTE: ld.so.conf apparently only applies to dynamic loader - but NOT
+#   compiler linker ?
+#
+#2) On non-Linux systems, we can try to stuff them in /etc/profile, (depending
+#	on user's rights) or $HOME/.bashrc (? $HOME/.profile), and source this
+#	file as ".$HOME/.bashrc". This should also work immediately.
+#
+#/usr/local/lib should always be in there !
+ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@:/usr/local/lib
+#ADD_LD_LIBRARY_PATH_SPACE=${ADD_LD_LIBRARY_PATH::/=--}
+#ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} | sed -e "s%:% %g")
+ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo "${ADD_LD_LIBRARY_PATH}" | sed -e "s/:/ /g" -e "s/;/ /g")
+
+#</options needed also for binary disrto makefile========================>
+
+
+
+
+#All varibales needed in environment, primarily because 4glpc cannot
+#read this file - all make files should include this file anyway:
+export MAKINGAUBIT
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	export AUBIT_SRC_ROOT
+endif
+export AUBITDIR
+#This one is needed to run Aubit compiled programs from build process:
+export LD_LIBRARY_PATH
+#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not
+#in Aubit compiler source code tree; it is added to this file by "make install"
+export AUBIT_BIN_INSTALL
+#Must be exported on MinGW, but don't seem to be working (put it in profile):
+export PATH
+
+
+## ==================================================================
+##            Convert Autoconf variables to Make variables
+## ==================================================================
+
+#Convert Autoconf variables into Make variables here, so we don't need to
+#process every make file with Autoconf:
+
+# Misc
+EXE_EXT				=@EXEEXT@
+GLIB_CFLAGS			=@GLIB_CFLAGS@
+FORMS_DESTINATION	=@FORMS_DESTINATION@
+HELP_DESTINATION	=@HELP_DESTINATION@
+COMP_FORM_EXT		=@COMP_FORM_EXT@
+LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
+RPM					=@RPM@
+LIBTOOL_DEPS		=@LIBTOOL_DEPS@
+enable_minimal		=@enable_minimal@
+
+# Windows / CygWin / MinGW / MSYS
+CYGWIN_PATH_WIN		=@CYGWIN_PATH_WIN@
+MSYS_ROOTDIR		=@MSYS_ROOTDIR@
+GCC_HOME_WINPATH	=@GCC_HOME_WINPATH@
+GCC_HOME_CYGPATH	=@GCC_HOME_CYGPATH@
+
+# Informix
+IFMX_ESQLC			=@IFMX_ESQLC@
+IFX_LIBS            =@IFX_LIBS@
+INFORMIXC			=@INFORMIXC@
+INFORMIXDIR			=@INFORMIXDIR@
+INFORMIXDIR_UNQUOTED=@INFORMIXDIR_UNQUOTED@
+
+# Querix 
+Q_ESQLC				=@Q_ESQLC@
+
+# GTK+
+GTK_INC_PATH		=@GTK_INC_PATH@
+GTK_LIB_PATH		=@GTK_LIB_PATH@
+GTKLIBS				=@GTKLIBS@
+GTK_VERSION			=@GTK_VERSION@
+
+# Curses
+HAVE_CURSES     	=@HAVE_CURSES@
+CURSES_INC_PATH 	=@CURSES_INC_PATH@
+CURSES_LIB_PATH		=@CURSES_LIB_PATH@
+CURSES_LIB_NAME 	=@CURSES_LIB_NAME@
+
+# PDcurses
+HAVE_PDCURSES   	=@HAVE_PDCURSES@
+HAS_PDCURSES_STATIC_OBJS =@HAS_PDCURSES_STATIC_OBJS@
+PD_CURSES_LIB_PATH	=@PD_CURSES_LIB_PATH@
+PD_CURSES_INC_PATH	=@PD_CURSES_INC_PATH@
+PD_CURSES_LIB_NAME	=@PD_CURSES_LIB_NAME@
+PD_CURSES_DRIVE		=@PD_CURSES_DRIVE@
+PD_CURSES_CYGDRIVE	=@PD_CURSES_CYGDRIVE@
+XCURSES_CFLAGS		=@XCURSES_CFLAGS@
+XCURSES_LIBS		=@XCURSES_LIBS@
+
+# libPDF
+PDFLIB_L_FLAGS		=@PDFLIB_L_FLAGS@
+PDFLIB_I_FLAGS		=@PDFLIB_I_FLAGS@
+
+# PCRE
+PCRE_INC_PATH		=@PCRE_INC_PATH@
+PCRE_LIB_PATH		=@PCRE_LIB_PATH@
+
+# XML-RPC
+XMLRPC_LFLAGS		=@XMLRPC_LFLAGS@
+XMLRPC_IFLAGS		=@XMLRPC_IFLAGS@
+XMLRPC_LIBS			=@XMLRPC_LIBS@
+
+# Iksemel / Jabber
+JABBERBUILD			=@JABBERBUILD@
+IKSEMEL_I_FLAGS		=@IKSEMEL_I_FLAGS@
+IKSEMEL_L_FLAGS		=@IKSEMEL_L_FLAGS@
+
+# SQLite
+SQLITE_LIBNAME		=@SQLITE_LIBNAME@
+SQLITE_LDPATH		=@SQLITE_LDPATH@
+
+# iODBC
+IODBC_INCLUDE		=@IODBC_INCLUDE@ 
+IODBC_LFLAGS		=@IODBC_LFLAGS@
+IODBC_LIBS			=@IODBC_LIBS@
+
+# UnixODBC
+UNIXODBC_LFLAGS		=@UNIXODBC_LFLAGS@
+UNIXODBC_LIBS		=@UNIXODBC_LIBS@ 
+
+# PostgreSQL
+PGODBC_INCLUDE		=@PGODBC_INCLUDE@ 
+PGODBC_LFLAGS		=@PGODBC_LFLAGS@	
+PGODBC_LIBNAME		=@PGODBC_LIBNAME@ 
+PGSQL_INCLUDE		=@PGSQL_INCLUDE@
+PGSQL_LFLAGS		=@PGSQL_LFLAGS@ 
+PGSQL_LIBS			=@PGSQL_LIBS@
+PGSQL_INCDIR		=@PGSQL_INCDIR@
+PGSQL_INCLUDE		=@PGSQL_INCLUDE@
+PGSQL_LIBDIR		=@PGSQL_LIBDIR@
+PG_ESQLC			=@PG_ESQLC@
+ECPG_INCDIR			=@ECPG_INCDIR@
+ECPG_LIBDIR			=@ECPG_LIBDIR@
+ECPG_LFLAGS			=@ECPG_LFLAGS@
+ECPG_IFLAGS			=@ECPG_IFLAGS@
+HAVE_PGSQL_LIB		=@HAVE_PGSQL_LIB@
+POSTGRESDIR			=@POSTGRESDIR@
+
+
+# SAP DB / MaxDB
+SAPDB_ESQLC			=@SAPDB_ESQLC@
+SAPODBC_INCLUDE		=@SAPODBC_INCLUDE@ 
+SAPODBC_LFLAGS		=@SAPODBC_LFLAGS@ 
+SAPDB_INCDIR		=@SAPDB_INCDIR@ 
+SAPDB_LIBDIR		=@SAPDB_LIBDIR@
+
+# Doxy
+DOXYGEN				=@DOXYGEN@
+WWW_DOCUMENT_ROOT	=@WWW_DOCUMENT_ROOT@
+CGI_DIR				=@CGI_DIR@
+WWW_HOST_NAME		=@WWW_HOST_NAME@
+
+# ORBit / CORBA
+HAS_ORBIT_TYPE		=@HAS_ORBIT_TYPE@
+ORBIT_IDL			=@ORBIT_IDL@
+ORBIT_NAME			=@ORBIT_NAME@
+ORBIT_VERSION		=@ORBIT_VERSION@
+CAPI_LDFLAGS		=@CAPI_LDFLAGS@
+CAPI_CFLAGS			=@CAPI_CFLAGS@
+ORBIT_CONFIG		=@ORBIT_CONFIG@
+
+TUI_DIALOG			=@TUI_DIALOG@
+TUI_DIALOG_VERSION	=@TUI_DIALOG_VERSION@
+XDIALOG				=@XDIALOG@
+XDIALOG_VERSION		=@XDIALOG_VERSION@
+DIALOG				=@DIALOG@
+DIALOG_TYPE			=@DIALOG_TYPE@
+EXDATA_MPZ			=@EXDATA_MPZ@
+PERL				=@PERL@
+
+## ==================================================================
+##                      Moved from aubitrc:
+## ==================================================================
+
+PDFBUILD=@PDFBUILD@
+JABBERBUILD=@JABBERBUILD@
+PERLBUILD=@PERLBUILD@
+GTKBUILD=@GTKBUILD@
+HAVE_UNIXODBC=@HAVE_UNIXODBC@
+HAVE_IODBC=@HAVE_IODBC@
+RPCLIB_NAME=@RPCLIB_NAME@
+
+###############################
+#GTK+ 2.0 configuration
+GTK_CONFIG="@GTK_CONFIG@"
+PKG_CONFIG="@PKG_CONFIG@"
+#package names reported by gtk-config or pkg-config:
+GTK_NAME="@GTK_NAME@"
+GDK_NAME="@GDK_NAME@"
+GLIB_NAME="@GLIB_NAME@"
+
+MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
+
+## ==================================================================
+##                      Common rules
+## ==================================================================
+
+#Create make file in current directory:
+%.mak: Makefile.in
+	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
+#"new" for instance
+%ew: Makefile.in
+	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
+#causes strange makefile updates...
+#"makefile" for instance
+#%akefile: Makefile.in
+#	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
+
+## ==================================================================
+##                    Install Settings
+## ==================================================================
+
+################################
+#RPM setup:
+RPMBUILDROOT=@RPMBUILDROOT@
+
+BIN_PATH    =bin
+LIB_PATH    =lib
+DOC_PATH    =docs
+TEST_PATH   =tools/test
+FGLPC_SETTINGS_PATH   =tools/4glpc/settings
+ETC_PATH    =etc
+INCL_PATH   =incl
+IDE_PATH  	=tools/ide
+CONVSQL_PATH=etc/convertsql
+IMPORT_PATH=etc/import
+
+#installation files sourcing paths. This is generally the same as destination
+#paths, but with different SOURCE path.
+SOURCE 		=${AUBIT_SRC_ROOT}
+BIN_DIR     =$(SOURCE)/${BIN_PATH}
+LIB_DIR     =$(SOURCE)/${LIB_PATH}
+DOC_DIR    	=$(SOURCE)/${DOC_PATH}
+FGLPC_SETTINGS_DIR     =$(SOURCE)/tools/4glpc/settings
+TEST_DIR    =$(SOURCE)/${TEST_PATH}
+TEST_DIR_STD=$(TEST_DIR)
+TEST_DIR_GUI=$(TEST_DIR)/gui
+ETC_DIR    	=$(SOURCE)/${ETC_PATH}
+HOME_DIR    =$(SOURCE)
+ROOT_DIR    =$(SOURCE)
+INCL_DIR    =$(SOURCE)/${INCL_PATH}
+IDE_DIR    	=$(SOURCE)/${IDE_PATH}
+CONVSQL_DIR =$(SOURCE)/${CONVSQL_PATH}
+IMPORT_DIR =$(SOURCE)/${IMPORT_PATH}
+
+#Paths to install to:
+BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
+LIB_DEST	=$(INSTALL_DIR)/${LIB_PATH}
+FGLPC_SETTINGS_DEST	=$(INSTALL_DIR)/${FGLPC_SETTINGS_PATH}
+DOC_DEST   	=$(INSTALL_DIR)/${DOC_PATH}
+TEST_DEST   =$(INSTALL_DIR)/${TEST_PATH}
+TEST_DEST_STD =$(TEST_DEST)
+TEST_DEST_GUI =$(TEST_DEST)/gui
+ETC_DEST   	=$(INSTALL_DIR)/${ETC_PATH}
+HOME_DEST   =$(HOME)
+ROOT_DEST	=$(INSTALL_DIR)
+INCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}
+IDE_DEST   	=$(INSTALL_DIR)/${IDE_PATH}
+CONVSQL_DEST=$(INSTALL_DIR)/${CONVSQL_PATH}
+IMPORT_DEST=$(INSTALL_DIR)/${IMPORT_PATH}
+
+##################################################
+#definitions of names for binary distro file name:
+#This is also set in makefile-common by configure, but can change after
+#last configure run
+#AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
+#AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
+AUBITVERSION=@AUBIT_VERSION@
+AUBITBUILD=@AUBIT_BUILD@
+
+COMPILEDATE	:=$(shell date +%d-%m-%Y)
+
+
+
+## ==================================================================
+##                    To bin directory
+## ==================================================================
+
+AMAKE_BIN_SCRIPTS=@AMAKE_SH@
+AMAKE_BIN_EXE=@AMAKE_BIN_EXE@
+RUNTIME_EXE=@RUNTIME_EXE@
+BIN_SCRIPTS=@ALL_SH@
+RUNTIME_RESOURCE=@RUNTIME_RESOURCE@
+COMP_EXE=@COMP_EXE@
+BIN_EXE=${COMP_EXE} ${AMAKE_BIN_EXE} ${RUNTIME_EXE}
+
+#Building this is optional:
+ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
+	#needs missing source code
+	BIN_EXE		+=fdecompile-j${EXEEXT}
+endif
+#user's manual choice (make extra):
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-unixODBC${EXE}
+endif
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc3${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-iodbc3${EXE}
+endif
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-iodbc2${EXE}
+endif
+
+#WARNING: watch out for files that allready have Aubit exe extension (.4ae)
+#On Windows, we cant just add .exe to them!
+#$(filter %.o,$(files))
+BIN_EXE_NOT_4AE=$(filter-out %.4ae,${BIN_EXE})
+BIN_EXE_4AE=$(filter %.4ae,${BIN_EXE})
+SETTINGS_FILES=C C_INFORMIX EC EC_INFORMIX EC_INGRES EC_POSTGRES EC_SAP INFORMIX
+BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} ${BIN_EXE_4AE} \
+			$(addsuffix ${EXE_EXT},${BIN_EXE_NOT_4AE})
+AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})
+
+
+#Additional files to allways remove from bin, even if we would not install
+#them under current configuration:
+BIN_ALLWAYSCLEAN=$(notdir @EXTRAFILE_2@) $(notdir @EXTRAFILE_1@) \
+	odbctest-iodbc2${EXE} odbctest-iodbc3${EXE} odbctest-unixODBC${EXE}
+
+## ==================================================================
+##                    To lib directory
+## ==================================================================
+
+#Only DLL we will actually link against - everything else is loaded at run-time:
+#LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
+LIB_EXPORTLIB   =@LIB_EXPORTLIB@
+
+#WARNING: Order here is important:
+TMP_LIBFILES	=$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}) $(addsuffix ${SO_EXT},@COMP_LIBS@ @ALL_LIBS@)
+LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES})
+
+#ifneq "${COMSPEC}" ""
+#	LIB_DEFAULT	+=$(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
+#endif
+
+#LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
+LIB_SO		=${LIB_DEFAULT}
+
+#Lib files we build depending on available 3rd party support:
+#did not work by passing this directly to notdir:
+
+TMP_RPMFILES=$(addprefix lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
+LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
+
+LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
+
+ifneq "${COMSPEC}" ""
+	LIB_FILES 		+=lib4glc${SO_EXT} $(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
+	LIB_ALLWAYSCLEAN+=libUI_TUI.dll
+endif
+
+#Additional files to clean even if we would not install them under
+#current configuration:
+LIB_ALLWAYSCLEAN+=libA4GL_cint${SO_EXT} libMENU_XDR${SO_EXT} libUI_GTK${SO_EXT} \
+	libMENU_GENERIC${SO_EXT} libSQL_esqlSAP${SO_EXT}
+
+## ==================================================================
+##                    To docs directory
+## ==================================================================
+
+DOC_FILES		=@ALL_DOC@
+
+## ==================================================================
+##                    To test directory
+## ==================================================================
+
+TEST_STD=@ALL_EXAMP@
+TEST_GUI=@ALL_EXAMP_GUI@
+TEST_FILES=$(addprefix gui/,$(TEST_GUI)) $(TEST_STD)
+
+## ==================================================================
+##                    To etc directory
+## ==================================================================
+
+ETC_FILES       =@ETC_FILES@
+
+#This file is installed by copying etc/aubitrc.in to aubitrc-bin.in
+#but we still need to de-install it:
+ETC_DEINST      =aubitrc-bin.in
+
+## ==================================================================
+##                    To etc/convertsql directory
+## ==================================================================
+
+CONVSQL_FILES 	=@CONVSQL_FILES@
+IMPORT_FILES 	=@IMPORT_FILES@
+
+## ==================================================================
+##                    To user's HOME directory
+## ==================================================================
+
+#Do not install this by default, it can confuse user not expecting anything
+#to override the global aubitrc
+#HOME_FILES		=etc/aubitrc
+
+
+## ==================================================================
+##                    To incl directory
+## ==================================================================
+
+AMAKE_INCL_FILES	=@AMAKE_INCL_FILES@
+INCL_HEADERS 		=@ALL_INC@ 
+INCL_MAKE   		=@INCL_MAKE@
+INCL_FILES	=${INCL_MAKE} ${AMAKE_INCL_FILES} ${INCL_HEADERS}
+
+## ==================================================================
+##                    To Aubit binary installation root directory
+## ==================================================================
+
+ROOT_FILES      =@ROOT_FILES@
+ROOT_ALLWAYSCLEAN=libtool
+
+## ==================================================================
+##                    To ide directory
+## ==================================================================
+
+#FIXME: replace this with binary executables:
+#IDE_files       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/Makefile
+
+#IDE installs:
+#/usr/local/bin/ide
+#/usr/local/4glide/ide.4ae
+#/usr/local/4glide/d4glinpt.afr d4glopts.afr
+#/usr/local/4glide/d4glhelp.iem
+
+
+## ==================================================================
+##                    Derived files lists with paths
+## ==================================================================
+
+#installation files with paths:
+TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
+TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
+TODOCS		=$(addprefix $(DOC_DIR)/,		$(DOC_FILES))
+TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
+TOTEST_GUI	=$(addprefix $(TEST_DIR_GUI)/,	$(TEST_GUI))
+TOETC		=$(addprefix $(ETC_DIR)/,		$(ETC_FILES))
+TOHOME		=$(addprefix $(HOME_DIR)/,		$(HOME_FILES))
+TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
+TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
+TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
+TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
+TOSETTINGS   =$(addprefix $(FGLPC_SETTINGS_DIR)/,	$(SETTINGS_FILES))
+TOIMPORT	=$(addprefix $(IMPORT_DIR)/,	$(IMPORT_FILES))
+AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,		$(AMAKE_BIN_FILES))
+AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,		$(AMAKE_INCL_FILES))
+
+ifneq "${COMSPEC}" ""
+	TOBIN	+=@EXTRAFILE_1@
+endif
+
+TOBIN		+=@EXTRAFILE_2@
+
+#deinstallation files with paths:
+FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES)) \
+			 $(addprefix $(BIN_DEST)/,	$(BIN_ALLWAYSCLEAN))
+FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES)) \
+			 $(addprefix $(LIB_DEST)/,	$(LIB_ALLWAYSCLEAN))
+FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
+FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
+FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) \
+			 $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) \
+			 $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))
+FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
+FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES)) \
+			 $(addprefix $(ROOT_DEST)/,	$(ROOT_ALLWAYSCLEAN))
+FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES)) \
+			 $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
+FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
+FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
+FROMIMPORT 	=$(addprefix $(IMPORT_DEST)/,$(IMPORT_FILES))
+
+## ==================================================================
+##                    Automatic build Settings
+## ==================================================================
+
+AUBITCVSSFNAME		=${AUBITNAME}src
+NAMEVERBLD			=${AUBITCVSSFNAME}-${AUBITVERSION}-${AUBITBUILD}
+PLATFORMINFO		=${NAMEVERBLD}.txt
+SOURCETARBASENAME	=${NAMEVERBLD}.${ARCHEXT}
+BINTARBASENAME      =${AUBITNAME}bin-${TARGET}-${AUBITVERSION}-${AUBITBUILD}.${ARCHEXT}
+SOURCETARNAME		=$(SOURCE)/$(SOURCETARBASENAME)
+
+#Path under your web server HTDOCS dir, where to put Doxy generated files:
+DOXY_WWWPATH        =projects/Aubit4GL/doxy
+
+
+## ==================================================================
+##                    Third-party products installation settings
+## ==================================================================
+
+WGET				=@WGET@
+RPM					=@RPM@
+TIME                =$(shell date +%H-%M-%S)
+#This one on SF will not work, because it used cookies to redirect:
+#RH_RPM_PATH		=http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
+#This one had time out problems:
+#250 Directory successfully changed.
+#--> PORT 192,168,1,69,4,103
+#421 Timeout. Pay attention.
+#Invalid PORT.
+#Retrying.
+#
+#RH_RPM_PATH         =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
+
+RH_RPM_VER			=@REDHAT_VER@
+
+RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/RedHat/RPMS
+
+#List of all missing options as make targets to be installed, as determined
+#by autoconf:
+INSTALL_MISSING_OPTIONAL =@INSTALL_MISSING_OPTIONAL@
+
+
+#=================================== EOF ================================
+

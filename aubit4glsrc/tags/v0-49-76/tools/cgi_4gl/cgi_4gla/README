@@ -1,0 +1,17 @@
+Comments:
+=========
+
+circinfo.4gl will not compile out of the box because it needs specific
+Informix tables to be set up and calls a "has" function which is not
+present.  But it should be a good model for how to design your own CGI/4GL
+applications.  Refer to the following web page for more information:
+
+              http://library.byu.edu/staff/bkh/cgi_4gldoc.html
+
+Files:
+======
+4gl_wrapper.c		C Wrapper Functions for 4GL
+Makefile		Sample Makefile
+circinfo.4gl		Sample 4GL program
+formsproc.c		CGI C API
+formsproc.h		CGI C API Header file

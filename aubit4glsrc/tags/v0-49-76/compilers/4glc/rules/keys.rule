@@ -1,0 +1,50 @@
+on_key_command : 
+        ONKEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;} 
+|
+        ON_ANY_KEY {strcpy($<str>$,"->ANY");} 
+;
+
+key_val : KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;};
+
+accept_key :  ACCEPTKEY key_value {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>2);iskey=0;}
+;
+
+
+single_key_val : KEY key_do {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>2);iskey=0;}
+;
+
+key_do	: key_value  {strcpy($<str>$,$<str>1);}
+	| OPEN_BRACKET key_value_list CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
+;
+
+key_value_list : key_value | key_value_list KW_COMMA key_value {
+	sprintf($<str>$,"%s||%s",$<str>1,$<str>3);
+}
+;
+
+key_value : key_value_1 
+;
+
+key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
+	| 	CTRL_KEY /* {strcpy($<str>$,"^A");}*/
+	| 	INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
+	| 	ACCEPT /* {strcpy($<str>$,"accept");}*/
+	|       SINGLE_KEY {strcpy($<str>$,$<str>1);}
+        |       ESCAPE {strcpy($<str>$,"escape");}
+        |       KWUP {strcpy($<str>$,"up");}
+        |       HELP {strcpy($<str>$,"help");}
+        |       KWDOWN {strcpy($<str>$,"down");}
+        |       RETURN {strcpy($<str>$,"return");}
+        |       DELETE {strcpy($<str>$,"delete");}
+        |       INSERT {strcpy($<str>$,"insert");}
+        |       TAB {strcpy($<str>$,"tab");}
+        |       LEFT {strcpy($<str>$,"left");}
+        |       RIGHT {strcpy($<str>$,"right");}     
+        |       NEXTPAGE {strcpy($<str>$,"nextpage");}     
+        |       NEXT {strcpy($<str>$,"nextpage");}     
+        |       PREVPAGE {strcpy($<str>$,"prevpage");}     
+        |       PREVIOUS {strcpy($<str>$,"prevpage");}     
+	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
+;
+
+

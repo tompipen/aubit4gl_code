@@ -1,0 +1,136 @@
+{
+#note: hash comments are not acceppted
+|^
+| Error at line 3, character -1
+| parse error
+
+--note: -- style comments are no acceppted
+
+
+note: comment below will cause form compiler to output equal number of
+emty lines to stdout:
+}
+
+
+{#@#######################################################################
+#@ When: Wed Feb 16 17:58:37 EDT 2000 Ver: 4.01.11
+#@ Log #  : AUS402.WR0202
+#@ What   : Allow Tagging and include entry code
+#@ Whom   : shatzi
+#@#######################################################################}
+{@######################################################################
+#@ When  : Thu 02 Oct 97
+#@ Log # : CUSMEL.AR0145
+#@ What  : Reformating the screen
+#@ Who   : peterl
+#@######################################################################
+#@ When  : Wed 25 Jun 97
+#@ Log#  : CUSMEL - MAX - AR54
+#@ What  : Standardise date display
+#@ Who   : samh
+#@######################################################################
+#@                                                                     #
+#@                        MAXIMISE FINANCIALS                          #
+#@                                                                     #
+#@      Copyright 1992 - Computer Systems Implementation Limited       #
+#@                                                                     #
+#@#####################################################################}
+database formonly
+
+screen
+{
+
+[a] [b] [f6     ] [f05]
+
+Start Date..[f000      ]
+End Date....[f050      ]
+\g----------------------------------------------------------------------------\g
+ Trans       Vendor         Seq Trans Document   Description         Amount
+ Date         Code  Currency    Type   Number
+\g----------------------------------------------------------------------------\g
+[f099      ][f001    ][c1 ][f02][a1][f003    |f004           |f005         ]
+[f099      ][f001    ][c1 ][f02][a1][f003    |f004           |f005         ]
+
+
+}
+{39X10}
+end
+
+attributes
+
+
+a = formonly.scroll_flag, comments = "";
+{
+|___________________________________^
+| Error at line 80, character 37
+| parse error
+}
+
+
+
+{
+fcompile  P109.per
+Attribute already used
+mv P109.frm P109.afr
+mv: P109.frm: No such file or directory
+
+...but compiler will NOT retun error code:
+
+}
+
+
+f000 = formonly.start_date type date, format = "dd/mm/yyyy", comments =
+ " Start Date for review of audit trail ";
+f050 = formonly.end_date type date, format = "dd/mm/yyyy", comments =
+ " End Date for review of audit trail ";
+f099 = formonly.tran_date, format = "dd/mm/yyyy", noentry, comments =
+ "Date of transaction used to create this ledger record";
+f001 = formonly.vend_code, upshift, upshift, comments =
+ "Unique Vendor ID";
+c1 = formonly.currency_code, upshift, comments =
+ "The currency used for this vendor";
+f02 = formonly.seq_num, comments =
+ "Numerical sequence whereby the transaction was entered in the system";
+a1 = formonly.trantype_ind,upshift, include = ("CH","DB","VO","TF"),
+   comments =
+ "CH - Cheque, DB - Debit, VO - Voucher, TF - Transfer/Partial Approval ";
+f003 = formonly.source_num, comments =
+ "Unique document or record referencing this transaction";
+f004 = formonly.tran_text, comments =
+ "Description of the transaction activity";
+f005 = formonly.tran_amt, comments =
+ "Amount of the transaction used to create this ledger";
+
+
+b  = formonly.type_ind,upshift,include=("","A","P","G","J","S","W"),comments=
+{|_________________________________________^
+| Error at line 123, character 43
+| parse error}
+"G-General, A-Chrg Thru Sale, P-Purch Ord, J-Dist to Job, S-Shipment, W-Order";
+
+
+f6 = formonly.debit_date type date, format = 'dd/mm/yyyy', comments =
+{|___________________________________________^
+| Error at line 100, character 36
+| parse error}
+" Specific voucher date to be processed";
+
+f05 = formonly.comments, noentry;
+{|____________________^
+| Error at line 84, character 22
+| parse error}
+
+end
+instructions
+delimiters " "
+screen record sr_apaudit [2] (tran_date,
+                              vend_code,
+                              currency_code,
+                              seq_num,
+                              trantype_ind,
+                              source_num,
+                              tran_text,
+                              tran_amt)
+
+
+

@@ -1,0 +1,52 @@
+/*
+=====================================================================
+                        Source: let.rule
+=====================================================================
+*/
+
+
+let_cmd :
+LET {chk4var=1;} obind_var_let_list {chk4var=0;
+expand_obind();
+A4GL_lex_printcomment("/*let3*/\n");}  EQUAL reset_cnt op_expr_null
+{
+int to_vars;
+	
+	A4GL_debug("/*processing let*/\n");
+	expand_obind();
+	to_vars=how_many_in_bind('o');
+	if (to_vars>=1)
+	{
+
+		if (!print_let_manyvars($<str>7))
+		{
+	    		a4gl_yyerror("Number of variables in let not equal to number of values\n");YYERROR;
+		}
+
+	}
+	else
+	{
+	    print_bind_pop1('o');
+		start_bind('o',0);
+	}
+
+}
+;
+
+op_expr_null : KW_NULL { 
+int to_vars;
+int cnt;
+expand_obind();
+to_vars=how_many_in_bind('o');
+for (cnt=0;cnt<=to_vars;cnt++) {
+	print_push_null(); 
+}
+sprintf($<str>$,"%d",to_vars+1);
+
+} 
+	| fgl_expr_concat 
+	;
+
+
+/* ============================= let.rule ========================== */
+

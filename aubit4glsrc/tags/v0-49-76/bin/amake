@@ -1,0 +1,825 @@
+#!/bin/sh
+#####################################################################
+#           Aubit 4gl make files execution script
+#
+#This script will use specified .mk files as base for building makefile
+#that will be processed by make command, by adding default or specified
+#header makefile (containing program's global make definitions and including
+#rules for building 4gl compiler specific targets) and footer makefile
+#(defining program's targets).
+#
+#.mk files are expected to contain only definitions of source files
+#that make a program, one program per .mk file. See examples in $AUBITDIR/incl
+#and $AUBITDIT/tools/test
+#
+# $Id: amake,v 1.33 2005-03-11 08:50:36 afalout Exp $
+#
+#####################################################################
+
+#`--include-dir=dir'
+#Specifies a directory dir to search for included makefiles. See section
+#Including Other Makefiles. If several `-I' options are used to specify
+#several directories, the directories are searched in the order specified.
+
+######################################
+# Dummy function to catch shell interpretors taht don't recognise functions
+function dummy {
+	echo "Your default shell does not understand functions - please use"
+	echo "'bash amake ...' instead of just 'amake ...'"
+	echo "Will try to do this myself:"
+	bash amake $@
+	RET=$?
+	exit $RET
+}
+
+######################################
+# Message functions 
+function verbose () {
+	message "$1" "V"
+}
+function error () {
+	message "$1" "E" "$2"
+}
+function warning () {
+	message "$1" "W"
+}
+function debug () {
+	message "$1" "D"
+}
+function note () {
+	message "$1" "N"
+}
+function message () {
+MSG_TEXT=$1
+MSG_TYPE=$2
+EXIT_CODE=$3
+msg=""
+	case $MSG_TYPE in 
+	V) if test "$VERBOSE" = "1"; then msg="VERBOSE: $MSG_TEXT"; fi ;;
+	D) if test "$DEBUG" = "1"; then msg="DEBUG: $MSG_TEXT"; fi ;;	
+	E) 	msg="ERROR: $MSG_TEXT"; 
+		if test "$EXIT_CODE" != ""; then msg="$msg STOP." ; fi
+		;;
+	W) msg="WARNING: $MSG_TEXT" ;;
+	N) if test "$SILENT" != "1"; then msg="NOTE: $MSG_TEXT"; fi ;;
+	*) if test "$SILENT" != "1"; then msg="$MSG_TEXT"; fi ;;
+	esac
+	
+	if test "$msg" != ""; then
+		echo "Amake: $msg"
+		if test "$EXIT_CODE" != "" ; then
+			exit $EXIT_CODE
+		fi
+	fi
+}
+
+
+#######################################
+#user wants us to make target using files on command line, and not an .mk file
+function compose_cmd_files () {
+		#Must not have a path:
+		PROGS="$FILES_PROG.$USER.tmp.mk"
+		MK_IS_CMD_LIST=1
+		echo "PROG=$FILES_PROG" > $PROGS
+		echo "FILES.per=$FILES_per" >> $PROGS
+		echo "FILES.4gl=$FILES_4gl" >> $PROGS
+		echo "FILES.lib=$FILES_LIB" >> $PROGS
+
+		MSG=
+		if test "$PER_NOT_IN_CURR_DIR" = "1" ; then
+			MSG="per"
+			PER_VPATH_LEVEL=1
+		fi
+		if test "$FGL_NOT_IN_CURR_DIR" = "1" ; then
+			MSG="$MSG 4gl"
+			FGL_VPATH_LEVEL=1
+		fi
+		if test "$LIB_NOT_IN_CURR_DIR" = "1" ; then
+			MSG="$MSG lib"
+			LIB_VPATH_LEVEL=1
+		fi
+		if test "$MSG" != "" ; then
+			verbose "some input files ($MSG) not in curr dir - using VPATH (1U/1D)"
+		fi
+		
+		if test "$PER_VPATH_LEVEL" != "" -o \
+			"$FGL_VPATH_LEVEL" != "" -o \
+			"$LIB_VPATH_LEVEL" != "" ; then
+				export USE_USER_VPATH=1
+				LEVEL_1_DIRS_UP=".:../`ls -l .. | grep "^d" | awk '{print $9}' | grep -v CVS | tr "\n" ":" | sed 's/:/:..\//g'`"
+				LEVEL_1_DIRS_DN="./`ls -l . | grep "^d" | awk '{print $9}' | grep -v CVS | tr "\n" ":" | sed 's/:/:.\//g'`"
+				verbose "VPATH up: $LEVEL_1_DIRS_UP"
+				verbose "VPATH down: $LEVEL_1_DIRS_DN"
+				VPATH_DIRS="$LEVEL_1_DIRS_UP:$LEVEL_1_DIRS_DN"
+		fi
+		if test "$FGL_VPATH_LEVEL" != "" ; then 
+			#vpath %.4gl   ${SET_VPATH_4GL}
+			#vpath %.glb   ${SET_VPATH_4GL}
+			export SET_VPATH_4GL="$VPATH_DIRS"
+		fi
+		if test "$PER_VPATH_LEVEL" != "" ; then
+			#vpath %.per   ${SET_VPATH_PER}
+			export SET_VPATH_PER="$VPATH_DIRS"
+		fi
+		if test "$LIB_VPATH_LEVEL" != "" ; then
+			#vpath %${LIB} ${SET_VPATH_LIB}
+			export SET_VPATH_LIB="$VPATH_DIRS"
+		fi
+		#vpath %.mk    ${SET_VPATH_MK}
+		#vpath %.msg   ${SET_VPATH_MSG}
+		#vpath %.sch   ${SCH_DIR}
+		#vpath %${FRM} ${SET_VPATH_FRM}
+		#vpath %${OBJ} ${SET_VPATH_OBJ}
+		#vpath %.aso   ${SET_VPATH_OBJ}
+		#vpath %${PRG} ${SET_VPATH_PRG}
+		#vpath %${HLP} ${SET_VPATH_HLP}
+}
+
+########################################
+# Check that we have ll we need to link in shared mode
+function check_shared () {
+	#if target is a library, then PROG will have .lib extension in .mk file
+	#PROG            = cinqwind.lib
+	TARGET_IS_LIBRARY=0; FGL_MAIN=""
+	PROG_NAME=`$MAKE -s -f $COMPOSITE show.PROG 2>/dev/null`
+	
+	if test "$PROG_NAME" != ""; then
+		BASENAME=`basename "$PROG_NAME" .lib`
+		if test "$BASENAME" != "$PROG_NAME"; then
+			TARGET_IS_LIBRARY=1
+		else
+			get_main_fgl
+		fi
+	else
+		error "cannot get PROG name from $ONEPROG"
+		error "$MAKE -s -f $COMPOSITE show.PROG"
+		$MAKE -s -f $COMPOSITE show.PROG
+		exit 4
+	fi
+}
+
+#######################################
+# Determine curent VPATH setting
+function get_vpath () {
+	
+	if test "$VPATH_DIRS" = "" ; then 
+		GET_SET_VPATH_4GL=`$MAKE -s -f $COMPOSITE show_SET_VPATH_4GL 2>/dev/null`
+		if test "$GET_SET_VPATH_4GL" = ""; then
+			error "$fglfile not in curent directory, but SET_VPATH_4GL is empty." "2"
+		else
+			GET_SET_VPATH_4GL=`echo "$GET_SET_VPATH_4GL" | tr ":" " "`
+		fi
+	else
+		#VPATH was set in this script
+		GET_SET_VPATH_4GL=`echo "$VPATH_DIRS" | tr ":" " "`
+	fi
+}
+
+######################################
+# find 4gl file containing MAIN block
+function get_main_fgl () {
+
+	#message "$MAKE -s -f $COMPOSITE show.MAIN.4gl"
+	#$MAKE -s -f $COMPOSITE show.MAIN.4gl
+	#exit 3
+	
+	FGL_MAIN=`$MAKE -s -f $COMPOSITE show.MAIN.4gl 2>/dev/null`
+	if test "$FGL_MAIN" = ""; then
+		#Find 4GL module containing MAIN block
+		#GLOBALS_4GL_LIST=`make -f $COMPOSITE show.sources.GLOBALS.4gl`
+		#Note: FILES_4GL_LIST will in most cases include GLOBALS_4GL_LIST files
+		FILES_4GL_LIST=`$MAKE -s -f $COMPOSITE show.sources.FILES.4gl  2>/dev/null`
+		if test "$FILES_4GL_LIST" != ""; then
+			FLG_MAIN_LIST=""; FLG_MAIN_CNT=0; GET_SET_VPATH_4GL=""
+			for fglfile in $FILES_4GL_LIST; do
+				if ! test -f "$fglfile"; then
+					if test "$GET_SET_VPATH_4GL" = ""; then
+						get_vpath
+					fi
+					GOTIT=0
+					for dir in  $GET_SET_VPATH_4GL ; do
+						if test -f "$dir/$fglfile"; then
+							fglfile=$dir/$fglfile
+							GOTIT=1
+							break
+						fi
+					done
+					if test "$GOTIT" = "0"; then
+						error "cannot find $fglfile (even tried VPATH)" "3"
+					fi
+				fi
+				grep -i -w "END MAIN" "$fglfile" > /dev/null 2>&1
+				RET=$?
+				if test "$RET" = "0" ; then
+					FLG_MAIN_LIST="$FLG_MAIN_LIST $fglfile"
+					let FLG_MAIN_CNT=FLG_MAIN_CNT+1
+				fi
+			done
+			if test "$FLG_MAIN_CNT" != "1"; then
+				if test "$FLG_MAIN_CNT" = "0"; then
+					note "did not find MAIN block in any of $ONEPROG source files"
+					note "Please add 'MAIN.4gl=filename.4gl' to $ONEPROG if you want to link it in shared mode"
+					SHARED=""
+				else
+					error "Found $FLG_MAIN_CNT 'END MAIN' in $ONEPROG source files:"
+					error "$FLG_MAIN_LIST"
+				fi
+				SHARED=
+				exit 2
+			else
+				FGL_MAIN="$FLG_MAIN_LIST"
+				verbose "$FGL_MAIN contains MAIN block"
+				#Cannot add it to the end of .mk file, becaus it can
+				#contain include statements which will make it invisible.
+				look_for="PROG"
+				change_to="MAIN.4gl	=$FGL_MAIN\n"
+				awk -v look_for="$look_for" -v change_to="$change_to" '
+				BEGIN {
+				}
+				{
+					if (look_for==$1) {
+						print
+						print change_to
+					} else {
+						print
+					}
+				}
+				' < $ONEPROG > /tmp/amake.tmp
+				
+				mv /tmp/amake.tmp $ONEPROG
+				RESTART_AMAKE=1
+			fi
+		else
+			error "could not get FILES.4gl list from $ONEPROG."
+			SHARED=
+		fi
+	fi
+}
+
+#######################################
+# remove temorary composite .mk file
+function remove_temp_composite () {
+	
+	if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+		#otherwise we would remove the "real" .mk file!
+		if test -f $COMPOSITE; then
+			verbose "Removing temp $COMPOSITE"
+			rm -f $COMPOSITE
+		fi
+	fi
+
+}
+
+#######################################
+function prepare_makefile () {
+		#assume make file will be an composite
+		COMPOSITE_IS_TMP=1
+		COMPOSITE=/tmp/$USER-$ONEPROG
+        #If mk file has no includes, add them
+		
+		#If word 'include' is used to really include a file (and not 
+		#perhaps as a comment) there will be exactly 2 words on that line
+		#which will give us 4 words total (for headed + footer)
+		WORD_CNT=`grep "include" $ONEPROG | wc -w`
+		#HAS_INCLUDE=`grep 'include ' $ONEPROG`
+        #if [ "$HAS_INCLUDE" = "" ]; then
+		if test "$WORD_CNT" != "4" ; then 
+			verbose "Adding include..."
+			OVERRIDEINCLUDE=1
+        fi
+
+		if test "$OVERRIDEINCLUDE" = "1"; then
+			verbose "Overriding include..."
+			INCLCMT="#include "
+			sed -e "s%include %$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
+	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
+			rm -f $COMPOSITE.tmp
+		else
+			COMPOSITE=$ONEPROG
+			COMPOSITE_IS_TMP=0
+		fi
+}
+
+#################################
+function show_help () {
+    echo
+	echo Aubit 4gl make tool
+    echo
+	echo ussage: amake progname/makefilename target options
+    echo
+    echo params :
+	echo " -all = process all .mk files in current directory"
+	echo " -log = log make processing to make.log file"
+    echo " -defaultinclude = use includes as specified in .mk file, default is"
+    echo "  to use make includes specified in this script"
+    echo " -header xxx = use xxx file for header include, overrides -defaultinclude"
+    echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
+    echo " -i : ignore errors in amake and continue (adds -k to make call)"
+	echo " everything else will be passed to make"
+	echo " -verbose = show what script is doing, and also pass -verbose to 4glpc/4glc"
+	echo "d4gl-pcode d4gl-ccode i4gl-pcode i4gl-pcode aubit querix - compiler to use"
+	echo ".4gl .per .lib .prg .lib.prg - specify input files instead of using .mk file"
+	echo " -shared - link in shared mode (Aubit only)"
+	echo " -parallel - Enable parallel build in make"
+	echo " TARGET=targetname (TARGET=clean|show|...) - specify alternative target"
+	echo
+	echo Examples:
+    echo
+    echo "'amake' - build default targets of all .mk files in ./"
+	echo "'amake -k -all install' - install all programs, ignore errors"
+    echo "'amake P11 aubit -k' - build aubit target defined in P11.mk, ignore errors"
+    echo "'amake P11 i4gl-pcode -defaultinclude' - build P11 target for I4GL p-code compiler, use"
+	echo "                 includes defined in P11"
+    echo "'amake P11 -header myhead.mk' - default P11 target, use myhead.mk for header"
+	echo "'amake max_db.mk querix clean' - invoke clean target of max_db.mk using Querix compiler"
+	echo "'amake a.4gl b.4gl ... Q.prg f.per - make program Q using a&b 4gl and f .per files"
+	echo
+	exit 1
+}
+
+############################################
+# Main loop - spin trough the list of makefiles and invoke make on them
+function main_loop () {
+	
+	#########################
+	for ONEPROG in $PROGS; do
+    #########################
+       	MSG="aMaking $ONEPROG"
+		if [ "$PARAM_PATH" != "" ]; then
+		 	MSG="$MSG in $PARAM_PATH"
+		else
+			MSG="$MSG in $PWD"
+		fi
+		message "$MSG"
+
+		if [ "$PARAM_PATH" != "" ]; then
+            cd $PARAM_PATH
+        fi
+		
+		prepare_makefile
+		
+		#Why am I using ONEPFOG as makefile here, and not COMPOSITE???
+		if test "$CLEANOBJECTS" = "1" ; then
+            $MAKE -f $ONEPROG clean DEFAULT=$DEFAULT
+        fi
+
+		if test "$CLEANTARGET" = "1"; then
+            $MAKE -f $ONEPROG clean.target DEFAULT=$DEFAULT
+        fi
+
+		if [ "$ONEPROG" = "allsinglelibs.mk" ]; then
+			if [ "$ONEPROG" != "$PROGS" ]; then
+				verbose "Ignoring $ONEPROG"
+				continue
+            fi
+		fi
+
+
+		if test "$SHARED" = "1"; then
+			if test "$DEFAULT" = "aubit"; then
+				#This must be invoked AFTER the makefile is composed, since
+				#not all .mk files will include footer themselves, and we
+				#need a footer to get data from .mk file
+				check_shared
+				
+				#but if its allready composed, then any changes we make 
+				#will be ignored. So we have to start again:
+				if test "$RESTART_AMAKE" = "1"; then
+					#invoke prepare_makefile function again to apply
+					#changes to makefile we made:
+					verbose "re-assebling makefile after changes made"
+					prepare_makefile
+				fi
+			else
+				verbose "-shared possible only using Aubit compiler. Disabled -shared"
+				SHARED=""
+			fi
+			if test "$SHARED" = "1"; then
+				#This will be used in Amake footer.mki to make shared objects:
+				export OBJS_LINK=SHARED
+			fi
+		fi
+		
+		verbose "Command is: $MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT"
+
+		if [ "$LOG" = "1" ]; then
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT > $LOGFILE 2>&1
+        else
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
+        fi
+
+        #Strange: make exits with 99 like this:
+		#make[1]: *** [AZ4.ao] Error 99
+        #but I get number 2 here. Maybe Make does not exit with error code
+        #returned by failed command, and sets it's own error cod instad?
+		RET=$?
+		remove_temp_composite
+
+		if test $RET != "0"; then
+			#user will see error messages comming from make already:
+			error "amake failed with code $RET."
+			if [ "$LOG" = "1" ]; then
+				verbose "See $LOGFILE"
+            fi
+
+			#this is silly: if we want to check for error files,
+            #we should check for the ones we really created by this run
+            #of amake, not for any err files in current durectory, that may
+            #belong to unrelated programs.
+			#ls *.err > /dev/null 2>&1
+			#RET2=$?
+			#if test $RET2 = "0"
+			#then
+			#	verbose "See .err files generated"
+            #fi
+
+			if ! [ "$IGNOREERROR" = "1" ];  then
+				if [ "$PARAM_PATH" != "" ]; then
+		            cd -
+        		fi
+				break
+				#exit $RET
+			else
+				note "**** Error ignored."
+				IGNORED_ERROR=$RET
+            fi
+		fi
+
+    ####
+	done
+    ####
+
+}
+
+######################################################
+# scan command line flags and set options and input files
+function process_cmd () {
+
+	if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "help" ] ; then
+		show_help
+	fi
+	
+	cnt=0
+	####################
+	for a in $ALL_FLAGS
+    ####################
+	do
+		FULLPARAM=$a
+		a=`basename $FULLPARAM $MK`
+        NOPATH=`basename $FULLPARAM`
+
+		if [ "$FULLPARAM" != "$a" ]; then
+            #param had a path, a .mk extension, or both
+            if [ "$NOPATH" != "$FULLPARAM" ]; then
+                HAS_PATH=1
+				PARAM_PATH=`echo $FULLPARAM | sed -e "s/$NOPATH//"`
+				verbose "PATH is $PARAM_PATH"
+			fi
+            if [ "$NOPATH" != "$a" ]; then
+                HAS_MK_EXT=1
+            fi
+		fi
+
+		#cannot use "let" because on CygWin sh is default - not bash, and sh does not support
+        #arigmetrics - uinless we want to use "bash" as prefix to all calls to amake ...
+		#let cnt=cnt+1
+
+        #############
+        case $NEXT in
+        #############
+
+        HEADER) HEADER=$a
+            	if ! [ -f $HEADER ]; then
+                    error "Cannot find HEADER $HEADER." "3"
+				fi
+				NEXT=
+                ;;
+
+        FOOTER) FOOTER=$a
+            	if ! [ -f $FOOTER ]; then
+                    error "Cannot find FOOTER $FOOTER." "3"
+				fi
+
+				NEXT=
+                ;;
+
+
+		*)  if [ -f "$PARAM_PATH$a$MK" ]; then
+                #this is a .mk file name:
+
+                if [ "$PROGS" = "" ]; then
+					#PROGS="$PARAM_PATH$a$MK"
+                    PROGS="$a$MK"
+                else
+					PROGS="$PARAM_PATH$a$MK $PROGS"
+					PROGS="$a$MK $PROGS"
+                fi
+			else
+	           ##########
+			   case $a in
+	           ##########
+			   #############################################################
+			   #Files user can specify directly to amake instead of
+			   #providing an .mk file name:
+			   *.per)
+			   		FILES_per="$FILES_per $a" 
+					if ! test -f $a ; then
+						PER_NOT_IN_CURR_DIR=1
+					fi
+					;;
+			   *.4gl)
+			   		FILES_4gl="$FILES_4gl $a" 
+					if ! test -f $a ; then
+						FGL_NOT_IN_CURR_DIR=1
+					fi
+					;;
+			   *.prg.lib) #The target which is library
+			   		FILES_PROG="`basename $a .prg.lib`.lib" ;;
+			   *.prg) #The target which is a program (executable)
+			   		FILES_PROG="`basename $a .prg`"
+					;;
+				*.lib) #Libraries to link into target
+					FILES_lib"$FILES_LIB $a"
+					if ! test -f $a ; then
+						LIB_NOT_IN_CURR_DIR=1
+					fi
+					;;
+			   
+			   #################this are parameters to this script:##########
+			   -all)
+			   		AMAKE_ALL=1
+					ls *.mk > /dev/null 2>&1
+					RET=$?
+					if test $RET = "0"; then
+						PROGS=`ls *$MK`
+				    else
+				        error "No .mk files in $PWD" "34"
+				    fi
+
+			   ;;
+
+			   -log) 		LOG="1"
+			   ;;
+			   
+			   -shared) #make object as shared libraries and link target 
+			   			#in shared mode (Aubit only)
+			   		SHARED=1
+			   ;;
+
+			   -parallel)	#Enable parallel build in make
+				   #  -j [N], --jobs[=N]          
+				   #		Allow N jobs at once; infinite jobs with no arg.
+				   #  -l [N], --load-average[=N], --max-load[=N]
+				   #		Don't start multiple jobs unless load is below N.
+			   				MAKE="$MAKE -j"
+					note "parallel build enabled"
+					;;
+			   
+			   
+			   -i) 			IGNOREERROR="1"
+                    		MAKE="$MAKE -k"
+			   ;;
+
+			   -defaultinclude) OVERRIDEINCLUDE=0
+			   ;;
+
+			   -verbose | --verbose)
+			   				VERBOSE="1"
+							#Note that Amake rules includes, like a4gl.mk
+							#will add --verbose flag when invoking 4glc/4glpc
+							#if VERBOSE is set to 1 and exported to environment
+							export VERBOSE
+							#Passing VERBOSE=1 on command line to make should
+							#have same effect
+							MKFLAGS="$MKFLAGS VERBOSE=1"
+							MAKE_SILENT=0
+							#Make has 2 verbose options:
+							# -d                          Print lots of debugging information.
+							# --debug[=FLAGS]             Print various types of debugging information.
+							#but both are usefull only for debugging 
+							#and not intended for most users - nothing we want
+							#to turn on with --verbose option
+							
+			   ;;
+
+			   -silent)
+			   			SILENT=1
+						MAKE_SILENT=1
+			   			MKFLAGS="$MKFLAGS --silent"
+					;;
+			   
+			   -header) 	OVERRIDEINCLUDE=1
+	                		#HEADER=<next parameter>
+							#let next=cnt+1
+	                		NEXT=HEADER
+
+			   ;;
+
+			   -footer) 	OVERRIDEINCLUDE=1
+	                		#FOOTER=<next parameter>
+                    		NEXT=FOOTER
+               ;;
+
+			   -cleantarget) 	CLEANTARGET="1"
+			   ;;
+
+			   -cleanobjects) 	CLEANOBJECTS="1"
+			   ;;
+
+			   -cleanall) 		CLEANOBJECTS="1"
+								CLEANTARGET="1"
+			   ;;
+
+			   
+			   
+			   TARGET=*) DEFAULT=`echo $a | sed -e 's/TARGET=//'`
+			   ;;
+			   
+			   #########anything else that starts with "-" is make flag:#####
+			   -*) 	
+			   		verbose "Adding $a to make flags"
+			   		MKFLAGS="$MKFLAGS $a"
+			   ;;
+
+
+               d4gl-pcode) DEFAULT=d4gl-pcode
+               ;;
+               d4gl-ccode) DEFAULT=d4gl-ccode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-pcode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-ccode
+               ;;
+               aubit) DEFAULT=aubit
+               ;;
+               querix) DEFAULT=querix
+               ;;
+
+			   ################anything else is make parameter:##############
+			   *)   		PARAMS="$a $PARAMS"
+
+
+			  ;;
+			  ####
+			  esac
+	          ####
+	        fi
+            ;;
+
+        ####
+		esac
+        ####
+
+	####
+	done
+    ####
+}	
+
+####################################
+# Set default options and settings
+function set_default_options () {
+
+	if [ "$AUBITDIR" = "" ]; then
+		AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+		RET=$?
+		if [ "$RET" != "0" ]; then
+			error "aubit-config returned error code $RET." "42"
+		fi
+		if [ "$AUBITDIR" = "" ]; then
+			error "AUBITDIR not set." "43"
+		else
+			export AUBITDIR
+		fi
+	fi
+	
+	if [ "$USER" = "" ]; then
+		USER=`whoami`
+	fi
+	
+	#defaults:
+	LOG="0"
+	LOGFILE=amake.log
+	OVERRIDEINCLUDE=0
+	#Name of the default file to be used as a header when compising a makefile
+	HEADER="$AUBITDIR/incl/header.mki"
+	#Name of the default file to be used as a footer when compising a makefile
+	FOOTER="$AUBITDIR/incl/footer.mki"
+	#Name of the file that will be used from FOOTER for 2-step linking
+	#(to enable VPATH to be re-examined) IT will NTO be included or composed to 
+	#makefole, but referenced using 'make -f' :
+	AMAKE_STEP_2="$AUBITDIR/incl/footer2.mki"
+	export AMAKE_STEP_2 HEADER
+	
+	#if you export MAKERULES, it will override 4gl make rules included in
+	#standard header.mki:
+	RULESDIR=$AUBITDIR/incl
+	#export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
+	#export MAKERULES="$RULESDIR/a4gl.mk"
+	#export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
+	
+	if test "$MAKE" = ""; then
+		#Amake can't use non-GNU make anyhow
+		if test "$COMSPEC" != ""; then
+			#CygWin does not install gmake link, make is gmake
+			MAKE=make
+		else
+			MAKE=gmake
+		fi
+		
+		#note "MAKE was not set - defaulting to $MAKE" 
+	fi
+	if test "$MAKE" != "gmake" -a "$COMSPEC" = ""; then 
+		warning "Amake requires GNU make (gmake) - current MAKE is set to $MAKE"
+	fi
+	
+	MK=".mk"
+	
+	#initialise variables:
+	PROGS=
+	PARAMS=
+	
+	#Pass -s to make to be silent. This will suppress 'changing into directory'
+	#and 'nothing to be done for XYZ' but it will also prevent make form printing
+	#the commands  as  they are executed. note that Amake -silent and -verbose
+	#flags change this setting - this is just a default
+	MAKE_SILENT=1
+	MKFLAGS=
+	NEXT=
+	CLEANOBJECTS=0
+	CLEANTARGET=0
+
+}
+
+####################################################################
+#						MAIN 
+####################################################################
+
+	ALL_FLAGS="$@"
+	set_default_options
+
+	if [ $# -lt 1 ]; then
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"; then
+			PROGS=`ls *$MK`
+		else
+			error "No .mk files in $PWD" "34"
+		fi
+	else
+		process_cmd
+	fi
+
+	#settigs that depend on command line flags
+	if test "$MAKE_SILENT" = "1" ; then
+		MKFLAGS="$MKFLAGS -s"
+	fi
+
+	if [ "$DEFAULT" = "" ]; then
+        #we need to explicitly sent this as variable to makefiele, because
+        #make don't store targets in MAKEFLAGS, so we would have no way
+        #to recognise which compielr we are using:
+		DEFAULT=aubit
+    fi
+
+	if test "$FILES_PROG" != "" ; then 
+		#user wants us to make target using files on command line, and not an .mk file
+		compose_cmd_files
+	fi
+
+	if [ "$PROGS" = "" ]; then
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"
+		then
+			PROGS=`ls *$MK`
+	    else
+	        error "No .mk files in $PWD" "34"
+	    fi
+	fi
+
+	if [ "$LOG" = "1" ]; then
+		message "Logging make to $LOGFILE"
+	fi
+
+	main_loop
+	remove_temp_composite
+	
+	if test "$MK_IS_CMD_LIST" = "1" -a "$RET" = "0"; then
+		#.mk file was created from command line input files specified by 
+		#user - remove it
+		rm -f "$PROGS"
+	fi
+	
+	if [ "$PARAM_PATH" != "" ]; then
+		cd -
+	fi
+	
+	if test "$IGNORED_ERROR" != ""; then
+		RET="$IGNORED_ERROR"
+		note "**** errors occured, but where ignored"
+	fi
+	
+	exit $RET
+
+#------------------------------- EOF ----------------------------------
+

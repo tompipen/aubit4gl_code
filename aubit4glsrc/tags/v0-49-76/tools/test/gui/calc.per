@@ -1,0 +1,44 @@
+database formonly
+screen
+{
+
+   [f1                ]  
+
+                   [f2]
+
+   [a] [b] [c]    [z  ] 
+
+   [d] [e] [f]    [y  ]
+
+   [g] [h] [i]    [x  ]
+
+   [j] [k]        [w  ]   [v]  
+
+    Simple 4GL Calculator
+}
+end
+attributes
+f1=formonly.entered;
+f2=formonly.prec, widget="combo",config="list=1,2";
+a=formonly.b1,widget="button",config="label='1'";
+b=formonly.b2,widget="button",config="label='2'";
+c=formonly.b3,widget="button",config="label='3'";
+d=formonly.b4,widget="button",config="label='4'";
+e=formonly.b5,widget="button",config="label='5'";
+f=formonly.b6,widget="button",config="label='6'";
+g=formonly.b7,widget="button",config="label='7'";
+h=formonly.b8,widget="button",config="label='8'";
+i=formonly.b9,widget="button",config="label='9'";
+j=formonly.bdot,widget="button",config="label='.'";
+k=formonly.b0,widget="button",config="label='0'";
+
+z=formonly.bplus,widget="button",config="label='+'";
+y=formonly.bminus,widget="button",config="label='-'";
+x=formonly.bdiv,widget="button",config="label='/'";
+w=formonly.btimes,widget="button",config="label='*'";
+
+v=formonly.bequals,widget="button",config="label='='";
+
+end
+instructions 
+delimiters "[]|"

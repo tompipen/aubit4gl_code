@@ -1,0 +1,2106 @@
+#!/bin/bash
+# --norc --noprofile
+#There are several problems with SH on CygWin - not sure how to do this to be compatible
+#with users that don't have bash on there *NIX platforms ....?
+#!/bin/sh
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: 4glpc.obsolete,v 1.10 2005-03-04 08:06:54 afalout Exp $
+#
+
+########################################################################
+#this is main Aubit 4gl compiler .4gl files compiler script
+#It is recomended in most situations to use 4glc directly - this scrip
+#will be obsoleted in the near future.
+########################################################################
+
+if test "$MAKINGAUBIT" = "1"; then 
+	echo "ERROR: 4glpc invoked while MAKINGAUBIT"
+	exit 5
+fi
+
+if [ "$1" = "-dirdiff" ]
+then
+	#Find files that exist in a tree but not in another tree
+	#to find files we missed in 'make clean.all'
+	echo "comparing $2 <=> $3"
+	cd $2
+	#DIRTYLIST=`find`
+	#find . -name "*~" -exec echo "\"{}\"" \;
+	#DIRTYLIST=`find . -exec echo "\"{}\"" \;`
+	
+	
+	#find . \( -path *tools/cygwin -o -path *crap \) -prune 
+	#find /usr/wpas/ \( -path *source -o -path *procs -o -path *\&* -o -path *.L
+	#-o -path *BP.O -o -path *SUBS.O -o -path *REPORT \) -prune -or -type d \(
+	#-name BP* -o -name *BP -o -name *PROG* -o -name *FUNC* -o -name *SUBS* -o
+	#-name *FMCS* -o -name INC* -o -name *INC -o -name PROMPTS* \) -print | tee
+	#/usr/wpas/source.dirs	
+	
+	#DIRTYLIST=`find . -exec echo "'{}'" \;`	
+	
+	#must ingnore tools/cygwin, since it contains files with spaces in filename
+	DIRTYLIST=`find . \( -path \*cygwin\* -o -path \*crap \) -prune -or -name "*"`
+	
+	cd -
+	
+	for file in $DIRTYLIST
+	do
+		LOOKFOR=$3/$file
+		#echo $LOOKFOR
+		if [ ! -f $LOOKFOR ]
+		then
+			if [ ! -d $LOOKFOR ]
+			then
+				#File exists in $2 but not in $3
+				#echo "$LOOKFOR"
+				echo $file
+				#exit
+			fi
+		fi
+	
+	done
+
+	
+	exit
+fi
+
+#Find out if we are using MinGW C compiler (If on Windows)
+if [ "$COMSPEC" != "" ]; then
+	SORT="/bin/sort"
+    #TMP=`type gcc | grep -i mingw`
+	TMP=`gcc -v 2>&1 | grep -i mingw`
+
+    if [ "$TMP" != "" ]; then
+        MINGW=1
+        CYG_ROOT="D:/cygwin"
+    fi
+else
+	SORT="sort"
+fi
+
+	if test "$A4GL_OBJ_EXT" = ""; then 
+		A4GL_OBJ_EXT=.ao
+	fi
+    ERRCHAR=^\|
+	GOBACKLINES=10
+	GOAFTERLINES=2
+    HEAD=head
+    #HEAD=head -n 20
+    SHOWERRCODE=1
+    FGLCEXEC=4glc
+	OVERWRITE_CONFIG=0
+#	USE_CONFIGURE=1
+	USE_SHARED="Yes"
+    TIME_IT=0
+	TIME=time
+
+
+#A4GLVERBOSE="yes"
+#A4GLDEBUG="yes"
+if [ "$A4GLDEBUG" = "yes" ]
+then
+	echo "A4GLDEBUG is on - debugging 4glpc script:"
+	A4GLVERBOSE="yes"
+fi
+
+aubit-config -ae > /tmp/$$.env 2>&1
+
+NO_COMPILE=0
+
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/aubit4gl
+AUBITETC=/etc/opt/aubit4gl
+
+#FIXME:
+#uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
+#[: --help: unknown operand
+#[: --help-options: unknown operand
+#...etc...
+#...but NOT on UNIX: Why?????
+
+if [ $# -lt 1 -o "$1" = "--help" ]; then
+    echo
+	echo Aubit 4gl main compiler script: $0
+    echo
+    echo Usage:
+    echo '  4glpc sourcefile.type [...] [options] executablename.4ae'
+    echo '  4glpc sourcefile.4gl -c -o objectname$A4GL_OBJ_EXT'
+    echo '  4glpc sourcefile.4gl -o executablename.4ae'
+	echo
+    echo ' For details, try: '
+    echo ' 4glpc --help-options	- for command line options'
+    echo ' 4glpc --help-env	- for environment variables recognised'
+	echo ' 4glpc --help-types	- for file types'
+    echo ' 4glpc --help-examples	- for examples'
+    echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
+fi
+
+if [ $# -lt 1 -o "$1" = "--help-options" ]; then
+    echo
+	echo Aubit 4gl main compiler script: $0
+    echo
+	echo Options:
+    echo '  -o'
+    echo '  -c : flag to C compiler (compile only, no linking)'
+	echo '  -shared/static ($USE_SHARED=Yes/no) compile with shared libraries'
+    echo '  -echo  ($DOIT=echo) display CC command only, do not execute'
+    echo '              this inhibits C compiler only, not the 4gl compiler'
+    echo '  -debug  ($INCLLINES=Yes) include extra debuging code'
+    echo '  -map/nomap ($MAP4GL=Yes) generate additional map file code'
+    echo '  -maponly'
+    echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
+    echo '  -noerrcode () do not show eeror code on compile errors'
+    echo '  -as-ddl'
+    echo '  -i ignore errors and continue'
+	echo '  -jabber link executable with Jabber libraries'
+	echo
+    echo All options unknown to Aubit compiler will be passed to C compiler
+    echo Please see Aubit 4gl manual for more information.
+    echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
+fi
+
+if [ $# -lt 1 -o "$1" = "--help-env" ]; then
+#FIXME: find and list all env var's recognised
+	echo
+	echo Aubit 4gl main compiler script: $0
+    echo
+	echo Environment variables recognised:
+    echo
+	echo '  -shared/static ($USE_SHARED=Yes/no) compile with shared libraries'
+    echo '  -echo  ($DOIT=echo) display CC command only, do not execute'
+    echo '              this inhibits C compiler only, not the 4gl compiler'
+    echo '  -debug  ($INCLLINES=Yes) include extra debuging code'
+    echo '  -map/nomap ($MAP4GL=Yes) generate additional map file code'
+    echo '  -maponly'
+    echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
+    echo '  -as-ddl'
+    echo '  $A4GLRC - full path to file to be used instead of .a4glrc'
+	echo
+    echo 'Note: $FGLCEXEC, cc and other compilers invoked by this script will'
+    echo '      recognise additional variables that might affect this script'
+    echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
+fi
+
+
+if [ $# -lt 1 -o "$1" = "--help-types" ]; then
+    echo
+	echo Aubit 4gl main compiler script: $0
+    echo
+	echo File types:
+    echo '	4gl - 4gl source file, compiled to .c and then to .o'
+    echo '	per - 4gl form file, compiled to .c and then to .o'
+    echo '	msg - 4gl message file, compiled to .iem'
+#FIXME: describe this:
+	echo '	a   -'
+    echo '	o   -'
+    echo '	c   -'
+    echo '	menu - Aubit 4gl GUI menu source, compiled to'
+    echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
+fi
+
+if [ $# -lt 1 -o "$1" = "--help-examples" ]; then
+#FIXME: describe this:
+	echo Examples:
+    echo
+	echo '  4glpc sourcefile.4gl -o executablename.4ge'
+	echo '  4glpc sourcefile.4gl -c -o objectname.o'
+	echo '  4glpc -shared file.4gl -o file.4ge'
+    echo '  4glpc -static -echo file.4gl -o file.4ge'
+    echo '  4glpc -debug file.4gl -o file.debug'
+    echo '  4glpc -map -echo file.4gl'
+    echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
+fi
+
+######################
+function run_next {
+######################
+#get next parameter from command line, and run specified command on it:
+
+		let nextparam=counter+1
+		#echo $nextparam
+		counter2=0
+		#echo $@
+		#echo $ALLPARAMS
+		for params in $ALLPARAMS #$@
+		do
+		   	let counter2=counter2+1
+			#echo 1 $counter2 2 $nextparam
+           	if test "$counter2" = "$nextparam"
+            then
+                filename=$params
+                #echo "Manifest for filename $filename :"
+                echo "Running: $DO_AND_EXIT $filename"
+                $DO_AND_EXIT $filename
+                exit
+			fi
+        done
+
+        echo "Error: nothing specified after switch"
+        exit 2
+
+}
+
+
+############################
+function testswitchfunc {
+############################
+	ISSWITCH=0
+
+	############
+	for a in $@
+	############
+	do
+	   ##########
+	   case $a in
+	   ##########
+
+	   $TESTSWITCH)     ISSWITCH=1
+	   ;;
+
+	  ####
+	  esac
+	  ####
+	####
+	done
+	####
+
+}
+
+
+########################
+function showerror {
+########################
+
+    if [ -f $errfname ]
+    then
+		if test $SHOWERRCODE = "1"
+		then
+			ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+		    if [ "$ERRLINES" != "0" ]
+		    then
+				# Not all greps can do a -B
+                               if [ "$A4GL_NO_GREP_B" = "Y" ]
+                               then
+                                  echo "============ FIRST ERROR  =============="
+                                  cat $errfname | grep -n $ERRCHAR
+                               else
+				   echo "============ FIRST ERROR: =============="
+				   cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+				fi
+		    else
+				echo "============ FIRST ERROR: =============="
+				$HEAD $errfname
+		    fi
+		    echo "========================================"
+		fi
+	    echo "See file $errfname"
+    fi
+
+}
+
+
+ALLPARAMS=$@
+
+# This needs checking
+if [ -f ${AUBITETC}/aubitrc ]
+then
+	A1=${AUBITETC}/aubitrc
+	. ${AUBITETC}/aubitrc
+fi
+
+#echo 1 AUBITDIR=$AUBITDIR
+#echo $A4GL_LEXTYPE
+
+#we no longer export all variables, so this is obsolete?:
+if [ "$MAKINGAUBIT" = "1" ] #if we are invoked from Aubit compiler makefiles
+then
+	if [ "$AUBIT_BIN_INSTALL" != "1" ] && [ "$AUBIT_SRC_ROOT" != "" ] #and we are still in Aubit source code tree
+    then
+		AUBITDIR=$AUBIT_SRC_ROOT
+    fi
+fi
+#echo 2AUBITDIR=$AUBITDIR
+    #find path to this script:
+	PATHTO4GLPC1=`dirname $0`
+	PATHTO4GLPC=`dirname $PATHTO4GLPC1` #remove bin/
+    #OLD_DIR=`pwd`
+	cd $PATHTO4GLPC
+    CURRDIR=`pwd`
+	cd -
+
+
+if [ "$AUBITDIR" = "" ]
+then
+	#if still emty, assume this script is in $AUBITDIR/bin
+	export AUBITDIR=$CURRDIR
+
+	if [ -f $AUBITDIR/bin/4glpc ]
+    then
+		echo "AUBITDIR now set to $AUBITDIR"
+        #cd $OLD_DIR
+    else
+        echo "Error: cannot set AUBITDIR: $AUBITDIR"
+		echo PATHTO4GLPC1=$PATHTO4GLPC1
+		echo PATHTO4GLPC=$PATHTO4GLPC
+    	echo OLD_DIR=$OLD_DIR
+		exit 13
+    fi
+fi
+
+
+if [ "$AUBITDIR" != "" ]
+then
+	if [ -f $AUBITDIR/etc/aubitrc ]
+	then
+		A2=$AUBITDIR/etc/aubitrc
+		. $AUBITDIR/etc/aubitrc
+	fi
+fi
+if [ -f ~/.aubit4gl/aubitrc ]
+then
+	A5=~/.aubit4gl/aubitrc
+	. ~/.aubit4gl/aubitrc
+fi
+#echo 3AUBITDIR=$AUBITDIR
+if [ -f ./.aubitrc ]
+then
+	A6=./.aubitrc
+	. ./.aubitrc
+fi
+
+if [ -f "$A4GL_INIFILE" ] && [ "$A4GL_INIFILE" != "" ]
+then
+	A7=$A4GL_INIFILE
+	. $A4GL_INIFILE
+fi
+
+
+. /tmp/$$.env
+rm /tmp/$$.env
+
+#we no longer export all variables, so this is obsolete?:
+if [ "$MAKINGAUBIT" = "1" ]
+then
+	#if we are invoked from Aubit compiler makefiles
+	if [ "$AUBIT_BIN_INSTALL" != "1" ] && [ "$AUBIT_SRC_ROOT" != "" ]
+    then
+		#and we are still in Aubit source code tree
+		#AUBITDIR=$AUBIT_SRC_ROOT
+		if test "$COMSPEC" != ""; then
+			#For MinGW, without drive letter:
+			PATH=$PATH:$AUBIT_SRC_ROOT/bin
+        fi
+    fi
+fi
+
+PATH=$AUBITDIR/bin:$PATH
+
+#Enables user to pass CFLAGS from command line/environment
+if [ "$COMPCC_OPTIONS" != "" ]
+then
+	COMPCC="$COMPCC_OPTIONS"
+else
+	COMPCC=""
+fi
+
+if [ "$A4GL_COMPAT_MODE" = "Y" ]
+then
+	echo "COMPAT MODE..."
+	COMPCC="-I$AUBITDIR/incl/compat"
+fi
+
+
+#old_incl is obsolete:
+#if [ "$OLD_INCL" != "0" ] #OLD_INCL is set in Makefile-common
+#then
+#	#if we did not EXPLICITLY turn on new includes, we have to set
+#    #old ones as default
+#	CFLAGS="-DOLD_INCL $CFLAGS"
+#fi
+
+if [ "$AUBITDIR_SRC" = "1" ] #set from Makefile-common
+then
+	CFLAGS="-DSRC_TREE $CFLAGS"
+fi
+
+JABBER_LIB_DIR=$AUBITDIR/tools/jabber
+JABBER_LIB_NAME=jabber
+
+FGLLIBSDIR="-L$AUBITDIR/lib"
+
+if [ "$CURRDIR" != "$AUBITDIR" ]; then
+	FGLLIBSDIR="$FGLLIBSDIR -L$CURRDIR/lib"
+fi
+
+if [ "$MINGW" = "1" ]; then
+	FGLLIBSDIR="$FGLLIBSDIR -L$CYG_ROOT$AUBITDIR/lib"
+fi
+
+
+
+if [ "$COMPILE_QUIET" != "" ]
+then
+        output=": "
+else
+        output="echo"
+fi
+
+#echo 4AUBITDIR=$AUBITDIR
+
+#restore things from before reading .a4glrc that where in environment:
+#see if we are called form Aubit compiler makefiles:
+TESTSWITCH=-make-compile
+testswitchfunc
+if test "$ISSWITCH" = "1"
+then
+	export MAKE4GLPC="Yes"
+fi
+
+LAST=""
+#GTK_INC_PATH is set in aubitrc
+INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
+
+if [ "$MINGW" = "1" ]; then
+	INCLDIR="$INCLDIR -I$CYG_ROOT$AUBITDIR/incl"
+fi
+
+if test "$SH" = ""; then 
+	if test "$SHELL" = ""; then
+		SH=bash
+	else
+		SH="$SHELL"
+	fi
+fi
+
+
+#The _wrap shell scripts should be obsoleted too. No use on Windows.
+#4glc should handle this correctly now
+NCC_PG="$SH ecpg_wrap"
+#NCC_IFX="esql"
+NCC_IFX="$SH esql_wrap"
+#CC is set via aubitrc config file:
+NCC_C="$CC" # -O2
+NCC_PCODE="c2pcode_fgl "
+
+if test "$A4GL_FAKELEXTYPE" = "PCODE"; then
+    NCC="$NCC_PCODE"
+else
+	NCC="$NCC_C "
+fi
+
+#  -save-temps              Do not delete intermediate files
+#  -v                       Display the programs invoked by the compiler
+#  -E                       Preprocess only; do not compile, assemble or link
+
+
+FGLC_OUTPUT_EXT=c
+
+if [ "$A4GL_LEXTYPE" = "EC" ]; then
+	if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]; then
+		FGLC_OUTPUT_EXT=cpc
+        NCC=$NCC_PG
+	else
+		#default, assumes A4GL_LEXDIALECT="INFORMIX"
+		FGLC_OUTPUT_EXT=ec
+        NCC="$NCC_IFX"
+	fi
+fi
+
+#This may help while compiling, but compiled programs will not run
+#if it's not in his environmnet. So set your environment!
+#WARNING: this _IS_ needed in case you have several different libraries
+#with same names in the path, like odbc. This will put path to library we
+#are currently compiling for in front, and pick up correct one:
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:.:
+#$AUBITDIR/extlibs
+
+#ADD_LD_LIBRARY_PATH is defined by 'configure' in aubitrc
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADD_LD_LIBRARY_PATH
+
+if [ "$TIMEIT" = "1" ]; then
+	NCC="$TIME $NCC"
+	FGLCEXEC="$TIME $FGLCEXEC"
+fi
+
+
+#when making shred library, we need to first create objects, and then 
+#do linking as separate stage (hint: esql don't know no .so)
+#this separation should probably be default anyway. 
+#Only allready compiled objects/libraries should reach linking stage
+TO_OBJECT=1
+
+counter=0
+ALL_FLAGS=$@
+
+###################
+#Pre-process cimmand line flags that we must know about BEFORE we process
+#the rest of the flags, because they affect how other flags behave and to 
+#assure position-independence of flags on command line
+###################
+for a in $ALL_FLAGS
+###################
+do
+   let counter=counter+1
+	case $a in
+	-verbose)
+	   A4GLVERBOSE="yes"
+	   SHOWERRCODE=1
+	   NCC_PG="$NCC_PG -verbose"
+	   NCC_IFX="$NCC_IFX -verbose"
+	   NCC="$NCC -verbose"	   
+	   echo "Verbose mode ON"
+	   ;;
+	-o)
+		let lookfor=counter+1
+		let cnt=0
+		for b in $ALL_FLAGS; do
+			let cnt=cnt+1
+			if test "$cnt" = "$lookfor"; then 
+				OUTFILE=$b
+				break
+			fi
+		done
+		;;
+	#--as-dll) #WARNING: NOT the same as -shared
+		#when making shred library, we need to first create objects, and then 
+		#do linking as separate stage (hint: esql don't know no .so)
+		
+		#TODO: this separation should probably be default anyway. 
+		#Only allready compiled objects/libraries should reach linking stage
+		#TO_OBJECT=1
+		#;;
+	   -c) #Do not link, compile to object only. Also implies only one object
+   		NO_LINKING=1
+		;;
+	esac
+done
+
+counter=0
+#Now process the rest of the flags
+###################
+for a in $ALL_FLAGS
+###################
+do
+   let counter=counter+1
+
+	if test "$skip_next_flag" = "1"; then
+        #we used this flag as parameter to the previous one, so we don't
+        #want it processed:
+		if [ "$A4GLVERBOSE" = "yes" ]
+		then
+            echo "Skipping over #$counter=$a"
+        fi
+        skip_next_flag=0
+		continue
+    fi
+
+   ##########
+   case $a in
+   ##########
+
+   -time)
+		if [ "$TIMEIT" != "1" ]; then
+			TIMEIT=1
+			NCC="$TIME $NCC"
+    	    FGLCEXEC="$TIME $FGLCEXEC"
+        fi
+   ;;
+
+   -findfunc)
+		nm -A --defined-only `find $AUBITDIR/lib -name '*.so'` | grep $2
+
+        #-H = show file names:
+		# grep -H "extern int close" /usr/include/*.h
+
+        exit 0
+   ;;
+
+   -findlib)
+		nm -A --defined-only `find /lib -name '*.so'` | grep $2
+
+        #-H = show file names:
+		# grep -H "extern int close" /usr/include/*.h
+
+        exit 0
+   ;;
+
+
+   -mk_pair)
+		#find all targets created by Amake make files, to detect which make fiels
+        #failed to produce resulting target
+		ALL=`find . -name "*.mk" -exec basename {} \; | $SORT `
+		CNT=0
+        CNT2=0
+		############
+		for a in $ALL
+		############
+		do
+            let CNT=CNT+1
+			#echo $a
+            PAIR=`basename $a .mk`.4ae
+			FOUND=`find -name $PAIR`
+            if [ "$FOUND" = "" ]; then
+	            PAIR=`basename $a .mk`.aox
+				FOUND=`find -name $PAIR`
+	            if [ "$FOUND" = "" ]; then
+                    echo "Cannot find a target of $a"
+                    let CNT2=CNT2+1
+                else
+					if [ "$A4GLVERBOSE" = "yes" ]; then
+						echo $a 	= $PAIR
+                    fi
+				fi
+            else
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo $a 	= $PAIR
+                fi
+            fi
+		done
+        echo "Total processed : $CNT"
+		echo "Total targets missing : $CNT2"
+    ;;
+
+   -mk_pair2)
+		#find amake makefile pair for each target object (programs and libraries)
+        #to detect missing make files
+		ALL=`find . -name "*.4ae" -exec basename {} \; | $SORT `
+		ALL="$ALL `find . -name "*.aox" -exec basename {} \; | $SORT `"
+		CNT=0
+		CNT2=0
+		############
+		for a in $ALL
+		############
+		do
+            let CNT=CNT+1
+			#echo $a
+            PAIR=`basename $a .4ae`
+            PAIR=`basename $PAIR .aox`
+            PAIR=$PAIR.mk
+			if [ "$A4GLVERBOSE" = "yes" ]; then
+				echo Looking for $PAIR
+            fi
+			FOUND=`find -name $PAIR`
+            if [ "$FOUND" = "" ]; then
+				echo "Cannot find make file pair ($PAIR) of $a"
+            let CNT2=CNT2+1
+            else
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo $a 	= $PAIR
+                fi
+            fi
+		done
+        echo "Total procesed : $CNT"
+        echo "Total missing  : $CNT2"
+    ;;
+
+
+   -not_mk)
+		#find 4gl source files not referenced in any .mk files
+		ALL4GL=`find . -name "*.4gl" -exec basename {} \; | $SORT `
+		ALLMK=`find . -name "*.mk" | $SORT `
+		CNT=0
+		CNT2=0
+		################
+		for a in $ALL4GL
+		#################
+		do
+            let CNT=CNT+1
+            FOUND=`grep $a $ALLMK`
+			if [ "$A4GLVERBOSE" = "yes" ]; then
+				echo Looking for $a
+            fi
+            if [ "$FOUND" = "" ]; then
+				echo "Cannot find make file referencing $a"
+	            let CNT2=CNT2+1
+
+				if [ "$CMPL" = "yes" ]; then
+                    #try to compile it
+					THIS4GL=`find . -name $a`
+    	            THISOBJ=`basename $THIS4GL .4gl`$A4GL_OBJ_EXT
+        	        THISPATH=`dirname $THIS4GL`
+                    if [ ! -f "$THISPATH/$THISOBJ" ]; then
+						echo "aubit 4glpc $THIS4GL -c -o $THISPATH/$THISOBJ"
+						aubit 4glpc $THIS4GL -c -o $THISPATH/$THISOBJ
+	                    if [ "$?" != "0" ]; then
+    	                    echo "Failed. Stop."
+        	                exit 44
+            	        fi
+                    else
+                        echo "exists: $THISPATH/$THISOBJ"
+                    fi
+                fi
+				if [ "$CMPL" = "clean" ]; then
+					THIS4GL=`find . -name $a`
+    	            THISOBJ=`basename $THIS4GL .4gl`$A4GL_OBJ_EXT
+        	        THISPATH=`dirname $THIS4GL`
+                    if [ -f "$THISPATH/$THISOBJ" ]; then
+                        rm $THISPATH/$THISOBJ
+                    fi
+                fi
+            else
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Found $a in $FOUND"
+                fi
+            fi
+		done
+        echo "Total procesed : $CNT"
+        echo "Total missing  : $CNT2"
+    ;;
+
+	-deps)
+	if test "$COMSPEC" = ""; then
+		#Check libs built on UNIX for dependencies we should include in installer
+		ALL_LIBS="$AUBITDIR/lib/lib*.so"
+
+		#Places we can search:
+		SEARCH_PATHS="/ "
+		
+		#List of libs we will ignore as user needs to install them
+		#GTK+ libs:
+		IGNORE_MISSING="libgdk- libglib- libgobject- libgtk- libglade- libgdk_pixbuf libintl-"
+		
+		#Informix CSDK libs:
+		IGNORE_MISSING="$IGNORE_MISSING isqlt09 isqlt09"
+		#PostgreSQL ECPG libs:
+		IGNORE_MISSING="$IGNORE_MISSING libecpg_compat libecpg"
+		
+		unset LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH="/xx/yy"
+		#export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib"
+		#echo "Disabling ldconfig..."
+		#touch /tmp/fakeldconfig
+		#ldconfig -n -N -X -f /tmp/fakeldconfig -C /tmp/fakeldconfig
+		#ldconfig -n -f /tmp/fakeldconfig -C /tmp/fakeldconfig
+		#ldconfig -p
+		
+		#ldd $AUBITDIR/lib/libSQL_pg.so
+		#exit
+		
+		for onelib in $ALL_LIBS; do
+			TMP=`ldd $onelib`
+			RET=$?
+			if test "$RET" != "0"; then 
+				echo "RET=$RET"
+				exit $RET
+			fi
+			
+			#echo $TMP
+			#continue
+			#exit
+			
+			XXX=`echo "$TMP" | grep "not found"`
+			RET=$?
+			if test "$XXX" != ""; then
+			#if test "$RET" != "0"; then
+				#echo "$TMP"
+				#echo "In $onelib :"
+				#echo "$XXX"
+				#exit
+				#echo "----"
+				#echo "$XXX" | /usr/bin/grep -v "libgdk-"
+				ZZZ="$XXX"
+				for one_ignore in $IGNORE_MISSING; do
+					ZZZ=`echo "$ZZZ" | grep -v "$one_ignore"`
+					#echo "----"
+					#echo $ZZZ
+				done
+				
+				if test "$ZZZ" != ""; then 
+					echo "In $onelib :"
+					echo "$ZZZ"
+					MISSING_FILE=`echo $ZZZ | awk '{print $5}'`
+					#echo $MISSING_FILE
+					#exit 1
+					
+					IS_IN_SETUP=`grep --word-regexp $MISSING_FILE $AUBITDIR_SRC/etc/aubit-rpm.spec`
+					if test "$IS_IN_SETUP" != ""; then 
+						echo "Allready in installer:"
+						echo "$IS_IN_SETUP"
+					else
+						echo "Not found in aubit-rpm.spec"
+						HAVE_MISSING=1
+						if test "$SEARCH_FOR_MISSING" = "1"; then 
+							for an_path in $SEARCH_PATHS; do
+								GOT_IT=`find $an_path -name $MISSING_FILE`
+								if test "$GOT_IT" != ""; then 
+									echo "Found it: $GOT_IT"
+									break
+								fi
+							done
+						fi
+					fi
+				fi
+			fi
+		done
+		#ldconfig
+		echo "LD_LIBRARY_PATH was: '$LD_LIBRARY_PATH'"
+		echo "Paths searched for missing files: '$SEARCH_PATHS'"
+		if test "$HAVE_MISSING" = "1"; then
+			if test "$IGNORE_MISSING_DEPS" = "1"; then 
+				echo "One or more missing dependecy - IGNORED."
+			else
+				echo "One or more missing dependecy. STOP."
+				exit 1
+			fi
+		else
+			echo "OK: No missing dependencies detected."
+			exit 0
+		fi	
+	else
+		#Check libs built on Windows for dependencies we should include in installer
+		#ALL_LIBS="libMENU_GENERIC.dll"
+		#ALL_LIBS="libLOGREP_PDF.so"
+		ALL_LIBS="$AUBITDIR/lib/lib*.dll"
+
+		#Places we can search:
+		SEARCH_PATHS="/  /cygdrive/f/MinGW/ /cygdrive/d/msys/ \
+			/cygdrive/d/tmp/ d:/Progra~1/GnuWin32"
+		
+		#List of libs we will ignore as user needs to install them
+		#GTK+ libs:
+		IGNORE_MISSING="libgdk- libglib- libgobject- libgtk- libglade- libgdk_pixbuf"
+		#Informix CSDK libs:
+		IGNORE_MISSING="$IGNORE_MISSING isqlt09 isqlt09"
+		#PostgreSQL ECPG libs:
+		IGNORE_MISSING="$IGNORE_MISSING libecpg_compat libecpg"
+
+		#libSQL_pg uses libintl-2 - it is NOT part of GTK+ - Its GetText
+		#its in GnuWin dir on Windows - seels like libpq is linked with it, so 
+		#PostgreSQL istaller would supply it?
+		IGNORE_MISSING="$IGNORE_MISSING libintl-"
+		
+#$ cygcheck lib/libSQL_pg.dll
+#    D:\WINNT\system32\libeay32.dll
+#    d:\Program Files\GnuWin32\bin\libintl-2.dll
+#      d:\Program Files\GnuWin32\bin\libiconv-2.dll
+#    D:\WINNT\system32\ssleay32.dll		
+
+		
+		SYSTEM32_PATH="`cygpath --windir`/system32"
+		UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
+		MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -1`
+		if test "$MSYS_REG_NAME" != ""; then 
+			MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"	
+			MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
+			MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+		fi
+		MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -1`
+		if test "$MSYS_REG_NAME" != ""; then	
+			MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
+			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+		fi
+		MINGW_ROOTDIR_CYG=`cygpath -u $MINGW_ROOTDIR`
+		unset PATH
+		#User needs to have Windows and MinGW, but __NOT__ MSYS:
+		#export PATH="$SYSTEM32_PATH:$MINGW_ROOTDIR:$MSYS_ROOTDIR"
+		export PATH="$SYSTEM32_PATH:$MINGW_ROOTDIR_CYG"
+		
+		for onelib in $ALL_LIBS; do
+			TMP=`/usr/bin/cygcheck $onelib`
+			RET=$?
+			if test "$RET" != "0"; then 
+				echo "RET=$RET"
+				exit $RET
+			fi
+			XXX=`echo "$TMP" | /usr/bin/grep "Error: could not find"`
+			RET=$?
+			if test "$XXX" != ""; then
+			#if test "$RET" != "0"; then
+				#echo "$TMP"
+				#echo "In $onelib :"
+				#echo "$XXX"
+				#echo "----"
+				#echo "$XXX" | /usr/bin/grep -v "libgdk-"
+				ZZZ="$XXX"
+				for one_ignore in $IGNORE_MISSING; do
+					ZZZ=`echo "$ZZZ" | /usr/bin/grep -v "$one_ignore"`
+					#echo "----"
+					#echo $ZZZ
+				done
+				
+				if test "$ZZZ" != ""; then 
+					echo "In $onelib :"
+					echo "$ZZZ"
+					MISSING_FILE=`echo $ZZZ | /usr/bin/awk '{print $5}'`
+					#echo $MISSING_FILE
+					#exit 1
+					
+					IS_IN_SETUP=`/usr/bin/grep --word-regexp $MISSING_FILE $AUBITDIR/etc/aubit-InnoSetup.iss`
+					if test "$IS_IN_SETUP" != ""; then 
+						echo "Allready in installer:"
+						echo "$IS_IN_SETUP"
+					else
+						echo "Not found in aubit-InnoSetup.iss"
+						HAVE_MISSING=1
+						for an_path in $SEARCH_PATHS; do
+							GOT_IT=`/bin/find $an_path -name $MISSING_FILE`
+							if test "$GOT_IT" != ""; then 
+								echo "Found it: $GOT_IT"
+								break
+							fi
+						done
+					fi
+				fi
+			fi
+		done
+		
+		echo "PATH was: '$PATH'"
+		echo "Paths searched for missing files: '$SEARCH_PATHS'"
+		if test "$HAVE_MISSING" = "1"; then
+			echo "One or more missing dependecy. STOP."
+			exit 1
+		else
+			echo "OK: No missing dependencies detected."
+			exit 0
+		fi
+	fi
+	exit 0
+		;;
+		
+	-vnc)
+		APP=xclock
+		HOSTNAME="aptiva"
+		VNCDISPLAY="$HOSTNAME:9"
+		VNCPORT=8123
+			Xvnc $VNCDISPLAY -rfbport $VNCPORT &
+			DISPLAY=$VNCDISPLAY; export DISPLAY; $APP &&
+			echo "To connect, use the following in 'vncviewer':"
+			echo "'$HOSTNAME::$VNCPORT'"
+	
+#user$ Xsvc :1 -geometry 200x100 &
+#user$ xeyes -display :1 -geometry 200x100 &
+#and the for testing purposes:
+#user$ vcviewer :1
+#and then I could connect from outside to see only the xeyes (and the X
+#backdrop, that wouldn't be shown if the app were opaque).			
+
+#I guess, however that the option -geometry 200x100 can be passed through
+#the vncserver script (almost sure).- then on the users .vnc directory
+#the file xstartup shuld simply contain:
+
+#xsetroot -solid grey 
+#xeyes -geometry 200x100 &
+
+#this would make it possible the same above but in a more standard manner
+#and with the password checking issues. The first line would also clean
+#the X backdrop into a grey solid state but it is not necessary for
+#opaque apps!.
+
+#NOTE:
+#Dialogs will appear centered on application and WITHOUT borders (a la
+#gdm display chooser configuration...)			
+	;;
+		
+	######################################################################
+	-chk-install)
+		#Check is we installed everything we should
+		if test "$COMSPEC" != ""; then
+			EXE_EXT=".exe"
+		fi
+		
+		if test "$INSTALLDIR" = ""; then 
+			INSTALLDIR="$AUBITDIR"
+		fi
+		if test "$SOURCEDIR" = ""; then
+			SOURCEDIR="$AUBITDIR_SRC"
+		fi
+
+		if test "$INSTALLDIR" = "$SOURCEDIR"; then
+			echo "ERROR: source and binary install directories are the same:"
+			echo "$INSTALLDIR"
+			exit 1
+		fi
+
+		if ! test -d "$INSTALLDIR"; then
+			echo "ERROR: INSTALLDIR ($INSTALLDIR) does not exist"
+			exit 1
+		fi
+		if ! test -d "$SOURCEDIR"; then
+			echo "ERROR: SOURCEDIR ($SOURCEDIR) does not exist"
+			exit 1
+		fi
+		
+		echo "Comparing binary install at $INSTALLDIR"
+		echo "with compiled source tree at $SOURCEDIR" 
+		
+
+		ALLDIRS="bin docs etc etc/import etc/config etc/convertsql \
+			incl tools/test tools/test/gui lib ."
+		
+		#Files to ignore - not needed in binary installations
+		IGNORE_LIST="xgen$EXE_EXT .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
+			-strip$EXE_EXT .err .warn asql .#* adbload.4ae \
+			manaual_to-do.txt ~ .bak .BAK Makefile-install \
+			aubit-InnoSetup.is* aubit-rpm.spe* aubitrc.in aubitrc \
+			aubitbuild.cro* Makefile-commo* lib/reflection.c lib/Makefile \
+			.out .glb .ao .c .o .4pe.dat .xpm .zip .tar.gz .tgz .log noddy.txt .html .htm\
+			aubit4glsrc-*.txt configure.in .tmp .status \
+			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h \
+			etc/config/bootstrap etc/config/ltmain.sh ChangeLog \
+			sqleditor.4ae"
+
+#Comparing binary install at d:/tmp/aubit4gl-silent
+#with compiled source tree at F:/cygwin/usr/src/aubit/aubit4glsrc
+#/bin/find: bin/aubitbuild.sh: No such file or directory
+#Missing conf4404.file
+#Missing conf4404
+
+		#Directories to ignore:
+		IGNORE_LIST="$IGNORE_LIST \
+			lib/libaubit4gl lib/libesql lib/libexdata lib/libform lib/libgui \
+			lib/libhelp lib/libincl lib/liblex lib/liblogical lib/libmenu \
+			lib/libmsg lib/libpacker lib/libpdf lib/librpc lib/libsql lib/libtui \
+			lib/libui lib/resource lib/swig lib/windows lib/libsqlparse CVS \
+			doxy debian incl/compat cccc \
+			lib/bin lib/data lib/extra_libs lib/generated \
+			tools/test/ace tools/test/db tools/test/altris \
+			tools/test/keys tools/test/lang tools/test/parser_bugs \
+			tools/test/regression tools/test/xml etc/Output \
+			glade help libltdl libtool trace cint common compilers"
+			
+		#tools/test files to ignore
+		IGNORE_LIST="$IGNORE_LIST \
+			tools/test/Makefile.in \
+			tools/test/helptest.4gl tools/test/make.bat tools/test/random.4gl \
+			tools/test/sok_microban.4gl tools/test/sokoban.4gl tools/test/sol.4gl \
+			tools/test/test_msgresp.4gl tools/test/conv_report.4gl \
+			tools/test/*.c tools/test/*.h tools/test/test_build \
+			tools/test/gui/Makefile.in tools/test/gui/list.per "
+			
+		#Header file to ignore - not needed in binary installation
+		IGNORE_LIST="$IGNORE_LIST \
+			incl/a4gl_incl_config.h incl/a4gl_esql_querix.h \
+			incl/a4gl_esql_sap.h incl/a4gl_incl_config.h.in \
+			incl/a4gl_sql.h incl/a4gl_API_esql_lib.h \
+			incl/a4gl_API_help_lib.h incl/a4gl_API_menu_lib.h \
+			incl/a4gl_API_packer_lib.h incl/a4gl_API_form_lib.h \
+			incl/a4gl_API_msg_lib.h incl/a4gl_API_ui_lib.h \
+			incl/a4gl_API_sqlparse_lib.h incl/API_lex.h \
+			incl/a4gl_API_sql_lib.h incl/a4gl_API_rpc_lib.h \
+			incl/a4gl_API_exreport_lib.h incl/stamp-h \
+			incl/a4gl_libaubit4gl.h incl/a4gl_API_packer.h"
+			
+			#seems a4gl_libaubit4gl.h and a4gl_API_packer.h are not needed any more?
+			
+			#FIXME: I'm not at all sure that this headers ignore list is 
+			#correct - see INCL_HEADERS_EC_REMOVETHIS in configure.in
+			
+		if test "$COMSPEC" != ""; then
+			#Ignore this files but ONLY on Windows
+			#Why did I do that????
+			#incl/a4gl_esql.h is ABSOLUTELY needed when using EC mode!!!
+			IGNORE_LIST="$IGNORE_LIST \		
+				incl/a4gl_API_esql.h incl/a4gl_API_packer.h \
+				incl/a4gl_esql_infx.h \
+				incl/a4gl_esql_postgres.h incl/a4gl_incl_infx.h \
+				incl/a4gl_libaubit4gl.h"
+		fi
+			
+			
+		#FIXME: etc/Makefile-install SHOULD be installed since it contains
+		#third-party installation scripts!
+		if test "$COMSPEC" = ""; then 
+			IGNORE_LIST="$IGNORE_LIST README-Windows.txt"
+			FIND="find"
+		else
+			FIND="/bin/find"
+			IGNORE_LIST="$IGNORE_LIST etc/config* \
+			tools/test/Makefile tools/test/*.exe tools/test/gui/Makefile \
+			configure install.sh \
+			lib/lib4glc.dll.a lib/libaubit4gl.dll lib/lib4glc.dll"
+			#NOTE: lib/libaubit4gl.dll and lib/lib4glc.dll go to bin/ not lib/
+			
+			#FIXME: remove creation of this .a from makefies:
+			IGNORE_LIST="$IGNORE_LIST lib/libA4GL_glade.dll.a lib/libA4GL_pcre.dll.a \
+			lib/libFORM_NOFORM.dll.a lib/libLEX_PERL.dll.a lib/libPACKER_XML.dll.a \
+			lib/libRPC_NORPC.dll.a lib/libSQL_nosql.dll.a lib/libUI_CONSOLE.dll.a"			
+		fi
+		#NOTE: asql is a link
+		#adbload is experimental
+		#aubitrc is aubitrc-bin.in
+				
+		cd $SOURCEDIR
+		for an_dir in $ALLDIRS; do
+			THIS_FILELIST=`$FIND $an_dir -maxdepth 1`
+			ALL_FILELIST="$ALL_FILELIST $THIS_FILELIST"
+		done
+		
+		#echo $ALL_FILELIST 
+		
+		cd $INSTALLDIR
+		for an_file in $ALL_FILELIST; do
+			an_file=`echo "$an_file" | sed -e "s/^\.\///"`
+			#case $an_file in *README*) 
+			#	echo "got $an_file" 
+			#;; esac
+		
+			ls $an_file > /dev/null 2>&1
+			RET=$?
+			if test "$RET" != "0"; then
+				IGNORE_IT=0
+				for ignore_file in $IGNORE_LIST; do
+					case $an_file in *$ignore_file) IGNORE_IT=1; break ;; esac
+				done
+				if test "$IGNORE_IT" = "0"; then 
+					echo "Missing $an_file"
+					HAVE_MISSING=1
+					#exit 2
+				fi
+			else
+				IS_INSTALLED_LIST="$IS_INSTALLED_LIST $an_file"
+			fi
+		done
+		if test "$HAVE_MISSING" = "1"; then 
+			exit 5
+		else
+			HAVE_UNEXPECTED=0
+			#Now we know that all files from source code tree directories
+			#we checked ended up in binary installation, minus the ones we 
+			#know should not be installed
+			echo "all files installed as expected"
+			
+			#echo "Comparing binary install at $INSTALLDIR"
+			#echo "with compiled source tree at $SOURCEDIR" 
+			
+			#echo "$IS_INSTALLED_LIST"
+			#exit
+			#List of files we know that will appear in installed bindir,
+			#that are not in places we check for, or are renamed, or
+			#can appear in binary tree for other reasons
+			IGNORE_INSTALLED="4GL_metrics.cgi aubitrc-bin.in .tgz /CVS/*" 
+
+			if test "$COMSPEC" != ""; then 
+				#Files created by Windows installer itself:
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					Aubit#4GL#compiler#on#the#Web.url unins000.dat unins000.exe"
+
+				#Files that change location
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					bin/lib4glc.dll bin/libaubit4gl.dll"
+				
+				#Files present only for Windows installer, and change place
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					readme-runtime.html"
+			fi
+			
+			cd $INSTALLDIR
+			#INSTALLED_FILELIST=`$FIND`
+			#Replace spaces in file names with # do we can handle them as 
+			#single item in the resulting list
+			INSTALLED_FILELIST=`$FIND  | sed -e "s/ /#/g"`
+			for installed_file in $INSTALLED_FILELIST; do
+				#Remove leading ./ in filename:
+				installed_file=`echo "$installed_file" | sed -e "s/^\.\///"`
+				if test "$installed_file" = "." \
+					-o "$installed_file" = "tools"; then 
+					continue
+				fi
+				#echo "checking $installed_file"
+				HAVE_IT=0
+				for an_file in $IS_INSTALLED_LIST; do
+					#case $an_file in *$installed_file) HAVE_IT=1; break ;; esac
+					case $installed_file in *$an_file) HAVE_IT=1; break ;; esac
+				done
+				if test "$HAVE_IT" = "0"; then 
+					for to_ignore_file in $IGNORE_INSTALLED; do
+ 						case $installed_file in *$to_ignore_file) HAVE_IT=1; break ;; esac
+					done
+					if test "$HAVE_IT" = "0"; then
+						echo "File $installed_file is installed, but is not in 'to install' list"
+						HAVE_UNEXPECTED=1
+						if test "1" = "2"; then 
+							ls $INSTALLDIR/$installed_file
+							ls $SOURCEDIR/$installed_file
+							exit 4
+						fi
+					fi
+				fi
+			done
+			if test "$HAVE_UNEXPECTED" != "1"; then
+				echo "All files installed are expected"
+				exit 0
+			else
+				echo "Some files installed are not expected there"
+				exit 2
+			fi
+		fi
+		exit 0
+		;;
+   -dups)
+		#list all duplicated files in tree below current location
+		ALL=`find . -name "*" -exec basename {} \; | $SORT | uniq -c | grep -v " 1" `
+		CNT=1
+		############
+		for a in $ALL
+		############
+		do
+			if [ $CNT = 2 ]
+			then
+				case $a in
+				#things to be ignored:
+				"CVS")
+				;;
+				"Root")
+				;;
+				"Repository")
+				;;
+				"Makefile")
+				;;
+				"Makefile.in")
+				;;
+				"Makefile.old")
+				;;
+				"bin")
+				;;
+				"config")
+				;;
+				"data")
+				;;
+				"debian")
+				;;
+				"Entries")
+				;;
+				"generated")
+				;;
+				"*.bak")
+				;;
+				READM*)
+				;;
+				"rules")
+				;;
+				* )
+					PRINTED_HEAER=0
+					FILE=`find . -name $a`
+					for b in $FILE
+					do
+						if [ ! -d "$b" ]
+						then
+							if [ "$PRINTED_HEAER" = "0" ]
+                            then
+                                PRINTED_HEAER=1
+								echo -------------------------- $DUP_NUM = $a
+                            fi
+							ls -al $b
+						else
+                            if [ "$A4GLVERBOSE" = "yes" ]
+                            then
+								echo "$b Is directory - skipped"
+                            fi
+						fi
+					done
+				esac
+				CNT=1
+			else
+			    CNT=2
+				DUP_NUM=$a
+			fi
+		done
+
+    ;;
+
+   -manifest)
+        DO_AND_EXIT="ldd"
+        run_next
+   ;;
+
+   -run)
+        DO_AND_EXIT="exec"
+        run_next
+   ;;
+
+   -settings)
+        echo "Processed configuration files, in this order:"
+		echo
+		echo "A1 [/etc/opt/aubit4gl/aubitrc] =$A1"
+		echo "A2 [/opt/aubit4gl/etc/aubitrc] =$A2"
+		echo "A3 [../etc/aubitrc]            =$A3"
+		echo "A4 [etc/aubitrc]               =$A4"
+		echo "A5 [~/.aubit4gl/aubitrc]       =$A5"
+		echo "A6 [./.aubitrc]                =$A6"
+		echo "A7 ['A4GL_INIFILE']           =$A7"
+		echo "A8 environment"
+		echo
+
+        echo AUBITDIR = $AUBITDIR
+
+        if [ "$1" = "-settings" ] && [ "$2" = "" ]
+        then
+			exit 0
+        fi
+		;;
+   *.a) # Library file
+   		COMPCC="$COMPCC $a"
+		;;
+   *.o | *.ao) # compiled object file
+	   #.ao behaves same as .o, needed to distinguish from I4GL objects in 
+	   #universal makefiles
+   		COMPCC="$COMPCC $a"
+		EXECNAME="1"
+		;;
+   *.aox) 	   #linked collection of compiled object files (.ao or .o) 
+   		COMPCC="$COMPCC $a"
+   		EXECNAME="1"
+		;;
+   *.ec)	#Informix ESQL/C compiler source code 
+		NCC="$NCC_IFX"
+		COMPCC="$COMPCC $a"
+		;;
+   *.cpc)	#PostgreSQL ESQL/C compiler source code
+		NCC="$NCC_PG"
+		COMPCC="$COMPCC $a"
+		;;
+   *.per)	#4GL form file source code
+		  if [ "$A4GLVERBOSE" = "yes" ]
+		  then
+            $output Compiling form $a
+		  fi
+
+		  fcompile -c $a
+		  err_code=$?
+
+          dirn=`dirname $a`
+   		  fname=`basename $a .per`
+   		  errfname=`basename $a .per`.err;
+
+		  if ! [ -f $fname.$FGLC_OUTPUT_EXT ]
+		  then
+            if [ -f $errfname ]
+            then
+				showerror
+				#$output "Error compiling $a, see file $errfname"
+			else
+				if [ -f $dirn/$errfname ]
+                then
+					errfname=$dirn/$errfname
+					showerror
+					#$output "Error compiling $a - see file $errfname"
+                else
+					$output "Error compiling $a - error file NOT created"
+                fi
+            fi
+            if [ "$IGNORE_ERRORS" != "1" ]
+            then
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+			        echo "Exiting with code $err_code"
+			    fi
+				exit $err_code
+            fi
+          else
+	        COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
+          fi
+
+   		#if test "$PER_C" = "1"; then 
+   		#	fcompile -c $a
+		#	fname=`basename $a .per`
+		#	COMPCC="$COMPCC $fname.c"
+		#else
+	   	#	fcompile $a
+		#fi
+		;;
+   *.msg)
+        fname=`basename $a .msg`
+		#mkmess $fname
+		amkmessage $fname
+		#COMPCC="$COMPCC $fname.c"
+		;;
+   *.menu)
+   		if test "MENU_C" = "1"; then
+   			mcompile -c $a
+			fname=`basename $a .menu`
+			COMPCC="$COMPCC $fname.c"
+		else
+			mcompile $a
+		fi
+		;;
+   *.4gl)
+		dirn=`dirname $a`
+        if [ "$dirn" != "." ]; then
+			if [ "$MINGW" = "1" ]; then
+    	        a=$CYG_ROOT$a
+				dirn=`dirname $a`
+        	fi
+        fi
+
+        fname=`basename $a .4gl`
+        errfname=`basename $a .4gl`.err;
+
+        fname2="$dirn/$fname"
+        fname3="$dirn/$fname.4gl"
+		fname=$fname2
+
+        #if we did not invoked 4gl compile from inside directory where 4gl is,
+        #CC will not be able to find it's .h file:
+		if [ "$dirn" != "" ] && [ "$dirn" != "." ]; then
+			 COMPCC="$COMPCC -I./$dirn"
+        fi
+
+        if ! [ -f $fname3 ]; then
+          echo "$fname3 not found"
+          exit 10
+        fi
+
+        # Create the blank...
+        touch $fname.$FGLC_OUTPUT_EXT
+
+        if [ -f "$fname".err ]; then
+        	rm "$fname".err
+        fi
+
+		if [ "$A4GLVERBOSE" = "yes" ]; then
+			if [ "$A4GLDEBUG" = "yes" ]; then
+				$output "$fname: "
+				$output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
+				$output AUBITDIR=$AUBITDIR, PATH=$PATH
+			fi
+			$output "Executing (1) : $FGLCEXEC $a"
+		fi
+
+		########################
+		#Invoke 4GL compiler
+		########################
+		err_msg=`eval "$FGLCEXEC" "$a"`
+		err_code=$?
+
+		if [ "$err_code" != "0" ]; then
+			#################################
+			#$FGLCEXEC returned an error code
+            #################################
+			if [ "$err_code" = "139" ]; then
+	        	echo "$FGLCEXEC core dump"
+				if [ "$A4GLDEBUG" = "yes" ]; then
+					env
+                fi
+				exit $err_code
+			fi
+
+			if [ -f $errfname ]; then
+				showerror
+			else
+				if [ -f $dirn/$errfname ]; then
+					errfname=$dirn/$errfname
+					showerror
+					if [ "$A4GLVERBOSE" = "yes" ]; then
+		            	$output err_msg is: $err_msg
+		            fi
+                else
+					$output "Error compiling $a - error file NOT created"
+	            	$output err_msg is: $err_msg
+                fi
+            fi
+			if [ "$A4GLVERBOSE" = "yes" ]; then
+				echo "Exiting with code $err_code"
+			fi
+			exit $err_code
+		fi
+		
+		if [ -f $fname.$FGLC_OUTPUT_EXT ]; then
+            ###########################################
+			#C file was created, no error was reported
+            ###########################################
+			if ! [ -s $fname.$FGLC_OUTPUT_EXT  ]; then
+				##############################################
+				#C file is empty!
+                ##############################################
+                echo "Created $fname.$FGLC_OUTPUT_EXT is zero size ! Message is:"
+                echo $err_msg
+
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+				  	if [ -f $errfname ]; then
+                        showerror
+					else
+						if [ -f $dirn/$errfname ]; then
+							errfname=$dirn/$errfname
+							showerror
+							#$output "Error compiling $fname.$FGLC_OUTPUT_EXT - see file $errfname"
+		                else
+							$output "Error compiling $fname.$FGLC_OUTPUT_EXT - error file NOT created"
+		                fi
+	                fi
+
+					$output err_msg is: $err_msg
+	                $output err_code is: $err_code
+	                $output Please check file "$fname".err
+	                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
+				fi
+	            #we don't want to exit with 0 here:
+	            err_code=9
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Exiting with code $err_code"
+				fi
+				exit $err_code
+			fi
+
+			if [ "$A4GLVERBOSE" = "yes" ]; then
+				$output $FGLCEXEC "$a" OK, continue...
+			fi
+			if [ "$MAP4GL" = "Y" ];	then
+				if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]; then
+					$output "Loading map file for $a into database"
+					loadmap $fname.map > /dev/null 2> $fname.map.err
+				fi
+			fi
+			if [ "$AUTOINDENT" = "Y" ];	then
+				PRETTYC=${PRETTYC:-"indent"}			
+			 	$PRETTYC "$fname.$FGLC_OUTPUT_EXT"
+			fi
+			if test "$TO_OBJECT"; then
+                #make an object from 4gl file
+				if test "$NO_LINKING"; then
+					#got -c flag, single object only on command line
+					if test "$OUTFILE" = ""; then
+						OUTFILE="$fname$A4GL_OBJ_EXT"
+					fi
+				else
+					#no -c flag, can have multiple object on command line,
+					#so -o may or may not not be the same thing
+					OUTFILE="$fname$A4GL_OBJ_EXT"
+				fi
+				#if [ "$COMSPEC" = "" ]
+				#then
+					EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $OUTFILE $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+				#else
+				#	EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname$A4GL_OBJ_EXT $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+                #    #remove this duplication
+				#	#EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -o $fname$A4GL_OBJ_EXT -c $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+				#fi
+
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					$output "executing (2) : $EXEC"
+				fi
+
+                ########################
+				#Invoke compiler
+				########################
+				eval $EXEC
+				err_code=$?
+                ########################
+				if [ "$err_code" != "0" ]; then
+                    #we got error from C compiler
+					showerror
+					echo "error compiling $fname.$FGLC_OUTPUT_EXT. STOP."
+					exit $err_code
+                else
+					if [ -f "$fname.$FGLC_OUTPUT_EXT.err" ]; then
+						#compiler did not return error code, but .err file was
+                        #created, and we know it will only contain compiler,
+                        #warnings, so we don't want to confuse things and people:
+
+						#-s is True if file exists and has a size greater than zero.
+						if [ -s "$fname.$FGLC_OUTPUT_EXT.err" ]; then
+							if [ "$A4GLVERBOSE" = "yes" ]; then
+    	                        echo "Found $fname.$FGLC_OUTPUT_EXT.err, moving it to $fname.$FGLC_OUTPUT_EXT.warn"
+        			        fi
+							mv "$fname.$FGLC_OUTPUT_EXT.err" "$fname.$FGLC_OUTPUT_EXT.warn"
+                        else
+                            #file exists, but it's empty
+                            rm "$fname.$FGLC_OUTPUT_EXT.err"
+                        fi
+                    else
+						if [ "$A4GLVERBOSE" = "yes" ]; then
+ 							echo "Did NOT found $fname.$FGLC_OUTPUT_EXT.err"
+	       		        fi
+					fi
+				fi
+				COMPCC="$COMPCC $fname$A4GL_OBJ_EXT"
+            else
+				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
+            fi
+        else
+            ###################################
+			#C file was _NOT_ created by FGLCEXEC, 
+			#but FGLCEXEC did _NOT_ return an error code
+            ###################################
+            #is this a 0 length 4gl file?
+			FGLFILESIZE=$(ls -al $fname3 | $AWK '{print $5}')
+
+			if [ "$FGLFILESIZE" = "0" ]
+            then
+				if [ "$A4GLVERBOSE" = "yes" ]
+	    		then
+					echo "$fname3 size is $FGLFILESIZE"
+                fi
+
+				#fakeing c file, to get empty object file from c compiler:
+				touch $fname.$FGLC_OUTPUT_EXT
+				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
+            else
+				$output "Error compiling $a - $fname.$FGLC_OUTPUT_EXT not generated, but no err code from $FGLCEXEC"
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+				  	if [ -f $errfname ]
+	    	        then
+                        showerror
+					else
+						if [ -f $dirn/$errfname ]
+		                then
+							errfname=$dirn/$errfname
+							showerror
+							#$output "Error compiling $fname.$FGLC_OUTPUT_EXT - see file $errfname"
+		                else
+							$output "Error compiling $fname.$FGLC_OUTPUT_EXT - error file NOT created"
+		                fi
+	                fi
+
+					$output err_msg is: $err_msg
+	                $output err_code is: $err_code
+	                $output Please check file "$fname".err
+	                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
+				fi
+	            #we don't want to exit with 0 here:
+	            err_code=9
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+					echo "Exiting with code $err_code"
+				fi
+				exit $err_code
+            fi
+		fi
+		;;
+   *.c) 	#C source code file
+   		COMPCC="$COMPCC $a"
+   		if test "$NO_LINKING" = "1"; then 
+			#there was -c on command line (which also indicate only one input 
+			#file on command line) and input file is a C file - so we want to 
+			#use linking stage to create output file (object)
+			NO_LINKING=0
+		fi
+		;;
+
+   -echo)	#Don't execute any command, just show what you would do 
+   		DOIT="echo"
+		;;
+   -e) #Pre-process only, no compiling or linking - for use with Informix ESQL/C only 
+	   	NO_COMPILE=1
+		ISMAKE=-1
+		TO_OBJECT=0
+		;;
+   -i) #Ifnore any errors and continue
+   		IGNORE_ERRORS="1"
+		;;
+	-jabber) 
+		USE_JABBER=1
+		;;
+   -verbose)
+   		#Got that earlier
+		;;
+   -noerrcode)
+        SHOWERRCODE=0
+		;;
+   -map)
+        echo "Setting map file on"
+        MAP4GL="Y"
+        export MAP4GL
+		;;
+   -maponly) 		
+		export MAP4GL="Y"
+		NOCFILE="Y"
+		;;
+   -make-compile) 	
+   		export MAKE4GLPC="Yes"
+		;;
+   -nomap) 
+   		unset MAP4GL
+		;;
+   -debug) 
+   		export INCLINES=""
+        export DEBUG=ALL
+		#DDEBUG="_g"
+        COMPCC="$COMPCC -g"
+	CFLAGS="$CFLAGS -g"
+		;;
+   -as-dll | --as-dll)		#creates shared library- .so on UNIX, .dll on Windows
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			if test "$A4GL_LEXDIALECT" = "POSTGRES"; then
+				PG_LIBS="-lecpg_compat -lpgtypes -lpq"			
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Note: Using PG_LIBS:"
+					echo "$PG_LIBS"
+					echo "COMPCC=$COMPCC"
+				fi
+				NCC_LINK="$NCC_C -shared -L$POSTGRESDIR/lib $PG_LIBS"
+			elif test "$A4GL_LEXDIALECT" = "INFORMIX"; then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Note: Using IFX_LIBS:"
+					echo "$IFX_LIBS"
+					echo "COMPCC=$COMPCC"
+				fi
+				#Informix ESQL compiler don't know how to link to shared library
+				#so we must use CC
+				NCC_LINK="$NCC_C -shared -L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql $IFX_LIBS"
+			else
+				echo "ERROR: don't know how to make shared library for A4GL_LEXDIALECT=$A4GL_LEXDIALECT"
+				exit 5			
+			fi
+		elif test "$A4GL_LEXTYPE" = "C"; then
+   			COMPCC="$COMPCC -shared"
+		else
+			echo "ERROR: don't know how to make shared library for A4GL_LEX=$A4GL_LEXTYPE"
+			exit 5
+		fi
+		AS_DLL="1"
+		;;
+   -shared) #When linking, use STATIC libraries
+   		#NOTE: has nothing to do with type of objects/libraries/execitables 
+		#that will be CREATED by this script
+   		USE_SHARED="Yes"
+		;;
+   -static)	#When linking, use STATIC libraries
+   		#NOTE: has nothing to do with type of objects/libraries/execitables 
+		#that will be CREATED by this script
+		USE_SHARED="No"
+		;;
+   -o) 
+   		#Note: allready in flags pre-processing ...
+		COMPCC="$COMPCC -o "
+		ISMAKE=-1 #flag to indicate that folowing flag is object name
+		TO_OBJECT=1
+		ERREXT=.err
+		if test "$fname" = ""; then
+			if test "$A4GLVERBOSE" = "yes"; then			
+				echo "WARNING: output file not (yet) named. Using 'unknown' for log file"
+			fi
+			fname='unknown'
+		fi
+		ERRFILE="$fname$ERREXT"
+		LAST="2> $ERRFILE"
+		DEFAULTCOMPCC="$COMPCC $fname"
+		EXECNAME="-1"
+		;;
+   -noprefix)  #Something for Mike, to be passed to FGLCEXEC, NOT to CC
+		pass="-N \"$next\""
+		FGLCEXEC="$FGLCEXEC $pass"
+		if [ "$A4GLVERBOSE" = "yes" ]; then
+			echo "FGLCEXEC=$FGLCEXEC"
+		fi
+		;;
+
+   *)	#everything else on command line 
+	if [ "$ISMAKE" = "-1" ]; then
+		#previous flag was -o
+		EXECNAME="$a"
+		ISMAKE=1
+		ERREXT=.err
+		ERRFILE="$a$ERREXT"
+		LAST="2> $ERRFILE"
+	fi
+	#Whatever it is, add it to link line we will pass to linker 
+    COMPCC="$COMPCC $a"
+	;;
+
+  ####
+  esac
+  ####
+####
+done
+####
+
+if test "$NO_LINKING" = "1"; then 
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+		echo "got -c flag (no linking). Done"
+	fi
+	exit 0
+fi
+
+
+if [ "$EXECNAME" = "-1" ]
+then
+    COMPCC=$DEFAULTCOMPCC
+	$output "-o specified without object name, default name is $fname"
+	if [ "$ISMAKE" = "-1" ]
+    then
+         ISMAKE=1
+    fi
+fi
+
+#-lFORM/MENU/MSG_xxx is here temporary, untill this lib is dlopen() enabled:
+#FGLLIBS_COMMON="-laubit4gl -lFORM_$A4GL_FORMTYPE -lMENU_$A4GL_MENUTYPE -lMSG_$A4GL_MSGTYPE"
+FGLLIBS_COMMON="-laubit4gl"
+if [ "$A4GL_NEED_COMPAT" = "1" ]
+then
+	FGLLIBS_COMMON="$FGLLIBS_COMMON -ldecimal"
+fi
+
+
+if [ "$COMSPEC" = "" ]
+then
+	FGLLIBS_COMMON="$FGLLIBS_COMMON" # -ldl"
+else
+	FGLLIBS_COMMON="$FGLLIBS_COMMON -L/lib/w32api -L/usr/local/lib"
+fi
+
+if [ "$A4GL_LEXTYPE" = "EC" ]
+then
+	#if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
+	#then
+		FGLLIBS_COMMON="$FGLLIBS_COMMON "
+	#else
+
+	#fi
+fi
+
+#FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_XDRTYPE"
+FGLLIBS_STATIC="$FGLLIBS_COMMON -static"
+FGLLIBS_SHARED="$FGLLIBS_COMMON"
+
+if [ "$A4GLDEBUG" = "yes" ]
+then
+	echo ------------------------------------------------------------------
+	echo USE_SHARED = $USE_SHARED
+	echo FGLLIBS_SHARED = $FGLLIBS_SHARED
+	echo FGLLIBS_STATIC = $FGLLIBS_STATIC
+	echo ------------------------------------------------------------------
+fi
+
+if [ "$USE_SHARED" = "Yes" ]
+then
+	FGLLIBS="$FGLLIBS_SHARED"
+else
+	FGLLIBS="$FGLLIBS_STATIC"
+
+	if test "$COMSPEC" = ""; then
+		#without -rdynamic:
+		#Opps 1 - can't open DLL - /opt/aubit/aubit4glsrc/lib/libSQL_unixodbc.so: undefined symbol: status
+		if [ "$A4GL_RDYNAMIC" = "" ]
+		then
+			A4GL_RDYNAMIC="-rdynamic"
+		fi
+		LIBS="$LIBS $A4GL_RDYNAMIC"
+	fi
+fi
+
+if test "$USE_JABBER" = "1"
+then
+	LIBS="$LIBS -L$JABBER_LIB_DIR -l$JABBER_LIB_NAME -liksemel"
+	#JabberX link line:
+	#MANLINK2= -rdynamic -lnsl -lposix -lcrypt -liksemel
+fi
+
+if [ "$NOCFILE" = "Y" ]
+then
+   if [ "$A4GLVERBOSE" = "yes" ]; then
+	   $output No C files to compile.
+   fi
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+		echo "Exiting with code 8"
+	fi
+	exit 8
+fi
+
+if [ "$COMPCC" = "" ]; then
+   if [ "$A4GLVERBOSE" = "yes" ]; then
+	   $output No C files to compile.
+   fi
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+		echo "Exiting with code 8"
+    fi
+	exit 8
+fi
+
+if [ "$A4GLDEBUG" = "yes" ]
+then
+#	echo $GTKGUI
+	echo $COMSPEC
+	echo $MAKE4GLPC
+fi
+
+if [ "$NO_COMPILE" = 1 ]; then
+	eval "$DOIT $NCC -e $CFLAGS $COMPCC $INCLDIR $LAST"
+	err_code=$?
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+		echo "Exiting after pre-processing stage with code $err_code"
+	fi
+	exit $err_code
+fi
+
+if [ "$ISMAKE" != "1" ]; then
+	if [ "$COMSPEC" != "" ]; then
+		echo "WARNING: susspicious - adding -c flag"
+        COMPCC="$COMPCC -c"
+    fi
+	EXEC="$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $LAST"
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+        $output "executing (3) : $EXEC"
+		echo ----------------------------------
+		echo "DOIT $DOIT"
+		echo "NCC $NCC"
+		echo "CFLAGS $CFLAGS"
+		echo "COMPCC $COMPCC"
+		echo "INCLDIR $INCLDIR"
+		echo "LAST $LAST"
+		echo ----------------------------------
+	
+	fi
+    ##################
+   	#invoke compiler
+    ##################
+	eval $EXEC
+	err_code=$?
+	if [ $err_code != 0 ]; then
+		if [ "$LAST" != "" ]; then
+			errfname=`expr "$LAST" : "..\(.*\)"`
+			showerror
+			cerrfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.err
+			if [ "$A4GLVERBOSE" = "yes" ]; then
+				echo "Moving $errfname to $cerrfname"
+            fi
+			mv $errfname $cerrfname
+			$output "Error compiling - check $cerrfname"
+		else
+			$output "Error compiling - no LAST data."
+		fi
+		if [ "$A4GLVERBOSE" = "yes" ]; then
+	        echo "Exiting with code $err_code"
+	    fi
+		exit $err_code
+   else
+        #compiler did not return error code
+		errfname=`expr "$LAST" : "..\(.*\)"`
+        if [ -f "$errfname" ]; then
+			#-s is True if file exists and has a size greater than zero.
+			if [ -s $errfname ]; then
+				#this must be warnings, since we got no error code...
+				warnfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.warn
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Moving $errfname to $warnfname (2)"
+	            fi
+				mv $errfname $warnfname
+            else
+                #file exists, but it's empty
+				rm $errfname
+            fi
+        fi
+   fi
+else # ISMAKE=1
+	if test "$NCC_LINK" = ""; then
+		NCC_LINK="$NCC"
+	fi
+	EXEC="$DOIT $NCC_LINK $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR \
+		$FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+
+   	if [ "$A4GLVERBOSE" = "yes" ]; then
+   		if test "$AS_DLL" ; then 
+			$output "Generating shared library"
+		else
+   			$output "Generating Exec"
+		fi
+		echo "executing (4) : $EXEC"
+		if [ "$A4GLDEBUG" = "yes" ]; then
+		   echo $DOIT
+		   echo $NCC_LINK
+		   echo $CFLAGS
+		   echo $COMPCC
+		   echo $INCLDIR
+		   echo $FGLLIBSDIR
+		   echo $FGLLIBS
+		   echo $LIBSDIR
+		   echo $LIBS
+		   echo $GTKLIBS
+		   echo $LAST
+
+		   echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+	       echo "PWD is `pwd`"
+	    fi
+	fi
+	eval "$EXEC"
+	err_code=$?
+	if [ $err_code != 0 ]; then
+		if [ "$LAST" != "" ]; then
+			errfname=`expr "$LAST" : "..\(.*\)"`
+			showerror
+			echo "Error compiling... check $errfname"
+		else
+			$output "Error compiling."
+		fi
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+        echo "Exiting with code $err_code"
+    fi
+	exit $err_code
+   fi
+fi
+
+#-s is True if file exists and has a size greater than zero.
+if [ "$ERRFILE" != "" -a ! -s "$ERRFILE" ]
+then
+	if [ -f "$ERRFILE" ]
+    then
+		rm $ERRFILE
+	fi
+fi
+
+#Remove output file if it's empty
+#errfname=`expr "$LAST" : "..\(.*\)"`
+##-s is True if file exists and has a size greater than zero.
+#if [ "$errfname" != "" -a ! -s "$errfname" ]
+#then
+#	if [ -f "$errfname" ]
+#    then
+#		rm $errfname
+#	fi
+#fi
+
+
+
+if [ "$A4GLVERBOSE" = "yes" ]
+then
+	echo "Exiting with code 0"
+fi
+
+exit 0
+
+
+#---------------------------- EOF ---------------------------------
+
