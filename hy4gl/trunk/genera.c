@@ -2,9 +2,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <ncurses.h>
 
+#ifdef KEEPNCURSESBOOL
+//To prevent redeclaration of bool in PostgreSQL c.h:
+#define bool
+#endif
+
 #include <postgres.h>
+#undef bool
+
+
 #include <libpq-fe.h>
 #include "global.h"
 #include "asa.h"

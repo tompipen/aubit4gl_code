@@ -1,15 +1,64 @@
+# +----------------------------------------------------------------------+
+# | Hy4gl 4gl Language Compiler Version $.0   root makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 David Prieto [davidp@sgth.es]                   |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact David Prieto [davidp@sgth.es]                                |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile,v 1.2 2001-10-25 03:29:09 afalout Exp $
+
+## ==================================================================
+##                              Settings
+## ==================================================================
+
+
 # Edita el Makefile.global para cambiar el nº de version y los dirs.
+# Edit file Makefile.global to change settings for your configuration.
+
 include Makefile.global
 
-all: hy4gl.e
-	
-.c.o: 
-	gcc -g -DVERSION='"$(VERSION)"' -Wall -c $<  -I$(INCL_PGRES)
+#-Dbool
+INCLPATH+=-DKEEPNCURSESBOOL
+#INCLPATH+=-I.
+INCLPATH+=-I$(INCL_PGRES)
+#INCLPATH+=-Ilocalincl
 
-hy4gl.e:  asa.o hy4gl.o y.tab.o lex.yy.o  genera.o genrpt.o genform.o
-	gcc -g -static -DVERSION='"$(VERSION)"' -o hy4gl.e  \
-		hy4gl.o y.tab.o lex.yy.o asa.o genera.o genrpt.o genform.o \
-                -lfl -L. -L$(LIB_PGRES) -lpq -lcrypt
+OBJ=hy4gl.o y.tab.o lex.yy.o asa.o genera.o genrpt.o genform.o
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: hy4gl.e
+
+log:
+	make > make.log 2>&1
+	@echo "See make.log file for results"
+
+.c.o:
+	gcc ${INCLPATH} -g -DVERSION='"$(VERSION)"' -Wall -c $<
+
+hy4gl.e:  ${OBJ}
+	gcc -g -static -DVERSION='"$(VERSION)"' -o hy4gl.e  ${OBJ} -lfl -L. -L$(LIB_PGRES) -lpq -lcrypt
 	strip hy4gl.e
 	$(MAKE) install
 
@@ -26,12 +75,27 @@ asa.c: asa.h asa.esa
 asa.h:
 	(hesa asa.esa; :)
 
+lib4gl:
+	$(MAKE) -C lib4gl
+
+## ==================================================================
+##                              Clean Targets
+## ==================================================================
+
 clean:
 	rm -f *.bak *.o lex.yy* y.tab* asa.c asa.h
+
+clean.all: clean clean.lib
+
+clean.lib:
 	cd lib4gl ; $(MAKE) clean
 
+## ==================================================================
+##              Install, release, distribution Targets
+## ==================================================================
+
 release:
-	mkdir -p versiones 
+	mkdir -p versiones
 	mkdir -p hy4gl.$(VERSION)
 	(cp * hy4gl.$(VERSION) ;:)
 	mkdir -p hy4gl.$(VERSION)/demo
@@ -42,8 +106,9 @@ release:
 	(cp lib4gl/* hy4gl.$(VERSION)/lib4gl ; \
 	tar zcvf versiones/hy4gl.$(VERSION).tgz hy4gl.$(VERSION))
 	rm -rf hy4gl.$(VERSION)
-   		
-install: 
+	@echo "Release complete"
+
+install:
 	mkdir -p $(INST_DIR)
 	cp -P hy4gl $(INST_DIR)/
 	chmod +x $(INST_DIR)/hy4gl
@@ -51,8 +116,10 @@ install:
 	chmod +x /usr/local/bin/hy4gl
 	cp hy4gl.e $(INST_DIR)/hy4gl.e
 	chmod +x $(INST_DIR)/hy4gl.e
-	cd lib4gl ; $(MAKE) ; $(MAKE) install
-
+#	cd lib4gl ; $(MAKE) ; $(MAKE) install
+	$(MAKE) lib4gl
+	$(MAKE) -C lib4gl install
+	@echo "Install complete"
 
 distrib: all
 	mkdir hy4gl.$(VERSION)
@@ -66,3 +133,6 @@ distrib: all
 	cp doc/*.ps hy4gl.$(VERSION)/docs
 	tar zcvf versiones/hy4gl-inst.$(VERSION).tgz hy4gl.$(VERSION)/
 	rm -rf hy4gl.$(VERSION)
+	@echo "Distrib complete"
+
+#---------------------------- EOF -------------------------------------
