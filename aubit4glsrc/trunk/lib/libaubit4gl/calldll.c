@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.43 2004-05-12 08:15:53 mikeaubury Exp $
+# $Id: calldll.c,v 1.44 2004-05-19 12:47:13 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,9 @@
 
 #if defined(__hpux__) //HP-UX UNIX OS
 #define USE_SHL 1
+#define SO_EXT "sl"
 #endif
+
 
 #ifdef USE_SHL
 #include <dl.h>
@@ -67,7 +69,18 @@
 
 #ifndef WIN32
 #include <dlfcn.h>
+
 #endif
+
+
+#ifndef SO_EXT
+#ifdef WIN32
+#define SO_EXT "dll"
+#else
+#define SO_EXT "so"
+#endif
+#endif
+
 
 /*
 =====================================================================
@@ -388,8 +401,8 @@ A4GL_dl_openlibrary (char *type, char *p)
 				   plugin_name);
             #else
 			  /* all other platforms: */
-			  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type,
-				   plugin_name);
+			  sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type,
+				   plugin_name,SO_EXT);
             #endif
 		#endif
 	#endif
@@ -629,7 +642,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "%s/lib/lib%s.so", acl_getenv ("AUBITDIR"), nfile);
+      sprintf (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -638,7 +651,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./lib%s.so", nfile);
+      sprintf (buff, "./lib%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -647,7 +660,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./%s.so", nfile);
+      sprintf (buff, "./%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
