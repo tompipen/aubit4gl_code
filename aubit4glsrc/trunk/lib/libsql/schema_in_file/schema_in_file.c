@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.6 2003-12-10 20:45:20 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.7 2004-03-04 16:27:49 mikeaubury Exp $
 #*/
 
 /**
@@ -64,7 +64,10 @@ char lasterrorstr[1024] = "";
 */
 
 FILE *f_db_in;
-
+char *A4GL_global_A4GLSQL_get_sqlerrm (void);
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
+void * A4GL_new_expr (char *value);
+void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /* We only need to implement the functions used by the compiler :
 
          A4GLSQL_end_get_columns
@@ -101,7 +104,7 @@ A4GLSQL_set_status (int a, int sql)
  * @todo Describe function
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GLSQL_init_connection_internal (char *dbName)
 {
   char fname[256];
   sprintf (fname, "%s.schema", dbName);
@@ -273,7 +276,7 @@ while (1) {
 return ptr;
 }
 
-struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
         printf("Warning Validation feature not implemented in SCHEMA_IN_FILE  SQL Driver");
         return 0;
 }

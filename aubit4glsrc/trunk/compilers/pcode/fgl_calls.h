@@ -1,4 +1,8 @@
 #include "a4gl_incl_4glhdr.h"
+#include "a4gl_incl_4gldef.h"
+#include "a4gl_4gl_callable.h"
+#include "a4gl_API_sql.h"
+#include "a4gl_sql.h"
 extern long int_flag;
 extern long quit_flag;
 extern long a4gl_status;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.36 2004-02-10 13:50:19 mikeaubury Exp $
+# $Id: variables.c,v 1.37 2004-03-04 16:27:21 mikeaubury Exp $
 #
 */
 
@@ -85,7 +85,7 @@ char find_variable_scope (char *s_in);
 
 int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
-void set_yytext (char *s);
+//void set_yytext (char *s);
 int isin_command (char *s);
 char *rettype (char *s);
 

@@ -6,6 +6,7 @@
 
 
 #include "a4gl_libaubit4gl.h"
+#include "a4gl_4glc_int.h"
 /*
 This module is intended to remove any problems with generating liblex from
 the .spec file.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.160 2004-02-29 15:02:19 mikeaubury Exp $
+# $Id: mod.c,v 1.161 2004-03-04 16:27:21 mikeaubury Exp $
 #
 */
 
@@ -99,15 +99,15 @@
 int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
 //static void set_whento (char *p);
-void set_whento_store(char *p);
-void set_whenever_store (int c, char *p) ;
+//void set_whento_store(char *p);
+//void set_whenever_store (int c, char *p) ;
 void set_whenever_from_store(void) ;
-void A4GL_lex_printh(char* fmt,... );
+//void A4GL_lex_printh(char* fmt,... );
 
 int A4GL_findex (char *str, char c);
 /*void push_validate (char *t2);*/
 int A4GL_get_attr_from_string (char *s);
-char get_curr_report_stack_whytype_1 (void);
+//char get_curr_report_stack_whytype_1 (void);
 char *get_curr_report_stack_why (void);
 char find_variable_scope (char *s_in);
 char *A4GL_get_important_from_clobber(char *s) ;
@@ -119,7 +119,7 @@ int get_validate_list_cnt(void) ;
 /*void clr_validate_list(void) ;*/
 /*struct expr_str *A4GL_get_validate_expr(int n) ;*/
 /*int A4GL_escape_quote_owner(void) ;*/
-struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
+//truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
 
 /*void A4GL_add_event(int n,char *s) ;*/
 /*void A4GL_add_onkey_key(char *s) ;*/
@@ -2288,6 +2288,7 @@ char *get_bind_varname(char i,int n) {
 	if (i=='i') {
 		return ibind[n].varname;
 	}
+	return "";
 }
 /**
  * Gets the number of elements filled in a bind array.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.63 2004-02-23 22:03:41 mikeaubury Exp $
+# $Id: resource.c,v 1.64 2004-03-04 16:27:49 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,7 @@
 char *debug=0;
 char *debug_level=0;
 
+static char * A4GL_strip_quotes_resource (char *s);
 
 /*
 =====================================================================
@@ -351,7 +352,6 @@ static void add_resources_in (FILE * resourcefile);
 static int next_resource (void);
 int A4GL_chk_dbdate (char *p);
 
-extern void A4GL_trim_nl (char *p);	/* in aubit-config.c when used to make aubit-config executable. */
 
 static char *chk_str_resource (char *s, struct str_resource *res);
 static int add_userptr (void *ptr);
@@ -621,7 +621,7 @@ if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
 			debug_level=ptr;
 		} 
 
-		ptr=A4GL_strip_quotes (ptr);
+		ptr=A4GL_strip_quotes_resource (ptr);
 		ptr=strdup(ptr);
 		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
 
@@ -1171,5 +1171,20 @@ A4GL_env_option_set (char *s)
   return 0;
 }
 
+
+static char * A4GL_strip_quotes_resource (char *s)
+{
+  static char buff[1024];
+  if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
+    {
+      strcpy (buff, &s[1]);
+      buff[strlen (buff) - 1] = 0;
+    }
+  else
+    {
+      strcpy (buff, s);
+    }
+  return buff;
+}
 
 /* ----------------------------- EOF --------------------------------- */

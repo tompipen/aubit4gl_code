@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.73 2004-03-04 08:29:54 mikeaubury Exp $
+# $Id: esql.ec,v 1.74 2004-03-04 16:27:48 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.73 2004-03-04 08:29:54 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.74 2004-03-04 16:27:48 mikeaubury Exp $";
 #endif
 
 
@@ -416,7 +416,7 @@ addESQLConnection (char *connectionName, char *dbName,
  *  - 0 : Connection estabilished.
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
   char buff[256];
@@ -460,7 +460,7 @@ A4GLSQL_init_connection (char *dbName)
  *  - 1 : Connection does not exist or error ocurred.
  */
 int
-A4GLSQL_close_session (char *sessname)
+A4GLSQL_close_session_internal (char *sessname)
 {
   EXEC SQL begin declare section;
   char *connectionName = sessname;
@@ -512,7 +512,7 @@ A4GLSQL_close_connection (void)
 /*	int A4GLSQL_make_connection(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p); */
 int A4GLSQL_make_connection
 /*  const UCHAR *server,const UCHAR *uid_p,const UCHAR *pwd_p) */
-  (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
+  (char * server, char * uid_p, char * pwd_p)
 {
   EXEC SQL begin declare section;
   char *dbName;
@@ -590,7 +590,7 @@ initPassword (const char *passwd)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 {
   EXEC SQL begin declare section;
   char *dbName = dsn;
@@ -655,7 +655,7 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
  *   - 1 : Connection with that name does not exist.
  */
 int
-A4GLSQL_set_conn (char *sessname)
+A4GLSQL_set_conn_internal (char *sessname)
 {
   EXEC SQL begin declare section;
   char *connectionName = sessname;
@@ -832,10 +832,12 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
  * @param ibind A pointer to the input bind array.
  * @return A statement identification structure pointer.
  */
-struct s_sid *
-A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
+void *
+A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind) 
 {
   struct s_sid *ptr;
+  struct BINDING *ibind;
+  ibind=vibind;
   A4GL_debug ("S=%s\n", s);
   ptr = prepareSqlStatement (ibind, ni, (struct BINDING *) 0, 0, s);
   A4GL_debug ("Got ptr as %p", ptr);
@@ -1391,6 +1393,7 @@ getDescriptorName (char *statementName, char bindType)
 static int
 getStatementBindType (struct s_sid *sid)
 {
+A4GL_debug("getStatementBindType : %p %p %d %d",sid->obind,sid->ibind,sid->no,sid->ni);
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0 &&
       sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
     return INPUT_OUTPUT_BIND;
@@ -1426,7 +1429,7 @@ executeStatement (struct s_sid *sid)
   statementName = sid->statementName;
   inputDescriptorName = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
-  A4GL_debug ("ExecuteStatement");
+  A4GL_debug ("ExecuteStatement %d - %d %d %d %d",getStatementBindType (sid),NO_BIND,INPUT_BIND,OUTPUT_BIND,INPUT_OUTPUT_BIND);
   switch (getStatementBindType (sid))
     {
     case NO_BIND:
@@ -1459,8 +1462,8 @@ executeStatement (struct s_sid *sid)
  * @param s A string with the sql statement to be prepared.
  * @return A pointer to the statement information structure.
  */
-struct s_sid *
-A4GLSQL_prepare_sql (char *s)
+void *
+A4GLSQL_prepare_sql_internal (char *s)
 {
   struct s_sid *sid;
   sid =
@@ -1477,8 +1480,10 @@ A4GLSQL_prepare_sql (char *s)
  * @return Allways 0
  */
 int
-A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
+A4GLSQL_add_prepare (char *pname, void *vsid)
 {
+struct s_sid *sid;
+sid=vsid;
   if (sid)
     {
       A4GL_add_pointer (pname, PRECODE, sid);
@@ -1499,7 +1504,7 @@ A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
  * @return Allways 0
  */
 int
-A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
+A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
 {
   return 0;
 }
@@ -1652,12 +1657,14 @@ processPosStatementBinds (struct s_sid *sid)
  *  - -1 : The pointer to the statement is null.
  */
 int
-A4GLSQL_execute_implicit_select (struct s_sid *sid)
+A4GLSQL_execute_implicit_select (void *vsid)
 {
+struct s_sid *sid;
   EXEC SQL begin declare section;
   char *statementName;
   char *statementText;
   EXEC SQL end declare section;
+sid=vsid;
 
   A4GL_debug ("ESQL : execute_implicit_select");
   if (sid == 0)
@@ -1728,14 +1735,16 @@ error_just_in_case ()
  *  - 1 : An error as ocurred.
  */
 int
-A4GLSQL_execute_implicit_sql (struct s_sid *sid)
+A4GLSQL_execute_implicit_sql (void *vsid)
 {
+struct s_sid *sid;
   EXEC SQL begin declare section;
   char *statementName;
   char *descriptorName;
   int inputBindCount;
   EXEC SQL end declare section;
   int rc = 0;
+  vsid=sid;
   A4GL_debug ("In execute_implicit_sql");
   if (sid == (struct s_sid *) 0)
     {
@@ -1788,8 +1797,8 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
  * @param s A string containing the select statement.
  * @return A pointer to the statement identification structure.
  */
-struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
+void *
+A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 			int no, char *s)
 {
 //printf("prepare_select : %d %d (%s)\n",ni,no,s);
@@ -1850,8 +1859,8 @@ getCursorType (int upd_hold, int scroll)
  * @param cursname The cursor name.
  * @return A pointer to the cursor informationstrucutre.
  */
-struct s_cid *
-A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
+void *
+A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 			char *cursname)
 {
   EXEC SQL BEGIN DECLARE SECTION;
@@ -1861,6 +1870,8 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
   EXEC SQL END DECLARE SECTION;
   int retval = 0;
   struct s_cid *cursorIdentification;
+  struct s_sid *sid;
+	sid=vsid;
 
   if (sid == (struct s_sid *) 0)
     return (struct s_cid *) 0;
@@ -2067,7 +2078,8 @@ getFetchType (int fetch_mode, int fetch_when)
 int
 A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
-		      struct BINDING *obind)
+			void *vobind
+)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = cursor_name;
@@ -2076,6 +2088,8 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   EXEC SQL END DECLARE SECTION;
   struct s_sid *sid;
   struct s_cid *cid;
+	      struct BINDING *obind;
+	obind=vobind;
 
   cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
   sid = (struct s_sid *) cid->statement;
@@ -2152,7 +2166,7 @@ sid->no = nobind;
 /* 	void A4GLSQL_put_insert(struct BINDING *ibind,int n); */
 /* int */
 void
-A4GLSQL_put_insert (struct BINDING *ibind, int n)
+A4GLSQL_put_insert (void *vibind, int n)
 {
   exec sql begin declare section;
   char *cursorName;
@@ -2160,6 +2174,8 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
   struct s_sid *sid;
   struct s_cid *cid;
   exec sql end declare section;
+  struct BINDING *ibind;
+  ibind=vibind;
 
   cursorName = A4GL_char_pop ();
 
@@ -2416,13 +2432,13 @@ printField (FILE * unloadFile, int idx, char *descName)
 /* 	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQL_unload_data (char *fname_o, char *delims, char *sqlStr, int nbind,
-		     struct BINDING *ibind)
+A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind)
 {
   int cnt = 0;
   static char databuf[64000];
   FILE *unloadFile;
   int rc = 0;
+  struct BINDING *ibind;
 
   EXEC SQL BEGIN DECLARE SECTION;
   char *strSql = sqlStr;
@@ -2431,6 +2447,7 @@ A4GLSQL_unload_data (char *fname_o, char *delims, char *sqlStr, int nbind,
   int coltype;
   EXEC SQL END DECLARE SECTION;
   char *fname;
+  ibind=vibind;
   A4GL_debug ("Unload data..");
   fname=strdup(fname_o); A4GL_trim(fname);
   unloadFile = (FILE *) A4GL_mja_fopen (fname, "wt");
@@ -2598,7 +2615,7 @@ A4GLSQL_commit_rollback (int mode)
  *   - A pointer to the structure found in the tree.
  *   - 0 : The structure was not found
  */
-struct s_sid *
+void *
 A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
@@ -2648,9 +2665,11 @@ A4GLSQL_flush_cursor (char *cursor)
  *   - 1 : There was an error.
  */
 int
-A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
+A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
 {
   struct s_sid *sid;
+struct BINDING *ibind;
+ibind=vibind;
 
   A4GL_debug ("ESQL : A4GLSQL_execute_sql");
   /** @todo : Fix the mode that is not used now  - done remove comment */
@@ -3278,7 +3297,7 @@ return ptr;
 }
 
 
-struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];

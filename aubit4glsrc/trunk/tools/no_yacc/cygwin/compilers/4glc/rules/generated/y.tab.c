@@ -10516,7 +10516,7 @@ strcpy(yyval.str,yyvsp[0].str);}
 #line 2731 "fgl.yacc"
     {
 	if (doing_a_print) {
-		sprintf(yyval.str,"A4GL_%sset_column(&rep);",ispdf());
+		sprintf(yyval.str,"A4GL_%sset_column(&_rep);",ispdf());
 	} else {
 		sprintf(yyval.str,"A4GL_ensure_column();");
 	}
@@ -10529,7 +10529,7 @@ strcpy(yyval.str,yyvsp[0].str);}
 #line 2742 "fgl.yacc"
     {
 	if (doing_a_print) {
-		sprintf(yyval.str,"A4GL_%sset_column(&rep);",ispdf());
+		sprintf(yyval.str,"A4GL_%sset_column(&_rep);",ispdf());
 	} else {
 		sprintf(yyval.str,"A4GL_ensure_column();");
 	}

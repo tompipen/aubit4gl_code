@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.9 2004-03-03 14:47:00 mikeaubury Exp $
+# $Id: input_array.c,v 1.10 2004-03-04 16:27:49 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.9 2004-03-03 14:47:00 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.10 2004-03-04 16:27:49 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -2031,7 +2031,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 	    {
 	      if (arr->fcntrl[a].extent >= 0 && arr->fcntrl[a].extent <= 255
 		  &&
-		  ((isprint (arr->fcntrl[a].extent)
+		  ((a_isprint (arr->fcntrl[a].extent)
 		    || arr->fcntrl[a].extent == 1
 		    || arr->fcntrl[a].extent == 4)))
 		{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.5 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: simple.c,v 1.6 2004-03-04 16:27:49 mikeaubury Exp $
 #*/
 
 
@@ -102,7 +102,7 @@ char *pwd = NULL;
  * @todo Describe function
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GLSQL_init_connection_internal (char *dbName)
 {
   char buff2[256];
   con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, login, pwd);

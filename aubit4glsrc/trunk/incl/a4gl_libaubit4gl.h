@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.113 2004-02-20 14:39:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.114 2004-03-04 16:27:47 mikeaubury Exp $
 #
 */
 
@@ -975,6 +975,7 @@ enum cmd_types {
   void A4GL_push_null (int dtype,int size);
   char *a4gl_substr (char *s, int dtype, int a, int b, ...);
   int A4GL_set_line (char *s, long l);
+char *get_bind_varname(char i,int n);
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
   long A4GL_pop_long (void);
@@ -1796,6 +1797,7 @@ char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
 int A4GL_key_map(int keycode);
 void A4GL_chk_for_screen_print(int a);
 void A4GL_logkey(long a);
+void A4GL_trim_nl (char *p);
 
 struct s_field_name {
 	char *fname;
@@ -1830,6 +1832,7 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 #include "a4gl_API_msg.h"	/* generated from .spec */
 #include "a4gl_API_packer.h"	/* generated from .spec */
 #include "a4gl_API_ui.h"	/* generated from .spec */
+#include "a4gl_sql.h"	/* generated from .spec */
 
 
 #include "a4gl_API_exdata.h"	/* created manually */

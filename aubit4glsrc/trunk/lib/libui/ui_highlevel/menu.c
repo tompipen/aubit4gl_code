@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.5 2004-02-12 19:10:03 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.6 2004-03-04 16:27:49 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -477,7 +477,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	    }
 	}
 
-      A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, isprint (a) ? a : '.');
+      A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, a_isprint (a) ? a : '.');
 #ifdef WIN32_BROKEN
       if (a == KEY_MOUSE)
 	{

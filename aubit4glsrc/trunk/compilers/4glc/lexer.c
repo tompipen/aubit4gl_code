@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.84 2004-01-29 08:33:44 mikeaubury Exp $
+# $Id: lexer.c,v 1.85 2004-03-04 16:27:21 mikeaubury Exp $
 #*/
 
 /**
@@ -112,7 +112,7 @@ struct translate_string
   char *identifier;
 };
 
-int is_builtin_func (char *s);
+//int is_builtin_func (char *s);
 char *get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char namespace[256] = "aclfgl_";

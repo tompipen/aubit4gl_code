@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.78 2004-02-22 02:29:00 afalout Exp $
+# $Id: sql.c,v 1.79 2004-03-04 16:27:48 mikeaubury Exp $
 #
 */
 
@@ -116,7 +116,7 @@
 */
 
 
-struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
+//truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
 struct s_cid *A4GLSQL_find_cursor (char *cname);
 struct s_cid *A4GLSQL_free_cursor (char *cname);
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) ;
@@ -610,8 +610,8 @@ A4GL_find_cursor_for_decl (char *cname)
  * @param s A string with the sql statement to be prepared.
  * @return A pointer to the statement information structure.
  */
-struct s_sid *
-A4GLSQL_prepare_sql (char *s)
+void *
+A4GLSQL_prepare_sql_internal (char *s)
 {
   struct s_sid *sid;
   int rc;
@@ -666,7 +666,7 @@ A4GLSQL_prepare_sql (char *s)
  * @param mode Not used.
  * @return A pointer to the statement strucuture, 0 otherwise.
  */
-struct s_sid *
+void *
 A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
@@ -690,9 +690,11 @@ A4GLSQL_find_prepare (char *pname)
  * @return
  */
 int
-A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
+A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
 {
   struct s_sid *sid;
+struct BINDING *ibind;
+ibind=vibind;
 
 #ifdef DEBUG
   A4GL_debug ("execute_sql");
@@ -727,12 +729,14 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  * @param no The number of output elements binded.
  * @param s The text of the select statement.
  */
-struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
-			int no, char *s)
+void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)
 {
   struct s_sid *sid;
   int rc;
+  struct BINDING *ibind;
+  struct BINDING *obind;
+  ibind=vibind;
+  obind=vobind;
 
   sid = malloc (sizeof (struct s_sid));
   sid->select = strdup (s);
@@ -794,10 +798,12 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
  * @param ibind The input bind
  * @return A pointer to an SQL statement information strucutre.
  */
-struct s_sid *
-A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
+void *
+A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)
 {
   struct s_sid *sid;
+  struct BINDING *ibind;
+  ibind=vibind;
   A4GL_debug ("prepare_glob_sql '%s' %p %d", s, ibind, ni);
   sid = malloc (sizeof (struct s_sid));
   sid->select = strdup (s);
@@ -853,12 +859,13 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
  * @param cursname The cursor name.
  * @return A pointer to the cursor informationstrucutre.
  */
-struct s_cid *
-A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
-			char *cursname)
+void *
+A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 {
   struct s_sid *nsid;
   struct s_cid *cid;
+  struct s_sid *sid;
+  sid=vsid;
 
   if (sid == 0)
     {
@@ -931,10 +938,12 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
  * @param sid The statement informnation handle.
  */
 int
-A4GLSQL_execute_implicit_sql (struct s_sid *sid)
+A4GLSQL_execute_implicit_sql (void *vsid)
 {
+struct s_sid *sid;
+  
   int rc = 0;
-
+sid=vsid;
   if (sid == 0)
     {
 #ifdef DEBUG
@@ -973,9 +982,11 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
  * @param sid The statement information.
  */
 int
-A4GLSQL_execute_implicit_select (struct s_sid *sid)
+A4GLSQL_execute_implicit_select (void *vsid)
 {
   int a;
+struct s_sid *sid;
+sid=vsid;
 
   if (sid == 0)
     {
@@ -1177,8 +1188,7 @@ A4GLSQL_open_cursor (int ni, char *s)
  */
 int
 A4GLSQL_fetch_cursor (char *cursor_name,
-		      int fetch_mode, int fetch_when, int nibind,
-		      struct BINDING *ibind)
+		      int fetch_mode, int fetch_when, int nibind, void *vibind)
 {
   struct s_cid *cid;
   int nfields;
@@ -1188,6 +1198,10 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   int use_nbind;
   struct BINDING *use_binding;
   int mode = 0;
+  struct BINDING *ibind;
+
+
+  ibind=vibind;
 
 #ifdef DEBUG
   A4GL_debug ("In fetch_cursor (%s,%d,%d,%d,%p)", cursor_name, fetch_mode,
@@ -1336,7 +1350,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  * @return	0 if success (program terminates otherwise)
  */
 int
-A4GLSQL_init_connection (char *dbName_f)
+A4GLSQL_init_connection_internal (char *dbName_f)
 {
 char empty[10] = "None";
 char dbName[2048];
@@ -1653,8 +1667,10 @@ A4GL_find_prepare2 (char *pname)
  * @param sid A pointer to the statement information.
  */
 int
-A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
+A4GLSQL_add_prepare (char *pname, void *vsid) 
 {
+struct s_sid *sid;
+sid=vsid;
   if (sid)
     {
       A4GL_add_pointer (pname, PRECODE, sid);
@@ -1742,7 +1758,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
  *   - 0 : there was an error connecting to database.
  */
 int
-A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
+A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p)
 {
 RETCODE rc;
 char uid[256] = "";
@@ -3052,7 +3068,7 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 {
   char empty[10] = "None";
   char *u, *p = 0;
@@ -3245,7 +3261,7 @@ aclfgl_hstmt_get (int np)
  * @param sessname The session name.
  */
 int
-A4GLSQL_set_conn (char *sessname)
+A4GLSQL_set_conn_internal (char *sessname)
 {
   HDBC *hdbc_new;
 
@@ -3283,7 +3299,7 @@ A4GLSQL_set_conn (char *sessname)
  *  - 1 : Session closed.
  */
 int
-A4GLSQL_close_session (char *sessname)
+A4GLSQL_close_session_internal (char *sessname)
 {
   HDBC *ptr;
   int rc;
@@ -3519,10 +3535,11 @@ A4GLSQL_commit_rollback (int mode)
  * @param sql1 Sql select text to generate the unload data.
  */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind)
+A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, void *vibind)
 {
   HSTMT hstmt;
   char *sql2;
+  struct BINDING *ibind;
   int cnt = 0;
   static char databuf[64000];
   short ncols;
@@ -3535,7 +3552,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BIND
   SWORD scale;
   SWORD nullable;
   FILE *fout;
-
+  ibind=vibind;
   fout = A4GL_mja_fopen (fname, "wt");
 
   if (fout == 0)
@@ -3815,8 +3832,10 @@ A4GL_chk_getenv (char *s, int a)
  * @param n 
  */
 void
-A4GLSQL_put_insert (struct BINDING *ibind, int n)
+A4GLSQL_put_insert ( void *vibind, int n)
 {
+struct BINDING *ibind;
+ibind=vibind;
 #ifdef DEBUG
   A4GL_debug ("Not implemented");
 #endif
@@ -3877,7 +3896,7 @@ return ptr;
 }
 
 
-struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 printf("Warning Validation feature not implemented in ODBC SQL Driver");
 return 0;
 }

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.33 2004-03-03 13:18:05 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.34 2004-03-04 16:27:48 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -270,16 +270,48 @@ void
 print_execute (char *stmt, int using)
 {
   int ni;
-  if (using == 0)
-    printc ("A4GLSQL_execute_sql(%s,0,0);\n", stmt);
-  else
-    {
+  int no;
+  if (using == 0) {printc ("A4GLSQL_execute_sql(%s,0,0);\n", stmt);}
+
+  if (using==1) {
       printc ("{\n");
       ni = print_bind_definition ('i');
       print_bind_set_value ('i');
       printc ("A4GLSQL_execute_sql(%s,%d,ibind);\n", stmt, ni);
       printc ("}\n");
     }
+
+  if (using==2) {
+      printc ("{\n");
+      printc("void *_save_bind_ptr;");
+      printc("int   _save_bind_cnt;");
+      no = print_bind_definition ('o');
+      print_bind_set_value ('o');
+      printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);",stmt,no);
+      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s));\n", stmt);
+      printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);",stmt);
+      printc ("}\n");
+    }
+
+  if (using==3) {
+      printc ("{\n");
+      printc("void *_osave_bind_ptr;");
+      printc("int   _osave_bind_cnt;");
+      printc("void *_isave_bind_ptr;");
+      printc("int   _isave_bind_cnt;");
+      no = print_bind_definition ('o');
+      no = print_bind_definition ('i');
+      print_bind_set_value ('o');
+      print_bind_set_value ('i');
+      printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",stmt,no);
+      printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,no);
+      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s));\n", stmt);
+      printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);",stmt);
+      printc ("A4GLSQL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);",stmt);
+      printc ("}\n");
+    }
+
+
 
 }
 

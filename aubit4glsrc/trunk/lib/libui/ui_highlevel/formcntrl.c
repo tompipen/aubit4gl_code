@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.8 2004-03-04 16:27:49 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.8 2004-03-04 16:27:49 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -454,7 +454,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	    has_picture = 0;
 	  if (fcntrl.extent >= 0 && fcntrl.extent <= 255
 	      &&
-	      ((isprint (fcntrl.extent) || fcntrl.extent == 1
+	      ((a_isprint (fcntrl.extent) || fcntrl.extent == 1
 		|| fcntrl.extent == 4)))
 	    {
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.65 2004-02-10 14:33:01 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.66 2004-03-04 16:27:47 mikeaubury Exp $
 */
 
 /**
@@ -299,8 +299,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 
 void A4GL_setnull (int type, void *buff, int size);
 void A4GL_trim (char *p);
-void A4GL_trim_nl (char *p);
   int aclfgl_set_count (int nargs);
+int a_isprint(int a);
   int aclfgl_arr_count (int nargs);
   int aclfgl_scr_line (int nargs);
   int aclfgl_arr_curr (int nargs);

@@ -343,5 +343,13 @@ void do_print_menu_block_end(void) ;
 int A4GL_escape_quote_owner(void) ;
 void push_validate (char *t2);
 int gen_cnt (int a);
+void expand_bind (struct binding_comp *bind, int btype, int cnt);
+void A4GL_lex_printc(char* fmt,... );
+void A4GL_lex_printh(char* fmt,... );
+void A4GL_lex_printcomment(char* fmt,... );
+char get_curr_report_stack_whytype_1 (void);
+void set_yytext (char *s);
 struct expr_str *A4GL_get_validate_expr(int n);
+void set_whento_store(char *p);
+void set_whenever_store (int c, char *p) ;
 /* ============================= EOF ================================= */

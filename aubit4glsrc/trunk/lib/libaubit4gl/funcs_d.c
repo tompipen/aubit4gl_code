@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.28 2004-03-03 13:17:59 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.29 2004-03-04 16:27:47 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 
 struct expr_str
 {
@@ -66,7 +67,6 @@ struct expr_str
 */
 
 int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
-void A4GL_trim_nl (char *p);
 
 void * A4GL_new_expr (char *value);
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
