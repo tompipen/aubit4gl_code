@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.47 2003-03-10 18:42:03 mikeaubury Exp $
+# $Id: esql.ec,v 1.48 2003-03-12 07:33:45 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.47 2003-03-10 18:42:03 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.48 2003-03-12 07:33:45 mikeaubury Exp $";
 #endif
 
 
@@ -1025,6 +1025,11 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
   register int i;
 
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+  if (sqlca.sqlcode==-480) {
+  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+  	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+  }
+
   if ( isSqlError() )
   {
     return 1;
@@ -1270,8 +1275,12 @@ static int allocateOutputDescriptor(char *descName,
   debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
   bindCount+=256;
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
-  if (sqlca.sqlcode=-480) {
-  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName ;
+  debug("Status=%d",sqlca.sqlcode);
+  if (sqlca.sqlcode==-480) {
+	sqlca.sqlcode=0;
+	set_a4gl_sqlca_sqlcode(0);
+	debug("Try dealloc and alloc");
+  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
   	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
   }
   debug("Done");
@@ -2514,6 +2523,10 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   }
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX :MaxColumns;
+  if (sqlca.sqlcode==-480) {
+  EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns' ;
+  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' ;
+  }
   if ( isSqlError() )
   {
 	#ifdef DEBUG

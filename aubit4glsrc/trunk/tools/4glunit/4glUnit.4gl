@@ -652,7 +652,7 @@ report testResultReport(messageType,mesg)
 	define mesg char(128)
 
 	output 
-	  page length 1
+	  page length 66
 		top margin 0
 		bottom margin 0
 		left margin 0
