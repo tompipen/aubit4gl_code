@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.61 2003-09-08 08:16:23 mikeaubury Exp $
+# $Id: esql.ec,v 1.62 2003-09-09 19:01:21 mikeaubury Exp $
 #
 */
 
@@ -139,7 +139,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.61 2003-09-08 08:16:23 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.62 2003-09-09 19:01:21 mikeaubury Exp $";
 #endif
 
 
@@ -1233,7 +1233,6 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       {
 		return 1;
       }
-	printf("tmpbuff=%s\n",tmpbuff);
       A4GL_ctodt(tmpbuff, (FglDatetime *)bind[idx].ptr,bind[idx].size);
       break;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.33 2003-09-08 08:15:15 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.34 2003-09-09 19:01:21 mikeaubury Exp $
 #
 */
 
@@ -641,7 +641,7 @@ A4GL_func_concat (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("   '%s' & '%s'", p1, p2);
+    A4GL_debug (" CONCAT  '%s' & '%s'", p1, p2);
   }
 #endif
 #ifdef DEBUG

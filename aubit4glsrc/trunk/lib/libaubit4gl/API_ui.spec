@@ -145,7 +145,7 @@ A4GL_make_pixmap char* filename -> void*
 /* int aclfgl_aclfgl_dump_screen (int n)*/
 aclfgl_aclfgl_dump_screen int n -> int
 /* int A4GL_set_fields_inp_arr (void* sio)*/
-A4GL_set_fields_inp_arr void* sio -> int
+/* A4GL_set_fields_inp_arr void* sio -> int */
 /* int A4GL_get_curr_width ()*/
 A4GL_get_curr_width -> int
 /* int A4GL_iscurrborder ()*/

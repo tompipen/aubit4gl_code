@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.42 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.43 2003-09-09 19:01:21 mikeaubury Exp $
 #
 */
 
@@ -3147,12 +3147,12 @@ print_execute (char *stmt, int using)
  * @return
  */
 void
-print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
+print_prompt_1 (char *a1, char *a2, char *a3, char *a4,int timeout)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("aubit4gl_pl::start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
   printc
-    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p);\n");
+    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p,%d);\n",timeout);
 }
 
 /**

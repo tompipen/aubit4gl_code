@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.47 2003-09-08 08:16:23 mikeaubury Exp $
+# $Id: iarray.c,v 1.48 2003-09-09 19:01:21 mikeaubury Exp $
 #*/
 
 /**
@@ -91,6 +91,8 @@ static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
 static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
 			      int arr_line, int attrib);
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
+
+static int A4GL_set_fields_inp_arr (void *vsio,int n);
 /*
 =====================================================================
                     Functions definitions
@@ -464,9 +466,9 @@ struct struct_scr_field *fprop;
 
 
   arr->scr_dim = arr->srec->dim;
-  if (curr_arr_inp!=arr) {
+  if (curr_arr_inp!=arr||curr_arr_inp) {
 	A4GL_debug("DO THEM AGAIN...");
-	A4GL_set_fields_inp_arr (arr);
+	A4GL_set_fields_inp_arr (arr,1);
   }
   curr_arr_inp = arr;
   form = arr->currform;
@@ -841,7 +843,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 
   if (curr_arr_inp&&curr_arr_inp!=inpa) {
 	A4GL_debug("DO THEM AGAIN...");
-	A4GL_set_fields_inp_arr (inpa);
+	A4GL_set_fields_inp_arr (inpa,0);
   }
   curr_arr_inp = inpa;
   A4GL_debug ("In A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
@@ -938,7 +940,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 			     inpa->scr_dim);
       A4GL_debug ("All done...");
       inpa->field_list = (void ***) fld_list;
-      A4GL_set_fields_inp_arr (inpa);
+      A4GL_set_fields_inp_arr (inpa,2);
 
       iclear_srec (inpa->srec, inpa);
 
@@ -1045,7 +1047,7 @@ debug_print_all_fields(FORM *f)
 * input array itself
 */
 int
-A4GL_set_fields_inp_arr (void *vsio)
+A4GL_set_fields_inp_arr (void *vsio,int n)
 {
   int wid;
   int a, b;
@@ -1120,7 +1122,8 @@ A4GL_set_fields_inp_arr (void *vsio)
 	    (struct struct_scr_field
 	     *) (field_userptr (sio->field_list[a][b]));
 	  A4GL_debug ("Settings flags to 0 for %d %d", a, b);
-	  field->flags = 0;
+
+	if (n==2)  field->flags = 0;
 	}
     }
   return 1;

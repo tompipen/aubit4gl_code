@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.71 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: stack.c,v 1.72 2003-09-09 19:01:21 mikeaubury Exp $
 #
 */
 
@@ -449,10 +449,10 @@ A4GL_debug_print_stack();
 
       if (A4GL_has_datatype_function_i (f, ">STRING"))
 	{
-	  char *(*function) (void *, char *, int);
-	  A4GL_debug ("8 Calling >STRING for datatype");
+	  char *(*function) (void *, int , char *, int);
+	  A4GL_debug ("Calling >STRING for datatype");
 	  function = A4GL_get_datatype_function_i (f, ">STRING");
-	  s = function (params[params_cnt - 1].ptr, 0, 0);
+	  s = function (params[params_cnt - 1].ptr, params[params_cnt - 1].size,0, 0);
 	  A4GL_drop_param ();
 	}
       else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.27 2003-08-25 19:03:07 mikeaubury Exp $
+# $Id: prompt.c,v 1.28 2003-09-09 19:01:22 mikeaubury Exp $
 #*/
 
 /**
@@ -123,7 +123,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 	sarr[field_cnt++] = (FIELD *) A4GL_make_label (0, 0, promptstr);
   }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  set_new_page (sarr[field_cnt], 1);
+  set_new_page (sarr[field_cnt-1], 1);
   sarr[field_cnt++] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
   prompt->field = sarr[field_cnt-1];
   sarr[field_cnt++] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
@@ -295,7 +295,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
  * @todo Describe function
  */
 int
-A4GL_prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt,int timeout)
 {
   int a;
   WINDOW *p;

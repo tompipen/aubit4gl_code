@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.38 2003-09-08 18:54:23 mikeaubury Exp $
+# $Id: ops.c,v 1.39 2003-09-09 19:01:21 mikeaubury Exp $
 #
 */
 
@@ -119,7 +119,55 @@ static char *make_using_sz(char *ptr,int sz,int dig,int dec) ;
 =====================================================================
                     Functions definitions
 =====================================================================
+
 */
+
+char *A4GL_tostring_decimal(void *p,int size, char *s_in,int n_in) {
+static char buff[256];
+int n,l;
+fgldecimal *p_d;
+char *ptr2;
+int size_c;
+char *ptr;
+
+ptr2=p;
+if (s_in!=0||n_in!=0) {
+	A4GL_debug("EXPECTING s_in=0 and n_in=0\n");
+	return 0;
+}
+
+if (A4GL_isnull(DTYPE_DECIMAL,ptr2)) {
+	int n;
+	n=size>>8;
+	if (size&255) n++;
+	memset(buff,' ',n);
+	buff[n]=0;
+        return buff;
+}
+
+//size=(NUM_DIG(ptr2)<<8)+NUM_DEC(ptr2);
+A4GL_push_dec(p,0,size);
+
+//n=NUM_DIG(ptr2);
+//l=NUM_DEC(ptr2);
+//size_c=n;
+//if (l) size_c++;
+
+
+ptr=make_using_tostring(ptr2,size>>8,size&255); //,size_c,n*2,l);
+A4GL_debug("Make using returns %s",ptr);
+A4GL_push_char(ptr);
+A4GL_pushop(OP_USING);
+ptr=A4GL_char_pop();
+strcpy(buff,ptr);
+free(ptr);
+return buff;
+}
+
+
+
+
+
 /**
  * Add all the default operations to the system
  *
@@ -1320,7 +1368,7 @@ A4GL_debug("Display_decimal size=%d",size);
         }
 
 //A4GL_debug("Calling make_using.. ptr=%p");
-        A4GL_push_char(make_using(ptr));
+        A4GL_push_char(make_using_tostring(ptr,size>>8,size&255));
         A4GL_pushop(OP_USING);
         ptr=A4GL_char_pop();
         strcpy(s,ptr);
@@ -1548,6 +1596,9 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", A4GL_display_byte);
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", A4GL_display_text);
 
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL,">STRING", A4GL_tostring_decimal);
+  //A4GL_add_datatype_function_i (DTYPE_DTIME,  ">STRING", A4GL_tostring_dtime);
+
 
 }
 
@@ -1585,6 +1636,34 @@ strcpy(buff,"-------------------------------------------------------------------
 dig=NUM_DIG(ptr)*2;
 dec=NUM_DEC(ptr);
 buff[dig-dec]=0;
+
+if  (dec) 	strcat(buff,"&.");
+else 		strcat(buff,"-&");
+
+memset(buff2,'&',255);
+buff2[dec]=0;
+strcat(buff,buff2);
+return buff;
+}
+
+static char *make_using_tostring(char *ptr,int d,int n) {
+static char buff[256];
+char buff2[256];
+int dig;
+int dec;
+int another=0;
+
+A4GL_assertion (ptr==0, "make_using has been passed a null pointer..");
+
+strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
+//dig=NUM_DIG(ptr)*2;
+//dec=NUM_DEC(ptr);
+dig=d;
+dec=n;
+
+//if (dig%2==1) another=1;
+
+buff[dig-dec-another]=0;
 
 if  (dec) 	strcat(buff,"&.");
 else 		strcat(buff,"-&");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.11 2003-07-28 07:04:14 mikeaubury Exp $
+# $Id: console.c,v 1.12 2003-09-09 19:01:21 mikeaubury Exp $
 #*/
 
 /**
@@ -546,7 +546,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
  * @todo Describe function
  */
 int
-A4GL_prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt,int timeout)
 {
   char buff[256];
   struct s_prompt *prompt;

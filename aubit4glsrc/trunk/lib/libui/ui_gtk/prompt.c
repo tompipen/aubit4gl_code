@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.13 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: prompt.c,v 1.14 2003-09-09 19:01:22 mikeaubury Exp $
 #*/
 
 /**
@@ -213,7 +213,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
  * it is stored.
  */
 int
-A4GL_prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt,int timeout)
 {
   GtkWidget *p;
   int action;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.93 2003-09-08 08:16:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.94 2003-09-09 19:01:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3637,11 +3637,11 @@ print_undo_use (char *s)
  * @param a4 The prompt attributes
  */
 void
-print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
+print_prompt_1 (char *a1, char *a2, char *a3, char *a4,int timeout)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("A4GL_start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p);\n");
+  printc ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p,%d);\n",timeout);
 }
 
 /**

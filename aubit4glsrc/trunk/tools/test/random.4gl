@@ -69,7 +69,6 @@ function xrnd()
         let S2 = 1
     end if
 
-	display "ldiv1"
     call ldiv(S1, 53668)
         returning quotient, remainder
 
@@ -80,7 +79,6 @@ function xrnd()
         let S1 = S1 + 2147483563
     end if
 
-	display "ldiv2"
     call ldiv(S2, 52774)
         returning quotient, remainder
 
