@@ -1,3 +1,12 @@
+/**
+ * @file
+ * ODBC Sql execution implementation
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.5 2002-01-13 16:53:49 mikeaubury Exp $
+# $Id: sql.c,v 1.6 2002-01-17 20:17:38 saferreira Exp $
 #
 */
 
@@ -375,6 +384,14 @@ find_cursor_for_decl (char *cname)
     return 0;
 }
 
+void A4GLSQL_set_status (int a, int sql)
+{
+
+  status = a;
+  if (sql)
+    sqlca.sqlcode = a;
+  debug ("Status set to %d", a);
+}
 
 
 struct s_sid *
@@ -426,6 +443,17 @@ A4GLSQL_prepare_sql (char *s)
     }
 }
 
+
+struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
+{
+  struct s_sid *ptr;
+  debug ("chk %s was prepared", pname);
+  set_errm (pname);
+  ptr = find_pointer_val (pname, PRECODE);
+  if (ptr)
+    return ptr;
+  return 0;
+}
 
 
 int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
@@ -1004,16 +1032,6 @@ void A4GLSQL_xset_status(int a) {
 	A4GLSQL_set_status(a,0);
 }
 
-void A4GLSQL_set_status (int a, int sql)
-{
-
-  status = a;
-  if (sql)
-    sqlca.sqlcode = a;
-  debug ("Status set to %d", a);
-}
-
-
 int A4GLSQL_get_status ()
 {
   return sqlca.sqlcode;
@@ -1095,20 +1113,6 @@ find_prepare2 (char *pname)
     return 1;
   return 0;
 }
-
-
-struct s_sid *
-A4GLSQL_find_prepare (char *pname, int mode)
-{
-  struct s_sid *ptr;
-  debug ("chk %s was prepared", pname);
-  set_errm (pname);
-  ptr = find_pointer_val (pname, PRECODE);
-  if (ptr)
-    return ptr;
-  return 0;
-}
-
 
 int A4GLSQL_add_prepare (char *pname, struct s_sid * sid)
 {
@@ -2242,18 +2246,19 @@ int fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2, 
   return cnt;
 }
 
-/*************************************/
-/* fill array ...
-   mx = maximum number of rows to fill in in arr1/arr2
-   arr1 = address of array 1
-   szarr1 = size of each item in array 1 
-   (eg ARRAY[20] of char(30) : mx=20, szarr1=30
-   arr2 = address of array 2
-   szarr2 = size of each item in array 2
-   service = what to fill in : DATABASES, TABLES, COLUMNS
-   mode = specific to service , when used by TABLES = exclude system tables
-   info = specific to service , when used by COLUMNS specifies the table name
-   ************************************ */
+/** 
+ * fill array ...
+ * @param mx Maximum number of rows to fill in in arr1/arr2
+ * @param arr1 Address of array 1
+ * @param szarr1 Size of each item in array 1 
+ *    (eg ARRAY[20] of char(30) : mx=20, szarr1=30
+ * @param arr2 Address of array 2
+ * @param szarr2 Size of each item in array 2
+ * @param service What to fill in : DATABASES, TABLES, COLUMNS
+ * @param mode Specific to service , when used by TABLES = exclude system tables
+ * @param info Specific to service , when used by COLUMNS specifies the table name
+ */
+/* NOT USED
 int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 	    char *service, int mode, char *info)
 {
@@ -2261,7 +2266,6 @@ int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
   if (strcmp (service, "DATABASES") == 0)
     {
 #ifdef DEBUG
-/* {DEBUG} */
       {
 	debug ("Get Databases");
       }
@@ -2272,7 +2276,6 @@ int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
   if (strcmp (service, "TABLES") == 0)
     {
 #ifdef DEBUG
-/* {DEBUG} */
       {
 	debug ("Get Tables");
       }
@@ -2283,7 +2286,6 @@ int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
   if (strcmp (service, "COLUMNS") == 0)
     {
 #ifdef DEBUG
-/* {DEBUG} */
       {
 	debug ("Get columns");
       }
@@ -2291,12 +2293,12 @@ int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
       return fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
     }
 #ifdef DEBUG
-/* {DEBUG} */
   {
     debug ("****** ERROR unknown service :%s", service);
   }
 #endif
 }
+*/
 
 
 A4GLSQL_get_datatype (char *db, char *tab, char *col)
