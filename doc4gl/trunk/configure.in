@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
+dnl # $Id: configure.in,v 1.11 2003-02-05 06:49:55 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -36,6 +36,11 @@ dnl #This script is used to configure BOTH source code and binary distributions
 ## ==================================================================
 ##                             Initialise
 ## ==================================================================
+
+
+#Workaround fro Informix libphtread madness:
+export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
+
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
