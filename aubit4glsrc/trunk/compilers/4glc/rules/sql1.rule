@@ -918,12 +918,31 @@ curr_v_clause : CURRENT  cur_v_part
 {strcpy($<str>$,$<str>2);}
 ;
 curr_clause : CURRENT  cur_part 
-{sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
+{
+char *ptr;
+ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+
+if (ptr) {
+	sprintf($<str>$," %s(%s) ",ptr,$<str>2);
+} else {
+	sprintf($<str>$," %s %s ",$<str>1,$<str>2);
+}
+}
 ;
 
 cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 | s_curr TO e_curr
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+{
+char *ptr;
+ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+if (ptr) {
+	sprintf($<str>$,"'%s','%s'",$<str>1,$<str>3);
+} else {
+	sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+}
+}
 ;
 
 cur_v_part: {strcpy($<str>$,"1,10");}
