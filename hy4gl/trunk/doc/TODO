@@ -1,0 +1,42 @@
+Antes de la version 1.0:
+------------------------
+*   CREATE TABLE
+*   CREATE INDEX
+*   DROP TABLE
+*   DROP INDEX
+*   SELECT anidadas
+   
+*   (reports) after group...
+*   (reports) page trailer
+
+*   (forms) Definir el form con la siguiente sintaxis:
+    form
+      screen
+
+         Nombre:    [no         ]   Casado: [c]
+         Direccion: [dir        ]
+         Poblacion: [pob        ]
+
+            [ac        ]            [cancelar ]         
+
+      end screen
+
+      no: input nombre char(50) attribute (cyan over blue) upshift,left
+      dir: input direccion like clientes.direccion attribute (...) 
+      pob: input poblacion like clientes.poblacion attribute ...
+      c:  check casado attribute (yellow over black)
+      ac: button aceptar attribute (white over red)
+      cancelar: button cancelar (white over red)
+    end form
+   
+*   Poder conectar/desconectar de la base de datos a voluntad
+
+*   Poder elegir la base de datos en tiempo de ejecución
+
+
+Para futuras versiones:
+-----------------------
+Generar interfaz cliente-servidor para la interfaz de usuario.
+Conectar con otras bases de datos por ODBC.
+
+

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.2 (Linux)">
+	<META NAME="CREATED" CONTENT="19980909;4185300">
+	<META NAME="CHANGEDBY" CONTENT="David Prieto">
+	<META NAME="CHANGED" CONTENT="19980909;7015000">
+	<STYLE>
+	<!--
+		@page { size: 21.01cm 29.69cm; margin: 2cm }
+		P { margin-bottom: 0.21cm }
+		H1 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 16pt; page-break-before: auto; page-break-after: auto }
+		P.cuerpo-de-texto-con-sangría { text-indent: 0.74cm; text-align: justify }
+		P.punto2 { margin-left: 1.42cm; text-align: justify }
+	-->
+	</STYLE>
+</HEAD>
+<BODY STYLE="border: none; padding: 0cm">
+<DIV TYPE=HEADER>
+	<P STYLE="margin-bottom: 0.76cm">		Ap&eacute;ndices</P>
+</DIV>
+<DIV ID="Introducción">
+	<H1 ALIGN=CENTER><FONT SIZE=5>Ap&eacute;ndice I. Requisitos del
+	sistema. Instalaci&oacute;n.</FONT></H1>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B>
+	requiere de los siguientes programas y utilidades instalados en su
+	sistema:</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<UL>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Linux v.2.0 o
+			superior</P>
+		</UL>
+	</UL>
+	<UL>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">PostgreSQL
+			v.6.3.2</P>
+		</UL>
+	</UL>
+	<P CLASS="punto2">Las librer&iacute;as de las versiones anteriores
+	de PostgreSQL no son compatibles con la implementaci&oacute;n de
+	hy4GL.</P>
+	<UL>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ncurses v.4.2</P>
+		</UL>
+	</UL>
+	<P CLASS="punto2">La versi&oacute;n anterior (1.9.9e) ten&iacute;a
+	un error por el que no se refrescaba la pantalla al editar el
+	contenido de un formulario de entrada</P>
+	<UL>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">lex/yacc/hesa</P>
+		</UL>
+	</UL>
+	<P CLASS="punto2">S&oacute;lo son necesarios si quiere recompilar
+	hy4GL.</P>
+	<UL>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">gcc-2.7 o
+			superior.</P>
+		</UL>
+	</UL>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En el disco de
+	instalaci&oacute;n se encuentra un archivo con el nombre
+	<FONT FACE="courier, monospace">hy4gl-0.5.tgz.</FONT> Este archivo
+	contiene los fuentes del programa y tambi&eacute;n su versi&oacute;n
+	compilada. Para su instalaci&oacute;n proceda de la siguiente
+	manera:</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<OL>
+		<OL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Cree un
+			directorio donde va a instalar los fuentes del programa.</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Descomprima el
+			archivo en ese directorio:</P>
+			<OL>
+				<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">tar zxvf
+				hy4gl-0.5.tgz</P>
+			</OL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Edite el archivo
+			Makefile.global, en el que se especifican los directorios donde se
+			encuentran las librer&iacute;as de desarrollo para PostgreSQL y el
+			directorio en el que desea instalar hy4GL</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Edite el archivo
+			hy4gl. Adapte los directorios que se indican en sus primeras
+			l&iacute;neas a la configuraci&oacute;n de su sistema.</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ejecute el
+			siguiente comando:</P>
+			<OL>
+				<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">make install</P>
+				<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Este comando copia
+				los programas y las librer&iacute;as al directorio que haya
+				indicado en Makefile.global. Si no lo ha modificado, ser&aacute; 
+				/usr/local/hy4gl 
+				</P>
+			</OL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Edite el archivo
+			/etc/ld.so.conf y a&ntilde;ada en &uacute;ltimo lugar el
+			directorio donde ha instalado hy4gl (/usr/local/hy4gl) para que el
+			enlazador din&aacute;mico encuentre las librer&iacute;as. Si no
+			tiene derechos de root puede a&ntilde;adir este directorio a su
+			variable de entorno LD_LIBRARY_PATH, con lo que conseguir&aacute;
+			el mismo resultado.</P>
+		</OL>
+	</OL>
+	<H1>Ap&eacute;ndice II. Herramientas empleadas.</H1>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para la realizaci&oacute;n
+	de este proyecto se han empleado las siguientes herramientas:</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Plataforma: <B>Linux
+	2.0.34 (RedHat 5.0)</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Compilador C:
+	<B>gcc-2.7.2</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Generador de
+	analizadores lexicos: <B>flex-2.5.4</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Generador de
+	analizadores sint&aacute;cticos: <B>bison 1.25</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Herramienta de
+	Especificaci&oacute;n de Sintaxis Abstracta: <B>hesa 1.1</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Librer&iacute;a de
+	manejo de terminal: <B>ncurses-4.2</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Gestior de bases de
+	datos: <B>PostgreSQL v.6.3.2</B></P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para generar esta
+	documentaci&oacute;n se ha usado el paquete <B>StarOffice 4.0</B>,
+	de StarDivision, en su versi&oacute;n para Linux.</P>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+	</P>
+</DIV>
+<DIV TYPE=FOOTER>
+	<P STYLE="margin-top: 0.51cm; margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm; border: none; padding: 0cm"><FONT SIZE=2><I>hy4GL:
+	compilador de lenguaje 4GL para PostgreSQL		Ap&eacute;ndices-<SDFIELD TYPE=PAGE SUBTYPE=RANDOM FORMAT=PAGE>2</SDFIELD></I></FONT></P>
+</DIV>
+</BODY>
+</HTML>

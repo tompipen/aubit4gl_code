@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Hy4gl - Introduction</title>
+</head>
+
+<body>
+
+<h2 align="center">Hy4gl compiler Introduction&nbsp;</h2>
+<hr>
+<p>The world of databases been historically has dominated by three great
+companies (Oracle, Informix and IBM) that offers dedicated products to the
+management of great amounts of information. These products normally have
+unattainable prices for an average company and we do not speak of a domestic
+user. Directed to an average market we found product multitude that can
+perfectly cover the necessities with any medium company without causing that the
+budget goes off.&nbsp;</p>
+<p>Less known by most of users, several generally developed gratuitous Database
+managers by Universities or groups of volunteers also exist. Some of these
+products have a great quality and in many cases they surpass the qualities of
+his commercial competitors. Between these gratuitous products and of great
+quality we found to PostgreSQL. The history of PostgreSQL begins like a project
+of investigation of the group of Professor Michael Stonebraker in Berkeley. Its
+original project, Ingres, are commercialized at the moment with the same name.
+The original University Ingres is still available free and uses its own query
+language ' QUEL'. Its following project was ' Postgres' (post-ingres), that used
+an advanced query language more: POSTQUEL. In 1987, Postgres introduced
+definibles rules, procedures, types and concepts of direction to objects.
+Postgres was commercialized with the name of Illustra and at the moment
+comprises of the Universal Server de Informix. The original Postgres version 4,2
+(still based on POSTQUEL) still can be found by Internet. Two students of the
+laboratory of Stonebraker, Andrew Yu and Jolly Chen, decided to rewrite great
+part of the Postgres code and to replace POSTQUEL by an extended subgroup of
+SQL. This new version was sent in 1995 as Postgres95 and then the development
+happened to hands of the community of Internet. Postgres95 evolved until which
+it is now PostgreSQL.&nbsp;</p>
+<p>PostgreSQL is a database manager based on the relational model, although it
+incorporates some concepts of the model OO, such as the inheritance. The USA an
+extended subgroup of SQL as query language and is implemented following the
+architecture client-server. PostgreSQL offers great variety of tools and
+bookstores to accede to Bases de Datos.&nbsp;</p>
+<p>In their version 6,3,2 (the last one at the time of writing this document),
+interfaces for the following languages exist: C. C++. Contracted C. Java
+(through JDBC). Perl. ODBC (drivers ODBC for PostgreSQL for Windows, Max, UNIX
+and VMS exist). Python. TCL&nbsp;</p>
+<p><i>Objective&nbsp;</i></p>
+<p>In spite of offering diverse interfaces of programming, PostgreSQL lacks a
+language of fourth generation (4GL) that facilitates the programming of
+applications of data bases. With this project it is tried to cover this hollow,
+developing a compiler for a language 4GL. Tomamos like reference language 4GL of
+Informix, being the objective for obtaining that programs designed for Informix
+can recompilados and be used with PostgreSQL with the minimum of
+modifications.&nbsp;</p>
+<p>Informix-4GL offers tools to create menus, forms of entrance of data and
+generators of listings. It will be necessary to define these same tools
+maintaining, if possible, the original syntax. In principle applications will be
+generated that work in way text, leaving for a future extension the generation
+of applications in graphical surroundings. Objectives that have covered the
+syntax with the language are almost identical to the one of Informix-4GL.&nbsp;</p>
+<p>The basic data types, those of date and hour, intervals and ' datetime have
+been implemented. The repetitive presentation, assigment statements in screen,
+structure (curls while and for) and conditional (if..else..), generation of
+menus and listing have been implemented completely. The handling of the forms of
+entrance of data has been implemented following the syntax of Informix-4GL
+original, nevertheless has modified the syntax of the definition of the forms to
+include to new types of objects, like bellboys or squares of verification. A new
+sentence has been introduced (browse), that allows to visualize all tuplas given
+back by a consultation and ' navegar' by them by means of movements of the
+cursor. The syntax of some sentences has been extended, allowing new
+functionalities not found in Informix-4GL, like multiple allocations. These
+modifications are explained with detail in the manual of user. Possibilities of
+extension an interface has been generated solely in way text. </p>
+<p>Nevertheless, the implementation of the functions of handling of entrance
+forms has been made of independent way of the implentación at low level (you
+attend). Thanks to this it is possible to develop bookstores of functions that
+manage the forms of entrance of graphical way, generating interfaces in
+X-Window. The code generation at the moment is very focused to the interface of
+PostgreSQL. A possible extension would be the generalization of this code, to
+even allow the development of applications that accede to data stored in another
+type of servers, or using ODBC (the API of access to data bases defined by
+Microsoft and that has become standard). </p>
+<hr>
+<p align="center">hy4GL: compiler of language 4GL for PostgreSQL</p>
+
+</body>
+
+</html>
