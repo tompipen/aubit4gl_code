@@ -1,0 +1,531 @@
+
+<html>
+
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+  <meta name="ProgId" content="FrontPage.Editor.Document">
+  <title> C functions for x4GL </title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h2 align="center"><a name="top">C function library for 4gl</a></h2>
+<hr>
+
+<ul>
+<li> <a href="#friends"> Introduction</a>
+     <ul>
+     <li> <a href="#response"> Responsibility </a> </li>
+     <li> <a href="#sup_comp"> 4GL compilers supported </a> </li>
+     <li> <a href="#owners">   Ownership of work </a> </li>
+     <li> <a href="#naming">   Naming conventions </a> </li>
+     <li> <a href="#coding">   Coding conventions </a>
+          <ul>
+          <li> <a href="#sharing">  Code-sharing </a> </li>
+          <li> <a href="#internal"> Knowledge of 4GL internals </a> </li>
+          <li> <a href="#c2fgl">    C/4GL calling convention defined by Informix </a> </li>
+          <li> <a href="#fglargs">  4GL argument and return limitations </a> </li>
+          <li> <a href="#err_hand"> Error handling </a> </li>
+          <li> <a href="#pl_const"> Accessing platform-specific C constants </a> </li>
+          </ul>
+     </li>
+     <li> <a href="#you_help">  Your help needed</a> </li>
+     <li> <a href="#Installing and compiling">Installing and compiling</a> </li>
+     </ul>
+</li>
+<li><a href="functions_by_source_file.html">Catalogue of functions by source
+  file</a></li>
+</ul>
+
+<hr>
+<h3>About this document</h3>
+
+This document originally started as Manifesto, and was modified for purposes of documenting
+the way the source code is structured and used.
+<p>&quot;C function library for x4gl&quot; documentation consists of two
+documents; this one - &quot;Introduction&quot; and <a href="functions_by_source_file.html">Catalogue of
+functions by source file</a>.</p>
+<p>This software was originally developed by Andrew Hamm and donated to OpenSource
+environment of <a href="http://aubit4gl.sourceforge.net/" target="_blank">Aubit
+4gl project</a>, under LGPL GNU license. It has a dedicated mailing list
+hosted&nbsp; at <a href="http://sourceforge.net/mail/?group_id=32409" target="_blank">Aubit
+mailing lists home page</a>.&nbsp;</p>
+<p>support is provided via mailing list. At the moment, this software is
+available only in Source code form, and only directly from CVS. Please see CVS
+instructions on Aubit project CVS home page.</p>
+
+<p>Most of the functions are in production but some are &quot;good ideas&quot;
+and may not be 100% correct or may not be 100% elegant. If anyone wants to use
+them straight away please e-mail me for an opinion. I'll either say &quot;yup -
+they're good&quot; or &quot;I'm not happy with that one so give me 10
+minutes.&quot; You'll probably be able to work out the quality of the
+straight-forward ones anyway.</p>
+<p>
+ <a href=#top> Top </a>
+
+</p>
+
+<a name="friends">
+<hr>
+<h3> C functions for Informix 4GL and friends </h3>
+</a>
+
+Informix 4GL supports the addition of C functions
+to the <acronym>RDS</acronym> runners,
+which allows you to extend the power
+of the 4GL language into other areas, not easily, or at all, achievable using
+only 4GL built-in syntax.
+
+My company
+<a href=http://www.sanderson.net.au>Sanderson Australia Pty Limited</a>
+(formerly Wacher Computing Solutions
+and soon to be something else - sigh)
+have used Informix 4GL for close to 10 years,
+and in that time we have developed
+a large suite of C functions for 4GL.
+
+<p>
+Noises made recently on the
+<a href=news:comp.databases.informix>Informix newsgroup</a>
+have prodded a few people into collating
+a public collection of C functions.
+This page is the beginning of my part in the effort.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="response">
+<hr>
+<h4> Responsibility </h4>
+</a>
+
+<font color=red> All care but no responsibility!!!!
+How could it be any other way? </font>
+<p> <a href=#top> Top </a>
+
+<a name="sup_comp">
+</p>
+<hr>
+<h4> 4GL compilers supported </h4>
+</a>
+
+These functions are all coded to work with
+Informix 4GL/RDS (P-code), Informix 4GL (C compiled)
+and Four J's Universal 4GL (A.K.A. Informix Dynamic 4GL)
+for both <acronym>P-CODE</acronym> and C compiled versions*.&nbsp;
+<p>
+
+NOTE: Strictly speaking, 4GL for C compiling
+is called simply "4GL" and 4GL p-code is called 4GL RDS.
+However, to be completely clear during any discussion,
+I'll call them 4GL/C and 4GL/RDS.</p>
+
+<p>
+Aubit 4GL and other 3rd party 4GL compilers
+may be automatically supported (perhaps with a little effort)
+depending on their compatibility
+with the internals of Informix 4GL.
+
+Part of this project could be
+to adapt the functions for these other products
+(by putting them on a piece of wood
+and banging a few nails through them?)
+This will of course have to be performed by interested parties.
+
+<p>
+<font size=-3> * NOTE: Four J's have stated
+they will remove their support for C compiled 4GL.
+This was what I heard a year ago anyway...
+things might have changed since then.
+
+Check with
+<a href=http://www.4js.com>Four J's</a>
+for more accurate information.
+
+<p>
+</font>
+ <a href=#top> Top </a>
+
+<a name="owners">
+<hr>
+<h4> Ownership of work </h4>
+</a>
+
+The functions that I've developed
+will probably remain under copyright to Sanderson,
+but since they are being published,
+clearly that's of little relevance to us programmers.
+Please maintain the copyright messages however;
+I like to think my work
+will be treated with due respect.
+
+<p>
+The new printf set of functions
+were developed by Art S. Kagel,
+long-time resident of the Informix newsgroup. Once again, pay due respect to any copyright requirements.<p>
+At a guess, Jonathan Leffler might contribute something,
+even if it's only good advice,
+and I know
+Andrej Falout will be getting involved.
+Everyone is invited to participate,
+especially if you have any
+interesting functions of your own,
+or if you are involved with
+Yet Another 4GL Compiler (YA4C)
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="naming">
+<hr>
+<h4> Naming conventions </h4>
+</a>
+
+Since these functions can be linked
+to 4GL/C as well as 4GL/RDS,
+the function names cannot conflict
+with any C function names.
+That precludes the use of function names like
+"fopen", "select", "bind", "malloc" and so on.
+
+<p>
+Informix, and to a greater extent Four J's,
+have added some functions to 4GL
+and they usually start with <b>fgl_</b>.
+Therefore I consider fgl_ to be a reserved name space,
+however other people do not.
+They reason that if Informix ever implements
+their own version of the functions
+then the private versions become redundant.
+That's very true assuming the Informix versions
+cover all the same functionality.
+More to the point, the rate of change of 4GL is so slow
+that you could almost say there will never be a conflict.
+
+<p>
+All the functions start with <b>c_</b>
+and internal functions (ie private to the 4GL library
+but external in scope) have all been prefixed by <b>cfgl_</b>.
+
+<p>
+Although it's a generally overblown issue,
+it still needs light debate so do your best...
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="coding">
+<hr>
+<h4> Coding conventions </h4>
+</a>
+
+<a name="sharing">
+<h5> Code-sharing </h5>
+</a>
+
+Any half-decent library suite will inevitably require
+it's own little army of support functions and variables.
+I don't see the point in having 40 functions
+each with code to report usage errors
+or blank-trim strings etc.
+so some attention has been paid
+to suitable support functions.
+
+<p>
+All .c files include <b>cfun4gl.h</b>
+which contains universal #includes and definitions.
+You'll find defines for many things
+including a few macros that help to extract
+some intelligence from the source using Perl scripts.
+
+<p>
+A file called <b>cfun4gl.c</b>
+contains the bulk of the support functions.
+Some support functions are local static in the individual .c file because they have no other use.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="internal">
+<h5> Knowledge of 4GL internals </h5>
+</a>
+
+As much as possible,
+the code should avoid any knowledge
+of the internal structure of the Informix 4GL runtime.
+This of course must also apply to other compilers
+such as Four J's and Aubit.
+There is a published interface for attaching C functions
+to the 4GL runtime and we should strive to stay within those bounds.
+
+A significant benefit of this is that you can link
+old objects to new runners without having to recompile the C.
+Another way of looking at this is,
+the same C object files can be linked
+to a variety of runtime types and versions
+without the added complication
+of maintaining many sets of object files.
+
+<p>
+The recent printf functions have violated that rule
+because they have a really difficult job to do. They don't work for Four J's
+because they are using a different internal stack structure.
+Looks like we'll be writing a full printf from scratch.
+Sounds horrible but I did it once when I was a young programmer
+so can't be that hard to do it again.
+At least we'll be able to boast
+a version of printf which is truly portable.
+I don't think we need to implement 100% of the full C printf.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="c2fgl">
+<h5> C/4GL calling convention defined by Informix </h5>
+</a>
+
+One of the minor hassles with building C functions for 4GL
+is the need to use a very un-C-like calling convention
+with it's associated dross.
+No, I'm not complaining about that convention,
+but it does require some care.
+I have used a C macro called &quot;<b>function&quot;</b>
+to build the C function headers.
+
+This macro includes parameters for numbers
+which describe the argument and return parameter counts.
+Perl scripts (functions.pl and ...) are used to generate includable function headers,
+and the interface definitions (hooks into 4GL)
+
+<p>
+The script functions.pl performs this dutyes:
+<ul>
+  <li>functions.pl --fdecls *.c &gt; fdecls.h<br>
+    &nbsp;&nbsp;&nbsp; generates a standard .h file for general inclusion&nbsp;</li>
+  <li>functions.pl --fgiusr *.c &gt; fgiusr.inc<br>
+    &nbsp;&nbsp;&nbsp; generates the guts of the fgiusr.c function for 4GL/RDS</li>
+  <li>functions.pl --fglext *.c &gt; fglext.inc<br>
+    &nbsp;&nbsp;&nbsp; generates the guts of the fglext.c function for Four J's runners.&nbsp;</li>
+</ul>
+
+<p>
+See the .c files mentioned to get a feel for it.
+
+<p>
+This Perl script looks for the function macro lines,
+and also looks for the optional RUNNER macros
+in the .c files. These macros are described in cfun4gl.h
+and maybe here in more detail one day if someone has a question.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="fglargs">
+<h5> 4GL argument and return limitations </h5>
+</a>
+
+All 4GL function arguments are by value only
+so reference parameters cannot be used.
+Any value returned from the function must 
+be part of the return list.
+As a result,
+some functions are forced to have a usage
+that is different from the well-known functions
+they are providing access to.
+This must be clearly documented
+(any volunteers?)
+and the functions must take care to check their usage
+(see below).
+
+<p>
+Informix 4GL and Four J's support variable argument lists
+and variable return lists
+so generally we can achieve our needs for some
+C functions which are <i> vararg</i>.
+One or two functions are pathologically difficult
+so their ambiguity is corrected
+using some ugly little booster arguments.
+The need for this is extremely rare, however.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="err_hand">
+<h5> Error handling </h5>
+</a>
+
+Error handling is important in two ways.
+If the programmer calls the function incorrectly
+then they must be notified.
+Ideally, the compiler will return the error,
+but that's impossible so I've made the functions
+check their usage as carefully as possible
+and they emit a runtime error and terminate
+the program if there is a usage problem.
+
+<p>
+The other kind of error handling is more ordinary.
+If you attempt to open a file but it doesn't exist,
+then this failure should be returned to the calling code.
+If you attempt to open a file with 15 parameters
+on the function call, then that's clearly a usage error
+so the first response is more appropriate.
+
+<p>
+Most if not all low-level UNIX system calls
+return -1 for error and leave an error number
+in a variable called "errno".
+Higher level C functions from the standard libraries
+have &quot;personalized&quot; error conventions.
+
+<p>
+Currently the affected functions all record <i> errno</i>
+into a private variable
+which can be queried by a simple function call.
+I would like to look into doing something clever
+which stuffs the <i> errno</i> value (or other errors)
+into the 4GL status variable.
+Jonathan Leffler could probably advise on that,
+but even if it's possible with Informix,
+it must also be possible with Four J's
+and to a lesser extent with other YA4C.
+
+<p>
+Personally I feel that beyond Informix and Four J's,
+other 4GL systems should not hold our work to ransom,
+and it's a good opportunity for them
+to become more compatible anyway.
+Some might say Four J's does not deserve special status either,
+but they are the 2nd-biggest player with many customers.
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="pl_const">
+<h5> Accessing platform-specific C constants </h5>
+</a>
+
+UNIX error numbers and C constants may vary
+from platform to platform,
+so we can't force 4GL programmers to embed things like
+
+<pre>    let x = c_errno()
+    if x = 27 then
+        ....</pre>
+
+because 27 may be 28 on a different platform.
+
+<p>
+Defining symbolic constants
+through 4GL global variables
+is not good enough
+because they will have to be initialized differently
+depending on the platform the 4GL is delivered to.
+We supply several different platforms
+so we could not take advantage of the 4GL portability
+if we were forced into this. (Ed: this is probably a job for Autoconf)
+
+<p>
+Using a 4GL preprocessor to define constants
+(we have a 4GL preprocessor
+which supports constants and <i>typedefs</i>)
+is not adequate either because ultimately
+the constants will be mapped to simple numbers
+and once again the hard-coded, platform dependent numbers
+would be embedded in the RDS p-code.
+
+<p>
+To solve this problem,
+I've written a support function
+and defined a simple convention
+for passing constants back to 4GL.
+For any package that needs constants
+(and so far that's <i> errno</i> and the network socket functions)
+there will be a function available to 4GL
+called (for example) c__errno("str").
+Note the double underscore.
+The string argument is a representation
+of the C constant - for example, c__errno("ENODIR").
+
+<p>
+Within the C library,
+we define a simple array (sorted by string name)
+which associates the string with the proper value.
+By the magic of the C compiler's preprocessor,
+the string will be mapped to the correct value
+using a simple (and fast) binary search of the array.
+Our happy 4GL programmers can now write:
+
+<pre>    let x = c_errno()
+    if x = c__errno(&quot;ENODIR&quot;) then
+        ....</pre>
+
+<p>
+If anyone thinks they have a performance problem
+with this in 4GL, they can assign a bunch of 4GL globals
+with their favorite values somewhere very early in <b>MAIN</b>.
+Frankly I think that would be excessive and pointless.
+</p>
+
+<p>
+ <a href=#top> Top </a>
+
+<a name="you_help">
+<hr>
+<h4> Your help needed </h4>
+</a>
+
+The primary purpose of inclusion of this code in OpenSource project, and not
+just releasing the code as downloadable archive to the public in some software
+repository, is to get interested parties to participate in it's future development.
+As with all Aubit 4gl project sub-projects, all forms of participations are
+invited and equally appreciated. This can range from using the library, and
+reporting bugs or discussing possible enhancements, to actively developing code
+and documentation in CVS repository.&nbsp;
+<p>The best way to get involved is to subscribe to the mailing list, as the
+first step. There, you can discuss issues you have, and ask for CVS read/write
+permissions if there is something you want to contribute to source code or documentation.</p>
+<p>
+
+This are some initial items on our TODO list:</p>
+<ul>
+  <li>More functions</li>
+  <li>Support for Aubit and Querix 4gl compilers</li>
+  <li>
+autoconf and porting to as many platforms as possible</li>
+  <li>Inclusion in Aubit distribution</li>
+  <li>DoxyGen documentation in source code</li>
+  <li>Name? 'C function library for 4GL' is a little long...</li>
+  <li>Merge with Power-4gl ?</li>
+  <li>Make dynamic (.so) loader for both I-4gl P-code and 4Js, and compile only
+    that in runner. Use Aubit 4gl compiler dlload.c code. Then, dynamic loader
+    can load this library, or any other, without the need to create new runner
+    every time new C function is needed. Use environment variable /
+    configuration file to let loader know hat to load.&nbsp;</li>
+</ul>
+<p>Of course, your suggestions are welcome, and your participation appreciated.</p>
+<p>See you on the mailing list!</p>
+<p>
+<a href=#top> Top </a>
+
+</p>
+<hr>
+
+<h2><a name="Installing and compiling">Installing and compiling</a></h2>
+<h4>4Js/D4GL</h4>
+<p>&nbsp;</p>
+<h4>Informix-4gl</h4>
+<h4>&nbsp;</h4>
+<h4>Aubit</h4>
+<h4>&nbsp;</h4>
+<h4>Other 4gl compilers</h4>
+<p><a href=#top> Top </a>
+
+</p>
+<hr>
+<p align="center"><a href="http://aubit4gl.sourceforge.net/" target="_blank">Aubit
+4gl project</a></p>
+
+</body>
+</html>
