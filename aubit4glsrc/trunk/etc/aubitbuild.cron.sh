@@ -182,14 +182,14 @@ if test "$DO_BUILD" = "1"; then
 			echo "$SH $BUILD_CMD $PARAMS" >> $MAILFILE
 		fi
 		###############################
-echo "After..." >> $LOGFILE
+		#echo "After..." >> $LOGFILE
 		#echo "After..." >> /tmp/cron_run.log
 		RET=$?
 		echo "Command returned code $RET" >> $LOGFILE
 		if test "$DEBUG" = "1"; then
 			echo "Command returned code $RET"
 		fi
-echo "2After..." >> $LOGFILE		
+		#echo "2After..." >> $LOGFILE		
 		if test "$RET" = "66"; then
 				#54 - error comparing created and uploaded file
 				#1 - help
@@ -204,11 +204,11 @@ echo "2After..." >> $LOGFILE
 				#everything else - failed to run command
 				BUILD_FAILED=1
 		fi
-echo "3After..." >> $LOGFILE		
+		#echo "3After..." >> $LOGFILE		
 	else
 		echo "ERROR: $BUILD_CMD is missing" >> $LOGFILE
 	fi
-echo "4After..." >> $LOGFILE	
+	#echo "4After..." >> $LOGFILE	
 	##################
 	#Finalize log file
 	date >> $LOGFILE

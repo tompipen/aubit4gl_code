@@ -34078,7 +34078,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.279 2004-10-29 14:08:20 afalout Exp $
+| $Id: configure,v 1.280 2004-10-30 04:35:21 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
@@ -34119,6 +34119,10 @@ echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
 echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6
 
+
+#not detected on istation:
+#  RPC_XMLRPC EXDTYPE_mpz SQL_pg SQL_c_ecpg UI_GLADE A4GL_glade MENU_XDR A4GL_pop
+# A4GL_pcre A4GL_sxml ESQL_POSTGRES SQL_esqlPG SQL_esqlSAP ESQL_SAP  IM_JABBER
 
 #------------------------------ EOF --------------------------------
 

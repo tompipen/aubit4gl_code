@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.68 2004-10-29 14:09:19 afalout Exp $
+# $Id: compile.c,v 1.69 2004-10-30 04:36:22 afalout Exp $
 #*/
 
 /**
@@ -219,8 +219,11 @@ initArguments (int argc, char *argv[])
 //But if I try to use full path, I get "'e:/Program' is not recognized as an 
 // internal or external command" even tho ther is NO single quotes on command
 //line - I susspect something it translating quotes (maybe esqlc?) 
-//	sprintf (informix_esql, "\"%s\" -n ",acl_getenv ("IFMX_ESQLC"));
-	sprintf (informix_esql, "esql -n ");
+//	sprintf (informix_esql, "\"%s\" ",acl_getenv ("IFMX_ESQLC"));
+	sprintf (informix_esql, "esql ");
+	#if ( defined(WIN32) )
+		sprintf (informix_esql, "%s -n ",informix_esql);
+	#endif
 	sprintf (pg_esql, "\"%s/bin/ecpg\"",acl_getenv ("POSTGRESDIR"));  
 
 #ifdef DEBUG
