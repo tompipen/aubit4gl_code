@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "libincl/debug.h"
 #include "libincl/database.h"
 #include "libincl/stack.h"
 #include "libincl/pointers.h"
 #include "libincl/dtypes.h"
-#include <stdlib.h>
 
 #include <stdarg.h>
 #include "libincl/dtypes.h"

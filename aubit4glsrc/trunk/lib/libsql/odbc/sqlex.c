@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: sqlex.c,v 1.3 2002-01-04 12:48:16 afalout Exp $
+* $Id: sqlex.c,v 1.4 2002-01-04 15:45:01 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.3  2002/01/04 12:48:16  afalout
+*	getenv fixes
+*	
 *	Revision 1.2  2001/12/21 04:14:41  afalout
 *	RMP work
 *	
@@ -441,34 +444,6 @@ remove_it (int a)
 }
 
 
-
-char *
-getres (char *s)
-{
-  char buff[256];
-  static char buff2[256];
-  int len;
-  strcpy (buff, s);
-  strcat (buff, "=");
-  len = strlen (s);
-
-  if (f == 0)
-    f = mja_fopen ("res", "r");
-
-  if (f == 0)
-    return invalid;
-
-  rewind (f);
-  while (fgets (buff2, 255, f))
-    {
-      stripnl (buff2);
-      if (strncasecmp (buff2, buff, len + 1) == 0)
-	{
-	  return &buff2[len + 1];
-	}
-    }
-  return invalid;
-}
 
 
 

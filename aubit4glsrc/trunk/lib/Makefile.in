@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-01-04 07:20:54 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-01-04 15:44:58 mikeaubury Exp $
 #
 
 #############
@@ -61,7 +61,7 @@ ODBCLIBDIR			= /home/aubit4gl/mycopy/Aubit4gl/lib/odbc
 
 #ODBC				=iodbc
 #PDFBUILD			=no
-ALL 				=libPDF_NOPDF.so
+ALL 				=libPDF_NOPDF.so aubit-config
 
 
 #-DNODEBUG -g
@@ -193,6 +193,11 @@ all: ${ALL}
 	@echo Targets ${ALL} built successfully.
 
 all_gui: ${ALL_GUI}
+
+
+aubit-config: aubit-config.c resource.c
+	gcc resource.c aubit-config.c -o aubit-config -I./libincl
+	cp aubit-config $(AUBITDIR)/bin
 
 #dynamic loading SQL libs:
 libsqlso: ${LIBSQL}
