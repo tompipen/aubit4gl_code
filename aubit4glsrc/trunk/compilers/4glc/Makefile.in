@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.70 2004-01-23 13:49:49 mikeaubury Exp $
+# $Id: Makefile.in,v 1.71 2004-01-24 19:33:59 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -176,8 +176,8 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 
 
 API_lex.c: API_lex.spec
-        ../../lib/bin/dlmagic API_lex.spec > API_lex.c
-        ../../lib/bin/dlmagic  API_lex.spec -h > API_lex.h
+	../../lib/bin/dlmagic API_lex.spec > API_lex.c
+	../../lib/bin/dlmagic  API_lex.spec -h > API_lex.h
 
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
