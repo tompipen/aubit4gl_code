@@ -227,7 +227,7 @@ let lv_err2=get_db_err_msg(sqlca.sqlcode)
 
 if get_exec_mode()=0 then
 	error lv_err2
-	sleep 1
+	sleep 1 # After an error (check and report)
 #else
 	#display lv_err2
 end if
@@ -297,7 +297,7 @@ display middle("Latest version available at:") at 13,1
 display middle("http://aubit4gl.sourceforge.net") at 14,1
 display middle("Development sponsored by Cassens Transport Company") at 16,1
 display middle("http://www.cassens.com") at 17,1
-sleep 2
+sleep 2 # Splash Screen 
 clear screen
 end function
 

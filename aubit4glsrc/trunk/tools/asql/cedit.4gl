@@ -573,7 +573,7 @@ code
 endcode
 if err then
 	display "Error opening file.."
-	sleep 2
+	sleep 2 # After an error
 end if
 return err
 end function

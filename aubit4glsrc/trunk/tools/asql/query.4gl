@@ -40,12 +40,11 @@ define lv_runnext integer
 let lv_runnext=0
 	
 	if not has_db() then
-		message "CALLING SELECT_DB" sleep 1
 		call select_db()
-		message "CALLED SELECT_DB" sleep 1
 	end if
 	if not has_db() then
-		return
+		error "No database selected"
+		#return
 	end if
 
 while true
@@ -366,7 +365,6 @@ define lv_fname char(255)
 	else
 		call open_tmpfile_as_stdin()
 	end if
-	sleep 1
 	call qry_run()
 end function
 

@@ -771,7 +771,7 @@ endcode
 
 if lv_rval=0 then
 	error "ERROR!!!"
-	sleep 2
+	sleep 1 # After an error...
 end if
 
 return lv_rval

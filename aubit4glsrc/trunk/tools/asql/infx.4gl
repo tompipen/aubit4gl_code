@@ -892,7 +892,7 @@ int a;
         if (sqlca.sqlcode<0) {
                 A4GL_push_char("Fetch error...");
                 A4GL_display_error(0,0);
-                sleep(1);
+                sleep(1); // Fetch error
                 return sqlca.sqlcode;
         }
 
@@ -1037,13 +1037,12 @@ endcode
 
 if sqlca.sqlcode!=0 then
 	error "Some error getting databases"
-	sleep 1
+	sleep 1 # getting db error
         if check_and_report_error() then
         	return
 	end if
 end if
 error "OK - got : ",ndbs," databases"
-sleep 1
 for a=1 to ndbs
 code
         strcpy(lv_name,dbsname[a-1]);
@@ -1056,7 +1055,6 @@ endcode
 
 call set_pick_cnt(ndbs)
 let lv_newname=prompt_pick("SELECT DATABASE >>","")
-Message "lv_newname=",lv_newname sleep 1
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
@@ -1292,8 +1290,8 @@ if sqlca.sqlcode=0 then
 	let lv_outline="Date Created        ",lv_rec.created
 	call add_to_display_file(lv_outline)
 else
-	display "BAD...."
-	sleep 1
+	display "BAD...." 
+	sleep 1 # load info status bad
 	return 0
 end if
 

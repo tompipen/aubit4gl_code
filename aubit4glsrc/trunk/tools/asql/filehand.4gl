@@ -189,7 +189,7 @@ endcode
 
 if not ok then
 	error "Unable to open file ",src
-	sleep 1
+	sleep 1 # After an error opening a file
 end if
 end function
 
