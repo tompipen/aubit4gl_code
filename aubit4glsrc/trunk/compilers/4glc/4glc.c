@@ -7,7 +7,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.10 2001-11-27 23:50:51 saferreira Exp $
+ * $Id: 4glc.c,v 1.11 2001-11-28 23:12:14 saferreira Exp $
  */
 
 //#include "../libincl/compiler.h"
@@ -21,7 +21,6 @@ extern FILE *ferr;
 extern int yylineno;
 extern int yyleng;
 char yytext[] = "";
-FILE *write_errfile (FILE *, char *, int, int);
 extern int chk4var;
 extern int lcnt;
 extern FILE *yyin;
@@ -30,8 +29,11 @@ char *outputfilename;
 char outputfile[132];
 extern char infilename[132];
 char errbuff[1024] = "";
+/*
 FILE *mja_fopen (char *, char *);
 char *acl_getenv (char *);
+*/
+#include "aubit_lib.h"
 #include "../../lib/libincl/pointers.h"
 
 int globals_only = 0;
@@ -196,7 +198,7 @@ void rm_quote (char *s)
  *
  * @param fname The globals file name
  */
-void read_globals (char *fname)
+int read_globals (char *fname)
 {
   char a[128];
   char b[128];
@@ -233,7 +235,7 @@ void read_globals (char *fname)
  *
  * @param s The string to be unquoted
  */
-rm_quotes (char *s)
+void rm_quotes (char *s)
 {
   char buff[256];
   int a;
@@ -258,8 +260,7 @@ extern long fpos;
  *
  * @param s The string that contains the error
  */
-yyerror (s)
-     char *s;
+yyerror (char *s)
 {
   char errfile[256];
   FILE *f;
@@ -294,7 +295,7 @@ yyerror (s)
  * @param p The second parameter
  * @param q The tird parameter
  */
-adderr (char *s, char *p, char *q)
+void adderr (char *s, char *p, char *q)
 {
   sprintf (errbuff, s, p, q);
 }
@@ -307,7 +308,7 @@ adderr (char *s, char *p, char *q)
  *   - 1 : if we are just doing globals
  *   - 0 : otherwise
  */
-only_doing_globals ()
+int only_doing_globals (void)
 {
   if (globals_only)
     return 1;

@@ -9,12 +9,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.29 2001-11-27 23:50:52 saferreira Exp $
+* $Id: mod.c,v 1.30 2001-11-28 23:12:14 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.29  2001/11/27 23:50:52  saferreira
+*	Some more warning fixes, documentation added and prototypes declared
+*	
 *	Revision 1.28  2001/11/27 20:48:24  saferreira
 *	Some cleaning, statics, prototype warnings and doxygen comments.
 *	
@@ -199,23 +202,14 @@ extern int in_define;
 #include "../../lib/libincl/debug.h"
 #include "../../lib/libincl/errors.h"
 #include "compiledefs.h"
-void *new_expr (char *value);
-void *append_expr (struct expr_str *orig_ptr, char *value);
+#include "aubit_lib.h"
 
 
-char *ignull (char *s);
 char pklist[2048] = "";
 char upd_using_notpk[5000] = "";
 int upd_using_notpk_cnt = 0;
 int rep_type = 0;
 
-//#define CHAR_VALUE 3
-//#define NAMED 2
-long scan_variables (char *s, int mode);
-long isvartype (char *s, int mode);
-int add_constant (char t, char *ptr, char *name);
-char *acl_getenv (char *);
-FILE *mja_fopen (char *, char *);
 #ifdef LEXER
 char xwords[256][256];
 int word_cnt = 0;
@@ -234,7 +228,6 @@ int xccode = 0;
 long fpos;
 #endif
 
-char *get_curr_rep_name ();
 struct s_constants
 {
   char type;
@@ -263,8 +256,6 @@ int cmenu = 0;
 int use_group = 0;
 char curr_rep_name[256];
 int curr_rep_block;
-char *upshift (char *a);
-char *downshift (char *a);
 
 int max_menu_no = 0;
 
@@ -272,8 +263,6 @@ int max_menu_no = 0;
 struct s_report sreports[1024];
 int sreports_cnt = 0;
 
-static int print_variable (int z, char ff);
-int print_record (int z, char ff,char *v);
 //int printcomment (char *fmt, ...);
 //int printh (char *fmt, ...);
 //int printc (char *fmt, ...);
@@ -282,7 +271,6 @@ static bname (char *str, char *str1, char *str2);
 
 char mmtitle[132][132];
 extern char *outputfilename;
-int push_bind_rec (char *s, char bindtype);
 int read_glob_var = 0;
 int counters[256];
 int count_counters = 0;
@@ -292,7 +280,6 @@ struct s_report_stack report_stack[REPORTSTACKSIZE];
 int report_stack_cnt = 0;
 int report_cnt = 1;
 
-int add_bind (char i, char *var);
 int nblock_no = 1;
 
 FILE *curr_db = 0;
@@ -411,7 +398,7 @@ static strip_bracket (char *s)
 /**
  * @param buff
  */
-char *with_strip_bracket (char *buff)
+static char *with_strip_bracket (char *buff)
 {
   static char bff[256];
   debug ("In with_strip_bracket\n");
@@ -427,7 +414,7 @@ char *with_strip_bracket (char *buff)
  * @param type The data type of the variable
  * @paran n
  */
-add_variable (char *name, char *type, char *n)
+static void add_variable (char *name, char *type, char *n)
 {
 
   debug ("In mod.c : add_variable (name = %s type = %s n = %d varcnt = %d)\n",
@@ -487,233 +474,14 @@ add_variable (char *name, char *type, char *n)
 
 }
 
-clr_variable ()
+void clr_variable (void)
 {
-
   varcnt = modlevel;
-
 }
 
-inmod ()
+void inmod (void)
 {
-
   modlevel = varcnt;
-
-}
-
-static void dump_gvars(void)
-{
-
-  FILE *f;
-  int a;
-  char ii[64];
-  strcpy (ii, outputfilename);
-  strcat (ii, ".glb");
-  f = mja_fopen (ii, "w");
-
-  if (f == 0)
-    {
-      fprintf (stderr, "Couldnt open output file %s\n", ii);
-      exit (0);
-    }
-
-  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
-
-  for (a = 0; a < varcnt; a++)
-    {
-      fprintf (f, "%s %s %s %s %s %s %d\n",
-	       vars[a].var_name,
-	       vars[a].var_type,
-	       vars[a].var_size,
-	       vars[a].var_arrsize,
-	       vars[a].tabname, vars[a].pklist, vars[a].level);
-
-    }
-  fprintf (f, "***CONSTANTS***\n");
-
-  for (a = 0; a < const_cnt; a++)
-    {
-      if (const_arr[a].scope == 'g')
-	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
-		 const_arr[a].ptr);
-    }
-
-  fclose (f);
-}
-
-print_variables (int z)
-{
-
-  int a;
-  int flg = 0;
-  int oz;
-
-  int record;
-
-  dump_vars ();
-
-  debug ("/**********************************************************/\n");
-
-  debug ("/******************* Variable definitions *****************/\n");
-
-  debug ("/**********************************************************/\n");
-
-  if (modlevel > 0)
-    {
-      debug ("/* local variables */\n");
-      for (a = modlevel; a < varcnt; a++)
-	{
-
-	  if (vars[a].level == 0)
-	    print_variable (a, 'L');
-
-	}
-
-    }
-
-  if (modlevel == -1)
-    {
-      debug ("/* global variables %d */\n", varcnt);
-      //printcomment ("/* global variables %d */\n", varcnt);
-
-      for (a = 0; a < varcnt; a++)
-	{
-	  if (vars[a].level == 0)
-	    {
-	      if (vars[a].globflg == 'G')
-		print_variable (a, 'G');
-	      else
-		print_variable (a, 'n');
-	    }
-	}
-      dump_gvars ();
-      if (only_doing_globals ())
-	exit (0);
-      /*varcnt=0; */
-    }
-
-  if (modlevel == 0)
-    {
-      debug ("/* module variables %d */\n", varcnt);
-
-      for (a = 0; a < varcnt; a++)
-	{
-	  if (vars[a].level == 0 && a >= var_hdr_finished)
-	    print_variable (a, 'M');
-	}
-
-    }
-
-  debug ("/**********************************************************/\n");
-
-}
-
-push_name (char *a, char *n)
-{
-
-  debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
-
-  add_variable (a, 0, n);
-
-}
-
-push_type (char *a, char *n, char *as)
-{
-
-  int z;
-
-  debug ("push_type : %s %s %s", a, n, as);
-  for (z = varcnt - 1; z >= 0; z--)
-    {
-      if (strcmp (vars[z].var_type, EMPTY) != 0)
-	break;
-      if (a != 0)
-	{
-	  if (strcmp (a, "_ASSOCIATE") == 0)
-	    {
-	      print_declare_associate_1 (vars[z].var_name, as, n);
-	      continue;
-	    }
-	}
-
-      if (strcmp (vars[z].var_type, EMPTY) != 0)
-	break;
-
-      if (a != 0)
-	strcpy (vars[z].var_type, a);
-      else
-	strcpy (vars[z].var_type, EMPTY);
-
-      if (n != 0)
-	{
-	  strcpy (vars[z].var_size, n);
-
-	}
-      else
-	strcpy (vars[z].var_size, EMPTY);
-
-      if (as != 0)
-	{
-	  debug ("Setting array size in vars...%s on %s", as,
-		 vars[z].var_name);
-	  strcpy (vars[z].var_arrsize, as);
-	}
-
-      else
-	{
-	  debug ("unSetting array size in vars...%s on %s", as,
-		 vars[z].var_name);
-	  //strcpy (vars[z].var_arrsize, EMPTY);
-	}
-
-    }
-
-}
-
-push_record ()
-{
-  //in_record++;
-  push_type ("_RECORD", 0, 0);
-}
-
-push_associate (char *a, char *b)
-{
-  push_type ("_ASSOCIATE", a, b);
-}
-
-pop_associate (char *a)
-{
-  /*add_variable (0,"_ENDASSOC", 0); */
-}
-
-add_link_to (char *tab, char *pkey)
-{
-  char *pt;
-  char *pk;
-  int z;
-  debug ("Adding link to %s %s\n", tab, pkey);
-  pt = strdup (tab);
-  pk = strdup (pkey);
-  for (z = varcnt; z >= 0; z--)
-    {
-      if (strcmp (vars[z].var_type, "_RECORD") == 0)
-	{
-	  debug ("vars[%d] is _RECORD\n", z);
-	  vars[z].tabname = pt;
-	  vars[z].pklist = pk;
-	  break;
-	}
-    }
-}
-
-pop_record ()
-{
-
-  //in_record--;
-  debug ("In mod.c : pop_record\n");
-
-  add_variable (0, "_ENDREC", 0);
-
 }
 
 static isin_command (char *cmd_type)
@@ -742,7 +510,81 @@ static isin_command (char *cmd_type)
     }
   return 0;
 }
-print_variable (int z, char ff)
+
+static int print_record (int z, char ff,char *vname)
+{
+
+  int a;
+  // It should be declared here because the thw two function are tighly coupled
+  static void print_variable (int z, char ff);
+
+  int lvl = 1;
+debug("Print record %s\n",vname);
+
+  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
+    {
+      if (ff != '-')
+	{
+	  print_start_record (1,vname);
+	}
+      else
+	{
+	  print_start_record (0,vname);
+	}
+
+    }
+  else
+    {
+      if (ff != 'G')
+	print_start_record (0,vname);
+
+      if (ff == 'G')
+	print_start_record (2,vname);
+    }
+
+  for (a = z + 1; a < varcnt; a++)
+    {
+
+      if (strcmp (vars[a].var_type, "_RECORD") == 0)
+	{
+
+	  if (vars[a].level > vars[z].level)
+	    a = print_record (a, '-',vars[a].var_name);
+
+	  continue;
+
+	}
+
+      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
+	{
+
+	  break;
+
+	}
+      print_variable (a, '-');
+
+    }
+
+  if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
+    {
+      print_end_record (vars[z].var_name, -1);
+    }
+
+  else
+    {
+      print_end_record (vars[z].var_name, atoi (vars[z].var_arrsize));
+    }
+
+  return a;
+
+}
+
+void setinc (a)
+{
+  inc += a;
+}
+
+static void print_variable (int z, char ff)
 {
   char tmpbuff[80];
 
@@ -838,73 +680,264 @@ print_variable (int z, char ff)
 
 }
 
-print_record (int z, char ff,char *vname)
+static void dump_gvars(void)
 {
 
+  FILE *f;
   int a;
+  char ii[64];
+  strcpy (ii, outputfilename);
+  strcat (ii, ".glb");
+  f = mja_fopen (ii, "w");
 
-  int lvl = 1;
-debug("Print record %s\n",vname);
-
-  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
+  if (f == 0)
     {
-      if (ff != '-')
-	{
-	  print_start_record (1,vname);
-	}
-      else
-	{
-	  print_start_record (0,vname);
-	}
+      fprintf (stderr, "Couldnt open output file %s\n", ii);
+      exit (0);
+    }
+
+  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
+
+  for (a = 0; a < varcnt; a++)
+    {
+      fprintf (f, "%s %s %s %s %s %s %d\n",
+	       vars[a].var_name,
+	       vars[a].var_type,
+	       vars[a].var_size,
+	       vars[a].var_arrsize,
+	       vars[a].tabname, vars[a].pklist, vars[a].level);
 
     }
+  fprintf (f, "***CONSTANTS***\n");
+
+  for (a = 0; a < const_cnt; a++)
+    {
+      if (const_arr[a].scope == 'g')
+	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
+		 const_arr[a].ptr);
+    }
+
+  fclose (f);
+}
+
+
+static char *ignull (char *ptr)
+{
+  static char *empty = "";
+  if (ptr)
+    return ptr;
   else
-    {
-      if (ff != 'G')
-	print_start_record (0,vname);
+    return empty;
+}
 
-      if (ff == 'G')
-	print_start_record (2,vname);
+/**
+ * Dumps the contents of all of the array variable to a file named dumpvars.out.
+ *
+ * It only does this action if environment variable DUMPVARS is assigned.
+ *
+ * It is mainly used to debug the code generation
+ *
+ */
+void dump_vars (void)
+{
+
+  FILE *f;
+
+  int a;
+  if (getenv ("DUMPVARS") == 0)
+    return;
+
+  f = (FILE *) mja_fopen ("dumpvars.out", "w");
+
+  for (a = 0; a < varcnt; a++)
+    {
+
+      fprintf (f, " %d - %s,%s,%s,%s,%d,%s,%s\n", a,
+	       ignull (vars[a].var_name),
+	       ignull (vars[a].var_type),
+	       ignull (vars[a].var_size),
+	       ignull (vars[a].var_arrsize),
+	       vars[a].level,
+	       ignull (vars[a].tabname), ignull (vars[a].pklist));
+
     }
 
-  for (a = z + 1; a < varcnt; a++)
-    {
-
-      if (strcmp (vars[a].var_type, "_RECORD") == 0)
-	{
-
-	  if (vars[a].level > vars[z].level)
-	    a = print_record (a, '-',vars[a].var_name);
-
-	  continue;
-
-	}
-
-      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
-	{
-
-	  break;
-
-	}
-      print_variable (a, '-');
-
-    }
-
-  if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
-    {
-      print_end_record (vars[z].var_name, -1);
-    }
-
-  else
-    {
-      print_end_record (vars[z].var_name, atoi (vars[z].var_arrsize));
-    }
-
-  return a;
+  fclose (f);
 
 }
 
-push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
+void print_variables (int z)
+{
+
+  int a;
+  int flg = 0;
+  int oz;
+
+  int record;
+
+  dump_vars ();
+
+  debug ("/**********************************************************/\n");
+
+  debug ("/******************* Variable definitions *****************/\n");
+
+  debug ("/**********************************************************/\n");
+
+  if (modlevel > 0)
+    {
+      debug ("/* local variables */\n");
+      for (a = modlevel; a < varcnt; a++)
+	{
+
+	  if (vars[a].level == 0)
+	    print_variable (a, 'L');
+
+	}
+
+    }
+
+  if (modlevel == -1)
+    {
+      debug ("/* global variables %d */\n", varcnt);
+      //printcomment ("/* global variables %d */\n", varcnt);
+
+      for (a = 0; a < varcnt; a++)
+	{
+	  if (vars[a].level == 0)
+	    {
+	      if (vars[a].globflg == 'G')
+		print_variable (a, 'G');
+	      else
+		print_variable (a, 'n');
+	    }
+	}
+      dump_gvars ();
+      if (only_doing_globals ())
+	exit (0);
+      /*varcnt=0; */
+    }
+
+  if (modlevel == 0)
+    {
+      debug ("/* module variables %d */\n", varcnt);
+
+      for (a = 0; a < varcnt; a++)
+	{
+	  if (vars[a].level == 0 && a >= var_hdr_finished)
+	    print_variable (a, 'M');
+	}
+
+    }
+
+  debug ("/**********************************************************/\n");
+
+}
+
+void push_name (char *a, char *n)
+{
+  debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
+  add_variable (a, 0, n);
+}
+
+void push_type (char *a, char *n, char *as)
+{
+  int z;
+
+  debug ("push_type : %s %s %s", a, n, as);
+  for (z = varcnt - 1; z >= 0; z--)
+    {
+      if (strcmp (vars[z].var_type, EMPTY) != 0)
+	break;
+      if (a != 0)
+	{
+	  if (strcmp (a, "_ASSOCIATE") == 0)
+	    {
+	      print_declare_associate_1 (vars[z].var_name, as, n);
+	      continue;
+	    }
+	}
+
+      if (strcmp (vars[z].var_type, EMPTY) != 0)
+	break;
+
+      if (a != 0)
+	strcpy (vars[z].var_type, a);
+      else
+	strcpy (vars[z].var_type, EMPTY);
+
+      if (n != 0)
+	{
+	  strcpy (vars[z].var_size, n);
+
+	}
+      else
+	strcpy (vars[z].var_size, EMPTY);
+
+      if (as != 0)
+	{
+	  debug ("Setting array size in vars...%s on %s", as,
+		 vars[z].var_name);
+	  strcpy (vars[z].var_arrsize, as);
+	}
+
+      else
+	{
+	  debug ("unSetting array size in vars...%s on %s", as,
+		 vars[z].var_name);
+	  //strcpy (vars[z].var_arrsize, EMPTY);
+	}
+
+    }
+
+}
+
+void push_record (void)
+{
+  //in_record++;
+  push_type ("_RECORD", 0, 0);
+}
+
+void push_associate (char *a, char *b)
+{
+  push_type ("_ASSOCIATE", a, b);
+}
+
+void pop_associate (char *a)
+{
+  /*add_variable (0,"_ENDASSOC", 0); */
+}
+
+void add_link_to (char *tab, char *pkey)
+{
+  char *pt;
+  char *pk;
+  int z;
+  debug ("Adding link to %s %s\n", tab, pkey);
+  pt = strdup (tab);
+  pk = strdup (pkey);
+  for (z = varcnt; z >= 0; z--)
+    {
+      if (strcmp (vars[z].var_type, "_RECORD") == 0)
+	{
+	  debug ("vars[%d] is _RECORD\n", z);
+	  vars[z].tabname = pt;
+	  vars[z].pklist = pk;
+	  break;
+	}
+    }
+}
+
+void pop_record (void)
+{
+
+  //in_record--;
+  debug ("In mod.c : pop_record\n");
+
+  add_variable (0, "_ENDREC", 0);
+
+}
+
+void push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
   strcpy (menu_stack[mn][mnopt - 1].menu_help, c);
@@ -920,31 +953,10 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 }
 
 
-setinc (a)
-{
-  inc += a;
-}
 
-
-getinc ()
+int getinc(void)
 {
   return inc;
-}
-
-long
-scan_variable (char *s)
-{
-  char buff[256];
-  int a;
-  a = scan_variables (s, 1);
-
-  if (a == -1)
-    {
-      strcpy (buff, s);
-      strcat (buff, ".*");
-      a = scan_variables (buff, 1);
-    }
-  return a;
 }
 
 static findex (char *str, char c)
@@ -958,8 +970,72 @@ static findex (char *str, char c)
   return 0;
 }
 
-long
-scan_variables (char *s, int mode)
+static int find_type (char *s)
+{
+  char errbuff[80];
+  debug ("find_type %s\n", s);
+  if (strcmp ("char", s) == 0)
+    return 0;
+
+  if (strcmp ("long", s) == 0)
+    return 2;
+
+  if (strcmp ("integer", s) == 0)
+    return 1;
+
+  if (strcmp ("int", s) == 0)
+    return 1;
+  if (strcmp ("short", s) == 0)
+    return 1;
+
+  if (strcmp ("double", s) == 0)
+    return 3;
+
+  if (strcmp ("float", s) == 0)
+    return 4;
+
+  if (strcmp ("fgldecimal", s) == 0)
+    return 5;
+
+  if (strcmp ("serial", s) == 0)
+    return 6;
+
+  if (strcmp ("fgldate", s) == 0)
+    return 7;
+
+  if (strcmp ("fglmoney", s) == 0)
+    return 8;
+
+  if (strcmp ("struct_dtime ", s) == 0)
+    return 10;
+
+  if (strcmp ("struct_dtime ", s) == 0)
+    return 10;
+
+  if (strcmp ("fglbyte", s) == 0)
+    return 11;
+
+  if (strcmp ("fgltext", s) == 0)
+    return 12;
+
+  if (strcmp ("varchar", s) == 0)
+    return 13;
+
+  if (strcmp ("struct_ival ", s) == 0)
+    return 14;
+
+  if (strcmp ("_RECORD", s) == 0)
+    return -2;
+
+  if (strcmp ("form", s) == 0)
+    return 9;
+
+  debug ("Invalid type : %s\n", s);
+  sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
+  yyerror (errbuff);
+  return 0;
+}
+static long scan_variables (char *s, int mode)
 {
   int a;
   long z;
@@ -1096,23 +1172,22 @@ scan_variables (char *s, int mode)
 
 }
 
-long
-isarrvariable (char *s)
+long scan_variable (char *s)
 {
-  long a;
-  a = isvartype (s, 1);
-  debug ("Checking if %s is an array %d", s, a);
+  char buff[256];
+  int a;
+  a = scan_variables (s, 1);
+
+  if (a == -1)
+    {
+      strcpy (buff, s);
+      strcat (buff, ".*");
+      a = scan_variables (buff, 1);
+    }
   return a;
 }
 
-long
-isrecvariable (char *s)
-{
-  return isvartype (s, 2);
-}
-
-long
-isvartype (char *s, int mode)
+static long isvartype (char *s, int mode)
 {
   int a;
   long z;
@@ -1174,7 +1249,21 @@ isvartype (char *s, int mode)
   return 0;
 }
 
-scan_arr_variable (char *s)
+long isarrvariable (char *s)
+{
+  long a;
+  a = isvartype (s, 1);
+  debug ("Checking if %s is an array %d", s, a);
+  return a;
+}
+
+
+static long isrecvariable (char *s)
+{
+  return isvartype (s, 2);
+}
+
+static int scan_arr_variable (char *s)
 {
 
   int a;
@@ -1225,74 +1314,7 @@ scan_arr_variable (char *s)
 
 }
 
-find_type (char *s)
-{
-  char errbuff[80];
-  debug ("find_type %s\n", s);
-  if (strcmp ("char", s) == 0)
-    return 0;
-
-  if (strcmp ("long", s) == 0)
-    return 2;
-
-  if (strcmp ("integer", s) == 0)
-    return 1;
-
-  if (strcmp ("int", s) == 0)
-    return 1;
-  if (strcmp ("short", s) == 0)
-    return 1;
-
-  if (strcmp ("double", s) == 0)
-    return 3;
-
-  if (strcmp ("float", s) == 0)
-    return 4;
-
-  if (strcmp ("fgldecimal", s) == 0)
-    return 5;
-
-  if (strcmp ("serial", s) == 0)
-    return 6;
-
-  if (strcmp ("fgldate", s) == 0)
-    return 7;
-
-  if (strcmp ("fglmoney", s) == 0)
-    return 8;
-
-  if (strcmp ("struct_dtime ", s) == 0)
-    return 10;
-
-  if (strcmp ("struct_dtime ", s) == 0)
-    return 10;
-
-  if (strcmp ("fglbyte", s) == 0)
-    return 11;
-
-  if (strcmp ("fgltext", s) == 0)
-    return 12;
-
-  if (strcmp ("varchar", s) == 0)
-    return 13;
-
-  if (strcmp ("struct_ival ", s) == 0)
-    return 14;
-
-  if (strcmp ("_RECORD", s) == 0)
-    return -2;
-
-  if (strcmp ("form", s) == 0)
-    return 9;
-
-  debug ("Invalid type : %s\n", s);
-  sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
-  yyerror (errbuff);
-  return 0;
-
-}
-
-set_variable (char *name, char *type, char *n, char *as, int lvl)
+static void set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
 
   vars[varcnt].level = lvl;
@@ -1314,7 +1336,54 @@ set_variable (char *name, char *type, char *n, char *as, int lvl)
 
 }
 
-set_4gl_vars ()
+int add_constant (char t, char *ptr, char *name)
+{
+  char scope = 'm';
+  int x;
+  char buff[256];
+  x = 0;
+  //x = rwlookup (name);
+  if (x != 0)
+    {
+      adderr ("'%s' is a reserved word and cannot be used as a constant\n",
+	      name, "");
+      yyerror ("Constant Declaration Error");
+    }
+  debug ("Add constant\n");
+  x = check_for_constant (name, buff);
+  if (x)
+    {
+/* Note : this shouldnt actually happen! 
+   all constants should be replaced by this point anyway
+   eg
+   define constant a="Bibble"
+   define constant a="Wibble"
+   will parse as
+   define constant a="Bibble"
+   define constant "Bibble"="Wibble"
+ */
+      adderr ("Constant %s has already been defined (as '%s')", name, buff);
+      yyerror ("Duplicate Constant");
+    }
+
+  if (isin_command ("FUNC") || isin_command ("REPORT")
+      || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
+    {
+      scope = 'f';
+    }
+  if (isin_command ("GLOBALS"))
+    {
+      scope = 'g';
+    }
+  const_arr[const_cnt].type = t;
+  strcpy (const_arr[const_cnt].name, name);
+  const_arr[const_cnt].type = t;
+  const_arr[const_cnt].scope = scope;
+  const_arr[const_cnt].ptr = strdup (ptr);
+  const_cnt++;
+}
+
+void set_4gl_vars(void)
 {
 
   set_variable ("int_flag", "long", "0", "----", 0);
@@ -1363,7 +1432,7 @@ set_4gl_vars ()
  *
  * @param s The database name
  */
-open_db (char *s)
+void open_db (char *s)
 {
 
   char db[132];
@@ -1379,14 +1448,6 @@ open_db (char *s)
     }
   if (db_used == 0)
     db_used = 1;
-}
-
-push_like (char *t)
-{
-
-  debug (">>>>>> %s\n", t);
-  push_like2 (t);
-  debug ("<<<<<<\n");
 }
 
 static char *rettype (char *s)
@@ -1430,7 +1491,7 @@ static char *rettype (char *s)
 
   return rs;
 }
-push_like2 (char *t2)
+static int push_like2 (char *t2)
 {
   char buff[300];
   char buffer[300];
@@ -1475,7 +1536,7 @@ push_like2 (char *t2)
       debug ("---> %s %s", cdtype, csize);
       trim_spaces (b);
       //push_name (b, 0);
-      push_type (rettype (cdtype), csize, 0);
+      push_type (rettype (cdtype), csize, (char *)0);
       return 1;
     }
 
@@ -1511,47 +1572,17 @@ push_like2 (char *t2)
 
 }
 
-push_rectab (char *t)
+void push_like (char *t)
 {
 
-  push_like (t);
-
+  debug (">>>>>> %s\n", t);
+  push_like2 (t);
+  debug ("<<<<<<\n");
 }
 
-/**
- * Dumps the contents of all of the array variable to a file named dumpvars.out.
- *
- * It only does this action if environment variable DUMPVARS is assigned.
- *
- * It is mainly used to debug the code generation
- *
- */
-dump_vars ()
+void push_rectab (char *t)
 {
-
-  FILE *f;
-
-  int a;
-  if (getenv ("DUMPVARS") == 0)
-    return;
-
-  f = (FILE *) mja_fopen ("dumpvars.out", "w");
-
-  for (a = 0; a < varcnt; a++)
-    {
-
-      fprintf (f, " %d - %s,%s,%s,%s,%d,%s,%s\n", a,
-	       ignull (vars[a].var_name),
-	       ignull (vars[a].var_type),
-	       ignull (vars[a].var_size),
-	       ignull (vars[a].var_arrsize),
-	       vars[a].level,
-	       ignull (vars[a].tabname), ignull (vars[a].pklist));
-
-    }
-
-  fclose (f);
-
+  push_like (t);
 }
 
 /**
@@ -1561,12 +1592,12 @@ dump_vars ()
  *
  * @param s The title of the menu
  */
-push_menu_title (char *s)
+void push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
 }
 
-push_blockcommand (char *cmd_type)
+void push_blockcommand (char *cmd_type)
 {
 
   debug ("START BLOCK %s", cmd_type);
@@ -1591,7 +1622,7 @@ push_blockcommand (char *cmd_type)
   ccnt++;
 }
 
-add_continue_blockcommand (char *cmd_type)
+void add_continue_blockcommand (char *cmd_type)
 {
   int z;
   int a;
@@ -1610,7 +1641,7 @@ add_continue_blockcommand (char *cmd_type)
 
 }
 
-pop_blockcommand (char *cmd_type)
+void pop_blockcommand (char *cmd_type)
 {
   int z;
   int a;
@@ -1653,7 +1684,7 @@ pop_blockcommand (char *cmd_type)
   exit (0);
 }
 
-in_command (char *cmd_type)
+int in_command (char *cmd_type)
 {
 
   int z;
@@ -1698,7 +1729,7 @@ static trim (char *s)
     s[strlen (s) - 1] = 0;
 }
 
-push_gen (int a, char *s)
+void push_gen (int a, char *s)
 {
   debug ("Push %d %s\n", a, s);
   if (gen_stack_cnt[a] >= 90)
@@ -1719,7 +1750,7 @@ static char *pop_gen (int a)
   gen_stack[a][gen_stack_cnt[a]];
 }
 
-pop_all_gen (int a, char *s)
+void pop_all_gen (int a, char *s)
 {
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
@@ -1743,459 +1774,6 @@ static yyerrorf (char *fmt, ...)
   yyerror (buff);
 }
 
-
-start_bind (char i, char *var)
-{
-  debug ("start_bind %c -  %s", i, var);
-
-  if (i == 'i')
-    {
-      ibindcnt = 0;
-    }
-  if (i == 'N')
-    {
-      nullbindcnt = 0;
-    }
-
-  if (i == 'o')
-    {
-      obindcnt = 0;
-    }
-
-  if (i == 'O')
-    {
-      ordbindcnt = 0;
-    }
-
-  if (i == 'f' || i == 'F')
-    {
-      fbindcnt = 0;
-    }
-
-  if (var != 0)
-    return add_bind (i, var);
-
-  return 0;
-}
-
-get_bind_cnt (char i)
-{
-  if (i == 'i')
-    return ibindcnt;
-  if (i == 'N')
-    return nullbindcnt;
-  if (i == 'o')
-    return obindcnt;
-  if (i == 'f' || i == 'F')
-    return fbindcnt;
-}
-
-add_bind (char i, char *var)
-{
-  long dtype;
-
-  if (var[0] == '"')
-    {
-      dtype = (strlen (var) - 2) << 16;
-    }
-  else
-    {
-      dtype = scan_variable (var);
-    }
-
-  debug ("add_bind - dtype=%d (%s)\n", dtype, var);
-
-  if (i == 'i')
-    {
-      if (dtype == -2)
-	{
-	  debug ("push_bind_rec...");
-	  push_bind_rec (var, i);
-	}
-      else
-	{
-	  strcpy (ibind[ibindcnt].varname, var);
-	  ibind[ibindcnt].dtype = dtype;
-	  ibindcnt++;
-	}
-      return ibindcnt;
-    }
-
-  if (i == 'N')
-    {
-      if (dtype == -2)
-	{
-	  debug ("push_bind_rec...");
-	  push_bind_rec (var, i);
-	}
-      else
-	{
-	  strcpy (nullbind[nullbindcnt].varname, var);
-	  nullbind[nullbindcnt].dtype = dtype;
-	  nullbindcnt++;
-	}
-      return nullbindcnt;
-    }
-
-
-
-  if (i == 'o')
-    {
-      if (dtype == -2)
-	{
-	  push_bind_rec (var, i);
-	}
-      else
-	{
-	  strcpy (obind[obindcnt].varname, var);
-	  obind[obindcnt].dtype = dtype;
-	  obindcnt++;
-	}
-      return obindcnt;
-    }
-
-  if (i == 'O')
-    {
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  strcpy (ordbind[ordbindcnt].varname, var);
-	  ordbind[ordbindcnt].dtype = dtype;
-	  ordbindcnt++;
-	}
-      return ordbindcnt;
-    }
-
-
-
-
-  if (i == 'f' || i == 'F')
-    {
-      if (i == 'f')
-	dtype = -1;
-
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  strcpy (fbind[fbindcnt].varname, var);
-	  fbind[fbindcnt].dtype = 0;
-	  fbindcnt++;
-	  return fbindcnt;
-	}
-    }
-
-}
-
-how_many_in_bind (char i)
-{
-  if (i == 'i')
-    return ibindcnt - 1;
-  if (i == 'N')
-    return nullbindcnt - 1;
-  if (i == 'o')
-    return obindcnt - 1;
-  if (i == 'O')
-    return ordbindcnt - 1;
-}
-
-
-
-continue_loop (char *cmd_type)
-{
-  int a;
-  int g = 0;
-  for (a = ccnt - 1; a >= 0; a--)
-    {
-
-      debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
-    }
-  if (g == 0)
-    {
-      debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
-      return;
-    }
-
-  print_continue_loop (command_stack[a].block_no);
-}
-
-
-
-exit_loop (char *cmd_type)
-{
-  int a;
-  int g = 0;
-  int printed = 0;
-
-  for (a = ccnt - 1; a >= 0; a--)
-    {
-
-      debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
-    }
-  if (g == 0)
-    {
-      debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
-      return;
-    }
-
-  if (strcmp (cmd_type, "MENU") == 0)
-    {
-      print_exit_loop ('M', 0);
-      printed = 1;
-    }
-
-  if (strcmp (cmd_type, "PROMPT") == 0)
-    {
-      print_exit_loop ('P', 0);
-      printed = 1;
-    }
-
-
-  if (printed == 0)
-    {
-      print_exit_loop (0, command_stack[a].block_no);
-    }
-}
-
-
-push_report_block (char *why, char whytype)
-{
-  set_curr_block (0);
-  strcpy (report_stack[report_stack_cnt].why, why);
-  report_stack[report_stack_cnt].whytype = whytype;
-  print_repctrl_block ();
-  report_stack_cnt++;
-}
-
-
-get_curr_rep ()
-{
-  return report_cnt;
-}
-
-
-init_report_structure (struct rep_structure * rep)
-{
-  rep->top_margin = 3;
-  rep->bottom_margin = 3;
-  rep->left_margin = 5;
-  rep->right_margin = 132;
-  rep->page_length = 66;
-  rep->page_no = 0;
-  rep->printed_page_no = 0;
-  rep->line_no = 0;
-  rep->col_no = 0;
-  rep->output_mode = 'F';
-  strcpy (rep->output_loc, "\"stdout\"");
-}
-
-pdf_init_report_structure (struct pdf_rep_structure *rep)
-{
-  rep->top_margin = -36.0;
-  rep->bottom_margin = -36.0;
-  rep->left_margin = -36.0;
-
-  rep->page_length = -842.0;	// A4
-  rep->page_width = -595.0;	// A4
-
-  rep->right_margin = rep->page_width - (2 * rep->left_margin);
-
-  rep->page_no = 0;
-  rep->printed_page_no = 0;
-  rep->line_no = 0.0;
-  rep->col_no = 0.0;
-  rep->output_mode = 'F';
-  rep->font_size = 10;
-  rep->paper_size = 1;
-  strcpy (rep->font_name, "\"Helvetica\"");
-  strcpy (rep->output_loc, "\"stdout\"");
-}
-
-
-scan_orderby (char *varname, int cnt)
-{
-  int a;
-  debug ("Scanning order by for %s %d", varname, ordbindcnt);
-  for (a = 0; a <= cnt; a++)
-    {
-      debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
-      if (aubit_strcasecmp (ordbind[a].varname, varname) == 0)
-	return a;
-    }
-  return -1;
-}
-
-
-reset_attrib (struct form_attr * form_attrib)
-{
-  debug ("Reseting attributes\n");
-  form_attrib->iswindow = 0;
-  form_attrib->form_line = 3;
-  form_attrib->error_line = -1;
-  form_attrib->comment_line = -2;
-  form_attrib->message_line = 1;
-  form_attrib->prompt_line = -2;
-  form_attrib->menu_line = 1;
-  form_attrib->border = 0;
-  form_attrib->attrib = 0;
-}
-
-attr_code (char *s)
-{
-  debug ("Decoding colour %s\n", s);
-  if (strcmp (s, "BLACK") == 0)
-    return colour_code (COLOR_BLACK);
-  if (strcmp (s, "YELLOW") == 0)
-    return colour_code (COLOR_YELLOW);
-  if (strcmp (s, "BLUE") == 0)
-    return colour_code (COLOR_BLUE);
-  if (strcmp (s, "CYAN") == 0)
-    return colour_code (COLOR_CYAN);
-  if (strcmp (s, "MAGENTA") == 0)
-    return colour_code (COLOR_MAGENTA);
-  if (strcmp (s, "GREEN") == 0)
-    return colour_code (COLOR_GREEN);
-  if (strcmp (s, "RED") == 0)
-    return colour_code (COLOR_RED);
-  if (strcmp (s, "WHITE") == 0)
-    return colour_code (COLOR_WHITE);
-  if (strcmp (s, "REVERSE") == 0)
-    return A_REVERSE;
-  if (strcmp (s, "BLINK") == 0)
-    return A_BLINK;
-  if (strcmp (s, "UNDERLINE") == 0)
-    return A_UNDERLINE;
-  if (strcmp (s, "BOLD") == 0)
-    return A_BOLD;
-  if (strcmp (s, "NORMAL") == 0)
-    return A_NORMAL;
-  if (strcmp (s, "INVISIBLE") == 0)
-    return colour_code (COLOR_BLACK);
-  if (strcmp (s, "DIM") == 0)
-    return A_DIM;
-  return 0;
-}
-
-colour_code (int a)
-{
-  int z, b;
-  z = 1;
-#ifdef WIN32
-  return COLOR_PAIR (a + 1);
-#else
-  return COLOR_PAIR (a + 1);
-#endif
-}
-
-
-static bname (char *str, char *str1, char *str2)
-{
-  char fn[132];
-  int a;
-  char *ptr;
-  strcpy (fn, str);
-  for (a = strlen (fn); a >= 0; a--)
-    {
-      if (fn[a] == '.')
-	{
-	  fn[a] = 0;
-	  break;
-	}
-    }
-  ptr = &fn[a];
-  strcpy (str1, fn);
-  if (a >= 0)
-    strcpy (str2, ptr + 1);
-  else
-    str2[0] = 0;
-}
-
-/**
- * Not Used
- */
-static get_single_key (char *s)
-{
-  char buff[2];
-  s[0] = s[1];
-  s[1] = 0;
-}
-
-set_mod_level (int a)
-{
-  modlevel = a;
-}
-
-static matoi (char *s)
-{
-  int a;
-  if (s == 0)
-    return 0;
-  a = atoi (s);
-  return a;
-}
-
-long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
-		   char *arr)
-{
-  int a;
-  long z;
-  char buff[256];
-  char *ptr;
-  int lvl = 0;
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-  strcpy (buff, s);
-  strip_bracket (buff);
-  strcat (buff, ".");
-  ptr = strtok (buff, ".");
-
-  for (a = 0; a < varcnt; a++)
-    {
-      if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
-	{
-	  ptr = strtok (0, ".");
-
-	  if (ptr == 0)
-	    {
-	      z =
-		find_type (vars[a].var_type) +
-		(atoi (vars[a].var_size) << 16);
-	      *level = vars[a].level;
-	      *type = z;
-	      *arrsize = matoi (vars[a].var_arrsize);
-	      if (arr)
-		strcpy (arr, vars[a].var_arrsize);
-	      *size = matoi (vars[a].var_size);
-	      debug ("\n/* %s %s %s %s %d */\n",
-		     vars[a].var_name,
-		     vars[a].var_type,
-		     vars[a].var_size, vars[a].var_arrsize, vars[a].level);
-	      return z;
-	    }
-
-	  lvl++;
-
-	}
-
-    }
-  return -1;
-}
-
 int push_bind_rec (char *s, char bindtype)
 {
   int a;
@@ -2207,6 +1785,9 @@ int push_bind_rec (char *s, char bindtype)
   char save[256];
   char *ptr;
   int lvl = 0;
+
+  // The function should be declared here because they are thigly coupled
+  int add_bind (char i, char *var);
 
   debug ("In push_bind_rec : %s\n", s);
 
@@ -2349,34 +1930,490 @@ int push_bind_rec (char *s, char bindtype)
   return -1;
 }
 
-drop_counter ()
+int add_bind (char i, char *var)
+{
+  long dtype;
+
+  if (var[0] == '"')
+    {
+      dtype = (strlen (var) - 2) << 16;
+    }
+  else
+    {
+      dtype = scan_variable (var);
+    }
+
+  debug ("add_bind - dtype=%d (%s)\n", dtype, var);
+
+  if (i == 'i')
+    {
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (ibind[ibindcnt].varname, var);
+	  ibind[ibindcnt].dtype = dtype;
+	  ibindcnt++;
+	}
+      return ibindcnt;
+    }
+
+  if (i == 'N')
+    {
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (nullbind[nullbindcnt].varname, var);
+	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbindcnt++;
+	}
+      return nullbindcnt;
+    }
+
+
+
+  if (i == 'o')
+    {
+      if (dtype == -2)
+	{
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (obind[obindcnt].varname, var);
+	  obind[obindcnt].dtype = dtype;
+	  obindcnt++;
+	}
+      return obindcnt;
+    }
+
+  if (i == 'O')
+    {
+      if (dtype == -2)
+	push_bind_rec (var, i);
+      else
+	{
+	  strcpy (ordbind[ordbindcnt].varname, var);
+	  ordbind[ordbindcnt].dtype = dtype;
+	  ordbindcnt++;
+	}
+      return ordbindcnt;
+    }
+
+
+
+
+  if (i == 'f' || i == 'F')
+    {
+      if (i == 'f')
+	dtype = -1;
+
+      if (dtype == -2)
+	push_bind_rec (var, i);
+      else
+	{
+	  strcpy (fbind[fbindcnt].varname, var);
+	  fbind[fbindcnt].dtype = 0;
+	  fbindcnt++;
+	  return fbindcnt;
+	}
+    }
+
+}
+
+
+int start_bind (char i, char *var)
+{
+  debug ("start_bind %c -  %s", i, var);
+
+  if (i == 'i')
+    {
+      ibindcnt = 0;
+    }
+  if (i == 'N')
+    {
+      nullbindcnt = 0;
+    }
+
+  if (i == 'o')
+    {
+      obindcnt = 0;
+    }
+
+  if (i == 'O')
+    {
+      ordbindcnt = 0;
+    }
+
+  if (i == 'f' || i == 'F')
+    {
+      fbindcnt = 0;
+    }
+
+  if (var != 0)
+    return add_bind (i, var);
+
+  return 0;
+}
+
+int get_bind_cnt (char i)
+{
+  if (i == 'i')
+    return ibindcnt;
+  if (i == 'N')
+    return nullbindcnt;
+  if (i == 'o')
+    return obindcnt;
+  if (i == 'f' || i == 'F')
+    return fbindcnt;
+}
+
+int how_many_in_bind (char i)
+{
+  if (i == 'i')
+    return ibindcnt - 1;
+  if (i == 'N')
+    return nullbindcnt - 1;
+  if (i == 'o')
+    return obindcnt - 1;
+  if (i == 'O')
+    return ordbindcnt - 1;
+}
+
+
+
+void continue_loop (char *cmd_type)
+{
+  int a;
+  int g = 0;
+  for (a = ccnt - 1; a >= 0; a--)
+    {
+
+      debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  g = 1;
+	  break;
+	}
+    }
+  if (g == 0)
+    {
+      debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
+      return;
+    }
+
+  print_continue_loop (command_stack[a].block_no);
+}
+
+
+
+void exit_loop (char *cmd_type)
+{
+  int a;
+  int g = 0;
+  int printed = 0;
+
+  for (a = ccnt - 1; a >= 0; a--)
+    {
+
+      debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  g = 1;
+	  break;
+	}
+    }
+  if (g == 0)
+    {
+      debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
+      return;
+    }
+
+  if (strcmp (cmd_type, "MENU") == 0)
+    {
+      print_exit_loop ('M', 0);
+      printed = 1;
+    }
+
+  if (strcmp (cmd_type, "PROMPT") == 0)
+    {
+      print_exit_loop ('P', 0);
+      printed = 1;
+    }
+
+
+  if (printed == 0)
+    {
+      print_exit_loop (0, command_stack[a].block_no);
+    }
+}
+
+
+void push_report_block (char *why, char whytype)
+{
+  set_curr_block (0);
+  strcpy (report_stack[report_stack_cnt].why, why);
+  report_stack[report_stack_cnt].whytype = whytype;
+  print_repctrl_block ();
+  report_stack_cnt++;
+}
+
+
+static get_curr_rep ()
+{
+  return report_cnt;
+}
+
+
+void init_report_structure (struct rep_structure * rep)
+{
+  rep->top_margin = 3;
+  rep->bottom_margin = 3;
+  rep->left_margin = 5;
+  rep->right_margin = 132;
+  rep->page_length = 66;
+  rep->page_no = 0;
+  rep->printed_page_no = 0;
+  rep->line_no = 0;
+  rep->col_no = 0;
+  rep->output_mode = 'F';
+  strcpy (rep->output_loc, "\"stdout\"");
+}
+
+  
+void pdf_init_report_structure (struct pdf_rep_structure *rep)
+{
+  rep->top_margin = -36.0;
+  rep->bottom_margin = -36.0;
+  rep->left_margin = -36.0;
+
+  rep->page_length = -842.0;	// A4
+  rep->page_width = -595.0;	// A4
+
+  rep->right_margin = rep->page_width - (2 * rep->left_margin);
+
+  rep->page_no = 0;
+  rep->printed_page_no = 0;
+  rep->line_no = 0.0;
+  rep->col_no = 0.0;
+  rep->output_mode = 'F';
+  rep->font_size = 10;
+  rep->paper_size = 1;
+  strcpy (rep->font_name, "\"Helvetica\"");
+  strcpy (rep->output_loc, "\"stdout\"");
+}
+
+
+int scan_orderby (char *varname, int cnt)
+{
+  int a;
+  debug ("Scanning order by for %s %d", varname, ordbindcnt);
+  for (a = 0; a <= cnt; a++)
+    {
+      debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
+      if (aubit_strcasecmp (ordbind[a].varname, varname) == 0)
+	return a;
+    }
+  return -1;
+}
+
+void reset_attrib (struct form_attr * form_attrib)
+{
+  debug ("Reseting attributes\n");
+  form_attrib->iswindow = 0;
+  form_attrib->form_line = 3;
+  form_attrib->error_line = -1;
+  form_attrib->comment_line = -2;
+  form_attrib->message_line = 1;
+  form_attrib->prompt_line = -2;
+  form_attrib->menu_line = 1;
+  form_attrib->border = 0;
+  form_attrib->attrib = 0;
+}
+
+static int colour_code (int a)
+{
+  int z, b;
+  z = 1;
+#ifdef WIN32
+  return COLOR_PAIR (a + 1);
+#else
+  return COLOR_PAIR (a + 1);
+#endif
+}
+
+int attr_code (char *s)
+{
+  debug ("Decoding colour %s\n", s);
+  if (strcmp (s, "BLACK") == 0)
+    return colour_code (COLOR_BLACK);
+  if (strcmp (s, "YELLOW") == 0)
+    return colour_code (COLOR_YELLOW);
+  if (strcmp (s, "BLUE") == 0)
+    return colour_code (COLOR_BLUE);
+  if (strcmp (s, "CYAN") == 0)
+    return colour_code (COLOR_CYAN);
+  if (strcmp (s, "MAGENTA") == 0)
+    return colour_code (COLOR_MAGENTA);
+  if (strcmp (s, "GREEN") == 0)
+    return colour_code (COLOR_GREEN);
+  if (strcmp (s, "RED") == 0)
+    return colour_code (COLOR_RED);
+  if (strcmp (s, "WHITE") == 0)
+    return colour_code (COLOR_WHITE);
+  if (strcmp (s, "REVERSE") == 0)
+    return A_REVERSE;
+  if (strcmp (s, "BLINK") == 0)
+    return A_BLINK;
+  if (strcmp (s, "UNDERLINE") == 0)
+    return A_UNDERLINE;
+  if (strcmp (s, "BOLD") == 0)
+    return A_BOLD;
+  if (strcmp (s, "NORMAL") == 0)
+    return A_NORMAL;
+  if (strcmp (s, "INVISIBLE") == 0)
+    return colour_code (COLOR_BLACK);
+  if (strcmp (s, "DIM") == 0)
+    return A_DIM;
+  return 0;
+}
+
+
+static bname (char *str, char *str1, char *str2)
+{
+  char fn[132];
+  int a;
+  char *ptr;
+  strcpy (fn, str);
+  for (a = strlen (fn); a >= 0; a--)
+    {
+      if (fn[a] == '.')
+	{
+	  fn[a] = 0;
+	  break;
+	}
+    }
+  ptr = &fn[a];
+  strcpy (str1, fn);
+  if (a >= 0)
+    strcpy (str2, ptr + 1);
+  else
+    str2[0] = 0;
+}
+
+/**
+ * Not Used
+ */
+static get_single_key (char *s)
+{
+  char buff[2];
+  s[0] = s[1];
+  s[1] = 0;
+}
+
+void set_mod_level (int a)
+{
+  modlevel = a;
+}
+
+static matoi (char *s)
+{
+  int a;
+  if (s == 0)
+    return 0;
+  a = atoi (s);
+  return a;
+}
+
+long get_variable_dets (char *s, int *type, int *arrsize, 
+		   int *size, int *level, char *arr)
+{
+  int a;
+  long z;
+  char buff[256];
+  char *ptr;
+  int lvl = 0;
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+  strcpy (buff, s);
+  strip_bracket (buff);
+  strcat (buff, ".");
+  ptr = strtok (buff, ".");
+
+  for (a = 0; a < varcnt; a++)
+    {
+      if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
+	{
+	  ptr = strtok (0, ".");
+
+	  if (ptr == 0)
+	    {
+	      z =
+		find_type (vars[a].var_type) +
+		(atoi (vars[a].var_size) << 16);
+	      *level = vars[a].level;
+	      *type = z;
+	      *arrsize = matoi (vars[a].var_arrsize);
+	      if (arr)
+		strcpy (arr, vars[a].var_arrsize);
+	      *size = matoi (vars[a].var_size);
+	      debug ("\n/* %s %s %s %s %d */\n",
+		     vars[a].var_name,
+		     vars[a].var_type,
+		     vars[a].var_size, vars[a].var_arrsize, vars[a].level);
+	      return z;
+	    }
+
+	  lvl++;
+
+	}
+
+    }
+  return -1;
+}
+
+
+
+void drop_counter(void)
 {
   count_counters--;
 }
 
-new_counter ()
+void new_counter (void)
 {
   count_counters++;
   counters[count_counters] = 0;
 }
 
-get_counter_val ()
+int get_counter_val (void)
 {
   debug ("/* get_counter_val =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
   return counters[count_counters];
 }
 
-inc_counter ()
+int inc_counter (void)
 {
   return ++counters[count_counters];
 }
 
-dec_counter ()
+int dec_counter (void)
 {
   return --counters[count_counters];
 }
 
+// Fiquei aqui
 reset_counter ()
 {
   counters[count_counters] = 0;
@@ -2821,54 +2858,6 @@ pcopy (char *s)
     fprintf (ferr, "%s\n", s);
 }
 
-int
-add_constant (char t, char *ptr, char *name)
-{
-  char scope = 'm';
-  int x;
-  char buff[256];
-  x = 0;
-  //x = rwlookup (name);
-  if (x != 0)
-    {
-      adderr ("'%s' is a reserved word and cannot be used as a constant\n",
-	      name, "");
-      yyerror ("Constant Declaration Error");
-    }
-  debug ("Add constant\n");
-  x = check_for_constant (name, buff);
-  if (x)
-    {
-/* Note : this shouldnt actually happen! 
-   all constants should be replaced by this point anyway
-   eg
-   define constant a="Bibble"
-   define constant a="Wibble"
-   will parse as
-   define constant a="Bibble"
-   define constant "Bibble"="Wibble"
- */
-      adderr ("Constant %s has already been defined (as '%s')", name, buff);
-      yyerror ("Duplicate Constant");
-    }
-
-  if (isin_command ("FUNC") || isin_command ("REPORT")
-      || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
-    {
-      scope = 'f';
-    }
-  if (isin_command ("GLOBALS"))
-    {
-      scope = 'g';
-    }
-  const_arr[const_cnt].type = t;
-  strcpy (const_arr[const_cnt].name, name);
-  const_arr[const_cnt].type = t;
-  const_arr[const_cnt].scope = scope;
-  const_arr[const_cnt].ptr = strdup (ptr);
-  const_cnt++;
-}
-
 clr_function_constants ()
 {
   int a;
@@ -3075,15 +3064,6 @@ trans_quote (char *s)
 }
 
 
-char *
-ignull (char *ptr)
-{
-  static char *empty = "";
-  if (ptr)
-    return ptr;
-  else
-    return empty;
-}
 
 last_var_is_linked (char *tabname, char *pklist)
 {

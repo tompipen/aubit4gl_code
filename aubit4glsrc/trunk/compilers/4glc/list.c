@@ -12,8 +12,13 @@ int list_cnt = 0;
 struct list lists[256];
 
 
-char *
-list_prompt (char *s)
+/**
+ * Prompts for user to insert something from standard input.
+ *
+ * @todo Get rid of gets
+ * @param s The string added at the end of the prompt
+ */
+char *list_prompt (char *s)
 {
   static char buff[256];
   printf ("Please enter %s:\n", s);
@@ -22,7 +27,17 @@ list_prompt (char *s)
   return buff;
 }
 
-list_prompt_many (char *id, char *s)
+/**
+ * Makes prompt for the user insert something from standard input.
+ * 
+ * It receives until the user hit <RETURN> empty string.
+ *
+ * Insert the values received in a lists array.
+ *
+ * @param id
+ * @param s The string to be added at the end of the prompt
+ */
+void list_prompt_many(char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -38,7 +53,15 @@ list_prompt_many (char *id, char *s)
   list_cnt++;
 }
 
-list_prompt_single (char *id, char *s)
+/**
+ * It prompts for user input from stdin.
+ *
+ * The string typed is inserted in the lists array
+ *
+ * @param id
+ * @param s The string to be added at the end of the prompt
+ */
+void list_prompt_single (char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -50,8 +73,7 @@ list_prompt_single (char *id, char *s)
 }
 
 
-
-list_set_single (char *id, char *s)
+void list_set_single (char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -62,7 +84,7 @@ list_set_single (char *id, char *s)
 }
 
 
-list_prepend (char *id, char *id2, char *str)
+static void list_prepend (char *id, char *id2, char *str)
 {
   int a;
   int orig_id;
@@ -80,7 +102,7 @@ list_prepend (char *id, char *id2, char *str)
   list_cnt++;
 }
 
-list_append (char *id, char *id2, char *str)
+void list_append (char *id, char *id2, char *str)
 {
   int a;
   int orig_id;
@@ -98,7 +120,7 @@ list_append (char *id, char *id2, char *str)
   list_cnt++;
 }
 
-list_copy (char *id, char *id2)
+void list_copy (char *id, char *id2)
 {
   int a;
   int orig_id;
@@ -116,7 +138,7 @@ list_copy (char *id, char *id2)
 
 
 
-list_find_id (char *id)
+static int list_find_id (char *id)
 {
   int a;
   char buff[256];
@@ -134,7 +156,7 @@ list_find_id (char *id)
   exit (0);
 }
 
-list_use (char *id1, char *id2, char *str, char *idnew)
+static list_use (char *id1, char *id2, char *str, char *idnew)
 {
   int iid1;
   int iid2;
@@ -162,7 +184,7 @@ list_use (char *id1, char *id2, char *str, char *idnew)
   list_cnt++;
 }
 
-list_gen (char *id, char *newid, char *sep)
+static list_gen (char *id, char *newid, char *sep)
 {
   char buff[256];
   int a;
@@ -185,7 +207,7 @@ list_gen (char *id, char *newid, char *sep)
 
 }
 
-list_print_all ()
+void list_print_all(void)
 {
   int id;
   int a;
@@ -202,7 +224,7 @@ list_print_all ()
 }
 
 
-list_print (char *cid)
+static list_print (char *cid)
 {
   int id;
   int a;
@@ -216,20 +238,19 @@ list_print (char *cid)
 }
 
 
-char *new_id ()
+char *new_id (void)
 {
   static char buff[256];
   sprintf (buff, "_list_%d", list_cnt);
   return buff;
 }
 
-list_columns (char *id, char *s)
+void list_columns (char *id, char *s)
 {
   list_set_single (id, s);
-
 };
 
-list_set_plus (char *newid, char *cid1, char *cid2)
+void list_set_plus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
   int a, b;
@@ -261,7 +282,7 @@ list_set_plus (char *newid, char *cid1, char *cid2)
 }
 
 
-list_set_minus (char *newid, char *cid1, char *cid2)
+void list_set_minus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
   int a, b;
@@ -290,8 +311,6 @@ list_set_minus (char *newid, char *cid1, char *cid2)
 }
 
 
-
-
-list_in ()
+void list_in(void)
 {
 };
