@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2004-03-25 08:48:54 mikeaubury Exp $
+# $Id: Makefile.in,v 1.33 2004-07-10 11:42:32 afalout Exp $
 #
 
 ROOT		=../../..
@@ -271,7 +271,8 @@ libSQL_c_ecpg.so: ${LIBROOT}/libSQL_c_ecpg.so
 ${LIBROOT}/libSQL_c_ecpg.so: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^
-	${CC} -c -I. -I.. -I${ROOT}/incl -I$(ECPG_INCDIR) ${ECPG_IFLAGS} $(basename $<).c -o $(basename $<).o
+	${CC} -c -I. -I.. -I${ROOT}/incl -I$(ECPG_INCDIR) ${LIBPQ_FE_H_IFLAGS} \
+		${ECPG_IFLAGS} $(basename $<).c -o $(basename $<).o
 	${CC} -shared -o $@ $(basename $<).o -L${LIBROOT} ${PGLIBS} ${LIBAUBIT4GL}
 
 ##################

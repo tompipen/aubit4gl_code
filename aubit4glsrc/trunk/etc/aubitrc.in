@@ -470,6 +470,7 @@ ECPG_IFLAGS="@ECPG_IFLAGS@"
 #Actually a ECPG installation dir - may or may not be the same as 
 #PostgreSQL engine installation directory. Used by ecpg_wrap script
 POSTGRESDIR="@POSTGRESDIR@"
+LIBPQ_FE_H_IFLAGS="@LIBPQ_FE_H_IFLAGS@"
 
 #####################
 #Workaround for PG ecpg problem (see test #24)

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.158 2004-07-01 11:51:38 afalout Exp $
+# $Id: Makefile-common.in,v 1.159 2004-07-10 11:42:32 afalout Exp $
 #
 
 
@@ -861,6 +861,8 @@ PD_CURSES_INC_PATH	=@PD_CURSES_INC_PATH@
 PD_CURSES_LIB_NAME	=@PD_CURSES_LIB_NAME@
 PD_CURSES_DRIVE		=@PD_CURSES_DRIVE@
 PD_CURSES_CYGDRIVE	=@PD_CURSES_CYGDRIVE@
+
+LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 
 
 ## ==================================================================

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.231 2004-07-06 23:33:43 afalout Exp $
+dnl # $Id: configure.in,v 1.232 2004-07-10 11:41:51 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -384,6 +384,7 @@ AC_SUBST(HAVE_PGODBC)
 AC_SUBST(PGODBC_INCLUDE)
 AC_SUBST(PGODBC_LFLAGS)
 AC_SUBST(PGODBC_LIBNAME)
+AC_SUBST(LIBPQ_FE_H_IFLAGS)
 
 #PG ESQL
 AC_SUBST(PGSQL_INCLUDE)
@@ -2042,13 +2043,13 @@ else
 fi
 AC_MSG_CHECKING(Aubit programs debugging)
 if test "$enable_debug" = "no" ; then
-    CFLAGS="$CFLAGS -DNODEBUG"
+    A4GL_CFLAGS="$CFLAGS -DNODEBUG"
     AC_MSG_RESULT(no)
 	AC_MSG_WARN(Debugging disabled, use --enable-debug to enable it.)
 	AUBIT_DEBUG=0
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
-    CFLAGS="$CFLAGS -g -Wall -DDEBUG"
+    A4GL_CFLAGS="$CFLAGS -g -Wall -DDEBUG"
     AC_MSG_RESULT(yes. Set DEBUG=ALL to get debug.out trace.)
 fi
 
@@ -3372,22 +3373,21 @@ if test "$withval" != "no"; then
 			#NOTE: can't use this one, all other PG headers we need are not there...
 			#test -d $withval/../libpq && PGSQL_INCDIR=$withval/../libpq
 
-		    old_CFLAGS=$CFLAGS; old_LDFLAGS=$LDFLAGS; old_LIBS=$LIBS; old_CPPFLAGS="$CPPFLAGS"
+		    old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
 		    
 			CFLAGS="$CFLAGS -I$PGSQL_INCDIR $ECPG_IFLAGS";
+			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR $ECPG_IFLAGS"
 			#LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
 			LDFLAGS="$LDFLAGS -L$ECPG_LIBDIR"
 		    LIBS="$LIBS $PGSQL_LIBS";
-			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR"
 
-			AC_MSG_RESULT(CFLAGS=$CFLAGS)
-			AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
-			AC_MSG_RESULT(LIBS=$LIBS)
-			AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
-			AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
-			
-			#headers needed to make libSQL_c_ecpg.so (esql_simple_ecpg.c):
-			AC_CHECK_HEADERS([ ecpgtype.h ecpglib.h ecpgerrno.h sqlca.h sql3types.h ])
+			export CFLAGS LDFLAGS LIBS CPPFLAGS
+
+			#AC_MSG_RESULT(CFLAGS=$CFLAGS)
+			#AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+			#AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
+			#AC_MSG_RESULT(LIBS=$LIBS)
+			#AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
 
             #reset:
 			unset ac_cv_header_libpq_fe_h
@@ -3396,19 +3396,33 @@ if test "$withval" != "no"; then
 
 			#This hader is NOT part of ecpg, it's part of libpq
 			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
-		
-			if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
-				-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
-				-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
-			then
-				#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+			#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+			HAVE_PG_ESQL_HEADERS_LIB=no
+			
+			if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" ; then
 				HAVE_PG_ESQL_HEADERS_LIB=yes
-			else
-				HAVE_PG_ESQL_HEADERS_LIB=no
+				PG_ESQL_HEADERS_LIB_SUFIX="pgsql"
+			fi
+			if test "$ac_cv_header_postgresql_libpq_fe_h" = "yes"; then
+				HAVE_PG_ESQL_HEADERS_LIB=yes
+				PG_ESQL_HEADERS_LIB_SUFIX="postgresql"
+			fi
+			if test "$ac_cv_header_libpq_fe_h" = "yes" ; then
+				HAVE_PG_ESQL_HEADERS_LIB=yes
+				PG_ESQL_HEADERS_LIB_SUFIX=""
 			fi
 
-			if test "$ac_cv_header_libpq_fe_h" = "yes" \
-				-a "$ac_cv_header_ecpgtype_h" = "yes" \
+			#Add suffix needed for libpq-fe.h included from ecpglib.h
+			LIBPQ_FE_H_IFLAGS="-I$PGSQL_INCDIR/$PG_ESQL_HEADERS_LIB_SUFIX -I/usr/include/$PG_ESQL_HEADERS_LIB_SUFIX"
+			CPPFLAGS="$CPPFLAGS $LIBPQ_FE_H_IFLAGS"
+			#AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+			
+			#headers needed to make libSQL_c_ecpg.so (esql_simple_ecpg.c):
+			#When testing for ecpglib.h, we allready need to know here is 
+			#libpq-fe.h because ecpglib.h includes it - WITHOUT A PATH!
+			AC_CHECK_HEADERS([ ecpgtype.h ecpglib.h ecpgerrno.h sqlca.h sql3types.h ])
+
+			if test "$ac_cv_header_ecpgtype_h" = "yes" \
 				-a "$ac_cv_header_ecpglib_h" = "yes" \
 				-a "$ac_cv_header_ecpgerrno_h" = "yes" \
 				-a "$ac_cv_header_sqlca_h" = "yes" \
@@ -3466,7 +3480,6 @@ fi
   AC_MSG_RESULT(--with-ecpg not specified)
 ])
 
-#exit
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -6717,7 +6730,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.231 2004-07-06 23:33:43 afalout Exp $
+| $Id: configure.in,v 1.232 2004-07-10 11:41:51 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

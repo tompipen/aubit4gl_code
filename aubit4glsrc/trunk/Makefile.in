@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.151 2004-06-27 03:16:30 afalout Exp $
+# $Id: Makefile.in,v 1.152 2004-07-10 11:41:45 afalout Exp $
 #
 
 ## ==================================================================
@@ -41,8 +41,8 @@ include incl/Makefile-common
 #anything, they just invoke other make files:
 .PHONY: all clean default log corecompile extra ide api.headers
 
-ALL					=settings api.headers corecompile test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload liblogical
+ALL					=settings api.headers corecompile liblogical test
+ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN	=
@@ -136,11 +136,11 @@ liblogical:
 	$(MAKE) -C lib/liblogical/processor
 #libLOGREPPROC_TXT.so
 	$(MAKE) -C lib/liblogical/txt/process
-#libLOGREP_CSV.so:
-	$(MAKE) -C lib/liblogical/csv/layout
 #libLOGREP_PROC_CSV.so:
 	$(MAKE) -C lib/liblogical/csv/process	
 ifeq "${GTK_VERSION}" "2.0"
+#libLOGREP_CSV.so:
+	$(MAKE) -C lib/liblogical/csv/layout
 #layout_engine:
 	$(MAKE) -C lib/liblogical/layout_engine
 #report_viewer
@@ -150,7 +150,7 @@ ifeq "${GTK_VERSION}" "2.0"
 else
 	@echo " "
 	@echo " ** WARNING:"	
-	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped 3 targets"
+	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped 4 targets"
 	@echo " "	
 endif	
 	@echo " "
@@ -158,9 +158,6 @@ endif
 	@echo "| liblogical: done "
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
-
-
-
 
 clean.liblogical:
 	$(MAKE) -C lib/liblogical/processor clean

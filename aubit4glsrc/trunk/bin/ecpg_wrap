@@ -48,10 +48,13 @@ fi
 
 if test "$PG_IFLAGS" = ""; then 
     PG_IFLAGS=`aubit-config ECPG_IFLAGS 2>/dev/null`
-	
+	LIBPQ_FE_H_IFLAGS=`aubit-config LIBPQ_FE_H_IFLAGS 2>/dev/null`
+
 	if test "$PG_IFLAGS" = ""; then
 		#try default
 		PG_IFLAGS="-I$POSTGRESDIR/include -I/usr/include/pgsql -I/usr/include/postgresql/informix/esql"
+	else
+		PG_IFLAGS="$PG_IFLAGS $LIBPQ_FE_H_IFLAGS"	
 	fi
 fi
 
