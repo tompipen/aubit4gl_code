@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2003-09-22 07:03:46 afalout Exp $
+# $Id: Makefile,v 1.9 2003-09-23 05:26:00 afalout Exp $
 #
 
 ROOT    =../..
@@ -109,7 +109,7 @@ XGENEXE    		=${ROOT}/bin/xgen
 
 
 ifneq "${COMSPEC}" ""
-	RPCLINKLIBS=-L"D:/cygwin/lib" -lrpclib 
+	RPCLINKLIBS=-L"D:/cygwin/lib" -lrpclib
 	#-lcygwin
 endif
 
@@ -121,7 +121,7 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) compiled."
 
 ${BINROOT}/checker: $(OBJ_CHECKER) npcode.h
-	$(CC) -g -o $@ $(OBJ_CHECKER) ${LINKLIBS}
+	$(CC) -g -o $@ $(OBJ_CHECKER) ${LINKLIBS} ${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE) npcode.h
 	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS} ${RPCLINKLIBS}
@@ -140,10 +140,10 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_C)
+	$(CC) -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS}
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS}
+	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS}
 
 
 ## ==================================================================

@@ -1,3 +1,10 @@
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+	/* missing from rpcgen generated .h on CygWin: */
+	#define bool_t int
+	#define u_int unsigned int
+#endif
+
+#include <stdio.h>
 #include "npcode.h"
 #include "npcode_defs.h"
 //#include "a4gl_incl_4glhdr.h"

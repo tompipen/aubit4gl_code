@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.18 2003-09-22 20:57:19 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.19 2003-09-23 05:26:00 afalout Exp $
 #*/
 
 /**
@@ -1077,8 +1077,12 @@ A4GL_display_at (int n, int a)
 	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
 	      		gtk_label_set_text (lab, s);
 		    	style = gtk_style_new ();
-    			gdk_font_unref (style->font);
+#if GTK_CHECK_VERSION(2,0,0)
+    // GTK+ 2.0 and up: structure has no member named `font'
+#else
+				gdk_font_unref (style->font);
     			style->font = gdk_font_load ("fixed");
+#endif
     			gtk_widget_set_style (GTK_WIDGET(lab), style);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
@@ -1100,8 +1104,12 @@ A4GL_display_at (int n, int a)
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 		    	style = gtk_style_new ();
-    			gdk_font_unref (style->font);
+#if GTK_CHECK_VERSION(2,0,0)
+    // GTK+ 2.0 and up: structure has no member named `font'
+#else
+				gdk_font_unref (style->font);
     			style->font = gdk_font_load ("fixed");
+#endif
     			gtk_widget_set_style (GTK_WIDGET(lab), style);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }

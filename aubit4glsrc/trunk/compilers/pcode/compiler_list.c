@@ -49,7 +49,7 @@ add_label (char *label)
     }
   else
     {
-#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
+#if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
 	  hcreate (100000);
 #endif
     }
@@ -59,8 +59,8 @@ add_label (char *label)
 
   e.key = strdup (label);
   e.data = (char *) current_function->cmds.cmds_len;
-  
-#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
+
+#if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
   ep = hsearch (e, ENTER);
 #endif
 
@@ -81,7 +81,7 @@ find_label (char *label)
   ENTRY e, *ep;
   e.key = label;
 
-#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
+#if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
   ep = hsearch (e, FIND);
 #endif
   if (!ep)
