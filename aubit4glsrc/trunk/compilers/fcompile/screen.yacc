@@ -553,7 +553,7 @@ DELIMITERS CHAR_VALUE {
 }
 | KW_SCREEN RECORD {
 A4GL_add_srec();
-} srec_dim OPEN_BRACKET field_list CLOSE_BRACKET op_ltype op_semi
+} srec_dim OPEN_BRACKET srec_field_list CLOSE_BRACKET op_ltype op_semi
 | KW_PANEL OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET TO OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET 
 ;
 
@@ -577,6 +577,19 @@ field_list_element {
 | field_list COMMA field_list_element {
 	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 };
+
+
+srec_field_list : 
+field_list_element {
+	sprintf($<str>$,"%s",$<str>1);
+} 
+| srec_field_list op_comma field_list_element {
+	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+};
+
+op_comma : 
+	| COMMA
+;
 
 field_list_item :
 named_or_kw	
