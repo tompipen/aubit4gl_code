@@ -137,6 +137,9 @@ A4GL_SQLCONVERT=YES
 #A4GL_SQLDIALECT=ORACLE
 
 
+############
+#auto initializing module and function local variables
+A4GL_AUTONULL=YES
 
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs

@@ -1630,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.8 2003-02-10 02:08:27 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.9 2003-02-20 05:37:22 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3594,6 +3594,31 @@ conversion routines, eg. oracle style outer joins with (+).
 
 I also need assistance on building up the config/rule files, especially
 for SAPDB and Oracle.
+
+Actually, much remains to be done on this interface.
+
+Some conversions can be done by simple search and replace rules,
+but most require coding, either because the transformations are
+considerable (beyond easy regex'ing), or because they apply in
+specific contexts.
+
+The idea is to gradually build up the 'coded' conversions while allowing
+for search/replace rules to handle anything not yet covered.
+I am trying to work on a simple way to include some context-sensitivity
+into the REPLACE command.
+eg. you might want "SELECT UNIQUE ..." to become "SELECT DISTINCT ...",
+but you don't want "CREATE UNIQUE INDEX ..." changing to "CREATE DISTINCT
+INDEX ..."
+similarly, other conversions are only applicable when the search string
+appears in an expression or as a column name (like 'user' or 'today').
+
+
+
+===========================================================================
+
+
+I've also included code for auto initializing module and function local
+variables (but you need to set A4GL_AUTONULL=YES to get this)...
 
 ===========================================================================
 

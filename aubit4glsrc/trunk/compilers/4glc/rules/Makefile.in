@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2003-02-17 12:04:10 mikeaubury Exp $
+# $Id: Makefile.in,v 1.14 2003-02-20 05:37:22 afalout Exp $
 #
 
 ROOT		=../../..
@@ -54,7 +54,7 @@ CFLAGS  +=-I..
 
 all: generated/kw.c generated/single_words.rule generated/y.tab.c generated/states.c
 
-generated/states.c: data/defstates
+generated/states.c: data/defstates data/kwords
 	${SH} bin/procstates
 
 generated/kw.h generated/kw.c generated/kw.yh: generated/single_words
@@ -66,9 +66,9 @@ generated/kw.h generated/kw.c generated/kw.yh: generated/single_words
 generated/single_words: data/kwords
 	${SH} bin/convkw.single
 
-generated/states.c: data/kwords
+#generated/states.c: data/kwords
 
-generated/single_words.rule:generated/single_words
+generated/single_words.rule: generated/single_words
 	${SH} bin/make_enable
 
 generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule
@@ -88,11 +88,14 @@ endif
 ##                           Clean targets
 ## ==================================================================
 
-clean: clean.generated
-	rm -f *.bak bin/*.bak
+
+clean: clean.generated clean.data
+	${RM} y.tab.c *.bak bin/*.bak .\#*
 
 clean.generated:
-	(cd generated; rm -f *.yacc *.c *.h *.yh *.rule *.output single_words)
+	(cd generated; ${RM} *.yacc *.c *.h *.yh *.rule *.output single_words)
 
+clean.data:
+	(cd data; ${RM} .\#* *.bak .*.bak)
 
 #----------------------------- EOF -------------------------------------

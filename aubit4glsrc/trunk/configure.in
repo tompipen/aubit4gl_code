@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.158 2003-02-19 22:27:13 afalout Exp $
+dnl # $Id: configure.in,v 1.159 2003-02-20 05:36:41 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -813,12 +813,15 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		YACC=no
 		WARN_YACC=1
 	else
-		AC_MSG_CHECKING(bison version)
+		AC_MSG_CHECKING(Bison version)
 		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
-	    if test "$1" = "1" -a "$2" -lt "25"; then
-	        AC_MSG_WARN(You will need bison 1.25 if you'd want to regenerate the Aubit parsers (found $1.$2).)
-        else
-		    AC_MSG_RESULT($1.$2 (ok))
+	    AC_MSG_RESULT($1.$2)
+
+		if test "$1" = "1" -a "$2" -lt "875"; then
+	        AC_MSG_WARN(You will need Bison 1.875 if you'd want to regenerate the Aubit parsers)
+			#Will use preconfigured y.tab.c from /tools/no_yacc
+			YACC=no
+			WARN_YACC=1
         fi
 	fi
 	
@@ -3621,9 +3624,9 @@ if test "$WARN_YACC" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
-| Will use pre-compiled parser files from tools/no_yacc              |
-| Use 'make refresh.noyacc' on source tree with yacc installed.      |
-| You will need bison if you'd want to regenerate the Aubit parsers. |
+| Will use pre-compiled parser files from tools/no_yacc. Use         |
+| 'make refresh.noyacc' on source tree with yacc installed.You will  |
+| need Bison 1.875 if you'd want to regenerate the Aubit parsers.    |
 X
 fi
 #Don't war about missing librpc/rpcgen any more, since we now have libpacker:
