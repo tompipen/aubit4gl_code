@@ -6,22 +6,23 @@
 
 
 <%@ page import="pt.despodata.java.ddata.DDataSource" %>
+<%@ page import="org.aubit4gl.dbdocumenter.navigator.DbDocumenter" %>
 <%@ page import="java.sql.*" %>
 
 
 <jsp:useBean id="implicitDS" scope="session" class="pt.despodata.java.ddata.DDataSource" />
-<!-- TODO - Mensagens independentes de locale -->
 
+<% DbDocumenter.setConnection(implicitDS.getConnection()); %>
 <HEAD>
-  <TITLE>Tabelas do módulo
+  <TITLE>Tables of module
 	<%= request.getParameter("database") %> 
-	da instância <%= request.getParameter("informixserver") %>
-	no host <%= request.getParameter("host") %>
+	and instance <%= request.getParameter("informixserver") %>
+	in the host <%= request.getParameter("host") %>
   </TITLE>
 </HEAD>
 
 <BODY>
-  <H1>Tabelas</H1>
+  <H1>Tables</H1>
 
 	<%
 	  String strSql;

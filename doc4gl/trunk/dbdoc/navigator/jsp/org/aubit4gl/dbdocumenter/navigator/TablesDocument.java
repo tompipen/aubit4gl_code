@@ -12,7 +12,7 @@ import pt.moredata.dao.*;
 
 
 /**
- * Compila e mostra informação sobre um conjunto de tabelas
+ * Compila e mostra informa??o sobre um conjunto de tabelas
  * <BR>
  */
 
@@ -50,7 +50,7 @@ public class TablesDocument
 	}
 
 	/**
-	 * Inicialização da documentação de tabelas
+	 * Inicializa??o da documenta??o de tabelas
 	 */
 	public void initTablesDocument()
 	{
@@ -81,13 +81,14 @@ public class TablesDocument
 		                " where codmod = '" + module + "'";
 		System.out.println("<BR>" + strSql);
 		try {
+                  Statement stmt=DbDocumenter.getConnection().createStatement();
 		  //Statement stmt=DDataSourcePool.getImplicitDataSource().
 
 		  // it looks like class DataSourcePool was removed - see DAOPool.java
             // cannot find method getImplicitDataSource anywhere!
 //		System.out.println("<BR>FIXXXMMMEEEE<BR>");
-		  Statement stmt=DataSourcePool.getImplicitDataSource().
-			  getConnection().createStatement();
+//	  Statement stmt=DataSourcePool.getImplicitDataSource().
+			  //getConnection().createStatement();
 
 		  ResultSet rs = stmt.executeQuery(strSql);
 		  while ( rs.next() )
@@ -95,12 +96,12 @@ public class TablesDocument
 	  }
 		catch (SQLException e)
 		{
-		  // ???? TODO : ver como se gerem excepções no JSP
+		  // ???? TODO : ver como se gerem excep??es no JSP
 		}
 	}
 
 	/**
-	 * Mostra todos os dados de documentação da(s) tabela(s) de acordo com os 
+	 * Mostra todos os dados de documenta??o da(s) tabela(s) de acordo com os 
 	 * parametros.
 	 */
   public void showTableDocument()
@@ -117,16 +118,16 @@ public class TablesDocument
 	}
 
 	/**
-	 * Mostra uma página que contem apenas a descrição do módulo 
+	 * Mostra uma p?gina que contem apenas a descri??o do m?dulo 
 	 */
 	public void showDbDocumenter()
 	{
-	  println("<H1>Documentação da base de dados</H1>");
+	  println("<H1>Documenta??o da base de dados</H1>");
 	}
 
 	/**
-	 * Mostra o sumário da tabela de acordo com as opções configuradas
-	 * Efectua a inicialização da informação sobre cada tabela nesta fase
+	 * Mostra o sum?rio da tabela de acordo com as op??es configuradas
+	 * Efectua a inicializa??o da informa??o sobre cada tabela nesta fase
 	 */
 	public void showTablesSummary()
 	{
@@ -168,7 +169,7 @@ public class TablesDocument
 	}
 
 	/**
-	 * Devolve em html a informação total sobre a tabela
+	 * Devolve em html a informa??o total sobre a tabela
 	 */
 	public void showTablesDetail()
 	{
@@ -258,7 +259,7 @@ public class TablesDocument
 	  }
 		catch (IOException e)
 		{
-		   /// ???? TODO - Gestão dos erros
+		   /// ???? TODO - Gest?o dos erros
 		}
 	}
 
