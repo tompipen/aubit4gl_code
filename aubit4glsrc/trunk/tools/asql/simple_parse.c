@@ -11,8 +11,8 @@
 void clr_stmt(void) ;
 void add_stmt(struct element *e);
 char * make_sql_string (char *first, ...);
-int yyparse(void) ;
-int yylex(void);
+int my_pretend_yyparse(void) ;
+int asql_yylex(void);
 
 
 
@@ -66,7 +66,7 @@ make_sql_string (char *first, ...)
 }
 
 
-int yyparse(void) {
+int my_pretend_yyparse(void) {
 int line=1;
 //int in_stmt=0;
 char *ptr=0;
@@ -79,7 +79,7 @@ int need_delim=0;
 int need_tabname=0;
 
 	while (1) {
-		a=yylex();
+		a=asql_yylex();
 
 		if (a==0) break;
 		/* Eat up comments */
@@ -127,7 +127,7 @@ int need_tabname=0;
 
 
 		if (a==KW_OBRACE) {
-			while (a&&a!=KW_CBRACE) a=yylex();
+			while (a&&a!=KW_CBRACE) a=asql_yylex();
 			continue;
 		}
 
@@ -157,7 +157,7 @@ int need_tabname=0;
 		}
 
 		if (a==KW_MINUS_MINUS) {
-			while (a!=KW_NL) a=yylex();
+			while (a!=KW_NL) a=asql_yylex();
 		}
 
 		if (a==KW_NL) {

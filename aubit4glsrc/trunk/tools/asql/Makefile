@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.35 2005-02-21 00:52:55 afalout Exp $
+# $Id: Makefile,v 1.36 2005-03-14 21:42:56 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -52,7 +52,7 @@ OBJS_4GL		= \
 
 ################
 #Objects that do not originate in 4GL code - version independent
-OBJS_C			=lex.yy.o simple_parse.o dir.o
+OBJS_C			=lex.asql_yy.o simple_parse.o dir.o
 
 ################
 #Version specific objects
@@ -211,8 +211,8 @@ asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 
 ################
 #Target to make parser
-lex.yy.c: parse.l
-	${LEX} -i $^
+lex.asql_yy.c: parse.l
+	${LEX} -Pasql_yy -i $^
 
 ################
 #Rule to make objects from 4GL file - Informix version
@@ -275,6 +275,6 @@ clean:
 	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} \
     ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
 	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c} \
-    *.bak *.err *.warn lex.yy.c
+    *.bak *.err *.warn lex.asql_yy.c
 
 # ============================= EOF =================================

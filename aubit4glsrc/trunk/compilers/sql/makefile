@@ -1,5 +1,5 @@
 #
-# $Id: makefile,v 1.9 2005-02-09 02:20:12 afalout Exp $
+# $Id: makefile,v 1.10 2005-03-14 21:39:23 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -22,7 +22,7 @@ ifeq "${YACC}" "no"
 	KW_YH		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.yh
 else
 	Y_TAB_C		=y.tab.c
-	LEX_YY_C	=lex.yy.c
+	LEX_YY_C	=lex.sqlparse_yy.c
 	KW_YH		=../4glc/rules/generated/kw.yh
 endif
 
@@ -79,14 +79,14 @@ sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	
 ${Y_TAB_C}: sql.yacc
 ifneq "${YACC}" "no"
-	${YACC} -v -t -d $<
+	${YACC} -p sqlparse -v -t -d $<
 else
 	@echo "No yacc (${YACC}) Using ${Y_TAB_C}"
 endif	
 
 ${LEX_YY_C}: m2.lex
 ifneq "${LEX}" "no"
-	${LEX} -i $<
+	${LEX} -Psqlparse_yy -i $<
 else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif

@@ -187,14 +187,14 @@ function qry_run()
 define a integer
 code
 {
-extern FILE *yyin;
+extern FILE *asql_yyin;
 extern struct element *list;
 extern int list_cnt;
 
 
-yyin=(FILE *)get_curr_mvfin("SQL");
+asql_yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
-a=yyparse();
+a=my_pretend_yyparse();
 a=list_cnt;
 }
 endcode
@@ -302,12 +302,12 @@ end case
 call open_tmpfile("SQL","r")
 code
 {
-extern FILE *yyin;
+extern FILE *asql_yyin;
 extern struct element *list;
 extern int list_cnt;
-yyin=(FILE *)get_curr_mvfin("SQL");
+asql_yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
-a=yyparse();
+a=my_pretend_yyparse();
 a=list_cnt;
 }
 endcode

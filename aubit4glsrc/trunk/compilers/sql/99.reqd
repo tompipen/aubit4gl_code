@@ -1,5 +1,5 @@
 %%
 
-#include "lex.yy.c"
+#include "lex.sqlparse_yy.c"
 #include "util.c"
 

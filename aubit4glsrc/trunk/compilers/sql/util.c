@@ -3,12 +3,14 @@
 */
 
 #include "a4gl_libaubit4gl.h"
-//#include "API_lex.h"
+void *nbs=0;
 
 struct sql_stmt {
         int type;
         char *val;
 };
+
+extern int yydebug;
 
 struct sql_stmt *stmts=0;
 int stmts_cnt=0;
@@ -182,7 +184,7 @@ fix_update_expr (int mode)
       if (db_used == 0)
         {
           sprintf (buff, "You cannot use update * =  without specifying a database");
-          asql_yyerror (buff);
+          sqlparse_yyerror (buff);
           return 0;
         }
 
@@ -192,7 +194,7 @@ fix_update_expr (int mode)
         A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
       if (rval == 0)
         {
-          asql_yyerror ("Table is not in the database");
+          sqlparse_yyerror ("Table is not in the database");
           return 0;
         }
 
@@ -214,7 +216,7 @@ fix_update_expr (int mode)
     {
 	//dump_updvals();
 	printf("%d %d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]);
-      asql_yyerror
+      sqlparse_yyerror
         ("Number of columns in update not the same as number of values");
     }
 
@@ -383,8 +385,8 @@ static char *get_bad_sql(void) {
 
 
 static void A4GLSQLCV_loadbuffer(char *fname) {
-	//FILE *in;
-	//int l;
+	if (nbs) yy_delete_buffer(nbs);
+
 	if (strcmp(fname,"-")==0) {
 		Sql_file=stdin;
 		input_from_file=1;
@@ -402,9 +404,11 @@ static void A4GLSQLCV_loadbuffer(char *fname) {
 
 
 static void A4GLSQLCV_setbuffer(char *s) {
+	if (nbs) yy_delete_buffer(nbs);
 	if (Sql) free(Sql);
 	Sql=strdup(s);
-	//printf("Length = %d (%s)\n",strlen(Sql),s);
+	A4GL_trim(Sql);
+	nbs=yy_scan_string(Sql);
 	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
 	input_from_file=0;
 	Sql_file=0;
@@ -426,21 +430,18 @@ static int meminput(char *buf,int maxsize) {
 
 
 
-static int asql_yyerror(char *s) {
+static int sqlparse_yyerror(char *s) {
 	A4GL_debug("%s Sql=%p\n",s,Sql);
 	if (Sql) {
 		char buff[200];
 		int c;
 		A4GL_debug("Here\n");
-		//printf("Here : %s in  %s\n",s,Sql); sleep (1);
 		c=sql_string_cnt;
 		c-=20;
 		if (c<0) {c=0; }
 		strncpy(buff,&Sql[sql_string_cnt],199);
 		buff[199]=0;
 		A4GL_debug("MEMREAD syntax error: %s\n",buff);
-		//printf("MEMREAD syntax error %s\n",buff);
-		//printf("                                         ^\n");
 	}
 	was_ok=0;
 	return 0;
@@ -485,7 +486,6 @@ convstr_dbl_to_single (char *s)
       buff[b++] = s[a];
 
     }
-  //printf ("Convstrsql ... %s => %s\n", s, buff);
   return buff;
 }
 
@@ -661,6 +661,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 	int a;
 	static char *ptr=0;
 	int l;
+	yydebug=0;
 	add_sql(-1,"");
 	A4GL_debug("A4GLSQLCV_convert_sql_internal %s %s %s %d",source_dialect, target_dialect, sql, from_file);
 
@@ -677,6 +678,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 	}
 
 	A4GL_debug("stmts=%p stmts_cnt=%d Sql=%s",stmts,stmts_cnt,Sql);
+
 	if (A4GLSQLCV_process()) {
 		// All ok !
 		A4GL_debug("SQL processed OK (%d statements)",stmts_cnt);
@@ -712,7 +714,9 @@ return ptr;
 
 char * A4GLSQLCV_convert_sql (char *target_dialect, char *sql) {
 char *ptr;
-ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
+	sql=strdup(sql);
+	ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
+	if (ptr!=sql) free(sql);
 	return ptr;
 }
 
@@ -725,8 +729,7 @@ static int A4GLSQLCV_process(void) {
         was_ok=1;
 	sql_string_cnt=0;
 	this_sql_start=0;
-
-        asql_yyparse();
+        sqlparse_yyparse();
         return was_ok;
 }
 
