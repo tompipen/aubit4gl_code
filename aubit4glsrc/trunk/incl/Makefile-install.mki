@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.47 2003-01-24 08:36:21 afalout Exp $
+# $Id: Makefile-install.mki,v 1.48 2003-01-25 01:46:59 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -465,6 +465,38 @@ install.dot: ${GRAPHVIZ_RPM}
 	@echo "Graphviz and Dot tool installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+install.doxygen:
+	@echo "FIXME: TO-DO"
+
+install.pg.esql:
+	@echo "FIXME: TO-DO"
+
+install.sapdb.odbc:
+	@echo "FIXME: TO-DO"
+
+install.mpz:
+	@echo "FIXME: TO-DO"
+
+install.sunrpc:
+	@echo "FIXME: TO-DO"
+
+install.xmmlrpc:
+	@echo "FIXME: TO-DO"
+
+install.unixodbc:
+	@echo "FIXME: TO-DO"
+
+install.ifx.odbc:
+	@echo "FIXME: TO-DO"
+
+install.pg.odbc:
+	@echo "FIXME: TO-DO"
+
+install.ifx.esql:
+	@echo "FIXME: TO-DO"
+
+install.gtk:
+	@echo "FIXME: TO-DO"
 
 # ============================== EOF ================================
 

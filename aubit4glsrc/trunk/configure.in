@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.140 2003-01-24 08:35:51 afalout Exp $
+dnl # $Id: configure.in,v 1.141 2003-01-25 01:46:39 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3154,7 +3154,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES GTK"
 	else
         PLUGIN_NO="$PLUGIN_NO GTK"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
@@ -3162,6 +3162,8 @@ fi
         PLUGIN_YES="$PLUGIN_YES TUI"
 	else
         PLUGIN_NO="$PLUGIN_NO TUI"
+		#should be on every Linux
+		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
 	fi
 
 	if test "$PDFBUILD" != "no"; then
@@ -3177,6 +3179,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES IFX_NATIVE"
 	else
         PLUGIN_NO="$PLUGIN_NO IFX_NATIVE"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
 	if test "$HAVE_PGODBC" = "yes" ; then
@@ -3184,6 +3187,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES PG_ODBC"
 	else
         PLUGIN_NO="$PLUGIN_NO PG_ODBC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.odbc"
 	fi
 
 	if test "$HAVE_IFXODBC" = "yes" ; then
@@ -3191,6 +3195,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES IFXODBC"
 	else
         PLUGIN_NO="$PLUGIN_NO IFXODBC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.odbc"
 	fi
 
 	if test "$HAVE_IODBC" = "yes" ; then
@@ -3206,6 +3211,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES unixODBC"
 	else
         PLUGIN_NO="$PLUGIN_NO unixODBC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbc"
 	fi
 
 	if test "$cygwin" = "1"; then
@@ -3222,6 +3228,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES XML-RPC"
 	else
         PLUGIN_NO="$PLUGIN_NO XML-RPC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmmlrpc"
 	fi
 
 	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
@@ -3242,6 +3249,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER"
 	else
         PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
 	fi
 
 	if test "$EXDATA_MPZ" != "no"; then
@@ -3249,6 +3257,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES MPZ"
 	else
         PLUGIN_NO="$PLUGIN_NO MPZ"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.mpz"
 	fi
 
 	if test "$HAVE_SAPODBC" = "yes" ; then
@@ -3256,6 +3265,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES SAPODBC"
 	else
         PLUGIN_NO="$PLUGIN_NO SAPODBC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sapdb.odbc"
 	fi
 
 	#this is made by 'make extra'
@@ -3278,6 +3288,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
 	else
         PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
 	if test "$DOT" = "no"; then
@@ -3285,7 +3296,7 @@ fi
     fi
 
 	if test "$DOXYGEN" = "no"; then
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.doxygen"
     fi
 
 	#RPMFILE_25=$LIB_PREFIX/

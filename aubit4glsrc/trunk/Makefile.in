@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.109 2003-01-24 08:35:43 afalout Exp $
+# $Id: Makefile.in,v 1.110 2003-01-25 01:46:35 afalout Exp $
 #
 
 ## ==================================================================
@@ -723,8 +723,20 @@ help.optional:
 	@echo " install.pdflib: Install PDF library"
 	@echo " install.iksemel: Install Jabber library"
 	@echo " install.dot: Install DoxyGen Dot tool, part of Graphviz package"
-	@echo
-
+	@echo ""
+	@echo "FIXME: TO-DO:"
+	@echo "install.doxygen:"
+	@echo "install.pg.esql:"
+	@echo "install.sapdb.odbc:"
+	@echo "install.mpz:"
+	@echo "install.sunrpc:"
+	@echo "install.xmmlrpc:"
+	@echo "install.unixodbc:"
+	@echo "install.ifx.odbc:"
+	@echo "install.pg.odbc:"
+	@echo "install.ifx.esql:"
+	@echo "install.gtk:"
+	@echo ""
 
 
 ## ------------------------------------------------------------------

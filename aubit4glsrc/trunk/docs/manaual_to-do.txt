@@ -1629,7 +1629,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.4 2003-01-24 08:36:21 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.5 2003-01-25 01:46:59 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3519,7 +3519,8 @@ See file P29f.err
 make[2]: [P29f.ao] Error 2 (ignored)
 sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/conv_rate.4gl -c -o conv_rate.ao
 
-
+ordhead=105
+-------------------------------------------
 
 sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/wshorwin.4gl -c -o wshorwin.ao
 ============ FIRST ERROR: ==============
@@ -3584,3 +3585,5 @@ See file psepwind.err
 make: *** [psepwind.ao] Error 2
 ERROR: amake failed.
 See .err files generated
+
+115
