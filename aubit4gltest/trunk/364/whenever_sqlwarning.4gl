@@ -2,7 +2,7 @@ DATABASE test1
 
 
 function sqlwarninghandler()
-display "sqlwarning.."
+	display "sqlwarning.."
 end function
 
 FUNCTION test_whenever()

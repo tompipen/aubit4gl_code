@@ -1,7 +1,7 @@
 DATABASE test1
 
 function notfoundhandler()
-display "not found"
+	display "not found"
 end function
 
 

@@ -12,3 +12,7 @@ ansi_sql_compat:
 
 desc:
 	@echo "Simple foreach handling"
+	
+sql_features_used:
+	@echo "CURSOR_SELECT IFX_SYSTABLES "
+	

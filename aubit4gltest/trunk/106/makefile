@@ -226,7 +226,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "SQL_END_SQL SELECT_RELATIVE"
+	@echo "SQL_END_SQL_BLOCK SELECT_RELATIVE"
 
 
 # ============================= EOF ================================

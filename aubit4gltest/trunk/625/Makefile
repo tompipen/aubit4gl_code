@@ -193,5 +193,5 @@ ansi_sql_compat:
 
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT \
-		DELETE_FROM_WHERE"
+		ANSI_DELETE"
 

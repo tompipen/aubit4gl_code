@@ -589,4 +589,8 @@ if test "$INFO_TEST" = "1"; then
 	fi
 fi
 
+	#Define list(s) of recognized SQL features
+	define_sql_features
+
+
 

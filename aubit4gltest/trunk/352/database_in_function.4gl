@@ -1,6 +1,6 @@
 
 main
-call db_function()
+	call db_function()
 end main
 
 

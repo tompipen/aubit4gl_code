@@ -213,4 +213,15 @@ need_ifx_version:
 transaction:
 	@echo "0"
 	
+	
+#################
+#If test is ANSI SQL 92 compatible, set to "1", if not to "0"
+#If unknown, leave empty
+ansi_sql_compat:
+	@echo ""
+
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS" 
+	
+	
 # ============================= EOF ================================

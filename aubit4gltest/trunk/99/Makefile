@@ -14,6 +14,8 @@ run: all
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE  ANSI_SELECT"
 
 desc:
 	@echo "Test of Aubit4GL extension - IN and EXISTS as 4GL expression"

@@ -1,7 +1,7 @@
 DATABASE test1
 
 function sqlerrorhandler()
-display "sqlerrorhandler"
+	display "sqlerrorhandler"
 end function
 
 

@@ -20,3 +20,6 @@ clean:
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "REPORT_ORDER_BY "
+

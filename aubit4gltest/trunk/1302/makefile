@@ -208,3 +208,7 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME DDL_INTERVAL ANSI_INSERT \
+		UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT "
+

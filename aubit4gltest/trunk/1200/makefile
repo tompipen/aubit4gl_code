@@ -213,4 +213,15 @@ need_ifx_version:
 transaction:
 	@echo "0"
 	
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE ANSI_INSERT DROP_TABLE ANSI_SELECT CURSOR_SELECT \
+		FREE_CURSOR CLOSE_CURSOR SQLCA_SQLCODE STATUS" 
+	
+	
+#################
+#If test is ANSI SQL 92 compatible, set to "1", if not to "0"
+#If unknown, leave empty
+ansi_sql_compat:
+	@echo ""
+	
 # ============================= EOF ================================

@@ -2,7 +2,7 @@
 DATABASE test1
 
 main
-call db_function()
+	call db_function()
 end main
 
 FUNCTION db_function()

@@ -16,3 +16,6 @@ clean:
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT VALIDATE_LIKE"
+

@@ -1,7 +1,7 @@
 DATABASE test1
 
 function anyErrorHandler()
-display "anyErrorHandler"
+	display "anyErrorHandler"
 end function
 
 FUNCTION test_whenever()

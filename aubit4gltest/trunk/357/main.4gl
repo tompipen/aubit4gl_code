@@ -1,3 +1,3 @@
 main
-call test_whenever()
+	call test_whenever()
 end main

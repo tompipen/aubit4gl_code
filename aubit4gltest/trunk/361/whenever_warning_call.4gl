@@ -10,5 +10,5 @@ END FUNCTION
 
 
 function warning_handler()
-display "Warning handler called"
+	display "Warning handler called"
 end function

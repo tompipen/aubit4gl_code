@@ -1265,7 +1265,7 @@ if test "$LOOP_TIMES" != ""; then
 		ALL_TESTS=""
 		CNT=0
 		while [ "1" = "1" ] ; do
-			CNT=`(expr $CNT + 1) 2>/dev/null`
+			let CNT=CNT + 1
 			ALL_TESTS="$ALL_TESTS $RUN_ONE"
 			if test "$CNT" = "$LOOP_TIMES"; then 
 				break
@@ -1627,7 +1627,7 @@ do
 	
     #################################
 	#Initialise counters and variables:
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	let COUNTER=COUNTER+1
 	IS_DB_TEST=0
 	ec_test=0
 	IS_NOSILENT_TEST=0
@@ -1967,7 +1967,7 @@ do
 		echo "TEST_NO=$TEST_NO" >> $WATCHIT_SH		
 		echo "echo 'Begin, test $TEST_NO' > /tmp/watchit.log" >> $WATCHIT_SH		
 		echo 'while [ "1" = "1" ] ; do' >> $WATCHIT_SH
-		echo '	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`' >> $WATCHIT_SH
+		echo '	let RUN_CNT=RUN_CNT+1' >> $WATCHIT_SH
 		echo '	if test "$RUN_CNT" = "10"; then' >> $WATCHIT_SH
 		echo '		echo "Max loop 10 - exit" >> /tmp/watchit.log' >> $WATCHIT_SH
 		echo "		MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
@@ -2011,7 +2011,7 @@ do
 	
 	##################################
     # run it:
-	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`
+	let RUN_CNT=RUN_CNT+1
 
 	cd $CURR_DIR/$TEST_NO
     if test "$SILENT" = "1" -o "$NO_TEST_OUTPUT" = "1"; then
@@ -2042,7 +2042,7 @@ do
 	fi
 	if test "$TIME_SCRIPT" = "1"; then
 		EXIT_TIME=`date +%s`
-		TOOK_TIME=`(expr $EXIT_TIME - $START_TIME) 2>/dev/null`
+		let TOOK_TIME=EXIT_TIME - START_TIME
 		echo "Took $TOOK_TIME seconds from start of run_tests to execution point"
 		if test "$TIME_LOOP" != "1"; then
 			exit 0
@@ -2052,7 +2052,7 @@ do
 	fi
 	if test "$TIME_LOOP" = "1"; then
 		LOOP_EXIT_TIME=`date +%s`
-		LOOP_TOOK_TIME=`(expr $LOOP_EXIT_TIME - $LOOP_START_TIME) 2>/dev/null`
+		let LOOP_TOOK_TIME=LOOP_EXIT_TIME - LOOP_START_TIME
 		echo "Took $LOOP_TOOK_TIME seconds from start of test loop to execution point"
 		continue
 	fi
@@ -2084,7 +2084,7 @@ do
 			fi
 			RET="kill"
 			KILL_LIST="$KILL_LIST $TEST_NO"
-			KILL_CNT=`(expr $KILL_CNT + 1) 2>/dev/null`
+			let KILL_CNT=KILL_CNT+1
 		else
 			#VERBOSE=1
 			if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
@@ -2134,7 +2134,7 @@ do
 		    TIME_COUNTER=0
 			for t in $TIME_LEGEND
 			do
-				#TIME_COUNTER=`(expr $TIME_COUNTER + 1) 2>/dev/null`
+				#let TIME_COUNTER=TIME_COUNTER+1
 	            #eval "TIME_$TIME_COUNTER=$t"
 				echo -e -n "$t\t"
 	        done
@@ -2144,7 +2144,7 @@ do
 			TIME_COUNTER=0
 			for t in $@
 			do
-				TIME_COUNTER=`(expr $TIME_COUNTER + 1) 2>/dev/null`
+				let TIME_COUNTER=TIME_COUNTER+1
 	            eval "TIME_$TIME_COUNTER=$t"
 				echo -e -n "$t\t"
 	        done
@@ -2164,10 +2164,10 @@ do
 		RESULT=1
 		if test "$IS_DB_TEST" = "1"; then
 			PASS_DB_TESTS="$PASS_DB_TESTS $TEST_NO"
-			PASS_DB_CNT=`(expr $PASS_DB_CNT + 1) 2>/dev/null`
+			let PASS_DB_CNT=PASS_DB_CNT+1
 		else
 			PASS_NONDB_TESTS="$PASS_NONDB_TESTS $TEST_NO"
-			PASS_NONDB_CNT=`(expr $PASS_NONDB_CNT + 1) 2>/dev/null`
+			let PASS_NONDB_CNT=PASS_NONDB_CNT+1
 		fi
 
 		#Compile list of all working SQL features:
@@ -2210,15 +2210,15 @@ do
 				echo "NOTE: $TEST_NO was expected to fail, but passed!"  >> $LOGFILE
 			fi
 			EXPECTED_TO_FAIL_PASSED_LIST="$EXPECTED_TO_FAIL_PASSED_LIST $TEST_NO"
-			EXPECTED_TO_FAIL_PASSED_CNT=`(expr $EXPECTED_TO_FAIL_PASSED_CNT + 1) 2>/dev/null`
+			let EXPECTED_TO_FAIL_PASSED_CNT=EXPECTED_TO_FAIL_PASSED_CNT+1
 		fi
-		PASS_CNT=`(expr $PASS_CNT + 1) 2>/dev/null`
+		let PASS_CNT=PASS_CNT+1
 		PASS_LIST="$PASS_LIST $TEST_NO"
 		if test "$IS_CERT_TEST" = "0"; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then
 				echo "$TEST_NO Pass - NOT CERTIFIED" >> $LOGFILE
 			fi
-			NOT_CERT_CNT=`(expr $NOT_CERT_CNT + 1) 2>/dev/null`
+			let NOT_CERT_CNT=NOT_CERT_CNT+1
 			NOT_CERT_LIST="$NOT_CERT_LIST $TEST_NO"
         else
 			if test "$SHOW_ITEM_RESULT" = "1"; then		
@@ -2228,7 +2228,7 @@ do
 	else
 		#test failed
 		RESULT=0
-		FAIL_CNT=`(expr $FAIL_CNT + 1) 2>/dev/null`
+		let FAIL_CNT=FAIL_CNT+1
 		
 		#Compile list of all failed SQL features:
 		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
@@ -2259,10 +2259,10 @@ do
 
 		if test "$IS_DB_TEST" = "1"; then
 			FAIL_DB_TESTS="$FAIL_DB_TESTS $TEST_NO"
-			FAIL_DB_CNT=`(expr $FAIL_DB_CNT + 1) 2>/dev/null`
+			let FAIL_DB_CNT=FAIL_DB_CNT+1
 		else
 			FAIL_NONDB_TESTS="$FAIL_NONDB_TESTS $TEST_NO"
-			FAIL_NONDB_CNT=`(expr $FAIL_NONDB_CNT + 1) 2>/dev/null`
+			let FAIL_NONDB_CNT=FAIL_NONDB_CNT+1
 		fi
 		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
 			IS_EXPECT_TO_FAIL_TEST=1
@@ -2271,11 +2271,11 @@ do
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then 
 			TMPNOTE="(expected)"
 			EXPECTED_TO_FAIL_LIST="$EXPECTED_TO_FAIL_LIST $TEST_NO"
-			EXPECTED_TO_FAIL_CNT=`(expr $EXPECTED_TO_FAIL_CNT + 1) 2>/dev/null`
+			let EXPECTED_TO_FAIL_CNT=EXPECTED_TO_FAIL_CNT+1
 		else
 			TMPNOTE=
 			NOT_EXPECTED_TO_FAIL_LIST="$NOT_EXPECTED_TO_FAIL_LIST $TEST_NO"
-			NOT_EXPECTED_TO_FAIL_CNT=`(expr $NOT_EXPECTED_TO_FAIL_CNT + 1) 2>/dev/null`			
+			let NOT_EXPECTED_TO_FAIL_CNT=NOT_EXPECTED_TO_FAIL_CNT+1			
 		fi
 		
 		if test "$IS_CERT_TEST" = "1" -a "$USE_ECI" = "1" ; then
@@ -2313,7 +2313,7 @@ do
 	
 	if test "$TIME_LOOP2" = "1"; then
 		LOOP_EXIT_TIME2=`date +%s`
-		LOOP_TOOK_TIME2=`(expr $LOOP_EXIT_TIME2 - $LOOP_START_TIME2) 2>/dev/null`
+		let LOOP_TOOK_TIME2=LOOP_EXIT_TIME2 - LOOP_START_TIME2
 		echo "Took $LOOP_TOOK_TIME2 seconds from execution point to end of loop"
 	fi
 #####
@@ -2514,18 +2514,22 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	if test "$NOT_ANSI_NO_SQL_FEATURES_DESC" != ""; then 
 		echo "Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
 	fi
+	
+	SQLFEATURES_LOGFILE=$CURR_DIR/sqlfeatures.log
+	rm -f $SQLFEATURES_LOGFILE
+	
 	if test "$PASS_INCOMPAT_SQL" != ""; then
-		echo "" >> $LOGFILE
-		echo "Passed, but SQL features used are listed as incompatible:" >> $LOGFILE
-		echo "$PASS_INCOMPAT_SQL" >> $LOGFILE
-		echo "" >> $LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "Passed, but SQL features used are listed as incompatible:" >> $SQLFEATURES_LOGFILE
+		echo "$PASS_INCOMPAT_SQL" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
 	fi
 	
 	if test "$FAIL_COMPAT_SQL" != ""; then 
-		echo "" >> $LOGFILE
-		echo "Failed, but SQL features used are listed as compatible:" >> $LOGFILE
-		echo "$FAIL_COMPAT_SQL" >> $LOGFILE
-		echo "" >> $LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
+		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
 	fi	
 	
 	if test "$FEATURE_NOT_EXPECTED" != ""; then
@@ -2574,16 +2578,24 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	
 	if test "$SQL_FEATURES_PASS_LIST" != ""; then
 		#This is 100% correct
-		echo "All working SQL features: $SQL_FEATURES_PASS_LIST"  >> $LOGFILE
+		echo "" >> SQLFEATURES_LOGFILE
+		echo "All working SQL features:"  >> $SQLFEATURES_LOGFILE
+		echo "$SQL_FEATURES_PASS_LIST"  >> $SQLFEATURES_LOGFILE		
+		echo "" >> SQLFEATURES_LOGFILE
 	fi
 	if test "$FILTERED_SQL_FEATURES_FAIL_LIST" != ""; then
 		#This is potentially not 100% correct, since we can have here listed
 		#an feature that did not fail, but the test in which it appeared did 
 		#for some other reason, and the same feature did not appear in any
 		#of the tests that passed, so we could not eliminate it from fail list
-		echo "All failed SQL features: $FILTERED_SQL_FEATURES_FAIL_LIST" >> $LOGFILE
+		echo "" >> SQLFEATURES_LOGFILE
+		echo "All (probably) failed SQL features:" >> $SQLFEATURES_LOGFILE
+		echo "$FILTERED_SQL_FEATURES_FAIL_LIST" >> $SQLFEATURES_LOGFILE		
+		echo "" >> SQLFEATURES_LOGFILE		
 	fi
-	
+	echo ""	 >> $LOGFILE
+	echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
+	echo ""	 >> $LOGFILE
 else
 	if test "$SKIP_OTHER_LIST" != "" ; then 
 		echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
@@ -2629,8 +2641,8 @@ else
         FAIL_CNT_TOT=`cat $CURR_DIR/fail.cnt`
         PASS_CNT_TOT=`cat $CURR_DIR/pass.cnt`
 
-		FAIL_CNT_NEW=`(expr $FAIL_CNT + $FAIL_CNT_TOT) 2>/dev/null`
-		PASS_CNT_NEW=`(expr $PASS_CNT + $PASS_CNT_TOT) 2>/dev/null`
+		let FAIL_CNT_NEW=FAIL_CNT+FAIL_CNT_TOT
+		let PASS_CNT_NEW=PASS_CNT+PASS_CNT_TOT
 
 		echo "$FAIL_CNT_NEW" > $CURR_DIR/fail.cnt
         echo "$PASS_CNT_NEW" > $CURR_DIR/pass.cnt

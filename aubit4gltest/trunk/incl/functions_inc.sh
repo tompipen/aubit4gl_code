@@ -2,6 +2,405 @@
 #							Functions
 ##############################################################################
 
+function cntpp () {
+local num=$1
+local numpp=0
+echo "got $num"
+	#C_CNT=`(expr $C_CNT + 1) 2>/dev/null`
+	let numpp=$num+1
+echo "returning $numpp"
+	return $numpp
+	
+}
+
+function test_cntpp () {
+	
+	X=4
+	echo $X
+	#let X=call cntpp $X
+	#cntpp $X; X=$?
+	#X=[cntpp $X]
+	echo $X
+	exit
+
+}
+
+
+##########################################
+#Define list(s) of recognized SQL features
+define_sql_features () {
+
+#test_cntpp
+	
+if test "$DISABLE_SQL_FEATURES_CHECK" != "1"; then
+#SH_DBG=1
+
+if test "$SH_DBG" = "1"; then 
+	echo "Loading SQL features list...."
+fi
+
+#sql_features_used:
+#	@echo ""
+
+#UPDATE_VIEW -> META_UPDATE_VIEW
+#SQL_FUNCTION_SUBSTR -> FUNC_SUBSTR
+#SQL_SERIAL -> DDL_SERIAL
+#DDL_MONEY_DATATYPE -> DDL_MONEY
+#SQL_UNIQUE -> what is that?
+
+		#First field legend:
+		#-------------------
+		#(P)OSSIBLE - all non-ANSI compatible SQL or db features that is posible
+		#to translate/emulate, but this is __NOT__ currently working
+		#It is anticipated that support for them will be implemented in the 
+		#near future
+		#
+		#(S)UPPORTED - all non-ANSI compatible SQL or db features that is posible
+		#to translate/emulate, and is implemented in Aubit and fully working
+		#
+		#(D)EPENDS - all non-ANSI compatible SQL or db features that is NOT posible
+		#to translate/emulate, so there behaviour will depend on functionality
+		#of the database back-end used.
+		#
+		#(I)MPOSSIBLE - all non-ANSI compatible SQL or db features that is NOT posible
+		#to translate/emulate, and never will be since it depends on the
+		#functionality of the back-end that CANNOT be emulated, translated
+		#or subsitituted
+
+		#Second field legend:
+		#--------------------
+		#D=DDL statement 
+		#S=SQL statement (Datata Manipulation Statement)
+		#C=Conectivity statement
+		#P=Procedure&trigger (Server Side) 
+		#F=Functions (Server Side)
+		#X=miXed
+		
+		#Array containing all possible / known SQL features names
+		SQL_FEATURES_NON_ANSI="\
+			I D ADD_CONSTRAINT \
+			I D ALTER_INDEX \
+			P D ALTER_TABLE \
+			I D ALTER_TABLE_ADD \
+			I D ALTER_TABLE_ADD_BEFORE \
+			I D ALTER_TABLE_DROP \
+			I D ALTER_TABLE_LOCK_MODE \
+			S S ANSI_DELETE \
+			S S ANSI_INSERT \
+			S S ANSI_SELECT \
+			S S ANSI_UPDATE \
+			S S BEGIN_WORK \
+			S S CLOSE_CURSOR \
+			S C CLOSE_DATABASE \
+			I D CLUSTER_INDEX \
+			S S COMMIT_WORK \
+			I D CREATE_AUDIT \
+			P D CREATE_DATABASE \
+			I D CREATE_DATABASE_IN \
+			I D CREATE_DATABASE_MODE_ANSI \
+			I D CREATE_DATABASE_WITH_LOG \
+			S D CREATE_INDEX \
+			P D CREATE_INDEX_ASC \
+			I D CREATE_INDEX_ASC_DESC \
+			I D CREATE_INDEX_CLUSTER \
+			I D CREATE_INDEX_COMPOSITE \
+			I D CREATE_INDEX_DESC \
+			S D CREATE_INDEX_UNIQUE \
+			I D CREATE_INDEX_UNIQUE_COMPOSITE \
+			I P CREATE_PROCEDURE \
+			I D CREATE_SYNONYM \
+			S D CREATE_TABLE \
+			I D CREATE_TABLE_EXTENT \
+			I D CREATE_TABLE_IN \
+			I D CREATE_TABLE_LOCK_MODE \
+			I D CREATE_TABLE_NEXT_SIZE \
+			S D CREATE_TEMP_TABLE \
+			I D CREATE_TEMP_TABLE_NO_LOG \
+			S D CREATE_VIEW_AS_SELECT \
+			S D CREATE_VIEW_AS_SELECT_MULTI_TABLE \
+			I D CREATE_VIEW_SELECT_WITH_CHECK \
+			S S CURSOR_SELECT \
+			S S CURSOR_SELECT_FOR_UPDATE \
+			S C DATABASE \
+			I C DATABASE_EXCLUSIVE \
+			P F DATETIME_EXTEND \
+			P D DDL_BYTE \
+			I D DDL_CHECK \
+			I D DDL_CONSTRAINT \
+			S D DDL_DATE \
+			S D DDL_DATETIME \
+			S D DDL_DEFAULT_VALUE \
+			P D DDL_DOUBLE_PRECISION \
+			P D DDL_FOREIGN_KEY \
+			I D DDL_INTERVAL \
+			S D DDL_MONEY \
+			P D DDL_NCHAR \
+			I D DDL_NEXT_SIZE \
+			S D DDL_NOT_NULL \
+			P D DDL_NVARCHAR \
+			P D DDL_PRIMARY_KEY \
+			I D DDL_REFERENCES \
+			P D DDL_SERIAL \
+			I D DDL_SET_CONSTRAINT \
+			I D DDL_SYNONYM \
+			P D DDL_TEXT \
+			P D DDL_UNIQUE \
+			S X DEFINE_LIKE \
+			P X DEFINE_LIKE_QUALIFIED_PATH \
+			I S DELETE_FROM_WHERE_ALL_SUBSELECT \
+			I S DELETE_FROM_WHERE_ANY_SUBSELECT \
+			P S DELETE_FROM_WHERE_EXISTS_SUBSELECT \
+			S S DELETE_FROM_WHERE_NULL \
+			I S DELETE_FROM_WHERE_SOME_SUBSELECT \
+			S S DELETE_FROM_WHERE_WITH_SUBSELECT \
+			I S DELETE_WHERE_CURRENT_OF \
+			I D DESC_INDEX \
+			I D DROP_AUDIT \
+			I D DROP_CONSTRAINT \
+			P D DROP_DATABASE \
+			S D DROP_INDEX \
+			I F DROP_PROCEDURE \
+			I D DROP_SYNONYM \
+			S D DROP_TABLE \
+			I F DROP_TRIGGER \
+			S D DROP_VIEW \
+			S S EXECUTE_INTO_USING \
+			S S EXECUTE_USING \
+			P S FETCH_RELATIVE \
+			S S FREE_CURSOR \
+			S X FREE_LOB \
+			P F FUNC_EXTEND \
+			P F FUNC_INTERVAL \
+			D F FUNC_SUBSTR \
+			S D GRANT \
+			S S GROUP_BY \
+			S S GROUP_BY_NUMBER \
+			I D IFX_SYSTABLES \
+			I D INDEX_FILLFACTOR \
+			S X INITIALIZE_LIKE \
+			S S INSERT_COLUMNLIST_EQ_VALUELIST \
+			S S INSERT_INTO_SELECT_FROM \
+			S X LOAD_FROM_INSERT_INTO \
+			I S LOCK_TABLE \
+			I S LOCK_TABLE_EXCLUSIVE \
+			I S LOCK_TABLE_SHARED \
+			I S META_DELETE_FROM_SYNONYM \
+			P S META_DELETE_FROM_VIEW \
+			P S META_DELETE_FROM_VIEW_MULTI_TABLE \
+			I S META_INSERT_MULTITABLE_VIEW \
+			I S META_INSERT_SYNONYM \
+			I S META_INSERT_VIEW \
+			P S META_SELECT_AS_ALIAS \
+			I S META_SELECT_FROM_SYNONYM \
+			S S META_SELECT_FROM_VIEW \
+			I S META_UPDATE_MULTI_TABLE_VIEW \
+			I S META_UPDATE_VIEW \
+			S S ORDER_BY \
+			S S ORDER_BY_ASC \
+			I S ORDER_BY_DESC \
+			S S ORDER_BY_NUMBER \
+			P S PUT_CURSOR \
+			I D RECOVER_TABLE \
+			I D RENAME_COLUMN \
+			I D RENAME_TABLE \
+			S X REPORT_ORDER_BY \
+			S D REVOKE \
+			S S ROLLBACK_WORK \
+			I D ROLLFORWARD_DATABASE \
+			I D ROWID \
+			I S SCROLL_CURSOR \
+			S S SELECT_ALL \
+			S S SELECT_AS \
+			S F SELECT_AVG \
+			S F SELECT_AVG_ALL \
+			S F SELECT_COUNT \
+			I F SELECT_COUNT_DISTINCT \
+			S S SELECT_DISTINCT \
+			S S SELECT_FOR_UPDATE \
+			S S SELECT_FOR_UPDATE_CURSOR \
+			S X SELECT_HAVING_COUNT \
+			S S SELECT_INTO_TEMP \
+			P X SELECT_INTO_TEMP_WITH_NO_LOG \
+			S F SELECT_MAX \
+			S X SELECT_MAX_ALL \
+			S F SELECT_MIN \
+			S X SELECT_MIN_ALL \
+			I S SELECT_OUTER \
+			D S SELECT_RELATIVE \
+			D F SELECT_SUBSTRING \
+			S F SELECT_SUM \
+			S X SELECT_SUM_ALL \
+			D S SELECT_UNION \
+			D S SELECT_UNION_ALL \
+			D S SELECT_WHERE_ALL_SUBSELECT \
+			S S SELECT_WHERE_BETWEEN \
+			S S SELECT_WHERE_EXISTS_SUBSELECT \
+			S S SELECT_WHERE_IN \
+			S S SELECT_WHERE_IN_SUBSELECT \
+			S S SELECT_WHERE_LIKE \
+			S S SELECT_WHERE_MATCHES \
+			S S SELECT_WHERE_NULL \
+			I D SET_BUFFERED_LOG \
+			I F SET_EXPLAIN \
+			I X SET_ISOLATION \
+			D X SET_LOCK_MODE \
+			D X SET_LOG \
+			S X SQLCA_SQLAWARN1 \
+			S X SQLCA_SQLAWARN2 \
+			S X SQLCA_SQLAWARN3 \
+			S X SQLCA_SQLAWARN4 \
+			S X SQLCA_SQLCODE \
+			S X SQLCA_SQLERRD1 \
+			S X SQLCA_SQLERRD2 \
+			S X SQLCA_SQLERRD3 \
+			S X SQLCA_SQLERRD4 \
+			S X SQLCA_SQLERRD5 \
+			S X SQLCA_SQLERRD6 \
+			S X SQLCA_SQLERRM \
+			S X SQL_END_SQL_BLOCK \
+			I D START_DATABASE \
+			I D START_DATABASE_WITH_LOG \
+			I D START_DATABASE_WITH_LOG_MODE_ANSI \
+			D X TABLENAME_DB_SERVER_USER_TABLE \
+			D X TABLENAME_DB_TABLE \
+			D X TABLENAME_DB_USER_TABLE \
+			P X UNLOAD_PATH_RELATIVE \
+			S X UNLOAD_TO \
+			S X UNLOAD_TO_SELECT_FROM \
+			S X UNLOAD_TO_SELECT_FROM_WHERE \
+			D S UNLOCK_TABLE \
+			S S UPDATE_COLUMNLIST_EQ_VALUELIST \
+			P S UPDATE_COLUMNLIST_EQ_VALUELIST_WITH_THRU \
+			S S UPDATE_SET_STAR \
+			S S UPDATE_SET_VALUE_WITH_SUBSELECT \
+			I D UPDATE_STATISTICS \
+			D S UPDATE_WHERE_CURRENT_OF \
+			S X VALIDATE_LIKE \
+			S S WHERE_ANY_SUBSELECT \
+			S S WHERE_BETWEEN \
+			S S WHERE_LIKE \
+			I S WHERE_LIKE_ESCAPE \
+			S S WHERE_MATCHES \
+			I S WHERE_MATCHES_ESCAPE \
+			S S WHERE_NOT_IN \
+			S S WHERE_NULL \
+			I S WHERE_SOME_SUBSELECT \
+			"
+
+		##############################################################
+		#Chop up the big list into separate lists depending on status
+		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0;
+		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
+		for field in $SQL_FEATURES_NON_ANSI ; do
+			let CNT=CNT+1
+			let FIELD_CNT=FIELD_CNT+1
+			if test "$FIELD_CNT" = "1"; then
+				FEATURE_STATUS="$field"
+			elif test "$FIELD_CNT" = "2"; then
+				FEATURE_TYPE="$field"
+				case $FEATURE_TYPE in
+				D) #D=DDL 
+					let D_CNT=D_CNT+1
+					;;
+				S) #SQL 
+					let S_CNT=S_CNT+1
+					;;
+				C) #conectivity 
+					let C_CNT=C_CNT+1
+					;;
+				P) #Procedure&trigger(serverSide) 
+					let P_CNT=P_CNT+1
+					;;
+				F) #functions(serverSide)
+					let F_CNT=F_CNT+1
+					;;
+				X) #mixed
+					let X_CNT=X_CNT+1
+					;;
+				*) echo "ERROR: FEATURE_TYPE=$FEATURE_TYPE"
+					exit 5
+					;;
+				esac
+				
+			elif test "$FIELD_CNT" = "3"; then
+				case $FEATURE_STATUS in 
+				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $field"
+					;;
+				S) SQL_FEATURES_NON_ANSI_SUPORTED="$SQL_FEATURES_NON_ANSI_SUPORTED $field"
+					;;
+				I) SQL_FEATURES_NON_ANSI_IMPOSIBLE="$SQL_FEATURES_NON_ANSI_IMPOSIBLE $field"
+					;;
+				D) SQL_FEATURES_NON_ANSI_DEPEND="$SQL_FEATURES_NON_ANSI_DEPEND $field"
+					;;
+				*) echo "ERROR: FEATURE_STATUS=$FEATURE_STATUS"
+					exit 5
+					;;
+				esac
+				let ROW_CNT=ROW_CNT+1
+				FIELD_CNT=0
+			else
+				echo "ERROR: FIELD_CNT=$FIELD_CNT"
+				exit 5
+			fi
+		done
+		
+		#for Debugging:
+		if test "2" = "1"; then
+			echo "SQL_FEATURES_NON_ANSI_POSIBLE=$SQL_FEATURES_NON_ANSI_POSIBLE"
+			echo 
+			echo "SQL_FEATURES_NON_ANSI_SUPORTED=$SQL_FEATURES_NON_ANSI_SUPORTED"
+			echo 
+			echo "SQL_FEATURES_NON_ANSI_IMPOSIBLE=$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+			echo 
+			echo "SQL_FEATURES_NON_ANSI_DEPEND=$SQL_FEATURES_NON_ANSI_DEPEND"
+			echo 
+			echo "DDL=$D_CNT SQL=$S_CNT Con=$C_CNT Proc=$P_CNT Func=$F_CNT Mixed=$X_CNT Total=$ROW_CNT"
+			exit
+		fi
+
+		
+		if test "2" = "1"; then 
+			#Dump sorted list to file
+			SQL_FEATURES_NON_ANSI=`echo $SQL_FEATURES_NON_ANSI | tr " " "\n" | $SORT -n |  tr "\n" " "`
+			rm -f all_sql_features.txt
+			CNT=0
+			for b in $SQL_FEATURES_NON_ANSI; do
+			
+				echo "			$b \\" >> all_sql_features.txt
+			done
+			echo "Total $CNT features described unloaded to all_sql_features.txt"
+			exit
+		fi
+								
+		#List of all non-ANSI compatible SQL or db features EXPECTED TO FAIL
+		SQL_FEATURES_NON_ANSI_EXPECT_FAIL="$SQL_FEATURES_NON_ANSI_POSIBLE \
+								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+	
+		#Statments not supported by 4Js ODI on non-Informix databases
+		SQL_INCOMPAT_4JS="$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+				
+		#Statements incompatible using Aubit in PG EC mode against 
+		#Informix compatibility patched PG engine
+		SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
+	
+		#Statements incompatible uisng Aubit in PG EC mode against 
+		#vanilla (not patched) PG engine V 7.4
+		SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
+			
+		#Statements incompatible using Aubit in C mode (ODBC) against 
+		#vanilla (not patched) PG engine V 7.4
+		SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
+
+if test "$SH_DBG" = "1"; then 
+	echo "Loaded SQL features list."
+	exit 
+fi
+
+		
+fi #$DISABLE_SQL_FEATURES_CHECK	
+		
+}
+
 
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
 chech_sql_features () {
@@ -13,237 +412,8 @@ chech_sql_features () {
 	#'work', but they 'work' because they are never executed, and if they where,
 	#who knows what would happne
 	if test "$DISABLE_SQL_FEATURES_CHECK" != "1" -a "$COMPILE_ONLY" != "1"; then
-		if test "$SQL_FEATURES_USED" != ""; then 
+		if test "$SQL_FEATURES_USED" != ""; then
 
-		
-		#List of non-ANSI compatible SQL or db features that is posible
-		#to translate/emulate, but this is __NOT__ currently working
-		#It is anticipated that support for them will be implemented in the 
-		#near future
-		SQL_FEATURES_NON_ANSI_POSIBLE="\
-			ALTER_TABLE \
-			ASC_INDEX \
-			DESC_INDEX \
-			CREATE_DATABASE \
-			CREATE_DATABASE_WITH_LOG \
-			CREATE_DATABASE_IN \
-			CREATE_DATABASE_MODE_ANSI \
-			CREATE_SYNONYM DDL_SYNONYM \
-			CREATE_VIEW \
-			DATABASE_EXCLUSIVE \
-			DATETIME_EXTEND \
-			DROP_INDEX \
-			DROP_DATABASE \
-			DROP_SYNONYM \
-			DROP_TRIGGER \
-			DDL_DEFAULT_VALUE \
-			DDL_DEFAULT \
-			DDL_PRIMARY_KEY \
-			DDL_FOREIGN_KEY \
-			DDL_MONEY_DATATYPE \
-			DDL_MONEY \
-			DDL_SERIAL \
-			DDL_UNIQUE \
-			DDL_DOUBLE_PRECISION \
-			DDL_DATE \
-			DDL_DATETIME \
-			DDL_INTERVAL \
-			DDL_NCHAR \
-			DDL_NVARCHAR \
-			DDL_TEXT \
-			DDL_BYTE \
-			FREE_CURSOR \
-			FUNC_INTERVAL \
-			FUNC_EXTEND \
-			LOCK_TABLE \
-			PUT_CURSOR \
-			RENAME_COLUMN \
-			RENAME_TABLE \
-			ROWID \
-			SELECT_RELATIVE FETCH_RELATIVE \
-			SELECT_ALL \
-			SELECT_DISTINCT \
-			SELECT_AS \
-			SELECT_SUBSTRING \
-			SELECT_OUTER \
-			SELECT_WHERE_IN_SUBSELECT \
-			SELECT_WHERE_ALL_SUBSELECT \
-			SELECT_WHERE_EXISTS_SUBSELECT \
-			SELECT_WHERE_BETWEEN \
-			SELECT_WHERE_IN \
-			SELECT_WHERE_NULL \
-			SELECT_WHERE_LIKE \
-			SELECT_WHERE_MATCHES \
-			SELECT_COUNT \
-			SQL_FUNCTION_SUBSTR \
-			SQL_SERIAL \
-			SELECT_INTO_TEMP_WITH_NO_LOG \
-			SELECT_FOR_UPDATE SELECT_FOR_UPDATE_CURSOR \
-			TABLENAME_DB_SERVER_USER_TABLE \
-			TABLENAME_DB_TABLE \
-			TABLENAME_DB_USER_TABLE \
-			UNLOCK_TABLE \
-			UNLOAD_PATH_RELATIVE \
-			UPDATE_WHERE_CURRENT_OF \
-			UNLOAD_TO_SELECT_FROM \
-			UNLOAD_TO_SELECT_FROM_WHERE \
-			"
-	
-		#List of non-ANSI compatible SQL or db features that is posible
-		#to translate/emulate, and is implemented in Aubit and fully working
-		SQL_FEATURES_NON_ANSI_SUPORTED="\
-			ANSI_INSERT \
-			ANSI_DELETE \
-			ANSI_SELECT \
-			BEGIN_WORK ROLLBACK_WORK \
-			CLOSE_DATABASE \
-			CLOSE_CURSOR \
-			CREATE_TABLE \
-			CREATE_INDEX \
-			CREATE_TEMP_TABLE \
-			COMMIT_WORK \
-			DROP_VIEW \
-			DELETE_WHERE_CURRENT_OF \
-			DELETE_FROM_WHERE_WITH_SUBSELECT \
-			DELETE_FROM_WHERE_EXISTS_SUBSELECT \
-			DELETE_FROM_WHERE_ALL_SUBSELECT \
-			DELETE_FROM_WHERE_ANY_SUBSELECT \
-			DELETE_FROM_WHERE_SOME_SUBSELECT \
-			DELETE_FROM_WHERE_NULL \
-			DELETE_FROM_WHERE \
-			LOAD_FROM_INSERT_INTO \
-			UNLOAD_TO \
-			ANSI_UPDATE \
-			CURSOR_SELECT \
-			CREATE_VIEW_SELECT \
-			DROP_TABLE \
-			EXECUTE_USING \
-			EXECUTE_INTO_USING \
-			GRANT \
-			INSERT_COLUMNLIST_EQ_VALUELIST \
-			INSERT_INTO_SELECT_FROM \
-			REVOKE \
-			SELECT_INTO_TEMP \
-			SQL_END_SQL_BLOCK SQL_END_SQL\
-			SQL_UNIQUE \
-			SCROLL_CURSOR \
-			SQLCA_SQLCODE \
-			UPDATE_COLUMNLIST_EQ_VALUELIST \
-			CURSOR_SELECT_FOR_UPDATE \
-			CREATE_VIEW_AS_SELECT \
-			CREATE_VIEW_AS_SELECT_MULTI_TABLE \
-			CREATE_VIEW_WITH_SELECT \
-			UPDATE_COLUMNLIST_EQ_VALUELIST_WITH_THRU \
-			UPDATE_SET_VALUE_WITH_SUBSELECT \
-			META_INSERT_VIEW \
-			META_INSERT_MULTITABLE_VIEW \
-			META_INSERT_SYNONYM \
-			META_DELETE_FROM_VIEW \
-			META_DELETE_FROM_VIEW_MULTI_TABLE \
-			META_DELETE_FROM_SYNONYM \
-			META_SELECT_AS_ALIAS \
-			ORDER_BY_NUMBERED ORDER_BY_NUMBER ORDER_NUMBER \
-			ORDER_ASC \
-			ORDER_DESC \
-			GROUP_BY \
-			GROUP_BY_NUMBER \
-			WHERE_LIKE_ESCAPE \
-			"
-
-
-		
-		#List of non-ANSI compatible SQL or db features that is NOT posible
-		#to translate/emulate, and never will be since it depends on the
-		#functionality of the back-end that CANNOT be emulated, translated
-		#or subsitituted
-		SQL_FEATURES_NON_ANSI_IMPOSIBLE="\
-			ALTER_INDEX \
-			ALTER_TABLE_ADD \
-			ALTER_TABLE_DROP \
-			ALTER_TABLE_LOCK_MODE \
-			ALTER_TABLE_ADD_BEFORE \
-			LOCK_TABLE_SHARED \
-			LOCK_TABLE_EXCLUSIVE \
-			CREATE_VIEW_SELECT_WITH_CHECK \
-			CLUSTER_INDEX \
-			CREATE_AUDIT \
-			CREATE_TEMP_TABLE_NO_LOG \
-			CREATE_TABLE_IN \
-			CREATE_TABLE_EXTENT \
-			CREATE_TABLE_NEXT_SIZE \
-			CREATE_TABLE_LOCK_MODE \
-			CREATE_INDEX_COMPOSITE \
-			CREATE_INDEX_UNIQUE \
-			CREATE_INDEX_UNIQUE_COMPOSITE \
-			CREATE_INDEX_CLUSTER \
-			CREATE_INDEX_ASC \
-			CREATE_INDEX_DESC \
-			CREATE_INDEX_ASC_DESC \
-			CREATE_PROCEDURE \
-			DROP_AUDIT \
-			DLL_UNIQUE \
-			DDL_CHECK \
-			DDL_REFERENCES \
-			DDL_SET_CONSTRAINT \
-			DDL_CONSTRAINT ADD_CONSTRAINT DROP_CONSTRAINT \
-			DDL_NEXT_SIZE \
-			FREE_LOB \
-			INDEX_FILLFACTOR \
-			META_UPDATE_VIEW \
-			META_UPDATE_MULTI_TABLE_VIEW \
-			ORDER_BY_ASC \
-			ORDER_BY_DESC \
-			RECOVER_TABLE \
-			ROLLFORWARD_DATABASE \
-			SET_ISOLATION \
-			SET_LOCK_MODE \
-			SET_EXPLAIN \
-			SET_LOG \
-			SET_BUFFERED_LOG \
-			START_DATABASE \
-			START_DATABASE_WITH_LOG \
-			START_DATABASE_WITH_LOG_MODE_ANSI \
-			UPDATE_STATISTICS \
-			UPDATE_VIEW \
-			"
-SQL features used not expected by compatiblity check:
- 758=WHERE_LIKE 761=WHERE_MATCHES_ESCAPE 762=WHERE_LIKE 763=WHERE_LIKE 764=WHERE_LIKE 768=WHERE_ANY_SUBSELECT 769=WHERE_SOME_SUBSELECT 770=WHERE_NOT_IN 772=WHERE_BETWEEN 773=WHERE_NULL 774=WHERE_LIKE 775=WHERE_MATCHES 776=WHERE_LIKE 779=SELECT_AVG 780=DLL_DATE 780=SELECT_MAX 780=ORDER_BY 781=DLL_DATE 781=SELECT_MIN 781=ORDER_BY 782=DLL_DATE 782=SELECT_SUM 782=ORDER_BY 783=DLL_DATE 783=SELECT_COUNT_DISTINCT 784=DLL_DATE 784=SELECT_MAX_ALL 784=ORDER_BY 785=DLL_DATE 785=SELECT_AVG_ALL 785=ORDER_BY 786=DLL_DATE 786=SELECT_MIN_ALL 786=ORDER_BY 787=DLL_DATE 787=SELECT_SUM_ALL 787=ORDER_BY 788=DLL_DATE 788=SELECT_HAVING_COUNT 788=ORDER_BY 789=DLL_DATE 789=SELECT_UNION 789=WHERE_BETWEEN 790=DLL_DATE 790=SELECT_UNION_ALL 790=WHERE_BETWEEN 904=SQLCA_SQLERRD1 905=SQLCA_SQLERRD2 906=SQLCA_SQLERRD2 907=SQLCA_SQLERRD3 908=SQLCA_SQLERRD4 909=SQLCA_SQLERRD5 910=SQLCA_SQLERRD6 911=SQLCA_SQLAWARN1 912=SQLCA_SQLAWARN2 914=SELECT_SUM 914=SQLCA_SQLAWARN3 915=SQLCA_SQLAWARN4
-
-		#List of all non-ANSI compatible SQL or db features
-		SQL_FEATURES_NON_ANSI="$SQL_FEATURES_NON_ANSI_POSIBLE \
-								$SQL_FEATURES_NON_ANSI_SUPORTED \
-								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-	
-		#List of all non-ANSI compatible SQL or db features EXPECTED TO FAIL
-		SQL_FEATURES_NON_ANSI_EXPECT_FAIL="$SQL_FEATURES_NON_ANSI_POSIBLE \
-								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-
-								
-#sql_features_used:
-#	@echo ""
-#TODO - check that all non-ANSI tests have sql_features_used target:
-#1300 1301 1302 1303 1304
-
-#DB tests but have no features description :  
-#14 51 63 72 99 110 212 257 258 270 309 327 352 353 354 357 358 359 360 361 
-#362 363 364 365 366 367 370 371 372 373 374 375 376 377 476 477 478 549 582
-#583 584 670 671 672 673 680 689 706 902 913 1200 1201
-
-			#Statments not supported by 4Js ODI on non-Informix databases
-			SQL_INCOMPAT_4JS="$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-				
-			#Statements incompatible using Aubit in PG EC mode against 
-			#Informix compatibility patched PG engine
-			SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-	
-			#Statements incompatible uisng Aubit in PG EC mode against 
-			#vanilla (not patched) PG engine V 7.4
-			SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-			
-			#Statements incompatible using Aubit in C mode (ODBC) against 
-			#vanilla (not patched) PG engine V 7.4
-			SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-	
 			if test "1" = "1"; then
 			#if test "$VERBOSE" = "1"; then
 				#Check that the feature listed in makefile has a pair
@@ -847,15 +1017,15 @@ COMPARE_REAL_WITH_STORED=1
 		#tests only static SQL, we must honor what is set in makefile, since
 		#it may be set because of dynamic SQL
 		IS_ANSI_COMPATIBLE=$IS_MAKE_ANSI_SQL_COMPAT
-		ALLREADY_SET_CNT=`(expr $ALLREADY_SET_CNT + 1) 2>/dev/null`
+		let ALLREADY_SET_CNT=ALLREADY_SET_CNT+1
 		ALLREADY_SET_LST="$ALLREADY_SET_LST $CHECK_TEST"
 		if test "$IS_ANSI_COMPATIBLE" = "0"; then 
 			MSG1="$CHECK_TEST: Result 0 from makefile"
-			FAIL_ANSI_CNT=`(expr $FAIL_ANSI_CNT + 1) 2>/dev/null`
+			let FAIL_ANSI_CNT=FAIL_ANSI_CNT+1
 			FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
 		else
 			MSG1="$CHECK_TEST: Result 1 from makefile"
-			ANSI_OK_CNT=`(expr $ANSI_OK_CNT + 1) 2>/dev/null`
+			let ANSI_OK_CNT=ANSI_OK_CNT+1
 			ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
 		fi
 	fi
@@ -864,23 +1034,23 @@ COMPARE_REAL_WITH_STORED=1
 		#do the ANSI check
 		RESULT=""
 		IS_ANSI_COMPATIBLE=""
-		TEST_CNT=`(expr $TEST_CNT + 1) 2>/dev/null`
+		let TEST_CNT=TEST_CNT+1
 		check_ansi $CHECK_TEST
-		TOTAL_FGL_CNT=`(expr $TOTAL_FGL_CNT + $FGL_CNT) 2>/dev/null`
+		let TOTAL_FGL_CNT=TOTAL_FGL_CNT+FGL_CNT
 
 		#Interpret and count results
 		
 			case $RESULT in
 				unknown-failed-but-no-ANSI-in-err)
 					MSG1="$CHECK_TEST: $FGL failed with code $RET, but no ANSI in err file"
-					FAIL_NOERRFILE_CNT=`(expr $FAIL_NOERRFILE_CNT + 1) 2>/dev/null`
+					let FAIL_NOERRFILE_CNT=FAIL_NOERRFILE_CNT+1
 					FAIL_NOERRFILE_LST="$FAIL_NOERRFILE_LST $CHECK_TEST"
 					IS_ANSI_COMPATIBLE="unknown"
 					;;
 				yes-only-comment-warnings)	
 					MSG1="$CHECK_TEST: $FGL generated ANSI warnings, but all about comments"
 					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
-						FAIL_ANSI_COMMENT_ONLY_CNT=`(expr $FAIL_ANSI_COMMENT_ONLY_CNT + 1) 2>/dev/null`
+						let FAIL_ANSI_COMMENT_ONLY_CNT=FAIL_ANSI_COMMENT_ONLY_CNT+1
 						FAIL_ANSI_COMMENT_ONLY_LST="$FAIL_ANSI_COMMENT_ONLY_LST $CHECK_TEST"
 					fi
 					IS_ANSI_COMPATIBLE="1"
@@ -889,34 +1059,34 @@ COMPARE_REAL_WITH_STORED=1
 					MSG1="$CHECK_TEST: $FGL generated ANSI warnings:"
 					MSG2="$WARN_TXT_NO_COMMENT"
 					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
-						FAIL_ANSI_CNT=`(expr $FAIL_ANSI_CNT + 1) 2>/dev/null`
+						let FAIL_ANSI_CNT=FAIL_ANSI_CNT+1
 						FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
 					fi
 					IS_ANSI_COMPATIBLE="0"
 					;;
 				unknown-failed-to-compile)
 					MSG1="$CHECK_TEST: $FGL faied with exit code $RET (not 6)"
-					FAIL_NOT_SIX=`(expr $FAIL_NOT_SIX + 1) 2>/dev/null`
+					let FAIL_NOT_SIX=FAIL_NOT_SIX+1
 					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
 					IS_ANSI_COMPATIBLE="unknown"
 					;;
 				unknown-different-results)
 					MSG1="$CHECK_TEST: $FGL conflicting results from compilers"
-					DIFF_RESULTS=`(expr $DIFF_RESULTS + 1) 2>/dev/null`
+					let DIFF_RESULTS=DIFF_RESULTS+1
 					DIFF_RESULTS_LST="$DIFF_RESULTS_LST $CHECK_TEST"
 					IS_ANSI_COMPATIBLE="unknown"
 					;;
 				yes)
 					MSG1="$CHECK_TEST: $FGL is ANSI compatible"
 					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then					
-						ANSI_OK_CNT=`(expr $ANSI_OK_CNT + 1) 2>/dev/null`
+						let ANSI_OK_CNT=ANSI_OK_CNT+1
 						ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
 					fi
 					IS_ANSI_COMPATIBLE="1"
 					;;
 				no-fgl)
 					MSG1="$CHECK_TEST: No 4gl files"
-					FAIL_NOT_SIX=`(expr $FAIL_NOT_SIX + 1) 2>/dev/null`
+					let FAIL_NOT_SIX=FAIL_NOT_SIX+1
 					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
 					IS_ANSI_COMPATIBLE="unknown"
 					;;
@@ -1006,7 +1176,7 @@ fi
 			break
 			;;
 		esac
-		FGL_CNT=`(expr $FGL_CNT + 1) 2>/dev/null`
+		let FGL_CNT=FGL_CNT+1
 		case $ANSI_USE_COMP in
 			ifx)
 				check_ansi_ifx $FGL
@@ -1386,7 +1556,7 @@ dl=$5
 
 	if test "$VERBOSE" = "1"; then 
 		count_rows $loadname $db
-		THIS_LOAD=`(expr $CNT - $BEFORE_LOAD) 2>/dev/null`
+		let THIS_LOAD=CNT - BEFORE_LOAD
 		echo "$THIS_LOAD rows loaded into $loadname"
 	fi
 	
@@ -1523,7 +1693,7 @@ aubit_version=`aubit 4glc -v | grep Version | awk '{print $2}'`
 aubit_build=`aubit 4glc -v | grep Build | awk '{print $3}'`
 #Only when non-Aubit 4gl compiler is used
 comp_version=""
-total_time=`(expr $FINISH_ALL_TIME - $START_TIME) 2>/dev/null`
+let total_time=FINISH_ALL_TIME - START_TIME
 c_ver=`gcc --version | grep gcc `
 #FIXME: adapt for PG/SAP/Querix :
 esql_ver=`esql -V | grep Version | awk '{print $3}'`
@@ -2165,7 +2335,7 @@ show_test_info() {
 
 			if test "$TEMPLATE_COMMENT" = "1"; then 
 				echo "WARNING: test still contains template comment in makefile"
-				TEMPLATE_COMMENT_CNT=`(expr $TEMPLATE_COMMENT_CNT + 1) 2>/dev/null`
+				let TEMPLATE_COMMENT_CNT=TEMPLATE_COMMENT_CNT+1
 				TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $TEST_NO"
 			fi
 			
@@ -2175,7 +2345,7 @@ show_test_info() {
 			then
 				echo "Please migrate folowing test info from 'run_tests' script to makefile:"
 				echo ""
-				MIGRATE_DESC_CNT=`(expr $MIGRATE_DESC_CNT + 1) 2>/dev/null`
+				let MIGRATE_DESC_CNT=MIGRATE_DESC_CNT+1
 				MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $TEST_NO"			
 			fi
 			
@@ -2183,12 +2353,12 @@ show_test_info() {
 				echo ""
 				echo $desc_txt
 				echo ""
-				HAS_DESC_TXT_CNT=`(expr $HAS_DESC_TXT_CNT + 1) 2>/dev/null`
+				let HAS_DESC_TXT_CNT=HAS_DESC_TXT_CNT+1
 			fi
 			
 			if test "$IS_REPORT_TEST" = "1"; then
 				echo "Test contains REPORT block"
-				IS_REPORT_TEST_CNT=`(expr $IS_REPORT_TEST_CNT + 1) 2>/dev/null`
+				let IS_REPORT_TEST_CNT=IS_REPORT_TEST_CNT+1
 			fi
 			if test "$EXPECT_CODE" != "0" ; then
 				if test "$EXPECT_CODE" = "x" ; then
@@ -2196,38 +2366,38 @@ show_test_info() {
 				else
 					echo "Test is expected to exit with code $EXPECT_CODE"
 				fi
-				NON_ZERO_EXIT_CNT=`(expr $NON_ZERO_EXIT_CNT + 1) 2>/dev/null`
+				let NON_ZERO_EXIT_CNT=NON_ZERO_EXIT_CNT+1
 			fi
 			if test "$COMPILE_ONLY" = "1" ; then
 				echo "Test is compile only, no execution will be attempted"
-				COMPILE_ONLY_CNT=`(expr $COMPILE_ONLY_CNT + 1) 2>/dev/null`
+				let COMPILE_ONLY_CNT=COMPILE_ONLY_CNT+1
 			fi
 			if test "$IS_PCODE_ENABLED" = "1" ; then
 				#All tests descxribed by makefiel are P-code enabled amyway
 				echo "Test is P-CODE testing enabled"
-				IS_PCODE_ENABLED_CNT=`(expr $IS_PCODE_ENABLED_CNT + 1) 2>/dev/null`
+				let IS_PCODE_ENABLED_CNT=IS_PCODE_ENABLED_CNT+1
 			fi
 			if test "$IS_DESCRIBED" != "1" ; then
 				echo "*** Test not described ***"
-				NOT_DESCRIBED_CNT=`(expr $NOT_DESCRIBED_CNT + 1) 2>/dev/null`
+				let NOT_DESCRIBED_CNT=NOT_DESCRIBED_CNT+1
 				NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $TEST_NO"
 			fi
 			if test "$IS_INVALID_TEST" = "1"; then 
 				echo "**** TEST MARKED INVALID IN run_tests ******"
-				IS_INVALID_CNT=`(expr $IS_INVALID_CNT + 1) 2>/dev/null`
+				let IS_INVALID_CNT=IS_INVALID_CNT+1
 				IS_INVALID_LIST="$IS_INVALID_LIST $TEST_NO"
 			fi
 			if test "$IS_EXPECT_TO_FAIL_TEST" = "1"; then 
 				echo "**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******"
-				EXPECT_FAIL_CNT=`(expr $EXPECT_FAIL_CNT + 1) 2>/dev/null`
+				let EXPECT_FAIL_CNT=EXPECT_FAIL_CNT+1
 				EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $TEST_NO"
 			fi
 			if test "$IS_DB_TEST" = "1"; then
 				echo "Test needs database"
-				IS_DB_TEST_CNT=`(expr $IS_DB_TEST_CNT + 1) 2>/dev/null`
+				let IS_DB_TEST_CNT=IS_DB_TEST_CNT+1
 				if test "$SE_REQUIRED" = "1"; then
 					echo "Test requires Informix SE RDBMS"
-					IS_SE_REQUIRED_CNT=`(expr $IS_SE_REQUIRED_CNT + 1) 2>/dev/null`
+					let IS_SE_REQUIRED_CNT=IS_SE_REQUIRED_CNT+1
 				fi
 				if test "$NEED_TRANSACTION" = "2" ; then
 					echo "Database MUST NOT have transactions enabled for this test."
@@ -2252,11 +2422,11 @@ show_test_info() {
 			fi
 			if test "$ec_test" = "1"; then
 				echo "Uses/require ESQL compiler output, instead of C output"
-				IS_EC_TEST_CNT=`(expr $IS_EC_TEST_CNT + 1) 2>/dev/null`
+				let IS_EC_TEST_CNT=IS_EC_TEST_CNT+1
 			fi
 			if test "$IS_NOSILENT_TEST" = "1"; then
 				echo "Test will fail if not running on screen (curses)"
-				IS_NOSILENT_CNT=`(expr $IS_NOSILENT_CNT + 1) 2>/dev/null`
+				let IS_NOSILENT_CNT=IS_NOSILENT_CNT+1
 			fi
 			if test "$IS_TUI_TEST" = "1"; then
 				echo "Test uses curses and/or screeen dump and may fail when TERM!=xterm"
@@ -2264,50 +2434,50 @@ show_test_info() {
 				echo "fail if TERM!=xterm"
 				echo "This core dumps on MinGW and messes up the terminal completely."
 				echo "On Cygwin they don't core dump, but this tests fail"
-				IS_TUI_TEST_CNT=`(expr $IS_TUI_TEST_CNT + 1) 2>/dev/null`
+				let IS_TUI_TEST_CNT=IS_TUI_TEST_CNT+1
 			fi
 			if test "$IS_FORM_TEST" = "1"; then
 				echo "Test uses .per form files"
-				IS_FORM_TEST_CNT=`(expr $IS_FORM_TEST_CNT + 1) 2>/dev/null`
+				let IS_FORM_TEST_CNT=IS_FORM_TEST_CNT+1
 			fi
 			if test "$IS_GRAPHIC_TEST" = "1"; then
 				echo "Test that use graphic characters in forms that may be platform dependent"
-				IS_GRAPHIC_TEST_CNT=`(expr $IS_GRAPHIC_TEST_CNT + 1) 2>/dev/null`
+				let IS_GRAPHIC_TEST_CNT=IS_GRAPHIC_TEST_CNT+1
 			fi
 			if test "$IS_CONSOLE_PROMPT_TEST" = "1"; then
 				echo "Test waits for user's input in CONSOLE mode, because automated testing"
 				echo "was not implemented there, so we must skip them untill this is implemented"
-				IS_CONSOLE_PROMPT_CNT=`(expr $IS_CONSOLE_PROMPT_CNT + 1) 2>/dev/null`
+				let IS_CONSOLE_PROMPT_CNT=IS_CONSOLE_PROMPT_CNT+1
 			fi
 			if test "$IS_DUMP_SCREEN_TEST" = "1"; then
 				echo "test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so"
 				echo "it won't work in CONSOLE mode"
-				IS_DUMP_SCREEN_CNT=`(expr $IS_DUMP_SCREEN_CNT + 1) 2>/dev/null`
+				let IS_DUMP_SCREEN_CNT=IS_DUMP_SCREEN_CNT+1
 			fi
 			if test "$IS_LONG_TEST" = "1"; then
 				echo "Test takes more then 10 minutes to compile or run"
-				IS_LONG_CNT=`(expr $IS_LONG_CNT + 1) 2>/dev/null`
+				let IS_LONG_CNT=IS_LONG_CNT+1
 			fi
 			if test "$IS_CERT_TEST" = "1"; then
 				echo "Tests is certified to run (with -eci) If it fails, something was probably broken"
 				echo "in current code."
-				IS_CERT_CNT=`(expr $IS_CERT_CNT + 1) 2>/dev/null`
+				let IS_CERT_CNT=IS_CERT_CNT+1
 			fi
 			if test "$IS_OBSOLETE_TEST" = "1"; then
 				echo "test is superceeded or obsoleted and should be silently skipped"
-				IS_OBSOLETE_CNT=`(expr $IS_OBSOLETE_CNT + 1) 2>/dev/null`
+				let IS_OBSOLETE_CNT=IS_OBSOLETE_CNT+1
 				IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $TEST_NO"
 			fi
 			if test "$compat_test" = "1"; then
 				echo "Test can be run using any 4GL compatible compiler, not just Aubit"
-				IS_COMPAT_CNT=`(expr $IS_COMPAT_CNT + 1) 2>/dev/null`
+				let IS_COMPAT_CNT=IS_COMPAT_CNT+1
 			fi
 			if test "$need_compat" = "1"; then
 				echo "Test requires Aubit to be in Informix compatibility mode"
 			fi
 			if test "$IS_UNKNOWN_TEST" = "1"; then 
 				echo "Test is clasified as UNKNOWN - please corect this."
-				UNKNOWN_TEST_CNT=`(expr $UNKNOWN_TEST_CNT + 1) 2>/dev/null`			
+				let UNKNOWN_TEST_CNT=UNKNOWN_TEST_CNT+1			
 				echo ""
 			fi
 			echo ""
@@ -2350,7 +2520,7 @@ check_skip() {
 		IS_INVALID_TEST=1
 	fi
 	if test "$IS_INVALID_TEST" = "1"; then
-		SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
+		let SKIP_INVALID_CNT=SKIP_INVALID_CNT+1
 		SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
 		SKIP_REASON="invalid test"
 		SKIP_REASON_CODES="$SKIP_REASON_CODES 1"
@@ -2426,7 +2596,7 @@ check_skip() {
 			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $TEST_NO"
 	    fi
 	    if test "$IS_NO_CRON_TEST" = "1" -a "$CRON_JOB" = "1"; then
-			IS_NO_CRON_CNT=`(expr $IS_NO_CRON_CNT + 1) 2>/dev/null`
+			let IS_NO_CRON_CNT=IS_NO_CRON_CNT+1
 			SKIP_REASON="fails when run as cron job"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 17"
 			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
@@ -2489,7 +2659,7 @@ check_skip() {
 		if test "$IS_DB_TEST" = "1"; then
 			#Checks that make sense only if test uses database
 			if test "$SKIP_NON_ANSI" = "1" -a "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
-				SKIP_NON_ANSI_CNT=`(expr $SKIP_NON_ANSI_CNT + 1) 2>/dev/null`
+				let SKIP_NON_ANSI_CNT=SKIP_NON_ANSI_CNT+1
 				SKIP_NON_ANSI_LIST="$SKIP_NON_ANSI_LIST $TEST_NO"
 				SKIP_REASON="not ANSI SQL compatible"
 				SKIP_REASON_CODES="$SKIP_REASON_CODES 66"
@@ -2583,7 +2753,7 @@ do_skip() {
 				#SKIP_REASON_CODES show ALL reasons codes
 				echo "Skip #$TEST_NO: $SKIP_REASON ($SKIP_REASON_CODES)"  >> $LOGFILE
 			fi
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			let SKIP_CNT=SKIP_CNT+1
 			if test "$UNL_LOG" = "1"; then
 				#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
 				result_unl $TEST_NO "" "$SKIP_REASON_CODES" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION

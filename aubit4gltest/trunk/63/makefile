@@ -10,3 +10,6 @@ run: constru.4ae
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE ANSI_INSERT ANSI_SELECT CURSOR_SELECT"
+

@@ -198,3 +198,6 @@ unknown_test:
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "DEFINE_LIKE"
+	

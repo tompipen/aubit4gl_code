@@ -10,5 +10,5 @@ END FUNCTION
 
 
 function error_handler()
-display "Error handler called"
+	display "Error handler called"
 end function

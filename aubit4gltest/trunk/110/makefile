@@ -233,5 +233,7 @@ sql_features_used:
 ansi_sql_compat:
 	@echo ""
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TEMP_TABLE LOAD_FROM_INSERT_INTO SELECT_COUNT"
 	
 # ============================= EOF ================================

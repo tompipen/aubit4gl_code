@@ -1,145 +1,363 @@
 This output was created using command 'run_tests -info'
-on Thu Oct 28 16:33:18 BST 2004
+on Mon Nov  8 00:41:15 NZDT 2004
  
  ------------------- Info for test 1 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Test setting some basic types to null
 
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_MONEY DDL_DATE DDL_DATETIME DROP_TABLE
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 3 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple menu test
 
+Test is P-CODE testing enabled
+Test waits for user's input in CONSOLE mode, because automated testing
+was not implemented there, so we must skip them untill this is implemented
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 4 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple PROMPT
 
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 6 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 testing fgl_drawbox
 
+Test that use graphic characters in forms that may be platform dependent
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 8 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple ERROR statement
 
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 9 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Compilation and linking using GLOBALS
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 10 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple combination of UI commands
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 11 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Basic UI exercising
 
+Test contains REPORT block
+Test will fail if not running on screen (curses)
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 12 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Decimal handling
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 13 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 4GL comparison testing
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 14 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple foreach handling
 
+Test contains REPORT block
+Test needs database
+Is ANSI SQL 92 compatible
+Uses SQL statemets features: CURSOR_SELECT IFX_SYSTABLES 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 15 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Prompt testing
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 21 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Pretty empty report
 
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 22 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Input array testing
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 23 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 input without defaults
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 24 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Fairly comprehensive Input test
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 25 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Another simple report - with page header and page trailer
 
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 26 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 More input array testing
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 27 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 before field/next field in an input
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 28 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Very basic datetime arithmetic
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 29 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Testing for memory corruption (obsolete ?)
 
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 30 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Checking field values in before clauses in Input array
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 31 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 INPUT from a wordwrap field
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 32 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Another simple report test
 
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 33 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Next field in before row
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 34 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 exit input in input array
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 35 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Check for an early arithmetic bug
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 36 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Test a foreach when an open has already been done
 
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE CLOSE_CURSOR DROP_TABLE
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 37 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -237,8 +455,6 @@ in current code.
 Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test contains REPORT block
-Test needs database
-Is ANSI SQL 92 compatible
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -337,6 +553,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE ANSI_INSERT ANSI_SELECT CURSOR_SELECT
 Test uses .per form files
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -373,6 +590,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -413,6 +631,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test contains REPORT block
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: REPORT_ORDER_BY 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -421,6 +640,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -447,9 +667,16 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 76 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Basic DB exercising of Datetimes
 
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_DATETIME
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 77 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -492,6 +719,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Test uses .per form files
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -528,6 +756,8 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 91 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Old makefile
 
@@ -535,6 +765,8 @@ Test needs database
 Database MUST NOT have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
 Uses SQL statemets features: PUT_CURSOR
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 92 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -555,17 +787,22 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
-Uses SQL statemets features: PUT_CURSOR
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 95 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Old makefile
 
 Test needs database
 Database MUST NOT have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE SELECT_FOR_UPDATE UPDATE_WHERE_CURRENT_OF
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 96 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -580,23 +817,42 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 98 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
 
-Some basic testing of sqlerrd[2] and sqlerrd[6]
 
+Some basic testing of sqlerrd[2] and sqlerrd[6] (SERIAL)
+
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_SERIAL
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 99 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Test of Aubit4GL extension - IN and EXISTS as 4GL expression
 
+Test needs database
+Is ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE  ANSI_SELECT
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 100 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Old makefile
 
+Test contains REPORT block
 Test needs database
 Database MUST NOT have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
 Uses SQL statemets features: PUT_CURSOR
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 101 -----------------------
 
@@ -604,6 +860,7 @@ Tests for NOTFOUND status code after select statement executed on empty temporar
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -639,11 +896,8 @@ in current code.
 
  ------------------- Info for test 105 -----------------------
 WARNING: test still contains template comment in makefile
-Please migrate folowing test info from 'run_tests' script to makefile:
-
+*** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 
  ------------------- Info for test 106 -----------------------
 
@@ -651,7 +905,7 @@ SELECT FIRST and SQL - END SQL block
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
-Uses SQL statemets features: SQL_END_SQL SELECT_RELATIVE
+Uses SQL statemets features: SQL_END_SQL_BLOCK SELECT_RELATIVE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -662,6 +916,7 @@ UNLOAD TO with SELECT statement and WHERE part
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE UNLOAD_TO_SELECT_FROM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -673,6 +928,7 @@ Testing for invalid file name in UNLOAD
 Test is expected to exit with code 1
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE UNLOAD_TO_SELECT_FROM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -684,39 +940,96 @@ Test for core dump when opening a cursor
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE SCROLL_CURSOR FETCH_RELATIVE CLOSE_CURSOR  SELECT_FOR_UPDATE_CURSOR BEGIN_WORK ROLLBACK_WORK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
+ ------------------- Info for test 110 -----------------------
+
+Test for core dump in LOAD FROM
+
+Test needs database
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE LOAD_FROM_INSERT_INTO SELECT_COUNT
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 111 -----------------------
+
+channel functions - 4js Aubit and Querix only
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 112 -----------------------
+
+Opening resource files from DBPATH
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test can be run using any 4GL compatible compiler, not just Aubit
+
  ------------------- Info for test 202 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Multiple input statements
 
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 203 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 4Jstyle dynamic array handling
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 204 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Test of the 'ord' function
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 205 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple test of 'showhelp' function
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 206 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Simple test of what happens when a row is not returned from a select
 
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 207 -----------------------
 
 This test checks the validity of date/datetime comparisons Its more for the SQL side than 4GL..
 
+Test needs database
+Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_DATETIME DDL_DATE FUNC_EXTEND
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -755,6 +1068,7 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT VALIDATE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -788,14 +1102,27 @@ in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 217 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 _variable(...) handling test - also tests shared library creation
 
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 218 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 ONC RPC client/server test
 
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 219 -----------------------
 
@@ -827,9 +1154,15 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 223 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 This test exercises the 'scroll' command
 
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 224 -----------------------
 
@@ -861,6 +1194,7 @@ This is a test to check some bug fixes reported by Art Kagel
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_DATETIME
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -872,9 +1206,15 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 229 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 This test checks that the comments are removed after an input/input array
 
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 230 -----------------------
 
@@ -949,9 +1289,14 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 239 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 
 Test of compiling a form into an executable (using fcompile -c)
 
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 240 -----------------------
 
@@ -1078,6 +1423,7 @@ This tests the ability to create a table with a MONEY field
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE DDL_MONEY CREATE_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1097,6 +1443,7 @@ This is a test for MID 512
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1106,6 +1453,7 @@ Tests mantis bug 516 (private bug) ecpg crashed on declare cursor for select sta
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1209,6 +1557,7 @@ Tests if 'display at' correctly resets the status variable
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1218,6 +1567,7 @@ A quick test of the define variable like dbname:tablename.column and record like
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1308,6 +1658,7 @@ This is a test to see if a page header is run at the correct point in time. At t
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1346,6 +1697,7 @@ This is a test for the UNLOAD bug reported
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_SERIAL DDL_MONEY DDL_DATE  INSERT_COLUMNLIST_EQ_VALUELIST UNLOAD_TO_SELECT_FROM_WHERE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1356,6 +1708,7 @@ Another UNLOAD test
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_SERIAL DDL_MONEY DDL_DATE  INSERT_COLUMNLIST_EQ_VALUELIST UNLOAD_TO_SELECT_FROM_WHERE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1376,6 +1729,7 @@ Quick test on using foreach on a declare which used variables
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1385,6 +1739,7 @@ This tests a problem with the use of datetime variables (reported by Fernando Or
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE DDL_DATETIME
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1396,26 +1751,6 @@ test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-
- ------------------- Info for test 292 -----------------------
-
-Tests display clearing with/without nulls
-
-
- ------------------- Info for test 293 -----------------------
-
-Tests display clearing with/without nulls
-
-
- ------------------- Info for test 294 -----------------------
-
-Tests display clearing with/without nulls
-
-
- ------------------- Info for test 295 -----------------------
-
-Tests display clearing with/without nulls
-
 
  ------------------- Info for test 296 -----------------------
 
@@ -1438,6 +1773,7 @@ This is a sample 4gl program which connects to a db specified via a variable and
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1533,6 +1869,7 @@ Just a database statement
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1679,6 +2016,7 @@ Database inside function
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1847,7 +2185,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Report with FORMAT EVERY ROW No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1856,7 +2193,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 All combinations of START REPORT No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1865,7 +2201,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 REPORT with one parameter No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1874,7 +2209,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 REPORT with 2 parameters No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1885,6 +2219,7 @@ DATABASE statement inside of the FUNCTION block No run-time checking
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1895,6 +2230,7 @@ DATABASE as global declaration and in function block No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1905,6 +2241,7 @@ DATABASE in MAIN block. No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1932,6 +2269,7 @@ WHENEVER ERROR STOP in function, but not called from MAIN - FIXME? No run-time c
 Test is expected to exit with non-zero code
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1942,6 +2280,7 @@ WHENEVER ERROR CALL test - not called from main - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1952,6 +2291,7 @@ WHENEVER ERROR GOTO- not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1962,6 +2302,7 @@ WHENEVER WARNING STOP - not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1972,6 +2313,7 @@ WHENEVER WARNING CALL - not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1982,6 +2324,7 @@ WHENEVER WARNING GOTO - not called from MAIN No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1992,6 +2335,7 @@ WHENEVER ANY ERROR - not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2002,6 +2346,7 @@ WHENEVER SQLWARNING - not called from MAIN - fixme No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2012,6 +2357,7 @@ WHENEVER SQLERROR - not called from main. No run-time error checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2022,6 +2368,7 @@ WHENEVER NOT FOUND - not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2032,6 +2379,7 @@ WHENEVER ERROR CONTINUE - not called from MAIN - FIXME No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SELECT_COUNT IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2058,6 +2406,7 @@ INITIALIZE record No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2068,6 +2417,7 @@ Simple INITIALIZE ... LIKE ... No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: INITIALIZE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2078,6 +2428,7 @@ List Initialize like with table
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: INITIALIZE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2088,6 +2439,7 @@ List Initialize like with dot-star notation
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE INITIALIZE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2098,6 +2450,7 @@ Simple validate
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: VALIDATE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2109,6 +2462,7 @@ Validate list - TEST IS INVALID (see source code)
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: VALIDATE_LIKE
 
  ------------------- Info for test 376 -----------------------
 
@@ -2117,6 +2471,7 @@ Validate with 'star' notation
 Test is compile only, no execution will be attempted
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE VALIDATE_LIKE IFX_SYSTABLES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2128,6 +2483,7 @@ Validate with table qualifier - TEST IS INVALID (see source code)
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: VALIDATE_LIKE
 
  ------------------- Info for test 378 -----------------------
 
@@ -2878,6 +3234,7 @@ DEFINE LIKE - all combinations No run-tme checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2889,6 +3246,7 @@ DEFINE LIKE with dot-star notation No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -2900,6 +3258,7 @@ DEFINE RECORD LIKE with qualifier - all combinations. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3338,6 +3697,7 @@ Simple CREATE and DROP table. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3348,6 +3708,7 @@ FIXME - duplicate of test 528 Please provide brief description of functionality 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE
 test is superceeded or obsoleted and should be silently skipped
 
  ------------------- Info for test 530 -----------------------
@@ -3356,6 +3717,7 @@ CREATE TABLE with database.owner specified. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE TABLENAME_DB_USER_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3367,6 +3729,7 @@ CREATE TABLE with all (Informix) data types. No run-time checking.
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
 Needs at least version 7.31 of Informix 4gl.
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DOUBLE_PRECISION  DDL_DATE DDL_DATETIME DDL_INTERVAL DDL_NCHAR DDL_NVARCHAR DDL_TEXT DDL_BYTE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3377,6 +3740,7 @@ CREATE TABLE with NOT NULL. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE TABLENAME_DB_USER_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3387,6 +3751,7 @@ CREATE TEMP TABLE. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3397,6 +3762,7 @@ CREATE TABLE ... WITH NO LOG No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE_NO_LOG
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3407,6 +3773,7 @@ CREATE TABLE with storage information. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE_IN CREATE_TABLE_EXTENT  CREATE_TABLE_NEXT_SIZE CREATE_TABLE_LOCK_MODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3418,6 +3785,7 @@ CREATE TABLE with PRIMARY KEY clause. No run-time checking. NOTE: fails with -if
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
 Needs at least version 7.31 of Informix 4gl.
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3429,6 +3797,7 @@ CREATE TABLE with 2 columns and PRIMARY KEY. No run-time checking. NOTE: fails w
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
 Needs at least version 7.31 of Informix 4gl.
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3439,6 +3808,7 @@ CREATE TABLE with UNIQUE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_UNIQUE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3449,6 +3819,7 @@ CREATE TABLE with 2 columns and UNIQUE/DISTINCT clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_UNIQUE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3459,6 +3830,7 @@ CREATE TABLE with FOREIGN key. No run-time checking. NOTE: fails with -ifx-p.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_REFERENCES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3468,6 +3840,7 @@ CREATE TABLE with two columns and FOREIGN KEY with REFERENCES clause. No run-tim
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_FOREIGN_KEY DDL_REFERENCES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3477,6 +3850,7 @@ CREATE TABLE with CHECK clause. No run-time checking. NOTE: fails with -ifx-p.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_CHECK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3486,6 +3860,7 @@ CREATE TABLE with DEFAULT clause. No run-time checking. NOTE: fails with -ifx-p.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DEFAULT_VALUE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3495,6 +3870,7 @@ CREATE TABLE with DISTINCT/UNIQUE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_UNIQUE 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3505,6 +3881,7 @@ CREATE/DROP DATABASE. Test is invalid - Aubit refuses to compile DROP DATABASE s
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_DATABASE CREATE_DATABASE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -3514,6 +3891,7 @@ DROP DATABASE - test is invalid - see test #545
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_DATABASE CREATE_DATABASE CLOSE_DATABASE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -3523,6 +3901,7 @@ CREATE/DROP DATABASE with Informix On-Line specific sintax. Test is invalid - se
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_DATABASE CREATE_DATABASE CREATE_DATABASE_WITH_LOG CREATE_DATABASE_IN CLOSE_DATABASE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -3532,6 +3911,7 @@ CREATE/DROP DATABASE with Informix SE specific syntax. Test is invalid - see tes
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_DATABASE CREATE_DATABASE_WITH_LOG CREATE_DATABASE_MODE_ANSI CLOSE_DATABASE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -3542,6 +3922,7 @@ DATABSE statement with complex names. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3552,6 +3933,7 @@ Open DATABASE with EXCLUSIVE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE_EXCLUSIVE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3562,6 +3944,7 @@ Simple ALTER TABLE. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3572,6 +3955,7 @@ ALTER TABLE with ADD clause. No run-time ckecking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3582,6 +3966,7 @@ ALTER TABLE with DROP clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE_DROP
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3592,6 +3977,7 @@ ALTER TABLE with ADD CONSTRAINT clause. No run-time checking. NOTE: fails to com
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE ADD_CONSTRAINT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3601,6 +3987,7 @@ ALTER TABLE with DROP CONSTRAINT clause. No run-time ckecking. NOTE: fails to co
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE ADD_CONSTRAINT DROP_CONSTRAINT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3610,6 +3997,7 @@ ALTER TABLE with NEXT SIZE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE DDL_NEXT_SIZE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3620,6 +4008,7 @@ ALTER TABLE with LOCK MODE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE_LOCK_MODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3630,6 +4019,7 @@ ALTER TABLE ... ADD with all (Informix) types. No run-time checking. NOTE: fails
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE DDL_SERIAL DDL_MONEY DDL_DOUBLE_PRECISION  DDL_DATE DDL_DATETIME DDL_INTERVAL DDL_NCHAR DDL_NVARCHAR DDL_TEXT DDL_BYTE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3639,6 +4029,7 @@ ALTER TABLE ADD with BEFORE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD_BEFORE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3649,6 +4040,7 @@ ALTER TABLE with MODIFY (all Informix types). No run-time checking. NOTE: fails 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE DDL_SERIAL DDL_MONEY DDL_DOUBLE_PRECISION  DDL_DATE DDL_DATETIME DDL_INTERVAL DDL_NCHAR DDL_NVARCHAR DDL_TEXT DDL_BYTE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3658,6 +4050,7 @@ ALTER TABLE ... MODIFY with column CONSTRAINT clause. No run-time checking. NOTE
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_CONSTRAINT ALTER_TABLE  DDL_DEFAULT_VALUE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3667,6 +4060,7 @@ ALTER TABLE ... ADD with column CONSTRAINT clause. No run-time checking. NOTE: f
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_CONSTRAINT  ALTER_TABLE DDL_DEFAULT_VALUE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3676,6 +4070,7 @@ Simple CREATE INDEX. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3686,6 +4081,7 @@ CREATE INDEX on several columns. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_COMPOSITE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3696,6 +4092,7 @@ CREATE UNIQUE INDEX. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_UNIQUE CREATE_INDEX_UNIQUE_COMPOSITE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3706,6 +4103,7 @@ CREATE CLUSTER INDEX. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_CLUSTER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3716,6 +4114,7 @@ CREATE INDEX with ASC clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_ASC
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3726,6 +4125,7 @@ CREATE INDEX with DESC clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_DESC CREATE_INDEX_ASC_DESC
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3736,6 +4136,7 @@ Complex CREATE INDEX. No run-time checking. NOTE: fails to compile with -ifx-p.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CLUSTER_INDEX CREATE_INDEX_ASC DESC_INDEX  INDEX_FILLFACTOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3745,6 +4146,7 @@ CREATE SYNONYM statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3755,6 +4157,7 @@ CREATE PUBLIC SYNONYM database statement. No run-time checking. NOTE: fails to c
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3764,6 +4167,7 @@ CREATE PRIVATE SYNONYM database statement. No run-time checking. NOTE: fails to 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3774,6 +4178,7 @@ CREATE SYNONYM with full name.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_SYNONYM_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3784,6 +4189,7 @@ DROP INDEX database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX DROP_INDEX
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3795,6 +4201,7 @@ DROP INDEX with full name.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_QUALIFIED_PATH DROP_INDEX_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3805,6 +4212,7 @@ DROP SYNONYM database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_SYNONYM DROP_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3816,6 +4224,7 @@ DROP SYNONYM with full name.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_SYNONYM_QUALIFIED_PATH  DROP_SYNONYM_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3826,6 +4235,7 @@ DROP TABLE database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3837,6 +4247,7 @@ DROP TABLE with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE_QUALIFIED_PATH CREATE_TABLE_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3847,6 +4258,7 @@ DROP INDEX database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX DROP_INDEX
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3858,6 +4270,7 @@ DROP INDEX with full name.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_INDEX_QUALIFIED_PATH DROP_INDEX_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3866,8 +4279,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 PREPARE database statement from variable. No run-time checking.
 
-Test needs database
-Is ANSI SQL 92 compatible
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3876,8 +4287,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 PREPARE database statement from string. No run-time checking.
 
-Test needs database
-Is ANSI SQL 92 compatible
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3888,6 +4297,7 @@ EXECUTE prepared stabase statement. No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3898,6 +4308,7 @@ EXECUTE with USING clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST EXECUTE_USING
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -3907,6 +4318,7 @@ EXECUTE INTO with USING clause. No run-time checking. NOTE: compiles, but Aubit 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST EXECUTE_USING EXECUTE_INTO_USING
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3917,6 +4329,7 @@ FREE prepared and executed statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: FREE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3927,6 +4340,7 @@ FREE a cursor. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST FREE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3943,10 +4357,13 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 SET EXPLAIN ON database statement. No run-time checking. NOTE: fails at run-time with -ifx-p.
 
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: SET_EXPLAIN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 591 -----------------------
 
@@ -3954,6 +4371,7 @@ SET EXPLAIN OFF database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: SET_EXPLAIN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3964,6 +4382,7 @@ CREATE VIEW database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_AS_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3975,6 +4394,7 @@ CREATE VIEW with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3985,6 +4405,7 @@ Simple UPDATE STATISTICS. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: UPDATE_STATISTICS
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3996,6 +4417,7 @@ LOCK TABLE with SHARED MODE. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_SHARED ROLLBACK_WORK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4007,6 +4429,7 @@ LOCK TABLE with EXCLUSIVE MODE. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_EXCLUSIVE ROLLBACK_WORK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4018,6 +4441,7 @@ LOCK TABLE with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOCK_TABLE TABLENAME_DB_SERVER_USER_TABLE TABLENAME_DB_TABLE TABLENAME_DB_USER_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4029,6 +4453,7 @@ UNLOCK TABLE database statement. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_SHARED COMMIT_WORK UNLOCK_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4040,6 +4465,7 @@ UNLOCK TABLE with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE TABLENAME_DB_SERVER_USER_TABLE LOCK_TABLE UNLOCK_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4051,6 +4477,7 @@ DROP TRIGGER database statement. Does not compile even with -ifx-p so probably i
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TRIGGER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -4060,6 +4487,7 @@ DROP VIEW database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_AS_SELECT DROP_VIEW
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4071,6 +4499,7 @@ DROP VIEW with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE_QUALIFIED_PATH CREATE_VIEW  DROP_VIEW_QUALIFIED_PATH CREATE_VIEW_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4081,6 +4510,7 @@ RENAME TABLE database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE RENAME_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4091,6 +4521,7 @@ RENAME COLUMN database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE RENAME_COLUMN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4102,6 +4533,7 @@ RENAME COLUMN with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE TABLENAME_DB_SERVER_USER_TABLE RENAME_COLUMN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4112,6 +4544,7 @@ CREATE VIEW ... AS SELECT database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_AS_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4122,6 +4555,7 @@ CREATE VIEW ... AS SELECT with named columns. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_AS_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4132,6 +4566,7 @@ CREATE VIEW with CHECK OPTION. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_SELECT_WITH_CHECK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4142,6 +4577,7 @@ Complex CREATE VIEW database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CREATE_VIEW_SELECT_WITH_CHECK
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4152,6 +4588,7 @@ Simple INSERT. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4162,6 +4599,7 @@ INSERT without naming columns. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4172,6 +4610,7 @@ INSERT INTO ... SELECT FROM database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_INTO_SELECT_FROM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4182,6 +4621,7 @@ INSERT from procedure (Informix specific) No run-time checking. SEE NOTE IN THE 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_PROCEDURE CREATE_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4192,6 +4632,7 @@ Simple DELETE database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_DELETE ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4202,6 +4643,7 @@ DELETE with WHERE clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_DELETE ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4213,6 +4655,7 @@ DELETE with WHERE CURRENT OF clause. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK SELECT_FOR_UPDATE  DELETE_WHERE_CURRENT_OF CLOSE_CURSOR ANSI_SELECT ROLLBACK_WORK SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4223,6 +4666,7 @@ DELETE with sub-query No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT  DELETE_FROM_WHERE_WITH_SUBSELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4233,6 +4677,7 @@ DELETE with EXISTS sub-query. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT  DELETE_FROM_WHERE_EXISTS_SUBSELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4243,6 +4688,7 @@ DELETE ... WHERE ALL/SOME/ANY. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT  DELETE_FROM_WHERE_ALL_SUBSELECT DELETE_FROM_WHERE_ANY_SUBSELECT  DELETE_FROM_WHERE_SOME_SUBSELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4253,6 +4699,7 @@ DELETE with IS NOT NULL. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT  DELETE_FROM_WHERE_NULL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4263,6 +4710,7 @@ Complex DELETE database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT  ANSI_DELETE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4273,6 +4721,7 @@ LOAD FROM ... INSERT INTO statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4283,6 +4732,7 @@ LOAD FROM ... INSERT INTO with file name in variable. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4293,6 +4743,7 @@ LOAD FROM with DELIMITER clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4303,6 +4754,7 @@ LOAD FROM with INSERT statement in variable. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4313,6 +4765,7 @@ LOAD FROM ... INSERT INTO with one column. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4323,6 +4776,7 @@ LOAD FROM ... INSERT INTO with several columns. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4333,6 +4787,7 @@ Simple UNLOAD TO statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE  LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4343,6 +4798,7 @@ UNLOAD TO with file name in variable. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE  LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4353,6 +4809,7 @@ UNLOAD with specified DELIMITER. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE  LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4363,6 +4820,7 @@ UNLOAD TO with query string in variable. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE  LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4373,6 +4831,7 @@ Complex UNLOAD statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE  LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4383,6 +4842,7 @@ Simple UPDATE database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4393,6 +4853,7 @@ SET LOCK MODE TO WAIT directive. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE SET_LOCK_MODE ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4403,6 +4864,7 @@ SET LOCK MODE TO WAIT with seconds specified. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE SET_LOCK_MODE ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4413,6 +4875,7 @@ SET LOCK MODE TO NOT WAIT directive. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE SET_LOCK_MODE ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4424,6 +4887,7 @@ SET ISOLATION TO DIRTY READ directive. No run-time checking. NOTE: requires tran
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK SET_ISOLATION ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4435,6 +4899,7 @@ SET ISOLATION TO CURSOR STABILITY directive. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK SET_ISOLATION ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4446,6 +4911,7 @@ SET ISOLATION TO REPEATABLE READ directive. No run-time checking.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK SET_ISOLATION ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4456,6 +4922,7 @@ GRANT TO ... PUBLIC database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4466,6 +4933,7 @@ GRANT ... TO user database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4476,6 +4944,7 @@ GRANT table privileges with TO PUBLIC clause. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4486,6 +4955,7 @@ GRANT on table to user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4496,6 +4966,7 @@ GRANT INSERT on table to user. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4506,6 +4977,7 @@ GRANT DELETE on table to user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4516,6 +4988,7 @@ GRANT UPDATE on table to user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4526,6 +4999,7 @@ GRANT INDEX on table to user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4536,6 +5010,7 @@ GRANT ALTER on table to user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4547,6 +5022,7 @@ GRANT on table will full name.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4557,6 +5033,7 @@ Complex GRANT on table. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4567,6 +5044,7 @@ REVOKE ... FROM PUBLIC database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4578,6 +5056,7 @@ REVOKE ... from user list. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4588,6 +5067,7 @@ REVOKE on table from PUBLIC database statement. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4598,6 +5078,7 @@ REVOKE on table from user list. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4609,6 +5090,7 @@ REVOKE INSERT on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4620,6 +5102,7 @@ REVOKE DELETE on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4631,6 +5114,7 @@ REVOKE SELECT on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4642,6 +5126,7 @@ REVOKE UPDATE on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4653,6 +5138,7 @@ REVOKE INDEX on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4664,6 +5150,7 @@ REVOKE ALTER on table. No run-time checking.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4674,6 +5161,7 @@ GRANT SELECT in all variants. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4684,6 +5172,7 @@ GRANT on table with GRANT OPTION. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4694,6 +5183,7 @@ GRANT on table AS GRANTOR No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE GRANT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4705,6 +5195,7 @@ REVOKE on table with full names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE REVOKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4717,6 +5208,7 @@ INSERT with all (Informix) data types. No run-time checking. Need minimum versio
 Test needs database
 Is ANSI SQL 92 compatible
 Needs at least version 7.31 of Informix 4gl.
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME  ANSI_INSERT ANSI_SELECT DROP_TABLE
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 671 -----------------------
@@ -4725,6 +5217,7 @@ UPDATE with all (Informix) database data types. No run-time checking. TEST IS IN
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME  DDL_INTERVAL ANSI_INSERT UPDATE_SET_STAR ANSI_SELECT DROP_TABLE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -4734,6 +5227,7 @@ DELETE with all (Informix) data types. No run-time checking. TEST IS INVALID (?)
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME  DDL_INTERVAL ANSI_INSERT ANSI_DELETE ANSI_SELECT SQLCA_SQLCODE DROP_TABLE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -4743,6 +5237,7 @@ SELECT with (Informix) data types. No run-time checking. TEST IS INVALID (?)
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME  DDL_INTERVAL ANSI_INSERT UPDATE_COLUMNLIST_EQ_VALUELIST  ANSI_SELECT ANSI_SELECT DROP_TABLE
 test is superceeded or obsoleted and should be silently skipped
 Test can be run using any 4GL compatible compiler, not just Aubit
 
@@ -4758,6 +5253,7 @@ UPDATE SYNONYM No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_SYNONYM CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CREATE_SYNONYM ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4768,6 +5264,7 @@ UPDATE on VIEW No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_VIEW SQLCA_SQLCODE DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CREATE_VIEW_AS_SELECT CURSOR_SELECT META_UPDATE_VIEW
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4778,6 +5275,7 @@ UPDATE on multi-table VIEW. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_VIEW SQLCA_SQLCODE DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CREATE_VIEW_AS_SELECT CURSOR_SELECT META_UPDATE_MULTI_TABLE_VIEW
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4788,6 +5286,7 @@ UPDATE with Informic-style SET syntax (column=value) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4798,6 +5297,7 @@ UPDATE with Informix-style SET syntax (multiple columns/values) No run-time chec
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4808,6 +5308,7 @@ UPDATE with dot-star notation (Informix syntax) No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE ANSI_DELETE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_SET_STAR CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4818,6 +5319,7 @@ UPDATE with constants in SET clause (Informix syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4828,6 +5330,7 @@ UPDATE with expresion in SET and column list (Informix syntax) No run-time check
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4838,6 +5341,7 @@ UPDATE with function calls in expresion (Informix syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME UPDATE_COLUMNLIST_EQ_VALUELIST FUNC_INTERVAL FUNC_EXTEND
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4854,6 +5358,7 @@ UPDATE with variables in SET clause (Informix syntax). No run-tiem checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4864,6 +5369,7 @@ UPDATE with SET sub-expression (Informix syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4874,6 +5380,7 @@ UPDATE ... SET with UNITS. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT DDL_DATETIME DDL_INTERVAL  FUNC_INTERVAL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4884,6 +5391,7 @@ UPDATE VIEW with Informix-style SET. No run-time checking.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DEFINE_LIKE ANSI_DELETE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_SET_STAR ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4894,6 +5402,7 @@ UPDATE ... SET one column (ANSI SQL 92 standard syntax). No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4904,6 +5413,7 @@ UPDATE SET columns (ANSI SQL 92 syntax). No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4914,6 +5424,7 @@ UPDATE standard SET with SQL expression. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4924,6 +5435,7 @@ UPDATE SET with SELECT (std ANSI SQL 92 syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4934,6 +5446,7 @@ UPDATE SET with variable (std ANSI SQL 92 syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT DDL_DATE ANSI_INSERT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4945,6 +5458,7 @@ UPDATE SET WHERE CURRENT OF (std. syntax) No run-time checking.
 Test needs database
 Database MUST NOT have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_UPDATE CURSOR_SELECT_FOR_UPDATE UPDATE_WHERE_CURRENT_OF  CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4955,6 +5469,7 @@ UPDATE with THRU syntax. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_COLUMNLIST_EQ_VALUELIST_WITH_THRU CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4965,6 +5480,7 @@ Complex UPDATE. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  UPDATE_SET_VALUE_WITH_SUBSELECT CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4975,6 +5491,7 @@ INSERT into VIEW. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_AS_SELECT  INSERT_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT META_INSERT_VIEW
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4985,6 +5502,7 @@ INSERT on multi-table view. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_AS_SELECT  META_INSERT_MULTITABLE_VIEW SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -4995,6 +5513,7 @@ INSERT on synonym. NO run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_SYNONYM CREATE_TABLE CREATE_SYNONYM  META_INSERT_SYNONYM CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5005,6 +5524,7 @@ UPDATE SET with sub-expression (std syntax). No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATETIME DDL_INTERVAL DDL_DATE  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5015,6 +5535,7 @@ UPDATE SET with function call in expression (std syntax). No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME DDL_INTERVAL  FUNC_INTERVAL FUNC_EXTEND
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5025,6 +5546,7 @@ UPDATE SET with variable (std syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE  ANSI_INSERT ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5035,6 +5557,7 @@ UPDATE SET with sub-expression (std syntax). No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME DDL_INTERVAL  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_UPDATE CURSOR_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5046,6 +5569,7 @@ UPDATE SET units (std syntax). No run-time checking.
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATETIME  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_UPDATE CURSOR_SELECT
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 706 -----------------------
@@ -5055,6 +5579,7 @@ Select with constants and expresions, all combinations. Informix specific syntax
 **** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_SELECT DROP_TABLE
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 707 -----------------------
@@ -5069,6 +5594,7 @@ INSERT witl fully qualified table names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_TABLE_QUALIFIED_PATH CREATE_TABLE  INSERT_COLUMNLIST_EQ_VALUELIST_QUALIFIED_PATH
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5079,6 +5605,7 @@ DELETE from view. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_AS_SELECT  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_DELETE CURSOR_SELECT META_DELETE_FROM_VIEW
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5089,6 +5616,7 @@ DELETE on multi-table view. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_AS_SELECT_MULTI_TABLE  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_DELETE SQLCA_SQLCODE CURSOR_SELECT  META_DELETE_FROM_VIEW_MULTI_TABLE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5099,6 +5627,7 @@ DELETE on synonym. No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_SYNONYM CREATE_TABLE CREATE_SYNONYM  INSERT_COLUMNLIST_EQ_VALUELIST ANSI_DELETE CURSOR_SELECT  META_DELETE_FROM_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5110,6 +5639,7 @@ DELETE with fully qualified table names.
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_TABLE_QUALIFIED_PATH CREATE_TABLE  CREATE_TABLE_QUALIFIED_PATH  INSERT_COLUMNLIST_EQ_VALUELIST_QUALIFIED_PATH DELETE_QUALIFIED_PATH 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5120,6 +5650,7 @@ Simple SELECT test.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5130,6 +5661,7 @@ SELECT several columns.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5140,6 +5672,7 @@ SELECT ALL.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_ALL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5150,6 +5683,7 @@ SELECT DISTINCT
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_DISTINCT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5160,6 +5694,7 @@ SELECT AS
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_AS
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5170,6 +5705,7 @@ SELECT with quoted strings.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_AS
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5180,6 +5716,7 @@ Check if column expressions is correctly fetched.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW DROP_SYNONYM CREATE_TABLE CREATE_VIEW_AS_SELECT  CREATE_SYNONYM INSERT_COLUMNLIST_EQ_VALUELIST ROWID
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5190,6 +5727,7 @@ SELECT with expresion. Informix SQL dialect (?).
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5200,25 +5738,28 @@ Check if select with substring fecth the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST SELECT_SUBSTRING
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
  ------------------- Info for test 724 -----------------------
 
-Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 12 1200 1201 1202 13 1300 1301 1302 1303 1304 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 292 293 294 295 296 297 298 299 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 adsl_grant bash bernard bibble bin build.log catalogue.dbl catalogue.sql core.dumps.960 CVS docs e1.c etc failures incl loader load_unl m1 m1.4gl m1.c old progress.281004 qadd rerun resources.log results_jake_28-10-2004_16-25-22.unl results.sql run_tests simple_null.c template test_run.sql watchit.sh x1 xxx xxxx fetch all correct values.
+Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 110 111 112 12 1200 1201 1202 1203 1204 13 1300 1301 1302 1303 1304 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 296 297 298 299 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 all_sql_features.txt all_sql_features.txt~ bin build.log catalogue.dbl catalogue.err catalogue.log catalogue.sql CVS debug.out docs etc incl loader resources.log results_aptiva_13-10-2004_20-51-00.unl results_aptiva_13-10-2004_22-13-51.unl results_aptiva_14-10-2004_12-26-55.unl results_aptiva_14-10-2004_20-09-35.unl results_aptiva_15-10-2004_18-23-02.unl results_aptiva_16-10-2004_12-49-24.unl results.dbl results.err results.log results.sql run_tests run_tests~ sqlfeatures.log SQLFEATURES_LOGFILE template test_run_aptiva_13-10-2004_22-13-51.unl test_run_aptiva_14-10-2004_12-26-55.unl test_run_aptiva_14-10-2004_20-09-35.unl test_run_aptiva_15-10-2004_18-23-02.unl test_run_aptiva_16-10-2004_12-49-24.unl test_run.dbl test_run.err test_run.log test_run.sql fetch all correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW DROP_SYNONYM CREATE_TABLE CREATE_VIEW_AS_SELECT  CREATE_SYNONYM INSERT_COLUMNLIST_EQ_VALUELIST ANSI_SELECT  META_SELECT_FROM_VIEW META_SELECT_FROM_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 725 -----------------------
 
-Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 12 1200 1201 1202 13 1300 1301 1302 1303 1304 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 292 293 294 295 296 297 298 299 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 adsl_grant bash bernard bibble bin build.log catalogue.dbl catalogue.sql core.dumps.960 CVS docs e1.c etc failures incl loader load_unl m1 m1.4gl m1.c old progress.281004 qadd rerun resources.log results_jake_28-10-2004_16-25-22.unl results.sql run_tests simple_null.c template test_run.sql watchit.sh x1 xxx xxxx fetch all correct values.
+Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 110 111 112 12 1200 1201 1202 1203 1204 13 1300 1301 1302 1303 1304 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 296 297 298 299 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 all_sql_features.txt all_sql_features.txt~ bin build.log catalogue.dbl catalogue.err catalogue.log catalogue.sql CVS debug.out docs etc incl loader resources.log results_aptiva_13-10-2004_20-51-00.unl results_aptiva_13-10-2004_22-13-51.unl results_aptiva_14-10-2004_12-26-55.unl results_aptiva_14-10-2004_20-09-35.unl results_aptiva_15-10-2004_18-23-02.unl results_aptiva_16-10-2004_12-49-24.unl results.dbl results.err results.log results.sql run_tests run_tests~ sqlfeatures.log SQLFEATURES_LOGFILE template test_run_aptiva_13-10-2004_22-13-51.unl test_run_aptiva_14-10-2004_12-26-55.unl test_run_aptiva_14-10-2004_20-09-35.unl test_run_aptiva_15-10-2004_18-23-02.unl test_run_aptiva_16-10-2004_12-49-24.unl test_run.dbl test_run.err test_run.log test_run.sql fetch all correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE DROP_VIEW DROP_SYNONYM CREATE_TABLE CREATE_VIEW_AS_SELECT  CREATE_SYNONYM INSERT_COLUMNLIST_EQ_VALUELIST ANSI_SELECT  META_SELECT_FROM_VIEW META_SELECT_FROM_SYNONYM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5229,6 +5770,7 @@ Check if a select with over two tables fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5239,6 +5781,7 @@ Check if a select with over two tables fetch the correct values AS ALIAS.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  ANSI_SELECT META_SELECT_AS_ALIAS
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5249,6 +5792,7 @@ Check if a select with over two tables with outer fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_OUTER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5259,6 +5803,7 @@ Check if a select with over two tables with two outer fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_OUTER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5269,6 +5814,7 @@ Check if a select with over two tables with two outer fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  SELECT_OUTER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5279,6 +5825,7 @@ SELECT with named ORDER BY.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_ALL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5289,6 +5836,7 @@ SELECT with numbered ORDER BY
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_ALL ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5299,6 +5847,7 @@ SELECT with DEC and ASC ORDER BY clause
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_ALL ORDER_BY_ASC ORDER_BY_DESC
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5309,6 +5858,7 @@ SELECT with complex ORDER BY.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_ASC ORDER_BY_DESC ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5319,6 +5869,7 @@ Check if a named group by fetches the correct values. .
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_COUNT ORDER_BY_NUMBER GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5329,6 +5880,7 @@ Check if a numbered group by fetches the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_COUNT ORDER_BY_NUMBER GROUP_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5339,6 +5891,7 @@ Check if a numbered group by fetches the correct values. Mixed GROUP BY.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_COUNT ORDER_BY_NUMBER GROUP_BY GROUP_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5361,7 +5914,7 @@ select into temp with no log..
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
-Uses SQL statemets features: SELECT_INTO_TEMP
+Uses SQL statemets features: SELECT_INTO_TEMP DROP_TABLE CREATE_TABLE BEGIN_WORK ROLLBACK_WORK  ORDER_BY_ASC ORDER_BY_DESC SQLCA_SQLCODE CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -5371,6 +5924,7 @@ Check if a select with a join between two tables fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5381,6 +5935,7 @@ Check if a simple select with a NOT condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5391,6 +5946,7 @@ Check if a simple select with a simple comparison condition fetch the correct va
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5401,6 +5957,7 @@ Check if a simple select with a IN subquery in where condition fetch the correct
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_IN_SUBSELECT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5411,6 +5968,7 @@ Check if a simple select with a EXISTS subquery in where condition fetch the cor
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_EXISTS_SUBSELECT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5421,6 +5979,7 @@ Check if a simple select with ALL subquery in where condition fetch the correct 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_ALL_SUBSELECT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5431,6 +5990,7 @@ Check if a simple select with between in where condition fetch the correct value
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_BETWEEN ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5441,6 +6001,7 @@ Check if a simple select with IN expression (not subquery) in where condition fe
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_IN ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5451,6 +6012,7 @@ Check if a simple select wth IN expression (not subquery) in where condition fet
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_NULL ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5461,6 +6023,7 @@ Check if a simple select with LIKE in where condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_LIKE ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5471,6 +6034,7 @@ Check if a simple select with MATCHES in where condition fetch the correct value
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_MATCHES ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5481,6 +6045,7 @@ Check if a simple select with MATCHES in where condition using a variable fetch 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_MATCHES ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5492,6 +6057,7 @@ Check if units on select list return the correct values.
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATETIME  ANSI_UPDATE SELECT_UNITS
 
  ------------------- Info for test 753 -----------------------
 
@@ -5499,6 +6065,7 @@ Check if a simple select that uses the rowid fetch the correct values values
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ROWID SQLCA_SQLCODE CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5509,6 +6076,7 @@ Check if a simple select with LIKE and characters escaped in where condition fet
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT WHERE_LIKE_ESCAPE ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5519,6 +6087,7 @@ Check if a simple select with < operatoor on where condition fetch the correct v
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5529,6 +6098,7 @@ Check if a simple select with > operator on where condition fetch the correct va
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5539,6 +6109,7 @@ Check if a simple select with <= operatoor on where condition fetch the correct 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5549,6 +6120,7 @@ Check if a simple select with LIKE in where condition using a variable fetch the
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER WHERE_LIKE CLOSE_CURSOR SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5559,6 +6131,7 @@ Check if a simple select with GREATER or equal the in where condition fetch the 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5569,6 +6142,7 @@ Check if a simple select with diferent the in where condition fetch the correct 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5579,6 +6153,7 @@ Check if a simple select with MATCHES and characters escaped in where condition 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR SQLCA_SQLCODE WHERE_MATCHES_ESCAPE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5589,6 +6164,7 @@ Check if a simple select with AND in where condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR WHERE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5599,6 +6175,7 @@ Check if a simple select with OR in where condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR WHERE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5609,6 +6186,7 @@ Check if a simple select with LIKE in where condition using a variable fetch the
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR WHERE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5619,6 +6197,7 @@ Test a select from a column to a smaller variable
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -5644,6 +6223,7 @@ Check if a simple select with ANY subquery in where condition fetch the correct 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR WHERE_ANY_SUBSELECT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5654,6 +6234,7 @@ Check if a simple select with SOME subquery in where condition fetch the correct
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR WHERE_SOME_SUBSELECT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5664,6 +6245,7 @@ Check if a simple select with NOT IN expression (not subquery) in where conditio
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR WHERE_NOT_IN ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5674,6 +6256,7 @@ Check if a select without a join between two tables fetch the correct cartesian 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5684,6 +6267,7 @@ Check if a simple select with NOT BETWEEN in where condition fetch the correct v
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER WHERE_BETWEEN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5694,6 +6278,7 @@ Check if a simple select with IS NULL in where condition using a variable fetch 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER WHERE_NULL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5704,6 +6289,7 @@ Check if a simple select with NOT LIKE in where condition using a variable fetch
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER WHERE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5714,6 +6300,7 @@ Check if a simple select with NOT MATCHES in where condition fetch the correct v
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER WHERE_MATCHES
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5724,6 +6311,7 @@ Check if a simple select with LIKE in where condition using a variable fetch the
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER WHERE_LIKE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5734,6 +6322,7 @@ Check if a simple select with COUNT(*) in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR ORDER_BY_NUMBER GROUP_BY SELECT_COUNT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5744,6 +6333,7 @@ Check if a simple select with AVG in select list fetch the correct values..
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST  CURSOR_SELECT CLOSE_CURSOR SELECT_AVG
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5754,6 +6344,7 @@ Check if a simple select with MAX in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_MAX GROUP_BY ORDER_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5764,6 +6355,7 @@ Check if a simple select with MIN in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_MIN GROUP_BY ORDER_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5774,6 +6366,7 @@ Check if a simple select with SUM in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_SUM GROUP_BY ORDER_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5784,6 +6377,7 @@ Check if a simple select with COUNT distinct in select list fetch the correct va
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  SELECT_COUNT_DISTINCT ORDER_BY_NUMBER
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5794,6 +6388,7 @@ Check if a simple select with MAX(ALL) in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_MAX_ALL ORDER_BY GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5804,6 +6399,7 @@ Check if a simple select with AVG(ALL) in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_AVG_ALL ORDER_BY GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5814,6 +6410,7 @@ Check if a simple select with MIN(ALL) in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_MIN_ALL ORDER_BY GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5824,6 +6421,7 @@ Check if a simple select with SUM ALL in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_SUM_ALL ORDER_BY GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5834,6 +6432,7 @@ Check if a simple select with HAVING condition using a variable fetch the correc
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_HAVING_COUNT ORDER_BY GROUP_BY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5844,6 +6443,7 @@ Check with UNION in where condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_UNION ORDER_BY_NUMBER WHERE_BETWEEN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5854,6 +6454,7 @@ Check with UNION ALL in where condition fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE  CURSOR_SELECT CLOSE_CURSOR SELECT_UNION_ALL ORDER_BY_NUMBER WHERE_BETWEEN
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5865,6 +6466,7 @@ Check if a ROLLBACK WORK works ok.
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE BEGIN_WORK ANSI_INSERT ROLLBACK_WORK  SELECT_COUNT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5875,6 +6477,7 @@ Check if the commit work statement after a transaction work
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE BEGIN_WORK ANSI_INSERT COMMIT_WORK  CURSOR_SELECT ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5913,6 +6516,7 @@ Test is compile only, no execution will be attempted
 Test needs database
 Test requires Informix SE RDBMS
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE RECOVER_TABLE SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5925,6 +6529,7 @@ Test is compile only, no execution will be attempted
 Test needs database
 Test requires Informix SE RDBMS
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE CLOSE_DATABASE ROLLFORWARD_DATABASE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5937,6 +6542,7 @@ Check if the SET CONSTRAINTS ALL IMEDIATE statement works
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ALTER_TABLE ADD_CONSTRAINT DDL_CHECK  SET_CONSTRAINTS BEGIN_WORK COMMIT_WORK CLOSE_CURSOR
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 798 -----------------------
@@ -5945,6 +6551,7 @@ Check if a simple select with rowid in select list fetch the correct values.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE ANSI_INSERT CURSOR_SELECT  ROWID ORDER_BY_NUMBER CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5989,6 +6596,7 @@ Test if the sqlca.sqlcode is assigned with NOTFOUND sql error.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_SELECT SQLCA_SQLCODE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -5999,6 +6607,7 @@ Test if the sqlca.sqlerrm is assigned with an obvious sql error.
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: ANSI_SELECT SQLCA_SQLERRM
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6017,6 +6626,7 @@ Test if the sqlca.sqlerrd[1] is assigned with NOTFOUND sql error.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_SELECT SQLCA_SQLERRD1
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6027,6 +6637,7 @@ Test if the sqlca.sqlerrd[2] is assigned with last serial inserted.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_SELECT SQLCA_SQLERRD2 DDL_SERIAL
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6037,6 +6648,7 @@ Test if the sqlca.sqlerrd[2] is assigned with the ISAM error with a lock
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLERRD2 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6047,6 +6659,7 @@ Test if the sqlca.sqlerrd[3] is assigned with the number of rows inserted update
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLERRD3 ANSI_UPDATE ANSI_DELETE
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6057,6 +6670,7 @@ Test if the sqlca.sqlerrd[4] is assigned with the estimated cost of query.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT CURSOR_SELECT  SQLCA_SQLERRD4 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6067,6 +6681,7 @@ Test if the sqlca.sqlerrd[5] is assigned with the offset of an error in an wrong
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_SELECT SQLCA_SQLERRD5 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6077,6 +6692,7 @@ Test if the sqlca.sqlerrd[6] is assigned with last rowid inserted.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_SERIAL ANSI_INSERT SQLCA_SQLERRD6 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6087,6 +6703,7 @@ Test if the sqlca.sqlarn[1] is assigned with a W
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_SELECT SQLCA_SQLAWARN1
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6097,6 +6714,7 @@ Test if the sqlca.sqlarn[2] is assigned with a W after a truncation in a select.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_SELECT SQLCA_SQLAWARN2
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6107,6 +6725,7 @@ Test if the sqlca.sqlarn[2] is assigned with a W after using a database without 
 
 Test needs database
 Is ANSI SQL 92 compatible
+Uses SQL statemets features: SQLCA_SQLAWARN2
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6117,6 +6736,7 @@ Test if the sqlca.sqlawarn[3] is assigned with a W after a null in an agregate f
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT SELECT_SUM SQLCA_SQLAWARN3
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6127,6 +6747,7 @@ Test if the sqlca.sqlawarn[4] is assigned with a W after a select with more on a
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_SELECT SQLCA_SQLAWARN4
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6138,6 +6759,7 @@ Test if the sqlca.sqlawarn[5] is assigned with a W after a select from a float t
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT ANSI_SELECT SQLCA_SQLAWARN5
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 917 -----------------------
@@ -6147,6 +6769,7 @@ Test if the sqlca.sqlawarn[6] is assigned with a W after an update with non ansi
 **** TEST MARKED INVALID IN run_tests ******
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE ANSI_INSERT UPDATE_COLUMNLIST_EQ_VALUELIST  SQLCA_SQLAWARN6
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 918 -----------------------
@@ -6277,6 +6900,7 @@ Test if the SET LOG 4gl statement works OK
 Test needs database
 Database MUST have transactions enabled for this test.
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: SET_LOG SET_BUFFERED_LOG
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6289,6 +6913,7 @@ Test if the START DATABASE 4gl statement works OK. Note - This test only works w
 Test is compile only, no execution will be attempted
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CLOSE_DATABASE START_DATABASE_WITH_LOG START_DATABASE_WITH_LOG_MODE_ANSI
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6797,6 +7422,7 @@ Testing a way to pass values between shell and 4gl using a temporary file.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: CREATE_TEMP_TABLE LOAD_FROM_INSERT_INTO ANSI_SELECT
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6805,15 +7431,33 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 This is a fairly comprehensive declare/open test for input/output binding
 
+**** TEST MARKED INVALID IN run_tests ******
 Test needs database
+Uses SQL statemets features: CREATE_TEMP_TABLE ANSI_INSERT DROP_TABLE ANSI_SELECT CURSOR_SELECT  FREE_CURSOR CLOSE_CURSOR SQLCA_SQLCODE STATUS
 
  ------------------- Info for test 1201 -----------------------
-WARNING: test still contains template comment in makefile
-*** Test not described ***
+
+Test behavious of status variable. No run-time checking
+
+**** TEST MARKED INVALID IN run_tests ******
+Test needs database
+Uses SQL statemets features: CREATE_TEMP_TABLE ANSI_SELECT STATUS
 
  ------------------- Info for test 1202 -----------------------
-WARNING: test still contains template comment in makefile
-*** Test not described ***
+
+infield() in ON KEY/INPUT BY NAME. Test is invalid - missing form file and keys.in
+
+**** TEST MARKED INVALID IN run_tests ******
+
+ ------------------- Info for test 1203 -----------------------
+
+Tests if finished an already finished report causes a core dump
+
+
+ ------------------- Info for test 1204 -----------------------
+
+Check the clear line in a display
+
 
  ------------------- Info for test 1300 -----------------------
 
@@ -6822,6 +7466,7 @@ CREATE TABLE with PRIMARY KEY clause. No run-time checking. NOTE: fails with -if
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
 Needs at least version 7.31 of Informix 4gl.
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_NOT_NULL DDL_PRIMARY_KEY
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6832,6 +7477,7 @@ CREATE TABLE with DEFAULT clause. No run-time checking. NOTE: fails with -ifx-p.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DEFAULT_VALUE DDL_DATETIME
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -6841,6 +7487,7 @@ UPDATE with constants in SET clause (Informix syntax) No run-time checking.
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME DDL_INTERVAL ANSI_INSERT  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6851,6 +7498,7 @@ UPDATE with expresion in SET and column list (Informix syntax) No run-time check
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME DDL_INTERVAL ANSI_INSERT  UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -6861,35 +7509,36 @@ Check if a simple select with GREATER or equal the in where condition fetch the 
 
 Test needs database
 Is __NOT__ ANSI SQL 92 compatible
+Uses SQL statemets features: DROP_TABLE CREATE_TABLE DDL_DATE ANSI_INSERT  CURSOR_SELECT ORDER_BY_NUMBER SQLCA_SQLCODE CLOSE_CURSOR
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
 --------------------------------------------------------------
-Total tests: 787
-Still has template comment: 23 ( 105 707 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1201 1202)
-Old makefile: 49 ( 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 77 78 79 80 82 84 86 90 92 93 94 96 97 105 212)
-Not described: 24 ( 499 707 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1201 1202)
-Invalid: 54 ( 105 375 377 498 499 684 705 707 752 797 916 917 918 919 920 921 922 923 924 925 926 927 928 929 930 931 932 933 934 935 938 939 940 941 942 943 944 945 946 947 948 949 950 951 952 953 954 955 956 957 958 959 964 966)
-Expected to fail (because of Aubit bug): 14 ( 240 278 296 348 349 350 351 670 706 766 767 962 976 987)
+Total tests: 788
+Still has template comment: 21 ( 105 707 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
+Old makefile: 92 ( 1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 91 92 93 94 95 96 97 98 99 100 202 203 204 205 206 212 217 218 223 229 239)
+Not described: 23 ( 105 499 707 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
+Invalid: 57 ( 105 375 377 498 499 684 705 707 752 797 916 917 918 919 920 921 922 923 924 925 926 927 928 929 930 931 932 933 934 935 938 939 940 941 942 943 944 945 946 947 948 949 950 951 952 953 954 955 956 957 958 959 964 966 1200 1201 1202)
+Expected to fail (because of Aubit bug): 13 ( 111 112 240 278 296 590 670 706 766 767 962 976 987)
 Obsolete: 18 ( 58 65 443 444 446 484 491 511 527 529 545 546 547 548 671 672 673 674)
  
-Has description text: 714
+Has description text: 717
 Expect non-zero exit status: 2
 Test is compile only: 79
-P-code enabled: 0
-Needs database: 338
+P-code enabled: 1
+Needs database: 345
 EC only test: 0
-Cannot run silent: 2
-Uses TUI UI: 25
-Uses forms: 83
-Uses graphic characterts: 1
-Expects manual input: 0
-Uses dump screen function: 13
+Cannot run silent: 3
+Uses TUI UI: 39
+Uses forms: 98
+Uses graphic characterts: 2
+Expects manual input: 1
+Uses dump screen function: 21
 Long running: 1
-Certified: 653
-x4GL compatible: 541
-Uses REPORT block: 10
+Certified: 698
+x4GL compatible: 545
+Uses REPORT block: 16
 All other unsorted tests: 0
  
 End of -info (all) output

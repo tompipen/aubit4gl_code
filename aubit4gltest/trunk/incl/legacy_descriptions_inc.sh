@@ -11,7 +11,7 @@
 #replaced with the one in template/ and tests described in taht makefile
 
 #Tests that require a database to compile/run:
-DB_TESTS="1 14 36 51 63 68 72 73 76 80 100 101 91 94 95 98 99 206 207 212"
+DB_TESTS="1 14 36 63 68 72 73 76 80 100 101 91 94 95 98 99 206 207 212"
 
 #Tests that use ESQL compiler output, instead of C output
 #TODO:This constraint should be obsolete once we replace the makefiles with the

@@ -209,3 +209,7 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME \
+			ANSI_INSERT ANSI_SELECT DROP_TABLE"
+

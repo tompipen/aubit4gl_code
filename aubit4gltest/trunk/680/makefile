@@ -208,3 +208,7 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "1"
 
+sql_features_used:
+	@echo "DEFINE_LIKE ANSI_DELETE INSERT_COLUMNLIST_EQ_VALUELIST \
+		UPDATE_SET_STAR CURSOR_SELECT"
+
