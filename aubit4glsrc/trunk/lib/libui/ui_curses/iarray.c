@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.19 2003-06-12 17:40:22 mikeaubury Exp $
+# $Id: iarray.c,v 1.20 2003-06-12 17:51:08 mikeaubury Exp $
 #*/
 
 /**
@@ -1082,6 +1082,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
   struct s_movement *ptr;
   void *last_field;
   void *next_field;
+  struct struct_scr_field *f;
 
 
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
@@ -1172,15 +1173,37 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
     last_field = 0;
 
   next_field = arr->field_list[scr_line - 1][attrib];
-  if (A4GL_has_bool_attribute (next_field, FA_B_NOENTRY)) {
-	// We can't go this this field - its a no entry
-	if (attrib>arr->curr_attrib) { // We want to move to the right..
-      		A4GL_newMovement (arr, scr_line, arr_line, attrib+1); // So keep going...
+  f = (struct struct_scr_field *) (field_userptr (next_field));
+
+ if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) {
+  while (1) {
+	int dir;
+
+	if (attrib>=arr->curr_attrib) { // We want to move to the right..
+		dir=1;
 	} else {
-      		A4GL_newMovement (arr, scr_line, arr_line, attrib-1); // So keep going...
+		dir=-1;
 	}
-	return;
+	A4GL_debug("next_field= %d %d\n",scr_line,attrib);
+  	next_field = arr->field_list[scr_line - 1][attrib];
+  	f = (struct struct_scr_field *) (field_userptr (next_field));
+
+  	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) {
+		attrib+=dir;
+		if (attrib>arr->srec->attribs.attribs_len) {
+			attrib=0;
+			scr_line++;
+		}
+		if (attrib<0) {
+			attrib=arr->srec->attribs.attribs_len;
+			scr_line--;
+		}
+	} else {
+      		A4GL_newMovement (arr, scr_line, arr_line, attrib+1); // So keep going...
+		return;
+	}
   }
+}
 	
 
 	
