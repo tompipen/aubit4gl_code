@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.19 2003-05-01 09:42:42 mikeaubury Exp $
+# $Id: ioform.c,v 1.20 2003-05-07 07:15:24 mikeaubury Exp $
 #*/
 
 /**
@@ -774,7 +774,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case 10:
     case KEY_DOWN:
 	if (s->mode!=MODE_INPUT_ARRAY||(a=='\t' && s->mode==MODE_INPUT_ARRAY)) {
-		if (std_dbscr.input_wrapmode==0 && curr_metric_is_verylast())  {
+		if (std_dbscr.input_wrapmode==0 && curr_metric_is_used_last_s_screenio(s,f))  {
       			s->field_changed = 1;
       			do_input_nowrap=1;
 			return 0;
@@ -3072,6 +3072,24 @@ curr_metric_is_verylast (void)
     return 1;
 
   return 0;
+}
+
+
+int curr_metric_is_used_last_s_screenio(struct s_screenio * s,FIELD *f) {
+int a;
+int fno=-1;
+
+for (a=0;a<=s->nfields;a++) {
+	debug("Current field=%p field_list=%p",f,s->field_list[a]);
+	if (f==s->field_list[a]) fno=a;
+}
+
+debug("curr_metric_is_used_last_s_screenio fno=%d nfields=%d",fno,s->nfields) ;
+if (fno==s->nfields) {
+	return 1;
+} 
+
+return 0;
 }
 
 
