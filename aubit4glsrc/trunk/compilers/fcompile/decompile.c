@@ -1,3 +1,8 @@
+/**
+ * @file
+ * The main module for form decompiler
+ */
+
 #include <stdio.h>
 #include "form_x.h"
 

@@ -1,12 +1,13 @@
 
 
 /**
+ * @file
  * The main module for the x4gl compiler.
  */
 
 /*
  *
- * $Id: 4glc.c,v 1.9 2001-11-27 20:48:24 saferreira Exp $
+ * $Id: 4glc.c,v 1.10 2001-11-27 23:50:51 saferreira Exp $
  */
 
 //#include "../libincl/compiler.h"
@@ -167,7 +168,7 @@ main (int argc, char *argv[])
  *
  * @param s The string to be unquoted
  */
-rm_quote (char *s)
+void rm_quote (char *s)
 {
   char buff[256];
   int a;
@@ -195,7 +196,7 @@ rm_quote (char *s)
  *
  * @param fname The globals file name
  */
-read_globals (char *fname)
+void read_globals (char *fname)
 {
   char a[128];
   char b[128];

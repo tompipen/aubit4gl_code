@@ -1,5 +1,3 @@
-   /* $Id: fcompile.c,v 1.6 2001-11-23 20:06:41 saferreira Exp $
-   /* */
 
 /**
  * Main module from the form compiler.
@@ -8,6 +6,9 @@
  *
  * The frm is the file used at run-time by x4gl
  */
+
+ /* $Id: fcompile.c,v 1.7 2001-11-27 23:50:53 saferreira Exp $
+    */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>

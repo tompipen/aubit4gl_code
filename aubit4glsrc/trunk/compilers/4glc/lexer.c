@@ -1,4 +1,5 @@
 /**
+ * @file
  * Lexical analisys.
  *
  * It reads the input file (the source.4gl) and returns a token to the 

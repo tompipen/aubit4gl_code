@@ -1,4 +1,5 @@
 /**
+ * @file
  * Implements stack functions for helping in the parsing.
  */
 

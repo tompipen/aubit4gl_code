@@ -1,5 +1,6 @@
 
 /**
+ * @file
  * It looks like function to help the parsing of a module (a x4gl one). 
  * For that the name mod.c
  *
@@ -8,12 +9,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.28 2001-11-27 20:48:24 saferreira Exp $
+* $Id: mod.c,v 1.29 2001-11-27 23:50:52 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.28  2001/11/27 20:48:24  saferreira
+*	Some cleaning, statics, prototype warnings and doxygen comments.
+*	
 *	Revision 1.27  2001/11/27 14:01:03  saferreira
 *	Removed old code inside #ifdefs
 *	
