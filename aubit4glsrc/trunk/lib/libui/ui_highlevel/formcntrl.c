@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -51,7 +51,7 @@ static char *module_id="$Id: formcntrl.c,v 1.11 2004-04-02 09:14:11 mikeaubury E
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
-int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos);
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r);
 int A4GL_conversion_ok(int);
 
 extern int m_lastkey;
@@ -593,7 +593,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	  			struct struct_scr_field *fprop;
 				int k;
 				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
-				k=A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form));
+				k=A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]");
 	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
       				if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = tolower (a); }
       				if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = toupper (a); }
@@ -869,6 +869,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	      if (really_ok == 0)
 		{
 		  //
+			A4GL_comments(fprop);
 		  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
 
 		  if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
@@ -1131,7 +1132,11 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
    A4GL_LL_set_carat(mform);
   a = A4GL_getch_win ();
 
-  if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) a=A4GLKEY_ACCEPT;
+  if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) {
+		a=A4GLKEY_ACCEPT;
+		A4GL_set_last_key (A4GLKEY_ACCEPT);
+	}
+
 
   s->processed_onkey = a;
   m_lastkey = a;

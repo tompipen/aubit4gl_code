@@ -540,7 +540,8 @@ if (indicator!=-1) {
           break;
         }
         if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
-                sprintf (buffer, "%lf", float_var);
+                sprintf (buffer, "%lf", float_var); 
+		if (display_mode==DISPLAY_UNLOAD) trim_trailing_0(buffer);
         } else {
                 sprintf (buffer, "%*lf", columnWidths[idx-1],float_var);
         }
@@ -557,6 +558,7 @@ if (indicator!=-1) {
       //sprintf (buffer, "%f", smfloat_var);
         if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
                 sprintf (buffer, "%f", smfloat_var);
+		if (display_mode==DISPLAY_UNLOAD) trim_trailing_0(buffer);
         } else {
                 sprintf (buffer, "%*f", columnWidths[idx-1],smfloat_var);
         }
@@ -581,6 +583,7 @@ if (indicator!=-1) {
 	A4GL_trim(buff);
         if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
                 sprintf (buffer, "%s", buff);
+		if (display_mode==DISPLAY_UNLOAD) trim_trailing_0(buffer);
         } else {
                 sprintf (buffer, "%*s", columnWidths[idx-1],buff);
         }
@@ -618,6 +621,7 @@ if (indicator!=-1) {
         }
         buff[32]=0;
       sprintf (buffer, "%s", buff);
+		if (display_mode==DISPLAY_UNLOAD) trim_trailing_0(buffer);
       //free (fgl_money);
       break;
 
@@ -1633,6 +1637,21 @@ database lv_dbname
 end function
 
 code
+void trim_trailing_0(char *buffer) {
+int a;
+char *ptr;
+ptr=strrchr(buffer,'.');
+if (ptr==0) return;
+for (a=strlen(buffer)-1;a>=0;a--) {
+if (&buffer[a]<=ptr) break;
+if (buffer[a]=='0') buffer[a]=0;
+else break;
+}
+if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
+}
+
+
+
 asql_explain(struct element *e) {
 // Not implemented - use set explain on/set explain off instead...
 }
@@ -1653,3 +1672,5 @@ else
 end if
 	return dbname
 end function
+
+

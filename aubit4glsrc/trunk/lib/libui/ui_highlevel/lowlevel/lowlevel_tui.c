@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.22 2004-04-05 10:09:42 saferreira Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.23 2004-05-13 12:46:01 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -36,7 +36,7 @@ static void
 A4GL_debug_print_field_opts (FIELD * a);
 int chars_normal[6];
 int have_default_colors = 0;
-int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r) ;
 
 static void A4GL_clear_prompt (struct s_prompt *prmt);
 //void A4GL_LL_screen_update (void);
@@ -2191,7 +2191,7 @@ return ;
 ** init_key = initial keystroke that caused us to be here.. (0 for before field)
 ** init_pos = position in field as retrived from the original field..
 */
-int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) {
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *left,char *right) {
 	static char rbuff[1024];
 	//static char rbuff2[1024];
 	FIELD *buff[4];
@@ -2214,7 +2214,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
   	if (fl > UILIB_A4GL_get_curr_height ()) fl = UILIB_A4GL_get_curr_height ();
         drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl-1, 0);
 
-	buff[0]=A4GL_LL_make_label(0,0,"[");
+	buff[0]=A4GL_LL_make_label(0,0,left);
 	buff[1]=A4GL_LL_make_field(0,0,1,1,fwidth-2);
         A4GL_field_opts_on (buff[1], AUBIT_O_ACTIVE);
         A4GL_field_opts_on (buff[1], AUBIT_O_EDIT);
@@ -2222,7 +2222,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
         //set_max_field(buff[1],fwidth-2);
 
 
-	buff[2]=A4GL_LL_make_label(0,fwidth-1,"]");
+	buff[2]=A4GL_LL_make_label(0,fwidth-1,right);
 	buff[3]=0;
 
 	f=A4GL_form_new_form(buff);

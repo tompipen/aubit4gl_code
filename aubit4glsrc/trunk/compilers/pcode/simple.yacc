@@ -46,6 +46,7 @@ char buff[20];
 %token KW_A_CLR_ERR
 %token KW_A_ERRCHK
 
+
 %start translation_unit
 
 %union {
@@ -132,7 +133,6 @@ cmd :
 ;
 
 
-
 fgl_funcs :
 	KW_A_PUSH_LONG '(' int_val ')' {
 			add_push_long($<e>3->param_u.n);
@@ -143,6 +143,11 @@ fgl_funcs :
 	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
 			add_push_char($<str>3);
 	}
+	| KW_A_PUSH_OP '(' CONSTANT ')' {
+			add_push_op($<str>3);
+	}
+
+
 /*
 	| KW_A_PUSH_CHAR '(' variable ')' {
 			add_push_charv($<e>3);

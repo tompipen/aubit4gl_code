@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.mja,v 1.6 2004-04-02 09:14:10 mikeaubury Exp $
+# $Id: Makefile.mja,v 1.7 2004-05-13 12:45:59 mikeaubury Exp $
 #
 
 LIBROOT=../..
@@ -78,7 +78,7 @@ ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o array.o i
 
 
 libUI_TUI_s${SO_EXT}: ${ALLOBJ}
-	ld ${SO_LDFLAGS} -o $@ $^ ./libformw_g.a ./libpanelw_g.a ./libncursesw_g.a -L/lib ${LINKLIBS}
+	ld ${SO_LDFLAGS} -o $@ $^ -lformw_g -lpanelw_g -lncursesw_g -L/usr/local/widec/lib  -L/lib ${LINKLIBS}
 
 ## ==================================================================
 ##                            Sub Targets

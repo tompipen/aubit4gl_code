@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.16 2004-04-02 09:14:11 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.17 2004-05-13 12:46:00 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -2756,4 +2756,28 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
   A4GL_LL_screen_update ();
 }
+
+
+ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
+
+       if (strcmp(siotype,"s_inp_arr")==0) {
+               static void* last_sio=0;
+               struct s_inp_arr *s;
+               s=sio;
+               if (last_sio!=sio) {
+                       // May need to do a full redraw..
+                       last_sio=sio;
+                       if (sio) A4GL_idraw_arr_all(s);
+               }
+               if (s) {
+                       A4GL_set_arr_curr (s->arr_line);
+                               A4GL_set_scr_line (s->scr_line);
+               }
+
+       }
+
+       if (strcmp(siotype, "s_screenio")==0) {
+       }
+
+ }
 

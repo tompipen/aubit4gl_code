@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.7 2003-12-05 01:44:36 afalout Exp $
+# $Id: compiler_main.c,v 1.8 2004-05-13 12:45:52 mikeaubury Exp $
 #*/
 
 /**
@@ -42,8 +42,8 @@
 
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
-	#define bool_t int
-	#define u_int unsigned int
+#define bool_t int
+#define u_int unsigned int
 #endif
 
 #include "npcode.h"
@@ -61,7 +61,7 @@ extern int yydebug;
 
 int debug_mode = 0;
 
-char fout[256]="a.4pe";
+char fout[256] = "a.4pe";
 
 struct module this_module;
 
@@ -91,102 +91,134 @@ int yyparse (void);
 int
 main (int argc, char *argv[])
 {
-int a;
-int got_input=0;
-int ignore_next=0;
+  int a;
+  int got_input = 0;
+  int ignore_next = 0;
 
   this_module.fglc_magic = FGLC_XDR_MAGIC;
   this_module.fglc_version = FGLC_XDR_VERSION;
 
-	if (argc == 1) {
-		printf("\n");
-		printf("Aubit C to P-code compiler. Usage:\n");
-		printf("\n");
-		printf(" -d : debug mode\n");
-		printf(" -y : debug mode + yydebug\n");
-		printf(" -D -L -I -o -l -c flags are accepted for compatibility with C compiler, but ignored\n");
-		printf("\n");
-		exit (1);
+  if (argc == 1)
+    {
+      printf ("\n");
+      printf ("Aubit C to P-code compiler. Usage:\n");
+      printf ("\n");
+      printf (" -d : debug mode\n");
+      printf (" -y : debug mode + yydebug\n");
+      printf
+	(" -D -L -I -o -l -c flags are accepted for compatibility with C compiler, but ignored\n");
+      printf ("\n");
+      exit (1);
     }
 
-  if (strcmp (argv[1], "-") == 0) {
+  if (strcmp (argv[1], "-") == 0)
+    {
       this_module.module_name = "-";
       yyin = stdin;
-      strcpy(fout,"a.4pe");
-  } else {
-	char *ptr;
-	char arg[256];
-    char *c12;
+      strcpy (fout, "a.4pe");
+    }
+  else
+    {
+      char *ptr = 0;
+      char arg[256];
+      char c12 [3];
 
 
 //printf("argc %d\n",argc);
 //exit (1);
-		for (a = 1; a < argc; a++) {
+      for (a = 1; a < argc; a++)
+	{
 //printf("arg=%d\n",a);
 //exit (1);
-		  if (ignore_next == 1) {
-            ignore_next=0;
-			continue;
-          }
+	  if (ignore_next == 1)
+	    {
+	      ignore_next = 0;
+	      continue;
+	    }
 
-		  strcpy(arg,argv[a]);
-          sprintf(c12,"%c%c",arg[0],arg[1]);
+	  strcpy (arg, argv[a]);
+	  sprintf (c12, "%c%c", arg[0], arg[1]);
 
- 		  if (strcmp (argv[a], "-d") == 0) {
-			  //printf("got -d\n");
-			  debug_mode = 1;
-		  } else if (strcmp (argv[a], "-y") == 0) {
-			  //printf("got -y\n");
-			  debug_mode = 1;
-			  yydebug = 1;
-		  } else if (strcmp (c12, "-I") == 0) {
-			//printf("got -I\n");
-			// -I flag: ignore
-            continue;
-		  } else if (strcmp (c12, "-L") == 0) {
-			//printf("got -L\n");
-			// -L flag: ignore
-            continue;
-		  } else if (strcmp (c12, "-D") == 0) {
-			//printf("got -D\n");
-			// -D flag: ignore
-            continue;
-		  } else if (strcmp (c12, "-o") == 0) {
-			//printf("got -o\n");
-			// -o flag: ignore
-            ignore_next=1;
-            continue;
-		  } else if (strcmp (c12, "-l") == 0) {
-			//printf("got -l\n");
-			// -l flag: ignore
-            continue;
-		  } else if (strcmp (c12, "-c") == 0) {
-			//printf("got -c\n");
-			// -c flag: ignore
-            continue;
-		  } else {
-			  this_module.module_name = strdup (argv[a]);
-			//printf ("Opening input file %s\n",argv[a]);
-			  yyin = fopen (this_module.module_name, "r");
-			  if (yyin == 0) {
-				printf ("Unable to open input file %s\n",this_module.module_name);
-				exit (2);
-			  } else {
-			      strcpy(fout,this_module.module_name);
-			      ptr=strrchr(fout,'.');
-				  if (ptr) { *ptr=0; }
-				  strcat(fout,".4pe");
-	              got_input=1;
- 				//yyparse ();
-			  }
-          } //end if
-        } //end for
-  }
+	  if (strcmp (argv[a], "-d") == 0)
+	    {
+	      //printf("got -d\n");
+	      debug_mode = 1;
+	    }
+	  else if (strcmp (argv[a], "-y") == 0)
+	    {
+	      //printf("got -y\n");
+	      debug_mode = 1;
+	      yydebug = 1;
+	    }
+	  else if (strcmp (c12, "-I") == 0)
+	    {
+	      //printf("got -I\n");
+	      // -I flag: ignore
+	      continue;
+	    }
+	  else if (strcmp (c12, "-L") == 0)
+	    {
+	      //printf("got -L\n");
+	      // -L flag: ignore
+	      continue;
+	    }
+	  else if (strcmp (c12, "-D") == 0)
+	    {
+	      //printf("got -D\n");
+	      // -D flag: ignore
+	      continue;
+	    }
+	  else if (strcmp (c12, "-o") == 0)
+	    {
+	      //printf("got -o\n");
+	      // -o flag: ignore
+	      ignore_next = 1;
+	      continue;
+	    }
+	  else if (strcmp (c12, "-l") == 0)
+	    {
+	      //printf("got -l\n");
+	      // -l flag: ignore
+	      continue;
+	    }
+	  else if (strcmp (c12, "-c") == 0)
+	    {
+	      //printf("got -c\n");
+	      // -c flag: ignore
+	      continue;
+	    }
+	  else
+	    {
+	      this_module.module_name = strdup (argv[a]);
+	      //printf ("Opening input file %s\n",argv[a]);
+	      yyin = fopen (this_module.module_name, "r");
+	      if (yyin == 0)
+		{
+		  printf ("Unable to open input file %s\n",
+			  this_module.module_name);
+		  exit (2);
+		}
+	      else
+		{
+		  strcpy (fout, this_module.module_name);
+		  ptr = strrchr (fout, '.');
+		  if (ptr)
+		    {
+		      *ptr = 0;
+		    }
+		  strcat (fout, ".4pe");
+		  got_input = 1;
+		  //yyparse ();
+		}
+	    }			//end if
+	}			//end for
+    }
 
-  if (got_input == 0) {
-	printf("ERROR: no input file\n");
-	exit (13);
-  }
+  if (got_input == 0)
+    {
+      printf ("ERROR: no input file\n");
+      exit (13);
+    }
 
   do_compiler_start (argc, argv);
 
@@ -221,22 +253,26 @@ int ignore_next=0;
   this_module.external_function_table.external_function_table_val = 0;
 
   A4GL_debug ("STring table : %d entries\n",
-  	this_module.string_table.string_table_len);
+	      this_module.string_table.string_table_len);
 
-  for (a = 0; a < this_module.string_table.string_table_len; a++) {
+  for (a = 0; a < this_module.string_table.string_table_len; a++)
+    {
       A4GL_debug ("%d. %s\n", a,
 		  this_module.string_table.string_table_val[a].s);
-  }
+    }
 
 
   add_default_named_structs ();	// For things like BINDING...
 
-  if (yyin) {
-		yyparse ();
-  } else {
-		printf ("Unable to open input file\n");
-		exit (2);
-  }
+  if (yyin)
+    {
+      yyparse ();
+    }
+  else
+    {
+      printf ("Unable to open input file\n");
+      exit (2);
+    }
 
   end_define_module ();
 
@@ -250,9 +286,12 @@ int ignore_next=0;
   //print_module();
 
   a = process_xdr ('O', &this_module, fout);
-  if (a) {
+  if (a)
+    {
       A4GL_debug ("Written ok %d\n", a);
-    } else {
+    }
+  else
+    {
       printf ("Failed to write %d\n", a);
       exit (1);
     }
@@ -265,7 +304,7 @@ int
 yyerror (char *s)
 {
   extern int yylineno;
-  printf ("%s @ line %d\n", s,yylineno);
+  printf ("%s @ line %d\n", s, yylineno);
   exit (1);
 }
 
@@ -286,4 +325,3 @@ call_function (long pc, struct npcmd_call *c)
 
 
 /* ================================= EOF ============================== */
-

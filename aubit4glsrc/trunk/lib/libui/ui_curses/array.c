@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.32 2004-05-12 08:15:58 mikeaubury Exp $
+# $Id: array.c,v 1.33 2004-05-13 12:45:59 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.32 2004-05-12 08:15:58 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.33 2004-05-13 12:45:59 mikeaubury Exp $";
 
 
 
@@ -503,7 +503,7 @@ draw_arr (arr, -1, arr->arr_line);
 
 
     case A4GLKEY_PGDN :
-if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
+if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->arr_line< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
 
       if (arr->arr_line+1 <= arr->no_arr) {
 		arr->cntrl=0-A4GLKEY_PGDN;

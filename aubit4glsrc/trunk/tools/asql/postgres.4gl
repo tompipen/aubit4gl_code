@@ -366,7 +366,30 @@ end function
 
 code
 
+void trim_trailing_0(char *buffer) {
+int a;
+char *ptr;
+ptr=strrchr(buffer,'.');
+if (ptr==0) return;
+for (a=strlen(buffer)-1;a>=0;a--) {
+if (&buffer[a]<=ptr) break;
+if (buffer[a]=='0') buffer[a]=0;
+else break;
+}
+if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
+}
+
 static void ltrim(char *s) {
+char *ptr;
+ltrim2(s);
+ptr=strchr(s,'.');
+if (ptr) {
+	trim_trailing_0(s);
+}
+}
+
+
+static void ltrim2(char *s) {
 char*ptr;
 char *p2;
 int a;

@@ -189,6 +189,10 @@ new_command (enum cmd_type cmd_type, void *ptr)
       CURRENT_CMD.cmd_u.c_push_long = (int) ptr;
       break;
 
+    case CMD_PUSH_OP:
+      CURRENT_CMD.cmd_u.c_push_op = (int) ptr;
+      break;
+
     case CMD_PUSH_CHAR:
       CURRENT_CMD.cmd_u.c_push_char = (int) ptr;
       break;
@@ -457,6 +461,12 @@ long add_clr_err(void) {
 
 long add_push_long(int n) {
   return new_command (CMD_PUSH_LONG, (void *)n);
+}
+
+long add_push_op(char *n) {
+  int ni;
+  ni=-1;
+  return new_command (CMD_PUSH_OP, ni);
 }
 
 long add_push_char(char *s) {

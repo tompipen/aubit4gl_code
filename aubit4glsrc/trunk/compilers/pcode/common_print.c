@@ -263,6 +263,9 @@ print_command (long func_id, long pc, struct cmd *cmd)
     case CMD_PUSH_INT: 
 	print_push_int(cmd->cmd_u.c_push_int);
 	break;
+    case CMD_PUSH_OP: 
+	print_push_op(cmd->cmd_u.c_push_int);
+	break;
 
     case CMD_CHK_ERR:
 	print_chk_err(cmd->cmd_u.c_chk_err_lineno);
@@ -308,6 +311,9 @@ void print_push_long(int n)  {
 	printf("A4GL_push_long(%d)",n);
 }
 
+void print_push_op(int n)  {
+	printf("A4GL push op(%d)",n);
+}
 
 void
 print_var_element (int lvl, struct variable_element *ve)

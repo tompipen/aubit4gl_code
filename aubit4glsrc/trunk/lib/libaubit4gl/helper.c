@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.28 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: helper.c,v 1.29 2004-05-13 12:45:57 mikeaubury Exp $
 #
 */
 
@@ -988,6 +988,15 @@ char *ptr;
 	return ret;
 }
 
+
+aclfgl_aclfgl_setenv(int n)  {
+char *a;
+char *b;
+b=A4GL_char_pop();
+a=A4GL_char_pop();
+A4GL_setenv(a,b,1);
+return 0;
+}
 
 /* =================================== EOF ============================= */
 

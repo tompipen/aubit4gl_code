@@ -91,6 +91,7 @@ void count();
 "REPORT_PAGETRAILER" 		{strcpy(yytext,"-14"); count(); return CONSTANT;}
 "REPORT_TERMINATE" 		{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 
+"A4GL_pushop"	{if (use_4gl_kw) return KW_A_PUSH_OP; else REJECT;}
 "A4GL_push_long"	{if (use_4gl_kw) return KW_A_PUSH_LONG; else REJECT;}
 "A4GL_push_int"		{if (use_4gl_kw) return KW_A_PUSH_INT; else REJECT;}
 "A4GL_push_char"	{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}

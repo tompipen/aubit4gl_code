@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $
+# $Id: display_array.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -489,9 +489,11 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
       arr->arr_line = arr->arr_line + arr->srec->dim;
       if (arr->arr_line > arr->no_arr)
 	{
-	  arr->scr_line = 1;
+	  //arr->scr_line = 1;
 	  arr->arr_line = arr->no_arr;
 	}
+	while (arr->arr_line<arr->scr_line) arr->scr_line--;
+
       redisplay_arr (arr, 2);
       A4GL_set_arr_curr (arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
@@ -501,8 +503,8 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 
 
     case A4GLKEY_PGDN:
-if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
-      if (arr->arr_line + 1 < arr->no_arr)
+if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
+      if (arr->arr_line + 1 <= arr->no_arr)
 	{
 	  arr->cntrl = 0 - A4GLKEY_PGDN;
 	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
