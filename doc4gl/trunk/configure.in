@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.5 2003-01-09 05:40:18 afalout Exp $
+dnl # $Id: configure.in,v 1.6 2003-01-12 09:24:10 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -37,7 +37,6 @@ dnl #This script is used to configure BOTH source code and binary distributions
 #Run-time:
 #Informix JDBC drivers
 #Informix database server (commercial)
-#JSP enabled web server, for example Jakarta Tomcat
 #Java Run-time environment - JRE, also referred to as JVM (for example, Sun J2SE or Kaffe implementation)
 
 
@@ -224,6 +223,7 @@ AC_SUBST(HTTPD)
 AC_SUBST(APACHE_CONF)
 AC_SUBST(WWW_HOST_NAME)
 AC_SUBST(WWW_DOCUMENT_ROOT)
+AC_SUBST(TOMCAT)
 AC_SUBST(TOMCAT_DIR)
 
 #RPM
@@ -259,6 +259,7 @@ AC_SUBST(GCC_MINGW)
 AC_SUBST(HAS_CHECK)
 AC_SUBST(JAVAC)
 AC_SUBST(ANT)
+AC_SUBST(WGET)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -694,7 +695,32 @@ GLIBC_VER=2.2.4
 
 PHP_CONFIGURE_PART(Checking standard programs:)
 
+AC_PATH_PROG(WGET, wget, no)
+
 AC_PATH_PROG(JAVAC, javac, no)
+
+#check JAVA_HOME, needed by ant
+
+#check if javac is actually kaffe.
+
+#This is KOPI javac: (installed with RH kaffe RPM)
+#THIS PROGRAM IS PART OF GNU KOPI, A SET OF GNU PACKAGES FOR JVM CODE GENERATION
+#MORE INFO:                 see: http://www.dms.at/kopi, http://www.gnu.org/kopi
+#[afalout@aptiva erp]$ javac -version
+#version number: 1.4F released 05/23/2000
+#[afalout@aptiva erp]$
+
+#This is Kaffe JVM:
+#[afalout@aptiva erp]$ java -version
+#Kaffe Virtual Machine
+#Copyright (c) 1996-2000
+#Transvirtual Technologies, Inc.  All rights reserved
+#Engine: Just-in-time v3   Version: 1.0.6   Java Version: 1.1
+#[afalout@aptiva erp]$
+
+
+
+
 
 AC_PATH_PROG(MAKE, make, no)
 if test "$MAKE" = "no" ; then
@@ -775,10 +801,11 @@ fi
 #This is probably a bug in autoconf, but if we don't test for Lex BEFORE
 #we test for C, all sort of wireds things will happen, so we have to test
 #it even in binary distro, where we don't need it:
-dnl #AC_PROG_LEX
+dnl #AC _PROG _LEX
+#something was testin twice for flex? are macros expanded even when commented out?
 AM_PROG_LEX
 if test "$LEX" = ":" || test "$LEX" = "" ; then
-    dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+    dnl #AC _PROG _LEX macro sets $LEX to ":" when it can't find lex of flex executables!
 	LEX="no"
 	if test "$doc4gl_SOURCE" = "1" ; then
         WARN_LEX=1
@@ -887,6 +914,30 @@ if test -n "$PROG_SENDMAIL"; then
 fi
 
 ## ==================================================================
+##                  Checks for Tomcat
+## ==================================================================
+
+#FIXME: check also for other JSP enabled web servers (??)
+
+PHP_CONFIGURE_PART(Checking for JSP web server:)
+
+AC_PATH_PROG(TOMCAT, tomcat, no)
+if test "$TOMCAT" = "no"; then
+	AC_PATH_PROG(TOMCAT4, tomcat4, no)
+	if test "$TOMCAT4" != "no"; then
+        TOMCAT=$TOMCAT4
+    fi
+fi
+
+if test "$TOMCAT" != "no"; then
+	AC_MSG_CHECKING(Tomcat home)
+	TOMCAT_DIR=`$TOMCAT --help | grep CATALINA_BASE | awk '{print $3}'`
+	AC_MSG_RESULT($TOMCAT_DIR)
+	#TOMCAT_JAVA_HOME=`$TOMCAT --help | grep JAVA_HOME | awk '{print $3}'`
+fi
+
+
+## ==================================================================
 ##                  Checks for Perl and Perl components
 ## ==================================================================
 
@@ -975,6 +1026,7 @@ fi
             fi
         fi
 	fi
+	AC_MSG_RESULT($PERL_MODULE_DIR)
 
 	AC_MSG_CHECKING(if library dir is in Perl @INC)
     TMP=`perl -V | grep $PERL_MODULE_DIR`
@@ -1629,9 +1681,9 @@ if test "$doc4gl_SOURCE" = "1" ; then
 				etc/fgldocrc
 				FgldocDefs.mk])
 
-    #apparently not needed - Autoconf finds .PL automatically
-	#FIXME check if we have Perl
-	#perl manager/Makefile.PL
+    if test "$PERL" != "no"; then
+		$PERL manager/Makefile.PL
+    fi
 
 else
 
