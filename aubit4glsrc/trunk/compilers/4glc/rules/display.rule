@@ -49,11 +49,13 @@ display_array_cmd : DISPLAY_ARRAY {
 	use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes 
 		{
 		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>8,$<str>9,&curr_input_array_attribs);
+	  	A4GL_new_events();
 		}
 	disp_rest {
 		add_continue_blockcommand ("DISPLAY");  
 		print_display_array_p2();
 		pop_blockcommand("DISPLAY");
+	  	A4GL_drop_events();
 }
 ;
 
@@ -78,18 +80,21 @@ disp_field_commands : disp_field_command | disp_field_commands disp_field_comman
 
 disp_field_command :  
 	AFTROW {
+		A4GL_add_event(-11,"");
 		print_befaft_field_1("AFT_ROW");
 		} 
 	commands {
 		print_befaft_field_2();
 	}
 	| BEFROW {
+		A4GL_add_event(-10,"");
 		print_befaft_field_1("BEF_ROW");
 		} 
 	commands {
 		print_befaft_field_2();
 	}
 	| on_key_command {
+		A4GL_add_onkey_key($<str>1);
 		print_onkey_1($<str>1);
 		} 
 	commands {

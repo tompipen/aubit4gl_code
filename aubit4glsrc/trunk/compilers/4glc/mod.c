@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.148 2004-01-16 11:26:15 mikeaubury Exp $
+# $Id: mod.c,v 1.149 2004-01-16 18:37:35 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,31 @@
 #define ledger_height    (float) 792.0
 #define p11x17_width     (float) 792.0
 #define p11x17_height    (float) 1224.0
+
+
+
+
+
+int A4GL_get_nevents(void) ;
+void A4GL_get_event(int n,int *i,char **s) ;
+
+int A4GL_findex (char *str, char c);
+void push_validate (char *t2);
+int A4GL_get_attr_from_string (char *s);
+char get_curr_report_stack_whytype (void);
+char find_variable_scope (char *s_in);
+void set_rep_no_orderby(int n) ;
+int get_rep_no_orderby(void) ;
+int get_validate_list_cnt(void) ;
+void clr_validate_list(void) ;
+struct expr_str *A4GL_get_validate_expr(int n) ;
+int A4GL_escape_quote_owner(void) ;
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
+
+void A4GL_add_event(int n,char *s) ;
+void A4GL_add_onkey_key(char *s) ;
+void A4GL_drop_events(void) ;
+void A4GL_new_events(void) ;
 
 /*
 =====================================================================
@@ -2001,7 +2026,7 @@ int
 add_bind (char i, char *var_i)
 {
   long dtype;
-char c;
+//char c;
 char var[2048]="";
 A4GL_debug("add_bind: %c %s\n",i,var_i);
 strcpy(var,var_i);
@@ -2916,8 +2941,8 @@ push_construct_table (char *tableName)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  char csize[20];
-  char cdtype[20];
+  //char csize[20];
+  //char cdtype[20];
   char buff[300];
   char *ccol;
 
@@ -3626,8 +3651,8 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   char buff[256];
   int b1;
-  int b2;
-  int b3;
+  //int b2;
+  //int b3;
   int dim;
   int xxxa;
   static struct binding_comp *save_bind=0;
@@ -3880,7 +3905,7 @@ tr_glob_fname (char *s)
 }
 
 char
-get_curr_report_stack_whytype ()
+get_curr_report_stack_whytype (void)
 {
   return report_stack[report_stack_cnt-1].whytype;
 }
@@ -4241,7 +4266,7 @@ void set_rep_no_orderby(int n) {
 	rep_no_orderby=n;
 }
 
-int get_rep_no_orderby() {
+int get_rep_no_orderby(void) {
 	return rep_no_orderby;
 }
 
@@ -4254,8 +4279,8 @@ struct s_validate {
 struct s_validate *validate_list=0;
 int validate_list_cnt=0;
 
-int get_validate_list_cnt() {
-int a;
+int get_validate_list_cnt(void) {
+//int a;
 	//printf("Return count : %d\n",validate_list_cnt);
 //for (a=0;a<validate_list_cnt;a++) {
 	//printf("   %s %s %p\n",validate_list[a].tabname,validate_list[a].colname,validate_list[a].expr);
@@ -4263,7 +4288,7 @@ int a;
 	return validate_list_cnt;
 }
 	
-void clr_validate_list() {
+void clr_validate_list(void) {
 	//printf("Clear list\n");
 	if (validate_list) free(validate_list);	
 	validate_list_cnt=0;
@@ -4289,11 +4314,70 @@ struct expr_str *A4GL_get_validate_expr(int n) {
 	return validate_list[n].expr;
 }
 
-int A4GL_escape_quote_owner() {
+int A4GL_escape_quote_owner(void) {
 	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"Y")==0) return 1;
 	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"N")==0) return 1;
 	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
 	return 1;
 }
+
+
+struct s_event {
+	int n;
+	char *s;
+};
+
+struct s_event_list {
+	int nevents;
+	struct s_event *events;
+};
+
+struct s_event_list event_queue[255];
+int nevent_queue=-1;
+
+void A4GL_new_events(void) {
+	nevent_queue++;
+	event_queue[nevent_queue].nevents=0;
+	event_queue[nevent_queue].events=0;
+}
+
+void A4GL_drop_events() {
+int a;
+	if (event_queue[nevent_queue].events) {
+		if (event_queue[nevent_queue].nevents) {
+			for (a=0;a<event_queue[nevent_queue].nevents;a++) {
+				free(event_queue[nevent_queue].events[a].s);
+			}
+		}
+		free(event_queue[nevent_queue].events);
+	}
+	event_queue[nevent_queue].nevents=0;
+	event_queue[nevent_queue].events=0;
+	nevent_queue--;
+}
+
+void A4GL_add_onkey_key(char *s) {
+	A4GL_add_event(-90,s);
+}
+
+void A4GL_add_event(int n,char *s) {
+	//printf("Add Event : %d %s\n",n,s);
+	event_queue[nevent_queue].nevents++;
+	event_queue[nevent_queue].events=realloc(event_queue[nevent_queue].events,sizeof(struct s_event)*event_queue[nevent_queue].nevents);
+	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].n=n;
+	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].s=strdup(s);
+}
+
+int A4GL_get_nevents(void) {
+	//printf("nevents=%d\n", event_queue[nevent_queue].nevents);
+	return event_queue[nevent_queue].nevents;
+}
+
+void A4GL_get_event(int n,int *i,char **s) {
+	//printf("getevent : %d\n", n);
+	*i=event_queue[nevent_queue].events[n].n;
+	*s=event_queue[nevent_queue].events[n].s;
+}
+
 /* ================================= EOF ============================= */
 

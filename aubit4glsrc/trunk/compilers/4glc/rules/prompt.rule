@@ -9,7 +9,7 @@ prompt_cmd	:
         variable opt_timeout opt_help_no
         opt_attributes {
                 push_blockcommand("PROMPT");
-
+	A4GL_new_events();
 	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,atoi($<str>7)) ;
 }
         prompt_key_sec {
@@ -19,6 +19,7 @@ prompt_cmd	:
 		add_continue_blockcommand ("PROMPT");
 		print_prompt_end($<str>6);
                 pop_blockcommand("PROMPT");
+		A4GL_drop_events();
                 A4GL_lex_printcomment("/* END OF PROMPT */");
                 }
 
@@ -46,6 +47,7 @@ prompt_key_clause : on_key_command_prompt
 	| prompt_key_clause on_key_command_prompt ;
 
 on_key_command_prompt : on_key_command {
+	A4GL_add_onkey_key($<str>1);
 	print_onkey_1($<str>1);
 } commands {
 	print_onkey_2_prompt();
