@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.3 2002-01-29 11:07:53 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-03-12 19:46:00 mikeaubury Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -71,10 +71,10 @@ menu:
 #	(mcompile -c menu.menu)
 
 demo:
-	(${FGLPCEXEC} -gtk hello-gui.4gl -o hello-gui ${ADDFLAGS})
+	(${FGLPCEXEC} -nogtk hello-gui.4gl -o hello-gui ${ADDFLAGS})
 
 game:
-	(${FGLPCEXEC} -gtk gui.4gl -o gui ${ADDFLAGS})
+	(${FGLPCEXEC} -nogtk gui.4gl -o gui ${ADDFLAGS})
 
 forms:
 	(${FCOMPILE} gui.per)

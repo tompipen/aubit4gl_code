@@ -28,7 +28,7 @@ else
 	display "GUI mode... - use Ctrl-Shift-F1 for console"
 	display "Use mouse to select square" at 5,40
 	let f=field_to_widget(dummy)
-	call field_hide(f)
+	call libUI_GTK::field_hide(f)
 	display "Hiding field", field_to_widget(dummy)
 end if
 
@@ -50,8 +50,10 @@ input a from dummy
 	on key('8') call set1(3,2)
 	on key('9') call set1(3,3)
 end input
-message "All done"
+
+message "All done" wait for key
 sleep 4
+
 end main
 
 
@@ -62,7 +64,6 @@ define x,y integer
 		call mygo()
 	end if
 	display " " to dummy
-	message "Here" 
 end function
 
 
@@ -99,16 +100,19 @@ let r=check_win()
 
 if r="X" then
 	message "You Win  !!!"
+	sleep 2
 	exit program
 end if
 
 if r="O" then
 	message "You Lost !!!"
+	sleep 2
 	exit program
 end if
 
 if r="-" then
 	message "Its a draw"
+	sleep 2
 	exit program
 end if
 return 1
