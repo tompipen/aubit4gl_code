@@ -38,12 +38,12 @@ function doit {
 			rm *.ec
 		fi
 
-		ls *.frm > /dev/null 2>&1
+		ls *.$COMPEXT > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
 		then
-			echo Removing .frm
-			rm *.frm
+			echo Removing .$COMPEXT
+			rm *.$COMPEXT
 		fi
 
 		#######
@@ -60,40 +60,41 @@ function compper {
 	####################
 	for i in *.per; do
 	####################
-	X=`basename $i .per`.frm;
+	X=`basename $i .per`.$COMPEXT;
 	ERR=`basename $i .per`.err;
 
 	if [ "x$SKIP" = "xskip" ]
 	then
 	    #echo "skip is on"
-		if [ -f $MAXDIR/aform/$X ]
+		if [ -f $MAXDIR/$DESTDIR/$X ]
 		then
-			echo "$MAXDIR/aform/$X exists - skip is on"
+			#echo "$MAXDIR/$DESTDIR/$X exists - skip is on"
 	        continue
 		else
-			echo #------- Running fcompile $i in $PWD : -------------  >> $ERRORLOG
-			echo Running fcompile $i in $PWD:;
-			fcompile $i >> $ERRORLOG 2>&1;
+			#echo "#------- Running $FORMCOMPILER $i in $PWD : -------------"  >> $ERRORLOG
+			echo Running $FORMCOMPILER $i in $PWD:;
+			$FORMCOMPILER $i >> $ERRORLOG 2>&1;
 		fi
 	else
 	    #echo "Skip is OFF"
-		#echo fcompile $i;
-		echo #------- Running fcompile $i in $PWD : -------------  >> $ERRORLOG
-	    fcompile $i >> $ERRORLOG 2>&1;
+		#echo $FORMCOMPILER $i;
+		#echo "#------- Running $FORMCOMPILER $i in $PWD : -------------"  >> $ERRORLOG
+	    $FORMCOMPILER $i >> $ERRORLOG 2>&1;
 	fi
 
 	RET=$?
 	if test $RET != "0"
 	then
-		echo "#fcompile failed, return code is $RET"
+		echo "$PWD/$i failed, return code is $RET"
+		echo "#$PWD/$i failed, return code is $RET"  >> $ERRORLOG
 		cp $i $ALLERRDIR
 
-	    echo "#$ERR : ##################################################" >> $ERRORLOG
+	    echo "########################################################## $ERR :" >> $ERRORLOG
 		if [ -f $ERR ]
 		then
 		    echo "$ERR was generated."
 			cp $ERR $ALLERRDIR
-	        cat $ERR | grep -B 3 \| >> $ERRORLOG
+	        cat $ERR | grep -B 3 $ERRCHAR >> $ERRORLOG
 		else
 	        echo "ERR file was __NOT__ generated."
 	        echo "ERR file was __NOT__ generated." >> $ERRORLOG
@@ -107,16 +108,17 @@ function compper {
 	        continue
 		fi
 	#else
-	#	echo "fcompile succeded, return code is $RET"
+	#	echo "$FORMCOMPILER succeded, return code is $RET"
 	fi;
 
 	if [ -f $X ]
 	then
-	    mv $X $MAXDIR/aform
+	    mv $X $MAXDIR/$DESTDIR
 		if [ -f $ERR ]
 		then
-		    echo "$ERR _AND_ $X was generated, but fcompile did not return error code."
-		    echo "#$ERR _AND_ $X was generated, but fcompile did not return error code."  >> $ERRORLOG
+			echo "#$PWD/$i failed, return code is $RET"  >> $ERRORLOG
+			echo "$ERR _AND_ $X was generated, but $FORMCOMPILER did not return error code."
+		    echo "#$ERR _AND_ $X was generated, but $FORMCOMPILER did not return error code."  >> $ERRORLOG
 			ls *.err
 			if test $STOPONERROR = "1"
 		    then
@@ -129,16 +131,17 @@ function compper {
 		fi;
 
 	else
+		echo "#$PWD/$i failed, return code is $RET"  >> $ERRORLOG
 		cp $i $ALLERRDIR
-	    echo "#$ERR : ##################################################" >> $ERRORLOG
-		echo "$X not generated, but fcompile did not return error code."
-		echo "#$X not generated, but fcompile did not return error code."  >> $ERRORLOG
+	    echo "########################################################## $ERR : " >> $ERRORLOG
+		echo "$X not generated, but $FORMCOMPILER did not return error code."
+		echo "#$X not generated, but $FORMCOMPILER did not return error code."  >> $ERRORLOG
 
 		if [ -f $ERR ]
 		then
 		    echo "$ERR was generated."
 			cp $ERR $ALLERRDIR
-	        cat $ERR | grep -B 3 \| >> $ERRORLOG
+	        cat $ERR | grep -B 3 $ERRCHAR >> $ERRORLOG
 		else
 			echo "$ERR was __NOT__ generated."
 			echo "#$ERR was __NOT__ generated."  >> $ERRORLOG
@@ -167,22 +170,46 @@ function compper {
 #MAIN
 ###############
 
-#SKIP=$1
+#############
+#configuration:
 SKIP=skip
-
 ROOTDIR=$PWD
-
-if [ -f $AUBITDIR/aubitenv ]
-then
-	. $AUBITDIR/aubitenv
-fi
-
-if [ -f /etc/aubitenv ]
-then
-	. /etc/aubitenv
-fi
-
+COMPILER=aubit
 ALLERRDIR=/tmp/amakeallf
+STOPONERROR=0
+ERRORLOG=/tmp/amakeallf/amakeallf.log
+
+
+if [ "$COMPILER" = "4js" ]
+then
+	#4Js/D4GL:
+	FORMCOMPILER=fglform
+	COMPEXT=42f
+	DESTDIR=gform
+	ERRCHAR=#
+fi
+
+if [ "$COMPILER" = "aubit" ]
+then
+	#Aubit 4gl:
+	FORMCOMPILER=fcompile
+	COMPEXT=frm
+	DESTDIR=aform
+	ERRCHAR=\|
+
+	if [ -f $AUBITDIR/aubitenv ]
+	then
+		. $AUBITDIR/aubitenv
+	fi
+
+	if [ -f /etc/aubitenv ]
+	then
+		. /etc/aubitenv
+	fi
+
+fi
+
+
 if [ -d $ALLERRDIR ]
 then
     rm -rf $ALLERRDIR
@@ -190,8 +217,6 @@ fi
 
 mkdir $ALLERRDIR
 
-STOPONERROR=0
-ERRORLOG=/tmp/amakeallf/amakeallf.log
 if [ -f $ERRORLOG ]
 then
 	rm $ERRORLOG
@@ -206,7 +231,7 @@ then
 	########################################################
 	for subsystem in ap ar eo fa gl in jm lc main qe re ss wo pu contr dvfund; do
 	########################################################
-		   echo
+
 		   if [ -d $ROOTDIR/$subsystem ]
            then
 			   echo Making forms in $subsystem...
