@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.7 2002-11-19 18:18:56 mikeaubury Exp $
+# $Id: prompt.c,v 1.8 2003-02-16 13:24:41 mikeaubury Exp $
 #*/
 
 /**
@@ -216,8 +216,11 @@ int action;
     {
       int style;
       GtkWidget *cw;
+	char buff[1024];
 
-      push_char (gtk_entry_get_text(GTK_ENTRY(prompt->field)));
+      strcpy (buff,gtk_entry_get_text(GTK_ENTRY(prompt->field)));
+	trim(buff);
+      push_char (buff);
       prompt->mode = 2;
       style = (int)gtk_object_get_data(GTK_OBJECT(p),"STYLE");
       cw=gtk_object_get_data(GTK_OBJECT(p),"CW");

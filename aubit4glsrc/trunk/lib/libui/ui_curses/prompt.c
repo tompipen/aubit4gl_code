@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.3 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: prompt.c,v 1.4 2003-02-16 13:24:17 mikeaubury Exp $
 #*/
 
 /**
@@ -282,6 +282,7 @@ prompt_loop (struct s_prompt * prompt)
   int a;
   WINDOW *p;
   FORM *mform;
+
 chkwin();
   mform = prompt->f;
   p = prompt->win;
@@ -290,11 +291,15 @@ chkwin();
 #endif
   if (prompt->mode == 1)
     {
+	char buff[1024];
 #ifdef DEBUG
       {	debug ("Mode=1 - prepare to quit field=%p", prompt->field);      }
       {	debug ("Buffer='%s'", field_buffer (prompt->field, 0));      }
 #endif
-      push_char (field_buffer (prompt->field, 0));
+	strcpy(buff,field_buffer(prompt->field,0));
+	trim(buff);
+
+      push_char (buff);
       prompt->mode = 2;
       gui_endprompt ((long)prompt); /* void    gui_endprompt		(long ld); */
       unpost_form (prompt->f);
