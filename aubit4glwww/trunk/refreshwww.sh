@@ -33,14 +33,27 @@
 #
 #
 #####################################################
+
+export CVS_RSH=
+#export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+export CVSROOT=':pserver:anonymous@cvs1.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+#autosfcvsanonpasswd
+
 cd $HOME
-cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
+
+#this needs password:
+#cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
+cvs -z8 checkout aubit4glsrc
+
 rm -rf $WWW/*
 cd aubit4glwww
 cp -r * $WWW
 cd $WWW
-cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
-echo "Aubit web site refreshed from CVS"
 
+#this needs password
+#cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
+cvs -z8 checkout aubit4gldoc
+
+echo "Aubit web site refreshed from CVS"
 sh refresh_hy4gl.sh
 
