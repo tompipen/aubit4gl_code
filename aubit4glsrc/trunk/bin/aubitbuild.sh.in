@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.43 2004-10-10 03:07:45 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.44 2004-10-24 04:21:02 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -277,8 +277,6 @@ fi
 if [ -f $DLPAGEPATH/aubitdownload-template.htm ]; then
 	DOWNLOADPAGE=$DLPAGEPATH/aubitdownload-template.htm
 else
-	#echo "$DLPAGEPATH/aubitdownload-template.htm is missing. Stop."
-	#exit 8
 	DOWNLOADPAGE_SCP=1  #we will get it from web server
 	DOWNLOADPAGE="aubitdownload-template.htm"
 fi
@@ -325,6 +323,10 @@ function runexec {
 		    echo "$EXEC failed with code $RET. See $LOGFILE"
 		    echo "$EXEC failed with code $RET"  >> $LOGFILE 2>&1
 		    if test "$STOPONERROR" = "1"; then
+				#Problem with this is that calling script (cron) will not
+				#know what failed, and we can't indicate this with exit code,
+				#and make allways returns stupid code 2 regardless of exit
+				#code of failed cmmand... :-(
 				exit $RET
             fi
 		fi
@@ -525,7 +527,7 @@ DAY=`date | awk '{print $3}'`
 if [ "$ANYDAY" = "0" ]; then
 	if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
 		#echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
-		exit
+		exit 55
     fi
 fi
 
@@ -653,7 +655,15 @@ if test "$MAKE" = "1"; then
 		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
 		
 	if test "$BUILD_CYGWIN" = "1" -o "$COMSPEC" = "" ; then
+		#We need to handle exit code ourselves, so that cron will
+		#know we failed on making a build
+		STOPONERROR=0
 		EXEC="make log"; runexec
+		STOPONERROR=1		
+		if test $RET != "0"; then
+			exit 66
+		fi
+		
 		if [ "$VERBOSE" = "1" ]
 		then
 			echo "See `pwd`/make.log for details."
@@ -852,8 +862,12 @@ if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
 	LOGFILE=$CONFIGLOG
 	LOGFILE=/tmp/mingw-config.log
     EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
+	STOPONERROR=0	
     EXEC="make log"; runexec
-
+	STOPONERROR=1		
+	if test $RET != "0"; then
+		exit 66
+	fi
 
     #Check that what we built is not dependent on Cygwin:
     TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`

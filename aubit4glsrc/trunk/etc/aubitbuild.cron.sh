@@ -168,10 +168,23 @@ if test "$DO_BUILD" = "1"; then
 		RET=$?
 		if test "$RET" != "0"; then
 			if test "$DEBUG" = "1"; then
-				echo "Command returned code $RET"		
+				echo "Command returned code $RET"
 			fi
 			echo "Command returned code $RET" >> $LOGFILE
-			BUILD_FAILED=1
+			if test "$RET" = "66"; then
+				#54 - error comparing created and uploaded file
+				#1 - help
+				#11 - param not recognized
+				#55 - not a day to run 
+				#23 - needed utility script is missing
+				#7 - source archive not created
+				#8 - bin tarball not created
+				#4 - depends on cygwin
+				#0 - all OK
+				#66 'make log' failed
+				#everything else - failed to run command
+				BUILD_FAILED=1
+			fi
 		else
 			if test "$DEBUG" = "1"; then
 				echo "Completed succesfully, see $MAILFILE for details"		

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.85 2004-10-23 13:36:34 mikeaubury Exp $
+# $Id: sql.c,v 1.86 2004-10-24 04:21:03 afalout Exp $
 #
 */
 
@@ -1375,7 +1375,7 @@ A4GL_trim(dbName);
 {
 char a[128], b[128], tmp[2048];
 char *FullPathDBname;
-
+char DATABASE[128];
 	A4GL_debug("SQLITE special...");
 
     /* NOTE:
@@ -1399,13 +1399,17 @@ char *FullPathDBname;
         //sprintf(tmp,"%s",dbName);
 		strcpy(tmp,dbName);
 	}
-
+	//store DB file name as per DATABASE statement
+    sprintf(DATABASE,"%s",tmp);
 	//Find full path to the SQLite database file, use DBPATH
 	FullPathDBname=A4GL_fullpath_dbpath((char *)tmp);
 
 	if (FullPathDBname) {
 		strcpy (tmp,FullPathDBname);
-		strcpy(dbName,tmp);
+		//strcpy (dbName,tmp);
+
+		//add db file name as per DATABASE statement to discovered path
+		sprintf(dbName,"%s/%s",tmp,DATABASE);
 		A4GL_debug("Found SQLite db in '%s'",dbName);
 	} else {
 		/*
@@ -1431,17 +1435,15 @@ char *FullPathDBname;
   A4GL_debug ("A4GLSQL_init_connection(dbName='%s')", dbName);
 #endif
 
-  if (strcmp (dbName, OldDBname) == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Already connected - ignored.");
-#endif
-      return 0;
+	if (strcmp (dbName, OldDBname) == 0) {
+		#ifdef DEBUG
+			A4GL_debug ("Already connected - ignored.");
+		#endif
+		return 0;
     }
 
   /* free up the current default connection, if there is one */
-  if (A4GL_has_pointer ("default", SESSCODE))
-    {
+  if (A4GL_has_pointer ("default", SESSCODE)) {
       hh = A4GL_find_pointer_val ("default", SESSCODE);
       rc = SQLFreeConnect ((SQLHSTMT )*hh);
       chk_rc (rc, 0, "SQLFreeConnect");

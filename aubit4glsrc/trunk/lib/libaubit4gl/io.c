@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.21 2004-08-31 20:46:52 mikeaubury Exp $
+# $Id: io.c,v 1.22 2004-10-24 04:21:02 afalout Exp $
 #
 */
 
@@ -348,17 +348,14 @@ A4GL_fullpath_xpath (char *fname, char *path)
 
 	      //A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
 
-	      if (A4GL_try_to_open (ptr, fname, 0))
-		{
-			printf("ptr=%s\n",ptr);
-		sprintf(str_path,ptr,"%s/%s",ptr,fname);
-		  return str_path;
-		}
-	      else
-		{
-		  cnt++;
-		  ptr = &str_path[cnt];
-		}
+	      if (A4GL_try_to_open (ptr, fname, 0))	{
+			//printf("ptr=%s\n",ptr);
+			sprintf(str_path,ptr,"%s/%s",ptr,fname);
+			return str_path;
+		  } else {
+			 cnt++;
+			 ptr = &str_path[cnt];
+		  }
 	    }
 	  else
 	    {
