@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.15 2002-09-25 22:00:56 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.16 2002-09-25 23:23:07 afalout Exp $
 #
 */
 
@@ -361,18 +361,33 @@
 =====================================================================
 */
 
+	#ifdef HAVE_CONFIG_H
+		/* header automatically created with AutoConf-configure */
+		#include "a4gl_incl_config.h"
+	#endif
+
 	#include <stdarg.h>  			/* va_start() */
    	#include <ctype.h> 				/* tolower() toupper() */
 	#include <stdio.h> 				/* needed for FILE symbol */
 	#include <string.h>
 	#include <stdlib.h> 			/* free() */
 
-	#ifndef __MACH__
-		#ifndef __APPLE__
-            //can't find it
-			#include <search.h> 			/* VISIT */
-        #endif
+	#ifdef HAVE_SEARCH_H
+	//#if ! (defined(__MACH__) && ! defined(__APPLE__))
+			#include <search.h> 			/* VISIT-used in pointers.c */
+    #else
+
+		/* For tsearch */
+		typedef enum
+		{
+		  preorder,
+		  postorder,
+		  endorder,
+		  leaf
+		}
+		VISIT;
     #endif
+
 
 /*
 	#ifdef HAVE_DLFCN_H
@@ -464,13 +479,8 @@
 
 	/* definitions used both in Aubit compiler code and at run-time */
 	#include "a4gl_incl_4gldef.h"
-
-	#ifdef HAVE_CONFIG_H
-		/* header automatically created with AutoConf-configure */
-		#include "a4gl_incl_config.h"
-	#endif
-
-    /* API prototypes */
+    
+	/* API prototypes */
 	#include "a4gl_API_lex.h"          	/* generated from .spec */
 	#include "a4gl_API_form.h"          /* generated from .spec */
 	#include "a4gl_API_menu.h"          /* generated from .spec */
