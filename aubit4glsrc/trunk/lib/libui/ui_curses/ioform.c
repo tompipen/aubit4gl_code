@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.66 2003-08-20 18:28:43 mikeaubury Exp $
+# $Id: ioform.c,v 1.67 2003-08-20 20:36:50 mikeaubury Exp $
 #*/
 
 /**
@@ -3364,21 +3364,34 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
 {
   int a;
   int fno = -1;
-
+  int last_usable=-1;
+  struct struct_scr_field *fprop;
+  
   for (a = 0; a <= s->nfields; a++)
     {
-      A4GL_debug ("Current field=%p field_list=%p", f, s->field_list[a]);
-      if (f == s->field_list[a])
-	fno = a;
+      A4GL_debug ("MMM a=%d Current field=%p field_list=%p", a,f, s->field_list[a]);
+      if (f == s->field_list[a]) fno = a;
+
+      fprop=(struct struct_scr_field *) (field_userptr (s->field_list[a]));
+
+      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY)) {
+		A4GL_debug("Field is not noentry");
+		last_usable=a;
+	}
+	else {
+		A4GL_debug("MMM Field is noentry");
+	}
     }
 
-  A4GL_debug ("curr_metric_is_used_last_s_screenio fno=%d nfields=%d", fno,
-	      s->nfields);
-  if (fno == s->nfields)
+  A4GL_debug ("MMM curr_metric_is_used_last_s_screenio fno=%d nfields=%d", fno, s->nfields);
+
+  if (fno == last_usable)
     {
+	A4GL_debug("MMM Is last");
       return 1;
     }
 
+A4GL_debug("MMM Not last");
   return 0;
 }
 
@@ -3662,9 +3675,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 	if (field_userptr (form->currentfield) != 0)
 	  {
 	    A4GL_debug ("Is a proper field");
-	    fprop =
-	      (struct struct_scr_field
-	       *) (field_userptr (form->currentfield));
+	    fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
 	    A4GL_debug ("fprop=%p", fprop);
 
 

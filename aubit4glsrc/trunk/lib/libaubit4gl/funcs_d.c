@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.23 2003-07-04 09:43:38 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.24 2003-08-20 20:36:50 mikeaubury Exp $
 #
 */
 
@@ -689,5 +689,12 @@ a4gl_using (char *str, int s, char *fmt, double num)
 }
 
 
+
+int A4GL_esql_db_open(int a) {
+	static int dbopen=0;
+	if (a==1) {dbopen=1;return 1;}
+	if (a==0) {dbopen=0;return 0;}
+	return dbopen;
+}
 
 /* ============================== EOF ========================== */

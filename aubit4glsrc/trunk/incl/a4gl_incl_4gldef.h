@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.53 2003-08-07 21:39:09 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.54 2003-08-20 20:36:50 mikeaubury Exp $
 */
 
 /**
@@ -335,6 +335,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void A4GL_fgl_end (void);
   void A4GL_system_run (int a);
   void A4GL_push_time (void);
+  int A4GL_esql_db_open(int a);
   //double A4GL_pop_double(void);
   /* ======================= API_ui.c ===================== */
 

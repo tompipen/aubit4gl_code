@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.49 2003-08-19 07:57:57 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.50 2003-08-20 20:36:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -166,6 +166,8 @@ print_close (char type, char *name)
       break;
     case 'D':
       printc ("EXEC SQL DISCONNECT 'default';\n");
+      printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0);");
+      print_copy_status ();
       break;
     case 'S':
       printc ("EXEC SQL CLOSE SESSION %s;\n", A4GL_strip_quotes (name));
@@ -772,6 +774,7 @@ print_init_conn (char *db)
 	  break;
 	}
     }
+  printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1);");
   print_copy_status ();
 }
 

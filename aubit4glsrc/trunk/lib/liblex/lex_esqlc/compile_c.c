@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.85 2003-08-20 18:28:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.86 2003-08-20 20:36:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2289,6 +2289,10 @@ print_error (char *s, int wait)
 void
 print_exit_program (int has_expr)
 {
+
+
+  if (doing_esql()) { printc("if (A4GL_esql_db_open(-1)) {"); print_close('D',""); printc("}"); }
+
   if (has_expr)
     printc ("A4GL_fgl_end();exit(A4GL_pop_int());");
   else
@@ -4145,7 +4149,9 @@ if (!is_schema)
 void
 print_main_end (void)
 {
-  printc ("A4GL_fgl_end_4gl_0();\nreturn 0;}\n");
+  if (doing_esql()) { printc("if (A4GL_esql_db_open(-1)) {"); print_close('D',""); printc("}"); }
+  printc ("A4GL_fgl_end_4gl_0();");
+  printc("return 0;}\n");
 }
 
 /**
