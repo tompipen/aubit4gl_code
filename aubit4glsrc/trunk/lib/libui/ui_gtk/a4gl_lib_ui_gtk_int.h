@@ -130,6 +130,10 @@ void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_changed (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
 
+void A4GL_getxy_coords(int *x,int *y) ;
+int A4GL_getx_coords(int x) ;
+int A4GL_gety_coords(int y) ;
+
 
 	/* error.c */
 void A4GL_msg_window_gtk (char *s);

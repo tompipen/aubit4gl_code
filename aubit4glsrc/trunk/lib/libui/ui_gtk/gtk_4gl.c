@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.25 2003-10-14 11:26:17 afalout Exp $
+# $Id: gtk_4gl.c,v 1.26 2003-10-16 11:21:59 mikeaubury Exp $
 #*/
 
 /**
@@ -81,7 +81,7 @@ char currwinname[256];
 static void show_form (GtkWindow * mainfrm, GtkFixed * form);
 //struct s_form_dets *A4GL_read_form (char *fname, char *formname);
 void A4GL_dump_object (GtkObject * o);
-char *A4GL_get_currwin_name (void);
+//char *A4GL_get_currwin_name (void);
 /*
 =====================================================================
                     Functions prototypes
@@ -96,7 +96,11 @@ void A4GL_add_to_console (char *s);
 void A4GL_create_console (void);
 void A4GL_decode_gui_winname (char *name);
 void A4GL_clear_console (char *s);
-struct struct_screen_record *A4GL_get_srec_gtk (char *name);
+//int A4GL_close_form (char *name);
+/* int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
+//int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
+//struct struct_screen_record *A4GL_get_srec_gtk (char *name);
+
 void A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line);
 void A4GL_make_and_display_label(int x,int y,char c,int attr);
 
@@ -228,7 +232,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
       win_screen = fixed;
       gtk_widget_show (GTK_WIDGET (fixed));
       gtk_container_add (GTK_CONTAINER (win), fixed);
-      gtk_widget_set_usize (GTK_WIDGET (win), w, h);
+      gtk_widget_set_usize (GTK_WIDGET (win), w+XWIDTH, h+YHEIGHT);
       gtk_object_set_data (GTK_OBJECT (fixed), "TOP", win);
       gtk_widget_show (GTK_WIDGET (win));
       win = fixed;
@@ -257,16 +261,14 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 	  A4GL_debug ("Event box=%p\n", wxx);
 
 
-	  gtk_fixed_put (GTK_FIXED (win_screen), wxx, x - XWIDTH,
-			 y - YHEIGHT / 2);
+	  gtk_fixed_put (GTK_FIXED (win_screen), wxx, x - XWIDTH/2, y - YHEIGHT/2 );
 
 
 	  frame = (GtkFrame *) gtk_frame_new (0);
 	  A4GL_debug ("Frame=%p\n", frame);
 	  gtk_frame_set_shadow_type (GTK_FRAME (frame), frame_style);
 
-	  gtk_widget_set_usize (GTK_WIDGET (frame), w + 2 * XWIDTH,
-				h + YHEIGHT);
+	  gtk_widget_set_usize (GTK_WIDGET (frame), w , h);
 
 	  gtk_container_add (GTK_CONTAINER (wxx), GTK_WIDGET (frame));
 	  gtk_widget_show (GTK_WIDGET (frame));
@@ -282,15 +284,15 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 
       A4GL_debug ("w=%d h=%d\n", w / XWIDTH, h / YHEIGHT);
       win = gtk_fixed_new ();
-      gtk_widget_set_usize (GTK_WIDGET (win), w, h);
+      gtk_widget_set_usize (GTK_WIDGET (win), w+XWIDTH, h+YHEIGHT);
 
       if (border)
 	{
-	  gtk_fixed_put (GTK_FIXED (fixed), win, XWIDTH, YHEIGHT / 2);
+	  gtk_fixed_put (GTK_FIXED (fixed), win, XWIDTH/2, YHEIGHT/2);
 	}
       else
 	{
-	  gtk_fixed_put (GTK_FIXED (fixed), win, x, y);
+	  gtk_fixed_put (GTK_FIXED (fixed), win, 0, 0); // x,y
 	  fixed = win;
 	}
 
@@ -684,8 +686,7 @@ show_form (GtkWindow * mainfrm, GtkFixed * form)
   /* gtk_box_pack_end_defaults (v, form); */
   off = (int) gtk_object_get_data (GTK_OBJECT (mainfrm), "FORM_LINE");
   A4GL_debug ("Off [FORM_LINE] = %d\n", off);
-  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0,
-		 (off - 1) * YHEIGHT);
+  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), A4GL_getx_coords(0), A4GL_gety_coords(off - 1));
 
   A4GL_debug ("Added mainfrm=%p form =%p as currform\n", mainfrm, form);
   gtk_object_set_data (GTK_OBJECT (mainfrm), "currform", form);
@@ -995,8 +996,7 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));
-	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
-			     y * YHEIGHT);
+	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), A4GL_getx_coords(x), A4GL_gety_coords(y));
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 	      gtk_widget_show (GTK_WIDGET (lab));
 #if GTK_CHECK_VERSION(2,0,0)
@@ -1057,7 +1057,7 @@ A4GL_make_and_display_label(int x,int y,char c,int attr)
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
       if (!lab) {
 		lab = (GtkLabel *) gtk_label_new (cbuff);
-	        gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
+	        gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), A4GL_getx_coords(x), A4GL_gety_coords(y));
 		gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
         gtk_widget_show (GTK_WIDGET (lab));
 		#if GTK_CHECK_VERSION(2,0,0)
@@ -1155,8 +1155,7 @@ A4GL_display_at (int n, int a)
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));
-	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
-			     y * YHEIGHT);
+	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), A4GL_getx_coords(x),A4GL_gety_coords(y));
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 		#if GTK_CHECK_VERSION(2,0,0)
 		    // GTK+ 2.0 and up: structure has no member named `font'
@@ -1385,7 +1384,7 @@ A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat, char *like,
     }
   gtk_object_set_data (GTK_OBJECT (win), "currform", form);
 
-  gtk_fixed_put (GTK_FIXED (fixed), GTK_WIDGET (form), 0, 0);
+  gtk_fixed_put (GTK_FIXED (fixed), GTK_WIDGET (form), A4GL_getx_coords(0), A4GL_gety_coords(0));
   gtk_widget_show (GTK_WIDGET (form));
   gtk_widget_show_all (GTK_WIDGET (win));
 
@@ -1532,5 +1531,32 @@ void A4GL_error_nobox(char *s,int attr)
 	printf(" --> *******************    %s    **********************\n",s);
 
 }
+
+
+void A4GL_getxy_coords(int *x,int *y) {
+	*x=(*x)*XWIDTH;
+	*y=(*y)*YHEIGHT;
+}
+
+
+int A4GL_getx_coords(int x) {
+int x1;
+int y1;
+x1=x;
+y1=0;
+A4GL_getxy_coords(&x1,&y1);
+return x1;
+}
+
+
+int A4GL_gety_coords(int y) {
+int x1;
+int y1;
+x1=0;
+y1=y;
+A4GL_getxy_coords(&x1,&y1);
+return y1;
+}
+
 
 /* ================================ EOF ================================ */

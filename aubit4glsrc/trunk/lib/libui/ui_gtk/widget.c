@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.18 2003-10-11 08:41:38 afalout Exp $
+# $Id: widget.c,v 1.19 2003-10-16 11:21:59 mikeaubury Exp $
 #*/
 
 /**
@@ -326,8 +326,7 @@ A4GL_add_widget (int metric_no, struct_form * f,
  A4GL_ChangeWidgetFont(new_widget,"FIXED");
 #endif
 
-      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,
-		     metric->x * XWIDTH, metric->y * 20);
+      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget, A4GL_getx_coords(metric->x), A4GL_gety_coords(metric->y));
       gtk_widget_show (new_widget);
       metric->field = 0;
     }
@@ -398,8 +397,7 @@ A4GL_add_widget (int metric_no, struct_form * f,
       gtk_object_set_data ((GtkObject *) A4GL_get_window_gtk (metric->scr),
 			   buff, new_widget);
 
-      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,
-		     (metric->x - 1) * XWIDTH, metric->y * 20);
+      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,A4GL_getx_coords(metric->x - 1) , A4GL_gety_coords(metric->y));
 
 
       A4GL_debug ("Comments='%s'\n", comments);

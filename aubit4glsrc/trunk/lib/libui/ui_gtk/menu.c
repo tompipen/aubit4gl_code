@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.14 2003-09-22 20:57:19 mikeaubury Exp $
+# $Id: menu.c,v 1.15 2003-10-16 11:21:59 mikeaubury Exp $
 #*/
 
 /**
@@ -136,7 +136,7 @@ A4GL_disp_h_menu (void *m)
       gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
       gtk_widget_show ((GtkWidget *)m);
       printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
-      gtk_fixed_put ((GtkFixed *) cwin, (GtkWidget *)m, 0, 0);
+      gtk_fixed_put ((GtkFixed *) cwin, (GtkWidget *)m, A4GL_getx_coords(0), A4GL_gety_coords(0));
       /* gtk_box_pack_start_defaults(v, m); */
       A4GL_debug ("Redisplayed me\n");
     }
@@ -172,7 +172,7 @@ A4GL_menu_loop (void *m)
       gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
       gtk_widget_show (m);
       printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
-      gtk_fixed_put ((GtkFixed *) cwin, m, 0, 0);
+      gtk_fixed_put ((GtkFixed *) cwin, m, A4GL_getx_coords(0), A4GL_gety_coords(0));
 #ifdef DEBUG
       A4GL_debug ("Redisplayed menu\n");
 #endif
@@ -379,7 +379,7 @@ va_list *ap)
   gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width()*XWIDTH , YHEIGHT);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
 
-  gtk_fixed_put((GtkFixed *)cwin, menubar, 0, 0);
+  gtk_fixed_put((GtkFixed *)cwin, menubar, A4GL_getx_coords(0), A4GL_gety_coords(gtk_object_get_data (GTK_OBJECT (cwin), "MENU_LINE")));
   //fglmenu=gtk_menu_new();
   A4GL_trim (title);
   if (strlen (title))
@@ -467,7 +467,8 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 			YHEIGHT);
   gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) 0);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
-  gtk_fixed_put ((GtkFixed *) cwin, menubar, 0, 0);
+  //gtk_fixed_put ((GtkFixed *) cwin, menubar, A4GL_getx_coords(0), A4GL_gety_coords(0));
+  gtk_fixed_put((GtkFixed *)cwin, menubar, A4GL_getx_coords(0), A4GL_gety_coords(gtk_object_get_data (GTK_OBJECT (cwin), "MENU_LINE")-1));
   A4GL_trim (title);
 
   if (strlen (title))

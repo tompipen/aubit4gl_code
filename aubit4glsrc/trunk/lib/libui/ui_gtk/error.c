@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.6 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: error.c,v 1.7 2003-10-16 11:21:59 mikeaubury Exp $
 #*/
 
 /**
@@ -92,10 +92,10 @@ A4GL_error_window_gtk (char *s)
   win = gtk_fixed_new ();
   gtk_widget_set_usize (win, A4GL_get_curr_width () * XWIDTH, YHEIGHT);
   label = gtk_label_new (s);
-  gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
+  gtk_fixed_put (GTK_FIXED (win), label, A4GL_getx_coords(0),A4GL_gety_coords(0) );
   gtk_widget_show (win);
 
-  gtk_fixed_put (GTK_FIXED (cw), win, 0, (errline - 1) * YHEIGHT);
+  gtk_fixed_put (GTK_FIXED (cw), win, A4GL_getx_coords(0), A4GL_gety_coords(errline - 1));
   gtk_widget_modify_style (win, rc_style);
   gtk_rc_style_unref (rc_style);
   gtk_widget_show (label);
@@ -173,11 +173,11 @@ A4GL_msg_window_gtk (char *s)
   A4GL_debug ("A2.1");
   label = gtk_label_new (s);
   A4GL_debug ("A3");
-  gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
+  gtk_fixed_put (GTK_FIXED (win), label, A4GL_getx_coords(0), A4GL_gety_coords(0));
   gtk_widget_show (win);
 
   A4GL_debug ("A4");
-  gtk_fixed_put (GTK_FIXED (cw), win, 0, (msgline - 1) * YHEIGHT);
+  gtk_fixed_put (GTK_FIXED (cw), win, A4GL_getx_coords(0), A4GL_gety_coords(msgline - 1));
   A4GL_debug ("A5");
   gtk_widget_show (label);
   A4GL_debug ("A6");

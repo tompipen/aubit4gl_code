@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.16 2003-10-08 17:09:52 mikeaubury Exp $
+# $Id: prompt.c,v 1.17 2003-10-16 11:21:59 mikeaubury Exp $
 #*/
 
 /**
@@ -176,7 +176,7 @@ A4GL_debug("Prompt mode=%d",c);
 
   /* gtk_fixed_put(cw,win,0,promptline*YHEIGHT); */
   if (prompt_style == 0)
-    gtk_fixed_put (GTK_FIXED (cw), GTK_WIDGET (win), 0, promptline * YHEIGHT);
+    gtk_fixed_put (GTK_FIXED (cw), GTK_WIDGET (win), A4GL_getx_coords(0), A4GL_gety_coords(promptline));
   else
     gtk_container_add (GTK_CONTAINER (cw), GTK_WIDGET (win));
 
