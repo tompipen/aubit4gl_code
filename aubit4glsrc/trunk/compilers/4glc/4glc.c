@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.31 2002-09-21 23:56:35 afalout Exp $
+# $Id: 4glc.c,v 1.32 2002-09-22 23:02:35 afalout Exp $
 #
 */
 
@@ -164,18 +164,18 @@ printUsage(char *argv[])
  * @param argc The argument count
  * @param argv The argument values
  */
-static void 
+static void
 initArguments(int argc, char *argv[])
 {
-  int i;
-  /* extern char *optarg; in /usr/include/getopt.h */
+int i;
+/* extern char *optarg; in /usr/include/getopt.h */
 /*  int this_option_optind = optind ? optind : 1; */
-  int option_index = 0;
-  int si;
-  char a[128];
-  char b[128];
-  char c[128];
-  static struct option long_options[] =
+int option_index = 0;
+int si;
+char a[128];
+char b[128];
+char c[128];
+static struct option long_options[] =
   {
     {"globals",     0, 0, 'G'},
     {"stack_trace", 1, 0, 's'},
@@ -183,9 +183,10 @@ initArguments(int argc, char *argv[])
     {0, 0, 0, 0},
   };
 
-#ifndef __sun__
-	#ifndef __sparc__
-	//no getopt_long on Solaris
+	debug ("Parsing the comand line arguments\n");
+
+ /* see http://www.gnu.org/software/gengetopt for inspiration */
+
   while ( ( i = getopt_long (argc, argv, "Gs:?h",
                         long_options, &option_index) ) != -1)
   {
@@ -211,9 +212,6 @@ initArguments(int argc, char *argv[])
         exit(0);
     }
   }
-
-    #endif
-#endif
 
   if ( optind >= argc )
   {
