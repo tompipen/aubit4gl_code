@@ -17,7 +17,8 @@
 
 #include "string.h"
 #include "a4gl_4glc_int.h"
-#include "memfile.h"
+#include "MemFile.h"
+#include "FglLexer.h"
 
 /*
 =====================================================================
@@ -50,6 +51,9 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
  */
 static const char *fglSource;
 
+MemFile *memFile;
+FglLexer *fglLexer;
+
 /*
 =====================================================================
                     Functions definitions
@@ -62,9 +66,17 @@ static const char *fglSource;
  * yylex use.
  *
  */
-int openFglFile()
+FglLexer *openFglFile()
 {
-  A4GL_memfile_fopen(fglSource);
+	memFile = new MemFile();
+  if ( memFile->fopen(fglSource) == 0 ) {
+		printf("Cant open %s\n",fglSource);
+	  perror("Opening source");
+		return 0;
+	}
+	fglLexer = new FglLexer();
+	// Tell the lexer wich memfile to use
+	fglLexer->setMemFile(memFile);
 }
 
 /**
@@ -72,6 +84,9 @@ int openFglFile()
  */
 void closeFglFile()
 {
+  //memFile->fclose();
+	delete memFile;
+	// @todo : Destroy the object
 }
 
 /**
@@ -93,15 +108,24 @@ void setFglSource(const char *_fglSource)
  * object that containts a Abstract Syntax.
  *
  * @param fileName input source file, with path but no extension
+ * @return 
+ *   0 - The syntax of the 4gl file is correct.
+ *   1 - The syntax is incorrect
  */
 int parse_4gl (const char *fglFileName)
 {
 	int x;
 	setFglSource(fglFileName);
-  openFglFile();
+  FglLexer *fglLexer = openFglFile();
+	// @todo : Implement this function
+	//yylex_init();
+	// I need to change something to pass the lexer object to the parser.
 	// @todo : The yyparse should return a FglModule abstract syntax.
-  x = a4gl_yyparse ();
+  x = a4gl_yyparse((void *)fglLexer);
+	// @todo : Implement this function
+	//yylex_destroy();
   closeFglFile();
+	return x;
 }
 
 /**
@@ -136,7 +160,7 @@ a4gl_yyerror (char *s)
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
 	*/
   printf ("%s%s (%s)\n", s, errbuff, yytext);
-  return (2);
+  //return (2);
 }
 
 /* ==================================== EOF =============================== */

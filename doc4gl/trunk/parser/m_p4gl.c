@@ -9,7 +9,7 @@
 
 extern int exit_stat;
 
-//static char *rcsid = "$Id: m_p4gl.c,v 1.5 2004-01-05 13:56:29 saferreira Exp $";
+//static char *rcsid = "$Id: m_p4gl.c,v 1.6 2004-01-16 20:45:28 saferreira Exp $";
 
 /**
  * The main entry function.

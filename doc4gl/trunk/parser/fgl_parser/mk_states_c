@@ -21,16 +21,8 @@
 mawk '
 BEGIN  {
 	cnt=0
-  print "#include \"../y.tab.h\""
-	print "const short *token_groups[];"
-	print "int allow_token_state(int yystate,int yytoken) {"
-	print "int a;"
-        print "  if (yytoken<0) return 1;"
-	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
-	print "   if (token_groups[yystate][a]==yytoken) return 1;"
-	print "  }"
-	print "  return 0;"
-	print "}"
+  print "#include \"FglAst.h\""
+  print "#include \"../fgl.tab.h\""
 	print "const short *token_groups[]={" > "generated/mk_states_1.h";
 }
 
@@ -102,6 +94,14 @@ END {
       print " "
    }
    print "#include \"mk_states_1.h\""
+	print "int allow_token_state(int yystate,int yytoken) {"
+	print "int a;"
+        print "  if (yytoken<0) return 1;"
+	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
+	print "   if (token_groups[yystate][a]==yytoken) return 1;"
+	print "  }"
+	print "  return 0;"
+	print "}"
 
 }' < $1 > generated/mk_states.c
 touch generated/mk_states.h

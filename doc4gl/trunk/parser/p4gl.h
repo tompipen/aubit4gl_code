@@ -3,7 +3,7 @@
  * @file
  * Contains the prototype declaration for external functions 
  *
- * $Id: p4gl.h,v 1.6 2004-01-05 13:56:29 saferreira Exp $
+ * $Id: p4gl.h,v 1.7 2004-01-16 20:45:28 saferreira Exp $
  */
 
 /* From ParseComment.c */

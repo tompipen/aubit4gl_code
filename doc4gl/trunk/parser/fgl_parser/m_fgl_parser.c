@@ -5,6 +5,9 @@
  *  @todo : Change this to use a unit test tool in C
  */
 
+#include <stdio.h>
+#include "fgl_parse.h"
+
 main() 
 {
 		if ( parse_4gl("test/fgl/simple/hello.4gl") )

@@ -5,6 +5,8 @@
  * @file
  * Lexical analisys.
  *
+ * WARNING : THIS FILE IS NO LONGER USED. TO BE REMOVED IN CVS
+ *
  * It reads the input file (the source.4gl) and returns a token to the
  * parser.
  *
@@ -27,7 +29,8 @@
 =====================================================================
 */
 
-#include "y.tab.h"
+#include "FglAst.h"
+#include "fgl.tab.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -38,7 +41,7 @@
 #define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
 
-#include "memfile.h"
+#include "MemFile.h"
 
 /*
 =====================================================================
@@ -54,6 +57,10 @@
 #define TYPE_EOF  		-1
 #define TYPE_USTRING  	-2	/* unterminated string */
 #define TYPE_NUM 		3
+
+#define NOT_NUMBER 0
+#define DECIMAL_NUMBER 1
+#define FRAC_NUMBER 2
 
 /*
 =====================================================================
@@ -141,10 +148,19 @@ extern struct s_kw *hashed_list[];
  */
 static int current_yylex_state;
 
+/**
+ * Flag that indicate that we want to trace the returned tokens
+ * from the lexer to the syntax parser.
+ */
+static char traceTokens;
+
+/** A reference to the memfile object used */
+static MemFile *memFile;
+
 
 /*
  * Modules that the lexer depends:
- *   memfile.c
+ *   MemFile.cpp
  * Other functions that this lexer depends:
  *    a4gl_yyerror ("");
  */
@@ -167,7 +183,7 @@ int lexer_fgetc (void)
 {
   int a;
 
-  a = A4GL_memfile_getc ();
+  a = memFile->getchar();
   if (a==0x0c) a=' ';
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); 
@@ -184,7 +200,7 @@ int lexer_fgetc (void)
   {    // we're starting a new line - clear and reset
     yyline[0] = a;
     yyline_len = 1;
-    yyline_fpos = A4GL_memfile_ftell ();
+    yyline_fpos = memFile->ftell ();
   }
   else
   {    // append char to line buffer - avoid overflow by shifting left
@@ -211,7 +227,7 @@ int lexer_fgetc (void)
 static void
 lexer_ungetc (int a)
 {
-  A4GL_memfile_ungetc (a);
+  memFile->ungetchar(a);
 
   if (a == '\n')
   {
@@ -248,7 +264,7 @@ isident (char *p)
 /*
  * Concatenate a character at the end of a string.
  * The string cannot be bigger then 1023.
- * Note : The string should have 3 more spacesto concatenate.
+ * Note : The string should have 3 more spaces to concatenate.
  *
  * @param s A pointer to the string that should be appended.
  * @param a The caracter to be added.
@@ -292,6 +308,9 @@ ccat (char *s, char a, int instr)
  *   - 0 : Its not a number
  *   - 1 : Its a number with just decimal part
  *   - 2 : Its a number with fractionary part
+ * NOT_NUMBER 0
+ * DECIMAL_NUMBER 1
+ * FRAC_NUMBER 2
  */
 static int
 isnum (char *s)
@@ -317,12 +336,12 @@ isnum (char *s)
 	    is_e++;
 	    continue;
 	  }
-    return 0;
+    return NOT_NUMBER;
   }
 
   if (is_e > 1)
   {
-    return 0;
+    return NOT_NUMBER;
   }
 
   if (is_e == 1)
@@ -377,10 +396,10 @@ isnum (char *s)
 
   if (strchr (s, '.'))
   {
-    return 2;
+    return FRAC_NUMBER;
   }
 
-  return 1;
+  return DECIMAL_NUMBER;
 }
 
 
@@ -391,11 +410,11 @@ isnum (char *s)
  * reading a operator (such as +) just return it.
  *
  * @param f The file pointer to the source being parsed
- * @param t A pointer to a place where this function put the type of word
+ * @param tokenType A pointer to a place where this function put the type of word
  *          founded.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word2 (int *t)
+static char *read_word2 (int *tokenType)
 {
   static char word[1024] = "";
   int escp = 0;
@@ -404,15 +423,15 @@ static char *read_word2 (int *t)
   int a;
 
   strcpy (word, "");
-  *t = NAMED_GEN;
+  *tokenType = NAMED_GEN;
 
   while (1)
   {
     a = lexer_fgetc ();
 
-    if (A4GL_memfile_feof ())
+    if (memFile->feof ())
 	  {
-	    *t = TYPE_EOF;
+	    *tokenType = TYPE_EOF;
 	    return word;
 	  }
 
@@ -421,7 +440,7 @@ static char *read_word2 (int *t)
 	  {
 	    while (1)
 	    {
-	      if (A4GL_memfile_feof ())
+	      if (memFile->feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
@@ -438,7 +457,7 @@ static char *read_word2 (int *t)
 	      ccat (word, a, instrs || instrd);
 	      a = lexer_fgetc ();
 	    }
-	    *t = CLINE;
+	    *tokenType = CLINE;
 	    return word;
 	  }
 
@@ -447,7 +466,7 @@ static char *read_word2 (int *t)
 	  {
 	    while (1)
 	    {
-	      if (A4GL_memfile_feof ())
+	      if (memFile->feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
@@ -456,7 +475,7 @@ static char *read_word2 (int *t)
 	      ccat (word, a, instrs || instrd);
 	      a = lexer_fgetc ();
 	    }
-	    *t = CLINE;
+	    *tokenType = CLINE;
 	    return word;
 	  }
   
@@ -476,7 +495,7 @@ static char *read_word2 (int *t)
 	    while (1)
 	    {
 	      a = lexer_fgetc ();
-	      if (A4GL_memfile_feof ())
+	      if (memFile->feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
@@ -484,7 +503,7 @@ static char *read_word2 (int *t)
 		    }
 	      ccat (word, a, instrs || instrd);
 	    }
-	    *t = KWS_COMMENT;
+	    *tokenType = KWS_COMMENT;
 	    return word;
 	  } // Refactor to a function
   
@@ -492,7 +511,7 @@ static char *read_word2 (int *t)
 	  {
 	    int z;
       if (strlen (word) > 0) {                  
-        lexer_ungetc (a, f);                  
+        lexer_ungetc (a);                  
 				return word;                
 		  }
 	    z = lexer_fgetc ();
@@ -502,13 +521,13 @@ static char *read_word2 (int *t)
 	        while (1)
 		      {
 		        a = lexer_fgetc ();
-		        if (A4GL_memfile_feof ())
+		        if (memFile->feof ())
 		          break;
 		        if (a == '\n' || a == '\r')
 		          break;
 		        ccat (word, a, instrs || instrd);
 		      }
-	        *t = KWS_COMMENT;
+	        *tokenType = KWS_COMMENT;
 	        return word;
 	      }
 	  }
@@ -521,7 +540,7 @@ static char *read_word2 (int *t)
 	    if (c == '}')
 	    {
 	      strcpy (word, "!}");
-	      *t = KWS_COMMENT;
+	      *tokenType = KWS_COMMENT;
 	      return word;
 	    }
 	    else
@@ -546,14 +565,14 @@ static char *read_word2 (int *t)
 	      while (1)
 		    {
 		      a = lexer_fgetc ();
-		      if (A4GL_memfile_feof ())
+		      if (memFile->feof ())
 		        break;
 		      if (a == '}')
 		        break;
 		      /* ccat(word,a,instrs||instrd); */
 		    }
 	    }
-	    *t = KWS_COMMENT;
+	    *tokenType = KWS_COMMENT;
 	    return word;
 	  }
   
@@ -562,7 +581,7 @@ static char *read_word2 (int *t)
 	    if (instrs || instrd)
 	    {
 	      printf ("Unterminated string escp=%d?\n", escp);
-	      *t = TYPE_USTRING;
+	      *tokenType = TYPE_USTRING;
 	    }
 	    if (strlen (word) > 0)
 	      return word;
@@ -634,7 +653,7 @@ static char *read_word2 (int *t)
 	      if (x != '"')
 		    {
 		      ccat (word, '"', instrs || instrd);
-		      *t = CHAR_VALUE;
+		      *tokenType = CHAR_VALUE;
 		      return word;
 		    }
 	      else
@@ -655,7 +674,7 @@ static char *read_word2 (int *t)
 	    if (instrs == 1)
 	    {
 	      ccat (word, '"', instrs || instrd);
-	      *t = CHAR_VALUE;
+	      *tokenType = CHAR_VALUE;
 	      return word;
 	    }
 	    ccat (word, '"', instrs || instrd);
@@ -692,17 +711,17 @@ char *A4GL_translate (char *s) {
  *          readed.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word (int *t)
+static char *read_word (int *tokenType)
 {
   char *ptr;
   char *s2;
 
-  ptr = read_word2 (t);
+  ptr = read_word2 (tokenType);
 
 	// If it is a string take the quotes an try to translate it.
 	// This could be in read_word2
 	// @todo : This can have a memory leak.
-  if (*t == CHAR_VALUE)
+  if (*tokenType == CHAR_VALUE)
   {
     char *s;
     s = strdup (ptr + 1);
@@ -851,11 +870,11 @@ get_hash_val (char *s)
  * @param buff
  * @param p
  * @param str
- * @param t The type of the token readed.
+ * @param tokenType The type of the token readed.
  * @return The type of the next token readed.
  */
 static int
-chk_word_more (char *buff, char *p, char *str, int t)
+chk_word_more (char *buff, char *p, char *str, int tokenType)
 {
   int cnt = 0;
   int oline;
@@ -864,7 +883,7 @@ chk_word_more (char *buff, char *p, char *str, int t)
   oline = yylineno;
 
 
-  a = A4GL_memfile_ftell ();
+  a = memFile->ftell ();
   /* check if the current word is a known reserved/key word */
 
   kwords = hashed_list[get_hash_val (p)];
@@ -891,16 +910,16 @@ chk_word_more (char *buff, char *p, char *str, int t)
     if (yyline_fpos < a)
 	  {
 
-	  A4GL_memfile_fseek (yyline_fpos, SEEK_SET);
-	  while (A4GL_memfile_ftell () < a)
+	  memFile->fseek (yyline_fpos, SEEK_SET);
+	  while (memFile->ftell () < a)
 	    {
-	      yyline[yyline_len++] = A4GL_memfile_getc ();
+	      yyline[yyline_len++] = memFile->getchar();
 	      yyline[yyline_len] = '\0';
 	    }
 	  }
     else
 	  {
-	    A4GL_memfile_fseek (a, SEEK_SET);
+	    memFile->fseek (a, SEEK_SET);
 	  }
 
   }
@@ -910,17 +929,17 @@ chk_word_more (char *buff, char *p, char *str, int t)
   strcpy (str, p);
 
   a = isnum (p);
-  if (a == 1)
+  if (a == DECIMAL_NUMBER)
   {
     strcpy (str, p);
     return INT_VALUE;
   }
-  if (a == 2)
+  if (a == FRAC_NUMBER)
   {
     strcpy (str, p);
     return NUMBER_VALUE;
   }
-  return t;
+  return tokenType;
 }
 
 /**
@@ -931,7 +950,6 @@ chk_word_more (char *buff, char *p, char *str, int t)
  *
  * If its not a reserved word could be a NUMBER, IDENTIFIER, ???
  *
- * @param f The file pointer that identifies the opened file source.
  * @param str A pointer to a string where ???? its appended.
  * @return The keyword integer identifier (please use the defines).
  */
@@ -939,11 +957,12 @@ static int
 chk_word (char *str)
 {
   char *p;
-  int t;
+  int tokenType;
   char buff[256];
 
   /* read the next word from the 4GL source file */
-  p = read_word (&t);
+  p = read_word (&tokenType);
+  //set_yytext(p);
   //A4GL_debug ("chk_word: read_word returns %s\n", p);
 
   /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
@@ -968,7 +987,7 @@ chk_word (char *str)
     return KW_CSTART;
   }
 
-  if (t == TYPE_EOF && xccode)
+  if (tokenType == TYPE_EOF && xccode)
   {
     printf ("Unexpected end of file - no endcode\n");
     exit (0);
@@ -998,14 +1017,14 @@ chk_word (char *str)
   /* end of code/endcode block handling */
 
   /* skip comments, do not return these to parser */
-  if (t == KWS_COMMENT)
+  if (tokenType == KWS_COMMENT)
   {
     strcpy (str, p);
     return chk_word (str);
   }
 
   /* the special end of file token indicates we have reached the end */
-  if (t == TYPE_EOF)
+  if (tokenType == TYPE_EOF)
   {
     strcpy (str, "");
     return -1;
@@ -1015,7 +1034,7 @@ chk_word (char *str)
    * reading ahead when checking for multi-word keywords
    */
   strcpy (buff, p);
-  return chk_word_more (buff, p, str, t);
+  return chk_word_more (buff, p, str, tokenType);
 }
 
 
@@ -1092,39 +1111,45 @@ fix_bad_strings (char *s)
  *  Assume that the file is allready opened and this does not need to be tested.
  * @todo - convert identifier to USER_DTYPE if required....
  *
- * @param pyylval
+ * @param pyylval A pointer to the union where the diferent values are stored.
  * @param yystate The current state in the bsion parser.
  * @param yys1 Not used 
  * @param yys2 Not used
+ * @return The type of the token found. It corresponds to the %token defined 
+ *         and used in the parser.
  */
 int
 a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 {
-  int a;
+  int tokenType;
   char text[1024];
   char buffval[20480];
   int allow;
+	YYSTYPE *yylval = (YYSTYPE *)pyylval;
+	// @todo : This static can fuck the reentrancy
   static int last_pc = 0;
 
   current_yylex_state = yystate;
 
-  a = A4GL_memfile_ftell();
-  if (A4GL_memfile_getLength())
+	// Why this ???
+  tokenType = memFile->ftell();
+  if (memFile->getLength())
   {
-    a = a * 100 / A4GL_memfile_getLength();
-    if (a > last_pc)
+    tokenType = tokenType * 100 / memFile->getLength();
+    if (tokenType > last_pc)
 	  {
-	    last_pc = a;
+	    last_pc = tokenType;
 	  }
   }
+	// /Why this ???
 
 	// Read and check what word was readed.
-  a = chk_word (text);
+  tokenType = chk_word (text);
   //A4GL_debug("chk_word returns token=%d, text=%s state=%d\n", a, text, yystate);
 
 	// Calls the generated from y.output allow token state to see if the word
 	// found is to be returned as identifier or TOKEN
-  allow = allow_token_state (yystate, a);
+  allow = allow_token_state (yystate, tokenType);
   //A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 
 	// The bison parser nows that we are in SQL BLOCK. Read until it
@@ -1136,24 +1161,26 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   {
     if (allow == 0) {
 		  int t;
-		  t=isnum(text);
-		  if (t==1) a=INT_VALUE;
-		  if (t==2) a=NUMBER_VALUE;
-		  if (t!=1&&t!=2) {
+		  t = isnum(text);
+		  if (t == DECIMAL_NUMBER) 
+			  tokenType=INT_VALUE;
+		  if (t == FRAC_NUMBER) 
+			  tokenType=NUMBER_VALUE;
+		  if (t != DECIMAL_NUMBER && t!= FRAC_NUMBER) {
 		 	  if (isident (text)) {
-				  a = NAMED_GEN;
+				  tokenType = NAMED_GEN;
 			  }
 		  }
 	  }
 
 	  // Calls the generated from y.output allow token state to see if the word
 	  // found is to be returned as identifier or TOKEN
-    if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
+    if (allow_token_state (yystate, USER_DTYPE) && tokenType == NAMED_GEN)
 	  {
-						/* TO UNCOMENT
+						/* @todo : Uncomment.
 	    if (A4GL_find_datatype (upshift (text)))
 	    {
-	      a = USER_DTYPE;
+	      tokenType = USER_DTYPE;
 	    }
 			*/
 	  }
@@ -1161,7 +1188,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   else  // SQLMODE
   {
     if (allow == 0)
-	    a = SQL_TEXT;
+	    tokenType = SQL_TEXT;
   }
 
   //A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
@@ -1169,13 +1196,19 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	// Check if returned  ????
 	// I think that it found a constant.
 	// @todo : This should go to a separated function.
-  if (a == 2 || a == NAMED_GEN)
+	/* @todo : Remove this if possible because this should be in semantic 
+	 * validation
+  if (tokenType == 2 || tokenType == NAMED_GEN)
   {
     //A4GL_debug ("  Constant check returns %d", 
 								//check_for_constant (text, buffval));
 
+		// The checking for constant variables should be done in the semantic
+		// verification and not in syntax analisys
+		
 		//@todo : Uncomment this 
     //switch (check_for_constant (text, buffval))
+		printf("TOKEN TYPE = %d : %s\n", tokenType, text);
     switch (10)
 	  {
 	    case 0:
@@ -1184,31 +1217,32 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	    case 1:
 	      //A4GL_debug (" Constant switch %s Char", buffval);
 	      strcpy (text, buffval);
-	      a = CHAR_VALUE;
-	      break;		/* 'c' */
+	      tokenType = CHAR_VALUE;
+	      break;		// 'c' 
 
 	    case 2:
 	      //A4GL_debug (" Constant switch %s Float", buffval);
 	      strcpy (text, buffval);
-	      a = NUMBER_VALUE;
-	      break;		/* 'f' */
+	      tokenType = NUMBER_VALUE;
+	      break;		// 'f'
 	    case 3:
 	      //A4GL_debug (" Constant switch %s Integer", buffval);
 	      strcpy (text, buffval);
-	      a = INT_VALUE;
-	      break;		/* 'i' */
+	      tokenType = INT_VALUE;
+	      break;		// 'i' 
 	    case 4:
 	      //A4GL_debug (" Constant switch %s ident", buffval);
 	      strcpy (text, buffval);
-	      a = NAMED_GEN;
-	      break;		/* 'C' */
+	      tokenType = NAMED_GEN;
+	      break;		// 'C' 
 	    default:
 	      a4gl_yyerror ("Unexpected Error");
 	  }
   }
+	*/
 
   /* 4GL identifiers are case insensitive - force to lower case */
-  if (a == 2)
+  if (tokenType == 2)
   {
     to_lower_str (text);
   }
@@ -1222,12 +1256,15 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	// @todo : Uncomment because it is realy needed.
   //set_str (pyylval, text);
 
-  lastlex = a;
+  lastlex = tokenType;
   word_cnt = 0;
-  //A4GL_debug ("lexer returns  a=%d, text=%s\n", a, text);
+  //A4GL_debug ("lexer returns  tokenType=%d, text=%s\n", tokenType, text);
 
-  printf("lexer returns  a=%d, text=%s\n", a, text);
-  return a;
+		// @todo : Return diferent things if identifier or other things.
+	yylval->token = new FglToken(yylineno,text);
+	if ( traceTokens )
+    printf("lexer returns  a=%d, text=%s, line=%d\n", tokenType, text, yylineno);
+  return tokenType;
 }
 
 /**
@@ -1286,6 +1323,27 @@ char *
 get_idents (int a)
 {
   return idents[a];
+}
+
+/**
+ * Setter function to the trace token(s) property.
+ * This is used mainly for debugging purposes.
+ *
+ * @param _traceTokens Flag to indicate that we want to trace tokens.
+ *        0 - Do not trace
+ *        otherwise - trace / log tokens
+ */
+void setTraceTokens(char _traceTokens) {
+  traceTokens = _traceTokens;
+}
+
+/**
+ * Setter to the memfile object 
+ *
+ * @param _memFile A reference to the MemFile object.
+ */
+void setMemFile(MemFile *_memFile) {
+  memFile = _memFile;
 }
 
 /* ================================== EOF ========================= */

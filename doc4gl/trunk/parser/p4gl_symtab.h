@@ -10,7 +10,7 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.7 2004-01-05 13:56:29 saferreira Exp $
+ * $Id: p4gl_symtab.h,v 1.8 2004-01-16 20:45:28 saferreira Exp $
  */
 
 

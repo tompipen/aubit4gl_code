@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: saferreira $
- * $Revision: 1.10 $
- * $Date: 2004-01-05 13:56:29 $
+ * $Revision: 1.11 $
+ * $Date: 2004-01-16 20:45:28 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
