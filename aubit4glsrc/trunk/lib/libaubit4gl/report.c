@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.7 2002-06-10 16:00:59 mikeaubury Exp $
+# $Id: report.c,v 1.8 2002-06-11 12:45:41 afalout Exp $
 #
 */
 
@@ -82,6 +82,9 @@ void 				end_report_table	(struct BINDING *b,int n,
 										struct BINDING *reread);
 void 				rep_file_print		(struct rep_structure *rep,
 										char *fname, int opt_semi);
+
+char *              decode_datatype		(int dtype,int dim);
+
 
 /*
 =====================================================================
@@ -407,8 +410,13 @@ return "";
 }
 
 
-/* Used for AREP compiler */
-char * decode_datatype(int dtype,int dim) {
+/**
+ * Used for AREP compiler 
+ * @todo Describe function
+ */
+char *
+decode_datatype(int dtype,int dim)
+{
 static char buff[256];
 	sprintf(buff,"%s %s",nm(dtype),sz(dtype,dim));
 	return buff;

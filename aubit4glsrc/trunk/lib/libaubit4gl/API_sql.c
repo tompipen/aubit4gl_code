@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.15 2002-06-11 08:42:26 afalout Exp $
+# $Id: API_sql.c,v 1.16 2002-06-11 12:45:41 afalout Exp $
 #
 */
 
@@ -236,7 +236,7 @@ A4GLSQL_get_curr_conn   (void)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_get_curr_conn");
-  return func();
+  return (char *)func();
 }
 
 /**
@@ -252,7 +252,7 @@ A4GLSQL_get_sqlerrm   (void)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_get_sqlerrm");
-  return func();
+  return (char *)func();
 }
 
 /**
@@ -291,7 +291,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
  * @param dtype A pointer to the variable where to put the data type.
  * @param size A pointer to the variable where to put the size of the column
  *  returned by the database.
- * @return 
+ * @return
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
@@ -417,7 +417,7 @@ A4GLSQL_prepare_glob_sql   (char *s, int ni, struct BINDING *ibind)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_prepare_glob_sql");
-  return func(s,ni,ibind);
+  return (struct s_sid *)func(s,ni,ibind);
 }
 
 
@@ -460,7 +460,7 @@ A4GLSQL_close_session   (char *sessname)
  * @param currname The name of the cursor.
  * @return
  */
-int 
+int
 A4GLSQL_close_cursor   (char *currname)  
 {
   if (libptr==0) A4GLSQL_initlib();
@@ -476,7 +476,7 @@ A4GLSQL_close_cursor   (char *currname)
  * @return
  */
 int
-A4GLSQL_fill_array     (int mx, char **arr1, int szarr1, char **arr2, 
+A4GLSQL_fill_array     (int mx, char **arr1, int szarr1, char **arr2,
 						int szarr2, char *service, int mode, char *info)
 {
   if (libptr==0) A4GLSQL_initlib();
@@ -497,7 +497,7 @@ A4GLSQL_prepare_sql   (char *s)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_prepare_sql");
-  return func(s);
+  return (struct s_sid *)func(s);
 }
 
 
@@ -570,7 +570,7 @@ A4GLSQL_prepare_select       (struct BINDING *ibind, int ni, struct BINDING *obi
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_prepare_select");
-  return func(ibind,ni,obind,no,s);
+  return (struct s_sid *)func(ibind,ni,obind,no,s);
 }
 
 /**
@@ -589,7 +589,7 @@ A4GLSQL_declare_cursor    (int upd_hold, struct s_sid *sid, int scroll, char *cu
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_declare_cursor");
-  return func(upd_hold,sid,scroll,cursname);
+  return (struct s_cid *)func(upd_hold,sid,scroll,cursname);
 }
 
 /**
@@ -712,7 +712,7 @@ A4GLSQL_find_prepare   (char *pname, int mode)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_find_prepare");
-  return func(pname,mode);
+  return (struct s_sid *)func(pname,mode);
 }
 
 /**
