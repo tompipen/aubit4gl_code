@@ -922,8 +922,10 @@ for a in $FLAGS; do
 			# -c : Enable Database to 4GL data type conversion
 			#Not sure if DBDELIMITER has anything to do with it, but
 			#i had a case where fglschema failed with -c too
+			#but it works from command line!!
 			echo "$DBDELIMITER"
-			fglschema -c $TEST_DB
+			#fglschema -c $TEST_DB
+			fglschema $TEST_DB
 			RET=$?
 			if test "$RET" != "0"; then 
 				rm -f ./etc/$TEST_DB.sch
