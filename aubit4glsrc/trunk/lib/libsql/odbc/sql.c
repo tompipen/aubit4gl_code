@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.105 2005-01-29 11:35:02 mikeaubury Exp $
+# $Id: sql.c,v 1.106 2005-01-31 12:37:01 mikeaubury Exp $
 #
 */
 
@@ -406,7 +406,18 @@ dll_import sqlca_struct a4gl_sqlca;
 
 
 
+static void ensure_as_char() {
+	if (A4GL_isyes(acl_getenv("DATE_AS_CHAR"))) { date_as_char=1; }
+	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { date_as_char=1; }
+
+	if (A4GL_isno(acl_getenv("DATE_AS_CHAR"))) { date_as_char=0; }
+	if (A4GL_isno(acl_getenv("DTIME_AS_CHAR"))) { date_as_char=0; }
+}
+
+
 static void set_conv_4gl_to_c(void) {
+
+ensure_as_char();
 if (date_as_char) {
 	conv_4gl_to_c[7]=SQL_C_CHAR;
   	fgl_sizes[7]=12;
@@ -2564,6 +2575,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       A4GL_get_date (*(int *) ptr, &d, &m, &y);
 
 
+ensure_as_char();
       if (date_as_char)
 	{
 	  sprintf (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
@@ -2590,6 +2602,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
       ptr = bind->ptr;
       p = (ACLDTIME *) A4GL_bind_datetime (ptr);
+ensure_as_char();
       if (dtime_as_char)
 	{
 	  char buff[50];
@@ -3886,6 +3899,7 @@ A4GL_bind_date (long *ptr_to_date_var)
   A4GL_debug ("Binding date for %p", ptr_to_date_var);
 #endif
   ptr->ptr = ptr_to_date_var;
+ensure_as_char();
 if (date_as_char) {
   strcpy (ptr->uDate.date_c, "0000-00-00");
 } else {
@@ -3903,6 +3917,7 @@ A4GL_bind_datetime (void *ptr_to_dtime_var)
 
   ptr = malloc (sizeof (ACLDTIME));
 
+ensure_as_char();
 if (dtime_as_char) {
   strcpy (ptr->dtime_u.dtime_c, "");
 } else {
@@ -3994,6 +4009,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 
 	  date1 = use_binding[bind_counter].ptr;
 
+ensure_as_char();
 if (date_as_char) {
 	  {
 	    int y, d, m;
@@ -4060,6 +4076,7 @@ if (date_as_char) {
 
 	  char buff[256];
 	  dt1 = use_binding[bind_counter].ptr;
+ensure_as_char();
 	if (dtime_as_char) {
 	  strcpy (buff, dt1->dtime_u.dtime_c);
 } else {

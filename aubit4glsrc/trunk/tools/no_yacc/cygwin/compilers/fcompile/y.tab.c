@@ -2609,7 +2609,7 @@ if (A4GLF_open_db(yyvsp[0].str)) {
 	int a;
 	static char buff[256];
 	strcpy(buff,yyvsp[0].str);
-	if (!A4GL_isyes(acl_getenv("NORMSCORE"))) {
+	if (A4GL_isyes(acl_getenv("SPACESCORE"))) {
 		for (a=0;a<strlen(buff);a++) {
 			if (buff[a]=='_') buff[a]=' ';
 		}
