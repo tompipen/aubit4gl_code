@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.20 2004-12-09 07:26:48 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.21 2004-12-16 09:28:25 mikeaubury Exp $
 #*/
 
 /**
@@ -55,6 +55,12 @@
 /*  Do we want the output indented ? */
 #define INDENT
 
+#ifdef IGNORE_HTONS_ETC
+#define a4gl_htons(x) x
+#define a4gl_htonl(x) x
+#define a4gl_ntohs(x) x
+#define a4gl_ntohl(x) x
+#endif
 
 /*
 -----------------------------------------------------------------------------
@@ -143,7 +149,7 @@ A4GL_open_packer (char *basename, char dir)
 
   if (toupper (dir) == 'O')  {
       sprintf (buff, "%s%s", basename,acl_getenv("A4GL_PACKED_EXT"));
-      outfile = fopen (buff, "w");
+      outfile = fopen (buff, "wb");
 
     if (outfile) {
 		  A4GL_set_last_outfile (buff);
