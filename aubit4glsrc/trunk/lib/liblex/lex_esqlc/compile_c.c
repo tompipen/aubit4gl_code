@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.127 2004-01-27 21:05:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.128 2004-01-28 16:23:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.127 2004-01-27 21:05:58 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.128 2004-01-28 16:23:03 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1169,7 +1169,7 @@ A4GL_prchkerr (int l, char *f)
 
   printc ("/* ERROR */");
   a =
-    pr_when_do ("   if (a4gl_status<0)", when_code[A_WHEN_ERROR], l, f,
+    pr_when_do ("   if (a4gl_status<0) ", when_code[A_WHEN_ERROR], l, f,
 		when_to[A_WHEN_ERROR]);
   printcomment ("/* SQLWARNING */");
   a =
@@ -1207,25 +1207,29 @@ static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
+//printf("%s when_code=%x continue=%x notset=%x stop=%x\n",when_str,when_code,WHEN_CONTINUE,WHEN_NOTSET,WHEN_STOP);
   if ((when_code & 15) == WHEN_CONTINUE)
     return 0;
   if ((when_code & 15) == WHEN_NOTSET)
     return 0;
   if (when_code == WHEN_STOP)
     {
-      printc ("%s A4GL_chk_err(%d,_module_name);\n", when_str, l, f);
+      printc ("%s A4GL_chk_err(%d,_module_name); /* STOP */\n", when_str, l, f);
       printcomment ("/* WHENSTOP */");
     }
   if (when_code == WHEN_CALL)
     {
-      printc ("%s %s%s(0);\n", when_str, get_namespace (when_to), when_to);
+      printc ("%s %s%s(0); /* CALL */\n", when_str, get_namespace (when_to), when_to);
       add_function_to_header (when_to, 1);
       printcomment ("/* WHENCALL */");
     }
 
   if (when_code == WHEN_GOTO)
     {
-      printc ("%s goto %s;\n", when_str, when_to);
+	char buff[256];
+	strcpy(buff,when_to);	
+	A4GL_convlower(buff);
+      printc ("%s goto %s;\n", when_str, buff);
       printcomment ("/* WHENGOTO */");
     }
   return 1;
@@ -3287,7 +3291,7 @@ print_scroll (char *flds, char *updown)
 void
 print_label (char *s)
 {
-  printc ("%s:\n", s);
+  printc ("%s: /* LABEL */\n", s);
   printc("aclfgli_clr_err_flg();");
 }
 
@@ -3968,7 +3972,10 @@ print_open_form (char *fmt, char *a1, char *a2)
 if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
 	char buff[256];
 	char *ptr;
-	printf("get_clobber1=%s\n",A4GL_get_important_from_clobber(a1));
+
+
+	//printf("get_clobber1=%s\n",A4GL_get_important_from_clobber(a1));
+
         if (scan_variable (A4GL_get_important_from_clobber(a1)) == -1) {
 	  set_yytext(A4GL_get_important_from_clobber(a1));
 	  a4gl_yyerror ("Form variable not defined");

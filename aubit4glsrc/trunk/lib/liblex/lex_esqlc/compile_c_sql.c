@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.27 2004-01-18 12:55:12 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.28 2004-01-28 16:23:03 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 
@@ -205,7 +205,7 @@ print_linked_cmd (int type, char *var)
 void
 print_locate (char where, char *var, char *fname)
 {
-  printc ("locate_var(&%s,'%c',%s);\n", var, where, fname);
+  printc ("A4GL_locate_var(&%s,'%c',%s);\n", var, where, fname);
 }
 
 

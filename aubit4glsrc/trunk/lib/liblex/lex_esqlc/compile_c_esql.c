@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.64 2004-01-18 12:55:12 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.65 2004-01-28 16:23:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.64 2004-01-18 12:55:12 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.65 2004-01-28 16:23:03 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -350,7 +350,7 @@ print_linked_cmd (int type, char *var)
 void
 print_locate (char where, char *var, char *fname)
 {
-  printc ("locate_var(&%s,'%c',%s);  /* FIXME */\n", var, where, fname);
+  printc ("A4GL_locate_var(&%s,'%c',%s);  /* FIXME */\n", var, where, fname);
 }
 
 
