@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.23 2004-09-02 15:57:42 mikeaubury Exp $
+# $Id: ui.c,v 1.24 2004-09-10 11:25:54 mikeaubury Exp $
 #
 */
 
@@ -290,7 +290,12 @@ void A4GL_display_at (int n, int a)
 
   if (tos_dtype % 256 == 0 && tos_size == 0)
     {
-      clr_end_of_line = 1;
+	char *ctos_ptr;
+	ctos_ptr=(char *)tos_ptr;
+        A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
+	if (A4GL_isnull(tos_dtype,tos_ptr)) {
+      		clr_end_of_line = 1;
+	}
     }
 
 	  if (x == -1 && y == -1) {

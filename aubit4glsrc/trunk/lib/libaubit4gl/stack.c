@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.99 2004-08-31 20:46:52 mikeaubury Exp $
+# $Id: stack.c,v 1.100 2004-09-10 11:25:54 mikeaubury Exp $
 #
 */
 
@@ -484,7 +484,7 @@ A4GL_debug_print_stack();
       exit (0);
     }
 
-  if ((params[params_cnt - 1].dtype & DTYPE_MASK) != 0)
+  if ((params[params_cnt - 1].dtype & DTYPE_MASK) != DTYPE_CHAR)
     {
       f = params[params_cnt - 1].dtype & DTYPE_MASK;
 
@@ -587,7 +587,7 @@ A4GL_conversion_ok(1);
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
-      if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
+      if ((params[params_cnt].dtype & DTYPE_MASK) != DTYPE_CHAR)
 	{
 	  //A4GL_debug ("7 Not Char.. %p", params[params_cnt].ptr);
 	  acl_free (params[params_cnt].ptr);
@@ -763,7 +763,15 @@ A4GL_debug("51 Have data");
       if ((d & DTYPE_MASK) == 0)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("7 Adding string '%s' size %d", A4GL_null_as_null(p), size);
+ {
+	char *cp;
+	cp=(char *)p;
+	if (cp) {
+	  A4GL_debug ("7 Adding string '%s' size %d %d %d", A4GL_null_as_null(p), size,cp[0],cp[1]);
+	} else {
+	  A4GL_debug ("7 Adding string '%s' size %d cp=null", A4GL_null_as_null(p), size);
+	}
+}
 #endif
 	}
 
@@ -2012,7 +2020,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       if (n>20) {z=add_to_z(z,"...");break;}
 
 
-      if ((params[a].dtype & DTYPE_MASK) != 0)
+      if ((params[a].dtype & DTYPE_MASK) != DTYPE_CHAR)
 	{
 	  sz = 30;
 	  A4GL_debug ("not char - sz=30");
@@ -2393,6 +2401,7 @@ A4GL_isnull (int type, char *buff)
       return function (buff);
     }
 
+  A4GL_debug ("30 ISNULL - No specific function");
 
   if (type == DTYPE_BYTE || type == DTYPE_TEXT)
     {
@@ -2412,7 +2421,7 @@ A4GL_isnull (int type, char *buff)
 
   if (type == DTYPE_CHAR)
     {
-      if (buff[0] == 0)
+      if (buff[0] == 0 && buff[1]==0)
 	return 1;
       else
 	return 0;
@@ -2578,7 +2587,7 @@ A4GL_drop_param (void)
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
-      if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
+      if ((params[params_cnt].dtype & DTYPE_MASK) != DTYPE_CHAR)
         {
           acl_free (params[params_cnt].ptr);
         }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.45 2004-05-11 14:02:35 saferreira Exp $
+# $Id: builtin_d.c,v 1.46 2004-09-10 11:25:54 mikeaubury Exp $
 #
 */
 
@@ -324,14 +324,14 @@ A4GL_push_char (char *p)
 
   if (p[0] == 0 && p[1] != 0)
     {
-      //A4GL_debug ("pc1");
+      A4GL_debug ("pc1");
       ptr = (char *) A4GL_new_string_set (strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
-      //A4GL_debug ("pc2");
+      A4GL_debug ("pc2");
       ptr = (char *) A4GL_new_string_set (strlen (p), p);
     }
   //A4GL_debug ("pc3");
@@ -604,8 +604,22 @@ A4GL_func_clip (void)
 {
   char *z;
   z = A4GL_char_pop ();
-  A4GL_trim (z);
-  A4GL_push_char (z);
+
+  if (strlen(z)) {
+  	A4GL_trim (z);
+	if (strlen(z)) {
+  		A4GL_push_char (z);
+	} else {
+		char buff[2];
+		buff[0]=0;
+		buff[1]=1;
+	A4GL_debug("Pushing a zero length non null string");
+  		A4GL_push_char (buff);
+	A4GL_debug("Done that");
+	}
+  } else {
+	A4GL_push_null(0,0);
+  }
   free (z);
   return 1;
 }

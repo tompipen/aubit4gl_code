@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.179 2004-09-07 06:09:04 mikeaubury Exp $
+# $Id: compile_c.c,v 1.180 2004-09-10 11:26:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.179 2004-09-07 06:09:04 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.180 2004-09-10 11:26:58 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -798,7 +798,7 @@ void
 print_start_block (int n)
 {
   printc ("\n");
-  printc ("START_BLOCK_%d: if(0) goto START_BLOCK_%d;\n", n,n);
+  printc ("START_BLOCK_%d: ;\n", n,n);
 }
 
 /**
@@ -813,7 +813,11 @@ void
 print_continue_block (int n, int brace)
 {
   printc ("\n");
-  printc ("CONTINUE_BLOCK_%d:    if (0) goto CONTINUE_BLOCK_%d;   /* add_continue */ ", n,n);
+  if (A4GL_doing_pcode()) {
+  	printc ("CONTINUE_BLOCK_%d:    ;   /* add_continue */ ", n,n);
+  } else {
+  	printc ("CONTINUE_BLOCK_%d:    ;   /* add_continue */ ", n,n);
+  }
   if (brace)
     printc ("}\n");
 }
@@ -828,7 +832,7 @@ print_continue_block (int n, int brace)
 void
 print_end_block (int n)
 {
-  printc ("END_BLOCK_%d: if (0) goto END_BLOCK_%d ;\n\n", n,n);
+  printc ("END_BLOCK_%d: ;\n\n", n,n);
 }
 
 /**
@@ -1163,20 +1167,15 @@ A4GL_prchkerr (int l, char *f)
       char tbuff[2000];
       sprintf (tbuff, "ERRCHK(%d,\"%s\"", l, f);
       strcpy (buff, tbuff);
-      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SUCCESS],
-	       when_to[A_WHEN_SUCCESS]);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SUCCESS], when_to[A_WHEN_SUCCESS]);
       strcat (buff, tbuff);
-      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_NOTFOUND],
-	       when_to[A_WHEN_NOTFOUND]);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_NOTFOUND], when_to[A_WHEN_NOTFOUND]);
       strcat (buff, tbuff);
-      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SQLERROR],
-	       when_to[A_WHEN_SQLERROR]);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SQLERROR], when_to[A_WHEN_SQLERROR]);
       strcat (buff, tbuff);
-      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_ERROR],
-	       when_to[A_WHEN_ERROR]);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_ERROR], when_to[A_WHEN_ERROR]);
       strcat (buff, tbuff);
-      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_WARNING],
-	       when_to[A_WHEN_WARNING]);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_WARNING], when_to[A_WHEN_WARNING]);
       strcat (buff, tbuff);
       sprintf (tbuff, ");");
       strcat (buff, tbuff);
@@ -1491,7 +1490,7 @@ print_constr (void)
 {
   int a;
   printc
-    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[%d]={\n",
+    ("struct s_constr_list constr_flds[%d]={\n",
      constr_cnt);
   for (a = 0; a < constr_cnt; a++)
     {
@@ -3736,13 +3735,13 @@ print_report_2 (int pdf, char *repordby)
   printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
+  printc ("    A4GL_rep_print(&_rep,0,1,0,-1);\n"); // Mantis ID 573
   printc ("        _useddata=1;");
   printc ("        for (_p=_g;_p<=acl_rep_ordcnt;_p++) ");
   printc ("               %s(_p,REPORT_BEFOREGROUP);", get_curr_rep_name ());
   printc ("   }");
 
 
-   printc("if (!_useddata) A4GL_rep_print(&_rep,0,0,0,-1);\n");
   printc ("   _useddata=1;\n");
 
   print_rep_ret (report_cnt,0);
@@ -5668,7 +5667,11 @@ for (a=0;a<n;a++) {
 	} else {
 		fields=get_field_codes(event_dets);
 		for (b=0;fields[b];b++) {
-			printc("{%d,%d,0,%s},",event_id,a+1,fields[b]);
+			if (strlen(fields[b])!=0) {
+				printc("{%d,%d,0,%s},",event_id,a+1,fields[b]);
+			} else {
+				printc("{%d,%d,0,\"\"},",event_id,a+1);
+			}
 		}
 	}
 }

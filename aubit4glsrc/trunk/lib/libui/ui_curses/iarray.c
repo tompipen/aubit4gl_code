@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.83 2004-07-03 11:58:13 mikeaubury Exp $
+# $Id: iarray.c,v 1.84 2004-09-10 11:26:59 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.83 2004-07-03 11:58:13 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.84 2004-09-10 11:26:59 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -867,6 +867,13 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_INS:
       //A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0);
 
+	  // cc 2004.09.06 when INS key is pressed, content may not be in
+	  //               content buffer yet, need to copy to ensure this
+/*
+      memcpy (
+	  (char *) (arr->binding[0].ptr + arr->arr_elemsize * (arr->arr_line - 1)),
+	  field_buffer(current_field(mform), 0), arr->arr_elemsize);
+*/
       A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
       break;
 
@@ -1717,7 +1724,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 	  A4GL_debug ("Adding AFTER FIELD..");
-
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
 
 	}
@@ -1969,11 +1975,6 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
       if (arr->fcntrl[a].state == 50)
 	{
 	  new_state = 0;
-	  //if (arr->curr_line_is_new==1) {
-	  	//arr->curr_line_is_new++;
-	  	//A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
-	  	//rval = -1;
-	  //}
 	}
 
 
@@ -1992,9 +1993,20 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
       if (arr->fcntrl[a].state == 99)
 	{
 	  // We want to do the actual insert here...
-	  new_state = 50;
+	FIELD *f;
+	f=arr->field_list[arr->scr_line-1][arr->curr_attrib];
+	if (f&& arr->currentfield) {
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
+	}
+	  new_state = 80;
+	  rval=-99;
+	}
+
+	if (arr->fcntrl[a].state == 80) {
 	  insert_line_in_array (arr);
-	rval=-99;
+	  rval=-99;
+	  new_state=50;
 	}
 
       if (arr->fcntrl[a].state == 50)
@@ -2649,7 +2661,13 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 
       fprop = (struct struct_scr_field *) (field_userptr (arr->field_list[scr_line - 1][a]));
 	
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0);
+	  // cc 2004.09.06 defualt attribute show be FGL_CMD_DISPLAY_CMD,
+	  //               only the current field be set to FGL_CMD_INPUT
+
+      //attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0);
+
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0);
+
       da = attr;
 
       if (arr_line == arr->arr_line)
