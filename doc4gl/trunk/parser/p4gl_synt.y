@@ -329,7 +329,8 @@ globals
 
 op_define_globals
    : GLOBALS_TOK                         { InGlobals = 1; InLimbo=0;   }
-	  op_define_list END_TOK GLOBALS_TOK   { InGlobals = 0; InLimbo=1;   }
+	  op_define_list END_TOK GLOBALS_TOK   
+		  { InGlobals = 0; InLimbo=1; defineOrGlobalsOcurred();}
 	;
 
                                 /* Included global variable by pre-processing */
@@ -339,7 +340,8 @@ op_inc_globals
 	  op_database
 	  op_define_globals
 	  op_function_list
-	  END_TOK INC_GLOBALS               { InInclude = 0; lineno=back_lineno;}
+	  END_TOK INC_GLOBALS               
+		  { InInclude = 0; lineno=back_lineno; defineOrGlobalsOcurred(); }
 	;
 
 /*
@@ -371,7 +373,7 @@ define_list
 define_statement
 	: DEFINE 
 	  variable_definition_list op_semicolon
-	{ Define(); }
+	{ defineFound(); }
 	;
 
 variable_definition_list
@@ -427,11 +429,11 @@ fgl_simple_data_type
 	: INTEGER        { $$ = CpStr("INTEGER"); }
 	| SMALLINT       { $$ = CpStr("SMALLINT"); }
 	| decimal        { $$ = CpStr($1); }
-   | money          { $$ = CpStr($1); }
+  | money          { $$ = CpStr($1); }
 	| float          { $$ = CpStr($1); }
 	| SMALLFLOAT     { $$ = CpStr("SMALLFLOAT"); }
 	| REAL           { $$ = CpStr(SMALLFLOAT); }
-   | DATE           { $$ = CpStr("DATE"); }
+  | DATE           { $$ = CpStr("DATE"); }
 	| char           { $$ = CpStr($1); }
 	| datetime       { $$ = CpStr($1); }
 	| current        { $$ = CpStr($1); }
@@ -1405,7 +1407,7 @@ time_expression
 
 date_value
   : STRING op_using { char *x; x = $1; }
-	| function_call op_using  { char *x; x= $1 }
+	| function_call op_using  { char *x; x= $1; }
 	| named_value op_using { char *x; x = $1; }
 	/* Só para resolver o today */
 	| IDENTIFIER op_using { char *x; x = $1; }
@@ -1788,11 +1790,11 @@ display_where_to
 
 
 display_array
-	: DISPLAY ARRAY IDENTIFIER TO IDENTIFIER '.' '*' 
+	: DISPLAY ARRAY named_value TO IDENTIFIER '.' '*' 
 			attribute_clause on_key_list
 	  END_TOK DISPLAY
 	                         { StInsertVariableUsage($3,lineno+1,READ_VAR); }
-	| DISPLAY ARRAY IDENTIFIER TO IDENTIFIER '.' '*' 
+	| DISPLAY ARRAY named_value TO IDENTIFIER '.' '*' 
 			attribute_clause 
 	                         { StInsertVariableUsage($3,lineno+1,READ_VAR); }
    ;
@@ -2406,7 +2408,7 @@ sql_statement:
 	| table_definition   /* Esta no schema definition que esta comentado */
 	| index_definition
 	| revoke
-	| DROP TABLE IDENTIFIER 
+	| DROP TABLE table_name 
 	| lock
 	| unlock
 	| update_statistics
@@ -3236,6 +3238,7 @@ column_name
 	| TEXT                                { $$=CpStr("TEXT");               }
 	| TOTAL                               { $$=CpStr("TOTAL");              }
 	| UNITS                               { $$=CpStr("UNITS");              }
+	| USER                                { $$=CpStr("USER");              }
 	;
 
 /* ??? Afectacao para o bison funcionar */

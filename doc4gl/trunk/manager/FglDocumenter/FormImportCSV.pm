@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
@@ -7,7 +7,7 @@
 # 
 #  As opções globais estão guardadas no módulo Options.
 #
-#  @todo - Passar este módulo a objecto
+#  @todo - Inserir mais uma opção (Inserção de processos indefinidos)
 #
 #  Autor : Sérgio Ferreira
 #
@@ -15,53 +15,188 @@
 
 package FglDocumenter::FormImportCSV;
 
+use strict;
 use Tk::Dialog;
+
+#  =========================================================================
+#  Constructor
+#  =========================================================================
+sub new
+{
+  my ($formImportCsv) = @_;
+
+	my $formImportCsv = {
+    "err"                => 0,
+	  "log"                => 0,
+	  "lh"                 => 0,
+    "okListener"         => 0,
+    "cancelListener"     => 0,
+    "progressListener"   => 0,
+    "form"               => 0,
+    "csvImportFile"      => "",
+	  "clearRepository"    => 0,
+	  "normalize"          => 1,
+	};
+	bless $formImportCsv, "FglDocumenter::FormImportCSV";
+	return $formImportCsv;
+}
+
+#  =========================================================================
+#  Afecta a propriedade do objecto que define o ficheiro de onde se importa
+#  =========================================================================
+sub setCsvImportFile
+{
+	my $obj = shift;
+  $obj->{csvImportFile}   = shift;
+}
+
+#  =========================================================================
+#  Devolve a propriedade do objecto que define o ficheiro de onde se importa
+#  =========================================================================
+sub getCsvImportFile
+{
+	my $obj = shift;
+  return $obj->{csvImportFile};
+}
+
+#  =========================================================================
+#  Afecta a propriedade do objecto que define se se pretende ou não limpar
+#  o repositório
+#  =========================================================================
+sub setClearRepository
+{
+	my $obj = shift;
+  $obj->{clearRepository}   = shift;
+}
+
+#  =========================================================================
+#  Retorna a propriedade do objecto que define se se pretende ou não limpar
+#  o repositório
+#  =========================================================================
+sub getClearRepository
+{
+	my $obj = shift;
+  return $obj->{clearRepository};
+}
+
+#  =========================================================================
+#  Afecta a propriedade do objecto que define se se pretende ou não 
+#  normalizar a informaçao
+#  =========================================================================
+sub setNormalize
+{
+	my $obj = shift;
+  $obj->{normalize}   = shift;
+}
+
+#  =========================================================================
+#  Retorna a propriedade do objecto que define se se pretende ou não 
+#  normalizar a informaçao
+#  =========================================================================
+sub getNormalize
+{
+	my $obj = shift;
+  return $obj->{normalize};
+}
+
+#  =========================================================================
+#  Afecta a propriedade do objecto que define se se pretende ou não 
+#  enviar a linha carregada para o log
+#  =========================================================================
+sub setSendLineToLog
+{
+	my $obj = shift;
+  $obj->{sendLineToLog}   = shift;
+}
+
+#  =========================================================================
+#  Retorna a propriedade do objecto que define se se pretende ou não 
+#  enviar a linha carregada para o log
+#  =========================================================================
+sub getSendLineToLog
+{
+	my $obj = shift;
+  return $obj->{sendLineToLog};
+}
+
+sub setLog
+{
+	my $obj = shift;
+  $obj->{log}   = shift;
+}
+
+sub setError
+{
+	my $obj = shift;
+  $obj->{err}   = shift;
+}
+
+#  =========================================================================
+#  Afecta o language handler que esta a ser usado
+#  =========================================================================
+sub setLh
+{
+	my $obj = shift;
+  $obj->{lh}   = shift;
+}
 
 #  =========================================================================
 #  Mostra valores e inicia a recepção de dados no form
 #  =========================================================================
 sub show
 {
-  $csvImportFile   = $FglDocumenter::Options::csvImportFile;	
-	$clearRepository = $FglDocumenter::Options::clearRepositoryOnImportCSV;
-	$normalize       = $FglDocumenter::Options::normalize;
-	$sendLineToLog   = $FglDocumenter::Options::sendLineToLog;
+	my $obj = shift;
 
-  $form = $main::mw->Toplevel();
+  my $lh = $obj->{lh};
+  my $form = $main::mw->Toplevel();
+	$obj->{form} = $form;
   
-  $form->title("Opções de importação");
-  $height = 650;
-  $width = 200;
-	FglDocumenter::Utils::setWindowAtCenter($form,$width,$height);
+  $form->title(
+	  $lh->maketext("Opções de importação")
+	);
 
-	$lblCsvFile = $form->Label(-text => "File to Import");
+	my $lblCsvFile = $form->Label(
+	  -text => $lh->maketext("File to Import")
+	);
 
-	$txtCsvFile = $form->Entry(-width => 64, 
-	  -textvariable => \$csvImportFile,
+	my $txtCsvFile = $form->Entry(-width => 64, 
+	  -textvariable => \$obj->{csvImportFile},
 		#-state => 'enabled'
   );
-  $csvFileButton = $form->Button(-text => "...", -command => \&chooseCsvFile);
+  my $csvFileButton =$form->Button(-text => "...", 
+	  -command => [ \&chooseCsvFile, $obj ]
+	);
+
 	$lblCsvFile->grid($txtCsvFile,$csvFileButton);
 
-	$cb = $form->Checkbutton(-text => "Clear Repository",
-	  -variable => \$clearRepository
+	my $cb = $form->Checkbutton(
+	  -text => $lh->maketext("Clear Repository"),
+	  -variable => \$obj->{clearRepository}
   );
 	$cb->grid(-sticky => "nw");
 
-	# @todo A variável não está bem ligada à check box
-	$cbNormalize = $form->Checkbutton(-text => "Normalize",
-	  -variable => \$normalize
+	my $cbNormalize = $form->Checkbutton(
+	  -text => $lh->maketext("Normalize"),
+	  -variable => \$obj->{normalize}
   );
 	$cbNormalize->grid(-sticky => "nw");
 
-	$cbNormalize = $form->Checkbutton(-text => "Send line to Log",
-	  -variable => \$sendLineToLog
+	$cbNormalize = $form->Checkbutton(
+	  -text => $lh->maketext("Send line to Log"),
+	  -variable => \$obj->{sendLineToLog}
   );
 	$cbNormalize->grid(-sticky => "nw");
 
-  $okButton = $form->Button(-text => "OK", -command => \&ok);
-	$cancelButton=$form->Button(-text => "Cancel", -command => \&cancel);
+  my $okButton = $form->Button(
+	  -text => $lh->maketext("OK"), 
+		-command => [ \&ok, $obj ]
+	);
+	my $cancelButton=$form->Button(
+	  -text => $lh->maketext("Cancel"), 
+		-command => [ \&cancel, $obj ]
+	);
 	$okButton->grid($cancelButton);
+	$form->Popup();
 }
 
 #  =========================================================================
@@ -71,14 +206,18 @@ sub show
 #  =========================================================================
 sub chooseCsvFile
 {
+	my $obj = shift;
+	my $lh = $obj->{lh};
   my $types = [
-            ['Text',              '.txt', 'TEXT'],
-            ['All Files',        '*',             ],
+            [ $lh->maketext('Text'),              '.txt', 'TEXT'],
+            [ $lh->maketext('All Files'),        '*',             ],
         ];
-  $csvImportFile = $form->getOpenFile(
-	  -title => "Seleccionar ficheiro CSV",
-	  -filetypes => $types
+  $obj->{csvImportFile} = $obj->{form}->getOpenFile(
+	  -title => $lh->maketext("Select CSV File"),
+	  -filetypes => $types,
+		-initialdir => "/tmp/",
   );
+	$obj->{form}->raise();
 }
 
 #  =========================================================================
@@ -87,12 +226,9 @@ sub chooseCsvFile
 #  =========================================================================
 sub ok
 {
-	$form->destroy;
-	$FglDocumenter::Options::csvImportFile = $csvImportFile;
-	$FglDocumenter::Options::clearRepositoryOnImportCSV = $clearRepository;
-	$FglDocumenter::Options::normalize     = $normalize;
-	$FglDocumenter::Options::sendLineToLog = $sendLineToLog;
-  \&$okListener() if $okListener ;
+	my $obj = shift;
+	$obj->{form}->destroy;
+  $obj->{okListener}() if $obj->{okListener};
 }
 
 
@@ -101,8 +237,9 @@ sub ok
 #  =========================================================================
 sub cancel
 {
-	$form->destroy;
-  \&$cancelListener() if $cancelListener;
+	my $obj = shift;
+	$obj->{form}->destroy;
+  $obj->{cancelListener}() if $obj->{cancelListener};
 }
 
 
@@ -111,7 +248,8 @@ sub cancel
 #  =========================================================================
 sub addOkListener
 {
-  $okListener = $_[0];
+	my $obj = shift;
+  $obj->{okListener} = shift;
 }
 
 #  =========================================================================
@@ -119,9 +257,8 @@ sub addOkListener
 #  =========================================================================
 sub addCancelListener
 {
-  $cancelListener = $_[0];
+	my $obj = shift;
+  $obj->{cancelListener} = shift;
 }
 
-
-
-return true;
+return 1;

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
@@ -9,12 +9,13 @@
 #  Autor : Sérgio Ferreira
 #
 #  @todo Scroll automático da scrolbar durante adição do log
+#  @todo - Meter strict a funcionar
 #
 #  =========================================================================
 
 package FglDocumenter::Log;
 
-
+#use strict;
 use Tk;
 
 #  =========================================================================
@@ -46,6 +47,7 @@ sub setFileName
 }
 
 #  =========================================================================
+#  @return the log file name
 #  =========================================================================
 sub getFileName
 {
@@ -63,6 +65,7 @@ sub setShowGUI
 }
 
 #  =========================================================================
+#  @return The flag that tells us if we are working in GUI mode.
 #  =========================================================================
 sub isShowGUI
 {
@@ -115,40 +118,24 @@ sub closeLogFile
 
 #  =========================================================================
 #  Abre a janela que mostra o log
+#  @todo : Passar isto a panel.
 #  =========================================================================
 sub openLogWindow
 {
   $obj = shift;
 
 	# @todo Isto tem de fazer parte integrante do objecto
-	$form = $main::mw->Toplevel();
+	$form = $main::mw;
   
-  $form->title("LOG");
-  #$width  = 650;
-  #$height = 400;
-	#Utils::setWindowAtCenter($form,$height,$width);
-
-	#$height = $mw->screenheight();
-  $height = 150;
+  $height = 10;
   $width = $main::mw->screenwidth();
-	my $y = $main::mw->screenheight() - height-1;
-	# print("Y = $y\n");
-	$y = 600;
-  $form->geometry("${width}x${height}+0+$y");
 
 
 	$textLog = $form->Scrolled("Text",
 	  -scrollbars => "se",
-		-width => $width-50,
-		-height => $height-50,
+		-width => $width-100,
+		-height => $height,
 	)->pack;
-	#->pack(-side => 'left',
-		#-fill => 'both', -expand => 1
-  #);
-	#$textLog->grid(-sticky => "w", -row => 1,-column => 0);
-
-  #$hideButton = $form->Button(-text => "HIDE", -command => \&hideLogWindow);
-	#$hideButton->grid;
 }
 
 #  =========================================================================

@@ -1,85 +1,40 @@
-/***************************************************************************
-#*
-#*            INFORMIX SOFTWARE, INC.
-#*
-#*               PROPRIETARY DATA
-#*
-#*   THIS DOCUMENT CONTAINS TRADE SECRET DATA WHICH IS THE PROPERTY OF 
-#*   INFORMIX SOFTWARE, INC.  THIS DOCUMENT IS SUBMITTED TO RECIPIENT IN
-#*   CONFIDENCE.  INFORMATION CONTAINED HEREIN MAY NOT BE USED, COPIED OR 
-#*   DISCLOSED IN WHOLE OR IN PART EXCEPT AS PERMITTED BY WRITTEN AGREEMENT 
-#*   SIGNED BY AN OFFICER OF INFORMIX SOFTWARE, INC.
-#*
-#*   THIS MATERIAL IS ALSO COPYRIGHTED AS AN UNPUBLISHED WORK UNDER
-#*   SECTIONS 104 AND 408 OF TITLE 17 OF THE UNITED STATES CODE. 
-#*   UNAUTHORIZED USE, COPYING OR OTHER REPRODUCTION IS PROHIBITED BY LAW.
-#***************************************************************************   
-#*   Module       : %M%
-#*   Object       : 
-#*   SCCS Id      : %W%
-#*   Full Path    : %P%
-#*   Author       : 
-#*   Release date : %D%
-#***************************************************************************/
+/**
+ * @file 
+ * Dump all the information in the abstract tree to the standard output.
+ * Symbol table dump in html format. It have crossed links between
+ * information.
+ * It just works if p4gl was executed with -d option.
+ */
+
 #include <stdio.h>
 #include <ctype.h>
 #include <varargs.h>
 #include "p4gl_symtab.h"
 
-FILE *f_dump;
+static FILE *f_dump;
 
-/*
- *  Symbol table dump in html format. It have crossed links between
- *  information
- *  It just works if p4gl was executed with -d option 
+/**
+ * Header of the dump of the symbol table.
  */
-
-
-/*
- * Faz dump da tabela de simbolos se ligado o dbug
- * Isto esta algo incompleto
- * Poderia ir para ficheiro e estar organizado
- */
-
-
-DumpSymtab()
-{
-
-   f_dump = stdout;
-   if ( dbug )
-	{
-		DumpHeader();
-		DumpIndex();
-		/*DumpGlobals();*/
-		DumpFunctionsDeclaration();
-		DumpFunctions();
-		DumpSql();
-		DumpFooter();
-		DumpModuleVariable();
-	}
-
-}
-
-/*
- * Header of the dump of the symbol table
- */
-DumpHeader()
+static void DumpHeader(void)
 {
    fprintf(f_dump,"<HTML><HEAD>");
    fprintf(f_dump,"<B>%s</B>",FicheiroInput);
    fprintf(f_dump,"</HEAD><BODY>");
 }
 
-DumpFooter()
+/**
+ * Footer of the dump of the symbol table.
+ */
+static void DumpFooter(void)
 {
    fprintf(f_dump,"</BODY></HTML>");
 }
 
-
-/*
+/**
  * Index of the dump information types
  */
-DumpIndex()
+static void DumpIndex(void)
 {
    fprintf(f_dump,"<H2>Index</H2>");
    fprintf(f_dump,"<A HREF=#Functions>Functions declared</A><BR>");
@@ -90,16 +45,16 @@ DumpIndex()
    fprintf(f_dump,"<HR>");
 }
 
-/*
+/**
  * Dump Information about functions declared, is arguments and count(s)
  */
-DumpFunctionsDeclaration()
+static void DumpFunctionsDeclaration(void)
 {
-   register int i,j;
-   VAR_USAGE *Next;
+  register int i,j;
+  VAR_USAGE *Next;
 
 	fprintf(f_dump,"<A NAME=Functions>");
-   fprintf(f_dump,"<H2>Function List</H2>");
+  fprintf(f_dump,"<H2>Function List</H2>");
 	fprintf(f_dump,"<TABLE BORDER>");
 	fprintf(f_dump,"<TR><TH>Name</TH><TH>Line</TH><TH># Instructions</TH>");
 	fprintf(f_dump,"<TH># Calls</TH><TH># SQL</TH><TH># Locals</TH></TR>");
@@ -120,11 +75,10 @@ DumpFunctionsDeclaration()
 	fprintf(f_dump,"</TABLE><HR>");
 }
 
-
-/*
+/**
  * Show functions detail
  */
-DumpFunctions()
+static void DumpFunctions(void)
 {
    register int i,j;
    VAR_USAGE *Next;
@@ -179,15 +133,12 @@ DumpFunctions()
 	fprintf(f_dump,"<HR>");
 }
 
-
-
-
-/*
+/**
  *  Dump in HTML the query(s) used in the source
  */
-DumpSql()
+static void DumpSql(void)
 {
-   register int i,j,k;
+  register int i,j,k;
 
 	fprintf(f_dump,"<H2><A NAME=Sql>SQL</A></H2>");
 	fprintf(f_dump,"<table border><TR><TH>Funcyion</TH><TH>Operation</TH>",
@@ -225,12 +176,12 @@ DumpSql()
 	 fprintf(f_dump,"</table>");
 }
 
-/*
+/**
  * Modular variables of the module
  */
-DumpModuleVariable()
+static void DumpModuleVariable(void)
 {
-   register short i;
+  register short i;
 
 	printf("<TABLE BORDER>");
 	printf("<TR><TH>Name</TH><TH>Declaration line</TH></TR>");
@@ -240,4 +191,25 @@ DumpModuleVariable()
 		       P4glCb.variaveis_mod[i].linha);
 	printf("</TR>");
 	printf("</TABLE>");
+}
+
+/**
+ * Entry point to abstract tree dump.
+ */
+void DumpSymtab(void)
+{
+
+   f_dump = stdout;
+   if ( dbug )
+	{
+		DumpHeader();
+		DumpIndex();
+		/*DumpGlobals();*/
+		DumpFunctionsDeclaration();
+		DumpFunctions();
+		DumpSql();
+		DumpFooter();
+		DumpModuleVariable();
+	}
+
 }

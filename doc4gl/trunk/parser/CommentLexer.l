@@ -3,8 +3,14 @@
 
 %{
 
-/* C code */
+/** 
+ * @file
+ * Lexer for fgldoc comment parsing.
+ */
 
+/**
+ * Redifinition of default YY_INPUT to read from a string instead a file.
+ */
 #define YY_INPUT(buf,result,max_size) \
 {\
   int c = getCommentChar(); \
@@ -29,10 +35,13 @@ alnum [a-zA-Z_0-9]
 
 "@todo" { startTodo(); }
 
+"@table" { startTable(); }
+
 "@"[aA]"uthor" { startAuthor(); }
 
 "@revision" { startRevision(); }
 "@version" { startRevision(); }
+"@deprecated" { markAsDeprecated(); }
 
 {alpha}{alnum}* { writeCommentIdentifier(yytext); }
 

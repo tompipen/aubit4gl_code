@@ -1,7 +1,9 @@
 %{
 /*  ==========================================================================
  *
- *   Author       : Sergio Ferreira
+ *   Author : Sergio Ferreira
+ *   $Date: 2003-01-06 20:16:43 $
+ *   $Id: p4gl_lex.l,v 1.2 2003-01-06 20:16:43 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -11,13 +13,11 @@
 #include <string.h>
 #include "p4gl_symtab.h"
 #include "p4gl.h"
+#include "y.tab.h"
 
-/* ??? Para retirar - O metodo de debug tem de mudar */
-#include "m_p4gl.c"   /* O main fica aqui por causa dos defines para debug */
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.2 2003-01-06 20:16:43 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
-
-void readDocComment(void);
 
 %}
 
@@ -29,7 +29,7 @@ quoted_string                   \'([^'\n]|\\['\n])*\'
 
 %%
 "\n"                        { lineno++; }
-"{**"                       { readDocComment(); }
+"{**"                       { documentationComment(); }
 "{"                         { readBlockComment(); }
 "#"                         { readLineComment(); }
 "--"                        { readLineComment(); }
@@ -66,6 +66,8 @@ yywrap()
 
 /**
  * Concatena a uma string outra alocando espaço para tal
+ *
+ *  @todo : This function should go to a specific module.
  *   @param strAppended String a ser aumentada
  *   @param strToAppend String a concatenar
  */
@@ -99,77 +101,26 @@ char *appendStr(char *strAppended,char *strToAppend)
 	return retStr;
 }
 
-
-
-/**
- * Lê os comentários de linha guardando-as numa string no caso de se 
- * usar os comentários standard como comentários de documentação
- */
-readLineComment()
-{
-  int ch;
-	char lcStr[256];
-	register int i=0;
-
-    while ((ch=input()) != '\n' && ch != EOF);
-      lineno++; 
-		return;
-
-	if ( standardComments == 0 || InLimbo == 0)
-	{
-    while ((ch=input()) != '\n' && ch != EOF);
-      lineno++; 
-  }
-	else
-	{
-		int commentTerminated = 0;
-		/*
-	  lcStr = malloc(256);
-		*/
-		if ( i >= 255 )
-		  fprintf(stderr,"ERRO COMENTÁRIO DE LINHA > 256");
-    while (commentTerminated == 0)
-		{
-		  ch = input();
-			switch ( ch )
-			{
-			  case '\n':
-					commentTerminated = 1;
-          lineno++; 
-					break;
-				case EOF:
-					commentTerminated = 1;
-					break;
-			  default:
-			    lcStr[i] = ch;
-			    i++;
-					break;
-			}
-		}
-		/* TODO - Inserir num buffer de linhas */
-		P4glCb.currFglDoc->buffer = appendStr(P4glCb.currFglDoc->buffer,lcStr);
-		printf("&&&&&&&&&&&&&&&&&&&&&&&&& Estragar currFgldoc\n");
-		/*free(lcStr);*/
-	}
-}
-
 /** 
  * It it suposed to have the some functionality of gets but using 
- * the macros input() and output()
+ * the macros input() and output() using the encapsulater function 
+ * p4glLexInput().
  *
  * This function should be at compiler library
  * The equal function in p4pp_lex.l is better than this one
+ * @todo : This function should go to a specific module.
  * @todo - resolver o retorno errado
+ *
+ * @para str
+ * @param NumberOfChar 
  */
-char *lexgets(str,NumberOfChr)
-char *str;
-int NumberOfChr;
+char *lexgets(char *str,int NumberOfChr)
 {
    register int i,ch;
 
 	for ( i = 0 ; i < NumberOfChr-1 ; i++ )
 	{
-		ch = input();
+		ch = p4glLexInput();
       if ( ch == EOF )
 			  return NULL;
 		if (ch == '\0' || ch == '\n')
@@ -184,6 +135,7 @@ int NumberOfChr;
  * Garante a existência de memória para o tamanho corrente
  * fazendo incrementos do tamanho definido (para não se estar sempre
  * a fazer realloc
+ * @todo : This function should change to other module.
  */
 char *ensureCapacity(char *str,int incrementSize,int neededSize)
 {
@@ -199,149 +151,19 @@ char *ensureCapacity(char *str,int incrementSize,int neededSize)
 	return retStr;
 }
 
-
 /**
- * Lê os comentários {** que indicam que estes servem para 
- * documentar o módulo ou método seguinte.
+ * Read one character from the input source file stream.
  *
+ * @return The chacter readed.
  */
-void readDocComment(void)
+int p4glLexInput(void)
 {
-	int ch;
-	int inComment = 0;
-	StringBuffer *docComment;
-
-	/* ??? TOD Isto tem de ser mudado para usar realoc(s).
-	 * O espaço alocado pode ser demais ou de menos. Deve ser optimizado
-	 * @todo Se forem lidos dois comentários sem passar por função não há free
-	 */
-	docComment = (StringBuffer *) constructStringBuffer();
-	initStringBuffer(docComment);
-  while ( inComment == 0 )
-	{
-		ch = input();
-		switch ( ch ) 
-		{
-		  case EOF:
-			  inComment = 1;
-		  case '}':
-			  inComment = 1;
-			  break;
-			case '\n':
-				appendCharStringBuffer(docComment,ch);
-				lineno++;
-			  break;
-      default:
-				appendCharStringBuffer(docComment,ch);
-			  break;
-		}
-  }
-
-	if ( P4glCb.idx_funcoes == 0 && P4glCb.numFglDoc > 0 )
-	{
-	  P4glCb.fglDoc        = (char *)strdup(P4glCb.currFglDoc->buffer);
-	  P4glCb.currFglDoc    = docComment;
-		P4glCb.parsedComment = parseComment(P4glCb.fglDoc);
-	}
-	else
-	  P4glCb.currFglDoc = docComment;
-
-	P4glCb.numFglDoc++;
-	//printf("Curr Fgl doc  %s\n===\n", P4glCb.currFglDoc->buffer);
-}
-
-/*
- * Read a block comment from yyin
- * It uses the syntax of 4gl { } and i have a block comment of my own 
- * thath does not coment the block to 4gl. It starts with {IGNORE } and
- * finishes with { IGNORE}
- *
- * TODO - Leitura de comentário de bloco
- */
-readBlockComment()
-{ 
-  char str[80];
-  int  j, ch = 1;
-
-
-	if ( lexgets(str,7) != NULL && strcmp("IGNORE",str) == 0 )
-  {
-    /* ignorar ate proximo IGNORE */
-		/* printf("IGNORE : \n"); */
-    while (lexgets (str, 80) != NULL) 
-    {
-      lineno++;
-      j = strlen(str);
-			/*printf(str); */
-      if (j > 8 && strstr(&str[j -8], "IGNORE}"))
-        break;
-      /* Leu IGNORE */
-    }
-  }
-  else
-  {
-    /* Voltar atras n caracteres */
-		lexunput(str,strlen(str));
-
-		/* Ignorar comentário */
-	  if ( standardComments == 0 || InLimbo == 0)
-		{
-      while (ch != EOF)
-			{
-        ch = input();
-				if ( ch == '}' || ch == EOF)
-				  break;
-        if ( ch == '\n' )
-          lineno++;
-	    }
-		  return;
-		}
-
-		/* Ler comentário para documentação */
-		{
-	  /* TODO - Tornar isto mais dinâmico */
-	  char *comment = (char *)malloc(512);
-		char *oldComment;
-    register int i=0;
-		int commentTerminated = 0;
-    while (commentTerminated == 0)
-		{
-			ch = input();
-			oldComment = comment;
-			comment = (char *)ensureCapacity(oldComment,512,i);
-			switch ( ch )
-			{
-			  case '\n':
-					comment[i] = ch;
-					i++;
-          lineno++;
-					break;
-			  case '}':
-					commentTerminated = 1;
-				  break;
-			  case EOF:
-					commentTerminated = 1;
-				  break;
-			  case 0:
-					comment[i] = 32;
-					i++;
-					break;
-			  default:
-					comment[i] = ch;
-					i++;
-					break;
-		  }
-	  }
-		  comment[i] = '\0';
-		  P4glCb.currFglDoc->buffer = (char *)appendStr(
-		    P4glCb.currFglDoc->buffer,comment
-		  );
-		}
-  }
+  return input();
 }
 
 /*
  * Read a quoted string from yyin
+ * @todo : This function should change to other module.
  * TODO - Tamanho da string não pode ser limitado
  */
 readString()
@@ -352,14 +174,14 @@ readString()
 
 	while ( stringFinished == 0)
 	{
-	  ch = input();
+	  ch = p4glLexInput();
     if ( ch == EOF )
 			break;
 		str[j] = ch; j++;
 	  switch ( ch )
 		{
 		  case '"':  /* Fazer lookahead para ver se é escape de aspas */
-				lookAheadCh = input(); 
+				lookAheadCh = p4glLexInput(); 
 				if ( lookAheadCh != '"' )
 				{
 		      unput(lookAheadCh);
@@ -372,7 +194,7 @@ readString()
 				}
 			  break;
 			case '\\':
-				lookAheadCh = input(); 
+				lookAheadCh = p4glLexInput(); 
 				if ( lookAheadCh != '"' )
 		      unput(lookAheadCh);
 				else
@@ -391,6 +213,11 @@ readString()
 
 /*
  * It unput(s) the number of characteres passed as parameter
+ *
+ * @todo : This function should change to other module.
+ *
+ * @param str
+ * @param Num
  */
 lexunput(str,Num)
 char *str;

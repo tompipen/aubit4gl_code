@@ -1,5 +1,6 @@
 
 /**
+ *  @file 
  *  Definição do buffer que guarda um comentário fgldoc
  *  
  *  @todo Maior dinamismo nos arrays
@@ -23,6 +24,13 @@ typedef struct {
 	int        todoStarted;
 	char       *author;
 	char       *revision;
+	int        deprecated;
+	TableUsage  **tableList;
+	int         tableIdx;
+	int         tableStarted; // There should be only one variable to state mach
 } Comment;
 
-
+char *getCommentBuffer(Comment *comment);
+int getCommentDeprecated(Comment *comment);
+TableUsage *getCommentTableUsage(Comment *comment,int index);
+int getCommentTableUsageIdx(Comment *comment);

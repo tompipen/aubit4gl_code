@@ -4,101 +4,103 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.1 2003-01-01 06:38:34 afalout Exp $
+# $Date: 2003-01-06 20:16:26 $
+# $Author: saferreira $
+# $Id: Makefile.in,v 1.2 2003-01-06 20:16:26 saferreira Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
-#
+# 
 #  ============================================================================
+
 
 include ../FgldocDefs.mk
 
-# ============================================================================
-#                           Settings
-# ============================================================================
 
-ALL=p4gl p4glpp
+#  ============================================================================
+#  Compilation of all programs 
+#  ============================================================================
+all: p4gl p4glpp
 
-.PHONY:install deinstall clean tags
-
-#  4gl Pre-Processor source files
-#    It resolve all the inclusions of globals (globals "file.4gl") and
-#    generates a temporary file.
-P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
-
-
-#  4GL Parser source files
+#  ============================================================================
+#  4GL Parser (for each source file)
+#  ============================================================================
 P4GLOBJ= p4gl_synt.o p4gl_ld_st.o p4gl_lex.o p4gl_parse.o  \
-		p4gl_util.o p4gl_dump_st.o  p4gl_ins_rep.o actions.o GenFglDoc.o \
-		InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o \
-        GenParameters.o
+p4gl_util.o p4gl_dump_st.o  p4gl_ins_rep.o actions.o GenFglDoc.o \
+InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o GenParameters.o \
+ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
+TableUsage.o P4glAbstractTree.o
 
-
-#  ============================================================================
-#                           Targets
-#  ============================================================================
-all: ${ALL}
-	@echo "Default targets (${ALL}) compiled successfully."
-
-p4gl : $(P4GLOBJ)
-	$(ESQL) $(CFLAGS) -o $@ $^
-
-p4glpp: $(P4GLPPOBJ)
-	$(ESQL) $(CFLAGS) -o $@ $^
-
-#  ============================================================================
-#                           Sub - tartgets
-#  ============================================================================
+p4gl : $(P4GLOBJ) m_p4gl.o
+	$(ESQL) $(CFLAGS) -o $@ $(P4GLOBJ) m_p4gl.o
 
 # Compilation of esql/c API for inserting in the repository
-p4gl_ins_rep.o:
-	$(ESQL) $(CFLAGS) -c $*.ec
-#	${RM} p4gl_ins_rep.c
+p4gl_ins_rep.o: p4gl_ins_rep.ec
+	$(ESQL) $(CFLAGS) -c p4gl_ins_rep.ec $(CFLAGS)
+	rm p4gl_ins_rep.c
 
 # TODO - Fazer regra genérica
 # Compilation of esql/c API for inserting in the repository
-InsertP4glRep.o:
-	$(ESQL) $(CFLAGS) -c $*.ec
-#	${RM} InsertP4glRep.c
+InsertP4glRep.o: InsertP4glRep.ec
+	$(ESQL) $(CFLAGS) -c InsertP4glRep.ec 
 
-#  Create lexer for comments
-CommentLexer.c:
-	$(LEX) -PyyComment -o$*.c $*.l
-#	$(CC) $(CFLAGS) -c CommentLexer.c
-
-p4gl_lex.c:
-	$(LEX) -o$@ $*.l
-
-p4pp_lex.c:
-	$(LEX) -o$@ $*.l
+#  ============================================================================
+#  Geração do lexer para os comentários
+#  ============================================================================
+CommentLexer.o: CommentLexer.l
+	$(LEX) -PyyComment -oCommentLexer.c CommentLexer.l
+	$(CC) $(CFLAGS) -c CommentLexer.c
 
 
 #  ==========================================================================
-#  							Generate tag(s) file
+#  Esta regra tem de ser bem vista.
+#  Sera que o GNU make mudou as regras ?
 #  ==========================================================================
-tags:
-	@-${RM} tags
+p4gl_lex.o : p4gl_lex.l m_p4gl.c
+	flex -t p4gl_lex.l > p4gl_lex.c
+	$(CC) -c p4gl_lex.c
+	rm p4gl_lex.c
+
+p4pp_lex.o : p4pp_lex.l m_p4glpp.c
+	flex -t p4pp_lex.l > p4pp_lex.c
+	$(CC) -c p4pp_lex.c
+	rm p4pp_lex.c
+
+#  ==========================================================================
+#  4gl Pre-Processor
+#    It resolve all the inclusions of globals (globals "file.4gl") and
+#    generates a temporary file.
+#  ==========================================================================
+P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
+
+p4glpp: $(P4GLPPOBJ)
+	$(ESQL) -o $@ $(P4GLPPOBJ)
+
+#  ==========================================================================
+#  P4gl as library. Done for unit testing.
+#  ==========================================================================
+p4gl.a : $(P4GLOBJ) p4glpp
+	ar rv p4gl.a $(P4GLOBJ) 
+
+#  ==========================================================================
+#  Generate tag(s) file
+#  ==========================================================================
+tags: 
+	@-rm tags
 	touch *c
 	ctags *.c
 
 #  ==========================================================================
-#  							Install the software
+#  Install the software 
 #  ==========================================================================
-
-install: ${ALL}
-	${INSTALL} $^ $(BINDIR)
-
-deinstall:
-	${RM} -f $(BINDIR)/p4gl $(BINDIR)/p4glpp
-
+.PHONY:install
+install:
+	cp p4gl p4glpp $(BINDIR)
 
 #  ==========================================================================
-#  								Clean
+#  Cleaning of all the garbage
 #  ==========================================================================
 clean:
-	--${RM} -f *.o ${ALL} lex.yy.c y.tab.h y.tab.c a.out core y.output \
-	*.4go *.4gi *.4ge *.bak CommentLexer.c p4pp_lex.c p4gl_lex.c p4gl_synt.c \
-    p4gl_ins_rep.c InsertP4glRep.c sqexplain.out
+	--rm -f *.o p4gl p4glpp lex.yy.c y.tab.h a.out core y.output sqexplain.out \
+	*.4go *.4gi *.4ge *.a
 
-
-# =============================== EOF =======================================
 

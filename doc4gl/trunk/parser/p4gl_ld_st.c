@@ -1,23 +1,31 @@
+/**
+ * @file
+ * Loading of the abstract tree.
+ *
+ * Most of the functions included in this module are called by the parser.
+ *
+ * The abstract tree does not have all information of 4gl file. Its only
+ * a sub-set documentation oriented.
+ *
+ * @todo : Break this module in severall, for each type of function
+ */
+
 /*
-#  ============================================================================ 
-#
-#  DESPODATA - Lisboa, PORTUGAL
-#                                                        
-#  $Revision: 1.2 $
-#  $Date: 2003-01-02 10:15:54 $
-#
-#  Programa      : Parser de 4gl para carregamento de informação sobre os
-#   módulos num repositório relacional
-#  ---------------------------------------------------------------------------
-#  DESCRICAO: Carregam a informação dentro de uma estrutura em memória
-#
-#  ---------------------------------------------------------------------------
-#  NOTAS: 
-#    Tem de se dar uma volta no processamento da tabela de simbolos
-#    para simplificar a insercao
-#
-#  ============================================================================ 
-*/
+ *
+ * Moredata - Lisboa, PORTUGAL
+ *                                                       
+ * $Author: saferreira $
+ * $Revision: 1.3 $
+ * $Date: 2003-01-06 20:16:42 $
+ *                                                       
+ * Programa      : Carregamento de informação sobre os módulos numa arvore
+ *                 abstracta em memoria
+ *
+ * ---------------------------------------------------------------------------
+ * @todo : Tem de se dar uma volta no processamento da tabela de simbolos
+ *   para simplificar a insercao
+ *
+ */
 
 
 #define GLOBAIS   /* As variaveis globais pertencem a este modulo */
@@ -26,199 +34,27 @@
 #include <ctype.h>
 #include <varargs.h>
 
-/* Gnu getopt */
-#include <getopt.h>
-
 /* Inseridos para funcionar com gcc */
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "p4gl_symtab.h"
+#include "p4gl.h"
 
-/*
- * Variable and symbol table initialization and parameters (with getopt)
- */
-
-InitP4gl(argc,argv)
-int argc;
-char *argv[];
-{
-	int c;
-	extern char *optarg;
-	extern int ID_Modulo;
-	char existe_ficheiro;
-
-	/* Para utilização do gnu getopt */
-	int this_option_optind = optind ? optind : 1;
-  int option_index = 0;
-	/* Estrutura para getopt_long */
-	static struct option long_options[] =
-  {
-    {"file", 1, 0, 'f'},
-    {"database", 1, 0, 'b'},
-    {"debug", 0, 0, 'd'},
-    {"verbose", 0, 0, 'v'},
-    {"insert", 0, 0, 'i'},
-    {"warning_level", 1, 0, 'w'},
-    {"help", 0, 0, 'h'},
-    {"document", 0, 0, 'c'},
-    {"std_comment", 0, 0, 's'},
-    {"document_directory", 1, 0, 'l'},
-    {"package", 1, 0, 'p'},
-    {"repository_options", 1, 0, 'o'},
-    {0, 0, 0, 0},
-	};
-
-	ID_Modulo                = 0;
-	P4glCb.idx_funcoes       = 0;
-	P4glCb.idx_globais       = 0;
-	P4glCb.ha_erros          = 0;
-	existe_ficheiro          = 0;
-	verbose                  = 0;
-	InsertInDatabase         = 0;
-	InLimbo                  = 1;
-	InGlobals                = 0;
-	InInclude                = 0;
-	InRecord                 = 0;
-	WarningLevel             = 0;
-	DBConnected              = 0;
-	IdxTabLikeStack          = 0;
-	TabLikeStack             = (char **)0;
-	DimTabLikeStack          = 0;
-	repositoryFormat         = P4GL;
-	generateFglDoc           = 0;
-	standardComments         = 0;
-	P4glCb.docFileDir        = ".";
-	P4glCb.numFglDoc         = 0;
-	P4glCb.errorToDb         = 0;
-	P4glCb.currFglDoc = (StringBuffer *)constructStringBuffer();
-	strcpy(P4glCb.package,".");
-	initStringBuffer(P4glCb.currFglDoc);
-	initDatabase();
-
-	/* Variaveis temporarias para passagem de valores entre regras */
-	/* Lixo para remover quando se implementar o $$ na maioria das regras */
-	Variaveis = (VARS *)0;
-
-
-	/* while ( (c=getopt(argc,argv,"f:dviw:h?csl:p:b:")) != -1) */
-	while ( ( c = getopt_long (argc, argv, "f:dviw:h?csl:p:b:",
-                        long_options, &option_index) ) != -1)
-	{
-		switch(c)
-		{
-			case 'f':                                       /* File */
-				strcpy(FicheiroInput,optarg);
-				existe_ficheiro = 1;
-				break;
-
-			case 'd':                                       /* Debug mode */
-				dbug = 1;
-				break;
-
-			case 'v':                                       /* Verbose mode */
-				verbose = 1;
-				break;
-
-			case 'i':                                       /* Repository Insert */
-				InsertInDatabase = 1;
-				break;
-
-			case 'w':                                  /* Warning level */
-				WarningLevel = atoi(optarg);
-				break;
-
-			case 'b':                                  /* Database Name */
-				strcpy(P4glCb.database,optarg);
-				break;
-
-			case 'c':                                  /* Documentation generation*/
-				generateFglDoc = 1;
-				break;
-
-			case 's':                                  /* Use standard comments */
-				printf("Standard comments\n");
-				standardComments = 1;
-				break;
-
-			case 'l':                            /* Documentation dir (location)*/
-				P4glCb.docFileDir = (char *)malloc(strlen(optarg+1));
-				strcpy(P4glCb.docFileDir,optarg);
-				break;
-
-
-			case 'p':                                       /* Package */
-				strcpy(P4glCb.package,optarg);
-				break;
-
-			case 'o':                                       /* Package */
-				insertRepositoryOptions(optarg);
-				break;
-
-			case 'h':                                  /* Warning level */
-			case '?':
-				/* Isto não está actualizado */
-		    printf(
-					 "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f filename.4gl\n");
-				printf("   -h : Display this help message\n");
-				printf("   -d : Debug mode\n");
-				printf("   -i : Insert in the repository\n");
-				printf("   -v : Verbose mode\n");
-				printf("   -w : Warning level (1..10)\n");
-				printf("   -c : Generate documentation\n");
-				printf("   -s : Use standard comments for documentation\n");
-				printf("   -p package : Name of the package\n");
-		        exit(0);
-		  /* Help */
-		  /* case 'E'  :  Only pre-processing */
-		  /* case  L   :  Do NOT load symbol table */
-		  /* Load only some objects */
-		  /* case '?':     Option not valid */
-		  /* case ':':     Missing option   */
-
-		}
-	}
-
-	if ( ! existe_ficheiro ) {
-		printf ("p4gl: nothing to do - try 'p4gl -h' for help\n");
-		exit(0);
-	}
-
-	P4glVerbose("4gl Pre-Processing\n");
-	GetDirectoryFromFile(); 
-	P4glVerbose("Directory %s\n",FileDirectory);
-	P4glPreProcessing();
-	OpenInputFile();              /* Abrir o source 4gl (parametro)      */
-	yyin = fin_ptr;
-	OpenLogFile();
-
-	InitSymtab();                 /* Inicializacao da tabela de simbolos */
-}
+/** 4GL Source current line */
+extern int lineno;            
 
 
 /**
- * Inicializa o nome da base de dados a partir do conteudo da
- * variável de ambiente DATABASE
- */
-initDatabase()
-{
-  if ( getenv("DATABASE") == NULL )
-    strcpy(P4glCb.database,"p4gl_repository");
-	else
-    strcpy(P4glCb.database,getenv("DATABASE"));
-	if ( P4glCb.database[0] == '\0' || strlen(P4glCb.database) == 0 )
-    strcpy(P4glCb.database,"p4gl_repository");
-}
-
-
-/*
- * PreProcessa o source de 4gl efectuando a copia dos ficheiros incluidos
- * para um temporario.
+ * PreProcess the 4gl source file making a copy of the files included in the
+ * 4gl to a temporary one.
  *
- * Falta enviar mais um nome de ficheiro onde serao esritos alguns valores para
- * alocacao de memoria obtidos na primeira passagem.
+ * @todo : Send a name of a file where the values should be writed so the 
+ *         memory allocation be obtained in the first pass.
  */
-P4glPreProcessing() 
+void P4glPreProcessing(void) 
 {
    char comand[512];
 
@@ -236,81 +72,13 @@ P4glPreProcessing()
 		P4glError(ERROR_EXIT,"Unable to Pre-process source (%s)\n",FicheiroInput);
 }
 
-/*
- *  Get the directory name and path of the file being parsed
- */
-GetDirectoryFromFile()
-{
-   register short i;
-	short len;
-	char *substr();
-	char *PathDirectory;
-
-	len = strlen(FicheiroInput);
-	/* 1 - Ver se o nome do ficheiro ja traz a directoria ou apenas file name */
-	for (i = len ; i >= 0 ; i--)
-	{
-      if ( FicheiroInput[i] == '/' )
-		{
-			if ( FicheiroInput[0] == '/' )
-			{
-            PathDirectory = substr(FicheiroInput,0,i-1);
-	         GetDirName(PathDirectory);
-				free(PathDirectory);
-				return;
-			}
-		   /* Concatenar o pwd com o resto */
-			PathDirectory = strcat(getcwd((char *)0,256),
-							           substr(FicheiroInput,0,i-1));
-			GetDirName(PathDirectory);
-			free(PathDirectory);
-		   return;
-		}
-	}
-	/* Nao descobriu /, portanto a directoria eh o pwd */
-	PathDirectory = getcwd((char *)0,256);
-	GetDirName(PathDirectory);
-	free(PathDirectory);
-}
-
-/*
- * Get Dir Name from dir Path
- * It saves complete path name of the file being parsed
- */
-GetDirName(DirPath)
-char *DirPath;
-{
-   register short i;
-	short len;
-
-	RClipp(DirPath);
-	FilePath = (char *)malloc(strlen(DirPath)+strlen(FicheiroInput)+2);
-	sprintf(FilePath,"%s/%s",DirPath,FicheiroInput);
-	len = strlen(DirPath);
-	for ( i = len ; i > 0 ; i-- )
-	{
-		if ( DirPath[i] == '/' )
-		{
-			strcpy(FileDirectory,DirPath+i+1);
-			return;
-		}
-	}
-	strcpy(FileDirectory,DirPath);
-}
-
-
-/*
- * Inicializacao de toda a estrutura de controlo 
- * Esta funcao e muito lenta.
+/**
+ * Initialize the control structure and abstract information tree.
  *
- * Se a tabela de simbolos for mudada para listas ordenadas fica muito mais
- * rapido.
- *
- * A proxima versao vai passar a trabalhar com alocacao dinamica de valores
- * obtidos na primeira passagem.
+ * @todo : A proxima versao vai passar a trabalhar com alocacao dinamica de 
+ * valores obtidos na primeira passagem.
  */
-
-InitSymtab()
+void initSymtab(void)
 {
    register int  i,j;
 	FILE          *FlPtrParam;
@@ -333,106 +101,79 @@ InitSymtab()
 	P4glCb.NumFunc = atoi(str+i+1);
 	fclose(FlPtrParam);
 
-	P4glCb.functions     = calloc(P4glCb.NumFunc, sizeof(FUNCTION));
+	P4glCb.functions = calloc(P4glCb.NumFunc, sizeof(FUNCTION));
+}
 
-	/* Em principio o calloc mete tudo a zeros 
-	for ( i = 0 ; i < MAXFUNC ; i++ )
-		FUNCAO(i).idx_parametros = 0; 
-	for ( j = 0 ; j < MAXFUNC ; j++ )
+/**
+ * Insert a modular variable declaration.
+ *
+ * @param NomeVariavel The string containing the variable name
+ * @param linha The line in source code where the declaration was found
+ */
+static void StInsertModGlobVariableDeclaration(char *NomeVariavel,int linha)
+{
+	defineOrGlobalsOcurred();
+  if ( P4glCb.variaveis_mod == (VARS *)0 )
 	{
-		FUNCAO(j).var_usage = (VAR_USAGE *)0;
-      FUNCAO(j).idx_function_call = 0;
-	   FUNCAO(j).idx_sql           = 0;
-	   for ( i = 0 ; i < MAXSQL ; i++ )
-	   {
-         IDX_TAB(j,i)           = 0;
-         SQL_STMT(j,i).operacao = 0;
-         SQL_STMT(j,i).cursor   = -1;
-	   }
-   }
-	*/
+		 P4glCb.variaveis_mod = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
+		 P4glCb.idx_var_mod   = 0;
+	}
+	P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome= (char *)malloc(
+    strlen(NomeVariavel)+1
+  );
+	strcpy(P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome  , NomeVariavel);
+	P4glCb.variaveis_mod[P4glCb.idx_var_mod].linha      = linha;
+	P4glCb.variaveis_mod[P4glCb.idx_var_mod].tipo = (char *)0; 
+	P4glCb.idx_var_mod++;
+	if ( P4glCb.idx_var_mod >= MAXGLBVARS )
+		P4glError(ERROR_EXIT,"Modular variable array overflow - Line %d\n",linha);
 }
 
-/* ========================= ABRIR E FECHAR FICHEIROS  
+/**
+ * Insert a new global variable declaration
+ *
+ * @param NomeVariavel The string containing the variable name
+ * @param DataType The String containing the data type of the variable
+ * @param linha The line in source code where the declaration was found
  */
-
-/* 
- * Abre o source de 4gl
- */
-OpenInputFile()
+static void StInsertGlobalVariableDeclaration(
+  char *NomeVariavel,char *DataType,int linha)
 {
-  fin_ptr = fopen(FicheiroTemp,"r");
-  if ( fin_ptr == ((FILE *)0 ))
-  {
-	 fprintf(stderr,"Erro a abrir ficheiro do source (.4gl) : <%s>\n",
-				FicheiroTemp);
-	 perror("ERRO");
-	 exit(1);
-  }
+	defineOrGlobalsOcurred();
+  if ( P4glCb.var_globais == (VARS *)0 )
+	{
+		 P4glCb.var_globais = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
+		 P4glCb.idx_var_glob   = 0;
+	}
+	P4glCb.var_globais[P4glCb.idx_var_glob].nome     = (char *)strdup(
+    NomeVariavel
+  );
+	P4glCb.var_globais[P4glCb.idx_var_glob].linha    = linha;
+	P4glCb.var_globais[P4glCb.idx_var_glob].tipo     = strdup(DataType);
+	if ( InInclude )
+	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_INCLUDE;
+	else
+	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_MODULE;
+	P4glCb.idx_var_glob++;
+	if ( P4glCb.idx_var_glob >= MAXGLBVARS )
+		P4glError(ERROR_EXIT,"Global variable array overflow - Line %d\n",linha);
 }
 
-/*
- * Abre o ficheiro onde os erros de sintaxe vao ficar acumulados 
- */
-OpenLogFile()
-{
-  char logfile[64];
-  char logdir[35];
-
-  if ( getenv("LOGDIR") != NULL )
-    strcpy(logdir,getenv("LOGDIR"));
-  else
-    strcpy(logdir,"/tmp");
-
-  if (logdir[0] == '\0' )
-  {
-		P4glWarning(DISPENSAVEL,
-	     "Variavel de ambiente <LOGDIR> nao esta preenchida (default /tmp)\n");
-	 strcpy(logdir,"/tmp");
-  }
-
-  sprintf(logfile,"%s/p4gl.log",logdir);
-
-  Log = fopen(logfile,"a");
-  if ( Log == ((FILE *)0 ))
-  {
-	 fprintf(stderr,"Erro a abrir ficheiro log <%s>\n",logfile);
-	 exit(1);
-  }
-}
-
-
-/*
- * Insert all variable(s) usage in the list at the symbol table
- */
-StInsVarListDeclaration(List,DataType)
-NAME_LIST *List;
-char      *DataType;
-{
-   register int i;
-
-	if ( InRecord )       /* Sub-variables are not inserted!...yet */
-		return;
-
-	for (i = 0 ; i < List->idx ; i++ )
-    StInsVarDeclaration(List->nome[i],DataType,List->line[i]);
-  CleanNameList(List);
-}
-
-/* 
- * Insere uma variavel dentro de um array dinamico que se nao estiver 
- * inicializado e-o.
- * Aloca o espaco para cada nome dinamicamente
+/**
+ * Insert a variable inside an dynamic array.
+ * If the array is not initialized do it e alocate the space for each name.
+ *
  * Aqui ainda nao tem o tipo
  * Numa primeira fase so me interessa o nome de variaveis 
  *     (Sub-variaveis de records nao servem para nada 
  * Quando chega ao fim da descoberta da funcao tem de afectar o array da funcao
  * com as variaveis locais disponiveis
+ *
+ * @param NomeVariavel The string containing the variable name
+ * @param DataType The string containing the data type 
+ * @param linha The line where found in source code
  */
-StInsVarDeclaration(NomeVariavel,DataType,linha)
-char *NomeVariavel;
-char *DataType;
-int  linha;
+static void StInsVarDeclaration(char *NomeVariavel,char *DataType,int linha)
 {
 
 	if ( InGlobals )                        /* Variavel global */
@@ -460,67 +201,106 @@ int  linha;
 		P4glError(ERROR_EXIT,"Local variable array overflow\n");
 }
 
-/*
- * Insercao de variaveis globais ao modulo
+/**
+ * Clean the dynamic memory allocated for name list
+ *
+ * @param List The list to be cleaned
  */
-StInsertModGlobVariableDeclaration(NomeVariavel,linha)
-char *NomeVariavel;
-int  linha;
+void CleanNameList(NAME_LIST *List)
 {
-  if ( P4glCb.variaveis_mod == (VARS *)0 )
-	{
-		 P4glCb.variaveis_mod = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
-		 P4glCb.idx_var_mod   = 0;
-	}
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome= (char *)malloc(
-    strlen(NomeVariavel)+1
-  );
-	strcpy(P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome  , NomeVariavel);
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].linha      = linha;
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].tipo = (char *)0; 
-	P4glCb.idx_var_mod++;
-	if ( P4glCb.idx_var_mod >= MAXGLBVARS )
-		P4glError(ERROR_EXIT,"Modular variable array overflow - Line %d\n",linha);
+   register int i;
+
+   for ( i = 0 ; i < List->idx ; i++ )
+		free(List->nome[i]);
+   free(List);
+}
+
+/**
+ * Insert all variable(s) usage in the list at the symbol table
+ *
+ * @param List The name list pointer
+ * @param DataType The string identifiing the data type
+ */
+void StInsVarListDeclaration(NAME_LIST *List,char *DataType)
+{
+   register int i;
+
+	if ( InRecord )       /* Sub-variables are not inserted!...yet */
+		return;
+
+	for (i = 0 ; i < List->idx ; i++ )
+    StInsVarDeclaration(List->nome[i],DataType,List->line[i]);
+  CleanNameList(List);
+}
+
+/**
+ * Checks if a variable is local 
+ *
+ * @param nome The name of the variable to be checked
+ * @return 1 : Is a local variable
+ *         0 : Its not a local variable
+ */
+static int IsLocalVariable(char *nome)
+{
+  register int i;
+
+  for ( i = 0 ; i < IdxVariaveis ; i++ )
+    if (strcasecmp(nome,Variaveis[i].nome)==0)
+      return 1;
+  return 0;
 }
 
 /*
- * Insercao de variaveis globais declaradas 
+ * Checks if a variable is modular
+ *
+ * @param The name of the variable to be checked
+ * @return 1 : The variable is modular
+ *         0 : The variable its not modular
  */
-StInsertGlobalVariableDeclaration(NomeVariavel,DataType,linha)
-char *NomeVariavel;
-char *DataType;
-int  linha;
+static int IsModuleVariable(char *nome)
 {
-  if ( P4glCb.var_globais == (VARS *)0 )
+   register int i;
+
+	/*printf("Vai ve se e global ao modulo \n"); */
+   for ( i = 0 ; i < P4glCb.idx_var_mod ; i++ )
 	{
-		 P4glCb.var_globais = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
-		 P4glCb.idx_var_glob   = 0;
+	/*printf("Vai comparar %s com %s\n", nome, P4glCb.variaveis_mod[i].nome);*/
+		if (strcasecmp(nome,P4glCb.variaveis_mod[i].nome)==0)
+			return 1;
 	}
-	P4glCb.var_globais[P4glCb.idx_var_glob].nome     = (char *)strdup(
-    NomeVariavel
-  );
-	P4glCb.var_globais[P4glCb.idx_var_glob].linha    = linha;
-	P4glCb.var_globais[P4glCb.idx_var_glob].tipo     = strdup(DataType);
-	if ( InInclude )
-	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_INCLUDE;
-	else
-	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_MODULE;
-	P4glCb.idx_var_glob++;
-	if ( P4glCb.idx_var_glob >= MAXGLBVARS )
-		P4glError(ERROR_EXIT,"Global variable array overflow - Line %d\n",linha);
+	return 0;
 }
 
+/**
+ * Checks if a variable is global
+ *
+ * @param The variable name
+ * @return 1 : The variable is global
+ *         0 : The variable its not global
+ */
+static int IsGlobalVariable(char *nome)
+{
+   register int i;
+
+   for ( i = 0 ; i < P4glCb.idx_var_glob ; i++ )
+	{
+		if (strcasecmp(nome,P4glCb.var_globais[i].nome)==0)
+			return 1;
+	}
+	return 0;
+}
 
 /*
  * Found a variable usage.
  *
  * It filter(s) local and modular variable and identifiers nor defined
  * in GLOBAL(s) statement
+ *
+ * @param nome The variable name found
+ * @param linha The line where the usage was found
+ * @param utilizacao The type of the usage made
  */
-StInsertVariableUsage(nome,linha,utilizacao)
-char *nome;
-int  linha;
-int  utilizacao;
+void StInsertVariableUsage(char *nome,int linha,int utilizacao)
 {
   VAR_USAGE *Next;
   VAR_USAGE *Previous;
@@ -572,10 +352,11 @@ int  utilizacao;
 
 /*
  * Insert all variable(s) usage in the list at the symbol table
+ *
+ * @param List The list to append with variable usage
+ * @param The Type of usage made
  */
-StInsertVariableListUsage(List,utilizacao)
-NAME_LIST *List;
-int  utilizacao;
+void StInsertVariableListUsage(NAME_LIST *List,int utilizacao)
 {
    register int i;
 
@@ -584,62 +365,15 @@ int  utilizacao;
   CleanNameList(List);
 }
 
-/*
- * Verifica se eh uma variavel local ou nao
+
+/**
+ * Found a new cursor declaration by the parser
+ *
+ * @param NomeCursor The cursor name found
+ * @param Tipo The type of the cursor
+ * @param Prepared A flag that identifies if its or not prepared
  */
-IsLocalVariable(nome)
-char *nome;
-{
-  register int i;
-
-  for ( i = 0 ; i < IdxVariaveis ; i++ )
-    if (strcasecmp(nome,Variaveis[i].nome)==0)
-      return 1;
-  return 0;
-}
-
-/*
- * Verifica se eh uma variavel global ao modulo ou nao
- */
-IsModuleVariable(nome)
-char *nome;
-{
-   register int i;
-
-	/*printf("Vai ve se e global ao modulo \n"); */
-   for ( i = 0 ; i < P4glCb.idx_var_mod ; i++ )
-	{
-	/*printf("Vai comparar %s com %s\n", nome, P4glCb.variaveis_mod[i].nome);*/
-		if (strcasecmp(nome,P4glCb.variaveis_mod[i].nome)==0)
-			return 1;
-	}
-	return 0;
-}
-
-/*
- * Verifica se eh ou nao uma variavel global 
- */
-IsGlobalVariable(nome)
-char *nome;
-{
-   register int i;
-
-   for ( i = 0 ; i < P4glCb.idx_var_glob ; i++ )
-	{
-		if (strcasecmp(nome,P4glCb.var_globais[i].nome)==0)
-			return 1;
-	}
-	return 0;
-}
-
-
-/*
- * New Cursor declaration
- */
-StInsertCursorDeclaration(NomeCursor,Tipo,Prepared)
-char *NomeCursor;
-int Tipo;
-short Prepared;
+void StInsertCursorDeclaration(char *NomeCursor,int Tipo,short Prepared)
 {
   P4glCb.cursores[P4glCb.idx_cursores].nome = (char *)malloc(
     strlen(NomeCursor)+1
@@ -657,13 +391,16 @@ short Prepared;
    P4glCb.idx_cursores++;
 }
 
-/*
- * Insere a utilizacao de um cursor
+/**
+ * Insert the usage of a cursor in the abstract tree.
+ * The parser found  acursor usage.
+ *
+ * @param nome The cursor name
+ * @param linha The line where the cursor was found
+ * @param utilizacao The type of the usage made
+ *
  */
-StInsertCursorUsage(nome,linha,utilizacao)
-char *nome;
-int  linha;
-int  utilizacao;
+void StInsertCursorUsage(char *nome,int linha,int utilizacao)
 {
    CUR_USAGE *Next;
    CUR_USAGE *Previous;
@@ -689,18 +426,15 @@ int  utilizacao;
 	Next->next       = (CUR_USAGE *)0;
 }
 
-
-
-
 /* 
- * Foi encontrado um define. Deve haver variaveis no array temporario
- * Eh fundamental receber o contexto do define, i.e: 
- *     GLOBALS - Declaracao de variaveis globais
- *     MODULE  - Declaracao de variaveis globais ao modulo
- *     LOCAL   - Declaracao de variaveis locais
+ * The parser have found a complete define for variable declarations.
+ *
+ * We have the information of variables in an array made for this purpose.
+ *
+ * For now just dont do anything.
  *
  */
-Define()
+void defineFound(void)
 {
    register int i;
 
@@ -710,101 +444,14 @@ Define()
 	 /* Copiar para arrays da tabela de simbolos e reinicializar pointers */
 }
 
-
-/*
- * Insere a declaracao de uma nova funcao na tabela de simbolos
- */
-StInsertFunction(FunctionName,ultima_linha,arguments)
-char      *FunctionName;
-int       ultima_linha;
-NAME_LIST *arguments;
-{
-  char *GetListConcat();
-
-	// ??? Provavelmente não deveria ser assim
-	Downshift(FunctionName);
-
-	if (strcmp(FunctionName,"paradarsorte") == 0)
-		return;
-
-	if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
-		return;
-
-	strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,FunctionName);
-	P4glCb.functions[P4glCb.idx_funcoes].n_linhas = 
-	   P4glCb.functions[P4glCb.idx_funcoes].linha - ultima_linha;
-	/* Podem existir funções sem parametros */
-	if ( arguments != (NAME_LIST *)0 )
-	  FUNCAO_CURR.ParamTxt      = GetListConcat(arguments,",");
-	else
-	  FUNCAO_CURR.ParamTxt      = (char *)0;
-	FUNCAO_CURR.parametros    = arguments;
-	FUNCAO_CURR.variaveis     = Variaveis;
-	FUNCAO_CURR.idx_var       = IdxVariaveis;
-	writeParameterComments(P4glCb.idx_funcoes);
-	FUNCAO_CURR.Include       = InInclude;
-	FUNCAO_CURR.NInstrucoes   = FunctionStatementCount;
-	if ( P4glCb.idx_funcoes >= P4glCb.NumFunc )
-		P4glError(ERROR_EXIT,"Function stack overflow %d\n",P4glCb.idx_funcoes);
-	P4glCb.idx_funcoes++;
-}
-
-/*
- * Insere a linha de declaracao de uma nova funcao na tabela de simbolos
- * Poderia chamar-se StInsertBeginFunction()
- * @todo - Os comentários deviam ser copiados e memória limpa
- */
-StInsertLineFunction(linha,functionType)
-int linha;
-int functionType;
-{
-	P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
-	P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
-	Variaveis = (VARS *)0;
-	IdxVariaveis=0;
-	FunctionStatementCount = 0;
-	FUNCAO_CURR.fglDoc     = strdup(P4glCb.currFglDoc->buffer);
-	/*FUNCAO_CURR.parsedDoc  = (Comment *)0; */
-	if ( FUNCAO_CURR.fglDoc != (char *) 0 )
-	  FUNCAO_CURR.parsedDoc  = (Comment *)parseComment(FUNCAO_CURR.fglDoc);
-	destroyStringBuffer(P4glCb.currFglDoc);
-}
-
-
 /**
- * Escreve os parametros declarados nos comentários associados a cada 
- * parametro.
- * Se o parametro não existir documentado é inserido vazio
+ * Verifies if exist and write one parameter in the corresponding comment.
  *
- * @param idxFunction Indice da função de que se quer escrever comentários
+ * @param docParameter Pointer to the parameter document
+ * @param nome The name found to the parameter
  */
-writeParameterComments(int idxFunction)
-{
-  Comment    *parsedDoc;
-	NAME_LIST  *parametros;
-  Parameters *docParameter;
-	register int j;
-
-	parsedDoc  = P4glCb.functions[idxFunction].parsedDoc;
-	parametros = P4glCb.functions[idxFunction].parametros;
-
-	if ( parametros == (NAME_LIST *)0 )
-	  return;
-
-	docParameter = parsedDoc->parameterList;
-	
-	for ( j = 0 ; j < parametros->idx ; j++ )
-		writeParameterToDoc(docParameter,parametros->nome[j],idxFunction);
-}
-
-/**
- * Verifica se existe e escreve um parâmetro no comentário de parâmetro 
- * correspondente.
- *
- * @param docParameter Apontador para documentação de parâmetros
- * @param nome Nome do parâmetro descoberto por parsing
- */
-writeParameterToDoc(Parameters *docParameter,char  *nome, int idxFunction)
+static void writeParameterToDoc(
+	Parameters *docParameter,char  *nome, int idxFunction)
 {
   int parameterDocumented;
 	register int i;
@@ -833,23 +480,162 @@ writeParameterToDoc(Parameters *docParameter,char  *nome, int idxFunction)
 }
 
 /**
- * Insere um argumento na lista de parametros
- * @param NmArg Nome do argumento da função
+ * Write the declared parameters in fgldoc comments with \@param
+ *
+ * @param idxFunction The index of the function for where we want to write the
+ *                    comments
  */
-StInsertArgument(NmArg)
+static void writeParameterComments(int idxFunction)
+{
+  Comment    *parsedDoc;
+	NAME_LIST  *parametros;
+  Parameters *docParameter;
+	register int j;
+
+	parsedDoc  = P4glCb.functions[idxFunction].parsedDoc;
+	parametros = P4glCb.functions[idxFunction].parametros;
+
+	if ( parametros == (NAME_LIST *)0 )
+	  return;
+
+	if ( parsedDoc == (Comment *)0 )
+	  return;
+
+	docParameter = parsedDoc->parameterList;
+	
+	for ( j = 0 ; j < parametros->idx ; j++ )
+		writeParameterToDoc(docParameter,parametros->nome[j],idxFunction);
+}
+
+/**
+ * Fill the table usage for the current function based on the information on the
+ * SQL array and (or) comment table tag.
+ *
+ * @param function Pointer to the function identification structure.
+ */
+static void fillTableUsage(FUNCTION *function)
+{
+  Comment    *parsedDoc;
+	register int j;
+
+	if ( function->parsedDoc == (Comment *)0 )
+	  return;
+
+	for ( j = 0 ; j <= getCommentTableUsageIdx(parsedDoc) ; j++ )
+	  addFunctionTableUsage(function,getCommentTableUsage(parsedDoc,j));
+
+	for ( j = 0 ; j <= getFunctionSqlIdx(function) ; j++ )
+	{
+		TableUsage *tableUsage;
+		SQL *sql;
+		register int k;
+
+		sql = getFunctionSql(function,j);
+
+		for ( k = 0 ; k < getSqlTableIdx(sql); k++ )
+		{
+			char *tableName;
+
+			tableName = getSqlTable(sql,k);
+		  tableUsage = newTableUsage();
+		  setTableUsageTableName(tableName,tableUsage);
+      setTableUsageFoundAs(TU_SQL,tableUsage);
+      setTableUsageOperation(sql->operacao,tableUsage);
+      setTableUsageLineNumber(TU_UNDEFINED,tableUsage);
+	    addFunctionTableUsage(function,tableUsage);
+		}
+	}
+}
+
+/**
+ * Found a complete function implementation.
+ *
+ * Executed after found the END FUNCTION.
+ *
+ * @param FunctionName A string containing the name of the function.
+ * @param ultima_linha The last line of the function.
+ * @param arguments The arguments of the function.
+ *
+ */
+void StInsertFunction(char *FunctionName,int ultima_linha,NAME_LIST *arguments)
+{
+  char *GetListConcat();
+
+	// ??? Provavelmente não deveria ser assim
+	Downshift(FunctionName);
+
+	if (strcmp(FunctionName,"paradarsorte") == 0)
+		return;
+
+	if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
+		return;
+
+	strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,FunctionName);
+	P4glCb.functions[P4glCb.idx_funcoes].n_linhas = 
+	   P4glCb.functions[P4glCb.idx_funcoes].linha - ultima_linha;
+	/* Podem existir funções sem parametros */
+	if ( arguments != (NAME_LIST *)0 )
+	  FUNCAO_CURR.ParamTxt      = GetListConcat(arguments,",");
+	else
+	  FUNCAO_CURR.ParamTxt      = (char *)0;
+	FUNCAO_CURR.parametros    = arguments;
+	FUNCAO_CURR.variaveis     = Variaveis;
+	FUNCAO_CURR.idx_var       = IdxVariaveis;
+	writeParameterComments(P4glCb.idx_funcoes);
+	FUNCAO_CURR.Include       = InInclude;
+	FUNCAO_CURR.NInstrucoes   = FunctionStatementCount;
+	fillTableUsage(&(FUNCAO_CURR));
+	if ( P4glCb.idx_funcoes >= P4glCb.NumFunc )
+		P4glError(ERROR_EXIT,"Function stack overflow %d\n",P4glCb.idx_funcoes);
+	P4glCb.idx_funcoes++;
+}
+
+/**
+ * Found the begining of a new function.
+ *
+ * Inserts the line number in the source where the declaration found.
+ * @todo - Os comentários deviam ser copiados e memória limpa
+ *
+ * @param linha The line where declaration found
+ * @param functionType The type of the function (FUNCTION,MAIN or REPORT).
+ */
+void StInsertLineFunction(int linha,int functionType)
+{
+	P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
+	P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
+	Variaveis = (VARS *)0;
+	IdxVariaveis=0;
+	FunctionStatementCount = 0;
+	/* Triger the documentation state machine event */
+	defineFunctionOcurred();
+}
+
+/**
+ * Insert an argument in parameter list.
+ *
+ * Not used.
+ *
+ * @param NmArg Parameter name in the function
+ */
+static void StInsertArgument(NmArg)
 char *NmArg;
 {
-  /* ??? Atencao a dimensoes - Deviam ser testadas */
+  /** @todo : Atencao a dimensoes - Deviam ser testadas */
   strcpy(FUNCAO_CURR.parametros->nome[IDX_ARG_CURR],NmArg);
   IDX_ARG_CURR++;
 }
 
 
-/*
- * Insere na tabela de simbolos a execucao de uma funcao 
+/**
+ * Insert an function call in the array of calls.
+ *
+ * Executed when the parser found one of the function call(s) type.
+ *
+ * @param FunctionName The name of the function
+ * @param linha The line number in the 4gl source where the function call was
+ *        found
  */
-StInsertFunctionCall(FunctionName,linha)
-char *FunctionName;
+void StInsertFunctionCall(char *FunctionName,int linha)
 {
 	Downshift(FunctionName);
 	if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
@@ -865,71 +651,109 @@ char *FunctionName;
    IDX_FC_CURR++;
 }
 
-/*
+/**
+ *
  * Update the type of usage made (Expression, call, etc)
+ *
+ * Executed when the parser terminates the statement where the function
+ * call was made.
+ *
+ * @param usage A string representing the usage type wich could be:
+ *   - FINISH REPORT
+ *   - OUTPUT TO REPORT
+ *   - CALL RETURNING
+ *   - CALL
+ *   - START TO REPORT
+ *   - EXPRESSION
+ *   - WHENEVER
+ *
  */
-StUpdFCUsage(usage)
-char *usage;
+void StUpdFCUsage(char *usage)
 {
    FUNCAO_CURR.FunctionCall[IDX_FC_CURR-1].Usage = strdup(usage);
 }
 
 
-/*
- * Insert de utilizacao de tabela no array
- * ??? De futuro serah para desaparecer
+/**
+ * Insert a table usage in the corresponding array.
+ * 
+ * The parser found the usage of the table in the array.
+ * The parser only found the embeded SQL. 
+ * If dynamic SQL used the programer should document it in the function comment.
+ *
+ * @param NmTable A string with the table name
  */
-StInsertTable(NmTable)
-char *NmTable;
+void StInsertTable(char *NmTable)
 {
    strcpy(SQL_STMT_CURR.tabelas[IDX_TAB_CURR],NmTable);
 }
 
-StIncrementTable()
+/**
+ * Increment the table counter.
+ * 
+ * @todo : Validate if this increment could be made in StInsertTable
+ */
+void StIncrementTable(void)
 {
    IDX_TAB_CURR++;
 }
 
-/*
- *  Found an SQL statement
+/**
+ *  Found an SQL statement by the parser
+ *
+ *  @param operacao The type of the operation
+ *  @param linha The line in the source code where the end of SQL statement 
+ *  found
  */
-StInsertSQL(operacao,linha)
-int  operacao;
-int  linha;
+void StInsertSQL(int operacao,int linha)
 {
 	SQL_STMT_CURR.operacao = operacao;
 	SQL_STMT_CURR.cursor   = -1;
 	FUNCAO_CURR.idx_sql++;
 }
 
-StInsertSQLTxt(SqlTxt)
-char *SqlTxt;
+/**
+ * Executed by the parser when it founds a complete SQL statement
+ *
+ * Insert in the abstract tree the String with all the SQL statement.
+ *
+ * @param SqlTxt The string containing the sql text
+ */
+void StInsertSQLTxt(char *SqlTxt)
 {
 	SQL_STMT_CURR.texto = SqlTxt;
 }
 
 
-/*
- * Funcao de comparacao para o qsort ordenar as funcoes 
+/**
+ * Order function to let qsort organize the functions in alphabetic order.
+ *
+ * @param f1 The function pointer to the first function
+ * @param f2 The function pointer to the second function
  */
-FuncCmp(f1,f2)
-char *f1;
-char *f2;
+static int FuncCmp(const void *f1,const void *f2)
 {
    return(strcmp(((FUNCTION *)f1)->name,((FUNCTION *)f2)->name));
 }
 
-FunctionCallCmp(f1,f2)
-char *f1;
-char *f2;
+/**
+ * Order function so quick sort can order the functions call
+ *
+ * @param f1 The first function call
+ * @param f2 The second function call
+ */
+static int FunctionCallCmp(const void *f1,const void *f2)
 {
    return(strcmp(((FUNC_CALL *)f1)->name,((FUNC_CALL *)f2)->name));
 }
 
-/*
- * Orderna os arrays da tabela de simbolos pelo nome
+/**
+ * Order the arrays of the abstract tree by name in order to acelerate
+ * the access.
+ *
+ * This action is normaly made after all the parsing being made.
  */
-OrderSymtab()
+void OrderSymtab(void)
 {
    register int i;
    
@@ -939,7 +763,7 @@ OrderSymtab()
 		*/
 	P4glVerbose("Symbol table post-treatment\n");
 		/* Ordenar lista de funcoes */
-   qsort(P4glCb.functions, P4glCb.idx_funcoes,sizeof(FUNCTION),FuncCmp);
+  qsort(P4glCb.functions, P4glCb.idx_funcoes,sizeof(FUNCTION),FuncCmp);
 	for (i=0 ; i < P4glCb.idx_funcoes ; i++)
 	{
 		/* Funcoes executadas */
@@ -958,17 +782,20 @@ OrderSymtab()
 
 
 
-/*  ========== Funcoes para stack do parser (Union) */
+/*  ========== Functions to parser stack (Union) */
 
-/*
+/**
  * Insert a new name in the list. If the original is null
- * it allocates space for it
+ * it allocates space for it.
+ *
+ * Used by the parser to pass things during the parse.
+ *
+ * @param Destino The destination list
+ * @param Origem The origin list
+ * @param Nome The name to be inserted in the list
+ * @param Linha The line in the source code where this was asked
  */
-InsertNameList(Destino,Origem,Nome,Linha)
-NAME_LIST **Destino;
-NAME_LIST *Origem;
-char *Nome;
-int Linha;
+void InsertNameList(NAME_LIST **Destino,NAME_LIST *Origem,char *Nome,int Linha)
 {
 	if ( Origem == (NAME_LIST *)0 )
 	{
@@ -987,14 +814,15 @@ int Linha;
 		P4glError(ERROR_EXIT,"List of names Stack Overflow\n");
 }
 
-/*
- * Concatenation of the list with a character separator
+/**
+ * Concatenate a string into the name element with other passed as parameter
+ * 
+ * @param List A pointer to the list to be appended
+ * @param ch The string to concatenate
  */
-char *GetListConcat(List, ch)
-NAME_LIST *List;
-char *ch;
+char *GetListConcat(NAME_LIST *List, char *ch)
 {
-   register int i;
+  register int i;
 	char *Destino;
 	int  len;
 
@@ -1014,11 +842,15 @@ char *ch;
 	return Destino;
 }
 
-/*
- * For debugging purpose only 
+/**
+ * For debugging purpose only.
+ * Not used
+ *
+ * Print all the content of a name list
+ *
+ * @param List The list to be printed to stdout
  */
-PrintNameList(List)
-NAME_LIST *List;
+static void PrintNameList(NAME_LIST *List)
 {
    register int i;
 
@@ -1026,24 +858,14 @@ NAME_LIST *List;
 		printf("--Nome %s\n",List->nome[i]);
 }
 
-/*
- * Clean the dynamic memory allocated for name list
+
+/**
+ * Remove the temporary files used during the parsing process.
+ *
+ * If executed in debug mode does nor remove-it and send a message to 
+ * standard output.
  */
-CleanNameList(List)
-NAME_LIST *List;
-{
-   register int i;
-
-   for ( i = 0 ; i < List->idx ; i++ )
-		free(List->nome[i]);
-   free(List);
-}
-
-
-/*
- * Remocoes diversas
- */
-CleanP4gl()
+void CleanP4gl(void)
 {
 	if ( !dbug )
 	{
@@ -1056,11 +878,12 @@ CleanP4gl()
 
 
 /*
- * Carrega na tabela de simbolos a existencia de um GLOBALS por include
- * ??? Isto provavelmente eh lixo
+ * Load in the abstract tree the existene of a GLOBALS instruction with
+ * file (not for globals explicit declaration).
+ *
+ * @param NmFicheiro The name of the file defined as GLOBALS file
  */
-GlobalsInclude(NmFicheiro)
-	char *NmFicheiro;
+void GlobalsInclude(char *NmFicheiro)
 {
 	if ( P4glCb.idx_globais >= MAXGLOB )
 		P4glError(ERROR_EXIT,"Include stack overflow\n");
@@ -1069,19 +892,83 @@ GlobalsInclude(NmFicheiro)
 	P4glCb.idx_globais++;
 }
 
-
 /**
- * Analisa a string relativa a opções de inserção no repositório
- * e configura a estrutura global REP_OPTIONS
+ * Gets the current source line number
+ *
+ * @return The current line in the source file
  */
-insertRepositoryOptions(char *options)
+int getLineno(void)
 {
-  if ( index(options,'t') != NULL || index(options,'T') != NULL )
-    P4glCb.repositoryOptions.insertTableUsage = 1;
-	/** @todo - Resto das opções de configuração */
+  return lineno;
 }
 
-   
+/**
+ * Assigns a new value to the current linenumber
+ *
+ * @param _lineno The new value to source line number
+ */
+void setLineno(int _lineno)
+{
+  lineno = _lineno;
+}
+
+/**
+ * Increment the current line number by one.
+ */
+void incrementLineno(void)
+{
+  lineno++;
+}
+
+/**
+ * Gets the flag that indicates if we are working with standard comments
+ *
+ * @return 0 : We do not want to load the standard comments
+ *         1 : We want to load the standard comments
+ */
+int isLoadStdComments()
+{
+  return standardComments;
+}
+
+/**
+ * Assigns the module global comment.
+ *
+ * @param comment The comment to the module.
+ */
+void setModuleComment(Comment *comment)
+{
+	P4glCb.parsedComment = comment;
+}
+
+/**
+ * Store the comment as the current function comment
+ *
+ * @oaram comment The comment for the current function
+ */
+void setFunctionComment(Comment *comment)
+{
+	FUNCAO_CURR.parsedDoc = comment;
+}
+
+/**
+ * Increment the counter of fgldoc(s) found in the source code
+ */
+void incrementNumFgldoc(void)
+{
+	P4glCb.numFglDoc++;
+}
+
+/**
+ * Checks if we are outside functions in source code
+ *
+ * @return 0 : The parser is reading inside a function
+ *         1 : We are between functions 
+ */
+int isInLimbo()
+{
+  return InLimbo;
+}
 
 /*
  * It insert(s) a table usage as like 

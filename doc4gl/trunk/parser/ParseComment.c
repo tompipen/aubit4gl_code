@@ -1,30 +1,39 @@
-
-#include <stdio.h>
-#include "Comment.h"
-#include "StringBuffer.h"
-
 /**
+ * @file
+ * Parse a comment to take the tags that begins with @.
  *
- * Efectua o parsing dos comentários para retirar as tags iniciadas por @
- * De notar que o parsing é efectuado sobre uma string e não sobre um ficheiro
+ * This parsing is made over a string and not a file because works with
+ * the comnment getted by the 4gl lexer.
  *
- * Foi construido com um prfixo diferente por forma a que possa ser linkado 
- * com o parser do 4gl.
+ * To be linked with the 4gl parser (wich is also built in lex/flex) is
+ * generated with a diferente prefix (done in the makefile).
  *
- * $Author: afalout $
- * $Revision: 1.1.1.1 $
- * $Id: ParseComment.c,v 1.1.1.1 2001-12-26 07:31:31 afalout Exp $
+ * The parsing itself is made with a specific state machine.
+ *
+ * @todo : Syntaxe para tipo de accao sobre tabelas.
+ *
+ * $Author: saferreira $
+ * $Revision: 1.2 $
+ * $Id: ParseComment.c,v 1.2 2003-01-06 20:16:29 saferreira Exp $
  *
  */
 
-char *currentChar;
-int commentLineStarted = 0;
+#include <stdio.h>
+#include <string.h>
+#include "TableUsage.h"
+#include "Comment.h"
+#include "StringBuffer.h"
+
+static char *currentChar;
+static int commentLineStarted = 0;
 
 /* Definições para máquina de estados */
 #define IN_COMMENT   0 
 #define TAG_COMMENT  1
 #define TAG_CODE     2
-int commentState = IN_COMMENT;
+
+/** Current comment state */
+static int commentState = IN_COMMENT;
 
 /* Definição da tag corrente */
 #define NO_TAG         -1
@@ -34,33 +43,50 @@ int commentState = IN_COMMENT;
 #define TAG_TODO       3
 #define TAG_AUTHOR     4
 #define TAG_REVISION   5
-int currentTag = NO_TAG;
+#define TAG_TABLE      6
 
-Comment *currentComment;
+/** Last tag readed by the parser */
+static int currentTag = NO_TAG;
+
+/** Current comment information */
+static Comment *currentComment;
 
 /**
- * Inicializa a memoria para um comentário
+ * Initialize the memory to a comment.
  *
- * @param comm Pointer onde a memória deve ser iniciada
- * @param bufferSize Tamanho pretendido para o buffer com o texto
+ * The allocation of the buffer to the text is made here. 
+ * If you want to use a Comment you should pass it throu this function.
+ *
+ * @todo : This function should go to Comment.c
+ *
+ * @param comm Pointer to a Comment structure to be initialized.
+ * @param bufferSize The maximum size of the text buffer.
  */
 static void initComment(Comment *comm,int bufferSize)
 {
-  comm->processIdx = 0;
-	comm->buffer = (char *)malloc(bufferSize * sizeof(char));
-	*comm->buffer = '\0';
+  comm->processIdx        = 0;
+	comm->buffer            = (char *)malloc(bufferSize * sizeof(char));
+	*comm->buffer           = '\0';
 	comm->processIdx        = 0;
 	comm->waitingForProcess = 0;
-	comm->parameterList = (Parameters *)initParameters(10);
+	comm->parameterList     = (Parameters *)initParameters(10);
 	comm->returnIdx         = -1;
 	comm->todoIdx           = -1;
+  comm->deprecated        = 0;
+	comm->tableList         = (TableUsage **)calloc(10,sizeof(TableUsage *));
+	comm->tableIdx          = -1;
+	comm->tableStarted      = 0;
 }
 
 
 /**
- * Faz o parsing de um comentário fgldoc
+ * Make the parsing of a fgldoc comments loaded in a string.
  *
- * @param commentToParse Comentário a analisar
+ * Alocates the space for a Comment structure that is filled with the
+ * information.
+ *
+ * @param commentToParse Text with the comment to parse.
+ * @return The comment information.
  */
 Comment *parseComment(char *commentToParse)
 {
@@ -73,18 +99,6 @@ Comment *parseComment(char *commentToParse)
 	initComment(currentComment,strlen(commentToParse));
   currentChar = commentToParse;
   yyCommentlex();
-
-	/* DEBUG */
-	/*
-	printf("==== COMENTÀRIO ====\n");
-	printf("TEXTO: %s\n",currentComment->buffer);
-	printf("&&&&& PROCESSES:\n");
-	for ( i = 0 ; i < currentComment->processIdx ; i++ )
-	{
-    printf("   * %s\n",currentComment->processCode[i]);
-	}
-	printf("=================\n\n");
-	*/
 	return currentComment;
 }
 
@@ -99,7 +113,9 @@ static void startCommentLine(void)
 
 /**
  * Devolve o próximo caracter da string de comentário ou EOF se null
- * Executado pelo parser gerado pelo lex
+ * Executado pelo parser gerado pelo lex.
+ *
+ * @return The next character in the comment. EOF if it reaches the end
  */
 int getCommentChar(void)
 {
@@ -108,7 +124,7 @@ int getCommentChar(void)
 	if ( *currentChar == '\0' )
     retval = EOF;
   else 
-		retval =  *currentChar;
+		retval = *currentChar;
   currentChar++;
   /*printf("Returning %c\n",retval); */
 	return retval;
@@ -169,13 +185,47 @@ static void setTodoComments(char *comments)
   currentComment->todoStarted = 0;
 }
 
+/**
+ *  Assigns a table usage definition in comment with table tag.
+ *
+ *  @todo : Tipo de utilização da tabela.
+ *  @todo : Separar a tabela retirando-lhe base de dados.
+ *
+ *  @param tableId Table name
+ */
+static void setTable(char *tableId)
+{
+	TableUsage *tableUsage;
+
+  if ( currentComment->tableStarted == 1 )
+  {
+    tableUsage = newTableUsage();
+    currentComment->tableList[currentComment->tableIdx] = tableUsage;
+	  setTableUsageTableName(tableId,tableUsage);
+	  setTableUsageFoundAs(TU_COMMENT,tableUsage);
+	  setTableUsageOperation(TU_UNDEFINED,tableUsage);
+	  setTableUsageLineNumber(TU_UNDEFINED,tableUsage);
+  }
+	else
+	{
+		char *oldStr, newStr[64];
+		tableUsage = currentComment->tableList[currentComment->tableIdx];
+	  oldStr = getTableUsageTableName(tableUsage);
+    sprintf(newStr, "%s%s",oldStr,tableId);
+	  setTableUsageTableName(newStr,tableUsage);
+		free(oldStr);
+	}
+  currentComment->tableStarted = 0;
+}
+
+
 
 /**
  * Foi descoberto um comentário de tag que deve ser escrito associado a tag 
  * corrente
  *
  * @param tagCode Código associado à tag corrente
- * @todo Colocar a inseerção no buffer correspondente
+ * @todo Colocar a inserção no buffer correspondente
  */
 static void writeTagComment(char *tagComment)
 {
@@ -197,6 +247,9 @@ static void writeTagComment(char *tagComment)
 		  break;
 		case TAG_REVISION:
 			setRevision(tagComment);
+		  break;
+		case TAG_TABLE:
+			setTable(tagComment);
 		  break;
 	}
 }
@@ -237,6 +290,8 @@ static void writeTagCode(char *tagCode)
  *  Escreve no texto do comentário um identificador descoberto caso este 
  *  não esteja no contexto de ser a definição de um processo
  *
+ *  Executed by the comment parser.
+ *
  *  @param id String que contem o referido identificador (palavra)
  */
 void writeCommentIdentifier(char *id)
@@ -275,6 +330,11 @@ void startParameter(void)
 	currentTag   = TAG_PARAMETER;
 }
 
+/**
+ * Foi descoberto o inicio de uma tag de return.
+ * Marca na máquina de estados este facto para receber o texto para o
+ * sitio certo.
+ */
 void startReturn(void)
 {
 	commentState = TAG_COMMENT;
@@ -283,6 +343,10 @@ void startReturn(void)
 	currentComment->returnIdx++;
 }
 
+/**
+ * Found a todo tag.
+ * Mark the fact in the state machine in order to be read the todo text.
+ */
 void startTodo(void)
 {
 	commentState = TAG_COMMENT;
@@ -291,12 +355,34 @@ void startTodo(void)
 	currentComment->todoIdx++;
 }
 
+/**
+ * Found a table tag.
+ * Mark the fact in the state machine in order to be read the table text.
+ *
+ * Finishes the table state after reading a new tag.
+ */
+void startTable(void)
+{
+	commentState = TAG_COMMENT;
+	currentTag   = TAG_TABLE;
+  currentComment->tableStarted = 1;
+	currentComment->tableIdx++;
+}
+
+/**
+ * Started a Author tag.
+ * Mark the fact in the state machine in order to read the author name
+ */
 void startAuthor(void)
 {
 	commentState = TAG_COMMENT;
 	currentTag   = TAG_AUTHOR;
 }
 
+/**
+ * Started a revision tag.
+ * Mark the fact in the state machine in order to read the source code revision
+ */
 void startRevision(void)
 {
 	commentState = TAG_COMMENT;
@@ -315,9 +401,11 @@ void writeNewLine(void)
 }
 
 /**
- *  Escreve no texto do comentário uma string que foi descoberta
+ *  Write in the comment text a string that was found.
+ *  Executed by the lexer when he found a string that its not a a tag.
+ *  The string found belong to the current tag and is apended to it.
  *
- *  @param comm : String com comentário
+ *  @param comm : The string with the text to be appended to the proper tag.
  */
 void writeOtherComment(char *comm)
 {
@@ -331,7 +419,8 @@ void writeOtherComment(char *comm)
       strcat(currentComment->buffer,comm);
 		  break;
 		case TAG_COMMENT:
-			writeTagComment(comm);
+	    if ( currentTag != TAG_TABLE )
+			  writeTagComment(comm);
 		  break;
 		case TAG_CODE:
 		  break;
@@ -339,9 +428,11 @@ void writeOtherComment(char *comm)
 }
 
 /**
- * Foi descoberto um separador no comentário
+ * Was found a separator in the comment. 
+ * Normaly the separator is appended to the tag comment or to comment buffer.
+ * When the state is in some specific TAG_COMMENT (TABLE) the 
  *
- * @param comm
+ * @param comm The separator found.
  */
 void writeSeparator(char *comm)
 {
@@ -358,5 +449,13 @@ void writeSeparator(char *comm)
 	}
 }
 
+/**
+ * Found the deprecated tag.
+ * Marks the fact in the current comment.
+ */
+void markAsDeprecated(void)
+{
+  currentComment->deprecated = 1;
+}
 
 

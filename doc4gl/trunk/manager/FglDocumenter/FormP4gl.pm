@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
@@ -7,49 +7,223 @@
 # 
 #  As opções globais estão guardadas no módulo Options.
 #
-#  @todo Passar a objecto
-#
 #  Autor : Sérgio Ferreira
 #
 #  =========================================================================
 
 package FglDocumenter::FormP4gl;
 
+use strict;
 use Tk::Dialog;
 use Tk::BrowseEntry;
 use FglDocumenter::Utils;
+use FglDocumenter::BaseClass;
+use FglDocumenter::FormDb;
+
+use vars qw(@ISA);
+@ISA = ("FglDocumenter::BaseClass");
+
+#  =========================================================================
+#  Constructor
+#  =========================================================================
+sub new
+{
+	my $pkg = shift;
+	my $formImportFgl = $pkg->allocate();
+
+	$formImportFgl->{okListener} =0;
+	return $formImportFgl;
+}
+
+#  =========================================================================
+#  Afecta a propriedade que define se devem ou não ser carregados os 
+#  comentários.
+#  =========================================================================
+sub setLoadComments
+{
+  my $obj = shift;
+	$obj->{loadComments} = shift;
+}
+
+#  =========================================================================
+#  Afecta a propriedade que define se deve ou não ser afectado o parse.
+#  =========================================================================
+sub setParseOnly
+{
+  my $obj = shift;
+	$obj->{parseOnly} = shift;
+}
+
+#  =========================================================================
+#  Afecta a propriedade que define se devemos ou carregar a utilização de
+#  tabelas.
+#  =========================================================================
+sub setLoadTableUsage
+{
+  my $obj = shift;
+	$obj->{loadTableUsage} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub setLoadParameters
+{
+  my $obj = shift;
+	$obj->{loadParameters} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub setLoadStrings
+{
+  my $obj = shift;
+	$obj->{loadStrings} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub setLoadLocalVariables
+{
+  my $obj = shift;
+	$obj->{loadLocalVariables} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub setImportFglLocation
+{
+  my $obj = shift;
+	$obj->{importFglLocation} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub setLoadFilesRecursive
+{
+  my $obj = shift;
+	$obj->{loadFilesRecursive} = shift;
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getPackage
+{
+  my $obj = shift;
+	return $obj->{package};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getLoadComments
+{
+  my $obj = shift;
+	return $obj->{loadComments};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getParseOnly
+{
+  my $obj = shift;
+	return $obj->{parseOnly};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getLoadTableUsage
+{
+  my $obj = shift;
+	return $obj->{loadTableUsage};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getLoadParameters
+{
+  my $obj = shift;
+	return $obj->{loadParameters};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getLoadStrings
+{
+  my $obj = shift;
+	return $obj->{loadStrings};
+}
+
+#  =========================================================================
+#  @return The flag that indicates the parser to load the local variables
+#  =========================================================================
+sub getLoadLocalVariables
+{
+  my $obj = shift;
+	return $obj->{loadLocalVariables};
+}
+
+#  =========================================================================
+#  @return The directory used for 4gl import
+#  =========================================================================
+sub getImportFglLocation
+{
+  my $obj = shift;
+	return $obj->{importFglLocation};
+}
+
+#  =========================================================================
+#  =========================================================================
+sub getLoadFilesRecursive
+{
+  my $obj = shift;
+	return $obj->{loadFilesRecursive};
+}
+
+#  =========================================================================
+#  @return the module list found and selected.
+#  =========================================================================
+sub getModuleList
+{
+  my $obj = shift;
+	return $obj->{modules};
+}
+
+#  =========================================================================
+#  @return The directory list for each source file to load to repository.
+#  =========================================================================
+sub getDirectoryList
+{
+  my $obj = shift;
+	return $obj->{directoryList};
+}
+
 
 #  =========================================================================
 #  Mostra valores e inicia a recepção de dados no form
 #  =========================================================================
 sub show
 {
+  my $obj = shift;
 
-	$loadComments       = $FglDocumenter::Options::loadComments;
-	$parseOnly          = $FglDocumenter::Options::parseOnly;
-	$loadTableusage     = $FglDocumenter::Options::loadTableUsage;
-	$loadParameters     = $FglDocumenter::Options::loadParameters;
-	$loadStrings        = $FglDocumenter::Options::loadStrings;
-	$loadLocalVariables = $FglDocumenter::Options::loadLocalVariables;
-	$importFglLocation  = $FglDocumenter::Options::importFglLocation;
-	$loadFilesRecursive = $FglDocumenter::Options::loadFilesRecursive;
+  my $lh = $obj->{lh};
 
-	if ( selectPackages() == 1 )
+	if ( $obj->selectPackages() == 1 )
 	{
-	  return false;
+	  return 0;
 	}
 
-  $form = $main::mw->Toplevel();
+  $obj->{form} = $main::mw->Toplevel();
+  my $form = $obj->{form};
   
-  $form->title("Opções de importação de fontes 4gl");
-  $height = 400;
-  $width  = 700;
-	FglDocumenter::Utils::setWindowAtCenter($form,$height,$width);
+  $form->title(
+	  $lh->maketext("4gl source import options")
+	);
 
-	$lblPackage = $form->Label(-text => "Package");
+	my $lblPackage = $form->Label(
+	  -text => $lh->maketext("Package")
+	);
 
-	$lbPackages = $form->BrowseEntry(-variable => \$package);
-	$lbPackages->insert('end',@packages);
+	my $lbPackages = $form->BrowseEntry(-variable => \$obj->{package});
+	$lbPackages->insert('end',$obj->{packages});
 	#$lbPackages->configure(-width => 62);
 	#$lbPackages->configure(-height => 1);
 	#$lbPackages->configure(-selectmode => "multiple");
@@ -61,22 +235,30 @@ sub show
 	#@bindings = $lbPackages->bind();
 
 
-	$lblLocation = $form->Label(-text => "Location (Directory)");
-	$txtLocation = $form->Entry(-width => 64, 
-	  -textvariable => \$importFglLocation,
+	my $lblLocation = $form->Label(
+	  -text => $lh->maketext("Location (Directory)")
+	);
+	my $txtLocation = $form->Entry(-width => 64, 
+	  -textvariable => \$obj->{importFglLocation},
 		-state => 'disabled'
   );
-  $locationButton = $form->Button(-text => "...", -command => \&chooseLocation);
+  my $locationButton = $form->Button(-text => "...", 
+	  -command => [ \&chooseLocation, $obj ]
+	);
 	$lblLocation->grid($txtLocation,$locationButton);
 	$lblLocation->grid(-sticky => "w", -row => 1,-column => 0);
 	$txtLocation->grid(-row => 1,-column => 1);
 	$locationButton->grid(-row => 1,-column => 2);
 
 
-	$lblModules = $form->Label(-text => "Modules");
-	@directoryList = ();
-	@modules = getModules($importFglLocation);
-	$lbModules = $form->Scrolled("Listbox", -scrollbars => "osoe");
+	my $lblModules = $form->Label(
+	  -text => $lh->maketext("Modules")
+	);
+	my $modulesRef = $obj->getModules($obj->{importFglLocation});
+	my @modules = @$modulesRef;
+	$obj->{modules} = \@modules;
+	my $lbModules = $form->Scrolled("Listbox", -scrollbars => "osoe");
+	$obj->{lbModules} = $lbModules;
 	$lbModules->insert('end',@modules);
 	$lbModules->configure(-width => 62);
 	$lbModules->configure(height => 1);
@@ -84,25 +266,31 @@ sub show
 	$lbModules->grid(-row => 2,-column => 1);
 	# @todo Janela para Selecção de módulos
 
-	$cbLoadComments = $form->Checkbutton(-text => "Load comments",
-	  -variable => \$loadComments
+	my $cbLoadComments = $form->Checkbutton(
+	  -text => $lh->maketext("Load comments"),
+	  -variable => \$obj->{loadComments}
   );
 	$cbLoadComments->grid(-sticky => "nw");
 
-	$cbParseOnly = $form->Checkbutton(-text => "Parse Only",
-	  -variable => \$parseOnly
+	my $cbParseOnly = $form->Checkbutton(
+	  -text => $lh->maketext("Parse Only"),
+	  -variable => \$obj->{parseOnly}
   );
 	$cbParseOnly->grid(-sticky => "nw");
 
 
-	$lblRepository = $form->Label(-text => "Repository");
-	$fgldocRepository = $FglDocumenter::Options::p4glRepository->getUrl();
-	$txtRepository = $form->Entry(-width => 64, 
-	  -textvariable => \$fgldocRepository,
+	my $lblRepository = $form->Label(
+	  -text => $lh->maketext("Repository")
+	);
+	$obj->{fgldocRepository} = 
+	  $obj->{connection}->getUrl()
+	;
+	my $txtRepository = $form->Entry(-width => 64, 
+	  -textvariable => \$obj->{fgldocRepository},
 		-state => 'disabled'
   );
-  $fgldocButton = $form->Button(-text => "...", 
-	  -command => \&configureRepository
+  my $fgldocButton = $form->Button(-text => "...", 
+	  -command => [ \&configureRepository, $obj ]
   );
 	$lblRepository->grid($txtRepository,$fgldocButton);
 	$lblRepository->grid(-sticky => "w", -row => 5,-column => 0);
@@ -110,35 +298,47 @@ sub show
 	$fgldocButton->grid(-row => 5,-column => 2);
 
 
-	$cbLoadTableUsage = $form->Checkbutton(-text => "Load Table Usage",
-	  -variable => \$loadTableusage
+	my $cbLoadTableUsage = $form->Checkbutton(
+	  -text => $lh->maketext("Load Table Usage"),
+	  -variable => \$obj->{loadTableusage}
   );
 	$cbLoadTableUsage->grid(-sticky => "nw");
 
-	$cbLoadParameters = $form->Checkbutton(-text => "Load Parameters",
-	  -variable => \$loadParameters
+	my $cbLoadParameters = $form->Checkbutton(
+	  -text => $lh->maketext("Load Parameters"),
+	  -variable => \$obj->{loadParameters}
   );
 	$cbLoadParameters->grid(-sticky => "nw");
 
-	$cbLoadStrings = $form->Checkbutton(-text => "Load Strings",
-	  -variable => \$loadStrings
+	my $cbLoadStrings = $form->Checkbutton(
+	  -text => $lh->maketext("Load Strings"),
+	  -variable => \$obj->{loadStrings}
   );
 	$cbLoadStrings->grid(-sticky => "nw");
 
-	$cbLoadLocalVariables = $form->Checkbutton(-text => "Load Local Variables",
-	  -variable => \$loadLocalVariables
+	my $cbLoadLocalVariables = $form->Checkbutton(
+	  -text => $lh->maketext("Load Local Variables"),
+	  -variable => \$obj->{loadLocalVariables}
   );
 	$cbLoadLocalVariables->grid(-sticky => "nw");
 
-	$cbRecursive = $form->Checkbutton(-text => "Recursive",
-	  -variable => \$loadFilesRecursive
+	my $cbRecursive = $form->Checkbutton(
+	  -text => $lh->maketext("Recursive"),
+	  -variable => \$obj->{loadFilesRecursive}
   );
 	$cbRecursive->grid(-sticky => "nw");
 
-  $okButton = $form->Button(-text => "OK", -command => \&ok);
-	$cancelButton=$form->Button(-text => "Cancel", -command => \&cancel);
+  my $okButton = $form->Button(
+	  -text => $lh->maketext("OK"),
+		-command => [ \&ok, $obj ]
+	);
+	my $cancelButton=$form->Button(
+	  -text => $lh->maketext("Cancel"), 
+		-command => [ \&cancel, $obj ]
+	);
 	$okButton->grid($cancelButton);
-	return true;
+	$form->Popup();
+	return 1;
 }
 
 #  =========================================================================
@@ -147,21 +347,30 @@ sub show
 #  =========================================================================
 sub configureRepository
 {
-	FglDocumenter::FormDb::addOkListener(
+	my $obj = shift;
+
+	my $objFormDb = new FglDocumenter::FormDb();
+
+	$objFormDb->setError($obj->{err});
+	$objFormDb->setLanguageHandler($obj->{lh});
+	$objFormDb->addOkListener(
 	  \&repositoryEditListener
   );
-	FglDocumenter::FormDb::showDbForm(
-	  $FglDocumenter::Options::p4glRepository
+	$objFormDb->showDbForm(
+		$obj->{connection}
   );
 }
 
 #  =========================================================================
-#  Listener para ser execuutado como callback quando o utilizador carrega 
+#  Listener para ser executado como callback quando o utilizador carrega 
 #  no botão de OK do form de configuração de acesso a BD
 #  =========================================================================
 sub repositoryEditListener
 {
-	$fgldocRepository  = $FglDocumenter::Options::p4glRepository->getUrl();
+	my $obj = shift;
+	$obj->{fgldocRepository} = 
+	  $obj->{connection}->getUrl()
+	;
 }
 
 
@@ -172,9 +381,10 @@ sub repositoryEditListener
 #  =========================================================================
 sub selectPackages
 {
-	$error->clearErrorFlag();
-	@packages = FglDocumenter::P4glRepository::selectPackages();
-	if ( $error->isErrorFlag() == 1 )
+	my $obj = shift;
+	$obj->{err}->clearErrorFlag();
+	$obj->{packages} = $obj->{repositoryUtil}->selectPackages();
+	if ( $obj->{err}->isErrorFlag() == 1 )
 	{
 	  return 1;
 	}
@@ -187,19 +397,9 @@ sub selectPackages
 #  =========================================================================
 sub ok
 {
-	$form->destroy;
-	$FglDocumenter::Options::packageName        = $package;
-	$FglDocumenter::Options::loadComments       = $loadComments;
-	$FglDocumenter::Options::parseOnly          = $parseOnly;
-	$FglDocumenter::Options::loadTableUsage     = $loadTableUsage;
-	$FglDocumenter::Options::loadParameters     = $loadParameters;
-	$FglDocumenter::Options::loadStrings        = $loadStrings;
-	$FglDocumenter::Options::loadLocalVariables = $loadLocalVariables;
-	$FglDocumenter::Options::importFglLocation  = $importFglLocation;
-	$FglDocumenter::Options::loadFilesRecursive = $loadFilesRecursive;
-	$FglDocumenter::Options::importFglModules   = $modules;
-	$FglDocumenter::Options::importFglDirs      = $directoryList;
-  \&$okListener() if $okListener ;
+	my $obj = shift;
+	$obj->{form}->destroy;
+  $obj->{okListener}() if $obj->{okListener} ;
 }
 
 
@@ -208,8 +408,9 @@ sub ok
 #  =========================================================================
 sub cancel
 {
-	$form->destroy;
-  \&$cancelListener() if $cancelListener;
+	my $obj = shift;
+	$obj->{form}->destroy;
+  $obj->{cancelListener}() if $obj->{cancelListener};
 }
 
 
@@ -218,7 +419,8 @@ sub cancel
 #  =========================================================================
 sub addOkListener
 {
-  $okListener = $_[0];
+	my $obj = shift;
+  $obj->{okListener} = shift;
 }
 
 #  =========================================================================
@@ -226,65 +428,87 @@ sub addOkListener
 #  =========================================================================
 sub addCancelListener
 {
-  $cancelListener = $_[0];
+	my $obj = shift;
+  $obj->{cancelListener} = shift;
 }
 
 #  =========================================================================
-#  Abre um file chooser que permite escolher um directorio e(ou) módulo(s)
+#  Open a file chooser so the user can choose the directory from where to
+#  load the information.
 #  =========================================================================
 sub chooseLocation
 {
-	$FileSelect = $form->FileSelect();
+	my $obj = shift;
+	my $FileSelect = $obj->{form}->FileSelect();
 	$FileSelect->configure(-verify => ["-d"]);
-	$importFglLocation = $FileSelect->Show;
-	@directoryList = ();
-	@modules = getModules($importFglLocation);
-	$lbModules->delete(0,$lbModules->size);
-	$lbModules->insert('end',@modules);
+	$obj->{importFglLocation} = $FileSelect->Show;
+	my $modulesRef = $obj->getModules($obj->{importFglLocation});
+	my @modules = @$modulesRef;
+	$obj->{modules} = \@modules;
+	$obj->{lbModules}->delete(0,$obj->{lbModules}->size);
+	$obj->{lbModules}->insert('end',@modules);
+	$obj->{form}->raise();
 }
 
 #  =========================================================================
 #  Obtem o nome de todos os módulos do directório enviado como parametro
-#  Fiz batota com a lista de directórios que não é local
 #    @todo - Inserir gestão de erros em vez de die
 #  =========================================================================
 sub getModules
 {
+	my $obj = shift;
 	my $wantedDir = shift;
   my $currentDir = POSIX::getcwd();
 	chdir $wantedDir || die "Cant change to $wantedDir : $!\n ";
   my $moduleDir = POSIX::getcwd();
 	my @moduleList = ();
+	my @directoryList;
+  my $file;
 	foreach $file (<*>)
 	{
-		if ( $file =~ / *.4gl/ && -f $file )
+		if ( $obj->isFglFile($file) )
 		{
 		  chomp($file);
 	    push(@directoryList,$moduleDir);
 	    push(@moduleList,$file);
 		}
-		elsif ( $loadFilesRecursive == 1 )
+		elsif ( $obj->{loadFilesRecursive} == 1 )
 		{
 		  if ( -d $file )
 		  {
-				$directory = "$file";
+				my $directory = "$file";
 				#$directory = "$wantedDir/$file";
-		    @subDirModules = getModules($directory);
+		    my $refSubDirModules = $obj->getModules($directory);
+		    my @subDirModules = @$refSubDirModules;
 	      @moduleList    = (@moduleList,@subDirModules);
 		  }
 		}
 	}
   chdir $currentDir;
-	return @moduleList;
+	$obj->{directoryList} = \@directoryList;
+	return \@moduleList;
 }
 
+
 #  =========================================================================
-#  Afecta a variável local com uma referência para o objecto de erros
+#  Testa se um ficheiro eh um ficheiro de 4gl
+#  @return A code that tells if it is a 4gl file.
+#    - 0 : Its not a fgl file.
+#    - 1 : its a fgl file.
 #  =========================================================================
-sub setError
+sub isFglFile
 {
-  $error = shift;
-}
+	my $obj = shift;
+	my $file = shift;
 
-return true;
+  if ( $file =~ /.*\.4gl/ )
+	{
+	  if ( -f $file )
+	  {
+	    return 1;
+    }
+	}
+	return 0;
+}
+1;
 

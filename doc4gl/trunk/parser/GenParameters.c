@@ -1,8 +1,9 @@
 /**
- * Funções para gestão dos parâmetros de funções
+ * @file
+ * Functions parameter management code.
  *
- * Author : $Author: afalout $
- * Revision : $Revision: 1.1.1.1 $
+ * Author : $Author: saferreira $
+ * Revision : $Revision: 1.2 $
  *
  * @todo - Terminar a implementação dos métodos
  *
@@ -14,9 +15,10 @@
 #define PARAM_BUFFER 640
 
 /**
- * Inicializa e devolve um estrutura de parametros
+ * Initialize and return a Parameters structure.
  *
- * @return Apontador para o objecto inicializado
+ * @param maxParameters The maximum number of parameters for memory allocation.
+ * @return Pointer to the structure allocated.
  */
 Parameters *initParameters(int maxParameters)
 {
@@ -29,11 +31,11 @@ Parameters *initParameters(int maxParameters)
 }
 
 /**
- * Insere os dados de um novo parametro no final do array
+ * Insert the data of a new parameter at the end of the array allocated.
  *
- * @param parameters Pointer para o objecto de parametros
- * @param name Nome da variável usada como parâmetro
- * @param comment Comentários ao parametro
+ * @param parameters Pointer to the structure.
+ * @param name Variable name used as 4gl parameter.
+ * @param comment Comments to the parameter found in document comment.
  */
 void addParameter(Parameters *parameters,char *name,char *comment)
 {
@@ -52,10 +54,10 @@ void addParameter(Parameters *parameters,char *name,char *comment)
 }
 
 /**
- *  Insere um novo parametro apenas com o nome da variável
+ *  Insert a new parameter just with is name.
  *
- *  @param parameters Pointer para o objecto que gere os parametros
- *  @param name Nome do parametro
+ *  @param parameters Pointer to the parameters structure.
+ *  @param name Name of the parameter.
  */
 void setParameterName(Parameters *parameters, char *name)
 {
@@ -63,10 +65,10 @@ void setParameterName(Parameters *parameters, char *name)
 }
 
 /**
- * Modifica o comentários do parametro corrente
+ * Modify the comments of the current parameter.
  *
- * @param parameters Pointer para o objecto de parametros
- * @param comment Comentários a associar
+ * @param parameters Pointer to the parameters structue.
+ * @param comment Comments to add.
  */
 void setParameterComments(Parameters *parameters, char *comment)
 {
@@ -79,15 +81,15 @@ void setParameterComments(Parameters *parameters, char *comment)
 }
 
 /**
- * Altera os dados de um parametro numa posição especifica
+ * Modify the information about a parameter at a specific position.
  *
  * @todo Gestão do erro caso ocorra
  * @todo Gestão de elementos vazios pelo meio
  * @todo Free(s) se elemento já preenchido
  *
- * @param name Nome da variável usada como parâmetro
- * @param comment Comentários ao parametro
- * @param idx Indice do parâmetro que se pretende alterar
+ * @param name Name of 4gl variable used as parameter
+ * @param comment Comments to parameter
+ * @param idx Index of the parameter to modify
  */
 void setParameter(Parameters *parameters,char *name,char *comment,int idx)
 {
@@ -101,10 +103,12 @@ void setParameter(Parameters *parameters,char *name,char *comment,int idx)
 
 
 /**
- * @param parameters Pointer para objecto de parametros
- * @param idx Indice do parametro pretendido
+ * Finds the parameter name by index.
  *
- * @return o nome do parametro numa dada posição, null se indice inválido
+ * @param parameters Pointer to the parameters structure.
+ * @param idx Index of the parameter wanted
+ *
+ * @return The name of the parameter, null if invalid index
  */
 char *getParameterName(Parameters *parameters,int idx)
 {
@@ -114,10 +118,12 @@ char *getParameterName(Parameters *parameters,int idx)
 }
 
 /**
- * @param parameters Pointer para objecto de parametros
- * @param idx Indice do parametro pretendido
+ * Finds the comment of the parameter identified by is index.
  *
- * @return o comentário do parametro numa dada posição, null se indice inválido
+ * @param parameters Pointer to the parameters structure.
+ * @param idx Index of the wanted parameter.
+ *
+ * @return The comments of the parameter. Null if invalid index.
  */
 char *getParameterComment(Parameters *parameters,int idx)
 {

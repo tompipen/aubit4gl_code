@@ -6,6 +6,7 @@
 {**
  * Function comment
  *
+ * @todo Testing the todo tag
  * @param a ParameterA
  * @param b ParameterA
  * @return Return a value

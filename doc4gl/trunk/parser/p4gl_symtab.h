@@ -1,6 +1,7 @@
-/*
+/**
+ * @file
  *
- * DESPODATA - Lisboa, PORTUGAL
+ * Moradat - Lisboa, PORTUGAL
  *                                                       
  * Author: Sergio Ferreira
  *                                                       
@@ -9,14 +10,8 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * DESCRICAO: 
- *
- * ---------------------------------------------------------------------------
- * NOTAS:
- *     Ths symbol and instructions table have an architecture nor veryu dynamic
- *
-#  ============================================================================ 
-*/
+ * $Id: p4gl_symtab.h,v 1.2 2003-01-06 20:16:45 saferreira Exp $
+ */
 
 
 /* General usage DEFINE(S) */
@@ -57,11 +52,10 @@ typedef struct                     /* Stack for Name Lists (parser usage) */
 	int  idx;
 }NAME_LIST;
 
-#include "StringBuffer.h"
  
 /*  ===== SQL description 
  *     ??? Nao suporta inserts de selects e nested queryes 
- *     ??? Falta associacao de SQL A cursores 
+ *     ??? Falta associacao de SQL a cursores 
  */
                                      /* SQL statement type                */
 #define  SQL_EMBEBIDO  0
@@ -73,12 +67,14 @@ typedef struct                     /* Stack for Name Lists (parser usage) */
 
 typedef struct {
 	 int  tipo;                /* SQL type as defined earlier             */
-    char tabelas[MAXTAB][18]; /* Used tables                             */
+   char tabelas[MAXTAB][18]; /* Used tables                             */
 	 int  idx_tabelas;         /* Number of used tables                   */
 	 int  operacao;            /* Operacao efectuada */
 	 char *texto;              /* SQL text                                */
 	 int  cursor;              /* Linking with the cursor, if so          */
 }SQL;
+
+#include "TableUsage.h"
 
 /*  ==== Cursor definition 
  */
@@ -172,10 +168,11 @@ typedef struct {
 	int       n_linhas;              /* N.o total de linhas */
 	SQL       sql[MAXSQL];           /* Array de instrucoes de SQL */
 	int       idx_sql;               /* Indice de SQL corrente     */
+	TableUsage *tableUsage[MAXSQL];   /* Table usage information */
+	int       idxTableUsage;         /* Index of table usage */
 	int       ID_Function;           /* Serial da funcao na tabela funcao */
 	short     Include;               /* Function is included from other file */
 	int       NInstrucoes;           /* N.o de instrucoes                    */
-	char      *fglDoc;               /* Comentário de documentação */
 	Comment   *parsedDoc;            /* Comentário de documentação */
 } FUNCTION;                        /* Definicao de uma Funcao */
 
@@ -188,14 +185,12 @@ typedef struct {
                                 /* Estrutura geral de controle de uma source */
 typedef struct {
 	char     directoria[64];         /* Directoria corrente */
-	char     package[64];            /* Nome do package */
+	char     *package;            /* Nome do package */
 	char     modulo[64];             /* Nome do source de 4gl */
 	char     *module;                /* Nome do source de 4gl */
-	char     database[18];           /* Statements DATABASE */
+	char     *database;              /* The repository database name */
 	int      numFglDoc;              /* Quantidade já lida de fgldocs */
-	StringBuffer *currFglDoc;        /* Comentário de documentação corrente */
-	char     *fglDoc;                /* Comentário de documentação */
-	Comment  *parsedComment;         /* Comentário de documentação */
+	Comment  *parsedComment;         /* Comentário de documentação do módulo */
 	GLOBALS  globais[MAXGLOB];       /* Globals files and variables           */ 
 	int      idx_globais;            /* Indice de variavel global corrente    */
 	int      UtilGlob;               /* N.o de utilizacao de globais          */
@@ -203,12 +198,12 @@ typedef struct {
 	short    idx_var_glob;           /* Indice de variaveis do modulo         */
   VARS     *variaveis_mod;         /* Variaveis globais ao modulo           */
 	short    idx_var_mod;            /* Indice de variaveis do modulo         */
-	FUNCTION *functions;             /* Funcoes                               */
+	FUNCTION *functions;            /* Funcoes                               */
   int      idx_funcoes;            /* Indice de funcao corrente             */ 
 	int      NumFunc;                /* Funcoes descobertas na 1.a passagem   */
 	CURSORES cursores[MAXCURS];      /* Array de cursores                     */ 
 	int      idx_cursores;           /* Indice de cursor corrente             */
-	char     NmFicheiroInput[64];    /* Nome do source 4gl                    */
+	char     *NmFicheiroInput;       /* Nome do source 4gl                    */
   char     Directory[64];          /* Directory where the scanned file is */
 	char     *NmFicheiroTemp;        /* Temporario depois de Pre-Processado   */
 	char     *NmFicheiroTemp2;       /* Temporario de valores obtidos no PP   */

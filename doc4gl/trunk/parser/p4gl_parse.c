@@ -1,39 +1,25 @@
-/*
-#  ============================================================================ 
-#
-#  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
-#  Divisao de desenvolvimento e producao de software.
-#                                                        
-#  Autor: sergio
-#                                                        
-#  Data de criacao: Tue Aug 24 14:19:33 LISBOA 1993
-#
-#  This Module contains Proprietary and Confidential
-#  Information of Despodata - Consultores internacionais Lda.
-# 
-#  Programa: Gerador de entradas de dados.
-#  ---------------------------------------------------------------------------
-#  DESCRICAO: Aqui esta a funcao que ve as palavras reservadas, para formato 
-#             ged.
-#
-#  ---------------------------------------------------------------------------
-#  FUNCOES: 
-# 
-#  ---------------------------------------------------------------------------
-#  NOTAS:
-#          O algoritmo desta pesquisa dicotomica foi retirado do livro:
-#               - " introduction to compiler construction with UNIX "
-#          Foi separado do lex pois agora existem alternativamente duas 
-#            tabelas de palavras reservadas: Versao ged e versao perform.
-#
-#  Problemas conhecidos:
-#     - CHARACTER e NUMERIC nao funcionam, provavelmente por causa da 
-#       ordenacao diferente do comportamento do strcmp()
-#     - Falta o table qualifier na definicao de variaveis LIKE
-#
-#  ============================================================================ 
-*/
+/**
+ * @file 
+ * Lexical parsing functions.
+ *
+ * This functions are mainly used by the lexer, but sometimes by the syntatic
+ * parser.
+ *
+ * The identification of the reserved words is made by binary search instead
+ * of lex to be much more fast.
+ *
+ * The algoritm is based on an example from the book:
+ *    - " introduction to compiler construction with UNIX "
+ *
+ * @author : Sergio Ferreira
+ *
+ *
+ * Problemas conhecidos:
+ *    - CHARACTER e NUMERIC nao funcionam, provavelmente por causa da 
+ *      ordenacao diferente do comportamento do strcmp()
+ *    - Falta o table qualifier na definicao de variaveis LIKE
+ *
+ */
 
 
 #include <stdio.h>
@@ -41,17 +27,15 @@
 #include "p4gl_symtab.h"
 #include "y.tab.h"
   
-  /*
-  * Para achar o elemento do meio do array que serve de tabela 
-  * de palavras reservadas
-  */
+/**
+ * Gives a pointer to the end of the reserved word table
+ */
 #define END(v)   (v-1 + sizeof v / sizeof v[0] )
 
 
-/* 
- * Tabela de palavras reservadas
+/**
+ * Reserved words ordered table
  */
-
 static struct ReservedWords {
   char *nome_pr;          /* Nome da palavra reservada */
   int  valor_token;       /* Valor usado pelo yylex para o yacc */
@@ -414,14 +398,16 @@ static struct ReservedWords {
 
   };
 
-/*
+/**
  * The token passed as parameter was not matched in lexxer.
  * This routine see an ordered array using binary search to see if is a 
- * reserved word of Informix 4gl
+ * reserved word of Informix 4gl.
+ *
+ * @param YYText The pointer to the parser found token.
+ * @return The integer value of the token if reserved word found
+ *         or the integer value of IDENTIFIER otherwise.
  */
-
-GetReserved(YYText)
-char *YYText;
+int GetReserved(char *YYText)
 {
   struct ReservedWords 
 	  *low  = ReservedWords,      /* Pointer to the begining of the array */
@@ -479,6 +465,9 @@ char *YYText;
 		"DBSERVERNAME",  DBSERVERNAME,
  */
 
+/**
+ * Internal 4gl function ordered table
+ */
 static struct FglFunctionTable {
   char *FunctionName;          
   }FglFunctionTable[] = {
@@ -515,12 +504,14 @@ static struct FglFunctionTable {
 		"YEAR" 
   };
 
-/*
- * If the function name is an internal 4gl function it returns 1 otherwise 0
+/**
+ * Check if the function name is an internal 4gl function.
+ *
+ * @param NmFunction The name of the function wanted.
+ * @return - 1 : Is internal function.
+ *         - 0 : Is not 4gl function.
  */
-
-IsFglFunction(NmFunction)
-char *NmFunction;
+int IsFglFunction(char *NmFunction)
 {
   struct FglFunctionTable 
 			*low  = FglFunctionTable,
@@ -548,10 +539,9 @@ char *NmFunction;
     return 0;
 }
 
-/* 
- * Key definition keyword list
+/**
+ * Key definition keyword ordered table
  */
-
 static struct FglKey {
   char *Key;          
   }FglKey[] = {
@@ -579,11 +569,13 @@ static struct FglKey {
   };
 
 /*
- * If the string contains a fgl key definition return(s) 1, otherwise 0
+ * Checks if the string contains a fgl key definition 
+ *
+ * @param StrKey The string containing the key to be checked
+ * @return - 1 : Is a key definition.
+ *        - 0 : It is not a key definition.
  */
-
-IsFglKey(StrKey)
-char *StrKey;
+int IsFglKey(char *StrKey)
 {
   struct FglKey 
 			*low  = FglKey,
@@ -631,10 +623,9 @@ char *StrKey;
 }
 
 
-/* 
- * Internal variable list
+/**
+ * Internal variable ordered table
  */
-
 static struct FglInternalVariable {
   char *Variable;          
   }FglInternalVariable[] = {
@@ -648,13 +639,15 @@ static struct FglInternalVariable {
 		"TRUE"
   };
 
-/*
- * If the string contains a fgl key definition return(s) 1 
- * otherwise 0
+/**
+ * Check if the string contains a fgl internal variable.
+ *
+ * @param InternalVariable The string containing the name of the internal 
+ * variable.
+ * @return - 1 : Is an internal 4gl variable
+ *         - 0 : Otherwise
  */
-
-IsFglInternalVariable(InternalVariable)
-char *InternalVariable;
+int IsFglInternalVariable(char *InternalVariable)
 {
   struct FglInternalVariable 
 			*low  = FglInternalVariable,
@@ -677,13 +670,12 @@ char *InternalVariable;
     return 0;
 }
 
-/* 
+/**
  * Color list - attribute(s)
  * It May be attribute list
  *
  * Poderia ser o lexer a devolver um token denominado attributo simples
  */
-
 static struct FglColorList {
   char *Color;          
   }FglColorList[] = {
@@ -696,13 +688,14 @@ static struct FglColorList {
 		"YELLOW"
   };
 
-/*
- * If the string contains a fgl key definition return(s) 1 
- * otherwise 0
+/**
+ * Check if the string contains a fgl color definition.
+ *
+ * @param Color The string that we want to check if it is a color.
+ * @return - 1 : Is a color definition
+ *         - 0 : It is not a color 
  */
-
-IsFglColor(Color)
-char *Color;
+int IsFglColor(char *Color)
 {
   struct FglColorList 
 			*low  = FglColorList,

@@ -1,107 +1,143 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
-#
-#  Implements methods in Perl/Tk for a for to allow configuration of
-#  global options.
 #
 #  Implementa métodos em Perl/Tk para um form que permite efectuar as
 #  configurações das opções globais.
 # 
 #  As opções globais estão guardadas no módulo Options.
 #
+#  @todo : Passar a objecto
+#  @todo : Meter strict a funcionar
+#  @todo : Localizar mensagens
+#
 #  Autor : Sérgio Ferreira
 #
 #  =========================================================================
 
+use strict;
+
 package FglDocumenter::FormOptions;
 
 use Tk::ROText;
+use FglDocumenter::FormDb;
+use FglDocumenter::BaseClass;
+
+use vars qw(@ISA);
+@ISA = ("FglDocumenter::BaseClass");
+
+my $objGlob;
+
+#  =========================================================================
+#  Constructor
+#  =========================================================================
+sub new
+{
+	my $pkg = shift;
+	my $formOptions = $pkg->allocate();
+
+	$formOptions->{okListener}       = 0;
+	$formOptions->{form}             = 0;
+	$formOptions->{fgldocRepository} = 0;
+	return $formOptions;
+}
 
 #  =========================================================================
 #  Mostra valores e inicia a recepção de dados no form
 #  =========================================================================
 sub show
 {
-  $form = MainWindow->new;
-  
-  if ( 1 ) {
-	  $form->title("Configuration of options");
-    } else {
-	  $form->title("Configuração de opções");
-    }
+	my $obj = shift;
 
-  $height = 500;
-  $width = 250;
-	FglDocumenter::Utils::setWindowAtCenter($form,$width,$height);
+  $obj->{form} = MainWindow->new;
+	my $form = $obj->{form};
+  my $lh = $obj->{lh};
+  
+  $form->title(
+	  $lh->maketext("Options configuration")
+	);
 
 	# Conexão à Base de dados para repositório 4gl
-	$lbl4doc = $form->Label(-text => "4gl Doc Repository");
-	$fgldocRepository = $FglDocumenter::Options::p4glRepository->getUrl();
-	$txt4doc = $form->Entry(-width => 40, 
-	  -textvariable => \$fgldocRepository,
+	my $lbl4doc = $form->Label(
+	  -text => $lh->maketext("4gl Doc Repository")
+	);
+	$obj->{fgldocRepository} = $FglDocumenter::Options::p4glRepository->getUrl();
+	my $txt4doc = $form->Entry(-width => 40, 
+	  -textvariable => \$obj->{fgldocRepository},
 		-state => 'disabled'
   );
-  $fgldocButton = $form->Button(-text => "...", -command => \&fgldocRep);
+  my $fgldocButton = $form->Button(-text => "...", 
+	  -command => [ \&fgldocRep, $obj ]
+	);
 	$lbl4doc->grid($txt4doc,$fgldocButton);
 
-	# Conexão à Base de dados de syspgm
-	$lblSyspgm = $form->Label(-text => "Syspgm 4gl Repository");
-	$syspgmRepository = $FglDocumenter::Options::syspgmRepository->getUrl();
-	$txtSyspgm = $form->Entry(-width => 40, 
-	  -textvariable => \$syspgmRepository,
-		-state => 'disabled'
-  );
-  $syspgmButton = $form->Button(-text => "...", -command => \&syspgmRep);
-	$lblSyspgm->grid($txtSyspgm,$syspgmButton);
 
 	# Nome de ficheiro para importação de CSV
-	$csvImportFile = $FglDocumenter::Options::csvImportFile;
-	$lblFlatFile = $form->Label(-text => "Flat file (CSV)");
-	$flatFileRepository = "Flat File";
-	$txtFlatFile = $form->Entry(-width => 20, 
-	  -textvariable => \$csvImportFile,
+	$obj->{csvImportFile} = $FglDocumenter::Options::csvImportFile;
+	my $lblFlatFile = $form->Label(-text => "Flat file (CSV)");
+	$obj->{flatFileRepository} = "Flat File";
+	my $txtFlatFile = $form->Entry(
+	  -width => 20, 
+	  -textvariable => \$obj->{csvImportFile},
 		-state => 'disabled'
   );
-  $flatFileButton = $form->Button(-text => "...", -command => \&selectCSVFile);
+  my $flatFileButton = $form->Button(-text => "...", 
+	  -command => [ \&selectCSVFile, $obj ]
+	);
 	$lblFlatFile->grid($txtFlatFile,$flatFileButton);
 
-	$xmlImportFile = $FglDocumenter::Options::xmlImportFile;
-	$lblFileXml = $form->Label(-text => "XML file");
-	$flatFileRepository = "XML File";
-	$txtFileXml = $form->Entry(-width => 20, 
-	  -textvariable => \$xmlImportFile,
+	$obj->{xmlImportFile} = $FglDocumenter::Options::xmlImportFile;
+	my $lblFileXml = $form->Label(
+	  -text => $lh->maketext("XML file")
+	);
+	$obj->{flatFileRepository} = "XML File";
+	my $txtFileXml = $form->Entry(-width => 20, 
+	  -textvariable => \$obj->{xmlImportFile},
 		-state => 'disabled'
   );
-  $xmlFileButton = $form->Button(-text => "...", -command => \&selectXMLFile);
+  my $xmlFileButton = $form->Button(-text => "...", 
+	  -command => [ \&selectXMLFile, $obj ]
+	);
 	$lblFileXml->grid($txtFileXml,$xmlFileButton);
 
 
-	$csvExportFile = $FglDocumenter::Options::csvExportFile;
-	$lblCsvExportFile = $form->Label(-text => "CSV Export File");
-	$txtCsvExportFile = $form->Entry(-width => 20, 
-	  -textvariable => \$csvExportFile,
+	my $csvExportFile = $FglDocumenter::Options::csvExportFile;
+	my $lblCsvExportFile = $form->Label(
+	  -text => "CSV Export File"
+	);
+	my $txtCsvExportFile = $form->Entry(-width => 20, 
+	  -textvariable => \$obj->{csvExportFile},
 		-state => 'disabled'
   );
-  $csvExportFileButton = $form->Button(
-	  -text => "...", -command => \&selectCSVExportFile
+  my $csvExportFileButton = $form->Button(
+	  -text => "...", -command => [ \&selectCSVExportFile, $obj ]
   );
 	$lblCsvExportFile->grid($txtCsvExportFile,$csvExportFileButton);
 
-	$xmlExportFile = $FglDocumenter::Options::xmlExportFile;
-	$lblExportFileXml = $form->Label(-text => "XML file");
-	$txtExportFileXml = $form->Entry(-width => 20, 
-	  -textvariable => \$xmlExportFile,
+	$obj->{xmlExportFile} = $FglDocumenter::Options::xmlExportFile;
+	my $lblExportFileXml = $form->Label(
+	  -text => $lh->maketext("XML file")
+	);
+	my $txtExportFileXml = $form->Entry(-width => 20, 
+	  -textvariable => \$obj->{xmlExportFile},
 		-state => 'disabled'
   );
-  $xmlExportFileButton = $form->Button(
-	  -text => "...", -command => \&selectXMLExportFile
+  my $xmlExportFileButton = $form->Button(
+	  -text => "...", 
+	  -command => [ \&selectXMLExportFile, $obj ]
   );
 	$lblExportFileXml->grid($txtExportFileXml,$xmlExportFileButton);
 
-  $okButton = $form->Button(-text => "OK", -command => \&ok);
-	$cancelButton=$form->Button(-text => "Cancel", -command => \&cancel);
+  my $okButton = $form->Button(
+	  -text => $lh->maketext("OK"), 
+		-command => [ \&ok, $obj ]
+	);
+	my $cancelButton=$form->Button(
+    -text => $lh->maketext("Cancel"), 
+		-command => [ \&cancel, $obj ]
+	);
 	$okButton->grid($cancelButton);
+	$form->Popup();
 }
 
 #  =========================================================================
@@ -111,25 +147,17 @@ sub show
 #  =========================================================================
 sub fgldocRep
 {
-	FglDocumenter::FormDb::addOkListener(
+	my $obj = shift;
+	my $formDbObject = new FglDocumenter::FormDb();
+	$formDbObject->addOkListener(
 	  \&repositoryEditListener
   );
-	$currRepository = $FglDocumenter::Options::p4glRepository;
-	$currRepositoryUrl = $fgldocRepository;
-	FglDocumenter::FormDb::showDbForm(
+	$formDbObject->setLanguageHandler($obj->{lh});
+	$obj->{currRepository} = $FglDocumenter::Options::p4glRepository;
+	$obj->{currRepositoryUrl} = $obj->{fgldocRepository};
+	$formDbObject->showDbForm(
 	  $FglDocumenter::Options::p4glRepository
   );
-}
-
-#  =========================================================================
-#  Abre o form relativo ao repositório de syspgm e permite a sua alteração
-#  =========================================================================
-sub syspgmRep
-{
-	FglDocumenter::FormDb::addOkListener(\&repositoryEditListener);
-	$currRepository = $FglDocumenter::Options::syspgmRepository;
-	$currRepositoryUrl = $syspgmRepository;
-	FglDocumenter::FormDb::showDbForm($FglDocumenter::Options::p4glRepository);
 }
 
 #  =========================================================================
@@ -138,8 +166,9 @@ sub syspgmRep
 #  =========================================================================
 sub repositoryEditListener
 {
-	$currRepositoryUrl = $currRepository->getUrl();
-	$fgldocRepository  = $FglDocumenter::Options::p4glRepository->getUrl();
+	my $obj = shift;
+	$obj->{currRepositoryUrl} = $obj->{currRepository}->getUrl();
+	$obj->{fgldocRepository}  = $FglDocumenter::Options::p4glRepository->getUrl();
 }
 
 #  =========================================================================
@@ -147,12 +176,13 @@ sub repositoryEditListener
 #  =========================================================================
 sub selectCSVFile
 {
+	my $obj = shift;
   my $types = [
             ['Text',              '.txt', 'TEXT'],
             ['All Files',        '*',             ],
         ];
-  $csvImportFile = $form->getOpenFile(
-	  -title => "Seleccionar ficheiro CSV",
+  $obj->{csvImportFile} = $obj->{form}->getOpenFile(
+	  -title => $obj->{lh}->maketext("Select CSV File"),
 	  -filetypes => $types
   );
 }
@@ -162,12 +192,13 @@ sub selectCSVFile
 #  =========================================================================
 sub selectXMLFile
 {
+	my $obj = shift;
   my $types = [
             ['Text',              '.xml', 'XML'],
             ['All Files',        '*',             ],
         ];
-  $xmlImportFile = $form->getOpenFile(
-	  -title => "Seleccionar ficheiro XML",
+  $obj->{xmlImportFile} = $obj->{form}->getOpenFile(
+	  -title => $obj->{lh}->maketext("Select XML File"),
 	  -filetypes => $types
   );
 }
@@ -178,12 +209,13 @@ sub selectXMLFile
 #  =========================================================================
 sub selectCSVFile
 {
+	my $obj = shift;
   my $types = [
             ['Text',              '.txt', 'TEXT'],
             ['All Files',        '*',             ],
         ];
-  $csvExportFile = $form->getSaveFile(
-	  -title => "Seleccionar ficheiro CSV",
+  $obj->{csvExportFile} = $obj->{form}->getSaveFile(
+	  -title => $obj->{lh}->maketext("Select CSV File"),
 	  -filetypes => $types
   );
 }
@@ -194,12 +226,13 @@ sub selectCSVFile
 #  =========================================================================
 sub selectXMLExportFile
 {
+	my $obj = shift;
   my $types = [
             ['Text',              '.xml', 'XML'],
             ['All Files',        '*',             ],
         ];
-  $xmlExportFile = $form->getSaveFile(
-	  -title => "Seleccionar ficheiro XML",
+  $obj->{xmlExportFile} = $obj->{form}->getSaveFile(
+	  -title => $obj->{lh}->maketext("Select XML File"),
 	  -filetypes => $types
   );
 }
@@ -210,12 +243,13 @@ sub selectXMLExportFile
 #  =========================================================================
 sub ok
 {
-	$form->destroy;
-	$FglDocumenter::Options::csvImportFile = $csvImportFile;
-	$FglDocumenter::Options::xmlImportFile = $xmlImportFile;
-	$FglDocumenter::Options::csvExportFile = $csvExportFile;
-	$FglDocumenter::Options::xmlExportFile = $xmlExportFile;
-  \&$okListener() if $okListener ;
+	my $obj = shift;
+	$obj->{form}->destroy;
+	$FglDocumenter::Options::csvImportFile = $obj->{csvImportFile};
+	$FglDocumenter::Options::xmlImportFile = $obj->{xmlImportFile};
+	$FglDocumenter::Options::csvExportFile = $obj->{csvExportFile};
+	$FglDocumenter::Options::xmlExportFile = $obj->{xmlExportFile};
+  $obj->{okListener}() if $obj->{okListener};
 }
 
 
@@ -224,8 +258,9 @@ sub ok
 #  =========================================================================
 sub cancel
 {
-	$form->destroy;
-  \&$cancelListener() if $cancelListener;
+	my $obj = shift;
+	$obj->{form}->destroy;
+  $obj->{cancelListener}() if $obj->{cancelListener};
 }
 
 
@@ -234,7 +269,8 @@ sub cancel
 #  =========================================================================
 sub addOkListener
 {
-  $okListener = $_[0];
+	my $obj = shift;
+  $obj->{okListener} = shift;
 }
 
 #  =========================================================================
@@ -242,7 +278,9 @@ sub addOkListener
 #  =========================================================================
 sub addCancelListener
 {
-  $cancelListener = $_[0];
+	my $obj = shift;
+  $obj->{cancelListener} = shift;
 }
 
-return true;
+
+1;

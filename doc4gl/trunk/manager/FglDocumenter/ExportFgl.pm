@@ -8,9 +8,10 @@
 # @todo Revisao de codigo e testes
 # @todo Ser esta classe que se preocupa em mudar para o directorio onde o 
 #       fonte está
+# @todo Rever valores de retorno
 #
-# $Author: afalout $
-# $Id: ExportFgl.pm,v 1.1.1.1 2001-12-26 07:32:22 afalout Exp $
+# $Author: saferreira $
+# $Id: ExportFgl.pm,v 1.2 2003-01-06 20:07:17 saferreira Exp $
 # 
 # ============================================================================
 
@@ -165,6 +166,7 @@ sub insertDocComments
 		$exportOneFglObject->setRepository($obj->{repository});
 		$exportOneFglObject->setFglModule($fglModule);
 		$exportOneFglObject->setFglDirectory($directory);
+		$exportOneFglObject->setReplaceFgldoc($obj->{replaceFgldoc});
 		$exportOneFglObject->setInsertEmptyComment(
 		  $obj->{insertEmptyComment}
 		);
@@ -172,6 +174,7 @@ sub insertDocComments
 						"Inserting coments on source", $fglModule) if $obj->{progressListener};
 	  $exportOneFglObject->commentModule($directory,$fglModule);
 	}
+  return 1;
 }
 
 return 1;

@@ -1,20 +1,23 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
 #  Objecto que abre uma janela que contem duas listas e permitem 
 #  escolher de uma das listas para a outra
+#
 # 
-#  $Author: afalout $
-#  $Revision: 1.1.1.1 $
+#  $Author: saferreira $
+#  $Revision: 1.2 $
 #
 #  =========================================================================
 
-package FglDocumenter::ListChooser;
 
+use strict;
 use Tk;
 use Tk::Frame;
 use FglDocumenter::Utils;
+
+package FglDocumenter::ListChooser;
 
 #  =========================================================================
 #  Construtora

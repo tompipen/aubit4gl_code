@@ -14,8 +14,8 @@
 # 
 #  =========================================================================
 
+use strict;
 use DBI;
-
 
 package FglDocumenter::DatabaseConnection;
 
@@ -25,7 +25,8 @@ package FglDocumenter::DatabaseConnection;
 #  =========================================================================
 sub new 
 {
-  my ($pkg,$INFORMIXDIR,$server,$host,$database,$user,$password) = @_;
+  my ($pkg,$INFORMIXDIR,$server,$host,$database,$user,$password,$dbiUrl,
+	    $connection) = @_;
 
 	my $dbConnection = {
 	  "INFORMIXDIR" => $INFORMIXDIR,
@@ -146,7 +147,7 @@ sub getDatabase
 #  ===========================================================================
 sub setError
 {
-	$obj = shift;
+	my $obj = shift;
   $obj->{err} = shift;
 }
 
@@ -155,7 +156,7 @@ sub setError
 #  ===========================================================================
 sub setLog
 {
-	$obj = shift;
+	my $obj = shift;
   $obj->{log} = shift;
 }
 
@@ -177,18 +178,77 @@ sub getUrl
 }
 
 # ============================================================================
-# Constroi a URL necessária para 
+# Constroi a URL necessária para.
+# No caso de se pretender criar a base de dados o server nao pode fazer parte
+# da URL (embora nao esteja a ver uma razao logica).
+# @todo Validar a utilizaçao do server na conexao a base de dados
 # ============================================================================
 sub buildDbiUrl
 {
-	$obj = shift;
-  my $dbUrl = "DBI:Informix:" . $obj->getDatabase();
-	if ( defined($server) )
+	my $obj = shift;
+	my $withDatabase = shift;
+  my $dbUrl;
+	if ($withDatabase )
 	{
-	  $dbUrl .= $obj->getServer();
+    $dbUrl = "DBI:Informix:" . $obj->getDatabase();
 	}
+	else
+	{
+    $dbUrl = "DBI:Informix:";
+	}
+  #if ( defined($obj->{server}) )
+	#{
+	  #$dbUrl .= $obj->getServer();
+	#}
   $obj->{dbiUrl} = $dbUrl;
 }
+
+# ============================================================================
+# Estabelece a conexão à instancia de informix sem base de dados
+# ============================================================================
+sub connectWithoutDatabase
+{
+	my $obj = shift;
+	$obj->buildDbiUrl(0);
+	my $user = $obj->getUser();
+	if ( defined($user)  )
+	{
+    if ( $obj->{connection} = DBI->connect(
+		  $obj->{dbiUrl},
+		  $obj->getUser(),
+			$obj->getPassword()) 
+    ){
+			$obj->{log}->log("Conexão à instancia estabelecida")
+			  if $obj->{log};
+		}
+    else
+		{
+      $obj->{err}->error(
+		    "Conexão à base de dados",
+		    "Impossivel estabelecer conexão : $obj->{dbiUrl}\n$DBI::errstr"
+      );
+			return 0;
+	  }
+	}
+	else
+	{
+    if ( ($obj->{connection} = DBI->connect($obj->{dbiUrl})) )
+		{
+			$obj->{log}->log("Conexão à instancia estabelecida")
+			  if $obj->{log};
+		}
+    else
+		{
+      $obj->{err}->error(
+		    "Conexão à base de dados",
+		    "Impossivel estabelecer conexão\n$DBI::errstr"
+      );
+			return 0;
+	  }
+	}
+	return 1;
+}
+
 
 # ============================================================================
 # Estabelece a conexão à base de dados de acordo com as propriedades do objecto
@@ -196,7 +256,7 @@ sub buildDbiUrl
 sub connect
 {
 	my $obj = shift;
-	$obj->buildDbiUrl();
+	$obj->buildDbiUrl(1);
 	my $user = $obj->getUser();
 	if ( defined($user)  )
 	{
@@ -255,4 +315,4 @@ sub getConnection
   return $obj->{connection};
 }
 
-return true;
+return 1;

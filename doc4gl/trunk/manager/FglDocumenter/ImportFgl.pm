@@ -5,8 +5,8 @@
 # Métodos que executam o parser de carregamento em Repositório da informação
 # existente nos sources de 4gl
 #
-# $Author: afalout $
-# $Id: ImportFgl.pm,v 1.1.1.1 2001-12-26 07:32:27 afalout Exp $
+# $Author: saferreira $
+# $Id: ImportFgl.pm,v 1.2 2003-01-06 20:08:19 saferreira Exp $
 # 
 # ============================================================================
 
@@ -231,6 +231,7 @@ sub parseSources
 	my @fglDirectoryList = @$refDirList;
 
 	my $i = 0;
+	$obj->{log}->log("Parsing $#fglModules");
 	foreach $module ( @fglModules )
 	{
 		my $directory = @fglDirectoryList[$i];
@@ -239,11 +240,16 @@ sub parseSources
 		  "$directory : $module"
     ) if $obj->{progressListener};
 
-		$obj->executeP4glFile(
+		my $p4glRetval;
+		$p4glRetval = $obj->executeP4glFile(
 			$directory,
 			$module,
 			$p4glOptions
     );
+		if ( $p4glRetval == 0 )
+		{
+		  $retval = 0;
+		}
 		$i++;
 	}
 	return $retval;
@@ -261,35 +267,45 @@ sub executeP4glFile
 	my $wantedDir   = shift;
 	my $module      = shift;
 	my $p4glOptions = shift;
+  my $retval = 1;
 
   my $currentDir = getcwd();
-	chdir $wantedDir || 
+	unless (chdir $wantedDir)
+	{
 		$obj->{err}->error(
 		  "Mudar de directório para parsing de $module",
 		  "Error changing to $wantedDir :$!"
     );		
+	  return 0;
+  }
 
   # @todo Retirar dependencia de opçoes
 	my $rep = $obj->{repository};
 	my $databaseName = $rep->getDatabase();
 	my $p4glCommand = "p4gl --file=$module --database=$databaseName" .
-	  " $p4glOptions "
+	  " $p4glOptions"
   ;
 
 	$obj->{log}->log("$p4glCommand em " . getcwd() . "\n");
 	my $result;
-	if ( $result = `$p4glCommand` )
+	# Isto não está a detectar eventuais erros correctamente
+	# @todo Conseguir detectar se tenho p4gl algures no PATH
+	$result = `$p4glCommand`;
+	if ( $result =~ "^\$" )
+  {
+	  $obj->{log}->log("$module Parsed");
+	}
+	else
 	{
-	  $obj->{log}->log("Error executing p4gl :\n		$!");
+	  $obj->{log}->log("Error executing p4gl :\n		$! $result");
 		$obj->{err}->error(
 		  "Parsing de ficheiro",
 		  "Error parsing $module :$result"
     );		
+		$retval = 0;
 	}
-	else
-	{
-	  $obj->{log}->log("$module Parsed");
-	}
+
+	# Still missing
   #{"file", 1, 0, 'f'},
   #{"database", 1, 0, 'b'},
   #{"debug", 0, 0, 'd'},
@@ -302,7 +318,15 @@ sub executeP4glFile
   #{"document_directory", 1, 0, 'l'},
   #{"package", 1, 0, 'p'},
   #{"repository_options", 1, 0, 'o'},
-	chdir $currentDir;
+	unless (chdir $currentDir)
+	{
+		$obj->{err}->error(
+		  "Mudar para directório original $currentDir",
+		  "Error changing to $currentDir :$!"
+    );		
+	  return 0;
+	}
+	return $retval;
 }
 
 return 1;

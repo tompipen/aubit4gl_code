@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
@@ -7,14 +7,16 @@
 #  de uma forma global por forma a simular uma espécie de gestão de excepções
 # 
 #  Está implementado sob a forma de objecto
+#   @todo Conseguir que o strict funcione
 #
-#  Autor : Sérgio Ferreira
+#  $Id: Error.pm,v 1.2 2003-01-06 20:07:08 saferreira Exp $
+#  $Author: saferreira $
 #
 #  =========================================================================
 
 package FglDocumenter::Error;
 
-
+#use strict;
 use Tk;
 
 #  =========================================================================
@@ -31,10 +33,14 @@ sub new
 	  "errorListener"      => 0,
 	  "warningListener"    => 0,
 	  "errorFlag"          => 0,
+	  "errorStack"         => 0,
 	  "errorStr"           => "",
+	  "displayError"       => 0,
 	  "UI"                 => "GUI",
 	};
 	bless $error, "FglDocumenter::Error";
+	my @errorList = ();
+	$error->{errorStack} = \@errorList;
 	return $error;
 }
 
@@ -48,11 +54,22 @@ sub setUI
 }
 
 #  =========================================================================
+#  Afecta a flag que indica se devemos ver o erro ou apenas guarda-lo
+#  =========================================================================
+sub setDisplayError
+{
+  $obj = shift;
+	$obj->{displayError} = shift;
+}
+
+#  =========================================================================
 #  Limpa o(s) erro(s) registados
 #  =========================================================================
 sub clearAllErrors
 {
   my $obj = shift;
+	my @errorList = ();
+	$obj->{errorStack} = \@errorList;
 }
 
 #  =========================================================================
@@ -119,7 +136,7 @@ sub cuiFatalError
 	  \&$obj->{ErrorListener}($titulo,%text) if $obj->ErrorListener;
 	}
 	printf("ERRO Fatal: $titulo\n");
-	printf("\i$text\n");
+	printf("$text\n");
 }
 
 
@@ -131,6 +148,16 @@ sub error
   my $obj    = shift;
 	my $title  = shift;
 	my $text   = shift;
+	if ( ! $obj->{displayError} )
+	{
+	  my $errText = $title . "\n" . $text;
+		my $arrayRef = $obj->{errorStack};
+		my @array = @$arrayRef;
+		push(@array,$errText);
+		$obj->{errorStack} = \@array;
+		return;
+	}
+
 	if ( $obj->{UI} eq "CUI" )
 	{
 	  $obj->cuiError($title,$text);
@@ -166,7 +193,7 @@ sub cuiError
 	my $title  = shift;
 	my $text   = shift;
 	printf("ERRO: $titulo\n");
-	printf("\i$text\n");
+	printf("  $text\n");
 }
 
 #  =========================================================================
@@ -323,6 +350,17 @@ sub getErrorStr
 {
   my $obj = shift;
 	return $obj->{errorStr};
+}
+
+#  =========================================================================
+#  Devolve o ultimo erro registado no stack
+#  =========================================================================
+sub getLastError
+{
+  my $obj = shift;
+	$arrRef = $obj->{errorStack};
+  @array = @$arrRef;
+	return $array[$#array];
 }
 
 return true;

@@ -1,15 +1,30 @@
 
+/**
+ * @file
+ * Functions to String Buffer management.
+ */
 
 #include "StringBuffer.h"
 
 /**
- * Métodos que permitem o manuseamento de string buffers
+ * Allocates and initialize a new string buffer
+ *
+ * @return A pointer to the allocated string buffer
  */
+StringBuffer *newStringBuffer(void)
+{
+  StringBuffer *sb;
+	sb = constructStringBuffer();
+	initStringBuffer(sb);
+	return sb;
+}
 
 /**
- * Inicializações de default do string buffer
+ * Allocate space to a new StringBuffer.
+ *
+ * @return A pointer to the allocated memory to the string buffer.
  */
-StringBuffer *constructStringBuffer()
+StringBuffer *constructStringBuffer(void)
 {
 	StringBuffer *sb;
 
@@ -18,7 +33,9 @@ StringBuffer *constructStringBuffer()
 }
 
 /**
- * Inicialização 
+ * Initialize all the information of a string buffer.
+ *
+ * To create a new one you shold call construct and init
  *
  * @param sb Pointer para o string buffer a inicializar
  */
@@ -31,8 +48,14 @@ void initStringBuffer(StringBuffer *sb)
 }
 
 /**
- * Concatena uma string no final do string buffer alocando, se necessário
- * mais espaço em memória
+ * Appends the string buffer with a string at the end of the buffer.
+ *
+ * If it needs more space allocate it with a realoc.
+ *
+ * You should play some atention to the factor in order that this be faster.
+ *
+ * @param sb The string buffer to be appended.
+ * @param str The string that we want to append in the buffer.
  */
 void appendStringBuffer(StringBuffer *sb,char *str)
 {
@@ -69,7 +92,10 @@ void appendStringBuffer(StringBuffer *sb,char *str)
 }
 
 /**
- * Concatena um carater a um string buffer 
+ * Appends a char at the end of the string buffer.
+ *
+ * @param sb A pointer to the string buffer.
+ * @param ch The character to append at the end of the string buffer.
  */
 void appendCharStringBuffer(StringBuffer *sb,char ch)
 {
@@ -81,13 +107,14 @@ void appendCharStringBuffer(StringBuffer *sb,char ch)
 }
 
 /**
- * Limpa a memória ocupada por um string buffer e reinicializa-o com 
- * os defaults
+ * Clean all the memory used by a string buffer.
+ *
+ * @param sb A pointer to the string buffer to be cleaned.
  */
 void destroyStringBuffer(StringBuffer *sb)
 {
 	if ( sb->buffer != (char *)0 )
     free(sb->buffer);
-	initStringBuffer(sb);
+	free(sb);
 }
 

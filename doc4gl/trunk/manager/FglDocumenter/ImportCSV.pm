@@ -26,28 +26,26 @@
 #   call 
 #   comments
 #
-# Autor: Sérgio Ferreira
+# developed by Sergio Ferreira from Moredata (http://www.moredata.pt), 
+# Lisboa Portugal.
+#
+# @todo Terminar validaçao e correcao de valores de retorno
+#
+# $Id: ImportCSV.pm,v 1.2 2003-01-06 20:08:15 saferreira Exp $
 # 
 # ============================================================================
 
 package FglDocumenter::ImportCSV;
 
 
+use strict;
 use DBI;        
-
-use IO::File;
-use File::Find;
-use File::stat;
-use POSIX;
-use Shell;       
 
 #  =========================================================================
 #  Constructor
 #  =========================================================================
 sub new
 {
-				#my ($pkg) = @_;
-
 	my $importCSV = {
 	  "substDocComment"     => 0,
 	  "haveFunctionComment" => 0,
@@ -58,7 +56,8 @@ sub new
 	  "sendLineToLog"       => 0,
 	  "repository"          => 0,
 	  "dbh"                 => 0,
-    "progressListener"    => 0
+    "progressListener"    => 0,
+    "insertUndefProcess"  => 0,
 	};
 	bless $importCSV, "FglDocumenter::ImportCSV";
 	return $importCSV;
@@ -110,7 +109,7 @@ sub setRepository
 sub setSheetFile
 {
   my $obj = shift;
-  $obj->{sheetFile} = $_[0];
+  $obj->{sheetFile} = shift;
 }
 
 #  ===========================================================================
@@ -120,6 +119,16 @@ sub getSheetFile
 {
   my $obj = shift;
   return $obj->{sheetFile};
+}
+
+#  ===========================================================================
+#  Sets the property that defines if the process is to be inserted if its
+#  used and nor in reference table.
+#  ===========================================================================
+sub setInsertUndefProcess
+{
+  my $obj = shift;
+  $obj->{insertUndefProcess} = 1;
 }
 
 #  ===========================================================================
@@ -137,7 +146,7 @@ sub addProgressListener
 sub getNumActions
 {
   my $obj = shift;
-	my $numLines = lineCount($sheetFile);
+	my $numLines = $obj->lineCount($obj->{sheetFile});
 	my $numActions = $numLines * 2;
 	my $numActions++;
 	my $numActions++;
@@ -152,6 +161,7 @@ sub lineCount
   my $obj = shift;
 	my $numLines = 0;
   open(SHEET,"< $obj->{sheetFile}");
+	my $sheetRow;
 	foreach $sheetRow ( <SHEET> )
 	{
 	  $numLines++;
@@ -182,12 +192,13 @@ sub loadSheet
 	{
 		$obj->{err}->error(
 		  "Abertura de ficheiro",
-		  "Impossivel abrir ficheiro CSV\n($obj->{sheetFile}):$!"
+		  "Impossivel abrir ficheiro CSV :$obj->{sheetFile}:$!"
     );
 	  return 0;
 	}
 
   $obj->deleteAllFromTable("p4gl_excel");
+	my $sheetRow;
 	foreach $sheetRow ( <SHEET> )
 	{
 		my @row = split(/\	/,$sheetRow);
@@ -216,7 +227,7 @@ sub loadSheet
 	{
 		$obj->{err}->error(
 		  "Encerramento de ficheiro",
-		  "Impossivel fechar ficheiro CSV\n($sheetFile):$!"
+		  "Impossivel fechar ficheiro CSV\n($obj->{sheetFile}):$!"
     );
   }
 	return 1;
@@ -293,11 +304,13 @@ sub insertRowSheet
 sub normalize
 {
   my $obj = shift;
-	$obj->insertPackages();
-	$obj->insertModules();
-	$obj->insertFunctions();
-  $obj->completeFunctionsInformation();
-  $obj->dropTempTables();
+	my $retval;
+	$retval = $obj->insertPackages();
+	$retval = $obj->insertModules();
+	$retval = $obj->insertFunctions();
+  $retval = $obj->completeFunctionsInformation();
+  $retval = $obj->dropTempTables();
+	return $retval;
 }
 
 #  ===========================================================================
@@ -353,7 +366,7 @@ sub insertPackages
   if ( $obj->isPackage(".") == 1 )
 	{
 	  $obj->{log}->log("Default package exists");
-		return;
+		return 0;
 	}
 
 	$obj->{log}->log("Default package inserted");
@@ -369,7 +382,7 @@ sub insertPackages
 		  "Inserção de linha",
 	    "Can't prepare insert into p4gl_package\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
 
   $sth->execute() || 
@@ -379,6 +392,7 @@ sub insertPackages
     );
   undef $sth;
 	$obj->{log}->log("Packages inserted");
+	return 1;
 }
 
 #  ===========================================================================
@@ -397,7 +411,7 @@ sub isPackage
 		  "Selecção de package",
 	    "Can't prepare select from p4gl_package\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
   $sthPack->execute() || 
 		$obj->{err}->error(
@@ -436,15 +450,20 @@ sub insertModules
 	$obj->insertNonExistantModules();
 
   # Inserir os não existentes a partir da temporária
-  my $numMods = $obj->{dbh}->do(q%
+  my $numMods;
+  unless ( $numMods = $obj->{dbh}->do(q%
 	  insert into p4gl_module (id_package,module_name) 
 		  select id_package, module_name from missing_modules
-  %) || 
+  %))
+	{
 		$obj->{err}->error(
 		  "Inserçao de modulos",
 	    "Impossivel inserir em p4gl_module\n$DBI::errstr\n"
     );
+	  return 0;
+	}
 	$obj->{log}->log("Modules inserted in p4gl_modules : $numMods");
+	return 1;
 }
 
 #  ===========================================================================
@@ -489,18 +508,23 @@ sub insertFunctions
 	$obj->insertNonExistantFunctions();
 	$obj->{progressListener}(
 		  "Normalization","Inserting functions") if $obj->{progressListener};
-  my $numMods = $obj->{dbh}->do(qq%
+  my $numMods;
+  unless ( $numMods = $obj->{dbh}->do(qq%
 	  insert into p4gl_function (
 		  id_package, module_name, function_name, function_type
      ) 
 		 select id_package, module_name, function_name, function_type 
 		 from missing_functions
-  %) || 
+  %))
+  {
 		$obj->{err}->error(
 		 "inserir funçoes",
 	   "Impossivel inserir de tabela temporária em p4gl_function\n$DBI::errstr\n"
     );
+	  return 0;
+	}
 	$obj->{log}->log("Functions inserted in p4gl_function: $numMods");
+  return 1;
 }
 
 #  ===========================================================================
@@ -544,14 +568,18 @@ sub insertNonExistantFunctions
 sub dropTempTables
 {
   my $obj = shift;
-  $obj->{dbh}->do(q%
+  unless ( $obj->{dbh}->do(q%
 	  drop table missing_functions;
 	  drop table missing_modules;
-  %) || 
+  %))
+	{
 		$obj->{err}->error(
 		  "Limpeza de temporárias",
 	    "Impossivel limpar tabelas temporária missing_modules e functions \n$DBI::errstr\n"
     );
+    return 0;
+  }
+	return 1;
 }
 
 #  ===========================================================================
@@ -574,14 +602,17 @@ sub completeFunctionsInformation
 		  "Selecção de linha",
 	    "Can't prepare select from p4gl_function\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
 
-  $sthFI->execute() || 
+  unless ( $sthFI->execute() )
+	{
 		$obj->{err}->error(
 		  "Selecção de linha",
 	    "Can't select from p4gl_function\n$DBI::errstr\n"
     );
+	  return 0;
+	}
   my(@row);
   while (@row = $sthFI->fetchrow_array())
   {
@@ -596,6 +627,7 @@ sub completeFunctionsInformation
 	  $obj->completeFunctionInformation($row[0],$row[1]);
   }
   undef $sthFI;
+	return 1;
 }
 
 
@@ -660,7 +692,7 @@ sub deleteFunctionProcesses
   my $obj = shift;
   my $modName   = shift;
   my $funcName = shift;
-  $procsDeleted = $obj->{dbh}->do(qq%
+  my $procsDeleted = $obj->{dbh}->do(qq%
 	  delete from p4gl_fun_process 
 	    where module_name='$modName' and function_name='$funcName'
     %) || 
@@ -669,6 +701,28 @@ sub deleteFunctionProcesses
 	    "Impossivel limpar processos de funçoes\n$DBI::errstr\n"
     );
 	$obj->{log}->log("Processes of functions deleted: $procsDeleted");
+}
+
+#  ===========================================================================
+#  Insere um processo na tabela
+#  ===========================================================================
+sub insertProcess
+{
+  my $obj = shift;
+	my $idProcess = shift;
+	my $procsInserted;
+  unless ( $procsInserted = $obj->{dbh}->do(qq%
+	  insert into p4gl_process (id_process,den_process)
+		  values ('$idProcess','Change the description please')
+    %) )
+	{
+		$obj->{err}->error(
+		  "Inserçao de processo",
+	    "Impossivel inserir processo\n$DBI::errstr\n"
+    );
+	  return 0;
+  }
+	return 1;
 }
 
 #  ===========================================================================
@@ -688,7 +742,7 @@ sub validateProcesses
 		  "Selecção de linha",
 	    "Can't prepare select from p4gl_excel\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
   $sthVP->execute() || 
 		$obj->{err}->error(
@@ -704,6 +758,13 @@ sub validateProcesses
 		  $obj->{log}->log(
 				"Processes used on sheet file but not found in p4gl_process:"
       );
+			if ( $obj->{insertUndefProcess} )
+			{
+				$obj->insertProcess($row[0]);
+		    $obj->{log}->log(
+				  "      Inserted : $row[0]"
+        );
+			}
 		}
 		$obj->{log}->log("    $row[0]\n");
 		$i++;
@@ -752,7 +813,7 @@ sub insertFunctionComments
 		  "Selecção de linha",
 	    "Can't prepare select comments from p4gl_excel\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
   $sthSel->execute() || 
 		$obj->{err}->error(
@@ -777,7 +838,7 @@ sub insertFunctionComments
 		  "Alteração de linha",
 	    "Can't prepare update p4gl_function\n$DBI::errstr\n"
     );
-		return false;
+		return 0;
 	}
   $sth->bind_param(1,$functionComment);
   $sth->execute() ||
@@ -786,8 +847,8 @@ sub insertFunctionComments
 	    "Can't update p4gl_function\n$DBI::errstr\n"
     );
   undef $sth;
+	return 1;
 }
-
 
 return 1;
 

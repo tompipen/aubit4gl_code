@@ -11,17 +11,18 @@
 # @todo Ser esta classe que se preocupa em mudar para o directorio onde o 
 #       fonte esta
 # @todo replaceFgldoc esta confuso por causa de usar true e ou 1
+# @todo Tem de passar pelo menos por uma iteraçao de testes
 #
-# $Author: afalout $
-# $Id: ExportOneFgl.pm,v 1.1.1.1 2001-12-26 07:32:34 afalout Exp $
+# $Author: saferreira $
+# $Id: ExportOneFgl.pm,v 1.2 2003-01-06 20:07:25 saferreira Exp $
 # 
 # ============================================================================
 
 package FglDocumenter::ExportOneFgl;
 
-# Falta resolver o problema do IO
-#use strict;
+use strict;
 use POSIX;
+use IO::File;
 
 #  =========================================================================
 #  Constructor
@@ -46,6 +47,7 @@ sub new
 		"processList"         => (),
 		"parametersList"      => (),
     "insertEmptyComment"  => 0,
+    "SOURCE_FILE"         => 0,
 	};
 	bless $exportOneFgl, "FglDocumenter::ExportOneFgl";
 	return $exportOneFgl;
@@ -176,6 +178,7 @@ sub commentModule
 
 #  ===========================================================================
 #  Obtem o nome da função a partir da linha que contem a sua declaracao
+#    @todo : Resolver o problema de funçoes cujo nome contenha "function"
 #    @param $[0] Linha de texto que contem a declaração da função
 #    @return nome da função
 #  ===========================================================================
@@ -190,7 +193,7 @@ sub getFunctionName
 		$funcName =~ s/\(.*\)//;
 		# Passar para minusculas
 		$funcName = lc $funcName;
-		# Tirar 
+		# Tirar espaços no fim do nome
 		$funcName =~ s/ *$//;
 		return $funcName;
 	}
@@ -231,6 +234,7 @@ sub stripComments
 }
 
 
+
 #  ===========================================================================
 #  Lê e ignora (se fôr caso disso) os comentários de bloco que ocupam mais de
 #  uma linha
@@ -254,7 +258,7 @@ sub readBlockComments
 	if ( $strippedTextLine =~ /\{\*\*/ )
 	{
 		$obj->{haveFunctionComment} = 1;
-		if ( $obj->{replaceFgldoc} == true )
+		if ( $obj->{replaceFgldoc} == 1 )
 		{
 			$obj->{originalLine} =~ s/\{\*\*.*$//;
 			chomp($obj->{originalLine});
@@ -284,13 +288,16 @@ sub startModuleDocCommentInsert
 {
   my $obj = shift;
 	$obj->backup($obj->{sourceFile});
-	if ( ! open(SOURCE_FILE,"< $obj->{sourceFile}") )
+	my $SOURCE_FILE = new IO::File;
+	if ( ! $SOURCE_FILE->open("< $obj->{sourceFile}") )
 	{
 		$obj->{err}->error(
 		  "Abertura de ficheiro",
 		  "Can't open sourcefile \n($obj->{sourceFile}):$!"
     );
+		return 0;
 	}
+	$obj->{SOURCE_FILE} = $SOURCE_FILE;
 	$obj->{tmp_file} = "fgldocumenter.$$.tmp";
 	if ( ! open(OUT_FILE,"> $obj->{tmp_file}") ) 
 	{
@@ -298,7 +305,9 @@ sub startModuleDocCommentInsert
 		  "Abertura de ficheiro",
 		  "Can't open temporary destination file\n($obj->{tmp_file}):$!"
     );
+		return 0;
   }
+	return 1;
 }
 
 #  ===========================================================================
@@ -319,7 +328,7 @@ sub readUntilCommentEnd
   my $ch = "";
 	while ( ! ($ch eq "}") )
 	{
-		$ch = getc(SOURCE_FILE);
+		$ch = $obj->{SOURCE_FILE}->getc();
 		if ( $putInOriginalLine == 1 )
 		{
 		  $obj->{originalLine} .= $ch;
@@ -329,17 +338,16 @@ sub readUntilCommentEnd
 	# Retirar new line do fim do doc comment
 	if ( $putInOriginalLine == 0 )
 	{
-    $ch = getc(SOURCE_FILE);
+    $ch = $obj->{SOURCE_FILE}->getc();
 	  if ( !($ch eq "\n") )
 		{
-			# @todo Para usar o strict tenho de trabalhar com isto de outra forma
-		  IO::Handle::ungetc(SOURCE_FILE, "\n")
+		  $obj->{SOURCE_FILE}->ungetc("\n")
 		}
 	}
 }
 
 #  ===========================================================================
-#  Devolve true se detectar que se está a iniciar uma nova função.
+#  Devolve 1 se detectar que se está a iniciar uma nova função.
 #  Esta detecção é efectuada de acordo com a máquina de estados e com a 
 #  existência da palavra reservada FUNCTION fora de um comentário
 #
@@ -353,6 +361,9 @@ sub beginingFunction
 
 	# ??? Cuidado com function no meio de label(s) ou nomes de variáveis
 	#print("TextCode line $textCodeLine\n");
+
+	# Ignorar functions dentro de strings
+	$textCodeLine =~ s/".*"//g;
 	if ( !($textCodeLine =~ /function/i) )
 	{
 	  return 0;
@@ -369,14 +380,14 @@ sub beginingFunction
 }
 
 #  ===========================================================================
-#  Devolve true se detectar que na mesma linha se está a terminar e a iniciar
+#  Devolve 1 se detectar que na mesma linha se está a terminar e a iniciar
 #  uma função. Neste caso a linha terá de ser partida e colocado o comentário
 #  entre as duas funções.
 #
 #    @todo Detectar se isto serve mesmo para alguma coisa.
 #
 #    @param linha de código com comentários removidos
-#    @return true se terminar e começar linha, false caso contrário
+#    @return 1 se terminar e começar linha, 0 caso contrário
 #  ===========================================================================
 sub endingAndBeginingFunction
 {
@@ -397,7 +408,7 @@ sub insertComment
   my $obj = shift;
 	my $functionDeclaration = shift;
 	my $functionName        = shift;
-	if ( $obj->{haveFunctionComment} == 1 && $obj->{replaceFgldoc} == 1 )
+	if ( $obj->{haveFunctionComment} == 1 && $obj->{replaceFgldoc} == 0 )
 	{
     print OUT_FILE "$functionDeclaration";
 	  return;
@@ -435,7 +446,7 @@ sub breakLineAndInsertComment
 sub readLine
 {
   my $obj = shift;
-  my $line = readline(SOURCE_FILE);
+  my $line = readline($obj->{SOURCE_FILE});
 	return $line;
 }
 
@@ -456,7 +467,8 @@ sub backup
     );	
 	}
 
-	if ( ! open(SOURCE_FILE,"<$sourceFile") )
+	my $SOURCE_FILE = new IO::File;
+	if ( ! $SOURCE_FILE->open("<$sourceFile") )
 	{
 		$obj->{err}->error(
 		  "Abertura de ficheiro",
@@ -466,13 +478,14 @@ sub backup
 		# @todo Dar uma excepçao
 	}
 
+	$obj->{SOURCE_FILE} = $SOURCE_FILE;
 	my $line;
-	foreach  $line ( <SOURCE_FILE> )
+	foreach  $line ( $obj->{SOURCE_FILE} )
 	{
 	  print(BACK_FILE "$line");
 	}
 
-	if ( ! close(SOURCE_FILE) )
+	if ( ! close($obj->{SOURCE_FILE}) )
 	{
 		$obj->{err}->warning(
 		  "Fechar ficheiro",
@@ -496,7 +509,7 @@ sub backup
 sub finishModuleDocCommentInsert
 {
   my $obj = shift;
-  if( ! close(SOURCE_FILE) )
+  if( ! close($obj->{SOURCE_FILE}) )
 	{
 		$obj->{err}->warning(
 		  "Fechar ficheiro",

@@ -1,63 +1,37 @@
-
-/*
- *   p4gl : 4gl source file parser
+/**
+ * @file 
+ * 4gl language documentation parser.
  *
- *   Autor : Sergio Ferreira
- *   Main e funcoes de execucao de mais alto nivel.
+ * Main 
+ *
+ * @author : Sergio Ferreira
  */
-
-#include "y.tab.h"
 
 extern int exit_stat;
 
-main(argc,argv)
-int argc;
-char *argv[];
+//static char *rcsid = "$Id: m_p4gl.c,v 1.3 2003-01-06 20:16:37 saferreira Exp $";
+
+/**
+ * The main entry function.
+ *
+ * @param argc The argument count
+ * @param argv The argument values
+ */
+main(int argc,char *argv[])
 {
-	InitP4gl(argc,argv);
+	initP4glPhaseOne();
+	initArguments(argc,argv);
+	initP4glPhaseTwo();
 	P4glVerbose("4gl Parsing\n");
-	if( yyparse()==0)    /* Parse a source .4gl - Nao tem recup. de erros */
+	if( parseFgl())    /* Parse a source .4gl - Nao tem recup. de erros */
 	{
-	   OrderSymtab();       /* Orderna os arrays da tabela or nome */
-	   DumpSymtab();
-		 executeActions();
+	  OrderSymtab();       /* Orderna os arrays da tabela or nome */
+	  DumpSymtab();
+		executeActions();
 	}
 	else
 		printf("P4gl Parsing failed\n");
 	CleanP4gl();
 	exit(exit_stat);
-}
-
-
-/* 
- * Funcao executada quando nao identificou uma palavra como reservada
- */
-CopyToken(YYText,TokenType)
-char *YYText;
-int TokenType;
-{ 
-
-	/* printf("Vai copiar %s\n",YYText); */
-   switch(TokenType)
-	{
-	   case IDENTIFIER:
-			strcpy(yylval.y_sym,YYText);
-			break;
-
-		/*
-	   case FGL_COLOR:
-			strcpy(yylval.y_sym,YYText);
-			break;
-			*/
-
-		case STRING:
-			strcpy(yylval.y_string,YYText);
-			break;
-
-		case NUMBER:
-			yylval.y_num = atoi(YYText);
-			break;
-
-	}
 }
 

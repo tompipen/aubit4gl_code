@@ -1,104 +1,90 @@
+/**
+ * @file
+ * Several utility functions.
+ *
+ * This utility functions are not agregated by type. When necessary are added
+ * to this module.
+ *
+ * The kinds identificated are:
+ *   - Parser utility functions
+ *   - String format and transformation
+ *
+ */
+
 /*
-#  ============================================================================ 
-#
-#  Copyright 1996 DESPODATA - Lisboa, PORTUGAL
-#                                                        
-#  Divisao de desenvolvimento e producao de software.
-#  Rua da Prata 166 4.o Dto
-#  1100 LISBOA
-#                                                        
-#  Autor: Sergio Alexandre Ferreira
-#                                                        
-#  Data de criacao: Sat May 04 10:26:13 LISBOA 1996
-#
-#	This Module contains Proprietary and Confidential
-#	Information of Despodata - Consultores internacionais Lda.
-#
-#  Programa      : Métodos Utilitários diversos
-#  ---------------------------------------------------------------------------
-#  DESCRICAO: 
-#
-#  ---------------------------------------------------------------------------
-#  FUNCOES: 
-# 
-#  ---------------------------------------------------------------------------
-#  NOTAS:
-#
-#  ============================================================================ 
-*/
+ *
+ * Moredata - Lisboa, PORTUGAL
+ *                                                       
+ * $Author: saferreira $
+ * $Revision: 1.3 $
+ * $Date: 2003-01-06 20:16:49 $
+ *                                                       
+ */
 
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "p4gl_symtab.h"
 
 
-/****************************************************************************
- *  DESCRICAO : Escreve os erros num ficheiro de erros e no standard error.
- *              Consoante o primeiro argumento sai ou continua.
- *  Argumentos variaveis ( varargs )
- ****************************************************************************/
-/*VARARGS0*/
-P4glError(va_alist)
-va_dcl
+/**
+ *  Write the parsing erros in the error file and in standard output.
+ *
+ *  Its an variable argument function.
+ *
+ *  @param errorType The type of the error:
+ *     - 0 : Exit the program
+ *     - otherwise : Do not exit
+ *  @param fmt The format of the message to sprintf
+ */
+void P4glError(int errorType,char *fmt,...)
 {
-	int tipoErro;              /* Se a 0 e para fazer exit */
 	va_list args;
-	char *fmt;
 	char  ErroTemporario[256];
 	char *NmDir;
 
-	va_start(args);
+	va_start(args,fmt);
 
-	NmDir = getcwd((char *)0,256);
-	tipoErro = va_arg(args,int); /* 1.o argumento para fazer exit ou nao */
-
-	fmt     = va_arg(args,char *);
+  NmDir = getcwd((char *)0,256);
 	(void)vsprintf(ErroTemporario,fmt,args);
 	va_end(args);
 
-	if ( P4glCb.errorToDb == 1 ) {
-    	RegisterErrorInDb(ErroTemporario);
-    }
-	//fprintf(stdout,"Log: %s\n",Log);
+	if ( P4glCb.errorToDb == 1 )
+    RegisterErrorInDb(ErroTemporario);
 	fprintf(stdout,"p4gl: %s, %s",FicheiroInput,ErroTemporario);
 	/* ??? Devia meter a data */
-
-	if (Log) {
-		fprintf(Log,"p4gl: Directory: %s - File: %s - %s",
+	fprintf(Log,"p4gl: Directoria: %s - Ficheiro: %s - %s",
 			  NmDir,FicheiroInput,ErroTemporario);
-    }
 
 	exit_stat = 1;
-	if ( tipoErro == 0 )
+	if ( errorType == 0 )
 	{
-      CleanP4gl();
+    CleanP4gl();
 		exit(1);
 	}
-
-    exit(0);
 }
 
 
-/*
- * Faz o tratamento de avisos quando necessario 
+/**
+ * Warning utility function.
+ *
+ * The function use variable arguments.
+ *
+ *  @param Level The level of the warning:
+ *     - 0 : Exit the program
+ *     - otherwise : Do not exit
+ *  @param fmt The format of the message to sprintf
  */
-/*VARARGS0*/
-P4glWarning(va_alist)
-va_dcl
+void P4glWarning(int errorLevel,char *fmt,...)
 {
 	va_list args;
-	char *fmt;
 	char  ErroTemporario[512];
-	int   Level;
 
-	va_start(args);
+	va_start(args,fmt);
 
-	Level = va_arg(args,int);
-	if ( Level > WarningLevel ) return;
+	if ( errorLevel > WarningLevel ) return;
 
-	fmt     = va_arg(args,char *);
 	(void)vsprintf(ErroTemporario,fmt,args);
 	va_end(args);
 	if ( P4glCb.errorToDb == 1 )
@@ -108,46 +94,45 @@ va_dcl
 	fprintf(P4glCb.fl_erros_ptr,"Warning: %s",ErroTemporario);
 }
 
-/*
- * Envia mensagens de verbose quando seleccionado
+/**
+ * Sending verbose messages to standard output.
+ *
+ * It uses variable arguments.
+ *
+ * @param fmt The format of the message to sprintf
  */
-/*VARARGS0*/
-P4glVerbose(va_alist)
-va_dcl
+void P4glVerbose(char *fmt,...)
 {
 	va_list args;
-	char *fmt;
 	char  ErroTemporario[128];
 
 	if (!verbose)
 		return;
-	va_start(args);
+	va_start(args,fmt);
 
-	fmt     = va_arg(args,char *);
 	(void)vsprintf(ErroTemporario,fmt,args);
 	va_end(args);
 
 	fprintf(stdout,"%s",ErroTemporario);
 }
 
-/*VARARGS0*/
-/* 
- * Funcao que mostra mensagem de debug caso este estaja ligado.
- * Devia poder trabalhar por nivel de debug.
+/**
+ * Sending debug messages to standard output.
+ *
+ * It works only when the debug flag is on.
+ *
+ * @param fmt The format of the message to sprintf
  */
-P4glDebug(va_alist)
-va_dcl
+void P4glDebug(char *fmt,...)
 {
 	va_list args;
-	char *fmt;
 	char  ErroTemporario[128];
 
    if (dbug == 0 )
 		return;
 
-	va_start(args);
+	va_start(args,fmt);
 
-	fmt     = va_arg(args,char *);
 	(void)vsprintf(ErroTemporario,fmt,args);
 	va_end(args);
 
@@ -156,11 +141,14 @@ va_dcl
 }
 
 
-/*
- * Remove espacos no fim da string
+/**
+ * Remove spaces in the end of the string.
+ *
+ * It does not alocate space to do it. The work is done in the original string.
+ *
+ * @param str The String to be trimmed
  */
-RClipp(str)
-char *str;
+void RClipp(char *str)
 {
    register int i;
 	int len;
@@ -173,20 +161,25 @@ char *str;
 }
 
 
-Upshift(str)
-char *str;
+/**
+ * Upshift the characters of a string.
+ *
+ * @param str The string to uppered
+ */
+void Upshift(char *str)
 {
-   register int i;
+  register int i;
 
 	for (i=0 ; str[i] != '\0' ; i++)
 		str[i] = toupper(str[i]);
 }
 
 /**
- * Faz downshift de todos os caracteres da string enviada como parametro
+ * Makes downshift in all characters of a string
+ *
+ * @param str The string to be lowered
  */
-Downshift(str)
-char *str;
+void Downshift(char *str)
 {
   register int i;
 
@@ -195,9 +188,16 @@ char *str;
 }
    
    
-
-copystr(StrDest,StrOrig)
-char *StrDest, *StrOrig;
+/**
+ * Copy the content of a string into another one.
+ *
+ * Assume that the destination string have enough space to put the original
+ * string.
+ *
+ * @param StrDest The destination string.
+ * @param StrOrig The origin string.
+ */
+void copystr(char *StrDest,char *StrOrig)
 {
    if (StrOrig == (char*)0 )
 		StrDest = (char *)0;
@@ -205,31 +205,34 @@ char *StrDest, *StrOrig;
 		strcpy(StrDest,StrOrig);
 }
 
-/*
- * Tira as aspas que estao no principio e fim da string recebida
- * como argumento
- * <A NAME=tiraAspas>TiraAspas</A>
- */
 
-tiraAspas(str)
-char *str;
+/**
+ * Strip the quotes that are in the beginning and end of a string.
+ *
+ * @param str The string where to strip the quotes.
+ */
+void tiraAspas(char *str)
 {
   str[0] = ' ';
   str[strlen(str)-1] = '\0';
 }
 
 
-/*VARARGS0*/
-/*
- *  Aloca espaco para a string de destino e faz vsprintf para o destino
- *  Quem chama esta funcao tem de se preocupar com os free()(s)
- *  TODO - Testar se memória acabou
+/**
+ *  Allocate space to the destination string and insert it the variable
+ *  arguments received.
+ *  
+ *  The deallocation process is a task for the calling functions.
+ *
+ *  @todo : Testar se memória acabou
+ *  @todo The cicle in va_start is a possible cause of errors
+ *
+ *  @param fmt The format to sprintf.
+ *  @return A pointer to the allocated string.
  */
-char *CpStr(va_alist)
-va_dcl
+char *CpStr(char *fmt,...)
 {
 	va_list args;
-	char *fmt;
 	char *destinoTemporario;
 	char *RetStr;
 	int size = 2048;
@@ -239,8 +242,7 @@ va_dcl
 	destinoTemporario = (char *)malloc(size);
 	while (1)
   {
-	  va_start(args);
-	  fmt = va_arg(args,char *);
+	  va_start(args,fmt);
 	  n = vsnprintf(destinoTemporario,size,fmt,args);
 	  va_end(args);
 
@@ -260,10 +262,12 @@ va_dcl
 
 
 /* 
- * Devolve o BaseName da variavel (primeiro nome antes de encontrar um ponto)
+ * Finds a takes the basename in a string content.
+ * The basename is the name before "." or "[".
+ *
+ * @param str The string to be transformated just for having basename
  */
-BaseName(str)
-char *str;
+void BaseName(char *str)
 {
    register int i;
 
@@ -275,10 +279,16 @@ char *str;
 }
 
 /**
- * Devolve o nome do ficheiro enviado como parametro sem a respectiva extensão
+ * Gets the name of a file without the extension (if so).
+ *
+ * Note that the returned string is allocated dynamicaly.
+ * It is responsability of the calling function to free the memory when doesent
+ * need it anymore.
+ *
+ * @param str The string with the file name.
+ * @return The extension stripped file name.
  */
-char *fileWithoutExtension(str)
-char *str;
+char *fileWithoutExtension(char *str)
 { 
   register int i;
 	char *retStr;
@@ -290,11 +300,18 @@ char *str;
 	return retStr;
 }
 
-/*
+/**
  * Returns the substring of str, starting in start a finishing in finish
+ *
+ * Note that the returned string is allocated dynamicaly. The free of the 
+ * memory is calling function responsability.
+ *
+ * @param str The string to substring.
+ * @param start Start index of the substring wanted.
+ * @param finish finishing index of the substring wanted.
+ * @return A pointer substring allocated and extracted.
  */
-char *substr(str, start, finish)
-char *str; short start; short finish;
+char *substr(char *str, short start, short finish)
 {
    register sh;
 	char *retstr;
@@ -308,12 +325,17 @@ char *str; short start; short finish;
 }
 
 
-/*
- * Verifica se uma string esta vazia (se nao tem nada, espacos ou tab(s)
+/**
+ * Verify if a substring is empty.
+ * It is considered empty with spaces and tab(s).
+ *
+ * Not used.
+ *
+ * @param The string to be verified
+ * @return - 1 The string is empty 
+ *         - 0 Otherwise
  */
-
-IsEmpty(Str)
-char *Str;
+int IsEmpty(char *Str)
 {
    register int i, len;
 

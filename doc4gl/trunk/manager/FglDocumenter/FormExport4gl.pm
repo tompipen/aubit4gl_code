@@ -9,16 +9,17 @@
 #
 #  @todo - Backup file
 #  @todo - Temp file name
+#  @todo - Strict a funcionar
 #
-#  $Author: afalout $
-#  $Id: FormExport4gl.pm,v 1.1.1.1 2001-12-26 07:32:24 afalout Exp $
+#  $Author: saferreira $
+#  $Id: FormExport4gl.pm,v 1.2 2003-01-06 20:07:38 saferreira Exp $
 #
 #  =========================================================================
 
-package FglDocumenter::FormExport4gl;
-
+#use strict;
 use Tk::Dialog;
 
+package FglDocumenter::FormExport4gl;
 
 #  =========================================================================
 #  Constructor
@@ -37,6 +38,7 @@ sub new
     "replaceFgldoc"  => 0,
     "okListener"     => 0,
     "cancelListener" => 0,
+    "lh"             => 0,
 	};
 	bless $formExport4gl, "FglDocumenter::FormExport4gl";
 	return $formExport4gl;
@@ -99,6 +101,15 @@ sub setReplaceFglDoc()
 }
 
 #  =========================================================================
+#  Assign the object language handler
+#  =========================================================================
+sub setLanguageHandler()
+{
+  my $obj = shift;
+	$obj->{lh} = shift;
+}
+
+#  =========================================================================
 #  Mostra valores e inicia a recepção de dados no form
 #  =========================================================================
 sub show
@@ -106,12 +117,14 @@ sub show
   my $obj = shift;
   $obj->{form} = $main::mw->Toplevel();
   
-  $obj->{form}->title("Opções de exportação para fontes 4gl");
-  my $height = 400;
-  my $width  = 250;
-	FglDocumenter::Utils::setWindowAtCenter($obj->{form},$width,$height);
+	my $lh = $obj->{lh};
+  $obj->{form}->title(
+    $lh->maketext("4gl source export options")
+	);
 
-	my $lblDirectory = $obj->{form}->Label(-text => "Location (Directory)");
+	my $lblDirectory = $obj->{form}->Label(
+	  -text => $lh->maketext("Location")
+	);
 	my $txtDirectory = $obj->{form}->Entry(
     -width => 64, 
 	  -textvariable => \$obj->{sourceDir},
@@ -147,6 +160,7 @@ sub show
 	  -command => [ \&cancel, $obj ]
   );
 	$okButton->grid($cancelButton);
+	$obj->{form}->Popup();
 }
 
 
@@ -227,6 +241,7 @@ sub chooseDirectory
 	my @modules = $obj->getFglModules($obj->{sourceDir});
 	$lbModules->delete(0,$lbModules->size);
 	$lbModules->insert('end',@modules);
+	$obj->{form}->raise();
 }
 
 #  =========================================================================

@@ -9,6 +9,7 @@
 #  os sources
 #
 #  É implementado sob a forma de objecto
+#  Não usado
 #
 #  Autor : Sérgio Ferreira
 #

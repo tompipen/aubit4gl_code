@@ -1,4 +1,11 @@
 
+/**
+ * @file
+ * Generate the fgldoc in static html to this module.
+ * This action is also made by the manager but implies the existance of 
+ * information in the repository.
+ */
+
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -11,30 +18,10 @@ FILE *o;
 char *methodSummary = "Sumário dos métodos";
 char *methodDetail  = "Detalhe dos métodos";
 
-/**
- * Gera as páginas web correspondentes ao Fgl doc do módulo corrente
- */
-
-genFglDoc()
-{
-
-  openModuleDocFile();
-	printDocHeader();
-	printFieldSummary();
-	printMethodsSummary();
-	printMethodsDetail();
-	printFieldDetail();
-	printDocTrailer();
-  closeModuleDocFile();
-
-	genMethodList();
-}
-
-
 /** 
- *  Abre o ficheiro onde vai ser escrita a documentação do módulo
+ *  Open the file where the information should be writed.
  */
-openModuleDocFile()
+static void openModuleDocFile(void)
 {
 	char *baseModName = (char *)fileWithoutExtension(P4glCb.module);
   P4glCb.docFileName = (char *)malloc(
@@ -48,52 +35,26 @@ openModuleDocFile()
   o = P4glCb.docFilePtr;
 }
 
-/**
- * Escreve o header da documentação de um módulo
- */
-printDocHeader()
-{
-  printHeader();
-  fprintf(o,"<HR>\n");
-  printHeaderNavbar();
-	printHeaderModuleData();
-}
 
 /**
- * Escreve a tabela de resumo com os respectivos links de todos os métodos
- * do módulo
+ * Writes the trailer documentation for the module.
  */
-printMethodsSummary()
-{
-  register int i;
-
-  printMethodSummaryHeader();
-	/* TODO - Tem de saber quantos métodos existem */
-  for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
-    printMethodSummaryBody(i);
-  printMethodSummaryTrailer();
-}
-
-
-
-/**
- * Escreve o trailer do método do módulo
- */
-writeModuleDocTrailer()
+static void writeModuleDocTrailer(void)
 {
 }
 
 /**
- * Fecha o ficheiro
+ * Closes the file
  */
-closeModuleDocFile()
+static void closeModuleDocFile(void)
 {
   fclose(o);
 }
 
-
-
-printHeader()
+/**
+ * Print the header of the html.
+ */
+static void printHeader(void)
 {
   fprintf(o,"<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0 Frameset//EN''");
 	fprintf(o,"http://www.w3.org/tr/rec-html40/frameset.dtd'>\n");
@@ -117,7 +78,10 @@ printHeader()
   fprintf(o,"<BODY BGCOLOR='white'>\n");
 }
 
-printHeaderNavbar()
+/**
+ * Prints the navigation bar with menu for the diferent actions.
+ */
+static void printHeaderNavbar(void)
 {
   fprintf(o,"<!-- ========== START OF NAVBAR ========== -->\n");
   fprintf(o,"<A NAME='navbar_top'><!-- --></A>\n");
@@ -183,8 +147,10 @@ printHeaderNavbar()
   fprintf(o,"<!-- =========== END OF NAVBAR =========== -->\n");
 }
 
-
-printHeaderModuleData()
+/**
+ * Prints the header of module documentation.
+ */
+static void printHeaderModuleData(void)
 {
   fprintf(o,"<!-- ======== START OF CLASS DATA ======== -->");
   fprintf(o,"<H2>Module  %s</H2>\n",P4glCb.module);
@@ -200,15 +166,19 @@ printHeaderModuleData()
   fprintf(o,"<P>\n");
 }
 
-
-printFieldSummary()
+/**
+ * Print the modular variable summary
+ */
+static void printFieldSummary(void)
 {
   /* TODO - Variáveis do módulo */
   fprintf(o,"<!-- =========== FIELD SUMMARY =========== -->\n");
 }
 
-
-printMethodSummaryHeader()
+/**
+ * Prints the function summary table
+ */
+static void printMethodSummaryHeader(void)
 {
   fprintf(o,"&nbsp;\n");
   fprintf(o,"<!-- ========== METHOD SUMMARY =========== -->\n");
@@ -225,15 +195,17 @@ printMethodSummaryHeader()
 }
 
 /**
- * Imprime a descrição do sumário dos métodos
+ * Prints the function summary description
+ *
+ * @param idxFunction The function index
  */
-printMethodSummaryBody(int idxFunction)
+static void printMethodSummaryBody(int idxFunction)
 {
   char *functionName;
 	char *comments;
 
   functionName = FUNCAO(idxFunction).name;
-	comments     = FUNCAO(idxFunction).fglDoc;
+	comments     = FUNCAO(idxFunction).parsedDoc->buffer;
 
   fprintf(o,"<TR BGCOLOR='white' CLASS='TableRowColor'>\n");
   fprintf(o,"<TD ALIGN='right' VALIGN='top' WIDTH='1%'>");
@@ -258,6 +230,19 @@ printMethodSummaryTrailer()
   fprintf(o,"</TABLE>\n");
 }
 
+/**
+ * Write the summary with the links to the detail information.
+ */
+static void printMethodsSummary(void)
+{
+  register int i;
+
+  printMethodSummaryHeader();
+	/* TODO - Tem de saber quantos métodos existem */
+  for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
+    printMethodSummaryBody(i);
+  printMethodSummaryTrailer();
+}
 
 /* TODO - Obter javadoc para variáveis */
 printFieldDetail()
@@ -267,9 +252,8 @@ printFieldDetail()
 
 /**
  * Escreve a documentação de uma método
- * @param idxFunction Indice da função que se está a documentar
  */
-printMethodsDetail(int idxFunction)
+static void printMethodsDetail(void)
 {
   register int i;
 
@@ -306,7 +290,7 @@ printMethodDetailBody(int idxFunction)
 	char *comments;
 
   functionName = FUNCAO(idxFunction).name;
-	comments     = FUNCAO(idxFunction).fglDoc;
+	comments     = FUNCAO(idxFunction).parsedDoc->buffer;
 
   fprintf(o,"<A NAME='%s()'><!-- --></A><H3>\n",functionName);
   fprintf(o,"%s</H3>\n",functionName);
@@ -420,8 +404,38 @@ genMethodList()
   for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
   {
     functionName = FUNCAO(i).name;
-	  comments     = FUNCAO(i).fglDoc;
+	  comments     = FUNCAO(i).parsedDoc->buffer;
 		fprintf(mo,"%s\n",functionName);
   }
   fclose(mo);
 }
+
+/**
+ * Writes de documentation html header.
+ */
+static void printDocHeader(void)
+{
+  printHeader();
+  fprintf(o,"<HR>\n");
+  printHeaderNavbar();
+	printHeaderModuleData();
+}
+
+
+/**
+ * Generate the html web page corresponding to the fgldoc of current module.
+ */
+void genFglDoc(void)
+{
+  openModuleDocFile();
+	printDocHeader();
+	printFieldSummary();
+	printMethodsSummary();
+	printMethodsDetail();
+	printFieldDetail();
+	printDocTrailer();
+  closeModuleDocFile();
+
+	genMethodList();
+}
+

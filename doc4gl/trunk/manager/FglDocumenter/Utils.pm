@@ -1,13 +1,16 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #  =========================================================================
 #
 #  Subrotinas utilitárias diversas
 # 
+#  @todo - Meter strict a funcionar
 #
 #  Autor : Sérgio Ferreira
 #
 #  =========================================================================
+
+use strict;
 
 package FglDocumenter::Utils;
 
@@ -17,9 +20,9 @@ package FglDocumenter::Utils;
 #  =========================================================================
 sub getCenterY
 {
-  $winHeight = shift;
-	$screenHeight = $main::mw->screenheight();
-  $y = $screenHeight / 2 - $winHeight / 2;
+  my $winHeight = shift;
+	my $screenHeight = $main::mw->screenheight();
+  my $y = $screenHeight / 2 - $winHeight / 2;
 	return $y;
 }
 
@@ -29,9 +32,9 @@ sub getCenterY
 #  =========================================================================
 sub getCenterX
 {
-  $winWidth = shift;
-	$screenWidth = $main::mw->screenwidth();
-  $x = $screenWidth / 2 - $winWidth / 2;
+  my $winWidth = shift;
+	my $screenWidth = $main::mw->screenwidth();
+  my $x = $screenWidth / 2 - $winWidth / 2;
 	return $x;
 }
 
@@ -50,12 +53,37 @@ sub setWindowAtCenter
 	# So para ver se funciona
 	# Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
 	# janelas hardcoded
-	$with = $main::mw->screenwidth();
-	$height = $main::mw->screenheight();
-  $x = getCenterX($width);
-	$y = getCenterY($height);
+	my $with = $main::mw->screenwidth();
+	my $height = $main::mw->screenheight();
+  my $x = getCenterX($width);
+	my $y = getCenterY($height);
 	$win->geometry("${height}x$width+$x+$y");
 
 }
 
-return true;
+
+#  =========================================================================
+#  Afecta a geometria da janela por forma a que esta fique ao centro
+#    @param janela 
+#    @param with - Largura da janela
+#    @param height - Altura da janela
+#  =========================================================================
+sub setFormAtCenter
+{	
+	my $win = shift;
+  #my $width = shift;
+	#my $height = shift;
+
+	# So para ver se funciona
+	# Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
+	# janelas hardcoded
+	my $width = $win->width;
+	my $height = $win->height;
+  my $x = getCenterX($width);
+	my $y = getCenterY($height);
+	$win->geometry("${height}x$width+$x+$y");
+	$win->update();
+
+}
+
+1;

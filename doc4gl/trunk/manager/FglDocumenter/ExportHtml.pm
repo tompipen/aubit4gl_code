@@ -4,21 +4,22 @@
 # 
 #  Geração da documentação de um package ou conjunto de 4gl(s)
 #
-#  @todo A toolbar podia ser reutilizada
+#  @todo : A toolbar podia ser reutilizada
+#  @todo : Usar o objecto base com herditariedade
+#  @todo : Localizar mensagens e erros
+#  @todo : Substituir dies por gestão de erros correcta
+#  @todo : O HTML localizado não está completo
 #
-#  $Author: afalout $
-#  $Date: 2001-12-26 07:32:37 $
-#  $Id: ExportHtml.pm,v 1.1.1.1 2001-12-26 07:32:37 afalout Exp $
+#  $Author: saferreira $
+#  $Date: 2003-01-06 20:07:21 $
+#  $Id: ExportHtml.pm,v 1.2 2003-01-06 20:07:21 saferreira Exp $
 #
 # ============================================================================
 
 package FglDocumenter::ExportHtml;
 
 use strict;
-use File::Find;
-use File::stat;
 use POSIX;
-use Shell;       
 use FglDocumenter::FglDocLocation;
 
 
@@ -45,15 +46,10 @@ sub new
     "files"              => 0,
 	  "packageMethods"     => 0,
 	  "methods"            => 0,
-	  "methodSummaryStr"   => "Resumo de Funções",
-	  "packageStr"         => "Directório",
 	  "packagesStr"        => "Directórios",
-	  "allModulesStr"      => "Todos os módulos",
-	  "moduleStr"          => "Módulo",
 	  "modulesStr"         => "Módulos",
-	  "overviewStr"        => "Introdução",
-	  "methodDetail"       => "Descrição de funções",
 	  "moduleInformation"  => 0,
+	  "lh"                 => 0,
 	};
 	bless $exportHtml, "FglDocumenter::ExportHtml";
 	return $exportHtml;
@@ -182,6 +178,15 @@ sub setMethods
 }
 
 #  ===========================================================================
+#  Afecta a propriedade do objecto onde se guarda o handler da linguagem
+#  ===========================================================================
+sub setLanguageHandler
+{
+  my $obj = shift;
+  $obj->{lh} = shift;
+}
+
+#  ===========================================================================
 #  Obtem o nome do package a partir no nome do ficheiro
 #  ===========================================================================
 sub getPackageName
@@ -194,6 +199,7 @@ sub getPackageName
 
 #  ===========================================================================
 #  Selecciona os packages existentes no repositorio e guarda-os numa lista
+#  @todo : Passar isto para objecto de acesso a repositório
 #  ===========================================================================
 sub selectPackages
 {
@@ -224,7 +230,7 @@ sub selectPackages
 }
 
 #  ===========================================================================
-#  Selecciona todos os módulos e carrega-os numa lista da classe
+#  Selecciona todos os processos e carrega-os numa lista 
 #  ===========================================================================
 sub selectProcesses
 {
@@ -433,7 +439,7 @@ sub createDirTree
 
 #  ===========================================================================
 #  Gera o html com a lista de modulos para o processo enviado como parametro
-#    @todo Terminar esta implementaçao
+#    @todo : Rever a lista de todas as funções inclusivamente o target.
 #  ===========================================================================
 sub genModulesForProcess
 {
@@ -452,6 +458,7 @@ sub genModulesForProcess
 	}
   open(MODPROCHTML, "> $modulesHtmlName") || 
 	  die "Cant open $modulesHtmlName : $!";
+	my $str = $obj->{lh}->maketext("All functions");
   printf MODPROCHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
 <!--NewPage-->
@@ -470,8 +477,8 @@ sub genModulesForProcess
 
 <TABLE BORDER="0" WIDTH="100%">
   <TR><TD NOWRAP><FONT CLASS="FrameItemFont">
-		  <A HREF="AllModules.html" TARGET="modulesFrame">
-			  $obj->{allModulesStr}
+		  <A HREF="AllFunctions.html" TARGET="descriptionsFrame">
+				$str
 			</A>
 	</FONT>
   <P>
@@ -485,7 +492,7 @@ sub genModulesForProcess
     printf(MODPROCHTML qq|
 <BR>
 <FONT CLASS="FrameItemFont">
-<A HREF="../%s.html" TARGET="descriptionsFrame">%s</A></FONT>
+<A HREF="%s.html" TARGET="descriptionsFrame">%s</A></FONT>
 |,
 		  $module,$module
     );
@@ -699,10 +706,12 @@ sub genTreeJs
   my $obj = shift;
 	my $treejsName = $obj->{destinationDir} . "/tree.js";
   open(TREEJS, "> $treejsName") || die "Cant open $treejsName";
+  my $str = $obj->{lh}->maketext("Processes");
+  my $str2 = $obj->{lh}->maketext("All modules");
   printf TREEJS qq|
-  foldersTree = gFld("<b>Processos</b>", "", "")
+  foldersTree = gFld("<b>$str</b>", "", "")
   insDoc(foldersTree, 
-	  gLnk("$obj->{allModulesStr}", "", "all_processes.html", "modulesFrame"))
+	  gLnk("$str2", "", "AllModules.html", "modulesFrame"))
 |;
 	$obj->genJsForProcess("top","foldersTree");
 }
@@ -718,6 +727,7 @@ sub genJsForProcess
   my $parentProcess = shift;
   my $lastFolder = shift;
   my $refProcs = $obj->selectDetailProcesses($parentProcess);
+	# @todo : receber uma hash com disp_process.
 	my @processList = @$refProcs;
 	if ( $#processList >= 0 )
 	{
@@ -1335,6 +1345,21 @@ Link to <A HREF="overview-summary.html">Non-frame version.</A></NOFRAMES>
 </HTML>
 |;
   close (INDEXHTML);
+
+	my $overviewHtmlName = $obj->{destinationDir} . "/overview-summary.html";
+  open(OVERVIEWHTML, "> $overviewHtmlName") || die "Cant open $overviewHtmlName";
+  printf OVERVIEWHTML qq|
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd>
+<!--NewPage-->
+<HTML>
+<HEAD>
+  <!-- Generated by fgldoc on ??? TODO ???? -->
+  <TITLE> Generated Documentation (Untitled) </TITLE>
+</HEAD>
+<B><P>Fgldoc - 4gl documentation tool</B>
+</HTML>
+|;
+  close (OVERVIEWHTML);
 }
 
 #  ===========================================================================
@@ -1358,6 +1383,8 @@ sub genAllProcessesHtml()
 	my $allProcessesHtmlName = $obj->{destinationDir} . "/all_processes.html";
   open(ALLPROCHTML, "> $allProcessesHtmlName") || 
 	  die "Cant open $allProcessesHtmlName $!";
+	my $str = $obj->{lh}->maketext("All modules");
+	my $str2 = $obj->{lh}->maketext("Package");
   print ALLPROCHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
 <!--NewPage-->
@@ -1380,12 +1407,14 @@ sub genAllProcessesHtml()
 <TABLE BORDER="0" WIDTH="100%">
   <TR><TD NOWRAP><FONT CLASS="FrameItemFont">
 		<A HREF="AllModules.html" TARGET="modulesFrame">
-		  $obj->{allModulesStr}
+		  $str
 		</A>
 	</FONT>
   <P>
 
-  <FONT size="+1" CLASS="FrameHeadingFont">$obj->{packageStr}</FONT>
+  <FONT size="+1" CLASS="FrameHeadingFont">
+		$str2
+	</FONT>
 |;
 
 	my $arrayRef = $obj->{processes};
@@ -1444,6 +1473,9 @@ sub genNavBar
 	{
 	  $moduleBgColor = "#FFFFFF";
 	}
+	my $str = $obj->{lh}->maketext("Overview");
+	my $str2 = $obj->{lh}->maketext("Package");
+  my $str3 = $obj->{lh}->maketext("Module");
   my $navString = qq|
 <!-- ========== START OF NAVBAR ========== -->
 <A NAME="$locationAnchor"><!-- --></A>
@@ -1456,13 +1488,19 @@ sub genNavBar
     <TR ALIGN="center" VALIGN="top">
 
       <TD BGCOLOR="$overviewBgColor" CLASS="NavBarCell1Rev"> &nbsp;
-		    <FONT CLASS="NavBarFont1Rev"><B>$obj->{overviewStr}</B></FONT>&nbsp;</TD>
+		    <FONT CLASS="NavBarFont1Rev"><B>
+				  $str
+				</B></FONT>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <FONT CLASS="$packageBgColor">$obj->{packageStr}</FONT>&nbsp;</TD>
+		    <FONT CLASS="$packageBgColor">
+				  $str2
+				</FONT>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <FONT CLASS="$moduleBgColor">$obj->{moduleStr}</FONT>&nbsp;</TD>
+		    <FONT CLASS="$moduleBgColor">
+				  $str3
+				</FONT>&nbsp;</TD>
   
 		<!-- Por enquanto nenhum destes se usa
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
@@ -1619,6 +1657,7 @@ sub selectModuleInformation
 	$obj->{moduleInformation} = \%moduleInformation;
 
 	$obj->selectModuleFunctions();
+	$obj->selectModuleTableUsage();
 	$obj->selectModuleVariables();
 }
 
@@ -1666,6 +1705,46 @@ sub selectModuleFunctions
 }
 
 #  ===========================================================================
+#  Selecciona a informaçao sobre as utilizações de tabelas num módulo.
+#  ===========================================================================
+sub selectModuleTableUsage
+{
+  my $obj = shift;
+	my $modRef = $obj->{moduleInformation};
+	my $module = $modRef->{moduleName};
+  my $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT unique table_name
+		FROM p4gl_table_usage
+		WHERE module_name = '$module' 
+	%);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de modulo",
+		  "Can't prepare select from p4gl_table_usage\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de tabela",
+	    "Can't select from p4gl_table_usage\n$DBI::errstr"
+    );
+  my(@row);
+  my(@tableUsageList);
+  while (@row = $sth->fetchrow_array())
+  {
+		printf("TABLE USAGE $row[0]");
+		my $tableName = $row[0];
+		push(@tableUsageList,$tableName);
+  }
+
+	$modRef->{tableUsageList} = \@tableUsageList;
+	$obj->{moduleInformation} = $modRef;
+  undef $sth;
+}
+
+#  ===========================================================================
 #  Selecciona a informaçao sobre as variaveis modulares 
 #  ===========================================================================
 sub selectModuleVariables
@@ -1688,6 +1767,7 @@ sub genHtmlForModule
 	$obj->printModuleHeader($module);
 	$obj->printFieldSummary($module);
 	$obj->printMethodsSummary($module);
+	$obj->printTableUsageSummary($module);
 	$obj->printMethodsDetail($module);
 	$obj->printFieldDetail($module);
 	$obj->printDocTrailer($module);
@@ -1776,7 +1856,7 @@ sub printMethodsSummary
 
   $obj->printMethodSummaryHeader();
 	my $i;
-  for ( $i = 0 ; $i < $#functionList ; $i++ )
+  for ( $i = 0 ; $i <= $#functionList ; $i++ )
 	{
 		my $funcInfRef = $functionList[$i];
     $obj->printMethodSummaryBody($funcInfRef);
@@ -1790,7 +1870,7 @@ sub printMethodsSummary
 sub printMethodSummaryHeader
 {
   my $obj = shift;
-	my $str = $obj->{methodSummaryStr};
+	my $str = $obj->{lh}->maketext("Function Summary");
 
   print MODULEHTML qq|
   &nbsp;
@@ -1829,6 +1909,66 @@ sub printMethodSummaryBody
 }
 
 #  ===========================================================================
+#  Escreve a tabela de resumo das tabelas usadas no módulo
+#  ===========================================================================
+sub printTableUsageSummary
+{
+  my $obj = shift;
+
+	# Desreferenciar / desempacotar informaçao
+	my $modRef = $obj->{moduleInformation};
+	my %moduleInformation = %$modRef;
+	my $tableRef = $moduleInformation{tableUsageList};
+	my @tableUsageList = @$tableRef;
+
+  $obj->printTableUsageSummaryHeader();
+	my $i;
+  for ( $i = 0 ; $i <= $#tableUsageList ; $i++ )
+	{
+		my $tableName = $tableUsageList[$i];
+    $obj->printTableUsageSummaryBody($tableName);
+	}
+  print MODULEHTML "</TABLE>\n";
+}
+
+#  ===========================================================================
+#  Imprime o header do sumario da utilização de tabelas
+#  ===========================================================================
+sub printTableUsageSummaryHeader
+{
+  my $obj = shift;
+	my $str = $obj->{lh}->maketext("Table Usage Summary");
+
+  print MODULEHTML qq|
+  &nbsp;
+  <!-- ========== TABLE USAGE SUMMARY =========== -->
+
+  <A NAME='table_summary'><!-- --></A>
+  <TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0' WIDTH='100%'>
+    <TR BGCOLOR='#CCCCFF' CLASS='TableHeadingColor'>
+      <TD COLSPAN=2><FONT SIZE='+2'><B>$str</B></FONT>
+			</TD>
+    </TR>
+|;
+}
+
+#  ===========================================================================
+# Imprime a descrição do sumário de utilização de tabelas.
+#  ===========================================================================
+sub printTableUsageSummaryBody
+{
+  my $obj = shift;
+  my $tableName = shift;
+
+  print MODULEHTML qq|
+  <TR BGCOLOR='white' CLASS='TableRowColor'>
+		<TD><CODE><B>$tableName</B></CODE>
+		</TD>
+  </TR>
+|;
+}
+
+#  ===========================================================================
 #  Escreve a documentação de uma método
 #  @param idxFunction Indice da função que se está a documentar
 #  ===========================================================================
@@ -1858,6 +1998,7 @@ sub printMethodsDetail
 sub printMethodDetailHeader
 {
   my $obj = shift;
+	my $str = $obj->{lh}->maketext("Function Detail");
   print MODULEHTML qq|
   <!-- ============ METHOD DETAIL ========== -->
   <HR>
@@ -1865,7 +2006,9 @@ sub printMethodDetailHeader
   <TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0' WIDTH='100%'>
   <TR BGCOLOR='#CCCCFF' CLASS='TableHeadingColor'>
   <TD COLSPAN=1><FONT SIZE='+2'>
-  <B>$obj->{methodDetail}</B></FONT></TD>
+  <B>
+	  $str
+	</B></FONT></TD>
   </TR>
   </TABLE>
 |;

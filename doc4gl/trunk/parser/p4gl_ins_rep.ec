@@ -1,3 +1,9 @@
+/**
+ * @file 
+ * Inserting information into repository (inslib version).
+ * Note : This repository format is no longer used
+ *
+ */
 
 /*===========================================================================
  *

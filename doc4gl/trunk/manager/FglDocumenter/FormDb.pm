@@ -2,48 +2,59 @@
 
 #  =========================================================================
 #
-#  Implements methods in Perl/Tk for the form to allow configuration of
-#  connection parameters to connect to Informix database.
-#
 #  Implementa métodos em Perl/Tk para um form que permite efectuar as
 #  configurações para estabelecimento de conexões a uma BD Informix
+#
+#  @todo Passar a objecto
 #
 #  Autor : Sérgio Ferreira
 #
 #  =========================================================================
 
+use strict;
+
 package FglDocumenter::FormDb;
 
-#  ===========================================================================
-#  Afecta o objecto de gestão de erros usado
-#  ===========================================================================
-sub setError
-{
-  $err = shift;
-}
+use FglDocumenter::BaseClass;
+use FglDocumenter::DatabaseConnection;
 
-#  ===========================================================================
-#  Afecta a referência para o objecto de gestão de log(s)
-#  ===========================================================================
-sub setLog
-{
-  $log = shift;
-}
+use vars qw(@ISA);
+@ISA = ("FglDocumenter::BaseClass");
 
+sub new
+{
+	my $pkg = shift;
+	my $formDb = $pkg->allocate();
+
+	$formDb->{okListener} =0;
+
+	$formDb->{form}           = 0;
+  $formDb->{okListener}     = 0;
+  $formDb->{cancelListener} = 0;
+  $formDb->{dbIfmxDir}      = 0;
+  $formDb->{sqlHosts}       = 0;
+  $formDb->{server}         = 0;
+  $formDb->{user}           = 0;
+  $formDb->{password}       = 0;
+  $formDb->{database}       = 0;
+	return $formDb;
+}
 
 #  =========================================================================
 #  Afecta a propriedade relativa ao directório onde o informix está instalado
 #  =========================================================================
 sub setInformixDir
 {
-  $dbIfmxDir = $_[0];
+	my $obj = shift;
+  $obj->{dbIfmxDir} = shift;
 }
 
 #  =========================================================================
 #  =========================================================================
 sub getInformixDir
 {
-  return $dbIfmxDir;
+	my $obj = shift;
+  return $obj->{dbIfmxDir};
 }
 
 
@@ -51,70 +62,88 @@ sub getInformixDir
 #  =========================================================================
 sub setSqlHosts
 {
-  $sqlHosts = $_[0];
+	my $obj = shift;
+  $obj->{sqlHosts} = shift;
 }
 
 #  =========================================================================
 #  =========================================================================
 sub getSqlHosts
 {
-  return $sqlHosts;
+	my $obj = shift;
+  return $obj->{sqlHosts};
 }
 
 #  =========================================================================
+#  Afecta o informixserver do objecto
 #  =========================================================================
 sub setServer
 {
-  $server = $_[0];
+	my $obj = shift;
+  $obj->{server} = shift;
 }
 
 #  =========================================================================
+#  Devolve o informixserver afectado no objecto
 #  =========================================================================
 sub getServer
 {
-  return $server;
+	my $obj = shift;
+  return $obj->{server};
 }
 
 #  =========================================================================
+#  Afecta o utilizador registado no objecto
 #  =========================================================================
 sub setUser
 {
-  $user = $_[0];
+	my $obj = shift;
+  $obj->{user} = shift;
 }
 
 #  =========================================================================
+#  Devolve o utilizador registado no objecto
 #  =========================================================================
 sub getUser
 {
-  return $user;
+	my $obj = shift;
+  return $obj->{user};
 }
 
 #  =========================================================================
+#  Afecta a passord do objecto
 #  =========================================================================
 sub setPassword
 {
-  $password = $_[0];
+	my $obj = shift;
+  $obj->{password} = shift;
 }
 
 #  =========================================================================
+#  Devolve a password registada no objecto
 #  =========================================================================
 sub getPassword
 {
-  return $password;
+	my $obj = shift;
+  return $obj->{password};
 }
 
 #  =========================================================================
+#  Afecta o nome da base de dados do objecto
 #  =========================================================================
 sub setDatabase
 {
-  $database = $_[0];
+	my $obj = shift;
+  $obj->{database} = shift;
 }
 
 #  =========================================================================
+#  Devolve o nome da base de dados do objecto
 #  =========================================================================
 sub getDatabase
 {
-  return $database;
+	my $obj = shift;
+  return $obj->{database};
 }
 
 #  =========================================================================
@@ -123,62 +152,85 @@ sub getDatabase
 #  =========================================================================
 sub showDbForm
 {
-	$dbConnection = shift;
-  setInformixDir($dbConnection->getInformixDir());
-  setSqlHosts($dbConnection->getHost());
-  setServer($dbConnection->getServer());
-  setDatabase($dbConnection->getDatabase());
-  setUser($dbConnection->getUser());
-  setPassword($dbConnection->getPassword());
+	my $obj = shift;
+	$obj->{dbConnection} = shift;
+	my $dbConnection = $obj->{dbConnection};
+  $obj->setInformixDir($dbConnection->getInformixDir());
+  $obj->setSqlHosts($dbConnection->getHost());
+  $obj->setServer($dbConnection->getServer());
+  $obj->setDatabase($dbConnection->getDatabase());
+  $obj->setUser($dbConnection->getUser());
+  $obj->setPassword($dbConnection->getPassword());
 
-  $dbForm = MainWindow->new;
+	my $lh = $obj->{lh};
 
-  if ( 1 ) {
-	  $dbForm->title("Database access configuration");
-    } else {
-	  $dbForm->title("Configuração acesso a base de dados");
-    }
+  $obj->{dbForm} = MainWindow->new;
+	my $dbForm = $obj->{dbForm};
+  
+  $dbForm->title( 
+	  $lh->maketext("Database access configuration")
+	);
 
-  $height = 300;
-  $width = 200;
-	FglDocumenter::Utils::setWindowAtCenter($dbForm,$width,$height);
-
-	$lblIfmxDir = $dbForm->Label(-text => "INFORMIXDIR");
-	$txtIfmxDir = $dbForm->Entry(-width => 20, -textvariable => \$dbIfmxDir );
+	my $lblIfmxDir = $dbForm->Label(-text => "INFORMIXDIR");
+	my $txtIfmxDir = $dbForm->Entry(-width => 20, 
+	  -textvariable => \$obj->{dbIfmxDir}
+	);
 	$lblIfmxDir->grid($txtIfmxDir);
 
-	$lblSqlHosts = $dbForm->Label(-text => "SQLHOST");
-	$txtSqlHosts = $dbForm->Entry(-width => 20, -textvariable => \$sqlHosts );
+	my $lblSqlHosts = $dbForm->Label(-text => "SQLHOST");
+	my $txtSqlHosts = $dbForm->Entry(-width => 20, 
+	  -textvariable => \$obj->{sqlHosts}
+	);
 	$lblSqlHosts->grid($txtSqlHosts);
 
-	$lblServer = $dbForm->Label(-text => "SERVER");
-	$txtServer = $dbForm->Entry(-width => 20, -textvariable => \$server );
+	my $lblServer = $dbForm->Label(-text => "SERVER");
+	my $txtServer = $dbForm->Entry(-width => 20, 
+	  -textvariable => \$obj->{server}
+	);
 	$lblServer->grid($txtServer);
 
-	$lblUser = $dbForm->Label(-text => "Login");
-	$txtUser = $dbForm->Entry(-width => 20, -textvariable => \$user );
+	my $lblUser = $dbForm->Label(
+	  -text => $lh->maketext("Login")
+	);
+	my $txtUser = $dbForm->Entry(-width => 20, 
+	  -textvariable => \$obj->{user}
+	);
 	$lblUser->grid($txtUser);
 
-	$lblPassword = $dbForm->Label(-text => "Password");
-	$txtPassword = $dbForm->Entry(
+	my $lblPassword = $dbForm->Label(
+	  -text => $lh->maketext("Password")
+	);
+	my $txtPassword = $dbForm->Entry(
 		-show => '*',
 	  -width => 20, 
-		-textvariable => \$password
+		-textvariable => \$obj->{password}
 	);
 	$lblPassword->grid($txtPassword);
 
-	$lblDatabase = $dbForm->Label(-text => "Database");
-	$txtDatabase = $dbForm->Entry(-width => 20, -textvariable => \$database);
+	my $lblDatabase = $dbForm->Label(
+	  -text => $lh->maketext("Database")
+	);
+	my $txtDatabase = $dbForm->Entry(-width => 20, 
+	  -textvariable => \$obj->{database}
+	);
 
 	# Botão para teste da conexão à BD
-	$testButton = $dbForm->Button(-text => "Test",
-	  -command => \&testDbConnection
+	my $testButton = $dbForm->Button(
+	  -text => $lh->maketext("Test") ,
+	  -command => [ \&testDbConnection, $obj ]
   );
 	$lblDatabase->grid($txtDatabase, $testButton);
 
-	$okButton = $dbForm->Button(-text => "OK", -command => \&okFormDb);
-	$cancelButton=$dbForm->Button(-text => "Cancel", -command => \&cancelFormDb);
+	my $okButton = $dbForm->Button(
+	  -text => $lh->maketext("OK"),
+	  -command => [ \&okFormDb, $obj ]
+	);
+	my $cancelButton = $dbForm->Button(
+	  -text => $lh->maketext("Cancel"),
+		-command => [ \&cancelFormDb, $obj ]
+	);
 	$okButton->grid($cancelButton);
+	$dbForm->Popup();
 }
 
 #  =========================================================================
@@ -187,42 +239,28 @@ sub showDbForm
 #  =========================================================================
 sub testDbConnection
 {
-	$dbConn = new FglDocumenter::DatabaseConnection(
-    $dbIfmxDir,
-    $server,
-    $sqlHosts,
-    $database,
-    $user,
-    $password
+	my $obj = shift;
+	my $lh = $obj->{lh};
+	$obj->{dbConn} = new FglDocumenter::DatabaseConnection(
+    $obj->{dbIfmxDir},
+    $obj->{server},
+    $obj->{sqlHosts},
+    $obj->{database},
+    $obj->{user},
+    $obj->{password}
 	);
-	$dbConn->setError($err);
-	$dbConn->connect();
+	$obj->{dbConn}->setError($obj->{err});
+	$obj->{dbConn}->connect();
 	if ( ! $DBI::err )
 	{
-		if ( 1 ) {
-			$form = $main::mw->Dialog(
-			  -title => "Test connection",
-		    -text => "Connection established"
-		    );
-
-        } else {
-			$form = $main::mw->Dialog(
-			  -title => "Testar conexão",
-		    -text => "Conexão estabelecida"
-		    );
-        }
+		my $form = $main::mw->Dialog(
+		  -title => $lh->maketext("Connection test"),
+	    -text => $lh->maketext("Connection established")
+    );
 	  $form->Show();
-	} else {
-
-		$form = $main::mw->Dialog(
-		  -title => "Test connection",
-	    -text => "Connection failed"
-		    );
-
-	  $form->Show();
-
-    }
-	$dbConn->disconnect();
+	}
+	$obj->{dbConn}->disconnect();
+	$obj->{dbForm}->raise();
 }
 
 #  =========================================================================
@@ -230,16 +268,17 @@ sub testDbConnection
 #  =========================================================================
 sub okFormDb
 {
-  $dbConnection->setInformixDir(getInformixDir());
-  $dbConnection->setHost(getSqlHosts());
-  $dbConnection->setServer(getServer());
-  $dbConnection->setDatabase(getDatabase());
-  $dbConnection->setUser(getUser());
-  $dbConnection->setPassword(getPassword());
+	my $obj = shift;
+  $obj->{dbConnection}->setInformixDir(getInformixDir());
+  $obj->{dbConnection}->setHost(getSqlHosts());
+  $obj->{dbConnection}->setServer(getServer());
+  $obj->{dbConnection}->setDatabase(getDatabase());
+  $obj->{dbConnection}->setUser(getUser());
+  $obj->{dbConnection}->setPassword(getPassword());
 
 	# ??? Eventualmente faltam destroys aos sub-widgets
-  $dbForm->destroy;
-  \&$okListener() if $okListener;
+  $obj->{dbForm}->destroy;
+  $obj->{okListener}() if $obj->{okListener};
 
 }
 
@@ -248,8 +287,9 @@ sub okFormDb
 #  =========================================================================
 sub cancelFormDb
 {
-  $dbForm->destroy;
-  \&$cancelListener() if $cancelListener;
+	my $obj = shift;
+  $obj->{dbForm}->destroy;
+  $obj->{cancelListener}() if $obj->{cancelListener};
 }
 
 #  =========================================================================
@@ -258,26 +298,31 @@ sub cancelFormDb
 #  =========================================================================
 sub showLoginForm
 {
-  $dbForm = MainWindow->new;
-  if ( 1 ) {
-	  $dbForm->title("Database access configuration");
-    } else {
-	  $dbForm->title("Configuração acesso a base de dados");
-    }
-
-  $height = 300;
-  $width = 200;
+	my $obj = shift;
+	my $lh = $obj->{lh};
+  $obj->{loginForm} = MainWindow->new;
+  
+	my $dbForm = $obj->{loginForm};
+  $dbForm->title(
+	  $lh->maketext("Login")
+	);
+  my $height = 300;
+  my $width = 200;
 	Utils::setWindowAtCenter($dbForm,$width,$height);
 
-	$lblUser = $dbForm->Label(-text => "Login");
-	$txtUser = $dbForm->Entry(-width => 20, -textvariable => $user );
+	my $lblUser = $dbForm->Label(
+	  -text => $lh->maketext("Login to database")
+	);
+	my $txtUser = $dbForm->Entry(-width => 20, -textvariable => $obj->{user} );
 	$lblUser->grid($txtUser);
 
-	$lblPassword = $dbForm->Label(-text => "Password");
-	$txtPassword = $dbForm->Entry(
+	my $lblPassword = $dbForm->Label(
+	  -text => $lh->maketext("Password")
+	);
+	my $txtPassword = $dbForm->Entry(
 		-show => '*',
 	  -width => 20, 
-	  -textvariable => $password
+	  -textvariable => $obj->{password}
   );
 	$lblPassword->grid($txtPassword);
 }
@@ -287,7 +332,8 @@ sub showLoginForm
 #  =========================================================================
 sub addOkListener
 {
-  $okListener = shift;
+	my $obj = shift;
+  $obj->{okListener} = shift;
 }
 
 #  =========================================================================
@@ -295,8 +341,9 @@ sub addOkListener
 #  =========================================================================
 sub addCancelListener
 {
-  $cancelListener = shift;
+	my $obj = shift;
+  $obj->{cancelListener} = shift;
 }
 
-return true;
+1;
 
