@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.14 2004-01-17 09:37:27 mikeaubury Exp $
+# $Id: memfile.c,v 1.15 2004-03-05 04:36:10 afalout Exp $
 #
 */
 
@@ -97,6 +97,9 @@ A4GL_memfile_fopen (char *f, char *mode)
       if (fread (buff, buff_len, 1, in) != 1)
 	{
 	  printf ("Unable to read file into buffer\n");
+	  //FIXME - use exit_with()
+	  exit (1);
+ 
 	}
     }
 
