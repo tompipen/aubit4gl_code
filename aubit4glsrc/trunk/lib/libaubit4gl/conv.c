@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.46 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: conv.c,v 1.47 2003-06-25 11:36:58 mikeaubury Exp $
 #
 */
 
@@ -812,8 +812,18 @@ A4GL_stoi (void *aa, void *zi, int sz_ignore)
   zz = strlen (a);
   errno = 0;
   *z = (short) strtol (a, &eptr, 10);
-  if (eptr - a < zz)
-    return 0;
+
+
+    if (eptr - a < zz) {
+            A4GL_debug("Fail check 1 a=%p eptr=%p zz=%d",a,eptr,zz);
+            strtod (a, &eptr);
+            if (eptr - a < zz) {
+                    return 0;
+            }
+            A4GL_debug("Close shave - its a float..");
+    }
+
+
   if (errno != 0 || *eptr != 0 || eptr == a)
     {
       return 0;
@@ -1362,6 +1372,7 @@ A4GL_dectoi (void *zz, void *aa, int sz_ignore)
   a = (short *) aa;
   z = (char *) zz;
   A4GL_dectos (z, buff, 64);
+  A4GL_debug("--> %s\n",buff);
   return A4GL_stoi (buff, a, 0);
 }
 

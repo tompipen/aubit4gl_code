@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.10 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: dmy.c,v 1.11 2003-06-25 11:36:58 mikeaubury Exp $
 #
 */
 
@@ -185,6 +185,7 @@ A4GL_using_date (int dn, char *us)
     }
 
   A4GL_get_date (dn, &d, &m, &y);
+  A4GL_debug("Got date : %d %d %d",d,m,y);
   dno = A4GL_day_in_week (d, m, y);
   /*
      g_dnamesfull[dno]);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.12 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: dates.c,v 1.13 2003-06-25 11:36:58 mikeaubury Exp $
 #
 */
 
@@ -229,7 +229,7 @@ get_yr (int d)
   int e;
   int h, l;
   A4GL_debug ("D=%d\n", d);
-  if (d == DATE_INVALID || d < 1000)
+  if (d == DATE_INVALID )
     return d;
   e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
   h = A4GL_gen_dateno (31, 12, e);
@@ -299,11 +299,16 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
   int i, leap;
   int year;
   A4GL_debug ("d=%d\n", d);
-  if (d == DATE_INVALID || d < 10000)
+  *day=0;
+  *mn=0;
+  *yr=0;
+  if (d == DATE_INVALID )
     return 0;
   year = get_yr (d);
+  A4GL_debug("YEAR = %d\n",year);
   *day = d - A4GL_gen_dateno (1, 1, year) + 1;
   leap = leap_year (year);
+  A4GL_debug("leap=%d\n",leap);
   for (i = 1; i <= 12; i++)
     {
       *day -= days_in_month[leap][i];
@@ -315,6 +320,7 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
     }
   *mn = i;
   *yr = year;
+  A4GL_debug("All done..");
   return 1;
 }
 
