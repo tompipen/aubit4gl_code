@@ -57,7 +57,7 @@
     int 		gen_field_list 		(FIELD *** field_list, struct s_form_dets *formdets, int a,va_list * ap);
     void 		int_form_driver 	(FORM * form, int a);
     int 		copy_field_data 	(struct s_form_dets * form);
-    void 		idisp_arr_fields 	(int n, int fonly, int attr, ...);
+    void 		iarr_arr_fields 	(int n, int fonly, int attr, ...);
     int 		get_curr_field_col 	(FORM * mform);
 	void 		default_attributes 	(FIELD * f, int dtype);
     FIELD * 	make_field 			(int, int, int, int);
@@ -89,6 +89,8 @@
     int 		find_ptr_debug 		(void *ptr);
     int 		getprompt_line 		(void);
 	void 		tui_print 			(char *fmt,...);
+	
+	int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */
     void set_array_mode(int type);

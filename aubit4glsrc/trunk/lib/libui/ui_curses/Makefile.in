@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-11-23 06:05:35 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-03-24 15:07:00 mikeaubury Exp $
 #
 
 LIBROOT=../..
@@ -66,7 +66,7 @@ endif
 ##                              Source files
 ## ==================================================================
 
-ALLOBJ=curslib.o newpanels.o ioform.o colours.o array.o iarray.o prompt.o
+ALLOBJ=curslib.o dump_scr.o newpanels.o ioform.o colours.o array.o iarray.o prompt.o
 
 ## ==================================================================
 ##                              Targets

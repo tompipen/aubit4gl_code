@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.9 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: ioform.c,v 1.10 2003-03-24 15:07:01 mikeaubury Exp $
 #*/
 
 /**
@@ -101,7 +101,12 @@ char *			read_string_dup 	(FILE * ofile);
 struct s_form_dets *getfromform 	(FORM * f);
 char *			string_width 		(char *a);
 WINDOW *		create_window 		(char *name, int x, int y, int w, int h, int border);
-void 			set_fields2 		(int nv, struct BINDING * vars, int d, int n,...);
+
+
+#ifdef OBSOLETE
+void 	set_fields2 		(int nv, struct BINDING * vars, int d, int n,...);
+#endif
+
 int 			display_fields 		(FORM * mform, int n, ...);
 extern char * 	find_attribute 		(struct s_form_dets *f, int field_no);
 void 			debug_print_field_opts (FIELD * a);
@@ -157,6 +162,7 @@ int 			curr_metric_is_last (void);
 int 			curr_metric_is_first (void);
 int 			curr_metric_is_veryfirst (void);
 int 			curr_metric_is_verylast (void);
+int curses_to_aubit(int a);
 
 /*
 =====================================================================
@@ -523,7 +529,7 @@ form_loop (struct s_screenio * s)
 {
   struct s_form_dets *form;
   int a;
-  int int_form_driver_ret = 0;
+  //int int_form_driver_ret = 0;
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   FORM *mform;
@@ -1347,6 +1353,7 @@ set_fields (struct s_screenio *sio)
 
 
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -1413,6 +1420,7 @@ set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
       exitwith ("No active field");
     }
 }
+#endif
 
 
 
@@ -1999,7 +2007,7 @@ set_init_pop_attr (FIELD * field, int attr)
  * @todo Describe function
  */
 void
-idisp_arr_fields (int n, int fonly, int attr, ...)
+iarr_arr_fields (int n, int fonly, int attr, ...)
 {
   int a;
   va_list ap;
@@ -2017,7 +2025,6 @@ idisp_arr_fields (int n, int fonly, int attr, ...)
 #ifdef DEBUG
   {    debug ("Genfldlist 5");  }
 #endif
-  debug ("idisp_arr_fields");
   nofields = gen_field_list (&field_list, formdets, n, &ap);
   if (fonly && nofields >= 0)
     nofields = 0;

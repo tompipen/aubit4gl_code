@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.16 2003-03-07 09:40:52 mikeaubury Exp $
+# $Id: curslib.c,v 1.17 2003-03-24 15:07:01 mikeaubury Exp $
 #*/
 
 /**
@@ -551,7 +551,7 @@ aclfgl_fgl_drawbox (int n)
 {
 int x, y, w, h, c;
 int xx, yy;
-void *ptr;
+//void *ptr=0;
 void *win;
   c = 0;
   if (n == 5)
@@ -560,31 +560,34 @@ void *win;
   y = pop_int ();
   w = pop_int ();
   h = pop_int ();
+  debug("In fgl_drawbox");
   debug("h=%d y+h=%d",h,y+h);
+  //win=curscr;
   win = find_pointer ("screen", WINCODE);
+  win=window_on_top();
 
   #define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
 
-  for (xx = x + 1; xx <= x + w - 1; xx++)
+  for (xx = x + 1; xx <x + w - 1; xx++)
     {
-      PMOVE( xx,y,'A');
+      PMOVE( xx,y,ACS_HLINE);
 
-      PMOVE (xx,y+h,'B');
+      PMOVE (xx,y+h-1,ACS_HLINE);
     }
 
-  for (yy = y + 1; yy <= y + h - 1; yy++)
+  for (yy = y + 1; yy < y + h - 1; yy++)
     {
-      PMOVE ( x,yy ,'|');
+      PMOVE ( x,yy ,ACS_VLINE);
 
-  	PMOVE ( x+w,yy ,'|');
+  	PMOVE ( x+w-1,yy ,ACS_VLINE);
     }
 
-  PMOVE ( x,y-1 ,'p');
-  PMOVE (x+w,y ,'q');
+  PMOVE ( x,y ,ACS_ULCORNER);
+  PMOVE (x+w-1,y ,ACS_URCORNER);
 
-  PMOVE (x,y + h ,'b');
+  PMOVE (x,y + h-1 ,ACS_LLCORNER);
 
-  PMOVE (x+w,y + h ,'d');
+  PMOVE (x+w-1,y + h-1 ,ACS_LRCORNER);
 
   mja_refresh ();
   return 0;

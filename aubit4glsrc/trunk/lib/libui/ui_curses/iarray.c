@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.6 2003-03-24 12:02:18 mikeaubury Exp $
+# $Id: iarray.c,v 1.7 2003-03-24 15:07:01 mikeaubury Exp $
 #*/
 
 /**
@@ -88,7 +88,7 @@ iclear_srec_line (struct struct_screen_record *srec, int line)
     {
       push_char (" ");
     }
-  idisp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, line + 1, 0,
+  iarr_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, line + 1, 0,
 		    0);
 }
 
@@ -159,13 +159,13 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   if (disp->highlight)
     {
       debug ("With highlight");
-      idisp_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line,
+      iarr_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line,
 			0, 0);
     }
   else
     {
       debug ("Without highlight");
-      idisp_arr_fields (disp->nbind, fonly, 0, srec2, scr_line, 0, 0);
+      iarr_arr_fields (disp->nbind, fonly, 0, srec2, scr_line, 0, 0);
     }
 }
 
@@ -364,7 +364,7 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
  * @param
  */
 static int
-idisp_loop (struct s_inp_arr *arr)
+iarr_loop (struct s_inp_arr *arr)
 {
   struct s_form_dets *form;
   int a;
@@ -441,6 +441,7 @@ idisp_loop (struct s_inp_arr *arr)
 
   if (a > 0 && a < 255)
     {
+	debug("KEY PRESS - DO SOMETHING WITH IT ?");
       int_form_driver (mform, a);
       int_form_driver (mform, REQ_VALIDATION);
     }
@@ -459,6 +460,7 @@ idisp_loop (struct s_inp_arr *arr)
     {
       a = KEY_NPAGE;
     }
+
   if (a == key_val ("PREV"))
     {
       a = KEY_PPAGE;
@@ -930,7 +932,7 @@ inp_arr (struct s_inp_arr *disp, void *ptr, char *srecname, int attrib)
       return -10;
     }
   debug ("disparr4");
-  return idisp_loop (disp);
+  return iarr_loop (disp);
 }
 
 

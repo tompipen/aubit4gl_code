@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.19 2003-03-10 09:09:45 mikeaubury Exp $
+# $Id: newpanels.c,v 1.20 2003-03-24 15:07:01 mikeaubury Exp $
 #*/
 
 /**
@@ -1480,7 +1480,13 @@ int clr_end_of_line=0;
       gui_print (a, s);
       mja_gotoxy (x, y);
 
-	line_length=get_curr_width()-x;
+
+	if (iscurrborder()) {
+		line_length=get_curr_width()-x;
+	} else {
+		line_length=get_curr_width()-x+1;
+	}
+
 	line_length++;
 	if (strlen(s)>line_length) {
 		debug("'%s' seems to long to display... - I'm gonna trim it..",s);
@@ -2575,7 +2581,12 @@ screen_width (void)
 {
   if (scr_width == -1)
     {
+      
       getmaxyx (stdscr, scr_height, scr_width);
+      if (acl_getenv("COLUMNS")) {
+		scr_width =atoi(acl_getenv("COLUMNS"));
+		scr_height=atoi(acl_getenv("LINES"));
+      }
     }
   debug ("screen_width returning %d", scr_width);
   return scr_width;
@@ -2591,6 +2602,11 @@ screen_height (void)
   if (scr_width == -1)
     {
       getmaxyx (stdscr, scr_height, scr_width);
+      if (acl_getenv("COLUMNS")) {
+                scr_width =atoi(acl_getenv("COLUMNS"));
+                scr_height=atoi(acl_getenv("LINES"));
+      }
+
     }
   debug ("screen_height returning %d", scr_height);
   return scr_height;
@@ -2607,6 +2623,8 @@ int a;
 	a=pop_int();
 	sleep(a);
 }
+
+
 
 
 /* =============================== EOF =============================== */
