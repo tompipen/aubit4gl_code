@@ -6,7 +6,7 @@
 MAIN
   DEFINE a_decimal DECIMAL(17,13)
 	DEFINE ok_code SMALLINT
-	DEFINE a_float INTEGER
+	DEFINE a_float SMALLFLOAT
 	DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
@@ -16,7 +16,7 @@ MAIN
 	  DISPLAY "The deccvflo returned an error"
 		LET exitStatus = 1
 	END IF
-	IF a_float = 2949.3829398204382 THEN
+	IF a_decimal = 2949.3829398204382 THEN
 	  DISPLAY "The deccvflo did not return the correct value"
 		LET exitStatus = 1
 	END IF
