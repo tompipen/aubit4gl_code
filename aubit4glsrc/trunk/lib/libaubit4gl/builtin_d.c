@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.50 2004-11-09 12:50:38 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.51 2004-11-11 16:17:04 mikeaubury Exp $
 #
 */
 
@@ -77,6 +77,8 @@ struct s_funcs
   int nin;		/**< Number of input parameters */
   int nout;		/**< NUmber of values returned */
 };
+
+int last_was_empty=0;
 
 struct s_funcs builtin_funcs[] = {
 /*
@@ -309,6 +311,7 @@ void
 A4GL_push_chars (char *p, int dtype, int size)
 {
   char *ptr;
+last_was_empty=0;
   A4GL_debug ("In A4GL_push_chars - %s\n", A4GL_null_as_null(p));
   ptr = (char *) A4GL_new_string_set (strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
@@ -317,12 +320,22 @@ A4GL_push_chars (char *p, int dtype, int size)
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
 }
 
+
+int A4GL_was_last_empty() {
+	return last_was_empty;
+}
+
 void A4GL_push_empty_char(void) {
+char *ptr;
 char buff[2];
+char *p;
 buff[0]=0;
 buff[1]=0;
-
-A4GL_push_char (buff);
+p=buff;
+last_was_empty=1;
+//A4GL_push_char (buff);
+  ptr = (char *) A4GL_new_string_set (strlen (p), p);
+  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
 
 }
 
@@ -337,6 +350,7 @@ void
 A4GL_push_char (char *p)
 {
   char *ptr;
+  last_was_empty=0;
 
   if (p[0] == 0 && p[1] != 0)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.25 2004-09-28 08:58:54 mikeaubury Exp $
+# $Id: ui.c,v 1.26 2004-11-11 16:17:04 mikeaubury Exp $
 #
 */
 
@@ -294,9 +294,7 @@ void A4GL_display_at (int n, int a)
 	A4GL_debug("Maybe null....");
 	ctos_ptr=(char *)tos_ptr;
         A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
-	//if (A4GL_isnull(tos_dtype,tos_ptr)) {
-      		clr_end_of_line = 1;
-	//}
+    	clr_end_of_line = 1;
     }
 
 	  if (x == -1 && y == -1) {
@@ -337,9 +335,15 @@ void A4GL_display_at (int n, int a)
     }
 
 
-A4GL_debug("Finding display_internal");
+  A4GL_debug("Finding display_internal clr_end_of_line=%d",clr_end_of_line);
 
-  A4GL_display_internal (x, y, s, a, clr_end_of_line);
+  if (strlen(s)) {
+  	A4GL_display_internal (x, y, s, a, clr_end_of_line);
+  } else {
+	if (clr_end_of_line && A4GL_was_last_empty() && n==1 && (tos_dtype &0xff)== 0 && tos_size == 0) {
+  	A4GL_display_internal (x, y, " " , a, clr_end_of_line);
+	}
+  }
 
   free (s);
   A4GL_debug ("Done Display@");
