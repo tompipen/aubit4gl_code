@@ -298,7 +298,7 @@ field elements = name x y width screen_no endswith'|'
 	fstart=colno;
 	openwith='|';
 }
-field_tag_name 
+field_tag_name_scr
 {
 	strcpy($<str>$,$<str>4);
 };

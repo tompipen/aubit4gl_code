@@ -243,7 +243,6 @@ return(NAMED);}
 			strcmp(yytext,"-")==0 ||
 			strcmp(yytext,"|")==0 ) {
 			sprintf(yylval.str,"\n%s",yytext);
-			printf("Graphic...\n");
 			colno++;
 			return  GRAPH_CH;
 		}
