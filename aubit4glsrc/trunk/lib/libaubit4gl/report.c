@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.56 2004-12-23 16:42:44 mikeaubury Exp $
+# $Id: report.c,v 1.57 2005-01-27 16:29:46 mikeaubury Exp $
 #
 */
 
@@ -1076,8 +1076,30 @@ A4GL_free_duplicate_binding (struct BINDING *b, int n)
 void
 A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
 {
-  A4GL_debug ("Not implemented A4GL_rep_file_print");
-  A4GL_exitwith ("Not implemented A4GL_rep_file_print");
+  FILE *f;
+  char buff[10000];
+  int has_cr;
+  f=fopen(fname,"r");
+  if (f==0) {
+  	A4GL_exitwith ("Unable to open PRINT FILE file");
+	return;
+  }
+  while (!feof(f)) {
+	  int a;
+	  a=fgets(buff,sizeof(buff)-1,f);
+	  if (!a) break;
+	  has_cr=0;
+	   // Trim any trailing \n
+	   while (buff[strlen(buff)-1]=='\n' || buff[strlen(buff)-1]=='\r') { 
+		  int c;
+		  has_cr++;
+		  c=strlen(buff);
+		  buff[c-1]=0;
+	  }
+	   A4GL_push_char(buff);
+	   if (has_cr) A4GL_rep_print(rep,1,0,0,-1);
+	   else        A4GL_rep_print(rep,1,1,0,-1);
+  }
 }
 
 
