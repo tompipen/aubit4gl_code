@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
-int A4GL_screen_height (void);
 
 
 FILE *f;

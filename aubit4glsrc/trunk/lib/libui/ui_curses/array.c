@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.8 2003-07-12 08:03:01 mikeaubury Exp $
+# $Id: array.c,v 1.9 2003-07-15 22:52:32 mikeaubury Exp $
 #*/
 
 /**
@@ -68,9 +68,12 @@ int cmode = 0;
 =====================================================================
 */
 
+#ifdef OLD
 int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
 		 int attrib, va_list * ap);
-
+void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
+void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
+#endif
 
 static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line,int first_only,...);
 /*
@@ -87,7 +90,6 @@ static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int att
 static void
 clear_srec (struct s_disp_arr *disp,struct struct_screen_record *srec)
 {
-  int a;
   int b;
   char srec1[256];
   A4GL_debug ("Clearing %s", srec->name);
@@ -676,8 +678,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_l
   formdets = A4GL_get_curr_form (1);
   flg = 0;
 
-  va_start (ap, arr_line);
-
+  va_start (ap, first_only);
 	
   nofields = A4GL_gen_field_list (&field_list, formdets, 9999 , &ap);
 

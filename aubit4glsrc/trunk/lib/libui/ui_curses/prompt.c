@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.20 2003-07-15 17:09:06 mikeaubury Exp $
+# $Id: prompt.c,v 1.21 2003-07-15 22:52:33 mikeaubury Exp $
 #*/
 
 /**
@@ -44,6 +44,7 @@
 */
 
 #include "a4gl_lib_ui_tui_int.h"
+#include <ctype.h>
 
 
 /*
@@ -52,9 +53,11 @@
 =====================================================================
 */
 
+static int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
+#ifdef OLD
 int A4GL_curses_to_aubit (int a);
-int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
 int A4GL_chkwin (void);
+#endif
 
 /*
 =====================================================================
@@ -284,7 +287,7 @@ A4GL_prompt_loop (void *vprompt)
   FORM *mform;
   static int last_key=0;
 
-  int kpress;
+  //int kpress;
   struct s_prompt *prompt;
   prompt = vprompt;
 

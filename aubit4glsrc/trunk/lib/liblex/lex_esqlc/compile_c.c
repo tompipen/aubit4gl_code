@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.64 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.65 2003-07-15 22:52:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -744,7 +744,7 @@ print_continue_loop (int n, char *cmd_type)
 {
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
-      printc ("_fld_dr= -99;\n");
+      printc ("_fld_dr= -1;\n");
     }
   printc ("goto CONTINUE_BLOCK_%d;", n);
 }
@@ -1996,7 +1996,7 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
 
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr= -99;\n");
+  printc ("_fld_dr= -1;\n");
 }
 
 
@@ -2712,7 +2712,15 @@ void
 print_next_field (char *s)
 {
 
-  printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),%s);\n", s);
+  if (strcpy(s,"\"+\"")) {
+  	printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'+',%s,0,0);\n", s);
+  } else {
+  	if (strcpy(s,"\"-\"")) {
+  		printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'-',%s,0,0);\n", s);
+  	} else {
+  		printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'!',%s,0,0);\n", s);
+	}
+   }
 
   if (isin_command ("INPUT") > isin_command ("CONSTRUCT"))
     {
@@ -2845,7 +2853,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
     }
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr= -99;\n");
+  printc ("_fld_dr= -1;\n");
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.58 2003-07-15 17:09:06 mikeaubury Exp $
+# $Id: newpanels.c,v 1.59 2003-07-15 22:52:33 mikeaubury Exp $
 #*/
 
 /**
@@ -45,7 +45,6 @@
 */
 
 #include "a4gl_lib_ui_tui_int.h"
-int A4GL_curses_to_aubit (int a);
 #include <ctype.h>
 
 /*
@@ -108,12 +107,27 @@ struct s_windows
 
 struct s_windows windows[MAXWIN];
 
+
+
+
+static WINDOW *
+A4GL_create_window (char *name, int x, int y, int w, int h,
+               int iswindow,
+               int form_line,
+               int error_line,
+               int prompt_line,
+               int menu_line,
+               int border, int comment_line, int message_line, int attrib);
+static WINDOW *A4GL_display_form (struct s_form_dets *f,int attr);
+static WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
+                              int y,int attr);
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
 /** @todo Take this prototypes of from here */
+#ifdef OLD
 int
 A4GL_real_getch_swin (WINDOW * window_ptr);
 int A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args);
@@ -136,7 +150,7 @@ int A4GL_get_curr_win (void);
 int A4GL_get_curr_height (void);
 int A4GL_get_curr_top (void);
 char *A4GL_get_currwin_name (void);
-int A4GL_get_curr_border (void);
+//int A4GL_get_curr_border (void);
 void display_at2 (char *z, int x, int y, int a);
 int A4GL_decode_line (int l);
 int A4GL_decode_line_ib (int l);
@@ -154,10 +168,9 @@ char *A4GL_windowname_on_top (void);
 int A4GL_invert_color (int a);
 //void  A4GL_sleep_i                         (void);
 
-WINDOW *A4GL_window_on_top (void);
+//WINDOW *A4GL_window_on_top (void);
 WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
 			      int y,int attr);
-WINDOW *A4GL_display_form (struct s_form_dets *f,int attr);
 WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h, int iswindow,
 		       int form_line, int error_line, int prompt_line,
 		       int menu_line, int border, int comment_line,
@@ -176,6 +189,7 @@ WINDOW *A4GL_display_form_win (WINDOW * w, char *name, struct s_form_dets *f);
 //LIBEXPORT void A4GL_show_window    (char *winname);
 //LIBEXPORT int A4GL_movewin                 (char *winname, int absol);
 
+#endif
 
 /*
 =====================================================================

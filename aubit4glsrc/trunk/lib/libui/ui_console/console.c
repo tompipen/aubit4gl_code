@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.8 2003-06-13 18:40:58 mikeaubury Exp $
+# $Id: console.c,v 1.9 2003-07-15 22:52:32 mikeaubury Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@ void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
 void A4GL_ui_init (int argc, char *argv[]);
 //void aclfgli_pr_message (int attr,int wait);
 //void A4GL_display_error (int a,int wait);
-ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
+void *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			   int help_no);
 void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 		      int help_no, int attr);
@@ -156,7 +156,7 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
  * 4GL CALL
  * @todo Describe function
  */
-ACL_Menu *
+void *
 A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   char buff[256];

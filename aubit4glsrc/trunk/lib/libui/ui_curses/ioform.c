@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.48 2003-07-15 17:09:06 mikeaubury Exp $
+# $Id: ioform.c,v 1.49 2003-07-15 22:52:32 mikeaubury Exp $
 #*/
 
 /**
@@ -87,7 +87,6 @@ char dbname[64];
 long inp_current_field = 0;
 //int do_input_nowrap = 0;
 
-
 /*
 =====================================================================
                     Functions prototypes
@@ -95,6 +94,40 @@ long inp_current_field = 0;
 */
 
 
+static int A4GL_page_for_cfield (struct s_screenio *s);
+static int A4GL_page_for_nfield (struct s_screenio *s);
+static int A4GL_page_for_pfield (struct s_screenio *s);
+static int A4GL_curr_metric_is_last (void);
+static int A4GL_curr_metric_is_first (void);
+static int A4GL_curr_metric_is_veryfirst (void);
+static int A4GL_curr_metric_is_verylast (void);
+static void A4GL_set_init_pop_attr (FIELD * field, int attr);
+static void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type);
+
+static FIELD *A4GL_scan_for_field (char *s);
+static int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
+static void A4GL_bomb_out (void);
+static int A4GL_get_curr_infield (void);
+static void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff,int ch) ;
+static void A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour);
+static void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
+static void A4GL_set_field_attr (FIELD * field);
+
+
+static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
+static int A4GL_field_name_match (FIELD * f, char *s);
+static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
+static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
+static int A4GL_get_field_width (FIELD * f);
+static void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
+static void A4GL_set_init_pop (FIELD * f);
+static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
+static void A4GL_dump_fields (FIELD * fields[]);
+static void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
+
+
+
+#ifdef OLD
 /** @todo Take this prototype definition for a header file */
 void A4GL_bomb_out (void);
 extern char *A4GL_replace_sql_var (char *s);
@@ -106,20 +139,12 @@ WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h,
 void A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour);
 int
 A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
-void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) ;
+//void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) ;
 
-void A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap);
 int display_fields (FORM * mform, int n, ...);
-extern char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
-void A4GL_debug_print_field_opts (FIELD * a);
-void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
+//void A4GL_debug_print_field_opts (FIELD * a);
 void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff, int ch);
 void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type);
-int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
-void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
-int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
-int A4GL_get_field_width (FIELD * f);
-int A4GL_page_for_nfield (struct s_screenio *s);
 int A4GL_proc_key (int a, FORM * mform, struct s_screenio *s);
 int A4GL_form_field_chk (struct s_screenio *sio, int m);
 int A4GL_form_field_constr (struct s_screenio *sio, int m);
@@ -134,29 +159,20 @@ int A4GL_req_field_input (struct s_screenio *s, ...);
 int A4GL_req_field_input_array (struct s_inp_arr *s, ...);
 void A4GL_set_init_value (FIELD * f, void *ptr, int dtype);
 int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
-int A4GL_turn_field_off (FIELD * f);
-void A4GL_turn_field_on (FIELD * f);
-void A4GL_turn_field_on2 (FIELD * f, int a);
-void A4GL_set_init_pop (FIELD * f);
+//int A4GL_turn_field_off (FIELD * f);
+//void A4GL_turn_field_on (FIELD * f);
+//void A4GL_turn_field_on2 (FIELD * f, int a);
 int A4GL_field_name_match (FIELD * f, char *s);
 void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
-void A4GL_dump_fields (FIELD * fields[]);
 void A4GL_set_init_pop_attr (FIELD * field, int attr);
 FIELD *A4GL_scan_for_field (char *s);
-int A4GL_get_curr_infield (void);
 int A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
-void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
 int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
-int A4GL_page_for_cfield (struct s_screenio *s);
-int A4GL_curr_metric_is_last (void);
-int A4GL_curr_metric_is_first (void);
-int A4GL_curr_metric_is_veryfirst (void);
-int A4GL_curr_metric_is_verylast (void);
 int A4GL_curses_to_aubit (int a);
-void A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type);
-int A4GL_gen_field_chars_ap (FIELD *** field_list,
-			     struct s_form_dets *formdets, va_list * ap);
+//void A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type);
+int A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
 
+#endif
 /*
 =====================================================================
                     Functions definitions
@@ -424,6 +440,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
   set_field_back (f, A4GL_colour_code (7));
 }
 
+#ifdef NDEF
 /**
  *
  * @todo Describe function
@@ -464,6 +481,7 @@ A4GL_field_noentry (FIELD * f)
   field_opts_off (f, O_ACTIVE);
   field_opts_off (f, O_EDIT);
 }
+#endif
 
 /**
  *
@@ -1149,8 +1167,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 	    if (fprop != 0)
 	      {
 
-		int d1,s1;
-		char *ptr1;
+		//int d1,s1;
+		//char *ptr1;
 
 		if ((fprop->datatype&DTYPE_MASK)==DTYPE_CHAR) return 0;
 
@@ -1799,11 +1817,10 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
  * @todo Describe function
  */
 int
-A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
-			 va_list * ap)
+A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap)
 {
   int a;
-  /* va_start (ap, formdets); */
+
 #ifdef DEBUG
   {
     A4GL_debug ("Starting A4GL_gen_field_chars %p %p", field_list, formdets);
@@ -1828,8 +1845,7 @@ A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
  * @todo Describe function
  */
 int
-A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
-		     int a, va_list * ap)
+A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_list * ap)
 {
   int z;
   int z1;
@@ -2225,8 +2241,7 @@ A4GL_dump_fields (FIELD * fields[])
  *
  * @todo Describe function
  */
-void
-A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
+void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 {
   struct struct_scr_field *f;
   struct s_form_dets *fff;
@@ -2519,6 +2534,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   struct s_form_dets *formdets;
   FIELD **field_list;
   int nofields;
+  va_list *ptr;
 
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
@@ -2534,7 +2550,8 @@ A4GL_set_arr_fields (int n, int attr, ...)
   }
 #endif
   A4GL_debug ("set_arr_fields");
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
+ptr=&ap;
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
   A4GL_debug ("Number of fields=%d", nofields);
   for (a = nofields; a >= 0; a--)
     {
@@ -2896,6 +2913,7 @@ A4GL_fgl_getfldbuf_ap (char *s, int n)
 
 
 
+#ifdef REMOVED
 
 /**
  *
@@ -2975,6 +2993,7 @@ A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
   A4GL_debug ("Returning %d from proc_key_prompt\n", a);
   return a;
 }
+#endif
 
 
 /**
@@ -3405,8 +3424,8 @@ A4GL_clr_form (int to_default)
 	      struct struct_scr_field *prop;
 	      prop = (struct struct_scr_field *) field_userptr (f);
 	      A4GL_mja_set_field_buffer (f, 0,
-					 A4GL_replace_sql_var
-					 (A4GL_strip_quotes
+					 (char *)A4GL_replace_sql_var
+					 ((char *)A4GL_strip_quotes
 					  (A4GL_get_str_attribute
 					   (prop, FA_S_DEFAULT))));
 	    }
@@ -3591,8 +3610,7 @@ aclfgl_get_page (int n)
 /*
  * This function causes a SEGFAULT - useful for stopping the debugger!
 */
-void
-A4GL_bomb_out ()
+static void A4GL_bomb_out (void)
 {
   char *ptr = 0;
   *ptr = 0;
@@ -3607,6 +3625,7 @@ A4GL_fgl_fieldtouched_input_array_ap (struct s_inp_arr *s, va_list * ap)
   int b;
   FIELD **field_list;
   int found;
+A4GL_debug("fgl_fieldtouched");
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
@@ -3662,6 +3681,7 @@ A4GL_fgl_fieldtouched_input_ap (struct s_screenio *s, va_list * ap)
   int b;
   FIELD **field_list;
   int found;
+A4GL_debug("fgl_fieldtouched");
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
@@ -3713,7 +3733,7 @@ void A4GL_clr_fields_ap (int to_defaults, va_list *ap) {
 int a;
 FIELD **field_list;
 int c;
-
+A4GL_debug("clr_Fields_ap");
   c = A4GL_gen_field_chars_ap (&field_list, A4GL_get_curr_form(1), ap);
   for (a=0;a<=c;a++) {
 	A4GL_mja_set_field_buffer(field_list[a],0,"");
@@ -3731,7 +3751,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   char buff2[80] = "";
   FORM *mform;
   int x, y;
-  int flg = 0;
+  //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
 
@@ -3779,8 +3799,8 @@ A4GL_debug("form_field_chk_iarr....");
 	    if (fprop != 0)
 	      {
 
-		int d1,s1;
-		char *ptr1;
+		//int d1,s1;
+		//char *ptr1;
 
 		A4GL_debug("15 fprop!=0");
 		if ((fprop->datatype&DTYPE_MASK)==DTYPE_CHAR) ;

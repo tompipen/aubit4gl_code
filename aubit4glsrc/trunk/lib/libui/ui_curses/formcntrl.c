@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.15 2003-07-12 08:03:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.16 2003-07-15 22:52:32 mikeaubury Exp $
 #*/
 
 /**
@@ -43,36 +43,39 @@
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 extern int m_lastkey;
-int A4GL_curses_to_aubit (int a);
-int A4GL_page_for_pfield (struct s_screenio *s);
-int A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
-
 #define CONTROL_STACK_LENGTH 10
 
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-void A4GL_mja_pos_form_cursor (FORM * form);
 static int process_control_stack (struct s_screenio *arr);
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
 static void A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f, char *parameter, int extent);
 static void A4GL_newMovement (struct s_screenio *arr,  int attrib);
 static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
+static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
+
+#ifdef OLD
+int A4GL_curses_to_aubit (int a);
+int A4GL_page_for_pfield (struct s_screenio *s);
+int A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
+
+
+void A4GL_mja_pos_form_cursor (FORM * form);
 
 int A4GL_form_field_chk (struct s_screenio *sio, int m);
 int A4GL_form_field_constr (struct s_screenio *sio, int m);
-int A4GL_req_field_input (struct s_screenio *s, ...);
+int A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap);
 int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 int A4GL_get_curr_metric (struct s_form_dets *form);
 int A4GL_page_for_nfield (struct s_screenio *s);
 struct s_form_dets *A4GL_getfromform (FORM * f);
 void *A4GL_memdup (void *ptr, int size);
-void
-A4GL_mja_set_current_field (FORM * form, FIELD * field);
+void A4GL_mja_set_current_field (FORM * form, FIELD * field);
 
+#endif
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 struct s_movement
 {
@@ -516,36 +519,31 @@ process_control_stack (struct s_screenio *sio)
 
 
 int
-A4GL_req_field_input (struct s_screenio *s, ...)
+A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap)
 { 
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
-  char *field_name;
-  va_list ap;
-  va_list ap2;
-  va_start (ap, s);
-  va_start(ap2,s);
-  field_name=va_arg(ap2,char *);
+  //char *field_name;
 
-  if (strcmp(field_name,"+")==0) { // Next field next
+
+  if (type=='+') { // Next field next
 			A4GL_init_control_stack (s,0);
 			s->currform->currentfield=0;
 			A4GL_newMovement(s,s->curr_attrib+1);
 			return 1;
   }
 
-  if (strcmp(field_name,"-")==0) { // Next field previous
+  if (type=='-') { // Next field previous
 			A4GL_init_control_stack (s,0);
 			s->currform->currentfield=0;
 			A4GL_newMovement(s,s->curr_attrib-1);
 			return 1;
   }
 
-
   A4GL_debug ("req_field");
 
-  a = A4GL_gen_field_list (&ptr, s->currform, 1, &ap);
+  a = A4GL_gen_field_list (&ptr, s->currform, 1,ap);
 
   if (a >= 0)
     {

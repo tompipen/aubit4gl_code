@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.45 2003-07-04 19:13:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.46 2003-07-15 22:52:32 mikeaubury Exp $
 #*/
 
 /**
@@ -104,6 +104,7 @@ int inwin;
 int curr_opt, max_opt;
 /*int currattr = 0; */
 char dirstr[100];
+int mja_strncmp(char *a,char *b,int c);
 
 int help_no, g_help_no;
 
@@ -126,47 +127,60 @@ int init_curses_mode = 0;
 =====================================================================
 */
 
-char *A4GL_mfgets (char *s, int n, FILE * fp);
+static void a4gl_gettext (int l, int t, int r, int b, char *buf);
+
+static void message (textarea * area, char *str, int x, int a);
+static void A4GL_chktag (char *buff, int fno);
+static void A4GL_menu_setcolor (ACL_Menu * menu, int typ);
+static void A4GL_set_value (int fno, char *buffer);
+static int A4GL_menu_getkey (ACL_Menu * menu);
+static void A4GL_clear_menu (ACL_Menu * menu);
+static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
+static void A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ);
+static int A4GL_set_combi_opts (int n, char *lst, int lstwidth, int scwidth, char *nme);
+static void A4GL_copy_opts (int opt, int n, char *lst, int lstwidth, int x, int y, int w, int l, int h);
+static int A4GL_do_key_combi (int h);
+static void A4GL_combi_dispopts (int opt, char *lst, int lstwidth, int x, int y, int w, int l, int h, int type);
+static int A4GL_getkey (void);
+static void A4GL_puttext (int x1, int y1, int x2, int y2, char *buf);
+static void A4GL_horiz_disp_opt (int row, int x, int y, int type);
+static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
+static char *A4GL_mfgets (char *s, int n, FILE * fp);
+static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
+static int wrapper_wgetch(WINDOW *w);
+
+#ifdef OLD
 void *A4GL_decode_clicked (void);
 char *A4GL_get_currwin_name (void);
 int A4GL_gui_startmenu (char *s, long a);
 void A4GL_size_menu (ACL_Menu * menu);
 void A4GL_menu_setcolor (ACL_Menu * menu, int typ);
-void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
+void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
 void A4GL_set_value (int fno, char *buffer);
 void A4GL_chktag (char *buff, int fno);
 void A4GL_gsub (char *str);
-int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
 int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 void A4GL_move_bar (ACL_Menu * menu, int a);
 int A4GL_find_char (ACL_Menu * menu, int key);
 void A4GL_clr_menu_disp (ACL_Menu * menu);
 void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
-void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 		 int type);
 void A4GL_display_menu (ACL_Menu * menu);
 void A4GL_clear_menu (ACL_Menu * menu);
 int A4GL_new_do_keys (ACL_Menu * menu, int a);
 int A4GL_menu_getkey (ACL_Menu * menu);
-void A4GL_horiz_disp_opt (int row, int x, int y, int type);
-void A4GL_puttext (int x1, int y1, int x2, int y2, char *buf);
 int A4GL_endis_fields_ap (int en_dis, va_list * ap);
-void A4GL_gettextinfo (struct text_info r);
-static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 /* void    A4GL_strip_nl 		(char *str); */
 /* void    A4GL_do_pause 			(void);  */
-void A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ);
-void A4GL_combi_dispopts (int opt, char *lst, int lstwidth, int x, int y, int w,
-		     int l, int h, int type);
-void A4GL_copy_opts (int opt, int n, char *lst, int lstwidth, int x, int y, int w,
-		int l, int h);
-int A4GL_getkey (void);
 /* void A4GL_disp_opt (int row, int x, int y, int l, int type); */
-int A4GL_do_key_combi (int h);
-int A4GL_set_combi_opts (int n, char *lst, int lstwidth, int scwidth, char *nme);
-static void message (textarea * area, char *str, int x, int a);
+#endif
 
+
+
+
+
+#ifdef OLD
 
 char *A4GL_string_width (char *s);
 void A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
@@ -201,18 +215,15 @@ void A4GL_menu_show (ACL_Menu * menu, ...);
 //void A4GL_set_option_value (char type, int keyval);
 //int A4GL_show_menu (void);
 //int A4GL_endis_fields (int en_dis, ...);
-ACL_Menu *A4GL_new_menu_tui_oldway (char *title, int x, int y, int mn_type,
-			       int help_no, int nopts, va_list * ap);
-ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
-			   int help_no);
-void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
-		      int helpno, int attr);
+ACL_Menu *A4GL_new_menu_tui_oldway (char *title, int x, int y, int mn_type, int help_no, int nopts, va_list * ap);
+ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
+void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc, int helpno, int attr);
 void A4GL_finish_create_menu (ACL_Menu * menu);
 void A4GL_refresh_after_system (void);
 WINDOW *A4GL_window_on_top (void);
-void aclfgli_show_help (int n);
 void A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
 
+#endif
 /*
 =====================================================================
                     Functions definitions
@@ -1292,6 +1303,7 @@ show_help_old (int no)
  *
  * @todo Describe function
  */
+#ifdef OLD
 void
 A4GL_gettextinfo (struct text_info r)
 {
@@ -1302,6 +1314,7 @@ A4GL_gettextinfo (struct text_info r)
   r.winbottom = r.wintop + r.screenheight;
   r.attribute = txtfcolour + txtbcolour * 16;
 }
+#endif
 
 
 /**
@@ -1636,6 +1649,7 @@ A4GL_disp_h_menu (ACL_Menu * menu)
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
 	 A4GL_get_curr_print_top () - 1, A4GL_get_curr_width ());
 #endif
+  mnln = A4GL_getmenu_line () - 1;
   if (menu->window_name[0] == 0)
     {
 #ifdef DEBUG
@@ -1661,7 +1675,7 @@ A4GL_disp_h_menu (ACL_Menu * menu)
       }
 #endif
 	
-      attrib=attrib-attrib&0x20;
+      attrib=attrib-(attrib&0x20);
 
       menu->attrib=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attrib,0);
 	
@@ -1957,8 +1971,7 @@ A4GL_display_menu (ACL_Menu * menu)
  *
  * @todo Describe function
  */
-void
-A4GL_clear_menu (ACL_Menu * menu)
+static void A4GL_clear_menu (ACL_Menu * menu)
 {
   PANEL *p;
   WINDOW *w;
@@ -2071,8 +2084,7 @@ A4GL_debug("h_disp_title : %s",str);
  *
  * @todo Describe function
  */
-void
-A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
+static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
   A4GL_subwin_gotoxy (menu->menu_win, pos + offset, 1,A4GL_get_curr_border());
@@ -2510,7 +2522,7 @@ A4GL_gsub (char *str)
  *
  * @todo Describe function
  */
-void
+static void
 A4GL_chktag (char *buff, int fno)
 {
   char buff2[132];
@@ -2544,8 +2556,7 @@ A4GL_chktag (char *buff, int fno)
  *
  * @todo Describe function
  */
-void
-A4GL_set_value (int fno, char *buffer)
+static void A4GL_set_value (int fno, char *buffer)
 {
   int a;
   char *name;
@@ -2877,7 +2888,7 @@ void
 A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap)
 {
   A4GL_debug ("Menu hide\n");
-  A4GL_menu_attrib (menu, 0, *ap);
+  A4GL_menu_attrib (menu, 0, ap);
 }
 
 /**
@@ -2897,7 +2908,7 @@ A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap)
  * @todo Describe function
  */
 void
-A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap)
+A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
 {
   int a;
   ACL_Menu_Opts *option;
@@ -2905,7 +2916,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap)
   char s[256];
   int flg;
   A4GL_debug ("Menu attrib %d\n", attr);
-  while ((argp = va_arg (ap, char *)))
+  while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
       A4GL_debug ("change attrib to %d of %s", attr, argp);
@@ -3058,15 +3069,14 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
  * 4GL CALL
  * @todo Describe function
  */
-void
-aclfgli_pr_message_internal (int attr, int wait,char *s)
+void aclfgli_pr_message_internal (int attr, int wait,char *s)
 {
   char p[2048];
   long w;
   int ml;
   int width;
   //char *s;
-  char *ptr_pop;
+  //char *ptr_pop;
   WINDOW *cw;
   char buff[512];
   static WINDOW *mw;
@@ -3310,8 +3320,7 @@ if (attr!=0xff) {
  *
  * @todo Describe function
  */
-void
-A4GL_menu_setcolor (ACL_Menu * menu, int typ)
+static void A4GL_menu_setcolor (ACL_Menu * menu, int typ)
 {
   WINDOW *currwin;
   long attr;
@@ -3366,8 +3375,7 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
  *
  * @todo Describe function
  */
-int
-A4GL_menu_getkey (ACL_Menu * menu)
+static int A4GL_menu_getkey (ACL_Menu * menu)
 {
   char cmd[60] = "";
   int a;
@@ -3958,7 +3966,7 @@ A4GL_refresh_after_system (void)
 // This is called internally...
 void A4GL_comments (struct struct_scr_field *fprop)
 {
-  char *str;
+  //char *str;
   int cline;
   char buff[256];
   if (!fprop) return;
@@ -3986,7 +3994,7 @@ void A4GL_comments (struct struct_scr_field *fprop)
 }
 
 
-wrapper_wgetch(WINDOW *w) {
+int wrapper_wgetch(WINDOW *w) {
 int a;
   a=A4GL_readkey();
   if (a!=0) {

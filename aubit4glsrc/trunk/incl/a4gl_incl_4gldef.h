@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.45 2003-07-09 16:19:01 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.46 2003-07-15 22:52:20 mikeaubury Exp $
 */
 
 /**
@@ -288,7 +288,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void A4GL_set_init (struct BINDING *b, int n);
   int A4GL_start_prompt (void *prompt, int ap, int c, int h, int af);	// Not really a char *prompt - but in an app it is...
   void A4GL_display_error (int attr, int wait);
-  int A4GL_req_field (void *s, int size, char *fieldname, int fno);
+  int A4GL_req_field (void *s, int size,char type,...);
+void * A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
   void A4GL_set_infield_from_stack (void);
   int A4GL_form_loop (void *s,int init);
   void aclfgli_pr_message (int attr, int wait,int nexpr);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.10 2003-06-06 09:52:38 mikeaubury Exp $
+# $Id: menu.c,v 1.11 2003-07-15 22:52:33 mikeaubury Exp $
 #*/
 
 /**
@@ -73,8 +73,7 @@ void A4GL_free_menu (void *m);
 //void A4GL_next_option (void *menu, char *nextopt);
 void A4GL_menu_hide (void *m, va_list * ap);
 void A4GL_menu_show (void *m, va_list * ap);
-GtkWidget *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
-			    int help_no);
+//void *A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
 void A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc,
 		      int helpno, int attr);
 void A4GL_finish_create_menu (void *menubar);
@@ -442,7 +441,7 @@ va_list *ap)
  * @param help_no The help number of the menu.
  * @return A pointer to the widget that implements the menu.
  */
-GtkWidget *
+void *
 A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   GtkWidget *menubar;
