@@ -92,6 +92,8 @@ void A4GL_tui_print (char *fmt, ...);
 void A4GL_mja_gotoxy (int x, int y);
 void
 A4GL_init_curses_stuff (void);
+void A4GL_comments (struct struct_scr_field *fprop);
+
 	//int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */

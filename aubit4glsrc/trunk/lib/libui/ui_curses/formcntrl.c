@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.5 2003-06-12 17:40:21 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.6 2003-06-13 10:04:01 mikeaubury Exp $
 #*/
 
 /**
@@ -202,6 +202,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   struct s_movement *ptr;
   void *last_field;
   void *next_field;
+  struct struct_scr_field *f;
 
 
   A4GL_debug ("newMovement %d ",  attrib);
@@ -234,6 +235,54 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
   A4GL_debug("last field was : %p",sio->currform->currentfield);
   next_field = sio->field_list[attrib];
+  f = (struct struct_scr_field *) (field_userptr (next_field));
+
+  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+    {
+      int dir = 0;
+      while (1)
+        {
+
+          if (dir == 0)
+            {
+              if (attrib >= sio->curr_attrib)
+                {               // We want to move to the right..
+                  dir = 1;
+                }
+              else
+                {
+                  dir = -1;
+                }
+            }
+          next_field = sio->field_list[attrib];
+          f = (struct struct_scr_field *) (field_userptr (next_field));
+
+          if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+            {
+              attrib += dir;
+              if (attrib > sio->nfields) 
+                {
+                  attrib = 0;
+                }
+
+              if (attrib < 0)
+                {
+                  attrib = sio->nfields;
+                }
+            }
+          else
+            {
+              A4GL_debug ("Found somewhere free...");
+              A4GL_newMovement (sio, attrib);       // So keep going...
+              return;
+            }
+        }
+    }
+
+
+
+
+
 
   if (last_field!=next_field || 1) {
   	A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field, A4GL_memdup (ptr, sizeof (struct s_movement)), 0);

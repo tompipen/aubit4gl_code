@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.31 2003-06-12 17:40:22 mikeaubury Exp $
+# $Id: ioform.c,v 1.32 2003-06-13 10:04:01 mikeaubury Exp $
 #*/
 
 /**
@@ -1145,7 +1145,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
     }
 
 
-return;
+return 0;
 
   A4GL_debug ("fprop=%p", fprop);
   A4GL_debug ("form->currentfield=%p", form->currentfield);
