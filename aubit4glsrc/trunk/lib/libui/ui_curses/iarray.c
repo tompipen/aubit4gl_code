@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.91 2004-11-18 16:27:06 mikeaubury Exp $
+# $Id: iarray.c,v 1.92 2004-11-26 13:50:34 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.91 2004-11-18 16:27:06 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.92 2004-11-26 13:50:34 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1275,10 +1275,7 @@ UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
 }
 
 
-/**
- * I think its not used because the function that calls it its not used
- */
-/*
+/* This is used by the fgl_set_scrline function */
 int
 set_scrline_ia (int np)
 {
@@ -1295,14 +1292,11 @@ set_scrline_ia (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set scrline...%d", a);  }
 #endif
-  return 1;
+  return 0;
 }
-*/
 
-/**
- * I think its not used because the function that calls it its not used
- */
-/*
+
+/* This is used by the fgl_set_arrline function */
 int
 set_arrline_ia (int np)
 {
@@ -1319,9 +1313,9 @@ set_arrline_ia (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set arrline... %d", a);  }
 #endif
-    return 1;
+    return 0;
 }
-*/
+
 
 /**
  * Not used

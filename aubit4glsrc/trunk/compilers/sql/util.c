@@ -346,7 +346,7 @@ static int asql_yyerror(char *s) {
 
 
 static char *convstrsql(char *s) {
-	if (s[0]=='"') return s;
+	if (s[0]=='\'') return s;
 	return convstr_dbl_to_single(s) ;
 }
 

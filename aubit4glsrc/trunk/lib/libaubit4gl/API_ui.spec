@@ -163,4 +163,5 @@ A4GL_acli_scroll_ap int n va_list* ap -> void
 A4GL_get_key int timeout -> int
 A4GL_create_menu void* m char* id int mode void* handler -> void*
 A4GL_reset_state_for void* sio char* siotype -> void
-
+aclfgl_fgl_set_arrline int nparam -> int
+aclfgl_fgl_set_scrline int nparam -> int

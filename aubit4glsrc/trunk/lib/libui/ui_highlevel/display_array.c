@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.14 2004-11-17 10:40:48 mikeaubury Exp $
+# $Id: display_array.c,v 1.15 2004-11-26 13:50:35 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.14 2004-11-17 10:40:48 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.15 2004-11-26 13:50:35 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -797,15 +797,7 @@ set_arrline_da (int np)
 }
 */
 
-/**
- * Not used
- *
- * @todo : Remove if not used.
- * @deprecated Removal candidate.
- * @param np Number of parameters.
- */
-/*
-static int
+int
 aclfgl_set_arrline(int np)
 {
 	if (cmode=='D') {
@@ -817,16 +809,16 @@ aclfgl_set_arrline(int np)
 	}
 return 0;
 }
-*/
+
 
 /**
  * Not used
  * @todo : Remove if not used.
  * @deprecated Removal candidate.
  */
-/*
+
 static int
-aclfgl_set_scrline(int np)
+aclfgl_fgl_set_scrline(int np)
 {
   if (cmode=='D') {
     return set_scrline_da(np);
@@ -838,7 +830,7 @@ aclfgl_set_scrline(int np)
   exitwith("set_scrline() may only be called when in a display/input array");
   return 0;
 }
-*/
+
 
 
 
