@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.28 2002-12-08 06:34:37 afalout Exp $
+# $Id: Makefile.in,v 1.29 2003-01-11 17:22:17 mikeaubury Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -92,6 +92,7 @@ endif
 	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
 	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
 	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
+	${FGLPCEXEC} ${4GLPCFLAGS} sol.4gl random.4gl -o solitaire
 	@echo 4gl demo targets successfully compiled
 
 pdf_report: pdf_report.4gl
