@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.30 2004-03-18 08:20:36 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.31 2004-07-05 16:16:09 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -98,7 +98,9 @@ make_sql_bind (char *sql, char *type)
   int a;
   if (sql == 0)
     {
-      printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
+      set_suppress_lines();
+      printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*A2*/\n");
+      clr_suppress_lines();
       if (strchr (type, 'i'))
 	{
 	  strcpy (buff_in, "");
@@ -178,7 +180,7 @@ make_sql_bind (char *sql, char *type)
 		}
 	    }
 	}
-      printc ("EXEC SQL END DECLARE SECTION;\n");
+      printc ("\nEXEC SQL END DECLARE SECTION;\n");
 
 
 	if (strchr (type, 'i')) {
@@ -257,7 +259,7 @@ make_sql_bind_expr (char *sql, char *type)
   int a;
 
 
-  ptr=addstr(ptr,&sz,"EXEC SQL BEGIN DECLARE SECTION;\n");
+  ptr=addstr(ptr,&sz,"\nEXEC SQL BEGIN DECLARE SECTION;/* A1*/\n");
   strcpy(b2,"");
 
 
@@ -346,7 +348,7 @@ make_sql_bind_expr (char *sql, char *type)
 	}
 
 	
-      ptr=addstr(ptr,&sz, "EXEC SQL END DECLARE SECTION;\n");
+      ptr=addstr(ptr,&sz, "\nEXEC SQL END DECLARE SECTION;\n");
 
 
 	if (strchr (type, 'i')) {

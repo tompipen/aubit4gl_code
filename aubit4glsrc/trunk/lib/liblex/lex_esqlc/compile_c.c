@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.171 2004-07-03 11:58:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.172 2004-07-05 16:16:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.171 2004-07-03 11:58:11 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.172 2004-07-05 16:16:09 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -88,6 +88,7 @@ extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
 //char get_curr_report_stack_whytype(void);
 
 
+int suppress_lines=0;
 char **get_field_codes(char *fields) ;
 char *get_curr_report_stack_why(void);
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
@@ -243,6 +244,18 @@ print_space (void)
   buff[ccnt * 3] = 0;
   fprintf (outfile, "%s", buff);
 }
+
+
+void set_suppress_lines() {
+	printc("\n/* SUPPRESS */\n");
+	suppress_lines++;
+}
+
+void clr_suppress_lines() {
+	suppress_lines--;
+	printc("\n/* !SUPPRESS */\n");
+}
+
 
 /**
  * Open the ouput target C file
@@ -476,17 +489,13 @@ if (os>=sizeof(buff)) {
     {
       for (a = 0; a < strlen (buff); a++)
 	{
-	  if (buff[a] == '\n')
+	  if (buff[a] == '\n' )
 	    {
-	      if (infilename != 0)
-		{
-		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-			   outputfilename);
-		}
-	      else
-		{
-		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-		  /* outputfilename); */
+		if (suppress_lines==0) {
+	      		if (infilename != 0) { fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno, outputfilename); }
+	      		else { fprintf (outfile, "\n#line %d \"null\"\n", yylineno); /* outputfilename); */ }
+		} else {
+	      		fprintf (outfile, "\n");
 		}
 	    }
 	  else
