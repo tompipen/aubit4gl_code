@@ -177,7 +177,7 @@ struct select_stmts {
 };
 
 
-struct read {
+struct read_stmt {
 	string filename<>;
 	string delimiters<>;
 	string orderby<>; /* FIXME */
@@ -185,7 +185,7 @@ struct read {
 
 union get_data switch(int select_or_read) {
 	case 0:struct select_stmts selects<>;
-	case 1:struct read read_data;
+	case 1:struct read_stmt read_data;
 	
 };
 
