@@ -693,7 +693,7 @@ char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
 
-if (type>='1'&&type<='4') return 255;
+if (type>='1'&&type<='9') return 255;
 
 p=s;
 
@@ -1208,7 +1208,7 @@ define lv_tabid integer
 let lv_tabid=get_tabid(lv_tabname)
 error "Not Implemented"
 
-return 1
+return 0
 end function
 
 
@@ -1277,7 +1277,7 @@ define lv_tabid integer
 let lv_tabid=get_tabid(lv_tabname)
 
 error "Not Implemented"
-return 
+return  0
 
 end function
 
@@ -1317,7 +1317,7 @@ define lv_s1,lv_s2 integer
 let lv_tabid=get_tabid(lv_tabname)
 
 if lv_tabid is null then
-	return
+	return 0
 end if
 
 
@@ -1466,9 +1466,10 @@ define lv_cont integer
 				end if
 
 			command "cOnstraints"
-				#CALL open_display_file()
-				call load_info_constraints(lv_tabname) 
-				#call do_paginate()
+				CALL open_display_file()
+				if  load_info_constraints(lv_tabname)  then
+					call do_paginate()
+				end if
 
 			command key "G" "triGgers"
 				call open_display_file()
@@ -1538,7 +1539,7 @@ let lv_old_index=" "
 let lv_tabid=get_tabid(lv_tabname)
 
 if lv_tabid is null then 
-	return
+	return 0
 end if
 
 
@@ -1591,7 +1592,8 @@ for lv_cnt=1 to 8
 		CALL add_to_display_file(lv_outline)
 	end if
 end for
-end foreach
+end foreach 
+return 1
 end function
 
 function sql_select_db(lv_dbname)

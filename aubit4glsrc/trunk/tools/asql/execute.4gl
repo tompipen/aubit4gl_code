@@ -324,7 +324,7 @@ code
 				else {
 					if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
 					else {
-						if (list[a].type>='1'&&list[a].type<='4') {
+						if (list[a].type>='1'&&list[a].type<='9') {
 							if (!asql_info(&list[a])) goto end_query;
 						} else {
 							if (list[a].type=='E'||list[a].type=='e') {
@@ -576,6 +576,7 @@ switch (e->type) {
 		case '1': aclfgl_load_info_columns(1);break;
 		case '2': aclfgl_load_info_status(1);break;
 		case '4': aclfgl_load_info_priv(1);break;
+		case '5': aclfgl_load_info_indexes(1);break;
 }
 a=A4GL_pop_int();
 if (exec_mode==EXEC_MODE_INTERACTIVE) {

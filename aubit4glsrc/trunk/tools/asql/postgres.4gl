@@ -556,7 +556,7 @@ if (strncasecmp(s,"database",8)==0) {
 	return 1;
 }
 
-if (type>='1'&&type<='4') return 255;
+if (type>='1'&&type<='9') return 255;
 
 qry_type=0;
 

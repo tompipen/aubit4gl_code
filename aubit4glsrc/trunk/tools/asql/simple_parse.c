@@ -185,6 +185,7 @@ int need_tabname=0;
 			if (a==KW_INFO_STAT) {e->type='2';need_tabname=1;}
 			if (a==KW_INFO_TABLES) e->type='3';
 			if (a==KW_INFO_PRIV) {e->type='4';need_tabname=1;}
+			if (a==KW_INFO_IDX) {e->type='5';need_tabname=1;}
 
 			if (e->type=='?') e->type='O';
 
