@@ -10,7 +10,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.7 2004-01-23 10:12:55 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.8 2004-01-25 13:08:05 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -1336,7 +1336,7 @@ A4GL_LL_set_form_page (void *form, int page)
   set_form_page (form, page);
 }
 
-void
+int
 A4GL_LL_form_page (void *form)
 {
   form_page (form);
@@ -2071,8 +2071,7 @@ A4GLHLUI_initlib() {
 
 
 // Not available in TUI mode...
-int
- A4GL_LL_endis_fields_ap (int en_dis, va_list * ap)
+int A4GL_LL_endis_fields_ap(int n,void* ap)
 {
 return 0;
 }
