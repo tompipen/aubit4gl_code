@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-03-19 02:44:48 afalout Exp $
+# $Id: Makefile,v 1.4 2004-03-19 04:00:14 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -43,8 +43,13 @@ CFLAGS=-g -I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl
 ##                              Targets
 ## ==================================================================
 
-../../../libLOGREPPROC_TXT.so : process_txt.c
+../../../libLOGREPPROC_TXT.so : process_txt.o
 	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -laubit4gl 
+
+process_txt.o: ../../layout_engine/API_layout.h
+
+../../layout_engine/API_layout.h:
+	${MAKE} -C ../../layout_engine API_layout.h
 
 ## ==================================================================
 ##                              Clean

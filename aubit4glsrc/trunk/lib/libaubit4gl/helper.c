@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.26 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: helper.c,v 1.27 2004-03-19 04:00:13 afalout Exp $
 #
 */
 
@@ -916,9 +916,9 @@ A4GL_read_form (char *s, char *p)
   char buff[256];
   void *ptr;
 
-#ifdef DEBUG
-  A4GL_debug ("read_form %s %s", s, p);
-#endif
+  #ifdef DEBUG
+  	A4GL_debug ("read_form %s %s", s, p);
+  #endif
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {
       A4GL_debug ("COMPILED_FORM!");
@@ -945,90 +945,49 @@ A4GL_read_form (char *s, char *p)
   return ptr;
 }
 
-
-
-/* -------------------------------------------------------------------------- */
-/* fgl_setenv()                                                               */
-/*                                                                            */
-/* This function allows to set or reset the value of environment variables.   */
-/* It expects one parameter : a string like VARIABLE=value with maximum 1024  */
-/* characters.  If the environment variable does not exists, it is created.   */
-/*                                                                            */
-/* Example : call fgl_setenv("DBPATH=/usr/app/appx")                          */
-/*
-	Writen by: (posted on 4Js mailing list)
-	Dragan Kovac
-	Centric Bussiness Solusions
-	Dragan.Kovac@kramers.nl
-	010-217-03-54
-	010-217-04-00
-
-   On some machines (e.g. SCO Unix) putenv(C) makes the argument string
-   part of the environment, so if you change the string ,
-   the environment changes.
-   Therefore we must malloc a new string for each call of fgl_setenv.
-	
-*/
-
-/* -------------------------------------------------------------------------- */
-/*
-int 
-fgl_setenv(int noarg)
-{
-char *putvar ;
-
-  putvar=(char *)malloc(1025);
-
-  popquote(i_s,sizeof(i_s));
-  clip(i_s);
-  if (putenv(i_s))
-    {
-    fprintf(stderr,"\nFGL_SETENV(%s) : Failed.\n",i_s);
-    _efemode();
-    exit(1);
-    }
-  return(0);
-  }
-*/
-  
+/**
+ *
+ * @param
+ * @return
+ */
 int
 A4GL_setenv(char *name, char *value, int overwrite)
 {
-//char* buff;
-char buff[1024]; /* YES THIS IS USED - DONT LET THE COMPILER TELL YOU OTHERWISE!!! */
 int ret;
 char prefixed_name[256];
 char *ptr;
-sprintf (prefixed_name, "A4GL_%s", name);
-/* Clear the current cache if there is one.. */
-ptr=(char *)A4GL_has_pointer (name,STR_RESOURCE_VAL);
-if (ptr) {
-	A4GL_del_pointer(name,STR_RESOURCE_VAL);
-}
-ptr=(char *)A4GL_has_pointer (prefixed_name,STR_RESOURCE_VAL);
-if (ptr) {
-	A4GL_del_pointer(prefixed_name,STR_RESOURCE_VAL);
-}
 
+	sprintf (prefixed_name, "A4GL_%s", name);
+	/* Clear the current cache if there is one.. */
+	ptr=(char *)A4GL_has_pointer (name,STR_RESOURCE_VAL);
+	if (ptr) {
+		A4GL_del_pointer(name,STR_RESOURCE_VAL);
+	}
+	ptr=(char *)A4GL_has_pointer (prefixed_name,STR_RESOURCE_VAL);
+	if (ptr) {
+		A4GL_del_pointer(prefixed_name,STR_RESOURCE_VAL);
+	}
 
-//#ifndef __MINGW32__		//No setenv() on MinGW
 #if HAVE_SETENV
-	//int setenv(const char *name, const char *value, int overwrite);
 	ret = setenv (name,value,overwrite);
 #else
 	#if HAVE_PUTENV
+		{
+		char buff[1024]; 
 		sprintf (buff,"%s=%s",name,value);
-		//int putenv(char *string);
-		//ret = putenv(buff);
 		ret = putenv(strdup(buff));
+		}
 	#else
-		A4GL_debug ("No setenv() or putenv() - cannot set environment variable %s", name);
+		#ifdef DEBUG
+			A4GL_debug ("No setenv() or putenv() - cannot set environment variable %s", name);
+		#endif
 		return 1;
 	#endif
 #endif
 
 	return ret;
 }
-  
-  
+
+
 /* =================================== EOF ============================= */
+
