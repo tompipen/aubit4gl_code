@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.25 2003-08-25 11:30:33 mikeaubury Exp $
+# $Id: report.c,v 1.26 2003-09-13 18:50:52 mikeaubury Exp $
 #
 */
 
@@ -53,23 +53,27 @@
 */
 
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
-void A4GL_fputmanyc (FILE * f, int c, int cnt);
+void A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt);
 void A4GL_set_column (struct rep_structure *rep);
 void A4GL_free_duplicate_binding (struct BINDING *b, int n);
 struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
-void A4GL_skip_top_of_page (struct rep_structure *rep);
+void A4GL_skip_top_of_page (struct rep_structure *rep,int n);
 
-void A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin);
+void A4GL_rep_print (struct rep_structure *rep, int a, int s,
+		     int right_margin);
 void A4GL_need_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
 void A4GL_make_report_table (struct BINDING *b, int n);
 void A4GL_add_row_report_table (struct BINDING *b, int n);
-int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread);
-int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
+int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o,
+			    int no, struct BINDING **reread);
+int A4GL_report_table_fetch (struct BINDING *reread, int n,
+			     struct BINDING *b);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
-void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
-static char *A4GL_report_char_pop(void) ;
+void A4GL_rep_file_print (struct rep_structure *rep, char *fname,
+			  int opt_semi);
+static char *A4GL_report_char_pop (void);
 
 char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
@@ -80,6 +84,53 @@ extern sqlca_struct a4gl_sqlca;
                     Functions definitions
 =====================================================================
 */
+
+
+#define SECTION_NORMAL 0
+#define SECTION_HEADER 1
+#define SECTION_TRAILER 2
+
+
+
+static report_print(struct rep_structure *rep,char *fmt,...) {
+va_list ap;
+char buff[2000];
+va_start(ap,fmt);
+
+vsprintf(buff,fmt,ap);
+
+if (rep->print_section==SECTION_NORMAL) {
+
+	if (rep->header) {
+		fprintf(rep->output,"%s",rep->header);
+		free(rep->header);
+		rep->header=0;
+	}
+	fprintf(rep->output,"%s",buff);
+}
+
+if (rep->print_section==SECTION_TRAILER) {
+	if (rep->header) {free(rep->header); rep->header=0;} // we've got a cached header - don't do anything..
+	else fprintf(rep->output,"%s",buff);
+}
+
+if (rep->print_section==SECTION_HEADER) {
+	if (rep->header) {
+		int a;
+		a=strlen(rep->header);
+		rep->header=realloc(rep->header,a+strlen(buff)+2);
+		rep->header[a]=0;
+		strcat(rep->header,buff);
+	} else {
+		rep->header=strdup(buff);
+	}
+}
+
+
+
+
+}
+
 
 /**
  *
@@ -105,7 +156,7 @@ gen_rep_tab_name (void *p)
  *  a   - number of parameters to print
  *  s   - do we require a newline at the end of this print
  *  right_margin - current right margin (not implemented yet)
- */ 
+ */
 void
 A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 {
@@ -120,7 +171,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
     }
 
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-  if (rep->line_no == 0 && rep->page_no == 0 && a<0)
+  if (rep->line_no == 0 && rep->page_no == 0 && a < 0)
     {
       if (rep->output_mode == 'F')
 	{
@@ -132,10 +183,12 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	      //A4GL_push_int (-1);
 	      //A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
 	      //A4GL_display_at (1, 0);
-	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+			  rep->report);
 	      rep->output = stdout;
 	      A4GL_gotolinemode ();
-	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+			  rep->report);
 	    }
 	  else
 	    {
@@ -159,21 +212,28 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	}
     }
 
-  if (a<0) { // We're just setting up...
-	return;
-  }
+  if (a < 0)
+    {				// We're just setting up...
+      return;
+    }
 
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
   if (rep->line_no == 0)
     {
       rep->line_no = 1;
       rep->page_no++;
+      rep->print_section=SECTION_HEADER;
       A4GL_debug ("Need page header");
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-      A4GL_push_int (rep->top_margin);
+      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+		  rep->report);
       A4GL_debug ("Skip lines...");
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+		  rep->report);
+
+	printf("Print top margin\n");
+      A4GL_push_int (rep->top_margin);
       A4GL_aclfgli_skip_lines (rep);
+
       A4GL_debug ("Done skip lines");
       if (rep->report == 0)
 	{
@@ -181,9 +241,13 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	  A4GL_exitwith ("Internal error");
 	  exit (10);
 	}
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+		  rep->report);
+
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+      rep->print_section=0;
+      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
+		  rep->report);
       A4GL_debug ("Done page header");
     }
 
@@ -194,7 +258,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
       if (rep->col_no == 0)
 	{
 	  rep->col_no = 1;
-	  A4GL_fputmanyc (rep->output, ' ', rep->left_margin);
+	  A4GL_fputmanyc (rep, ' ', rep->left_margin);
 	}
       for (b = 0; b < a; b++)
 	{
@@ -202,7 +266,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	  A4GL_debug ("Popped '%s'...", str);
 	  rep->col_no += strlen (str);
 	  A4GL_debug ("Popped %s\n", str);
-	  fprintf (rep->output, "%s", str);
+	  report_print (rep, "%s", str);
 	  acl_free (str);
 	}
     }
@@ -210,25 +274,33 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 
   if (s == 0)
     {
-      fprintf (rep->output, "\n");
+      report_print (rep, "\n");
       rep->col_no = 0;
       rep->line_no++;
 
-      if (rep->line_no > rep->page_length - rep->bottom_margin)
-	{
-	  for (cnt = 0; cnt < rep->bottom_margin; cnt++)
-	    {
-	      fprintf (rep->output, "\n");
-	    }
-	  rep->line_no = 0;
-	  if (rep->page_length != 1)
-	    {			// Not sure if we need this at all
-	      // but it messes up page length 1 for certain..
-	      A4GL_rep_print (rep, 0, 0, 0);
+
+      if (rep->print_section==SECTION_NORMAL) {
+      	if (rep->line_no > rep->page_length - rep->lines_in_trailer-rep->bottom_margin) {
+		printf("Adding trailer..\n");
+		rep->print_section=SECTION_TRAILER;
+      		rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
+		rep->print_section=SECTION_NORMAL;
+      	}
+
+      	if (rep->line_no > rep->page_length - rep->bottom_margin)
+		{
+		printf("Bottom margin %d",rep->bottom_margin);
+	  	for (cnt = 0; cnt < rep->bottom_margin; cnt++) {
+	      		report_print (rep, "\n");
+			rep->line_no++;
+			printf("--->%d\n",rep->line_no);
+	    	}
+
+	  	rep->line_no = 0;
+		A4GL_rep_print(rep,0,1,0);
 	    }
 	}
     }
-  fflush (rep->output);
   return;
 }
 
@@ -238,11 +310,15 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
  * @todo Describe function
  */
 void
-A4GL_fputmanyc (FILE * f, int c, int cnt)
+A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
 {
   int a;
-  for (a = 0; a < cnt; a++)
-    fputc (c, f);
+  char *x;
+  x=malloc(cnt+1);
+  memset(x,c,cnt);
+  x[cnt]=0;
+  report_print(rep,x);
+  //for (a = 0; a < cnt; a++) fputc (c, f);
 }
 
 /**
@@ -266,8 +342,8 @@ A4GL_set_column (struct rep_structure *rep)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("Current pos=%d need position %d left_margin=%d", rep->col_no, a,
-	   rep->left_margin);
+    A4GL_debug ("Current pos=%d need position %d left_margin=%d", rep->col_no,
+		a, rep->left_margin);
   }
 #endif
 
@@ -291,12 +367,12 @@ A4GL_set_column (struct rep_structure *rep)
   if (needn > 0)
     {
 
-      A4GL_fputmanyc (rep->output, ' ', (int) needn);
+      A4GL_fputmanyc (rep, ' ', (int) needn);
       rep->col_no += needn;
 #ifdef DEBUG
       /* {DEBUG} */
       {
- A4GL_debug ("Colno increased by %d", needn);
+	A4GL_debug ("Colno increased by %d", needn);
       }
 #endif
     }
@@ -305,7 +381,7 @@ A4GL_set_column (struct rep_structure *rep)
 #ifdef DEBUG
       /* {DEBUG} */
       {
- A4GL_debug ("Already past that point");
+	A4GL_debug ("Already past that point");
       }
 #endif
     }
@@ -324,8 +400,7 @@ A4GL_aclfgli_skip_lines (struct rep_structure *rep)
   a = A4GL_pop_long ();
   for (b = 0; b < a; b++)
     {
-      A4GL_push_char ("");
-      A4GL_rep_print (rep, 1, 0, 0);
+      A4GL_rep_print (rep, 0, 0, 0);
     }
 }
 
@@ -339,7 +414,7 @@ A4GL_need_lines (struct rep_structure *rep)
   int a;
   a = A4GL_pop_int ();
   if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
-    A4GL_skip_top_of_page (rep);
+    A4GL_skip_top_of_page (rep,2);
 }
 
 /**
@@ -347,16 +422,31 @@ A4GL_need_lines (struct rep_structure *rep)
  * @todo Describe function
  */
 void
-A4GL_skip_top_of_page (struct rep_structure *rep)
+A4GL_skip_top_of_page (struct rep_structure *rep,int n)
 {
   int z;
-  z = rep->page_no;
+  int a;
 
-  while (z == rep->page_no)
-    {
-      A4GL_push_char ("");
-      A4GL_rep_print (rep, 1, 0, 0);
+  a=rep->page_length-rep->line_no-rep->bottom_margin-rep->lines_in_trailer;
+
+if (n!=1 || rep->page_no) {
+  if (rep->header) return;
+  if (rep->line_no==0) return;
+}
+
+  //if (rep->page_no==1&& rep->lines_in_first_header) {
+	//a=a-rep->lines_in_first_header;
+  //} else {
+	//a=a-rep->lines_in_header;
+  //}
+
+printf("Add %d lines %d %d\n",a,rep->print_section,n);
+
+  for (z=0;z<=a;z++) {
+      A4GL_rep_print (rep, 0, 0, 0);
     }
+    //A4GL_rep_print (rep, 0, 0, 0);
+printf("Done skip top %d %d\n",rep->page_no,rep->line_no);
 
 }
 
@@ -512,7 +602,8 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql (A4GL_mk_temp_tab (b, n)));
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql
+				(A4GL_mk_temp_tab (b, n)));
 }
 
 
@@ -526,7 +617,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   char buff[1024];
   int a;
   void *x;
-  A4GL_debug("Add row report table");
+  A4GL_debug ("Add row report table");
   sprintf (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
@@ -540,7 +631,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   x = (void *) A4GLSQL_prepare_glob_sql (buff, n, b);
   A4GL_debug ("x=%p\n", x);
   A4GLSQL_execute_implicit_sql (x);
-  A4GL_debug("a4glsqlca.sqlcode=%d",a4gl_sqlca.sqlcode);
+  A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
 /**
@@ -549,7 +640,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
  */
 int
 A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
-		   struct BINDING **reread)
+			struct BINDING **reread)
 {
   int a1;
   int a2;
@@ -748,7 +839,9 @@ A4GL_pause (char *s)
 }
 
 
-static char *A4GL_report_char_pop(void) {
+static char *
+A4GL_report_char_pop (void)
+{
   int tos_size;
   int tos_dtype;
   void *tos_ptr;
@@ -758,21 +851,27 @@ static char *A4GL_report_char_pop(void) {
 
   function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
 
-  ptr = function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0, DISPLAY_TYPE_PRINT);
+  ptr =
+    function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0,
+	      DISPLAY_TYPE_PRINT);
   if (ptr != 0)
-            {
-		ptr=strdup(ptr);
-              A4GL_drop_param ();
-  } else {
-		 ptr = A4GL_char_pop ();
-  }
+    {
+      ptr = strdup (ptr);
+      A4GL_drop_param ();
+    }
+  else
+    {
+      ptr = A4GL_char_pop ();
+    }
 
 
   return ptr;
 
 }
 
-void A4GL_finished_report() {
+void
+A4GL_finished_report ()
+{
 // after a report has finished the screen
 // maybe left in line mode...
 }
