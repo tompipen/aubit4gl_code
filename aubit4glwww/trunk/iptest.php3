@@ -60,8 +60,9 @@ echo " <BR> aptiva.falout.com = ".$serverip6."<BR>";
 ?>
 
 
-<a href="http://www.dynip.com/main/?ns=28&doc=30&regkey=365439-4217875025&nextscreen=checkservice">DynIP test</a>
+<a href="http://www.dynip.com/main/?ns=28&doc=30&regkey=365439-4217875025&nextscreen=checkservice">DynIP services test</a>
 
+<a href="http://www.dynip.com/main/?ns=28&doc=30&regkey=365439-4217875025&nextscreen=accinfo">DynIP IP address</a>
 
 
 </BODY>
