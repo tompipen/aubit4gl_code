@@ -40,11 +40,14 @@ GTK
 
 UI
 	Implement proper message stack (current way doesn't work properly)
+	
 
 Other unimplemented functions
 	put_insert
 	INPUT ARRAY
 	ERROR - needs a window...
+	get_fldbuf 
+	check infield etc
 
 
 SQL Parser
