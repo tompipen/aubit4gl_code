@@ -1,0 +1,3 @@
+export CINTSYSDIR=/usr/local/cint
+export PATH=$PATH:$CINTSYSDIR
+cint -p -I$AUBITDIR/incl -l$AUBITDIR/lib/libA4GL_cint.so $1.c
