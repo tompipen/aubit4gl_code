@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.14 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: console.c,v 1.15 2004-01-26 10:39:57 mikeaubury Exp $
 #*/
 
 /**
@@ -330,7 +330,7 @@ A4GL_redisplay_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 int
- UILIB_A4GL_menu_loop (void * menuv)
+ UILIB_A4GL_menu_loop_v2 (void * menuv,void *vevt)
 {
   char buff[21];
   int a;
@@ -547,7 +547,7 @@ int
  * @todo Describe function
  */
 int
- UILIB_A4GL_prompt_loop (void *vprompt,int timeout, void *vevt) 
+ UILIB_A4GL_prompt_loop_v2 (void *vprompt,int timeout, void *vevt) 
 {
  struct aclfgl_event_list *evt;
   char buff[256];
@@ -558,7 +558,7 @@ int
   prompt->mode = 2;
   A4GL_stripnl (buff);
   A4GL_push_char (buff);
-  return 1;
+  return 0;
 }
 
 int
