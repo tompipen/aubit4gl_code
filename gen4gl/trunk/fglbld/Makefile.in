@@ -1,4 +1,4 @@
-#	@(#)$Id: Makefile.in,v 1.1 2002-06-16 07:36:07 afalout Exp $
+#	@(#)$Id: Makefile.in,v 1.2 2002-06-20 04:04:59 afalout Exp $
 #
 #	Makefile for FGLBLD program
 #	Works with standard Xenix make and RMK
@@ -37,7 +37,14 @@ DOCDIR=./doc/
 ETCDIR=./etc/
 
 FGLBLDDIR=.
-CFLAGS=-O -I${INFORMIXDIR}/incl -DI4GL_${FGLTYPE} -I${INCL_DIR}
+IFLAGS=-I${INFORMIXDIR}/incl -I${INFORMIXDIR}/incl/tools -I${INFORMIXDIR}/incl/esql -I${INCL_DIR}
+CFLAGS=-O ${IFLAGS} -DI4GL_${FGLTYPE}
+
+ifneq "@IFMX_ESQLC@" "no"
+	CFLAGS	+=-DHAS_ESQLC
+endif
+
+
 LIBRARY=./libdlist.a
 LDFLAGS=${LIBRARY} -s
 COPY=cp
@@ -155,7 +162,20 @@ LIBOBJECTS=\
 	${LIBRARY}(round.o)\
 	${LIBRARY}(scrdump.o)\
 	${LIBRARY}(sqltype.o)\
-	${LIBRARY}(uname.o)
+	${LIBRARY}(uname.o)\
+	${LIBRARY}(access.o)\
+	${LIBRARY}(decsci.o)\
+	${LIBRARY}(fgldec.o)\
+	${LIBRARY}(ljust.o)\
+	${LIBRARY}(msgtext.o)\
+	${LIBRARY}(sqlname.o)
+
+#sqltype.ec
+
+#New files sent by JL:
+#access.c decsci.c fgldec.c ljust.c msgtext.c sqlname.c sqltype.ec
+
+
 
 GLOBOBJ=\
 	fglbldg.o\
@@ -300,6 +320,7 @@ cpio:	${RUNTIME.FILES} makefile
 ${I4GL.rds}:	${INTERPRETER.o} ${LIBRARY}
 	rm -f o.${@F}
 	if [ -f ${@F} ] ; then mv ${@F} o.${@F} ; rm -f o.${@F} ; fi
+#cfglgo -o fglgo fgiusr.o ./libdlist.a -s
 	c${@F} -o ${@F} ${INTERPRETER.o} ${LDFLAGS}
 
 redraw.o  ${LIBRARY}(redraw.o):		${INCL_DIR}/rdscurses.h
@@ -320,3 +341,26 @@ clean.all: clean
 
 run:
 	./fglgo fglbld.4gi
+
+#cannot have install target at all because of install/install.sh scripts
+#install:
+#	@echo "please use install-fglbld (conflict with file name)"
+
+install-fglbld:
+	(cd Distribution; ./install)
+
+
+
+#Creating /opt/fglbld
+#Installing directory /opt/fglbld/.
+#Installing directory /opt/fglbld/bin
+#./etc/instfile: bin/fgldb not found
+#Installing directory /opt/fglbld/forms
+#Installing directory /opt/fglbld/doc
+#Installing directory /opt/fglbld/src
+#Installing directory /opt/fglbld/etc
+
+
+
+# ============================= EOF ================================
+

@@ -10,8 +10,9 @@ case $uid in
 	exit 1;;
 esac
 
-:	${FGLBLDDIR:=/usr/fglbld}
-:	${FGLBLDBIN:=${INFORMIXDIR:-/usr/informix}/bin}
+:	${FGLBLDDIR:=/opt/fglbld}
+#:	${FGLBLDBIN:=${INFORMIXDIR:-/opt/informix}/bin}
+:	${FGLBLDBIN:=${FGLBLDBIN:-/usr}/bin}
 :	${FGLUSR:=informix}
 :	${FGLGRP:=informix}
 :	${FGLTYPE:=RDS}

@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: decimal.h,v $
-@(#)Version:         $Revision: 1.1 $
-@(#)Last changed:    $Date: 2002-06-16 07:36:15 $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-20 04:05:07 $
 @(#)Purpose:         Substitute decimal.h
 @(#)Author:          J Leffler
 */
@@ -15,12 +15,26 @@
 **  subject to change if Informix ever change their version of the file.
 */
 
-typedef struct decimal
-{
-	short	s[3];
-	char	c[16];
-};
+/*
+In file included from include/decsci.h:22,
+                 from decsci.c:12:
+include/decimal.h:19: redefinition of `struct decimal'
+*/
 
-typedef struct decimal dec_t;
+#ifndef HAS_ESQLC
+
+	typedef struct decimal
+	{
+		short	s[3];
+		char	c[16];
+	};
+
+	typedef struct decimal dec_t;
+#endif
 
 #endif	/* DECIMAL_H */
+
+
+
+
+
