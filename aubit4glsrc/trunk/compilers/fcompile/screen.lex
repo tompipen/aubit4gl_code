@@ -20,7 +20,7 @@
 [\r] ;
 [\n] 	{lineno++;colno=0;graphics_mode=0;REJECT}
 [ ]	{ colno++;}
-[\t]	{colno+=8;}
+[\t]	{ while ((colno%8)!=0) colno++; }
 [	 \n]	;
 <comment>"}"	{BEGIN INITIAL;}
 <comment>.	;

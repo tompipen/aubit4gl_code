@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.68 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: newpanels.c,v 1.69 2003-08-15 07:58:46 mikeaubury Exp $
 #*/
 
 /**
@@ -1827,12 +1827,24 @@ A4GL_chkwin (void)
 
   if (A4GL_islinemode ())
     {
+	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH1"))) {
+		A4GL_debug("INIT_COL_REFRESH1 TRIGGERED...");
+		if (has_colors()) {
+			A4GL_debug("init_col_refresh1 - init_colour_pairs");
+			A4GL_init_colour_pairs ();
+		}
+	}
+
 	A4GL_debug(" API_ui Was linemode..");
 	clearok(curscr,1);
       	A4GL_init_curses_stuff ();
 
-	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH"))) {
-		if (has_colors()) A4GL_init_colour_pairs ();
+	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH2"))) {
+		A4GL_debug("INIT_COL_REFRESH1 TRIGGERED...");
+		if (has_colors()) {
+			A4GL_debug("init_col_refresh2 - init_colour_pairs");
+			A4GL_init_colour_pairs ();
+		}
 	}
 
 
@@ -1840,6 +1852,14 @@ A4GL_chkwin (void)
       	A4GL_set_scrmode ('S');
 	A4GL_zrefresh();
       	A4GL_mja_refresh ();
+	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH3"))) {
+		A4GL_debug("INIT_COL_REFRESH1 TRIGGERED...");
+		if (has_colors()) {
+			A4GL_debug("init_col_refresh3 - init_colour_pairs");
+			A4GL_init_colour_pairs ();
+		}
+	}
+
     } else {
 	A4GL_debug("API_ui Was screen mode..");
 	}

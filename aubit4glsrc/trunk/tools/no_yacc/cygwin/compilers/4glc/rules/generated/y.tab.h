@@ -46,8 +46,8 @@
      NOT_EQUAL = 1428,
      PLUS = 1595,
      MINUS = 1582,
-     DIVIDE = 1515,
      MULTIPLY = 1487,
+     DIVIDE = 1515,
      MOD = 1583,
      COMMAND = 1361,
      NUMBER_VALUE = 1655,
@@ -712,8 +712,8 @@
 #define NOT_EQUAL 1428
 #define PLUS 1595
 #define MINUS 1582
-#define DIVIDE 1515
 #define MULTIPLY 1487
+#define DIVIDE 1515
 #define MOD 1583
 #define COMMAND 1361
 #define NUMBER_VALUE 1655
