@@ -248,10 +248,19 @@ for a in $FLAGS; do
 		;;
 	-show-config)
 		#don't run any tests - just show configuration under which they would be executed
+		#at the point of makefile incovation in this script
 		SHOW_CONFIG=1
 		#break
 		;;
 		
+	-show )
+		#don't run any tests - just show configuration under which they would be executed
+		#at the point of COMPILATIOn in the test makefile
+		SHOW_CONFIG_IN_MAKE=1
+		export SHOW_CONFIG_IN_MAKE
+		#break
+		;;
+
 	-show-make) 	
 		#Dont run "run" target in makefile - run "show" target instead
 		MAKE_TARGET=show
@@ -1850,7 +1859,8 @@ do
 		aubit-config A4GL_LEXTYPE
 		aubit-config A4GL_LEXDIALECT
 		aubit-config A4GL_SQLTYPE
-		
+		note "Above config is at point of makefile incovation in run_tests"
+		note "and NOT in test makefil itself"
 		exit 0
 	fi
 	
@@ -2326,6 +2336,12 @@ do
 		RET=$?
 	fi
 
+	if test "$SHOW_CONFIG_IN_MAKE" = "1"; then
+		message "end of config output"
+		exit 0
+	fi
+	
+	
 	if [ "$RET" != "$MAKE_EXPECT_CODE" ]; then
 		if test "$SILENT" != "1"; then
 			stty sane # Just it case it bombed...
@@ -2651,15 +2667,15 @@ do
 			done
 			if test "$RUN_ONE" != ""; then
 				if test "$IN_4G_NOT_IN_MK" != ""; then
-					echo "WARNING: features listed by 4glc but not in Makefile:"
-					echo "$IN_4G_NOT_IN_MK"
+					verbose	"WARNING: features listed by 4glc but not in Makefile:"
+					verbose "$IN_4G_NOT_IN_MK"
 				fi
 				if test "$IN_MK_NOT_IN_4GLC" != ""; then
-					echo "WARNING: features listed in Makefile but not by 4glc:"
-					echo "$IN_MK_NOT_IN_4GLC"
+					verbose "WARNING: features listed in Makefile but not by 4glc:"
+					verbose "$IN_MK_NOT_IN_4GLC"
 				fi
-				echo "DB features (makefile) :$SQL_FEATURES_USED" 
-				echo "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+				verbose "DB features (makefile) :$SQL_FEATURES_USED" 
+				verbose "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
 			else
 				if test "$IN_4G_NOT_IN_MK" != ""; then
 					LIST_IN_4G_NOT_IN_MK="$LIST_IN_4G_NOT_IN_MK ($TEST_NO:$IN_4G_NOT_IN_MK)"
@@ -2670,7 +2686,7 @@ do
 			fi
 		else
 			if test "$RUN_ONE" != ""; then
-				echo "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
+				verbose "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
 			fi
 		fi
 	fi
@@ -2683,7 +2699,7 @@ do
 	if test "$TIME_LOOP2" = "1"; then
 		LOOP_EXIT_TIME2=`date +%s`
 		let LOOP_TOOK_TIME2=LOOP_EXIT_TIME2 - LOOP_START_TIME2
-		echo "Took $LOOP_TOOK_TIME2 seconds from execution point to end of loop"
+		message "Took $LOOP_TOOK_TIME2 seconds from execution point to end of loop"
 	fi
 #####
 done

@@ -3,6 +3,49 @@
 #							Functions
 ##############################################################################
 
+
+######################################
+# Message functions 
+function verbose () {
+	message "$1" "V"
+}
+function error () {
+	message "$1" "E" "$2"
+}
+function warning () {
+	message "$1" "W"
+}
+function debug () {
+	message "$1" "D"
+}
+function note () {
+	message "$1" "N"
+}
+function message () {
+MSG_TEXT=$1
+MSG_TYPE=$2
+EXIT_CODE=$3
+msg=""
+	case $MSG_TYPE in 
+	V) if test "$VERBOSE" = "1"; then msg="VERBOSE: $MSG_TEXT"; fi ;;
+	D) if test "$DEBUG" = "1"; then msg="DEBUG: $MSG_TEXT"; fi ;;	
+	E) 	msg="ERROR: $MSG_TEXT"; 
+		if test "$EXIT_CODE" != ""; then msg="$msg STOP." ; fi
+		;;
+	W) msg="WARNING: $MSG_TEXT" ;;
+	N) if test "$SILENT" != "1"; then msg="NOTE: $MSG_TEXT"; fi ;;
+	*) if test "$SILENT" != "1"; then msg="$MSG_TEXT"; fi ;;
+	esac
+	
+	if test "$msg" != ""; then
+		echo "run_tests: $msg"
+		if test "$EXIT_CODE" != "" ; then
+			exit $EXIT_CODE
+		fi
+	fi
+}
+
+
 ########################
 #calculate percentage
 function calc_percent () {
@@ -1605,6 +1648,7 @@ check_postgresql () {
 			
 				#TODO: maybe we can use PGPASSWORD instead of 'echo $PGUSER_POSTGRES_PWD' ???
 				
+				#This apparently works in PG8, but not in 7.4				
 				#WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
 				#WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
 				WIN_PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
@@ -1622,10 +1666,8 @@ check_postgresql () {
 					echo "ERROR: specified PG_CONF ($PG_CONF) is not a file"
 					exit 4
 				fi
-				if test "$VERBOSE" = "1"; then 
-					echo "PGDATA set to '$PGDATA'"
-					echo "PG_CONF set to '$PG_CONF'"
-				fi
+				verbose "PGDATA set to '$PGDATA'"
+				verbose "PG_CONF set to '$PG_CONF'"
 			fi
 		fi
 	else
@@ -1635,14 +1677,28 @@ check_postgresql () {
 		fi
 	fi
 	
-	#Find current PostgreSQL configuration file in sue by currently rinning
+	#Find current PostgreSQL configuration file in use by currently running
 	#instance of PG engine (PG_CONF)
-	if test "$PG_CONF" = ""; then 
+	if test "$PG_CONF" = ""; then
 		if test -f "$PGDATA/postgresql.conf"; then 
 			PG_CONF="$PGDATA/postgresql.conf"
 		else
-			echo "WARNING: failed to determine PG config file location"
-			PG_CONF="unknown"
+			#This apparently works in PG8, but not in 7.4				
+			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
+			PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+			
+			if ! test -f "$PG_CONF"; then		
+				#seems like engine does not keep config file name (tried psql 'SHOW ALL;')
+				#So only source of config file location is environment where postmaster
+				#command was executed
+				warning "failed to determine PG config file location (PGDATA=$PGDATA)"
+				ls -al $PGDATA *.conf
+				PG_CONF="unknown"
+			fi
+			if ! test -d "$PGDATA"; then
+				warning "failed to determine PG data directory (PGDATA=$PGDATA)"
+				PGDATA=""
+			fi
 		fi
 	fi
 	
@@ -1819,8 +1875,7 @@ check_postgresql () {
 		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
 		#...and restart pg...?
 		if test "$IGNORE_CONF_ERR" != "1" -a "$DB_TYPE" = "PG-IFX-74"; then 
-			echo "STOP. (correct or use -ignore-conf-error to ignore)"
-			exit 8
+			error "(correct or use -ignore-conf-error to ignore)" "8"
 		fi
 	fi
 	#if test "$COMSPEC" != ""; then
@@ -1837,8 +1892,7 @@ check_postgresql () {
 		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
 		#...and restart pg...?
 		if test "$IGNORE_CONF_ERR" != "1" -a "$DB_TYPE" = "PG-IFX-74"; then 
-			echo "STOP. (correct or use -ignore-conf-error to ignore)"
-			exit 8
+			error "(correct or use -ignore-conf-error to ignore)" "8"
 		fi
 	fi
 	
@@ -4150,15 +4204,15 @@ function log_results () {
 		#fi
 		echo ""	 >> $LOGFILE
 		if test "$VERBOSE_RESULTS_LOG" != ""; then
-			echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
+			verbose "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
 		else
-			echo "VERBOSE_RESULTS_LOG is null"
+			warning "VERBOSE_RESULTS_LOG is null"
 		fi
 	fi 
 	if test "$SQLFEATURES_LOGFILE" != ""; then
-		echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
+		verbose "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
 	else
-		echo "SQLFEATURES_LOGFILE is null"
+		warning "SQLFEATURES_LOGFILE is null"
 	fi
 	echo ""	 >> $LOGFILE
 		

@@ -177,5 +177,5 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE META_REUSE_CURSOR ANSI_SELECT STATUS"
+	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS"
 
