@@ -33,32 +33,22 @@ print_options('P',$<str>2);
 print_options('A',$<str>1);
 iskey=0;
 }
-		| DELETE single_key_val {
-print_options('D',$<str>2);
-iskey=0;
-}
-		| INSERT single_key_val {
-print_options('I',$<str>2);
-iskey=0;
-}
-		| NEXT single_key_val {
-print_options('N',$<str>2);
-}
-		| PREVIOUS single_key_val {
-print_options('p',$<str>2);
-iskey=0;
-}
-		| HELP single_key_val {
-print_options('H',$<str>2);
-}
-		| HELP_FILE file_name { print_set_helpfile($<str>2); }
-		| LANG_FILE file_name { print_set_langfile($<str>2); }
-		| DISPLAY attributes_def {
-print_options('d',$<str>2);
-}
-		| INPUT attributes_def {
-print_options('i',$<str>2);
-}
+		| DELETE single_key_val { print_options('D',$<str>2); iskey=0; }
+		| INSERT single_key_val { print_options('I',$<str>2); iskey=0; }
+		| NEXT single_key_val { print_options('N',$<str>2); }
+		| PREVIOUS single_key_val { print_options('p',$<str>2); iskey=0; }
+		| HELP single_key_val     { print_options('H',$<str>2); }
+		| HELP_FILE file_name    { print_set_helpfile($<str>2); }
+		| LANG_FILE file_name    { print_set_langfile($<str>2); }
+
+		| DISPLAY_ATTR_FORM        { print_options('A',"1"); }
+		| DISPLAY_ATTR_WINDOW      { print_options('A',"2"); }
+
+		| INPUT_ATTR_FORM        { print_options('B',"1"); }
+		| INPUT_ATTR_WINDOW      { print_options('B',"2"); }
+
+		| DISPLAY attributes_def { print_options('d',$<str>2);print_options('A',"0"); }
+		| INPUT attributes_def   { print_options('i',$<str>2); print_options('B',"0");}
 		| INPUT_WRAP {
 print_options('W',"1");
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.39 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.40 2004-03-01 07:06:47 mikeaubury Exp $
 #
 */
 
@@ -725,8 +725,10 @@ A4GL_func_using (void)
       A4GL_trim (fmt);
   }
       s = strlen (fmt);
-      z = A4GL_new_string (s);
+      z = A4GL_new_string (s+1);
+	A4GL_debug("Calling a4gl_using");
       a4gl_using (z, s, fmt, a);
+	A4GL_debug("z=%s\n",z);
       A4GL_push_char (z);
     }
   else

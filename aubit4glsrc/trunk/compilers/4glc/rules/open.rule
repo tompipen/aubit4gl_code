@@ -93,8 +93,8 @@ op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
 
 
 connect_cmd :
-CONNECT_TO var_ident op_connect_as con_user_details {
-	print_open_session($<str>3,$<str>2,$<str>4);
+CONNECT TO var_ident op_connect_as con_user_details {
+	print_open_session($<str>4,$<str>3,$<str>5);
 }
 ;
 

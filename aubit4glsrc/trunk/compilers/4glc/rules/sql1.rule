@@ -268,9 +268,18 @@ sql_commands :  schema_ss {
 	;
 
 privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option
-{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+	| GRANT db_priv TO grantee_list {sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| REVOKE db_priv FROM grantee_list {sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
+
+
+db_priv:
+	CONNECT
+	| RESOURCE
+	| DBA
+;
 
 op_with_grant_option: {strcpy($<str>$,"");}
 	| WITH_GRANT_OPTION
@@ -278,8 +287,8 @@ op_with_grant_option: {strcpy($<str>$,"");}
 	;
 
 privileges:
-	ALL_PRIVILEGES
-{sprintf($<str>$," %s ",$<str>1);}
+	ALL_PRIVILEGES {sprintf($<str>$," %s ",$<str>1);}
+	| ALL {sprintf($<str>$," %s ",$<str>1);}
 	| action_list
 	;
 
@@ -294,6 +303,8 @@ action: SELECT
 	| DELETE
 	| UPDATE op_grant_column_list
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| ALTER
+	| INDEX
 	;
 
 op_grant_column_list: {strcpy($<str>$,"");}
@@ -1336,9 +1347,10 @@ value_expression_initial_ss :
 	| var_ident_ibind_ss 	{
 		$<sql_string>$=$<sql_string>1;
 	}
-	| subquery_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
+	| subquery_ss { $<sql_string>$=$<sql_string>1; }
+	| ALL subquery_ss { $<sql_string>$=make_sql_string("ALL ",$<sql_string>2,0); }
+	| ANY subquery_ss { $<sql_string>$=make_sql_string("ANY ",$<sql_string>2,0); }
+	| SOME subquery_ss { $<sql_string>$=make_sql_string("SOME ",$<sql_string>2,0); }
 	| ATSIGN identifier {
 		$<sql_string>$=strdup($<str>2);
 	}
@@ -1461,7 +1473,7 @@ misc_sql :
 
 rename_stmt :
 	RENTAB rentabname TO rentabname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
-	| RENCOL rentabname DOT rencolname TO rencolname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
+	| RENCOL table_name DOT rencolname TO rencolname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
 ;
 
 rentabname : identifier;

@@ -105,10 +105,12 @@ if (tail[round_cnt]>='5') {
 }
 
 while (carry) {
+		A4GL_debug("Doing Carry... %s",tail);
 		round_cnt--;
 		if (round_cnt<0) break;
 		tail[round_cnt]++;
 		if (tail[round_cnt]<='9') {carry=0;break;}
+		if (tail[round_cnt]>'9') tail[round_cnt]='0';
 }
 
 if (carry) head_i++;
@@ -128,7 +130,7 @@ if (isneg) dec->dec_data[0]+=128;
 	//printf("str=%s digits=%d decimal=%d\n",&dec->dec_data[2],digits,decimals);
 	//printf("NEEDS ROUNDING\n");
 //}
-//printf("----> %s\n",&dec->dec_data[2]);
+A4GL_debug("----> %s\n",&dec->dec_data[2]);
 return dec;
 }
 
