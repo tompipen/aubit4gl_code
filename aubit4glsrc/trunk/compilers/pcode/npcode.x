@@ -92,14 +92,11 @@ struct npvariable {
 	enum var_category category;
 	struct variable_element *var;
 
-	/* long alloc_size; */
-	/* long offset;     */
-	/* struct param *set; */
 };
 
 
 struct param_list {
-	struct param list<>;
+	long  list_param_id<>;
 };
 
 enum enumop {
@@ -122,9 +119,9 @@ enum enumop {
 
 
 struct param_op {
-	struct param *left;
+	long left_param_id;
 	enum enumop op_i;
-	struct param *right;
+	long right_param_id;
 };
 
 
@@ -138,17 +135,11 @@ struct cmd_end_block {
 	long pc_start_block;
 };
 
-/*
-struct param_c_call {
-	short func_id;
-	struct param *params;
-};
-*/
 
 union param switch (int param_type) {
 	case PARAM_TYPE_LITERAL_INT: 		long 			n;
 	case PARAM_TYPE_LITERAL_CHAR: 		char 			c;
-	case PARAM_TYPE_LITERAL_STRING: 	long str_entry;
+	case PARAM_TYPE_LITERAL_STRING: 	long 			str_entry;
 	case PARAM_TYPE_LITERAL_DOUBLE:		double 			*d;
 	case PARAM_TYPE_VAR:			string 			v<>;
 	case PARAM_TYPE_VAR_ID: 		int 			vid;
@@ -156,39 +147,30 @@ union param switch (int param_type) {
 	case PARAM_TYPE_LIST: 			struct param_list 	*p_list;
 	case PARAM_TYPE_OP: 			struct param_op 	*op;
 	case PARAM_TYPE_USE_VAR: 		struct use_variable 	*uv;
+	case PARAM_TYPE_CACHED: 		long 			param_cache_id; 
+	case PARAM_TYPE_SPECIAL: 		string 			special<>;
+	case PARAM_TYPE_ONKEY: 			string 			keys<>;
+	case PARAM_TYPE_NULL: 			void; 
 	case PARAM_TYPE_EMPTY: 			void; 
-	case PARAM_TYPE_CACHED: 		long param_cache_id; 
-	case PARAM_TYPE_SPECIAL: 		string special<>;
-	case PARAM_TYPE_ONKEY: 			string keys<>;
 };
 
 struct npcmd_if {
-	struct param *condition;
+	long condition_param_id;
 	long goto_true;
 	long goto_false;
 };
-
-/*
-struct cmd_while {
-	struct param condition;
-	long goto_true;
-	long goto_false;
-};
-*/
-
 
 
 struct npcmd_call {
 	long func_id;
-	/* char is_c; */
-	struct param *params;
+	long func_params_param_id;
 };
 
 
 
 struct use_variable_sub {
-	struct param 			*subscript;
-	long 				element;
+	long subscript_param_id;
+	long element;
 };
 
 struct use_variable {
@@ -196,22 +178,17 @@ struct use_variable {
 	short defined_in_block_pc; 	/* -1 for MODULE LEVEL */
 	char indirection;
 	struct use_variable_sub sub<>;
-
-	/* 
-	struct param 		*subscript;
-	struct use_variable 	*next;
-	*/
 };
 
 
 struct cmd_set_var {
 	struct use_variable variable;
-	struct param value;
+	long value_param_id;
 };
 
 struct cmd_set_var1 {
 	struct use_variable variable;
-	struct param value;
+	long value_param_id;
 	int set;
 };
 
@@ -236,36 +213,30 @@ struct ecall {
 
 /* An individual command */
 union cmd switch(int  cmd_type) {
-	case CMD_BLOCK: 	struct cmd_block 	*c_block;
-	case CMD_END_BLOCK: 	struct cmd_end_block 	*c_endblock;
-	case CMD_CALL: 		struct npcmd_call 	*c_call;
-	case CMD_IF: 		struct npcmd_if  		*c_if;
-	case CMD_SET_VAR: 	struct cmd_set_var 	*c_setvar;
-	case CMD_SET_VAR_ONCE: 	struct cmd_set_var1 	*c_setvar1;
+	case CMD_BLOCK: 	struct cmd_block *	c_block;
+	case CMD_END_BLOCK: 	struct cmd_end_block *	c_endblock;
+	case CMD_CALL: 		struct npcmd_call *	c_call;
+	case CMD_IF: 		struct npcmd_if *	c_if;
+	case CMD_SET_VAR: 	struct cmd_set_var *	c_setvar;
+	case CMD_SET_VAR_ONCE: 	struct cmd_set_var1 *	c_setvar1;
 	case CMD_GOTO_LABEL: 	long 			c_goto_str;
 	case CMD_GOTO_PC: 	long 			c_goto_pc;
-	case CMD_RETURN: 	struct param 		*c_return;
-
-	case CMD_CLR_ERR:     void;
-	case CMD_END_4GL_0:   void;
-	case CMD_END_4GL_1:  void;
+	case CMD_RETURN: 	long  			c_return_param_id;
+	case CMD_CLR_ERR:       void;
+	case CMD_END_4GL_0:     void;
+	case CMD_END_4GL_1:     void;
 	case CMD_NOP: 		void;
-
 	case CMD_PUSH_LONG:     long			c_push_long;
 	case CMD_PUSH_INT:	short 			c_push_int;
-	case CMD_CHK_ERR: 	long c_chk_err_lineno;
-	case CMD_ERRCHK:	struct cmd_errchk 	*c_errchk;
+	case CMD_CHK_ERR: 	long 			c_chk_err_lineno;
+	case CMD_ERRCHK:	struct cmd_errchk *	c_errchk;
 	case CMD_PUSH_CHAR:	long 			c_push_char;
-	case CMD_PUSH_CHARV: 	struct param 		*c_var;
+	case CMD_PUSH_CHARV: 	long 			c_var_param_id;
 
-/*
-	case CMD_CHK_ERR		=103,
-	case CMD_PUSH_VARIABLE	=104,
-*/
-	case CMD_DISPLAY_AT:	struct cmd_display_at c_disp_at;
-	case CMD_PUSH_OP:	long   c_push_op;
-	case CMD_ECALL:	struct ecall *c_ecall;
-	case CMD_SET_STAT: long c_setval;
+	case CMD_DISPLAY_AT:	struct cmd_display_at 	c_disp_at;
+	case CMD_PUSH_OP:	long   			c_push_op;
+	case CMD_ECALL:		struct ecall *		c_ecall;
+	case CMD_SET_STAT: 	long 			c_setval;
 };
 
 
@@ -288,8 +259,6 @@ struct module {
 	long 			file_size;
 	string 			module_name<>;
 	long 			compiled_time;
-
-
 	struct vstring 		string_table<>;
 	struct vstring 		id_table<>;
 	long  			external_function_table<>;

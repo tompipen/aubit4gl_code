@@ -116,16 +116,28 @@ find_function (char *s)
 long
 new_command (enum cmd_type cmd_type, void *ptr)
 {
-
+//int a;
   if (this_module.functions.functions_len == 0)
     {
       printf ("No current function to add a command to....\n");
       exit (1);
     }
 
-
+  if (cmd_type==CMD_NULL ){
+ 		printf("CMD NULL PASSED IN\n");
+		exit(2);
+  }
   current_function =
     &this_module.functions.functions_val[this_module.functions.functions_len - 1];
+/*
+  for (a=0;a<current_function->cmds.cmds_len;a++) {
+		if (current_function->cmds.cmds_val[a].cmd_type==CMD_NULL) {
+				printf("Whoops - something got splatted\n");
+				exit(2);
+		}
+  }
+*/
+
 
   current_function->cmds.cmds_len++;
   current_function->cmds.cmds_val =
@@ -158,18 +170,10 @@ new_command (enum cmd_type cmd_type, void *ptr)
 
     case CMD_SET_VAR:
       CURRENT_CMD.cmd_u.c_setvar = ptr;
-      A4GL_debug ("\n\nADDING CMD_SET_VAR : %p\n\n", ptr);
-      A4GL_debug ("variable=%p value=%p\n",
-		  &CURRENT_CMD.cmd_u.c_setvar->variable,
-		  &CURRENT_CMD.cmd_u.c_setvar->value);
       break;
 
     case CMD_SET_VAR_ONCE:
       CURRENT_CMD.cmd_u.c_setvar1 = ptr;
-      A4GL_debug ("\n\nADDING CMD_SET_VAR : %p\n\n", ptr);
-      A4GL_debug ("variable=%p value=%p\n",
-		  &CURRENT_CMD.cmd_u.c_setvar->variable,
-		  &CURRENT_CMD.cmd_u.c_setvar->value);
       break;
 
 
@@ -182,7 +186,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
       break;
 
     case CMD_RETURN:
-      CURRENT_CMD.cmd_u.c_return = (struct param *) ptr;
+      CURRENT_CMD.cmd_u.c_return_param_id =  (long)ptr;
       break;
 
     case CMD_PUSH_LONG:
@@ -206,7 +210,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
       break;
 
     case CMD_PUSH_CHARV:
-      CURRENT_CMD.cmd_u.c_var = (struct param *) ptr;
+      CURRENT_CMD.cmd_u.c_var_param_id = (long)ptr;
       break;
 
     case CMD_PUSH_INT:
@@ -238,12 +242,12 @@ new_command (enum cmd_type cmd_type, void *ptr)
 
 
 long
-add_call (char *funcname, struct param *params)
+add_call (char *funcname, long params_i)
 {
   struct npcmd_call *c;
   c = malloc (sizeof (struct npcmd_call));
   c->func_id = add_id (funcname);
-  c->params = params;
+  c->func_params_param_id = params_i;
   add_called (funcname);
   return new_command (CMD_CALL, c);
 }
@@ -270,7 +274,7 @@ add_block (void *ptr_c_vars)
 
 
 long
-add_set_var (struct use_variable *var, struct param *value, int once)
+add_set_var (struct use_variable *var, long value, int once)
 {
   struct cmd_set_var *v;
   struct cmd_set_var1 *v1;
@@ -286,29 +290,9 @@ add_set_var (struct use_variable *var, struct param *value, int once)
   memcpy (&(v1->variable), var, sizeof (struct use_variable));
 
 
-//A4GL_debug("Before copy : ");
-  //print_params(value);
-  if (value)
-    {
-      memcpy (&(v->value), value, sizeof (struct param));
-      memcpy (&(v1->value), value, sizeof (struct param));
-    }
-  else
-    {
-      v->value.param_type = PARAM_TYPE_EMPTY;
-      v1->value.param_type = PARAM_TYPE_EMPTY;
-    }
+  v->value_param_id=value;
+  v1->value_param_id=value;
 
-//A4GL_debug("After copy : ");
-  //print_params(&v->value);
-
-  if ((long) value < 100 && value)
-    {
-      char *ptr = 0;
-      printf ("CORRUPT VALUE\n");
-      *ptr = 0;
-
-    }
   if (once)
     {
       v1->set = 0;
@@ -318,8 +302,8 @@ add_set_var (struct use_variable *var, struct param *value, int once)
     {
       pc = new_command (CMD_SET_VAR, v);
     }
-  //print_set_var(v);
   return pc;
+
 }
 
 
@@ -334,56 +318,9 @@ current_pc ()
 
 
 
-/*
-void
-add_label (char *label)
-{
-  current_function =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
-					 1];
-  A4GL_debug ("Add label %s %d\n", label, current_function->cmds.cmds_len);
-
-
-  if (find_label (label) >= 0)
-    {
-      printf ("Label already exists (%s)\n", label);
-      exit (1);
-    }
-  labels[labels_cnt].str = strdup (label);
-  labels[labels_cnt].pc = current_function->cmds.cmds_len;
-  labels_cnt++;
-  if (labels_cnt >= LABELSCNT)
-    {
-      printf ("Too many labels");
-      exit (11);
-    }
-
-  //return new_command(CMD_LABEL,strdup(label));
-}
-*/
 
 
 
-/*
-int
-find_label (char *label)
-{
-  int a;
-
-
-  if (tfind(label,&label_tree,strcmp)) {
-
-
-  for (a = 0; a < labels_cnt; a++)
-    {
-      if (strcmp (labels[a].str, label) == 0)
-	{
-	  return labels[a].pc;
-	}
-    }
-  return -1;
-}
-*/
 
 
 
@@ -410,12 +347,14 @@ end_function ()
 {
   int a;
   do_end_block ();
-  new_command (CMD_RETURN, 0);
+  if (this_module.params.params_val[1].param_type!=PARAM_TYPE_EMPTY) {
+		printf("NOT EMPTY\n");
+  }
+  new_command (CMD_RETURN, (void *)1);
   is_in_function = 0;
   a = this_module.functions.functions_len - 1;
   resolve_gotos_func (a);
 
-  //printf("Done..\n");
   return 0;
 }
 
@@ -423,10 +362,7 @@ end_function ()
 long
 end_main ()
 {
-  //do_end_block ();
-  //new_command (CMD_RETURN, 0);
   is_in_function = 0;
-  //printf("Done..\n");
   return 0;
 }
 
@@ -444,11 +380,11 @@ end_block ()
 }
 
 long
-add_if (struct param *e, char *true, char *false)
+add_if (long e_i, char *true, char *false)
 {
   struct npcmd_if *f;
   f = malloc (sizeof (struct npcmd_if));
-  f->condition = e;
+  f->condition_param_id = e_i;
   f->goto_true = (long) true;
   f->goto_false = (long) false;
   return new_command (CMD_IF, f);
@@ -489,14 +425,14 @@ long add_ecall(char *s,int a,int b) {
 
 
 long add_set_stat(int a) {
-  struct ecall *ptr;
-  return new_command (CMD_SET_STAT, a);
+  //struct ecall *ptr;
+  return new_command (CMD_SET_STAT, (void *)a);
 }
 
 long add_push_op(char *n) {
   int ni;
   ni=atoi(n);
-  return new_command (CMD_PUSH_OP, ni);
+  return new_command (CMD_PUSH_OP, (void *)ni);
 }
 
 long add_push_char(char *s) {
@@ -511,9 +447,8 @@ long add_push_char(char *s) {
   	return new_command (CMD_PUSH_CHAR, (void *)n);
 }
 
-long add_push_charv(struct param *e) {
-	int n;
-  	return new_command (CMD_PUSH_CHARV, (void *)e);
+long add_push_charv(long e_i) {
+  	return new_command (CMD_PUSH_CHARV, (void *)e_i);
 }
 
 
@@ -761,10 +696,8 @@ add_id (char *s)
 void
 add_function (char *function_name, struct define_variables *v, int is_static)
 {
-//
   int a;
   struct npfunction *curr_func;
-  //printf ("Processing :%-80.80s\n", function_name); fflush(stdout);
 
   if (labels_cnt)
     {
@@ -787,14 +720,11 @@ add_function (char *function_name, struct define_variables *v, int is_static)
   curr_func->cmds.cmds_len = 0;
   curr_func->cmds.cmds_val = 0;
 
-  //curr_func->stack.stack_len=0;
-  //curr_func->stack.stack_val=0;
   if (v)
     {
       curr_func->param_vars.param_vars_len = v->var_len;
       curr_func->param_vars.param_vars_val =
-	malloc (sizeof (struct use_variable) * v->var_len);
-      //printf("Adding %d variables as parameters..\n",v->var_len);
+              malloc (sizeof (struct use_variable) * v->var_len);
       memset (curr_func->param_vars.param_vars_val, 0,
 	      (sizeof (struct use_variable) * v->var_len));
     }
@@ -802,7 +732,6 @@ add_function (char *function_name, struct define_variables *v, int is_static)
     {
       curr_func->param_vars.param_vars_len = 0;
       curr_func->param_vars.param_vars_val = 0;
-      //printf("No variables as parameters\n");
     }
 
 // Add our function block...
@@ -825,10 +754,15 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 	    }
 	  else
 	    {
-	      //printf("Adding %d as parameter variable array \n",a);
-	      add_variable_array (CAT_NORMAL, &v->var_val[a],
+		long xx[3];
+		xx[0]=v->var_val[a].i_arr_size[0];
+		xx[1]=v->var_val[a].i_arr_size[1];
+		xx[2]=v->var_val[a].i_arr_size[2];
+
+	      add_variable_array (CAT_NORMAL, 
+				&v->var_val[a],
 				  GET_ID (v->var_val[a].name_id),
-				  &v->var_val[a].i_arr_size[0], 0);
+				  xx, 0);
 	    }
 	}
 
@@ -839,22 +773,10 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 	  struct use_variable *uv;
 	  uv = mk_use_variable (0, 0, GET_ID (v->var_val[a].name_id), 0);
 	  uv->indirection = 0;
-	  //p = malloc (sizeof (struct param));
-	  //p->param_type = PARAM_TYPE_USE_VAR;
-	  //p->param_u.uv = uv;
 	  memcpy (&curr_func->param_vars.param_vars_val[a], uv,
 		  sizeof (struct use_variable));
 	}
-
-
-
-
-
     }
-
-
-
-
 }
 
 
@@ -866,7 +788,7 @@ in_function (void)
 
 
 long
-add_return (struct param *r)
+add_return (long r)
 {
-  return new_command (CMD_RETURN, r);
+  return new_command (CMD_RETURN, (void *)r);
 }

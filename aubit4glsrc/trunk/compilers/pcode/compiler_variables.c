@@ -120,10 +120,11 @@ set_master_type (int type)
 }
 
 void
-set_master_set (struct param *set)
+set_master_set (long e_i)
 {
-  struct use_variable *uv;
+//struct param *set;
 
+  struct use_variable *uv;
   uv = malloc (sizeof (struct use_variable));
   uv->variable_id = master_variable->variable_id;
   uv->defined_in_block_pc = vstack_pc[vstack_cnt - 1];
@@ -134,17 +135,16 @@ set_master_set (struct param *set)
 
   if (m_type == 1)
     {
-      add_set_var (uv, set, 1);
+      add_set_var (uv, e_i, 1);
     }
   else
     {
-      add_set_var (uv, set, 0);
+      add_set_var (uv, e_i, 0);
     }
 }
 
 void
-add_variable (int type, struct variable_element *e, char *id,
-	      struct param *set)
+add_variable (int type, struct variable_element *e, char *id, long set_i) // @todo - set_i - is it used ?
 {
 
   struct npvariable *v;
@@ -156,10 +156,6 @@ add_variable (int type, struct variable_element *e, char *id,
   master_variable = v;
   master_variable->variable_id = vid++;
   master_variable->category = type;
-
-  //master_variable->total_size = 0;
-  //master_variable->unit_size = 0;
-  //master_variable->offset = 0;
 
   master_variable->var = e;
   e->name_id = add_id (id);
@@ -202,8 +198,7 @@ add_variable (int type, struct variable_element *e, char *id,
 
 
 void
-add_variable_array (int type, struct variable_element *e, char *id,
-		    long *arrsize, struct param *set)
+add_variable_array (int type, struct variable_element *e, char *id, long *arrsize, long set)
 {
 int as;
   if (arrsize)
@@ -214,13 +209,13 @@ int as;
 	if (arrsize[0]) as=arrsize[0]; else as=1;
 	if (arrsize[1]) as*=arrsize[1]; 
 	if (arrsize[2]) as*=arrsize[2]; 
-	printf("Arr dim : %d\n",as);
-	printf("%d %d\n",e->total_size,e->unit_size);
+	//printf("Arr dim : %d\n",as);
+	//printf("%ld %d\n",e->total_size,e->unit_size);
 	if (e->unit_size==0) {
 		e->unit_size=e->total_size;
 		e->total_size*=as;
 	}
-	printf("   -> %d %d\n",e->total_size,e->unit_size);
+	//printf("   -> %ld %d\n",e->total_size,e->unit_size);
     }
   else
     {
@@ -352,18 +347,20 @@ find_variable (int sid, char *s, short *block_no)
 
 
 struct use_variable *
-mk_use_variable (struct param *p, struct param *arr, char *id,
-		 char indirection)
+mk_use_variable (long p_i, long arr_i, char *id, char indirection)
 {
   struct use_variable *u;
   struct use_variable_sub *sub = 0;
 
+
   u = malloc (sizeof (struct use_variable));
-  A4GL_debug ("Use variable... %p\n", p);
+  A4GL_debug ("Use variable... %d\n", p_i);
 
   u->indirection = indirection;
+  u->sub.sub_len=0;
+  u->sub.sub_val=0;
 
-  if (p == 0)
+  if (p_i == 0)
     {
       u->variable_id = find_variable (-1, id, &u->defined_in_block_pc);
 
@@ -378,23 +375,20 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
 	}
       u->sub.sub_len = 0;
       u->sub.sub_val = 0;
-      if (arr)
+      if (arr_i)
 	{
 	  sub = malloc (sizeof (struct use_variable_sub));
 	  sub->element = -1;
-	  sub->subscript = arr;
+	  sub->subscript_param_id = arr_i;
 	  u->sub.sub_len++;
-	  u->sub.sub_val =
-	    realloc (u->sub.sub_val,
-		     sizeof (struct use_variable_sub) * u->sub.sub_len);
-	  memcpy (&u->sub.sub_val[u->sub.sub_len - 1], sub,
-		  sizeof (struct use_variable_sub));
+	  u->sub.sub_val = realloc (u->sub.sub_val, sizeof (struct use_variable_sub) * u->sub.sub_len);
+	  memcpy (&u->sub.sub_val[u->sub.sub_len - 1], sub, sizeof (struct use_variable_sub));
 	}
 
     }
   else
     {
-      u = p->param_u.uv;
+      u = get_use_variable(p_i);
     }
 
 
@@ -402,7 +396,7 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
 
 
 
-  if (p)
+  if (p_i)
     {
       struct use_variable *parent = 0;
       struct variable_element *v;
@@ -411,6 +405,12 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
       int a;
       int next_element;
       struct cmd *command;
+      struct param *p;
+	if (p_i!=-1) {
+		p=&PARAM_ID(p_i);
+	} else {
+		p=get_param();
+	}
 
 //
 // Find out at which level our variable is
@@ -512,11 +512,15 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
 	realloc (parent->sub.sub_val,
 		 sizeof (struct use_variable_sub) * parent->sub.sub_len);
       sub = malloc (sizeof (struct use_variable_sub));
+
+
       sub->element = next_element;
-      sub->subscript = 0;
-      if (arr)
+      sub->subscript_param_id = 0;
+
+
+      if (arr_i)
 	{
-	  sub->subscript = arr;
+	  sub->subscript_param_id = arr_i;
 	}
       memcpy (&parent->sub.sub_val[u->sub.sub_len - 1], sub,
 	      sizeof (struct use_variable_sub));
@@ -671,7 +675,7 @@ new_variable_struct (struct define_variables *v)
     {
       n->next.next_val = 0;
     }
-printf("Setting total_size to %d\n",s);
+//printf("Setting total_size to %d\n",s);
   n->total_size = s;
   return n;
 }
@@ -697,22 +701,19 @@ add_default_named_structs ()
   struct define_variables *v;
 
 /* Struct BINDING */
-  v =
-    add_default_struct_list (0,
-			     make_default_struct_element ("VoidPointer", 0,
-							  "ptr"));
-  add_default_struct_list (v,
-			   make_default_struct_element ("LONG", 0, "dtype"));
-  add_default_struct_list (v,
-			   make_default_struct_element ("LONG", 0, "size"));
-  add_default_struct_list (v,
-			   make_default_struct_element ("LONG", 0,
-							"start_char_subscript"));
-  add_default_struct_list (v,
-			   make_default_struct_element ("LONG", 0,
-							"end_char_subscript"));
-
+  v = add_default_struct_list (0, make_default_struct_element ("VoidPointer", 0, "ptr"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "dtype"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "size"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "start_char_subscript"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "end_char_subscript"));
   make_named_struct ("BINDING", v);
+
+  v = add_default_struct_list (0, make_default_struct_element ("LONG", 0, "event_type"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "block"));
+  add_default_struct_list (v, make_default_struct_element ("LONG", 0, "keycode"));
+  add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "field"));
+  make_named_struct ("aclfgl_event_list", v);
+
 
 /* All Done... */
 }

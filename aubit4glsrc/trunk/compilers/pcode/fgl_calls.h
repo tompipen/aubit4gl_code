@@ -36,20 +36,22 @@ int A4GL_pcode_ecall(char *x,int a,int params) {
   long npc;
   long rval;
   struct param p;
-
+  struct param p2;
+  struct param_list pl;
 	p.param_type=PARAM_TYPE_LIST;
-	
-	p.param_u.p_list=malloc(sizeof(struct param_list));
-	p.param_u.p_list->list.list_len=1;
-	p.param_u.p_list->list.list_val=malloc(sizeof(struct param));
-	p.param_u.p_list->list.list_val[0].param_type=PARAM_TYPE_LITERAL_INT;
-	p.param_u.p_list->list.list_val[0].param_u.n=params;
+	p.param_u.p_list=&pl;
+	p.param_u.p_list->list_param_id.list_param_id_len=1;
+	p.param_u.p_list->list_param_id.list_param_id_val=malloc(sizeof(int));
+	p.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
+	p2.param_type=PARAM_TYPE_LITERAL_INT;
+	p2.param_u.n=params;
+	set_param(&p2);
 
 
   npc = find_pcode_function (x);
 
   if (npc != -1) {
-      rval=run_function (npc, &p);
+      	rval=run_function (npc, &p);
   } else {
   	call_c_function (x, &p, &rval);
   }

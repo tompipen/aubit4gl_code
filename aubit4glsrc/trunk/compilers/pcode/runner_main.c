@@ -74,6 +74,7 @@ run_module ()
   int a;
   int pc_for_main;
   struct param main_params;
+  struct param main_params_2;
 
   if (this_module.fglc_magic != FGLC_XDR_MAGIC)
     {
@@ -123,11 +124,14 @@ run_module ()
 
   main_params.param_type = PARAM_TYPE_LIST;
   main_params.param_u.p_list = malloc (sizeof (struct param_list));
-  main_params.param_u.p_list->list.list_len = 1;
-  main_params.param_u.p_list->list.list_val = malloc (sizeof (struct param));
-  main_params.param_u.p_list->list.list_val[0].param_type =
-    PARAM_TYPE_LITERAL_INT;
-  main_params.param_u.p_list->list.list_val[0].param_u.n = 0;
+  main_params.param_u.p_list->list_param_id.list_param_id_len = 1;
+  main_params.param_u.p_list->list_param_id.list_param_id_val = malloc(sizeof(long));
+  set_param(&main_params_2);
+
+  main_params.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
+
+  main_params_2.param_type = PARAM_TYPE_LITERAL_INT;
+  main_params_2.param_u.n = 0;
   run_function (a, &main_params);
   return 1;
 }
@@ -158,7 +162,7 @@ run_function_int (int func_no, int module_special, struct param *p)
 {
   long pc = 0;
   struct cmd *c;
-  int i;
+  long i;
 
 
 /* 
@@ -190,7 +194,7 @@ Normally we should get a value for p - even if it contains a 0 length list
       fprintf (logfile, "Have some parameters...\n");fflush(logfile);
       if (p->param_type != PARAM_TYPE_LIST)
 	{
-	  fprintf (stderr, "Internal error\n");
+	  fprintf (stderr, "Internal error - param_type (%d) != PARAM_TYPE_LIST\n",p->param_type);
 	  exit (82);
 	}
       else
@@ -202,7 +206,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 	  expecting =
 	    this_module.functions.functions_val[func_no].param_vars.
 	    param_vars_len;
-	  got = p->param_u.p_list->list.list_len;
+	  got = p->param_u.p_list->list_param_id.list_param_id_len;
 	  if (got != expecting)
 	    {
 	      fprintf (stderr, "Expecting %d parameters - got %d\n",
@@ -217,16 +221,10 @@ Normally we should get a value for p - even if it contains a 0 length list
 	  for (a = 0; a < got; a++)
 	    {
 	      struct use_variable *sv_var;
-	      struct param *sv_val;
+	      //long sv_val;
 	      sv_var = &sv.variable;
-	      sv_val = &sv.value;
-	      memcpy (sv_val,
-		      &p->param_u.p_list->list.list_val[a],
-		      sizeof (struct param));
-	      memcpy (sv_var,
-		      &this_module.functions.functions_val[func_no].
-		      param_vars.param_vars_val[a],
-		      sizeof (struct use_variable));
+	      sv.value_param_id=p->param_u.p_list->list_param_id.list_param_id_val[a];
+	      memcpy (sv_var, &this_module.functions.functions_val[func_no].  param_vars.param_vars_val[a], sizeof (struct use_variable));
 	      set_var (0, &sv);
 	    }
 	}
@@ -282,15 +280,17 @@ fflush(logfile);
 	  pc++;
 	  break;
 	case CMD_IF:
-	  evaluate_param (c->cmd_u.c_if->condition, &i);
+	  evaluate_param_i_into_integer (c->cmd_u.c_if->condition_param_id, &i);
 	  if (i)
 	    {
+fprintf (logfile,"Condition is true : %ld\n",i);
 	      pc = pc + c->cmd_u.c_if->goto_true;
 	      if (c->cmd_u.c_if->goto_true == 0)
 		pc++;		// NOP GOTO
 	    }
 	  else
 	    {
+fprintf (logfile,"Condition is false : %ld\n",i);
 	      pc = pc + c->cmd_u.c_if->goto_false;
 	      if (c->cmd_u.c_if->goto_false == 0)
 		pc++;		// NOP GOTO
@@ -312,9 +312,15 @@ fflush(logfile);
 	  if (c->cmd_u.c_goto_pc == 0)
 	    pc++;		// NOP GOTO 
 	  break;
-	case CMD_RETURN:
 
-	  evaluate_param (c->cmd_u.c_return, &i);
+
+	case CMD_RETURN:
+	  if (c->cmd_u.c_return_param_id>1) {
+	  	evaluate_param_i_into_integer (c->cmd_u.c_return_param_id, &i);
+	  } else {
+		i=0;
+	  }
+
 	  if (!module_special)
 	    {
 	      // Deallocate any variables

@@ -37,6 +37,7 @@ menu "Hello test"
 			sleep 1
 		end prompt
 		display "Hello ",a clipped
+		sleep 1
 
 	command "form" "Open a form "
 		#display "Form"

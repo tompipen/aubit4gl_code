@@ -23,8 +23,6 @@ int
 process_xdr (char dir, void *s, char *filename)
 {
   FILE *fxx;
-  //void *libptr;
-  //char buff[256];
   XDR xdrp;
   int a;
 
@@ -46,7 +44,6 @@ process_xdr (char dir, void *s, char *filename)
       return 0;
     }
 
-
   if (dir == 'O')
     xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
   else
@@ -56,8 +53,13 @@ process_xdr (char dir, void *s, char *filename)
   a = xdr_module (&xdrp, s);
   xdr_destroy (&xdrp);
   fclose (fxx);
+
+
+
+
   return a;
 }
+
 #else
 
 int process_xdr(char dir, void *s,char *filename) {
@@ -96,6 +98,7 @@ int A4GL_write_data_to_file(char *t,void *s,char *fname) {
   a = xdr_module (&xdrp, s);
   xdr_destroy (&xdrp);
   fclose (fxx);
+  write_more(s);
   return a;
 }
 
@@ -109,6 +112,71 @@ FILE *fxx;
   xdr_destroy (&xdrp);
   fclose (fxx);
   return a;
+}
+
+
+write_more(struct module *objp) {
+  FILE *fxx;
+  XDR xdrp;
+  int a;
+
+printf("Write more...\n");
+
+
+  fxx = fopen ("out.string_table", "wb");
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  xdr_array (&xdrp, (char **)&objp->string_table.string_table_val, (u_int *) &objp->string_table.string_table_len, ~0, sizeof (vstring), (xdrproc_t) xdr_vstring);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+  fxx = fopen ("out.id_table", "wb");
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  xdr_array (&xdrp, (char **)&objp->id_table.id_table_val, (u_int *) &objp->id_table.id_table_len, ~0, sizeof (vstring), (xdrproc_t) xdr_vstring);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+  fxx = fopen ("out.external_function_table", "wb");
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  xdr_array (&xdrp, (char **)&objp->external_function_table.external_function_table_val, (u_int *) &objp->external_function_table.external_function_table_len, ~0, sizeof (long), (xdrproc_t) xdr_long);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+	printf("%d functions\n",objp->functions.functions_len);
+  fxx = fopen ("out.functions", "wb");
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  xdr_array (&xdrp, (char **)&objp->functions.functions_val, (u_int *) &objp->functions.functions_len, ~0, sizeof (npfunction), (xdrproc_t) xdr_npfunction);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+
+
+
+  fxx = fopen ("out.params", "wb");
+  printf("%d params\n",objp->params.params_len);
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  xdr_array (&xdrp, (char **)&objp->params.params_val, (u_int *) &objp->params.params_len, ~0, sizeof (param), (xdrproc_t) xdr_param);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+
+ {
+	int a;
+	int b;
+	char fname[255];
+	for (a=0;a<objp->functions.functions_len;a++) {
+		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
+			sprintf(fname,"cmds/%04d_%04d_%d.cmd",a,b,objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type);
+			printf("Write : %s\n",fname); fflush(stdout);
+  			fxx = fopen (fname, "wb");
+  			xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+			xdr_cmd (&xdrp, &objp->functions.functions_val[a].cmds.cmds_val[b]);
+  			xdr_destroy (&xdrp);
+  			fclose (fxx);
+		}
+	}
+ }
+
+
 }
 
 #else

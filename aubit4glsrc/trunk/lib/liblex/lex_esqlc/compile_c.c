@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.169 2004-06-25 18:25:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.170 2004-06-26 16:45:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.169 2004-06-25 18:25:36 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.170 2004-06-26 16:45:19 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2772,7 +2772,7 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (_nargs!=%d) {a4gl_status= -30174;A4GL_pop_args(_nargs);return 0;}\n",
+    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -4485,7 +4485,7 @@ void
 print_func_args (int c)
 {
   printc
-    ("if (_nargs!=%d) {a4gl_status= -30174;A4GL_pop_args(_nargs);return 0;}\n",
+    ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return 0;}\n",
      c, yylineno);
   print_function_variable_init ();
   printc ("A4GL_pop_params(fbind,%d);\n", c);
@@ -5274,10 +5274,10 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 
 	if (has_function(ident,&lib,0)) {
 		// Call shared...
-  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n%s}",  lib, ident, params,line,file,get_reset_state_after_call());
+  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n%s}",  lib, ident, params,line,file,get_reset_state_after_call());
 
 	} else {
-      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n%s}\n",
+      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n%s}\n",
 	       get_namespace (ident), ident, params, line, file, get_reset_state_after_call());
 	}
     }

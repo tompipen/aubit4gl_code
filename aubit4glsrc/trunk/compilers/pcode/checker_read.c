@@ -29,6 +29,7 @@ main (int argc, char *argv[])
       printf ("Usage %s filename.4pe\n", argv[0]);
       exit (1);
     }
+do_compiler_start (argc, argv);
   a = process_xdr ('I', &this_module, argv[1]);
 
   if (a)
@@ -50,7 +51,7 @@ main (int argc, char *argv[])
 
 
 void *
-get_var_ptr (struct use_variable *use_var)
+get_var_ptr (struct use_variable *use_var,int *size)
 {
   printf ("Shouldn't be using variables during checking..\n");
   exit (1);

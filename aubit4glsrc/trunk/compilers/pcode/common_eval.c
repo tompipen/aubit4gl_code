@@ -36,8 +36,32 @@ static char *op_str[]={
 */
 
 
+struct param *last_set ;
+
+void set_param(struct param *p) {
+	last_set=p;
+}
+
+struct param *get_param(void) {
+	return last_set;
+}
+
+int evaluate_param_i_into_integer (long e_i, long *x) {
+struct param *e;
+int a;
+if (e_i==-1) {
+	e=get_param();
+} else {
+	e=&PARAM_ID(e_i);
+}
+a=evaluate_param_into_integer(e,x);
+return a;
+}
+
+
+
 int
-evaluate_param (struct param *e, int *x)
+evaluate_param_into_integer(struct param *e, long *x)
 {
   *x = -1;
   if (e == 0)
@@ -84,20 +108,19 @@ evaluate_param (struct param *e, int *x)
 
     case PARAM_TYPE_OP:
       {
-	int a;
-	int b;
+	long a;
+	long b;
 	A4GL_debug ("Getting a...\n");
-	evaluate_param (e->param_u.op->left, &a);
-	if (e->param_u.op->right)
+	evaluate_param_i_into_integer (e->param_u.op->left_param_id, &a);
+	if (e->param_u.op->right_param_id>0)
 	  {
-	    evaluate_param (e->param_u.op->right, &b);
+	    evaluate_param_i_into_integer (e->param_u.op->right_param_id, &b);
 	    A4GL_debug ("Got b\n");
 	  }
 	else
 	  {
 	    b = 0;
 	  }
-	//printf("XXXX op=%d (%s) a=%d b=%d\n", e->param_u.op->op_i, op_str[e->param_u.op->op_i], a, b); fflush(stdout);
 
 
 	switch (e->param_u.op->op_i)
@@ -163,7 +186,8 @@ evaluate_param (struct param *e, int *x)
       return 1;
 
     case PARAM_TYPE_LIST:
-      fprintf (stderr, "struct param_list %p\n", e->param_u.p_list);
+      fprintf (stderr, "Can't evaluate a struct param_list %p\n", e->param_u.p_list);
+	{ char *ptr=0; *ptr=0;}
       exit (2);
       return 0;
 
@@ -171,15 +195,20 @@ evaluate_param (struct param *e, int *x)
     case PARAM_TYPE_USE_VAR:
       {
 	void *v;
+	int size;
 	A4GL_debug ("struct use_variable %p\n", e->param_u.uv);
-	v = get_var_ptr (e->param_u.uv);
+	v = get_var_ptr (e->param_u.uv,&size);
 	//printf ("Got variables address as %p\n", v);
 	if (v == 0)
 	  {
 	    fprintf (stderr, "Variable wasn't initialized...\n");
 	    exit (2);
 	  }
-	*x = *(int *) v;
+	if (size==1) *x = *(char *) v;
+	if (size==2) *x = *(short *) v;
+	if (size==4) *x = *(long *) v;
+	if (size==8) *x = *(double *) v;
+
 	A4GL_debug ("USE VAR --- > %d", *x);
 	return 1;
       }

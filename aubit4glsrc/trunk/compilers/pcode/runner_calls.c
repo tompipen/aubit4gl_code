@@ -71,11 +71,11 @@ struct call_funcs
 long
 handle_44 (void *end_func, struct param *p)
 {
-  int params[1];
+  long params[1];
   long rval;
   long (*func) (long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
   rval = func (params[0]);
   return rval;
 }
@@ -83,14 +83,14 @@ handle_44 (void *end_func, struct param *p)
 void
 handle_014 (void *end_func, struct param *p)
 {
-  int param1_i;
+  long param1_i;
   char param1;
-  int param2;
+  long param2;
   void (*func) (char,long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &param1_i);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &param1_i);
   param1=(char )param1_i;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &param2);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &param2);
   func (param1,param2);
 }
 
@@ -110,12 +110,12 @@ handle_4 (void *end_func, struct param *p)
 long
 handle_444 (void *end_func, struct param *p)
 {
-  int params[2];
+  long params[2];
   long rval;
   long (*func) (long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
   rval = func (params[0], params[1]);
   return rval;
 }
@@ -125,13 +125,13 @@ handle_444 (void *end_func, struct param *p)
 long
 handle_4444 (void *end_func, struct param *p)
 {
-  int params[3];
+  long params[3];
   long rval;
   long (*func) (long, long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
   rval = func (params[0], params[1], params[2]);
   return rval;
 
@@ -141,14 +141,14 @@ handle_4444 (void *end_func, struct param *p)
 long
 handle_44444 (void *end_func, struct param *p)
 {
-  int params[4];
+  long params[4];
   long rval;
   long (*func) (long, long, long,long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
-  evaluate_param (&p->param_u.p_list->list.list_val[3], &params[3]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[3], &params[3]);
   rval = func (params[0], params[1], params[2],params[3]);
   return rval;
 
@@ -158,15 +158,15 @@ handle_44444 (void *end_func, struct param *p)
 long
 handle_444444 (void *end_func, struct param *p)
 {
-  int params[5];
+  long params[5];
   long rval;
   long (*func) (long, long, long, long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
-  evaluate_param (&p->param_u.p_list->list.list_val[3], &params[3]);
-  evaluate_param (&p->param_u.p_list->list.list_val[4], &params[4]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[3], &params[3]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[4], &params[4]);
   rval = func (params[0], params[1], params[2], params[3], params[4]);
   return rval;
 }
@@ -175,20 +175,20 @@ handle_444444 (void *end_func, struct param *p)
 long
 handle_44444444444 (void *end_func, struct param *p)
 {
-  int params[10];
+  long params[10];
   long rval;
   long (*func) (long, long, long, long, long, long, long, long, long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
-  evaluate_param (&p->param_u.p_list->list.list_val[3], &params[3]);
-  evaluate_param (&p->param_u.p_list->list.list_val[4], &params[4]);
-  evaluate_param (&p->param_u.p_list->list.list_val[5], &params[5]);
-  evaluate_param (&p->param_u.p_list->list.list_val[6], &params[6]);
-  evaluate_param (&p->param_u.p_list->list.list_val[7], &params[7]);
-  evaluate_param (&p->param_u.p_list->list.list_val[8], &params[8]);
-  evaluate_param (&p->param_u.p_list->list.list_val[9], &params[9]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[3], &params[3]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[4], &params[4]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[5], &params[5]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[6], &params[6]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[7], &params[7]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[8], &params[8]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[9], &params[9]);
   rval = func (params[0], params[1], params[2], params[3], params[4],
 	       params[5], params[6], params[7], params[8], params[9]);
   return rval;
@@ -209,10 +209,10 @@ long
 handle_02 (void *end_func, struct param *p)
 {
   short params[1];
-  int p1;
+  long p1;
   void (*func) (long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &p1);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &p1);
   params[0] = p1;
   func (params[0]);
   return 0;
@@ -221,10 +221,10 @@ handle_02 (void *end_func, struct param *p)
 long
 handle_04 (void *end_func, struct param *p)
 {
-  int params[1];
+  long params[1];
   void (*func) (long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
   func (params[0]);
   return 0;
 
@@ -233,11 +233,11 @@ handle_04 (void *end_func, struct param *p)
 long
 handle_044 (void *end_func, struct param *p)
 {
-  int params[2];
+  long params[2];
   void (*func) (long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
   func (params[0], params[1]);
   return 0;
 }
@@ -245,12 +245,12 @@ handle_044 (void *end_func, struct param *p)
 long
 handle_0444 (void *end_func, struct param *p)
 {
-  int params[3];
+  long params[3];
   void (*func) (long, long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
   func (params[0], params[1], params[2]);
   return 0;
 }
@@ -258,15 +258,15 @@ handle_0444 (void *end_func, struct param *p)
 long
 handle_0444444 (void *end_func, struct param *p)
 {
-  int params[6];
+  long params[6];
   void (*func) (long, long, long, long, long, long);
   func = end_func;
-  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
-  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
-  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
-  evaluate_param (&p->param_u.p_list->list.list_val[3], &params[3]);
-  evaluate_param (&p->param_u.p_list->list.list_val[4], &params[4]);
-  evaluate_param (&p->param_u.p_list->list.list_val[5], &params[5]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[3], &params[3]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[4], &params[4]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[5], &params[5]);
   func (params[0], params[1], params[2], params[3], params[4], params[5]);
 
   return 0;
@@ -367,12 +367,12 @@ call_c_function (char *s, struct param *p, long *r)
     {
       if (p->param_type != PARAM_TYPE_LIST)
 	{
-	  printf ("Was expecting a list...\n");
+	  fprintf (stderr,"Was expecting a list (Got %d)\n",p->param_type);
 	  exit (20);
 	}
 
       list = p->param_u.p_list;
-      A4GL_debug ("Have %d values...", list->list.list_len);
+      A4GL_debug ("Have %d values...", list->list_param_id.list_param_id_len);
     }
   else
     {
@@ -391,11 +391,17 @@ call_c_function (char *s, struct param *p, long *r)
       //printf("Sig not found - try to guess.. \n");
       if (list)
 	{
-	  for (a = 0; a < list->list.list_len; a++)
+	  for (a = 0; a < list->list_param_id.list_param_id_len; a++)
 	    {
 
-	      //printf("Param %d - %d\n",a,list->list.list_val[a]);
-	      switch (list->list.list_val[a].param_type)
+	      //printf("Param %d - %d\n",a,list->list.list_param_id_val[a]);
+		struct param *p;
+		if (list->list_param_id.list_param_id_val[a]!=-1) {
+			p=&PARAM_ID(list->list_param_id.list_param_id_val[a]);
+		} else {
+			p=get_param();
+		}
+	      switch (p->param_type)
 		{
 		case PARAM_TYPE_LITERAL_CHAR:
 		  strcat (buff, "1");
@@ -414,8 +420,7 @@ call_c_function (char *s, struct param *p, long *r)
 		  break;	// A guess...
 		default:
 		  ok = 0;
-		  printf ("Can't figure it out...%d\n",
-			  list->list.list_val[a].param_type);
+		  printf ("Can't figure it out...%d\n",p->param_type);
 		  exit (2);
 		}
 
@@ -441,11 +446,11 @@ call_c_function (char *s, struct param *p, long *r)
   fprintf (logfile, "Calling C function : %s\n", s);
   if (list)
     {
-      if (strlen (sig) - 1 != list->list.list_len)
+      if (strlen (sig) - 1 != list->list_param_id.list_param_id_len)
 	{
 	  printf
 	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
-	     strlen (sig) - 1, list->list.list_len);
+	     strlen (sig) - 1, list->list_param_id.list_param_id_len);
 	  exit (21);
 	}
     }
@@ -455,7 +460,7 @@ call_c_function (char *s, struct param *p, long *r)
 	{
 	  printf
 	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
-	     strlen (sig) - 1, list->list.list_len);
+	     strlen (sig) - 1, list->list_param_id.list_param_id_len);
 	  exit (21);
 	}
     }

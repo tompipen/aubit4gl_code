@@ -31,15 +31,20 @@ define
 	mv_stage 		char(20),
 	mv_namespace 		char(256),
 	mv_output 		char(256),
+
 	mv_compile_4gl		char(256),
 	mv_compile_4gl_opts	char(256),
+
 	mv_compile_c 		char(256),
 	mv_compile_c_opts 	char(256),
 	mv_compile_c_debug 	char(256),
+
 	mv_compile_pec 		char(256),
 	mv_compile_pec_opts 	char(256),
+
 	mv_preprocess 		char(256),
 	mv_preprocess_opts	char(256),
+
 	mv_link 		char(256),
 	mv_link_opts 		char(256),
 	mv_link_debug 		char(256),
@@ -237,6 +242,7 @@ DEFINE lv_type CHAR(40)
 DEFINE lv_output_type CHAR(20)
 DEFINE lv_output char(255)
 DEFINE lv_cnt integer
+DEFINE lv_minus_c, lv_minus_e INTEGER
 
 
 
@@ -246,12 +252,21 @@ DEFINE lv_cnt integer
   END IF
   CALL init()
 
+  LET lv_minus_c=0
+  LET lv_minus_e=0
 # We should really scan first for our output filename...
   LET lv_cnt=0
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
 	IF lv_arg="-o" THEN
 		LET lv_cnt=lv_cnt+1
+	END IF
+	IF lv_arg="-e" THEN
+		LET lv_minus_e=1
+	END IF
+
+	IF lv_arg="-c" THEN
+		LET lv_minus_c=1
 	END IF
   END FOR
 
@@ -261,10 +276,21 @@ DEFINE lv_cnt integer
 		CALL usg()
   END IF
 
+
 # Darn - none at all - guess its an object
-  IF lv_cnt=0 THEN
-	LET lv_output_type="OBJ"
+  IF lv_cnt=0 and lv_output_type="UNK" THEN
+	IF lv_minus_c THEN
+		LET lv_output_type="OBJ"
+	ELSE
+		IF lv_minus_e THEN
+			LET lv_output_type="C"
+		ELSE
+			LET lv_output_type="OBJ"
+		END IF
+	END IF
+	
   END IF
+
 
   IF lv_cnt=1 THEN
 	# OK - find it again..
@@ -361,6 +387,8 @@ DEFINE lv_cnt integer
 	end if
   END IF
 
+
+
   LET mv_stage=lv_output_type
 
   FOR a=1 to lv_num_args
@@ -381,7 +409,9 @@ DEFINE lv_cnt integer
 		WHEN "-G"			let mv_make_globals=1 continue for
 	
 		WHEN "--namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
+		WHEN "-namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 
+		WHEN "-noprefix"		let mv_namespace="" continue for
 		WHEN "--noprefix"		let mv_namespace="" continue for
 		WHEN "-n"			let mv_namespace="" continue for
 
@@ -394,8 +424,17 @@ DEFINE lv_cnt integer
 		WHEN "--output"			let a=a+1 let mv_output=arg_val(a) continue for
 		WHEN "-o"			let a=a+1 let mv_output=arg_val(a) continue for
 
-		WHEN "-c"			let mv_stage="OBJ" continue for
-		WHEN "-e"			let mv_stage="C" continue for
+		WHEN "-c"			if lv_output_type!="OBJ" then
+							display "Invalid combination -c, generating a ",lv_output_type
+							exit program 2
+						end if
+						let mv_stage="OBJ" continue for
+						
+		WHEN "-e"			if lv_output_type!="C" then
+							display "Invalid combination -e, generating a ",lv_output_type
+							exit program 2
+						end if
+						let mv_stage="C" continue for
 
 		WHEN "--compile-4gl-only"	let mv_stage="EC" continue for
 		WHEN "--compile-only"		let mv_stage="OBJ" continue for

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2004-06-14 09:04:14 afalout Exp $
+# $Id: Makefile,v 1.21 2004-06-26 16:45:19 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -53,11 +53,11 @@ OBJ_COMMON      =npcode_xdr.o  common_print.o common_eval.o
 
 OBJ_RUNNER_COMMON=runner_main.o  runner_vars.o ${OBJ_COMMON}
 
-OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
+OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
 				${OBJ_COMMON} common_io_c.o
 
-OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
+OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
 				${OBJ_COMMON} common_io_fgl.o
 
@@ -152,10 +152,10 @@ ${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
 
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
-	$(CC) -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS}
+	$(CC) -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
-	$(CC) -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} -laubit4gl ${RPCLINKLIBS}
+	$(CC) -g -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} -laubit4gl ${RPCLINKLIBS}
 
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
@@ -204,10 +204,10 @@ npcode_xdr.o: npcode_xdr.c
 	$(CC) ${RPC_CFLAGS} -c -o $@ $^
 
 common_io_c.o: common_io.c
-	$(CC) -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
+	$(CC) -g -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
 
 common_io_fgl.o: common_io.c
-	$(CC) -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
+	$(CC) -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
 
 compiler_list.o: compiler_list.c
 	$(CC) ${CFLAGS} ${LIST_CFLAGS} -c -o $@ $^

@@ -18,7 +18,7 @@ int if_stack[256];
 int if_stack_cnt=0;
 
 static char buff[20];
-
+extern module this_module;
 
 %}
 
@@ -55,7 +55,8 @@ static char buff[20];
 	char str[256];
 	struct cmd *cmd;
 	void *ptr;
-	struct param *e;
+	//struct param *e;
+	long e_id;
 	int i;
 	struct variable_element *define_var;
 	struct use_variable 	*use_var;
@@ -77,14 +78,15 @@ tu : function_definition
 ;
 
 
+/*
 op_define_entry_op_set_group : 
 	| define_entry_op_set_group
 ;
-
 define_entry_op_set_group : 
 	define_entry_op_set
 	| define_entry_op_set_group define_entry_op_set
 ;
+*/
 
 
 function_definition :
@@ -152,21 +154,15 @@ fgl_funcs :
 			add_set_stat(atoi($<str>3));
 	}
 	| KW_A_ECALL '(' STRING_LITERAL ',' int_val ',' int_val ')' {
-			printf("ECALL....\n"); 
-			add_ecall($<str>3,$<e>5->param_u.n,$<e>7->param_u.n);
+			//printf("ECALL....\n"); 
+			add_ecall($<str>3, get_expr_n($<e_id>5),get_expr_n($<e_id>7));
 	}
 
-
-/*
-	| KW_A_PUSH_CHAR '(' variable ')' {
-			add_push_charv($<e>3);
-	}
-*/
 	| KW_A_PUSH_CHAR '(' op_expr_list ')' {
-		add_call("A4GL_push_char",$<e>3);
+		add_call("A4GL_push_char",$<e_id>3);
 	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
-			add_chk_err($<e>3->param_u.n);
+			add_chk_err(get_expr_n($<e_id>3));
 	}
 	| KW_A_CLR_ERR '(' ')' {
 			add_clr_err();
@@ -180,13 +176,13 @@ fgl_funcs :
 			')' {
 			struct cmd_errchk *ptr;
 			ptr=malloc(sizeof(struct cmd_errchk));
-			ptr->line=$<e>3->param_u.n;
+			ptr->line=get_expr_n($<e_id>3);
 			ptr->module_name=add_string($<str>5);
-			ptr->modes[0]=$<e>7->param_u.n;
-			ptr->modes[1]=$<e>11->param_u.n;
-			ptr->modes[2]=$<e>15->param_u.n;
-			ptr->modes[3]=$<e>19->param_u.n;
-			ptr->modes[4]=$<e>23->param_u.n;
+			ptr->modes[0]=get_expr_n($<e_id>7);
+			ptr->modes[1]=get_expr_n($<e_id>11);
+			ptr->modes[2]=get_expr_n($<e_id>15);
+			ptr->modes[3]=get_expr_n($<e_id>19);
+			ptr->modes[4]=get_expr_n($<e_id>23);
 			ptr->actions[0]=add_string($<str>9);
 			ptr->actions[1]=add_string($<str>13);
 			ptr->actions[2]=add_string($<str>17);
@@ -259,34 +255,34 @@ param_semi : param ';' {$<define_var>$=$<define_var>1;}
 
 param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_id=add_id($<str>2); }
 	| dtype id_list '[' dtype_int_val ']' 	{
-				int x;
+				long x;
 				$<define_var>$=$<define_var>1; 
 				$<define_var>$->name_id=add_id($<str>2); 
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[0]=x;
 				$<define_var>$->i_arr_size[1]=0;
 				$<define_var>$->i_arr_size[2]=0;
 	}
 	| dtype id_list '[' dtype_int_val ']' '[' dtype_int_val ']' 	{
-				int x;
+				long x;
 				$<define_var>$=$<define_var>1;
 				$<define_var>$->name_id=add_id($<str>2); 
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[0]=x;
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[1]=x;
 				$<define_var>$->i_arr_size[2]=0;
 
 	}
 	| dtype id_list '[' dtype_int_val ']' '[' dtype_int_val ']' '[' dtype_int_val ']'	{
-				int x;
+				long x;
 				$<define_var>$=$<define_var>1;
 				$<define_var>$->name_id=add_id($<str>2); 
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[0]=x;
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[1]=x;
-				evaluate_param($<e>4,&x);
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[2]=x;
 
 	}
@@ -331,30 +327,30 @@ define_entry_op_set:
 ;
 
 
-op_set : | set {set_master_set($<e>1);} 
+op_set : | set {set_master_set($<e_id>1);} 
 ;
 
 
 return: 
 	RETURN  {add_return(0);}
-	| RETURN expr {add_return($<e>2);}
+	| RETURN expr {add_return($<e_id>2);}
 	;
 
 
 set: '=' set_internal {
-	$<e>$=$<e>2;
+	$<e_id>$=$<e_id>2;
 }
 ;
 
 
 set_internal: 
-	  expr {$<e>$=$<e>1;}
-	| '{' s_expr_list '}' { $<e>$=$<e>2; }
-	| '{' '}' { $<e>$=malloc(sizeof(struct param)); $<e>$->param_type=PARAM_TYPE_EMPTY; }
+	  expr {$<e_id>$=$<e_id>1;}
+	| '{' s_expr_list '}' { $<e_id>$=$<e_id>2; }
+	| '{' '}' { $<e_id>$=0; }
 	;
 
-s_expr_list : set_internal {$<e>$=new_param_list($<e>1);}
-	| s_expr_list ',' set_internal {$<e>$=append_param_list($<e>1,$<e>3);}
+s_expr_list : set_internal 		{$<e_id>$=new_param_list_returns_long($<e_id>1);}
+	| s_expr_list ',' set_internal  {append_param_list($<e_id>1,$<e_id>3);$<e_id>$=$<e_id>1;}
 ;
 
 
@@ -384,8 +380,8 @@ opd_define_entry:
 	}
 	| dtype IDENTIFIER '[' dtype_int_val ']'   		{
 			long as[3];
-			int x;
-				evaluate_param($<e>4,&x);
+			long x;
+				evaluate_param_i_into_integer($<e_id>4,&x);
 				as[0]=x;
 				as[1]=0;
 				as[2]=0;
@@ -393,10 +389,10 @@ opd_define_entry:
 	}
 	| dtype IDENTIFIER '[' dtype_int_val ']' '[' dtype_int_val ']'  		{
 			long as[3];
-			int x;
-			evaluate_param($<e>4,&x);
+			long x;
+			evaluate_param_i_into_integer($<e_id>4,&x);
 			as[0]=x;
-			evaluate_param($<e>7,&x);
+			evaluate_param_i_into_integer($<e_id>7,&x);
 			as[1]=x;
 			as[2]=0;
 
@@ -404,12 +400,12 @@ opd_define_entry:
 	}
 	| dtype IDENTIFIER '[' dtype_int_val ']' '[' dtype_int_val ']' '[' dtype_int_val ']' 		{
 			long as[3];
-			int x;
-			evaluate_param($<e>4,&x);
+			long x;
+			evaluate_param_i_into_integer($<e_id>4,&x);
 			as[0]=x;
-			evaluate_param($<e>7,&x);
+			evaluate_param_i_into_integer($<e_id>7,&x);
 			as[1]=x;
-			evaluate_param($<e>10,&x);
+			evaluate_param_i_into_integer($<e_id>10,&x);
 			as[2]=x;
 			add_variable_array(0,$<define_var>1,$<str>2,as,0);
 
@@ -428,13 +424,11 @@ func_def_entry:
 
 
 dtype_int_val :
-		int_val  {$<e>$=$<e>1;}
+		int_val  {$<e_id>$=$<e_id>1;}
 		| int_val '+' int_val {
 	int n;
-	n=$<e>1->param_u.n+ $<e>3->param_u.n;
-		A4GL_debug("n=%d\n",n);
-		$<e>1->param_u.n=n;
-	$<e>$=$<e>1;
+		n=get_expr_n($<e_id>1) +  get_expr_n($<e_id>3);
+		$<e_id>$=new_param_returns_long('I',(void *)n);
 	}
 ;
 
@@ -494,7 +488,7 @@ if: IF '(' expr ')' {
 			A4GL_debug("i = %d\n",$<i>$);
 			add_label(buff);
 			sprintf(buff,"_if_else_%d",if_cnt);
-			add_if($<e>3,0,strdup(buff));
+			add_if($<e_id>3,0,strdup(buff));
 			}
 		cmd  {
 			A4GL_debug("using i = %d\n",$<i>5);
@@ -525,7 +519,7 @@ for :
                         add_label(buff);
 	} expr ';' {
                         sprintf(buff,"_while_e_%d",$<i>5);
-                        add_if($<e>6,0,strdup(buff));
+                        add_if($<e_id>6,0,strdup(buff));
 	}
 	assign_common ')' cmd 
 	{
@@ -550,7 +544,7 @@ while : WHILE {
 
 		} '(' expr ')'  {
 			sprintf(buff,"_while_e_%d",$<i>2);
-			add_if($<e>4,0,strdup(buff));
+			add_if($<e_id>4,0,strdup(buff));
 		} cmd {
 			sprintf(buff,"_while_c_%d",$<i>2);
 			add_goto(buff);
@@ -570,16 +564,16 @@ goto: GOTO IDENTIFIER {
 	}
 ;
 
-expr :   or_expr  {$<e>$=$<e>1;}
+expr :   or_expr  {$<e_id>$=$<e_id>1;}
 ;
 
 
-or_expr: and_expr  {$<e>$=$<e>1;}
-	| or_expr OR_OP and_expr   { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
+or_expr: and_expr  {$<e_id>$=$<e_id>1;}
+	| or_expr OR_OP and_expr   { $<e_id>$=new_param_op_returns_long($<e_id>1,$<str>2,$<e_id>3); }
 ;
 
-and_expr : other_expr_1  {$<e>$=$<e>1;}
-	| and_expr AND_OP other_expr_1  { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
+and_expr : other_expr_1  {$<e_id>$=$<e_id>1;}
+	| and_expr AND_OP other_expr_1  { $<e_id>$=new_param_op_returns_long($<e_id>1,$<str>2,$<e_id>3); }
 ;
 
 
@@ -587,28 +581,26 @@ other_expr_1: expr_1
 ;
 
 expr_1:
-	 op 			{$<e>$=$<e>1; }  
-	| int_val 		{$<e>$=$<e>1;}
+	 op 			{$<e_id>$=$<e_id>1; }  
+	| int_val 		{$<e_id>$=$<e_id>1;}
 	| STRING_LITERAL 	{
 			char *buff;
 			char *buff2;
 			buff=strdup($<str>1);
 			buff2=&buff[1];
 			buff2[strlen(buff2)-1]=0;
-			$<e>$=new_param('s',buff2); 
+			$<e_id>$=new_param_returns_long('s',buff2); 
 			free(buff);
 			}
-	| fcall_expr 	 	{$<e>$=$<e>1; }
-	| variable 		{$<e>$=$<e>1; }  
-	/* | '&' variable 		{$<e>$=$<e>2; } */  /* @fixme - should reference the address not the variable */
-	/* | '*' variable 		{$<e>$=$<e>2; } */   /* @fixme - should reference the address not the variable */
-	| '(' expr ')'   	{$<e>$=$<e>2; }
-	| cast expr     	{$<e>$=$<e>2; }
-	| '!' expr 		{$<e>$=new_param_op($<e>2,"NOT",0);}
-	| BEF_ROW { $<e>$=new_param('S',"BEF_ROW");}
-	| AFT_ROW { $<e>$=new_param('S',"AFT_ROW");}
-	| AFTER_INP { $<e>$=new_param('S',"AFTER_INP");}
-	| ON_KEY '(' STRING_LITERAL ')' { $<e>$=new_param('K',$<str>3);}
+	| fcall_expr 	 	{$<e_id>$=$<e_id>1; }
+	| variable 		{$<e_id>$=$<e_id>1; }  
+	| '(' expr ')'   	{$<e_id>$=$<e_id>2; }
+	| cast expr     	{$<e_id>$=$<e_id>2; }
+	| '!' expr 		{$<e_id>$=new_param_op_returns_long($<e_id>2,"NOT",0);}
+	| BEF_ROW 		{ $<e_id>$=new_param_returns_long('S',"BEF_ROW");}
+	| AFT_ROW 		{ $<e_id>$=new_param_returns_long('S',"AFT_ROW");}
+	| AFTER_INP 		{ $<e_id>$=new_param_returns_long('S',"AFTER_INP");}
+	| ON_KEY '(' STRING_LITERAL ')' { $<e_id>$=new_param_returns_long('K',$<str>3);}
 
 
 ;
@@ -617,32 +609,34 @@ cast:
 	'(' dtype ')'
 	;
 
-op_expr_list : {$<e>$=0; }
-	| expr_list  {$<e>$=$<e>1;}
+op_expr_list : {$<e_id>$=0; }
+	| expr_list  {$<e_id>$=$<e_id>1;}
 
 ;
 
 expr_list:
-	expr {$<e>$=new_param_list($<e>1);
+	expr {$<e_id>$=new_param_list_returns_long($<e_id>1);
 		}
 	| expr_list ',' expr {
-			$<e>$=append_param_list($<e>1,$<e>3);
+			append_param_list($<e_id>1,$<e_id>3);
+			$<e_id>$=$<e_id>1;
 	}
 ;
 
 
 fcall :
 	IDENTIFIER '('  op_expr_list ')' {
-		add_call($<str>1,$<e>3);
+		add_call($<str>1,$<e_id>3);
 	}
 ;
 
 fcall_expr :
 	IDENTIFIER '('  op_expr_list ')' {
-				$<e>$=new_param_fcall($<str>1,$<e>3);
+			$<e_id>$=new_param_fcall_returns_long($<str>1,$<e_id>3);
+			
 	}
 	| SIZEOF '(' op_expr_list ')' {
-				$<e>$=new_param_fcall($<str>1,$<e>3);
+				$<e_id>$=new_param_fcall_returns_long($<str>1,$<e_id>3);
 	}
 ;
 
@@ -650,18 +644,11 @@ fcall_expr :
 
 op: 
 	 expr_1 double_operator expr_1 {
-		$<e>$=new_param_op($<e>1,$<str>2,$<e>3);
+		$<e_id>$=new_param_op_returns_long($<e_id>1,$<str>2,$<e_id>3);
 		}
 ;
 
 
-
-/*
-and_or_op : expr AND_OP expr { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
-| expr OR_OP expr { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
-;
-
-*/
 
 
 double_operator:
@@ -686,18 +673,18 @@ int_constant_val :
 	
 int_val: int_constant_val {
 			char buff[256];
-			$<e>$=malloc(sizeof(struct param));
-			$<e>$->param_type=PARAM_TYPE_LITERAL_INT;
+			int n=0;
 			sprintf(buff,$<str>1);
 			if (buff[0]=='0') {
 				if (buff[1]=='x'||buff[1]=='X') {
-					$<e>$->param_u.n=strtol(buff,0,16);
+					n=strtol(buff,0,16);
 				} else {
-					$<e>$->param_u.n=strtol(buff,0,8);
+					n=strtol(buff,0,8);
 				}
 			} else {
-				$<e>$->param_u.n=atoi($<str>1);
+				n=atoi($<str>1);
 			}
+			$<e_id>$=new_param_returns_long('I',(void *)n);
 }
 ;
 
@@ -713,55 +700,47 @@ assign: assign_common {
 assign_common: variable '=' expr {
 	struct param *e;
 	struct use_variable *v;
-	e=$<e>1;
-	v=e->param_u.uv;
-	$<assignment>$.p=$<e>3;
+	e=&PARAM_ID($<e_id>1);
+	v=get_use_variable($<e_id>1);
+	$<assignment>$.p=$<e_id>3;
 	$<assignment>$.v=v;
 
 }
 | variable INC_OP {
-        struct param *e;
-        struct use_variable *v;
-	struct param *e2;
-	struct param *e_1;
-        e_1=malloc(sizeof(struct param)); e_1->param_type=PARAM_TYPE_LITERAL_INT; e_1->param_u.n=1;
-        e=$<e>1;
-        v=e->param_u.uv;
-	e2=new_param_op($<e>1,"+",e_1);
-	$<assignment>$.p=e2;
-	$<assignment>$.v=v;
+        /* struct param *e; */
+        /* struct use_variable *v; */
+	/* struct param *e2; */
+	/* struct param *e_1; */
+	int e_id2;
+	int n;
+	n=new_param_returns_long('I',(void *)1);
+	e_id2=new_param_op_returns_long($<e_id>1,"+",n);
+	$<assignment>$.p=e_id2;
+	$<assignment>$.v=get_use_variable($<e_id>1);
 }
 | variable DEC_OP {
-        struct param *e;
-        struct use_variable *v;
-	struct param *e2;
-	struct param *e_1;
-        e_1=malloc(sizeof(struct param)); e_1->param_type=PARAM_TYPE_LITERAL_INT; e_1->param_u.n=1;
-        e=$<e>1;
-        v=e->param_u.uv;
-	e2=new_param_op($<e>1,"-",e_1);
-	$<assignment>$.p=e2;
-	$<assignment>$.v=v;
+        /* struct param *e; */
+        /* struct use_variable *v; */
+	/* struct param *e2; */
+	/* struct param *e_1; */
+	int e_id2;
+	int n;
+	n=new_param_returns_long('I',(void *)1);
+        e_id2=new_param_op_returns_long($<e_id>1,"-",n);
+        $<assignment>$.p=e_id2;
+        $<assignment>$.v=get_use_variable($<e_id>1);
 }
 | variable ADD_ASSIGN expr {
-        struct param *e;
-        struct use_variable *v;
-	struct param *e2;
-        e=$<e>1;
-        v=e->param_u.uv;
-	e2=new_param_op($<e>1,"+",$<e>3);
+	long e2;
+	e2=new_param_op_returns_long($<e_id>1,"+",$<e_id>3);
 	$<assignment>$.p=e2;
-	$<assignment>$.v=v;
+	$<assignment>$.v=get_use_variable($<e_id>1);
 }
 | variable SUB_ASSIGN expr {
-        struct param *e;
-        struct use_variable *v;
-	struct param *e2;
-        e=$<e>1;
-        v=e->param_u.uv;
-	e2=new_param_op($<e>1,"+",$<e>3);
+	long e2;
+	e2=new_param_op_returns_long($<e_id>1,"-",$<e_id>3);
 	$<assignment>$.p=e2;
-	$<assignment>$.v=v;
+	$<assignment>$.v=get_use_variable($<e_id>1);
 }
 
 
@@ -770,39 +749,35 @@ assign_common: variable '=' expr {
 ;
 
 
-variable: IDENTIFIER 				{$<e>$=new_param('V',(void *)mk_use_variable(0    ,0    ,$<str>1,0)); 
-}
-	| IDENTIFIER '[' expr ']'  		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
-	| IDENTIFIER '[' expr ']' '[' expr ']' 		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
-	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
+variable: IDENTIFIER 				{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,0    ,$<str>1,0));}
+	| IDENTIFIER '[' expr ']'  		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
+	| IDENTIFIER '[' expr ']' '[' expr ']' 		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
+	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
 	| variable '.' IDENTIFIER 		{
-		$<e>$=new_param('V',
+		$<e_id>$=new_param_returns_long('V',
 	(void *)mk_use_variable(
-	$<e>1,
+	$<e_id>1,
 	0    ,
 	$<str>3,0));
 	}    
 
 	| variable '.' IDENTIFIER '[' expr ']'	{
-$<e>$=new_param('V',(void *)mk_use_variable(
-$<e>1,
-$<e>5,
-$<str>3,
-0
-)
-);}    
+		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(
+			$<e_id>1,
+			$<e_id>5,
+			$<str>3,
+			0
+			)
+			);
+	}    
 	| '*' variable  	{
-		struct param *p;
-		p=$<e>2;
-		$<e>$=$<e>2;
-		p->param_u.uv->indirection++;
+		$<e_id>$=$<e_id>2;
+		set_indirection($<e_id>2,1);
 
 	}
 	| '&' variable  	{
-		struct param *p;
-		p=$<e>2;
-		$<e>$=$<e>2;
-		p->param_u.uv->indirection--;
+		set_indirection($<e_id>2,-1);
+		$<e_id>$=$<e_id>2;
 	}
 ;
 

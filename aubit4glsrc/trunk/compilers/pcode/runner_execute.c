@@ -1,7 +1,7 @@
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
-	#define bool_t int
-	#define u_int unsigned int
+#define bool_t int
+#define u_int unsigned int
 #endif
 
 #include <stdio.h>
@@ -46,6 +46,10 @@ int callstack_cnt = 0;
 int callstack_alloc = 0;
 struct cmd_block *callstack = 0;
 
+
+
+
+
 static void
 add_block_to_stack (int pc, struct cmd_block *b)
 {
@@ -73,7 +77,8 @@ add_block_to_stack (int pc, struct cmd_block *b)
     }
 
   fprintf (logfile, "ADDING to stack %p stack length : %d\n", b,
-	   callstack_cnt);fflush(logfile);
+	   callstack_cnt);
+  fflush (logfile);
 
   for (a = 0; a < b->c_vars.c_vars_len; a++)
     {
@@ -92,8 +97,9 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	  if (b->c_vars.c_vars_val[a].category == CAT_STATIC)
 	    {
 	      b->c_vars.c_vars_val[a].category = CAT_ALLOC_STATIC;
-	//printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
-	      b->c_vars.c_vars_val[a].var->offset = (long) malloc (b->c_vars.c_vars_val[a].var->total_size);
+	      //printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
+	      b->c_vars.c_vars_val[a].var->offset =
+		(long) malloc (b->c_vars.c_vars_val[a].var->total_size);
 	    }
 
 	  if (b->c_vars.c_vars_val[a].category == CAT_EXTERN)
@@ -105,7 +111,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	      // Need to find our variable...
 	      // It will be in the module_variables table of another module
 	      n = &b->c_vars.c_vars_val[a];
-	      ptr = resolve_externs (GET_ID(n->var->name_id));
+	      ptr = resolve_externs (GET_ID (n->var->name_id));
 
 	      if (ptr != (void *) -1)
 		{
@@ -128,8 +134,8 @@ add_block_to_stack (int pc, struct cmd_block *b)
     {
       callstack[callstack_cnt - 1].mem_for_vars =
 	(long) malloc (callstack[callstack_cnt - 1].mem_to_alloc);
-	//printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
-	//printf("mem=%p to %p  (%d)\n",
+      //printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
+      //printf("mem=%p to %p  (%d)\n",
 //callstack[callstack_cnt - 1].mem_for_vars, 
 //callstack[callstack_cnt - 1].mem_for_vars+ callstack[callstack_cnt - 1].mem_to_alloc,
 //callstack[callstack_cnt - 1].mem_to_alloc
@@ -146,17 +152,14 @@ remove_block_from_stack ()
 {
   callstack_cnt--;
   fprintf (logfile, "Removing from stack - stack length : %d\n",
-	   callstack_cnt);fflush(logfile);
+	   callstack_cnt);
+  fflush (logfile);
 
 }
 
 
 
-static void
-copy_across_params (struct param *dest, struct param *src)
-{
-  memcpy (dest, src, sizeof (struct param));
-}
+//static void copy_across_params (struct param *dest, struct param *src) { memcpy (dest, src, sizeof (struct param)); }
 
 void
 execute_start_block (long pc, struct cmd_block *c)
@@ -177,132 +180,184 @@ execute_end_block (void)
 void
 set_var (long pc, struct cmd_set_var *sv)
 {
-  int x;
+  long x;
+int found;
+int size;
   struct param *uset_var;
   struct use_variable *use_var;
   long *ptr;
-int call_stack_entry;
-  struct param *nparam;
+  int call_stack_entry;
+  //struct param *nparam;
   struct cmd_set_var nsv;
-int lvl;
+  int lvl;
 
-  uset_var = &sv->value;
+  if (sv->value_param_id!=-1) {
+  	uset_var = &PARAM_ID (sv->value_param_id);
+  } else {
+	uset_var=get_param();
+  }
+
   use_var = &sv->variable;
-  if (sv==0) {
-	char *ptr=0;
-	printf("Nothing to set ?\n");
-	*ptr=0;
-	exit(2);
+  if (sv == 0)
+    {
+      char *ptr = 0;
+      printf ("Nothing to set ?\n");
+      *ptr = 0;
+      exit (2);
 
-  }
-//print_set_var(sv);
-//printf("USE VAR:\n");
-//print_use_variable(use_var);fflush(stdout);
-//printf("---------\n");
+    }
+  if (use_var->variable_id < 0)
+    {
+      printf ("Interal error - some corruption");
+      exit (2);
+    }
 
-  if(use_var->variable_id<0) {
-	printf("Interal error - some corruption");
-	exit(2);
-  }
+
+
+
+
   if (uset_var->param_type == PARAM_TYPE_LIST)
     {
       int a;
-      struct npvariable *var;
+      struct npvariable *npvar;
       memset (&nsv, 0, sizeof (nsv));
       // Copy across the basics...
       memcpy (&nsv.variable, use_var, sizeof (struct use_variable));
 
       nsv.variable.sub.sub_len = use_var->sub.sub_len + 1;
-      nsv.variable.sub.sub_val =
-	malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
+      nsv.variable.sub.sub_val = malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
+
+      if (use_var->defined_in_block_pc == -1)
+	{
+	  call_stack_entry = 0;
+	}
+      else
+	{
+	  call_stack_entry = callstack_cnt - 1;
+	}
 
 
 
-
-  if (use_var->defined_in_block_pc == -1)
+  found=-1;
+  for (a = 0; a < callstack[call_stack_entry].c_vars.c_vars_len; a++)
     {
-      call_stack_entry = 0;
+      if (use_var->variable_id == callstack[call_stack_entry].c_vars.c_vars_val[a].variable_id)
+        {
+          found = a;
+          break;
+        }
     }
-  else
-    {
-      call_stack_entry = callstack_cnt - 1;
-    }
 
 
-      var = &callstack[call_stack_entry].c_vars.c_vars_val[use_var->variable_id];
+if (found>=0) {
+      npvar = &callstack[call_stack_entry].c_vars.c_vars_val[found];
 
-printf("\n\n\nVAR:\n");
-print_variable(0,var);
-printf("\n\n\n");
-printf("Levels : %d ****************************************\n",use_var->sub.sub_len) ;
+      //printf ("\n\n\nVAR:\n");
+      //print_variable (0, npvar);
+      //printf ("\n\n\n");
+      //printf ("Levels : %d ****************************************\n", use_var->sub.sub_len);
+
+} else {
+	printf("Variable not found\n");
+	exit(2);
+}
 
 
 
+      if (found>= callstack[call_stack_entry].c_vars.c_vars_len) { 
+		printf("Corrupt variable id %d >=%d \n", found, callstack[call_stack_entry].c_vars.c_vars_len); 
+		printf("ID=%ld\n",sv->value_param_id); 
+		fprintf(logfile,"Corrupt variable id...\n"); exit(2); 
+	}
 
 
       memcpy (nsv.variable.sub.sub_val, use_var->sub.sub_val,
 	      sizeof (struct use_variable_sub) * use_var->sub.sub_len);
 
-      if (uset_var->param_u.p_list->list.list_len == 0)
+  
+
+      if (uset_var->param_u.p_list->list_param_id.list_param_id_len == 0)
 	{
-	  fprintf (logfile, "NO LENGTH\n");fflush(logfile);
+	  fprintf (logfile, "NO LENGTH\n");
+	  fflush (logfile);	
 	}
 
-      //printf("uset_var->param_u.p_list->list.list_len=%d\n",uset_var->param_u.p_list->list.list_len);
 
-      lvl=use_var->sub.sub_len+1;
-//printf("lvl was=%d *****************\n",lvl);
-	if (var) {
-		if (var->var) {
-      			if (var->var->i_arr_size[0]) lvl--;
-      			if (var->var->i_arr_size[1]) lvl--;
-      			if (var->var->i_arr_size[2]) lvl--;
-		} else {
-			printf("No var->var\n");
-		}
-	} else {
-		printf("No var\n");
+      lvl = use_var->sub.sub_len + 1;
+      if (npvar)
+	{
+	  if (npvar->var)
+	    {
+	      if (npvar->var->i_arr_size[0])
+		lvl--;
+	      if (npvar->var->i_arr_size[1])
+		lvl--;
+	      if (npvar->var->i_arr_size[2])
+		lvl--;
+	    }
+	  else
+	    {
+	      printf ("No var->var\n");
+	      fprintf (logfile,"ERR : No var->var\n");
+		exit(2);
+	    }
+	}
+      else
+	{
+	      printf ("No var\n");
+	      fprintf (logfile,"ERR : No var\n");
+		exit(2);
 	}
 
-//printf("lvl now=%d *****************\n",lvl);
-
-      for (a = 0; a < uset_var->param_u.p_list->list.list_len; a++)
+      for (a = 0; a < uset_var->param_u.p_list->list_param_id.list_param_id_len; a++)
 	{
 	  struct param i;
 	  i.param_type = PARAM_TYPE_LITERAL_INT;
 	  i.param_u.n = a;
+	
+	  if (lvl == 0)
+	    {
+	      //printf ("[%d]", a);
+	      set_param(&i);
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript_param_id = -1;
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element = -1;
+	    }
+	  else
+	    {
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript_param_id = 0;
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element = a;
+	    }
 
-	if (lvl==0) {
-		printf("[%d]",a);
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript = &i;
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element   = -1;
-        } else {
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript = 0;
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element   = a;
-	}
-
-	  nparam = &uset_var->param_u.p_list->list.list_val[a];
-	  copy_across_params (&nsv.value, &uset_var->param_u.p_list->list.list_val[a]);
-//printf("a=%d\n",a);
-      	//print_use_variable(&nsv.variable);
-	printf("pc=%d\n",pc);
+	  //nparam = uset_var->param_u.p_list->list_param_id.list_param_id_val[a];
+	  nsv.value_param_id=uset_var->param_u.p_list->list_param_id.list_param_id_val[a];
+		//printf("Calling set_var\n");
 	  set_var (pc, &nsv);
 	}
       free (nsv.variable.sub.sub_val);
-
-
     }
   else
     {
-      evaluate_param (uset_var, &x);
-      //A4GL_debug ("=");
+      evaluate_param_into_integer (uset_var, &x);
       use_var = &sv->variable;
-      ptr = get_var_ptr (use_var);
-	//printf("ptr=%p\n",ptr);
-      if (ptr)
-	{
-	  *(int *) ptr = x;
+      ptr = get_var_ptr (use_var,&size);
+
+      if (ptr) { 
+	int done=0;
+	if (size==1) { *(char *) ptr = x; done=1; }
+	if (size==2) { *(short *) ptr = x; done=1;}
+	if (size==4) { *(long *) ptr = x; done=1;}
+	if (size==8) { *(double *) ptr = x; done=1;}
+	 if (done==0) {
+		// Strange - it should be one of those....
+		fprintf(logfile,"Strange size  reported %ld (size=%d)",x,size);
+		*(long *) ptr = x; 
 	}
+
+	fprintf(logfile,"Setting =%ld (size=%d)",x,size);
+			//*(int *) ptr = x; 
+	}
+
+
     }
 
 
@@ -313,25 +368,32 @@ printf("Levels : %d ****************************************\n",use_var->sub.sub
 void
 set_var_once (long pc, struct cmd_set_var1 *sv)
 {
-  int x;
+  long x;
   //struct param *set_var;
   struct use_variable *use_var;
   long *ptr;
+  int size;
 
-  if (sv->set)
-    return;
-  evaluate_param (&sv->value, &x);
+  if (sv->set) return;
+
+  evaluate_param_i_into_integer (sv->value_param_id, &x);
+
   //A4GL_debug ("=");
   use_var = &sv->variable;
 
-  ptr = get_var_ptr (use_var);
+  ptr = get_var_ptr (use_var,&size);
 
   if (ptr)
     {
-      *(int *) ptr = x;
+	fprintf(logfile,"Setting =%ld (size=%d)",x,size);
+	if (size==1) *(char *) ptr = x;
+	if (size==2) *(short *) ptr = x;
+	if (size==4) *(long *) ptr = x;
+	if (size==8) *(double *) ptr = x;
     }
-
 }
+
+
 
 long
 call_function (long pc, struct npcmd_call *c)
@@ -341,20 +403,30 @@ call_function (long pc, struct npcmd_call *c)
   long rval;
 
   x = GET_ID (c->func_id);
-  //A4GL_debug (" --> %s\n", x);
   npc = find_pcode_function (x);
   if (npc != -1)
     {
-      return run_function (npc, c->params);
+      fprintf(logfile,"Call PCODE function param=%ld\n",c->func_params_param_id);fflush(logfile);
+	if (c->func_params_param_id!=0) {
+      		return run_function (npc, &PARAM_ID(c->func_params_param_id));
+	} else {
+      		return run_function (npc, 0);
+	}
     }
-  //A4GL_debug ("Not a 4gl function - must be C\n");
-  call_c_function (x, c->params, &rval);
+  fprintf(logfile,"Call C function\n");fflush(logfile);
+
+     if (c->func_params_param_id!=0) {
+  		call_c_function (x, &PARAM_ID(c->func_params_param_id), &rval);
+     } else { 
+  		call_c_function (x, 0, &rval);
+     }
+  fprintf(logfile,"C function returns %ld\n",rval);
   return rval;
 }
 
 
 void *
-get_var_ptr (struct use_variable *uv)
+get_var_ptr (struct use_variable *uv,int *size)
 {
   int a;
   int found = -1;
@@ -362,7 +434,7 @@ get_var_ptr (struct use_variable *uv)
   struct variable_element *ve_main;
   struct variable_element *ve_sub;
   int call_stack_entry;
-int indirect;
+  int indirect;
   char pointer_or_offset = 'N';
   char *rptr = 0;
 //int *rptr_i=0;
@@ -453,21 +525,24 @@ int indirect;
 
   if (!rptr)
     {
-      fprintf (logfile, "****** Variable pointer not found\n");fflush(logfile);
+      fprintf (logfile, "****** Variable pointer not found\n");
+      fflush (logfile);
 
       print_use_variable (uv);
       fflush (stdout);
 
-      fprintf (logfile, "\n");fflush(logfile);
+      fprintf (logfile, "\n");
+      fflush (logfile);
       return 0;
     }
 
   ve_main = var->var;
+
   //printf ("-->%s", GET_ID (ve_main->name_id));
-  //printf (" offset		=%ld", ve_main->offset);
-  //printf (" total_size	=%ld", ve_main->total_size);
-  //printf (" unit_size	=%ld", ve_main->unit_size);
-  //printf (" rptrbase	=%p", rptr);
+  //printf (" offset            =%ld", ve_main->offset);
+  //printf (" total_size        =%ld", ve_main->total_size);
+  //printf (" unit_size =%ld", ve_main->unit_size);
+  //printf (" rptrbase  =%p", rptr);
   //printf ("\n");
 
 
@@ -476,7 +551,7 @@ int indirect;
   A4GL_debug (" total_size	=%ld", ve_main->total_size);
   A4GL_debug (" unit_size	=%ld", ve_main->unit_size);
   A4GL_debug ("\n");
-  A4GL_debug("sub.sub_len=%d",uv->sub.sub_len);
+  A4GL_debug ("sub.sub_len=%d", uv->sub.sub_len);
 
 // If we've got to here we've found our top level variable
 
@@ -486,53 +561,65 @@ int indirect;
       int a;
       for (a = 0; a < uv->sub.sub_len; a++)
 	{
-	  ve_sub = &ve_main->next.next_val[a];
+	  ve_sub = 0; // &ve_main->next.next_val[a];
 	  if (uv->sub.sub_val[a].element != -1)
 	    {
+	  	ve_sub = &ve_main->next.next_val[    uv->sub.sub_val[a].element ];
+		//printf("ELEMENT :  %d\n",uv->sub.sub_val[a].element);
+  		//printf(" offset		=%ld\n", ve_sub->offset);
+  		//printf(" name		=%s\n", GET_ID(ve_sub->name_id));
+		rptr+= ve_sub->offset;
 	      A4GL_debug ("Sub : STRUCT (%ld)\n", uv->sub.sub_val[a].element);
 	    }
 	  else
 	    {
-	      int x;
-		//printf("Looking to get subscript %d\n",a);
-	      evaluate_param (uv->sub.sub_val[a].subscript, &x);
-//print_params(uv->sub.sub_val[a].subscript);
-		//printf("Element=%d x=%x\n",uv->sub.sub_val[a].element, x);
-	      //printf ("Sub :ARRAY (%d) +=%d\n", x,ve_main->unit_size*x);
+	      long x;
+	      evaluate_param_i_into_integer (uv->sub.sub_val[a].subscript_param_id, &x);
+		if (x<0 || x>ve_main->i_arr_size[a]) {
+			A4GL_debug("RANGE CHECK FAILED CHECK\n");
+			fprintf(logfile,"Evaluate gives bounds check failure = %ld of %d\n",x,ve_main->i_arr_size[a]);
+			exit(2);
+		}
+		A4GL_debug("Evaluate = %d of %d\n",x,ve_main->i_arr_size[0]);
 	      rptr += ve_main->unit_size * x;
 	    }
 	}
     }
 
-indirect=uv->indirection;
+  indirect = uv->indirection;
 // Are we looking at an array ?
 //printf("A\n");
-if (ve_main->i_arr_size[0]) {
-	// Are we looking at the variable for the array - with no subscripts
-	// eg char buff[245];
-	//   printf("%s",buff)
-	// This should return &buff which should be the same as &buff[0]
-	//
+  if (ve_main->i_arr_size[0])
+    {
+      // Are we looking at the variable for the array - with no subscripts
+      // eg char buff[245];
+      //   printf("%s",buff)
+      // This should return &buff which should be the same as &buff[0]
+      //
 
-	//printf("Variable indirection.. %d\n",uv->sub.sub_len);
+      A4GL_debug("Variable indirection.. %d indirect=%d\n",uv->sub.sub_len,indirect);
 
-	if (uv->sub.sub_len==0) {
-	//printf("indirect set to -1\n");
-	indirect=-1;
+       if (uv->sub.sub_len == 0)
+	{
+	  indirect = -1;
 	}
-}
-A4GL_debug("Indirection=%d ptr=%p \n",indirect,rptr);
+    }
+  A4GL_debug ("Indirection=%d ptr=%p \n", indirect, rptr);
+
+  *size=ve_main->unit_size;
   if (indirect == -1)
     {
-	static void *ptr;
-	ptr=rptr;
-	A4GL_debug("indirection -1 : %p",&ptr);
+      static void *ptr;
+      ptr = rptr;
+      A4GL_debug ("indirection -1 : %p", &ptr);
+	*size=4;
       return &ptr;
     }
 
   if (indirect == 1)
     {
-	A4GL_debug("indirection 1 : %p",*(int *)rptr);
+      A4GL_debug ("indirection 1 : %p", *(int *) rptr);
+	
       return (void *) *(int *) rptr;
     }
 
@@ -544,7 +631,7 @@ A4GL_debug("Indirection=%d ptr=%p \n",indirect,rptr);
 
   if (indirect == 0)
     {
-	A4GL_debug("indirection 0 : %p",rptr);
+      A4GL_debug ("indirection 0 : %p", rptr);
       return rptr;
     }
 

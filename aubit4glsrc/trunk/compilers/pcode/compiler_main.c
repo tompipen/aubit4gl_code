@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.9 2004-06-13 08:51:15 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.10 2004-06-26 16:45:19 mikeaubury Exp $
 #*/
 
 /**
@@ -124,12 +124,8 @@ main (int argc, char *argv[])
       char c12 [3];
 
 
-//printf("argc %d\n",argc);
-//exit (1);
       for (a = 1; a < argc; a++)
 	{
-//printf("arg=%d\n",a);
-//exit (1);
 	  if (ignore_next == 1)
 	    {
 	      ignore_next = 0;
@@ -208,7 +204,6 @@ main (int argc, char *argv[])
 		    }
 		  strcat (fout, ".4pe");
 		  got_input = 1;
-		  //yyparse ();
 		}
 	    }			//end if
 	}			//end for
@@ -238,6 +233,14 @@ main (int argc, char *argv[])
 
   this_module.params.params_len = 0;
   this_module.params.params_val = 0;
+  {
+	int n;
+	struct param *p;
+  	make_new_param(&n,&p);
+	p->param_type=PARAM_TYPE_NULL;
+  	make_new_param(&n,&p);
+	p->param_type=PARAM_TYPE_EMPTY;
+  }
 
   add_id ("");
   add_function ("__MODULE", 0, 1);
@@ -277,13 +280,12 @@ main (int argc, char *argv[])
   end_define_module ();
 
   set_externs ();
-  //resolve_gotos ();
   move_defines ();
+  optimize();
 
   A4GL_debug ("String table has %d entries\n",
 	      this_module.string_table.string_table_len);
 
-  //print_module();
 
   a = process_xdr ('O', &this_module, fout);
   if (a)
@@ -310,7 +312,7 @@ yyerror (char *s)
 
 
 void *
-get_var_ptr (struct use_variable *use_var)
+get_var_ptr (struct use_variable *use_var,int *size)
 {
   printf ("Shouldn't be using variables during compilation..\n");
   exit (1);
