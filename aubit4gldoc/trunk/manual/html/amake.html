@@ -1,0 +1,221 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Amake&nbsp;&nbsp;&nbsp; Amake</title>
+</head>
+
+<body>
+
+<h2>Amake - x4gl specific set of rules and tools for GNU "make"</h2>
+<h4>Introduction</h4>
+<p>With Aubit 4gl compiler, compiling small program can be trivial:</p>
+<p>&nbsp;&nbsp;&nbsp; 4glpc *.4gl -o myprog<br>
+&nbsp;&nbsp;&nbsp;   	4glpc *.per<br>
+&nbsp;&nbsp;&nbsp;  		mkmess myhelp</p>
+<p>Even with extra C code, it's still simple:</p>
+<p>&nbsp;&nbsp;&nbsp; 4glpc *.4gl myccode.c -o myprog -DAUBIT4GL<br>
+&nbsp;&nbsp;&nbsp; ...</p>
+<p>But, when you want to keep your make files compatible with Informix and 4Js compilers,
+have multiple program definitions in one directory, use pre-linked libraries, and
+be capable of compiling to P-code and C-code for each compiler, take care of installing and cleaning,
+it's not that simple any more.</p>
+<h4>Summary</h4>
+<p>When you need to create new make file to compile x4gl programs, you should
+use rules, headers and footer prototypes supplied with Aubit 4gl. Utility for
+running created make files, while not necessary, is also supplied, and can make
+your life a little easier.</p>
+<p>For existing Informix 4gl and 4Js BDL/D4GL makefiles, I created a conversion system that will first create completely new set of make
+files from existing makefile (one per program) and&nbsp; then let you use it, in more or less same way we did so far, but erase
+most if not all of existing shortcomings. Old makefiles are preserved, so you can mix and match, if you really want to,
+but you won't need to.</p>
+<h4>Instructions for converting existing makefiles:</h4>
+<p>1. run "prepmake" in directory containing old make file, "makefile". This will create file "makefile.prep"
+containing instruction needed for dumping program definitions to individual make files (*.mk). Note: this functionality
+depends on fact that your existing makefiles use command "fgllink" or other 4gl
+compiler command somewhere in each defined program target, and list all source files in dependencies. If for any reason this is not true for some
+makefile you want to process, look at the script, it should be easy to substitute this with some other present
+command.</p>
+<p>Next, &quot;prepmake&quot; will first run "touch *.4gl" (to force all targets into thinking they need
+building) and then "make -f makefile.prep". This will create one make file for each program defined in makefile.prep,
+named as &lt;program>.mk, using script "genmake". Each .mk files will contain definitions of include headers and footers, and
+names of source files needed to build that<br>
+program, and nothing else. Like this:</p>
+<table border="1" width="100%">
+  <tr>
+    <td width="100%" bgcolor="#C0C0C0">     include header.mki
+      <p>     PROG      = P4E<br>
+     GLOBALS.4gl    = P4E.4gl</p>
+      <p>     FILES.4gl = \<br>
+          ${GLOBALS.4gl} \<br>
+          bankwind.4gl \<br>
+          ckapwind.4gl \<br>
+          ckhdwind.4gl \<br>
+          secufunc.4gl \<br>
+          vendwind.4gl</p>
+      <p>     FILES.per = ${ALLFORMS.per}</p>
+      <p>     include footer.mki</td>
+  </tr>
+</table>
+<p>small _is_ beautiful.</p>
+<p>FIXME: add note about amakeallo and amakeallf</p>
+<p>Note: amake knows how to override header.mki, footer.mki, or both. You can also override anything coming from header,
+and later, in footer, anything at all.</p>
+<p>2. Use it:</p>
+<p>Examples:<br>
+'amake' - build default targets of all .mk files in ./<br>
+'amake -k -all install' - install all programs, ignore errors<br>
+'amake P11 aubit -k' - build aubit target defined in P11.mk, ignore errors<br>
+'amake P11 aubit -defaultinclude' - build P11 target for Aubit compiler, use                 includes defined in P11<br>
+'amake P11 -header myhead.mk' - default P11 target, use myhead.mk for header</p>
+<p>see "amake --help" for full lost of flags and parameters.</p>
+<p>3. Tell me if it's useful for you, if you need help, explanations, changes...</p>
+<p>If you make generally useful changes, I would like if you send them back to me. Latest version of this files will always
+available trough Aubit 4gl CVS</p>
+<h3>Notes:</h3>
+<p>a) Most existing makefiles have no idea which file contains GLOBALS definitions;
+some compilers care, some don't. I assumed first source file listed in GLOBALS file, which can be wrong. If you step
+on this one, you'll need to find out manually which one is it actually. I guess it's more then possible to grep for "END
+GLOBALS" in "genmake" if we wanted to do that automatically.</p>
+<p>b) Some existing makefiles often don't have any references to form files, and
+even if they do, they have no idea which forms belong to which program. By default, I defined that each program needs all
+forms in current module. It would be wise to gradually replace this with actual forms needed. I guess that it should be
+possible to grep that from "genmake", since there we know all 4gl source files.</p>
+<p>c) You should consider this as technology demonstration. Some things are probably missing, or incorrect, in rules
+definitions and targets. But this is now so easy to fix, since it's all in one place that I did not worry to much. It
+compiled everything I tried. But I don't consider this finished code. It does what I needed, it may or may not do that
+same for you, but again, it's really easy to do anything in the way this is structured now. You
+should consult "make" manual at http://www.gnu.org/manual/make-3.79.1/html_mono/make.html if you want to
+play with existing code.</p>
+<p>d) all "programs" that are nothing more then hard links, are ignored. This need to be fixed in
+existing mekefiles manually, unless someone can explain to me what good is to link program under
+different name and then pretend it's something else. It won't work on Windows anyway, so if we want
+Windows compatibility, we cannot do this in any case.</p>
+<p>e) some of functionality depends on recent version of GNU make. If you don't have it, you'll need to download it from
+http://www.gnu.org. My version was 3.77. Current version as of time of writing was 3.79</p>
+<p>f) Most existing x4gl makefiles don't have any idea about help files. It should be
+possible to grep for this in "genmake".</p>
+<p>g) It's really easy to add functionality to do local check out, since now you can compile anywhere, even without any
+source files in local directory (amake/make will find them if they exist) This is closely related to the way how serious
+development should be organized using version control...</p>
+<p>h) Why one make file for one program? First, when more then one developer is working in same tree, it gives me the warm
+fussy feeling. Second, it makes target definitions cleaner, simpler, and easier to debug. Third, you can checkout your
+own make file to wherever you want, together with all sources needed for program. Or without them for that matter.</p>
+<p>i) Object libraries (.aox in Aubit, .42x in 4js dialect). I guess it should be possible to
+make attempt in automating this in "genmake", if we really want it. Related to this is an issue of how
+different 4gl compilers "strip" unused functions from executables. D4GL don't really care, since linking produces only map file.
+i4gl do care, and Querix and Aubit, being C code translators, can easily strip executables.</p>
+<p>j) why is amake needed: actually, it's not, you can do "make -f 1.mk 2.mk params" or "make -f *.mk params" just fine, as
+long as you keep header and footer includes in each .mk file. It just makes things simpler, more flexible, and can
+replace headers on the fly.</p>
+<h3>Installation and files summary</h3>
+<p>(don't forget to convert back to UNIX file format if you are receiving this on Windows box; needless to say, scripts
+will need "chmod a+x")</p>
+<p>This two should go somewhere in the path, but will probably be used only once:</p>
+<ul>
+  <li>prepmake  - sh script to prepare original make file, created "makefile.prep"</li>
+  <li>genmake   - sh script called from prepared makefile to create individual make files</li>
+</ul>
+<p>Header will probably be most useful in your program directory, since it can contain module specific definitions, but one
+copy of general type should also probably be in /etc or /usr/incl:</p>
+<ul>
+  <li>header.mki - make file for including from each individual make file. It in     turn includes a4gl.mk i4gl.mk q4gl.mk and d4gl.mk by default.</li>
+</ul>
+<p>Following files are supposed to be completely abstracted, so in /etc or /usr/include they go:</p>
+<ul>
+  <li>footer.mki - make targets definitions included from each individual make file.</li>
+  <li>a4gl.mk - rules for compiling using Aubit 4gl compiler</li>
+  <li>i4gl.mk - rules for compiling using classic Informix 4gl compiler</li>
+  <li>d4gl.mk - rules for compiling using 4Js (Informix D4GL) 4gl compiler</li>
+  <li>q4gl.mk - rules for compiling using Querix 4gl compiler</li>
+</ul>
+<p>And finally, this one should be in the path, probably in /bin:</p>
+<ul>
+  <li>amake - sh script used for executing make process, instead of "make" command</li>
+</ul>
+<h4>Credits:</h4>
+<p>Thanks to Jonathan Leffler for Informix-4gl and 4Js rules, and general concept of how 4gl program should be processed by
+make. See <a href="http://www.informix.com/idn"> www.informix.com/idn</a></p>
+<h4>Note about using #DEFINE-style constructs, like C</h4>
+<p>There's nothing built into 4GL, but many people use the Unix "M4" command successfully.
+You could also use "cpp".</p>
+<p>Stuart Kemp <a href="mailto:(stuart@cs.jcu.edu.au"> (stuart@cs.jcu.edu.au</a>):</p>
+<p>To use the C preprocessor (cpp) in conjunction with GNU make you might use a suffix of ".cpp" on the files you edit, and then build a Makefile
+containing:</p>
+<p>.SUFFIXES: .4gi .4go .4gl .cpp .frm .per<br>
+<br>
+.cpp.4gl:<br>
+        @echo Make $@ from $&lt; $(CPPDEFS)<br>
+        @$(CPP) $(CPPDEFS) $&lt; > $@<br>
+<br>
+.per.frm:<br>
+        @echo Make $@ from $&lt;<br>
+        @form4gl -s $&lt;<br>
+<br>
+.4gl.4go:<br>
+        fglpc $&lt;</p>
+<p>Of course, the downside of this is that if you get an error-message when running your .4g[io] program, the line-number will be that in the .4gl file,
+not the .cpp file.</p>
+<h4>Notes about provided compile rules (From IDN)</h4>
+<p>There are no standard rules for how to organize Makefiles for 4gl. This note attempts to repair this deficiency for both Unix and NT systems.</p>
+<p><i>Makefiles for Classic 4GL on Unix</i></p>
+<p>Assuming that your version of MAKE understands the 'include' directive, a typical
+makefile will look rather like the file described earlier in this doccument. If your MAKE does not understand the 'include' directive, the simplest solution is to obtain a version of MAKE which does understand them. One such MAKE is GNU Make, which is widely available on the Internet. See The GNU Project and the Free Software Foundation (FSF) for more information.</p>
+<p>The rules file 'i4gl.mk' is located in some convenient directory. In the example, $HOME/etc is used, but a centralized location such as
+$AUBITDIR/incl, $INFORMIXDIR/etc or $FGLDIR/etc is a reasonable choice. Note that either the curly brackets or parentheses are required around the name of the environment variable in the makefile.</p>
+<p>The macros list the components of the program, and the definitions of the lists avoid replicating names as much as possible, so that if a file is added, deleted or renamed, only one line in the makefile needs to be changed.</p>
+<p>Note too that the current versions of i4gl.mk and d4gl.mk automatically provide definitions for the majority of the derived files, so the makefile itself does not have to define macros such as FILES.o or FILES.4ec. It must, however, define FILES.4gl for the I4GL source files, FILES.per for the form source files, and FILES.msg for the help source files, since these macros are used to define the other macros.</p>
+<p>This makefile uses the 'standard' install script for Unix, and that means it can only install a single file at a time (an silly design decision, but one which was made so long ago that it cannot readily be changed). Consequently, we have to iterate over the list of form files. If there was more than one message file, we'd need to do the same for the message files.</p>
+<p>The hard work in this makefile is the install and clean process. The actual compilation rules are minimal, occupying just six non-blank lines.</p>
+<p>There are some standard targets which are desirable in most makefiles. These include all to build everything that is needed by default, install to put the software in a location where it can be used, and clean to remove the debris from the development process.</p>
+<p>As another pseudo-standard, if you are working with both Classic 4GL and Dynamic 4GL, or if you are using both p-code and c-code, it helps to standardize on some extra names. The makefiles illustrated here use:</p>
+<p>aubit Aubit 4gl c-code compilation<br>
+i4gl-ccode Classic 4GL c-code compilation (I4GL)<br>
+i4gl-pcode Classic 4GL p-code compilation (I4GL-RDS)<br>
+d4gl-ccode Dynamic 4GL c-code compilation<br>
+d4gl-pcode Dynamic 4GL p-code compilation<br>
+i4gl Classic 4GL (both p-code and c-code)<br>
+d4gl Dynamic 4GL (both p-code and c-code)<br>
+querix Querix 4gl c-code compilation</p>
+<p>This makefiles can also builds the custom I4GL p-code runner that is needed to run the program.</p>
+<p><i>Makefiles for Dynamic 4GL on Unix</i></p>
+<p>The rules for compiling D4GL are similar to the rules for compiling I4GL, but they use a different set of suffixes.&nbsp;</p>
+<p>The first target in the makefile is 'default', and is what will be built if you simply type "make -f d4glonly.make". It is set up to build just the D4GL p-code program; to build the c-code program too, you have to specify "all" or "d4gl-ccode" on the command line.</p>
+<p>This makefile builds a custom runner for D4GL because the code uses some C code. When you need a D4GL custom runner, you have to link with it too, so you have to build the custom runner before you try linking the program, and the dependencies ensure this happens automatically.</p>
+<p>The rest of the makefile follows the pattern in the I4GL version, with the changes appropriate to handling D4GL instead of I4GL.</p>
+<p><i>Make Rules for I4GL on Unix</i></p>
+<p>The actual rules for compiling Informix Classic 4GL are defined in the file i4gl.mk . There are a number of key things to note about them.</p>
+<p>The rules file does not reset the complete MAKE suffix list. Some versions of the file did, but this leads to problems when you try to add support for Dynamic 4GL as well; which file should be included first, and why, and so on. The down-side of being so accommodating is that if there is an intermediate ".c" file left over by a failed I4GL compilation, then that file will be compiled in preference to the ".4gl". To fix this, you have to nullify the suffix list and then reinstate the suffixes you want in the correct order (which means preferring the .4gl file to the .c file, and .ec files to .c files). However, it is difficult to write two separate files, i4gl.mk and d4gl.mk, which can be included in either order, and which don't repeat each others suffixes, if you also zero the suffix list in both files.</p>
+<p>I guess you could solve this if you defined I4GL.SUFFIXES and D4GL.SUFFIXES as macros, and had the line which re-instates the suffix rules specify both macros, even if one of them was actually empty (as it would be if you had not already processed the other rules file). A change for next month.</p>
+<p>The rules file does not define any targets, so that you can include it at the top of the makefile without altering the default target written in the makefile.</p>
+<p>The macro names are very consistent (arguably too consistent and not sufficiently mnemonic).</p>
+<p><i>NMAKE</i></p>
+<p>If you have Microsoft Visual Studio or Microsoft Visual C++ on your NT machine, you will have the NMAKE program available to you. You can use Makefiles patterned on the one shown below (from the D4GLDEMO program).
+Note that both the rules and the makefiles are much simpler on NT than on Unix because Classic 4GL is not available on NT, and neither is the Dynamic 4GL c-code compiler.</p>
+<p>Some of the significant differences between MAKE on Unix and NMAKE on NT are:</p>
+<p>NMAKE does not accept ${MACRO}, but only $(MACRO).<br>
+NMAKE does not accept a dot in macro names.<br>
+NMAKE does not recognize 'null suffix' rules (for converting x.c into x, for example; it would only handle x.c to x.exe).<br>
+Since there is no D4GL c-code compiler on NT, those rules in d4gl.mk are irrelevant.<br>
+Since there is no I4GL c-code or p-code compiler on NT, the rules in i4gl.mk are irrelevant.<br>
+There is no fglmkrun on NT.<br>
+You have to be very careful about what you do with 'cd' commands. Typically, you have to do:</p>
+<p>        cd with &amp;&amp; $(MAKE) &amp;&amp; cd ..</p>
+<p>POSIX.1 requires MAKE to accept both ${MACRO} and ${FILE.o}, unlike NMAKE. Since Unix versions of MAKE do accept the notations accepted by NMAKE, it would be possible, and possibly even sensible, to resign oneself to using the notation accepted by NMAKE in both the Unix and NT versions of the Classic 4GL and Dynamic 4GL makefiles and make rules. However, that also feels a bit like giving in to the school-yard bully, and that isn't really acceptable.</p>
+<p>Prepared by: mailto:jleffler@informix.com<br>
+Last Updated: 1999-10-08<br>
+Edited by AF</p>
+<p><i>Note about bug in ESQL/C rules:</i></p>
+<p>Compiling ESQL/C code did not work because of macro name mismatches.  Specifically, there's a line that defines ESQL =&nbsp;
+${ESQL_EC_ENV} ${ESQL_EC_CMD} ${ESQL_EC_FLAGS} but the corresponding macros for compiling ESQL/C code use ${ESQL_EC} rather than ${ESQL}.  I
+concluded that I meant to define ESQL_EC, not ESQL.</p>
+<p>For Aubit 4gl team,</p>
+<p>Andrej Falout</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

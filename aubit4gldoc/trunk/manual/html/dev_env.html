@@ -226,7 +226,51 @@ And then, add bunch of GNU 4gl application, including our Maximise (I hope..)</p
 
 <hr>
 
+<p> From temp documents:</p>
+
 <p> &nbsp;</p>
+
+<p> &nbsp;</p>
+
+<font SIZE="2">
+<p>NOTE: this is a temporary document, which will be removed once it's included
+in Aubit 4gl manual. Please look for updates in manual.</p>
+<h2>Aubit 4gl Development Environment - aIDE</h2>
+<p>most x4GL compilers don't have a standard development environment distributed
+with them, that is analogous to the Informix i4gl and r4gl programmer's
+environments distributed with Classic I4GL and I4GL-RDS. However, it is not very
+hard to create one using 4GL programming language, and the source code for one
+such environment is available through IDN, and included in Aubit CVS and
+distributions with authors permission.</p>
+<p>aIDE assumes that you are working with MAKE rather than trying to use the
+program database used by i4gl and r4gl. The source code requires two C functions
+and the corresponding fglext.c file to be linked into the custom runner, if
+compiling with Informix or 4Js p-code compilers.</p>
+<p>One of those functions, file_access(), is called by the aIDE code. It allows
+an 4GL program to determine whether a file exists and is readable, writable or
+executable. It uses the Unix/POSIX system call access(2), so it can produce odd
+results if the program is running SUID.</p>
+<p>The other function is a C support function, popstring(), that has been
+included in the Classic I4GL library since release 4.12/6.00 but is not in the
+D4GL library. This is a variant on popquote() which removes all trailing blanks
+from the variable. It behaves differently from both popquote() and popvchar().</p>
+<p>All the other code is relatively straight-forward I4GL code. The program has
+been enhanced to work with the D4GL/BDL environment. It can run in character
+mode or GUI mode, and can be compiled with all compilers supported by
+&quot;amake&quot;, including Aubit 4gl, Classic I4GL (p-code or c-code) or with
+D4GL (p-code or c-code).</p>
+<p>There is a Makefile included which works with amake, using GNU MAKE. The
+Makefile is a reasonable example of how to design Makefiles for use with amake
+while remaining compatible with other 4gl compilers when using C functions. Because
+program uses C functions, special case of amake footer file, footer-c.mki is
+used.</p>
+<p>Prepared by: <a href="mailto:jleffler@informix.com">mailto:jleffler@informix.com</a><br>
+Last Updated: 1999-10-06</p>
+<p>Modified by: <a href="mailto:afalout@ihug.co.nz">mailto:afalout@ihug.co.nz</a><br>
+Last Modified: 2001-09-23</p>
+</font>
+
+
 
 </body>
 
