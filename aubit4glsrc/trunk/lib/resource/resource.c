@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.72 2004-03-19 08:32:44 whaslbeck Exp $
+# $Id: resource.c,v 1.73 2004-04-21 08:23:24 mikeaubury Exp $
 #
 */
 
@@ -96,8 +96,8 @@ struct str_resource builtin_resource[] = {
 #endif
   {"A4GL_SQLDIALECT", "INFORMIX"},
   {"RM_COMMENTS_FIRST","Y"},
-  {"A4GL_UPSCOL_ATT","syscolatt"},
-  {"A4GL_UPSCOL_VAL","syscolval"},
+  {"A4GL_SYSCOL_ATT","syscolatt"},
+  {"A4GL_SYSCOL_VAL","syscolval"},
   {"A4GL_UI", "TUI"}, 			//should this be CONSOLE ?
   {"A4GL_FORMTYPE", "GENERIC"},
   {"A4GL_PACKER", "XML"},       //should this be PACKED?

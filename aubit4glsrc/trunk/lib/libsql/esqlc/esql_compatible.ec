@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.6 2004-03-06 07:57:24 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.7 2004-04-21 08:19:35 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.6 2004-03-06 07:57:24 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.7 2004-04-21 08:19:35 mikeaubury Exp $";
 #endif
 
 
@@ -3791,7 +3791,7 @@ char val[65];
 struct expr_str *ptr=0;
 EXEC SQL END DECLARE SECTION;
 int cnt;
-sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
 EXEC SQL PREPARE p_get_val FROM :buff;
 if (sqlca.sqlcode!=0) return 0;
 EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;

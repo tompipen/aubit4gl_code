@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.82 2004-04-20 17:48:11 mikeaubury Exp $
+# $Id: esql.ec,v 1.83 2004-04-21 08:19:12 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.82 2004-04-20 17:48:11 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.83 2004-04-21 08:19:12 mikeaubury Exp $";
 #endif
 
 
@@ -3363,13 +3363,15 @@ EXEC SQL END DECLARE SECTION;
 char *cptr=0;
 //int cnt;
 
-cptr=acl_getenv("A4GL_UPSCOL_VAL");
+cptr=acl_getenv("A4GL_SYSCOL_VAL");
 
 if (cptr==0) return 0;
 if (strlen(cptr)==0) return 0;
 if (strcmp(cptr,"NONE")==0) return 0;
+sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
+cptr ,tabname,colname);
 
-sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+A4GL_debug("buff=%s",buff);
 EXEC SQL PREPARE p_get_val FROM :buff;
 if (sqlca.sqlcode!=0) return -1;
 EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;

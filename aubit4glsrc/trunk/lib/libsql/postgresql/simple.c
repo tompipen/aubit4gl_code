@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.13 2004-03-29 17:37:51 mikeaubury Exp $
+# $Id: simple.c,v 1.14 2004-04-21 08:23:16 mikeaubury Exp $
 #*/
 
 
@@ -427,7 +427,7 @@ int nrows=0;
 int a;
 	
 	
-  sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+  sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
 
   res = PQexec (con, buff);
 

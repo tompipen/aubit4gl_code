@@ -736,7 +736,7 @@ char val[65];
 char *ptr=0;
 EXEC SQL END DECLARE SECTION;
 int cnt;
-	sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+	sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
 	EXEC SQL PREPARE p_get_val FROM :buff;
 	if (sqlca.sqlcode!=0) return 0;
 	EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
