@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.24 2005-03-19 08:51:23 mikeaubury Exp $
+# $Id: simple.c,v 1.25 2005-03-21 17:28:46 mikeaubury Exp $
 #*/
 
 
@@ -105,6 +105,13 @@ int
 A4GLSQL_init_connection_internal (char *dbName)
 {
   char buff2[256];
+  char *envname;
+  envname=acl_getenv("PG_DBPATH");
+  if (envname) {
+	A4GL_debug("Using a different database %s specified from the environment",envname);
+	if (strlen(envname))  dbName=envname;
+  }
+
   con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, login, pwd);
   if (con == NULL)
     {
