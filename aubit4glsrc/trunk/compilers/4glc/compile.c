@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.54 2004-03-09 07:12:30 afalout Exp $
+# $Id: compile.c,v 1.55 2004-03-13 02:46:20 afalout Exp $
 #*/
 
 /**
@@ -691,7 +691,9 @@ initArguments (int argc, char *argv[])
 			}
 			else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/
 			{
-				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
+				strcat (l_libs, " -lESQL_INFORMIX");  
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+				   informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -725,6 +727,7 @@ initArguments (int argc, char *argv[])
 			}
 			else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/
 			{
+				strcat (l_libs, " -lESQL_INFORMIX");
 				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
@@ -769,6 +772,7 @@ initArguments (int argc, char *argv[])
 			}
 			else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/
 			{
+				strcat (l_libs, " -lESQL_INFORMIX");
 				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
@@ -823,6 +827,7 @@ initArguments (int argc, char *argv[])
 			}
 			else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/
 			{
+					strcat (l_libs, " -lESQL_INFORMIX");
 				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);

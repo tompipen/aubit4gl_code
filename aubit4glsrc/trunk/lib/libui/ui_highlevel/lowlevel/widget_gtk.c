@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.9 2004-03-12 17:02:05 whaslbeck Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.10 2004-03-13 02:46:20 afalout Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -851,20 +851,23 @@ A4GL_cr_textbox (void)
 GtkWidget *
 A4GL_cr_label (void)
 {
-  GtkWidget *label;
-  char *caption;
-  caption = A4GL_find_param ("CAPTION");
-  char *utf=g_locale_to_utf8(caption, -1, NULL, NULL, NULL);
-  label = gtk_label_new (utf);
-//  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
-//    A4GL_debug("using PANGO ML for Label '%s'\n",caption);
-//    gtk_label_set_use_markup(label, TRUE);
-//  }
-  g_free(utf);
-  gtk_widget_show (label);
-  A4GL_add_signal_grab_focus (label, 0);
-  A4GL_add_signal_clicked (label, 0);
-  return label;
+GtkWidget *label;
+char *caption;
+char *utf;
+	caption = A4GL_find_param ("CAPTION");
+	utf=g_locale_to_utf8(caption, -1, NULL, NULL, NULL);
+	label = gtk_label_new (utf);
+	/*
+	if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+	A4GL_debug("using PANGO ML for Label '%s'\n",caption);
+	gtk_label_set_use_markup(label, TRUE);
+	}
+	*/
+	g_free(utf);
+	gtk_widget_show (label);
+	A4GL_add_signal_grab_focus (label, 0);
+	A4GL_add_signal_clicked (label, 0);
+	return label;
 }
 
 /**
