@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.241 2004-09-16 13:34:26 afalout Exp $
+dnl # $Id: configure.in,v 1.242 2004-09-23 06:15:26 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -5679,6 +5679,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 	if test "$GCC_MINGW" = "yes" ; then
 		#MinGW now has something called search.h but its not complete
+		#try: grep VISIT /cygdrive/c/MinGW/include/search.h
 		AC_MSG_WARN(Disabling MinGW search.h - not compatible)
 		as_ac_Header="no"
 		AC_DEFINE(HAVE_SEARCH_H,0,[ ])
@@ -6979,7 +6980,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.241 2004-09-16 13:34:26 afalout Exp $
+| $Id: configure.in,v 1.242 2004-09-23 06:15:26 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

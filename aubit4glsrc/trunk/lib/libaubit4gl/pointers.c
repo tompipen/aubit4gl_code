@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.32 2004-09-22 10:06:50 afalout Exp $
+# $Id: pointers.c,v 1.33 2004-09-23 06:15:49 afalout Exp $
 #
 */
 
@@ -86,81 +86,6 @@ struct s_node
 =====================================================================
 */
 
-#if HAVE_SEARCH_H && ! defined(__MINGW32__)
-//#if HAVE_SEARCH_H
-	// MinGW 3.1.0 introduced search.h, but it's not complete
-	#  include <search.h>
-#else
-	/* search internal node for windows and platforms without this 
-	library function (like Darwin) */
-
-	typedef struct entry
-	{
-	  char *key, *data;
-	}
-	ENTRY;
-	
-	typedef enum
-	{ FIND, ENTER }
-	ACTION;
-	
-		/* TSEARCH(3C) */
-		/** The type of the visit made to an element of the tree */
-	
-	
-	#if defined(__MINGW32__)
-		/* why was this line commented out? BECAUSE IT'S DEFINED IN 
-		incl/a4gl_libaubit4gl.h
-		F***! New version of MinGW needs this enabled, but old one
-		needs it commented OUT. FIND OUT WHY!
-		
-		On new MinGW, if commented out, error is:
-		pointers.c:142: parse error before "which"
-		
-		On old MinGW (gcc 3.2) , if not commented out, error is:
-		pointers.c:122: conflicting types for `preorder'
-		a4gl_libaubit4gl.h:483: previous declaration of `preorder'
-		pointers.c:122: conflicting types for `postorder'
-		a4gl_libaubit4gl.h:484: previous declaration of `postorder'
-		pointers.c:122: conflicting types for `endorder'
-		a4gl_libaubit4gl.h:485: previous declaration of `endorder'
-		pointers.c:122: conflicting types for `leaf'
-		a4gl_libaubit4gl.h:487: previous declaration of `leaf'
-		pointers.c:122: redefinition of `VISIT'
-		a4gl_libaubit4gl.h:488: `VISIT' previously declared here
-		*/
-		
-		#if defined (__GNUC__) && defined (__GNUC_MINOR__)
-			// Do a 'make gcc_symbols' in aubit source root to see what 
-			//current compiler defines
-			//&& defined (__VERSION__) && (__VERSION__ "3.2 (mingw special 20020817-1)")
-			//#define __VERSION__ "3.2.3 (mingw special 20030504-1)"
-			#if (__GNUC__ == 3)
-				//#if (__GNUC_MINOR__ >= 3)
-				#if (__GNUC_MINOR__ >= 2)
- 					typedef enum { preorder, postorder, endorder, leaf } VISIT;
-				#endif
-			#endif
-		#endif
-	#endif
-	
-	//why is this line commented out?
-	//void A4GL_action (const void *nodep, const VISIT which, const int depth);
-	
-		/** A node tree information */
-	typedef struct node_t
-	{
-	  char *key;
-	  struct node_t *left, *right;
-	}
-	node;
-	
-	node *tsearch (char *key, node ** rootp, int (*compar) (const void *l,const void *r));
-	node *tdelete (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
-	void twalk (node * root, void *act);
-		// void twalk(node *root, VISIT action);
-	node *tfind (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
-#endif
 
 /*
 =====================================================================
@@ -170,7 +95,7 @@ struct s_node
 
 int A4GL_strcmpare (const void *a, const void *b);
 //If you are loking here because you got parse error before "which", look
-//a bit higher in this file ...
+//in incl/a4gl_libauit4gl.h for search.h
 void A4GL_action (const void *nodep, const VISIT which, const int depth);
 void print_ptr_stack (void);
 
