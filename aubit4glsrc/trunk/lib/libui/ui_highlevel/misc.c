@@ -4,7 +4,7 @@
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.4 2004-01-18 09:54:56 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1321,5 +1321,13 @@ int
  UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
 {
  A4GL_LL_endis_fields_ap(en_dis,ap);
+}
+
+
+int UILIB_A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat, char *like,
+               int disable, void *handler_e, void *phandler_c) {
+A4GL_chkwin();
+	return A4GL_LL_open_gui_form(name_orig,absolute,nat,like,disable,handler_e,phandler_c);
+
 }
 

@@ -525,5 +525,13 @@ A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
 =YES|NO
 	This is solely for backward compatibilty with older Aubit4GL versions.
 	It should be set to N in all other cases..
+RM_COMMENTS_FIRST COMPILE remove any comments before compiling the 4GL code
+=YES|NO
+	This defaults to Yes, if you have problems with compilation - it may be
+	that this code is getting confused. Try setting to N, or setting DUMP_LAST
+DUMP_LAST COMPILE output the results of the last remove comments
+=YES|NO
+	This will produce a file 'last' which contains the file with the comments
+	removed. This is used to check the operation of the RM_COMMENTS_FIRST code
 
 

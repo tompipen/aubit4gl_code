@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.5 2004-01-18 09:54:56 mikeaubury Exp $";
 #include "forms.h"
 
 void *A4GL_create_window (char *name, int x, int y, int w, int h,
@@ -1154,6 +1154,7 @@ UILIB_A4GL_hide_window (char *winname)
 {
   void *w;
   int a;
+  A4GL_chkwin();
   w = A4GL_find_pointer (winname, WINCODE);
 
 
@@ -1606,6 +1607,7 @@ LIBEXPORT void
 UILIB_A4GL_show_window (char *winname)
 {
   void *p;
+  A4GL_chkwin();
   p = A4GL_find_pointer (winname, WINCODE);
 #ifdef DEBUG
   {

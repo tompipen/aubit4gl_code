@@ -8,7 +8,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.4 2004-01-17 11:13:35 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.5 2004-01-18 09:54:56 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -2022,3 +2022,7 @@ int
 return 0;
 }
 
+
+A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void *phandler_c) {
+// Not in TUI mode you don't....
+}

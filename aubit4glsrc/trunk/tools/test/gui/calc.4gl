@@ -1,7 +1,7 @@
 main
-	set pause mode on
-	hide window _variable("screen")
-	set pause mode off
+	#set pause mode on
+	#hide window _variable("screen")
+	#set pause mode off
 
 
 

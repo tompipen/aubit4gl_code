@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-01-17 05:49:31 afalout Exp $
+# $Id: makefile,v 1.6 2004-01-18 09:54:56 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -123,7 +123,7 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
-ALL				+=${LIBROOT}/libUI_HLGENERIC${SO_EXT} testit
+#ALL				+=${LIBROOT}/libUI_HLGENERIC${SO_EXT} testit
 
 
 #old stuff - replace/remove
@@ -159,7 +159,7 @@ OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc
 all: ${ALL}
 	@echo "Default trgets (${ALL}) compiled sucessfuly."
 
-${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
+#${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
 #	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o libUI_HLGENERIC${SO_EXT} -laubit4gl
 #	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
