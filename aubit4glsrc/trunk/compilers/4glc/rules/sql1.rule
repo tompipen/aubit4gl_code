@@ -1156,13 +1156,12 @@ value_expression_pls_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| value_expression_ss  identifier {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);
+		if (A4GL_isyes(acl_getenv("USE_ALIAS_AS"))) {
+			$<sql_string>$=make_sql_string($<sql_string>1," AS ",$<str>2,0);
+		} else {
+			$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);
+		}
 	}
-/*
-	| value_expression_ss  reserved_word {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);
-	}
-*/
 ;
 
 
