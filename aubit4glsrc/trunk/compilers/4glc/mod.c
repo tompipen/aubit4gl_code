@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.156 2004-02-09 08:07:30 mikeaubury Exp $
+# $Id: mod.c,v 1.157 2004-02-09 11:45:43 mikeaubury Exp $
 #
 */
 
@@ -3948,10 +3948,17 @@ tr_glob_fname (char *s)
 }
 
 char
+get_curr_report_stack_whytype_1 (void)
+{
+  return report_stack[report_stack_cnt-1].whytype;
+}
+
+char
 get_curr_report_stack_whytype (void)
 {
   return report_stack[report_stack_cnt].whytype;
 }
+
 
 char*
 get_curr_report_stack_why (void)
