@@ -2,7 +2,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
-#include "forms.h"
+#include "../forms.h"
 
 #include "lowlevel.h"
 #include "formdriver.h"
@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.42 2004-06-01 20:31:36 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.43 2004-06-08 18:58:53 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
