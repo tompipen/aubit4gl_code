@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.11 2003-05-15 07:10:43 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.12 2003-10-12 12:04:39 mikeaubury Exp $
 #*/
 
 /**
@@ -621,6 +621,58 @@ A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
   A4GL_push_char ("");
   A4GL_pdf_rep_print (p, 1, cr, 0);
   return 1;
+}
+
+
+
+int A4GL_pdf_pdffunc (struct pdf_rep_structure *p,char *fname,int n) {
+char *ptr;
+int a;
+double d;
+
+        if (strcmp(fname,"set_parameter")==0) {
+                char *ptr1;
+                char *ptr2;
+                ptr2=A4GL_char_pop();
+                ptr1=A4GL_char_pop();
+                PDF_set_parameter(p->pdf_ptr,ptr1,ptr2);
+                acl_free(ptr1);
+                acl_free(ptr2);
+                return 0;
+        }
+        if (strcmp(fname,"set_value")==0) {
+                char *ptr1;
+                int a;
+                a=A4GL_pop_int();
+                ptr1=A4GL_char_pop();
+                A4GL_debug("Setting pdf value %s to %d\n",ptr1,a);
+                PDF_set_value(p->pdf_ptr,ptr1,a);
+                acl_free(ptr1);
+                return 0;
+        }
+
+
+        if (strcmp(fname,"set_font_size")==0) {
+                d=A4GL_pop_double();
+                p->font_size=d;
+                PDF_setfont(p->pdf_ptr, p->font,p->font_size);
+        return 0;
+        }
+
+        if (strcmp(fname,"set_font_name")==0) {
+                ptr=A4GL_char_pop();
+                strcpy(p->font_name,ptr);
+                acl_free(ptr);
+                a= PDF_findfont(p->pdf_ptr, p->font_name, "winansi",0  );
+                if (a<0) {
+                        A4GL_exitwith("Unable to locate font");
+                        return 0;
+                }
+                p->font =a;
+                PDF_setfont(p->pdf_ptr, p->font, p->font_size);
+        return 0;
+        }
+return 0;
 }
 
 

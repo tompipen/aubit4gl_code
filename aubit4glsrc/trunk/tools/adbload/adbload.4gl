@@ -129,7 +129,8 @@ function file2array(p_filename)
     ##########################
         if not lineskip then
 			let dummy = readoneline(p_fileid)
-            if dummy is null then
+	display "Dummy=",dummy
+            if dummy is null or length(dummy)=0 then
                 exit for
             end if
 			let tmplen = length(dummy)
@@ -602,7 +603,7 @@ define
 				call myshowhelp()
 		        exit program
 
-			when ARGUMENTstringUP = "-examples"
+			when ARGUMENTstringUP = "-EXAMPLES"
 				call show_examples()
 		        exit program
 

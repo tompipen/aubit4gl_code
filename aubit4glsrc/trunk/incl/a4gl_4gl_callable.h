@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.9 2003-09-14 07:47:10 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.10 2003-10-12 12:04:30 mikeaubury Exp $
 */
 
 /**
@@ -137,6 +137,7 @@ void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 void A4GL_display_at (int n, int a);
 int A4GL_key_val(char *s);
+double A4GL_pdf_size(double u,char x,void *ptr);
 
 
 #define A4GL_FUNCTION

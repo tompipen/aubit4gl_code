@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.69 2003-09-10 10:32:50 afalout Exp $
+# $Id: sql.c,v 1.70 2003-10-12 12:04:39 mikeaubury Exp $
 #
 */
 
@@ -903,7 +903,8 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
       A4GL_debug ("Setting dynamic cursor");
 #endif
       rc =
-	SQLSetStmtOption ((SQLHSTMT )&nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
+	SQLSetStmtOption ((SQLHSTMT )nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
+      if (rc==1) rc=0;
       chk_rc (rc, nsid->hstmt, "SQLSetScrollOption SCROLL_STATIC");
       printf (" rc = %d\n", rc);
     }

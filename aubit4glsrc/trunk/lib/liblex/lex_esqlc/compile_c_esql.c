@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.55 2003-09-29 15:10:37 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.56 2003-10-12 12:04:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -165,7 +165,11 @@ print_close (char type, char *name)
       printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-      printc ("EXEC SQL DISCONNECT 'default';\n");
+	if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
+      		printc ("EXEC SQL CLOSE DATABASE;\n");
+	} else {
+      		printc ("EXEC SQL DISCONNECT 'default';\n");
+	}
       printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0);");
       print_copy_status ();
       break;
@@ -752,6 +756,29 @@ void
 print_init_conn (char *db)
 {
 
+if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
+  if (db == 0) {
+      printc ("{");
+      printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
+      printc ("char *s;");
+      printc ("char setdb[256];");
+      printc ("EXEC SQL END DECLARE SECTION;\n");
+      printc ("s=A4GL_char_pop();sprintf(setbuf,\"DATABASE %%s\");\n");
+      printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");
+      printc ("EXEC SQL EXECUTE acl_p_set_db;\n");
+      printc ("}");
+  } else {
+      switch (esql_type ())
+	{
+	case 1:
+	  printc ("EXEC SQL DATABASE %s;\n", db);
+	  break;
+	case 2:
+	  printc ("EXEC SQL DATABASE %s;\n", db);
+	  break;
+	}
+  }
+} else {
   if (db == 0)
     {
       printc ("{");
@@ -764,6 +791,10 @@ print_init_conn (char *db)
     }
   else
     {
+	printc("if (A4GL_esql_db_open(-1)) {");
+	print_close('D',"");
+      		//printc ("EXEC SQL DISCONNECT 'default';\n");
+	printc("}");
       switch (esql_type ())
 	{
 	case 1:
@@ -774,6 +805,8 @@ print_init_conn (char *db)
 	  break;
 	}
     }
+  }
+
   printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1);");
   print_copy_status ();
 }

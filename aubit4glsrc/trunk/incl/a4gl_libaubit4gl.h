@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.97 2003-10-11 08:41:38 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.98 2003-10-12 12:04:30 mikeaubury Exp $
 #
 */
 
@@ -1098,7 +1098,7 @@ void A4GL_display_at (int n, int a);
 
 
 
-  double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
+  //double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 
 #define REP_TYPE_PDF 			1
 #define REP_TYPE_NORMAL 		2

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.106 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.107 2003-10-12 12:04:38 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -604,7 +604,6 @@ void
 print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
-  //printc("A4GL_rep_print(&rep,0,1,0);"); // NEW
 }
 
 
@@ -658,7 +657,7 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (rep.page_no<=1) {A4GL_rep_print(&rep,0,1,0);A4GL_rep_print(&rep,0,0,0);}");	// MJA 13092003
+      printc ("   if (rep.page_no<=1) {A4GL_%srep_print(&rep,0,1,0);A4GL_%srep_print(&rep,0,0,0);}",ispdf(),ispdf());	// MJA 13092003
       printc ("   rep.finishing=1;");
       printc ("   A4GL_skip_top_of_page(&rep,999);");
       printc ("}");
@@ -899,7 +898,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=(void *)&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(rep.output_loc);");
-  printc ("A4GL_rep_print(&rep,-1,-1,-1);");
+  printc ("A4GL_%srep_print(&rep,-1,-1,-1);",ispdf());
   print_rep_ret (report_cnt);
 }
 
@@ -1954,7 +1953,7 @@ real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
   real_print_expr (args);
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("_retvars=pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
+  printc ("_retvars=A4GL_pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
 }
 
 /**
@@ -3326,12 +3325,12 @@ print_format_every_row (void)
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
   printc ("A4GL_push_char(rbindvarname[_rr]);\n");
   printc
-    ("A4GL_rep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_rep_print(&rep,1,1,0); \n");
+    ("A4GL_%srep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0); \n",ispdf());
   printc ("A4GL_push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
-  printc ("A4GL_rep_print(&rep,1,1,0); A4GL_rep_print(&rep,0,0,0);\n");
+  printc ("A4GL_%srep_print(&rep,1,1,0); A4GL_%srep_print(&rep,0,0,0);\n",ispdf(),ispdf());
   printc ("}");
   printc
-    ("A4GL_push_char(\" \");A4GL_rep_print(&rep,1,1,0); A4GL_rep_print(&rep,0,0,0);");
+    ("A4GL_push_char(\" \");A4GL_%srep_print(&rep,1,1,0); A4GL_%srep_print(&rep,0,0,0);",ispdf(),ispdf());
   printc ("}");
   /* printc ("#error FORMAT EVERY ROW not implemented yet");
      print_rep_ret (); */
@@ -3404,10 +3403,10 @@ print_report_print (int type, char *semi, char *wordwrap)
 {
 
   if (type == 0)
-    printc ("%sA4GL_rep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("%sA4GL_rep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+    printc ("A4GL_%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
 /**
