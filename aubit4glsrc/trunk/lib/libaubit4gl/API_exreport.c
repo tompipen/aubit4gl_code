@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.15 2003-05-15 07:10:38 mikeaubury Exp $
+# $Id: API_exreport.c,v 1.16 2003-10-12 12:02:28 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,7 @@ A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_rep_print");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_rep_print");
   A4GL_func (rep, a, s, right_margin);
 }
 
@@ -161,7 +161,7 @@ A4GL_pdf_fputmanyc (FILE * f, int c, int cnt)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_fputmanyc");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_fputmanyc");
   A4GL_func (f, c, cnt);
 }
 
@@ -174,7 +174,7 @@ A4GL_pdf_set_column (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_set_column");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_set_column");
   A4GL_func (rep);
 }
 
@@ -188,7 +188,7 @@ A4GL_pdf_skip_to (void *rep, double a)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_skip_to");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_to");
   A4GL_func (rep, a);
 }
 
@@ -202,7 +202,7 @@ A4GL_pdf_skip_by (void *rep, double a)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_skip_by");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_by");
   A4GL_func (rep, a);
 }
 
@@ -215,7 +215,7 @@ A4GL_pdf_aclfgli_skip_lines (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_aclfgli_skip_lines");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_aclfgli_skip_lines");
   A4GL_func (rep);
 }
 
@@ -228,7 +228,7 @@ A4GL_pdf_need_lines (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_need_lines");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_need_lines");
   A4GL_func (rep);
 }
 
@@ -241,7 +241,7 @@ A4GL_pdf_skip_top_of_page (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_skip_top_of_page");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_top_of_page");
   A4GL_func (rep);
 }
 
@@ -254,7 +254,7 @@ A4GL_pdf_add_spaces (void)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_add_spaces");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_add_spaces");
   A4GL_func ();
 }
 
@@ -265,7 +265,7 @@ So define them as static then.
 
 void pdf_new_page(void *p) {
   if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"pdf_new_page");
+  func=find_func(libptr,"A4GL_pdf_new_page");
   func(p);
 }
 
@@ -273,13 +273,13 @@ void pdf_new_page(void *p) {
 
 void A4GL_pdf_set_info (void *p,char *creator) {
   if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"pdf_set_info");
+  func=find_func(libptr,"A4GL_pdf_set_info");
   func(p,creator);
 }
 
 pdf_move(void *p) {
   if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"pdf_move");
+  func=find_func(libptr,"A4GL_pdf_move");
   func(f,c,cnt);
 }
 */
@@ -294,7 +294,7 @@ A4GL_pdf_rep_close (void *p)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_rep_close");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_rep_close");
   A4GL_func (p);
 }
 
@@ -311,7 +311,7 @@ A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
   A4GL_debug ("Trying to find A4GL_pdf_size - libptr=%p", libptr);
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func_d = A4GL_find_func_double (libptr, "pdf_size");
+  A4GL_func_d = A4GL_find_func_double (libptr, "A4GL_pdf_size");
 
   d = A4GL_func_d (f, c, p);
   A4GL_debug ("Got size as : %lf", d);
@@ -329,7 +329,7 @@ A4GL_pdf_pdffunc (void *p, char *fname, int n)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_pdffunc");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_pdffunc");
   A4GL_func (p, fname, n);
 }
 
@@ -344,7 +344,7 @@ A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "pdf_blob_print");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_blob_print");
   A4GL_func (p, blob, type, cr);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.40 2003-09-10 10:36:19 mikeaubury Exp $
+# $Id: ops.c,v 1.41 2003-10-12 12:02:28 mikeaubury Exp $
 #
 */
 
@@ -1439,6 +1439,10 @@ A4GL_debug("Display_money");
 
 
   if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT) {
+        if (A4GL_isnull(DTYPE_DECIMAL,ptr)) {
+                strcpy(buff,"");
+                return buff;
+        }
         A4GL_push_dec(ptr,1,size);
 
 
