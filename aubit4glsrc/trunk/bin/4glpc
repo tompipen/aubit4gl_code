@@ -1,7 +1,12 @@
 #!/bin/sh
 #/bin/bash
+########################################################################
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
+#
+# $Id: 4glpc,v 1.22 2001-10-16 03:09:13 afalout Exp $
+#
+########################################################################
 
     ERRCHAR=^\|
 	GOBACKLINES=10
@@ -9,7 +14,7 @@
     HEAD=head
     #HEAD=head -n 20
     SHOWERRCODE=1
-
+    FGLCEXEC=4glc
 
 #FIXME:
 #uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
@@ -62,6 +67,7 @@ then
 	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
+    echo '  -noodbc'
     echo '  -as-ddl'
     echo '  -i ignore errors and continue'
 	echo '  -jabber link executable with Jabber libraries'
@@ -249,8 +255,8 @@ fi
 
 #save some things from environment, so they don't get overwtitten by .a4glrc -
 # we need this when making compiler:
-ENV_ODBC_LIB_DIR=$ODBC_LIB_DIR
-ENV_ODBC_LIB_NAME=$ODBC_LIB_NAME
+ENV_ODBC_LIB_DIR="$ODBC_LIB_DIR"
+ENV_ODBC_LIB_NAME="$ODBC_LIB_NAME"
 
 
 	FOUNDRC=0
@@ -332,34 +338,37 @@ else
         output="echo"
 fi
 
-if [ "$ODBC_LIB_NAME" = "" ]
-then
-	if [ "$COMSPEC" = "" ]
-    then
-		ODBC_LIB_NAME="iodbc"
-    else
-        ODBC_LIB_NAME="odbc32"
-    fi
-fi
 
-if [ "$ODBC_LIB_DIR" = "" ]
+if [ "$ODBC_LIB_NAME" != "noodbc" ]
 then
-	if [ -d $AUBITDIR/extlibs ]
+	if [ "$ODBC_LIB_NAME" = "" ]
 	then
-		ODBC_LIB_DIR=$AUBITDIR/extlibs
-    fi
-fi
+		if [ "$COMSPEC" = "" ]
+	    then
+			ODBC_LIB_NAME="iodbc"
+	    else
+	        ODBC_LIB_NAME="odbc32"
+	    fi
+	fi
 
-if [ "$ODBC_SHARED" = "" ]
-then
-        ODBC_SHARED="-L$ODBC_LIB_DIR"
-fi
+	if [ "$ODBC_LIB_DIR" = "" ]
+	then
+		if [ -d $AUBITDIR/extlibs ]
+		then
+			ODBC_LIB_DIR=$AUBITDIR/extlibs
+	    fi
+	fi
 
-if [ "$ODBC_STATIC" = "" ]
-then
-        ODBC_STATIC="-L$ODBC_LIB_DIR"
-fi
+	if [ "$ODBC_SHARED" = "" ]
+	then
+	        ODBC_SHARED="-L$ODBC_LIB_DIR"
+	fi
 
+	if [ "$ODBC_STATIC" = "" ]
+	then
+	        ODBC_STATIC="-L$ODBC_LIB_DIR"
+	fi
+fi
 
 #restore things from before reading .a4glrc that where in environment:
 #see if we are called form Aubit compiler makefiles:
@@ -380,20 +389,24 @@ then
 	then
         echo "NOTE: invoked from Aubit compiler main makefile"
     fi
-	if [ "$ENV_ODBC_LIB_DIR" != "" ]
-	then
-		ODBC_LIB_DIR=$ENV_ODBC_LIB_DIR
-		ODBC_SHARED="-L$ENV_ODBC_LIB_DIR"
-		ODBC_STATIC="-L$ENV_ODBC_LIB_DIR"
 
-		echo "NOTE: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
-	fi
+	if [ "$ODBC_LIB_NAME" != "noodbc" ]
+    then
+		if [ "$ENV_ODBC_LIB_DIR" != "" ]
+		then
+			ODBC_LIB_DIR="$ENV_ODBC_LIB_DIR"
+			ODBC_SHARED="-L$ENV_ODBC_LIB_DIR"
+			ODBC_STATIC="-L$ENV_ODBC_LIB_DIR"
 
-	if [ "$ENV_ODBC_LIB_NAME" != "" ]
-	then
-		ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
-	    echo "NOTE: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
-	fi
+			echo "NOTE: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
+		fi
+
+		if [ "$ENV_ODBC_LIB_NAME" != "" ]
+		then
+			ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
+		    echo "NOTE: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
+		fi
+    fi
 fi
 
 LAST=""
@@ -411,8 +424,14 @@ fi
 #WARNING: this _IS_ needed in case you have several different libraries
 #with same names in the path, like odbc. This will put path to library we
 #are currently compiling for in front, and pick up correct one:
-export LD_LIBRARY_PATH=$ODBC_LIB_DIR:$LD_LIBRARY_PATH:$AUBITDIR/lib:
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:
 #$AUBITDIR/extlibs
+
+if [ "$ODBC_LIB_NAME" != "noodbc" ]
+then
+	export LD_LIBRARY_PATH=$ODBC_LIB_DIR:$LD_LIBRARY_PATH
+fi
 
 counter=0
 
@@ -541,7 +560,8 @@ do
 
 
    *.4gl)
-          dirn=`dirname $a`
+
+		  dirn=`dirname $a`
           fname=`basename $a .4gl`
           errfname=`basename $a .4gl`.err;
 
@@ -575,17 +595,17 @@ do
 	          $output "$fname: "
 			  $output ODBC_LIB_DIR is $ODBC_LIB_DIR
 			  $output LD_LIBRARY_PATH is $LD_LIBRARY_PATH
-              $output "Executing (3) : 4glc $a"
+              $output "Executing (3) : $FGLCEXEC $a"
           fi
 
-          err_msg=`4glc "$a"`
+          err_msg=`"$FGLCEXEC" "$a"`
           err_code=$?
 
           if [ "$err_code" != "0" ]
           then
 			if [ "$err_code" = "139" ]
 	        then
-	        	echo "4glc core dump"
+	        	echo "$FGLCEXEC core dump"
 	            exit 139
 			fi
 
@@ -623,7 +643,7 @@ do
         then
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
-            $output 4glc "$a" OK, continue...
+            $output $FGLCEXEC "$a" OK, continue...
 		  fi
 
           if [ "$AUTOINDENT" = "Y" ]
@@ -697,7 +717,7 @@ do
 				touch $fname.c
 				COMPCC="$COMPCC $fname.c"
             else
-				$output "Error compiling $a - $fname.c not generated, but no err code from 4glc"
+				$output "Error compiling $a - $fname.c not generated, but no err code from $FGLCEXEC"
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
 				  	if [ -f $errfname ]
@@ -748,16 +768,16 @@ do
    ;;
 
 
-   -pdf) 	export USE_PDF = "yes"
+   -pdf) 	export USE_PDF="yes"
    ;;
 
-   -nopdf) 	export USE_PDF = "no"
+   -nopdf) 	export USE_PDF="no"
+            #echo Set USE_PDF to $USE_PDF
    ;;
 
 
-   -verbose) A4GLVERBOSE="yes"
-        export A4GLVERBOSE
-        SHOWERRCODE=1
+   -verbose) 	export A4GLVERBOSE="yes"
+				SHOWERRCODE=1
    ;;
 
    -noerrcode)
@@ -798,15 +818,26 @@ do
         fi
    ;;
 
-   -as-dll) COMPCC="$COMPCC -shared"
+   -noodbc)		ODBC_LIB_NAME=noodbc
+                ODBCFLAG=-noodbc
+				unset ODBC_LIB_DIR
+		        unset ODBC_SHARED
+	    	    unset ODBC_STATIC
+                FGLCEXEC=4glc-noodbc
+   ;;
+
+   -as-dll) 	COMPCC="$COMPCC -shared"
    ;;
 
    -shared)  if [ "$COMSPEC" = "" ]
             then
 			   USE_SHARED="Yes"
             else
-				FGLLIBS="$FGLLIBS_SHARED $ODBC_SHARED"
-	            export FGLLIBS
+				export FGLLIBS="$FGLLIBS_SHARED"
+				if [ "$ODBC_LIB_NAME" != "noodbc" ]
+				then
+					export FGLLIBS="$FGLLIBS $ODBC_SHARED"
+                fi
             fi
    ;;
 
@@ -814,12 +845,15 @@ do
             then
 				USE_SHARED="No"
             else
-				export FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
+				export FGLLIBS="$FGLLIBS_STATIC"
+				if [ "$ODBC_LIB_NAME" != "noodbc" ]
+				then
+					export FGLLIBS="$FGLLIBS $ODBC_STATIC"
+                fi
             fi
 
    ;;
 
-   #suppress final linking stage to executable?
    -o) COMPCC="$COMPCC -o "
        ISMAKE=-1
        LINKIT=1
@@ -849,6 +883,11 @@ do
 done
 ####
 
+if [ "$A4GLVERBOSE" = "yes" ]
+then
+	echo Finished processing switches. USE_PDF = $USE_PDF
+fi
+
 if [ "$EXECNAME" = "-1" ]
 then
     COMPCC=$DEFAULTCOMPCC
@@ -862,12 +901,19 @@ fi
 if [ "$COMSPEC" = "" ]
 then
     #echo COMSPEC not defined: $COMSPEC
-	FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclshared"$ui" -lm -ldl"
-	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclall"$ui" -lm -ldl"
+	FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclshared"$ui$ODBCFLAG" -lm -ldl"
+	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclall"$ui$ODBCFLAG" -lm -ldl"
 else
     #echo COMSPEC defined: $COMSPEC
-	FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclallgui -lm -lrpclib  -L/lib/w32api -lodbc32 -lodbccp32"
-	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclallgui -lm  -lrpclib -L/lib/w32api -lodbc32 -lodbccp32"
+	FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm -lrpclib  -L/lib/w32api"
+	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm  -lrpclib -L/lib/w32api"
+
+	if [ "$ODBC_LIB_NAME" != "noodbc" ]
+    then
+		FGLLIBS_SHARED="$FGLLIBS_SHARED -lodbc32 -lodbccp32"
+		FGLLIBS_STATIC="$FGLLIBS_STATIC -lodbc32 -lodbccp32"
+    fi
+
 fi
 
 if [ "$USE_PDF" = "yes" ]
@@ -903,23 +949,37 @@ fi
 
 if [ "$USE_SHARED" = "Yes" ]
 then
-        if [ "$ODBC" = "" ]
-        then
-                ODBC=$ODBC_SHARED
-        fi
-
-        FGLLIBS="$FGLLIBS_SHARED $ODBC"
+		if [ "$ODBC_LIB_NAME" != "noodbc" ]
+		then
+	        if [ "$ODBC" = "" ]
+    	    then
+        		ODBC=$ODBC_SHARED
+	        fi
+			FGLLIBS="$FGLLIBS_SHARED $ODBC"
+        else
+	        FGLLIBS="$FGLLIBS_SHARED"
+		fi
 else
-        if [ "$ODBC" = "" ]
-        then
+		if [ "$ODBC_LIB_NAME" != "noodbc" ]
+		then
+			if [ "$ODBC" = "" ]
+    	    then
                 ODBC=$ODBC_STATIC
+        	fi
+	        FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
+        else
+	        FGLLIBS="$FGLLIBS_STATIC"
         fi
-
-        FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
 fi
 
+#FIXME: provate reference to /root/ncurses/ncurses-5.2/lib, please remove!
 
-LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
+LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
+
+if [ "$ODBC_LIB_NAME" != "" ] && [ "$ODBC_LIB_NAME" != "noodbc" ]
+then
+	LIBS="$LIBS -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
+fi
 
 if test "$USE_JABBER" = "1"
 then

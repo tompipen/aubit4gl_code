@@ -3,11 +3,12 @@
 #
 #			Aubit 4gl compiler - make system
 #
-# genmake - utillity script to create Aubit-style makefiles from typical 
+# genmake - utillity script to create Aubit-style makefiles from typical
 # existing 4gl makefiles.
 #
 # You are not supposed to run this script mannualy; it will be called from
 # makefiles created with "prepmake" script.
+# $Id: genmake,v 1.6 2001-10-16 03:09:13 afalout Exp $
 #
 ##########################################################################
 

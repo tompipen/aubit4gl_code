@@ -11,6 +11,9 @@
 #.mk files are expected to contain only definitions of source files
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
+
+# $Id: amake,v 1.9 2001-10-16 03:09:13 afalout Exp $
+
 #####################################################################
 
 #`--include-dir=dir'

@@ -5,6 +5,7 @@
 #
 #do not put ANY hard coded names here!!!!!
 #
+# $Id: footer.mki,v 1.11 2001-10-16 03:09:13 afalout Exp $
 ######################################
 
 ifneq "$(DBASE)" ""
