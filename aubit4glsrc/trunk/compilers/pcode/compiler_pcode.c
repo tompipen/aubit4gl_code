@@ -193,6 +193,10 @@ new_command (enum cmd_type cmd_type, void *ptr)
       CURRENT_CMD.cmd_u.c_push_char = (int) ptr;
       break;
 
+    case CMD_PUSH_CHARV:
+      CURRENT_CMD.cmd_u.c_var = (struct param *) ptr;
+      break;
+
     case CMD_PUSH_INT:
       CURRENT_CMD.cmd_u.c_push_int = (int)ptr;
       break;
@@ -466,6 +470,12 @@ long add_push_char(char *s) {
 	n=add_string(ptr);
   	return new_command (CMD_PUSH_CHAR, (void *)n);
 }
+
+long add_push_charv(struct param *e) {
+	int n;
+  	return new_command (CMD_PUSH_CHARV, (void *)e);
+}
+
 
 long add_push_int(int n) {
   return new_command (CMD_PUSH_INT, (void *)n);

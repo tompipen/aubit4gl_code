@@ -37,7 +37,7 @@ char buff[20];
 %token STRUCT UNION ENUM ELLIPSIS
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-%token ON_KEY BEF_ROW
+%token ON_KEY BEF_ROW AFT_ROW AFTER_INP
 %token KW_A_PUSH_LONG 
 %token KW_A_PUSH_INT
 %token KW_A_PUSH_CHAR
@@ -139,10 +139,12 @@ fgl_funcs :
 	}
 	| KW_A_PUSH_INT '(' int_val ')' {
 			add_push_int($<e>3->param_u.n);
-		printf("fgl_funcs..\n");
 	}
 	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
 			add_push_char($<str>3);
+	}
+	| KW_A_PUSH_CHAR '(' variable ')' {
+			add_push_charv($<e>3);
 	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
 			add_chk_err($<e>3->param_u.n);
@@ -588,6 +590,8 @@ expr_1:
 	| cast expr     	{$<e>$=$<e>2; }
 	| '!' expr 		{$<e>$=new_param_op($<e>2,"NOT",0);}
 	| BEF_ROW { $<e>$=new_param('S',"BEF_ROW");}
+	| AFT_ROW { $<e>$=new_param('S',"AFT_ROW");}
+	| AFTER_INP { $<e>$=new_param('S',"AFTER_INP");}
 	| ON_KEY '(' STRING_LITERAL ')' { $<e>$=new_param('K',$<str>3);}
 
 

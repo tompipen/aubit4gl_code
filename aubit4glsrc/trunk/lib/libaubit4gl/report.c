@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.30 2003-09-17 19:14:16 mikeaubury Exp $
+# $Id: report.c,v 1.31 2003-11-04 20:22:15 mikeaubury Exp $
 #
 */
 
@@ -55,15 +55,15 @@
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
 void A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt);
 void A4GL_set_column (struct rep_structure *rep);
-void A4GL_free_duplicate_binding (struct BINDING *b, int n);
-struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
+static void A4GL_free_duplicate_binding (struct BINDING *b, int n);
+static struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int n);
 
 void A4GL_rep_print (struct rep_structure *rep, int a, int s,
 		     int right_margin);
 void A4GL_need_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
-char *A4GL_mk_temp_tab (struct BINDING *b, int n);
+static char *A4GL_mk_temp_tab (struct BINDING *b, int n);
 void A4GL_make_report_table (struct BINDING *b, int n);
 void A4GL_add_row_report_table (struct BINDING *b, int n);
 int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o,
@@ -75,8 +75,11 @@ void A4GL_rep_file_print (struct rep_structure *rep, char *fname,
 			  int opt_semi);
 static char *A4GL_report_char_pop (void);
 
+
 char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
+void A4GL_finished_report (void);
+
 
 
 /*
@@ -92,7 +95,7 @@ extern sqlca_struct a4gl_sqlca;
 
 
 
-static report_print(struct rep_structure *rep,char *fmt,...) {
+static void report_print(struct rep_structure *rep,char *fmt,...) {
 va_list ap;
 char buff[2000];
 va_start(ap,fmt);
@@ -315,7 +318,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 void
 A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
 {
-  int a;
+  //int a;
   char *x;
   x=malloc(cnt+1);
   memset(x,c,cnt);
@@ -584,7 +587,7 @@ A4GL_decode_datatype (int dtype, int dim)
  *
  * @todo Describe function
  */
-char *
+static char *
 A4GL_mk_temp_tab (struct BINDING *b, int n)
 {
   int a;
@@ -752,7 +755,7 @@ A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
  *
  * @todo Describe function
  */
-struct BINDING *
+static struct BINDING *
 A4GL_duplicate_binding (struct BINDING *b, int n)
 {
   struct BINDING *rbind;
@@ -814,7 +817,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
  *
  * @todo Describe function
  */
-void
+static void
 A4GL_free_duplicate_binding (struct BINDING *b, int n)
 {
   int a;
@@ -887,7 +890,7 @@ A4GL_report_char_pop (void)
 }
 
 void
-A4GL_finished_report ()
+A4GL_finished_report (void)
 {
 // after a report has finished the screen
 // maybe left in line mode...

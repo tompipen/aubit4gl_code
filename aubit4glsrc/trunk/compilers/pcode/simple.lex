@@ -10,7 +10,7 @@
 #include "npcode_defs.h"
 void comment (void );
 int check_type (void);
-int use_4gl_kw=0;
+int use_4gl_kw=1;
 void hash (void );
 %}
 D			[0-9]
@@ -72,6 +72,8 @@ void count();
 
 "ON_KEY" {count(); return ON_KEY;}
 "BEF_ROW" {count(); return BEF_ROW;}
+"AFT_ROW" {count(); return AFT_ROW;}
+"AFTER_INP" {count(); return AFTER_INP;}
 
 "REPORT_START" 			{strcpy(yytext,"-1"); count(); return CONSTANT;}
 "REPORT_FINISH" 		{strcpy(yytext,"-2"); count(); return CONSTANT;}
