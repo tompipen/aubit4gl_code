@@ -1,0 +1,9 @@
+
+DATABASE test
+
+GLOBALS "globals.4gl"
+
+DEFINE s INTEGER
+
+FUNCTION testFunction()
+END FUNCTION
