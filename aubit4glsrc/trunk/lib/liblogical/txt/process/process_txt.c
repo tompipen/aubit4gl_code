@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../../common/a4gl_lle.h"
-#include "../../layout_engine/API_layout.h"
+#include "../../processor/API_process.h"
 
 char **lines;
 
@@ -9,13 +9,13 @@ int page_touched = 0;
 FILE *rep_fout;
 
 
-int RP_default_file (void) {
+int RP_default_file (void *report,char *errbuff) {
 	// As there is no file description to mess with!
 	return 1;
 }
 
 
-int RP_load_file (FILE *fin) {
+int RP_load_file (void *report, FILE *fin) {
 	// As there is no file description to mess with!
 	return 1;
 }
@@ -77,21 +77,23 @@ set_text (int x, int y, char *s)
   page_touched = 1;
 }
 
-extern struct r_report *report;
 
-
-int RP_process_report (char *buff) 
+int RP_process_report (void *rp, char *buff) 
 {
   int a;
   int block;
   int entry;
+  struct r_report *report;
   struct r_report_block_entries *centry;
   int x, y;
   int page;
   int last_page = -1;
   int sz;
   page_touched = 0;
-//printf("RP_process\n"); fflush(stdout);
+
+  report=rp;
+
+
   if (rep_fout) fclose(rep_fout);
 
   rep_fout=0;
@@ -102,6 +104,8 @@ int RP_process_report (char *buff)
 
   A4GL_trim(buff);
   if (!strlen(buff)) {
+	static lbuff[256];
+	buff=lbuff;
 	tmpnam(buff);
   }
 

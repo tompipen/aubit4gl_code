@@ -16,12 +16,27 @@ struct r_report *rep;
 
 GtkWidget *create_block (int n);
 void msgbox (char *title, char *txt);
-
-struct r_report *report;
+static void quit_program (void);
+static void save_file (void);
 static void start_lle (void);
+static void load_file (void);
+static void open_rv (void);
+static void open_pal (void);
+void set_block_clicked (int rb);
+void set_clicked (int rb, int entry);
+void setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label);
+void setup_block (int b, GtkWidget * evt, GtkWidget * label);
+void edit_lle(void);
+
+
 int rbs;
 
+
+
+struct r_report *report_internal;
 struct s_rbx *rbx = 0;
+
+
 char *input_fname;
 int lc_entry = -1;
 int lc_rb = -1;
@@ -30,30 +45,32 @@ int lc_rb = -1;
 static void
 default_file (void)
 {
-  LR_default_file ();
+  LR_default_file (report_internal);
 }
 
 static void
 preview_file (void)
 {
-  LR_preview_file ();
+  LR_preview_file (report_internal);
 }
 
 /* ******************************************************************************** */
 
 int main (int argc, char *argv[])
 {
-  int npages;
-  char buff[256];
-  int buff_i;
-  char buff_c;
-  int c;
-  int a, b;
-  int found;
   char buff_env[256];
-  int block_cnt;
-  int rblock_cnt;
-  int entry_cnt;
+
+
+  //int npages;
+  //char buff[256];
+  //int buff_i;
+  //char buff_c;
+  //int c;
+  //int a, b;
+  //int found;
+  //int block_cnt;
+  //int rblock_cnt;
+  //int entry_cnt;
   rbs = 0;
   rbx = 0;
 
@@ -62,9 +79,9 @@ int main (int argc, char *argv[])
       printf ("Usage %s type file-name\n", argv[0]);
       exit (1);
     }
-  report = read_report_output (argv[2]);
+  report_internal = read_report_output (argv[2]);
 
-  if (report == 0)
+  if (report_internal == 0)
     {
       printf ("Unable to open report output\n");
       exit (2);
@@ -77,14 +94,14 @@ int main (int argc, char *argv[])
 
 #ifdef MOVED_TO_COMMON
 
-  for (a = 0; a < report->nblocks; a++)
+  for (a = 0; a < report_internal->nblocks; a++)
     {
       found = 0;
       if (rbs)
 	{
 	  for (b = 0; b < rbs; b++)
 	    {
-	      if (report->blocks[a].rb == rbx[b].rb)
+	      if (report_internal->blocks[a].rb == rbx[b].rb)
 		{
 		  found = 1;
 		  break;
@@ -95,9 +112,9 @@ int main (int argc, char *argv[])
 	continue;
       rbs++;
       rbx = realloc (rbx, sizeof (struct s_rbx) * rbs);
-      rbx[rbs - 1].rb = report->blocks[a].rb;
-      rbx[rbs - 1].why = report->blocks[a].why;
-      rbx[rbs - 1].where = report->blocks[a].where;
+      rbx[rbs - 1].rb = report_internal->blocks[a].rb;
+      rbx[rbs - 1].why = report_internal->blocks[a].why;
+      rbx[rbs - 1].where = report_internal->blocks[a].where;
     }
 
   printf ("%d distinct blocks...\n", rbs);
@@ -111,22 +128,22 @@ int main (int argc, char *argv[])
       rbx[block_cnt].nentry_nos = 0;
       rbx[block_cnt].max_size_entry = 0;
 
-      for (rblock_cnt = 0; rblock_cnt < report->nblocks; rblock_cnt++)
+      for (rblock_cnt = 0; rblock_cnt < report_internal->nblocks; rblock_cnt++)
 	{
-	  if (rbx[block_cnt].rb != report->blocks[rblock_cnt].rb)
+	  if (rbx[block_cnt].rb != report_internal->blocks[rblock_cnt].rb)
 	    {
 	      continue;
 	    }
 
-	  for (entry_cnt = 0; entry_cnt < report->blocks[rblock_cnt].nentries;
+	  for (entry_cnt = 0; entry_cnt < report_internal->blocks[rblock_cnt].nentries;
 	       entry_cnt++)
 	    {
-	      if (report->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
+	      if (report_internal->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
 		  rbx[block_cnt].max_entry)
 		{
 		  int nmax;
 		  nmax =
-		    report->blocks[rblock_cnt].entries[entry_cnt].entry_id +
+		    report_internal->blocks[rblock_cnt].entries[entry_cnt].entry_id +
 		    1;
 
 		  rbx[block_cnt].entry_nos =
@@ -143,11 +160,11 @@ int main (int argc, char *argv[])
 		}
 
 	      if (strlen
-		  (report->blocks[rblock_cnt].entries[entry_cnt].string))
+		  (report_internal->blocks[rblock_cnt].entries[entry_cnt].string))
 		{
 		  rbx[block_cnt].entry_nos[entry_cnt] = entry_cnt;
 		  rbx[block_cnt].max_size_entry[entry_cnt] =
-		    strlen (report->blocks[rblock_cnt].entries[entry_cnt].
+		    strlen (report_internal->blocks[rblock_cnt].entries[entry_cnt].
 			    string);
 		}
 	    }
@@ -188,7 +205,7 @@ int main (int argc, char *argv[])
 #endif
 
 
-  obtain_rbs_rbx(report,&rbs,&rbx);
+  obtain_rbs_rbx(report_internal,&rbs,&rbx);
 
   gtk_init (&argc, &argv);
 
@@ -230,14 +247,12 @@ destroy (GtkWidget * widget, gpointer data)
   gtk_main_quit ();
 }
 
-void
-quit_program (void)
+void quit_program (void)
 {
   gtk_main_quit ();
 }
 
-void
-save_file (void)
+void save_file (void)
 {
   FILE *fout;
   char *fname;
@@ -261,9 +276,9 @@ save_file (void)
 		return;
 	}
       fprintf (fout, "A4GL_LOGICAL_REPORT %s\n", acl_getenv ("LOGREP"));
-      fprintf (fout, "%s %s\n", report->repName, report->modName);
+      fprintf (fout, "%s %s\n", report_internal->repName, report_internal->modName);
       fprintf (fout, "%s\n", input_fname);
-      ok=LR_save_file (fout);
+      ok=LR_save_file (report_internal,fout);
       if (!ok) {
 		msgbox ("Some error during save", "Warning - No save performed...");
 	}
@@ -275,24 +290,23 @@ save_file (void)
     }
 }
 
-void
-load_file (void)
+void load_file (void)
 {
   FILE *fin;
   char *fname;
   int ok;
   char buff[255];
-  char logrep[255];
-  char orig[255];
-  char rname[255];
-  char mname[255];
+  //char logrep[255];
+  //char orig[255];
+  //char rname[255];
+  //char mname[255];
 	
   fname = create_file_selection (0);
 
   if (fname) {
 	ok=0;
   	if (load_filter_file_header(fname,&fin,buff)) {
-      		ok=LR_load_file (fin);
+      		ok=LR_load_file (report_internal, fin);
   	}
 	fclose(fin);
 
@@ -304,14 +318,12 @@ load_file (void)
   }
 }
 
-void
-open_rv (void)
+void open_rv (void)
 {
   edit_lle ();
 }
 
-void
-open_pal (void)
+void open_pal (void)
 {
   printf ("Not implemented yet..");
 }
@@ -330,7 +342,7 @@ start_lle ()
   GtkWidget *vbox_in_sw;
   GtkWidget *sw;
   GtkWidget *l;
-  int block;
+  //int block;
 
   static GtkItemFactoryEntry entries[] = {
 
@@ -348,7 +360,7 @@ start_lle ()
   acc = gtk_accel_group_new ();
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   sprintf (desc, "Logical Layout Engine (Report : %s from Module : %s)",
-	   report->repName, report->modName);
+	   report_internal->repName, report_internal->modName);
   gtk_window_set_title (GTK_WINDOW (window), desc);
   gtk_widget_set_usize (GTK_WIDGET (window), 400, 400);
 
@@ -383,10 +395,10 @@ start_lle ()
   sprintf (buff,
 	   "Version : %d\nCtime=%d\nTop Margin=%d Bottom Margin=%d Left Margin=%d Right Margin=%d\n"
 	   "Page Length=%d Max Page=%d Max Line=%d Max Col=%d",
-	   report->version_no, report->ctime, report->top_margin,
-	   report->bottom_margin, report->left_margin, report->right_margin,
-	   report->page_length, report->max_page, report->max_line,
-	   report->max_col);
+	   report_internal->version_no, report_internal->ctime, report_internal->top_margin,
+	   report_internal->bottom_margin, report_internal->left_margin, report_internal->right_margin,
+	   report_internal->page_length, report_internal->max_page, report_internal->max_line,
+	   report_internal->max_col);
 
   l = gtk_label_new (buff);
   gtk_widget_show (l);
@@ -394,7 +406,7 @@ start_lle ()
   gtk_container_add (GTK_CONTAINER (vbox_in_sw), l);
 
 
-  LR_show_layout_rest (vbox_in_sw);
+  LR_show_layout_rest (report_internal,vbox_in_sw);
 
   gtk_widget_show_all (window);
 
@@ -410,13 +422,13 @@ start_lle ()
 
 
 
-set_clicked (int rb, int entry)
+void set_clicked (int rb, int entry)
 {
   lc_entry = entry;
   lc_rb = rb;
 }
 
-set_block_clicked (int rb)
+void set_block_clicked (int rb)
 {
   lc_entry = -1;
   lc_rb = rb;
@@ -425,12 +437,12 @@ set_block_clicked (int rb)
 
 void setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label)
 {
-  LR_setup_entry (b, e, evt, label);
+  LR_setup_entry (report_internal,b, e, evt, label);
 }
 
 void setup_block (int b, GtkWidget * evt, GtkWidget * label)
 {
-  LR_setup_block (b, evt, label);
+  LR_setup_block (report_internal,b, evt, label);
 }
 
 

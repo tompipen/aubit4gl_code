@@ -7,7 +7,6 @@ extern int rbs;
 extern struct s_rbx *rbx;
 
 struct csv_report_layout *layout;
-extern struct r_report *report;
 
 FILE *rep_fout=0;
 
@@ -18,7 +17,7 @@ int A4GLLOGREP_PROC_initlib() {
 
 
 
-int RP_default_file(char *buff) {
+int RP_default_file(void *report, char *buff) {
 	layout=default_csv(buff);
 	if (layout) return 1;
 	else return 0;
@@ -26,7 +25,7 @@ int RP_default_file(char *buff) {
 
 
 
-int RP_load_file(FILE* fin) {
+int RP_load_file(void *report, FILE* fin) {
 	layout=read_csv(fin);
 	if (layout==0) {return 0;}
 	return 1;
@@ -138,10 +137,12 @@ for (a=0;a<layout->nblocks;a++) {
 
 }
 
-int RP_process_report(char* buff) {
+int RP_process_report(void *vreport, char* buff) {
+struct r_report *report;
 char fname[1024];
 int a;
 int b;
+report=vreport;
 	rep_fout=0;
 
 	if (layout==0|| report==0) {

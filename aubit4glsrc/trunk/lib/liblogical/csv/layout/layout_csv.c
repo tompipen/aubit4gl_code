@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "../../common/a4gl_lle.h"
 #include "../common/csv_io.h"
+#include "../../layout_engine/API_layout.h"
 
 void msgbox (char *title, char *txt);
 
@@ -41,7 +42,7 @@ GtkWidget *create_block (int n);
 void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 			      GtkSelectionData * selection_data, guint info,
 			      guint t, gpointer data);
-extern struct r_report *report;
+
 
 GtkWidget **block_tables = 0;
 int nblock_tables = 0;
@@ -75,9 +76,10 @@ save_file (void)
 
 /* ******************************************************************************** */
 
-void LR_show_layout_rest (GtkWidget * vbox_in_sw)
+void LR_show_layout_rest (void *vreport, void* vvbox_in_sw)
 {
   /* create a new window */
+
   //char desc[255];
   //char buff[1024];
 
@@ -87,6 +89,10 @@ void LR_show_layout_rest (GtkWidget * vbox_in_sw)
   //GtkWidget *vbox;
   //GtkWidget *sw;
   //GtkWidget *l;
+
+GtkWidget *vbox_in_sw;
+vbox_in_sw=vvbox_in_sw;
+
   int block;
 
   gtk_rc_parse_string (style_cell);
@@ -558,8 +564,11 @@ do_data_get_block (GtkWidget * widget, GdkDragContext * dc,
 
 
 void
-LR_setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label)
+LR_setup_entry (void *report, int b, int e,  void *ev,void *lb)
 {
+GtkWidget * evt; GtkWidget * label;
+evt=ev;
+label=lb;
   gtk_drag_source_set (evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_entry,
 		       sizeof (target_entry) / sizeof (GtkTargetEntry),
 		       GDK_ACTION_MOVE | GDK_ACTION_COPY);
@@ -571,8 +580,11 @@ LR_setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label)
 
 
 void
-LR_setup_block (int b, GtkWidget * evt, GtkWidget * label)
+LR_setup_block (void *report, int b,  void *ev, void *lb)
 {
+GtkWidget * evt; GtkWidget * label;
+evt=ev;
+label=lb;
   gtk_drag_source_set (evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_block,
 		       sizeof (target_block) / sizeof (GtkTargetEntry),
 		       GDK_ACTION_MOVE | GDK_ACTION_COPY);
@@ -582,7 +594,7 @@ LR_setup_block (int b, GtkWidget * evt, GtkWidget * label)
 
 
 void
-LR_default_file ()
+LR_default_file (void *report)
 {
   struct csv_report_layout *d;
   char buff[2048];
@@ -596,13 +608,13 @@ LR_default_file ()
 
 
 void
-LR_preview_file ()
+LR_preview_file (void *report)
 {
   printf ("preview_file not implemented\n");
 }
 
 
-int LR_save_file(FILE *fout) {
+int LR_save_file(void *report,FILE *fout) {
 int a;
 GtkWidget *table;
 int x;
@@ -689,7 +701,7 @@ return 1;
 
 
 
-int LR_load_file(FILE *fin) {
+int LR_load_file(void *report,FILE *fin) {
 struct csv_report_layout *in;
 
 in=read_csv(fin);

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "../common/common_pdf.h"
 #include "../../common/a4gl_lle.h"
+#include "../../layout_engine/API_layout.h"
 
 void msgbox(char *title,char *txt) ;
 
@@ -12,6 +13,7 @@ GtkWidget *labels[10];
 GtkWidget *values[10];
 
 extern struct pdf_layout layout;
+
 GtkWidget *paper_b[10]; // Assume no more than 10 papers anyway..
 
 static void cp_boxes_to_data() {
@@ -58,18 +60,18 @@ static void show_layout () {
 	
 }
 
-void LR_default_file() {
+void LR_default_file(void *report) {
 	pdf_default_file();
 	show_layout();
 }
 
 
-void LR_preview_file() {
+void LR_preview_file(void *report) {
 	msgbox("Cannot Preview","Use the report viewer as a preview");
 }
 
 
-void LR_show_layout_rest(void *sb) {
+void LR_show_layout_rest(void *report, void *sb) {
 	GtkWidget *lab;
 	GtkAdjustment *adj;
 	GtkWidget *hbox;
@@ -160,26 +162,26 @@ void LR_show_layout_rest(void *sb) {
 	values[4]=hbox;
 	gtk_table_attach_defaults(GTK_TABLE(table),values[4],1,2,4,5); 
 	gtk_widget_show_all(table);
-	LR_default_file();
+	LR_default_file(report);
 	show_layout();
 }
 
 
-void LR_setup_entry(int b,int e, void *evt, void *label) {
+void LR_setup_entry(void *report, int b,int e, void *evt, void *label) {
 	//
 }
 
 
-void LR_setup_block(int b, void *evt, void *label) {
+void LR_setup_block(void *report, int b, void *evt, void *label) {
 	//
 }
 
-int LR_save_file(FILE *fin) {
+int LR_save_file(void *report, FILE *fin) {
 	cp_boxes_to_data();
 	return pdf_save_file(fin);
 }
 
-int LR_load_file(FILE *fin) {
+int LR_load_file(void *report, FILE *fin) {
 	return pdf_load_file(fin);
 	show_layout();
 }

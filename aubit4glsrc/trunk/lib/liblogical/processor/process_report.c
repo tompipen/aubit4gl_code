@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../common/a4gl_lle.h"
-//#include "API_process.h"
+#include "API_process.h"
+
 int A4GLLOGREPPROC_initlib (void);
 int A4GL_setenv(char *v,char *val,int overwrite);
 
@@ -24,12 +25,13 @@ char *ofile="";
 int random_name=1;
 
 
+if (argc>2) {
 if (strcmp(argv[1],"-o")==0) {
   	ofile=argv[2];
 	off=2;
 	random_name=0;
 } 
-
+}
 
 if (argc-off != 4 && argc-off!=3 )
     {
@@ -89,12 +91,12 @@ if (argc-off != 4 && argc-off!=3 )
 			printf("Unable to open filter file : %s\n",buff);
 			exit(2);
 		}
-		if (!RP_load_file(fin_filter)) {
+		if (!RP_load_file(report,fin_filter)) {
 			printf("Unable to open filter file : %s\n",buff);
 			exit(2);
 		}
   } else {
-	if (!RP_default_file(errbuff)) {
+	if (!RP_default_file(report,errbuff)) {
 		printf("No default file could be generated :\n%s\n",errbuff);
 		exit(2);
 	}
@@ -107,7 +109,7 @@ if (argc-off != 4 && argc-off!=3 )
 
   strcpy(buff,ofile);
 
-  if (RP_process_report(buff)) {
+  if (RP_process_report(report, buff)) {
 	if (random_name)      printf("OK - output should be in %s\n",buff);
   } else {
 	printf("Failed to process\n");

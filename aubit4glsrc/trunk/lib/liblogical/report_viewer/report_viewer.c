@@ -34,7 +34,7 @@ char *style_unselected = "style \"unselected\" {font_name=\"monospace 6\" bg[NOR
 char *style_unselectable = "style \"unselectable\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
 
 
-extern struct r_report *report;
+//extern struct r_report *report;
 
 int selectable = 1;
 
@@ -244,7 +244,7 @@ destroy (GtkWidget * widget, gpointer data)
 
 /* ******************************************************************************** */
 
- void
+void
 edit_lle ()
 {
   int a;

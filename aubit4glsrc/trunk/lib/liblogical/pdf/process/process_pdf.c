@@ -3,7 +3,7 @@
 #include "pdflib.h"
 #include "../../common/a4gl_lle.h"
 #include "../common/common_pdf.h"
-#include "../../layout_engine/API_layout.h"
+#include "../../processor/API_process.h"
 
 char **lines;
 
@@ -16,12 +16,12 @@ void output_page (PDF *p, int w, int h,char **lines);
 
 
 
-int RP_default_file (void) {
+int RP_default_file (void *report,char *errbuff) {
 	return pdf_default_file();
 }
 
 
-int RP_load_file (FILE *fin) {
+int RP_load_file (void *report, FILE *fin) {
 	return pdf_load_file(fin);
 }
 
@@ -72,19 +72,21 @@ set_text (int x, int y, char *s)
   page_touched = 1;
 }
 
-extern struct r_report *report;
+//extern struct r_report *report;
 
 
-int RP_process_report (char *buff) 
+int RP_process_report (void *vreport, char *buff) 
 {
   int a;
   int block;
   int entry;
+  struct r_report *report;
   struct r_report_block_entries *centry;
   int x, y;
   int page;
   int last_page = -1;
   page_touched = 0;
+  report=vreport;
  
 
   if ((p=PDF_new()) == (PDF *)0) {
