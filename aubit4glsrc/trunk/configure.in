@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.36 2002-02-22 13:22:13 afalout Exp $
+# $Id: configure.in,v 1.37 2002-02-25 05:55:49 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1902,6 +1902,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 tools/jabber/Makefile
                 tools/odbctest/Makefile
                 tools/test/gui/Makefile
+                tools/test/regression/Makefile
+                tools/test/lang/Makefile
                 tools/test/Makefile
 				docs/doxy/Doxyfile])
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.18 2002-02-22 13:22:23 afalout Exp $
+# $Id: Makefile-common.in,v 1.19 2002-02-25 05:55:54 afalout Exp $
 #
 
 
@@ -350,6 +350,18 @@ endif
 
 
 #<options needed also for binary disrto makefile========================>
+
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
+#	../../../bin/fcompile
+	MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
+	FGLPCEXEC	=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
+else
+	FCOMPILE	=aubit fcompile
+	MKMESS      =aubit mkmess
+	FGLPCEXEC	=aubit 4glpc
+endif
+
 
 #install location:
 ifdef COMSPEC
