@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.26 2004-11-30 17:38:01 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.27 2005-01-06 08:34:16 mikeaubury Exp $
 #
 */
 
@@ -430,7 +430,10 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 A4GL_debug("Copy char : mode=%c",mode);
 A4GL_debug("Copy char : x=%d",x);
 A4GL_debug("Copy char : y=%d",y);
-A4GL_debug("Copy char : indicat=%d",indicat);
+A4GL_debug("Copy char : p_indicat=%p",p_indicat);
+if (p_indicat) {
+	A4GL_debug("Copy char : *p_indicat=%p",*p_indicat);
+}
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
