@@ -22,4 +22,5 @@ ansi_sql_compat:
 
 sql_features_used:
 	@echo "REPORT_ORDER_BY "
-
+desc:
+	@echo "Simple report checking when using ORDER BY (not ORDER EXTERNAL..)"

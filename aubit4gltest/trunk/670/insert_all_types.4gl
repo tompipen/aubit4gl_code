@@ -244,6 +244,7 @@ MAIN
 	# Assignment(s)
   LET r_.aInteger  = 20000000
   LET r_.aInt  = -20000000
+  Let r_.aSerial=0
   LET r_.aSmallint  = 32767
   LET r_.aDecimal  = 123456789012345.0
   LET r_.aDec  = 123456789012345.0

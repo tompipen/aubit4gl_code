@@ -16,3 +16,6 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "CREATE_TEMP_TABLE"
 
+
+desc: 
+	@echo  "Null string date/datetime checking"

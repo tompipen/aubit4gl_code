@@ -3,12 +3,14 @@ DATABASE test1
 
 MAIN
   DEFINE lv_keyColumn SMALLINT
+define aSecond interval second to second
   DEFINE lv_singleQuoted CHAR(10)
   DEFINE lv_doubleQuoted CHAR(10)
   DEFINE exitStatus SMALLINT
 	DEFINE r_ RECORD
 	  doubleQuotedStr CHAR(20),
-		singleQuotedStr VARCHAR(20,10),
+		#singleQuotedStr VARCHAR(20,10),
+		singleQuotedStr VARCHAR(20),
 		userStr CHAR(10),
 		-- Literal numbers
 		aNegativeInteger INTEGER,
@@ -309,7 +311,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.singleQuotedStr != 	'Single quoted'  THEN
-    DISPLAY "Diferent value 2"
+    DISPLAY "Diferent value 2:",r_.singleQuotedStr
     LET exitStatus = 1
   END IF
   --IF r_.-- Literal numbers != 	-- Literal numbers THEN
@@ -435,7 +437,7 @@ MAIN
     DISPLAY "Diferent value 31"
     LET exitStatus = 1
   END IF
-  IF r_.currYearSecond != 	CURRENT YEAR TO SECOND THEN
+  IF r_.currYearSecond != 	CURRENT YEAR TO SECOND AND  r_.currYearSecond + asecond !=       CURRENT YEAR TO SECOND THEN
     DISPLAY "Diferent value 32 : ",r_.currYearSecond," ",CURRENT YEAR TO SECOND
     LET exitStatus = 1
   END IF
@@ -456,7 +458,7 @@ MAIN
     LET exitStatus = 1
   END IF
 
-  IF r_.currMonthSecond != 	CURRENT MONTH TO SECOND THEN
+  IF r_.currMonthSecond != 	CURRENT MONTH TO SECOND  AND r_.currMonthSecond + asecond !=      CURRENT MONTH TO SECOND THEN
     DISPLAY "Diferent value 38 ", r_.currMonthSecond," ",CURRENT MONTH TO SECOND
     LET exitStatus = 1
   END IF
@@ -472,7 +474,8 @@ MAIN
     DISPLAY "Diferent value 42"
     LET exitStatus = 1
   END IF
-  IF r_.currDaySecond != 	CURRENT DAY TO SECOND THEN
+
+  IF r_.currDaySecond  != CURRENT DAY TO SECOND and  r_.currDaySecond+asecond  != CURRENT DAY TO SECOND THEN
     DISPLAY "Diferent value 43"
     LET exitStatus = 1
   END IF
@@ -484,7 +487,7 @@ MAIN
     DISPLAY "Diferent value 46"
     LET exitStatus = 1
   END IF
-  IF r_.currHourSecond != 	CURRENT HOUR TO SECOND THEN
+  IF r_.currHourSecond != 	CURRENT HOUR TO SECOND and r_.currHourSecond+ asecond  !=       CURRENT HOUR TO SECOND THEN
     DISPLAY "Diferent value 47"
     LET exitStatus = 1
   END IF
@@ -496,7 +499,7 @@ MAIN
     DISPLAY "Diferent value 50"
     LET exitStatus = 1
   END IF
-  IF r_.currSecondSecond != 	CURRENT SECOND TO SECOND  THEN
+  IF r_.currSecondSecond != 	CURRENT SECOND TO SECOND  and r_.currSecondSecond + asecond !=     CURRENT SECOND TO SECOND THEN
     DISPLAY "Diferent value 52"
     LET exitStatus = 1
   END IF

@@ -51,15 +51,6 @@ ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
 
-#Relative
-#DBPATH:=${DBPATH}:/here/there:../23:/and/every/where:
-
-#Absolute
-PWD=$(shell pwd)
-DBPATH:=${DBPATH}:/here/there:${PWD}/../23:/and/every/where:
-
-export DBPATH
-
 ## ======================================================================
 ##                 	Local Targets
 ## ======================================================================
@@ -84,14 +75,7 @@ progname${TARGET_EXT}: ${MODULES}
 #Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(4)
 #Add more "progname${TARGET_EXT}" items if test uses more then one program <<(5)
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-	#form4gl ../23/p1.per
-	#fglform ../23/p1.per
-	#fmpc ../23/p1.per
-	fcompile ../23/p1.per
-#Make sure that no for compiler droped compiled form in this directory	
-	# mv p1.* ../23
-	#ls ../23/*.frm ../23/*.afr.* ../23/*.pic ../23/*.42f  
-	
+
 ################
 #Run the compiled test
 run: compile
@@ -125,7 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Opening resource files from DBPATH"
+	@echo "This is not a test but a Testing template. \
+		Please provide brief description of functionality tested here."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -199,7 +184,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -232,12 +217,7 @@ transaction:
 #################
 #List here any SQL dialect-specific features that may be incompatible
 #with some database back-ends, like:
-#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE 
-#CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM GRANT RECOVER_TABLE 
-#RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE SELECT_INTO_TEMP 
-#SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS
-#SERIAL ROWID PUT_CURSOR SQL_END_SQL SELECT_RELATIVE
-#...etc...
+#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
 	@echo ""

@@ -19,3 +19,5 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT VALIDATE_LIKE"
 
+desc:
+	@echo "VALIDATE check"
