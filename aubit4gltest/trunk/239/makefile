@@ -21,3 +21,6 @@ run: prog.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Test of compiling a form into an executable (using fcompile -c)"

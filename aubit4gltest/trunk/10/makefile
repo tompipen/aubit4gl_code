@@ -14,3 +14,6 @@ run: ui_contrl.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Simple combination of UI commands"

@@ -11,3 +11,6 @@ run: m2.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Simple test of 'showhelp' function"

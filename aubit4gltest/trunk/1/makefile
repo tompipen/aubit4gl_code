@@ -12,3 +12,5 @@ run: simple_null.4ae
 ansi_sql_compat:
 	@echo "0"
 
+desc
+	@echo "Setting some basic types to null"

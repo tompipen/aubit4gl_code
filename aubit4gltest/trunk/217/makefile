@@ -15,3 +15,5 @@ clean:
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo "_variable(...) handling test  - also tests shared library creation"

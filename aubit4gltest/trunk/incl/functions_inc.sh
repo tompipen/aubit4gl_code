@@ -1083,7 +1083,7 @@ aubit_build=`aubit 4glc -v | grep Build | awk '{print $3}'`
 #Only when non-Aubit 4gl compiler is used
 comp_version=""
 total_time=`(expr $FINISH_ALL_TIME - $START_TIME) 2>/dev/null`
-c_ver=`gcc --version`
+c_ver=`gcc --version | grep gcc `
 #FIXME: adapt for PG/SAP/Querix :
 esql_ver=`esql -V | grep Version | awk '{print $3}'`
 #Fixme - addapt for non-Informix engines

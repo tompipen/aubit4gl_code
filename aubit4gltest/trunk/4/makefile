@@ -11,3 +11,5 @@ run: prompt_err.4ae
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo "Simple PROMPT"

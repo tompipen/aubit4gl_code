@@ -10,4 +10,5 @@ run: select.4ae
 
 ansi_sql_compat:
 	@echo "0"
-
+desc:
+	@echo "Simple test of what happens when a row is not returned from a select"
