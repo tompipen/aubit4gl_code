@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.7 2002-01-02 00:39:13 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-01-03 20:16:09 saferreira Exp $
 #
 
 
@@ -32,7 +32,12 @@
 #Default=/etc/opt/aubit4gl
 AUBITETC=/etc/opt/aubit4gl
 
-include mkname.mk
+#if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
+#if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
+#if this make file is named "Makefile", DO NOT edit it!
+MKNAME=
+
+
 
 #PREFIX=${AUBITDIR}/install
 PREFIX=/opt/aubit4gl

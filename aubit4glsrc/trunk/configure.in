@@ -3,7 +3,7 @@
 AC_PREREQ(2.50)
 
 AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_AUX_DIR(etc/config)
 AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
 AC_CONFIG_HEADER([incl/config.h])
 
