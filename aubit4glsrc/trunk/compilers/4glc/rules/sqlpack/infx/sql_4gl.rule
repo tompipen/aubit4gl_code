@@ -161,8 +161,8 @@ cursor_specification_sel_ss:
 		start_bind('o',0);
 		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(2,$<str>1)) ,0);
 	}
-	| select_statement_ss  {
-		$<sql_string>$=$<sql_string>1;
+	| select_statement_ss  curs_forupdate {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
 	}
 ;
 
@@ -204,7 +204,7 @@ fgl_sql_statement: delete_statement_position {
         	if (strstr($<str>2,"FOR UPDATE")) {
                    printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
         	}
-                print_do_select($<sql_string>1);
+                print_do_select($<sql_string>$);
                 strcpy($<str>$,"select");
         }
 ;

@@ -63,7 +63,9 @@ find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
 find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
 
 sh run_tests -clean
-sh run_tests -esqli
+A4GL_DUMP_CORE=Y
+export A4GL_DUMP_CORE
+sh run_tests -esqli > /tmp/runtests.out
 
 if grep -y "Fail" build.log 
 then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.101 2004-09-12 19:13:33 mikeaubury Exp $
+# $Id: stack.c,v 1.102 2004-09-30 10:20:01 mikeaubury Exp $
 #
 */
 
@@ -1471,6 +1471,14 @@ A4GL_push_today();
 l=A4GL_pop_long();
 A4GL_push_char(A4GL_using_date(l,"ddd mmm dd yyyy"));
 }
+
+void A4GL_push_time_expr(void) {
+struct_dtime a ;
+A4GL_push_current( 4 ,6);
+}
+
+
+
 /**
  *
  *

@@ -336,7 +336,7 @@ column_constraint_list_ss :
 
 column_constraint_ss : 
 	column_constraint_ss_1 opt_constraint_name {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<str>2,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
 	}
 ;
 

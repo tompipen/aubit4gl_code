@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.47 2004-09-19 16:12:09 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.48 2004-09-30 10:20:01 mikeaubury Exp $
 #
 */
 
@@ -532,6 +532,13 @@ aclfgl_date (int n)
   long d;
   d = A4GL_pop_date ();
   A4GL_push_date (d);
+  return 1;
+}
+
+int aclfgl_time(int n) {
+   struct_dtime a ;
+   A4GL_pop_var2(&a,10,0x46);
+   A4GL_push_variable(&a,0x46000a);
   return 1;
 }
 

@@ -547,6 +547,9 @@ function_callb:
 DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_date(1);");
 }
+| TIME OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_time(1);");
+}
 | MONTH OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_month(1);");
 	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
@@ -797,9 +800,12 @@ builtin_expr : curr_v_clause {
                sprintf($<str>$,"A4GL_push_current(%s);",$<str>1);
 		$<ptr>$=A4GL_new_expr($<str>$);
           	}
-		       | DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
-			$<ptr>$=A4GL_new_expr($<str>$);
-			}
+       | DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
+       | TIME  { inc_counter(); strcpy($<str>$,"A4GL_push_time_expr();");
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
 
 	;
 
