@@ -317,12 +317,12 @@ insql=0;
 ;
 
 and_or_expr: 
-AND fgl_expr_c 
+KW_AND fgl_expr_c 
 {
 	/* sprintf($<str>$,"%s pushop(OP_AND);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_AND);");
 }
-| OR fgl_expr_c 
+| KW_OR fgl_expr_c 
 {
 	/* sprintf($<str>$,"%s pushop(OP_OR);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
@@ -421,7 +421,7 @@ CLIPPED
 }
 ;
 using_expr:
-USING fgl_expr_c 
+KW_USING fgl_expr_c 
 {
 	sprintf($<str>$,"%s pushop(OP_USING);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_USING);");
@@ -603,11 +603,9 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 | ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));
 	$<ptr>$=new_expr($<str>$);
 }
-| ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3);
-	$<ptr>$=new_expr($<str>$);
-}
-;
-
+| ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3); $<ptr>$=new_expr($<str>$); } ;
+| EXTEND OPEN_BRACKET variable_or_current CLOSE_BRACKET { 
+	sprintf($<str>$,"%s",$<str>3); $<ptr>$=new_expr($<str>$); } ;
 pdf_expr : fgl_expr_c POINTS  {
 	$<ptr>$=append_expr($<ptr>1,"push_double(-1);pushop(OP_MULT);");
 }
@@ -619,5 +617,12 @@ pdf_expr : fgl_expr_c POINTS  {
 }
 ;
 
-
+variable_or_current: variable COMMA s_curr_v TO e_curr_v {
+		sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5);
+	}
+	| CURRENT s_curr_v TO e_curr_v {
+			sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4);
+				
+		}
+;
 /* ============================ expr.rule =========================== */

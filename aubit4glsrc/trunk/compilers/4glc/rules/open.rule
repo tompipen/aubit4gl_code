@@ -44,7 +44,7 @@ open_form_rest: open_form_gui
 
 ;
 
-open_form_gui:  op_at_gui op_like_gui op_disable USING formhandler_name
+open_form_gui:  op_at_gui op_like_gui op_disable KW_USING formhandler_name
 	{sprintf($<str>$,"open_gui_form(%%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",$<str>1,$<str>2,$<str>3,$<str>5,$<str>5);}
 ;
 
@@ -72,7 +72,7 @@ open_cursor_cmd :
 	OPEN cursor_name {
 	print_open_cursor($<str>2,"0");
 }
-	| OPEN cursor_name USING reset_cnt fgl_expr_list {
+	| OPEN cursor_name KW_USING reset_cnt fgl_expr_list {
 	print_open_cursor($<str>2,$<str>5); /* CHANGED from $<str>4 */
 }
 ;
@@ -108,9 +108,9 @@ op_connect_as :
 
 con_user_details :
         {sprintf($<str>$,"0,0");}
-        | AS USER char_or_var USING char_or_var
+        | AS USER char_or_var KW_USING char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-        | USER char_or_var USING char_or_var
+        | USER char_or_var KW_USING char_or_var
               {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
 ;
 

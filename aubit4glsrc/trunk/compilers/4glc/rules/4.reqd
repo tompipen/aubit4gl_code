@@ -1,9 +1,9 @@
 %token <str> NAME
 %left UMINUS
 %left COMMA
-%left OR         
-%left AND        
-%left USING 
+%left KW_OR         
+%left KW_AND        
+%left KW_USING 
 %left MATCHES     
 %left POWER
 %left LESS_THAN 

@@ -584,13 +584,13 @@ op_having_clause: {strcpy($<str>$,"");}
 
 search_condition:
 	boolean_term
-	| search_condition OR boolean_term
+	| search_condition KW_OR boolean_term
 {sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 boolean_term:
 	boolean_factor
-	| boolean_term AND boolean_factor
+	| boolean_term KW_AND boolean_factor
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
@@ -684,7 +684,7 @@ comparison_predicate:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression comp_op subquery
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression op_not BETWEEN value_expression AND value_expression
+	| value_expression op_not BETWEEN value_expression KW_AND value_expression
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	| value_expression op_not LIKE pattern op_escape
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}

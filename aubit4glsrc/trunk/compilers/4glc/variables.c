@@ -714,6 +714,7 @@ has_name (struct name_list *namelist, char *name)
     {
       if (strcasecmp (namelist->name, name) == 0)
 	return 1;
+      	debug("Check %s against %s nope",namelist->name,name);
       ptr_name = ptr_name->next;
     }
   return 0;

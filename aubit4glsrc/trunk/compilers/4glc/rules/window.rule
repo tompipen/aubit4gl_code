@@ -9,23 +9,15 @@ op_clr_fields : | KWFIELD fld_list
 ;
 
 op_to_defs : 
-{
-strcpy($<str>$,"0");
-}
-| TO_DEFAULTS {
-strcpy($<str>$,"1"); 
-}
+{ strcpy($<str>$,"0"); }
+| TO_DEFAULTS { strcpy($<str>$,"1"); }
 ;
 
-clear_cmd	:	CLEARSCR
-{ 
-print_clr_window("\"screen\"");
-}
+clear_cmd	:	CLEARSCR { print_clr_window("\"screen\""); }
 		|	CLEARWIN win_name { print_clr_window($<str>2); }
 		|	CLEARSTAT win_name { print_clr_window($<str>2); }
-		|	CLEARFORM op_to_defs {
-	print_clr_form(0,0,$<str>2);
-}
+		|	CLEARFORM { print_clr_form(0,0,"0"); }
+		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
 		|	CLEARFORM form_name op_clr_fields  op_to_defs {
 	print_clr_form($<str>2,$<str>3,$<str>4);
 }
@@ -60,7 +52,7 @@ show_cmd : SHOW_WINDOW win_name {
 	print_show_window($<str>2);
 	addmap("Show Window",$<str>2,curr_func,yylineno,infilename); 
 }
-| SHOW_MENU menu_name USING menu_handler op_mnfile {
+| SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
 	print_show_menu($<str>2,$<str>4);
 	addmap("Call Menuhandler",$<str>4,curr_func,yylineno,infilename); 
 }

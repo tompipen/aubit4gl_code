@@ -256,8 +256,8 @@ print OUT <<EOF;
 # Do not edit it directly.
 #*/
 
-#include "$HSOURCE"
 #include "$YTABH"
+#include "$HSOURCE"
 
 /**
  * Called from yylex().

@@ -393,6 +393,7 @@ sprintf($<str>$,"%d",a);
 report_def : REPORT 
 {
 rep_type=REP_TYPE_NORMAL;
+  clr_function_constants ();
 clr_variable(); lastlineno=yylineno; init_report_structure(&rep_struct);
 }
 identifier OPEN_BRACKET

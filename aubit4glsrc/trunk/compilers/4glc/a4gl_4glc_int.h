@@ -43,9 +43,9 @@
 
 #include "rules/generated/kw.h"
 
-#ifndef _NO_Y_TAB_H_
-	#include "rules/generated/y.tab.h"
-#endif
+//#ifndef _NO_Y_TAB_H_
+	//#include "rules/generated/y.tab.h"
+//#endif
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 

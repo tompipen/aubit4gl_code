@@ -341,7 +341,7 @@ read_glob (char *s)
 #ifdef DEBUG
   /* CRAP! I already have downshifted file name here!!! */
   debug ("Trying to open globals file %s\n", ii);
-  fprintf (stderr, "Trying to open globals file %s\n", ii);
+  //fprintf (stderr, "Trying to open globals file %s\n", ii);
 #endif
 
 
@@ -453,6 +453,8 @@ read_variable_header (FILE * f, struct variable *v)
   int a;
   int cnt;
   read_global_string (f, "NAME", &v->names.name, 1);
+  	v->names.next=0;
+  debug("Read variable : %s",v->names.name);
   read_global_int (f, "TYPE", &v->variable_type);
   read_global_char (f, "USER_SYSTEM", &v->user_system);
   read_global_int (f, "IS_ARRAY", &v->is_array);
