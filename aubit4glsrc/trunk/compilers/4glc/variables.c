@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.45 2004-08-10 13:40:20 mikeaubury Exp $
+# $Id: variables.c,v 1.46 2004-08-10 19:36:00 whaslbeck Exp $
 #
 */
 
@@ -74,6 +74,7 @@ static char get_current_variable_scope (void);
 static void make_arr_str (char *s, struct variable *v);
 static void strip_bracket (char *s);
 static void print_variable (struct variable *v, char scope, int level);
+void print_Constant_1(char *name,struct constant_data *c);
 static char *rettype_integer (int n);
 static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       char *prefix_buff,
@@ -82,6 +83,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 void make_function (char *name, int record_cnt);
 static int is_system_variable (char *s);
 char find_variable_scope (char *s_in);
+struct variable *find_dim(char *s);
 
 void print_class_variables (void);
 //void dump_variable_records (struct variable **v, int cnt, int lvl);
