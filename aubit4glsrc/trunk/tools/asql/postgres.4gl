@@ -51,6 +51,11 @@ extern int *columnAlign; // CA1
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
+
+#define LOADBUFFSIZE 32000
+char loadbuff[LOADBUFFSIZE];
+
+
 FILE *unloadFile=0;
 int firstFetchInit=0;
 extern char *delim;// delimiters for load/unload
@@ -970,11 +975,13 @@ endcode
 		message "Database not opened..." attribute(reverse)
 		sleep 1
                 if check_and_report_error() then
+			sleep 1
+			call clear_screen_portion()
 			return
 		end if
         end if
 end if
-
+call clear_screen_portion()
 end function
 
 
@@ -1298,7 +1305,127 @@ int ec_check_and_report_error() {
 
 
 
+static char *safe_quotes(char *s) {
+static char *p=0;
+char *p2=0;
+static int plen=0;
+int a;
+int c=0;
+
+if(strlen(s)>plen) {
+        plen=strlen(s);
+        p=realloc(p,plen+1000);
+}
+
+c=0;
+for (a=0;a<strlen(s);a++) {
+        if (s[a]!='\\')   {p[c++]=s[a];continue;}
+        continue;
+}
+p[c]=0;
+p2=strdup(p);
+
+c=0;
+// First - escape any quotes
+for(a=0;a<strlen(p2);a++) {
+                if (p2[a]!='\'') {p[c++]=p2[a];continue;}
+                p[c++]='\\';
+                p[c++]='\'';
+}
+p[c]=0;
+free(p2);
+return p;
+}
+
+
+
+char delims[256];
+char *delim;
+FILE *loadFile=0;
+
+
+
+#define MAXLOADCOLS 256
+#define MAXCOLLENGTH 32
+/* Column name list where information is to be loaded */
+char col_list[MAXLOADCOLS][MAXCOLLENGTH];
+/* Array with pointers to each delimiter in current load line */
+char *colptr[MAXLOADCOLS];
+
+
+static int
+find_delims (char delim)
+{
+  int cnt = 1;
+  int a;
+  colptr[0] = &loadbuff[0];
+
+  for (a = 0; a < strlen (loadbuff); a++)
+    {
+      if ((loadbuff[a] == delim && loadbuff[a-1]!='\\') || loadbuff[a] == 0)
+        {
+          colptr[cnt++] = &loadbuff[a + 1];
+        }
+    }
+
+  cnt--;
+
+  for (a = 1; a <= cnt; a++)
+    *(colptr[a] - 1) = 0;
+
+  for (a = 0; a < cnt; a++)
+    {
+      A4GL_debug ("Field %d = %s", a, colptr[a]);
+    }
+  return cnt;
+}
+
+
 int asql_load_data(struct element *e) {
+EXEC SQL BEGIN DECLARE SECTION;
+char ins_str[32000];
+EXEC SQL END DECLARE SECTION;
+int raffected;
+int b;
+int a;
+int ok;
+char smbuff[2048];
+int nfields;
+int lineno=0;
+        delim=&delims[0];
+        strcpy(delim,"|");
+
+        if (loadFile) fclose(loadFile);
+        if (e->delim) { if (strlen(e->delim)) { strcpy(delim,e->delim); } }
+        loadFile=fopen(e->fname,"r");
+        if (loadFile==0) { set_sqlcode(-805); return 0; }
+        ok=0;
+        while (1) {
+                fgets (loadbuff, LOADBUFFSIZE - 1, loadFile);
+                if (feof (loadFile)) {
+                        A4GL_debug ("Got to end of the file");
+                        break;
+                }
+                lineno++;
+                stripnlload (loadbuff, delim[0]);
+                nfields = find_delims (delim[0]);
+                sprintf(ins_str,e->stmt);
+                strcat(ins_str," values (");
+                for (a=0;a<nfields;a++) {
+                        if (a) strcat(ins_str,",");
+                        sprintf(smbuff,"'%s'",safe_quotes(colptr[a]));
+                        if (strcmp(smbuff,"''")==0) {strcpy(smbuff,"NULL");}
+                        strcat(ins_str,smbuff);
+                }
+                strcat(ins_str,")");
+                EXEC SQL prepare p_loadit from :ins_str;
+                EXEC SQL execute p_loadit;
+                if (get_sqlcode()!=0) { break; }
+        }
+        fclose(loadFile);
+        loadFile=0;
+        return lineno;
+
 }
 
 

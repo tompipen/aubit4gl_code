@@ -14,9 +14,6 @@ struct element {
 
 
 #include "simple.h"
-#define MAXLOADCOLS 256
-#define MAXCOLLENGTH 32
-#define LOADBUFFSIZE 32000
 
 
 /*
@@ -26,20 +23,22 @@ struct element {
 */
 
 
-/* Buffer that contains the current line being loaded */
+#ifdef MOVED
+#define LOADBUFFSIZE 32000
 char loadbuff[LOADBUFFSIZE];
-
+#define MAXLOADCOLS 256
+#define MAXCOLLENGTH 32
 /* Column name list where information is to be loaded */
 char col_list[MAXLOADCOLS][MAXCOLLENGTH];
-
 /* Array with pointers to each delimiter in current load line */
 char *colptr[MAXLOADCOLS];
+#endif
 
 
 
 char delims[256];
 char *delim;
-FILE *loadFile=0;
+//FILE *loadFile=0;
 
 static char *safe_quotes(char *s);
 
@@ -83,6 +82,9 @@ int b;
 	return raffected;
 }
 
+
+#ifdef MOVED
+
 static int
 find_delims (char delim)
 {
@@ -109,8 +111,10 @@ find_delims (char delim)
     }
   return cnt;
 }
+#endif
 
-static void
+
+void
 stripnlload (char *s, char delim)
 {
   int a;
@@ -172,7 +176,6 @@ int lineno=0;
 	return lineno;
 }
 
-#endif
 static char *safe_quotes(char *s) {
 static char *p=0;
 char *p2=0;
@@ -205,6 +208,7 @@ free(p2);
 return p;
 }
 
+#endif
 
 
 

@@ -31,7 +31,7 @@ define mv_username,mv_passwd char(255)
 function database_menu()
 menu "DATABASE"
 	command "Select" "Select a database to work with."
-		call select_db()
+		call select_db() 
 
 	command "Create"  "Create a new database."
 		call create_db()

@@ -200,14 +200,19 @@ a=list_cnt;
 endcode
 
 if get_exec_mode()=0 then
-message a using "<<<<"," statements to execute"
+	if a>0 then
+		message a using "<<<<"," statements to execute"
+	else
+		message "No statements to execute"
+	end if
 end if
 
-
-if not execute_queries(0) then
-	if get_exec_mode()=0 then
-		#error "Error Executing.."
-		#
+if a then
+	if not execute_queries(0) then
+		if get_exec_mode()=0 then
+			#error "Error Executing.."
+			#
+		end if
 	end if
 end if
 
