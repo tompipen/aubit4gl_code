@@ -18,7 +18,7 @@
 
 %%
 [\r] ;
-[\n] 	{if (ignorekw==1) return KW_NL; else {graphics_mode=0;REJECT; }}
+[\n] 	{if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
 [ ]	{ if (ignorekw==1) return KW_WS; }
 [\t]	{ while ((colno%8)!=0) colno++; if (ignorekw==1) {colno--;return KW_WS;}}
 [	 \n]	;
