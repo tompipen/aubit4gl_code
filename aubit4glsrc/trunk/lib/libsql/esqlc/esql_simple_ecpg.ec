@@ -56,7 +56,7 @@ A4GLSQL_get_sqlerrm (void)
  *  - 0 : Connection estabilished.
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
 
@@ -125,6 +125,14 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
   printf ("Get_columns - tabname=%s\n", tabname);
   printf ("              colname=%s\n", colname);
+
+
+/*
+
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='tab1' ORDER BY a.attnum
+*/
+
+
   sprintf (strSelect, "select * from %s", tabname);
   A4GL_debug ("strSelect : %s\n", strSelect);
   printf ("SELECT : %s\n", strSelect);
@@ -240,7 +248,7 @@ switch (dtype) {
 
 
 static long fixtype(int dtype) {
-	printf("DTYPE = %d (SI=%d I=%d)\n",dtype,SQL3_INTEGER,SQL3_SMALLINT);
+	printf("DTYPE = %x (SI=%d I=%d)\n",dtype,SQL3_INTEGER,SQL3_SMALLINT);
 
 switch (dtype) {
         case SQL3_CHARACTER : return DTYPE_CHAR;
@@ -298,13 +306,15 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
   EXEC SQL GET DESCRIPTOR descReadAllColumns VALUE:idx:columnName =
     NAME,:dataType = TYPE,:length = LENGTH;
+  printf("sqlca.sqlcode=%d\n",sqlca.sqlcode);
   if (isSqlError ())
     return 0;
 
+printf("1\n");
   *dtype = fixtype(dataType);
   *colname = columnName;
   *size = fixlength (dataType, length);
-  A4GL_debug ("dtype=%d size=%d colname=%s\n", *dtype, *size, *colname);
+  printf ("dtype=%d size=%d colname=%s\n", *dtype, *size, *colname);
   getColumnsOrder++;
   return 1;
 }
@@ -354,6 +364,7 @@ getSQLDataType (char *connName, char *tabname, char *colname,
   int length;
   EXEC SQL END DECLARE SECTION;
 
+printf("getSQLDataType\n");
   sprintf (strSelect, "select %s from %s", colname, tabname);
   A4GL_debug ("SQL = %s", strSelect);
   EXEC SQL PREPARE stReadColumns FROM:strSelect;
@@ -363,15 +374,16 @@ getSQLDataType (char *connName, char *tabname, char *colname,
     }
 
   EXEC SQL ALLOCATE DESCRIPTOR descReadColumns;
-  if (isSqlError ())
-    {
-      return 1;
-    }
+  if (isSqlError ()) { return 1; }
 
   EXEC SQL DECLARE c_rc CURSOR FOR stReadColumns;
+  if (isSqlError ()) { return 1; }
   EXEC SQL OPEN c_rc;
+  if (isSqlError ()) { return 1; }
   EXEC SQL FETCH in c_rc INTO sql descriptor descReadColumns;
+  if (isSqlError ()||sqlca.sqlcode==100) { return 1; }
   EXEC SQL CLOSE c_rc;
+  if (isSqlError ()) { return 1; }
 
   EXEC SQL GET DESCRIPTOR descReadColumns VALUE 0:dataType = TYPE,:length =
     LENGTH;
@@ -385,6 +397,7 @@ getSQLDataType (char *connName, char *tabname, char *colname,
     {
       return 1;
     }
+printf("2\n");
   *dtype = fixtype(dataType);
   *size = fixlength (dataType, length);
   return 0;
@@ -423,6 +436,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   *dtype=-1;
   *size=0;
   sprintf (strSelect, "select %s.%s from %s", tabname,colname, tabname);
+A4GL_debug("%s",strSelect);
   EXEC SQL PREPARE stXReadColumns FROM:strSelect;
   if (isSqlError ())
     {
@@ -450,7 +464,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       return 0;
     }
   EXEC SQL FETCH in c_rCols INTO sql descriptor descReadColumns2;
-  if (isSqlError ()) { EXEC SQL ROLLBACK WORK; return 0; }
+  if (isSqlError ()||sqlca.sqlcode==100) { EXEC SQL ROLLBACK WORK; return 0; }
 
 
 
@@ -464,6 +478,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 	EXEC SQL ROLLBACK WORK;
       return 0;
     }
+printf("3\n");
   *dtype = fixtype(dataType);
   *size = fixlength (dataType, length);
   A4GL_debug("Got DTYPE=%d %d ",*dtype,*size);

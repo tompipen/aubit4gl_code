@@ -19,7 +19,7 @@ int isSqlError()  {
  *  - 1 : An error ocurred.
  *  - 0 : Connection estabilished.
  */
-int A4GLSQL_init_connection (char *dbName)
+int A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected=0;
 
