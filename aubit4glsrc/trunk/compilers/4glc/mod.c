@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.144 2003-12-30 13:33:07 mikeaubury Exp $
+# $Id: mod.c,v 1.145 2003-12-30 15:23:56 mikeaubury Exp $
 #
 */
 
@@ -2037,6 +2037,10 @@ strcpy(var,var_i);
 	}
       else
 	{
+	if (ibindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	}
 	  ibind[ibindcnt].start_char_subscript = 0;
 	  ibind[ibindcnt].end_char_subscript = 0;
 
@@ -2103,6 +2107,10 @@ strcpy(var,var_i);
 	}
       else
 	{
+	if (obindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	}
 	  strcpy (obind[obindcnt].varname, var);
 	  obind[obindcnt].dtype = dtype;
 	  obindcnt++;
@@ -2116,6 +2124,10 @@ strcpy(var,var_i);
 	push_bind_rec (var, i);
       else
 	{
+	if (ordbindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	}
 	  strcpy (ordbind[ordbindcnt].varname, var);
 	  ordbind[ordbindcnt].dtype = dtype;
 	  ordbindcnt++;
@@ -2135,6 +2147,10 @@ strcpy(var,var_i);
 	push_bind_rec (var, i);
       else
 	{
+	if (fbindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	}
 	  strcpy (fbind[fbindcnt].varname, var);
 	  fbind[fbindcnt].dtype = 0;
 	  fbindcnt++;
