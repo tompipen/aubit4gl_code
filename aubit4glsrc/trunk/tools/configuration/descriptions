@@ -16,6 +16,7 @@
 # Notes:
 #       Do not use double quotes (") use single quote(')
 #
+#  ALWAYS LEAVE A BLANK LINE AT THE END OF THIS FILE!
 ###############################################################################
 A4GL_AUTOBANG UI/TUI/MENU  Enable automatic ! for command entry
 =YES|NO
@@ -502,6 +503,26 @@ A4GL_FLASHONERROR RUNTIME Indicates that a screen flash should be emitted by the
 =YES|NO
 	Not all terminals are capable of emitting a screen flash. If a screen flash is not 
 	possible then the terminal bell is rung instead.
+A4GL_REFRESH_AFTER_MOVE UI/TUI Issue a screen update after a cursor movement
+=YES|NO
+	This is a screen drawing optimization function. Normally a screen update is not required
+	but there may be some instances where the screen cursor does not move to the right place
+	if this isn't set. If you're not too worried about where the screen cursor is, or your application
+	doesn't suffer from this problem then set this to N
+A4GL_FIRSTCOL_ONERR UI/TUI Move to the beginning of a field after an error
+=YES|NO
+	Can only be set if CLR_FIELD_ON_ERROR=N
+	See CLR_FIELD_ON_ERROR
+A4GL_CLR_FIELD_ON_ERROR UI/TUI Clears a field after an error
+=YES|NO
+	If this is set them FIRSTCOL_ONERR will never be triggered
+	See FIRSTCOL_ONERR
+A4GL_NO_REFRESH_AFTER_SYSTEM UI Issue a screen refresh after any sysem command
+=YES|NO
+	In Informix 4GL, the screen is not refreshed after every system command but only
+	after a new screen instruction is issued. This means that if you are running a lot
+	of system commands, Aubit4GL's screen may appear to flicker between line mode
+	and screen mode. Set this to N to inhibit the automatic screen refresh.
 A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
 =YES|NO
 	This is solely for backward compatibilty with older Aubit4GL versions.
