@@ -26,7 +26,7 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.9 2004-09-28 09:49:28 afalout Exp $
+# $Id: Makefile.in,v 1.10 2004-09-29 05:37:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -48,7 +48,8 @@ all: ${ALL}
 	@echo "Successfuly compiled default target (${ALL})"
 	
 ${ROOT}/bin/loadmap${EXE_EXT} : loadmap.4gl
-	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} -o $@ $<
+#	${FAIL_OK}
+	${4GLPC} ${4GLPCFLAGS} -o $@ $<
 #	export DEBUG=ALL; ${ROOT}/bin/4glc -o $@ $<
 	
 ## ==================================================================

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.45 2004-09-22 10:06:52 afalout Exp $
+# $Id: Makefile.in,v 1.46 2004-09-29 05:37:45 afalout Exp $
 #
 
 ROOT    =../..
@@ -128,8 +128,9 @@ test.build: test_build.4gl
 
 #Same purpose as test.build target, but for Perl compiler:
 test.perl: test_build.4gl
-	4glc_perl $^
-	@PERL@ test_build.pl
+#calldll.c            497    (     0,     0) 1 Function Not found : print_Constant
+	export A4GL_LEXTYPE=PERL; export DEBUG=ALL; ${ROOT}/bin/4glc --verbose test_build.4gl
+	export A4GL_UI=TUI;  export DEBUG=ALL; @PERL@ ./test_build.pl
 
 ## ==================================================================
 ##                    Targets in sub-makefiles

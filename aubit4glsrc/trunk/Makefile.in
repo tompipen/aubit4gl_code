@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.161 2004-09-28 13:35:25 afalout Exp $
+# $Id: Makefile.in,v 1.162 2004-09-29 05:37:07 afalout Exp $
 #
 
 ## ==================================================================
@@ -266,7 +266,7 @@ perl: api perl.compiler perl.lib test.perl
 	@echo " "
 
 api:
-	$(MAKE) -C lib/libauibt4gl api
+	$(MAKE) -C lib/libaubit4gl api
 
 perl.compiler:
 	${MAKE} -C lib/liblex/lex_perl
@@ -280,8 +280,7 @@ perl.lib:
 	@echo Aubit 4gl Perl-code libraries installed
 
 test.perl:
-	cd tools/test; export A4GL_LEX=perl; 4glc test_build.4gl
-	cd tools/test; perl test_build.pl
+	${MAKE} -C tools/test test.perl
 
 
 ## ==================================================================

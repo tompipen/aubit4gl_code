@@ -2,7 +2,7 @@
 ##########################################################################
 #
 # Script that bootstraps creation of SWIG warpers for Aubit libraries
-# Used for Aubit Perl putput compiler.
+# Used for Aubit Perl output compiler.
 #
 ##########################################################################
 
@@ -10,18 +10,57 @@
 #Clean everything:
 #should we move "@PERL@ Makefile.PL" before this?
 if [ -f Makefile ]; then
+	echo "Cleaning (make clean)..."
 	make clean
+	RET=$?
+	if test "$RET" != "0"; then
+		echo "make clean failed"
+		exit 1
+	fi
 fi
 
 #Create SWIG warpers:
 #FIXME: take Perl version from configure:
+echo "Create SWIG warpers (@SWIG@ -v -perl5 -shadow lib.i)"
 @SWIG@ -v -perl5 -shadow lib.i
+RET=$?
+if test "$RET" != "0"; then
+	echo "ERROR: command '@SWIG@ -v -perl5 -shadow lib.i' failed"
+	exit 1
+fi
 
 #Create Makefile using Perl MakeMaker, from Makefile.PL:
+echo "Create Makefile (@PERL@ Makefile.PL)"
 @PERL@ Makefile.PL
+RET=$?
+if test "$RET" != "0"; then
+	echo "ERROR: command '@PERL@ Makefile.PL' failed"
+	exit 1
+fi
+
 
 #Build:
-make
+echo "Building (make)"
+
+#I was getting `sv_undef' `na' and `sv_yes' undeclared using Perl 5.8.0 
+#So I had to add PERL_POLLUTE which is disabled by default in 5.6.0
+#Seems SWIG does not care about particilar versions of Perl5 ?
+make CCFLAGS+=-DPERL_POLLUTE
+RET=$?
+if test "$RET" != "0"; then
+	echo "ERROR: command 'make' failed"
+	exit 1
+fi
 
 #Install:
+echo "Installing (make install)"
 make install
+RET=$?
+if test "$RET" != "0"; then
+	echo "ERROR: command 'make install' failed"
+	exit 1
+fi
+
+echo "Success"
+exit 0
+
