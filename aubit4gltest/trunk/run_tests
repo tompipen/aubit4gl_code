@@ -168,7 +168,14 @@ exit
 }
 
 ##
-# Create runner with C function for dumping screen to file
+# Create runner with C function for dumping screen to file.
+#
+# Test 252 is nice to try screen dumps :
+# 	bash run_tests -cert [-querix|-ifx-p|-4js-p] 252
+#
+# NOTE: Aubit has built-in dump_screen function
+# Querix and Informix C-compiled do not need a runner - they will get
+# dump_screen function linked in when compiling 4GL programs (in Makefile-common)
 #
 # @param COMPILER Type of 4GL compiler to create runner for
 ##
@@ -180,26 +187,20 @@ OBJ_CUSTOM="$CUSTOM.o"
 		
 	case $COMPILER in
 	informix)
-		#test_create_runner
-		#t1
 		if test "$INFORMIXDIR" = ""; then 
 			echo "ERROR: INFORMIXDIR not set"
 			exit 3
 		fi
+		if test "$AUBITDIR_SRC" = ""; then 
+			echo "ERROR: AUBITDIR_SRC not set"
+			exit 3
+		fi		
 		create_ifx_api
 		rm -f $IFX_RUNNER 
 		SOURCES="$SRC_CUSTOM ./fgiusr-ifx.c"
 		#CFGLGO_FLAGS="-dumpspecs"
-		CFGLGO_FLAGS="-v"
-		LIBS="/opt/informix/lib/tools/librdsterm.a -lcurses -lform -lpanel"
-		LIBS="$LIBS -L$INFORMIXDIR/lib/tools -lrdsterm"
-		#LIBS="$LIBS -L$INFORMIXDIR/lib -lforms"
-
-		#cc -c $SRC_CUSTOM -I${INFORMIXDIR}/incl/tools -o $OBJ_CUSTOM 
-		#cfglgo $OBJ_CUSTOM fgiusr.o -o $RUNNER -lcurses
-		#exit
-		
-		EXEC="cfglgo $CFGLGO_FLAGS $LIBS $SOURCES -o $IFX_RUNNER "
+		#CFGLGO_FLAGS="-v"
+		EXEC="cfglgo -DI4GL_RDS $CFGLGO_FLAGS $LIBS $SOURCES -o $IFX_RUNNER "
 		echo $EXEC
 		rm -f tmp.log
 		eval $EXEC > tmp.log 2>&1
@@ -214,7 +215,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		fi
 		;;
 	4js)
-		#aauming we will be uiing Informix RDBMS
+		#assuming we will be uiing Informix RDBMS
 		if test "$INFORMIXDIR" = ""; then 
 			echo "ERROR: INFORMIXDIR not set"
 			exit 3
@@ -223,19 +224,36 @@ OBJ_CUSTOM="$CUSTOM.o"
 			echo "ERROR: FGLDIR (Four J's) not set"
 			exit 3
 		fi
+		if test "$AUBITDIR_SRC" = ""; then 
+			echo "ERROR: AUBITDIR_SRC not set"
+			exit 3
+		fi		
 		create_4js_api
+		
+		#decap strips away the termcap escape sequences
+		EXEC="gcc $AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/decap.c -o ./decap"
+		echo $EXEC
+		eval $EXEC
+		RET=$?
+		if test "$RET" != "0"; then
+			echo "ERROR: compiling C code failed"
+			exit 3
+		fi
+		
 		#Specify version of database on your system; see 'fglmkrun -dl'
 		#DB=ifx9** #ERROR(-6197):'Open Database Interface' extension is not allowed with this license type.
 		#DB=ix711
 		DB=ix720
-		#need Curses for scr_dump function
-		LFLAGS="-lncurses"
+		#4Js apprently DOES NOT use curses
+		#LFLAGS="-lkf \"-lncurses\""
 		rm -f $FJSRUNNER
 		LINKER="esql"	#assumes there is Informix ESQL/C installed
+		SRC_CUSTOM="$AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/fgl_prtscr.c \
+			$AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/wrappers.c"
 		EXEC="fglmkrun -d $DB -o $FJSRUNNER -l $LINKER \
-			-cpf \"-DFOURJS -I${FGLDIR}/include\" \
+			-cpf \"-DFOURJS -I$FGLDIR/include\" \
 			-acs \"$SRC_CUSTOM\" \
-			-lkf \"$LFLAGS\" \
+			$LFLAGS \
 			-ext fgiusr-4js.c"
 		echo $EXEC
 		rm -f tmp.log
@@ -249,8 +267,6 @@ OBJ_CUSTOM="$CUSTOM.o"
 			echo "Four J's custom runner ($FJSRUNNER) created" 
 			rm -f tmp.log
 		fi
-		# test 252 is nice to try screen dumps :
-		# bash run_tests -cert [-querix|-ifx-p|-4js-p] 252
 		;;
 	*)
 		echo "ERROR: unknown compiler type: $COMPILER"
@@ -540,6 +556,13 @@ DB_HAS_TRANSACTION=NULL
 #apparently they fail with anything else, like when LANG is set to 'de_DE@euro'
 export LC_NUMERIC="C"
 
+if test "$COMSPEC" != ""; then
+	FIND=/bin/find
+else
+	FIND=find
+fi
+
+
 IFX_RUNNER="$CURR_DIR/testfglgo"
 FJSRUNNER="$CURR_DIR/testfglrun"
 if test "$AUBITDIR_SRC" = ""; then 
@@ -556,6 +579,7 @@ else
 	echo "** WARNING: Aubit source code directory setting (AUBITDIR_SRC)"
 	echo "** is invalid: $AUBITDIR_SRC"
 	echo "**"
+	AUBITDIR_SRC=""	
 fi
 
 #######################
@@ -1544,8 +1568,14 @@ for a in $FLAGS; do
 		#I4GL_PC_FLAGS variable used in i4gl.mk
 		I4GL_PC_FLAGS="$I4GL_PC_FLAGS -ansi"
 		export I4GL_PC_FLAGS
+		if test -f "$IFX_RUNNER" ; then
+			echo "Note: using custom runner"
+			RUNNER=$IFX_RUNNER
+			FGLRUN=$IFX_RUNNER
+			export FGLRUN RUNNER
+		fi
 		;;
-		
+
 	-4js-p)				#Use FourJs P-code compiler instead of Aubit compiler
 		USE_COMP=4js-p
 		if test -f "$FJSRUNNER" ; then
@@ -1820,6 +1850,17 @@ if test "$IS_ODBC_MANAGER" = "1"; then
 	fi
 fi
 
+CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
+		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
+		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
+		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
+		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
+		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
+		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"  -o -name "*.42f"
+		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
+		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp" -o -name "*.pic"
+		-o -name "*.4js" -o -name "*.infx" -o -name "*.querix"
+		")"'
 
 #######################
 #Clean rubbish
@@ -1827,23 +1868,8 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 	if test "$SILENT" != "1"; then
 		echo "Cleaning all tests..."
 	fi
-	if test "$COMSPEC" != ""; then
-		FIND=/bin/find
-	else
-		FIND=find
-	fi
 
-	EXEC='	$FIND . "(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
-		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
-		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
-		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
-		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
-		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
-		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"
-		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
-		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp"
-		")" -exec rm {} \;'
-	
+	EXEC="$FIND . $CLEAN_FIND_FILES -exec rm {} \;"
 	eval $EXEC
 
 	if test "$CLEAN_ALL" = "1"; then
@@ -3446,25 +3472,10 @@ do
 		if test "$VERBOSE"; then
 			echo "Cleaning $CURR_DIR/$a ..."
 		fi
-		if test "$COMSPEC" != ""; then
-			FIND=/bin/find
-		else
-			FIND=find
-		fi
-		
-		EXEC='$FIND $CURR_DIR/$a "(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
-		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
-		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
-		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
-		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
-		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
-		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"
-		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
-		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp"
-		")" -exec rm {} \;'
 
+		EXEC="$FIND $CURR_DIR/$a $CLEAN_FIND_FILES -exec rm {} \;"
 		eval $EXEC
-		
+
 		if test "$VERBOSE" = "1"; then 
 			$MAKE -C $CURR_DIR/$a clean 
 		else
