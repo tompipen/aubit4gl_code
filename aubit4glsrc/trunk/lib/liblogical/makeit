@@ -19,7 +19,7 @@ then
 		echo ""
 		echo Making $a/$b
 		echo ""
-		cd /home/aubit4gl/aubit4glsrc/lib/liblogical/$a/$b
+		cd $AUBITDIR/lib/liblogical/$a/$b
 		make $@
 	done
 else
@@ -27,7 +27,7 @@ else
 		echo ""
 	echo Making $a
 	echo ""
-	cd /home/aubit4gl/aubit4glsrc/lib/liblogical/$a
+	cd $AUBITDIR/lib/liblogical/$a
 	make $@
 fi
 done
