@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: pointers.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -39,40 +39,44 @@
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  */
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define TXT_LEN 128
+
+#define  FIND(a) (tfind(a,(void *)&root,strcmpare))
+#define  ADD(a) (tsearch(a,(void *)&root,strcmpare))
+#define  DELETE(a) (tdelete(a,(void *)&root,strcmpare))
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <string.h>
+#include <stdlib.h> //free()
 
 #ifndef WIN32
-#include <search.h>
+	#include <search.h>
 #endif
 
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h" //trim()
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 /** Root of the tree */
 void *root = 0;
 
-
-/* search internal node for windows only*/
-#ifdef WIN32
-typedef struct entry { char *key, *data; } ENTRY;
-typedef enum { FIND, ENTER } ACTION;
-
-/* TSEARCH(3C) */
-/** The type of the visit made to an element of the tree */
-typedef enum { preorder, postorder, endorder, leaf } VISIT;
-
-/** A node tree information */
-typedef struct node_t
-{
-    char	  *key;
-    struct node_t *left, *right;
-}
-node;
-node *tsearch(char *key, node **rootp, int		(*compar)());
-node *tdelete(char *key, node **rootp, int		(*compar)());
-void twalk(node* root, void *act); 
-node *tfind(char *key, node **rootp, int		(*compar)());
-#endif
 
 /**
  * Tree node
@@ -83,6 +87,39 @@ struct s_node
     void *ptr;
   };
 
+/*
+=====================================================================
+                   Platform specific definitions
+=====================================================================
+*/
+
+/* search internal node for windows only*/
+#ifdef WIN32
+	typedef struct entry { char *key, *data; } ENTRY;
+	typedef enum { FIND, ENTER } ACTION;
+
+	/* TSEARCH(3C) */
+	/** The type of the visit made to an element of the tree */
+	typedef enum { preorder, postorder, endorder, leaf } VISIT;
+
+	/** A node tree information */
+	typedef struct node_t
+	{
+	    char	  *key;
+	    struct node_t *left, *right;
+	}
+	node;
+	node *tsearch(char *key, node **rootp, int		(*compar)());
+	node *tdelete(char *key, node **rootp, int		(*compar)());
+	void twalk(node* root, void *act);
+	node *tfind(char *key, node **rootp, int		(*compar)());
+#endif
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Comparison function to use with bsearch.
@@ -94,13 +131,11 @@ struct s_node
  *   - zero if a equals b
  *   - greater than zero if a greater b
  */
-int strcmpare(const void *a,const void *b) {
+int 
+strcmpare(const void *a,const void *b) 
+{
 	return strcmp(a,b);
 }
-
-#define  FIND(a) (tfind(a,(void *)&root,strcmpare))
-#define  ADD(a) (tsearch(a,(void *)&root,strcmpare))
-#define  DELETE(a) (tdelete(a,(void *)&root,strcmpare))
 
 /**
  * Function to be executed when iterating in one node.
@@ -120,7 +155,7 @@ action (const void *nodep, const VISIT which, const int depth)
 {
   struct s_node *datap;
   char buff[80];
-  void *val;
+//  void *val;
   memset (buff, ' ', 80);
   buff[depth * 4] = 0;
   switch (which)
@@ -148,7 +183,8 @@ action (const void *nodep, const VISIT which, const int depth)
  * @param type The type of the information stored.
  * @param ptr A pointer to the information to store.
  */
-void add_pointer (char *orig_name, char type, void *ptr)
+void 
+add_pointer (char *orig_name, char type, void *ptr)
 {
   void *a;
   struct s_node *buff;
@@ -217,7 +253,8 @@ void add_pointer (char *orig_name, char type, void *ptr)
  * pointers.h and(or) dbforms.h.
  * @return The pointer to the memory location information.
  */
-void *find_pointer (const char *pname, char t)
+void *
+find_pointer (const char *pname, char t)
 {
   struct s_node buff;
   struct s_node *node;
@@ -251,7 +288,8 @@ void *find_pointer (const char *pname, char t)
  * Iterate in the tree and execute the action() function to show what it is
  * doing.
  */
-print_ptr_stack() 
+void
+print_ptr_stack(void)
 {
   twalk(root, action);       
 }
@@ -262,7 +300,8 @@ print_ptr_stack()
  * @param pname The key to access to the tree.
  * @param t The type of the information stired in the tree.
  */
-void del_pointer (char *pname, char t)
+void 
+del_pointer (char *pname, char t)
 {
   void *a;
   struct s_node *buff;
@@ -318,6 +357,7 @@ find_pointer_val (char *pname, char t)
  *   - 0 :
  *   - 1 :
  */
+int
 find_pointer_ptr (
 		   char *name,
 		   char *type,
@@ -359,7 +399,8 @@ find_pointer_ptr (
  *   - 0 : Do not exist in the tree
  *   - 1 : Exist in the tree
  */
-int has_pointer (char *pname, char t)
+int
+has_pointer (char *pname, char t)
 {
   void *a;
   a = find_pointer (pname, t);
@@ -388,7 +429,14 @@ node *tsearch(key, rootp, compar)
 /* find or insert datum into search tree */
 char 	*key;			/* key to be located */
 register node	**rootp;	/* address of tree root */
-int	(*compar)();		/* ordering function */
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int	
+(*compar)(void);		/* ordering function */
 {
     register node *q;
 
@@ -418,7 +466,14 @@ node *tdelete(key, rootp, compar)
 /* delete node with given key */
 char	*key;			/* key to be deleted */
 register node	**rootp;	/* address of the root of tree */
-int	(*compar)();		/* comparison function */
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int	
+(*compar)(void);		/* comparison function */
 {
     node *p;
     register node *q;
@@ -486,7 +541,8 @@ register int	level;
  * @param root Root of the tree to be walked
  * @paramaction Function to be called at each node
  */
-void twalk(node* root, void *act)
+void 
+twalk(node* root, void *act)
 {
     if (root != (node *)0 && act != (void(*)())0)
 	trecurse(root, act, 0);
@@ -515,7 +571,8 @@ void twalk(node* root, void *act)
  *   - 0 : Key not found in the tree.
  *   - 1 : Key found in the tree.
  */
-node *tfind(char *key, register node **rootp, int (*compar)())
+node *
+tfind(char *key, register node **rootp, int (*compar)())
 {
     if (rootp == (struct node_t **)0)
 	return ((struct node_t *)0);
@@ -530,7 +587,7 @@ node *tfind(char *key, register node **rootp, int (*compar)())
     }
     return (node *)0;
 }
-#endif
+#endif //#ifdef WIN32
 
-
+// ============================== EOF ============================
 

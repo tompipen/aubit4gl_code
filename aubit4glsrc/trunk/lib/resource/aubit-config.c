@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.2 2002-05-06 07:21:16 afalout Exp $
+# $Id: aubit-config.c,v 1.3 2002-05-20 11:41:13 afalout Exp $
 #
 */
 
@@ -43,6 +43,8 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h> //strcmp()
+#include <stdlib.h> //exit()
 
 /*
 extern int strcmp (const char *, const char *);
@@ -55,7 +57,9 @@ extern void exitwith(void);
 extern void dump_all_resource_vars(void);
 extern char *acl_getenv (char *s);
 
-main(int argc,char *argv[]) {
+int
+main(int argc,char *argv[]) 
+{
 
 	//load settings from config file(s):
 	build_user_resources();
@@ -79,7 +83,8 @@ main(int argc,char *argv[]) {
  *  @param p The string to be trimmed.
  */
 void
-trim_nl(char *p) {
+trim_nl(char *p) 
+{
         int a;
         for (a=strlen(p)-1;a>=0;a--) {
                 if (p[a]!=' '&&p[a]!='\n'&&p[a]!='\r')  break;

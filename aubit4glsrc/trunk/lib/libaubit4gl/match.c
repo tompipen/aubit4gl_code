@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.2 2002-05-18 11:56:47 afalout Exp $
+# $Id: match.c,v 1.3 2002-05-20 11:41:12 afalout Exp $
 #*/
 
 /**
@@ -36,6 +36,16 @@
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  */
+
+
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <string.h> 	//strlen()
+#include <ctype.h> 		//toupper()
 
  /*
 =====================================================================
@@ -103,7 +113,7 @@ int fast_match_after_star (register char *pattern, register char *text);
  *   - TRUE : The pattern have wildcards.
  *   - FALSE : The pattern dont have wildcards.
  */
-BOOLEAN 
+BOOLEAN
 is_pattern (char *p)
 {
       while (*p)
@@ -482,7 +492,7 @@ int
 matche_after_star (register char *p, register char *t)
 {
       register int match = 0;
-      register nextp;
+      register int nextp;
 
       /* pass over existing ? and * in pattern */
 

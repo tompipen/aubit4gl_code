@@ -52,10 +52,9 @@ fi
 ######################
 
 echo "
-
-/******************************************************************************
+/**********************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
-*               project definition - automatically generated - do not modify
+*
 *
 * \$Id\$
 *
@@ -64,13 +63,37 @@ echo "
 * Change History :
 *	\$Log\$
 *
-*******************************************************************************/
+***********************************************************************/
 
-int internal_build(void) {
+/**
+ * @file
+ * Functions and data to get versions of source files used to build libaubit4gl
+ * 	automatically generated using mkproject script - do not modify
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+#include <string.h> //strcpy()
+
+/**
+ *
+ * @todo Describe function
+ */
+int 
+internal_build(void)
+{
 	return $build;
 }
 
-char *internal_version(void) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+internal_version(void) 
+{
 	return \"$version\";
 }
 
@@ -86,7 +109,7 @@ char *internal_version(void) {
 #grep all C files in lib to create rest of project.c:
 #######################################################
 
-cd $CURRDIR/../../lib
+cd $CURRDIR/../../lib/libaubit4gl
 
 
 #grep "\$Id" *.c | nawk '
@@ -101,13 +124,27 @@ id=substr($0,index($0,"Id"));
 if (id!="Id$") printf("{\"%s\",\"%s\"},\n",mname,id);
 }
 END {
-print "{\"\",0}"
+print "{\"\",\"0\"}"
 print "};"
 
-print "void set_version(int a,char *m,char *id) {"
-print "strcpy(m,internal_versions[a].module);"
-print "strcpy(id,internal_versions[a].id);"
+
+
+print " "
+print "/**"
+print " *"
+print " * @todo Describe function"
+print " */"
+print "void"
+print "set_version(int a,char *m,char *id)"
+print "{"
+print "	strcpy(m,internal_versions[a].module);"
+print "	strcpy(id,internal_versions[a].id);"
 print "}"
+print ""
+print "// ============================== EOF =============================="
+print " "
+
+
 }
 ' >> $PROJECTC2
 

@@ -9,7 +9,7 @@
  */
 
  /*
-  * $Id: fcompile.c,v 1.14 2002-04-29 03:30:01 afalout Exp $
+  * $Id: fcompile.c,v 1.15 2002-05-20 11:41:12 afalout Exp $
   */
 
 //here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
@@ -66,42 +66,30 @@ struct struct_form the_form;
  *  @param str1 Pointer to the place where the base name is putted
  *  @param str2 Pointer to the place where the extension will be inserted
  */
+/* this function is in libaubit4gl
 static bname (char *str, char *str1, char *str2)
 {
-
   char fn[132];
-
   int a;
-
   char *ptr;
-
   strcpy (fn, str);
 
   for (a = strlen (fn); a >= 0; a--)
     {
-
       if (fn[a] == '.')
 	{
-
 	  fn[a] = 0;
-
 	  break;
-
 	}
-
     }
-
   ptr = &fn[a];
-
   strcpy (str1, fn);
-
   if (a >= 0)
-    strcpy (str2, ptr + 1);
-
+	strcpy (str2, ptr + 1);
   else
     str2[0] = 0;
-
 }
+*/
 
 /**
  * The main entry point to the form compiler

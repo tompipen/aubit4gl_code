@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+# $Id: API_sql.c,v 1.7 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -53,6 +53,7 @@
 #include "a4gl_sqlca.h"
 #include "a4gl_database.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -96,7 +97,7 @@ extern void *find_func_allow_missing (void *dllhandle, char *func); //in calldll
 int 
 A4GLSQL_initlib (void)
 {
-  char s[512];
+//  char s[512];
 	libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
 	debug("libptr=%p\n",libptr);
 	if (libptr==0) {
@@ -105,9 +106,9 @@ A4GLSQL_initlib (void)
 	}
 	func=find_func_allow_missing(libptr,"A4GLSQL_initlib"); //warning: assignment makes pointer from integer without a cast
 
-	if (func) 
+	if (func)
 		return func();
-	else 
+	else
 		return 1;
 }
 

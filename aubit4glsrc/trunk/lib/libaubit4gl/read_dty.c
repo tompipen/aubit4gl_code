@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.3 2002-04-24 07:45:59 afalout Exp $
+# $Id: read_dty.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -37,12 +37,32 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
+#include "a4gl_debug.h" //debug()
+#include "a4gl_dlsql.h" //A4GLSQL_get_datatype()
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 
-static split_half(char *str,char *str1,char *str2)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+split_half(char *str,char *str1,char *str2)
 {
 	char fn[132];
 	int a;
@@ -59,55 +79,66 @@ static split_half(char *str,char *str1,char *str2)
 	if (a>=0) strcpy(str2,ptr+1);
 	else str2[0]=0;
 }
+*/
 
-static split_tab_col_type(char *str,char *str1,char *str2,char *str3)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+split_tab_col_type(char *str,char *str1,char *str2,char *str3)
 {
 	split_half(str,str2,str3);
 	split_half(str2,str1,str2);
 }
-
+*/
 
 /**
  * Get the datatype from tables and columns.
  *
  * @param tabname The table name.
  * @param colname The column name.
- * @param dbname The database name. 
- * @param tablist 
- * @return 
+ * @param dbname The database name.
+ * @param tablist
+ * @return
  *   - -1 : An error ocurred.
  *   - Otherwise : The datatype found
  */
-get_dtype(char *tabname, char *colname,char *dbname,char *tablist[]) {
-	FILE *ifile;
-	char buff[132];
-	char tab[20];
-	char col[20];
-	char dtype[20];
-	char size[20];
+int
+get_dtype(char *tabname, char *colname,char *dbname,char *tablist[])
+{
+//	FILE *ifile;
+//	char buff[132];
+//	char tab[20];
+//	char col[20];
+//	char dtype[20];
+//	char size[20];
 	int a,b;
-        int dd;
-        int fs;
-b=0;
+//    int dd;
+//    int fs;
+	b=0;
 
-if (strlen(tabname)!=0) 
-	{
-	b=A4GLSQL_get_datatype(dbname,tabname,colname);
-	if (b>=0 ) return b;
-	else return -1;
+	if (strlen(tabname)!=0)
+		{
+		b=A4GLSQL_get_datatype(dbname,tabname,colname);
+		if (b>=0 ) return b;
+		else return -1;
+		}
+
+	if (tablist==0) {
+	        debug("Column not found");
+	        return -1;
 	}
 
-if (tablist==0) {
-        debug("Column not found");
-        return -1;
-}
-
-for (a=0;tablist[a]!=0;a++) {
-    b=get_dtype(tablist[a],colname,dbname,0);
-    if (b>=0) return b;
-}
+	for (a=0;tablist[a]!=0;a++) {
+	    b=get_dtype(tablist[a],colname,dbname,0);
+	    if (b>=0) return b;
+	}
 
 return -1;
 }
 
+
+//========================= EOF ==============================
 

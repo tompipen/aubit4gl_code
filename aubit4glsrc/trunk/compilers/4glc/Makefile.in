@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.31 2002-05-06 07:21:15 afalout Exp $
+# $Id: Makefile.in,v 1.32 2002-05-20 11:41:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -82,7 +82,7 @@ ALL				=rules.t 4glc
 #	LIB_C_L     =-lA4GLLEX_C
 #endif
 
-CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
+CFLAGS			+=-I../../lib -I../../lib/libincl -I../../lib/liblex/lex_c -I. -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 
 ## ==================================================================
 ##                              Targets

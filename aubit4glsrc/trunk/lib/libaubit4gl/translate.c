@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.4 2002-05-17 07:08:33 afalout Exp $
+# $Id: translate.c,v 1.5 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -41,7 +41,12 @@
 */
 
 #include <stdio.h>
-#include <string.h> //strdup()
+#include <string.h> 			//strdup()
+#include <stdlib.h> 			//realloc()
+
+#include "a4gl_debug.h" 		//debug()
+#include "a4gl_io.h" 			//open_file_dbpath()
+#include "a4gl_aubit_lib.h" 	//stripnl()
 
 /*
 =====================================================================
@@ -148,7 +153,7 @@ char buff[TRANSLINESIZE];
 
 	while (1) {
 		int a;
-		char *ptr;
+//		char *ptr;
 		char *ptr2;
 
 		fgets(buff,TRANSLINESIZE,file);
@@ -180,13 +185,13 @@ char buff[TRANSLINESIZE];
  * @return
  */
 void
-dumpstring(char *s,long n,char *fname) 
+dumpstring(char *s,long n,char *fname)
 {
 static FILE *f;
 static int ident=0;
-char buff[256];
-char buff_str[256];
-int id;
+//char buff[256];
+//char buff_str[256];
+//int id;
 int a;
 
 	if (strlen(acl_getenv("DUMPSTRINGS"))) {

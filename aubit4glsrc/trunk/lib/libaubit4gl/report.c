@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: report.c,v 1.3 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -38,21 +38,47 @@
  * @todo Doxygen comments to add to functions
  */
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
 #include "a4gl_report.h"
 #include "a4gl_stack.h"
+#include "a4gl_dlsql.h"
+#include "a4gl_runtime_tui.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 void aclfgli_skip_lines(struct rep_structure *rep);
 void fputmanyc(FILE *f,int c,int cnt);
 void set_column(struct rep_structure *rep);
-
 void free_duplicate_binding( struct BINDING *b,int n) ;
 struct BINDING *duplicate_binding(struct BINDING *b,int n) ;
+void skip_top_of_page(struct rep_structure *rep);
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
-static char *gen_rep_tab_name(void *p) {
+/**
+ *
+ * @todo Describe function
+ */
+static char *
+gen_rep_tab_name(void *p)
+{
 int a;
 static char buff[256];
 	a=(int)p;
@@ -62,7 +88,12 @@ static char buff[256];
 
 
 
-void rep_print (struct rep_structure *rep, int a, int s,int right_margin)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 {
   int b;
   int cnt;
@@ -83,11 +114,11 @@ void rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 	      push_char("");
 	      push_int(-1);
 	      push_int(-1);
-  	debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
+			debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
 	      display_at(1,0);
-  debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
+			debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
 	      rep->output = stdout;
-  debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
+			debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
 	    }
 	  else
 	    {
@@ -174,96 +205,136 @@ void rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 }
 
 
-void fputmanyc(FILE *f,int c,int cnt) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+fputmanyc(FILE *f,int c,int cnt) 
+{
 int a;
-for (a=0;a<cnt;a++) fputc(c,f);
+	for (a=0;a<cnt;a++) fputc(c,f);
 }
 
-void set_column(struct rep_structure *rep) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+set_column(struct rep_structure *rep) 
+{
 long a;
 long needn;
-a=pop_long();
-push_char("");
-rep_print(rep,1,1,0);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Popped %ld - print what we have",a);
-}
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Current pos=%d need position %d left_margin=%d",rep->col_no,a,rep->left_margin);
-}
-#endif
-if (rep->col_no==0) {
-     rep->col_no=1;
-}
-needn=a - rep->col_no + rep->left_margin -1;
-if (rep->col_no==1) needn+=1;
+	a=pop_long();
+	push_char("");
+	rep_print(rep,1,1,0);
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Popped %ld - print what we have",a);
+	}
+	#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Current pos=%d need position %d left_margin=%d",rep->col_no,a,rep->left_margin);
+	}
+	#endif
+	if (rep->col_no==0) {
+	     rep->col_no=1;
+	}
+	needn=a - rep->col_no + rep->left_margin -1;
+	if (rep->col_no==1) needn+=1;
 
-#ifdef DEBUG
-/* {DEBUG} */ {debug("needn=%ld",needn);
-}
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("needn=%ld",needn);
+	}
+	#endif
 
-if (needn>0) {
+	if (needn>0) {
 
-        fputmanyc(rep->output,' ',(int)needn);
-        rep->col_no+=needn;
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("Colno increased by %d",needn);
+	        fputmanyc(rep->output,' ',(int)needn);
+	        rep->col_no+=needn;
+	#ifdef DEBUG
+	/* {DEBUG} */ {        debug("Colno increased by %d",needn);
+	}
+	#endif
+	} else {
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Already past that point");
+	}
+	#endif
+	}
+	push_char("");
 }
-#endif
-} else {
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Already past that point");
-}
-#endif
-}
-push_char("");
-} 
 
-void aclfgli_skip_lines(struct rep_structure *rep) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+aclfgli_skip_lines(struct rep_structure *rep) 
+{
 long a;
 long b;
-a=pop_long();
-for (b=0;b<a;b++) {
-push_char("");
-rep_print (rep, 1, 0,0);
-}
+	a=pop_long();
+	for (b=0;b<a;b++) {
+	push_char("");
+	rep_print (rep, 1, 0,0);
+	}
 }
 
-void need_lines(struct rep_structure *rep) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+need_lines(struct rep_structure *rep)
+{
 int a;
-a=pop_int();
-if (rep->line_no > (rep->page_length - rep->bottom_margin -a))
-      skip_top_of_page(rep);
+	a=pop_int();
+	if (rep->line_no > (rep->page_length - rep->bottom_margin -a))
+	      skip_top_of_page(rep);
 }
 
-skip_top_of_page(struct rep_structure *rep) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+skip_top_of_page(struct rep_structure *rep)
+{
 int z;
-z=rep->page_no;
+	z=rep->page_no;
 
-while (z==rep->page_no) {
-     push_char("");
-     rep_print(rep,1,0,0);
+	while (z==rep->page_no) {
+	     push_char("");
+	     rep_print(rep,1,0,0);
+	}
+
 }
 
-}
-
-add_spaces()
+/**
+ *
+ * @todo Describe function
+ */
+void
+add_spaces(void)
 {
 int a;
 char str[1000];
-a=pop_int();
-if (a>=1000) a=999;
-memset(str,' ',a);
-str[a]=0;
-push_char(str);
+	a=pop_int();
+	if (a>=1000) a=999;
+	memset(str,' ',a);
+	str[a]=0;
+	push_char(str);
 }
 
 
-/* ORDER BY */
-
-static char *nm(int n) {
+/**
+ * ORDER BY
+ *
+ * @todo Describe function
+ */
+static char *
+nm(int n) 
+{
 	switch(n&15) {
 		case 0: return "CHAR";
 		case 1: return "SMALLINT";
@@ -283,57 +354,82 @@ static char *nm(int n) {
 	return "CHAR";
 }
 
-static char *sz(int d,int s) {
+/**
+ *
+ * @todo Describe function
+ */
+static char *
+sz(int d,int s) 
+{
 static char buff[256];
-switch(d&15) {
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-	case 7:
-	case 6:
-	case 11:
-	case 12:
-		 return "";
+	switch(d&15) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 7:
+		case 6:
+		case 11:
+		case 12:
+			 return "";
 
-	case 10: return "YEAR TO FRACTION(5)";
+		case 10: return "YEAR TO FRACTION(5)";
 
-	case 8:
-	case 5: /* decimal */
-		return "(16,32)";
+		case 8:
+		case 5: /* decimal */
+			return "(16,32)";
 
-	case 0: 
-	case 13: sprintf(buff,"(%d)",s); return buff;
+		case 0:
+		case 13: sprintf(buff,"(%d)",s); return buff;
 
-	case 14: sprintf(buff,"year to second(5)",s);return buff;
-}
+		case 14: sprintf(buff,"year to second(5)");
+			return buff;
+	}
 return "";
 }
 
-char *mk_temp_tab(struct BINDING *b,int n) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+mk_temp_tab(struct BINDING *b,int n)
+{
 int a;
 static char buff[30000];
 char tmpbuff[256];
 
-// hopefully b should be fairly random within this session..
-// as the same report cannot be running twice at the same time.....
-sprintf(buff,"create temp table %s (\n",gen_rep_tab_name(b));
+	// hopefully b should be fairly random within this session..
+	// as the same report cannot be running twice at the same time.....
+    // Andrej say: yes it can!
+	sprintf(buff,"create temp table %s (\n",gen_rep_tab_name(b));
 
-for (a=0;a<n;a++) {
-	if (a) strcat(buff,",\n");
-	sprintf(tmpbuff,"c%d %s %s",a,nm(b[a].dtype),sz(b[a].dtype,b[a].size));
-	strcat(buff,tmpbuff);
-}
-strcat(buff,")");
+	for (a=0;a<n;a++) {
+		if (a) strcat(buff,",\n");
+		sprintf(tmpbuff,"c%d %s %s",a,nm(b[a].dtype),sz(b[a].dtype,b[a].size));
+		strcat(buff,tmpbuff);
+	}
+	strcat(buff,")");
 return buff;
 }
 
-make_report_table(struct BINDING *b,int n) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+make_report_table(struct BINDING *b,int n)
+{
    A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_sql(mk_temp_tab(b,n)));
 }
 
 
-add_row_report(struct BINDING *b,int n) 
+/**
+ *
+ * @todo Describe function
+ */
+void
+add_row_report(struct BINDING *b,int n)
 {
   char buff[1024];
   int a;
@@ -351,8 +447,14 @@ add_row_report(struct BINDING *b,int n)
   A4GLSQL_execute_implicit_sql(x);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 init_report_table(struct BINDING *b,int n,struct BINDING *o,int no,
-struct BINDING **reread) {
+struct BINDING **reread) 
+{
 int a1;
 int a2;
 int ok;
@@ -367,61 +469,82 @@ char tbuff[1024];
     };                          /* end of binding */
 
 
-*reread=duplicate_binding(b,n);
+	*reread=duplicate_binding(b,n);
 
-sprintf(buff,"select * from %s order by ", gen_rep_tab_name(b));
+	sprintf(buff,"select * from %s order by ", gen_rep_tab_name(b));
 
-for (a1=0;a1<no;a1++) {
-ok=0;
-	debug("Looking for %p",o[a1]);
-	if (a1) strcat(buff,",");
-	for (a2=0;a2<n;a2++) {
-		debug("Checking %p %p",o[a1].ptr,b[a2].ptr);
-		if (o[a1].ptr==b[a2].ptr) {
-			sprintf(tbuff,"c%d",a2);
-			strcat(buff,tbuff);
-			ok=1;
-			break;
+	for (a1=0;a1<no;a1++) {
+	ok=0;
+		debug("Looking for %p",o[a1]);
+		if (a1) strcat(buff,",");
+		for (a2=0;a2<n;a2++) {
+			debug("Checking %p %p",o[a1].ptr,b[a2].ptr);
+			if (o[a1].ptr==b[a2].ptr) {
+				sprintf(tbuff,"c%d",a2);
+				strcat(buff,tbuff);
+				ok=1;
+				break;
+			}
+		}
+		if (ok==0) {
+				debug("Can't match column in orderby....");
+				exitwith("Big Opps");
+				return 0;
 		}
 	}
-	if (ok==0) {
-			debug("Can't match column in orderby....");
-			exitwith("Big Opps");
-			return 0;
-	}
-}
-debug("Got select statement as : %s\n",buff);
-sprintf(tbuff,"_%d",gen_rep_tab_name(b));
-A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
+	debug("Got select statement as : %s\n",buff);
+	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b)); // warning: int format, pointer arg (arg 3)
+	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
 
-if (sqlca.sqlcode!=0) return 0;
-A4GLSQL_open_cursor (0, tbuff);
-if (sqlca.sqlcode!=0) return 0;
+	if (sqlca.sqlcode!=0) return 0;
+	A4GLSQL_open_cursor (0, tbuff);
+	if (sqlca.sqlcode!=0) return 0;
+
+
+return 0;
 }
 
 
-report_table_fetch(struct BINDING *reread,int n,struct BINDING *b) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+report_table_fetch(struct BINDING *reread,int n,struct BINDING *b)
+{
 char tbuff[1024];
-int a;
-	sprintf(tbuff,"_%d",gen_rep_tab_name(b));
+//int a;
+	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b)); // warning: int format, pointer arg (arg 3)
 	A4GLSQL_set_sqlca_sqlcode (0);
 	A4GLSQL_fetch_cursor (tbuff, 2, 1, n, reread);
 	push_params(reread,n);
-	
+
 	if (sqlca.sqlcode==0) return 1;
 	A4GLSQL_set_sqlca_sqlcode (0);
 	return 0;
 }
 
-end_report_table(struct BINDING *b,int n,struct BINDING *reread) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+end_report_table(struct BINDING *b,int n,struct BINDING *reread)
+{
 	free_duplicate_binding(reread,n);
 }
 
-struct BINDING *duplicate_binding(struct BINDING *b,int n) {
+/**
+ *
+ * @todo Describe function
+ */
+struct BINDING *
+duplicate_binding(struct BINDING *b,int n)
+{
 struct BINDING *rbind;
 int a;
 int sz;
-debug("Duplicating bindings....");
+	debug("Duplicating bindings....");
 	rbind=malloc(sizeof(struct BINDING)*n);
 	for (a=0;a<n;a++) {
 		sz=0;
@@ -430,7 +553,7 @@ debug("Duplicating bindings....");
 
 			case 1: 
 			case 2: 
-			case 6: 
+			case 6:
 			case 7: 
 			case 4: sz=4;break;
 
@@ -452,25 +575,38 @@ debug("Duplicating bindings....");
 		rbind[a].dtype=b[a].dtype;
 		rbind[a].size=b[a].size;
 	}
-debug("All done");
+	
+	debug("All done");
 return rbind;
 }
 
-void free_duplicate_binding( struct BINDING *b,int n) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+free_duplicate_binding( struct BINDING *b,int n) 
+{
 int a;
-debug("Freeing duplicate..");
-for (a=0;a<n;a++) {
-	debug("Freeing %p",b[a].ptr);
-	free(b[a].ptr);
-}
-debug("Freeing structure %p",b);
-free(b);
+	debug("Freeing duplicate..");
+	for (a=0;a<n;a++) {
+		debug("Freeing %p",b[a].ptr);
+		free(b[a].ptr);
+	}
+	debug("Freeing structure %p",b);
+	free(b);
 }
 
 
-rep_file_print(struct rep_structure *rep, char *fname, int opt_semi) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+rep_file_print(struct rep_structure *rep, char *fname, int opt_semi) 
+{
 	debug("Not implemented");
 	exitwith("Not implemented");
 }
 
-
+// ============================= EOF ================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+# $Id: resource.c,v 1.7 2002-05-20 11:41:13 afalout Exp $
 #
 */
 
@@ -46,6 +46,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> //toupper()
 
 /*
 This is only source code file in which we should allowe getenv() function
@@ -229,7 +230,7 @@ struct str_resource builtin_resource[] =
   {"W32GCC", "gcc -s -O"},
 
 /* End of definitions */
-  {"", 0}
+  {"", "0"}
 };
 
 /*
@@ -241,6 +242,11 @@ struct str_resource builtin_resource[] =
 static int has_resource(char *s) ;
 static void add_resources_in(FILE *resourcefile) ;
 static int next_resource(void);
+int chk_dbdate (char *p);
+
+extern void trim_nl(char *p); //in aubit-config.c when used to make aubit-config executable.
+
+
 
 /*
 =====================================================================
@@ -367,7 +373,7 @@ find_str_resource (char *s)
 char *
 acl_getenv (char *s)
 {
-  static char undef[] = "Undefined";
+//  static char undef[] = "Undefined";
   char prefixed_string[256];
   char *ptr;
 
@@ -400,7 +406,7 @@ acl_getenv (char *s)
 int
 chk_dbdate (char *p)
 {
-  int d, m, y, del, ysize;
+  int d, m, y; //, del, ysize;
   int cnt;
   d = -1;
   m = -1;
@@ -437,6 +443,8 @@ chk_dbdate (char *p)
           return 0;
         }
     }
+
+  return 0;
 }
 
 /**
@@ -774,7 +782,7 @@ int a;
  * @param
  */
 int
-env_option_set(char *s) 
+env_option_set(char *s)
 {
 char *a;
 	a=acl_getenv(s);

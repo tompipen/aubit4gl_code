@@ -24,10 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.12 2002-05-11 10:37:26 afalout Exp $
+# $Id: compile_c.c,v 1.13 2002-05-20 11:41:13 afalout Exp $
 #
 */
-
 
 /**
  * @file
@@ -38,6 +37,12 @@
  * The goal is to generate a C program that implement the functionality of
  * the 4gl being compiled.
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 //#include <stdio.h>
 //#include <string.h>
@@ -50,11 +55,20 @@
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
 #include "a4gl_lex_print_protos_c.h"
-
+#include "a4gl_4glc_4glc.h"
+#include "a4gl_aubit_lib.h"
 
 //included here because of dll separation. Make sure this is OK
 //defines things like struct s_report_stack that are used here
 //#include "compiledefs.h"
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 
 /** Pointer to the output C file */
 static FILE *outfile = 0;
@@ -122,12 +136,24 @@ extern int fbindcnt;
 extern struct s_constr_buff constr_buff[256];
 extern int constr_cnt;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 extern void set_clobber(char *c);
 
 //function prototypes that must be here, not in header file:
 static void printc(char* fmt,... );
 void lex_printc(char *fmt, va_list *ap);
 void real_lex_printc(char *fmt, va_list *ap);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Print spaces to the increment acording to scope level generated in 
@@ -199,7 +225,10 @@ open_outfile(void)
   	fprintf (outfile, "#include \"%s\"\n", h);
   //if (acl_getenv ("GTKGUI"))
     //fprintf (outfile, "#include <acl4glgui.h>\n");
-  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
+  
+  //we no longer need this:
+  //fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ()); //warning: format argument is not a pointer (arg 3)
+
   fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
 	   outputfilename);
 
@@ -218,7 +247,8 @@ discrepancy betweenm number of parameters passed to function between
 (...) and (va_list *args)
 */
 
-static void printc(char* fmt,... )
+static void 
+printc(char* fmt,... )
 {
 va_list ap;
 	debug("via printc in lib");
@@ -227,7 +257,8 @@ va_list ap;
 }
 
 
-void lex_printc(char *fmt, va_list *ap)
+void 
+lex_printc(char *fmt, va_list *ap)
 {
 	debug("via lex_printc in lib");
 	real_lex_printc(fmt,ap);
@@ -245,7 +276,8 @@ void lex_printc(char *fmt, va_list *ap)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void real_lex_printc(char *fmt, va_list *ap)
+void 
+real_lex_printc(char *fmt, va_list *ap)
 {
   //va_list args;
   char buff[40960]="ERROR-empty init";
@@ -263,9 +295,9 @@ void real_lex_printc(char *fmt, va_list *ap)
 	//va_start (args, fmt);
 	vsprintf (buff, fmt, *ap);
 
-debug("buff in lib=%s\n",buff);
-strcpy(buff2,fmt);
-debug("fmt in lib=%s\n",buff2);
+	debug("buff in lib=%s\n",buff);
+	strcpy(buff2,fmt);
+	debug("fmt in lib=%s\n",buff2);
 
 
   if (isyes(acl_getenv ("INCLINES")))
@@ -282,8 +314,8 @@ debug("fmt in lib=%s\n",buff2);
 		    }
 	      else
 		    {
-		      fprintf (outfile, "\n#line %d \"null\"\n", yylineno,
-			     outputfilename);
+		      fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
+			     //outputfilename);
 		    }
 	    }
 	    else
@@ -297,14 +329,6 @@ debug("fmt in lib=%s\n",buff2);
   else
   {
 	  ptr = strtok (buff, "\n");
-
-//strcpy(buff2,ptr);
-//debug("ptr=%s\n",buff2);
-//strcpy(buff2,fmt);
-//debug("fmt=%s\n",buff2);
-//strcpy(buff2,args);
-//debug("args=%s\n",buff2);
-
 	  while (ptr)
 		{
 		  print_space ();
@@ -458,50 +482,50 @@ print_report_ctrl(void)
 
   for (a = 0; a < report_stack_cnt; a++)
     {
-/* on last row */
-//      if (report_stack[a].whytype == 'L')
-		if (get_report_stack_whytype(a) == 'L')
+	/* on last row */
+		//if (report_stack[a].whytype == 'L')
+		if (*get_report_stack_whytype(a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-/* on every row */
-//      if (report_stack[a].whytype == 'E')
-		if (get_report_stack_whytype(a) == 'E')
+	/* on every row */
+		//if (report_stack[a].whytype == 'E')
+		if (*get_report_stack_whytype(a) == 'E')
 	printc
 	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-/* before group of */
-//      if (report_stack[a].whytype == 'B')
-		if (get_report_stack_whytype(a) == 'B')
+	/* before group of */
+		//      if (report_stack[a].whytype == 'B')
+		if (*get_report_stack_whytype(a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-//	   report_stack[a].why, report_cnt, a);
+		//	   report_stack[a].why, report_cnt, a);
 	   get_report_stack_why(a), report_cnt, a);
 
-/* after group of */
-//      if (report_stack[a].whytype == 'A')
-		if (get_report_stack_whytype(a) == 'A')
+	/* after group of */
+		//      if (report_stack[a].whytype == 'A')
+		if (*get_report_stack_whytype(a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-//	   report_stack[a].why, report_cnt, a);
+		//	   report_stack[a].why, report_cnt, a);
 	   get_report_stack_why(a), report_cnt, a);
 
-//      if (report_stack[a].whytype == 'T')
-		if (get_report_stack_whytype(a) == 'T')
+		//      if (report_stack[a].whytype == 'T')
+		if (*get_report_stack_whytype(a) == 'T')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-//      if (report_stack[a].whytype == 'P')
-		if (get_report_stack_whytype(a) == 'P')
+		//      if (report_stack[a].whytype == 'P')
+		if (*get_report_stack_whytype(a) == 'P')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-//      if (report_stack[a].whytype == 'p')
-		if (get_report_stack_whytype(a) == 'p')
+		//      if (report_stack[a].whytype == 'p')
+		if (*get_report_stack_whytype(a) == 'p')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
@@ -892,9 +916,9 @@ static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
-  if (when_code & 15 == WHEN_CONTINUE)
+  if ((when_code & 15) == WHEN_CONTINUE)
     return 0;
-  if (when_code & 15 == WHEN_NOTSET)
+  if ((when_code & 15) == WHEN_NOTSET)
     return 0;
   if (when_code == WHEN_STOP)
     {
@@ -1033,7 +1057,7 @@ static int
 print_arr_bind (char i)
 {
   int a;
-  int dtype;
+//  int dtype;
   debug ("/* %c */\n", i);
   //dump_vars ();
   if (i == 'i')
@@ -1069,6 +1093,10 @@ print_arr_bind (char i)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static int
 print_constr (void)
 {
@@ -1085,11 +1113,15 @@ print_constr (void)
   return a;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 static int
 print_field_bind_constr (void)
 {
-  char tabname[40];
-  char colname[40];
+//  char tabname[40];
+//  char colname[40];
   int a;
   for (a = 0; a < constr_cnt; a++)
     {
@@ -1120,7 +1152,7 @@ print_param (char i)
 {
   int a;
   int b;
-  char buff[256];
+//  char buff[256];
   char *ptr;
   debug ("Expanding binding.. - was %d entries", fbindcnt);
   expand_bind (&fbind, 'F', fbindcnt);
@@ -1190,7 +1222,7 @@ int
 print_bind (char i)
 {
   int a;
-  int dtype;
+//  int dtype;
   debug ("/* %c */\n", i);
   if (i == 'i')
     {
@@ -1259,8 +1291,12 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind, 'O', ordbindcnt);
-      printc ("static struct BINDING _ordbind[]={\n");
+      expand_bind (&ordbind, 'O', ordbindcnt);  //warning: passing arg 1 of `expand_bind' from incompatible pointer type
+		//void expand_bind (struct binding * bind, int btype, int cnt);
+        //extern struct binding ordbind[NUMBINDINGS];
+
+
+	  printc ("static struct BINDING _ordbind[]={\n");
       if (ordbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1278,9 +1314,14 @@ print_bind (char i)
       start_bind (i, 0);
       return a;
     }
+return 0;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 print_bind_expr (void *ptr, char i)
 {
@@ -1305,6 +1346,8 @@ print_bind_expr (void *ptr, char i)
       start_bind (i, 0);
       return a;
     }
+
+return 0;
 }
 
 
@@ -1444,6 +1487,10 @@ print_returning (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 print_form_is_compiled (char *s)
 {
@@ -1696,40 +1743,41 @@ print_construct_2 (char *driver)
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr) {
-     int ccc;
-     int k;
-printc ("{\n");
-start_bind ('i', constr_str);
-k = print_bind ('i');
-ccc = print_constr ();
-printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
-	sizeof (struct s_screenio) + 10);
-printc ("while(_fld_dr!=0){\n");
-printc ("if (_fld_dr==-100) {\n");
-printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
-printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
-printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
-if (byname == 1)
-  {
-    printc
-      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
-    print_field_bind_constr ();
-    printc (" /* */,0));\n");
-  }
-else
-  {
-    printc
-      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-       attr);}
+print_construct_3 (int byname, char *constr_str, char *attr) 
+{
+int ccc;
+int k;
+	printc ("{\n");
+	start_bind ('i', constr_str);
+	k = print_bind ('i');
+	ccc = print_constr ();
+	printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
+		sizeof (struct s_screenio) + 10);
+	printc ("while(_fld_dr!=0){\n");
+	printc ("if (_fld_dr==-100) {\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
+	printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
+	printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
+	if (byname == 1)
+	  {
+	    printc
+	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	    print_field_bind_constr ();
+	    printc (" /* */,0));\n");
+	  }
+	else
+	  {
+	    printc
+	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	       attr);}
 
-printc
-  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-printc ("_fld_dr=-99;\n");
+	printc
+	  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+	printc ("_fld_dr=-99;\n");
 }
 
 
@@ -2071,14 +2119,14 @@ print_foreach_end (void)
  *
  * @param c The cursor name.
  */
-static void
+void
 print_free_cursor (char *s)
 {
-  printc ("/* FREE CUROSR .. FIXME */\n");
+  printc ("// FREE CUROSR .. FIXME \n");
 }
 
 /**
- * For some statement, the C implementation need to push a string to the 
+ * For some statement, the C implementation need to push a string to the
  * internal stack.
  *
  * Prints the call to library push_char() to the output file.
@@ -2405,8 +2453,8 @@ char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr)
 {
-  int ccc;
-  char buff[132];
+//  int ccc;
+//  char buff[132];
   static char buff2[256];
   int cnt;
   printc ("/*");
@@ -2457,6 +2505,8 @@ get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
     return "form_loop(&_inp_io,_forminit)";
+
+    return "";
 }
 
 /**
@@ -2489,7 +2539,7 @@ print_label (char *s)
 
 /**
  * The parser found a LET 4gl statement and implements the C code for it.
- * 
+ *
  * @param nexprs The number of variable to be assigned.
  */
 int
@@ -2527,7 +2577,7 @@ print_push_null (void)
  * This statement are not informix 4gl original statements.
  *
  * @param type : The sql statement type.
- *   - S : Select 
+ *   - S : Select
  *   - D : Delete
  *   - U : Update
  * @param var The 4gl variable name to be used.
@@ -2537,13 +2587,13 @@ print_linked_cmd (int type, char *var)
 {
   char tabname[64];
   char pklist[256];
-  int no;
+//  int no;
   int ni;
   if (last_var_is_linked (tabname, pklist))
     {
       char buff[80];
       char buff2[80];
-      int no;
+      int no = 0;
       int no_keys;
       int azcnt;
       printc ("{\n");
@@ -2975,6 +3025,10 @@ print_sleep (void)
 
 /* EXPRESSIONS */
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 print_op (char *type)
 {

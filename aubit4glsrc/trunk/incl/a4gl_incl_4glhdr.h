@@ -31,13 +31,34 @@ void *prepare_glob_sql (char *s,int ni,void *b);
 extern sqlca_struct sqlca;
 
 /** 4gl global status variable */
-extern int status;
+#ifndef DEFINE_STATUS
+	//FIXME: is this OK? see lib/fglwrap.c
+	#ifdef __CYGWIN__
+	extern int status;
+	#else
+	extern long status;
+	#endif
+#endif
 
 /** 4gl interrupt ocurred global flag */
-extern int int_flag;
+#ifndef DEFINE_INTFLAG
+    #ifdef __CYGWIN__
+    extern int int_flag;
+    #else
+	extern long int_flag;
+    #endif
+#endif
+
 
 /** 4gl quit ocurred global flag */
-extern int quit_flag;
+#ifndef DEFINE_QUITFLAG
+    #ifdef __CYGWIN__
+	extern long quit_flag;
+    #else
+	extern int quit_flag;
+    #endif
+#endif
+
 
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
@@ -118,17 +139,17 @@ double ret_var(void *p,int d) ;
 int pop_char(char *z,int size);
 char *char_pop();
 int pop_param(void *p,int d,int size);
-int pop_params(struct BINDING *b,int n);
+void pop_params(struct BINDING *b,int n);
 void push_param(void *p,int d);
-int push_user();
-int push_today();
+void push_user();
+void push_today();
 int opboolean();
-int pop_args(int a) ;
-int debug_print_stack() ;
-int print_stack() ;
+void pop_args(int a) ;
+void debug_print_stack(void) ;
+void print_stack() ;
 
 
-int locate_var(struct fgl_int_loc *p,char where,char *filename);
+void locate_var(struct fgl_int_loc *p,char where,char *filename);
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))

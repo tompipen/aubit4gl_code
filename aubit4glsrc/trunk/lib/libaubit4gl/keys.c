@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: keys.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -63,7 +63,6 @@
 
 int check_keys (int val, char *str2);
 int check_key (int val, char *a, int ln);
-int key_val(char *str);
 int key_val2 (char *str);
 
 

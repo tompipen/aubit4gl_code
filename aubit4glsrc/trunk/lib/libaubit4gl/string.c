@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: string.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -61,6 +61,7 @@
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -103,9 +104,9 @@ char *
 new_string(int a)
 {
 	char *ptr;
-	char *ptr2;
+//	char *ptr2;
 	ptr=(char *)acl_malloc(a+1,"New string"); /* 1 for NULL */
-	return ptr; 
+	return ptr;
 }
 
 

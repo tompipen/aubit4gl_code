@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.7 2002-05-07 09:02:47 afalout Exp $
+# $Id: others.c,v 1.8 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -37,25 +37,59 @@
  * or to be externally seen
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
 #include "a4gl_keys.h"
+//here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c)
+#include "a4gl_formxw.h"
+
+#include "a4gl_aubit_lib.h" //fgl_error()
+#include "a4gl_runtime_tui.h" //push_long()
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 
 //here only to satisfy libMENU_( from compilers/4glc/4glc.c)
 char *outputfilename;
 
-//here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c)
-#include "a4gl_formxw.h"
 struct struct_form the_form;
 struct struct_scr_field *fld;
 int as_c=1;
-
 int m_lastkey = 0;
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
 char *strip_quotes (char *s);
 char *replace_sql_var (char *s);
 int attr_name_match (struct struct_scr_field *field, char *s);
 char *get_str_attribute (struct struct_scr_field *f, int str);
+int get_lastkey (void);
+int fgl_keyval(int _np);
+void convlower(char *s);
+int has_str_attribute (struct struct_scr_field * f, int str);
 
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 
 /**
@@ -66,10 +100,12 @@ char *get_str_attribute (struct struct_scr_field *f, int str);
  * @param _np Number of parameters passed by stack. Should be zero. If not
  * give an error.
  */
-int aclfgl_fgl_lastkey(int _np) 
+int 
+aclfgl_fgl_lastkey(int _np)
 {
   long _r;
-  if (_np!=0) { fgl_error(-3000,"");}
+  if (_np!=0) { fgl_error(-3000,"",0,0);}
+
   _r=get_lastkey();
   push_long(_r);
   return 1;
@@ -81,7 +117,8 @@ int aclfgl_fgl_lastkey(int _np)
  * @param _np the number of parameters passed by stack.
  * @return Allways 1
  */
-int aclfgl_fgl_keyval(int _np) 
+int
+aclfgl_fgl_keyval(int _np)
 {
   return fgl_keyval(_np);
 }
@@ -96,26 +133,27 @@ int aclfgl_fgl_keyval(int _np)
  * @param _np The number of para,eters passed by stack.
  * @return Allways 1
  */
-int fgl_keyval(int _np) 
+int
+fgl_keyval(int _np)
 {
   long _r;
   char *v0;
   char buff[20];
 
-if (_np!=1) {
-	A4GLSQL_set_status(-3000,0);
-	debug("Bad number of arguments to fgl_keyval got %d - expected 1",_np);
+	if (_np!=1) {
+		A4GLSQL_set_status(-3000,0);
+		debug("Bad number of arguments to fgl_keyval got %d - expected 1",_np);
 
-	for (_r=0;_r<_np;_r++) {
-		pop_char(buff,10);
+		for (_r=0;_r<_np;_r++) {
+			pop_char(buff,10);
+		}
 	}
-}
 
-v0=char_pop();
+	v0=char_pop();
 
-push_int(key_val(v0));
-acl_free(v0);
-return 1;
+	push_int(key_val(v0));
+	acl_free(v0);
+	return 1;
 }
 
 /**
@@ -128,14 +166,16 @@ return 1;
  * @param The number of parameters
  * @return Allways 1
  */
-int aclfgl_upshift(int _np) {
+int 
+aclfgl_upshift(int _np)
+{
 char *v1;
-if (_np!=1) { fgl_error(-3000,"");}
-v1=char_pop();
-convupper(v1);
-push_char(v1);
-acl_free(v1);
-return 1;
+	if (_np!=1) { fgl_error(-3000,"",0,0);}
+	v1=char_pop();
+	convupper(v1);
+	push_char(v1);
+	acl_free(v1);
+	return 1;
 }
 
 /**
@@ -148,41 +188,46 @@ return 1;
  * @param The number of parameters
  * @return Allways 1
  */
-int aclfgl_downshift(int _np) {
+int 
+aclfgl_downshift(int _np) 
+{
 char *v1;
-if (_np!=1) { fgl_error(-3000,"");}
-//char_pop(v1);
-v1=char_pop();
-//convupper(v1);
-convlower(v1);
-push_char(v1);
-acl_free(v1);
-return 1;
+	if (_np!=1) { fgl_error(-3000,"",0,0);}
+	//char_pop(v1);
+	v1=char_pop();
+	//convupper(v1);
+	convlower(v1);
+	push_char(v1);
+	acl_free(v1);
+	return 1;
 }
 
 /**
- * Upshift a string 
+ * Upshift a string
  *
  * @param s The string to be converted.
  */
-convupper(char *s) {
+void
+convupper(char *s)
+{
 int a;
-for (a=0;s[a];a++) {
-    s[a]=toupper(s[a]);
-}
-
+	for (a=0;s[a];a++) {
+	    s[a]=toupper(s[a]);
+	}
 }
 
 /**
- * Downshift a string 
+ * Downshift a string
  *
  * @param s The string to be converted.
  */
-convlower(char *s) {
+void
+convlower(char *s)
+{
 int a;
-for (a=0;s[a];a++) {
-    s[a]=tolower(s[a]);
-}
+	for (a=0;s[a];a++) {
+	    s[a]=tolower(s[a]);
+	}
 
 }
 
@@ -192,15 +237,17 @@ for (a=0;s[a];a++) {
  * @param v The string key representation.
  * @return The integer key representation.
  */
-int net_keyval(char *v) 
+int 
+net_keyval(char *v)
 {
 char v0[80];
 long _r;
-debug("In net_keyval");
-strcpy(v0,v);
-trim(v);
-stripnl(v);
-debug("Decoding ...%s...",v0);
+	
+	debug("In net_keyval");
+	strcpy(v0,v);
+	trim(v);
+	stripnl(v);
+	debug("Decoding ...%s...",v0);
 	if (strlen(v0)==1) {return v0[0];}
 	if (strcmp(v0,"INTERRUPT")==0) {return (-1);}
 	if (strcmp(v0,"ACCEPT")==0) {return(-2);}
@@ -229,12 +276,21 @@ debug("Decoding ...%s...",v0);
 return 0;
 }
 
-get_lastkey ()
+/**
+ *
+ * @todo Describe function
+ */
+int
+get_lastkey (void)
 {
   return m_lastkey;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 set_last_key (int a)
 {
@@ -242,6 +298,10 @@ set_last_key (int a)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 strip_quotes (char *s)
 {
@@ -260,6 +320,10 @@ strip_quotes (char *s)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 replace_sql_var (char *s)
 {
@@ -293,11 +357,16 @@ replace_sql_var (char *s)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 attr_name_match (struct struct_scr_field * field, char *s)
 {
   char colname[40];
   char tabname[40];
-  char buff[80];
+//  char buff[80];
   int aa;
   int ab;
   //debug ("Field : %p\n", field);
@@ -327,6 +396,10 @@ attr_name_match (struct struct_scr_field * field, char *s)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 get_str_attribute (struct struct_scr_field *f, int str)
 {
@@ -347,12 +420,17 @@ get_str_attribute (struct struct_scr_field *f, int str)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 find_srec (struct_form * fd, char *name)
 {
   int a;
-  int b;
+//  int b;
 
-debug("No of records : %d",fd->records.records_len);
+	debug("No of records : %d",fd->records.records_len);
 
   for (a = 0; a < fd->records.records_len; a++)
     {
@@ -364,6 +442,11 @@ debug("No of records : %d",fd->records.records_len);
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 has_str_attribute (struct struct_scr_field * f, int str)
 {
   int a;
@@ -376,6 +459,10 @@ has_str_attribute (struct struct_scr_field * f, int str)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 char_val (char *s)
 {
@@ -392,6 +479,6 @@ char_val (char *s)
 }
 
 
-
+// ============================== EOF ==========================
 
 

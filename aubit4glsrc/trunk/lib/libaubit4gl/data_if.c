@@ -24,16 +24,27 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: data_if.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
-#ifdef THIS_FILE_IS_OBSOLETE
 
 // I don't think so (Andrej) :
 /*******************************************************/
 /* This file was automatically generated - do not edit */
 /*******************************************************/
+
+
+/*
+
+sh ../../bin/4glpc fshow.4gl -o fshow
+============ FIRST ERROR: ==============
+/tmp/cc2r1wE7.o: In function `main':
+/opt/aubit/aubit4glsrc/compilers/fcompile/./fshow.c:99: undefined reference to `get_set'
+collect2: ld returned 1 exit status
+========================================
+
+*/
 
 
 /**
@@ -744,8 +755,6 @@ int a;
 	return (void *)0;
 }
 
-
-#endif
 
 // ================================ EOF ==============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.6 2002-05-14 09:27:27 afalout Exp $
+# $Id: compile_perl.c,v 1.7 2002-05-20 11:41:13 afalout Exp $
 #
 */
 
@@ -318,7 +318,7 @@ open_outfile (void)
   fprintf(outfile,"package aubit4gl_pl;\n");
   if (acl_getenv ("GTKGUI"))
     fprintf (outfile, "require aubit4gl_gtk\n");
-  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ());
+//  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ());
   fprintf (outfile, "$aubit_module_name=\"%s.4gl\";\n", outputfilename);
   hfile = mja_fopen (h, "w");
 }

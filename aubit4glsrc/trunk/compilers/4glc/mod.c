@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.61 2002-05-14 09:27:27 afalout Exp $
+# $Id: mod.c,v 1.62 2002-05-20 11:41:03 afalout Exp $
 #
 */
 
@@ -64,6 +64,8 @@
 #include "a4gl_errors.h"
 #include "a4gl_4glc_compiledefs.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_4glc_print_protos.h"
+#include "a4gl_dlsql.h"
 
 /*
 =====================================================================
@@ -232,6 +234,7 @@ struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array *
 =====================================================================
 */
 
+static int is_pk (char *s);
 
 /*
 =====================================================================
@@ -293,6 +296,7 @@ strip_bracket (char *s)
  * @param buff The original string to be stripped
  * @return static buffer with string stripped
  */
+/*
 static char *
 with_strip_bracket (const char *buff)
 {
@@ -302,6 +306,7 @@ with_strip_bracket (const char *buff)
   strip_bracket (bff);
   return bff;
 }
+*/
 
 /**
  * Adds a new variable found by the parser to the variable array
@@ -492,7 +497,7 @@ print_record(int z, char ff,char *vname)
  * @param a The increment.
  */
 void 
-setinc (a)
+setinc (int a)
 {
   inc += a;
 }
@@ -962,7 +967,7 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
  *
  * @return The content of the inc variable.
  */
-int 
+int
 getinc(void)
 {
   return inc;
@@ -1069,7 +1074,7 @@ find_type (char *s)
  * Scan a string to find what kind of variable is declared or used inside 
  * it.
  *
- * @todo Complete the folowing comment 
+ * @todo Complete the folowing comment
  *
  * Transform the sting making the folowing actions:
  *   - Strip eventual square brackets []
@@ -1349,7 +1354,7 @@ isarrvariable (char *s)
  *   - 0
  *   - 1
  */
-static long 
+static long
 isrecvariable (char *s)
 {
   return isvartype (s, 2);
@@ -1360,7 +1365,8 @@ isrecvariable (char *s)
  *
  * @todo : Undertstand if this function is old code and if so remove-it
  */
-static int 
+/*
+static int
 scan_arr_variable (char *s)
 {
 
@@ -1398,11 +1404,13 @@ scan_arr_variable (char *s)
 	  }
   }
 
-  debug ("/* Warning    Couldnt find %s */\n", s);
+  debug ("// Warning    Couldnt find %s \n", s);
 
   return -1;
 
 }
+*/
+
 
 /**
  * Adds a new variable to the variable array.
@@ -1843,7 +1851,7 @@ push_blockcommand (char *cmd_type)
  * @param cmd_type The type of continue found (the keyword found after 
  * the CONTINUE token).
  */
-void 
+void
 add_continue_blockcommand (char *cmd_type)
 {
   int z;
@@ -1949,7 +1957,7 @@ pop_blockcommand (char *cmd_type)
  *
  * @param cmd_type
  */
-int 
+int
 in_command (char *cmd_type)
 {
 
@@ -2606,11 +2614,13 @@ push_report_block (char *why, char whytype)
  *
  * @param
  */
+/*
 static
 get_curr_rep ()
 {
   return report_cnt;
 }
+*/
 
 /**
  * Initializes a new report structurem where some information about it
@@ -2860,11 +2870,12 @@ attr_code (char *s)
  *
  * This function is repeated in severall places.
  *
- * @param str The file name 
+ * @param str The file name
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
-static 
+/*
+static
 bname (char *str, char *str1, char *str2)
 {
   char fn[132];
@@ -2886,17 +2897,20 @@ bname (char *str, char *str1, char *str2)
   else
     str2[0] = 0;
 }
+*/
 
 /**
  * Not Used
  */
-static 
+/*
+static
 get_single_key (char *s)
 {
   char buff[2];
   s[0] = s[1];
   s[1] = 0;
 }
+*/
 
 /**
  *
@@ -3066,7 +3080,7 @@ set_counter (int a)
  *
  * @param
  */
-void 
+void
 inc_counter_by (int a)
 {
   counters[count_counters] += a;
@@ -3079,18 +3093,20 @@ inc_counter_by (int a)
  *
  * @param
  */
-static void 
+/*
+static void
 dec_counter_by (int a)
 {
   counters[count_counters] -= a;
 }
+*/
 
 /**
  *
  *
  * @param
  */
-static 
+static
 add_arr_bind (char i, char *nvar)
 {
   long dtype;
@@ -3751,7 +3767,8 @@ setrecord (char *s, char *t, char *c)
  * @param d A pointer to he destination string
  * @param s A pointer to the origin string.
  */
-static void 
+/*
+static void
 swapstring (char *d, char *s)
 {
   int b = 0;
@@ -3784,6 +3801,7 @@ swapstring (char *d, char *s)
     }
   debug ("Converted : %s to %s", s, d);
 }
+*/
 
 /**
  * Check the number of dimentions in the array declaration string
@@ -3884,10 +3902,11 @@ inc_report_cnt (void)
  * @param s The string to be checked.
  * @return A pointer to a static buffer with the escaped string.
  */
+/*
 static char *
 trans_quote (char *s)
 {
-  static char buff[1024];
+//  static char buff[1024];
   int c;
   int a;
   c = 0;
@@ -3902,6 +3921,7 @@ trans_quote (char *s)
     }
   return buff;
 }
+*/
 
 /**
  *
@@ -3909,7 +3929,7 @@ trans_quote (char *s)
  * @param pklist
  * @return
  */
-int 
+int
 last_var_is_linked (char *tabname, char *pklist)
 {
   strcpy (pklist, "");
@@ -4065,7 +4085,7 @@ print_push_rec (char *s, char *b)
 {
   int a;
   long z;
-  char buff[256];
+//  char buff[256];
   int cnt = 0;
   char bb[256];
   char buffer[40000] = "";
@@ -4073,7 +4093,7 @@ print_push_rec (char *s, char *b)
   char nbuff[40000];
   char *ptr;
   int lvf;
-  int lvl = 0;
+//  int lvl = 0;
   char endoflist[256];
   char save[256];
 
@@ -4131,7 +4151,7 @@ print_push_rec (char *s, char *b)
 	{
 	  strcpy (buffer2, buffer);
 	  sprintf (buffer, "%s   push_variable(&%s%s,0x%x);\n",
-		   buffer2, bb, vars[a].var_name, z);
+		   buffer2, bb, vars[a].var_name, (unsigned int)z); // warning: unsigned int format, long unsigned int arg (arg 6)
 	  cnt++;
 	}
       else
@@ -4288,7 +4308,7 @@ chk_init_var (char *s)
 void 
 dump_expr (struct expr_str *orig_ptr)
 {
-  struct expr_str *ptr;
+//  struct expr_str *ptr;
   struct expr_str *start;
   start = orig_ptr;
 
@@ -4356,7 +4376,7 @@ append_expr (struct expr_str *orig_ptr, char *value)
 void *
 append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
-  struct expr_str *ptr;
+//  struct expr_str *ptr;
   struct expr_str *start;
   debug ("MJA append_expr_expr %p %p", orig_ptr, second_ptr);
   start = orig_ptr;
@@ -4372,14 +4392,14 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 
 /**
  * Checks and return the length of an expression
- * 
- * @param ptr 
+ *
+ * @param ptr
  * @return The number of operands in an expression
  */
-int 
+int
 length_expr (struct expr_str * ptr)
 {
-  void *optr;
+//  void *optr;
   int c = 0;
   debug ("Print expr... %p", ptr);
   while (ptr)
@@ -4396,10 +4416,10 @@ length_expr (struct expr_str * ptr)
  *
  * @param s
  */
-void 
+void
 tr_glob_fname (char *s)
 {
-  char buff[256];
+//  char buff[256];
   int a;
   for (a = 0; a <= strlen (s); a++)
     {
@@ -4445,8 +4465,8 @@ tr_glob_fname (char *s)
  *
  * @param
  */
-char
-*get_report_stack_whytype(int a)
+char *
+get_report_stack_whytype(int a)
 {
     return &report_stack[a].whytype; //warning: return makes pointer from integer without a cast
 }
@@ -4456,8 +4476,8 @@ char
  *
  * @param
  */
-char
-*get_report_stack_why(int a)
+char *
+get_report_stack_why(int a)
 {
 	return report_stack[a].why;
 }

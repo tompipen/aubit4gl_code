@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.1 2002-04-23 07:01:19 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.2 2002-05-20 11:41:13 afalout Exp $
 #
 */
 
@@ -39,8 +39,45 @@
  * the 4gl being compiled.
  */
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <string.h>
+#include <stdio.h>
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 char lname[256];
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+extern void printc(char* fmt,... ); //in API_lex.c
+extern void printh (char *fmt, ...); //in API_lex.x
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_formhandler (char *name)
 {
 strcpy(lname,name);
@@ -63,19 +100,35 @@ strcpy(lname,name);
 
 }
 
-print_getwin() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_getwin(void) 
+{
 	printc("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,get_currwin_name());\n",lname);
 	printc("if (strlen(this_win)==0) strcpy(this_win,get_currwin_name());\n");
 	printc("if (strcmp(this_win,cwin)!=0) current_window(this_win);");
 }
 
 
-print_end_formhandler ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_end_formhandler (void)
 {
   printc ("}\n");
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_event (int type)
 {
 
@@ -90,11 +143,21 @@ print_event (int type)
     printc ("if (BEFORE_CLOSE_FORM) {\n");
 }
 
-print_event_2 ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_event_2 (void)
 {
   printc ("}\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_gtk_field (int type, char *s)
 {
   if (type == 'B')
@@ -108,34 +171,58 @@ print_gtk_field (int type, char *s)
     printc ("if (AFTER_FIELD(\"%s\")) {\n", s);
   if (type == 'o')
     printc ("if (ON_FIELD(\"%s\")) {\n", s);
-
-
 }
 
 
-print_gtk_field_2 ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_gtk_field_2 (void)
 {
   printc ("}\n");
 }
 
 /*************************************************************************/
 
+
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_gtk_menuhandler_1 (char *name)
 {
   printc ("void aclfglmn_%s(char *p) {\n", name);
 }
 
-print_gtk_menuhandler_bsm ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_gtk_menuhandler_bsm (void)
 {
   printc ("if (strcmp(p,\"__BSM__\")==0) {\n");
 }
 
 
-print_gtk_menuhandler_bsm_end ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_gtk_menuhandler_bsm_end (void)
 {
   printc ("}/* before show menu*/\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_gtk_menuhandler_on (char *s)
 {
   char buff[256];
@@ -148,12 +235,25 @@ print_gtk_menuhandler_on (char *s)
 }
 
 
-print_gtk_menuhandler_on_end ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_gtk_menuhandler_on_end (void)
 {
   printc ("}\n");
 }
 
-print_gtk_menuhandler_end() {
-printc("}\n");
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_gtk_menuhandler_end(void) 
+{
+	printc("}\n");
 }
 
+
+// ================================= EOF ==============================

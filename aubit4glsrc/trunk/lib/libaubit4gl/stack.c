@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.8 2002-05-17 07:08:33 afalout Exp $
+# $Id: stack.c,v 1.9 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -51,7 +51,6 @@
 #include <math.h>
 #include <sys/types.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -68,6 +67,10 @@
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
 #include "a4gl_acl_string.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_runtime_tui.h" 	//push_date()
+#include "a4gl_dlsql.h"
+
 /*
 =====================================================================
                     Platform specific definitions
@@ -173,9 +176,7 @@ int num_local_binding[LOCAL_BINDINGS];
 =====================================================================
 */
 
-void push_param (void *p, int d);
-int pop_param (void *p, int d, int s);
-char *lrtrim(char *z) ;
+// see a4gl_stack.h
 
 /*
 =====================================================================
@@ -501,10 +502,10 @@ pop_param (void *p, int d, int size)
  * @param b
  * @param n
  */
-int 
+void
 pop_params (struct BINDING *b, int n)
 {
-  int a;
+int a;
   for (a = n - 1; a >= 0; a--)
   {
     pop_param (b[a].ptr, b[a].dtype, b[a].size);
@@ -516,10 +517,10 @@ pop_params (struct BINDING *b, int n)
  *
  * @return
  */
-int
+void
 push_params (struct BINDING *b, int n)
 {
-  int a;
+int a;
   for (a = 0; a < n; a++)
     {
       push_param (b[a].ptr, b[a].dtype);
@@ -558,15 +559,15 @@ pop_binding(int *n)
 void 
 push_param (void *p, int d)
 {
-  double doublea, doubleb;
+  double doublea = 0 , doubleb = 0;
   char *c1;
   char *c2;
-  int opres;
+//  int opres;
   int size;
   int n1, n2;
   int i1, i2;
   char buff[80];
-  int a;
+//  int a;
   int zzz;
 
   int doing_dt_or_int=0;
@@ -575,7 +576,7 @@ push_param (void *p, int d)
 	int s1;
 	int s2;
 	int ptr1;
-	int ptr2;
+	int ptr2 = 0;
   size = DECODE_SIZE (d);
   d = d & 0xffff;
 
@@ -661,8 +662,8 @@ push_param (void *p, int d)
 	    debug("MJA1 %d",strlen(params[params_cnt-1].ptr));
 
 		// I don't remember what this is for - so I'm getting shot for now...
-	    zzz=params[params_cnt - 1].dtype & DTYPE_MASK +
-	    strlen (params[params_cnt - 1].ptr) + params[params_cnt - 1].size;
+	    zzz=(params[params_cnt - 1].dtype & DTYPE_MASK) +
+	    (strlen (params[params_cnt - 1].ptr)) + (params[params_cnt - 1].size);
 
 		zzz=1;
 
@@ -689,8 +690,8 @@ push_param (void *p, int d)
 	{
 	debug("MJA2");
 	  zzz =
-	    params[params_cnt - 2].dtype & DTYPE_MASK +
-	    strlen (params[params_cnt - 2].ptr); //+ params[params_cnt - 2].size;
+	    ((params[params_cnt - 2].dtype & DTYPE_MASK) +
+	    (strlen (params[params_cnt - 2].ptr))); //+ params[params_cnt - 2].size;
 	zzz=1;
 
 	  if (zzz == 0)
@@ -741,7 +742,7 @@ push_param (void *p, int d)
 	a=pop_int();
 	while (a>=1) {
 		debug("MJA Getting base value from stack.. a=%d",a);
-        	get_top_of_stack (a+1, &d1, &s1, &ptr1);
+        	get_top_of_stack (a+1, &d1, &s1,(void **) &ptr1);
 		debug("MJA Got %p 0x%x %d\n",ptr1,d1,s1);
 		debug(" MJA *ptr1=%d",*(int *)ptr1);
 		push_param((void *)ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
@@ -754,7 +755,7 @@ push_param (void *p, int d)
 	}
 	debug("MJA Setting ok=%d\n",ok);
 	debug_print_stack();
-	drop_param(1); // Get rid of the base...
+	drop_param(); // Get rid of the base...
 	if (d==OP_IN) push_int(ok);
 	else push_int(!ok);
 	debug_print_stack();
@@ -775,21 +776,21 @@ push_param (void *p, int d)
 	sprintf(cname,"chkin_%d",cntsql++);
 
 	s=char_pop();
-        get_top_of_stack (1, &d1, &s1, &ptr1);
+        get_top_of_stack (1, &d1, &s1,(void **) &ptr1);
         A4GLSQL_set_sqlca_sqlcode(0);
    	{
 		int n;
 		struct BINDING *ibind;
    		struct BINDING obind[]={ {0,0,0} }; /* end of binding */
 		ibind=pop_binding(&n);
-		A4GLSQL_declare_cursor(0,A4GLSQL_prepare_select(ibind,n,obind,0,s),0,cname);  
+		A4GLSQL_declare_cursor(0,A4GLSQL_prepare_select(ibind,n,obind,0,s),0,cname);
 	}
 	if (status!=0) {drop_param();push_int(0);}
         A4GLSQL_set_sqlca_sqlcode(0);
         A4GLSQL_open_cursor(0,cname);
 	if (status!=0) {drop_param();push_int(0);}
 	while (1) {
- 		A4GLSQL_fetch_cursor(cname,2,1,1,ibind); 
+ 		A4GLSQL_fetch_cursor(cname,2,1,1,ibind);
 		if (status!=0) break;
 		debug("MJA tmpvar=%s\n",tmpvar);
 		push_param(tmpvar,0);
@@ -799,7 +800,7 @@ push_param (void *p, int d)
 		if (eql) ok=1;
 		a--;
 	}
-	drop_param(1); // Get rid of the base...
+	drop_param(); // Get rid of the base...
 	if (d==OP_IN_SELECT) push_int(ok);
 	else push_int(!ok);
 	debug_print_stack();
@@ -807,9 +808,9 @@ push_param (void *p, int d)
   }
 
   if (d==OP_EXISTS||d==OP_NOTEXISTS) {
-	int a;
+//	int a;
 	int ok=0;
-	int eql;
+//	int eql;
 	char *s;
 	char tmpvar[256];
 	static int cntsql=0;
@@ -824,13 +825,13 @@ push_param (void *p, int d)
 	debug("s=%s\n",s);
         A4GLSQL_set_sqlca_sqlcode(0);
 	dbind=pop_binding(&n);
-	A4GLSQL_declare_cursor(0,A4GLSQL_prepare_select(dbind,n,obind,0,s),0,cname);  
+	A4GLSQL_declare_cursor(0,A4GLSQL_prepare_select(dbind,n,obind,0,s),0,cname);
 	if (status!=0) {push_int(0);return;}
         A4GLSQL_set_sqlca_sqlcode(0);
         A4GLSQL_open_cursor(0,cname);
 	debug("opened cursor");
 	if (status!=0) {push_int(0);return;}
- 	A4GLSQL_fetch_cursor(cname,2,1,1,ibind); 
+ 	A4GLSQL_fetch_cursor(cname,2,1,1,ibind);
 	debug("fetched");
 	if (status==0) ok=1;
 	if (status==100) ok=0;
@@ -850,10 +851,11 @@ push_param (void *p, int d)
 
       if (chknull (2, n1, n2))
 	return;
-
-        get_top_of_stack (1, &d1, &s1, &ptr1);
-        get_top_of_stack (2, &d2, &s2, &ptr2);
-	if ( d1!=DTYPE_INTERVAL||d1!=DTYPE_DTIME|| d2!=DTYPE_INTERVAL||d2!=DTYPE_DTIME)  {
+		//void get_top_of_stack (int a, int *d, int *s, void **ptr);
+        get_top_of_stack (1, &d1, &s1,(void **) &ptr1);
+        get_top_of_stack (2, &d2, &s2,(void **) &ptr2);
+	if ( d1!=DTYPE_INTERVAL||d1!=DTYPE_DTIME|| d2!=DTYPE_INTERVAL||d2!=DTYPE_DTIME)  
+	{
       		doublea = pop_double ();
       		doubleb = pop_double ();
 	} else {
@@ -998,7 +1000,7 @@ push_param (void *p, int d)
 		n2=0;
 	debug("Fudging...");
 	}
-		
+
       if (chknull (2, n1, n2)) return ;
       func_concat ();
       break;
@@ -1113,8 +1115,8 @@ push_today (void)
   int mja_day;
   struct tm *local_time;
   time_t now;
-  int ch, month, year, yflag;
-  int zz;
+  int month, year; //ch, yflag;
+//  int zz;
 
 //      setlocale(LC_ALL,"");
   (void) time (&now);
@@ -1139,12 +1141,12 @@ push_today (void)
 void
 push_current (int a, int b)
 {
-  long z;
+//  long z;
   int mja_day;
   struct tm *local_time;
   time_t now;
-  int ch, month, year, yflag;
-  int zz;
+  int month, year; //ch, yflag;
+//  int zz;
   char buff[50];
   char buff2[50];
 //      setlocale(LC_ALL,"");
@@ -1161,7 +1163,10 @@ push_current (int a, int b)
        0123456789012345678901234
        YYYY-MM-DD hh:mm:ss.fffff
 */
-  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%d000000000000", year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, local_time->tm_sec, 0	/* no support for fractions of a second yet */
+  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%d000000000000",
+  	year, month, mja_day, local_time->tm_hour,
+	local_time->tm_min, local_time->tm_sec, local_time->tm_sec //, 0
+	/* no support for fractions of a second yet */
     );
   debug ("Time is %s", buff);
   buff[b] = 0;
@@ -1180,12 +1185,12 @@ push_current (int a, int b)
 void
 push_time (void)
 {
-  long z;
-  int mja_day;
+//  long z;
+//  int mja_day;
   struct tm *local_time;
   time_t now;
-  int ch, month, year, yflag;
-  int zz;
+//  int ch, month, year, yflag;
+//  int zz;
   char buff[20];
 //      setlocale(LC_ALL,"");
   debug ("In push_time");
@@ -1223,7 +1228,7 @@ opboolean (void)
   int d1, d2;
   char *z1;
   char *z2;
-  char buff[200];
+//  char buff[200];
   double a, b;
   int cmp;
   int adate;
@@ -1296,7 +1301,7 @@ opboolean (void)
       debug ("2 --> %s %lf", z1, a);
     }
 
-  if (stod (z1, &adate) == 1)
+  if (stod (z1, &adate,0) == 1)
     {
       debug ("String is a date...");
       b = (double) adate;
@@ -1325,13 +1330,13 @@ opboolean (void)
 void
 pop_args (int a)
 {
-  char *s;
-  int z;
+  char *s = 0;
+  int z = 0;
   if (z > 0)
     {
       for (z = 0; z < a; z++)
 		s = char_pop ();
-    	
+
 		acl_free (s);
     }
 }
@@ -1394,7 +1399,8 @@ print_stack (void)
   printf ("Call stack has %d entries:\n", params_cnt);
   for (a = 0; a < params_cnt; a++)
     {
-      conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff);
+      conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 8);
+      //int conv (int dtype1, void *p1, int dtype2, void *p2, int size);
       printf (" %d Dtype (%d) %s\n", a, params[a].dtype & DTYPE_MASK, buff);
     }
 }
@@ -1497,10 +1503,10 @@ params_on_stack (char *_paramnames[],int n)
  *
  * @return
  */
-int
+void
 push_bind (struct BINDING *b, int n, int no, int elemsize)
 {
-  int a;
+int a;
 	#ifdef DEBUG
 	/* {DEBUG} */ debug ("push_bind");
 	#endif
@@ -1520,10 +1526,10 @@ push_bind (struct BINDING *b, int n, int no, int elemsize)
  *
  * @return
  */
-int
+void
 push_disp_bind (struct BINDING *b, int n)
 {
-  int a;
+int a;
 	#ifdef DEBUG
 	/* {DEBUG} */ debug ("push_disp_bind");
 	#endif
@@ -1550,7 +1556,7 @@ int i;
 int ca, cb;
 char *mptr[2048];
 
-  
+
   for (ca = 0; ca < no; ca++)
     {
 	#ifdef DEBUG
@@ -1618,7 +1624,7 @@ int
 read_param (void *p, int d, int size, int c)
 {
   int b;
-  char *ptr;
+//  char *ptr;
 	#ifdef DEBUG
 	/* {DEBUG} */ debug ("Stack pointer=%d c=%d", params_cnt, c);
 	/* {DEBUG} */ debug ("read param pointer =%p datatype=%x size=%d count=%d",
@@ -1652,7 +1658,7 @@ upshift_stk (void)
 int //should be boll
 isparamdate (void)
 {
-  if (params[params_cnt - 1].dtype & DTYPE_MASK == DTYPE_DATE)
+  if ((params[params_cnt - 1].dtype) & (DTYPE_MASK == DTYPE_DATE))
   return TRUE;
   return FALSE;
 }
@@ -1687,7 +1693,8 @@ setnull (int type, char *buff, int size)
     {
       struct a4gl_dtime *i;
       i = (struct a4gl_dtime *) buff;
-      i->data[0] == 0;
+      //i->data[0] == 0;  //warning: statement with no effect
+      i->data[0] = 0;
       return;
     }
 
@@ -1695,7 +1702,8 @@ setnull (int type, char *buff, int size)
     {
       struct ival *i;
       i = (struct ival *) buff;
-      i->data[0] == 0;
+      //i->data[0] == 0;  //warning: statement with no effect
+      i->data[0] = 0;
       return;
     }
 
@@ -1959,12 +1967,13 @@ chknull_boolean (int n, int n1, int n2)
 int
 conv_to_interval (int a)
 {
-  double d;
-  struct ival i;
-  char buff[256];
-debug("Conv to interval - %d\n",a);
+double d;
+//  struct ival i;
+char buff[256];
+	
+	debug("Conv to interval - %d\n",a);
 	d=pop_double();
-debug("Got d as %lf\n",d);
+	debug("Got d as %lf\n",d);
 	switch (a) {
 		case (OP_YEAR): sprintf(buff,"%d-00",(int)d);break;
 		case (OP_MONTH): sprintf(buff,"0000-%d",(int)d);break;
@@ -1982,8 +1991,8 @@ debug("Got d as %lf\n",d);
 	debug("a=%d %d %d %d\n",a,OP_YEAR,OP_MONTH,OP_HOUR);
 
   // d will now be a number of years or a number of seconds.
-  if (a==(OP_YEAR)||a==(OP_MONTH)) {
-	debug("%d %d",(a==OP_YEAR),(a==OP_MONTH));
+  if ((a==(OP_YEAR))||(a==(OP_MONTH))) {
+	debug("%d %d",(a==(OP_YEAR)),(a==(OP_MONTH)));
 	debug("A. Buff = %s",buff);
 	push_char(buff);
   } else {
@@ -2010,8 +2019,9 @@ debug("Got d as %lf\n",d);
 int
 push_binding(void *ptr,int num)
 {
-int n;
-	if (local_binding_cnt>=LOCAL_BINDINGS) {
+//int n;
+	if (local_binding_cnt>=LOCAL_BINDINGS)
+	{
 		exitwith("Too many bindings");
 		return 0;
 	}
@@ -2019,6 +2029,7 @@ int n;
 	local_binding[local_binding_cnt]=ptr;
 	num_local_binding[local_binding_cnt]=num;
 	local_binding_cnt++;
+return 0;
 }
 
 
@@ -2033,10 +2044,10 @@ struct bound_list {
  *
  * @return
  */
-void *
-dif_start_bind(void) 
+void
+dif_start_bind(void)
 {
-	struct bound_list *list;
+struct bound_list *list;
 	debug("STarting bind");
 	list=malloc(sizeof(struct bound_list));
 	list->ptr=0;
@@ -2050,11 +2061,12 @@ dif_start_bind(void)
  * @return
  */
 void
-dif_add_bind(struct bound_list *list,void *dptr,int dtype,int size) {
+dif_add_bind(struct bound_list *list,void *dptr,int dtype,int size)
+{
 int a;
-int l;
-struct BINDING *b;
-struct BINDING **pp;
+//int l;
+//struct BINDING *b;
+//struct BINDING **pp;
 
 	a=list->cnt+1;
 	list->ptr=realloc(list->ptr, sizeof(struct BINDING)*a);
@@ -2071,9 +2083,9 @@ struct BINDING **pp;
  * @return
  */
 void
-dif_add_bind_date(struct bound_list *list,long a) 
+dif_add_bind_date(struct bound_list *list,long a)
 {
-int *z; 
+int *z;
 	z=malloc(sizeof(int));
 	*z=a; 
 	dif_add_bind(list,z,DTYPE_DATE,0);
@@ -2180,10 +2192,10 @@ char *z;
  *
  * @return
  */
-void 
-dif_free_bind(struct bound_list *list) 
+void
+dif_free_bind(struct bound_list *list)
 {
-int a;
+//int a;
 	debug("free bind");
 	free(list->ptr);
 	free(list);
@@ -2283,7 +2295,7 @@ double a;
  *
  * @return
  */
-int 
+int
 dif_pop_bind_smfloat(struct bound_list *list)
 {
   float a;
@@ -2301,10 +2313,10 @@ dif_pop_bind_smfloat(struct bound_list *list)
  *
  * @param list
  */
-int 
+int
 dif_pop_bind_dec(struct bound_list *list)
 {
-  char *a;
+//  char *a;
 
 	if (list->popped==-1)
 	  list->popped=list->cnt-1;
@@ -2318,11 +2330,11 @@ dif_pop_bind_dec(struct bound_list *list)
  *
  * @param list
  */
-int 
+int
 dif_pop_bind_money(struct bound_list *list)
 {
-  char *a;
-	if (list->popped==-1) 
+//  char *a;
+	if (list->popped==-1)
 	  list->popped=list->cnt-1;
 	return (int)list->ptr[list->popped].ptr;
 }

@@ -1,10 +1,13 @@
 /* *****************************************************************************
  * (c) 1997-2002 Aubit Computing Ltd.
  *
- * $Id: a4gl_incl_4gldef.h,v 1.2 2002-05-18 14:57:29 mikeaubury Exp $
+ * $Id: a4gl_incl_4gldef.h,v 1.3 2002-05-20 11:41:12 afalout Exp $
  *
  * Change History :
  *	$Log: not supported by cvs2svn $
+ *	Revision 1.2  2002/05/18 14:57:29  mikeaubury
+ *	small changes
+ *	
  *	Revision 1.1  2002/04/25 06:32:46  afalout
  *	Adding a4gl_xxx_ prefix to remaining header files
  *	
@@ -64,6 +67,8 @@ typedef struct {
  * Binding information structure definition.
  * Used to bind values to and from SQL.
  */
+
+//warning: struct binding in a4gl_4glc_compiledefs is DIFFERENT!!!!
 struct BINDING {
 	void *ptr; /**< A pointer to the variable bounded */
 	int dtype; /**< The data type of the variable bounded */

@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: readmsg.c,v 1.3 2002-05-20 11:41:13 afalout Exp $
+#*/
+
 /**
  * @file
  * Functions for reading help message file in native format
@@ -9,7 +38,23 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
+#include <string.h>
+
+#include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 //from extfile.c :
 char helpbuff[10000];
@@ -17,7 +62,16 @@ char disp[24][81];
 int max_width;
 FILE *helpfile = 0;
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 read_help_f (int no,int *maxwidth)
 {
@@ -55,14 +109,14 @@ read_help_f (int no,int *maxwidth)
 
       if (pos == no)
         {
-debug("Got it...");
+			debug("Got it...");
           fseek (helpfile, (long) num + 3, SEEK_SET);
           while (1 == 1)
             {
               if (feof (helpfile))
                 break;
               fgets (tmpbuf, 80, helpfile);
-debug("Buff=%s",tmpbuf);
+				debug("Buff=%s",tmpbuf);
               strcat(helpbuff,tmpbuf);
               stripnl (tmpbuf);
               strcpy (disp[cnt++], tmpbuf);
@@ -90,5 +144,5 @@ debug("Buff=%s",tmpbuf);
 }
 
 
-
+// ============================== EOF ===============================
 

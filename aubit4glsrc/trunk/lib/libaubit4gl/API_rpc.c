@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
+# $Id: API_rpc.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -34,15 +34,47 @@
  * @todo Add Doxygen comments to file
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 static void *libptr=0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 static int (*func)();
 void *find_func(void *p,char *s);
 void *find_func_allow_missing(void *p,char *s);
 
-int A4GLRPC_initlib (void)
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int 
+A4GLRPC_initlib (void)
 {
 
 	debug("Opening RPC library");
@@ -66,13 +98,19 @@ int A4GLRPC_initlib (void)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 remote_func_call (char *host,int async,char *funcname,int port,int np)
 {
-  va_list ap;
+//  va_list ap;
 	debug("remote_func_call - libptr=%p\n");
   if (libptr==0) A4GLRPC_initlib();
   func=find_func(libptr,"remote_func_call");
   return func (host,async,funcname,port,np);
 }
 
+
+// ============================== EOF =================================

@@ -55,7 +55,7 @@ static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
 
 //char *strip_quotes (char *s);
-void *get_curr_form ();
+//void *get_curr_form ();
 //char *strip_quotes (char *s);
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: rexp2.c,v 1.5 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 =====================================================================
 */
 
-#define size_t long
+//#define size_t long
 #define  EQ 1
 #define  LEQ 2
 #define  NEQ 3
@@ -83,6 +83,10 @@
 =====================================================================
 */
 
+
+#include <stdlib.h> //atoi()
+#include <string.h> //strlen()
+
 //#ifdef WIN32
 #ifdef __CYGWIN__
 	#include "regex2.h"
@@ -92,6 +96,7 @@
 
 #include "a4gl_match.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -111,13 +116,9 @@ int     constr_size;
 
 char *construct(char *colname, char *val, int inc_quotes);
 void doconstruct(char *s,char *whereclause);
-int mja_match(char *str1, char*str2, int likeormatch);
 int mja_matchcmp(char *a,char *s_match);
-
-static regex_t *mja_regcmp(char *a,char *b);
 static int isop(char *str, int i);
-static int convert_constr_buffer(char *str);
-static int mja_regexec(regex_t *ptr,char *str);
+static void convert_constr_buffer(char *str);
 
 /*
 =====================================================================
@@ -151,11 +152,11 @@ appendchr(char *s, char c)
 int
 mja_match(char *str1, char*str2, int likeormatch)
 {
-char    tmp_str[80];
-regex_t *a;
-int 	newcursor;
-int     b;
-int     z;
+//char    tmp_str[80];
+//regex_t *a;
+//int 	newcursor;
+//int     b;
+//int     z;
 char    MULTICHAR, SINGLECHAR;
 
 		int error;
@@ -189,18 +190,19 @@ char    MULTICHAR, SINGLECHAR;
 char *
 construct(char *colname, char *val, int inc_quotes)
 {
-        char    *ptr2;
-        int     a;
-        char    quote[2] = "";
-        static char     buffer[512];
-        static char     buff2[512];
-        static char     buff3[512];
-        int     z;
-        int     z2;
-        int     cnt;
-        int     k, k2;
-        char    lastchar;
-        int ismatch;
+char    *ptr2;
+int     a;
+char    quote[2] = "";
+static char     buffer[512];
+static char     buff2[512];
+static char     buff3[512];
+int     z;
+int     z2;
+int     cnt;
+int     k, k2=0;
+char    lastchar;
+int ismatch;
+
 		trim(val);
         ptr2 = val;
         strcpy(buff3,"");
@@ -407,13 +409,15 @@ isop(char *str, int i)
  *
  * @return
  */
-static
-int convert_constr_buffer(char *str)
+static void
+convert_constr_buffer(char *str)
 {
-        int     a;
-        int     b;
-        b = strlen(str);
-        for (a = 0; a < b; a++) {
+int     a;
+int     b;
+        
+		b = strlen(str);
+        for (a = 0; a < b; a++) 
+		{
                 if (str[a] == '\n')
                         str[a] = 0;
         }
@@ -458,70 +462,6 @@ doconstruct(char *s,char *whereclause)
         if (strlen(whereclause)==0) strcpy(whereclause,"1=1");
 }
 
-
-#ifdef OLDSTYLE
-
-/**
- *
- *
- * @return
- */
-static regex_t *
-mja_regcmp(char *a,char *b)
-{
-	int z;
-	regex_t *reg_expr;
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("In mja_regcmp");
-	}
-	#endif
-	reg_expr=(regex_t *)acl_malloc(sizeof(regex_t),"mja_regcmp");
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Malloced");
-	}
-	#endif
-	z=regcomp(reg_expr,a,REG_EXTENDED);
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Regcomp'ed");
-	}
-	#endif
-	if (z)  {return 0;}
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Yip1");
-	}
-	#endif
-	return reg_expr;
-}
-
-/**
- *
- *
- * @return
- */
-static int
-mja_regexec(regex_t *ptr,char *str)
-{
-int a;
-	return !(regexec(ptr, str,0,0,0));
-}
-
-/**
- *
- *
- * @return
- */
-int 
-mja_matchcmp(char *a,char *s_match)
-{
-int z;
-regex_t *reg_expr;
-	reg_expr=(regex_t *)acl_malloc(sizeof(regex_t),"mja_regexec");
-	z=regcomp(reg_expr,s_match,REG_EXTENDED);
-	if (z)  {return 0;}
-	return !(regexec(reg_expr, a,0,0,0));
-}
-
-#endif
 
 // ============================ EOF ==================================
 

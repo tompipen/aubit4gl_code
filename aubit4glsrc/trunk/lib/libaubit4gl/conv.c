@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: conv.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -67,6 +67,7 @@
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
+
 
 
 /*
@@ -237,7 +238,6 @@ int sftoc		(void *aa, void *zz, int c);
 int sftof 		(void *aa, void *zz, int c);
 int sftosf 		(void *aa, void *bb, int c);
 int sftodec 	(void *a, void *z, int size);
-int stod 		(void *zz, void *aa, int sz_ignore);
 int stol 		(void *aa, void *zi, int sz_ignore);
 int stodec 		(void *a, void *z, int size);
 int stosf 		(void *aa, void *zz, int sz_ignore);
@@ -417,11 +417,11 @@ struct ival *d;
 
   exitwith ("serious bug in conv.c");
 
-  //trying to pass array of int to function expecting one int:
 	//void decode_interval (struct ival *ival, int *data);
   decode_interval ((struct ival *)a, &data); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
-  debug("Converting to %d %d %d\n",val1,val2,val3);
 
+
+  debug("Converting to %d %d %d\n",val1,val2,val3);
   conv_invdatatoc(data,val1,val2,val3,d->data);
   debug("Set b..");
   return 1;

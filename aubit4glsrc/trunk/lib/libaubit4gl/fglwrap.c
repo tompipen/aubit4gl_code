@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
+# $Id: fglwrap.c,v 1.6 2002-05-20 11:41:12 afalout Exp $
 #
 */
 
@@ -57,6 +57,7 @@
 #include <signal.h>
 #include <locale.h>
 #include <string.h>
+#include <unistd.h> //sleep()
 
 #ifdef __CYGWIN__
 	#include <windows.h>
