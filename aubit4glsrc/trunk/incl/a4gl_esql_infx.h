@@ -51,4 +51,9 @@ void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
 
 #define COPY_SQLCA 
 #define popdec(x) {fgldecimal _s;pop_var(&_s,0x1e100005);copy_decimal(x,&_s,0x1e10,'i');}
-#define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x20100005);}
+#define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x1e100005);}
+
+
+#define popdtime(x) {char *_s;_s=char_pop();dtcvasc(_s,&x);free(_s);}
+
+#define retdtime(x) {char _s[123];dttoasc(&x,_s);push_char(_s);}
