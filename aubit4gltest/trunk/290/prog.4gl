@@ -1,4 +1,6 @@
 DATABASE test1
+# The current means we can't check the outputs - 
+# but this was failing with a -410 for esqli mode (worked ok for ec mode)
 MAIN
     DEFINE w_f2 datetime year to minute
     CREATE TEMP TABLE testupdate (f1 int, f2 datetime year to minute,
