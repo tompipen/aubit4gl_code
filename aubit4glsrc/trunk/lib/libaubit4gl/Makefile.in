@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.46 2003-03-10 18:42:02 mikeaubury Exp $
+# $Id: Makefile.in,v 1.47 2003-03-22 09:42:33 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -45,7 +45,7 @@ CMODS_API   = \
 
 #In alphabetical order:
 COMMONSRC= \
-	builtin.c builtin_d.c \
+	attributes.c builtin.c builtin_d.c \
 	calldll.c conv.c \
 	data_if.c dates.c dmy.c  datatypes.c \
 	err.c error.c errfile.c extfile.c \

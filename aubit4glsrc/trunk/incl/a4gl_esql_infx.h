@@ -46,3 +46,5 @@ void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
 #define COPY_DATA_OUT_13(a4gl,infx,size) *strcpy(*(a4gl),*(infx))
 #define COPY_DATA_OUT_14(a4gl,infx,size) copy_interval(infx,a4gl,size,'o')
 
+
+#define COPY_SQLCA 
