@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.24 2003-08-07 09:07:12 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.25 2003-08-07 21:39:22 mikeaubury Exp $
 #*/
 
 /**
@@ -828,6 +828,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
             }
 	A4GL_debug("MJA Try to move to next field : %d\n",s->curr_attrib+1);
 	A4GL_newMovement(s,s->curr_attrib+1);
+	break;
 
 
     case A4GLKEY_LEFT:

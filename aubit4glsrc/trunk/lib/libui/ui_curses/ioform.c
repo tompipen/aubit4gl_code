@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.61 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: ioform.c,v 1.62 2003-08-07 21:39:22 mikeaubury Exp $
 #*/
 
 /**
@@ -3707,5 +3707,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   return 0;
 
 }
+
 
 /* ================================ EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.37 2003-08-07 09:07:13 mikeaubury Exp $
+# $Id: iarray.c,v 1.38 2003-08-07 21:39:22 mikeaubury Exp $
 #*/
 
 /**
@@ -1291,7 +1291,9 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       return;
     }
 
-
+  if (scr_line>arr_line) {
+	scr_line=arr_line;
+  }
   if (attrib < 0)
     {
       // attempt to move too far to the left

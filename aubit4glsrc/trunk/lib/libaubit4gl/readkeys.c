@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.5 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: readkeys.c,v 1.6 2003-08-07 21:39:22 mikeaubury Exp $
 #*/
 
 /**
@@ -186,12 +186,14 @@ void A4GL_logkey(long a) {
 		"RETURN",
 		"ENTER",
 		"TAB",
-		"DOWN,"
+		"DOWN",
 		"UP",
 		"LEFT",
 		"RIGHT",
 		"ESCAPE",
 		"BACKSPACE",
+		"PGUP",
+		"PGDN",
 	0
 	};
 		
@@ -207,7 +209,6 @@ void A4GL_logkey(long a) {
 	for (k=1;k<=36;k++) {
 		char buff[256];
 		sprintf(buff,"F%d",k);
-		
 		if (a==A4GL_key_val(buff)) {
 			fprintf(keylog,"\\%s\n",buff);fflush(keylog);
 			return;
@@ -216,6 +217,8 @@ void A4GL_logkey(long a) {
 
 	//fprintf(keylog,"a=%d ",a);
 	for (k=0;keys[k];k++) {
+		A4GL_debug("Checking against built in key for %s - %d %d",keys[k],a,A4GL_key_val(keys[k]));
+
 		if (a==A4GL_key_val(keys[k])) {
 				A4GL_debug("Log keypress %s in file %p",keys[k],keylog);
 				fprintf(keylog,"\\%s\n",keys[k]);fflush(keylog);

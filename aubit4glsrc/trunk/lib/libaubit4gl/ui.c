@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.5 2003-07-29 10:47:04 mikeaubury Exp $
+# $Id: ui.c,v 1.6 2003-08-07 21:39:22 mikeaubury Exp $
 #
 */
 
@@ -588,6 +588,29 @@ void A4GL_reset_processed_onkey() {
 
 int A4GL_has_processed_onkey() {
 	return processed_onkey;
+}
+
+
+
+
+int A4GL_field_name_str_match(char *f1,char *f2) {
+int a;
+char *f1p;
+char *f2p;
+f1p=strchr(f1,'.');
+if(f1p) f1p++;
+else f1p=f1;
+
+f2p=strchr(f2,'.');
+if(f2p) f2p++;
+else f2p=f2;
+
+a=strcmp(f1p,f2p);
+if (a==0) a=1;
+else a=0;
+
+A4GL_debug("field_name_str_match : %s %s -> %d",f1p,f2p,a);
+return a;
 }
 
 /* ============================= EOF ================================ */

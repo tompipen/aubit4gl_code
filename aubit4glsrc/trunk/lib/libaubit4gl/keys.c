@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.23 2003-07-29 10:47:04 mikeaubury Exp $
+# $Id: keys.c,v 1.24 2003-08-07 21:39:22 mikeaubury Exp $
 #
 */
 
@@ -197,15 +197,19 @@ A4GL_key_val2 (char *str)
     return A4GLKEY_DOWN;
   if (mja_strcmp ("UP", str) == 0)
     return A4GLKEY_UP;
+
   if (mja_strcmp ("LEFT", str) == 0)
     return A4GLKEY_LEFT;
+
   if (mja_strcmp ("RIGHT", str) == 0)
     return A4GLKEY_RIGHT;
+
   if (mja_strcmp ("ESCAPE", str) == 0)
     return 27;
 
   if (mja_strcmp("PGDN",str)==0) { return A4GLKEY_PGDN; }
   if (mja_strcmp("PGUP",str)==0) { return A4GLKEY_PGUP; }
+
   if (mja_strcmp("BACKSPACE",str)==0) { return A4GLKEY_BACKSPACE; }
   if (mja_strcmp("CANCEL",str)==0) { return A4GLKEY_CANCEL; }
   if (mja_strcmp("HOME",str)==0) { return A4GLKEY_HOME; }

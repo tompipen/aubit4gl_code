@@ -13500,7 +13500,7 @@ racnt+=a;
 
   case 1128:
 #line 5845 "fgl.yacc"
-    { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"acl_getenv(\"DBPRINT\"");}
+    { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"acl_getenv(\"DBPRINT\")");}
     break;
 
   case 1129:

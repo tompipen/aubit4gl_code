@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.24 2003-07-26 11:12:37 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.25 2003-08-07 21:39:09 mikeaubury Exp $
 */
 
 /**
@@ -57,8 +57,8 @@ extern "C"
 
 
 #define A4GL_fglerror(a,b) A4GL_fgl_error(__LINE__,__FILE__,a,b)
-#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
-#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
+#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&A4GL_field_name_str_match(fldname,zzz))
+#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&A4GL_field_name_str_match(fldname,zzz))
 #define DO_BEFORE_DELETE  (_fld_dr==-12)
 #define DO_AFTER_DELETE  (_fld_dr==-13)
 #define DO_BEFORE_INSERT  (_fld_dr==-14)
