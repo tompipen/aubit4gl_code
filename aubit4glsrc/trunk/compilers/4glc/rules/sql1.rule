@@ -199,6 +199,7 @@ op_exclusive :
 	}
 ;
 
+
 set_database_cmd : 
        DATABASE var_ident_qchar op_exclusive
 {
@@ -227,6 +228,11 @@ sql_commands :  schema_ss {
 			print_exec_sql($<sql_string>1);
 			strcpy($<str>$,"Schema");
 	} 
+	| MISC_INFX_SQL {
+			print_exec_sql($<sql_string>1);
+			printf("Warning: Informix specific SQL @ line %d\n",yylinenoe);
+			strcpy($<str>$,"InfxSpecificSql");
+	}
 	| schema_element_ss {
 	 A4GL_lex_printcomment("/*  schema  2*/\n");
 		print_exec_sql($<sql_string>1);

@@ -15997,12 +15997,12 @@ sprintf($<str>$,"%d,ibind",ni);
 
   case 1431:
 #line 7030 "fgl.yacc"
-    {sprintf(yyval.str,"%d,A4GL_pop_int()",FETCH_RELATIVE);}
+    {sprintf(yyval.str,"%d,A4GL_pop_long()",FETCH_RELATIVE);}
     break;
 
   case 1432:
 #line 7032 "fgl.yacc"
-    {sprintf(yyval.str,"%d,A4GL_pop_int()",FETCH_ABSOLUTE);}
+    {sprintf(yyval.str,"%d,A4GL_pop_long()",FETCH_ABSOLUTE);}
     break;
 
   case 1433:
