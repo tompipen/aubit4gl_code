@@ -1,0 +1,9 @@
+
+
+MAIN
+  DEFINE i SMALLINT
+
+	LET i = 1
+	IF I = 1 THEN
+	END IF
+END MAIN

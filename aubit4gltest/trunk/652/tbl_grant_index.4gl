@@ -1,0 +1,17 @@
+
+DATABASE test1
+
+MAIN
+	WHENEVER ERROR CONTINUE
+	DROP TABLE xpto
+	WHENEVER ERROR STOP
+	CREATE TABLE xpto (
+	  firstColumn SMALLINT,
+		secondColumn CHAR(10)
+	)
+
+  GRANT INDEX ON xpto TO PUBLIC
+  GRANT INDEX ON xpto TO informix
+  GRANT INDEX ON xpto TO informix, root
+	DROP TABLE xpto
+END MAIN

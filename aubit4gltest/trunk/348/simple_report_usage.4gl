@@ -1,0 +1,10 @@
+
+MAIN
+  START REPORT simpleReport
+	OUTPUT TO REPORT simpleReport()
+	FINISH REPORT simpleReport
+END MAIN
+
+REPORT simpleReport()
+  FORMAT EVERY ROW 
+END REPORT

@@ -1,0 +1,8 @@
+$DBG ./arith.4ae > arith.out
+if diff  arith.out arith.out.expected
+then
+	exit 0
+else
+	exit 1
+fi
+

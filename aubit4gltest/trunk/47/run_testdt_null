@@ -1,0 +1,7 @@
+$DBG ./testdt_null.4ae > m1.log
+if diff $DIFF_FLAGS m1.log m1.log.expected
+then
+	exit 0
+else
+	exit 1
+fi

@@ -1,0 +1,10 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=500000
+./g1.4ae
+grep -v Date arr.out > arr.out.nodate
+if diff arr.out.nodate arr.out.expected
+then
+	exit 0
+else
+	exit 1
+fi

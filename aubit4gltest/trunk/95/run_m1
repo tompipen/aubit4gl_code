@@ -1,0 +1,7 @@
+./m1.4ae > m1.out
+if diff m1.out m1.out.expected 
+then
+	:
+else
+	exit 1
+fi

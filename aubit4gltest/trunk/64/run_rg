@@ -1,0 +1,21 @@
+./rg.4ae
+bad=0
+for a in *.out
+do
+	if diff $a $a.expected  > /dev/null
+	then
+		echo "No Differences in $a"
+	else
+		echo "Differences in $a"
+		#diff $a expected/$a
+		bad=1
+	fi
+	
+done
+
+if [ $bad = 1 ]
+then
+	exit 1
+else
+	exit 0
+fi

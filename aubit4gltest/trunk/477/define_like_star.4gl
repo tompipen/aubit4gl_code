@@ -1,0 +1,6 @@
+
+DATABASE test1
+
+MAIN
+  DEFINE myS RECORD LIKE systables.*
+END MAIN

@@ -1,0 +1,36 @@
+export A4GL_TRIMDUMP=24x80
+export A4GL_KEYFILE=keys.in
+
+./prog.4ae
+
+if diff s1.out s1.out.expected
+then
+	:
+else
+	exit 1
+fi
+
+
+if diff s2.out s2.out.expected
+then
+	:
+else
+	exit 2
+fi
+
+
+if diff s3.out s3.out.expected
+then
+	:
+else
+	exit 3
+fi
+
+
+if diff s4.out s4.out.expected
+then
+	:
+else
+	exit 4
+fi
+

@@ -1,0 +1,8 @@
+
+DATABASE test1
+
+MAIN
+  CREATE TEMP TABLE tmp_tbl (
+	  just_a_field INTEGER
+	) WITH NO LOG
+END MAIN

@@ -1,0 +1,3 @@
+./decassign.4ae > da.out
+diff da.out da.out.expected
+

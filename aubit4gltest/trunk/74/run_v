@@ -1,0 +1,19 @@
+export A4GL_TRIMDUMP=24x80
+export A4GL_KEYFILE=keys.in
+./v.4ae
+
+if diff scr.out scr.out.expected
+then
+	:
+else
+	echo "Diff in scr.out"
+	exit 1
+fi
+if diff scr2.out scr2.out.expected
+then
+	:
+else
+	echo "Diff in scr2.out"
+	exit 1
+fi
+exit 0

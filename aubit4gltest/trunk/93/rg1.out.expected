@@ -1,0 +1,40 @@
+
+     PAGE HEADER
+     BEFORE GROUP a: a =           1 b =           0 c =           1
+     BEFORE GROUP b: a =           1 b =           0 c =           1
+     ROW:            a =           1 b =           0 c =           1
+     ROW:            a =           1 b =           0 c =           2
+     ROW:            a =           1 b =           0 c =           3
+     ROW:            a =           1 b =           0 c =           4
+     ROW:            a =           1 b =           0 c =           5
+     AFTER GROUP b:  a =           1 b =           0 c =           5 count =    5 sum =   15
+     AFTER GROUP a:  a =           1 b =           0 c =           5 count =    5 sum =   15
+     BEFORE GROUP a: a =           2 b =           0 c =           1
+     BEFORE GROUP b: a =           2 b =           0 c =           1
+     ROW:            a =           2 b =           0 c =           1
+     ROW:            a =           2 b =           0 c =           2
+     ROW:            a =           2 b =           0 c =           3
+     ROW:            a =           2 b =           0 c =           4
+     ROW:            a =           2 b =           0 c =           5
+     AFTER GROUP b:  a =           2 b =           0 c =           5 count =    5 sum =   15
+
+
+     PAGE HEADER
+     AFTER GROUP a:  a =           2 b =           0 c =           5 count =    5 sum =   15
+     BEFORE GROUP a: a =           3 b =           0 c =           1
+     BEFORE GROUP b: a =           3 b =           0 c =           1
+     ROW:            a =           3 b =           0 c =           1
+     ROW:            a =           3 b =           0 c =           2
+     ROW:            a =           3 b =           0 c =           3
+     ROW:            a =           3 b =           0 c =           4
+     ROW:            a =           3 b =           0 c =           5
+     AFTER GROUP b:  a =           3 b =           0 c =           5 count =    5 sum =   15
+     AFTER GROUP a:  a =           3 b =           0 c =           5 count =    5 sum =   15
+     GRAND count =   15 GRAND sum =   45
+
+
+
+
+
+
+

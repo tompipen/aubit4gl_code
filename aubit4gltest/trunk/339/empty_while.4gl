@@ -1,0 +1,9 @@
+
+
+MAIN
+  DEFINE i SMALLINT
+
+	let i = 11
+  WHILE i < 10
+	END WHILE
+END MAIN

@@ -1,0 +1,14 @@
+#and what is r2.4gl for?
+all4ae: r1.4gl
+#	4glpc r1.4gl -o r1.4ae
+	4glc --verbose r1.4gl -o r1.4ae
+	${FGLC} r1.4gl -o r1.4ae
+#We have -eci -ecpg , etc swhitches for this in run_tests script
+#	(export A4GL_LEXTYPE=C; 4glpc r1.4gl -o r1_i.4ae)
+#	(export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INFORMIX;4glpc r1.4gl -o r1_iec.4ae)
+#	(export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=POSTGRES;4glpc r1.4gl -o r1_pec.4ae)
+
+compile: all4ae
+	
+run: compile
+	sh ./run_r1

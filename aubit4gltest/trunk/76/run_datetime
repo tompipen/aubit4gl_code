@@ -1,0 +1,7 @@
+./datetime.4ae > datetime.out
+if diff datetime.out dt.out.expected
+then
+	exit 0
+else
+	exit 1
+fi

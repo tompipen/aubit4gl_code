@@ -1,0 +1,8 @@
+
+DATABASE TEST1
+
+MAIN
+  DEFINE i SMALLINT
+
+	VALIDATE i LIKE systables.tabid
+END MAIN

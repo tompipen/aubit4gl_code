@@ -1,0 +1,7 @@
+./chartst.4ae > chartst.out
+if diff chartst.out chartst.out.expected 
+then
+	exit 0
+else
+	exit 1
+fi

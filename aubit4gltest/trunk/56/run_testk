@@ -1,0 +1,8 @@
+export A4GL_KEYFILE=keys.in
+$DBG ./testk.4ae
+if [ $? = 0 ]
+then
+	exit 0
+else
+	exit 1
+fi

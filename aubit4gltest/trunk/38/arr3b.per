@@ -1,0 +1,44 @@
+
+DATABASE FORMONLY
+
+SCREEN
+{
+
+
+
+   Media           Expected    Qty        Pickups          Loans
+\g--------------------------------------------------------------------------------
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+
+
+
+
+
+
+\g--------------------------------------------------------------------------------
+
+
+
+
+}
+
+ATTRIBUTES
+des = FORMONLY.description;
+exp = FORMONLY.bal_amount TYPE INTEGER;
+cnt = FORMONLY.bal_units  TYPE INTEGER;
+pu = FORMONLY.price TYPE INTEGER;
+ln = FORMONLY.loan TYPE INTEGER;
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"
+SCREEN RECORD ftlbal[3]
+(
+	FORMONLY.description,
+	FORMONLY.bal_amount,
+	FORMONLY.bal_units,
+	FORMONLY.price,
+	FORMONLY.loan
+)

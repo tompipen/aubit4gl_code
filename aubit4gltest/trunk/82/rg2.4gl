@@ -1,0 +1,61 @@
+
+
+MAIN
+
+	DEFINE
+		rec		RECORD
+			c	INTEGER,
+			a	INTEGER,
+			b	INTEGER
+		END RECORD
+
+	START REPORT rg2 TO "rg2.out"
+
+	FOR rec.a = 1 TO 3
+		FOR rec.b = 1 TO 4
+			FOR rec.c = 1 TO 5
+				OUTPUT TO REPORT rg2 (rec.*)
+			END FOR
+		END FOR
+	END FOR
+				
+	FINISH REPORT rg2
+
+END MAIN
+
+REPORT rg2 (rec)
+
+	DEFINE
+		rec		RECORD
+			c	INTEGER,
+			a	INTEGER,
+			b	INTEGER
+		END RECORD
+
+	OUTPUT
+		TOP MARGIN 0
+		BOTTOM MARGIN 0
+		PAGE LENGTH 20
+
+	FORMAT
+
+	PAGE HEADER
+		PRINT "PAGE HEADER ", rec.a, rec.b
+
+	BEFORE GROUP OF rec.a
+		PRINT "BEFORE GROUP LEVEL a =", rec.a
+
+	BEFORE GROUP OF rec.b
+		PRINT "  BEFORE GROUP LEVEL b =", rec.b
+
+	ON EVERY ROW
+		PRINT "    ROW ", rec.a, rec.b, rec.c
+
+	AFTER GROUP OF rec.b
+		PRINT "  AFTER GROUP LEVEL b =", rec.b
+
+	AFTER GROUP OF rec.a
+		PRINT "AFTER GROUP LEVEL a =", rec.a
+
+END REPORT
+

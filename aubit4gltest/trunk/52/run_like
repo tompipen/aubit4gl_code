@@ -1,0 +1,7 @@
+$DBG ./like.4ae > like.out
+if diff like.out like.out.expected
+then
+exit 0
+else
+exit 1
+fi

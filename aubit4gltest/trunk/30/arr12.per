@@ -1,0 +1,23 @@
+
+DATABASE formonly  
+SCREEN
+{
+
+            [f001       ] [f002  ]
+            [f001       ] [f002  ]
+            [f001       ] [f002  ]
+            [f001       ] [f002  ]
+
+}
+END
+
+ATTRIBUTES
+f001 = FORMONLY.bc;
+f002 = FORMONLY.bi TYPE INTEGER;
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"
+SCREEN RECORD ba[4](bc,bi)
+END
+

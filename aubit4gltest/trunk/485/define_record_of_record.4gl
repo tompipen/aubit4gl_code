@@ -1,0 +1,14 @@
+
+MAIN
+  DEFINE pr RECORD 
+	  pr RECORD
+	    pr RECORD
+	      pr RECORD
+	        pr RECORD
+						  anInt INTEGER
+		      END RECORD
+		    END RECORD
+		  END RECORD
+		END RECORD
+	END RECORD
+END MAIN

@@ -1,0 +1,11 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=5000
+$DBG ./ibt.4ae
+grep -v Date ibt.out > ibt.out.nodate
+if diff $DIFF_FLAGS ibt.out.nodate ibt.out.nodate.expected
+then
+	exit 0
+else
+	exit 1
+fi
+

@@ -1,0 +1,9 @@
+export A4GL_KEYFILE=keys.in
+./moneytype.4ae
+if [ $? = 0 ]
+then 
+exit 0
+else
+exit 1
+fi
+

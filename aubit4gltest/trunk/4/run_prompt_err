@@ -1,0 +1,31 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=10000
+export A4GL_TRIMDUMP=24x80
+
+$DBG ./prompt_err.4ae
+
+if diff prompt_1.out prompt_1.out.expected
+then
+:
+else
+	echo "DIFF 1"
+	exit 1
+fi
+
+if diff prompt_2.out prompt_2.out.expected
+then
+:
+else
+	echo "DIFF 2"
+	exit 1
+fi
+
+if diff prompt_3.out prompt_3.out.expected
+then
+:
+else
+	echo "DIFF 3"
+	exit 1
+fi
+
+exit 0

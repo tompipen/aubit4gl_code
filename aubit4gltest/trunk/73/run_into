@@ -1,0 +1,7 @@
+./into.4ae > into.out
+if diff $DIFF_FLAGS into.out into.out.expected
+then
+	exit 0
+else
+	exit 1
+fi

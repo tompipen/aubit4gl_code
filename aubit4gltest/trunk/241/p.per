@@ -1,0 +1,37 @@
+database formonly
+screen
+{
+
+  num [n         ]
+  date[d         ]
+
+   num   date
+  [na ] [da        ]
+  [na ] [da        ]
+  [na ] [da        ]
+  [na ] [da        ]
+  [na ] [da        ]
+f1 : next/quit
+[m                          ]
+}
+end
+
+attributes
+n	= formonly.sno type integer,
+comments = " integer"
+;
+d	= formonly.sdt type date,
+comments = " date"
+;
+na	= formonly.snoa type integer,
+comments = " integer"
+;
+da	= formonly.sdta type date,
+comments = " date"
+;
+end
+
+instructions
+	delimiters " "
+	screen record parm_scr[5] (snoa thru sdta)
+end

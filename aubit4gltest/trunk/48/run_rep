@@ -1,0 +1,23 @@
+
+$DBG ./rep.4ae
+
+
+
+if diff $DIFF_FLAGS rep.data.out rep.data.out.expected
+then
+:
+else
+	echo "DIFF 1"
+	exit 1
+fi
+
+
+if diff $DIFF_FLAGS rep.empty.out rep.empty.out.expected
+then
+:
+else
+	echo "DIFF 1"
+	exit 1
+fi
+
+exit 0

@@ -1,0 +1,9 @@
+export A4GL_KEYFILE=keys.in
+$DBG ./test_265.4ae
+grep -v "Date" test_265.log > test_265.log.nodate
+if diff test_265.log.nodate test_265.log.nodate.expected 
+then
+	:
+else
+	exit 1
+fi

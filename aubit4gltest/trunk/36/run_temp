@@ -1,0 +1,29 @@
+echo "./temp.4ae"
+$DBG ./temp.4ae
+RET=$?
+exit $RET
+
+
+
+
+
+#old stuff - remove it:
+
+
+echo "./temp_c.4ae"
+$DBG ./temp_c.4ae
+RET=$?
+
+if test "$RET" != "0"; then
+    exit $RET
+fi
+
+if test "$SKIP_EC_RUN" = "1"; then
+	echo "Skipping EC test: ./temp_ec.4ae"
+else
+	echo "./temp_ec.4ae"
+	./temp_ec.4ae
+    RET=$?
+fi
+
+    exit $RET

@@ -1,0 +1,32 @@
+DATABASE
+	formonly
+
+SCREEN
+{
+                    \gp---------------------------------------q\g
+                    \g|\g[f0                                   ]\g|\g
+                    \g|---------------------------------------|\g
+                    \g|   COD         DESCRIPCCION            |\g
+                    \g|---------------------------------------|\g
+                    \g|\g[f1  ][f2                             ]\g|\g
+                    \g|---------------------------------------|\g
+                    \g|        INPUT ARRAY WITH NULL          |\g
+                    \g|---------------------------------------|\g
+                    \g|\g[f3  ][f4                             ]\g|\g
+                    \g|\g[f3  ][f4                             ]\g|\g
+                    \g|\g[f3  ][f4                             ]\g|\g
+                    \gb---------------------------------------d\g
+}
+END
+ATTRIBUTES
+f0 = FORMONLY.title,
+     REVERSE,
+     NOENTRY;
+f1 = FORMONLY.code_i TYPE INTEGER, REQUIRED, REVERSE;
+f2 = FORMONLY.desc_i TYPE CHAR, REQUIRED, REVERSE;
+
+f3 = FORMONLY.code_ia TYPE INTEGER, COMMENTS="ENTER COD", REQUIRED, REVERSE;
+f4 = FORMONLY.desc_ia TYPE CHAR NOT NULL, REQUIRED, COMMENTS="ENTER DES", REVERSE;
+INSTRUCTIONS
+SCREEN RECORD srec1[3](code_ia,desc_ia)
+END
