@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.74 2004-04-27 13:27:38 mikeaubury Exp $
+# $Id: resource.c,v 1.75 2004-06-03 11:34:46 mikeaubury Exp $
 #
 */
 
@@ -139,6 +139,7 @@ struct str_resource builtin_resource[] = {
   {"DBLANG", "<ACLDIR>"},
   {"DBMONEY", "#."},
   {"DBPATH", "."},
+  {"A4GL_NO_CONV_ERR","Y"},
   {"DBPRINT", "lp"},
   {"ACLCCOMP", "cc"},
   {"ACL_MOUSE", "N"},

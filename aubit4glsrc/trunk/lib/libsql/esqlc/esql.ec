@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.88 2004-05-26 12:52:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.89 2004-06-03 11:33:07 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.88 2004-05-26 12:52:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.89 2004-06-03 11:33:07 mikeaubury Exp $";
 #endif
 
 
@@ -1183,13 +1183,37 @@ int type;
   FglMoney *fgl_money;
   FglDatetime *fgl_dtime;
   FglInterval *fgl_interval;
+  char buff[10];
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
   dataType = getIfmxDataType (bind[idx].dtype);
   length = bind[idx].size;	// unfix datatype ?
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+ buff[0]=sqlca.sqlwarn.sqlwarn0;
+ buff[1]=sqlca.sqlwarn.sqlwarn1;
+ buff[2]=sqlca.sqlwarn.sqlwarn2;
+ buff[3]=sqlca.sqlwarn.sqlwarn3;
+ buff[4]=sqlca.sqlwarn.sqlwarn4;
+ buff[5]=sqlca.sqlwarn.sqlwarn5;
+
   EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:indicator = INDICATOR,:length = LENGTH,:type=TYPE;
   //printf("Source datatype : %d\n",type);
+  
+
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+	sqlca.sqlwarn.sqlwarn0=buff[0];
+	sqlca.sqlwarn.sqlwarn1=buff[1];
+	sqlca.sqlwarn.sqlwarn2=buff[2];
+	sqlca.sqlwarn.sqlwarn3=buff[3];
+	sqlca.sqlwarn.sqlwarn4=buff[4];
+	sqlca.sqlwarn.sqlwarn5=buff[5];
+
+
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   if (isSqlError ())
     {
       A4GL_debug ("Err1");
@@ -1214,7 +1238,13 @@ int type;
 	return 1;
       char_var = malloc (length + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-		if (length>bind[idx].size) length=bind[idx].size;
+		if (length>bind[idx].size) {
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+			A4GL_debug("TRUNC");
+			length=bind[idx].size;
+			sqlca.sqlwarn.sqlwarn0='W';
+			sqlca.sqlwarn.sqlwarn1='W';
+		}
 	{char *ptr;
 		ptr=bind[idx].ptr;
       strncpy (ptr, char_var,length);
@@ -1256,6 +1286,10 @@ int type;
     case DTYPE_DECIMAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:decimal_var =
 	DATA;
+	if (dataType==DTYPE_FLOAT || dataType==DTYPE_SMFLOAT) {
+		sqlca.sqlwarn.sqlwarn0='W';
+		sqlca.sqlwarn.sqlwarn4='W';
+	}
       A4GL_debug ("DECIMAL...");
       if (isSqlError ())
 	{
@@ -1358,7 +1392,18 @@ int type;
       A4GL_debug ("Some isSqlError..");
       return 1;
     }
-  A4GL_debug ("Ok");
+
+  if (buff[0]=='W')  {
+		sqlca.sqlwarn.sqlwarn0=buff[0];
+		if (buff[1]=='W') sqlca.sqlwarn.sqlwarn1=buff[1];
+		if (buff[2]=='W') sqlca.sqlwarn.sqlwarn2=buff[2];
+		if (buff[3]=='W') sqlca.sqlwarn.sqlwarn3=buff[3];
+		if (buff[4]=='W') sqlca.sqlwarn.sqlwarn4=buff[4];
+		if (buff[5]=='W') sqlca.sqlwarn.sqlwarn5=buff[5];
+  }
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+  A4GL_debug ("Ok %c ",sqlca.sqlwarn.sqlwarn0);
   return 0;
 }
 
@@ -1421,12 +1466,14 @@ processOutputBind (char *descName, int bCount, struct BINDING *bind)
   EXEC SQL end declare section;
   register int i;
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   for (i = 0; i < bindCount; i++)
     if (bindOutputValue (descriptorName, i, bind) == 1)
       {
 	A4GL_debug ("Failed bind @ %d\n", i);
 	return 1;
       }
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   return 0;
 }
 
@@ -1511,6 +1558,7 @@ executeStatement (struct s_sid *sid)
    default: 
       A4GL_exitwith ("Invalid bind\n");
     }
+   A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
 
   if (isSqlError ())
     rc = 1;
@@ -1651,7 +1699,10 @@ deallocateDescriptors (struct s_sid *sid)
   char *descriptorName;
   EXEC SQL end declare section;
   int rc = 0;
+      char buff[10];
+	buff[0]=sqlca.sqlwarn.sqlwarn0; buff[1]=sqlca.sqlwarn.sqlwarn1; buff[2]=sqlca.sqlwarn.sqlwarn2; buff[3]=sqlca.sqlwarn.sqlwarn3; buff[4]=sqlca.sqlwarn.sqlwarn4; buff[5]=sqlca.sqlwarn.sqlwarn5;
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   if (sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
     {
       descriptorName = sid->inputDescriptorName;
@@ -1661,6 +1712,7 @@ deallocateDescriptors (struct s_sid *sid)
     }
   if (isSqlError ())
     rc = 1;
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
@@ -1669,8 +1721,11 @@ deallocateDescriptors (struct s_sid *sid)
       free (descriptorName);
       sid->outputDescriptorName = 0;
     }
+	sqlca.sqlwarn.sqlwarn0=buff[0]; sqlca.sqlwarn.sqlwarn1=buff[1]; sqlca.sqlwarn.sqlwarn2=buff[2]; sqlca.sqlwarn.sqlwarn3=buff[3]; sqlca.sqlwarn.sqlwarn4=buff[4]; sqlca.sqlwarn.sqlwarn5=buff[5];
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   if (isSqlError ())
     rc = 1;
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   return rc;
 }
 
@@ -1687,6 +1742,27 @@ deallocateDescriptors (struct s_sid *sid)
 static int
 processPosStatementBinds (struct s_sid *sid)
 {
+exec sql begin declare section;
+char *n;
+int numberOfColumns;
+exec sql end declare section;
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+n=sid->outputDescriptorName;
+if (n) {
+  EXEC SQL GET DESCRIPTOR :n:numberOfColumns = COUNT;
+  if (numberOfColumns!=sid->no) {
+		sqlca.sqlwarn.sqlwarn0='W';
+		sqlca.sqlwarn.sqlwarn3='W';
+  }
+} else {
+	if (sid->no!=0) {
+		sqlca.sqlwarn.sqlwarn0='W';
+		sqlca.sqlwarn.sqlwarn3='W';
+        }
+}
+
+
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
       A4GL_debug ("calling processOutputBind");
@@ -1698,12 +1774,15 @@ processPosStatementBinds (struct s_sid *sid)
 	}
     }
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
   if (deallocateDescriptors (sid) == 1)
     {
       A4GL_debug ("Deallocating failed..");
       return 1;
     }
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   A4GL_debug ("All Ok in posStatementBinds");
   return 0;
 }
@@ -1752,6 +1831,7 @@ sid=vsid;
       error_just_in_case ();
       return 1;
     }
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   if (sqlca.sqlcode == 0)
     {
       A4GL_debug ("ESQL : post");
@@ -1763,8 +1843,11 @@ sid=vsid;
 	  return 1;
 	}
     }
-  A4GL_debug ("All ok ?");
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+
   A4GLSQL_set_status (sqlca.sqlcode, 1);
+  copy_sqlca_Stuff();
   return 0;
 }
 
@@ -1829,10 +1912,13 @@ struct s_sid *sid;
     }
   if (executeStatement (sid) == 1)
     {
+   A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
       A4GL_debug ("Execute failed");
       error_just_in_case ();
       return 1;
     }
+   A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
+
     a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
     a4gl_sqlca.sqlerrd[1]=sqlca.sqlerrd[1];
     a4gl_sqlca.sqlerrd[2]=sqlca.sqlerrd[2];
