@@ -1700,8 +1700,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
   if (v->is_array)
     {
-      yyerror ("Can't use a variable containing an array in this context\n");
-      return 0;
+      //yyerror ("Can't use a variable containing an array in this context\n");
+      //return 0;
     }
 
   list = *list_ptr;
@@ -2365,4 +2365,26 @@ last_var_is_linked (char *tabname, char *pklist)
     return 0;
   else
     return 1;
+}
+
+
+void print_nullify(char type) {
+int a;
+struct variable **list=0;
+int list_cnt=0;
+printf("print_nullify called :%c\n",type);
+
+if (type=='M') { list=list_module; list_cnt=list_module_cnt;}
+if (type=='F') { list=list_local;list_cnt=list_local_cnt; }
+if(list==0) {
+	return;
+}
+start_bind('N',0);
+
+for (a=0;a<list_cnt;a++) {
+	printf("Adding : %s\n",list[a]->names.name);
+	add_bind('N',list[a]->names.name);
+
+}
+print_init();
 }

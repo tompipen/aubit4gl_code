@@ -1,9 +1,9 @@
 4GL
 	implement extend() 4GL function
 	implement datetime() & interval() 4GL functions
-	'thru' on display etc
+	'thru' on display etc ************** DONE
 	initialize array/record containing array
-	Allow auto initialize of function variables (As per pcode)
+	Allow auto initialize of function variables (As per pcode) ** Done (And module level too - globals still outstanding)
 	Add globals header file into variable declaration
 	Create function names export
 	Clean up error handling
@@ -40,9 +40,9 @@ Other unimplemented functions
 
 SQL Parser
 	IN (variable,variable)
-	add extend() SQL function into parser
+	add extend() SQL function into parser *********** DONE
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
-	Bind substrings (also used in displays/inputs)
+	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 
 SQL plugins
 	unixODBC bug (see bug db on SF)
@@ -63,6 +63,7 @@ TUI
 	clean up construct...
     Windows TUI uses strange characters
     DISPLAY without AT erises the screen completely - sends to stdout - should display _OVER_ existing display/screen
+		(** THIS IS CURSES FAULT **NOT** Aubit...)
 
 PERL
 	fix "make perl"

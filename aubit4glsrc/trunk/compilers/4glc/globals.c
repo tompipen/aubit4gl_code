@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.7 2003-02-17 05:07:13 afalout Exp $
+# $Id: globals.c,v 1.8 2003-02-17 15:40:49 mikeaubury Exp $
 #
 */
 
@@ -625,7 +625,7 @@ char buff3[256];
 
   fgets(buff3,255,f);
   sprintf (buff, "%s=%%lf\n", name);
-  sscanf (f, buff, val); // warning: passing arg 1 of `sscanf' from incompatible pointer type
+  sscanf (buff3, buff, val); // warning: passing arg 1 of `sscanf' from incompatible pointer type
 
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.25 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: conv.c,v 1.26 2003-02-17 15:40:50 mikeaubury Exp $
 #
 */
 
@@ -136,7 +136,7 @@ void trim_dec 			(char *s);
 void negate 			(char *s);
 void pr 				(char *wrkbf);
 void double_to_dec 		(double arg, char *buf, size_t length, size_t digits);
-void assertion 			(int a, char *s);
+//void assertion 			(int a, char *s);
 
 
 int valid_dt 	(char *s, int *data);

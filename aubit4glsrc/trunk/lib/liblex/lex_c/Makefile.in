@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-10-22 06:43:37 afalout Exp $
+# $Id: Makefile.in,v 1.13 2003-02-17 15:40:50 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 #FIXME: does compile_c_gtk.o belong here, or in 4GLCAOBJ ?
-4GLCOBJ_C		=compile_c.o compile_c_gtk.o
+4GLCOBJ_C		=compile_c.o compile_c_gtk.o init.o
 
 ## ==================================================================
 ##                    Options

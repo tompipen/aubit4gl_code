@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.54 2003-02-14 10:18:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.55 2003-02-17 15:40:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1332,8 +1332,11 @@ int a;
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ibind[a].varname,
-		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d,%d,%d}", ibind[a].varname,
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
+		ibind[a].start_char_subscript,
+		ibind[a].end_char_subscript
+	);
 	}
       printc ("\n}; /* end of binding */\n");
       start_bind (i, 0);
@@ -2450,15 +2453,173 @@ print_import (char *func, int nargs)
  * Print in the generated output file the C implementation of the 
  * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
+
+
+
+static int split_arrsizes(char *s,int *arrsizes) {
+char *ptrs[10];
+char buff[200];
+int cnt=1;
+int a;
+
+
+        strcpy(buff,s);
+        ptrs[0]=buff;
+
+        for (a=0;a<10;a++) arrsizes[a]=0;
+
+        for (a=0;a<strlen(s);a++) {
+                if (s[a]==']') {
+                        buff[a]=0;
+                        ptrs[cnt++]=&s[a+2];
+                }
+
+        }
+
+
+        for (a=0;a<cnt;a++) {
+                arrsizes[a]=atoi(ptrs[a]);
+        }
+        return cnt;
+
+}
+
+
+void print_init_var(char *name,char *prefix,int alvl) {
+        int d;
+        int a;
+        int size;
+        int lvl;
+        char arr[256];
+        int x;
+        char buff[1024];
+        char prefix2[1024];
+        int arrsizes[10];
+        int cnt;
+        int acnt;
+
+
+
+
+        // Have we got a record ?
+        if (strchr(name,'.')) {
+                char buffx[1024];
+                char *ptr;
+
+                // OK - we're going to break this down...
+                strcpy(buffx,name);
+                ptr=strchr(buffx,'.');
+                // We've found the next '.'
+                // put the LHS onto 'prefix'
+                // and the RHS into name...
+                *ptr=0;
+                ptr++;
+                strcpy(prefix2,prefix);
+                if (strlen(prefix2)) {
+                        strcat(prefix2,".");
+                }
+                strcat(prefix2,buffx);
+
+                printf("Looking for %s\n",prefix2);
+
+                x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
+
+                if (x==-1) { yyerror("Couldn't find variable to null it...[2]"); return; }
+                if (x!=-2) {
+                        yyerror("I was expecting a record..."); return;}
+
+                // is this an array ?
+                if (a) {
+                        char buff_id[256];
+                        cnt=split_arrsizes(arr,&arrsizes);
+                        printf("cnt=%d\n",cnt);
+                        for (acnt=0;acnt<cnt;acnt++) {
+                                sprintf(buff_id,"_fglcnt_%d",alvl);
+                                printc("{int %s;\n",buff_id);
+                                printc("for (%s=0;%s<%d;%s++) {",buff_id,buff_id,a,buff_id);
+                                strcat(prefix2,"[");
+                                strcat(prefix2,buff_id);
+                                strcat(prefix2,"]");
+                                alvl++;
+                        }
+                }
+                print_init_var(ptr,prefix2,alvl);
+
+                if (a) {
+                        for (acnt=0;acnt<cnt;acnt++) {
+                                printc("} /* End init for */\n}\n"); alvl--;
+                        }
+                }
+
+                return;
+        }
+
+
+// If we've got to here we can only be dealing with a leaf on a record
+        strcpy(prefix2,prefix);
+        if (strlen(prefix2)) { strcat(prefix2,"."); }
+        strcat(prefix2,name);
+
+        printf("prefix2=%s prefix=%s name=%s\n",prefix2,prefix,name);
+
+
+        x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
+
+        if (x<0) { yyerror("Couldn't find variable to null it...[1]"); return; }
+        if (a) {
+                        char buff_id[256];
+                        cnt=split_arrsizes(arr,&arrsizes);
+                        for (acnt=0;acnt<cnt;acnt++) {
+                                sprintf(buff_id,"_fglcnt_%d",alvl);
+                                printc("{int %s;\n",buff_id);
+                                printc("for (%s=0;%s<%d;%s++) {",buff_id,buff_id,a,buff_id);
+                                strcat(prefix2,"[");
+                                strcat(prefix2,buff_id);
+                                strcat(prefix2,"]");
+                                alvl++;
+                        }
+        }
+        printc("setnull(%d,&%s,%d);",d&0xffff,prefix2,size);
+        if (a) {
+                        for (acnt=0;acnt<cnt;acnt++) {
+                                printc("} /* End init for */\n}\n"); alvl--;
+                        }
+        }
+
+}
+/**
+ * Print in the generated output file the C implementation of the
+ * INITIALIZE <variable_list> TO NULL 4gl statement.
+ */
 void
 print_init (void)
 {
   int cnt;
   printc ("{\n");
-  cnt = print_bind ('N');
-  printc ("set_init(nullbind,%d);\n", cnt);
+  expand_bind (&nullbind[0], 'N', nullbindcnt);
+
+  for (cnt=0;cnt<nullbindcnt;cnt++) {
+                print_init_var(nullbind[cnt].varname,"",0);
+  }
+
+  //cnt = print_bind ('N');
+  //printc ("set_init(nullbind,%d);\n", cnt);
   printc ("}\n");
 }
+
+
+
+
+
+//void
+//print_init (void)
+//{
+  //int cnt;
+  //printc ("{\n");
+  //cnt = print_bind ('N');
+  //printc ("set_init(nullbind,%d);\n", cnt);
+  //printc ("}\n");
+//}
 
 /**
  * Print the C implementation of the INITIALIZE LIKE 4gl statement.

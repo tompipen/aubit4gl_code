@@ -130,7 +130,7 @@ screens_section :
 				strdup(buff);
 
 		in_screen_section=1; 
-	}  screens_rest;
+	}  screens_rest
 | KW_SCREEN_TITLE CHAR_VALUE {
 	char buff[256];
 	char *ptr;
@@ -785,7 +785,8 @@ clause:
 		$<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL");
 	}
 	| value  {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
+		$<expr>$=$<expr>1;
+			//create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
 	}
 	| value KWBETWEEN value KWAND value {
 		$<expr>$=create_list_expr();
