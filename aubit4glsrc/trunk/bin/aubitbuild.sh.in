@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.11 2002-12-08 06:34:36 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.12 2003-01-15 11:43:32 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -168,7 +168,6 @@ AUBIT_BUILD=@AUBIT_BUILD@
 #####################
 #name of the computer we are on:
 HOSTNAME=`hostname`
-
 
 SRPM_PATH=/usr/src/redhat/SRPMS
 RPM_PATH=/usr/src/redhat/RPMS/i586
@@ -474,9 +473,11 @@ if test "$MAKE" = "1"; then
 		
 		#increase build number, but doing this on more then one computer will cause
         #problems with "cvs update"
-		if [ "$HOSTNAME" = "falout.org" ]; then
+		if [ "$HOSTNAME" = "aptiva" ]; then
 			EXEC="make build"; runexec
-        fi
+        else
+            echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
+		fi
 
 		#configure will use aubitconf if it exists to provide switches:
 		#pasing parameters to configure from here will only work if aubitconf script is

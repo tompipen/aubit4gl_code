@@ -88,4 +88,11 @@
     #define HAVE_PDCURSES 0
 
 
+	#define HAVE_PGSQL_LIBPQ_FE_H 0
+	#define HAVE_POSTGRESQL_LIBPQ_FE_H 0
+
+	#define HAVE_PGSQL_IODBC_IODBC_H 0
+	#define HAVE_PGSQL_IODBC_ISQL_H 0
+	#define HAVE_PGSQL_IODBC_ISQLEXT_H 0
+
 #endif /* #ifndef CONFIG_H_INCL */

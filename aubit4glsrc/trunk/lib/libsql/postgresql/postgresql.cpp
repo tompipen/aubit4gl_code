@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.4 2003-01-12 21:28:44 saferreira Exp $
+# $Id: postgresql.cpp,v 1.5 2003-01-15 11:43:33 afalout Exp $
 #
 */
 
@@ -56,52 +56,26 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include "4gldef.h"
-	#include "database.h"
-
-	#ifndef WIN32
-	  #include <string.h>
-	  #include "pointers.h"
-	  #include "dtypes.h"
-	  #include <stdlib.h>
-	#else
-	  #include <windows.h>
-	  #include "libincl/pointers.h"
-	  #include "libincl/dtypes.h"
-	#endif
-
-	#include "constats.h"
-
-	#ifndef WIN32
-		#include <stdarg.h>
-	#endif
-
-	/* stack.h will eventually include stdlib.h, which uses getenv(), so
-	 * we need to set GETENV_OK and only then include debug.h
-	 */
-	#include "libincl/stack.h"
-	#define GETENV_OK
-	#include "debug.h"
-	/* ------ To check if necessary until here */
-
-	#include <libpq-fe.h>
-
-#else
-
-    //#include "a4gl_lib_sql_pg_int.h"
   #include <stdio.h>
   #include "a4gl_incl_4gldef.h"
   #include "a4gl_API_sql.h"
-  #include <postgresql/libpq-fe.h>
+
+#if HAVE_POSTGRESQL_LIBPQ_FE_H
+	#include <postgresql/libpq-fe.h>
+#else
+	#if HAVE_PGSQL_LIBPQ_FE_H
+		#include <pgsql/libpq-fe.h>
+	#else
+		#define libpq(s)	assert("Don't have libpq-fe.h" == 0)
+	#endif
+#endif
+
   #include "PgConnection.h"
   #include "ConnectionException.h"
   #include "PgDriver.h"
   #include "PreparedStatement.h"
 
-#endif
 
 using namespace Aubit4glSql_postgresql;
 
@@ -123,7 +97,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.4 2003-01-12 21:28:44 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.5 2003-01-15 11:43:33 afalout Exp $";
 #endif
 
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.136 2003-01-12 22:09:03 saferreira Exp $
+dnl # $Id: configure.in,v 1.137 2003-01-15 11:43:27 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -228,6 +228,12 @@ AC_SUBST(SAPODBC_LFLAGS)
 AC_SUBST(HAVE_PGODBC)
 AC_SUBST(PGODBC_INCLUDE)
 AC_SUBST(PGODBC_LFLAGS)
+
+#PG ESQL
+AC_SUBST(PGSQL_INCLUDE)
+AC_SUBST(PGSQL_LFLAGS)
+AC_SUBST(PGSQL_LIBS)
+
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1236,7 +1242,7 @@ if test "$cygwin" = "1"; then
 fi
 
 ## ==================================================================
-##                 Checks for PostgreSQL lib support
+##                 Checks for PostgreSQL lib and ESQL/C compiler support
 ## ==================================================================
 
 #force this check even if not specified on command line:
@@ -1244,7 +1250,7 @@ if test "$with_pgsql" = ""; then
 	with_pgsql=yes
 fi
 
-PHP_CONFIGURE_PART(Checking for PostgresSQL support:)
+PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL and library support:)
 AC_ARG_WITH(pgsql,
 [  --with-pgsql[=DIR]      Include PostgresSQL support.  DIR is the PostgresSQL
                           base install directory, defaults to /usr/local/pgsql.],
@@ -1285,14 +1291,30 @@ AC_ARG_WITH(pgsql,
 	# FIXME: Replace `main' with a function in `-lc':
 	AC_CHECK_LIB([pq], [main])
 
-	if test "$ac_cv_lib_pq_main" = "yes"; then
-		AC_DEFINE(HAVE_PGSQL)
-        HAVE_PGSQL_LIB=yes
-	    #AC_MSG_RESULT(yes)
-	    AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+    #needed by native PG connector:
+	AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h ])
+    #FIXME: if we did not find this header; disable compilation of PG native
+    #connector
+
+	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" -o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" ; then
+		HAVE_PG_ESQL_HEADERS=yes
+    else
+        HAVE_PG_ESQL_HEADERS=no
+    fi
+
+	AC_MSG_CHECKING(PG ESQL connector support)
+	if test "$ac_cv_lib_pq_main" = "yes" ; then
+		if test "$HAVE_PG_ESQL_HEADERS" = "yes"; then
+			AC_DEFINE(HAVE_PGSQL)
+    	    HAVE_PGSQL_LIB=yes
+	    	AC_MSG_RESULT(Yes)
+		    AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+        else
+			AC_MSG_RESULT(NO (missing headers))
+        fi
     else
         HAVE_PGSQL_LIB=no
-		#AC_MSG_RESULT(no)
+		AC_MSG_RESULT(NO (missing library))
     fi
 
 	CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS
@@ -1505,35 +1527,41 @@ AC_ARG_WITH(pgodbc,
 			#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
 			#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
 			#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
-			AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+			
+			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+
+			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
+
         fi
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
         CPPFLAGS="$old_CPPFLAGS"
 
+		AC_MSG_CHECKING(PG ODBC connector support)
 		if test $ac_cv_lib_psqlodbc_main = yes; then
 
-			if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
+			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
+			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
                 HAVE_PG_HEADERS=no
             fi
 
-            if test "$HAVE_PG_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+			if test "$HAVE_PG_HEADERS" != "yes" && AUBIT_SOURCE=1; then
             #we need headers only to compile source code
 			    AC_DEFINE(HAVE_PGODBC,0,[ ])
-				AC_MSG_RESULT(no header files)
+				AC_MSG_RESULT(NO (missing header files))
 			else
 				HAVE_PGODBC=yes
 			    PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE"
 			    PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
 
 			    AC_DEFINE(HAVE_PGODBC,1,[ ])
-			    #AC_MSG_RESULT(PGODBC=yes)
+			    AC_MSG_RESULT(yes)
             fi
 		else
 		    AC_DEFINE(HAVE_PGODBC,0,[ ])
-		    #AC_MSG_RESULT(PGODBC=no)
+		    AC_MSG_RESULT(No (missing library))
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -3070,7 +3098,15 @@ fi
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
 
-	#RPMFILE_24=$LIB_PREFIX/
+
+    if test "$HAVE_PGSQL_LIB" = "xxyes"; then
+		RPMFILE_24=$LIB_PREFIX/libSQL_pg$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
+	else
+        PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
+	fi
+
+
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.10 2002-10-20 12:02:38 afalout Exp $
+# $Id: rexp2.c,v 1.11 2003-01-15 11:43:33 afalout Exp $
 #
 */
 
@@ -44,16 +44,16 @@
 =====================================================================
 */
 
-#define  EQ 1
-#define  LEQ 2
-#define  NEQ 3
-#define  GEQ 4
-#define  LTHN 5
-#define  GTHN 6
-#define  BIGG 7
-#define  LST 8
-#define  OR 8
-#define  RANGE 10
+#define  EQ 	1
+#define  LEQ 	2
+#define  NEQ 	3
+#define  GEQ 	4
+#define  LTHN 	5
+#define  GTHN 	6
+#define  BIGG 	7
+#define  LST 	8
+#define  OR 	8
+#define  RANGE 	10
 /*
 #define CONSTR_SEP '\t'
 #define like(s1,s2) mja_match(s1,s2,'L');
@@ -61,7 +61,7 @@
 */
 
 #define is_match_decimal "[\\+\\-]{0,1}[0-9]{0,}\\.[0-9]{0,}"
-#define is_match_integer  "[\\+\\-]{0,1}[0-9]{1,}"
+#define is_match_integer "[\\+\\-]{0,1}[0-9]{1,}"
 
 #define MATCH_LITERAL  5    /* match failure on literal match */
 #define MATCH_RANGE    4    /* match failure on [..] construct */
@@ -90,7 +90,7 @@
 =====================================================================
 */
 
-char    *constr_bits[256];
+char *	constr_bits[256];
 int     constr_size;
 
 /*
@@ -100,10 +100,10 @@ int     constr_size;
 */
 
 
-void doconstruct(char *s,char *whereclause);
-int mja_matchcmp(char *a,char *s_match);
-static int isop(char *str, int i);
-static void convert_constr_buffer(char *str);
+void 		doconstruct				(char *s,char *whereclause);
+int 		mja_matchcmp			(char *a,char *s_match);
+static int 	isop					(char *str, int i);
+static void convert_constr_buffer	(char *str);
 
 /*
 =====================================================================
@@ -120,8 +120,9 @@ static void convert_constr_buffer(char *str);
 static void
 appendchr(char *s, char c)
 {
-        int     a;
-        a = strlen(s);
+int     a;
+        
+		a = strlen(s);
         if (c=='\'') appendchr(s,'\\');
         s[a] = c;
         s[a+1] = 0;
@@ -138,27 +139,25 @@ int
 mja_match(char *str1, char*str2, int likeormatch)
 {
 char    MULTICHAR, SINGLECHAR;
+int error;
 
-		int error;
-		trim(str1);
-		trim(str2);
+	trim(str1);
+	trim(str2);
 		#ifdef DEBUG
-		/* {DEBUG} */ {        debug("Match '%s' '%s' %c",str1,str2,likeormatch);
-		}
+			{debug("Match '%s' '%s' %c",str1,str2,likeormatch);}
 		#endif
 
         if (likeormatch == 'L') {
                 MULTICHAR = '%';
                 SINGLECHAR = '.';
-        } else
-        {
+        } else {
                 MULTICHAR = '*';
                 SINGLECHAR = '?';
         }
 
 		error = matche(str2,str1);
 		if (error==MATCH_VALID) return 1;
-		else return 0;
+			else return 0;
 }
 
 
@@ -181,7 +180,7 @@ int     z2;
 int     cnt;
 int     k, k2=0;
 char    lastchar;
-int ismatch;
+int 	ismatch;
 
 		trim(val);
         ptr2 = val;
@@ -211,7 +210,7 @@ int ismatch;
                         appendchr(buffer, ptr2[a]);
                         /*constr_bits[constr_size++]=&ptr2[a];*/
                         /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1];*/
-                } else if (z == 0 && lastchar > 0) { /* last character was a control  
+                } else if (z == 0 && lastchar > 0) { /* last character was a control
                                                                                                                                                                                                           but this one isnt */
                         appendchr(buffer, '\n');
                         constr_bits[constr_size++] = &buffer[strlen(buffer)];
@@ -220,7 +219,7 @@ int ismatch;
                 } else if (z > 0 && lastchar > 0) {
                         if (lastchar<OR&&z==EQ) {
                                 appendchr(buffer, ptr2[a]);
-                        } else 
+                        } else
                         {
                                 appendchr(buffer, '\n');
                                 constr_bits[constr_size++] = &buffer[strlen(buffer)];
@@ -334,7 +333,7 @@ int ismatch;
                 strcat(buff3, "");
         }
         /*
-        	for (z=0;z<constr_size;z++) 
+        	for (z=0;z<constr_size;z++)
 			{
             	printf("(%s)\n",constr_bits[z]);
             }
@@ -394,9 +393,9 @@ convert_constr_buffer(char *str)
 {
 int     a;
 int     b;
-        
+
 		b = strlen(str);
-        for (a = 0; a < b; a++) 
+        for (a = 0; a < b; a++)
 		{
                 if (str[a] == '\n')
                         str[a] = 0;

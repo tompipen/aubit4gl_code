@@ -25,19 +25,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.99 2003-01-04 01:58:30 afalout Exp $
+# $Id: Makefile-common.in,v 1.100 2003-01-15 11:43:33 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
-AUBITNAME=@SHORTNAME@
+AUBITNAME					=@SHORTNAME@
 
 #If we later need to know if this makefile was included or not:
-MAKEFILE_COMMON_INCLUDED=1
+MAKEFILE_COMMON_INCLUDED	=1
 
 #############
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/${AUBITNAME}
-AUBITETC=/etc/opt/${AUBITNAME}
+AUBITETC					=/etc/opt/${AUBITNAME}
 
 
 #WARNING! configure is not creating this file when in binary tree,
@@ -47,11 +47,11 @@ AUBITETC=/etc/opt/${AUBITNAME}
 #with binary distro only to install/deinstall and compile stuff in tools/test
 #so I guess it's OK - if not, we will have to pack Makefile-common.in with
 #binary distro and modify configure to create it for binary build too.
-AUBIT_SRC_ROOT=@aubitdir@
-AUBIT_VERSION=@AUBIT_VERSION@
-AUBIT_BUILD=@AUBIT_BUILD@
-COMPILE_DATE=@COMPILE_DATE@
-TARGET=@target@
+AUBIT_SRC_ROOT				=@aubitdir@
+AUBIT_VERSION				=@AUBIT_VERSION@
+AUBIT_BUILD					=@AUBIT_BUILD@
+COMPILE_DATE				=@COMPILE_DATE@
+TARGET						=@target@
 
 ifeq "${TARGET_OS}" ""
 	TARGET_OS=$(findstring solaris,${TARGET})

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.6 2002-10-18 07:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-01-15 11:43:33 afalout Exp $
 #
 
 ROOT        =../../..
@@ -42,6 +42,7 @@ else
 	DATAIODIR	=${ROOT}/common/dataio
 endif
 XDR_CMODS   =${DATAIODIR}/form_x_xdr.c ${DATAIODIR}/menu_x_xdr.c ${DATAIODIR}/report_xdr.c
+XDR_OBJS	=${XDR_CMODS:.c=.o}
 CMODS   	=pack_xdr.c ${XDR_CMODS}
 
 ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
@@ -56,7 +57,7 @@ else
 endif
 
 LOCAL_IFLAGS=-I..
-OBJS		= pack_xdr.o ${XDR_CMODS:.c=.o}
+OBJS		= pack_xdr.o ${XDR_OBJS}
 CFLAGS      +=${LOCAL_IFLAGS}
 
 #we don't want -Wall in CFLAGS when compiling rpcgen generated c code because
@@ -83,12 +84,11 @@ ${LIBROOT}/libPACKER_XDR${SO_EXT}: ${OBJS}
 #	${MV} TMP${SOEXP_EXT} $@.a
 #endif
 
-${XDR_CMODS}:
+${XDR_OBJS}:
 #	${MAKE} -C ${ROOT}/common/dataio
-	${MAKE} -C ${ROOT}/common/dataio form_x_xdr.c
-	${MAKE} -C ${ROOT}/common/dataio menu_x_xdr.c
-	${MAKE} -C ${ROOT}/common/dataio report_xdr.c
-
+	${MAKE} -C ${ROOT}/common/dataio form_x_xdr.o
+	${MAKE} -C ${ROOT}/common/dataio menu_x_xdr.o
+	${MAKE} -C ${ROOT}/common/dataio report_xdr.o
 
 #only source we can use full CFLAGS on:
 #pack_xdr.o: pack_xdr.c

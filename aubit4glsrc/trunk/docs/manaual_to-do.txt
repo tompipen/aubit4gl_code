@@ -1629,7 +1629,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.2 2003-01-09 02:03:55 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.3 2003-01-15 11:43:33 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3145,7 +3145,7 @@ Use in my makefiles:
 -mcpu=i686
 -Wno-implicit-int
 -Wno-comment
--Wno-unused
+
 
 =======================================================================
 
@@ -3174,4 +3174,202 @@ To doc4gl manual:
 >
 
 ======================================================================
+
+> > compilers/ace/perl_runner ?
+>
+> I missed that dir - do you have anything that describe it's usage?
+
+
+Firstly - you need to copy  the perl runner scripts (the .pm's) from
+perl_runner to the perl library directory (I used
+/usr/local/lib/perl5/site_perl - but yours maybe different)
+
+Then - you need to make aace_perl :
+
+make aace_perl
+
+I think I added this back into the Makefile.in, so you should only need to
+'configure' and then be able to 'make'.
+
+
+Once you've got that - you can start
+
+aace_perl myreport.aace
+
+(a .aace is identical to a .ace)
+
+
+
+When you want to run your report :
+
+$ chmod 777 myreport.run.pl
+$ myreport.run.pl
+
+
+(You'll also have a myreport.aarc.pl - but that can be discarded).
+
+
+Points to note :
+
+The report runs via DBI - you'll need that set up in order to run any reports.
+
+The connection is made using
+
+	$dbh = DBI->connect("DBI:$dbtype:".$report->{"report"}{"dbname"});
+
+Which may not suffice for some DBI database interfaces, the $dbtype is taken
+from the AACE_DB environment variable and default to 'Informix' if not set.
+
+
+The report compiles using the normal A4GL libraries (ie not DBI) so you'll
+need those set up to compile the reports.
+
+The report.pm is pretty much ok (there are a few bugs) - in particular there
+is **NO** 'format every row end' section - you must use a proper format
+section (PAGE HEADER, ON EVERY ROW etc).
+
+
+Finally -
+
+READ THE LICENSE INFO -
+
+	# (c) 2002 Aubit Computing Ltd
+	#
+	# NOTE : This code is not covered by the GPL and is not part of the core
+	#        Aubit4gl system or maintained by the Aubit4GL team.
+	#
+	#        If you wish to use this code the following condition applies :
+	#
+	#             You must NOT use this code in any commercial application
+	#             without prior consent of Aubit Computing Ltd
+	#
+	# For full details of the licensing terms - please contact Aubit Computing
+Ltd
+	#
+
+
+
+
+
+If you want to add this to the documentation then fine - but its not GPL - its
+owned by me (as I think it could have serious commercial potential) - I may
+remove/change this code at will !
+
+
+Just to complete the extra ace stuff - there is also aace_4gl
+
+This converts an ACE report to 4GL doing all the necessary conversions
+en-route.
+Eg:
+
+
+	DATABASE stores END
+	OUTPUT
+	        REPORT TO "myfile.out"
+	END
+
+	SELECT
+
+	    tabname,
+	    tabid
+	FROM systables END
+
+	FORMAT
+	ON EVERY ROW
+		PRINT tabname," ",tabid
+	END
+
+
+Becomes :
+
+	MAIN
+	   CALL run_report_systables()
+	END MAIN
+
+	FUNCTION run_report_systables()
+	# Variables
+	DEFINE lv_data RECORD
+	   x_tabname CHAR (18),
+	   x_tabid INTEGER
+	END RECORD
+# end of initialisation
+
+	DECLARE c_r_systables CURSOR FOR
+	   SELECT tabname,tabid FROM systables
+
+	START REPORT rep_systables
+
+	FOREACH c_r_systables INTO lv_data.*
+
+ 	 OUTPUT TO REPORT rep_systables (lv_data.*)
+	END FOREACH
+
+	FINISH REPORT rep_systables
+
+	END FUNCTION
+
+	REPORT rep_systables(lv_data)
+	DEFINE lv_data RECORD
+	   x_tabname CHAR (18),
+	   x_tabid INTEGER
+	END RECORD
+	OUTPUT
+	  TOP MARGIN 3
+	  BOTTOM MARGIN 3
+	  LEFT MARGIN 5
+	  RIGHT MARGIN 132
+	  TOP OF PAGE ""
+	 REPORT TO "myfile.out"
+
+
+	FORMAT
+
+	ON EVERY ROW
+	   PRINT lv_data.x_tabname , " " , lv_data.x_tabid
+
+	END REPORT
+
+
+
+
+
+(I just fixed the REPORT TO myfile.out !)
+
+
+To use it - compile your ace report :
+
+	$ aace somereport.aace
+then run the processor on the resultant .aarc file
+
+	$ aace_4gl somereport.aarc
+
+This will dump to stdout - so :
+	$ aace_4gl somereport.aarc > somereport.4gl
+
+
+This will ALWAYS shove the MAIN..END MAIN block in so it can be compiled into
+a standalone program.
+
+You'll obviously need to remove that in order to put it into a larger
+program...
+
+
+
+
+
+Again - check the license:
+
+# (c) 2002 Aubit Computing Ltd
+#
+# NOTE : This code is not covered by the GPL and is not part of the core
+#        Aubit4gl system or maintained by the Aubit4GL team.
+#
+#        If you wish to use this code the following condition applies :
+#
+#          You must NOT use this code or any code that is generated in any
+#          commercial application without prior consent of Aubit Computing Ltd
+#
+# For full details of the licensing terms - please contact Aubit Computing Ltd
+#
+*/
 

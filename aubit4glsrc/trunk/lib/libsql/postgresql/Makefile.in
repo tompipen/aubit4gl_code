@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2003-01-12 21:28:44 saferreira Exp $
+# $Id: Makefile.in,v 1.4 2003-01-15 11:43:33 afalout Exp $
 #
 
 ROOT    =../../..
@@ -32,23 +32,18 @@ LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../../incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-SRC=postgresql.cpp ConnectionException.cpp PgConnection.cpp \
-PgDriver.cpp PreparedStatement.cpp
-OBJS=${SRC:.cpp=.o}
-CFLAGS+=-I..
+SRC		=postgresql.cpp ConnectionException.cpp PgConnection.cpp \
+		PgDriver.cpp PreparedStatement.cpp
+OBJS	=${SRC:.cpp=.o}
+CFLAGS	+=-I.. @PGSQL_INCLUDE@
 CXXFLAGS=$(CFLAGS)
 
-ifdef ${COMSPEC}
-    ALL=dllSQL_pg.dll
-else
-    ALL=libSQL_pg${SO_EXT}
-endif
+ALL=${LIBROOT}/libSQL_pg${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -56,14 +51,9 @@ endif
 
 ALL: ${ALL}
 
-libSQL_pg${SO_EXT}: $(OBJS)
-	${LD} ${SO_LDFLAGS} $^ -Lpq -o $@
+${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
+	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@
 	${CP} $@ ${LIBROOT}
-
-## ==================================================================
-##                          Windows targets
-## ==================================================================
-
 
 ## ==================================================================
 ##                              Clean

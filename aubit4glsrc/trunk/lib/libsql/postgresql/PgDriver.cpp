@@ -12,7 +12,17 @@
  */
 
 #include <string.h>
-#include <postgresql/libpq-fe.h>
+
+#if HAVE_POSTGRESQL_LIBPQ_FE_H
+	#include <postgresql/libpq-fe.h>
+#else
+	#if HAVE_PGSQL_LIBPQ_FE_H
+		#include <pgsql/libpq-fe.h>
+	#else
+		#define libpq(s)	assert("Don't have libpq-fe.h" == 0)
+	#endif
+#endif
+
 #include "PgConnection.h"
 #include "PgDriver.h"
 #include "ConnectionException.h"

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.29 2003-01-11 17:22:17 mikeaubury Exp $
+# $Id: Makefile.in,v 1.30 2003-01-15 11:43:34 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -59,7 +59,7 @@ endif
 
 ALL_FAIL=test_select
 
-ALL=${DEFAULT} assoc pdf_report file testmenu testmpz ${SUB} ${REGRES} ${ALL_FAIL}
+ALL=${DEFAULT} assoc solitaire pdf_report file testmenu testmpz ${SUB} ${REGRES} ${ALL_FAIL}
 
 ## ==================================================================
 ##                              Targets
@@ -85,15 +85,20 @@ sub: ${SUB}
 	@echo targets in sub directories successfully compiled
 
 4gldemo:
-#	@echo AUBITDIR in Makefile=${AUBITDIR}
-ifeq "${FCONVERT}" "yes"
-	${FCONVERT_CMD} hello.4gl hello2.4gl hello_db.4gl
-endif
+#KEEP IN MIND THAT THIS MAKE FILE IS ALSO IN BINARY DISTRIBUTION - DO NOT ADD
+#ANY MORE TARGETS HERE UNLESS YOU WILL ALSO MODIFY THE INSTALLER TO PACK NEEDED
+#SOURCE FILES IN BYNARY DISTROS - OTHERWISE MAKE WILL FAIL BECAUSE OF MISSING
+#SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
+#ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
+#CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
 	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
 	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
 	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
-	${FGLPCEXEC} ${4GLPCFLAGS} sol.4gl random.4gl -o solitaire
 	@echo 4gl demo targets successfully compiled
+
+
+solitaire:
+	${FGLPCEXEC} ${4GLPCFLAGS} sol.4gl random.4gl -o solitaire
 
 pdf_report: pdf_report.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
@@ -172,7 +177,9 @@ clean:
 	hello hello2 hello_db test_build filetest *.hlp *.exe *.stackdump *.exe \
 	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
 	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.ao *.log *.4ge *.pl *.pm \
-	test_build.c .\#* .*.bak
+	test_build.c .\#* .*.bak assoc *.frm.xml testmpz file testmenu
+
+
 
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"

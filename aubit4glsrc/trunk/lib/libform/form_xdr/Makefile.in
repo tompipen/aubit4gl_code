@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.12 2003-01-15 11:43:33 afalout Exp $
 #
 
 ROOT		=../../..
@@ -104,6 +104,9 @@ ci: $(CMODS)
 
 ${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+${ROOT}/compilers/fcompile/form_x_xdr.o:
+	${MAKE} -C ${ROOT}/compilers/fcompile form_x_xdr.o
 
 ## ==================================================================
 ##                        Dependencies
