@@ -83,6 +83,10 @@ main(int argc, char *argv[])
 
 	while( (s = fgets( line, HELPMAXLEN, infile )) != NULL )
 	{
+		if (line[0]=='#') {
+			continue;
+		}
+
 		if( line[0] == '.' )
 		{
 			++count;

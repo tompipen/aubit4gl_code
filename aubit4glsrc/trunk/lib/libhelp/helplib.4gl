@@ -304,7 +304,7 @@ code
 	else if( msgnotfound )
 	{
 		charcount = 0;
-		sprintf(errmsg, "Error: Message %d not found in %s",
+		sprintf(errmsg, "Error: Message %d not found in '%s'",
 				 n,filename);
 		myseterr(errmsg);
 	}
