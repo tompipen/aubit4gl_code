@@ -49,6 +49,7 @@ VARIABLE A4GL_LEXDIALECT
 A4GL_copy_char char* infx,char* a4gl,int indicat,int size,int mode,int x,int y -> void
 A4GL_copy_date long* infx,long* a4gl,int indicat,int size,int mode -> void
 A4GL_copy_datetime void* infx, void* a4gl,int indicat,int size,int mode -> void
+A4GL_copy_interval void* infx, void* a4gl,int indicat,int size,int mode -> void
 A4GL_copy_decimal void* infx,void* a4gl,int indicat,int size,char dir -> void
 A4GL_copy_float float* infx,float* a4gl,int indicat,int size,int mode -> void
 A4GL_copy_double double* infx,double* a4gl,int indicat,int size,int mode -> void
@@ -59,10 +60,6 @@ popdec void* vx -> void
 retdec void* vx -> void
 popdtime void* vx -> void
 retdtime void* vx -> void
-/* A4GL_copy_interval -> void 
-A4GL_copy_interval void* a,void* b,int c,int d,char e,int f,int g -> void
-*/
-A4GL_copy_interval void* a,void* b,int c,int d,char e -> void
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.12 2004-03-29 08:15:45 mikeaubury Exp $
+# $Id: simple.c,v 1.13 2004-03-29 17:37:51 mikeaubury Exp $
 #*/
 
 
@@ -427,7 +427,7 @@ int nrows=0;
 int a;
 	
 	
-	sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+  sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
 
   res = PQexec (con, buff);
 
@@ -437,21 +437,25 @@ int a;
     case PGRES_TUPLES_OK:
       	nrows = PQntuples (res);
       	A4GL_debug ("Returns %d fields", nfields);break;
+	case PGRES_NONFATAL_ERROR:
+		return 0;
 
-    case PGRES_EMPTY_QUERY:
-    case PGRES_COPY_OUT:
+    	case PGRES_EMPTY_QUERY:
+    	case PGRES_COPY_OUT:
 	case PGRES_COPY_IN:
 	case PGRES_BAD_RESPONSE:
-	case PGRES_NONFATAL_ERROR:
+
 	case PGRES_FATAL_ERROR:
-  	A4GL_set_errm (tabname);
-  	A4GL_exitwith ("Unexpected postgres return code\n");
-	return 0;
+		A4GL_debug("Got : %d",PQresultStatus (res));
+  		A4GL_set_errm (tabname);
+  		A4GL_exitwith ("Unexpected postgres return code\n");
+	return -1;
     }
 
   if (!nrows) {
 	return 0;
   }
+
   for (a=0;a<nrows;a++) {
 		strcpy(val,PQgetvalue(res,a,0));
 		ptr=A4GL_add_validation_elements_to_expr(ptr,val);
