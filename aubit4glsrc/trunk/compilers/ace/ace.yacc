@@ -180,7 +180,7 @@ set_expr_int(struct expr *e,int a)
 %token NUMBER_VALUE
 %token NUMERIC
 %token OF 
-%token ON EVERY ROW
+%token ON
 %token OPEN_BRACKET
 %token OPEN_SQUARE
 %token OR
@@ -189,7 +189,6 @@ set_expr_int(struct expr *e,int a)
 %token OUTER
 %token OUTPUT
 %token PAGE
-%token PAGE 
 %token PAGE_HEADER
 %token PAGE_TRAILER
 %token PARAM
@@ -382,12 +381,12 @@ output_element:
 
 
 select_section:
-	read_list END | select_list END { execute_selects(); }
+	read_list END | sec_select_list END { execute_selects(); }
 ;
 
-select_list:
+sec_select_list:
 	select_statement 			 { add_select($<str>1,temp_tab_name); }
-	| select_list SEMICOLON select_statement { add_select($<str>3,temp_tab_name); }
+	| sec_select_list SEMICOLON select_statement { add_select($<str>3,temp_tab_name); }
 ;
 
 read_list: 
@@ -826,7 +825,7 @@ e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 
 
 select_statement:
-	SELECT {reset_sql_stuff();} op_ad select_list 
+	SELECT {reset_sql_stuff();} op_ad sq_select_list 
 	table_expression
         sel_p2 
 	{sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6);
@@ -835,7 +834,7 @@ select_statement:
 
 /*
 in_select_statement:
-	SELECT op_ad select_list table_expression sel_p2 {
+	SELECT op_ad sq_select_list table_expression sel_p2 {
              char buff[30000];
              //int ni = 0,no = 0;
              sprintf(buff,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
@@ -848,7 +847,7 @@ select_statement2:
 	select_statement2_1  ;
 
 select_statement2_1:
-	SELECT op_ad select_list 
+	SELECT op_ad sq_select_list 
 	table_expression 
         sel_p2
 {sprintf($<str>$,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5 );}
@@ -887,7 +886,7 @@ strcpy(temp_tab_name,$<str>3);
 
 
 subquery:
-	OPEN_BRACKET SELECT op_ad select_list table_expression CLOSE_BRACKET
+	OPEN_BRACKET SELECT op_ad sq_select_list table_expression CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	;
 
@@ -897,9 +896,9 @@ op_ad: {strcpy($<str>$,"");}
 	| UNIQUE {sprintf($<str>$,"DISTINCT");}
 	;
 
-select_list: 
+sq_select_list: 
 	value_expression_pls 
-	| select_list COMMA value_expression_pls { sprintf($<str>$," %s,%s",$<str>1,$<str>3);}
+	| sq_select_list COMMA value_expression_pls { sprintf($<str>$," %s,%s",$<str>1,$<str>3);}
 	;
 
 value_expression_pls : 
