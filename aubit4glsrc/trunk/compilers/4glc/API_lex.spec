@@ -669,6 +669,10 @@ print_dealloc_arr char* s -> void
 print_alloc_arr char* s char* dim -> void
 print_realloc_arr char* s char* dim -> void
 get_in_exists_sql char* s char t -> void*
+
+print_free_convertable char* report_name -> void
+print_convert_report char* report_name char* fout char* type char* layoutfile  -> void
+
 CLASS_print_reflector -> void
 CLASS_set_class_name char* name -> void
 CLASS_set_parent_name char* name -> void

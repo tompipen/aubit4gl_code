@@ -5,36 +5,48 @@
 */
 
 
-start_cmd : START_REPORT rep_name TO_PRINTER op_convert {
+start_cmd : START_REPORT rep_name TO_PRINTER  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
 			}
-	    | START_REPORT rep_name TO rout op_convert {
+	    | START_REPORT rep_name TO rout  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("F",$<str>4,$<str>2);
 			}
-	    | START_REPORT rep_name TO_PIPE rout op_convert {
+	    | START_REPORT rep_name TO_PIPE rout  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P",$<str>4,$<str>2);
 			}
-	    | START_REPORT rep_name TO_SCREEN rout op_convert {
+	    | START_REPORT rep_name TO_SCREEN  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("S",$<str>4,$<str>2);
+			print_start_report("S","\"\"",$<str>2);
 			}
-	    | START_REPORT rep_name op_convert {
+	    | START_REPORT rep_name AS_CONVERTABLE {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("","\"\"",$<str>2);
+			print_start_report("C","\"\"",$<str>2);
 			}
 ;
 
 
-op_convert : {strcpy($<str>$,"0");} 
-	| AS_CONVERTABLE {strcpy($<str>$,"1");}
+
+
+
+convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8);
+		}
+ 		| CONVERT_REPORT rep_name TO var_or_char AS var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"");
+		}
 ;
 
-rout : CHAR_VALUE | cvariable;
+rout : CHAR_VALUE | cvariable
+;
 
 
+free_rep_cmd : FREE_REPORT rep_name {
+		print_free_convertable($<str>2);
+}
+;
 
 rep_name : identifier;
 
@@ -50,9 +62,25 @@ output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET reset_cnt op_fgl_
 finish_cmd : FINISH_REPORT rep_name {
 		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
 		print_finish_report($<str>2);
+		print_free_convertable($<str>2); // Shouldn't really be needed - but they may have started it "AS CONVERTABLE"
 		}
+	| FINISH_REPORT rep_name CONVERTING_TO_MANY   {
+		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		print_finish_report($<str>2);
+		// Can't free convertable here - developer needs to do that using FREE REPORT
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char KW_USING var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8);
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"");
+		print_free_convertable($<str>2);
+	}
+	
 ;
-
 
 
 term_rep_cmd : TERMINATE_REPORT rep_name {
