@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.35 2003-04-23 18:15:39 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.36 2003-04-24 08:30:18 mikeaubury Exp $
 */
 
 /**
@@ -277,7 +277,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void set_option_value (char type, int keyval);
   int aclfgli_get_err_flg (void);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
-  void clr_fields (int to_defaults, char *flds,int fno);
+  void clr_fields (int to_defaults, char *flds,int fno,...);
+
   int chk_iskey (char *keys);
   int fgl_infield (char *s, int a);
   int disp_fields (int n, int attr, ...);
@@ -394,8 +395,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   int aclfgl_fgl_keyval (int _np);
   int aclfgl_upshift (int _np);
   int aclfgl_downshift (int _np);
-  int upshift_stk(void);
-  int downshift_stk(void);
+  void upshift_stk(void);
+  void downshift_stk(void);
 
   /* ======================== datatypes.c ================ */
 

@@ -18,9 +18,11 @@
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 
+#ifdef __cplusplus
 void copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir);
 void copy_decimal(dec_t *infx,fgldecimal *a4gl,int size,char dir);
 void copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int mode);
+#endif
 
 
 // Conversion functions between informix types and A4GL datatypes
@@ -65,3 +67,6 @@ void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
 #define popdtime(x) {char *_s;_s=char_pop();dtcvasc(_s,&x);free(_s);}
 
 #define retdtime(x) {char _s[123];dttoasc(&x,_s);push_char(_s);}
+#ifdef __cplusplus
+}
+#endif

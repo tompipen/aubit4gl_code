@@ -13,8 +13,10 @@
 
 
 #include "a4gl_incl_4glhdr.h"
-#include "a4gl_libaubit4gl.h"
 #define GETENV_OK 
+
+#include "a4gl_libaubit4gl.h"
+
 #ifdef DIALECT_INFORMIX
 #include "a4gl_esql_infx.h"
 #endif
