@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.154 2004-02-01 08:14:35 mikeaubury Exp $
+# $Id: mod.c,v 1.155 2004-02-07 10:02:50 mikeaubury Exp $
 #
 */
 
@@ -3952,6 +3952,15 @@ get_curr_report_stack_whytype (void)
 {
   return report_stack[report_stack_cnt-1].whytype;
 }
+
+char*
+get_curr_report_stack_why (void)
+{
+  return report_stack[report_stack_cnt-1].why;
+}
+
+
+
 /* folowing functions are to work around problem with exporting struct in Windows dll */
 
 /**
