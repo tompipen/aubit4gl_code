@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.132 2003-10-16 09:46:07 afalout Exp $
+# $Id: Makefile.in,v 1.133 2003-10-21 10:29:12 afalout Exp $
 #
 
 ## ==================================================================
@@ -291,6 +291,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
 	$(MAKE) -C tools/convertsql clean
+	cd tools/test/build_tests; ${SH} run_tests -clean
 	@echo "Aubit 4gl compiler source tree is now clean NOTE: tools tree not cleaned"
 
 

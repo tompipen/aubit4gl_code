@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.204 2003-10-16 09:46:09 afalout Exp $
+dnl # $Id: configure.in,v 1.205 2003-10-21 10:29:14 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -238,7 +238,6 @@ AC_C_BIGENDIAN
 #   If words are stored with the most significant byte first (like Motorola and SPARC,
 #but not Intel and VAX, CPUs), define WORDS_BIGENDIAN.
 
-
 AC_CYGWIN
 #  Checks for the Cygwin environment. If present, sets shell variable CYGWIN to `yes'.
 #If not present, sets CYGWIN to the empty string.
@@ -255,14 +254,42 @@ AC_DISABLE_STATIC
 #Note: The libltdl library included with all libtool versions will only work on
 #Darwin when dlcompat is installed.
 
+
+
+#		echo "****************************************"
+#		echo "is this before command line lenght?   1"
+#		echo "****************************************"
+
 #AC_LIBLTDL_INSTALLABLE
 AC_LIBLTDL_CONVENIENCE
 AC_LIBTOOL_WIN32_DLL
+
 AC_LIBTOOL_DLOPEN
+
+#yes
+
+case $host in
+	#hppa2.0w-hp-hpux11.00
+	*-hp-hpux*)
+		#> 1) in ./configure I get a core dump when trying to figure command line length.
+		#>    I do a "export lt_cv_sys_max_cmd_len=200" before configure and that
+		#>    seems to clear it up.
+		export lt_cv_sys_max_cmd_len=200
+		;;
+esac
+
 AC_PROG_LIBTOOL
+
+#no
+#		echo "****************************************"
+#		echo "is this before command line lenght?   2"
+#		echo "****************************************"
+
+
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
+#not
 
 ## ==================================================================
 ##                Define what will get substituted
@@ -1315,6 +1342,7 @@ case $host in
 		echo "    platform to the mailing list. Thank you."
         ;;
 esac
+
 
 LDFLAGS_SHARED="$PIC -shared"
 

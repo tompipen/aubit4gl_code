@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.58 2003-09-15 13:07:24 mikeaubury Exp $
+# $Id: Makefile.in,v 1.59 2003-10-21 10:29:20 afalout Exp $
 #
 
 ROOT    	=../..
@@ -104,15 +104,25 @@ endif
 
 LCLINT_CFLAGS   	=${C_IFLAGS}
 
-ifneq "${TARGET_OS}" "cygwin"
-ifneq "${GCC_MINGW}" "yes"
-	LINK_LIBS           =-ldl -lm
-endif
-endif
 
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
+
+
+
+ifneq "${TARGET_OS}" "hpux"
+	ifneq "${TARGET_OS}" "cygwin"
+		ifneq "${GCC_MINGW}" "yes"
+            #all platforms except HP-UX, CygWin and MinGW:
+			LINK_LIBS           =-ldl -lm
+		endif
+	endif
+else
+            #HP-UX only:
+			LINK_LIBS           =-lcl -lm
+endif
+
 
 ifeq "${GCC_MINGW}" "yes"
 	#LINK_LIBS		+=-lc
