@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.6 2003-01-12 09:24:09 afalout Exp $
+#  $Id: Makefile.in,v 1.7 2003-01-12 23:51:18 afalout Exp $
 #
 #  ==========================================================================
 
@@ -118,9 +118,10 @@ clean.manager:
 #Perl created makefile (from Makefile.PL) will rename Makefle to Makefile.old
 #so we have to restore that:
 	cd manager; mv Makefile.old Makefile
-	cd manager; ${RM} *.bak
+	cd manager; ${RM} *.bak pm_to_blib
 	cd manager/FglDocumenter; ${RM} *.bak
 	cd manager/FglDocumenter/test; ${RM} *.bak
+	rm -rf blib
 
 #delete everything not in the distribution (CVS)
 distclean: clean
@@ -128,12 +129,12 @@ distclean: clean
 
 #Files created by configure script
 clean.config: clean.makefile
-	${RM} etc/fgldocrc FgldocDefs.mk doc4gl_config.h pm_to_blib
-	rm -rf manager/blib
+	${RM} etc/fgldocrc FgldocDefs.mk pm_to_blib
+	rm -rf manager/blib etc/doc4gl_config.h
 
 #Make files created by configure script:
 clean.makefile:
-	${RM} parser/Makefile browser/Makefile manager/Makefile
+	${RM} parser/Makefile browser/Makefile manager/Makefile manager/Makefile.old
 
 # =========================================================================
 #                           Install Perl modules
