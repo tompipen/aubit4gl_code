@@ -138,13 +138,13 @@ make.modulos:
 #  ============================================================================
 clean:
 	${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak *.ao *.aox \
-    *.4gx  *.qo *.qox *.c *.h *.glb
+    *.4gx  *.qo *.qox *.c *.h *.glb *.42m
 	export DEFAULT=${4GLCOMP}; amake clean
 	cd 4glsrc; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
 	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
 	cd 4glsrc/functions_4gl; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
 	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
-	cd forms; ${RM} *.err *.frm *.bak
+	cd forms; ${RM} *.err *.frm *.bak *.42f
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             DBdoc 4GL browser source code now clean.               |"
