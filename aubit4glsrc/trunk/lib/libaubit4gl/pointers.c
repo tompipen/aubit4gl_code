@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.12 2002-09-26 07:40:41 afalout Exp $
+# $Id: pointers.c,v 1.13 2002-09-26 07:44:50 afalout Exp $
 #
 */
 
@@ -489,20 +489,22 @@ int
     register node *r;
     int cmp;
 
-    //Andrej: temp commented out for debug on Darwin
-	//if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
-	//return ((struct node_t *)0);
+
+	if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
+	return ((struct node_t *)0);
+
+ //Andrej: temp commented out for debug on Darwin
+//	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
+//	{
+//		p = *rootp;
+//		rootp = (cmp < 0) ?
+//	    &(*rootp)->left :		/* follow left branch */
+//	    &(*rootp)->right;		/* follow right branch */
+//		if (*rootp == (struct node_t *)0)
+//	    	return ((struct node_t *)0);	/* key not found */
+//  }
 
 
-    while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
-    {
-	p = *rootp;
-	rootp = (cmp < 0) ?
-	    &(*rootp)->left :		/* follow left branch */
-	    &(*rootp)->right;		/* follow right branch */
-	if (*rootp == (struct node_t *)0)
-	    return ((struct node_t *)0);	/* key not found */
-    }
     r = (*rootp)->right;			/* D1: */
     if ((q = (*rootp)->left) == (struct node_t *)0)	/* Left (struct node_t *)0? */
 	q = r;
