@@ -1,10 +1,41 @@
 /*
 @(#)File:            $RCSfile: msgtext.c,v $
-@(#)Version:         $Revision: 1.1 $
-@(#)Last changed:    $Date: 2002-06-20 09:10:42 $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-21 05:44:01 $
 @(#)Purpose:         Open, Read, Close Informix Error Message Files
 @(#)Author:          J Leffler
 */
+
+
+/* missing - this is dummy */
+/*
+int
+ldint(char *entry) { return 1; }
+*/
+
+/*
+**	Convert 2-byte character array into real short integer
+**	Works on both 680x0 and 80x86 type machines.
+**	Slows 680x0 type machines up as it is then a no-op.
+*/
+/* 
+	taken from ldint/ldint.c :
+	Ushort probably defined in missing #include "stldint.h"
+*/
+/* Ushort */
+short
+ldint(register char *s)
+{
+	register int    i;
+	/* register Ushort j; */
+	register short j;
+
+	for (i = j = 0; i < 2; i++)
+	{
+		j = (j << 8) | (*s++ & 0xFF);
+	}
+	return(j);
+}
 
 /* -- Include Files */
 
@@ -49,7 +80,7 @@ extern char    *malloc();
 extern void     free();
 
 #if !defined(lint)
-static char     sccs[] = "@(#)$Id: msgtext.c,v 1.1 2002-06-20 09:10:42 afalout Exp $";
+static char     sccs[] = "@(#)$Id: msgtext.c,v 1.2 2002-06-21 05:44:01 afalout Exp $";
 #endif
 
 /* Close an already open error message file */
@@ -93,13 +124,6 @@ char           *cp2;
 	register Entry *ep2 = (Entry *) cp2;
 
 	return (ep1->err_number - ep2->err_number);
-}
-
-/* missing - this is dummy */
-int
-ldint(char *entry)
-{
-    return 1;
 }
 
 char           *iem_read(msg)

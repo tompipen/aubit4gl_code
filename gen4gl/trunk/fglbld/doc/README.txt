@@ -1,3 +1,5 @@
+@(#)$Id: README.txt,v 1.2 2002-06-21 05:43:50 afalout Exp $
+
 :FGLBLDVER:
 
 *********************************************
@@ -31,15 +33,16 @@ Guardian of DBD::Informix v1.00.PC1 -- http://dbi.perl.org
 Changes made to the code I received, before importing to SourceForge:
 
 1. Code in RCS directory, that was already in root was deleted.
-2. Remaining files where extracted in last RCV version, and directory
+2. Remaining files where extracted in last RCS version, and directory
     was remaned in only_in_RCS
 3. All files in SCCS directory where deleted, since they already existed
     elsewhere. Except for fglbld.sh, that was moved into only_in_RCS
 4. All .man files where moved in new directorry called "man"
 5. All .4pr files where renamed in .per and moved in new directorry
 	called "per"
-6. .RDS and .4GL files where renamed in .rds and .4gl
-
+6. *.RDS and *.4GL files where renamed to *-RDS.lst and *-4GL.lst
+7. Aubitconf "configure" script was added.
+8. .c and .4gl source code was isolated to new directory "source"
 
 =========================================================================
 
@@ -149,4 +152,4 @@ Good Luck with your modifications.
 Jonathan Leffler
 Sphinx Ltd
 1st December 1989
-@(#)$Id: README.txt,v 1.1.1.1 2002-06-15 05:07:11 afalout Exp $
+
