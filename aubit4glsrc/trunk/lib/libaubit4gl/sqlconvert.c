@@ -1,3 +1,4 @@
+
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,46 +25,8 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.16 2004-10-23 13:36:31 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.17 2004-10-25 10:25:35 mikeaubury Exp $
 #
-*/
-
-/**
- * @file
- * SQL syntax conversion functions.
- *
- * Written by Philip Sterry <psterry@wananchi.com>
- *
- * The only function that should be called here is:
- *
- *     convert_sql( source_dialect, target_dialect, sql_statement ) 
- *
- * This will (attempt to) convert the SQL statement from the program
- * into a form that the DBMS can handle.
- *
- * To test SQL for ANSI SQL 92 99 and 2003 compatibiolity, see:
- * http://developer.mimer.com/validator
- * http://sqlfairy.sf.net (Perl, DDL only)
- * http://www.equivalentscript.com (comertial, not much else then DDL Orracle/SQLserver)
- * http://www.sqissql.com (Java)
- * http://www.vembu.com (comertial, Java)
- * http://ldbc.sf.net (Java)
- * http://www.crossdb.com (Java)
- * http://www.jasmine.org.uk/~simon/bookshelf/papers/babelql/babelql.html (DDL, C pre-processor based)
- * http://www.jnetdirect.com (SQL->XML->SQL - Java)
- * http://www.sqlapi.com (C++, commertial?)
- Perl - see:
- 	SQL::Parser
-	SQL::Statement
-	
- 
- * Four Js ODI manuals 
- */
-
-/*
-=====================================================================
-                           Includes
-=====================================================================
 */
 
 #include "a4gl_libaubit4gl_int.h"
@@ -88,25 +51,81 @@
 */
 
 /* struct to hold list of functions from conversion file(s) */
-typedef void (*func_t) (char *, char *);
-struct fnlist
-{
-  func_t funcp;
-  char *args;
-  struct fnlist *next;
-};
-/* struct for list of conversions currently loaded */
-struct cvlist
-{
-  char source[40];
-  char target[40];
-  struct fnlist *fnlistp;
-  struct cvlist *next;
-};
-struct cvlist *cvlistptr = NULL;
-
 /* empty string that can be pointed to */
 char empty[] = "";
+
+char *cvsql_names[]={
+  "CVSQL_NONE",
+  "CVSQL_REPLACE",
+  "CVSQL_REPLACE_EXPR",
+  "CVSQL_REPLACE_CMD",
+  "CVSQL_DOUBLE_TO_SINGLE",
+  "CVSQL_MATCHES_TO_LIKE",
+  "CVSQL_MATCHES_TO_REGEX",
+  "CVSQL_SUBSTRING_FUNCTION",
+  "CVSQL_TABLE_ALIAS_AS",
+  "CVSQL_COLUMN_ALIAS_AS",
+  "CVSQL_ANSI_UPDATE",
+  "CVSQL_MONEY_AS_DECIMAL",
+  "CVSQL_SQL_CURRENT_FUNCTION",
+  "CVSQL_STRIP_ORDER_BY_INTO_TEMP",
+  "CVSQL_ADD_CASCADE",
+  "CVSQL_OMIT_NO_LOG"
+
+};
+
+struct ilist {
+        int i0;
+        int i1;
+        int i2;
+        int i3;
+        int i4;
+        int i5;
+} ;
+
+
+enum cvsql_type
+
+{
+  CVSQL_NONE,
+  CVSQL_REPLACE,
+  CVSQL_REPLACE_EXPR,
+  CVSQL_REPLACE_CMD,
+  CVSQL_DOUBLE_TO_SINGLE,
+  CVSQL_MATCHES_TO_LIKE,
+  CVSQL_MATCHES_TO_REGEX,
+  CVSQL_SUBSTRING_FUNCTION,
+  CVSQL_TABLE_ALIAS_AS,
+  CVSQL_COLUMN_ALIAS_AS,
+  CVSQL_ANSI_UPDATE,
+  CVSQL_MONEY_AS_DECIMAL,
+  CVSQL_SQL_CURRENT_FUNCTION,
+  CVSQL_STRIP_ORDER_BY_INTO_TEMP,
+  CVSQL_ADD_CASCADE,
+  CVSQL_OMIT_NO_LOG
+};
+
+
+struct s_replace
+{
+  char *from;
+  char *to;
+};
+
+struct cvsql_data
+{
+  enum cvsql_type type;
+  struct s_replace data;
+
+};
+
+
+
+struct cvsql_data *conversion_rules = 0;
+int conversion_rules_cnt = 0;
+
+
+
 
 /*
 =====================================================================
@@ -114,8 +133,8 @@ char empty[] = "";
 =====================================================================
 */
 
-struct fnlist *A4GL_cv_fnlist (char *source, char *target);
-func_t A4GL_cv_str_to_func (char *p, int len);
+void A4GL_cv_fnlist (char *source, char *target);
+int A4GL_cv_str_to_func (char *p, int len);
 
 void A4GL_cvsql_double_single (char *sql, char *args);
 /* void A4GL_cvsql_rowid (char *sql, char *oid); */
@@ -141,11 +160,105 @@ void A4GL_cv_delchstr (char *p, int n);
 char *A4GL_cv_unqstrstr (char *str, char *word);
 char *A4GL_cv_lastnonblank (char *str);
 
+#define SQL_CONVERSION '@'
+#define SQL_CONVERSION_CNT '&'
+
 /*
 =====================================================================
                     Function definitions
 =====================================================================
 */
+void
+A4GL_convert_sql (char *source_dialect, char *target_dialect, char *sql) {
+	//printf("convert sql out of action for a while\n");
+
+}
+
+/*
+ * Returns the next token string in a statement
+ *
+ * @param  p    pointer into SQL statement string
+ * @param  *n   points to an int that'll hold the token length
+ * @param  dot  treat dot (.) as a separate token
+ */
+char *
+A4GL_cv_next_token (char *p, int *len, int dot)
+{
+  char *p2;
+  int slash = 0;
+
+  // ignore whitespace
+  while (*p > 0 && isspace (*p))
+    p++;
+
+  if (*p == '\0')
+    {
+      if (len > 0)
+	*len = 0;
+      return (char *) 0;
+    }
+
+  p2 = p + 1;
+
+  if (isquote (*p))
+    {
+      /* starts with a quote, look for (unescaped) closing quote */
+      for (; *p2 > 0; p2++)
+	{
+	  if (slash)
+	    {
+	      slash--;
+	    }
+	  else
+	    {
+	      if (*p2 == '\\')
+		{
+		  slash++;
+		  continue;
+		}
+	    }
+	  if (*p2 == *p)
+	    {
+	      p2++;
+	      break;
+	    }
+	}
+    }
+  else
+    {
+      if (iscmpop (*p))
+	{
+	  /* comp. operator sequence ( >, >=, !=, ... ) */
+	  while (*p2 > 0 && iscmpop (*p2))
+	    p2++;
+	}
+      else
+	{
+	  /* any sequence comprising table, keyword, number, etc. */
+	  if (dot)
+	    {
+	      if (iswordch (*p))
+		{
+		  while (*p2 > 0 && iswordch (*p2))
+		    p2++;
+		}
+	    }
+	  else
+	    {
+	      if (istabcol (*p))
+		{
+		  while (*p2 > 0 && istabcol (*p2))
+		    p2++;
+		}
+	    }
+	}
+    }
+  /* note, if none of the above, then we return a single char
+   */
+  if (len > 0)
+    *len = p2 - p;
+  return p;
+}
 
 /*
  * Converts an SQL command string written for a specific DBMS to
@@ -153,89 +266,56 @@ char *A4GL_cv_lastnonblank (char *str);
  * 
  * @param  source   SQL dialect statement is written in
  * @param  target   SQL dialect understood by the DBMS
- * @param  sql      SQL command string
 */
 void
-A4GL_convert_sql (char *source_dialect, char *target_dialect, char *sql)
+A4GL_load_convert (char *source_dialect, char *target_dialect)
 {
-  struct fnlist *p = NULL;
+  char buff[256];
+  sprintf (buff, "%s_%s", source_dialect, target_dialect);
+  //printf("Looking for : %s\n",buff);
 
-  A4GL_debug ("convert_sql: source=%s, target=%s, sql=%s",
-	 source_dialect, target_dialect, sql);
-
-  if ((source_dialect == NULL) || (target_dialect == NULL) ||
-      (strcmp (source_dialect, target_dialect) == 0))
+  if (A4GL_has_pointer (buff, SQL_CONVERSION))
     {
-      return;
+      conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
+      conversion_rules_cnt = A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
+    }
+  else
+    {
+      conversion_rules = 0;
+      conversion_rules_cnt = 0;
+      A4GL_cv_fnlist (source_dialect, target_dialect);
+      A4GL_add_pointer (buff, SQL_CONVERSION, conversion_rules);
+      A4GL_add_pointer (buff, SQL_CONVERSION_CNT, conversion_rules_cnt);
     }
 
-  p = A4GL_cv_fnlist (source_dialect, target_dialect);
-
-  while (p)
-    {
-      if (p->funcp)
-	{
-	  p->funcp (sql, p->args);
-	}
-      p = p->next;
-    }
-
-  A4GL_debug ("  A4GL_convert_sql returns %s", sql);
 }
 
-/*
- * Loads up conversion files and returns a pointer to a
- * linked list of conversion functions to be called.
- *
- * @param  source  source dialect
- * @param  target  target dialect
- */
-struct fnlist *
+
+
+
+void
 A4GL_cv_fnlist (char *source, char *target)
 {
   char buff[201];
-  struct cvlist *cv;
-  struct fnlist *p = NULL;
+  char buff_sm[201];
   FILE *fh;
   char *t;
   int len;
 
-  /* do we have this conversion loaded ? */
-  cv = cvlistptr;
-  while (cv)
-    {
-      if ((strcasecmp (cv->source, source) == 0) &&
-	  (strcasecmp (cv->target, target) == 0))
-	{
-	  return cv->fnlistp;
-	}
-      cv = cv->next;
-    }
-
-  /* no we don't, so malloc a new struct for the conversion
-   * info, and load the file (named "source-target.cnv")
-   */
-  cv = cvlistptr;
-  cvlistptr = (struct cvlist *) malloc (sizeof (struct cvlist));
-  strcpy (cvlistptr->source, source);
-  strcpy (cvlistptr->target, target);
-  cvlistptr->fnlistp = NULL;
-  if (cv)
-    cv->next = cvlistptr;
 
   strcpy (buff, acl_getenv ("SQLCNVPATH"));
 
   if (buff[0] == '\0')
-    sprintf (buff, "%s/etc/convertsql",acl_getenv ("AUBITDIR"));
+    sprintf (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
   len = strlen (buff);
-  sprintf (&buff[len], "/%s-%s.cnv", source, target);
+  sprintf (buff_sm, "/%s-%s.cnv", source, target);
+  strcat (buff, buff_sm);
 
   A4GL_debug ("loading sql conversion file %s", buff);
-
   if ((fh = fopen (buff, "r")) == NULL)
     {
       A4GL_debug ("failed to open file");
-      return cvlistptr->fnlistp;	/* NULL */
+      return;			/* NULL */
     }
 
   /* each line of the file consists of a function name and
@@ -247,92 +327,246 @@ A4GL_cv_fnlist (char *source, char *target)
 	continue;
       if (*t == '#')
 	continue;
-      if (p)
-	{
-	  p->next = (struct fnlist *) malloc (sizeof (struct fnlist));
-	  p = p->next;
-	}
-      else
-	{
-	  cvlistptr->fnlistp =
-	    (struct fnlist *) malloc (sizeof (struct fnlist));
-	  p = cvlistptr->fnlistp;
-	}
-      p->funcp = A4GL_cv_str_to_func (t, len);
-      p->args = &empty[0];
-      p->next = NULL;
+
+      conversion_rules_cnt++;
+      conversion_rules =
+	realloc (conversion_rules,
+		 sizeof (*conversion_rules) * conversion_rules_cnt);
+
+      conversion_rules[conversion_rules_cnt - 1].type =
+	A4GL_cv_str_to_func (t, len);
+      conversion_rules[conversion_rules_cnt - 1].data.from = 0;
+      conversion_rules[conversion_rules_cnt - 1].data.to = 0;
+A4GL_trim(t);
+      //printf ("1. (%s)\n", t);
       /* get the argument list, A4GL_strip off leading = sign */
       t += len;
       t = A4GL_cv_next_token (t, &len, 0);
+
       if (t && len == 1 && *t == '=')
-	t = A4GL_cv_next_token ((t + len), &len, 0);
+	{
+	  t = A4GL_cv_next_token ((t + len), &len, 0);
+	}
+
       if (t)
 	{
+	char *left;
+	char *right;
+	char xx[256];
+
 	  len = strlen (t);
 	  while (len > 0 && isspace (t[len - 1]))
 	    len--;
+
+
+	  //printf ("3. (%s)\n", t);
 	  if (len > 0)
 	    {
-	      p->args = malloc (len + 1);
-	      strncpy (p->args, t, len);
-	      p->args[len] = '\0';
+		strncpy(xx,t,255);
+		xx[255]=0;
+		left=&xx[0];
+		right=strchr(xx,'=');
+
+
+		if (right) {
+			*right=0;
+			right++;
+			//printf("yy %s\n",right);
+			while (*right=='='||*right==' '||*right=='\t') right++;
+			A4GL_trim(right);
+	      		conversion_rules[conversion_rules_cnt - 1].data.to = strdup(right);
+			//printf("xx %s\n",right);
+		} else {
+	      		conversion_rules[conversion_rules_cnt - 1].data.to = 0;
+		}
+		A4GL_trim(left);
+      		conversion_rules[conversion_rules_cnt - 1].data.from = strdup(left);
 	    }
 	}
     }
+
   fclose (fh);
 
-  return cvlistptr->fnlistp;
+  return;
 }
 
-func_t
-A4GL_cv_str_to_func (char *p, int len)
+
+//
+// This is a workshy version of the SQL parsing stuff - 
+// it will be called from the main SQL parser to do the final tidying up....
+//
+char *A4GLSQLCV_check_sql(char *s ) {
+int b;
+static char *buff=0;
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {
+		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+buff=realloc(buff,strlen(s)*2+1000);
+strcpy(buff,s);
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE) {
+		if (strstr(buff,conversion_rules[b].data.from)!=0) {
+			char b2[256];
+			sprintf(b2,"%s = %s", conversion_rules[b].data.from,conversion_rules[b].data.to);
+			A4GL_cvsql_replace (buff, b2);
+		}
+	}
+}
+return buff;
+}
+
+
+
+char *A4GLSQLCV_generate_current(char *from,char *to) {
+static char buff[256];
+char *ptr;
+if (from==0) from="YEAR";
+if (to==0)   to="SECOND";
+
+
+                ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+                if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+
+                if (ptr) {
+                        sprintf(buff,"%s('%s','%s')",ptr,from,to);
+                } else {
+                        sprintf(buff,"CURRENT %s TO %s",from,to);
+                }
+
+return buff;
+}
+
+
+
+
+int A4GLSQLCV_check_requirement(char *s) {
+int a;
+int b;
+a=A4GL_cv_str_to_func (s, strlen(s));
+
+if (a==0) return 0; // I don't know what they are talking about...
+
+if (conversion_rules==0) {
+	printf("No rules loaded\n");
+	return 0;
+}
+
+// OK - now go through and have a look....
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==a) {
+		return b+1;
+	}
+}
+
+return 0;
+}
+
+
+char *A4GLSQLCV_check_colname(char *tabname,char *colname) {
+static char buff[256];
+	if (tabname) {
+		sprintf(buff,"%s.%s",tabname,colname);
+	} else {
+		sprintf(buff,"%s",colname);
+	}
+	return buff;
+}
+
+
+char *A4GLSQLCV_matches_string(char *str,char *esc) {
+static char buff[1024];
+if (strlen(esc)) {
+		sprintf(buff,"MATCHES %s %s",str,esc);
+} else {
+		sprintf(buff,"MATCHES %s ",str);
+}
+return buff;
+}
+
+
+char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) {
+static char buff[256]; 
+int rule;
+rule=A4GLSQLCV_check_requirement("SUBSTRING_FUNCTION");
+
+
+if (!rule || n==0) {
+	if (n==0) return colname; 
+	if (n==1) { sprintf(buff,"%s[%s]",colname,l); return buff; }  
+	if (n==2) { sprintf(buff,"%s[%s,%s]",colname,l,r); return buff; } 
+} else {
+	char *func;
+        func=conversion_rules[rule-1].data.from;
+	if (n==1) { sprintf(buff,"%s(%s,%s,%s)",func,colname,l,l); return buff; }  
+	if (n==2) { sprintf(buff,"%s(%s,%s,%s)",func,colname,l,r); return buff; } 
+}
+A4GL_debug("Shouldn't get to here...");
+return "???";
+}
+
+
+
+char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) {
+static char buff[256]; 
+int rule;
+static char l[256]="";
+static char r[256]="";
+char *s;
+
+if (i0) sprintf(l,"%d",i1);
+if (i0>=2) sprintf(r,"%d",i2);
+s= A4GLSQLCV_make_substr_s(colname,i0,l,r);
+//printf("s=%s\n",s);
+return s;
+}
+
+
+
+int A4GL_cv_str_to_func (char *p, int len)
 {
 
   if (strncasecmp (p, "REPLACE", len) == 0)
-    {
-      return &A4GL_cvsql_replace;
-    }
+    return CVSQL_REPLACE;
   if (strncasecmp (p, "REPLACE_EXPR", len) == 0)
-    {
-      return &A4GL_cvsql_replace;
-    }
+    return CVSQL_REPLACE_EXPR;
   if (strncasecmp (p, "REPLACE_COMMAND", len) == 0)
-    {
-      return &A4GL_cvsql_replace;
-    }
+    return CVSQL_REPLACE_CMD;
   if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
-    {
-      return &A4GL_cvsql_double_single;
-    }
+    return CVSQL_DOUBLE_TO_SINGLE;
   if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
-    {
-      return &A4GL_cvsql_matches_like;
-    }
+    return CVSQL_MATCHES_TO_LIKE;
   if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
-    {
-      return &A4GL_cvsql_matches_regex;
-    }
+    return CVSQL_MATCHES_TO_REGEX;
   if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
-    {
-      return &A4GL_cvsql_substring;
-    }
+    return CVSQL_SUBSTRING_FUNCTION;
   if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
-    {
-      return &A4GL_cvsql_tab_alias;
-    }
+    return CVSQL_TABLE_ALIAS_AS;
   if (strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0)
-    {
-      return &A4GL_cvsql_col_alias;
-    }
+    return CVSQL_COLUMN_ALIAS_AS;
   if (strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0)
-    {
-      return &A4GL_cvsql_split_update;
-    }
+    return CVSQL_ANSI_UPDATE;
+
+  if (strncasecmp (p, "MONEY_AS_DECIMAL", len) == 0) return CVSQL_MONEY_AS_DECIMAL;
+  if (strncasecmp (p, "SQL_CURRENT_FUNCTION", len) == 0) return CVSQL_SQL_CURRENT_FUNCTION;
+  if (strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0) return CVSQL_STRIP_ORDER_BY_INTO_TEMP;
+  if (strncasecmp (p, "ADD_CASCADE", len) == 0) return CVSQL_ADD_CASCADE;
+  if (strncasecmp (p, "OMIT_NO_LOG", len) == 0) return CVSQL_OMIT_NO_LOG;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
-
+printf("Unknown : %s\n",p);
   return NULL;
 }
+
+
+
+
+
+#ifdef NOT_PORTED
 
 /*
  * Changes double-quotes in SQL statements to single quotes.
@@ -396,6 +630,41 @@ A4GL_cvsql_double_single (char *sql, char *args)
 }
 
 
+#ifdef NOT_USED
+/*
+ * Replaces the 'rowid' pseudo-column in a SQL statement
+ *
+ * @param   sql   string holding SQL statement
+ * @param   oid   string to replace "rowid", usually "oid"
+ */
+void
+A4GL_cvsql_rowid (char *sql, char *oid)
+{
+  char *t;
+  int len;
+
+  t = sql;
+  while ((t = A4GL_cv_next_token (t, &len, 0)) != NULL)
+    {
+      char *p = 0;
+      if (strncasecmp (t, "rowid", len) == 0)
+	{
+	  p = t;
+	}
+      else
+	{
+	  if (strncasecmp (&t[len - 6], ".rowid", 6) == 0)
+	    p = &t[len - 5];
+	}
+      if (p > 0)
+	{
+	  A4GL_cv_replacestr (p, 5, oid);
+	  t += strlen ("rowid") - strlen (oid);
+	}
+      t += len;
+    }
+}
+#endif
 
 /*
  * Converts an Informix style update to the standard format
@@ -597,9 +866,9 @@ A4GL_cvsql_substring (char *sql, char *func)
   char *t_left = 0;
   int len;
   char *orig_sql;
-  orig_sql=sql;
+  orig_sql = sql;
 
-A4GL_debug("substr -> %s Before",orig_sql);
+  A4GL_debug ("substr -> %s Before", orig_sql);
 
   /* seek and convert anything like  " (table.)column [ ... ] " */
   while ((t = A4GL_cv_next_token (sql, &len, 0)))
@@ -648,7 +917,7 @@ A4GL_debug("substr -> %s Before",orig_sql);
 	  t_left = 0;
 	}
     }
-A4GL_debug("substr -> %s After",orig_sql);
+  A4GL_debug ("substr -> %s After", orig_sql);
 }
 
 /*
@@ -662,7 +931,7 @@ A4GL_cvsql_tab_alias (char *sql, char *args)
   char *t;
   int len;
   int state = 0;
-A4GL_debug("Into tab_alias %s",sql);
+  A4GL_debug ("Into tab_alias %s", sql);
 
   /* main loop scans entire string because multiple 'from' clauses
    * are possible in 'union' selects
@@ -737,7 +1006,7 @@ A4GL_cvsql_col_alias (char *sql, char *args)
   char *p;
   char *from;
   int len, n;
-A4GL_debug("Into col_alias %s",sql);
+  A4GL_debug ("Into col_alias %s", sql);
 
   /* main loop scans entire string because 'select' clauses
    * can appear more than once, in unions and sub-queries.
@@ -784,8 +1053,9 @@ A4GL_debug("Into col_alias %s",sql);
 		  if (isalnum (*a))
 		    {
 		      b = A4GL_cv_nth_token (p, (i - 1), &l);
-			A4GL_debug("b=%s\n",b);
-		      if (isoperator (*b) || (strncasecmp (b, "as", l) == 0)||b[0]=='['||b[0]==']')
+		      A4GL_debug ("b=%s\n", b);
+		      if (isoperator (*b) || (strncasecmp (b, "as", l) == 0)
+			  || b[0] == '[' || b[0] == ']')
 			{
 			  b = NULL;
 			}
@@ -810,54 +1080,6 @@ A4GL_debug("Into col_alias %s",sql);
       *from = 'f';
 
       t = from;
-    }
-
-}
-
-/*
- * Replaces a string in a SQL statement. The search string must
- * begin on a token.
- *
- * @param   sql   string holding SQL statement
- * @param   str   search/replace as "before = after"
- */
-void
-A4GL_cvsql_replace (char *sql, char *args)
-{
-  char srch[100];
-  char *rplc;
-  char *t;
-  int slen;
-  int len;
-
-  /* extract the search and replace strings from args */
-  if (args == NULL || args[0] == '\0')
-    return;
-  if ((t = a_strchr (args, '=')) == NULL)
-    return;
-  rplc = A4GL_cv_next_token ((t + 1), &len, 0);
-  if (rplc == NULL)
-    rplc = empty;
-  if ((slen = t - args + 1) < 1)
-    return;
-  strncpy (srch, args, slen);
-  srch[--slen] = '\0';
-  while (srch[slen - 1] == ' ')
-    srch[--slen] = '\0';
-
-  /* locate any token that matches the start of the search string */
-  t = sql;
-  while ((t = A4GL_cv_next_token (t, &len, 1)) != NULL)
-    {
-      if (strncasecmp (t, srch, len) == 0)
-	{
-	  if (strncasecmp (t, srch, slen) == 0)
-	    {
-	      A4GL_cv_replacestr (t, slen, rplc);
-	      t += strlen (rplc) - slen;
-	    }
-	}
-      t += len;
     }
 
 }
@@ -1026,92 +1248,6 @@ A4GL_cv_nth_token (char *p, int n, int *len)
 }
 
 /*
- * Returns the next token string in a statement
- *
- * @param  p    pointer into SQL statement string
- * @param  *n   points to an int that'll hold the token length
- * @param  dot  treat dot (.) as a separate token
- */
-char *
-A4GL_cv_next_token (char *p, int *len, int dot)
-{
-  char *p2;
-  int slash = 0;
-
-  // ignore whitespace
-  while (*p > 0 && isspace (*p))
-    p++;
-
-  if (*p == '\0')
-    {
-      if (len > 0)
-	*len = 0;
-      return (char *) 0;
-    }
-
-  p2 = p + 1;
-
-  if (isquote (*p))
-    {
-      /* starts with a quote, look for (unescaped) closing quote */
-      for (; *p2 > 0; p2++)
-	{
-	  if (slash)
-	    {
-	      slash--;
-	    }
-	  else
-	    {
-	      if (*p2 == '\\')
-		{
-		  slash++;
-		  continue;
-		}
-	    }
-	  if (*p2 == *p)
-	    {
-	      p2++;
-	      break;
-	    }
-	}
-    }
-  else
-    {
-      if (iscmpop (*p))
-	{
-	  /* comp. operator sequence ( >, >=, !=, ... ) */
-	  while (*p2 > 0 && iscmpop (*p2))
-	    p2++;
-	}
-      else
-	{
-	  /* any sequence comprising table, keyword, number, etc. */
-	  if (dot)
-	    {
-	      if (iswordch (*p))
-		{
-		  while (*p2 > 0 && iswordch (*p2))
-		    p2++;
-		}
-	    }
-	  else
-	    {
-	      if (istabcol (*p))
-		{
-		  while (*p2 > 0 && istabcol (*p2))
-		    p2++;
-		}
-	    }
-	}
-    }
-  /* note, if none of the above, then we return a single char
-   */
-  if (len > 0)
-    *len = p2 - p;
-  return p;
-}
-
-/*
  * Returns true if token pointed to in a keyword marks
  * the start of a SQL clause
  *
@@ -1122,9 +1258,10 @@ int
 A4GL_cv_is_clause_word (char *p, int len)
 {
 
-  if (strncasecmp (p, "select", 6) == 0 || strncasecmp (p, "from", 4) == 0 ||
-      strncasecmp (p, "where", 5) == 0 || strncasecmp (p, "having", 6) == 0 ||
-      strncasecmp (p, "union", 5) == 0 || strncasecmp (p, "into", 4) == 0)
+  if (strncasecmp (p, "select", 6) == 0 || strncasecmp (p, "from", 4) == 0
+      || strncasecmp (p, "where", 5) == 0
+      || strncasecmp (p, "having", 6) == 0
+      || strncasecmp (p, "union", 5) == 0 || strncasecmp (p, "into", 4) == 0)
     {
       return 1;
     }
@@ -1136,62 +1273,6 @@ A4GL_cv_is_clause_word (char *p, int len)
   return 0;
 }
 
-
-/* ----------------------------------------------------------------
- * Functions for manipulating space-padded null terminated strings.
- * Care is taken to avoid any chance of buffer overflow. SQL strings
- * will be truncated if conversion extends beyond the available space.
-*/
-
-/*
- * Replace a string inside another string
- */
-void
-A4GL_cv_replacestr (char *p, int n, char *s)
-{
-  while (*s > 0)
-    {
-      if (n-- > 0)
-	{
-	  *p++ = *s++;
-	}
-      else
-	{
-	  A4GL_cv_inschstr (p++, *s++);
-	}
-    }
-  if (n > 0)
-    A4GL_cv_delchstr (p, n);
-}
-
-/*
- * Insert one char into a string, and drop the last char.
- */
-void
-A4GL_cv_inschstr (char *p, char c)
-{
-  char x;
-  while ((x = *p) > 0)
-    {
-      *p++ = c;
-      c = x;
-    }
-}
-
-/*
- * Delete chars from a string, and pad end with spaces
- */
-void
-A4GL_cv_delchstr (char *str, int n)
-{
-  char *p;
-  while (n-- > 0)
-    {
-      for (p = str; *p > 0; p++)
-	if ((*p = *(p + 1)) == 0)
-	  *p = ' ';
-    }
-}
 
 /*
  * Locate first occurence of a word in a string, but ignore
@@ -1274,3 +1355,139 @@ A4GL_cv_lastnonblank (char *str)
 }
 
 /* ============================= EOF ================================ */
+#endif
+
+
+/*
+ * Replaces a string in a SQL statement. The search string must
+ * begin on a token.
+ *
+ * @param   sql   string holding SQL statement
+ * @param   str   search/replace as "before = after"
+ */
+void
+A4GL_cvsql_replace (char *sql, char *args)
+{
+  char srch[100];
+  char *rplc;
+  char *t;
+  int slen;
+  int len;
+
+  /* extract the search and replace strings from args */
+  if (args == NULL || args[0] == '\0')
+    return;
+  if ((t = a_strchr (args, '=')) == NULL)
+    return;
+  rplc = A4GL_cv_next_token ((t + 1), &len, 0);
+  if (rplc == NULL)
+    rplc = empty;
+  if ((slen = t - args + 1) < 1)
+    return;
+  strncpy (srch, args, slen);
+  srch[--slen] = '\0';
+  while (srch[slen - 1] == ' ')
+    srch[--slen] = '\0';
+
+  /* locate any token that matches the start of the search string */
+  t = sql;
+  while ((t = A4GL_cv_next_token (t, &len, 1)) != NULL)
+    {
+      if (strncasecmp (t, srch, len) == 0)
+	{
+	  if (strncasecmp (t, srch, slen) == 0)
+	    {
+	      A4GL_cv_replacestr (t, slen, rplc);
+	      t += strlen (rplc) - slen;
+	    }
+	}
+      t += len;
+    }
+
+}
+
+/* ----------------------------------------------------------------
+ * Functions for manipulating space-padded null terminated strings.
+ * Care is taken to avoid any chance of buffer overflow. SQL strings
+ * will be truncated if conversion extends beyond the available space.
+*/
+
+/*
+ * Replace a string inside another string
+ */
+void
+A4GL_cv_replacestr (char *p, int n, char *s)
+{
+  while (*s > 0)
+    {
+      if (n-- > 0)
+	{
+	  *p++ = *s++;
+	}
+      else
+	{
+	  A4GL_cv_inschstr (p++, *s++);
+	}
+    }
+  if (n > 0)
+    A4GL_cv_delchstr (p, n);
+}
+
+/*
+ * Insert one char into a string, and drop the last char.
+ */
+void
+A4GL_cv_inschstr (char *p, char c)
+{
+  char x;
+  while ((x = *p) > 0)
+    {
+      *p++ = c;
+      c = x;
+    }
+}
+
+/*
+ * Delete chars from a string, and pad end with spaces
+ */
+void
+A4GL_cv_delchstr (char *str, int n)
+{
+  char *p;
+  while (n-- > 0)
+    {
+      for (p = str; *p > 0; p++)
+	if ((*p = *(p + 1)) == 0)
+	  *p = ' ';
+    }
+}
+
+
+
+A4GL_strwscmp(char *a,char *b) {
+int a_i;
+int b_i;
+char *o1;
+char *o2;
+b_i=0;
+o1=strdup(a);
+o2=strdup(b);
+b_i=0;
+for (a_i=0;a_i<strlen(a);a_i++) {
+	if (a[a_i]==' '||a[a_i]=='\t') continue;
+	o1[b_i++]=toupper(a[a_i]);
+}
+o1[b_i]=0;
+b_i=0;
+for (a_i=0;a_i<strlen(b);a_i++) {
+	if (b[a_i]==' '||b[a_i]=='\t') continue;
+	o2[b_i++]=toupper(b[a_i]);
+}
+o2[b_i]=0;
+a_i=strcmp(o1,o2);
+free(o1);
+free(o2);
+return a_i;
+	
+
+}
