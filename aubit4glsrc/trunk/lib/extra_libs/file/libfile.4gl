@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.14 2005-03-01 09:24:22 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.15 2005-03-10 10:04:36 mikeaubury Exp $
 }
 
 {**
@@ -251,6 +251,7 @@ code
 	fgets(buff,255,(FILE *)handle);
 	A4GL_trim_nl(buff);
 	A4GL_push_char(buff);
+	A4GLSTK_popFunction();
 	return 1;
 endcode
 
