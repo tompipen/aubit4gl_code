@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.172 2004-07-05 16:16:09 mikeaubury Exp $
+# $Id: compile_c.c,v 1.173 2004-07-07 20:11:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.172 2004-07-05 16:16:09 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.173 2004-07-07 20:11:40 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -246,12 +246,12 @@ print_space (void)
 }
 
 
-void set_suppress_lines() {
+void set_suppress_lines(void) {
 	printc("\n/* SUPPRESS */\n");
 	suppress_lines++;
 }
 
-void clr_suppress_lines() {
+void clr_suppress_lines(void) {
 	suppress_lines--;
 	printc("\n/* !SUPPRESS */\n");
 }
@@ -1999,7 +1999,7 @@ char lib[255];
   add_function_to_header (identifier, 1,"");
 
 
-if (has_function(identifier,&lib,0)) {
+if (has_function(identifier,lib,0)) {
 
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
@@ -5281,7 +5281,7 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
   else
     {
 
-	if (has_function(ident,&lib,0)) {
+	if (has_function(ident,lib,0)) {
 		// Call shared...
   	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n%s}",  lib, ident, params,line,file,get_reset_state_after_call());
 
@@ -5642,12 +5642,21 @@ int *keys;
 char **fields;
 
 n=A4GL_get_nevents();
-printc("static struct aclfgl_event_list _sio_evt[]={");
 if (n==0) {
+	if (A4GL_doing_pcode()) {
+		printc("struct aclfgl_event_list _sio_evt[1]={");
+	} else {
+		printc("static struct aclfgl_event_list _sio_evt[]={");
+	}
 	printc(" {0}};");
 	return ;
 }
 
+if (A4GL_doing_pcode()) {
+	printc("struct aclfgl_event_list _sio_evt[%d]={",n);
+} else {
+	printc("static struct aclfgl_event_list _sio_evt[]={");
+}
 for (a=0;a<n;a++) {
 	A4GL_get_event(a,&event_id,&event_dets);
 	if (event_id==-90) {
