@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
+# $Id: report.c,v 1.10 2002-12-31 02:41:04 psterry Exp $
 #
 */
 
@@ -199,7 +199,7 @@ rep_print (struct rep_structure *rep, int a, int s,int right_margin)
   if (a > 0)
     {
     if (rep->col_no==0) {
-         rep->col_no+=rep->left_margin;
+         rep->col_no = 1;
          fputmanyc(rep->output,' ',rep->left_margin);
     }
       for (b = 0; b < a; b++)
@@ -265,11 +265,14 @@ long needn;
 	/* {DEBUG} */ {debug("Current pos=%d need position %d left_margin=%d",rep->col_no,a,rep->left_margin);
 	}
 	#endif
-	if (rep->col_no==0) {
-	     rep->col_no=1;
-	}
-	needn=a - rep->col_no + rep->left_margin -1;
-	if (rep->col_no==1) needn+=1;
+
+  	if ( rep->col_no == 0 ) {
+  	     needn = a + rep->left_margin - 1;
+  	     rep->col_no = 1;
+  	}
+  	else {
+  	     needn = a - rep->col_no;
+  	}
 
 	#ifdef DEBUG
 	/* {DEBUG} */ {debug("needn=%ld",needn);
@@ -655,3 +658,4 @@ rep_file_print(struct rep_structure *rep, char *fname, int opt_semi)
 }
 
 /* ============================= EOF ================================ */
+
