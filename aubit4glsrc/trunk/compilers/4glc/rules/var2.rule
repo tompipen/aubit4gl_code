@@ -25,12 +25,16 @@ var_ident :  var2
 
 
 var2 :
-	DOLLAR  var3 {strcpy($<str>$,$<str>2);} | var3
+	DOLLAR  var3 {
+		strcpy($<str>$,$<str>2);
+	} | var3 {
+		strcpy($<str>$,$<str>1);
+	}
 ;
 
 var3:
-        array_r_variable_or_ident // MJA 010503
-	| identifier
+        array_r_variable_or_ident {strcpy($<str>$,$<str>1);}
+	| identifier {strcpy($<str>$,$<str>1);}
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
 	| CHAR_VALUE DOT var3 DOT aft_dot {
 		if (A4GL_escape_quote_owner()) {
