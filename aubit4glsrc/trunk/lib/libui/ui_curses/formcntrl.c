@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.68 2004-11-22 12:29:21 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.69 2005-02-01 10:25:35 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.68 2004-11-22 12:29:21 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.69 2005-02-01 10:25:35 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1623,6 +1623,11 @@ m_d2[1]=0;
 
         A4GL_int_form_driver(f,REQ_VALIDATION);
         strcpy(orig,field_buffer(buff[1],0));
+
+
+	A4GL_trim(orig);
+
+
 
         A4GL_debug("Unpost and delete...");
         unpost_form(f);
