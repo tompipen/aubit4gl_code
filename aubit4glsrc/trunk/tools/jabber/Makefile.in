@@ -24,37 +24,51 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-04-02 08:50:34 afalout Exp $
 #
 
 include ../../incl/Makefile-common
 override NOINCL=0
 
-### -----------------------------------------------------------------
-###                     Settings
-### -----------------------------------------------------------------
+## ==================================================================
+##                              Settings
+## ==================================================================
 
-AMAKE=../../bin/amake
-AMAKE_FLAGS=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
+AMAKE		=../../bin/amake
+AMAKE_FLAGS	=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
+ifneq "@JABBERBUILD@" "no"
+    ALL 	=test_im
+else
+    ALL 	=no_libs
+endif
 
-### -----------------------------------------------------------------
-###                     Targets
-### -----------------------------------------------------------------
+CFLAGS		+=@IKSEMEL_I_FLAGS@
 
-all: test_im
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
 
 test_im:
 	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
 
-lib4glim.o:
-	${CC} lib4glim.c -c -o lib4glim.o
+#lib4glim.o:
+#	${CC} lib4glim.c -c -o $@
 
 
-### -----------------------------------------------------------------
-###                     Testing
-### -----------------------------------------------------------------
+libIM_JABBER.so: lib4glim.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel @IKSEMEL_L_FLAGS@
+	${CP} $@ ../../lib
+
+no_libs:
+	@echo "IksEmEl library was not detected on your system. Stop."
+
+## ==================================================================
+##                              Testing
+## ==================================================================
 
 #lib4glim can be compiled as executable for testing:
 exec4glim: lib4glim.c
@@ -70,9 +84,9 @@ exec4glim: lib4glim.c
 test: exec4glim
 	echo "This is my message to you" | exec4glim
 
-### -----------------------------------------------------------------
-###                     Clean
-### -----------------------------------------------------------------
+## ==================================================================
+##                              Clean
+## ==================================================================
 
 clean: clean.test
 	-rm -f *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-03-29 10:02:20 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-04-02 08:50:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -69,7 +69,7 @@ simple_html.sf:
 	@echo "simple_html sh script created"
 
 
-libA4GL_html.so: libahtmllib.4gl
+libA4GL_HTML.so: libahtmllib.4gl
 	${SH} 4glpc -as-dll $^ -o $@
 	cp $@ ../../../lib
 
