@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.28 2004-02-10 18:53:07 mikeaubury Exp $
+# $Id: array.c,v 1.29 2004-02-11 09:26:02 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.28 2004-02-10 18:53:07 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.29 2004-02-11 09:26:02 mikeaubury Exp $";
 
 
 
@@ -376,7 +376,10 @@ draw_arr (arr, -1, arr->arr_line);
 	//A4GL_zrefresh();
 	arr->processed_onkey=0;
         a = A4GL_getch_win ();
-	if (abort_pressed) a=-100;
+	if (abort_pressed) {
+		int_flag=1;
+		a=-100;
+	}
 	A4GL_debug("Abort pressed");
 
 	arr->processed_onkey=a;
@@ -557,6 +560,7 @@ if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->n
 
     case -100: 
  	A4GL_debug("act as %d - abort!",act_as);
+		int_flag=1;
       		if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
 	return 0;
 

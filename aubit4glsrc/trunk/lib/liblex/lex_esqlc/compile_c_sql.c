@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.30 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.31 2004-02-11 09:25:43 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -33,7 +33,8 @@ print_exec_sql_bound (char *s)
 {
   int c;
   printc ("{\n");
-  c = print_bind ('i');
+  c = print_bind_definition ('i');
+  print_bind_set_value ('i');
   printc
     ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_glob_sql(\"%s\",%d,ibind));\n",
      s, c);
@@ -80,7 +81,8 @@ print_foreach_next (char *cursorname, char *using, char *into)
   /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
-  ni = print_bind ('o');
+  ni = print_bind_definition ('o');
+  print_bind_set_value('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
 	  FETCH_RELATIVE, ni);
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
@@ -156,9 +158,12 @@ print_linked_cmd (int type, char *var)
 	  add_bind ('i', buff);
 	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
-      if (type == 'S')
-	no = print_bind ('o');
-      ni = print_bind ('i');
+      if (type == 'S') no = print_bind_definition ('o');
+      ni = print_bind_definition ('i');
+
+      if (type == 'S') print_bind_set_value ('o');
+      print_bind_set_value ('i');
+	
       if (type == 'S')
 	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
       if (type == 'D')
@@ -228,7 +233,8 @@ print_put (char *cname,char *putvals)
 {
   int n;
   printc ("{\n");
-  n = print_bind ('i');
+  n = print_bind_definition ('i');
+  print_bind_set_value ('i');
   printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
   printc ("}\n");
 }
@@ -269,7 +275,8 @@ print_execute (char *stmt, int using)
   else
     {
       printc ("{\n");
-      ni = print_bind ('i');
+      ni = print_bind_definition ('i');
+      print_bind_set_value ('i');
       printc ("A4GLSQL_execute_sql(%s,%d,ibind);\n", stmt, ni);
       printc ("}\n");
     }
@@ -448,8 +455,10 @@ print_curr_spec (int type, char *s)
 		bt=0;
 		ni=ibindcnt;
 		no=obindcnt;
-		if (obindcnt) {bt++;print_bind('o');}
-		if (ibindcnt) {bt+=2;print_bind('i');}
+		if (obindcnt) {bt++;print_bind_definition('o');}
+		if (ibindcnt) {bt+=2;print_bind_definition('i');}
+		if (obindcnt) {print_bind_set_value('o');}
+		if (ibindcnt) {print_bind_set_value('i');}
 		
 		switch(bt) {
     		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);break;
@@ -484,8 +493,10 @@ print_select_all (char *buff)
   int ni, no;
   static char b2[2000];
   printc ("{\n");
-  ni = print_bind ('i');
-  no = print_bind ('o');
+  ni = print_bind_definition ('i');
+  no = print_bind_definition ('o');
+  print_bind_set_value ('i');
+  print_bind_set_value ('o');
   sprintf (b2, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")", ni, no,
 	   buff);
   return b2;
