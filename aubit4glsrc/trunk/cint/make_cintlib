@@ -14,7 +14,7 @@ export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH
 rm -f makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h
 
 
-makecint -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l $USEAUBIT_PATH/lib/libaubit4gl.so
+/opt/cint/makecint -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l $USEAUBIT_PATH/lib/libaubit4gl.so
 
 make -f makefile
 

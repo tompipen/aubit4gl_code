@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.82 2003-08-15 18:36:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.83 2003-08-19 07:57:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -329,13 +329,13 @@ open_outfile (void)
      fprintf (outfile, "#include <acl4glgui.h>\n");
 
      we no longer need this:
-     fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
+     fprintf (outfile, "static char *_compiler_ser=\"%s\";\n", get_serno ());
    */
 
   if (doing_cs()) {
   fprintf (outfile, "static string module_name=\"%s.4gl\";\n", outputfilename);
   } else {
-  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n", outputfilename);
+  fprintf (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
   }
 
 
@@ -1283,7 +1283,7 @@ print_arr_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[]={\n");
+      printc ("struct BINDING ibind[%d]={\n",ibindcnt);
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
@@ -1298,7 +1298,7 @@ print_arr_bind (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[]={\n");
+      printc ("struct BINDING obind[%d]={\n",obindcnt);
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
@@ -1322,7 +1322,7 @@ print_constr (void)
 {
   int a;
   printc
-    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[]={\n");
+    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[%d]={\n",constr_cnt);
   for (a = 0; a < constr_cnt; a++)
     {
       if (a > 0)
@@ -1379,7 +1379,7 @@ print_param (char i)
       printc ("static ");
     }
 
-  printc ("struct BINDING %cbind[]={ /* print_param */\n", i);
+  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i,fbindcnt);
   for (a = 0; a < fbindcnt; a++)
     {
 
@@ -1395,7 +1395,7 @@ print_param (char i)
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
     {
-      printc ("static char *rbindvarname[]={\n");
+      printc ("static char *rbindvarname[%d]={\n",fbindcnt);
       for (b = 0; b < fbindcnt; b++)
 	{
 
@@ -1413,7 +1413,7 @@ print_param (char i)
       printc ("};\n");
     }
 
-  printc ("char *_paramnames[]={");
+  printc ("char *_paramnames[%d]={",fbindcnt);
 
   for (a = 0; a < fbindcnt; a++)
     {
@@ -1446,7 +1446,7 @@ print_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[]={\n /* ibind %d*/", ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ibindcnt,ibindcnt);
       if (ibindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1472,7 +1472,7 @@ print_bind (char i)
     {
       expand_bind (&nullbind[0], 'N', nullbindcnt);
       printc ("\n");
-      printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
+      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/", nullbindcnt,nullbindcnt);
       if (nullbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1494,7 +1494,7 @@ print_bind (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[]={\n");
+      printc ("struct BINDING obind[%d]={\n",obindcnt);
       if (obindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1528,7 +1528,7 @@ print_bind (char i)
        */
 
 
-      printc ("static struct BINDING _ordbind[]={\n");
+      printc ("static struct BINDING _ordbind[%d]={\n",ordbindcnt);
       if (ordbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1562,7 +1562,8 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-      A4GL_append_expr (ptr, "struct BINDING ibind[]={");
+	sprintf(buff,"struct BINDING ibind[%d]",ibindcnt);
+      A4GL_append_expr (ptr, buff);
       if (ibindcnt == 0)
 	{
 	  A4GL_append_expr (ptr, "{0,0,0}");
@@ -1709,7 +1710,7 @@ print_form_is_compiled (char *s, char *packer, char *formtype)
   //printf("%s - %s - %s\n",s,packer,formtype);
   printc ("A4GL_add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s,
 	  packer, formtype, s);
-  printh ("extern char compiled_form_%s[];\n", s);
+  printh ("extern char *compiled_form_%s;\n", s);
 }
 
 /**
@@ -3983,7 +3984,7 @@ printDeclareFunctionStack (char *_functionName)
 	if (doing_cs()) {
     		printc ("\nstring _functionName = \"%s\";\n", _functionName);
 	} else {
-    		printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
+    		printc ("\nstatic char *_functionName = \"%s\";\n", _functionName);
 	}
   }
 }
@@ -4093,7 +4094,7 @@ print_main_1 (void)
   	printc ("int nargs=0;");
   } else {
   	printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
-  	printc ("char *_paramnames[]={\"\"};");
+  	printc ("char *_paramnames[1]={\"\"};");
   	printc ("int nargs=0;");
   }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.48 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.49 2003-08-19 07:57:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1044,6 +1044,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 				printc("}");
 			}
 
+			print_copy_status ();
 		printc("}");
 
   } else {
@@ -1134,6 +1135,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 	if (file[0]!='"') {
 		printc("}");
 	}
+  	print_copy_status ();
   } else {
   	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
   }

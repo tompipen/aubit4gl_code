@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.84 2003-08-09 09:27:13 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.85 2003-08-19 07:57:57 mikeaubury Exp $
 #
 */
 
@@ -1437,6 +1437,7 @@ void A4GL_display_at (int n, int a);
     int field_number;
     int state;
     int extent;
+    void *field;
   };
 
   struct s_screenio
