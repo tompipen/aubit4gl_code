@@ -43,11 +43,14 @@ xdr_struct_form(xdrs, objp)
 int tab_cnt = 0;
 int srec_cnt = 0;
 //int maxline = 0;
-//int maxcol = 0; 
+//int maxcol = 0;
 
 /** @todo Take this prototype definition for a header file */
 //void default_attributes (FIELD * f, int dtype);
-int comments (struct struct_scr_field *fprop);
+//int comments (struct struct_scr_field *fprop);
+void comments (struct struct_scr_field *fprop);
+void do_translate_form(struct_form *the_form);
+
 //char *strip_quotes (char *s);
 void *get_curr_form ();
 //char *strip_quotes (char *s);
@@ -261,7 +264,7 @@ set_default_form (struct s_form_attr *form)
   form->prompt_line = 4;
 }
 
-
+void
 read_attributes (struct s_form_dets *f)
 {
   int a;
@@ -285,6 +288,7 @@ read_attributes (struct s_form_dets *f)
 
 /***********************************************************************/
 
+void
 comments (struct struct_scr_field * fprop)
 {
   if (fprop)
@@ -298,25 +302,30 @@ comments (struct struct_scr_field * fprop)
     }
 }
 
-
+//looks like this is not used because it has return at the top?
+//but there is a call to it from libUI_TUI that needs to be removed
+//if the is the case - and from API_form.spec too
+void
 dump_srec (struct s_form_dets * fd)
 {
   int a;
   int b;
+
   return;
+
   debug ("fd=%p srecs_cnt=%ld", fd, fd->fileform->records.records_len);
   for (a = 0; a < fd->fileform->records.records_len; a++)
-    {
-      debug ("Screen record : %s [%d] (%d)\n",
-	     fd->fileform->records.records_val[a].name,
-	     fd->fileform->records.records_val[a].dim,
-	     fd->fileform->records.records_val[a].attribs.attribs_len);
+	{
+		debug ("Screen record : %s [%d] (%d)\n",
+		fd->fileform->records.records_val[a].name,
+	    fd->fileform->records.records_val[a].dim,
+	    fd->fileform->records.records_val[a].attribs.attribs_len);
       for (b = 0;
 	   b < fd->fileform->records.records_val[a].attribs.attribs_len; b++)
-	{
-	  debug ("                    %d\n",
+		{
+		  debug ("                    %d\n",
 		 fd->fileform->records.records_val[a].attribs.attribs_val[b]);
-	}
+		}
     }
 }
 
@@ -351,17 +360,6 @@ get_srec (char *name)
       records_val[a];
 }
 
-
-
-
-
-
-
-
-
-
-
-
 /*********************************************************/
 
 #define INC_EACH "\n"
@@ -395,6 +393,7 @@ check_field_for_include (char *s, char *inc, int dtype)
   return FALSE;
 }
 
+int
 include_range_check (char *ss, char *ptr, int dtype)
 {
   static char buff[2048];	/* what we're checking */
@@ -404,6 +403,7 @@ include_range_check (char *ss, char *ptr, int dtype)
   char *ptr2;
   char *ptr3;
   char *s;
+
   s = strdup (ss);
   trim (s);
   debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
@@ -509,6 +509,7 @@ strip_quotes (char *s)
 
 */
 
+int
 has_bool_attribute (struct struct_scr_field *f, int bool)
 {
   int a;
@@ -523,6 +524,7 @@ has_bool_attribute (struct struct_scr_field *f, int bool)
   return 0;
 }
 
+int
 set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 {
   int a;
@@ -537,32 +539,39 @@ set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 }
 
 
-do_translate_form(struct_form *the_form) {
-        int a;
-        int b;
-        char *ptr;
-        for (a=0;a<the_form->metrics.metrics_len;a++) {
-                if (strncmp(the_form->metrics.metrics_val[a].label,"get_translated_id:",18)==0) {
+void
+do_translate_form(struct_form *the_form)
+{
+int a;
+int b;
+char *ptr;
+
+	for (a=0;a<the_form->metrics.metrics_len;a++)
+    {
+    	if (strncmp(the_form->metrics.metrics_val[a].label,"get_translated_id:",18)==0)
+		{
 			ptr=&the_form->metrics.metrics_val[a].label[18];
 			ptr=(char *)get_translated_id(ptr);
 			the_form->metrics.metrics_val[a].label=ptr;
 		}
-        }
+	}
 
-        for (b=0;b< the_form->attributes.attributes_len;b++) {
-                for (a=0;a<the_form->attributes.attributes_val[b].str_attribs.str_attribs_len;a++) {
-        if (the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS) {
-
-                if (strncmp(the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value, "get_translated_id:",18)==0) {
-
-                ptr=&the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value[18];
-		ptr=(char *)get_translated_id(ptr);
-                if (ptr)
-                        the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=ptr;
-        }
-}
-}
-}
+    for (b=0;b< the_form->attributes.attributes_len;b++)
+	{
+    	for (a=0;a<the_form->attributes.attributes_val[b].str_attribs.str_attribs_len;a++)
+		{
+        	if (the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS)
+			{
+    	    	if (strncmp(the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value, "get_translated_id:",18)==0)
+				{
+            	    ptr=&the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value[18];
+					ptr=(char *)get_translated_id(ptr);
+	       	        if (ptr)
+		                the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=ptr;
+				}
+			}
+		}
+	}
 }
 
 

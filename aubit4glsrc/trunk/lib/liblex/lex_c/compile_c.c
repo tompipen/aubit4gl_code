@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.11 2002-05-11 09:30:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.12 2002-05-11 10:37:26 afalout Exp $
 #
 */
 
@@ -100,8 +100,6 @@ struct s_report
 */
 extern struct s_report sreports[1024];
 
-
-
 extern int sreports_cnt;
 extern char when_to_tmp[64];
 
@@ -126,8 +124,10 @@ extern int constr_cnt;
 
 extern void set_clobber(char *c);
 
-/* The important stuff ! */
-
+//function prototypes that must be here, not in header file:
+static void printc(char* fmt,... );
+void lex_printc(char *fmt, va_list *ap);
+void real_lex_printc(char *fmt, va_list *ap);
 
 /**
  * Print spaces to the increment acording to scope level generated in 
@@ -193,7 +193,7 @@ open_outfile(void)
 
   fprintf (outfile, "#define fgldate long\n");
   fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
-  if (strchr(h,'/')!=0) 
+  if (strchr(h,'/')!=0)
   	fprintf (outfile, "#include \"%s\"\n", strrchr(h,'/')+1);
   else
   	fprintf (outfile, "#include \"%s\"\n", h);
@@ -204,7 +204,7 @@ open_outfile(void)
 	   outputfilename);
 
   hfile = mja_fopen (h, "w");
-  
+
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
     fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n");
   }
@@ -221,27 +221,16 @@ discrepancy betweenm number of parameters passed to function between
 static void printc(char* fmt,... )
 {
 va_list ap;
-
 	debug("via printc in lib");
-   va_start(ap,fmt);
-//   func(fmt,&ap);
+	va_start(ap,fmt);
 	real_lex_printc(fmt,&ap);
 }
 
 
 void lex_printc(char *fmt, va_list *ap)
 {
-//va_list ap;
-  char buff[40960]="ERROR-empty init";
-
 	debug("via lex_printc in lib");
-//   va_start(ap,fmt);
-//   func(fmt,&ap);
-//	vsprintf (buff, fmt, *ap);
-
-	//real_lex_printc(fmt,&ap);
 	real_lex_printc(fmt,ap);
-//    real_lex_printc(fmt,buff);
 }
 
 
@@ -256,13 +245,6 @@ void lex_printc(char *fmt, va_list *ap)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-/*
-<<<<<<< compile_c.c
-//void printc(char *fmt, ...)
-void
-LEXLIB_printc(char *fmt, va_list *args)
-=======
-*/
 void real_lex_printc(char *fmt, va_list *ap)
 {
   //va_list args;

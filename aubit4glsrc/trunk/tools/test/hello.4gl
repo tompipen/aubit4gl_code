@@ -20,9 +20,9 @@ menu "Hello test"
 		#display "Form"
         	open window w2 at 2,2 with form "form" attribute(border)
 
-        #display "This is a line in the form" to s_info[1].info_line
+        display "This is a line in the form" to s_info[1].info_line
 		#sleep 2
-        #display "This is line 2 in the form" to s_info[2].info_line
+        display "This is line 2 in the form" to s_info[2].info_line
         sleep 2
 		close window w2
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.36 2002-05-11 05:51:19 afalout Exp $
+# $Id: Makefile-common.in,v 1.37 2002-05-11 10:37:26 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -308,8 +308,12 @@ else
 	SO_EXT      =.so
     SH			=sh
 
+
 	LN			=${LN_H}
-	LN_S_LIB    =${LN_H}
+	#we should not use hard links when we are installing, because this
+    #can cause errors like "Invalid cross-device link" when source
+    #and destination is on different deveices:
+	#LN_S_LIB    =${LN_S}
 	CPEXE		=${LN_H}
 endif
 

@@ -1,4 +1,4 @@
-# @(#)$Id: footer-c.mki,v 1.2 2002-03-31 07:05:31 afalout Exp $
+# @(#)$Id: footer-c.mki,v 1.3 2002-05-11 10:37:26 afalout Exp $
 # Product: Aubit 4gl IDE $
 # Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
 # FIXME: add Querix compiler GUI and Oracle targets
@@ -228,14 +228,13 @@ install.d4gl-pcode:	d4gl-pcode
 ## ------------------------------------------------------------------
 
 clean:
-	${RM} ${FILES.frm} ${FILES} ${FILES.4ge} ${FILES.o} ${FILES.iem}
-	${RM} ${FILES.4ec} ${FILES.ec} ${FILES.c}
-	${RM} ${FILES.42e} ${FILES.42r} ${FILES.42m} ${FILES.42c} ${FILES.42o}
-	${RM} ${DCFILES.o} ${FGLEXT.o} ${FILES.42f} ${FILES.42g}
-	${RM} ${FILES.4go} ${FILES.4gi}
-	${RM} ${FGLRUN} ${FGLGO} ${FILES.42h} ${CFILE3.c} ${CFILE3.o}
-	${RM} $(A4GL_CLEAN_FLAGS) ${ADDITIONAL_CLEAN} ${ADDITIONAL_CLEAN1}
-	${RM} $(Q4GL_CLEAN_FLAGS) *.tmp ${FILES.aubit.4gl:.4gl=.c}
+	${RM} ${FILES.frm} ${FILES} ${FILES.4ge} ${FILES.o} ${FILES.iem} \
+	${FILES.4ec} ${FILES.ec} ${FILES.c} ${FILES.42e} ${FILES.42r} \
+	${FILES.42m} ${FILES.42c} ${FILES.42o} ${DCFILES.o} ${FGLEXT.o} \
+	${FILES.42f} ${FILES.42g} ${FILES.4go} ${FILES.4gi} ${FGLRUN} ${FGLGO} \
+	${FILES.42h} ${CFILE3.c} ${CFILE3.o} $(A4GL_CLEAN_FLAGS) \
+	${ADDITIONAL_CLEAN} ${ADDITIONAL_CLEAN1} $(Q4GL_CLEAN_FLAGS) *.tmp \
+	${FILES.aubit.4gl:.4gl=.c}
 #---------------------------- EOF -----------------------------------
 
 

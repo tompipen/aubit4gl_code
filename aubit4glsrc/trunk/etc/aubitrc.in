@@ -59,7 +59,7 @@ A4GL_RPCTYPE=@A4GL_RPCTYPE@
 #Defines default UI (user intertface) driver to load
 #When used: run-time only
 #Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
-AUBITGUI=@AUBITGUI@
+A4GL_AUBITGUI=@AUBITGUI@
 
 ############
 #Default output language driver for 4gl compiler:

@@ -1067,15 +1067,17 @@ void translate_form() {
 
 //============== from decompile.c =====================
 
-
+/* did not work
 int
 isolated_xdr_struct_form( XDR xdrp, struct struct_form the_form)
+//isolated_xdr_struct_form(void* xdrp,void* the_form)
 {
 int a;
 	a=xdr_struct_form(&xdrp,&the_form);
-    return a;
+  debug ("in isolated_xdr_struct_form: form=%d\n", a);
+	return a;
 
 }
 
-
+*/
 

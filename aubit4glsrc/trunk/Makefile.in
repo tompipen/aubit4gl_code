@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.64 2002-05-07 09:02:33 afalout Exp $
+# $Id: Makefile.in,v 1.65 2002-05-11 10:37:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -86,7 +86,7 @@ ifneq "@HAVE_RPCLIB@" "0"
 	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XDR${SOEXP_EXT} $(SOURCE)/lib/libMENU_XDR${SOEXP_EXT} $(SOURCE)/lib/libFORM_XDR${SOEXP_EXT}
 endif
 
-ifneq "XML_RPC@" "no"
+ifeq "@XML_RPC@" "yes"
 	TOLIBCUI		+=$(SOURCE)/lib/libRPC_XMLRPC${SO_EXT}
 	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XMLRPC${SOEXP_EXT}
 endif
@@ -562,21 +562,22 @@ packide:
 installdrop:
 	${RMDIR} $(INSTALL_DIR)
 
-#install.tree.mkpath:
 install.tree:
-	${MKPATH} $(INSTALL_DIR)/bin
-	${MKPATH} $(INSTALL_DIR)/lib
-	${MKPATH} $(INSTALL_DIR)/etc
-	${MKPATH} $(INSTALL_DIR)/incl
-	${MKPATH} $(INSTALL_DIR)/tools/test/gui
-	${MKPATH} $(INSTALL_DIR)/docs
+	${MKPATH} $(INSTALL_DIR)/bin $(INSTALL_DIR)/lib $(INSTALL_DIR)/etc \
+	$(INSTALL_DIR)/incl $(INSTALL_DIR)/tools/test/gui $(INSTALL_DIR)/docs
+#	${MKPATH} $(INSTALL_DIR)/lib
+#	${MKPATH} $(INSTALL_DIR)/etc
+#	${MKPATH} $(INSTALL_DIR)/incl
+#	${MKPATH} $(INSTALL_DIR)/tools/test/gui
+#	${MKPATH} $(INSTALL_DIR)/docs
+
 	@echo "Aubit 4gl compiler instalation tree created"
 
-install.links.source:
+#install.links.source:
 #this links bin programs to location of Aubit source code:
-	${MKPATH} ${BIN_INSTALL_LINK}
-	${LN_S} ${AUBITDIR}/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
-	${LN_S} ${AUBITDIR}/bin/aubit ${BIN_INSTALL_LINK}/aubit
+#	${MKPATH} ${BIN_INSTALL_LINK}
+#	${LN_S} ${AUBITDIR}/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
+#	${LN_S} ${AUBITDIR}/bin/aubit ${BIN_INSTALL_LINK}/aubit
 
 install.makefile-install:
 	${CP} etc/Makefile-install $(INSTALL_DIR)/Makefile

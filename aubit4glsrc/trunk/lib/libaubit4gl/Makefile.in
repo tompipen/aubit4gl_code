@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-05-08 21:32:56 saferreira Exp $
+# $Id: Makefile.in,v 1.11 2002-05-11 10:37:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -48,7 +48,7 @@ COMMONSRC= \
 	calldll.c conv.c \
 	data_if.c dates.c dmy.c debug.c \
 	err.c error.c errfile.c extfile.c \
-	fglwrap.c funcs_d.c \
+	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
@@ -59,7 +59,7 @@ COMMONSRC= \
 	pointers.c \
 	read_dty.c report.c rexp2.c ../resource/resource.c \
 	screen.c sleep.c stack.c string.c \
-	translate.c function_call_stack.c
+	translate.c
 
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o} ${OBJS_API}
@@ -162,6 +162,9 @@ lclint: $(CMODS)
 	@echo "see lclint.log for results"
 
 api: ${OBJS_API}
+
+#API_ui.c API_exreport.c API_sql.c API_rpc.c where created manually and
+#have no coresponding .spec file
 
 API_msg.c: API_msg.spec
 	${SH} ${DLMAGIC} $^ > $@
