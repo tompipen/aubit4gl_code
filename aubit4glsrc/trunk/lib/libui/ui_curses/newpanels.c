@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.72 2003-09-22 14:52:43 mikeaubury Exp $
+# $Id: newpanels.c,v 1.73 2003-09-22 20:02:28 mikeaubury Exp $
 #*/
 
 /**
@@ -1715,7 +1715,6 @@ int nattr;
 WINDOW *wot;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",a);
-  A4GL_chkwin ();
 
   if (x == -1 && y == -1)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.59 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: curslib.c,v 1.60 2003-09-22 20:02:27 mikeaubury Exp $
 #*/
 
 /**
@@ -148,6 +148,7 @@ static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 static char *A4GL_mfgets (char *s, int n, FILE * fp);
 static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
 static int wrapper_wgetch(WINDOW *w);
+static void A4GL_flatten_menu(ACL_Menu *menu) ;
 
 #ifdef OLD
 void *A4GL_decode_clicked (void);
@@ -1629,6 +1630,7 @@ A4GL_free_menu (void * menuv)
 #ifdef DEBUG
   A4GL_debug ("Attempting to delete window : %p", menu->menu_win);
 #endif
+  A4GL_flatten_menu(menu);
   A4GL_clear_menu (menu);
   update_panels ();
   doupdate ();
@@ -1685,7 +1687,15 @@ A4GL_disp_h_menu (void* menuv)
  A4GL_debug ("cl=%d  cw=%d cpt=%d mnln=%d", cl, cw, cpt, mnln);
       }
 #endif
-      strcpy (menu->window_name, A4GL_glob_window (cl, cpt - 1 + mnln-A4GL_iscurrborder(), cw, 2, 0));
+      menu->gw_b=A4GL_iscurrborder();
+      menu->gw_y=cpt - 1 + mnln - A4GL_iscurrborder();
+      menu->gw_x=cl;
+
+
+  strcpy (menu->window_name, A4GL_glob_window (cl, cpt - 1 + mnln-A4GL_iscurrborder(), cw, 2, 0));
+
+
+      //strcpy (menu->window_name, A4GL_glob_window (cl, menu->gw_y, cw, 2, 0));
 #ifdef DEBUG
       {
  A4GL_debug ("Globbed");
@@ -4069,6 +4079,45 @@ int A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,
 
 int A4GLUI_initlib() {
 	return 1;
+}
+
+void A4GL_flatten_menu(ACL_Menu *menu) {
+WINDOW *m;
+WINDOW *p;
+int a;
+int x;
+int y;
+int px;
+int py;
+
+
+return;
+
+ px=menu->gw_x;
+ py=menu->gw_y;
+
+ if (menu->gw_b) {
+		px-=1;
+		py-=1;
+ } else {
+	px-=2;
+	py-=2;
+ }
+ m=menu->menu_win ;
+ p = A4GL_find_pointer (menu->window_name, MNPARCODE);
+ if (p&&m) ;
+ else return;
+ for (y=0;y<=1;y++) {
+ 	for (x=0;x<menu->w;x++) {
+		a=mvwinch(m,y,x);
+		if (a&A_BOLD) a-=A_BOLD;
+		if (a&A_NORMAL) a-=A_NORMAL;
+		a|=A_DIM;
+		//A4GL_debug("%d,%d %04x",x,y,a);
+		mvwaddch(p,y+py,x+px,a);
+	}
+ }
+ 
 }
 
 /* ============================== EOF ============================== */
