@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.110 2004-12-23 16:42:45 mikeaubury Exp $
+# $Id: ioform.c,v 1.111 2005-01-17 13:41:26 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.110 2004-12-23 16:42:45 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.111 2005-01-17 13:41:26 mikeaubury Exp $";
 /**
  * @file
  *
@@ -3831,7 +3831,7 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
  * @todo Describe function
  */
 int
-UILIB_aclfgl_set_page (int n)
+UILIB_aclfgl_a4gl_set_page (int n)
 {
   int b;
   struct s_form_dets *f;

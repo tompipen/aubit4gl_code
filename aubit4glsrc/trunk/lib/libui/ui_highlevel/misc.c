@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.21 2005-01-05 20:04:15 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.22 2005-01-17 13:41:29 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -34,7 +34,7 @@ UILIB_aclfgl_a4gl_get_page (int n)
 }
 
 int
-UILIB_aclfgl_set_page (int n)
+UILIB_aclfgl_a4gl_set_page (int n)
 {
   int b;
   struct s_form_dets *f;
