@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.26 2004-08-11 18:04:58 mikeaubury Exp $
+# $Id: globals.c,v 1.27 2004-08-12 19:11:09 whaslbeck Exp $
 #
 */
 
@@ -89,6 +89,7 @@ static void write_variable_linked (FILE * f, struct variable *v);
 static void write_variable_record (FILE * f, struct variable *v);
 static void write_variable_assoc (FILE * f, struct variable *v);
 static void write_variable_constant (FILE * f, struct variable *v);
+static void write_variable_object (FILE * f, struct variable *v);
 static void read_global_int (FILE * f, char *name, int *val);
 static void read_global_string (FILE * f, char *name, char **val, int alloc);
 static void read_global_char (FILE * f, char *name, char *val);
@@ -99,6 +100,7 @@ static void read_variable_linked (FILE * f, struct variable *v);
 static void read_variable_record (FILE * f, struct variable *v);
 static void read_variable_assoc (FILE * f, struct variable *v);
 static void read_variable_constant (FILE * f, struct variable *v);
+static void read_variable_object (FILE * f, struct variable *v);
 static void generate_globals_for (char *s);
 static void write_variable_function (FILE * f, struct variable *v) ;
 static void read_variable_function (FILE * f, struct variable *v) ;
