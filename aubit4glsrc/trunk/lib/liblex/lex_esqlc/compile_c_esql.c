@@ -102,7 +102,7 @@ print_foreach_next (char *cursorname, char *into)
 void
 print_free_cursor (char *s)
 {
-  printc ("EXEC SQL FREE CURSOR %s\n",s);
+  printc ("EXEC SQL FREE %s\n",s);
   print_copy_status();
 }
 

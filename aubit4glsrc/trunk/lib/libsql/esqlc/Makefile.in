@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2003-02-28 06:34:10 afalout Exp $
+# $Id: Makefile.in,v 1.20 2003-03-03 21:11:03 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -87,7 +87,7 @@ ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 	IFXLIBS_LIB_ESQL:=$(addprefix $(INFORMIXDIR)/lib/esql/,${IFXLIBS_LIB_ESQL})
 
 	#Final result:
-	IFX_LIBS		:=${IFXLIBS_LIB} ${IFXLIBS_LIB_ESQL} ${NON_IFX_LIBS}
+	IFX_LIBS		:=${IFXLIBS_LIB} ${IFXLIBS_LIB_ESQL} ${NON_IFX_LIBS} -lifasf
 endif
 
 

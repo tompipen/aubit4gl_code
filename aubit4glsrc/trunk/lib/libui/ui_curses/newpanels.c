@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.14 2003-03-01 14:18:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.15 2003-03-03 21:11:07 mikeaubury Exp $
 #*/
 
 /**
@@ -243,7 +243,7 @@ init_windows (void)
 LIBUSEONLY void *
 create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
-  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0);
+  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0xffff);
 }
 
 /**
@@ -268,8 +268,9 @@ create_window (char *name, int x, int y, int w, int h,
   PANEL *pan;
   int a;
   chkwin ();
+
   #ifdef DEBUG
-  	debug ("Creating window %s (%d %d %d %d) %d attrib=0x%x", name, x, y, w, h, border, attrib);
+  	debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y, w, h, border, attrib);
   #endif
 
 	if (form_line==0xff) { form_line=std_dbscr.form_line; }
@@ -277,6 +278,22 @@ create_window (char *name, int x, int y, int w, int h,
 	if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
 	if (error_line==0xff) { error_line=std_dbscr.error_line; }
 	if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+
+   if (attrib==0xffff) {
+	char *s;
+	int a;
+	int n;
+	s=acl_getenv("BACKGROUND");
+	if (strlen(s)) {
+		n=sscanf(s,"%x",&a);
+		if (n) {
+			attrib=a;
+		}
+	}
+	
+   }
+	
+
 	if (strcmp (name, "screen") == 0)
     {
       h = screen_height () - 1;
@@ -288,6 +305,7 @@ create_window (char *name, int x, int y, int w, int h,
       debug ("h=%d", h);
       debug ("Calling screen width");
       debug ("w=%d", w);
+      set_bkg (win, attrib);
 
       gui_win (name, screen_height (), screen_width (), 1, 1, 0, (long)win);
       add_pointer (name, WINCODE, win);
@@ -311,7 +329,7 @@ create_window (char *name, int x, int y, int w, int h,
 			add_pointer (name, DROPSHADOW, dswin);
 	  		set_bkg (dswin, '+');
 			debug("XX3 REVERSE");
-	      	  wbkgdset (dswin, COLOR_RED|A_REVERSE);
+	      	  	wbkgdset (dswin, COLOR_RED|A_REVERSE);
 	  		mja_wrefresh (dswin);
 			sleep(2);
 		}
@@ -361,14 +379,22 @@ create_window (char *name, int x, int y, int w, int h,
       debug ("Set pad char to space");
     }
   debug ("Setting attribute for window to 0x%x\n", attrib);
+
+
+
   set_bkg (win, attrib);
+
+
   add_pointer (name, ATTRIBUTE, (void *) attrib);
   if (border)
     {
-      wbkgdset (win, attrib);
+      //wbkgdset (win, attrib);
       debug ("Adding border %x", attrib);
+
+      set_bkg (win, attrib);
+
       wborder (win, 0, 0, 0, 0, 0, 0, 0, 0);
-      wbkgdset (win, 0);
+      //wbkgdset (win, 0);
       mja_wrefresh (win);
     }
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2003-02-07 04:01:45 afalout Exp $
+# $Id: Makefile,v 1.3 2003-03-03 21:11:00 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 ${LIBROOT}/libesqlhelper_funcs.so: helper_funcs.o
-	esql -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
+	esql -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
 
 helper_funcs.o: helper_funcs.ec
 	esql -g -c -o $@ $^ -I${ROOT}/incl

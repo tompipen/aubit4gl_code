@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.13 2003-03-02 16:36:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.14 2003-03-03 21:11:06 mikeaubury Exp $
 #*/
 
 /**
@@ -3135,8 +3135,12 @@ size_menu (ACL_Menu * menu)
 void
 set_bkg (WINDOW * win, int attr)
 {
-  wbkgd (win, attr);
-  wbkgdset (win, 0);
+
+  wbkgd (win, decode_aubit_attr(attr,'w'));
+
+  //wbkgdset (win, 0);
+  wbkgdset (win,  decode_aubit_attr(attr,'w'));
+
 }
 
 
