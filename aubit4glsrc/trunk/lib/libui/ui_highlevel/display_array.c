@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $
+# $Id: display_array.c,v 1.8 2004-02-10 18:53:41 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.8 2004-02-10 18:53:41 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -572,6 +572,7 @@ if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->n
       break;
 
     case -100: 
+    	if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
 	return 0;
 
     case -101:
