@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.36 2002-03-07 03:55:40 afalout Exp $
+# $Id: Makefile.in,v 1.37 2002-03-07 11:54:53 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -150,19 +150,24 @@ endif
 #libaclall-noodbc.a  libaclall.a  libaclallgui-noodbc.a  libaclallgui.a
 
 
-TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libaclsharedgui${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
-TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} $(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_TUI${SO_EXT}
+TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
+#$(SOURCE)/lib/libaclsharedgui${SO_EXT}
+TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} \
+			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_TUI${SO_EXT}
 
 ifneq "${STATICLIB_INST}" "no"
-	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libUI_GTK_x.a
+	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libUI_GTK_x.a
+	#$(SOURCE)/lib/libaclallgui.a
 	TOLIBCUI+=$(SOURCE)/lib/libaclall.a
 endif
 
 TOLIB_EXPORTLIB =$(SOURCE)/lib/libaclshared${SOEXP_EXT} \
-            $(SOURCE)/lib/libPDF_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT}
+            $(SOURCE)/lib/libPDF_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT} \
+            $(SOURCE)/lib/libUI_TUI${SOEXP_EXT}
 
-TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} $(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
-					$(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
+TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} $(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
+#$(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
+
 
 
 ifneq "${COMSPEC}" ""
@@ -464,7 +469,8 @@ libs:
 
 gtkgui:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
+#no longer needed?
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libUI_GTK_x.so
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui UI_GTK_x

@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.55 2002-03-07 06:55:46 afalout Exp $
+# $Id: 4glpc,v 1.56 2002-03-07 11:55:00 afalout Exp $
 #
 
 ########################################################################
@@ -375,8 +375,7 @@ if [ "$GTKGUI" = "" ]
 then
 
     #if [ -f  $AUBITDIR/lib/libaclsharedgui.so/dll ]
-    if [ "$GTKBUILD" = "yes" -a 0 ]
-	then
+    if [ "$GTKBUILD" = "yes" -a 0 ] ; then
 	export GTKGUI="Yes"
     	export ui=gui
     else
@@ -1312,8 +1311,12 @@ if [ "$COMSPEC" = "" ]
 then
     #echo COMSPEC not defined: $COMSPEC
     #-L$AUBITDIR/lib -L../../lib
-	FGLLIBS_SHARED="-laclshared"$ui$ODBCFLAG" -lm -ldl"
-	FGLLIBS_STATIC="-laclall"$ui$ODBCFLAG" -lm -ldl"
+	#FGLLIBS_SHARED="-laclshared"$ui$ODBCFLAG" -lm -ldl"
+	#FGLLIBS_STATIC="-laclall"$ui$ODBCFLAG" -lm -ldl"
+	FGLLIBS_COMMON="-lm -dl"
+	FGLLIBS_SHARED="-laclshared $FGLLIBS_COMMON"
+	FGLLIBS_STATIC="-laclall $FGLLIBS_COMMON"
+
 else
     #echo COMSPEC defined: $COMSPEC
     #-L$AUBITDIR/lib -L../../lib
@@ -1322,8 +1325,12 @@ else
 
     #-L$AUBITDIR/lib  -L../../lib
 	FGLLIBS_COMMON="-lm $RPCLIB_NAME -L/lib/w32api -L/usr/local/lib"
-	FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"
-	FGLLIBS_SHARED="-laclshared$ui$ODBCFLAG $FGLLIBS_COMMON"
+	#FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"
+	#FGLLIBS_SHARED="-laclshared$ui$ODBCFLAG $FGLLIBS_COMMON"
+
+	FGLLIBS_STATIC="-laclall $FGLLIBS_COMMON"
+	FGLLIBS_SHARED="-laclshared $FGLLIBS_COMMON"
+
 
 	if [ "$ODBC_LIB_NAME" != "noodbc" ]
     then
@@ -1363,8 +1370,7 @@ fi
 #    fi
 #fi
 
-if ! [ "$COMSPEC" = "" ]
-then
+if [ "$COMSPEC" != "" ] && [ "$MAKE4GLPC" != "Yes" ]; then
 	FGLLIBS_SHARED="$FGLLIBS_SHARED -lcurses"
 	FGLLIBS_STATIC="$FGLLIBS_STATIC -lcurses"
 fi
@@ -1389,7 +1395,8 @@ then
 		#		FGLLIBS="$FGLLIBS_SHARED $ODBC"
         #    fi
 		#else
-			FGLLIBS="-shared $FGLLIBS_SHARED"
+			#FGLLIBS="-shared $FGLLIBS_SHARED"
+            FGLLIBS="$FGLLIBS_SHARED"
 		#fi
 else
 		#if [ "$ODBC_LIB_NAME" != "noodbc" ]

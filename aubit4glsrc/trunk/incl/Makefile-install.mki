@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.10 2002-03-07 03:55:45 afalout Exp $
+# $Id: Makefile-install.mki,v 1.11 2002-03-07 11:55:00 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -81,9 +81,9 @@ install.links:
 
 install.libs.links: deinstall.libs.links
 ifeq "${GTKBUILD}" "yes"
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} ${LIB_INSTALL_LINK}/libaclsharedgui${SO_EXT}
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl${SO_EXT}
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl_x${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl_x${SO_EXT}
+#	${LN_S_LIB} $(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} ${LIB_INSTALL_LINK}/libaclsharedgui${SO_EXT}
+#	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl${SO_EXT}
+#	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl_x${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl_x${SO_EXT}
 endif
 ifeq "${PDFBUILD}" "yes"
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
