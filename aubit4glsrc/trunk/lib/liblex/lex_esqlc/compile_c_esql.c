@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.62 2004-01-04 15:52:40 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.63 2004-01-04 16:41:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -859,7 +859,7 @@ print_do_select (char *s)
 void
 print_flush_cursor (char *s)
 {
-  printc ("EXEC SQL FLUSH CURSOR %s;\n", s);
+  printc ("EXEC SQL FLUSH CURSOR %s;\n", A4GL_strip_quotes(s));
   print_copy_status ();
 }
 
