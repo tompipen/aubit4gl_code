@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.58 2002-05-06 07:21:15 afalout Exp $
+# $Id: mod.c,v 1.59 2002-05-07 22:52:21 saferreira Exp $
 #
 */
 
@@ -43,7 +43,6 @@
  * @todo -pedantic
  */
 
-int inc = 0;
 //#include "../libincl/compiler.h"
 #include <string.h>
 #include <stdio.h>
@@ -64,24 +63,36 @@ extern int in_define;
 #include "a4gl_4glc_compiledefs.h"
 #include "a4gl_aubit_lib.h"
 
-char pklist[2048] = "";
-char upd_using_notpk[5000] = "";
-int upd_using_notpk_cnt = 0;
+static int inc = 0;
+static char pklist[2048] = "";
+static char upd_using_notpk[5000] = "";
+static int upd_using_notpk_cnt = 0;
+
+/** The report type */
 int rep_type = 0;
 
 /*
 #ifdef LEXER
 char xwords[256][256];
 int word_cnt = 0;
+int xccode = 0;
+long fpos;
 #endif
 */
 
 #define USE_PRINTCOMMENT
+
+/** The count of menus found */
 extern int menu_cnt;
+
+/** The source file line number */
 extern int yylineno;
+
+/** The input (4gl file name */
 extern char *infilename;
 
-int db_used = 0;
+/** Flag that indicate that a database is being used */
+static int db_used = 0;
 int last_var_found = -1;
 int var_hdr_finished;
 /*
@@ -90,15 +101,16 @@ int xccode = 0;
 long fpos;
 #endif
 */
+/** Array of constants defined in some scope */
 struct s_constants
 {
-  char type;
-  void *ptr;
-  char name[32];
-  char scope;
+  char type;     /**< The constant type */
+  void *ptr;     /**< A pointer to the value of the constant */
+  char name[32]; /**< The constant name */
+  char scope;    /**< The scope  g : Global; m : Modular; f : Function*/
 }
 const_arr[MAXCONSTANTS];
-int const_cnt = 0;
+static int const_cnt = 0;
 
 /**
  * Array where all the WHENEVER conditions are stored.
@@ -186,17 +198,17 @@ int fbindcnt = 0;
 struct variables
 {
 
-  char var_name[65];
-  char var_type[20];
-  char var_size[20];
-  char var_arrsize[20];
-  int alev1;
+  char var_name[65];     /**< The name of the variable */
+  char var_type[20];     /**< The data type of the variable */
+  char var_size[20];     /**< The size in bytes of the variables */
+  char var_arrsize[20];  /**< The number of elements if the variable is array */
+  int alev1;     
   int alev2;
   int alev3;
-  int level;
-  char *tabname;
+  int level;             /**< _The level. I think the record */
+  char *tabname;         /**< The name of the name if like */
   char *pklist;
-  char globflg;
+  char globflg
 }
 vars[MAXVARS];
 
@@ -368,6 +380,9 @@ void clr_variable (void)
   varcnt = modlevel;
 }
 
+/**
+ *
+ */
 void inmod (void)
 {
   modlevel = varcnt;
@@ -476,6 +491,11 @@ static int print_record(int z, char ff,char *vname)
   return a;
 }
 
+/**
+ * Increment the variable inc by a value.
+ *
+ * @param a The increment.
+ */
 void setinc (a)
 {
   inc += a;
@@ -704,9 +724,7 @@ void print_variables (void)
   //dump_vars ();
 
   debug ("/**********************************************************/\n");
-
   debug ("/******************* Variable definitions *****************/\n");
-
   debug ("/**********************************************************/\n");
 
   if (modlevel > 0)
@@ -860,11 +878,19 @@ void push_associate (char *a, char *b)
   push_type ("_ASSOCIATE", a, b);
 }
 
+/**
+ * Does nothing
+ */
 void pop_associate (char *a)
 {
   /*add_variable (0,"_ENDASSOC", 0); */
 }
 
+/**
+ *
+ * @param tab
+ * @param pkey
+ */
 void add_link_to (char *tab, char *pkey)
 {
   char *pt;
@@ -885,6 +911,9 @@ void add_link_to (char *tab, char *pkey)
     }
 }
 
+/**
+ *
+ */
 void pop_record (void)
 {
 
@@ -895,6 +924,15 @@ void pop_record (void)
 
 }
 
+/**
+ *
+ * @param mn
+ * @param mnopt
+ * @param a
+ * @param b
+ * @param c
+ * @param hlp
+ */
 void push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
@@ -910,8 +948,11 @@ void push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
   debug ("Menu %d Option %d '%s'", mn, mnopt, b);
 }
 
-
-
+/**
+ * Obtain the value of the inc variable.
+ *
+ * @return The content of the inc variable.
+ */
 int getinc(void)
 {
   return inc;
@@ -1379,6 +1420,12 @@ static void set_variable (char *name, char *type, char *n, char *as, int lvl)
 
 }
 
+/**
+ * 
+ * @param t
+ * @param ptr
+ * @param name
+ */
 int add_constant (char t, char *ptr, char *name)
 {
   char scope = 'm';
@@ -1784,6 +1831,15 @@ void add_continue_blockcommand (char *cmd_type)
 
 }
 
+/**
+ * Check if is a continue of a command.
+ *
+ * @param s The keyword / token for it could be a continue.
+ *
+ * @return 
+ *   - 1 : Is a continue command.
+ *   - 0 : Otherwise.
+ */
 static int iscontinuecmd (char *s)
 {
 
@@ -1801,6 +1857,14 @@ static int iscontinuecmd (char *s)
   return 0;
 }
 
+/**
+ * An end of a block command was ocurred.
+ *
+ *   - End the block with the necessary command.
+ *   - Decrement the increment count.
+ *
+ * @param cmd_type The type of the block that was ended.
+ */
 void pop_blockcommand (char *cmd_type)
 {
   int z;
@@ -1844,6 +1908,10 @@ void pop_blockcommand (char *cmd_type)
   exit (0);
 }
 
+/**
+ *
+ * @param cmd_type
+ */
 int in_command (char *cmd_type)
 {
 
@@ -1893,6 +1961,11 @@ static void trim(char *s)
     s[strlen (s) - 1] = 0;
 }
 
+/**
+ *
+ * @param a 
+ * @param s
+ */
 void push_gen (int a, char *s)
 {
   debug ("Push %d %s\n", a, s);
@@ -1907,6 +1980,8 @@ void push_gen (int a, char *s)
 
 /**
  * Not used
+ *
+ * @param a
  */
 /*
 static char *pop_gen (int a)
@@ -1915,6 +1990,12 @@ static char *pop_gen (int a)
   gen_stack[a][gen_stack_cnt[a]];
 }
 */
+
+/**
+ *
+ * @param a
+ * @param s
+ */
 void pop_all_gen (int a, char *s)
 {
   int z;
@@ -2969,7 +3050,13 @@ char *convstrsql (char *s)
   return buff;
 }
 
-
+/**
+ * Compile the 4gl source with -G option to generate the .glb file
+ *
+ * This file is then readed to generate the externs in C.
+ *
+ * @param s The 4gl file name (without extension).
+ */
 static void generate_globals_for (char *s)
 {
   char buff[1024];
@@ -3003,10 +3090,13 @@ static void generate_globals_for (char *s)
   setenv ("NOCFILE", nocfile, 1);
 }
 
-
+/**
+ * Read the gobals file (.glb).
+ *
+ * @param s The file name (without .glb extension).
+ */
 void read_glob (char *s)
 {
-
   FILE *f;
   int a;
   char line[256];
@@ -3135,11 +3225,26 @@ char *downshift (char *a)
   return buff;
 }
 
+/**
+ * Obtain the current report block.
+ *
+ * @return The current block.
+ */
 static int get_curr_block (void)
 {
   return curr_rep_block;
 }
 
+/**
+ * Add a report ???
+ *
+ * @param t
+ * @param s1
+ * @param s2
+ * @param a
+ *
+ * @return
+ */
 int add_report_agg (char t, char *s1, char *s2, int a)
 {
   if (use_group)
@@ -3195,32 +3300,63 @@ int add_report_agg (char t, char *s1, char *s2, int a)
       return 2;
     }
   use_group = 0;
+  return -1;
 }
 
-
+/**
+ * Generate the name for the current report.
+ *
+ * It is generated with an aubit4gl specific namespace.
+ *
+ * @param s The name of the report in the 4gl source
+ */
 void set_curr_rep_name (char *s)
 {
   strcpy (curr_rep_name, "acl_fglr_");
   strcat (curr_rep_name, s);
 }
 
+/**
+ * Obtain the current report name.
+ *
+ * @return The name of the report.
+ */
 char *get_curr_rep_name (void)
 {
   return curr_rep_name;
 }
 
+/**
+ * Assigns the flag that tells that we are inside a group.
+ */
 void set_ingroup (void)
 {
   use_group = 1;
 }
 
-
+/**
+ *
+ */
 void set_whento (char *p)
 {
   debug ("whento = %p", p);
   strcpy (when_to_tmp, p);
 }
 
+/**
+ * Define the error handling after a certain point of the program.
+ *
+ * @param c The event to be catched:
+ *  - WHEN_ERROR:
+ *  - WHEN_ANYERROR:
+ *  - WHEN_SQLERROR:
+ *  - WHEN_WARNING:
+ *  - WHEN_SQLWARNING:
+ *  - WHEN_NOTFOUND:
+ *  - WHEN_SUCCESS:
+ *  - WHEN_SQLSUCCESS:
+ * @param p The action to execute.
+ */
 void set_whenever (int c, char *p)
 {
   int code;
@@ -3242,11 +3378,6 @@ void set_whenever (int c, char *p)
 	set_whenever (WHEN_SQLERROR,p);
       code = A_WHEN_ERROR;
       break;
-
-// Can someone explain the difference...
-      //case WHEN_ANYERROR:
-      //code = A_WHEN_ANYERROR;
-      //break;
 
     case WHEN_SQLERROR:
       code = A_WHEN_SQLERROR;
@@ -3293,7 +3424,9 @@ void set_whenever (int c, char *p)
   print_clr_status ();
 }
 
-
+/**
+ * Clear all constants.
+ */
 void clr_function_constants (void)
 {
   int a;
@@ -3371,6 +3504,14 @@ int setrecord (char *s, char *t, char *c)
   return 0;
 }
 
+/**
+ * Escape special characters in a string copying it to another.
+ *
+ * Escape \,",' with a \
+ *
+ * @param d A pointer to he destination string
+ * @param s A pointer to the origin string.
+ */
 static void swapstring (char *d, char *s)
 {
   int b = 0;
@@ -3404,6 +3545,12 @@ static void swapstring (char *d, char *s)
   debug ("Converted : %s to %s", s, d);
 }
 
+/**
+ * Check the number of dimentions in the array declaration string
+ *
+ * @param s A pointer to the string with array declaration.
+ * @return The number of dimentions.
+ */
 int num_arr_elem (char *s)
 {
   int a;
@@ -3442,11 +3589,22 @@ char *change_arr_elem (char *s)
   return buff;
 }
 
+/**
+ * Executed at the end of the parsing process by bison.
+ */
 yywrap ()
 {
   return 1;
 }
 
+/**
+ * Check if a string is one of the internal variables: today,time,user,date
+ *
+ * @param s The string to be checked.
+ * @return 
+ *   - 1 : Is an internal variable.
+ *   - 0 : Otherwise
+ */
 int system_var (char *s)
 {
   if (aubit_strcasecmp (s, "today") == 0)
@@ -3460,6 +3618,9 @@ int system_var (char *s)
   return 0;
 }
 
+/**
+ * Increment the number of reports declared.
+ */
 void inc_report_cnt (void)
 {
   sreports_cnt = 0;
@@ -3467,6 +3628,12 @@ void inc_report_cnt (void)
   report_stack_cnt = 0;
 }
 
+/**
+ * Escape the quotes in a string with backslash.
+ *
+ * @param s The string to be checked.
+ * @return A pointer to a static buffer with the escaped string.
+ */
 static char *trans_quote (char *s)
 {
   static char buff[1024];
@@ -3485,8 +3652,12 @@ static char *trans_quote (char *s)
   return buff;
 }
 
-
-
+/**
+ *
+ * @param tabname
+ * @param pklist
+ * @return
+ */
 int last_var_is_linked (char *tabname, char *pklist)
 {
   strcpy (pklist, "");
@@ -3507,11 +3678,11 @@ int last_var_is_linked (char *tabname, char *pklist)
 }
 
 /**
- * split a string into peices, 
+ * Split a string into pieces, 
  *
- * @param s
+ * @param s The input string
  * @param a
- * @param buff
+ * @param buff A pointer to the buffer where the result is putted.
  * @return 
  *   - if a=0 return the number of pieces
  *   - if a=1 then return the first into buffetc...
@@ -3562,6 +3733,11 @@ int linked_split (char *s, int a, char *buff)
   return 0;
 }
 
+/**
+ * Copy a value to the primary key list.
+ *
+ * @param s The string to be copied.
+ */
 void set_pklist (char *s)
 {
   debug ("pklist set to %s\n", s);
@@ -3595,6 +3771,15 @@ char *get_upd_using_queries (void)
 
 }
 
+/**
+ * Check if the current report is a pdf one.
+ *
+ * @todo : The rep type is never assigned.
+ *
+ * @return 
+ *   - An empty string if is a normal report 
+ *   - pdf_ Otherwise
+ */
 char *ispdf (void)
 {
   if (rep_type == REP_TYPE_NORMAL)
@@ -3708,9 +3893,14 @@ int print_push_rec (char *s, char *b)
  * This should be called after the structure is known - ie. just before you 
  * want to print it !
  *
- * @param bind
- * @param btype
- * @param cnt
+ * @param bind A pointer to the bind structure.
+ * @param btype The type of the bind:
+ *   - i : Input bind.
+ *   - N : Null bind.
+ *   - o : Output bind.
+ *   - O 
+ *   - f or F :
+ * @param cnt The number of elements in the bind array.
  */
 void expand_bind (struct binding * bind, int btype, int cnt)
 {
@@ -3738,19 +3928,29 @@ void expand_bind (struct binding * bind, int btype, int cnt)
 
 }
 
+/**
+ * Expandthe output bind
+ */
 void expand_obind (void)
 {
   expand_bind (obind, 'o', obindcnt);
 }
 
-
+/**
+ * Get a variable name at a specified position of  the variable array.
+ *
+ * @param z The position where to find the variable.
+ * @return A pointer to the variable found.
+ */
 char *get_var_name (int z)
 {
   return vars[z].var_name;
 }
 
-
-
+/**
+ *
+ * @param s
+ */
 void chk_init_var (char *s)
 {
   char buff[1024];
@@ -3803,6 +4003,11 @@ void chk_init_var (char *s)
 
 }
 
+/**
+ * Dump an expression if in debug mode.
+ *
+ * @param orig_ptr A pointer to the expression list
+ */
 void dump_expr (struct expr_str *orig_ptr)
 {
   struct expr_str *ptr;
@@ -3817,6 +4022,12 @@ debug("DUMP EXPR : ");
 debug("---------------------------------------------------");
 }
 
+/**
+ * Allocate space and create a new expression structure.
+ *
+ * @param value The value to be added to the expression.
+ * @return A pointer to the allocated expression.
+ */
 void *new_expr (char *value)
 {
   struct expr_str *ptr;
@@ -3829,6 +4040,13 @@ void *new_expr (char *value)
   return ptr;
 }
 
+/**
+ * Insert a new value to the expression.
+ *
+ * @param orig_expr
+ * @param value 
+ * @return 
+ */
 void *append_expr (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
@@ -3849,6 +4067,12 @@ void *append_expr (struct expr_str *orig_ptr, char *value)
   return start;
 }
 
+/**
+ * Insert a new expression at the end of anoher one.
+ *
+ * @param orig_ptr The expression to be appended.
+ * @param second_ptr The expression to append.
+ */
 void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
   struct expr_str *ptr;
@@ -3856,12 +4080,12 @@ void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
   debug ("MJA append_expr_expr %p %p", orig_ptr, second_ptr);
   start = orig_ptr;
   if (orig_ptr->next != 0)
-    {
-      while (orig_ptr->next != 0)
-	orig_ptr = orig_ptr->next;
-    }
+  {
+    while (orig_ptr->next != 0)
+      orig_ptr = orig_ptr->next;
+  }
   orig_ptr->next = second_ptr;
- dump_expr(start);
+  dump_expr(start);
   return start;
 }
 

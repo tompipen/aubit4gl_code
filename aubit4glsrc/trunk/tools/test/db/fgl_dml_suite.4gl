@@ -68,12 +68,14 @@ function test_select_into()
   select a_char
     into the_char
     from test_table
-    where an_int =1
+    --where an_int =1
   if the_char = "TEST" then
     display "Select OK"
+    return
   else
     display "Select NOT OK: ", the_char
   end if
+  display "========================"
 end function
 
 {**

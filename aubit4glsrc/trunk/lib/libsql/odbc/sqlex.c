@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.11 2002-04-24 07:46:00 afalout Exp $
+# $Id: sqlex.c,v 1.12 2002-05-07 22:52:24 saferreira Exp $
 #
 */
 
@@ -861,7 +861,8 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
  *
  * @param hstmt The statement handle.
  */
-set_blob_data(HSTMT hstmt) {
+set_blob_data(HSTMT hstmt)
+{
   int rc;
   struct fgl_int_loc *blob;
   rc=SQL_NEED_DATA;

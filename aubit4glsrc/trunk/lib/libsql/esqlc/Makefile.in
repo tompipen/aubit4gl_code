@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-04-24 07:46:00 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-05-07 22:52:24 saferreira Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,7 +40,7 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I../../libincl -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl
+CFLAGS				+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
 
 ESQL_INCLPATH		=-I../.. -I../../../compilers/fcompile -I../../libincl -I$(AUBITDIR)/incl
 
@@ -74,10 +74,7 @@ libSQL_esql.so: ${OBJS}
 -L$(INFORMIXDIR)/lib/cli $(SO_LDFLAGS) $^ @IFX_LIBS@ -o $@
 	cp $@ ../..
 
-${OBJS}: ${SRC_C}
-
-${SRC_C}: ${SRC} ../../../compilers/fcompile/form_x.h
-#	esql -dcmdl -o libSQL_esql.dll -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX
+${OBJS}: $(SRC)
 	esql -c ${SRC} ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
 
 dllSQL_esql: ${SRC} ${DEF}

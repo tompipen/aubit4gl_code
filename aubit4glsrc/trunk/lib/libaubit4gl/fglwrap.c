@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.3 2002-04-24 07:45:59 afalout Exp $
+# $Id: fglwrap.c,v 1.4 2002-05-07 22:52:24 saferreira Exp $
 #
 */
 
@@ -274,6 +274,37 @@ int isyes(char *s)
 	if (s[0]=='y'||s[0]=='Y'||s[0]=='1'||aubit_strcasecmp(s,"true")==0) return 1;
 	return 0;
 }
+/**
+ * Create an error in a string.
+ *
+ * @para str A pointer to the place where the error string will be generated.
+ * @param fileName A string with the source name.
+ * @param lineno The line in the source where the error ocurred.
+ */
+void generateError(char *str,char *fileName,int lineno)
+{
+  if (isgui()) 
+  {
+    sprintf(str,"Error in '%s'@%d\rErr=%d.\r%s.",
+      fileName,
+      lineno,
+      status,
+      err_print(status,sqlca.sqlerrm)
+    );
+  }
+  else
+  {
+    sprintf(str,
+     "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
+      fileName,
+      lineno,
+      status,
+      err_print(status,sqlca.sqlerrm)
+    );
+  }
+  if ( A4GLSTK_isStackInfo() )
+    sprintf(str,"%s\n%s",str,A4GLSTK_getStackTrace());
+}
 
 /**
  * Check if have ocurred some error.
@@ -285,42 +316,31 @@ int isyes(char *s)
 void chk_err(int lineno,char *fname) 
 {
   char s[2048];
-	#ifdef DEBUG
-		/* {DEBUG} */ {debug("Checking exit status");}
-	#endif
+  #ifdef DEBUG
+  /* {DEBUG} */ {debug("Checking exit status");}
+  #endif
 
-	if (status >= 0) 
-	  return;
+  if (status >= 0) 
+    return;
 
-	if (isscrmode()) 
-		gotolinemode();
+  if (isscrmode()) 
+    gotolinemode();
 
-	debug("Error...");
-	if (isgui()) 
-	{
-	  sprintf(s,"Error in '%s'@%d\rErr=%d.\r%s.",
-		  fname,
-			lineno,
-			status,
-			err_print(status,sqlca.sqlerrm)
-		);
-	  debug("About to send to front end");
-	  sleep(1);
-	  gui_error(s,1);
-	  gui_error("Quitting...",1);
+  debug("Error...");
+  generateError(s,fname,lineno);
+  if (isgui()) 
+  {
+    debug("About to send to front end");
+    sleep(1);
+    gui_error(s,1);
+    gui_error("Quitting...",1);
   }
-	else 
-	{
-	  debug("Write error to screen...");
-	  sprintf(s,"Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
-		  fname,
-			lineno,
-			status,
-			err_print(status,sqlca.sqlerrm)
-		);
-	  printf("%s",s);
-	}
-	exit(1);
+  else 
+  {
+    debug("Write error to screen...");
+    printf("%s",s);
+  }
+  exit(1);
 }
 
 /**

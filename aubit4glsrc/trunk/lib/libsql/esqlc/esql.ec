@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.12 2002-04-25 06:32:46 afalout Exp $
+# $Id: esql.ec,v 1.13 2002-05-07 22:52:24 saferreira Exp $
 #
 */
 
@@ -58,7 +58,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.12 2002-04-25 06:32:46 afalout Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.13 2002-05-07 22:52:24 saferreira Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -73,13 +73,12 @@ static const char rcs[] = "@(#)$Id: esql.ec,v 1.12 2002-04-25 06:32:46 afalout E
 	#include "a4gl_dtypes.h"
 	#include <stdlib.h>
 #else
-	#include <windows.h>
+  #include <windows.h>
   int status;
 	#include "a4gl_pointers.h"
 	#include "a4gl_dtypes.h"
 #endif
 
-/** @todo : We should not put the path in the include */
 #include "a4gl_constats.h"
 
 EXEC SQL include sqlca;

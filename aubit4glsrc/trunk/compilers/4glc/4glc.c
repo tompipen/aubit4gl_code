@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.21 2002-04-24 07:45:51 afalout Exp $
+# $Id: 4glc.c,v 1.22 2002-05-07 22:52:21 saferreira Exp $
 #
 */
 
@@ -35,10 +35,12 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.21 2002-04-24 07:45:51 afalout Exp $
+ * $Id: 4glc.c,v 1.22 2002-05-07 22:52:21 saferreira Exp $
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
 #ifdef YYDEBUG
 extern int yydebug;
 #else
@@ -65,6 +67,12 @@ char errbuff[1024] = "";
 #include "a4gl_pointers.h"
 
 int globals_only = 0;
+
+/**
+ * Flag that identifies if the compiler should generate function call stack 
+ * actualization.
+ */
+static int genStackInfo = 1;
 
 /**
  * Breaks the file name to take the file name without extension and dir name
@@ -98,12 +106,106 @@ static void bname (char *str, char *str1, char *str2)
 }
 
 /**
+ * Print the usage message when executing the 4gl compiler.
+ */
+static void printUsage(char *argv[])
+{
+  printf("Usage %s [options] filename[.4gl]\n", argv[0]);
+  printf("Options:\n");
+  printf("  -G     | --globals         : Generate the globals map file\n");
+  printf("  -s 0|1 | --stack_trace 0|1 : ");
+  printf("Instruct the stack trace inclusion in file:\n");
+  printf("     0 - No generate\n");
+  printf("     1 - Generate(Default)\n");
+}
+
+
+/**
+ * Parse the comand line arguments and acording to the passed values
+ * set(s) the properties.
+ *
+ * @param argc The argument count
+ * @param argv The argument values
+ */
+static void initArguments(int argc, char *argv[])
+{
+  int i;
+  extern char *optarg;
+  int this_option_optind = optind ? optind : 1;
+  int option_index = 0;
+  int si;
+  char a[128];
+  char b[128];
+  char c[128];
+  static struct option long_options[] =
+  {
+    {"globals",     0, 0, 'G'},
+    {"stack_trace", 1, 0, 's'},
+    {"help", 0, 0, '?'},
+    {0, 0, 0, 0},
+  };
+
+  while ( ( i = getopt_long (argc, argv, "Gs:?h",
+                        long_options, &option_index) ) != -1)
+  {
+    switch(i)
+    {
+      case 'G':              /* Global generate only */
+        globals_only = 1;
+        break;
+
+      case 's':              /* Stack information inclusion */
+	si = atoi(optarg);
+        if ( si != 0 && si != 1 )
+	{
+	  printUsage(argv);
+	  exit(1);
+	}
+        setGenStackInfo(si);
+        break;
+
+      case '?':
+      case 'h':
+	printUsage(argv);
+        exit(0);
+    }
+  }
+
+  if ( optind >= argc )
+  {
+    printf("No file name defined\n");
+    printUsage(argv);
+    exit(1);
+  }
+  check_and_show_id ("4GL Compiler", argv[optind]);
+  outputfilename = outputfile;
+  if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
+  {
+    printf ("Yacc Debugging on\n");
+    yydebug = 1;
+  }
+  
+  strcpy (c, argv[optind]);
+  bname (c, a, b);
+  if (b[0] == 0)
+  {
+    strcat (c, ".4gl");
+  }
+  bname (c, a, b);
+  strcpy (outputfilename, a);
+  yyin = fopen (c, "r");
+ 
+  strcpy (infilename, c);
+}
+
+
+/**
  * The main entry point function of 4glc compiler.
  *
  * @param argc The argument count
  * @param argv The argument values
  */
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
   char a[128];
   char b[128];
@@ -111,62 +213,63 @@ main (int argc, char *argv[])
   int x;
   FILE *fopn;
   int fname_arg_no = 1;
+
+  /** @todo : Remove things that are to use */
+  int useGetopt = 1;
   init_states ();
 
   yydebug = 0;
 
-	//load settings from config file(s):
-	build_user_resources();
+  //load settings from config file(s):
+  build_user_resources();
 
 
-  if (argc > 1)
+  if ( useGetopt )
+    initArguments(argc,argv);
+  else             /** @todo : Remove this code when it works OK */
+  {
+    if (argc > 1)
     {
-
       if (strcmp (argv[1], "-G") == 0)
-	{
-	  globals_only = 1;
-	  fname_arg_no = 2;
-	}
-
+      {
+        globals_only = 1;
+        fname_arg_no = 2;
+      }
+  
       check_and_show_id ("4GL Compiler", argv[fname_arg_no]);
-
+  
       outputfilename = outputfile;
-
+  
       if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
-	{
-	  printf ("Yacc Debugging on\n");
-	  yydebug = 1;
-	}
-
+      {
+        printf ("Yacc Debugging on\n");
+        yydebug = 1;
+      }
+  
       strcpy (c, argv[fname_arg_no]);
       bname (c, a, b);
-//printf("Split it\n");
       if (b[0] == 0)
-	{
-	  strcat (c, ".4gl");
-	}
-//printf("Split it again\n");
+      {
+        strcat (c, ".4gl");
+      }
       bname (c, a, b);
-//printf("gen fname\n");
-//printf("c=%s b=%s a='%s'\n",c,b,a);
       strcpy (outputfilename, a);
-//printf("Output to %s\n",outputfilename);
-//printf("outputfilename = %s\n",outputfilename);
-//printf("Got input : %s\n",c);
       yyin = fopen (c, "r");
-
+  
       strcpy (infilename, c);
     }
-  else
+    else
     {
       printf ("Usage %s [-G] filename[.4gl]\n", argv[0]);
       exit (1);
     }
+  }
+
   if (yyin == 0)
-    {
-      printf ("Error opening file : %s\n", c);
-      exit (1);
-    }
+  {
+    printf ("Error opening file : %s\n", infilename);
+    exit (1);
+  }
 
   fseek(yyin,0,SEEK_END);
   yyin_len=ftell(yyin);
@@ -201,7 +304,6 @@ main (int argc, char *argv[])
 
   exit (x);
 }
-
 
 /**
  * Remove the quotes in the beginning and at the from a quoted string
@@ -344,4 +446,26 @@ int only_doing_globals (void)
   if (globals_only)
     return 1;
   return 0;
+}
+
+/**
+ * Assign a value into the global flag that indicate if the compiler should
+ * generate function call stack information.
+ *
+ * @param _genStackInfo The vlaue to assign to the flag
+ */
+void setGenStackInfo(int _genStackInfo)
+{
+  genStackInfo = _genStackInfo;
+}
+
+/**
+ * Check the value of the global flag that indicate if the compiler should
+ * generate function call stack information.
+ *
+ * @param _genStackInfo The vlaue to assign to the flag
+ */
+int isGenStackInfo(void)
+{
+  return genStackInfo;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.6 2002-05-06 07:21:16 afalout Exp $
+# $Id: compile_c.c,v 1.7 2002-05-07 22:52:24 saferreira Exp $
 #
 */
 
@@ -75,7 +75,7 @@ extern struct rep_structure rep_struct;
 extern struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;
-extern int ccnt;		// Block counter - defined in lexer.c
+extern int ccnt;		/**< Block counter - defined in lexer.c */
 extern char mmtitle[132][132];
 
 extern struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -3498,6 +3498,50 @@ print_at_termination (char *f)
   print_niy ("AT TERMINATION");
 }
 
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * initialization function to the calling stack.
+ */
+void printInitFunctionStack(void)
+{
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_initFunctionCallStack();");
+}
+
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * declaration function to the calling stack.
+ */
+void printDeclareFunctionStack(char *functionName)
+{
+  if (isGenStackInfo())
+    printc ("\nstatic char _functionName[] = \"%s\";\n",functionName);
+}
+
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * push function to the calling stack.
+ */
+void printPushFunction(void)
+{
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_pushFunction(_functionName);\n");
+}
+
+/**
+ * Print the C C code to the call to the pop function of the calling stack.
+ *
+ * It only does it if defined as compiler option.
+ */
+void printPopFunction(void)
+{
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_popFunction();\n");
+}
+
 
 /**
  * The parser found the FUNCTION keyword folowed by is name and the 
@@ -3524,6 +3568,7 @@ print_func_start (char *isstatic, char *fname, int type)
     printc ("\n%sint aclfgl_%s (int nargs){ \n", isstatic, fname);
   if (type == 1)
     printc ("\n%sint aclfglm_%s (int nargs){ \n", isstatic, fname);
+ printDeclareFunctionStack(fname);
 }
 
 /**
@@ -3830,6 +3875,12 @@ print_curr_spec (int type, char *s)
  *
  * This implementation calls the library function that prepares the statement 
  * A4GLSQL_prepare_select().
+ *
+ * This is called directly by the parser.
+ *
+ * @todo : Separate the generation from the parsing using an abstract syntax
+ * tree.
+ *
  *
  * @param buff A string buffer with the select statement
  * @return A string with the C implementation
