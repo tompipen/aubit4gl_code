@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.23 2003-02-19 22:28:38 afalout Exp $
+#	 $Id: footer.mki,v 1.24 2003-02-22 01:52:21 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -44,6 +44,13 @@ PROGTYPE  = $(suffix ${PROG})
 #NOTE: this applies only to LD, and NOT to GCC
 LD_RUN_PATH	:=${LIBSTORE}:${LD_RUN_PATH}
 export LD_RUN_PATH
+
+#We need to add lib to name of libraries (libxxxx.xx) when we will use them to link using -l switch
+ifeq "${GCC_MINGW}" "yes"
+	LIBPREFIX	=lib
+    LIBLINKFLG	=-l
+endif
+
 
 ########################
 #If we did not include rules files for all compilers, we must at least specify
@@ -84,10 +91,10 @@ ifeq "$(PROGTYPE)" ".lib"
 	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}}
     ifeq "${LIBS_LINK}" "SHARED"
 		#aubit shared library
-		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_SOL_EXT}}
+		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_SOL_EXT}}
 	else
 		#aubit static library
-		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}}
+		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_LIB_EXT}}
     endif
 else
     #we are making a program
@@ -106,7 +113,7 @@ endif
 #       Set extensions for compiling library/objects/forms/help files
 # =======================================================================
 
-#Libraries:
+#Libraries (as specified by make file as part of ptogram):
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
 	endif
@@ -115,11 +122,25 @@ endif
 	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_LIB_EXT}})
 	FILES.4cx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_CLIB_EXT}})
 	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${Q4GL_LIB_EXT}})
-    ifeq "${LIBS_LINK}" "SHARED"
-		FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
+
+	ifeq "${LIBS_LINK}" "SHARED"
+		FILES.aox = $(addprefix ${LIBPREFIX}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
     else
-		FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+		FILES.aox = $(addprefix ${LIBPREFIX}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
     endif
+
+	ifneq "${LIBLINKFLG}" ""
+		ifeq "${LIBS_LINK}" "SHARED"
+			FILES.aubit.link = $(addprefix ${LIBLINKFLG}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
+	    else
+			FILES.aubit.link = $(addprefix ${LIBLINKFLG}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+	    endif
+    else
+
+
+	endif
+
+
 #OBJECTS
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDOBJSTORE=${OBJSTORE}
@@ -130,7 +151,7 @@ endif
 	ifeq "${OBJS_LINK}" "SHARED"
 
         #FIXME: we neet to take out the 4gl file from FILES.4gl list, that
-        #contatins MAIN block, as it will still need to be compiles to static 
+        #contatins MAIN block, as it will still need to be compiles to static
 		#object that will be made in executable, since shared libraries
         #created here will need bot be passes as -l[lib]name on linking line -
         #they will also need [lib] prefix added!
@@ -172,10 +193,18 @@ endif
 #fails to link...)
 AUBIT_DEPS		=${FILES.ao} 	${FILES.aox}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
 D4GL_PCODE_DEPS	=${FILES.42m} 	${FILES.42x}	${GLOB_GLOBALS:.obj=${D4GL_OBJ_EXT}}
-D4GL_CCODE_DEPS	=${FILES.42o} 	${FILES.42FIXME}	${GLOB_GLOBALS:.obj=${D4GL_COBJ_EXT}}
+D4GL_CCODE_DEPS	=${FILES.42o} 	${FILES.42FIX}	${GLOB_GLOBALS:.obj=${D4GL_COBJ_EXT}}
 I4GL_PCODE_DEPS	=${FILES.4go} 	${FILES.4gx}	${GLOB_GLOBALS:.obj=${I4GL_OBJ_EXT}}
-I4GL_CCODE_DEPS	=${FILES.oFIXME} 	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}}
+I4GL_CCODE_DEPS	=${FILES.oFIX}	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}}
 QUERIX_DEPS		=${FILES.qo} 	${FILES.qox}	${GLOB_GLOBALS:.obj=${Q4GL_OBJ_EXT}}
+
+
+ifneq "${LIBLINKFLG}" ""
+	AUBIT_LINK_DEPS	=${FILES.ao}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+else
+	AUBIT_LINK_DEPS	=${AUBIT_DEPS}
+endif
+
 
 # =======================================================================
 #                 Define files to be cleaned
@@ -229,7 +258,6 @@ ifeq "$(DEFAULT)" "querix"
 endif
 
 
-
 # =======================================================================
 #                              Targets
 # =======================================================================
@@ -253,12 +281,12 @@ all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
 #make reaches prgram target, examine dependencies, applies VPATH and hopefully
 #finds them. If this does not help, remove it, since it's redundant:
 #aubit	  :	${FILES.aox} ${PROG.4ae} ${FILES.afr} ${FILES.hlp}
-aubit	  :	${PROG.4ae} ${FILES.afr} ${FILES.hlp}
-d4gl-pcode:	${FILES.42x} ${PROG.42r} ${FILES.42f} ${FILES.42h}
-d4gl-ccode:	${FILES.42o} ${PROG.42e} ${FILES.42f} ${FILES.42h}
-i4gl-pcode:	${FILES.4gx} ${PROG.4gi} ${FILES.frm} ${FILES.iem}
-i4gl-ccode:	${FILES.4cx} ${PROG.4ge} ${FILES.frm} ${FILES.iem}
-querix    : ${FILES.qox} ${PROG.4qe} ${FILES.pic} ${FILES.qms}
+aubit	  :	${AUBIT_DEPS} 		${PROG.4ae} ${FILES.afr} ${FILES.hlp}
+d4gl-pcode:	${D4GL_PCODE_DEPS} 	${PROG.42r} ${FILES.42f} ${FILES.42h}
+d4gl-ccode:	${D4GL_CCODE_DEPS} 	${PROG.42e} ${FILES.42f} ${FILES.42h}
+i4gl-pcode:	${I4GL_PCODE_DEPS} 	${PROG.4gi} ${FILES.frm} ${FILES.iem}
+i4gl-ccode:	${I4GL_CCODE_DEPS} 	${PROG.4ge} ${FILES.frm} ${FILES.iem}
+querix    : ${QUERIX_DEPS} 		${PROG.4qe} ${FILES.pic} ${FILES.qms}
 plexus:
 
 # =======================================================================
@@ -266,14 +294,42 @@ plexus:
 # =======================================================================
 
 
-${PROG.4ae}:${AUBIT_DEPS}
-ifeq "$(PROGTYPE)" ".lib"
+#This is an explicit rule - vpath will not be searched - use implicit rule instead?
+#${PROG.4ae}:${AUBIT_DEPS}
+${PROG.4ae}:${AUBIT_LINK_DEPS}
+	@echo "AUBIT_DEPS:  ${AUBIT_DEPS}"
+ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
+ifeq "${A4GL_USE_LD}" "yes" #using ld
 #-fPIC will apparently not work on AIX - we should autoconf this file
 #--rpath${LIBSTORE} # -L${LIBSTORE}
-	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@
+#	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	echo "ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@"; \
+	ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@
+else                        #using 4glc
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	echo "${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
+	${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@  ${FILES.aubit.link}
+endif
+else 						#------------------ linking executable ---------------------
+ifeq "${USE_4GLPC}" "1"
+	${FAIL_LINK}${A4GL_CC} $^ -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
 else
-#	${FAIL_LINK}${A4GL_CC} $^ -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
-	@for afile in $^ ; do \
+	@${FAIL_LINK}for afile in $^ ; do \
         x=`dirname $$afile`; \
         if test "$$x" != "."; then \
             allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
@@ -283,6 +339,7 @@ else
     done; \
 	echo "${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}" ;\
     ${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
+endif
 endif
 #	@echo CHANGED: $?
 
@@ -386,6 +443,11 @@ ${FILES.ao}:	${GLOBALS.4gl}
 #                  only files specified by this make file
 # =======================================================================
 
+#FIXME: this will clean object only in current directory - but
+#object, libraries, forms, help files (and sometimes the target itself if it's a library
+#itself, for example, will reside outside of current directory. I'll need to use VPATH to
+#clean them...
+
 clean: clean.target clean.help clean.obj clean.cfiles \
 			clean.forms clean.libs clean.common
 
@@ -432,6 +494,8 @@ clean.common:
 #                     Clean Targets - all compilers
 #                  only files specified by this make file
 # =======================================================================
+
+#FIXME: see note under  Clean Targets - current compiler
 
 #FIXME: some targets are missing
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.60 2003-02-10 02:08:28 afalout Exp $
+# $Id: Makefile-install.mki,v 1.61 2003-02-22 01:52:21 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -156,7 +156,7 @@ deinstall.files:
 #Drop Autoconf support directory:
 	rm -rf $(INSTALL_DIR)/etc/config
 #files created after installation, and by Autoconf:
-	${RM} $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
+	${RM} $(INSTALL_DIR)/*.${ARCHEXT} $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
 	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
 
 #######################################
@@ -164,6 +164,7 @@ deinstall.files:
 deinstall.tree:
 	-rmdir $(INSTALL_DIR)/bin
 	-rmdir $(INSTALL_DIR)/lib
+	-rmdir $(INSTALL_DIR)/etc/convertsql
 	-rmdir $(INSTALL_DIR)/etc
 	-rmdir $(INSTALL_DIR)/incl
 	-rmdir $(INSTALL_DIR)/tools/test/gui

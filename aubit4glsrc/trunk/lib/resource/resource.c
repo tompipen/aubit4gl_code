@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.31 2003-02-19 22:28:40 afalout Exp $
+# $Id: resource.c,v 1.32 2003-02-22 01:52:22 afalout Exp $
 #
 */
 
@@ -269,6 +269,8 @@ struct str_resource builtin_resource[] =
   {"A4GL_EXE_EXT", 		".4ae"},
   {"A4GL_DLL_EXT", 		".so"},
 #endif
+    /* can't use del on Windows, does not accept forward slash in the path */
+  {"A4GL_RM_CMD", 		"rm -f"},
 
 	/* WINDOWS Compilation options */
 /* obsolete
@@ -956,7 +958,7 @@ next_resource(void)
  * @param
  */
 static int 
-has_resource(char *s) 
+has_resource(char *s)
 {
 int a;
 	if (build_resource_cnt) {

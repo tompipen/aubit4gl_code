@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.119 2003-02-20 05:37:23 afalout Exp $
+# $Id: Makefile-common.in,v 1.120 2003-02-22 01:52:21 afalout Exp $
 #
 
 #Workarounf for Informix installers messing up libphtread:
@@ -889,7 +889,8 @@ endif
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
 ifneq "${COMSPEC}" ""
-	LIB_FILES +=${LIB_EXPORTLIB} lib4glc${SO_EXT}
+	LIB_FILES 		+=${LIB_EXPORTLIB} lib4glc${SO_EXT}
+	LIB_ALLWAYSCLEAN+=libUI_TUI.dll
 endif
 
 ## ==================================================================
@@ -993,17 +994,17 @@ INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
 ## ==================================================================
 
 #installation files with paths:
-TOBIN		=$(addprefix $(BIN_DIR)/,	$(BIN_FILES))
-TOLIB		=$(addprefix $(LIB_DIR)/,	$(LIB_FILES))
-TODOCS		=$(addprefix $(DOC_DIR)/,	$(DOC_FILES))
-#TOTEST		=$(addprefix $(TEST_DIR)/,	$(TEST_FILES))
+TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
+TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
+TODOCS		=$(addprefix $(DOC_DIR)/,		$(DOC_FILES))
+#TOTEST		=$(addprefix $(TEST_DIR)/,		$(TEST_FILES))
 TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
 TOTEST_GUI	=$(addprefix $(TEST_DIR_GUI)/,	$(TEST_GUI))
-TOETC		=$(addprefix $(ETC_DIR)/,	$(ETC_FILES))
-TOHOME		=$(addprefix $(HOME_DIR)/,	$(HOME_FILES))
-TOROOT		=$(addprefix $(ROOT_DIR)/,	$(ROOT_FILES))
-TOINCL		=$(addprefix $(INCL_DIR)/,	$(INCL_FILES))
-TOIDE       =$(addprefix $(IDE_DIR)/,	$(IDE_FILES))
+TOETC		=$(addprefix $(ETC_DIR)/,		$(ETC_FILES))
+TOHOME		=$(addprefix $(HOME_DIR)/,		$(HOME_FILES))
+TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
+TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
+TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
 
 
@@ -1017,7 +1018,7 @@ TOBIN		+=$(SOURCE)/tools/metrics_4gl/4GL_metrics.cgi
 
 #deinstallation files with paths:
 FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES))
-FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES))
+FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES))  $(addprefix $(LIB_DEST)/,$(LIB_ALLWAYSCLEAN))
 FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
 FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
 FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.62 2003-02-20 05:37:22 afalout Exp $
+# $Id: Makefile.in,v 1.63 2003-02-22 01:52:19 afalout Exp $
 #
 
 ROOT		=../..
@@ -41,7 +41,7 @@ WANTKW_C		= mk_states.c
 Y_OUTPUT		= rules/generated/y.output
 
 
-ifeq "@YACC@" "no"
+ifeq "${YACC}" "no"
 	GENRULES    =${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
 	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc

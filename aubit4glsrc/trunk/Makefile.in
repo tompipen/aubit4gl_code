@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.113 2003-02-10 02:07:09 afalout Exp $
+# $Id: Makefile.in,v 1.114 2003-02-22 01:51:50 afalout Exp $
 #
 
 ## ==================================================================
@@ -226,11 +226,11 @@ clean:
 	@echo FIXME: only cleanall works
 
 #will clean EVERYTHING that is not source file from CVS
-distclean: clean.all clean.tools clean.distclean clean.config
+distclean: clean.all clean.tools clean.aubitbuild clean.distclean clean.config
 	@echo Aubit 4gl compiler source tree now distribution clean
 
 clean.distclean:
-	$(MAKE) -C tools/fgldoc distclean
+	-$(MAKE) -C tools/fgldoc distclean
 
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
@@ -280,7 +280,7 @@ clean.tools:
 	$(MAKE) -C tools/4gl_beautify/iid clean
 	$(MAKE) -C tools/4gl_beautify/infmx_tidy clean
 	$(MAKE) -C tools/4glunit clean
-	$(MAKE) -C tools/fgldoc clean
+	-$(MAKE) -C tools/fgldoc clean
 	(cd tools/4gltree; ${RM} *.bak)
 	(cd tools/metrics_4gl; ${RM} *.bak)
 	@echo Aubit 4gl compiler tools source tree is now clean
@@ -343,13 +343,14 @@ clean.root:
 	rm -rf autom4te.cache
 
 #stuff created by aubitbuild.sh:
+clean.build: clean.aubitbuild
 clean.aubitbuild:
 	${RM} tmpdlpage1.html aubitdownload.htm tmpdlpage2.html aubitdownload-template.htm \
     cybuildnames.tmp unixbuildnames.tmp unixsrcbuildnames.tmp cysrcbuildnames.tmp \
     warning.log
 #FIXME: move this to appropriate makefile :
 	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h \
-	tools/ide/debug.out tools/adbaccess/debug.out
+	tools/ide/debug.out tools/adbaccess/debug.out *.${ARCHEXT} *.htm *.html *.tmp
 
 clean.rpc:
 	${RM} compilers/fcompile/form_x_xdr.c compilers/menus/menu_x_xdr.c \
@@ -361,8 +362,8 @@ clean.bin:
 	*.bak .*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
-	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile xgen dbbeauty *.err \
-    iid infmx_tidy *.4ae *-strip \
+	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile${EXE} xgen${EXE} dbbeauty${EXE} *.err \
+    iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
 	)
 
 clean.etc:
@@ -390,9 +391,6 @@ clean.project:
 	(cd tools/cygwin; ${RM} *.bak)
 
 
-#Clean stuff that is lef over aubitbuild.sh:
-clean.build:
-	${RM} *.tgz *.htm *.html *.tmp
 
 ## ==================================================================
 ##                              Install

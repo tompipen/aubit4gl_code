@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.26 2003-02-19 22:28:38 afalout Exp $
+#	 $Id: a4gl.mk,v 1.27 2003-02-22 01:52:21 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.26 2003-02-19 22:28:38 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.27 2003-02-22 01:52:21 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -52,17 +52,18 @@ endif
 #Name of the warper script for allAubit commands, that we expect in the PATH
 AUBIT_WRAPER		=aubit
 
-#Fixme: remove this by removing the need to use 4glpc script, and use 4glc directly instad:
 ifdef COMSPEC
-    SH=bash
+    SH				=bash
 else
-    SH=sh
+    SH				=sh
 endif
 
-AUBIT_CMD   =${SH} ${AUBIT_WRAPER}
+#AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
+AUBIT_CMD   		=${AUBIT_WRAPER}
 
 #do we want to use 4glpc shell script, or will we invoke 4glc directly
 USE_4GLPC           =0
+#USE_4GLPC           =1
 
 ###########################
 #If this compilers needs objects ar run-time, set to 'yes':
@@ -75,6 +76,9 @@ A4GL_IS_C_COMPILER	=yes
 ###########################
 #Name of C compiler used to compile Aubit created C files, and for linking objects:
 AUCC				=gcc
+
+A4GL_LINKLIBS       =-laubit4gl
+A4GL_LINKLIBS_LFLAGS=-L${AUBITDIR}/lib
 
 ###########################
 #Flags to C compiler for compiling objects:
@@ -115,6 +119,7 @@ A4GL_CL         = ${A4GL_CL_ENV} ${A4GL_CL_CMD} ${A4GL_CL_FLAGS}
 A4GL_FC         = ${A4GL_FC_CMD} ${A4GL_FC_FLAGS}
 A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 
+#A4GL_LINKLIBS A4GL_LINKLIBS_LFLAGS
 
 #######################
 # Define suffixes which are recognised.
@@ -182,43 +187,22 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #we want to allways have the dependency of the object to the 4gl source file.
 #Otherwise, make would be happy when it see that object is up-to-date in
 #respect to the c file, and ignore possible change in 4gl file
-#.4gl${A4GL_OBJ_EXT}:
-%${A4GL_OBJ_EXT} : %.4gl
-	@${FAIL_CMPL_4GL}if test "$(^D)" = "" -o "$(^D)" = "."; then \
-		echo "${A4GL_CC} $< -c -o ${OBJSTORE}$@"; \
-		${A4GL_CC} $< -c -o ${OBJSTORE}$@; \
-	else \
-		echo "${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
-		${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@; \
-	fi
-
-dddddd%${A4GL_OBJ_EXT} : %.4gl
-	@echo "1 $(<D)"
-	@echo "2 $(*D)"
-	@echo "3 $(%D)"
-	@echo "4 $(^D)"
-ifneq "$(^D)" ""
-ifneq "$(^D)" "."
 #On Windows when using Cygwin tools (that use UNIX paths and Cygwing path mangling) and native
 #Windows 4glc and gcc (that know nothing about this CigWin paths) we need to add path to CygWin
 #installation in front of any source file paths specified in rule call:
-	@echo "Adding path..."
-	${FAIL_CMPL_4GL}${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@
-endif
-endif
-ifeq "$(^D)" ""
-	@echo "1 NOT Adding path... >>$(^D)<<"
+#.4gl${A4GL_OBJ_EXT}:
+%${A4GL_OBJ_EXT} : %.4gl
+ifeq "${USE_4GLPC}" "1"
 	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
+else
+	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
+		echo "${A4GL_CC} $< -c -o${OBJSTORE}$@"; \
+		${A4GL_CC} $< -c -o${OBJSTORE}$@; \
+	else \
+		echo "adding $(<D)  ${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@"; \
+		${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@; \
+	fi
 endif
-ifeq "$(^D)" "."
-	@echo "2 NOT Adding path...>>$(^D)<<"
-	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
-endif
-
-
-#FIXME: instead of above, invoke 4glc first, an then gcc directly, to maximize controll:
-#	aubit 4glc -c hello.4gl
-#	${FAIL_CMPL_C}${AUCC} ${AUCC_FLAGS} -c $*.c -o $*.ao
 
 ####################################
 # Rule to compile an shared object file from a 4gl file
@@ -232,6 +216,12 @@ endif
 %${A4GL_LIB_EXT}:  %.mk
 	@echo "Making library $*.aox using $^"
 	${AMAKE} $<
+
+lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
+	@echo "Making library $*.aox using $^"
+	${AMAKE} $<
+
+
 
 ####################################
 # Rule for compiling form files

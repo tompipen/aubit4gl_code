@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-10-22 06:43:37 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-02-22 01:52:22 afalout Exp $
 #
 
 ROOT    =../../..
@@ -44,7 +44,7 @@ include ${ROOT}/incl/Makefile-common
 ##                    Options
 ## ==================================================================
 
-ifeq "@YACC@" "no"
+ifeq "${YACC}" "no"
 	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
 	KW_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h
 	Y_TAB_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h

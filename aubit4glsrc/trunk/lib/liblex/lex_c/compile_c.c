@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.59 2003-02-20 23:05:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.60 2003-02-22 01:52:21 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4672,7 +4672,7 @@ return buff;
 void lex_parsed_fgl() {
 	if (outfile) fclose(outfile);
 	if (hfile) fclose(hfile);
-	printf("4GL module compiled successfully\n");
+
 }
 
 void print_sql_block_cmd(char *s) {
