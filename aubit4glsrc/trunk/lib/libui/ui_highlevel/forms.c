@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.9 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.10 2004-03-18 09:42:24 mikeaubury Exp $";
 
 #include "forms.h"
 #include "hl_proto.h"
@@ -847,6 +847,7 @@ void *
 UILIB_A4GL_get_curr_form (int warn_if_no_form)
 {
   char buff[80];
+A4GL_chkwin();
   sprintf (buff, "A4GL_get_currwinno()=%d", A4GL_get_currwinno ());
 
 #ifdef DEBUG

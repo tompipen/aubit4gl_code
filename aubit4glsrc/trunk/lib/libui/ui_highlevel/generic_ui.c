@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.9 2004-03-09 09:35:50 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.10 2004-03-18 09:42:24 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -1482,7 +1482,7 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
   int attr_no;
   int srec_no;
   int cnt = 0;
-
+  if (formdets==0) return 0;
 #ifdef DEBUG
   {
     A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.93 2004-03-09 16:40:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.94 2004-03-18 09:42:19 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.93 2004-03-09 16:40:15 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.94 2004-03-18 09:42:19 mikeaubury Exp $";
 /**
  * @file
  *
@@ -1805,7 +1805,10 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
   int attr_no;
   int srec_no;
   int cnt = 0;
-
+  if (formdets==0) {
+		A4GL_exitwith("No form displayed");
+		return 0;
+  }
 #ifdef DEBUG
   {
     A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);

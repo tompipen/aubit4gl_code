@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.86 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: newpanels.c,v 1.87 2004-03-18 09:42:19 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.86 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.87 2004-03-18 09:42:19 mikeaubury Exp $";
 
 /**
  * @file
@@ -1136,6 +1136,8 @@ void *
  UILIB_A4GL_get_curr_form (int warn_if_no_form)
 {
   char buff[80];
+  A4GL_chkwin();
+
   sprintf (buff, "currwinno=%d", currwinno);
 
 #ifdef DEBUG
