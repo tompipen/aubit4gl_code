@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.32 2003-05-30 17:07:40 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.33 2003-05-30 18:34:07 mikeaubury Exp $
 #
 */
 
@@ -3354,7 +3354,7 @@ print_menu_1 (int n)
  * @return
  */
 void
-print_end_menu_1 (void)
+print_end_menu_1 (int n)
 {
   printc ("if ($cmd_no==-1) {\n");
   print_menu (menu_cnt);
@@ -3367,7 +3367,7 @@ print_end_menu_1 (void)
  * @return
  */
 void
-print_end_menu_2 (void)
+print_end_menu_2 (int n)
 {
   printc
     ("$cmd_no=aubit4gl_pl::menu_loop($m);\n}\naubit4gl_pl::free_menu($m);\n");
@@ -3393,7 +3393,7 @@ print_menu_block (int n)
  * @return
  */
 void
-print_menu_block_end (void)
+print_menu_block_end (int n)
 {
   printc ("}\n");
 }
@@ -3404,7 +3404,7 @@ print_menu_block_end (void)
  * @return
  */
 void
-print_option_op (int type, char *n)
+print_option_op (int type, char *n,int mn)
 {
   if (type == 'N')
     printc ("aubit4gl_pl::next_option(m,%s);\n", n);
@@ -3852,7 +3852,7 @@ void
 print_end_record (char *vname, char *arrsize)
 {
   printing_record--;
-  if (arrsize == -1)
+  if ((int)arrsize == -1)
     {
       printc ("} \n", vname);
     }

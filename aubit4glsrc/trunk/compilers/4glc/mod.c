@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.126 2003-05-30 16:57:50 mikeaubury Exp $
+# $Id: mod.c,v 1.127 2003-05-30 18:33:21 mikeaubury Exp $
 #
 */
 
@@ -3847,6 +3847,7 @@ return "";
 static char *add_clobber(char *buff_orig,char *important) {
 static char buff_new[256];
 static int p=0;
+char b1[256];
 	strcpy(buff_new,buff_orig);
 
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
@@ -3859,14 +3860,15 @@ static int p=0;
 	}
 
 
-	if (strlen(buff_orig)<=18) {
+	if (strlen(buff_orig)<=20) {
 		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
 		return buff_orig;
 	}
 
-	sprintf(buff_new,"a4gl_%d_%s",p++,important);
-	buff_new[18]=0;
+	strcpy(b1,important);
+	b1[10]=0;
+	sprintf(buff_new,"\"a4gl_%03d_%s\"",p++,b1);
 	clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 	clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
 	return buff_new;
@@ -3876,10 +3878,11 @@ char *do_clobbering(char *f,char *s) {
 static char buff[256];
 	if (A4GL_isyes(acl_getenv("NOCLOBBER"))) {
 		printf("NOCLOBBER : %s\n",s);
-		return s;
+		sprintf(buff,"\"%s\"",s);
+		return buff;
 	}
 
-	sprintf(buff,"%s_%s",f,s);
+	sprintf(buff,"\"%s_%s\"",f,s);
 
 	if (A4GL_isyes(acl_getenv("ALWAYSCLOBBER"))) {
 		return buff;
