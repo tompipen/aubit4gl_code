@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.78 2004-03-09 16:40:15 mikeaubury Exp $
+# $Id: esql.ec,v 1.79 2004-03-14 10:41:49 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.78 2004-03-09 16:40:15 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.79 2004-03-14 10:41:49 mikeaubury Exp $";
 #endif
 
 
@@ -1999,7 +1999,10 @@ A4GLSQL_open_cursor (int ni, char *s)
 
   cursorIdentification = A4GL_find_pointer (s, PRECODE);
 
-
+  if (cursorIdentification==0) {
+		A4GL_exitwith("Cursor not found");
+		return 1;
+	}
   A4GL_debug ("Got cursorIdentification as : %p", cursorIdentification);
   sid = cursorIdentification->statement;
   A4GL_debug("%s",sid->select);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.77 2004-02-09 07:25:20 afalout Exp $
+# $Id: Makefile.in,v 1.78 2004-03-14 10:41:48 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -70,7 +70,7 @@ CMODS_LIB       =\
 				compile.c \
 				dim.c \
 				list.c lexer.c memfile.c ../../lib/generated/std_funcs.c field_handling.c \
-				mod.c map.c variables.c globals.c lex.c API_lex.c \
+				mod.c map.c var_handling.c variables.c globals.c lex.c API_lex.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \
                 ${Y_TAB_C} \

@@ -690,7 +690,7 @@ op_escape:
 pattern_ss:
 	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}
 /*
-	  value_specification {$<sql_string>$=make_sql_string($<str>1);}
+	  value_specification {$<sql_string>$=make_sql_string($<str>1,0);}
 	| var_ident_ibind_ss {$<sql_string>$=$<sql_string>1;}
 */
 	;
@@ -1313,6 +1313,15 @@ value_expression_pls_ss :
 			$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);
 		}
 	}
+	| value_expression_ss AS identifier {
+		if (A4GL_isyes(acl_getenv("A4GL_USE_ALIAS_AS"))) {
+			$<sql_string>$=make_sql_string($<sql_string>1," AS ",$<str>3,0);
+		} else {
+			$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>3,0);
+		}
+	}
+
+
 ;
 
 
@@ -1354,7 +1363,7 @@ value_expression_initial_ss :
 		$<sql_string>$=strdup($<str>2);
 	}
 	| ATSIGN identifier DOT identifier {
-		$<sql_string>$=make_sql_string($<str>2,".",$<str>4);
+		$<sql_string>$=make_sql_string($<str>2,".",$<str>4,0);
 	}
 ;
 

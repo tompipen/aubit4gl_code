@@ -279,58 +279,6 @@ char arrbuff[256];
 
 
 
-array_r_variable_or_ident:
-identifier arr_subscripts
-{
-  int type,arrsize,size,level;
-  //char buff2[256];
-  char arrbuff[256];
-//printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  A4GL_lex_printcomment("/*array variable nnn */");
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
-  A4GL_lex_printcomment("/*here %s %x */",$<str>1,type);
-  if (scan_variable($<str>1)==-1) {
-	sprintf($<str>$,"%s[%s]",$<str>1,$<str>2);
-  } else {
-
-
-  A4GL_debug("Type=%d (%d) arrsize=%d",type,type&0xffff,arrsize);
-
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.3*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-      	dec_counter();
-  } else {
- 
-  if (((type & 0xffff) != 0) || (arrsize>0))
-    {
-      A4GL_lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);
-      sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
-      A4GL_lex_printcomment ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.4*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-             addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
-      A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-      	dec_counter();
-      	mcnt--;
-    }
-  }
-}
-
-  mcnt++;
-}
-;
-
 
 
 
@@ -663,7 +611,7 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   char arrbuff[256];
   A4GL_lex_printcomment("/*..array_r_varid..*/");
 
-//printf("Got array %s %s\n",$<str>1,$<str>3);
+printf("Got array %s %s\n",$<str>1,$<str>3);
 if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
 	// Its a variable
 	//printf("gvd = true\n");

@@ -192,19 +192,17 @@ upd_value_expression_ss:
 
 
 upd_value_expression_initial_ss :
-        upd_var_ident_ibind_ss    {
-                $<sql_string>$=$<sql_string>1;
-
-        }
-        | subquery_ss {
-                $<sql_string>$=$<sql_string>1;
-        }
-        | ATSIGN identifier {
-                $<sql_string>$=strdup($<str>2);
-        }
-        | ATSIGN identifier DOT identifier {
-                $<sql_string>$=make_sql_string($<str>2,".",$<str>4);
-        }
+        upd_var_ident_ibind_ss    { 
+		
+		$<sql_string>$=$<sql_string>1; 
+	}
+        | subquery_ss { $<sql_string>$=$<sql_string>1; }
+        | ATSIGN identifier { $<sql_string>$=strdup($<str>2); }
+        | ATSIGN identifier DOT identifier { $<sql_string>$=make_sql_string($<str>2,".",$<str>4,0); }
+        | ATSIGN identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string($<str>2,"[",$<str>4,"]",0); }
+        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string($<str>2,".",$<str>4,"[",$<str>6,"]",0); }
+        | ATSIGN identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string($<str>2,"[",$<str>4,",",$<str>6,"]",0); }
+        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string($<str>2,".",$<str>4,"[",$<str>6,",",$<str>8,"]",0); }
         | upd_value_expression_complex_ss { 
 		$<sql_string>$=$<sql_string>1; 
 		pop_all_gen(UPDVAL2,"!");

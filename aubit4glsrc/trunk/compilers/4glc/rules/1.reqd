@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.46 2004-02-23 22:03:09 mikeaubury Exp $
+# $Id: 1.reqd,v 1.47 2004-03-14 10:41:49 mikeaubury Exp $
 #
 */
 
@@ -114,6 +114,7 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include "var_handling.h"
 
 /*
 =====================================================================
@@ -228,6 +229,9 @@ int if_print_section[100]={0,0,0,0};
 	struct generic_entry_ident *ident;
 	struct generic_entry_variable *variable;
 	struct generic_entry_literal *literal;
+	struct variable_usage *var_usg;
+	struct num_list *num_list;
+	struct array_list *array_list;
 	int 	integer_val;
 	float 	float_val;
 	}

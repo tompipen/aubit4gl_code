@@ -5,55 +5,86 @@
 */
 
 
-var_ident :  var2  
+var_ident :  var2_vu
 {
-	if (scan_variable($<str>1)!=-1)
-	{
+	if (scan_variable(variable_usage_as_string($<var_usg>1,VAR_USG_ANY))!=-1) {
 		char buff[1024];
-			sprintf(buff,"%s",fgl_add_scope($<str>1,0));
-
+		sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
 		print_push_variable(buff);
-
 		strcpy($<str>$,"?");
-
 	} else {
-		strcpy($<str>$,$<str>1);
+		strcpy($<str>$,variable_usage_as_string($<var_usg>1,VAR_USG_IDENT));
 	}
 
 }
 ;
 
 
-var2 :
-	DOLLAR  var3 {
-		strcpy($<str>$,$<str>2);
-	} | var3 {
-		strcpy($<str>$,$<str>1);
+var2_as_string : var2_vu {
+		strcpy($<str>$,variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
 	}
 ;
 
-var3:
-        array_r_variable_or_ident {strcpy($<str>$,$<str>1);}
-	| identifier {strcpy($<str>$,$<str>1);}
-	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT var3 DOT aft_dot {
+var2_vu :
+	DOLLAR  var3_vu {
+		$<var_usg>$=$<var_usg>2;
+	} | var3_vu {
+		$<var_usg>$=$<var_usg>1;
+	}
+;
+
+
+
+var3_vu:
+	var4_vu
+	| CHAR_VALUE DOT var4_vu
+;
+
+var4_vu:
+	var4_item_vu
+	| var4_vu DOT var4_item_vu {
+		$<var_usg>$=append_variable_usage($<var_usg>1,$<var_usg>3);
+	}
+	| var4_vu DOT MULTIPLY {
+		$<var_usg>$=new_variable_usage($<var_usg>1,"*",0);
+	}
+;
+
+
+var4_item_vu:
+        array_r_variable_or_ident_vu {
+			$<var_usg>$=$<var_usg>1;
+	} 
+	| identifier { $<var_usg>$=new_variable_usage(0,$<str>1,0); }
+;
+
+
+/*
+
+	| var3_vu DOT MULTIPLY {
+		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
+	}
+	| var3_vu DOT array_r_varid_vu {
+		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
+	}
+	| var3_vu DOT identifier {
+		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
+	}
+
+	| CHAR_VALUE DOT var3_vu {
+		char buff[2048];
 		if (A4GL_escape_quote_owner()) {
-			sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+			sprintf(buff,"\\\"%s\\\"", A4GL_strip_quotes ($<str>1));
 		} else {
-			sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+			sprintf(buff,"\"%s\"", A4GL_strip_quotes ($<str>1));
 		}
+		$<var_usg>$=new_variable_usage($<var_usg>3,buff,1);
 	}
 ;
-
-aft_dot :
-	MULTIPLY
-	| array_r_varid
-	| identifier
-;
+*/
 
 
-
-var_ident_ibind_ss :  var2  
+var_ident_ibind_ss :  var2_as_string
 {
 	int sv_val;
 	//printf("var_ident_ibind_ss : %s\n",$<str>1);
@@ -79,8 +110,7 @@ var_ident_ibind_ss :  var2
 		$<sql_string>$=strdup(get_column_transform($<str>1));
 	}
 }
-| var2 THRU var2 
-{
+| var2_as_string THRU var2_as_string {
 char buff[256];
 char was_str[40000];
 int z = 0,a = 0;
@@ -125,6 +155,75 @@ for (a=0;a<z;a++)  {
 }
 ;
 
+
+array_r_variable_or_ident_vu: identifier arr_subscripts_al
+{
+  int type,arrsize,size,level;
+  char arrbuff[256];
+  struct num_list *array;
+  struct num_list *substr;
+  struct array_list *al;
+
+  $<var_usg>$=new_variable_usage(0,$<str>1,0);
+  al=$<array_list>2;
+  array=al->array;
+  substr=al->substr;
+
+  if (array) {
+	int cnt;
+	cnt=0;
+	while (array) {
+		set_variable_usage_subscript($<var_usg>$,cnt,array->num);
+		cnt++;
+		array=array->next;
+	}
+  }
+
+  if (substr) {
+	int cnt;
+	cnt=0;
+	while (substr) {
+		set_variable_usage_substr($<var_usg>$,cnt,substr->num);
+		cnt++;
+		substr=substr->next;
+	}
+  }
+}
+;
+
+arr_subscripts_al :
+        OPEN_SQUARE num_list_nl CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript or substring");
+		al=malloc(sizeof(struct array_list));
+		al->array=$<num_list>2;
+		al->substr=0;
+		$<array_list>$=al;
+
+        } 
+	| OPEN_SQUARE num_list_nl CLOSE_SQUARE OPEN_SQUARE num_list_nl CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript & substring");
+		al=malloc(sizeof(struct array_list));
+		al->array=$<num_list>2;
+		al->substr=$<num_list>5;
+		$<array_list>$=al;
+        }
+;
+
+
+num_list_nl:	num_list_element_nl { 
+			$<num_list>$=$<num_list>1; 
+		}
+		| num_list_nl COMMA num_list_element_nl { 
+			$<num_list>$=append_num_list_items($<num_list>1,$<num_list>3); 
+		}
+;
+
+num_list_element_nl: arr_expr
+{
+  $<num_list>$=new_num_list_item($<str>1);
+};
 
 
 /* ================================ var2.rule ===================== */

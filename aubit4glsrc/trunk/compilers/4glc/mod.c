@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.161 2004-03-04 16:27:21 mikeaubury Exp $
+# $Id: mod.c,v 1.162 2004-03-14 10:41:48 mikeaubury Exp $
 #
 */
 
@@ -2107,7 +2107,7 @@ strcpy(var,var_i);
 	      int s_send;
 	      int a;
 	      strcpy (buff2, &var[strlen("a4gl_substr ")+1]);
-
+		printf("%s\n",buff2);
 	      a =
 		sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype,
 			&s_sstart, &s_send);
