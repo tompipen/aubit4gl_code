@@ -28,6 +28,7 @@ void count();
 ";"			{ count(); return(KW_SEMI); }
 "{"			{ count(); return(KW_OBRACE); }
 "}"			{ count(); return(KW_CBRACE); }
+"explain"		{ count(); return(KW_EXPLAIN); }
 "select"		{ count(); return(KW_SELECT); }
 "update"		{ count(); return(KW_UPDATE); }
 "delete"		{ count(); return(KW_DELETE); }

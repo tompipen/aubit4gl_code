@@ -179,6 +179,7 @@ int need_tabname=0;
 			if (a==KW_INSERT) e->type='I';
 			if (a==KW_DELETE) e->type='D';
 			if (a==KW_SELECT) e->type='S';
+			if (a==KW_EXPLAIN) e->type='E';
 
 			if (a==KW_INFO_COL) {e->type='1';need_tabname=1;}
 			if (a==KW_INFO_STAT) {e->type='2';need_tabname=1;}

@@ -324,17 +324,21 @@ code
 				else {
 					if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
 					else {
-	
 						if (list[a].type>='1'&&list[a].type<='4') {
 							if (!asql_info(&list[a])) goto end_query;
 						} else {
-							if (qry_type==1) {
-		A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
-								A4GL_push_char(l_db);
-								aclfgl_sql_select_db(1);
+							if (list[a].type=='E'||list[a].type=='e') {
+								raffected=asql_explain(&list[a]); 
 							} else {
-								if (!execute_query_1(&raffected)) goto end_query;
+								if (qry_type==1) {
+									A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
+									A4GL_push_char(l_db);
+									aclfgl_sql_select_db(1);
+								} else {
+									if (!execute_query_1(&raffected)) goto end_query;
+								}
 							}
+
 						}
 					}
 				}

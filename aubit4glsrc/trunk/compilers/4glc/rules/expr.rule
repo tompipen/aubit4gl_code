@@ -590,6 +590,18 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_new_expr(buff);
 	inc_counter();
 }
+| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_isdynarr_allocated(&%s);",$<str>3);
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
+| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable COMMA INT_VALUE CLOSE_BRACKET { 
+        char buff[256];
+        sprintf(buff,"A4GL_dynarr_extent(&%s,%d);",$<str>3,atoi($<str>5));
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
 ;
 
 

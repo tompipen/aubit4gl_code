@@ -24,6 +24,7 @@
 #define KW_INFO_IDX 280
 #define KW_INFO_TABLES 281
 #define KW_INFO_PRIV 282
+#define KW_EXPLAIN 283
 
 
 struct element {

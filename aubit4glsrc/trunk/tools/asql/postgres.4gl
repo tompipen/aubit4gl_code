@@ -621,6 +621,33 @@ execute_select_free() {
 }
 
 
+int asql_explain_mode(int a) {
+static int em=0;
+if (a==1) em=1;
+if (a==0) em=0;
+if (a==-1) return em;
+}
+
+
+int asql_explain(struct element *e) {
+EXEC SQL BEGIN DECLARE SECTION;
+static char lv_str[256];
+EXEC SQL END DECLARE SECTION;
+
+EXEC SQL EXECUTE stExec INTO :lv_str;
+//printf("----->%s\n",lv_str);
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+			if (out==0) {open_display_file_c(); }
+                        fprintf(out,"%s\n",lv_str);
+			outlines++;
+			aclfgl_do_paginate(0);
+                } else {
+                        fprintf(exec_out,"%s\n",lv_str);
+			outlines++;
+                }
+	
+return 1;
+}
 
 static int field_widths() {
 EXEC SQL BEGIN DECLARE SECTION;
@@ -1155,3 +1182,6 @@ function sql_select_db(lv_dbname)
 define lv_dbname char(64)
 database lv_dbname
 end function
+
+
+

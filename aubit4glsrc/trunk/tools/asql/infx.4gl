@@ -1598,3 +1598,9 @@ function sql_select_db(lv_dbname)
 define lv_dbname char(64)
 database lv_dbname
 end function
+
+code
+asql_explain(struct element *e) {
+// Not implemented - use set explain on/set explain off instead...
+}
+endcode

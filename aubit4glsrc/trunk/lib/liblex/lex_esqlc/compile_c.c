@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.112 2003-11-26 08:35:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.113 2003-11-26 11:46:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4606,7 +4606,7 @@ print_define (char *varstring, int isstatic_extern)
     {
       strcat (buff, "extern ");
     }
-  printc ("%s%s ;\n", buff, varstring);
+  printc ("%s%s ; \n", buff, varstring);
 }
 
 /**
@@ -5261,7 +5261,8 @@ print_alloc_arr (char *s, char *d)
       dim[0] = 1;
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);
+  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(%s[0]),0);", s,s, s,dim[0],dim[1],dim[2],dim[3],dim[4],l, s);
+  //printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);
 }
 
 
@@ -5321,13 +5322,13 @@ print_realloc_arr (char *s, char *d)
       dim[0] = 1;
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s,l, s);
+  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(%s[0]),1);", s,s, s,dim[0],dim[1],dim[2],dim[3],dim[4],l, s);
 }
 
 void
 print_dealloc_arr (char *s)
 {
-  printc ("free(%s);", s);
+  printc ("A4GL_dynarr_free(&%s,%s);", s,s);
 }
 
 /* =========================== EOF ================================ */
