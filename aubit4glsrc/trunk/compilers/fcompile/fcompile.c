@@ -1,5 +1,6 @@
 
 /**
+ * @file
  * Main module from the form compiler.
  *
  * The form compiler parses a .per file and generates a .frm (compiled form)
@@ -7,8 +8,9 @@
  * The frm is the file used at run-time by x4gl
  */
 
- /* $Id: fcompile.c,v 1.7 2001-11-27 23:50:53 saferreira Exp $
-    */
+ /* 
+  * $Id: fcompile.c,v 1.8 2001-12-06 20:57:30 saferreira Exp $
+  */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
@@ -87,8 +89,12 @@ static bname (char *str, char *str1, char *str2)
 
 }
 
-
-
+/**
+ * The main entry point to the form compiler
+ *
+ * @param argc The argument count
+ * @param argv The argument values
+ */
 int main (int argc, char *argv[])
 {
   char a[128];
