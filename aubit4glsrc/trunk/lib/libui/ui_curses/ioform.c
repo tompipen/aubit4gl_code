@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.64 2003-08-15 18:36:11 mikeaubury Exp $
+# $Id: ioform.c,v 1.65 2003-08-19 18:41:32 mikeaubury Exp $
 #*/
 
 /**
@@ -801,7 +801,7 @@ A4GL_read_fields (void *formdetsv)
 void
 A4GL_start_form (struct s_form_dets *s)
 {
-  A4GL_debug("Start form - %p %p",s,s->form);
+  A4GL_debug ("Start form - %p %p", s, s->form);
 
   A4GL_int_form_driver (s->form, REQ_FIRST_PAGE);
   A4GL_int_form_driver (s->form, REQ_FIRST_FIELD);
@@ -897,14 +897,17 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    A4GL_trim (buff2);
 		    getsyx (y, x);
 		    A4GL_trim (buff2);
-		    if (strlen (buff2) == 0)  {
-			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)) {
-                        		A4GL_error_nobox (acl_getenv("FIELD_REQD_MSG"), 0);
-					set_current_field (mform, form->currentfield);
-					return -4;
-			}
-		      return 0;
-			}
+		    if (strlen (buff2) == 0)
+		      {
+			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+			  {
+			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
+					      0);
+			    set_current_field (mform, form->currentfield);
+			    return -4;
+			  }
+			return 0;
+		      }
 		    A4GL_push_param (buff2, DTYPE_CHAR);
 
 		    if (!A4GL_pop_param
@@ -924,7 +927,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 		     fprop->datatype) == 0)
 		  {
-                    A4GL_error_nobox (acl_getenv("FIELD_INCL_MSG"), 0);
+		    A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 		    set_current_field (mform, form->currentfield);
 		    return -4;
 		  }
@@ -939,7 +942,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    // 
 		    if (strlen (buff) == 0)
 		      {
-                        A4GL_error_nobox (acl_getenv("FIELD_REQD_MSG"), 0);
+			A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
 			set_current_field (mform, form->currentfield);
 			return -4;
 
@@ -1262,22 +1265,27 @@ A4GL_set_fields (void *vsio)
   A4GL_debug ("Field list=%p number of fields = %d", field_list, nofields);
 
   nv = sio->novars;
-  if (sio->mode==MODE_CONSTRUCT) {
-		int a;
-		int need_fix=0;
-		// sio->constr contains a s_constr_list structure
-		// this may need explanding if the column contains a '*'
-		for (a=0;a<nv;a++) {
-			if (strcmp(sio->constr[a].colname,"*")==0) { // It'll need expanding...
-				need_fix=1;
-			} 
-		}
-		if (need_fix) {
-				A4GL_exitwith("Construct needs fixing to handle 'byname on tab.*'");
-				sio->nfields=0;
-				return 0;
-		}
-  }
+  if (sio->mode == MODE_CONSTRUCT)
+    {
+      int a;
+      int need_fix = 0;
+      // sio->constr contains a s_constr_list structure
+      // this may need explanding if the column contains a '*'
+      for (a = 0; a < nv; a++)
+	{
+	  if (strcmp (sio->constr[a].colname, "*") == 0)
+	    {			// It'll need expanding...
+	      need_fix = 1;
+	    }
+	}
+      if (need_fix)
+	{
+	  A4GL_exitwith
+	    ("Construct needs fixing to handle 'byname on tab.*'");
+	  sio->nfields = 0;
+	  return 0;
+	}
+    }
 
   if (nofields != nv - 1)
     {
@@ -1286,7 +1294,7 @@ A4GL_set_fields (void *vsio)
 	 nofields + 1, nv);
       A4GL_exitwith
 	("Number of fields is not the same as the number of variables");
-	sio->nfields=0;
+      sio->nfields = 0;
       return 0;
     }
 
@@ -1843,7 +1851,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	       A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 	       fprop->datatype) == 0)
 	    {
-              A4GL_error_nobox (acl_getenv("FIELD_INCL_MSG"), 0);
+	      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 	      set_current_field (mform, sio->currform->currentfield);
 	    }
 	}
@@ -1870,7 +1878,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 					 || (fprop->datatype == 8));
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
-		A4GL_error_nobox (acl_getenv("FIELD_CONSTR_EXPR"), 0);
+		A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
 	    }
 	}
     }
@@ -2451,10 +2459,11 @@ A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
-  if (s->nfields==0) {
-	A4GL_push_char("");
-	return 0;
-  }
+  if (s->nfields == 0)
+    {
+      A4GL_push_char ("");
+      return 0;
+    }
   if (s->currform == 0)
     {
       A4GL_push_char ("");
@@ -2479,7 +2488,7 @@ A4GL_push_constr (void *vs)
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
 		      (fprop->datatype) & 0xffff);
 
-	
+
 	  //A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname, s->constr[a].colname);
 
 	  ptr =
@@ -2593,8 +2602,10 @@ A4GL_get_curr_infield (void)
   return inp_current_field;
 }
 
-void A4GL_set_curr_infield(long a) {
-	inp_current_field=a;
+void
+A4GL_set_curr_infield (long a)
+{
+  inp_current_field = a;
 }
 
 /**
@@ -3635,7 +3646,8 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		//char *ptr1;
 
 		A4GL_debug ("15 fprop!=0");
-		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR) {
+		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
+		  {
 
 		    A4GL_modify_size (&buff[4],
 				      form->fileform->metrics.
@@ -3651,28 +3663,30 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 		    A4GL_debug ("15 Check buff2='%s'", buff2);
 
-		    if (strlen (buff2) == 0) {
-			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)) {
-					A4GL_error_nobox (acl_getenv("FIELD_REQD_MSG"), 0);
-					set_current_field (mform, form->currentfield);
-					return -4;
-			}
-			return 0;
-		    }
-
-			A4GL_push_param (buff2, DTYPE_CHAR);
-
-			if (!A4GL_pop_param
-			    (buff, fprop->datatype,
-			     A4GL_get_field_width (form->currentfield)))
+		    if (strlen (buff2) == 0)
+		      {
+			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 			  {
-			    A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),
+			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
 					      0);
-			    A4GL_mja_set_field_buffer (form->currentfield, 0,
-						       " ");
 			    set_current_field (mform, form->currentfield);
 			    return -4;
 			  }
+			return 0;
+		      }
+
+		    A4GL_push_param (buff2, DTYPE_CHAR);
+
+		    if (!A4GL_pop_param
+			(buff, fprop->datatype,
+			 A4GL_get_field_width (form->currentfield)))
+		      {
+			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+			A4GL_mja_set_field_buffer (form->currentfield, 0,
+						   " ");
+			set_current_field (mform, form->currentfield);
+			return -4;
+		      }
 		  }
 
 
@@ -3682,27 +3696,27 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 		     fprop->datatype) == 0)
 		  {
-                        A4GL_error_nobox (acl_getenv("FIELD_INCL_MSG"), 0);
+		    A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 		    //set_current_field (mform, form->currentfield);
 		    return -4;
 		  }
 
 
-                if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
-                  {
-                    char buff[8024];
-                    strcpy (buff,
-                            field_buffer (sio->currform->currentfield, 0));
-                    A4GL_trim (buff);
-                    //
-                    if (strlen (buff) == 0)
-                      {
-                        A4GL_error_nobox (acl_getenv("FIELD_REQD_MSG"), 0);
-                        set_current_field (mform, form->currentfield);
-                        return -4;
+		if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+		  {
+		    char buff[8024];
+		    strcpy (buff,
+			    field_buffer (sio->currform->currentfield, 0));
+		    A4GL_trim (buff);
+		    //
+		    if (strlen (buff) == 0)
+		      {
+			A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+			set_current_field (mform, form->currentfield);
+			return -4;
 
-                      }
-                  }
+		      }
+		  }
 
 
 
