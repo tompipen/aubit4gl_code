@@ -49,6 +49,8 @@ fi
 IFX_RUNNER="$CURR_DIR/bin/testfglgo"
 FJSRUNNER="$CURR_DIR/bin/testfglrun"
 
+CATALOGUE_UNL_FILE="$CURR_DIR/docs/catalogue.unl"
+
 #######################
 #Set and check AUBITDIR
 if test "$AUBITDIR" = ""; then
@@ -366,6 +368,248 @@ for a in $FLAGS; do
             continue
             ;;
 
+
+		-db-features-doc)
+			echo "Preparing catalogue of db features, please wait..."
+			FEATURES_STATUS_TMP="features_status.tmp"
+			TEST_FEATURES_TMP="tests_features.tmp"
+			OUT_TMP=out.tmp
+			HTML=1
+			if test "$HTML" = "1"; then
+				FINAL_OUT=support_status.html
+			else
+				FINAL_OUT=support_status.txt
+			fi
+			#Create list of features
+			cat etc/db_features.conf | grep -v "^#" | cut --fields=5,20,21 --delimiter=" " > $FEATURES_STATUS_TMP
+			#create list of tests using features
+			cat $CATALOGUE_UNL_FILE | cut --fields=2,41 --delimiter="|" > $TEST_FEATURES_TMP
+			rm -f $OUT_TMP $FINAL_OUT
+			
+			FEATURES_STATUS=`cat $FEATURES_STATUS_TMP`
+			CNT=0; P_CNT=0;S_CNT=0;D_CNT=0;I_CNT=0;U_CNT=0;
+			for col in $FEATURES_STATUS ; do
+				let CNT=CNT+1
+				#echo "$CNT = $col"
+				case $CNT in
+					1) STATUS="$col"
+						case $STATUS in
+						P) STATUS_NAME="POSSIBLE"; let P_CNT=P_CNT+1;;
+						S) STATUS_NAME="SUPPORTED"; let S_CNT=S_CNT+1;;
+						D) STATUS_NAME="DEPENDS"; let D_CNT=D_CNT+1;;
+						I) STATUS_NAME="IMPOSSIBLE"; let I_CNT=I_CNT+1;;
+						*) echo "ERROR: STATUS=$STATUS"; exit 5;;
+						esac
+						;;
+					2) TYPE="$col"
+						case $TYPE in
+						D) TYPE_NAME="DDL";; 
+						S) TYPE_NAME="SQL";; 
+						C) TYPE_NAME="Conectivity";; 
+						P) TYPE_NAME="Procedure&trigger(serverSide)";; 
+						F) TYPE_NAME="Functions(serverSide)";;
+						X) TYPE_NAME="Mixed";;
+						*) echo "ERROR: TYPE=$TYPE"; exit 5;;
+						esac
+						;;
+					3) LABEL="$col"; CNT=0; 
+						TEST_CNT=`grep --count --word-regexp $LABEL $TEST_FEATURES_TMP`
+						TEST_LIST=`grep --word-regexp $LABEL $TEST_FEATURES_TMP | cut --fields=1 --delimiter="|" | tr "\n" "_"`
+						if test "$TEST_CNT" = "0"; then 
+							STATUS_NAME="UNTESTED"
+							TEST_LIST="NONE"
+							let U_CNT=U_CNT+1
+							#Fixme; reduce current stat counter by one
+						fi
+						echo "$LABEL|$TYPE_NAME|$STATUS_NAME|$TEST_CNT|$TEST_LIST" >> $OUT_TMP
+						;;
+				esac
+			done
+			
+			#echo "See $OUT_TMP"
+			
+			#P_LIST=`grep "|POSSIBLE|" $OUT_TMP | tr "|" " "`
+			#S_LIST=`grep "|SUPPORTED|" $OUT_TMP`
+			#D_LIST=`grep "|DEPENDS|" $OUT_TMP`
+			#I_LIST=`grep "|IMPOSSIBLE|" $OUT_TMP`
+			#U_LIST=`grep "|UNTESTED|" $OUT_TMP`
+
+			#'results_$HOSTNAME$U$date_stamp.unl'
+			#'test_run_$HOSTNAME$U$date_stamp.unl'
+			LAST_RESULTS=`ls -al --sort=t "results_$HOSTNAME*" 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
+			if test "$LAST_RESULTS" = ""; then 
+				echo "WARNING: no results files (results_HOSTNAME_DATE.unl) found"
+			fi
+			
+			if test "$HTML" = "1"; then 
+				echo "<html><head>"  >> $FINAL_OUT
+				echo "<meta http-equiv='Content-Language' content='en-us'>"  >> $FINAL_OUT
+				echo "<meta http-equiv='Content-Type' content='text/html; charset=windows-1252'>"  >> $FINAL_OUT
+				TITLE="Aubit 4GL: SQL & database features support status for PostgreSQL 7.4 with IFX patch"
+				echo "<title>$TITLE</title></head><body>"  >> $FINAL_OUT
+				echo "<h1 align='center'>$TITLE</h1><BR>"  >> $FINAL_OUT
+				echo "Links: <br>" >> $FINAL_OUT
+				echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/etc/db_features.conf?view=markup">SQL and database features status configuration file (also contains status descriptions)</a><br>"  >> $FINAL_OUT
+				echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/docs/catalogue.unl?view=markup">Tests catalogue (.unl)</a><br>"  >> $FINAL_OUT
+				echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/docs/catalogue.txt?view=markup">Tests catalogue (.txt)</a><br>"  >> $FINAL_OUT				
+				echo "<a href="http://developer.mimer.se/validator/">Mimer SQL Validator</a><br>"  >> $FINAL_OUT
+				echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php">Database Server Feature Comparisons</a><br>"  >> $FINAL_OUT
+				echo "<br><br>" >> $FINAL_OUT
+			fi
+			
+			STAT_LIST="SUPPORTED DEPENDS POSSIBLE IMPOSSIBLE UNTESTED"
+			#STAT_LIST="UNTESTED"
+			for STAT in $STAT_LIST; do
+				case $STAT in
+					POSSIBLE) STAT_CNT="$P_CNT";;
+					SUPPORTED) STAT_CNT="$S_CNT";;
+					DEPENDS) STAT_CNT="$D_CNT";;
+					IMPOSSIBLE) STAT_CNT="$I_CNT";;
+					UNTESTED) STAT_CNT="$U_CNT";;
+					*) echo "ERROR: STAT=$STAT"; exit 5;;
+				esac
+				echo "Creating status list for $STAT group ($STAT_CNT), please wait..."
+				if test "$HTML" = "1"; then			
+					echo "<div align='left'>"  >> $FINAL_OUT
+					echo "  <table border='1' id='table$STAT'>"  >> $FINAL_OUT
+					echo "  <tr><td colspan='6' bgcolor='#C0C0C0'><p align='center'>$STAT</td></tr>"  >> $FINAL_OUT
+					echo "<tr>" >> $FINAL_OUT
+					echo "  <td>Feature</td>" >> $FINAL_OUT
+					echo "  <td>Type</td>" >> $FINAL_OUT
+					#if test "$LAST_RESULTS" = ""; then
+						echo "  <td>Used in<br>tests</td>" >> $FINAL_OUT
+						echo "  <td>Tests USING feature</td>" >> $FINAL_OUT
+					#else
+						echo "  <td>Working<br>tests</td>" >> $FINAL_OUT
+						echo "  <td>WORKING tests using feature</td>" >> $FINAL_OUT
+					#fi
+					echo "</tr>" >> $FINAL_OUT
+					
+				else
+					echo "-------------- $STAT ($STAT_CNT) ------------------" >> $FINAL_OUT				
+				fi 
+				
+				THIS_STAT_LIST=`grep "|$STAT|" $OUT_TMP | tr "|" " "`
+				CNT=0
+				for col in $THIS_STAT_LIST; do
+#echo $col				
+					let CNT=CNT+1
+					case $CNT in
+					1) LABEL="$col";;
+					2) TYPE_NAME="$col";;
+					3);;#STATUS_NAME
+					4) TEST_CNT="$col";;
+					5) TEST_LIST="$col"; CNT=0
+						TEST_LIST=`echo $TEST_LIST | tr "_" " "`
+#echo $TEST_CNT
+						#here we have the list of tests that use that feature
+						#now we have to check if this tests really worked 
+						#for this database:
+						TEST_WORKING_CNT=0
+						TEST_FAILED_CNT=0
+						TEST_WORKING_LIST=""
+						TEST_FAILED_LIST=""
+						if test "$LAST_RESULTS" = ""; then 
+							TEST_WORKING_CNT="0"
+							TEST_WORKING_LIST="?"
+						else
+							for AN_TEST in $TEST_LIST; do
+								x=`grep "|$AN_TEST|" $LAST_RESULTS`
+									#1: timestamp char (19),   -- 22-10-2004_01-34-24
+									#2: test_no smallint,
+									#3: result smallint,
+									#4: skip_reason char (20),
+									#5: expect_fail smallint,
+									#6: test_version decimal,
+
+								RESULT=`echo $x | cut --fields=3 --delimiter="|"`
+								if test "$RESULT" = "1"; then
+									TEST_WORKING_CNT=TEST_WORKING_CNT+1
+									TEST_WORKING_LIST="$TEST_WORKING_LIST $AN_TEST"
+								else
+									TEST_FAILED_CNT=TEST_FAILED_CNT+1
+									TEST_FAILED_LIST="$TEST_FAILED_LIST $AN_TEST"
+								fi
+							
+							done
+						fi
+
+						if test "$TEST_WORKING_CNT" -gt "5"; then 
+							CNT2=0; REDUCED_TEST_LIST=""
+							for t in $TEST_WORKING_LIST; do
+								let CNT2=CNT2+1
+								REDUCED_TEST_LIST="$REDUCED_TEST_LIST $t"
+								if test "$CNT2" = "5"; then
+									break
+								fi
+							done
+							TEST_WORKING_LIST="$REDUCED_TEST_LIST ..."
+						fi
+						if test "$TEST_CNT" -gt "5"; then 
+							CNT2=0; REDUCED_TEST_LIST=""
+							for t in $TEST_LIST; do
+								let CNT2=CNT2+1
+								REDUCED_TEST_LIST="$REDUCED_TEST_LIST $t"
+								if test "$CNT2" = "5"; then
+									break
+								fi
+							done
+							TEST_LIST="$REDUCED_TEST_LIST ..."
+						fi
+						
+						if test "$HTML" = "1"; then
+							TMP=$TEST_LIST
+							TEST_LIST=""
+							for test in $TMP; do
+								TEST_LIST="$TEST_LIST <a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/">$test</a>"
+							done
+							TMP=$TEST_WORKING_LIST
+							TEST_WORKING_LIST=""
+							for test in $TMP; do
+								TEST_WORKING_LIST="$TEST_WORKING_LIST <a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/">$test</a>"
+							done
+						
+						
+							echo "<tr>" >> $FINAL_OUT
+							echo "  <td>$LABEL</td>" >> $FINAL_OUT
+							echo "  <td>$TYPE_NAME</td>" >> $FINAL_OUT
+							echo "  <td>$TEST_CNT</td>" >> $FINAL_OUT
+							echo "  <td>$TEST_LIST</td>" >> $FINAL_OUT
+							echo "  <td>$TEST_WORKING_CNT</td>" >> $FINAL_OUT
+							echo "  <td>$TEST_WORKING_LIST</td>" >> $FINAL_OUT
+							echo "</tr>" >> $FINAL_OUT
+						else
+							#echo "$LABEL	($TYPE_NAME) $TEST_CNT: $TEST_LIST"  >> $FINAL_OUT
+							#x=`echo -n "$LABEL";echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST"`
+							#echo -n "$LABEL";echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST"
+							#printf "%s" "$LABEL"; printf "\t\t\t(%s) %s: %s\n" "$TYPE_NAME" "$TEST_CNT" "$TEST_LIST"
+							#echo $x >> $FINAL_OUT
+							#echo -n "$LABEL" >> $FINAL_OUT
+							#echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST" >> $FINAL_OUT
+							printf "%s\n" "$LABEL" >> $FINAL_OUT
+							printf "\t(%s) %s: %s\n" "$TYPE_NAME" "$TEST_WORKING_CNT" "$TEST_WORKING_LIST" >> $FINAL_OUT
+						fi
+						;;
+					*) echo "ERROR: CNT=$CNT"; exit 5
+						;;
+					esac
+				done
+				if test "$HTML" = "1"; then		
+					echo "  </table>"  >> $FINAL_OUT
+					echo "</div><br><br>"  >> $FINAL_OUT
+				else
+					echo ""	 >> $FINAL_OUT
+					echo ""	 >> $FINAL_OUT
+				fi
+			done
+			#cat $FINAL_OUT
+			if test "$HTML" = "1"; then
+				echo "</body></html>"  >> $FINAL_OUT
+			fi
+			echo "Done: see $FINAL_OUT"
+			exit
+			;;
+			
         -find) #find word in 4gl code
 			FIND_WORD="1"
             continue
@@ -472,7 +716,7 @@ for a in $FLAGS; do
 
 		-catalogue) 
 			#create catalogue.txt and .unl file using -info flag
-			rm -f $CURR_DIR/docs/catalogue.unl
+			rm -f $CATALOGUE_UNL_FILE
 			export CATALOGUE_UNL=1
 			echo "Creating tests catalogue file ... this will take a while, please wait..."			
 			$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt

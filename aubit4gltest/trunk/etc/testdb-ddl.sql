@@ -10,7 +10,8 @@
 //      (tabid integer,
 //	tabname char (100)
 // );
-//
+// 'left' is reserved word in Postgres (and probably some other databases) 
+// so it was renamed to xx_left - seems unused, since tests still work
 */
 
  create table dummy (tabname varchar (128,0),tabid integer);
@@ -78,7 +79,7 @@ create table a4gl_syscolatt
     inverse nchar(1),
     underline nchar(1),
     blink nchar(1),
-    left nchar(1),
+    xx_left nchar(1),
     def_format nchar(64),
     condition nchar(64)
   );

@@ -116,7 +116,7 @@ desc:
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -183,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -219,13 +219,13 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "UNLOAD_TO_SELECT_FROM"
 
 	
 #################
 #If test is ANSI SQL 92 compatible, set to "1", if not to "0"
 #If unknown, leave empty
 ansi_sql_compat:
-	@echo ""
+	@echo "1"
 
 # ============================= EOF ================================

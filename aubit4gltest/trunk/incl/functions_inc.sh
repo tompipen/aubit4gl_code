@@ -3,6 +3,34 @@
 #							Functions
 ##############################################################################
 
+function activate_use_cache () {
+		if test -f $CURR_DIR/etc/cache_IS_DB_TEST.txt ; then
+			USE_CACHE=1
+			IS_DB_TEST_CACHE="`cat $CURR_DIR/etc/cache_IS_DB_TEST.txt`"
+		else
+			echo "You need to create a cache file first to use -use-cache"
+		fi
+}
+
+function activate_log_unl () {
+		#unload rest result to .unl file
+		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+		U="_"
+		if test "$VERBOSE" = "1"; then 
+			echo "Logging results to file 'results_$HOSTNAME$U$date_stamp.unl'"
+			echo "and 'test_run_$HOSTNAME$U$date_stamp.unl'"
+		fi
+		unl_file="$CURR_DIR/results_$HOSTNAME$U$date_stamp.unl"
+		test_run_unl_file="$CURR_DIR/test_run_$HOSTNAME$U$date_stamp.unl"
+		if test "1" = "2"; then 
+			rm -f $unl_file $test_run_unl_file
+			#rm -f results_*.unl test_run_*.unl
+		fi
+		UNL_LOG=1
+		MEASURE_TIME=1
+}
+
+
 function cntpp () {
 local num=$1
 local numpp=0
@@ -262,7 +290,6 @@ function chech_sql_features () {
 	
 if test "$SH_DBG" = "1"; then 
 	echo "Checking SQL features..."
-	#exit
 fi
 	#NOTE: All tests should at least compile, regardless of what 
 	#SQL features are used in the code - so we will skip testing for SQL
@@ -277,12 +304,25 @@ fi
 	#and then skip them here too... most of them by now have text "no runtime
 	#checking" in test description...
 	
-	if test "$DISABLE_SQL_FEATURES_CHECK" = "1" -o "$COMPILE_ONLY" = "1"; then
+	if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
 		if test "$SH_DBG" = "1"; then
-			echo "DISABLE_SQL_FEATURES_CHECK=$DISABLE_SQL_FEATURES_CHECK COMPILE_ONLY=$COMPILE_ONLY"
+			echo "DISABLE_SQL_FEATURES_CHECK=$DISABLE_SQL_FEATURES_CHECK"
 		fi
 		return
 	fi
+
+	if test "$COMPILE_ONLY" = "1"; then
+		if test "$SH_DBG" = "1"; then
+			echo "COMPILE_ONLY=$COMPILE_ONLY"
+		fi
+		#We cant ignore checking of SQL features for compile only tests,
+		#because even compile can fail when for instance -ecp is used
+		#because the SQL is incompatible
+		if test "$A4GL_LEXTYPE" = "C"; then 
+			return
+		fi
+	fi
+
 	
 	if test "$SQL_FEATURES_USED" = ""; then
 		#If test has no SQL/db features description, skip it - should never 
@@ -1799,7 +1839,7 @@ ALL_RESULTS=results_*.unl
 
 
 	echo "Loading catalogue..."
-	load_table "aubit_tests" "catalogue" "$CURR_DIR/docs/catalogue.unl" "42" "$dl"
+	load_table "aubit_tests" "catalogue" "$CATALOGUE_UNL_FILE" "42" "$dl"
 
 	for FILE in $ALL_RESULTS; do 
 		STAMP=`echo $FILE | sed -e 's/results_//' -e 's/.unl//'`
@@ -1939,7 +1979,7 @@ expect_fail_4js=""
 expect_fail_querix=""
 
 dl="|"
-logfile="$CURR_DIR/docs/catalogue.unl"
+logfile="$CATALOGUE_UNL_FILE"
 
 if ! test -f $logfile; then
 if test "$UNL_LEGEND" = "1"; then 
@@ -1956,6 +1996,8 @@ $dl'expect_fail_esqli'$dl'expect_fail_ecp'$dl'expect_fail_ifx_p'$dl'expect_fail_
 $dl'expect_fail_querix'$dl'sql_features_used'$dl'ansi_sql'$dl" > $logfile
 fi
 fi
+
+#total 41 columns 
 
 echo "$time$dl$test_no$dl$invalid$dl$is_db$dl$is_ec$dl$is_nosilent$dl$is_tui\
 $dl$is_form$dl$is_report$dl$is_graphics$dl$is_prompt$dl$is_dump_screen\
@@ -2488,6 +2530,11 @@ LOGFILE=$4
 LOGFILE_CMD="> $LOGFILE 2>&1"
 AS_USER=$5
 
+if test "$VERBOSE" = "1"; then
+	echo "Running script $SCRIPT"
+	#exit
+fi
+
    case $RDBMS in
 	informix)
 		EXEC="dbaccess $DB -qcr $SCRIPT $LOGFILE_CMD"
@@ -2497,10 +2544,10 @@ AS_USER=$5
 	postgres)
 	
 		#if test "$COMSPEC" != ""; then 
-			if test "$PGUSER_POSTGRES_PWD" = ""; then 
-				error "PGUSER_POSTGRES_PWD is empty. STOP."
-				exit 6
-			fi
+		#	if test "$PGUSER_POSTGRES_PWD" = ""; then 
+		#		echo "PGUSER_POSTGRES_PWD is empty. STOP."
+		#		exit 6
+		#	fi
 		#	EXEC="echo "$PGUSER_POSTGRES_PWD" | \"$PSQL\" -d $DB -f $SCRIPT $LOGFILE_CMD"
 		#else
 			EXEC="$PSQL -d $DB -f $SCRIPT $LOGFILE_CMD"
@@ -2508,12 +2555,25 @@ AS_USER=$5
 		if test "$AS_USER" != ""; then 
 			EXEC="su -l $AS_USER -c '$EXEC'"
 		fi
+		if test "$VERBOSE" = "1"; then
+			echo "Running: $EXEC"
+		fi
 		eval $EXEC
 		RET=$?
+		#psql sometimes does not exit with non-zero status on error
+		TT=`grep "ERROR:" $LOGFILE`
+		if test "$TT" = ""; then 
+			TT=`grep "syntax error" $LOGFILE`
+		fi
+		if test "$TT" != ""; then
+			echo "Error: see $LOGFILE"
+			echo $TT
+			exit 2
+		fi
+		
 		;;
 		
 	sqlite)
-
 		if test "$VERBOSE" = "1"; then 
 			echo "cat $SCRIPT | $SQLITE_EXE $SQLITE_DB"
 		fi
@@ -2531,7 +2591,12 @@ AS_USER=$5
 		echo $EXEC
 		echo "returned code $RET. See $LOGFILE"
 		exit $RET
+	else
+		if test "$VERBOSE" = "1"; then
+			echo "Command returned code $RET"
+		fi
 	fi
+	
 }
 
 
@@ -2548,9 +2613,11 @@ LOGFILE=/tmp/testdb.log
 	
    case $RDBMS in
 	informix | postgres)
+		echo "Converting DDL SQL..."	
 		convert_sql ddl $RDBMS $SCRIPT
 		echo "Creating tables..."
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		echo "Converting data SQL..."		
 		convert_sql data $RDBMS $SCRIPT
 		echo "Loading data..."
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
@@ -2790,9 +2857,11 @@ show_test_info() {
 			fi
 			echo ""
 			if test "$INFO_TEST" = "1"; then
-				if test "$CATALOGUE_UNL" = "1"; then 
-					catalogue_unl
-				fi
+				#now called from main look, to enable creation of
+				#unl catalogue at the same time when running tests (FULL_LOOP)
+				#if test "$CATALOGUE_UNL" = "1"; then 
+				#	catalogue_unl
+				#fi
 				continue
 			fi
 }
@@ -3098,6 +3167,10 @@ function do_skip() {
 function show_results () {
 
 cd $CURR_DIR
+
+if test "$LOGFILE" = ""; then
+	LOGFILE=$CURR_DIR/build.log
+fi
 
 ########################
 #calculate success percentage

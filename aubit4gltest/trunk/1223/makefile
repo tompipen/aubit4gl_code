@@ -219,7 +219,7 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE_WITH_NO_LOG LOAD_FROM_INSERT_INTO ANSI_SELECT"
+	@echo "CREATE_TEMP_TABLE_NO_LOG LOAD_FROM_INSERT_INTO ANSI_SELECT"
 
 	
 #################

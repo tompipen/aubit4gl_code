@@ -104,9 +104,19 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "SET EXPLAIN ON database statement."
-	@echo "No run-time checking. NOTE: fails at run-time with -ifx-p."
-
+	@echo "SET EXPLAIN ON database statement. No run-time checking. \
+	Note that this test may fail because of Informix configuration issues. \
+	For example, if your oninit permissions look like this: \
+	-rwSr-sr--    1 informix informix  8497828 Mar  3  2002 /opt/informix/bin/oninit \
+	then this test will fail. If you execute: \
+	chown root /opt/informix/bin/oninit \
+	chmod 6754  /opt/informix/bin/oninit \
+	so that oninit permissions are: \
+	-rwsr-sr--    1 root     informix  8497828 Mar  3  2002 /opt/informix/bin/oninit \
+	then this tests may work, is the oninit has permissions to write to the \
+	tests directory and create sqexplain.out file. \
+	When using -ecp, this statement is ignored, and test will allways 'work'."
+	
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################

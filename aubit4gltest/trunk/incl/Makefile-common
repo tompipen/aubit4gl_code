@@ -224,6 +224,9 @@ ifneq "${COMPILE_ONLY}" "1"
 				echo "Run OK ($$RET)"; \
 			else \
 				echo "Run FAILED ($$RET but expecting ${EXPECT_CODE})"; \
+				if test -f ./out ; then \
+					cat ./out ; \
+				fi ; \
 				exit 1; \
 			fi \
 		fi

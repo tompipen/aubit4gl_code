@@ -2,28 +2,30 @@ database test1
 
 main
 define a,b,c char(10)
+
+#display "create temp table..."
 	create temp table t1 ( 
 		a char(10),
 		b char(10)
 	)
-
+#display "insert..."
 	insert into t1 values ("Hello","World")
 
-# One to few
+#display "One to few"
 	initialize a,b,c to null
 	select * into a from t1
 	call dodisplay(a,b,c)
 
-# perfect
+#display "perfect"
 	initialize a,b,c to null
 	select * into a,b from t1
 	call dodisplay(a,b,c)
 
-# One to many
+#display "One to many"
 	initialize a,b,c to null
 	select * into a,b,c from t1
 	call dodisplay(a,b,c)
-
+#display "end."
 end main
  
 function dodisplay(a,b,c)

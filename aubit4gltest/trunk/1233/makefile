@@ -147,7 +147,7 @@ form_test:
 ################
 #Test uses REPORT section
 report_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test that use graphic characters in forms that may be platform dependent
@@ -175,7 +175,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -185,7 +185,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)

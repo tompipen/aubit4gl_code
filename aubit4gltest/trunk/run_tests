@@ -7,7 +7,9 @@ START_TIME=`date +%s`
 
 #Function called when user interupts execution
 function on_abort () {
-	show_results ABORTED
+	if test "$ENTERED_TEST_LOOP" = "1"; then
+		show_results ABORTED
+	fi
 	echo ">>>>>>>>>>>>>>>> A B O R T E D <<<<<<<<<<<<<<<<<<<<"
 	exit 1
 }
@@ -347,9 +349,6 @@ for a in $FLAGS; do
 		SHOW_4GL_ERROR=1
 		;;
 		
-    -nodb)          #skip db dependent tests
-		NO_DB=1
-	    ;;
 
     -memdbg)        #Use 'valgrind' to perform memory checking ar run-time
 		export DBG=valgrind
@@ -369,7 +368,13 @@ for a in $FLAGS; do
 		
     -onlydb)        #run only db based tests
 		ONLY_DB=1
+		activate_use_cache
 	    ;;
+    -nodb)          #skip db dependent tests
+		activate_use_cache
+		NO_DB=1
+	    ;;
+		
 	-skip-unknown-trans) #Skip tests with explicit pref for trans, when cant 
 						#determine state of trans in current RDBMS
 		SKIP_UNKNOWN_TRANS=1
@@ -436,12 +441,7 @@ for a in $FLAGS; do
 		;;
 
 	-use-cache) 	#Use cached test descriptions to loop faster
-		if test -f $CURR_DIR/etc/cache_IS_DB_TEST.txt ; then
-			USE_CACHE=1
-			IS_DB_TEST_CACHE="`cat $CURR_DIR/etc/cache_IS_DB_TEST.txt`"
-		else
-			echo "You need to create a cache file first to use -use-cache"
-		fi
+		activate_use_cache
 		;;
 		
     -noskip)        #do not skip any tests whatever the reason is
@@ -582,6 +582,10 @@ for a in $FLAGS; do
 				echo "Attempt to make it failed. Stop."
             	exit 9
 			fi
+		else
+			if test "$VERBOSE" = "1" ; then
+				echo "Found: $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT"
+			fi
         fi
 		
 		if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
@@ -594,6 +598,10 @@ for a in $FLAGS; do
 			if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
 				echo "Attempt to make it failed. Stop."
             	exit 9
+			fi
+		else
+			if test "$VERBOSE" = "1" ; then
+				echo "Found: $LIBS_DIR/libESQL_INFORMIX$SO_EXT"
 			fi
         fi
 		
@@ -624,8 +632,7 @@ for a in $FLAGS; do
 		USE_PG=1
         #this will be used only by 4glc/fcompile compilers:
 
-		if [ "$A4GL_SYSCOL_VAL" = "" ]
-		then	
+		if [ "$A4GL_SYSCOL_VAL" = "" ]; then
 			A4GL_SYSCOL_VAL=a4gl_syscolval
 			export A4GL_SYSCOL_VAL
 		fi
@@ -816,21 +823,7 @@ for a in $FLAGS; do
 		;;
 
 	-log-unl)
-		#unload rest result to .unl file
-		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
-		U="_"
-		if test "$VERBOSE" = "1"; then 
-			echo "Logging results to file 'results_$HOSTNAME$U$date_stamp.unl'"
-			echo "and 'test_run_$HOSTNAME$U$date_stamp.unl'"
-		fi
-		unl_file="$CURR_DIR/results_$HOSTNAME$U$date_stamp.unl"
-		test_run_unl_file="$CURR_DIR/test_run_$HOSTNAME$U$date_stamp.unl"
-		if test "1" = "2"; then 
-			rm -f $unl_file $test_run_unl_file
-			#rm -f results_*.unl test_run_*.unl
-		fi
-		UNL_LOG=1
-		MEASURE_TIME=1
+		activate_log_unl
 		;;
 		
     -odbcdb-ifx)        #Use Informix RDBMS for ODBC manager connections
@@ -1723,9 +1716,23 @@ if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1"; then
 	#-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
 	#Full loop means we are going to loop troug ALL tests and read 
 	#actuall descriptions for ALL tests, which will allow us to create 
-	#new cache files. (Stalled on 478?)
+	#new cache files.
 	FULL_LOOP=1
 	rm -f $CURR_DIR/etc/cache_IS_DB_TEST.txt
+fi
+
+if test "$FULL_LOOP" = "1" 	-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
+#Activate loging of results to unl, creation of unl catalogue
+	activate_log_unl
+	#Cannot activate catalogue to .txt because that uses redirection of output
+	#of this script to a file, but can still create new .unl catalogue
+	rm -f $CURR_DIR/docs/catalogue.unl
+	export CATALOGUE_UNL=1
+	date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+	if test "$VERBOSE" = "1"; then
+		echo "Creating tests catalogue file (docs/catalogue.unl)"
+	fi
+	#$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt
 fi
 
 
@@ -1733,6 +1740,8 @@ fi
 if test "$SILENT" = "1" -a "$NO_ECHO" != "1"; then
 	echo "Running test(s)..."
 fi
+
+ENTERED_TEST_LOOP=1
 #########################
 for TEST_NO in $ALL_TESTS
 #########################
@@ -2085,6 +2094,10 @@ do
 			#Show test info
 			show_test_info
 		fi
+		if test "$CATALOGUE_UNL" = "1"; then 
+			catalogue_unl
+		fi
+
 
 	if test "$SH_DBG" = "1"; then 
 		echo "Determining if we can/should run test $TEST_NO"

@@ -1,7 +1,6 @@
 #This file conatains lists of all tests expected to fail
 #it is used as include from main testing execution script
 
-
 # --------------------------------------------------------------------------
 #							-cert (-eci)
 # --------------------------------------------------------------------------
@@ -14,7 +13,6 @@
 #NOTE: <*> = OK with -esqli
 EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
-#278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593 # Should be fixed
 #766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
 #962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
@@ -23,10 +21,11 @@ EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
 #233 failed once, but cant reproduce??
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS  590 "
-#296 Unable to read form. # Should be there now...
-#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?) 	
-# Yes - it is ignored..
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+
+#Tests that may fail for reasons other then Aubit bug (config issues)
+#590 Cannot open EXPLAIN output file. (Works with -ecp because its ignored) 	
+#218 RPC client server test
 
 # --------------------------------------------------------------------------
 #							-esql
@@ -90,6 +89,7 @@ EXPECT_TO_FAIL_TESTS_MINGW="242 244 246 252 254 272 273 274 276 277 288 535 1060
 #277 
 #288 
 #535
+#218 RPC client-server test
 #1060 - Native Windows executable knows nothing about bash and CygWin paths,
 #so RUN-ining a shell script fails with error mesage from Microsoft cmd.exe
 
@@ -106,44 +106,26 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="76 530 535"
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 110 376 530 535 584 587 739 900 903 913 \
+	630 670 748 1208 1220 1221 1228"
+#1 afinderr -213 /opt/aubit/aubit4glsrc/help/help_ecpg.iem: ECPG_MISSING_INDICATOR -213 http://aubit.com/mantis/view.php?id=687	
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
+#98 serial insert ignores non-zero value http://aubit.com/mantis/view.php?id=604
+#110 COPY delimiter must be a single character http://aubit.com/mantis/view.php?id=693
+#376 core in 4glc : http://aubit.com/mantis/view.php?id=688
 #530,535 (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
+#584 587 prepared DATABASE stmt fails with -220 http://aubit.com/mantis/view.php?id=694
+#739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
+#900 A wrong select give a zero sqlca http://aubit.com/mantis/view.php?id=690
+#903 Wrong sqlca it as not assigned sqlcode http://aubit.com/mantis/view.php?id=691
+#913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
 
-#TODO: Close bugs in Mantis:
-#FIXED: 36 (close cursor) http://aubit.com/mantis/bug_view_page.php?bug_id=0000478
-#SEEM TO BE WORKING NOW BUT HOW? 227 (syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000483
-
-#############
-#Not reported, but diagnosed:
-EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
-	1 91 100 106 234 376 109 286 287 793 794 913 914 915 207 900 903 739"
-#1 afinderr -213 /opt/aubit/aubit4glsrc/help/help_ecpg.iem: ECPG_MISSING_INDICATOR          -213   	
-#91,100,234 put.cpc:155: ERROR: invalid datatype 'PUT' - now SKIP (PUT_CURSOR)
-#106 prog.cpc:138: ERROR: syntax error at or near "1" - SQL...END SQL block & SELECT FIRST (relative)
-#376 core in 4glc :
-#aubit 4glc list_validate_like_star.4gl -c -o list_validate_like_star.ao
-#row number 1 is out of range 0..-1
-#286 287 A4GLSQL_set_sqlerrm(''relative path not allowed for COPY to file' in line 147.','NOT SET ') 
-#109 core dump when opening lock cursor
-#793 794 syntax error at or near "AUDIT" - now SKIP
-#914 A warning was not issued after an agregate with null values
-#913 An warning was not issued with a DB with transactions 
-#207 Performing extend(year to day)
-#900 A wrong select give a zero sqlca
-#903 Wrong sqlca it as not assigned sqlcode
-#739 A row was deleted from a temp table with no log
-
-#############
-#Not reported, not diagnosed:
-EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
-	110 541 551 552 553 554 555 556 557 558 559 560 561 562 569 570 571 572 \
-	573 575 576 577 579 581 584 587 593 597 599 600 603 607 611 612 620 \
-	632 633 634 635 636 639 643 645 646 648 649 650 651 652 653 654 655 656 \
-	657 658 659 664 665 666 667 668 669 675 676 683 686 687 \
-	689 698 700 701 702 704 710 711 713 714 721 724 725 728 729 730 750 751 \
-	754 760 761 762 773 775 795 796 902 904 905 906 908 909 936 \
-	937 1301 1302 1303 1304 218 253 278 630 670 706 748 1208 1220 1221"	
+#630 LOAD FROM INSERT INTO 
+#670 error in ecpg generated C code
+#748 FETCH issue
+#1208 1228 UNLOAD TO SELECT FROM cant open file
+#1220 select one more filed then it exsist in the table
+#1221 fails with -ecp (both DECLARE cursor into and FOREACH into return empty)
 
 # --------------------------------------------------------------------------
 #							-sqlite and -sqlite-odbc
@@ -206,7 +188,8 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
 	953 954 955 956 957 958 959 964	966  918 \
-	938 939 940 941 942 943 944 945 946 947 1206"
+	938 939 940 941 942 943 944 945 946 947 1206 \
+	1234 1239 1233 1235 1236"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -226,6 +209,8 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #1200 out.expected missing ** FIXED ?
 #287 never exits with -cert (seems to be fixed)
 #empty MAIN block
+#1234 1239 1233 1237 missing out.expected
+#1235 1236 missing form file
 
 ################################### EOF #################################
 
