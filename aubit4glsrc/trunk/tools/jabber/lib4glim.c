@@ -23,6 +23,7 @@ Because of all these differences, many projects use cross-platform wrapper
 libraries instead of the native socket APIs.
 
 
+
 */
 #include <sys/time.h>
 #include <sys/types.h>
@@ -80,11 +81,19 @@ int timeout;
 char to[2000];
 int receive;
 int success;
-
+#ifdef __STDIN__
 	fgets (line1, 2000, stdin);
 	fgets (line2, 2000, stdin);
 	strcat (line1, line2);
 
+#else	
+		#ifdef J_DEBUG
+			printf ("Using default test message\n");
+		#endif
+		strcat (line1, "This is Aubit test message");
+#endif
+	
+	
 	#ifdef __WIN32__
 	{
 	unsigned short version;

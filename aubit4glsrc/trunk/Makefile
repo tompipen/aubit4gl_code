@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2004-12-20 08:24:49 afalout Exp $
+# $Id: Makefile,v 1.4 2004-12-22 11:20:24 afalout Exp $
 #
 
 ## ==================================================================
@@ -45,11 +45,11 @@ include incl/Makefile-common
 ###############################
 #Things we compile by default
 ALL					=settings api.headers corecompile liblogical libfile \
-						libstring test
+						libstring glade test
 						
 ###############################
 #Things we compile with 'extra' target
-ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload glade
+ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN=
@@ -69,17 +69,17 @@ endif
 
 ################################
 #Define targetss for liblogical
-LIBLOGICAL_BUILD=bin/process_report lib/libLOGREPPROC_TXT.so lib/libLOGREP_PROC_CSV.so
-LIBLOGICAL_GTK2_DEPEND=lib/libLOGREP_CSV.so bin/layout_engine bin/report_viewer \
-	lib/libLOGREP_TXT.so
-LIBLOGICAL_PDF_DEPEND=lib/libLOGREP_PROC_PDF.so lib/libLOGREP_PDF.so
+#Libraries are made with lib makefile
+#LIBLOGICAL_BUILD=bin/process_report lib/libLOGREPPROC_TXT${SO_EXT} lib/libLOGREP_PROC_CSV${SO_EXT}
+LIBLOGICAL_BUILD=bin/process_report
+#LIBLOGICAL_GTK2_DEPEND=lib/libLOGREP_CSV${SO_EXT} bin/layout_engine bin/report_viewer \
+#	lib/libLOGREP_TXT${SO_EXT}
+LIBLOGICAL_GTK2_DEPEND=bin/layout_engine bin/report_viewer
+#LIBLOGICAL_PDF_DEPEND=lib/libLOGREPPROC_PDF${SO_EXT} lib/libLOGREP_PDF${SO_EXT}
+
 ifeq "${GTK_VERSION}" "2.0"
 	LIBLOGICAL_BUILD+=${LIBLOGICAL_GTK2_DEPEND}
 endif
-ifeq "${PDFBUILD}" "yes"
-	LIBLOGICAL_BUILD+=${LIBLOGICAL_PDF_DEPEND}
-endif
-
 
 ## ==================================================================
 ##                              Targets
@@ -184,19 +184,20 @@ bin/layout_engine:
 bin/report_viewer:
 	$(MAKE) -C lib/liblogical/report_viewer
 
-lib/libLOGREPPROC_TXT.so:
-	$(MAKE) -C lib/liblogical/txt/process
-lib/libLOGREP_TXT.so:
-	$(MAKE) -C lib/liblogical/txt/layout
-lib/libLOGREP_PROC_CSV.so:
-	$(MAKE) -C lib/liblogical/csv/process
-lib/libLOGREP_CSV.so:
-	$(MAKE) -C lib/liblogical/csv/layout
-lib/libLOGREP_PROC_PDF.so:
-	$(MAKE) -C lib/liblogical/pdf/process
-lib/libLOGREP_PDF.so:
-	$(MAKE) -C lib/liblogical/pdf/layout
+#Now in lib makefile:
+#lib/libLOGREPPROC_TXT${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/txt/process
+#lib/libLOGREPPROC_CSV${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/csv/process
+#lib/libLOGREPPROC_PDF${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/pdf/process
 
+#lib/libLOGREP_TXT${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/txt/layout
+#lib/libLOGREP_CSV${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/csv/layout
+#lib/libLOGREP_PDF${SO_EXT}:
+#	$(MAKE) -C lib/liblogical/pdf/layout
 	
 clean.liblogical:
 	$(MAKE) -C lib/liblogical/processor clean
@@ -357,7 +358,7 @@ doxy.install.search:
 
 strip:
 	cd bin; strip 4glc fcompile
-	cd lib; strip *.so
+	cd lib; strip *${SO_EXT}
 
 
 ## ==================================================================
@@ -531,11 +532,12 @@ clean.bin:
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
 	checker${EXE} runner_fgl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
-	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc_new${EXE} \
+	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc${EXE} \
 	)
 
 clean.etc:
-	${RM} etc/*.bak etc/config/*.bak etc/aubit-auto.spec
+	${RM} etc/*.bak etc/*~ etc/config/*.bak etc/config/*~ etc/aubit-auto.spec \
+	etc/*.hlp etc/*.afr.*
 	rm -rf etc/Output
 
 #Cant do a4gl_API_* because a4gl_API_exdata.h is NOT generated
@@ -822,6 +824,16 @@ endif
 	@echo "${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm"
 	@echo "'make rpm' successfull, see rpmbuild.log for details"
 
+rpm.check:
+#      -bl    Do  a  "list check".  The "%files" section from the
+#              spec file is macro expanded, and checks are made to
+#              verify that each file exists.
+#      --nobuild
+#              Do not execute any build stages. Useful for testing
+#              out spec files.
+	rpm -bl ${RPMCONFFILE}
+	
+	
 #automatically create .spec file for RPM build:
 etc/aubit-auto.spec: aubit4gl.lsm
 	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec

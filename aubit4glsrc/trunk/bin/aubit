@@ -275,21 +275,25 @@ if [ "$COMSPEC" != "" ]; then
 fi
 
 
-#set DBPATH for use by some Aubit programs that need form and/or help files, like asql, configurator, etc...
+#set DBPATH for use by some Aubit programs that need form and/or help files, 
+like asql, configurator, etc...
 
 #because of the problem in dealing with multiple separators in resource.c we need to test
 #if this variables are currently empty or not before concernating
+#we should no longer have form or help files in bin/
+#ADD_DBPATH=$AUBITDIR/bin
+ADD_DBPATH=$AUBITDIR/etc
 
 if test "$A4GL_DBPATH" = "" ; then
-	A4GL_DBPATH=$AUBITDIR/bin
+	A4GL_DBPATH=$ADD_DBPATH
 else
-	A4GL_DBPATH=$AUBITDIR/bin$A4GL_PATH_SEP$A4GL_DBPATH
+	A4GL_DBPATH=$ADD_DBPATH$A4GL_PATH_SEP$A4GL_DBPATH
 fi
 
 if test "$DBPATH" = "" ; then
-	DBPATH=$AUBITDIR/bin
+	DBPATH=$ADD_DBPATH
 else
-	DBPATH=$AUBITDIR/bin$A4GL_PATH_SEP$DBPATH
+	DBPATH=$ADD_DBPATH$A4GL_PATH_SEP$DBPATH
 fi
 
 if test "$TARGET_OS" = "xxxmingw"; then

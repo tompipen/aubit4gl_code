@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.55 2004-12-21 00:23:02 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.56 2004-12-22 11:22:18 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -72,7 +72,7 @@
 ## ==================================================================
 
 #VERBOSE=1
-SH_DEBUG=1
+#SH_DEBUG=1
 
 ALL_FLAGS=$@
 NUM_FLAGS=$#
@@ -531,20 +531,26 @@ UP_URLENCODED="$3"
 		echo "ERROR: filesize of local and uploaded file are different"
 		echo "$LOCAL_FILE"
 		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
-		FILESIZE_SF=""
-		website_filesize "$HTTP_FILE"
-		echo "Again, filesize on SF: $FILESIZE_SF:"
-		FILESIZE_SF=""
-		website_filesize "$HTTP_FILE"
-		echo "Once more, filesize on SF: $FILESIZE_SF:"
+		if test "$SH_DEBUG" = "1"; then
+			#was very consistent, allways same result
+			FILESIZE_SF=""
+			website_filesize "$HTTP_FILE"
+			echo "Again, filesize on SF: $FILESIZE_SF:"
+			FILESIZE_SF=""
+			website_filesize "$HTTP_FILE"
+			echo "Once more, filesize on SF: $FILESIZE_SF:"
+		fi
 		echo "----------------------------------------------------"				
 		COMPARED_OK=0
 #echo "command was:"
 #echo "$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;"
 #echo "cat $WGET_LOG | grep Content-Length: | awk '{print $3}'"
-		
-		echo "Will try downloading that file to compare:"
-		compare_files "$UP_FILE" "$LOCAL_FILE" "$UP_URLENCODED"
+		if test "$SH_DEBUG" = "1"; then
+			#Little point, allways downloaded file of same size as reported by 
+			#website_filesize function
+			echo "Will try downloading that file to compare:"
+			compare_files "$UP_FILE" "$LOCAL_FILE" "$UP_URLENCODED"
+		fi
 	else
 		if [ "$VERBOSE" = "1" ]; then
 			echo "Size compares OK:"
@@ -1277,7 +1283,7 @@ the_file="$1"
 			fi
 		fi
 		timeout="`grep timeout $the_script | awk '{print $3}'`"
-		echo "Upload took $TOOK_TIME seconds (timeout=$timeout)."
+		echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."
 		#if test "$timeout" -lt "$TOOK_TIME" -o 
 		if test "$timeout" = "$TOOK_TIME"; then
 			echo "WARNING: did 'expect' timeout kill scp?"
@@ -1557,6 +1563,15 @@ function func_get_flags () {
 					fi
 					;;
 	
+				-debug | --debug)
+					SH_DEBUG=1
+					VERBOSE=1
+					if [ "$NUM_FLAGS" = "1" ]; then
+						DO_ALL=1
+					fi
+					;;
+					
+					
 			esac
 		done
 	

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.24 2004-09-24 06:29:04 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.25 2004-12-22 11:22:18 afalout Exp $
 #
 
 ###########
@@ -509,6 +509,29 @@ make install
 @IMPORTFILE_18@
 @IMPORTFILE_19@
 @IMPORTFILE_20@
+
+
+@HELPFILE_1@
+@HELPFILE_2@
+@HELPFILE_3@
+@HELPFILE_4@
+@HELPFILE_5@
+@HELPFILE_6@
+@HELPFILE_7@
+@HELPFILE_8@
+@HELPFILE_9@
+@HELPFILE_10@
+
+@FORMFILE_1@
+@FORMFILE_2@
+@FORMFILE_3@
+@FORMFILE_4@
+@FORMFILE_5@
+@FORMFILE_6@
+@FORMFILE_7@
+@FORMFILE_8@
+@FORMFILE_9@
+@FORMFILE_10@
 
 ##############
 %changelog

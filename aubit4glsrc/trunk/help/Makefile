@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2004-12-21 07:31:47 afalout Exp $
+# $Id: Makefile,v 1.3 2004-12-22 11:22:18 afalout Exp $
 #
 
 ROOT    =..
@@ -38,17 +38,25 @@ include ${ROOT}/incl/a4gl.mk
 ##                              Options
 ## ==================================================================
 
-HLP_FILES=help_aubit.iem help_ecpg.iem help_sqlite.iem
+DESTINATION=${ROOT}/${HELP_DESTINATION}/
+
+HLP_FILES=	help_aubit${A4GL_HLP_EXT} \
+			help_ecpg${A4GL_HLP_EXT} \
+			help_sqlite${A4GL_HLP_EXT}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all: ${HLP_FILES}
+	cp $^ ${DESTINATION}
 	@echo "Help files compiled."
 
-#%.iem: %.hlp
-#	../bin/amkmessage $< $@
+#%${A4GL_HLP_EXT}: $(notdir %.msg)
+#	../bin/amkmessage $(notdir $<) $@
+
+#.msg${A4GL_HLP_EXT}:
+#	${FAIL_CMPL_HLP}${A4GL_MC} $(notdir $^) $@
 
 ## ==================================================================
 ##                              Clean

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.271 2004-12-21 00:20:45 afalout Exp $
+dnl # $Id: configure.in,v 1.272 2004-12-22 11:20:45 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -591,6 +591,10 @@ AC_SUBST(INCLINES)
 AC_SUBST(VALGRIND)
 
 #Install/deinstall files lists
+AC_SUBST(FORMS_DESTINATION)
+AC_SUBST(HELP_DESTINATION)
+AC_SUBST(COMP_FORM_EXT)
+
 AC_SUBST(AMAKE_SH)
 AC_SUBST(AMAKE_BIN_EXE)
 AC_SUBST(ALL_SH)
@@ -1434,6 +1438,28 @@ AC_SUBST(ISHELPFILE_8)
 AC_SUBST(ISHELPFILE_9)
 AC_SUBST(ISHELPFILE_10)
 
+#Form files
+AC_SUBST(FORMFILE_1)
+AC_SUBST(FORMFILE_2)
+AC_SUBST(FORMFILE_3)
+AC_SUBST(FORMFILE_4)
+AC_SUBST(FORMFILE_5)
+AC_SUBST(FORMFILE_6)
+AC_SUBST(FORMFILE_7)
+AC_SUBST(FORMFILE_8)
+AC_SUBST(FORMFILE_9)
+AC_SUBST(FORMFILE_10)
+
+AC_SUBST(ISFORMFILE_1)
+AC_SUBST(ISFORMFILE_2)
+AC_SUBST(ISFORMFILE_3)
+AC_SUBST(ISFORMFILE_4)
+AC_SUBST(ISFORMFILE_5)
+AC_SUBST(ISFORMFILE_6)
+AC_SUBST(ISFORMFILE_7)
+AC_SUBST(ISFORMFILE_8)
+AC_SUBST(ISFORMFILE_9)
+AC_SUBST(ISFORMFILE_10)
 
 
 ## ==================================================================
@@ -1518,6 +1544,14 @@ SLASH=\\
 INFORMIXC=$CC
 HAVE_CURSES=0
 HAVE_PDCURSES=0
+
+COMP_FORM_EXT=".afr.dat"
+
+#if test "$COMSPEC" = ""; then 
+	A4GL_EXE_EXT=".4ae"
+#else
+#	A4GL_EXE_EXT=".exe"
+#fi
 
 AC_PATH_PROG(CYGPATH, cygpath, no)
 
@@ -1930,24 +1964,17 @@ COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
 #to create dll, and we don't get .a file...
 NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel A4GL_file"
 
-#Seems to be working now - remove:
-#if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
-	#On CygWin/MinGW:
-	#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
-	#/usr/bin/bash 4glc --as-dll libfile.4gl -o libA4GL_file.dll
-	#============ FIRST ERROR: ==============
-	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1834):libfile.c: undefined reference to `trim_nl'
-	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1846):libfile.c: undefined reference to `push_char'
-	#========================================
-#	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
-#fi
+#Define targets for liblogical
+LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
+LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV"
+LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT"
+LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF LOGREP_PDF"
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
-		SQLPARSE_NONE SQLPARSE_INFORMIX $NEED_4GLC_ALL_libs"
+		SQLPARSE_NONE SQLPARSE_INFORMIX $NEED_4GLC_ALL_libs $LIBLOGICAL_BUILD"
 #UI_HLGENERIC
-
 
 #libaubit4gl should be first, to avoid dependency chase
 LIB_EXPORTLIB=aubit4gl
@@ -1985,42 +2012,20 @@ LIB_EXPORTLIB=aubit4gl
 AMAKE_BIN_EXE=aubit-config
 
 #Resource files needed by some of the executables
-RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat \
-	qryfrm.afr.dat"
+RUNTIME_RESOURCE=""
 
-#Note: "asql" is just a link to asql_p or asql_i
+#Note: "asql" is just a link to asql_p/_i/_g
 
 #Executables that are needed even in run-time distibutions:
 RUNTIME_EXE="fshow loadmap afinderr configurator $AMAKE_BIN_EXE"
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm 4glpc sql_parse"
-
-#Currently fail to compile on formhandler: ide1.4ae 
-#Needs IFX ESQL/C: sqleditor.4ae
-		
-#aupscol currently compiles only with Informix ESQL/C
-#asql_p / asql_i compile only if PG / IFX ESQLC compilers are installed
-
-#FIXME: pack files created in $(MAKE) -C help (help_aubit.iem help_ecpg.iem help_sqlite.iem
-
-#FIXME: can't make pcode without Bison
-#BUT WE DON'T KNOW THAT YET - MOVE ALL THIS AT THE END OF THE SCRIPT!!
-if test "$BISON" != "no"; then 
-	#Need RPClib:
-	PCODE_EXE_RPC="c2pcode checker runner"
-	PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
-fi
+        aace generate_aace adecompile convertsql aace_4gl aace_perl default_frm \
+		4glpc sql_parse process_report ide1$A4GL_EXE_EXT asql_g$A4GL_EXE_EXT"
 
 COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
-if test "$GCC_MINGW" != "yes"; then
-	#Pcode stuff needs RCPlib which does not exist on Windows/MinGW
-	COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
-fi
-
-#xgen
-
+#xgen - not needed for binary installs
 #needs missing source code
 #	BIN_EXE		+=fdecompile-j${EXEEXT}
 #user's manual choice:
@@ -2028,28 +2033,8 @@ fi
 #	BIN_EXE		+=odbctest-iodbc3${EXE}
 #	BIN_EXE		+=odbctest-iodbc2${EXE}
 
-    COUNTER=0
-	for FILE in $COMP_EXE ; do
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
-		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
-	done
-
-	for FILE in $RUNTIME_EXE ; do
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
-	done
-
-	for FILE in $RUNTIME_RESOURCE ; do
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
-	done
-
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+#NOTE: COMP_EXE, RUNTIME_EXE and RUNTIME_RESOURCE are processed near the 
+#end of this script, to allow for conditional files
 
 ## ==================================================================
 ##       Define permanent list of shell scripts to build/install
@@ -2129,8 +2114,6 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 ##       Define permanent list of examples to build/install
 ## ==================================================================
 
-#ALL_EXAMP="`cd tools/test; ls *.4gl` `cd tools/test; ls *.per` `cd tools/test; ls *.msg`"
-#ALL_EXAMP_GUI="`cd tools/test/gui; ls *.4gl` `cd tools/test/gui; ls *.per`"
 ALL_EXAMP="testmenu.menu file.4gl form.per hello.4gl hello_db.4gl \
 		hello2.4gl helpfile.msg pdf_report.4gl test_build.4gl test_select.4gl \
 		testmenu.4gl assoc2.4gl testmpz.4gl"
@@ -2197,17 +2180,31 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 ##       Define permanent list of help files to build/install
 ## ==================================================================
 
-ALL_HELP="help_aubit.iem and help_ecpg.iem"
+ALL_HELP="helpfile.hlp help_aubit.hlp help_ecpg.hlp help_sqlite.hlp 4glpc.hlp"
+FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT qryfrm$COMP_FORM_EXT "
+
+#Destination for files we use in build process, installation and when
+#we make installers (relative to Aubit root)
+#DBPATH should allways be set to that place (as it is in 'aubit' script)
+#TODO: set it in aubitrc too
+FORMS_DESTINATION=etc
+HELP_DESTINATION=etc
 
     COUNTER=0
 	for FILE in $ALL_HELP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "HELPFILE_$COUNTER='%doc $INST_BASE/help/$FILE'"
-		eval "ISHELPFILE_$COUNTER='Source: $IS_SOURCE\help\\$FILE; DestDir: {app}\help; Components: runtime'"
+		eval "HELPFILE_$COUNTER='%doc $INST_BASE/$HELP_DESTINATION/$FILE'"
+		eval "ISHELPFILE_$COUNTER='Source: $IS_SOURCE\\$HELP_DESTINATION\\$FILE; DestDir: {app}\\$HELP_DESTINATION; Components: runtime'"
+	done
+	COUNTER=0
+	for FILE in $FORM_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "FORMFILE_$COUNTER='%doc $INST_BASE/$FORMS_DESTINATION/$FILE'"
+		eval "FORMFILE_$COUNTER='Source: $IS_SOURCE\\$FORMS_DESTINATION\\$FILE; DestDir: {app}\\$FORMS_DESTINATION; Components: runtime'"
 	done
 
-#FIXME: add to RPM & ISS scripts
-
+	#NOTE: FORM_FILES and ALL_HELP are added to ETC_FILES later
+	
 ## ==================================================================
 ##       Define permanent list of documentation files to build/install
 ## ==================================================================
@@ -2282,8 +2279,7 @@ ROOT_FILES_CONF="install.sh"
 #Warning: ROOT_FILES variable is used by make install target
 ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
 
-#Warning: ETC_FILES variable also used for make install target
-ETC_FILES="4glpc.iem gtkrc_2 odbc.ini.example"
+ETC_FILES="gtkrc_2 odbc.ini.example"
 
 ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
@@ -2305,6 +2301,9 @@ ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 #This 2 are used in Makefile-common in BIN_ALLWAYSCLEAN and TOBIN variables
 EXTRAFILE_1=$aubitdir/tools/cygwin/run.exe
 EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
+
+#Add form and help files to ETC_FILES, so they get in make install/deinstall 
+ETC_FILES="$ETC_FILES $FORM_FILES $ALL_HELP"
 
 ## ==================================================================
 ##                              Debugging
@@ -7852,16 +7851,18 @@ PLUGIN_NO_LINKABLE=
 	fi
 	
 	if test "$PDFBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES EXREPORT_PDF"
+		PLUGIN_YES="$PLUGIN_YES EXREPORT_PDF $LIBLOGICAL_PDF_DEPEND"
 	else
-        PLUGIN_NO="$PLUGIN_NO EXREPORT_PDF"
+        PLUGIN_NO="$PLUGIN_NO EXREPORT_PDF $LIBLOGICAL_PDF_DEPEND"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pdflib"
 	fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
+		COMP_EXE="$COMP_EXE sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
+		#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
 	else
-        PLUGIN_NO="$PLUGIN_NO SQL_esql ESQL_INFORMIX"
+        PLUGIN_NO="$PLUGIN_NO SQL_esql ESQL_INFORMIX sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
@@ -7924,14 +7925,14 @@ PLUGIN_NO_LINKABLE=
 	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
-		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR"
+		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#SUN RPC does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR"
+			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR"
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
         fi
 	fi
 
@@ -7970,8 +7971,11 @@ PLUGIN_NO_LINKABLE=
 			#only to resolve variables defined as LIKE when compiling 4gl 
 			#code using EC dialect POSTGRES
 			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
+			COMP_EXE="$COMP_EXE asql_p$A4GL_EXE_EXT"
+			#asql_p compile only if PG ESQLC compiler is installed
+			
         else
-			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
+			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg asql_p$A4GL_EXE_EXT"
 		fi
 
 if test "disabled" = ""; then
@@ -7991,6 +7995,13 @@ fi
 	else
         PLUGIN_NO="$PLUGIN_NO MENU_GENERIC UI_HL_GTK"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
+	fi
+	
+	if test "$GTK_VERSION" = "2.0"; then 
+		PLUGIN_YES="$PLUGIN_YES $LIBLOGICAL_GTK2_DEPEND"
+	else
+		PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_GTK2_DEPEND"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk2"		
 	fi
 
 	if test "$HAS_GLADE_2" = "1" -a "$GTKBUILD" != "no"; then
@@ -8130,6 +8141,49 @@ fi
     PLUGIN_YES="$PLUGIN_YES $PLUGIN_YES_LINKABLE"
     PLUGIN_NO="$PLUGIN_NO $PLUGIN_NO_LINKABLE"
 
+	
+## ==================================================================
+##    Populate files lists for executables, resource files, etc:
+## ==================================================================
+
+#Need RPClib:
+PCODE_EXE_RPC="c2pcode checker runner"
+PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
+
+#FIXME: can't make pcode without Bison - IS THIS STILL TRUE?
+#if test "$BISON" != "no"; then
+	COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
+	if test "$HAVE_RPCLIB" != "0"; then
+		COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
+	else
+		#FIXME: this should be EXE_NO, not PLUGIN_NO
+		PLUGIN_NO="$PLUGIN_NO $PCODE_EXE_RPC"
+	fi
+#fi
+
+    COUNTER=0
+	for FILE in $COMP_EXE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
+		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+	done
+
+	for FILE in $RUNTIME_EXE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+	done
+
+	for FILE in $RUNTIME_RESOURCE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+	done
+
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"	
+	
 AC_MSG_RESULT(done.)
 
 ## ==================================================================
@@ -8619,7 +8673,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.271 2004-12-21 00:20:45 afalout Exp $
+| $Id: configure.in,v 1.272 2004-12-22 11:20:45 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

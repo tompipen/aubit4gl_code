@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.32 2004-12-01 07:21:09 afalout Exp $
+# $Id: Makefile,v 1.33 2004-12-22 11:22:20 afalout Exp $
 #
 
 ROOT    		=../..
@@ -91,20 +91,21 @@ A4GL_USE_DATABASE_STMT=Y
 #Export to environment
 export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS
 
-ALL				=qryfrm${A4GL_FRM_EXT}
+ALL_FORMS		=qryfrm${A4GL_FRM_EXT}
 
 ################
 #Decide what to compile by default
 ifneq "${PG_ESQLC}" "no"
 	ifeq "${HAVE_PGSQL_LIB}" "yes"
-		ALL		+=asql_p${A4GL_EXE_EXT}
+		ALL_PROGS		+=asql_p${A4GL_EXE_EXT}
     endif
 endif
 ifneq "${IFMX_ESQLC}" "no"
-	ALL			+=asql_i${A4GL_EXE_EXT}
+	ALL_PROGS			+=asql_i${A4GL_EXE_EXT}
 endif
 
-ALL			+=asql_g${A4GL_EXE_EXT}
+ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
+
 ################
 #4gl compiler command line to use
 4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
@@ -137,6 +138,9 @@ COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 
 LINKLIBS		=
 #-lUI_TUI
+
+
+ALL				=${ALL_FORMS} ${ALL_PROGS}
 
 .phony: install all clean
 
@@ -188,11 +192,6 @@ asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
-################
-#Target to make form file used in both versions
-#qryfrm.afr.dat: qryfrm.per
-#	A4GL_FORMTYPE=GENERIC; A4GL_PACKER=PACKED; ${ROOT}/bin/fcompile $^
-
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
@@ -219,15 +218,16 @@ pg_%.ao: %.4gl
 ## ==================================================================
 
 install:
-	${CP} ${ALL} ${ROOT}/bin
+	${CP} ${ALL_PROGS} ${ROOT}/bin
+	${CP} ${ALL_FORMS} ${ROOT}/${FORMS_DESTINATION}
 #	ln -s ${ROOT}/bin/asql_p.4ae ${ROOT}/bin/asql
 	${RM} ${AUBITDIR}/bin/asql	
 	ln -s ${AUBITDIR}/bin/asql_g${A4GL_EXE_EXT} ${AUBITDIR}/bin/asql
 	@echo "asql installed."
 
-deinstall:
-	cd ${ROOT}/bin; ${RM} ${ALL} asql
-	@echo "asql de-installed."
+#deinstall:
+#	cd ${ROOT}/bin; ${RM} ${ALL} asql
+#	@echo "asql de-installed."
 
 ## ==================================================================
 ##                     Run from current location

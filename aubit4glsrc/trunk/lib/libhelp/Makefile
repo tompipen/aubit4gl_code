@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2004-12-19 08:12:39 afalout Exp $
+# $Id: Makefile,v 1.23 2004-12-22 11:22:19 afalout Exp $
 #
 
 ROOT    	=../..
@@ -80,9 +80,9 @@ a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 ## ==================================================================
 
 clean:
-	rm -f a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} \
+	${RM} a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} \
 	a4gl_xxhelp.afr.dat helplib.${FGLC_OUTPUT_EXT} helplib.c helplib.ec \
-	helplib.glb helplib.h *.err *.bak debug.out
+	helplib.glb helplib.h *.err *.bak debug.out *.o *.ao *~ *.warn
 
 # =============================== EOF ================================
 

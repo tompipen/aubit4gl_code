@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.6 2004-10-29 14:09:21 afalout Exp $
+# $Id: makefile,v 1.7 2004-12-22 11:22:20 afalout Exp $
 #
 
 ROOT        =../..
@@ -39,7 +39,7 @@ include 	${ROOT}/incl/Makefile-common
 ##                              Settings
 ## ==================================================================
 
-ALL 	=${ROOT}/bin/4glpc ${ROOT}/etc/4glpc.iem
+ALL 	=${ROOT}/bin/4glpc ${ROOT}/${HELP_DESTINATION}/4glpc.hlp
 
 ## ==================================================================
 ##                              Targets
@@ -48,7 +48,7 @@ ALL 	=${ROOT}/bin/4glpc ${ROOT}/etc/4glpc.iem
 all: ${ROOT}/bin/4glc ${ALL}
 	@echo "Default targets (${ALL}) compiled."
 
-${ROOT}/etc/4glpc.iem: helpfile.hlp ${ROOT}/bin/amkmessage
+${ROOT}/${HELP_DESTINATION}/4glpc.hlp: helpfile.msg ${ROOT}/bin/amkmessage
 	${ROOT}/bin/amkmessage $< $@
 
 ${ROOT}/bin/4glpc: 4glpc.ao times.ao readsettings.ao 
@@ -79,5 +79,5 @@ ${ROOT}/bin/4glc:
 ## ==================================================================
 
 clean:
-	${RM} *.ao *.o *.c *.h *.err *.glb ${ALL} *~ *.bak
+	${RM} *.ao *.o *.c *.h *.err *.glb ${ALL} *~ *.bak *.warn
 

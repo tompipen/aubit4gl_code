@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.51 2004-10-20 12:18:51 afalout Exp $
+#	 $Id: a4gl.mk,v 1.52 2004-12-22 11:22:19 afalout Exp $
 
 ##########################################################################
 #
@@ -365,11 +365,9 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 ####################################
 # Rules for compiling message files
 #
-#FIXME: this assumes program will look for .iem extension
 #FIXME: Aubit will not look for help file in executable directory,
 #it will look only in current directory (.) and fail if program is
 #executed from anywhere else!
-#.msg.iem:
 .msg${A4GL_HLP_EXT}:
 	${FAIL_CMPL_HLP}${A4GL_MC} $^ $@
 #because of this make fill always recompile help file, since it can't

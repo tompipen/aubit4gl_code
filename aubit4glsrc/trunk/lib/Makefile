@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-12-19 08:12:38 afalout Exp $
+# $Id: Makefile,v 1.3 2004-12-22 11:22:19 afalout Exp $
 #
 
 ROOT    =..
@@ -498,6 +498,24 @@ libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 
+
+############################
+#LibLogical libraries:
+
+libLOGREPPROC_TXT${SO_EXT}:
+	$(MAKE) -C liblogical/txt/process
+libLOGREPPROC_CSV${SO_EXT}:
+	$(MAKE) -C liblogical/csv/process
+libLOGREPPROC_PDF${SO_EXT}:
+	$(MAKE) -C liblogical/pdf/process
+
+libLOGREP_TXT${SO_EXT}:
+	$(MAKE) -C liblogical/txt/layout
+libLOGREP_CSV${SO_EXT}:
+	$(MAKE) -C liblogical/csv/layout
+libLOGREP_PDF${SO_EXT}:
+	$(MAKE) -C liblogical/pdf/layout
+
 ##############
 #Not libraries - programs:
 aubit-config: ${AUBITCONFIG_DEPS}
@@ -520,7 +538,7 @@ clean.all: clean
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.librpc clean.libroot \
 	clean.other clean.libui clean.libmenu clean.libform clean.libpacker \
-	clean.cint
+	clean.cint clean.liblogical
 
 clean.libroot:
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err \
@@ -569,6 +587,15 @@ clean.libpacker:
 	${MAKE} -C ${LIBPACKERXDR_PATH} clean
 	${MAKE} -C ${LIBPACKERXML_PATH} clean
 
+clean.liblogical:
+	$(MAKE) -C liblogical/txt/process clean
+	$(MAKE) -C liblogical/txt/layout clean
+	$(MAKE) -C liblogical/csv/process clean
+	$(MAKE) -C liblogical/csv/layout clean
+	$(MAKE) -C liblogical/pdf/process clean
+	$(MAKE) -C liblogical/pdf/layout clean
+
+	
 clean.other:
 	${MAKE} -C ${LIBAUBIT4GL_PATH} clean
 	${MAKE} -C ${LIBMSGNATIVE_PATH} clean

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.10 2004-10-08 02:47:21 afalout Exp $
+# $Id: makefile,v 1.11 2004-12-22 11:22:20 afalout Exp $
 #
 
 ROOT    =../..
@@ -46,9 +46,12 @@ export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
 ##                              Options
 ## ==================================================================
 
-ALL=configurator${EXE} helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
+PROGS		=configurator${EXE}
+FORMS		=change${COMP_FORM_EXT} options${COMP_FORM_EXT} values${COMP_FORM_EXT}
+HELP		=helpfile${A4GL_HLP_EXT}
+ALL			=${PROGS} ${FORMS} ${HELP}
 
-.phony: install clean all deinstall run
+.phony: install clean all run
 
 OBJS=config.ao rest.ao dir.o globals.ao
 
@@ -62,28 +65,21 @@ all: ${ALL} install
 config.4gl helpfile.msg: descriptions mk_config 
 	${SH} mk_config > config.4gl
 
-config.ao: config.4gl 
-rest.ao: rest.4gl
-globals.ao: globals.4gl
-
 configurator${EXE}: ${OBJS}
 	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; \
 		export A4GL_UI=CONSOLE; ${FGLPCEXEC} $^ -o $@
-
 show:
 	@echo "A4GL_CURR_PACKER=${A4GL_CURR_PACKER}"
 		
 ## ==================================================================
-##                              Install/deinstall
+##                              Install
 ## ==================================================================
 
 install:
-	cp ${ALL} ${ROOT}/bin
+	cp ${PROGS} ${ROOT}/bin
+	cp ${HELP} ${ROOT}/${HELP_DESTINATION}
+	cp ${FORMS} ${ROOT}/${FORMS_DESTINATION} 
 	@echo "Aubit configurator installed"
-
-deinstall:
-	${RM} $(addprefix ${ROOT}/bin/,${ALL})
-	@echo "Aubit configurator deinstalled"
 
 run: ${ALL}
 #	export A4GL_UI=TUI; ${ROOT}/bin/configurator
