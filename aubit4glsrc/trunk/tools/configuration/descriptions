@@ -388,10 +388,14 @@ MAKE
 A4GL_MAP4GL
 =YES|NO
 A4GL_MARK_SCOPE
-A4GL_MONEY_AS_DECIMAL
+A4GL_MONEY_AS_DECIMAL Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
 =YES|NO
-A4GL_MONEY_AS_MONEY
+	Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
+	you will get (ERROR: Only numeric/decimal have precision/scale argument)
+A4GL_MONEY_AS_MONEY Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
 =YES|NO
+	This will probably fail, since PG EC compiler curently does not know about 
+	MONEY datatype (ERROR: invalid datatype 'money').
 A4GL_MONO UI/TUI Force monochrome output
 =YES|NO
 A4GL_NOCFILE

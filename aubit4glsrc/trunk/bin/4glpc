@@ -29,8 +29,15 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.123 2004-02-10 13:50:02 mikeaubury Exp $
+# $Id: 4glpc,v 1.124 2004-03-08 02:43:21 afalout Exp $
 #
+
+########################################################################
+#this is main Aubit 4gl compiler .4gl files compiler script
+#It is recomended in most situations to use 4glc directly - this scrip
+#will be obsoleted in the near future.
+########################################################################
+
 
 if [ "$1" = "-dirdiff" ]
 then
@@ -77,12 +84,6 @@ then
 	
 	exit
 fi
-
-########################################################################
-#this is main Aubit 4gl compiler .4gl files compiler script
-#It is recomended in most situations to use 4glc directly - this scrip
-#will be obsoleted in the near future.
-########################################################################
 
 #Find out if we are using MinGW C compiler (If on Windows)
 if [ "$COMSPEC" != "" ]; then
@@ -999,14 +1000,13 @@ do
 		########################
 		#Invoke 4GL compiler
 		########################
-		echo $FGLCEXEC $a
 		err_msg=`eval "$FGLCEXEC" "$a"`
 		err_code=$?
 
 		if [ "$err_code" != "0" ]
 		then
 			##############################
-			#4glc returned an error code
+			#$FGLCEXEC returned an error code
             ##############################
 			if [ "$err_code" = "139" ]
 	        then
@@ -1170,7 +1170,7 @@ do
             fi
         else
             ###################################
-			#C file was _NOT_ created by 4glc, but 4glc did _NOT_ return an error code
+			#C file was _NOT_ created by FGLCEXEC, but FGLCEXEC did _NOT_ return an error code
             ###################################
             #is this a 0 length 4gl file?
 			FGLFILESIZE=$(ls -al $fname3 | $AWK '{print $5}')
@@ -1183,9 +1183,6 @@ do
                 fi
 
 				#fakeing c file, to get empty object file from c compiler:
-				#Simplest way is before the 4glc call in 4glpc, 'touch' the required C
-				#file...
-
 				touch $fname.$FGLC_OUTPUT_EXT
 				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
             else
@@ -1295,7 +1292,7 @@ do
 
    ;;
 
-   -noprefix)  #Something for Mike, to be passed to 4glc, NOT to CC
+   -noprefix)  #Something for Mike, to be passed to FGLCEXEC, NOT to CC
 	pass="-N \"$next\""
         FGLCEXEC="$FGLCEXEC $pass"
 	if [ "$A4GLVERBOSE" = "yes" ]; then

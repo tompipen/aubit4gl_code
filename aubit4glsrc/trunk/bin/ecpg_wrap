@@ -1,26 +1,44 @@
+#!/bin/sh
 
+FLAGS="$@"
 
-#Show verbose messages of what this script is doing
-SH_DEBUG=1
-
-
-if test "$SH_DEBUG" = "1"; then
-	echo "In ecpg_wrap : $@"
+if test "$DEBUG" = "ALL"; then
+	#Force verbose mode for debugging when Aubit DEBUG is set
+	FLAGS="$FLAGS -verbose"
+	SCRIPT_DEBUG="1"
 fi
+
+for a in $FLAGS; do
+	case $a in
+			
+        -noecho)    #Don't show any non-critical messages while running
+			NO_ECHO=1
+			;;
+
+        -verbose)   #Show more information about what is going on
+            VERBOSE=1
+			echo "In ecpg_wrap : $FLAGS"
+			;;
+
+	esac
+done
 
 #######################################################################
 #				Set environment 
 #######################################################################
 
 
-if [ "$POSTGRESDIR" = "" ]
-then
-	export POSTGRESDIR=/usr/local/pgsql
+if [ "$POSTGRESDIR" = "" ]; then
+    POSTGRESDIR=`aubit-config POSTGRESDIR 2>/dev/null`
+	if [ "$POSTGRESDIR" = "" ]; then
+		#try default
+		export POSTGRESDIR=/usr/local/pgsql
+	fi
 fi
 
 if [ "$AUBITDIR" = "" ]
 then
-    AUBITDIR=`aubit-config AUBITDIR`
+    AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
 	if [ "$AUBITDIR" = "" ]
 	then
         echo "ERROR: AUBITDIR unknown. Stop."
@@ -65,7 +83,7 @@ while [ "$1" != "" ]
 do
 	a=$1
 
-	if [ "$a" = -t ]
+	if [ "$a" = "-t" ]
 	then
 		ecpg_args="$ecpg_args $a"
 		shift
@@ -73,7 +91,7 @@ do
 	fi
 
 
-	if [ "$a" = -e ]
+	if [ "$a" = "-e" ]
 	then
 		ECPG_ONLY=1
 		shift
@@ -81,7 +99,7 @@ do
 	fi
 
 
-	if [ "$a" = -c ]
+	if [ "$a" = "-c" ]
 	then
 		COMPILE_OBJ=1
 		shift
@@ -142,7 +160,7 @@ do
 		b4go2=./`basename "$c" ".4go"`
 	fi
 
-	if [ $b.$ECPG_EXT = $a -o $b2.$ECPG_EXT = $a ]
+	if [ "$b.$ECPG_EXT" = "$a" -o "$b2.$ECPG_EXT" = "$a" ]
 	then
 		srcs="$srcs $a"
 		shift
@@ -150,7 +168,7 @@ do
 	fi
 
 
-	if [ $bc.c = $a -o $bc2.c = $a ]
+	if [ "$bc.c" = "$a" -o "$bc2.c" = "$a" ]
 	then
 		csrcs="$csrcs $a"
 		shift
@@ -171,7 +189,6 @@ do
 		continue
 	fi
 
-
 	if [ $a = "-o" ]
 	then
 		shift
@@ -189,24 +206,27 @@ do
 	fi
 
 	other_args="$other_args $a"
-	echo "ADDED $a to other_args"
+	if test "$VERBOSE" = "1" ; then
+		echo "ADDED $a to other_args"
+	fi
 
 	shift
 done
 
-if test "$SH_DEBUG" = "1"; then
-	echo "SOURCES : " $srcs
+if test "$VERBOSE" = "1" -a "$srcs" != "" ; then
+	echo "SOURCES : $srcs"
 fi
-
-
-echo "incl_args=$incl_args"
-
+if test "$VERBOSE" = "1" -a "$incl_args" != "" ; then
+	echo "incl_args=$incl_args"
+fi
 
 for a in $srcs
 do
 	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $incl_args $a"
     #-C INFORMIX_SE
-    echo $ECPG_RUN
+	if test "$VERBOSE" = "1"; then
+    	echo $ECPG_RUN
+	fi
     eval $ECPG_RUN
 
     RET=$?
@@ -221,37 +241,75 @@ do
     then
     	GCC_COMPILE="gcc $incl_args $other_args -c $out.c $PG_IFLAGS "
 
-	if test "$OUTPUT_IS_OBJECT" = "1"; then
-	    GCC_COMPILE="$GCC_COMPILE $output"
-	    echo "Compiling $out.c to object $output"
-	else
-	    echo "Compiling $out.c to object"
-	fi
+		if test "$OUTPUT_IS_OBJECT" = "1"; then
+			GCC_COMPILE="$GCC_COMPILE $output"
+			if test "$VERBOSE" = "1"; then
+				echo "Compiling $out.c to object $output"
+			fi
+		else
+			if test "$VERBOSE" = "1"; then
+				echo "Compiling $out.c to object"
+			fi
+		fi
+		
+		if test "$VERBOSE" = "1"; then
+			echo $GCC_COMPILE
+		fi
+		
+		eval $GCC_COMPILE
+		RET=$?
+		
+		if test "$RET" != "0"; then
+			if test "$VERBOSE" = "1"; then
+				echo "Exiting with code $RET"
+			fi
+			exit $RET
+		fi
 
-	echo $GCC_COMPILE
-    	eval $GCC_COMPILE
-    	RET=$?
-	if test "$RET" != "0"; then
-        	exit $RET
-   	fi
     	ofiles="$ofiles $out.o"
     fi
 done
 
 if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
 	if [ "$csrcs" = "" ]; then
-		if test "$SH_DEBUG" = "1"; then
-		echo "COMPILE_OBJ or no ofiles other_args=$other_args"
+		if test "$SCRIPT_DEBUG" = "1"; then 
+			echo "COMPILE_OBJ=$COMPILE_OBJ"
+			echo "ofiles=$ofiles"
+			echo "csrcs=$csrcs"
 		fi
-		exit 0
+
+		if test "$COMPILE_OBJ" = "1"; then
+			#no linking - we are done
+			exit 0
+		else
+			if test "$VERBOSE" = "1"; then
+				echo "Linking only: COMPILE_OBJ or no ofiles other_args=$other_args"
+			fi
+			#This is not an error - do not exit!
+			#exit 1
+		fi
 	fi
 fi
 
-GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl $output $incl_args"
-echo "GCC_RUN="
-echo $GCC_RUN
+
+if test "$COMPILE_OBJ" = "1"; then
+	other_args="-c $other_args"
+else 
+	LFLAGS="-L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm \
+			-L$AUBITDIR/lib -laubit4gl"
+fi
+
+GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args $LFLAGS $output $incl_args"
+if test "$VERBOSE" = "1"; then
+	echo "(3) $GCC_RUN"
+fi
+
 eval $GCC_RUN
 RET=$?
+
+if test "$VERBOSE" = "1"; then
+	echo "Exiting ecpg_wrap with code $RET"
+fi
 exit $RET
 
 

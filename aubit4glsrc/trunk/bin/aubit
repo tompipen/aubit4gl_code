@@ -49,7 +49,6 @@ fi
 
 export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
 
-
 if [ $# -lt 1 -o "$1" = "--help" ]
 then
     echo
@@ -72,16 +71,20 @@ then
 	exit 1
 fi
 
-COMMAND=$1
 
 #FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
 #used and give us bunch of errors in 4glpc. We need to recognize and fix this here
 
+FLAGS=$@
+EXEC=""
+FLAG_CNT=0
+
+for FLAG in $FLAGS; do
    ################
-   case $COMMAND in
+   case $FLAG in
    ################
 
-   *verbose)
+   --verbose)
         echo "AUBITDIR=$AUBITDIR"
         echo "PATH=$PATH"
         echo "DBPATH=$DBPATH"
@@ -90,14 +93,24 @@ COMMAND=$1
    ;;
 
    *)
-        $@
-
+		FLAG_CNT=`(expr $FLAG_CNT + 1) 2>/dev/null`
+		
+		if test "$FLAG_CNT" = "1" -a "$VALGRIND" = "YES" ; then 
+	        EXEC="$EXEC valgrind $FLAG"		
+		else
+	        EXEC="$EXEC $FLAG"
+		fi
    ;;
 
   ####
   esac
   ####
+done
 
+echo "Running: $EXEC"
+eval $EXEC
+RET=$?
+exit $RET
 
 #----------------------------- EOF --------------------------
 

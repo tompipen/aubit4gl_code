@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.7 2004-03-07 21:58:57 mikeaubury Exp $
+# $Id: simple.c,v 1.8 2004-03-08 02:43:41 afalout Exp $
 #*/
 
 
@@ -77,7 +77,7 @@ int curr_colno = 0;
          A4GLSQL_get_columns
          A4GLSQL_get_sqlerrm
          A4GLSQL_get_status
-         A4GLSQL_init_connection
+         A4GLSQL_init_connection_internal
          A4GLSQL_initlib 		** NOT REQUIRED - allow_missing
          A4GLSQL_next_column
          A4GLSQL_read_columns
@@ -278,7 +278,14 @@ return 1;
 char *
 A4GLSQL_dbms_dialect ()
 {
-  return "POSTGRES";
+	/* 
+	WARNING - make sure we use names as per file naming in
+	etc/convertsql/*
+	This string will be used in /lib/libaubit4gl/sqlconvert.c 
+	to form file name
+	*/
+	
+	return "POSTGRESQL";
 }
 
 

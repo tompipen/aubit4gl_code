@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.9 2003-12-04 09:21:32 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.10 2004-03-08 02:43:41 afalout Exp $
 #
 */
 
@@ -206,10 +206,8 @@ A4GL_cv_fnlist (char *source, char *target)
 
   strcpy (buff, acl_getenv ("SQLCNVPATH"));
 
-  /* FIXME: use AUBITDIR here, not hard-coded path */
-
   if (buff[0] == '\0')
-    strcpy (buff, "/opt/aubit4gl/etc/convertsql");
+    sprintf (buff, "%s/etc/convertsql",acl_getenv ("AUBITDIR"));
   len = strlen (buff);
   sprintf (&buff[len], "/%s-%s.cnv", source, target);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.52 2004-03-06 07:57:23 mikeaubury Exp $
+# $Id: compile.c,v 1.53 2004-03-08 02:43:40 afalout Exp $
 #*/
 
 /**
@@ -870,6 +870,9 @@ initArguments (int argc, char *argv[])
       A4GL_debug ("Runnung %s", buff);
 	#endif
     ret = system (buff);
+	#ifdef DEBUG
+      A4GL_debug ("Command returned code %d", ret);
+	#endif
     if (ret)
 	{
 	  printf ("Error compiling %s - check %s.err\n", output_object,
@@ -1684,122 +1687,6 @@ get_default_database (void)
 }
 
 
-/*
-int
-ecpg_wrap(void)
-{
-  char buff[1024];
-
-
-
-SH_DEBUG=0
-
-
-if test "$SH_DEBUG" = "1"; then
-	echo "In ecpg_wrap : $@"
-fi
-
-
-if [ "$POSTGRESDIR" = "" ]
-then
-	export POSTGRESDIR=/usr/local/pgsql
-fi
-
-if [ "$AUBITDIR" = "" ]
-then
-    AUBITDIR=`aubit-config AUBITDIR`
-	if [ "$AUBITDIR" = "" ]
-	then
-        echo "ERROR: AUBITDIR unknown. Stop."
-        exit 5
-    fi
-fi
-
-
-//export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
-//export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
-
-//ECPG_EXT=cpc
-
-while [ "$1" != "" ]
-do
-	a=$1
-
-	if [ "$a" = -t ]
-	then
-		ecpg_args="$ecpg_args $a"
-		shift
-		continue
-	fi
-
-	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I" ]
-	then
-		ecpg_args="$ecpg_args $a"
-		shift
-		a=$1
-		ecpg_args="$ecpg_args $a"
-		shift
-		continue
-	fi
-
-	d=`dirname $a`
-	if [ "$d" != "" ]
-	then
-		c=$d/`basename "$a" `
-		b=$d/`basename "$c" ".$ECPG_EXT"`
-	else
-		c=`basename "$a" `
-		b=`basename "$c" ".$ECPG_EXT"`
-	fi
-
-	if [ $b.$ECPG_EXT = $a ]
-
-	then
-		srcs="$srcs $a"
-		shift
-		continue
-	fi
-
-	other_args="$other_args $a"
-
-	shift
-done
-
-if test "$SH_DEBUG" = "1"; then
-	echo "SOURCES : " $srcs
-fi
-
-for a in $srcs
-do
-	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a"
-    #-C INFORMIX_SE
-    echo $ECPG_RUN
-    eval $ECPG_RUN
-    RET=$?
-    if test "$RET" != "0"; then
-        exit $RET
-    fi
-	out=`basename $a ".$ECPG_EXT"`
-	cfiles="$cfiles $out.c"
-done
-
-GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes"
-echo $GCC_RUN
-eval $GCC_RUN
-RET=$?
-exit $RET
-
-
-
-    //"$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a"
-//	sprintf (buff,"%s/bin/ecpg -C INFORMIX -t %s %s",$POSTGRESDIR,$ecpg_args,$a);
-    //#-C INFORMIX_SE
-
-    return 1;
-
-}
-
-*/
-
+//TODO - incorporate ecpg_wrap script here as a function
 
 /* ==================================== EOF =============================== */
