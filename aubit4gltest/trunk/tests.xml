@@ -2581,22 +2581,22 @@
   <NUMBER>913</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[2] with W after a DATABASE in a DB without transactions</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>914</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[3] after agregate functions with null values</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>915</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[4] with more values on select list then on INTO</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>916</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[5] with a float to decimal conversion used</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>917</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[6] non ANSI update</DESCRIPTION>
