@@ -20,6 +20,14 @@ MAIN
 	LOAD FROM "unlfile.unl" INSERT INTO xpto_tmp
 	SELECT * INTO r.* FROM xpto_tmp
 	DISPLAY r.*
+	
+#             unload to pr_filename delimiter pr_delimiter
+#                 select * from t_unload
+
+	
+	
+	
+	
 	DROP TABLE xpto_tmp
 END MAIN
 

@@ -3,6 +3,645 @@
 #							Functions
 ##############################################################################
 
+######################################################
+function db_features_doc () {
+	
+	echo "Preparing catalogue of db features, please wait..."
+	TEST_WEBCVS_URL="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest"
+	FEATURES_STATUS_TMP="/tmp/features_status.tmp"
+	TEST_FEATURES_TMP="/tmp/tests_features.tmp"
+	OUT_TMP=out.tmp
+	EXPANDED_CONFIDENCE=1
+	EXTRACT_FEATURE_COMMENTS=1
+	HTML=1
+	if test "$HTML" = "1"; then
+		FINAL_OUT="./docs/support_status.html"
+	else
+		FINAL_OUT="./docs/support_status.txt"
+	fi
+	LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
+	if test "$LAST_RESULTS" = ""; then 
+		echo "ERROR: no results files (results_HOSTNAME_DATE.unl) found"
+		exit 1
+	else
+		if test ! -f $LAST_RESULTS ; then
+			echo "ERROR: results file ($LAST_RESULTS) missing"
+			exit 2
+		fi
+	fi
+	
+	if test ! -f $CATALOGUE_UNL_FILE ; then
+		echo "ERROR: catalogue file ($CATALOGUE_UNL_FILE) missing"
+		exit 2
+	fi
+	U="_"
+	TEST_DATE=`echo "$LAST_RESULTS" | sed -e "s/results_$HOSTNAME$U//" | sed -e 's/_/ /' | awk '{print $1}'`
+	TEST_TIME=`echo "$LAST_RESULTS" | sed -e "s/results_$HOSTNAME$U//" | sed -e 's/_/ /' | awk '{print $2}' | sed -e 's/.unl//'`
+	U="_"
+	TEST_RUN_UNL="test_run_$HOSTNAME$U$TEST_DATE$U$TEST_TIME.unl"
+	if test ! -f $TEST_RUN_UNL ; then
+		echo "ERROR: $TEST_RUN_UNL missing"
+		exit 5
+	else
+		RESULTS_HOST=`cut --fields=2 --delimiter="|" $TEST_RUN_UNL`
+		#RESULTS_USER=`cut --fields=3 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_PLATFORM=`cut --fields=4 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_OSNAME=`cut --fields=5 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_OS_VER=`cut --fields=6 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_FLAGS=`cut --fields=7 --delimiter="|" $TEST_RUN_UNL`
+		
+		RESULTS_AUBIT_VER=`cut --fields=8 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_AUBIT_BUILD=`cut --fields=9 --delimiter="|" $TEST_RUN_UNL`
+		#Only when non-Aubit 4gl compiler is used:
+		RESULTS_COMP_VER=`cut --fields=10 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_TOTAL_TIME=`cut --fields=11 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_C_COMP_VER=`cut --fields=12 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_ESQL_VER=`cut --fields=13 --delimiter="|" $TEST_RUN_UNL`
+#temp. override:
+#RESULTS_ESQL_VER=`$POSTGRES_BIN/ecpg --version`				
+
+		RESULTS_DB_VER=`cut --fields=14 --delimiter="|" $TEST_RUN_UNL`
+#TEmp overide:
+#RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
+
+		#RESULTS_MAKE_VER=`cut --fields=15 --delimiter="|" $TEST_RUN_UNL`
+		#RESULTS_SH_VER=`cut --fields=16 --delimiter="|" $TEST_RUN_UNL`
+		RESULTS_LOG_TEXT=`cut --fields=17 --delimiter="|" $TEST_RUN_UNL`				
+	fi
+	#Create list of features
+	cat etc/db_features.conf | grep -v "^#" | cut --fields=5,20,21 --delimiter=" " > $FEATURES_STATUS_TMP
+	#create list of tests using features
+	cat $CATALOGUE_UNL_FILE | cut --fields=2,41 --delimiter="|" > $TEST_FEATURES_TMP
+	rm -f $OUT_TMP $FINAL_OUT
+	
+	FEATURES_STATUS=`cat $FEATURES_STATUS_TMP`
+	CNT=0; P_CNT=0;S_CNT=0;D_CNT=0;I_CNT=0;U_CNT=0;G_CNT=0;A_CNT=0;
+	for col in $FEATURES_STATUS ; do
+		let CNT=CNT+1
+		#echo "$CNT = $col"
+		case $CNT in
+			1) STATUS="$col"
+				case $STATUS in
+				P) STATUS_NAME="POSSIBLE"; let P_CNT=P_CNT+1;;
+				S) STATUS_NAME="SUPPORTED"; let S_CNT=S_CNT+1;;
+				D) STATUS_NAME="DEPENDS"; let D_CNT=D_CNT+1;;
+				I) STATUS_NAME="IMPOSSIBLE"; let I_CNT=I_CNT+1;;
+				G) STATUS_NAME="IGNORED"; let G_CNT=G_CNT+1;;
+				A) STATUS_NAME="PARTIAL"; let A_CNT=A_CNT+1;;
+				*) echo "ERROR: STATUS=$STATUS"; exit 5;;
+				esac
+				;;
+			2) TYPE="$col"
+				case $TYPE in
+				D) TYPE_NAME="DDL";; 
+				S) TYPE_NAME="SQL";; 
+				C) TYPE_NAME="Conectivity";; 
+				P) TYPE_NAME="Procedure_&_trigger_(server_side)";; 
+				F) TYPE_NAME="Functions_(server_side)";;
+				X) TYPE_NAME="Mixed";;
+				*) echo "ERROR: TYPE=$TYPE"; exit 5;;
+				esac
+				;;
+			3) LABEL="$col"; CNT=0; 
+				TEST_CNT=`grep --count --word-regexp $LABEL $TEST_FEATURES_TMP`
+				TEST_LIST=`grep --word-regexp $LABEL $TEST_FEATURES_TMP | cut --fields=1 --delimiter="|" | tr "\n" "_"`
+				if test "$TEST_CNT" = "0"; then 
+					STATUS_NAME="UNTESTED"
+					TEST_LIST="NONE"
+					let U_CNT=U_CNT+1
+					#Fixme; reduce current stat counter by one
+				fi
+				echo "$LABEL|$TYPE_NAME|$STATUS_NAME|$TEST_CNT|$TEST_LIST" >> $OUT_TMP
+				;;
+		esac
+	done
+	if test "$HTML" = "1"; then 
+		echo "<html><head>"  >> $FINAL_OUT
+		echo "<meta http-equiv='Content-Language' content='en-us'>"  >> $FINAL_OUT
+		echo "<meta http-equiv='Content-Type' content='text/html; charset=windows-1252'>"  >> $FINAL_OUT
+		TITLE="Aubit 4GL: SQL & database features support and usage status"
+		echo "<title>$TITLE</title></head><body>"  >> $FINAL_OUT
+		echo "<h1 align='center'>$TITLE</h1><BR>"  >> $FINAL_OUT
+		echo "Links: <br>" >> $FINAL_OUT
+		echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/etc/db_features.conf?view=markup">SQL and database features status configuration file (also contains status descriptions)</a><br>"  >> $FINAL_OUT
+		echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/docs/catalogue.unl?view=markup">Tests catalogue (.unl)</a><br>"  >> $FINAL_OUT
+		echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/docs/catalogue.txt?view=markup">Tests catalogue (.txt)</a><br>"  >> $FINAL_OUT				
+		echo "<a href="http://developer.mimer.se/validator/">Mimer SQL Validator</a><br>"  >> $FINAL_OUT
+		echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php">Database Server Feature Comparisons</a><br>"  >> $FINAL_OUT
+		echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php?res_id=450">Database Server Feature Comparison: PostgreSQL-7.3.3, Informix-7.24UC5</a><br>"  >> $FINAL_OUT				
+		echo "<br><br>" >> $FINAL_OUT
+		#echo "Testing conditions:<br>" >> $FINAL_OUT
+		
+		echo "<div align="left">" >> $FINAL_OUT
+		echo "  <table border="1" id="table2">" >> $FINAL_OUT
+		echo "  <tr><td colspan='2' bgcolor='#C0C0C0'><p align='center'>Testing conditions:</td></tr>"  >> $FINAL_OUT				
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Host name</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_HOST</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Platform</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_PLATFORM</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>OS name</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_OSNAME</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>OS version</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_OS_VER</td>" >> $FINAL_OUT
+		#RESULTS_USER
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Test flags (expanded)</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_FLAGS</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Aubit 4GL compiler version (major.minor)</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_AUBIT_VER</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Aubit 4GL compiler build</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_AUBIT_BUILD</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		#Only when non-Aubit 4gl compiler is used
+		if test "$RESULTS_COMP_VER" != ""; then
+			echo "    <tr>" >> $FINAL_OUT
+			echo "      <td>Non-Aubit 4GL compiler version</td>" >> $FINAL_OUT
+			echo "      <td>$RESULTS_COMP_VER</td>" >> $FINAL_OUT
+			echo "    </tr>" >> $FINAL_OUT
+		fi
+		#Disabled - huge number!
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Tests total run time (seconds)</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_TOTAL_TIME</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>C compiler version (GCC)</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_C_COMP_VER</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Used ESQL/C compiler version</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_ESQL_VER</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>Used database version</td>" >> $FINAL_OUT
+		echo "      <td>$RESULTS_DB_VER</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		#RESULTS_MAKE_VER
+		#RESULTS_SH_VER
+		if test "$RESULTS_LOG_TEXT" != ""; then
+			echo "    <tr>" >> $FINAL_OUT
+			echo "      <td>Teest custom log text</td>" >> $FINAL_OUT
+			echo "      <td>$RESULTS_LOG_TEXT</td>" >> $FINAL_OUT
+			echo "    </tr>" >> $FINAL_OUT
+		fi
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>This report created on</td>" >> $FINAL_OUT
+		echo "      <td>`date`</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		
+		echo "  </table>" >> $FINAL_OUT
+		echo "</div>" >> $FINAL_OUT
+		echo "<br><br>" >> $FINAL_OUT
+
+
+
+		echo "<div align="left">" >> $FINAL_OUT
+		echo "  <table border="1" id="table2">" >> $FINAL_OUT
+		echo "  <tr><td colspan='2' bgcolor='#C0C0C0'><p align='center'>Legend:</td></tr>"  >> $FINAL_OUT				
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>(n)</td>" >> $FINAL_OUT
+		echo "      <td>for preceding test number, as follows:</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td><font color='#FF0000'>E</font></td>" >> $FINAL_OUT
+		echo "      <td>Test does not perform any run-time Error checking</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>S</td>" >> $FINAL_OUT
+		echo "      <td>test was Skipped</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td><font color='#FF0000'>C</font></td>" >> $FINAL_OUT
+		echo "      <td>test is Compile only - it was not executed</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		
+		if test "$EXPANDED_CONFIDENCE" = "1"; then
+			echo "    <tr>" >> $FINAL_OUT
+			echo "      <td>x</td>" >> $FINAL_OUT
+			echo "      <td>Confidence estimate for this test (1-5)</td>" >> $FINAL_OUT
+			echo "    </tr>" >> $FINAL_OUT
+		fi
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>&nbsp;</td>" >> $FINAL_OUT
+		echo "      <td>Other symbols:</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+		if test "$EXPANDED_CONFIDENCE" = "1"; then
+			echo "    <tr>" >> $FINAL_OUT
+			echo "      <td>[<font color="#0000FF">C</font>/A/A/P]</td>" >> $FINAL_OUT
+			echo "      <td>confidence that feature works (0-5) <font color="#0000FF">COMBINED</font>/AVERAGE/ABSOLUTE/PROPORTIONAL</td>" >> $FINAL_OUT
+			echo "    </tr>" >> $FINAL_OUT
+		else
+			echo "    <tr>" >> $FINAL_OUT
+			echo "      <td>[C]</td>" >> $FINAL_OUT
+			echo "      <td>confidence that feature works (0-5) COMBINED</td>" >> $FINAL_OUT
+			echo "    </tr>" >> $FINAL_OUT
+		fi
+		echo "    <tr>" >> $FINAL_OUT
+		echo "      <td>...</td>" >> $FINAL_OUT
+		echo "      <td>Indicates that not all test numbers belonging to that group are listed (max=5)</td>" >> $FINAL_OUT
+		echo "    </tr>" >> $FINAL_OUT
+
+		echo "  </table>" >> $FINAL_OUT
+		echo "</div>" >> $FINAL_OUT
+		echo "<br><br>" >> $FINAL_OUT
+		
+	else
+		echo "RESULTS_HOST $RESULTS_HOST" >> $FINAL_OUT
+		echo "RESULTS_PLATFORM $RESULTS_PLATFORM" >> $FINAL_OUT
+		echo "RESULTS_OSNAME $RESULTS_OSNAME" >> $FINAL_OUT
+		echo "RESULTS_OS_VER $RESULTS_OS_VER" >> $FINAL_OUT				
+		#RESULTS_USER				
+		echo "RESULTS_FLAGS $RESULTS_FLAGS" >> $FINAL_OUT
+		echo "RESULTS_AUBIT_VER $RESULTS_AUBIT_VER" >> $FINAL_OUT
+		echo "RESULTS_AUBIT_BUILD $RESULTS_AUBIT_BUILD" >> $FINAL_OUT
+		#Only when non-Aubit 4gl compiler is used
+		if test "$RESULTS_COMP_VER" != ""; then
+			echo "RESULTS_COMP_VER $RESULTS_COMP_VER" >> $FINAL_OUT
+		fi
+		#Disabled - huge number!
+		#echo "RESULTS_TOTAL_TIME $RESULTS_TOTAL_TIME" >> $FINAL_OUT
+		echo "RESULTS_C_COMP_VER $RESULTS_C_COMP_VER" >> $FINAL_OUT
+		echo "RESULTS_ESQL_VER $RESULTS_ESQL_VER" >> $FINAL_OUT
+		echo "RESULTS_DB_VER $RESULTS_DB_VER" >> $FINAL_OUT				
+		#RESULTS_MAKE_VER
+		#RESULTS_SH_VER
+		if test "$RESULTS_LOG_TEXT" != ""; then 
+			echo "RESULTS_LOG_TEXT $RESULTS_LOG_TEXT" >> $FINAL_OUT
+		fi
+	
+	fi
+	
+	STAT_LIST="SUPPORTED PARTIAL DEPENDS IGNORED POSSIBLE IMPOSSIBLE UNTESTED"
+	#STAT_LIST="UNTESTED"
+	for STAT in $STAT_LIST; do
+		case $STAT in
+			POSSIBLE) STAT_CNT="$P_CNT";;
+			SUPPORTED) STAT_CNT="$S_CNT";;
+			DEPENDS) STAT_CNT="$D_CNT";;
+			IMPOSSIBLE) STAT_CNT="$I_CNT";;
+			IGNORED) STAT_CNT="$G_CNT";;
+			UNTESTED) STAT_CNT="$U_CNT";;
+			PARTIAL)  STAT_CNT="$A_CNT";;
+			*) echo "ERROR: STAT=$STAT"; exit 5;;
+		esac
+		echo "Creating status list for $STAT group ($STAT_CNT), please wait..."
+		if test "$HTML" = "1"; then			
+			echo "<div align='left'>"  >> $FINAL_OUT
+			echo "  <table border='1' id='table$STAT'>"  >> $FINAL_OUT
+			echo "  <tr><td colspan='8' bgcolor='#C0C0C0'><p align='center'>$STAT ($STAT_CNT)</td></tr>"  >> $FINAL_OUT
+			echo "<tr>" >> $FINAL_OUT
+			echo "  <td>Feature</td>" >> $FINAL_OUT
+			echo "  <td>Type</td>" >> $FINAL_OUT
+			#if test "$LAST_RESULTS" = ""; then
+				echo "  <td>Used in<br>tests</td>" >> $FINAL_OUT
+				echo "  <td>Tests USING feature</td>" >> $FINAL_OUT
+			#else
+				echo "  <td>Working<br>tests</td>" >> $FINAL_OUT
+				echo "  <td>WORKING tests using feature</td>" >> $FINAL_OUT
+			#fi
+			echo "  <td>Feature comments</td>" >> $FINAL_OUT
+			echo "  <td>Enter your comments here:</td>" >> $FINAL_OUT
+			echo "</tr>" >> $FINAL_OUT
+			
+		else
+			echo "-------------- $STAT ($STAT_CNT) ------------------" >> $FINAL_OUT				
+		fi 
+		
+		THIS_STAT_LIST=`grep "|$STAT|" $OUT_TMP | tr "|" " "`
+		CNT=0
+		for col in $THIS_STAT_LIST; do
+			let CNT=CNT+1
+			case $CNT in
+			1) LABEL="$col";;
+			2) TYPE_NAME="$col";;
+			3);;#STATUS_NAME
+			4) TEST_CNT="$col";;
+			5) TEST_LIST="$col"; CNT=0
+				if test "$LABEL" = "NONE"; then
+					continue
+				fi
+			 	echo -n "$LABEL "
+				TEST_LIST=`echo $TEST_LIST | tr "_" " "`
+				#here we have the list of tests that use that feature
+				#now we have to check if this tests really worked 
+				#for this database:
+				TEST_WORKING_CNT=0
+				TEST_FAILED_CNT=0
+				TEST_WORKING_LIST=""
+				TEST_FAILED_LIST=""
+				if test "$LAST_RESULTS" = ""; then 
+					TEST_WORKING_CNT="0"
+					TEST_WORKING_LIST="?"
+				else
+					for AN_TEST in $TEST_LIST; do
+						x=`grep "|$AN_TEST|" $LAST_RESULTS`
+							#1: timestamp char (19),   -- 22-10-2004_01-34-24
+							#2: test_no smallint,
+							#3: result smallint,
+							#4: skip_reason char (20),
+							#5: expect_fail smallint,
+							#6: test_version decimal,
+
+						RESULT=`echo $x | cut --fields=3 --delimiter="|"`
+						if test "$RESULT" = "1"; then
+							let TEST_WORKING_CNT=TEST_WORKING_CNT+1
+							TEST_WORKING_LIST="$TEST_WORKING_LIST $AN_TEST"
+						else
+							let TEST_FAILED_CNT=TEST_FAILED_CNT+1
+							TEST_FAILED_LIST="$TEST_FAILED_LIST $AN_TEST"
+						fi
+					done
+				fi
+				if test "$TEST_WORKING_CNT" -gt "0"; then
+					#get confidence for each (working) test,
+					#reorder list to show tests with high confidence first (tests
+					#that are not compile-only, and tests that do
+					#perform run-time error checking
+					#DBG_CONFID=1
+					CNT2=0;
+					LIST_0="";LIST_2="";LIST_3="";LIST_4="";LIST_5="";
+					CNT_0=0;CNT_2=0;CNT_3=0;CNT_4=0;CNT_5=0;SUM_CONF=0
+					for t in $TEST_WORKING_LIST; do
+						let CNT2=CNT2+1
+						make_test_attrib_label "$t" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+						if test "$DBG_CONFID" = "1"; then
+							echo "Test=$t Confidence=$THIS_TEST_CONFIDENCE"
+						fi
+						case $THIS_TEST_CONFIDENCE in
+							0) LIST_0="$LIST_0 $t"; let CNT_0=CNT_0+1;;
+							2) LIST_2="$LIST_2 $t"; let CNT_2=CNT_2+1;;
+							3) LIST_3="$LIST_3 $t"; let CNT_3=CNT_3+1;;
+							xx4) LIST_4="$LIST_4 $t"; let CNT_4=CNT_4+1;;
+							5) LIST_5="$LIST_5 $t"; let CNT_5=CNT_5+1;;
+							*) echo "ERROR: THIS_TEST_CONFIDENCE=$THIS_TEST_CONFIDENCE"; exit 3;;
+						esac
+						let SUM_CONF=SUM_CONF+THIS_TEST_CONFIDENCE
+					done
+					#After all tests for this feature are rated,
+					#calculate confidence in this feature:
+					#BS-this fives num of all tests - let SUM_CONF=CNT_0+CNT_2+CNT_3+CNT_4+CNT_5
+					if test "$DBG_CONFID" = "1"; then
+						echo "Feature conf. counters: 0=$CNT_0 2=$CNT_2 3=$CNT_3 4=$CNT_4 5=$CNT_5"
+						echo "SUM=$SUM_CONF"
+					fi
+					#---------------------------------------------
+					#Percentage:
+					#nonsence - we want average, not percentage
+					#percent of what?
+					#PERC_CONF=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $SUM_CONF $TEST_WORKING_CNT`
+					#Reduce to 1-5 range:
+					#let FEATURE_CONFIDENCE_PERCENTAGE=($PERC_CONF/2)/10
+					#if test "$DBG_CONFID" = "1"; then
+					#	echo "PERC_CONF=(SUM_CONF*100/TEST_WORKING_CNT)"
+					#	echo "$PERC_CONF=($SUM_CONF*100/$TEST_WORKING_CNT)"
+					#	echo "Percent: PERC_CONF=$PERC_CONF FEATURE_CONFIDENCE_PERCENTAGE=$FEATURE_CONFIDENCE_PERCENTAGE"
+					#fi
+					
+					#---------------------------------------------
+					#Average score:
+					AVG_CONF=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X/$Y);print "$Z";' $SUM_CONF $TEST_WORKING_CNT`
+					#AVG_CONF=SUM_CONF/TEST_WORKING_CNT
+					FEATURE_CONFIDENCE_AVERAGE=$AVG_CONF
+					if test "$DBG_CONFID" = "1"; then
+						echo "AVG_CONF = SUM_CONF / TEST_WORKING_CNT ($AVG_CONF=$SUM_CONF/$TEST_WORKING_CNT)"
+						echo "Average: AVG_CONF=$AVG_CONF FEATURE_CONFIDENCE_AVERAGE=$FEATURE_CONFIDENCE_AVERAGE"
+					fi
+					#---------------------------------------------
+					#Absolute
+					FEATURE_CONFIDENCE_ABSOLUTE=0
+					if test "$CNT_2" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=2; fi
+					if test "$CNT_3" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=3; fi
+					if test "$CNT_4" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=4; fi
+					if test "$CNT_5" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=5; fi
+					if test "$DBG_CONFID" = "1"; then
+						echo "FEATURE_CONFIDENCE_ABSOLUTE=$FEATURE_CONFIDENCE_ABSOLUTE"
+					fi
+					#---------------------------------------------
+					#Proportional-assign value based on number of tests working
+					if test "$TEST_WORKING_CNT" -gt "5"; then 
+						FEATURE_CONFIDENCE_PROPORTIONAL="5"
+					else
+						FEATURE_CONFIDENCE_PROPORTIONAL="$TEST_WORKING_CNT"
+					fi
+					if test "$DBG_CONFID" = "1"; then
+						echo "FEATURE_CONFIDENCE_PROPORTIONAL=$FEATURE_CONFIDENCE_PROPORTIONAL"
+					fi
+					#TODO: assign value to NUMBER of tests in each confidence group;
+					#so that if we have 10 tests in group 2, and one in 5, 
+					#we don't get too high score
+					
+					#---------------------------------------------
+					#Combined - calculate median from average, absolute and proportional
+					let FEATURE_CONFIDENCE_COMBINED=(FEATURE_CONFIDENCE_AVERAGE+FEATURE_CONFIDENCE_ABSOLUTE+FEATURE_CONFIDENCE_PROPORTIONAL)/3
+					if test "$DBG_CONFID" = "1"; then
+						echo "FEATURE_CONFIDENCE_COMBINED=(FEATURE_CONFIDENCE_AVERAGE+FEATURE_CONFIDENCE_ABSOLUTE+FEATURE_CONFIDENCE_PROPORTIONAL)/3"
+						echo "$FEATURE_CONFIDENCE_COMBINED=($FEATURE_CONFIDENCE_AVERAGE+$FEATURE_CONFIDENCE_ABSOLUTE+$FEATURE_CONFIDENCE_PROPORTIONAL)/3"								
+						echo "FEATURE_CONFIDENCE_COMBINED=$FEATURE_CONFIDENCE_COMBINED"
+						exit
+					fi
+					#Reorder list, high confidence first
+					TEST_WORKING_LIST="$LIST_5 $LIST_4 $LIST_3 $LIST_2 $LIST_0"
+				else
+					FEATURE_CONFIDENCE=0
+					FEATURE_CONFIDENCE_COMBINED=0
+				fi
+				
+				if test "$TEST_WORKING_CNT" -gt "5"; then
+					CNT2=0; REDUCED_WORKING_TEST_LIST=""
+					for t in $TEST_WORKING_LIST; do
+						let CNT2=CNT2+1
+						REDUCED_WORKING_TEST_LIST="$REDUCED_WORKING_TEST_LIST $t"
+						if test "$CNT2" = "5"; then
+							break
+						fi
+					done
+					TEST_WORKING_LIST="$REDUCED_WORKING_TEST_LIST ..."
+				fi
+				if test "$TEST_CNT" -gt "5"; then 
+					CNT2=0; REDUCED_TEST_LIST=""
+					for t in $TEST_LIST; do
+						let CNT2=CNT2+1
+						REDUCED_TEST_LIST="$REDUCED_TEST_LIST $t"
+						if test "$CNT2" = "5"; then
+							break
+						fi
+					done
+					TEST_LIST="$REDUCED_TEST_LIST ..."
+				fi
+				
+				if test "$EXTRACT_FEATURE_COMMENTS" = "1"; then
+					func_extract_feature_comments "$LABEL"
+				fi
+				
+				TYPE_NAME=`echo $TYPE_NAME | tr "_" " "`
+				
+				if test "$HTML" = "1"; then
+					TMP=$TEST_LIST
+					TEST_LIST=""
+					for test_no in $TMP; do
+						if test "$test_no" != "..." -a "$test_no" != "NONE"; then
+							make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+							TEST_LIST="$TEST_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
+						else
+							TEST_LIST="$TEST_LIST $test_no"
+						fi
+					done
+					if test "$TEST_WORKING_LIST" != ""; then
+						TMP=$TEST_WORKING_LIST
+						TEST_WORKING_LIST=""
+						for test_no in $TMP; do
+							if test "$test_no" != "..." -a "$test_no" != "NONE"; then
+								make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+								TEST_WORKING_LIST="$TEST_WORKING_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
+							else
+								TEST_WORKING_LIST="$TEST_WORKING_LIST $test_no"										
+							fi
+						done
+					else
+						if test "$STAT" = "SUPPORTED"; then
+							TEST_WORKING_LIST="<font color='#FF0000'>NONE</font>"
+						else
+							TEST_WORKING_LIST="NONE"
+						fi
+					fi
+				
+					LABEL_LEN=`echo "$LABEL" | wc --chars`
+					if test "$LABEL_LEN" -gt "20"; then
+						LABEL_1=`echo "$LABEL" | cut --fields=1,2 --delimiter="_"`
+						LABEL_2=`echo "$LABEL" | cut --fields=3,4,5,6,7,8,9 --delimiter="_"`
+						LABEL="${LABEL_1}_...<br>..._${LABEL_2}"
+					fi
+					
+					echo "<tr>" >> $FINAL_OUT
+					echo "  <td>$LABEL</td>" >> $FINAL_OUT
+					echo "  <td>$TYPE_NAME</td>" >> $FINAL_OUT
+					echo "  <td>$TEST_CNT</td>" >> $FINAL_OUT
+					echo "  <td>$TEST_LIST</td>" >> $FINAL_OUT
+					if test "$EXPANDED_CONFIDENCE" = "1" -a "$TEST_WORKING_CNT" -gt "0" ; then
+						echo "  <td>$TEST_WORKING_CNT [<font color="#0000FF">$FEATURE_CONFIDENCE_COMBINED</font>/$FEATURE_CONFIDENCE_AVERAGE/$FEATURE_CONFIDENCE_ABSOLUTE/$FEATURE_CONFIDENCE_PROPORTIONAL]</td>" >> $FINAL_OUT
+					else
+						if test "$TEST_WORKING_CNT" -gt "0"; then
+							echo "  <td>$TEST_WORKING_CNT [<font color="#0000FF">$FEATURE_CONFIDENCE_COMBINED</font>]</td>" >> $FINAL_OUT
+						else
+							echo "  <td>$TEST_WORKING_CNT</td>" >> $FINAL_OUT
+						fi
+					fi
+					echo "  <td>$TEST_WORKING_LIST</td>" >> $FINAL_OUT
+					if test "$THE_COMMENT" = ""; then 
+						THE_COMMENT="&nbsp;"
+					fi
+					echo "  <td>$THE_COMMENT</td>" >> $FINAL_OUT
+					#Empty column to allow manual adding/editing of HTML table
+					#to add comments
+					echo "  <td>&nbsp;</td>" >> $FINAL_OUT
+					echo "</tr>" >> $FINAL_OUT
+				else
+					#echo "$LABEL	($TYPE_NAME) $TEST_CNT: $TEST_LIST"  >> $FINAL_OUT
+					#x=`echo -n "$LABEL";echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST"`
+					#echo -n "$LABEL";echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST"
+					#printf "%s" "$LABEL"; printf "\t\t\t(%s) %s: %s\n" "$TYPE_NAME" "$TEST_CNT" "$TEST_LIST"
+					#echo $x >> $FINAL_OUT
+					#echo -n "$LABEL" >> $FINAL_OUT
+					#echo -e "\t\t\t($TYPE_NAME) $TEST_CNT: $TEST_LIST" >> $FINAL_OUT
+					printf "%s\n" "$LABEL" >> $FINAL_OUT
+					printf "\t(%s) %s: %s\n" "$TYPE_NAME" "$TEST_WORKING_CNT" "$TEST_WORKING_LIST" >> $FINAL_OUT
+				fi
+				;;
+			*) echo "ERROR: CNT=$CNT"; exit 5
+				;;
+			esac
+		done
+		if test "$HTML" = "1"; then		
+			echo "  </table>"  >> $FINAL_OUT
+			echo "</div><br><br>"  >> $FINAL_OUT
+		else
+			echo ""	 >> $FINAL_OUT
+			echo ""	 >> $FINAL_OUT
+		fi
+		#add newline because of featur names being echo'd without newline
+		echo " "
+	done
+	#cat $FINAL_OUT
+	if test "$HTML" = "1"; then
+		echo "</body></html>"  >> $FINAL_OUT
+	fi
+	echo "Done: see $FINAL_OUT"
+	
+	rm -f "$FEATURES_STATUS_TMP" "$TEST_FEATURES_TMP"
+	
+}
+
+
+######################################################
+function func_extract_feature_comments () {
+#WARNING - extracting comments from config file takes time
+#Not recomended for anything but features support status
+#catalog creation and similar - not while running
+#ordinary tests
+
+#Line must NOT start with a #, then it will have none or more 
+#alpha and numbers, then feature name, followed by none or more 
+#spaces before and of the line
+#DBG_THIS=1
+#FEATURE_NAME="CLUSTER_INDEX"
+FEATURE_NAME="$1"
+	if test "$DBG_THIS" = "1"; then	
+		echo "Extracting comment for $FEATURE_NAME"
+	fi
+
+	REGEX="^[^#][[:alnum:][:space:]]*$FEATURE_NAME[[:space:]]*\$"
+	#get 10 lines after the current feature identifier
+	TMP1=`grep -E --word-regexp -A10 -e "$REGEX" etc/db_features.conf`
+	if test "$DBG_THIS" = "1"; then 
+		echo "1:--------------------"
+		echo "$TMP1"
+		#exit
+	fi
+	#Number ALL lines, and then take only lines that did NOT start with a comment
+	#then isolate first two, then get the second line
+	#NOTE: must be done on one line, so we dont loose newline
+	TMP2=`echo "$TMP1" | grep -n "" | grep -v ":#"  | head -n 2 | tail -n 1`
+	if test "$DBG_THIS" = "1"; then
+		echo "2:--------------------"
+		echo "$TMP2"
+	fi
+	#Get the line number of that line
+	NEXT_FEATURE_LINE=`echo $TMP2 | awk '{print $1}' | tr ":" " "`
+	if test "$DBG_THIS" = "1"; then
+		echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
+	fi
+	let NEXT_FEATURE_LINE=NEXT_FEATURE_LINE-1
+	if test "$DBG_THIS" = "1"; then	
+		echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
+	fi
+	#Now get that number of lines - cant use data we allready have in the 
+	#variable TMP1 because they lost newline
+	#Take ony lines that begin with the comment
+	#and get rid of comment symbol, filter out lines starting with 
+	#3 hashes (###) because they contain line field numbers
+	#NOTE: must be done on one line
+	THE_COMMENT=`grep --word-regexp -A$NEXT_FEATURE_LINE "$REGEX" etc/db_features.conf | grep  "^#" | sed 's/^#//' | grep -v "^###"`
+	if test "$DBG_THIS" = "1"; then
+		if test "$THE_COMMENT" != ""; then 
+			echo "$FEATURE_NAME comment: $THE_COMMENT"
+		fi
+		exit
+	fi
+}
+
 
 function filter_out_white_listed () { 
 #Add configuration specific expect-to-fail list tho the 
@@ -236,7 +875,8 @@ fi
 		#Initialise counters:
 		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0; DOTS_CNT=0
 		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
-		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0; IGNORED_CNT=0
+		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0; 
+		IGNORED_CNT=0; PARTIAL_CNT=0
 		D_P_CNT=0; D_S_CNT=0; D_I_CNT=0; D_D_CNT=0
 		S_P_CNT=0; S_S_CNT=0; S_I_CNT=0; S_D_CNT=0
 		C_P_CNT=0; C_S_CNT=0; C_I_CNT=0; C_D_CNT=0
@@ -322,57 +962,15 @@ fi
 					let DEPEND_CNT=DEPEND_CNT+1 ;;
 				G) SQL_FEATURES_NON_ANSI_IGNORED="$SQL_FEATURES_NON_ANSI_IGNORED $FEATURE_NAME"
 					let IGNORED_CNT=IGNORED_CNT+1 ;;
+				A) SQL_FEATURES_NON_ANSI_PARTIAL="$SQL_FEATURES_NON_ANSI_PARTIAL $FEATURE_NAME"
+					let PARTIAL_CNT=PARTIAL_CNT+1 ;;
+					
 				*) echo "ERROR: FEATURE_STATUS=$FEATURE_STATUS"
 					exit 5 ;;
 				esac
 
 				if test "$EXTRACT_FEATURE_COMMENTS" = "1"; then 
-					#WARNING - extracting comments from config file takes time
-					#Not recomended for anything but features support status
-					#catalog creation and similar - not while running
-					#ordinary tests
-					
-					#Line must NOT start with a #, then it will have none or more 
-					#alpha and numbers, then feature name, followed by none or more 
-					#spaces before and of the line 
-					#FEATURE_NAME="CLUSTER_INDEX"
-					REGEX="^[^#][[:alnum:][:space:]]*$FEATURE_NAME[[:space:]]*\$"
-					#get 10 lines after the current feature identifier
-					TMP1=`grep -E --word-regexp -A10 -e "$REGEX" etc/db_features.conf`
-					if test "$DBG_THIS" = "1"; then 
-						echo "1:--------------------"
-						echo "$TMP1"
-						#exit
-					fi
-					#Number ALL lines, and then take only lines that did NOT start with a comment
-					#then isolate first two, then get the second line
-					#NOTE: must be done on one line, so we dont loose newline
-					TMP2=`echo "$TMP1" | grep -n "" | grep -v ":#"  | head -n 2 | tail -n 1`
-					if test "$DBG_THIS" = "1"; then
-						echo "2:--------------------"
-						echo "$TMP2"
-					fi
-					#Get the line number of that line
-					NEXT_FEATURE_LINE=`echo $TMP2 | awk '{print $1}' | tr ":" " "`
-					if test "$DBG_THIS" = "1"; then
-						echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
-					fi
-					let NEXT_FEATURE_LINE=NEXT_FEATURE_LINE-1
-					if test "$DBG_THIS" = "1"; then	
-						echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
-					fi
-					#Now get that number of lines - cant use data we allready have in the 
-					#variable TMP1 because they lost newline
-					#Take ony lines that begin with the comment
-					#and get rid of comment symbol, filter out lines starting with 
-					#3 hashes (###) because they contain line field numbers
-					#NOTE: must be done on one line
-					THE_COMMENT=`grep --word-regexp -A$NEXT_FEATURE_LINE "$REGEX" etc/db_features.conf | grep  "^#" | sed 's/^#//' | grep -v "^###"`
-					if test "$DBG_THIS" = "1"; then
-						if test "$THE_COMMENT" != ""; then 
-							echo "$FEATURE_NAME comment: $THE_COMMENT"
-						fi
-					fi
+					func_extract_feature_comments "$FEATURE_NAME"
 				fi
 			
 				let ROW_CNT=ROW_CNT+1
@@ -419,6 +1017,9 @@ fi
 			echo 
 			echo "Ignored ($IGNORED_CNT):"
 			echo "$SQL_FEATURES_NON_ANSI_IGNORED"
+			echo			
+			echo "Partial ($PARTIAL_CNT):"
+			echo "$SQL_FEATURES_NON_ANSI_PARTIAL"
 			echo 
 			echo "All described features totals:"
 			echo "DDL=$D_CNT SQL=$S_CNT Con=$C_CNT Proc=$P_CNT Func=$F_CNT Mixed=$X_CNT Total=$ROW_CNT"
@@ -1989,11 +2590,11 @@ X
 		exit 5
 	fi
 
-	load_unl_tables
-	
-	echo "Done"
+	echo "Done creating tables"
 }
 
+
+#Load all .unl data
 load_unl_tables () {
 dl="|"
 #ALL_RESULTS="aptiva_16-10-2004_12-49-24"
@@ -2033,6 +2634,7 @@ ALL_RESULTS=results_*.unl
 	
 }
 
+#Load single .unl file
 load_table () {
 db=$1
 loadname=$2
@@ -2198,18 +2800,26 @@ let total_time=FINISH_ALL_TIME-START_TIME
 #echo "check this: total_time=FINISH_ALL_TIME - START_TIME"
 #echo "($total_time = $FINISH_ALL_TIME - $START_TIME)"
 
-#c_ver=`gcc --version | grep gcc `
-c_ver=`gcc --version`
+c_ver=`gcc --version | grep gcc `
+if test "$c_ver" = ""; then 
+	c_ver=`gcc --version`
+fi
 
 if test "$A4GL_LEXTYPE" = "EC"; then
 	#FIXME: adapt for SAP/Querix/Ingres :
-	if test "$USE_ECP" = "1" -o "$A4GL_LEXDIALECT" = "POSTGRES"; then
+	if test "$USE_ECP" = "1" -a "$A4GL_LEXDIALECT" = "POSTGRES"; then
 		esql_ver=`$POSTGRES_BIN/ecpg --version`
 	fi
-	if test "$USE_ECI" = "1" -o "$A4GL_LEXDIALECT" = "INFORMIX"; then
+	if test "$USE_ECI" = "1" -a "$A4GL_LEXDIALECT" = "INFORMIX"; then
 		esql_ver=`esql -V | grep Version | awk '{print $3}'`
 	fi
 fi
+
+#echo "A4GL_LEXTYPE=$A4GL_LEXTYPE"
+#echo "USE_ECP=$USE_ECP"
+#echo "A4GL_LEXDIALECT=$A4GL_LEXDIALECT"
+#echo "esql_ver=$esql_ver"
+#echo "USE_ECI=$USE_ECI"
 
 #Fixme - addapt for non-Informix engines
 case "$DB_TYPE" in 
@@ -3374,7 +3984,8 @@ fi
 #Complete results log file
 
 echo "" >> $LOGFILE
-echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: (All/NoErrChk/CompOnly) $PASS_CNT/$NO_RUNTIME_ERR_CHECK_CNT/$COMPILE_ONLY_PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
+echo "Skipped: $SKIP_CNT Run: $RUN_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
+echo "Passed: (All/NoErrChk/CompOnly) $PASS_CNT/$NO_RUNTIME_ERR_CHECK_CNT/$COMPILE_ONLY_PASS_CNT" >> $LOGFILE
 if test "$KILL_CNT" != "0"; then 
 	echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
 fi
@@ -3384,8 +3995,16 @@ fi
 if test "$NOT_EXPECTED_TO_FAIL_CNT" != "0"; then 
 	echo "NOT expected to fail: $NOT_EXPECTED_TO_FAIL_LIST ($NOT_EXPECTED_TO_FAIL_CNT)" >> $LOGFILE
 fi
-if test "$NOT_CERT_CNT" != "0"; then 
-	echo "NOT certified: $NOT_CERT_LIST ($NOT_CERT_CNT)" >> $LOGFILE
+if test "$NOT_CERT_CNT" != "0"; then
+	#if not -cert 1
+	#	WHITELIST_TESTS_ECP
+	#fi
+	
+	#No point in showing what pased and is not certified, unless we are 
+	#testing under -cert conditions
+	if test "$USE_ECI" = "1"; then
+		echo "NOT certified: $NOT_CERT_LIST ($NOT_CERT_CNT)" >> $LOGFILE
+	fi
 fi
 if test "$SKIP_NODESC_LIST" != ""; then 
 	echo "Skipped as not descsribed: $SKIP_NODESC_LIST" >> $LOGFILE
@@ -3393,8 +4012,14 @@ fi
 if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then 
 	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
 fi
+
+	VERBOSE_RESULTS_LOG="$CURR_DIR/verbose_results.log"
+	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
+	rm -f $SQLFEATURES_LOGFILE $VERBOSE_RESULTS_LOG
+
+
 if test "$SKIP_INVALID_LIST" != "" ; then 
-	echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
+	echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $VERBOSE_RESULTS_LOG
 fi
 if test "$SKIP_KEYS_IN_LIST" != ""; then
 	echo "Skipped as use keys.in: $SKIP_KEYS_IN_LIST" >> $LOGFILE
@@ -3414,9 +4039,7 @@ fi
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 	
-	VERBOSE_RESULTS_LOG="$CURR_DIR/verbose_results.log"
-	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
-	rm -f $SQLFEATURES_LOGFILE $VERBOSE_RESULTS_LOG
+	echo "Platform: $PLATFORM" >> $VERBOSE_RESULTS_LOG
 	
 	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
 		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $VERBOSE_RESULTS_LOG
@@ -3425,9 +4048,8 @@ fi
 		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
 	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
-		#echo "Skipped incompatible feature ($SKIP_INCOMPAT_SQL_CNT): $SKIP_INCOMPAT_SQL_LIST" >> $LOGFILE
-		echo "Skipped incompatible feature ($SKIP_INCOMPAT_SQL_CNT)" >> $LOGFILE
-		echo "Skipped incompatible feature: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
+		echo "Skipped $SKIP_INCOMPAT_SQL_CNT tests with incompatible feature" >> $LOGFILE
+		echo "Skipped incompatible feature: ($SKIP_INCOMPAT_SQL_CNT) $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
 		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $VERBOSE_RESULTS_LOG
@@ -3674,15 +4296,14 @@ else
 		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT"
     	echo "See $LOGFILE for details."
     fi
-
 fi
 if test "$UNL_LOG" = "1"; then 
 	FINISH_ALL_TIME=`date +%s`
 	test_run_unl
-	echo ""
-	echo "Logging files closed:"
-	echo "  results_$HOSTNAME$U$date_stamp.unl"
-	echo "  test_run_$HOSTNAME$U$date_stamp.unl"
+	echo "" >> $VERBOSE_RESULTS_LOG
+	echo "Logging files closed:" >> $VERBOSE_RESULTS_LOG
+	echo "  results_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
+	echo "  test_run_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
 fi
 echo ""
 cd $CURR_DIR

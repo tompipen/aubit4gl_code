@@ -212,7 +212,7 @@ need_ifx_version:
 #If database this test runs against MUST NOT have transactions support, set to "2"
 #"0" means "don't care"
 transaction:
-	@echo "0"
+	@echo "1"
 	
 # ============================= EOF ================================
 

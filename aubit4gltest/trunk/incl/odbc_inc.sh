@@ -2,7 +2,7 @@
 ##############################################################################
 #                           Prepare ODBC settings
 ##############################################################################
-
+function odbc_init () {
 ##########################
 #Define the ODBCINI environment variable to point at your system wide odbc.ini.
 #This will mess up the ability of users to define their own data sources, but
@@ -29,11 +29,14 @@ if test "$ODBCINSTINI" = ""; then
 	export ODBCINSTINI=$CURR_DIR/etc/odbcinst.ini
 fi
 
-if [ "$ODBCINI" != "" ]; then
-	if ! test -f "$ODBCINI"; then
-		touch $ODBCINI
-	fi
-fi
+
+#Removed because it was bugging Mike - I dont remember why was it
+#dome in the first place - remind myself to write more comments
+#if [ "$ODBCINI" != "" ]; then
+#	if ! test -f "$ODBCINI"; then
+#		touch $ODBCINI
+#	fi
+#fi
 
 #########################
 #List of ODBC driver shared libraries
@@ -455,3 +458,10 @@ if test "$IS_ODBC" = "1"; then
 	    fi
     fi
 fi
+} #function odbc_init ()
+
+if test "$IS_ODBC" = "1" -o "$IS_ODBC_MANAGER" = "1"; then
+	odbc_init
+fi	
+
+

@@ -81,6 +81,7 @@ compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 ################
 #Run the compiled test
 run: compile
+	chmod a+rw .
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:

@@ -109,15 +109,14 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "ord() server-side function in SELECT and UPDATE SQL statements"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -184,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -220,14 +219,14 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "CREATE_TEMP_TABLE ANSI_INSERT ANSI_SELECT ANSI_UPDATE FUNC_ORD DROP_TABLE"
 
 	
 #################
 #If test is ANSI SQL 92 compatible, set to "1", if not to "0"
 #If unknown, leave empty
 ansi_sql_compat:
-	@echo ""
+	@echo "0"
 
 	
 # ============================= EOF ================================

@@ -18,6 +18,11 @@ function on_abort () {
 # 2) SIGINT	9) SIGKILL	15) SIGTERM	
 trap "on_abort" 2 9 15
 
+
+#create a file called 'sql_features' when compiling 4GL code
+export A4GL_DUMP_FEATURES=yes
+
+
 ###########################################
 #Include task specific shell script files:
 #List of all tests expected to fail:
@@ -270,8 +275,13 @@ for a in $FLAGS; do
     -verbose-results | --verbose-results)   #Show more information about results
         #we already got this one set
         ;;
+		
 	-new-unl-db)
+		#Create database & tables to hold date from catalogues and test results
+		#.unl files
 		create_unl_db_tables
+		load_unl_tables
+		echo "Data loaded" 
 		exit 0
 		;;
 	-log-text*) #custom text to log to unl file
@@ -614,7 +624,7 @@ for a in $FLAGS; do
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECS=1; export SKIP_EC_RUN=0
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=SAP
         #this will be used only by 4glc/fcompile compilers:
-		export A4GL_SQLTYPE=esqlSAP
+		export A4GL_SQLTYPE=esqlSAP; USE_ECI=0
 
 
 		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
@@ -629,7 +639,7 @@ for a in $FLAGS; do
     -ecp)   		#Use PostgreSQL ESQL/C EC output in for db tests
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECP=1; export SKIP_EC_RUN=0
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=POSTGRES
-		USE_PG=1
+		USE_PG=1; USE_ECI=0
         #this will be used only by 4glc/fcompile compilers:
 
 		if [ "$A4GL_SYSCOL_VAL" = "" ]; then
@@ -971,7 +981,7 @@ for a in $FLAGS; do
 		fi
 		;;
 	-4js-p)				#Use FourJs P-code compiler instead of Aubit compiler
-		USE_COMP=4js-p
+		USE_COMP=4js-p; USE_ECI=0
 		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_4JS"
 		if test -f "$FJSRUNNER" ; then
 			if test "$VERBOSE" = "1"; then		
@@ -1024,7 +1034,7 @@ for a in $FLAGS; do
 		
 		;;
 	-querix)				#Use Querix compiler instead of Aubit compiler
-		USE_COMP=querix
+		USE_COMP=querix; USE_ECI=0
 		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_QUERIX"
 		#Force Querix compiler to check SQL for ANSI compliance
 		#Q4GL_CC_FLAGS variable used in q4gl.mk
@@ -1638,8 +1648,8 @@ NOT_CERT_CNT=0
 echo "" > $LOGFILE
 echo "============================== Test results ===============================" >> $LOGFILE
 echo "" >> $LOGFILE
-echo "Flags: $FLAGS" >> $LOGFILE
-echo "Platform: $PLATFORM" >> $LOGFILE
+echo "Flags (expanded): $FLAGS" >> $LOGFILE
+
 if test "$ALL_DB" = "1"; then
 	#remove irelevant flags, keep -sqlite -nospace -defaults -esqli
 	#also remove ONE -sqlite, since it's a default added by -default switch
@@ -1658,10 +1668,11 @@ if test "$VERBOSE" = "1"; then
 	#TODO: show versions of 4Js/Informix/Querix compiler - if used
 fi
 
-echo "" >> $LOGFILE
 if test "$RUN_ONE" != ""; then
+	#echo "" >> $LOGFILE
 	echo "Running test: $RUN_ONE" >> $LOGFILE
 	ALL_TESTS=$RUN_ONE
+	#echo "" >> $LOGFILE
 #else
 #	if test "$NO_ECHO" != "1"; then
 #		#echo "Running tests: $ALL_TESTS" >> $LOGFILE
@@ -1669,7 +1680,6 @@ if test "$RUN_ONE" != ""; then
 #		echo "Running tests: $ALL_TESTS" >> $LOGFILE
 #   fi
 fi
-echo "" >> $LOGFILE
 
 rm -f $CURR_DIR/$TIME_FILE
 rm -f $CURR_DIR/$OUTPUT_LOG
@@ -1832,6 +1842,10 @@ do
 		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
 		echo "in environment: DBMONEY=$DBMONEYc"
 		
+		aubit-config A4GL_LEXTYPE
+		aubit-config A4GL_LEXDIALECT
+		aubit-config A4GL_SQLTYPE
+		
 		exit 0
 	fi
 	
@@ -1867,7 +1881,11 @@ do
 	SE_REQUIRED=0
 	SKIP_REASON=""
 	SKIP_REASON_CODES=""
-
+	IS_MAKE_ANSI_SQL_COMPAT=""
+	NEED_TRANSACTION=""
+	SQL_FEATURES_USED=""
+	SQL_FEATURES_COMPATIBLE=""
+	
     #################################
     #See if we should skip this test:
     if test "$RUN_ONE" != "" -a "$RUN_ONE" != "$TEST_NO"; then
@@ -2060,6 +2078,10 @@ do
 				IS_DB_NO_SQL_FEATURES_DESC="$IS_DB_NO_SQL_FEATURES_DESC $TEST_NO"
 			fi
 		fi
+	else
+		IS_MAKE_ANSI_SQL_COMPAT=""
+		NEED_TRANSACTION=""
+		SQL_FEATURES_USED=""
 	fi
 	
 	if test "$SH_DBG" = "1"; then 
@@ -2505,7 +2527,6 @@ do
 				fi
 			done
 		fi
-#echo "SQL_FEATURES_FAIL_LIST $SQL_FEATURES_FAIL_LIST"
 
 		if test "$SQL_FEATURES_COMPATIBLE" = "1" -a "$IS_DB_TEST" = "1" \
 			-a "$SQL_FEATURES_USED" != ""; then 
@@ -2565,6 +2586,21 @@ do
             break
         fi
 	fi
+	
+	if test "$A4GL_DUMP_FEATURES" != "" \
+		-a "$A4GL_DUMP_FEATURES" != "no" \
+		-a "$A4GL_DUMP_FEATURES" != "NO" \
+		-a "$IS_DB_TEST" = "1" \
+		-a "$USE_COMP" = "aubit" \
+		; then
+		SQL_FEATURES_DUMPFILE="$CURR_DIR/$TEST_NO/sql_features"
+		if test -f "$SQL_FEATURES_DUMPFILE" ; then
+			cat "$SQL_FEATURES_DUMPFILE"
+		else
+			echo "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
+		fi
+	fi
+	
 	if test "$UNL_LOG" = "1"; then
 		#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
 		result_unl $TEST_NO $RESULT "" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION
