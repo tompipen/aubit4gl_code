@@ -1,0 +1,32 @@
+
+#  ==========================================================================
+#  Main makefile for compile and install fgldoc tools
+#
+#  Developed by Sergio Ferreira, Lisbon, Portugal
+#
+#  $Autor$
+#  $Date: 2003-01-01 04:09:26 $
+#  $Id: Makefile.in,v 1.1 2003-01-01 04:09:26 afalout Exp $
+#  
+#  ==========================================================================
+
+include FgldocDefs.mk
+
+.PHONY:all
+all:
+	$(MAKE) -C parser all
+	$(MAKE) -C manager all
+	$(MAKE) -C browser all
+
+.PHONY:install
+install:
+	$(MAKE) -C parser install
+	$(MAKE) -C manager install
+	$(MAKE) -C browser install
+
+.PHONY:clean
+clean:
+	$(MAKE) -C parser clean
+	$(MAKE) -C manager clean
+	$(MAKE) -C browser clean
+

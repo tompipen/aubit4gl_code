@@ -1,0 +1,57 @@
+
+#  ==========================================================================
+#  This are some definitions needed to fgldoc to be compiled and instaled
+#  
+#  The goal is to minimize the places where it can be configured in order to
+#  the autoconf build should be much more easy
+#
+#  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
+#
+#  $Author: afalout $
+#  $Date: 2003-01-01 04:09:26 $
+#  $Id: FgldocDefs.mk.in,v 1.1 2003-01-01 04:09:26 afalout Exp $
+#
+#  ==========================================================================
+
+
+#
+# To compile the 4gl parser
+# Warning (in HP/UX) it just works with -g)
+#
+YACC=bison
+YFLAGS=-d -y
+LEX=lex
+CFLAGS=-g
+ESQL=esql -static
+
+#  ==========================================================================
+#  The place where the parser (p4gl) executable is to be installed
+#  ==========================================================================
+BINDIR=/usr/local/bin
+
+#  ==========================================================================
+#  The directory where to install the perl modules (it should be created
+#  when make executed)
+#  ==========================================================================
+PERL_MODULE_DIR=/usr/local/lib/perl/5.6.0/FglDocumenter
+
+#  ==========================================================================
+#  Place where tomcat jsp container is installed
+#  ==========================================================================
+TOMCAT_DIR=/usr/local/jakarta-tomcat
+
+#  ==========================================================================
+#  Application dir inside tomcat,
+#  The place where the jsp(s) should be installed
+#  ==========================================================================
+NAV_DIR=$(TOMCAT_DIR)/webapps/fgldocumenter
+
+#  ==========================================================================
+#  Place inside applictation dir where tomcat is configured to find the
+#  class files
+#  ==========================================================================
+CLASS_DIR=$(NAV_DIR)/WEB-INF/classes
+
+INSTALL=cp
+RM=rm
+
