@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2004-03-21 00:47:22 afalout Exp $
+# $Id: Makefile,v 1.17 2004-03-21 16:05:10 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -42,6 +42,7 @@ include ${ROOT}/incl/a4gl.mk
 
 4GLC	=${ROOT}/bin/4glc
 FCOMPILE=${ROOT}/bin/fcompile
+CFLAGS+= -DPORTABLE
 
 #ifneq "${COMSPEC}" ""
 	#LINKLIBS=-lD:/WINNT/system32/winsock.dll

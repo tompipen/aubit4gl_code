@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.8 2003-10-11 08:41:37 afalout Exp $
+# $Id: amkmessage.c,v 1.9 2004-03-21 16:03:23 mikeaubury Exp $
 #*/  
   
 /**
@@ -363,6 +363,7 @@ out2 (int n, FILE * f)
   memcpy(s,&nn,2);
   //s[0] = n / 256;
   //s[1] = n % 256;
+//printf("Writing %d as %d\n",n,nn);
   return fwrite2 (s, f);
 }
 

@@ -295,8 +295,8 @@ indexrec[5],
 indexrec[6],
 indexrec[7]);
                                 memcpy(&msgno,indexrec,2);
-                                //msgno=A4GL_ntohs(msgno);
-				A4GL_debug("msgno=%d",msgno);
+                                //msgno=ntohs(msgno);
+				//A4GL_debug("msgno=%d",msgno);
                                 msgno=ntohs(msgno);
 				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
 
