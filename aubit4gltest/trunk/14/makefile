@@ -6,3 +6,7 @@ compile: rep.4ae
 	
 run: rep.4ae
 	sh ./run_rep
+
+ansi_sql_compat:
+	@echo "1"
+

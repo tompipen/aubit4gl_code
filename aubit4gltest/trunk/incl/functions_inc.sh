@@ -2,6 +2,172 @@
 #							Functions
 ##############################################################################
 
+
+dont_use_me () {
+
+ALL_DIRS=[0-9]*
+ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
+LIST=""
+LIST2=""
+LIST3=""
+
+for TEST_NO in $ALL_TESTS; do
+	IS_DB_TEST=0
+	for b in $DB_TESTS; do
+		if test "$b" = "$TEST_NO"; then
+			IS_DB_TEST=1
+		fi
+	done
+	if test "$IS_DB_TEST" = "0"; then 
+		TMP_IS_DB_TEST=`$MAKE -s -C $TEST_NO db_test 2>/dev/null`
+		if test "$TMP_IS_DB_TEST" != ""; then 
+			IS_DB_TEST=$TMP_IS_DB_TEST
+		fi
+	fi
+	if test "$IS_DB_TEST" = "1"; then 
+		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
+		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
+			SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
+			if test "$SQL_FEATURES_USED" != ""; then
+				LIST3="$LIST3 $TEST_NO"			
+			else
+				LIST="$LIST $TEST_NO"
+			fi
+		fi
+	else
+		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
+		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
+			LIST2="$LIST2 $TEST_NO"
+		fi
+	fi
+
+done
+
+echo "List of datbase tests that are not ANSI compatible, " 
+echo "and we need to find out why and list that in sql_features_used target:"
+echo "$LIST"
+# 1 36 68 73 76 80 94 95 98 101 107 108 109 206 207 255 269 286 287 289 290
+#298 528 530 531 532 533 534 535 536 537 538 539 540 541 542 543 544 545 546
+#547 548 550 551 552 553 554 555 556 557 558 559 560 561 562 563 564 565 566
+#567 568 569 570 571 572 573 574 575 576 577 578 579 580 581 585 586 587 588
+#590 591 592 593 594 595 596 597 598 599 600 602 603 605 606 607 609 610 611
+#612 613 614 615 616 618 619 620 621 622 623 624 625 626 627 628 629 630 631 
+#632 633 634 635 636 637 638 639 640 642 643 644 645 646 647 648 649 650 651 
+#652 653 654 655 656 657 658 659 660 661 662 663 664 665 666 667 668 669 675 
+#676 677 678 679 681 682 683 685 686 687 690 691 692 693 694 695 696 697 698 
+#699 700 701 702 703 704 705 710 711 712 713 714 715 716 717 718 719 720 721 
+#722 723 724 725 726 727 728 729 730 731 732 733 734 735 736 737 740 741 742 
+#743 744 745 746 747 748 749 750 751 753 754 755 756 757 758 759 760 761 762 
+#763 764 768 769 770 771 772 773 774 775 776 778 779 780 781 782 783 784 785 
+#786 787 788 789 790 791 792 795 796 797 798 901 904 905 906 907 908 909 910 
+#911 912 914 915 916 917 936 937 1060
+
+echo ""
+echo "Non-db tests, but marked not ANSI compatible (???)"
+echo "$LIST2"
+echo ""
+echo "Allready have features described:"
+echo "$LIST3"
+# 91 100 106 234 738 793 794
+
+exit
+
+
+
+	
+#Tests I plan to mark as ANSI compatible:
+#datetime: 
+A="28 47 49 51 60 215 224 265 271 280 947 970 982 993"
+
+#Date : 
+B="69 90 202 211 222 225 229 240 241 247 249 260 262 268 279 479 480 481 497 \
+	946 961 981 992 1001"
+#(Comment: I think it is safe to assume all databases we are interested in 
+#support DATE and DATETIME?)
+
+#Money: 
+C="78 456 966 980 991 1000 24"
+#(Comment: Money is just a decimal, so we can/should deal with this reasonably 
+#easy in any database?) 
+
+#Initialize like : 
+D="372 373"
+#(function of compiler, not database) 
+
+#Create temp table: 
+E="63 99"
+#(We can/should emulate this one reasonably easy on any database) 
+
+#Validate like : 
+F="374 376 377 375"
+#(function of compiler, not database) 
+
+#UPDATE ... SET * = pr.* : 
+G="680 689"
+#(We can/should emulate this one reasonably easy on any database)
+
+#Interval: 
+H="706 707 948 971 983 994 670 671 672 673"
+#(Comment: I think it is safe to assume all databases we are interested in 
+#support INTERVALs this days?)
+
+
+#Varchar: 
+I="801 802 944 945 968 974 984 985 986 987 988 989 990 996 1003"
+#(Comment: I think it is safe to assume all databases we are interested in 
+#support VARCHARs this days?)
+
+#Smallfloat: 
+J="924 925 941 953 963 978 1006"
+#(Comment: I think it is safe to assume all databases we are interested in 
+#support SMALLFLOAT this days?)
+
+#The only 'crime' of following tests is that they use DATABASE without full qualifier:
+K="14 72 96 212 244 258 270  273 274 278 309 327 331 332 333 334 335 352 353 \
+	354 357 358 359 360 361 362 363 364 365 366 367 370 371 476 477 478 513 \
+	514 515 516 517 518 519 520 521 522 523 524 525 526 549 902 913 949 950 257" 
+#Safe to ignore?
+
+LIST="$A $B $C $D $E $F $G $H $I $J $K"
+
+#for TEST_NO in $LIST; do
+#	change_setting ansi_sql_compat 1 $TEST_NO
+#	echo "Test $TEST_NO - set ansi_sql_compat to yes"
+#done
+
+
+#Tests I plan to mark as ANSI INCOMPATIBLE:
+
+#Free cursor: 
+A="587 589"
+
+#Set explain : 
+B="590 591"
+
+#Database exclusive: 
+C="550"
+
+#Tests that use Alter table, Drop table, check, close database, primary key, 
+#distinct, references, create synonym, foreign key, rename column, drop trigger, 
+#set constraint, start database, set log, rollforward database, default, 
+#create/drop database, cluster index, lock table: 
+D="536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 \
+	597 599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797"
+
+LIST="$A $B $C $D"
+	
+#for TEST_NO in $LIST; do
+#	change_setting ansi_sql_compat 0 $TEST_NO
+#	echo "Test $TEST_NO - set ansi_sql_compat to no"
+#done
+
+
+
+
+exit
+
+}
+
 count_rows () {
 tablename=$1
 dbname=$2

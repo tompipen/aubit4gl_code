@@ -6,3 +6,7 @@ compile: using.4ae
 	
 run: using.4ae
 	sh ./run_using
+
+ansi_sql_compat:
+	@echo "1"
+

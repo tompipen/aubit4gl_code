@@ -10,3 +10,7 @@ compile: all
 	
 run: all
 	sh ./run_in
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -11,3 +11,7 @@ run: m1.4ae
 	
 clean:
 	rm -f m1.out.nodate
+
+ansi_sql_compat:
+	@echo "1"
+

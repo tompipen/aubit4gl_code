@@ -10,3 +10,7 @@ run: ibt.4ae
 clean:
 	rm -f ibt.out.nodate
 
+
+ansi_sql_compat:
+	@echo "1"
+

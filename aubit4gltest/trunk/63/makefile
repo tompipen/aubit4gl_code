@@ -6,3 +6,7 @@ compile: constru.4ae
 	
 run: constru.4ae
 	sh ./run_constru
+
+ansi_sql_compat:
+	@echo "1"
+

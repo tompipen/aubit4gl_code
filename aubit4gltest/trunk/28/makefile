@@ -6,3 +6,7 @@ compile: dt.4ae
 	
 run: dt.4ae
 	sh ./run_dt
+
+ansi_sql_compat:
+	@echo "1"
+

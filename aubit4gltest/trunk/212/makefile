@@ -12,3 +12,7 @@ run: prog.4ae
 clean:
 	rm -rf prelude
 	
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,7 @@ compile: testdt_null.4ae
 run: compile
 	sh run_testdt_null
 	
+
+ansi_sql_compat:
+	@echo "1"
+

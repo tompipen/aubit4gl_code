@@ -6,3 +6,7 @@ compile: testdt.4ae
 	
 run: testdt.4ae
 	sh ./run_testdt
+
+ansi_sql_compat:
+	@echo "1"
+

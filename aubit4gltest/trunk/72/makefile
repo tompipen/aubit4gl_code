@@ -16,3 +16,7 @@ run: compile
 clean:
 	rm -f test_319_iec.rpt  test_319_i.rpt  test_319_pec.rpt  test_319.rpt
 	
+
+ansi_sql_compat:
+	@echo "1"
+

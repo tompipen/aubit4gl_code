@@ -317,6 +317,10 @@ for a in $FLAGS; do
 			fi
 			;;
 			
+		-do-not-use-me)
+			dont_use_me
+			;;
+			
 		-set-ansi-yes)
 			SET_ANSI_TO="1"
 			;;
