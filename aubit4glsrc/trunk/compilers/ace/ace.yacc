@@ -436,11 +436,11 @@ format_action :
 	{
 		add_fmt(FORMAT_ON_LAST_ROW,"",$<commands>4);
 	}
-        | BEFORE GROUP OF variable_sub commands 
+        | BEFORE GROUP OF variable_sub_a commands 
 	{
 		add_fmt(FORMAT_BEFORE_GROUP,$<str>4,$<commands>5);
 	}
-        | AFTER GROUP OF variable_sub commands 
+        | AFTER GROUP OF variable_sub_a commands 
 	{
 		add_fmt(FORMAT_AFTER_GROUP,$<str>4,$<commands>5);
 	}
@@ -451,6 +451,16 @@ variable_sub:
 NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE
 |NAMED  OPEN_SQUARE expr CLOSE_SQUARE
 | NAMED 
+;
+
+variable_sub_a:
+	variable_sub | INTVAL {
+int vid;
+int a;
+a=atoi($<str>1);
+vid = find_sql_var (a);
+sprintf($<str>$,this_report.variables.variables_val[vid].name);
+}
 ;
 
 
