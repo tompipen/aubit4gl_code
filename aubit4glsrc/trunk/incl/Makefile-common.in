@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.45 2002-06-06 12:31:26 afalout Exp $
+# $Id: Makefile-common.in,v 1.46 2002-06-07 05:13:15 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -216,25 +216,10 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 
 #Total header files (.h) in Aubit: 102 (76 in lib/ incl/ and compilers/)
 
-#FIXME: add -Wmissing-prototypes -Wstrict-prototypes -pedantic -Wmissing-declarations -Wredundant-decls
-
-#       -Wstrict-prototypes
-#              Warn  if  a  function is declared or defined without specifying
-#              the argument types.  (An old-style function definition is  per­
-#              mitted  without  a  warning  if preceded by a declaration which
-#              specifies the argument types.)
-
-
-
-#-Wall only: 			Toatal compiler warnings: 2168 -> 32
-#-pedantic:     		Fails
-#-Wmissing-prototypes:  Toatal compiler warnings: 1058 -> 7
-#-Wstrict-prototypes:   Toatal compiler warnings: 1465 -> 20
-#-Wmissing-declarations:Toatal compiler warnings: 961 -> 6
-#-Wredundant-decls:     Toatal compiler warnings: 5156 -> 14
 
 NON_PEDANTIC_OK		=1
-CWARN               =-pedantic -Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+#cannot use -pedantic, too much warnings
+CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
