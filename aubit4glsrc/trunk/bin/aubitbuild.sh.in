@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.7 2002-11-06 11:42:23 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.8 2002-11-08 07:23:47 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -504,6 +504,7 @@ if test "$MAKE" = "1"; then
             else
                 echo "FIXME: splint disabled on CygWin"
             fi
+            echo " "
 
         fi
 
@@ -671,6 +672,12 @@ if test "$GET" = "1"; then
 		echo "sed -e '/^$TIME_TEMPL/s/$TIME_TEMPL/$LABEL $TMP_TIME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
 		echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 
+        #fixme: add time of last update:
+		#wt-unknown
+		#lt-unknown
+
+
+
 	    EXEC="sh $BINNAMESSCRIPT"; runexec
 
 		if test "$VERBOSE" = "1"; then
@@ -812,8 +819,38 @@ if test "$COMPARE" = "1"; then
     fi
 
 	if test "$RPM" = "1"; then
-        echo "FIXME: not comparing created RPM files"
+		if test "$SOURCERPM" != ""; then
+			if test " -f /tmp/$SOURCERPMBASENAME"; then
+				rm -f /tmp/$SOURCERPMBASENAME
+		    fi
+			EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCERPMBASENAME"; runexec
+			diff /tmp/$SOURCERPMBASENAME $SOURCERPM
+			RET=$?
+			if test $RET != "0"
+			then
+		        echo "Error: /tmp/$SOURCERPMBASENAME and $SOURCERPM are different"
+				ls -al /tmp/$SOURCERPMBASENAME
+				ls -al $SOURCERPM
+				exit 54
+		    fi
+        fi
 
+
+		if test "$BINRPM" != "" ; then
+			if test " -f /tmp/$BINRPMBASENAME"; then
+				rm -f /tmp/$BINRPMBASENAME
+		    fi
+			EXEC="$AUTOSFSCPGET $SCPPATH/$BINRPMBASENAME"; runexec
+			diff /tmp/$BINRPMBASENAME $BINRPM
+			RET=$?
+			if test $RET != "0"
+			then
+		        echo "Error: /tmp/$BINRPMBASENAME and $BINRPM are different"
+				ls -al /tmp/$BINRPMBASENAME
+				ls -al $BINRPM
+				exit 54
+		    fi
+		fi
     fi
 
 	COMPARED_OK=1
@@ -832,6 +869,8 @@ if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 	EXEC="rm -f /tmp/$SOURCETARBASENAME"; runexec
 	EXEC="rm -f /tmp/$TARBALLBASENAME"; runexec
 	EXEC="rm -f /tmp/$WINSETUPEXE_BASENAME"; runexec
+	EXEC="rm -f /tmp/$SOURCERPMBASENAME"; runexec
+	EXEC="rm -f /tmp/$BINRPMBASENAME"; runexec
 
 	#clean files created by aubitbuild script:
 	EXEC="make clean.aubitbuild"; runexec
@@ -851,6 +890,8 @@ echo "******* LOG END ********" >> $LOGFILE
 echo "******* `date` ********" >> $LOGFILE
 echo "***********************" >> $LOGFILE
 echo " " >> $LOGFILE
+
+echo " "
 
 #done
 exit 0

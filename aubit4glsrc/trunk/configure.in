@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.128 2002-11-07 03:44:15 afalout Exp $
+dnl # $Id: configure.in,v 1.129 2002-11-08 07:23:30 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -46,11 +46,12 @@ if test -f "tools/project/version" ; then
 	AUBIT_BUILD=`cat tools/project/build`
 fi
 
-#AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
+#FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and $AUBIT_BUILD are not
+#constants. Maybe we should drop stuff in tools/project alltogether, use Autoconf instead?
 AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
 
 #needed to initialize AutoMake functionallity, that will create Makefile.in
-#files from Makefile.am
+#files from Makefile.am:
 #AM_INIT_AUTOMAKE
 AM_INIT_AUTOMAKE(Aubit4gl, $AUBIT_VERSION.$AUBIT_BUILD)
 
@@ -3101,7 +3102,8 @@ cat<<X
 | You will need lex if you'd want to regenerate the Aubit parsers.   |
 X
 fi
-if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" ; then
+TMP=`echo $PATH | grep :/lib:`
+if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" && test "$TMP" = ""; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
