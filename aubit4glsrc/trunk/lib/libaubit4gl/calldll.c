@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
+# $Id: calldll.c,v 1.23 2002-11-28 06:48:12 afalout Exp $
 #
 */
 
@@ -267,10 +267,14 @@ dl_openlibrary (char *type, char *p)
 
   char *plugin_name;
 
-  //need to hide this pointer, something in the way we read registry is messing it up!
+  //need to hide this pointer, something in the way we read registry is messing it up! >>>>>>>>>STATIC!!!!!!<<<<<<<<<FIX IT!!!!!
   sprintf (tmpbuff, "%s",p);
   plugin_name = tmpbuff;
 
+
+  if ( (! acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0) ) {
+		exitwith("Error: Cannot determine AUBITDIR - STOP.");
+  }
 
 	#ifdef __CYGWIN__
 	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
@@ -464,7 +468,11 @@ char nfunc[256];
 char nfile[256];
 int (*func_ptr) (int);
 int a;
-  
+
+  if ( (! acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0) ) {
+		exitwith("Error: Cannot determine AUBITDIR - STOP.");
+  }
+
   A4GLSQL_set_status (0,0);
   strcpy (nfile, filename);
 
