@@ -1632,7 +1632,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.14 2003-04-20 23:18:27 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.15 2003-05-08 08:17:27 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3922,7 +3922,35 @@ ASP|ASP|Application Service Provider|ERP|
 >         - Function prototype
 
 
-http://aptiva:8080/manager/install?path=/promotxt&war=file:/var/tomcat4/webapps/promotxt.war
+
+
+> > Can you please summarize what is expected to work (which tags, and in
+> > which context) and what not? You say:
+> >
+> >>    - The html generation it have now:
+> >>         - Parameters
+> >>         - Return values
+> >>         - Todo list
+> >>         - Function prototype
+> >
+> > which is fine, but does this mean nothing else is extracted or just that
+> > it's not generated in current HTML output?
+>
+> Currently the status of the tags is:
+>   @file - Loaded. There is nothing to generate.
+>   @process - Loaded and generated.
+>   @param - Extracted and generated.
+>   @return - Extracted and generated.
+>   @todo - Extracted and generated.
+>   @table - Extracted and generated.
+>   @author - Extracted but not generated.
+>   @revision - Extracted but not generated.
+>   @version - An alias to revision.
+>   @deprecated - Extracted but not generated.
+>   @depreciated - Does not exist. Where did you found it ?.
+>
+>
+
 
 
 ===========================================================================

@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.13 2003-05-01 02:37:28 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.14 2003-05-08 08:17:27 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -31,6 +31,56 @@
 # Compilers and flags
 ##########################################################################
 
+#/opt/querix/lib/ (V4)
+
+#static only:
+#libesql.a
+#libesqld.a
+#libq4gl.a
+
+#Other:
+#main.4gl
+#q4gl.def
+#Makedef
+#4rules
+
+#Shared link libraries:
+#libssl.so
+#libcrypto.so
+#libltdl.so
+#
+#libfgld.so
+#libfgl.so
+#
+#libsqlcd.so
+#libsqlc.so
+
+#Run-time Loadable modules:
+#moddbdb2d.so
+#moddbdb2.so
+#
+#moddboracle.so
+#moddboracled.so
+#
+#modrephtmld.so
+#modrephtml.so
+#
+#moddbdefaultd.so
+#moddbdefault.so
+#
+#moddbinformixd.so
+#moddbinformixqxd.so
+#moddbinformixqx.so
+#moddbinformix.so
+#
+#modwinguid.so
+#modwingui.so
+
+
+###########################
+#Version of Querix compiler in use
+Q4GL_VERSION        =4
+
 ###########################
 #If this compilers needs objects ar run-time, set to 'yes':
 Q4GL_INST_OBJ		=no
@@ -58,13 +108,13 @@ ifneq "${QUERIXDIR}" ""
 		LEFT=(
 		RIGHT=)
 
-		EXTENDERLIBS_GUI	=$(subst QUERIXDIR,$(QUERIXDIR),$(shell cat "${QUERIXDIR}/etc/gui.ext"))
+		EXTENDERLIBS_GUI	=$(subst QUERIXDIR,$(QUERIXDIR),$(shell cat "${QUERIXDIR}/etc/gui.ext" 2>/dev/null))
 		EXTENDERLIBS_GUI	:=$(subst USE_DEBUG_LIBRARIES,${USE_DEBUG_LIBRARIES},${EXTENDERLIBS_GUI})
 		EXTENDERLIBS_GUI	:=$(subst ${DOLLAR},,${EXTENDERLIBS_GUI})
 		EXTENDERLIBS_GUI	:=$(subst ${LEFT},,${EXTENDERLIBS_GUI})
 		EXTENDERLIBS_GUI	:=$(subst ${RIGHT},,${EXTENDERLIBS_GUI})
 
-		EXTENDERLIBS_HTML	=$(shell cat "${QUERIXDIR}/etc/html.ext")
+		EXTENDERLIBS_HTML	=$(shell cat "${QUERIXDIR}/etc/html.ext" 2>/dev/null)
     endif
 endif
 
@@ -92,7 +142,9 @@ ifndef COMSPEC
 		#this works:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform  -L/opt/querix/./lib -lfgl -lsqli  -lpanel
 		#this does not:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform -lpanel -L/opt/querix/./lib -lfgl -lsqli
 	else
-		QX_CURSES		="$(QUERIXDIR)/lib/libpanel.a" "$(QUERIXDIR)/lib/libcurses.a"
+		ifneq "${Q4GL_VERSION}" "4"
+			QX_CURSES		="$(QUERIXDIR)/lib/libpanel.a" "$(QUERIXDIR)/lib/libcurses.a"
+        endif
 	endif
 endif
 
@@ -128,7 +180,12 @@ ifdef COMSPEC
 #	QXI_CORELIBS    =-L"$(QUERIXDIR)/bin" -lfgl$(USE_DEBUG_LIBRARIES) -lsqlc$(USE_DEBUG_LIBRARIES)
 
 else
-	QXI_CORELIBS    =-lfgl$(USE_DEBUG_LIBRARIES) -lsqli$(USE_DEBUG_LIBRARIES)
+	QXI_CORELIBS    =-lfgl$(USE_DEBUG_LIBRARIES)
+	ifeq "${Q4GL_VERSION}" "4"
+		QXI_CORELIBS	+=-lsqlc$(USE_DEBUG_LIBRARIES)
+    else
+		QXI_CORELIBS	+=-lsqli$(USE_DEBUG_LIBRARIES)
+    endif
 endif
 
 
