@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.69 2003-06-30 17:36:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.70 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -1122,7 +1122,7 @@ enum cmd_types {
   /* ======================= From buildtin_d.c ==================== */
 
   void A4GL_push_dtime (struct A4GLSQL_dtime *p);
-  void A4GL_push_int (int p);
+  void A4GL_push_int (short p);
   void A4GL_push_long (long p);
   void A4GL_push_date (long p);
   void A4GL_push_float (float p);

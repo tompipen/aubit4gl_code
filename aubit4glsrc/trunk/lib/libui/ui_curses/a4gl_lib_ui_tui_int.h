@@ -74,7 +74,7 @@ int A4GL_xwattr_get (WINDOW * w);
 int A4GL_getmessage_line (void);
 WINDOW *A4GL_get_currwin (void);
 int A4GL_subwin_print (WINDOW * win, char *fmt, ...);
-int A4GL_subwin_gotoxy (WINDOW * win, int x, int y);
+int A4GL_subwin_gotoxy (WINDOW * win, int x, int y,int has_border);
 int A4GL_refresh_menu_window (char *name, int top);
 int A4GL_getmenu_line (void);
 int A4GL_get_curr_print_top (void);

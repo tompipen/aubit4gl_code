@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.30 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.31 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -142,10 +142,10 @@ static void push_byte (void *ptr);
  * @param p The integer value to be pushed to the stack
  */
 void
-A4GL_push_int (int p)
+A4GL_push_int (short p)
 {
-  int *ptr;
-  ptr = (int *) acl_malloc (sizeof (int), "push int");
+  short *ptr;
+  ptr = (short *) acl_malloc (sizeof (short), "push int");
   *ptr = p;
   A4GL_push_param (ptr, DTYPE_SMINT + DTYPE_MALLOCED);
 }
@@ -813,7 +813,7 @@ A4GL_push_variable (void *ptr, int dtype)
 
   if ((dtype & 0xff) == 0)
     {
-      A4GL_debug ("Value = %s\n", ptr);
+      A4GL_debug ("Value = '%s'\n", ptr);
     }
   if (A4GL_isnull (dtype, ptr))
     {
@@ -851,7 +851,7 @@ A4GL_push_variable (void *ptr, int dtype)
       //push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
     case 1:
       A4GL_debug ("SMALLINT= %d\n", *(short *) ptr);
-      A4GL_push_int ((int) *(short *) ptr);
+      A4GL_push_int (*(short *) ptr);
       return;
       break;
     case 2:

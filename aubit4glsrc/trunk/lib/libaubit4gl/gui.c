@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: gui.c,v 1.20 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -176,10 +176,10 @@ void
 A4GL_proc_it (char *buff)
 {
   int a;
-  A4GL_debug ("Use gui=%d sock=%d", use_gui, sock);
+  //A4GL_debug ("Use gui=%d sock=%d", use_gui, sock);
   if (use_gui > 0 && sock)
     {
-      A4GL_debug ("Sending %s to front end", buff);
+      //A4GL_debug ("Sending %s to front end", buff);
       a = write (sock, buff, strlen (buff));
       if (a <= 0)
 	connected = 0;

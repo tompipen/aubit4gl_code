@@ -663,9 +663,12 @@ op_escape:
 	{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
-pattern:
-	  value_specification
-	| identifier
+pattern_ss:
+	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}
+/*
+	  value_specification {$<sql_string>$=make_sql_string($<str>1);}
+	| var_ident_ibind_ss {$<sql_string>$=$<sql_string>1;}
+*/
 	;
 
 escape_character:
@@ -718,14 +721,14 @@ comparison_predicate_ss:
 	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss {
 		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
 	}
-	| value_expression_ss LIKE pattern op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<str>3,$<str>4,0);
+	| value_expression_ss LIKE pattern_ss op_escape {
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
 	}
-	| value_expression_ss NOT_LIKE pattern op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<str>3,$<str>4,0);
+	| value_expression_ss NOT_LIKE pattern_ss op_escape {
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
 	}
-	| value_expression_ss op_not MATCHES pattern op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," MATCHES ",$<str>4,$<str>5,0);
+	| value_expression_ss op_not MATCHES pattern_ss op_escape {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," MATCHES ",$<sql_string>4,$<str>5,0);
 	}
 	;
 
@@ -1288,7 +1291,7 @@ value_expr_list_ss :
 ;
 
 value_specification:
-	| literal
+	 literal
 	;
 
 unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement2_ss {

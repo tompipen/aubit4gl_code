@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.43 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: resource.c,v 1.44 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -307,6 +307,7 @@ struct str_resource builtin_resource[] = {
 //#endif
   /* can't use del on Windows, does not accept forward slash in the path */
   {"A4GL_RM_CMD", "rm -f"},
+  {"A4GL_DEBUG_LEVEL", "10"},
 
 
   {"GTK_INC_PATH", ""},		//this ently is to prevent core dumps on Windows when thsi value is not set

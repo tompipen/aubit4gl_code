@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.22 2003-06-16 17:14:04 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.23 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -338,7 +338,7 @@ A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size)
 
 #ifdef DEBUG
   {
-    A4GL_debug ("digittoc");
+    A4GL_debug ("digittoc %d",*a);
   }
 #endif
   sprintf (buff, fmt, *a);

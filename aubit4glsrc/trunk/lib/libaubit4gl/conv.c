@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.50 2003-06-27 19:59:43 mikeaubury Exp $
+# $Id: conv.c,v 1.51 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -898,7 +898,7 @@ A4GL_itodec (void *a, void *z, int size)
   errno = 0;
   A4GL_debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
   A4GL_init_dec (z, h, t);
-  sprintf (buff, "%016d", *(int *) a);
+  sprintf (buff, "%016d", *(short *) a);
 
   eptr = A4GL_str_to_dec (buff, z);
 
@@ -1550,9 +1550,9 @@ A4GL_ltod (void *aa, void *zz, int sz_ignore)
 int
 A4GL_itod (void *aa, void *zz, int sz_ignore)
 {
-  int *a;
+  short *a;
   int *z;
-  a = (int *) aa;
+  a = (short *) aa;
   z = (int *) zz;
   *z = *a;
   return 1;
@@ -1840,20 +1840,22 @@ int
 A4GL_itoc (void *aa, void *zz, int size)
 {
   char fmt[10] = "d";
-  int *a;
+  short local_a;
+  int local_a_int;
   char *z;
   char buff[256];
-  a = (int *) aa;
-  *a = ((*a) & 0xffff);
+  local_a=*(short *)aa;
+  local_a_int=local_a;
+
   z = (char *) zz;
-  if (A4GL_digittoc (a, z, fmt, DTYPE_SMINT, size))
+  if (A4GL_digittoc (&local_a_int, z, fmt, DTYPE_SMINT, size))
     {
 #ifdef DEBUG
       {
  A4GL_debug ("itoc return from A4GL_digittoc using %s", fmt);
       }
 #endif
-      sprintf (buff, fmt, *(short *) a);
+      sprintf (buff, fmt, local_a_int);
     }
   if (strlen (buff) > size)
     {
@@ -1906,10 +1908,10 @@ A4GL_itol (void *aa, void *zz, int sz_ignore)
 int
 A4GL_itof (void *aa, void *zz, int sz_ignore)
 {
-  int *a;
+  short *a;
   double *z;
   z = (double *) zz;
-  a = (int *) aa;
+  a = (short *) aa;
   *z = (double) *a;
   return 1;
 }
@@ -1925,10 +1927,10 @@ A4GL_itof (void *aa, void *zz, int sz_ignore)
 int
 A4GL_itosf (void *aa, void *zz, int sz_ignore)
 {
-  int *a;
+  short *a;
   float *z;
   z = (float *) zz;
-  a = (int *) aa;
+  a = (short *) aa;
   *z = (float) *a;
   return 1;
 }
@@ -1944,10 +1946,10 @@ A4GL_itosf (void *aa, void *zz, int sz_ignore)
 int
 A4GL_itovc (void *aa, void *zz, int c)
 {
-  int *a;
+  short *a;
   char *z;
   z = (char *) zz;
-  a = (int *) aa;
+  a = (short *) aa;
   A4GL_itoc (a, z, c);
   return 1;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.54 2003-06-27 20:04:10 mikeaubury Exp $
+# $Id: newpanels.c,v 1.55 2003-07-04 09:43:39 mikeaubury Exp $
 #*/
 
 /**
@@ -57,6 +57,7 @@
 #ifdef __CYGWIN__
 dll_import struct s_form_attr std_dbscr;
 dll_import sqlca_struct sqlca;
+
 #endif
 
 /*
@@ -73,9 +74,9 @@ dll_import sqlca_struct sqlca;
                     Variables definitions
 =====================================================================
 */
-
 extern int have_default_colors;
 WINDOW *currwin;
+extern PANEL *curr_error_panel;
 int scr_width = -1;
 int scr_height = -1;
 int currwinno = -1;
@@ -386,7 +387,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	  if (toupper (name[0]) != name[0])
 	    A4GL_gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
 	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_debug ("Window = %p", win);
+	  A4GL_debug ("Window = %p name=%s", win,name);
 	}
 
     }
@@ -438,6 +439,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
     }
 
   pan = new_panel (win);
+  A4GL_debug("New panel %p for window %p name %s",pan,win,name);
   set_panel_userptr (pan, strdup (name));
   A4GL_add_pointer (name, PANCODE, pan);
 
@@ -838,6 +840,7 @@ A4GL_tui_print (char *fmt, ...)
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
   //wprintw (currwin, "%s", buff);
+A4GL_debug("addsr : %s",buff);
   waddstr (currwin, buff);
 
   A4GL_mja_wrefresh (currwin);
@@ -1476,6 +1479,7 @@ A4GL_decode_line_scr (int l)
 	A4GL_debug("decode_line_scr - l=%d",l);
   if (l > 0)
     {
+		while (l>A4GL_screen_height()) l--;
 	  return l;
     }  
 	if (l<0)
@@ -1501,11 +1505,14 @@ A4GL_decode_line (int l)
       if (A4GL_get_curr_border ())
 	{
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
-	  return l ;
+		l--;
+	  while (l>A4GL_get_curr_height()) l--;
+	  return l;
 	}
       else
 	{
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
+	  while (l>A4GL_get_curr_height()) l--;
 	  return l;
 	}
     }
@@ -1544,10 +1551,12 @@ A4GL_decode_line_ib (int l)
       if (A4GL_get_curr_border ())
 	{
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
+	  while (l>A4GL_get_curr_height()) l--;
 	  return l ;
 	}
       else
 	{
+	  while (l>A4GL_get_curr_height()) l--;
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
 	  return l;
 	}
@@ -1642,10 +1651,17 @@ A4GL_inc_winname (char *b)
 int
 A4GL_getmenu_line (void)
 {
+int a;
   if (windows[currwinno].winattr.menu_line!=0xff) {
-	return A4GL_decode_line (windows[currwinno].winattr.menu_line);
+	a=A4GL_decode_line (windows[currwinno].winattr.menu_line);
+	if (a<0) return 1;
+	while (a+1>=A4GL_get_curr_height()) a--;
+	return a;
   }
-  return A4GL_decode_line (std_dbscr.menu_line);
+  a=A4GL_decode_line (std_dbscr.menu_line);
+	if (a<0) return 1;
+	while (a+1>=A4GL_get_curr_height()) a--;
+	return a;
 }
 
 /**
@@ -1948,7 +1964,7 @@ A4GL_open_form (char *name)
   A4GLSQL_set_status (0, 0);
 
   form = A4GL_read_form (buff, name);
-  A4GL_debug ("Read form returns %d status = %d\n", form);
+  A4GL_debug ("Read form returns %d status = %d\n", form,a4gl_status);
   if (a4gl_status != 0)
     {
       A4GL_debug ("Some problem opening form...");
@@ -2094,9 +2110,13 @@ A4GL_refresh_menu_window (char *name, int top)
  * @todo Describe function
  */
 int
-A4GL_subwin_gotoxy (WINDOW * win, int x, int y)
+A4GL_subwin_gotoxy (WINDOW * win, int x, int y,int has_border)
 {
   int a;
+//if (has_border) y--;
+	A4GL_debug("subwin_gotoxy - %d %d win=%p",y-1,x-1,win);
+ if (y<1) y=1;
+ if (x<1) x=1;
   a = wmove (win, y - 1, x - 1);
   if (a == ERR)
     {
@@ -2133,6 +2153,7 @@ A4GL_subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
   A4GL_chkwin ();
   va_start (args, fmt);
   wmove (win, y - 1, x - 1);
+A4GL_debug("subwin_printxy %d %d %s",x,y,fmt);
   A4GL_mja_vwprintw (win, fmt, &args);
   A4GL_mja_wrefresh (win);
   return 0;
@@ -2264,7 +2285,7 @@ A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
       a = a - (a & 0xff);
       wattrset (win, a);
     }
-  A4GL_debug ("Attribute : %x on win %p\n", A4GL_xwattr_get (win), win);
+  A4GL_debug ("Attribute : %x on win %p - buff=%s\n", A4GL_xwattr_get (win), win,buff);
   wprintw (win, "%s", buff);
   return 0;
 }
@@ -2453,8 +2474,12 @@ int
 A4GL_find_win (PANEL * p)
 {
   int a;
-  if (p == 0)
-    return A4GL_find_win (panel_below (0));
+  if (p == 0) {
+	A4GL_debug("find_win for panel_below(0)");
+	p=panel_below(0);
+	if (p==curr_error_panel) p=panel_below(p);
+        return A4GL_find_win (p);
+  }
 #ifdef DEBUG
   {
     A4GL_debug ("Finding window %p", p);
@@ -2463,6 +2488,7 @@ A4GL_find_win (PANEL * p)
 
   for (a = 0; a < MAXWIN; a++)
     {
+	if (windows[a].pan==0) continue;
 #ifdef DEBUG
       {
  A4GL_debug ("Checking windows   : %p %p %p", panel_window (windows[a].pan),
@@ -2635,10 +2661,17 @@ A4GL_getmessage_line (void)
 int
 A4GL_getprompt_line (void)
 {
+int a;
+  A4GL_debug ("getprompt_line - %d", windows[currwinno].winattr.prompt_line);
   if (windows[currwinno].winattr.prompt_line!=0xff) {
 	return A4GL_decode_line (windows[currwinno].winattr.prompt_line);
   }
-  return A4GL_decode_line (std_dbscr.prompt_line);
+  a=A4GL_decode_line (std_dbscr.prompt_line); // MJAMJA 
+  a--;
+  if (A4GL_iscurrborder()) a++;
+ 
+  A4GL_debug("Prompt line %d",a);
+return a;
 }
 
 /**

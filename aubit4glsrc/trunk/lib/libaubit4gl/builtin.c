@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.42 2003-06-10 22:20:53 mikeaubury Exp $
+# $Id: builtin.c,v 1.43 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -151,7 +151,7 @@ aclfgl_arr_count (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_int (m_arr_count);
+  A4GL_push_long (m_arr_count);
 /* a is now set to set_Count */
   return 1;
 }
@@ -170,7 +170,7 @@ aclfgl_scr_line (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_int (m_scr_line);
+  A4GL_push_long (m_scr_line);
   return 1;
 }
 
@@ -188,7 +188,7 @@ aclfgl_arr_curr (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_int (m_arr_curr);
+  A4GL_push_long (m_arr_curr);
   return 1;
 }
 

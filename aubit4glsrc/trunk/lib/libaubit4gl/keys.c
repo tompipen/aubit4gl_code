@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.18 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: keys.c,v 1.19 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -132,7 +132,7 @@ A4GL_key_val (char *str)
 {
   int a;
   a = A4GL_key_val2 (str);
-  A4GL_debug ("key_val : '%s' = %d", str, a);
+  A4GL_debug ("30 key_val : '%s' = %d", str, a);
   return a;
 }
 
@@ -146,7 +146,7 @@ A4GL_key_val2 (char *str)
   int a;
   char b[3];
 
-  A4GL_debug ("In A4GL_key_val str=%s", str);
+  A4GL_debug ("99 In A4GL_key_val str=%s", str);
 
   if (strlen (str) == 1)
     {
@@ -194,7 +194,12 @@ A4GL_key_val2 (char *str)
   if (A4GL_mja_strncmp ("CONTROL", str, 7) == 0)
     {
       A4GL_debug ("control key '%s' - returning '%c'\n", str, str[8]);
-      return toupper (str[8]) - 'A' + 1;
+	if (str[8]>='A'&&str[8]<='Z')
+      			return toupper (str[8]) - 'A' + 1;
+	if (str[9]>='A'&&str[9]<='Z')
+      			return toupper (str[9]) - 'A' + 1;
+	if (str[10]>='A'&&str[10]<='Z')
+      			return toupper (str[10]) - 'A' + 1;
     }
 
   if (str[0] == '^')
@@ -215,7 +220,6 @@ A4GL_key_val2 (char *str)
     }
   return -1;
 }
-
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.14 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: prompt.c,v 1.15 2003-07-04 09:43:39 mikeaubury Exp $
 #*/
 
 /**
@@ -92,9 +92,11 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_debug ("create window %d %d", 1, promptline);
   A4GL_debug ("%d %d", width - 1, 2);
   cw = (WINDOW *) A4GL_get_currwin ();
-  p =
-    derwin (cw, 1, width, promptline - 1 + A4GL_iscurrborder () * 2,
-	    A4GL_iscurrborder ());
+  p = derwin (cw, 1, width, promptline  , A4GL_iscurrborder ());
+  if (p==0) {
+		A4GL_exitwith("No prompt window created");
+		return 0;
+  }
   prompt->win = p;
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.26 2003-06-30 17:36:14 mikeaubury Exp $
+# $Id: debug.c,v 1.27 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -112,6 +112,7 @@ A4GL_debug_full (char *fmt, ...)
   va_list args;
   static char buff[40960];
   int a;
+  int dbg_level;
   if (nodebug == DEBUG_NOTREQUIRED)
     return;
 
@@ -132,8 +133,9 @@ A4GL_debug_full (char *fmt, ...)
     }
 
   a=atoi(fmt);
+  dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
 
-  if (a&&a>=atoi(acl_getenv("DEBUG_LEVEL")) ) {
+  if (a&&a>dbg_level) {
 	return;
   }
   if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.21 2003-06-30 17:36:14 mikeaubury Exp $
+# $Id: ops.c,v 1.22 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -951,8 +951,9 @@ A4GL_display_smint (void *ptr, int size, int size_c, struct struct_scr_field *fi
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
                 char using_buff[256];
-      if (A4GL_isnull(DTYPE_SMINT,ptr)) { strcpy(buff,""); return buff; }
+      		if (A4GL_isnull(DTYPE_SMINT,ptr)) { strcpy(buff,""); return buff; }
   		a = *(short *) ptr;
+		A4GL_debug("display_smint a=%d",a);
                 if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
                         strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
                 } else {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.64 2003-06-30 17:36:14 mikeaubury Exp $
+# $Id: stack.c,v 1.65 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ int A4GL_push_binding (void *ptr, int num);
 void dif_add_bind (struct bound_list *list, void *dptr, int dtype, int size);
 void dif_add_bind_date (struct bound_list *list, long a);
 void dif_add_bind_smint (struct bound_list *list, int a);
-void dif_add_bind_smint_ptr (struct bound_list *list, int *a);
+void dif_add_bind_smint_ptr (struct bound_list *list, short *a);
 void dif_add_bind_dbl_ptr (struct bound_list *list, double *a);
 void dif_add_bind_int (struct bound_list *list, long a);
 void dif_add_bind_float (struct bound_list *list, double a);
@@ -190,7 +190,7 @@ void A4GL_set_escape (char *s);
 int
 A4GL_pop_bool (void)
 {
-  int ptr;
+  short ptr;
   ptr = 0;
 
   A4GL_debug ("8 Popping boolean..");
@@ -199,7 +199,7 @@ A4GL_pop_bool (void)
 
   ptr = A4GL_pop_int ();
 
-
+  A4GL_debug("pop bool : ptr=%x\n",ptr);
   if (A4GL_isnull(DTYPE_SMINT,(void *)&ptr)) {
 		A4GL_debug("8 Null can't be true..");
 		return 0;
@@ -404,6 +404,7 @@ int
 A4GL_pop_char (char *z, int size)
 {
   int a;
+  memset(z,0,size);
   a = A4GL_pop_param (z, DTYPE_CHAR, size);
 #ifdef DEBUG
   /* {DEBUG} */ A4GL_debug ("8 pop_char returns char ='%s'", z);
@@ -514,8 +515,7 @@ A4GL_pop_param (void *p, int d, int size)
 		b=1;
   	} else {
 	
-  		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK,
-	    		params[params_cnt].ptr, d & DTYPE_MASK, p, size);
+  		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 	
   	}
   }
@@ -1080,16 +1080,23 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_OR:
-      if (A4GL_chknull (2, n1, n2,dn1,dn2))
-	return;
       A4GL_debug ("OP_OR");
+
+      if (n1&&n2)  {
+      	if (A4GL_chknull (2, n1, n2,dn1,dn2)) { A4GL_debug("One of null..."); return; }
+      }
+
+	
       i1 = A4GL_pop_int ();
       i2 = A4GL_pop_int ();
+      if (i1&&!n1) {A4GL_push_int(1);break;}
+      if (i2&&!n2) {A4GL_push_int(1);break;}
+      A4GL_push_int(0);
 
       /* dumpstack(); */
-      A4GL_debug ("OP_OR : %d %d\n", i1, i2);
+      //A4GL_debug ("OP_OR : %d %d\n", i1, i2);
 
-      A4GL_push_int (i1 || i2);
+      //A4GL_push_int (i1 || i2);
       break;
 
 
@@ -2536,8 +2543,8 @@ dif_add_bind_date (struct bound_list *list, long a)
 void
 dif_add_bind_smint (struct bound_list *list, int a)
 {
-  int *z;
-  z = malloc (sizeof (int));
+  short *z;
+  z = malloc (sizeof (short));
   *z = a;
   dif_add_bind (list, z, DTYPE_SMINT, 0);
 }
@@ -2548,7 +2555,7 @@ dif_add_bind_smint (struct bound_list *list, int a)
  * @return
  */
 void
-dif_add_bind_smint_ptr (struct bound_list *list, int *a)
+dif_add_bind_smint_ptr (struct bound_list *list, short *a)
 {
   //printf ("a=%p", a);
   //printf ("*a=%x\n", *a);
@@ -2565,7 +2572,7 @@ dif_add_bind_dbl_ptr (struct bound_list *list, double *a)
 {
   //printf ("a=%p", a);
   //printf ("*a=%f\n", *a);
-  dif_add_bind (list, a, DTYPE_SMINT, 0);
+  dif_add_bind (list, a, DTYPE_FLOAT, 0);
   *a = 3.142;
 }
 

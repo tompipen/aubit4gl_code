@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.12 2003-05-23 13:04:17 mikeaubury Exp $
+# $Id: gui_io.c,v 1.13 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -105,7 +105,7 @@ gui_send (char *c, char *s)
      buffer[0]=0;
      }
    */
-  A4GL_debug ("Sent");
+  //A4GL_debug ("Sent");
 }
 
 /**
@@ -194,7 +194,7 @@ A4GL_gui_refresh (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("gui_refresh");
+    A4GL_debug ("99 gui_refresh");
   }
 #endif
   gui_send ("REFRESH", "");

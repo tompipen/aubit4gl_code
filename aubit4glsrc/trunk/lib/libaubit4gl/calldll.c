@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.33 2003-06-14 13:13:52 afalout Exp $
+# $Id: calldll.c,v 1.34 2003-07-04 09:43:38 mikeaubury Exp $
 #
 */
 
@@ -441,7 +441,7 @@ A4GL_find_func (void *dllhandle, char *func)
   sprintf (tempbuff, "%s", func);
 #endif
 
-  A4GL_debug ("find_func: Finding pointer to DLL function %s\n", tempbuff);
+  A4GL_debug ("15 find_func: Finding pointer to DLL function %s\n", tempbuff);
 
   if (dllhandle == 0)
     {
@@ -450,10 +450,10 @@ A4GL_find_func (void *dllhandle, char *func)
       /* return badfunc; */
     }
   func_ptr = dlsym (dllhandle, tempbuff);
-  A4GL_debug ("Got %p", func_ptr);
+  A4GL_debug ("25 Got %p", func_ptr);
   if (func_ptr == 0)
     {
-      A4GL_debug ("Function Not found");
+      A4GL_debug ("1 Function Not found");
       A4GL_exitwith ("Could not find function in shared library");
       // This is so critical - we're out of here...
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.42 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.43 2003-07-04 09:43:39 mikeaubury Exp $
 #*/
 
 /**
@@ -975,23 +975,32 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
   char *ff;
   int a;
 
+if (ptr) {
+        A4GL_push_param (ptr, dtype);
+	A4GL_display_field_contents(f,dtype&DTYPE_MASK,DECODE_SIZE(dtype),ptr);
+	return;
+} 
+
+
+
+
   A4GL_debug ("field width=%d", A4GL_get_field_width (f));
   if (ptr != 0)
     {
-      A4GL_debug ("Got init value");
       A4GL_push_param (ptr, dtype);
-      ff = A4GL_new_string (A4GL_get_field_width (f));
+      ff = malloc (A4GL_get_field_width (f)+1);
       A4GL_pop_char (ff, A4GL_get_field_width (f));
     }
   else
     {
-      ff = A4GL_new_string (A4GL_get_field_width (f));
+      ff = malloc (A4GL_get_field_width (f)+1);
       for (a = 0; a < A4GL_get_field_width (f); a++)
 	ff[a] = ' ';
       ff[A4GL_get_field_width (f) - 1] = 0;
     }
-  A4GL_debug ("set_init_value : display '%s' to field", ff);
+
   A4GL_mja_set_field_buffer (f, 0, ff);
+  free(ff);
   A4GL_debug ("Init complete");
 }
 
@@ -1440,6 +1449,7 @@ A4GL_set_fields (void *vsio)
   int a;
   int nv;
   int flg;
+  char buff[2048];
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
   struct struct_scr_field *prop;
@@ -1512,8 +1522,10 @@ A4GL_set_fields (void *vsio)
 
       if (wid)
 	{
-	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr,
-			       sio->vars[a].dtype);
+	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr, sio->vars[a].dtype);
+
+
+
 	}
       else
 	{
@@ -1537,9 +1549,15 @@ A4GL_set_fields (void *vsio)
 
       if (sio->mode != MODE_CONSTRUCT)
 	{
-	  A4GL_push_char (field_buffer (field_list[a], 0));
-	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype,
-			 sio->vars[a].size);
+		strcpy(buff,field_buffer (field_list[a], 0)); 
+		A4GL_trim(buff);
+
+          if(strlen(buff))
+	  	A4GL_push_char (buff);
+	  else 
+		A4GL_push_null( sio->vars[a].dtype, sio->vars[a].size); // @todo - check if its set to not null and return CHARs instead..
+
+	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
 	}
 
       if (flg == 0)

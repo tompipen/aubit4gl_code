@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: pointers.c,v 1.20 2003-07-04 09:43:39 mikeaubury Exp $
 #
 */
 
@@ -286,23 +286,23 @@ A4GL_find_pointer (const char *pname, char t)
   struct s_node *node;
   void *a;
 
-  A4GL_debug ("Finding pointer to %s %c", pname, t);
   buff.name[0] = t;
   buff.name[1] = 0;
   strcat (buff.name, pname);
   buff.ptr = 0;
-  A4GL_debug ("Finding %s", buff.name);
+  A4GL_debug ("10 Finding %s", buff.name);
   a = FIND (&buff);
   A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
       node = *(struct s_node **) a;
-      A4GL_debug ("Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
+
+      A4GL_debug ("20 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
       return node->ptr;
     }
   else
     {
-      A4GL_debug ("Opps - not found pname=%s t=%c a=%p", pname, t, a);
+      A4GL_debug ("10 Opps - not found pname=%s t=%c a=%p", pname, t, a);
       return 0;
     }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.10 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.11 2003-07-04 09:43:39 mikeaubury Exp $
 #*/
 
 /**
@@ -314,6 +314,10 @@ process_control_stack (struct s_screenio *sio)
   rval = -1;
   new_state = 99;
 
+      if (sio->curr_attrib>=0) {
+		A4GL_debug ("process control stack isnull = %d", 
+					A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
+	}
 
   a = sio->fcntrl_cnt - 1;
 
@@ -398,8 +402,7 @@ process_control_stack (struct s_screenio *sio)
       new_state = 0;
       sio->curr_attrib = ptr_movement->attrib_no;
       A4GL_debug ("Before field - fieldname=%p", sio->fcntrl[a].field_name);
-      A4GL_debug ("Before field - fieldname=%s", sio->fcntrl[a].field_name);
-
+      A4GL_debug ("Before field - fieldname=%s isnull = %d", sio->fcntrl[a].field_name,A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
 
 
       sio->currentfield = sio->field_list[sio->curr_attrib];
@@ -409,7 +412,11 @@ process_control_stack (struct s_screenio *sio)
       fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
       attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
       if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
+
+
+
       A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype);
+
 
 
 	A4GL_debug("Adding comments...");
@@ -420,6 +427,7 @@ process_control_stack (struct s_screenio *sio)
       A4GL_push_long ((long) sio->currentfield);
       A4GL_push_char (sio->fcntrl[a].field_name);
 	A4GL_debug("New current field set to %p",sio->currentfield);
+      A4GL_debug ("doing Before field - fieldname=%s isnull = %d", sio->fcntrl[a].field_name,A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
 
       rval = -197;
     }
@@ -454,6 +462,7 @@ process_control_stack (struct s_screenio *sio)
 		}
 
 
+		A4GL_debug("Calling A4GL_pop_var2 : %p %d %d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
           	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 	
 		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
