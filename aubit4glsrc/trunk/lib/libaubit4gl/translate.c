@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.11 2003-02-06 23:45:16 mikeaubury Exp $
+# $Id: translate.c,v 1.12 2003-02-12 08:13:17 mikeaubury Exp $
 #
 */
 
@@ -254,7 +254,7 @@ char buff[2048];
 			if (quote==0) {
 				/* formwrite2.c: */
 				//ORIGINAL: sprintf(buff,"get_translated_id:%s",to);
-				sprintf(buff,"get_translated_id(%s)",to);
+				sprintf(buff,"get_translated_id(\"%s\")",to);
             } else {
 				/* lexer.c: NO LONGER THERE !!?? */
 				sprintf(buff,"get_translated_id(\"%s\")",to);
