@@ -1,6 +1,6 @@
-label_cmd :  LABEL  { 
+label_cmd :  LABEL  {
 char buff[256];
-printf("Label : %s\n",get_idents(0));
+debug("Label : %s\n",get_idents(0));
 strcpy(buff,get_idents(0));
 convlower(buff);
 print_label(buff);

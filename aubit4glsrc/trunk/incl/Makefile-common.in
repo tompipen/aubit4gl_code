@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.120 2003-02-22 01:52:21 afalout Exp $
+# $Id: Makefile-common.in,v 1.121 2003-02-22 11:06:57 afalout Exp $
 #
 
 #Workarounf for Informix installers messing up libphtread:
@@ -254,7 +254,8 @@ CC 					=@CC@
 LN_S 				=ln -s -f
 LN_H                =ln -f
 AR 					=ar rc
-YACC                =@YACC@ @DEBUG_BISON@
+#YACC                =@YACC@ @DEBUG_BISON@
+YACC                =$(strip @YACC@ @DEBUG_BISON@)
 #-i needed to create case insensitive scanner:
 LEX					=@LEX@ -i
 NICE                =nice -20

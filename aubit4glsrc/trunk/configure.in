@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.159 2003-02-20 05:36:41 afalout Exp $
+dnl # $Id: configure.in,v 1.160 2003-02-22 11:06:12 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -824,7 +824,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			WARN_YACC=1
         fi
 	fi
-	
+
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
 	AC_PATH_PROG(DOXYSEARCH, doxysearch, no)
@@ -1072,7 +1072,7 @@ fi
 			AC_MSG_RESULT(no)
 		fi
 	fi
-	
+
 	#FIXME: DO we have JSP needed for FGLDOC?
 
     if test "$APACHE_CONF" != ""; then
@@ -1242,8 +1242,6 @@ AC_ARG_WITH(informix,
 
 			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
 			then
-				AC_MSG_CHECKING(if we can use esql)
-
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
 				if test -z "$IFX_LIBS"; then
@@ -1284,7 +1282,8 @@ AC_ARG_WITH(informix,
 				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
 				AC_MSG_RESULT($IFX_VERSION)
 				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
-				
+
+				AC_MSG_CHECKING(if we can use esql)
 				AC_MSG_RESULT(Yes)
 
 				CFLAGS="$old_CFLAGS"
@@ -1420,7 +1419,7 @@ if test "$cygwin" = "1"; then
 		#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
         #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
 		AC_CHECK_LIB([ivif7912], [main])
-		
+
 
 		#only two dll's in csdk280_tc1 - none have lib prefix
 		AC_CHECK_LIB([clidll], [main])
@@ -1524,7 +1523,7 @@ AC_ARG_WITH(sapodbc,
 		old_LIBS="$LIBS"
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
-		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl"
+		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl -I$withval"
 		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib -L$withval/indep_prog/runtime/7300/lib"
         LIBS="-lsqlrte -lpcr -lpthread -lm"
 
@@ -1540,30 +1539,36 @@ AC_ARG_WITH(sapodbc,
 		# FIXME: Replace `main' with a function in `-lsqlod':
 		AC_CHECK_LIB([sqlod], [main])
 		if test $ac_cv_lib_sqlod_main = yes; then
-			AC_CHECK_HEADERS([ sql.h sqlext.h sqltypes.h WINDOWS.H ])
-            #FIXME: disable is this headrs are missing and source code
+			AC_CHECK_HEADERS([interfaces/odbc/incl/sql.h \
+								interfaces/odbc/incl/sqlext.h \
+								interfaces/odbc/incl/sqltypes.h \
+								interfaces/odbc/incl/WINDOWS.H])
         fi
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
         CPPFLAGS="$old_CPPFLAGS"
 
 		if test $ac_cv_lib_sqlod_main = yes; then
-
-			if test "$ac_cv_header_sqltypes_h" = "yes" && test "$ac_cv_header_sql_h" = "yes" && test "$ac_cv_header_sqlext_h" = "yes" && test "$ac_cv_header_WINDOWS_H" = "yes" ; then
-                HAVE_SAPODBC_HEADERS=yes
+			if test "$ac_cv_header_interfaces_odbc_incl_sqltypes_h" = "yes" \
+				&& test "$ac_cv_header_interfaces_odbc_incl_sql_h" = "yes" \
+				&& test "$ac_cv_header_interfaces_odbc_incl_sqlext_h" = "yes" \
+				&& test "$ac_cv_header_interfaces_odbc_incl_WINDOWS_H" = "yes"
+			then
+				HAVE_SAPODBC_HEADERS=yes
             else
                 HAVE_SAPODBC_HEADERS=no
             fi
 
-            if test "$HAVE_SAPODBC_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+			AC_MSG_CHECKING(if we can use SAP ODBC)
+			if test "$HAVE_SAPODBC_HEADERS" != "yes" && AUBIT_SOURCE=1; then
             #we need headers only to compile source code
 			    AC_DEFINE(HAVE_SAPODBC,0,[ ])
 				AC_MSG_RESULT(no header files)
 			else
+				AC_MSG_RESULT(yes)
 				HAVE_SAPODBC=yes
 			    SAPODBC_INCLUDE="$TMP_SAPODBC_INCLUDE"
 			    SAPODBC_LFLAGS="$TMP_SAPODBC_LFLAGS"
-
 			    AC_DEFINE(HAVE_SAPODBC,1,[ ])
             fi
 		else
@@ -1624,7 +1629,7 @@ AC_ARG_WITH(pgodbc,
 			#including /usr/lib/libpsqlodbc.a (so we don't need
 			#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
 			#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
-			
+
 			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
 
 			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
@@ -2338,7 +2343,7 @@ AC_ARG_WITH(rpc,
 
 	if test "$withval" != "no"; then
 
-		AC_MSG_CHECKING(for RPC support)
+		#AC_MSG_CHECKING(for RPC support)
 
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
@@ -2454,7 +2459,7 @@ AC_ARG_WITH(rpc,
                 WARN_RPCLIB=1
                 #FIXME: if we link fcompile and mcompile statically with rpclib for binary distro, will
                 #it be able to compile forms and menus on systems without rpclib installed?
-				
+
 				#FIXME: if we link libRPC_SUNRPC statically with rpclib for binary distro, will RPC work
 				#on system without rpclib installed?
             else
@@ -2718,48 +2723,23 @@ if test "$WITH_JAVA" != "no" ; then
     WITH_JAVA=no
 	AC_MSG_CHECKING(for Java header files for JNI)
 
-#not added:
-#/usr/lib/gcc-lib/i386-redhat-linux/2.96/include/jni.h
-#/usr/lib/gcc-lib/i386-redhat-linux/3.0.2/include/jni.h
+	#what about using GCC JNI?:
+	#/usr/lib/gcc-lib/i386-redhat-linux/2.96/include/jni.h
+	#/usr/lib/gcc-lib/i386-redhat-linux/3.0.2/include/jni.h
 
-#added:
-#/usr/include/kaffe/jni.h
-#/usr/local/src/j2sdk1.3.1/include/jni.h
+	#so here we go the "manual" way - it will not actually test if jni.h is usable,
 
-
-#This whole block is not even entered:
-
-#OH MY GOD! it is entered on CygWin !!!!!
-
-    # try without any precautions
-    AC_TRY_CPP([#include <jni.h>], WITH_JAVA=yes,
-        [ dirs="$prefix /usr/local/src/j2sdk1.3.1 /usr/lib/java /usr/java /usr/java/jdk1.4 /usr/lib/jdk1.4 /opt/java1.4 /usr/lpp/java/J1.4 /usr/java/jdk1.4 /usr/lib/jdk1.4 /usr/jdk14 /jdk1.4 /usr/java/jdk1.3 /usr/include/java /usr/local/java /usr/local/include/kaffe /usr/include/kaffe /usr/lib/jdk1.3 /opt/java1.3 /usr/lpp/java/J1.3 /usr/java/jdk1.2 /usr/lib/jdk1.2.2 /usr/lib/jdk1.2.1 /usr/jdk122 /usr/lib/jdk122 /usr/lib/jdk1.2.1 /opt/java1.2 /usr/lpp/java/J1.2 /usr/lib/jdk1.1.8 /usr/jdk118 /usr/lib/jdk118 /usr/lpp/java/J1.1 /opt/java1.1 /usr /opt/local /jdk1.3 /jdk1.2.3 /jdk1.2.2 /jdk1.2.1 /System/Library/Frameworks/JavaVM.framework/Headers /usr/jdk_base/include"
-
-        if test "$JAVAPACKAGE" != ""; then
-            dirs="$JAVAPACKAGE $dirs"
-		fi
-#echo "dirs = $dirs"
-        # now try to find jni.h
-        for i in "$dirs" ; do
-#echo "i=$i"
-echo "1"
-			if test -r $i/jni.h ; then
-                JAVAINCLUDE="$i"
-echo "yes1"
-				break
-            elif test -r $i/include/jni.h ; then
-echo "yes2"
-				JAVAINCLUDE="$i/include"
-                break
-            fi
-        done
-    ])
-
-echo "manual"
-
-#so here we go the "manual" way - it will not actually test if jni.h is usable,
-#but at least it will find it:
-        dirs="$prefix /usr/local/src/j2sdk1.3.1 /usr/lib/java /usr/java /usr/java/jdk1.4 /usr/lib/jdk1.4 /opt/java1.4 /usr/lpp/java/J1.4 /usr/java/jdk1.4 /usr/lib/jdk1.4 /usr/jdk14 /jdk1.4 /usr/java/jdk1.3 /usr/include/java /usr/local/java /usr/local/include/kaffe /usr/include/kaffe /usr/lib/jdk1.3 /opt/java1.3 /usr/lpp/java/J1.3 /usr/java/jdk1.2 /usr/lib/jdk1.2.2 /usr/lib/jdk1.2.1 /usr/jdk122 /usr/lib/jdk122 /usr/lib/jdk1.2.1 /opt/java1.2 /usr/lpp/java/J1.2 /usr/lib/jdk1.1.8 /usr/jdk118 /usr/lib/jdk118 /usr/lpp/java/J1.1 /opt/java1.1 /usr /opt/local /jdk1.3 /jdk1.2.3 /jdk1.2.2 /jdk1.2.1 /System/Library/Frameworks/JavaVM.framework/Headers /usr/jdk_base/include"
+	dirs="$prefix /usr/local/src/j2sdk1.3.1 /usr/lib/java /usr/java        \
+		/usr/java/jdk1.4 /usr/lib/jdk1.4 /opt/java1.4 /usr/lpp/java/J1.4       \
+		/usr/java/jdk1.4 /usr/lib/jdk1.4 /usr/jdk14 /jdk1.4 /usr/java/jdk1.3   \
+		/usr/include/java /usr/local/java /usr/local/include/kaffe             \
+		/usr/include/kaffe /usr/lib/jdk1.3 /opt/java1.3 /usr/lpp/java/J1.3     \
+		/usr/java/jdk1.2 /usr/lib/jdk1.2.2 /usr/lib/jdk1.2.1 /usr/jdk122       \
+		/usr/lib/jdk122 /usr/lib/jdk1.2.1 /opt/java1.2 /usr/lpp/java/J1.2      \
+		/usr/lib/jdk1.1.8 /usr/jdk118 /usr/lib/jdk118 /usr/lpp/java/J1.1       \
+		/opt/java1.1 /usr /opt/local /jdk1.3 /jdk1.2.3 /jdk1.2.2 /jdk1.2.1     \
+		/System/Library/Frameworks/JavaVM.framework/Headers                    \
+		/usr/jdk_base/include"
 
         if test "$JAVAPACKAGE" != ""; then
             dirs="$JAVAPACKAGE $dirs"
@@ -3764,7 +3744,8 @@ fi
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
 		if test "$MAKE" != "no" ; then
-			$MAKE ldconfig
+			#--silent
+			$MAKE --silent --no-print-directory ldconfig
         else
             echo "Ooops! No 'make' installed, you will have to do it manually!"
         fi

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2003-02-22 01:52:21 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-02-22 11:06:56 afalout Exp $
 #
 
 ROOT        =../..
@@ -62,8 +62,9 @@ ${ROOT}/bin/xgen: ${OBJS}
 	${CC} ${EXE_CFLAGS} $^ -o $@
 #	${CP} $@ ${ROOT}/bin
 
-y.tab.c: x.yacc lex.yy.c 
+y.tab.c: x.yacc lex.yy.c
 #${ROOT}/common/dataio/form_x.x.h
+#	@echo "YACC=>>${YACC}<<"
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
 else
@@ -73,7 +74,7 @@ endif
 
 
 lex.yy.c: x.lex
-ifeq "@LEX@" "no"
+ifeq "${LEX}" "no"
 	${CP} ${LEX_YY_C} .
 else
 #	${NICE} ${LEX} $(SOURCES.lex)
