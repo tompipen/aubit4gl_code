@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2003-11-15 11:09:42 afalout Exp $
+# $Id: Makefile,v 1.9 2003-11-15 13:20:36 afalout Exp $
 #
 
 ROOT    =../..
@@ -40,19 +40,20 @@ include ${ROOT}/incl/Makefile-common
 OBJS_4GL= asql.ao connection_menu.ao pick.ao database.ao main_menu.ao query.ao \
 	session.ao table.ao execute.ao paginate.ao
 
-#Objects that originate in 4GL code, with ESQL compiler specific prefix, so that
-#we don't mix them up when linking
-OBJS_4GL_PG=$(addprefix pg_,${OBJS_4GL})
-OBJS_4GL_IFX=$(addprefix ifx_,${OBJS_4GL})
-
 #Objects that do not originate in 4GL code - version independent
 OBJS_C=lex.yy.o simple_parse.o dir.o
 
+#Version specific objects
+OBJS_PG_ONLY=postgres.ao
+OBJS_IFX_ONLY=infx.ao
+
+CLEAN_OBJS=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY}
+
 #All objects for Postgres version
-OBJS_PG=${OBJS_4GL_PG} ${OBJS_C} postgres.ao
+OBJS_PG=$(addprefix pg_,${OBJS_4GL}) $(addprefix pg_,${OBJS_PG_ONLY}) ${OBJS_C}
 
 #All objects for Informix version
-OBJS_IFX=$(OBJS_4GL_IFX) ${OBJS_C} infx.ao
+OBJS_IFX=$(addprefix ifx_,${OBJS_4GL}) $(addprefix ifx_,${OBJS_IFX_ONLY}) ${OBJS_C}
 
 ## ==================================================================
 ##                              Options
@@ -77,6 +78,9 @@ endif
 4GLPC=${SH} ${ROOT}/bin/4glpc
 #-verbose
 
+#-G stops esql/c putting #lines in the output so its easier to debug
+4GLPCFLAGS=-g
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -89,6 +93,13 @@ all : ${ALL}
 	@echo ""
 
 #why are we linking with UI_TUI ?
+#Because we call some of those curses routines directly ATM.
+#Hopefully I can get rid of that eventually but the brief was to make the
+#edititing key compatible with Informix's. To do this I'll need to access the
+#curses routines directly..
+#There may be an argument for putting this editing routine into a separate
+#module (one key compatible TUI mode one, one that just uses the aubit UI
+#routines) - but thats for later...
 asql_i.4ae: A4GL_LEXDIALECT=INFORMIX
 asql_i.4ae: ${OBJS_IFX}
 	${4GLPC} -g  $^ -o $@  -lUI_TUI
@@ -118,20 +129,15 @@ qryfrm.afr.dat: qryfrm.per
 lex.yy.c: parse.l
 	${LEX} -i parse.l
 
-#dir.o: dir.c
-#	${CC} -g -c dir.c
+ifx_%.ao: %.4gl
+	${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 
-
-#-G stops esql/c putting #lines in the output so its easier to debug
-#%query.ao: query.4gl
-#	${4GLPC} -g -G -c $^ -o $@
-#
-#%execute.ao: execute.4gl
-#	${4GLPC} -g -G -c $^ -o $@
+pg_%.ao: %.4gl
+	${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 
 #Rule to make objects from 4GL file
-%.ao:
-	${4GLPC} -g -c $(subst pg_,,$(subst ifx_,,$*)).4gl -o $@
+#%.ao:
+#	${4GLPC} -g -c $(subst pg_,,$(subst ifx_,,$*)).4gl -o $@
 
 
 ## ==================================================================
@@ -159,10 +165,19 @@ run.p:
 ## ==================================================================
 
 clean:
-	${RM} ${OBJS_IFX} ${OBJS_PG} ${ALL} *.bak *.err *.warn lex.yy.c \
-    ${OBJS_4GL:.ao=.h} ${OBJS_4GL:.ao=.glb} ${OBJS_4GL:.ao=.ec} \
-	${OBJS_4GL:.ao=.cpc} ${OBJS_4GL:.ao=.c} \
-	postgres.c postgres.cpc postgres.h postgres.glb \
-	infx.c infx.ec infx.glb infx.h
+	${RM} ${ALL} *.bak *.err *.warn lex.yy.c ${OBJS_PG} ${OBJS_IFX} \
+    ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
+	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c}
+
+
+
+#    ${OBJS_PG:.ao=.h} ${OBJS_PG:.ao=.glb} ${OBJS_PG} \
+#	${OBJS_PG:.ao=.cpc} ${OBJS_PG:.ao=.c} \
+#    ${OBJS_IFX:.ao=.h} ${OBJS_IFX:.ao=.glb} ${OBJS_IFX} \
+#	${OBJS_IFX:.ao=.c}  ${OBJS_IFX:.ao=.ec}
+
+
+#	postgres.c postgres.cpc postgres.h postgres.glb \
+#	infx.c infx.ec infx.glb infx.h
 
 # ============================= EOF ============================
