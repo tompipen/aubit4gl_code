@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.1 2003-05-26 10:07:10 afalout Exp $
+#  $Id: Makefile.in,v 1.2 2003-05-27 08:29:23 afalout Exp $
 #  =========================================================================
 
 ROOT=../../..
@@ -56,8 +56,12 @@ TOMCAT_ANT_F=catalina-ant.jar
 #path and name of the Tomcat extensions to Ant:
 TOMCAT_ANT  =${JAVA_SHARED}/${TOMCAT_ANT_F}
 
+#See http://javaoltp.moredata.pt/
+MOREDATA_OLTP=oltp-stable-src.jar
+MOREDATA_OLTP_URL=http://javaoltp.moredata.pt/pthtm/download/stable/oltp-stable-src.jar
+
 #additional CLASSPATH values needed for the execution of Ant:
-DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
+DOC4GL_CLASSPATH=${MOREDATA_OLTP}:${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
 
 #Declare targets that do not generate any files, to avoid conflicts:
 .PHONY : all install clean deinstall
@@ -95,7 +99,7 @@ all: ant
 #############################
 #Invokes ant with default settings to compile all .java files and create
 #build tree:
-ant: ${TOMCAT_ANT}
+ant: ${TOMCAT_ANT} ${MOREDATA_OLTP}
 ifneq "${ANT}" "no"
 ifneq "${JAVAC}" "no"
 #directory missing on some Tomcat installations, but needed by build.xml:
@@ -107,6 +111,9 @@ endif
 else
 	@echo "Ant tool not found - cannot compile"
 endif
+
+${MOREDATA_OLTP}:
+	wget ${MOREDATA_OLTP_URL}
 
 # =========================================================================
 #                              Install
@@ -459,5 +466,9 @@ endif
 	@echo "|             DBdoc JSP browser source code now clean.               |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
+
+makefile: Makefile
+Makefile: Makefile.in
+	cd ${ROOT}; config.status --file=dbdoc/navigator/jsp/Makefile; cd -
 
 # =================================== EOF =================================
