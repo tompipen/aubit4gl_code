@@ -851,9 +851,13 @@ print_select_all (char *buff)
 void
 print_unload (char *file, char *delim, char *sql)
 {
+char filename[256];
+char delim_s[256];
+if (file[0]=='"') { sprintf(filename,"'%s'",A4GL_strip_quotes(file)); } else { sprintf(filename,":%s",file); }
+if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
   if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
-  	printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",file,delim,sql);
+  			printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
   } else {
   	printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
   }
@@ -876,16 +880,21 @@ print_unload (char *file, char *delim, char *sql)
 void
 print_load (char *file, char *delim, char *tab, char *list)
 {
+char filename[256];
+char delim_s[256];
+if (file[0]=='"') { sprintf(filename,"'%s'",A4GL_strip_quotes(file)); } else { sprintf(filename,":%s",file); }
+if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
+
   if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
 	if (strlen(list)==1) 
-  		printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s  ;",file,delim,tab);
+  		printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s  ;",filename,delim_s,tab);
 	else {	
 		char *ptr;
 		char buff[100];
 		int p=0;
 		list[strlen(list)-2]=0;
 		ptr=list;
-  			printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s (",file,delim,tab);
+  			printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s (",filename,delim_s,tab);
 		while (1) {
 			strcpy(buff,ptr);
 			ptr=strchr(buff,',');
