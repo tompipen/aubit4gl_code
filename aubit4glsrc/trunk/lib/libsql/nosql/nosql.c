@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.26 2003-05-15 07:10:44 mikeaubury Exp $
+# $Id: nosql.c,v 1.27 2003-05-16 06:49:33 afalout Exp $
 #*/
 
 /**
@@ -99,7 +99,7 @@ int
 A4GLSQL_init_connection (char *dbName)
 {
   A4GL_debug ("Connection with database not available: A4GL_SQLTYPE=nosql");
-  local_exitwith
+  A4GL_local_exitwith
     ("Could not init_connection - Connection with database not available: A4GL_SQLTYPE=nosql");
   return 0;
 }

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.35 2003-05-16 03:07:11 afalout Exp $
+#	 $Id: footer.mki,v 1.36 2003-05-16 06:49:33 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -638,6 +638,11 @@ show:
 	@echo "EXTENSIONS (FRM, OBJ, PRG, LIB, HLP): ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}"
 	@echo CORE_PROGDIR = ${CORE_PROGDIR}
 	@echo CORE_LANGDIR = ${CORE_LANGDIR}
+	@echo A4GL_CC_LDFLAGS = ${A4GL_CC_LDFLAGS}
+	@echo A4GL_CC = ${A4GL_CC}
+	@echo A4GL_CC = ${EXECSTORE}
+	@echo PATH.link = ${PATH.link}
+	@echo FILES.aubit.link = ${FILES.aubit.link}
 
 
 src:

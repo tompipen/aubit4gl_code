@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.30 2003-05-16 03:08:13 afalout Exp $
+# $Id: compile_perl.c,v 1.31 2003-05-16 06:49:33 afalout Exp $
 #
 */
 
@@ -212,10 +212,10 @@ void
 internal_lex_printc(char* fmt,... )
 {
 va_list ap;
-	debug("via A4GL_lex_printc (2) in lib");
+	A4GL_debug("via A4GL_lex_printc (2) in lib");
 	va_start(ap,fmt);
 	real_lex_printc(fmt,&ap);
-        debug("Done....");
+        A4GL_debug("Done....");
 }
 */
 
@@ -435,14 +435,14 @@ void
 print_report_ctrl (void)
 {
   int a;
-  debug
+  A4GL_debug
     ("/* ********************************************************** */\n");
-  debug
+  A4GL_debug
     ("/*                 Report Control Block                       */\n");
-  debug
+  A4GL_debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
-  //printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
+  //printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
 /*
    printc("    if (acl_ctrl==REPORT_START) goto start_%d;\n",report_cnt);
    printc("    if (acl_ctrl==REPORT_FINISH) goto finish_%d;\n",report_cnt);
@@ -845,7 +845,7 @@ A4GL_prchkerr (int l, char *f)
     ("if ($aubit4gl_pl::sqlca_sqlcode !=0 || $aubit4gl_pl::status !=0 || %d) {\n",
      when_code[A_WHEN_SUCCESS] == WHEN_CALL
      || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("debug(\"status=%%d sqlca_sqlcode=%%d\",status,sqlca_sqlcode);\n"); */
+  /*printc("A4GL_debug(\"status=%%d sqlca_sqlcode=%%d\",status,sqlca_sqlcode);\n"); */
   printcomment ("/* NOTFOUND */");
   a =
     pr_when_do ("   if ($aubit4gl_pl::sqlca_sqlcode==100)",
@@ -1393,22 +1393,22 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-      append_expr (ptr, "struct BINDING ibind[]={");
+      A4GL_append_expr (ptr, "struct BINDING ibind[]={");
       if (ibindcnt == 0)
 	{
-	  append_expr (ptr, "{0,0,0}");
+	  A4GL_append_expr (ptr, "{0,0,0}");
 	}
 
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
-	    append_expr (ptr, ",");
+	    A4GL_append_expr (ptr, ",");
 	  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
 		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-	  append_expr (ptr, buff);
+	  A4GL_append_expr (ptr, buff);
 	}
 
-      append_expr (ptr, "};");
+      A4GL_append_expr (ptr, "};");
       start_bind (i, 0);
       return a;
     }
@@ -1790,7 +1790,7 @@ print_construct_2 (char *driver)
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  //printc ("debug(\"form_loop=%%d\",_fld_dr);");
+  //printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
   printc
     ("\n}\n push_constr(&_inp_io);\n aubit4gl_pl::pop_params(ibind,1);\n }\n");
   pop_blockcommand ("CONSTRUCT");	/* FIXME */
@@ -1837,7 +1837,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
     }
 
   printc
-    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=set_fields(&_inp_io); A4GL_debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr=-99;\n");
 }
 
@@ -2444,7 +2444,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
       printc ("if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   printc
-    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=set_fields(&_inp_io); A4GL_debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr=-99;\n");
 }
 

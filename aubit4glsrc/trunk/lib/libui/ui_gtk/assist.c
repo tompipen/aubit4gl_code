@@ -29,7 +29,7 @@ extern GtkWidget *currwindow;
                     Constants definitions
 =====================================================================
 */
-#define CHK_UI if (ui_mode!=1) {exitwith("Not in GUI mode");return 0;} else {A4GL_debug("UI mode ok");}
+#define CHK_UI if (ui_mode!=1) {A4GL_exitwith("Not in GUI mode");return 0;} else {A4GL_debug("UI mode ok");}
 /*
 =====================================================================
                     Functions prototypes
@@ -50,7 +50,7 @@ void *
 find_curr_window(void) 
 {
 void *w;
-	w=get_curr_win_gtk();
+	w=A4GL_get_curr_win_gtk();
 	if (gtk_object_get_data(w,"TOP")) {
 		A4GL_debug("Has parent...");
 		w=gtk_object_get_data(w,"TOP");
@@ -64,7 +64,7 @@ extern
 long quit_flag;
 extern 
 long a4gl_status;
-extern 
+dll_import 
 struct {
 long sqlcode;
 char sqlerrm [72+1];
@@ -145,7 +145,7 @@ static char _functionName[] = "get_window_title";
    A4GL_pop_params(fbind,1);
    CHK_UI
    	trim(s);
-   	gtk_window_set_title(GTK_WINDOW(get_curr_win_gtk()),s);
+   	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win_gtk()),s);
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -169,7 +169,7 @@ static char _functionName[] = "set_window_icon";
    A4GL_pop_params(fbind,1);
    CHK_UI
    	trim(s);
-   	w=(int)make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
+   	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
    	trim(s);
    	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?
    /* End of code */
@@ -192,7 +192,7 @@ static char _functionName[] = "a4gl_run_gui";
    CHK_UI
      while (1) {
        a4gl_usleep (100);
-   	gui_run_til_no_more ();
+   	A4GL_gui_run_til_no_more ();
      }
    /* End of code */
    A4GLSTK_popFunction();
@@ -234,7 +234,7 @@ static char _functionName[] = "yeild";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-     gui_run_til_no_more ();
+     A4GL_gui_run_til_no_more ();
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -278,7 +278,7 @@ static char _functionName[] = "set_prompt_style";
    init_module_variables();
    A4GL_pop_params(fbind,1);
    CHK_UI
-   gui_prompt_style(a);
+   A4GL_gui_prompt_style(a);
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -350,7 +350,7 @@ static char _functionName[] = "get_filename";
    	gtk_widget_show (file_selector);
    	while (1) {
    	    a4gl_usleep (100);
-   	 	gui_run_til_no_more ();
+   	 	A4GL_gui_run_til_no_more ();
    		if (strlen(selected_filename)!=0) {
    			break;
    		}
@@ -654,7 +654,7 @@ static char _functionName[] = "entry_text_get";
    CHK_UI
    	A4GL_debug("g=%d %x",g,g);
    	s=gtk_editable_get_chars(GTK_EDITABLE(g),0,-1);
-   	push_char(s);
+   	A4GL_push_char(s);
    	g_free(s);
    	return 1;
    }
@@ -722,7 +722,7 @@ static char _functionName[] = "form_caption_get";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	//gtk_window_get_title(get_curr_win_gtk());
+   	//gtk_window_get_title(A4GL_get_curr_win_gtk());
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -741,7 +741,7 @@ static char _functionName[] = "form_hide";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	gtk_widget_hide(GTK_WIDGET(get_curr_win_gtk()));
+   	gtk_widget_hide(GTK_WIDGET(A4GL_get_curr_win_gtk()));
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -760,7 +760,7 @@ static char _functionName[] = "form_show";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-   	gtk_widget_show(GTK_WIDGET(get_curr_win_gtk()));
+   	gtk_widget_show(GTK_WIDGET(A4GL_get_curr_win_gtk()));
    /* End of code */
    A4GLSTK_popFunction();
    return 0;
@@ -782,10 +782,10 @@ static char _functionName[] = "form_is_open";
    init_module_variables();
    A4GL_pop_params(fbind,1);
    CHK_UI
-   	//void *find_param (char *name);
-   	//if (find_param(s,WINCODE)) push_int(1);
-   	if ((int)find_param((char *)WINCODE)) push_int(1);
-   	else push_int(0);
+   	//void *A4GL_find_param (char *name);
+   	//if (A4GL_find_param(s,WINCODE)) A4GL_push_int(1);
+   	if ((int)A4GL_find_param((char *)WINCODE)) A4GL_push_int(1);
+   	else A4GL_push_int(0);
    	return 1;
    /* End of code */
    A4GLSTK_popFunction();
@@ -814,7 +814,7 @@ static char _functionName[] = "list_count_get";
    A4GL_pop_params(fbind,1);
    CHK_UI
    	g=tolist(GTK_WIDGET(g));
-   	push_int(GTK_CLIST(g)->rows);
+   	A4GL_push_int(GTK_CLIST(g)->rows);
    	return 1;
    /* End of code */
    A4GLSTK_popFunction();
@@ -841,7 +841,7 @@ static char _functionName[] = "list_current_get";
    GList* sel ;
    s=tolist(GTK_WIDGET(s));
    sel = GTK_CLIST(s)->selection;
-   push_int(sel ? (int)(sel->data) :  -1);
+   A4GL_push_int(sel ? (int)(sel->data) :  -1);
    return 1;
    }
    /* End of code */
@@ -1003,9 +1003,9 @@ static char _functionName[] = "splat_with_image";
    GtkWidget *widget;
    GtkWidget *cw;
    trim(lv_config);
-   widget=make_widget("pixmap",lv_config,w);
+   widget=A4GL_make_widget("pixmap",lv_config,w);
    gtk_widget_show(widget);
-   cw=GTK_WIDGET(get_curr_win_gtk());
+   cw=GTK_WIDGET(A4GL_get_curr_win_gtk());
    gtk_fixed_put (GTK_FIXED (cw), widget, 0, 20);
    gtk_widget_show(cw);
    }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.28 2003-05-15 07:10:19 mikeaubury Exp $
+# $Id: compile.c,v 1.29 2003-05-16 06:49:33 afalout Exp $
 #*/
 
 /**
@@ -274,7 +274,7 @@ initArguments (int argc, char *argv[])
 	      A4GL_bname (output_object, a, b);
 	      strcpy (ext, ".");
 	      strcat (ext, b);
-	      //debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
+	      //A4GL_debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
 
 	      if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0)
 		{
@@ -614,7 +614,7 @@ initArguments (int argc, char *argv[])
          link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
          must link with .dll - meaning that we must force shared linking even when user specified
          static flag */
-      debug
+      A4GL_debug
 	("Static linking specified - forcing shared linking on Windows\n");
       compile_lib = 0;
       compile_so = 1;
@@ -774,7 +774,7 @@ static int
 compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	     int silent, int verbose, char output_object[128])
 {
-  int x, ret, flength;
+  int x, ret, flength=0;
   char buff[1028];
   char single_output_object[128] = "";
   char c[128];			//The 4gl file
@@ -964,9 +964,13 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	    }
 	  else
 	    {
+    	  if (verbose)
+			{
+			  printf ("C compilation of the object successfull.\n");
+			}
 
 	      /* determine the c.err file size */
-	      sprintf (buff, "%s.c.err", aa);
+		  sprintf (buff, "%s.c.err", aa);
 	      filep = fopen (buff, "r");
 	      //  f = A4GL_mja_fopen (ii, "r");
 	      fseek (filep, 0, SEEK_END);
@@ -1009,6 +1013,11 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		  A4GL_debug ("Runnung %s", buff);
 #endif
 		  ret = system (buff);
+          if (ret)
+            {
+                printf ("Error executing: %s\n",buff);
+				printf ("%s.c.err file size = %d\n", aa, flength);
+            }
 
 		}
 	      else

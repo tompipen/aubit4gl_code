@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: assist.4gl,v 1.8 2003-05-16 06:49:34 afalout Exp $
 
 # ASSIST.4gl
 #
@@ -67,7 +67,7 @@ extern GtkWidget *currwindow;
 =====================================================================
 */
 
-#define CHK_UI if (ui_mode!=1) {exitwith("Not in GUI mode");return 0;} else {A4GL_debug("UI mode ok");}
+#define CHK_UI if (ui_mode!=1) {A4GL_exitwith("Not in GUI mode");return 0;} else {A4GL_debug("UI mode ok");}
 
 
 /*
@@ -93,7 +93,7 @@ void *
 find_curr_window(void) 
 {
 void *w;
-	w=get_curr_win_gtk();
+	w=A4GL_get_curr_win_gtk();
 	if (gtk_object_get_data(w,"TOP")) {
 		A4GL_debug("Has parent...");
 		w=gtk_object_get_data(w,"TOP");
@@ -125,7 +125,7 @@ define s char(256)
 code
 CHK_UI
 	trim(s);
-	gtk_window_set_title(GTK_WINDOW(get_curr_win_gtk()),s);
+	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win_gtk()),s);
 endcode
 end function
 
@@ -139,7 +139,7 @@ define w integer
 code
 CHK_UI
 	trim(s);
-	w=(int)make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
+	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
 
 	trim(s);
 	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?
@@ -155,7 +155,7 @@ code
 CHK_UI
   while (1) {
     a4gl_usleep (100);
-	gui_run_til_no_more ();
+	A4GL_gui_run_til_no_more ();
   }
 endcode
 end function
@@ -195,7 +195,7 @@ end function
 function yeild()
 code
 CHK_UI
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 endcode
 end function
 
@@ -226,7 +226,7 @@ function set_prompt_style(a)
 define a integer
 code
 CHK_UI
-gui_prompt_style(a);
+A4GL_gui_prompt_style(a);
 endcode
 end function
 
@@ -292,7 +292,7 @@ code
 	gtk_widget_show (file_selector);
 	while (1) {
 	    a4gl_usleep (100);
-	 	gui_run_til_no_more ();
+	 	A4GL_gui_run_til_no_more ();
 		if (strlen(selected_filename)!=0) {
 			break;
 		}
@@ -447,7 +447,7 @@ code
 CHK_UI
 	A4GL_debug("g=%d %x",g,g);
 	s=gtk_editable_get_chars(GTK_EDITABLE(g),0,-1);
-	push_char(s);
+	A4GL_push_char(s);
 	g_free(s);
 	return 1;
 }
@@ -485,7 +485,7 @@ end function
 function form_caption_get()
 code
 CHK_UI
-	//gtk_window_get_title(get_curr_win_gtk());
+	//gtk_window_get_title(A4GL_get_curr_win_gtk());
 endcode
 end function
 
@@ -495,7 +495,7 @@ end function
 function form_hide()
 code
 CHK_UI
-	gtk_widget_hide(GTK_WIDGET(get_curr_win_gtk()));
+	gtk_widget_hide(GTK_WIDGET(A4GL_get_curr_win_gtk()));
 endcode
 end function
 
@@ -505,7 +505,7 @@ end function
 function form_show()
 code
 CHK_UI
-	gtk_widget_show(GTK_WIDGET(get_curr_win_gtk()));
+	gtk_widget_show(GTK_WIDGET(A4GL_get_curr_win_gtk()));
 endcode
 end function
 
@@ -516,10 +516,10 @@ function form_is_open(s)
 define s integer
 code
 CHK_UI
-	//void *find_param (char *name);
-	//if (find_param(s,WINCODE)) push_int(1);
-	if ((int)find_param((char *)WINCODE)) push_int(1);
-	else push_int(0);
+	//void *A4GL_find_param (char *name);
+	//if (A4GL_find_param(s,WINCODE)) A4GL_push_int(1);
+	if ((int)A4GL_find_param((char *)WINCODE)) A4GL_push_int(1);
+	else A4GL_push_int(0);
 	return 1;
 endcode
 end function
@@ -544,7 +544,7 @@ define g integer
 code
 CHK_UI
 	g=tolist(GTK_WIDGET(g));
-	push_int(GTK_CLIST(g)->rows);
+	A4GL_push_int(GTK_CLIST(g)->rows);
 	return 1;
 endcode
 end function
@@ -560,7 +560,7 @@ CHK_UI
 GList* sel ;
 s=tolist(GTK_WIDGET(s));
 sel = GTK_CLIST(s)->selection;
-push_int(sel ? (int)(sel->data) :  -1);
+A4GL_push_int(sel ? (int)(sel->data) :  -1);
 return 1;
 }
 endcode
@@ -621,9 +621,9 @@ CHK_UI
 GtkWidget *widget;
 GtkWidget *cw;
 trim(lv_config);
-widget=make_widget("pixmap",lv_config,w);
+widget=A4GL_make_widget("pixmap",lv_config,w);
 gtk_widget_show(widget);
-cw=GTK_WIDGET(get_curr_win_gtk());
+cw=GTK_WIDGET(A4GL_get_curr_win_gtk());
 gtk_fixed_put (GTK_FIXED (cw), widget, 0, 20);
 gtk_widget_show(cw);
 }

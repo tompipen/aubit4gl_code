@@ -77,7 +77,7 @@ function libhelp_showhelp(filename, n)
 	let msgerrcnt = 0
 	let filename = filename clipped
 code
-debug("filename=%s",filename);
+A4GL_debug("filename=%s",filename);
 	trim(filename);
 endcode
 

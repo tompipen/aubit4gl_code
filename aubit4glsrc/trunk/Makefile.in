@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.119 2003-03-23 07:19:15 afalout Exp $
+# $Id: Makefile.in,v 1.120 2003-05-16 06:49:11 afalout Exp $
 #
 
 ## ==================================================================
@@ -527,7 +527,14 @@ ifndef COMSPEC
 	@echo "Aubit tarball created"
 else
 #when on CygWin, maybe we should still use tar or bzip2, to preserve permissions, links...?
-	zip -r ${SOURCETARBASENAME} *
+#zip [-options] [-b path] [-t mmddyyyy] [-n suffixes] [zipfile list] [-xi list]
+#  -x   exclude the following names
+	zip -r ${SOURCETARBASENAME} * -x bin/aubitbuild.sh aubitbuild.sh
+#When running from aubitbuild.sh:
+#  adding: bin/aubitbuild.sh
+#  zip diagnostic: GetFileAttributes failed
+#zip warning: Permission denied
+#zip warning: could not open for reading: bin/aubitbuild.sh
 	@echo "Aubit zipball created"
 endif
 
