@@ -6,15 +6,9 @@
  * This was based on a bug found.
  *}
 
-database desp
-#database test1
+database test1
 
 main
-  define lv_r_xpto  record 
-    anInt INTEGER,
-    aString CHAR(20)
-  end record
-
   whenever error continue
   drop table xpto
   whenever error stop
@@ -28,17 +22,16 @@ main
   insert into xpto values (2,"Two")
   insert into xpto values (3,"Three")
 
-  declare cr_update cursor for 
-    select xpto.an_int, xpto.a_string
-      from xpto
-      for update
-  begin work
-  open cr_update
-  fetch cr_update into lv_r_xpto.*
-  update xpto set a_string = "The One"
-    where current of cr_update
-  close cr_update
-  commit work
+  call use_cursor()
+  call use_cursor()
+  drop table xpto
+end main
+
+function use_cursor()
+  define lv_r_xpto  record 
+    anInt INTEGER,
+    aString CHAR(20)
+  end record
 
   declare cr_update cursor for 
     select xpto.an_int, xpto.a_string
@@ -51,6 +44,5 @@ main
     where current of cr_update
   close cr_update
   commit work
-  drop table xpto
-end main
+end function
 
