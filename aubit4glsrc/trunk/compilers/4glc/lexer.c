@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.87 2004-03-25 18:07:43 mikeaubury Exp $
+# $Id: lexer.c,v 1.88 2004-03-27 11:09:48 mikeaubury Exp $
 #*/
 
 /**
@@ -293,6 +293,10 @@ isnum (char *s)
   int a;
   int dp = 0;
   int is_e = 0;
+  char orig[256];
+  int exp_n;
+
+  strcpy(orig,s);
 
   for (a = 0; a < strlen (s); a++)
     {
@@ -347,6 +351,8 @@ isnum (char *s)
       sscanf (ptr, "%ld", &n);
 	}
 
+/*
+
       if (strchr (buff, '.'))
 	{
 	  a_mode = 2;
@@ -359,7 +365,9 @@ isnum (char *s)
 
 	}
 
+
 	if (n<0) {n=0-n;inv=1;}
+	exp_n=n;
       while (n)
 	{
 	  if (a_mode == 1)
@@ -372,16 +380,27 @@ isnum (char *s)
 	  n--;
 	}
 
+
       if (a_mode == 1)
 	{
-		if (inv) sprintf (s, "%ld", 1/a_i);
+		//printf("a_i=%ld\n",a_i);
+		if (inv) sprintf (s, "%lf", 1.0/(double)a_i);
 		else     sprintf (s, "%ld", a_i);
 	}
       else
 	{
-	if (inv) sprintf (s, "%f", 1.0/a_d);
-	else sprintf (s, "%f", a_d);
+		//printf("a_d=%lf\n",a_d);
+	//if (inv) sprintf (s, "%32.8lf", 1.0/a_d);
+	//else sprintf (s, "%lf", a_d);
+		a_d=strtod(orig,0);
+		sprintf(s,"%.8lf",a_d);
+
 	}
+*/
+
+	a_d=strtod(orig,0);
+	sprintf(s,"%.8lf",a_d);
+	//printf("%s-->%s\n",orig,s);
     }
 
   if (strchr (s, '.'))
@@ -591,20 +610,23 @@ read_word2 (FILE * f, int *t)
       if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
 	{
 		char *ptr;
-		
-	  /*printf("Word : %s\n",word); */
-	  if ((a=='+' || a=='-') && strlen(word)>2 && toupper(word[strlen(word)-1])=='E') {
+	  	//printf("Word : %s a=%c\n",word,a); 
+	  	if ((a=='+' || a=='-') && strlen(word)>=2 && toupper(word[strlen(word)-1])=='E') {
 		char *ptr;
+		//printf("a=%c\n",a);
 		ptr=strdup(word);
 		ptr[strlen(ptr)-1]=0;
 		if (isnum(ptr))  {
 				free(ptr);
       				ccat (word, a, instrs || instrd);
+					//printf("Its a number : %s\n",ptr);
 				continue;
+
+		} else {
+			//printf("Its not a number : %s\n",ptr);
 		}
 		free(ptr);
-	}
-	else {
+	} else {
 
 	  if (strlen (word) > 0)
 	    {
