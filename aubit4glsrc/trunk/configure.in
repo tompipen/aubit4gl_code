@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.16 2002-01-23 09:06:16 afalout Exp $
+# $Id: configure.in,v 1.17 2002-01-23 11:13:01 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -129,13 +129,9 @@ AUBIT_DEBUG=1
 IFMX_ESQLC=no
 
 case "$target_os" in
-	linux-gnu)
-	    #echo "Linux gnu"
+	*linux*)
         #rpclib is part of clib on Linux
 		test_rpclib="0"
-		;;
-	*linux*)
-	    test_rpclib="0"
 		;;
 	cygwin)
 		ODBC=odbc32;
@@ -150,6 +146,10 @@ esac
 #converted to shell variables in "xxxxx_wwwww" format.
 
 if test "$enable_debug" = "no" ; then
+	#FIXME: where should I implement AUBIT_DEBUG in code:
+    # gcc -g
+    # DEBUG=ALL
+    # strip executables
 	AC_MSG_WARN(Debugging disabled)
 	AUBIT_DEBUG=0
 fi
@@ -210,6 +210,12 @@ AC_PATH_PROG(LDCONFIG, ldconfig, no)
 
 #FIXME: stop if rpcgen is not found on any platform other then Windows
 AC_PATH_PROG(RPCGEN, rpcgen, no)
+
+if test "$RPCGEN" = "no"; then
+	if test "$target_os" != "cygwin"; then
+		AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
+    fi
+fi
 
 #Fixme: set GTKBUILD=no if one of this two is not found, even if libraries
 #are installed
@@ -848,14 +854,51 @@ fi
 
 if test "$test_rpclib" = "1"
 then
-  # FIXME: Replace `main' with a function in `-lrpclib':
-	AC_CHECK_LIB([rpclib], [main])
-	if test $ac_cv_lib_rpclib_main != yes; then
-		AC_MSG_ERROR( "librpclib" not found. Please install RPC library. Stop.)
+	#force this check even if not specified on command line:
+	if test "$with_rpclib" = ""; then
+		with_rpclib=yes
+		AC_MSG_CHECKING(for rpclib support)
 	fi
 else
 	AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
 fi
+
+AC_ARG_WITH(rpclib,
+[  --with-rpclib[=DIR]   Include RPClib support.  DIR is the RPClib base
+                          install directory, defaults to /usr/local.],
+[
+
+	if test "$withval" != "no"; then
+
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			WARN_LD_LIBRARY_PATH=1
+	    fi
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		LDFLAGS="$LDFLAGS -L$withval/lib -I$withval/include"
+		# FIXME: Replace `main' with a function in `-lrpclib':
+		AC_CHECK_LIB([rpclib], [main])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+
+		if test $ac_cv_lib_rpclib_main = yes; then
+		    RPCLIB_INCLUDE=-I$withval/include
+		    RPCLIB_LFLAGS=-L$withval/lib
+		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
+		else
+			AC_MSG_ERROR( "-lrpclib" not found. Please install RPC library. Stop.)
+		    AC_DEFINE(HAVE_RPCLIB,0,[ ])
+		fi
+	else
+		AC_MSG_RESULT(disbled)
+	fi
+],[
+	AC_MSG_RESULT(--with-rpclib not specified)
+])
+
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
