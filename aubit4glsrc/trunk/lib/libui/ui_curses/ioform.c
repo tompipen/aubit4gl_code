@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.5 2002-11-23 08:45:10 mikeaubury Exp $
+# $Id: ioform.c,v 1.6 2003-01-07 18:05:34 psterry Exp $
 #*/
 
 /**
@@ -972,7 +972,8 @@ form_field_chk (struct s_screenio *sio, int m)
                               {
                                 push_char (get_str_attribute
                                            (fprop, FA_S_FORMAT));
-                                push_param ("using", FUNCTION_OP);
+                                //push_param ("using", FUNCTION_OP);
+                                pushop (OP_USING);
                               }
                             pop_param (buff, DTYPE_CHAR,
                                        get_field_width (form->currentfield));
@@ -2752,7 +2753,8 @@ copy_field_data (struct s_form_dets * form)
                           {
                             push_char (get_str_attribute
                                        (fprop, FA_S_FORMAT));
-                            push_param ("using", FUNCTION_OP);
+                            //push_param ("using", FUNCTION_OP);
+                            pushop (OP_USING);
                           }
                         pop_param (buff, DTYPE_CHAR,
                                    get_field_width (form->currentfield));
