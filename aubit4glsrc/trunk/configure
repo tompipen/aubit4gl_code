@@ -7072,7 +7072,7 @@ else
 		echo "$as_me:7072: checking make version" >&5
 echo $ECHO_N "checking make version... $ECHO_C" >&6
 		#this creates fill set dump on Solaris
-		set `make --version 2>/dev/null | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+		set `make --version | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
 		#set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
 		if test "$1" != ""; then
 			if test "$1" = "3" -a "$2" -lt "50"; then
@@ -9180,7 +9180,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-    if test "$I4GL_PCOMPILER" != "no"; then
+    if test "$I4GL_CCOMPILER" != "no"; then
 	#For 4glWorks: try to understand if the product is esql/c 5+
 	#aware, or is a special case, ie c4gl 4.x or is not esql/c
 	#aware in any way, shape or form (ie an rds only shop)

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.65 2002-09-21 23:56:35 afalout Exp $
+# $Id: Makefile-common.in,v 1.66 2002-09-22 01:11:57 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -232,6 +232,11 @@ AWK                 =@AWK@
 #ld: fatal: option -h and building a dynamic executable are incompatible
 #ld: fatal: Flags processing errors
 
+#Solaris:
+#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+#ld: fatal: option -h and building a dynamic executable are incompatible
+#ld: fatal: Flags processing errors
+
 #LD                  =ld
 LD                  =${CC}
 ALL_LIBS			=@LIBS@
@@ -298,7 +303,12 @@ else
 	RDYNAMIC            =-rdynamic
 endif
 
-
+#Solaris ld:
+#   In static mode, -dn, relocatable object files given as argu-
+#     ments are combined to produce an executable object file.  If
+#     the  -r  option  is  specified, relocatable object files are
+#     combined to produce one relocatable object file
+#
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 
