@@ -712,7 +712,7 @@ int intprflg=0;
       strcat (buff, " SCROLL");
     }
   strcat (buff, " CURSOR");
-  if (h1)
+  if (h1 || esql_type ()==2) // All postgres cursors should be with hold
     {
       strcat (buff, " WITH HOLD");
     }

@@ -116,6 +116,7 @@ make_sql_bind (char *sql, char *type)
 	if (strchr (type, 'i')) {
 		char comma=' ';
       		printc("struct BINDING native_binding_i[]={\n");
+		if(ibindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<ibindcnt;a++) {
 			printc("   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
 			comma=',';
@@ -126,6 +127,7 @@ make_sql_bind (char *sql, char *type)
 	if (strchr (type, 'o')) {
 		char comma=' ';
       		printc("struct BINDING native_binding_o[]={\n");
+		if(obindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			printc(" %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
 			comma=',';
