@@ -10,10 +10,10 @@
 #ifndef _AUBIT_LIB_INCL_EXT_
 #define _AUBIT_LIB_INCL_EXT_
 
-	#include <stdarg.h>  /* va_start() */
-   	#include <ctype.h> /* tolower() toupper() */
+	#include <stdarg.h>  			/* va_start() */
+   	#include <ctype.h> 				/* tolower() toupper() */
 
-	#include <stdio.h> /* needed for FILE symbol */
+	#include <stdio.h> 				/* needed for FILE symbol */
 	#include <string.h>
 	#include <stdlib.h> 			/* free() */
 	#include <search.h> 			/* VISIT */
@@ -24,9 +24,12 @@
 	#include <sys/types.h>
 	#include <time.h>
 
-	#include <pwd.h>    /* getpwduid() */
+	#include <pwd.h>    			/* getpwduid() */
 
-    /* ======================== from a4gl_aubitcolours.h ========== */
+	#include "a4gl_incl_4gldef.h" 	/* definitions used both in Aubit compiler code and at run-time */
+
+
+	/* ======================== from a4gl_aubitcolours.h ========== */
 
 	#define AUBIT_COLOR_BLACK     0x00000
 	#define AUBIT_COLOR_RED       0x00100
@@ -434,7 +437,7 @@
 
 	#ifdef HAVE_CONFIG_H
 		/* header automatically created with AutoConf-configure */
-		#include "../../incl/config.h"
+		#include "a4gl_incl_config.h"
 	#endif
 
 	#ifdef DMALLOC
@@ -444,15 +447,6 @@
 	void debug_full (char *fmt,...);
 	void exitwith_sql(char *s) ;
 	void set_errm(char *s);
-
-	/* this is now ONLY in a4gl_incl_4glhdr.h
-	#ifndef NODEBUG
-		int set_line(char *s,long l);
-		#define debug set_line(__FILE__,__LINE__);debug_full
-	#else
-		#define debug null_func
-	#endif
-    */
 
 	/*
 	   This will prevent ussage of getenv and wgetenv functions:
@@ -603,28 +597,12 @@
 
 	#define set_status(a) set_status(a,0)
 
-	/*
-	should be neede donly for Auibt compiled 4gl to C code:
-	#include "a4gl_incl_4gldef.h"
-    */
-
 	/* ------------------ moved from 4gldef.h --------------------- */
-	/** SQLCA structure definition */
-	typedef struct {
-		int sqlcode;
-		char sqlerrm[73];
-		char sqlerrp[9];
-		int sqlerrd[6];
-		char sqlawarn[9];
-		char sqlstate[10];
-	} sqlca_struct;
 
 	/**
 	 * Binding information structure definition.
 	 * Used to bind values to and from SQL.
 	 */
-
-	/* warning: struct binding in a4gl_4glc_compiledefs is DIFFERENT!!!! */
 	struct BINDING {
 		void *ptr; /**< A pointer to the variable bounded */
 		int dtype; /**< The data type of the variable bounded */
@@ -1156,7 +1134,6 @@
 	void pushop (int a);
 	char *params_on_stack (char *_paramnames[],int n);
 
-    /* #include "a4gl_incl_4glhdr.h" */
 
 	int 	isnull 				(int type, char *buff);
 	void 	setnull 			(int type, char *buff, int size);

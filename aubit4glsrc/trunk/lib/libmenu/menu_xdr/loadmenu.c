@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.13 2002-06-29 13:12:02 afalout Exp $
+# $Id: loadmenu.c,v 1.14 2002-08-13 11:56:48 afalout Exp $
 #*/
 
 /**
@@ -43,35 +43,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include "a4gl_menuxw.h"
-	#include <gdk/gdk.h>
-	#include <gtk/gtk.h>
-
-	/* 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
-	 we need to set GETENV_OK and only then include debug.h */
-	#ifdef __CYGWIN__
-		#define GETENV_OK
-		#include <rpc/rpc.h>
-	#endif
-
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_io.h"
-	#include "a4gl_incl_4glhdr.h"
-	#include "a4gl_gtk_cr_funcs.h"
-	#include "a4gl_dbform.h"			/* struct s_form_dets */
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_menu_xdr_int.h"
-
-#endif
-
-
+#include "a4gl_lib_menu_xdr_int.h"
 
 /*
 =====================================================================

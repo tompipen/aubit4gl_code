@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.22 2002-07-26 14:37:03 mikeaubury Exp $
+# $Id: esql.ec,v 1.23 2002-08-13 11:56:48 afalout Exp $
 #
 */
 
@@ -107,43 +107,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include "a4gl_incl_4gldef.h"
-	#include "a4gl_database.h"
-
-	#ifndef WIN32
-		#include <string.h>
-		#include "a4gl_pointers.h"
-		#include "a4gl_dtypes.h"
-		#include <stdlib.h>
-	#else
-		#include <windows.h>
-		#include "a4gl_pointers.h"
-		#include "a4gl_dtypes.h"
-	#endif
-
-	#include "a4gl_constats.h"
-	#include "a4gl_incl_4glhdr.h"
-
-	#ifndef WIN32
-		#include <stdarg.h>
-	#endif
-
-	/* stack.h will eventually include stdlib.h, which uses getenv(), so
-	 * we need to set GETENV_OK and only then include debug.h
-	 */
-	#include "a4gl_stack.h"
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_sql_esqlc_int.h"
-
-#endif
-
+#include "a4gl_lib_sql_esqlc_int.h"
 
 EXEC SQL include sqlca;
 
@@ -155,7 +119,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.22 2002-07-26 14:37:03 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.23 2002-08-13 11:56:48 afalout Exp $";
 #endif
 
 #ifdef WIN32

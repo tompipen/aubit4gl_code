@@ -53,11 +53,6 @@
 	char *	get_report_stack_why(int a);
 	char *	get_report_stack_whytype(int a);
 
-	#ifdef OLD_INCL
-		#include "a4gl_incl_4glhdr.h" /* struct rep_structure */
-    #endif
-
-
 	struct expr_str
 	{
 	  char *expr;
@@ -196,12 +191,16 @@
 	};
 
 
-	/* warning: struct BINDING defined in a4gl_incl_4gldef.h is DIFFERENT */
-	struct binding
+	/* warning: struct BINDING defined in a4gl_libaubit4gl.h is DIFFERENT
+	uppercase-lowercase! So i renamed it to "binding_comp"
+	used in compile_c.c compile_perl.c mod.c */
+
+	struct binding_comp
 	{
 	  char varname[132];
 	  int dtype;
 	};
+
 
 	struct s_constr_buff
 	{
@@ -212,7 +211,7 @@
     /* ------------------------ end from a4gl_4glc_compiledefs.h ------------------- */
 
 
-	void 	expand_bind 		(struct binding * bind, int btype, int cnt);
+	void 	expand_bind 		(struct binding_comp * bind, int btype, int cnt);
 	char *	get_var_name 		(int z);
 	void 	chk_init_var 		(char *s);
 	void 	dump_expr 			(struct expr_str *orig_ptr);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: window.c,v 1.2 2002-08-13 11:56:48 afalout Exp $
 #*/
 
 /**
@@ -42,24 +42,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <gtk/gtk.h>
-
-	#include "a4gl_incl_4glhdr.h"
-	#include "a4gl_ui.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_gtk_4gl.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

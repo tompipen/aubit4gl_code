@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.22 2002-07-11 09:22:04 mikeaubury Exp $
+# $Id: stack.c,v 1.23 2002-08-13 11:56:48 afalout Exp $
 #
 */
 
@@ -48,38 +48,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <math.h>
-	#include <sys/types.h>
-	#include <ctype.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <time.h>
-
-	#ifndef WIN32
-		#include <unistd.h>
-		#include <pwd.h>
-	#endif
-
-	#include "a4gl_incl_4glhdr.h" 	/* push_param() */
-	#include "a4gl_dbform.h"
-	#include "a4gl_dates.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_acl_string.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_runtime_tui.h"	/* push_date() */
-	#include "a4gl_dlsql.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================

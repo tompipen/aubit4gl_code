@@ -1,12 +1,53 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: a4gl_incl_4glhdr.h,v 1.12 2002-08-13 11:56:48 afalout Exp $
+*/
+
 /**
  * @file
  * Header file used to include in the generated c files with origin
  * in the 4gl source files.
+ *
+ * This file is NOT included from anywhere else - compile_c.c prints
+ * include statemennt for this file when outputing C code that is result
+ * of compiling 4gl code by 4glc
+ *
+ * Therefore, this file contains definitions and prototypes that are
+ * needed ONLY when running compiled programs, and NOT anywhere else in
+ * Aubit compiler or libraries code.
+ *
  */
 
 #ifndef FGLHDR_INCL
 #define FGLHDR_INCL
 	#include <stdio.h>
+	#include "a4gl_incl_4gldef.h"
+
+
 	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
 	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
 	#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
@@ -19,20 +60,8 @@
 	#define BEFORE_INP  (_fld_dr==-99)
 	#define AFTER_INP  (_fld_dr==-95)
 	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
-
-
-#ifdef OLD_INCL
-
-	/* not strictly voids - but saves getting into the details */
-	void *prepare_glob_sql (char *s,int ni,void *b);
-#endif
 	#define set_status(a) set_status(a,0)
 
-	#include "a4gl_incl_4gldef.h"
-
-#ifndef OLD_INCL
-	#include "a4gl_libaubit4gl.h"
-#endif
 
     #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
     /* for everything except libaubit4gl */
@@ -181,37 +210,6 @@
 	#define ENCODE_SIZE(x) (x<<16)
 	#define DECODE_SIZE(x) (x>>16)
 
-	/* Prototpes for functions that should be seen */
-#ifdef OLD_INCL
-	char *	new_string(int a);
-	int 	pop_bool(void);
-	int 	pop_int(void);
-	long 	pop_long(void);
-	long 	pop_date(void);
-	float 	pop_float(void);
-	double 	pop_double(void);
-	int 	pop_var(void *p,int d) ;
-	int 	pop_var2(void *p,int d,int s) ;
-	double 	ret_var(void *p,int d) ;
-	int 	pop_char(char *z,int size);
-	char *	char_pop(void);
-	int 	pop_param(void *p,int d,int size);
-
-	void 	pop_params		(struct BINDING *b,int n);
-	void 	push_param		(void *p,int d);
-	void 	push_params 	(struct BINDING *b, int n);
-
-	void 	push_user(void);
-	void 	push_today(void);
-	int 	opboolean(void);
-	void 	pop_args(int a) ;
-	void 	debug_print_stack(void) ;
-	void 	print_stack(void) ;
-
-
-	void 	locate_var(struct fgl_int_loc *p,char where,char *filename);
-#endif
-
 	#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#define dll_export __declspec(dllexport)
 		#define dll_import __declspec(dllimport)
@@ -234,55 +232,6 @@
 	#define NEW(struct) get_set(struct,0,GETSETNEW,0,0)
 	#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
 
-#ifdef OLD_INCL
-
-	/* report stuff */
-	struct rep_structure {
-	    int top_margin,bottom_margin,left_margin,right_margin;
-	    int page_length;
-	    int has_first_page;
-	    char *next_page;
-	    char *rep_table; /* database table for aggregate values */
-	    struct BINDING *group_data;
-	    char output_mode;
-	    char output_loc[256];
-	    char top_of_page[256];
-	    FILE *output;
-	    int page_no;
-	    int printed_page_no;
-	    int line_no;
-	    int col_no;
-		/* was 	    int (*report)(); */
-		/* int (*report)(void); */ /* report.c:180: too many arguments to function */
-        int (*report)(int a, int b);
-	};
-	struct pdf_rep_structure {
-	    double top_margin,bottom_margin,left_margin,right_margin;
-	    double page_length;
-	    double page_width;
-	    int has_first_page;
-	    char *next_page;
-	    char *rep_table; /* database table for aggregate values */
-	    struct BINDING *group_data;
-	    char output_mode;
-	    char output_loc[256];
-	    FILE *output;
-	    int page_no;
-	    int printed_page_no;
-	    double line_no;
-	    double col_no;
-		/* was 	    int (*report)(); */
-		/* int (*report)(void); */ /* report.c:180: too many arguments to function */
-        int (*report)(int a, int b);
-		char font_name[256];
-	    double font_size;
-	    int paper_size;
-	    void *pdf_ptr;
-	   int font;
-	};
-
-	double pdf_size(double f, char c,struct pdf_rep_structure *p);
-#endif
 	#define REPORT_START -1
 	#define REPORT_FINISH -2
 	#define REPORT_DATA -3
@@ -304,14 +253,10 @@
 	#define WARN 2
 
 	#ifndef NODEBUG
-#ifdef OLD_INCL
-		int set_line(char *s,long l);
-#endif
 		#define debug set_line(__FILE__,__LINE__);debug_full
 	#else
 		#define debug null_func
 	#endif
-
 
 	#define MENU_ALL "_AlL_"
 

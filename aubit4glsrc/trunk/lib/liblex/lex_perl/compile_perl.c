@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.17 2002-07-16 17:41:57 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.18 2002-08-13 11:56:48 afalout Exp $
 #
 */
 
@@ -137,11 +137,11 @@ extern char when_to_tmp[64];
 
 extern char when_to[64][8];
 
-extern struct binding ibind[NUMBINDINGS];
-extern struct binding nullbind[NUMBINDINGS];
-extern struct binding obind[NUMBINDINGS];
-extern struct binding fbind[NUMBINDINGS];
-extern struct binding ordbind[NUMBINDINGS];
+extern struct binding_comp ibind[NUMBINDINGS];
+extern struct binding_comp nullbind[NUMBINDINGS];
+extern struct binding_comp obind[NUMBINDINGS];
+extern struct binding_comp fbind[NUMBINDINGS];
+extern struct binding_comp ordbind[NUMBINDINGS];
 
 extern int ordbindcnt;
 
@@ -1986,7 +1986,7 @@ void print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,char *a
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
+  printc ("SET(\"s_disp_arr\",_dispio,\"binding_comp\",obind);\n");
   printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
   printc
@@ -2440,7 +2440,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr==-100) {\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"binding_comp\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);

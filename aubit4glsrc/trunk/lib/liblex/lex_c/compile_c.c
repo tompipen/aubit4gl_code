@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.29 2002-07-29 18:18:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.30 2002-08-13 11:56:48 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -156,11 +156,11 @@ extern char when_to_tmp[64];
 
 extern char when_to[64][8];
 
-extern struct binding ibind[NUMBINDINGS];
-extern struct binding nullbind[NUMBINDINGS];
-extern struct binding obind[NUMBINDINGS];
-extern struct binding fbind[NUMBINDINGS];
-extern struct binding ordbind[NUMBINDINGS];
+extern struct binding_comp ibind[NUMBINDINGS];
+extern struct binding_comp nullbind[NUMBINDINGS];
+extern struct binding_comp obind[NUMBINDINGS];
+extern struct binding_comp fbind[NUMBINDINGS];
+extern struct binding_comp ordbind[NUMBINDINGS];
 
 extern int ordbindcnt;
 
@@ -288,7 +288,20 @@ open_outfile(void)
   hfile = mja_fopen (h, "w");
 
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
-    fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n");
+	/*
+  	strange: was this supposed to be A4GL_AUBITGUI and not GTKGUI?
+    Since GTK programs are working anyway, should I assume this is
+    obsolete code?
+	*/
+
+	/* fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n"); */
+    /* only this was in a4gl_incl_acl4glgui.h, which was removed from CVS: */
+	
+	fprintf (hfile, "#include <gtk/gtk.h>\n");
+	fprintf (hfile, "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,'on')==0||strnullcmp(data,'clicked')==0))\n");
+	fprintf (hfile, "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
+	fprintf (hfile, "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
+
   }
 }
 
@@ -2109,7 +2122,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
+  printc ("SET(\"s_disp_arr\",_dispio,\"binding_comp\",obind);\n");
   printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
   printc
@@ -2608,7 +2621,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr==-100) {\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"binding_comp\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.2 2002-07-26 14:37:03 mikeaubury Exp $
+# $Id: a4gl_API_sql.h,v 1.3 2002-08-13 11:56:48 afalout Exp $
 #
 */
 
@@ -87,7 +87,6 @@ define it in any case? */
 	int A4GLSQL_get_datatype   (char *db, char *tab, char *col);
 	int A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd);
 	int A4GLSQL_set_conn   (char *sessname);
-    /* #include "a4gl_incl_4gldef.h" */ /* struct BINDING */
     struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.54 2002-07-21 06:41:48 afalout Exp $
+# $Id: Makefile-common.in,v 1.55 2002-08-13 11:56:47 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -232,7 +232,7 @@ NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 C_IFLAGS            =-I/usr/local/include
-C_DFLAGS			+=-DDEBUG
+C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H
 
 #This can be overriden from command line: "make OLD_INCL=0" to compile
 #with new include files:

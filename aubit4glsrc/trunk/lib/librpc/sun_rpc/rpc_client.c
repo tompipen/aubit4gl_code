@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.8 2002-06-29 13:12:03 afalout Exp $
+# $Id: rpc_client.c,v 1.9 2002-08-13 11:56:48 afalout Exp $
 #*/
 
 /**
@@ -42,27 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include "a4gl_xdr_rpc_stack.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_runtime_tui.h"		/* push_long() */
-	#include "a4gl_incl_4glhdr.h" 		/* pop_int() */
-
-	#ifdef __CYGWIN__
-		#define GETENV_OK
-		/* On Cygwin, stack.h will eventually include stdlib.h, that will have getenv
-		call. Everywhere else, we should use acl_getenv. */
-	#endif
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_rpc_xdr_int.h"
-
-#endif
-
+#include "a4gl_lib_rpc_xdr_int.h"
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.75 2002-07-16 20:40:47 mikeaubury Exp $
+# $Id: mod.c,v 1.76 2002-08-13 11:56:47 afalout Exp $
 #
 */
 
@@ -197,15 +197,15 @@ int constr_cnt = 0;
  * Used for instructions like execute using or open using wher we have a list 
  * of variables that act as input for the statement.
  */
-struct binding ibind[NUMBINDINGS];
-struct binding nullbind[NUMBINDINGS];
+struct binding_comp ibind[NUMBINDINGS];
+struct binding_comp nullbind[NUMBINDINGS];
 
 /**
  * Output bind array.
  */
-struct binding obind[NUMBINDINGS];
-struct binding fbind[NUMBINDINGS];
-struct binding ordbind[NUMBINDINGS];
+struct binding_comp obind[NUMBINDINGS];
+struct binding_comp fbind[NUMBINDINGS];
+struct binding_comp ordbind[NUMBINDINGS];
 
 int ordbindcnt = 0;
 int ibindcnt = 0;           /** Number of elements in ibind array */
@@ -4199,9 +4199,9 @@ print_push_rec (char *s, char *b)
  * @param cnt The number of elements in the bind array.
  */
 void 
-expand_bind (struct binding * bind, int btype, int cnt)
+expand_bind (struct binding_comp * bind, int btype, int cnt)
 {
-  struct binding save_bind[NUMBINDINGS];
+  struct binding_comp save_bind[NUMBINDINGS];
   char buff[256];
   int a;
   for (a = 0; a < cnt; a++)

@@ -1,30 +1,31 @@
-/* *****************************************************************************
- * (c) 1997-2002 Aubit Computing Ltd.
- *
- * $Id: a4gl_incl_4gldef.h,v 1.6 2002-06-29 13:12:01 afalout Exp $
- *
- * Change History :
- *	$Log: not supported by cvs2svn $
- *	Revision 1.5  2002/06/06 12:31:26  afalout
- *	Fixing warnings with -pedantic
- *	
- *	Revision 1.4  2002/05/28 10:32:08  afalout
- *	Fixing redundant declarations with -Wredundant-decls
- *	
- *	Revision 1.3  2002/05/20 11:41:12  afalout
- *	Fixing warnings wiht -Wall
- *
- *	Revision 1.2  2002/05/18 14:57:29  mikeaubury
- *	small changes
- *
- *	Revision 1.1  2002/04/25 06:32:46  afalout
- *	Adding a4gl_xxx_ prefix to remaining header files
- *
- *	Revision 1.1  2002/04/13 11:09:49  saferreira
- *	Informix connector
- *
- *
- *****************************************************************************/
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: a4gl_incl_4gldef.h,v 1.7 2002-08-13 11:56:48 afalout Exp $
+*/
 
 /**
  * @file
@@ -34,12 +35,26 @@
  *
  * Header file used to include in the generated c files with origin
  * in the 4gl source files.
+ *
+ * This file is included from:
+ * a4gl_incl_4glhdr.h (included by 4glc compiled 4gl code)
+ * and
+ * a4gl_libaubit4gl.h (included from the most of Aubit compiler and libraries code)
+ *
  */
 
 #ifndef FGLDEF_INCL
 #define FGLDEF_INCL
 
-	#include <stdio.h>
+	/** SQLCA structure definition */
+	typedef struct {
+		int sqlcode;
+		char sqlerrm[73];
+		char sqlerrp[9];
+		int sqlerrd[6];
+		char sqlawarn[9];
+		char sqlstate[10];
+	} sqlca_struct;
 
 	/**
 	 * Decimal 4gl data type variable definition
@@ -54,54 +69,12 @@
 	typedef fgldecimal FglMoney;
 
 	/**
-	 * Money 4gl data type variable definition 
+	 * Money 4gl data type variable definition
 	 */
 	typedef struct  {
 		char data[64]; /**< The value stored in money variable */
 	} fglmoney;
 
-
-#ifdef OLD_INCL
-
-	/** SQLCA structure definition */
-	typedef struct {
-		int sqlcode;
-		char sqlerrm[73];
-		char sqlerrp[9];
-		int sqlerrd[6];
-		char sqlawarn[9];
-		char sqlstate[10];
-	} sqlca_struct;
-
-#endif
-
-
-
-#ifdef OLD_INCL
-	/**
-	 * Binding information structure definition.
-	 * Used to bind values to and from SQL.
-	 */
-
-	/* warning: struct binding in a4gl_4glc_compiledefs is DIFFERENT!!!! */
-	struct BINDING {
-		void *ptr; /**< A pointer to the variable bounded */
-		int dtype; /**< The data type of the variable bounded */
-		long size; /**< The size in bytes of the variable bounded */
-	};
-
-	/**
-	 * Location definition structure for blobs.
-	 */
-	struct fgl_int_loc {
-	  char where;
-	  FILE *f;
-	  long memsize;
-	  char filename[256];
-	  void *ptr;
-	};
-
-#endif
 
 	#define fglbyte struct fgl_int_loc
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_nomenu.c,v 1.1 2002-06-29 13:12:02 afalout Exp $
+# $Id: menu_nomenu.c,v 1.2 2002-08-13 11:56:48 afalout Exp $
 #*/
 
 /**
@@ -43,23 +43,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-/*
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_io.h"
-	#include "a4gl_incl_4glhdr.h"
-	#include "a4gl_gtk_cr_funcs.h"
-	#include "a4gl_dbform.h"	*/		/* struct s_form_dets */
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_menu_int.h"
-
-#endif
-
+#include "a4gl_lib_menu_int.h"
 
 /* what do we need here? */
 

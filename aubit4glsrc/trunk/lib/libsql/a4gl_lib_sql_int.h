@@ -5,7 +5,6 @@
 
 /* ==================== from a4gl_database.h ============== */
 
-	/* #include "a4gl_incl_4gldef.h" */
 
 	/**
 	 * An SQL statement identification structure.

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.6 2002-05-14 09:27:27 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.7 2002-08-13 11:56:47 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -182,7 +182,7 @@ make install
 
 #Include files:
 /opt/aubit4gl/incl/a4gl_incl_4glhdr.h
-/opt/aubit4gl/incl/a4gl_incl_acl4glgui.h
+#/opt/aubit4gl/incl/a4gl_incl_acl4glgui.h
 "/opt/aubit4gl/incl/*.mk"
 "/opt/aubit4gl/incl/*.mki"
 
