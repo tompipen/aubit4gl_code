@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.26 2003-05-22 21:59:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.27 2003-05-23 17:51:28 mikeaubury Exp $
 #*/
 
 /**
@@ -1343,6 +1343,10 @@ A4GL_set_fields (void *vsio)
     wid = 1;
   A4GL_debug ("in set fields");
   formdets = sio->currform;
+  if (formdets==0) {
+	A4GL_exitwith("No form");
+	return 0 ;
+  }
   A4GL_debug ("set fdets");
 
   flg = 0;
@@ -2450,6 +2454,10 @@ A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
+  if (s->currform==0) {
+	A4GL_push_char("");
+	return 0;
+  }
   A4GL_int_form_driver (s->currform->form, REQ_FIRST_PAGE);
 
   A4GL_debug ("Push_constr");
