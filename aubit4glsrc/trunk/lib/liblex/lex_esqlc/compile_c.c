@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.24 2003-03-29 16:48:31 mikeaubury Exp $
+# $Id: compile_c.c,v 1.25 2003-04-01 20:28:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4241,4 +4241,14 @@ void lex_parsed_fgl() {
         if (outfile) fclose(outfile);
         if (hfile) fclose(hfile);
 }
+
+void print_import_legacy(char *s) {
+	printc("\n");
+	printc("\n");
+	printc("\n\nstatic int aclfgl_%s(int n) {\nreturn %s(n);\n}\n",s,s);
+	printc("\n");
+	printc("\n");
+}
+
+
 /* =========================== EOF ================================ */
