@@ -91,7 +91,19 @@ foreach c_gettables_drop into lv_tabname
 end foreach
 call set_pick_cnt(lv_cnt-1)
 
+while true
 call prompt_pick(lv_prompt,"") returning lv_tabname
+if lv_tabname is not null then
+	select * from systables where tabname=lv_tabname
+	if sqlca.sqlcode=100 then
+		error "Table not found"
+	else
+		exit while
+	end if
+else
+	exit while
+end if
+end while
 
 return lv_tabname
 end function

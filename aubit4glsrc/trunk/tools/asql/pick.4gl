@@ -54,7 +54,7 @@ define yinc integer
 define this_page integer
 code
 mv_maxy=A4GL_get_curr_height();
-mv_maxx=A4GL_get_curr_width();
+mv_maxx=A4GL_get_curr_width()+1;
 endcode
 let mv_max_option_width=0
 
@@ -68,7 +68,7 @@ let this_page=1
 
 
 if mv_cnt<4*9 then
-	let yinc=2
+	let yinc=1
 else 
 	let yinc=1
 end if
@@ -171,48 +171,111 @@ end function
 function prompt_pick(lv_txt,lv_value)
 define lv_txt char(80)
 define lv_value char(80)
+define lv_cnt integer
+define lv_found integer
+define lv_doneit integer
 call clear_screen_portion()
 
 if mv_cnt >=1 then
 	let int_flag=false
-	call show_pick()
-	prompt lv_txt clipped for lv_value #attribute(normal)
 
-	on key(down)
-		if mv_curr_option+1<=mv_cnt then
-			let mv_curr_option=mv_curr_option+1
-		else
-			let mv_curr_option=1
-		end if
+
+	while true
 		call show_pick()
-		continue prompt
+		prompt lv_txt clipped for lv_value #attribute(normal)
 	
-	on key(right)
-		if mv_curr_option+mv_rows<=mv_cnt then
-			let mv_curr_option=mv_curr_option+mv_rows
+		on key(down)
+			if mv_curr_option+1<=mv_cnt then
+				let mv_curr_option=mv_curr_option+1
+			else
+				let mv_curr_option=1
+			end if
 			call show_pick()
-		end if
-		continue prompt
-	
-	
-	on key(up)
-		if mv_curr_option-1>=1 then
-			let mv_curr_option=mv_curr_option-1
-		else
-			let mv_curr_option=mv_cnt
-		end if
-			call show_pick()
-		continue prompt
-	
-	on key(left)
-		if mv_curr_option-mv_rows>=1 then
-			let mv_curr_option=mv_curr_option-mv_rows
-			call show_pick()
-		end if
-		continue prompt
-	
-	end prompt
+			continue prompt
+		
+		on key(right)
+			let lv_doneit=0
+			if mv_curr_option+mv_rows<=mv_cnt then
+				if mv_cpage=mv_printat[mv_curr_option+mv_rows].page_no then
+					let mv_curr_option=mv_curr_option+mv_rows
+					call show_pick()	
+					let lv_doneit=1
+				end if
+			end if
 
+			continue prompt
+		
+		
+		on key(up)
+			if mv_curr_option-1>=1 then
+				let mv_curr_option=mv_curr_option-1
+			else
+				let mv_curr_option=mv_cnt
+			end if
+				call show_pick()
+				continue prompt
+		
+		on key(left)
+			let lv_doneit=0
+			if mv_curr_option-mv_rows>=1 then
+				if mv_cpage=mv_printat[mv_curr_option-mv_rows].page_no then
+					let mv_curr_option=mv_curr_option-mv_rows
+					call show_pick()
+					let lv_doneit=1
+				end if
+			end if
+			continue prompt
+		
+		end prompt
+	
+		if (lv_value !="," and lv_value!=".") or int_flag=true or lv_value is null then
+			exit while
+		end if
+	
+		if lv_value="." then
+			if mv_cpage=mv_npages and mv_cpage=1 then
+				# Theres only a single page
+			else 
+				let lv_found=0
+				for lv_cnt=mv_curr_option to mv_cnt
+					if mv_cpage!=mv_printat[lv_cnt].page_no then
+						let mv_curr_option=lv_cnt
+						let lv_found=1
+						exit for
+					end if
+				end for
+				if lv_found=0 then
+					let mv_curr_option=1
+				end if
+			end if
+		end if
+
+
+
+		if lv_value="," then
+			if mv_cpage=mv_npages and mv_cpage=1 then
+				# Theres only a single page
+			else 
+				let lv_found=0
+				for lv_cnt=mv_curr_option to 1 step -1
+					if mv_cpage!=mv_printat[lv_cnt].page_no then
+						let mv_curr_option=lv_cnt
+						let lv_found=1
+						exit for
+					end if
+				end for
+
+				if lv_found=0 then
+					let mv_curr_option=mv_cnt
+				end if
+			end if
+		end if
+
+
+	end while
+	
+	
+	
 	if int_flag=true then
 		call clear_screen_portion()
 		return ""
