@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.82 2002-07-14 08:09:54 afalout Exp $
+# $Id: 4glpc,v 1.83 2002-08-29 10:43:47 mikeaubury Exp $
 #
 
 ########################################################################
@@ -273,6 +273,7 @@ function showerror {
 
 ALLPARAMS=$@
 
+# This needs checking
 if [ -f ${AUBITETC}/aubitrc ]
 then
 	A1=${AUBITETC}/aubitrc
