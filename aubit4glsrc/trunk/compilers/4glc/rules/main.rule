@@ -18,7 +18,9 @@ func_or_main2 : func_or_main
 	;
 
 at_term_cmd :
-        AT_TERMINATION_CALL  identifier
+        AT_TERMINATION_CALL  identifier {
+		printc("exitwith(\"NOT IMPLEMENTED : AT TERMINATION\");");
+	}
 ;
 
 func_or_main	:	func_def

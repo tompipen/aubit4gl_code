@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.13 2001-09-18 08:32:23 mikeaubury Exp $
+* $Id: mod.c,v 1.14 2001-09-22 20:09:59 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.13  2001/09/18 08:32:23  mikeaubury
+*	More fixes..
+*	
 *	Revision 1.12  2001/09/17 21:12:37  mikeaubury
 *	new and improved...
 *	But still working in it..
@@ -1764,7 +1767,7 @@ start_bind (char i, char *var)
       ordbindcnt = 0;
     }
 
-  if (i == 'f')
+  if (i == 'f'||i=='F')
     {
       fbindcnt = 0;
     }
@@ -1782,7 +1785,7 @@ get_bind_cnt (char i)
     return nullbindcnt;
   if (i == 'o')
     return obindcnt;
-  if (i == 'f')
+  if (i == 'f'||i=='F')
     return fbindcnt;
 }
 
@@ -1862,18 +1865,22 @@ add_bind (char i, char *var)
       return ordbindcnt;
     }
 
-  if (i == 'f')
+
+
+
+  if (i == 'f'||i=='F')
     {
+      if (i=='f') dtype=-1;
+
       if (dtype == -2)
+	push_bind_rec (var, i);
+      else
 	{
-	  debug ("push_bind_rec...");
-	  push_bind_rec (var, i);
-	} else {
-      		strcpy (fbind[fbindcnt].varname, var);
-      		fbind[fbindcnt].dtype = dtype;
-      		fbindcnt++;
-      		return fbindcnt;
-	}
+      	strcpy (fbind[fbindcnt].varname, var);
+      	fbind[fbindcnt].dtype = 0;
+      	fbindcnt++;
+      	return fbindcnt;
+       }
     }
 
 }
@@ -1886,7 +1893,7 @@ print_param (char i)
   printc ("\n");
 
   debug("Expanding binding.. - was %d entries",fbindcnt);
-  expand_bind(&fbind,'f',fbindcnt);
+  expand_bind(&fbind,'F',fbindcnt);
   debug("Expanded - now %d entries",fbindcnt);
 
   if (i == 'r')
@@ -2718,7 +2725,7 @@ start_arr_bind (char i, char *var)
     {
       obindcnt = 0;
     }
-  if (i == 'f')
+  if (i == 'f'||i=='F')
     {
       fbindcnt = 0;
     }
@@ -2783,7 +2790,7 @@ add_arr_bind (char i, char *nvar)
 	}
       return obindcnt;
     }
-  if (i == 'f')
+  if (i == 'f'||i=='F')
     {
       strcpy (fbind[fbindcnt].varname, var);
       fbind[fbindcnt].dtype = dtype;
@@ -3259,6 +3266,7 @@ set_whenever (int c, char *p)
   int code;
   int oldcode;
   oldcode = c & 15;
+  debug("MJA Set_whenever : %d %s",c,p);
   c = c >> 4;
   c = c << 4;
   code = -1;
@@ -3267,9 +3275,16 @@ set_whenever (int c, char *p)
     case WHEN_ERROR:
       code = A_WHEN_ERROR;
       break;
+
     case WHEN_ANYERROR:
-      code = A_WHEN_ANYERROR;
+      code = A_WHEN_ERROR;
       break;
+
+// Can someone explain the difference...
+    //case WHEN_ANYERROR:
+      //code = A_WHEN_ANYERROR;
+      //break;
+
     case WHEN_SQLERROR:
       code = A_WHEN_SQLERROR;
       break;
@@ -3316,6 +3331,8 @@ prchkerr (int l, char *f)
 /* 1 = stop */
 /* 2 = call */
 /* 3 = goto */
+
+debug("MJA prchkerr %d %s",l,f);
 
   printc ("if (sqlca.sqlcode !=0 || status !=0 || %d) {\n",
 	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
