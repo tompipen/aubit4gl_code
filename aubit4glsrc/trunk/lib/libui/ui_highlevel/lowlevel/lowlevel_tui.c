@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.13 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.14 2004-02-11 19:45:02 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -2194,15 +2194,21 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	buff[2]=A4GL_LL_make_label(0,fwidth-1,"]");
 	buff[3]=0;
 
-	f=A4GL_LL_new_form(buff);
+	f=A4GL_form_new_form(buff);
 
         A4GL_form_set_form_win (f, panel_window(cwin));
         A4GL_form_set_form_sub (f, drwin);
 	a=A4GL_form_post_form(f);
 	A4GL_debug("construct - post_form = %d",a);
 	A4GL_mja_set_field_buffer(buff[1],0,rbuff);
+
 	A4GL_LL_screen_update();
+
+	A4GL_LL_int_form_driver(f,AUBIT_REQ_FIRST_FIELD);
 	A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
+	if (f->current==0) {
+		A4GL_debug("Still not current...");
+	}
 	if (initpos) {
 		//for (a=0;a<=initpos;a++) {
 			//A4GL_LL_int_form_driver(f,AUBIT_REQ_NEXT_CHAR);
@@ -2216,8 +2222,8 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 		A4GL_LL_set_carat(f);
 		A4GL_LL_screen_update();
 		a=A4GL_LL_getch_swin (panel_window(cwin));
-		
-		if (abort_pressed) break;
+		A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
+		if (abort_pressed||a==-100) {abort_pressed=1;a=-100;break;}
 		if (A4GL_has_event_for_keypress(a,evt)) return a;
 
 

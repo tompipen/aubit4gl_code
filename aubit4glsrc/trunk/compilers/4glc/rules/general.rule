@@ -120,10 +120,10 @@ ident_p2 : NAMED {
 var_or_string : var | CHAR_VALUE;
 
 field_name2_as_struct	:	identifier {
-					$<field_entry>$=new_field_entry($<str>1,"1",0); 
+					$<field_entry>$=new_field_entry($<str>1,"1",1); 
 				}
 				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE {
-					$<field_entry>$=new_field_entry($<str>1,$<str>3,0); 
+					$<field_entry>$=new_field_entry($<str>1,$<str>3,1); 
 				}
 				| identifier DOT MULTIPLY {
 					char buff[256];

@@ -600,7 +600,9 @@ A4GL_form_new_form (FIELD ** fields)
   form = (FORM *) malloc (sizeof (FORM));
   memcpy (form, &default_form, sizeof (FORM));
 
-  for (a = 0; fields[a]; a++);
+  for (a = 0; fields[a]; a++) {
+		A4GL_debug("a=%d field[a]=%p\n",a,fields[a]);
+	}
   form->maxfield = a;
 
   form->field = malloc (sizeof (FIELD *) * form->maxfield);
@@ -674,6 +676,9 @@ FIELD *current;
 int field_length;
 int a;
 A4GL_debug("TTT - form_driver %d %x",c,c);
+if (c==REQ_FIRST_FIELD) {
+	A4GL_debug("REQ FIRST FIELD detected");
+}
 
 current=form->current;
 
@@ -689,7 +694,7 @@ if (c!=REQ_FIRST_FIELD) {
 	cfield_buffer=A4GL_form_field_buffer(current,0);
 	field_length=strlen(cfield_buffer);
 } else {
-
+A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
       for (a = 0; a < form->maxfield; a++)
 	{
 	  int fopts;
@@ -714,30 +719,60 @@ if (c!=REQ_FIRST_FIELD) {
 	A4GL_debug("----> FIELD WAS '%s'",cfield_buffer);
 
       // Add it as a character..
-	if (form->curcol<field_length) {
 
-		if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
-			memset(cfield_buffer,' ',field_length);
-		}
-		
-		if ((form->status&2)==0) { // Overwrite mode...
-			A4GL_debug("OVERWRITE CHARACTER : %c",c);
-			cfield_buffer[form->curcol]=c;
-		} else {
-			char *rest_of_line;
-			A4GL_debug("INSERT CHARACTER : %c",c);
-			rest_of_line=strdup(&cfield_buffer[form->curcol]);
-			cfield_buffer[form->curcol]=c;
-			if (strlen(rest_of_line)) {
-				strncpy(&cfield_buffer[form->curcol+1],rest_of_line,strlen(rest_of_line)-1);
+	if (current->maxgrow!=0) {
+		if (form->curcol<field_length) {
+			if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
+				memset(cfield_buffer,' ',field_length);
 			}
+			
+			if ((form->status&2)==0) { // Overwrite mode...
+				A4GL_debug("OVERWRITE CHARACTER : %c",c);
+				cfield_buffer[form->curcol]=c;
+			} else {
+				char *rest_of_line;
+				A4GL_debug("INSERT CHARACTER : %c",c);
+				rest_of_line=strdup(&cfield_buffer[form->curcol]);
+				cfield_buffer[form->curcol]=c;
+				if (strlen(rest_of_line)) {
+					strncpy(&cfield_buffer[form->curcol+1],rest_of_line,strlen(rest_of_line)-1);
+				}
+			}
+	
+			/* Now advance one character */
+			if (form->curcol<(field_length-1)) {
+				form->curcol++;	
+			} 
 		}
 
-		/* Now advance one character */
-		if (form->curcol<(field_length-1)) {
-			form->curcol++;	
-		} 
+	}  else {
+		if (form->curcol<=field_length-1) {
+			if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
+				memset(cfield_buffer,' ',field_length);
+			}
+			
+			if ((form->status&2)==0) { // Overwrite mode...
+				A4GL_debug("OVERWRITE CHARACTER : %c",c);
+				cfield_buffer[form->curcol]=c;
+			} else {
+				char *rest_of_line;
+				A4GL_debug("INSERT CHARACTER : %c",c);
+				rest_of_line=strdup(&cfield_buffer[form->curcol]);
+				cfield_buffer[form->curcol]=c;
+				if (strlen(rest_of_line)) {
+					strncpy(&cfield_buffer[form->curcol+1],rest_of_line,strlen(rest_of_line)-1);
+				}
+			}
+	
+			/* Now advance one character */
+			if (form->curcol<(field_length-1)) {
+				form->curcol++;	
+			} 
+		}
 	}
+
+
+
 	A4GL_debug("----> FIELD NOW '%s'",cfield_buffer);
         redraw_current_field(form);
         return E_OK;
