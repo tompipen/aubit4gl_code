@@ -638,6 +638,17 @@ char *qry_strings[255]={
 
 
 
+void set_stdin_width() {
+char buff[256];
+char *ptr;
+int w;
+ptr=acl_getenv("COLUMNS");
+if (ptr==0) return 132;
+if (strlen(ptr)==0) return 132;
+w=atoi(ptr);
+if (w<=20) return 132;
+return w;
+}
 
 
 char *get_qry_msg(int qry_type,int n) {

@@ -38,6 +38,7 @@ extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
 int need_cursor_free=0;
+int stdin_screen_width=-1;
 
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
@@ -109,8 +110,8 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
                 display_mode=DISPLAY_ACROSS;
         }
 } else {
-
-        if (field_widths()>132) {
+        if (stdin_screen_width==-1) set_stdin_width();
+        if (field_widths () > stdin_screen_width) {
                 display_mode=DISPLAY_DOWN;
         } else {
                 display_mode=DISPLAY_ACROSS;

@@ -42,6 +42,8 @@ extern char *delim;
 #define DISPLAY_DOWN   2
 #define DISPLAY_UNLOAD 3
 
+int stdin_screen_width=-1;
+
 extern char **columnNames;
 extern int *columnWidths;
 #define EXEC_MODE_INTERACTIVE   0
@@ -794,7 +796,8 @@ if (display_mode != DISPLAY_UNLOAD)
     else
       {
 
-	if (field_widths () > 132)
+	if (stdin_screen_width==-1) set_stdin_width();
+	if (field_widths () > stdin_screen_width)
 	  {
 	    display_mode = DISPLAY_DOWN;
 	  }
