@@ -26,51 +26,50 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.8 2002-09-09 06:51:01 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-12-17 00:14:50 afalout Exp $
 #
 
 ROOT    =../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                    Options
 ## ==================================================================
 
-4GLPC=${SH} ${ROOT}/bin/4glpc
-ESQL=@IFMX_ESQLC@
+4GLPC	=${SH} ${ROOT}/bin/4glpc
+ESQL	=@IFMX_ESQLC@
 CFLAGS	+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
+
+
+#informix_test.h
+#fgl_dml_suite.4gl
 
 OBJECTS	=test_informix_util.ec test_informix.o connection_suite.o \
 		ddl_suite.o dml_suite.o
 
-#THIS is wrong:
-#LIBS	=-lcheck -laubit4gl -lRPC_NORPC -lSQL_esql
 LIBS	=-lcheck -laubit4gl
-# ...because RPC_NORPC and SQL_esql -- are loaded by libaubit4gl
 
-#this is linked to libUI_TUI:
-#-lncurses -lpanel -lform and should be @CURSES_LIB_NAME@
-#this is linked to libUI_GTK:
-#-lgtk -lgdk
-#This is loaded dynamically at run-time by libaubit4gl, one or the other:
-#-lSQL_esql -lSQL_unixodbc
-
-#FIXME: also test if we have -lcheck
-ifneq "${ESQL}" "no"
-	ALL=test_informix 
-	#test_db.4ae
+ifeq "@HAS_CHECK@" "1"
+	ifneq "${ESQL}" "no"
+		ALL=test_informix
+		#test_db.4ae
+	else
+		ALL=no_esql
+	endif
 else
-	ALL=no_esql
+	ALL=no_check
 endif
+
+.PHONY: all clean no_esql no_check
 
 ## ==================================================================
 ##                    Targets
 ## ==================================================================
 
-ALL: ${ALL}
+all: ${ALL}
+	@echo "Successfully compiled default targets: ${ALL}"
 
 test_informix: ${OBJECTS}
 	$(ESQL) $(CFLAGS) $^ -o $@ ${LIBS}
@@ -85,12 +84,16 @@ fgl_ec_util.o: fgl_ec_util.ec
 no_esql:
 	@echo "Configure did not found esql compiler - cannot compile tests."
 
+no_check:
+	@echo "Configure did not found 'check' library - cannot compile tests."
+
 ## ==================================================================
 ##                    Clean
 ## ==================================================================
 
 clean:
-	${RM} *.o test_informix *.exe *.bak
+	${RM} *.o test_informix *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h \
+    test_informix_util.c
 
 # =============================== EOF ===============================
 
