@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.129 2002-11-08 07:23:30 afalout Exp $
+dnl # $Id: configure.in,v 1.130 2002-11-09 05:40:27 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -609,7 +609,7 @@ fi
 AC_MSG_CHECKING(YY Debugging)
 if test "$enable_yy_debug" = "yes" ; then
 	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
-	YYDEBUG="-DYYDEBUG=1"
+	YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE"
     AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
 else
     AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)
@@ -2949,20 +2949,24 @@ fi
         PLUGIN_NO="$PLUGIN_NO XML-RPC"
 	fi
 
-	if test "$HAVE_RPCLIB" != "0"; then
-
+	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
 		RPMFILE_11=$LIB_PREFIX/libMENU_XDR$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
+    else
+        PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+    fi
+
+	if test "$HAVE_RPCLIB" != "0"; then
 		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
 		RPMFILE_13=$LIB_PREFIX/libFORM_XDR$SO_EXT
-
 		RPMFILE_14=$LIB_PREFIX/libXDRPACKER_menu_list$SO_EXT
 		RPMFILE_15=$LIB_PREFIX/libXDRPACKER_report$SO_EXT
 		RPMFILE_16=$LIB_PREFIX/libXDRPACKER_struct_form$SO_EXT
         RPMFILE_17=$LIB_PREFIX/libPACKER_XDR$SO_EXT
 
-        PLUGIN_YES="$PLUGIN_YES MENU_XDR RPC_XDR FORM_XDR XDRPACKER"
+        PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER"
 	else
-        PLUGIN_NO="$PLUGIN_NO MENU_XDR RPC_XDR FORM_XDR XDRPACKER"
+        PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER"
 	fi
 
 	if test "$EXDATA_MPZ" != "no"; then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.36 2002-10-22 06:43:35 afalout Exp $
+# $Id: lexer.c,v 1.37 2002-11-09 05:40:41 afalout Exp $
 #*/
 
 /**
@@ -62,10 +62,10 @@
 #endif
 
 //#define stricmp strcasecmp
-#define stricmp aubit_strcasecmp
-#define TYPE_EOF  -1
-#define TYPE_USTRING  -2	/* unterminated string */
-#define TYPE_NUM 3
+#define stricmp 		aubit_strcasecmp
+#define TYPE_EOF  		-1
+#define TYPE_USTRING  	-2	/* unterminated string */
+#define TYPE_NUM 		3
 #define DBG
 
 /*
@@ -75,16 +75,17 @@
 */
 
 
-char 			idents[256][256];
-int 			idents_cnt = 0;
-FILE *			yyin = 0; 			/* Pointer to the source file openen being parsed */
-int 			yylineno = 1; 		/* Current line number */
+int 			idents_cnt 	= 0;
+FILE *			yyin 		= 0;	/* Pointer to the source file openen being parsed */
+int 			yylineno 	= 1;	/* Current line number */
+int 			lastlex 	= -2;
+int 			xccode 		= 0;
+int 			word_cnt 	= 0;
+
 char *			lastword;
-int 			lastlex = -2;
-int 			xccode = 0;
-extern int 		ccnt; 				/* defined in others.c */
+
 char 			xwords[256][256];
-int 			word_cnt = 0;
+char 			idents[256][256];
 long 			fpos;
 
 struct translate_string {
@@ -103,13 +104,15 @@ extern struct 	translate_string *translate_list;
 extern int 		translate_list_cnt;
 extern int 		chk4var;
 
+extern int 		ccnt; 				/* defined in others.c */
+
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
 
-char *translate(char *s);
+char *	translate	(char *s);
 
 
 /*
