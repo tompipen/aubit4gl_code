@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.105 2005-01-27 09:17:22 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.106 2005-02-03 08:33:42 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.105 2005-01-27 09:17:22 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.106 2005-02-03 08:33:42 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -302,17 +302,17 @@ clr_suppress_lines();
 /**
  * Print the C implementation of the FREE CURSOR 4gl statement.
  *
- * Not used and do not generate any implementation.
- *
- * FIXME: function exists in odbc/sql.c
  *
  * @param c The cursor name.
  */
 void
 print_free_cursor (char *s)
 {
-A4GL_save_sql("FREE %s", s);
-  printc ("\nEXEC SQL FREE %s\n", s);
+  static char *cname=0;
+  if (cname) free(cname);
+  cname=strdup(A4GL_strip_quotes(s));
+  A4GL_save_sql("FREE %s", s);
+  printc ("\nEXEC SQL FREE %s;\n", cname);
   print_copy_status ();
 }
 
