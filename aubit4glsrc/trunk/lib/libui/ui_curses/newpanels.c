@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.79 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: newpanels.c,v 1.80 2003-12-18 16:30:08 mikeaubury Exp $
 #*/
 
 /**
@@ -790,7 +790,10 @@ A4GL_mja_gotoxy (int x, int y)
     {
       A4GL_debug ("Move to %d %d fails", x, y);
     }
-  A4GL_mja_refresh ();
+
+  if (A4GL_isyes(acl_getenv("REFRESH_AFTER_MOVE"))) {
+  	A4GL_mja_refresh ();
+  }
 }
 
 /**
