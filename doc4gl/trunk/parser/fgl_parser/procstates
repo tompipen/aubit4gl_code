@@ -1,0 +1,90 @@
+#!/bin/sh
+
+#
+# This script creates states.c from data/defstates file
+#
+
+awk '
+BEGIN {
+	cnt=1;
+}
+
+/^#/ {next}
+
+/^[a-z_]*:/ {
+	split($0,arr,":")
+	state[arr[1]]="Yes"
+	states[arr[1]]=0
+	cstate=arr[1]
+	next
+}
+
+{
+	for (a=1;a<=NF;a++) {
+		cond[cstate,states[cstate]++]=$a
+
+		cons[cnt++]=$a
+	}
+}
+
+END {
+
+	print "/* "
+	print " * Created with procstates shell script from data/defstates - do not edit "
+	print " */"
+	print ""
+	print "#ifdef OLD_INCL"
+		print "#include \"kw.h\""
+		print "#include \"string.h\""
+		print "#include \"a4gl_debug.h\""
+		print "#include \"a4gl_4glc_4glc.h\""
+	print "#else"
+		print "#include \"../a4gl_4glc_int.h\""
+	print "#endif"
+	print ""
+#	print "static char *names[]={"
+#		for (a in state) { print "   \"" a "\"," }
+#	print "0};"
+	print " "
+	print "int statecnt[]={"
+		for (a in state) { 
+			print "   0 /* " a " */ ," 
+		}
+	print "0};"
+	print " "
+	print "void"
+	print "init_states(void) {"
+	for (a=1;a<cnt;a++) {
+		print "    turn_state(" cons[a] ",0);"
+	}
+	print "}"
+
+	print ""
+	print "void"
+	print "start_state(char *s,int on_off) {"
+	cnt=0
+	for (a in state) {
+		print "   if (strcmp(\"" a "\",s)==0) { /* " states[a] " */"
+		print "      if (on_off==1) statecnt[" cnt "]++;"
+		print "      else           statecnt[" cnt "]--;"
+		print " "
+		print "      //A4GL_debug(\"Start state %s %d\\n\",s,on_off);"
+		#print "      if (statecnt[" cnt "]>0&&on_off==0) return;"
+		print " "
+		for (b=0;b<states[a];b++) {
+			print "      turn_state(" cond[a,b] ",on_off);"
+		}
+
+		print "   }"
+		print ""
+	cnt++
+	}
+	print "}"
+	print ""
+	print "/* ============================= EOF ============================= */"
+	print ""
+}' $1 > generated/states.c
+
+
+
+

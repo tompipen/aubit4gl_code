@@ -599,6 +599,10 @@ function_def
 			op_local_variables 
 			fgl_statement_list
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
+	| ALLOCATE '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("ALLOCATE"),lineno+1,$3);InLimbo=1; }
 	| CHECK '(' op_argument_list ')'  /* Just to fix Andrej problem */
 			op_local_variables 
 			fgl_statement_list
@@ -623,6 +627,10 @@ function_def
 			op_local_variables 
 			fgl_statement_list
 		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("WARNING"),lineno+1,$3);InLimbo=1; }
+	| MENU '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("MENU"),lineno+1,$3);InLimbo=1; }
 	| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
 			 op_local_variables 
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
@@ -1590,12 +1598,14 @@ function_call
   : IDENTIFIER '(' op_call_parameters ')'
                                { StInsertFunctionCall($1,lineno+1); 
                                  $$=CpStr("%s(%s)",$1,$3);           }
+  | ALLOCATE '(' op_call_parameters ')' { $$=CpStr("ALLOCATE()"); }
   | CHECK '(' op_call_parameters ')' { $$=CpStr("CHECK()"); }
   | HEADER '(' op_call_parameters ')' { $$=CpStr("HEADER()"); }
   | UNLOAD '(' op_call_parameters ')' { $$=CpStr("UNLOAD()"); }
   | VERIFY '(' op_call_parameters ')' { $$=CpStr("VERIFY()"); }
   | LENGTH '(' fgl_operand ')' { $$=CpStr("LENGTH(%s)",$3); }
   | DATE '(' fgl_operand ')'   { $$=CpStr("DATE(%s)",$3); }
+  | MENU '(' op_call_parameters ')' { $$=CpStr("MENU()"); }
   | RESOURCE '(' fgl_operand ')'   { $$=CpStr("RESOURCE(%s)",$3); }
   | WARNING '(' op_call_parameters ')'   { $$=CpStr("RESOURCE(%s)",$3); }
   /*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    */
@@ -1752,6 +1762,8 @@ construct_variable_clause
       { CleanNameList($3);
          StInsertVariableUsage($1,lineno+1,ASSIGNMENT);}
   | BY NAME IDENTIFIER ON column_list 
+       {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
+  | BY NAME IDENTIFIER '.' IDENTIFIER ON column_list 
        {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
 
 
@@ -2045,6 +2057,7 @@ menu_key
 
 menu_action
   : NEXT OPTION STRING
+  | NEXT OPTION named_value
   | SHOW OPTION named_value
      /* VARIABLE USAGE */
   | SHOW OPTION menu_option_list
@@ -2565,6 +2578,7 @@ sql_statement:
   | lock
   | unlock
   | update_statistics
+  | alter_cmd 
   ;
 
 lock
@@ -2766,8 +2780,9 @@ column_constraint:
   | CHECK '(' search_condition ')'
   ;
 
-/*------------------------ 6.2 <table definition> ---------------------------*/
-
+/**
+ * The CREATE TABLE statement.
+ */
 table_definition:
   CREATE op_temp TABLE table_name
   '('  table_element_list ')' op_with_no_log
@@ -2792,6 +2807,268 @@ op_with_no_log
   : 
   | WITH NO LOG
   ;
+
+
+/**
+ * The alter table SQL statement.
+ * 4gl code example:
+ *   ALTER TABLE xptoTable (
+ *      ???? 
+ *   )
+ */
+alter_cmd 
+  : ALTER TABLE table_name alter_clauses_ss 
+  ;
+
+/**
+ * Comma separated of alter table possibilities.
+ * @todo : Understand what ss means.
+ */
+alter_clauses_ss
+  : alter_clause_ss 
+	| alter_clauses_ss ',' alter_clause_ss 
+  ;
+
+/**
+ * The possible ALTER TABLE subsections.
+ */
+alter_clause_ss
+  : alter_add_clause_ss 
+	| alter_drop_clause 
+	| alter_modify_clause 
+	| alter_add_constraint_clause 
+	| alter_drop_contraint_clause 
+	| alter_modify_next 
+	| alter_lock_mode 
+  ;
+
+/**
+ * Adition of a new column to a table to be used in the ALTER TABLE statement.
+ * 4gl code example:
+ *   ADD a CHAR(10) NOT NULL BEFORE xpto
+ *   ADD (a CHAR(10) NOT NULL, b SMALLINT) BEFORE xpto
+ */
+alter_add_clause_ss
+  : ADD add_column_clause_ss  
+	| ADD '(' add_column_clauses_ss ')'
+  ;
+
+/**
+ * A single column adition in a table to be used in the ADD substatement of
+ * the ALTER TABLE statement.
+ * 4gl code examples:
+ *   a CHAR(10)
+ *   a CHAR(10) NOT NULL BEFORE xpto
+ *   b SMALLINT BEFORE xpto
+ */
+add_column_clause_ss
+  : table_element_ss 
+	| table_element_ss BEFORE column_name 
+  ;
+
+/** 
+ * Comma separated list of columns to be added to a table.
+ * This is used in the ALTER TABLE statement.
+ * 4gl code examples:
+ *   a CHAR(10) NOT NULL, b SMALLINT
+ */
+add_column_clauses_ss
+  : add_column_clause_ss 
+	| add_column_clauses_ss ',' add_column_clause_ss 
+  ;
+
+/**
+ * Droping a column from a table in the ALTER TABLE statement.
+ * 4gl code example:
+ *   DROP xpto
+ *   DROP (a,b,c)
+ */
+alter_drop_clause
+  : DROP drop_column 
+	| DROP '(' drop_column_list ')'
+  ;
+
+/**
+ * Comma separated of column names to be droped from a table.
+ * 4gl code examples:
+ *   xpto
+ *   a,b
+ */
+drop_column_list 
+  : drop_column 
+	| drop_column_list ',' drop_column 
+  ;
+
+/**
+ * A possible column to be droped from a table.
+ * 4gl code examples:
+ *   xpto
+ *   a
+ *   b
+ */
+drop_column 
+  : column_name
+  ;
+
+/**
+ * Modification of a column in the ALTER TABLE statement.
+ * 4gl code examples: 
+ *   MODIFY 
+ */
+alter_modify_clause 
+  : MODIFY modify_column_clause_ss 
+	| MODIFY '(' modify_column_clauses_ss ')'
+  ;
+
+/**
+ * Comma separated list of column modifications used in the ALTER TABLE 
+ * statement.
+ * 4gl code examples:
+ */
+modify_column_clauses_ss 
+  : modify_column_clause_ss 
+	| modify_column_clauses_ss ',' modify_column_clause_ss 
+  ;
+
+/**
+ * Column modification used in the ALTER TABLE statement.
+ * 4gl code example:
+ */
+modify_column_clause_ss 
+  : table_element_ss 
+  ;
+
+/**
+ * Possible lock modes of a table. Used in the create table statement.
+ * 4gl code examples:
+ *   LOCK MODE PAGE
+ *   LOCK MODE ROW
+ */
+alter_lock_mode 
+  : LOCK MODE PAGE 
+	| LOCK MODE ROW 
+  ;
+
+/**
+ * Changing the next size in kilobytes of an extent of a table.
+ * 4gl code example:
+ *   MODIFY NEXT SIZE 100
+ */
+alter_modify_next 
+  : MODIFY NEXT NUMBER 
+  //: MODIFY NEXT SIZE NUMBER 
+  ;
+
+/**
+ * Adition of a constraint to a table, to be used inside an ALTER TABLE 
+ * statement.
+ * 4gl code examples:
+ *   ADD CONSTRAINT ???
+ *   ADD CONSTRAINT ( ??? )
+ */
+alter_add_constraint_clause
+  : ADD CONSTRAINT column_constraint_ss 
+	| ADD CONSTRAINT '(' column_constraints_ss ')'
+  ;
+
+alter_drop_contraint_clause
+  : DROP CONSTRAINT constraint_name
+	| DROP CONSTRAINT '(' column_constraints_ss ')'
+  ;
+
+column_constraints_ss
+  : column_constraint_ss 
+	| column_constraints_ss ',' column_constraint_ss 
+  ;
+
+constraint_name
+  : column_identifier
+  ;
+
+/**
+ * One table element definition. The table elements are the columns,
+ * constraints, primary or foreign key(s).
+ * 4gl code examples:
+ *
+ */
+table_element_ss
+  : ct_column_definiton_ss 
+	| table_constraint_definition
+	; 
+
+/**
+ * A column definition to be used in a CREATE TABLE and ALTER TABLE
+ * statements.
+ * 4gl code examples:
+ *
+ */ 
+ct_column_definiton_ss
+  : column_name data_type op_default_clause op_column_constraint_list_ss 
+  ;
+
+/**
+ * Optional default values for a column, to be used in a CREATE TABLE or
+ * ALTER TABLE statements.
+ * 4gl code example:
+ *   DEFAULT 10
+ */
+op_default_clause
+  : 
+	| default_clause
+  ;
+
+/**
+ * Optional column constraint (Check, not null, etc) definition list to 
+ * be used in the CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL UNIQUE CHECK(aCol=1)
+ */
+op_column_constraint_list_ss
+  : 
+  | column_constraint_list_ss 
+  ;
+
+/**
+ * Not optional column constraint (Check, not null, etc) definition list to 
+ * be used in the CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL UNIQUE CHECK(aCol=1)
+ */
+column_constraint_list_ss 
+  : column_constraint_ss 
+	| column_constraint_list_ss column_constraint_ss 
+  ;
+
+/**
+ * Possible column level constraint definition to be used in the CREATE 
+ * TABLE or ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL
+ *   NOT NULL UNIQUE
+ *   UNIQUE
+ *   REFERENCES xptoTable (aCol)
+ *   CHECK (aCol = 10)
+ */
+column_constraint_ss
+  : NOT NULL_TOK 
+	| NOT NULL_TOK UNIQUE 
+	| UNIQUE 
+	| references_specification 
+	//| CHECK '(' search_condition_ss ')' 
+	;
+
+/**
+ * The default value that is inserted in a table when the INSERT statement
+ * does not use the column.
+ * This is used by CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   DEFAULT 1
+ *   DEFAULT NULL
+ */
+default_clause
+  : DEFAULT sql_literal
+	| DEFAULT NULL_TOK
+	;
 
 /*--------------------------------- <index> --------------------------------*/
 
@@ -3368,6 +3645,8 @@ table_identifier
   | USER        /* ??? Isto devia dar um errozito */
      { strcpy($$,"USER"); }
   | COMMENT        /* ??? Isto devia dar um errozito */
+     { strcpy($$,"COMMENT"); }
+  | RESOURCE        /* ??? Isto devia dar um errozito */
      { strcpy($$,"COMMENT"); }
   ;
 

@@ -62,7 +62,6 @@
 */
 
 #include "a4gl_4glc_int.h"
-#include "variables.h"
 
 /*
 =====================================================================
@@ -74,76 +73,11 @@
 extern int 	lineno; 
 
 /** @todo : check if i can live without this */
-extern int 	read_glob_var;
-extern int 	modlevel;
-extern int 	charno;
-extern int 	last_var_found;
-extern int 	varcnt;
-extern int 	in_record;
-extern int 	rep_type;
 extern int 	yylineno;
-extern int compiling_system_4gl;
 
-int sql_mode=0;
-
-char 		menuhandler[256];
-char 		last_var [256];
-char 		larr[4096]="";
-char 		larr2[4096]="";
-char 		clobber[64]="";
-char 		dtypelist[2048];
-char 		curr_func[256]="Module";
-char 		where_having[1024];
-char		menu[2048];
-char 		varstring[100];
-char 		infilename[132]="";
-char 		current_upd_table[64]="";
-
-int 		is_schema=0;
-int 		in_define=0;
-int 		rordcnt;
-int 		racnt=0;
-int 		ccode=0;
-int 		errbomb=0;
-int 		glob_only=0;
-int 		inp_flags=0;
-int 		lcnt;
-int 		vcnt;
-int 		rcnt;
-int 		lastlineno=0;
-int 		cnt;
-int 		mcnt=0;
-int 		inrec=0;
-int 		iskey=0;
-int 		insql=0;
-int 		menu_cnt=0;
-int 		chk4var=0;
-int 		menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int 		menu_blk[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int 		in_sql=0;
-int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
-int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
-int 		fcall_cnt=0;
-int 		doing_declare=0;
-int 		message_cnt=0;
-
-struct 		rep_structure rep_struct;
-struct 		pdf_rep_structure pdf_rep_struct;
-struct 		form_attr form_attrib;
-char *		make_sql_string(char *first,...);
-void copy_gen (int a, int b);
-char *get_namespace (char *s);
-void set_yytext (char *s);
-int isin_command (char *cmd_type);
+/** @todo : Check if this is needed here */
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
-char *do_clobbering(char *f,char *s);
-struct input_array_attribs curr_input_array_attribs;
 
-int if_print_stack[100][2];
-int if_print_stack_cnt=0;
-int if_print_section[100]={0,0,0,0};
-
-#include "../generic.h"
 
 %}
 /** The prefix used when generating the C code. */
@@ -152,23 +86,7 @@ int if_print_section[100]={0,0,0,0};
 //glr-parser
 %start module
 %union	  {
-
-
-
-	//char	str[3100];  /* This would core dump in CygWin on call to */
 	char	str[1024];  /* This would core dump in CygWin on call to */
-						/* yyparse in y.tab.c - 3100 in maximum. */
-						/* Was: char	str[20000]; */
-
-	struct expr_str *ptr;
-	char *sql_string;
-	struct generic_entry_list *list;
-	struct generic_entry *entry;
-	struct generic_entry_ident *ident;
-	struct generic_entry_variable *variable;
-	struct generic_entry_literal *literal;
-	int 	integer_val;
-	float 	float_val;
 	}
 
 /* ============================== 1.reqd ============================ */
@@ -1035,8 +953,8 @@ attribute
 	|NORMAL
 	|INVISIBLE
 	|DIM
-  |NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
-	|input_array_attributes {strcpy($<str>$,"0");}
+  |NO_NEW_LINES 
+	|input_array_attributes 
 	;
 
 /**
@@ -2339,8 +2257,8 @@ inexpr_list
 in_expr
   : IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET 
   | NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET 
-  | IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET 
-  | NOT_IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET 
+  | IN OPEN_BRACKET inexpr_list CLOSE_BRACKET 
+  | NOT_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET 
   ;
 
 /**
@@ -2407,14 +2325,6 @@ comparison_expr
   | LESS_THAN_EQ fgl_expr_c
   | GREATER_THAN_EQ fgl_expr_c
   ;
-
-/**
- * To remove.
- */
-reset_cnt : {
-	reset_counter();
-}
-;
 
 /**
  * A call of a function inside an expression.
@@ -2600,7 +2510,7 @@ foreach_cmd
  */
 opt_foreach_using_part
   : 
-	| KW_USING reset_cnt fgl_expr_list 
+	| KW_USING fgl_expr_list 
 	;
 
 /* </FOREACH_RULE> */
@@ -3329,7 +3239,7 @@ input_array_attributes
   ;
 
 /**
- * Soecific INPUT ARRAY attributes.
+ * Specific INPUT ARRAY attributes.
  */
 input_array_attributes_int 
   : CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	
@@ -3600,7 +3510,13 @@ func_or_main
 	;
 
 /**
- *
+ * A module code, including embedded C code and global whenever statements.
+ * Note that Informix 4gl does not suport C code outside functions.
+ * 4gl code examples:
+ *    WHENEVER ERROR stop
+ *    START C
+ *     ... C Code...
+ *    END C
  */
 module_code 
   : code_cmd 
@@ -3707,14 +3623,14 @@ db_section
   ;
 
 /**
- * One GLOBALS section of a 4gl module.
+ * The main rule for the GLOBALS section of a 4gl module.
  */
 module_globals_section 
   : actual_globals_section 
   ;
 
 /**
- *
+ * A list of possible diferent globals statements.
  */
 actual_globals_section 
   : xglobals_entry
@@ -3722,7 +3638,14 @@ actual_globals_section
   ;
 
 /**
- *
+ * A global definition, including the GLOBALS statement, the global DATABASE
+ * embedded C code and WHENEVER statements.
+ * 4gl code examples:
+ *   GLOBALS "globalsFile"
+ *   GLOBALS
+ *      ... define statements ...
+ *   END GLOBALS
+ *   DATABASE xpto
  */
 xglobals_entry 
   : globals_entry 
@@ -3731,7 +3654,12 @@ xglobals_entry
   ;
 
 /**
- *
+ * A globals statement.
+ * 4gl code examples:
+ *   GLOBALS "globalsFile"
+ *   GLOBALS
+ *      ... define statements ...
+ *   END GLOBALS
  */
 globals_entry
   : GLOBALS glob_section 
@@ -3740,8 +3668,7 @@ globals_entry
 /**
  * The possible kind of globals: define statements or file name.
  * 4gl code examples:
- *   GLOBALS "globalsFile"
- *   GLOBALS
+ *   "globalsFile"
  *      ... define statements ...
  *   END GLOBALS
  */
@@ -4029,7 +3956,10 @@ var_int
   ;
 
 /**
- *
+ * A rule for a variable name (simple or composed) folowed by a DOT.
+ * 4gl code examples:
+ *   xpto.
+ *   a.b.xpto.
  */
 varsetidentdot 
   : var DOT
@@ -4037,8 +3967,13 @@ varsetidentdot
 
 /**
  * 4gl variable definition.
+ * @todo : Understand why the array_r_variable rule is used.
  * 4gl code examples:
- *   
+ *   xpto.*
+ *   xpto.a
+ *   xpto[1,2,i]
+ *   xpto[1,2,i][1,j]
+ *   xpto<"ZZZ">
  */
 var
   : varsetidentdot dot_part_var
@@ -4081,7 +4016,10 @@ assoc_sub
   ;
 
 /**
- * 
+ * The things that can apear after a dot of a variable definition.
+ * 4gl code examples:
+ *   *
+ *   xpto
  */
 dot_part_var
   : MULTIPLY 
@@ -4089,21 +4027,31 @@ dot_part_var
   ;
 
 /**
- *
+ * An array variable definition.
+ * 4gl code example:
+ *   xpto[1,2,p]
+ *   xpto[6,1][j,k]
  */
 array_r_variable
   : identifier arr_subscripts
   ;
 
 /**
- *
+ * An array variable definition.
+ * 4gl code example:
+ *   xpto[1,2,p]
+ *   xpto[6,1][j,k]
+ * @todo : Understand why do i need the two rules 
  */
 array_r_variable_or_ident
   : identifier arr_subscripts
   ;
 
 /**
- *
+ * The definition of the subscripts for an array variable.
+ * 4gl code examples:
+ *   [1,2,p]
+ *   [6,1][j,k]
  */
 arr_subscripts 
   : OPEN_SQUARE num_list CLOSE_SQUARE 
@@ -4122,14 +4070,33 @@ num_list
   | num_list COMMA num_list_element
   ;
 
+/**
+ * A possible number element to use in the subscripts of an array definition.
+ */
 num_list_element
   : arr_expr
   ;
 
+/**
+ * A single variable to be used on the left hand side of an assignment.
+ * @todo : See if it can ocur a merge between obind_let_var, let_variable and
+ * let_var
+ * 4gl code examples:
+ *   i
+ *   pXpto.*
+ */
 let_variable
   : let_var
   ;
 
+/**
+ * A single variable to be used on the left hand side of an assignment.
+ * @todo : See if it can ocur a merge between obind_let_var, let_variable and
+ * let_var
+ * 4gl code examples:
+ *   i
+ *   pXpto.*
+ */
 let_var
   : let_array_r_variable 
   | let_var DOT let_var_dot 
@@ -4140,36 +4107,86 @@ let_var
   | assoc_var_write
   ;
 
+/**
+ * In the left hand side of an assigmnent statement this is the part after a
+ * DOT in the receiving variable definition.
+ * 4gl code example:
+ *   *
+ *   xpto
+ */
 let_var_dot 
   : MULTIPLY 
   | identifier 
   ;
 
+/**
+ * Definition of an array variable when it is present in the left hand side
+ * of a LET statement.
+ * 4gl code examples:
+ *   xpto[a,2]
+ */
 let_array_r_variable
   : identifier arr_subscripts
   ;
 
+/**
+ * Optional parameters definition list.
+ * This are the variabe names between brackets after the function or 
+ * report name.
+ */
 op_param_var_list
   : 
   | fparam_var_list
 	;
 
+/**
+ * Not optional comma separated parameters definition list.
+ * This are the variabe names between brackets after the function or 
+ * report name.
+ * 4gl code examples:
+ *   xpto
+ *   xpto,a,b
+ */
 fparam_var_list
   :	func_def_var 
 	|	fparam_var_list COMMA func_def_var 
   ;
 
+/** 
+ * Input binded comma separated variable list.
+ * This is used as variable list(s) of the USING in EXECUTE statement, 
+ * RETURNING section of CALL statement and DISPLAY statement.
+ * 4gl code examples:
+ *   a, b, c
+ *   xpto
+ */
 ibind_var_list
   :	ibind_var 
 	|	ibind_var_list COMMA ibind_var 
   ;
 
-
+/**
+ * A parameter variable to be used between brackets after the FUNCTION or
+ * report name when they are defined.
+ * 4gl code example:
+ *   a
+ *   xpto
+ *   firstVar THRU lastVar
+ */
 func_def_var 
   : identifier 
 	| identifier DOT identifier 
   ;
 
+/**
+ * The possibilities of variables used as INPUT BINDED.
+ * 4gl code examples:
+ *   xpto
+ *   firstVar THRU lastVar
+ *   "XPTO"
+ *   2.45
+ *   69
+ */
 ibind_var 
   : variable  
 	| variable THRU variable 
@@ -4178,40 +4195,89 @@ ibind_var
 	| INT_VALUE 
   ;
 
+/**
+ * Comma separated list of output variables (where to assign values) to be 
+ * used in statements like FECTH (in INTO) or FOREACH.
+ * 4gl code examples:
+ *   xpto.a, xpto.b
+ *   i
+ */
 obind_var_list
   :	obind_var  
 	|	obind_var_list COMMA obind_var 
   ;
 
+/**
+ * A definition of output variables. It could represent a list because 
+ * the THRU defines a list of variables.
+ * It is used in statements like FETCH OR FOREACH (in INTO).
+ * 4gl code examples:
+ *   xpto.a THRU xpto.b
+ *   i
+ */
 obind_var 
   : variable
 	| variable THRU variable 
   ;
 
+/** 
+ * The left hand side of an LET statement.
+ * The receiving variable(s) in an assignment.
+ * 4gl code examples:
+ *    i 
+ *    pRecord.* 
+ *    i, j
+ */
 obind_var_let_list
   :	obind_let_var  
 	|	obind_var_let_list COMMA obind_let_var 
   ;
 
+/**
+ * A single variable to be used on the left hand side of an assignment.
+ * @todo : See if it can ocur a merge between obind_let_var, let_variable and
+ * let_var
+ * 4gl code examples:
+ *   i
+ *   pXpto.*
+ */
 obind_let_var 
   : let_variable
   ;
 
+/**
+ * Usage of array variables. To INPUT ARRAY or DISPLAY ARRAY statements.
+ * 4gl code examples:
+ *   paVariable
+ */
 use_arr_var 
   : variable 
   ;
 
+/**
+ * Comma separated output variable list used to definition of order in sort 
+ * instructions like ORDER EXTERNAL BY in REPORTS.
+ * 4gl code examples:
+ *   a DESC, a ASC
+ */
 obind_var_list_ord
   :	obind_var_ord
 	| obind_var_list_ord COMMA obind_var_ord
   ;
 
+/**
+ * A single output variable to be used in the definition of instructions
+ * to order information like ORDER EXTERNAL BY in REPORT(s).
+ * 4gl code examples:
+ *   a ASC
+ */
 obind_var_ord 
   : variable optional_asc_desc
 	;
 
 /**
  * Optional acending or descending order, to be used things like ORDER.
+ * @todo : Understand if this rule could be merged with opt_asc_desc
  */
 optional_asc_desc
   : 
@@ -4219,15 +4285,32 @@ optional_asc_desc
 	| DESC
 	;
 
+/**
+ * @todo : Make sopme comment to this rule.
+ * 4gl code example:
+ *   xpto[1,2]
+ */
 array_r_varid
   : identifier OPEN_SQUARE num_list CLOSE_SQUARE
   ;
 
+/**
+ * Comma separated list of variables to be initialized with the INITIALIZE
+ * statement.
+ * 4gl code examples:
+ *   a, b, XPTO.a THRU xpto.x
+ */
 init_bind_var_list
   :	init_bind_var 
 	|	init_bind_var_list COMMA init_bind_var 
   ;
 
+/**
+ * A single variable to be initialized with INITIALIZE statement.
+ * 4gl code examples:
+ *   a
+ *   xpto.a THRU xpto.g
+ */
 init_bind_var 
   : variable  
 	| variable THRU variable 
@@ -4249,61 +4332,141 @@ open_window_cmd
   : OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  
   ;
 
+/**
+ * Optional AT location in screen where to open a status box.
+ * This is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   AT (2,4) 
+ *   AT (x,y) 
+ *   AT (x+2,y/5) 
+ */
 op_at_statusbox 
   : 
 	| AT OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
   ;
 
+/**
+ * Optional size of a statusbox.
+ * This is an extension to Informix 4gl.
+ * 4gl code example:
+ *   SIZE (10,10)
+ *   SIZE (width,heigth)
+ */
 op_size_statusbox 
   : 
 	| SIZE OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET
   ;
 
+/**
+ * OPEN STATUSBOX statement.
+ * This is an extension to Informix 4gl.
+ * 4gl code example:
+ *   OPEN STATUSBOX AT (2,3) SIZE (10,10)
+ *   OPEN STATUSBOX AT (x+1,y/2) SIZE (width,heigth)
+ */
 open_statusbox_cmd 
   : OPEN_STATUSBOX identifier op_at_statusbox
   ;
 
+/**
+ * A possible name of a GUI form handler.
+ * @todo : Define what is a form handler.
+ */
 formhandler_name
   : identifier 
   ;
 
+/**
+ * OPEN FORM statement to open a form in a window.
+ * 4gl code examples:
+ *    OPEN FORM xptoForm 
+ */
 open_form_cmd 
   : OPEN_FORM open_form_name  open_form_rest
   ;
 
+/**
+ * The second part of the OPEN FORM statement where is choosed if it is 
+ * standard or GUI extension.
+ * 4gl code examples:
+ *
+ */
 open_form_rest
   : open_form_gui
 	| FROM fgl_expr 
   ;
 
+/**
+ * The GUI open form extension to Informix 4gl.
+ * 4gl code examples:
+ *   AT ABSOLUTE (10,15) LIKE xpto.a DISABLE ALL USING xxx
+ *   AT (10,15)
+ */
 open_form_gui
   :  op_at_gui op_like_gui op_disable KW_USING formhandler_name
   ;
 
+/**
+ * Optional AT substatement of a GUI form.
+ * This is an extension to standard Informix 4gl.
+ * 4gl code example:
+ *   AT ABSOLUTE (10,15)
+ *   AT (10,15)
+ */
 op_at_gui
   :
 	| AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 
   ;
 
+/**
+ * Optional like to be used in a GUI open form statement.
+ * 4gl code example:
+ *   LIKE xpto.a
+ */
 op_like_gui
   : 
 	| LIKE ident_or_var
   ;
 
+/**
+ * Optional absolute keyword to be used in GUI open form statement.
+ */
 op_absolute
   : 
 	| ABSOLUTE 
   ;
 
+/**
+ * Open a connection to a database with a named connection.
+ * This is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   OPEN SESSION connName TO DATABASE dbName AS USER sergio PASSWORD xpto
+ *   OPEN SESSION connName TO DATABASE dbName AS USER sergio, PASSWORD xpto
+ *   OPEN SESSION connName TO DATABASE dbName AS sergio, xpto
+ *   OPEN SESSION connName TO DATABASE 
+ */
 open_session_cmd 
   : OPEN_SESSION conn_id TO_DATABASE var_ident user_details
   ;
 
+/**
+ * Opening a database cursor.
+ * 4gl code examples:
+ *   OPEN crName
+ *   OPEN crName USING a,b, xpto.*
+ */
 open_cursor_cmd 
   : OPEN cursor_name 
-	| OPEN cursor_name KW_USING reset_cnt fgl_expr_list 
+	| OPEN cursor_name KW_USING fgl_expr_list 
   ;
 
+/**
+ * User details to be used in the OPEN SESSION statement.
+ * @todo : Understand if this rule could be merged with con_user_details 
+ *   AS USER sergio PASSWORD xpto
+ *   AS USER sergio, PASSWORD xpto
+ *   AS sergio, xpto
+ */
 user_details 
   :
 	| AS USER char_or_var PASSWORD char_or_var
@@ -4311,21 +4474,44 @@ user_details
 	| AS char_or_var COMMA char_or_var
   ;
 
+/**
+ * Optional disable to be used in GUI open form statement.
+ * 4gl code examples:
+ *   DISABLE PROGRAM
+ *   DISABLE ALL
+ */
 op_disable 
   : 
 	| DISABLE_PROGRAM 
   | DISABLE_ALL 
   ;
 
+/**
+ * The statement to connect to a database.
+ * 4gl code examples:
+ *   CONNECT TO dbName AS connName AS USER sergio USING xpto
+ *   CONNECT TO dbName USER sergio USING xpto
+ */
 connect_cmd 
   : CONNECT_TO var_ident op_connect_as con_user_details 
   ;
 
-op_connect_as 
+/**
+ * Optional connection name definition for the connect statement.
+ * 4gl code examples:
+ *   AS connName 
+ */
+op_connect_as  
   :
   | AS var_ident 
   ;
 
+/**
+ * The optional user identification to connect to a database.
+ * 4gl code examples:
+ *   AS USER sergio USING xpto
+ *   USER sergio USING xpto
+ */
 con_user_details 
   :
   | AS USER char_or_var KW_USING char_or_var
@@ -4482,7 +4668,9 @@ prompt_title
 /* <PUT_STATEMENT> */
 
 /**
- * 
+ * The statement to PUT values in an insert cursor.
+ * 4gl code examples:
+ *   PUT crXPTO FROM a,b,3
  */
 put_cmd 
   : PUT cursor_name  put_from
@@ -4869,11 +5057,22 @@ idx_column
   | identifier
 	;
 
+/**
+ * Comma separated list of elements in a table.
+ * 4gl code examples:
+ *   
+ */
 table_element_list_ss
   : table_element_ss 
 	| table_element_list_ss COMMA table_element_ss 
   ;
 	
+/**
+ * One table element definition. The table elements are the columns,
+ * constraints, primary or foreign key(s).
+ * 4gl code examples:
+ *
+ */
 table_element_ss
   : ct_column_definiton_ss 
 	| table_constraint_definition_ss 
@@ -4903,12 +5102,16 @@ alter_cmd
 
 /**
  * Comma separated of alter table possibilities.
+ * @todo : Understand what ss means.
  */
 alter_clauses_ss
   : alter_clause_ss 
 	| alter_clauses_ss COMMA alter_clause_ss 
   ;
 
+/**
+ * The possible ALTER TABLE subsections.
+ */
 alter_clause_ss
   : alter_add_clause_ss 
 	| alter_drop_clause 
@@ -4919,45 +5122,98 @@ alter_clause_ss
 	| alter_lock_mode 
   ;
 
+/**
+ * Adition of a new column to a table to be used in the ALTER TABLE statement.
+ * 4gl code example:
+ *   ADD a CHAR(10) NOT NULL BEFORE xpto
+ *   ADD (a CHAR(10) NOT NULL, b SMALLINT) BEFORE xpto
+ */
 alter_add_clause_ss
   : ADD add_column_clause_ss  
 	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET 
   ;
 
+/**
+ * A single column adition in a table to be used in the ADD substatement of
+ * the ALTER TABLE statement.
+ * 4gl code examples:
+ *   a CHAR(10)
+ *   a CHAR(10) NOT NULL BEFORE xpto
+ *   b SMALLINT BEFORE xpto
+ */
 add_column_clause_ss
   : table_element_ss 
 	| table_element_ss BEFORE identifier 
   ;
 
+/** 
+ * Comma separated list of columns to be added to a table.
+ * This is used in the ALTER TABLE statement.
+ * 4gl code examples:
+ *   a CHAR(10) NOT NULL, b SMALLINT
+ */
 add_column_clauses_ss
   : add_column_clause_ss 
 	| add_column_clauses_ss COMMA add_column_clause_ss 
   ;
 
+/**
+ * Droping a column from a table in the ALTER TABLE statement.
+ * 4gl code example:
+ *   DROP xpto
+ *   DROP (a,b,c)
+ */
 alter_drop_clause
   : DROP drop_column 
 	| DROP OPEN_BRACKET drop_column_list CLOSE_BRACKET 
   ;
 
-drop_column_list
+/**
+ * Comma separated of column names to be droped from a table.
+ * 4gl code examples:
+ *   xpto
+ *   a,b
+ */
+drop_column_list 
   : drop_column 
 	| drop_column_list COMMA drop_column 
   ;
 
+/**
+ * A possible column to be droped from a table.
+ * 4gl code examples:
+ *   xpto
+ *   a
+ *   b
+ */
 drop_column 
   : identifier
   ;
 
+/**
+ * Modification of a column in the ALTER TABLE statement.
+ * 4gl code examples: 
+ *   MODIFY 
+ */
 alter_modify_clause 
   : MODIFY modify_column_clause_ss 
 	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET 
   ;
 
+/**
+ * Comma separated list of column modifications used in the ALTER TABLE 
+ * statement.
+ * 4gl code examples:
+ */
 modify_column_clauses_ss 
   : modify_column_clause_ss 
 	| modify_column_clauses_ss COMMA modify_column_clause_ss 
   ;
 
+/**
+ * Column modification used in the ALTER TABLE statement.
+ * 4gl code example:
+ */
 modify_column_clause_ss 
   : table_element_ss 
   ;
@@ -4973,10 +5229,22 @@ alter_lock_mode
 	| LOCK_MODE_ROW 
   ;
 
+/**
+ * Changing the next size in kilobytes of an extent of a table.
+ * 4gl code example:
+ *   MODIFY NEXT SIZE 100
+ */
 alter_modify_next 
   : MODIFY_NEXT_SIZE INT_VALUE 
   ;
 
+/**
+ * Adition of a constraint to a table, to be used inside an ALTER TABLE 
+ * statement.
+ * 4gl code examples:
+ *   ADD CONSTRAINT ???
+ *   ADD CONSTRAINT ( ??? )
+ */
 alter_add_constraint_clause
   : ADD_CONSTRAINT column_constraint_ss 
 	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET 
@@ -5138,6 +5406,10 @@ sort_spec
 	| column_name 
 	;
 
+/**
+ * Optional ascending or descending to use in the ORDER BY of a SELECT statement
+ * @todo : Understand if this rule could be merged with optional_asc_desc
+ */
 op_asc_desc
   : 
 	| ASC 
@@ -5300,6 +5572,14 @@ table_constraint_definition_ss
 	| check_constraint_definition_ss  
 	;
 
+/**
+ * The default value that is inserted in a table when the INSERT statement
+ * does not use the column.
+ * This is used by CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   DEFAULT 1
+ *   DEFAULT NULL
+ */
 default_clause
   : DEFAULT literal
 	| DEFAULT_NULL
@@ -5307,31 +5587,63 @@ default_clause
 
 /*
 column_definiton_ss:
-	column_name data_type op_default_clause op_column_constraint_list_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<sql_string>4,0);
-	}
+	column_name data_type op_default_clause op_column_constraint_list_ss 
 	;
 */
 
+/**
+ * A column definition to be used in a CREATE TABLE and ALTER TABLE
+ * statements.
+ * 4gl code examples:
+ *
+ */ 
 ct_column_definiton_ss
   : identifier data_type op_default_clause op_column_constraint_list_ss 
   ;
 
+/**
+ * Optional default values for a column, to be used in a CREATE TABLE or
+ * ALTER TABLE statements.
+ * 4gl code example:
+ *   DEFAULT 10
+ */
 op_default_clause
   : 
 	| default_clause
   ;
 
+/**
+ * Optional column constraint (Check, not null, etc) definition list to 
+ * be used in the CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL UNIQUE CHECK(aCol=1)
+ */
 op_column_constraint_list_ss
   : 
   | column_constraint_list_ss 
   ;
 
+/**
+ * Not optional column constraint (Check, not null, etc) definition list to 
+ * be used in the CREATE TABLE and ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL UNIQUE CHECK(aCol=1)
+ */
 column_constraint_list_ss 
   : column_constraint_ss 
 	| column_constraint_list_ss column_constraint_ss 
   ;
 
+/**
+ * Possible column level constraint definition to be used in the CREATE 
+ * TABLE or ALTER TABLE statements.
+ * 4gl code examples:
+ *   NOT NULL
+ *   NOT NULL UNIQUE
+ *   UNIQUE
+ *   REFERENCES xptoTable (aCol)
+ *   CHECK (aCol = 10)
+ */
 column_constraint_ss
   : NOT_NULL 
 	| NOT_NULL_UNIQUE 
@@ -5457,8 +5769,8 @@ op_escape
 pattern_ss
   : value_expression_initial_ss 
 /*
-	  value_specification {$<sql_string>$=make_sql_string($<str>1);}
-	| var_ident_ibind_ss {$<sql_string>$=$<sql_string>1;}
+	  value_specification 
+	| var_ident_ibind_ss 
 */
 	;
 
@@ -6502,7 +6814,7 @@ upd_value_expression_initial_ss
   | KW_FALSE
   | USER
   | COUNT_MULTIPLY
-  //| MULTIPLY {$<sql_string>$=make_sql_string("*",0);}
+  //| MULTIPLY 
   ;
 
 upd_value_expression_complex_ss 
@@ -6720,7 +7032,8 @@ command1
   ;
 
 commands_all 
-  :  {print_cmd_start();} commands_all1 {print_cmd_end();};
+  : commands_all1 
+	;
 
 commands_all1 	
   : pause_screen_on_cmd
