@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.16 2004-09-20 13:33:34 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.17 2004-09-21 08:54:18 mikeaubury Exp $
 #
 */
 
@@ -78,7 +78,7 @@ But them missing DtimeToChar and fammily - where are they?
  * @todo describe function
  */
 void 
-A4GL_copy_decimal(void *infxv,void *a4glv,int indicat,int size,char dir) 
+ESQLAPI_A4GL_copy_decimal(void *infxv,void *a4glv,int indicat,int size,char dir) 
 {
 #ifdef DIALECT_POSTGRES
 EXEC SQL BEGIN DECLARE SECTION;
@@ -137,7 +137,7 @@ char b[65];
  * @todo describe function
  */
 void 
-A4GL_copy_money(void *infxv,void *a4glv,int indicat,int size,char dir) 
+ESQLAPI_A4GL_copy_money(void *infxv,void *a4glv,int indicat,int size,char dir) 
 {
 
 #ifdef DIALECT_POSTGRES
@@ -224,7 +224,7 @@ int arr_dtime[]={
  * @todo describe function
  */
 void 
-A4GL_copy_datetime(void *infxv, void *a4glv,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,int indicat,int size,int mode) 
 {
 dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 	infx=infxv;
@@ -292,7 +292,7 @@ if (*infx==0) indicat=-1;
  * @todo describe function
  */
 #ifdef DIALECT_INFORMIX
-void A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode) 
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode) 
 {
 intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
 if (mode=='i'||mode=='o') ; 
@@ -361,7 +361,7 @@ else {
 
 #ifdef DIALECT_POSTGRES
 
-void A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode)  {
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode)  {
 	printf("A4GL_copy_interval for postgres not implemented yet\n");
 
 }
@@ -372,7 +372,7 @@ void A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode) 
  * @todo describe function
  */
 void 
-A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
+ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 {
 
 	if (mode=='i') {
@@ -400,7 +400,7 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y)
  * @todo describe function
  */
 void 
-A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) 
 {
 short  mdy[3];
 int mdy_i[3];
@@ -437,7 +437,7 @@ if (*infx==0) indicat=-1;
  * @todo describe function
  */
 void 
-A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
@@ -456,7 +456,7 @@ A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
@@ -475,7 +475,7 @@ A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(CFLOATTYPE,(void *)infx);return;}
@@ -494,7 +494,7 @@ A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
@@ -582,7 +582,7 @@ retdtime(void *vx)
  *
  * @todo describe function
  */
-A4GLESQL_initlib() 
+ESQLAPI_A4GLESQL_initlib() 
 {
 
 }

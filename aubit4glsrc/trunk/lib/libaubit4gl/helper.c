@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.33 2004-09-21 06:08:04 mikeaubury Exp $
+# $Id: helper.c,v 1.34 2004-09-21 08:53:23 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 void A4GLPACKER_clrlibptr (void);
 void A4GLFORM_clrlibptr (void);
 
