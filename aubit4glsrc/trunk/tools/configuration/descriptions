@@ -544,6 +544,12 @@ GDB_ATTACH RUNTIME Attach GDB to the process when a Segmentation Fault occurs
 	#7  0x40180baf in __libc_start_main () from /lib/libc.so.6
 	Ignore everything up to the <signal handler called>, and 'frame 5' (in this case)
 	should show the offending line..
+NO_ALT_SCR RUNTIME/TUI Try to disable the alternate screen (for xterm and console)
+=YES|NO
+	When using some terminals types in curses mode, an alternate screen is employed so that
+	when the application finishes (or otherwise enters line mode), the original screen will 
+	be redisplayed. Setting this option attempts to disable this screen swapping so that the
+	original screen is used for the 4GL display.
 DUMP_LAST COMPILE output the results of the last remove comments
 =YES|NO
 	This will produce a file 'last' which contains the file with the comments
