@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.184 2004-10-15 15:00:15 mikeaubury Exp $
+# $Id: mod.c,v 1.185 2004-10-23 13:36:26 mikeaubury Exp $
 #
 */
 
@@ -112,7 +112,7 @@ char *get_curr_report_stack_why (void);
 char find_variable_scope (char *s_in);
 char *A4GL_get_important_from_clobber(char *s) ;
 char *A4GL_get_clobber_from_orig(char *s);
-
+char *A4GLSQLCV_check_sql(char *s) ;
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
 
@@ -801,9 +801,9 @@ scan_variables (char *s_n, int mode)
 
   /*long z;*/
   long z_new;
-   char s[1024];
-  char buff[256];
-  char buff2[256];
+  char s[1024];
+  char buff[1024];
+  char buff2[1024];
   /*char *ptr;*/
   /*int dir;*/
 
@@ -812,8 +812,14 @@ scan_variables (char *s_n, int mode)
   int dtype;
   int size;
   int vval;
+
+  if (strlen(s_n)>1023) {
+	A4GL_assertion(1,"scan_variables buffers too small");
+  }
   memset(s,0,1024);
   strcpy(s,s_n);
+
+
 A4GL_debug("s=%s",A4GL_null_as_null(s));
 
   /*last_var_found = -1;*/
@@ -828,6 +834,9 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
   if (strchr (s, '\n'))
     return -2;			/* This is a variable thru variable.. */
 
+  if (strlen(s)>=sizeof(buff)) {
+		A4GL_assertion(1,"scan_variables buffer is too small..");
+  }
   strcpy (buff, s);
 
 
@@ -4552,13 +4561,6 @@ struct expr_str *A4GL_get_validate_expr(int n) {
 	return validate_list[n].expr;
 }
 
-int A4GL_escape_quote_owner(void) {
-	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"Y")==0) return 1;
-	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"N")==0) return 1;
-	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
-	return 1;
-}
-
 
 struct s_event {
 	int n;
@@ -4626,29 +4628,43 @@ ordbindcnt=fbindcnt;
 }
 
 
-char *make_substr(char *colname,struct ilist *int_list) {
-static char buff[256];
-	if (int_list->i0==0) return colname;
-	if (int_list->i0==1) { sprintf(buff,"%s[%d]",colname,int_list->i1); return buff; }
-	if (int_list->i0==2) { sprintf(buff,"%s[%d,%d]",colname,int_list->i1,int_list->i2); return buff; }
 
-a4gl_yyerror("Internal error..");
-return "???";
+/* 
+   Translate from the directory name for the SQLPACK to the
+   logical name used for translating...
+*/
+char *A4GL_decode_packtype(char *s) {
+	if (strcmp(s,"infx")==0) return "INFORMIX";
+	if (strcmp(s,"postgres")==0) return "POSTGRES";
 
+	return s;
 }
 
-char *matches_string(char *str,char *esc) {
-static char buff[1024];
-if (strlen(esc)) {
-sprintf(buff,"MATCHES %s %s",str,esc);
-} else {
-sprintf(buff,"MATCHES %s ",str);
-}
-return buff;
+
+void A4GL_CV_print_exec_sql(char *s) {
+	print_exec_sql(A4GLSQLCV_check_sql(s));
 }
 
-char *check_colname(char *s) {
-return s;
+
+void A4GL_CV_print_exec_sql_bound(char *s) {
+	print_exec_sql_bound(A4GLSQLCV_check_sql(s));
+}
+
+void A4GL_CV_print_do_select(char *s) {
+	print_do_select(s);
+}
+
+
+void A4GL_CV_print_select_all(char *s) {
+	print_select_all(A4GLSQLCV_check_sql(s));
+}
+
+
+int A4GL_escape_quote_owner(void) {
+	if (A4GLSQLCV_check_requirement("QUOTE_OWNER")) {return 1;}
+	if (A4GLSQLCV_check_requirement("NO_OWNER_QUOTE")) {return 0;}
+	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
+	return 1;
 }
 
 /* ================================= EOF ============================= */

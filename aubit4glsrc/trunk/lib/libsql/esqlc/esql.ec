@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.101 2004-10-18 15:59:52 mikeaubury Exp $
+# $Id: esql.ec,v 1.102 2004-10-23 13:36:33 mikeaubury Exp $
 #
 */
 
@@ -152,7 +152,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.101 2004-10-18 15:59:52 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.102 2004-10-23 13:36:33 mikeaubury Exp $";
 #endif
 
 
@@ -1271,7 +1271,8 @@ int type;
 	{char *ptr;
 		ptr=bind[idx].ptr;
       strncpy (ptr, char_var,length);
-	ptr[length]=0;
+	ptr[bind[idx].size]=0;
+	//ptr[length]=0;
 	}
       free (char_var);
       break;
@@ -1776,7 +1777,7 @@ char *n;
 int numberOfColumns;
   char warnbuff[10];
 exec sql end declare section;
-
+memset(warnbuff,0,10);
  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
 n=sid->outputDescriptorName;
@@ -1821,6 +1822,7 @@ if (n) {
       A4GL_debug ("Deallocating failed..");
       return 1;
     }
+
   if (warnbuff[0]=='W') {
 		sqlca.sqlwarn.sqlwarn0='W';
 		if (warnbuff[1]) sqlca.sqlwarn.sqlwarn1='W';
@@ -2181,7 +2183,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
  *
  */
 int
-A4GLSQL_open_cursor (int ni, char *s)
+A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
@@ -2189,8 +2191,11 @@ A4GLSQL_open_cursor (int ni, char *s)
   struct s_sid *sid;
   char *inputDescriptorName;
   char *outputDescriptorName;
+  int save_ni=-1;
+  struct BINDING *save_ibind;
 
   EXEC SQL END DECLARE SECTION;
+
 
 
   cursorIdentification = A4GL_find_pointer (s, PRECODE);
@@ -2200,8 +2205,11 @@ A4GLSQL_open_cursor (int ni, char *s)
 		return 1;
 	}
   A4GL_debug ("Got cursorIdentification as : %p", cursorIdentification);
+
   sid = cursorIdentification->statement;
+
   A4GL_debug("%s",sid->select);
+
 
 
   if (strncasecmp(sid->select,"INSERT",6)==0) {
@@ -2212,11 +2220,20 @@ A4GLSQL_open_cursor (int ni, char *s)
   }
 
 
-  inputDescriptorName = sid->inputDescriptorName;
-  outputDescriptorName = sid->outputDescriptorName;
-  A4GL_debug ("Descritors : %s %s", inputDescriptorName, outputDescriptorName);
+  if (ni) {
+	// They've used a value on the OPEN
+	save_ni=sid->ni;
+	save_ibind=sid->ibind;
+	sid->ni=ni;
+	sid->ibind=(struct BINDING *)vibind;
+  }
 
   processPreStatementBinds (sid);	// MJA 150503
+
+  inputDescriptorName = sid->inputDescriptorName;
+  outputDescriptorName = sid->outputDescriptorName;
+  A4GL_debug ("Descriptors : %s %s %d %d", inputDescriptorName, outputDescriptorName,sid->ni,sid->no);
+
 
   switch (getStatementBindType (sid))
     {
@@ -2234,14 +2251,25 @@ A4GLSQL_open_cursor (int ni, char *s)
 	//INTO SQL DESCRIPTOR :outputDescriptorName
        ;
       break;
+
     case INPUT_OUTPUT_BIND:
       A4GL_debug ("Into on an open ?");
-      EXEC SQL OPEN:cursorName
-	//INTO SQL DESCRIPTOR :outputDescriptorName
-        USING SQL DESCRIPTOR:inputDescriptorName;
+
+
+      EXEC SQL OPEN:cursorName 
+        USING SQL DESCRIPTOR:inputDescriptorName
+
+
+//INTO SQL DESCRIPTOR :outputDescriptorName
+;
       break;
     }
 
+
+	if (save_ni!=-1) {
+		sid->ni=save_ni;
+		sid->ibind=save_ibind;
+	}
 
   if (isSqlError ())
     return 1;

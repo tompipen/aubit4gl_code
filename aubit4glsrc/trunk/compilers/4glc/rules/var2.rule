@@ -37,7 +37,14 @@ var2_vu :
 
 var3_vu:
 	var4_vu
-	| CHAR_VALUE DOT var4_vu
+	| CHAR_VALUE DOT var4_vu {
+		if (A4GL_escape_quote_owner()) {
+			$<var_usg>$=new_variable_usage(0,$<str>1,0); 
+			$<var_usg>$=append_variable_usage($<var_usg>$,$<var_usg>3);
+		} else {
+			$<var_usg>$=$<var_usg>3;
+		}
+	}
 ;
 
 var4_vu:
@@ -84,82 +91,54 @@ var4_item_vu:
 */
 
 
-var_ident_ibind_ss :  var2_as_string
+var_ident_ibind_ss :  var2_vu /* a1 */
 {
 	int sv_val;
-	//printf("var_ident_ibind_ss : %s\n",$<str>1);
-	sv_val=scan_variable($<str>1);
+        char *str1;
+	str1=strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
 
-	if (strncmp($<str>1," a4gl_sub",9)==0) {
+	sv_val=scan_variable(str1);
+
+	if (strncmp(str1," a4gl_sub",9)==0) {
 		// Its a substring of a variable
 		sv_val=1;
 	}
 
-	if (sv_val!=-1&&(!system_var($<str>1)))
+	if (sv_val!=-1&&(!system_var(str1)))
 	{
 		// Its a variable
 		int z = 0,a = 0;
 		//printf("add as bind\n");
 		a=get_bind_cnt('i');
-		z=add_bind('i',$<str>1);
+		z=add_bind('i',str1);
 		z-=a;
 		$<sql_string>$=strdup(A4GL_set_var_sql(doing_declare,z));
 
 	} else { 
 		// Its a column
-		$<sql_string>$=strdup(get_column_transform($<str>1));
+		$<sql_string>$=strdup(get_column_transform(str1));
 	}
+free(str1);
 }
-| var2_as_string THRU var2_as_string {
+| var2_vu THRU var2_vu { /* a2 */
 char buff[256];
+char *str1;
+char *str3;
 char was_str[40000];
 char lstr[1024];
 int z = 0,a = 0;
+str1=strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+str3=strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
 strcpy(was_str,"");
-printf("THRU : %s %s\n",$<str>1,$<str>3);
-
-A4GL_debug("Starting THRU");
-
-sprintf(buff,"%s\n%s",$<str>1,$<str>3);
+sprintf(buff,"%s\n%s",str1,str3);
 a=get_bind_cnt('i');
 printf("get_bind_cnt=%d\n",a);
 z=add_bind('i',buff);
 z-=a;
-
 strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
-//for (a=0;a<z;a++)  {
-         //if (strlen(was_str)) {strcat(was_str,",");}
-	 //strcat(was_str,A4GL_set_var_sql(doing_declare,1));
-//}
-
-
-
-	/* split_record(buff,&v_r,&v_1,&v_2);
-
-	v_loop=v_1;
-
-	while (1) {
-                //strcpy(kp,was_str);
-                sprintf(buff,"%s.%s",r1,v_loop->names.name);
-
-		if (scan_variable(buff)!=-1&&(!system_var(buff))) {
-			a=get_bind_cnt('i');
-			z=add_bind('i',buff);
-			z-=a;
-			if (strlen(was_str)) {strcat(was_str,",");}
-			strcat(was_str,A4GL_set_var_sql(doing_declare,z));
-        	}
-
-		//for (a=0;a<z;a++)  {
-			//if (strlen(was_str)) {strcat(was_str,",");}
-         		//strcat(was_str,"?");
-		//}
-		v_loop=get_next_variable(v_r,v_loop,v_2);
-	}
-*/
-
-
 $<sql_string>$=strdup(was_str);
+free(str1);
+free(str3);
 }
 ;
 

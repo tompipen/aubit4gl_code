@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.56 2004-10-03 16:23:19 mikeaubury Exp $
+# $Id: 4glc.c,v 1.57 2004-10-23 13:36:26 mikeaubury Exp $
 #
 */
 
@@ -83,6 +83,7 @@ main (int argc, char *argv[])
 {
   int x = 0;
   char *ptr;
+  char *dialect=0;
   struct str_resource *user_resource = 0;
 
 
@@ -102,6 +103,23 @@ main (int argc, char *argv[])
   if (ptr!=0) {
 		set_namespace(ptr);
   }
+
+  dialect=acl_getenv("A4GL_LEXDIALECT");
+
+  if (strlen(dialect)==0) {
+	dialect=0;
+  }
+
+
+
+  if (dialect) {
+	// We're only going to load our pack now if we are generating a dialect...
+  	A4GL_load_convert(A4GL_compiled_sqlpack(),dialect);
+  }  else {
+  	A4GL_load_convert(A4GL_compiled_sqlpack(),"default");
+  }
+
+
   x = initArguments (argc, argv);
   if (a4gl_yydebug)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.29 2004-03-04 16:27:48 mikeaubury Exp $
+# $Id: nosql.c,v 1.30 2004-10-23 13:36:34 mikeaubury Exp $
 #*/
 
 /**
@@ -322,7 +322,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
  * @todo Describe function
  */
 int
-A4GLSQL_open_cursor (int ni, char *s)
+A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 {
   A4GL_local_exitwith ("Could not open_cursor - noODBC build");
   return 0;

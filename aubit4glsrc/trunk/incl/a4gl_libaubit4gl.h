@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.136 2004-10-04 13:50:00 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.137 2004-10-23 13:36:30 mikeaubury Exp $
 #
 */
 
@@ -794,6 +794,16 @@
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
   void A4GL_strip_nl (char *str);
 int A4GL_readkey(void);
+
+char *A4GLSQLCV_generate_current(char *from,char *to) ;
+int A4GLSQLCV_check_requirement(char *s) ;
+char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
+char *A4GLSQLCV_matches_string(char *str,char *esc) ;
+char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
+char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
+
+
+
 
   ACL_Menu *A4GL_new_menu (char *title, int x, int y, int mn_type, int help_no,
 		      int nopts, va_list * ap);

@@ -58,6 +58,12 @@ delete_statement_search_ss:
 		}
 ;
 
+order_by_clause_ss: order_by_clause {
+	$<sql_string>$=strdup($<str>1);
+}
+;
+
+
 order_by_clause:
 	ORDER BY sort_specification_list
 	{sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
@@ -122,45 +128,45 @@ misc_infx_stmt:
 
 
 sql_commands :  schema_ss {
-			print_exec_sql($<sql_string>1);
+			A4GL_CV_print_exec_sql($<sql_string>1);
 			strcpy($<str>$,"Schema");
 	} 
 	| misc_infx_stmt {
 			char buff[256];
-			print_exec_sql(convstrsql($<str>1));
+			A4GL_CV_print_exec_sql(convstrsql($<str>1));
 			sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
 			ansi_violation(buff,1);
 			strcpy($<str>$,"InfxSpecificSql");
 	}
 	| schema_element_ss {
-		print_exec_sql($<sql_string>1);
+		A4GL_CV_print_exec_sql($<sql_string>1);
 		strcpy($<str>$,"Schema Element");
 	} 
 	| commit_statement  { print_sql_commit(1); }
-	| misc_sql { print_exec_sql($<str>1); }
+	| misc_sql { A4GL_CV_print_exec_sql($<str>1); }
 	| begin_statement   { print_sql_commit(-1); }
 	| fgl_sql_statement
 
 	| delete_statement_search_ss {
 	 A4GL_lex_printcomment("/*  delete 2 */\n");
-		print_exec_sql_bound($<sql_string>1);
+		A4GL_CV_print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"Delete where ...");
 	} 
 	| insert_statement_ss {
 	 A4GL_lex_printcomment("/*  insert */\n");
-		print_exec_sql_bound($<sql_string>1);
+		A4GL_CV_print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"insert");
 	} 
 	| rollback_statement  {
 		print_sql_commit(0);
 	}
 	| update_statement_ss {
-		print_exec_sql_bound($<sql_string>1);
+		A4GL_CV_print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"update");
 	} 
-	| drops_statement { print_exec_sql($<str>1); }
-	| create_statement_ss { print_exec_sql($<sql_string>1); }
-	| alter_statement_ss {print_exec_sql($<sql_string>1); }
+	| drops_statement { A4GL_CV_print_exec_sql($<str>1); }
+	| create_statement_ss { A4GL_CV_print_exec_sql($<sql_string>1); }
+	| alter_statement_ss {A4GL_CV_print_exec_sql($<sql_string>1); }
 ;
 
 privilege_definition:
@@ -475,9 +481,8 @@ table_reference:
 	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
 ;
 
-tname: table_name
-	| table_name correlation_name {
-		if (A4GL_isyes(acl_getenv("A4GL_TABLE_ALIAS_AS"))) {
+tname: table_name | table_name correlation_name {
+		if (A4GLSQLCV_check_requirement("TABLE_ALIAS_AS")) {
 			sprintf($<str>$,"%s AS %s",$<str>1,$<str>2);
 		} else {
 			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
@@ -492,7 +497,7 @@ tname: table_name
 tname_list : table_reference | tname_list KW_COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 ;
 
-table_expression_ss:
+table_expression_old_ss:
 	from_clause  
 	op_where_clause_ss
 	op_group_by_clause_ss
@@ -503,6 +508,33 @@ table_expression_ss:
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,kw_space,$<sql_string>3,kw_space,$<sql_string>4,0);
 	}
 ;
+
+
+table_expression_2_ss: from_clause  op_where_clause_2_ss
+		{$<sql_string>$=make_sql_string_and_free($<str>1," ",$<sql_string>2,0);}
+;
+
+op_where_clause_2_ss:
+	op_group_by_clause_2_ss {$<sql_string>$=$<sql_string>1;}
+	| where_clause_ss op_group_by_clause_2_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
+;
+
+op_group_by_clause_2_ss:
+	op_having_clause_2_ss {$<sql_string>$=$<sql_string>1;}
+	| group_by_clause_ss op_having_clause_2_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
+;
+
+
+
+
+op_having_clause_2_ss : op_order_by_clause_ss  {$<sql_string>$=$<sql_string>1;}
+	| having_clause_ss op_order_by_clause_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
+;
+
+op_order_by_clause_ss:
+	{$<sql_string>$=strdup("");}
+	| order_by_clause_ss {$<sql_string>$=$<sql_string>1;}
+
 
 op_where_clause_ss:  { $<sql_string>$=strdup("");}
 	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
@@ -625,7 +657,7 @@ comparison_predicate_ss:
 	| value_expression_ss NOT_LIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss NOT_ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss op_not MATCHES pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(matches_string($<sql_string>4,$<str>5)),0);
+	| value_expression_ss op_not MATCHES pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(A4GLSQLCV_matches_string($<sql_string>4,$<str>5)),0);
 		}
 ;
 
@@ -685,7 +717,7 @@ exact_numeric_type:
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
-		if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
 			sprintf($<str>$," DECIMAL %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5);
 		} else {
 			sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
@@ -694,7 +726,7 @@ exact_numeric_type:
 
 
 	| MONEY  {
-		if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+		if (A4GLSQLCV_check_requirement ("MONEY_AS_DECIMAL")) {
 			strcpy($<str>$,"DECIMAL");
 		} else {
 			strcpy($<str>$,"MONEY");
@@ -858,17 +890,20 @@ column_name :
 ;
 
 column_name_specific: identifier col_arr { 
+		struct ilist *i;
+		i=&$<int_list>2;
 		addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
-		strcpy($<str>$,make_substr(check_colname($<str>1),&$<int_list>2));
+		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
 	}
 	| table_name DOT identifier col_arr {
-		
-		sprintf($<str>$,"%s.%s",$<str>1,check_colname($<str>3));
+		struct ilist *i;
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
 		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
-		strcpy($<str>$,make_substr($<str>$,&$<int_list>4));
+		i=&$<int_list>4;
+		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
 	}
 	| table_name  DOT MULTIPLY {
-		sprintf($<str>$,"%s.*",$<str>1);
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
 		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 	}
 ;
@@ -885,16 +920,9 @@ literal: CHAR_VALUE { strcpy($<str>$,convstrsql($<str>1)); A4GL_debug("Set $<str
 ;
 
 
-cur_part: { strcpy($<str>$,""); }
+cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); }
 	| s_curr TO e_curr {
-		char *ptr;
-		ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-		if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-		if (ptr) {
-			sprintf($<str>$,"'%s','%s'",$<str>1,$<str>3);
-		} else {
-			sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-		}
+		strcpy($<str>$,A4GLSQLCV_generate_current($<str>1,$<str>3));
 	}
 ;
 
@@ -938,7 +966,7 @@ select_statement_ss_str:
 	{ start_bind('i',0); }
 	select_list_ss {A4GL_debug("Got select list...\n");}
         opt_into_sel_ss 
-	table_expression_ss
+	table_expression_2_ss
         sel_p2_ss {
 		char *ptr;
                 $<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
@@ -959,7 +987,7 @@ select_statement2_ss:
 select_statement21_ss:
 	SELECT  op_ad select_list_ss
         opt_into_sel_ss
-	table_expression_ss
+	table_expression_2_ss
         sel_p2_ss {
 	$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
 }
@@ -971,7 +999,7 @@ sel_p2_ss : { $<sql_string>$=strdup(""); }
 	| order_by_clause  { $<sql_string>$=strdup($<str>1); }
 	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),0); } 
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
-	if (A4GL_isyes(acl_getenv("A4GL_NO_ORDBY_INTO_TEMP"))) {
+	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
 	} else {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
@@ -993,13 +1021,13 @@ opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(s
 
 
 query_specification_ss:
-	SELECT op_ad select_list_ss table_expression_ss {
+	SELECT op_ad select_list_ss table_expression_2_ss {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space, $<sql_string>3,kw_space,$<sql_string>4,0);
 	}
 ;
 
 subquery_ss:
-	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_ss CLOSE_BRACKET {
+	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_2_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free(strdup("("),strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,kw_space,$<sql_string>5,kw_cb,0);
 	}
 ;
@@ -1027,14 +1055,14 @@ value_expression_pls_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| value_expression_ss  identifier {
-		if (A4GL_isyes(acl_getenv("A4GL_USE_ALIAS_AS"))) {
+		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AS "),strdup($<str>2),0);
 		} else {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),0);
 		}
 	}
 	| value_expression_ss AS identifier {
-		if (A4GL_isyes(acl_getenv("A4GL_USE_ALIAS_AS"))) {
+		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AS "),strdup($<str>3),0);
 		} else {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>3),0);
@@ -1239,16 +1267,7 @@ interval_value:
 
 
 curr_clause : CURRENT  cur_part {
-char *ptr;
-ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-
-if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-
-if (ptr) {
-        sprintf($<str>$," %s(%s) ",ptr,$<str>2);
-} else {
-        sprintf($<str>$," %s %s ",$<str>1,$<str>2);
-}
+strcpy($<str>$,$<str>2);
 }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.84 2004-09-22 14:39:05 afalout Exp $
+# $Id: sql.c,v 1.85 2004-10-23 13:36:34 mikeaubury Exp $
 #
 */
 
@@ -1024,12 +1024,16 @@ sid=vsid;
  * @return
  */
 int
-A4GLSQL_open_cursor (int ni, char *s)
+A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 {
   struct s_cid *cid;
   char *curs;
   unsigned long rowcount;
   int rc;
+if (ni) {
+	printf("OPEN with values not implemented yet for open_Cursor in sql.c\n");
+}
+
 
 #ifdef DEBUG
   A4GL_debug ("Checking cursor %s exists before opening", s);

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.39 2004-10-18 15:59:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.40 2004-10-23 13:36:32 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -74,11 +74,11 @@ print_close (char type, char *name)
  * @param into The variable list where the cursor is fetched in.
  */
 void
-print_foreach_next (char *cursorname, char *using, char *into)
+print_foreach_next (char *cursorname, int has_using, char *into)
 {
   int ni;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
-  print_open_cursor(cursorname,using);
+  print_open_cursor(cursorname,has_using);
   /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
@@ -349,9 +349,19 @@ print_open_session (char *s, char *v, char *user)
  * @param using The using expression list.
  */
 void
-print_open_cursor (char *cname, char *using)
+print_open_cursor (char *cname, int has_using)
 {
-  printc ("A4GLSQL_open_cursor(%s,%s);\n", using, cname);
+   if (has_using) {
+	int ni;
+      	printc ("{\n");
+      	ni = print_bind_definition ('i');
+      	print_bind_set_value ('i');
+  	printc ("A4GLSQL_open_cursor(%s,%d,ibind);\n", cname,ni);
+  	printc("}");
+  } else {
+  	printc ("A4GLSQL_open_cursor(%s,0,0);\n",  cname);
+
+  }
 }
 
 void
@@ -560,12 +570,18 @@ print_unload (char *file, char *delim, char *sql)
   int ni, no;
   static char b2[20000];
   int os;
+  int isvar=-1;
   printc ("{\n");
   ni = print_bind_definition ('i');
   print_bind_set_value ('i');
 
+if (strncmp(sql,"SELECT ",7)==0) isvar=0;
 
-if (scan_variable (sql) == -1) {
+if (isvar==-1) {
+	if (scan_variable (sql) == -1) isvar=0; else isvar=1;
+}
+
+if (isvar==0) {
   printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,%d,ibind);\n", file, delim, sql,ni);
 } else {
   printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,%d,ibind);\n", file, delim, sql,ni);

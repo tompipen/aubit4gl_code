@@ -4,7 +4,7 @@
 drops_statement : drops_c ;
 
 drops_c : DROP_TABLE table_name {
-			if (A4GL_isyes(acl_getenv("A4GL_ADD_CASCADE"))) {
+			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
 				sprintf($<str>$, "%s %s CASCADE",$<str>1,$<str>2);
 			} else {
 				sprintf($<str>$, "%s %s ",$<str>1,$<str>2);
@@ -85,7 +85,7 @@ create_c_1  :
 
 op_no_log : {strcpy($<str>$,"");} 
 	| WITH_NO_LOG {
-		if (A4GL_isyes(acl_getenv("A4GL_OMIT_NO_LOG"))) {
+		if (A4GLSQLCV_check_requirement("OMIT_NO_LOG")) {
 			strcpy($<str>$,"");
 		} else {
 			sprintf($<str>$," %s ",$<str>1);

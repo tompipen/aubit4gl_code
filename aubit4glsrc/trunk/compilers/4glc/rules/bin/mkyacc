@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.17 2004-09-29 09:15:58 mikeaubury Exp $
+# $Id: mkyacc,v 1.18 2004-10-23 13:36:29 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -77,6 +77,7 @@ grep -h "^[^ ]*_cmd.*:" generated/fgl.yacc  | $AWK '
 
 echo "/* ========================== end from mkyacc =========================== */" >> generated/fgl.yacc
 cat last.reqd >> generated/fgl.yacc
+echo "char *A4GL_compiled_sqlpack(void ) {char *s=\"$A4GL_SQLPACK\"; return A4GL_decode_packtype(s);}" >>  generated/fgl.yacc
 chmod 444 generated/fgl.yacc
 
 

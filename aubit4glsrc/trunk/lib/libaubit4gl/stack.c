@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.102 2004-09-30 10:20:01 mikeaubury Exp $
+# $Id: stack.c,v 1.103 2004-10-23 13:36:31 mikeaubury Exp $
 #
 */
 
@@ -990,7 +990,7 @@ A4GL_debug("51 Have data");
 	  A4GL_push_int (0);
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (0, cname);
+      A4GLSQL_open_cursor (cname,0,0);
       if (a4gl_status != 0)
 	{
 	  A4GL_drop_param ();
@@ -1053,7 +1053,7 @@ A4GL_debug("51 Have data");
 	  return;
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (0, cname);
+      A4GLSQL_open_cursor (cname,0,0);
       A4GL_debug ("opened cursor");
       if (a4gl_status != 0)
 	{

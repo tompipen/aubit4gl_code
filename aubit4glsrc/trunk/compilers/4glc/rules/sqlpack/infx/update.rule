@@ -194,18 +194,22 @@ upd_value_expression_ss:
 upd_value_expression_initial_ss :
         upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
         | subquery_ss { $<sql_string>$=$<sql_string>1; }
-        | ATSIGN identifier col_arr { $<sql_string>$=make_sql_string_and_free(
-								strdup(
-									make_substr(
-										check_colname($<str>2),
-										&$<int_list>3
-									)
-								),0); 
+        | ATSIGN identifier col_arr { 
+			struct ilist *i;
+			i=&$<int_list>3;
+$<sql_string>$=make_sql_string_and_free(
+						strdup(
+						A4GLSQLCV_make_substr(
+							A4GLSQLCV_check_colname(0,$<str>2),i->i0,i->i1,i->i2
+							)
+						),0); 
 		}
         | ATSIGN identifier DOT identifier col_arr { 
 		char buff[256];
+			struct ilist *i;
+			i=&$<int_list>5;
 		sprintf(buff,"%s.%s",$<str>2,$<str>4);
-		$<sql_string>$=make_sql_string_and_free(strdup(make_substr(check_colname(buff),&$<int_list>5)),0); 
+		$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname($<str>2,$<str>4),i->i0,i->i1,i->i2)),0); 
 		}
         | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; pop_all_gen(UPDVAL2,"!"); }
         | literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}

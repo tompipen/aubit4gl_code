@@ -6,14 +6,14 @@
 
 
 set_cmd :
-SQLSEON {print_exec_sql($<str>1);}
-| SQLSEOFF {print_exec_sql($<str>1);}
-| SQLSLMW op_int_val {sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql($<str>$); }
-| SQLSLMNW  {print_exec_sql($<str>1);}
-| SQLSIDR {print_exec_sql($<str>1);}
-| SQLSIRR {print_exec_sql($<str>1);}
-| SQLSICS {print_exec_sql($<str>1);}
-| SQLSICR {print_exec_sql($<str>1);}
+SQLSEON {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSEOFF {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSLMW op_int_val {sprintf($<str>$,"%s %s",$<str>1,$<str>2); A4GL_CV_print_exec_sql($<str>$); }
+| SQLSLMNW  {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSIDR   {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSIRR   {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSICS   {A4GL_CV_print_exec_sql($<str>1);}
+| SQLSICR   {A4GL_CV_print_exec_sql($<str>1);}
 | SET_SESSION_TO conn_id { 
 	print_set_conn($<str>2);
 }

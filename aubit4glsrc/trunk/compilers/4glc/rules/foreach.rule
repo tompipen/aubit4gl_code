@@ -17,7 +17,7 @@ A4GL_lex_printcomment(" /* foreach */\n");
 opt_foreach_using_part
 opt_foreach_into_fetch_part 
 {
-print_foreach_next($<str>3,$<str>5,$<str>6);
+print_foreach_next($<str>3,atoi($<str>5),$<str>6);
 }
 commands
 END_FOREACH {
@@ -25,13 +25,15 @@ add_continue_blockcommand ("FOREACH");
 print_foreach_end($<str>3);
 pop_blockcommand("FOREACH"); 
 //print_foreach_close($<str>3);
-} ;
+} 
+;
 
 
 
 opt_foreach_using_part: {strcpy($<str>$,"0");}
-	| KW_USING reset_cnt fgl_expr_list {
-		strcpy($<str>$,$<str>3);
-	}
+	| KW_USING reset_cnt ibind_var_list { sprintf($<str>$,"1"); }
+
+;
+
 /* ====================== foreach.rule ============================== */
 

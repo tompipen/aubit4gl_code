@@ -147,3 +147,7 @@ New Directives
  SQL_CURRENT_FUNCTION = functionname
 	Use a function for generating the current date/time - this function should accept two parameters 
 	"from" and "to" which are text strings eg "YEAR","SECOND"
+
+ QUOTE_OWNER/NO_OWNER_QUOTE
+	Use/Don't use quoting for tablenames when supplied in sourcecode
+

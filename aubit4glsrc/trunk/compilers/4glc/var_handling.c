@@ -13,7 +13,7 @@ struct variable_usage *
 new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 {
   struct variable_usage *newv;
-int a;
+  int a;
   newv = malloc (sizeof (struct variable_usage));
 
   newv->variable_name = strdup (partname);
@@ -119,7 +119,6 @@ variable_usage_as_string (struct variable_usage *var, int ident_flg)
   // At this point we should have
   // VAR_USG_VARIABLE, VAR_USG_IDENT, or VAR_USG_ANY
   variable_usage_as_string_int (var, buff, ident_flg);
-  //printf ("Made string : %s from variable ident=%d\n", buff, ident_flg);
   return buff;
 }
 
@@ -132,15 +131,15 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
   int a;
   char tmpbuff[2048];
   int type;
-         int arrsize,size,level;
-         char arrbuff[256];
-
+  int arrsize, size, level;
+  char arrbuff[256];
 
   strcat (buff, var->variable_name);
 
-  if (ident_flg != VAR_USG_SIMPLE && ident_flg != VAR_USG_IDENT) {
-	get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-  }
+  if (ident_flg != VAR_USG_SIMPLE && ident_flg != VAR_USG_IDENT)
+    {
+      get_variable_dets (buff, &type, &arrsize, &size, &level, arrbuff);
+    }
 
   if (ident_flg != VAR_USG_SIMPLE)
     {				// If we're doing it "simple" ...
@@ -148,24 +147,25 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
       // we just want the variable structure
       // not the array contents...
 
-
-  if (var->nsubscripts && var->nsubstrings == 0)
-    {
-      // It might be a substring..
-	//printf("Type = %x\n",type);
-	if (arrsize==0|| type==-1 || ident_flg==VAR_USG_IDENT) {
-		//printf("Fix it...\n");
-		// This is a substring - not a subscript...
-		var->nsubstrings=var->nsubscripts;
-		var->substrings[0]=var->subscripts[0];
-		var->substrings[1]=var->subscripts[1];
-		if (var->nsubstrings>2) {
-			a4gl_yyerror("Too many subscripts for a substring");
-			return;
+      if (var->nsubscripts && var->nsubstrings == 0)
+	{
+	  // It might be a substring..
+	  //printf("Type = %x\n",type);
+	  if (arrsize == 0 || type == -1 || ident_flg == VAR_USG_IDENT)
+	    {
+	      //printf("Fix it...\n");
+	      // This is a substring - not a subscript...
+	      var->nsubstrings = var->nsubscripts;
+	      var->substrings[0] = var->subscripts[0];
+	      var->substrings[1] = var->subscripts[1];
+	      if (var->nsubstrings > 2)
+		{
+		  a4gl_yyerror ("Too many subscripts for a substring");
+		  return;
 		}
-		var->nsubscripts=0;
+	      var->nsubscripts = 0;
+	    }
 	}
-    }
 
 
       if (var->nsubscripts)
@@ -176,7 +176,8 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 
 	      for (a = 0; a < var->nsubscripts; a++)
 		{
-		  if (a) strcat (buff, "][");
+		  if (a)
+		    strcat (buff, "][");
 		  sprintf (tmpbuff, "((%s)-1)", var->subscripts[a]);
 		  strcat (buff, tmpbuff);
 		}
@@ -185,15 +186,10 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	    }
 	  else
 	    {
-	      strcpy (tmpbuff, "");
-	      strcat (buff, "[");
-	      for (a = 0; a < var->nsubscripts; a++)
-		{
-		  if (a) strcat (buff, ",");
-		  sprintf (tmpbuff, "%s", var->subscripts[a]);
-	      	  strcat (buff, tmpbuff);
-		}
-	      strcat (buff, "]");
+		// Shouldn't happen ?
+	          strcpy(buff, A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 0,0,0));
+
+
 	    }
 	}
 
@@ -208,27 +204,41 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 
 	  if (var->nsubstrings == 1)
 	    {
-		if (ident_flg==VAR_USG_VARIABLE) {
-	      		sprintf (tmpbuff, " a4gl_substr(%s , %d , %s ,0) ", buff, type, var->substrings[0]);
-	  		strcpy (buff, tmpbuff);
-			strcpy(tmpbuff,"");
-		} else {
-	      		sprintf (tmpbuff, "[%s] ", var->substrings[0]);
+	      if (ident_flg == VAR_USG_VARIABLE)
+		{
+		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s ,0) ", buff,
+			   type, var->substrings[0]);
+		  strcpy (buff, tmpbuff);
+		  strcpy (tmpbuff, "");
+	  	strcat (buff, tmpbuff);
+		}
+	      else
+		{
+	          char *n;
+	          n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 1,var->substrings[0],0);
+		strcpy(buff,n);
 		}
 	    }
 
 	  if (var->nsubstrings == 2)
 	    {
-		if (ident_flg==VAR_USG_VARIABLE) {
-	      		sprintf (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) ", buff, type, var->substrings[0],var->substrings[1]);
-	  		strcpy (buff, tmpbuff);
-			strcpy(tmpbuff,"");
-		} else {
-	      		sprintf (tmpbuff, "[%s,%s]", var->substrings[0], var->substrings[1]);
+	      if (ident_flg == VAR_USG_VARIABLE)
+		{
+		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) ",
+			   buff, type, var->substrings[0],
+			   var->substrings[1]);
+		  strcpy (buff, tmpbuff);
+		  strcpy (tmpbuff, "");
+	  	strcat (buff, tmpbuff);
+		}
+	      else
+		{
+	          char *n;
+	          n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 2,var->substrings[0],var->substrings[1]);
+		strcpy(buff,n);
 
 		}
 	    }
-	  strcat (buff, tmpbuff);
 	}
     }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.15 2004-10-15 15:00:23 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.16 2004-10-23 13:36:31 mikeaubury Exp $
 #
 */
 
@@ -396,41 +396,6 @@ A4GL_cvsql_double_single (char *sql, char *args)
 }
 
 
-#ifdef NOT_USED
-/*
- * Replaces the 'rowid' pseudo-column in a SQL statement
- *
- * @param   sql   string holding SQL statement
- * @param   oid   string to replace "rowid", usually "oid"
- */
-void
-A4GL_cvsql_rowid (char *sql, char *oid)
-{
-  char *t;
-  int len;
-
-  t = sql;
-  while ((t = A4GL_cv_next_token (t, &len, 0)) != NULL)
-    {
-      char *p = 0;
-      if (strncasecmp (t, "rowid", len) == 0)
-	{
-	  p = t;
-	}
-      else
-	{
-	  if (strncasecmp (&t[len - 6], ".rowid", 6) == 0)
-	    p = &t[len - 5];
-	}
-      if (p > 0)
-	{
-	  A4GL_cv_replacestr (p, 5, oid);
-	  t += strlen ("rowid") - strlen (oid);
-	}
-      t += len;
-    }
-}
-#endif
 
 /*
  * Converts an Informix style update to the standard format

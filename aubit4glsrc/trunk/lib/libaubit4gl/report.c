@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.45 2004-09-22 14:39:04 afalout Exp $
+# $Id: report.c,v 1.46 2004-10-23 13:36:31 mikeaubury Exp $
 #
 */
 
@@ -821,7 +821,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
   if (a4gl_sqlca.sqlcode != 0)
     return 0;
-  A4GLSQL_open_cursor (0, tbuff);
+  A4GLSQL_open_cursor ( tbuff,0,0);
   if (a4gl_sqlca.sqlcode != 0)
     return 0;
 

@@ -42,7 +42,7 @@ A4GLSQL_execute_implicit_sql    void* sid -> int
 
 
 A4GLSQL_fetch_cursor char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
-A4GLSQL_open_cursor int ni char* s -> int
+A4GLSQL_open_cursor char* s int no void* vibind -> int
 A4GLSQL_flush_cursor char* cursor -> void
 A4GLSQL_close_cursor char* currname -> int
 A4GLSQL_declare_cursor int upd_hold void* sid int scroll char* cursname -> void*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.50 2004-10-03 16:23:20 mikeaubury Exp $
+# $Id: variables.c,v 1.51 2004-10-23 13:36:27 mikeaubury Exp $
 #
 */
 
@@ -1028,7 +1028,9 @@ find_variable_in (char *s, struct variable **list, int cnt)
 
   for (a = 0; a < cnt; a++)
     {
+	if (list==0) { A4GL_assertion(1,"find_variable_in passed an invalid list"); }
       v = list[a];
+	if (v==0) { A4GL_assertion(1,"find_variable_in passed an invalid list"); }
       /* Can we find the name at this point ?*/
       if (!has_name (&v->names, var_section)
 	  && !strcmp (var_section, "*") == 0)
@@ -1961,7 +1963,7 @@ check_for_constant (char *name, char *buff)
 static void
 strip_bracket (char *s)
 {
-  char buff[256];
+  char buff[2048];
   int a;
   int c = 0;
   int f = 0;
@@ -1969,16 +1971,17 @@ strip_bracket (char *s)
   A4GL_debug ("strip_bracket %s\n",s);
   for (a = 0; a <= strlen (s); a++)
     {
-      if (s[a] == '[')
-	f++;
+      if (s[a] == '[') f++;
+
       if (f == 0 && s[a] != ' ') {
 	buff[c++] = s[a];
 	buff[c]=0;
-	/*A4GL_debug("--> %s",buff);*/
-	}
+	if (c>=sizeof(buff)) { A4GL_assertion(1,"buff in strip_bracket too small"); }
+      }
       if (s[a] == ']')
 	f--;
     }
+	if (c>=sizeof(buff)) { A4GL_assertion(1,"buff in strip_bracket too small"); }
   buff[c]=0;
   strcpy (s, buff);
 }

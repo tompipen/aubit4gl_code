@@ -11,7 +11,9 @@ then
 		cvs  update -dP
 	fi
 	make cleanall
-	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome
+	./configure  --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome
+
+
 #--with-curses=/usr/local/widec
 fi
 

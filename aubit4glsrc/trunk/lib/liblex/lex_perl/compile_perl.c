@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.52 2004-02-09 08:07:47 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.53 2004-10-23 13:36:32 mikeaubury Exp $
 #
 */
 
@@ -2130,7 +2130,7 @@ print_foreach_start (void)
  * @return
  */
 void
-print_foreach_next (char *cursorname, char *using, char *into)
+print_foreach_next (char *cursorname, int using, char *into)
 {
   printc ("set_sqlca_sqlcode(0);\n");
   //printc ("open_cursor(0,%s);\n", cursorname);
@@ -3242,9 +3242,13 @@ print_open_session (char *s, char *v, char *user)
  * @return
  */
 void
-print_open_cursor (char *cname, char *using)
+print_open_cursor (char *cname, int has_using)
 {
-  printc ("aubit4gl_pl::open_cursor(%s,%s);\n", using, cname);
+  if (has_using) {
+  printc ("aubit4gl_pl::open_cursor(%s,ni,ibind);\n",cname);
+  } else {
+  printc ("aubit4gl_pl::open_cursor(%s,0,0);\n",cname);
+  }
 }
 
 

@@ -260,7 +260,7 @@ cp_sqlca();
       if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
 
       need_cursor_free=1;
-   	A4GLSQL_open_cursor(0,"crExec");
+   	A4GLSQL_open_cursor("crExec",0,0);
         if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
         need_cursor_free=3;
 

@@ -233,8 +233,8 @@ print_for_default_step -> void
 /* void print_foreach_start () */
 print_foreach_start -> void
 
-/* void print_foreach_next (char *cursorname, char *using, char *into) */
-print_foreach_next char* cursorname,char* using, char* into -> void
+/* void print_foreach_next (char *cursorname, int has_using, char *into) */
+print_foreach_next char* cursorname,int has_using, char* into -> void
 
 /* void print_foreach_end () */
 print_foreach_end char* cname -> void
@@ -433,8 +433,8 @@ print_open_form char* fmt,char* a1,char* a2 -> void
 /* void print_open_session (char *s, char *v, char *user) */
 print_open_session char* s,char* v,char* user -> void
 
-/* void print_open_cursor (char *cname, char *open_using) */
-print_open_cursor char* cname,char* open_using -> void
+/* void print_open_cursor (char *cname, int has_using) */
+print_open_cursor char* cname,int has_using -> void
 
 /* void print_clr_window (char *s) */
 print_clr_window char* s -> void

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.88 2004-10-18 15:59:52 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.89 2004-10-23 13:36:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.88 2004-10-18 15:59:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.89 2004-10-23 13:36:32 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -236,7 +236,7 @@ A4GL_save_sql("CLOSE SESSION %s", A4GL_strip_quotes (name));
  * @param into The variable list where the cursor is fetched in.
  */
 void
-print_foreach_next (char *xcursorname, char *using, char *into)
+print_foreach_next (char *xcursorname, int has_using, char *into)
 {
   int ni;
   int no;
@@ -247,7 +247,7 @@ print_foreach_next (char *xcursorname, char *using, char *into)
   printc ("a4gl_sqlca.sqlcode=0;\n");
 
 
-  print_open_cursor(cursorname,using);
+  print_open_cursor(cursorname,has_using);
 
   /*printc("internal_recopy_%s_i_Dir();",cursorname);*/
   /*print_copy_status ();*/
@@ -689,7 +689,7 @@ A4GL_save_sql("CONNECT TO '%s'", v);
  * @param using The using expression list.
  */
 void
-print_open_cursor (char *xcname, char *using)
+print_open_cursor (char *xcname, int has_using)
 {
   int n;
   int a;
@@ -697,50 +697,36 @@ print_open_cursor (char *xcname, char *using)
   if (cname) free(cname);
   cname=strdup(A4GL_strip_quotes(xcname));
 
+  set_suppress_lines();
+  if (has_using) {
+      int a;
+	int ni;
+        printc("internal_recopy_%s_i_Dir();",cname);
+      printc ("{ /* OPEN */\n");
 
-  n = atoi (using);
-  if (n)
-    {
-      printc ("{\nEXEC SQL BEGIN DECLARE SECTION;/*9*/");
-      for (a = n - 1; a >= 0; a--)
-	{
-	  printc ("char *_using_%d;", a);
-	}
-      printc ("\nEXEC SQL END DECLARE SECTION;");
+      ni = print_bind_definition ('i');
+      print_bind_set_value ('i');
+      print_conversions ('i');
 
-      for (a = n - 1; a >= 0; a--)
-	{
-	  printc ("_using_%d=A4GL_char_pop();A4GL_trim(_using_%d);\n", a,a);
-	}
-
-      printc("internal_recopy_%s_i_Dir();",cname);
-A4GL_save_sql("OPEN '%s'", cname);
-	set_suppress_lines();
-      printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",
-	      cname, n);
-      for (a = 0; a < n; a++)
-	{
-	  if (a)
-	    printc (",");
-	  printc (":_using_%d\n", a);
-	}
+     A4GL_save_sql("OPEN %s USING ...", cname);
+      printc ("\nEXEC SQL OPEN %s USING \n", cname);
+      for (a = 0; a < ni; a++)
+        {
+          if (a)
+            printc (",");
+          printc (":_vi_%d\n", a);
+        }
 
       printc (";");
-
-	clr_suppress_lines();
-      for (a = n - 1; a >= 0; a--)
-	{
-	  printc ("free(_using_%d);\n", a);
-	}
-      printc ("}");
-    }
-  else
-    {
+      printc ("}\n");
+  } else {
       printc("internal_recopy_%s_i_Dir();",cname);
-A4GL_save_sql("OPEN '%s'", cname);
+      A4GL_save_sql("OPEN '%s'", cname);
       printc ("\nEXEC SQL OPEN  %s; /* No using */\n", cname);
-	/*printc("A4GL_char_pop();");*/
-    }
+  }
+
+
+  clr_suppress_lines();
   print_copy_status ();
 }
 
@@ -1337,6 +1323,7 @@ A4GL_save_sql("UNLOAD : %s",sql);
 	int ni;
 	int a;
 	char *ptr;
+	int isvar=-1;
         printc("{");
 	ni=print_bind_definition('i');
         print_bind_set_value('i');
@@ -1357,7 +1344,16 @@ A4GL_save_sql("UNLOAD : %s",sql);
 		if (ptr[a]=='\n') ptr[a]=' ';
 	}
   print_conversions('i');
-  if (scan_variable (ptr) == -1) {
+
+
+if (strncmp(sql,"SELECT ",7)==0) isvar=0;
+  if (isvar==-1) {
+  	if (scan_variable (ptr) == -1) isvar=0;
+	else isvar=1;
+  }
+
+
+  if (isvar==0) {
   	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
   } else {
   	printc ("A4GLSQL_unload_data(%s,%s, %s,%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
@@ -1565,6 +1561,12 @@ int n,m;
 int l;
 if (strchr(s,'[')==0) return s;
 
+
+
+
+
+
+
 /*printf("TRANSFORM %s\n",s);*/
       switch (esql_type ())
 	{
@@ -1753,7 +1755,7 @@ if (type=='I') {
 		p=print_select_all(sql);
 		/*printf("p=%s",p);*/
 		print_declare("0",p,cname,0,0);
-		print_open_cursor(cname,"0");
+		print_open_cursor(cname,0);
 
 
 }
