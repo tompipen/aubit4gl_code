@@ -25,7 +25,7 @@ then
 	echo ' 4glpc --help-types	- for file types'
     echo ' 4glpc --help-examples	- for examples'
     echo
-	exit 1
+	exit 6
 fi
 
 if [ $# -lt 1 -o "$1" = "--help-options" ]
@@ -54,7 +54,7 @@ then
     echo All options unknown to Aubit compiler will be passed to C compiler
     echo Please see Aubit 4gl manual for more information.
     echo
-    exit 1
+    exit 6
 fi
 
 if [ $# -lt 1 -o "$1" = "--help-env" ]
@@ -85,7 +85,7 @@ then
     echo 'Note: 4glc, cc and other compilers invoked by this script will'
     echo '      recognise additional variables that might affect this script'
     echo
-	exit 1
+	exit 6
 fi
 
 
@@ -104,7 +104,7 @@ then
     echo '	c   -'
     echo '	menu - Aubit 4gl GUI menu source, compiled to'
     echo
-    exit 1
+    exit 6
 fi
 
 if [ $# -lt 1 -o "$1" = "--help-examples" ]
@@ -120,7 +120,7 @@ then
     echo '  4glpc -map -echo file.4gl'
 	echo '  4glpc -gtk file.4gl -o'
     echo
-	exit 1
+	exit 6
 fi
 
 if [ "$GTKGUI" = "" ]
@@ -292,6 +292,8 @@ do
 		  fi
 
 		  fcompile -c $a
+		  err_code=$?
+
    		  fname=`basename $a .per`
 
 		  if ! [ -f $fname.c ]
@@ -299,7 +301,7 @@ do
             $output "Error compiling $a."
             if [ "$IGNORE_ERRORS" != "1" ]
             then
-				exit 6
+				exit $err_code
             fi
           else
 	        COMPCC="$COMPCC $fname.c"
@@ -365,7 +367,7 @@ do
                     $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
                   fi
 
-				 exit 1
+				 exit $err_code
           fi
 
 		  if [ "$A4GLVERBOSE" = "yes" ]
@@ -585,7 +587,7 @@ then
    then
 	   $output No C files to compile.
    fi
-	exit 0
+	exit 8
 fi
 
 if [ "$COMPCC" = "" ]
@@ -594,7 +596,7 @@ then
    then
 	   $output No C files to compile.
    fi
-   exit 0
+   exit 8
 fi
 
 
@@ -634,8 +636,10 @@ then
         $output executing: $EXEC
    fi
 
-   eval $EXEC
-   if [ $? != 0 ]
+   	eval $EXEC
+	err_code=$?
+
+   if [ $err_code != 0 ]
    then
       if [ "$LAST" != "" ]
       then
@@ -643,7 +647,7 @@ then
       else
 		  $output "Error compiling."
       fi
-      exit 3
+      exit $err_code
    fi
 
 else
@@ -653,9 +657,9 @@ else
    then
 	   $output executing: $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
    fi
-   eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
-
-   if [ $? != 0 ]
+	eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
+	err_code=$?
+   if [ $err_code != 0 ]
    then
       if [ "$LAST" != "" ]
       then
@@ -663,7 +667,7 @@ else
       else
 		  $output "Error compiling."
       fi
-      exit 2
+      exit $err_code
    fi
 fi
 

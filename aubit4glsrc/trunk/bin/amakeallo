@@ -20,13 +20,15 @@ function stats {
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
+    echo "$CCOMPWARNING produced warnings from C compiler, but compiled."
+	echo "$NOGLBFILE glb files not found, but $OKNOGLBFILE compiled on the fly."
 
 }
 
 ############################
 function shortstats {
 ############################
-	echo "OK= $COMPSUCCESS 4gl= $COMPFAIL4GL skip= $COMPBEFORE c= $COMPFAILCCOMP core= $COMPFAILCORE ?= $COMPFAILUNKNOWN compat=$FAILCOMPATIBLE"
+	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE noglob=$OKNOGLBFILE/$NOGLBFILE cw=$CCOMPWARNING"
 
 }
 
@@ -178,11 +180,14 @@ function compileit {
 	pwd=`pwd`
 	HFILE=`basename $i .4gl`.h;
 	GFILE=`basename $i .4gl`.glb;
+    OBJERR=`basename $i .4gl`.$COMPEXT2
+	OBJERR=$OBJERR.err
 
     HAVEERRFILE=0
     HAVECFILE=0
     HAVEHFILE=0
 	HAVEGFILE=0
+    HAVEOBJERRFILE=0
 
 
 	if [ "$COMPILER" = "aubit" ]
@@ -229,8 +234,99 @@ function compileit {
 
 	echo "#Running $A4GLPC (in $pwd):"  >> $ERRORLOG 2>&1;
 
-	$A4GLPC >> $ERRORLOG 2>&1;
+	#$A4GLPC >> $ERRORLOG 2>&1;
+	#err_msg=`4glc "$a"`
+	#err_msg=`eval "$A4GLPC"`
+	#err_msg=`$A4GLPC`
+	err_msg=`$A4GLPC > /tmp/compmsg.tmp 2>&1`
 	RET=$?
+
+    if [ "$err_msg" != "" ]
+    then
+        echo "MSG from compiler: $err_msg"   >> $ERRORLOG 2>&1;
+	    if [ "$VERBOSE" = "1" ]
+    	then
+			echo "MSG from compiler: $err_msg"
+        fi
+    else
+        if [ -f /tmp/compmsg.tmp ]
+        then
+			err_msg=`cat /tmp/compmsg.tmp`
+        fi
+	    if [ "$err_msg" != "" ]
+	    then
+	        echo "MSG from compiler: $err_msg"   >> $ERRORLOG 2>&1;
+		    if [ "$VERBOSE" = "1" ]
+	    	then
+				echo "MSG from compiler: $err_msg"
+	        fi
+        fi
+	fi
+
+	if test $RET = "7"
+    then
+		let NOGLBFILE=NOGLBFILE+1
+
+		#on exit code 7, $err_msg will be something like:
+		#"Couldnt open globals file ../ar/AC.glb"
+		DEPENDGLOB4GLFILE=$(echo $err_msg | awk '{print $5}')
+		if [ "$VERBOSE" = "1" ]
+    	then
+	        echo "File $DEPENDGLOB4GLFILE need to be compiled first..."
+        fi
+        echo "File $DEPENDGLOB4GLFILE need to be compiled first..."  >> $ERRORLOG 2>&1;
+
+        DEPEND4GLFILE=`basename $DEPENDGLOB4GLFILE .glb`.4gl;
+        DEPEND4GLOBJ=`basename $DEPENDGLOB4GLFILE .glb`.ao;
+		A4GLGLOBPC="$FGLCOMPILER $DEPEND4GLFILE -c -o $DEPEND4GLOBJ"
+		#4glpc .glb.4gl -c -o .glb.ao
+
+
+	    if [ "$VERBOSE" = "1" ]
+    	then
+	        echo "Running $A4GLGLOBPC"
+        fi
+        echo "Running $A4GLGLOBPC" >> $ERRORLOG 2>&1;
+
+		err_msg=`eval "$A4GLGLOBPC"`
+		RET=$?
+
+	    if [ "$err_msg" != "" ]
+	    then
+	        echo "$err_msg"   >> $ERRORLOG 2>&1;
+		    if [ "$VERBOSE" = "1" ]
+	    	then
+				echo "$err_msg"
+	        fi
+	    fi
+
+		if test $RET = "0"
+	    then
+		    OKNOGLBFILE=OKNOGLBFILE+1
+        else
+		    if [ "$VERBOSE" = "1" ]
+    		then
+				echo "Compiling $DEPENDGLOB4GLFILE failed."
+            fi
+			echo "Compiling $DEPENDGLOB4GLFILE failed."  >> $ERRORLOG 2>&1;
+			WASERROR=1
+			let COMPFAIL4GL=COMPFAIL4GL+1
+
+			if test $STOPONERROR = "1"
+		    then
+				echo "Stop."
+				exit 1
+		    else
+				return
+			fi
+
+        fi
+
+        #now try it again:
+	    err_msg=`eval "$A4GLPC"`
+		RET=$?
+    fi
+
 
 	if [ -f $ERR ]
     then
@@ -255,6 +351,13 @@ function compileit {
 			cp $GFILE $ERRFILESDIR
             HAVEGFILE=1
         fi
+		if [ -f $OBJERR ]
+        then
+			cp $OBJERR $ERRFILESDIR
+            HAVEOBJERRFILE=1
+        fi
+
+
     fi
 
 	if test $RET != "0"
@@ -262,6 +365,7 @@ function compileit {
         #does this fails in 4Js too?
         if [ "$COMPILER" = "aubit" ] && [ "$COMPATIBLE" = "1" ]
         then
+			echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"  >> $ERRORLOG
 			if [ "$VERBOSE" = "1" ]
 		    then
 				echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"
@@ -314,25 +418,32 @@ function compileit {
 		    then
         	    echo "It compiled OK with 4Js"
             fi
+            echo "It compiled OK with 4Js" >> $ERRORLOG
 		fi
 
 		WASERROR=1
 		cp $i $ERRFILESDIR   #4gl file
-		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
 		if [ -f $ERR ]
 		then
-		    if [ "$VERBOSE" = "1" ]
+			echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
+			if [ "$VERBOSE" = "1" ]
 		    then
 				echo "$FGLCOMPILER failed: $PWD/$FGL"
             fi
-	        cat $ERR | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR >> $ERRORLOG
-			let COMPFAIL4GL=COMPFAIL4GL+1
+			if test $RET = "3"
+			then
+				cat $ERR  >> $ERRORLOG
+				let COMPFAILCCOMP=COMPFAILCCOMP+1
+            else
+				cat $ERR | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR >> $ERRORLOG
+				let COMPFAIL4GL=COMPFAIL4GL+1
+			fi
+
 		else
-            OBJERR=`basename $i .4gl`.$COMPEXT2
-			OBJERR=$OBJERR.err
 			if [ -f $OBJERR ]
             then
-			    if [ "$VERBOSE" = "1" ]
+				echo "########################################## ($RET) $PWD/$OBJERR :" >> $ERRORLOG
+				if [ "$VERBOSE" = "1" ]
 			    then
 					echo "cc failed: $PWD/$FGL"
                 fi
@@ -425,31 +536,31 @@ function compileit {
 
 	if [ -f $ERR ]
 	then
-		WASERROR=1
+		#This is not really an error:
+		#WASERROR=1
 	    if [ "$VERBOSE" = "1" ]
     	then
 			echo "Object was generated, but $ERR was generated too, and $FGLCOMPILER did not return error code."
+            echo "This probably indicate C compiler warnings"
         fi
 		echo "Object was generated, but $ERR was generated too, and $FGLCOMPILER did not return error code."  >> $ERRORLOG
 		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
 		cat $ERR | grep -B $GOBACKLINES $GOAFTERLINES $ERRCHAR >> $ERRORLOG
-	    #this usualy indicates error in C compiler, so there will probably not be any
+	    #this usualy indicates warnings from C compiler, so we will probably not have
 		#4gl error lines markers, so we better include complete error file here:
 		echo "#____________________ COMPLETE ERR FILE: _______________________" >> $ERRORLOG
 		cat $ERR >> $ERRORLOG
         echo "##########################################################" >> $ERRORLOG
-		#let COMPFAILCCOMP=COMPFAILCCOMP+1
-		#let COMPFAIL=COMPFAIL+1
-		let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
+		let CCOMPWARNING=CCOMPWARNING+1
 
-
-		if test $STOPONERROR = "1"
-	    then
-			echo "Stop."
-			exit 1
-	    else
-			return
-		fi
+		#this is not really an error:
+		#if test $STOPONERROR = "1"
+	    #then
+		#	echo "Stop."
+		#	exit 1
+	    #else
+		#	return
+		#fi
 
 	fi;
 
@@ -569,13 +680,18 @@ function doit {
 
 	################
 	#configuration:
+	
+	ERRFILESDIR=/tmp/amakeallo
+	ERRORLOG=$ERRFILESDIR/amakeallo.log
+    FJSERRFILESDIR=$ERRFILESDIR-4js
+	AUBITERRFILESDIR=$ERRFILESDIR-aubit
+	DESTDIR=/tmp/amakeallo-objects
+	ROOTDIR=$PWD
+
 	STOPONERROR=0
 	STOPGLOBALSERROR=0
     NONGLOBAFTERGLOBERR=0
 	SKIP=skip
-	ERRFILESDIR=/tmp/amakeallo
-	ERRORLOG=$ERRFILESDIR/amakeallo.log
-	ROOTDIR=$PWD
 	#ERRCHAR=\|
     ERRCHAR=^\|
     COMPILER=aubit
@@ -584,10 +700,9 @@ function doit {
 	GOAFTERLINES=10
     FULLCLEAN=0
     COMPATIBLE=0
-    FJSERRFILESDIR=$ERRFILESDIR-4js
-	AUBITERRFILESDIR=$ERRFILESDIR-aubit
     VERBOSE=0
-    MAXMODE=1
+    MAXMODE=0
+	SKIPDIRS=
 
 	###############
 	#initialise:
@@ -600,6 +715,9 @@ function doit {
 	COMPFAILUNKNOWN=0
     FAILCOMPATIBLE=0
 	TOTALFAILED=0
+    CCOMPWARNING=0
+    NOGLBFILE=0
+    OKNOGLBFILE=0
 
 	############
 	for a in $@
@@ -637,14 +755,14 @@ function doit {
 		-noskip) 	SKIP=noskip
         ;;
 
-        -tmp)  		DESTDIR=/tmp/amakeallo-objects
-		;;
-
         -fullclean) FULLCLEAN=1
         ;;
 
         -compat) 	COMPATIBLE=1
         ;;
+
+        -maxmode)   MAXMODE=1
+		;;
 
         -v)			VERBOSE=1
         ;;
@@ -661,10 +779,10 @@ function doit {
 			echo " -stopglob = stop if any GLOBALS 4gl file fails (continue)"
             echo " -nonglob = continue compiling non-global files even if globals fail (skip)"
 			echo " -noskip = do not skip files that are already compiled (skip)"
-			echo " -x  = rename Aubit old extensions [.o->.ao]"
-			echo " -tmp = move objects to /tmp/amakeallo-objects ('MAXDIR/?prog')"
+			echo " -x = rename Aubit old extensions [.o->.ao]"
 			echo " -fullclean = remove .c .h .ec before you start (DANGER!)"
 			echo " -compat = ignore errors if they fail in 4Js too (do not ignore)"
+			echo " -maxmode = special mode for Maximise application testing"
 			echo " -v = verbose - show what you are doing"
 			echo " -help = this help"
             echo
@@ -691,17 +809,6 @@ function doit {
 		COMPEXT=o
 		COMPEXT2=ao
 
-		if ! [ "$DESTDIR" = "/tmp/amakeallo-objects" ]
-        then
-			if [ -d $MAXDIR/aprog ]
-	        then
-				DESTDIR=$MAXDIR/aprog
-            else
-                echo "NOTE: using /tmp/amakeallo-objects for objects store"
-				DESTDIR=/tmp/amakeallo-objects
-            fi
-		fi
-
 		if [ -f $AUBITDIR/aubitenv ]
 		then
 			. $AUBITDIR/aubitenv
@@ -712,6 +819,14 @@ function doit {
 			. /etc/aubitenv
 		fi
 
+		if test $MAXMODE = "1"
+        then
+			if [ -d $MAXDIR/aprog ]
+	        then
+				DESTDIR=$MAXDIR/aprog
+            fi
+        fi
+
 	fi
 
 	if [ "$COMPILER" = "4js" ]
@@ -721,18 +836,17 @@ function doit {
 		FGLCOMPILER=fglcomp
 		COMPEXT=42m
 		COMPEXT2=
-		if ! [ "$DESTDIR" = "/tmp/amakeallo-objects" ]
+
+		if test $MAXMODE = "1"
         then
 			if [ -d $MAXDIR/gprog ]
 	        then
 				DESTDIR=$MAXDIR/gprog
-            else
-                echo "NOTE: using /tmp/amakeallo-objects for objects store"
-				DESTDIR=/tmp/amakeallo-objects
             fi
         fi
 	fi
 
+	echo "NOTE: using $DESTDIR for objects store"
 
 
 	if [ -d $ERRFILESDIR ]
@@ -748,28 +862,32 @@ function doit {
 
 	if test $RECURSIVE = "1"
 	then
+		if test $MAXMODE = "1"
+        then
+			#In Maximise, order of compilation is important, and we also
+            #need to skip some dorectories
+			ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
+            SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
+        else
+			ALLSUBDIRS=`ls -l | grep "^d" | awk '{print $NF}'`
+        fi
 
-		ALLSUBDIRS=`ls -l | grep "^d" | awk '{print $NF}'`
-        #echo $ALLSUBDIRS
-		#################################################################################
-		#for subsystem in winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods; do
+		################################
         for subsystem in $ALLSUBDIRS; do
-		#################################################################################
+		################################
 
                 if [ "$subsystem" = "$DESTDIR" ]
 				then
 					continue
                 fi
 
-				#if test $MAXMODE = "1"
+                #FIXME: this is not working - we need to be able to skip
+                #defined directories:
+				#if [ "$subsystem" in $SKIPDIRS ]
                 #then
-                    #FIXME: this is not working - we need to skip all this sirectories in
-                    #Maximise mode:
-					#if [ "$subsystem" in "aform aprog forms prog gform gprog qform qprog" ]
-                    #then
-                    #    continue
-                    #fi
+                #    continue
                 #fi
+
 
 			   if [ -d $ROOTDIR/$subsystem ]
 	           then

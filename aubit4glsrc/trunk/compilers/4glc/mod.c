@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.7 2001-09-07 21:35:38 mikeaubury Exp $
+* $Id: mod.c,v 1.8 2001-09-07 23:15:46 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.7  2001/09/07 21:35:38  mikeaubury
+*	yet more fixes
+*	
 *	Revision 1.6  2001/09/06 20:02:21  mikeaubury
 *	More fixes (incl. major one on passing records to functions/reports)
 *	
@@ -2873,7 +2876,7 @@ read_glob (char *s)
   if (f == 0)
     {
       fprintf (stderr, "Couldnt open globals file %s\n", ii);
-      exit (0);
+      exit (7);
     }
 
   debug ("OPening %s\n", ii);
