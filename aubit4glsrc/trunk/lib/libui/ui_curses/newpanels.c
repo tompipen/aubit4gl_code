@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.90 2004-07-01 17:22:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.91 2004-07-03 11:58:13 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.90 2004-07-01 17:22:48 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.91 2004-07-03 11:58:13 mikeaubury Exp $";
 
 /**
  * @file
@@ -877,7 +877,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   fl = A4GL_getform_line ();
   for (a=fl;a<=A4GL_get_curr_height();a++) {
-	A4GL_display_internal (1, a, "", 0, 1);
+	A4GL_display_internal (1, a, " ", 0, 1);
   }
   scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline - 1;
@@ -1664,8 +1664,6 @@ WINDOW *wot;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 
-  A4GLSQL_set_status (0, 0);
-
   if (x == -1 && y == -1)
     {
       A4GL_debug ("Line mode display");
@@ -1679,13 +1677,23 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
   else
     {
       int b;
+	int w;
+	int h;
+	w=A4GL_get_curr_width();
+	h=A4GL_get_curr_height();
+	if (currwinno==0) {
+		w=A4GL_screen_width();
+		h=A4GL_screen_height();
+	}
+
       /* WINDOW *win; */
-        A4GL_debug("DISPLAY @ %d %d %d %d - '%s'",x,y,A4GL_get_curr_width(),A4GL_get_curr_height(),s);
-	if (y<1|| y>A4GL_get_curr_height()) {
+        A4GL_debug("DISPLAY @ %d %d %d %d - '%s' %d",x,y,w,h,s,currwinno);
+
+	if (y<1|| y>h) {
 		A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
 		return;
 	}
-	if (x<1|| x>A4GL_get_curr_width()) {
+	if (x<1|| x>w) {
 		A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
 		return;
 	}
@@ -1713,7 +1721,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	char buff[1024];
 	memset(buff,' ',1024);
 	sl=strlen(s);
-	sl=A4GL_get_curr_width()-sl;
+	sl=w-sl;
 	if (sl>=0) buff[sl]=0;
 	buff[1023]=0;
 	A4GL_debug("currwin=%p",currwin);

@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.23 2004-07-01 17:22:49 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.24 2004-07-03 11:58:14 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1512,8 +1512,7 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
 		  if (cnt >= a)
 		    {
 		      A4GL_debug ("cnt=%d a=%d", cnt, a);
-		      A4GL_exitwith
-			("Too few variables for the number of fields");
+		      A4GL_exitwith ("Too few variables for the number of fields");
 		      return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
@@ -1565,8 +1564,7 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
 		    {
 		      A4GL_debug ("cnt=%d a=%d", cnt, a);
 		      A4GL_debug ("Too few variables");
-		      A4GL_exitwith
-			("Too few variables for the number of fields");
+		      A4GL_exitwith ("Too few variables for the number of fields");
 		      return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);

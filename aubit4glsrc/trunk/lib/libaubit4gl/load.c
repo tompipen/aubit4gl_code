@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.20 2004-03-03 13:18:05 mikeaubury Exp $
+# $Id: load.c,v 1.21 2004-07-03 11:57:29 mikeaubury Exp $
 #
 */
 
@@ -293,8 +293,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	{
 	  sprintf (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
-	  A4GL_exitwith
-	    ("Number of fields in load file does not equal the number of columns %s");
+	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;
 	}
 
@@ -394,8 +393,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 	{
 	  sprintf (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
-	  A4GL_exitwith
-	    ("Number of fields in load file does not equal the number of columns %s");
+	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;
 	}
 
@@ -415,7 +413,9 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 			}
 			strcat(sqlstmt,")");
 		}
-  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1) { 
+				A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
+		return 0; }
       }
 
       A4GLSQL_set_status (0, 1);

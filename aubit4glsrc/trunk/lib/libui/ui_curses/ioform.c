@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.100 2004-05-28 13:18:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.101 2004-07-03 11:58:13 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.100 2004-05-28 13:18:08 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.101 2004-07-03 11:58:13 mikeaubury Exp $";
 /**
  * @file
  *
@@ -884,9 +884,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
   A4GL_debug (" current field %p  form says currfield=%p m=%d",
 	      form->currentfield, current_field (mform), m);
-  A4GL_debug
-    ("field_status(form->currentfield)=%d field_status(currfield)=%d",
-     field_status (form->currentfield), field_status (current_field (mform)));
+  A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
       /*
@@ -896,7 +894,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       A4GL_debug ("Is different");
       fprop = 0;
 
-      if (form->currentfield != 0)
+      if (form->currentfield != 0) {
 	if (field_userptr (form->currentfield) != 0)
 	  {
 	    A4GL_debug ("Is a proper field");
@@ -1178,7 +1176,7 @@ if (fprop != 0) A4GL_comments (fprop);
 
 
 
-
+}
 
 	      }
 	  }
@@ -1472,8 +1470,7 @@ int
 	}
       if (need_fix)
 	{
-	  A4GL_exitwith
-	    ("Construct needs fixing to handle 'byname on tab.*'");
+	  A4GL_exitwith ("Construct needs fixing to handle 'byname on tab.*'");
 	  sio->nfields = 0;
 	  return 0;
 	}
@@ -1484,8 +1481,7 @@ int
       A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      A4GL_exitwith
-	("Number of fields is not the same as the number of variables");
+      A4GL_exitwith ("Number of fields is not the same as the number of variables");
       sio->nfields = 0;
       return 0;
     }
@@ -1796,9 +1792,7 @@ int
  *
  * @todo Describe function
  */
-int
-A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
-		     int a, va_list * ap)
+int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
 {
   int z;
   int z1;
@@ -1815,31 +1809,30 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
   int attr_no;
   int srec_no;
   int cnt = 0;
+  A4GL_debug("a=%d\n",max_number);
+
+
   if (formdets==0) {
 		A4GL_exitwith("No form displayed");
-		return 0;
+		return -1;
   }
 #ifdef DEBUG
   {
-    A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);
+    A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, max_number, ap);
   }
 #endif
   A4GL_debug ("field_list=%p", field_list);
-  A4GL_debug ("Here 2");
-  /*
-     *field_list = calloc (a, sizeof (FIELD *));
-     *field_list = calloc (1024, sizeof (FIELD *));
+  A4GL_debug ("Here 2 a=%d",max_number);
 
-     A4GL_dump_srec (&formdets);
-   */
-
-  for (z1 = 0; z1 <= a; z1++)
+  for (z1 = 0; z1 <= max_number; z1++)
     {
       A4GL_debug ("Getting first %d", z1);
       s = va_arg (*ap, char *);	/* This is suspect.... */
 
-      if (s == 0)
+      if (s == 0) {
+		A4GL_debug("Nothing left to look for");
 	break;
+	}
 
       A4GL_debug ("Got first %s:", s);
 
@@ -1907,15 +1900,14 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
 		  {
-		    A4GL_debug ("cnt=%d a=%d", cnt, a);
+		    A4GL_debug ("cnt=%d a=%d", cnt, max_number);
 		  }
 #endif
 
-		  if (cnt >= a)
+		  if (cnt >= max_number)
 		    {
-		      A4GL_debug ("cnt=%d a=%d", cnt, a);
-		      A4GL_exitwith
-			("Too few variables for the number of fields");
+		      A4GL_debug ("cnt=%d a=%d", cnt, max_number);
+		      A4GL_exitwith ("Too few variables for the number of fields");
 		      return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
@@ -1929,18 +1921,19 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 
       else
 	{
+
+	
 	  for (z = 0; z < formdets->fileform->attributes.attributes_len; z++)
 	    {
 	      attr_no = z;
-	      A4GL_debug ("attr_no=%d", attr_no);
 #ifdef DEBUG
 	      {
-		A4GL_debug ("Attr 2");
+	      A4GL_debug ("attr_no=%d", attr_no);
 	      }
 #endif
-	      mno =
-		A4GL_attr_name_match (&formdets->fileform->attributes.
-				      attributes_val[attr_no], s);
+	      mno = A4GL_attr_name_match (&formdets->fileform->attributes.attributes_val[attr_no], s);
+		A4GL_debug("mno=%d\n",mno);
+
 	      if (mno)
 		{
 		  fno =
@@ -1961,15 +1954,14 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
 		  {
-		    A4GL_debug ("cnt=%d a=%d", cnt, a);
+		    A4GL_debug ("cnt=%d a=%d", cnt, max_number);
 		  }
 #endif
-		  if (cnt >= a)	/* was >= */
+		  if (cnt >= max_number)	/* was >= */
 		    {
-		      A4GL_debug ("cnt=%d a=%d", cnt, a);
+		      A4GL_debug ("cnt=%d a=%d", cnt, max_number);
 		      A4GL_debug ("Too few variables");
-		      A4GL_exitwith
-			("Too few variables for the number of fields");
+		      A4GL_exitwith ("Too few variables for the number of fields");
 		      return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
@@ -2478,7 +2470,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
 #endif
   A4GL_debug ("set_arr_fields");
   ptr = &ap;
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
   A4GL_debug ("Number of fields=%d", nofields);
   for (a = nofields; a >= 0; a--)
     {

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.170 2004-06-26 16:45:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.171 2004-07-03 11:58:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.170 2004-06-26 16:45:19 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.171 2004-07-03 11:58:11 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2269,7 +2269,7 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
     }
 
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n",sio_id);
+    ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n}\n",sio_id);
   printc ("_fld_dr= -1;\n");
 }
 
@@ -3212,7 +3212,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 	("if ((int)GET(\"s_screenio\",_sio_%d,\"nfields\")==-1) break;\n",sio_id);
     }
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n",sio_id);
+    ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n}\n",sio_id);
   printc ("_fld_dr= -1;_exec_block=0;\n");
 }
 

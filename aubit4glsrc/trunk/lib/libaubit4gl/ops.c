@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.53 2004-05-26 13:21:33 mikeaubury Exp $
+# $Id: ops.c,v 1.54 2004-07-03 11:57:29 mikeaubury Exp $
 #
 */
 
@@ -1075,8 +1075,7 @@ A4GL_in_in_ops (int op)
 
   if (se1 != se2)
     {
-      A4GL_exitwith
-	("Can't use interval YEAR-MONTH and DAY-FRACTION together");
+      A4GL_exitwith ("Can't use interval YEAR-MONTH and DAY-FRACTION together");
       return;
     }
 

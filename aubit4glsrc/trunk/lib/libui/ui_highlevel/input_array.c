@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $
+# $Id: input_array.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1087,8 +1087,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 	{
 	  if (inpa->maxcount > inpa->arr_size)
 	    {
-	      A4GL_exitwith
-		("MAXCOUNT out of range (<0 or > array record size)");
+	      A4GL_exitwith ("MAXCOUNT out of range (<0 or > array record size)");
 	      return 0;
 	    }
 	  inpa->arr_size = inpa->maxcount;
@@ -1274,8 +1273,7 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
       A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      A4GL_exitwith
-	("Number of fields is not the same as the number of variables");
+      A4GL_exitwith ("Number of fields is not the same as the number of variables");
       return 0;
     }
 
@@ -2248,8 +2246,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 		  && (arr->binding[arr->curr_attrib].dtype & DTYPE_MASK) !=
 		  DTYPE_VCHAR)
 		{
-		  A4GL_exitwith
-		    ("Picture applied to a non-char field not implemented yet..");
+		  A4GL_exitwith ("Picture applied to a non-char field not implemented yet..");
 		}
 	      else
 		{

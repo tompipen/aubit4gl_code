@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.60 2004-07-01 17:22:48 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.61 2004-07-03 11:58:12 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.60 2004-07-01 17:22:48 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.61 2004-07-03 11:58:12 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -251,13 +251,14 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   last_field = sio->currform->currentfield;
 
   A4GL_debug ("last field was : %p", sio->currform->currentfield);
+A4GL_debug("field=%d %p\n",attrib,sio->field_list);
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f)
-      || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
+  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f) || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
     {
       int dir = 0;
+      A4GL_debug("Looking across ");
       while (1)
 	{
 
@@ -275,18 +276,18 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 	  next_field = sio->field_list[attrib];
 	  f = (struct struct_scr_field *) (field_userptr (next_field));
 
-	  if (
-	  A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f)
-	  
-	      || (f->datatype == DTYPE_SERIAL))
+	  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f) || (f->datatype == DTYPE_SERIAL  && sio->mode != MODE_CONSTRUCT))
 	    {
+		A4GL_debug("Looking across");
 	      attrib += dir;
+		A4GL_debug("Looking across dir=%d attrib=%d nfields=%d",dir,attrib,sio->nfields);
 	      if (attrib > sio->nfields)
 		{
 
 
 		  if (std_dbscr.input_wrapmode == 0)
 		    {
+	A4GL_debug("ACCEPT - EXIT_INPUT_OK\n");
 		      A4GL_add_to_control_stack (sio,
 						 FORMCONTROL_EXIT_INPUT_OK, 0,
 						 0, 0);
@@ -322,6 +323,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 					      sizeof (struct s_movement)), 0);
       if (last_field)
 	{
+		A4GL_debug("ADD AFTER FIELD <------------------------------------");
 	  //if (last_field!=next_field) {
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field,
 				     0, 0);
@@ -383,6 +385,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       A4GL_comments (0);
       if (sio->fcntrl[a].state == 99)
 	{
+		A4GL_debug("ADD AFTER FIELD <------------------------------------");
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
 				     sio->currentfield, 0, 0);
 	  new_state = 50;
@@ -801,8 +804,20 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      char *picture;
 	      int field_no;
 	      char buff[10024];
+		char *fld_b;
 	      field_no = sio->curr_attrib;
-	      strcpy (buff, field_buffer (sio->currentfield, 0));
+		if (sio->currentfield==0) {
+			A4GL_fgl_die_with_msg(1,"No current field");
+		}
+		fld_b=field_buffer(sio->currentfield,0);
+		if (fld_b==0) {
+			A4GL_fgl_die_with_msg(1,"No current field buffer");
+		}
+	      strncpy (buff, fld_b,sizeof(buff));
+		buff[10023]=0;
+		if (strlen(buff)>=10023) {
+			A4GL_fgl_die_with_msg(1,"Internal error or string too long");
+		}
 
 
 	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
@@ -1235,6 +1250,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
 	  if (std_dbscr.input_wrapmode == 0
 	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	    {
+		A4GL_debug("AT LAST <-----------------------------------------");
 	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
 					 a);
 	      return;
@@ -1341,6 +1357,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   if (A4GL_is_special_key(a,A4GLKEY_ACCEPT))
     {
       A4GL_set_last_key (A4GLKEY_ACCEPT);
+	A4GL_debug("ACCEPT - EXIT_INPUT_OK\n");
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       return -1;
     }
@@ -1405,6 +1422,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (std_dbscr.input_wrapmode == 0
 	  && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	{
+	A4GL_debug("ACCEPT - EXIT_INPUT_OK\n");
 	  A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
 	  return 0;
 	}
@@ -1614,6 +1632,7 @@ int A4GL_get_metric_for (struct s_form_dets *form, void *f)
 
 
 void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
+	A4GL_debug("finish_screenio");
 	if (strcmp(siotype,"s_inp_arr")==0) {
 		A4GL_comments(0);
 	}
@@ -1652,10 +1671,22 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
-	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) return 1;
+	A4GL_debug("A4GL_field_is_noentry");
+
+	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) {
+		A4GL_debug("noentry");
+		return 1;
+	}
 // It would appear that the NOUPDATE allows entry to a field on a 'construct' but not
 // an input...
-	if (doing_construct) return 0;
-	if (A4GL_has_bool_attribute (f, FA_B_NOUPDATE)) return 1;
+	if (doing_construct) {
+		A4GL_debug("OK - its construct");
+		return 0;
+	}
+	if (A4GL_has_bool_attribute (f, FA_B_NOUPDATE)) {
+		A4GL_debug("No UPDATE");
+		return 1;
+	}
+	A4GL_debug("OK");
 	return 0;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.21 2004-05-18 19:34:11 mikeaubury Exp $
+# $Id: ui.c,v 1.22 2004-07-03 11:57:30 mikeaubury Exp $
 #
 */
 
@@ -283,6 +283,7 @@ void A4GL_display_at (int n, int a)
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
 
+  A4GLSQL_set_status(0,0);
   A4GL_debug_print_stack();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
   A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype % 256, tos_size, tos_ptr);

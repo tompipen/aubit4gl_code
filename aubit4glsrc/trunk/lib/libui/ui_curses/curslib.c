@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.93 2004-05-24 14:28:38 mikeaubury Exp $
+# $Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.93 2004-05-24 14:28:38 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -2961,7 +2961,7 @@ A4GL_comments (struct struct_scr_field *fprop)
   char buff[256];
   int attr;
 
-  if (!fprop) strcpy(buff,"");
+  if (!fprop) strcpy(buff," ");
   else {
 
   if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS))

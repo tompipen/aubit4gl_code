@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.40 2004-06-06 13:55:12 mikeaubury Exp $
+# $Id: others.c,v 1.41 2004-07-03 11:57:30 mikeaubury Exp $
 #
 */
 
@@ -425,35 +425,35 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s)
   char tabname[40];
   int aa;
   int ab;
-  /*
+
      A4GL_debug ("Field : %p\n", field);
      A4GL_debug ("attr_name_match : %s", s);
-   */
+
 
   A4GL_bname (s, tabname, colname);
 
-  /*
+
      A4GL_debug ("Splits to %s & %s", tabname, colname);
      A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
-   */
+
 
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
   /* A4GL_debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
-      A4GL_debug ("Match on *");
+      A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)",s,tabname,colname,field->tabname,field->colname);
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
-      A4GL_debug ("Matched");
+      A4GL_debug ("Matched %s.%s = %s.%s ",tabname,colname,field->tabname,field->colname);
       return 1;
     }
-  /*
+  
      A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
-     field->colname, colname);
-   */
+    field->colname, colname);
+ 
   return 0;
 }
 

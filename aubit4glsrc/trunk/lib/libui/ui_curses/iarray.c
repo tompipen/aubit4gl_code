@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.82 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: iarray.c,v 1.83 2004-07-03 11:58:13 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.82 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.83 2004-07-03 11:58:13 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1079,8 +1079,7 @@ int
 	{
 	  if (inpa->maxcount > inpa->arr_size)
 	    {
-	      A4GL_exitwith
-		("MAXCOUNT out of range (<0 or > array record size)");
+	      A4GL_exitwith ("MAXCOUNT out of range (<0 or > array record size)");
 	      return 0;
 	    }
 	  inpa->arr_size = inpa->maxcount;
@@ -1261,8 +1260,7 @@ if (field_opts(field_list[a])&O_BLANK) { A4GL_debug("O_BLANK MMMM turned off"); 
       A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      A4GL_exitwith
-	("Number of fields is not the same as the number of variables");
+      A4GL_exitwith ("Number of fields is not the same as the number of variables");
       return 0;
     }
 
@@ -2283,8 +2281,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
 		  && (arr->binding[arr->curr_attrib].dtype & DTYPE_MASK) !=
 		  DTYPE_VCHAR)
 		{
-		  A4GL_exitwith
-		    ("Picture applied to a non-char field not implemented yet..");
+		  A4GL_exitwith ("Picture applied to a non-char field not implemented yet..");
 		}
 	      else
 		{

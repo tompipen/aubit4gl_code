@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -687,8 +687,7 @@ UILIB_A4GL_set_fields (void *vsio)
 	}
       if (need_fix)
 	{
-	  A4GL_exitwith
-	    ("Construct needs fixing to handle 'byname on tab.*'");
+	  A4GL_exitwith ("Construct needs fixing to handle 'byname on tab.*'");
 	  sio->nfields = 0;
 	  return 0;
 	}
@@ -699,8 +698,7 @@ UILIB_A4GL_set_fields (void *vsio)
       A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      A4GL_exitwith
-	("Number of fields is not the same as the number of variables");
+      A4GL_exitwith ("Number of fields is not the same as the number of variables");
       sio->nfields = 0;
       return 0;
     }
