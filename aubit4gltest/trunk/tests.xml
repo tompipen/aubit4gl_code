@@ -2746,27 +2746,27 @@
   <NUMBER>946</NUMBER>
   <DESCRIPTION>popdate and retdate</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>947</NUMBER>
   <DESCRIPTION>popdtime and retdtime</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>948</NUMBER>
   <DESCRIPTION>popinv and retinv</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>949</NUMBER>
   <DESCRIPTION>poplocator</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>950</NUMBER>
   <DESCRIPTION>pushint</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>951</NUMBER>
   <DESCRIPTION>pushshort</DESCRIPTION>
@@ -2781,7 +2781,7 @@
   <NUMBER>953</NUMBER>
   <DESCRIPTION>pushflo</DESCRIPTION>
   <TEST_GOAL>Stack</TEST_GOAL>
-  <STATUS>OK</STATUS>
+  <STATUS>TBD</STATUS>
 
   <NUMBER>954</NUMBER>
   <DESCRIPTION>pushdub</DESCRIPTION>
@@ -2964,40 +2964,6 @@
   <STATUS>TBD</STATUS>
 
 	-- Selects :
-	-- Stack C functions
-	    -- popint
-			popshort
-			poplong
-			popflo
-			popdub
-			popdec
-			popquote
-			popvchar
-			popdate
-			popdtime
-			popinv
-			poplocator
-			retint
-			retshort
-			retlong
-			retflo
-			retdub
-			retdec
-			retquote
-			retvchar
-			retdate
-			retdtime
-			retinv
-			pushint
-			pushshort
-			pushlong
-			pushflo
-			pushdub
-			pushdec
-      fgl_start
-			fgl_call
-			fgl_exitfm
-			fgl_end
 	-- Set optimization
 	-- Put
 	-- Flush
