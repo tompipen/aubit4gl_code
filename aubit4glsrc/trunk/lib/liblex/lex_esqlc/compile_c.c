@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.48 2003-05-31 09:46:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.49 2003-06-01 14:03:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -76,6 +76,8 @@
 void add_function_to_header (char *identifier, int parms);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
+void
+printcomment (char *fmt, ...);
 
 /*
 =====================================================================
@@ -1408,8 +1410,11 @@ print_bind (char i)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ibind[a].varname,
-		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d,%d,%d}", ibind[a].varname,
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
+		ibind[a].start_char_subscript,
+		ibind[a].end_char_subscript
+		);
 	}
       printc ("\n}; /* end of binding */\n");
       if (doing_esql ())
@@ -1456,8 +1461,10 @@ print_bind (char i)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", obind[a].varname,
-		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d,%d,%d}", obind[a].varname,
+		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
+		ibind[a].start_char_subscript,
+		ibind[a].end_char_subscript);
 	}
       printc ("\n}; /* end of binding */\n");
       if (doing_esql ())

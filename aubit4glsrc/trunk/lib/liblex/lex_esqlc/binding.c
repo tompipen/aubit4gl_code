@@ -76,13 +76,28 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < ibindcnt; a++)
 		{
 		  print_sql_type (a, 'i');
+		if ((ibind[a].dtype & 0xffff)==0) {
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d);\n",
+			   ibind[a].dtype & 0xffff, 
+					//ibind[a].varname, 
+					a,
+					
+				a,
+			   ibind[a].dtype >> 16,
+			ibind[a].start_char_subscript,
+			ibind[a].end_char_subscript
+);
+		} else {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d);\n",
 			   ibind[a].dtype & 0xffff, 
 					//ibind[a].varname, 
 					a,
 					
 				a,
-			   ibind[a].dtype >> 16);
+			   ibind[a].dtype >> 16
+);
+
+		}
 		  strcat (buff_in, buff_small);
 		}
 	      //printc ("/* %s */", buff_in);
@@ -100,12 +115,27 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < obindcnt; a++)
 		{
 		  print_sql_type (a, 'o');
+
+		if ((obind[a].dtype & 0xffff)==0) {
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%d,%d,%d);\n",
+			   obind[a].dtype & 0xffff, 
+				//obind[a].varname, 
+				a,
+				a,
+			   obind[a].dtype >> 16,
+			obind[a].start_char_subscript,
+			obind[a].end_char_subscript);
+
+		} else {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%d);\n",
 			   obind[a].dtype & 0xffff, 
 				//obind[a].varname, 
 				a,
 				a,
-			   obind[a].dtype >> 16);
+			   obind[a].dtype >> 16
+			);
+
+		}
 		  strcat (buff_out, buff_small);
 		}
 	    }

@@ -559,3 +559,7 @@ print_foreach_end (void)
 
   printc ("}\n");
 }
+
+char *get_column_transform(char *s) {
+return s;
+}

@@ -29,9 +29,10 @@ extern "C"
 
 
 // Conversion functions between informix types and A4GL datatypes
-  void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int size,
+void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int size,
 		     char dir);
-#define COPY_DATA_IN_0(a4gl,infx,size) strcpy((char *)(infx),(char *)(a4gl))
+
+#define COPY_DATA_IN_0(a4gl,infx,size,n,m) strcpy((char *)(infx),(char *)(a4gl))
 #define COPY_DATA_IN_1(a4gl,infx,size) *((short *)(infx))=*((short *)(a4gl))
 #define COPY_DATA_IN_2(a4gl,infx,size) *((int *)(infx))=*((int *)(a4gl))
 #define COPY_DATA_IN_3(a4gl,infx,size) *((double *)(infx))=*((double *)(a4gl))
@@ -48,7 +49,7 @@ extern "C"
 #define COPY_DATA_IN_14(a4gl,infx,size) A4GL_copy_interval(infx,a4gl,size,'i')
 
 
-#define COPY_DATA_OUT_0(a4gl,infx,size) strcpy((char *)(a4gl),(char *)(infx))
+#define COPY_DATA_OUT_0(a4gl,infx,size,n,m) strcpy((char *)(a4gl),(char *)(infx))
 #define COPY_DATA_OUT_1(a4gl,infx,size) *((short *)(a4gl))=*((short *)(infx))
 #define COPY_DATA_OUT_2(a4gl,infx,size) *((int *)(a4gl))=*((int *)(infx))
 #define COPY_DATA_OUT_3(a4gl,infx,size) *((double *)(a4gl))=*((int *)(infx))

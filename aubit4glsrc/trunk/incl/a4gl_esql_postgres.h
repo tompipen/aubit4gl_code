@@ -15,7 +15,7 @@
 
 #include "decimal.h"
 
-#define COPY_DATA_IN_0(a4gl,pgres,size) strcpy((char *)(pgres),(char *)(a4gl))
+#define COPY_DATA_IN_0(a4gl,pgres,size,n,m) strcpy((char *)(pgres),(char *)(a4gl))
 #define COPY_DATA_IN_1(a4gl,pgres,size) *((short *)(pgres))=*((short *)(a4gl))
 #define COPY_DATA_IN_2(a4gl,pgres,size) *((int *)(pgres))=*((int *)(a4gl))
 #define COPY_DATA_IN_3(a4gl,pgres,size) *((double *)(pgres))=*((double *)(a4gl))
@@ -32,7 +32,7 @@
 #define COPY_DATA_IN_14(a4gl,pgres,size) exitwith("NIY - I14")
 
 
-#define COPY_DATA_OUT_0(a4gl,pgres,size) strcpy((char *)(a4gl),(char *)(pgres))
+#define COPY_DATA_OUT_0(a4gl,pgres,size,n,m) strcpy((char *)(a4gl),(char *)(pgres))
 #define COPY_DATA_OUT_1(a4gl,pgres,size) *((short *)(a4gl))=*((short *)(pgres))
 #define COPY_DATA_OUT_2(a4gl,pgres,size) *((int *)(a4gl))=*((int *)(pgres))
 #define COPY_DATA_OUT_3(a4gl,pgres,size) *((double *)(a4gl))=*((int *)(pgres))

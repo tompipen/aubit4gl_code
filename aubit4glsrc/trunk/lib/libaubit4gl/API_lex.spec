@@ -628,6 +628,8 @@ print_gtk_menuhandler_on_end -> void
 /* print_gtk_menuhandler_end() */
 print_gtk_menuhandler_end -> void
 
+get_column_transform char* s -> char*
+
 print_module_variable_init -> void
 
 print_cmd_start -> void
@@ -644,6 +646,7 @@ A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
 A4GL_expr_for_call char* ident char* params int line char* file -> char*
+
 /*  ============================== EOF ================================= */
 
 

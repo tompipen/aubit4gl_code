@@ -4,6 +4,9 @@ static void print_copy_status (void);
 void print_conversions (char i);
 int last_ni;
 int last_no;
+void printcomment (char *fmt, ...);
+int esql_type (void);
+extern void printh (char *fmt, ...);
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
@@ -681,7 +684,7 @@ void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   char buff[256];
-  int a;
+  //int a;
 int intprflg=0;
   printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
   //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
@@ -944,4 +947,48 @@ print_foreach_end (void)
   printcomment ("/* end of foreach while loop */\n");
 
   printc ("}\n");
+}
+
+char *get_column_transform(char *s) {
+char buff[256];
+static char buff2[256];
+char *ptr1;
+char *ptr2;
+int n,m;
+int l;
+if (strchr(s,'[')==0) return s;
+
+//printf("TRANSFORM %s\n",s);
+      switch (esql_type ())
+	{
+	case 1:
+		//printf("Informix\n");
+		return s; // Informix style
+	  break;
+
+	case 2:
+		//printf("Postgres\n");
+		strcpy(buff,s);
+		ptr1=strchr(buff,'[');
+		*ptr1=0;
+		ptr1++;
+		ptr2=strchr(ptr1,',');
+		if (ptr2==0) {
+			ptr2=strdup("1]");
+		} else {
+			 *ptr2=0;
+			ptr2++;
+		}
+		l=strlen(ptr2);
+		if (ptr2[l-1]==']') {
+			ptr2[l-1]=0;
+		}
+		n=atoi(ptr1);
+		m=atoi(ptr2);
+		//printf("N=%d m=%d s=%s\n",n,m,s);
+		sprintf(buff2,"substr(%s,%d,%d)",buff,n,(m-n)+1);
+		return buff2;
+	  break;
+	}
+	return s;
 }

@@ -37,16 +37,28 @@ aft_dot :
 
 var_ident_ibind_ss :  var2  
 {
-	if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
+	int sv_val;
+	//printf("var_ident_ibind_ss : %s\n",$<str>1);
+	sv_val=scan_variable($<str>1);
+
+	if (strncmp($<str>1," a4gl_sub",9)==0) {
+		// Its a substring of a variable
+		sv_val=1;
+	}
+
+	if (sv_val!=-1&&(!system_var($<str>1)))
 	{
+		// Its a variable
 		int z = 0,a = 0;
+		//printf("add as bind\n");
 		a=get_bind_cnt('i');
 		z=add_bind('i',$<str>1);
 		z-=a;
 		$<sql_string>$=strdup(A4GL_set_var_sql(z));
 
-	} else {
-		$<sql_string>$=strdup($<str>1);
+	} else { 
+		// Its a column
+		$<sql_string>$=strdup(get_column_transform($<str>1));
 	}
 }
 | var2 THRU var2 
