@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.38 2004-11-10 13:40:16 mikeaubury Exp $
+# $Id: fcompile.c,v 1.39 2004-11-11 13:42:58 mikeaubury Exp $
 #*/
 
 /**
@@ -118,11 +118,11 @@ main (int argc, char *argv[])
     }
 
   A4GL_debug ("Initializing fcompile\n");
+  A4GL_setenv("A4GL_UI","CONSOLE");
   A4GL_fgl_start(argc,argv);
 
   /* load settings from config file(s): */
   //A4GL_build_user_resources ();
-
   strcpy (d, "");
 
   as_c = 0;
