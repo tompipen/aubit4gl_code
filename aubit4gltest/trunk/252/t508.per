@@ -30,7 +30,7 @@ ATTRIBUTES
 des = FORMONLY.description type char, autonext; 
 exp = FORMONLY.bal_amount TYPE INTEGER, include = (null, 0 to 29) ;
 cnt = FORMONLY.bal_units  TYPE INTEGER, FORMAT = "---&" ;
-pu = FORMONLY.price type decimal, picture="######.##",
+pu = FORMONLY.price type decimal, picture="#########.##",
     {required, include  = (null,0000001 TO 9999999),}
         comments = " Invoice Number"; 
 ln = FORMONLY.loan TYPE INTEGER;

@@ -34,6 +34,8 @@ ifeq "${USE_COMP}" ""
 	USE_COMP=aubit
 endif
 
+OUT_EXPECTED=out.expected
+
 ifeq "${USE_COMP}" "aubit"
 
 	#Map extensions from compiler specific to general:
@@ -46,7 +48,9 @@ ifeq "${USE_COMP}" "aubit"
 	
 
 	#Force Aubit UI to TUI: (unless specified on make command line)
-	A4GL_UI=HL_TUI
+	ifeq "${A4GL_UI}" ""
+		A4GL_UI=HL_TUI
+	endif
 
 	ifeq "${A4GL_KEYLOG}" ""
 		#if A4GL_KEYLOG is set, it means we are to record, not playback keystrokes
@@ -65,7 +69,7 @@ ifeq "${USE_COMP}" "aubit"
 	#define default linking action
 		DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
 	endif
-
+	OUT=out
 	RUNNER=
 	
 endif
@@ -87,8 +91,10 @@ ifeq "${USE_COMP}" "ifx-p"
 			rm progname.4gi; \
 			exit 1; \
 		fi
-	
-	RUNNER=fglgo
+	ifeq "${RUNNER}" ""	
+		RUNNER=fglgo
+	endif
+	OUT=out.infx
 	
 endif
 
@@ -102,7 +108,10 @@ ifeq "${USE_COMP}" "4js-p"
 	TARGET_EXT		=${D4GL_PRG_EXT}
 
 	DEFAULT_LINK	=${D4GL_PC} -o $@ $(subst .42r,.42m,$(notdir $^))
-	RUNNER			=fglrun
+	ifeq "${RUNNER}" ""
+		RUNNER			=fglrun
+	endif
+	OUT=out.4js
 	
 endif
 
@@ -116,9 +125,9 @@ ifeq "${USE_COMP}" "querix"
 	TARGET_EXT		=${Q4GL_PRG_EXT}
 
 	#DEFAULT_LINK	=${Q4GL_PL} $^ > $@;
-	DEFAULT_LINK	=${FAIL_LINK}${Q4GL_CL} -o $@ $(subst ${Q4GL_PRG_EXT},${Q4GL_OBJ_EXT},$(notdir $^)) ${Q4GL_CL_LDFLAGS} ${QXI_LIBS} 	
+	DEFAULT_LINK	=${FAIL_LINK}${Q4GL_CL} -o $@ $(subst ${Q4GL_PRG_EXT},${Q4GL_OBJ_EXT},$(notdir $^)) ${Q4GL_CL_LDFLAGS} ${QXI_LIBS} ${SRC_CUSTOM} 	
 	RUNNER			=
-	
+	OUT=out.querix
 endif
 
 ################
@@ -174,7 +183,7 @@ ifneq "${COMPILE_ONLY}" "1"
 
 	DEFAULT_RUN=${RUNNER} ${DBG} ./progname${NAMED_RUN}
 	
-	DIFF_COMMON=if diff out out.expected; then \
+	DIFF_COMMON=if diff ${OUT} ${OUT_EXPECTED}; then \
 			echo "Success";  \
             exit 0; \
 		else \

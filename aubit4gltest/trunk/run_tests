@@ -8,15 +8,11 @@
 
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="82 487 488 490 240 670 696 "
-# 82(report),487,488 (Too many arguments to function `A4GL_acli_scroll'),
-#490 (syntax on SCROOL DOWN ... BY) 
+EXPECT_TO_FAIL_TESTS="240 670 "
 #240 (numeric formating) 670 (syntax errors in generated EC code)
-#696 (Syntax in generated EC)
 
 #Not (yet) reported
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 205"
-#205 - help file
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
@@ -40,14 +36,228 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 249 684 105 705 217"
+INVALID_TESTS="375 377 684 105 705 "
+#375,377 -"informix".systables (assumes user "informix" created test database)
+#684 - no test files
 #105 - missing database schemma
-#705 - It is not possible to convert between the specified types.
-#217 - -as-dll problem with 4glpc
+#705 - "It is not possible to convert between the specified types." with -ifx-p
 
 ##############################################################################
 #							Functions
 ##############################################################################
+
+##
+# Create API code for Four J's custom runner
+#
+##
+create_4js_api() {
+rm -f fgiusr-4js.c
+
+#ERROR(-6200):Module 'prog': The function <extern C>.aclfgl_dump_screen(2,1) 
+#will be called as aclfgl_dump_screen(1,0).
+
+cat<<EOF > fgiusr-4js.c
+#include <f2c/fglExt.h>
+int aclfgl_dump_screen (int n);
+	UsrData usrData[] = {
+	  {0, 0}
+	};
+	
+	UsrFunction usrFunctions[] = {
+	  {"aclfgl_dump_screen", aclfgl_dump_screen, 1, 0},
+	  {0, 0, 0, 0}
+	};
+
+EOF
+}
+
+##
+# Create API code for Informix custom runner
+#
+##
+create_ifx_api() {
+rm -f fgiusr-ifx.c
+cat<<EOF > fgiusr-ifx.c
+#include "fgicfunc.h"
+int aclfgl_dump_screen (int n);
+cfunc_t usrcfuncs[] =
+{
+	"aclfgl_dump_screen", aclfgl_dump_screen, 1,
+	0, 0, 0
+}; 
+EOF
+}
+
+
+t1() {
+	
+cat<<EOF > prog.4gl
+main
+	display "1"
+	call prdate()
+	display "2"
+end main
+EOF
+
+cat<<EOF > cfunc.c
+#include <stdio.h>
+#include <time.h>
+prdate()
+{
+/* This program timestamps file FileX */
+long cur_date;
+extern int errno;
+FILE *fptr;
+time(&cur_date);
+fptr = fopen("time_file","a");
+fprintf(fptr,"FileX was accessed %s", ctime(&cur_date));
+printf("4GL: FileX was accessed %s", ctime(&cur_date));
+fclose(fptr);
+}
+EOF
+
+create_ifx_api
+
+rm -f time_file
+
+cfglgo ./fgiusr.c ./cfunc.c ./infx.o -o testfglgo
+#Gives:
+#./infx.o(.text+0xb4): undefined reference to `scr_dump'
+
+
+#cfglgo ./fgiusr.c ./cfunc.c ./infx.o -lncurses -o testfglgo
+#Gives:
+#feform.o(.text+0x184): undefined reference to `wgraphset'
+#feform.o(.text+0x1c4): undefined reference to `waddgch'
+#feform.o(.text+0x236): undefined reference to `waddgch'
+#feform.o(.text+0x28a): undefined reference to `wgraphset'
+
+
+fglpc ./prog.4gl
+./testfglgo ./prog.4go
+cat time_file
+exit
+
+}
+
+test_create_runner() {
+cat<<EOF > fgiusr.c 
+#include "fgicfunc.h"
+	cfunc_t usrcfuncs[] =
+	{
+		0, 0, 0
+	};
+EOF
+
+cc -c ./fgiusr.c -I${INFORMIXDIR}/incl/tools
+#cc -c /opt/aubit/aubit4glsrc/lib/extra_libs/infx_dump_screen/infx.c -I${INFORMIXDIR}/incl/tools
+#cfglgo fgiusr.o infx.o -o testfglgo -lncurses
+cfglgo fgiusr.o -o testfglgo
+
+cat<<EOF > x.4gl
+	MAIN
+			DISPLAY "Hello world...: "
+	END MAIN
+EOF
+
+fglpc x.4gl
+./testfglgo ./x.4go
+
+exit 
+}
+
+##
+# Create runner with C function for dumping screen to file
+#
+# @param COMPILER Type of 4GL compiler to create runner for
+##
+create_runner() {
+COMPILER=$1
+
+SRC_CUSTOM="$CUSTOM.c"
+OBJ_CUSTOM="$CUSTOM.o"
+		
+	case $COMPILER in
+	informix)
+		#test_create_runner
+		#t1
+		if test "$INFORMIXDIR" = ""; then 
+			echo "ERROR: INFORMIXDIR not set"
+			exit 3
+		fi
+		create_ifx_api
+		rm -f $IFX_RUNNER 
+		SOURCES="$SRC_CUSTOM ./fgiusr-ifx.c"
+		#CFGLGO_FLAGS="-dumpspecs"
+		CFGLGO_FLAGS="-v"
+		LIBS="/opt/informix/lib/tools/librdsterm.a -lcurses -lform -lpanel"
+		LIBS="$LIBS -L$INFORMIXDIR/lib/tools -lrdsterm"
+		#LIBS="$LIBS -L$INFORMIXDIR/lib -lforms"
+
+		#cc -c $SRC_CUSTOM -I${INFORMIXDIR}/incl/tools -o $OBJ_CUSTOM 
+		#cfglgo $OBJ_CUSTOM fgiusr.o -o $RUNNER -lcurses
+		#exit
+		
+		EXEC="cfglgo $CFGLGO_FLAGS $LIBS $SOURCES -o $IFX_RUNNER "
+		echo $EXEC
+		rm -f tmp.log
+		eval $EXEC > tmp.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+			less tmp.log
+			echo "ERROR: creation of Informix custom runner failed"
+			exit $RET
+		else
+			echo "Informix custom runner ($IFX_RUNNER) created" 
+			rm -f tmp.log
+		fi
+		;;
+	4js)
+		#aauming we will be uiing Informix RDBMS
+		if test "$INFORMIXDIR" = ""; then 
+			echo "ERROR: INFORMIXDIR not set"
+			exit 3
+		fi
+		if test "$FGLDIR" = ""; then 
+			echo "ERROR: FGLDIR (Four J's) not set"
+			exit 3
+		fi
+		create_4js_api
+		#Specify version of database on your system; see 'fglmkrun -dl'
+		#DB=ifx9** #ERROR(-6197):'Open Database Interface' extension is not allowed with this license type.
+		#DB=ix711
+		DB=ix720
+		#need Curses for scr_dump function
+		LFLAGS="-lncurses"
+		rm -f $FJSRUNNER
+		LINKER="esql"	#assumes there is Informix ESQL/C installed
+		EXEC="fglmkrun -d $DB -o $FJSRUNNER -l $LINKER \
+			-cpf \"-DFOURJS -I${FGLDIR}/include\" \
+			-acs \"$SRC_CUSTOM\" \
+			-lkf \"$LFLAGS\" \
+			-ext fgiusr-4js.c"
+		echo $EXEC
+		rm -f tmp.log
+		eval $EXEC > tmp.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+			less tmp.log
+			echo "ERROR: creation of Four J's custom runner failed"
+			exit $RET
+		else
+			echo "Four J's custom runner ($FJSRUNNER) created" 
+			rm -f tmp.log
+		fi
+		# test 252 is nice to try screen dumps :
+		# bash run_tests -cert [-querix|-ifx-p|-4js-p] 252
+		;;
+	*)
+		echo "ERROR: unknown compiler type: $COMPILER"
+		;;
+	esac
+			
+	exit 0
+}
 
 ##
 # Convert SQL script for particular RDBMS dialect
@@ -295,7 +505,7 @@ UNKNOWN_TESTS=" \
 #options/compiler or run-time settings is not capable of performing all functions it should
 CERT_TESTS="1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 \
 		35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 59 60 61 62 63 64 66 67 \
-		68 69 70 71 72 73 74 75 76 77 78 79 80 84 86 90 96 97 99 202 204 205 \
+		68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 96 97 99 202 204 205 \
 		92 93 94 98 101 203 210 206 207 208 209 212 217 218 239"
 
 #List of tests that where superceeded or obsoleted for various reasons,
@@ -329,7 +539,23 @@ DB_HAS_TRANSACTION=NULL
 #apparently they fail with anything else, like when LANG is set to 'de_DE@euro'
 export LC_NUMERIC="C"
 
-
+IFX_RUNNER="$CURR_DIR/testfglgo"
+FJSRUNNER="$CURR_DIR/testfglrun"
+if test "$AUBITDIR_SRC" = ""; then 
+	AUBITDIR_SRC=/opt/aubit/aubit4glsrc
+fi
+if test -d "$AUBITDIR_SRC"; then  
+	CUSTOM="$AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/infx"
+	SRC_CUSTOM="$CUSTOM.c"
+	OBJ_CUSTOM="$CUSTOM.o"
+	#Used when linking Querix
+	export SRC_CUSTOM
+else
+	echo "**"
+	echo "** WARNING: Aubit source code directory setting (AUBITDIR_SRC)"
+	echo "** is invalid: $AUBITDIR_SRC"
+	echo "**"
+fi
 
 #######################
 #Set and check AUBITDIR
@@ -855,7 +1081,12 @@ for a in $FLAGS; do
 		#Dont run "run" target in makefile - run "show" target instead
 		MAKE_TARGET=show
 		;;
-		
+	-runner-ifx) 	#Create p-code runner for Informix P-code compiler 
+		create_runner informix
+		;;
+	-runner-4js) 	#Create p-code runner for Four J's P-code compiler 
+		create_runner 4js
+		;;
 	-noecho)    #Don't show any non-critical messages while running tests
         #we already got this one set
 		;;
@@ -968,21 +1199,42 @@ for a in $FLAGS; do
         ;;
 
 	-console)        #use CONSOLE UI for tests
-		if ! test -f $LIBS_DIR/libUI_CONSOLE$SO_EXT; then
+		UI=CONSOLE
+		if ! test -f $LIBS_DIR/libUI_$UI$SO_EXT; then
 			if ! test "$NO_ECHO"; then
-				echo "ERROR: cannot find CONSOLE plug in"
+				echo "ERROR: cannot find $UI plug in"
             fi
             exit 9
         fi
-        UI=CONSOLE;	export A4GL_UI=CONSOLE
+        export A4GL_UI=$UI
 		if ! test "$NO_ECHO"; then
 			echo "** "
 			echo "** WARNING:"
-			echo "** Some tests can't run in CONSOLE mode and will be skipped"
+			echo "** Some tests can't run in $UI mode and will be skipped"
 			echo "** "
         fi
         ;;
 
+	-gtk)			#Use GTK UI for running tests
+		UI=HL_GTK
+		if ! test -f $LIBS_DIR/libUI_$UI$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find $UI plug in"
+            fi
+            exit 9
+        fi
+		export A4GL_UI=$UI
+		#What is this for?
+		#export DISPLAY=:0
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Some tests can't run in $UI mode and will be skipped"
+			echo "** "
+        fi
+        ;;
+	
+		
 	-sqlite)        #Use SQLite as database for db tests
 		if ! test -f $LIBS_DIR/libSQL_sqlite$SO_EXT; then
 			if ! test "$NO_ECHO"; then
@@ -1295,6 +1547,12 @@ for a in $FLAGS; do
 		
 	-4js-p)				#Use FourJs P-code compiler instead of Aubit compiler
 		USE_COMP=4js-p
+		if test -f "$FJSRUNNER" ; then
+			echo "Note: using custom runner"
+			RUNNER=$FJSRUNNER
+			FGLRUN=$FJSRUNNER
+			export FGLRUN RUNNER
+		fi
 		;;
 		
 	-querix)				#Use Querix compiler instead of Aubit compiler
@@ -1393,6 +1651,7 @@ for a in $FLAGS; do
 		echo " -retest-invalid Run only tests that are flaged as invalid"
 		echo " -alltests[-db|-nodb] Run all available combinations of tests"
 		echo " -console    Use CONSOLE UI for tests"
+		echo " -gtk        Use GTK+ UI for running tests"		
 		echo " -tuin       use HL_TUIN UI for tests"
 		echo ""
 		exit 0
@@ -1433,6 +1692,7 @@ for a in $FLAGS; do
 		echo " -add-makefile Add makefile from template to tests that don't have one" 
 		echo " -add-cvsignore Add .cvsignore from template to tests that don't have one"
 		echo " -record     record keystrokes to file while running program"
+		echo " -runner-[ifx|4js] Create p-code runner for specified compiler"		
 		echo ""
 		
 		exit 0
@@ -2572,6 +2832,7 @@ date >> $LOGFILE
 echo "" >> $LOGFILE
 if test "$RUN_ONE" != ""; then
 	echo "Running test: $RUN_ONE" >> $LOGFILE
+	ALL_TESTS=$RUN_ONE
 #else
 #	if test "$NO_ECHO" != "1"; then
 #		#echo "Running tests: $ALL_TESTS" >> $LOGFILE
@@ -2624,7 +2885,6 @@ fi
 for a in $ALL_TESTS
 ####################
 do
-
 	#Make sure we are in tests root
 	cd $CURR_DIR
 
@@ -3345,7 +3605,7 @@ do
 	            echo "WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING!"
 	            echo
             fi
-        else
+		else
 			if test "$SHOW_ITEM_RESULT" = "1"; then
 				if test "$IS_CERT_TEST" = "1" ; then 
 					echo "$a Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) (-eci certified) <<<" >> $LOGFILE			
@@ -3404,6 +3664,7 @@ done
 
 #####################
 #Complete results log file
+
 echo "" >> $LOGFILE
 echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT" >> $LOGFILE
 
