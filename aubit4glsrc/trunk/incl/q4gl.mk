@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.10 2003-03-13 01:57:07 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.11 2003-03-23 07:19:42 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -82,9 +82,9 @@ EXTENDER_HTML       =no
 ###########################
 #If you want to link with local, native Curses libraries, set this to 'yes';
 #otherwise, Querix provided static Curses libraries will be linked
-#CURSES_LOCAL		=yes
+#QX_CURSES_LOCAL		=yes
 
-ifeq "${CURSES_LOCAL}" "yes"
+ifeq "${QX_CURSES_LOCAL}" "yes"
 	#FIXME: replace -lcurses with value assigned by autoconf (can be ncurses)
 	QX_CURSES		=-lpanel -lcurses -lform
     #apparently standard Linux -lpanel does not define few symbols needed by Querix..
@@ -100,8 +100,13 @@ SHARED				=-rdynamic
 
 ###########################
 #All libraries needed to link Querix program:
-QXI_LIBS			=${QX_CURSES} -L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
+ifeq "${QX_CURSES_LOCAL}" "yes"
+	QXI_LIBS			=${QX_CURSES} -L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
 						-lsqli$(USE_DEBUG_LIBRARIES)
+else
+	QXI_LIBS			=-L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
+						-lsqli$(USE_DEBUG_LIBRARIES) ${QX_CURSES}
+endif
 
 #The extender libs must appear in the link list before libfgl(d) and libsql(d).
 ifeq "${EXTENDER_GUI}" "yes"

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.167 2003-03-09 07:26:33 afalout Exp $
+dnl # $Id: configure.in,v 1.168 2003-03-23 07:19:21 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1312,6 +1312,9 @@ AC_ARG_WITH(informix,
 			#First check if we have esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
 
+            #Querix ESQL/C compiler from Hydra 4:
+			AC_PATH_PROG(Q_ESQLC, esqlc, no)
+
 			if test "$cygwin" = "1"; then
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
 				AC_PATH_PROG(MSVC_COMP, cl, no)
@@ -1319,7 +1322,21 @@ AC_ARG_WITH(informix,
 				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
 				then
 	                ESQLCC_OK="OK"
-                fi
+                    MSVC_LINK="$MSVC_LINK /nologo"
+#Qerix flags when using MSVC:
+#CFLAGS=/nologo -DWINNT -Dgetenv=QXgetenv -MD -O2 -Y- $(INCLUDES)
+#CFLAGS_DEBUG=/nologo -DWINNT -Dgetenv=QXgetenv -MD - Zi -GX -Od -Y- $(INCLUDES)
+
+#FGL_LIBS="$(QUERIXDIR)\lib\libfgl.lib"
+#FGL_LIBS_DEBUG="$(QUERIXDIR)\lib\libfgld.lib"
+#SQL_LIB="$(QUERIXDIR)\lib\libsqlc.lib"
+#SQL_LIB_DEBUG="$(QUERIXDIR)\lib\libsqlcd.lib"
+#LINK_FLAGS=/nologo /subsystem:console /incremental:yes /machine:x86
+
+#QX_LIBS=$(FGL_LIBS) $(SQL_LIB) $(LINK_FLAGS)
+#QX_LIBS_DEBUG=$(FGL_LIBS_DEBUG) $(SQL_LIB_DEBUG) $(LINK_FLAGS) /debug
+
+				fi
 			else
                 #on non-Windows platforms, native C compiler will do:
 				ESQLCC_OK="OK"

@@ -745,10 +745,10 @@ function fglUnitPrintFailure(i,testName,testComment)
 	define testComment char(60)
 	define msg char(80)
 
+	let options.showResultIn = "T"
+
   if options.showResultIn = "T" then
-display "i=", i
 	  let msg = i using "<<<<", ")", testName
-display "msg=", msg clipped
 	  output to report testResultReport("",msg)
 		let msg = "    ", testComment
 	  output to report testResultReport("",msg)

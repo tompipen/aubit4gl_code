@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-10-07 11:06:30 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-03-23 07:19:42 afalout Exp $
 #
 
 ROOT    =../../..
@@ -37,9 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Source files
 ## ==================================================================
 
-#FIXME: extract writing functions from compilers/helpcpmpile/mkmess.c
-#and create writemsg.c
-CMODS 				=readmsg.c
+CMODS 				=readmsg.c writemsg.c
 OBJS				=${CMODS:.c=.o}
 
 ## ==================================================================
@@ -50,7 +48,7 @@ CFLAGS				+=-I.. -I${ROOT}/compilers/fcompile
 ALL 				=${LIBROOT}/libMSG_NATIVE${SO_EXT}
 
 ifeq "${TARGET_OS}" "cygwin"
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS		=-L${LIBROOT} -laubit4gl
 endif
 
 
@@ -63,20 +61,9 @@ all: ${ALL}
 
 ${LIBROOT}/libMSG_NATIVE${SO_EXT} : ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
-
-
-
-## ==================================================================
-##                       Windows 32 DLL Targets
-## ==================================================================
-
-#.PHONY : dllFORM_XDR
-#dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
-#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
-#	${CP} libFORM_XDR.dll ${LIBROOT}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ## ==================================================================
 ##                             Sub Targets
@@ -90,10 +77,10 @@ ci: $(CMODS)
 ## ==================================================================
 
 
-readmsg.o: ${ROOT}/compilers/fcompile/form_x.h
+#readmsg.o: ${ROOT}/compilers/fcompile/form_x.h
 
-${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+#${ROOT}/compilers/fcompile/form_x.h:
+#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 
 ## ==================================================================

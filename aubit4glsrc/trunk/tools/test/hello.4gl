@@ -11,12 +11,13 @@ define a char(40)
 #  options form line 4 	#this gives the result one would expect for a default;
                         #form is opened after menu and message lines - on line 3
 
-
+options help file "helpfile.hlp"
+options help key F1
 
 let axxx=1
 
 menu "Hello test"
-    command "window" "Open a new window"
+    command "window" "Open a new window" help 2
 		#display "Window"
 		open window w1 at 10,30 with 3 rows,20 columns attribute(border)
 		display "   Hello  World   " at 2,2 attribute(cyan,reverse)
@@ -41,6 +42,9 @@ menu "Hello test"
         end menu
 
 		close window w2
+
+    command "help"
+        call showhelp(1)
 
 
     command "config"

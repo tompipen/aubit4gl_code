@@ -1,8 +1,52 @@
-// This should be a complete list of all possible attributes anything
-// can have - some are not applicable to certain areas....
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: attributes.c,v 1.2 2003-03-23 07:19:42 afalout Exp $
+#*/
+
+/**
+ * @file
+ * This should be a complete list of all possible attributes anything
+ * can have - some are not applicable to certain areas.
+ *
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include "a4gl_libaubit4gl_int.h"
 
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 
 struct all_attributes {
@@ -42,6 +86,11 @@ struct all_attributes {
 };
 
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
 * Get a string representation of an attribute
@@ -109,3 +158,6 @@ get_attr_from_string(char *s)
         printf("Unknown attribute : %s\n",s);
         return -1;
 }
+
+
+/* =============================== EOF ================================== */

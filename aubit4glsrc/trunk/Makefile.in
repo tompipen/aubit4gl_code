@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.118 2003-03-14 07:54:46 afalout Exp $
+# $Id: Makefile.in,v 1.119 2003-03-23 07:19:15 afalout Exp $
 #
 
 ## ==================================================================
@@ -1008,6 +1008,12 @@ lclint:
 	@echo "All SPLint warnings: "
 	@echo "                          Reported  Suppressed"
 	@echo "`grep "^Total" lclint.log`"
+
+
+#Show what preprocessor symbols GCC defines
+gcc_symbols:
+	gcc -E -dM - </dev/null
+
 
 ## ---------------------------- EOF ----------------------------------
 
