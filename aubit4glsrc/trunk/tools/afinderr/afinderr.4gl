@@ -54,7 +54,7 @@ char buff[256];
 char buff2[256];
 struct dirent *de;
 strcpy(buff,(char *)acl_getenv("AUBITDIR"));
-strcat(buff,"/iem");
+strcat(buff,"/help");
 d=(DIR *)opendir(buff);
 
 if (d!=0) {
