@@ -80,6 +80,20 @@ handle_44 (void *end_func, struct param *p)
   return rval;
 }
 
+void
+handle_014 (void *end_func, struct param *p)
+{
+  int param1_i;
+  char param1;
+  int param2;
+  void (*func) (char,long);
+  func = end_func;
+  evaluate_param (&p->param_u.p_list->list.list_val[0], &param1_i);
+  param1=(char )param1_i;
+  evaluate_param (&p->param_u.p_list->list.list_val[0], &param2);
+  func (param1,param2);
+}
+
 
 long
 handle_4 (void *end_func, struct param *p)
@@ -190,12 +204,6 @@ handle_0 (void *end_func, struct param *p)
   return 0;
 }
 
-long
-handle_014 (void *end_func, struct param *p)
-{
-  printf ("handle_014 not implemented\n");
-  return 0;
-}
 
 long
 handle_02 (void *end_func, struct param *p)
@@ -591,10 +599,10 @@ void * find_by_dlself(char *s)
 
   void *ptr=0;
   char buff[255];
-  char *ptr1;
+  //char *ptr1;
   int a;
   char *fname;
-  if (so_libs[0]==-1) {
+  if ((long)so_libs[0]==-1) {
   	for (a=0;a<10;a++) {
 	  	if (a==0) {
 		  	fname=0;
