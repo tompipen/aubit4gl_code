@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.19 2003-07-21 21:40:12 mikeaubury Exp $
+# $Id: report.c,v 1.20 2003-07-23 11:49:58 mikeaubury Exp $
 #
 */
 
@@ -509,7 +509,7 @@ A4GL_make_report_table (struct BINDING *b, int n)
  * @todo Describe function
  */
 void
-A4GL_add_row_report (struct BINDING *b, int n)
+A4GL_add_row_report_table (struct BINDING *b, int n)
 {
   char buff[1024];
   int a;

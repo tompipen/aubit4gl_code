@@ -28,7 +28,7 @@ VARIABLE A4GL_LEXTYPE
 A4GL_internal_lex_printc char* fmt va_list* ap -> void
 
 /* printh (char *fmt, ...) */
-A4GL_internal_lex_printh char* fmt va_list* ap -> void
+A4GL_internal_lex_printh char* fmt   va_list* ap -> void
 
 /* void printcomment (char *fmt,...) */
 A4GL_internal_lex_printcomment char* fmt va_list* ap -> void

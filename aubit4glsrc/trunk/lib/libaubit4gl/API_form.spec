@@ -30,7 +30,7 @@ VARIABLE A4GL_FORMTYPE
 A4GL_dump_srec void* fd -> void
 
 /* void comments (struct struct_scr_field *fprop); */
-A4GL_comments void* fprop -> void
+/*A4GL_comments void* fprop -> void */
 
 /* void set_default_form (struct s_form_attr *form) */
 A4GL_set_default_form void* form -> void
