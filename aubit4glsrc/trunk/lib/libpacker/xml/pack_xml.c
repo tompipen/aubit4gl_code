@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.16 2003-10-20 12:19:00 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.17 2003-10-28 10:52:27 mikeaubury Exp $
 #*/
 
 /**
@@ -721,7 +721,7 @@ input_string (char *name, char **val, int ptr, int isarr)
   A4GL_debug("buff=%s",buff);
   blen=strlen(buff);
   A4GL_debug("blen=%d",blen);
-  blen=blen/2;
+  //blen=blen/2;
   blen+=2;
   pptr = malloc (blen);
   memset(pptr,0,blen);
