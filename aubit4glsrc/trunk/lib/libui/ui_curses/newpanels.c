@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.108 2005-03-07 17:10:47 mikeaubury Exp $
+# $Id: newpanels.c,v 1.109 2005-03-08 20:47:36 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.108 2005-03-07 17:10:47 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.109 2005-03-08 20:47:36 mikeaubury Exp $";
 
 /**
  * @file
@@ -1742,7 +1742,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
       /* b was got via curses - so we can use the curses version */
       wattrset (wot, b);
       A4GL_mja_wrefresh (wot);
-      A4GL_mja_refresh ();
+      //A4GL_mja_refresh ();
     }
 }
 
@@ -2242,7 +2242,7 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
   currwin = win;
   attr = getbkgd (currwin);
   A4GL_debug ("Window background = %x", attr);
-  if (attr == 0)
+  if (attr == 0 )
     {
       attr = A_NORMAL & ' ';
     }
@@ -3223,6 +3223,7 @@ void
 UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
 {
   struct s_form_attr *scr;
+  if (currwinno<0) return;
   scr=&windows[currwinno].winattr;
   switch (type)
     {
@@ -3252,6 +3253,7 @@ int
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
   struct s_form_attr *scr;
+  if (currwinno<0)  return 0;
   scr=&windows[currwinno].winattr;
 
   switch (type)

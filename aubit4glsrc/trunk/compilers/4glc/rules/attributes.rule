@@ -7,7 +7,7 @@
 
 opt_attributes:	/*empty*/ {
 	 A4GL_debug("Using default attribute of WHITE");
-		sprintf($<str>$,"%d",0);}
+		sprintf($<str>$,"-1");}
 		| attributes_def {strcpy($<str>$,$<str>1);}
 ;
 

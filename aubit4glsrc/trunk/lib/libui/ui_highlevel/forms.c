@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.17 2005-03-07 17:10:51 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.18 2005-03-08 20:47:37 mikeaubury Exp $";
 
 #include "hl_forms.h"
 #include "hl_proto.h"
@@ -1379,7 +1379,8 @@ void A4GL_dump_winstack (void)
 void *
 A4GL_get_currwin (void)
 {
-  return win_stack[win_stack_cnt - 1]->win;
+  if (win_stack_cnt>0) return win_stack[win_stack_cnt - 1]->win;
+  else return 0;
 }
 
 

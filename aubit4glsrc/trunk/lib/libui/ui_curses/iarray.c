@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.93 2005-03-07 14:53:10 mikeaubury Exp $
+# $Id: iarray.c,v 1.94 2005-03-08 20:47:34 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.93 2005-03-07 14:53:10 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.94 2005-03-08 20:47:34 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -136,6 +136,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 {
   struct s_form_dets *form;
   FORM *mform;
+  A4GL_debug("do_key_move");
   int at_first = 0;
   int at_last = 0;
 
@@ -163,7 +164,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 	}
 
     }
@@ -2624,11 +2625,16 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	      FORM *mform;
 	      A4GL_int_form_driver (arr->currform->form, REQ_OVL_MODE);	// Always in overwrite mode in a picture...
 	      mform = arr->currform->form;
-	      if (strchr ("A#X", picture[mform->curcol]) == 0
-		  && picture[mform->curcol]) {
-	A4GL_debug("do_key_move");
+	      if (strchr ("A#X", picture[mform->curcol]) == 0 && picture[mform->curcol]) {
+
+                        if (strchr(&picture[mform->curcol+1],'9')
+                        ||strchr(&picture[mform->curcol+1],'#')
+                        ||strchr(&picture[mform->curcol+1],'X')) {
+
+		
 		do_key_move ('R', arr, arr->fcntrl[a].extent, has_picture,
 			     picture);
+			}
 		}
 	    }
 

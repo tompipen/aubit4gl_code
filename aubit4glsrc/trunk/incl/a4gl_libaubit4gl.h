@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.160 2005-03-07 14:53:03 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.161 2005-03-08 20:47:11 mikeaubury Exp $
 #
 */
 
@@ -176,7 +176,7 @@
 #define AUBIT_COLOR_CYAN      		0x00600
 #define AUBIT_COLOR_WHITE     		0x00700
 
-#define AUBIT_ATTR_NORMAL     		0x00800
+#define AUBIT_ATTR_NORMAL     		0x0
 #define AUBIT_ATTR_REVERSE    		0x01000
 #define AUBIT_ATTR_UNDERLINE  		0x02000
 #define AUBIT_ATTR_BOLD       		0x04000

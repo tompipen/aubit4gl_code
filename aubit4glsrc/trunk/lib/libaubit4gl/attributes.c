@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.27 2005-02-20 19:34:42 mikeaubury Exp $
+# $Id: attributes.c,v 1.28 2005-03-08 20:47:32 mikeaubury Exp $
 #*/
 
 /**
@@ -399,6 +399,7 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
       A4GL_debug ("30 Command is DISPLAY");
       int_options = A4GL_get_option_value ('d');
       int_disp_form = A4GL_get_curr_form_attr ();
+	if (int_disp_form==0xffff) int_disp_form=0;
       int_open_window = A4GL_get_curr_window_attr ();
       A4GL_debug ("30 int_options=%x int_disp_form=%x int_open_window=%x",
 		  int_options, int_disp_form, int_open_window);
@@ -409,6 +410,7 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
       A4GL_debug ("30 Command is INPUT");
       int_options = A4GL_get_option_value ('i');
       int_disp_form = A4GL_get_curr_form_attr ();
+	if (int_disp_form==0xffff) int_disp_form=0;
       int_open_window = A4GL_get_curr_window_attr ();
       break;
     }
@@ -417,19 +419,23 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
   if (int_options)
     {
       ptr_std_options = &std_options;
+		A4GL_debug("a");
       A4GL_attr_int_to_std (int_options, ptr_std_options);
     }
   if (int_disp_form)
     {
       ptr_std_disp_form = &std_disp_form;
+		A4GL_debug("a");
       A4GL_attr_int_to_std (int_disp_form, ptr_std_disp_form);
     }
   if (int_open_window)
     {
       ptr_std_open_window = &std_open_window;
+		A4GL_debug("a");
       A4GL_attr_int_to_std (int_open_window, ptr_std_open_window);
     }
 
+A4GL_debug("XXX %x",attrib_curr);
   return A4GL_determine_attribute_internal (attrib_curr, attrib_field, 0,	// We don't do syscol yet...
 					    ptr_std_options,
 					    ptr_std_disp_form,
@@ -636,6 +642,8 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
   struct struct_scr_field *fprop;
   int attr;
 
+
+  
   if (cmd_type == FGL_CMD_CLEAR)
     {				// Dont bother with clear...
       A4GL_debug ("30 CMD_CLEAR Attributes are always 0...");
@@ -644,11 +652,12 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
 
   fprop = vfprop;
 /* Decode our current attribute */
-
-  if (attrib_curr_int)
+  A4GL_debug("attrib_curr_int=0x%x (%d)",attrib_curr_int,attrib_curr_int);
+  if (attrib_curr_int!=-1  )
     {
-      A4GL_attr_int_to_std (attrib_curr_int, &attrib_curr);
-      ptr_attrib_curr = &attrib_curr;
+		A4GL_debug("a - %x %d",attrib_curr_int,attrib_curr_int);
+      		A4GL_attr_int_to_std (attrib_curr_int, &attrib_curr);
+      		ptr_attrib_curr = &attrib_curr;
       A4GL_debug
 	("30 determined Attribute setting attrib_curr =  %x %d %d %d %d %d %d %d",
 	 ptr_attrib_curr->colour, ptr_attrib_curr->normal,
@@ -672,6 +681,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
       attrib_field.normal = 0;
 
       a = A4GL_evaluate_field_colour (val_for_field, fprop);
+A4GL_debug("eval = %d",a);
 
       if (a == -1)
 	{
@@ -679,6 +689,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
 	}
       else
 	{
+		A4GL_debug("a =%d",a);
 	  A4GL_attr_int_to_std (a << 8, &attrib_field);
 	  attr = attrib_field.colour;
         }
@@ -707,6 +718,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
 
 
 
+A4GL_debug("attr before = %x",attr);
 	  if (attrib_field.normal)
 	    attr += AUBIT_ATTR_NORMAL;
 	  if (attrib_field.reverse)
@@ -721,6 +733,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
 	    attr += AUBIT_ATTR_DIM;
 	  if (attrib_field.invisible)
 	    attr += AUBIT_ATTR_INVISIBLE;
+A4GL_debug("attr after = %x",attr);
 
 
 	  A4GL_debug ("Form attribute = %x\n", attr);
@@ -744,6 +757,8 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
     }
 
   A4GL_debug ("30 ptr_attrib_field=%p\n", ptr_attrib_field);
+
+  A4GL_debug("ptr_attrib_curr=%p ptr_attrib_field=%p", ptr_attrib_curr, ptr_attrib_field);
 
   r =
     A4GL_determine_attribute_as_std_attr (cmd_type, ptr_attrib_curr,

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.119 2005-03-07 14:53:10 mikeaubury Exp $
+# $Id: ioform.c,v 1.120 2005-03-08 20:47:35 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.119 2005-03-07 14:53:10 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.120 2005-03-08 20:47:35 mikeaubury Exp $";
 /**
  * @file
  *
@@ -640,11 +640,8 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
 	      attr, nattr);
   attr = nattr;
 
-  if (attr & AUBIT_ATTR_REVERSE)
-    r = 1;
-  else
-    r = 0;
-  A4GL_debug
+  if (attr & AUBIT_ATTR_REVERSE) r = 1;
+  else r = 0; A4GL_debug
     ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
      attr);
   A4GL_set_field_colour_attr (field, r, attr);

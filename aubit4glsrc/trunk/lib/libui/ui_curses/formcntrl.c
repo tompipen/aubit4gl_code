@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.72 2005-03-07 14:53:09 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.73 2005-03-08 20:47:34 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.72 2005-03-07 14:53:09 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.73 2005-03-08 20:47:34 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -760,12 +760,15 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		    }
 		  //A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
 
-
 		  A4GL_set_init_value (sio->currentfield, ptr, 0);
 		  if (picture[0]!='9'&&picture[0]!='#' && picture[0]!='X') {
-		  	do_key_move_fc ('R', sio, 0, 1, picture);
-	  		//pos_form_cursor (sio->currform->form);
-  			//A4GL_mja_wrefresh (currwin);
+			if (strchr(&picture[1],'9')
+			||strchr(&picture[1],'#')
+			||strchr(&picture[1],'X')) {
+				// Theres no point in moving across if theres
+				// nothing to move to
+		  		do_key_move_fc ('R', sio, 0, 1, picture);
+			}
 		  }
 
 		  A4GL_debug ("XYX Set field : %s", ptr);
@@ -1294,7 +1297,7 @@ do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 	}
     }
   A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);

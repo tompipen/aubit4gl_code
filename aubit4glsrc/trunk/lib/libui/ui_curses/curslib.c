@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.105 2005-03-07 14:53:09 mikeaubury Exp $
+# $Id: curslib.c,v 1.106 2005-03-08 20:47:33 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.105 2005-03-07 14:53:09 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.106 2005-03-08 20:47:33 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -257,7 +257,7 @@ A4GL_debug("After");
   strcpy(str,str_orig);
 
   A4GL_subwin_gotoxy (curr_error_window, 1, 1, 0);
-  if (attr == 0)
+  if (attr == 0 || attr==-1)
     attr = A_REVERSE;		//+A4GL_colour_code (COLOR_RED);
   else
     attr = A4GL_decode_aubit_attr (attr, 'w');
