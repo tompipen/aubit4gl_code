@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2003-11-15 05:35:54 afalout Exp $
+# $Id: Makefile,v 1.7 2003-11-15 07:09:47 afalout Exp $
 #
 
 ROOT    =../..
@@ -36,15 +36,23 @@ include ${ROOT}/incl/Makefile-common
 ##                              Source files
 ## ==================================================================
 
+#Objects that originate in 4GL code
 OBJS_4GL= asql.ao connection_menu.ao pick.ao database.ao main_menu.ao query.ao \
 	session.ao table.ao execute.ao paginate.ao
 
+#Objects that originate in 4GL code, with ESQL compiler specific prefix, so that
+#we don't mix them up when linking
+OBJS_4GL_PG=$(addprefix pg_,${OBJS_4GL})
+OBJS_4GL_IFX=$(addprefix ifx_,${OBJS_4GL})
+
+#Objects that do not originate in 4GL code - version independent
 OBJS_C=lex.yy.o simple_parse.o dir.o
 
-OBJS=${OBJS_4GL} ${OBJS_C}
+#All objects for Postgres version
+OBJS_PG=${OBJS_4GL_PG} ${OBJS_C} postgres.ao
 
-OBJS_PG=${OBJS} postgres.ao
-OBJS_IFX=${OBJS} infx.ao
+#All objects for Informix version
+OBJS_IFX=$(OBJS_4GL_IFX) ${OBJS_C} infx.ao
 
 ## ==================================================================
 ##                              Options
@@ -66,25 +74,46 @@ ifneq "${IFMX_ESQLC}" "no"
 	ALL+=asql_i.4ae
 endif
 
+4GLPC=${ROOT}/bin/4glpc 
+#-verbose
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all : ${ALL}
-	@echo "Default targets (${ALL}) compiled."
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default targets (${ALL}) compiled."
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 #obsolete:
 #check:
-#	./check_for_env
+#	./check_for_env -- remove from CVS !
 
+
+#why are we linking with UI_TUI ?
+asql_i.4ae: A4GL_LEXDIALECT=INFORMIX
 asql_i.4ae: ${OBJS_IFX}
-	A4GL_LEXDIALECT=INFORMIX; 4glpc -g  $^ -o $@  -lUI_TUI
+	${4GLPC} -g  $^ -o $@  -lUI_TUI
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|           Successfuly compiler Informix version of asql            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
+asql_p.4ae: A4GL_LEXDIALECT=POSTGRES
 asql_p.4ae: ${OBJS_PG}
-	A4GL_LEXDIALECT=POSTGRES; 4glpc -g  $^ -o $@  -lUI_TUI
+	${4GLPC} -g  $^ -o $@  -lUI_TUI
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|          Successfuly compiler PostgreSQL version of asql           |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 qryfrm.afr.dat: qryfrm.per
-	fcompile $^
+	${ROOT}/bin/fcompile $^
 
 ## ==================================================================
 ##                              Sub-targets
@@ -92,32 +121,21 @@ qryfrm.afr.dat: qryfrm.per
 
 
 lex.yy.c: parse.l
-	flex -i parse.l
+	${LEX} -i parse.l
 
 dir.o: dir.c
-	gcc -g -c dir.c
+	${CC} -g -c dir.c
 
+#What is -G doing? This is not 4glpc flag...
+%query.ao: query.4gl
+	${4GLPC} -g -G -c $^ -o $@
 
-query.ao: query.4gl
-	4glpc -g -G -c $^ -o $@
+%execute.ao: execute.4gl
+	${4GLPC} -g -G -c $^ -o $@
 
-execute.ao: execute.4gl
-	4glpc -g -G -c $^ -o $@
-
-infx.ao: infx.4gl
-	A4GL_LEXDIALECT=INFORMIX; 4glpc -g -c $^ -o $@
-
-postgres.ao: postgres.4gl
-#	echo $@ $^ $*
-#	echo $*  ${$@:.ao=.o} ${$^:.4gl=.o}
-	A4GL_LEXDIALECT=POSTGRES; 4glpc -g -c $^ -o $@
-#ecpg_wrap script produces .o not .ao - FIX IT
-#	mv $*.o $@
-#	mv ${$@:.ao=.o} $@
-	mv postgres.o $@
-
-%.ao: %.4gl
-	4glpc -g -c $^ -o $@
+#Rule to make objects from 4GL file
+%.ao:
+	${4GLPC} -g -c $(subst pg_,,$(subst ifx_,,$*)).4gl -o $@
 
 
 ## ==================================================================
@@ -127,35 +145,24 @@ postgres.ao: postgres.4gl
 install:
 	@echo "asql installed."
 
-
-
 deinstall:
 	@echo "asql de-installed."
+
+run.i:
+	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";./asql_i.4ae
+
+run.p:
+	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";./asql_p.4ae
 
 ## ==================================================================
 ##                              clean
 ## ==================================================================
 
 clean:
-	${RM} ${OBJS} ${ALL} *.bak *.err *.warn lex.yy.c \
+	${RM} ${OBJS_IFX} ${OBJS_PG} ${ALL} *.bak *.err *.warn lex.yy.c \
     ${OBJS_4GL:.ao=.h} ${OBJS_4GL:.ao=.glb} ${OBJS_4GL:.ao=.ec} \
-	${OBJS_4GL:.ao=.cpc} ${OBJS_4GL:.ao=.c}
-
-
-#	rm -f \
-#	asql.4ae asql.4ae.err asql.c asql.ec asql.glb asql.h asql.o \
-#	connection_menu.c connection_menu.ec connection_menu.glb connection_menu.h connection_menu.o \
-#	database.c database.ec database.glb database.h database.o \
-#	dir.o \
-#	execute.c execute.ec execute.glb execute.h execute.o \
-#	lex.yy.c lex.yy.o \
-#	main_menu.c main_menu.ec main_menu.glb main_menu.h main_menu.o \
-#	pick.c pick.ec pick.glb pick.h pick.o \
-#	query.c query.ec query.glb query.h query.o \
-#	session.c session.ec session.glb session.h session.o \
-#	simple_parse.o \
-#	table.c table.ec table.glb table.h table.o \
-#	paginate.c paginate.ec paginate.glb paginate.h paginate.o \
-#	infx.c infx.ec infx.glb infx.h infx.o
+	${OBJS_4GL:.ao=.cpc} ${OBJS_4GL:.ao=.c} \
+	postgres.c postgres.cpc postgres.h postgres.glb \
+	infx.c infx.ec infx.glb infx.h
 
 # ============================= EOF ============================
