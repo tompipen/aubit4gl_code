@@ -6,8 +6,8 @@ PDF *p=0;
 #define PAGE_LAYOUT_WIDTH a4_width
 #define PAGE_LAYOUT_HEIGHT a4_height
 
-#define DEFAULT_FONT "Helvetica"
-#define DEFAULT_FONT_SIZE 12
+#define DEFAULT_FONT "Courier"
+#define DEFAULT_FONT_SIZE 10
 
 float x_max;
 float y_max;

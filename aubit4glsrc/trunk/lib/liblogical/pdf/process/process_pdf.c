@@ -108,6 +108,7 @@ int RP_process_report (char *buff)
   PDF_set_info(p,"Creator","Aubit 4GL");
   PDF_set_info(p,"Author","Liblogical PDF output");
   PDF_set_info(p,"Title",report->repName);
+  PDF_set_info(p,"Subject",report->modName);
 
   lines = malloc (sizeof (char *) * report->page_length);
 

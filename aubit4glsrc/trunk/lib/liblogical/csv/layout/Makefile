@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-03-19 11:05:08 afalout Exp $
+# $Id: Makefile,v 1.6 2004-05-25 17:47:06 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -47,7 +47,7 @@ CFLAGS=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl \
 
 
 ${LIBROOT}/libLOGREP_CSV.so : layout_csv.c ../common/csv_io.c
-	cc -Wall -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl
+	gcc -Wall -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl
 
 ## ==================================================================
 ##                              Clean

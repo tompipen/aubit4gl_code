@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2004-03-19 11:05:26 afalout Exp $
+# $Id: Makefile,v 1.7 2004-05-25 17:47:08 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
-ROOT		=../../../..
+ROOT		=${AUBITDIR}
+LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -37,14 +37,14 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl 
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ${LIBROOT}/libLOGREPPROC_TXT.so : process_txt.o
-	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
+	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 
 process_txt.o: ../../layout_engine/API_layout.h
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-03-19 11:05:10 afalout Exp $
+# $Id: Makefile,v 1.6 2004-05-25 17:47:07 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 
-CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl
+CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 
 OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 
@@ -47,7 +47,7 @@ OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 ## ==================================================================
 
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	cc -rdynamic -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl
+	gcc -rdynamic -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

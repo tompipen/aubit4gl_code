@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-05-21 11:53:43 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2004-05-25 17:46:13 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
-ROOT		=../../../..
+ROOT		=${AUBITDIR}
+LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -37,14 +37,16 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl 
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC 
+
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libLOGREPPROC_PDF.so : process_pdf.o pdf_handling.o
-	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
+${LIBROOT}/libLOGREPPROC_PDF.sl : process_pdf.o pdf_handling.o
+	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
+
 
 process_pdf.o: ../../layout_engine/API_layout.h
 

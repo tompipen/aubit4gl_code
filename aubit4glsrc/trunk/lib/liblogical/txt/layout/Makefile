@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2004-03-19 11:05:26 afalout Exp $
+# $Id: Makefile,v 1.5 2004-05-25 17:47:08 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -45,7 +45,7 @@ LFLAGS=-L$(ROOT)/lib -laubit4gl `pkg-config --libs --cflags gtk+-2.0`
 ## ==================================================================
 
 ${LIBROOT}/libLOGREP_TXT.so : layout_txt.c
-	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} ${LFLAGS}
+	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} ${LFLAGS}
 
 ## ==================================================================
 ##                              Options

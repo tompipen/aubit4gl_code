@@ -107,7 +107,7 @@ return &csv_report_layout;
 struct csv_report_layout *default_csv(char *errbuff) {
 int a;
 int b;
-int every;
+int every=-1;
 int n;
 static struct csv_report_layout csv_report_layout;
 struct csv_entry *entry;
@@ -123,7 +123,7 @@ struct csv_entry *entry;
     }
 
 
-   if (every==0) {
+   if (every==-1) {
 		strcpy(errbuff,"There does not appear to be an on every row in this report.\n" 
 				"It is not currently possible to generate a default CS output for a report with no ON EVERY ROW...");
 		return 0;
