@@ -33,7 +33,7 @@ create_c_2_ss  :
 
 
 create_c_1  : 
-	CREATE_IDX table_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);} 
+	CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);} 
 	| CREATE_DATABASE ident_or_var {
 		a4gl_yyerror("You cannot create a database from within Aubit4gl....");
 	}
@@ -96,6 +96,13 @@ alter_cmd : ALTER_TABLE identifier alter_clauses_ss {
 	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
 	print_exec_sql($<sql_string>$); 
 }
+	| ALTER_INDEX idx_name TO_CLUSTER {
+		$<sql_string>$=make_sql_string("ALTER INDEX ",$<str>2," TO CLUSTER",0);
+		print_exec_sql($<sql_string>$); 
+		}
+	| ALTER_INDEX idx_name TO_NOT_CLUSTER {
+		$<sql_string>$=make_sql_string("ALTER INDEX ",$<str>2," TO NOT CLUSTER",0);
+		}
 ;
 
 alter_clauses_ss:
