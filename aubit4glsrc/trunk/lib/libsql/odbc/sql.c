@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.79 2004-03-04 16:27:48 mikeaubury Exp $
+# $Id: sql.c,v 1.80 2004-04-04 16:17:56 mikeaubury Exp $
 #
 */
 
@@ -3423,6 +3423,18 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 			   date1->date.month, date1->date.year);
 	  *((long *) date1->ptr) = zz;
 	}
+
+	if (use_binding[a].dtype == DTYPE_DECIMAL) {
+		// We've actually selected into a double...
+		double d;
+		d=*((double *)use_binding[a].ptr);
+		A4GL_debug("d=%lf",d);
+		A4GL_push_double(d);
+		A4GL_pop_var2(use_binding[a].ptr,use_binding[a].dtype,use_binding[a].size);
+	}
+
+
+
     }
 
 #ifdef DEBUG
@@ -3433,10 +3445,12 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
       {
 	char *cptr;
 	int dtype;
-	if (use_binding[a].dtype)
-	  dtype = use_binding[a].dtype;
-	else
+
+
+	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL )
 	  dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
+	else
+	  dtype = use_binding[a].dtype;
 
 
 
