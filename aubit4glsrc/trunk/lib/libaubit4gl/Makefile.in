@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.36 2002-09-27 04:45:37 afalout Exp $
+# $Id: Makefile.in,v 1.37 2002-09-27 06:25:42 afalout Exp $
 #
 
 ROOT    	=../..
@@ -126,13 +126,21 @@ ifeq "${TARGET_OS}" "darwin"
 		#possible to point these symlinks at different minor revisions of
 		#the library.
 
+        INST_PATH=$(INSTALL_DIR)/lib
+		INST_NAME=${INST_PATH}/libaubit4gl${SO_EXT_LINKABLE}
+        #INST_NAME=${AUBITDIR}/lib/libaubit4gl${SO_EXT_LINKABLE}
+
         SO_LDFLAGS1=$(SO_LDFLAGS:%-flat_namespace=%)
 		SO_LDFLAGS2=$(SO_LDFLAGS1:%-bundle=%)
 		SO_LDFLAGS3=$(SO_LDFLAGS2:%-undefined=%)
 		#SO_LDFLAGS_NOBUNDLE=-r $(SO_LDFLAGS3:%suppress=%)
 		SO_LDFLAGS_NOBUNDLE=-dynamiclib \
-			-install_name ${AUBITDIR}/lib/libaubit4gl${SO_EXT_LINKABLE} \
+			-install_name ${INST_NAME} \
 			$(SO_LDFLAGS3:%suppress=%)
+        #FIXME: -install_name like this will not work after 'make install'!
+        #since is in effect hard coded path to the lib file
+		#we will have to link two libraries, one for use in source tree,
+        #and one to install
 else
 		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
 endif
@@ -147,6 +155,10 @@ all: ${ALL}
 
 ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
 	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
+ifeq "${TARGET_OS}" "darwin"
+	${MKPATH} ${INST_PATH}
+	${CP} @$ ${INST_PATH}
+endif
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets

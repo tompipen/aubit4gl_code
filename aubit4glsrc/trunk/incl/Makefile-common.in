@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.83 2002-09-27 03:57:39 afalout Exp $
+# $Id: Makefile-common.in,v 1.84 2002-09-27 06:25:42 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -328,7 +328,8 @@ ifeq "@GETOPT_LONG@" "no"
 	C_IFLAGS 			+=-I$(AUBITDIR)/tools/getopt
 endif
 
-C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H
+YYDEBUG             =@YYDEBUG@
+C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H ${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}

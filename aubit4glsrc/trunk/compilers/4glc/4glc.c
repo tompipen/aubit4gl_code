@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.35 2002-09-27 06:25:42 afalout Exp $
+# $Id: 4glc.c,v 1.36 2002-09-27 06:26:51 afalout Exp $
 #
 */
 
@@ -241,7 +241,7 @@ main(int argc, char *argv[])
 
   /** @todo : Remove things that are to use */
 #if (defined(__MACH__) && defined(__APPLE__))
-
+  int useGetopt = 0;
 #else
   int useGetopt = 1;
 #endif
