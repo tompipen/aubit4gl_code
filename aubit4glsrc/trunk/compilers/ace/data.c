@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.10 2002-07-30 17:52:10 mikeaubury Exp $
+# $Id: data.c,v 1.11 2002-08-02 13:53:54 mikeaubury Exp $
 #*/
 
 /**
@@ -52,6 +52,7 @@
 
 #endif
 
+#define debug set_line(__FILE__,__LINE__);debug_full
 /*
 =====================================================================
                     Variables definitions
@@ -671,7 +672,9 @@ execute_selects (void)
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
 
-      //printf("-->%s\n",nstatement);
+	debug("1");
+	debug("Executing select..");
+	debug("%s",nstatement);
 
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
