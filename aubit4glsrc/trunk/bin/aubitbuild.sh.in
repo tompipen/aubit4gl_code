@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.5 2002-11-02 01:28:25 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.6 2002-11-05 05:36:03 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -169,6 +169,12 @@ AUBIT_BUILD=@AUBIT_BUILD@
 #name of the computer we are on:
 HOSTNAME=`hostname`
 
+
+SRPM_PATH=/usr/src/redhat/SRPMS
+RPM_PATH=/usr/src/redhat/RPMS/i586
+RPMBUILD_PATH=/usr/src/redhat/BUILD
+RPMSRC_PATH=/usr/src/redhat/SOURCES
+
 ## ==================================================================
 ##                      Platform dependent Configuration
 ## ==================================================================
@@ -190,6 +196,10 @@ if [ "$COMSPEC" = "" ]; then
 	TEMPLATEBINRPM=$SHORTNAME--template--.rpm
     DLPAGEPATH=/opt/aubit/aubit4glwww/files
 
+	TIME_TEMPL=lt-unknown
+    LABEL=Linux
+
+
 else
     #Windows/CygWin
 
@@ -210,6 +220,9 @@ else
 	#TEMPLATEBINRPM=xxxxx--template--.rpm
     DLPAGEPATH=/usr/aubit/aubit4glwww/files
 	TEMPLATE_WINSETUPEXE=setup---template--.exe
+
+	TIME_TEMPL=wt-unknown
+    LABEL=Windows
 
 fi
 
@@ -396,7 +409,7 @@ fi
 
 
 echo "******* aubitbuild.sh start: ********" > $LOGFILE
-
+echo "******* `date` ********" >> $LOGFILE
 if [ "$VERBOSE" = "1" ]
 then
     echo "Initialized log file: $LOGFILE"
@@ -466,7 +479,7 @@ if test "$MAKE" = "1"; then
 		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
 		if [ "$VERBOSE" = "1" ]
 		then
-			echo "PWD = `pwd` see make.log there..."
+			echo "See `pwd`/make.log for details."
         fi
 		EXEC="make log"; runexec
 
@@ -480,7 +493,7 @@ if test "$MAKE" = "1"; then
 			echo "Toatal compiler warnings: $WARNLINES"
 	        echo " "
 			grep "warning:" make.log > warning.log
-			echo "See `PWD`/warning.log for details"
+			echo "See `pwd`/warning.log for details"
 	        echo " "
 
 			if [ "$COMSPEC" = "" ]; then
@@ -535,8 +548,8 @@ fi
 if test "$RPM" = "1"; then
     ################## make RPM #######################
     STOPONERROR=0   #Continue even if next statemets fails
-    EXEC="rm -f /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm"; runexec
-    EXEC="rm -f /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm"; runexec
+    EXEC="rm -f $SRPM_PATH/$SHORTNAME*.src.rpm"; runexec
+    EXEC="rm -f $RPM_PATH/$SHORTNAME*.rpm"; runexec
     EXEC="rm -rf /usr/src/redhat/BUILD/$SHORTNAME*"; runexec
 	STOPONERROR=1
 
@@ -546,21 +559,21 @@ if test "$RPM" = "1"; then
 fi
 
 #get file names of created RPM archives"
-if ! [ -f /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm ]; then
+if ! [ -f $SRPM_PATH/$SHORTNAME*.src.rpm ]; then
 	if test "$RPM" = "1"; then
 		echo "source RPM not created"
     fi
 else
-	SOURCERPM=`ls /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm`
+	SOURCERPM=`ls $SRPM_PATH/$SHORTNAME*.src.rpm`
 	SOURCERPMBASENAME=`basename $SOURCERPM`
 fi
 
-if ! [ -f /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm ]; then
+if ! [ -f $RPM_PATH/$SHORTNAME*.rpm ]; then
 	if test "$RPM" = "1"; then
 		echo "Binary RPM not created."
     fi
 else
-	BINRPM=`ls /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm`
+	BINRPM=`ls $RPM_PATH/$SHORTNAME*.rpm`
 	BINRPMBASENAME=`basename $BINRPM`
 fi
 
@@ -652,6 +665,11 @@ if test "$GET" = "1"; then
 			echo "sed -e '/^$TEMPLATE_WINSETUPEXE/s/$TEMPLATE_WINSETUPEXE/$WINSETUPEXE_BASENAME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
 			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 		fi
+
+        #Update time:
+        TMP_TIME=`date`
+		echo "sed -e '/^$TIME_TEMPL/s/$TIME_TEMPL/$LABEL $TMP_TIME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
+		echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 
 	    EXEC="sh $BINNAMESSCRIPT"; runexec
 
@@ -763,10 +781,6 @@ if test "$COMPARE" = "1"; then
 	if test "$WINSETUPEXE" != ""; then
 		rm -f "/tmp/$WINSETUPEXE_BASENAME"
 
-#echo "a $WINSETUPEXE_BASENAME_ESC"
-#echo "b $WINSETUPEXE_BASENAME"
-#echo "c $WINSETUPEXE"
-
 #works OK:
 #scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit\ 4GL\ compiler\ 0.30RC3.147.exe" .
 
@@ -777,17 +791,6 @@ if test "$COMPARE" = "1"; then
 #with -> spawn scp -q afalout@aubit4gl.sourceforge.net:"[lrange $argv 0 5]" .
 #in auto_sf_scp_get !!!!
 
-
-#####################################################
-#Executing: auto_sf_scp_get /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe
-#####################################################
-#spawn scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe" .
-#afalout@aubit4gl.sourceforge.net's password:
-#scp: /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe: No such file or directory
-
-
-
-		#EXEC="$AUTOSFSCPGET $SCPPATH/$WINSETUPEXE_BASENAME_ESC"; runexec
 		EXEC="$AUTOSFSCPGET $SCPPATH/$WINSETUPEXE_BASENAME"; runexec
 		if test -f "/tmp/$WINSETUPEXE_BASENAME"; then
 			diff "/tmp/$WINSETUPEXE_BASENAME" "$WINSETUPEXE"
@@ -799,11 +802,18 @@ if test "$COMPARE" = "1"; then
 				ls -al "$WINSETUPEXE"
 				exit 54
 		    else
-		        echo "OK: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are same"
+				if test "$VERBOSE" = "1"; then
+					echo "OK: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are same"
+                fi
 			fi
         else
 			echo "download failed for /tmp/$WINSETUPEXE_BASENAME"
         fi
+    fi
+
+	if test "$RPM" = "1"; then
+        echo "FIXME: not comparing created RPM files"
+
     fi
 
 	COMPARED_OK=1
@@ -812,7 +822,7 @@ fi
 
 if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 
-    #Clean
+    #Clean created archives and files
 	EXEC="rm -f $DLTMP1 $DLTMP2 $DOWNLOADPAGEBASE"; runexec
 	EXEC="rm -f $SOURCETARNAME $TARBALL $SOURCERPM $BINRPM"; runexec
 	EXEC="rm -f $CYSRCBUILDNAMES $CYBUILDNAMES"; runexec
@@ -821,10 +831,26 @@ if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 	#delete compare files:
 	EXEC="rm -f /tmp/$SOURCETARBASENAME"; runexec
 	EXEC="rm -f /tmp/$TARBALLBASENAME"; runexec
+	EXEC="rm -f /tmp/$WINSETUPEXE_BASENAME"; runexec
 
+	#clean files created by aubitbuild script:
 	EXEC="make clean.aubitbuild"; runexec
-fi
 
+    #clean directory in /tmp
+    #FIXME: move this to makefile which created it:
+    rm -rf /tmp/aubit4glsrc-*
+
+	if test "$RPM" = "1"; then
+		#clean temprary stuff created by RPM:
+	    rm -rf $RPMBUILD_PATH/aubit4gl-*
+    	rm -rf $RPMSRC_PATH/aubit4glsrc-*
+    fi
+
+
+echo "******* LOG END ********" >> $LOGFILE
+echo "******* `date` ********" >> $LOGFILE
+echo "***********************" >> $LOGFILE
+echo " " >> $LOGFILE
 
 #done
 exit 0
