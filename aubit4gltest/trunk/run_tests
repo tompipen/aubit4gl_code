@@ -193,6 +193,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		SOURCES="$SRC_CUSTOM ./fgiusr-ifx.c"
 		#CFGLGO_FLAGS="-dumpspecs"
 		#CFGLGO_FLAGS="-v"
+		#CFGLGO_FLAGS="-DDEBUG"
 		EXEC="cfglgo -DI4GL_RDS $CFGLGO_FLAGS $LIBS $SOURCES -o $IFX_RUNNER "
 		echo $EXEC
 		rm -f tmp.log
@@ -243,7 +244,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		#/opt/aubit/gen4gl/fglbld/include/decimal.h
 		#/opt/informix/incl/tools/decimal.h
 		#/opt/querix/incl/decimal.h
-		FJS_CFLAGS="-cpf \"-DC4GL=1 -DFOURJS \
+		FJS_CFLAGS="-cpf \"-DC4GL=1 -DDEBUG -DFOURJS \
 			-I$FGLDIR/include -I$INFORMIXDIR/incl/tools \
 			-I$INFORMIXDIR/incl\""
 		
@@ -759,7 +760,7 @@ for a in $FLAGS; do
                 else
 					CVSIGNORE="$a/.cvsignore"
 					#CVSIGNORE_OUT=">> $CVSIGNORE"
-					ADDEXT_LIST=".frm .infx"
+					ADDEXT_LIST=".pic"
 					for ADDEXT in $ADDEXT_LIST; do
 						if ! grep "$ADDEXT" "$CVSIGNORE" > /dev/null ; then 
 							#echo "*$ADDEXT" $CVSIGNORE_OUT
