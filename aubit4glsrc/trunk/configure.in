@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.272 2004-12-22 11:20:45 afalout Exp $
+dnl # $Id: configure.in,v 1.273 2004-12-25 00:32:06 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2193,14 +2193,14 @@ HELP_DESTINATION=etc
     COUNTER=0
 	for FILE in $ALL_HELP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "HELPFILE_$COUNTER='%doc $INST_BASE/$HELP_DESTINATION/$FILE'"
+		eval "HELPFILE_$COUNTER='$INST_BASE/$HELP_DESTINATION/$FILE'"
 		eval "ISHELPFILE_$COUNTER='Source: $IS_SOURCE\\$HELP_DESTINATION\\$FILE; DestDir: {app}\\$HELP_DESTINATION; Components: runtime'"
 	done
 	COUNTER=0
 	for FILE in $FORM_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "FORMFILE_$COUNTER='%doc $INST_BASE/$FORMS_DESTINATION/$FILE'"
-		eval "FORMFILE_$COUNTER='Source: $IS_SOURCE\\$FORMS_DESTINATION\\$FILE; DestDir: {app}\\$FORMS_DESTINATION; Components: runtime'"
+		eval "FORMFILE_$COUNTER='$INST_BASE/$FORMS_DESTINATION/$FILE'"
+		eval "ISFORMFILE_$COUNTER='Source: $IS_SOURCE\\$FORMS_DESTINATION\\$FILE; DestDir: {app}\\$FORMS_DESTINATION; Components: runtime'"
 	done
 
 	#NOTE: FORM_FILES and ALL_HELP are added to ETC_FILES later
@@ -2242,7 +2242,7 @@ CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
     COUNTER=0
 	for FILE in $CONVSQL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "CONVFILE_$COUNTER='%doc $INST_BASE/etc/convertsql/$FILE'"
+		eval "CONVFILE_$COUNTER='$INST_BASE/etc/convertsql/$FILE'"
 		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\convertsql\\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
 	done
 
@@ -2266,7 +2266,7 @@ IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
     COUNTER=0
 	for FILE in $IMPORT_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "IMPORTFILE_$COUNTER='%doc $INST_BASE/etc/import/$FILE'"
+		eval "IMPORTFILE_$COUNTER='$INST_BASE/etc/import/$FILE'"
 		eval "ISIMPORTFILE_$COUNTER='Source: $IS_SOURCE\etc\import\\$FILE; DestDir: {app}\etc\import; Components: runtime'"
 	done
 
@@ -8673,7 +8673,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.272 2004-12-22 11:20:45 afalout Exp $
+| $Id: configure.in,v 1.273 2004-12-25 00:32:06 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

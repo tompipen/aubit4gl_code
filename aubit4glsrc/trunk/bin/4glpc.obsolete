@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.3 2004-12-13 01:55:31 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.4 2004-12-25 00:33:34 afalout Exp $
 #
 
 ########################################################################
@@ -796,6 +796,104 @@ do
     ;;
 
 	-deps)
+	if test "$COMSPEC" = ""; then
+		#Check libs built on UNIX for dependencies we should include in installer
+		ALL_LIBS="$AUBITDIR/lib/lib*.so"
+
+		#Places we can search:
+		SEARCH_PATHS="/ "
+		
+		#List of libs we will ignore as user needs to install them
+		#GTK+ libs:
+		IGNORE_MISSING="libgdk- libglib- libgobject- libgtk- libglade- libgdk_pixbuf"
+		#Informix CSDK libs:
+		IGNORE_MISSING="$IGNORE_MISSING isqlt09 isqlt09"
+		#PostgreSQL ECPG libs:
+		IGNORE_MISSING="$IGNORE_MISSING libecpg_compat libecpg"
+		
+		unset LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH="/xx/yy"
+		#export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib"
+		#echo "Disabling ldconfig..."
+		#touch /tmp/fakeldconfig
+		#ldconfig -n -N -X -f /tmp/fakeldconfig -C /tmp/fakeldconfig
+		#ldconfig -n -f /tmp/fakeldconfig -C /tmp/fakeldconfig
+		#ldconfig -p
+		
+		#ldd $AUBITDIR/lib/libSQL_pg.so
+		#exit
+		
+		for onelib in $ALL_LIBS; do
+			TMP=`ldd $onelib`
+			RET=$?
+			if test "$RET" != "0"; then 
+				echo "RET=$RET"
+				exit $RET
+			fi
+			
+			#echo $TMP
+			#continue
+			#exit
+			
+			XXX=`echo "$TMP" | grep "not found"`
+			RET=$?
+			if test "$XXX" != ""; then
+			#if test "$RET" != "0"; then
+				#echo "$TMP"
+				#echo "In $onelib :"
+				#echo "$XXX"
+				#exit
+				#echo "----"
+				#echo "$XXX" | /usr/bin/grep -v "libgdk-"
+				ZZZ="$XXX"
+				for one_ignore in $IGNORE_MISSING; do
+					ZZZ=`echo "$ZZZ" | grep -v "$one_ignore"`
+					#echo "----"
+					#echo $ZZZ
+				done
+				
+				if test "$ZZZ" != ""; then 
+					echo "In $onelib :"
+					echo "$ZZZ"
+					MISSING_FILE=`echo $ZZZ | awk '{print $5}'`
+					#echo $MISSING_FILE
+					#exit 1
+					
+					IS_IN_SETUP=`grep --word-regexp $MISSING_FILE $AUBITDIR_SRC/etc/aubit-rpm.spec`
+					if test "$IS_IN_SETUP" != ""; then 
+						echo "Allready in installer:"
+						echo "$IS_IN_SETUP"
+					else
+						echo "Not found in aubit-rpm.spec"
+						HAVE_MISSING=1
+						if test "$SEARCH_FOR_MISSING" = "1"; then 
+							for an_path in $SEARCH_PATHS; do
+								GOT_IT=`find $an_path -name $MISSING_FILE`
+								if test "$GOT_IT" != ""; then 
+									echo "Found it: $GOT_IT"
+									break
+								fi
+							done
+						fi
+					fi
+				fi
+			fi
+		done
+		#ldconfig
+		echo "LD_LIBRARY_PATH was: '$LD_LIBRARY_PATH'"
+		echo "Paths searched for missing files: '$SEARCH_PATHS'"
+		if test "$HAVE_MISSING" = "1"; then
+			if test "$IGNORE_MISSING_DEPS" = "1"; then 
+				echo "One or more missing dependecy - IGNORED."
+			else
+				echo "One or more missing dependecy. STOP."
+				exit 1
+			fi
+		else
+			echo "OK: No missing dependencies detected."
+			exit 0
+		fi	
+	else
 		#Check libs built on Windows for dependencies we should include in installer
 		#ALL_LIBS="libMENU_GENERIC.dll"
 		#ALL_LIBS="libLOGREP_PDF.so"
@@ -891,6 +989,153 @@ do
 			echo "OK: No missing dependencies detected."
 			exit 0
 		fi
+	fi
+	exit 0
+		;;
+		
+	-chk-install)
+		#Check is we installed everything we should
+		
+		ALLDIRS="bin docs etc etc/import etc/config etc/convertsql \
+			incl tools/test tools/test/gui lib ."
+		
+		#Files to ignore - not needed in binary installation
+		IGNORE_LIST="xgen .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
+			-strip .err .warn asql .#* adbload.4ae \
+			manaual_to-do.txt ~ .bak .BAK Makefile-install \
+			aubit-InnoSetup.is* aubit-rpm.spe* aubitrc.in aubitrc \
+			aubitbuild.cro* Makefile-commo* lib/reflection.c lib/Makefile \
+			.out .glb .ao .4pe.dat .xpm .tar.gz .tgz .log noddy.txt .html .htm\
+			aubit4glsrc-*.txt configure.in .tmp .status \
+			BUGS.txt .m4 .mja todo todo.done "
+
+		
+		#Directories to ignore:
+		IGNORE_LIST="$IGNORE_LIST \
+			lib/libaubit4gl lib/libesql lib/libexdata lib/libform lib/libgui \
+			lib/libhelp lib/libincl lib/liblex lib/liblogical lib/libmenu \
+			lib/libmsg lib/libpacker lib/libpdf lib/librpc lib/libsql lib/libtui \
+			lib/libui lib/resource lib/swig lib/windows lib/libsqlparse CVS \
+			doxy debian incl/compat \
+			lib/bin lib/data lib/extra_libs lib/generated \
+			tools/test/ace tools/test/db tools/test/altris \
+			tools/test/keys tools/test/lang tools/test/parser_bugs \
+			tools/test/regression tools/test/xml \
+			glade help libltdl libtool trace cint common compilers"
+			
+		#tools/test files to ignore
+		IGNORE_LIST="$IGNORE_LIST \
+			tools/test/Makefile.in \
+			tools/test/helptest.4gl tools/test/make.bat tools/test/random.4gl \
+			tools/test/sok_microban.4gl tools/test/sokoban.4gl tools/test/sol.4gl \
+			tools/test/test_msgresp.4gl tools/test/conv_report.4gl \
+			tools/test/*.c tools/test/*.h tools/test/test_build \
+			tools/test/gui/Makefile.in tools/test/gui/list.per "
+			
+		#Header file to ignore - not needed in binary installation
+		IGNORE_LIST="$IGNORE_LIST \
+			incl/a4gl_incl_config.h incl/a4gl_esql_querix.h \
+			incl/a4gl_esql_sap.h incl/a4gl_incl_config.h.in \
+			incl/a4gl_sql.h incl/a4gl_API_esql_lib.h \
+			incl/a4gl_API_help_lib.h incl/a4gl_API_menu_lib.h \
+			incl/a4gl_API_packer_lib.h incl/a4gl_API_form_lib.h \
+			incl/a4gl_API_msg_lib.h incl/a4gl_API_ui_lib.h \
+			incl/a4gl_API_sqlparse_lib.h incl/API_lex.h \
+			incl/a4gl_API_sql_lib.h incl/a4gl_API_rpc_lib.h \
+			incl/a4gl_API_exreport_lib.h incl/stamp-h"
+			
+			
+		#FIXME: etc/Makefile-install SHOULD be installed since it contains
+		#third-party installation scripts!
+		if test "$COMSPEC" = ""; then 
+			IGNORE_LIST="$IGNORE_LIST README-Windows.txt"
+		fi
+		#NOTE: asql is a link
+		#adbload is experimental
+		#aubitrc is aubitrc-bin.in
+				
+		cd $AUBITDIR_SRC
+		for an_dir in $ALLDIRS; do
+			THIS_FILELIST=`find $an_dir -maxdepth 1`
+			ALL_FILELIST="$ALL_FILELIST $THIS_FILELIST"
+		done
+		
+		#echo $ALL_FILELIST 
+		
+		cd $AUBITDIR
+		for an_file in $ALL_FILELIST; do
+			an_file=`echo "$an_file" | sed -e "s/^\.\///"`
+			#case $an_file in *README*) 
+			#	echo "got $an_file" 
+			#;; esac
+		
+			ls $an_file > /dev/null 2>&1
+			RET=$?
+			if test "$RET" != "0"; then
+				IGNORE_IT=0
+				for ignore_file in $IGNORE_LIST; do
+					case $an_file in *$ignore_file) IGNORE_IT=1; break ;; esac
+				done
+				if test "$IGNORE_IT" = "0"; then 
+					echo "Missing $an_file"
+					HAVE_MISSING=1
+					#exit 2
+				fi
+			else
+				IS_INSTALLED_LIST="$IS_INSTALLED_LIST $an_file"
+			fi
+		done
+		if test "$HAVE_MISSING" = "1"; then 
+			exit 5
+		else
+			HAVE_UNEXPECTED=0
+			#Now we know that all files from source code tree directories
+			#we checked ended up in binary installation, minus the ones we 
+			#know should not be installed
+			echo "all files installed as expected"
+			#echo "$IS_INSTALLED_LIST"
+			#exit
+			#List of files we know that will appear in installed bindir,
+			#that are not in places we check for, or are renamed, or
+			#can appear in binary tree for other reasons
+			IGNORE_INSTALLED="4GL_metrics.cgi aubitrc-bin.in .tgz /CVS/*" 
+			
+			cd $AUBITDIR
+			INSTALLED_FILELIST=`find`
+			for installed_file in $INSTALLED_FILELIST; do
+				installed_file=`echo "$installed_file" | sed -e "s/^\.\///"`
+				if test "$installed_file" = "." \
+					-o "$installed_file" = "tools"; then 
+					continue
+				fi
+				#echo "checking $installed_file"
+				HAVE_IT=0
+				for an_file in $IS_INSTALLED_LIST; do
+					#case $an_file in *$installed_file) HAVE_IT=1; break ;; esac
+					case $installed_file in *$an_file) HAVE_IT=1; break ;; esac
+				done
+				if test "$HAVE_IT" = "0"; then 
+					for to_ignore_file in $IGNORE_INSTALLED; do
+ 						case $installed_file in *$to_ignore_file) HAVE_IT=1; break ;; esac
+					done
+					if test "$HAVE_IT" = "0"; then
+						echo "File $installed_file is installed, but is not in 'to install' list"
+						HAVE_UNEXPECTED=1
+						#ls $AUBITDIR$installed_file
+						#ls $AUBITDIR_SRC$installed_file
+						#exit 4
+					fi
+				fi
+			done
+			if test "$HAVE_UNEXPECTED" != "1"; then
+				echo "All files installed are expected"
+				exit 0
+			else
+				echo "Some files installed are not expected there"
+				exit 2
+			fi
+		fi
+		exit 0
 		;;
    -dups)
 		#list all duplicated files in tree below current location

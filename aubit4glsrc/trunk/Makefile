@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2004-12-22 11:20:24 afalout Exp $
+# $Id: Makefile,v 1.5 2004-12-25 00:31:31 afalout Exp $
 #
 
 ## ==================================================================
@@ -606,11 +606,18 @@ endif
 	@echo "| Aubit compiler installed to $(INSTALL_DIR)"
 	@echo "| You can test the installation by executing:                        |"
 	@echo "| cd $(INSTALL_DIR)/tools/test; make  "
+	@echo "| You can check that all got installed with 'make install.check'     |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
 	@echo " "
 
+########################
+#Check that 'make install' installed everything we expect, and not things
+#we dont expect/want:
+install.check:
+	${SH} bin/4glpc.obsolete -chk-install
+	
 #install compiler core files
 install.core: install.tree
 	${CP} $(TOBIN) $(BIN_DEST)
@@ -781,9 +788,12 @@ endif
 
 rpm.build: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
 rpm.build: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
-rpm.build:
+rpm.build: rpm.check
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
 #build it, and only then make src and bin RPM
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Building RPM packages...                                           |"
+	@echo "+--------------------------------------------------------------------+"
 ifeq "${RPM}" "new"
 	${RM} ${SRCTMP}
 	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
@@ -819,21 +829,77 @@ endif
 		echo "use RPM=new on make line to force refresh"; \
 	fi
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
-	@echo "Created files:"
-	@echo "${RPMBUILDROOT}/SRPMS/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm"
-	@echo "${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm"
-	@echo "'make rpm' successfull, see rpmbuild.log for details"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Created files:                                                     |"
+	@echo "| ${RPMBUILDROOT}/SRPMS/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm"
+	@echo "| ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm"
+	@echo "| 'make rpm' successfull, see rpmbuild.log for details               |"
+	@echo "+--------------------------------------------------------------------+"
 
-rpm.check:
+rpm.check: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
+rpm.check: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
+rpm.check: rpm.check.deps
 #      -bl    Do  a  "list check".  The "%files" section from the
 #              spec file is macro expanded, and checks are made to
 #              verify that each file exists.
 #      --nobuild
 #              Do not execute any build stages. Useful for testing
 #              out spec files.
+#	./config.status --file etc/aubit-rpm.spec
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Testing RPM config file (${RPMCONFFILE})"
+	@echo "+--------------------------------------------------------------------+"
+	@if [ ! -f ${SRCTMP} ]; then touch ${SRCTMP}; touch /tmp/fakesrctmp; fi
 	rpm -bl ${RPMCONFFILE}
+	@if [ -f /tmp/fakesrctmp ]; then rm -f ${SRCTMP}; rm -f /tmp/fakesrctmp; fi
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| RPM config file (${RPMCONFFILE}) tested OK"
+	@echo "+--------------------------------------------------------------------+"
 	
 	
+rpm.check.deps:
+#Not sure this makes any senese on Linux - since I did not find a way to disable
+#ldconfing cache or DT_RPATH/DT_RUNPATH, it will esentially just tell us which
+#libraries we used to link Aubit stuff are not in ld.so.conf, since only thing I can 
+#disable is LD_LIBRARY_PATH. Bastard is even smart enough to find libraries I 
+#intentionally renamed...
+	export MAKINGAUBIT=0; export IGNORE_MISSING_DEPS=1; ${SH} bin/4glpc.obsolete -deps
+	
+#Install created binary RPM and check it against binary installation 
+#created with 'make install' for consistency:
+rpm.test:
+#       --badreloc
+#              Used  with  --relocate,  permit  relocations on all
+#              file paths, not just those  OLDPATH's  included  in
+#              the binary package relocation hint(s).
+#      --noscripts        --nopre        --nopost        --nopreun        --nopostun
+#       --prefix NEWPATH
+#              For relocateable  binary  packages,  translate  all
+#              file  paths that start with the installation prefix
+#              in the package relocation hint(s) to NEWPATH.
+
+#       --relocate OLDPATH=NEWPATH
+#              For relocatable binary packages, translate all file
+#              paths  that start with OLDPATH in the package relo­
+#              cation hint(s) to NEWPATH.  This option can be used
+#              repeatedly  if several OLDPATH's in the package are
+#              to be relocated.
+
+	rpm --install
+
+eee:
+	rpm -qpil ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+#or `less /path/to/package/intel-mkl_p-5.1-2.i386.rpm`.
+#This will list all the info and files in the package.
+#It will tell you if you can relocate the files.	
+	
+	rpm -qp --queryformat "%{defaultprefix\}\n" ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+#If the package is not relocatable, you'll only see the word (none). If, on the 
+#other hand, the command displays a path, that means the package is relocatable. 
+#Unless specified otherwise, every file in the package will be installed 
+#somewhere below the path specified by the default prefix. 
+
+
 #automatically create .spec file for RPM build:
 etc/aubit-auto.spec: aubit4gl.lsm
 	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
