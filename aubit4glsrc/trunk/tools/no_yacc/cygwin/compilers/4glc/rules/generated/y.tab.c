@@ -17172,7 +17172,7 @@ print_report_ctrl();
   case 1333:
 #line 7443 "fgl.yacc"
     { 
-		strcpy(yyval.str,""); /* strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o'))); */ 
+		strcpy(yyval.str,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
 		}
     break;
 
@@ -21015,7 +21015,7 @@ print_undo_use(yyvsp[-2].str);
 			 add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
 		yyval.sql_string=make_sql_string_and_free(strdup("SET ("),strdup(yyvsp[-5].str),strdup(")=("),yyvsp[-1].sql_string,kw_cb,0);
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
 			yyval.sql_string=strdup(fix_update_expr(0)); 
 			ansi_violation("Update (..)=(..)",0);
 		}  else {

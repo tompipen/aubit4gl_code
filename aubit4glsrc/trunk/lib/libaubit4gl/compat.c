@@ -243,10 +243,12 @@ void popdec_aubit (fgldecimal *x) {
 void popdtime(void* vx);
 void retdtime(void* vx);
 void retdec(void* vx);
+void popdec(void* vx);
 
 void popdtime(void* vx) { popdtime_native(vx); }
 void retdtime(void* vx) { retdtime_native(vx); }
 void retdec(void* vx)   { retdec_native(vx); }
+void popdec(void* vx)   { popdec_native(vx); }
 
 
 void
