@@ -29,7 +29,7 @@ int A4GL_LL_set_new_page(void *field,int n) ;
 void A4GL_LL_set_field_userptr (void *field, void *ptr) ;
 void *A4GL_LL_get_field_userptr (void *field) ;
 void A4GL_LL_set_field_attr ( void *field) ;
-void *A4GL_LL_new_form(void **fields) ;
+void *A4GL_LL_new_form(void *formdets) ;
 void A4GL_LL_set_form_userptr(void *form,void *data) ;
 void *A4GL_LL_get_form_userptr(void *form) ;
 char *A4GL_LL_field_buffer(void *field,int n) ;

@@ -1325,7 +1325,7 @@ UILIB_A4GL_read_fields (void *formdetsv)
 	}
     }
   A4GL_debug ("formdets->form_fields=%p", formdets->form_fields);
-  formdets->form = A4GL_LL_new_form (formdets->form_fields);
+  formdets->form = A4GL_LL_new_form ((void *)formdets);
   if (formdets->form == 0)
     {
       A4GL_exitwith ("Failed to create the loaded the form");

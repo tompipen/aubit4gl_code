@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.70 2004-01-04 15:52:40 mikeaubury Exp $
+# $Id: esql.ec,v 1.71 2004-01-12 21:37:19 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.70 2004-01-04 15:52:40 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.71 2004-01-12 21:37:19 mikeaubury Exp $";
 #endif
 
 
@@ -2675,7 +2675,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
   int numberOfColumns;
-  int MaxColumns = 254;		//we will be able to process tables with maximum 254 columns
+  int MaxColumns = 1024;		//we will be able to process tables with maximum 254 columns
   EXEC SQL END DECLARE SECTION;
 
   sprintf (strSelect, "select * from %s\n", tabname);

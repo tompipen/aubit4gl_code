@@ -146,6 +146,9 @@ fgl_funcs :
 	| KW_A_PUSH_CHAR '(' variable ')' {
 			add_push_charv($<e>3);
 	}
+	| KW_A_PUSH_CHAR '(' op_expr_list ')' {
+		add_call($<str>1,$<e>3);
+	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
 			add_chk_err($<e>3->param_u.n);
 	}
@@ -331,10 +334,7 @@ set: '=' set_internal {
 set_internal: 
 	  expr {$<e>$=$<e>1;}
 	| '{' s_expr_list '}' { $<e>$=$<e>2; }
-	| '{' '}' { 
-		$<e>$=malloc(sizeof(struct param));
-		$<e>$->param_type=PARAM_TYPE_EMPTY;
- 	}
+	| '{' '}' { $<e>$=malloc(sizeof(struct param)); $<e>$->param_type=PARAM_TYPE_EMPTY; }
 	;
 
 s_expr_list : set_internal {$<e>$=new_param_list($<e>1);}

@@ -1142,9 +1142,12 @@ A4GL_LL_set_field_attr (void *field)
 
 
 void *
-A4GL_LL_new_form (void **fields)
+A4GL_LL_new_form (void *vfd)
 {
-  return new_form ((FIELD **) fields);
+struct s_form_dets *fd;
+fd=vfd;
+
+  return new_form ((FIELD **) fd->form_fields);
 }
 
 void
@@ -1908,21 +1911,19 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
       A4GL_debug ("AP...");
       if (strlen (promptstr))
 	{
-	  A4GL_LL_set_field_fore (sarr[0],
-				  A4GL_LL_decode_aubit_attr (ap, 'f'));
+	  A4GL_LL_set_field_fore (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
 	  A4GL_LL_set_field_back (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'b'));	// maybe need 'B' for whole field..
 	}
     }
 
-  A4GL_LL_set_field_back (prompt->field, A4GL_LL_colour_code (0));
-  A4GL_LL_set_field_fore (prompt->field, A4GL_LL_colour_code (7));
+  //A4GL_LL_set_field_back (prompt->field, A4GL_LL_colour_code (0));
+  //A4GL_LL_set_field_fore (prompt->field, A4GL_LL_colour_code (7));
 
   if (af)
     {
-      A4GL_debug ("AF...");
-      A4GL_LL_set_field_back (prompt->field,
-			      A4GL_LL_decode_aubit_attr (af, 'f'));
-      A4GL_LL_set_field_fore (prompt->field, A4GL_LL_decode_aubit_attr (af, 'b'));	// maybe need 'B' for whole field..
+      A4GL_debug ("AF... %d",af);
+      A4GL_LL_set_field_back (prompt->field, A4GL_LL_decode_aubit_attr (af, 'b'));
+      A4GL_LL_set_field_fore (prompt->field, A4GL_LL_decode_aubit_attr (af, 'f'));	// maybe need 'B' for whole field..
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
 	  A4GL_debug ("Invisible");
@@ -1943,7 +1944,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   A4GL_debug ("Made fields");
 
-  f = A4GL_LL_new_form (sarr);
+  f = new_form ((FIELD **) &sarr);
   A4GL_debug ("Form f = %p", f);
   prompt->f = f;
   A4GLSQL_set_status (0, 0);

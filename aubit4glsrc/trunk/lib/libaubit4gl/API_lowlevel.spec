@@ -84,7 +84,7 @@ A4GL_LL_make_window_top void* w -> void
 A4GL_LL_move_window void* w int y int x -> void
 
 /* void* A4GL_LL_new_form void* *fields */
-A4GL_LL_new_form void** fields -> void*
+A4GL_LL_new_form void* formdets -> void*
 
 /* void A4GL_LL_out_linemode char* s */
 A4GL_LL_out_linemode char* s -> void

@@ -1249,10 +1249,11 @@ int
   char *promptstr;
   int promptline;
   struct s_prompt *prompt;
-  void *sarr[3];
+  //void *sarr[3];
   void *p;
   void *d;
   void *cw;
+  struct s_form_dets fd;
   struct s_a4gl_gtk_form *f;
   int width;
   char buff[300];
@@ -1303,6 +1304,7 @@ int
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
+  memset(&fd,0,sizeof(struct s_form_dets));
 
 
 
@@ -1310,10 +1312,10 @@ int
     {
 	GtkWidget *evt;
 	evt=gtk_event_box_new();
-      	sarr[field_cnt++] = (void *) A4GL_LL_make_label (0, 0, promptstr);
-	gtk_container_add(GTK_CONTAINER(evt),sarr[field_cnt-1]);
+      	fd.form_fields[field_cnt++] = (void *) A4GL_LL_make_label (0, 0, promptstr);
+	gtk_container_add(GTK_CONTAINER(evt),fd.form_fields[field_cnt-1]);
 	gtk_widget_show(evt);
-	gtk_misc_set_alignment(GTK_MISC(sarr[field_cnt-1]), 0.0f, 0.5f);
+	gtk_misc_set_alignment(GTK_MISC(fd.form_fields[field_cnt-1]), 0.0f, 0.5f);
       	gtk_fixed_put (GTK_FIXED (p), evt,  0,0);
   	ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
   	if (ap)
@@ -1323,29 +1325,29 @@ int
         {
 	  //printf("Setting attributes for prompt string %x %x\n",A4GL_LL_decode_aubit_attr (ap, 'f')>>8, A4GL_LL_decode_aubit_attr (ap, 'b')>>8);
 //printf("SET FIELD FORE 4\n");
-          A4GL_LL_set_field_fore (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
+          A4GL_LL_set_field_fore (fd.form_fields[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
           A4GL_LL_set_field_back (evt, A4GL_LL_decode_aubit_attr (ap, 'b'));        
         }
     }
 
     }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  A4GL_LL_set_new_page (sarr[field_cnt - 1], 1);
-  sarr[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width - 1);
-  gtk_fixed_put (GTK_FIXED (p), sarr[field_cnt-1],  (strlen(promptstr)+1)*gui_xwidth,0);
-  prompt->field = sarr[field_cnt - 1];
+  A4GL_LL_set_new_page (fd.form_fields[field_cnt - 1], 1);
+  fd.form_fields[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width - 1);
+  gtk_fixed_put (GTK_FIXED (p), fd.form_fields[field_cnt-1],  (strlen(promptstr)+1)*gui_xwidth,0);
+  prompt->field = fd.form_fields[field_cnt - 1];
 
-  sarr[field_cnt++] = 0;        /* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
+  fd.form_fields[field_cnt++] = 0;        /* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
   for (a=0;a<field_cnt;a++) {
-		if (sarr[a]) gtk_widget_show(GTK_WIDGET(sarr[a]));
+		if (fd.form_fields[a]) gtk_widget_show(GTK_WIDGET(fd.form_fields[a]));
   }
 
   
-  /* set_field_pad(sarr[1],' '); */
+  /* set_field_pad(fd.form_fields[1],' '); */
   A4GL_debug ("set field to =%p", prompt->field);
   A4GL_debug ("Field=%p", prompt->field);
 
-  /* A4GL_default_attributes (sarr[0], 0); */
+  /* A4GL_default_attributes (fd.form_fields[0], 0); */
 
   A4GL_default_attributes (prompt->field, 0);
   A4GL_debug ("STATIC OFF");
@@ -1380,11 +1382,10 @@ int
   A4GL_LL_set_field_buffer (prompt->field, 0, buff);
   A4GL_debug ("Set buffer ");
 
-  //sarr[2] = 0;
+  //fd.form_fields[2] = 0;
 
   A4GL_debug ("Made fields");
-
-  f = A4GL_LL_new_form (sarr);
+  f = A4GL_LL_new_form (&fd);
   f->currentfield=f->nwidgets-1;
   A4GL_debug ("Form f = %p", f);
   prompt->f = f;
@@ -1898,9 +1899,11 @@ void A4GL_LL_set_form_page(void* vform,int page) {
 struct s_a4gl_gtk_form *form;
 }
 
-void* A4GL_LL_new_form(void** fields) {
+void* A4GL_LL_new_form(void* vfd) {
+struct s_form_dets *fd;
 struct s_a4gl_gtk_form *form;
 int a;
+
 /*
         int nwidgets;
         int npages;
@@ -1911,7 +1914,7 @@ int a;
         void *userptr;
 */
 
-
+fd=vfd;
 form=malloc(sizeof(struct s_a4gl_gtk_form));
 
 /* Set everything up.. */
@@ -1926,8 +1929,8 @@ form->notebook=0;
 form->userptr=0;
 
 
-for (a=0;fields[a];a++)  {
-	if (gtk_object_get_data(GTK_OBJECT(fields[a]),"NEWPAGE")) form->npages++;
+for (a=0;fd->form_fields[a];a++)  {
+	if (gtk_object_get_data(GTK_OBJECT(fd->form_fields[a]),"NEWPAGE")) form->npages++;
 }
 
 //printf("%d widgets detected on %d pages\n",a,form->npages);
@@ -1941,8 +1944,8 @@ if (form->npages>1) {
 }
 
 printf("Making form\n");
-for (a=0;fields[a];a++)  {
-	form->widgets[a]=fields[a];
+for (a=0;fd->form_fields[a];a++)  {
+	form->widgets[a]=fd->form_fields[a];
 }
 return form;
 }
