@@ -938,7 +938,9 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 		printc(");");
 			
 	}
-	printc("}");
+	if (file[0]!='"') {
+		printc("}");
+	}
   } else {
   	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
   }
