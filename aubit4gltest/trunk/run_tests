@@ -2595,9 +2595,19 @@ do
 		; then
 		SQL_FEATURES_DUMPFILE="$CURR_DIR/$TEST_NO/sql_features"
 		if test -f "$SQL_FEATURES_DUMPFILE" ; then
-			cat "$SQL_FEATURES_DUMPFILE"
+			SQL_FEATURES_USED_4GLC=`cat "$SQL_FEATURES_DUMPFILE"`
+			#get rid of the newline:
+			SQL_FEATURES_USED_4GLC=`echo "$SQL_FEATURES_USED_4GLC" | tr "\n" " "`
+			#SQL_FEATURES_COMPATIBLE=""
+			
+			if test "$RUN_ONE" != ""; then
+				echo "DB features (makefile) :$SQL_FEATURES_USED" 
+				echo "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+			fi
 		else
-			echo "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
+			if test "$RUN_ONE" != ""; then
+				echo "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
+			fi
 		fi
 	fi
 	
