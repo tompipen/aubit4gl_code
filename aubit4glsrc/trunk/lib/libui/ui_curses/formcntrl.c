@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.54 2004-05-12 08:15:59 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.55 2004-05-21 13:26:33 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.54 2004-05-12 08:15:59 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.55 2004-05-21 13:26:33 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -69,6 +69,7 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 int A4GL_conversion_ok(int);
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current(void *form);
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 
 /*
 =====================================================================
@@ -253,7 +254,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f)
       || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
     {
       int dir = 0;
@@ -274,7 +275,9 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 	  next_field = sio->field_list[attrib];
 	  f = (struct struct_scr_field *) (field_userptr (next_field));
 
-	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+	  if (
+	  A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f)
+	  
 	      || (f->datatype == DTYPE_SERIAL))
 	    {
 	      attrib += dir;
@@ -701,14 +704,14 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 		      if (picture[a] == 'A')
 			{
-			  if (!isalpha (ptr[a]))
+			  if (!isalpha ((int)ptr[a]))
 			    ptr[a] = ' ';
 			  continue;
 			}
 
 		      if (picture[a] == '#')
 			{
-			  if (!isdigit (ptr[a]))
+			  if (!isdigit ((int)ptr[a]))
 			    ptr[a] = ' ';
 			  continue;
 			}
@@ -1630,4 +1633,15 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
       if (strcmp(siotype, "s_screenio")==0) {
       }
 
+}
+
+
+
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
+	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) return 1;
+// It would appear that the NOUPDATE allows entry to a field on a 'construct' but not
+// an input...
+	if (doing_construct) return 0;
+	if (A4GL_has_bool_attribute (f, FA_B_NOUPDATE)) return 1;
+	return 0;
 }

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.96 2004-05-12 08:15:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.97 2004-05-21 13:26:33 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.96 2004-05-12 08:15:59 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.97 2004-05-21 13:26:33 mikeaubury Exp $";
 /**
  * @file
  *
@@ -46,6 +46,7 @@ static char *module_id="$Id: ioform.c,v 1.96 2004-05-12 08:15:59 mikeaubury Exp 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 static void chk_for_picture(FIELD *f,char *buff) ;
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 
 /*
 =====================================================================
@@ -566,13 +567,20 @@ A4GL_set_field_attr (FIELD * field)
 
     }
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+  if (A4GL_field_is_noentry(0,f))
     {
         A4GL_debug ("No entry");
-	A4GL_debug("ZZZZ - SET OPTS");
-        field_opts_off (field, O_ACTIVE);
-        field_opts_off (field, O_EDIT);
+	A4GL_debug("ZZZZ - SET OPTS - DISABLE ::::::::::::::::::::::::::::::::::::::::::::;;;");
+	A4GL_debug("removed- this may cause problems.....");
+
+
+	// Removed these - I think they are obsolete....
+	// 21/05/2004  MJA
+        //field_opts_off (field, O_ACTIVE);
+        //field_opts_off (field, O_EDIT);
     }
+
+
 
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
@@ -1296,7 +1304,7 @@ A4GL_turn_field_on (FIELD * f)
   int a;
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
-		A4GL_debug("ZZZZ - SET OPTS");
+  A4GL_debug("ZZZZ - SET OPTS");
   a = field_opts_on (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
   a = field_opts_on (f, O_EDIT);
@@ -3645,7 +3653,11 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
 
       fprop = (struct struct_scr_field *) (field_userptr (s->field_list[a]));
 
-      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) || (fprop->datatype==DTYPE_SERIAL && s->mode != MODE_CONSTRUCT) )
+      if (!
+      
+      A4GL_field_is_noentry((s->mode == MODE_CONSTRUCT),fprop)
+      
+      || (fprop->datatype==DTYPE_SERIAL && s->mode != MODE_CONSTRUCT) )
 	{
 	  A4GL_debug ("Field is not noentry");
 	  last_usable = a;
