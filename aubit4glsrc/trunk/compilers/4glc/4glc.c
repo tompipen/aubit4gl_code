@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.3 2001-08-30 18:55:47 mikeaubury Exp $
+/* $Id: 4glc.c,v 1.4 2001-08-31 18:22:31 mikeaubury Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -25,6 +25,7 @@ char errbuff[1024] = "";
 FILE *mja_fopen (char *, char *);
 #include "../../lib/libincl/pointers.h"
 
+int globals_only=0;
 
 int lineno = 1;
 
@@ -61,6 +62,7 @@ main (argc, argv)
   char c[128];
   int x;
   FILE *fopn;
+  int fname_arg_no=1;
   init_states ();
 
   yydebug=0;
@@ -68,7 +70,12 @@ main (argc, argv)
   if (argc > 1)
     {
 
-      check_and_show_id ("4GL Compiler", argv[1]);
+      if (strcmp(argv[1],"-G")==0) {
+		globals_only=1;
+		fname_arg_no=2;
+      }
+
+      check_and_show_id ("4GL Compiler", argv[fname_arg_no]);
 
       outputfilename = outputfile;
 
@@ -83,7 +90,7 @@ main (argc, argv)
 	  yydebug = 0;
 	}
 
-      strcpy (c, argv[1]);
+      strcpy (c, argv[fname_arg_no]);
       bname (c, a, b);
 //printf("Split it\n");
       if (b[0] == 0)
@@ -221,4 +228,10 @@ adderr (s, p, q)
      char *q;
 {
   sprintf (errbuff, s, p, q);
+}
+
+
+only_doing_globals() {
+	if (globals_only) return 1;
+	return 0;
 }

@@ -115,7 +115,7 @@ NOT fgl_expr_c {
 ;
 
 initial_expr: 
-int_sign NUMBER_VALUE 
+int_sign real_number 
 {
         debug("init expr %s %s",$<str>1,$<str>2);
         sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
@@ -137,7 +137,7 @@ CHAR_VALUE  {
 sprintf($<str>$,"push_char(%s);",$<str>1);
 inc_counter();
 }
-| NUMBER_VALUE 
+| real_number 
 {
 sprintf($<str>$,"push_double((double)%s);",$<str>1);
 inc_counter();

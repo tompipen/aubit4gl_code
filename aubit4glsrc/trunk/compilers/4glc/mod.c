@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.1.1.1 2001-08-20 02:35:38 afalout Exp $
+* $Id: mod.c,v 1.2 2001-08-31 18:22:31 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.1.1.1  2001/08/20 02:35:38  afalout
+*	Initial import to SF
+*	
 *	Revision 1.12  2001/08/17 10:20:42  maubury
 *	loop updates
 *	
@@ -399,6 +402,7 @@ print_variables (int z)
 	    }
 	}
       dump_gvars ();
+      if (only_doing_globals()) exit(0);
       /*varcnt=0; */
     }
 
@@ -1664,7 +1668,7 @@ open_outfile ()
   openmap (outputfilename);
   //printf ("catting");
   ptr=acl_getenv("NOCFILE");
-  if (ptr!=0) {
+  if (strlen(ptr)) {
 	  if (ptr[0]=='Y'||ptr[0]=='y') {
 		debug(">>> NO C FILES... %s",ptr);
 			return;
@@ -2806,9 +2810,15 @@ char line[256];
   strcat (ii, ".glb");
   f = mja_fopen (ii, "r");
 
+  if (f==0) {
+	debug("Trying to compile globals file");
+	generate_globals_for(ii);
+  	f = mja_fopen (ii, "r");
+  }
+
   if (f == 0)
     {
-      fprintf (stderr, "Couldnt open input file %s\n", ii);
+      fprintf (stderr, "Couldnt open globals file %s\n", ii);
       exit (0);
     }
 
@@ -3895,4 +3905,35 @@ int iscontinuecmd(char *s) {
 
 
 	return 0;
+}
+
+
+generate_globals_for(char *s) {
+char buff[1024];
+char dirname[1024];
+char fname[1024];
+char *ptr;
+char nocfile[256];
+strcpy(buff,s);
+
+if (strchr(buff,'/')) {
+	strcpy(dirname,buff);
+	ptr=strrchr(dirname,'/');
+	*ptr=0;
+	ptr++;
+	strcpy(fname,ptr);
+} else {
+	strcpy(dirname,".");
+	strcpy(fname,buff);
+}
+
+strcpy(nocfile,acl_getenv("NOCFILE"));
+setenv("NOCFILE","Yes",1);
+ptr=strchr(fname,'.');
+*ptr=0;
+debug("Trying to compile globals file %s\n",fname);
+sprintf(buff,"cd %s; 4glc -G %s",dirname,fname);
+system(buff);
+setenv("NOCFILE",nocfile,1);
+
 }

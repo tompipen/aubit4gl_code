@@ -120,3 +120,6 @@ YYERROR;
 };
 
 
+real_number : NUMBER_VALUE | DOT INT_VALUE {
+		sprintf($<str>$,".%s",$<str>2);
+};

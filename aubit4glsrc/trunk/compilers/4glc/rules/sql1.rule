@@ -828,13 +828,13 @@ correlation_name:
 
 literal: CHAR_VALUE {sprintf($<str>$,convstrsql($<str>1));}
 	| NUMERIC
-	| NUMBER_VALUE
+	| real_number
 	| INT_VALUE
-	| PLUS NUMBER_VALUE
+	| PLUS real_number
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	| PLUS INT_VALUE
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| MINUS NUMBER_VALUE
+	| MINUS real_number
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	| MINUS INT_VALUE
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}

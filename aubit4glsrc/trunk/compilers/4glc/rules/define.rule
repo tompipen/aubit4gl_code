@@ -17,7 +17,7 @@ def_part : def_part2 |  def_part COMMA def_part2
 
 def_part2:	 
 CONSTANT identifier op_equal CHAR_VALUE   { add_constant('c',$<str>4,$<str>2); addmap('c',$<str>2,curr_func,yylineno,infilename); }
-| CONSTANT identifier op_equal NUMBER_VALUE { add_constant('f',$<str>4,$<str>2);
+| CONSTANT identifier op_equal real_number { add_constant('f',$<str>4,$<str>2);
 addmap('c',$<str>2,curr_func,yylineno,infilename);
  }
 | CONSTANT identifier op_equal INT_VALUE    { add_constant('i',$<str>4,$<str>2);

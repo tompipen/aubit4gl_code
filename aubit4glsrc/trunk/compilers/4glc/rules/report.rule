@@ -284,7 +284,7 @@ nval: nval_number POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
 	| nval_number        {sprintf($<str>$,"%f",atof($<str>1));} 
 ;
 
-nval_number: NUMBER_VALUE | INT_VALUE
+nval_number: real_number | INT_VALUE
 ;
 
 pdf_op_output_section : | OUTPUT pdf_output_commands ;
