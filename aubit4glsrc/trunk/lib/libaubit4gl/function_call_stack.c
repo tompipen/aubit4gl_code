@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.20 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.21 2005-03-10 10:06:42 mikeaubury Exp $
 #*/
 
 /**
@@ -183,6 +183,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
       	A4GL_debug (" Param %d (%s)", a + 1, params[a]);
 	}
     }
+  A4GL_assertion(functionCallPointer>=MAX_FUNCTION_CALL_STACK,"Function calls too deep (perhaps a missing popFunction ?");
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
