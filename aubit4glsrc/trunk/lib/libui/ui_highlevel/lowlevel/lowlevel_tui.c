@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.20 2004-03-26 11:28:57 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.21 2004-04-02 09:14:12 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -380,7 +380,7 @@ A4GL_debug("CURSES : update");
 }
 
 void
-A4GL_LL_screen_refresh (void)
+A4GL_LL_screen_redraw (void)
 {
 // Blank the screen and redraw from scratch
 A4GL_debug("CURSES : refresh");
@@ -1286,7 +1286,7 @@ PANEL *w;
   A4GL_debug("CURSES : set_carat");
   A4GL_LL_screen_update();
   w = (PANEL *) A4GL_get_currwin ();
-  wrefresh(panel_window(w));
+  //wrefresh(panel_window(w));
 }
 
 
@@ -1858,8 +1858,9 @@ int rblock;
     {
       prompt_last_key = 0;
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
-      A4GL_zrefresh ();
-      wrefresh (p);
+      //A4GL_zrefresh ();
+      //wrefresh (p);
+      A4GL_LL_screen_update();
       A4GL_debug ("Return pressed");
       prompt->mode = 1;
       return 0;
@@ -1875,7 +1876,7 @@ int rblock;
 
 
 
-  wrefresh (p);
+      A4GL_LL_screen_update();
 
   if (prompt->charmode)
     {
@@ -1923,9 +1924,11 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   cw = (void *) A4GL_get_currwin ();
   if (UILIB_A4GL_iscurrborder ())
     promptline++;
-  p =
-    derwin (panel_window (cw), 1, width, promptline - 1,
-	    UILIB_A4GL_iscurrborder ());
+
+
+ A4GL_debug("panel_window (cw)=%d , width=%d, promptline - 1 =%d UILIB_A4GL_iscurrborder ()=%d", panel_window (cw), width, promptline - 1, UILIB_A4GL_iscurrborder ());
+
+  p = derwin (panel_window (cw), 1, width, promptline - 1, UILIB_A4GL_iscurrborder ());
 
 
   if (p == 0)
@@ -1935,7 +1938,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     }
   prompt->win = p;
   buff[width] = 0;
-  wprintw (p, "%s", buff);
+  wprintw (p, "%s", buff); A4GL_LL_screen_update();sleep (1);
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
@@ -1950,11 +1953,10 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     {
       sarr[field_cnt++] = (void *) A4GL_LL_make_label (0, 0, promptstr);
     }
-  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1,
-	      width - 1);
+
+  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
   A4GL_form_set_new_page (sarr[field_cnt - 1], 1);
-  sarr[field_cnt++] =
-    (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width + 1);
+  sarr[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width + 1);
   prompt->field = sarr[field_cnt - 1];
   sarr[field_cnt++] = 0;	/* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
 
@@ -2045,7 +2047,7 @@ static void A4GL_clear_prompt (struct s_prompt *prmt)
 #endif
   p = prmt->win;
   delwin ((WINDOW *) p);
-  A4GL_LL_screen_refresh ();
+  A4GL_LL_screen_update ();
 }
 
 
@@ -2423,5 +2425,33 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
 int A4GL_LL_menu_loop(ACL_Menu *menu) {
 	return -1;
 }
+
+
+
+void
+A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
+{
+  int ch2;
+  int attr;
+  void *p;
+  wchar_t buff[2];
+  attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
+  buff[0]=ch;
+  buff[1]=0;
+
+
+  p = panel_window (win);
+  if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
+    {
+      x--;
+      y--;
+    }
+  if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
+  else {
+		wattrset((WINDOW *)p,attr&0xffffff00);
+		mvwaddwstr(p,  y, x, buff);
+	}
+}
+
 
 

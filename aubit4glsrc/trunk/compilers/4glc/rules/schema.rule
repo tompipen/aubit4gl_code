@@ -3,8 +3,14 @@ drops_cmd : drops_c {
 }
 ;
 
-drops_c : DROP_TABLE table_name {sprintf($<str>$, "%s %s",$<str>1,$<str>2);}
-	| DROP_VIEW table_name {sprintf($<str>$,  "%s %s",$<str>1,$<str>2);}
+drops_c : DROP_TABLE table_name {
+			if (A4GL_isyes(acl_getenv("A4GL_ADD_CASCADE"))) {
+				sprintf($<str>$, "%s %s CASCADE",$<str>1,$<str>2);
+			} else {
+				sprintf($<str>$, "%s %s ",$<str>1,$<str>2);
+			}
+		}
+	| DROP_VIEW table_name {sprintf($<str>$,  "%s %s ",$<str>1,$<str>2);}
 	| DROP_INDEX idx_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 	| DROP_TRIGGER identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;

@@ -31,6 +31,7 @@ extern int colno;
 extern int scr;
 int in_comment;
 long fileseek=0;
+int ltab=0;
 
 dll_import struct_form the_form;
 
@@ -213,16 +214,18 @@ some_text {
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	ltab=0;
 }
-| field  
+| field  { ltab=0; }
 | KW_TAB {
-	if (colno==0) colno=4; 
+	if (colno==0) {colno=4; ltab=1;}
 	else {
 		if (colno==4) {colno=16;}
 		else {
 			colno++;
 			while ((colno%8)!=0) {colno++;}
 		}
+		ltab=0;
 	}
 }
 | GRAPH_CH {
@@ -232,6 +235,7 @@ some_text {
 	colno++;
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	ltab=0;
 } 
 
 | PIPE {
@@ -241,6 +245,7 @@ some_text {
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	ltab=0;
 }
 
 
@@ -249,6 +254,7 @@ some_text {
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	ltab=0;
 } 
 
 | ch_list {
@@ -258,10 +264,19 @@ some_text {
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	ltab=0;
 }  
-| KW_WS {colno++;}
-| KW_NL {colno=0;lineno++;}
-| KW_NONSPACE 
+| KW_WS {
+	if (ltab==1) colno=8;
+	ltab=0;
+	colno++;
+}
+| KW_NL {colno=0;lineno++;
+	ltab=0;
+}
+| KW_NONSPACE  {
+	ltab=0;
+}
 
 
 
@@ -275,44 +290,43 @@ ch_list: CH {strcpy($<str>$,$<str>1);}
 field : 
 OPEN_SQUARE 
 {
+	colno++;
 	fstart=colno;
 	openwith='[';
 }
 field_element 
 CLOSE_SQUARE
 {
+	colno++;
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	if (openwith=='[')
 		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,3,"");
 	else
 		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,2,"");
-};
-
-
-field_element : 
-field_tag_name_scr {
-	strcpy($<str>$,$<str>1);
-} 
-| 
-field_element PIPE  
-{
-	/* 
-field elements = name x y width screen_no endswith'|' 
-*/
-	if (colno>the_form.maxcol) the_form.maxcol=colno; 
-	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	if (openwith=='[')
-		A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,1,"");
-	else
-		A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,0,"");
-	fstart=colno;
-	openwith='|';
 }
-field_tag_name_scr
-{
-	strcpy($<str>$,$<str>4);
-};
+
+
+;
+
+
+field_element : field_tag_name_scr {
+			strcpy($<str>$,$<str>1);
+			} 
+		| field_element PIPE  {
+				/* field elements = name x y width screen_no endswith'|' */
+				if (colno>the_form.maxcol) the_form.maxcol=colno; 
+				if (lineno>the_form.maxline) the_form.maxline=lineno;
+				if (openwith=='[')
+					A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,1,"");
+				else
+					A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,0,"");
+				fstart=colno;
+				openwith='|';
+			} field_tag_name_scr {
+				strcpy($<str>$,$<str>4);
+			}
+;
 
 
 

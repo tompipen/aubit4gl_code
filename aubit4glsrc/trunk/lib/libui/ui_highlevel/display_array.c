@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: display_array.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -444,7 +444,7 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
     {
 
     case 18:
-      A4GL_LL_screen_refresh ();
+      A4GL_LL_screen_redraw ();
       break;
 
 

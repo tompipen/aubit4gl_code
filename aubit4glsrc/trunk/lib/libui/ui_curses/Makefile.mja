@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.mja,v 1.5 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: Makefile.mja,v 1.6 2004-04-02 09:14:10 mikeaubury Exp $
 #
 
 LIBROOT=../..
@@ -40,7 +40,7 @@ include ${ROOT}/incl/Makefile-common
 
 #CFLAGS		+=-I.. -I. -I${ROOT}/incl
 #must be BEFORE system paths:
-CFLAGS		:= ${CFLAGS} -I.. -I. -I${ROOT}/incl
+CFLAGS		:= -I/usr/local/widec/include ${CFLAGS} -I.. -I. -I${ROOT}/incl
 #-I/usr/local/include -I/usr/local/rpc -I/usr/local
 #-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
@@ -78,7 +78,7 @@ ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o array.o i
 
 
 libUI_TUI_s${SO_EXT}: ${ALLOBJ}
-	ld ${SO_LDFLAGS} -o $@ $^  -lform_g -lpanel_g -lncurses_g -L/lib ${LINKLIBS}
+	ld ${SO_LDFLAGS} -o $@ $^ ./libformw_g.a ./libpanelw_g.a ./libncursesw_g.a -L/lib ${LINKLIBS}
 
 ## ==================================================================
 ##                            Sub Targets

@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.8 2004-03-24 19:03:05 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.9 2004-04-02 09:14:11 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -510,7 +510,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
       if (a == 18)
 	{
-	  A4GL_LL_screen_refresh ();
+	  A4GL_LL_screen_redraw ();
 	  continue;
 	}
 

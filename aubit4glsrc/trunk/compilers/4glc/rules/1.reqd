@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.48 2004-03-27 11:10:47 mikeaubury Exp $
+# $Id: 1.reqd,v 1.49 2004-04-02 09:14:09 mikeaubury Exp $
 #
 */
 
@@ -189,6 +189,7 @@ void set_yytext (char *s);
 int isin_command (char *cmd_type);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
+void A4GL_copy_fbind_to_Obind(void);
 struct input_array_attribs curr_input_array_attribs;
 
 int if_print_stack[100][2];

@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.15 2004-03-28 15:34:55 whaslbeck Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.16 2004-04-02 09:14:11 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -993,62 +993,6 @@ int UILIB_A4GLUI_initlib (void)
 }
 
 
-void
-UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
-{
-  int nattr;
-  void *wot;
-  A4GL_debug ("display_internal : %d %d %s %d %d", x, y, s, a, clr_line);
-  A4GL_debug ("determine_attribute seems to be returning %x\n", a);
-
-  if (x == -1 && y == -1)
-    {
-      A4GL_debug ("Line mode display");
-      if (A4GL_isscrmode ())
-	{
-	  A4GL_LL_switch_to_line_mode ();
-	}
-      A4GL_LL_out_linemode (s);
-    }
-  else
-    {
-      int b;
-      A4GL_chkwin ();
-      nattr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, a, 0, 0);
-      a = nattr;
-
-      wot = (void *) A4GL_window_on_top_ign_menu ();
-
-      for (b = 0; b < strlen (s); b++)
-	{
-	  A4GL_LL_wadd_char_xy_col (wot, x, y, (a&0xffffff00) + (s[b]&0xff));
-	  x++;
-	}
-
-      if (clr_line)
-	{
-	  int sl;
-	  char buff[1024];
-	  memset (buff, ' ', 1024);
-	A4GL_debug("strlen=%d",strlen(s));
-	  sl = strlen (s);
-	  sl = A4GL_get_curr_width () - sl;
-	A4GL_debug("sl=%d spaces required",sl);
-	  if (sl >= 0) {
-	    	buff[sl] = 0;
-	  	buff[1023] = 0;
-	  	for (b = 0; b < strlen (buff); b++)
-	    	{
-	      	A4GL_LL_wadd_char_xy_col (wot, x, y, (a&0xffffff00) + (buff[b]&0xff));
-	      	x++;
-	    	}
-		}
-	}
-
-      A4GL_LL_screen_update ();
-    }
-}
-
 
 void
 UILIB_A4GL_gotolinemode ()
@@ -1078,7 +1022,7 @@ UILIB_A4GL_menu_loop_v2 (void *menuv,void *evt)
 
 
 
-
+#ifdef MOVED_TO_WIDTH
 void
 A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 {
@@ -1111,7 +1055,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 */
     }
 }
-
+#endif
 
 
 
@@ -2762,3 +2706,54 @@ A4GL_find_attrib_from_field (struct_form * f, int field_no)
   return -1;
 
 }
+
+
+
+
+void
+UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
+{
+  int nattr;
+  void *wot;
+  A4GL_debug ("display_internal : %d %d %s %d %d", x, y, s, a, clr_line);
+  A4GL_debug ("determine_attribute seems to be returning %x\n", a);
+
+  if (x == -1 && y == -1)
+    {
+      A4GL_debug ("Line mode display");
+      if (A4GL_isscrmode ())
+	{
+	  A4GL_LL_switch_to_line_mode ();
+	}
+      A4GL_LL_out_linemode (s);
+    }
+  else
+    {
+      int b;
+      A4GL_chkwin ();
+      nattr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, a, 0, 0);
+      a = nattr;
+
+      wot = (void *) A4GL_window_on_top_ign_menu ();
+      A4GL_wprintw(wot,a,x,y,"%s",s);
+
+      if (clr_line)
+	{
+	  int sl;
+	  char buff[1024];
+	  memset (buff, ' ', 1024);
+	  A4GL_debug("strlen=%d",strlen(s));
+	  sl = strlen (s);
+	  sl = A4GL_get_curr_width () - sl;
+	  A4GL_debug("sl=%d spaces required",sl);
+	  if (sl >= 0) {
+	    	buff[sl] = 0;
+	  	buff[1023] = 0;
+		A4GL_wprintw(wot,x,y,(a&0xffffff00),buff);
+		}
+	}
+    }
+
+  A4GL_LL_screen_update ();
+}
+

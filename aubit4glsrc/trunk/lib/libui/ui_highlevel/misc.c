@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.13 2004-03-24 19:03:05 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.14 2004-04-02 09:14:11 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1180,7 +1180,7 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
   switch (a)
     {
     case 18:
-      A4GL_LL_screen_refresh ();
+      A4GL_LL_screen_redraw ();
       break;
 
 

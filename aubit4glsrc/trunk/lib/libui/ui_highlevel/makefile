@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.16 2004-03-25 09:16:04 afalout Exp $
+# $Id: makefile,v 1.17 2004-04-02 09:14:11 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -108,7 +108,7 @@ CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} \
 					-I.. -I. -I${ROOT}/incl
 
 ifneq "${HAVE_CURSES}" "0"
-	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT} ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
 else
 	ifneq "${HAVE_PDCURSES}" "0"
 		ALL			+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
@@ -138,7 +138,7 @@ CFLAGS			+=-g -I${ROOT}/incl -I.. -I${LIBROOT}/libaubit4gl
 ##                              Source files
 ## ==================================================================
 
-OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o
+OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o 
 
 ## ==================================================================
 ##                              Targets
@@ -152,14 +152,26 @@ all: ${ALL}
 #	cp *${SO_EXT} ../..
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
+${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
 
-${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
+${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
-${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
+
+${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_wide.o
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw -lncursesw
+
+
+
+${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS}
+
+width_narrow.o: width.c
+	cc -DNO_WIDEC width.c ${CFLAGS} -c -o width_narrow.o
+
+width_wide.o: width.c
+	cc -DWIDEC width.c ${CFLAGS} -c -o width_wide.o
 
 ## ==================================================================
 ##                              Sub-Targets
@@ -197,8 +209,8 @@ menu_gtk.o: lowlevel/menu_gtk.c
 	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I../../../common/dataio -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
 
 #All objects depend on API headers:
-${OBJS}: ${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h ${ROOT}/incl/a4gl_API_menu.h \
-	${ROOT}/incl/a4gl_API_msg.h ${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h a4gl_API_lowlevel.h
+#${OBJS}: ${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h ${ROOT}/incl/a4gl_API_menu.h \
+	#${ROOT}/incl/a4gl_API_msg.h ${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h a4gl_API_lowlevel.h
 
 #Rule to generate API's:
 ${ROOT}/incl/a4gl_API_%.h :

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.171 2004-03-29 09:11:22 mikeaubury Exp $
+# $Id: mod.c,v 1.172 2004-04-02 09:14:06 mikeaubury Exp $
 #
 */
 
@@ -4454,7 +4454,12 @@ static void push_validate_column(char *tabname,char *colname) {
 	/*A4GL_trim(colname);*/
 	strcpy(validate_list[validate_list_cnt-1].tabname,tabname);
 	strcpy(validate_list[validate_list_cnt-1].colname,colname);
+
 	validate_list[validate_list_cnt-1].expr=A4GLSQL_get_validation_expr(tabname,colname);
+	if (validate_list[validate_list_cnt-1].expr==-1) {
+		a4gl_yyerror("Unable to get validation information - does A4GL_SYSCOLVAL exist ?");
+	}
+
 	/*printf("-->%p (%d)\n",validate_list[validate_list_cnt-1].expr,validate_list_cnt-1);*/
 	/*printf("%d elements\n",length_expr(validate_list[validate_list_cnt-1].expr));*/
 	

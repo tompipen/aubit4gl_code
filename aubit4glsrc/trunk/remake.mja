@@ -11,7 +11,8 @@ then
 		cvs -q update -dP
 	fi
 	make cleanall
-	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl
+	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl 
+#--with-curses=/usr/local/widec
 fi
 
 

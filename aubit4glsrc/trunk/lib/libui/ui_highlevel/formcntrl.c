@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.11 2004-04-02 09:14:11 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1352,7 +1352,7 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
   switch (a)
     {
     case 18:
-      A4GL_LL_screen_refresh ();
+      A4GL_LL_screen_redraw ();
 
       break;
 /*

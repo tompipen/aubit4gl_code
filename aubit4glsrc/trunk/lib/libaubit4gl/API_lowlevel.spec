@@ -102,7 +102,7 @@ A4GL_LL_screen_height -> int
 A4GL_LL_screen_mode  -> void
 
 /* void A4GL_LL_screen_refresh void */
-A4GL_LL_screen_refresh  -> void
+A4GL_LL_screen_redraw  -> void
 
 /* void A4GL_LL_screen_update void */
 A4GL_LL_screen_update  -> void
