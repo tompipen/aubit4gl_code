@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.5 2004-12-25 07:42:31 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.6 2004-12-27 10:52:43 afalout Exp $
 #
 
 ########################################################################
@@ -91,6 +91,7 @@ fi
 
 #Find out if we are using MinGW C compiler (If on Windows)
 if [ "$COMSPEC" != "" ]; then
+	SORT="/bin/sort"
     #TMP=`type gcc | grep -i mingw`
 	TMP=`gcc -v 2>&1 | grep -i mingw`
 
@@ -98,6 +99,8 @@ if [ "$COMSPEC" != "" ]; then
         MINGW=1
         CYG_ROOT="D:/cygwin"
     fi
+else
+	SORT="sort"
 fi
 
 	if test "$A4GL_OBJ_EXT" = ""; then 
@@ -676,7 +679,7 @@ do
    -mk_pair)
 		#find all targets created by Amake make files, to detect which make fiels
         #failed to produce resulting target
-		ALL=`find . -name "*.mk" -exec basename {} \; | sort `
+		ALL=`find . -name "*.mk" -exec basename {} \; | $SORT `
 		CNT=0
         CNT2=0
 		############
@@ -711,8 +714,8 @@ do
    -mk_pair2)
 		#find amake makefile pair for each target object (programs and libraries)
         #to detect missing make files
-		ALL=`find . -name "*.4ae" -exec basename {} \; | sort `
-		ALL="$ALL `find . -name "*.aox" -exec basename {} \; | sort `"
+		ALL=`find . -name "*.4ae" -exec basename {} \; | $SORT `
+		ALL="$ALL `find . -name "*.aox" -exec basename {} \; | $SORT `"
 		CNT=0
 		CNT2=0
 		############
@@ -744,8 +747,8 @@ do
 
    -not_mk)
 		#find 4gl source files not referenced in any .mk files
-		ALL4GL=`find . -name "*.4gl" -exec basename {} \; | sort `
-		ALLMK=`find . -name "*.mk" | sort `
+		ALL4GL=`find . -name "*.4gl" -exec basename {} \; | $SORT `
+		ALLMK=`find . -name "*.mk" | $SORT `
 		CNT=0
 		CNT2=0
 		################
@@ -992,6 +995,41 @@ do
 	fi
 	exit 0
 		;;
+		
+	-vnc
+		APP=xclock
+		HOSTNAME="aptiva"
+		VNCDISPLAY="$HOSTNAME:9"
+		VNCPORT=8123
+			Xvnc $VNCDISPLAY -rfbport $VNCPORT &
+			DISPLAY=$VNCDISPLAY; export DISPLAY; $APP &&
+			echo "To connect, use the following in 'vncviewer':"
+			echo "'$HOSTNAME::$VNCPORT'"
+	
+#user$ Xsvc :1 -geometry 200x100 &
+#user$ xeyes -display :1 -geometry 200x100 &
+#and the for testing purposes:
+#user$ vcviewer :1
+#and then I could connect from outside to see only the xeyes (and the X
+#backdrop, that wouldn't be shown if the app were opaque).			
+
+#I guess, however that the option -geometry 200x100 can be passed through
+#the vncserver script (almost sure).- then on the users .vnc directory
+#the file xstartup shuld simply contain:
+
+#xsetroot -solid grey 
+#xeyes -geometry 200x100 &
+
+#this would make it possible the same above but in a more standard manner
+#and with the password checking issues. The first line would also clean
+#the X backdrop into a grey solid state but it is not necessary for
+#opaque apps!.
+
+#NOTE:
+#Dialogs will appear centered on application and WITHOUT borders (a la
+#gdm display chooser configuration...)			
+	;;
+		
 	######################################################################
 	-chk-install)
 		#Check is we installed everything we should
@@ -1021,8 +1059,10 @@ do
 			aubitbuild.cro* Makefile-commo* lib/reflection.c lib/Makefile \
 			.out .glb .ao .c .o .4pe.dat .xpm .zip .tar.gz .tgz .log noddy.txt .html .htm\
 			aubit4glsrc-*.txt configure.in .tmp .status \
-			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h"
+			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h \
+			etc/config/bootstrap etc/config/ltmain.sh"
 
+			
 		#Directories to ignore:
 		IGNORE_LIST="$IGNORE_LIST \
 			lib/libaubit4gl lib/libesql lib/libexdata lib/libform lib/libgui \
@@ -1198,7 +1238,7 @@ do
 		;;
    -dups)
 		#list all duplicated files in tree below current location
-		ALL=`find . -name "*" -exec basename {} \; | sort | uniq -c | grep -v " 1" `
+		ALL=`find . -name "*" -exec basename {} \; | $SORT | uniq -c | grep -v " 1" `
 		CNT=1
 		############
 		for a in $ALL

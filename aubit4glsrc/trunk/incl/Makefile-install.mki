@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.93 2004-12-25 07:42:32 afalout Exp $
+# $Id: Makefile-install.mki,v 1.94 2004-12-27 10:52:44 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -349,21 +349,31 @@ else
 	chmod a+x /etc/cron.daily/
 endif	
 
+#####################################
+#prepare the crontab file to install:
+prepare.crontab.file: OUT2 = ${HOME}/aubitbuild.cron
+prepare.crontab.file:
+	@echo "" > ${OUT2}
+	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
+	@echo "SHELL=${SH}" >> ${OUT2}
+ifdef COMSPEC
+#WATCH OUT FOR UNIX/Windows overwriting each others download page!
+#Start Windows job at 01:00:00 AM  
+	@echo "00 01 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
+else
+#Start Linux job at 06:00:00 AM
+	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
+endif
+	@echo "" >> ${OUT2}
 
 	
 ######################################
 #Put Aubit nihgtly cron script unser daily cron directory
 install.cron: OUT2 = ${HOME}/aubitbuild.cron
-install.cron:
+install.cron: prepare.crontab.file
 ifdef COMSPEC
 #Copy our cron script to cron directory
 	${MAKE} copy.aubitbuild
-#prepare the crontab file to install:
-	@echo "" > ${OUT2}
-	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
-	@echo "SHELL=${SH}" >> ${OUT2}
-	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
-	@echo "" >> ${OUT2}
 #Activate the crontab using prepared crontab script
 	crontab ${OUT2}
 	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"	
@@ -390,7 +400,30 @@ ifdef COMSPEC
 #	mailhub=aptiva
 #	hostname=istation.falout.com
 else
+ifdef USE_DAILY_CRON
+#Just use daily cron job
+#What time does daily cron start? - WATCH OUT FOR UNIX/Windows overwriting each others download page!
+#looks like 04:02 AM?
 	${MAKE} copy.aubitbuild
+else
+#Install out own crontab, so we can set the start time
+#Just in case we forgot it in cron daily scripts directory:
+	${RM} /etc/cron.daily/aubitbuild.cron.sh
+
+#-------------------------------
+#Copy our cron script to cron directory
+	${MAKE} copy.aubitbuild
+#Activate the crontab using prepared crontab script
+	crontab ${OUT2}
+	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"	
+	${MAKE} show.cron
+#We dont want to deinstall as part of install - let user deinstall:	
+#	${MAKE} deinstall.cron
+	${MAKE} show.cron	
+	@echo "Log goes to /var/log/cron.log"
+#-------------------------------
+	
+endif
 endif
 	@echo "aubitbuild cron script installed."
 
@@ -876,6 +909,14 @@ PGIFX_SRC				=postgresql081704
 PGIFX_SRC_GZ			=${PGIFX_SRC}.tar.gz
 PGIFX_INSTPATH			=/opt/pg-ifx/${PGIFX_SRC}
 PGIFX_CTL				=${PGIFX_INSTPATH}/pg-ifx-ctl-${PGIFX_SRC}
+
+
+# 34: LibVNCserver:
+install.libvncserver:
+#CVS modules: libvncserver rdp2vnc vncterm
+#	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/libvncserver login
+	${MKPATH} /tmp/libvncserver
+	cd /tmp/libvncserver; cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/libvncserver co libvncserver
 
 
 ## ==================================================================

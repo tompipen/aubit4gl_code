@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.6 2004-12-25 07:41:22 afalout Exp $
+# $Id: Makefile,v 1.7 2004-12-27 10:52:22 afalout Exp $
 #
 
 ## ==================================================================
@@ -875,7 +875,7 @@ rpm.check: rpm.check.deps
 	@echo "| RPM config file (${RPMCONFFILE}) tested OK"
 	@echo "+--------------------------------------------------------------------+"
 	
-	
+###################
 rpm.check.deps:
 #Not sure this makes any senese on Linux - since I did not find a way to disable
 #ldconfing cache or DT_RPATH/DT_RUNPATH, it will esentially just tell us which
@@ -883,10 +883,13 @@ rpm.check.deps:
 #disable is LD_LIBRARY_PATH. Bastard is even smart enough to find libraries I 
 #intentionally renamed...
 	export MAKINGAUBIT=0; export IGNORE_MISSING_DEPS=1; ${SH} bin/4glpc.obsolete -deps
-	
+
+###################	
 #Install created binary RPM and check it against binary installation 
 #created with 'make install' for consistency:
-rpm.test:
+#rpm.test: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
+rpm.install:
 #       --badreloc
 #              Used  with  --relocate,  permit  relocations on all
 #              file paths, not just those  OLDPATH's  included  in
@@ -903,22 +906,49 @@ rpm.test:
 #              cation hint(s) to NEWPATH.  This option can be used
 #              repeatedly  if several OLDPATH's in the package are
 #              to be relocated.
+	rpm --install --noscripts --prefix /tmp/aubit4gl-rpminstall ${RPM_FILE}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| RPM installed to /tmp/aubit4gl-rpminstall"
+	@echo "+--------------------------------------------------------------------+"
 
-	rpm --install
+#######################
+rpm.deinstall:
+	-rpm --erase --noscripts aubit4gl
+	rm -rf /tmp/aubit4gl-rpminstall	
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| aubit4gl RPM deinstalled"
+	@echo "+--------------------------------------------------------------------+"
 
-eee:
-	rpm -qpil ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
-#or `less /path/to/package/intel-mkl_p-5.1-2.i386.rpm`.
-#This will list all the info and files in the package.
-#It will tell you if you can relocate the files.	
+#######################
+rpm.test.files:
+	export MAKINGAUBIT=0; export INSTALLDIR="/tmp/aubit4gl-rpminstall/aubit4gl" ;${SH} bin/4glpc.obsolete -chk-install
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| RPM files compare test finished"
+	@echo "+--------------------------------------------------------------------+"
+
+#######################
+rpm.test: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| RPM test finished"
+	@echo "+--------------------------------------------------------------------+"
 	
-	rpm -qp --queryformat "%{defaultprefix\}\n" ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+########################	
+#Show info about the RPM package
+#rpm.info: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+rpm.info: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
+rpm.info:
+#This command will show details about RPM and list all files in it
+	rpm -qpil ${RPM_FILE}
+#It will tell you if you can relocate the files.	
+	rpm -qp --queryformat '%{DEFAULTPREFIX}\n' ${RPM_FILE}
+#INSTALLPREFIX displays the prefix under which a package was installed.
+	-rpm -q --queryformat '%{INSTALLPREFIX}\n' aubit4gl
 #If the package is not relocatable, you'll only see the word (none). If, on the 
 #other hand, the command displays a path, that means the package is relocatable. 
 #Unless specified otherwise, every file in the package will be installed 
 #somewhere below the path specified by the default prefix. 
 
-
+######################
 #automatically create .spec file for RPM build:
 etc/aubit-auto.spec: aubit4gl.lsm
 	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
@@ -1213,8 +1243,11 @@ refresh.perl:
 
 #Find c files with same names
 find.dup.c.files:
+ifdef COMSPEC
+	find . -name "*.c" -exec basename {} \; | /bin/sort | uniq -c | grep -v " 1"
+else
 	find . -name "*.c" -exec basename {} \; | sort | uniq -c | grep -v " 1"
-
+endif
 #compile examples and run them
 test.install:
 	(cd $(INSTALL_DIR)/tools/test; ${MAKE}; ./hello; cd gui; ${MAKE}; ./hello_gui)

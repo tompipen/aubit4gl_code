@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.57 2004-12-25 07:42:31 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.58 2004-12-27 10:52:43 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -243,6 +243,7 @@ if ! test -f $the_script ; then
 	fi
 fi
 #Extract the TIMEOUT value out of the script
+#9000 sec=150min=2:30=2,5 hours!!!
 timeout="`grep timeout $the_script | awk '{print $3}'`"
 
 CHECK_SIZE_AFTER_UPLOAD=1
@@ -504,13 +505,39 @@ the_url="$1"
 
 	FILESIZE_SF=`$WGET_SIZE $the_url > $WGET_LOG 2>&1;`
 	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | awk '{print $3}'`
+	if test "$FILESIZE_SF" = ""; then 
+		echo "ERROR: failed to get file size for uploaded file file:"
+		echo "$HTTP_FILE"
+		echo "see $WGET_LOG"
+	else
+		rm -f $WGET_LOG	
+	fi
+}
+
+#############################
+function local_filesize () {
+#############################
+LOCAL_FILE="$1"
+
+	if test "$SH_DEBUG" = "1"; then 
+		echo "Trying to ls: .$LOCAL_FILE."
+	fi
+	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
+	FILESIZE_LOCAL_HUMAN=`ls -alh "$LOCAL_FILE" | awk '{print $5}';`
+	if test "$SH_DEBUG" = "1"; then	
+		echo "xx"
+	fi
+	
+	if test "$FILESIZE_LOCAL" = ""; then 
+		echo "ERROR: failed to get file size for local file:"
+		echo "$LOCAL_FILE"
+	fi
 }
 
 ############################
 function compare_size () {
 ############################
 #Compare file sizes of local and uploaded file on web site. 
-
 UP_FILE="$1"
 LOCAL_FILE="$2"
 UP_URLENCODED="$3"
@@ -522,47 +549,17 @@ SIZE_COMPARES_OK=0
 		HTTP_FILE="$HTTP_FILES_URL/$UP_URLENCODED"
 	fi
 	website_filesize "$HTTP_FILE"
-	FILESIZE_SF=`$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;`
-	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | awk '{print $3}'`
-	if test "$FILESIZE_SF" = ""; then 
-		echo "ERROR: failed to get file size for uploaded file file:"
-		echo "$HTTP_FILE"
-		echo "see $WGET_LOG"
-		COMPARED_OK=0
-		return
-	fi
-	rm -f $WGET_LOG
-	if test "$SH_DEBUG" = "1"; then 
-		echo "Trying to ls: .$LOCAL_FILE."
-	fi
-	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
-	if test "$SH_DEBUG" = "1"; then	
-		echo "xx"
-	fi
-	if test "$FILESIZE_LOCAL" = ""; then 
-		echo "ERROR: failed to get file size for local file:"
-		echo "$LOCAL_FILE"
+	local_filesize "$LOCAL_FILE"
+	if test "$FILESIZE_LOCAL" = "" -o "$FILESIZE_SF" = ""; then 
 		COMPARED_OK=0
 		return
 	fi
 	if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then 
 		echo "ERROR: filesize of local and uploaded file are different"
 		echo "$LOCAL_FILE"
-		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
-		if test "$SH_DEBUG" = "1"; then
-			#was very consistent, allways same result
-			FILESIZE_SF=""
-			website_filesize "$HTTP_FILE"
-			echo "Again, filesize on SF: $FILESIZE_SF:"
-			FILESIZE_SF=""
-			website_filesize "$HTTP_FILE"
-			echo "Once more, filesize on SF: $FILESIZE_SF:"
-		fi
+		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL ($FILESIZE_LOCAL_HUMAN)"
 		echo "----------------------------------------------------"				
 		COMPARED_OK=0
-#echo "command was:"
-#echo "$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;"
-#echo "cat $WGET_LOG | grep Content-Length: | awk '{print $3}'"
 		if test "$SH_DEBUG" = "1"; then
 			#Little point, allways downloaded file of same size as reported by 
 			#website_filesize function
@@ -573,9 +570,9 @@ SIZE_COMPARES_OK=0
 		SIZE_COMPARES_OK=1
 		if [ "$VERBOSE" = "1" ]; then
 			echo "Size compares OK:"
-		echo "$LOCAL_FILE"
-		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
-		echo "----------------------------------------------------"				
+			echo "$LOCAL_FILE"
+			echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
+			echo "----------------------------------------------------"				
 		fi
 	fi
 }
@@ -1165,16 +1162,9 @@ function func_regression_test () {
 	fi
 }
 
-###################################
-function func_get_files () {
-###################################
-# get files we need to create Automatic Nightly Builds web page and then
-#create html page
-
-	if test "$GET" = "1"; then
-		if test "$VERBOSE" = "1"; then
-			echo "In func_get_files()"
-		fi
+########################################
+function get_download_page_files () {
+########################################
 
 		if [ "$DOWNLOADPAGE_SCP" = "1" ]; then
 			#This will fail first time we do it, if this server is not allsready 
@@ -1208,73 +1198,129 @@ function func_get_files () {
             SRCNAMESSCRIPT=$CYSRCBUILDNAMES
 			BINNAMESSCRIPT=$CYBUILDNAMES
 		fi
+	
+}
 
-	    #Source file name in build names script
-		echo "sed -e '/^$TEMPLATESRC/s/$TEMPLATESRC/$SOURCETARBASENAME/' $DLTMP1 > $DLTMP2"  > $SRCNAMESSCRIPT
-		if test "$RPM" = "1"; then
-			echo "sed -e '/^$TEMPLATESRPM/s/$TEMPLATESRPM/$SOURCERPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $SRCNAMESSCRIPT
-        else
-			echo "cp $DLTMP2 $DLTMP1"  >> $SRCNAMESSCRIPT
+###########################################
+function sed_filename () {
+###########################################
+REPLACE="$1"
+REPLACE_WITH="$2"
+FROM="$3"
+TO="$4"
+OUT="$5"
+
+	for an_name in $FAILED_UPLOAD_LIST; do
+		if test "$an_name" = "$REPLACE_WITH"; then
+			#If upload of the file failed, prevent it from being available
+			#so people don't try to use it
+			echo "$an_name in failed upload list"
+			REPLACE_WITH="NOT_AVAILABLE-UPLOAD_FAILED-$REPLACE_WITH"
 		fi
+	done
 
-	    EXEC="sh $SRCNAMESSCRIPT"; runexec
+	echo "sed -e '/^$REPLACE/s/$REPLACE/$REPLACE_WITH/' $FROM > $TO" >> $OUT
+}
 
-	    #Tarball name in buils names script:
-		echo "sed -e '/^$TEMPLATENAME/s/$TEMPLATENAME/$TARBALLBASENAME/' $DLTMP1 > $DLTMP2"  > $BINNAMESSCRIPT
-		if test "$RPM" = "1"; then
-			echo "sed -e '/^$TEMPLATEBINRPM/s/$TEMPLATEBINRPM/$BINRPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $BINNAMESSCRIPT
-        else
-			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
-		fi
-		if test "$WINSETUPEXE" != ""; then
-			echo "sed -e '/^$TEMPLATE_WINSETUPEXE/s/$TEMPLATE_WINSETUPEXE/$WINSETUPEXE_BASENAME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
-			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
-		fi
+###########################################
+function set_download_page_filenames () {
+###########################################
 
-        #Update time:
-        TMP_TIME=`date`
-		echo "sed -e '/^$TIME_TEMPL/s/$TIME_TEMPL/$LABEL $TMP_TIME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
+	rm -f "$SRCNAMESSCRIPT" "$BINNAMESSCRIPT"
+	
+	#Source file name in build names script
+	#echo "sed -e '/^$TEMPLATESRC/s/$TEMPLATESRC/$SOURCETARBASENAME/' $DLTMP1 > $DLTMP2"  > $SRCNAMESSCRIPT
+	sed_filename "$TEMPLATESRC" "$SOURCETARBASENAME" "$DLTMP1" "$DLTMP2" "$SRCNAMESSCRIPT"
+	
+	#SRC RPM:
+	if test "$RPM" = "1"; then
+		#echo "sed -e '/^$TEMPLATESRPM/s/$TEMPLATESRPM/$SOURCERPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $SRCNAMESSCRIPT
+		sed_filename "$TEMPLATESRPM" "$SOURCERPMBASENAME" "$DLTMP2" "$DLTMP1" "$SRCNAMESSCRIPT"
+    else
+		echo "cp $DLTMP2 $DLTMP1"  >> $SRCNAMESSCRIPT
+	fi
+
+	#Apply
+	EXEC="sh $SRCNAMESSCRIPT"; runexec
+
+	#Tarball name in buils names script:
+	#echo "sed -e '/^$TEMPLATENAME/s/$TEMPLATENAME/$TARBALLBASENAME/' $DLTMP1 > $DLTMP2"  > $BINNAMESSCRIPT
+	sed_filename "$TEMPLATENAME" "$TARBALLBASENAME" "$DLTMP1" "$DLTMP2" "$BINNAMESSCRIPT"
+	
+	#BIN RPM:
+	if test "$RPM" = "1"; then
+		#echo "sed -e '/^$TEMPLATEBINRPM/s/$TEMPLATEBINRPM/$BINRPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $BINNAMESSCRIPT
+		sed_filename "$TEMPLATEBINRPM" "$BINRPMBASENAME" "$DLTMP2" "$DLTMP1" "$BINNAMESSCRIPT"
+    else
 		echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
+	fi
+		
+	#Windows setup executable:
+	if test "$WINSETUPEXE" != ""; then
+		#echo "sed -e '/^$TEMPLATE_WINSETUPEXE/s/$TEMPLATE_WINSETUPEXE/$WINSETUPEXE_BASENAME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
+		sed_filename "$TEMPLATE_WINSETUPEXE" "$WINSETUPEXE_BASENAME" "$DLTMP1" "$DLTMP2" "$BINNAMESSCRIPT"
+		echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
+	fi
 
-	    EXEC="sh $BINNAMESSCRIPT"; runexec
+    #Update time:
+    TMP_TIME=`date`
+	#echo "sed -e '/^$TIME_TEMPL/s/$TIME_TEMPL/$LABEL $TMP_TIME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
+	sed_filename "$TIME_TEMPL" "$LABEL $TMP_TIME" "$DLTMP1" "$DLTMP2" "$BINNAMESSCRIPT"
+	echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 
+	#Apply
+	EXEC="sh $BINNAMESSCRIPT"; runexec
+
+	if test "$VERBOSE" = "1"; then
+    	echo "Created and executed:"
+        echo $SRCNAMESSCRIPT
+        echo $BINNAMESSCRIPT
+	fi
+
+}
+
+###################################
+function func_get_files () {
+###################################
+# get files we need to create Automatic Nightly Builds web page and then
+# create html page
+
+	if test "$GET" = "1"; then
 		if test "$VERBOSE" = "1"; then
-            echo "Created and executed:"
-            echo $SRCNAMESSCRIPT
-            echo $BINNAMESSCRIPT
+			echo "In func_get_files()"
+		fi
+		get_download_page_files
+		set_download_page_filenames
+		restore_links
+	fi
+}
 
-        fi
-
-
-	    ################## restore links for other platform builds #########
+##############################
+function restore_links () {
+##############################
+# restore links for other platform builds
 
 		if [ "$COMSPEC" = "" ]; then
-
 			if [ -f $CYBUILDNAMES ]; then
 				EXEC="dos2unix $CYBUILDNAMES"; runexec
 				EXEC="sh $CYBUILDNAMES"; runexec
 		    fi
-
 			if [ -f $CYSRCBUILDNAMES ]; then
 				EXEC="dos2unix $CYSRCBUILDNAMES"; runexec
 				EXEC="sh $CYSRCBUILDNAMES"; runexec
 			fi
         else
-
 			if [ -f $UNIXBUILDNAMES ]; then
 				EXEC="sh $UNIXBUILDNAMES"; runexec
 		    fi
-
 			if [ -f $CYSRCBUILDNAMES ]; then
 				EXEC="sh $UNIXSRCBUILDNAMES"; runexec
 			fi
-
         fi
 
 		if test "$VERBOSE" = "1"; then
             echo "Fixed download names from other platform(s)"
         fi
-	fi
 }
 
 #############################
@@ -1296,7 +1342,7 @@ UP_URLENCODED="$3"
 		if test "$TOOK_TIME" -gt "$timeout"; then
 			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."	
 			echo "WARNING: did 'expect' timeout kill scp?"
-			do_retry=1
+			#do_retry=1
 		fi
 
 		if test "$CHECK_SIZE_AFTER_UPLOAD" = "1"; then 
@@ -1310,6 +1356,7 @@ UP_URLENCODED="$3"
 			if test "$MAX_RETRY" = "$RETRY_CNT"; then
 				echo "Reached maximum number of upload retries ($MAX_RETRY) - giving up."
 				echo "Upload of $the_file failed"
+				FAILED_UPLOAD_LIST="$FAILED_UPLOAD_LIST $the_file"
 				break
 			fi
 			let RETRY_CNT=RETRY_CNT+1
