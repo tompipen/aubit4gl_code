@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.46 2002-03-22 08:28:54 afalout Exp $
+# $Id: configure.in,v 1.47 2002-03-25 00:59:39 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -491,6 +491,7 @@ AC_PATH_PROG(SWIG, swig, no)
 AC_PATH_PROG(SH, sh, /bin/sh)
 AC_PATH_PROG(LDD, ldd, no)
 
+#cygcheck can be used instead of ldd that is missing on CygWin:
 AC_PATH_PROG(CYGCHECK, cygcheck, no)
 
 #$ cygcheck ../bin/4glc.exe
@@ -1836,7 +1837,8 @@ AC_CHECK_LIB([curses], [main])
         else
 			AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
         fi
-		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE MENUS OR FORMS - ONLY 'DISPLAY' WILL WORK!)
+		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
+		AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
 		AC_MSG_WARN(Considder installing 'curses' libraries)
 	fi
 
@@ -2094,3 +2096,4 @@ echo "Thank you for using Aubit 4gl."
 echo ""
 
 #------------------------------ EOF --------------------------------
+

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.15 2002-03-21 01:29:16 afalout Exp $
+# $Id: Makefile-install.mki,v 1.16 2002-03-25 00:59:43 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -193,6 +193,8 @@ endif
 	-rmdir $(INSTALL_DIR)/tools
 	-rmdir $(INSTALL_DIR)/docs
 	-rmdir $(INSTALL_DIR)
+
+ifneq "${LDCONFIG}" "no"
 #remove entry from library path config file:
 ifeq "${GREP_LD_SO_CONF}" ""
 	@echo "$(INSTALL_DIR)/lib entry in ${LD_SO_CONF} does not exist."
@@ -203,8 +205,12 @@ else
 	ldconfig
 	@echo "Refreshed ldconfig cache."
 endif
-	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "
-	@echo "where not deleted."
+else
+	@echo FIXME: remove stuff from .bashrc
+endif
+	@echo ""
+	@echo "Aubit compiler de-installed."
+	@echo "Config file in ${AUBITETC} was NOT deleted."
 
 #stuff left over from aubitbuild.sh:
 deinstall.build:
@@ -223,6 +229,7 @@ test:
 	export AUBITGUI=CONSOLE; tools/test/test_build
 
 ldconfig:
+ifneq "${ADD_LD_LIBRARY_PATH}" ""
 ifneq "${LDCONFIG}" "no"
 	@echo "Adding to ${LD_SO_CONF} :"
 	@echo " "
@@ -245,6 +252,7 @@ ifeq "$(shell  grep ${ADD_LD_LIBRARY_PATH} ${HOME}/.bashrc)" ""
 	@echo ""
 else
 	@echo "${ADD_LD_LIBRARY_PATH} already present in ${HOME}/.bashrc"
+endif
 endif
 endif
 

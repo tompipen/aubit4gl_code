@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.60 2002-03-22 08:28:57 afalout Exp $
+# $Id: 4glpc,v 1.61 2002-03-25 00:59:43 afalout Exp $
 #
 
 ########################################################################
@@ -1153,7 +1153,8 @@ do
                 FGLCEXEC=4glc-noodbc
    ;;
 
-   -as-dll) 	COMPCC="$COMPCC -shared"
+   -as-dll)		#creates shared library- .so on UNIX, .dll on Windows
+   				COMPCC="$COMPCC -shared"
    ;;
 
    -shared)  #if [ "$COMSPEC" = "" ]
@@ -1318,7 +1319,7 @@ else
 fi
 FGLLIBS_COMMON="$FGLLIBS_COMMON -lm -lPDF_$A4GL_PDFTYPE -lRPC_$A4GL_RPCTYPE"
 FGLLIBS_STATIC="$FGLLIBS_COMMON -laclall"
-FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared -shared"
+FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared"
 
 if [ "$A4GLDEBUG" = "yes" ]
 then

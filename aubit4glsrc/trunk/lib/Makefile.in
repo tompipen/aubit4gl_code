@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.35 2002-03-22 08:28:58 afalout Exp $
+# $Id: Makefile.in,v 1.36 2002-03-25 00:59:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -100,9 +100,9 @@ LDFLAGS				=-Map mapfile
 4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
-	LDFLAGS			+= ${RPCLIB_NAME} -lc
-	ALL				+=dllaclshared dlllibRPC_NORPC
-	ALL_GUI			+=dllaclsharedgui
+	LDFLAGS			+=-lc
+	ALL				+=dlllibRPC_NORPC dllaclshared
+#	ALL_GUI			+=dllaclsharedgui
 	#ifeq "$(ODBC_LINK)" "static"
 	#	ifneq "$(ODBC)" "no"
 	#		ALL		+=libaclall-noodbc.a
@@ -182,6 +182,13 @@ else
     PDF_LIBNAME     =-lPDF_NOPDF
 endif
 
+ifneq "@HAVE_RPCLIB@" "0"
+	RPCLIB_NAME=-lRPC_SUNRPC
+else
+	RPCLIB_NAME=-lRPC_NORPC
+endif
+
+
 #====================================================================
 
 OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
@@ -250,6 +257,7 @@ libSQL_pgodbc.so:
 .PHONY : dllaclshared
 dllaclshared : $(OBJS) ${GUI_TUI}
 #	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="@CURSES_LIB_NAME@ ${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
+#	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 #$RPCLIB_NAME
 
@@ -284,11 +292,11 @@ libgtk4gl.dll:
 	${MAKE} -C libgui
 
 dlllibRPC_SUNRPC: ${CMODS_RPC}
-	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
-
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+#-laclshared
 
 ## ==================================================================
 ##                             Sub Targets

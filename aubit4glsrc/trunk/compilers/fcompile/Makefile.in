@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2002-03-22 08:28:57 afalout Exp $
+# $Id: Makefile.in,v 1.19 2002-03-25 00:59:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,7 +38,15 @@ override NOINCL=0
 
 4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -nogtk -L../../lib
 CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@
-ALL		 		= fcompile fshow
+
+#FIXME: we should compile dummy executables in any case, so we can use them instead
+#of real ones when installing binary distro on system with missing RPClib:
+ifeq "@HAVE_RPCLIB@" "0"
+	ALL			=norpclib
+else
+	ALL	 		=fcompile fshow fdecompile
+endif
+
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=fdecompile-j
@@ -113,17 +121,53 @@ CFLAGS			+=@RPCLIB_INCLUDE@
 all:	 $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
-objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
-sources: $(SOURCES)
-targets: $(SOURCES) $(TARGETS)
+#objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
+#sources: $(SOURCES)
+#targets: $(SOURCES) $(TARGETS)
 
 fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
-	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#same as: why are we using 4glpc ?
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -laclall -lPDF_NOPDF -lRPC_NORPC
+#	gcc -g -O2 -DAUTOBANG -DDEBUG -I/usr/local/include -DWIN32 -fnative-struct -I../../lib -I. -I/usr/aubit/aubit4glsrc/tools/no_curses/cygwin -I/usr/aubit/aubit4glsrc/tools/no_rpc/cygwin -L../../lib -o fcompile fcompile.o formwrite2.o where.o y.tab.o -lm  -laclall -lRPC_NORPC -lPDF_NOPDF
 	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
 
-fcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
-	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
-	${LN} fcompile-noodbc${EXE} ../../bin/fcompile-noodbc${EXE}
+#fcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
+#	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#	${LN} fcompile-noodbc${EXE} ../../bin/fcompile-noodbc${EXE}
+
+fdecompile-j : decompile.c form_x_xdr.c dump_java.c
+	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump_java.c -o $@
+	cp $@ ../../bin
+
+fdecompile : decompile.c form_x_xdr.c dump.c
+ifeq "@HAVE_RPCLIB@" "0"
+#:rpc_norpc.c: undefined reference to `exitwith'
+	${CC} ${CFLAGS} decompile.c -L../../lib -lRPC_NORPC dump.c -o $@ ${CYGWIN_FLAGS}
+else
+	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
+endif
+	cp $@ ../../bin
+
+fshow : fshow.4gl
+	${SH} ../../bin/4glpc fshow.4gl -o fshow
+	cp $@ ../../bin
+
+#fshow-gtk : fshow.4gl
+#	${SH} ../../bin/4glpc -verbose -gtk -DGTK fshow.4gl -o fshow-gtk
+#	cp $@ ../../bin
+
+norpclib:
+#we will make some fake executables, to simplify installation and RPM builds:
+	${CC} fnorpclib.c -o fcompile
+	${CC} fnorpclib.c -o fdecompile
+	${CC} fnorpclib.c -o fshow
+	cp fcompile fdecompile fshow ../../bin
+	@echo "Sun RPClib was not detected - no form related functionality will be compiled"
+
+## ==================================================================
+##                          Sub targets
+## ==================================================================
 
 y.tab.c: ${Y_TAB_C_DEP}
 ifeq "@YACC@" "no"
@@ -131,8 +175,6 @@ ifeq "@YACC@" "no"
 else
 	nice -20 ${YACC} -v  $(SOURCES.yacc)
 endif
-
-y.tab.o: lex.yy.c
 
 lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
@@ -144,17 +186,20 @@ endif
 fcompile.h: fcompile.c
 	@touch $@
 
-
-#form_x_xdr.c: rpc
-
-rpc: form_x_xdr.c
-
 form_x_xdr.c: form_x.x
 	${RPCGEN}
 
+## ==================================================================
+##                          Dependencies
+## ==================================================================
+
+#form_x_xdr.c: rpc
+form_x.h: 		rpc
+rpc: 			form_x_xdr.c
+y.tab.o: 		lex.yy.c
 formwrite2.o :  form_x.h
-fcompile.o :  form_x.h
-where.o : form_x.h
+fcompile.o :  	form_x.h
+where.o : 		form_x.h
 
 
 ## ==================================================================
@@ -180,26 +225,5 @@ clean:
 
 lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
-
-fdecompile-j : decompile.c form_x_xdr.c dump_java.c
-	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump_java.c -o $@
-	cp $@ ../../bin
-
-fdecompile : decompile.c form_x_xdr.c dump.c
-ifeq "@HAVE_RPCLIB@" "0"
-#:rpc_norpc.c: undefined reference to `exitwith'
-	${CC} ${CFLAGS} decompile.c ../../lib/rpc_norpc.o dump.c -o $@ ${CYGWIN_FLAGS}
-else
-	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
-endif
-	cp $@ ../../bin
-
-fshow : fshow.4gl
-	-${SH} ../../bin/4glpc -nogtk fshow.4gl -o fshow
-	-cp $@ ../../bin
-
-fshow-gtk : fshow.4gl
-	-${SH} ../../bin/4glpc -verbose -gtk -DGTK fshow.4gl -o fshow-gtk
-	-cp $@ ../../bin
 
 #-----------------------------------------------------------------------

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.42 2002-03-21 01:29:11 afalout Exp $
+# $Id: Makefile.in,v 1.43 2002-03-25 00:59:38 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -706,7 +706,7 @@ endif
 #etc/aubit-auto.spec
 
 install.core: install.tree install.gtk
-	-${CP} $(TOBIN) $(INSTALL_DIR)/bin
+	${CP} $(TOBIN) $(INSTALL_DIR)/bin
 	chmod a+x $(INSTALL_DIR)/bin/*
 	$(CP) $(TOROOT) $(INSTALL_DIR)
 	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
@@ -1774,6 +1774,15 @@ test.full:
 	${MAKE}
 	${MAKE} install
 	${MAKE} test.install
+
+
+refresh.noyacc:
+	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
+	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
+	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
+	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
 
 
 ## ---------------------------- EOF ----------------------------------

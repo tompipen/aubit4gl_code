@@ -119,7 +119,7 @@
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 #include <string.h>
-#include <curses.h>
+//#include <curses.h>
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/debug.h"
 #include "where.h"
@@ -2059,25 +2059,25 @@ case 112:
 case 113:
 #line 451 "screen.yacc"
 {
-	sprintf(yyval.str,"%d",A_REVERSE);
+	sprintf(yyval.str,"%d",get_attr_from_string("REVERSE"));
 }
     break;
 case 114:
 #line 454 "screen.yacc"
 {
-	sprintf(yyval.str,"%d",A_LEFT);
+	sprintf(yyval.str,"%d",get_attr_from_string("LEFT"));
 }
     break;
 case 115:
 #line 457 "screen.yacc"
 {
-	sprintf(yyval.str,"%d",A_BLINK);
+	sprintf(yyval.str,"%d",get_attr_from_string("BLINK"));
 }
     break;
 case 116:
 #line 460 "screen.yacc"
 {
-	sprintf(yyval.str,"%d",A_UNDERLINE);
+	sprintf(yyval.str,"%d",get_attr_from_string("UNDERLINE"));
 }
     break;
 case 118:

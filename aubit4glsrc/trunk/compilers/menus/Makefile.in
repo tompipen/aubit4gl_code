@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-03-22 08:28:57 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-03-25 00:59:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,17 +36,22 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib 
+4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
 #-rdynamic
-#-nogtk
-ALL				=mcompile
+
+#FIXME: we should compile dummy executables in any case, so we can use them instead
+#of real ones when installing binary distro on system with missing RPClib:
+ifeq "@HAVE_RPCLIB@" "0"
+	ALL			=norpclib
+else
+	ALL			=mcompile mdecompile
+endif
 
 ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 else
 	RPCGEN      =@RPCGEN@ menu_x.x
 endif
-
 
 CFLAGS		   +=-I. @RPCLIB_INCLUDE@
 
@@ -62,29 +67,15 @@ endif
 
 LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
 
-#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-#	ifeq "$(ODBC)" "no"
-#		4GLPCFLAGS	+=-noodbc
-#	else
-#		ALL 	+=mcompile-noodbc
-#	endif
-#endif
-
-#ifeq "$(PDFBUILD)" "yes"
-#	4GLPCFLAGS	+=-lpdf
-#else
-#	4GLPCFLAGS	+=-nopdf
-#endif
-
 SRC_COMMON      =mcompile.c menuwrite.c
 
 SCRIPT 			=
 ifeq "@HAVE_RPCLIB@" "0"
-	SOURCES.c 		=${SRC_COMMON}
+	SOURCES.c 	=${SRC_COMMON}
 else
-	SOURCES.c 		=${SRC_COMMON} menu_x_xdr.c
-    ALL             +=mdecompile
+	SOURCES.c 	=${SRC_COMMON} menu_x_xdr.c
 endif
+
 SOURCES.h 		=
 SOURCES.yacc 	=menu.yacc
 SOURCES.lex 	= menu.lex
@@ -101,23 +92,35 @@ LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 
 
 all:	 $(ALL)
-objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
-sources: $(SOURCES)
-targets: $(SOURCES) $(TARGETS)
+#objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
+#sources: $(SOURCES)
+#targets: $(SOURCES) $(TARGETS)
+
+norpclib:
+#we will make some fake executables, to simplify installation and RPM builds:
+	${CC} mnorpclib.c -o mcompile
+	${CC} mnorpclib.c -o mdecompile
+	cp mcompile mdecompile ../../bin
+	@echo "Sun RPClib was not detected - no menu related functionality will be compiled"
 
 mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
-	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#same as: why are we using 4glpc ?
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -laclall -lPDF_NOPDF -lRPC_NORPC
+#-lm
 	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
 
-mcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
-	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
-	${LN} mcompile-noodbc${EXE} ../../bin/mcompile-noodbc${EXE}
+#mcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
+#	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+#	${LN} mcompile-noodbc${EXE} ../../bin/mcompile-noodbc${EXE}
 
-#menu_x_xdr.c: menu_x.h
+mdecompile: decompile.c menu_x_xdr.c
+	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib -lRPC_SUNRPC -o $@ ${CYGWIN_FLAGS}
+	cp $@ ../../bin
 
-#rpc: menu_x.x
-
-rpc: menu_x_xdr.c
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
 
 menu_x_xdr.c: menu_x.x
 	${RPCGEN}
@@ -132,8 +135,6 @@ else
 	nice -20 ${YACC} -v  $(SOURCES.yacc)
 endif
 
- y.tab.o: lex.yy.c
-
 lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
 	cp ${LEX_YY_C} .
@@ -141,11 +142,18 @@ else
 	nice -20 flex -i $(SOURCES.lex)
 endif
 
+## ==================================================================
+##                             Dependencies
+## ==================================================================
+
+y.tab.o: lex.yy.c
+rpc: menu_x_xdr.c
+#menu_x_xdr.c: menu_x.h
+#rpc: menu_x.x
 
 ## ==================================================================
 ##                           Install targets
 ## ==================================================================
-
 
 install:
 	install -m 555 mcompile $(SCRIPT) $(AWADI)/db_tools
@@ -153,7 +161,6 @@ install:
 ## ==================================================================
 ##                          Clean targets
 ## ==================================================================
-
 
 clean:
 	$(RM) mcompile mcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta core *~ *.ln \
@@ -163,11 +170,6 @@ clean:
 ## ==================================================================
 ##                           Other targets
 ## ==================================================================
-
-
-mdecompile: decompile.c menu_x_xdr.c
-	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -o $@ ${CYGWIN_FLAGS}
-	cp $@ ../../bin
 
 lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
