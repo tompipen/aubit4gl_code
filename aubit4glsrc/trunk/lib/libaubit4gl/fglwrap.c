@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.64 2004-05-12 16:52:41 whaslbeck Exp $
+# $Id: fglwrap.c,v 1.65 2004-05-19 15:10:02 mikeaubury Exp $
 #
 */
 
@@ -355,14 +355,52 @@ A4GL_system_run (int a)
 {
   char *s;
   int ret;
-int rf=0;
-  
-  if (a!=2) {
-  	if (A4GL_isscrmode ()) {
-		A4GL_gotolinemode ();
-		rf=1;
+  int rf=0;
+int oval;
+  enum {
+	MODE_NORMAL,
+	MODE_LINE,
+	MODE_FORM} ui_mode;
+  ;
+  ui_mode=MODE_NORMAL;
+
+
+/* did they specify a more on the RUN .. line ? */
+  if (a>255) {
+	if ((a&0xff00)==0x100)  ui_mode=MODE_LINE;
+	if ((a&0xff00)==0x200)  ui_mode=MODE_FORM;
+	a=a&0xff;
+  }
+
+
+  if (ui_mode==MODE_NORMAL) {
+	/* need to check the OPTIONS.. here */
+  	oval=A4GL_get_option_value ('r');
+  	if (oval==0) {
+		/* Nothing specified */
+  	} else {
+		if (oval==1) ui_mode=MODE_LINE;
+		if (oval==2) ui_mode=MODE_FORM;
 	}
   }
+	
+
+
+/* If its not changed - just use the default... */
+  if (ui_mode==MODE_NORMAL) {
+	ui_mode=MODE_LINE;
+  }
+
+
+  if (a!=2) {
+  	if (A4GL_isscrmode ()) {
+		if (ui_mode!=MODE_FORM) {
+			A4GL_gotolinemode ();
+			rf=1;
+		}
+	}
+  }
+
   s = A4GL_char_pop ();
   if (a == 2)
     strcat (s, " &");

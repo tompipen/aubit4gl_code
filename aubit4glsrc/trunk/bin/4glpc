@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.128 2004-04-09 09:31:54 mikeaubury Exp $
+# $Id: 4glpc,v 1.129 2004-05-19 15:10:00 mikeaubury Exp $
 #
 
 ########################################################################
@@ -322,8 +322,15 @@ function showerror {
 			ERRLINES=`cat $errfname | grep -c $ERRCHAR`
 		    if [ "$ERRLINES" != "0" ]
 		    then
-				echo "============ FIRST ERROR: =============="
-				cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+				# Not all greps can do a -B
+                               if [ "$A4GL_NO_GREP_B" = "Y" ]
+                               then
+                                  echo "============ FIRST ERROR  =============="
+                                  cat $errfname | grep -n $ERRCHAR
+                               else
+				   echo "============ FIRST ERROR: =============="
+				   cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+				fi
 		    else
 				echo "============ FIRST ERROR: =============="
 				$HEAD $errfname

@@ -41,7 +41,10 @@ main
 	define d integer
 
 	let msgerrcnt = 0
-
+        if num_args()=0 then
+                display "Usage : afinderr number"
+                exit program 0
+        end if
 	let n=arg_val(1)
 code
 {

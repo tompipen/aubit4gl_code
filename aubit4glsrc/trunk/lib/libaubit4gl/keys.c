@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.27 2004-03-19 19:24:52 mikeaubury Exp $
+# $Id: keys.c,v 1.28 2004-05-19 15:10:02 mikeaubury Exp $
 #
 */
 
@@ -354,6 +354,12 @@ A4GL_set_option_value (char type, int keyval)
     case 'S':
       std_dbscr.sqlintr = keyval;
       break;
+
+    case 'r':
+	std_dbscr.run_ui_mode=keyval;break;
+    case '|':
+	std_dbscr.pipe_ui_mode=keyval;break;
+	
     }
 }
 
@@ -421,6 +427,12 @@ A4GL_get_option_value (char type)
     case 'S':
       return std_dbscr.sqlintr ;
       break;
+    case 'r':
+	return std_dbscr.run_ui_mode;
+      break;
+    case '|':
+	return std_dbscr.pipe_ui_mode;
+      break;
     }
 A4GL_exitwith("Unknown option value");
 return 0;
@@ -454,6 +466,8 @@ A4GL_debug("init_stddbscr - form_line");
   std_dbscr.error_line = -1;
   std_dbscr.inskey = A4GLKEY_F (1);
   std_dbscr.delkey = A4GLKEY_F (2);
+  std_dbscr.pipe_ui_mode=0;
+  std_dbscr.run_ui_mode=0;
 }
 
 /* ============================== EOF ============================= */

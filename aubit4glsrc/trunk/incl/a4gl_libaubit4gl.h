@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.123 2004-05-12 08:15:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.124 2004-05-19 15:10:02 mikeaubury Exp $
 #
 */
 
@@ -780,6 +780,8 @@ int A4GL_readkey(void);
     int acckey;
     int fieldconstr;
     int sqlintr;
+    int run_ui_mode;
+    int pipe_ui_mode;
   };
 
   /* OBJECTMODULE is defined ONLY in keys.c */

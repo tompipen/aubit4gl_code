@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.15 2004-04-21 21:26:25 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.16 2004-05-19 15:10:03 mikeaubury Exp $
 #*/
 
 /**
@@ -106,7 +106,7 @@ void A4GL_pdf_move (struct pdf_rep_structure *p);
  * @todo Describe function
  */
 void
-A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin)
+A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin,int why)
 {
   int b;
   char *str;
@@ -208,7 +208,7 @@ rep=vrep;
       if (rep->line_no > rep->page_length - rep->bottom_margin)
 	{
 	  rep->line_no = 0;
-	  A4GL_pdf_rep_print (rep, 0, 0, 0);
+	  A4GL_pdf_rep_print (rep, 0, 0, 0,-1);
 	}
     }
   fflush (rep->output);
@@ -372,7 +372,7 @@ rep=vrep;
   while (z == rep->page_no)
     {
       A4GL_push_char ("");
-      A4GL_pdf_rep_print (rep, 1, 0, 0);
+      A4GL_pdf_rep_print (rep, 1, 0, 0,-1);
     }
 
 }
@@ -662,13 +662,13 @@ blob=vblob;
   p->line_no = p->line_no + (double) y;
   p->col_no = p->col_no + (double) x;
   A4GL_push_char ("");
-  A4GL_pdf_rep_print (p, 1, cr, 0);
+  A4GL_pdf_rep_print (p, 1, cr, 0,-1);
   return;
 }
 
 
 
-void A4GL_pdf_pdffunc (void *vp,char *fname,int n) {
+int A4GL_pdf_pdffunc (void *vp,char *fname,int n) {
 char *ptr;
 int a;
 double d;
@@ -684,7 +684,7 @@ p=vp;
                 PDF_set_parameter(p->pdf_ptr,ptr1,ptr2);
                 acl_free(ptr1);
                 acl_free(ptr2);
-                return ;
+                return 0;
         }
         if (strcmp(fname,"moveto")==0) {
                 float f1;
@@ -692,11 +692,11 @@ p=vp;
                 f2=A4GL_pop_double();
                 f1=A4GL_pop_double();
                 PDF_moveto(p->pdf_ptr,f1,f2);
-                return ;
+                return 0;
         }
         if (strcmp(fname,"stroke")==0) {
                 PDF_stroke(p->pdf_ptr);
-                return ;
+                return 0;
         }
 
 
@@ -706,7 +706,7 @@ p=vp;
                 f2=A4GL_pop_double();
                 f1=A4GL_pop_double();
                 PDF_lineto(p->pdf_ptr,f1,f2);
-                return ;
+                return 0;
         }
 
 
@@ -719,7 +719,7 @@ p=vp;
                 A4GL_debug("Setting pdf value %s to %d\n",ptr1,a);
                 PDF_set_value(p->pdf_ptr,ptr1,a);
                 acl_free(ptr1);
-                return ;
+                return 0;
         }
 
 
@@ -727,7 +727,7 @@ p=vp;
                 d=A4GL_pop_double();
                 p->font_size=d;
                 PDF_setfont(p->pdf_ptr, p->font,p->font_size);
-        return ;
+        return 0;
         }
 
         if (strcmp(fname,"set_font_name")==0) {
@@ -737,13 +737,13 @@ p=vp;
                 a= PDF_findfont(p->pdf_ptr, p->font_name, "winansi",0  );
                 if (a<0) {
                         A4GL_exitwith("Unable to locate font");
-                        return ;
+                        return 0;
                 }
                 p->font =a;
                 PDF_setfont(p->pdf_ptr, p->font, p->font_size);
-        return ;
+        return 0;
         }
-return ;
+return 0;
 }
 
 

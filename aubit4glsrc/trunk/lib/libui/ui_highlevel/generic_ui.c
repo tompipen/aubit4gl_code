@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.18 2004-05-18 16:20:26 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.19 2004-05-19 15:10:03 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -2755,7 +2755,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	}
   A4GL_LL_screen_update ();
     }
-
+A4GL_debug("DOne display");
 }
 
 
