@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.75 2005-01-28 08:01:50 mikeaubury Exp $
+# $Id: builtin.c,v 1.76 2005-02-04 08:26:27 mikeaubury Exp $
 #
 */
 
@@ -430,11 +430,14 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
 #ifdef DEBUG
   {
     A4GL_debug ("   Stack contained %s\n", A4GL_null_as_null(np));
-  }
-  {
     A4GL_debug ("   Size=%d", size);
   }
 #endif
+
+  if (strlen(np)!=size) {
+		A4GL_pad_string(np,size);
+  }
+
   strncpy (&ca[a - 1], np, size);
 #ifdef DEBUG
   {
