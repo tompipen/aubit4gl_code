@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.26 2005-01-05 20:04:14 mikeaubury Exp $
+# $Id: readforms.c,v 1.27 2005-02-09 20:32:51 mikeaubury Exp $
 #*/
 
 /**
@@ -410,17 +410,17 @@ include_range_check (char *ss, char *ptr, int dtype)
 	}
       A4GL_debug ("Not a string expression");
       A4GL_push_char (s);
-      A4GL_pop_param (&buff, dtype, dim);
+      A4GL_pop_param (&buff[0], dtype, dim);
 
       A4GL_push_char (ptr);
-      A4GL_pop_param (&buff2, dtype, dim);
+      A4GL_pop_param (&buff2[0], dtype, dim);
 
       /* do we have a range of values to check ? */
       if (ptr3)
 	{
           A4GL_debug("Have a ptr3 - %s - suggests a range",ptr3);
 	  A4GL_push_char (ptr3);
-	  A4GL_pop_param (&buff3, dtype, dim);
+	  A4GL_pop_param (&buff3[0], dtype, dim);
       	  ptr3 = buff3;
 	}
       ptr1 = buff;
