@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.9 2003-01-21 03:05:01 afalout Exp $
+#  $Id: Makefile.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
 #
 #  ==========================================================================
 
@@ -91,6 +91,10 @@ install.manager:
 	mkdir -p $(PERL_MODULE_DIR)/L10N
 	${INSTALL} manager/fgldoc ${BINDIR}
 	chmod a+x ${BINDIR}/fgldoc
+#Note that Perl generated make file will install to:
+#Installing /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/img/ftv2lastnode.gif
+#Installing /usr/local/bin/fgldoc
+#Maybe I should use PREFIX=xyz to controll install location?
 	$(MAKE) -C manager install
 #This will be installed by Perl generated makefile, now obsolete (check!)
 #	${INSTALL} manager/FglDocumenter/*.pm $(PERL_MODULE_DIR)
@@ -107,10 +111,27 @@ install.manager:
 # =========================================================================
 #                           Deinstall
 # =========================================================================
-deinstall:
+deinstall: deinstall.manager
 	$(MAKE) -C parser deinstall
-	$(MAKE) -C manager deinstall
+#Perl generated make file has no deinstall target:
+#	$(MAKE) -C manager deinstall
 	$(MAKE) -C browser deinstall
+
+deinstall.manager:
+	cd ${PERL_MODULE_DIR}; rm -f ${MGR_PM_FILES} ${MGR_PRG} *.bak
+	cd ${PERL_MODULE_DIR}/img; rm -f ${MGR_IMG_FILES}
+	cd ${PERL_MODULE_DIR}/L10N; rm -f ${MGR_PM_L10N_FILES} *.bak
+	cd ${PERL_MODULE_DIR}/test; rm -f ${MGR_PM_TEST_FILES} *.bak
+	rm -f ${BINDIR}/${MGR_PRG}
+	rmdir ${PERL_MODULE_DIR}/img
+	rmdir ${PERL_MODULE_DIR}/L10N
+	rmdir ${PERL_MODULE_DIR}/test
+	rmdir ${PERL_MODULE_DIR}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully de-installed.              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 # =========================================================================
 #                                Clean

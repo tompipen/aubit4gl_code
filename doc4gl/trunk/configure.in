@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.9 2003-01-23 02:09:09 afalout Exp $
+dnl # $Id: configure.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -215,6 +215,7 @@ AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(PERL_VERSION)
 AC_SUBST(PERL_MODULE_DIR)
+AC_SUBST(PERL_SITE_DIR)
 AC_SUBST(MISSING_PERLMODS)
 
 #other
@@ -1034,6 +1035,46 @@ fi
     #FIXME: we should use site_perl dir to install our stuff
 	AC_MSG_CHECKING(Perl modules directory)
 
+        PERL5DIR=`($PERL -e 'use Config; print $Config{archlib};') 2>/dev/null`
+        if test "$PERL5DIR" != ""; then
+            if test "$PERLINCLUDE" = "nope"; then
+                if test -r "$PERL5DIR/perl.h"; then
+                    AC_MSG_RESULT(PERL5DIR/perl.h)
+                    WITH_PERL=yes
+                    PERLINCLUDE="$PERL5DIR"
+                elif test -r "$PERL5DIR/CORE/perl.h"; then
+                    AC_MSG_RESULT($PERL5DIR/CORE/perl.h)
+                    WITH_PERL=yes
+                    PERLINCLUDE="$PERL5DIR/CORE"
+                fi
+            else
+                WITH_PERL=yes
+                AC_MSG_RESULT($PERLINCLUDE)
+            fi
+            if test "$PERLINCLUDE" = "nope"; then
+                AC_MSG_RESULT(could not locate perl.h...)
+                WITH_PERL=no
+            fi
+        else
+            AC_MSG_RESULT(unable to determine Perl configuration)
+            WITH_PERL=no
+        fi
+
+        PERLLIBDIR=`($PERL -e 'use Config; print $Config{sitearchexp};') 2>/dev/null`
+        if test -z "$PERLLIBDIR" -o ! -d "$PERLLIBDIR"; then
+            AC_MSG_RESULT(         unable to determine perl shared library directory)
+        fi
+
+        PERLMODDIR=`($PERL -e 'use Config; print $Config{sitelib};') 2>/dev/null`
+        if test -z "$PERLMODDIR" -o ! -d "$PERLMODDIR"; then
+            AC_MSG_RESULT(         unable to determine perl module directory)
+            PERLMODDIR="/usr/local/lib/perl5/site_perl/5.6.0"
+        fi
+
+
+
+
+
 	PERL_MODULE_DIR="/usr/lib/perl5/$PERL_VERSION"
 	PERL_SITE_DIR="/usr/lib/perl5/site_perl/$PERL_VERSION"
     if test ! -d "$PERL_MODULE_DIR"; then
@@ -1063,15 +1104,20 @@ fi
 		AC_MSG_RESULT(Yes)
 	fi
 
-	AC_MSG_CHECKING(if library dir $PERL_SITE_DIR is in Perl @INC)
-	TMP=`$PERL -V | grep $PERL_SITE_DIR`
-    if test "$TMP" = ""; then
-		AC_MSG_RESULT(No)
-		AC_MSG_WARN(Detected path ($PERL_SITE_DIR) not found in Perl INC config.)
-		AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+	if test -d "$PERL_SITE_DIR"; then
+		#Apparently, some Perl version like 5.6.1 do not have site_perl at all:
+		AC_MSG_CHECKING(if library dir $PERL_SITE_DIR is in Perl @INC)
+		TMP=`$PERL -V | grep $PERL_SITE_DIR`
+	    if test "$TMP" = ""; then
+			AC_MSG_RESULT(No)
+			AC_MSG_WARN(Detected path ($PERL_SITE_DIR) not found in Perl INC config.)
+			AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+	    else
+			AC_MSG_RESULT(Yes)
+	    fi
     else
-		AC_MSG_RESULT(Yes)
-    fi
+		PERL_SITE_DIR=
+	fi
 
 	#installation info, with versions can be found:
 	#/usr/lib/perl5/5.6.0/i386-linux/perllocal.pod

@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.9 2003-01-21 03:05:01 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
 #
 #  ==========================================================================
 
@@ -33,6 +33,8 @@ TOMCAT_PASSWORD =@TOMCAT_PASSWORD@
 
 ANT_FLAGS       =-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
 
+DOC4GLSRCDIR    =@doc4gldir@
+
 #  ==========================================================================
 #  The place where the executables will to be installed
 #  ==========================================================================
@@ -42,8 +44,12 @@ BINDIR			=@prefix@/bin
 #  The directory where to install the perl modules (it must exist before
 #  'make install' is executed)
 #  ==========================================================================
-PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
 
+ifneq "@PERL_SITE_DIR@" ""
+	PERL_MODULE_DIR	=@PERL_SITE_DIR@/FglDocumenter
+else
+	PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
+endif
 #  ==========================================================================
 #  Place where Tomcat or other jsp container is installed
 #  ==========================================================================
@@ -80,6 +86,21 @@ JAVA_SHARED		=/usr/share/java
 
 #location for installing third party Java components and Tomcat:
 BASE=/usr/local/src
+
+
+#Perl manager files list, for deinstall:
+
+MGR_SRC             =${DOC4GLSRCDIR}/manager/FglDocumenter
+MGR_IMG_SRC         =${MGR_SRC}/img
+MGR_PM_SRC          =${MGR_SRC}
+MGR_PM_L10N_SRC     =${MGR_SRC}/L10N
+MGR_PM_TEST_SRC     =${MGR_SRC}/test
+
+MGR_IMG_FILES		=$(notdir $(wildcard ${MGR_IMG_SRC}/*.gif))
+MGR_PM_FILES		=$(notdir $(wildcard ${MGR_PM_SRC}/*.pm))
+MGR_PM_L10N_FILES	=$(notdir $(wildcard ${MGR_PM_L10N_SRC}/*.pm))
+MGR_PM_TEST_FILES   =$(notdir $(wildcard ${MGR_PM_TEST_SRC}/*.txt) $(wildcard ${MGR_PM_TEST_SRC}/*.4gl))
+MGR_PRG				=fgldoc
 
 #  ==========================================================================
 #                   Jakarta TomCat installation files and paths

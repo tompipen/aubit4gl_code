@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.4 2003-01-14 07:28:58 afalout Exp $
+#  $Id: Makefile.in,v 1.5 2003-02-04 05:21:58 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -37,6 +37,8 @@ IMG_FILES	=$(addprefix $(IMG_PATH)/,			$(IMG_FILE))
 JS_FILES	=$(addprefix $(BUILD_PATH)/,		$(JS_FILE))
 
 TOMCAT_ANT  = ${JAVA_SHARED}/catalina-ant.jar
+#$${JAVA_SHARED}/jaxp_transform_impl.jar:${JAVA_SHARED}/jaxp_parser_impl.jar:
+DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
 
 .PHONY : all install clean deinstall
 
@@ -57,7 +59,7 @@ ifneq "${ANT}" "no"
 ifneq "${JAVAC}" "no"
 #directory missing on some Tomcat installations, but needed by build.xml:
 	mkdir -p ${TOMCAT_DIR}/shared/lib
-	export CLASSPATH=${CLASSPATH}:$^; ${ANT} ${ANT_FLAGS}
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS}
 else
 	@echo "Java compiler not found - cannot compile"
 endif
@@ -97,12 +99,12 @@ install: ${TOMCAT_ANT} install.index install.ant install.index install.files
 install.ant:
 #First find out if fgldocumenter was already installed under Tomcat:
 #FIXME: make evaluates this no mater which target we are invoking, causig a delay
-ifeq "$(findstring fgldocumenter,$(shell ${ANT} ${ANT_FLAGS} list))" "fgldocumenter"
+ifeq "$(findstring fgldocumenter,$(shell export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list))" "fgldocumenter"
 #already installed
-	export CLASSPATH=${CLASSPATH}:${TOMCAT_ANT}; ${ANT} ${ANT_FLAGS} reload
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} reload
 else
 #new install
-	export CLASSPATH=${CLASSPATH}:${TOMCAT_ANT}; ${ANT} ${ANT_FLAGS} install
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} install
 endif
 
 #This target phisically copyes files under Tomcat installation. I'm not sure if
@@ -147,7 +149,7 @@ install.index:
 #First deactivate browser application in Tomcat instance, then phisically remove 
 #files installed under Tomcat installation directory:
 deinstall: ${TOMCAT_ANT} deinstall.files
-	export CLASSPATH=${CLASSPATH}:${TOMCAT_ANT}; ${ANT} ${ANT_FLAGS} remove
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} remove
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             Doc4gl browser successfully de-installed.              |"
@@ -171,10 +173,10 @@ else
 	@echo "Tomcat directory unknown. Cannot deinstall"
 endif
 
-#Use Tocat specific ant target "list", to show currently installed Tomcat apps, 
+#Use Tocat specific ant target "list", to show currently installed Tomcat apps,
 #and there status:
 status:
-	${ANT} ${ANT_FLAGS} list
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list
 
 # =========================================================================
 #                              Clean
@@ -184,7 +186,7 @@ clean:
 	$(RM) *.class *.jar *.bak
 	rm -rf classes
 	rm -rf build
-	${ANT} ${ANT_FLAGS} clean
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} clean
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             Doc4gl browser source code now clean.                  |"
