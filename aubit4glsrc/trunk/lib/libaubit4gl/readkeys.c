@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.8 2004-02-23 22:03:39 mikeaubury Exp $
+# $Id: readkeys.c,v 1.9 2004-03-09 16:40:14 mikeaubury Exp $
 #*/
 
 /**
@@ -231,7 +231,7 @@ void A4GL_logkey(long a) {
 		fprintf(keylog,"\\CONTROL-%c\n",(char)a+'A'-1);fflush(keylog);
 		return;
 	}
-	if (isprint(a)&&a!='\\') {
+	if ((a_isprint(a)&&a!='\\') || A4GL_isyes(acl_getenv("LOGALL"))) {
 		fprintf(keylog,"%c",(char)a);fflush(keylog);
 		return;
 	}

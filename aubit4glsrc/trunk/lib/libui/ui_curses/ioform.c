@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.92 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.93 2004-03-09 16:40:15 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.92 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.93 2004-03-09 16:40:15 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2694,6 +2694,11 @@ int
 
   A4GL_debug ("Push_constr");
   A4GL_debug ("nfields=%d", s->nfields);
+  if (s->field_list==0) {
+		A4GL_exitwith("Internal error - no field list");
+      		A4GL_push_char ("");
+		return 0;
+  }
   A4GL_debug ("s-field_list[0]=%p", s->field_list[0]);
 
   for (a = 0; a <= s->nfields; a++)

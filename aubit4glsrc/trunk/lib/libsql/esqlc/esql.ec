@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.77 2004-03-09 08:45:59 mikeaubury Exp $
+# $Id: esql.ec,v 1.78 2004-03-09 16:40:15 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,7 @@
 //WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #define _SQLCA_DEFINED_
 #include  <sqltypes.h>
+#include <string.h>
 
 //#ifndef __QUERIX__
 $include sqlca;
@@ -140,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.77 2004-03-09 08:45:59 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.78 2004-03-09 16:40:15 mikeaubury Exp $";
 #endif
 
 
@@ -896,6 +897,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   long int_var, *int_ptr;
   double float_var, *float_ptr;
   float smfloat_var, *smfloat_ptr;
+  void *vptr;
   dec_t decimal_var;
   long date_var;
   dec_t money_var;
@@ -967,8 +969,8 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 	TYPE =:dataType, DATA =:smfloat_var;
       break;
     case DTYPE_DECIMAL: 
-
-      fgl_decimal = (fgldecimal *) bind[idx].ptr;
+	vptr=(void *)bind[idx].ptr;
+      fgl_decimal = (fgldecimal *) vptr;
 	char_var=(char *)&fgl_decimal->dec_data[2];
       if (deccvasc (char_var, strlen (char_var), &decimal_var))
 	{
@@ -1242,7 +1244,7 @@ int type;
 	  return 1;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
-      A4GL_stodec (tmpbuff, bind[idx].ptr, bind[idx].size);
+      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
       break;
 
 
@@ -1250,8 +1252,12 @@ int type;
     	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var = DATA;
 
       if (isSqlError ())
-	return 1;
-      *(long *) bind[idx].ptr = date_var;
+	return 1; 
+	{
+	long *fgl_date;
+      fgl_date = (long *) bind[idx].ptr;
+      *fgl_date = date_var;
+	}
       break;
 
 

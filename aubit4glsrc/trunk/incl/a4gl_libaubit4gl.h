@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.114 2004-03-04 16:27:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.115 2004-03-09 16:39:24 mikeaubury Exp $
 #
 */
 
@@ -1384,7 +1384,7 @@ void A4GL_display_at (int n, int a);
 
   int atoport (char *service, char *proto);
 #ifndef __MINGW32__
-  int A4GL_get_connection (int socket_type, u_short port, int *listener);
+  int A4GL_get_connection (int socket_type, unsigned short port, int *listener);
 #endif
   int A4GL_sock_read (int sockfd, char *buf, size_t count);
   int A4GL_sock_write (int sockfd, char *buf, size_t count);
