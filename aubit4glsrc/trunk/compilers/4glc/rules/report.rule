@@ -135,7 +135,7 @@ need_command : NEED fgl_expr {start_state("skip",1);} KWLINE {printc("%sneed_lin
 ;
 
 skip_command : SKIP fgl_expr {start_state("KWLINE",1);} KWLINE {printc("%saclfgli_skip_lines(&rep);\n",ispdf());start_state("KWLINE",0); }
-	| SKIP_TO_TOP {printc("%saclfgli_skip_top_of_page(&rep);\n",ispdf());}
+	| SKIP_TO_TOP {printc("%sskip_top_of_page(&rep);\n",ispdf());}
 	| SKIP_BY nval {
 			if (rep_type!=REP_TYPE_PDF) {
 				yyerror("SKIP BY is only in PDF reports");
