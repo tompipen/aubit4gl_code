@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.54 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: conv.c,v 1.55 2003-07-18 07:56:26 mikeaubury Exp $
 #
 */
 
@@ -288,7 +288,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   { A4GL_dtos, A4GL_dtoi, A4GL_dtol, A4GL_dtof, A4GL_dtosf, A4GL_dtodec, A4GL_dtof, A4GL_ltol, A4GL_dtomdec, NO, A4GL_d_to_dt, NO, NO, A4GL_dtovc, NO} ,
   { A4GL_mdectos, A4GL_mdectoi, A4GL_mdectol, A4GL_mdectof, A4GL_mdectosf, A4GL_mdectodec, A4GL_mdectol, NO, A4GL_mdectomdec, NO, NO, NO, NO, A4GL_mdectos, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,
-  { A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO,A4GL_dttodt, NO, NO, NO, NO} ,
+  { A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO,NO,A4GL_dttodt, NO, NO, NO, NO,NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,

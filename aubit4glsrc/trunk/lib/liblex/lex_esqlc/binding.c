@@ -26,6 +26,7 @@ void printc (char *fmt, ...);
 void printh (char *fmt, ...);
 int esql_type (void);
 
+static void print_sql_type_postgres (int a, char ioro);
 
 
 
@@ -205,11 +206,16 @@ void
 print_sql_type (int a, char ioro)
 {
   // Need to do some check to determine which ESQL/C to use...
-  print_sql_type_infx (a, ioro);
+  if (esql_type()==1) {
+  	print_sql_type_infx (a, ioro);
+  }
+  if (esql_type()==2) {
+  	print_sql_type_postgres (a, ioro);
+  }
 }
 
 
-void
+static void
 print_sql_type_infx (int a, char ioro)
 {
 
@@ -293,13 +299,8 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("float _vo_%d;", a);
 	  break;
 	case 5:
-	  if (esql_type()==2) {
 	  	printc ("decimal _vo_%d;", a);
-	  	//printc ("decimal _vo_%d={0,0,0,0,0,NULL,NULL};", a); // No longer required - handled by ecpg
-	  } else {
-	  	printc ("decimal _vo_%d;", a);
-	  }
-	  break;
+	  	break;
 	case 6:
 	  printc ("int _vo_%d;", a);
 	  break;
@@ -307,13 +308,128 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("int _vo_%d;", a);
 	  break;
 	case 8:
-	  if (esql_type()==2) {
 	  	printc ("money _vo_%d;", a);
-	  	//printc ("money _vo_%d={0,0,0,0,0,NULL,NULL};", a); // No longer required - handled by ecpg
-	  } else {
-	  	printc ("money _vo_%d;", a);
-	  }
 	  break;
+	case 9:
+	  printc ("Blah _vo_%d;", a);
+	  break;
+	case 10:
+	  printc ("datetime _vo_%d;", a);
+	  break;
+	case 11:
+	  printc ("interval _vo_%d;", a);
+	  break;
+	case 12:
+	  printc ("text _vo_%d;", a);
+	  break;
+	case 13:
+	  printc ("varchar _vo_%d;", a);
+	  break;
+	case 14:
+	  printc ("interval _vo_%d;", a);
+	  break;
+	}
+    }
+  printc ("\n");
+
+}
+
+
+
+static void print_sql_type_postgres (int a, char ioro)
+{
+
+  if (ioro == 'i')
+    {
+      switch (ibind[a].dtype & 0xffff)
+	{
+	case 0:
+	  printc ("char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 1:
+	  printc ("short _vi_%d;", a);
+	  break;
+	case 2:
+	  printc ("int _vi_%d;", a);
+	  break;
+	case 3:
+	  printc ("double _vi_%d;", a);
+	  break;
+	case 4:
+	  printc ("float _vi_%d;", a);
+	  break;
+
+	case 5:
+	  printc ("decimal _vi_%d;", a);
+	  break;
+
+	case 6:
+	  printc ("int _vi_%d;", a);
+	  break;
+
+	case 7:
+	  printc ("date _vi_%d;", a);
+	  break;
+	case 8:
+	  printc ("money _vi_%d;", a);
+	  break;
+	case 9:
+	  printc ("Blah _vi_%d;", a);
+	  break;
+	case 10:
+	  printc ("datetime _vi_%d;", a);
+	  break;
+	case 11:
+	  printc ("interval _vi_%d;", a);
+	  break;
+	case 12:
+	  printc ("text _vi_%d;", a);
+	  break;
+	case 13:
+	  printc ("varchar _vi_%d;", a);
+	  break;
+	case 14:
+	  printc ("interval _vi_%d;", a);
+	  break;
+	}
+    }
+
+
+  if (ioro == 'o')
+    {
+ 	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+		printc("  short _voi_%d;",a);
+	}
+
+      switch (obind[a].dtype & 0xffff)
+	{
+	case 0:
+	  printc ("char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  break;
+	case 1:
+	  printc ("short _vo_%d;", a);
+	  break;
+	case 2:
+	  printc ("int _vo_%d;", a);
+	  break;
+	case 3:
+	  printc ("double _vo_%d;", a);
+	  break;
+	case 4:
+	  printc ("float _vo_%d;", a);
+	  break;
+	case 5:
+	  	printc ("decimal _vo_%d;", a);
+	  break;
+	case 6:
+	  printc ("int _vo_%d;", a);
+	  break;
+	case 7:
+	  printc ("date _vo_%d;", a);
+	  break;
+	case 8:
+	  	printc ("money _vo_%d;", a);
+	  	break;
 	case 9:
 	  printc ("Blah _vo_%d;", a);
 	  break;

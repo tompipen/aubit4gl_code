@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.17 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.18 2003-07-18 07:56:26 mikeaubury Exp $
 #*/
 
 /**
@@ -352,7 +352,7 @@ process_control_stack (struct s_screenio *sio)
         {
          A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, sio->currentfield, 0, 0);
           new_state = 50;
-	  rval=-90;
+	  rval=-1;
         }
 
       if (sio->fcntrl[a].state == 50)
@@ -385,8 +385,7 @@ process_control_stack (struct s_screenio *sio)
 
       if (sio->fcntrl[a].state == 50)
 	{
-      struct struct_scr_field *fprop;
-
+      	  struct struct_scr_field *fprop;
 	  new_state=0;
 
       			fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
@@ -408,7 +407,7 @@ process_control_stack (struct s_screenio *sio)
 	  		A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
 		} 
               	fprop->flags|=1; // Clear the before field flag
-		rval=-90;
+		rval=-1;
 	  //mja_wrefresh(currwin);
 	}
     }
@@ -658,7 +657,9 @@ A4GL_mja_pos_form_cursor (mform);
 
 // Process the key..
   A4GL_proc_key_input (a, mform, s);
-  return -90;
+
+  //return -90;
+  return -1;
 }
 
 

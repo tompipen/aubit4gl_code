@@ -165,6 +165,31 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 }
 
 
+
+A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) {
+short  mdy[3];
+int mdy_i[3];
+	if (mode=='i') {
+		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);return;}
+		printf("Getdate\n");
+		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
+		mdy[0]=mdy_i[0]; // In aubit - these are integers
+		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
+		mdy[2]=mdy_i[2]; // That informix is expecting
+		rmdyjul(mdy,infx); // Set the informix one
+	}
+
+	if (mode=='o') {
+	printf("gen_Dateno\n");
+		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
+		rjulmdy(*infx,mdy); 				// Get the MDY from informix
+		printf("%d %d %d\n",mdy[1],mdy[0],mdy[2]);
+		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
+	}
+}
+
+
+
 A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.21 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: keys.c,v 1.22 2003-07-18 07:56:26 mikeaubury Exp $
 #
 */
 
@@ -382,8 +382,8 @@ A4GL_debug("init_stddbscr - form_line");
   std_dbscr.border = 0;
   std_dbscr.inpattr = 0;
   std_dbscr.dispattr = 0;
-  std_dbscr.nextkey = A4GLKEY_F (4);
-  std_dbscr.prevkey = A4GLKEY_F (3);
+  std_dbscr.nextkey = A4GLKEY_F (3);
+  std_dbscr.prevkey = A4GLKEY_F (4);
   std_dbscr.acckey = 27;
   std_dbscr.helpkey = 22;
   std_dbscr.input_wrapmode = 0;
