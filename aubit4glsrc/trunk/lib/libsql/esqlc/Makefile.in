@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-09-17 08:12:52 afalout Exp $
 #
 
 ROOT		=../../..
@@ -33,7 +33,7 @@ LIBROOT		=../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -80,7 +80,7 @@ libSQL_esql.so: ${OBJS}
 	${CP} $@ ${LIBROOT}
 
 ${OBJS}: $(SRC)
-	esql -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	@IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 
 ## ==================================================================
 ##                              Windows Targets
@@ -90,19 +90,19 @@ dllSQL_esql: ${SRC} ${DEF}
 #  -e, -p          Preprocess only (no compilation or linking).
 #-dcmdl          Displays command lines of all programs invoked.
 #-c              Preprocess and compile only (no linking).
-	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
+	@IFMX_ESQLC@ -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
 		-I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ${LIBROOT}/libaubit4gl.dll.a
 	${CP} libSQL_esql.dll ${LIBROOT}
 
 ${LIBROOT}/libaubit4gl.def:
-	make -C ${LIBROOT} dllaubit4gl
+	${MAKE} -C ${LIBROOT} dllaubit4gl
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	rm -f *.o *.so *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp *.lib
+	${RM} *.o *.so *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp *.lib
 
 #------------------------------- EOF -------------------------------
 

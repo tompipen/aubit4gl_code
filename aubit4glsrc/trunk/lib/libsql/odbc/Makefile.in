@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2002-09-08 09:41:06 afalout Exp $
+# $Id: Makefile.in,v 1.23 2002-09-17 08:12:52 afalout Exp $
 #
 
 ROOT    =../../..
@@ -45,6 +45,23 @@ CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
 OBJECTS					=sql.o sqlex.o
+
+
+#`-rpath dir'
+#           Add a directory to the runtime  library  search  path.
+#           This  is  used  when  linking  an  ELF executable with
+#           shared objects.  All `-rpath' arguments  are  concate­
+#           nated  and  passed  to  the runtime linker, which uses
+#           them  to  locate  shared  objects  at  runtime.    The
+#           `-rpath'  option  is  also  used  when locating shared
+#           objects which are needed by shared objects  explicitly
+#           included  in  the  link;  see  the  description of the
+#           `-rpath-link' option.  If `-rpath' is  not  used  when
+#           linking  an  ELF executable, the contents of the envi­
+#           ronment variable `LD_RUN_PATH' will be used if  it  is
+#           defined.
+LD_RUN_PATH =${INFORMIXDIR}/lib/esql
+#IFX_RPATH	=-rpath ${INFORMIXDIR}/lib/esql
 
 ## ==================================================================
 ##                              Targets
@@ -92,7 +109,7 @@ ${LIBROOT}/libSQL_unixodbc.so: ${OBJECTS}
 
 ${LIBROOT}/libSQL_ifxodbc.so: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
 ${LIBROOT}/libSQL_ifxodbc.so: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli ${IFX_RPATH} -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 #	cp $@ ${LIBROOT}
 
 ${LIBROOT}/libSQL_pgodbc.so: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.14 2002-08-31 06:19:59 afalout Exp $
+# $Id: mcompile.c,v 1.15 2002-09-17 08:12:51 afalout Exp $
 #*/
 
 /**
@@ -53,7 +53,6 @@
 /* in lex.yy.c */
 extern int 	buffpos				(void);
 extern int 	yyparse				(void);
-
 int			yyerror 			(char *s);	/* fgl_comp_error() */
 int 		yywrap				(void); 	/* fgl_comp_wrap() */
 menu * 		nmenu				(void);

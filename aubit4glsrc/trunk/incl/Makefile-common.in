@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.61 2002-09-09 06:51:01 afalout Exp $
+# $Id: Makefile-common.in,v 1.62 2002-09-17 08:12:52 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -50,6 +50,22 @@ AUBIT_BUILD=@AUBIT_BUILD@
 COMPILE_DATE=@COMPILE_DATE@
 TARGET=@target@
 
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring solaris,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring linux,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring aix,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring cygwin,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=unknown
+endif
+
 SUBDIR:=$(shell pwd)
 
 ## ==================================================================
@@ -60,6 +76,14 @@ SUBDIR:=$(shell pwd)
 ifndef NOINCL
 	NOINCL=0
 endif
+
+#    if expression ; \
+#     then command ; \
+#          ... ; \
+#     else command ; \
+#          ... ; \
+#     fi
+
 
 ifeq "$(NOINCL)" "0"
 
@@ -200,15 +224,28 @@ LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 #automatically pick up the w32api libraries, even if they are installed.
 #command line.
 #even better, use libtool (once it is working on CygWin)
-LD                  =ld
+
+#On Solaris:
+#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+#ld: fatal: option -h and building a dynamic executable are incompatible
+#ld: fatal: Flags processing errors
+
+#LD                  =ld
+LD                  =${CC}
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
 
 NON_PEDANTIC_OK		=1
-#cannot use -pedantic, too much warnings
-CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+#cannot use -pedantic, too much warnings, using Splint instead
+
+ifeq "${TARGET_OS}" "linux"
+	CWARN    		=-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+else
+	CWARN			=
+endif
+
 C_IFLAGS            =-I/usr/local/include
 C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H
 C_IFLAGS 			+=-I$(AUBITDIR)/incl
@@ -251,7 +288,13 @@ PIC					=@PIC@
 #        o Under SunOS-4.1, gcc interprets it by setting the -dc -dp
 #          options for ld, which again forces the allocation of the symbol
 #          table in the code produced (see ld(1) on a Sun).
-RDYNAMIC            =-rdynamic
+
+ifeq "${TARGET_OS}" "solaris"
+	#On Solaris: gcc: unrecognized option `-rdynamic'
+	RDYNAMIC            =
+else
+	RDYNAMIC            =-rdynamic
+endif
 
 
 USE_RPCGEN			=@USE_RPCGEN@
@@ -275,7 +318,20 @@ AUBIT_LIB			=-laubit4gl
 
 SO_EXT=@SO_EXT@
 
-ifdef COMSPEC
+## ==================================================================
+##                    Platform dependent Settings
+## ==================================================================
+
+ifdef COMSPEC #############Windows platform - CygWin related:################
+
+	ARCHEXT			=zip
+    DIRSEP			=\\
+	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
+	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
+	GTKCONFIGCMD	=echo ${LIBVER}
+    LDDCMD          =cygcheck
+    #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
+
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
 	#native-struct rewuired by GTK on Windows
 	CFLAGS		+=-DWIN32 -fnative-struct
@@ -296,7 +352,17 @@ ifdef COMSPEC
 	LN_S_LIB    =cp
 	CPEXE		=cp
 
-else
+
+else ####################### Platform is UNIX ##############################
+
+	ARCHEXT			=tar.gz
+    DIRSEP			=/
+	#on unix, we expect to have WWW set in environment
+	#WWW			=/data2/htdocs
+	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
+	GTKCONFIGCMD	=gtk-config --version
+    LDDCMD          =ldd
+
     #FIXME: add -g from configure
 	#FIXME: verify that we need -fPIC in CFLAGS
 	CFLAGS      +=${PIC}
@@ -314,7 +380,10 @@ else
     #and destination is on different deveices:
 	#LN_S_LIB    =${LN_S}
 	CPEXE		=${LN_H}
+
 endif
+
+
 
 ####################### from aubitbuild-multi.mk ####################
 
@@ -731,6 +800,7 @@ BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
 ##                    To lib directory
 ## ==================================================================
 
+#Lib files we build allways
 TMP_LIBFILES= \
 	@LIBFILE_1@ @LIBFILE_2@ @LIBFILE_3@ @LIBFILE_4@ @LIBFILE_5@ @LIBFILE_6@ \
 	@LIBFILE_7@ @LIBFILE_8@ @LIBFILE_9@ @LIBFILE_10@ @LIBFILE_11@ @LIBFILE_12@ \
@@ -758,6 +828,7 @@ LIB_SO		=${LIB_DEFAULT}
 #Only DLL wr will actually link against - everything else is loaded at run-time:
 LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
 
+#Lib files we build depending on available 3rd party support:
 TMP_RPMFILES = \
 	@RPMFILE_1@ @RPMFILE_2@ @RPMFILE_3@ @RPMFILE_4@ @RPMFILE_5@ @RPMFILE_6@ \
 	@RPMFILE_7@ @RPMFILE_8@ @RPMFILE_9@ @RPMFILE_10@ @RPMFILE_11@ @RPMFILE_12@ \
@@ -766,6 +837,10 @@ TMP_RPMFILES = \
 	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
 	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@
 
+#remains:
+#lib  libtool
+#[root@aptiva aubit4gl]# ls lib
+#libEXREPORT_PDF.so  libIM_JABBER.so  libSQL_iodbc.so
 
 
 LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
@@ -800,7 +875,7 @@ DOC_FILES		=changelog.txt COPYING CREDITS LICENSE aubit4gl.ico
 
 TEST_STD= \
 		assoc2.4gl  form.per    hello_db.4gl  pdf_report.4gl  testmpz.4gl \
-		basic.4gl   hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
+		hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
 		file.4gl    hello.4gl   Makefile      testmenu.4gl testmenu.menu
 
 TEST_GUI= \

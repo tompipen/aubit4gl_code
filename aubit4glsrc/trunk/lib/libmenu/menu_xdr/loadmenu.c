@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.16 2002-08-31 06:20:00 afalout Exp $
+# $Id: loadmenu.c,v 1.17 2002-09-17 08:12:52 afalout Exp $
 #*/
 
 /**
@@ -72,10 +72,10 @@ GtkWidget *tooltips = 0;
 
 static GtkWidget * real_load_menu (char *fname, char *menu_id, int mode, void *handler);
 
-char* mn_caption(char *s);
-char* mn_help(char *s);
-void show_menu (char *menuid, void *handler);
-void endis_menuitems (int en_dis, ...);
+char * 	mn_caption		(char *s);
+char * 	mn_help			(char *s);
+void 	show_menu 		(char *menuid, void *handler);
+void 	endis_menuitems (int en_dis, ...);
 
 /*
 =====================================================================
@@ -310,6 +310,8 @@ create_menu (menu_list *m, char *id, int mode, void *handler)
 
 /**
  * Load 4gl menus from a compiled file.
+ * A redirector function to satisfy function prototype in API while using
+ * void pointer in return
  *
  * @param fname
  * @param menuid The menu name.
@@ -322,6 +324,17 @@ load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
 	return real_load_menu (fname,menu_id,mode,handler);
 }
+
+
+/**
+ * Load 4gl menus from a compiled file.
+ *
+ * @param fname
+ * @param menuid The menu name.
+ * @param mode
+ * @param handler The menu handler name.
+ * @return A pointer to the menu widget created.
+ */
 static GtkWidget *
 real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {

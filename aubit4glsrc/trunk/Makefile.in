@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.84 2002-09-09 06:50:50 afalout Exp $
+# $Id: Makefile.in,v 1.85 2002-09-17 08:12:16 afalout Exp $
 #
 
 ## ==================================================================
@@ -34,44 +34,17 @@
 include incl/Makefile-common
 
 ## ==================================================================
-##                    Platform dependent Settings
+##                    Automatic build Settings
 ## ==================================================================
 
-ifdef COMSPEC #############Windows platform - CygWin related:################
+AUBITCVSSFNAME		=aubit4glsrc
+NAMEVERBLD			=${AUBITCVSSFNAME}-${AUBITVERSION}-${AUBITBUILD}
+PLATFORMINFO		=${NAMEVERBLD}.txt
+SOURCETARBASENAME	=${NAMEVERBLD}.${ARCHEXT}
+SOURCETARNAME		=$(SOURCE)/$(SOURCETARBASENAME)
 
-	ARCHEXT			=zip
-    DIRSEP			=\\
-	EXE				=.exe
-	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
-	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
-	GTKCONFIGCMD	=echo ${LIBVER}
-    LDDCMD          =cygcheck
-    #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
-
-else ####################### Platform is UNIX ##############################
-
-	ARCHEXT			=tar.gz
-    DIRSEP			=/
-	#on unix, we expect to have WWW set in environment
-	#WWW			=/data2/htdocs
-	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
-	GTKCONFIGCMD	=gtk-config --version
-    LDDCMD          =ldd
-endif
-
-
-## ==================================================================
-##                    Nightly builds Settings
-## ==================================================================
-
-AUBITCVSSFNAME=aubit4glsrc
-NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
-
-PLATFORMSTRING	=compile-platform-info
-PLATFORMINFO	=${PLATFORMSTRING}.txt
-
-SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
-SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
+#Path under your web server HTDOCS dir, where to put Doxy generated files:
+DOXY_WWWPATH        =projects/Aubit4GL/doxy
 
 ## ==================================================================
 ##                    Define default target
@@ -81,7 +54,7 @@ ALL					=settings corecompile test
 ALL_EXTRA  			=libfile libstring ide odbctest libhtml
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
-ALL_EXTRA_BROKEN	= adbaccess adbload
+ALL_EXTRA_BROKEN	=adbaccess adbload
 
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
@@ -185,12 +158,11 @@ test.perl:
 	cd tools/test; perl test_build.pl
 
 
-## ------------------------------------------------------------------
+## ==================================================================
 ##            DoxyGen doccumentation creation
-## ------------------------------------------------------------------
+## ==================================================================
 
 doxy: docs/doxy/html/index.html
-
 docs/doxy/html/index.html:
 ifneq "@DOXYGEN@" "no"
 	${MAKE} doxy.make
@@ -200,23 +172,25 @@ endif
 ifneq "@CGI_DIR@" ""
 	${MAKE} doxy.install.search
 endif
+	@echo DoxyGen source code documentation generated.
 	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
 else
-	@echo "Sorry DOXYGEN not installed"
+	@echo "Sorry DOXYGEN not detected"
 endif
 
 doxy.make:
 	rm -rf docs/doxy/html
-	doxygen docs/doxy/Doxyfile
+	@DOXYGEN@ docs/doxy/Doxyfile
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
 doxy.install.www:
-	rm -rf @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	cd @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html; doxytag -s search.idx
+	rm -rf @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	${MKPATH} @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	cd @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html; doxytag -s search.idx
 	@echo DoxyGen doccumentation installed in web server path :
-	@echo @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	@echo Point your web browser to @WWW_HOST_NAME@/projects/Aubit4GL/doxy/html/index.html
+	@echo @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	@echo Point your web browser to @WWW_HOST_NAME@/${DOXY_WWWPATH}/html/index.html
 
 doxy.install.search:
 	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
@@ -317,7 +291,7 @@ clean.root:
 #We must not clean *.log when running make process to make.log:
 #we must not clean *.tmp because of unixbuildnames.tmp:
 	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
-	*.err ${PLATFORMSTRING}*.txt make.log commit.log rpmbuild.log \
+	*.err ${PLATFORMINFO} make.log commit.log rpmbuild.log \
 	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log \
     tmpdlpage1.html
 
@@ -353,7 +327,7 @@ clean.install:
 
 clean.swig:
 	@if [ -f lib/swig/?akefile ]; then \
-		$(MAKE) ${MKNAME} -C lib/swig clean; \
+		$(MAKE) -C lib/swig clean; \
     fi
 	(cd lib/swig; ${RM} lib_wrap.c *.old *.bak aubit4gl_pl.pm domake)
 
@@ -479,8 +453,8 @@ createcleantar: installdrop installall tarinstall
 tar: clean.all
 #COMPILE_DATE=20-01-2002
 #TARGET=i586-pc-linux-gnu
-	${RM} aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
-	tar -cvzf aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
+	${RM} ${SOURCETARBASENAME}
+	tar -cvzf ${SOURCETARBASENAME} *
 	@echo "Aubit source tarball created"
 
 source.zip:
@@ -748,7 +722,7 @@ settings.common:
 	@echo "LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}" >> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) >> ${OUT}
-	@echo AUBITDIR=${AUBITDIR} OS=$(TARGET) >> ${OUT}
+	@echo AUBITDIR=${AUBITDIR} OS=$(TARGET) TARGET_OS=${TARGET_OS}>> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 
 show.platform: OUT="/tmp/showplatform"
