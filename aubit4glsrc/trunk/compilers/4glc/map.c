@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.22 2003-01-29 11:31:21 mikeaubury Exp $
+# $Id: map.c,v 1.23 2003-01-30 11:52:29 afalout Exp $
 #*/
 
 /**
@@ -400,6 +400,13 @@ printUsage(char *argv[])
   printf("specified. All options that are not recognised, are passed to C compiler,\n");
   printf("if -c -o -d or -l was specified.\n");
   printf("\n");
+
+/*
+  printf("sec =%d\n",current_second());
+//extern long int random (void)
+srandom ((unsigned int) current_second());
+  printf("sec =%d\n",random());
+*/
 }
 
 

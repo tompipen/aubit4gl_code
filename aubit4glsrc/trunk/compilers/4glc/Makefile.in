@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.53 2003-01-29 11:31:21 mikeaubury Exp $
+# $Id: Makefile.in,v 1.54 2003-01-30 11:52:29 afalout Exp $
 #
 
 ROOT		=../..
@@ -113,6 +113,9 @@ all: ${ALL}
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
+#ifeq "${STRIP_EXECUTABLES}" "yes"
+	${STRIP} -o $@-strip $@
+#endif
 
 ## ==================================================================
 ##                            Windows Targets
@@ -175,7 +178,7 @@ lexer.o: 						${GENRULES}/kw.h
 lexer.o: 						${GENRULES}/y.tab.h
 
 wantkw.c: rules/generated/y.output
-	perl wantkw_gen.pl
+	@PERL@ wantkw_gen.pl
 wantkw.o: wantkw.c
 
 ## ==================================================================
@@ -193,7 +196,8 @@ lclint: $(CMODS)
 ## ==================================================================
 
 clean: clean.rules.generated clean.rules
-	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a *.def
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* \
+	4glp *.log *.dll *.dll.a *.def wantkw.c wantkw.h
 
 clean.rules.generated:
 	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.96 2003-01-29 14:34:37 mikeaubury Exp $
+# $Id: mod.c,v 1.97 2003-01-30 11:52:29 afalout Exp $
 #
 */
 
@@ -3251,9 +3251,7 @@ char pklist[1024];
   	strcpy (ii, s);
 	strcat (ii, ".glb");
    	#ifdef DEBUG
-		/* CRAP! I already have downshifted file name here!!! */
 		debug ("Trying to open globals file %s\n", ii);
-    	fprintf (stderr, "Trying to open globals file %s\n", ii);
     #endif
 
 
@@ -4500,16 +4498,16 @@ static char buff[256];
 int a;
 int c;
 
-c=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]==',') {
-		buff[c++]='-';
-		buff[c++]='1';
+	c=0;
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]==',') {
+			buff[c++]='-';
+			buff[c++]='1';
+		}
+		buff[c++]=s[a];
 	}
-	buff[c++]=s[a];
-}
-buff[c++]='-';
-buff[c++]='1';
-buff[c]=0;
-return buff;
+	buff[c++]='-';
+	buff[c++]='1';
+	buff[c]=0;
+	return buff;
 }
