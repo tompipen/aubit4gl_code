@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.67 2004-01-17 09:40:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.68 2004-01-17 10:41:42 mikeaubury Exp $
 #*/
 
 /**
@@ -1087,7 +1087,8 @@ int
       inpa->last_scr_line = 1;
       inpa->last_arr_line = 1;
       A4GL_debug ("inp_arr - returning -99  BEFORE INPUT....");
-      return -99;
+    	if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);
+      return -1;
     }
   A4GL_debug ("inpaarr4");
   //ireinpalay_arr (inpa, 2);
@@ -1714,6 +1715,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
     {
+
+	A4GL_debug("AFTER INPUT ?");
 	  A4GL_comments(0);
 
       if (arr->fcntrl[a].state == 99)
@@ -1944,7 +1947,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{
 	  new_state = 50;
 	  last_key_code=arr->fcntrl[a].extent;
-	  rval = -90;
+	  rval=-90;
 	}
 
 
@@ -2498,14 +2501,17 @@ A4GL_debug("Called pop_iarr_var - ok");
   return rval;
 }
 
-static int process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt) {
+static int process_control_stack (struct s_inp_arr  *sio,struct aclfgl_event_list *evt) {
 int rval;
 rval=process_control_stack_internal(sio);
 A4GL_debug("Got rval as : %d",rval);
 switch (rval) {
         case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
         case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
-        case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) {return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+        case -90 : if (A4GL_has_event_for_keypress(last_key_code,evt)) {
+                        sio->processed_onkey = 0;
+			return A4GL_has_event_for_keypress(last_key_code,evt);
+		   } rval=-1;break;
         case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
         case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
         case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
