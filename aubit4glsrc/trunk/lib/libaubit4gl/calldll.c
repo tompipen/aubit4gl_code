@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.37 2003-07-27 09:15:30 mikeaubury Exp $
+# $Id: calldll.c,v 1.38 2003-09-03 19:10:41 mikeaubury Exp $
 #
 */
 
@@ -608,6 +608,14 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   A4GLSQL_set_status (0, 0);
   strcpy (nfile, filename);
 
+  if (strncmp(nfile,"a4gl_",5)==0) { /* Do upshift on A4GL */
+	nfile[0]='A';
+	nfile[1]='4';
+	nfile[2]='G';
+	nfile[3]='L';
+  }
+A4GL_debug("nfile=%s\n",nfile);
+
 #if (defined(__MACH__) && defined(__APPLE__))
   strcpy (nfunc, "aclfgl__");
 #else
@@ -626,7 +634,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "%s/lib/lib%s.so", acl_getenv ("AUBITDIR"), filename);
+      sprintf (buff, "%s/lib/lib%s.so", acl_getenv ("AUBITDIR"), nfile);
       A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -635,7 +643,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./lib%s.so", filename);
+      sprintf (buff, "./lib%s.so", nfile);
       A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -644,7 +652,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./%s.so", filename);
+      sprintf (buff, "./%s.so", nfile);
       A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
