@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.242 2004-09-23 06:15:26 afalout Exp $
+dnl # $Id: configure.in,v 1.243 2004-09-24 06:28:22 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -455,6 +455,7 @@ AC_SUBST(GDK_NAME)
 AC_SUBST(GLIB_NAME)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GTK_VERSION)
+AC_SUBST(HAS_GLADE_2)
 
 #Sun RPC/XDR
 AC_SUBST(RPCGEN)
@@ -584,6 +585,7 @@ AC_SUBST(ALL_EXAMP_GUI)
 AC_SUBST(RUNTIME_EXE)
 AC_SUBST(ALL_MAKEFILE)
 AC_SUBST(CONVSQL_FILES)
+AC_SUBST(IMPORT_FILES)
 AC_SUBST(AMAKE_INCL_FILES)
 AC_SUBST(INCL_HEADERS_EC)
 AC_SUBST(INCL_HEADERS_EC_REMOVETHIS)
@@ -1249,6 +1251,49 @@ AC_SUBST(ISCONVFILE_18)
 AC_SUBST(ISCONVFILE_19)
 AC_SUBST(ISCONVFILE_20)
 
+#Import files
+AC_SUBST(IMPORTFILE_1)
+AC_SUBST(IMPORTFILE_2)
+AC_SUBST(IMPORTFILE_3)
+AC_SUBST(IMPORTFILE_4)
+AC_SUBST(IMPORTFILE_5)
+AC_SUBST(IMPORTFILE_6)
+AC_SUBST(IMPORTFILE_7)
+AC_SUBST(IMPORTFILE_8)
+AC_SUBST(IMPORTFILE_9)
+AC_SUBST(IMPORTFILE_10)
+AC_SUBST(IMPORTFILE_11)
+AC_SUBST(IMPORTFILE_12)
+AC_SUBST(IMPORTFILE_13)
+AC_SUBST(IMPORTFILE_14)
+AC_SUBST(IMPORTFILE_15)
+AC_SUBST(IMPORTFILE_16)
+AC_SUBST(IMPORTFILE_17)
+AC_SUBST(IMPORTFILE_18)
+AC_SUBST(IMPORTFILE_19)
+AC_SUBST(IMPORTFILE_20)
+
+AC_SUBST(ISIMPORTFILE_1)
+AC_SUBST(ISIMPORTFILE_2)
+AC_SUBST(ISIMPORTFILE_3)
+AC_SUBST(ISIMPORTFILE_4)
+AC_SUBST(ISIMPORTFILE_5)
+AC_SUBST(ISIMPORTFILE_6)
+AC_SUBST(ISIMPORTFILE_7)
+AC_SUBST(ISIMPORTFILE_8)
+AC_SUBST(ISIMPORTFILE_9)
+AC_SUBST(ISIMPORTFILE_10)
+AC_SUBST(ISIMPORTFILE_11)
+AC_SUBST(ISIMPORTFILE_12)
+AC_SUBST(ISIMPORTFILE_13)
+AC_SUBST(ISIMPORTFILE_14)
+AC_SUBST(ISIMPORTFILE_15)
+AC_SUBST(ISIMPORTFILE_16)
+AC_SUBST(ISIMPORTFILE_17)
+AC_SUBST(ISIMPORTFILE_18)
+AC_SUBST(ISIMPORTFILE_19)
+AC_SUBST(ISIMPORTFILE_20)
+
 #Amake files:
 AC_SUBST(ISAMAKEFILE_1)
 AC_SUBST(ISAMAKEFILE_2)
@@ -1812,6 +1857,9 @@ RUNTIME_EXE="fshow afinderr configurator $AMAKE_BIN_EXE"
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
         aace adecompile convertsql aace_4gl aace_perl default_frm "
 
+#Currently fail to compile on formhandler: ide1.4ae 
+#Needs IFX ESQL/C: sqleditor.4ae
+		
 #aupscol currently compiles only with Informix ESQL/C
 #asql_p / asql_i compile only if PG / IFX ESQLC compilers are installed
 
@@ -2039,10 +2087,9 @@ ROOT_FILES_DOC="README.txt"
 	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help'"
 
 ## ==================================================================
-##       Define permanent list of conversion files to build/install
+##       Define permanent list of conversion files to install
 ## ==================================================================
 
-#FIXME: still to be added to RPM and Windows installers.
 CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv"
 
@@ -2053,7 +2100,19 @@ CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\convertsql\\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
 	done
 
+## ==================================================================
+##       Define permanent list of import files to install
+## ==================================================================
 
+IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
+	default  README"
+
+    COUNTER=0
+	for FILE in $IMPORT_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "IMPORTFILE_$COUNTER='%doc $INST_BASE/etc/import/$FILE'"
+		eval "ISIMPORTFILE_$COUNTER='Source: $IS_SOURCE\etc\import\\$FILE; DestDir: {app}\etc\import; Components: runtime'"
+	done
 
 ## ==================================================================
 ##       Define permanent list of configuration files to build/install
@@ -2292,6 +2351,17 @@ fi
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking standard programs:)
+
+	AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+	if test "$PKG_CONFIG" != "no"; then
+		AC_MSG_CHECKING(pkg-config version)
+		PKG_CONFIG_VERSION=`$PKG_CONFIG --version`
+		if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
+			AC_MSG_RESULT(OK ($PKG_CONFIG_VERSION))
+		else
+			AC_MSG_WARN([*** pkg-config ($PKG_CONFIG_VERSION) too old; version 0.14 or later required.])
+		fi
+	fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
@@ -4576,19 +4646,6 @@ AC_ARG_WITH(pgodbc,
 #            $DEP_PKG_ERRORS]))
 
 #
-# Find pkg-config
-#
-#AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-#if test x$PKG_CONFIG = xno ; then
-#  AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
-#fi
-#
-#if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
-#  :
-#else
-#  AC_MSG_ERROR([*** pkg-config too old; version 0.14 or better required.])
-#fi
-
 
 PHP_CONFIGURE_PART(Checking for GTK+ GUI support:)
 
@@ -4608,7 +4665,6 @@ AC_ARG_WITH(gtk,
 		old_PATH="$PATH"
 		PATH="$PATH:$withval/bin"
 		AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-		AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
         PATH="$old_PATH"
 #---cut---
 		old_LIBS=$LIBS
@@ -4822,7 +4878,36 @@ AC_MSG_RESULT($GTKBUILD ($GTK_NAME $GDK_NAME $GLIB_NAME) $GTK_VERSION)
 
 #Fixme: we should test for GTK+ versions
 
+## ==================================================================
+##                  Check for Glade support
+## ==================================================================
 
+PHP_CONFIGURE_PART(Checking for Glade support:)
+
+if test "$PKG_CONFIG" != "no"; then
+	AC_MSG_CHECKING(Glade 2 in pkg-config)
+	#--exists  return 0 if the module(s) exist
+	GLADE_NAME="libglade-2.0"
+	if $PKG_CONFIG --exists $GLADE_NAME ; then
+		HAS_GLADE_2=1
+		GLADE_VERSION=`$PKG_CONFIG --modversion $GLADE_NAME`
+		AC_MSG_RESULT(pkg-config reports $GLADE_NAME present ($GLADE_VERSION))
+		#In GladeWin Windows installer:
+		#/cygdrive/c/GTK/lib/libglade-2.0.dll.a
+		AC_CHECK_LIB([glade-2.0], [main])
+		AC_CHECK_LIB([glade], [main])
+		AC_CHECK_LIB([glade-gnome], [main])
+	else
+		HAS_GLADE_2=0
+		AC_MSG_RESULT(pkg-config reports $GLADE_NAME MISSING)
+	fi
+else
+	HAS_GLADE_2=0
+	AC_MSG_RESULT(no pkg-config detected)
+fi
+		
+#TODO: if found, enable compiling of lib/libui/ui_glade
+		
 ## ==================================================================
 ##                  Check for Jabber IM support
 ## ==================================================================
@@ -6489,6 +6574,13 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
+	if test "$HAS_GLADE_2" = "1" -a "$GTKBUILD" != "no"; then
+		PLUGIN_YES="$PLUGIN_YES UI_GLADE A4GL_glade"	
+	else
+        PLUGIN_NO="$PLUGIN_NO UI_GLADE A4GL_glade"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.glade2"
+	fi
+	
 	#All libMENU_xxx need libUI_GTK on Windows to be linked with, to
     #resolve symbols - so all libMENU_ must be built after libUI_GTK
 	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
@@ -6980,7 +7072,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.242 2004-09-23 06:15:26 afalout Exp $
+| $Id: configure.in,v 1.243 2004-09-24 06:28:22 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

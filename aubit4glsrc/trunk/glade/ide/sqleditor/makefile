@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.2 2004-07-04 23:59:57 afalout Exp $
+# $Id: makefile,v 1.3 2004-09-24 06:29:05 afalout Exp $
 #
 
 ROOT					=../../..
@@ -52,7 +52,11 @@ A4GL_LEXDIALECT			=INFORMIX
 OBJ						= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
 						execute.ao simple_parse.o lex.yy.o main.ao
 
-ALL						=${ROOT}/bin/sqleditor.4ae
+ifneq "${IFMX_ESQLC}" "no"
+	ALL						=${ROOT}/bin/sqleditor.4ae
+else
+	ALL						=no_esql
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -62,7 +66,12 @@ all: ${ALL}
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Default target (${ALL}) succesfully compiled"
 	@echo "+--------------------------------------------------------------------+"	
-	
+
+no_esql:
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Informix ESQL/C not detected - cannot compile Glade SQL editor     |"
+	@echo "+--------------------------------------------------------------------+"
+
 ${ROOT}/bin/sqleditor.4ae: ${OBJ}
 	${4GLPC} $^ -o $@
 	

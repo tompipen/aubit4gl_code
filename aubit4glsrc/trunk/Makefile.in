@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.158 2004-09-22 14:36:44 afalout Exp $
+# $Id: Makefile.in,v 1.159 2004-09-24 06:28:07 afalout Exp $
 #
 
 ## ==================================================================
@@ -39,13 +39,13 @@ include incl/Makefile-common
 
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
-.PHONY: all clean default log corecompile extra ide api.headers
+.PHONY: all clean default log corecompile extra ide api.headers glade
 
 ALL					=settings api.headers corecompile liblogical test
 ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
-ALL_EXTRA_BROKEN	=
+ALL_EXTRA_BROKEN	=glade
 
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
@@ -242,6 +242,20 @@ jabber:
 adbload:
 	$(MAKE) -C tools/adbload
 
+#Glade IDE has no dependencies to compile, SQL Editor needs IFX ESQL 
+#(check is in it's makefile). Both need libglade to run.
+#TODO: include in install/deinstall, RPM and Windows installer
+glade:
+	$(MAKE) -C glade/ide
+ifneq "${IFMX_ESQLC}" "no" 	
+	$(MAKE) -C glade/ide/sqleditor
+endif	
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Successfuly built Glade support                                    |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+
 ## ==================================================================
 ##                        Perl output mode
 ## ==================================================================
@@ -384,6 +398,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/adbaccess clean
 	$(MAKE) -C tools/aupscol clean
 	$(MAKE) -C help clean
+	$(MAKE) -C glade/ide clean
 	@echo " "	
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Aubit 4gl compiler source tree is now clean                        |"
@@ -589,6 +604,7 @@ install.setmod:
 install.config: install.home
 	$(CP) ${TOETC} $(ETC_DEST)
 	$(CP) ${TOCONVSQL} $(CONVSQL_DEST)
+	$(CP) ${TOIMPORT} $(IMPORT_DEST)
 	@echo "Configuration examples installed to $(INSTALL_DIR)/etc"
 
 #Install files in user's home directory
@@ -623,7 +639,7 @@ pack.ide:
 #Create installation tree
 install.tree:
 	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) \
-	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST}
+	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST} ${IMPORT_DEST}
 	@echo "Aubit 4gl compiler instalation tree created"
 #FIXME: we need to chown installation tree to something, since installation has 
 #to be run as root - or use "install" utility?

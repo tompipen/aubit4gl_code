@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.23 2004-09-18 06:32:37 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.24 2004-09-24 06:29:04 afalout Exp $
 #
 
 ###########
@@ -488,7 +488,27 @@ make install
 @CONVFILE_19@
 @CONVFILE_20@
 
-
+#Import files:
+@IMPORTFILE_1@
+@IMPORTFILE_2@
+@IMPORTFILE_3@
+@IMPORTFILE_4@
+@IMPORTFILE_5@
+@IMPORTFILE_6@
+@IMPORTFILE_7@
+@IMPORTFILE_8@
+@IMPORTFILE_9@
+@IMPORTFILE_10@
+@IMPORTFILE_11@
+@IMPORTFILE_12@
+@IMPORTFILE_13@
+@IMPORTFILE_14@
+@IMPORTFILE_15@
+@IMPORTFILE_16@
+@IMPORTFILE_17@
+@IMPORTFILE_18@
+@IMPORTFILE_19@
+@IMPORTFILE_20@
 
 ##############
 %changelog

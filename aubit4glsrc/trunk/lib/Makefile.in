@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.104 2004-06-28 12:33:49 afalout Exp $
+# $Id: Makefile.in,v 1.105 2004-09-24 06:29:05 afalout Exp $
 #
 
 ROOT    =..
@@ -73,6 +73,8 @@ LIBSQLESQL_PATH     =libsql/esqlc
 LIBUIHL_PATH       =libui/ui_highlevel
 LIBUICURSES_PATH	=libui/ui_curses
 LIBUICONSOLE_PATH	=libui/ui_console
+LIBUIGLADE_PATH		=libui/ui_glade
+LIBUIGLADELIB_PATH	=libui/ui_glade/glade_lib
 LIBFORMNOFORM_PATH	=libform/noform
 LIBFORMXDR_PATH		=libform/form_xdr
 LIBFORMGENERIC_PATH	=libform/form_generic
@@ -171,6 +173,10 @@ LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_P
 					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}
 LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \
 					$(wildcard ${LIBUICONSOLE_PATH}/Makefile) ${ALL_H}
+LIBUIGLADE_DEPS		=$(wildcard ${LIBUIGLADE_PATH}/*.c) \
+					$(wildcard ${LIBUIGLADE_PATH}/Makefile) ${ALL_H}
+LIBUIGLADELIB_DEPS	=$(wildcard ${LIBUIGLADELIB_PATH}/*.4gl) \
+					$(wildcard ${LIBUIGLADELIB_PATH}/makefile) ${ALL_H}
 LIBFORMNOFORM_DEPS	=$(wildcard ${LIBFORMNOFORM_PATH}/*.c) $(wildcard ${LIBFORMNOFORM_PATH}/*.h) \
 					$(wildcard ${LIBFORMNOFORM_PATH}/Makefile) ${ALL_H}
 LIBFORMXDR_DEPS		=$(wildcard ${LIBFORMXDR_PATH}/*.c) $(wildcard ${LIBFORMXDR_PATH}/*.h) \
@@ -234,6 +240,11 @@ libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
 libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_GTK${SO_EXT}
 
+libA4GL_glade${SO_EXT}: ${LIBUIGLADELIB_DEPS}
+	$(MAKE) -C ${LIBUIGLADELIB_PATH}
+
+libUI_GLADE${SO_EXT}: ${LIBUIGLADE_DEPS}
+	$(MAKE) -C ${LIBUIGLADE_PATH}
 
 ##############
 #libFORM_
@@ -487,6 +498,8 @@ clean.libui:
 	${MAKE} -C ${LIBUIHL_PATH} clean
 	${MAKE} -C ${LIBUICONSOLE_PATH} clean
 	${MAKE} -C ${LIBUICURSES_PATH} clean
+	${MAKE} -C ${LIBUIGLADELIB_PATH} clean
+	${MAKE} -C ${LIBUIGLADE_PATH} clean
 
 clean.libsql:
 	${MAKE} -C ${LIBSQLNOSQL_PATH} clean

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.38 2004-09-22 14:39:03 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.39 2004-09-24 06:29:04 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -1042,9 +1042,7 @@ if test "$COMPARE" = "1"; then
 
 	#source tarball
 	if test "$SOURCETARBASENAME" != ""; then
-		if test " -f /tmp/$SOURCETARBASENAME"; then
-			rm -f /tmp/$SOURCETARBASENAME
-	    fi
+		rm -f /tmp/$SOURCETARBASENAME
 		if test "$COMPARE_SIZE" = "1"; then
 			compare_size $SOURCETARBASENAME $SOURCETARNAME
 		else
@@ -1052,146 +1050,58 @@ if test "$COMPARE" = "1"; then
 		fi
     fi
 
+	#binary tarball
 	if test "$TARBALLBASENAME" != "" -a "$TARBALL" != "NONE"; then
-		if test " -f /tmp/$TARBALLBASENAME"; then
-			rm -f /tmp/$TARBALLBASENAME
-	    fi
-		EXEC="$AUTOSFSCPGET $SCPPATH/$TARBALLBASENAME"; runexec
-		
-		if [ -f /tmp/$TARBALLBASENAME ]; then
-			diff /tmp/$TARBALLBASENAME $TARBALL
-			RET=$?
-			if test $RET != "0"; then
-		        #echo "Error: /tmp/$TARBALLBASENAME and $TARBALL are different"
-				ls -al /tmp/$TARBALLBASENAME
-				ls -al $TARBALL
-				if [ "$VERBOSE" = "1" ]; then
-					echo "Failed cmd was: $EXEC"
-				fi
-				echo "----------------------------------------------------"
-				COMPARED_OK=0
-				if test "$STOP_AFTER_DL_ERROR" = "1"; then 
-					exit 54
-				fi
-		    fi
-        else
-            echo "Downlaod of $TARBALLBASENAME failed"
-			if [ "$VERBOSE" = "1" ]; then
-				echo "Failed cmd was: $EXEC"
-			fi
-			echo "----------------------------------------------------"
-			COMPARED_OK=0
-        fi
+		rm -f /tmp/$TARBALLBASENAME
+		if test "$COMPARE_SIZE" = "1"; then
+			compare_size $TARBALLBASENAME $TARBALL
+		else
+			compare_files $TARBALLBASENAME $TARBALL
+		fi
     fi
-
-	if test "$WINSETUPEXE" != ""; then
-		rm -f "/tmp/$WINSETUPEXE_BASENAME"
 
 #works OK:
 #scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit\ 4GL\ compiler\ 0.30RC3.147.exe" .
-
 #Works:
 #$ auto_sf_scp_get /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe
 #spawn scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe" .
 # but you need to replace -> spawn scp -q afalout@aubit4gl.sourceforge.net:"$argv" .
 #with -> spawn scp -q afalout@aubit4gl.sourceforge.net:"[lrange $argv 0 5]" .
 #in auto_sf_scp_get !!!!
-
-		EXEC="$AUTOSFSCPGET $SCPPATH/$WINSETUPEXE_BASENAME"; runexec
-		if test -f "/tmp/$WINSETUPEXE_BASENAME"; then
-			diff "/tmp/$WINSETUPEXE_BASENAME" "$WINSETUPEXE"
-			RET=$?
-			if test $RET != "0"; then
-		        #echo "Error: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are different"
-				ls -al "/tmp/$WINSETUPEXE_BASENAME"
-				ls -al "$WINSETUPEXE"
-				if [ "$VERBOSE" = "1" ]; then
-					echo "Failed cmd was: $EXEC"
-				fi
-				echo "----------------------------------------------------"
-				COMPARED_OK=0
-				if test "$STOP_AFTER_DL_ERROR" = "1"; then 
-					exit 54
-				fi
-		    else
-				if test "$VERBOSE" = "1"; then
-					echo "OK: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are same"
-                fi
-			fi
-        else
-			echo "Download of $WINSETUPEXE_BASENAME failed"
-			if [ "$VERBOSE" = "1" ]; then
-				echo "Failed cmd was: $EXEC"
-			fi
-			echo "----------------------------------------------------"
-			COMPARED_OK=0
-        fi
-    fi
-
-	if test "$RPM" = "1"; then
-		if test "$SOURCERPM" != ""; then
-			if test " -f /tmp/$SOURCERPMBASENAME"; then
-				rm -f /tmp/$SOURCERPMBASENAME
-		    fi
-			EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCERPMBASENAME"; runexec
-			if [ -f /tmp/$SOURCERPMBASENAME ]; then
-				diff /tmp/$SOURCERPMBASENAME $SOURCERPM
-				RET=$?
-				if test $RET != "0"; then
-			        #echo "Error: /tmp/$SOURCERPMBASENAME and $SOURCERPM are different"
-					ls -al /tmp/$SOURCERPMBASENAME
-					ls -al $SOURCERPM
-					if [ "$VERBOSE" = "1" ]; then
-						echo "Failed cmd was: $EXEC"
-					fi
-					echo "----------------------------------------------------"
-					COMPARED_OK=0
-					if test "$STOP_AFTER_DL_ERROR" = "1"; then 
-						exit 54
-					fi
-			    fi
-            else
-                echo "Download of $SOURCERPMBASENAME failed"
-				if [ "$VERBOSE" = "1" ]; then
-					echo "Failed cmd was: $EXEC"
-				fi
-				echo "----------------------------------------------------"
-				COMPARED_OK=0
-            fi
-        fi
-
-
-		if test "$BINRPM" != "" ; then
-			if test " -f /tmp/$BINRPMBASENAME"; then
-				rm -f /tmp/$BINRPMBASENAME
-		    fi
-			EXEC="$AUTOSFSCPGET $SCPPATH/$BINRPMBASENAME"; runexec
-			if [ -f /tmp/$BINRPMBASENAME ]; then
-				diff /tmp/$BINRPMBASENAME $BINRPM
-				RET=$?
-				if test $RET != "0"; then
-			        #echo "Error: /tmp/$BINRPMBASENAME and $BINRPM are different"
-					ls -al /tmp/$BINRPMBASENAME
-					ls -al $BINRPM
-					if [ "$VERBOSE" = "1" ]; then
-						echo "Failed cmd was: $EXEC"
-					fi
-					echo "----------------------------------------------------"
-					COMPARED_OK=0
-					if test "$STOP_AFTER_DL_ERROR" = "1"; then 
-						exit 54
-					fi
-			    fi
-            else
-                echo "Download of $BINRPMBASENAME failed"
-				if [ "$VERBOSE" = "1" ]; then
-					echo "Failed cmd was: $EXEC"
-				fi
-				echo "----------------------------------------------------"
-				COMPARED_OK=0
-            fi
+	
+	#Windows setup executable
+	if test "$WINSETUPEXE" != ""; then
+		rm -f "/tmp/$WINSETUPEXE_BASENAME"
+		if test "$COMPARE_SIZE" = "1"; then
+			compare_size $WINSETUPEXE_BASENAME $WINSETUPEXE
+		else
+			compare_files $WINSETUPEXE_BASENAME $WINSETUPEXE
 		fi
     fi
+
+	#RPMs - source & binary
+	if test "$RPM" = "1"; then
+		if test "$SOURCERPM" != ""; then
+			#Source RPM
+			rm -f /tmp/$SOURCERPMBASENAME
+			if test "$COMPARE_SIZE" = "1"; then
+				compare_size $SOURCERPMBASENAME $SOURCERPM
+			else
+				compare_files $SOURCERPMBASENAME $SOURCERPM
+			fi
+		fi
+
+		if test "$BINRPM" != "" ; then
+			#Binary RPM
+			rm -f /tmp/$BINRPMBASENAME
+			if test "$COMPARE_SIZE" = "1"; then
+				compare_size $BINRPMBASENAME $BINRPM
+			else
+				compare_files $BINRPMBASENAME $BINRPM
+			fi
+		fi
+    fi
+	
 	if test "$COMPARED_OK" != "1"; then
 		echo "ERROR: one or more errors comparing created and downloaded files"
 	fi

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.162 2004-09-16 13:35:43 afalout Exp $
+# $Id: Makefile-common.in,v 1.163 2004-09-24 06:29:05 afalout Exp $
 #
 
 
@@ -924,7 +924,7 @@ ETC_PATH    =etc
 INCL_PATH   =incl
 IDE_PATH  	=tools/ide
 CONVSQL_PATH=etc/convertsql
-
+IMPORT_PATH=etc/import
 
 #installation files sourcing paths. This is generally the same as destination
 #paths, but with different SOURCE path.
@@ -941,6 +941,7 @@ ROOT_DIR    =$(SOURCE)
 INCL_DIR    =$(SOURCE)/${INCL_PATH}
 IDE_DIR    	=$(SOURCE)/${IDE_PATH}
 CONVSQL_DIR =$(SOURCE)/${CONVSQL_PATH}
+IMPORT_DIR =$(SOURCE)/${IMPORT_PATH}
 
 #Paths to install to:
 BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
@@ -955,6 +956,7 @@ ROOT_DEST	=$(INSTALL_DIR)
 INCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}
 IDE_DEST   	=$(INSTALL_DIR)/${IDE_PATH}
 CONVSQL_DEST=$(INSTALL_DIR)/${CONVSQL_PATH}
+IMPORT_DEST=$(INSTALL_DIR)/${IMPORT_PATH}
 
 ##################################################
 #definitions of names for binary distro file name:
@@ -1137,9 +1139,8 @@ ETC_DEINST      =aubitrc-bin.in
 ##                    To etc/convertsql directory
 ## ==================================================================
 
-#FIXME: still to be added to RPM and Windows installers.
-
 CONVSQL_FILES 	=@CONVSQL_FILES@
+IMPORT_FILES 	=@IMPORT_FILES@
 
 ## ==================================================================
 ##                    To user's HOME directory
@@ -1241,6 +1242,7 @@ TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
+TOIMPORT	=$(addprefix $(IMPORT_DIR)/,	$(IMPORT_FILES))
 AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,		$(AMAKE_BIN_FILES))
 AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,		$(AMAKE_INCL_FILES))
 
@@ -1269,6 +1271,7 @@ FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES)) \
 			 $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
 FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
+FROMIMPORT 	=$(addprefix $(IMPORT_DEST)/,$(IMPORT_FILES))
 
 ## ==================================================================
 ##                    Automatic build Settings

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.15 2004-09-08 10:05:20 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.16 2004-09-24 06:29:04 afalout Exp $
 ;
 
 
@@ -584,7 +584,27 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISCONVFILE_19@
 @ISCONVFILE_20@
 
-
+; Import files:
+@ISIMPORTFILE_1@
+@ISIMPORTFILE_2@
+@ISIMPORTFILE_3@
+@ISIMPORTFILE_4@
+@ISIMPORTFILE_5@
+@ISIMPORTFILE_6@
+@ISIMPORTFILE_7@
+@ISIMPORTFILE_8@
+@ISIMPORTFILE_9@
+@ISIMPORTFILE_10@
+@ISIMPORTFILE_11@
+@ISIMPORTFILE_12@
+@ISIMPORTFILE_13@
+@ISIMPORTFILE_14@
+@ISIMPORTFILE_15@
+@ISIMPORTFILE_16@
+@ISIMPORTFILE_17@
+@ISIMPORTFILE_18@
+@ISIMPORTFILE_19@
+@ISIMPORTFILE_20@
 
 ;Amake files:
 @ISAMAKEFILE_1@
