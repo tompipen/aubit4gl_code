@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.183 2004-10-02 08:03:19 mikeaubury Exp $
+# $Id: mod.c,v 1.184 2004-10-15 15:00:15 mikeaubury Exp $
 #
 */
 
@@ -101,7 +101,7 @@ void A4GL_get_event(int n,int *i,char **s) ;
 //static void set_whento (char *p);
 //void set_whento_store(char *p);
 //void set_whenever_store (int c, char *p) ;
-void set_whenever_from_store(void) ;
+//void set_whenever_from_store(void) ;
 //void A4GL_lex_printh(char* fmt,... );
 
 int A4GL_findex (char *str, char c);
@@ -4625,5 +4625,30 @@ memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
 ordbindcnt=fbindcnt;
 }
 
-/* ================================= EOF ============================= */
 
+char *make_substr(char *colname,struct ilist *int_list) {
+static char buff[256];
+	if (int_list->i0==0) return colname;
+	if (int_list->i0==1) { sprintf(buff,"%s[%d]",colname,int_list->i1); return buff; }
+	if (int_list->i0==2) { sprintf(buff,"%s[%d,%d]",colname,int_list->i1,int_list->i2); return buff; }
+
+a4gl_yyerror("Internal error..");
+return "???";
+
+}
+
+char *matches_string(char *str,char *esc) {
+static char buff[1024];
+if (strlen(esc)) {
+sprintf(buff,"MATCHES %s %s",str,esc);
+} else {
+sprintf(buff,"MATCHES %s ",str);
+}
+return buff;
+}
+
+char *check_colname(char *s) {
+return s;
+}
+
+/* ================================= EOF ============================= */

@@ -9,7 +9,7 @@ sql_block_cmd : SQL {
 ;
 
 sqlblock_kw : 
-	COMMA
+	KW_COMMA
 	| OPEN_SQUARE
 	| CLOSE_SQUARE
 	| OPEN_BRACKET

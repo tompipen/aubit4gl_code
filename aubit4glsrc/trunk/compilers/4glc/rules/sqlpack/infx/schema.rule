@@ -1,10 +1,7 @@
 /* ================= schema.rule ============== */
 
 
-drops_cmd : drops_c {
-	print_exec_sql($<str>1);
-}
-;
+drops_statement : drops_c ;
 
 drops_c : DROP_TABLE table_name {
 			if (A4GL_isyes(acl_getenv("A4GL_ADD_CASCADE"))) {
@@ -13,17 +10,14 @@ drops_c : DROP_TABLE table_name {
 				sprintf($<str>$, "%s %s ",$<str>1,$<str>2);
 			}
 		}
-	| DROP_VIEW table_name {sprintf($<str>$,  "%s %s ",$<str>1,$<str>2);}
-	| DROP_INDEX idx_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-	| DROP_TRIGGER identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| DROP_VIEW table_name 		{sprintf($<str>$,  "%s %s ",$<str>1,$<str>2);}
+	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;
 
 
-create_cmd : 
-	create_c_1 { print_exec_sql($<str>1); }
-	| create_c_2_ss { print_exec_sql($<sql_string>1); 
-	free($<sql_string>1);
-}
+create_statement_ss : create_c_1  {$<sql_string>$=strdup($<str>1);}
+	| create_c_2_ss  {$<sql_string>$=$<sql_string>1;}
 ;
 
 create_c_2_ss  : 
@@ -69,6 +63,8 @@ cr_index_extra_entry :
 	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
 	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2);}
 ;
+
+
 create_c_1  : 
 	CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$," %s %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);} 
 	| CREATE_DATABASE ident_or_var {
@@ -77,44 +73,30 @@ create_c_1  :
 	| DROP_DATABASE ident_or_var {
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| CREATE_SYNONYM table_name FOR table_name {
-		sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4);
-	}
-	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE {
-		
-		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4));
-	}
-	| DROP_AUDIT_FOR table_name  {
-		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2);
-	}
-	| DROP_SYNONYM table_name {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-	}
-	| RECOVER_TABLE table_name {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-	}
-	| ROLLFORWARD_DATABASE var_ident_qchar {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-	}
-	;
+	| CREATE_SYNONYM table_name FOR table_name { sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); }
+	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE { sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); }
+	| DROP_AUDIT_FOR table_name  { sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
+	| DROP_SYNONYM table_name { sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
+	| RECOVER_TABLE table_name { sprintf($<str>$,"RECOVER TABLE %s",$<str>2); }
+	| ROLLFORWARD_DATABASE var_ident_qchar { sprintf($<str>$,"ROLLFORWARD DATABASE %s",$<str>2); }
+;
 
-op_no_log : 
-{strcpy($<str>$,"");} 
-| WITH_NO_LOG
-{
-if (A4GL_isyes(acl_getenv("A4GL_OMIT_NO_LOG"))) {
-	strcpy($<str>$,"");
-} else {
-	sprintf($<str>$," %s ",$<str>1);
-}
-}
+
+
+op_no_log : {strcpy($<str>$,"");} 
+	| WITH_NO_LOG {
+		if (A4GL_isyes(acl_getenv("A4GL_OMIT_NO_LOG"))) {
+			strcpy($<str>$,"");
+		} else {
+			sprintf($<str>$," %s ",$<str>1);
+		}
+	}
 ;
 
 
 idx_column_list : 
-idx_column | 
-idx_column_list COMMA idx_column 
-{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+		idx_column 
+		| idx_column_list KW_COMMA idx_column {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 idx_column : 
@@ -127,7 +109,7 @@ table_element_list_ss:
   	table_element_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| table_element_list_ss COMMA table_element_ss {
+	| table_element_list_ss KW_COMMA table_element_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 ;
@@ -143,24 +125,18 @@ table_element_ss:
 	
 
 
-upd_stats_cmd : 
-	UPDATESTATS_T	identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-	| UPDATESTATS	
-;
 
 
 
 
-alter_cmd : ALTER_TABLE identifier alter_clauses_ss {
+alter_statement_ss : ALTER_TABLE identifier alter_clauses_ss {
 	$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
-	print_exec_sql($<sql_string>$); }
+	}
 	| ALTER_INDEX idx_name TO_CLUSTER {
 		$<sql_string>$=make_sql_string_and_free(strdup("ALTER INDEX "),strdup($<str>2),strdup(" TO CLUSTER"),0);
-		print_exec_sql($<sql_string>$); 
 		}
 	| ALTER_INDEX idx_name TO_NOT_CLUSTER {
 		$<sql_string>$=make_sql_string_and_free(strdup("ALTER INDEX "),strdup($<str>2),strdup(" TO NOT CLUSTER"),0);
-		print_exec_sql($<sql_string>$); 
 		}
 ;
 
@@ -168,7 +144,7 @@ alter_clauses_ss:
 	alter_clause_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| alter_clauses_ss COMMA alter_clause_ss {
+	| alter_clauses_ss KW_COMMA alter_clause_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 
@@ -224,7 +200,7 @@ add_column_clauses_ss:
 	add_column_clause_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| add_column_clauses_ss COMMA add_column_clause_ss {
+	| add_column_clauses_ss KW_COMMA add_column_clause_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 ;
@@ -242,7 +218,7 @@ alter_drop_clause:
 
 drop_column_list:
 	drop_column 
-	| drop_column_list COMMA drop_column {
+	| drop_column_list KW_COMMA drop_column {
 		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 	}
 ;
@@ -263,7 +239,7 @@ modify_column_clauses_ss :
 	modify_column_clause_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| modify_column_clauses_ss COMMA modify_column_clause_ss {
+	| modify_column_clauses_ss KW_COMMA modify_column_clause_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 ;
@@ -302,7 +278,7 @@ alter_add_constraint_clause:
 
 table_constraint_definition_list_ss: table_constraint_definition_ss opt_constraint_name {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
-} | table_constraint_definition_list_ss COMMA table_constraint_definition_ss opt_constraint_name {
+} | table_constraint_definition_list_ss KW_COMMA table_constraint_definition_ss opt_constraint_name {
 	$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,strdup($<str>4), 0);
 }
 ;
@@ -321,7 +297,7 @@ alter_drop_constraint_clause:
 
 constraint_names :
 	constraint_name {strcpy($<str>$,$<str>1);}
-	| constraint_names COMMA constraint_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+	| constraint_names KW_COMMA constraint_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 /*
@@ -329,7 +305,7 @@ column_constraints_ss:
 	column_constraint_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| column_constraints_ss COMMA column_constraint_ss {
+	| column_constraints_ss KW_COMMA column_constraint_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 ;

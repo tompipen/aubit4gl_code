@@ -90,7 +90,7 @@ bef_field_list_as_struct :
                         $<field_list>$=new_field_list();
                         $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
         }
-        | bef_field_list_as_struct COMMA field_name_as_struct {
+        | bef_field_list_as_struct KW_COMMA field_name_as_struct {
                         $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
         }
 ;
@@ -100,7 +100,7 @@ aft_field_list_as_struct :
                         $<field_list>$=new_field_list();
                         $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
         }
-        |aft_field_list_as_struct COMMA field_name_as_struct {
+        |aft_field_list_as_struct KW_COMMA field_name_as_struct {
                         $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
         }
 ;

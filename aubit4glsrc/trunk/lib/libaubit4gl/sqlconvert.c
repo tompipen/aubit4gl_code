@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.14 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.15 2004-10-15 15:00:23 mikeaubury Exp $
 #
 */
 
@@ -118,7 +118,7 @@ struct fnlist *A4GL_cv_fnlist (char *source, char *target);
 func_t A4GL_cv_str_to_func (char *p, int len);
 
 void A4GL_cvsql_double_single (char *sql, char *args);
-void A4GL_cvsql_rowid (char *sql, char *oid);
+/* void A4GL_cvsql_rowid (char *sql, char *oid); */
 void A4GL_cvsql_split_update (char *sql, char *args);
 void A4GL_cvsql_matches_like (char *sql, char *args);
 void A4GL_cvsql_matches_regex (char *sql, char *args);
@@ -395,6 +395,8 @@ A4GL_cvsql_double_single (char *sql, char *args)
     }
 }
 
+
+#ifdef NOT_USED
 /*
  * Replaces the 'rowid' pseudo-column in a SQL statement
  *
@@ -428,6 +430,7 @@ A4GL_cvsql_rowid (char *sql, char *oid)
       t += len;
     }
 }
+#endif
 
 /*
  * Converts an Informix style update to the standard format

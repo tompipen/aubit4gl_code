@@ -26,14 +26,14 @@ op_insert_column_list: {strcpy($<str>$,"");}
 
 insert_column_list:
 	column_name
-	| insert_column_list COMMA column_name {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| insert_column_list KW_COMMA column_name {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 insert_value_list_ss:
 	insert_value_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| insert_value_list_ss COMMA insert_value_ss {
+	| insert_value_list_ss KW_COMMA insert_value_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
 	}
 ;
@@ -65,7 +65,7 @@ order_by_clause:
 
 sort_specification_list:
 	sort_specification
-	| sort_specification_list COMMA sort_specification {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| sort_specification_list KW_COMMA sort_specification {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 sort_specification: sort_spec op_asc_desc {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
@@ -108,15 +108,28 @@ if (strcmp($<str>2,"?")==0) {
 
 ;
 
+other_misc_infx_stmt  :
+        UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+        | UPDATESTATS
+;
+
+
+misc_infx_stmt: 
+	MISC_INFX_SQL
+	| other_misc_infx_stmt
+;
+
 
 
 sql_commands :  schema_ss {
 			print_exec_sql($<sql_string>1);
 			strcpy($<str>$,"Schema");
 	} 
-	| MISC_INFX_SQL {
+	| misc_infx_stmt {
+			char buff[256];
 			print_exec_sql(convstrsql($<str>1));
-			printf("Warning: Informix specific SQL @ line %d\n",yylineno);
+			sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
+			ansi_violation(buff,1);
 			strcpy($<str>$,"InfxSpecificSql");
 	}
 	| schema_element_ss {
@@ -145,6 +158,9 @@ sql_commands :  schema_ss {
 		print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"update");
 	} 
+	| drops_statement { print_exec_sql($<str>1); }
+	| create_statement_ss { print_exec_sql($<sql_string>1); }
+	| alter_statement_ss {print_exec_sql($<sql_string>1); }
 ;
 
 privilege_definition:
@@ -174,7 +190,7 @@ privileges:
 
 action_list:
 	action
-	| action_list COMMA action
+	| action_list KW_COMMA action
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
@@ -193,13 +209,13 @@ op_grant_column_list: {strcpy($<str>$,"");}
 
 grant_column_list:
 	  column_name
-	| grant_column_list COMMA column_name
+	| grant_column_list KW_COMMA column_name
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 grantee_list:
 	  grantee
-	| grantee_list COMMA grantee
+	| grantee_list KW_COMMA grantee
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
@@ -222,7 +238,7 @@ op_view_column_list: {strcpy($<str>$,"");}
 
 view_column_list:
 	column_name
-	| view_column_list COMMA column_name
+	| view_column_list KW_COMMA column_name
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
@@ -260,7 +276,7 @@ referenced_table_and_columns:
 
 references_column_list:
 	  column_name
-	| references_column_list COMMA column_name
+	| references_column_list KW_COMMA column_name
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
@@ -279,7 +295,7 @@ unique_constraint_definition:
 
 unique_column_list:
 	  column_name
-	| unique_column_list COMMA column_name
+	| unique_column_list KW_COMMA column_name
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 	
@@ -426,7 +442,7 @@ column_specification_list_ss:
 	  column_specification_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| column_specification_list_ss COMMA column_specification_ss {
+	| column_specification_list_ss KW_COMMA column_specification_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 	}
 ;
@@ -447,7 +463,7 @@ from_clause:
 
 table_reference_list:
 	  table_reference {table_cnt++;}
-	| table_reference_list COMMA table_reference {
+	| table_reference_list KW_COMMA table_reference {
 		sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
 		table_cnt++;
 	}
@@ -473,7 +489,7 @@ tname: table_name
 ;
 
 
-tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
+tname_list : table_reference | tname_list KW_COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 ;
 
 table_expression_ss:
@@ -583,7 +599,7 @@ in_predicate_ss:
 
 in_value_list:
 	  in_value_specification
-	| in_value_list COMMA in_value_specification
+	| in_value_list KW_COMMA in_value_specification
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
@@ -594,7 +610,7 @@ in_value_specification : var_ident_ibind_ss {
 ;
 
 op_not: {strcpy($<str>$,"");}
-	| NOT
+	| NOT {strcpy($<str>$," NOT ");}
 ;
 
 
@@ -609,7 +625,8 @@ comparison_predicate_ss:
 	| value_expression_ss NOT_LIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss NOT_ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss op_not MATCHES pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" MATCHES "),$<sql_string>4,strdup($<str>5),0); }
+	| value_expression_ss op_not MATCHES pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(matches_string($<sql_string>4,$<str>5)),0);
+		}
 ;
 
 comp_op:
@@ -691,7 +708,7 @@ exact_numeric_type:
 	| NVARCHAR
 	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| NVARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
+	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	| DATETIME s_curr TO e_curr
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
@@ -706,12 +723,12 @@ exact_numeric_type:
 	| VARCHAR
 	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
+	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 ;
 
 op_scale: {strcpy($<str>$,"");}
-	| COMMA scale {
+	| KW_COMMA scale {
 		sprintf($<str>$,",%s",$<str>2);
 }
 ;
@@ -818,9 +835,17 @@ authorization_identifier:
 
 
 
-col_arr : {strcpy($<str>$,"");} 
-	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s]",$<str>2);}
-	| OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);}
+col_arr : {$<int_list.i0>$=0;}
+	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {
+		$<int_list.i0>$=1;
+		$<int_list.i1>$=atoi($<str>2);
+	}
+	| OPEN_SQUARE INT_VALUE KW_COMMA INT_VALUE CLOSE_SQUARE {
+		$<int_list.i0>$=2;
+		$<int_list.i1>$=atoi($<str>2);
+		$<int_list.i2>$=atoi($<str>4);
+		//sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);
+	}
 ;
 
 column_name : 
@@ -832,21 +857,20 @@ column_name :
 	}
 ;
 
-column_name_specific: identifier col_arr
-{ 
-addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
-sprintf($<str>$,"%s%s",$<str>1,$<str>2);
-}
-	| table_name DOT identifier col_arr
-{
-sprintf($<str>$,"%s.%s%s",$<str>1,$<str>3,$<str>4);
-addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
-}
-	| table_name  DOT MULTIPLY
- {
-sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
-}
+column_name_specific: identifier col_arr { 
+		addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
+		strcpy($<str>$,make_substr(check_colname($<str>1),&$<int_list>2));
+	}
+	| table_name DOT identifier col_arr {
+		
+		sprintf($<str>$,"%s.%s",$<str>1,check_colname($<str>3));
+		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+		strcpy($<str>$,make_substr($<str>$,&$<int_list>4));
+	}
+	| table_name  DOT MULTIPLY {
+		sprintf($<str>$,"%s.*",$<str>1);
+		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+	}
 ;
 
 correlation_name:
@@ -854,10 +878,7 @@ correlation_name:
 ;
 
 
-literal: CHAR_VALUE {
-	strcpy($<str>$,convstrsql($<str>1));
- A4GL_debug("Set $<str>$ to %s\n",$<str>$);
-}
+literal: CHAR_VALUE { strcpy($<str>$,convstrsql($<str>1)); A4GL_debug("Set $<str>$ to %s\n",$<str>$); }
 	| real_number
 	| INT_VALUE
         | curr_clause
@@ -865,17 +886,16 @@ literal: CHAR_VALUE {
 
 
 cur_part: { strcpy($<str>$,""); }
-| s_curr TO e_curr
-{
-char *ptr;
-ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-if (ptr) {
-	sprintf($<str>$,"'%s','%s'",$<str>1,$<str>3);
-} else {
-	sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-}
-}
+	| s_curr TO e_curr {
+		char *ptr;
+		ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+		if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+		if (ptr) {
+			sprintf($<str>$,"'%s','%s'",$<str>1,$<str>3);
+		} else {
+			sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+		}
+	}
 ;
 
 
@@ -895,7 +915,7 @@ dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
 
 
 /*
-cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 colident: identifier
@@ -927,22 +947,14 @@ select_statement_ss_str:
 }
 ;
 
-/*
-in_select_statement_ss:
-	SELECT op_ad select_list_ss table_expression_ss sel_p2_ss {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space, $<sql_string>3, kw_space,$<sql_string>4, kw_space,$<sql_string>5,0);
-}
-
-;
-*/
-
 select_statement2_ss:
 	select_statement21_ss {
 		$<sql_string>$=$<sql_string>1;
 	 }
 	| char_or_var {
 		$<sql_string>$=strdup($<str>1);
-	};
+	}
+;
 
 select_statement21_ss:
 	SELECT  op_ad select_list_ss
@@ -1005,7 +1017,7 @@ select_list_ss:
 	value_expression_pls_ss  {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| select_list_ss COMMA value_expression_pls_ss { 
+	| select_list_ss KW_COMMA value_expression_pls_ss { 
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 	}
 ;
@@ -1083,7 +1095,7 @@ value_expression_complex_ss :
 
 value_expr_list_ss : 
 	value_expression_ss {$<sql_string>$=$<sql_string>1;}
-	| value_expr_list_ss COMMA value_expression_ss {
+	| value_expr_list_ss KW_COMMA value_expression_ss {
 	$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 }
 	
@@ -1125,7 +1137,7 @@ opt_col_list: {strcpy($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
 sprintf($<str>$,"%s,0",$<str>2);
 };
 
-col_list : simple_column_name | col_list COMMA simple_column_name {
+col_list : simple_column_name | col_list KW_COMMA simple_column_name {
     sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 };
 
@@ -1200,10 +1212,10 @@ units_qual:
 ;
 
 extend_qual_ss:
-        CURRENT COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
-        | var_ident_ibind_ss COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
+        CURRENT KW_COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
+        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
         | CURRENT s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);}
-	| value_expression_ss COMMA s_curr TO e_curr
+	| value_expression_ss KW_COMMA s_curr TO e_curr
 ;
 
 datetime_value_qualified :
@@ -1226,10 +1238,10 @@ interval_value:
 ;
 
 
-curr_clause : CURRENT  cur_part
-{
+curr_clause : CURRENT  cur_part {
 char *ptr;
 ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+
 if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
 
 if (ptr) {

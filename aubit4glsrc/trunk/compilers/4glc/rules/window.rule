@@ -40,7 +40,7 @@ current_win_cmd	:	CWIS {
 	print_current_window($<str>2);
 };
 
-window_type	:	fgl_expr ROWS COMMA fgl_expr COLUMNS {
+window_type	:	fgl_expr ROWS KW_COMMA fgl_expr COLUMNS {
 sprintf($<str>$,"A4GL_cr_window");
 reset_attrib(&form_attrib);
 }
@@ -77,11 +77,11 @@ hide_cmd : HIDE_WINDOW win_name {
 }
 ;
 
-move_cmd : MOVE_WINDOW win_name TO fgl_expr COMMA fgl_expr 
+move_cmd : MOVE_WINDOW win_name TO fgl_expr KW_COMMA fgl_expr 
 {
 print_move_window($<str>2,0);
 }
-          |  MOVE_WINDOW win_name BY fgl_expr COMMA fgl_expr
+          |  MOVE_WINDOW win_name BY fgl_expr KW_COMMA fgl_expr
 {
 print_move_window($<str>2,1);
 }

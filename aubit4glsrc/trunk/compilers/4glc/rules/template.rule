@@ -34,7 +34,7 @@ template_single_value :
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_single(a,$<str>2);}
 	| 	PROMPT_MANY CHAR_VALUE  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>2);}
-	| 	PROMPT INT_VALUE COMMA CHAR_VALUE  {
+	| 	PROMPT INT_VALUE KW_COMMA CHAR_VALUE  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>4);}
 	|	CHAR_VALUE {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_single(a,$<str>1);}

@@ -13,11 +13,11 @@ sprintf($<str>$,"open window");
 ;
 
 op_at_statusbox : 
-	| AT OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
+	| AT OPEN_BRACKET fgl_expr KW_COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
 ;
 
 op_size_statusbox : 
-	| SIZE OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET
+	| SIZE OPEN_BRACKET fgl_expr KW_COMMA fgl_expr CLOSE_BRACKET
 ;
 
 open_statusbox_cmd :
@@ -48,7 +48,7 @@ open_form_gui:  op_at_gui op_like_gui op_disable KW_USING formhandler_name
 	{sprintf($<str>$,"A4GL_open_gui_form(&%%s,%%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",$<str>1,$<str>2,$<str>3,$<str>5,$<str>5);}
 ;
 
-op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 
+op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr KW_COMMA fgl_expr CLOSE_BRACKET 
 	{sprintf($<str>$,"%s,2",$<str>2);}
 ;
 
@@ -81,9 +81,9 @@ open_cursor_cmd :
 user_details :  {sprintf($<str>$,"0,0");}
 	| AS USER char_or_var PASSWORD char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-	| AS USER char_or_var COMMA PASSWORD char_or_var
+	| AS USER char_or_var KW_COMMA PASSWORD char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>6);}
-	| AS char_or_var COMMA char_or_var
+	| AS char_or_var KW_COMMA char_or_var
               {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
 ;
 

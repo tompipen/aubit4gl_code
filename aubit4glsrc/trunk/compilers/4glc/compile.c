@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.63 2004-10-12 00:40:51 afalout Exp $
+# $Id: compile.c,v 1.64 2004-10-15 15:00:15 mikeaubury Exp $
 #*/
 
 /**
@@ -917,7 +917,7 @@ initArguments (int argc, char *argv[])
 				A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 				if (verbose) { printf ("%s is non-zero\n", buff); }
 				//something wrong here - doews not show 1 or 0 but large random integer
-				if (verbose) { printf ("shell_is_bash=%d\n"),shell_is_bash;}
+				if (verbose) { printf ("shell_is_bash=%d\n",shell_is_bash);}
 				if ( ! win_95_98 ) {
 					  sprintf (buff, "%s %s.err %s.warn", mv_cmd,
 						   output_object, output_object);

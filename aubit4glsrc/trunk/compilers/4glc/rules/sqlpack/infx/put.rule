@@ -17,7 +17,7 @@ A4GL_debug("putlist = %s\n",$<str>$);
 ;
 
 put_val_list  : put_val {push_gen(PUTVAL,$<str>1);} | 
-                put_val_list COMMA put_val {push_gen(PUTVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
+                put_val_list KW_COMMA put_val {push_gen(PUTVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
 ;
 
 put_val : value_expression_ss {

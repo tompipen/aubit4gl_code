@@ -9,7 +9,7 @@ VALIDATE init_bind_var_list LIKE {
 ;
 
 
-validate_tab_list : validate_tab | validate_tab_list COMMA validate_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+validate_tab_list : validate_tab | validate_tab_list KW_COMMA validate_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 }
 ;
 

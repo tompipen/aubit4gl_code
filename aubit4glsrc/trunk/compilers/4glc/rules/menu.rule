@@ -99,7 +99,7 @@ ALL
 ;
 
 opt_name_list	:	opt_name
-		| 	opt_name_list COMMA opt_name 
+		| 	opt_name_list KW_COMMA opt_name 
 			{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);};
 
 menu_title 	:	variable {strcpy($<str>$,$<str>1);  

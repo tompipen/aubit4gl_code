@@ -302,7 +302,7 @@ num_list: num_list_element
 A4GL_debug("List element");
   sprintf ($<str>$, "%s", $<str>1);
 }
-|num_list COMMA num_list_element
+|num_list KW_COMMA num_list_element
 {
 A4GL_debug("List element continues");
   sprintf ($<str>$, "%s,%s", $<str>1, $<str>3); 
@@ -514,7 +514,7 @@ fparam_var_list:	func_def_var {
 				start_bind('O',0);
 				sprintf($<str>$,"1");
 			}
-			| fparam_var_list COMMA func_def_var {
+			| fparam_var_list KW_COMMA func_def_var {
 				int c;
 				c=add_bind('f',$<str>3);
 				/*c=add_bind('O',$<str>3); */
@@ -532,7 +532,7 @@ A4GL_lex_printcomment("/*STarted bind 2*/\n");
 strcpy($<str>$,"");
 }
 	|	
-ibind_var_list COMMA ibind_var {
+ibind_var_list KW_COMMA ibind_var {
 A4GL_lex_printcomment("/* Added */\n");
 add_bind('i',$<str>3);
 strcpy($<str>$,"");
@@ -553,7 +553,7 @@ ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}
 obind_var_list:	obind_var  {
 start_bind('o',$<str>1);
 } 
-	|	obind_var_list COMMA obind_var {
+	|	obind_var_list KW_COMMA obind_var {
 add_bind('o',$<str>3);
 strcpy($<str>$,"");
 }
@@ -571,7 +571,7 @@ A4GL_lex_printcomment("/* start obind with  %s*/\n",$<str>1);
 A4GL_debug("obind_var_let_list ---> %s\n",$<str>1);
 start_bind('o',$<str>1);
 } 
-	|	obind_var_let_list COMMA obind_let_var {
+	|	obind_var_let_list KW_COMMA obind_let_var {
 A4GL_lex_printcomment("/* add to obind %s */\n",$<str>3);
 add_bind('o',$<str>3);
 A4GL_debug("obind_var_let_list ---> %s\n",$<str>3);
@@ -593,7 +593,7 @@ use_arr_var : variable {
 
 obind_var_list_ord: obind_var_ord  {
 		start_bind('O',$<str>1);
-	} | obind_var_list_ord COMMA obind_var_ord {
+	} | obind_var_list_ord KW_COMMA obind_var_ord {
                add_bind('O',$<str>3);
                strcpy($<str>$,"");
 	}
@@ -628,7 +628,7 @@ A4GL_lex_printcomment("/*STarted bind 2*/\n");
 strcpy($<str>$,"");
 }
 	|	
-init_bind_var_list COMMA init_bind_var {
+init_bind_var_list KW_COMMA init_bind_var {
 A4GL_lex_printcomment("/* Added */\n");
 add_bind('N',$<str>3);
 strcpy($<str>$,"");

@@ -23,7 +23,7 @@ call_ext :
 	ibind_var_list {
 		print_returning();
 	}
-   | FORM_IS_COMPILED OPEN_BRACKET identifier COMMA CHAR_VALUE COMMA CHAR_VALUE CLOSE_BRACKET {
+   | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
 	print_form_is_compiled($<str>3,$<str>5,$<str>7);
 	}
 
@@ -199,7 +199,7 @@ func_call_args	: func_arg
 		{
 	$<ptr>$=$<ptr>1;
 }
-		| func_call_args COMMA func_arg {
+		| func_call_args KW_COMMA func_arg {
 		$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);
 }
 

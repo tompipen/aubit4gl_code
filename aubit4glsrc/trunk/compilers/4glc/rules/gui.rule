@@ -11,7 +11,7 @@ print_gui_do_menuitems($<str>2,'C');
 ;
 
 menu_item_list:
-        menu_item | menu_item_list COMMA menu_item
+        menu_item | menu_item_list KW_COMMA menu_item
                 {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 

@@ -71,14 +71,14 @@ input_section :
 
 
 in_variable_list :
-        variable | in_variable_list COMMA variable
+        variable | in_variable_list KW_COMMA variable
 ;
 
-in_id_list : identifier | in_id_list COMMA identifier
+in_id_list : identifier | in_id_list KW_COMMA identifier
 ;
 
 in_bn_variable_list :
-        variable | in_bn_variable_list COMMA variable
+        variable | in_bn_variable_list KW_COMMA variable
 ;
 
 field_ops :

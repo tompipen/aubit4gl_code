@@ -57,7 +57,7 @@
 
 #endif
 
-#include "rules/generated/kw.h"
+//#include "rules/generated/kw.h"
 
 //#ifndef _NO_Y_TAB_H_
 	//#include "rules/generated/y.tab.h"
@@ -392,5 +392,28 @@ struct file_description {
 };
 
 
+char *check_colname(char *s) ;
+void push_scope(void);
+void file_out_nl(char *why);
+int read_class (char *s,int is_parent);
+void dump_class (void);
+char *matches_string(char *m,char *e);
+void set_whenever_from_store(void) ;
+
+struct ilist {
+	int i0;
+	int i1;
+	int i2;
+	int i3;
+	int i4;
+	int i5;
+} ;
+
+void file_out_indent(int cnt);
+int is_sql_kw(int a);
+char *make_substr(char *colname,struct ilist *int_list);
+struct variable *find_dim(char *s);
 int has_function(char *s,char *file,struct flist *ptr);
+void push_object (char *objtype);
+void pop_scope(void);
 /* ============================= EOF ================================= */

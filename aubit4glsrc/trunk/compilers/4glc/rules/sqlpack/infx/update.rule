@@ -121,7 +121,7 @@ upd_columns_ss :
 	col_1_ss  {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| upd_columns_ss COMMA col_1_ss {
+	| upd_columns_ss KW_COMMA col_1_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 	}
 ;
@@ -138,7 +138,7 @@ col_1_ss :
 upd_col_list  : upd_column_name	{
 			push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
 		} 
-		| upd_col_list COMMA upd_column_name {
+		| upd_col_list KW_COMMA upd_column_name {
 			push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 		}
 
@@ -154,7 +154,7 @@ upd_val_list_ss  :
                 	push_gen(UPDVAL,$<sql_string>1);
 		}
 	}
-	| upd_val_list_ss COMMA upd_val_ss { 
+	| upd_val_list_ss KW_COMMA upd_val_ss { 
 		if (gen_cnt(UPDVAL2)) {
 			copy_gen(UPDVAL,UPDVAL2);
 		} else {
@@ -194,12 +194,19 @@ upd_value_expression_ss:
 upd_value_expression_initial_ss :
         upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
         | subquery_ss { $<sql_string>$=$<sql_string>1; }
-        | ATSIGN identifier { $<sql_string>$=strdup($<str>2); }
-        | ATSIGN identifier DOT identifier { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0); }
-        | ATSIGN identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("["),strdup($<str>4),strdup("]"),0); }
-        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),strdup("["),strdup($<str>6),strdup("]"),0); }
-        | ATSIGN identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("["),strdup($<str>4),kw_comma,strdup($<str>6),strdup("]"),0); }
-        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),strdup("["),strdup($<str>6),kw_comma,strdup($<str>8),strdup("]"),0); }
+        | ATSIGN identifier col_arr { $<sql_string>$=make_sql_string_and_free(
+								strdup(
+									make_substr(
+										check_colname($<str>2),
+										&$<int_list>3
+									)
+								),0); 
+		}
+        | ATSIGN identifier DOT identifier col_arr { 
+		char buff[256];
+		sprintf(buff,"%s.%s",$<str>2,$<str>4);
+		$<sql_string>$=make_sql_string_and_free(strdup(make_substr(check_colname(buff),&$<int_list>5)),0); 
+		}
         | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; pop_all_gen(UPDVAL2,"!"); }
         | literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
         | KW_TRUE {$<sql_string>$=make_sql_string_and_free(strdup("TRUE"),0);}
@@ -235,7 +242,7 @@ upd_var_ident_ibind_ss:  var_ident_ibind_ss { $<sql_string>$=$<sql_string>1; }
 
 upd_value_expr_list_ss :
         upd_value_expression_ss {$<sql_string>$=$<sql_string>1;}
-        | upd_value_expr_list_ss COMMA upd_value_expression_ss {
+        | upd_value_expr_list_ss KW_COMMA upd_value_expression_ss {
         $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
 }
 

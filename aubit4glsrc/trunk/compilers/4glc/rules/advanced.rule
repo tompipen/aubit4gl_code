@@ -34,7 +34,7 @@ valid_port : variable {
 ;
 
 
-remote_func_list :  remote_func |  remote_func_list COMMA remote_func
+remote_func_list :  remote_func |  remote_func_list KW_COMMA remote_func
 	{
 	sprintf($<str>$,"%s%s",$<str>1,$<str>3);
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.55 2004-09-30 16:11:57 mikeaubury Exp $
+# $Id: 1.reqd,v 1.56 2004-10-15 15:00:19 mikeaubury Exp $
 #
 */
 
@@ -204,6 +204,7 @@ char *kw_comma=",";
 char *kw_space=" ";
 char *kw_ob="(";
 char *kw_cb=")";
+
 #include "../generic.h"
 #include "../field_handling.h"
 
@@ -215,6 +216,7 @@ struct sql_statement {
 	int nibind;
 	int nobind;
 };
+
 
 /*
 =====================================================================
@@ -252,6 +254,7 @@ struct sql_statement {
 	int 	integer_val;
 	float 	float_val;
 	struct sql_statement *sql_stmt;
+	struct ilist int_list;
 	}
 
 /* ============================== 1.reqd ============================ */

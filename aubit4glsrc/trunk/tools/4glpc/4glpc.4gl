@@ -130,8 +130,9 @@ define lv_pack char(256)
 
 	let mv_include="-I\"",fgl_getenv("AUBITDIR"),"/incl\" "
 
+
 	IF fgl_getenv("GTK_INC_PATH")!= "" THEN
-		let mv_include=mv_include clipped, "-I\"",fgl_getenv("GTK_INC_PATH"),"\""
+		let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
 	END IF
 
 	LET mv_libs=" -laubit4gl"
@@ -522,13 +523,22 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	# If we get to here its either a compile option thats not recognised or
 	# its a filename...
 
+	display "lv_arg=",lv_arg
+	if lv_arg matches "-Wl,*" then
+		let mv_link_opts=mv_link_opts clipped," ",lv_arg
+		continue for
+	end if
+
 	if lv_arg matches "-I*" then
 		if lv_arg="-I" then
 			LET a=a+1
 			let lv_arg="-I",arg_val(a)
 		end if
 		let mv_include=mv_include clipped," ",lv_arg
-
+   		if mv_verbose>=5 then
+   			display "Setting mv_include because of a -I ",mv_include clipped
+   		end if
+		continue for
 	end if
 
 	if lv_arg matches "-l*" then
@@ -682,6 +692,10 @@ IF lv_from="4GL"  THEN
 	END IF
 
 
+	if lv_to is null or lv_to=" " then
+		let lv_to="OBJ"
+	end if
+
 	CASE lv_to
 		WHEN "C"
 			LET lv_new=lv_base clipped,get_ext("C")
@@ -707,7 +721,7 @@ IF lv_from="4GL"  THEN
 				call make_into(lv_new,"C","OBJ")
 			END IF
 		OTHERWISE
-			display "Unhandled compilation : ",lv_from," ",lv_to," for ",lv_fname
+			display "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
 			if mv_noerrcode then
 				exit program 2
 			else
@@ -1049,6 +1063,11 @@ if mv_makecompile then
 end if
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
+if mv_verbose>=4 then
+	display "compile_c=",mv_compile_c clipped
+	display "compile_c_opts=",mv_compile_c_opts clipped
+	display "include=",mv_include clipped
+end if
 
 let lv_runstr=mv_compile_c clipped," ",mv_compile_c_opts clipped," "
 
@@ -1237,4 +1256,18 @@ A4GL_trim(s);
 unlink(s);
 }
 endcode
+end function
+
+
+function verbosity()
+return mv_verbose
+end function
+
+function isverbose(n)
+define n integer
+if mv_verbose>=n then
+	return 1
+else
+	return 0
+end if
 end function

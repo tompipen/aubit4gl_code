@@ -16,8 +16,8 @@ define_section :
 
 
 define_multiple :
-		define_set {file_out_nl();}
-	|	define_multiple define_set {file_out_nl();}
+		define_set {file_out_nl("ds");}
+	|	define_multiple define_set {file_out_nl("dms");}
 ;
 
 
@@ -34,7 +34,7 @@ define_set :
 
 def_part :
 		def_part2
-	|	def_part COMMA def_part2
+	|	def_part KW_COMMA def_part2
 ;
 
 
@@ -115,7 +115,7 @@ var_def_name :
 
 var_def_list :
 		var_def_name
-	|	var_def_list COMMA var_def_name
+	|	var_def_list KW_COMMA var_def_name
 ;
 
 
@@ -181,12 +181,12 @@ number_arr_assoc :
 
 
 number_arr_list :
-		number_value_arr COMMA number_value_arr COMMA number_value_arr {
+		number_value_arr KW_COMMA number_value_arr KW_COMMA number_value_arr {
 		   sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5);
 		    A4GL_debug("Triplet");
 		   
 		} 
-	|	number_value_arr COMMA number_value_arr {
+	|	number_value_arr KW_COMMA number_value_arr {
 		   sprintf($<str>$,"%s][%s",$<str>1,$<str>3);
 		    A4GL_debug("double");
 		   
@@ -255,7 +255,7 @@ record_variable :
 
 link_to_pk_list :
 		link_to_pk
-	|	link_to_pk_list COMMA link_to_pk {
+	|	link_to_pk_list KW_COMMA link_to_pk {
 		    sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 		   
 		} 
@@ -310,7 +310,7 @@ dtype :
 		   push_type("varchar",$<str>3,0);
 		   
 		} 
-	|	VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {
+	|	VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   push_type("varchar",$<str>3,0);
 		   
 		} 
@@ -318,7 +318,7 @@ dtype :
 		   push_type("char",$<str>3,0);
 		   
 		} 
-	|	NVARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {
+	|	NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   push_type("char",$<str>3,0);
 		   
 		} 
@@ -370,7 +370,7 @@ dtype :
 		       push_type("fgldecimal",buff,0);
 		   
 		} 
-	|	DECIMAL OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {
+	|	DECIMAL OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
 		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fgldecimal",buff,0);
@@ -388,7 +388,7 @@ dtype :
 		      push_type("fglmoney",buff,0);
 		   
 		} 
-	|	MONEY OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {
+	|	MONEY OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
 		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fglmoney",buff,0);

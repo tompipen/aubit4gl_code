@@ -282,7 +282,7 @@ print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi {
 opt_scaling :
 	{ strcpy($<str>$,A4GL_get_default_scaling());}
 	| SCALED_BY fgl_expr_c { strcpy($<str>$,$<str>2); strcat($<str>$,$<str>2); }
-	| SCALED_BY fgl_expr_c COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
+	| SCALED_BY fgl_expr_c KW_COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
 ;
 
 img_types : 	
@@ -313,7 +313,7 @@ rep_expr_list :
 	rep_expr {
 	print_report_print(1,0,$<str>1);
 	} 
-| rep_expr_list COMMA rep_expr {
+| rep_expr_list KW_COMMA rep_expr {
 	print_report_print(1,0,$<str>3); /* changed from $<str>1 */
 }
 ;
@@ -604,7 +604,7 @@ pdf_report_section: pdf_op_output_section op_rep_order_by  { strcpy($<str>$,$<st
 
 
 pdf_functions :
-	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA {new_counter();
+	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA {new_counter();
    		addmap("CALL",$<str>3,curr_func,yylineno,infilename);
    		}
    		opt_func_call_args

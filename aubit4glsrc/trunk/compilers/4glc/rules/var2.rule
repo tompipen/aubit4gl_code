@@ -223,7 +223,7 @@ arr_subscripts_al :
 num_list_nl:	num_list_element_nl { 
 			$<num_list>$=$<num_list>1; 
 		}
-		| num_list_nl COMMA num_list_element_nl { 
+		| num_list_nl KW_COMMA num_list_element_nl { 
 			$<num_list>$=append_num_list_items($<num_list>1,$<num_list>3); 
 		}
 ;

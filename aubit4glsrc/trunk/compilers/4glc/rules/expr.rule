@@ -64,7 +64,7 @@ fgl_expr_ret_list 	: fgl_expr_ret
 	sprintf($<str>$,"%d",get_counter_val());
 	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$);
 }
-		| 	fgl_expr_ret_list COMMA fgl_expr_ret
+		| 	fgl_expr_ret_list KW_COMMA fgl_expr_ret
 {
 	sprintf($<str>$,"%d",get_counter_val());
 	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
@@ -78,7 +78,7 @@ fgl_expr_list 	: fgl_expr
 	sprintf($<str>$,"%d",get_counter_val());
 	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$);
 }
-		| 	fgl_expr_list COMMA fgl_expr
+		| 	fgl_expr_list KW_COMMA fgl_expr
 {
 	sprintf($<str>$,"%d",get_counter_val());
 	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
@@ -89,7 +89,7 @@ fgl_expr_list 	: fgl_expr
 
 
 fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
-		| 	fgl_expr_concat COMMA fgl_expr
+		| 	fgl_expr_concat KW_COMMA fgl_expr
 {
 	print_op("OP_CONCAT");
 	dec_counter();sprintf($<str>$,"%d",get_counter_val());
@@ -308,7 +308,7 @@ KW_AND fgl_expr_c
 inexpr_list : fgl_expr_c  {
 	$<ptr>$=$<ptr>1;
 	}
-	| inexpr_list COMMA fgl_expr_c {
+	| inexpr_list KW_COMMA fgl_expr_c {
 		A4GL_debug("Adding to list...");
 		$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);
 	}
@@ -724,7 +724,7 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
         $<ptr>$=A4GL_new_expr(buff);
         inc_counter();
 }
-| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable COMMA INT_VALUE CLOSE_BRACKET { 
+| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable KW_COMMA INT_VALUE CLOSE_BRACKET { 
         char buff[256];
         sprintf(buff,"A4GL_dynarr_extent(&%s,%d);",$<str>3,atoi($<str>5));
         $<ptr>$=A4GL_new_expr(buff);
@@ -839,8 +839,8 @@ builtin_expr : curr_v_clause {
 
 	/*
 	variable_or_current: 
-		CURRENT COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>3,$<str>5); }
-		| variable COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
+		CURRENT KW_COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>3,$<str>5); }
+		| variable KW_COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
 		| CURRENT s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4); }
 	;
 	*/
@@ -890,7 +890,7 @@ builtin_expr : curr_v_clause {
 				$<field_list>$=new_field_list();
 				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
 			} |
-		field_name_list_as_struct COMMA field_name_as_struct {
+		field_name_list_as_struct KW_COMMA field_name_as_struct {
 				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 		}
 	;
@@ -899,7 +899,7 @@ builtin_expr : curr_v_clause {
 				$<field_list>$=new_field_list();
 				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
 			} |
-		field_name_list_or_char_as_struct COMMA field_name_or_char_as_struct {
+		field_name_list_or_char_as_struct KW_COMMA field_name_or_char_as_struct {
 				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 		}
 	;

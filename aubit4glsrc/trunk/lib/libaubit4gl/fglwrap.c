@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.70 2004-09-21 20:26:21 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.71 2004-10-15 15:00:23 mikeaubury Exp $
 #
 */
 
@@ -1277,8 +1277,35 @@ if (A4GL_isyes(acl_getenv("NEED_SIGCHLD"))) {
 		A4GL_exitwith("Unable to attach SIGCLD handler");
 		return 0;
 	}
+
 #endif
 }
+
+if (A4GL_isyes(acl_getenv("NEED_SIGPIPE")) || 1 ) {
+
+#if (defined(WIN32) || defined(__CYGWIN__) || defined (__MINGW32__))
+	/*
+	fglwrap.c:1144: `SA_NOCLDWAIT' undeclared (first use in this function)
+	fglwrap.c:1146: `SIGCLD' undeclared (first use in this function)
+	*/
+    A4GL_debug("SA_NOCLDWAIT on Windows? FIXME!");
+#else
+	A4GL_debug("Adding SIGPIPE handler to stop defunct processes with informix..");
+	memset(&ServerSig,0,sizeof(struct sigaction));
+	ServerSig.sa_handler = SIG_IGN;
+	ServerSig.sa_flags = SA_NOCLDWAIT;
+
+	if (sigaction(SIGPIPE, &ServerSig, NULL))
+	{
+		A4GL_exitwith("Unable to attach SIGPIPE handler");
+		return 0;
+	}
+
+#endif
+}
+
+
+
 	return 1;
 }
 

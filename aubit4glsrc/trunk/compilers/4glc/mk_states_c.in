@@ -1,6 +1,7 @@
 @AWK@ '
 BEGIN  {
 	cnt=0
+        print "#include \"a4gl_4glc_int.h\""
         print "#include \"y.tab.h\""
 	print "const short *token_groups[];"
 	print "int allow_token_state(int yystate,int yytoken) {"

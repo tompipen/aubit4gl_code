@@ -19,7 +19,7 @@ file_name	:	CHAR_VALUE | cvariable
 
 a_number	:	fgl_expr;
 
-coords		:	a_number COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+coords		:	a_number KW_COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
 ;
 
 display_coords	:	coords;

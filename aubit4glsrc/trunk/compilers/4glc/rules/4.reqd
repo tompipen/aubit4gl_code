@@ -1,6 +1,6 @@
 %token <str> NAME
 %left UMINUS
-%left COMMA
+%left KW_COMMA
 %left KW_OR         
 %left KW_AND        
 %left KW_USING 

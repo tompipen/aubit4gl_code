@@ -8,7 +8,7 @@
 options_cmd : OPTIONS opt_options;
 
 opt_options : opt_allopts
-	| opt_options COMMA opt_allopts
+	| opt_options KW_COMMA opt_allopts
 ;
 
 opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }

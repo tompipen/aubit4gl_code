@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.98 2004-10-04 13:49:59 afalout Exp $
+# $Id: lexer.c,v 1.99 2004-10-15 15:00:15 mikeaubury Exp $
 #*/
 
 /**
@@ -48,7 +48,6 @@
 =====================================================================
 */
 
-#include "y.tab.h"
 #include <ctype.h>
 
 /*prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would*/
@@ -57,7 +56,8 @@
 /* please use A4GL_ namespace.*/
 #define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
-
+#include "y.tab.h"
+#include "rules/generated/kw.h"
 #include "memfile.h"
 
 extern int isin_formhandler;
@@ -1738,7 +1738,7 @@ could_be=0;
 // (with the obvious exceptions...)
 int is_sql_kw(int a) {
 	if (a==INTO) return 1;
-	if (a==COMMA) return 1;
+	if (a==KW_COMMA) return 1;
 	if (a==OPEN_SQUARE) return 1;
 	if (a==CLOSE_SQUARE) return 1;
 	if (a==OPEN_BRACKET) return 1;
