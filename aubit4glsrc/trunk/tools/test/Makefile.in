@@ -1,4 +1,4 @@
-# +----------------------------------------------------------------------+
+ac# +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.42 2003-08-09 09:27:14 afalout Exp $
+# $Id: Makefile.in,v 1.43 2004-02-06 22:50:17 afalout Exp $
 #
 
 ROOT    =../..
@@ -37,6 +37,16 @@ include ${ROOT}/incl/?4gl.mk
 ## ==================================================================
 ##                              Options
 ## ==================================================================
+
+
+A4GL_LEXTYPE=C
+DEBUG=ALL
+A4GL_SQLTYPE=nosql
+A4GL_UI=CONSOLE
+
+export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
+					
+
 
 #4GLPCFLAGS		=-verbose -settings
 

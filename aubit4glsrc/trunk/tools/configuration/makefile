@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.6 2004-02-01 03:16:54 afalout Exp $
+# $Id: makefile,v 1.7 2004-02-06 22:50:17 afalout Exp $
 #
 
 ROOT    =../..
@@ -33,6 +33,14 @@ include ${ROOT}/incl/Makefile-common
 
 #rules for making targets:
 include ${ROOT}/incl/a4gl.mk
+
+A4GL_LEXTYPE=C
+DEBUG=ALL
+A4GL_SQLTYPE=nosql
+A4GL_UI=CONSOLE
+
+export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
+
 
 ## ==================================================================
 ##                              Options
@@ -56,7 +64,8 @@ config.ao: config.4gl
 rest.ao: rest.4gl
 
 configurator${EXE}: config.ao rest.ao dir.o
-	${FGLPCEXEC} $^ -o $@
+	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; \
+		${FGLPCEXEC} $^ -o $@
 
 ## ==================================================================
 ##                              Install/deinstall

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.75 2004-02-03 04:55:06 afalout Exp $
+# $Id: Makefile.in,v 1.76 2004-02-06 22:50:16 afalout Exp $
 #
 
 ROOT		=../..
@@ -226,6 +226,13 @@ lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
+
+show:
+	@echo "YACC=${YACC}"
+	@echo "GENRULES=${GENRULES}"
+	@echo "Y_TAB_C=${Y_TAB_C}"
+	@echo "CFLAGS=${CFLAGS}"
+	@echo "Y_OUTPUT=${Y_OUTPUT}"
 
 ## ==================================================================
 ##                            Clean Targets
