@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.54 2004-07-03 11:57:29 mikeaubury Exp $
+# $Id: ops.c,v 1.55 2004-07-16 16:37:55 mikeaubury Exp $
 #
 */
 
@@ -318,6 +318,9 @@ A4GL_in_dt_ops (int op)
       in.ltime = pi->ltime;
     }
 
+dt.stime=-1;
+dt.ltime=-1;
+
   if (pd)
     {
       dt.stime = pd->stime;
@@ -334,6 +337,8 @@ A4GL_in_dt_ops (int op)
       return;
     }
 
+
+  A4GL_setnull(10,&dt,dt.stime*16+dt.ltime);
 
   A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
 

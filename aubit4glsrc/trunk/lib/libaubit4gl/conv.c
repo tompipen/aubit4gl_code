@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.81 2004-07-11 09:46:51 mikeaubury Exp $
+# $Id: conv.c,v 1.82 2004-07-16 16:37:55 mikeaubury Exp $
 #
 */
 
@@ -532,10 +532,10 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
 
 int A4GL_d_to_dt(void *a,void *b,int size) {
 	int d_y,d_m,d_d;
-	char buff[20];
+	static char buff[20];
 	A4GL_get_date (*(long *)a, &d_d, &d_m, &d_y );
 	sprintf(buff,"%04d-%02d-%02d",d_y,d_m,d_d);
-	return A4GL_ctodt(buff,b,size);
+	return A4GL_ctodt(&buff[0],b,size);
 
 }
 
@@ -572,12 +572,14 @@ A4GL_dttodt (void *a, void *b, int size)
   char buff[256];
   struct A4GLSQL_dtime *d;
   d = a;
-
-  if (d->stime >= 1 && d->stime <= 11);
+/*
+  if (d->stime >= 1 && d->stime <= 19);
   else
-    {
+    { 
+	A4GL_debug("d->stime=%d\n",d->stime);
       A4GL_assertion (1, "Start Time invalid on datetime (dttodt)");
     }
+*/
 
   if (d->ltime >= 1 && d->ltime <= 11);
   else
@@ -600,11 +602,13 @@ A4GL_dttodt (void *a, void *b, int size)
   A4GL_debug ("In A4GL_dttodt - calling A4GL_dttoc size=%x ", size);
   if (A4GL_dttoc (a, buff, 255))
     {
+      int rval;
       d = b;
       A4GL_debug ("Got buff as : %s - size=%x\n", A4GL_null_as_null(buff), size);
       d->stime = size / 16;
       d->ltime = size % 16;
-      return A4GL_ctodt (buff, b, d->stime * 16 + d->ltime);
+      rval=A4GL_ctodt (buff, b, d->stime * 16 + d->ltime);
+	return rval;
     }
   return 0;
 }
@@ -619,12 +623,16 @@ A4GL_dttodt (void *a, void *b, int size)
  *   - 1 : Convertion done.
  */
 int
-A4GL_ctodt (void *a, void *b, int size)
+A4GL_ctodt (void *av, void *b, int size)
 {
   int data[256];
   struct A4GLSQL_dtime *d;
-int valid;
-  A4GL_debug ("ctodt : %p %p %d\n", a, b, size);
+  int valid;
+  char *a;
+
+  a=(char *)av;
+
+  A4GL_debug ("ctodt : %s %p %d\n", a, b, size);
   A4GL_debug ("a-->%s\n", A4GL_null_as_null(a));
   d = (struct A4GLSQL_dtime *) b;
 
@@ -661,6 +669,8 @@ data[6]=0;
     }
   else
     {
+	//A4GL_assertion(1,"Bibble");
+	//printf("INVALID \n");
 	A4GL_setnull(DTYPE_DTIME,d,size);
       return 1;
     }
@@ -699,7 +709,7 @@ A4GL_dttoc (void *a, void *b, int size)
   if (d->stime >= 1 && d->stime <= 15);
   else
     {
-      A4GL_assertion (1, "Start Time invalid on datetime");
+      A4GL_assertion (1, "Start Time invalid on datetime(dttoc)");
     }
 
   if (d->ltime >= 1 && d->ltime <= 15);
@@ -2720,6 +2730,16 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   return rval;
 }
 
+
+void A4GL_assertion_failed(char *s)  {
+      fflush (stdout);
+      A4GL_set_errm (s);
+      A4GL_debug ("%s", A4GL_null_as_null(s));
+      A4GL_exitwith ("Assertion failed %s");
+      A4GL_chk_err (0, "Unknown");
+      exit (0);
+}
+
 /**
  * Assert if an expression is true.
  *
@@ -2731,15 +2751,9 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 void
 A4GL_assertion (int a, char *s)
 {
-  if (a)
-    {
-      fflush (stdout);
-      A4GL_set_errm (s);
-      A4GL_debug ("%s", A4GL_null_as_null(s));
-      A4GL_exitwith ("Assertion failed %s");
-      A4GL_chk_err (0, "Unknown");
-      exit (0);
-    }
+if (a) {
+	A4GL_assertion_failed(s);
+}
 }
 
 
@@ -2753,8 +2767,7 @@ A4GL_assertion (int a, char *s)
  *   - 0 : The date is not valid.
  *   - 1 : The date is valid.
  */
-int
-A4GL_valid_dt (char *s, int *data)
+int A4GL_valid_dt (char *s, int *data)
 {
   int a;
   char buff[256];
@@ -2769,6 +2782,7 @@ A4GL_valid_dt (char *s, int *data)
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
     0
   };
+
 
   A4GL_debug ("In valid_dt\n");
   if (strlen (s) > 25)
