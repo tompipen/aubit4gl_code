@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.62 2004-10-16 01:33:24 afalout Exp $
+# $Id: Makefile.in,v 1.63 2004-12-07 20:26:58 whaslbeck Exp $
 #
 
 ROOT        =../..
@@ -142,7 +142,6 @@ y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
 else
-#	${NICE} ${YACC} -v  $(SOURCES.yacc)
 	${YACC} -v  $(SOURCES.yacc)
 endif
 
@@ -150,7 +149,7 @@ lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
 	${CP} ${LEX_YY_C} .
 else
-	${NICE} ${LEX} $(SOURCES.lex)
+	${LEX} $(SOURCES.lex)
 endif
 
 rpc: form_x_xdr.c

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2004-10-01 00:51:01 afalout Exp $
+# $Id: Makefile.in,v 1.9 2004-12-07 20:27:02 whaslbeck Exp $
 #
 
 ROOT        =../..
@@ -72,7 +72,6 @@ y.tab.c: x.yacc lex.yy.c
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
 else
-#	${NICE} ${YACC} -v  $(SOURCES.yacc)
 	${YACC} x.yacc
 endif
 
@@ -81,7 +80,6 @@ lex.yy.c: x.lex
 ifeq "${LEX}" "no"
 	${CP} ${LEX_YY_C} .
 else
-#	${NICE} ${LEX} $(SOURCES.lex)
 	${LEX} $^
 endif
 

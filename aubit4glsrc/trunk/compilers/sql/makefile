@@ -1,6 +1,6 @@
 
 #
-# $Id: makefile,v 1.4 2004-11-27 06:43:43 afalout Exp $
+# $Id: makefile,v 1.5 2004-12-07 20:27:02 whaslbeck Exp $
 #
 
 ROOT		=../..
@@ -68,7 +68,7 @@ endif
 
 lex.yy.c: m2.lex
 ifneq "${LEX}" "no"
-	${NICE} ${LEX} -i $<
+	${LEX} -i $<
 else
 	@echo "No lex (${LEX})"
 	exit 4

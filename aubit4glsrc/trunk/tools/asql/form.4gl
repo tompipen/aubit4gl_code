@@ -275,6 +275,7 @@ end function
 
 
 function new_form()
+define lv_fname char(255)
 	let int_flag=false
 	prompt "Form name >>" for lv_fname
 	if int_flag=true or lv_fname is null or lv_fname matches " " then

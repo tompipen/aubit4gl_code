@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2003-02-22 01:52:20 afalout Exp $
+# $Id: Makefile.in,v 1.33 2004-12-07 20:27:01 whaslbeck Exp $
 #
 
 ROOT        =../..
@@ -110,14 +110,14 @@ y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
 else
-	nice -20 ${YACC} -v  $(SOURCES.yacc)
+	${YACC} -v  $(SOURCES.yacc)
 endif
 
 lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
 	${CP} ${LEX_YY_C} .
 else
-	nice -20 flex -i $(SOURCES.lex)
+	flex -i $(SOURCES.lex)
 endif
 
 rpc:
