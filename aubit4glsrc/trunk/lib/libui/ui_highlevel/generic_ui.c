@@ -528,14 +528,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
     }
   A4GL_debug ("f4");
 
-#if ! defined (__CYGWIN__)
-  //On CygWin: generic_ui.c:469: error: incompatible type for argument 1 of `__builtin_va_end'
-  va_end (ap);
-#else
-  A4GL_debug ("*******************************");
-  A4GL_debug ("FIXME: va_end problem on CygWin");
-  A4GL_debug ("*******************************");
-#endif
+  va_end (*ap);
 
 }
 
