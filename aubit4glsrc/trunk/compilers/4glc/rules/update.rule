@@ -57,7 +57,19 @@ set_clause_list_ss:
 		} else {
 			ansi_violation("Update (..)=(..)",1);
 		}
-}
+    }
+    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
+		$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
+		push_gen(UPDCOL,"*");
+		if (isyes(acl_getenv("FIXUPDATE"))) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+    }
+
+
     | XSET upd_columns_ss  {
 		$<sql_string>$=make_sql_string("SET ",$<sql_string>2,0);
     }
@@ -80,6 +92,29 @@ set_clause_list_ss:
 			ansi_violation("Update (..)=(..)",1);
 		}
 	}
+    | XSET identifier DOT MULTIPLY EQUAL upd_val_list_ss  {
+		char *ptr;
+
+		ptr=$<sql_string>6;
+		push_gen(UPDCOL,"*");
+
+		if (ptr[0]=='(') {
+			$<sql_string>$=make_sql_string("SET *= ",$<sql_string>6,0);
+		} else {
+			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>6,")",0);
+		}
+
+		if (isyes(acl_getenv("FIXUPDATE"))) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+	}
+
+
+
+
 ;
 
 upd_columns_ss : 

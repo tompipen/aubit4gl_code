@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.69 2003-05-01 09:42:17 mikeaubury Exp $
+# $Id: lexer.c,v 1.70 2003-05-06 17:39:01 mikeaubury Exp $
 #*/
 
 /**
@@ -505,6 +505,12 @@ read_word2 (FILE * f, int *t)
 
       if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
+	  if (strlen (word) > 0)
+	    {
+	      mja_ungetc (a, f);
+	      return word;
+	    }
+	
 	  a = mja_fgetc (f);
 	  if (a != '!')
 	    {

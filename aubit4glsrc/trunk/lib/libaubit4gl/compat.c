@@ -45,8 +45,8 @@ void popvchar(char *x,int y) {
 	pop_char(x,y);
 }
 
-void retdub(double x) {
-	push_double(x);
+void retdub(double *x) {
+	push_double(*x);
 }
 
 

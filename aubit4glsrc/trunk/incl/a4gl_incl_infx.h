@@ -21,7 +21,7 @@ void retstring(char* str);
 void pushshort (short x);
 void pushlong (long x);
 void popvchar (char* x, int y);
-void retdub (double x);
+void retdub (double *x);
 
 
 
