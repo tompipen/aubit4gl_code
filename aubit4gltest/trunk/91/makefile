@@ -9,7 +9,7 @@ run: put.4ae
 	
 
 desc:
-	@echo "Old test makefile"
+	@echo "Old makefile"
 	
 	
 ################

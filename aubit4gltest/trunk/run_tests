@@ -689,7 +689,7 @@ for a in $FLAGS; do
                 else
 					CVSIGNORE="$a/.cvsignore"
 					#CVSIGNORE_OUT=">> $CVSIGNORE"
-					ADDEXT_LIST=".4go .4gi"
+					ADDEXT_LIST=".frm .infx"
 					for ADDEXT in $ADDEXT_LIST; do
 						if ! grep "$ADDEXT" "$CVSIGNORE" > /dev/null ; then 
 							#echo "*$ADDEXT" $CVSIGNORE_OUT
