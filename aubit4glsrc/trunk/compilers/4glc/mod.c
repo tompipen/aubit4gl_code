@@ -15,12 +15,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.35 2001-12-07 18:20:07 mikeaubury Exp $
+* $Id: mod.c,v 1.36 2002-01-06 10:20:29 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.35  2001/12/07 18:20:07  mikeaubury
+*	dl stuff
+*	
 *	Revision 1.33  2001/12/02 22:34:45  saferreira
 *	Some prototypes declared, warnings fixed and Doxygen comments added
 *
@@ -833,7 +836,7 @@ void print_variables (int z)
 
   int record;
 
-  dump_vars ();
+  //dump_vars ();
 
   debug ("/**********************************************************/\n");
 
