@@ -73,3 +73,31 @@ op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
 ;
 
 
+
+
+
+connect_cmd :
+ CONNECT_TO var_ident op_connect_as con_user_details
+ {
+  printc("init_session(%s",$<str>3);
+    if (strcmp($<str>4,"?")==0) {
+        printc(",char_pop(),%s);\n",$<str>4);
+  } else {
+        printc("    ,\"%s\",%s);\n",$<str>2,$<str>4);
+  }
+}
+;
+
+op_connect_as :
+        {strcpy($<str>$,$<str>1);}
+        | AS var_ident {strcpy($<str>$,$<str>2);}
+
+;
+
+con_user_details :
+        {sprintf($<str>$,"0,0");}
+        | AS USER char_or_var USING char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
+        | USER char_or_var USING char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
+;

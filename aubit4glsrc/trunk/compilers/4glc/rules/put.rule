@@ -1,0 +1,29 @@
+put_cmd :
+        PUT cursor_name  {
+		start_bind('i',0);
+		}
+		put_from
+		{
+		int n;
+		printc("{\n");
+		n=print_bind('i');
+		printc("/* PUT %s FROM %s */",$<str>2,$<str>4); 
+		printc("put_insert(%d);\n",n);
+		printc("}\n");
+	}
+;
+
+put_from:
+	{strcpy($<str>$,"");} 
+| FROM put_val_list { strcpy($<str>$,$<str>2);}
+;
+
+put_val_list  : put_val {push_gen(PUTVAL,$<str>1);} | 
+                put_val_list COMMA put_val {push_gen(PUTVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
+;
+
+put_val : value_expression | KW_NULL
+;
+
+
+

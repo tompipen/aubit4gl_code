@@ -90,7 +90,7 @@ var_or_string : var | CHAR_VALUE;
 
 setident : {
 		debug("Setident\n");
-		chk4var=1;
+		//chk4var=1;
 	strcpy($<str>$,"");
 	   } ;
 
