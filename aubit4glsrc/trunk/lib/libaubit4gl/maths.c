@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.11 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: maths.c,v 1.12 2004-02-20 14:39:52 mikeaubury Exp $
 #
 */
 
@@ -204,7 +204,7 @@ A4GL_find_op_function (int dtype1, int dtype2, int op)
   dtype1 = dtype1 & DTYPE_MASK;
   dtype2 = dtype2 & DTYPE_MASK;
 
-  A4GL_debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
+  //A4GL_debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
 
   if (nparam_op (op) == 0)
     {
@@ -219,7 +219,7 @@ A4GL_find_op_function (int dtype1, int dtype2, int op)
 
   if (ptr_orig == 0)
     {
-      A4GL_debug ("No ptr_orig - so no...");
+      //A4GL_debug ("No ptr_orig - so no...");
       return 0;
     }
 

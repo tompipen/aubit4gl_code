@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.59 2004-01-16 16:35:43 mikeaubury Exp $
+# $Id: resource.c,v 1.60 2004-02-20 14:39:53 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,9 @@
 #define _NO_FORM_X_H_
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+
+char *debug=0;
+char *debug_level=0;
 
 
 /*
@@ -88,6 +91,7 @@ struct str_resource builtin_resource[] = {
 #else
   {"A4GL_SQLTYPE", "nosql"},
 #endif
+  {"A4GL_SQLDIALECT", "INFORMIX"},
   {"RM_COMMENTS_FIRST","Y"},
   {"A4GL_UPSCOL_ATT","syscolatt"},
   {"A4GL_UPSCOL_VAL","syscolval"},
@@ -491,6 +495,7 @@ find_str_resource (char *s)
 #ifdef DEBUG
 //      debug("Resurce %s has value of: %s\n",s,ptr);
 #endif
+	//printf("ptr=%s\n",ptr);
       return ptr;
     }
   else
@@ -513,8 +518,22 @@ char prefixed_string[1024];
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
 int cumulate = 0;
 char cumulate_char=0;
-char cumulated_string[2048];
 
+char cumulated_string[2048]="";
+char cumulated_string_tmp[2048]="";
+
+if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
+	if (debug!=0) return debug;
+} 
+
+if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
+	if (debug_level!=0) return debug_level;
+} 
+
+ if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
+	return A4GL_find_pointer(s,STR_RESOURCE_VAL);
+ }
+//printf("Looking for %s\n",s);
 //WARNING - strings returned by getenv() are linited to 125 charcters!
 //strings defined in aubitrc don't have this limitation.
 
@@ -543,28 +562,33 @@ char cumulated_string[2048];
 
     if (cumulate) {
 		if (ptr_env_A4GL != 0) {
-			sprintf(cumulated_string,"%s",ptr_env_A4GL);
+			sprintf(cumulated_string_tmp,"%s",ptr_env_A4GL);
+			strcpy(cumulated_string,cumulated_string_tmp);
 		}
-	    if (ptr_env != 0) {
-			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_env);
+	    	if (ptr_env != 0) {
+			sprintf(cumulated_string_tmp,"%s%c%s",cumulated_string,cumulate_char,ptr_env);
+			strcpy(cumulated_string,cumulated_string_tmp);
 		}
-	    if (ptr_registry != 0) {
-			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_registry);
+	    	if (ptr_registry != 0) {
+			sprintf(cumulated_string_tmp,"%s%c%s",cumulated_string,cumulate_char,ptr_registry);
+			strcpy(cumulated_string,cumulated_string_tmp);
 		}
-	    if (ptr_resources_A4GL != 0) {
-			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_resources_A4GL);
+	    	if (ptr_resources_A4GL != 0) {
+			sprintf(cumulated_string_tmp,"%s%c%s",cumulated_string,cumulate_char,ptr_resources_A4GL);
+			strcpy(cumulated_string,cumulated_string_tmp);
 		}
 		if (ptr_resources != 0) {
-			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_resources);
+			sprintf(cumulated_string_tmp,"%s%c%s",cumulated_string,cumulate_char,ptr_resources);
+			strcpy(cumulated_string,cumulated_string_tmp);
 		}
 		if (strlen (cumulated_string) != 0 ){
 			ptr=(char *)cumulated_string;
-        }
+        	}
     } else {
 		if (ptr_env_A4GL != 0) { ptr=ptr_env_A4GL; }
-	    else if (ptr_env != 0) { ptr=ptr_env; }
-	    else if (ptr_registry != 0) { ptr=ptr_registry; }
-	    else if (ptr_resources_A4GL != 0) { ptr=ptr_resources_A4GL; }
+	    	else if (ptr_env != 0) { ptr=ptr_env; }
+	    	else if (ptr_registry != 0) { ptr=ptr_registry; }
+	    	else if (ptr_resources_A4GL != 0) { ptr=ptr_resources_A4GL; }
 		else if (ptr_resources != 0) { ptr=ptr_resources; }
 	}
 
@@ -580,7 +604,13 @@ char cumulated_string[2048];
 		if (strcmp (s, "DBDATE") == 0) {
 			A4GL_chk_dbdate (ptr);
 		}
-
+		if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
+			debug=ptr;
+		} 
+		if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
+			debug_level=ptr;
+		} 
+		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
 		return ptr;
     }
 }

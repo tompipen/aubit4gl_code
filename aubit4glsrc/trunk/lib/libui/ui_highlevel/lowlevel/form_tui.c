@@ -394,6 +394,12 @@ A4GL_form_set_form_sub (FORM * form, WINDOW * sub)
   return E_OK;
 }
 
+WINDOW *
+A4GL_form_form_sub (const FORM * form)
+{
+  return form->sub ;
+}
+
 
 int
 A4GL_form_set_form_userptr (FORM * form, void *userptr)

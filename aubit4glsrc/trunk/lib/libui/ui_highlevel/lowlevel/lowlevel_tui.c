@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.15 2004-02-12 19:10:55 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.16 2004-02-20 14:39:53 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -604,13 +604,26 @@ A4GL_LL_display_form (void *vf, int attrib)
 
 
   wclear (drwin);
+  a = A4GL_form_set_form_sub (f->form, drwin);
+
+
   if (a == E_POSTED)
     {
-      A4GL_form_unpost_form (f->form);
-      a = A4GL_form_set_form_win (f->form, panel_window(w));
+        WINDOW *olddrwin;
+	A4GL_debug("Deleteing old subwin");
+        olddrwin=A4GL_form_form_sub(f->form);
+	delwin(olddrwin);
+        A4GL_form_unpost_form (f->form);
+  	a = A4GL_form_set_form_sub (f->form, drwin);
     }
 
-  a = A4GL_form_set_form_sub (f->form, drwin);
+  a = A4GL_form_set_form_win (f->form, panel_window(w));
+  if (a == E_POSTED)
+    {
+	A4GL_exitwith("That shouldn't be posted by now...");
+	exit(33);
+    }
+
 
   A4GL_debug ("setup windows");
   keypad (panel_window ((PANEL *) w), TRUE);
@@ -632,6 +645,7 @@ A4GL_LL_display_form (void *vf, int attrib)
       A4GL_debug ("Form posted already - dumping and re-doing");
       A4GL_form_unpost_form (f->form);
       a = A4GL_form_post_form (f->form);
+      A4GL_debug ("Form was already posted - status now : %d",a);
     }
 
   if (f->form_details.border)
@@ -1341,8 +1355,11 @@ A4GL_LL_get_carat (void *form)
 int
 A4GL_LL_int_form_driver (void *mform, int mode)
 {
-  A4GL_form_form_driver (mform, mode);
-	return 1;
+int a;
+  a=A4GL_form_form_driver (mform, mode);
+  A4GL_debug("int_form_Driver %p %x = %d",mform,mode,a);
+	return a;
+	//return 1;
 }
 
 void *

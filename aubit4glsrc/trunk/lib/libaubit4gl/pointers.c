@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.24 2003-10-16 09:46:25 afalout Exp $
+# $Id: pointers.c,v 1.25 2004-02-20 14:39:52 mikeaubury Exp $
 #
 */
 
@@ -183,13 +183,13 @@ A4GL_action (const void *nodep, const VISIT which, const int depth)
       break;
     case postorder:
       datap = *(struct s_node **) nodep;
-      A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
+      ////A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     case endorder:
       break;
     case leaf:
       datap = *(struct s_node **) nodep;
-      A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
+      //A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     }
   return;
@@ -212,57 +212,57 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   struct s_node *node;
   char ptrchar[800];
   A4GL_trim (orig_name);
-  A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
+  //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
   buff = (struct s_node *) malloc (sizeof (struct s_node));
   buff->name[0] = type;
   buff->name[1] = 0;
   strcat (buff->name, orig_name);
   buff->ptr = ptr;
-  A4GL_debug ("Buff=%p\n", buff);
+  //A4GL_debug ("Buff=%p\n", buff);
   a = FIND (buff);
 
   if (a)
     {
-      A4GL_debug ("Found an existing one %p\n", a);
+      //A4GL_debug ("Found an existing one %p\n", a);
       node = *(struct s_node **) a;
-      A4GL_debug ("Node = %p\n", node);
-      A4GL_debug ("Node=%p name=%s\n", node, node->name);
+      //A4GL_debug ("Node = %p\n", node);
+      //A4GL_debug ("Node=%p name=%s\n", node, node->name);
       sprintf (ptrchar, ">%p", buff->ptr);
-      A4GL_debug ("Copied ptr\n");
+      //A4GL_debug ("Copied ptr\n");
       node->ptr = ptr;
-      A4GL_debug ("Copy buffer %s\n", ptrchar);
+      //A4GL_debug ("Copy buffer %s\n", ptrchar);
       strcpy (buff2.name, ptrchar);
-      A4GL_debug ("And find its pointer\n");
+      //A4GL_debug ("And find its pointer\n");
       a = FIND (&buff2);
       if (a)
 	{
-	  A4GL_debug ("Found ptr... \n");
+	  //A4GL_debug ("Found ptr... \n");
 	  node = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE (&buff2);
 #endif
 
-	  A4GL_debug ("Try to free %p\n", node);
+	  //A4GL_debug ("Try to free %p\n", node);
 	  strcpy (node->name, "======");
 	  free (node);
 	}
       else
 	{
-	  A4GL_debug ("No pointer\n");
+	  //A4GL_debug ("No pointer\n");
 	}
     }
   else
     {
-      A4GL_debug ("tfind ... a=%p\n", a);
+      //A4GL_debug ("tfind ... a=%p\n", a);
       a = ADD (buff);
-      A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
+      //A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
   buff_add = (struct s_node *) malloc (sizeof (struct s_node));
   sprintf (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
-  A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
+  //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD (buff_add);
-  A4GL_debug ("Added...");
+  //A4GL_debug ("Added...");
 }
 
 
@@ -286,19 +286,19 @@ A4GL_find_pointer (const char *pname, char t)
   buff.name[1] = 0;
   strcat (buff.name, pname);
   buff.ptr = 0;
-  A4GL_debug ("30 Finding %s", buff.name);
+  //A4GL_debug ("30 Finding %s", buff.name);
   a = FIND (&buff);
-  //A4GL_debug ("A=%p", a);
+  ////A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
       node = *(struct s_node **) a;
 
-      A4GL_debug ("30 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
+      //A4GL_debug ("30 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
       return node->ptr;
     }
   else
     {
-      A4GL_debug ("10 Opps - not found pname=%s t=%c a=%p", pname, t, a);
+      //A4GL_debug ("10 Opps - not found pname=%s t=%c a=%p", pname, t, a);
       return 0;
     }
 }
@@ -334,7 +334,7 @@ A4GL_del_pointer (char *pname, char t)
   buff->name[0] = t;
   buff->name[1] = 0;
   strcat (buff->name, pname);
-  A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
+  //A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
   a = FIND (buff);
   if (a)
     {
@@ -389,26 +389,26 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   struct s_node buff;
   struct s_node *node;
   void *a;
-  A4GL_debug ("Finding pointer to pointer %p", ptr);
+  //A4GL_debug ("Finding pointer to pointer %p", ptr);
   sprintf (buff.name, ">%p", ptr);
-  A4GL_debug ("Finding %s", buff.name);
+  //A4GL_debug ("Finding %s", buff.name);
   buff.ptr = 0;
 
   a = FIND (&buff);
-  A4GL_debug ("Find returns %p", a);
+  //A4GL_debug ("Find returns %p", a);
   if (a)
     {
       node = *(struct s_node **) a;
       node = (struct s_node *) node->ptr;
 
-      A4GL_debug ("Copying.. %s", node->name);
+      //A4GL_debug ("Copying.. %s", node->name);
       *type = node->name[0];
       strcpy (name, &node->name[1]);
       return 1;
     }
   else
     {
-      A4GL_debug ("Not found");
+      //A4GL_debug ("Not found");
       return 0;
     }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.69 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: conv.c,v 1.70 2004-02-20 14:39:52 mikeaubury Exp $
 #
 */
 
@@ -1589,7 +1589,7 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
   int *date;
   str = (char *) str_v;
   date = (int *) date_v;
-A4GL_debug("STOD : %s %d",str_v,*date);
+//A4GL_debug("STOD : %s %d",str_v,*date);
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
   // we only need to do this once, the first time stod() is called.
   // note - for this conversion we need only the three letters DMY

@@ -60,11 +60,13 @@ end function
 function load_newvals()
 define a integer
 define v char(50)
+display "Please wait..." at  1,1
 for a=1 to 400
 	let v=get_name(a)
 	if v is null or v matches " " then
 		exit for
 	end if
+	display "Loading : ",v,"" at 2,1
 	let lv_newvals[a]=fgl_getenv(v)
 end for
 end function

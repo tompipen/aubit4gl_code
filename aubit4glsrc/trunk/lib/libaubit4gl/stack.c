@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.84 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: stack.c,v 1.85 2004-02-20 14:39:52 mikeaubury Exp $
 #
 */
 
@@ -526,7 +526,7 @@ A4GL_pop_param (void *p, int d, int size)
   char *ptr;
 
 A4GL_conversion_ok(1);
-A4GL_debug("pop_param");
+//A4GL_debug("pop_param");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
 
   params_cnt--;
@@ -553,7 +553,7 @@ A4GL_debug("pop_param");
 		//printf("Setnull %d %p %d %p %d",d1,s1,d,p,size);
 		b=1;
   	} else {
-		A4GL_debug("Doing conv");
+		//A4GL_debug("Doing conv");
 		A4GL_conversion_ok(1);
   		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 		
@@ -1738,25 +1738,25 @@ int first;
 
   /* comparison of char to number/date */
 
-#ifdef DEBUG
-  /* {DEBUG} */ A4GL_debug ("Dont know how to compare a %d to a %d\n", d1, d2);
-#endif
+
+
+
 
   if (d1 == 0)
     {
 	//double aa;
-      A4GL_debug ("First is string");	
+      //A4GL_debug ("First is string");	
 	first=1;
       z1 = A4GL_char_pop ();
       b = A4GL_pop_double ();
 	if (A4GL_stof (z1, &a, 0)) {
-		A4GL_debug("OK as a float");
+		//A4GL_debug("OK as a float");
 	} else {
 		A4GL_debug("Doesn't look much like a float to me (%s)",z1);
 		return -2;
 	}
       //b = strtod (z1,&ptr);
-      A4GL_debug ("1 --> %s %lf ", z1, b);
+      //A4GL_debug ("1 --> %s %lf ", z1, b);
     }
   else
     {
@@ -1766,17 +1766,17 @@ int first;
       z1 = A4GL_char_pop ();
       //b = strtod (z1,&ptr);
 	if (A4GL_stof (z1, &b, 0)) {
-		A4GL_debug("OK as a float..");
+		//A4GL_debug("OK as a float..");
 	} else {
 		A4GL_debug("Doesn't look much like a float to me (%s)",z1);
 		return -2;
 	}
-      A4GL_debug ("2 --> %s %lf", z1, a);
+      //A4GL_debug ("2 --> %s %lf", z1, a);
     }
 
   if (A4GL_stod (z1, &adate, 0) == 1)
     {
-      A4GL_debug ("String is a date...");
+      //A4GL_debug ("String is a date...");
 
 	if (first==0) 
       		b = (double) adate;

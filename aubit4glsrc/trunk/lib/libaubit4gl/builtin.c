@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.53 2004-02-20 13:19:19 mikeaubury Exp $
+# $Id: builtin.c,v 1.54 2004-02-20 14:39:52 mikeaubury Exp $
 #
 */
 
@@ -216,6 +216,8 @@ aclfgl_fgl_getenv (int nargs)
   A4GL_trim (g);
   A4GL_debug ("Looking up %s", g);
   p = acl_getenv (g);
+  A4GL_debug("Got back %p");
+  if (p) A4GL_debug(" %s = '%s'",g,p);
   if (p == 0)
     A4GL_push_char ("");
   else
