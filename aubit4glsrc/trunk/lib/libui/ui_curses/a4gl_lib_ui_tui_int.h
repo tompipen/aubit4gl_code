@@ -62,6 +62,7 @@ int A4GL_get_curr_field_col (FORM * mform);
 void A4GL_default_attributes (FIELD * f, int dtype);
 FIELD *A4GL_make_field (int, int, int, int);
 FIELD *A4GL_make_label (int frow, int fcol, char *label);
+int A4GL_chkwin(void);
 
 
     /* =======================  in newpanels.c  ======================= */

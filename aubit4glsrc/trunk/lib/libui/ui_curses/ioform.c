@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.37 2003-06-18 19:21:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.38 2003-06-19 18:22:01 mikeaubury Exp $
 #*/
 
 /**
@@ -96,7 +96,6 @@ long inp_current_field = 0;
 
 
 /** @todo Take this prototype definition for a header file */
-int A4GL_chkwin (void);
 void A4GL_bomb_out (void);
 extern char *A4GL_replace_sql_var (char *s);
 char *read_string_dup (FILE * ofile);
@@ -218,31 +217,31 @@ A4GL_make_label (int frow, int fcol, char *label)
 		if (!A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS")))  {
 			set_field_back(f, A_ALTCHARSET);
 			switch(label[1]) {
-				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
-				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
-				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
-				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
-				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
-				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
+				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER); break;
+				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER); break;
+				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER); break;
+				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER); break;
+				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE); break;
+				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE); break;
 				default : A4GL_debug("Unknown graphic : %c",label[1]); is_graphics=0;
 			}
 		} else {
 			set_field_back(f, A_ALTCHARSET);
-			A4GL_debug("Extended graphics : %c",label[1]);
+			A4GL_debug("Extended graphics : %c ACS_HLINE=%d",label[1],ACS_HLINE);
 			switch(label[1]) {
-				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
-				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
-				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
-				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
-				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
-				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
+				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER); break;
+				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER); break;
+				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER); break;
+				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER); break;
+				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE); break;
+				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE); break;
 
-				case '>': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LTEE&0xff); break;
-				case '<': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_RTEE&0xff); break;
-				case '^': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_BTEE&0xff); break;
+				case '>': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LTEE); break;
+				case '<': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_RTEE); break;
+				case '^': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_BTEE); break;
 				case 'v': 
-				case 'V': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_TTEE&0xff); break;
-				case '+': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_PLUS&0xff); break;
+				case 'V': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_TTEE); break;
+				case '+': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_PLUS); break;
 				default : A4GL_debug("Unknown graphic : %c",label[1]); is_graphics=0;
 			}
 		}
@@ -296,7 +295,6 @@ A4GL_read_metrics (struct s_form_dets *formdets)
   delims[0][1] = 0;
   delims[1][1] = 0;
   delims[2][1] = 0;
-
   n = formdets->fileform->metrics.metrics_len;
   A4GL_debug ("metrics len=%d", n);
   for (a = 0; a < n; a++)
@@ -1570,7 +1568,6 @@ A4GL_set_fields (void *vsio)
       A4GL_error_box ("NO active field\n", 0);
     }
   A4GL_zrefresh();
-  sleep(1);
   return 1;
 }
 
@@ -1704,6 +1701,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   int nofields;
   a4gl_status = 0;
 
+  A4GL_chkwin();
   A4GL_debug ("In disp_fields");
   formdets = A4GL_get_curr_form ();
 #ifdef DEBUG
@@ -2574,8 +2572,11 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 
 void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff,int ch) {
 	char buff[20];
-	buff[0]=ch;
+	A4GL_debug("Ch=%d",ch);
+	if (ch==0) {return; } 
+	buff[0]=ch&0xff;
 	buff[1]=0;
+	A4GL_debug("Adding char %d %c",ch,ch);
 	A4GL_mja_set_field_buffer (field,  nbuff, buff);
 }
 /**
@@ -3344,6 +3345,7 @@ A4GL_clr_form (int to_default)
 void
 A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 {
+  A4GL_chkwin();
   A4GL_exitwith ("Not implemented for TUI mode");
 }
 

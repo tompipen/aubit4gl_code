@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.39 2003-06-18 19:21:08 mikeaubury Exp $
+# $Id: curslib.c,v 1.40 2003-06-19 18:22:01 mikeaubury Exp $
 #*/
 
 /**
@@ -1361,10 +1361,11 @@ A4GL_init_curses_stuff ()
   keypad (stdscr, TRUE);
 
   if (has_colors()) {
-  start_color ();
-  A4GL_init_colour_pairs ();
+  	//start_color ();
+  	A4GL_init_colour_pairs ();
   }
   A4GL_init_windows ();
+
 
   A4GL_mja_gotoxy (1, 1);
   A4GL_tui_print ("                                 ");
@@ -1398,6 +1399,7 @@ A4GL_init_curses_stuff ()
 	    }
 	#endif
 #endif
+
 }
 
 
@@ -3499,7 +3501,7 @@ A4GL_new_menu_tui_oldway (char *title,
   ACL_Menu *menu;
   ACL_Menu_Opts *opt1;
   ACL_Menu_Opts *opt2;
-
+  
   if (nopts < 1)
     return 0;
   strcpy (buff, title);
@@ -3596,7 +3598,8 @@ ACL_Menu *
 A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   char buff[256];
-  ACL_Menu *menu;
+  ACL_Menu *menu; 
+  A4GL_chkwin();
   strcpy (buff, title);
   A4GL_trim (buff);
   menu = nalloc (ACL_Menu);
@@ -3735,6 +3738,7 @@ A4GL_new_menu (char *title,
   ACL_Menu_Opts *opt1;
   ACL_Menu_Opts *opt2;
 
+  A4GL_chkwin();
   if (nopts < 1)
     return 0;
   strcpy (buff, title);
@@ -3867,7 +3871,13 @@ void A4GL_comments (struct struct_scr_field *fprop)
   
   cline=A4GL_getcomment_line();
   buff[A4GL_get_curr_width()]=0;
-  A4GL_display_internal (1, cline, buff, 0, 1);
+  A4GL_debug("MJA COMMENTS 1,%d,%s",cline,buff);
+
+  if (cline>A4GL_get_curr_height())  {
+		cline=A4GL_get_curr_height();
+  }
+
+  A4GL_display_internal (1, cline, buff, AUBIT_COLOR_WHITE, 1);
   A4GL_zrefresh();
 
 

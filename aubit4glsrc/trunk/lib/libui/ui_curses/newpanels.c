@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.48 2003-06-18 19:21:08 mikeaubury Exp $
+# $Id: newpanels.c,v 1.49 2003-06-19 18:22:01 mikeaubury Exp $
 #*/
 
 /**
@@ -124,7 +124,6 @@ void A4GL_inc_winname (char *b);
 int A4GL_getch_swin (WINDOW * window_ptr);
 int A4GL_getform_line (void);
 int A4GL_find_win (PANEL * p);
-int A4GL_chkwin (void);
 int A4GL_screen_height (void);
 int A4GL_top_win (PANEL * p);
 char *A4GL_pointer_code (int c);
@@ -368,7 +367,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	  A4GL_debug ("XX3 REVERSE");
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
 	  A4GL_mja_wrefresh (dswin);
-	  sleep (2);
 	}
 
       if (border == 3)
@@ -380,7 +378,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	  A4GL_debug ("XX4 REVERSE");
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
 	  A4GL_mja_wrefresh (dswin);
-	  sleep (2);
 	}
 
       if (border == 0)
@@ -1593,12 +1590,13 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
 	A4GL_debug("Check we have CURSES env");
       A4GL_chkwin ();
 	A4GL_debug("Done");
-nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
-a=nattr;
+	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
+	a=nattr;
       b = A4GL_xwattr_get (currwin);
       a4glattr_wattrset (A4GL_window_on_top (), a);
       A4GL_gui_print (a, s);
       A4GL_mja_gotoxy (x, y);
+	A4GL_debug("X=%d Y=%d",x,y);
       A4GL_tui_print ("%s", s);
       if (clr_line)
 	{
@@ -1632,6 +1630,7 @@ A4GL_display_error (int a, int wait)
   char *s;
   A4GL_debug ("Cr string");
   s = A4GL_char_pop ();
+  A4GL_chkwin();
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
   A4GL_debug ("trimmed -> %s", s);
@@ -1850,6 +1849,9 @@ A4GL_open_form (char *name)
   char *s;
   char buff[256];
   struct s_form_dets *form;
+
+
+  A4GL_chkwin();
   s = A4GL_char_pop ();
   strncpy (buff, s, 256);
   buff[255] = 0;
@@ -1887,6 +1889,7 @@ A4GL_open_form (char *name)
 void
 A4GL_close_form (char *formname)
 {
+  A4GL_chkwin();
   A4GL_debug ("FIXME : A4GL_close_form not implemented");
 }
 
@@ -1901,7 +1904,7 @@ A4GL_disp_form (char *name, int attr)
   struct s_form_dets *f;
   WINDOW *w;
   char buff[80];
-
+  A4GL_chkwin();
   A4GL_debug ("attr=%d\n", attr);
   attr = A4GL_decode_aubit_attr (attr, 'w');
 
@@ -2449,6 +2452,7 @@ A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
 int
 A4GL_getcomment_line (void)
 {
+A4GL_debug("Comment line for currwin=%d std_dbscr=%d",windows[currwinno].winattr.comment_line,std_dbscr.comment_line);
   if (windows[currwinno].winattr.comment_line!=0xff) {
 	return A4GL_decode_line_ib (windows[currwinno].winattr.comment_line);
   }

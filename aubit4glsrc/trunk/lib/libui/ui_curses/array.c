@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.6 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: array.c,v 1.7 2003-06-19 18:22:01 mikeaubury Exp $
 #*/
 
 /**
@@ -89,6 +89,7 @@ clear_srec (struct struct_screen_record *srec)
   int b;
   char srec1[256];
   A4GL_debug ("Clearing %s", srec->name);
+  A4GL_chkwin();
   strcpy (srec1, srec->name);
   strcat (srec1, ".*");
   A4GL_debug ("Got fields as %s", srec1);
@@ -121,6 +122,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   int topline;
   int scr_line;
   int first_only = 0;
+  A4GL_chkwin();
 #ifdef DEBUG
   {
     A4GL_debug ("in draw_arr %p %d %d", disp, type, no);
@@ -269,6 +271,7 @@ disp_loop (struct s_disp_arr *arr)
   int a;
   int redisp;
   FORM *mform;
+  A4GL_chkwin();
   curr_arr_disp = arr;
   form = arr->currform;
   m_lastkey = 0;
@@ -422,6 +425,7 @@ A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib
 	     va_list * ap)
 {
   int a;
+  A4GL_chkwin();
   curr_arr_disp = disp;
   A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
   if (disp->srec == 0)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.43 2003-06-18 10:30:23 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.44 2003-06-19 18:22:00 mikeaubury Exp $
 #
 */
 
@@ -1166,6 +1166,7 @@ struct sigaction ServerSig;
     A4GL_exitwith("SA_NOCLDWAIT on Windows? FIXME!");
 #else
 	A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
+	memset(&ServerSig,0,sizeof(struct sigaction));
 	ServerSig.sa_handler = SIG_IGN;
 	ServerSig.sa_flags = SA_NOCLDWAIT;
 

@@ -25,10 +25,11 @@ extern "C"
   void pushlong (long x);
   void popvchar (char *x, int y);
   void retdub (double *x);
-  void popdec(dec_t *x);
-  void retdec(dec_t *x) ;
-  void popdtime(dtime_t *x) ;
-  void retdtime(dtime_t *x) ;
+
+  void popdec(void *x);
+  void retdec(void *x) ;
+  void popdtime(void *x) ;
+  void retdtime(void *x) ;
 
 
 #ifdef __cplusplus

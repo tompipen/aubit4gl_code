@@ -206,32 +206,37 @@ A4GL_copy_double(double *infx,double *a4gl,int size,int mode) {
 }
 
 
-
-void popdec(dec_t *x) {
-	char *s;
-	s=A4GL_char_pop();
-	deccvasc(s,strlen(s),x); 
-	free(s);
+void popdec(void *vx) {
+	dec_t *x;
+        char *s;
+	x=vx;
+        s=A4GL_char_pop();
+        deccvasc(s,strlen(s),x);
+        free(s);
 }
 
-void retdec(dec_t *x) {
-	fgldecimal _s;
-	A4GL_copy_decimal(x,&_s,0x1e10,'o');
-	A4GL_push_variable(&_s,0x1e100005);
+void retdec(void *vx) {
+	dec_t *x;
+        fgldecimal _s;
+	x=vx;
+        A4GL_copy_decimal(x,&_s,0x1e10,'o');
+        A4GL_push_variable(&_s,0x1e100005);
 }
 
-void popdtime(dtime_t *x) {
-	char *s;
-	s=A4GL_char_pop();
-	dtcvasc(s,x); 
-	free(s);
+void popdtime(void *vx) {
+	dtime_t *x;
+        char *s;
+	x=vx;
+        s=A4GL_char_pop();
+        dtcvasc(s,x);
+        free(s);
 }
 
 
-void retdtime(dtime_t *x) {
-	char s[123];
-	struct A4GLSQL_dtime d;
-	dttoasc(x,s);
-	A4GL_push_char(s);
+void retdtime(void *vx) {
+        char s[123];
+	dtime_t *x;
+        struct A4GLSQL_dtime d;
+	x=vx;
+        dttoasc(x,s);
 }
-
