@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.13 2002-03-16 12:00:03 afalout Exp $
+# $Id: Makefile-install.mki,v 1.14 2002-03-21 00:22:53 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -230,7 +230,8 @@ ifneq "${LDCONFIG}" "no"
 	ldconfig
 	@echo "Refreshed ldconfig cache."
 else
-#FIXME: grep ${HOME}/.bashrc first, to see if have this already.
+#FIXME: and what if user is not using Bash, but some other shell?
+ifeq "$(shell  grep ${ADD_LD_LIBRARY_PATH} ${HOME}/.bashrc)" ""
 	@echo "Adding to ${HOME}/.bashrc :"
 	@echo ' ' >> ${HOME}/.bashrc
 	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
@@ -241,6 +242,9 @@ else
 	@echo "    . ${HOME}/.bashrc"
 	@echo "BEFORE you attempt to compile Aubit source code, or run Aubit programs."
 	@echo ""
+else
+	@echo "${ADD_LD_LIBRARY_PATH} already present in ${HOME}/.bashrc"
+endif
 endif
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.44 2002-03-19 11:07:54 afalout Exp $
+# $Id: configure.in,v 1.45 2002-03-21 00:22:46 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1087,11 +1087,11 @@ AC_ARG_WITH(pgodbc,
 			    PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
 
 			    AC_DEFINE(HAVE_PGODBC,1,[ ])
-			    AC_MSG_RESULT(PGODBC=yes)
+			    #AC_MSG_RESULT(PGODBC=yes)
             fi
 		else
 		    AC_DEFINE(HAVE_PGODBC,0,[ ])
-		    AC_MSG_RESULT(PGODBC=no)
+		    #AC_MSG_RESULT(PGODBC=no)
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -1822,13 +1822,13 @@ AC_CHECK_LIB([curses], [main])
         HAVE_CURSES=1
 	    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
 		CURSES_LIB_PATH="-L/lib"
-		if [ "$AUBITGUI" = "CONSOLE" ]; then
+		if test "$AUBITGUI" = "CONSOLE" ; then
 			AUBITGUI=TUI
         fi
 	else
 		HAVE_CURSES=0
 		CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
-		if [ "$AUBITGUI" = "CONSOLE" ]; then
+		if test "$AUBITGUI" = "CONSOLE" ; then
 			AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
         else
 			AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
@@ -1836,6 +1836,7 @@ AC_CHECK_LIB([curses], [main])
 		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE MENUS OR FORMS - ONLY 'DISPLAY' WILL WORK!)
 		AC_MSG_WARN(Considder installing 'curses' libraries)
 	fi
+
 
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
