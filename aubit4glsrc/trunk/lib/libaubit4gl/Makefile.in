@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2002-09-26 00:14:53 afalout Exp $
+# $Id: Makefile.in,v 1.33 2002-09-26 12:05:58 afalout Exp $
 #
 
 ROOT    	=../..
@@ -109,6 +109,18 @@ ifeq "${TARGET_OS}" "solaris"
 endif
 
 
+ifeq "${TARGET_OS}" "darwin"
+		#SO_LDFLAGS	=-r ${LDFLAGS}
+		#This is to make ONLY dlopen() loadable library, not a standard
+        #shared one, ("bundle") so we will need separate setting for
+		#libaubit4gl.dynlib
+		#SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
+        SO_LDFLAGS_NOBUNDLE=-r $(SO_LDFLAGS:%-flat_namespace -bundle -undefined suppress=%)
+else
+		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
+endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -117,7 +129,7 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libaubit4gl${SO_EXT} : $(OBJS)
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINK_LIBS}
+	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
