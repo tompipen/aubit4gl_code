@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2004-12-17 05:21:00 afalout Exp $
+# $Id: Makefile,v 1.3 2004-12-20 08:24:49 afalout Exp $
 #
 
 ## ==================================================================
@@ -49,9 +49,11 @@ ALL					=settings api.headers corecompile liblogical libfile \
 						
 ###############################
 #Things we compile with 'extra' target
-ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload\
-						glade
+ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload glade
+
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
+ALL_EXTRA_BROKEN=
+
 ALL_EXTRA_BROKEN	=
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
@@ -59,9 +61,11 @@ endif
 ifneq "${JABBERBUILD}" "no"
 	ALL_EXTRA  		+=jabber
 endif
-ifneq "/usr/bin/doxygen" "no"
-	ALL_EXTRA  		+=doxy
-endif
+#ifneq "${DOXYGEN}" "no"
+	#Dont put DoxyGen in extra target - it takes a long time, and aubitbuild
+	#calls 'make extra' and so it would tun it twice - as part of 'make extra'
+	#ALL_EXTRA  		+=doxy
+#endif
 
 ################################
 #Define targetss for liblogical
@@ -93,6 +97,7 @@ default: ${ALL}
 	@echo "| Execute 'make extra' to compile additional components:             |"
 	@echo "| ${ALL_EXTRA}"
 	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
+	@echo "| Use 'make doxy' to create API covumentation.                       |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
@@ -299,14 +304,14 @@ test.perl:
 doxy: docs/doxy/html/index.html
 docs/doxy/html/index.html:
 #FIXME - Use Autoconf @DOXYGEN@ here
-ifneq "/usr/bin/doxygen" "no"
+ifneq "${DOXYGEN}" "no"
 	${MAKE} doxy.make
 #FIXME: use Autoconf variable here:
-ifneq "/var/www/html" ""
+ifneq "${WWW_DOCUMENT_ROOT}" ""
 	${MAKE} doxy.install.www
 endif
 #FIXME: this is wrong - check if cgi-bin dir exists
-ifneq "/var/www/cgi-bin/" ""
+ifneq "${CGI_DIR}" ""
 	${MAKE} doxy.install.search
 endif
 	@echo DoxyGen source code documentation generated.
@@ -317,25 +322,24 @@ endif
 
 doxy.make:
 	rm -rf docs/doxy/html
-	/usr/bin/doxygen docs/doxy/Doxyfile
+	${DOXYGEN} docs/doxy/Doxyfile
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
 doxy.install.www:
-	rm -rf /var/www/html/${DOXY_WWWPATH}/html
-	${MKPATH} /var/www/html/${DOXY_WWWPATH}
-	cp -r docs/doxy/html /var/www/html/${DOXY_WWWPATH}/html
-	cd /var/www/html/${DOXY_WWWPATH}/html; doxytag -s search.idx
+	rm -rf ${WWW_DOCUMENT_ROOT}/${DOXY_WWWPATH}/html
+	${MKPATH} ${WWW_DOCUMENT_ROOT}/${DOXY_WWWPATH}
+	cp -r docs/doxy/html ${WWW_DOCUMENT_ROOT}/${DOXY_WWWPATH}/html
+	cd ${WWW_DOCUMENT_ROOT}/${DOXY_WWWPATH}/html; doxytag -s search.idx
 	@echo DoxyGen doccumentation installed in web server path :
-	@echo /var/www/html/${DOXY_WWWPATH}/html
-	@echo Point your web browser to www.falout.com/${DOXY_WWWPATH}/html/index.html
+	@echo ${WWW_DOCUMENT_ROOT}/${DOXY_WWWPATH}/html
+	@echo Point your web browser to ${WWW_HOST_NAME}/${DOXY_WWWPATH}/html/index.html
 
 doxy.install.search:
-	${MKPATH} /var/www/cgi-bin/
-	${CP} docs/doxy/html/doxysearch.cgi /var/www/cgi-bin/
+	${MKPATH} ${CGI_DIR}
+	${CP} docs/doxy/html/doxysearch.cgi ${CGI_DIR}
 #run docs/doxy/html/installdox to replace any dummy links:
 	@docs/doxy/html/installdox
 
-	
 
 ## ==================================================================
 ##                              Strip
@@ -462,15 +466,15 @@ clean.makefiles:
 	${RM} compilers/4glc/Makefile compilers/4glc/rules/Makefile \
 	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
 	compilers/menus/Makefile incl/Makefile-common \
-    lib/Makefile lib/libui/ui_console/Makefile lib/libpdf/Makefile \
+    lib/libui/ui_console/Makefile lib/libpdf/Makefile \
     lib/libsql/nosql/Makefile lib/libsql/esqlc/Makefile \
-    lib/libsql/odbc/Makefile lib/extra_libs/file/Makefile \
+    lib/extra_libs/file/Makefile \
     lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \
     tools/adbaccess/Makefile tools/adbload/Makefile \
     tools/html/Makefile tools/ide/Makefile \
-    tools/jabber/Makefile tools/odbctest/Makefile \
+    tools/odbctest/Makefile \
     tools/test/Makefile tools/test/gui/Makefile \
 	common/dataio/Makefile compilers/ace/Makefile compilers/xgen/Makefile \
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
@@ -486,10 +490,7 @@ clean.makefiles:
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
 	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \
 	tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile \
-    tools/fgldoc/Makefile \
-    Makefile
-
-
+    tools/fgldoc/Makefile 
 
 clean.splint:
 	${RM} lclint.log compilers/fcompile/lclint.log compilers/helpcompile/lclint.log \
@@ -519,6 +520,7 @@ clean.rpc:
 	compilers/fcompile/form_x.h compilers/menus/menu_x.h
 
 clean.bin:
+#dont clean aubitbuild.sh - this is Autoconf generated file
 	(cd bin;${RM} 4glc${EXE} fcompile${EXE} mcompile${EXE} mkmess${EXE} \
 	mcompile-noodbc${EXE} loadmap${EXE} \
 	*.bak .*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
@@ -529,7 +531,7 @@ clean.bin:
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
 	checker${EXE} runner_fgl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
-	aubitbuild.sh  c2pcode_fgl${EXE} runner${EXE} *~ 4glpc_new${EXE} \
+	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc_new${EXE} \
 	)
 
 clean.etc:
@@ -768,7 +770,7 @@ cleantar:
 
 #this will make rpm form autoconf-ed etc/aubit-rpm.conf
 rpm:
-ifneq "/bin/rpm" ""
+ifneq "${RPM}" ""
 	./config.status --file etc/aubit-rpm.spec
 	${MAKE} rpm.build
 else
@@ -1134,7 +1136,7 @@ test.full:
 #	automake --add-missing
 
 
-libtool: etc/config/ltmain.sh
+libtool: ${LIBTOOL_DEPS}
 #copy:
 #config.guess   config.sub   ltconfig   ltmain.in
 #from local libtool directory:

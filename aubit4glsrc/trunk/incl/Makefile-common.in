@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.173 2004-12-19 08:12:38 afalout Exp $
+# $Id: Makefile-common.in,v 1.174 2004-12-20 08:26:41 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -947,6 +947,14 @@ PGODBC_LIBNAME		=@PGODBC_LIBNAME@
 
 SAPODBC_INCLUDE		=@SAPODBC_INCLUDE@ 
 SAPODBC_LFLAGS		=@SAPODBC_LFLAGS@ 
+
+DOXYGEN				=@DOXYGEN@
+WWW_DOCUMENT_ROOT	=@WWW_DOCUMENT_ROOT@
+CGI_DIR				=@CGI_DIR@
+WWW_HOST_NAME		=@WWW_HOST_NAME@
+RPM					=@RPM@
+LIBTOOL_DEPS		=@LIBTOOL_DEPS@
+
 
 
 ## ==================================================================
