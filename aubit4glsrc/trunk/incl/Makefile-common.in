@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.75 2002-09-24 09:29:43 afalout Exp $
+# $Id: Makefile-common.in,v 1.76 2002-09-25 01:14:46 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -224,6 +224,7 @@ INSTALL     		=${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
 MKPATH      		=mkdir -p
 CPPFLAGS 			=
 #LDFLAGS 			=-s
+LDFLAGS             =@LDFLAGS@
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
 
@@ -363,6 +364,32 @@ endif
 
 SO_EXT=@SO_EXT@
 
+	ARCHEXT			=tar.gz
+    DIRSEP			=/
+	#on unix, we expect to have WWW set in environment
+	#WWW			=/data2/htdocs
+	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
+	GTKCONFIGCMD	=gtk-config --version
+    LDDCMD          =ldd
+
+    #FIXME: add -g from configure
+	#FIXME: verify that we need -fPIC in CFLAGS
+	CFLAGS      +=${PIC}
+
+	#flags to linker, when making shared libraries:
+	SO_LDFLAGS	=-shared
+
+	#flags to CC when making and linking executables:
+	EXE_CFLAGS  =${RDYNAMIC}
+	EXEEXT		=
+	LN			=${LN_H}
+	#we should not use hard links when we are installing, because this
+    #can cause errors like "Invalid cross-device link" when source
+    #and destination is on different deveices:
+	#LN_S_LIB    =${LN_S}
+	CPEXE		=${LN_H}
+
+
 ## ==================================================================
 ##                    Platform dependent Settings
 ## ==================================================================
@@ -397,39 +424,12 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	CPEXE		=cp
 
 
-else ####################### All other platforms ##############################
-
-	ARCHEXT			=tar.gz
-    DIRSEP			=/
-	#on unix, we expect to have WWW set in environment
-	#WWW			=/data2/htdocs
-	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
-	GTKCONFIGCMD	=gtk-config --version
-    LDDCMD          =ldd
-
-    #FIXME: add -g from configure
-	#FIXME: verify that we need -fPIC in CFLAGS
-	CFLAGS      +=${PIC}
-
-	#flags to linker, when making shared libraries:
-	ifeq "${TARGET_OS}" "darwin"
-		SO_LDFLAGS	=-shared
-    else
-		SO_LDFLAGS	=-r
-    endif
-
-    #flags to CC when making and linking executables:
-	EXE_CFLAGS  =${RDYNAMIC}
-	EXEEXT		=
-	LN			=${LN_H}
-	#we should not use hard links when we are installing, because this
-    #can cause errors like "Invalid cross-device link" when source
-    #and destination is on different deveices:
-	#LN_S_LIB    =${LN_S}
-	CPEXE		=${LN_H}
-
 endif
 
+ifeq "${TARGET_OS}" "darwin"
+		SO_LDFLAGS	=-r
+
+endif
 
 
 ####################### from aubitbuild-multi.mk ####################

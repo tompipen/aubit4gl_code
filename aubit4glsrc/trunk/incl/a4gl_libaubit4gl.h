@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.13 2002-08-31 06:19:59 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.14 2002-09-25 01:14:46 afalout Exp $
 #
 */
 
@@ -393,7 +393,56 @@
 	#include <stdio.h> 				/* needed for FILE symbol */
 	#include <string.h>
 	#include <stdlib.h> 			/* free() */
-	#include <search.h> 			/* VISIT */
+
+	#ifndef __MACH__
+		#ifndef __APPLE__
+            //can't find it
+			#include <search.h> 			/* VISIT */
+        #endif
+    #endif
+
+/*
+	#ifdef HAVE_DLFCN_H
+		#include <dlfcn.h>
+	#endif
+
+	#if HAVE_MACH_O_DYLD_H
+		#include <mach-o/dyld.h>
+    #endif
+*/
+
+/*
+Bundles: OS X makes a distinction between dynamic libraries (.dylib on this 
+platform) and executable modules that are loadable at runtime ("bundles" in 
+the OS X jargon). Other Unixes do not make this distinction. By perusal of 
+various Web pages, I found that compiling a C file destined to be a bundle 
+required the switch -fno-common. Linking it to be a bundle required the 
+switches below:
+    -flat_namespace -bundle -undefined suppress
+Also, the bundle must be linked using cc and not with ld, otherwise you will
+get the dreaded dyld_stub_binding_helper error when you actually run the
+program. (My thanks go to Christoph Pfisterer, who told me how to get rid
+of this last problem.)
+
+Download dlCompat library patch from (http://prdownloads.sourceforge.net/gnu-darwin).
+Copy the dlfcn.h include file into /usr/include directory. Copy libdl.dylib
+and libdl.a libraries into /usr/lib directory.
+
+
+[Apr 2002] -Wl,-force_flat_namespace is needed to get all the programs
+to link correctly. [Thanks to Russ Poldrack for this info.]
+
+afni_plugin.c and NLfit_model.c: It turns out that the compiler on OS X always 
+prepends a "_" to all external symbol names (e.g., function "fred" becomes 
+"_fred", as far as the compiler/linker are concerned). When the bundles 
+(.so files) that comprise plugins and models are loaded, a particular 
+function name is searched for (PLUGIN_init()). For DARWIN, this function 
+name had to have the "_" prepended. (This required a single character 
+change to the code that took me several days to discover. Ugh.)
+
+*/
+
+
 	#include <assert.h>             /* assert() */
 	#include <time.h>
 	#include <math.h> 				/* pow() */
