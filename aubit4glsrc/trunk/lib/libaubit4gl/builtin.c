@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.67 2004-11-01 18:55:18 whaslbeck Exp $
+# $Id: builtin.c,v 1.68 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -817,9 +817,13 @@ A4GL_errorlog (char *fname, int l, int n)
 void
 A4GL_close_errorlog_file (void)
 {
+A4GL_debug("Close_errlog_file");
   if (error_log_file)
     {
+      A4GL_debug("error log was open");
       fclose (error_log_file);
+      A4GL_debug("not any more...");
+      error_log_file=0;
     }
 }
 
@@ -873,12 +877,14 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
 void
 A4GL_close_database (void)
 {
+  if (A4GL_isyes(acl_getenv("FORCE_CLOSE"))) {
   if (A4GL_has_pointer ("default", SESSCODE))
     {
       A4GLSQL_close_session ("default");
       A4GL_del_pointer ("default", SESSCODE);
     }
   return;
+  }
   return;
 }
 

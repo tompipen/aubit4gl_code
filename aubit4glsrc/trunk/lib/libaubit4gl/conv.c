@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.90 2004-10-29 19:13:19 mikeaubury Exp $
+# $Id: conv.c,v 1.91 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -2755,7 +2755,6 @@ void A4GL_assertion_failed(char *s)  {
 		char *ptr=0;
       		A4GL_exitwith ("Assertion failed %s");
 		*ptr=0;
-		printf("HERE\n");
       		A4GL_chk_err (0, "Unknown");
 	}
 
@@ -2763,7 +2762,7 @@ void A4GL_assertion_failed(char *s)  {
       A4GL_chk_err (0, "Unknown");
 
 
-      exit (0);
+      exit (2);
 }
 
 /**
@@ -2777,6 +2776,7 @@ void A4GL_assertion_failed(char *s)  {
 void
 A4GL_assertion (int a, char *s)
 {
+A4GL_debug("Assertion ? a=%d s=%s",a,s);
 if (a) {
 	A4GL_assertion_failed(s);
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.103 2004-10-23 13:36:31 mikeaubury Exp $
+# $Id: stack.c,v 1.104 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -413,7 +413,7 @@ A4GL_pop_var2 (void *p, int d, int s)
 			a4gl_status=0; 
 		}
 		z=1; 
-		A4GL_setnull(d,p,s); 
+		A4GL_setnull(d&DTYPE_MASK,p,s); 
 	}
 #ifdef DEBUG
       A4GL_debug ("2 pop_var2 - error in conversion %d d=%d s=%d\n", z, d, s);
@@ -551,14 +551,14 @@ A4GL_conversion_ok(1);
   if (ptr1==0) {
 		A4GL_conversion_ok(1);
 		A4GL_debug("ptr1=0");
-		A4GL_setnull(d,p,size);
+		A4GL_setnull(d&DTYPE_MASK,p,size);
 		return 1;
   } else {
   	if (A4GL_isnull(d1,ptr1)) {
 		A4GL_conversion_ok(1);
 		A4GL_debug("Isnull\n");
 		//char *ptr=0;if (d1!=0) *ptr=0;
-		A4GL_setnull(d,p,size);
+		A4GL_setnull(d&DTYPE_MASK,p,size);
 		//printf("Setnull %d %p %d %p %d",d1,s1,d,p,size);
 		b=1;
   	} else {
@@ -1473,7 +1473,7 @@ A4GL_push_char(A4GL_using_date(l,"ddd mmm dd yyyy"));
 }
 
 void A4GL_push_time_expr(void) {
-struct_dtime a ;
+//struct_dtime a ;
 A4GL_push_current( 4 ,6);
 }
 
@@ -2299,8 +2299,16 @@ A4GL_setnull (int type, void *vbuff, int size)
   char *buff;
 
 
+if (type>255) {
+	printf("Bad..: %d %x\n",type,type);
+	A4GL_assertion(1,"expecting type <= 255 + a size"); 
+}
 
-  A4GL_debug ("Set null");
+
+
+
+
+  A4GL_debug ("Set nulli %d %p %d",type,vbuff,size);
   buff = (char *) vbuff;
 
   if (A4GL_has_datatype_function_i (type, "INIT"))
@@ -2623,9 +2631,19 @@ A4GL_drop_param (void)
 void
 A4GL_set_init (struct BINDING *b, int n)
 {
+static int ln;
   int a;
+  ln=n;
+  //printf("set init : n=%d\n",n);
   for (a = 0; a < n; a++)
     {
+  //printf("set init : a=%d\n",a);
+	if (n!=ln||n>10000||a>=n||a>=ln) {
+		printf("n=%d ln=%d\n",n,ln);
+		A4GL_assertion(1,"internal corruption");
+	}
+      //printf("calling A4GL_setnull (%d,%p,%d);\n",b[a].dtype, (char *) b[a].ptr, b[a].size);
+
       A4GL_setnull (b[a].dtype, (char *) b[a].ptr, b[a].size);
     }
 }
@@ -3066,7 +3084,7 @@ dif_pop_bind_money (struct bound_list *list)
 char *
 A4GL_lrtrim (char *z)
 {
-  static char rstr[2000];
+  static char rstr[100000];
   int a;
   strcpy (rstr, "");
   A4GL_debug ("15 COpied");
@@ -3075,12 +3093,12 @@ A4GL_lrtrim (char *z)
     {
       if (z[a] != ' ')
 	{
-	  strcpy (rstr, &z[a]);
+	  strncpy (rstr, &z[a],100000);
+	  rstr[99999]=0;
 	  break;
 	}
     }
   A4GL_debug ("11 Searched..");
-
   A4GL_trim (rstr);
   A4GL_debug ("10 lrtrim : All done - returning '%s'", A4GL_null_as_null(rstr));
   return rstr;

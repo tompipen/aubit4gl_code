@@ -140,12 +140,23 @@ end main
 
 function open_db()
 	define lv_db char(255)
+	define lv_exit integer
 	whenever error continue
 	call check_db(mv_curr_db) returning lv_db
 	database mv_curr_db
-
+	whenever error stop
 	if sqlca.sqlcode<0 then
+
+code
+if (!isatty(fileno(stdin))) { lv_exit=1; }
+if (!isatty(fileno(stdout))) { lv_exit=1; }
+endcode
+		if lv_exit or is_echo() then
+			display "Unable to connect to database ",mv_curr_db
+			exit program 2
+		end if
 		error "Unable to connect to database ",mv_curr_db
+
 	else
 		call set_curr_db(lv_db)
 	end if

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.71 2004-10-15 15:00:23 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.72 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -146,7 +146,9 @@ A4GL_fgl_end ()
 #endif
       A4GL_gotolinemode ();
     }
+A4GL_debug("Close db");
   A4GL_close_database ();
+A4GL_debug("Close errlog");
   A4GL_close_errorlog_file ();
   A4GL_debug ("End of program - exit(0).");
 }

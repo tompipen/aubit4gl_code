@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.35 2004-10-28 22:04:56 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.36 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -783,4 +783,13 @@ return 0;
 }
 
 
+
+
+#ifdef strcpy
+#undef strcpy
+#endif
+char *A4GL_strcpy(char *dest,char *src) {
+	strcpy(dest,src);
+	return dest;
+}
 /* ============================== EOF ========================== */

@@ -1,7 +1,7 @@
 # This is an example of logical report usage....
 # Pretty neat huh ?
 #
-database test1
+database stores
 main
 
 define t,c char(20)
@@ -12,7 +12,7 @@ define n integer
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns
 		where systables.tabid=syscolumns.tabid
-		and systables.tabid>99
+		and systables.tabid<10
 		order by 1,2,3
 
 

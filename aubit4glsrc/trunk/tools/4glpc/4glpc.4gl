@@ -20,7 +20,7 @@ define
 
 define mv_export_symbols char(256)
 define mv_import_symbols char(256)
-define mv_objects char(2048)
+define mv_objects char(20480)
 define mv_errfile char(256)
 define mv_newest_obj char(256)
 
@@ -507,6 +507,14 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 							let mv_output="a.out",get_ext("DLL")
 						end if
 						continue for
+
+		WHEN "-as-dll"			let mv_make_dll=1 let mv_stage="DLL" 
+						if mv_output="" or mv_output is null then
+							let mv_output="a.out",get_ext("DLL")
+						end if
+						continue for
+
+
 		WHEN "-X4glc"			let a=a+1 let mv_compile_4gl_opts=mv_compile_4gl_opts clipped," " ,arg_val(a) continue for
 		WHEN "-Xlinker"			let a=a+1 let mv_link_opts=mv_link_opts clipped," " ,arg_val(a) continue for
 		WHEN "-Xcompiler"		let a=a+1 let mv_compile_c_opts=mv_compile_c_opts clipped," ",arg_val(a) continue for
@@ -523,7 +531,6 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	# If we get to here its either a compile option thats not recognised or
 	# its a filename...
 
-	display "lv_arg=",lv_arg
 	if lv_arg matches "-Wl,*" then
 		let mv_link_opts=mv_link_opts clipped," ",lv_arg
 		continue for
@@ -538,6 +545,23 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
    		if mv_verbose>=5 then
    			display "Setting mv_include because of a -I ",mv_include clipped
    		end if
+		continue for
+	end if
+
+
+	if lv_arg = "-fPIC" then
+		let mv_compile_c_opts=mv_compile_c_opts clipped," -fPIC"
+		continue for
+	end if
+
+
+	if lv_arg MATCHES "-D*" then
+		if lv_arg="-D" then
+			LET a=a+1
+			let mv_compile_c_opts=mv_compile_c_opts clipped," -D ",arg_val(a)
+		else
+			let mv_compile_c_opts=mv_compile_c_opts clipped," ",lv_arg
+		end if
 		continue for
 	end if
 
@@ -559,6 +583,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		continue for
 	end if
 
+	
+display "lv_arg=",lv_arg clipped
+
 	let lv_type=generate_ext("LIB")
 	IF lv_arg matches "*.a" or lv_arg matches lv_type  # Its a library
 	   or lv_arg matches "*.aox" then 
@@ -576,7 +603,6 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	if lv_arg matches "*.o" 
 	   or lv_arg matches "*.ao" 
 	   or lv_arg matches lv_type then
-		display "A5 :",lv_arg
 		call add_obj(lv_arg)
 		continue for
 	end if
@@ -840,7 +866,7 @@ end function
 
 ################################################################################
 function runit(lv_str)
-define lv_str char(1024)
+define lv_str char(10240)
 run lv_str
 end function
 
@@ -882,7 +908,7 @@ function run_4glc(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(1024)
+define lv_runstr char(10000)
 define lv_status integer
 
 
@@ -956,8 +982,8 @@ end function
 function check_exit_status(p_status,p_filename,p_runstr)
 define p_status integer
 define p_filename char(512)
-define p_runstr char(1024)
-define lv_runstr char(1024)
+define p_runstr char(10240)
+define lv_runstr char(10240)
 define lv_errsize integer
 
 if p_status > 255 then
@@ -965,8 +991,9 @@ if p_status > 255 then
 end if
 
 let lv_errsize=file_size(mv_errfile)
+
 if lv_errsize<0 then
-	display "Error - unable to find the size of the error file"
+	display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
 	exit program 99
 end if
 
@@ -1003,7 +1030,7 @@ function run_esql_prec(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(1024)
+define lv_runstr char(10240)
 define lv_status integer
 
 if mv_verbose>=1 then
@@ -1041,7 +1068,7 @@ function run_compile(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(1024)
+define lv_runstr char(10240)
 define lv_compile_c_opts char(512)
 define lv_status integer
 
@@ -1102,7 +1129,7 @@ function run_compile_esql(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(1024)
+define lv_runstr char(10240)
 define lv_status integer
 
 if mv_makecompile then
@@ -1138,7 +1165,7 @@ end function
 function run_link(lv_output)
 define lv_status integer
 define  lv_output char(512)
-define lv_runstr char(1024)
+define lv_runstr char(10240)
 
 
 if mv_makecompile then

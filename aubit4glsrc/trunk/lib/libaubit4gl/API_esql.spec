@@ -30,15 +30,15 @@ LIB_PREFIX ESQLAPI_
 /* void printc(char *fmt, ...) */
 
 /*
-* void A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y);
-* void A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode);
-* void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int indicat,int size,int mode);
-* void A4GL_copy_decimal(dec_t *infx,fgldecimal *a4gl,int indicat,int size,char dir);
-* void A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode);
-* void A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode);
-* void A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode);
-* void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,int indicat,int size,char dir);
-* void A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode);
+* void A4GL_copy_char(char *infx,char *a4gl,short* indicat,int size,int mode,int x,int y);
+* void A4GL_copy_date(long *infx,long *a4gl,short* indicat,int size,int mode);
+* void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,short*  indicat,int size,int mode);
+* void A4GL_copy_decimal(dec_t *infx,fgldecimal *a4gl,short*  indicat,int size,char dir);
+* void A4GL_copy_float(float *infx,float *a4gl,short*  indicat,int size,int mode);
+* void A4GL_copy_double(double *infx,double *a4gl,short*  indicat,int size,int mode);
+* void A4GL_copy_int(long *infx,long *a4gl,short*  indicat,int size,int mode);
+* void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,short*  indicat,int size,char dir);
+* void A4GL_copy_smint(short* infx,short* a4gl,short*  indicat,int size,int mode);
 * void popdec(void *vx);
 * void retdec(void *vx);
 * void popdtime(void *vx);
@@ -46,16 +46,16 @@ LIB_PREFIX ESQLAPI_
 */
 
 
-A4GL_copy_char char* infx,char* a4gl,int indicat,int size,int mode,int x,int y -> void
-A4GL_copy_date long* infx,long* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_datetime void* infx, void* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_interval void* infx, void* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_decimal void* infx,void* a4gl,int indicat,int size,char dir -> void
-A4GL_copy_float float* infx,float* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_double double* infx,double* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_int long* infx,long* a4gl,int indicat,int size,int mode -> void
-A4GL_copy_money void* infx,void* a4gl,int indicat,int size,char dir -> void
-A4GL_copy_smint short* infx,short* a4gl,int indicat,int size,int mode -> void
+A4GL_copy_char char* infx,char* a4gl,short*  indicat,int size,int mode,int x,int y -> void
+A4GL_copy_date long* infx,long* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_datetime void* infx, void* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_interval void* infx, void* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_decimal void* infx,void* a4gl,short*  indicat,int size,char dir -> void
+A4GL_copy_float float* infx,float* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_double double* infx,double* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_int long* infx,long* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_money void* infx,void* a4gl,short*  indicat,int size,char dir -> void
+A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,int mode -> void
 
 popdec_native void* vx -> void
 retdec_native void* vx -> void

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.23 2004-10-28 22:04:57 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.24 2004-11-03 14:34:28 pjfalbe Exp $
 #
 */
 
@@ -576,6 +576,10 @@ return buff;
 int A4GLSQLCV_check_requirement(char *s) {
 int a;
 int b;
+
+if (A4GL_isyes(acl_getenv(s))) {
+	return 1;
+}
 a=A4GL_cv_str_to_func (s, strlen(s));
 
 if (a==0) return 0; // I don't know what they are talking about...
