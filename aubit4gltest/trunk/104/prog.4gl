@@ -23,7 +23,7 @@ define a,b,c char(5)
     construct by name l on test.a, test.b, test.c
     close window w_test
     display l clipped
-	if l="test.a>'1' AND test.b matches '*a' AND test.c<='3'" then
+	if l="test.a>'1' and test.b matches '*a' and test.c<='3'" then
 		exit program 0
 	else
 		exit program 1

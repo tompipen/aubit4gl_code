@@ -1,7 +1,8 @@
 This output was created using command 'run_tests -info'
-on Fri Dec  3 16:30:41 GMT 2004
+on Fri Feb  4 11:38:41 GMT 2005
  
-WARNING: treating DB features as ANSI db without conversion
+WARNING: DB_TYPE is empty. Indicate which db to use - see -help-db.
+WARNING: Disabled SQL features checking.
  ------------------- Info for test 1 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
 
@@ -1636,6 +1637,8 @@ This is a test of handling of multi occurences of the same name for a fieldname 
 Test uses .per form files
 test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 279 -----------------------
@@ -3464,7 +3467,12 @@ Test uses .per form files
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 499 -----------------------
-*** Test not described ***
+
+Input from with list.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 500 -----------------------
 
@@ -7510,6 +7518,140 @@ Tests conversion from/to money/smallint (MID 639)
 Simple unload test for MID 591
 
 
+ ------------------- Info for test 1209 -----------------------
+WARNING: test still contains template comment in makefile
+*** Test not described ***
+
+ ------------------- Info for test 1210 -----------------------
+
+This tests the handling of -ve decimal numbers
+
+Test contains REPORT block
+Test needs database
+
+ ------------------- Info for test 1211 -----------------------
+
+This checks a reports output can be set within the report
+
+
+ ------------------- Info for test 1212 -----------------------
+
+This is a quick test of next key next
+
+
+ ------------------- Info for test 1213 -----------------------
+
+Report test
+
+
+ ------------------- Info for test 1214 -----------------------
+
+Report test
+
+
+ ------------------- Info for test 1215 -----------------------
+
+Report test
+
+
+ ------------------- Info for test 1216 -----------------------
+
+Report test
+
+
+ ------------------- Info for test 1217 -----------------------
+
+Tests some comparsons on dates using string literals
+
+
+ ------------------- Info for test 1218 -----------------------
+WARNING: test still contains template comment in makefile
+*** Test not described ***
+
+ ------------------- Info for test 1219 -----------------------
+
+This is a test of several issues - mid 655 656 657
+
+
+ ------------------- Info for test 1220 -----------------------
+
+Tests the SQL drivers ability to select fewer or more columns than variables
+
+Test needs database
+
+ ------------------- Info for test 1221 -----------------------
+
+Tests empty foreach loops (bug reported by James Scott)
+
+
+ ------------------- Info for test 1222 -----------------------
+
+Test of using a 0 in a numeric field on a construct
+
+
+ ------------------- Info for test 1223 -----------------------
+
+This tests after group clauses where there is no every row
+
+Test contains REPORT block
+Test needs database
+
+ ------------------- Info for test 1224 -----------------------
+
+MID 663 - ensure that the number of function parameters is checked
+
+Test is expected to exit with code 1
+
+ ------------------- Info for test 1225 -----------------------
+
+Brief test of the implementation of PRINT FILE
+
+
+ ------------------- Info for test 1226 -----------------------
+
+This tests passing NULL values to DAY, MONTH, YEAR and MDY functions
+
+
+ ------------------- Info for test 1227 -----------------------
+
+MID 666
+
+
+ ------------------- Info for test 1228 -----------------------
+
+MID 665
+
+
+ ------------------- Info for test 1229 -----------------------
+
+MID 672 - spaces at the start if a PICTURE
+
+
+ ------------------- Info for test 1230 -----------------------
+
+MID 670 construct on date field (part 1)
+
+
+ ------------------- Info for test 1231 -----------------------
+
+MID 670 construct on date field (part 1)
+
+
+ ------------------- Info for test 1232 -----------------------
+
+MID 669 - construct on DECIMAL field
+
+
+ ------------------- Info for test 1233 -----------------------
+
+MID 676 : Extra spaces in print date and print sum where
+
+
+ ------------------- Info for test 1234 -----------------------
+
+This tests the setting of a portion of a string with a null value
+
+
  ------------------- Info for test 1300 -----------------------
 
 CREATE TABLE with PRIMARY KEY clause. No run-time checking. NOTE: fails with -ifx-p.
@@ -7566,30 +7708,30 @@ in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
 --------------------------------------------------------------
-Total tests: 796
-Still has template comment: 22 ( 105 707 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1206)
+Total tests: 822
+Still has template comment: 24 ( 105 707 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1206 1209 1218)
 Old makefile: 92 ( 1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 91 92 93 94 95 96 97 98 99 100 202 203 204 205 206 212 217 218 223 229 239)
-Not described: 24 ( 105 499 707 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1206)
+Not described: 25 ( 105 707 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959 1206 1209 1218)
 Invalid: 53 ( 105 375 377 684 705 707 752 797 916 917 918 919 920 921 922 923 924 925 926 927 928 929 930 931 932 933 934 935 938 939 940 941 942 943 944 945 946 947 948 949 950 951 952 953 954 955 956 957 958 959 964 966 1206)
 Expected to fail (because of Aubit bug): 8 ( 111 240 590 766 767 962 976 987)
 Obsolete: 18 ( 58 65 443 444 446 484 491 511 527 529 545 546 547 548 671 672 673 674)
  
-Has description text: 727
-Expect non-zero exit status: 2
+Has description text: 752
+Expect non-zero exit status: 3
 Test is compile only: 79
 P-code enabled: 1
-Needs database: 345
+Needs database: 348
 EC only test: 0
 Cannot run silent: 3
 Uses TUI UI: 39
-Uses forms: 98
+Uses forms: 99
 Uses graphic characterts: 2
 Expects manual input: 1
 Uses dump screen function: 21
 Long running: 1
-Certified: 703
+Certified: 705
 x4GL compatible: 545
-Uses REPORT block: 16
+Uses REPORT block: 18
 All other unsorted tests: 0
  
 End of -info (all) output
