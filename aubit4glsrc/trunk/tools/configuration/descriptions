@@ -253,7 +253,7 @@ DBDATE RUNTIME Specified how dates will be formated
 DBEDIT RUNTIME Name of the editor to use for TEXT BLOB fields
 	Applies to asql only?
 A4GL_DBPATH RUNTIME/COMPILE Path to look in for databases and resource files
-    See 'DBPATH' for more information
+	See 'DBPATH' for more information
 DBPATH SQL/HELP/FORMS/MENU/RUNTIME/COMPILE Path to look in for databases and resource files
 	DBPATH variable containls list of directory(es) that will be searched for objects
 	like compiled form, help and menu files, and SQLite databases. Use coloumn (:)

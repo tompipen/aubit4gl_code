@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.126 2004-06-09 06:03:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.127 2004-06-26 13:51:25 mikeaubury Exp $
 #
 */
 
@@ -224,7 +224,10 @@
 
   /* ========================= from a4gl_keys.h ================== */
 #define A4GLKEY_ESCAPE          27
+/*
 #define A4GLKEY_ENTER 		0xff01
+*/
+#define A4GLKEY_ENTER 		13
 #define A4GLKEY_DOWN 		0xff02
 #define A4GLKEY_UP 		0xff03
 #define A4GLKEY_LEFT 		0xff04
