@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.15 2002-09-26 08:12:22 afalout Exp $
+# $Id: calldll.c,v 1.16 2002-09-26 11:08:49 afalout Exp $
 #
 */
 
@@ -175,6 +175,24 @@ dl_openlibrary (char *type, char *name)
 	#else
 		#if (defined(__MACH__) && defined(__APPLE__))
 		  sprintf (buff, "%s/lib/lib%s_%s.dylib", acl_getenv ("AUBITDIR"), type, name);
+
+          /*
+	        void *handle;
+	        void (*hw)(void);
+	        void (*hh)(void);
+	        printf("Loading \"libhello.dylib\" .....\n");
+	        handle = dlopen("/Users/fujiik/sandbox/mypkg/src/libdl/test/libhello.dylib",RTLD_LAZY);
+
+	        hw = dlsym(handle,"_helloworld");
+	        (*hw)();
+	        hh = dlsym(handle,"_hellohoge");
+	        (*hh)();
+
+	        dlclose(handle);
+
+        */
+
+
         #else
 		  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
         #endif

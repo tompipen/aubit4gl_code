@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.79 2002-09-26 06:10:45 afalout Exp $
+# $Id: Makefile-common.in,v 1.80 2002-09-26 11:08:40 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -290,7 +290,8 @@ endif
 
 #LD Command to use for linking libraries:
 ifeq "${TARGET_OS}" "darwin"
-	LD                  =ld
+	#LD                  =ld
+	LD                  =${CC}
 else
 	LD                  =${CC}
 endif
@@ -345,7 +346,12 @@ FAIL_OK             =-
 #         independent code,  suitable  for  dynamic  linking,
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
+#On Darwin Autoconf will set PIC = -fno-common
 PIC					=@PIC@
+ifeq "${TARGET_OS}" "darwin"
+	#will just -fPIC be enough?
+	PIC				=@PIC@ -fPIC
+endif
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 
@@ -433,7 +439,9 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 endif
 
 ifeq "${TARGET_OS}" "darwin"
-		SO_LDFLAGS	=-r ${LDFLAGS}
+		#SO_LDFLAGS	=-r ${LDFLAGS}
+		#cc -bundle -undefined suppress -o libhello.dylib hh.o hw.o
+		SO_LDFLAGS	=-bundle -undefined suppress ${LDFLAGS}
 endif
 
 
