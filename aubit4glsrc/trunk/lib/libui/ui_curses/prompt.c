@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.40 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: prompt.c,v 1.41 2004-03-03 13:18:07 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.40 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.41 2004-03-03 13:18:07 mikeaubury Exp $";
 
 /**
  * @file
@@ -429,7 +429,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
     }
 
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
-  if (isprint (a) && a<0xff) {
+  if (a_isprint (a) && a<0xff) {
     	A4GL_int_form_driver (mform, a);
   	A4GL_debug ("Called int_form_driver");
   	A4GL_int_form_driver (mform, REQ_VALIDATION);
@@ -447,8 +447,10 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 
   if (prompt->charmode)
     {
-	if (isprint(a)&&a<0xff) {
+	if (a_isprint(a)&&a<0xff) {
       		A4GL_push_char (field_buffer (prompt->field, 0));
+      		unpost_form (prompt->f);
+      		A4GL_clear_prompt (prompt);
       		prompt->mode=2;
 	}
     }

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.71 2004-03-01 07:06:48 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.72 2004-03-03 13:18:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.71 2004-03-01 07:06:48 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.72 2004-03-03 13:18:05 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -448,24 +448,32 @@ print_prepare (char *stmt, char *sqlvar)
  * @param using Flag to indicate if the statement have USING instruction:
  *   - 0 : Does not have USING
  *   - 1 : EXECUTE have USING
+ *   - 2 :         has INTO
+ *   - 3 :         has INTO & USING
  */
 void
 print_execute (char *stmt, int using)
 {
   int ni;
+  int no;
 
   if (using == 0)
     {
       printc ("EXEC SQL EXECUTE %s;\n", A4GL_strip_quotes (stmt));
       print_copy_status ();
     }
-  else
+
+
+  if (using==1) 
     {
       int a;
       printc ("{ /* EXECUTE */\n");
+
       ni = print_bind_definition ('i');
-      ni = print_bind_set_value ('i');
+      print_bind_set_value ('i');
       print_conversions ('i');
+
+
       printc ("EXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
       for (a = 0; a < ni; a++)
 	{
@@ -478,6 +486,66 @@ print_execute (char *stmt, int using)
       print_copy_status ();
       printc ("}\n");
     }
+
+  if (using==2) 
+    {
+      int a;
+      printc ("{ /* EXECUTE */\n");
+      no = print_bind_definition ('o');
+      print_bind_set_value ('o');
+      printc ("EXEC SQL EXECUTE %s INTO \n", A4GL_strip_quotes (stmt));
+      for (a = 0; a < no; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc (":_vo_%d\n", a);
+	}
+
+      printc (";");
+      print_copy_status ();
+      print_conversions ('o');
+      printc ("}\n");
+    }
+
+
+  if (using==3) 
+    {
+      int a;
+      printc ("{ /* EXECUTE */\n");
+      ni = print_bind_definition ('i');
+      no = print_bind_definition ('o');
+
+      print_bind_set_value ('o');
+      print_bind_set_value ('i');
+
+      print_conversions ('i');
+
+      printc ("EXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
+      for (a = 0; a < ni; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc (":_vi_%d\n", a);
+	}
+
+	printc(" INTO ");
+      for (a = 0; a < no; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc (":_vo_%d\n", a);
+
+	}
+      printc (";");
+      print_copy_status ();
+      print_conversions ('o');
+      printc ("}\n");
+    }
+
+
+
+
+
 
 }
 

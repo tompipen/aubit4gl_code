@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.32 2004-02-29 15:03:19 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.33 2004-03-03 13:18:05 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -519,8 +519,11 @@ print_select_all (char *buff)
 void
 print_unload (char *file, char *delim, char *sql)
 {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,0,0);\n", file, delim,
-	  sql);
+if (scan_variable (sql) == -1) {
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,0,0);\n", file, delim, sql);
+} else {
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,0,0);\n", file, delim, sql);
+}
 }
 
 /**

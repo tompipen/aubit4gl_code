@@ -1407,7 +1407,6 @@ value_specification:
 	;
 
 unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement2_ss {
-
 print_unload($<str>3,$<str>4,$<sql_string>5);
 print_undo_use($<str>1);
 }
@@ -1431,7 +1430,7 @@ strcpy($<str>$,$<str>2);
 };
 
 char_or_var : CHAR_VALUE | variable {
-if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type char for a delimiter..");YYERROR;}
+		if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;}
 }
 ;
 

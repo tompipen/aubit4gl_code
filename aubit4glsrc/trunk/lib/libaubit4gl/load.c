@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.19 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: load.c,v 1.20 2004-03-03 13:18:05 mikeaubury Exp $
 #
 */
 
@@ -341,7 +341,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
  *    - 1 : OK
  */
 int
-A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
+A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 {
   //va_list ap;
   //char *colname;
@@ -355,8 +355,12 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
   struct BINDING *ibind = 0;
   char buff[255];
   int a;
+  int prepared=0;
+  static char *sqlstmt=0;
   delim = delims[0];
 
+  if (sqlstmt) free(sqlstmt);
+  sqlstmt=strdup(sqlstmt_orig);
   A4GL_debug ("In load_data");
   strcpy (filename, fname);
   A4GL_trim (filename);
@@ -371,11 +375,6 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
 
   for (a=0;a<strlen(sqlstmt);a++) { if (sqlstmt[a]=='?') cnt++; }
 
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1)
-    {
-      A4GL_exitwith ("Internal Error : Error generating insert string for load");
-      return 0;
-    }
 
   while (1)
     {
@@ -391,7 +390,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
       nfields = find_delims (delim);
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
 
-      if (nfields != cnt)
+      if (nfields != cnt && cnt)
 	{
 	  sprintf (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
@@ -400,25 +399,44 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
 	  return 0;
 	}
 
+      if (!prepared) {
+		prepared=1;
+		if (cnt==0) {
+			int a;
+			free(sqlstmt);
+			sqlstmt=malloc(strlen(sqlstmt_orig)+ (nfields * 4) + 100);
+			
+			strcpy(sqlstmt,sqlstmt_orig);
+			A4GL_trim(sqlstmt);
+			strcat(sqlstmt," VALUES (");
+			for (a=0;a<nfields;a++) {
+				if (a) strcat(sqlstmt,",");
+				strcat(sqlstmt,"?");
+			}
+			strcat(sqlstmt,")");
+		}
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+      }
+
       A4GLSQL_set_status (0, 1);
       if (ibind)
 	{
 	  free (ibind);
 	}
-      ibind = malloc (sizeof (struct BINDING) * cnt);
-      for (a = 0; a < cnt; a++)
+      ibind = malloc (sizeof (struct BINDING) * nfields);
+      for (a = 0; a < nfields; a++)
 	{
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = 0;
 	  ibind[a].size = strlen (colptr[a]);
 	}
-      A4GL_debug ("EXECUTE SQL cnt=%d", cnt);
-      A4GLSQL_execute_sql ("load", cnt, ibind);
+      A4GL_debug ("EXECUTE SQL nfields=%d", nfields);
+      A4GLSQL_execute_sql ("load", nfields, ibind);
 
       if (a4gl_status != 0)
 	{
-	  sprintf (buff, "%d", cnt);
+	  sprintf (buff, "%d", nfields);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
 	}

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.139 2004-02-29 15:03:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.140 2004-03-03 13:18:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.139 2004-02-29 15:03:19 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.140 2004-03-03 13:18:05 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1867,7 +1867,8 @@ print_returning (void)
 {
   int cnt;
   printc ("{\n");
-  cnt = print_bind ('i');
+  cnt = print_bind_definition ('i');
+   print_bind_set_value ('i');
   printc
     /* warning! :       void    A4GLSQL_set_status      (int a, int sql); */
 /* I've added the check back in - even if its -1....*/

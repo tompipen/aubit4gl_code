@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.27 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.28 2004-03-03 13:17:59 mikeaubury Exp $
 #
 */
 
@@ -755,5 +755,12 @@ void * A4GL_append_expr (struct expr_str *orig_ptr, char *value)
   A4GL_debug ("Appended expr");
   //dump_expr(start);
   return start;
+}
+
+
+int a_isprint(int a) {
+	if (isprint(a)) return 1;
+	if (a>0x7f) return 1;
+	return 0;
 }
 /* ============================== EOF ========================== */

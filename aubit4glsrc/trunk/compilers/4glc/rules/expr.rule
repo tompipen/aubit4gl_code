@@ -264,7 +264,7 @@ report_only_expr:
 COLUMN fgl_expr_c 
 {
 	if (doing_a_print) {
-		sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
+		sprintf($<str>$,"A4GL_%sset_column(&_rep);",ispdf());
 	} else {
 		sprintf($<str>$,"A4GL_ensure_column();");
 	}
@@ -275,7 +275,7 @@ COLUMN fgl_expr_c
 | COLUMNS fgl_expr_c 
 {
 	if (doing_a_print) {
-		sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
+		sprintf($<str>$,"A4GL_%sset_column(&_rep);",ispdf());
 	} else {
 		sprintf($<str>$,"A4GL_ensure_column();");
 	}

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../common/a4gl_lle.h"
 
-
+void setup_entry(int b,int e,GtkWidget *evt,GtkWidget *lab);
 GtkWidget *window;
 GtkWidget *notebook;
 
@@ -20,7 +20,7 @@ int last_entry = -1;
 int last_block = -1;
 
 static void add_widget (int rb, int evt, GtkWidget * w);
-static void edit_lle ();
+void edit_lle ();
 static void select_widgets (int rb, int evt);
 static void unselect_widgets (int rb, int evt);
 static int find_block_where (char w1, char *w2);
@@ -37,14 +37,14 @@ char *style_unselectable =
   "style \"unselectable\" {font_name=\"monospace 10\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
 
 
-struct r_report *report;
+extern struct r_report *report;
 
 int selectable = 1;
 
 
 
 /* ******************************************************************************** */
-
+#ifdef MOVED_TO_MAIN_C
 main (int argc, char *argv[])
 {
   int npages;
@@ -84,7 +84,7 @@ main (int argc, char *argv[])
 
   edit_lle ();
 }
-
+#endif
 
 
 
@@ -137,6 +137,7 @@ label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
   last_rb = rb;
   last_entry = entry;
   select_widgets (last_rb, last_entry);
+  set_clicked(rb,entry);
 
   return TRUE;
 }
@@ -182,6 +183,7 @@ label_clicked_block (GtkWidget * widget, GdkEventButton * event,
 
   select_block (block);
   last_block = block;
+  set_block_clicked(block);
   return TRUE;
 }
 
@@ -228,7 +230,7 @@ destroy (GtkWidget * widget, gpointer data)
 
 /* ******************************************************************************** */
 
-static void
+ void
 edit_lle ()
 {
   int a;
@@ -249,6 +251,15 @@ edit_lle ()
 
   /* This is called in all GTK applications. Arguments are parsed
    * from the command line and are returned to the application. */
+
+  gtk_rc_parse_string (style_selected);
+  gtk_rc_parse_string (style_unselected);
+  gtk_rc_parse_string (style_unselectable);
+
+  gtk_rc_parse_string
+    ("style \"fixed\" { bg[NORMAL] = \"#ffffff\" } widget \"*.fixed\" style \"fixed\"");
+
+
 
   /* create a new window */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -337,14 +348,9 @@ edit_lle ()
 	      gtk_object_set_data (GTK_OBJECT (label), "DESCRIPTION", (void *) desc);
 
 
+		setup_entry(block,entry,evt,label);
 
-                gtk_drag_source_set(
-                        evt,
-                        GDK_BUTTON1_MASK | GDK_BUTTON2_MASK,
-                        target_entry,
-                        sizeof(target_entry) / sizeof(GtkTargetEntry),
-                        GDK_ACTION_MOVE | GDK_ACTION_COPY
-                );
+                //gtk_drag_source_set( evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_entry, sizeof(target_entry) / sizeof(GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
 
 
 	      add_widget (report->blocks[block].rb, centry->entry_id, evt);
@@ -408,8 +414,6 @@ edit_lle ()
     }
   gtk_widget_show_all (window);
 
-  gtk_main ();
-  return;
 
 }
 

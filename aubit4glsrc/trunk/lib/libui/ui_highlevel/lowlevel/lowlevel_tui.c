@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.17 2004-02-23 22:03:40 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.18 2004-03-03 13:18:08 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1878,7 +1878,9 @@ int rblock;
   	if ((isprint (a) && a < 0xff) || (a>=0x7f && a<=0xff))
 	{
 	  A4GL_push_char (A4GL_LL_field_buffer (prompt->field, 0));
-
+   	  A4GL_form_unpost_form (prompt->f);
+      	  A4GL_clear_prompt (prompt);
+	  prompt->f=0;
 	  prompt->mode = 2;
 	}
     }

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.71 2004-02-10 19:05:20 mikeaubury Exp $
+# $Id: iarray.c,v 1.72 2004-03-03 13:18:07 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.71 2004-02-10 19:05:20 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.72 2004-03-03 13:18:07 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -824,12 +824,13 @@ process_key_press (struct s_inp_arr *arr, int a)
       break;
 
     case A4GLKEY_LEFT:
+      A4GL_debug("Left key pressed - want to move left...");
       if (at_first)
 	{
+        A4GL_debug("at first - curr_attrib=%d...",arr->curr_attrib);
 	  if (arr->curr_attrib)
 	    {
-	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-				arr->curr_attrib - 1);
+	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1);
 	    }
 	  else
 	    {
@@ -1469,6 +1470,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
   void *last_field = 0;
   void *next_field;
   struct struct_scr_field *f;
+     static int dir = 0;
 
 
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
@@ -1579,10 +1581,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) || (f->datatype==DTYPE_SERIAL))
     {
-      static int dir = 0;
-      A4GL_debug ("Requested field is noentry");
+      A4GL_debug ("Requested field is noentry attrib=%d curr_attrib=%d",attrib,arr->curr_attrib);
       while (1)
 	{
+      A4GL_debug ("in while attrib=%d curr_attrib=%d dir=%d",attrib,arr->curr_attrib,dir);
 
 	  if (dir == 0)
 	    {
@@ -1603,17 +1605,20 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 
 	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) || (f->datatype==DTYPE_SERIAL))
 	    {
-	      A4GL_debug ("Darn - next field is no entry too...");
+	      A4GL_debug ("Darn - next field is no entry too dir=%d",dir);
 	      attrib += dir;
+		A4GL_debug("attrib now : %d",attrib);
 	      if (attrib >= arr->srec->attribs.attribs_len)
 		{
 		  attrib = 0;
+		A4GL_debug("attrib now : %d - too far to the right",attrib);
 		  scr_line++;
 		  arr_line++;
 		  if (arr_line > arr->arr_size)
 		    {		// Attempting to move off the bottom of the array...
-		      A4GL_debug
-			("Too far down - should really error at this point");
+	  		A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
+		        A4GL_debug ("Too far down - should really error at this point");
+			dir=0;
 		      return;
 		    }
 		}
@@ -1621,13 +1626,15 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 	      if (attrib < 0)
 		{
 		  attrib = arr->srec->attribs.attribs_len;
+		  A4GL_debug("attrib now : %d - too far to the left",attrib);
 		  scr_line--;
 		  arr_line--;
 		}
 	    }
 	  else
 	    {
-	      A4GL_debug ("Found somewhere free...");
+	      dir=0;
+	      A4GL_debug ("Found somewhere free... %d %d %d",scr_line,arr_line,attrib);
 	      A4GL_newMovement (arr, scr_line, arr_line, attrib);	// So keep going...
 	      return;
 	    }
@@ -1637,6 +1644,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 
 
 
+  dir=0;
   ptr = malloc (sizeof (struct s_movement));
   ptr->scr_line = scr_line;
   ptr->arr_line = arr_line;
@@ -2021,7 +2029,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
 	    {
 	      if (arr->fcntrl[a].extent >= 0 && arr->fcntrl[a].extent <= 255
 		  &&
-		  ((isprint (arr->fcntrl[a].extent)
+		  ((a_isprint (arr->fcntrl[a].extent)
 		    || arr->fcntrl[a].extent == 1
 		    || arr->fcntrl[a].extent == 4)))
 		{

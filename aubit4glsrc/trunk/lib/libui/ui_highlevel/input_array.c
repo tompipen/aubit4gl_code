@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.7 2004-02-10 19:05:24 mikeaubury Exp $
+# $Id: input_array.c,v 1.8 2004-03-03 13:18:07 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.7 2004-02-10 19:05:24 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.8 2004-03-03 13:18:07 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1453,6 +1453,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   void *last_field = 0;
   void *next_field;
   struct struct_scr_field *f;
+  static int dir = 0;
 
 
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
@@ -1564,7 +1565,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
       || (f->datatype == DTYPE_SERIAL))
     {
-      static int dir = 0;
       A4GL_debug ("Requested field is noentry");
       while (1)
 	{
@@ -1600,8 +1600,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		  arr_line++;
 		  if (arr_line > arr->arr_size)
 		    {		// Attempting to move off the bottom of the array...
-		      A4GL_debug
-			("Too far down - should really error at this point");
+	  		A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
+		      A4GL_debug ("Too far down - should really error at this point");
 		      return;
 		    }
 		}
@@ -1625,6 +1625,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 
 
+  dir=0;
   ptr = malloc (sizeof (struct s_movement));
   ptr->scr_line = scr_line;
   ptr->arr_line = arr_line;

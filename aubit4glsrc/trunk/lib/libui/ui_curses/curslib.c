@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.87 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.88 2004-03-03 13:18:07 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.87 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.88 2004-03-03 13:18:07 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -382,7 +382,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	      /* print ("%s > %s ", str, st); */
 	      A4GL_tui_print ("%s > %s ", str, st);
 	    }
-	  else if (isprint (a) && strlen (st) <= (w - strlen (str) - 5))
+	  else if (a_isprint (a) && strlen (st) <= (w - strlen (str) - 5))
 	    sprintf (st, "%s%c", st, a);
 	}
       if (last_opt != curr_opt)
@@ -935,7 +935,7 @@ A4GL_check_type (char c, char type, int flg, int len)
 
   if (type == 'A')
     {
-      return (isprint (c));
+      return (a_isprint (c));
     }
 
   if (type == 'Y')
@@ -2706,7 +2706,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	    }
 	}
 
-      A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, isprint (a) ? a : '.');
+      A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, a_isprint (a) ? a : '.');
 #ifdef WIN32_BROKEN
       if (a == KEY_MOUSE)
 	{
