@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.88 2004-03-29 09:11:24 mikeaubury Exp $
+# $Id: stack.c,v 1.89 2004-04-13 18:06:03 mikeaubury Exp $
 #
 */
 
@@ -1783,14 +1783,17 @@ int first;
       //A4GL_debug ("2 --> %s %lf", z1, a);
     }
 
-  if (A4GL_stod (z1, &adate, 0) == 1)
+  if (strchr(z1,'/') && A4GL_stod (z1, &adate, 0) == 1) // Looks a bit like a date...
     {
-      //A4GL_debug ("String is a date...");
 
-	if (first==0) 
-      		b = (double) adate;
-	else
-      		a = (double) adate;
+	if (!A4GL_isnull(DTYPE_DATE,&adate)) {
+      		A4GL_debug ("String looks like it is a date...");
+
+		if (first==0) 
+      			b = (double) adate;
+		else
+      			a = (double) adate;
+	}
     }
 
   if (z1)
