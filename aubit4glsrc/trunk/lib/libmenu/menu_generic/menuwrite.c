@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.12 2003-08-23 00:42:58 afalout Exp $
+# $Id: menuwrite.c,v 1.13 2004-03-23 23:34:03 mikeaubury Exp $
 #*/
 
 /**
@@ -69,7 +69,7 @@ char buff_xdr[30000];
 
 extern char *outputfilename;
 
-struct menu_list the_menus;
+//struct menu_list the_menus;
 struct struct_scr_field *fld;
 
 char *chk_alias (char *s);
@@ -117,14 +117,18 @@ A4GL_error_with (char *s, char *a, char *b)
  * @todo Describe function
  */
 void
-A4GL_write_menu (void)
+A4GL_write_menu (void* ml)
 {
   char fname[132];
   char fname2[132];
   int a;
   menu_list *ptr;
+  struct menu_list *the_menus_ptr;
 
-  ptr = &the_menus;
+  the_menus_ptr=ml;
+  ptr = the_menus_ptr;
+
+  
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_BASE_EXT"));
 
@@ -132,12 +136,15 @@ A4GL_write_menu (void)
   strcat (fname2, ".c");
 
 
+  if (the_menus_ptr->menus.menus_len==0) {
+	printf("No menus!\n");
+	exit(20);
+  }
+  A4GL_debug ("has %d menus\n", the_menus_ptr->menus.menus_len);
 
-  A4GL_debug ("has %d menus\n", the_menus.menus.menus_len);
+  A4GL_debug ("calling write_data_to_file\n", the_menus_ptr->menus.menus_len);
 
-  A4GL_debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
-
-  a = A4GL_write_data_to_file ("menu_list", &the_menus, fname);
+  a = A4GL_write_data_to_file ("menu_list", the_menus_ptr, fname);
 
   A4GL_debug ("returned from write_data_to_file()");
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_nomenu.c,v 1.6 2003-08-23 00:42:58 afalout Exp $
+# $Id: menu_nomenu.c,v 1.7 2004-03-23 23:35:02 mikeaubury Exp $
 #*/
 
 /**
@@ -47,7 +47,7 @@
 
 #include "menu_x.x.h"
 
-struct menu_list the_menus;
+//struct menu_list the_menus;
 
 extern char *outputfilename;
 
@@ -67,14 +67,14 @@ void A4GL_error_with (char *s, char *a, char *b);
  * @todo Describe function
  */
 void
-A4GL_write_menu (void)
+A4GL_write_menu (void*ml)
 {
   char fname[132];
   char fname2[132];
   int a;
   menu_list *ptr;
 
-  ptr = &the_menus;
+  ptr = ml;
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_BASE_EXT"));
 
@@ -83,11 +83,11 @@ A4GL_write_menu (void)
 
 
 
-  A4GL_debug ("has %d menus\n", the_menus.menus.menus_len);
+  A4GL_debug ("has %d menus\n", ptr->menus.menus_len);
 
-  A4GL_debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
+  A4GL_debug ("calling write_data_to_file\n", ptr->menus.menus_len);
 
-  a = A4GL_write_data_to_file ("menu_list", &the_menus, fname);
+  a = A4GL_write_data_to_file ("menu_list", ptr, fname);
 
   A4GL_debug ("returned from write_data_to_file()");
 

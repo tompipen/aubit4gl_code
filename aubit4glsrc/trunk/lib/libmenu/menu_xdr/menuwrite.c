@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.13 2003-08-23 00:42:58 afalout Exp $
+# $Id: menuwrite.c,v 1.14 2004-03-23 23:35:02 mikeaubury Exp $
 #*/
 
 /**
@@ -69,7 +69,7 @@ char buff_xdr[30000];
 
 extern char *outputfilename;
 
-struct menu_list the_menus;
+//struct menu_list the_menus;
 struct struct_scr_field *fld;
 
 char *chk_alias (char *s);
@@ -121,14 +121,15 @@ A4GL_error_with (char *s, char *a, char *b)
  * @todo Describe function
  */
 void
-A4GL_write_menu (void)
+A4GL_write_menu (void* ml)
 {
   char fname[132];
   char fname2[132];
   int a;
   XDR xdrp;
   menu_list *ptr;
-  ptr = &the_menus;
+
+  ptr = ml;
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_BASE_EXT"));
 
@@ -138,7 +139,7 @@ A4GL_write_menu (void)
 
   fxx = fopen (fname, "wb");
 
-  A4GL_debug ("has %d menus\n", the_menus.menus.menus_len);
+  A4GL_debug ("has %d menus\n", ptr->menus.menus_len);
 
   A4GL_debug ("writing in XDR format file %s\n", fname);
 

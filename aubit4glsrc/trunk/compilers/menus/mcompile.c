@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.23 2003-08-23 00:42:58 afalout Exp $
+# $Id: mcompile.c,v 1.24 2004-03-23 23:34:18 mikeaubury Exp $
 #*/
 
 /**
@@ -94,7 +94,7 @@ extern int lcnt;
 extern int lineno;
 extern FILE *yyin;
 extern char *outputfilename;
-extern struct menu_list the_menus;
+struct menu_list the_menus;
 
 int ignorekw = 0;
 int colno = 0;
