@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2003-07-16 08:18:25 afalout Exp $
 #
 
 ROOT    	=../..
@@ -40,12 +40,20 @@ include ${ROOT}/incl/Makefile-common
 4GLC	=${ROOT}/bin/4glc
 FCOMPILE=${ROOT}/bin/fcompile
 
+#ifneq "${COMSPEC}" ""
+	#LINKLIBS=-lD:/WINNT/system32/winsock.dll
+	#LINKLIBS=-lwsock32
+	#LINKLIBS=-lws2_32 -lwsock32 -lmswsock
+#endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ${LIBROOT}/libHELP_std${SO_EXT}: helplib.c a4gl_xxhelp.afr.c
-	export A4GL_SQLTYPE=nosql; ${SH} ${ROOT}/bin/4glpc -g -as-dll $^ -o $@
+	export A4GL_SQLTYPE=nosql; ${SH} ${ROOT}/bin/4glpc ${LINKLIBS} -g -as-dll $^ -o $@
+#	gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -I../../incl -o $@ $^ -L.. -laubit4gl
 #WARNING: cannot use 4glc directly, because of broken getopt_long() on CygWin (-o will not be recognized)
 #	export A4GL_SQLTYPE=nosql; ${4GLC} --shared $^ -o $@
 
@@ -65,6 +73,7 @@ a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 ## ==================================================================
 
 clean:
-	rm -f a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} a4gl_xxhelp.afr.dat helplib.c helplib.glb helplib.h *.err *.bak debug.out
+	rm -f a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} \
+	a4gl_xxhelp.afr.dat helplib.c helplib.glb helplib.h *.err *.bak debug.out
 
 # =============================== EOF ================================

@@ -5,10 +5,32 @@ help.4gl	Aubit4GL help routines (work with Informix .iem files)
 
 		First working version
 
-		Note: Uses inline C code for I/O 
+		Note: Uses inline C code for I/O
 }
 code
 	#include <errno.h>
+
+
+	/*
+	-----------------------------------------------------------------------------
+	 PORTABLE
+	   Set if we are going to use network style integers
+	   Not set if we are going to use native integers
+	 (On some platforms these may be the same, on others they won't be)
+	-----------------------------------------------------------------------------
+	*/
+
+	#ifdef PORTABLE
+		#include <netinet/in.h>
+	#else
+		#ifndef htonl
+			#define htonl(x) (x)
+			#define htons(x) (x)
+			#define ntohl(x) (x)
+			#define ntohs(x) (x)
+		#endif
+	#endif
+
 
 	#define HELPMAXLEN 78
 	static FILE * infile;
@@ -255,6 +277,7 @@ code
 			if(fread(indexrec,1,8,infile)< 8) ok = 0;
 			if(ok ) {
                                 memcpy(&msgno,indexrec,2);
+                                //msgno=A4GL_ntohs(msgno);
                                 msgno=ntohs(msgno);
 			}
 			else

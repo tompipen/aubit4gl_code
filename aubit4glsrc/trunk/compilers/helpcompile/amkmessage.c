@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.6 2003-06-20 15:03:18 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.7 2003-07-16 08:18:25 afalout Exp $
 #*/  
   
 /**
@@ -64,18 +64,41 @@
  * @todo 2. Add errno arg to chckerr()
  * @todo 3. investigate whether strtol() is preferable to atoi
  *
- */ 
-  
+ */
+
 /*
 =====================================================================
 		                    Includes
 =====================================================================
-*/ 
-  
+*/
+
 #include "a4gl_mkmess_int.h"
 //#include <stdio.h>
 //#include <stdlib.h>
-  
+
+
+/*
+-----------------------------------------------------------------------------
+ PORTABLE
+   Set if we are going to use network style integers
+   Not set if we are going to use native integers
+ (On some platforms these may be the same, on others they won't be)
+-----------------------------------------------------------------------------
+*/
+
+#ifdef PORTABLE
+	#include <netinet/in.h>
+#else
+	#ifndef htonl
+		#define htonl(x) (x)
+		#define htons(x) (x)
+		#define ntohl(x) (x)
+		#define ntohs(x) (x)
+	#endif
+#endif
+
+
+
 /*
 =====================================================================
                     Variables definitions
@@ -108,7 +131,7 @@ int fwrite2 (char *s, FILE * f);
  * @param argc The arg count
  * @param argv The arguments values
  */ 
-int 
+int
 main (int argc, char *argv[]) 
 {
   FILE * infile, *outfile;

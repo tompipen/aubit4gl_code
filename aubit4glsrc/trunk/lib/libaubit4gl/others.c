@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.29 2003-07-12 08:02:57 mikeaubury Exp $
+# $Id: others.c,v 1.30 2003-07-16 08:18:25 afalout Exp $
 #
 */
 
@@ -597,42 +597,73 @@ aubit_yyprint (int xstderr, int xyychar, int xyylval)
 
 
 
+
+/**
+ *
+ * cygwin headers has no prototype for usleep(), but have the function
+ *   on POSIX/ANSI sustems thsi is usually in unistd.h:
+ *	extern int usleep (__useconds_t __useconds) __THROW;
+ *
+ *   Mingwin header stdlib.h has _sleep() but suggest to use Windows API
+ *   finstion Sleep() instead (see winbase.h) .
+ *
+ *	The usleep() function will cause the calling thread to be suspended
+ *	from execution until either the number of real-time microseconds
+ *	specified by the argument useconds has elapsed or a signal is
+ *	delivered to the calling thread and its action is to invoke a
+ *	signal-catching function or to terminate the process.
+ *	The suspension time may be longer than requested due to the
+ *	scheduling of other activity by the system.
+ *
+ */
 void
 a4gl_usleep (int a)
 {
 
-/* cygwin headers has no prototype for usleep(), but have the function
-    on POSIX/ANSI sustems thsi is usually in unistd.h:
-	extern int usleep (__useconds_t __useconds) __THROW;
-
-    Mingwin header stdlib.h has _sleep() but suggest to use Windows API
-    finstion Sleep() instead (see winbase.h) .
-
-	The usleep() function will cause the calling thread to be suspended
-	from execution until either the number of real-time microseconds
-	specified by the argument useconds has elapsed or a signal is
-	delivered to the calling thread and its A4GL_action is to invoke a
-	signal-catching function or to terminate the process.
-	The suspension time may be longer than requested due to the
-	scheduling of other activity by the system.
-
-*/
-
 #ifdef __MINGW32__
 #include <winbase.h>
   DWORD b;
-
   b = a / 1000;
-
-  //There is no usleep provided on MinGW
   Sleep (b);			/* SECONDS - __NOT__ micro!!! */
 #else
   usleep (a);			/* microseconds !!!!! */
 #endif
-
 }
 
+/*
+Windows has this functions in winsock.dll
+prototypes are in MinGW/include/winsock2.h
+		# undef ntohs
+*/
+/*
+unsigned short
+A4GL_ntohs(unsigned short netshort)
+{
+char *ptr;
+unsigned short  *iptr;
+char buff[2];
+
+	#if HAVE_NTOHS == 0
+		// Byte swap..
+
+		#if HAVE_LEAST_BYTE_FIRST == 1
+			//least byte first
+			ptr=&netshort;
+			buff[0]=ptr[1];
+			buff[1]=ptr[0];
+			iptr=(int *)&buff;
+			return *iptr;
+		#else
+			//#define ntohs(x) (x)
+		#endif
+
+    #else
+		return ntohs(netshort);
+    #endif
 
 
+
+}
+*/
 
 /* ============================== EOF ========================== */

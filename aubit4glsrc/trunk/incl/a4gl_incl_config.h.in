@@ -95,4 +95,10 @@
 	#define HAVE_PGSQL_IODBC_ISQL_H 0
 	#define HAVE_PGSQL_IODBC_ISQLEXT_H 0
 
+    #define HAVE_LEAST_BYTE_FIRST 0
+	#define HAVE_HTONS 0
+	#define HAVE_NSTOH 0
+	#define HAVE_NTOHS 0
+
+
 #endif /* #ifndef CONFIG_H_INCL */

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.175 2003-07-13 04:11:33 afalout Exp $
+dnl # $Id: configure.in,v 1.176 2003-07-16 08:18:17 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -73,8 +73,6 @@ if test "$enableval" = "yes" ; then
     WITH_DEBUG=yes
 fi)
 
-
-
 CONFIGURE_COMMAND="$ac_configure_args"
 
 #location of additional Autoconf files
@@ -87,6 +85,29 @@ AC_CONFIG_AUX_DIR(etc/config)
 #aubitconf script will typically have only one line, for example:
 #./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
 if test "$AUBITCONF_FLAG" != "running"; then
+
+	## ==================================================================
+	##            check what the byte ordering is: prepare test file
+	## ==================================================================
+        #This must be done on first pass only, since after we invoke
+        #aubitconf, "echo -e" will not work ...
+		rm -f ./order.c ./order ./order.exe ./order.o ./order.tmp
+
+		echo "" > order.c
+		echo "main() {" >> order.c
+		echo "short a;" >> order.c
+		echo "char *ptr;" >> order.c
+		echo "a=1;" >> order.c
+		echo "ptr=(char *)&a;" >> order.c
+
+		echo 'printf("%d%d",ptr\1330\135,ptr\1331\135);' > order.tmp
+	    xx=`cat order.tmp`
+		echo -e "$xx" >> order.c
+
+		echo "}" >> order.c
+		echo "" >> order.c
+
+	##############################
 
 PHP_CONFIGURE_PART(Looking for configure parameters file:)
 
@@ -182,6 +203,7 @@ AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+
 
 ## ==================================================================
 ##                Define what will get substituted
@@ -3157,6 +3179,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
     #AC_CHECK_FUNC(setenv,,AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
 	AC_CHECK_FUNCS([setenv])
 
+	AC_CHECK_FUNCS([htons nstoh ntohs])
+
 	#Check if we have it in libc:
 	AC_CHECK_FUNC(getopt_long,GETOPT_LONG=yes,AC_CHECK_LIB(iberty, getopt_long))
     if test "$GETOPT_LONG" != "yes"; then
@@ -3268,6 +3292,33 @@ case "$host" in
 	;;
 esac
 
+## ==================================================================
+##            check what the byte ordering is:
+## ==================================================================
+
+    gcc order.c -o order
+
+    ORDER=`./order`
+
+	case "$ORDER" in
+		10) #least byte first
+			AC_DEFINE(HAVE_LEAST_BYTE_FIRST,1,[ ])
+            echo "Byte order is 10"
+        ;;
+
+        01) #If it gives 01 then ntohs would be
+			#define ntohs(x) (x)
+			AC_DEFINE(HAVE_LEAST_BYTE_FIRST,0,[ ])
+            echo "Byte order is 01"
+	        ;;
+
+        *)
+            echo "Invalid byte order result: >>$ORDER<<"
+            exit 5
+	        ;;
+    esac
+
+	rm -f ./order.c ./order ./order.exe ./order.o ./order.tmp
 
 ## ==================================================================
 ##            Decide on default SQL driver
@@ -3357,7 +3408,7 @@ if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
 	A4GL_MENUTYPE="$default_menu"
 else
-	
+
     #Why would we want XDR menu as default in any case?
 	#if test "$HAVE_RPCLIB" != "0"; then
 	#	A4GL_MENUTYPE="XDR"

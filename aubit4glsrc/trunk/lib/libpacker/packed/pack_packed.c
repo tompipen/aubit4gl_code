@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.11 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.12 2003-07-16 08:18:26 afalout Exp $
 #*/
 
 /**
@@ -68,15 +68,16 @@
 */
 
 #ifdef PORTABLE
-#include <netinet/in.h>
+	#include <netinet/in.h>
 #else
-#ifndef htonl
-#define htonl(x) (x)
-#define htons(x) (x)
-#define ntohl(x) (x)
-#define ntohs(x) (x)
+	#ifndef htonl
+		#define htonl(x) (x)
+		#define htons(x) (x)
+		#define ntohl(x) (x)
+		#define ntohs(x) (x)
+	#endif
 #endif
-#endif
+
 #include <ctype.h>
 
 /*
@@ -468,6 +469,7 @@ input_short (char *name, short *val, int ptr, int isarr)
   return a;
 
 }
+
 
 
 /**
