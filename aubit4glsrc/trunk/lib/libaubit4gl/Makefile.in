@@ -24,12 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.25 2002-07-28 08:58:19 afalout Exp $
+# $Id: Makefile.in,v 1.26 2002-08-18 05:00:27 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Source files

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.2 2002-06-29 13:12:02 afalout Exp $
+# $Id: ops.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
 #
 */
 
@@ -48,18 +48,8 @@
 */
 
 
-#ifdef OLD_INCL
+#include "a4gl_libaubit4gl_int.h"
 
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
 
 /*
 =====================================================================
@@ -73,7 +63,6 @@ void int_int_ops(int op) ;
 	void push_int(int a);
 #endif
 void add_default_operations(void) ;
-void add_op_function(int dtype1,int dtype2,int op,void *function);
 void dt_in_ops(int op);
 
 

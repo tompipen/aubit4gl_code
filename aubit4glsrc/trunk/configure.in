@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.73 2002-07-21 10:14:19 afalout Exp $
+# $Id: configure.in,v 1.74 2002-08-18 05:00:09 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -244,6 +244,10 @@ AC_SUBST(AUTOSPEC)
 AC_SUBST(JABBERBUILD)
 AC_SUBST(IKSEMEL_L_FLAGS)
 AC_SUBST(IKSEMEL_I_FLAGS)
+
+#exdatatype
+AC_SUBST(EXDATA_MPZ)
+AC_SUBST(EXDTYPE)
 
 #other
 AC_SUBST(PERL)
@@ -1858,6 +1862,36 @@ AC_MSG_RESULT($XML_RPC)
 
 
 ## ==================================================================
+##            Check for mpz library (large integers) for exdatatype
+## ==================================================================
+
+
+AC_CHECK_LIB([gmp], [main])
+
+if test $ac_cv_lib_gmp_main = yes; then
+
+	if test "$AUBIT_SOURCE" = "1" ; then
+	    #to compile from source code, we need headers too:
+		AC_CHECK_HEADERS([ gmp.h ])
+
+		if test "$ac_cv_header_gmp_h" = "yes"  ; then
+			EXDATA_MPZ=yes
+            EXDTYPE=MPZ
+        else
+			EXDATA_MPZ=no
+        fi
+    else
+		EXDATA_MPZ=yes
+		EXDTYPE=MPZ
+    fi
+else
+	EXDATA_MPZ=no
+fi
+
+
+
+
+## ==================================================================
 ##            Check for Perl generating compiler support
 ## ==================================================================
 
@@ -2337,6 +2371,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/libpacker/perl/Makefile
 				lib/libpacker/xdr/Makefile
 				lib/libpacker/xml/Makefile
+   				lib/libexdata/Makefile
 				lib/swig/domake
 				lib/Makefile
                 tools/adbaccess/Makefile

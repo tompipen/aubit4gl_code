@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.3 2002-07-21 09:56:42 afalout Exp $
+# $Id: pack_packed.c,v 1.4 2002-08-18 05:00:27 afalout Exp $
 #*/
 
 /**
@@ -47,17 +47,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <string.h>
-	#include "a4gl_debug.h"
-#else
-    #define _NO_FORM_X_H_
-	/* FIXME: this should be a4gl_lib_packer_packed_int.h */
-	#include "a4gl_libaubit4gl.h"
-#endif
+#include "a4gl_lib_packer_packed_int.h"
 
 /*
 =====================================================================
@@ -112,6 +102,7 @@ int contentok = 0;
 char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *find_contents (char *s);		/* Extract the tag contents from a string */
 
+/*
 int input_int (char *name, int *val, int ptr, int isarr);
 int input_long (char *name, long *val, int ptr, int isarr);
 int input_bool (char *name, int *val, int ptr, int isarr);
@@ -141,11 +132,13 @@ int open_packer (char *basename,char dir);
 void close_packer (char dir);
 int output_start_array (char *s, int type, int len);
 int output_end_array (char *s, int type);
-int output_short (char *name, short val, int ptr, int isarr);
 int input_start_array (char *s, int type, int *len);
 int input_end_array (char *s, int type);
-int input_short (char *name, short *val, int ptr, int isarr);
 int can_pack_all(void);
+*/
+
+int input_short (char *name, short *val, int ptr, int isarr);
+int output_short (char *name, short val, int ptr, int isarr);
 
 /*
 =====================================================================
@@ -305,7 +298,8 @@ int a;
  * @todo Describe function
  */
 int
-output_bool (char *name, short val, int ptr, int isarr)
+//output_bool (char *name, short val, int ptr, int isarr)
+output_bool (char *name, int val, int ptr, int isarr)
 {
 	return output_short(name,val,ptr,isarr);
 }
@@ -597,7 +591,8 @@ return input_int(name,d,0,-1);
  * @todo Describe function
  */
 int
-can_pack_all(void)
+//can_pack_all(void)
+can_pack_all(char* name)
 {
 	return 0;
 }

@@ -1,32 +1,68 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: a4gl_libaubit4gl.h,v 1.7 2002-08-18 05:00:27 afalout Exp $
+#
+*/
+
 /**
  * @file
  *
- * Definition of structures and typedefs necessary
- * for the libaubit4gl library.
+ * Definition of structures and typedefs necessary for the libaubit4gl library
+ * and commony used in most of Aubit code.
+ *
+ * This file is included from all API header files, all executables (compilers,
+ * tools) - therefore from most if not all Aubit compiler code.
+ * It is NOT included from Aubit compiler (4glc) generated c code.
+ *
  * Definitipns EXTERNAL to library (needed outside of it) an used in
  * most of Aubit compielr code and compiler 4gl programs.
+ * libaubit4gl.so/dll specific definitions are in a4gl_libaubit4gl_int.h
+ * which will also include this file.
+ *
+ * See diagram of Aubit header includes in the documentation.
+ *
  */
 
 #ifndef _AUBIT_LIB_INCL_EXT_
 #define _AUBIT_LIB_INCL_EXT_
 
-	#include <stdarg.h>  			/* va_start() */
-   	#include <ctype.h> 				/* tolower() toupper() */
+ /*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
-	#include <stdio.h> 				/* needed for FILE symbol */
-	#include <string.h>
-	#include <stdlib.h> 			/* free() */
-	#include <search.h> 			/* VISIT */
-
-	#include <assert.h>             /* assert() */
-
-	#include <math.h>
-	#include <sys/types.h>
-	#include <time.h>
-
-	#include <pwd.h>    			/* getpwduid() */
-
-	#include "a4gl_incl_4gldef.h" 	/* definitions used both in Aubit compiler code and at run-time */
+	#ifdef __CYGWIN__
+		/* we do not want code to behave as native Windows code if we are
+        compiling under CygWin environment, since CygWin is essentially
+        UNIX-like environment. When you see ifdef WIN32 in Aubit code, this
+        applies ONLY to Windows native compilers, like MSVC or Borland */
+		#undef WIN32
+	#endif
 
 
 	/* ======================== from a4gl_aubitcolours.h ========== */
@@ -116,12 +152,6 @@
 
 	/* ========================= from a4gl_ui.h ====================== */
 
-	/*
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <ctype.h>
-	#include <stdarg.h>
-    */
 	#define DESCLENGTH 10
 	#define nalloc(x) malloc(sizeof(x))
 	#define INVERT 1
@@ -162,6 +192,254 @@
 	#define BADFILE 3
 	#define NOWRITE 4
 	#define BADWRITE 5
+
+
+    /* ---------------------- */
+
+	#define STREQL(a,b) (strcmp(a,b)==0)
+	#define STRNEQ(a,b) (strcmp(a,b)!=0)
+	#define STRIEQ(a,b) (strcasecmp(a,b)==0)
+	#define STRINEQ(a,b) (strcasecmp(a,b)!=0)
+
+
+	#define RES_PANEL 1
+	#define RES_ACLWINDOW 2
+	#define RES_CURSWINDOW 3
+	#define RES_ACLFORM 4
+
+	#define getptr_PANEL(b) (PANEL *)find_pointer(b,RES_PANEL)
+	#define getptr_s_windows(b) (struct s_windows *)find_pointer(b,RES_ACLWINDOW)
+	#define getptr_WINDOW(b) (WINDOW *)find_pointer(b,RES_CURSWINDOW)
+	#define getptr_s_form_dets(b) (struct s_form_dets *)find_pointer(b,RES_ACLFORM)
+
+	#define pushptr_PANEL(b,p)      add_pointer(b,RES_PANEL,p)
+	#define pushptr_s_windows(b,p)   add_pointer(b,RES_ACLWINDOW,p)
+	#define pushptr_WIN(b,p)         add_pointer(b,RES_CURSWINDOW,p)
+	#define pushptr_s_form_dets(b,p) add_pointer(b,RES_ACLFORM,p)
+
+
+	/* available on to this library */
+	#define LIBPRIVATE static
+
+	/* available to other files in the library */
+	#define LIBUSEONLY
+
+	#define LIBEXPORT
+
+	/* available to 4gl */
+	#define LIBINTERFACE
+
+	#define PANCODE '1'
+	#define WINCODE '2'
+
+
+	/* ========================= from a4gl_ui.h ====================== */
+
+	#define IDENTLEN 18;
+	#define ACL_MN_SHOW 0x0000
+	#define ACL_MN_HIDE 0x0001
+	#define A_BORDER 0x400
+	#define wchk() if (sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
+
+    /* ========================== from a4gl_dtypes.h ==================== */
+
+
+
+	#define DTYPE_CHAR      0
+	#define DTYPE_SMINT     1
+	#define DTYPE_INT       2
+	#define DTYPE_FLOAT     3
+	#define DTYPE_SMFLOAT   4
+	#define DTYPE_DECIMAL   5
+	#define DTYPE_SERIAL    6
+	#define DTYPE_DATE      7
+	#define DTYPE_MONEY     8
+	#define DTYPE_DTIME     10
+	#define DTYPE_BYTE      11
+	#define DTYPE_TEXT      12
+	#define DTYPE_VCHAR     13
+	#define DTYPE_INTERVAL  14
+
+
+	#define DTYPE_CHAR      0
+	#define DTYPE_SMINT     1
+	#define DTYPE_INT       2
+	#define DTYPE_FLOAT     3
+	#define DTYPE_SMFLOAT       4
+	#define DTYPE_DECIMAL       5
+	#define DTYPE_SERIAL        6
+	#define DTYPE_DATE      7
+	#define DTYPE_MONEY     8
+	#define DTYPE_DTIME     10
+	#define DTYPE_BYTE      11
+	#define DTYPE_TEXT      12
+	#define DTYPE_VCHAR     13
+	#define DTYPE_INTERVAL      14
+
+	#define DTYPE_MASK 255 /* bit pattern for data type */
+
+	#define MAX_DTYPE  255
+	#define DTYPE_MALLOCED 256
+
+
+	#define MAXDIG 30
+	#define MAXPNT 30
+
+
+
+/*
+=====================================================================
+		               System Includes
+=====================================================================
+*/
+
+
+	#include <stdarg.h>  			/* va_start() */
+   	#include <ctype.h> 				/* tolower() toupper() */
+	#include <stdio.h> 				/* needed for FILE symbol */
+	#include <string.h>
+	#include <stdlib.h> 			/* free() */
+	#include <search.h> 			/* VISIT */
+	#include <assert.h>             /* assert() */
+	#include <time.h>
+	#include <math.h> 				/* pow() */
+	#include <pwd.h>    			/* getpwduid() */
+	#include <locale.h>             /* setlocale() */
+	#include <unistd.h> 			/* sleep() close() write() */
+	#include <signal.h>             /* SIGINT */
+	/*
+	to force LCLint to process <sys/types.h>, since form_x.h will include
+    rpc.h that needs fd_set.
+	included via /usr/include/sys/types.h but defined in /usr/include/sys/select.h
+	 */
+
+	/*@-skipposixheaders@*/
+	#include <sys/types.h>
+	/*@=skipposixheaders@*/
+
+	#ifdef DMALLOC
+		#include "dmalloc.h"
+	#endif
+
+	#ifdef WIN32
+		#include <windows.h>
+	#else
+		#include <sys/socket.h>
+		#include <netinet/in.h>
+		#include <netdb.h>
+	#endif
+
+
+	/*
+	   This will prevent ussage of getenv and wgetenv functions:
+	   You could also enforce the prohibition of other undesirable C
+	   functions, with gets() and strtok() springing to mind as the first
+	   candidates, but there are likely to be others too.
+
+		This would cause compile-time error if getenv() is used:
+		#define getenv(s)	assert("Do not use getenv()" == 0)
+		like this:
+		/usr/include/stdlib.h:587: parse error before string constant
+
+		 This will also cause compile time error (prefered)
+        #define getenv(s) do not use getenv() - use acl_getenv() instead
+            ...but it will not work for Splint so we must use assert one
+
+        Must be after system includes, because stdlib.h sefines getenv()
+	*/
+
+	#ifndef GETENV_OK
+		#define getenv(s)	assert("Do not use getenv() - use acl_getenv() instead" == 0)
+	#endif
+
+	#ifndef WGETENV_OK
+		#define wgetenv(s)	assert("Do not use wgetenv() - use acl_getenv() instead" == 0)
+	#endif
+
+
+
+
+/*
+=====================================================================
+		               Aubit Includes
+=====================================================================
+*/
+
+	/* definitions used both in Aubit compiler code and at run-time */
+	#include "a4gl_incl_4gldef.h"
+
+	#ifdef HAVE_CONFIG_H
+		/* header automatically created with AutoConf-configure */
+		#include "a4gl_incl_config.h"
+	#endif
+
+
+	/**
+	 * Binding information structure definition.
+	 * Used to bind values to and from SQL.
+	 * Need to be here because a4gl_API_sql.h needs it
+	 */
+	struct BINDING {
+		void *ptr; /**< A pointer to the variable bounded */
+		int dtype; /**< The data type of the variable bounded */
+		long size; /**< The size in bytes of the variable bounded */
+	};
+
+
+    /* API prototypes */
+	#include "a4gl_API_lex.h"
+	#include "a4gl_API_form.h"
+	#include "a4gl_API_menu.h"
+	#include "a4gl_API_msg.h"
+	#include "a4gl_API_sql.h"
+	#include "a4gl_API_packer.h"
+    //#include "a4gl_API_ui.h"
+    //#include "a4gl_API_exreport.h"
+    //#include "a4gl_API_rpc.h"
+    //#include "a4gl_API_exdata.h"
+
+	/* ============================ from datatypes.c ============================ */
+    /* this should go in new header file called a4gl_API_exdata.h : */
+	void    init_datatypes			(void);
+	void *  get_datatype_function_n	(char *name,char *funcname);
+	int     has_datatype_function_n	(char *name,char *funcname);
+	int     A4GLEXDATA_initlib 		(char *f);
+	int     find_datatype_out		(char *name);
+	int 	find_datatype			(char *name);
+	void *  get_datatype_function_i	(int a,char *funcname);
+	int     has_datatype_function_i	(int a,char *funcname);
+	int 	add_datatype 			(char *name, int rq, int precision);
+	int 	add_datatype_function_n (char *name, char *funcname, void *func);
+	void 	add_conversion 			(char *from, char *to, void *func);
+	/* ============================ end from datatypes.c ============================ */
+
+
+
+    #ifndef _NO_FORM_X_H_
+		#ifdef SRC_TREE
+			#include "../common/dataio/form_x.x.h"   /* struct_form */
+        #else
+			#include "form_x.x.h"   /* struct_form */
+        #endif
+    #endif
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+
+	/* ========================= from a4gl_ui.h ====================== */
 
 	typedef struct
 	{
@@ -209,8 +487,6 @@
 	  }
 	ACL_Menu;
 
-	#define IDENTLEN 18;
-
 	typedef struct  {
 	int x,y;
 	int length;
@@ -240,11 +516,6 @@
 	char form_name[19];
 	} gen_form;
 
-
-	/* #include "a4gl_sqlca.h" */
-
-	#define ACL_MN_SHOW 0x0000
-	#define ACL_MN_HIDE 0x0001
 	#ifdef OBJECTMODULE
 		char opts[100][80];		/*menu options */
 		int abort_pressed;
@@ -273,8 +544,6 @@
 
 	/* from curslib.c: */
 	void disp_opt (int row, int x, int y, int l, int type);
-
-
 
 	int do_key_menu (void);		/*internal function */
 
@@ -321,9 +590,6 @@
 	int attrib;
 	} attributes;
 
-
-	#define A_BORDER 0x400
-
 	enum box_styles
 	  {
 	    NORMAL_BOX,
@@ -349,22 +615,10 @@
 	  };
 
 
-	#define wchk() if (sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
-
 	void *create_blank_window (char *name, int x, int y, int w, int h, int border);
 
 	char * glob_window (int x, int y, int w, int h, int border);
 	void * find_pointer (const char *pname, char t);
-
-	/* #include "a4gl_prompt.h" */
-
-
-
-
-
-
-
-
 
     /* ============================================================= */
 
@@ -392,87 +646,12 @@
 		#endif
 	#endif
 
-
-
-	#define STREQL(a,b) (strcmp(a,b)==0)
-	#define STRNEQ(a,b) (strcmp(a,b)!=0)
-	#define STRIEQ(a,b) (strcasecmp(a,b)==0)
-	#define STRINEQ(a,b) (strcasecmp(a,b)!=0)
-
-
-	#define RES_PANEL 1
-	#define RES_ACLWINDOW 2
-	#define RES_CURSWINDOW 3
-	#define RES_ACLFORM 4
-
-	#define getptr_PANEL(b) (PANEL *)find_pointer(b,RES_PANEL)
-	#define getptr_s_windows(b) (struct s_windows *)find_pointer(b,RES_ACLWINDOW)
-	#define getptr_WINDOW(b) (WINDOW *)find_pointer(b,RES_CURSWINDOW)
-	#define getptr_s_form_dets(b) (struct s_form_dets *)find_pointer(b,RES_ACLFORM)
-
-	#define pushptr_PANEL(b,p)      add_pointer(b,RES_PANEL,p)
-	#define pushptr_s_windows(b,p)   add_pointer(b,RES_ACLWINDOW,p)
-	#define pushptr_WIN(b,p)         add_pointer(b,RES_CURSWINDOW,p)
-	#define pushptr_s_form_dets(b,p) add_pointer(b,RES_ACLFORM,p)
-
-
-	/* available on to this library */
-	#define LIBPRIVATE static
-
-	/* available to other files in the library */
-	#define LIBUSEONLY
-
-	#define LIBEXPORT
-
-	/* available to 4gl */
-	#define LIBINTERFACE
-
-	#define PANCODE '1'
-	#define WINCODE '2'
-
-
-
-
     /* ======================== from debug.h ========================*/
 
-	#ifdef HAVE_CONFIG_H
-		/* header automatically created with AutoConf-configure */
-		#include "a4gl_incl_config.h"
-	#endif
-
-	#ifdef DMALLOC
-		#include "dmalloc.h"
-	#endif
 
 	void debug_full (char *fmt,...);
 	void exitwith_sql(char *s) ;
 	void set_errm(char *s);
-
-	/*
-	   This will prevent ussage of getenv and wgetenv functions:
-	   You could also enforce the prohibition of other undesirable C
-	   functions, with gets() and strtok() springing to mind as the first
-	   candidates, but there are likely to be others too.
-	*/
-
-	#ifndef GETENV_OK
-		/*
-		This would cause compile-time error is getenv() is used:
-		#define getenv(s)	assert("Do not use getenv()" == 0)
-		like this:
-		/usr/include/stdlib.h:587: parse error before string constant
-
-		 This will also cause compile time error (prefered)
-        #define getenv(s) do not use getenv() - use acl_getenv() instead
-            ...but it will not work for Splint so we must use assert one
-		*/
-		#define getenv(s)	assert("Do not use getenv() - use acl_getenv() instead" == 0)
-	#endif
-
-	#ifndef WGETENV_OK
-		#define wgetenv(s)	assert("Do not use wgetenv() - use acl_getenv() instead" == 0)
-	#endif
-
 
 	struct a4gl_dtime {
 	    int stime;
@@ -481,42 +660,7 @@
 	};
 
 
-	#ifndef IVAL_STRUCT
-	#define IVAL_STRUCT
-		struct ival {
-		    int stime;     /**< The start qualifier */
-		    int ltime;     /**< The end qualifier */
-		    char data[32]; /**< The value of the interval variable */
-		};
-	
-		
-		#define struct_ival struct ival
-
-		/** 4gl Datetime data type definition */
-		typedef struct ival FglInterval;
-
-	#endif
-
     /* ========================== from a4gl_dtypes.h ==================== */
-
-	#ifndef DTYPES_INCL
-	#define DTYPES_INCL
-
-
-		#define DTYPE_CHAR		0
-		#define DTYPE_SMINT		1
-		#define DTYPE_INT			2
-		#define DTYPE_FLOAT		3
-		#define DTYPE_SMFLOAT	4
-		#define DTYPE_DECIMAL	5
-		#define DTYPE_SERIAL		6
-		#define DTYPE_DATE		7
-		#define DTYPE_MONEY		8
-		#define DTYPE_DTIME		10
-		#define DTYPE_BYTE		11
-		#define DTYPE_TEXT		12
-		#define DTYPE_VCHAR		13
-		#define DTYPE_INTERVAL	14
 
 		struct s_typenames {
 		char *name;
@@ -546,39 +690,11 @@
 			extern struct s_typenames def_dtypes[];
 		#endif
 
-		#define DTYPE_CHAR		0
-		#define DTYPE_SMINT		1
-		#define DTYPE_INT		2
-		#define DTYPE_FLOAT		3
-		#define DTYPE_SMFLOAT		4
-		#define DTYPE_DECIMAL		5
-		#define DTYPE_SERIAL		6
-		#define DTYPE_DATE		7
-		#define DTYPE_MONEY		8
-		#define DTYPE_DTIME		10
-		#define DTYPE_BYTE		11
-		#define DTYPE_TEXT		12
-		#define DTYPE_VCHAR		13
-		#define DTYPE_INTERVAL		14
-
-		#define DTYPE_MASK 255 /* bit pattern for data type */
-
-		#define MAX_DTYPE  255
-		#define DTYPE_MALLOCED 256
-
-
-		#define MAXDIG 30
-		#define MAXPNT 30
-
-
-
-	#endif /* #ifndef DTYPES_INCL */
-
 
     /* ==================== from incl_4glhdr.h =========================*/
 
 
-	#include <stdio.h>
+
 	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
 	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
 	#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
@@ -591,23 +707,15 @@
 	#define BEFORE_INP  (_fld_dr==-99)
 	#define AFTER_INP  (_fld_dr==-95)
 	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
+	#define set_status(a) set_status(a,0)
 
 	/* not strictly voids - but saves getting into the details */
 	void *prepare_glob_sql (char *s,int ni,void *b);
 
-	#define set_status(a) set_status(a,0)
+
 
 	/* ------------------ moved from 4gldef.h --------------------- */
 
-	/**
-	 * Binding information structure definition.
-	 * Used to bind values to and from SQL.
-	 */
-	struct BINDING {
-		void *ptr; /**< A pointer to the variable bounded */
-		int dtype; /**< The data type of the variable bounded */
-		long size; /**< The size in bytes of the variable bounded */
-	};
 
 	/**
 	 * Location definition structure for blobs.
@@ -956,7 +1064,6 @@
 
 
 	/* ======================= From buildtin_d.c ====================*/
-	/* #include "a4gl_dbform.h" */ /* struct a4gl_dtime */
 
 	void 	push_dtime		(struct a4gl_dtime *p);
 	void 	push_int		(int p);
@@ -1035,17 +1142,6 @@
 	int     digittoc			(int *a,char *z,char *fmt,int dtype,int size);
 
 
-	/* ============================ datatypes.c ============================ */
-
-	void    init_datatypes		(void);
-	void *  get_datatype_function_n(char *name,char *funcname);
-	int     has_datatype_function_n(char *name,char *funcname);
-	int     A4GLEXDATA_initlib (char *f);
-	int     find_datatype_out(char *name);
-	int 	find_datatype(char *name);
-	void *  get_datatype_function_i(int a,char *funcname);
-	int     has_datatype_function_i(int a,char *funcname);
-
 	/* =========================== dates.c ================================= */
 	long 	gen_dateno			(int day,int month,int year);
 	int 	get_date			(int d,int *day,int *mn,int *yr);
@@ -1065,12 +1161,6 @@
 
     /* ============================ from a4gl_stack.h =================*/
 
-	#include <stdio.h>
-	/*
-	#ifndef _NO_DBFORM_H_
-		#include "a4gl_dbform.h"
-	#endif
-    */
 	#define OP_MASK 512|1024
 	#define OP_MASK_BASE 512
 
@@ -1164,10 +1254,6 @@
 	#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 	#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
-
-	#include <math.h> /* pow() */
-
-
 	/* ============================ calldll.c ============================== */
 	void * 	dl_openlibrary 		(char *type, char *name);
 	void *  find_func_allow_missing (void *dllhandle, char *func);
@@ -1243,10 +1329,6 @@
 
 	FILE *open_file_dbpath(char *fname);
 
-
-	#include <locale.h>                 /* setlocale() */
-	#include <unistd.h> 				/* sleep() */
-
 	/* ========================== API_exreport.c =========================== */
 	void	A4GLREPORT_initlib 	(void);
 
@@ -1268,10 +1350,6 @@
 
 	/* ============================ err.c =================================== */
 	char * 	err_print			(int a,char *s);
-
-
-	#include <signal.h>                 /* SIGINT */
-
 
 	/* =========================== project.c =============================== */
 	/* (created using mkproject script) */
@@ -1310,43 +1388,6 @@
 
     /* =================== from a4gl_shockhelp.h ====================*/
 
-
-	#ifdef __CYGWIN__
-		#undef WIN32
-	#endif
-
-	#ifdef WIN32
-		#include <windows.h>
-	#else
-		#include <sys/socket.h>
-		#include <netinet/in.h>
-		#include <netdb.h>
-	#endif
-
-/*
-builtin_d.c:89: warning: function declaration isn't a prototype
-builtin_d.c:89: warning: redundant redeclaration of `__errno_location' in same scope
-/usr/include/bits/errno.h:39: warning: previous declaration of `__errno_location'
-
-we cannot use /usr/include/bits/errno.h since it includes definition of
-#   define errno (*__errno_location ())
-This is in confluct with definitions of errno in several places in Aubit code,
-like in ../generated/tmperrs.h :
-
-int errno;
-
-OTOH, if we don't include it, then we get :
-
-
-gui.c:414: `EINTR' undeclared (first use in this function)
-gui.c:414: (Each undeclared identifier is reported only once
-
-So it will be included only in gui.c
-
-
-*/
-
-	/* #include <errno.h> */
 
 	/* On some crazy systems, these aren't defined. */
 	#ifndef EXIT_FAILURE
@@ -1387,26 +1428,6 @@ So it will be included only in gui.c
 		#undef MIN
 	#endif
 
-	/*
-
-	to force LCLint to process <sys/types.h>, since form_x.h will include
-    rpc.h that needs fd_set.
-
-	included via /usr/include/sys/types.h but defined in /usr/include/sys/select.h
-
-	 */
-
-	/*@-skipposixheaders@*/
-	#include <sys/types.h>
-	/*@=skipposixheaders@*/
-
-    #ifndef _NO_FORM_X_H_
-		#ifdef SRC_TREE
-			#include "../common/dataio/form_x.x.h"   /* struct_form */
-        #else
-			#include "form_x.x.h"   /* struct_form */
-        #endif
-    #endif
 
 	/* ============================ others.c ================================ */
 
@@ -1449,22 +1470,13 @@ So it will be included only in gui.c
 
 	/* ============================ maths.c ================================ */
 	void * find_op_function(int dtype1,int dtype2,int op);
+	void add_op_function	(int dtype1,int dtype2,int op,void *function);
 
 	/* ============================ translate.c ============================ */
 
 	void 	dumpstring			(char *s,long n,char *fname);
 
     /* ========================== from a4gl_screen.h ==================== */
-
-
-    /*
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdarg.h>
-	#include <ctype.h>
-
-	#include "a4gl_formxw.h"
-    */
 
 	struct s_screenio {
 		int mode;
@@ -1552,7 +1564,6 @@ So it will be included only in gui.c
 	int load_data(char *fname,char *delims,char *tabname,...);
 
 	/* ======================== From array.c ================================= */
-	/* #include "a4gl_screen.h" */ /* struct s_disp_arr */
 
 	/* From iarray.c */
 	int inp_arr (struct s_inp_arr *disp, void *ptr, char *srecname, int attrib);
@@ -1585,7 +1596,6 @@ So it will be included only in gui.c
 	int find_function(char *a);
 	void push_variable(void *ptr,int dtype);
     */
-	/* #include "a4gl_dbform.h" */ /* struct a4gl_dtime */
 	/*
 	void push_dtime(struct a4gl_dtime *p);
 	void push_interval(struct ival *p);
@@ -1719,7 +1729,7 @@ So it will be included only in gui.c
 	void 	display_at 			(int n, int a);
 	void 	get_strings_from_attr(int attr,char *col_str,char *attr_str);
 	void 	set_scrmode			(char a);
-	/* #include "a4gl_dbform.h" */ /* struct s_form_dets */
+
 
 	struct s_form_attr
 	  {
@@ -1777,16 +1787,11 @@ So it will be included only in gui.c
 
 	/* ========================= API_sql.c ================================= */
 
-    #include "a4gl_API_sql.h"
+
 
 	void    A4GLSQL_set_status 	(int a, int sql);
 	int     A4GLSQL_close_cursor (char *cname);
 
-
-	#include "../incl/a4gl_API_lex.h"
-	#include "../incl/a4gl_API_form.h"
-	#include "../incl/a4gl_API_menu.h"
-	#include "../incl/a4gl_API_msg.h"
 
 #endif /* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

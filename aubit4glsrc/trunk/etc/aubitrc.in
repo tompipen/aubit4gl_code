@@ -85,6 +85,14 @@ A4GL_MENUTYPE=@A4GL_MENUTYPE@
 #Options: (NATIVE), XML
 A4GL_MSGTYPE=@A4GL_MSGTYPE@
 
+############
+#External data types support to be loaded
+#Currently only MPZ (large integers) are supported here
+#FIME: not sure if this is needed - looks like this is loaded on request:
+#see example testmpz.4gl into the tools/test directory.
+EXDTYPE=@EXDTYPE@
+
+
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
 ## ===================================================================

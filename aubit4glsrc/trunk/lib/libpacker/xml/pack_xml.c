@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: pack_xml.c,v 1.3 2002-08-18 05:00:28 afalout Exp $
 #*/
 
 /**
@@ -46,17 +46,8 @@
 		                    Includes
 =====================================================================
 */
-
-#ifdef OLD_INCL
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <string.h>
-	#include "a4gl_debug.h"
-#else
-    #define _NO_FORM_X_H_
-	/* FIXME: this should be a4gl_lib_packer_xml_int.h */
-	#include "a4gl_libaubit4gl.h"
-#endif
+    
+#include "a4gl_lib_packer_xml_int.h"
 
 /*
 =====================================================================
@@ -92,7 +83,7 @@ int level = 0;
 char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *find_contents (char *s);		/* Extract the tag contents from a string */
 
-
+/*
 int input_int (char *name, int *val, int ptr, int isarr);
 int input_long (char *name, long *val, int ptr, int isarr);
 int input_bool (char *name, int *val, int ptr, int isarr);
@@ -107,7 +98,7 @@ int input_enum (char *name, int *d);
 
 int output_int (char *name, int val, int ptr, int isarr);
 int output_long (char *name, long val, int ptr, int isarr);
-int output_bool (char *name, int val, int ptr, int isarr);
+//int output_bool (char *name, int val, int ptr, int isarr);
 int output_string (char *name, char *val, int ptr, int isarr);
 int output_double (char *name, double val, int ptr, int isarr);
 int output_start_struct (char *s, char *n, int ptr, int isarr);
@@ -117,6 +108,8 @@ int output_nullptr (char *s);
 int output_okptr (char *s);
 int output_end_union (char *s, char *n);
 int output_enum (char *name, char *s, int d);
+*/
+
 
 /*
 --------------------------------
@@ -127,13 +120,13 @@ static void chk (void *x);
 
 void print_level (void);
 char * pr_elem (int a, int p);
-int open_packer (char *basename, char dir);
-void close_packer (char dir);
-int output_start_array (char *s, int type, int len);
-int output_end_array (char *s, int type);
-int input_start_array (char *s, int type, int *len);
-int input_end_array (char *s, int type);
-int can_pack_all(char *name);
+//int open_packer (char *basename, char dir);
+//void close_packer (char dir);
+//int output_start_array (char *s, int type, int len);
+//int output_end_array (char *s, int type);
+//int input_start_array (char *s, int type, int *len);
+//int input_end_array (char *s, int type);
+//int can_pack_all(char *name);
 
 
 /*
@@ -188,7 +181,7 @@ pr_elem (int a, int p)
 	}
       else
 	{
-	  sprintf (buff, ""); /*  warning: zero-length format string */
+	  sprintf (buff, " "); /*  warning: zero-length format string */
 	}
     }
   return buff;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: pack_xdr.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
 #*/
 
 /**
@@ -45,15 +45,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-	#include <stdio.h>
-	#include "rpc/rpc.h"
-#else
-	#include "rpc/rpc.h"
-	#define _NO_FORM_X_H_
-	/* FIXME: this should be a4gl_lib_packer_xdr_int.h */
-	#include "a4gl_libaubit4gl.h"
-#endif
+#include "a4gl_lib_packer_xdr_int.h"
 
 /*
 =====================================================================
@@ -61,12 +53,12 @@
 =====================================================================
 */
 
-int unpack_all(char *name,void *s,char *filename);
-int pack_all(char *name,void *s,char *filename);
+//int unpack_all(char *name,void *s,char *filename);
+//int pack_all(char *name,void *s,char *filename);
 int A4GLPACKER_initlib (void);
-int can_pack_all(char* name);
-int open_packer(char *fname,int dir) ;
-int close_packer(int dir);
+//int can_pack_all(char* name);
+//int open_packer(char *fname,int dir) ;
+//int close_packer(int dir);
 
 
 static int (*func)(); /*  warning: function declaration isn't a prototype */
@@ -94,7 +86,7 @@ A4GLPACKER_initlib (void)
  * @todo Describe function
  */
 int 
-can_pack_all(char* name) 
+can_pack_all(char* name)
 {
 	void *libptr;
   	libptr=(void *)dl_openlibrary("XDRPACKER",name);
@@ -108,8 +100,8 @@ can_pack_all(char* name)
    We don't need to worry about these two functions
    as we're doing the whole thing in one go using xdr
 */
-int open_packer(char *fname,int dir)  { return 0; }
-int close_packer(int dir) { return 0; }
+int open_packer(char *fname,char dir)  { return 0; }
+void close_packer(char dir) { return; }
 
 
 /**

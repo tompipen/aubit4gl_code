@@ -22,41 +22,50 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
+
 #
-# $Id: Makefile.in,v 1.2 2002-08-18 05:00:28 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-08-18 05:00:27 afalout Exp $
 #
 
-ROOT        =../../..
-LIBROOT     =../..
+ROOT        =../..
+LIBROOT     =..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
-##                    		Settings
+##                              Options
 ## ==================================================================
 
-CMODS   	=pack_xml.c
-ALL 		=libPACKER_XML${SO_EXT}
-LOCAL_IFLAGS=-I..
-CFLAGS      +=${LOCAL_IFLAGS}
+CMODS   			=mpz.c
+OBJS				=${CMODS:.c=.o}
+ALL     			=libEXDTYPE_mpz${SO_EXT}
+
+LCLINT_CFLAGS   	=${C_IFLAGS}
+LOCAL_IFLAGS        =-I${ROOT}/incl -I${ROOT}/compilers/fcompile -I.
 
 ## ==================================================================
-##                          Targets
+##                              Targets
 ## ==================================================================
 
-ALL: ${ALL}
+all: ${ALL}
 
-libPACKER_XML${SO_EXT}: ${CMODS}
-	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^
+
+libEXDTYPE_mpz${SO_EXT} : ${CMODS}
+#	${CC} -g -c $^ ${LOCAL_IFLAGS}
+	${CC} ${CFLAGS} -c $^ ${LOCAL_IFLAGS}
+	${LD} $(SO_LDFLAGS) -o $@ ${OBJS} -lgmp
 	${CP} $@ ${LIBROOT}
 
+
 ## ==================================================================
-##                          Clean
+##                              Clean
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.bak *.o
+	${RM} *.so *.bak *.o
+
+
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================
@@ -64,8 +73,8 @@ clean:
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
-#=============================== EOF ================================
 
+# ================================ EOF ==============================

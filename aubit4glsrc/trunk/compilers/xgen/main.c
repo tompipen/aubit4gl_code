@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: main.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
 #*/
 
 /**
@@ -42,13 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-	#include <stdio.h>
-#else
-    /* FIXME: this should be a4gl_xgen_int.h */
-	#define _NO_FORM_X_H_
-	#include "a4gl_libaubit4gl.h"
-#endif
+#include "a4gl_xgen_int.h"
 
 /*
 =====================================================================

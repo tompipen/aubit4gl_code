@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.7 2002-08-13 11:56:48 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.8 2002-08-18 05:00:27 afalout Exp $
 */
 
 /**
@@ -118,7 +118,7 @@
 	/**
 	 * Interval variable data type.
 	 */
-	#define IVAL_STRUCT
+
 	struct ival {
 	    int stime;     /**< The start qualifier */
 	    int ltime;     /**< The end qualifier */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.12 2002-07-16 17:41:56 mikeaubury Exp $
+# $Id: gui.c,v 1.13 2002-08-18 05:00:27 afalout Exp $
 #
 */
 
@@ -81,33 +81,31 @@
 */
 
 
+#include "a4gl_libaubit4gl_int.h"
 
-#ifdef OLD_INCL
+/*
+builtin_d.c:89: warning: function declaration isn't a prototype
+builtin_d.c:89: warning: redundant redeclaration of `__errno_location' in same scope
+/usr/include/bits/errno.h:39: warning: previous declaration of `__errno_location'
 
-	#include <unistd.h> 			/* close() write() */
+we cannot use /usr/include/bits/errno.h since it includes definition of
+#   define errno (*__errno_location ())
+This is in confluct with definitions of errno in several places in Aubit code,
+like in ../generated/tmperrs.h :
 
-	#ifndef WIN32
-		#include <sys/time.h>
-	#endif
+int errno;
 
-	#ifdef __CYGWIN__
-		#include <sys/time.h>
-	#endif
+OTOH, if we don't include it, then we get :
 
 
-	#include "a4gl_dbform.h"
-	#include "a4gl_sockhelp.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_runtime_tui.h"
-	#include "a4gl_aubit_lib.h"
+gui.c:414: `EINTR' undeclared (first use in this function)
+gui.c:414: (Each undeclared identifier is reported only once
 
-#else
+So it will be included only in gui.c:
+*/
+#include <errno.h> /* EINTR */
 
-    #include "a4gl_libaubit4gl_int.h"
-	#include <errno.h> /* EINTR */
-#endif
 
-#include <sys/time.h>
 /*
 =====================================================================
                     Functions prototypes

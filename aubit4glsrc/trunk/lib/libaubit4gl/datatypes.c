@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.9 2002-07-29 18:18:40 mikeaubury Exp $
+# $Id: datatypes.c,v 1.10 2002-08-18 05:00:27 afalout Exp $
 #
 */
 
@@ -33,40 +33,29 @@
  * Data type definition functions
  *
  * This is complex stuff
-	 * What we want to be able to do is add datatypes programatically
-	 * We therefor maintain a list of available datatypes
-	 * and their various conversion routines..
-	 * 
-	 * This is very much a work in progress....
-	 *
-	 */
+ * What we want to be able to do is add datatypes programatically
+ * We therefor maintain a list of available datatypes
+ * and their various conversion routines..
+ *
+ * This is very much a work in progress....
+ *
+ * This file should be renamed to API_exdata.c
+ *
+ */
 
-	/*
-	   =====================================================================
+/*
+=====================================================================
 	   Includes
-	   =====================================================================
-	 */
-
-
-#ifdef OLD_INCL
-
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-
-#else
+=====================================================================
+*/
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
-
-
-	/*
-	   =====================================================================
+/*
+=====================================================================
 	   Variables definitions
-	   =====================================================================
-	 */
+=====================================================================
+*/
 
 int inited = 0;
 
@@ -86,12 +75,12 @@ struct s_datatype
 };
 
 
-	/* 
+	/*
 	   Functions allowed :
-	   alloc                        //
-	   free                         //
-	   output_LANG          // normal language representation (eg LANG=C)
-	   output_SQL           // SQL representation (eg LANG=ODBC)
+	   alloc           //
+	   free            //
+	   output_LANG     // normal language representation (eg LANG=C)
+	   output_SQL      // SQL representation (eg LANG=ODBC)
 	   nset            // Set to null
 	   zset            // Set to zero
 	   isnull          // returns 1 if value is null, 0 if not
@@ -103,41 +92,35 @@ struct s_datatype
 	 */
 
 
-void add_default_operations (void);
-struct s_datatype dtypes[MAX_DTYPE];
 
+struct s_datatype dtypes[MAX_DTYPE];
 
 static void *libptr = 0;
 
-	/*
-	   =====================================================================
+/*
+=====================================================================
 	   Functions prototypes
-	   =====================================================================
-	 */
+=====================================================================
+*/
 
+int add_datatype_function_i (int a, char *funcname, void *func);
+void add_default_operations (void);
 void add_default_datatypes (void);
 static int (*func) (void);
-
-int add_datatype (char *name, int rq, int precision);
-int add_datatype_function_i (int a, char *funcname, void *func);
-int add_datatype_function_n (char *name, char *funcname, void *func);
-int call_datatype_function_i (void *obj, int dtype, char *funcname,
-			      int nparam);
-
-void add_conversion (char *from, char *to, void *func);
+int call_datatype_function_i (void *obj, int dtype, char *funcname,int nparam);
 int aclfgl_load_datatype (int nargs);
 
-	/*
-	   =====================================================================
-	   Functions definitions
-	   =====================================================================
-	 */
+/*
+=====================================================================
+				   Functions definitions
+=====================================================================
+*/
 
 
-	/**
-	 *
-	 * Load a specified datatype into the system
-	 */
+/**
+ *
+ * Load a specified datatype into the system
+ */
 int
 A4GLEXDATA_initlib (char *f)
 {
@@ -158,11 +141,11 @@ A4GLEXDATA_initlib (char *f)
 
 
 
-	/**
-	 * Initialize all the datatypes
-	 *
-	 * @todo Describe function
-	 */
+/**
+ * Initialize all the datatypes
+ *
+ * @todo Describe function
+ */
 void
 init_datatypes (void)
 {
@@ -183,12 +166,12 @@ init_datatypes (void)
 
 
 
-	/**
-	 * Returns function pointer on success
-	 * return 0 on failure
-	 *
-	 *  This function gets finds a datatype function for a given datatype ID
-	 */
+/**
+ * Returns function pointer on success
+ * return 0 on failure
+ *
+ *  This function gets finds a datatype function for a given datatype ID
+ */
 void *
 get_datatype_function_i (int a, char *funcname)
 {
@@ -207,14 +190,14 @@ get_datatype_function_i (int a, char *funcname)
 
 
 
-	/**
-	 * Returns 1 on success
-	 * return 0 on failure
-	 *
-	 * This function checks to see if a function is available for
-	 * a specified datatype ID
-	 *
-	 */
+/**
+ * Returns 1 on success
+ * return 0 on failure
+ *
+ * This function checks to see if a function is available for
+ * a specified datatype ID
+ *
+ */
 int
 has_datatype_function_i (int a, char *funcname)
 {
@@ -237,24 +220,19 @@ has_datatype_function_i (int a, char *funcname)
   return 0;
 }
 
-
-
-
-
-
-	/**
-	 *
-	 * add_datatype
-	 * Name      = name of datatype
-	 * rq        = requested datatype ID number
-	 * precision = precisness of the datatype
-	 *             this will determine which datatype would be used for numeric comparisons
-	 *		(eg float > smallfloat > int > smallint
-	 *             Therefore - if you are comparing a smallint to a float - you'd convert both to 'float'
-	 * returns the datatype  ID if successfull or -1
-	 *
-	 * This function allows the dynamic creation of a new datatype
-	 */
+/**
+ *
+ * add_datatype
+ * Name      = name of datatype
+ * rq        = requested datatype ID number
+ * precision = precisness of the datatype
+ *             this will determine which datatype would be used for numeric comparisons
+ *      (eg float > smallfloat > int > smallint
+ *             Therefore - if you are comparing a smallint to a float - you'd convert both to 'float'
+ * returns the datatype  ID if successfull or -1
+ *
+ * This function allows the dynamic creation of a new datatype
+ */
 int
 add_datatype (char *name, int rq, int precision)
 {
@@ -287,10 +265,10 @@ add_datatype (char *name, int rq, int precision)
 
 }
 
-	/**
-	 *
-	 * @todo Describe function
-	 */
+/**
+ *
+ * @todo Describe function
+ */
 int
 find_datatype_out (char *name)
 {
@@ -319,10 +297,10 @@ find_datatype_out (char *name)
 }
 
 
-	/**
-	 *
-	 * @todo Describe function
-	 */
+/**
+ *
+ * @todo Describe function
+ */
 int
 find_datatype (char *name)
 {
@@ -346,12 +324,12 @@ find_datatype (char *name)
 
 }
 
-	/**
-	 * Returns 1 on success
-	 * return 0 on failure
-	 *
-	 * @todo Describe function
-	 */
+/**
+ * Returns 1 on success
+ * return 0 on failure
+ *
+ * @todo Describe function
+ */
 int
 add_datatype_function_i (int a, char *funcname, void *func)
 {
@@ -374,6 +352,10 @@ add_datatype_function_i (int a, char *funcname, void *func)
   return 1;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 {

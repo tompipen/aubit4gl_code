@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.58 2002-07-11 09:44:35 mikeaubury Exp $
+# $Id: Makefile.in,v 1.59 2002-08-18 05:00:27 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -92,6 +92,10 @@ endif
 
 ifneq "@PERLBUILD@" "no"
 	ALL +=libLEX_PERL${SO_EXT}
+endif
+
+ifneq "@EXDATA_MPZ@" "no"
+	ALL +=libEXDTYPE_mpz${SO_EXT}
 endif
 
 
@@ -242,6 +246,9 @@ libRPC_NORPC.so:
 libRPC_XMLRPC.so:
 	${MAKE} -C librpc/xml_rpc $@
 
+libEXDTYPE_mpz${SO_EXT}:
+	${MAKE} -C libexdata $@
+
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
@@ -289,6 +296,7 @@ clean.other:
 	${MAKE} -C ../tools/loadmap clean
 	${MAKE} -C liblex/lex_c clean
 	${MAKE} -C liblex/lex_perl clean
+	${MAKE} -C libexdata clean
 
 ## ==================================================================
 ##                         Other Targets
