@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.10 2003-03-02 03:29:51 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.11 2004-03-12 01:10:32 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -116,6 +116,7 @@ D4GL_CLEAN_FLAGS	=$(addprefix *,	$(D4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(D4
 #.SUFFIXES:
 #.SUFFIXES: ${D4GL_SUFFIXES} ${SUFFIXES}
 
+####################
 #%.42m: %.4gl
 .4gl.42m:
 #	${D4GL_PC} -c $*.4gl
@@ -125,6 +126,7 @@ D4GL_CLEAN_FLAGS	=$(addprefix *,	$(D4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(D4
 #	${A4GL_CC} $< -c -o ${OBJSTORE}$@
 #	${LIBMVCMD} $@ ${OBJSTORE}
 
+#####################
 #Compile single 4gl file to executable
 .4gl.42r:
 #	${D4GL_PC} -c $*.4gl
@@ -141,6 +143,7 @@ D4GL_CLEAN_FLAGS	=$(addprefix *,	$(D4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(D4
 
 #	fgllink -O -o $@ $*.42m ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
 
+#####################
 eerr%.42x:
 	@echo $@ $^
 #	fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
