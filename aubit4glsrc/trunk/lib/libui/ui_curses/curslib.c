@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.73 2003-12-24 18:07:03 mikeaubury Exp $
+# $Id: curslib.c,v 1.74 2003-12-26 11:37:45 mikeaubury Exp $
 #*/
 
 /**
@@ -3092,7 +3092,9 @@ A4GL_flatten_menu (ACL_Menu * menu)
 }
 
 
-
+int UILIB_A4GL_get_key(int timeout) {
+	return  A4GL_getch_win();
+}
 
 /* ============================== EOF ============================== */
 
