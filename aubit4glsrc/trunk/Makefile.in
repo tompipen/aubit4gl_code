@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.154 2004-08-14 06:45:59 afalout Exp $
+# $Id: Makefile.in,v 1.155 2004-09-13 16:26:57 afalout Exp $
 #
 
 ## ==================================================================
@@ -957,11 +957,11 @@ commit: refresh.all build
 	
 ## ------------------------------------------------------------------
 ##       Maintainance of pre-assembled and pre-compiled files
-##       used in absence of compielr tools when vompiling from source code
+##       used in absence of compiler tools when compiling from source code
 ## ------------------------------------------------------------------
 
 ####################
-#refresh all fules storred in CVS that are used in absence of verious
+#refresh all files storred in CVS that are used in absence of verious
 #compiler tools:
 refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib refresh.perl
 
@@ -1268,7 +1268,8 @@ test.build:
 #run_tests script will determine what is available for testing based on
 #available libraries in lib
 #	-cd tools/test/build_tests; ${SH} run_tests -alltests
-	@echo "NOTE: build tests are no longer in Aubit 4GL compiler source code tree" 
+#	@echo "NOTE: build tests are no longer in Aubit 4GL compiler source code tree" 
+	-cd /opt/aubit/aubit4gltest; ${SH} run_tests -cert -silent -verbose-results -noprogress -range 1 20
 
 ## ---------------------------- EOF ----------------------------------
 

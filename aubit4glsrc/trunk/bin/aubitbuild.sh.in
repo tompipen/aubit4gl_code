@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.35 2004-09-12 07:03:46 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.36 2004-09-13 16:29:48 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -647,6 +647,9 @@ if [ "$HOSTNAME" = "aptiva" ]; then
 	EXEC="cd $AUBITSRCDIR"; runexec
 	STOPONERROR=0
 	EXEC="make extra"; runexec
+	
+	#FIXME: show result of make extra here
+	
 	STOPONERROR=1
 	#EXEC="cd $AUBITBINDIR"; runexec
 fi
@@ -823,7 +826,15 @@ fi  #if WINSETUP
         WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
 	fi
 
-
+if test "2" = "1"; then
+#this is in 'make test.build'
+	#Run regression tests
+	STOPONERROR=0
+    EXEC="cd /opt/aubit/aubit4gltest"; runexec
+    STOPONERROR=0
+	EXEC="bash run_tests -cert -silent -verbose-results -range 1 20"; runexec
+    STOPONERROR=1
+fi
 
 if test "$GET" = "1"; then
 

@@ -32,7 +32,19 @@ if [ "$AUBITDIR" = "" ]; then
 fi
 
 #Contains values determined by Autoconf for INFORMIXDIR, IFX libs, etc.
-. $AUBITDIR/etc/aubitrc
+if test -f "$AUBITDIR/etc/aubitrc"; then 
+	. "$AUBITDIR/etc/aubitrc"
+else
+	if test -f "$HOME/.aubitrc"; then
+		. "$HOME/.aubitrc"
+	else
+		if test -f /etc/opt/aubit4gl/aubitrc; then
+			. /etc/opt/aubit4gl/aubitrc
+		else
+			echo "WARNING: cannot find aubitrc"
+		fi
+	fi
+fi
 
 if [ "$INFORMIXDIR" = "" ]; then
 	echo "ERROR: INFORMIXDIR not set"
