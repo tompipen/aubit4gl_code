@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2004-09-28 09:49:12 afalout Exp $
+# $Id: Makefile,v 1.24 2004-09-28 13:36:32 afalout Exp $
 #
 
 ROOT    =../..
@@ -230,7 +230,7 @@ npcode_xdr.o: npcode_xdr.c
 	$(CC) ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_c.o: common_io.c
-	$(CC) -g -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) -g -DRPCGEN_HEADERS -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_fgl.o: common_io.c
 	$(CC) -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<

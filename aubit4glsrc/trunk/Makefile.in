@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.160 2004-09-28 09:46:07 afalout Exp $
+# $Id: Makefile.in,v 1.161 2004-09-28 13:35:25 afalout Exp $
 #
 
 ## ==================================================================
@@ -42,10 +42,11 @@ include incl/Makefile-common
 .PHONY: all clean default log corecompile extra ide api.headers glade
 
 ALL					=settings api.headers corecompile liblogical test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
+ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload\
+						glade
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
-ALL_EXTRA_BROKEN	=glade
+ALL_EXTRA_BROKEN	=
 
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl

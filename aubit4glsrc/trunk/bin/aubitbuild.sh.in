@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.40 2004-09-25 08:05:39 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.41 2004-09-28 13:36:31 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -67,12 +67,14 @@
 
 #VERBOSE=1
 
+#falout.com CVS: (change "aptiva" to "falout.com" when working over Internet)
+LOCAL_CVS_SERVER=aptiva
+
 #####################
 #Source system environment: important when running from cron
 . /etc/profile
 
 #This is to work around one of Informix installer screwing up libphtread:
-#[afalout@aptiva menu]$ tar
 #tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by tar)
 #tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by /lib/librt.so.1)
 export LD_LIBRARY_PATH="/lib:$LD_LIBRARY_PATH"
@@ -96,9 +98,8 @@ case "$ACVS" in
 
 	falout.com)
 
-		#falout.com CVS: (chang "aptiva" to "falout.com" when working over Internet)
 		export CVS_RSH=
-		export CVSROOT=':pserver:afalout@aptiva:/data/cvs'
+		export CVSROOT=":pserver:afalout@$LOCAL_CVS_SERVER:/data/cvs"
 		AUBITCVSNAME=Aubit4gl
         ;;
 
@@ -194,7 +195,8 @@ HTTP_FILES_URL="http://aubit4gl.sf.net/files/"
 #####################
 #name of the computer we are on:
 HOSTNAME=`hostname`
-
+HOSTNAME_EXTRA=aptiva.falout.org
+HOSTNAME_INCREASE_BUILD=aptiva.falout.org
 #RedHat:
 RPM_ROOT=/usr/src/redhat
 #Mandrake:
@@ -319,8 +321,7 @@ function runexec {
 		
         #reset log file:
 		LOGFILE=$MAINLOG
-		if test $RET != "0"
-		then
+		if test $RET != "0"; then
 		    echo "$EXEC failed with code $RET. See $LOGFILE"
 		    echo "$EXEC failed with code $RET"  >> $LOGFILE 2>&1
 		    if test "$STOPONERROR" = "1"; then
@@ -626,7 +627,7 @@ if test "$MAKE" = "1"; then
 		
 		#increase build number, but doing this on more then one computer will cause
         #problems with "cvs update"
-		if [ "$HOSTNAME" = "aptiva" ] || [ "$HOSTNAME" = "aptiva.falout.org" ]; then
+		if [ "$HOSTNAME" = "$HOSTNAME_INCREASE_BUILD" ] ; then
 			EXEC="make build"; runexec
         else
             echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
@@ -714,7 +715,7 @@ else
     echo "MAKE disabled ($MAKE)"
 fi
 
-if [ "$HOSTNAME" = "aptiva" ]; then
+if [ "$HOSTNAME" = "$HOSTNAME_EXTRA" ]; then
 	EXEC="cd $AUBITSRCDIR"; runexec
 	STOPONERROR=0
 	EXEC="make extra"; runexec

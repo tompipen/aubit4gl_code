@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875b.  */
+/* A Bison parser, made by GNU Bison 1.875.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 1726,
-     UMINUS = 1727,
+     NAME = 1727,
+     UMINUS = 1728,
      COMMA = 1628,
      KW_OR = 1668,
      KW_AND = 1623,
@@ -46,7 +46,7 @@
      NOT_EQUAL = 1489,
      PLUS = 1654,
      MINUS = 1641,
-     FINPUT = 1728,
+     FINPUT = 1709,
      MULTIPLY = 1547,
      DIVIDE = 1574,
      MOD = 1642,
@@ -753,26 +753,26 @@
      UNCHECK_MENUITEM = 1706,
      BEFORE = 1707,
      INPUT = 1708,
-     END = 1709,
-     INT_TO_ID = 1710,
-     TIMEOUT = 1711,
-     OFF = 1712,
-     WITH_1_DIMENSION = 1713,
-     WITH_2_DIMENSION = 1714,
-     WITH_3_DIMENSION = 1715,
-     TILDE = 1716,
-     ILIKE = 1717,
-     FGL_ISDYNARR_ALLOCATED = 1718,
-     FGL_DYNARR_EXTENTSIZE = 1719,
-     FILLFACTOR = 1720,
-     END_CLASS = 1721,
-     KW_CLASS = 1722,
-     EXTENDS = 1723,
-     PIPE = 1724
+     END = 1710,
+     INT_TO_ID = 1711,
+     TIMEOUT = 1712,
+     OFF = 1713,
+     WITH_1_DIMENSION = 1714,
+     WITH_2_DIMENSION = 1715,
+     WITH_3_DIMENSION = 1716,
+     TILDE = 1717,
+     ILIKE = 1718,
+     FGL_ISDYNARR_ALLOCATED = 1719,
+     FGL_DYNARR_EXTENTSIZE = 1720,
+     FILLFACTOR = 1721,
+     END_CLASS = 1722,
+     KW_CLASS = 1723,
+     EXTENDS = 1724,
+     PIPE = 1725
    };
 #endif
-#define NAME 1726
-#define UMINUS 1727
+#define NAME 1727
+#define UMINUS 1728
 #define COMMA 1628
 #define KW_OR 1668
 #define KW_AND 1623
@@ -788,7 +788,7 @@
 #define NOT_EQUAL 1489
 #define PLUS 1654
 #define MINUS 1641
-#define FINPUT 1728
+#define FINPUT 1709
 #define MULTIPLY 1547
 #define DIVIDE 1574
 #define MOD 1642
@@ -1495,28 +1495,28 @@
 #define UNCHECK_MENUITEM 1706
 #define BEFORE 1707
 #define INPUT 1708
-#define END 1709
-#define INT_TO_ID 1710
-#define TIMEOUT 1711
-#define OFF 1712
-#define WITH_1_DIMENSION 1713
-#define WITH_2_DIMENSION 1714
-#define WITH_3_DIMENSION 1715
-#define TILDE 1716
-#define ILIKE 1717
-#define FGL_ISDYNARR_ALLOCATED 1718
-#define FGL_DYNARR_EXTENTSIZE 1719
-#define FILLFACTOR 1720
-#define END_CLASS 1721
-#define KW_CLASS 1722
-#define EXTENDS 1723
-#define PIPE 1724
+#define END 1710
+#define INT_TO_ID 1711
+#define TIMEOUT 1712
+#define OFF 1713
+#define WITH_1_DIMENSION 1714
+#define WITH_2_DIMENSION 1715
+#define WITH_3_DIMENSION 1716
+#define TILDE 1717
+#define ILIKE 1718
+#define FGL_ISDYNARR_ALLOCATED 1719
+#define FGL_DYNARR_EXTENTSIZE 1720
+#define FILLFACTOR 1721
+#define END_CLASS 1722
+#define KW_CLASS 1723
+#define EXTENDS 1724
+#define PIPE 1725
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 219 "fgl.yacc"
+#line 220 "fgl.yacc"
 typedef union YYSTYPE {
 
 
@@ -1541,8 +1541,8 @@ typedef union YYSTYPE {
 	int 	integer_val;
 	float 	float_val;
 	} YYSTYPE;
-/* Line 1252 of yacc.c.  */
-#line 1546 "y.tab.h"
+/* Line 1248 of yacc.c.  */
+#line 1545 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
