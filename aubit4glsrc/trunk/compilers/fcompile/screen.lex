@@ -30,7 +30,6 @@
 		if (graphics_mode) graphics_mode=0;
 		else graphics_mode=1;
 		if (ignorekw==1) {
-			printf("non-space\n");
 			return KW_NONSPACE;
 		}
 	}
