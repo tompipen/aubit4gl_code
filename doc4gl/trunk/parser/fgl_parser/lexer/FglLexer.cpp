@@ -31,11 +31,13 @@
 
 #include "MemFile.h"
 #include "KeyWord.h"
-#include "FglLexer.h"
 #include "FglAst.h"
+#include "FglLexer.h"
 #include "y.tab.h"
 // @todo : Remove this after cleaning more
 #include "a4gl_4glc_int.h"
+
+#define	AST_STATE	((NodeState *)astState)
 
 /*
 =====================================================================
@@ -476,6 +478,7 @@ char *FglLexer::read_word2 (int *tokenType)
   
 		// Found a open bracket comment.
 		// @todo : Refactor this into a function.
+		// @todo : Fgldoc comment
     if (a == '{' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    if (strlen (word) > 0)
@@ -1036,7 +1039,8 @@ void FglLexer::fix_bad_strings (char *s)
  * @return The type of the token found. It corresponds to the %token defined 
  *         and used in the parser.
  */
-int FglLexer::yyLex (void *pyylval, int yystate, short *yys1, short *yys2)
+int FglLexer::yyLex (void *pyylval, int yystate, short *yys1, short *yys2,
+                     NodeState *astState)
 {
   int tokenType;
   char text[1024];
@@ -1102,9 +1106,9 @@ int FglLexer::yyLex (void *pyylval, int yystate, short *yys1, short *yys2)
   word_cnt = 0;
   //A4GL_debug ("lexer returns  tokenType=%d, text=%s\n", tokenType, text);
 
-		// @todo : Return diferent things if identifier or other things.
+	// @todo : Return diferent things if identifier or other things.
 	// Assign the value to send it to the parser.
-	yylval->token = new FglToken(yylineno,text);
+	yylval->node = AST_STATE->FglIdentifierCreate(strdup(text));
 	if ( traceTokens )
     printf("lexer returns  tokenType=%d, text=%s, line=%d\n", 
 			tokenType, text, yylineno);

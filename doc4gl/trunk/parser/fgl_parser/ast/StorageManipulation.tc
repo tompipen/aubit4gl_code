@@ -1,0 +1,67 @@
+
+/**
+ * @file
+ * 4gl Storage Manipulation treecc input file for C++.
+ * Contains nodes for the folowing 4gl statements:
+ *   INITIALIZE
+ *   LET
+ *   LOCATE
+ *   VALIDATE
+ *
+ * @todo : Complete this definition
+ */
+
+/*
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * A list of variables used in intialize statement
+ */
+%node InitializeVariableList BinaryExpression
+
+/**
+ * Abstract initialize variables that will be initialized.
+ * The concrete are single variables or a THRU list
+ */
+%node AbstractInitVariable FglNode %abstract  %typedef
+
+/**
+ * A single variable used in the initialize statement
+ */
+%node InitializeSingleVariable AbstractInitVariable %typedef = 
+{
+  FglNode *variable;
+}
+
+/**
+ * A concrete thru list to be used in the INITIALIZE statement.
+ */
+%node InitializeThruVariable AbstractInitVariable %typedef = 
+{
+  FglNode *first_variable;
+	FglNode *second_variable;
+}
+
+/**
+ * Node definition for the initialize statement.
+ */
+%node Initialize FglStatement %typedef =
+{
+    InitializeVariableList *init_val_list;
+		FglNode *form_rest;
+}
+

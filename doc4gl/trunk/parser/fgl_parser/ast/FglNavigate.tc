@@ -1,0 +1,31 @@
+
+/**
+ * The idea is navigate in the AST table and output everithing to stdout
+ */
+
+//%include "Fgl.tc"
+
+%operation void FglNavigate([FglNode *node])
+
+FglNavigate(FglNode)
+{
+	//fprintf(stderr,"%s:%d <%s>\n",__FILE__,__LINE__,node->getKindName());
+	Function *func;
+	FglIdentifier *ident;
+	switch ( node->getKind() )
+	{
+	  case FunctionList_kind:
+	    FglNavigate(((FunctionList *)node)->expr1);
+			func = (Function *)((FunctionList *)node)->expr2;
+			ident = (FglIdentifier *)func->functionName;
+	    fprintf(stderr, "Func is : %s \n", ident->name);
+			break;
+		case Function_kind:
+	    //fprintf(stderr,"%s:%d <%s>\n",__FILE__,__LINE__,node->getKindName());
+			func = (Function *)((FunctionList *)node);
+			ident = (FglIdentifier *)func->functionName;
+	    fprintf(stderr, " Func is : %s \n", ident->name);
+			break;
+	}
+
+}

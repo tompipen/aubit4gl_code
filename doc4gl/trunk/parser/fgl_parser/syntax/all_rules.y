@@ -2,10 +2,7 @@
 =====================================================================
                         Source: 99.reqd
 =====================================================================
-*/
-
-
-%%
+*/ 
 
 pause_screen_on_cmd : SETPMON  
 ;
@@ -624,20 +621,6 @@ op_datetime_qual
 /* <DATETIME_EXPRESSION> */
 
 
-/* <DEFER_STATEMENT> */
-
-/**
- * The signal defer statement
- * 4gl code examples:
- *    DEFER INTERRUPT
- *    DEFER QUIT
- */
-defer_cmd	
-  : DEFER_INTERRUPT 
-	|	DEFER_QUIT 
-	;
-
-/* </DEFER_STATEMENT> */
 
 
 /* <DEFINE_STATEMENT> */
@@ -2003,7 +1986,7 @@ opt_help_no
  */
 identifier	
   : NAMED  
-	  { $$ = new FglIdentifier($1->getText()); }
+		{ $$ = $1; }
   ;
 
 /**
@@ -2270,38 +2253,6 @@ import_m
 module_import
   : IMPORT_DATATYPE identifier 
   ;
-
-
-/* <INITIALIZE_STATEMENT> */
-
-/**
- * The statement INITIALIZE to init values to variables.
- * 4gl code examples:
- *   INITIALIZE x, y, z.* TO NULL
- *   INITIALIZE x LIKE tab.col
- */ 
-init_cmd 
-  : INITIALIZE init_bind_var_list TO KW_NULL
-  | INITIALIZE init_bind_var_list LIKE init_tab_list
-  ;
-
-/**
- * A list of tables used on initialize statement.
- */
-init_tab_list 
-  : init_tab 
-	| init_tab_list COMMA init_tab 
-  ;
-
-/**
- * An table definitiono to be used on INITIALIZE statement.
- */
-init_tab 
-  : tab_name DOT column_name 
-	| tab_name DOT MULTIPLY 
-  ;
-
-/* </INITIALIZE_STATEMENT> */
 
 /* <INPUT_STATEMENT> */
 
@@ -2580,32 +2531,6 @@ label_cmd
   ;
 
 
-/* <LET_STATEMENT> */
-
-/** 
- * The 4gl assignment LET stateement.
- * 4gl code examples:
- *    LET i = 10
- *    LET pRecord.* = NULL
- */
-let_cmd 
-  : LET obind_var_let_list EQUAL op_expr_null
-  ;
-
-/**
- * Optional null expression.
- * @todo : Change the name to this rule because it is not only for NULLS
- * 4gl code example:
- *   NULL
- *   
- */
-op_expr_null
-  : KW_NULL 
-	| fgl_expr_concat 
-	;
-
-
-/* </LET_STATEMENT> */
 
 /** 
  * @todo : Understand what statement is this one.
@@ -2626,18 +2551,6 @@ linked_del_cmd
  */
 linked_upd_cmd 
   : UPDATE_USING variable 
-  ;
-
-/**
- * The LOCATE statement to tell where the blob variable is located (in memory
- * or file).
- * 4gl code examples:
- *    LOCATE blobVar IN MEMORY
- *    LOCATE blobVar IN FILE "/tmp/blobFile"
- */
-locate_cmd 
-  : LOCATE variable IN_MEMORY 
-  | LOCATE variable IN_FILE file_name 
   ;
 
 /**
@@ -2665,85 +2578,6 @@ deallocate_array_cmd
 	;
 
 
-/* <MAIN_RULE> */
-
-/**
- * A 4gl module. This is the main rule to parse a 4gl source file.
- * 4gl code example:
- *   DEFINE x SMALLINT
- *
- *   MAIN
- *     CALL hello()
- *   END MAIN
- *  
- *   FUNCTION hello()
- *     DISPLAY "Hello world"
- *   END FUNCTION
- */
-module
-  : op_module_header func_main_def 
-	  { 
-		  $$ = new FglModule($2); 
-			*ast = $$;
-		}
-  ;
-
-
-/**
- * The optional 4gl module header.
- * The module header could be the database, globals and modular
- * variables definition.
- */
-op_module_header
-  : 
-	| module_header 
-  ;
-
-/**
- * The list of module header entry(s).
- */
-module_header	
-  :	module_entry 
-	|	module_header module_entry
-  ;
-
-/**
- * The possible 4gl header for modules.
- * 4gl code examples:
- *
- */
-module_entry 
-  : module_import 
-  | module_code 
-  | module_globals_section 
-  | module_define_section  
-	;
-
-/**
- * Optional Main or other functions definition.
- * @todo : Change this rule name to op_func_or_main
- */
-func_main_def	
-  : /* could be empty file */
-	  { $$ = (FunctionList *)0; }
-  | function_list
-	  { $$ = $1; }
-  ;
-
-/**
- * Not optional list of main or other kind of functions definition.
- * In mike parser this rule was called func_or_main2
- * @todo : Change the name ofthis rule to func_or_main_list
- *
- * @return A pointer to a list of functions (of diferent types).
- */
-function_list 
-  : func_or_main
-	  { $$ = new FunctionList($1); }
-	| function_list func_or_main 
-	  { $$ = $1->addFunction($2); }
-	;
-
 /**
  * AT TERMINATION CALL statement.
  * This is an extension to standard Informix 4gl.
@@ -2753,10 +2587,13 @@ at_term_cmd
   ;
 
 /**
- * Function or main definition.
+ * Abstract Function definition.
+ * This rule is called func_or_main in Mike parser.
+ * It is abstract because could be all function types (function, main,
+ * report, etc).
  */
-func_or_main	
-  :	func_def 
+abstract_function	
+  :	function_definition 
 	  { $$ = $1; }
 	|	main_def
 	|	mem_func_def
@@ -2816,43 +2653,6 @@ ldeffunction
 	| LOCAL_FUNCTION
   ;
 
-/*
- * Function definition.
- * 4gl code examples:
- *   FUNCTION funcName(x,y)
- *      ... define_statements ...
- *      ... 4gl statements ...
- *   END FUNCTION
- * @return A pointer to a FglFunction object.
- */
-func_def	
-  : ldeffunction identifier OPEN_BRACKET  op_param_var_list CLOSE_BRACKET 
-      define_section 
-      op_code commands 
-		end_func_command
-		 { $$ = new FglFunction($2); }
-	;
-
-/*
- * The end of the function rule 
- * @todo : Understand if this rule is realy needed.
- */
-end_func_command 
-  : END_FUNCTION 
-  ;
-
-/**
- * The specific MAIN function definition.
- * 4gl code example:
- *    MAIN 
- *      ... define statements ...
- *      ... fgl statements ...
- *    END MAIN
- */
-main_def
-  :	MAIN define_section commands END_MAIN 
-  ;
-
 /**
  * The return statements
  * 4gl code examples:
@@ -2874,17 +2674,6 @@ return_cmd
 op_fgl_expr_list 
   : 
 	| fgl_expr_list 
-  ;
-
-/**
- * The database statement.
- * The schema is an extension to standard Informix 4gl.
- * 4gl code example:
- *    DATABASE xpto
- */
-db_section	
-  : DATABASE dbase_name 
-	| SCHEMA dbase_name 
   ;
 
 /**
@@ -3197,11 +2986,15 @@ msg_wait
 
 /**
  * A variable definition.
+ *
+ * @todo : Fix the AST assignment
+ *
  * 4gl code example:
  *   
  */
 variable
   : var_int
+      { $$ = AST_STATE->VariableCreate("VAR"); }
   ;
 
 /**
@@ -3551,147 +3344,10 @@ array_r_varid
   : identifier OPEN_SQUARE num_list CLOSE_SQUARE
   ;
 
-/**
- * Comma separated list of variables to be initialized with the INITIALIZE
- * statement.
- * 4gl code examples:
- *   a, b, XPTO.a THRU xpto.x
- */
-init_bind_var_list
-  :	init_bind_var 
-	|	init_bind_var_list COMMA init_bind_var 
-  ;
-
-/**
- * A single variable to be initialized with INITIALIZE statement.
- * 4gl code examples:
- *   a
- *   xpto.a THRU xpto.g
- */
-init_bind_var 
-  : variable  
-	| variable THRU variable 
-  ;
-
 /* </NEWVARIABLE_RULE> */
 
 
 /* <OPEN_STATEMENTS> */
-
-/**
- * The OPEN WINDOW statement that opens a new window somewhere in the
- * screen.
- * 4gl code examples:
- *    OPEN WINDOW wName AT 2, 10 WITH 2 ROWS, 5 COLUMNS
- *    OPEN WINDOW wName AT 2, 10 WITH FORM "XX"
- */
-open_window_cmd 
-  : OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  
-  ;
-
-/**
- * Optional AT location in screen where to open a status box.
- * This is an extension to Informix 4gl.
- * 4gl code examples:
- *   AT (2,4) 
- *   AT (x,y) 
- *   AT (x+2,y/5) 
- */
-op_at_statusbox 
-  : 
-	| AT OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
-  ;
-
-/**
- * Optional size of a statusbox.
- * This is an extension to Informix 4gl.
- * 4gl code example:
- *   SIZE (10,10)
- *   SIZE (width,heigth)
- */
-op_size_statusbox 
-  : 
-	| SIZE OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET
-  ;
-
-/**
- * OPEN STATUSBOX statement.
- * This is an extension to Informix 4gl.
- * 4gl code example:
- *   OPEN STATUSBOX AT (2,3) SIZE (10,10)
- *   OPEN STATUSBOX AT (x+1,y/2) SIZE (width,heigth)
- */
-open_statusbox_cmd 
-  : OPEN_STATUSBOX identifier op_at_statusbox
-  ;
-
-/**
- * A possible name of a GUI form handler.
- * @todo : Define what is a form handler.
- */
-formhandler_name
-  : identifier 
-  ;
-
-/**
- * OPEN FORM statement to open a form in a window.
- * 4gl code examples:
- *    OPEN FORM xptoForm 
- */
-open_form_cmd 
-  : OPEN_FORM open_form_name  open_form_rest
-  ;
-
-/**
- * The second part of the OPEN FORM statement where is choosed if it is 
- * standard or GUI extension.
- * 4gl code examples:
- *
- */
-open_form_rest
-  : open_form_gui
-	| FROM fgl_expr 
-  ;
-
-/**
- * The GUI open form extension to Informix 4gl.
- * 4gl code examples:
- *   AT ABSOLUTE (10,15) LIKE xpto.a DISABLE ALL USING xxx
- *   AT (10,15)
- */
-open_form_gui
-  :  op_at_gui op_like_gui op_disable KW_USING formhandler_name
-  ;
-
-/**
- * Optional AT substatement of a GUI form.
- * This is an extension to standard Informix 4gl.
- * 4gl code example:
- *   AT ABSOLUTE (10,15)
- *   AT (10,15)
- */
-op_at_gui
-  :
-	| AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 
-  ;
-
-/**
- * Optional like to be used in a GUI open form statement.
- * 4gl code example:
- *   LIKE xpto.a
- */
-op_like_gui
-  : 
-	| LIKE ident_or_var
-  ;
-
-/**
- * Optional absolute keyword to be used in GUI open form statement.
- */
-op_absolute
-  : 
-	| ABSOLUTE 
-  ;
 
 /**
  * Open a connection to a database with a named connection.
@@ -3796,7 +3452,7 @@ opt_options
 	;
 
 /**
- * Allowed options that could be cofigurated.
+ * Allowed options that could be configurated.
  */
 opt_allopts 	
   : COMMENT_LINE line_no 
@@ -3862,101 +3518,6 @@ stmt_id
 	;
 
 /* </PREPARE_STATEMENT> */
-
-
-/* <PROMPT_STATEMENT> */
-
-/**
- * The 4gl interactive user prompt to the user.
- * 4gl code examples:
- *    PROMPT "Type something " FOR CHAR var 
- *    PROMPT "Type something " FOR CHAR TIMEOUT 150
- *    PROMPT "Type something " FOR CHAR var HELP 100
- *    PROMPT "Type something " FOR CHAR var HELP 100 ATTRIBUTE(REVERSE)
- */
-prompt_cmd	
-  : PROMPT prompt_title opt_attributes FOR opt_char
-    variable opt_timeout opt_help_no opt_attributes 
-    prompt_key_sec 
-  ;
-
-/**
- * Optional timeout to use in the PROMPT statement.
- * Define the amount of time that prompt wait for an answer.
- * This is an extension to Informix 4gl.
- * 4gl code example:
- *    TIMEOUT 150
- */
-opt_timeout
-  :
-  | TIMEOUT INT_VALUE 
-  ;
-
-/**
- * A GUI prompt.
- * This rule is an extension to Informix 4gl.
- * 4gl code examples:
- *   PROMPT "What ? " RETURNING answerVar
- *   PROMPT "What ? " ATTRIBUTE RETURNING answerVar
- */
-gui_prompt_cmd 
-  : PROMPT prompt_title opt_attributes  RETURNING variable 
-  ;
-
-/**
- * Optional char used in PROMPT statement.
- */
-opt_char 
-  : /* empty */ 
-  | CHAR 
-  ;
-
-/**
- * Optional key events of PROMPT statement
- * @todo : Change the name of the rule to opt
- * 4gl code examples:
- *     ON KEY CONTROL-W
- *       ... 4gl statements ...
- *     ON KEY CONTROL-X
- *       ... 4gl statements ....
- *   END PROMPT
- */
-prompt_key_sec 
-  :  /* empty */ 
-	| prompt_key_clause END_PROMPT
-	;
-
-/**
- * The list key events for the PROMPT statement.
- * 4gl code examples:
- *   ON KEY CONTROL-W
- *     ... 4gl statements ....
- *   ON KEY CONTROL-X
- *     ... 4gl statements ....
- */
-prompt_key_clause 
-  : on_key_command_prompt
-	| prompt_key_clause on_key_command_prompt 
-	;
-
-/**
- * A single key event to be used in the PROMPT statement.
- * 4gl code example:
- *   ON KEY CONTROL-W
- *     ... 4gl statements ....
- */
-on_key_command_prompt 
-  : on_key_command commands 
-  ;
-
-/**
- * The title for a PROMPT statement and gui PRoMPT statement.
- */
-prompt_title 
-  : fgl_expr_concat
-	;
-
-/* </PROMPT_STATEMENT> */
 
 
 /* <PUT_STATEMENT> */
@@ -4512,19 +4073,6 @@ op_rep_order_by
   ;
 
 /**
- * The definition of the special functions that are reports.
- * 4gl code examples:
- *   REPORT xptoRepName(a,b,c)
- *      DEFINE a,b,c SMALLINT
- *      ... Report definition sections ...
- *   END REPORT
- */
-report_def 
-  : REPORT identifier OPEN_BRACKET op_param_var_list CLOSE_BRACKET 
-	  define_section report_section format_section END_REPORT 
-  ;
-
-/**
  * Optional where to be used in the aggregate functions of the report
  * statement(s).
  * 4gl code examples:
@@ -5016,21 +4564,6 @@ op_fgl_expr
 	;
 
 /* </SET_STATEMENT> */
-
-
-/* <SLEEP_STATEMENT> */
-
-/**
- * Sleeps for a specified number of miliseconds.
- * 4gl code examples:
- *    SLEEP 1
- *    SLEEP numericVar
- */
-sleep_cmd 
-  : SLEEP fgl_expr 
-  ;
-
-/* </SLEEP_STATEMENT> */
 
 
 /* <SQL1_RULE> */
@@ -6413,18 +5946,6 @@ e_curr
 	;
 
 /**
- * The possible database names.
- * 4gl code examples:
- *   "a_database"
- *   varContainingDatabase
- */
-dbase_name	
-  :	identifier 
-  | identifier ATSIGN identifier
-  |	CHAR_VALUE 
-	;
-
-/**
  * Flushing of an insert cursor into the database.
  * 4gl code examples:
  *    FLUSH crXpto
@@ -7656,69 +7177,6 @@ var_ident_ibind_ss
 /* </VAR_RULE> */
 
 
-/* <WHENEVER_STATEMENTS> */
-
-/**
- * The whenever handling compiler directives.
- * 4gl code examples:
- *   WHENEVER NOT FOUND CONTINUE
- *   WHENEVER SQLERROR CALL xptoFunc
- *   WHENEVER ANY ERROR STOP
- */
-whenever_cmd 	
-  :  WHENEVER_NOT_FOUND when_do
-	|  WHENEVER_SQLERROR when_do
-	|  WHENEVER_ANY_ERROR when_do
-	|  WHENEVER_ERROR_CONTINUE 
-	|  WHENEVER_ERROR when_do
-	|  WHENEVER_SQLWARNING when_do
-	|  WHENEVER_WARNING_CONTINUE 
-	|  WHENEVER_WARNING when_do
-	|  WHENEVER_SUCCESS when_do
-	|  WHENEVER_SQLSUCCESS when_do
-	;
-
-/**
- * Actions that can be executed when an error or warning (defined in the
- * WHENEVER statement ocurr.
- * 4gl code examples:
- *   CONTINUE
- *   GO TO labelName
- *   GOTO :labelName
- *   STOP
- *   CALL xptoFunction
- */
-when_do		
-  :	CONTINUE 
-	|	GO TO label_goto
-	|	GOTO label_goto
-	|	STOP
-	|	FCALL function_name_when
-	;
-
-/**
- * A possible label where the whenever error goto can jump to.
- * 4gl code examples:
- *   labelName
- *   :labelName
- */
-label_goto	
-  :	identifier
-  |	COLON identifier
-	;
-
-/**
- * A function that a program call when a WHENEVER event ocurr.
- * 4gl code examples:
- *   xptoFuncName
- */ 
-function_name_when
-  :	identifier
-	;
-
-/* </WHENEVER_STATEMENTS> */
-
-
 /* <WHILE_STATEMENT> */
 
 /**
@@ -7876,42 +7334,6 @@ move_cmd
 
 /* </WINDOW_STATEMENTS> */
 
-/* <VALIDATE_RULE> */
-
-/**
- * The statement to validate the contents of variables with the values stored
- * in the tables filled by upscol utility.
- * 4gl code examples:
- *   VALIDATE firstVar, secondVar LIKE table.column, otherTable.otherColumn
- *   VALIDATE recordVar.* LIKE table.*
- */ 
-validate_cmd 
-  : VALIDATE init_bind_var_list LIKE validate_tab_list  
-  ;
-
-/**
- * A comma separated list of column names to be used to the VALIDATE statement.
- * 4gl code examples:
- *   
- */
-validate_tab_list 
-  : validate_tab 
-	| validate_tab_list COMMA validate_tab 
-  ;
-
-/**
- * A possible column(s) name(s) to be used in the list of the VALIDATE 
- * statement.
- * 4gl code examples:
- *   table.column
- *   table.*
- */
-validate_tab 
-  : tab_name DOT column_name 
-	| tab_name DOT MULTIPLY 
-  ;
-
-/* </VALIDATE_RULE> */
 
  /* ================ from make_enable ================= */
 
@@ -8024,7 +7446,8 @@ commands_all1
 	|	message_cmd
 	|	open_window_cmd
 	|	open_statusbox_cmd
-	|	open_form_cmd
+	|	open_form_cmd 
+	  { $$ = $1; }
 	|	open_session_cmd
 	|	open_cursor_cmd
 	|	connect_cmd

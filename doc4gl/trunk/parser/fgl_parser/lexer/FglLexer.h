@@ -76,7 +76,8 @@ class FglLexer {
 		FglLexer();
     void set_namespace (char *s);
     void setMemFile(MemFile *_memFile);
-    int yyLex (void *pyylval, int yystate, short *yys1, short *yys2);
+    int yyLex (void *pyylval, int yystate, short *yys1, short *yys2,
+               NodeState *astState);
     void setTraceTokens(char _traceTokens);
 		void setParserError(ParserError *_parserError);
 		ParserError *getParserError(void);

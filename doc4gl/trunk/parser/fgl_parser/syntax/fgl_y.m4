@@ -15,6 +15,15 @@ include(preamble.y)
 include(../generated/kw.yh)
 /* </../generated/kw.yh> */
 
+%%
+
+include(FglDefinition.y)
+include(CompilerDirectives.y) 
+include(StorageManipulation.y)
+include(ScreenInteraction.y)
+include(ReportExecution.y)
+include(Sql.y)
+
 /* <all_rules.y> */
 
 include(all_rules.y)

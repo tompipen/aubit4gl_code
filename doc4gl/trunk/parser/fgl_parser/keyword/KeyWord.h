@@ -27,6 +27,11 @@ class KeyWord {
 		int getMode();
 		char *getVals();
 		~KeyWord();
+		// Just to keep compatible with lexer
+    KeyWord::KeyWord();
+    int getHashVal(const char *s);
+    struct s_kw *getKwords(const char *keyWord);
+    struct s_kw *getKwords(int hashKey);
 };
 
 #endif

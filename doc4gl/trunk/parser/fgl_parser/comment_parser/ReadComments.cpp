@@ -12,8 +12,8 @@
 
 /*
  * @author : Sergio Ferreira
- * $Date: 2004-02-02 20:42:13 $
- * $Id: ReadComments.cpp,v 1.1 2004-02-02 20:42:13 saferreira Exp $
+ * $Date: 2004-03-12 11:16:02 $
+ * $Id: ReadComments.cpp,v 1.2 2004-03-12 11:16:02 saferreira Exp $
  */
 
 #include "stdio.h"

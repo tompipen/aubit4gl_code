@@ -1,6 +1,6 @@
 
 fgl.o: fgl.c
-	$(CXX) $(CFLAGS) -I .. -I ../ast -I ../lexer -I ../error -c fgl.c
+	$(CXX) $(CFLAGS) -I .. -I ../ast -I ../lexer -I ../error -I ../keyword -c fgl.c
 
 fgl.c : fgl.y
 	bison -y -r all -d -v fgl.y

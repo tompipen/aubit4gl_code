@@ -23,10 +23,11 @@
 
 // This is necessary to receive a pointer to the lexer object. This macro is
 // deprecated
-#define YYPARSE_PARAM fglLexer , FglModule **ast
+// @todo : The old FglModule ast should be removed
+#define YYPARSE_PARAM fglLexer , NodeState *astState
 
 // @todo : See an alternative since this macro is deprecated
-#define YYLEX_PARAM yystate,yyssa,yyssp
+#define YYLEX_PARAM yystate,yyssa,yyssp, astState
 
 
 // Hehe - This one is pretty cool if you have a fairly recent version of bison
@@ -58,6 +59,9 @@
 #define a4gl_yyerror(e) ((FglLexer *)fglLexer)->getParserError()->addError(e, \
 ((FglLexer *)fglLexer)->getLine(),0)
 
+/** A macro to access to the treecc ast easyly */
+#define	AST_STATE	((NodeState *)astState)
+
 /*
 =====================================================================
 		                    Variables definitions
@@ -74,40 +78,42 @@
 /** The prefix used when generating the C code. */
 %name-prefix="a4gl_yy"
 
-/* This makes the parser reentrant (does not depend on anything global). */
+/* This makes the parser reentrant (does not depend on any global variables). */
 %pure-parser
 
-/* Testing parser parameters - This cores bison 1.875 */
+/* Testing using parser parameters - This cores bison 1.875 */
 //%parse-param "FglLexer *fglLexer", "fglLexer"
 
 
-
-
-
 /* The start rule that the parser accepts */
+/* If we want to make dynamic SQL parser generation this rule should be 
+ * generated.
+ */
 %start module
 
 /* The union where the values of rules are stored */
-%union	  {
-	FglIdentifier *fgl_identifier;
-	FunctionList *fgl_function_list;
-	FglFunction *function;
-	FglToken *token;
-	FglModule *fgl_module;
-	// @todo : Remove this way of talking to the parser
-	char	str[1024];  /* This would core dump in CygWin on call to */
-	}
+%union {
+	FglNode *node;
+}
 
 /* <TOKEN_TYPE> */
 
-%type <token> NAMED_GEN	NAMED
-%type <function> func_def	func_or_main 
-%type <fgl_identifier> identifier	
-%type <fgl_function_list> function_list func_main_def
-%type <fgl_module> module
+/* More generic types for generic rules */
+%type <node> variable
+
+%type <node> NAMED_GEN	NAMED
+%type <node> function_definition	abstract_function 
+%type <node> identifier	abstract_open_form_rest open_form_name
+%type <node> function_list op_function_list
+%type <node> module
+%type <node> open_form_cmd commands_all1 	
+
+/* For initialize statement */
+%type <node> init_cmd init_bind_var_list init_bind_var
+
 /* <TOKEN_TYPE> */
 
-%token <str> NAME
+//%token <str> NAME
 %left UMINUS
 %left COMMA
 %left KW_OR         
@@ -138,3 +144,5 @@
 %token KW_CEND
 %token USER_DTYPE
 %token SQL_TEXT
+
+

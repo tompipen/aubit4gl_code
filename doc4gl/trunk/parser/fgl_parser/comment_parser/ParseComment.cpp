@@ -14,8 +14,8 @@
  * @todo : Change the logic of the file level comments algorithm
  *
  * $Author: saferreira $
- * $Revision: 1.1 $
- * $Id: ParseComment.cpp,v 1.1 2004-02-02 20:42:13 saferreira Exp $
+ * $Revision: 1.2 $
+ * $Id: ParseComment.cpp,v 1.2 2004-03-12 11:16:02 saferreira Exp $
  *
  */
 
