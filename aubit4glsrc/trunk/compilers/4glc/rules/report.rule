@@ -304,6 +304,7 @@ output_command :
 | BOTTOM_MARGIN INT_VALUE {rep_struct.bottom_margin=atoi($<str>2);}
 | PAGE_LENGTH INT_VALUE {rep_struct.page_length=atoi($<str>2);}
 | REPORT_TO CHAR_VALUE {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
+| REPORT_TO variable {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
 | REPORT_TO_PIPE CHAR_VALUE {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
 | TOP_OF_PAGE CHAR_VALUE {strcpy(rep_struct.top_of_page,$<str>2);}
 ;
