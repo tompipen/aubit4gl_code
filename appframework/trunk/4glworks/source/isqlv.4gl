@@ -72,6 +72,7 @@ function sql_viewer()
 	call uni_upstream(om, op) returning om, op
 	call uni_upstream(om, op) returning om, op
 	call menu_get(om, op) returning om, op
+	call pan_enter()
 	call uni_downstream(om, op) returning om, op
 	call uni_downstream(om, op) returning im, ip
 	let om=""

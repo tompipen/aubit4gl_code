@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jun 02
+	Current release: Sep 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -448,6 +448,7 @@ char *c;
     }
     st_p->sqlda_in.sqld++;
 badexit:
+;			/* some cc's like it hot */
 }
 
 /*

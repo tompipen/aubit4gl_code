@@ -6,7 +6,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Mar 00
-	Current release: Jun 02
+	Current release: Sep 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -132,22 +132,10 @@ static int prevtoken=-1;
 #define F_table         2
  
 /*
-** statement types
+** stack memory (dis)allocation
 */
-#define T_for           0
-#define T_foreach       1
-#define T_while         2
-#define T_if            3
-#define T_procedure     4
-
-/*
-** control stack states
-*/
-#define S_active         1
-#define S_disabled       0
-#define S_procedure     -1
-#define S_continue      -2
-#define S_if            -3
+#define fgw_smalloc(s) fgw_tssmalloc(&pstate->exphead, s)
+#define fgw_sfree(str) fgw_tssfree(&pstate->exphead, str)
 
 /*
 ** intermediate buffers for ops
@@ -177,6 +165,8 @@ char *fgw_getstring();
 char *fgw_getvar();
 static exprstack_t *arglist_sqp();
 static void pushresult_sqp();
+static void fgw_freetssstack();
+static void fgw_assign();
 static void yyerror();
 static int yylex();
 static int fgw_exprtype();
@@ -208,9 +198,6 @@ static void dtsub_sqp();
 static void dtsubinv_sqp();
 static void fgw_setint();
 static void fgw_setdouble();
-static char *fgw_smalloc();
-static void fgw_sfree();
-static void fgw_freetssstack();
 %}
 
 %union {
@@ -222,7 +209,7 @@ fgw_fdesc	*fd;		/* output statements */
 }
 
 %type <fd>	output, append
-%type <stack>	exitcl, format1, ftype, fspec
+%type <stack>	fnproc, breaks, exitcl, format1, ftype, fspec
 %type <stack>	nullcl, unitcl
 %type <stack>	betweencl, mrexcl, lrexcl
 
@@ -274,57 +261,405 @@ target:	    {
 	    }
 	  stmt
 ;
-stmt:	  plain
+/*
+** technically, we support nested stored procedures, even if the engine does not
+*/
+stmt:	  END fnproc	{
+			    controlstack_t *c;
+			
+			    if (!pstate->control.count)
+				YYFAIL;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    if (c->stmt_type!=$2.type)
+				YYFAIL;
+			    if (c->state==S_INPROC)
+			    {
+				fgw_stmttype *s;
+				int r;
+
+				if (!(s=sql_newstatement()))
+				    FAIL(-208)
+				r=sql_run(c->proc_start, s, pstate->touch);
+				sql_freestatement(s);
+				if (!status)
+				    status=r;
+				if (!risnull(CINTTYPE, (char *) &status))
+				    if (pstate->error_cont)
+					status=0;
+				    else
+					FAILCHECK
+			    }
+			    fgw_stackdrop(&pstate->control, 1);
+			}
+	| CREATE fnproc	{
+			    controlstack_t c;
+
+			    byfill(&c, sizeof(c), 0);
+			    c.stmt_type=$2.type;
+			    if (pstate->control.count)
+				switch (((controlstack_t *)
+				    fgw_stackpeek(&pstate->control))->state)
+				{
+				  case S_ACTIVE:
+				    c.state=S_INPROC;
+				    break;
+				  case S_NESTED:
+				  case S_INPROC:
+				    c.state=S_NESTED;
+				    break;
+				  default:
+				    c.state=S_DISPROC;
+				}
+			    else
+				c.state=S_INPROC;
+			    c.proc_start=pstate->sqlstart;
+			    fgw_stackpush(&pstate->control, &c);
+			    YYACCEPT
+			}
+	| {
+	    int s;
+
+	    s=pstate->control.count? ((controlstack_t *)
+		fgw_stackpeek(&pstate->control))->state: S_ACTIVE;
+	    if (s==S_INPROC || s==S_DISPROC || s==S_NESTED)
+		YYACCEPT;
+	  } stmt1
 ;
-plain:	  display
+fnproc:	  FUNCTION	{
+			    $$.type=FUNCTION;
+			}
+	| PROCEDURE	{
+			    $$.type=PROCEDURE;
+			}
+;
+stmt1:	  {
+/*
+** if we don't have to do anything, we don't parse, just accept
+*/
+	    if (pstate->control.count &&
+		((controlstack_t *) fgw_stackpeek(&pstate->control))->state<S_ACTIVE)
+	    {
+		controlstack_t c;
+
+		byfill(&c, sizeof(c), 0);
+		c.stmt_type=yychar;
+		c.state=S_DISABLED;
+		fgw_stackpush(&pstate->control, &c);
+		YYACCEPT;
+	    }
+	  } ctrl
+	| DONE		{
+			    controlstack_t *c;
+			    exprstack_t *e;
+
+			    if (!pstate->control.count)
+				YYFAIL;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    switch(c->stmt_type)
+			    {
+			      case FOR:
+				if (c->state!=S_DISABLED &&
+				    c->element)
+				{
+				    c->element--;
+				    e=(exprstack_t *)
+					fgw_stackpeek(&pstate->exprlist)-
+					    c->element;
+				    fgw_assign(e, c->destvar);
+				    fgw_freetssstack(e);
+				    c->state=S_ACTIVE;
+				    pstate->phase1=c->phase1;
+				}
+				else
+				{
+				    if (c->destvar)
+					fgw_sfree(c->destvar);
+				    if (c->forcount)
+				    {
+					e=(exprstack_t *)
+					    fgw_stackpeek(&pstate->exprlist)-
+						c->element;
+					while (c->element--)
+					    fgw_freetssstack(++e);
+					fgw_stackdrop(&pstate->exprlist,
+							c->forcount);
+				    }
+				    fgw_stackdrop(&pstate->control, 1);
+				}
+				break;
+			      case FOREACH:
+				curstmt=c->stmt;
+				if (c->state!=S_DISABLED)
+				{
+				    c->state=S_ACTIVE;
+				    sql_dorows(curstmt, pstate->txtvar,
+						pstate->vars, 0);
+				    if (status==SQLNOTFOUND)
+				    {
+					status=0;
+					c->state=S_DISABLED;
+				    }
+				    else if (!risnull(CINTTYPE, (char *) &status))
+					if (pstate->error_cont)
+					    status=0;
+					else
+					    FAILCHECK
+				}
+				if (c->state==S_DISABLED)
+				{
+				    if (curstmt)
+					sql_freestatement(curstmt);
+				    fgw_stackdrop(&pstate->control, 1);
+				}
+				else
+				    pstate->phase1=c->phase1;
+				curstmt=NULL;
+				break;
+			      case WHILE:
+				if (c->state!=S_DISABLED)
+				{
+				    c->nextphase1=pstate->phase1;
+				    pstate->phase1=c->phase1;
+				    c->state=S_WHILE;
+				}
+				else
+				    fgw_stackdrop(&pstate->control, 1);
+				break;
+			      default:
+				YYFAIL;
+			    }
+			}
+	| ELIF		{
+			    controlstack_t *c;
+
+			    if (!pstate->control.count)
+				YYFAIL;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    if (c->stmt_type!=IF)
+				YYFAIL;
+			    if (c->state!=S_IF)
+			    {
+				c->state=S_DISABLED;
+				YYACCEPT;
+			    }
+			} allexp {
+			    controlstack_t *c;
+			    exprstack_t *s;
+			    int r, n;
+ 
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    r=fgw_toboolean(s, &n);
+			    fgw_freetssstack(s);
+			    if (n || !r)
+				c->state=S_IF;
+			    else
+				c->state=S_ACTIVE;
+			}
+	| ELSE		{
+			    controlstack_t *c;
+
+			    if (!pstate->control.count)
+				YYFAIL;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    if (c->stmt_type!=IF)
+				YYFAIL;
+			    if (c->state==S_IF)
+				c->state=S_ACTIVE;
+			    else
+				c->state=S_DISABLED;
+			}
+	| FI		{
+			    controlstack_t *c;
+
+			    if (!pstate->control.count)
+				YYFAIL;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    if (c->stmt_type!=IF)
+				YYFAIL;
+			    fgw_stackdrop(&pstate->control, 1);
+			}
+	| { 
+	    if (pstate->control.count &&
+		((controlstack_t *) fgw_stackpeek(&pstate->control))->state!=
+		  S_ACTIVE)
+		YYACCEPT;
+	  } plain
+
+;
+ctrl:	  FOR VAR IN elist	{
+			    controlstack_t c;
+			    exprstack_t *e;
+
+			    byfill(&c, sizeof(c), 0);
+			    c.stmt_type=FOR;
+			    e=arglist_sqp(&pstate->exprlist, &c.forcount);
+			    c.element=c.forcount-1;
+			    fgw_tssdetach(&pstate->lexhead, $2);
+			    fgw_tssattach(&pstate->exphead, $2);
+			    c.destvar=$2;
+			    c.state=S_ACTIVE;
+			    c.phase1=pstate->phase1;
+			    fgw_assign(e, c.destvar);
+			    fgw_freetssstack(e);
+			    fgw_stackpush(&pstate->control, &c);
+			}
+	| FOREACH	{
+			    if (!(curstmt=sql_newstatement()))
+				FAIL(-208)
+			} select using into format {
+			    int r;
+			    controlstack_t c;
+
+			    byfill(&c, sizeof(c), 0);
+			    c.stmt_type=FOREACH;
+			    c.state=S_ACTIVE;
+			    c.phase1=pstate->phase1;
+			    c.stmt=curstmt;
+			    pstate->sqlsv=*pstate->sqlend;
+			    *pstate->sqlend='\0';
+			    if (!(r=sql_run(pstate->sqlstart, curstmt,
+					    pstate->touch)))
+			    {
+				sql_dorows(curstmt, pstate->txtvar, pstate->vars,
+					   0);
+				if (status==SQLNOTFOUND)
+				{
+				    status=0;
+				    c.state=S_DISABLED;
+				}
+			    }
+			    curstmt=NULL;
+			    if (!status)
+				status=r;
+			    if (!risnull(CINTTYPE, (char *) &status))
+				if (pstate->error_cont)
+				    status=0;
+				else
+				    FAILCHECK
+			    fgw_stackpush(&pstate->control, &c);
+			}
+	| WHILE allexp	{
+			    controlstack_t c, *oc;
+			    exprstack_t *s;
+			    int r, n;
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    r=fgw_toboolean(s, &n);
+			    fgw_freetssstack(s);
+			    if (pstate->control.count)
+			    {
+			        oc=(controlstack_t *)
+					fgw_stackpeek(&pstate->control);
+				if (oc->state==S_WHILE)
+				{
+				    if (n || !r)
+					if (pstate->inside_expansion)
+					    oc->state=S_DISABLED;
+					else
+					{
+					    pstate->phase1=oc->nextphase1;
+					    fgw_stackdrop(&pstate->control, 1);
+					}
+				    else
+					oc->state=S_ACTIVE;
+				    goto done_while;
+				}
+			    }
+			    byfill(&c, sizeof(c), 0);
+			    c.stmt_type=WHILE;
+			    if (n || !r)
+				c.state=S_DISABLED;
+			    else
+				c.state=S_ACTIVE;
+			    c.phase1=pstate->prevphase1;
+			    fgw_stackpush(&pstate->control, &c);
+done_while:
+			}
+	| IF allexp	{
+			    controlstack_t c;
+			    exprstack_t *s;
+			    int r, n;
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    r=fgw_toboolean(s, &n);
+			    fgw_freetssstack(s);
+			    byfill(&c, sizeof(c), 0);
+			    c.stmt_type=IF;
+			    if (n || !r)
+				c.state=S_IF;
+			    else
+				c.state=S_ACTIVE;
+			    fgw_stackpush(&pstate->control, &c);
+			}
+;
+plain:	  breaks	{
+			    controlstack_t *c;
+			    int i;
+
+			    i=pstate->control.count;
+			    c=(controlstack_t *) fgw_stackpeek(&pstate->control);
+			    while (i && c->stmt_type==IF)
+			    {
+				i--;
+				c->state=S_DISABLED;
+				c--;
+			    }
+			    if (!i)
+				YYFAIL;
+			    if ($1.type==BREAK)
+				c->state=S_DISABLED;
+			    else
+				c->state=S_CONTINUE;
+			}
+	| display
 	| assign
-	| output		{
+	| output	{
 /*
 ** if it is a pipe, see if we can write to it, or child has gone away
 */
-				    if (!status && $<fd>1 &&
-					$<fd>1!=(fgw_fdesc *) -1 && $<fd>1->fd_pid)
-				    {
+			    if (!status && $<fd>1 &&
+				$<fd>1!=(fgw_fdesc *) -1 && $<fd>1->fd_pid)
+			    {
 /*
 ** give the child shell the time to exec the correct image
 ** FIXME - older SYSV might not know about usleep
 */
-				        (void) usleep(100000);
-				        fgw_fdwrite($<fd>1, "", 0);
-				        if (status)
-					{
-					    errcode=status;
-					    childstatus=fgw_fdclose($<fd>1);
-					}
-				    }
-				    if (!status)
-				    {
-					if (pstate->curr_fd &&
-					    pstate->curr_fd!=(fgw_fdesc *) -1)
-					{
-					    sql_flush(pstate->txtvar, 1);
-/* FIXME: close flag */
-					    if (pstate->curr_fd!=pstate->def_fd)
-					    {
-						childstatus=fgw_fdclose(pstate->curr_fd);
-						errcode=status;
-					    }
-					}
-				    }
-				    if (!status)
-				    {
-					sql_openfile(pstate->txtvar, $<fd>1);
-					pstate->curr_fd=$<fd>1;
-				    }
-				    else
-					status=0;
+			        (void) usleep(100000);
+			        fgw_fdwrite($<fd>1, "", 0);
+			        if (status)
+				{
+				    errcode=status;
+				    childstatus=fgw_fdclose($<fd>1);
 				}
+			    }
+			    if (!status)
+			    {
+				if (pstate->curr_fd &&
+				    pstate->curr_fd!=(fgw_fdesc *) -1)
+				{
+				    sql_flush(pstate->txtvar, 1);
+/* FIXME: close flag */
+				    if (pstate->curr_fd!=pstate->def_fd)
+				    {
+					childstatus=fgw_fdclose(pstate->curr_fd);
+					errcode=status;
+				    }
+				}
+			    }
+			    if (!status)
+			    {
+				sql_openfile(pstate->txtvar, $<fd>1);
+				pstate->curr_fd=$<fd>1;
+			    }
+			    else
+				status=0;
+			}
         | sql
 	| WHENEVER ERROR errcl
 	| LOAD FROM exp del	{
 			    exprstack_t f, d;
 
-			    fgw_freetssstack(&yylval.stack);
 			    d=*(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			    f=*(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			    fgw_2string(&f, &d);
@@ -340,7 +675,6 @@ plain:	  display
 	| UNLOAD TO exp del	{
 			    exprstack_t *f, *d;
 
-			    fgw_freetssstack(&yylval.stack);
 			    d=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			    f=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			    fgw_2string(f, d);
@@ -376,6 +710,13 @@ plain:	  display
 			    }
 			}
 	| /* empty */
+;
+breaks:	  BREAK			{
+				    $$.type=BREAK;
+				}
+	| CONTINUE		{
+				    $$.type=CONTINUE;
+				}
 ;
 output:	  APPEND TO append	{
 				    $$=$3;
@@ -499,24 +840,8 @@ assign:	  LET VAR '=' allexp %prec ASSIGN	{
 			    exprstack_t *s;
 
 			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
-			    switch (s->type)
-			    {
-			      case CSTRINGTYPE:
-			      case FGWVAR:
-				fgw_hstadd(pstate->vars, $<var>2, CSTRINGTYPE,
-					   s->val.string);
-				break;
-			      case CDOUBLETYPE:
-			      case CINTTYPE:
-			      case CDATETYPE:
-				fgw_hstadd(pstate->vars, $<var>2, s->type,
-					   (char *) &(s->val.real));
-				break;
-			      default:
-				fgw_hstadd(pstate->vars, $<var>2, s->type,
-					   (char *) s->val.datetime);
-			    }
-			    fgw_sfree($<var>2);
+			    fgw_assign(s, $2);
+			    fgw_tssfree(&pstate->lexhead, $2);
 			    fgw_freetssstack(s);
 			}
 	| LET VAR rangecl '=' allexp %prec ASSIGN	{
@@ -551,9 +876,9 @@ assign:	  LET VAR '=' allexp %prec ASSIGN	{
 */
 			    if (r->val.range[1]>=vl)
 			        *(t+r->val.range[1]+1)='\0';
-			    fgw_hstadd(pstate->vars, $<var>2, CSTRINGTYPE, t);
+			    fgw_hstadd(pstate->vars, $2, CSTRINGTYPE, t);
 			    fgw_sfree(t);
-			    fgw_sfree($<var>2);
+			    fgw_tssfree(&pstate->lexhead, $2);
 			    fgw_freetssstack(s1);
 			}
 ;
@@ -578,6 +903,7 @@ sql:	    {
 sql1:	   select using into format	{
 			    int r;
 
+			    pstate->sqlsv=*pstate->sqlend;
 			    *pstate->sqlend='\0';
 			    if (!(r=sql_run(pstate->sqlstart, curstmt,
 					    pstate->touch)))
@@ -591,6 +917,7 @@ sql1:	   select using into format	{
 	 | squsing	{
 			    int r;
  
+			    pstate->sqlsv=*pstate->sqlend;
 			    *pstate->sqlend='\0';
 			    r=sql_run(pstate->sqlstart, curstmt, pstate->touch);
 			    sql_freestatement(curstmt);
@@ -598,11 +925,9 @@ sql1:	   select using into format	{
 			    if (!status)
 				status=r;
 			}
-	 | sqother	{
+	 | SQLTOK	{
 			    int r;
  
-			    if (yychar==VAR)
-				fgw_sfree(&yylval.var);
 			    r=sql_run(pstate->sqlstart, curstmt, pstate->touch);
 			    sql_freestatement(curstmt);
 			    curstmt=NULL;
@@ -616,9 +941,6 @@ select:	  SELECT	{}
 squsing:  dml using	{}
 	| SELECT SQLTOK using	{}
 ;
-sqother:  CREATE	{}
-	| SQLTOK	{}
-;
 dml:	  INSERT	{}
 	| UPDATE	{}
 	| DELETE	{}
@@ -630,11 +952,11 @@ into:	  /* empty */
 			}
 ;
 vlist:	  vlist ',' VAR {
-			    fgw_tssdetach(&pstate->tsshead, $3);
+			    fgw_tssdetach(&pstate->lexhead, $3);
 			    fgw_tssattach(&curstmt->intovars, $3);
 			}
 	| VAR		{
-			    fgw_tssdetach(&pstate->tsshead, $1);
+			    fgw_tssdetach(&pstate->lexhead, $1);
 			    fgw_tssattach(&curstmt->intovars, $1);
 			}
 ;
@@ -646,11 +968,11 @@ using:	  /* empty */
 ;
 ulist:	  ulist ',' VAR	{
 			    sql_setholder(curstmt, pstate->vars, $3);
-			    fgw_sfree($<var>3);
+			    fgw_tssfree(&pstate->lexhead, $<var>1);
 			}
 	| VAR		{
 			    sql_setholder(curstmt, pstate->vars, $1);
-			    fgw_sfree($<var>1);
+			    fgw_tssfree(&pstate->lexhead, $<var>1);
 			}
 ;
 format:	  format1	{
@@ -719,7 +1041,8 @@ hlist:	  hlist ',' allexp 	{
 				    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 				    sql_setheader(curstmt, fgw_tostring(s,
 								&cbuf, NULL));
-				    fgw_freetssstack(s);
+/*				    fgw_freetssstack(s);
+*/
 				}
 	| allexp	{
 			    exprstack_t *s;
@@ -727,7 +1050,8 @@ hlist:	  hlist ',' allexp 	{
 
 			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			    sql_setheader(curstmt, fgw_tostring(s, &cbuf, NULL));
-			    fgw_freetssstack(s);
+/*			    fgw_freetssstack(s);
+*/
 			}
 ;
 /*
@@ -739,6 +1063,13 @@ allexp:	  boolexp
 ;
 exp:	  CNST			{
 				    $1.count=0;
+				    if ($1.type==CSTRINGTYPE)
+				    {
+					fgw_tssdetach(&pstate->lexhead,
+						      $1.val.string);
+					fgw_tssattach(&pstate->exphead,
+						      $1.val.string);
+				    }
 				    fgw_stackpush(&pstate->exprlist, &($1));
 				}
 	| NULLVALUE		{
@@ -750,12 +1081,11 @@ exp:	  CNST			{
 				}
 	| VAR			{
 				    exprstack_t v;
-				    fgw_cvvar(&v, fgw_hstget(pstate->vars,
-								$<var>1));
+				    fgw_cvvar(&v, fgw_hstget(pstate->vars, $1));
 				    FAILCHECK
 				    v.count=0;
 				    fgw_stackpush(&pstate->exprlist, &v);
-				    fgw_sfree($<var>1);
+				    fgw_tssfree(&pstate->lexhead, $1);
 				}
 /* FIXME: index, replace, pads & substrings use byte (as opposed to char)
    starts & ends/lengths. they should be ok as far as GLS goes, but this 
@@ -784,7 +1114,7 @@ exp:	  CNST			{
 				    }
 				    e.count=0;
 				    fgw_stackpush(&pstate->exprlist, &e);
-				    fgw_sfree($<var>1);
+				    fgw_tssfree(&pstate->lexhead, $1);
 				}
 	| CASE casecl elsecl END	{
 				    exprstack_t *e, *w;
@@ -1881,11 +2211,24 @@ parserstate_t *state;
     else
   	pstate->parseroptions=SQLHACK;
     pstate->ibufp=pstate->o_query+pstate->phase1.stmt_start;
+    pstate->ibufe=pstate->ibufp+strlen(pstate->ibufp);
     pstate->sqlstart=pstate->ibufp;
-    pstate->sqlend=pstate->ibufp+strlen(pstate->ibufp);
+    pstate->sqlend=pstate->ibufe;
+    pstate->sqlsv=0;
     init_sqp();
     status=0;
     yyparse();
+/*
+** stored procedures and outer layers require buffer untouched
+** restore whatever damage we have done
+*/
+    if (pstate->sqlsv)
+	*pstate->sqlend=pstate->sqlsv;
+/*
+** free string resources
+*/
+    prevtoken=-1;
+    fgw_tssdrop(&(pstate->lexhead));
     return status;
 }
 
@@ -3592,6 +3935,45 @@ int d;
 }
 
 /*
+** frees temporary memory on stack
+*/
+static void fgw_freetssstack(r1)
+exprstack_t *r1;
+{
+    switch(r1->type)
+    {
+      case CSTRINGTYPE:
+      case CINVTYPE:
+      case CDTIMETYPE:
+	if (r1->val.string)
+	    fgw_tssfree(&pstate->exphead, r1->val.string);
+    }
+}
+
+/*
+** assigns stack contents to variable
+*/
+static void fgw_assign(s, v)
+exprstack_t *s;
+char *v;
+{
+    switch (s->type)
+    {
+      case CSTRINGTYPE:
+      case FGWVAR:
+	fgw_hstadd(pstate->vars, v, CSTRINGTYPE, s->val.string);
+	break;
+      case CDOUBLETYPE:
+      case CINTTYPE:
+      case CDATETYPE:
+	fgw_hstadd(pstate->vars, v, s->type, (char *) &(s->val.real));
+	break;
+      default:
+	fgw_hstadd(pstate->vars, v, s->type, (char *) s->val.datetime);
+    }
+}
+
+/*
 ** scanner & parser hacks
 **
 ** reserved words list
@@ -3769,7 +4151,6 @@ char *s;
 */
     if (curstmt)
 	sql_freestatement(curstmt);
-    prevtoken=-1;
 }
 
 /*
@@ -3834,7 +4215,7 @@ static int scanner_sql()
 */
 	else if ((c>='A' && c<='Z') || (c>='a' &&c<='z'))
 	{
-	    if (!(yylval.var=fgw_getvar(&(pstate->tsshead), pstate->tokstart,
+	    if (!(yylval.var=fgw_getvar(&(pstate->lexhead), pstate->tokstart,
 					&(pstate->ibufp), &t)))
 /*
 ** no memory, so stop scanning & parsing, issue an error
@@ -3849,7 +4230,7 @@ static int scanner_sql()
 		    t=t->next;
 		else
 		{
-		    fgw_sfree(yylval.var);
+		    fgw_tssfree(&pstate->lexhead, yylval.var);
 		    switch (t->type)
 		    {
 		      case FNCT:
@@ -3876,7 +4257,7 @@ static int scanner_sql()
 */
 	else if (c=='\"' && delimident)
 	{
-	    if (yylval.var=fgw_getstring(&(pstate->tsshead), pstate->tokstart,
+	    if (yylval.var=fgw_getstring(&(pstate->lexhead), pstate->tokstart,
 					 &(pstate->ibufp)))
 		return VAR;
 	    else
@@ -3888,7 +4269,7 @@ static int scanner_sql()
 	else if (c=='\'' || c=='\"')
 	{
 	    yylval.stack.type=CSTRINGTYPE;
-	    if (yylval.stack.val.string=fgw_getstring(&(pstate->tsshead),
+	    if (yylval.stack.val.string=fgw_getstring(&(pstate->lexhead),
 						      pstate->tokstart,
 						      &(pstate->ibufp)))
 		return CNST;
@@ -3931,7 +4312,8 @@ static int scanner_sql()
 */
 static int yylex()
 {
-    YYSTYPE svlval, swlval;
+    static YYSTYPE svlval;
+    YYSTYPE swlval;
     int t;
 
     if (prevtoken>=0)
@@ -3948,12 +4330,17 @@ static int yylex()
 	    t=scanner_sql();
 	    switch (t)
 	    {
+/*
+** we could actually postpone cleaning up those to when lexhead is dropped
+** we do it here to avoid allocating needlessly memory
+** FIXME: we could get scanner_sql to avoid allocating memory in the first place
+*/
 	      case VAR:
-		fgw_sfree(yylval.var);
+		fgw_tssfree(&pstate->lexhead, yylval.var);
 		break;
 	      case CNST:
 		if (yylval.stack.type==CSTRINGTYPE)
-		    fgw_freetssstack(&yylval.stack);
+		    fgw_tssfree(&pstate->lexhead, yylval.stack.val.string);
 		break;
 	      case INTO:
 		if (pstate->parseroptions & DMLHACK)
@@ -3969,7 +4356,7 @@ static int yylex()
 		    return INTO;
 		}
 		if (t==CNST && yylval.stack.type==CSTRINGTYPE)
-		    fgw_freetssstack(&yylval.stack);
+		    fgw_tssfree(&pstate->lexhead, yylval.stack.val.string);
 		break;
 	      case FORMAT:
 		if (pstate->parseroptions & DMLHACK)
@@ -3989,17 +4376,28 @@ static int yylex()
 	{
 	  case VAR:
 	    t=SQLTOK;
-	    fgw_sfree(yylval.var);
 	    break;
-	  case INSERT:
-	  case DELETE:
-	  case UPDATE:
-	    pstate->parseroptions|=DMLHACK;
-	    break;
-	  case EXECUTE:
-	  case SELECT:
-	    pstate->parseroptions|=SELECTHACK;
+/*
+** avoid one R/R conflict between create proc and create something else
+*/
+	  case CREATE:
+	    prevtoken=scanner_sql();
+	    if (prevtoken!=FUNCTION && prevtoken!=PROCEDURE)
+		return SQLTOK;
 	}
+    }
+    switch (t)
+    {
+      case INSERT:
+      case DELETE:
+      case UPDATE:
+	pstate->parseroptions|=DMLHACK;
+	break;
+      case EXECUTE:
+      case SELECT:
+	pstate->parseroptions|=SELECTHACK;
+	pstate->sqlstart=pstate->tokstart;
+	break;
     }
     return t;
 }
@@ -4152,7 +4550,8 @@ char *s, **n;
 /*
 ** copy string & adjust sizes
 */
-	bycopy(s, sbuf+sz, newsz);
+	if (newsz)
+	    bycopy(s, sbuf+sz, newsz);
 	sz+=newsz;
 	*(sbuf+sz)='\0';
 /*
@@ -5138,34 +5537,4 @@ double v;
 	rsetnull(CDOUBLETYPE, (char *) &(r->val.real));
     else
 	r->val.real=v;
-}
-
-/*
-** allocates temporary memory
-*/
-static char *fgw_smalloc(s)
-int s;
-{
-    return fgw_tssmalloc(&pstate->tsshead, s);
-}
-
-/*
-** frees temporary memory
-*/
-static void fgw_sfree(str)
-char *str;
-{
-    fgw_tssfree(&pstate->tsshead, str);
-}
-
-/*
-** frees temporary memory on stack
-*/
-static void fgw_freetssstack(r1)
-exprstack_t *r1;
-{
-    if ((r1->type==CSTRINGTYPE ||
-	 r1->type==CINVTYPE ||
-	 r1->type==CDTIMETYPE) && r1->val.string)
-	fgw_tssfree(&pstate->tsshead, r1->val.string);
 }

@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Mar 00
-	Current release: May 02
+	Current release: Sep 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -73,7 +73,7 @@ int nargs;
 	retint(-208);
     else
     {
-	retint(fgw_sqlexec(i_query, strlen(i_query), def_fd, flags, 
+	retint(fgw_sqlexec(i_query, strlen(i_query)+1, def_fd, flags, 
 			   width, txtvar));
 	free(i_query);
     }
@@ -110,9 +110,10 @@ int nargs;
 static fgw_localfree(cs)
 controlstack_t *cs;
 {
-    if (!risnull(CINTTYPE, (char *) &(cs->stmt_id)))
-	sql_freestatement(cs->stmt_id);
+    if (cs && cs->stmt)
+	sql_freestatement(cs->stmt);
 }
+
 /*
 **  preprocessor (expansion, comments, and statement breakup)
 */
@@ -172,7 +173,8 @@ loc_t *txtvar;
 	    state.verbose=-1;
     }
     fgw_locatetext(state.txtvar);
-    state.curr_fd=sql_openfile(state.txtvar, state.def_fd);
+    state.curr_fd=state.def_fd;
+    sql_openfile(state.txtvar, state.def_fd);
     if (state.verbose>0)
     {
 /*
@@ -219,6 +221,7 @@ loc_t *txtvar;
 	{
 	    int ip, s, e, l;
 	    char txt[CHARSIZE];
+	    controlstack_t *c;
 
 	    l=state.i_size-state.phase1.input_char+expidx-2;
 /* FIXME: using 4gl user interaction */
@@ -226,9 +229,8 @@ loc_t *txtvar;
 		      l>32766? 32766: l);
 	    pushlocator(state.vars);
 	    pushint(state.verbose);
-/*	    pushint((state.stack_len? (state.stack->state==S_active ||
-				  state.stack->state==S_procedure): 1));
-*/	    pushint(1);
+	    pushint(state.control.count?
+		(c=(controlstack_t *) fgw_stackpeek(&state.control), c->state>S_DISABLED): 1);
 	    pushint(expidx);
 	    fgl_call(sql_explode, 5);
 	    popint(&ip);
@@ -464,11 +466,19 @@ loc_t *txtvar;
 /*
 **  process statement
 */
-	    if (state.phase1.input_char==state.i_size ||
-		foundstmt)
+	    if (state.phase1.input_char==state.i_size || foundstmt)
 	    {
 		state.parseroptions=0;
+		state.inside_expansion=!(state.phase1.stmt_start>expend ||
+					 (foundstmt &&
+					 expstart>=state.phase1.next_stmt_start));
 		lastcode=sql_parser(&state);
+/*
+**  stored procedures and control statements require that statements be
+**  concatenated by semicolons, so undo string termination
+*/
+		if (foundstmt)
+		    *state.ibufe=';';
 		if (risnull(CINTTYPE, (char *) &lastcode))
 		{
 		    lastcode=0;
@@ -490,32 +500,37 @@ loc_t *txtvar;
 		else if (lastcode && lastcode!=SQLNOTFOUND)
 		    goto bad_exit;
 /*
-**  skip to next statement
-*/
-		state.phase1.stmt_start=state.phase1.next_stmt_start;
-/*
 **  remove processed statements from ouput buffer
 */
 		if (!state.control.count)
 		{
-		    if (state.phase1.stmt_start>=state.o_size)
+		    if (state.phase1.next_stmt_start>=state.o_size)
 		    {
 			state.phase1.output_buffer_len=0;
-			state.phase1.stmt_start=0;
+			state.phase1.next_stmt_start=0;
 			expstart=0;
 			expend=0;
 		    }
 		    else
 		    {
 			strcpy(state.o_query,
-			       state.o_query+state.phase1.stmt_start);
+			       state.o_query+state.phase1.next_stmt_start);
 			state.phase1.output_buffer_len-=
-			    state.phase1.stmt_start;
-			state.phase1.stmt_start=0;
+			    state.phase1.next_stmt_start;
+			state.phase1.next_stmt_start=0;
 		    }
 		}
+/*
+** no initialization of prevphase1 as for now the byfill on state is enough
+*/
+		state.prevphase1=state.phase1;
+/*
+**  skip to next statement
+*/
+		state.phase1.stmt_start=state.phase1.next_stmt_start;
 	    }
-	    innerloop=(state.phase1.stmt_start<state.o_size) && foundstmt;
+	    innerloop=(state.phase1.stmt_start<state.phase1.output_buffer_len) &&
+		      (state.phase1.input_char==state.i_size || foundstmt);
 	}
     }
 /*
@@ -552,7 +567,7 @@ bad_exit:
     fgw_stackfree(&state.control, fgw_localfree);
     fgw_stackfree(&state.exprlist, NULL);
     fgw_freehash(state.vars);
-    fgw_tssdrop(&state.tsshead);
+    fgw_tssdrop(&state.exphead);
     if (state.o_query)
 	free(state.o_query);
     if (fgw_ischild())
@@ -646,7 +661,7 @@ int nargs;
 	retquote("");
     retint(s);
     fgw_stackfree(&state.exprlist, NULL);
-    fgw_tssdrop(&state.tsshead);
+    fgw_tssdrop(&state.exphead);
     return(2);
 }
 
@@ -698,6 +713,7 @@ int nargs;
     popint(&s);
     buf=fgw_popquote();
     str=NULL;
+    head=NULL;
     if (buf)
     {
 /*

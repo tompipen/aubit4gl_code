@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jun 02
+	Current release: Sep 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -454,7 +454,7 @@ char *c;
 	st_p->headwidth=0;
     }
     l=strlen(c);
-    if (!(d=fgw_fmtnew(&st_p->headers, l)))
+    if (!(d=fgw_fmtnew(&st_p->headers, l+1)))
 	status=-1319;
     else
     {
@@ -709,8 +709,8 @@ struct sqlvar_struct *col;
     {
 	  case FMT_BRIEF:
 	    f=col2str_sql(col, &b);
-	    if (((!st_p->field)+strlen_sql(textvar, fgw_text(textvar)->nolines)+
-		 strlen(f))<=st_p->width)
+	    if (((st_p->field? strlen_sql(textvar, fgw_text(textvar)->nolines)+1:
+		 0)+strlen(f))<=st_p->width)
 	    {
 		if (st_p->field)
 		    addstring_sql(textvar, ",");

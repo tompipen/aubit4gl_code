@@ -168,7 +168,7 @@
 10|13|  format vertical "%s%8i%8i[][]%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i"|
 10|14|  headers "Statement", "Cost", "Rows", "", "",|
 10|15|     "Sequential scans", "Sort scans", "AutoIndexes", "Index paths",|
-10|16|     "Merge joins", "Hasc Joins", "Key only paths", "Temp files", "Views",|
+10|16|     "Merge joins", "Hash Joins", "Key only paths", "Temp files", "Views",|
 10|17|     "Remote sql", "Sec. threads", "Requested PDQ", "PDQ priority"|
 4|4|               part4, part5, part6, part7, part8|
 4|5|  from <+lone put db select name from sysmaster:sysdatabases+>:sysindexes i,|

@@ -4,7 +4,7 @@
 #	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 #
 #	Initial release: Oct 92
-#	Current release: Jan 02
+#	Current release: Aug 02
 #
 #	This library is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU Lesser General Public
@@ -176,7 +176,8 @@ function uni_downstream(im, ip)
 	end if
 	call drop_uni()
       when (im=MB_scroll) and pan_focussed()
-	while scroll_findtext(length(uni_retrieve(pan_row()))>0, ip, ol)
+	while scroll_findtext(length(asc_retrieveline(uni_text[cur_pane],
+						      pan_row()))>0, ip, ol)
 	end while
 	let ln=pan_row()
 #
@@ -262,7 +263,6 @@ function uni_settext(t)
     if (uni_tmpstate[pane_id])
     then
 	call asc_free(uni_text[pane_id])
-	let uni_tmpstate[pane_id]=0
     end if
     let uni_tmpstate[pane_id]=0
     if (t is not null)
@@ -305,7 +305,7 @@ function drop_uni()
     define p smallint
 
     for p=1 to K_maxpane
-	if (uni_tmpstate[p])
+	if (uni_tmpstate[p]>0)
 	then
 	    call asc_free(uni_text[p])
 	    let uni_tmpstate[p]=0
@@ -327,7 +327,7 @@ function stp_uni()
     else
 	start report mlt_rep to pipe dest
 	for i=1 to pan_max()
-	    output to report mlt_rep(uni_retrieve(i))
+	    output to report mlt_rep(asc_retrieveline(uni_text[cur_pane], i))
 	end for
 	finish report mlt_rep
 	call ptr_check()

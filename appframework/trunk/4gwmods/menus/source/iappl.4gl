@@ -354,7 +354,7 @@ function app_execute(la)
 	  when (ol)
 	    let msg=MB_chooseset
 	    let o_query=o_query[1, ol], txt clipped
-	    let ol=ol+e-s+1
+	    let ol=ol+length(txt)
 	  otherwise
 	    let msg=MB_chooseset
 	    let o_query=txt clipped
