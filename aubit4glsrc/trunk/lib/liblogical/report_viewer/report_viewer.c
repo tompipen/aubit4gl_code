@@ -378,11 +378,12 @@ edit_lle ()
 	      if (gtk_object_get_data (GTK_OBJECT (fixed), buff) == 0
 		  && selectable)
 		{
-		  label = gtk_label_new (" ");
+		  label = gtk_label_new (">");
 		  evt = gtk_event_box_new ();
 		  gtk_widget_set_name (GTK_WIDGET (label), "unselected");
 		  gtk_widget_set_name (GTK_WIDGET (evt), "unselected");
 
+		  setup_block(block,evt,label);
 		  add_widget_block_where(report->blocks[block].where, report->blocks[block].why,label);
 		  add_widget_block_where(report->blocks[block].where, report->blocks[block].why,evt);
 
