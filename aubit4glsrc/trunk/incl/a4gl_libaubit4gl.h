@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.133 2004-09-02 15:57:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.134 2004-09-10 12:11:43 mikeaubury Exp $
 #
 */
 
@@ -421,6 +421,7 @@
 #define DTYPE_SERIAL    6
 #define DTYPE_DATE      7
 #define DTYPE_MONEY     8
+#define DTYPE_NULL	9
 #define DTYPE_DTIME     10
 #define DTYPE_BYTE      11
 #define DTYPE_TEXT      12

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.31 2004-07-10 09:48:34 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.32 2004-09-10 12:11:43 mikeaubury Exp $
 */
 
 /**
@@ -169,6 +169,15 @@ extern "C"
 #define ERR_BADNOARGS 1000
 #define ABORT 1
 #define WARN 2
+
+
+#ifndef S_CONSTR_LIST
+#define S_CONSTR_LIST
+struct s_constr_list {
+	char *tabname;
+	char *colname;
+	};
+#endif
 
 #ifndef NODEBUG
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
