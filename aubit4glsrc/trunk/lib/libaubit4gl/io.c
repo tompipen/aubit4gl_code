@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: io.c,v 1.5 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -46,6 +46,7 @@
 
 #include "a4gl_dbform.h"
 #include "a4gl_tunable.h"
+#include "a4gl_aubit_lib.h"     //acl_getenv()
 #include "a4gl_debug.h"
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.66 2002-05-26 06:26:43 afalout Exp $
+# $Id: mod.c,v 1.67 2002-05-30 06:25:12 afalout Exp $
 #
 */
 
@@ -1121,7 +1121,7 @@ find_type (char *s)
  *   - -2 Is a variable thru variable
  *   - A numeric code number identifiing the data type (@see find_type())
  */
-static long 
+static long
 scan_variables (char *s, int mode)
 {
   int a;
@@ -1760,6 +1760,8 @@ pushLikeAllTableColumns(char *tableName)
 
     //int A4GLSQL_next_column(char *colname, int *dtype,int *size);
     rval = A4GLSQL_next_column(colname,&idtype,&isize);
+	// warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+    // we are sending char ARRAY to function expecting char POINTER !!!!
 
     if (rval == 0 )
       break;
@@ -2181,8 +2183,10 @@ push_bind_rec (char *s, char bindtype)
   char *ptr;
   int lvl = 0;
 
-  // The function should be declared here because they are thigly coupled
-  int add_bind (char i, char *var);
+  /* The function should be declared here because they are thigly coupled
+  int add_bind (char i, char *var); */
+  /* BUT add_bind is already declared in a4gl+4glc_4glc.h !!! */
+
 
   debug ("In push_bind_rec : %s\n", s);
 

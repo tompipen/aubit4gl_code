@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.33 2002-05-25 12:12:45 afalout Exp $
+# $Id: sql.c,v 1.34 2002-05-30 06:25:20 afalout Exp $
 #
 */
 
@@ -47,15 +47,16 @@
 #include <stdlib.h>
 
 #include "a4gl_database.h"
-// stack.h will eventually include stdlib.h, which uses getenv(), so
-// we need to set GETENV_OK and only then include debug.h
 #include "a4gl_stack.h"
-#define GETENV_OK
-#include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
-#include "a4gl_runtime_tui.h"	//push_variable
+#include "a4gl_runtime_tui.h"	/* push_variable() */
+
+/* stack.h will eventually include stdlib.h, which uses getenv(), so
+ we need to set GETENV_OK and only then include debug.h */
+#define GETENV_OK
+#include "a4gl_debug.h"
 
 #ifdef __CYGWIN__
 	#include <windows.h>
@@ -93,15 +94,21 @@
 
 	#ifdef PGODBC
 			#include <pgsql/iodbc/iodbc.h>
-			#include <pgsql/iodbc/isql.h>
+			/* #include <pgsql/iodbc/isql.h> */
 			#include <pgsql/iodbc/isqlext.h>
+
+            /* NOTHING WE CAN DO:
+            /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
+			/usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
+            */
+
 			#define __UCHAR_DEFINED__
 		    #define __ODBC_DEFINED__
 	#endif
 
     #ifndef __ODBC_DEFINED__
-        //default for tesing, when we don't use makefile we will not have -Dxxx
-		// unixODBC headers:
+        /* default for tesing, when we don't use makefile we will not have -Dxxx
+		 unixODBC headers: */
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
@@ -111,7 +118,8 @@
 
 #endif
 
-#include "a4gl_dlsql.h" //char *A4GLSQL_get_currdbname   (char *cursor);
+/* MUST be included after ODBC specific headers to precent redeclaration of UCHAR */
+#include "a4gl_dlsql.h" 		/* A4GLSQL_get_currdbname */
 
 /*
 =====================================================================
@@ -140,7 +148,7 @@
 #define MAX_NUM_STRING_SIZE (MAX_NUM_PRECISION + 5)
 #define strlen(a) (strlen((char *)a))
 #define fgl_size(a,b) (fgl_sizes[a]==-1?b+1:fgl_sizes[a])
-//#define fgl_size(a,b) (fgl_sizes[a]==-1?b:fgl_sizes[a])
+/* #define fgl_size(a,b) (fgl_sizes[a]==-1?b:fgl_sizes[a]) */
 
 /*
 =====================================================================
@@ -155,7 +163,7 @@ struct s_sid *find_prepare (char *pname, int mode);
 int find_cursor_for_decl (char *cname);
 struct s_cid *A4GLSQL_find_cursor (char *cname);
 int need_quotes (int d);
-void *find_pointer_val (char *name, char t);
+//void *find_pointer_val (char *name, char t);
 int obind_column_arr (int pos, char *s, HSTMT hstmt);
 void ibind_column_arr (int pos, char *s, HSTMT hstmt);
 char *proc_bind_arr (char **b, int n, char t, HSTMT hstmt);
@@ -169,14 +177,14 @@ int ODBC_exec_select (HSTMT hstmt);
 int sqlerrwith (int rc, HSTMT h);
 int chk_need_blob(int rc,HSTMT hstmt)  ;
 int chk_getenv(char *s,int a) ;
-void A4GLSQL_set_sqlca_sqlcode(int a);
+//void A4GLSQL_set_sqlca_sqlcode(int a);
 void post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,HSTMT hstmt);
 void  set_sqlca (HSTMT hstmt, char *s, int reset);
 UDWORD display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
 int example2 (UCHAR * server, UCHAR * uid, UCHAR * pwd, UCHAR * sqlstr);
 void chrcat (char *s, char a);
 char *conv_binding (struct BINDING *b);
-char *char_pop (void);
+//char *char_pop (void);
 HSTMT *new_hstmt (HSTMT * hstmt);
 static int conv_sqldtype (int sqldtype, int sdim);
 

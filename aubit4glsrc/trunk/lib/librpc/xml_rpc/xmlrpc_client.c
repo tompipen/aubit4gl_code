@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.3 2002-05-24 13:30:03 afalout Exp $
+# $Id: xmlrpc_client.c,v 1.4 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 
@@ -72,9 +72,9 @@ xmlrpc_env env;
 =====================================================================
 */
 
-double pop_double(void);
+//double pop_double(void);
 //int push_double(double a);
-float pop_float(void);
+//float pop_float(void);
 //int push_float(float a);
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+# $Id: helper.c,v 1.7 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -42,8 +42,11 @@
 		                    Includes
 =====================================================================
 */
-
+//#include <malloc.h> - all already in stdlib.h
+#include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
+
 #include "a4gl_dbform.h"
 #include "a4gl_pointers.h"
 #include "a4gl_debug.h"
@@ -51,7 +54,7 @@
 #include "a4gl_aubit_lib.h"
 
 //don't include a4gl_dlsql.h here, since it need UCHAR defined, and this is
-// SQL driver dependent
+// SQL driver dependent ????
 #include "a4gl_dlsql.h" //A4GLSQL_get_currdbname()
 
 /*
@@ -61,7 +64,7 @@
 */
 
 
-extern char *A4GLSQL_get_currdbname(void);
+//extern char *A4GLSQL_get_currdbname(void);
 void strip_pc(char *s,char*d);
 int extract_numeral(char *s);
 
@@ -640,9 +643,6 @@ int a;
 **  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <malloc.h>
-#include <stdio.h>
-#include <string.h>
 
 /* Some bits stripped out */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.7 2002-05-23 09:29:34 afalout Exp $
+# $Id: API_exreport.c,v 1.8 2002-05-30 06:25:18 afalout Exp $
 #
 */
 
@@ -69,7 +69,7 @@ static void *libptr=0;
 static int (*func)();
 static double (*func_d)();
 void *find_func(void *p,char *s);
-void *find_func_allow_missing(void *p,char *s);
+//void *find_func_allow_missing(void *p,char *s);
 void pdf_skip_by(void *rep,double a) ;
 double pdf_metric(int a,char  c,void *rep);
 void pdf_aclfgli_skip_lines(void *rep);

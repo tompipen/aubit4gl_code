@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.15 2002-05-24 13:30:03 afalout Exp $
+# $Id: esql.ec,v 1.16 2002-05-30 06:25:20 afalout Exp $
 #
 */
 
@@ -58,7 +58,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.15 2002-05-24 13:30:03 afalout Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.16 2002-05-30 06:25:20 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -461,7 +461,7 @@ static char *initUser(const char *userName)
   if ( userName != NULL )
     return strdup(userName);
   /** @todo : Confirm if this should be the env var name to be used */
-  retUser = acl_getenv("SQLUID");
+  retUser = (char *)acl_getenv("SQLUID");
   if ( retUser != NULL )
     return strdup(retUser);
   return retUser;
@@ -479,7 +479,7 @@ static char *initPassword(const char *passwd)
   if ( passwd != NULL )
     return strdup(passwd);
   /** @todo : Confirm if this should be the env var name to be used */
-  retPasswd = acl_getenv("SQLPWD");
+  retPasswd = (char *)acl_getenv("SQLPWD");
   if ( retPasswd != NULL )
     return strdup(retPasswd);
   return retPasswd;
@@ -2031,7 +2031,7 @@ int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
     int coltype;
   EXEC SQL END DECLARE SECTION;
 
-  unloadFile = mja_fopen(fname,"wt");
+  unloadFile = (FILE *)mja_fopen(fname,"wt");
   if ( unloadFile == (FILE *)0 )
   {
     /** @todo : Generate some error code compatible with informix 4gl */

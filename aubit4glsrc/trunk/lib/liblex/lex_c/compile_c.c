@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.17 2002-05-26 08:43:45 afalout Exp $
+# $Id: compile_c.c,v 1.18 2002-05-30 06:25:20 afalout Exp $
 #
 */
 
@@ -142,7 +142,7 @@ extern int constr_cnt;
 =====================================================================
 */
 
-extern void set_clobber(char *c);
+//extern void set_clobber(char *c);
 
 //function prototypes that must be here, not in header file:
 static void printc(char* fmt,... );

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
+# $Id: rpc_client.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 /**
@@ -69,16 +69,6 @@ extern unsigned long serviceport;
 =====================================================================
 */
 
-#ifdef WIN32
-	#ifndef __CYGWIN__
-		return_values *call_remote_func_1(call *argp, CLIENT *clnt);
-	#else
-		return_values *call_remote_func_1(call argp, CLIENT *clnt);
-	#endif
-#else
-	return_values *call_remote_func_1(call argp, CLIENT *clnt);
-#endif
-
 
 /*
 =====================================================================
@@ -86,9 +76,9 @@ extern unsigned long serviceport;
 =====================================================================
 */
 
-double pop_double(void);
+//double pop_double(void);
 //int push_double(double a);
-float pop_float(void);
+//float pop_float(void);
 //int push_float(float a);
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
+# $Id: mcompile.c,v 1.9 2002-05-30 06:25:17 afalout Exp $
 #*/
 
 /**
@@ -55,9 +55,9 @@
 */
 
 
-FILE *	mja_fopen		(char *name, char *mode);
-FILE *	write_errfile	(FILE *f,char *s,long p,int l);
-void    init_menu		(void);
+/* FILE *	mja_fopen		(char *name, char *mode); */
+/* FILE *	write_errfile	(FILE *f,char *s,long p,int l); */
+/* void    init_menu		(void); */
 
 // in lex.yy.c
 extern int buffpos		(void);

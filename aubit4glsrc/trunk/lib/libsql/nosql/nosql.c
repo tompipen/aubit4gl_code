@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.15 2002-05-23 09:29:36 afalout Exp $
+# $Id: nosql.c,v 1.16 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 /**
@@ -70,7 +70,7 @@ char lasterrorstr[1024] = "";
 void local_exitwith (char *s);
 char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname, int mode);
-void A4GLSQL_set_status (int a, int sql);
+//void A4GLSQL_set_status (int a, int sql);
 extern char * global_A4GLSQL_get_sqlerrm (void); //in API_sql.c
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.27 2002-05-25 12:12:44 afalout Exp $
+# $Id: 4glc.c,v 1.28 2002-05-30 06:25:12 afalout Exp $
 #
 */
 
@@ -158,7 +158,7 @@ static void
 initArguments(int argc, char *argv[])
 {
   int i;
-  extern char *optarg;
+  /* extern char *optarg; in /usr/include/getopt.h */
 //  int this_option_optind = optind ? optind : 1;
   int option_index = 0;
   int si;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
+# $Id: rpc_server.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 /**
@@ -59,9 +59,9 @@
 =====================================================================
 */
 
-double pop_double(void);
+//double pop_double(void);
 //int push_double(double a);
-float pop_float(void);
+//float pop_float(void);
 //int push_float(float a);
 //void *find_pointer(char *c,char a);
 static int call_func(char *s,int a);

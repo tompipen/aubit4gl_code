@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.14 2002-05-26 06:26:49 afalout Exp $
+# $Id: stack.c,v 1.15 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -41,11 +41,11 @@
  * @todo Doxygen comments to add to functions
  */
 
- /*
-    =====================================================================
-    Includes
-    =====================================================================
-  */
+/*
+=====================================================================
+							   Includes
+=====================================================================
+*/
 
 #include <stdio.h>
 #include <math.h>
@@ -56,10 +56,11 @@
 #include <time.h>
 
 #ifndef WIN32
-#include <unistd.h>
-#include <pwd.h>
+	#include <unistd.h>
+	#include <pwd.h>
 #endif
 
+#include "a4gl_incl_4glhdr.h" 	//push_param()
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
@@ -79,25 +80,25 @@
 
 
 #ifdef WIN32
-struct passwd
-{
-  char pw_name[20];
-};
+	struct passwd
+	{
+	  char pw_name[20];
+	};
 #endif
 
 //FIXME: is this OK? see lib/libincl/dbform.h
 #ifdef __CYGWIN__
-extern int int_flag;
-extern int status;
+	//extern int int_flag;
+	//extern int status;
 
     //this is all wrong: where is TRUE/FALS usualy defined?
-#ifndef BOOLEAN
-# define BOOLEAN int
-# define TRUE 1
-# define FALSE 0
-#endif
+	#ifndef BOOLEAN
+		#define BOOLEAN int
+		#define TRUE 1
+		#define FALSE 0
+	#endif
 #else
-extern long status;
+	//extern long status;
 #endif
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: dates.c,v 1.5 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -118,7 +118,7 @@ struct s_days {
 */
 
 void	day_array 	(int, int, int *);
-int		day_in_week (int, int, int);
+//int		day_in_week (int, int, int);
 int		day_in_year (int, int, int);
 int     y2kmode		(int yr);
 

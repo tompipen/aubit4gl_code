@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.10 2002-05-26 06:26:49 afalout Exp $
+# $Id: API_sql.c,v 1.11 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -61,7 +61,7 @@
 =====================================================================
 */
 
-sqlca_struct sqlca;
+//sqlca_struct sqlca;
 //long status;
 static void *libptr=0;
 typedef unsigned char UCHAR;
@@ -74,7 +74,7 @@ typedef unsigned char UCHAR;
 
 static int (*func)();
 void *find_func(void *p,char *s);
-extern void *find_func_allow_missing (void *dllhandle, char *func); //in calldll.c
+//extern void *find_func_allow_missing (void *dllhandle, char *func); //in calldll.c
 
 /*
 =====================================================================

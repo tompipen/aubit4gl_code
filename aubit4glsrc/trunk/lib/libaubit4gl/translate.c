@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.5 2002-05-20 11:41:12 afalout Exp $
+# $Id: translate.c,v 1.6 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -83,7 +83,7 @@ int list_of_strings_len=0;
 =====================================================================
 */
 
-char * acl_getenv(char *);
+//char * acl_getenv(char *);
 void add_translate(int mode,char * from,char * to, int quote);
 void make_trans_list(void);
 char * translate(char *s);

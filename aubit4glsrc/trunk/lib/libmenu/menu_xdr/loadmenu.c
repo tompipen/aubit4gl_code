@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.7 2002-05-24 13:30:03 afalout Exp $
+# $Id: loadmenu.c,v 1.8 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 /**
@@ -45,7 +45,7 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
-#include <strings.h>
+//#include <strings.h>
 
 // 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h

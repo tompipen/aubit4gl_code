@@ -32,6 +32,8 @@ shell script convkw.single
 =====================================================================
 */
 
+/* prevent warning for redundant declaration of yyparse: */
+#define _BISON_SIMPLE_INCL_
 
 #include <stdio.h>
 #include <ctype.h>
@@ -137,11 +139,11 @@ int fcall_cnt=0;
 */
 
 
-char *downshift(char *);
-char *convstrsql(char *);
-void *new_expr(char *value) ;
-//void *append_expr(void *orig_ptr,char *value);
-//void *append_expr_expr(void *orig_ptr,void *second_ptr);
+/* char *downshift(char *); */
+/* char *convstrsql(char *); */
+/* void *new_expr(char *value) ; */
+/* void *append_expr(void *orig_ptr,char *value); */
+/* void *append_expr_expr(void *orig_ptr,void *second_ptr); */
 
 
 %}

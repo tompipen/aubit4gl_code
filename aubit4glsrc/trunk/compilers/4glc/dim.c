@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.10 2002-05-25 12:12:44 afalout Exp $
+# $Id: dim.c,v 1.11 2002-05-30 06:25:12 afalout Exp $
 #*/
 
 /**
@@ -38,7 +38,7 @@
 =====================================================================
 */
 
-#include <strings.h>
+/* #include <strings.h> */
 #include <string.h>
 #include <stdlib.h> 			//realloc()
 

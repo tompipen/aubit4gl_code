@@ -40,7 +40,7 @@ extern int menu_cnt;
 char sbuff[256];
 menu_option_item *o;
 extern char *outputfilename;
-extern FILE *yyin;
+/* extern FILE *yyin; */
 struct menu *m;
 
 

@@ -36,6 +36,9 @@ printcomment char* fmt ... -> void
 //void print_sleep (void)
 print_sleep -> void
 
+//void print_include(char *s)
+print_include char* s -> void
+
 //void print_push_variable (char *s)
 print_push_variable char* s -> void
 

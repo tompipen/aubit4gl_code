@@ -11,6 +11,10 @@
 =====================================================================
 */
 
+/* prevent warning for redundant declaration of yyparse / fgl_comp_parse: */
+#define _BISON_SIMPLE_INCL_
+
+
 #include <stdio.h>
 #include <string.h>
 #include "a4gl_formxw.h"
@@ -45,7 +49,7 @@ extern int openwith;
 extern char currftag[256];
 extern char *outputfilename;
 extern char *tablist[];
-extern FILE *yyin;
+/* extern FILE *yyin; */
 int in_screen_section=0;
 
 /*
@@ -55,7 +59,7 @@ int in_screen_section=0;
 */
 
 char *chk_alias(char *s);
-extern char *char_val(char*s);
+/* extern char *char_val(char*s); */
 
 /*
 =====================================================================
@@ -316,8 +320,9 @@ fpart | fpart_list fpart;
 fpart : 
 EQUAL { 
 init_fld();
-} 
-field_type op_att {
+}
+field_type op_att 
+{
 	make_downshift(fld->tabname);
 	make_downshift(fld->colname);
 
@@ -326,13 +331,16 @@ field_type op_att {
 	fld->colours.colours_val=0;
 	debug("add color %d\n",FA_C_WHITE);
 }
-op_field_desc 
+op_field_desc
 {
-if (fld->datatype==90&&!(has_str_attribute(fld,FA_S_DEFAULT))) {
-        debug("Currpos = %ld\n",ftell(yyin));
-        yyerror("A button must have a default value for its caption");
-        YYERROR;
-}
+	if (fld->datatype==90&&!(has_str_attribute(fld,FA_S_DEFAULT)))
+	{
+	        extern FILE *yyin;
+
+			debug("Currpos = %ld\n",ftell(yyin));
+	        yyerror("A button must have a default value for its caption");
+	        YYERROR;
+	}
 	set_field(currftag,fld);
 };
 

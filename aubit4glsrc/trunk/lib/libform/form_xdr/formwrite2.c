@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.6 2002-05-24 13:30:02 afalout Exp $
+# $Id: formwrite2.c,v 1.7 2002-05-30 06:25:19 afalout Exp $
 #*/
 
 /**
@@ -932,7 +932,9 @@ getdatatype(char *col,char *tab)
 
   debug("Calling get_dtype with %s %s %s",the_form.dbname,tab,col);
   //int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]);
-  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);   // warning: passing arg 4 of `get_dtype' from incompatible pointer type
+  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);   
+  // warning: passing arg 4 of `get_dtype' from incompatible pointer type
+  // so we are passing a char ponter to function expecting char array !!
   debug("get_dtype returns %d",a);
   /* 6-2 ? CHECK */
   if (a==6) a=2;
@@ -1090,7 +1092,7 @@ add_bool_attr(struct struct_scr_field *f,int type)
 
   debug("add_bool_attr\n");
 
-  if (!has_bool_attribute(f,type)) 
+  if (!has_bool_attribute(f,type)) /* see a4gl_aubit_lib.h for declaration */
   {
     if (f->bool_attribs.bool_attribs_len==0) f->bool_attribs.bool_attribs_val=0;
 

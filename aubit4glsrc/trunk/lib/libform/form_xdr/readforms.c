@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.10 2002-05-24 13:30:02 afalout Exp $
+# $Id: readforms.c,v 1.11 2002-05-30 06:25:19 afalout Exp $
 #*/
 
 /**
@@ -57,6 +57,7 @@
 #include "a4gl_pointers.h"
 #include "a4gl_aubit_lib.h"
 #include "a4gl_io.h"
+#include "a4gl_runtime_tui.h"			/* push_char() */
 #include "a4gl_debug.h"
 
 
@@ -146,7 +147,7 @@ char *string_width (char *a);
 //WINDOW *create_window (char *name, int x, int y, int w, int h, int border);
 
 //extern WINDOW *currwin;
-char *new_string (int a);
+//char *new_string (int a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 //int display_fields (FORM * mform, int n, ...);
 
@@ -348,7 +349,7 @@ read_attributes (struct s_form_dets *f)
 	     f->fileform->attributes.attributes_val[a].colour);
       if (f->fileform->attributes.attributes_val[a].colour == -1)
 	f->fileform->attributes.attributes_val[a].colour = 7;
-      if (has_bool_attribute
+      if (has_bool_attribute /* see a4gl_aubit_lib.h for declaration */
 	  (&f->fileform->attributes.attributes_val[a], FA_B_REVERSE))
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
       else

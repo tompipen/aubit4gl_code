@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.5 2002-05-24 13:30:03 afalout Exp $
+# $Id: has_pdf.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
 #*/
 
 /**
@@ -60,7 +60,7 @@
 =====================================================================
 */
 
-double 	pdf_size		(double f, char c,struct pdf_rep_structure *p) ;
+/* double 	pdf_size		(double f, char c,struct pdf_rep_structure *p) ; */
 void 	pdf_skip_by		(struct pdf_rep_structure *rep,double a) ;
 double 	pdf_metric		(int a,char  c,struct pdf_rep_structure *rep);
 void 	pdf_aclfgli_skip_lines(struct pdf_rep_structure *rep);

@@ -175,34 +175,34 @@
 	#define DECODE_SIZE(x) (x>>16)
 
 	/* Prototpes for functions that should be seen */
-	char *new_string(int a);
-	int pop_bool();
-	int pop_int(void);
-	long pop_long();
-	long pop_date();
-	float pop_float();
-	double pop_double();
-	int pop_var(void *p,int d) ;
-	int pop_var2(void *p,int d,int s) ;
-	double ret_var(void *p,int d) ;
-	int pop_char(char *z,int size);
-	char *char_pop(void);
-	int pop_param(void *p,int d,int size);
-	//int pop_param (void *p, int d, int s);
+	char *	new_string(int a);
+	int 	pop_bool();
+	int 	pop_int(void);
+	long 	pop_long();
+	long 	pop_date();
+	float 	pop_float();
+	double 	pop_double();
+	int 	pop_var(void *p,int d) ;
+	int 	pop_var2(void *p,int d,int s) ;
+	double 	ret_var(void *p,int d) ;
+	int 	pop_char(char *z,int size);
+	char *	char_pop(void);
+	int 	pop_param(void *p,int d,int size);
+	//int 	pop_param (void *p, int d, int s);
 
-	void pop_params(struct BINDING *b,int n);
-	//void push_param(void *p,int d);
-	void 	push_params 		(struct BINDING *b, int n);
+	void 	pop_params		(struct BINDING *b,int n);
+	void 	push_param		(void *p,int d);
+	void 	push_params 	(struct BINDING *b, int n);
 
-	void push_user();
-	void push_today();
-	int opboolean();
-	void pop_args(int a) ;
-	void debug_print_stack(void) ;
-	void print_stack() ;
+	void 	push_user();
+	void 	push_today();
+	int 	opboolean();
+	void 	pop_args(int a) ;
+	void 	debug_print_stack(void) ;
+	void 	print_stack() ;
 
 
-	void locate_var(struct fgl_int_loc *p,char where,char *filename);
+	void 	locate_var(struct fgl_int_loc *p,char where,char *filename);
 
 
 	#if (defined(WIN32) && ! defined(__CYGWIN__))

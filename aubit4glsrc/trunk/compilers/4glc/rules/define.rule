@@ -207,7 +207,8 @@ push_type("struct_dtime ",$<str>2,0);
 				function=get_datatype_function_n(upshift(buff),"OUTPUT");
 				debug("Got function as %p",function);
 
-				if (function!=-1) {
+                /*  warning: comparison between pointer and integer */
+				if ((int)function != -1) {
 					debug("call returns %s\n",function());
 					strcpy(buff,function());
 					debug("Set up buff as %s");
@@ -215,7 +216,7 @@ push_type("struct_dtime ",$<str>2,0);
 					debug("Pushed type : %s\n",function());
 				}
 			} else {
-				//yyerror("Unknown datatype : %s",$<str>1);
+				/* yyerror("Unknown datatype : %s",$<str>1); */
                 yyerror("Unknown datatype.");
 			}
 		}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
+# $Id: fglwrap.c,v 1.9 2002-05-30 06:25:19 afalout Exp $
 #
 */
 
@@ -80,6 +80,8 @@
 */
 
 //FIXME: is this OK? see lib/libincl/dbform.h
+
+/* now defined ONLY in a4gl_incl_4glhdr.h
 #ifdef __CYGWIN__
 	extern int int_flag;
 	extern int status;
@@ -87,7 +89,10 @@
 	extern long status;
 #endif
 
+
 extern sqlca_struct sqlca;
+
+*/
 int p_numargs=0;
 int isdebug=0;
 char *p_args[256];
