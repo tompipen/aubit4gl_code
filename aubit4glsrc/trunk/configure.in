@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.281 2005-02-11 03:28:13 afalout Exp $
+dnl # $Id: configure.in,v 1.282 2005-02-11 12:34:05 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2181,18 +2181,21 @@ xxxINCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
 	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h"
 #	../common/dataio/form_x.x.h
 
+#This is really needed (Feb 2005)
+INCL_HEADERS_EC_REMOVETHIS="a4gl_API_esql.h a4gl_incl_infx.h"
+
 
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
 		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
-		a4gl_API_sqlparse.h"
+		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h"
 
 #INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
 #		a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
 
 
 #not needed:
-#a4gl_API_esql.h a4gl_API_packer.h
+#a4gl_API_esql.h <<< is needed!! a4gl_API_packer.h
 
     COUNTER=0
 	for FILE in $ALL_INC ; do
@@ -4645,6 +4648,25 @@ AC_ARG_WITH(informix,
 			if test "$enable_ac_debug" = "yes" ; then
 				echo "IFMX_ESQLC='$IFMX_ESQLC'"
 			fi
+
+			if test "$IFMX_ESQLC" != "no"; then
+				old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
+				#WARNING:new PG path must come first
+				CFLAGS="-I$IFX_INCDIR -I$INFORMIXDIR/incl $CFLAGS"
+				CPPFLAGS="-I$IFX_INCDIR -I$INFORMIXDIR/incl $CPPFLAGS"
+				#LDFLAGS="$LDFLAGS"
+				#LIBS="$PGSQL_LIBS"
+				
+				#include "esql/decimal.h"
+				AC_CHECK_HEADERS([ esql/decimal.h ])
+				if test "$ac_cv_header_esql_decimal_h" != "yes" ; then
+					AC_MSG_WARN(Missing esql/decimal.h - disabling Informix ESQL/C support)
+					IFMX_ESQLC="no"
+				fi
+				CFLAGS="$old_CFLAGS"; LDFLAGS="$old_LDFLAGS"; LIBS="$old_LIBS"; CPPFLAGS="$old_CPPFLAGS"				
+			fi
+			
+			
 			if test "$IFMX_ESQLC" != "no"; then
 				case "$IFMX_ESQLC" in
 					*cygdrive*)
@@ -5834,6 +5856,21 @@ fi
 				LIBS=$old_LIBS
 				LDFLAGS=$old_LDFLAGS
 
+				if test "$ac_cv_lib_ifcli_main" = "yes"; then
+					old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
+					CFLAGS="-I$IFX_INCDIR -I$INFORMIXDIR/incl -I$INFORMIXDIR $CFLAGS"
+					CPPFLAGS="-I$IFX_INCDIR -I$INFORMIXDIR/incl -I$INFORMIXDIR $CPPFLAGS"
+					#LDFLAGS="$LDFLAGS"
+					#LIBS="$PGSQL_LIBS"
+
+					AC_CHECK_HEADERS([ incl/cli/infxcli.h incl/cli/infxsql.h ])
+					if test "$ac_cv_header_incl_cli_infxcli_h" != "yes" \
+						-o "$ac_cv_header_incl_cli_infxsql_h" != "yes" ; then
+						AC_MSG_WARN(Missing incl/cli/infxcli.h or incl/cli/infxsql.h - disabling Informix ODBC support)
+						ac_cv_lib_ifcli_main="no"
+					fi
+					CFLAGS="$old_CFLAGS"; LDFLAGS="$old_LDFLAGS"; LIBS="$old_LIBS"; CPPFLAGS="$old_CPPFLAGS"
+				fi
 
 				if test "$ac_cv_lib_ifcli_main" = "yes"; then
 					HAVE_IFXODBC=yes
@@ -5876,6 +5913,9 @@ fi
 	  AC_MSG_RESULT(--with-ifxodbc not specified)
 	])
 
+if test "$enable_stop_ifxodbc" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Checks for SAP DB ODBC driver
@@ -9007,7 +9047,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.281 2005-02-11 03:28:13 afalout Exp $
+| $Id: configure.in,v 1.282 2005-02-11 12:34:05 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
