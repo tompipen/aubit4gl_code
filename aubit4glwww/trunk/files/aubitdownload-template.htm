@@ -45,7 +45,7 @@ released are seriously out of date.</font></p>
   <li><a href="#Source distribution">Source distribution</a></li>
   <li><a href="#Precompiled binary distribution">Precompiled binary distribution</a></li>
   <li><a href="#Other files">Other files</a></li>
-  <li><a href="#Dependencies download links">Dependencies download links</a></li>
+  <li><a href="../pages/optional.html">Optional functionality and dependencies download links</a></li>
 </ul>
 <p><span style="background-color: #00FF00"><font color="#000000">Please note:&nbsp;</font></span></p>
 <ul>
@@ -55,9 +55,6 @@ released are seriously out of date.</font></p>
     compile, and be available. We keep builds from previous days available, so
     you can <a href="/files/">click here</a> to see if you may find what you
     want. Tip: look for full file names in your browser's status bar.</li>
-  <li>Some browsers will show empty page if you try to view
-    compile-platform-info-*.txt files, reason unknown. They are included in
-    compressed archives too.</li>
   <li> <a href="mailto:afalout@ihug.co.nz">Let
 me know</a> if you have problems with any link on this page</li>
 </ul>
@@ -115,16 +112,6 @@ aubit4gl--template--.src.rpm
 </h3>
 
 
-<P>
- This is our first attempt at binary
-packaging, so please forgive us if it's not all it should be. <a href="mailto:afalout@ihug.co.nz">Let
-me know</a> if you have problems, but also please let me know in which
-configurations you found it to work OK. They are automatically built every
- night, so they should always be at most a day old. If they are not, let me
- know.&nbsp;
-</P>
-
-
 <p>Platforms available:</p>
 <ul>
   <li><a href="#tar.gz tarball precompiled binary packages:">Linux tar.gz and RPM precompiled binary packages</a></li>
@@ -141,10 +128,6 @@ configurations you found it to work OK. They are automatically built every
     PDFlib library is not detected, this functionality will be disabled in
     automatically created configuration file. See &quot;README.txt&quot; file in
     archive you will download for details.</li>
-  <li>If 'configure' script does not detect ANY ODBC manager/driver that it can
-    use, &quot;noODBC&quot; versions of SQL libraries will be configured and
-    used. Therefore
-you will NOT be able execute any database oriented (SQL) commands!</li>
   <li>RPM package have a script that needs to be performed as part of RPM
     installation. If your RPM client is configured in a way which prohibits
     execution of scripts, installation will fail. If this happens, you will need
@@ -189,10 +172,7 @@ you will NOT be able execute any database oriented (SQL) commands!</li>
       <td align="center">
         <p><a href="
 aubit4gl-bin-RH6-iODBC-GTK-PDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-iODBC-GTK-PDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info" width="15" height="16"></a></td>
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a></td>
       <td align="center">
         
       <a href="
@@ -230,10 +210,7 @@ Windows</a></i></u></font></span></p>
       <td>
         <p align="center"><a href="
 aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---template--.zip
-			"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---txttemplate--.zip.txt
-			"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+			"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a></td>
       <td>
         &nbsp;</td>
       <td>&nbsp;</td>
@@ -266,174 +243,13 @@ platforms, and consider contributing binary packages.</p>
 
 
 <p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
-<hr>
-<h3><a name="Dependencies download links">Dependencies download links</a></h3>
-<p>Depending on your needs, you will need some or all third-party software and/or libraries
-listed here present on your system. First, check if you have them, and if they are
-compatible version. You can run &quot;configure&quot; script to see what it will
-report, in both binary an source files distributions. And if you don't, but you
-want the functionality, follow links provided, and install them
-according to there installation instructions. See manual and README.txt for more information.
-To activate correctly installed functionality based on external libraries or
-programs, after they are installed, it should be sufficient to re-run &quot;configure&quot;
-script, and in case of source code distribution recompile source code and
-re-install. You can, of course, always edit configuration files manually, if you
-prefer.</p>
-<p>Note: If you want minimum hassle, we found that Red Hat 7.2 contains all
-dependencies for Aubit 4gl out of the box, on one CD, all in RPM automatic
-installs (It does NOT have PDFlib, since it is commercial product - OpenSource,
-but you will need to pay fee if you use it) It has unixODBC with GUI configuration
-tools, PostgreSQL with nice GUI tools, and all worked immediately for me. So if
-you have choice of operating systems, this is our recommended platform.</p>
-<p>If you have RPM, or other package manager based system (DEB, etc), easiest
-way to check for existing dependencies (if &quot;configure&quot; cannot find
-them but you know you have them) is to query that system. Of course, if
-dependencies where installed using them. Otherwise, try running
-&quot;configure&quot; script, and see what it will report (note: it will NOT
-find anything that is installed in non-standard locations - you can still use it
-by manually specifying the location to &quot;configure&quot; script, but you
-will have to find this location on your own.)</p>
-<h4><i><span style="background-color: #00FF00"><font color="#000000">ODBC</font></span></i></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-  <p>To access the database using SQL statements. However, even this is now
-  optional, and Aubit compiler and compiled programs can function as
-  general-purpose language compiler, even if you do not have it, but of course,
-  if you don't attempt to execute SQL statements, in which case error will be
-  reported.</p>
-</blockquote>
-<p><i>How to check if you have it:</i></p>
-<blockquote>
-<p>UNIX: Safest bet is to look for file &quot;odbc.ini&quot; - all ODBC managers
-and/or drivers use it. If you have it, look for libodbc.so (unixODBC) or
-libiodbc.so (iODBC).&nbsp;</p>
-<p>You don't need ODBC manager, you can link with ODBC drivers directly, but
-this is probably not what you want (in this case, you will have to recompile
-everything to change database backend)</p>
-<p>Windows: all Windows installation include ODBC manager, odbc32.dll</p>
-<p>PLEASE NOTE: Whatever you do, verify that your ODBC connection is working,
-BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
-</blockquote>
-<p><i>Download and install it if you don't:&nbsp;</i></p>
-<ul>
-  <li> <a href="http://www.unixodbc.org/" target="_blank">unixODBC</a>
-    (recommended - GPL license)</li>
-  <li> <a href="http://www.openlink.co.uk/" target="_blank">OpenLink</a> (Commercial
-    product - uses custom version of iODBC manager)</li>
-  <li> <a href="http://www.iodbc.org" target="_blank">iODBC</a>
-    (Standalone ODBC manager, GPL license)
-  </li>
-  <li> PostgreSQL ODBC driver
-  </li>
-  <li> Informix ODBC driver
-  </li>
-</ul>
-<p>Note that SOME managers come with drivers for SOME databases, and some don't.
-If you will be linking Aubit against ODBC manager, you will of course need both
-the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
-<h4><span style="background-color: #00FF00"><i><font color="#000000">PDF</font></i></span></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-  <p>You will need it to use Aubit's PDF report generations functionality. This
-  is optional too, and Aubit will work without it, unless you try to use PDF specific
-  report functionality, in which case error will be repoted.</p>
-</blockquote>
-<p><i>How to check if you have it:</i></p>
-<blockquote>
-  <p>UNIX: Look for file &quot;pdflib.h&quot; - Without it, you will be unable to
-  compile Aubit with PDF support. If you downloaded precompiled Aubit binary
-  with PDFlib support, look for &quot;?????.so&quot;</p>
-  <p>Windows: FIXME: Is PDFlib available for CygWin?</p>
-</blockquote>
-<p><i>Download and install it if you don't:&nbsp;</i></p>
-<ul>
-  <li> <a href="http://www.pdflib.com" target="_blank">PDFlib</a></li>
-</ul>
-<p>NOTE: This is commercial product - OpenSource, but you will need to pay fee
-if you use it. See license agreement on the site.&nbsp;</p>
-<h4><i><span style="background-color: #00FF00"><font color="#000000">NCURSES</font></span></i></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-<p>Always needed.</p>
-</blockquote>
-<p><i>How to check if you have it:</i> at least version 5.0 or higher</p>
-<blockquote>
-  <p>UNIX: Look for &quot;ncurses.h&quot;, probably in /usr/include. It should contain
-  string NCURSES_VERSION_MAJOR</p>
-  <p>Windows: CygWin default installation includes ncurses</p>
-</blockquote>
-<p><i>Download and install it if you don't:</i></p>
-<ul>
-  <li> <a href="http://www.gnu.org/software/ncurses/ncurses.html" target="_blank">Ncurses
-home page</a> </li>
-  <li> <a href="ftp://ftp.gnu.org/pub/gnu/ncurses" target="_blank">Ncurses
-FTP site</a></li>
-</ul>
-<h4><i><span style="background-color: #00FF00"><font color="#000000">GTK</font></span></i></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-<p>To use Aubit GUI functionality. This is optional too, and if you don't have
-it, Aubit programs will fun in CUI (terminal/character) mode. Note that you can
-switch to CUI mode even if you do have GTK+ functionality active.</p>
-</blockquote>
-<p><i>How to check if you have it:</i></p>
-<blockquote>
-<p>UNIX: Try &quot;gtk-config --version&quot;</p>
-<p>Windows: try same as for UNIX, inside CygWin shell - see Aubit manual.
-Windows binary build includes GTK libraries, and so does runtime package for
-Windows.</p>
-</blockquote>
-<p><i>Download and install it if you don't:&nbsp;</i></p>
-<ul>
-  <li> <a href="http://www.gtk.org" target="_blank">GTK</a></li>
-  <li> <a href="http://user.sgic.fi/~tml/gimp/win32/downloads.html" target="_blank">GTK
-    for Windows/CygWin</a></li>
-</ul>
-<h4><i><span style="background-color: #00FF00"><font color="#000000">IksEmEl -
-Jabber and XML</font></span></i></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-<p>Needed only to compile 4GL PROGRAMS that will use XML/Jabber calls</p>
-</blockquote>
-<p><i>How to check if you have it:</i></p>
-<blockquote>
-  <p>UNIX: Look for file libiksemel.so</p>
-  <p>Windows: FIXME: is iksemel available on CygWin?</p>
-</blockquote>
-<p><i>Download and install it if you don't:&nbsp;</i></p>
-<blockquote>
-<p><a href="http://jabber-x.sourceforge.net">IksEmEl libraries</a></p>
-</blockquote>
-<p>&nbsp;</p>
-<h4><span style="background-color: #00FF00"><font color="#000000">RPCgen</font></span></h4>
-<p><i>When will you need it:</i></p>
-<blockquote>
-<p>Needed only when compiling Aubit 4gl compiler from source code</p>
-</blockquote>
-<p><i>How to check if you have it:</i></p>
-<blockquote>
-  <p>Windows/CygWin: Currently, you don't need RPCgen, since we are distributing
-  Aubit code with special customized (read: hacked) versions of files that are
-  on UNIX created by RPCgen. Reason for this is that most versions we found,
-  where broken in one way or the other.</p>
-  <p>UNIX: Look for executable called &quot;rpcgen&quot;&nbsp;</p>
-</blockquote>
-<p><i>Download and install it if you don't:&nbsp;</i></p>
-<ul>
-  <li>Sun RPCgen for <a href="http://www.hirmke.de/software/develop/gnuwin32/cygwin/porters/Vinschen_Corinna/B20/sunrpc-4.0.cygwin1.README" target="_blank">CygWin
-    readme</a></li>
-  <li>Sun RPC <a href="http://csgrad.cs.vt.edu/~fdrake/cs5204/rpc/rpc1057.html" target="_blank">protocol
-    specifications V2</a></li>
-  <li>Sun sources <a href="http://playground.sun.com/pub/rpc/" target="_blank">download</a></li>
-  <li><a href="http://netbula.com/oncrpc/rpcgen.html" target="_blank">Netbula
-    RPCgen</a> (and online manual) - commercial</li>
-  <li>Please let me know if you have better link for RPC download</li>
-</ul>
-<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
 
 
 <hr>
 <p align="center"><a href="../index.html">Aubit 4GL compiler home page</a></p>
+
+<p align="center">Aubit 4gl project is hosted by:
+<p align="center"><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=32409&amp;type=3" border="0" alt="SourceForge Logo"></a>
 
 </body>
 

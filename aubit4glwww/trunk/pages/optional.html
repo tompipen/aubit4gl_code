@@ -1,0 +1,370 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Aubit 4gl download page</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#00FFFF" vlink="#0000FF">
+
+<div align="left">
+  <table border="0" width="100%">
+    <tr>
+      <td>
+<h3><a name="Dependencies download links">Optional functionality and
+dependencies</a></h3>
+      </td>
+      <td align="right"><a href="../index.html"><img border="0" src="../images/AubitLogoOnBlack.jpg" width="263" height="142"></a></td>
+    </tr>
+  </table>
+</div>
+<hr>
+<ul>
+  <li><a href="#ODBC">ODBC libraries</a> (optional)</li>
+  <li><a href="#Native database connection libraries">Native database connection
+    libraries</a> (optional)&nbsp;</li>
+  <li><a href="#PDF">PDF library</a> (optional)</li>
+  <li><a href="#NCURSES">Curses library</a> (optional)</li>
+  <li><a href="#GTK">GTK+ library</a> (optional)</li>
+  <li><a href="#IksEmEl - Jabber and XML">Jabber IM library</a> (optional)</li>
+  <li><a href="#Sun RPC">Sun RCP</a> package&nbsp;</li>
+  <li><a href="#RPC-XML">RPC-XML libraries</a> (optional)</li>
+  <li><a href="#C language compiler">C language compiler</a></li>
+  <li><a href="#Perl">Perl interpreter</a> (optional)</li>
+  <li><a href="#SWIG">SWIG libraries</a> (optional)</li>
+</ul>
+<p>Please see Aubit 4gl <a href="../aubit4gldoc/index.html">on-line
+documentation</a> page for additional documentation and architecture diagram,
+that will show you how this all fit together.</p>
+<p>Depending on your needs for functionality, you will need some or all third-party software and/or libraries
+listed here present on your system. First, check if you have them, and if they are
+compatible version. You can run &quot;configure&quot; script to see what it will
+report, in both binary an source files distributions. And if you don't have
+them, but you
+want the functionality, follow links provided, and install them
+according to there installation instructions. See manual and README.txt for more information.
+To activate correctly installed functionality based on external libraries or
+programs, after they are installed, it should be sufficient to re-run &quot;configure&quot;
+script, and in case of source code distribution recompile source code and
+re-install. You can, of course, always edit configuration files manually, if you
+prefer.</p>
+<p>Note: If you want minimum hassle, we found that Red Hat 7.2 contains all
+dependencies for Aubit 4gl out of the box, on one CD, all in RPM automatic
+installs (It does NOT have PDFlib, since it is commercial product - OpenSource,
+but you will need to pay fee if you use it) It has unixODBC with GUI configuration
+tools, PostgreSQL with nice GUI tools, and all worked immediately for me. So if
+you have choice of operating systems, this is our recommended platform.</p>
+<p>If you have RPM, or other package manager based system (DEB, etc), easiest
+way to check for existing dependencies (if &quot;configure&quot; cannot find
+them but you know you have them) is to query that system. Of course, if
+dependencies where installed using them. Otherwise, try running
+&quot;configure&quot; script, and see what it will report (note: it will NOT
+find anything that is installed in non-standard locations - you can still use it
+by manually specifying the location to &quot;configure&quot; script, but you
+will have to find this location on your own.)</p>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000"><a name="ODBC">ODBC</a></font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+  <p>To access the database using SQL statements. This is
+  optional, and Aubit compiler and compiled programs can function as
+  general-purpose language compiler, even if you do not have it, but of course,
+  if you don't attempt to execute SQL statements, in which case error will be
+  reported.&nbsp;</p>
+  <p>Note: you can use one of native database drivers instead ODBC. Currently
+  available: Informix ESQL/C&nbsp;</p>
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no ODBC related support was detected in standard
+locations, then...</p>
+  <p>UNIX: look for file &quot;odbc.ini&quot; - all ODBC managers
+and/or drivers use it. If you have it, look for libodbc.so (unixODBC manager) or
+libiodbc.so (iODBC/OpenLink manager) or for ODBC drivers provided by database
+  vendor (currently only Informix and PostgreSQL ODBC drives are supported directly
+  by Aubit - all other ODBC connections MUST go via ODBC managers)</p>
+<p>You don't need ODBC manager, you can link with ODBC drivers directly, but
+this is probably not what you want.</p>
+<p>Windows: all Windows installation include ODBC manager, odbc32.dll</p>
+<p>PLEASE NOTE: Whatever you do, verify that your ODBC connection is working,
+BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<p>&nbsp;&nbsp;&nbsp; Managers:</p>
+<ul>
+  <li> <a href="http://www.unixodbc.org/" target="_blank">unixODBC</a>
+    (recommended - GPL license)</li>
+  <li> <a href="http://www.openlink.co.uk/" target="_blank">OpenLink</a> (Commercial
+    product - uses custom version of iODBC manager)</li>
+  <li> <a href="http://www.iodbc.org" target="_blank">iODBC</a>
+    (Standalone ODBC manager, GPL license)
+  </li>
+</ul>
+<p>&nbsp;&nbsp;&nbsp; Drivers:</p>
+<ul>
+  <li> <a href="http://www.postgresql.org" target="_blank"> PostgreSQL ODBC</a> driver
+  </li>
+  <li> <a href="http://www.informix.com/evaluate"> Informix ODBC</a> driver
+    (Part of CSDK)
+  </li>
+</ul>
+<p>Note that SOME managers come with drivers for SOME databases, and some don't.
+If you will be linking Aubit against ODBC manager, you will of course need both
+the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><span style="background-color: #00FF00"><font color="#000000"><i><a name="Native database connection libraries">Native
+database connection libraries</a></i></font></span></h4>
+<p><i>When will you need it:</i></p>
+<h4><span style="background-color: #00FF00"><i><font color="#000000"><a name="PDF">PDF</a></font></i></span></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+  <p>You will need it to use Aubit's PDF report generations functionality. This
+  is optional, and Aubit will work without it, unless you try to use PDF specific
+  report functionality, in which case error will be reported.</p>
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+  <p>First run configure; if no PDF related support was detected in standard
+  locations, then...</p>
+  <p>UNIX: Look for file &quot;pdflib.h&quot; - Without it, you will be unable to
+  compile Aubit with PDF support. If you downloaded precompiled Aubit binary
+  with PDFlib support, look for &quot;?????.so&quot;</p>
+  <p>Windows: FIXME: Is PDFlib available for CygWin?</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li> <a href="http://www.pdflib.com" target="_blank">PDFlib</a></li>
+</ul>
+<p>NOTE: This is commercial product - OpenSource, but you will need to pay fee
+if you use it. See license agreement on the site.&nbsp;</p>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000"><a name="NCURSES">NCURSES</a></font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Needed to display forms and ring menus in character (TUI) mode only. This is
+optional, and you can use GUI mode without it, and programs will function and be
+usable, for example, for CGI or report generation.</p>
+</blockquote>
+<p><i>How to check if you have it:</i> at least version 5.0 or higher</p>
+<blockquote>
+<p>First run configure; if no Curses related support was detected in standard
+locations, then...</p>
+  <p>UNIX: Look for &quot;ncurses.h&quot;, probably in /usr/include. It should contain
+  string NCURSES_VERSION_MAJOR</p>
+  <p>Windows: CygWin default installation includes ncurses</p>
+</blockquote>
+<p><i>Download and install it if you don't:</i></p>
+<ul>
+  <li> <a href="http://www.gnu.org/software/ncurses/ncurses.html" target="_blank">Ncurses
+home page</a> </li>
+  <li> <a href="ftp://ftp.gnu.org/pub/gnu/ncurses" target="_blank">Ncurses
+FTP site</a></li>
+</ul>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000"><a name="GTK">GTK</a></font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>To use Aubit GUI functionality. This is optional, and if you don't have
+it, Aubit programs will fun in CUI (terminal/character) mode. Note that you can
+switch to CUI mode even if you do have GTK+ functionality support.</p>
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no GTK+ related support was detected in standard
+locations, then...</p>
+<p>UNIX: Try &quot;gtk-config --version&quot;</p>
+<p>Windows: try same as for UNIX, inside CygWin shell - see Aubit manual.
+Windows binary build includes GTK libraries, and so does runtime package for
+Windows.</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li> <a href="http://www.gtk.org" target="_blank">GTK</a></li>
+  <li> <a href="http://user.sgic.fi/~tml/gimp/win32/downloads.html" target="_blank">GTK
+    for Windows/CygWin</a></li>
+</ul>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000"><a name="IksEmEl - Jabber and XML">IksEmEl -
+Jabber and XML</a></font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Needed only to compile 4GL PROGRAMS that will use XML/Jabber calls</p>
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Jabber related support was detected in standard
+locations, then...</p>
+  <p>UNIX: Look for file libiksemel.so</p>
+  <p>Windows: FIXME: is iksemel available on CygWin?</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<blockquote>
+<p><a href="http://jabber-x.sourceforge.net">IksEmEl libraries</a></p>
+</blockquote>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a> <a href="#Dependencies download links">Back
+to Optional Functionality menu</a></p>
+<h4><span style="background-color: #00FF00"><font color="#000000"><a name="Sun RPC">Sun
+RPC</a></font></span></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Sun RPC package contains 3 components used by Aubit:&nbsp;</p>
+</blockquote>
+<ul>
+  <li>RPCGEN executable: Needed only when compiling Aubit 4gl compiler from source code,
+    only if you wish to re-create RPC related files.</li>
+  <li>RPC protocol interface library: Needed only to execute Aubit RPC calls</li>
+  <li>XDR function library: Needed to both create and open compiled form files
+    (.afr) and menu files (.mnu), Without it, Aubit forms and menus
+    functionality will be unavailable. Aubit programs can still work, for
+    example, as CGI programs, or as report generators.</li>
+</ul>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Sun RPC related support was detected in standard
+locations, then...</p>
+  <p>Windows/CygWin: Currently, you don't need RPCgen, since we are distributing
+  Aubit code with special customized (read: hacked) versions of files that are
+  on UNIX created by RPCgen. Reason for this is that most versions we found,
+  where broken in one way or the other.</p>
+  <p>UNIX: Look for executable called &quot;rpcgen&quot;&nbsp;</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li>Sun RPCgen for <a href="http://www.hirmke.de/software/develop/gnuwin32/cygwin/porters/Vinschen_Corinna/B20/sunrpc-4.0.cygwin1.README" target="_blank">CygWin
+    readme</a></li>
+  <li>Sun RPC <a href="http://csgrad.cs.vt.edu/~fdrake/cs5204/rpc/rpc1057.html" target="_blank">protocol
+    specifications V2</a></li>
+  <li>Sun sources <a href="http://playground.sun.com/pub/rpc/" target="_blank">download</a></li>
+  <li><a href="http://netbula.com/oncrpc/rpcgen.html" target="_blank">Netbula
+    RPCgen</a> (and online manual) - commercial</li>
+  <li>Please let me know if you have better link for RPC download</li>
+</ul>
+<p><a href="#Dependencies download links">Back to Optional Functionality menu</a></p>
+
+
+<h4><span style="background-color: #00FF00"><font color="#000000"><a name="RPC-XML">RPC-XML</a></font></span></h4>
+
+
+<p><i>When will you need it:</i></p>
+
+
+<blockquote>
+  <p>If you want to use |Aubit RPC functionality via RPC-XML standard, you will
+  need &quot;XML-RPC library for C&quot; that in turn requires LibWWW from W3C.
+  LibWWW is also used to read and create XML formatted documents, like
+  configuration files, database schemas, database exports, etc...</p>
+
+
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Sun RPC related support was detected in standard
+locations, then...</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+
+
+<blockquote>
+<p><a href="http://xmlrpc-c.sourceforge.net/" target="_blank">XML-RPC library
+for C and C++</a></p>
+
+
+  <p><a href="http://www.w3.org/Library/" target="_blank">Libwww - the W3C
+  Protocol Library</a> (contains <a href="http://expat.sourceforge.net/" target="_blank">Expat
+  XML parser</a>, also used for read/write of XML files)</p>
+
+
+</blockquote>
+<p><a href="#Dependencies download links">Back to Optional Functionality menu</a></p>
+
+
+<h4><span style="background-color: #00FF00"><font color="#000000"><a name="C language compiler">C
+language compiler</a></font></span></h4>
+
+
+<p><i>When will you need it:</i></p>
+
+
+<blockquote>
+  <p>To compile Aubit compiler from source code, and to compile 4gl programs to
+  native executables, you will need C compiler. GCC is recommended. If you plan
+  to use Aubit binary installation with Perl or Java Aubit 4gl compiler
+  generating output modules, C compiler is not needed.</p>
+
+
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Sun RPC related support was detected in standard
+locations, then...</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+
+
+<p><a href="#Dependencies download links">Back to Optional Functionality menu</a></p>
+
+
+<h4><span style="background-color: #00FF00"><font color="#000000"><a name="Perl">Perl</a></font></span></h4>
+
+
+<p><i>When will you need it:</i></p>
+
+
+<blockquote>
+  <p>To run 4gl programs compiled with Aubit 4gl compiler Perl generating
+  option, you need Perl run-time.</p>
+
+
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Sun RPC related support was detected in standard
+locations, then...</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+
+
+<p><a href="#Dependencies download links">Back to Optional Functionality menu</a></p>
+
+
+<h4><a name="SWIG"><span style="background-color: #00FF00"><font color="#000000">SWIG</font></span></a></h4>
+
+
+<p><i>When will you need it:</i></p>
+
+
+<blockquote>
+  <p>To run 4gl programs compiled with Aubit 4gl compiler Perl generating
+  option, you need SWIG libraries, that provide interface between Aubit run-time
+  libraries, and Perl code</p>
+
+
+</blockquote>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>First run configure; if no Sun RPC related support was detected in standard
+locations, then...</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+
+
+<p><a href="#Dependencies download links">Back to Optional Functionality menu</a></p>
+
+
+<hr>
+<p align="center"><a href="../index.html">Aubit 4GL compiler home page</a> </p>
+
+<p align="center">Aubit 4gl project is hosted by:
+<p align="center"><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=32409&amp;type=3" border="0" alt="SourceForge Logo"></a>
+
+</body>
+
+</html>

@@ -62,7 +62,7 @@ fi
 
 if [ "$UPDATE" = "-upd" ]
 then
-	cvs update 2>&1
+	cvs update -d 2>&1
 	RET=$?
 	if test "$RET" != "0"
 	then
