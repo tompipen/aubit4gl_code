@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.7 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.8 2003-11-27 21:26:45 mikeaubury Exp $
 #
 */
 
@@ -60,7 +60,7 @@
 #define istabcol(x) (isalnum(x)||(x)=='.'||(x)=='_')
 #define iswordch(x) (isalnum(x)||(x)=='_')
 #define iscmpop(x) ((x)=='='||(x)=='!'||(x)=='>'||(x)=='<')
-#define isoperator(x)  (strchr("+-*/%|^",(x)) != NULL)
+#define isoperator(x)  (strchr("+-*/%|^[,]",(x)) != NULL)
 
 /*
 =====================================================================
@@ -611,6 +611,10 @@ A4GL_cvsql_substring (char *sql, char *func)
   char *t_col = 0;
   char *t_left = 0;
   int len;
+  char *orig_sql;
+  orig_sql=sql;
+
+A4GL_debug("substr -> %s Before",orig_sql);
 
   /* seek and convert anything like  " (table.)column [ ... ] " */
   while ((t = A4GL_cv_next_token (sql, &len, 0)))
@@ -659,7 +663,7 @@ A4GL_cvsql_substring (char *sql, char *func)
 	  t_left = 0;
 	}
     }
-
+A4GL_debug("substr -> %s After",orig_sql);
 }
 
 /*
@@ -673,6 +677,7 @@ A4GL_cvsql_tab_alias (char *sql, char *args)
   char *t;
   int len;
   int state = 0;
+A4GL_debug("Into tab_alias %s",sql);
 
   /* main loop scans entire string because multiple 'from' clauses
    * are possible in 'union' selects
@@ -747,6 +752,7 @@ A4GL_cvsql_col_alias (char *sql, char *args)
   char *p;
   char *from;
   int len, n;
+A4GL_debug("Into col_alias %s",sql);
 
   /* main loop scans entire string because 'select' clauses
    * can appear more than once, in unions and sub-queries.

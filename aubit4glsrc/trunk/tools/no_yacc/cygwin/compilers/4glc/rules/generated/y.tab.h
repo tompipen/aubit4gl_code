@@ -29,8 +29,8 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 1666,
-     UMINUS = 1667,
+     NAME = 1668,
+     UMINUS = 1669,
      COMMA = 1575,
      KW_OR = 1615,
      KW_AND = 1570,
@@ -50,16 +50,16 @@
      DIVIDE = 1521,
      MOD = 1589,
      COMMAND = 1367,
-     NUMBER_VALUE = 1668,
-     CHAR_VALUE = 1669,
-     INT_VALUE = 1670,
-     NAMED_GEN = 1671,
-     CLINE = 1672,
-     SQLLINE = 1673,
-     KW_CSTART = 1674,
-     KW_CEND = 1675,
-     USER_DTYPE = 1676,
-     SQL_TEXT = 1677,
+     NUMBER_VALUE = 1670,
+     CHAR_VALUE = 1671,
+     INT_VALUE = 1672,
+     NAMED_GEN = 1673,
+     CLINE = 1674,
+     SQLLINE = 1675,
+     KW_CSTART = 1676,
+     KW_CEND = 1677,
+     USER_DTYPE = 1678,
+     SQL_TEXT = 1679,
      DYNAMIC_ARRAY = 1000,
      RESIZE_ARRAY = 1001,
      ALLOCATE_ARRAY = 1002,
@@ -705,11 +705,13 @@
      WITH_2_DIMENSION = 1661,
      WITH_3_DIMENSION = 1662,
      TILDE = 1663,
-     ILIKE = 1664
+     ILIKE = 1664,
+     FGL_ISDYNARR_ALLOCATED = 1665,
+     FGL_DYNARR_EXTENTSIZE = 1666
    };
 #endif
-#define NAME 1666
-#define UMINUS 1667
+#define NAME 1668
+#define UMINUS 1669
 #define COMMA 1575
 #define KW_OR 1615
 #define KW_AND 1570
@@ -729,16 +731,16 @@
 #define DIVIDE 1521
 #define MOD 1589
 #define COMMAND 1367
-#define NUMBER_VALUE 1668
-#define CHAR_VALUE 1669
-#define INT_VALUE 1670
-#define NAMED_GEN 1671
-#define CLINE 1672
-#define SQLLINE 1673
-#define KW_CSTART 1674
-#define KW_CEND 1675
-#define USER_DTYPE 1676
-#define SQL_TEXT 1677
+#define NUMBER_VALUE 1670
+#define CHAR_VALUE 1671
+#define INT_VALUE 1672
+#define NAMED_GEN 1673
+#define CLINE 1674
+#define SQLLINE 1675
+#define KW_CSTART 1676
+#define KW_CEND 1677
+#define USER_DTYPE 1678
+#define SQL_TEXT 1679
 #define DYNAMIC_ARRAY 1000
 #define RESIZE_ARRAY 1001
 #define ALLOCATE_ARRAY 1002
@@ -1385,6 +1387,8 @@
 #define WITH_3_DIMENSION 1662
 #define TILDE 1663
 #define ILIKE 1664
+#define FGL_ISDYNARR_ALLOCATED 1665
+#define FGL_DYNARR_EXTENTSIZE 1666
 
 
 
@@ -1411,7 +1415,7 @@ typedef union YYSTYPE {
 	float 	float_val;
 	} YYSTYPE;
 /* Line 1248 of yacc.c.  */
-#line 1414 "y.tab.h"
+#line 1418 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
