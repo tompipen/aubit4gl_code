@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
+# $Id: rpc_client.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
 #*/
 
 /**
@@ -109,7 +109,24 @@ fgl_rpc_1( char* host,char *func,int np)
 {
 CLIENT *clnt;
 return_values  *result_1={0};
-call  call_remote_func_1_arg1={0,0,0,0,0}; // warning: missing braces around initializer
+//call  call_remote_func_1_arg1={"0",0,0,0,0}; // warning: missing braces around initializer
+call  call_remote_func_1_arg1={"0",{0,0},{0,0}};
+
+/*
+struct call {
+	char *function_name;
+	struct {
+		u_int parameters_len;
+		object_data *parameters_val;
+	} parameters;
+	struct {
+		u_int sizedata_len;
+		long *sizedata_val;
+	} sizedata;
+};
+*/
+
+
 
 object_data *ptr;
 //double dbl;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.16 2002-05-25 12:12:44 afalout Exp $
+# $Id: compile_c.c,v 1.17 2002-05-26 08:43:45 afalout Exp $
 #
 */
 
@@ -289,7 +289,7 @@ lex_printc(char *fmt, va_list *ap)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void 
+void
 real_lex_printc(char *fmt, va_list *ap)
 {
   //va_list args;
@@ -1184,7 +1184,7 @@ print_param (char i)
 //  char buff[256];
   char *ptr;
   debug ("Expanding binding.. - was %d entries", fbindcnt);
-  expand_bind (&fbind, 'F', fbindcnt);
+  expand_bind (&fbind[0], 'F', fbindcnt); // warning: passing arg 1 of `expand_bind' from incompatible pointer type
   debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
@@ -1275,7 +1275,7 @@ print_bind (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind, 'N', nullbindcnt);
+      expand_bind (&nullbind[0], 'N', nullbindcnt); // warning: passing arg 1 of `expand_bind' from incompatible pointer type
       printc ("\n");
       printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
       if (nullbindcnt == 0)
@@ -1320,7 +1320,7 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind, 'O', ordbindcnt);  //warning: passing arg 1 of `expand_bind' from incompatible pointer type
+      expand_bind (&ordbind[0], 'O', ordbindcnt);  //warning: passing arg 1 of `expand_bind' from incompatible pointer type
 		//void expand_bind (struct binding * bind, int btype, int cnt);
         //extern struct binding ordbind[NUMBINDINGS];
 
@@ -1444,7 +1444,7 @@ print_remote_func (char *identifier)
 }
 
 
-/** 
+/**
  * Print the C implementation of the execution of the SQL statement allready 
  * readed.
  *

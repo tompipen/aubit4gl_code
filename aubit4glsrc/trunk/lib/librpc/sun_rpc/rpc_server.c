@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
+# $Id: rpc_server.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
 #*/
 
 /**
@@ -127,8 +127,26 @@ arg1=&arg;
 		result.return_values_val=malloc(sizeof(object_data)*1);
 		result.return_values_val[0].dtype=2;
 		result.return_values_val[0].single_dtype_u.longval=0;
-	        fgl_rpc_reply(&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
-             //void fgl_rpc_reply(char *result);
+	        
+        exitwith ("serious bug in rpc_server.c");
+
+			fgl_rpc_reply(&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
+             
+			 //so we are passing struct to function expecting char pointer !!!
+
+
+			 //void fgl_rpc_reply(char *result);
+             //static return_values result={0,0};
+
+			/*
+			typedef struct {
+				u_int return_values_len;
+				object_data *return_values_val;
+			} return_values;
+			*/
+
+
+
 	}
 
 

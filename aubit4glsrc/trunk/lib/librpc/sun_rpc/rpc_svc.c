@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
+# $Id: rpc_svc.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
 #*/
 
 /**
@@ -288,7 +288,8 @@ fgl_rpc_reply(char *result)
 	xdrproc_t xdr_result;
 
 	xdr_result = (xdrproc_t) xdr_return_values;
-	if (result != NULL && !svc_sendreply(stransp, xdr_result, result)) {
+	if (result != NULL && !svc_sendreply(stransp, xdr_result, result))
+	{
 		exitwith("Unable to send asynchronous reply!");
 	}
 	return;
