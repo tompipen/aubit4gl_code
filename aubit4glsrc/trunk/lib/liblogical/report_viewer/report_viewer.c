@@ -149,6 +149,7 @@ evt_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 {
   printf ("EVT CLICKED\n");
   label_clicked (widget, event, user_data);
+  return FALSE;
 }
 
 
@@ -239,6 +240,13 @@ edit_lle ()
   GtkWidget *vbox;
   char desc[256];
 
+#define DRAG_TARGET_NAME_0 "ReportBlock"
+#define DRAG_TARGET_INFO_0 0
+
+  GtkTargetEntry target_entry[]={
+	{DRAG_TARGET_NAME_0,0,DRAG_TARGET_INFO_0}
+  };
+
   /* This is called in all GTK applications. Arguments are parsed
    * from the command line and are returned to the application. */
 
@@ -321,17 +329,23 @@ edit_lle ()
 
 	      label = gtk_label_new (centry->string);
 
-	      g_signal_connect (G_OBJECT (evt), "button_press_event",
-				G_CALLBACK (evt_clicked), NULL);
-	      g_signal_connect (G_OBJECT (label), "button_press_event",
-				G_CALLBACK (label_clicked), NULL);
+	      g_signal_connect (G_OBJECT (evt), "button_press_event", G_CALLBACK (evt_clicked), NULL);
+	      g_signal_connect (G_OBJECT (label), "button_press_event", G_CALLBACK (label_clicked), NULL);
 
-	      gtk_object_set_data (GTK_OBJECT (label), "RB",
-				   (void *) report->blocks[block].rb);
-	      gtk_object_set_data (GTK_OBJECT (label), "ENTRY",
-				   (void *) centry->entry_id);
-	      gtk_object_set_data (GTK_OBJECT (label), "DESCRIPTION",
-				   (void *) desc);
+	      gtk_object_set_data (GTK_OBJECT (label), "RB", (void *) report->blocks[block].rb);
+	      gtk_object_set_data (GTK_OBJECT (label), "ENTRY", (void *) centry->entry_id);
+	      gtk_object_set_data (GTK_OBJECT (label), "DESCRIPTION", (void *) desc);
+
+
+
+                gtk_drag_source_set(
+                        evt,
+                        GDK_BUTTON1_MASK | GDK_BUTTON2_MASK,
+                        target_entry,
+                        sizeof(target_entry) / sizeof(GtkTargetEntry),
+                        GDK_ACTION_MOVE | GDK_ACTION_COPY
+                );
+
 
 	      add_widget (report->blocks[block].rb, centry->entry_id, evt);
 	      add_widget (report->blocks[block].rb, centry->entry_id, label);

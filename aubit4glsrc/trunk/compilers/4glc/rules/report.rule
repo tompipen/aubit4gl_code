@@ -5,26 +5,22 @@
 */
 
 
-start_cmd : START_REPORT rep_name TO_PRINTER
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
-}
-	    | START_REPORT rep_name TO rout
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("F",$<str>4,$<str>2);
-}
-	    | START_REPORT rep_name TO_PIPE rout
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("P",$<str>4,$<str>2);
-}
-	    | START_REPORT rep_name
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("","\"\"",$<str>2);
-}
+start_cmd : START_REPORT rep_name TO_PRINTER {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
+			}
+	    | START_REPORT rep_name TO rout {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("F",$<str>4,$<str>2);
+			}
+	    | START_REPORT rep_name TO_PIPE rout {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("P",$<str>4,$<str>2);
+			}
+	    | START_REPORT rep_name {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("","\"\"",$<str>2);
+			}
 ;
 
 
@@ -37,31 +33,25 @@ rout : CHAR_VALUE | cvariable;
 rep_name : identifier;
 
 
-op_values : | VALUES ;
+op_values : | VALUES ; /* This isn't standard - but it looks pretty OUTPUT TO REPORT VALUES (...)... */
 
-output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET 
-reset_cnt 
-op_fgl_expr_list 
-CLOSE_BRACKET
-{
-addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
-print_output_to_report($<str>2,$<str>6); 
-}
+output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET reset_cnt op_fgl_expr_list CLOSE_BRACKET {
+		addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
+		print_output_to_report($<str>2,$<str>6); 
+		}
 ;
 
-finish_cmd : FINISH_REPORT rep_name
-{
-addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
-print_finish_report($<str>2);
-}
+finish_cmd : FINISH_REPORT rep_name {
+		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		print_finish_report($<str>2);
+		}
 ;
 
 
 
-term_rep_cmd : TERMINATE_REPORT rep_name
-{
-addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
-print_terminate_report($<str>2);
+term_rep_cmd : TERMINATE_REPORT rep_name {
+		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		print_terminate_report($<str>2);
 }
 ;
 
@@ -77,69 +67,57 @@ FORMAT format_actions
 format_actions : format_action | format_actions format_action;
 
 format_action :
-	 FIRST_PAGE_HEADER 
-{ push_report_block("FIRST",'P');}
-commands {
-rep_struct.lines_in_first_header=if_print_stack[0][0];
-pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
-print_rep_ret(0,1);
-}
-	| PAGE_TRAILER
-{ push_report_block("TRAILER",'T');
-if_print_stack[0][0]=0;
-if_print_stack[0][1]=0;
-}
-commands {
-rep_struct.lines_in_trailer=if_print_stack[0][0];
-pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
-print_rep_ret(0,1);
-}
-	| PAGE_HEADER 
-{ push_report_block("HEADER",'p');}
-commands {
-rep_struct.lines_in_header=if_print_stack[0][0];
-pdf_rep_struct.lines_in_header=if_print_stack[0][0];
-print_rep_ret(0,1);}
-	| ON_EVERY_ROW 
-{ push_report_block("EVERY",'E');}
-commands {print_rep_ret(0,1);}
-	| ON_LAST_ROW 
-{ push_report_block("LAST",'L');}
-commands {print_rep_ret(0,1);}
+	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P');} commands {
+		rep_struct.lines_in_first_header=if_print_stack[0][0];
+		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
+		print_rep_ret(0,1);
+		}
+	| PAGE_TRAILER { 
+		push_report_block("TRAILER",'T');
+		if_print_stack[0][0]=0;
+		if_print_stack[0][1]=0;
+	} commands {
+		rep_struct.lines_in_trailer=if_print_stack[0][0];
+		pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
+		print_rep_ret(0,1);
+	}
+	| PAGE_HEADER { push_report_block("HEADER",'p');} commands {
+		rep_struct.lines_in_header=if_print_stack[0][0];
+		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
+		print_rep_ret(0,1);}
+	| ON_EVERY_ROW { push_report_block("EVERY",'E');} commands {print_rep_ret(0,1);}
+	| ON_LAST_ROW { push_report_block("LAST",'L');} commands {print_rep_ret(0,1);}
 	| BEFGROUP variable  {
-int a;
-char buff[80];
-A4GL_debug("rordcnt=%d",rordcnt);
-a=scan_orderby($<str>2,rordcnt);
-if (a<0) {
-   sprintf(buff,"%s is not in the order by list",$<str>2);
-   a4gl_yyerror(buff);
-	YYERROR;
-}
-sprintf(buff,"%d",a+1);
-push_report_block(buff,'B');
-set_curr_block(a+1);
-}
-commands {print_rep_ret(0,1);}
-	| AFTGROUP variable
-{ 
-int a;
-char buff[80];
-
-A4GL_debug("rordcnt=%d",rordcnt);
-a=scan_orderby($<str>2,rordcnt);
-if (a<0) {
-   sprintf(buff,"%s is not in the order by list",$<str>2);
-   a4gl_yyerror(buff);
-	YYERROR;
-}
-
-sprintf(buff,"%d",a+1);
-push_report_block(buff,'A');
-set_curr_block(a+1);
-
-}
-commands {print_rep_ret(0,1);}
+		int a;
+		char buff[80];
+		A4GL_debug("rordcnt=%d",rordcnt);
+		a=scan_orderby($<str>2,rordcnt);
+		if (a<0) {
+   		sprintf(buff,"%s is not in the order by list",$<str>2);
+   		a4gl_yyerror(buff);
+			YYERROR;
+		}
+		sprintf(buff,"%d",a+1);
+		push_report_block(buff,'B');
+		set_curr_block(a+1);
+		} commands {print_rep_ret(0,1);}
+	| AFTGROUP variable { 
+		int a;
+		char buff[80];
+		
+		A4GL_debug("rordcnt=%d",rordcnt);
+		a=scan_orderby($<str>2,rordcnt);
+		if (a<0) {
+   		sprintf(buff,"%s is not in the order by list",$<str>2);
+   		a4gl_yyerror(buff);
+			YYERROR;
+		}
+		
+		sprintf(buff,"%d",a+1);
+		push_report_block(buff,'A');
+		set_curr_block(a+1);
+		
+		} commands {print_rep_ret(0,1);}
 ;
 
 report_cmd : 
