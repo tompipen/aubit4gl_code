@@ -13,7 +13,7 @@ op_to_defs :
 | TO_DEFAULTS { strcpy($<str>$,"1"); }
 ;
 
-clear_cmd	:	CLEARSCR { print_clr_window("\"screen\""); }
+clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"screen\""); }
 		|	CLEARWIN win_name { print_clr_window($<str>2); }
 		|	CLEARSTAT win_name { print_clr_window($<str>2); }
 		|	CLEARFORM { print_clr_form(0,0,"0"); }
