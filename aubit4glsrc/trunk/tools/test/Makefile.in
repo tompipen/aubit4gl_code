@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.16 2002-01-31 11:34:06 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-02-24 04:30:30 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -57,22 +57,6 @@ ifdef COMSPEC
 	endif
 endif
 
-
-#ifeq "$(GTKBUILD)" "yes"
-#	#-gtk is now default, so we don't really need this...
-#	4GLPCFLAGS+= -gtk
-#else
-#	4GLPCFLAGS+= -nogtk
-#endif
-
-
-#ifeq "$(PDFBUILD)" "yes"
-#	4GLPCFLAGS		+=-lpdf
-#    4GLPCTESTFLAGS	=-lpdf
-#else
-#	4GLPCFLAGS		+=-nopdf
-#    4GLPCTESTFLAGS	=-nopdf
-#endif
 
 ifeq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
@@ -132,86 +116,6 @@ other:
 help:
 	@echo "use 'make NOGTK=1' to compile without GTK GUI"
 	@echo "use 'make' to compile with GTK GUI"
-
-## ==================================================================
-##                    Regression testing targets
-## ==================================================================
-
-regression.all: regression.4gl.all regression.per.all fail.4gl.all fail.per.all tort.4gl.all
-
-##################### Aubit ############ 4JS ############# Querix ########
-regression.4gl.all: regression.4gl 	regression.4gl.4js 	regression.4gl.q
-regression.per.all: regression.per  regression.per.4js  regression.per.q
-fail.4gl.all:       fail.4gl 		fail.4gl.4js 		fail.4gl.q
-fail.per.all:       fail.per 		fail.per.4js        fail.per.q
-tort.4gl.all:		tort.4gl 		tort.4gl.4js 		tort.4gl.q
-
-####### regression-test-4gl ##########
-
-regression.4gl:
-	${FGLPCEXEC} -nogtk regression-test-4gl.4gl -o regression-test-4gl
-
-regression.4gl.4js:
-	fglcomp regression-test-4gl.4gl
-
-regression.4gl.q:
-	fglc regression-test-4gl.4gl
-
-####### regression-test-per ##########
-
-regression.per:
-	${FCOMPILE} regression-test-per.per
-
-regression.per.4js:
-	fglform regression-test-per.per
-
-regression.per.q:
-	fmpc regression-test-per.per
-
-
-####### regression-fails-4gl ##########
-
-fail.4gl:
-	${FGLPCEXEC} -nogtk regression-fails-4gl.4gl -o regression-fails-4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} torturetest4glcomp.4gl -o torturetest4glcomp
-
-fail.4gl.4js:
-	fglcomp regression-fails-4gl.4gl
-	fglcomp torturetest4glcomp.4gl
-
-fail.4gl.q:
-	fglc regression-fails-4gl.4gl
-	fglc torturetest4glcomp.4gl
-
-fail.4gl.ifx:
-	fglpc regression-fails-4gl.4gl
-	fglpc torturetest4glcomp.4gl
-
-
-####### regression-fails-per ##########
-
-fail.per:
-	${FCOMPILE} regression-fails-per.per
-
-fail.per.4js:
-	fglform regression-fails-per.per
-
-fail.per.q:
-	fmpc regression-fails-per.per
-
-## ==================================================================
-##                            Torture test
-## ==================================================================
-
-tort.4gl:
-	${FGLPCEXEC} ${4GLPCFLAGS} torturetest4glcomp.4gl -o torturetest4glcomp
-
-tort.4gl.4js:
-	fglcomp torturetest4glcomp.4gl
-
-tort.4gl.q:
-	fglc torturetest4glcomp.4gl
-
 
 ## ==================================================================
 ##                           Clean targets
