@@ -394,6 +394,7 @@ pdf_output_command :
 op_rep_order_by : {
 int a;
 set_rep_no_orderby(1);
+if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 a=print_bind_definition('O');
 print_order_by_type(2,-1);
 sprintf($<str>$,"%d",a);
@@ -402,6 +403,7 @@ sprintf($<str>$,"%d",a);
 {
 int a;
 set_rep_no_orderby(0);
+if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 a=print_bind_definition('O');
 print_order_by_type(1,a);
 sprintf($<str>$,"%d",a);
@@ -410,6 +412,7 @@ A4GL_debug("Order by Gives :%d\n",a);
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 int a;
 set_rep_no_orderby(0);
+if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 a=print_bind_definition('O');
 print_order_by_type(2,a);
 sprintf($<str>$,"%d",a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.22 2004-03-14 10:40:58 afalout Exp $
+# $Id: helper.c,v 1.23 2004-03-14 15:59:18 mikeaubury Exp $
 #
 */
 
@@ -1008,7 +1008,7 @@ int ret;
 		//ret = putenv(buff);
 		ret = putenv(strdup(buff));
 	#else
-		A4GL_debug ("No setenv() or putenv() - cannot set environmant variable %s", name);
+		A4GL_debug ("No setenv() or putenv() - cannot set environment variable %s", name);
 		return 1;
 	#endif
 #endif

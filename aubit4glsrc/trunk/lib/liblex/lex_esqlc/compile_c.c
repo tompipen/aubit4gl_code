@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.145 2004-03-09 15:50:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.146 2004-03-14 15:59:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.145 2004-03-09 15:50:05 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.146 2004-03-14 15:59:18 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1692,7 +1692,9 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind[0], 'O', ordbindcnt);
+	//printf("Expanding ordbind %d",ordbindcnt);
+      	expand_bind (&ordbind[0], 'O', ordbindcnt);
+	//printf("Expanding ordbind -> %d",ordbindcnt);
       /*
          warning: passing arg 1 of `expand_bind' from incompatible pointer type
          void expand_bind (struct binding * bind, int btype, int cnt);
@@ -3636,6 +3638,7 @@ print_report_2 (int pdf, char *repordby)
 {
   int cnt;
   int a;
+printf("in print_report_2 - ordbincnt=%d\n",ordbindcnt);
   if (pdf)
     printc ("static struct pdf_rep_structure _rep;\n");
   else
@@ -5673,7 +5676,10 @@ print_bind_definition (char i)
   if (i == 'O')
     {
       printc ("\n");
+      
+	printf("Expanding ordbind %d ",ordbindcnt);
       expand_bind (&ordbind[0], 'O', ordbindcnt);
+	printf("Expanding ordbind ->%d\n ",ordbindcnt);
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{

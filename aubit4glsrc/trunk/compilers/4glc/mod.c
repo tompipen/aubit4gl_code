@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.162 2004-03-14 10:41:48 mikeaubury Exp $
+# $Id: mod.c,v 1.163 2004-03-14 15:59:16 mikeaubury Exp $
 #
 */
 
@@ -4478,6 +4478,12 @@ void A4GL_get_event(int n,int *i,char **s) {
 	/*printf("getevent : %d\n", n);*/
 	*i=event_queue[nevent_queue].events[n].n;
 	*s=event_queue[nevent_queue].events[n].s;
+}
+
+
+void A4GL_copy_fbind_to_Obind() {
+memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
+ordbindcnt=fbindcnt;
 }
 
 /* ================================= EOF ============================= */

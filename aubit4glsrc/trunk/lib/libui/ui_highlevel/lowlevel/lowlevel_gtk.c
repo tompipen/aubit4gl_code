@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.32 2004-03-13 08:41:50 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.33 2004-03-14 15:59:19 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -396,7 +396,7 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
   label = (GtkLabel *) gtk_label_new (label_utf);
   if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
     A4GL_debug("using PANGO ML for Label '%s'\n",msg);
-    gtk_label_set_use_markup(label, TRUE);
+    gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
   }
   g_free(label_utf);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
@@ -614,7 +614,7 @@ if (x==0&&y==0&&h==0&&w==0) {
 	gtk_widget_show(frame);
         gtk_container_add (GTK_CONTAINER (frame),fixed);
         gtk_container_add (GTK_CONTAINER (hbox), frame);
-	gtk_box_set_child_packing(hbox,frame,1,1,2,GTK_PACK_START);
+	gtk_box_set_child_packing(GTK_BOX(hbox),frame,1,1,2,GTK_PACK_START);
 
 	frame=gtk_frame_new("");
 	gtk_widget_show(frame);
@@ -623,7 +623,7 @@ if (x==0&&y==0&&h==0&&w==0) {
 
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
         gtk_container_add (GTK_CONTAINER (hbox), bb);
-	gtk_box_set_child_packing(hbox,bb,0,0,2,GTK_PACK_START);
+	gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
 	}
         gtk_container_add (GTK_CONTAINER (win), hbox);
 	win_screen=fixed;
@@ -1121,7 +1121,12 @@ int A4GL_LL_set_field_opts(void* field,int oopt) {
     if (oopt & AUBIT_O_ACTIVE || oopt & AUBIT_O_EDIT) {
 		A4GL_gui_set_active (field, 1);
     } else {
-		A4GL_gui_set_active (field, 0);
+ 		if (gtk_object_get_data(GTK_OBJECT(field),"MF_ISLABEL")) {
+			// Labels are always active :)
+			A4GL_gui_set_active (field, 1);
+		} else {
+			A4GL_gui_set_active (field, 0);
+		}
     }
    return 1;
 }
@@ -1368,7 +1373,7 @@ frame=gtk_frame_new(0);
 label=gtk_label_new(lab_utf);
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   A4GL_debug("using PANGO ML for Label '%s'\n", str);
-  gtk_label_set_use_markup(label, TRUE);
+  gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 }
 g_free(lab_utf);
 evt=gtk_event_box_new();
@@ -2076,9 +2081,9 @@ char *label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 widget=gtk_label_new(label_utf);
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   A4GL_debug("using PANGO ML for Label '%s'\n",label);
-  gtk_label_set_use_markup(widget, TRUE);
+  gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
 }
-gtk_label_set_use_markup(widget, A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")));    
+gtk_label_set_use_markup(GTK_LABEL(widget), A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")));    
 g_free(label_utf);
 if (strcmp(label,"[")==0) return 0;
 if (strcmp(label,"]")==0) return 0;
@@ -2184,7 +2189,7 @@ return form;
 int A4GL_LL_int_form_driver(void* vform,int mode) {
 struct s_a4gl_gtk_form *form;
 GtkWidget *cwidget;
-int a;
+int a=0;
 form=vform;
 cwidget=form->widgets[form->currentfield];
 
@@ -2295,7 +2300,7 @@ if (mode<=255 && a_isprint(mode) && mode >=' ') {
 
 
 	default: 
-		if (a>255) {
+		if (mode>255) {
 			printf("Unknown mode : %d\n",mode);
 			{char *ptr=0; *ptr=0;}
 		}
@@ -2881,7 +2886,7 @@ GtkWidget *bb;
 bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
 if (bb==0) return 0;
 gtk_widget_hide(bb);
-
+return 1;
 }
 
 int A4GL_LL_disp_h_menu( ACL_Menu *menu) {

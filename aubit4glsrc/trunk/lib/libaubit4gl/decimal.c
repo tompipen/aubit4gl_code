@@ -3,6 +3,7 @@
 fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 int A4GL_conversion_ok(int);
 char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
+char decimal_char=0;
 
 
 fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
@@ -29,6 +30,15 @@ long head_i;
 char buff[256];
 int round_cnt;
 int carry;
+if (decimal_char==0) {
+	sprintf(buff,"%f",1.2);
+	if (strchr(buff,'.')) decimal_char='.';
+	if (strchr(buff,',')) decimal_char=',';
+}
+if (decimal_char==0) {
+	decimal_char='.';
+}
+
 
 	A4GL_debug("XYXY str to dec : %s",str);
 
@@ -57,7 +67,7 @@ for (a=0;a<strlen(str);a++) {
 		continue;
 	}
 
-	if (str[a]=='.'&&(sec=='h'||sec=='f')) {
+	if (str[a]==decimal_char&&(sec=='h'||sec=='f')) {
 		sec='t';
 		continue;
 	}

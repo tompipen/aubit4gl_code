@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.37 2004-03-04 16:27:21 mikeaubury Exp $
+# $Id: variables.c,v 1.38 2004-03-14 15:59:17 mikeaubury Exp $
 #
 */
 
@@ -1383,7 +1383,7 @@ print_variables (void)
 
   scope = get_current_variable_scope ();
 
-
+  A4GL_debug("Scope=%c\n",scope);
 
   if (scope == 'l')
     {
@@ -1421,6 +1421,7 @@ print_local_variables (void)
 {
   int a;
 
+  A4GL_debug("printing local variables\n");
   for (a = 0; a < list_local_cnt; a++)
     {
       print_variable (list_local[a], 'L', 0);
@@ -2588,6 +2589,7 @@ print_variable (struct variable *v, char scope, int level)
   static_extern_flg = 0;
   strcpy (arrbuff, "-1");
   /* are we dealing with the sqlca variable ?*/
+	A4GL_debug("v->names.name=%s",v->names.name);
   if (level == 0 && strcmp (v->names.name, "sqlca") == 0)
     {
 #ifdef DEBUG

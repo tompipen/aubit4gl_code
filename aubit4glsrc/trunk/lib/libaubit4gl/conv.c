@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.70 2004-02-20 14:39:52 mikeaubury Exp $
+# $Id: conv.c,v 1.71 2004-03-14 15:59:17 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,7 @@
 #include <ctype.h>
 
 int A4GL_conversion_ok(int);
+static int decimal_char=0;
 /*
 =====================================================================
                     Constants definitions
@@ -1236,7 +1237,17 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
   char *p;
   char buff[32];
   int n;
-int ok;
+  int ok;
+  int duped=0;
+
+  if (decimal_char==0) {
+	sprintf(buff,"%f",1.2);
+	if (strchr(buff,'.')) decimal_char='.';
+	if (strchr(buff,',')) decimal_char=',';
+	if (decimal_char==0) {
+		decimal_char='.';
+	}
+  }
 
   //A4GL_debug ("stof aa = %s, zz = %f", aa, (double *) zz);
   a = (char *) aa;
@@ -1245,7 +1256,7 @@ int ok;
  *z=0;
 
   /* watch out for any "," separators in the number - remove them first */
-  if (strchr (a, ','))
+  if (strchr (a, ',')&&decimal_char!=',')
     {
       a = buff;
       for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++)
@@ -1256,8 +1267,17 @@ int ok;
       *a = '\0';
       a = buff;
     }
-
+  if (decimal_char==',' && strchr(a,'.')) {
+		char *ptr;
+		a=strdup(a);
+		ptr=strchr(a,'.');
+		*ptr=',';
+		duped=1;
+	
+  }
+	
   ok=sscanf (a, "%lf", z);
+  if (duped) free(a);
   A4GL_debug ("stof: string %s ", a);
   A4GL_debug ("stof: float %lf", *z);
   A4GL_debug ("stof: OK=%d", ok);
