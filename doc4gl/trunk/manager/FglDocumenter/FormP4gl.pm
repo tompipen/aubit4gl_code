@@ -501,7 +501,7 @@ sub isFglFile
 	my $obj = shift;
 	my $file = shift;
 
-  if ( $file =~ /.*\.4gl/ )
+  if ( $file =~ /.*\.4gl$/ )
 	{
 	  if ( -f $file )
 	  {

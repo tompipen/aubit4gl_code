@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: saferreira $
- * $Revision: 1.4 $
- * $Date: 2003-02-05 12:45:13 $
+ * $Revision: 1.5 $
+ * $Date: 2003-04-14 17:58:08 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -58,7 +58,7 @@ void P4glPreProcessing(void)
 {
    char comand[512];
 
-	// Tenho de retirar isto
+	// @todo : We should not use tmpnam
 	FicheiroTemp  = tmpnam((char *)0);
 	FicheiroParam = (char *)malloc(strlen(FicheiroTemp)+4);
 	/* Devia existir uma inicializacao do dbug para html
@@ -557,21 +557,21 @@ static void fillTableUsage(FUNCTION *function)
  * @param arguments The arguments of the function.
  *
  */
-void StInsertFunction(char *FunctionName,int ultima_linha,NAME_LIST *arguments)
+void StInsertFunction(char *functionName,int ultima_linha,NAME_LIST *arguments)
 {
   char *GetListConcat();
 
-	//fprintf(stderr,"Found %s\n",FunctionName);
+	/*fprintf(stderr,"Found %s\n",functionName); */
 	// ??? Provavelmente não deveria ser assim
-	Downshift(FunctionName);
+	Downshift(functionName);
 
-	if (strcmp(FunctionName,"paradarsorte") == 0)
+	if (strcmp(functionName,"paradarsorte") == 0)
 		return;
 
-	if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
+	if (IsFglFunction(functionName))  /* Nao insere funcoes internas */
 		return;
 
-	strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,FunctionName);
+	strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,functionName);
 	P4glCb.functions[P4glCb.idx_funcoes].n_linhas = 
 	   P4glCb.functions[P4glCb.idx_funcoes].linha - ultima_linha;
 	/* Podem existir funções sem parametros */

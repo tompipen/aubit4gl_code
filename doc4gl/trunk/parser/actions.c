@@ -32,8 +32,6 @@ void executeActions(void)
       insertP4glRep();
   }
 
-	/** Aqui tem de se inserir a chamada ao novo repositório */
-
   if ( generateFglDoc )
 	  genFglDoc();
 }

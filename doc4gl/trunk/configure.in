@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.11 2003-02-05 06:49:55 afalout Exp $
+dnl # $Id: configure.in,v 1.12 2003-04-14 17:55:38 saferreira Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1065,10 +1065,12 @@ fi
             WITH_PERL=no
         fi
 
-        PERLLIBDIR=`($PERL -e 'use Config; print $Config{sitearchexp};') 2>/dev/null`
-        if test -z "$PERLLIBDIR" -o ! -d "$PERLLIBDIR"; then
-            AC_MSG_RESULT(         unable to determine perl shared library directory)
-        fi
+				# FIXME : Comented because in debian perl build this not assigned. 
+				# Lets hope that we dont need it
+        #PERLLIBDIR=`($PERL -e 'use Config; print $Config{sitearchexp};') 2>/dev/null`
+        #if test -z "$PERLLIBDIR" -o ! -d "$PERLLIBDIR"; then
+            #AC_MSG_RESULT(         unable to determine perl shared library directory)
+        #fi
 
         PERLMODDIR=`($PERL -e 'use Config; print $Config{sitelib};') 2>/dev/null`
         if test -z "$PERLMODDIR" -o ! -d "$PERLMODDIR"; then
@@ -1092,10 +1094,15 @@ fi
 				PERL_MODULE_DIR="/usr/local/lib/perl5/$PERL_VERSION"
 				PERL_SITE_DIR="/usr/local/lib/perl5/site_perl/$PERL_VERSION"
 			    if test ! -d "$PERL_MODULE_DIR"; then
-					AC_MSG_ERROR(Cannot determine where to install Perl modules. Stop.)
-                fi
+						# In debian modules are instaled in perl5 dir
+				    PERL_MODULE_DIR="/usr/lib/perl5"
+				    PERL_SITE_DIR="/usr/local/lib/perl5/site_perl/$PERL_VERSION"
+			      if test ! -d "$PERL_MODULE_DIR"; then
+					    AC_MSG_ERROR(Cannot determine where to install Perl modules. Stop.)
             fi
-        fi
+          fi
+				fi
+     fi
 	fi
 	AC_MSG_RESULT($PERL_MODULE_DIR)
 

@@ -227,10 +227,15 @@ char *getParameterDataType(int idxFunction,char *paramName)
   {
     varName = FUNCAO(idxFunction).variaveis[i].nome;
     if ( strcmp(varName,paramName) == 0 )
+		{
       dataType = FUNCAO(idxFunction).variaveis[i].tipo;
+			break;
+	  }
   }
-  return dataType;
+  /** @fixme : Possiblem memory leak */
+  return strdup(dataType);
 }
+
 
 /**
  * Insert the parameters of a function
@@ -269,6 +274,8 @@ int idxFunction;
       comments = "";
     var_name = parameters->name[i];
     dataType = parameters->dataType[i];
+    if ( dataType == NULL )
+      dataType = getParameterDataType(idxFunction,var_name);
     if ( dataType == NULL )
       dataType = "--";
     exec sql insert into p4gl_fun_parameter (
@@ -440,7 +447,7 @@ static void insertTablesUsage(int idxFunction)
  *
  * @todo - Ver se não dá erro quando não tem comentários (NULL)
  *
- * @param idxFunction Index of function in aarray of abstract tree.
+ * @param idxFunction Index of function in array of abstract tree.
  */
 static void insertFunction(int idxFunction)
 {

@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-02-05 12:45:13 $
- *   $Id: p4gl_lex.l,v 1.3 2003-02-05 12:45:13 saferreira Exp $
+ *   $Date: 2003-04-14 17:58:09 $
+ *   $Id: p4gl_lex.l,v 1.4 2003-04-14 17:58:09 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.3 2003-02-05 12:45:13 saferreira Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.4 2003-04-14 17:58:09 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -166,7 +166,7 @@ int p4glLexInput(void)
 /*
  * Read a quoted string from yyin
  * @todo : This function should change to other module.
- * TODO - Tamanho da string não pode ser limitado
+ * @TODO - Tamanho da string não pode ser limitado a 256
  */
 readString()
 { 
@@ -195,20 +195,16 @@ readString()
 					j++;
 				}
 			  break;
-			case '\\':
+			case '\\':  // Everything after \ is consumed, even "
 				lookAheadCh = p4glLexInput(); 
-				if ( lookAheadCh != '"' )
-		      unput(lookAheadCh);
-				else
-				{
-		      str[j] = lookAheadCh; 
-					j++;
-				}
+		    str[j] = lookAheadCh; 
+								j++;
 			  break;
 			case '\n':
         lineno++; 
 				break;
 		}
+		fflush(stdout);
   }
 	str[j] = '\0';
 }

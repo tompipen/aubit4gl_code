@@ -10,17 +10,18 @@
 package FglDocumenter::Options;
 
 use POSIX;
-use XML::Dumper;
+#@todo : Use this package but include it in configure
+#use XML::Dumper;
 use Data::Dumper;
 
 #  =========================================================================
-#  Construtora.
-#  Inicializa as opções com valores de default ou apenas instanciação
+#  Constructor
+#  Initialize the options with default values.
 #  =========================================================================
 sub BEGIN
 {
-	$home = $ENV{'HOME'} || die "You're homeless!\n";
-	$optionsFile = "$home/.fgldocrc";
+  $home = $ENV{'HOME'} || die "You're homeless!\n";
+  $optionsFile = "$home/.fgldocrc";
   #loadOptions();
 }
 
@@ -40,20 +41,20 @@ sub loadDefaultOptions
 {
   my $host = `hostname`;
   my $user = `whoami`;
-	chomp($host);
-	chomp($user);
-	my $database = $ENV{"DATABASE"};
+  chomp($host);
+  chomp($user);
+  my $database = $ENV{"DATABASE"};
   if ( ! defined($database) )
-	{
-	  $database = "p4gl_repository";
-	}
+  {
+    $database = "p4gl_repository";
+  }
 
-	# Parametros para execucao em CUI
-	# Tipo de acção a executar
-	$UI = "GUI";
-	$action = "";
+  # Parametros para execucao em CUI
+  # Tipo de acção a executar
+  $UI = "GUI";
+  $action = "";
 
-	# @todo - Mudar esta mecanica
+  # @todo - Mudar esta mecanica
   $importInformixDir    = $ENV{"INFORMIXDIR"};
   $importInformixServer = $ENV{"INFORMIXSERVER"};
   $importHost           = $host;
@@ -66,42 +67,42 @@ sub loadDefaultOptions
   $exportDatabase       = $database;
   $exportUser           = $user;
 
-	initRepository();
+  initRepository();
 
-	$csvImportFile  = "4gl_mapping.txt";
-	$xmlImportFile  = "4gl_mapping.xml";
+  $csvImportFile  = "4gl_mapping.txt";
+  $xmlImportFile  = "4gl_mapping.xml";
 
-	$csvExportFile  = "4gl_mapping.txt";
-	$xmlExportFile  = "4gl_mapping.xml";
-	$htmlExportDir  = "";
-	$ignoreExistDir = 1;
+  $csvExportFile  = "4gl_mapping.txt";
+  $xmlExportFile  = "4gl_mapping.xml";
+  $htmlExportDir  = "";
+  $ignoreExistDir = 1;
 
-	$clearRepositoryOnImportCSV = 0;
-	$normalize = 1;
-	$sendLineToLog = 0;
+  $clearRepositoryOnImportCSV = 0;
+  $normalize = 1;
+  $sendLineToLog = 0;
 
-	$clearRepositoryOnImportXML = false;
+  $clearRepositoryOnImportXML = false;
 
-	# Do form de importação de dados de 4gl(s) por parsing
-	$packageName        = 1;
-	$loadComments       = 1;
-	$parseOnly          = 0;
-	$loadTableUsage     = 0;
-	$loadParameters     = 1;
-	$loadStrings        = 0;
-	$loadFilesRecursive = 1;
-	$loadLocalVariables = 0;
-	$importFglLocation  = ".";
-	$importFglModules   = ();
-	$importFglDirs      = ();
+  # Do form de importação de dados de 4gl(s) por parsing
+  $packageName        = 1;
+  $loadComments       = 1;
+  $parseOnly          = 0;
+  $loadTableUsage     = 0;
+  $loadParameters     = 1;
+  $loadStrings        = 0;
+  $loadFilesRecursive = 1;
+  $loadLocalVariables = 0;
+  $importFglLocation  = ".";
+  $importFglModules   = ();
+  $importFglDirs      = ();
 
-	# Do form para exportação de comentários para os sources
-	$sourceDir          = getcwd();
-	$replaceFgldoc      = 1;
-	$fglSource          = "";
-	$insertEmptyComment = 0;
+  # Do form para exportação de comentários para os sources
+  $sourceDir          = getcwd();
+  $replaceFgldoc      = 1;
+  $fglSource          = "";
+  $insertEmptyComment = 0;
 
-	$logShowed          = 1;
+  $logShowed          = 1;
 }
 
 #  =========================================================================
@@ -110,22 +111,22 @@ sub loadDefaultOptions
 sub initRepository
 {
   $p4glRepository = new FglDocumenter::DatabaseConnection(
-		$importInformixDir,
-		$importInformixServer,
-		$importHost,
-		$importDatabase,
-		$importUser,
-		""
-	);
+    $importInformixDir,
+    $importInformixServer,
+    $importHost,
+    $importDatabase,
+    $importUser,
+    ""
+  );
 
   $syspgmRepository = new FglDocumenter::DatabaseConnection(
-		$exportInformixDir,
-		$exportInformixServer,
-		$exportHost,
-		$exportDatabase,
-		$exportUser,
-		""
-	);
+    $exportInformixDir,
+    $exportInformixServer,
+    $exportHost,
+    $exportDatabase,
+    $exportUser,
+    ""
+  );
 }
 
 #  =========================================================================
@@ -135,14 +136,14 @@ sub initRepository
 sub loadOptions
 {
   if ( -f $optionsFile )
-	{
-	  openOptionsFile();
-	  initRepository();
-	}
-	else
-	{
-	  loadDefaultOptions();
-	}
+  {
+    openOptionsFile();
+    initRepository();
+  }
+  else
+  {
+    loadDefaultOptions();
+  }
 }
 
 
@@ -185,7 +186,7 @@ sub getSyspgmRepository
 #  =========================================================================
 sub openFileToWrite
 {
-	open(OPTIONS,"> $optionsFile");
+  open(OPTIONS,"> $optionsFile");
 }
 
 #  =========================================================================
@@ -193,7 +194,7 @@ sub openFileToWrite
 #  =========================================================================
 sub openFileToRead
 {
-	open(OPTIONS,"< $optionsFile");
+  open(OPTIONS,"< $optionsFile");
 }
 
 #  =========================================================================
@@ -207,19 +208,19 @@ sub save
     ['Fgldoc',           '.fgldocrc', 'TEXT'],
     ['All Files',        '*',             ],
   ];
-	my $initDir = getcwd();
+  my $initDir = getcwd();
   $tmpOptionsFile = $parentWin->getSaveFile(
-		-initialdir => $initDir,
-		-initialfile => $optionsFile,
-	  -title => "Seleccionar ficheiro de parametros",
-	  -filetypes => $types
+    -initialdir => $initDir,
+    -initialfile => $optionsFile,
+    -title => "Seleccionar ficheiro de parametros",
+    -filetypes => $types
   );
-	if ( !defined($tmpOptionsFile) )
-	{
-	  return;
-	}
-	$optionsFile = $tmpOptionsFile;
-	saveOptions();
+  if ( !defined($tmpOptionsFile) )
+  {
+    return;
+  }
+  $optionsFile = $tmpOptionsFile;
+  saveOptions();
 }
 
 #  =========================================================================
@@ -228,88 +229,86 @@ sub save
 #  =========================================================================
 sub saveOptions
 {
-	openFileToWrite();
-	$dataToDump = Data::Dumper->Dump(
-	  [$csvImportFile,
-		 $xmlImportFile,
-	   $UI,
-	   $action,
-	   $importInformixDir,
-		 $importInformixServer,
-		 $importHost,
-		 $importDatabase,
-		 $importUser,
-	   $exportInformixDir,
-		 $exportInformixServer,
-		 $exportHost,
-		 $exportDatabase,
-		 $exportUser,
-	   $csvExportFile,
-	   $xmlExportFile,
-	   $htmlExportDir,
-	   $ignoreExistDir,
-	   $clearRepositoryOnImportCSV,
-	   $normalize,
-	   $clearRepositoryOnImportXML,
-	   $packageName,
-	   $loadComments,
-	   $parseOnly,
-	   $loadTableUsage,
-	   $loadParameters,
-	   $loadStrings,
-	   $loadLocalVariables,
-	   $sourceDir,
-	   $replaceFgldoc,
-	   $fglSource,
-	   $insertEmptyComment,
-	   $logShowed,
-	   $importFglLocation,
-	   $importFglModules,
-	   $importFglDirs,
-	   $loadFilesRecursive
+  openFileToWrite();
+  $dataToDump = Data::Dumper->Dump(
+    [$csvImportFile,
+     $xmlImportFile,
+     $UI,
+     $importInformixDir,
+     $importInformixServer,
+     $importHost,
+     $importDatabase,
+     $importUser,
+     $exportInformixDir,
+     $exportInformixServer,
+     $exportHost,
+     $exportDatabase,
+     $exportUser,
+     $csvExportFile,
+     $xmlExportFile,
+     $htmlExportDir,
+     $ignoreExistDir,
+     $clearRepositoryOnImportCSV,
+     $normalize,
+     $clearRepositoryOnImportXML,
+     $packageName,
+     $loadComments,
+     $parseOnly,
+     $loadTableUsage,
+     $loadParameters,
+     $loadStrings,
+     $loadLocalVariables,
+     $sourceDir,
+     $replaceFgldoc,
+     $fglSource,
+     $insertEmptyComment,
+     $logShowed,
+     $importFglLocation,
+     $importFglModules,
+     $importFglDirs,
+     $loadFilesRecursive
     ],
-	  [
-		 "csvImportFile",
-		 "xmlImportFile",
-	   "UI",
-	   "action",
-	   "importInformixDir",
-		 "importInformixServer",
-		 "importHost",
-		 "importDatabase",
-		 "importUser",
-	   "exportInformixDir",
-		 "exportInformixServer",
-		 "exportHost",
-		 "exportDatabase",
-		 "exportUser" ,
-	   "csvExportFile",
-	   "xmlExportFile",
-	   "htmlExportDir",
-	   "ignoreExistDir",
-	   "clearRepositoryOnImportCSV",
-	   "normalize",
-	   "clearRepositoryOnImportXML",
-	   "packageName",
-	   "loadComments",
-	   "parseOnly",
-	   "loadTableUsage",
-	   "loadParameters",
-	   "loadStrings",
-	   "loadLocalVariables",
-	   "sourceDir",
-	   "replaceFgldoc",
-	   "fglSource",
-	   "insertEmptyComment",
-	   "logShowed",
-	   "importFglLocation",
-	   "importFglModules",
-	   "importFglDirs",
-	   "loadFilesRecursive"
+    [
+     "csvImportFile",
+     "xmlImportFile",
+     "UI",
+     "importInformixDir",
+     "importInformixServer",
+     "importHost",
+     "importDatabase",
+     "importUser",
+     "exportInformixDir",
+     "exportInformixServer",
+     "exportHost",
+     "exportDatabase",
+     "exportUser" ,
+     "csvExportFile",
+     "xmlExportFile",
+     "htmlExportDir",
+     "ignoreExistDir",
+     "clearRepositoryOnImportCSV",
+     "normalize",
+     "clearRepositoryOnImportXML",
+     "packageName",
+     "loadComments",
+     "parseOnly",
+     "loadTableUsage",
+     "loadParameters",
+     "loadStrings",
+     "loadLocalVariables",
+     "sourceDir",
+     "replaceFgldoc",
+     "fglSource",
+     "insertEmptyComment",
+     "logShowed",
+     "importFglLocation",
+     "importFglModules",
+     "importFglDirs",
+     "loadFilesRecursive"
     ]
   );
-	print OPTIONS "$dataToDump";
-	close(OPTIONS);
+  print OPTIONS "$dataToDump";
+  close(OPTIONS);
 }
 
 #  =========================================================================
@@ -323,19 +322,19 @@ sub open
     ['Fgldoc',           '.fgldocrc', 'TEXT'],
     ['All Files',        '*',             ],
   ];
-	my $initDir = getcwd();
+  my $initDir = getcwd();
   $tmpOptionsFile = $parentWin->getOpenFile(
-		-initialdir => $initDir,
-		-initialfile => $optionsFile,
-	  -title => "Seleccionar ficheiro de parametros",
-	  -filetypes => $types
+    -initialdir => $initDir,
+    -initialfile => $optionsFile,
+    -title => "Seleccionar ficheiro de parametros",
+    -filetypes => $types
   );
-	if ( !defined($tmpOptionsFile) )
-	{
-	  return;
-	}
-	$optionsFile = $tmpOptionsFile;
-	openOptionsFile();
+  if ( !defined($tmpOptionsFile) )
+  {
+    return;
+  }
+  $optionsFile = $tmpOptionsFile;
+  openOptionsFile();
 }
 
 #  =========================================================================
@@ -344,15 +343,15 @@ sub open
 #  =========================================================================
 sub openOptionsFile
 {
-	openFileToRead();
-	my $line = "";
-	my $str = "";
-	while ( $line = <OPTIONS> )
-	{
-	   $str .= $line;
-	}
-	eval $str;
-	close(OPTIONS);
+  openFileToRead();
+  my $line = "";
+  my $str = "";
+  while ( $line = <OPTIONS> )
+  {
+     $str .= $line;
+  }
+  eval $str;
+  close(OPTIONS);
 }
 
 return true;

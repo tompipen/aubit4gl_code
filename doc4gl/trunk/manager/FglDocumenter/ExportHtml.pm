@@ -11,8 +11,8 @@
 #  @todo : O HTML localizado não está completo
 #
 #  $Author: saferreira $
-#  $Date: 2003-01-06 20:07:21 $
-#  $Id: ExportHtml.pm,v 1.2 2003-01-06 20:07:21 saferreira Exp $
+#  $Date: 2003-04-14 17:58:01 $
+#  $Id: ExportHtml.pm,v 1.3 2003-04-14 17:58:01 saferreira Exp $
 #
 # ============================================================================
 
@@ -314,6 +314,45 @@ sub selectDetailProcesses
 }
 
 #  ===========================================================================
+#  Get the description of a process. This is made here because of the 
+#  dificulty in perl to handle records or objects
+#
+#  @param $processId The id of the process to be selected.
+#  @return The process display name to be showed in the tree.
+#  ===========================================================================
+sub selectProcessName
+{
+  my $obj = shift;
+  my $processId = shift;
+	my $dispProcess;
+  my $sth = $obj->{dbh}->prepare(qq%
+	    SELECT disp_process FROM p4gl_process 
+		    where id_process = '$processId'
+	%);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Select of process name",
+		  "Can't prepare select from processes\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de processos",
+	    "Can't select from p4gl_process\n$DBI::errstr"
+  );
+	my @row;
+  if (@row = $sth->fetchrow_array())
+  {
+		$dispProcess = $row[0];
+	  $dispProcess =~ s/^ *//g; $dispProcess =~ s/ *$//g;
+  }
+  undef $sth;
+	return $dispProcess;
+}
+
+#  ===========================================================================
 #  Devolve o nome do ficheiro
 #  ===========================================================================
 sub getFileName
@@ -438,8 +477,14 @@ sub createDirTree
 }
 
 #  ===========================================================================
-#  Gera o html com a lista de modulos para o processo enviado como parametro
+#  Generate an html with the 4gl module list for a process.
 #    @todo : Rever a lista de todas as funções inclusivamente o target.
+#    @todo : When the html is generated in directory tree, the HREF should be 
+#            changed.
+#    @todo All functions is commented because is not yet implemented.
+#
+#  @param processId The process key. If AllModules generate for all 4gl 
+#  modules.
 #  ===========================================================================
 sub genModulesForProcess
 {
@@ -448,17 +493,21 @@ sub genModulesForProcess
   my $modListRef = $obj->selectModulesForProcess($processId);
 	my @moduleList = @$modListRef;
 	my $modulesHtmlName;
+	my $destinationPath;
 	if ( $processId eq "AllModules" )
 	{
 	  $modulesHtmlName = $obj->{destinationDir} . "/AllModules.html";
+	  $destinationPath = "./";
+		
   }
 	else
 	{
 	  $modulesHtmlName = $obj->{destinationDir} . "/$processId/modules.html";
+	  $destinationPath = "../";
 	}
   open(MODPROCHTML, "> $modulesHtmlName") || 
 	  die "Cant open $modulesHtmlName : $!";
-	my $str = $obj->{lh}->maketext("All functions");
+	my $allFuncStr = $obj->{lh}->maketext("All functions");
   printf MODPROCHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
 <!--NewPage-->
@@ -477,13 +526,15 @@ sub genModulesForProcess
 
 <TABLE BORDER="0" WIDTH="100%">
   <TR><TD NOWRAP><FONT CLASS="FrameItemFont">
+			<!--
 		  <A HREF="AllFunctions.html" TARGET="descriptionsFrame">
-				$str
+				$allFuncStr
 			</A>
+			-->
 	</FONT>
   <P>
 
-  <FONT size="+1" CLASS="FrameHeadingFont">$obj->{packagesStr}</FONT>
+  <FONT size="+1" CLASS="FrameHeadingFont">$obj->{modulesStr}</FONT>
 |;
 
   my $module;
@@ -492,9 +543,9 @@ sub genModulesForProcess
     printf(MODPROCHTML qq|
 <BR>
 <FONT CLASS="FrameItemFont">
-<A HREF="%s.html" TARGET="descriptionsFrame">%s</A></FONT>
+<A HREF="%s/%s.html" TARGET="descriptionsFrame">%s</A></FONT>
 |,
-		  $module,$module
+		  $destinationPath,$module,$module
     );
   }
 
@@ -674,7 +725,7 @@ body { background-color: #FFFFFF }
 }
 
 #  ===========================================================================
-#  Gera o html que mostra o javascript da arvore
+#  Generate the HTML that calls the tree javascript.
 #  ===========================================================================
 sub genTreeHtml
 {
@@ -697,9 +748,7 @@ initializeDocument()
 }
 
 #  ===========================================================================
-#  Gera o Javascript para mostrar os sources organizados numa arvore em 
-#  Javascript
-#  Optou-se pela geraçao aqui pois fica mais compacto.
+#  Generate the javascript where the concrete tree  is implemented.
 #  ===========================================================================
 sub genTreeJs
 {
@@ -713,13 +762,16 @@ sub genTreeJs
   insDoc(foldersTree, 
 	  gLnk("$str2", "", "AllModules.html", "modulesFrame"))
 |;
-	$obj->genJsForProcess("top","foldersTree");
+	$obj->genJsForProcess("top","foldersTree","TOP");
 }
 
 #  ===========================================================================
-#  Gera o javascript para o processo
-#    @todo Resolver o problema do(s) link(s).
-#    @param Processo para o qual se vai detalhar a arvore
+#  Generate the script that initialize the tree folders and leaves.
+#    @todo Fix the link problem in the nodes.
+#    @todo There should be generated a directory tree containing all the
+#          subprocesses.
+#    @param parentProcess Process Key that should be detailed.
+#    @param lastFolder The name of the last folder where it was executed.
 #  ===========================================================================
 sub genJsForProcess
 {
@@ -727,6 +779,7 @@ sub genJsForProcess
   my $parentProcess = shift;
   my $lastFolder = shift;
   my $refProcs = $obj->selectDetailProcesses($parentProcess);
+  my $processDisplayName;
 	# @todo : receber uma hash com disp_process.
 	my @processList = @$refProcs;
 	if ( $#processList >= 0 )
@@ -738,17 +791,19 @@ sub genJsForProcess
 		}
 		else
 		{
+      $processDisplayName = $obj->selectProcessName($parentProcess);
 	    print TREEJS qq%
-  $parentProcess = insFld($lastFolder, gFld("$processName", "", "files.html"))
+  $parentProcess = insFld($lastFolder, gFld("$processDisplayName", "", "files.html"))
 %;
 	    $lastFolder = $parentProcess;
 		}
 	}
 	else
 	{
+    $processDisplayName = $obj->selectProcessName($parentProcess);
 	  print TREEJS qq%
   insDoc($lastFolder, 
-	  gLnk("$parentProcess", "", "$parentProcess/modules.html","modulesFrame"))
+	  gLnk("$processDisplayName", "", "$parentProcess/modules.html","modulesFrame"))
 %;
 	}
 	my $i = 0;
@@ -1447,6 +1502,8 @@ sub genAllProcessesHtml()
 }
 
 # ============================================================================
+# @todo  Do not generate an empty navbar.
+#
 # Gera a navbar de acordo com os parametros definidos
 #   @param 1 - Location (bottom ou top) anchor
 #   @param 2 - URL path
@@ -1473,9 +1530,12 @@ sub genNavBar
 	{
 	  $moduleBgColor = "#FFFFFF";
 	}
-	my $str = $obj->{lh}->maketext("Overview");
-	my $str2 = $obj->{lh}->maketext("Package");
-  my $str3 = $obj->{lh}->maketext("Module");
+	#my $str = $obj->{lh}->maketext("Overview");
+	#my $str2 = $obj->{lh}->maketext("Package");
+  #my $str3 = $obj->{lh}->maketext("Module");
+	my $str = "";
+	my $str2 = "";
+  my $str3 = "";
   my $navString = qq|
 <!-- ========== START OF NAVBAR ========== -->
 <A NAME="$locationAnchor"><!-- --></A>
@@ -1734,7 +1794,6 @@ sub selectModuleTableUsage
   my(@tableUsageList);
   while (@row = $sth->fetchrow_array())
   {
-		printf("TABLE USAGE $row[0]");
 		my $tableName = $row[0];
 		push(@tableUsageList,$tableName);
   }
@@ -1969,12 +2028,13 @@ sub printTableUsageSummaryBody
 }
 
 #  ===========================================================================
-#  Escreve a documentação de uma método
-#  @param idxFunction Indice da função que se está a documentar
+#  Escreve a documentação dos métodos de um módulo
+#  @param module_name The name of the module being documented.
 #  ===========================================================================
 sub printMethodsDetail
 {
   my $obj = shift;
+	my $moduleName = shift;
 
 	# Desreferenciar / desempacotar informaçao
 	my $modRef = $obj->{moduleInformation};
@@ -1984,10 +2044,10 @@ sub printMethodsDetail
 
   $obj->printMethodDetailHeader();
 	my $i;
-  for ( $i = 0 ; $i < $#functionList ; $i++ )
+  for ( $i = 0 ; $i <= $#functionList ; $i++ )
 	{
 		my $funcInfRef = $functionList[$i];
-    $obj->printMethodDetailBody($funcInfRef);
+    $obj->printMethodDetailBody($moduleName,$funcInfRef);
 	}
   print MODULEHTML "<!-- ========= END OF CLASS DATA ========= --> <HR>\n";
 }
@@ -2017,14 +2077,13 @@ sub printMethodDetailHeader
 
 #  ===========================================================================
 #  Preenche os dados relativos ao detalhe de cada método 
+#  @param moduleName The name of the moduke being documented.
 #  @param idxFunction Indice da função na tabela de simbolos
-#  @todo Parametros
-#  @todo Lista de tarefas
-#  @todo Valores de retorno
 #  ===========================================================================
 sub printMethodDetailBody
 {
   my $obj = shift;
+	my $moduleName = shift;
   my $funcInfRef = shift;
 	my %functionInformation = %$funcInfRef;
 
@@ -2034,10 +2093,286 @@ sub printMethodDetailBody
   print MODULEHTML qq|
 	<HR>
   <A NAME='$functionName()'><!-- --></A><H3>$functionName</H3>
-  <DL>
-    <DD>$comments</DD>
-  </DL>
 |;
+	$obj->printFunctionPrototype($moduleName,$functionName);
+  print MODULEHTML "<DL><DD>$comments</DD>\n";
+
+	$obj->printFunctionParameters($moduleName,$functionName);
+	$obj->printFunctionReturns($moduleName,$functionName);
+	$obj->printFunctionTodos($moduleName,$functionName);
+
+  print MODULEHTML "</DL>\n";
+}
+
+#  ===========================================================================
+#  Print the prototype for the 4gl function.
+#  ===========================================================================
+sub printFunctionPrototype
+{
+  my $obj = shift;
+	my $moduleName = shift;
+	my $functionName = shift;
+	$functionName =~ s/^ *//g; $functionName =~ s/ *$//g;
+
+	print MODULEHTML "<PRE>\n";
+
+  my $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT function_type FROM p4gl_function 
+		  WHERE module_name='$moduleName' and function_name = '$functionName'
+  %);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de parametro de função",
+		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de parametro de função",
+	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+	my $haveParameters = 0;
+  my(@row);
+	my %moduleInformation;
+  if (@row = $sth->fetchrow_array())
+	{
+	  my $functionType = $row[0];
+		if ( $functionType eq "R" ) {
+	    print MODULEHTML "REPORT ";
+		}
+		else {
+	    print MODULEHTML "FUNCTION ";
+		}
+	}
+	print MODULEHTML "$functionName(";
+
+  $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT var_name FROM p4gl_fun_parameter 
+		  WHERE module_name='$moduleName' and function_name = '$functionName'
+  %);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de parametro de função",
+		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de parametro de função",
+	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+	my $haveParameters = 0;
+  my(@row);
+	my %moduleInformation;
+	my $i = 0;
+  while (@row = $sth->fetchrow_array())
+	{
+		if ( $i > 0 ) { print MODULEHTML ","; }
+	  my $varName = $row[0];
+	  $varName =~ s/^ *//g; $varName =~ s/ *$//g;
+		print MODULEHTML "$varName";
+		$i++;
+	}
+	print MODULEHTML ")";
+	print MODULEHTML "</PRE>\n";
+}
+
+#  ===========================================================================
+#  Select and print the function parameters descripitons.
+#  @param moduleName the Name of the 4gl module.
+#  @param functionName the Name of the function.
+#  ===========================================================================
+sub printFunctionParameters
+{
+  my $obj = shift;
+	my $moduleName = shift;
+	my $functionName = shift;
+	my $varName;
+	my $dataType;
+	my $comments;
+
+  my $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT var_name, data_type, comments FROM p4gl_fun_parameter 
+		  WHERE module_name='$moduleName' and function_name = '$functionName'
+  %);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de parametro de função",
+		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de parametro de função",
+	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+	my $haveParameters = 0;
+  my(@row);
+	my %moduleInformation;
+  while (@row = $sth->fetchrow_array())
+  {
+		if ( !$haveParameters )
+		{
+			$haveParameters = 1;
+      print MODULEHTML qq|
+	    <BR><DD>
+	    <DL>
+	    <DT><B>Parameters:</B>
+      |;
+		}
+	  $varName = $row[0];
+	  $dataType = $row[1];
+	  $comments = $row[2];
+	  $obj->printParameter($varName,$dataType,$comments);
+  }
+  undef $sth;
+
+  if ( $haveParameters )
+	{
+    print MODULEHTML qq|
+	  </DT></DL></DD>
+  |;
+	}
+}
+
+#  ===========================================================================
+#  Print the description of a parameter.
+#  @param varName The name of the 4gl variable
+#  @param dataType The datatype of the 4gl variable
+#  @param comments The comments associated to the 4gl variable
+#  ===========================================================================
+sub printParameter
+{
+  my $obj = shift;
+	my $varName = shift;
+	my $dataType = shift;
+	my $comments = shift;
+  print MODULEHTML qq|
+	  <DD><CODE>$varName  $dataType</CODE> $comments
+|;
+}
+
+#  ===========================================================================
+#  Select and print the function return descripitons.
+#  @param the Name of the function
+#  @todo Implement it
+#  ===========================================================================
+sub printFunctionReturns
+{
+  my $obj = shift;
+	my $moduleName = shift;
+	my $functionName = shift;
+	my $varName;
+	my $dataType;
+	my $comments;
+
+  my $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT var_name, data_type, comments FROM p4gl_fun_return 
+		  WHERE module_name='$moduleName' and function_name = '$functionName'
+  %);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de parametro de função",
+		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de parametro de função",
+	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+	my $haveReturn = 0;
+  my(@row);
+	my %moduleInformation;
+  while (@row = $sth->fetchrow_array())
+  {
+		if ( !$haveReturn )
+		{
+			$haveReturn = 1;
+      print MODULEHTML qq|
+	    <BR><DD>
+	    <DL>
+	    <DT><B>Return Values:</B>
+      |;
+		}
+	  $varName = $row[0];
+	  $dataType = $row[0];
+	  $comments = $row[2];
+	  $obj->printParameter($varName,$dataType,$comments);
+  }
+  undef $sth;
+
+	if ( $haveReturn )
+	{
+    print MODULEHTML qq|
+	  </DT></DL></DD>
+  |;
+  }
+}
+
+#  ===========================================================================
+#  Select and print the function todos descripitons.
+#  @param moduleName the Name of the 4gl module.
+#  @param functioName the Name of the function
+#  @todo Implement it
+#  ===========================================================================
+sub printFunctionTodos
+{
+  my $obj = shift;
+	my $moduleName = shift;
+	my $functionName = shift;
+	my $comments;
+
+  my $sth = $obj->{dbh}->prepare(qq% 
+	  SELECT comments FROM p4gl_fun_todo 
+		  WHERE module_name='$moduleName' and function_name = '$functionName'
+  %);
+  if ( ! $sth )
+	{
+		$obj->{err}->error(
+		  "Seleção de parametro de função",
+		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+		return;
+	}
+  $sth->execute() || 
+		$obj->{err}->error(
+		  "Selecção de parametro de função",
+	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    );
+	my $haveTodo = 0;
+  my(@row);
+	my %moduleInformation;
+  while (@row = $sth->fetchrow_array())
+  {
+		if ( !$haveTodo )
+		{
+			$haveTodo = 1;
+      print MODULEHTML qq|
+	    <BR><DD>
+	    <DL>
+	    <DT><B>Todo task list:</B>
+      |;
+		}
+	  $comments = $row[0];
+    print MODULEHTML "<DD><CODE>$comments</CODE>\n";
+  }
+  undef $sth;
+
+  if ( $haveTodo )
+	{
+    print MODULEHTML qq|
+	  </DT></DL></DD>
+  |;
+	}
 }
 
 #  ===========================================================================
@@ -2065,6 +2400,15 @@ sub printDocTrailer
 }
 
 #  ===========================================================================
+#  
+#  ===========================================================================
+sub initL10N
+{
+  my $obj = shift;
+	$obj->{"modulesStr"} = $obj->{lh}->maketext("Modules");
+}
+
+#  ===========================================================================
 #  Executa a geraçao/exportaçao da informaçao para html de acordo com os 
 #  parametros preenchidos
 #  ===========================================================================
@@ -2075,6 +2419,7 @@ sub export
 	$obj->selectProcesses();
 	$obj->{originalDir} = getcwd();
 	$obj->createDirTree();
+	$obj->initL10N();
   $obj->genHtml();
 	chdir($obj->{originalDir}) || die "Can go again to original directory";
 }

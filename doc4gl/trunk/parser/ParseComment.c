@@ -13,8 +13,8 @@
  * @todo : Syntaxe para tipo de accao sobre tabelas.
  *
  * $Author: saferreira $
- * $Revision: 1.3 $
- * $Id: ParseComment.c,v 1.3 2003-02-13 11:21:01 saferreira Exp $
+ * $Revision: 1.4 $
+ * $Id: ParseComment.c,v 1.4 2003-04-14 17:58:07 saferreira Exp $
  *
  */
 
@@ -313,6 +313,7 @@ void writeCommentIdentifier(char *id)
 
 /**
  * Set the current comment as the module documentation comment.
+ * Now is implemented in order to ignore @file.
  * @todo : Implement it
  */
 void setModuleDocument(void)

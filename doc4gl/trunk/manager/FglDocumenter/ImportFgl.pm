@@ -6,7 +6,7 @@
 # existente nos sources de 4gl
 #
 # $Author: saferreira $
-# $Id: ImportFgl.pm,v 1.5 2003-02-12 12:48:59 saferreira Exp $
+# $Id: ImportFgl.pm,v 1.6 2003-04-14 17:58:01 saferreira Exp $
 # 
 # ============================================================================
 
@@ -246,7 +246,7 @@ sub parseSources
   {
     my $directory = @fglDirectoryList[$i];
 
-    $obj->{progressListener}("Parsing source 4gl",
+    $obj->{progressListener}("Parsing 4gl source ",
       "$directory : $module"
     ) if $obj->{progressListener};
 
@@ -259,9 +259,9 @@ sub parseSources
     if ( $p4glRetval == 0 )
     {
       $retval = 0;
-			if ( $obj->{stop} == 1 ) {
-			  return $retval;
-			}
+      if ( $obj->{stop} == 1 ) {
+        return $retval;
+      }
     }
     $i++;
   }
@@ -304,20 +304,23 @@ sub executeP4glFile
 
   $obj->{log}->log("$p4glCommand in " . getcwd() . "\n");
   my $result;
-	
-	if (! open P4GL, "$p4glCommand|" ) {
-	  print "Error executing p4gl : $!\n";
-		return 0;
+  
+  if (! open P4GL, "$p4glCommand|" ) {
+    my $errMsg = "Error executing p4gl : $!\n" .  
+      "This could due to a PATH to p4gl command problem\n";
+    $obj->{log}->log("$errMsg");
+    print $errMsg;
+    return 0;
   }
-	$result = <P4GL>;
-	# @todo : Fix this. This is not the good way to test.
+  $result = <P4GL>;
+  # @todo : Fix this. This is not the good way to test.
   if ( $result =~ "^\$" )
   {
     $obj->{log}->log("$module Parsed");
   }
   else
   {
-		chomp($result);
+    chomp($result);
     $obj->{log}->log("Error executing p4gl :\n    $result");
     $obj->{err}->error(
       "Parsing de ficheiro",

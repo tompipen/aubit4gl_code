@@ -420,7 +420,7 @@ int GetReserved(char *YYText)
 	extern int lineno;
 
 	/* todo : Isto devia ser controlado por opção para debug */
-	 /*printf("Line %d - %s\n",lineno,YYText); fflush(stdout);  */
+	 //printf("Line %d - %s\n",lineno,YYText); fflush(stdout);  
    strcpy(mytk,YYText);
    while ( low <= high )
    {

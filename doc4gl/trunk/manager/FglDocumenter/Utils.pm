@@ -21,9 +21,9 @@ package FglDocumenter::Utils;
 sub getCenterY
 {
   my $winHeight = shift;
-	my $screenHeight = $main::mw->screenheight();
+  my $screenHeight = $main::mw->screenheight();
   my $y = $screenHeight / 2 - $winHeight / 2;
-	return $y;
+  return $y;
 }
 
 #  =========================================================================
@@ -33,9 +33,9 @@ sub getCenterY
 sub getCenterX
 {
   my $winWidth = shift;
-	my $screenWidth = $main::mw->screenwidth();
+  my $screenWidth = $main::mw->screenwidth();
   my $x = $screenWidth / 2 - $winWidth / 2;
-	return $x;
+  return $x;
 }
 
 #  =========================================================================
@@ -45,19 +45,19 @@ sub getCenterX
 #    @param height - Altura da janela
 #  =========================================================================
 sub setWindowAtCenter
-{	
-	my $win = shift;
+{  
+  my $win = shift;
   my $width = shift;
-	my $height = shift;
+  my $height = shift;
 
-	# So para ver se funciona
-	# Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
-	# janelas hardcoded
-	my $with = $main::mw->screenwidth();
-	my $height = $main::mw->screenheight();
+  # So para ver se funciona
+  # Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
+  # janelas hardcoded
+  my $with = $main::mw->screenwidth();
+  my $height = $main::mw->screenheight();
   my $x = getCenterX($width);
-	my $y = getCenterY($height);
-	$win->geometry("${height}x$width+$x+$y");
+  my $y = getCenterY($height);
+  $win->geometry("${height}x$width+$x+$y");
 
 }
 
@@ -69,20 +69,20 @@ sub setWindowAtCenter
 #    @param height - Altura da janela
 #  =========================================================================
 sub setFormAtCenter
-{	
-	my $win = shift;
+{  
+  my $win = shift;
   #my $width = shift;
-	#my $height = shift;
+  #my $height = shift;
 
-	# So para ver se funciona
-	# Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
-	# janelas hardcoded
-	my $width = $win->width;
-	my $height = $win->height;
+  # So para ver se funciona
+  # Temporariamente fica assim. Esta melhor pois nao fica com tamanhos de 
+  # janelas hardcoded
+  my $width = $win->width;
+  my $height = $win->height;
   my $x = getCenterX($width);
-	my $y = getCenterY($height);
-	$win->geometry("${height}x$width+$x+$y");
-	$win->update();
+  my $y = getCenterY($height);
+  $win->geometry("${height}x$width+$x+$y");
+  $win->update();
 
 }
 
@@ -98,46 +98,46 @@ sub setFormAtCenter
 #  =========================================================================
 sub getModules
 {
-	my $wantedDir = shift;
-	my $loadFilesRecursive = shift;
+  my $wantedDir = shift;
+  my $loadFilesRecursive = shift;
   my $currentDir = POSIX::getcwd();
-	chdir $wantedDir || die "Cant change to $wantedDir : $!\n ";
+  chdir $wantedDir || die "Cant change to $wantedDir : $!\n ";
   my $moduleDir = POSIX::getcwd();
-	my @moduleList = ();
+  my @moduleList = ();
   my $file;
-	foreach $file (<*>)
-	{
-		if ( isFglFile($file) )
-		{
-		  chomp($file);
-	    push(@FglDocumenter::Utils::directoryList,$moduleDir);
-	    push(@moduleList,$file);
-		}
-		elsif ( $loadFilesRecursive == 1 )
-		{
-		  if ( -d $file )
-		  {
-				my $directory = "$file";
-				#$directory = "$wantedDir/$file";
-		    my $refSubDirModules = getModules($directory,1);
-		    my @subDirModules = @$refSubDirModules;
-	      @moduleList    = (@moduleList,@subDirModules);
-		  }
-		}
-	}
+  foreach $file (<*>)
+  {
+    if ( isFglFile($file) )
+    {
+      chomp($file);
+      push(@FglDocumenter::Utils::directoryList,$moduleDir);
+      push(@moduleList,$file);
+    }
+    elsif ( $loadFilesRecursive == 1 )
+    {
+      if ( -d $file )
+      {
+        my $directory = "$file";
+        #$directory = "$wantedDir/$file";
+        my $refSubDirModules = getModules($directory,1);
+        my @subDirModules = @$refSubDirModules;
+        @moduleList    = (@moduleList,@subDirModules);
+      }
+    }
+  }
   chdir $currentDir;
-	return \@moduleList;
+  return \@moduleList;
 }
 
 sub initDirectoryList 
 {
-	@FglDocumenter::Utils::directoryList = ();
+  @FglDocumenter::Utils::directoryList = ();
 }
 
 
 sub getDirectoryList
 {
-	return \@FglDocumenter::Utils::directoryList;
+  return \@FglDocumenter::Utils::directoryList;
 }
 
 
@@ -152,16 +152,16 @@ sub getDirectoryList
 #  =========================================================================
 sub isFglFile
 {
-	my $file = shift;
+  my $file = shift;
 
-  if ( $file =~ /.*\.4gl/ )
-	{
-	  if ( -f $file )
-	  {
-	    return 1;
+  if ( $file =~ /.*\.4gl$/ )
+  {
+    if ( -f $file )
+    {
+      return 1;
     }
-	}
-	return 0;
+  }
+  return 0;
 }
 
 

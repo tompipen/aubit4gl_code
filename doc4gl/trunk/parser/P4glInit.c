@@ -131,7 +131,7 @@ static void setRepositoryOptions(char *options)
 {
   if ( index(options,'t') != NULL || index(options,'T') != NULL )
     P4glCb.repositoryOptions.insertTableUsage = 1;
-  /** @todo - Resto das opções de configuração */
+  /** @todo - The missing configuration options */
 }
 
 
@@ -435,8 +435,10 @@ static void getDirectoryFromFile(void)
 
 
 /**
- * Abstract tree initialization.
  * Phase two. After setting the execution properties
+ *
+ * Abstract tree initialization.
+ * Input (4gl source) file opening.
  *
  * @return The status returning code:
  *   0 : There was an error initializing.
