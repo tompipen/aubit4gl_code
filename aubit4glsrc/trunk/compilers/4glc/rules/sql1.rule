@@ -1024,9 +1024,9 @@ in_select_statement:
 ;
 
 select_statement2:
-	select_statement2_1 | char_or_var ;
+	select_statement21 | char_or_var ;
 
-select_statement2_1:
+select_statement21:
 	SELECT setident op_ad select_list 
         opt_into_sel 
 	table_expression 

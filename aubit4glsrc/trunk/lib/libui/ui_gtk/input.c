@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.2 2002-09-17 09:38:03 afalout Exp $
+# $Id: input.c,v 1.3 2002-09-20 10:06:05 mikeaubury Exp $
 #*/
 
 /**
@@ -108,7 +108,7 @@ static int gui_form_field_chk (void);
 extern char *replace_sql_var (char *s); 	/* others.c */
 
 int form_loop (struct s_screenio * s);
-int gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, ...);
+int gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap);
 int set_fields (struct s_screenio * sio);
 void disp_fields (int n, int attr, va_list * ap);
 int push_constr (struct s_screenio *s);
@@ -510,14 +510,14 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
  * @return The number of elements returned.
  */
 int
-gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, ...)
+gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
 {
   int a;
-  va_list ap;
-  va_start (ap, cwin);
+  //va_list ap;
+  //va_start (ap, cwin);
 
   debug ("XXX1");
-  a = gen_field_list_gtk (field_list, GTK_WINDOW(cwin), 9999, &ap);
+  a = gen_field_list_gtk (field_list, GTK_WINDOW(cwin), 9999, ap);
   return a;
 }
 

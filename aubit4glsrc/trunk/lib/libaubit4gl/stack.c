@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.23 2002-08-13 11:56:48 afalout Exp $
+# $Id: stack.c,v 1.24 2002-09-20 10:06:04 mikeaubury Exp $
 #
 */
 
@@ -762,7 +762,7 @@ push_param (void *p, int d)
         	case OP_LESS_THAN_EQ:
         	case OP_GREATER_THAN_EQ:
         	case OP_EQUAL:
-        	case OP_NOT_EQUAL:
+        	case OP_NOT_EQUAL: 
 			function=find_op_function(dtype_2,dtype_1,OP_MATH);
 	}
 
@@ -1019,15 +1019,18 @@ push_param (void *p, int d)
 	push_int (0);
       break;
 
-    case OP_NOT_EQUAL:
+    case OP_NOT_EQUAL: 
+	debug("Checking OP NOT EQUAL");
       if (chknull_boolean (2, n1, n2))
 	return;
 
       debug ("OP_NOT_EQUAL");
-      if (opboolean () == 0)
+      if (opboolean () == 0) {
 	push_int (0);
-      else
+	}
+      else {
 	push_int (1);
+	}
       break;
 
     case OP_OR:

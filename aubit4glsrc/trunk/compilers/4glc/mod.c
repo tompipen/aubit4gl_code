@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.78 2002-09-01 10:40:10 afalout Exp $
+# $Id: mod.c,v 1.79 2002-09-20 10:06:04 mikeaubury Exp $
 #
 */
 
@@ -2813,15 +2813,18 @@ void
 reset_attrib (struct form_attr * form_attrib)
 {
   debug ("Reseting attributes\n");
-  form_attrib->iswindow = 0;
-  form_attrib->form_line = 3;
-  form_attrib->error_line = -1;
-  form_attrib->comment_line = -2;
-  form_attrib->message_line = 1;
-  form_attrib->prompt_line = -2;
-  form_attrib->menu_line = 1;
-  form_attrib->border = 0;
-  form_attrib->attrib = 0;
+  form_attrib->iswindow     = 0;
+
+  form_attrib->attrib       = 0xffff;
+
+  form_attrib->form_line    = 0xff;
+  form_attrib->error_line   = 0xff;
+  form_attrib->comment_line = 0xff;
+  form_attrib->message_line = 0xff;
+  form_attrib->prompt_line  = 0xff;
+  form_attrib->menu_line    = 0xff;
+
+  form_attrib->border       = 0;
 }
 
 

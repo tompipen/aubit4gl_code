@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.2 2002-09-08 10:38:20 afalout Exp $
+# $Id: newpanels.c,v 1.3 2002-09-20 10:06:05 mikeaubury Exp $
 #*/
 
 /**
@@ -306,6 +306,12 @@ create_window (char *name, int x, int y, int w, int h,
 #ifdef DEBUG
   debug ("Creating window %s (%d %d %d %d) %d attrib=0x%x", name, x, y, w, h, border, attrib);
 #endif
+
+if (form_line==0xff) { form_line=std_dbscr.form_line; }
+if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+if (error_line==0xff) { error_line=std_dbscr.error_line; }
+if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   if (strcmp (name, "screen") == 0)
     {
       h = screen_height () - 1;
@@ -1598,6 +1604,12 @@ cr_window_form (char *name,
   WINDOW *win;
   debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
 	 name, iswindow, form_line, error_line, prompt_line, menu_line, border, comment_line, message_line, attrib);
+
+if (form_line==0xff) { form_line=std_dbscr.form_line; }
+if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+if (error_line==0xff) { error_line=std_dbscr.error_line; }
+if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 
   s = char_pop ();
   x = pop_int ();

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
+# $Id: ops.c,v 1.4 2002-09-20 10:06:04 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ long d;
 		case OP_LESS_THAN_EQ: 		push_int(a<=b); return;
 		case OP_GREATER_THAN_EQ: 	push_int(a>=b); return;
 		case OP_EQUAL: 			push_int(a<=b); return;
-		case OP_NOT_EQUAL: 		push_int(a>=b); return;
+		case OP_NOT_EQUAL: 		push_int(a!=b); return;
 	}
 
 	exitwith("Unknown operation");

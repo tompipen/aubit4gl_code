@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: menu.c,v 1.2 2002-09-20 10:06:05 mikeaubury Exp $
 #*/
 
 /**
@@ -85,7 +85,7 @@ extern GtkWidget *tooltips;
 void disp_h_menu (void *m);
 int menu_loop (void *m);
 void free_menu (void *m);
-void next_option_gtk (void * menu, char *nextopt);
+void next_option (void * menu, char *nextopt);
 void menu_hide (void *m, va_list *ap);
 void menu_show (void *m,va_list *ap);
 GtkWidget * new_menu_create (char *title, int x, int y, int mn_type, int help_no);
@@ -271,7 +271,7 @@ find_menu_item (void *m, char *s)
  * @param nextop.
  */
 void
-next_option_gtk (void * menu, char *nextopt)
+next_option (void * menu, char *nextopt)
 {
 	debug("next option - Has no effect in GUI mode");
 }

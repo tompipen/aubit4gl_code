@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.2 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.3 2002-09-20 10:06:05 mikeaubury Exp $
 #*/
 
 /**
@@ -206,6 +206,13 @@ create_window_gtk (char *name, int x, int y, int w, int h,
   GtkFrame *frame = 0;
   GtkWidget *wxx = 0;
   int isscreenwin = 0;
+
+if (form_line==0xff) { form_line=std_dbscr.form_line; }
+if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+if (error_line==0xff) { error_line=std_dbscr.error_line; }
+if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+
 
   debug ("gui_create_window %s %d %d %d %d", name, x, y, w, h);
 
@@ -463,6 +470,15 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
   h = pop_int ();
   x = pop_int ();
   y = pop_int ();
+
+
+
+if (form_line==0xff) { form_line=std_dbscr.form_line; }
+if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+if (error_line==0xff) { error_line=std_dbscr.error_line; }
+if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+
   if (has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
@@ -664,7 +680,8 @@ int off;
 
   /* gtk_box_pack_end_defaults (v, form); */
   off = (int) gtk_object_get_data (GTK_OBJECT (mainfrm), "FORM_LINE");
-  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0, off * YHEIGHT);
+  debug("Off [FORM_LINE] = %d\n",off);
+  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0, (off-1) * YHEIGHT);
 
   debug ("Added mainfrm=%p form =%p as currform\n", mainfrm, form);
   gtk_object_set_data (GTK_OBJECT (mainfrm), "currform", form);
@@ -713,6 +730,12 @@ cr_window_form (char *s,
   char buff[256];
   GtkFixed *form;
   GtkWindow *win;
+
+if (form_line==0xff) { form_line=std_dbscr.form_line; }
+if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+if (error_line==0xff) { error_line=std_dbscr.error_line; }
+if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 
   fname = char_pop ();
   trim(fname);

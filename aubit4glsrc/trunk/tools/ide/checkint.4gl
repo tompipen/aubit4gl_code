@@ -1,5 +1,5 @@
 {
-	@(#)$Id: checkint.4gl,v 1.1.1.1 2001-08-20 02:37:05 afalout Exp $
+	@(#)$Id: checkint.4gl,v 1.2 2002-09-20 10:06:05 mikeaubury Exp $
 	@(#)JLSS Informix Tools: General Library
 	@(#)Interrupt checker
 	@(#)Author: JL
@@ -11,8 +11,8 @@ FUNCTION check_interrupt()
 	DEFINE rcs CHAR(1)
 
 	IF int_flag != 0 THEN
-		LET rcs = "@(#)$Id: checkint.4gl,v 1.1.1.1 2001-08-20 02:37:05 afalout Exp $"
-		ERROR "Interrupt detected -- ignored"
+		LET rcs = "@(#)$Id: checkint.4gl,v 1.2 2002-09-20 10:06:05 mikeaubury Exp $"
+		ERROR "Interrupt detected -- ignored : ",int_flag
 		LET int_flag = 0
 	END IF
 

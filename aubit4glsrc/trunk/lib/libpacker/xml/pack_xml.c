@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.3 2002-08-18 05:00:28 afalout Exp $
+# $Id: pack_xml.c,v 1.4 2002-09-20 10:06:04 mikeaubury Exp $
 #*/
 
 /**
@@ -255,9 +255,10 @@ find_contents (char *s)
 static void
 chk (void *x)
 {
+return;
   if ((int)x < 10000)
     {
-      printf ("Suspect pointer...\n");
+      printf ("Suspect pointer... : %p\n",x);
       exit (0);
     }
 }
