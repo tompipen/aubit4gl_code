@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.56 2003-06-06 07:30:47 mikeaubury Exp $
+# $Id: stack.c,v 1.57 2003-06-16 08:19:42 mikeaubury Exp $
 #
 */
 
@@ -1650,7 +1650,7 @@ A4GL_debug_print_stack (void)
 #endif
   for (a = 0; a < params_cnt; a++)
     {
-      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 20);
+      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 40);
 #ifdef DEBUG
       /* {DEBUG} */ A4GL_debug (" %d Dtype (%d)='%s' size=%d:", a,
 			   params[a].dtype & DTYPE_MASK, buff,
@@ -1741,7 +1741,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 
       if ((params[a].dtype & DTYPE_MASK) != 0)
 	{
-	  sz = 20;
+	  sz = 30;
 	  A4GL_debug ("not char - sz=30");
 	}
       else
