@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2005-03-25 23:33:49 afalout Exp $
+# $Id: Makefile,v 1.2 2005-03-26 00:06:27 afalout Exp $
 #
 
 ROOT		=../..
@@ -173,7 +173,7 @@ endif
 #	${MAKE} -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C}
-${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
+	${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 	${MAKE} -C rules
