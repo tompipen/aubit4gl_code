@@ -52,8 +52,40 @@ void executeActions(void)
  */
 int parseFgl(void)
 {
+	if ( usedParser == FGLDOC_PARSER )
+	  return fgldocParser();
+	else
+	  return aubitParser();
+}
+
+/**
+ * Parse the 4gl using the parser builded specificaly for this.
+ * @todo : The preprocessing and file opening must be done here 
+ * @return The result of the parsing process.
+ */
+int fgldocParser(void) 
+{
+  if ( fgldocParserPrepare() == 0)
+	  return 1;
+	openParamFile();
   if ( yyparse() == 0)
 	  return 1;
+  return 0;
+}
+
+/**
+ * Parse the 4gl using a version of the aubit 4gl modified parser.
+ * @return The result of the parsing process
+ */
+int aubitParser(void) 
+{
+#ifdef WITH_AUBIT_PARSER
+	if ( parse_4gl("test/fgl/simple/hello.4gl") )
+	  return 1;
+#else
+	printf("Not compiled with aubit4gl parser\n");
+	return 1;
+#endif
   return 0;
 }
 

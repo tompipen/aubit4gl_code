@@ -119,6 +119,16 @@ void setDocFileDir(char *_docFileDir)
   P4glCb.docFileDir = strdup(_docFileDir);
 }
 
+void setUsedParser(int _usedParser)
+{
+  usedParser = _usedParser;
+}
+
+int getUsedParser(void)
+{
+	return usedParser;
+}
+
 /**
  * Sets the package name.
  *
@@ -160,6 +170,31 @@ static void initDatabase(void)
 }
 
 /**
+ * Print fgldoc usage.
+ * To be used with p4gl --help or when an error ocurr in options.
+ */
+static void printUsage(void) 
+{
+   printf(
+           "Usage: p4gl [-h] [-d] [-a] [-i] [-v] [-w level] -f ficheiro.4gl\n");
+   printf("--help : Display this help message\n");
+   printf("--debug : Debug mode\n");
+   printf("--aubit_parser : Use aubit 4gl parser\n");
+   printf("--html : Dump HTML to stdout\n");
+   printf("--insert : Insert in the repository\n");
+   printf("--verbose : Verbose mode\n");
+   printf("--warning_level : Warning level (1..10)\n");
+   printf("--document : Generate documentation\n");
+   printf("--std_comment : Use standard comments for documentation\n");
+   printf("--package=package : Nome do package\n");
+   printf("--file=file.4gl : Name of 4gl file to process\n");
+   printf("--database=dbname : Name databse to use\n");
+   printf("--document_directory= : \n");
+   printf("--repository_options= : \n");
+   printf("--insert_process= : \n");
+}
+
+/**
  * Parse the comand line arguments and acording to the passed values
  * set(s) the properties.
  *
@@ -190,11 +225,12 @@ void initArguments(int argc, char *argv[])
     {"package", 1, 0, 'p'},
     {"repository_options", 1, 0, 'o'},
     {"insert_process", 1, 0, 'x'},
+    {"aubit_parser", 0, 0, 'a'},
     {0, 0, 0, 0},
   };
 
   /* while ( (c=getopt(argc,argv,"f:dviw:h?csl:p:b:")) != -1) */
-  while ( ( c = getopt_long (argc, argv, "f:dviw:h?csl:p:b:",
+  while ( ( c = getopt_long (argc, argv, "f:daviw:h?csl:p:b:",
                         long_options, &option_index) ) != -1)
   {
     switch(c)
@@ -205,6 +241,11 @@ void initArguments(int argc, char *argv[])
 
       case 'd':						/* Debug mode */
         setDebug(1);
+        break;
+
+      case 'a':						/* Use the aubit 4gl parser */
+				printf("Set used parser to aubit\n");
+        setUsedParser(AUBIT_PARSER);
         break;
 
       case 't':						/* Dump HTML to stdout */
@@ -250,22 +291,7 @@ void initArguments(int argc, char *argv[])
       case 'h':						/* Help */
       case '?':
         /* Isto não está actualizado */
-        printf(
-           "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
-        printf("--help : Display this help message\n");
-        printf("--debug : Debug mode\n");
-        printf("--html : Dump HTML to stdout\n");
-        printf("--insert : Insert in the repository\n");
-        printf("--verbose : Verbose mode\n");
-        printf("--warning_level : Warning level (1..10)\n");
-        printf("--document : Generate documentation\n");
-        printf("--std_comment : Use standard comments for documentation\n");
-        printf("--package=package : Nome do package\n");
-        printf("--file=file.4gl : Name of 4gl file to process\n");
-        printf("--database=dbname : Name databse to use\n");
-        printf("--document_directory= : \n");
-        printf("--repository_options= : \n");
-        printf("--insert_process= : \n");
+				printUsage();
         exit(0);
 
 
@@ -354,6 +380,7 @@ void initP4glPhaseOne(void)
   P4glCb.parsedComment     = (Comment *)0;
   P4glCb.package           = strdup(".");
   P4glCb.insertProcess     = 1;
+	usedParser = FGLDOC_PARSER;
   initDatabase();
 
   /* Variaveis temporarias para passagem de valores entre regras */
@@ -465,12 +492,13 @@ static void getDirectoryFromFile(void)
  *   0 : There was an error initializing.
  *   1 : Everithing OK.
  */
-int initP4glPhaseTwo(void)
+int fgldocParserPrepare(void)
 {
   /** @todo : This test should return error */
+	/** @todo : Use printUsage here */
   if ( ! existe_ficheiro )
     P4glError(ERROR_EXIT,
-       "Usage: p4gl [-h] [-d] [-i] [-v] -f %s\nTry 'p4gl --help' for more options\n","filename.4gl");
+       "Usage: p4gl [-h] [-d] [-a] [-i] [-v] -f %s\nTry 'p4gl --help' for more options\n","filename.4gl");
 
   P4glVerbose("4gl Pre-Processing\n");
   getDirectoryFromFile(); 
@@ -479,8 +507,6 @@ int initP4glPhaseTwo(void)
   if ( !openInputFile() )
     return 0;
   yyin = fin_ptr;
-
-  initSymtab();                 /* Inicializacao da tabela de simbolos */
   return 1;
 }
 

@@ -14,9 +14,9 @@
  *
  * Moredata - Lisboa, PORTUGAL
  *                                                       
- * $Author: afalout $
- * $Revision: 1.9 $
- * $Date: 2003-12-10 11:48:07 $
+ * $Author: saferreira $
+ * $Revision: 1.10 $
+ * $Date: 2004-01-05 13:56:29 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -80,9 +80,6 @@ void P4glPreProcessing(void)
  */
 void initSymtab(void)
 {
-   register int  i,j;
-  FILE          *FlPtrParam;
-  char          str[128];
 
   P4glVerbose("Initializing\n");
 
@@ -90,9 +87,20 @@ void initSymtab(void)
   P4glCb.var_globais   = (VARS *)0;
   P4glCb.UtilGlob      = 0;
   P4glCb.idx_var_glob  = 0;
+}
 
+
+/**
+ * Open the parameter file created after the preprocessing
+ */
+void openParamFile(void)
+{
+  register int  i;
+  char          str[128];
+  FILE          *FlPtrParam;
 
   FlPtrParam = fopen(FicheiroParam,"r");
+	// @this could not be here
   if (FlPtrParam == (FILE *)0)
     P4glError(ERROR_EXIT,"Unable to read parameter file (%s)\n",FicheiroParam);
   if (fgets (str, 80,  FlPtrParam) == NULL) 

@@ -3,7 +3,7 @@
  * @file
  * Contains the prototype declaration for external functions 
  *
- * $Id: p4gl.h,v 1.5 2003-11-20 10:51:49 afalout Exp $
+ * $Id: p4gl.h,v 1.6 2004-01-05 13:56:29 saferreira Exp $
  */
 
 /* From ParseComment.c */
@@ -95,6 +95,8 @@ void initArguments(int argc, char *argv[]);
 void setPackage(char *_package);
 void initP4glPhaseOne(void);
 int initP4glPhaseTwo(void);
+void setUsedParser(int _usedParser);
+int getUsedParser(void);
 
 /** From P4glAbstractTree.c */
 int getFunctionsIdx(void);
@@ -119,5 +121,6 @@ void RegisterWarningInDb(char *msg);
 void InsertInslib(void);
 void SqlErrors(void);
 
-
+/** From GenFglDoc.c */
+void genFglDoc(void);
 

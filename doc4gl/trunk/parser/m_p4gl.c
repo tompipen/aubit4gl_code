@@ -9,7 +9,7 @@
 
 extern int exit_stat;
 
-//static char *rcsid = "$Id: m_p4gl.c,v 1.4 2003-12-10 11:48:07 afalout Exp $";
+//static char *rcsid = "$Id: m_p4gl.c,v 1.5 2004-01-05 13:56:29 saferreira Exp $";
 
 /**
  * The main entry function.
@@ -21,7 +21,7 @@ main(int argc,char *argv[])
 {
 	initP4glPhaseOne();
 	initArguments(argc,argv);
-	initP4glPhaseTwo();
+  initSymtab();                 /* Initialize the fgldoc abstract tree */
 	P4glVerbose("4gl Parsing\n");
 	if( parseFgl())    /* Parse a source .4gl - Nao tem recup. de erros */
 	{

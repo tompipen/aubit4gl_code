@@ -58,15 +58,13 @@ void dump_gvars (void);
 void rm_quote (char *s);
 int read_globals (char *fname);
 void rm_quotes (char *s);
-void adderr (char *s, char *p, char *q);
-int only_doing_globals (void);
 int isGenStackInfo (void);
 void a4gl_yyerror (char *s);
 
 
 	/* ========================== Implemented in lexer.c ================= */
 
-int mja_fgetc (FILE * f);
+int mja_fgetc ();
 void turn_state (int kw, int v);
 void set_namespace (char *s);
 	//int   yylex                           (void);

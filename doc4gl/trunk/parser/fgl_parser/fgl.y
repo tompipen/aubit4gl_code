@@ -4635,29 +4635,66 @@ opt_timeout
   | TIMEOUT INT_VALUE 
   ;
 
+/**
+ * A GUI prompt.
+ * This rule is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   PROMPT "What ? " RETURNING answerVar
+ *   PROMPT "What ? " ATTRIBUTE RETURNING answerVar
+ */
 gui_prompt_cmd 
   : PROMPT prompt_title opt_attributes  RETURNING variable 
   ;
 
+/**
+ * Optional char used in PROMPT statement.
+ */
 opt_char 
   : /* empty */ 
   | CHAR 
   ;
 
+/**
+ * Optional key events of PROMPT statement
+ * @todo : Change the name of the rule to opt
+ * 4gl code examples:
+ *     ON KEY CONTROL-W
+ *       ... 4gl statements ...
+ *     ON KEY CONTROL-X
+ *       ... 4gl statements ....
+ *   END PROMPT
+ */
 prompt_key_sec 
   :  /* empty */ 
 	| prompt_key_clause END_PROMPT
 	;
 
+/**
+ * The list key events for the PROMPT statement.
+ * 4gl code examples:
+ *   ON KEY CONTROL-W
+ *     ... 4gl statements ....
+ *   ON KEY CONTROL-X
+ *     ... 4gl statements ....
+ */
 prompt_key_clause 
   : on_key_command_prompt
 	| prompt_key_clause on_key_command_prompt 
 	;
 
+/**
+ * A single key event to be used in the PROMPT statement.
+ * 4gl code example:
+ *   ON KEY CONTROL-W
+ *     ... 4gl statements ....
+ */
 on_key_command_prompt 
   : on_key_command commands 
   ;
 
+/**
+ * The title for a PROMPT statement and gui PRoMPT statement.
+ */
 prompt_title 
   : fgl_expr_concat
 	;
@@ -4670,22 +4707,46 @@ prompt_title
 /**
  * The statement to PUT values in an insert cursor.
  * 4gl code examples:
- *   PUT crXPTO FROM a,b,3
+ *   PUT crXPTO FROM a,b,3, NULL
+ *   PUT crXPTO 
  */
 put_cmd 
   : PUT cursor_name  put_from
   ;
 
+/**
+ * Optional variable from the PUT statement reads the values to insert
+ * in an insert cursor.
+ * @todo : Put the opt in this rule name.
+ * 4gl code example:
+ *   FROM a,b,3
+ */
 put_from
   :
   | FROM put_val_list 
   ;
 
+/**
+ * A comma separated of values to use as FROM substement to a PUT cursor
+ * statement.
+ * 4gl code examples:
+ *   a,b,NULL,3
+ *   1,2, "xpto", 4.0
+ *   NULL
+ */
 put_val_list  
   : put_val 
 	| put_val_list COMMA put_val 
   ;
 
+/**
+ * A single value to be used in a FROM substatement of a PUT cursor statement.
+ * 4gl code examples:
+ *   1
+ *   "Xpto"
+ *   b
+ *  NULL
+ */
 put_val 
   : value_expression_ss 
   | KW_NULL 
@@ -4698,6 +4759,12 @@ put_val
 
 /**
  * Start the execution of a report.
+ * 4gl code examples:
+ *   START REPORT repXpto to PRINTER
+ *   START REPORT repXpto to "rep.out"
+ *   START REPORT repXpto to commandInVar
+ *   START REPORT repXpto to PIPE "more"
+ *   START REPORT repXpto 
  */
 start_cmd 
   : START_REPORT rep_name TO_PRINTER
@@ -4706,20 +4773,45 @@ start_cmd
 	| START_REPORT rep_name
   ;
 
+/**
+ * The possible place to output a report (file name or prompt command).
+ * 4gl code examples:
+ *   "xpto.out"
+ *   "more"
+ *   commandVar
+ */
 rout 
   : CHAR_VALUE 
 	| cvariable
 	;
 
+/** 
+ * The possible name of a report.
+ * 4gl code examples:
+ *   repXpto
+ */
 rep_name 
   : identifier
 	;
 
+/**
+ * Optional values of a report in the OUTPUT TO REPORT statement.
+ * I think this is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   VALUES
+ */
 op_values 
   : 
 	| VALUES 
 	;
 
+/**
+ * The output to report statement to send values to a report.
+ * 4gl code examples:
+ *    OUTPUT TO REPORT repXpto(1,"XX",a+b)
+ *    OUTPUT TO REPORT repXpto VALUES (1,"XX",a+b)
+ *    OUTPUT TO REPORT repXpto()
+ */
 output_cmd 
   : OUTPUT_TO_REPORT rep_name op_values OPEN_BRACKET 
     op_fgl_expr_list CLOSE_BRACKET
@@ -4734,24 +4826,64 @@ finish_cmd
   : FINISH_REPORT rep_name
   ;
 
+/**
+ * A synonym to FINISH REPORT statement.
+ * 4gl code example:
+ *   TERMINATE REPORT xptoReport
+ */
 term_rep_cmd 
   : TERMINATE_REPORT rep_name
   ;
 
+/**
+ * The report definition section.
+ * 4gl code examples:
+ *   
+ */
 report_section
   : op_output_section op_rep_order_by  
 	;
 
+/**
+ * The possible FORMAT section(s) of a report definition.
+ * 4gl code examples:
+ *   FORMAT EVERY ROW
+ *   FORMAT
+ *     
+ */
 format_section
   : FORMAT EVERY_ROW 
   | FORMAT format_actions
   ;
 
+/**
+ * The list of possible report format sections.
+ * 4gl code examples:
+ * 
+ */
 format_actions 
   : format_action 
 	| format_actions format_action
 	;
 
+/**
+ * The possible report format sections.
+ * 4gl code examples:
+ *   FIRST PAGE HEADER
+ *      ... 4gl report statements ...
+ *   PAGE TRAILER
+ *      ... 4gl report statements ...
+ *   PAGE HEADER
+ *      ... 4gl report statements ...
+ *   ON EVERY ROW
+ *      ... 4gl report statements ...
+ *   ON LAST ROW
+ *      ... 4gl report statements ...
+ *   BEFORE GROUP OF a,b
+ *      ... 4gl report statements ...
+ *   AFTER GROUP OF x,y,z
+ *      ... 4gl report statements ...
+ */
 format_action 
   : FIRST_PAGE_HEADER commands 
 	| PAGE_TRAILER commands 
@@ -4762,6 +4894,16 @@ format_action
 	| AFTGROUP variable commands 
   ;
 
+/**
+ * The specific commands that can only be used inside a format action of a 
+ * REPORT.
+ * 4gl code examples:
+ *    PRINT column 10, "XXX"
+ *    PRINT IMAGE column 10, "XXX"
+ *    NEED 10 LINES
+ *    PAUSE "Hit any key"
+ *    SKIP 2 lines
+ */
 report_cmd 
   : print_command 
 	| print_img_command
@@ -4778,11 +4920,23 @@ need_command
   : NEED fgl_expr KWLINE 
   ;
 
+/**
+ * Optional lines to be use in the SKIP statement of reports.
+ */
 op_lines 
   : 
 	| KWLINE 
   ;
 
+/**
+ * The skip statement of reports.
+ * 4gl code examples:
+ *   SKIP x LINES
+ *   SKIP TO TOP OF PAGE
+ *   FONT SIZE 10
+ *   SKIP BY x 
+ *   SKIP TO 10 
+ */
 skip_command 
   : SKIP INT_VALUE op_lines 
 	| SKIP_TO_TOP 
@@ -4791,25 +4945,47 @@ skip_command
 	| SKIP_TO nval 
   ;
 
+/**
+ * Optional report expression list. To be used in the PRINT statement
+ * of the REPORTS(s).
+ */
 opt_rep_expr_list  
   : 
 	| xrep_expr_list
   ;
 
+/**
+ * Not optional report expression list. Tobe used in the PRINT statement
+ * of the REPORT(s).
+ */
 xrep_expr_list
   : xxrep_expr_list
 	| xrep_expr_list xxrep_expr_list
   ;
 
+/**
+ * Report expression list to be used in the print statement with the 
+ * optional AT place to be printed.
+ */
 xxrep_expr_list 
   : rep_expr_list opt_print_at 
   ;
 
+/**
+ * Optional AT of the expressions to be used in the PRINT statement of 
+ * REPORT(s).
+ */
 opt_print_at 
   : 
 	| AT nval 
   ;
 
+/**
+ * The PRINT statement to be used in the REPORT(s).
+ * 4gl code examples:
+ *   PRINT "Xpto ", a, b
+ *   PRINT "Xpto ", a, b;
+ */
 print_command 
   : PRINT opt_rep_expr_list opt_semi 
   ;
@@ -4824,17 +5000,40 @@ print_file_command
   : PRINT_FILE char_or_var opt_semi 
   ;
 
-
+/**
+ * Print image statement to be used in the report.
+ * This statement is an extensionto Informix 4gl.
+ * 4gl code examples:
+ *   PRINT IMAGE blobVariableName AS GIF SCALED BY 100
+ *   PRINT IMAGE blobVariableName AS PNG SCALED BY 100
+ *   PRINT IMAGE blobVariableName JPEG;
+ */
 print_img_command 
   : PRINT_IMAGE blob_var img_types opt_scaling opt_semi 
   ;
 
+/**
+ * Optional scaling of an image.
+ * This is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   SCALED BY i
+ *   SCALED BY 100/i, 20
+ */
 opt_scaling 
   :
 	| SCALED_BY fgl_expr_c 
 	| SCALED_BY fgl_expr_c COMMA fgl_expr_c 
   ;
 
+/**
+ * Image types suported by the reports.
+ * This is an extension to informix 4gl.
+ * 4gl code examples:
+ *   AS TIFF
+ *   AS GIF
+ *   AS PNG
+ *   AS JPEG
+ */
 img_types 
   :	AS_TIFF 
 	| AS_GIF 
@@ -4842,6 +5041,9 @@ img_types
 	| AS_JPEG
   ;
 
+/**
+ * A Blob variable to be used in PRINT IMAGE statement.
+ */
 blob_var 
   :  variable 
   ;
@@ -4854,15 +5056,42 @@ opt_semi
   | SEMICOLON 
   ;
 
+/**
+ * A comma separated list of report expressions that can be used in a REPORT.
+ * 4gl code examples:
+ *   "XXX"
+ *   a clipped, " Hello ", b using "<<<<<"
+ */
 rep_expr_list 
   : rep_expr 
   | rep_expr_list COMMA rep_expr 
   ;
 
+/**
+ * A report expression part.
+ * 4gl code examples:
+ *  "XXX"
+ *  a clipped
+ *  b using "####"
+ *  str WORDWRAP RIGHT MARGIN 80
+ */
 rep_expr 
   : fgl_expr op_wordwrap 
   ;
 
+/**
+ * The report aggregate functions to be used in the after group / before group
+ * sections.
+ * 4gl code examples:
+ *   SUM(x+1)
+ *   SUM(x) WHERE a = 1
+ *   COUNT(*) WHERE b = a
+ *   PERCENT(*) WHERE b = a
+ *   AVERAGE(*) WHERE b = a
+ *   AVG(*) WHERE b = a
+ *   MIN(*) WHERE b = a
+ *   MAX(*) WHERE b = a
+ */
 rep_agg 
   : SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
   | COUNT_MULTIPLY rep_where
@@ -4874,16 +5103,40 @@ rep_agg
   | XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
   ;
 
+/**
+ * The output section of a report.
+ * 4gl code examples:
+ *   OUTPUT
+ *     PAGE LENGTH 72
+ *     ... Other output commands ...
+ */
 op_output_section 
   : 
 	| OUTPUT output_commands 
 	;
 
+/**
+ * A list of possible output commands.
+ */
 output_commands 
   : output_command 
 	| output_commands output_command
 	;
 
+/**
+ * The valid output commands.
+ * 4gl code examples:
+ * LEFT MARGIN 5
+ * RIGHT MARGIN 80
+ * TOP MARGIN 2
+ * BOTTOM MARGIN 2
+ * PAGE LENGTH 72
+ * REPORT TO PRINTER  
+ * REPORT TO "xx.out"
+ * REPORT TO outVar
+ * REPORT TO PIPE "more"
+ * TOP OF PAGE "XPTO"
+ */
 output_command 
   : LEFT_MARGIN INT_VALUE 
   | RIGHT_MARGIN INT_VALUE 
@@ -4897,11 +5150,22 @@ output_command
   | TOP_OF_PAGE CHAR_VALUE 
   ;
 
+/**
+ * Output commands to be used in the PDF reports.
+ */
 pdf_output_commands 
   : pdf_output_command 
 	| pdf_output_commands pdf_output_command
 	;
 
+/**
+ * The possible PDF dimensions.
+ * 4gl code examples:
+ *   10 POINTS
+ *   1.5 INCHES
+ *   150 MM
+ *   20
+ */
 nval
   : nval_number POINTS 
 	| nval_number INCHES 
@@ -4909,16 +5173,48 @@ nval
 	| nval_number       
   ;
 
+/**
+ * Possible numbers to be used in the PDF dimensions.
+ */
 nval_number
   : real_number 
 	| INT_VALUE
   ;
 
+/**
+ * The specific PDF OUTPUT section of a REPORT.
+ * 4gl code examples:
+ *   OUTPUT
+ */
 pdf_op_output_section 
   : 
 	| OUTPUT pdf_output_commands 
 	;
 
+/*
+ * The possible specific commands that can be used in a PDF report.
+ * 4gl code examples:
+ *   LEFT MARGIN 10 MM
+ *   RIGHT MARGIN 1.5 IN 
+ *   TOP MARGIN 50 POINTS
+ *   BOTTOM MARGIN 20
+ *   PAGE LENGTH 297 MM
+ *   PAGE WIDTH 297 MM
+ *   FONT NAME "Courier"
+ *   FONT SIZE 10 POINTS
+ *   PAPER SIZE IS A4  
+ *   PAPER SIZE IS LETTER
+ *   PAPER SIZE IS LEGAL 
+ *   PAPER SIZE IS A5 
+ *   PAGE TRAILER SIZE 10
+ *   PAGE HEADER SIZE 10 MM
+ *   FIRST PAGE HEADER SIZE 10 MM
+ *   REPORT TO "out.pdf"
+ *   REPORT TO PIPE "acroread"
+ *   DEFAULT
+ *   ASCII HEIGHT ALL
+ *   ASCII WIDTH ALL
+ */
 pdf_output_command 
   : LEFT_MARGIN nval 
   | RIGHT_MARGIN nval 
@@ -4946,45 +5242,101 @@ pdf_output_command
   | ASCII_WIDTH_ALL
   ;
 
+/**
+ * Optional report ORDER BY section.
+ * 4gl code examples:
+ *   ORDER BY x, y
+ *   ORDER EXTERNAL BY a, b
+ */
 op_rep_order_by 
   : 
   | ORDER BY obind_var_list_ord
   | ORDER_EXTERNAL_BY obind_var_list_ord 
   ;
 
+/**
+ * The definition of the special functions that are reports.
+ * 4gl code examples:
+ *   REPORT xptoRepName(a,b,c)
+ *      DEFINE a,b,c SMALLINT
+ *      ... Report definition sections ...
+ *   END REPORT
+ */
 report_def 
   : REPORT identifier OPEN_BRACKET op_param_var_list CLOSE_BRACKET 
 	  define_section report_section format_section END_REPORT 
   ;
 
+/**
+ * Optional where to be used in the aggregate functions of the report
+ * statement(s).
+ * 4gl code examples:
+ *   WHERE c = 2 AND b>c
+ */ 
 rep_where 
   :  
   | WHERE fgl_expr_c 
   ;
 
+/**
+ * Pause command to be used in the report statement when it wantrs to stop
+ * the processing for each page (as an example).
+ * 4gl code examples:
+ *   PAUSE "Hit any key"
+ *   PAUSE mesgVar
+ */ 
 pause_command
   : PAUSE pause_msg
   ;
 
-pause_msg 
+/**
+ * The optional pause message.
+ * @todo : Change the name of the rule top opt_pause_msg.
+ */
+pause_msg  
   : 
 	| var_or_char 
   ;
 
+/**
+ * The PDF report definition.
+ * This is an extension to Informix 4gl.
+ * 4gl code examples:
+ *   REPORT xptoRepName(a,b,c)
+ *      DEFINE a,b,c SMALLINT
+ *      ... Report definition sections ...
+ *   END REPORT
+ */
 pdf_report_def 
   : PDF_REPORT identifier OPEN_BRACKET op_param_var_list CLOSE_BRACKET 
     define_section  pdf_report_section format_section END_REPORT 
   ;
 
+/**
+ * The possible report formating sections.
+ */
 pdf_report_section
   : pdf_op_output_section op_rep_order_by  
 	;
 
+/**
+ * A PDF function that can be called inside a PDF report.
+ * 4gl code examples:
+ *   PDF_FUNCTION("funcName",a,b) 
+ *   PDF_FUNCTION("funcName",a,b) RETURNING x,y
+ */
 pdf_functions 
   : PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA 
    	opt_func_call_args CLOSE_BRACKET opt_return
   ;
 
+/**
+ * The optional WORDWRAP subsection of a PRINT statement of a report.
+ * 4gl code examples:
+ *   WORDWRAP
+ *   WORDWRAP RIGHT MARGIN 20
+ *   WORDWRAP RIGHT MARGIN x
+ */
 op_wordwrap
   :
  	| WORDWRAP 
@@ -5014,43 +5366,96 @@ run_cmd
 
 /* </RUN_STATEMENT> */
 
+/**
+ * The possible DROP commands.
+ * @todo : Understamd if this rule is realy needed.
+ */ 
 drops_cmd 
   : drops_c 
   ;
 
+/**
+ * The specific possible DROP commands.
+ * 4gl code examples:
+ *   DROP TABLE tblName
+ *   DROP TABLE owner.tblName
+ *   DROP VIEW owner.viewName
+ *   DROP INDEX owner.idxName
+ */
 drops_c 
   : DROP_TABLE  
 	| DROP_VIEW  
 	| DROP_INDEX  
   ;
 
+/**
+ * The possible CREATE statements.
+ */
 create_cmd 
   : create_c_1 
 	| create_c_2_ss 
   ;
 
+/**
+ * A group of several possible CREATE statements.
+ * 4gl code examples:
+ *   CREATE TABLE tblName ( 
+ *     ... TBL DEFINITION ...
+ *   )
+ *   CREATE TEMP TABLE tempTblName ( 
+ *     ... TBL DEFINITION ...
+ *   )
+ *   CREATE TEMP TABLE tempTblName ( 
+ *     ... TBL DEFINITION ...
+ *   ) WITH NO LOG
+ */
 create_c_2_ss  
   : CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET 
 	| CREATE_TEMP_TABLE table_name 
 	  OPEN_BRACKET table_element_list_ss CLOSE_BRACKET op_no_log 
   ;
 
+/**
+ * Another group of possible CREATE statements (index and database).
+ * The possible index types are defined by kwords and the lexer.
+ * 4gl code examples:
+ *   CREATE DISTINCT INDEX idxName ON tblName (aCol, bCol)
+ *   CREATE UNIQUE CLUSTER INDEX idxName ON tblName (aCol, bCol)
+ *   CREATE UNIQUE INDEX idxName ON tblName (aCol DESC, bCol)
+ *   CREATE CLUSTER INDEX idxName ON tblName (aCol, bCol ASC)
+ *   CREATE INDEX idxName ON tblName (aCol, bCol)
+ *   CREATE DATABASE dbName
+ *   CREATE DATABASE "xpto"
+ */
 create_c_1  
   : CREATE_IDX idx_column_list CLOSE_BRACKET 
 	| CREATE_DATABASE ident_or_var 
 	;
 
+/**
+ * Optional WITH NO LOG to be used in temporary table creation.
+ * 4gl code example:
+ *   WITH NO LOG
+ */
 op_no_log 
   : 
   | WITH_NO_LOG
   ;
 
-
+/**
+ * Comma separated list of columns.
+ * 4gl code example:
+ *   a,b
+ *   a ASC, b DESC
+ */
 idx_column_list 
   : idx_column 
 	| idx_column_list COMMA idx_column 
   ;
 
+/**
+ * The definition of an index column.
+ */
 idx_column 
   : identifier ASC 
   | identifier DESC 
@@ -5242,30 +5647,68 @@ alter_modify_next
  * Adition of a constraint to a table, to be used inside an ALTER TABLE 
  * statement.
  * 4gl code examples:
- *   ADD CONSTRAINT ???
- *   ADD CONSTRAINT ( ??? )
+ *   ADD CONSTRAINT NOT NULL
+ *   ADD CONSTRAINT REFERENCES xptoTable (aCol)
+ *   ADD CONSTRAINT CHECK (aCol = 10)
+ *   ADD CONSTRAINT (constName NOT NULL, otherConst REFERENCES xptoTable (aCol))
+ *   ADD CONSTRAINT constName REFERENCES xptoTable (aCol)
+ *   ADD CONSTRAINT constName CHECK (aCol = 10)
  */
 alter_add_constraint_clause
   : ADD_CONSTRAINT column_constraint_ss 
 	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET 
   ;
 
+/**
+ * Droping a constraint from a table. Used by ALTER TABLE statement.
+ * 4gl code examples:
+ *   DROP CONSTRAINT xptoConst
+ *   DROP CONSTRAINT (xptoConst,secondConst)
+ */
 alter_drop_contraint_clause
   : DROP_CONSTRAINT constraint_name
 	| DROP_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET 
   ;
 
+/**
+ * A list of comma separated constraints.
+ * 4gl code examples:
+ *   xptoConst
+ *   xptoConst,secondConst
+ */
 column_constraints_ss
   : column_constraint_ss 
 	| column_constraints_ss COMMA column_constraint_ss 
   ;
 
+/**
+ * A constraint name.
+ * 4gl code example:
+ *   xptoConst
+ *   constraint
+ */
 constraint_name
   : identifier
   ;
 
 /* <SET_STATEMENT> */
 
+/**
+ * The possible SET statements.
+ * The set session and set cursor statements.
+ * 4gl code examples:
+ *   SET EXPLAIN ON
+ *   SET EXPLAIN OFF
+ *   SET LOCK MODE TO WAIT i*2
+ *   SET LOCK MODE TO NOT WAIT
+ *   SET ISOLATION TO DIRTY READ
+ *   SET ISOLATION TO REPEATABLE READ
+ *   SET ISOLATION TO CURSOR STABILITY
+ *   SET ISOLATION TO COMMITTED READ
+ *   SET SESSION TO connectionName
+ *   SET SESSION TO connectionName OPTION "xx" TO "yy"
+ *   SET CURSOR crName OPTION "xx" TO "yy"
+ */
 set_cmd 
   : SQLSEON
   | SQLSEOFF
@@ -5280,10 +5723,21 @@ set_cmd
   | SET_CURSOR cursor_name OPTION char_or_var TO char_or_var 
   ;
 
+/**
+ * Optional connection identification. Used in the SET SESSION statements.
+ * 4gl code examples:
+ *   connName
+ */
 op_conn_id 
   : 
 	| conn_id;
 
+/**
+ * Optional 4gl expression.
+ * 4gl code examples:
+ *   i + 1
+ *   func() / 2 + i
+ */
 op_fgl_expr 
   :
   | fgl_expr
@@ -5318,58 +5772,149 @@ rollback_statement
   : ROLLBACK_W 
 	;
 
+/**
+ * Database insert statement.
+ * @todo : Understand what ss means.
+ * 4gl code examples:
+ *   INSERT INTO xptoTable 
+ *   INSERT INTO xptoTable (firstCol,secondCol,b,c) VALUES (a,b,8,"xx")
+ *   INSERT INTO xptoTable (x,y,z) SELECT a,b,c FROM otherTable WHERE a > 1
+ *   INSERT INTO xptoTable VALUES (a,b,8,"xx")
+ *   INSERT INTO xptoTable SELECT a,b,c FROM otherTable WHERE a > 1
+ */
 insert_statement_ss
   : INSERT_INTO table_name op_insert_column_list ins_2_ss 
   ;
 
+/**
+ * The second part of the INSERT statement.
+ * 4gl code examples:
+ *   VALUES (a,b,8,"xx")
+ *   SELECT a,b,c FROM otherTable WHERE a > 1
+ */
 ins_2_ss 
   : VALUES OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET 
 	| query_specification_ss
 	;
 
+/**
+ * Optional INSERT statement column list.
+ * 4gl code example:
+ *   (a,b,8,"xx")
+ */
 op_insert_column_list
   : 
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET
 	;
 
+/**
+ * Comma separated column list used in the INSERT statement.
+ * 4gl code examples:
+ *   a
+ *   x,y,z,w
+ */
 insert_column_list
   : column_name
 	| insert_column_list COMMA column_name
   ;
 
+/**
+ * Comma separated list of values to be inserted in a table with the INSERT 
+ * statement.
+ * @todo : understand what ss means.
+ * 4gl code examples:
+ *    a,b,8,"xx",NULL
+ */
 insert_value_list_ss
   : insert_value_ss 
 	| insert_value_list_ss COMMA insert_value_ss 
   ;
 
+/**
+ * Single value that can be inserted to be used in the INSERT statement.
+ * @todo : understand what ss means.
+ * 4gl code example:
+ *   NULL
+ *   a
+ *   "xx"
+ *   i+1
+ */
 insert_value_ss
   : value_expression_ss 
 	| KW_NULL 
 	;
 
+/**
+ * The cursor FETCH statement.
+ * 4gl code examples:
+ *   FETCH crName 
+ *   FETCH crName INTO x,y,z
+ *   FETCH FIRST crName
+ *   FETCH LAST crName INTO x,y,z
+ *   FETCH NEXT crName
+ *   FETCH PREVIOUS crName
+ *   FETCH PRIOR crName INTO x,y,z
+ *   FETCH CURRENT crName
+ *   FETCH RELATIVE 10 crName  INTO x,y,z
+ *   FETCH ABSOLUTE i + 1 crName 
+ */
 fetch_statement
   : FETCH fetch_part opt_into_fetch_part
   ;
 
+/**
+ * The possible name to declare a CURSOR with the DECLARE statement.
+ * 4gl statement examples:
+ *   crName
+ */
 declare_cursor_name  
   : ident_or_var 
   ;
 
+/**
+ * The specification about what kind of fetch is made.
+ * 4gl code examples:
+ *   crName
+ *   
+ */
 fetch_part
   : fetch_place fetch_cursor_name
   | fetch_cursor_name
   ;
 
+/**
+ * Optional INTO subcommand of the FETCH statement.
+ * 4gl code examples:
+ *   INTO a,b,c
+ */
 opt_into_fetch_part
   :
   | INTO obind_var_list 
   ;
 
+/**
+ * Optional INTO subcommand of the FOREACH statement.
+ * 4gl code examples:
+ *   INTO a,b,c
+ */
 opt_foreach_into_fetch_part
   :
   | INTO obind_var_list 
   ;
 
+/**
+ * The kind of place for where the cursor should be positioned.
+ * Used in the FETCH statement.
+ * 4gl code examples:
+ *   FIRST 
+ *   LAST
+ *   NEXT
+ *   PREVIOUS
+ *   PRIOR
+ *   CURRENT
+ *   RELATIVE 10
+ *   ABSOLUTE i + 1
+*/
 fetch_place 
   : FIRST 
 	| LAST
@@ -5381,26 +5926,67 @@ fetch_place
 	| ABSOLUTE fgl_expr
   ;
 
+/**
+ * Delete a row from a table using a cursor.
+ * 4gl code examples:
+ *   DELETE FROM tblName WHERE CURRENT OF crName
+ */
 delete_statement_position
   : DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
 	;
 
+/**
+ * Remove a row from a table with the DELETE statement using a WHERE 
+ * clause.
+ * 4gl code examples:
+ *   DELETE FROM tableName 
+ *   DELETE FROM tableName WHERE a = 1
+ */
 delete_statement_search_ss
   : DELETE_FROM table_name op_where_clause_ss
 	;
 
+/**
+ * The order by clause when reading from a table.
+ * To be used in the SELECT statements.
+ * 4gl code examples:
+ *   ORDER BY a,b,c 
+ *   ORDER BY a ASC, b, c DESC
+ *   ORDER BY 1 ASC, 2, 4 DESC
+ */
 order_by_clause
   : ORDER BY sort_specification_list
 	;
 
+/**
+ * The comma separated list of columns and order of a ORDER BY statement.
+ * 4gl code examples:
+ *   a ASC, b, 3, 4 ASC
+ */
 sort_specification_list
   : sort_specification
 	| sort_specification_list COMMA sort_specification
 	;
+
+/**
+ * A column definition and kind of order when used in a ORDER BY statement.
+ * 4gl code examples:
+ *   a ASC
+ *   b
+ *   c DESC
+ *   1 ASC
+ *   2
+ */
 sort_specification
   : sort_spec op_asc_desc 
   ;
 
+/**
+ * The specification of the order column.
+ * 4gl code examples:
+ *   a
+ *   1
+ */
 sort_spec
   : INT_VALUE 
 	| column_name 
@@ -5425,29 +6011,58 @@ begin_statement
   : BEGIN_WORK 
   ;
 
+/**
+ * Commiting a transaction to the database.
+ * 4gl code example:
+ *   COMMIT WORK
+ */
 commit_statement
   : COMMIT_W 
 	;
 
+/**
+ * Optional exclusive to be used in the database statement.
+ * When used with exclusive this opens the database just for the session.
+ */
 op_exclusive 
   :
 	|	EXCLUSIVE 
   ;
 
+/**
+ * The DATABASE command that opens a database.
+ * 4gl code examples:
+ *   DATABASE xptoDB EXCLUSIVE
+ */
 set_database_cmd 
   : DATABASE var_ident_qchar op_exclusive
   ;
 
-
+/**
+ * A variable, identifier to be used as name of a database.
+ * @todo : Change this to db_name
+ */
 var_ident_qchar
   : var_ident 
 	| CHAR_VALUE 
   ;
 
+/**
+ * The SQL statements of 4gl with optional connection used definition.
+ * The USE command is an extension to Informix 4gl.
+ * 4gl code examples:
+ *    USE SESSION connName FOR INSERT INTO tbl SELECT * FROM tbl3
+ *    UPDATE tbl set a=1 WHERE b > 3
+ */
 sql_cmd 
   : opt_use sql_commands 
   ;
 
+/**
+ * The 4gl sql statements without the USE part.
+ * This rule breaks the SQL statements in kinds.
+ * 4gl code examples:
+ */
 sql_commands 
   : schema_ss 
 	| schema_element_ss 
@@ -5463,25 +6078,56 @@ sql_commands
 	| update_statement_ss 
 	;
 
+/**
+ * The SQL statement to GRANT privileges on database tables.
+ * 4gl code examples:
+ *   GRANT ALL PRIVILEGES ON tblName TO sergio, mike WITH GRANT OPTION
+ *   GRANT UPDATE ON tblName TO sergio
+ *   GRANT SELECT, UPDATE, DELETE, UPDATE(a,b) TO sergio
+ */
 privilege_definition
   : GRANT privileges ON table_name TO grantee_list op_with_grant_option
 	;
 
+/**
+ * Optional WITH GRANT OPTION to be used in the GRANT sql statement.
+ */
 op_with_grant_option
   : 
 	| WITH_GRANT_OPTION
 	;
 
+/**
+ * Kinds of privileges that can be granted to a database table.
+ * 4gl code examples:
+ *   ALL PRIVILEGES
+ *   SELECT, UPDATE, DELETE, UPDATE(a,b)
+ */
 privileges
   : ALL_PRIVILEGES
 	| action_list
 	;
 
+/**
+ * Comma separated list of actions to do in the GRANT statement to tables
+ * of the database.
+ * 4gl code examples:
+ *    SELECT, UPDATE, DELETE, UPDATE(a,b)
+ *    UPDATE
+ */
 action_list
   : action
 	| action_list COMMA action
 	;
 
+/**
+ * A database action to wich can be given provileges with the GRANT statement.
+ * 4gl code examples:
+ *   SELECT
+ *   INSERT
+ *   DELETE
+ *   UPDATE (a,b)
+ */
 action
   : SELECT
 	| INSERT
@@ -5489,21 +6135,47 @@ action
 	| UPDATE op_grant_column_list
 	;
 
+/**
+ * Optional column list to be used in the UPDATE action to wich permissions
+ * can be given with the GRANT statement.
+ * 4gl code example:
+ *   (a,b)
+ */
 op_grant_column_list
   : 
 	| OPEN_BRACKET grant_column_list CLOSE_BRACKET
 	;
 
+/**
+ * Comma separated of columns wich can be givem permissions with the GRANT
+ * statement.
+ * 4gl code examples:
+ *   a,b
+ */
 grant_column_list
   : column_name
 	| grant_column_list COMMA column_name
 	;
 
+/**
+ * The comma separated list of people to wich the permissions are given
+ * to make an action in the database with the GRANT statement.
+ * 4gl code examples:
+ *    andrej, mike, sergio
+ *    PUBLIC
+ */
 grantee_list
   : grantee
 	| grantee_list COMMA grantee
 	;
 
+/**
+ * The specific definition of all possible people to wich permissions can 
+ * be granted to make actions in the database.
+ * 4gl code examples:
+ *   PUBLIC
+ *   andrej
+ */
 grantee
   : PUBLIC
 	| authorization_identifier

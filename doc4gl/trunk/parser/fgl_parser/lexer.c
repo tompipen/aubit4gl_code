@@ -14,7 +14,11 @@
  *
  * Normaly is done with lex.
  * This one is implemented only in C.
- * This is a new version of the original aubit 4gl lexer.
+ * This is a new version of the original freat aubit 4gl lexer made 
+ * by Mike Aubury.
+ *
+ * @todo : This lexer should be visible to parser just by yylex() function
+ * @todo : Understand how this good lexer works.
  */
 
 /*
@@ -25,6 +29,7 @@
 
 #include "y.tab.h"
 #include <ctype.h>
+#include <string.h>
 
 //prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would
 //mess up constants defined in y.tab.h generated with new version of Bison
@@ -56,65 +61,85 @@
 =====================================================================
 */
 
+// This flag should be assigned by a function.
+static int sql_mode;
 
-int sql_mode;
-// @todo Uncomment if needed
-//extern int sql_mode;
+static int idents_cnt = 0;
 
-int idents_cnt = 0;
-FILE *yyin = 0;			/* Pointer to the source file openen being parsed */
-int yylineno = 1;		/* Current line number */
-int lastlex = -2;
-int xccode = 0;     /* Flag to help insice ccode parsing */
-int word_cnt = 0;
+/**
+ * Current 4gl source file line number 
+ */
+int yylineno = 1;		
 
-char yyline[2000] = "";	/* Current line read so far, incl. CR/LF */
-int yyline_len = 0;		  /* Length of current line */
-long yyline_fpos = 0;		/* FIle position of start of current line */
+/**
+ * 
+ */
+static int lastlex = -2;
 
+#define NO_CODE 0
+#define C_CODE 1
+#define SQL_CODE 2
+/** Flag to help inside c ans SQL code parsing */
+static int xccode = NO_CODE; 
 
-char *lastword;         /* The last word founded */
+/**
+ *
+ */
+static int word_cnt = 0;
+
+/** 
+ * Current line read so far, incl. CR/LF 
+ */
+static char yyline[2000] = "";	
+
+/**
+ * Length of current line
+ */
+static int yyline_len = 0;		  
+
+/**
+ * FIle position of start of current line 
+ */
+static long yyline_fpos = 0;		
+
 
 #define MAX_XWORDS 1024
 
-char xwords[MAX_XWORDS][256];
-char idents[256][256];
+/**
+ * 
+ */
+static char xwords[MAX_XWORDS][256];
 
-/** @todo : Understand if this variable is realy necessary */
-long fpos;             /* The position in the file */
+/**
+ *
+ */
+static char idents[256][256];
 
 
-
-/* Extern reserved words table */
+/** 
+ * Extern reserved words table.
+ * The reserved words table is synamicaly generated based on the kwords
+ * file.
+ * The lexer use it to see wich words are reserved.
+ */
 struct s_kw *kwords;
+
+/**
+ *
+ */
 extern struct s_kw *hashed_list[];
 
-extern char infilename[];
-extern int yyin_len;
-extern int chk4var;
+/** 
+ * Current state to help in the identifier problem 
+ * @todo : This is just assigned. No other usage.
+ */
+static int current_yylex_state;
 
-extern int ccnt;		/* defined in others.c */
-
-/** Current state to help in the identifier problem */
-int current_yylex_state;
 
 /*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-static int chk_word_more (FILE * f, char *buff, char *p, char *str, int t);
-//char *A4GL_translate (char *s);
-static void turn_state_all (int kw, int v, int arr);
-static int get_hash_val (char *s);
-/* The lexer entry point */
-int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
-
-/*
- * Functions that this lexer depends:
- *    A4GL_memfile_getc (f);
- *    A4GL_memfile_ftell (f);
+ * Modules that the lexer depends:
+ *   memfile.c
+ * Other functions that this lexer depends:
  *    a4gl_yyerror ("");
  */
 
@@ -126,15 +151,17 @@ int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 
 /**
  * Read and return a new caracter from the input file.
+ * Use the API that gets each caracter from the input. 
+ * Currently each file is loaded to a memory buffer in the begining of
+ * the processing.
  *
- * @param f The file pointer to the file where the parsing is made.
  * @return The caracter getted from the source file opened.
  */
-int mja_fgetc (FILE * f)
+int lexer_fgetc (void)
 {
   int a;
 
-  a = A4GL_memfile_getc (f);
+  a = A4GL_memfile_getc ();
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); 
 	 * DOS will end it with only 10(LF=\n) 
@@ -143,7 +170,6 @@ int mja_fgetc (FILE * f)
   if (a == '\n')		//ASCII 10 = LF
   {
     yylineno++;
-    fpos = A4GL_memfile_ftell(f);
   }
 
   // maintain a buffer (yyline) holding current line being scanned
@@ -151,7 +177,7 @@ int mja_fgetc (FILE * f)
   {    // we're starting a new line - clear and reset
     yyline[0] = a;
     yyline_len = 1;
-    yyline_fpos = A4GL_memfile_ftell (f);
+    yyline_fpos = A4GL_memfile_ftell ();
   }
   else
   {    // append char to line buffer - avoid overflow by shifting left
@@ -169,19 +195,20 @@ int mja_fgetc (FILE * f)
 
 /**
  * Unget a allready readed caracter from the source file.
+ * Use the memfile API to unget from the buffer.
+ * Currently the source file is maimntained in a memory buffer.
  *
  * @param a The Character to be ungeted
  * @param f The file pointer of file being read
  */
 static void
-mja_ungetc (int a, FILE * f)
+lexer_ungetc (int a)
 {
-  A4GL_memfile_ungetc (a, f);
+  A4GL_memfile_ungetc (a);
 
   if (a == '\n')
   {
     yylineno--;
-    fpos = A4GL_memfile_ftell (f);
   }
 
   // remove from current line buffer
@@ -190,7 +217,7 @@ mja_ungetc (int a, FILE * f)
 }
 
 /**
- * Checks if a string is possible identifier.
+ * Checks if a string is possible identifier acording to the rules.
  * A string could be a alfabetical, number or underscore.
  *
  * @param p The string to be checked
@@ -361,8 +388,7 @@ isnum (char *s)
  *          founded.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *
-read_word2 (FILE * f, int *t)
+static char *read_word2 (int *t)
 {
   static char word[1024] = "";
   int escp = 0;
@@ -375,25 +401,26 @@ read_word2 (FILE * f, int *t)
 
   while (1)
   {
-    a = mja_fgetc (f);
+    a = lexer_fgetc ();
 
-    if (A4GL_memfile_feof (f))
+    if (A4GL_memfile_feof ())
 	  {
 	    *t = TYPE_EOF;
 	    return word;
 	  }
 
-    if (xccode == 2)
+		// @todo : Refactor this into a separated function.
+    if (xccode == SQL_CODE)
 	  {
 	    while (1)
 	    {
-	      if (A4GL_memfile_feof (f))
+	      if (A4GL_memfile_feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
 		      if (strcasecmp (word, "endcode") == 0)
 		        break;
-		      a = mja_fgetc (f);
+		      a = lexer_fgetc ();
 		      continue;
 		    }
 
@@ -402,24 +429,25 @@ read_word2 (FILE * f, int *t)
 		      break;
 		    }
 	      ccat (word, a, instrs || instrd);
-	      a = mja_fgetc (f);
+	      a = lexer_fgetc ();
 	    }
 	    *t = CLINE;
 	    return word;
 	  }
 
-    if (xccode == 1)
+		// @todo : Refactor this into a function
+    if (xccode == C_CODE)
 	  {
 	    while (1)
 	    {
-	      if (A4GL_memfile_feof (f))
+	      if (A4GL_memfile_feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
 		      break;
 		    }
 	      ccat (word, a, instrs || instrd);
-	      a = mja_fgetc (f);
+	      a = lexer_fgetc ();
 	    }
 	    *t = CLINE;
 	    return word;
@@ -428,18 +456,20 @@ read_word2 (FILE * f, int *t)
   
     /* printf("Read %d = %c\n",a,a); */
   
-    if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
+		// Found a # comment.
+		// @todo : Refactor this into a function.
+    if (a == '#' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      mja_ungetc (a, f);
+	      lexer_ungetc (a);
 	      return word;
 	    }
   
 	    while (1)
 	    {
-	      a = mja_fgetc (f);
-	      if (A4GL_memfile_feof (f))
+	      a = lexer_fgetc ();
+	      if (A4GL_memfile_feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
 		    {
@@ -449,19 +479,19 @@ read_word2 (FILE * f, int *t)
 	    }
 	    *t = KWS_COMMENT;
 	    return word;
-	  }
+	  } // Refactor to a function
   
-    if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
+    if (a == '-' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    int z;
-	    z = mja_fgetc (f);
-	    mja_ungetc (z, f);
+	    z = lexer_fgetc ();
+	    lexer_ungetc (z);
 	    if (z == '-')
 	    {
 	        while (1)
 		      {
-		        a = mja_fgetc (f);
-		        if (A4GL_memfile_feof (f))
+		        a = lexer_fgetc ();
+		        if (A4GL_memfile_feof ())
 		          break;
 		        if (a == '\n' || a == '\r')
 		          break;
@@ -473,10 +503,10 @@ read_word2 (FILE * f, int *t)
 	  }
   
   
-    if (a == '!' && instrs == 0 && instrd == 0 && xccode == 0)
+    if (a == '!' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    char c;
-	    c = mja_fgetc (f);
+	    c = lexer_fgetc ();
 	    if (c == '}')
 	    {
 	      strcpy (word, "!}");
@@ -485,25 +515,27 @@ read_word2 (FILE * f, int *t)
 	    }
 	    else
 	    {
-	      mja_ungetc (c, f);
+	      lexer_ungetc (c);
 	    }
 	  }
   
-    if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
+		// Found a { comment.
+		// @todo : Refactor this into a function.
+    if (a == '{' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      mja_ungetc (a, f);
+	      lexer_ungetc (a);
 	      return word;
 	    }
   
-	    a = mja_fgetc (f);
+	    a = lexer_fgetc ();
 	    if (a != '!')
 	    {
 	      while (1)
 		    {
-		      a = mja_fgetc (f);
-		      if (A4GL_memfile_feof (f))
+		      a = lexer_fgetc ();
+		      if (A4GL_memfile_feof ())
 		        break;
 		      if (a == '}')
 		        break;
@@ -542,7 +574,7 @@ read_word2 (FILE * f, int *t)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      mja_ungetc (a, f);
+	      lexer_ungetc (a);
 	      return word;
 	    }
 	  }
@@ -555,7 +587,7 @@ read_word2 (FILE * f, int *t)
 	      if (isnum (word) && a == '.');
 	      else
 		    {
-		      mja_ungetc (a, f);
+		      lexer_ungetc (a);
 		      return word;
 		    }
 	    }
@@ -585,8 +617,8 @@ read_word2 (FILE * f, int *t)
 	    if (instrd == 1)
 	    {
 	      int x;
-	      x = mja_fgetc (f);
-	      mja_ungetc (x, f);
+	      x = lexer_fgetc ();
+	      lexer_ungetc (x);
   
 	      if (x != '"')
 		    {
@@ -596,7 +628,7 @@ read_word2 (FILE * f, int *t)
 		    }
 	      else
 		    {
-		      x = mja_fgetc (f);
+		      x = lexer_fgetc ();
 		      ccat (word, '\\', instrs || instrd);
 		      ccat (word, '"', instrs || instrd);
 		      continue;
@@ -633,30 +665,40 @@ read_word2 (FILE * f, int *t)
 }
 
 /**
+ * Point to add string translation when wanted.
+ *
+ * @param s The string to be translated
+ * @return The translated string.
+ */
+char *A4GL_translate (char *s) {
+  return s;
+}
+
+/**
  * Read a new word from the source file.
  *
- * @param f The file pointer of the source being readed
- * @param t
+ * @param t A pointer to the place where to left the type of token 
+ *          readed.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *
-read_word (FILE * f, int *t)
+static char *read_word (int *t)
 {
   char *ptr;
   char *s2;
 
-  ptr = read_word2 (f, t);
+  ptr = read_word2 (t);
+
+	// If it is a string take the quotes an try to translate it.
+	// This could be in read_word2
+	// @todo : This can have a memory leak.
   if (*t == CHAR_VALUE)
   {
     char *s;
     s = strdup (ptr + 1);
     s[strlen (s) - 1] = 0;
-		// @todo : Uncomment if needed
-    //A4GL_dumpstring (s, yylineno, infilename);
-		// @todo : Uncomment if needed
-    //s2 = A4GL_translate (s);
+    s2 = A4GL_translate (s);
     if (s2)
-	  ptr = s2;
+	    ptr = s2;
   }
 
   /* if (s) ptr=s; */
@@ -672,17 +714,21 @@ read_word (FILE * f, int *t)
 
 
 /**
+ * This function is executed several times for the some token readed.
+ * This function calls it self.
+ * Check if it is a multi word token and reads all the simbols that 
+ * expect to find.
+ * This function is called by check_word_more
  *
- * @param cnt
- * @param pos
- * @param f The file pointer to the file being parsed
- * @param p
+ * @param cnt The kwords array position.
+ * @param pos The position in the vals array of the kwords array.
+ * @param p The token found.
  * @return
  *    0 - 
  *    1 -
  */
 static int
-words (int cnt, int pos, FILE * f, char *p)
+words (int cnt, int pos,char *p)
 {
   int z;
   int t;
@@ -722,9 +768,9 @@ words (int cnt, int pos, FILE * f, char *p)
     return 1;
   }
 
-  p = read_word (f, &t);
+  p = read_word (&t);
 
-  z = words (cnt, pos + 1, f, p);
+  z = words (cnt, pos + 1, p);
 
   if (z == 0)
   {
@@ -735,6 +781,7 @@ words (int cnt, int pos, FILE * f, char *p)
 
 /**
  * Iterate the kwords.vals array until != 0.
+ * @todo : Check if the text variable dimension it is not a problem
  *
  * @param c The index in the kwords array.
  * @return A static buffer containing the concatenation of the values in 
@@ -743,124 +790,26 @@ words (int cnt, int pos, FILE * f, char *p)
 static char *
 mk_word (int c)
 {
-  static char buff[256];
+  static char text[256];
   int a;
   int icnt = 0;
-  strcpy (buff, "");
+  strcpy (text, "");
   for (a = 0; kwords[c].vals[a]; a++)
   {
     if (a > 0)
-	    strcat (buff, " ");
+	    strcat (text, " ");
 
     if (stricmp (kwords[c].vals[a], "<ident>") == 0)
 	  {
-	    strcat (buff, idents[icnt++]);
+	    strcat (text, idents[icnt++]);
 	  }
     else
 	  {
-	    strcat (buff, kwords[c].vals[a]);
+	    strcat (text, kwords[c].vals[a]);
 	  }
   }
-  return buff;
+  return text;
 }
-
-/**
- * Check if a token is a reserved word.
- *
- * If so it returns an integer (wich is defined with #define generated by
- * yacc/bison) that easily identifies the reserved word.
- *
- * If its not a reserved word could be a NUMBER, IDENTIFIER, ???
- *
- * @param f The file pointer that identifies the opened file source.
- * @param str A pointer to a string where ???? its appended.
- * @return The keyword integer identifier (please use the defines).
- */
-static int
-chk_word (FILE * f, char *str)
-{
-  char *p;
-  int t;
-  char buff[256];
-
-  /* read the next word from the 4GL source file */
-  p = read_word (f, &t);
-  set_yytext(p);
-  //A4GL_debug ("chk_word: read_word returns %s\n", p);
-
-  /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
-   * These are handled entirely by the lexer, so we test for this
-   * here. While we are in such blocks, the compiler will copy the
-   * source verbatim without any alterations or error checking.
-   * A code block starts with the word 'code' by itself on a line,
-   * and ends with the word 'endcode'.
-   */
-
-  if ((strcasecmp (p, "--!code") == 0
-       || strcasecmp (p, "code") == 0)
-      && (xccode == 0) && (strncmp (yyline, p, strlen (p)) == 0))
-  {
-    xccode = 1;
-    return KW_CSTART;
-  }
-
-  if (strcmp (p, "a4gl_start_sql_code") == 0 && xccode == 0)
-  {
-    xccode = 2;
-    return KW_CSTART;
-  }
-
-  if (t == TYPE_EOF && xccode)
-  {
-    printf ("Unexpected end of file - no endcode\n");
-    exit (0);
-  }
-
-  if (xccode && (strcasecmp (p, "endcode") == 0
-		 || strcasecmp (p, "--!endcode") == 0
-		 || strcasecmp (p, "--!end code") == 0
-		 || strcasecmp (p, "end code") == 0))
-  {
-    xccode = 0;
-    return KW_CEND;
-  }
-
-  if (xccode == 1)
-  {
-    strcpy (str, p);
-    return CLINE;
-  }
-
-  if (xccode == 2)
-  {
-    strcpy (str, p);
-    strcat (str, "*");
-    return SQLLINE;
-  }
-  /* end of code/endcode block handling */
-
-  /* skip comments, do not return these to parser */
-  if (t == KWS_COMMENT)
-  {
-    strcpy (str, p);
-    return chk_word (f, str);
-  }
-
-  /* the special end of file token indicates we have reached the end */
-  if (t == TYPE_EOF)
-  {
-    strcpy (str, "");
-    return -1;
-  }
-
-  /* save the current input file location, as we have to do some
-   * reading ahead when checking for multi-word keywords
-   */
-  strcpy (buff, p);
-  return chk_word_more (f, buff, p, str, t);
-}
-
-
 
 /**
  * Generate an Hash value to a string.
@@ -885,19 +834,17 @@ get_hash_val (char *s)
   return c;
 }
 
-
 /**
  * Check if it is a multi symbol reserved word.
  *
- * @param f
  * @param buff
  * @param p
  * @param str
- * @param t
- * @return
+ * @param t The type of the token readed.
+ * @return The type of the next token readed.
  */
 static int
-chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
+chk_word_more (char *buff, char *p, char *str, int t)
 {
   int cnt = 0;
   int oline;
@@ -906,7 +853,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   oline = yylineno;
 
 
-  a = A4GL_memfile_ftell (f);
+  a = A4GL_memfile_ftell ();
   /* check if the current word is a known reserved/key word */
 
   kwords = hashed_list[get_hash_val (p)];
@@ -917,7 +864,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
     if (kwords[cnt].mode >= 1)
 	  {
 	    idents_cnt = 0;
-	    if (words (cnt, 0, f, p))
+	    if (words (cnt, 0, p))
 	    {
 	      strcpy (str, mk_word (cnt));
 	      return kwords[cnt].id;
@@ -933,29 +880,16 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
     if (yyline_fpos < a)
 	  {
 
-#ifndef OLDWAY
-	  int tl;
-	  static char tmpbuff[2000];
-	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
-	  tl = A4GL_memfile_ftell (f);
-	  //printf("a-tl = %d\n",a-tl);
-	  A4GL_memfile_fread (tmpbuff, a - tl, 1, f);
-	  tmpbuff[a - tl] = 0;
-	  strcpy (&yyline[yyline_len], tmpbuff);
-	  yyline_len += a - tl;
-
-#else
-	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
-	  while (A4GL_memfile_ftell (f) < a)
+	  A4GL_memfile_fseek (yyline_fpos, SEEK_SET);
+	  while (A4GL_memfile_ftell () < a)
 	    {
-	      yyline[yyline_len++] = A4GL_memfile_getc (f);
+	      yyline[yyline_len++] = A4GL_memfile_getc ();
 	      yyline[yyline_len] = '\0';
 	    }
-#endif
 	  }
     else
 	  {
-	    A4GL_memfile_fseek (f, a, SEEK_SET);
+	    A4GL_memfile_fseek (a, SEEK_SET);
 	  }
 
   }
@@ -979,6 +913,102 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 }
 
 /**
+ * Check if a token is a reserved word.
+ *
+ * If so it returns an integer (wich is defined with #define generated by
+ * yacc/bison) that easily identifies the reserved word.
+ *
+ * If its not a reserved word could be a NUMBER, IDENTIFIER, ???
+ *
+ * @param f The file pointer that identifies the opened file source.
+ * @param str A pointer to a string where ???? its appended.
+ * @return The keyword integer identifier (please use the defines).
+ */
+static int
+chk_word (char *str)
+{
+  char *p;
+  int t;
+  char buff[256];
+
+  /* read the next word from the 4GL source file */
+  p = read_word (&t);
+  //A4GL_debug ("chk_word: read_word returns %s\n", p);
+
+  /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
+   * These are handled entirely by the lexer, so we test for this
+   * here. While we are in such blocks, the compiler will copy the
+   * source verbatim without any alterations or error checking.
+   * A code block starts with the word 'code' by itself on a line,
+   * and ends with the word 'endcode'.
+   */
+
+  if ((strcasecmp (p, "--!code") == 0
+       || strcasecmp (p, "code") == 0)
+      && (xccode == NO_CODE) && (strncmp (yyline, p, strlen (p)) == 0))
+  {
+    xccode = C_CODE;
+    return KW_CSTART;
+  }
+
+  if (strcmp (p, "a4gl_start_sql_code") == 0 && xccode == NO_CODE)
+  {
+    xccode = SQL_CODE;
+    return KW_CSTART;
+  }
+
+  if (t == TYPE_EOF && xccode)
+  {
+    printf ("Unexpected end of file - no endcode\n");
+    exit (0);
+  }
+
+  if (xccode && (strcasecmp (p, "endcode") == 0
+		 || strcasecmp (p, "--!endcode") == 0
+		 || strcasecmp (p, "--!end code") == 0
+		 || strcasecmp (p, "end code") == 0))
+  {
+    xccode = NO_CODE;
+    return KW_CEND;
+  }
+
+  if (xccode == C_CODE)
+  {
+    strcpy (str, p);
+    return CLINE;
+  }
+
+  if (xccode == SQL_CODE)
+  {
+    strcpy (str, p);
+    strcat (str, "*");
+    return SQLLINE;
+  }
+  /* end of code/endcode block handling */
+
+  /* skip comments, do not return these to parser */
+  if (t == KWS_COMMENT)
+  {
+    strcpy (str, p);
+    return chk_word (str);
+  }
+
+  /* the special end of file token indicates we have reached the end */
+  if (t == TYPE_EOF)
+  {
+    strcpy (str, "");
+    return -1;
+  }
+
+  /* save the current input file location, as we have to do some
+   * reading ahead when checking for multi-word keywords
+   */
+  strcpy (buff, p);
+  return chk_word_more (buff, p, str, t);
+}
+
+
+/**
  * Convert the case of each character (if needed) to lower case.
  *
  * @param c The string to be lowered
@@ -995,6 +1025,7 @@ to_lower_str (char *s)
 
 /**
  * Fixes up back-slash quoting in source code strings.
+ * @todo : The maximum length of the string should be parametrized.
  *
  * @param s The string to be fixed
  */
@@ -1047,70 +1078,76 @@ fix_bad_strings (char *s)
  *  more tokens.
  *
  *  The purpose is give tokens to the syntatic parser (made in yacc/bison).
+ *  Assume that the file is allready opened and this does not need to be tested.
  * @todo - convert identifier to USER_DTYPE if required....
  *
- * @param pyyval
- * @param yystate
- * @param yys1
- * @param yys2
+ * @param pyylval
+ * @param yystate The current state in the bsion parser.
+ * @param yys1 Not used 
+ * @param yys2 Not used
  */
 int
 a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 {
   int a;
-  char buff[1024];
+  char text[1024];
   char buffval[20480];
   int allow;
   static int last_pc = 0;
 
   current_yylex_state = yystate;
 
-  if (yyin == 0)
-    {
-      printf ("No input...\n");
-      exit (0);
-    }
-
-  a = A4GL_memfile_ftell (yyin);
-  if (yyin_len)
+  a = A4GL_memfile_ftell();
+  if (A4GL_memfile_getLength())
   {
-    a = a * 100 / yyin_len;
+    a = a * 100 / A4GL_memfile_getLength();
     if (a > last_pc)
 	  {
 	    last_pc = a;
 	  }
   }
-  a = chk_word (yyin, buff);
-  //A4GL_debug("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
 
+	// Read and check what word was readed.
+  a = chk_word (text);
+  //A4GL_debug("chk_word returns token=%d, text=%s state=%d\n", a, text, yystate);
+
+	// Calls the generated from y.output allow token state to see if the word
+	// found is to be returned as identifier or TOKEN
   allow = allow_token_state (yystate, a);
   //A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 
+	// The bison parser nows that we are in SQL BLOCK. Read until it
+	// Threat things diferently
+	// @todo : The parser rigth now does not assign sql_mode.
+	// @todo : Put this in a separated function.
+	// If sql_mode == 0 we are not in sql mode
   if (sql_mode == 0)
   {
     if (allow == 0) {
 		  int t;
-		  t=isnum(buff);
+		  t=isnum(text);
 		  if (t==1) a=INT_VALUE;
 		  if (t==2) a=NUMBER_VALUE;
 		  if (t!=1&&t!=2) {
-		 	  if (isident (buff)) {
+		 	  if (isident (text)) {
 				  a = NAMED_GEN;
 			  }
 		  }
 	  }
 
+	  // Calls the generated from y.output allow token state to see if the word
+	  // found is to be returned as identifier or TOKEN
     if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
 	  {
 						/* TO UNCOMENT
-	    if (A4GL_find_datatype (upshift (buff)))
+	    if (A4GL_find_datatype (upshift (text)))
 	    {
 	      a = USER_DTYPE;
 	    }
 			*/
 	  }
   }
-  else
+  else  // SQLMODE
   {
     if (allow == 0)
 	    a = SQL_TEXT;
@@ -1118,13 +1155,16 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   //A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
 
+	// Check if returned  ????
+	// I think that it found a constant.
+	// @todo : This should go to a separated function.
   if (a == 2 || a == NAMED_GEN)
   {
     //A4GL_debug ("  Constant check returns %d", 
-								//check_for_constant (buff, buffval));
+								//check_for_constant (text, buffval));
 
 		//@todo : Uncomment this 
-    //switch (check_for_constant (buff, buffval))
+    //switch (check_for_constant (text, buffval))
     switch (10)
 	  {
 	    case 0:
@@ -1132,23 +1172,23 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
 	    case 1:
 	      //A4GL_debug (" Constant switch %s Char", buffval);
-	      strcpy (buff, buffval);
+	      strcpy (text, buffval);
 	      a = CHAR_VALUE;
 	      break;		/* 'c' */
 
 	    case 2:
 	      //A4GL_debug (" Constant switch %s Float", buffval);
-	      strcpy (buff, buffval);
+	      strcpy (text, buffval);
 	      a = NUMBER_VALUE;
 	      break;		/* 'f' */
 	    case 3:
 	      //A4GL_debug (" Constant switch %s Integer", buffval);
-	      strcpy (buff, buffval);
+	      strcpy (text, buffval);
 	      a = INT_VALUE;
 	      break;		/* 'i' */
 	    case 4:
 	      //A4GL_debug (" Constant switch %s ident", buffval);
-	      strcpy (buff, buffval);
+	      strcpy (text, buffval);
 	      a = NAMED_GEN;
 	      break;		/* 'C' */
 	    default:
@@ -1159,42 +1199,25 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /* 4GL identifiers are case insensitive - force to lower case */
   if (a == 2)
   {
-    to_lower_str (buff);
+    to_lower_str (text);
   }
 
-  fix_bad_strings (buff);
+  fix_bad_strings (text);
 
   /* call set_str() to send back to the parser the text/value 
    * associated with the token.
    */
-  //set_str (buff);
+  //set_str (text);
 	// @todo : Uncomment because it is realy needed.
-  //set_str (pyylval, buff);
+  //set_str (pyylval, text);
 
-  lastword = buff;
   lastlex = a;
   word_cnt = 0;
-  //A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+  //A4GL_debug ("lexer returns  a=%d, text=%s\n", a, text);
 
+  printf("lexer returns  a=%d, text=%s\n", a, text);
   return a;
 }
-
-/**
- * 
- *
- * @param kw
- * @param v
- */
-void
-turn_state (int kw, int v)
-{
-  int a;
-  for (a = 0; a <= 26; a++)
-  {
-    turn_state_all (kw, v, a);
-  }
-}
-
 
 /**
  *
@@ -1227,63 +1250,31 @@ turn_state_all (int kw, int v, int arr)
 }
 
 /**
+ * 
  *
- * @param a
+ * @param kw
+ * @param v
+ */
+void
+turn_state (int kw, int v)
+{
+  int a;
+  for (a = 0; a <= 26; a++)
+  {
+    turn_state_all (kw, v, a);
+  }
+}
+
+/**
+ * Get an element of the idents array.
+ *
+ * @param a The index in the array that we want to obtain.
+ * @return A pointer to the identifier array.
  */
 char *
 get_idents (int a)
 {
   return idents[a];
 }
-
-
-/*
-chk_for_kw_in(short *yys1,short *yys2,int a,char *buff) {
-short *stack_cnt;
-int r;
-int could_be;
-could_be=0;
-
-  for (stack_cnt=yys2;stack_cnt>=yys1;stack_cnt--) {
-      		r = wants_kw_token (*stack_cnt, a);
-		if (r==1) {
-			if (scan_variable (buff) == -1) r=0;
-			else return a;
-		}
-		printf("r=%d\n",r);
-		if (r==2) {
-			printf("Y");
-			could_be++;
-		}
-		if (r==3) {
-			printf("X");
-			could_be++;
-		}
- }
- if (could_be) return 2;
- return 0;
-
-		if (r==0) {
-			return a;
-		}
-
-		if (r==2) {
-			//return NAMED_GEN;
-			continue;
-		}
-
-		if (r==3) {
-			continue;
-		}
-
- 		if (r==1) {
-			if (scan_variable (buff) != -1) return NAMED_GEN;
-			else return a;
-		}
-  }
-
-  return NAMED_GEN;
-}
-*/
 
 /* ================================== EOF ========================= */

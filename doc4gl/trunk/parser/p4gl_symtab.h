@@ -10,7 +10,7 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.6 2003-12-10 11:48:07 afalout Exp $
+ * $Id: p4gl_symtab.h,v 1.7 2004-01-05 13:56:29 saferreira Exp $
  */
 
 
@@ -291,6 +291,12 @@ EXTE int generateFglDoc;
 
 /** Define se se usa os comentários standard do 4gl para documentação */
 EXTE int standardComments;
+
+#define FGLDOC_PARSER 0
+#define AUBIT_PARSER  1
+
+/** Define wich parser to use */
+EXTE int usedParser;
 
 EXTE short  WarningLevel;       /* Verbose and Warning detail display level */
 

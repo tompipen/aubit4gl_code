@@ -396,28 +396,59 @@ define_statement
 	{ defineFound(); }
 	;
 
+/**
+ * A comma separated variable definition list to be used in the define statement
+ * 4gl code examples:
+ *   a SMALLINT, b CHAR(10), c ARRAY[10] OF DECIMAL(10,1)
+ */
 variable_definition_list
 	: variable_definition_list ',' variable_declaration
 	| variable_declaration
 	;
 
+/**
+ * A single variable declaration.
+ * 4gl code example:
+ *   a SMALLINT
+ */
 variable_declaration
 	: variable_list_declaration fgl_data_type
-																	{ StInsVarListDeclaration($1,$2);} 
+	  { StInsVarListDeclaration($1,$2);} 
 	;
 
+/**
+ * A list of variables to be declared of a specific type.
+ */
 variable_list_declaration
 	: variable_list_declaration ',' var_name
-																 { InsertNameList(&$$,$1,$3,lineno+1);    }
+		{ InsertNameList(&$$,$1,$3,lineno+1);    }
 	| var_name
-												{ InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
+		{ InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
 	;
 
+/**
+ * A possible 4gl data type.
+ * 4gl code examples:
+ *   INTEGER
+ *   LIKE tableName.colName
+ *   LIKE tableName.*
+ *   ARRAY[10] OF INTEGER
+ *   RECORD 
+ *      a SMALLINT
+ *   END RECORD
+ *   TEXT
+ *   BYTE
+ *   SERIAL
+ */
 fgl_data_type
-	: fgl_simple_data_type                   { $$ = CpStr($1); }
-	| LIKE table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); }
-	| LIKE IDENTIFIER ':' table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
-	| array_data_type                        { $$ = CpStr($1); }
+	: fgl_simple_data_type                   
+	  { $$ = CpStr($1); }
+	| LIKE table_identifier '.' column_name  
+	  { $$ = CpStr("LIKE %s.%s",$2,$4); }
+	| LIKE IDENTIFIER ':' table_identifier '.' column_name  
+	  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
+	| array_data_type                        
+	  { $$ = CpStr($1); }
 	| record_data_type                       { $$ = CpStr($1); }
 	| TEXT                                   { $$ = CpStr("TEXT"); }
 	| BYTE                                   { $$ = CpStr("BYTE"); }
@@ -426,6 +457,7 @@ fgl_data_type
 
 array_data_type
 	: ARRAY '[' array_dim ']' OF fgl_data_type { $$ = $6; }
+	;
 
 /* ??? Aqui existem conflitos  */
 /* ??? As afectacoes sao so para o bison funcionar */
@@ -435,15 +467,21 @@ array_dim
 	| NUMBER ',' NUMBER ',' NUMBER   { int x; x = $1; x=$3; x=$5;}
 	;
 
-/* Tenho de limpar as variaveis entretanto descobertas pois sao sub-variaveis */
-/* TODO - Esta regra está agranelada */
+/**
+ * A RECORD datatype definition.
+ * Tenho de limpar as variaveis entretanto descobertas pois sao sub-variaveis 
+ * @todo - Esta regra está agranelada
+ *
+ */
 record_data_type
 	:    RECORD                             { InRecord = 1; }
 					variable_definition_list 
 			 END_TOK RECORD                     { InRecord = 0;  $$=CpStr("RECORD");}
 	| RECORD LIKE table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$3); }
-	| RECORD LIKE IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$5); }
-	| RECORD LIKE IDENTIFIER '@' IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$7); }
+	| RECORD LIKE IDENTIFIER ':' table_identifier '.' '*'  
+	  {$$=CpStr("RECORD LIKE %s.*",$5); }
+	| RECORD LIKE IDENTIFIER '@' IDENTIFIER ':' table_identifier '.' '*'  
+	  {$$=CpStr("RECORD LIKE %s.*",$7); }
 	;
 
 fgl_simple_data_type
@@ -1442,6 +1480,8 @@ var_name
   | SERIAL        { strcpy($$,"SERIAL");}
   | SMALLINT      { strcpy($$,"SMALLINT");}
   | SHARE   complete_array_usage               { strcpy($$,"SHARE");}
+  | START         { strcpy($$,"START");}
+  | TAB           { strcpy($$,"TAB");}
   | TABLE         { strcpy($$,"TABLE");}
   | TRAILER       { strcpy($$,"TRAILER");}
   | TRANSACTION   { strcpy($$,"TRANSACTION");}
@@ -1748,13 +1788,18 @@ clear
   | CLEAR WINDOW SCREEN
   | CLEAR SCREEN
   | CLEAR field_clause_list
+	;
 
+/**
+ * The construct statement
+ */
 construct
   : CONSTRUCT 
     construct_variable_clause 
     op_attribute_clause 
     op_help_clause
     construct_management
+	;
 
 construct_variable_clause
   /* : IDENTIFIER ON column_list FROM  field_clause_list  */
@@ -1763,8 +1808,13 @@ construct_variable_clause
          StInsertVariableUsage($1,lineno+1,ASSIGNMENT);}
   | BY NAME IDENTIFIER ON column_list 
        {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
+  | IDENTIFIER '.' IDENTIFIER ON column_list 
+       {StInsertVariableUsage($1,lineno+1,ASSIGNMENT);}
+  | IDENTIFIER '.' IDENTIFIER ON column_list FROM  field_clause_list 
+      { StInsertVariableUsage($1,lineno+1,ASSIGNMENT);}
   | BY NAME IDENTIFIER '.' IDENTIFIER ON column_list 
        {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
+	;
 
 
 op_help_clause
@@ -3660,6 +3710,7 @@ column_name
   | COUNT                               { $$=CpStr("COUNT");             }
   | DATE                                { $$=CpStr("DATE");             }
   | DEC                                 { $$=CpStr("SHARE");             }
+  | FILE_TOK                            { $$=CpStr("FILE");             }
   | FIELD                               { $$=CpStr("FIELD");             }
   | FORM                                { $$=CpStr("FORM");             }
   | FREE                                { $$=CpStr("FREE");               }
