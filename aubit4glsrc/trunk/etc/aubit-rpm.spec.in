@@ -6,13 +6,18 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.2 2002-02-02 11:57:23 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.3 2002-03-09 10:45:09 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
 #desired. In these cases, the autoreqprov tag may be used to disable it.
 #This tag takes a yes/no or 0/1 value. For example, to disable automatic
 #dependency processing, the following line may be used:
+#This is needed in case of Aubit, because otherwise all dependencies for
+#all modules like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
+#as prerequisites for installing Aubit, which is not true, since Aubit can 
+#be configured to use this extensions only if they are installed on target 
+#system
 AutoReqProv: no
 
 
@@ -34,8 +39,9 @@ BuildArchitectures: @target_cpu@
 
 
 #Provides is supposed to specify a capability needed by other packages,
-#that can be provided by more tehn one package.
-Provides: 4gl_compiler
+#that can be provided by more then one package. For instance, both 4Js BDL,
+#Querix Hydra, and Informix RDS provide Informix-4gl compatible compiler.
+Provides: x4gl_compiler
 
 #Finding  Requires: (using /usr/lib/rpm/find-requires)...
 Requires: glibc >= 2.2, glibc-devel >= 2.2, ncurses-devel >= 5, /bin/bash, /bin/sh, make
@@ -55,7 +61,7 @@ Source: http://aubit4gl.sourceforge.net/files/@SHORTNAME@src-@AUBIT_VERSION@.@AU
 ##############
 Aubit 4gl (Fourth Generation programing Language) compiler compiles source 
 files to several low-level programming languages (C, Perl, Java...). It has
-ODBC and native databse conectivity, GUI interface and many features.
+ODBC and native database conectivity, GUI interface and many features.
 
 Install Aubit compiler if you want to write business oriented databse
 applications.
@@ -100,6 +106,7 @@ make install
 ##############
 %defattr(-,root,root)
 
+#Directories to be created:
 %dir /opt/aubit4gl/bin
 %dir /opt/aubit4gl/lib
 %dir /opt/aubit4gl/etc
@@ -110,68 +117,88 @@ make install
 %dir /opt/aubit4gl/tools
 %dir /opt/aubit4gl/docs
 
-/opt/aubit4gl/lib/libaclallgui.a
-/opt/aubit4gl/lib/libgtk4gl_x.a
-/opt/aubit4gl/lib/libgtk4gl.so
-/opt/aubit4gl/lib/libaclsharedgui.so
-/opt/aubit4gl/lib/libgtk4gl_x.so
-/opt/aubit4gl/bin/4glc
-/opt/aubit4gl/bin/4glpc
-/opt/aubit4gl/bin/fcompile
-/opt/aubit4gl/bin/mcompile
-/opt/aubit4gl/bin/mkmess
-/opt/aubit4gl/bin/amake
-/opt/aubit4gl/bin/amakeallo
-/opt/aubit4gl/bin/amakeallf
-/opt/aubit4gl/bin/loadmap
-/opt/aubit4gl/bin/aubit
-/opt/aubit4gl/bin/aubit-config
-/opt/aubit4gl/bin/genmake
-/opt/aubit4gl/bin/mdecompile
-/opt/aubit4gl/bin/prepmake
-/opt/aubit4gl/bin/fdecompile
-/opt/aubit4gl/bin/fshow
-/opt/aubit4gl/bin/fshow-gtk
-"/opt/aubit4gl/bin/*"
-%doc /opt/aubit4gl/README.txt
-/opt/aubit4gl/incl/4glhdr.h
-/opt/aubit4gl/incl/acl4glgui.h
-"/opt/aubit4gl/incl/*.mk"
-"/opt/aubit4gl/incl/*.mki"
-/opt/aubit4gl/incl/Makefile-common
-/opt/aubit4gl/lib/libaclall.a
-/opt/aubit4gl/lib/libaclshared.so
-/opt/aubit4gl/lib/libPDF_NOPDF.so
-/opt/aubit4gl/lib/libSQL_nosql.so
+#FIXME: this files should be set from configure, only if coresponding
+#libraries are present on system making RPM:
+/opt/aubit4gl/lib/libUI_GTK.so
 /opt/aubit4gl/lib/libPDF_PDF.so
 /opt/aubit4gl/lib/libSQL_unixodbc.so
 /opt/aubit4gl/lib/libSQL_iodbc.so
 /opt/aubit4gl/lib/libSQL_esql.so
 /opt/aubit4gl/lib/libSQL_ifxodbc.so
 /opt/aubit4gl/lib/libSQL_pgodbc.so
+/opt/aubit4gl/bin/fshow-gtk
+
+
+#now obsolete:
+#/opt/aubit4gl/lib/libaclallgui.a
+#/opt/aubit4gl/lib/libgtk4gl_x.a
+#/opt/aubit4gl/lib/libgtk4gl.so
+#/opt/aubit4gl/lib/libaclsharedgui.so
+#/opt/aubit4gl/lib/libgtk4gl_x.so
+
+#Below are only files that should be created by make in any case:
+
+#Executables:
+/opt/aubit4gl/bin/4glc
+/opt/aubit4gl/bin/fcompile
+/opt/aubit4gl/bin/mcompile
+/opt/aubit4gl/bin/mkmess
+/opt/aubit4gl/bin/loadmap
+/opt/aubit4gl/bin/fdecompile
+/opt/aubit4gl/bin/fshow
+/opt/aubit4gl/bin/aubit-config
+/opt/aubit4gl/bin/mdecompile
+
+#Shell scripts:
+/opt/aubit4gl/bin/4glpc
+/opt/aubit4gl/bin/amake
+/opt/aubit4gl/bin/amakeallo
+/opt/aubit4gl/bin/amakeallf
+/opt/aubit4gl/bin/aubit
+/opt/aubit4gl/bin/genmake
+/opt/aubit4gl/bin/prepmake
+#"/opt/aubit4gl/bin/*"
+
+#Include files:
+/opt/aubit4gl/incl/4glhdr.h
+/opt/aubit4gl/incl/acl4glgui.h
+"/opt/aubit4gl/incl/*.mk"
+"/opt/aubit4gl/incl/*.mki"
+
+
+#FIXME: remove static libraries from future distros:
+/opt/aubit4gl/lib/libaclall.a
+
+#Shared libraries:
+/opt/aubit4gl/lib/libaclshared.so
+/opt/aubit4gl/lib/libPDF_NOPDF.so
+/opt/aubit4gl/lib/libSQL_nosql.so
+/opt/aubit4gl/lib/libUI_TUI.so
+
+#Examples:
 "/opt/aubit4gl/tools/test/*.4gl"
 "/opt/aubit4gl/tools/test/*.per"
-/opt/aubit4gl/tools/test/Makefile
 "/opt/aubit4gl/tools/test/*.msg"
 "/opt/aubit4gl/tools/test/gui/*.4gl"
 "/opt/aubit4gl/tools/test/gui/*.per"
+
+#Makefiles:
+/opt/aubit4gl/incl/Makefile-common
+/opt/aubit4gl/tools/test/Makefile
 /opt/aubit4gl/tools/test/gui/Makefile
+/opt/aubit4gl/Makefile
+#included via *.mki with include files:
+#/opt/aubit4gl/incl/Makefile-install.mki
+
+#Documentation files:
+%doc /opt/aubit4gl/README.txt
 %doc /opt/aubit4gl/docs/changelog.txt
 %doc /opt/aubit4gl/docs/COPYING
 %doc /opt/aubit4gl/docs/CREDITS
 %doc /opt/aubit4gl/docs/LICENSE
+
+#Configuration files:
 %config /opt/aubit4gl/etc/odbc.ini.example
-#%dir /usr/bin
-#/usr/bin/aubit-config
-#/usr/bin/aubit
-#/usr/lib/libaclsharedgui.so
-#/usr/lib/libgtk4gl.so
-#/usr/lib/libgtk4gl_x.so
-#/usr/lib/libPDF_PDF.so
-#/usr/lib/libPDF_NOPDF.so
-#/usr/lib/libaclshared.so
-/opt/aubit4gl/Makefile
-/opt/aubit4gl/incl/Makefile-install.mki
 %config /opt/aubit4gl/etc/aubitrc-bin.in
 /opt/aubit4gl/configure
 /opt/aubit4gl/etc/config/config.guess

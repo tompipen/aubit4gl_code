@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.57 2002-03-07 12:23:45 afalout Exp $
+# $Id: 4glpc,v 1.58 2002-03-09 10:45:09 afalout Exp $
 #
 
 ########################################################################
@@ -1252,19 +1252,19 @@ then
             fi
 	    fi
 
-		if  [ "$MAKE4GLPC" != "Yes" ]
-		then
-            GTKLIBS="-lgtk4gl -lgtk4gl_x $GTKLIBS"
-        fi
+		#if  [ "$MAKE4GLPC" != "Yes" ]
+		#then
+        #    GTKLIBS="-lgtk4gl -lgtk4gl_x $GTKLIBS"
+        #fi
     fi
 else  #UNIX
 	if [  "$GTKGUI" = "Yes" ]
     then
 		GTKLIBS="-lgdk -lgtk -lglib"
-		if  [ "$MAKE4GLPC" != "Yes" ]
-		then
-			GTKLIBS="$GTKLIBS -lgtk4gl -lgtk4gl_x"
-    	fi
+		#if  [ "$MAKE4GLPC" != "Yes" ]
+		#then
+		#	GTKLIBS="$GTKLIBS -lgtk4gl -lgtk4gl_x"
+    	#fi
 
 		if [ "$GLIBVER" != "old" ]
         then

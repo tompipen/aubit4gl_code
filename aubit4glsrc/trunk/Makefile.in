@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.37 2002-03-07 11:54:53 afalout Exp $
+# $Id: Makefile.in,v 1.38 2002-03-09 10:45:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -1387,7 +1387,7 @@ endif
 		fi; \
 		${CP} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ${SRCTMP} ; \
 	else \
-        echo "Have ${SRCTMP}"; \
+        echo "Have ${SRCTMP} use RPM=new on make line to force refresh"; \
 	fi
 #	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
