@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.11 2002-09-26 07:35:52 afalout Exp $
+# $Id: pointers.c,v 1.12 2002-09-26 07:40:41 afalout Exp $
 #
 */
 
@@ -452,8 +452,11 @@ int
     {
 	int r;
 
-	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	    return (*rootp);		/* we found it! */
+    //Andrej: temp. commented out for debug on Darwin
+	//if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
+	//    return (*rootp);		/* we found it! */
+
+
 	rootp = (r < 0) ?
 	    &(*rootp)->left :		/* T3: follow left branch */
 	    &(*rootp)->right;		/* T4: follow right branch */
@@ -486,8 +489,11 @@ int
     register node *r;
     int cmp;
 
-    if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
-	return ((struct node_t *)0);
+    //Andrej: temp commented out for debug on Darwin
+	//if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
+	//return ((struct node_t *)0);
+
+
     while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
     {
 	p = *rootp;
