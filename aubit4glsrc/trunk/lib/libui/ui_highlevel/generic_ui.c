@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.26 2004-08-05 17:19:40 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.27 2004-08-06 15:37:01 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2741,10 +2741,10 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
         int h;
         w=A4GL_get_curr_width();
         h=A4GL_get_curr_height();
-        if (A4GL_get_currwinno()==0) {
-                w=A4GL_screen_width();
-                h=A4GL_screen_height();
-        }
+        //if (A4GL_get_currwinno()==0) {
+                //w=A4GL_screen_width();
+                //h=A4GL_screen_height();
+        //}
 
         if (y<1|| y>h) {
                 A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
