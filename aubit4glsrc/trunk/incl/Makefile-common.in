@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.153 2004-03-19 04:00:13 afalout Exp $
+# $Id: Makefile-common.in,v 1.154 2004-03-21 00:47:21 afalout Exp $
 #
 
 
@@ -317,7 +317,6 @@ INSTALL_CMD 		=install
 INSTALL     		=${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
 MKPATH      		=mkdir -p
 CPPFLAGS 			=
-#LDFLAGS 			=-s
 LDFLAGS             =@LDFLAGS@
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
@@ -362,10 +361,12 @@ endif
 
 ifeq "${TARGET_OS}" "solaris"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
+	#Apprently, this is when Sun native LD is used:	
 	#RDYNAMIC		=
 	
 	#Requested by Phillip Heller:
-	RDYNAMIC		=-export-dynamic
+	#Note that this assumes GNU ld
+	RDYNAMIC		=--export-dynamic
 
 	#Solaris 8 (??!!)
 	#-export-dynamic worked.  The compiler complaining about the existence of

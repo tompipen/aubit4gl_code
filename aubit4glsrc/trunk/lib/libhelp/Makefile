@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2004-02-02 09:38:13 afalout Exp $
+# $Id: Makefile,v 1.16 2004-03-21 00:47:22 afalout Exp $
 #
 
 ROOT    	=../..
@@ -32,6 +32,9 @@ LIBROOT		=..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
+
+#Rules for compiling 4GL sources using Aubit compiler
+include ${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Settings
@@ -50,7 +53,7 @@ FCOMPILE=${ROOT}/bin/fcompile
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
+${LIBROOT}/libHELP_std${SO_EXT}: helplib.o a4gl_xxhelp.afr.o
 	${LD} ${SO_LDFLAGS} -g -DPORTABLE -o $@ $^ -I${ROOT}/incl -L${ROOT}/lib -laubit4gl
 	@echo "Help library sucesfully compiled."
 
@@ -59,11 +62,14 @@ ${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
 ##                              Sub-targets
 ## ==================================================================
 
+helplib.o: helplib.${FGLC_OUTPUT_EXT}
+#a4gl_xxhelp.afr.o: a4gl_xxhelp.afr.c
 
 helplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
 	${4GLC} --namespace "aclfgli_" $^
 
+#For debugging only
 dbghelplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
 	gdb --args ${4GLC} --namespace "aclfgli_" $^

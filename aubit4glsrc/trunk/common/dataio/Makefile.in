@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.19 2003-10-20 12:18:59 mikeaubury Exp $
+# $Id: Makefile.in,v 1.20 2004-03-21 00:46:06 afalout Exp $
 #
 
 ROOT        =../..
@@ -56,6 +56,11 @@ XGEN	=${LIBROOT}/libDATA_struct_form${SO_EXT} \
 ANY		=${LIBROOT}/libDATA_any${SO_EXT}
 
 ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
+endif
+#How do I say "OR" here??
+ifeq "${TARGET_OS}" "solaris"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
 endif
