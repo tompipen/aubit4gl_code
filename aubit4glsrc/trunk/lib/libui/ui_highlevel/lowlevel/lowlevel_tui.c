@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.27 2004-06-26 09:33:27 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.28 2004-06-26 13:00:33 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.27 2004-06-26 09:33:27 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.28 2004-06-26 13:00:33 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -401,8 +401,7 @@ A4GL_LL_remove_window (void *x)
   delwin (w);
 }
 
-void
-A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
+void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
 {
   int ch2;
   int attr;
@@ -2499,6 +2498,7 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
 
 
 
+#ifdef WIDEC
 void
 A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
 {
@@ -2520,15 +2520,13 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
   if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
   else {
 		wattrset((WINDOW *)p,attr&0xffffff00);
-#if (! defined(__CYGWIN__)) 
 		a4gl_mvwaddwstr(p,  y, x, buff);
-#else
 		A4GL_debug ("See comment on top of file. EXIT");
 		exit (2);
-#endif
 	}
 }
 
+#endif
 
 
 void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {

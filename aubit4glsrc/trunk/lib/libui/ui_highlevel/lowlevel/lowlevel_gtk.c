@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.45 2004-06-14 18:13:03 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.46 2004-06-26 13:00:33 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -1044,6 +1044,11 @@ void A4GL_LL_screen_refresh(void ) {
 	UILIB_A4GL_gui_run_til_no_more();
 }
 
+void A4GL_LL_screen_redraw(void ) {
+	//printf("NEED TO HIDE CONSOLE1\n");
+	//A4GL_hide_console();
+	UILIB_A4GL_gui_run_til_no_more();
+}
 
 void A4GL_LL_screen_update(void ) {
 	//printf("NEED TO HIDE CONSOLE2\n");
