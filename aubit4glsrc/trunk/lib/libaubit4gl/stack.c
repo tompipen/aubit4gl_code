@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.97 2004-08-10 13:04:07 mikeaubury Exp $
+# $Id: stack.c,v 1.98 2004-08-16 21:46:32 mikeaubury Exp $
 #
 */
 
@@ -408,7 +408,14 @@ A4GL_pop_var2 (void *p, int d, int s)
   if (z != 1)
     {
       A4GL_exitwith ("Error in conversion");
-      if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { A4GL_debug("Ignoreing"); a4gl_status=0; z=1; A4GL_setnull(d,p,s); }
+      if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { 
+		A4GL_debug("Ignoreing"); 
+		if (d!=DTYPE_SMINT) {
+			a4gl_status=0; 
+		}
+		z=1; 
+		A4GL_setnull(d,p,s); 
+	}
 #ifdef DEBUG
       A4GL_debug ("2 pop_var2 - error in conversion %d d=%d s=%d\n", z, d, s);
 #endif
@@ -560,10 +567,19 @@ A4GL_conversion_ok(1);
 		A4GL_conversion_ok(1);
   		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 		
-		if (b==0) {
+		if (b==0 ) {
+			A4GL_debug("d=%d d=%d",params[params_cnt].dtype & DTYPE_MASK, d & DTYPE_MASK);
+			if ((d & DTYPE_MASK) == DTYPE_SMINT)  {
+			// Do nothing 
+			} else {
 			A4GL_conversion_ok(0);
 			A4GL_debug("Bad conversion");
-			  if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { A4GL_debug("Ignoreing"); a4gl_status=0; }
+		
+			if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { 
+					A4GL_debug("Ignoreing"); a4gl_status=0; 
+			}
+			}
+
 		}
   	}
   }

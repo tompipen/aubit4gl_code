@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.92 2004-08-16 10:19:14 mikeaubury Exp $
+# $Id: newpanels.c,v 1.93 2004-08-16 21:47:03 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.92 2004-08-16 10:19:14 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.93 2004-08-16 21:47:03 mikeaubury Exp $";
 
 /**
  * @file
@@ -1712,6 +1712,10 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	attr=nattr;
       b = A4GL_xwattr_get (currwin);
       wot=A4GL_window_on_top_ign_menu ();
+      if (wot==0) { 
+		A4GL_exitwith("Internal error - window on top =0");
+		return ;
+      }
 
       a4glattr_wattrset (wot, attr);
       A4GL_gui_print (attr, s);
@@ -3013,6 +3017,7 @@ A4GL_window_on_top (void)
   while (1) {
   	ptr = panel_below (ptr);
   	s = panel_userptr (ptr);	/* get name of panel */
+	if (strcmp(s,"error window")==0) continue;
 	if (s) break;
 	
   }
@@ -3035,6 +3040,7 @@ A4GL_window_on_top_ign_menu (void)
   	ptr = panel_below (ptr);
 	A4GL_debug("panel below=%p",ptr);
   	s = panel_userptr (ptr);	/* get name of panel */
+	if (strcmp(s,"error window")==0) continue;
 	A4GL_debug("userptr=%p",s);
 	
 	if (s) {
