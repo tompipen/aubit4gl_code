@@ -110,7 +110,10 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
                 display_mode=DISPLAY_ACROSS;
         }
 } else {
-        if (stdin_screen_width==-1) stdin_screen_width=set_stdin_width();
+        if (stdin_screen_width==-1) {
+		stdin_screen_width=set_stdin_width();
+		//printf("---> %d width\n",stdin_screen_width);
+	}
         if (field_widths () > stdin_screen_width) {
                 display_mode=DISPLAY_DOWN;
         } else {
@@ -1052,6 +1055,6 @@ endcode
 END FUNCTION
 
 FUNCTION load_info_tables()
-	display "Not implemented"
+	display "Not implemented" at 24,1
 	sleep 1
 end function

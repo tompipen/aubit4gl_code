@@ -1,7 +1,7 @@
 
-#define IDENTIFIER 258
-#define CONSTANT 259
-#define STRING_LITERAL 260
+#define KW_IDENTIFIER 258
+#define KW_CONSTANT 259
+#define KW_STRING_LITERAL 260
 #define KW_INSERT 261
 #define KW_SELECT 262
 #define KW_DELETE 263
@@ -10,8 +10,8 @@
 #define KW_CBRACE 266
 #define KW_SEMI 267
 #define KW_SPACE 268
-#define CHAR 269
-#define NL 270
+#define KW_CHAR 269
+#define KW_NL 270
 #define KW_MINUS_MINUS  271
 #define KW_INTO 272
 #define KW_TEMP 273

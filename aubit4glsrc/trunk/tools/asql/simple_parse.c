@@ -85,15 +85,15 @@ int need_tabname=0;
 		/* Eat up comments */
 
 		if (need_fname) {
-			if (a==KW_SPACE||a==NL) continue;
+			if (a==KW_SPACE||a==KW_NL) continue;
 
-			if (a==IDENTIFIER||a==STRING_LITERAL) {
+			if (a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT) {
 				char buff[512];
 				strcpy(buff,yylval.str);
 				strcpy(buff,A4GL_strip_quotes(buff));
 				e->fname=strdup(buff);
 				// We also need to remove the UNLOAD ... bit...
-				printf("Scrapping %s\n",ptr);
+				//printf("Scrapping %s\n",ptr);
 				free(ptr); ptr=0;
 				need_fname=0;
 				continue;
@@ -101,7 +101,7 @@ int need_tabname=0;
 			printf("Unknown a when looking for filename %d\n",a);
 		}
 
-                if (need_delim&&a==STRING_LITERAL) {
+                if (need_delim&&a==KW_STRING_LITERAL) {
                         e->delim=strdup(yylval.str);
                         free(ptr); ptr=0;
                         need_delim=0;
@@ -109,7 +109,7 @@ int need_tabname=0;
                 }
 
 		if (need_tabname) {
-			if (a==IDENTIFIER) {
+			if (a==KW_IDENTIFIER) {
 				e->fname=strdup(yylval.str);
                         	free(ptr);ptr=0;
 				need_tabname=0;
@@ -134,7 +134,7 @@ int need_tabname=0;
 
 		if (into_temp==1) {
 			A4GL_debug("Got into_temp - a=%d",a);
-			if (a==KW_TEMP||a==KW_SPACE||a==NL) ;
+			if (a==KW_TEMP||a==KW_SPACE||a==KW_NL) ;
 			else into_temp=0;
 		}
 
@@ -148,14 +148,14 @@ int need_tabname=0;
 		}
 
 		if (a==KW_MINUS_MINUS) {
-			while (a!=NL) a=yylex();
+			while (a!=KW_NL) a=yylex();
 		}
 
-		if (a==NL) {
+		if (a==KW_NL) {
 			line++;
 		}
 
-		if ((a==NL||a==KW_SPACE)&&e==0) {
+		if ((a==KW_NL||a==KW_SPACE)&&e==0) {
 			continue;
 		}
 

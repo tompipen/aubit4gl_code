@@ -269,10 +269,10 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
 		p=list[a].stmt;
 
-			display_mode_unload(0);
-		if (list[a].type!='L'&&list[a].type!='l'&& list[a].type!='C'&&list[a].type!='c') {
-
+		display_mode_unload(0);
+		if (list[a].type!='L'&&list[a].type!='l') {
 			qry_type=prepare_query_1(p,list[a].type);
+			if (list[a].type=='C'||list[a].type=='c') qry_type=255;
 		} else {
 			qry_type=255;
 		}
@@ -387,10 +387,12 @@ end_query: ;
 endcode
 
 if sqlca.sqlcode>=0 then
-	if exec_mode=0 then
+	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
 	else
-		display msg clipped
+code
+	fprintf(stderr,"%s",msg);
+endcode
 		display " "
 	end if
 
@@ -416,7 +418,9 @@ else
 		# We'll stop after the first error...
 		return 0 
 	else
-		display msg clipped
+code
+	fprintf(stderr,"%s\n",msg);
+endcode
 		display " "
 	end if
 end if
@@ -638,7 +642,7 @@ char *qry_strings[255]={
 
 
 
-void set_stdin_width() {
+int set_stdin_width() {
 char buff[256];
 char *ptr;
 int w;

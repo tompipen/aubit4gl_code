@@ -44,18 +44,18 @@ info[ \t\v\f]*indexes[ \t\v\f]*for { count(); return(KW_INFO_IDX); }
 info[ \t\v\f]*access[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*privileges[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
-{L}({L}|{D})*		{ count(); return(IDENTIFIER); }
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
-0{D}+{IS}?		{ count(); return(CONSTANT); }
-{D}+{IS}?		{ count(); return(CONSTANT); }
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); }
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
-L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
+{L}({L}|{D})*		{ count(); return(KW_IDENTIFIER); }
+0[xX]{H}+{IS}?		{ count(); return(KW_CONSTANT); }
+0{D}+{IS}?		{ count(); return(KW_CONSTANT); }
+{D}+{IS}?		{ count(); return(KW_CONSTANT); }
+L?'(\\.|[^\\'])+'	{ count(); return(KW_CONSTANT); }
+{D}+{E}{FS}?		{ count(); return(KW_CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{ count(); return(KW_CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{ count(); return(KW_CONSTANT); }
+L?\"(\\.|[^\\"])*\"	{ count(); return(KW_STRING_LITERAL); }
 [ \t\v\f]		{ count(); return (KW_SPACE); }
-[\n]			{ count(); return (NL);}
-.			{ count(); return (CHAR);}
+[\n]			{ count(); return (KW_NL);}
+.			{ count(); return (KW_CHAR);}
 
 
 %%
