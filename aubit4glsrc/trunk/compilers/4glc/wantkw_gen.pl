@@ -64,11 +64,11 @@ while(<IN>) {
     if ( /^\s*rule\s+\d/i ) { s/rule/123/i }
     # rule lines begin with space or digits
     # - anything else and we stop
-    if ( /^[a-z]/i )
+    if ( /^[_a-z]/i )
      {
 	last;
      }
-    elsif (/^\s*\d+[\s\d]*\s+([a-z]\w+)\s*->\s*\/.*empty.*\//)
+    elsif (/^\s*\d+[\s\d]*\s+([_a-z]\w+)\s*->\s*\/.*empty.*\//)
      {
         $empty{$1} = 1;
      }
@@ -99,11 +99,11 @@ while(<IN>) {
     if ( /^\s*rule\s+\d/i ) { s/rule/123/i }
 
     # rule lines begin with space or digits - anything else and we stop
-    last if /^[a-z]/i;
+    last if /^[_a-z]/i;
 
     # is this a rule does with a left- and right-hand side ?
     if
-    (/^\s*\d+[\s\d]*\s+([a-z]\w+)\s*->\s*(@\d+\s+|\s*)(\w.*)$/)
+    (/^\s*\d+[\s\d]*\s+([_a-z]\w+)\s*->\s*(@\d+\s+|\s*)(\w.*)$/)
     {
         ($left,$right) = ($1, $3);
     }
@@ -139,7 +139,7 @@ while(<IN>) {
     }
 
     # only lower-case words are possible identifiers
-    next unless ( $right =~ /^\s*([a-z]\w+)\s*$/ );
+    next unless ( $right =~ /^\s*([_a-z]\w+)\s*$/ );
 
     # if right-hand side is a known identifier, so is the left
     if ( is_ident($right) )
@@ -230,7 +230,7 @@ while ( <IN> ) {
       next;
   }
   # look for rule like "left-side -> some-stuff  .  identifier other-stuff "
-  elsif ( /^\s*\w+.*->.* \.\s+([a-z]\w+)\b/ )
+  elsif ( /^\s*\w+.*->.* \.\s+([_a-z]\w+)\b/ )
   {
       $rule = $_;
       $rule_has_ident = (exists $ident{$1} );
@@ -239,7 +239,7 @@ while ( <IN> ) {
            push @kw, rule_kwords( $1, 0 );
       }
   }
-  elsif ( $rule && /^\s*([a-z]\w+)\s+.*\bto\s+state\s+\d/ )
+  elsif ( $rule && /^\s*([_a-z]\w+)\s+.*\bto\s+state\s+\d/ )
   {
       # state accepts lower case symbol as next token,
       # check if it is an identifier type
@@ -248,7 +248,7 @@ while ( <IN> ) {
            push @words, $1 unless $rule_has_ident;
       }
   }
-  elsif ( $rule && /^\s*([A-Z]+)\s+.*(shift|reduce)/ )
+  elsif ( $rule && /^\s*([_A-Z]+)\s+.*(shift|reduce)/ )
   {
       # state can accept the named keyword token, save for later
 	push @kw, $1;
@@ -481,11 +481,11 @@ sub rule_kwords {
  # look for any single-word token names on right,
  # recursively descend into other lower-case names
  for $right ( split(/\n/, $rule{$left}) ) {
-     if ( $right =~ /^[A-Z].*[A-Z]$/ )
+     if ( $right =~ /^[_A-Z].*[_A-Z]$/ )
      {
         push @w, $right;
      }
-     elsif ( ($level < 10) && ($right =~ /^[a-z]/) )
+     elsif ( ($level < 10) && ($right =~ /^[_a-z]/) )
      {
         push @w, rule_kwords($right, $level+1);
      }
