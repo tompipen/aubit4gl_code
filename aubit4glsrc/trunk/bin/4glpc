@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.56 2002-03-07 11:55:00 afalout Exp $
+# $Id: 4glpc,v 1.57 2002-03-07 12:23:45 afalout Exp $
 #
 
 ########################################################################
@@ -1313,7 +1313,7 @@ then
     #-L$AUBITDIR/lib -L../../lib
 	#FGLLIBS_SHARED="-laclshared"$ui$ODBCFLAG" -lm -ldl"
 	#FGLLIBS_STATIC="-laclall"$ui$ODBCFLAG" -lm -ldl"
-	FGLLIBS_COMMON="-lm -dl"
+	FGLLIBS_COMMON="-lm -ldl"
 	FGLLIBS_SHARED="-laclshared $FGLLIBS_COMMON"
 	FGLLIBS_STATIC="-laclall $FGLLIBS_COMMON"
 
