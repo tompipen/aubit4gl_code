@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.115 2004-03-09 16:39:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.116 2004-03-15 12:06:00 mikeaubury Exp $
 #
 */
 
@@ -432,9 +432,11 @@
 		#endif
 	#else						/* UNIX */
 		#include <pwd.h>		/* getpwduid() */
+		#ifndef NO_UNIX_HEADERS
 		#include <sys/socket.h>
 		#include <netinet/in.h>
 		#include <netdb.h>
+		#endif
 	#endif
 
   	//#include <ctype.h>    	/* tolower() toupper() */

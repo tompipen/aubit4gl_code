@@ -306,7 +306,7 @@ if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
 else print "#include " HEADER_FILE 
 print ""
 print "static void *libptr=0;"
-print "static int (*func)();"
+#print "static int (*func)();"
 #print "static double (*func_d)();"
 #print "void *A4GL_find_func(void *p,char *s);"
 print "int A4GL" lib "_initlib (void);"
@@ -326,6 +326,7 @@ print "    libptr=0;"
 print "}"
 print ""
 print "int A4GL" lib "_initlib (void) {"
+print "int (*func)(void);"
 print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
 print "   if (libptr==0) {"
 print "      A4GL_exitwith(\"Unable to open " $lib " library...\");"
@@ -436,6 +437,15 @@ if (va_start!="") {print "va_list ap;"}
 if (rtype!="void") {
 	print rtype " rval;"
 }
+printf("static %s (*func_%d)(",rtype,++funccnt)
+for (b=0;b<c;b++) {
+	xxtype=param_type[b]
+	gsub("*"," * ",xxtype)
+	gsub("  "," ",xxtype)
+	if (b) printf(",")
+	printf("%s ",xxtype) 
+}
+print ");"
 
 print "#ifdef DEBUG"
 debug_args=debug_args ")"
@@ -447,15 +457,15 @@ print "#endif"
 print "   if (libptr==0) A4GL" lib "_initlib();"
 if (map[call_fname]) cfname=map[call_fname];
 else cfname=call_fname;
-print "   func=A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
+print "   func_" funccnt "=A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
 if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }
 
 if (rtype=="void")
-	print "   func(" args ");"
+	print "   func_" funccnt "(" args ");"
 else {
-	print "   rval=(" rtype ")func(" args ");"
+	print "   rval=(" rtype ")func_" funccnt " (" args ");"
 	print "#ifdef DEBUG"
 	print ring(rtype)
 	print "#endif"
