@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.12 2002-10-22 06:43:36 afalout Exp $
+# $Id: funcs_d.c,v 1.13 2003-01-02 10:53:00 psterry Exp $
 #
 */
 
@@ -315,9 +315,9 @@ digittoc(int *a,char *z,char *fmt,int dtype,int size)
  * USING 4gl statement implementation.
  *
  * @param str The string where to return the values.
- * @param s
+ * @param s   Max. length of string
  * @param fmt The string that contains the format pattern.
- * @param num The number to be formated.
+ * @param num The (double-float) number to be formated.
  */
 void
 using(char *str,int s,char *fmt,double num)
@@ -337,7 +337,7 @@ int a,b;
 int isprnt=0;
 double ad;
 
-	debug("In using...");
+debug("In using... fmt=%s, num=%lf", fmt, num);
 	for (a=0;a<MAXPNT;a++) {pnt[a]=0;}
 	for (a=0;a<MAXDIG;a++) {dig[a]=0;}
 
@@ -380,12 +380,48 @@ double ad;
 	num+=ad;
 	sprintf(number,"%64.32f",num);
 	number[31]=0;
-	debug("Number=%s",number);
-	debug("Format=%s",fmt);
 	strcpy(str,fmt);
 	b=30;
 	isprnt=1;
 
+    // first, ensure the format string is wide enough to hold the number
+    // if not, try drop trailing decimals, otherwise flag overflow with *'s
+    {
+     int f_cnt = 0;
+     int n_cnt = isneg;
+	 // count format string number place holders, up to decimal point
+	 for (a=0; a < strlen(fmt); a++) {
+        if (fmt[a] == '.') break;
+        if (strchr(rep_digit,fmt[a])) f_cnt++;
+	 }
+	 // count the digits in the integer part of the number
+	 for (a=b; (a > 0 && ptr1[a] > '0'); a--) n_cnt++;
+
+	 if ( f_cnt < n_cnt ) {
+	    debug("overflow, f_cnt=%d,n_cnt=%d", f_cnt, n_cnt);
+	    a = strlen(fmt);
+            if ( n_cnt > a ) {
+               // no way this number can fit, fill with stars ...
+	       if ( a > s ) a = s;
+               memset( str, '*', a);
+	       return;
+	    }
+            else
+            {
+               // use a compact format that at least can display the number
+               if ( isneg ) {
+               memset( fmt, '-', a);
+	       num = 0-num;
+	       }
+	       else {
+               memset( fmt, '#', a);
+	       }
+	        if (n_cnt < a) fmt[n_cnt]='.';
+		debug("trying fmt=%s",fmt);
+		return (using( str, s, fmt, num) );
+	    }
+	 }
+	}
 	for (a=strlen(fm1)-1;a>=0;a--) 
 	{
     if (strchr(rep_digit,fm1[a])) {
@@ -402,6 +438,7 @@ double ad;
                       if (fm1[a]=='+'&&isneg) {str[a]='-';continue;}
                       if (fm1[a]=='+'&&!isneg) {str[a]='+';continue;}
                       if (fm1[a]=='-'&&isneg) {str[a]='-';continue;}
+                      if (fm1[a]=='-'&&!isneg) {str[a]=' ';continue;}
                       if (fm1[a]=='(') {
                             if (isneg) {str[a]='(';continue;}
                             else {str[a]=' ';continue;}
@@ -409,22 +446,17 @@ double ad;
                       if (fm1[a]==')'&&isneg) {str[a]=')';continue;}
                       str[a]=fm1[a];continue;
               }
-              else {str[a]=' ';continue;}
+              else { str[a]=' ';continue;}
               str[a]=fm1[a]; 
           } 
     }
     else 
-	{
-          if (isprnt) {
-              str[a]=fm1[a];
-          }
-          else
-          {
-            if (fm1[a]==',') {str[a]=' ';continue;}
-            str[a]=fm1[a];
-
-          }
-         }
+	 {
+       if (ptr1[b]==' ' && str[a]==',') {
+	       if (fm1[a+1]=='<') { str[a] = '<'; }
+	       else { str[a] = ' '; }
+       }
+      }
 	}
 	b=0;
 
@@ -456,19 +488,25 @@ double ad;
 #else
 	ptr=(char *)rindex(str,'<');
 #endif
+
+	// for any unused leading "<" or "-<" format chars,
+	// shift the output to the left
 	if (ptr) 
 	{
 	   b=0;
 	   for (a=0;a<strlen(str);a++) 
 	   {
-	    if (str[a]=='<') continue;
+	    if (str[a]=='<') {
+		    if (str[a+1]==',') str[a+1]='<'; 
+		    continue;
+            }
+	    if (!isneg && str[a]=='-' && str[a+1]=='<') continue;
 	    buff[b++]=str[a];
 	   }
 	   buff[b]=0;
 	   strcpy(str,buff);
 	}
-	debug("str=%s",str);
+	debug("using: result str=%s",str);
 }
-
 /* ============================== EOF ========================== */
 

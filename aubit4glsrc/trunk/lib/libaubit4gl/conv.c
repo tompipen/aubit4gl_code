@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.16 2002-12-31 02:50:39 psterry Exp $
+# $Id: conv.c,v 1.17 2003-01-02 10:53:00 psterry Exp $
 #
 */
 
@@ -124,6 +124,7 @@ char *str_to_dec 		(char *s, char *w);
 char *init_dec 			(char *s, int len, int d);
 char *mult_dec 			(char *s, char *v);
 char *divide_dec		(char *s, char *w);
+int dec_roundoff		( char *s, int n );
 void dec_to_dec 		(char *f, char *t);
 void dump 				(char *s);
 
@@ -855,18 +856,26 @@ int
 ftodec (void *a, void *z, int size)
 {
   char *eptr;
-  int h;
-  int t;
-  char buff[256];
-  h = size;
-  t = h;
-  h = h / 256;
-  t = t - h * 256;
+  int ndig;
+  int ndec;
+  char buff[64];
+  char fmt[16];
+
+  ndig = size>>8;
+  ndec = size & 0xff;
   errno = 0;
-  debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
-  init_dec (z, h, t);
-  sprintf (buff, "%32.16f", *(double *) a);
-  eptr = str_to_dec (buff, z);
+  init_dec (z, ndig, ndec);
+
+  if (ndec >= 0) {
+     // set format to the number of digits needed, to force round-off
+     sprintf(fmt,"%%-32.%df", ndec);
+  }
+  else {
+     strcpy(fmt,"%-32.16f");
+  }
+  sprintf(buff, fmt, *(double *) a);
+
+  eptr = str_to_dec(buff, z);
 
   if (eptr)
     return 1;
@@ -1125,16 +1134,13 @@ dectos (void *z, void *w, int size)
 {
   char *buff;
   int r;
-  debug ("dectos");
+  debug ("dectos: z = '%s', size=%d", z, size);
+  dump (z);
 
   buff = dec_to_str (z, size);
-  debug ("In dectos gets '%s'", buff);
-  dump (z);
-  r = ctoc (buff, w, size);
-  debug("buff=%s\n",(char *)buff);
-  debug("w=%s\n",(char *)w);
-  debug("size=%d\n",size);
-
+  debug("dec_to_str -> %s\n", buff);
+  r = ctoc(buff, w, size);
+  debug("w = %s\n", buff);
   return r;
 }
 
@@ -1153,9 +1159,12 @@ stof (void *aa, void *zz, int sz_ignore)
 {
   char *a;
   double *z;
+  debug("stof aa = %s, zz = %f", aa, (double *) zz );
   a = (char *) aa;
+  debug("stof(a) %s", a );
   z = (double *) zz;
   sscanf (a, "%lf", z);
+  debug("float  %lf", *z );
   return 1;
 }
 
@@ -2160,7 +2169,6 @@ debug("String_set....");
 
   string_set (b, a, size);
 
-
 #ifdef DEBUG
   {    debug ("Set string");  }
 #endif
@@ -2556,11 +2564,11 @@ dec_math (char *s, char *w, char *r, char op)
 /**
  * Convert a value from double to decimal.
  *
- * @param arg
- * @param buf
- * @param length
- * @param digits
- * @return Nothing important.
+ * @param  arg  the double value
+ * @param  buf  pointer to the decimal
+ * @param  length of decimal
+ * @param  number of decimal digits
+ * @return void
  */
 void
 double_to_dec (double arg, char *buf, size_t length, size_t digits)
@@ -2574,10 +2582,12 @@ double_to_dec (double arg, char *buf, size_t length, size_t digits)
 
 
 /**
- * Copy a decimal value.
+ * Copy a decimal value, converting where necessary if the source
+ * and destination have different lengths and decimal places.
  *
- * @param f The value to be copied.
- * @param t A pointer to the place where to copy the decimal value.
+ * @param f pointer to the value to be copied.
+ * @param t pointer to the place where to copy the decimal value.
+ * @return void
  */
 void
 dec_to_dec (char *f, char *t)
@@ -2585,24 +2595,49 @@ dec_to_dec (char *f, char *t)
   int l, lt;
   int d, ld;
   int x, y, c;
+  char buff[64];
+
+debug("dec_to_dec");
+dump(f);
+dump(t);
+
   trim_dec (f);
+
+dump(f);
 
   l = NUM_DIG (f);
   d = NUM_DEC (f);
 
-  debug("dec_to_dec : l=%d d=%d\n",l,d);
   if (t[0] & 128)
     t[0] = t[0] - 128;
   lt = NUM_DIG (t);
   ld = NUM_DEC (t);
 
-  debug("dec_to_dec : l=%d d=%d\n",lt,ld);
+  if ( ld < d && d > 0 ) {
+  // target has fewer decimal places - do we need to round off ?
+  // we need only do this if the rounding might be upward on the
+  // last decimal digit, ie. check if the next digit is 5 or more
+     c = 0;
+     x = l + OFFSET_DEC(f) - ( d%2==0 ? d/2 : (d+1)/2);
+     if ( ld%2 == 0 ) {
+         if ( (f[x+(ld/2)] & 0xf0) >= 0x50 )  c = 1;
+     }
+     else {
+         if ( (f[x+(ld-1)/2] & 0x0f) >= 0x05 ) c = 1;
+     }
+     debug("rounding = %d",c);
+     if ( c ) {
+        // use a rounded copy of the source decimal
+	printf("copying %d bytes\n", NUM_BYTES(f) );
+        memcpy( buff, f, NUM_BYTES(f) );
+	dec_roundoff( buff, ld );
+	f = buff;
+     }
+  }
 
   x = 0;
   y = 0;
   x = (l * 2 - lt * 2 - d + ld) / 2;
-  debug("x=%d\n",x);
-
 
   if (x < 0)
     {
@@ -2610,14 +2645,11 @@ dec_to_dec (char *f, char *t)
       x = 0;
     }
 
-
   c = lt - x;
   c = lt;
 
-
   if (c > l)
     c = l;
-
 
   if (c < 0)
     {
@@ -2634,9 +2666,10 @@ dec_to_dec (char *f, char *t)
 
   memcpy (&t[y + OFFSET_DEC (t)], &f[x + OFFSET_DEC (f)], c);
 
-
   if (f[0] & 128)
     negate (t);
+
+  dump( t );
 }
 
 /**
@@ -2714,21 +2747,17 @@ debug("Cnt = %d\n",cnt);
   for (a = 0; a < hdcnt; a += 2)
     {
       buff[cnt] = HEX_VAL ((hd[a] - '0') * 10 + (hd[a + 1] - '0'));
-	debug("%d %02x\n",cnt,buff[cnt]&0xff);
 	cnt++;
     }
 
   for (a = 0; a < tlcnt; a += 2)
     {
       buff[cnt] = HEX_VAL ((tl[a] - '0') * 10 + (tl[a + 1] - '0'));
-	debug("%d %d\n",cnt,buff[cnt]&0xff);
 	cnt++;
     }
 
-
   if (w == 0)
     {
-      debug("init_Dec .. %d %d\n",hdcnt+tlcnt,tlcnt);
       w = init_dec (w, (hdcnt + tlcnt), tlcnt);
     }
 
@@ -2864,93 +2893,62 @@ negate (char *s)
 char *
 dec_to_str (char *s, int size)
 {
-  int l;
-  int d;
-  int c;
-  int x;
-  int a;
-  int k;
+  int l,d;
+  int c,x,a,k;
   static char buff[DBL_DIG1];
-  int has_zero = 1;
-debug("dec_to_str...");
-dump(s);
 
-  l = NUM_DIG (s);
-  d = NUM_DEC (s);
+  l = NUM_DIG (s);  // length of decimal in bytes
+  d = NUM_DEC (s);  // number of digits to right of decimal point
+  // calculate starting position (bytes) of decimal point
+  x = l + OFFSET_DEC(s) - ( d%2==0 ? d/2 : (d+1)/2);
 
-  debug ("l=%d d=%d\n", l, d);
+  debug("dec_to_str l=%d d=%d\n", l, d);
+  dump(s);
+
   if (l == 0 && d == 0)
-    {
+   {
       l = size & 256;
       d = size % 256;
-      debug ("**** CHECK THIS - IT LOOKS WRONG l=%d d=%d\n", l, d);
-    }
-  c = 0;
-  x = l * 2 - d;
+      debug ("**** CHECK THIS - IT LOOKS WRONG, l=%d d=%d\n", l, d);
+   }
 
   memset (buff, 0, DBL_DIG1 - 1);
+  c = 0;
 
+  // a negative decimal has first bit set
   if (s[0] & 128)
     {
-      buff[0] = '-';
-      c++;
-      x++;
+      buff[c++] = '-';
     }
 
-  if (c == x)
-    {
-      buff[c++] = '.';
-      has_zero = 0;
-    }
- 
-  //debug("OFFSET_DEC(s)=%d\n",OFFSET_DEC(s));
+  // skip initial 2-byte 'header' and leading zero bytes before dec. point
+  a = OFFSET_DEC(s);
+  while (s[a] == 0 && a < x) { a++; }
 
-  for (a = OFFSET_DEC (s); a <= l + 1; a++)
+  // scan digits (0-9) of number, packed two per byte/char
+  for ( ; a <= l + 1; a++)
     {
-	
+      if ( a == x ) {
+         // insert decimal point, and a leading zero if needed
+	 if (c==0 || buff[c-1]=='-')  buff[c++] = '0';
+         buff[c++] = '.';
+      }
+
+      // extract decimal as a 2-digit number ( 00 - 99 ) 
       k = DEC_VAL (s[a]);
-	debug("k=%d\n",k);
-      buff[c++] = ((int) k / 10) + '0';
-      if (buff[c - 1] != '0' && has_zero == 1)
-	has_zero = 0;
-      if (buff[c - 1] == '0' && has_zero == 1)
-	buff[c - 1] = ' ';
 
-      if (c == x)
-	{
+      // append ascii char for left-hand digit, unless
+      // it's an unecessary leading zero
+      buff[c] = ((int) k / 10) + '0';
+      if ( buff[c]=='0' && (c==0 || buff[0]=='-')) { buff[c] = 0; } else c++;
 
-	  buff[c++] = '.';
+      // similarly for right-hand digit
+      buff[c] = (int) k % 10 + '0';
+      if ( c==0 && buff[c]=='0' ) { buff[c] = 0; } else c++;
 
-	  has_zero = 0;
-
-	}
-
-      buff[c++] = (int) k % 10 + '0';
-
-      if (buff[c - 1] != '0' && has_zero == 1)
-	has_zero = 0;
-      if (buff[c - 1] == '0' && has_zero == 1)
-	buff[c - 1] = ' ';
-
-      if (c == x)
-	{
-
-	  buff[c++] = '.';
-
-	  has_zero = 0;
-
-	}
     }
 
-  if (d == 0)
-    {
-      buff[x] = 0;
-      if (buff[x - 1] == ' ')
-	buff[x - 1] = '0';
-    }
-
-  debug ("has_zero=%d c=%d x=%d", has_zero, c, x);
-debug("Buff: %s\n",buff);
+  debug("returning: %s\n",buff);
   return buff;
 }
 
@@ -3034,6 +3032,7 @@ minus_dec (char *a, char *b)
 char *
 init_dec (char *s, int len, int d)
 {
+	debug("init_dec len=%d,d=%d",len,d);
   if (len%2==1) len++; /* This was missing - odd number decimals wouldn't allocate the right space! */
   if (s == 0)
     {
@@ -3042,6 +3041,7 @@ init_dec (char *s, int len, int d)
   memset (s, 0, len + OFFSET_DEC (s));
   SET_DIG (s, len / 2);
   SET_DEC (s, d);
+  dump(s);
   return s;
 }
 
@@ -3118,6 +3118,59 @@ mult_dec (char *s, char *v)
   SET_DEC (buff2, md);
   return buff2;
 }
+
+/*
+ * Round a decimal number to a given number of decimal places
+ *
+ * @param s  pointer to the decimal to be rounded
+ * @param n  number of decimal places required
+ * @return   1 if rounded ok,  0 if failed (overflow)
+*/
+int
+dec_roundoff( char *s, int n ) {
+ int l,d,i,c,k;
+ char buff[DBL_DIG1];
+
+  l = NUM_DIG (s);  // length of decimal in bytes
+  d = NUM_DEC (s);  // number of decimal places
+ 
+  // we can only round off to fewer decimals than we have
+  if (n >= d) return 0;
+
+  // copy the decimal digits to a char buffer - ignore sign and dec. point
+  memset (buff, 0, DBL_DIG1 - 1);
+  c=0;
+  for ( i = OFFSET_DEC(s); i <= l + 1; i++)
+  {
+      k = DEC_VAL(s[i]);
+      buff[c++] = ((int) k / 10) + '0';
+      buff[c++] = (int) k % 10 + '0';
+  }
+
+  // round off number in the char buffer
+  n = l * 2 - n;
+  while ( n > 0 && buff[n] >= '5' ) {
+      buff[n--] = '0';
+      if ( buff[n] < '9' ) {
+          buff[n] += 1;
+	  break;
+      }
+      buff[n] = '9';
+  }
+
+  // test for an overflow - we cannot round in that case
+  if ( n < 1 && buff[0] == '0' ) return 0;
+
+  // write rounded result back to decimal number
+  i = OFFSET_DEC(s);
+  for ( c = 0; c <= strlen(buff); c += 2 )
+  {
+      s[i++] = HEX_VAL ((buff[c] - '0') * 10 + (buff[c+1] - '0'));
+  }
+
+  return 1;
+}
+
 
 #ifdef TEST
 

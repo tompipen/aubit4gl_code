@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.11 2002-11-23 06:05:35 afalout Exp $
+# $Id: builtin_d.c,v 1.12 2003-01-02 10:53:00 psterry Exp $
 #
 */
 
@@ -226,8 +226,10 @@ void
 push_dec(char *p,int ismoney)
 {
   char *ptr;
-  ptr=(char *)acl_malloc(p[0]+2,"push dec");
-  memcpy(ptr,p,p[0]+2);
+  int plen = (p[0]&127) + 2;
+
+  ptr=(char *)acl_malloc(plen,"push dec");
+  memcpy(ptr, p, plen);
   if (ismoney) {
     push_param(ptr,DTYPE_MONEY+DTYPE_MALLOCED);
   }
@@ -815,4 +817,5 @@ push_variable(void *ptr,int dtype)
 
 
 /* ============================== EOF =============================== */
+
 
