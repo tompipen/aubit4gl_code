@@ -9,7 +9,11 @@
  * away the termcap escape sequences.
  * 
  * Part of the code is in the runner, and the decap is stand alone,
- * and some of the code is in wrappers.c  
+ * and some of the code is in wrappers.c
+ *  
+ * Really all it does is set up the file name and the temporary 
+ * redirection of standard output for the user-prompted redraw.
+ *  
  * 
  *	Code donated by ICANON Associates Incorporated http://www.icanon.com 
  *  by Joe Lewinski <lewinski@icanon.com>
@@ -61,19 +65,37 @@
 	extern	_EFwindow	*topwin, *botwin, *_Wscreen;
 #endif
 	extern	WINDOW	*_efbigwin;
+
+#ifdef OBSOLETE
+	/*
+	That part of the code should be #ifdef'd out.   I would even
+	go as far as removing it, as the external symbols are no
+	longer available in 4Js post 3.10.
+	*/
 	extern	char	*GB;
+#endif
 #endif
 static int fd1, fd3;
 
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 int 
 //fgl_prtscr(int pcnt)
 aclfgl_dump_screen (int pcnt)
 {
 #if C4GL
 	register FILE	*fp;
-#ifdef OBSOLETE
+	#ifdef OBSOLETE
 	register	_EFwindow	*scr;
-#endif	
+	#endif	
 	register	WINDOW	*win;
 	register	CHAR	**line,	*data;
 	register	int y,x;
@@ -114,6 +136,7 @@ aclfgl_dump_screen (int pcnt)
 			/* fputc ('|', fp);*/ 
 			for (x=0, data=*line; x < win->_maxx; x++, data++) {
 				c=(char) *data & _CHARACTER;
+#ifdef OBSOLETE				
 				if ((*data &_GRAPHMODE) && *GB) {
 					if      (c==GB[0]) c='+';
 					else if (c==GB[1]) c='+';
@@ -123,6 +146,7 @@ aclfgl_dump_screen (int pcnt)
 					else if (c==GB[5]) c='|';
 					else c=' ';
 				}
+#endif				
 				fputc (c, fp);
 			}
 			/* fputc ('|', fp);*/ 

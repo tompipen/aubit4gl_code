@@ -12,7 +12,6 @@
 #Get settings
 . ../../etc/aubitrc
 
-
 CURRDIR=$PWD
 
 if [ "$AUBITDIR" = "" ]
@@ -29,22 +28,29 @@ PROJECTC=$AUBITDIR/lib/generated/project.c
 ##########################
 #get current build number:
 ##########################
-build=`cat build`
+build=`cat $CURRDIR/build`
 
 #############################
 #Get current version number:
 ##############################
-version=`cat version`
+version=`cat $CURRDIR/version`
+
+if test "$build" = "" -o "$version" = ""; then 
+	echo "ERROR: cannot read build and/or version number"
+	exit 5
+fi
+
 
 if [ "$1" = "-increase" ]
 then
-	echo "Increasing build number..."
 	#########################
 	#Increase build counter:
 	#########################
 	#build=`expr $build + 1`
-    let build=build+1
-	echo $build > build
+    let newbuild=build+1
+	echo $newbuild > $CURRDIR/build
+	echo "Increased build from $build to $newbuild"
+	let build=newbuild
 fi
 
 
