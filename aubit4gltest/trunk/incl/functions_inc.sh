@@ -84,8 +84,8 @@ fi
 		#Fields:
 		#Field 1 - Feature status for any ANSI 92 compliant database (that has .cnv file)
 		#Field 2 - Feature status for any ANSI 92 compliant database (that does NOT have .cnv file)
-		#Field 3 - Feature status for Informix On-Line (5, 7.x, 9.x) databases
-		#Field 4 - Feature status for Informix SE (All version) databases
+		#Field 3 - Feature status for Informix On-Line (5.x, 7.x, 9.x) databases
+		#Field 4 - Feature status for Informix SE (All versions) databases
 		#Field 5 - Feature status for PG 7.4 with Informix compatibility patch
 		#Field 6 - Feature status for vanilla (not patched) PostgreSQL 7.4 and 8
 		#Field 7 - Feature status for SQLite version xyz
@@ -629,8 +629,8 @@ chech_sql_features () {
 				else                        
 					SKIP_INCOMPAT_SQL_LIST="$SKIP_INCOMPAT_SQL_LIST $TEST_NO"
 				fi
-				SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES="$SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES \
-					($TEST_NO:$INCOMPAT_SQL_LIST)"
+				let SKIP_INCOMPAT_SQL_CNT=SKIP_INCOMPAT_SQL_CNT+1
+				SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES="$SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES ($TEST_NO:$INCOMPAT_SQL_LIST)"
 				SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
 				SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
 			else

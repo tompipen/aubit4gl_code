@@ -1611,7 +1611,7 @@ rm -f $CURR_DIR/$ERROR_LOG
 	PASS_DB_CNT=0
 	PASS_NONDB_CNT=0
 	KILL_CNT=0
-
+	SKIP_INCOMPAT_SQL_CNT=0
 #reset cache files:
 if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1"; then
 	#-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
@@ -2500,7 +2500,7 @@ fi
 		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
 	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
-		#echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST" >> $VERBOSE_RESULTS_LOG
+		echo "Skipped incompatible SQL ($SKIP_INCOMPAT_SQL_CNT): $SKIP_INCOMPAT_SQL_LIST" >> $LOGFILE
 		echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
@@ -2560,9 +2560,9 @@ fi
 			echo "Pass non-db: ($PASS_NONDB_CNT) $PASS_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
 	fi
-	if test "$VERBOSE_RESULTS" = "1"; then
-		echo "Pass db: ($PASS_DB_CNT) Pass non-db: ($PASS_NONDB_CNT)" >> $LOGFILE
-	fi
+	#if test "$VERBOSE_RESULTS" = "1"; then
+		echo "Pass db: ($PASS_DB_CNT) Pass non-db: ($PASS_NONDB_CNT)" >> $VERBOSE_RESULTS_LOG
+	#fi
 	if test "$FAIL_FULL_LIST" = "1"; then	
 		if test "$FAIL_DB_TESTS" != "" ; then 
 			echo "Fail db: ($FAIL_DB_CNT) $FAIL_DB_TESTS" >> $VERBOSE_RESULTS_LOG
@@ -2571,9 +2571,9 @@ fi
 			echo "Fail non-db: ($FAIL_NONDB_CNT) $FAIL_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
 	fi
-	if test "$VERBOSE_RESULTS" = "1"; then
-		echo "Fail db: ($FAIL_DB_CNT) Fail non-db: ($FAIL_NONDB_CNT)" >> $LOGFILE
-	fi
+	#if test "$VERBOSE_RESULTS" = "1"; then
+		echo "Fail db: ($FAIL_DB_CNT) Fail non-db: ($FAIL_NONDB_CNT)" >> $VERBOSE_RESULTS_LOG
+	#fi
 	ALL_FAILED="$FAIL_DB_TESTS $FAIL_NONDB_TESTS"
 	if test "$ALL_FAILED" != " " -a "$SHOW_FAIL_DESC" = "1"; then 
 		echo "------------------------- Failed tests descriptions ---------------------------" >> $VERBOSE_RESULTS_LOG
@@ -2679,17 +2679,18 @@ fi
 		echo "" >> $SQLFEATURES_LOGFILE		
 	fi
 	
-if test "$VERBOSE_RESULTS" = "1"; then	
-	cat $VERBOSE_RESULTS_LOG  >> $LOGFILE
+if test "$VERBOSE_RESULTS" = "1"; then
+	echo ""	 >> $LOGFILE
+	cat "$VERBOSE_RESULTS_LOG"  >> $LOGFILE
+	echo ""	 >> $LOGFILE
 else
 	#if test "$SKIP_OTHER_LIST" != "" ; then 
 	#	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
 	#fi
 	echo ""	 >> $LOGFILE
 	echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
-	echo ""	 >> $LOGFILE
 fi 
-	echo ""	 >> $LOGFILE
+
 	echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
 	echo ""	 >> $LOGFILE
 	
