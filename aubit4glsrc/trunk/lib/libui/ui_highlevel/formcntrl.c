@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.13 2004-05-21 13:34:11 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.12 2004-05-13 12:46:00 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.13 2004-05-21 13:34:11 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -56,6 +56,7 @@ int A4GL_conversion_ok(int);
 
 extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) ;
 
 /*
 static int process_control_stack (struct s_screenio *arr, struct aclfgl_event_list *evt);
@@ -242,7 +243,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (next_field));
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+  if (A4GL_field_is_noentry((sio->mode==MODE_CONSTRUCT), f) 
       || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
     {
       int dir = 0;
@@ -265,7 +266,8 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 	    (struct struct_scr_field
 	     *) (A4GL_LL_get_field_userptr (next_field));
 
-	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+	  if (A4GL_field_is_noentry((sio->mode==MODE_CONSTRUCT), f)
+
 	      || (f->datatype == DTYPE_SERIAL))
 	    {
 	      attrib += dir;
@@ -1647,3 +1649,14 @@ A4GL_get_curr_metric (struct s_form_dets *form)
   A4GL_debug ("NO current metric !");
   return -1;
 }
+
+
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
+        if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) return 1;
+// It would appear that the NOUPDATE allows entry to a field on a 'construct' but not
+// an input...
+        if (doing_construct) return 0;
+        if (A4GL_has_bool_attribute (f, FA_B_NOUPDATE)) return 1;
+        return 0;
+}
+

@@ -5,10 +5,10 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.19 2004-05-19 15:10:03 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.20 2004-05-21 13:34:11 mikeaubury Exp $";
 //#include "generic_ui.h"
 
-
+int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap);
 static void A4GL_move_bar (ACL_Menu * menu, int a);
@@ -1769,7 +1769,7 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, void *f)
 	(struct struct_scr_field
 	 *) (A4GL_LL_get_field_userptr (s->field_list[a]));
 
-      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY)
+      if (! A4GL_field_is_noentry((s->mode==MODE_CONSTRUCT), fprop)
 	  || (fprop->datatype == DTYPE_SERIAL && s->mode != MODE_CONSTRUCT))
 	{
 	  A4GL_debug ("Field is not noentry");
@@ -2755,7 +2755,8 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	}
   A4GL_LL_screen_update ();
     }
-A4GL_debug("DOne display");
+    A4GL_debug("Done Display");
+
 }
 
 

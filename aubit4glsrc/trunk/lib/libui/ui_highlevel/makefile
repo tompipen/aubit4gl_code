@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.21 2004-05-18 16:20:26 mikeaubury Exp $
+# $Id: makefile,v 1.22 2004-05-21 13:34:11 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -56,8 +56,7 @@ GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 #Need to find better sollution for this:
 GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
-CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} \
-					${GTK_LIB_PATH}
+CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH} -I/usr/local/include/ncurses
 
 CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
 GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
@@ -169,10 +168,10 @@ ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 
 width_narrow.o: width.c
-	cc -DNO_WIDEC width.c ${CFLAGS} -c -o width_narrow.o
+	gcc -DNO_WIDEC width.c ${CFLAGS} -c -o width_narrow.o
 
 width_wide.o: width.c
-	cc -DWIDEC width.c ${CFLAGS} -c -o width_wide.o
+	gcc -DWIDEC width.c ${CFLAGS} -c -o width_wide.o
 
 ## ==================================================================
 ##                              Sub-Targets
