@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.29 2004-05-13 12:45:57 mikeaubury Exp $
+# $Id: helper.c,v 1.30 2004-05-18 15:43:47 mikeaubury Exp $
 #
 */
 
@@ -857,7 +857,7 @@ aclfgl_w_rowid_s (int arg)
 int
 aclfgl_fgl_prtscr (int n)
 {
-  return 0;
+  return aclfgl_aclfgl_dump_screen(n);
 }
 
 
