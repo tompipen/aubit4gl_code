@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.53 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.54 2003-06-27 20:04:10 mikeaubury Exp $
 #*/
 
 /**
@@ -893,6 +893,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   A4GL_debug ("scale form %p", f->form);
 
   fl = A4GL_getform_line ();
+  for (a=fl;a<=A4GL_get_curr_height();a++) {
+	A4GL_display_internal (1, a, "", 0, 1);
+  }
   scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline - 1;
   cols = f->fileform->maxcol;
