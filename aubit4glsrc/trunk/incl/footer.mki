@@ -145,6 +145,7 @@ ${PROG.42r}:	${DBASE.sch} ${FILES.42m}
 ${PROG.4ae}:	${FILES.ao}
 #	${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
 	${TARGETCMD}
+	@echo CHANGED: $?
 
 ${PROG.42e}:	${DBASE.sch} ${FILES.42o}
 	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
@@ -161,7 +162,8 @@ debug:
 enddebug:
 	@echo ***DEBUG END***
 
-
+#is this causing everything to recompile when GLOBALS file is changed?
+#No, something else...
 # Object file dependencies
 ${FILES.42m}:	${GLOBALS.4gl}
 ${FILES.42o}:	${GLOBALS.4gl}

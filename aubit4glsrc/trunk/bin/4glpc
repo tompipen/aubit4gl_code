@@ -154,6 +154,61 @@ then
 	exit 6
 fi
 
+######################
+function run_next {
+######################
+#get next parameter from command line, and run specified command on it:
+
+		let nextparam=counter+1
+		#echo $nextparam
+		counter2=0
+		#echo $@
+		#echo $ALLPARAMS
+		for params in $ALLPARAMS #$@
+		do
+		   	let counter2=counter2+1
+			#echo 1 $counter2 2 $nextparam
+           	if test "$counter2" = "$nextparam"
+            then
+                filename=$params
+                #echo "Manifest for filename $filename :"
+                echo "Running: $DO_AND_EXIT $filename"
+                $DO_AND_EXIT $filename
+                exit
+			fi
+        done
+
+        echo "Error: nothing specified after switch"
+        exit 2
+
+}
+
+
+############################
+function testswitchfunc {
+############################
+	ISSWITCH=0
+
+	############
+	for a in $@
+	############
+	do
+	   ##########
+	   case $a in
+	   ##########
+
+	   $TESTSWITCH)     ISSWITCH=1
+	   ;;
+
+	  ####
+	  esac
+	  ####
+	####
+	done
+	####
+
+}
+
 
 ########################
 function showerror {
@@ -180,6 +235,7 @@ function showerror {
 }
 
 
+ALLPARAMS=$@
 
 if [ "$GTKGUI" = "" ]
 then
@@ -247,11 +303,6 @@ fi
 
 COMPCC=""
 
-#This may help while compiling, but compiled programs will not run
-#if it's not in his environmnet. So set your environment!
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:$ODBC_LIB_DIR
-#$AUBITDIR/extlibs
-
 JABBER_LIB_DIR=$AUBITDIR/tools/jabber
 JABBER_LIB_NAME=jabber
 
@@ -311,19 +362,39 @@ fi
 
 
 #restore things from before reading .a4glrc that where in environment:
-
-if [ "$ENV_ODBC_LIB_DIR" != "" ]
+#see if we are called form Aubit compiler makefiles:
+TESTSWITCH=-make-compile
+testswitchfunc
+if test "$ISSWITCH" = "1"
 then
-	ODBC_LIB_DIR=$ENV_ODBC_LIB_DIR
-    echo "Warning: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
+	export MAKE4GLPC="Yes"
 fi
 
-if [ "$ENV_ODBC_LIB_NAME" != "" ]
+#we want to do this ONLY if we are making compiler, but not all calls to
+#4glpc have make-compile flag, so we cannot rely on this:
+#if [ "$MAKE4GLPC" = "Yes" ]
+#MAKINGAUBIT will be exported in root makefile
+if test "$MAKINGAUBIT" = "1"
 then
-	ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
-    echo "Warning: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
-fi
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "NOTE: invoked from Aubit compiler main makefile"
+    fi
+	if [ "$ENV_ODBC_LIB_DIR" != "" ]
+	then
+		ODBC_LIB_DIR=$ENV_ODBC_LIB_DIR
+		ODBC_SHARED="-L$ENV_ODBC_LIB_DIR"
+		ODBC_STATIC="-L$ENV_ODBC_LIB_DIR"
 
+		echo "Warning: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
+	fi
+
+	if [ "$ENV_ODBC_LIB_NAME" != "" ]
+	then
+		ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
+	    echo "Warning: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
+	fi
+fi
 
 LAST=""
 INCLDIR="-I$AUBITDIR/incl"
@@ -335,13 +406,30 @@ else
 	GCC=${GCC:-"gcc -O -g "}
 fi
 
+#This may help while compiling, but compiled programs will not run
+#if it's not in his environmnet. So set your environment!
+#WARNING: this _IS_ needed in case you have several different libraries
+#with same names in the path, like odbc. This will put path to library we
+#are currently compiling for in front, and pick up correct one:
+export LD_LIBRARY_PATH=$ODBC_LIB_DIR:$LD_LIBRARY_PATH:$AUBITDIR/lib:
+#$AUBITDIR/extlibs
+
+counter=0
+
 ############
 for a in $@
 ############
 do
+   let counter=counter+1
    ##########
    case $a in
    ##########
+
+   -manifest)
+        DO_AND_EXIT="ldd"
+        run_next
+   ;;
+
 
    *.a) COMPCC="$COMPCC $a"
    ;;
@@ -441,6 +529,13 @@ do
           fname2="$dirn/$fname"
           fname3="$dirn/$fname.4gl"
 		  fname=$fname2
+
+          #if we not invoked 4gl compile from out od dir where 4gl is,
+          #CC will not be able to find it's .h file:
+		  if [ "$dirn" != "" ] 
+		  then
+			  COMPCC="$COMPCC -I./$dirn"
+          fi
 
           if ! [ -f $fname3 ]
           then
@@ -605,7 +700,7 @@ do
 	                $output Please check file "$fname".err
 	                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
 				fi
-	            #we don't want to wxit with 0 here:
+	            #we don't want to exit with 0 here:
 	            err_code=9
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
@@ -626,20 +721,20 @@ do
    ;;
 
 
-   -gtk) GTKGUI="Yes"
-         export GTKGUI
-	 ui="gui"
-	export ui
+   -gtk) 	export GTKGUI="Yes"
+			export ui="gui"
    ;;
 
-   -pdf) USE_PDF = "yes"
-         export USE_PDF
+   -nogtk) 	export GTKGUI="no"
    ;;
 
 
-   -nogtk) GTKGUI="no"
-        export GTKGUI
+   -pdf) 	export USE_PDF = "yes"
    ;;
+
+   -nopdf) 	export USE_PDF = "no"
+   ;;
+
 
    -verbose) A4GLVERBOSE="yes"
         export A4GLVERBOSE
@@ -656,13 +751,12 @@ do
         export MAP4GL
    ;;
 
-   -maponly) MAP4GL="Y"
-             NOCFILE="Y"
-         export MAP4GL
+   -maponly) 		export MAP4GL="Y"
+             		NOCFILE="Y"
    ;;
 
-   -make-compile) MAKE4GLPC="Yes"
-		export MAKE4GLPC
+   -make-compile) 	export MAKE4GLPC="Yes"
+
    ;;
 
    -nomap) unset MAP4GL
@@ -728,7 +822,7 @@ do
       fi
       COMPCC="$COMPCC $a"
   ;;
-  
+
   ####
   esac
   ####
@@ -759,8 +853,21 @@ fi
 
 if [ "$USE_PDF" = "yes" ]
 then
-	FGLLIBS_SHARED=$FGLLIBS_SHARED " -lpdf"
-	FGLLIBS_STATIC=$FGLLIBS_STATIC " -lpdf"
+	#we don't want to link PDF libs in compiler, if USE_PDF is specified via
+    #a4glrc - each makefile should pass explicit -lpdf as needed
+	if [ "$MAKE4GLPC" != "Yes" ]
+    then
+		if test "$MAKINGAUBIT" = "1"
+		then
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+	        echo "NOTE: invoked from Aubit compiler main makefile"
+		    fi
+        else
+			FGLLIBS_SHARED="$FGLLIBS_SHARED -lpdf"
+			FGLLIBS_STATIC="$FGLLIBS_STATIC -lpdf"
+        fi
+    fi
 fi
 
 if ! [ "$COMSPEC" = "" ]

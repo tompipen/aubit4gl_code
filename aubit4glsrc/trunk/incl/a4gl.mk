@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.5 2001-09-15 01:01:09 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.6 2001-09-20 08:55:16 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -77,9 +77,14 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #	${A4GL_CC} $< -c -o $@
 
 
+#%.o : %.c
+#        $(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+
+%.ao : %.4gl
 #.4gl.ao:
-.4gl.ao:
 	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+#	${A4GL_CC} $^ -c -o ${OBJSTORE}$@
 #	${A4GL_CC} $? -c -o ${OBJSTORE}$@
 
 #	${A4GL_CC} $< -c -o $@

@@ -8,7 +8,8 @@ main
 define t,c char(20)
 define n integer
 
-database stores7
+#database stores7
+database maindb
 
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns
