@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.99 2004-09-22 08:06:13 mikeaubury Exp $
+# $Id: esql.ec,v 1.100 2004-09-24 08:59:18 mikeaubury Exp $
 #
 */
 
@@ -124,6 +124,10 @@ dll_export sqlca_struct a4gl_sqlca;
 #define FETCH__RELATIVE 		5
 #define FETCH__ABSOLUTE 		6
 
+//#define TU_ENCODE(len,s,e) (((len)<<8) | ((s)<<4) | (e))
+//#define TU_DTENCODE(s,e) TU_ENCODE(((e)-(s)+((s)==TU_YEAR?4:2)), s, e)
+//#define TU_IENCODE(len,s,e) TU_ENCODE(((e)-(s)+(len)),s,e)
+//#define TU_FLEN(len) (TU_LEN(len)-(TU_END(len)-TU_START(len)))
 
 /*
 =====================================================================
@@ -148,7 +152,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.99 2004-09-22 08:06:13 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.100 2004-09-24 08:59:18 mikeaubury Exp $";
 #endif
 
 
@@ -934,10 +938,29 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   FglDatetime *fgl_dtime;
   FglInterval *fgl_interval;
   char genData[256];
+int arr_dtime[]={
+        0,0,0,  0,      0,      0,      0,      0,      0,      0,      0,
+  0,    0,      0,      0,      0,      0,      1024,   1538,   2052,   2566,
+  3080, 3594,   3851,   4108,   4365,   4622,   4879,   0,      0,      0,
+  0, 0, 0,
+  546, 1060, 1574, 2088, 2602, 2859, 3116, 3373, 3630, 3887,
+  0, 0, 0, 0, 0, 0, 0,
+  580, 1094, 1608, 2122, 2379, 2636, 2893, 3150, 3407,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  614, 1128, 1642, 1899, 2156, 2413, 2670, 2927,
+  0, 0, 0, 0, 0, 0, 0, 0, 0,
+  648, 1162, 1419, 1676, 1933, 2190, 2447,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  682, 939, 1196, 1453, 1710, 1967
+  };
+
 
   dataType = getIfmxDataType (bind[idx].dtype);
   length = bind[idx].size;	// unfix_length...
   A4GL_debug ("In binding - %d %d ptr=%p", dataType, length, bind[idx].ptr);
+  if (dataType==2) {
+			A4GL_debug("Value = %d\n",*(long *)bind[idx].ptr);
+  }
 
   if (A4GL_isnull (dataType, bind[idx].ptr))
     {
@@ -1022,8 +1045,11 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
       fgl_dtime = (FglDatetime *) bind[idx].ptr;
 
       A4GL_dttoc (fgl_dtime, &genData, 30);
-      A4GL_debug ("DT = '%s'\n", genData);
-      dtime_var.dt_qual = 3594;
+      A4GL_debug ("DT = '%s' dtype=%d size=%d %d\n", genData,bind[idx].dtype,bind[idx].size,
+			TU_DTENCODE(bind[idx].size>>4,bind[idx].size&0x15));
+      dtime_var.dt_qual = arr_dtime[bind[idx].dtype,bind[idx].size];
+//TU_DTENCODE(bind[idx].size>>4,bind[idx].size&0x15);
+//3594;
       if (dtcvasc (genData, &dtime_var))
 	{
       		dtime_var.dt_qual = 1642;
@@ -1170,6 +1196,7 @@ int arr_dtime[]={
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   682, 939, 1196, 1453, 1710, 1967
   };
+
   /*
      fglbyte byte_var;
      fgltext text_var;
@@ -1198,7 +1225,6 @@ int type;
  buff[5]=sqlca.sqlwarn.sqlwarn5;
 
   EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:indicator = INDICATOR,:length = LENGTH,:type=TYPE;
-  //printf("Source datatype : %d\n",type);
   
 
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
@@ -1225,7 +1251,6 @@ int type;
       A4GL_setnull (dataType, bind[idx].ptr, length);	/* Something wrong with this */
       return 0;
     }
-
   A4GL_debug ("MJAMJA datatype : %d", dataType);
   switch (dataType)
     {
@@ -1463,14 +1488,17 @@ processOutputBind (char *descName, int bCount, struct BINDING *bind)
   int bindCount = bCount;
   EXEC SQL end declare section;
   register int i;
-
+  int y;
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
-  for (i = 0; i < bindCount; i++)
-    if (bindOutputValue (descriptorName, i, bind) == 1)
+  for (i = 0; i < bindCount; i++) {
+	A4GL_debug("HHHHHHHHHHHHHHHHHHH");
+        y=bindOutputValue (descriptorName, i, bind);
+	if (y == 1)
       {
 	A4GL_debug ("Failed bind @ %d\n", i);
 	return 1;
       }
+	}
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   return 0;
 }
@@ -1645,12 +1673,9 @@ processPreStatementBinds (struct s_sid *sid)
   if (sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
     {
       A4GL_debug ("a2");
-      if (sid->inputDescriptorName == 0)
-	sid->inputDescriptorName =
-	  getDescriptorName (sid->statementName, 'I');
+      if (sid->inputDescriptorName == 0) sid->inputDescriptorName = getDescriptorName (sid->statementName, 'I');
 
-      if (processInputBind (sid->inputDescriptorName, sid->ni, sid->ibind) ==
-	  1)
+      if (processInputBind (sid->inputDescriptorName, sid->ni, sid->ibind) == 1)
 	{
 	  A4GL_debug ("Fail1 ");
 	  return 1;
@@ -1661,8 +1686,8 @@ processPreStatementBinds (struct s_sid *sid)
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
 
-
       sid->outputDescriptorName = getDescriptorName (sid->statementName, 'O');
+
 
       A4GL_debug ("a3.1 no=%d ", sid->no);
 
@@ -1679,7 +1704,9 @@ processPreStatementBinds (struct s_sid *sid)
       A4GL_debug ("a4");
       descriptorName = sid->outputDescriptorName;
       statementName = sid->statementName;
+
       EXEC SQL DESCRIBE:statementName USING SQL DESCRIPTOR:descriptorName;
+
       A4GL_debug ("a4.1");
     }
   A4GL_debug ("OK3");
@@ -1777,7 +1804,6 @@ if (n) {
 }
 
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
-
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
       A4GL_debug ("calling processOutputBind");
@@ -1946,7 +1972,6 @@ struct s_sid *sid;
       error_just_in_case ();
       return 1;
     }
-   //printf("WARNING flags : %c %c %c %c %c %c -(%s)\n", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
    A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
 
     a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
@@ -2014,7 +2039,6 @@ void *
 A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 			int no, char *s)
 {
-//printf("prepare_select : %d %d (%s)\n",ni,no,s);
   return (prepareSqlStatement (ibind, ni, obind, no, s));
 }
 
@@ -2135,7 +2159,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 
   if (processPreStatementBinds (sid) == 1)
-    return (struct s_cid *) 0;
+	 return (struct s_cid *) 0;
 
   return cursorIdentification;
 }
@@ -2168,7 +2192,6 @@ A4GLSQL_open_cursor (int ni, char *s)
 
   EXEC SQL END DECLARE SECTION;
 
-  A4GL_debug ("Open Cursor");
 
   cursorIdentification = A4GL_find_pointer (s, PRECODE);
 
@@ -2191,8 +2214,7 @@ A4GLSQL_open_cursor (int ni, char *s)
 
   inputDescriptorName = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
-  A4GL_debug ("Descritors : %s %s", inputDescriptorName,
-	      outputDescriptorName);
+  A4GL_debug ("Descritors : %s %s", inputDescriptorName, outputDescriptorName);
 
   processPreStatementBinds (sid);	// MJA 150503
 
@@ -2306,6 +2328,10 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   EXEC SQL END DECLARE SECTION;
   struct s_sid *sid;
   struct s_cid *cid;
+  int was_zero;
+  struct BINDING *bx;
+  void *o1;
+  int o2;
 	      struct BINDING *obind;
 	obind=vobind;
 
@@ -2317,6 +2343,11 @@ A4GLSQL_fetch_cursor (char *cursor_name,
       return 1;
     }
 
+
+   o1=sid->obind;
+   o2=sid->no;
+
+
   if (sid->no!=0) {
 	if (nobind==0) {
 		nobind=sid->no;
@@ -2324,13 +2355,16 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 	}
   }
 
-sid->obind = obind;
-sid->no = nobind;
 
+
+  sid->obind = obind;
+  sid->no = nobind;
 
   /** @todo : Maybe input bind should be cleaned (if exist) */
-  if (processPreStatementBinds (sid) == 1)
+  if (processPreStatementBinds (sid) == 1) {
+   	sid->obind=o1; sid->no=o2;
     return 1;
+  }
   descriptorName = sid->outputDescriptorName;
 
   switch (getFetchType (fetch_mode, fetch_when))
@@ -2357,14 +2391,30 @@ sid->no = nobind;
     EXEC SQL FETCH ABSOLUTE: position: cursorName USING SQL DESCRIPTOR:descriptorName;
       break;
     default:
+   	sid->obind=o1; sid->no=o2;
       A4GL_exitwith ("Invalid fetch");
+	return 1;
     }
-  if (isSqlError ())
+
+
+  if (isSqlError ()) {
+   	sid->obind=o1; sid->no=o2;
     return 1;
-  if (isNotFound ())
+  }
+
+  if (isNotFound ()) {
+   	sid->obind=o1; sid->no=o2;
     return 0;
-  if (processPosStatementBinds (sid) == 1)
-    return 1;
+  }
+
+
+  if (processPosStatementBinds (sid) == 1) {
+   	sid->obind=o1; sid->no=o2;
+    	return 1;
+  }
+
+   	sid->obind=o1;
+   	sid->no=o2;
   return 0;
 }
 
@@ -2400,20 +2450,14 @@ A4GLSQL_put_insert (void *vibind, int n)
   cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
   sid = (struct s_sid *) cid->statement;
 
-	//printf("CID : %d %d\n",cid->ni,cid->no);
-	//printf("SID : %d %d\n",sid->ni,sid->no);
 if (sid) {
-	//printf("Maybe %d %d\n",sid->ni,sid->no);
 
   if (sid->ni!=0) {
         if (n==0) {
-	//printf("FORCE IT..\n");
                 n=sid->ni;
                 ibind=sid->ibind;
         }
   }
-} else {
-	//printf("No sid\n");
 }
 
 
