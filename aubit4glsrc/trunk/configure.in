@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.38 2002-03-01 07:41:42 mikeaubury Exp $
+# $Id: configure.in,v 1.39 2002-03-07 04:03:07 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -255,7 +255,7 @@ COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
 test_rpclib="1"
 GTKBUILD=no
-AUBITGUI=text
+AUBITGUI=TUI
 A4GL_SQLTYPE=nosql
 
 HAVE_IODBC=no
@@ -1325,7 +1325,7 @@ AC_ARG_WITH(gtk,
 		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes; then
 					AC_DEFINE(HAVE_GTK,1,[ ])
 					GTKBUILD=yes
-					AUBITGUI=gtk
+					AUBITGUI=GTK
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
