@@ -62,39 +62,11 @@ constr_extra_commands : constr_extra_command | constr_extra_commands constr_extr
 ;
 
 constr_extra_command :  
-	  BEFFIELD bef_c_field_list  {
-		A4GL_add_event(-97,$<str>2);
-		print_befaft_field_1($<str>2);
-	} 
-	commands {
-		print_befaft_field_2();
-
-	}
-	| AFTFIELD aft_c_field_list {
-		A4GL_add_event(-98,$<str>2);
-		print_befaft_field_1($<str>2);
-	} commands {
-		print_befaft_field_2();
-	}
-	| on_key_command {
-		A4GL_add_onkey_key($<str>1);
-		print_onkey_1($<str>1);
-	} commands {
-		print_onkey_2();
-	}
-	| AFTCONSTRUCT {
-		A4GL_add_event(-95,"");
-		print_befaft_field_1("AFTER_INP");
-	} commands {
-		print_befaft_field_2();
-	}
-	| BEFCONSTRUCT {
-		A4GL_add_event(-99,"");
-		print_befaft_field_1("BEFORE_INP");
-		} 
-	commands {
-		print_befaft_field_2();
-	}
+	  BEFFIELD bef_c_field_list  { A4GL_add_event(-97,$<str>2); print_befaft_field_1($<str>2); } commands { print_befaft_field_2(); }
+	| AFTFIELD aft_c_field_list { A4GL_add_event(-98,$<str>2); print_befaft_field_1($<str>2); } commands { print_befaft_field_2(); }
+	| on_key_command { A4GL_add_onkey_key($<str>1); print_onkey_1($<str>1); } commands { print_onkey_2(); }
+	| AFTCONSTRUCT { A4GL_add_event(-95,""); print_befaft_field_1("AFTER_INP"); } commands { print_befaft_field_2(); }
+	| BEFCONSTRUCT { A4GL_add_event(-99,""); print_befaft_field_1("BEFORE_INP"); } commands { print_befaft_field_2(); }
 ;
 
 
@@ -102,19 +74,19 @@ constr_extra_command :
 
 
 bef_c_field_list :
-	field_name2 {sprintf($<str>$,"BEF_FIELD_CHK(%s)",$<str>1);}
+	field_name2 {sprintf($<str>$,"%s",$<str>1);}
 	| bef_c_field_list COMMA field_name2 {
 	  char buff[80];
-	  sprintf(buff,"BEF_FIELD_CHK(%s)",$<str>3);
+	  sprintf(buff,"%s",$<str>3);
 	  A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
 aft_c_field_list :
-	field_name2 {sprintf($<str>$,"AFT_FIELD_CHK(%s)",$<str>1);}
+	field_name2 {sprintf($<str>$,"%s",$<str>1);}
 	|aft_c_field_list COMMA field_name2 {
 	  char buff[80];
-	  sprintf(buff,"AFT_FIELD_CHK(%s)",$<str>3);
+	  sprintf(buff,"%s",$<str>3);
 	  A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
