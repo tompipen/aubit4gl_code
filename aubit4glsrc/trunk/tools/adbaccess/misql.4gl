@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.8 2003-09-22 14:51:58 mikeaubury Exp $
+# $Id: misql.4gl,v 1.9 2005-02-13 10:26:12 afalout Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -111,7 +111,7 @@ define
    IF arg_val(1) = "-v"
    OR arg_val(1) = "-V"
    THEN
-      CALL message_prompt("$Id: misql.4gl,v 1.8 2003-09-22 14:51:58 mikeaubury Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.9 2005-02-13 10:26:12 afalout Exp $","")
       EXIT PROGRAM
    END IF
 
@@ -1000,8 +1000,8 @@ END FUNCTION
 
 FUNCTION delete_table()
   LET m_text = "delete from ",m_tabname CLIPPED," where rowid = ",m_rowid
-  PREPARE DO FROM m_text
-  EXECUTE DO
+  PREPARE DOIT FROM m_text
+  EXECUTE DOIT
   IF status = 0 THEN
      MESSAGE "Row deleted"
   END IF

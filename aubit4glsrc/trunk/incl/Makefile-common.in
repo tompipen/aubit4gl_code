@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.181 2005-02-11 03:30:12 afalout Exp $
+# $Id: Makefile-common.in,v 1.182 2005-02-13 10:26:12 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -215,6 +215,7 @@ endif
 
 #optionally, override things set in environment:
 ifneq "${ENVOVERRIDE}" "NO"
+	#if ENVOVERRIDE is not set to NO, then...
 	ifneq "${ENV_A4GL_SQLTYPE}" ""
 		A4GL_SQLTYPE=${ENV_A4GL_SQLTYPE}
     endif
@@ -227,8 +228,27 @@ ifneq "${ENVOVERRIDE}" "NO"
 	
 	A4GL_UI=CONSOLE
     export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT A4GL_UI
-
 endif
+
+ifneq "${ENVOVERRIDE}" "YES"
+	#We should ignore A4GL_LEXTYPE while compiling the compiler
+	A4GL_LEXTYPE=C
+	export A4GL_LEXTYPE 
+endif
+
+
+#this is needed when not using LEXTYPE=C, but do we really want to 
+#use any other LEXTYPE when building Aubit?
+#ifeq "${A4GL_LEXTYPE}" "EC"
+#	ifeq "$A4GL_LEXDIALECT" "POSTGRES"
+#		FGLC_OUTPUT_EXT=cpc
+#        NCC="ecpg_wrap"
+#	else
+#		FGLC_OUTPUT_EXT=ec
+#        NCC="esql"
+#    endif
+#endif
+
 
 
 WINDOWS_DRIVE   =@WINDOWS_DRIVE@
@@ -545,19 +565,6 @@ endif
 #Define compilers to use for compiling Aubit compiler generated code
 #NCC=gcc
 FGLC_OUTPUT_EXT=c
-
-#We should ignore A4GL_LEXTYPE while compiling the compiler
-#ifeq "${A4GL_LEXTYPE}" "EC"
-#	ifeq "$A4GL_LEXDIALECT" "POSTGRES"
-#		FGLC_OUTPUT_EXT=cpc
-#        NCC="ecpg_wrap"
-#	else
-#		FGLC_OUTPUT_EXT=ec
-#        NCC="esql"
-#    endif
-#endif
-
-
 
 ########################
 #do not install static libraries on CygWin:

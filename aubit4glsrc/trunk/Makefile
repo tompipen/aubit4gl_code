@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.12 2005-02-11 03:27:22 afalout Exp $
+# $Id: Makefile,v 1.13 2005-02-13 10:26:05 afalout Exp $
 #
 
 ## ==================================================================
@@ -1428,7 +1428,13 @@ show:
 	@echo "RUNTIME_EXE=${RUNTIME_EXE}"
 	@echo "BIN_EXE_NOT_4AE=$(BIN_EXE_NOT_4AE)"
 	@echo "BIN_EXE_4AE=$(BIN_EXE_4AE)"
+	@echo "A4GL_LEXTYPE=${A4GL_LEXTYPE}"
+	@echo "A4GL_LEXTYPE in aubit-config=`aubit-config A4GL_LEXTYPE`"
+	@echo "A4GL_LEXDIALECT=${A4GL_LEXDIALECT}"
+	@echo "A4GL_LEXDIALECT in aubit-config=`aubit-config A4GL_LEXDIALECT`"
 
+
+	
 show.platform: OUT="/tmp/showplatform"
 show.platform: platform.common
 	cat /tmp/showplatform
