@@ -1,0 +1,83 @@
+#!/bin/sh
+#
+# ---------- Script que llama al programa que haga falta
+# -          para compilar cada modulo.
+#
+#
+#
+
+PGRESLIB=/usr/local/pgsql/lib/
+PGRESINC=/usr/include/pgsql/
+HY4GLDIR=/usr/local/hy4gl
+
+LIBRERIAS="-lpq -lm -lpanel -lmenu -lform -lncurses -lcrypt"
+
+LIBDIR=$HY4GLDIR
+INCDIR=$HY4GLDIR
+
+# Parametros que mando al hy4gl.e
+HY4GLPARAM=
+
+# Parametros que mando al compilador de C
+CC=gcc
+CCOPTS=
+FUENTES=
+
+SALIDA=
+HAY_ERRORES="NO"
+
+if [ $# -lt 1 ]
+then
+	echo "hy4gl. (c) 1998 David Prieto."
+    echo 
+    echo "Sintaxis: hy4gl [opciones] <fuente.4gl> [<fuente.4gl>...] "
+	echo "                [<fuente.c>...] [<objeto.o>...] [<libreria.a>...] "
+	echo "                [-l flags] [-o ejecutable]"
+	echo
+	echo "          -V                  Muestra la version de hy4gl"
+	echo "          -c                  Generación de código solamente. "
+	echo "                              No genera ejecutable"
+	echo "          -<otros parametros> Son pasados al compilador de C"
+	echo ""
+	exit 1
+fi
+
+while [ ! -z "$1" ]
+do
+
+	case $1 in 
+		*.4gl )
+		       $HY4GLDIR/hy4gl.e $1
+		       if [ "$?" != "0" ]
+		       then
+			       HAY_ERRORES="SI"
+		       fi
+               FUENTE=`basename $1 .4gl`.c
+		       FUENTES="$FUENTES $FUENTE"
+		       if [ "$SALIDA" = "" ]
+		       then
+			       SALIDA=`basename $1 .4gl`.e
+		       fi
+               echo
+				 ;;
+		*.c ) FUENTES="$FUENTES $1"
+				;;
+
+   	-o )  shift
+         	SALIDA=$1
+            ;;
+            
+		* )	CCOPTS="$CCOPTS $1"
+				;;
+	esac
+   shift
+done
+
+if [ "$HAY_ERRORES" = "NO" ]
+then
+	echo $CC -o $SALIDA $CCOPTS $FUENTES -I $INCDIR -I $PGRESINC \
+		-L $LIBDIR -L $PGRESLIB -l4gl $LIBRERIAS
+	$CC -o $SALIDA $CCOPTS $FUENTES -I $INCDIR -I $PGRESINC \
+		-L $LIBDIR -L $PGRESLIB -l4gl $LIBRERIAS
+fi
+

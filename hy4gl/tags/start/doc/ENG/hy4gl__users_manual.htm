@@ -1,0 +1,1957 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Hy4gl - User's manual</title>
+</head>
+
+<body>
+
+<h2 align="center">Hy4gl User's Manual
+</h2>
+
+<hr>
+
+<p>
+<i>
+Indice:</i>
+</p>
+
+<ul>
+  <li>
+Sintaxis del lenguaje 4GL</li>
+  <li>Comentarios</li>
+  <li>Declaraciones de variables</li>
+  <li>Tipos de datos</li>
+  <li>Declaración de variables</li>
+  <li>Funciones</li>
+  <li>Expresiones</li>
+  <li>Expresiones simples</li>
+  <li>Operadores USING, CLIPPED y [ ]</li>
+  <li>Operador USING</li>
+  <li>Operador CLIPPED</li>
+  <li>Operador [ ]</li>
+  <li>Llamadas a funciones</li>
+  <li>Operadores binarios</li>
+  <li>Operador +</li>
+  <li>Operador -</li>
+  <li>Operadores * y /</li>
+  <li>Operadores de comparación</li>
+  <li>Operadores lógicos</li>
+  <li>Precedencia de operadores</li>
+  <li>Sentencias</li>
+  <li>C Embebido (ampliación a Informix-4GL)</li>
+  <li>Asignación</li>
+  <li>Asignaciones múltiples (ampliación a Informix-4GL)</li>
+  <li>Estructuras condicionales y repetitivas</li>
+  <li>EXIT PROGRAM</li>
+  <li>Llamadas a funciones</li>
+  <li>Condiciones IF... THEN... ELSE... END IF</li>
+  <li>Bucles WHILE</li>
+  <li>Bucles FOR</li>
+  <li>Interfaz de usuario</li>
+  <li>Operaciones con ventanas</li>
+  <li>OPEN WINDOW</li>
+  <li>CURRENT WINDOW</li>
+  <li>MOVE WINDOW</li>
+  <li>CLEAR WINDOW</li>
+  <li>CLOSE WINDOW</li>
+  <li>Presentación en pantalla</li>
+  <li>Introducción de datos simples</li>
+  <li>Menús</li>
+  <li>Formularios de entrada</li>
+  <li>Formato</li>
+  <li>Manejo</li>
+  <li>Acceso a Bases de Datos. Sentencias SQL</li>
+  <li>Transacciones Consultas</li>
+  <li>Inserción de valores</li>
+  <li>Borrado de valores</li>
+  <li>Cursores</li>
+  <li>EXEC_SQL</li>
+  <li>FOREACH</li>
+  <li>BROWSE (ampliación a Informix-4GL)</li>
+  <li>Generador de Listados</li>
+  <li>Formato del listado</li>
+  <li>Sentencias de control de listados</li>
+  <li>Uso del compilador de 4GL</li>
+  <li>Variables de entorno</li>
+</ul>
+
+<p>
+<i>
+Syntax of language 4GL &nbsp;</i>
+</p>
+
+<p>
+Like a program in C, a program in 4GL consist of one or several modules in
+&nbsp;that variables, functions, forms of entrance and listings are defined. The
+structure of each module &nbsp;he will be the following one: &nbsp;
+</p>
+
+<p>
+[ DATABASE &lt; you go &gt; ] &nbsp;<br>
+[ declarations global variables ] &nbsp;<br>
+functions &nbsp;<br>
+[ forms ] &nbsp;<br>
+[ reports ] &nbsp;
+</p>
+
+<p>
+In one of the modules main' must have a called function '. The function main is
+the one that &nbsp;it executes when beginning the program. &nbsp;If the program accedes to a data base, will be necessary to specify the name of
+the same one in &nbsp;the first line of the program, by means of the line ' DATABASE &lt; names &gt; '
+&nbsp;
+</p>
+
+<p>
+Commentaries &nbsp;
+</p>
+
+<p>
+Commentaries within the programs can be included so that their code is easier of
+&nbsp;to include/understand hy4GL allows to introduce the commentaries between keys,
+in the style of Informix-4GL or &nbsp;well between characters / * and * /, in the style of C. the compiler detects the
+nested commentaries and ignores &nbsp;all the code that finds between the marks of beginning and end of commentary.
+&nbsp;<br>
+Ej: &nbsp;
+</p>
+
+<p>
+{ Function: suma_totales; &nbsp;<br>
+fra calculates the total amount of one. } &nbsp;<br>
+function suma_totales() &nbsp;<br>
+use for curls defines j to integer / * j it * / &nbsp;<br>
+/ * no longer I need this variable. &nbsp;<br>
+it defines sum to integer / * to be calculating... * / &nbsp;<br>
+* / &nbsp;<br>
+... &nbsp;<br>
+</p>
+
+<p>
+Declarations of variables: &nbsp;
+</p>
+
+<p>
+Data types: &nbsp;
+</p>
+
+<p>
+The language supports the following basic data types: &nbsp;
+</p>
+
+<p>
+. Integer &nbsp;
+</p>
+
+<p>
+The rank allowed for whole numbers is the one of ' long int' of C. Dependerá on
+&nbsp;platform in which one is working. In Linux, using GCC 2,7, the rank is between
+&nbsp;-2,147,483,647 and 2.147.483.648 &nbsp;
+</p>
+
+<p>
+. Float &nbsp;
+</p>
+
+<p>
+This type allows to use real numbers. It is implemented by means of the data
+type ' doublé of &nbsp;C, reason why the precision will depend on the used compiler of C. &nbsp;
+</p>
+
+<p>
+. Char(x) &nbsp;
+</p>
+
+<p>
+It allows to use chains of characters. There is no limit for the size of the
+chain. To difference &nbsp;of language C, it is not necessary to reserve a character for the mark of put
+aim of chain &nbsp;that it reserves the compiler automatically to it. &nbsp;<br>
+The length of the chain can be omitted. In this case, the variable will have a
+length of 1 &nbsp;character. &nbsp;<br>
+In this data type imprimibles characters will only be able to be stored. It is
+not thought &nbsp;in order to store binary data. &nbsp;
+</p>
+
+<p>
+. Date &nbsp;
+</p>
+
+<p>
+In order to store dates. They allow to dates from 1de January of year 1 (d.C.)
+until good &nbsp;spent year 40,000 (I believe that with this there will be no problems in the
+2000). &nbsp;
+</p>
+
+<p>. Time &nbsp;
+</p>
+
+<p>
+It allows to accurately store hours until thousandth of second. &nbsp;Although the data type allows to store the hour with that precision, thousandth
+of &nbsp;second arithmetical operations are lost when making. &nbsp;
+</p>
+
+<p>
+. Datetime &nbsp;
+</p>
+
+<p>
+It stores to a moment, represented per date and hour. The characteristics
+commented in &nbsp;two previous types are applicable to this one. &nbsp;
+</p>
+
+<p>
+. Interval &nbsp;
+</p>
+
+<p>
+It stores an interval of time, represented by a number of hours, minutes and
+&nbsp;seconds. The difference between two ' datetimes' is an interval. &nbsp;In addition to the basic data types, it is allowed to define registries, formed
+by fields of &nbsp;<br>
+basic types. It is not allowed that a field of a registry is, as well, another
+registry. &nbsp;
+</p>
+
+<p>
+Declaration of variables: &nbsp;
+</p>
+
+<p>
+Like in any programming language, hy4GL allows to define variables in which
+&nbsp;they will store the data with which hy4GL is working is a tipado language: each
+variable is &nbsp;of a determined type, although it will be seen more ahead than the own language
+makes the conversion of &nbsp;types automatically. &nbsp;
+</p>
+
+<p>
+The name of the variables must begin by a letter or a sign of emphasized ' _ ',
+and can &nbsp;to contain any combination of letters, numbers and signs ' _ '. &nbsp;The scope of a variable depends on the part of the module in which it is
+declared. Thus, if one &nbsp;variable is declared within a function, will be visible (it will be possible to
+be acceded to his content) only &nbsp;<br>
+from within of that same function. If the variable is declared outside a
+function, will be visible from &nbsp;any function of this module. It is not possible to use in a module a variable
+that is declared &nbsp;in another different module. &nbsp;
+</p>
+
+<p>
+The syntax of the declaration of variables is the following one: &nbsp;
+</p>
+
+<p>
+IT DEFINES &lt; id&gt;[, &lt; you go &gt;,...] &lt; type &gt; &nbsp;<br>
+Ej: &nbsp;<br>
+it defines i to integer &nbsp;<br>
+it defines Time hour &nbsp;<br>
+it defines today, dates yesterday &nbsp;<br>
+it defines datetime now &nbsp;<br>
+it defines name, last names char(50) &nbsp;<br>
+it defines key to char &nbsp;
+</p>
+
+<p>
+If the application accedes to data bases, is possible to define variable of the
+same type that &nbsp;certain field of a table in the data base. The syntax for it is: &nbsp;
+</p>
+
+<p>
+&gt; &lt; DEFINES you go &gt; &lt; LIKE table. &lt; field &gt; &nbsp;
+</p>
+
+<p>
+For it it is necessary that the name of the data base in the instruction has
+been indicated &nbsp;
+</p>
+
+<p>
+DATABASE &lt; names &gt; &nbsp;<br>
+Ej: &nbsp;<br>
+database accounting &nbsp;<br>
+like defines cuentas.numero account &nbsp;<br>
+like defines amount mayor.importe &nbsp;
+</p>
+
+<p>It is possible to define registries that group several variables in a single
+structure. In order to define &nbsp;registry will be used the following syntax: &nbsp;
+</p>
+
+<p>
+RECORD &lt; DEFINES you go &gt; &nbsp;<br>
+&lt; name &gt; &lt; type &gt; &nbsp;<br>
+... &nbsp;<br>
+END RECORD &nbsp;
+</p>
+
+<p>
+In order to accede to a field of a registry one will specify the name of the
+registry and the one of the field &nbsp;separated by a point. In order to talk about to the complete list of fields of a
+registry, it will be used &nbsp;name of the registry followed of '. * ' &nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+it defines client record &nbsp;<br>
+I cosay to integer &nbsp;<br>
+name char(50) &nbsp;<br>
+last names char(50) &nbsp;<br>
+end record &nbsp;<br>
+let cliente.nombre=&quot;JUAN &quot; &nbsp;<br>
+let cliente.*=busca_cliente(cliente.nombre) &nbsp;
+</p>
+
+<p>A registry with the same structure can be defined that a table of the data base:
+&nbsp;
+</p>
+
+<p>
+RECORD &lt; LIKE DEFINES you go &gt; &lt; table &gt;. * &nbsp;
+</p>
+
+<p>
+Of course, it will be necessary to have indicated the name of the data base by
+means of &nbsp;instruction DATABASE &nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+database accounting &nbsp;<br>
+greater record defines reg like. * &nbsp;<br>
+record defines rcta like accounts. * &nbsp;
+</p>
+
+<p>Functions: &nbsp;
+</p>
+
+<p>
+The functions will be declared with the following syntax: &nbsp;
+</p>
+
+<p>FUNCTION &lt; names &gt; ([ par1 [, par2... ] ]) &nbsp;<br>
+declarations local variables and parameters &nbsp;sentences &nbsp;<br>
+END FUNCTION&nbsp;
+</p>
+
+<p>
+If the function rebice parameters, will be related the names of the formal
+parameters between &nbsp;the parentheses. It is necessary to consider that the parameters will be
+necessary to declare them within &nbsp;function, along with the local variables, if there were them. &nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+function graba_registro(r, donde) &nbsp;<br>
+like defines r record clients. * &nbsp;<br>
+it defines where char(20) &nbsp;<br>
+if donde=&quot;clientes &quot; then &nbsp;<br>
+insert into clients values (r. *) &nbsp;<br>
+else &nbsp;<br>
+insert into suppliers values(r. *) &nbsp;<br>
+end if &nbsp;<br>
+end function &nbsp;
+</p>
+
+<p>
+The function main, is an exception. Their syntax is: &nbsp;
+</p>
+
+<p>MAIN &nbsp;<br>
+declarations local variables &nbsp;<br>
+sentences &nbsp;<br>
+END MAIN &nbsp;
+</p>
+
+<p>The function main is, as it commented previously, the first function that is
+executed when sending &nbsp;the application. The global variable arg_count indicates the number of
+parameters that have been sent to &nbsp;program, and the function arg_val(i) gives back to the parameter number i. Like
+in C, the parameter &nbsp;number zero is the name of the program. &nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+main &nbsp;<br>
+it defines param char(50) &nbsp;<br>
+if arg_count=0 then &nbsp;<br>
+display &quot; Error. I number of parametros erroneo. &quot; &nbsp;<br>
+exit program &nbsp;<br>
+end if &nbsp;<br>
+let param=arg_val(1) &nbsp;<br>
+... &nbsp;<br>
+end main &nbsp;
+</p>
+
+<p>A function can give back to several parameters using the sentence return, whose
+syntax is: &nbsp;
+</p>
+
+<p>RETURN [ &lt; expresion1&gt;[, &lt; expresion2&gt;[.... &lt; expresion_n &gt; ]
+] ] &nbsp;
+</p>
+
+<p>The language supports recursividad without it exists more limits than the taxes
+by the compiler &nbsp;of used C &nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+function factorial(n) &nbsp;<br>
+it defines n to integer &nbsp;<br>
+if n=0 then &nbsp;<br>
+return 1 &nbsp;<br>
+else &nbsp;<br>
+return n*(factorial(n-1)) &nbsp;<br>
+end if &nbsp;<br>
+end function &nbsp;<br>
+</p>
+
+<p>
+Expressions: &nbsp;
+</p>
+
+<p>Simple expressions: &nbsp;
+</p>
+
+<p>
+hy4GL supports the following simple expressions: &nbsp;
+</p>
+
+<p>
+. Variable &nbsp;
+</p>
+
+<p>
+It is enough with indicating the name of the variable. The type of the
+expression will be the same one that the type &nbsp;<br>
+of the variable. The variable must be of a basic type, not allowing itself for
+this type of &nbsp;expressions names of registries. &nbsp;<br>
+Ej: &nbsp;<br>
+it defines to integer &nbsp;<br>
+like defines r record clients. * &nbsp;<br>
+display a &nbsp;<br>
+display r.nombre &nbsp;
+</p>
+
+<p>
+. Number &nbsp;
+</p>
+
+<p>
+Whole or real numbers can be used. In order to indicate decimal the point is
+used '. ' and not &nbsp;they must use separators for the thousands. If the number does not take to the
+point decimal, the expression &nbsp;it will be of whole type, whereas it will be of type float in case of taking it.
+&nbsp;
+</p>
+
+<p>Ej: &nbsp;<br>
+display 4 &nbsp;<br>
+display 4.5 &nbsp;
+</p>
+
+<p>
+. Chain &nbsp;
+</p>
+
+<p>
+The double chains will be expressed in inverted commas &quot; &quot;. The
+expression will be of type chain. &nbsp;<br>
+Ej: &nbsp;
+</p>
+
+<p>
+display &quot; Error. &quot; &nbsp;<br>
+display &quot; is not the client &quot; &nbsp;
+</p>
+
+<p>
+Operators USING, CLIPPED and [ ]: &nbsp;
+</p>
+
+<p>
+Operator Using &nbsp;
+</p>
+
+<p>
+Operator USING turns a numerical expression to the specified format into the
+mask. &nbsp;The syntax is the following one: &nbsp;
+</p>
+
+<p>
+expression USING chewed &nbsp;
+</p>
+
+<p>The mask will consist of a series of characters '-','#',' &amp; ',',' and '. '.
+The mask is applied to &nbsp;numerical expression, giving back a chain in which the characters '-','#' and '
+&amp; ' are replaced &nbsp;by the corresponding digits. The symbol ' # ' is used to fill up with spaces to
+the left; &nbsp;symbol ' - ' stuffed also with spaces, except in the first position in which
+there are not dígtos, &nbsp;that it will be replaced by the sign ' - ' in case that the number is negative.
+The symbol ' &amp; ' is used &nbsp;in order to fill up with zeros the corresponding positions. The signs ', ' are
+used to separate the thousands &nbsp;and '. ' to indicate the position of the point decimal &nbsp;
+</p>
+
+<p>
+Ej: &nbsp;<br>
+0 using &quot;##.###,##&quot; - &gt; &quot;. &quot; &nbsp;<br>
+10,23 using &quot;##.###,##&quot; - &gt; &quot; 10,23 &quot; &nbsp;<br>
+1123,23 using &quot;##.###,##&quot; - &gt; &quot; 1.123,23 &quot; &nbsp;<br>
+-1123,23 using &quot; &amp;&amp;, &amp;&amp;&amp;. &amp;&amp; &quot; - &gt;
+&quot; 01.123,23 &quot; &nbsp;<br>
+-1123,23 using &quot;--,-- &amp;. &amp;&amp; &quot; - &gt; &quot; - 1.123,23
+&quot; &nbsp;
+</p>
+
+<p>
+Operator Clipped &nbsp;
+</p>
+
+<p>
+Operator CLIPPED cuts the final spaces of a chain. The resulting expression is
+one &nbsp;new chain. Their syntax is the following one: &nbsp;
+</p>
+
+<p>
+expression CLIPPED &nbsp;
+</p>
+
+<p>
+Ej: &nbsp;<br>
+let name = &quot; JUAN &quot; &nbsp;<br>
+let apellidos=&quot;PEREZ &quot; &nbsp;<br>
+let nomape=nombre+apellidos / * nomape=&quot;JUAN PEREZ &quot; * / &nbsp;<br>
+let nomape=nombre clipped+apellidos / * nomape=&quot;JUANPEREZ &quot; * / &nbsp;<br>
+let nomape=nombre clipped+ &quot; &quot; +apellidos / * nomape=&quot;JUAN PEREZ
+* / &nbsp;
+</p>
+
+<p>
+Operator [ ] &nbsp;
+</p>
+
+<p>
+The operator [ ] allows to obtain a subchain from an expression. The new
+expression &nbsp;resultant is of type chain. Their syntax is the following one: &nbsp;
+</p>
+
+<p>
+expresion[i, j ] &nbsp;<br>
+expresion[i ] &nbsp;
+</p>
+
+<p>
+Between the hooks the position of beginning and end of the subchain will be
+indicated that is desired &nbsp;to obtain. The end position can be omitted, with which the subchain will be
+taken that begins and &nbsp;í finishes in the position '. &nbsp;
+</p>
+
+<p>
+Ej: &nbsp;<br>
+it defines ccc char(20) &nbsp;<br>
+it defines organization, branch char(4) &nbsp;<br>
+it defines dc1, dc2 to char &nbsp;<br>
+it defines account char(10) &nbsp;<br>
+prompt &quot; Introduces his I number of account (20 digitos) &quot; for ccc
+&nbsp;<br>
+let entidad=ccc[1,4 ] &nbsp;<br>
+<blink>*** TRANSLATION ENDS HERE ***</blink>let sucursal=ccc[5,8]&nbsp;<br>
+let dc1=ccc[9] &nbsp;<br>
+let dc2=ccc[10] &nbsp;<br>
+let cuenta=ccc[11,20] &nbsp;<br>
+</p>
+
+<p>
+Llamadas a funciones &nbsp;<br>
+Los valores devueltos por una función son usados como expresiones. El tipo de
+estas &nbsp;<br>
+expresiones dependerá del tipo de los valores devueltos por la función. &nbsp;<br>
+Ej: &nbsp;<br>
+define hora time &nbsp;<br>
+let hora=time() /* la funcion time() devuelve la hora actual */ &nbsp;<br>
+Operadores binarios &nbsp;<br>
+Los siguientes operadores transforman dos expresiones en una nueva expresión.
+El tipo de la &nbsp;<br>
+expresión resultante dependerá de los tipos de las expresiones originales.
+&nbsp;<br>
+Operador + &nbsp;<br>
+Este operador toma dos expresiones y devuelve una nueva expresión, resultado de
+sumar las &nbsp;<br>
+dos expresiones originales. El significado de sumar depende del tipo de las
+expresiones originales. &nbsp;<br>
+En el siguiente cuadro se detalla el comportamiento de este operador: &nbsp;<br>
++ Char &nbsp;<br>
+&quot;10&quot; &nbsp;<br>
+Integer &nbsp;<br>
+(5) &nbsp;<br>
+Float &nbsp;<br>
+(5.5) &nbsp;<br>
+Date &nbsp;<br>
+(10/12/1998) &nbsp;<br>
+Time &nbsp;<br>
+(10:10:05) &nbsp;<br>
+Datetime &nbsp;<br>
+(10/12/1998 &nbsp;<br>
+10:10:05) &nbsp;<br>
+Interval &nbsp;<br>
+(123:10:20) &nbsp;<br>
+Char &nbsp;<br>
+(&quot;10&quot;) &nbsp;<br>
+Char &nbsp;<br>
+&quot;1010&quot; &nbsp;<br>
+Char &nbsp;<br>
+&quot;105&quot; &nbsp;<br>
+Char &nbsp;<br>
+(105.5&quot; &nbsp;<br>
+Char &nbsp;<br>
+&quot;1010-12-1998&quot; &nbsp;<br>
+Char &nbsp;<br>
+&quot;1010:10:05&quot; &nbsp;<br>
+Char &nbsp;<br>
+&quot;1010-12-1998 &nbsp;<br>
+10:10:05&quot; &nbsp;<br>
+Char &nbsp;<br>
+&quot;10123:10:20&quot; &nbsp;<br>
+Integer &nbsp;<br>
+(5) &nbsp;<br>
+Char &nbsp;<br>
+&quot;510&quot; &nbsp;<br>
+Integer &nbsp;<br>
+10 &nbsp;<br>
+Float &nbsp;<br>
+10.5 &nbsp;<br>
+Date &nbsp;<br>
+15/12/1998 &nbsp;<br>
+Time &nbsp;<br>
+10:10:10 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:10&quot; &nbsp;<br>
+Interval &nbsp;<br>
+123:10:25 &nbsp;<br>
+Float &nbsp;<br>
+(5.5) &nbsp;<br>
+Char &nbsp;<br>
+&quot;5.500010&quot; &nbsp;<br>
+Float &nbsp;<br>
+10.5 &nbsp;<br>
+Float &nbsp;<br>
+11 &nbsp;<br>
+Date &nbsp;<br>
+15/12/1998 &nbsp;<br>
+Time &nbsp;<br>
+10:10:10 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:10&quot; &nbsp;<br>
+Interval &nbsp;<br>
+123:10:25 &nbsp;<br>
+Date &nbsp;<br>
+(10-12- &nbsp;<br>
+1998) &nbsp;<br>
+Char &nbsp;<br>
+&quot;10-12-199810&quot; &nbsp;<br>
+Date &nbsp;<br>
+15-12-1998 &nbsp;<br>
+Date &nbsp;<br>
+15-12-1998 &nbsp;<br>
+No permitido Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:05 &nbsp;<br>
+No permitido No permitido &nbsp;<br>
+Time &nbsp;<br>
+(10:10:05) &nbsp;<br>
+Char &nbsp;<br>
+&quot;10:10:05.00010&quot; &nbsp;<br>
+Time &nbsp;<br>
+10:10:10 &nbsp;<br>
+Time &nbsp;<br>
+10:10:10 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:05 &nbsp;<br>
+No permitido No permitido Time &nbsp;<br>
+13:20:25 &nbsp;<br>
+Datetime &nbsp;<br>
+(10-12-1998 &nbsp;<br>
+10:10:05) &nbsp;<br>
+Char &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:05.00010 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:10 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:10 &nbsp;<br>
+No permitido No permitido No permitido Datetime &nbsp;<br>
+15-12-1998 13:20:25 &nbsp;<br>
+Interval &nbsp;<br>
+(123:10:20) &nbsp;<br>
+Char &nbsp;<br>
+123:10:20.010 &nbsp;<br>
+Interval &nbsp;<br>
+123:10:25 &nbsp;<br>
+Interval &nbsp;<br>
+123:10:25 &nbsp;<br>
+No permitido Time &nbsp;<br>
+13:20:25 &nbsp;<br>
+Datetime &nbsp;<br>
+15-12-1998 &nbsp;<br>
+13:20:25 &nbsp;<br>
+Interval &nbsp;<br>
+246:20:40 &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-10 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Operador - &nbsp;<br>
+Devuelve la expresión resultante de calcular la diferencia entre las dos
+expresiones originales. &nbsp;<br>
+El comportamiento de este operador, así como el tipo de la expresión
+resultante depende de las &nbsp;<br>
+expresiones originales: &nbsp;<br>
+- Char &nbsp;<br>
+&quot;10&quot; &nbsp;<br>
+Integer &nbsp;<br>
+(5) &nbsp;<br>
+Float &nbsp;<br>
+(5.5) &nbsp;<br>
+Date &nbsp;<br>
+(10/12/1998) &nbsp;<br>
+Time &nbsp;<br>
+(10:10:05) &nbsp;<br>
+Datetime &nbsp;<br>
+(10/12/1998 &nbsp;<br>
+10:10:05) &nbsp;<br>
+Interval &nbsp;<br>
+(123:10:20) &nbsp;<br>
+Char &nbsp;<br>
+(&quot;10&quot;) &nbsp;<br>
+No permitido No &nbsp;<br>
+permitido &nbsp;<br>
+No permitido No permitido No permitido No permitido No permitido &nbsp;<br>
+Integer &nbsp;<br>
+(5) &nbsp;<br>
+Integer &nbsp;<br>
+-5 &nbsp;<br>
+Integer &nbsp;<br>
+0 &nbsp;<br>
+Float &nbsp;<br>
+-0.5 &nbsp;<br>
+No permitido No permitido No permitido No permitido &nbsp;<br>
+Float &nbsp;<br>
+(5.5) &nbsp;<br>
+Float &nbsp;<br>
+-4.5 &nbsp;<br>
+Float &nbsp;<br>
+0.5 &nbsp;<br>
+Float &nbsp;<br>
+0 &nbsp;<br>
+No permitido No permitido No permitido No permitido &nbsp;<br>
+Date &nbsp;<br>
+(10-12- &nbsp;<br>
+1998) &nbsp;<br>
+No permitido Date &nbsp;<br>
+5-12-1998 &nbsp;<br>
+Date &nbsp;<br>
+15-12-1998 &nbsp;<br>
+Integer &nbsp;<br>
+0 &nbsp;<br>
+diferencia en dias &nbsp;<br>
+No permitido Integer &nbsp;<br>
+0 &nbsp;<br>
+diferencia en dias &nbsp;<br>
+No permitido &nbsp;<br>
+Time &nbsp;<br>
+(10:10:05) &nbsp;<br>
+No permitido Time &nbsp;<br>
+10:10:00 &nbsp;<br>
+Time &nbsp;<br>
+10:10:10 &nbsp;<br>
+No permitido Time &nbsp;<br>
+00:00:00 &nbsp;<br>
+No permitido Time &nbsp;<br>
+06:59:45 &nbsp;<br>
+Datetime &nbsp;<br>
+(10-12-1998 &nbsp;<br>
+10:10:05) &nbsp;<br>
+No permitido Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:00 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+10:10:00 &nbsp;<br>
+Interval &nbsp;<br>
+10:10:05 &nbsp;<br>
+Datetime &nbsp;<br>
+10-12-1998 &nbsp;<br>
+00:00:00 &nbsp;<br>
+Interval &nbsp;<br>
+00:00:00 &nbsp;<br>
+Datetime &nbsp;<br>
+5-12-1998 06:59:45 &nbsp;<br>
+Interval &nbsp;<br>
+(123:10:20) &nbsp;<br>
+No permitido Interval &nbsp;<br>
+123:10:15 &nbsp;<br>
+Interval &nbsp;<br>
+123:10:15 &nbsp;<br>
+No permitido No permitido No permitido Interval &nbsp;<br>
+00:00:00 &nbsp;<br>
+Operadores * y / &nbsp;<br>
+Estos operadores realizan las operaciones aritméticas de producto y división
+respectivamente. &nbsp;<br>
+Sólo pueden operar entre números, ya sean reales o enteros. La expresión que
+se obtiene es de tipo &nbsp;<br>
+real. &nbsp;<br>
+Si se intenta operar con expresiones que no son de tipo numérico, éstas se
+convierten &nbsp;<br>
+automáticamente a tipo real. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-11 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Operadores de comparación &nbsp;<br>
+Para realizar comparaciones de expresiones se usan los operadores &lt;, &lt;=,
+=, !=, &gt;= y &gt; &nbsp;<br>
+expresion1 &lt; expresion2 &nbsp;<br>
+expresion1 &lt;= expresion2 &nbsp;<br>
+expresion1 = expresion2 &nbsp;<br>
+expresion1 != expresion2 &nbsp;<br>
+expresion1 &gt;= expresion2 &nbsp;<br>
+expresion1 &gt; expresion2 &nbsp;<br>
+Las expresiones numéricas se comparan, como es de esperar, por su valor. Las
+expresiones de &nbsp;<br>
+tipo cadena se comparan según su orden alfabético, teniendo en cuenta que
+todas las mayúsculas &nbsp;<br>
+van delante de las minúsculas. &nbsp;<br>
+Las expresiones de tipo fecha/hora se comparan según su antigüedad. &nbsp;<br>
+De esta manera, se cumple que: &nbsp;<br>
+01-01-1998 &lt; 02-01-1998 &nbsp;<br>
+01-01-1998 10:10:25 &gt; 01-01-1998 10:10:24 &nbsp;<br>
+Estas expresiones devuelve 1 si se cumple la condición, y 0 en caso contrario.
+&nbsp;<br>
+Operadores lógicos &nbsp;<br>
+Las siguientes expresiones realizan las operaciones lógicas comunes: &nbsp;<br>
+! expresion &nbsp;<br>
+expresion AND expresion &nbsp;<br>
+expresion OR expresion &nbsp;<br>
+Estas expresiones devuelven verdadero (1) o falso (0) según se cumpla o no la
+condición. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-12 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Precedencia de operadores &nbsp;<br>
+La precedencia de los operadores en hy4GL es, de mayor a menor, la siguiente:
+&nbsp;<br>
+! &nbsp;<br>
+USING CLIPPED &nbsp;<br>
+[] &nbsp;<br>
+* / &nbsp;<br>
++ - &nbsp;<br>
+&lt; &lt;= = != &gt; &gt;= &nbsp;<br>
+AND &nbsp;<br>
+OR &nbsp;<br>
+Se han colocado en la misma línea aquellos operadores que tienen la misma
+precedencia. Se &nbsp;<br>
+pueden agrupar expresiones entre paréntesis para conseguir que las operaciones
+se realicen en un &nbsp;<br>
+orden determinado &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-13 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Sentencias: &nbsp;<br>
+C Embebido (ampliación a Informix-4GL) &nbsp;<br>
+El lenguaje aporta una gran funcionalidad y permite al programador relizar la
+mayoría de las &nbsp;<br>
+acciones necesarias para el desarrollo de una aplicación de bases de datos. Sin
+embargo, siempre &nbsp;<br>
+hay acciones que no es posible realizar directamente usando las sentencias del
+lenguaje 4GL o que &nbsp;<br>
+por motivos de eficiencia es preferible realizarlas en lenguaje C. &nbsp;<br>
+Para estos casos, hy4GL permite insertar sentencias en C dentro del fuente en
+4GL. La sintaxis &nbsp;<br>
+para ello es la siguiente: &nbsp;<br>
+... &nbsp;<br>
+sentencias 4GL &nbsp;<br>
+.c &nbsp;<br>
+[declaraciones C] &nbsp;<br>
+sentencias C &nbsp;<br>
+c. &nbsp;<br>
+sentencias 4GL &nbsp;<br>
+... &nbsp;<br>
+Dentro del bloque de C se puede acceder a los datos almacenados en las variables
+del programa. &nbsp;<br>
+Véase la guía de implementación para conocer los tipos de datos con los que
+se implementan las &nbsp;<br>
+variables. También se pueden definir variables cuyo ámbito será el del bloque
+de C exclusivamente. &nbsp;<br>
+Ej: &nbsp;<br>
+define usuario char(50) &nbsp;<br>
+define directorio char(255) &nbsp;<br>
+/* leo el nombre de usuario y el directorio actual * &nbsp;<br>
+.c &nbsp;<br>
+strncpy(usuario,getenv(&quot;LOGNAME&quot;),sizeof(usuario)-1); &nbsp;<br>
+getcwd(directorio,sizeof(directorio-1)); &nbsp;<br>
+c. &nbsp;<br>
+if usuario=&quot;root&quot; then &nbsp;<br>
+display &quot;No puede ejecutar el programa como root.&quot; &nbsp;<br>
+exit program &nbsp;<br>
+end if &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-14 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Asignación: &nbsp;<br>
+Para asignar valores a variables se usará la sentencia LET. Su sintaxis es la
+siguiente: &nbsp;<br>
+LET &lt;id&gt; = expresion &nbsp;<br>
+El lenguaje realiza la conversión automática de tipos, por lo que no es
+necesario que la &nbsp;<br>
+expresión sea del mismo tipo que la variable de destino. &nbsp;<br>
+Ej: &nbsp;<br>
+define dt datetime &nbsp;<br>
+define d date &nbsp;<br>
+define i integer &nbsp;<br>
+define c char(40) &nbsp;<br>
+let dt=datetime() /* Asigna a dt la fecha y hora actual */ &nbsp;<br>
+let d=dt /* Asigna a 'd' la fecha actual */ &nbsp;<br>
+/* Asigna a 'c' una cadena con la fecha y hora contenida &nbsp;<br>
+en 'dt' en el formato &quot;dd-mm-aaaa HH:MM:SS.mmm&quot; */ &nbsp;<br>
+let c=dt &nbsp;<br>
+let i=&quot;50&quot;+&quot;20&quot; /* Asigna a 'i' el numero 5020 */ &nbsp;<br>
+Asignaciones múltiples (ampliación a Informix-4GL) &nbsp;<br>
+Se permite realizar varias asignaciones en una misma sentencia LET. La sintaxis
+para ello es la &nbsp;<br>
+siguiente 1 : &nbsp;<br>
+LET &lt;id1&gt;, &lt;id2&gt;,... = expresion1,expresion2,... &nbsp;<br>
+A la variable id1 se le asignará el valor de la expresión expresion1; a la
+variable id2 el &nbsp;<br>
+valor de la expresión expresion2, etc. Habrá que prestar especial atención en
+que el número de &nbsp;<br>
+variables de destino sea igual al número de valores devueltos por las
+expresiones. Especial cuidado &nbsp;<br>
+hay que tener al llamar a funciones, ya que una función puede devolver varios
+valores: &nbsp;<br>
+define sw_encontrado integer &nbsp;<br>
+define nombre,apellidos,direccion char(50) &nbsp;<br>
+LET sw_encontrado, nombre, apellidos = datos_cliente(&quot;0001&quot;) &nbsp;<br>
+Esta construcción puede ser útil para operaciones como intercambio de valores
+entre variables &nbsp;<br>
+1 Nota para los usuarios de Informix-4GL: En Informix-4GL se usa la coma ','
+para concatenar cadenas. Una &nbsp;<br>
+consecuencia directa de esto es que no se puedan concatenar cadenas al enviar
+parámetros a funciones, debiendo &nbsp;<br>
+asignar primero las cadenas a una variable y después enviar dicha variable a la
+función. Para evitar estos &nbsp;<br>
+problemas, hy4GL usa el operador '+' para concaternar cadenas. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-15 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+(swap), para lo cual no es necesario una variable temporal: &nbsp;<br>
+LET a,b=b,a &nbsp;<br>
+Al igual que en cualquier situación en la que se puede expresar una lista de
+variables, es posible &nbsp;<br>
+asignar valores a todos los campos de un registro de la siguiente manera: &nbsp;<br>
+LET &lt;id&gt;.* = expresion1,expresion2,... &nbsp;<br>
+Ej: &nbsp;<br>
+LET cliente.*=&quot;JUAN&quot;,&quot;PEREZ&quot;,&quot;C/ RABIDA,
+10&quot;,21003,&quot;HUELVA&quot; &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-16 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Estructuras condicionales y repetitivas: &nbsp;<br>
+hy4GL ofrece las siguientes construcciones para variar el flujo del programa:
+&nbsp;<br>
+EXIT PROGRAM &nbsp;<br>
+Esta sentencia provoca el final inmediato del programa. Se desconecta de la base
+de datos (si &nbsp;<br>
+estuviera conectado) y el terminal vuelve a su estado normal. No se borra la
+pantalla. &nbsp;<br>
+Ej: &nbsp;<br>
+define usuario like usuarios.nombre &nbsp;<br>
+prompt &quot;Usuario: &quot; for usuario &nbsp;<br>
+select * into usuario from usuarios where nombre=usuario &nbsp;<br>
+if status=notfound then &nbsp;<br>
+display &quot;Acceso denegado\n&quot; &nbsp;<br>
+exit program &nbsp;<br>
+end if &nbsp;<br>
+Llamadas a funciones &nbsp;<br>
+Se puede realizar una llamada a una función mediante la sentencia CALL. La
+sintaxis de esta &nbsp;<br>
+sentencia es la siguiente: &nbsp;<br>
+CALL funcion(expr1,expr2,...) [ RETURNING var1,var2,...] &nbsp;<br>
+En caso de que la función devuelva uno o más valores, se usará la cláusula
+RETURNING para &nbsp;<br>
+asignar estos valores a variables. &nbsp;<br>
+Ej: &nbsp;<br>
+define cliente record like clientes.* &nbsp;<br>
+prompt &quot;Codigo del cliente: &quot; for cliente.numero &nbsp;<br>
+call busca_cliente(cliente.numero) returning cliente.* &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-17 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Condiciones IF... THEN... ELSE... END IF &nbsp;<br>
+Esta estructura permite la ejecución de una serie de sentencias sólo en caso
+de que se cumpla &nbsp;<br>
+una condición. De manera opcional se puede indicar también un conjunto de
+sentencias que se &nbsp;<br>
+ejecutarán si la condición no se cumple. &nbsp;<br>
+La sintaxis es la siguiente: &nbsp;<br>
+IF &lt;condicion&gt; THEN &nbsp;<br>
+sentencias1 &nbsp;<br>
+[ELSE &nbsp;<br>
+sentencias2] &nbsp;<br>
+END IF &nbsp;<br>
+En primer lugar se evaluará la condición. En caso de que ésta se cumpla, se
+ejecutará el grupo &nbsp;<br>
+de sentencias sentencias1. Si la condición no se cumple, se ejecutará el grupo
+de sentencias &nbsp;<br>
+sentencias2. &nbsp;<br>
+Ej: &nbsp;<br>
+if dow(today())=&quot;Domingo&quot; then &nbsp;<br>
+display &quot;Cerrado.&quot; &nbsp;<br>
+exit program &nbsp;<br>
+else &nbsp;<br>
+call menu_ppal() &nbsp;<br>
+end if &nbsp;<br>
+Bucles WHILE &nbsp;<br>
+Esta construcción permite ejecutar un conjunto de sentencias mientras se cumpla
+una condición. &nbsp;<br>
+La condición se evaluará antes de entrar en el bucle, por lo que si ésta no
+se cumple, es posible que &nbsp;<br>
+no se entre nunca en el bucle. &nbsp;<br>
+La sintaxis es la siguiente: &nbsp;<br>
+WHILE &lt;condicion&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+CONTINUE WHILE &nbsp;<br>
+EXIT WHILE &nbsp;<br>
+... &nbsp;<br>
+END WHILE &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-18 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Dentro del bucle se pueden usar las sentencias CONTINUE WHILE y EXIT WHILE. La
+&nbsp;<br>
+primera salta hasta el principio del bucle, ignorando las sentencias que se
+encuentran después de &nbsp;<br>
+ésta. EXIT WHILE sale del bucle directamente. &nbsp;<br>
+Ej: &nbsp;<br>
+define i,total,parcial integer &nbsp;<br>
+let i=0 &nbsp;<br>
+let total=0 &nbsp;<br>
+/* Facturas que suman nuestro primer millon */ &nbsp;<br>
+while total &lt;1000000 &nbsp;<br>
+let i=i+1 &nbsp;<br>
+/* la factura numero 3 no la sumo... */ &nbsp;<br>
+if i=3 then &nbsp;<br>
+continue while &nbsp;<br>
+end if &nbsp;<br>
+select importe into parcial from facturas where numero=i &nbsp;<br>
+if status=notfound then &nbsp;<br>
+display &quot;Error... no se encuentra la factura nº&quot;,i &nbsp;<br>
+let total=0 &nbsp;<br>
+exit while &nbsp;<br>
+end if &nbsp;<br>
+display &quot;Fra: &quot;,i,&quot; Importe: &quot;,parcial using
+&quot;###,###,## &amp;&quot; &nbsp;<br>
+let total=total+parcial &nbsp;<br>
+end while &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-19 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Bucles FOR &nbsp;<br>
+Los bucles FOR son usados para ejecutar un conjunto de sentencias variando el
+valor de una &nbsp;<br>
+variable desde un valor inicial hasta un valor final. &nbsp;<br>
+La variable que se use para ir variando su valor debe ser de tipo numérico o de
+tipo fecha. En la &nbsp;<br>
+primera iteración su valor será el de la expresión1, y se irá incrementando
+en una unidad hasta &nbsp;<br>
+alcanzar el valor de la expresión2. &nbsp;<br>
+FOR &lt;variable&gt; = &lt;expresion1&gt; TO &lt;expresion2&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+CONTINUE FOR &nbsp;<br>
+EXIT FOR &nbsp;<br>
+... &nbsp;<br>
+END FOR &nbsp;<br>
+Al igual que en los bucles WHILE, se pueden usar las sentencias CONTINUE FOR y
+&nbsp;<br>
+EXIT FOR para forzar una nueva iteración o para salir inmediatamente del bucle.
+&nbsp;<br>
+Ej: &nbsp;<br>
+{Mostramos todos los dias laborables de este mes &nbsp;<br>
+a partir de hoy} &nbsp;<br>
+define m integer &nbsp;<br>
+define d date &nbsp;<br>
+let mes=month(today()) &nbsp;<br>
+for d=today() to today()+31 &nbsp;<br>
+if month(d)!=mes then &nbsp;<br>
+exit for &nbsp;<br>
+end if &nbsp;<br>
+if dow(d)=&quot;Domingo&quot; or dow(d)=&quot;Sabado&quot; then &nbsp;<br>
+continue for &nbsp;<br>
+end if &nbsp;<br>
+display d &nbsp;<br>
+end for &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-20 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Interfaz de usuario &nbsp;<br>
+Operaciones con ventanas. &nbsp;<br>
+La información que aparece en pantalla se muestra dentro de ventanas. Todo
+programa en &nbsp;<br>
+hy4GL usa, al menos, una ventana que se crea automáticamente al iniciar el
+programa y que ocupa &nbsp;<br>
+toda la pantalla. &nbsp;<br>
+OPEN WINDOW &nbsp;<br>
+Se pueden definir ventanas de cualquier tamaño y en cualquier posición,
+siempre que quepan &nbsp;<br>
+dentro de los límites de la pantalla. Si se intenta crear una ventana de mayor
+tamaño que la pantalla, &nbsp;<br>
+ésta será reducida hasta caber en pantalla. La sentencia para crear una nueva
+ventana es OPEN &nbsp;<br>
+WINDOW, cuya sintaxis es la siguiente 2 : &nbsp;<br>
+OPEN WINDOW &lt;nombre&gt; AT &lt;y&gt;, &lt;x&gt; WITH &lt;h&gt; ROWS,
+&lt;w&gt; COLUMNS &nbsp;<br>
+[ATTRIBUTE ( &lt;color&gt; [OVER &lt;color&gt;][,BRIGHT][,BORDER] )] &nbsp;<br>
+[TITLE expresion] &nbsp;<br>
+Ej: &nbsp;<br>
+open window w1 at 1,1 with 10 rows,78 columns &nbsp;<br>
+attribute(white over red,bright,border) &nbsp;<br>
+title &quot;Tareas para el dia &quot;+today() &nbsp;<br>
+display &quot;Esta ventana se cerrará en 1 segundo&quot; &nbsp;<br>
+delay 1 &nbsp;<br>
+close window w1 &nbsp;<br>
+Si se indica un atributo de color, la ventana se muestra con ese atributo, y
+todo lo que se escriba &nbsp;<br>
+dentro de ella tendrá ese mismo atributo si no se indica lo contrario. Si entre
+los atributos se incluye &nbsp;<br>
+la opción 'BORDER', la ventana se muestra con un borde que la rodea. El borde
+se dibuja en las &nbsp;<br>
+coordenadas indicadas, y la parte útil de la ventana queda reducida en dos líneas
+y dos columnas, &nbsp;<br>
+que son las que ocupa el borde 3 . &nbsp;<br>
+Una vez que se abre una nueva ventana, ésta pasa a ser la ventana activa.Todo
+lo que se muestre &nbsp;<br>
+en pantalla a partir de ese instante aparecerá en esta ventana. &nbsp;<br>
+Las ventanas sólo pueden ser referenciadas desde la función en la que se han
+creado. No se &nbsp;<br>
+puede cerrar ni realizar ninguna operación sobre una ventana desde una función
+distinta, excepto &nbsp;<br>
+escribir en ella. &nbsp;<br>
+Las ventanas son apilables: se puede definir una ventana encima de otra sin que
+se pierda el &nbsp;<br>
+contenido de la ventana que queda oculta. &nbsp;<br>
+2 La opción TITLE es una ampliación a la sintaxis de Informix-4GL. &nbsp;<br>
+3 Informix-4GL muestra un borde 'exterior' a la ventana. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-21 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+CURRENT WINDOW &nbsp;<br>
+Para cambiar la ventana activa se usa la sentencia CURRENT WINDOW, cuya
+sentencia es: &nbsp;<br>
+CURRENT WINDOW &lt;nombre&gt; &nbsp;<br>
+Sólo es posible activar una ventana desde la función en la que ésta se ha
+definido. Una vez &nbsp;<br>
+activada una ventana, todo lo que se muestre en pantalla aparecerá en ella.
+&nbsp;<br>
+Ej: &nbsp;<br>
+if status=notfound then &nbsp;<br>
+current window wmensajes &nbsp;<br>
+prompt &quot;No se encuentra el registro.&quot; for char tecla &nbsp;<br>
+current window wproceso &nbsp;<br>
+end if &nbsp;<br>
+La ventana pasa a estar en lo más alto de la pila de ventanas. Si la ventana
+estaba ocultada total &nbsp;<br>
+o parcialmente por otra ventana, ahora será visible totalmente. &nbsp;<br>
+MOVE WINDOW &nbsp;<br>
+En ocasiones es necesario mover una ventana para poder abrir otra sin ocultar la
+anterior. La &nbsp;<br>
+sintaxis de la sentencia para mover una ventana es: &nbsp;<br>
+MOVE WINDOW &lt;nombre&gt; TO &lt;y&gt;, &lt;x&gt; &nbsp;<br>
+La ventana debe haberse creado en la misma función desde la que se mueve. Esta
+sentencia no &nbsp;<br>
+cambia el estado de la ventana en cuanto a si está o no activa, o su posición
+en la pila de ventanas. &nbsp;<br>
+CLEAR WINDOW &nbsp;<br>
+Esta sentencia borra el contenido de la ventana activa. &nbsp;<br>
+CLOSE WINDOW &nbsp;<br>
+Para cerrar una ventana se usa la sentencia CLOSE WINDOW. La ventana debe haber
+sido &nbsp;<br>
+creada desde la misma función en la que se cierra. Si ésta era la ventana
+activa, la nueva ventana &nbsp;<br>
+activa pasa a ser la que estuviera inmediatamente debajo de ésta en la pila de
+ventanas (la última &nbsp;<br>
+que estaba activa antes que ésta). &nbsp;<br>
+CLOSE WINDOW &lt;nombre&gt; &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-22 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Presentación en pantalla &nbsp;<br>
+Para mostrar datos en pantalla se usa la sentencia DISPLAY, cuya sintaxis es la
+siguiente: &nbsp;<br>
+DISPLAY expresion [,expresion...] [AT y,x] &nbsp;<br>
+[ATTRIBUTE ( color [over color] [,bright] )] &nbsp;<br>
+[,expresion ... AT ... ATTRIBUTE...] &nbsp;<br>
+Las expresiones son presentadas siempre en la ventana activa. Si no se incluye
+la cláusula &nbsp;<br>
+AT,las expresiones son mostradas en la posición actual del cursor. Los
+atributos de color con los que &nbsp;<br>
+aparecerán las expresiones son los de la ventana activa por defecto, o los
+indicados en la cláusula &nbsp;<br>
+ATTRIBUTE. &nbsp;<br>
+El cursor se mueve a la posición del último carácter después de ejecutar la
+sentencia DISPLAY. &nbsp;<br>
+Si no se ha indicado la cláusula AT, se imprimirá un retorno de carro después
+de mostrar todas las &nbsp;<br>
+expresiones. Si se ha llegado a la última línea de la ventana activa, todo el
+contenido de la misma &nbsp;<br>
+subirá una línea. &nbsp;<br>
+Ej: &nbsp;<br>
+display &quot;Nombre: &quot;,cliente.nombre at 1,1 &nbsp;<br>
+attribute (cyan over blue, bright), &nbsp;<br>
+&quot;Dirección: &quot;,cliente.direccion at 2,1 &nbsp;<br>
+attribute(cyan over blue) &nbsp;<br>
+Introducción de datos simples 4 &nbsp;<br>
+La instrucción PROMPT permite obterner el valor de una variable a través del
+teclado. El &nbsp;<br>
+programa presentará en pantalla una expresión opcional, su ejecución se
+dentendrá hasta que se &nbsp;<br>
+introduzca una cadena y se pulse la tecla Intro. La cadena es convertida al tipo
+de dato de la variable &nbsp;<br>
+de destino. &nbsp;<br>
+Si se especifica la opción CHAR, el valor de la primera tecla pulsada es
+asignado a la variable &nbsp;<br>
+de destino, sin que se espere a la pulsación de la tecla Intro. &nbsp;<br>
+4 Véase también la sección 'Formularios de Entrada'. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-23 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+La sintaxis de la sentencia PROMPT es la siguiente: &nbsp;<br>
+PROMPT [expresion] FOR [CHAR] &lt;variable&gt; &nbsp;<br>
+Ej: &nbsp;<br>
+define tecla char &nbsp;<br>
+define i,j integer &nbsp;<br>
+prompt &quot;Introduce un numero: &quot; for i &nbsp;<br>
+display &quot;Introduce otro numero: &quot; &nbsp;<br>
+prompt for j &nbsp;<br>
+prompt &quot;Pulse una tecla para continuar...&quot; for char tecla &nbsp;<br>
+Menús: &nbsp;<br>
+hy4GL ofrece la sentencia MENU para la definición de menús de opciones. Un menú
+consiste en &nbsp;<br>
+una serie de opciones, cada una de las cuales tiene asociada un conjunto de
+sentencias que se &nbsp;<br>
+ejecutarán en caso de ser seleccionadas. Además, es posible indicar un grupo
+de acciones que se &nbsp;<br>
+ejecutarán al pulsar una tecla determinada. &nbsp;<br>
+La sintaxis para la definición de menús es la siguiente: &nbsp;<br>
+MENU [HORIZONTAL|VERTICAL] &nbsp;<br>
+[ATTRIBUTE (color [OVER color]) [ ; (color [OVER color])]] &nbsp;<br>
+COMMAND &lt;expresion&gt; [, &lt;expresion&gt;] &nbsp;<br>
+sentencias &nbsp;<br>
+ON KEY ( &lt;id&gt;) &nbsp;<br>
+sentencias &nbsp;<br>
+... &nbsp;<br>
+EXIT MENU &nbsp;<br>
+... &nbsp;<br>
+END MENU &nbsp;<br>
+Las distintas opciones se relacionarán en las cláusulas COMMAND. La primera
+expresión que &nbsp;<br>
+sigue a la cláusula es la cadena que se mostrará en pantalla. La segunda
+expresión es opcional e &nbsp;<br>
+indica un texto de ayuda asociado a la opción. Este texto aparecerá en
+pantalla cuando el cursor se &nbsp;<br>
+sitúe sobre la opción. Una vez que el usuario pulse la tecla Intro, se
+ejecutarán las sentencias &nbsp;<br>
+relacionadas tras la cláusula COMMAND correspondiente a la opción
+seleccionada. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-24 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Las opciones aparecerán en pantalla en la primera línea de la ventana activa
+(las que quepan), a &nbsp;<br>
+no ser que se indique la opción VERTICAL, en cuyo caso aparecerán una sobre
+otra. La opción &nbsp;<br>
+activa aparece marcada por un signo '-', y se muestra con los colores
+invertidos. Es posible cambiar &nbsp;<br>
+los colores por defecto tanto de todas las opciones como de la opción
+seleccionada mediante la &nbsp;<br>
+cláusula ATTRIBUTE. El color de las opciones se indica en primer lugar y,
+opcionalmente y &nbsp;<br>
+separado del anterior por un punto y coma ';', se indicará el atributo de color
+de la opción activa. &nbsp;<br>
+Las teclas de movimiento del cursor permiten seleccionar la opción. En caso de
+que haya más &nbsp;<br>
+opciones de las que caben en pantalla, el movimiento del cursor provocará que
+éstas vayan &nbsp;<br>
+apareciendo. La tecla 'Intro' selecciona una opción y provoca que se ejecuten
+las sentencias &nbsp;<br>
+asociadas a la misma. Una vez ejecutadas todas las sentencias, el menú sigue
+activo y es posible &nbsp;<br>
+seleccionar una nueva opción. &nbsp;<br>
+La cláusula ON KEY permite indicar un conjunto de acciones que se ejecutarán
+al presionar una &nbsp;<br>
+tecla determinada. &nbsp;<br>
+La sentencia EXIT MENU provoca la salida del menú. &nbsp;<br>
+Ej: &nbsp;<br>
+open window w_menu at 1,1 with 5 rows,78 columns &nbsp;<br>
+attribute(yellow over blue, bright,border) &nbsp;<br>
+menu &nbsp;<br>
+command &quot;Articulos&quot;,&quot;Gestion de almacen&quot; &nbsp;<br>
+call gest_almacen() &nbsp;<br>
+command &quot;Clientes&quot;,&quot;Gestion de clientes&quot; &nbsp;<br>
+call gest_clientes() &nbsp;<br>
+command &quot;Proveedores&quot;,&quot;Gestion de proveedores&quot; &nbsp;<br>
+call gest_prov &nbsp;<br>
+command &quot;Salir&quot;,&quot;Fin de la aplicacion&quot; &nbsp;<br>
+exit menu &nbsp;<br>
+on key(F1) &nbsp;<br>
+open window w_ayuda at 5,5 with 10 rows,50 columns &nbsp;<br>
+attribute(white over red) &nbsp;<br>
+call ayuda() &nbsp;<br>
+close window w_ayuda &nbsp;<br>
+on key(F8) &nbsp;<br>
+exit menu &nbsp;<br>
+end menu &nbsp;<br>
+close window w_menu &nbsp;<br>
+exit program &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-25 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Formularios de entrada: &nbsp;<br>
+Se vio anteriormente la sentencia PROMPT, que permite introducir información
+por teclado. &nbsp;<br>
+En esta sección se verá el uso de formularios de entrada de datos. Estos
+formularios permiten la &nbsp;<br>
+introducción y visualización de información de una manera más compleja que
+la ofrecida por la &nbsp;<br>
+sentencia PROMPT. &nbsp;<br>
+Los formularios de entrada permiten al usuario editar el valor de varias
+variables al mismo &nbsp;<br>
+tiempo, desplazándose con el cursor entre distintos campos. &nbsp;<br>
+Un formulario está compuesto por uno o más campos de edición, botones y
+casillas de &nbsp;<br>
+verificación. Los campos de edición aparecen en pantalla como regiones
+rectangulares en las que se &nbsp;<br>
+puede introducir un texto. Las casillas de verificación son cuadros de edición
+que sólo admiten los &nbsp;<br>
+valores 'X' o ' ' (activado/desactivado). Los botones permiten ejecutar acciones
+al ser pulsados. &nbsp;<br>
+Formato &nbsp;<br>
+El formato del formulario se define fuera de las funciones y siguiendo la
+siguiente sintaxis: &nbsp;<br>
+FORM &lt;nombre&gt; &nbsp;<br>
+INPUT &lt;nombre&gt; FROM y,x TO y2,x2 &nbsp;<br>
+[ATTRIBUTE ( color [over color] [,bright] )] &nbsp;<br>
+BUTTON &lt;nombre&gt; AT y,x &nbsp;<br>
+[ATTRIBUTE ( color [over color] [,bright] )] &nbsp;<br>
+CHECK &lt;nombre&gt; AT y,x &nbsp;<br>
+[ATTRIBUTE ( color [over color] [,bright] )] &nbsp;<br>
+END FORM &nbsp;<br>
+El formulario debe tener un nombre, con el que es accedido desde el programa.
+Los objetos que &nbsp;<br>
+lo componen se identifican también mediante un nombre. &nbsp;<br>
+Al definir el formulario se pueden indicar los atributos de color que deben
+tener los objetos. Si &nbsp;<br>
+no se indica nada, tendrán los mismos que la ventana sobre la que se muestre el
+formulario. &nbsp;<br>
+Manejo &nbsp;<br>
+CREATE FORM &lt;nombre&gt; &nbsp;<br>
+La primera acción que hay que realizar para poder usar un formulario de entrada
+es crearlo. La &nbsp;<br>
+sentencia CREATE FORM crea en memoria todas las estructuras necesarias para el
+manejo del &nbsp;<br>
+formulario. El formulario es creado y asociado a la ventana actual. No se puede
+tener dos &nbsp;<br>
+formularios activos al mismo tiempo en la misma ventana. &nbsp;<br>
+DISPLAY FORM &lt;nombre&gt; &nbsp;<br>
+La sentencia CREATE FORM prepara el formulario para su uso, pero no lo muestra
+en pantalla. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-26 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Para ello, se necesita usar la sentencia DISPLAY FORM. &nbsp;<br>
+DISPLAY BY NAME &lt;variables&gt; &nbsp;<br>
+Esta sentencia muestra el valor de las variables especificadas. Cada variable es
+mostrada dentro &nbsp;<br>
+del campo del formulario cuyo nombre sea igual al de la variable. &nbsp;<br>
+INPUT BY NAME &lt;variables&gt; &nbsp;<br>
+Esta sentencia es usada para obtener el valor de las variables indicadas a través
+del formulario. &nbsp;<br>
+Al usuario se le presenta en pantalla el formulario y podrá ir introduciendo
+valores en los distintos &nbsp;<br>
+campos y moverse entre ellos mediante el uso de las teclas de movimiento de
+cursor. El &nbsp;<br>
+programador puede definir una serie de sentencias que se ejecutarán al salir de
+un campo &nbsp;<br>
+determinado, al pulsar una tecla determinada o al pulsar sobre un botón. &nbsp;<br>
+La sintaxis de esta sentencia es la siguiente: &nbsp;<br>
+INPUT BY NAME &lt;variables&gt; &nbsp;<br>
+ON KEY('x') &nbsp;<br>
+sentencias &nbsp;<br>
+ON BUTTON &lt;nombre&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+AFTER FIELD &lt;nombre&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+... &nbsp;<br>
+VALIDATE FIELD &nbsp;<br>
+... &nbsp;<br>
+EXIT INPUT &nbsp;<br>
+... &nbsp;<br>
+NEXT FIELD &lt;nombre&gt; &nbsp;<br>
+... &nbsp;<br>
+AFTER FIELD &lt;nombre&gt; &nbsp;<br>
+... &nbsp;<br>
+END INPUT &nbsp;<br>
+Cuando el usuario sale de un campo (moviendo el cursor para entrar en un nuevo
+campo), el &nbsp;<br>
+contenido del buffer de edición es asignado a la variable de destino. El
+programador puede entonces &nbsp;<br>
+usar las cláusulas AFTER FIELD para controlar la validez del dato o para
+realizar cualquier tipo de &nbsp;<br>
+acción. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-27 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+La sentencia VALIDATE FIELD puede ser usada dentro de un bloque de código que
+se ejecuta &nbsp;<br>
+al pulsar sobre una tecla. Esta sentencia fuerza a que se actualice el valor de
+la variable de destino &nbsp;<br>
+con el contenido del campo activo actualmente. Esto es necesario hacerlo dentro
+de las sentencias &nbsp;<br>
+que se ejecutan en una cláusula ON KEY, ya que el valor de las variables de
+destino no se actualiza &nbsp;<br>
+normalmente hasta que no se ha salido del campo. &nbsp;<br>
+Si alguna de las sentencias modifica el valor de una variable que se está
+editando, será &nbsp;<br>
+necesario enviar al formulario el nuevo valor de la variable mediante el uso de
+la sentencia &nbsp;<br>
+'DISPLAY BY NAME'. &nbsp;<br>
+Desde dentro del propio formulario es posible mover el cursor a un campo
+determinado usando &nbsp;<br>
+la sentencia 'NEXT FIELD' o terminar la edición mediante la sentencia EXIT
+INPUT &nbsp;<br>
+Ej: &nbsp;<br>
+form f_clientes &nbsp;<br>
+input codigo from 1,10 to 1,6 &nbsp;<br>
+input nombre from 2,10 to 2,30 &nbsp;<br>
+input direccion from 3,10 to 3,30 &nbsp;<br>
+check facturar at 4,10 &nbsp;<br>
+button aceptar at 2,40 &nbsp;<br>
+button cancelar at 3,40 &nbsp;<br>
+end form &nbsp;<br>
+function editar_cliente &nbsp;<br>
+define sw_aceptado integer &nbsp;<br>
+define r record &nbsp;<br>
+codigo integer &nbsp;<br>
+nombre char(20) &nbsp;<br>
+direccion char(20) &nbsp;<br>
+facturar integer &nbsp;<br>
+end record &nbsp;<br>
+let sw_aceptado=0 &nbsp;<br>
+create form f_clientes &nbsp;<br>
+display form f_clientes &nbsp;<br>
+input by name r.* &nbsp;<br>
+on key(F1) &nbsp;<br>
+call ayuda() &nbsp;<br>
+on button aceptar &nbsp;<br>
+validate field &nbsp;<br>
+let sw_aceptado=1 &nbsp;<br>
+exit input &nbsp;<br>
+on button cancelar &nbsp;<br>
+let sw_aceptado=0 &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-28 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+exit input &nbsp;<br>
+after field codigo &nbsp;<br>
+if r.codigo &lt;100 then &nbsp;<br>
+let r.codigo=0 &nbsp;<br>
+display by name r.codigo &nbsp;<br>
+next field r.codigo &nbsp;<br>
+end if &nbsp;<br>
+end input &nbsp;<br>
+end function &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-29 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Acceso a Bases de Datos. Sentencias SQL &nbsp;<br>
+El objetivo de este manual no es explicar la sintaxis del lenguaje SQL, sino ver
+de qué forma se &nbsp;<br>
+integra este lenguaje en el 4GL implementado. &nbsp;<br>
+Transacciones &nbsp;<br>
+PostgreSQL es un gestor de bases de datos transaccional. Permite agrupar
+operaciones dentro &nbsp;<br>
+de transacciones y anular todas las actualizaciones realizadas por una transacción
+si es necesario. &nbsp;<br>
+Las sentencias para indicar el comienzo y final de una transacción son: &nbsp;<br>
+BEGIN TRANSACTION &nbsp;<br>
+Indica el comienzo de una transacción. Todas las actualizaciones que se
+realicen sobre la base &nbsp;<br>
+de datos no serán definitivas hasta que se ejecute la sentencia COMMIT
+TRANSACTION &nbsp;<br>
+COMMIT TRANSACTION &nbsp;<br>
+Esta sentencia indica que se ha llegado al final de una transacción y que se
+deben fijar todas las &nbsp;<br>
+actualizaciones realizadas sobre la base de datos. &nbsp;<br>
+ABORT TRANSACTION &nbsp;<br>
+Con esta sentencia se cancela una transacción. Todas las actualizaciones
+realizadas desde la &nbsp;<br>
+sentencia BEGIN TRANSACTION son desechadas. &nbsp;<br>
+Hay que tener cuidado de no anidar transacciones. Es común cometer el error de
+comenzar una &nbsp;<br>
+transacción y llamar a una función que no sabemos que también comienza otra
+transacción. Hasta &nbsp;<br>
+ahí no hay problema. El problema llega cuando la segunda transacción ejecuta
+un 'COMMIT &nbsp;<br>
+TRANSACTION'. En ese momento se están aceptando TODAS las actualizaciones
+realizadas a la &nbsp;<br>
+base de datos, no sólo las de la última transacción; sin embargo, la
+transacción inicial aún no ha &nbsp;<br>
+terminado. &nbsp;<br>
+Consultas &nbsp;<br>
+La sentencia SELECT de SQL busca en una o varias tablas aquellos registros que
+cumplan &nbsp;<br>
+determinadas condiciones. &nbsp;<br>
+SELECT &lt;lista_campos&gt; [INTO &lt;lista_variables&gt;] &nbsp;<br>
+FROM &lt;lista_tablas&gt; &nbsp;<br>
+[WHERE &lt;condicion&gt;] &nbsp;<br>
+[ORDER BY &lt;lista_campos&gt;] &nbsp;<br>
+Si se indica la cláusula INTO, los valores de los campos devueltos son
+asignados a las variables &nbsp;<br>
+que se indiquen. Si la consulta devuelve más de una tupla, se asignarán los
+valores de los campos de &nbsp;<br>
+la primera de ellas, y se presenta un aviso en pantalla. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-30 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Es posible conocer si una consulta no ha devuelto ninguna tupla. La variable
+global 'status' &nbsp;<br>
+tendrá el valor notfound en caso de no encontrar registros que cumplan la
+condición. &nbsp;<br>
+Ej: &nbsp;<br>
+define r record like clientes.* &nbsp;<br>
+prompt &quot;Codigo: &quot; for r.codigo &nbsp;<br>
+select * into r.* from clientes &nbsp;<br>
+where codigo=r.codigo &nbsp;<br>
+if status=notfound then &nbsp;<br>
+display &quot;No se encuentra el cliente &quot;,r.codigo &nbsp;<br>
+else &nbsp;<br>
+display &quot;El cliente &quot;,r.codigo,&quot; se llama &quot;,r.nombre &nbsp;<br>
+end if &nbsp;<br>
+Inserción de valores &nbsp;<br>
+La sentencia de SQL para insertar valores dentro de una tabla es INSERT. En
+hy4GL se usa &nbsp;<br>
+con la misma sintaxis que en SQL: &nbsp;<br>
+INSERT INTO &lt;tabla&gt; VALUES ( &lt;expresiones&gt; ) &nbsp;<br>
+Ej: &nbsp;<br>
+input by name r_cliente.* &nbsp;<br>
+on button aceptar &nbsp;<br>
+if confirmar()=&quot;SI&quot; then &nbsp;<br>
+insert into clientes values (r_cliente.*) &nbsp;<br>
+if status=ok then &nbsp;<br>
+exit input &nbsp;<br>
+else &nbsp;<br>
+call mensaje_error(&quot;No se puede insertar el registro&quot;) &nbsp;<br>
+exit program &nbsp;<br>
+end if &nbsp;<br>
+end if &nbsp;<br>
+end input &nbsp;<br>
+La inserción de valores puede fallar por diversas causas (que el usuario no
+tenga permiso para &nbsp;<br>
+escribir en al tabla, que ya exista un registro con la misma clave primaria,
+etc). Para conocer si una &nbsp;<br>
+instrucción INSERT ha conseguido o no su cometido, se puede consultar el valor
+de la variable &nbsp;<br>
+global status. Ésta valdrá ok si la inserción ha sido correcta. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-31 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Borrado de valores &nbsp;<br>
+Para borrar valores de una tabla se usa la sentencia DELETE de SQL. Su sintaxis
+es la siguiente: &nbsp;<br>
+DELETE FROM &lt;tabla&gt; [WHERE &lt;condicion&gt;] &nbsp;<br>
+Si no se indica ninguna condición se borrarán TODOS los registros de la tabla.
+&nbsp;<br>
+Ej: &nbsp;<br>
+prompt &quot;¿Desea borrar el albarán &quot;+num_albaran+ &nbsp;<br>
+&quot; ahora que está facturado? (S/N)&quot; for char sino &nbsp;<br>
+if sino=&quot;s&quot; or sino=&quot;S&quot; then &nbsp;<br>
+delete from albaranes where numero=num_albaran &nbsp;<br>
+end if &nbsp;<br>
+Cursores &nbsp;<br>
+Una consulta a la base de datos puede devolver varias tuplas. PostgreSQL ofrece
+dos métodos &nbsp;<br>
+para acceder a los datos devueltos por estas consultas. Por un lado, se pueden
+obtener del servidor &nbsp;<br>
+de bases de datos todas las tuplas devueltas por la consulta y, una vez en
+memoria, tratarlas de &nbsp;<br>
+manera local. Por otra parte, se puede declarar un cursor e ir obteniendo las
+tuplas una a una para &nbsp;<br>
+tratarlas. La desventaja de este último método es que PostgreSQL solamente
+permite hacerlo dentro &nbsp;<br>
+de una transacción, mientras que el primero no se puede usar si la consulta
+devuelve gran cantidad &nbsp;<br>
+de tuplas. &nbsp;<br>
+hy4GL ofrece una interfaz homogénea para usar ambos métodos. En ambos será
+necesario &nbsp;<br>
+declarar un cursor. Si se opta por el primer método, se incluirá el atributo
+de local en la declaración &nbsp;<br>
+del cursor. &nbsp;<br>
+La sintaxis de la declaración de un cursor es la siguiente: &nbsp;<br>
+DECLARE &lt;nombre&gt; [LOCAL] CURSOR FOR select... &nbsp;<br>
+DECLARE &lt;nombre&gt; [LOCAL] CURSOR FOR expresion &nbsp;<br>
+Ej: &nbsp;<br>
+declare c local cursor for &nbsp;<br>
+select * from clientes where ult_compra &lt;&quot;1-1-1998&quot; &nbsp;<br>
+Ej: &nbsp;<br>
+let consulta= &nbsp;<br>
+&quot;select provincia,count(*) from clientes group by provincia&quot; &nbsp;<br>
+declare c cursor for consulta &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-32 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Un cursor sólo se puede declarar una vez en el módulo fuente. &nbsp;<br>
+Antes de poder usar los datos devueltos por la consulta hay que abrir el cursor.
+Al abrir un &nbsp;<br>
+cursor se evalúan las expresiones que se hayan incluido en las cláusulas where
+de la consulta y se &nbsp;<br>
+ejecuta la misma. &nbsp;<br>
+La sentencia para abrir un cursor es la siguiente: &nbsp;<br>
+OPEN &lt;cursor&gt; &nbsp;<br>
+El propio compilador comprueba si se trata de un cursor declarado como local o
+no. En caso de &nbsp;<br>
+que se haya declarado como local, ejecuta la consulta y obtiene del servidor
+TODAS las tuplas &nbsp;<br>
+resultantes. Si no se ha declarado como local, simplemente se abre el cursor en
+el servidor. &nbsp;<br>
+Una vez abierto un cursor se pueden obtener las tuplas resultantes de la
+consulta con la &nbsp;<br>
+sentencia FETCH, cuya sintaxis es la siguiente &nbsp;<br>
+FETCH [NEXT|PREVIOUS] &lt;cursor&gt; INTO &lt;lista_variables&gt; &nbsp;<br>
+Si el cursor se ha declarado como local, se asignan directamente a las variables
+de destino los &nbsp;<br>
+valores de los campos de la siguiente tupla, que ya está en memoria. Si el
+cursor no se ha declarado &nbsp;<br>
+como local, se obtiene en ese momento del servidor la siguiente tupla y sus
+campos son asignados a &nbsp;<br>
+las variables. &nbsp;<br>
+Es posible obtener la tupla anterior en lugar de la siguiente usando la opción
+PREVIOUS &nbsp;<br>
+Si se ha llegado al final de la consulta (o al principio, si se ha usado
+PREVIOUS), la variable &nbsp;<br>
+global status tomará el valor de notfound &nbsp;<br>
+Al finalizar el trabajo con el cursor es necesario cerrar el mismo. La sentencia
+CLOSE cierra el &nbsp;<br>
+cursor y libera la memoria usada por el mismo (y por las tuplas resultantes de
+la consulta, en caso &nbsp;<br>
+de que el cursor estuviera declarado como local). Su sintaxis es: &nbsp;<br>
+CLOSE &lt;cursor&gt; &nbsp;<br>
+Ej: &nbsp;<br>
+define r record like clientes.* &nbsp;<br>
+declare c local cursor for select * from clientes &nbsp;<br>
+where codigo &lt;10 &nbsp;<br>
+open c &nbsp;<br>
+fetch c into r.* &nbsp;<br>
+while status!=notfound &nbsp;<br>
+display &quot;Cliente &quot;,r.codigo,&quot; - &quot;,r.nombre &nbsp;<br>
+fetch c into r.* &nbsp;<br>
+end while &nbsp;<br>
+close c &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-33 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+EXEC_SQL &nbsp;<br>
+hy4GL no soporta la sintaxis completa del lenguaje SQL, sin embargo ofrece esta
+sentencia &nbsp;<br>
+para permitir al programador ejecutar sentencias SQL no soportadas por el
+lenguaje. &nbsp;<br>
+Su sintaxis es la siguiente: &nbsp;<br>
+EXEC_SQL &lt;expresion&gt; [INTO &lt;lista_variables&gt;] &nbsp;<br>
+Si la sentencia ejecutada devuelve valores, éstos pueden ser asignados a
+variables mediante la &nbsp;<br>
+cláusula INTO, y se podrá usar la variable global status para conocer si se
+han obtenido o no &nbsp;<br>
+valores (status!=notfound). Por contra, si se trata de una sentencia que no
+devuelve valores, &nbsp;<br>
+la variable global status tomará el valor ok si se ha ejecutado con éxito
+&nbsp;<br>
+Ej: &nbsp;<br>
+EXEC_SQL &quot;create table tmp_numeros (i integer);&quot; &nbsp;<br>
+if status!=ok then &nbsp;<br>
+display &quot;no se ha podido crear la tabla temporal&quot; &nbsp;<br>
+end if &nbsp;<br>
+Ej: &nbsp;<br>
+EXEC_SQL &quot;select max(numero) from facturas&quot; INTO num_fac &nbsp;<br>
+FOREACH &nbsp;<br>
+La estructura FOREACH se usa para recorrer un cursor desde el pricipio hasta el
+final. La &nbsp;<br>
+sintaxis de esta estructura repetitiva es la siguiente: &nbsp;<br>
+FOREACH &lt;cursor&gt; INTO &lt;lista_variables&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+... &nbsp;<br>
+CONTINUE FOREACH &nbsp;<br>
+... &nbsp;<br>
+EXIT FOREACH &nbsp;<br>
+... &nbsp;<br>
+END FOREACH &nbsp;<br>
+El cursor debe estar declarado, pero no abierto. El cursor se abrirá automáticamente
+al entrar en &nbsp;<br>
+el FOREACH. Por cada tupla del mismo, sus campos son asignados a la lista de
+variables y se &nbsp;<br>
+ejecutan las sentencias. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-34 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+La sentencia CONTINUE FOREACH fuerza a que se avance hasta la siguiente tupla. ,
+mientras &nbsp;<br>
+que la sentencia EXIT FOREACH cierra el cursor y sale del bucle. &nbsp;<br>
+Cuando el cursor llega hasta el final éste se cierra automáticamente y termina
+la ejecución del &nbsp;<br>
+bucle. &nbsp;<br>
+Ej: &nbsp;<br>
+define r record like diario.* &nbsp;<br>
+define num_cta like diario.cta &nbsp;<br>
+declare c cursor for select * from diario where cta=num_cta &nbsp;<br>
+let total=0 &nbsp;<br>
+foreach c into r.* &nbsp;<br>
+if r.debe_haber=&quot;D&quot; then &nbsp;<br>
+let total=total-r.importe &nbsp;<br>
+else &nbsp;<br>
+let total=total+r.importe &nbsp;<br>
+end if &nbsp;<br>
+end foreach &nbsp;<br>
+display &quot;saldo: &quot;,total &nbsp;<br>
+BROWSE (ampliación a Informix-4GL) &nbsp;<br>
+Esta sentencia es usada para presentar en pantalla el resultado de una consulta
+a la base de &nbsp;<br>
+datos. Es necesario definir un cursor con la consulta que se pretende
+visualizar. El cursor hay que &nbsp;<br>
+declararlo como LOCAL. &nbsp;<br>
+BROWSE &lt;cursor&gt; INTO &lt;lista_variables&gt; &nbsp;<br>
+[FROM y,x TO yy,xx] &nbsp;<br>
+[TITLE &lt;expresion] &nbsp;<br>
+DISPLAY &lt;expresiones&gt; &nbsp;<br>
+ON KEY (id) &nbsp;<br>
+sentencias &nbsp;<br>
+ON KEY (num) &nbsp;<br>
+sentencias &nbsp;<br>
+ON KEY (cadena) &nbsp;<br>
+sentencias &nbsp;<br>
+... &nbsp;<br>
+EXIT BROWSE &nbsp;<br>
+END BROWSE &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-35 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Al llegar el programa a esta sentencia, se abre automáticamente el cursor, se
+ejecuta la consulta &nbsp;<br>
+y se obtienen todas las tuplas resultantes. Para imprimir cada una de ellas, se
+asignan los distintos &nbsp;<br>
+campos de la tupla actual a las variables indicadas en la cláusula INTO, y se
+imprimen las &nbsp;<br>
+expresiones de la cláusula DISPLAY. &nbsp;<br>
+A partir de este momento, el usuario podrá desplazarse por las tuplas
+resultantes usando las &nbsp;<br>
+teclas de movimiento de cursor. Pulsando la tecla ESCape, se abandona la
+sentencia BROWSE y se &nbsp;<br>
+cierra el cursor. &nbsp;<br>
+El programador puede definir una serie de sentencias a ejecutar cuando el usuaro
+pulse una &nbsp;<br>
+tecla determinada. Entre estas sentencias puede incluir EXIT BROWSE, que
+abandonará el &nbsp;<br>
+BROWSE y cerrará el cursor. &nbsp;<br>
+Ej: &nbsp;<br>
+define rp record like provincias.* &nbsp;<br>
+declare c local cursor for select * from provincias &nbsp;<br>
+browse c into rp.* &nbsp;<br>
+title &quot;Matricula Provincia&quot; &nbsp;<br>
+display rp.mat+&quot; &quot;+rp.nombre &nbsp;<br>
+on key (F1) &nbsp;<br>
+call ayuda() &nbsp;<br>
+on key(KEY_ENTER) &nbsp;<br>
+call ver_provincia(rp.*) &nbsp;<br>
+on key(F8) &nbsp;<br>
+exit browse &nbsp;<br>
+end browse &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-36 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Generador de Listados &nbsp;<br>
+El lenguaje 4GL ofrece una sintaxis sencilla a la vez que potente para generar
+listados. El &nbsp;<br>
+generador de listados controla los saltos de página, encabezamientos y los
+cambios de grupo, lo que &nbsp;<br>
+facilita enormemente la tarea al programador. &nbsp;<br>
+Formato del listado &nbsp;<br>
+Los listados se definen fuera de las funciones con la siguiente sintaxis: &nbsp;<br>
+REPORT &lt;nombre&gt;(parametros) &nbsp;<br>
+declaraciones locales &nbsp;<br>
+OUTPUT &nbsp;<br>
+REPORT TO &lt;fichero&gt; &nbsp;<br>
+REPORT TO PIPE &lt;comando&gt; &nbsp;<br>
+PAGE WIDTH &lt;num&gt; &nbsp;<br>
+PAGE HEIGTH &lt;num&gt; &nbsp;<br>
+FORMAT &nbsp;<br>
+FIRST PAGE HEADER &nbsp;<br>
+sentencias &nbsp;<br>
+PAGE HEADER &nbsp;<br>
+sentencias &nbsp;<br>
+BEFORE GROUP OF &lt;lista_variables&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+ON EVERY ROW &nbsp;<br>
+sentencias &nbsp;<br>
+AFTER GROUP OF &lt;lista_variables&gt; &nbsp;<br>
+sentencias &nbsp;<br>
+PAGE FOOTER &nbsp;<br>
+sentencias &nbsp;<br>
+ON LAST ROW &nbsp;<br>
+sentencias &nbsp;<br>
+END REPORT &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-37 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Un listado debe tener un nombre y recibir unos parámetros, que serán la base
+de la información &nbsp;<br>
+que se imprima. Al igual que una función, un listado puede usar variables
+locales para realizar sus &nbsp;<br>
+cálculos internos. Estas variables habrá que definirlas junto con los parámetros
+formales. &nbsp;<br>
+La definición de un listado tiene dos secciones: la primera, OUTPUT, en la que
+se indica el &nbsp;<br>
+nombre del fichero de salida o un comando que se ejecutará y al que se va a
+enviar la salida del &nbsp;<br>
+listado. En esta sección se especifica también el tamaño (lineas y columnas)
+de una página, para &nbsp;<br>
+permitir la detección automática de los saltos de página. &nbsp;<br>
+En la segunda sección, FORMAT, se indica la apariencia que va a tomar el
+listado. Consta de &nbsp;<br>
+varias condiciones (todas ellas opcionales) y de las sentencias que se deben
+ejecutar al cumplirse &nbsp;<br>
+cada una de las condiciones. &nbsp;<br>
+.FIRST PAGE HEADER &nbsp;<br>
+Sentencias que se deben ejecutar al comenzar el listado. &nbsp;<br>
+.PAGE HEADER &nbsp;<br>
+Sentencias que se deben ejecutar al comenzar cada página &nbsp;<br>
+.BEFORE GROUP OF &lt;var1&gt;, &lt;var2&gt;,... &nbsp;<br>
+Sentencias que se ejecutarán cuando se vaya a producir un cambio en los valores
+de las &nbsp;<br>
+variables indicadas &nbsp;<br>
+.ON EVERY ROW &nbsp;<br>
+Sentencias que se ejecutan en cada línea &nbsp;<br>
+.AFTER GROUP OF &nbsp;<br>
+Sentencias que se ejecutan después de producirse el cambio en los valores de
+las variables. &nbsp;<br>
+.PAGE TRAILER &nbsp;<br>
+Sentencias que se ejecutan al final de cada página &nbsp;<br>
+.ON LAST ROW &nbsp;<br>
+Sentencias que se ejecutan al final del listado &nbsp;<br>
+Para enviar realmente una línea al listado se usa la sentencia PRINT. Esta
+sentencia deberá &nbsp;<br>
+estar incluida en alguna/s de las condiciones de la sección FORMAT de la
+definición del listado si se &nbsp;<br>
+quiere que el listado produzca alguna salida. &nbsp;<br>
+Dentro de un listado se pueden usar las variables pageno y lineno, que indican
+el número de &nbsp;<br>
+página y el número de línea dentro de la página respectivamente. &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-38 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Sentencias de control de listados &nbsp;<br>
+Para generar un listado se usan las siguientes sentencias: &nbsp;<br>
+. START REPORT &lt;nombre&gt; &nbsp;<br>
+Esta sentencia indica el comienzo del listado. Al ejecutarla se preparan todas
+las estructuras &nbsp;<br>
+internas y se crean tablas temporales para almacenar la información que va a
+generar el &nbsp;<br>
+listado. &nbsp;<br>
+. OUTPUT TO REPORT &lt;nombre&gt; (param1, param2, ...) &nbsp;<br>
+Envía al generador de listados los parámetros indicados. &nbsp;<br>
+. FINISH REPORT &lt;nombre&gt; &nbsp;<br>
+Da por finalizado el listado. Al ejecutar esta sentencia es cuando se genera
+realmente el &nbsp;<br>
+listado a partir de todos los parámetros recibidos mediante sentencias OUTPUT
+TO &nbsp;<br>
+REPORT &nbsp;<br>
+Ej: &nbsp;<br>
+function listar_alumnos() &nbsp;<br>
+define r record like alumnos.* &nbsp;<br>
+declare c cursor for selec * from alumnos order by grupo &nbsp;<br>
+start report r1 &nbsp;<br>
+foreach c into r.* &nbsp;<br>
+output to report r1(r.grupo,r.nombre) &nbsp;<br>
+end foreach &nbsp;<br>
+finish report r1 &nbsp;<br>
+end function &nbsp;<br>
+report r1(grupo,nombre) &nbsp;<br>
+define grupo char(5) &nbsp;<br>
+define nombre char(40) &nbsp;<br>
+output report to pipe &quot;lp -dlaser&quot; &nbsp;<br>
+page width 78 &nbsp;<br>
+page length 64 &nbsp;<br>
+format &nbsp;<br>
+first page header &nbsp;<br>
+print &quot;LISTADO DE ALUMNOS POR GRUPO Fecha:&quot;+today() &nbsp;<br>
+print &quot;&quot; &nbsp;<br>
+print &quot;Nombre y apellidos&quot; &nbsp;<br>
+print &quot;-------------------------------------&quot; &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-39 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+page header &nbsp;<br>
+print &quot;LISTADO DE ALUMNOS POR GRUPO Pag:&quot;+pageno &nbsp;<br>
+print &quot;&quot; &nbsp;<br>
+print &quot;Nombre y apellidos&quot; &nbsp;<br>
+print &quot;-------------------------------------&quot; &nbsp;<br>
+before group of grupo &nbsp;<br>
+print &nbsp;<br>
+print &quot;Grupo: &quot;,grupo &nbsp;<br>
+print &quot;--------------------------------&quot; &nbsp;<br>
+on every row &nbsp;<br>
+print nombre &nbsp;<br>
+end report &nbsp;<br>
+hy4GL: compilador de lenguaje 4GL para PostgreSQL 2-40 &nbsp;<br>
+<br>
+Manual de Usuario &nbsp;<br>
+Uso del compilador de 4GL. &nbsp;<br>
+El programa con el que se invoca al compilador es hy4gl. Se trata de un script
+que &nbsp;<br>
+comprueba el tipo de cada uno de los archivos que recibe como parámetro y
+ejecuta el programa &nbsp;<br>
+necesario para compilarlo. &nbsp;<br>
+hy4gl solamente procesa aquellos archivos con extension .4gl. El resto de
+archivos, así como &nbsp;<br>
+todos los demás parámetros que reciba son enviados al compilador de C. &nbsp;<br>
+Si no se especifica el parámetro -o (para indicarle al compilador de C el
+nombre del ejecutable &nbsp;<br>
+que debe generar, en lugar de a.out), se generará un ejecutable con el mismo
+nombre que el primer &nbsp;<br>
+archivo que se mande como parámetro a hy4gl, y con extensión .e &nbsp;<br>
+Ej: &nbsp;<br>
+. Para generar alumnos.e a partir de alumnos.4gl: &nbsp;<br>
+hy4gl alumnos.4gl &nbsp;<br>
+. Para generar gestion.e a partir de menu.4gl, profesores.4gl y &nbsp;<br>
+alumnos.4gl: &nbsp;<br>
+hy4gl -o gestion.e menu.4gl profesores.4gl alumnos.4gl &nbsp;<br>
+. Para compilar profesores.4gl y obtener el modulo objeto, pero no generar
+ejecutable: &nbsp;<br>
+hy4gl -c profesores.4gl -o progesores.o &nbsp;<br>
+Variables de entorno &nbsp;<br>
+Las siguientes variables de entorno pueden influir en el comportamiento del
+compilador: &nbsp;<br>
+. HYVERB: Si existe esta variable de entorno, el compilador muestra en pantalla
+el código &nbsp;<br>
+generado. &nbsp;<br>
+. C_LIBRARY_PATH: Indica la lista de directorios en los que el enlazador va a
+buscas las &nbsp;<br>
+librerías &nbsp;<br>
+. C_INCLUDE_PATH: Indica la lista de directorios en los que el compilador de C
+va a buscar &nbsp;<br>
+los archivos de cabecera. &nbsp;<br>
+Las siguientes variables de entorno pueden influir en el comportamiento de las
+aplicaciones &nbsp;<br>
+generadas: &nbsp;<br>
+. HY4GLHOST y HY4GLPORT: si existen, indican el nombre del host y el puerto
+TCP/IP del &nbsp;servidor de PostgreSQL. &nbsp;<br>
+</p>
+
+<hr>
+
+<p align="center">
+hy4GL: compilador de lenguaje 4GL para PostgreSQL<br>
+<br>
+</p>
+
+</body>
+
+</html>

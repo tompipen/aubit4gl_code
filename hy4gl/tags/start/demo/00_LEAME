@@ -1,0 +1,6 @@
+En este directorio hay algunos programas de demostracion.
+
+Para que funcionen correctamente hay que crear la base de datos 'hy4gl_test'
+   y cargar las tablas que se definen en 'test.sql'
+
+Sin hacer esto no es posible compilar muchos de los programas.   

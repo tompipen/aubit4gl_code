@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# script para pasar a CD el directorio de desarrollo.
+#
+#
+#
+# Hago un 'make release'
+make release
+
+#
+#
+# Copio lo que me interesa a un directorio temporal. 
+# El nombre del directorio viene de la fecha del sistema
+
+tar zcvf /tmp/`date +%y%m%d`.tgz -C /home/davidp/devel/ 4gl
+
+DIR_TMP=cd_tmp/Proyecto/`date +%y%m%d`
+mkdir -p $DIR_TMP
+
+mv /tmp/`date +%y%m%d`.tgz cd_tmp/Proyecto
+
+cp -p * $DIR_TMP
+cp -rp versiones/ $DIR_TMP
+cp -rp demo/ $DIR_TMP
+cp -rp lib4gl/ $DIR_TMP
+cp -rp doc/ $DIR_TMP
+
+
+mkisofs -C `cdrecord -msinfo dev=0,3,0` \
+	 -r -v -D -L -l -M /dev/scd0 -o imagen.iso cd_tmp 
+
+if [ "$?" = "0" ]
+then
+   cdrecord dev=0,3,0 speed=2 -v -multi -eject imagen.iso
+fi
+
+rm -rf cd_tmp
+rm imagen.iso

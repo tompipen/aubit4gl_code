@@ -1,0 +1,134 @@
+%{
+#include "global.h"
+%}
+%union {cadena	nombre;
+        double	valor;
+		 }
+%type <nombre> Identificador
+%type <valor>  Constante
+%%
+Fichero :: var: Variables; fun: Funciones
+Funciones :: Funcion *
+Funcion :: nom: Identificador; par: ListaId; cod: Acciones; tip: Tipo
+ListaId :: Identificador *
+Rect :: y,x,yy,xx: Expresion
+Tipo :: tip: Identificador; tam: Constante; cam: Variables
+Acciones :: var: Variables; cod: Sentencias
+Variables :: Variable *
+Variable :: nom: Identificador; tip: Tipo
+Sentencias :: Sentencia *
+Sentencia :: FuenteC | ExitProgram | Asignacion | Llamada | Retorno | Bloque
+            | Leer | LeerExit | Escribir | Sql | OpVentana | Delay | OpMenu | OpReport
+            | OpForm | OpBrowse | WhenEver
+
+FuenteC:: Identificador *
+
+WhenEver:: accion: Identificador
+
+OpMenu:: Menu | ExitMenu | MenuAttr
+Menu :: nom: Identificador; exp: Expresion; fmt: Constante; att: MenuAttr; opc: MenuOps
+MenuOps :: MenuOp *
+MenuOp :: nom: Expresion; desc: Expresion; cod: Sentencias; key: Constante
+MenuAttr :: fore,back: AttsVentana
+
+OpForm:: Form | FormDisplay | FormCreate | OpFormDispByName | OpFormInputByName
+   		| FormExit | FormCurrentField | FormValidateField
+FormDisplay:: nom: Identificador
+FormCreate:: nom: Identificador
+Form:: nom: Identificador; campos: FormCampos
+FormCampos:: FormCampo *
+FormCampo:: tipo: FormTipoCampo; nom: Identificador; y,x,yy,xx: Expresion; attr: AttsVentana
+FormTipoCampo:: FormButton | FormInput | FormLabel | FormCheck
+FormDispByName:: campos: ListaId
+FormInputByName:: campos: ListaId; opc: FormOnKeys; after: FormAfterFields
+FormOnKeys :: FormOnKey *
+FormOnKey :: nom: Identificador; cod: Sentencias
+FormAfterFields :: FormAfterField *
+FormAfterField :: nom: Identificador; cod: Sentencias
+FormCurrentField :: nom: Identificador
+
+OpBrowse:: Browse | BrowseExit
+Browse :: nom: Identificador; cur: Identificador; vars: ListaId; 
+   donde: Rect; titulo: Expresion; exp: Expresion; opc: BrowseOps;
+   sino: Sentencias
+
+BrowseOps :: BrowseOp *
+BrowseOp :: nom: Identificador; cod: Sentencias
+
+OpReport :: StartReport | FinishReport | PrintReport 
+Report :: nom: Identificador; par: ListaId; var: Variables; out: RptOutput; fmt: FormatoRpt
+StartReport :: nom: Identificador
+FinishReport :: nom: Identificador
+PrintReport :: exp: Expresion
+RptOutput:: Identificador *
+FormatoRpt:: fph,ph:Sentencias; bg: RptGrupos; ev: Sentencias;
+	ag: RptGrupos; pf,lr: Sentencias
+RptGrupos:: RptGrupo *
+RptGrupo:: ids: ListaId; cod: Sentencias
+
+Sql :: Database | Select | Insert | Update | Delete | Declare | ExecSQL
+Database :: nom: Identificador
+Declare :: nom: Identificador; local: Constante; query: Select; es_select: Constante
+Select :: cam: ListaId; into: ListaId; from: ListaId; where: Condicion; order: ListaId
+ExecSQL :: comando: Expresion; into: ListaId
+Insert :: tabla: Identificador; valores: ListaId
+Delete :: tabla: Identificador; where: Condicion
+Update :: tabla: Identificador; updates: UpdateCampos ; 
+   	where: Condicion        
+UpdateCampos :: UpdateCampo *
+UpdateCampo :: campo: Identificador; valor: Expresion
+
+Transacc :: op: Identificador
+OpenCursor :: nom: Identificador
+CloseCursor :: nom: Identificador
+FetchCursor :: nom: Identificador; next: Constante; vars: ListaId
+
+Delay :: tiempo: Expresion
+OpVentana :: AbVentana | CieVentana | MovVentana | ClearWindow
+AbVentana :: nom: Identificador; y, x, h, w: Constante; attr: AttsVentana; tit: Expresion
+CieVentana :: nom: Identificador
+MovVentana :: nom: Identificador; y, x: Expresion
+CurVentana :: nom: Identificador
+AttsVentana :: AtVentana *
+AtVentana :: nom: Identificador; val: Constante
+
+Leer :: esc: Expresion; var: Variable; cha: Constante; keys: LeerKeys
+LeerKeys :: LeerOnKey *
+LeerKey :: nom: Identificador; cod: Sentencias
+
+Escribir :: lst: Displays
+Displays :: Display *
+Display :: y,x: Expresion; exp: Expresiones; attr: AttsVentana
+
+Llamada :: nom: Identificador; arg: Expresiones
+Llamaproc :: nom: Identificador; arg: Expresiones
+Retorno :: exp: Expresiones
+
+Asignacion :: des: ListaId; fue: Expresiones
+Bloque :: While | ContinueWhile | ExitWhile | For | ContinueFor | ExitFor |
+        	If | Foreach | ContinueForeach | ExitForeach
+
+While :: con: Condicion ; cod: Sentencias
+For :: cont: Id; desde, hasta: Expresion; cod: Sentencias
+If :: con: Condicion ; codsi, codelse: Sentencias
+Foreach :: nom: Identificador; vars: ListaId; cod: Sentencias
+Condicion :: termi, termd: Expresion; op: Logica
+
+Expresiones :: Expresion *
+Expresion :: Id | Const | Binaria | Unaria | Llamada | 
+   Cadena | Subcadena | Using | Clipped
+   
+Id :: nom: Identificador
+Subcadena :: exp: Expresion; desde, hasta: Expresion
+Using :: exp: Expresion; mascara: Identificador
+Clipped :: exp: Expresion
+Const :: val: Constante; tip: Identificador
+Cadena :: val: Identificador
+Unaria :: term: Expresion; op: Opunar
+Opunar :: Menos | Negacion
+Binaria :: termi,termd: Expresion; op: Opbina
+Opbina :: Aritmetica | Logica
+Aritmetica :: Suma | Resta | Multiplica | Divide | Pot
+Logica ::  Or | And | Menor | Mayor | Igual | Distinto
+       | Not | Menorigual | Mayorigual
+

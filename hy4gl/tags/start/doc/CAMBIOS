@@ -1,0 +1,602 @@
+
+Hy4gl compiler
+
+File: CAMBIOS
+(Change log)
+
+
+01-08-00 - 0.7.7
+-------
+   En un '...where...' admito expresiones del tipo:
+      where tabla.campo=????
+
+   Si en un 'where' aparece un identificador que es el nombre de una variable,
+      entiendo que se refiere a la variable del programa y no a un campo de
+      la base de datos, independientemente de si se encuentra a la izquierda
+      o a la derecha del operador.
+
+   Ejemplo:
+      define nombre char(20)
+      let nombre="Pepe"
+      select max(nombre) from personas
+         where nombre=nombre
+      
+      En este caso, el identificador 'nombre' en 'select max(nombre)' se refiere
+         al campo 'nombre' de la tabla 'personas'. Y los identificadores 'nombre'
+         y 'nombre' del where se refieren AMBOS a la variable 'nombre'.
+      Para evitar problemas, se puede usar la notacion 'tabla.campo':
+      
+         select max(nombre) from personas
+            where personas.nombre=nombre
+
+   Ahora se puede dar el caso de que exista una variable en el programa llamada 
+   'personas'. Bueno, pues cambiale el nombre a la variable porque te va a
+   dar problemas... ;-)
+   
+         
+05-06-00 - 0.7.6
+--------
+   Si un 'update...' no tenia 'where', no compilaba
+   Fallaba al leer un campo tipo 'timespan' (interval) de una base de datos.
+   Hay un fallo en la funcion _4GLstr2datetime o en alguna parte, que cuando
+       trabajo con una lista de campos y uno es un datetime, falla todo. 
+       Hay que pasar el campo a una variable tipo cadena, y trabajar con ella
+       mientras arreglo esto.
+       
+06-06-99 - 0.7.5
+--------
+   Había un error en la generacion del where, cuando la expresion contenia
+       un 'clipped', o una subcadena, o un 'using'.
+
+06-05-99 - 0.7.4
+--------
+   Implemento el 'WHENEVER ERROR'
+   La sintaxis es: 
+      WHENEVER ERROR {"continue" | "stop" | "call funcion(params)"}
+   Por defecto, un programa se para o avisa si una instruccion SQL no se
+      ha efectuado correctamente.
+   Poniendo 'whenever error continue', se evita que el programa haga esta
+      comprobacion, y es responsabilidad del programador comprobar el valor
+      de la variable 'status'.
+   Tambien sera posible hacer que la ejecucion del programa salte a una 
+      funcion cuando se produzca un error, pero esto no esta todavia
+      implementado.
+      
+   NOTA: En Informix-4GL, el 'WHENEVER ERROR' afecta a las sentencias SQL
+      que estan detras FISICAMENTE, en el fuente. En hy4GL, afecta a 
+      las que se EJECUTAN despues que el 'whenever error', porque nunca
+      me ha gustado como lo hacia Informix...
+      
+   
+27-04-99 - 0.7.3
+--------
+   Incluyo la ultima version del codigo de 'dousing', de SKaRCHa.
+   Acepto constantes del tipo '+3'
+   El formato de la hora no incluye por defecto los milisegundos. Lo mismo
+      para el 'datetime'. Si existe la variable de entorno 'HYMILLISECONDS', 
+      entonces si se mostraran los milisegundos.
+   
+19-04-99
+--------
+   Ahora si el analizador lexico detecta una expresion del tipo '-num', no
+      genera una expresion del tipo '-1 * num', sino una constante con
+      el valor negativo.
+   Se siguen aceptando expresiones del tipo '-a' ademas de '-123'
+      
+13-04-99 - 0.7.2
+--------
+   La precedencia de los operadores !=, <=, >= no estaba definida, y las 
+      expresiones a<=b and b<=c  se generaban como (a<=(b and b))<=c
+   
+12-04-99
+--------
+   where (... or ...) and ... 
+      No generaba el código para las agrupaciones por paréntesis.
+      
+08-04-99
+--------
+   Select... order by x DESCENDING
+
+
+07-04-99 - 0.7.1
+--------
+   INSERT INTO... / UPDATE TABLE...
+      Si alguno de los valores a insertar o actualizar era el resultado de
+	una llamada a funcion, no se generaba bien:
+      insert into dias values (today()) -> no funcionaba
+   
+   Los 'reports' fallaban si se intentaba lanzar un mismo listado más de
+      una vez.
+   
+07-03-99
+--------
+   UPDATE TABLE... (en fin... que no lo había implementado...O:-)
+
+   Las expresiones tipo 'clipped', 'cadena[n,m]' y 'using' no se trataban
+      bien al hacer un 'where'.
+
+   Acepto cadenas tipo '010190' como fechas. Si el año es menor de 50
+      se supone 20xx y si es mayor o igual de 50, se supone 19xx.
+      Si la cadena no viene con 6 cifras, se toma el año tal cual.
+
+   Al introducir una fecha erronea, se convierte a 01-01-0001 después 
+      de dar un aviso de error.
+
+23-02-99   Version 0.7
+--------
+   El chequeo del numero de parametros que recibe una funcion fallaba
+      al esperar un registro.
+
+************************************************************************
+   
+21-11-98
+--------
+   Actualizo a PostgreSQL-6.4.0
+   Acepto el tipo 'timespan' como 'interval'.
+
+15-11-98
+--------
+   Al convertir de cadena a intervalo, si el intervalo era negativo
+      daba un aviso incorrecto.
+   Genero las llamadas a funciones como 'void' para evitar 'warnings' del
+      compilador de C.
+   Ahora las funciones devuelven el numero de valores apilados y reciben un
+      entero, que es el numero de parametros recibidos. Esto servirá luego
+      para comprobar que una función recibe el numero de parametros
+      correcto.
+   Compruebo el numero de parametros que recibe una funcion.
+      
+7-11-98
+--------
+   El formato numerico de 'using' usa los separadores de miles y decimales 
+      del locale (by SKaRCHa).
+      
+05-11-98
+--------
+   Primera versión pública.
+   
+25-10-98
+--------
+   Uso los 'locales' para el formato de numero y los caracteres especiales
+      Con esto ya se pueden introducir eñes y acentos en los forms.
+   No cargo el locale de formato de numeros ni de moneda, para evitar 
+      problemas con PostgreSQL, al que tengo que enviar los numeros en
+      formato ingles.
+      
+26-9-98
+-------
+   Funcion 'center(cadena,entero)' devuelve una cadena de 'entero' espacios, 
+      con la cadena centrada.
+   Funcion int(x).- Devuelve la parte entera de x
+   Funcion round(x,y).- Redondea x con 'y' decimales
+
+   PROMPT expresion FOR CHAR id
+      ON KEY(xxx)                <------ Nuevo
+         sentencias
+      ON KEY(xxx)
+         sentencias
+         EXIT PROMPT
+      ON KEY...
+   END PROMPT
+   
+23-9-98
+-------
+   ExecSQL siempre generaba el codigo del 'INTO...', aunque no se hubiera 
+      puesto nada.
+
+22-9-98
+-------
+   Fallaba al compilar si un cursor no estaba declarado al entrar en un browse
+   Al desapilar los parametros que recibe una funcion, se llamaba a 
+      _4GLstrncpy con un tamaño de un caracter de mas.
+
+   browse <cursor> into ...
+   [from ... to ...]
+   [title ...]
+   display xxxxx
+      on key
+         ...
+      on key
+         ...
+   [else        ---> Nuevo. Se ejecuta si no hay nada que mostrar.
+      <sentencias>]
+   end browse
+   
+21-9-98
+-------
+   lib4gl/menu.c.- Si las opciones del menu no tenian descripcion, daban
+      un seg.fault.
+
+13-9-98
+-------
+   Funcion ndow(date) devuelve un numero con el dia de la semana.
+   La operacion de dividir hacia las operaciones al reves. O:-)
+      
+10-9-98
+-------
+   Presento el proyecto. Se acabó la vida de estudiante :-((
+
+9-9-98
+------
+   Los 'browses' ya no borran TODA la ventana en cada actualizacion. Ahora
+   solo se borra la parte ocupada por el browse. Muy util para poner en
+   la misma ventana un texto explicando lo que hace cada tecla...
+   
+6-9-98
+------
+   Sigo con el manual de usuario... vaya tela...
+
+   Al escribir la documentación me doy cuenta de que algunas operaciones no
+      se realizan como es debido, y que otras no están implementadas.
+
+   CALL funcion() RETURNING id1,id2...
+
+   CLEAR WINDOW
+
+   PAGE LENGTH sinonimo de PAGE HEIGHT
+   PAGE TRAILER sinonimo de PAGE FOOTER
+
+5-9-98
+------
+   Arreglo un error en las asignaciones multiples. Fallaba si el numero
+      de variables era distinto al numero de expresiones.
+   
+   Las diferencias entre 'datetimes' devuelven ahora 'interval'.
+
+   Operaciones entre 'interval' consigo mismo y con los demás.
+      
+4-9-98
+------
+   Operaciones entre 'datetimes'. Calcula la diferencia entre dos datetimes 
+      (=segundos) y suma/resta enteros (segundos) a datetimes.
+
+   Corregido error en CONTINUE WHILE, que saltaba a donde no debia.
+
+   Corregido error en _4GLnewwin(), que hacia que la ventana de curses no 
+      apuntaran a las ventanas que yo gestiono.
+
+   Ahora _4GLnewwin() devuelve un puntero a un 'struct _WINDOW'. 
+      Las variables para las ventanas se definen ahora como punteros
+      a struct _WINDOW, en lugar de struct _WINDOW directamente.
+      
+3-9-98
+------
+   Me matriculo del Proyecto.
+
+2-9-98
+------
+   funciones date(), time() y datetime() devuelven la fecha, hora y
+      momento actual.
+
+   El atributo 'bright' no estaba implementado en los forms.
+         
+1-9-98
+------
+   EXIT PROGRAM <- Sale del programa.
+
+   INPUT BY NAME ...
+      ON KEY          \
+      ON BUTTON       | Los tres son opcionales.
+      AFTER FIELD     /
+   END INPUT
+   
+   la sentencia 'DISPLAY' ahora recibe listas de expresiones, en vez de 
+      expresiones simples. La sintaxis ahora es:
+   DISPLAY <expresion> [, <expresion>, ...] [AT ...] [ATTRIBUTE...] 
+      [,  <expresion>... [AT...] [ATTRIBUTE... ]]
+
+   Al generar el codigo de las funciones, les cambio el nombre, poniendoles
+      el sufijo '_Fn_'. Eso es para poder definir funciones que tengan el 
+      mismo nombre que otras funciones de la libreria de C (p.e., time()).
+   Cambio la generacion de codigo de las llamadas a funciones, para que llamen
+      con el nuevo nombre. Cambio el nombre de las funciones del run-time.
+      
+   Los programas generados pueden usar la variable global arg_count para
+      conocer el numero de parametros recibidos, y la funcion arg_val(i) 
+      para conocer el valor del parametro. arg_val(0)=nombre del programa.
+
+   Nueva funcion _4GLinit() en lib4gl que se encarga de preparar las curses.
+   Quito todo ese codigo de la generacion de la funcion 'main'.
+
+   Los nombres de los colores ya no son palabras reservadas. Ahora el 
+      analizador sintactico los recibe como identificadores y comprueba
+      que sean nombres validos.
+         
+31-8-98
+-------
+   Habia un pequeño error en las funciones de conversion de cadena a hora.
+
+   Genero un 'set DateStyle to SQL' despues del 'set DateStyle to European'
+      para que los 'datetime' salgan como 'dd/mm/aaaa HH:MM:SS.mmm'
+      en lugar del formato del 'locale'. Ahora ya puedo leer campos de tipo
+      'datetime' de una tabla y operar con ellos sin problemas.
+
+   expresion CLIPPED  <- Quita los espacios al final.
+
+   FOR ...
+      EXIT FOR        <- Nuevo
+      CONTINUE FOR    <- Nuevo
+   END FOR            
+
+   Al hacer un 'select into', si no encontraba tuplas daba un error. Ahora
+   el programa continua y pone status=notfound.
+      
+   Las expresiones siguientes no generaban codigo o lo hacian incorrectamente:
+      !expresion
+      expresion!=expresion
+      -expresion
+
+   Las multipicaciones siempre devolvian enteros.
+         
+30-8-98
+-------
+   Arreglo un bug-de-los-grandes en la funcion tipo_campo_bd. El buffer para
+   la query era de 256 bytes... muy poquillo... ahora es de 8196 (lo maximo
+   que acepta PostgreSQL). Daba problemas al hacer un 'record like' con una
+   tabla con nombre > 10 caracteres.
+
+   Las variables que estoy editando en un form se validan al salir de cada 
+   campo.
+
+   INPUT BY NAME...
+      AFTER FIELD ... <- Nuevo.
+         sentencias
+         ...
+         VALIDATE FIELD <- Nuevo. Valida el campo en el que nos encontramos.
+         ...
+         CURRENT FIELD <nombre>  <- Nuevo. Pasa el cursor a ese campo
+         NEXT FIELD <nombre>     <- Igual que el anterior (compat. Informix).
+         ...
+   END INPUT
+      
+   expresion USING cadena <- (funcion _4GLdousing cortesia de Antonio Perez)
+   
+   Cambio la precedencia de los operadores 'OR' y 'AND'. Los pongo los ultimos.
+   Antes los operadores estos tenian mas precedencia que los demas, y 
+      pasaban cosas como:
+   if tecla='n' or tecla='N' then ---> if tecla=(('n' or tecla)='N')
+      que seguramente no era lo que querías... Ya va bien (creo).
+      
+   Generacion de codigo de los 'open cursor' no funcionaba bien si el cursor
+      no era local.
+         
+29-8-98
+-------
+   Termino de implementar los titulos en los browses.
+   Ahora el campo 'cursor' del browse es un puntero al cursor, no una 
+      copia del mismo.
+   
+   No se podian hacer browses anidados. Ya si.
+
+   La funcion '_4GLchkInsert' solo recibe como parametro la 'query'.
+
+   Corregido un bug en el 'define var like tabla.campo'
+   
+28-8-98-> 0.5
+-------------	
+   Cambio la generacion de codigo para los cursores. Ahora, en un 
+   declare cursor no se genera nada. Todo el codigo se genera al abrir el
+   cursor. De esta manera, si tenemos una select con variables del programa
+   en las condiciones, se evaluaran estas variables cada vez que se abra el 
+   cursor, no cuando se declara el mismo.
+   
+   Si existe la var. de entorno HYVERB, el compilador muestra en pantalla 
+      el codigo que va generando. Asi puedo ver donde se corta si hay
+      algun seg.fault.
+
+   Si existe la var. de entorno HYDEBUG, el ejecutable que se genera 
+      manda a stderr toda la comunicacion entre el cliente y el servidor
+      de Postgres.
+            
+   BROWSE <cursor> INTO id,id...
+      [FROM y,x TO yy,xx]        <--- Nuevo
+      [TITLE expresion]          <--- Nuevo
+      DISPLAY ..
+      ...
+   END BROWSE
+   
+   Cambio la funcion _4GLexec. Hago dos versiones: una para queries que
+   deben guardar un conjunto de valores (select, fetch) y otra para
+   las que no devuelven nada (insert, delete, begin...). La primera se llama
+   _4GLcursor y la segunda, _4GLexec. Esta segunda libera la memoria despues
+   de ejecutar la query, pero actualiza la var. status.
+   _4GLexec recibe un nuevo parametro, _CURSOR*, que es donde va a dejar el
+   resultado de la query. Si es NULL, reserva memoria para un _CURSOR 
+   y devuelve un puntero al mismo.
+   Si no es NULL, lo actualiza con los datos recibidos.
+   Este cambio es grande... Cambio el nº de version al 0.5
+      
+   
+26-8-98
+-------
+   Los nombres de los tipos ya no son 'palabras reservadas'. Ahora es el
+   analizador sintactico el que comprueba que el tipo escrito sea correcto.
+   (excepto CHAR que sigue siendo palabra reservada: PROMPT FOR CHAR...).
+
+   Implemento los tipos:
+      TIME (hh:mm:ss.mmm), 
+      DATETIME (dd-mm-aaaa hh:mm:ss.mmm)
+      INTERVAL (hhhhhhhhhh:mm:ss.mmm)
+      Falta implementar muchas de las operaciones entre ellos, y funciones
+         que devuelvan sus partes: day(DATETIME), hour(INTERVAL), etc.
+      
+25-8-98
+-------
+   EXEC_SQL expresion [ INTO var1, var2, ...]
+   Depuro algunos problemas de memoria que terminaban en 'Segmentation Fault'.   
+   
+24-8-98 (por la noche... ':-| )
+-------
+   FOR i = exp1 TO exp2
+      sentencias
+   END FOR
+      Reconoce la sintaxis y genera ya parte del codigo. No funciona todavia
+      con 'marcha atras' (si exp2<exp1).
+      Funciona con 'i' de tipo numerico o fecha.
+
+   Funciones para el 'run-time': 
+      dow(fecha)-> devuelve una cadena con el dia
+         de la semana que corresponde a esa fecha (en español).
+      today()-> devuelve la fecha de hoy.
+      
+24-8-98 (por la tarde ;-)
+-------
+   El fetch parece que ya va bien... a ver lo que dura.
+
+   BEGIN TRANSACTION
+   CANCEL TRANSACTION
+   COMMIT TRANSACTION
+   Los cambio; ahora son sentencias independientes; antes era una estructura
+      BEGIN TRANSACTION
+         ...
+      COMMIT TRANSACTION
+   Y no podia poner un 'COMMIT TRANSACTION' dentro de un IF, por ejemplo...
+   
+   
+24-8-98.-
+-------
+   Las fechas ya no las trato como 'struct tm'. Ahora se almacenan como
+   un '_4GLDATE', que es un struct con dia, mes y anno.
+   Las operaciones entre fechas se hacen convirtiendolas a dia juliano.
+   Depuro el codigo del 'fetch' (todavia no anda muy fino).
+   
+21-8-98.-
+-------
+   Script de instalacion.
+   open cursor
+   fetch [previous] <cursor> into <vars>
+   close cursor
+      
+20-8-98.-
+-------
+   EXIT WHILE
+   CONTINUE WHILE
+   
+   EXIT FOREACH
+   CONTINUE FOREACH
+   
+   Documentacion!!! Por fin me he puesto a escribir un texto con la
+      sintaxis del lenguaje... ya era hora. Pero es que lo necesitaba
+      para pasarselo a los Beta-Testers.
+   
+19-8-98.- 
+-------
+   BEFORE GROUP OF ... ya funciona bien. Antes detectaba el cambio, pero 
+      no actualizaba las vars temporales, con lo que en cada registro
+      habia un cambio.
+   
+18-8-98.-
+-------
+   menu.c: Al pasar a ncurses-4.2 no se muestra el menu si no se ha
+      especificado un atributo. El problema estaba en llamadas a 'wgetbkgd'.
+      Ahora llamo a 'wattr_get' para leer el atributo de la ventana activa,
+      y parece que va bien. :-?
+
+   Subcadenas.- Se puede usar la notacion identificador[1,20] para referirse
+      a los primeros 20 caracteres del la variable.
+
+      Generalizando, se puede usar tambien:
+         expresion[desde,hasta]
+      Con lo que podemos tomar una subcadena de cualquier expresion.
+
+      Se puede escribir tambien:
+         expresion[desde] 
+      que es equivalente a expresion[desde,desde]
+   
+17-8-98.-
+-------
+   C embebido. Se puede incluir codigo directamente en C. La sintaxis es:
+      .c
+          [declaraciones de variables]
+          sentencias en C
+      c.
+   La unica limitacion es que cada linea no puede sobrepasar los 256 caracteres,
+      aunque se puede usar '\' para continuar en la siguiente linea.
+   Las variables que se declaren dentro de este bloque de codigo son solo 
+      visibles dentro del mismo.
+
+   ESCAPE en un INPUT BY NAME devuelve al campo el valor que tenia al entrar.
+
+   Actualizo a ncurses-4.2. Por lo visto, la version anterior (1.9.9e) 
+      tenia errores por los que no funcionaba bien la libreria de forms.
+   
+11-8-98.-
+-------
+   Ampliado el codigo del INPUT BY NAME. Ya devuelve los valores a las
+      variables correspondientes al salir del form.
+
+   Nuevo: 'EXIT INPUT'.
+
+   Nueva opcion para el Input by name:
+      INPUT BY NAME...
+         ON KEY(x)
+            ...
+         ON BUTTON x   <-- Se activa al pulsar 'space' sobre el boton 'x'.
+            ...
+      END INPUT
+   
+9-8-98.-
+-------
+   Generacion del codigo para los forms de pantalla.
+   Genera las estructuras internas y las de curses.
+   Muestra en pantalla el form y procesa las pulsaciones de teclado.
+   Sintaxis y generacion de codigo de:
+
+      CREATE FORM <form>
+      DISPLAY FORM <form>
+      DISPLAY BY NAME <id> , <id> , ...
+      INPUT BY NAME <id> , <id> , ...
+            (aun no devuelve a las variables las cadenas introducidas en el 
+             form).
+
+ (no es que haya estado un mes sin hacer nada... es que he estado 
+  estudiando como funcionan los forms de las curses... ;-)
+     
+29-6-98.- 
+-------
+   Empiezo a definir forms de pantalla. De momento acepto la sintaxis, 
+      pero no genero codigo.
+   Cambio las funciones de pila. Ahora, las pop_* no liberan la memoria 
+      ocupada por el elemento que devuelven. La idea es hacer algo de
+      'recoleccion de basura', liberándola al salir del bloque de codigo 
+      (for, while, funcion,...)
+   Corregido un error en _4GLexec, que no ponia status=notfound si no 
+      encontraba tuplas.
+   Nueva sentencia: 'exit browse'. Sin comentarios...
+   Los browse's detectan si tienen o no registros, saliendo con status=notfound
+      si no los hay.
+   
+         
+17-5-98.- Version 0.4
+-------
+	Las ventanas con borde eran antes una ventana y una sub-ventana.
+	Eso daba problemas con los paneles al intentar moverlas. Ahora son 
+		dos ventanas: una para el borde y otra para el contenido.
+    'THEN' opcional en sentencias 'IF'. (compatible con Informix).
+    'CALL' opcional para llamar a funciones. (compatible con Informix).
+    Se pueden definir varias variables en un mismo 'define'
+   
+15-5-98.-
+-------
+	Ahora 'hy4gl' es un script que llama al ejecutable 'hy4gl.e' para
+		cada fuente que haya que traducir.
+	hy4gl acepta como parametro fuentes en c y varios '.4gl' que son
+		linkados como un solo ejecutable.
+	Adapto algunos detalles para que sea compatible con PostgreSQL 6.3.2
+
+   (en este tiempo avanzo poco... estudiando Complementos de Matematicas,
+      que me tenia ya aburrido...)
+      
+21-10-97.- Version 0.3.- 
+--------
+	Reports
+	Soporte de tipo decimal
+   
+	
+27-09-97.- Version 0.2.- 
+--------
+	Soporte de menís y browses
+	Cambio la forma de evaluar expresiones.
+    Antes lo hacia convirtiendo directamente a C.
+    Ahora lo hago mediante una pila. Es un poco mas lento, pero permite 
+         hacer mas 'limpiamente' los cambios de tipo y el paso de parametros
