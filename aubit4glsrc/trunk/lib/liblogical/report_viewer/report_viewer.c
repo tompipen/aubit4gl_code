@@ -10,7 +10,7 @@ GtkWidget *notebook;
 FILE *fin;
 
 #define XWIDTH 8
-#define YHEIGHT 15
+#define YHEIGHT 13
 
 #define MIN_PAGE 10
 #define MAX_PAGE 10
@@ -29,12 +29,9 @@ static void add_widget_block_where (char w1, char *w2, GtkWidget * widget);
 static void select_block (int rb);
 static void unselect_block (int rb);
 
-char *style_selected =
-  "style \"selected\" {font_name=\"monospace 8\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
-char *style_unselected =
-  "style \"unselected\" {font_name=\"monospace 8\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
-char *style_unselectable =
-  "style \"unselectable\" {font_name=\"monospace 8\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
+char *style_selected = "style \"selected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
+char *style_unselected = "style \"unselected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
+char *style_unselectable = "style \"unselectable\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
 
 
 extern struct r_report *report;
@@ -281,7 +278,7 @@ edit_lle ()
 
   /* create a new window */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-
+gtk_widget_set_usize (GTK_WIDGET (window),500,300);
   sprintf(desc,"Report Output Viewer (Report : %s from Module : %s)",report->repName,report->modName);
   gtk_window_set_title (GTK_WINDOW (window), desc);
 
@@ -304,8 +301,8 @@ edit_lle ()
 
   for (a = 0; a < report->max_page; a++)
     {
-      if (a >= MIN_PAGE && a < report->max_page - MAX_PAGE)
-	continue;
+	GtkWidget *fixed2;
+      if (a >= MIN_PAGE && a < report->max_page - MAX_PAGE) continue;
       sprintf (buff, "Page %d", a + 1);
       label = gtk_label_new (buff);
       fixed = gtk_fixed_new ();
@@ -315,6 +312,7 @@ edit_lle ()
 			    report->page_length * YHEIGHT);
       gtk_widget_set_name (fixed, "fixed");
       gtk_object_set_data (GTK_OBJECT (notebook), buff, fixed);
+
       gtk_notebook_append_page (GTK_NOTEBOOK (notebook), fixed, label);
     }
 
@@ -338,8 +336,9 @@ edit_lle ()
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_widget_show (sw);
   gtk_container_add (GTK_CONTAINER (vbox), sw);
-
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(sw), notebook);
+	fixed=gtk_fixed_new();
+  gtk_fixed_put(fixed, notebook,0,0);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(sw),fixed);
 
 
   label = gtk_label_new ("Status: Nothing selected");
