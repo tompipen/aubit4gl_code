@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.16 2002-06-06 12:31:29 afalout Exp $
+# $Id: sqlex.c,v 1.17 2002-06-26 06:11:44 afalout Exp $
 #
 */
 
@@ -44,72 +44,88 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <stdarg.h>
+#ifdef OLD_INCL
 
-#include "a4gl_dtypes.h"
+	#include <stdio.h>
+	#include <stdarg.h>
 
-#ifdef __CYGWIN__
-	#define __ODBC_DEFINED__
-	#define WIN32
-	#include <windows.h>
-	#include <sql.h>
-	#include <sqlext.h>
-#else
-	#ifdef UNIXODBC
-	    #define __ODBC_DEFINED__
+	#ifdef __CYGWIN__
+		#define __ODBC_DEFINED__
+		#define WIN32
+		#include <windows.h>
 		#include <sql.h>
 		#include <sqlext.h>
-		#include <odbcinst.h>
-	#endif
-
-	#ifdef IODBC
-	    #define __ODBC_DEFINED__
-		#ifdef OLDIODBC
-			#include <iodbc.h>
-			#include <isql.h>
-			#include <isqlext.h>
-        #else
+	#else
+		#ifdef UNIXODBC
+			#define __UCHAR_DEFINED__
+			#define __ODBC_DEFINED__
 			#include <sql.h>
 			#include <sqlext.h>
-			#include <sqltypes.h>
-         #endif
+			#include <odbcinst.h>
+		#endif
+
+		#ifdef IODBC
+		    #define __ODBC_DEFINED__
+			#define __UCHAR_DEFINED__
+			#ifdef OLDIODBC
+				#include <iodbc.h>
+				#include <isql.h>
+				#include <isqlext.h>
+	        #else
+				#include <sql.h>
+				#include <sqlext.h>
+				#include <sqltypes.h>
+	         #endif
+		#endif
+
+		#ifdef IFXODBC
+			/* infomix headers require wchar_t to be already defined
+			so we have to include stdio.h here */
+			#include <stdio.h>
+
+			#define __ODBC_DEFINED__
+			#include <incl/cli/infxcli.h>
+			#include <incl/cli/infxsql.h>
+			/* #include <incl/cli/sqlucode.h> */
+		#endif
+
+		#ifdef PGODBC
+		    #define __ODBC_DEFINED__
+			#include <pgsql/iodbc/iodbc.h>
+			#include <pgsql/iodbc/isql.h>
+			#include <pgsql/iodbc/isqlext.h>
+		#endif
+
+	    #ifndef __ODBC_DEFINED__
+	        /* default for tesing, when we don't use makefile we will not have -Dxxx
+			 unixODBC headers:
+	         */
+			#include <sql.h>
+			#include <sqlext.h>
+			#include <odbcinst.h>
+			#define __UCHAR_DEFINED__
+		    #define __ODBC_DEFINED__
+		#endif
+
 	#endif
 
-	#ifdef IFXODBC
-	    #define __ODBC_DEFINED__
-		#include <incl/cli/infxcli.h>
-		#include <incl/cli/infxsql.h>
-		/* #include <incl/cli/sqlucode.h> */
-	#endif
+	#include "a4gl_dtypes.h"
 
-	#ifdef PGODBC
-	    #define __ODBC_DEFINED__
-		#include <pgsql/iodbc/iodbc.h>
-		#include <pgsql/iodbc/isql.h>
-		#include <pgsql/iodbc/isqlext.h>
-	#endif
+	#include "a4gl_dbform.h" 		/* struct s_form_dets */
+	#include "a4gl_aubit_lib.h"
+	/* stack.h will eventually include stdlib.h, which uses getenv(), so
+	 we need to set GETENV_OK and only then include debug.h */
+	#include "a4gl_stack.h"
+	#define GETENV_OK
+	#include "a4gl_debug.h"
 
-    #ifndef __ODBC_DEFINED__
-        /* default for tesing, when we don't use makefile we will not have -Dxxx
-		 unixODBC headers:
-         */
-		#include <sql.h>
-		#include <sqlext.h>
-		#include <odbcinst.h>
-		#define __UCHAR_DEFINED__
-	    #define __ODBC_DEFINED__
-	#endif
+
+#else
+
+    #include "a4gl_lib_sql_odbc_int.h"
 
 #endif
 
-#include "a4gl_dbform.h" 		/* struct s_form_dets */
-#include "a4gl_aubit_lib.h"
-/* stack.h will eventually include stdlib.h, which uses getenv(), so
- we need to set GETENV_OK and only then include debug.h */
-#include "a4gl_stack.h"
-#define GETENV_OK
-#include "a4gl_debug.h"
 
 /*
 =====================================================================

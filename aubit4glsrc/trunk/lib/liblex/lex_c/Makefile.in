@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-04-28 04:43:58 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-06-26 06:11:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -48,7 +48,7 @@ else
 	ALL         = libLEX_C.so
 endif
 
-CFLAGS			+=-I.. -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
+CFLAGS			+=-I. -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
 
 ## ==================================================================
 ##                              Targets

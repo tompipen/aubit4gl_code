@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.13 2002-06-06 12:31:28 afalout Exp $
+# $Id: compile_perl.c,v 1.14 2002-06-26 06:11:43 afalout Exp $
 #
 */
 
@@ -43,18 +43,30 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include "a4gl_dbform.h"
-#include "a4gl_report.h"
-#include "a4gl_oform.h"
-#include "a4gl_attributes.h"
-#include "a4gl_errors.h"
-#include "a4gl_constats.h"
-#include "a4gl_prompt.h"
-#include "a4gl_aubit_lib.h"
-#include "../lex_c/a4gl_lex_print_protos_c.h"
-#include "a4gl_4glc_4glc.h"
-#include "a4gl_debug.h"
+
+
+
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include "a4gl_dbform.h"
+	#include "a4gl_report.h"
+	#include "a4gl_oform.h"
+	#include "a4gl_attributes.h"
+	#include "a4gl_errors.h"
+	#include "a4gl_constats.h"
+	#include "a4gl_prompt.h"
+	#include "a4gl_aubit_lib.h"
+	#include "../lex_c/a4gl_lex_print_protos_c.h"
+	#include "a4gl_4glc_4glc.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_lex_perl_int.h"
+
+#endif
 
 /*
 =====================================================================

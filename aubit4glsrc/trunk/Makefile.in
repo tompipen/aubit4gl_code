@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.70 2002-06-25 03:22:27 afalout Exp $
+# $Id: Makefile.in,v 1.71 2002-06-26 06:11:28 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -439,8 +439,9 @@ clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
-	$(MAKE) -C lib/libgui clean
-	${MAKE} -C lib/libtui clean
+	$(MAKE) -C lib/libui/ui_console clean
+	$(MAKE) -C lib/libui/ui_curses clean
+	$(MAKE) -C lib/libui/ui_gtk clean
 	$(MAKE) -C lib/extra_libs/file clean
 	$(MAKE) -C lib/extra_libs/string clean
 	$(MAKE) -C compilers/4glc/rules clean
@@ -474,16 +475,17 @@ clean.makefiles:
 	${RM} compilers/4glc/Makefile compilers/4glc/rules/Makefile \
 	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
 	compilers/menus/Makefile incl/Makefile-common \
-    lib/Makefile lib/libgui/Makefile lib/libpdf/Makefile \
+    lib/Makefile lib/libui/ui_console/Makefile lib/libpdf/Makefile \
     lib/libsql/nosql/Makefile lib/libsql/esqlc/Makefile \
     lib/libsql/odbc/Makefile lib/extra_libs/file/Makefile \
-    lib/extra_libs/string/Makefile lib/libtui/Makefile \
+    lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \
     tools/adbaccess/Makefile tools/adbload/Makefile \
     tools/html/Makefile tools/ide/Makefile \
     tools/jabber/Makefile tools/odbctest/Makefile \
-    tools/test/Makefile tools/test/gui/Makefile Makefile
+    tools/test/Makefile tools/test/gui/Makefile \
+	lib/libui/ui_gtk/Makefile Makefile
 
 
 clean.root:

@@ -24,18 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.6 2002-06-26 06:11:43 afalout Exp $
+# $Id: params.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
 #*/
 
 /**
  * @file
- * Functions for reading help message file in native format
+ * The param mechanism for the GTK lib store parameters.
  *
+ * Its a kind of hash where we store vales by key
  *
- * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -47,19 +46,26 @@
 
 #ifdef OLD_INCL
 
-	#include <stdio.h>
+	#include <gtk/gtk.h>
 	#include <string.h>
+	#include <stdlib.h> 		/* atoi() */
 
-	#include "a4gl_aubit_lib.h"
 	#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_msg_native_int.h"
+    #include "a4gl_lib_ui_gtk_int.h"
 
 #endif
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
+#define TYPE_CHAR 1
+#define TYPE_INT 2
 
 /*
 =====================================================================
@@ -67,11 +73,30 @@
 =====================================================================
 */
 
-/* from extfile.c : */
-char helpbuff[10000];
-char disp[24][81];
-int max_width;
-FILE *helpfile = 0;
+
+/** The arguments count */
+static int args_cnt;
+
+/** Array of arguments stored. */
+static char *args[256];
+
+/** The values of the parameters */
+static char *args_val[256];
+
+/** The types of the parameters */
+static int args_type[256];
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+	void split_config (char *str);
+	void * find_param (char *name);
+#endif
+
 
 /*
 =====================================================================
@@ -80,80 +105,99 @@ FILE *helpfile = 0;
 */
 
 /**
+ * Get parameters from a string.
  *
- * @todo Describe function
+ * The parameter separator is ;
+ *
+ * @param str The string with the parameters.
  */
-int
-read_help_f (int no,int *maxwidth)
+void
+split_config (char *str)
 {
-  short pos;
-  int cnt;
-  short num;
-  char tmpbuf[80];
-  max_width = 0;
-  cnt = 0;
-  rewind (helpfile);
-  helpbuff[0]=0;
-  *maxwidth=0;
-  debug("Reading : %d (%p)",no,helpfile);
+  char *ptr;
+  char *s;
+  int a;
+  ptr = str;
+  args_cnt = 0;
   while (1)
     {
-      fread (&pos, 2, 1, helpfile);
-      debug("pos=%d",pos);
 
-      if (pos == -1 || pos > no) {
-         debug("Out of range 1");
-         exitwith("Help message not found");
-        break;
-      }
+      s = strtok (ptr, ";");
 
-      if (feof (helpfile)) {
-         debug("End of file");
-         exitwith("Help message not found");
-        return 0;
-        break;
-      }
+      if (s)
+	{
+	  args[args_cnt++] = s;
+	}
+      else
+	{
+	  break;
+	}
 
-      fread (&num, 2, 1, helpfile);
-
-      debug("num=%d",num);
-
-      if (pos == no)
-        {
-			debug("Got it...");
-          fseek (helpfile, (long) num + 3, SEEK_SET);
-          while (1 == 1)
-            {
-              if (feof (helpfile))
-                break;
-              fgets (tmpbuf, 80, helpfile);
-				debug("Buff=%s",tmpbuf);
-              strcat(helpbuff,tmpbuf);
-              stripnl (tmpbuf);
-              strcpy (disp[cnt++], tmpbuf);
-              if (strlen (tmpbuf) > max_width)
-                max_width = strlen (tmpbuf);
-              if (cnt > 20)
-                break;
-              num = fgetc (helpfile);
-              if (num == 127)
-                break;
-              else
-                ungetc (num, helpfile);
-            }
-        }
-
-      *maxwidth=max_width;
-      if (pos == no) {
-           debug("Got it...");
-           return cnt;
-      }
+      ptr = 0;
     }
-  exitwith("Could not read help message");
-  return 0;
+
+  for (a = 0; a < args_cnt; a++)
+    {
+      args_val[a] = 0;
+      ptr = strchr (args[a], '=');
+      if (ptr)
+	{
+	  *ptr = 0;
+	  args_val[a] = ptr + 1;
+	}
+      if (args_val[a][0] == '\'')
+	{
+	  args_type[a] = TYPE_CHAR;
+	  args_val[a][strlen (args_val[a]) - 1] = 0;
+	  args_val[a]++;
+	}
+      else
+	{
+	  args_type[a] = TYPE_INT;
+	}
+
+      debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a], args_type[a]);
+    }
+}
+
+/**
+ * Find a values of a parameter by name.
+ *
+ * @param name The name of the parameter to be finded.
+ * @return A pointer to the bytes that have the values stored.
+ */
+void *
+find_param (char *name)
+{
+  int a;
+  int reqd = 1;
+  if (name[0] == '*')
+    {
+      reqd = 0;
+      name++;
+    }
+  for (a = 0; a < args_cnt; a++)
+    {
+      if (strcasecmp (args[a], name) == 0)
+	{
+	  if (args_type[a] == TYPE_CHAR)
+	    return args_val[a];
+	  else
+	    return (void *) atoi (args_val[a]);
+	}
+    }
+
+  if (reqd)
+    {
+      debug ("Required Parameter not found %s\n", name);
+      return 0;
+    }
+  else
+    {
+      return 0;
+    }
 
 }
 
 
 /* ============================== EOF =============================== */
-

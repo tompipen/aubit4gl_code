@@ -24,18 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.6 2002-06-26 06:11:43 afalout Exp $
+# $Id: d2.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
 #*/
 
 /**
  * @file
- * Functions for reading help message file in native format
- *
- *
- * @todo Add Doxygen comments to file
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * Event handling functions.
  */
 
 /*
@@ -45,20 +39,22 @@
 */
 
 
+
 #ifdef OLD_INCL
-
+	
 	#include <stdio.h>
-	#include <string.h>
 
-	#include "a4gl_aubit_lib.h"
+	#include <gtk/gtk.h>
+
+	#include "a4gl_formxw.h"
+	#include "a4gl_gtk_dims.h"
 	#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_msg_native_int.h"
+    #include "a4gl_lib_ui_gtk_int.h"
 
 #endif
-
 
 
 /*
@@ -67,11 +63,19 @@
 =====================================================================
 */
 
-/* from extfile.c : */
-char helpbuff[10000];
-char disp[24][81];
-int max_width;
-FILE *helpfile = 0;
+GtkWidget *tooltips;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+#ifdef OLD_INCL
+	gint delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
+	void destroy_event (GtkWidget * widget, gpointer data);
+#endif
 
 /*
 =====================================================================
@@ -80,80 +84,40 @@ FILE *helpfile = 0;
 */
 
 /**
+ * If you return FALSE in the "delete_event" signal handler,
+ * GTK will emit the "destroy" signal. Returning TRUE means
+ * you don't want the window to be destroyed.
+ * This is useful for popping up 'are you sure you want to quit?'
+ * type dialogs. 
  *
- * @todo Describe function
+ * @param widget 
+ * @param event
+ * @param data
+ * @return FALSE
  */
-int
-read_help_f (int no,int *maxwidth)
+gint
+delete_event (GtkWidget * widget, GdkEvent * event, gpointer data)
 {
-  short pos;
-  int cnt;
-  short num;
-  char tmpbuf[80];
-  max_width = 0;
-  cnt = 0;
-  rewind (helpfile);
-  helpbuff[0]=0;
-  *maxwidth=0;
-  debug("Reading : %d (%p)",no,helpfile);
-  while (1)
-    {
-      fread (&pos, 2, 1, helpfile);
-      debug("pos=%d",pos);
 
-      if (pos == -1 || pos > no) {
-         debug("Out of range 1");
-         exitwith("Help message not found");
-        break;
-      }
+  g_print ("delete event occurred\n");
 
-      if (feof (helpfile)) {
-         debug("End of file");
-         exitwith("Help message not found");
-        return 0;
-        break;
-      }
+  /* Change TRUE to FALSE and the main window will be destroyed with
+   * a "delete_event". */
 
-      fread (&num, 2, 1, helpfile);
+  return (FALSE);
+}
 
-      debug("num=%d",num);
-
-      if (pos == no)
-        {
-			debug("Got it...");
-          fseek (helpfile, (long) num + 3, SEEK_SET);
-          while (1 == 1)
-            {
-              if (feof (helpfile))
-                break;
-              fgets (tmpbuf, 80, helpfile);
-				debug("Buff=%s",tmpbuf);
-              strcat(helpbuff,tmpbuf);
-              stripnl (tmpbuf);
-              strcpy (disp[cnt++], tmpbuf);
-              if (strlen (tmpbuf) > max_width)
-                max_width = strlen (tmpbuf);
-              if (cnt > 20)
-                break;
-              num = fgetc (helpfile);
-              if (num == 127)
-                break;
-              else
-                ungetc (num, helpfile);
-            }
-        }
-
-      *maxwidth=max_width;
-      if (pos == no) {
-           debug("Got it...");
-           return cnt;
-      }
-    }
-  exitwith("Could not read help message");
-  return 0;
-
+/**
+ * Another callback 
+ *
+ * @param widget
+ * @param data
+ */
+void
+destroy_event (GtkWidget * widget, gpointer data)
+{
+  gtk_main_quit ();
 }
 
 
-/* ============================== EOF =============================== */
-
+/* ================================ EOF ============================= */

@@ -24,18 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.6 2002-06-26 06:11:43 afalout Exp $
+# $Id: fields.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
 #*/
 
 /**
  * @file
- * Functions for reading help message file in native format
  *
- *
- * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -45,33 +41,27 @@
 */
 
 
+
 #ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include <string.h>
-
-	#include "a4gl_aubit_lib.h"
+	#include <gtk/gtk.h>
+	#include "a4gl_dbform.h"
+	#include "a4gl_gtk_gtk_4gl.h"
 	#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_msg_native_int.h"
+    #include "a4gl_lib_ui_gtk_int.h"
 
 #endif
 
-
-
 /*
 =====================================================================
-                    Variables definitions
+                    Functions prototypes
 =====================================================================
 */
 
-/* from extfile.c : */
-char helpbuff[10000];
-char disp[24][81];
-int max_width;
-FILE *helpfile = 0;
+void endis_fields (int en_dis,va_list *ap);
 
 /*
 =====================================================================
@@ -80,80 +70,56 @@ FILE *helpfile = 0;
 */
 
 /**
+ * Enable or disable fields in GTK GUI mode.
  *
- * @todo Describe function
+ * @param en_dis The action to do:
+ *   - D : Disable
+ *   - E : Enable
+ * @param ... The list of the fields to be enabled or disabled.
  */
-int
-read_help_f (int no,int *maxwidth)
+void
+endis_fields (int en_dis,va_list *ap)
 {
-  short pos;
-  int cnt;
-  short num;
-  char tmpbuf[80];
-  max_width = 0;
-  cnt = 0;
-  rewind (helpfile);
-  helpbuff[0]=0;
-  *maxwidth=0;
-  debug("Reading : %d (%p)",no,helpfile);
-  while (1)
+  GtkWidget *formdets;
+  int a;
+  int nofields;
+  GtkWidget **field_list;
+  formdets = GTK_WIDGET(get_curr_form ());
+
+
+  debug("Formdets = %p\n",formdets);
+
+  nofields = gen_field_list_gtk (&field_list, (GtkWindow *)formdets, 9999, ap);
+  debug("nofields=%d\n",nofields);
+
+  for (a = 0; a <= nofields; a++)
     {
-      fread (&pos, 2, 1, helpfile);
-      debug("pos=%d",pos);
-
-      if (pos == -1 || pos > no) {
-         debug("Out of range 1");
-         exitwith("Help message not found");
-        break;
-      }
-
-      if (feof (helpfile)) {
-         debug("End of file");
-         exitwith("Help message not found");
-        return 0;
-        break;
-      }
-
-      fread (&num, 2, 1, helpfile);
-
-      debug("num=%d",num);
-
-      if (pos == no)
-        {
-			debug("Got it...");
-          fseek (helpfile, (long) num + 3, SEEK_SET);
-          while (1 == 1)
-            {
-              if (feof (helpfile))
-                break;
-              fgets (tmpbuf, 80, helpfile);
-				debug("Buff=%s",tmpbuf);
-              strcat(helpbuff,tmpbuf);
-              stripnl (tmpbuf);
-              strcpy (disp[cnt++], tmpbuf);
-              if (strlen (tmpbuf) > max_width)
-                max_width = strlen (tmpbuf);
-              if (cnt > 20)
-                break;
-              num = fgetc (helpfile);
-              if (num == 127)
-                break;
-              else
-                ungetc (num, helpfile);
-            }
-        }
-
-      *maxwidth=max_width;
-      if (pos == no) {
-           debug("Got it...");
-           return cnt;
-      }
+	debug("Doing something to %p %d\n",field_list[a],en_dis);
+      gui_set_active (field_list[a], en_dis);
     }
-  exitwith("Could not read help message");
-  return 0;
+}
+
+
+/**
+ * Enable or disable a widget in GTK GUI mode.
+ *
+ * @param w The widget to be changed.
+ * @param en_dis The action to do:
+ *   - D : Disable.
+ *   - E : Enable.
+ */
+void
+gui_set_active(GtkWidget *w,int en_dis)
+{
+  GtkWidget *p;
+  debug("Set active : %p %d",w,en_dis);
+	p=gtk_object_get_data (GTK_OBJECT(w), "Child");
+  debug("p=%p",p);
+	if (p==0) p=w;
+  debug(" activate %p ",p);
+	gtk_widget_set_sensitive (p, en_dis);
 
 }
 
 
-/* ============================== EOF =============================== */
-
+/* ============================= EOF =========================== */

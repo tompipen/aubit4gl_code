@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.15 2002-06-11 12:58:38 afalout Exp $
+# $Id: readforms.c,v 1.16 2002-06-26 06:11:43 afalout Exp $
 #*/
 
 /**
@@ -42,23 +42,35 @@
 =====================================================================
 */
 
-#include <signal.h>
-#include <ctype.h>
-#include <assert.h>
 
-#ifdef __CYGWIN__
-	#include <rpc/rpc.h>
+
+#ifdef OLD_INCL
+
+	#include <signal.h>
+	#include <ctype.h>
+	#include <assert.h>
+
+	#ifdef __CYGWIN__
+		#include <rpc/rpc.h>
+	#endif
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_constats.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_io.h"
+	#include "a4gl_runtime_tui.h"			/* push_char() */
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_form_xdr_int.h"
+
 #endif
 
-#include "a4gl_dbform.h"
-#include "a4gl_constats.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_stack.h"
-#include "a4gl_pointers.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_io.h"
-#include "a4gl_runtime_tui.h"			/* push_char() */
-#include "a4gl_debug.h"
+
 
 
 /*

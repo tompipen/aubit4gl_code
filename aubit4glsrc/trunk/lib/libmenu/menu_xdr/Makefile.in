@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-06-05 07:04:56 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-06-26 06:11:43 afalout Exp $
 #
 
+LIBROOT=../..
+ROOT=../../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -38,7 +41,7 @@ override NOINCL=0
 #CMODS_PROJECT	=project.c
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_MENU_XDR		=../../../compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
+CMODS_MENU_XDR		=${ROOT}/compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
 
 CMODS_MENU_NOMENU	=menu_nomenu.c
 
@@ -92,7 +95,7 @@ else #GLIBVER="old"
     endif
 endif
 
-CFLAGS+=${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I../../../compilers/fcompile
+CFLAGS+=${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/fcompile
 
 ifdef COMSPEC
 	ALL=dllMENU_NOMENU
@@ -110,7 +113,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS	:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/menus -I../../libincl ${CFLAGS} -I../../../compilers/menus -I../../libgui
+CFLAGS	:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/menus -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/compilers/menus -I${LIBROOT}/libui/ui_gtk
 
 
 #we don't want -Wall in CFLAGS when compiling menu_x_xdr.c because it would
@@ -135,55 +138,25 @@ all: ${ALL}
 
 libMENU_NOMENU.so : ${OBJS_MENU_NOMENU}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
+	${CP} $@ ${LIBROOT}
 
 libMENU_XDR.so : ${OBJS_MENU_XDR}
 	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
-	${CP} $@ ../..
-
-
-
-#../../lib/libMENU_XDR.so: undefined reference to
-#`gui_xwidth'       	lib/libgui/dims.h
-#`gui_yheight'      	lib/libgui/dims.h
-#`tooltips'             lib/libgui/d2.c
-
-
-#`get_curr_win_gtk'     lib/libgui/gtk_4gl.c
-#`gui_run_til_no_more'  lib/libgui/gtk_4gl.c
-#`get_curr_width_gtk'   lib/libgui/windows.c
-#`make_pixmap'          lib/libgui/cr_funcs.c
-
-
-#`outputfilename'
-
-
-
-
-#/opt/aubit/aubit4glsrc/lib/libUI_GTK.so: undefined reference to
-#`xdr_struct_form'      form_x_xdr.c
-####`has_str_attribute'    libform/form_xdr/readforms.c
-####`find_srec'            libform/form_xdr/readforms.c
-####`get_str_attribute'	libform/form_xdr/readforms.c
-#####`attr_name_match'      libform/form_xdr/readforms.c
-####`replace_sql_var'      libform/form_xdr/readforms.c
-
-
-
+	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 .PHONY : dllMENU_XDR
-dllMENU_XDR : ${CMODS_MENU_XDR}  ../compilers/menus/menu_x.h
-	${MAKE} libMENU_XDR.dll DLLOBJS="${CMODS_MENU_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/menus -I../incl"
-	${CP} libMENU_XDR.dll ../..
+dllMENU_XDR : ${CMODS_MENU_XDR}  ${ROOT}/compilers/menus/menu_x.h
+	${MAKE} libMENU_XDR.dll DLLOBJS="${CMODS_MENU_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/menus -I${ROOT}/incl"
+	${CP} libMENU_XDR.dll ${LIBROOT}
 
 .PHONY : dllMENU_NOMENU
 dllMENU_NOMENU : ${CMODS_MENU_NOMENU}
 	${MAKE} libMENU_NOMENU.dll DLLOBJS="$^"
-	${CP} libMENU_NOMENU.dll ../..
+	${CP} libMENU_NOMENU.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets
@@ -192,10 +165,10 @@ dllMENU_NOMENU : ${CMODS_MENU_NOMENU}
 ci: $(CMODS)
 	ci -l  $^
 
-../../../compilers/menus/menu_x_xdr.c  ../../../compilers/menus/menu_x.h:
-	${MAKE} -C ../../../compilers/menus rpc
+${ROOT}/compilers/menus/menu_x_xdr.c  ${ROOT}/compilers/menus/menu_x.h:
+	${MAKE} -C ${ROOT}/compilers/menus rpc
 
-../../../compilers/menus/menu_x_xdr.o: ../../../compilers/menus/menu_x_xdr.c
+${ROOT}/compilers/menus/menu_x_xdr.o: ${ROOT}/compilers/menus/menu_x_xdr.c
 	${CC} ${CFLAGS_MENU_X_XDR_C} -c -o $@ $^
 
 loadmenu.o: loadmenu.c
@@ -206,11 +179,11 @@ loadmenu.o: loadmenu.c
 ##                        Dependencies
 ## ==================================================================
 
-#../../../compilers/menus/menu_x_xdr.o: ../../../compilers/menus/menu_x.h
+#${ROOT}/compilers/menus/menu_x_xdr.o: ${ROOT}/compilers/menus/menu_x.h
 
 #error.c : generated/tmperrs.h
-#array.o: array.c ../compilers/fcompile/form_x_xdr.c
-#builtin.c: ../compilers/fcompile/form_x.h
+#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets

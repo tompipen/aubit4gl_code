@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# | Aubit 4gl Language Compiler Version $.0   lib/libtui makefile		 |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,113 +24,88 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-06-26 06:11:43 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-06-26 06:11:44 afalout Exp $
 #
 
+LIBROOT=../..
+ROOT=../../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
-
-## ==================================================================
-##                              Source files
-## ==================================================================
-
-#require XDR frunctions, part of Sun RPClib:
-CMODS_FORM_XDR		=../../../compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
-OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
+CFLAGS		+=
+#-I../libincl -I../../incl
+#-I../../compilers/menus -I../../compilers/fcompile @RPCLIB_INCLUDE@
+
 ifdef COMSPEC
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dllFORM_XDR
-    endif
+	ALL				+=dlllibUI_CONSOLE
 else
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libFORM_XDR${SO_EXT}
-    endif
+	ALL				+=libUI_CONSOLE.so
 endif
 
-#This must NOT be += because it would place affitional parameters AFTER
-#existing parameters already in CFLAGS: we must not do this, because if
-#specific path is needed to RPClib, it MUST be BEFORE other potenitially
-#conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS}
+ifeq "${NON_PEDANTIC_OK}" "1"
+	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
+else
+	CFLAGS_NO_PEDANTIC  =${CFLAGS}
+endif
 
-## RPC type and XDR are not the same thing. RPC type represents Remote
-#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
-#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
-#are needed by forms and menus functionality, and without it user would not
-#ba able to compile or open forms and menus, since they compiled output
-#file format is outpudte in XDR format for portability:
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+ALLOBJ_CONSOLE=console.o
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: note ${ALL}
-	@echo "Default targets (${ALL}) built successfully."
+all : ${ALL}
+	@echo "Default targets (${ALL}) successfully compiled."
 
-note:
-	@echo "Building: ${ALL}"
-
-libFORM_XDR.so : ${OBJS_FORM_XDR}
-	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^
-	${CP} $@ ../..
+libUI_CONSOLE.so: ${ALLOBJ_CONSOLE}
+	${LD} ${SO_LDFLAGS} -o $@ ${ALLOBJ_CONSOLE}
+	cp $@ ${LIBROOT}
 
 ## ==================================================================
-##                       Windows 32 DLL Targets
+##                              Windows Targets
 ## ==================================================================
 
-.PHONY : dllFORM_XDR
-dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
-	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/fcompile -I../incl"
-	${CP} libFORM_XDR.dll ../..
-
-
-## ==================================================================
-##                             Sub Targets
-## ==================================================================
-
-ci: $(CMODS)
-	ci -l  $^
-
-../../../compilers/fcompile/form_x_xdr.c  ../../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
-
-## ==================================================================
-##                        Dependencies
-## ==================================================================
-
-#error.c : generated/tmperrs.h
-#array.o: array.c ../compilers/fcompile/form_x_xdr.c
-#builtin.c: ../compilers/fcompile/form_x.h
-
-## ==================================================================
-##                        Clean Targets
-## ==================================================================
-
-clean :
-	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
-	${RM} form_x_xdr.c form_x.h project.c aubit-config
-	${RM} loadmap loadmap.c loadmap.h core
-	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
-	${RM} *.base *.exp libaubit4gl.def
+.PHONY : dlllibUI_CONSOLE
+dlllibUI_CONSOLE: ${ALLOBJ_CONSOLE}
+	${MAKE} libUI_CONSOLE.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT} "
+# -lPDF_NOPDF
+	cp libUI_CONSOLE.dll ${LIBROOT}
+	cp libUI_CONSOLE${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 
 ## ==================================================================
-##                         Other Targets
+##                              Dependencies
 ## ==================================================================
 
-lclint: $(CMODS)
-	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
-	@echo "see lclint.log for results"
+console.o: ${ROOT}/compilers/fcompile/form_x.h
 
-#----------------------------------- EOF -------------------------------
+## ==================================================================
+##                            Sub Targets
+## ==================================================================
 
+${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
+#invalid lvalue in assignment
+console.o: console.c
+	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
 
+clean:
+	${RM} *.o *.so *.bak  *.ao *.err *.glb *.dll *.a *.def *.glb *.ao \
+	debug.out *.err core  gmon.out
 
+#------------------------------- EOF --------------------------------

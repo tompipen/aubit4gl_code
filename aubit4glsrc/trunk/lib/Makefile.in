@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.55 2002-06-11 08:42:26 afalout Exp $
+# $Id: Makefile.in,v 1.56 2002-06-26 06:11:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -118,10 +118,13 @@ libEXREPORT_NOPDF.dll:
 	${MAKE} -C libpdf NOPDF.dll
 
 libUI_GTK.dll:
-	${MAKE} -C libgui
+	${MAKE} -C libui/ui_gtk
 
-libUI_TUI.dll libUI_CONSOLE.dll:
-	$(MAKE) -C libtui
+libUI_CONSOLE.dll:
+	$(MAKE) -C libui/ui_console
+
+libUI_TUI.dll:
+	$(MAKE) -C libui/ui_curses
 
 libaubit4gl.dll :
 	${MAKE} -C libaubit4gl $@
@@ -163,10 +166,13 @@ libMSG_NATIVE.so:
 	${MAKE} -C libmsg/msg_native
 
 libUI_GTK.so:
-	$(MAKE) -C libgui
+	$(MAKE) -C libui/ui_gtk
 
-libUI_TUI.so libUI_CONSOLE.so:
-	$(MAKE) -C libtui
+libUI_TUI.so:
+	$(MAKE) -C libui/ui_curses
+
+libUI_CONSOLE.so:
+	$(MAKE) -C libui/ui_console
 
 aubit-config:
 	${MAKE} -C resource
@@ -178,7 +184,7 @@ libaubit4gl.so :
 	${MAKE} -C libaubit4gl $@
 
 libFORM_NOFORM.so :
-	${MAKE} -C libform/form_xdr $@
+	${MAKE} -C libform/noform $@
 
 libFORM_XDR.so :
 	${MAKE} -C libform/form_xdr $@
@@ -234,8 +240,9 @@ clean.generated:
 	generated/project.c generated/project.o
 
 clean.all: clean
-	${MAKE} -C libgui clean
-	${MAKE} -C libtui clean
+	${MAKE} -C libui/ui_gtk clean
+	${MAKE} -C libui/ui_console clean
+	${MAKE} -C libui/ui_curses clean
 
 clean.libincl:
 	${RM} libincl/*.bak
@@ -255,6 +262,7 @@ clean.librpc:
 clean.other:
 	${MAKE} -C libaubit4gl clean
 	${MAKE} -C libform/form_xdr clean
+	${MAKE} -C libform/noform clean
 	${MAKE} -C libmenu/menu_xdr clean
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
