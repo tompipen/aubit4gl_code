@@ -587,7 +587,7 @@ op_extend_i: interval_qual
 
 function_call_expr:
 function_callb
-| GET_FLDBUF OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET {
+| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("get_fldbuf can only be used in an input or construct");
    		YYERROR;
@@ -605,7 +605,7 @@ addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infile
 	inc_counter();
 }
 
-| INFIELD OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET {
+| INFIELD OPEN_BRACKET field_name_list_or_char_as_struct CLOSE_BRACKET {
 /* Informix allows this outside of a input/construct... */
 	if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
 		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_sio,_inp_io_type,%s,0,0));",field_name_list_as_char($<field_list>3)); 
@@ -615,7 +615,7 @@ addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infile
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }
-| FIELD_TOUCHED OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET 
+| FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
 	{ 
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("field_touched can only be used in an input or construct");
@@ -625,7 +625,7 @@ addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infile
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }
-| NOT_FIELD_TOUCHED OPEN_BRACKET fld_list_as_struct CLOSE_BRACKET 
+| NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
 	{ 
 	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
    		a4gl_yyerror("field_touched can only be used in an input or construct");
@@ -733,4 +733,16 @@ field_name_list_as_struct : field_name_as_struct {
 	field_name_list_as_struct COMMA field_name_as_struct {
                         $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 	}
+;
+
+field_name_list_or_char_as_struct : field_name_or_char_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+		} |
+	field_name_list_or_char_as_struct COMMA field_name_or_char_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+	}
+;
+
+
 /* ============================ expr.rule =========================== */

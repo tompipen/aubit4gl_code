@@ -27,7 +27,7 @@ BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
 	strcpy($<str>$,A4GL_get_formloop_str(0));
 	reset_constr();
 }
-| variable ON constr_col_list opt_defs FROM fld_list_as_struct op_help opt_attributes
+| variable ON constr_col_list opt_defs FROM field_name_list_as_struct op_help opt_attributes
 {
 	print_construct_3(0,$<str>1,field_name_list_as_char($<field_list>6),$<str>8,atoi($<str>8));
 	strcpy($<str>$,A4GL_get_formloop_str(0));

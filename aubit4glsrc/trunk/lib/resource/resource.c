@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.60 2004-02-20 14:39:53 mikeaubury Exp $
+# $Id: resource.c,v 1.61 2004-02-21 11:14:36 mikeaubury Exp $
 #
 */
 
@@ -530,9 +530,18 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 	if (debug_level!=0) return debug_level;
 } 
 
- if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
-	return A4GL_find_pointer(s,STR_RESOURCE_VAL);
- }
+
+
+ //if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
+	//return A4GL_find_pointer(s,STR_RESOURCE_VAL);
+ //}
+
+
+
+
+
+
+
 //printf("Looking for %s\n",s);
 //WARNING - strings returned by getenv() are linited to 125 charcters!
 //strings defined in aubitrc don't have this limitation.
@@ -610,7 +619,9 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 		if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 			debug_level=ptr;
 		} 
-		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
+
+		//A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
+
 		return ptr;
     }
 }

@@ -30,11 +30,11 @@ disable_cmd : DISABLE_MENUITEMS menu_item_list
 {
 print_gui_do_menuitems($<str>2,'D');
 }
-        | DISABLE fld_list_as_struct
+        | DISABLE field_name_list_as_struct
 {
 print_gui_do_fields(field_name_list_as_char($<field_list>2),'D');
 }
-        | DISABLE_FORM form_name KWFIELD fld_list_as_struct
+        | DISABLE_FORM form_name KWFIELD field_name_list_as_struct
 {
 print_gui_do_form($<str>2,field_name_list_as_char($<field_list>4),'D');
 }
@@ -44,11 +44,11 @@ enable_cmd : ENABLE_MENUITEMS menu_item_list
 {
 print_gui_do_menuitems($<str>2,'E');
 }
-        | ENABLE fld_list_as_struct
+        | ENABLE field_name_list_as_struct
 {
 print_gui_do_fields(field_name_list_as_char($<field_list>2),'E');
 }
-        | ENABLE_FORM form_name KWFIELD fld_list_as_struct
+        | ENABLE_FORM form_name KWFIELD field_name_list_as_struct
 {
 print_gui_do_form(field_name_list_as_char($<field_list>2),$<str>4,'E');
 }

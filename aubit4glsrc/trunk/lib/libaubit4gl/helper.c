@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.20 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: helper.c,v 1.21 2004-02-21 11:14:35 mikeaubury Exp $
 #
 */
 
@@ -928,8 +928,7 @@ A4GL_read_form (char *s, char *p)
       A4GLPACKER_clrlibptr ();
 
 #ifndef __MINGW32__		//No setenv() on MinGW
-      setenv ("A4GL_FORMTYPE", A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE),
-	      1);
+      setenv ("A4GL_FORMTYPE", A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE), 1);
       setenv ("A4GL_PACKER", A4GL_find_pointer_val (s, COMPILED_FORM_PACKER), 1);
 #endif
     }
