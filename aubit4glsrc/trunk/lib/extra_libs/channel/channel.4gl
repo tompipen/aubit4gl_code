@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.8 2004-12-01 11:51:12 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.9 2004-12-02 08:20:31 mikeaubury Exp $
 }
 
 {**
@@ -460,15 +460,14 @@ for (a=1;a<n;a++) {
 			for (a=0;a<n;a++) free(px[a]);
 			free(px);
 			free(ptr);
-			printf("No out channel\n"); A4GL_push_int(0); return 1;
+			return 0;
 	}
 
 	fprintf(f,"%s\n",ptr);
 	free(ptr);
 	for (a=0;a<n;a++) free(px[a]);
 	free(px);
-	A4GL_push_int(1);
-	return 1;
+	return 0;
 }
 #endif
 endcode
