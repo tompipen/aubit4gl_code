@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.43 2004-03-24 11:06:29 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.44 2004-03-24 11:45:48 mikeaubury Exp $
 #
 */
 
@@ -305,7 +305,7 @@ void
 A4GL_push_chars (char *p, int dtype, int size)
 {
   char *ptr;
-  A4GL_debug ("In A4GL_push_chars - %s\n", p);
+  A4GL_debug ("In A4GL_push_chars - %s\n", A4GL_null_as_null(p));
   ptr = (char *) A4GL_new_string_set (strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
   A4GL_debug ("Using dtype : %d",
@@ -324,7 +324,6 @@ void
 A4GL_push_char (char *p)
 {
   char *ptr;
-  //A4GL_debug ("Push_char '%s'\n", p);
 
   if (p[0] == 0 && p[1] != 0)
     {
@@ -340,7 +339,6 @@ A4GL_push_char (char *p)
     }
   //A4GL_debug ("pc3");
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
-  //A4GL_debug ("ADDED : %s to stack...", p);
 }
 
 /**
@@ -638,7 +636,7 @@ A4GL_func_concat (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug (" CONCAT  '%s' & '%s'", p1, p2);
+    A4GL_debug (" CONCAT  '%s' & '%s'", A4GL_null_as_null(p1), A4GL_null_as_null(p2));
   }
 #endif
 #ifdef DEBUG
@@ -663,7 +661,7 @@ A4GL_func_concat (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("concat returns -> %s", z1);
+    A4GL_debug ("concat returns -> %s", A4GL_null_as_null(z1));
   }
 #endif
 }
@@ -716,7 +714,7 @@ A4GL_func_using (void)
       z = A4GL_new_string (s+1);
 	A4GL_debug("Calling a4gl_using");
       a4gl_using (z, s, fmt, a);
-	A4GL_debug("z=%s\n",z);
+	A4GL_debug("z=%s\n",A4GL_null_as_null(z));
       A4GL_push_char (z);
     }
   else
@@ -724,7 +722,7 @@ A4GL_func_using (void)
       d = A4GL_pop_date ();
 #ifdef DEBUG
       {
- A4GL_debug ("Date using...%ld (%s)", d, fmt);
+ A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
       }
 #endif
 
@@ -822,7 +820,7 @@ A4GL_push_variable (void *ptr, int dtype)
 
   if ((dtype & 0xff) == 0)
     {
-      A4GL_debug ("Value = '%s'\n", ptr);
+      A4GL_debug ("Value = '%s'\n", A4GL_null_as_null(ptr));
     }
   if (A4GL_isnull (dtype, ptr))
     {

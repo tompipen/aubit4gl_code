@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.8 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: dataio.c,v 1.9 2004-03-24 11:45:48 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,7 @@ A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
 {
   char buff[256];
 #ifdef DEBUG
-  A4GL_debug ("Read_data_from_file : %s %p %s", datatype, ptr, filename);
+  A4GL_debug ("Read_data_from_file : %s %p %s", A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
 #endif
   libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
   if (libptr == 0)
@@ -122,7 +122,7 @@ A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
   int result;
 #ifdef DEBUG
   A4GL_debug ("Write data to file : datatype=%s ptr=%p file=%s\n",
-	 datatype, ptr, filename);
+	 A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
 #endif
   libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
   if (libptr == 0)
@@ -134,18 +134,18 @@ A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
   sprintf (buff, "write_%s", datatype);
 
 #ifdef DEBUG
-  A4GL_debug ("Looking for function : %s", buff);
+  A4GL_debug ("Looking for function : %s", A4GL_null_as_null(buff));
 #endif
 
   A4GL_func = A4GL_find_func (libptr, buff);
 #ifdef DEBUG
-  A4GL_debug ("Calling %s(ptr=%p,filename=%s)", buff, ptr, filename);
+  A4GL_debug ("Calling %s(ptr=%p,filename=%s)", A4GL_null_as_null(buff), ptr, A4GL_null_as_null(filename));
 #endif
 
   result = A4GL_func (ptr, filename);
 
 #ifdef DEBUG
-  A4GL_debug ("Returned from %s\n", buff);
+  A4GL_debug ("Returned from %s\n", A4GL_null_as_null(buff));
 #endif
 
   return result;

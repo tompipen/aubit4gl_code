@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.72 2004-03-15 20:17:11 mikeaubury Exp $
+# $Id: conv.c,v 1.73 2004-03-24 11:45:48 mikeaubury Exp $
 #
 */
 
@@ -359,13 +359,13 @@ A4GL_inttoint (void *a, void *b, int size)
   A4GL_inttoc (a, buff, 60);
   A4GL_trim (buff);
   memset(d->data,0,sizeof(d->data));
-  A4GL_debug ("Got Interval as : '%s'\n", buff);
+  A4GL_debug ("Got Interval as : '%s'\n", A4GL_null_as_null(buff));
   return A4GL_ctoint (buff, b, size);
 
 /*
 #ifdef DEBUG
   inttoc(a,buff,40);
-	A4GL_debug(" Buff=%s\n",buff);
+	A4GL_debug(" Buff=%s\n",A4GL_null_as_null(buff));
 #endif
 
 
@@ -465,7 +465,7 @@ A4GL_inttoc (void *a1, void *b, int size)
       strcat (buff, buff2);
 
     }
-  A4GL_debug ("-->%s\n", buff);
+  A4GL_debug ("-->%s\n", A4GL_null_as_null(buff));
   A4GL_ctoc (buff, b, size);
   return 1;
 }
@@ -489,7 +489,7 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
   strcpy (localchar, a_char);
   d = (struct ival *) b_int;
 
-  A4GL_debug ("ctoint - %s size_b=%x\n", a_char, size_b);
+  A4GL_debug ("ctoint - %s size_b=%x\n", A4GL_null_as_null(a_char), size_b);
   d->ltime = size_b & 15;
   d->stime = size_b >> 4;
 
@@ -601,7 +601,7 @@ A4GL_dttodt (void *a, void *b, int size)
   if (A4GL_dttoc (a, buff, 255))
     {
       d = b;
-      A4GL_debug ("Got buff as : %s - size=%x\n", buff, size);
+      A4GL_debug ("Got buff as : %s - size=%x\n", A4GL_null_as_null(buff), size);
       d->stime = size / 16;
       d->ltime = size % 16;
       return A4GL_ctodt (buff, b, d->stime * 16 + d->ltime);
@@ -625,7 +625,7 @@ A4GL_ctodt (void *a, void *b, int size)
   struct A4GLSQL_dtime *d;
 int valid;
   A4GL_debug ("ctodt : %p %p %d\n", a, b, size);
-  A4GL_debug ("a-->%s\n", a);
+  A4GL_debug ("a-->%s\n", A4GL_null_as_null(a));
   d = (struct A4GLSQL_dtime *) b;
 
   d->ltime = size % 16;
@@ -727,12 +727,12 @@ A4GL_dttoc (void *a, void *b, int size)
 
   if (strlen (buff) > size)
     {
-      A4GL_debug ("does not fit '%s' %d", buff, size);
+      A4GL_debug ("does not fit '%s' %d", A4GL_null_as_null(buff), size);
       A4GL_exitwith ("does not fit\n");
       return 0;
     }
 
-  A4GL_debug ("dttoc sets to '%s'", buff);
+  A4GL_debug ("dttoc sets to '%s'", A4GL_null_as_null(buff));
 
   strcpy (b, buff);
   return 1;
@@ -823,7 +823,7 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
   errno = 0;
   A4GL_trim (a);
 
-  A4GL_debug("Processing %s",a);
+  A4GL_debug("Processing %s",A4GL_null_as_null(a));
   zz = strlen (a);
   *z = strtol (a, &eptr, 10);
 
@@ -869,7 +869,7 @@ A4GL_itodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
+  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   A4GL_init_dec (z, h, t);
   sprintf (buff, "%016d", *(short *) a);
 
@@ -910,7 +910,7 @@ A4GL_ltodec (void *a, void *z, int size)
 
   A4GL_init_dec (z, h, t);
   sprintf (buff, "%ld", *(long *) a);
-  A4GL_debug ("Buff=%s\n", buff);
+  A4GL_debug ("Buff=%s\n", A4GL_null_as_null(buff));
   eptr = A4GL_str_to_dec (buff, z);
   //A4GL_debug ("eptr=%p\n", eptr);
 
@@ -948,14 +948,14 @@ A4GL_debug("ftodec... %lf" ,*(double *)a);
     {
        //set format to the number of digits needed, to force round-off
       sprintf (fmt, "%%-32.%df", ndec+1);
-	A4GL_debug("Format=%s",fmt);
+	A4GL_debug("Format=%s",A4GL_null_as_null(fmt));
     }
   else
     {
       strcpy (fmt, "%-32.1f");
     }
   sprintf (buff, fmt, *(double *) a);
-	A4GL_debug("buff=%s",buff);
+	A4GL_debug("buff=%s",A4GL_null_as_null(buff));
   eptr = A4GL_str_to_dec (buff, z);
 
   if (eptr)
@@ -987,7 +987,7 @@ A4GL_sftodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
+  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   A4GL_init_dec (z, h, t);
   sprintf (buff, "%32.16f", *(float *) a);
   eptr = A4GL_str_to_dec (buff, z);
@@ -1021,7 +1021,7 @@ A4GL_dectodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
+  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   A4GL_init_dec (z, h, t);
   buff = A4GL_dec_to_str (a, 0);
   eptr = A4GL_str_to_dec (buff, z);
@@ -1053,7 +1053,7 @@ A4GL_stodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
+  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   A4GL_init_dec (z, h, t);
 
   A4GL_debug ("After init\n");
@@ -1086,14 +1086,14 @@ A4GL_mdectos (void *z, void *w, int size)
 
   buff = A4GL_dec_to_str (z, size);
 
-  A4GL_debug ("mdec_to_str -> '%s'\n", buff);
+  A4GL_debug ("mdec_to_str -> '%s'\n", A4GL_null_as_null(buff));
 
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
 
   A4GL_string_set (w, buff2, size);
 
-  A4GL_debug ("w = %s\n", w);
+  A4GL_debug ("w = %s\n", A4GL_null_as_null(w));
   return 1;
 }
 
@@ -1227,12 +1227,12 @@ A4GL_dectos (void *z, void *w, int size)
   char *buff;
   char buff2[200];
   buff = A4GL_dec_to_str (z, size);
-  A4GL_debug ("dec_to_str -> '%s'\n", buff);
+  A4GL_debug ("dec_to_str -> '%s'\n", A4GL_null_as_null(buff));
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
   A4GL_string_set (w, buff2, size);
 
-  A4GL_debug ("w = %s\n", w);
+  A4GL_debug ("w = %s\n", A4GL_null_as_null(w));
 
 
   return 1;
@@ -1269,7 +1269,6 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 	}
   }
 
-  //A4GL_debug ("stof aa = %s, zz = %f", aa, (double *) zz);
   a = (char *) aa;
 
   z = (double *) zz;
@@ -1298,7 +1297,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 	
   ok=sscanf (a, "%lf", z);
   if (duped) free(a);
-  A4GL_debug ("stof: string %s ", a);
+  A4GL_debug ("stof: string %s ", A4GL_null_as_null(a));
   A4GL_debug ("stof: float %lf", *z);
   A4GL_debug ("stof: OK=%d", ok);
   return ok;
@@ -1374,7 +1373,7 @@ int rval;
   a = (short *) aa;
   z = (char *) zz;
   A4GL_dectos (z, buff, 64);
-  A4GL_debug("--> %s\n",buff);
+  A4GL_debug("--> %s\n",A4GL_null_as_null(buff));
 
   rval=A4GL_stoi (buff, a, 0);
 
@@ -1829,7 +1828,7 @@ A4GL_dtos (void *aa, void *zz, int size)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("Date = %s\n", z);
+    A4GL_debug ("Date = %s\n", A4GL_null_as_null(z));
   }
 #endif
   return 1;
@@ -1861,7 +1860,7 @@ A4GL_itoc (void *aa, void *zz, int size)
     {
 #ifdef DEBUG
       {
- A4GL_debug ("itoc return from A4GL_digittoc using %s", fmt);
+ A4GL_debug ("itoc return from A4GL_digittoc using %s", A4GL_null_as_null(fmt));
       }
 #endif
       sprintf (buff, fmt, local_a_int);
@@ -1995,7 +1994,7 @@ A4GL_ltoc (void *aa, void *zz, int size)
     {
 #ifdef DEBUG
       {
- A4GL_debug ("ltoc return from A4GL_digittoc using %s", fmt);
+ A4GL_debug ("ltoc return from A4GL_digittoc using %s", A4GL_null_as_null(fmt));
       }
 #endif
       sprintf (buff, fmt, *(long *) a);
@@ -2726,7 +2725,7 @@ A4GL_assertion (int a, char *s)
     {
       fflush (stdout);
       A4GL_set_errm (s);
-      A4GL_debug ("%s", s);
+      A4GL_debug ("%s", A4GL_null_as_null(s));
       A4GL_exitwith ("Assertion failed %s");
       A4GL_chk_err (0, "Unknown");
       exit (0);
@@ -2770,7 +2769,7 @@ A4GL_valid_dt (char *s, int *data)
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  A4GL_debug ("Splitting '%s'\n", s);
+  A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(s));
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 1; a < buff_size; a++)
@@ -2820,7 +2819,7 @@ A4GL_valid_dt (char *s, int *data)
   type[cnt] = 0;
   dt_type = -1;
   A4GL_debug ("cnt=%d\n", cnt);
-  A4GL_debug ("type=%s\n", type);
+  A4GL_debug ("type=%s\n", A4GL_null_as_null(type));
 
   if (strcmp (type, "") == 0)
     {
@@ -2954,7 +2953,7 @@ A4GL_valid_dt (char *s, int *data)
 
       if (i != 1 && strlen (ptr[i - a]) != 2 && i != 7)
 	{
-	  A4GL_debug ("expecting 2 digits -> '%s'\n", ptr[i - a]);
+	  A4GL_debug ("expecting 2 digits -> '%s'\n", A4GL_null_as_null(ptr[i - a]));
 	  return 0;
 	}
 
@@ -2981,7 +2980,7 @@ A4GL_valid_dt (char *s, int *data)
 	  data[i - 1] = atoi (ptr[i - a]);
 	}
 
-      A4GL_debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
+      A4GL_debug ("%s -> '%s'\n", A4GL_null_as_null(codes[i]), A4GL_null_as_null(ptr[i - a]));
     }
 
   // Do we have a valid date ?
@@ -3037,13 +3036,13 @@ A4GL_valid_int (char *s, int *data, int size)
   A4GL_debug ("In valid_int size=%x\n",size);
   if (strlen (s) > 30)
     {
-      A4GL_debug ("Too long - '%s' (%d)\n", s, strlen (s));
+      A4GL_debug ("Too long - '%s' (%d)\n", A4GL_null_as_null(s), strlen (s));
       return 0;
     }
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  A4GL_debug ("Splitting '%s'\n", buff);
+  A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(buff));
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 1; a < buff_size; a++)
@@ -3237,7 +3236,7 @@ A4GL_valid_int (char *s, int *data, int size)
 	  data[i - 1] = atoi (ptr[i - a]);
 	}
 
-      A4GL_debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
+      A4GL_debug ("%s -> '%s'\n", A4GL_null_as_null(codes[i]), A4GL_null_as_null(ptr[i - a]));
     }
   has_yr_month = 0;
   has_rest = 0;
@@ -3378,7 +3377,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
 	   ival->data[19], ival->data[20], ival->data[21],
 	   ival->data[22], ival->data[23]);
 
-  A4GL_debug ("buff=%s\n", buff);
+  A4GL_debug ("buff=%s\n",A4GL_null_as_null( buff));
 
   cnt = 0;
   for (c = 1; c < s1; c++)
@@ -3393,7 +3392,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
   c = s2;
   strncpy (buff2, &buff[cnt], s2);
   buff2[s2] = 0;
-  A4GL_debug ("buff2 = '%s'\n", buff2);
+  A4GL_debug ("buff2 = '%s'\n", A4GL_null_as_null(buff2));
 
   c2 = c;
   ltime = ival->ltime;
@@ -3402,7 +3401,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
 
   for (cpc = s1; cpc < ltime; cpc++)
     {
-      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
+      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, A4GL_null_as_null(buff2), c2, cnt,
 	     cnt + c2);
       data[cpc - 1] = atoi (buff2);
 
@@ -3428,11 +3427,11 @@ A4GL_decode_interval (struct ival *ival, int *data)
 	}
     }
 
-  A4GL_debug ("cpc=%d buff2=%s", cpc, buff2);
+  A4GL_debug ("cpc=%d buff2=%s", cpc, A4GL_null_as_null(buff2));
   data[cpc - 1] = atoi (buff2);
   for (c = 0; c < 7; c++)
     {
-      A4GL_debug ("Data : %s %d\n", codes[c], data[c]);
+      A4GL_debug ("Data : %s %d\n", A4GL_null_as_null(codes[c]), data[c]);
     }
 }
 #endif

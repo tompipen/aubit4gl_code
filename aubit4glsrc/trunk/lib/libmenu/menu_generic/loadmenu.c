@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.10 2004-03-24 11:06:29 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.11 2004-03-24 11:45:48 mikeaubury Exp $
 #*/
 
 /**
@@ -43,7 +43,7 @@
 // to make it work, XDR definitions need to be replaced with libPACKER calls !!!
 
 
-
+#include "a4gl_lib_menu_generic_int.h"
 
 /*
 =====================================================================

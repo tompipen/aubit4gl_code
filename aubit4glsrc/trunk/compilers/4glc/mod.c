@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.168 2004-03-24 11:06:16 mikeaubury Exp $
+# $Id: mod.c,v 1.169 2004-03-24 11:45:12 mikeaubury Exp $
 #
 */
 
@@ -512,7 +512,7 @@ print_record (int z, char ff, char *vname)
 
   /* MJA - NEWVARIABLE*/
 
-  A4GL_debug ("Print record %s\n", vname);
+  A4GL_debug ("Print record %s\n", A4GL_null_as_null(vname));
 
   if (isin_command ("REPORT") ||
       isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
@@ -558,7 +558,7 @@ print_record (int z, char ff, char *vname)
     }
   else
     {
-      A4GL_debug ("print_end_record %s %s", vars[z].var_name, vars[z].var_arrsize);
+      A4GL_debug ("print_end_record %s %s", A4GL_null_as_null(vars[z].var_name), A4GL_null_as_null(vars[z].var_arrsize));
 
       print_end_record (vars[z].var_name, vars[z].var_arrsize);
     }
@@ -610,7 +610,7 @@ ignull (char *ptr)
 void
 push_name (char *a, char *n)
 {
-  A4GL_debug ("push_name  a = %s n = %d \n", a, n);
+  A4GL_debug ("push_name  a = %s n = %d \n", A4GL_null_as_null(a), n);
   a4gl_add_variable (a, 0, n);
 }
 
@@ -696,7 +696,7 @@ add_link_to (char *tab, char *pkey)
   /*char *pt;*/
   /*char *pk;*/
   /*int z;*/
-  A4GL_debug ("Adding link to %s %s\n", tab, pkey);
+  A4GL_debug ("Adding link to %s %s\n", A4GL_null_as_null(tab), A4GL_null_as_null(pkey));
 
   variable_action (-1, tab, pkey, "", "add_link_to");
 
@@ -741,7 +741,7 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
   menu_stack[mn][mnopt].menu_title[0] = 0;
   menu_stack[mn][mnopt].menu_help[0] = 0;
   menu_stack[mn][mnopt].menu_key[0] = 0;
-  A4GL_debug ("Menu %d Option %d '%s'", mn, mnopt, b);
+  A4GL_debug ("Menu %d Option %d '%s'", mn, mnopt, A4GL_null_as_null(b));
 }
 
 /**
@@ -814,7 +814,7 @@ scan_variables (char *s_n, int mode)
   int vval;
   memset(s,0,1024);
   strcpy(s,s_n);
-A4GL_debug("s=%s",s);
+A4GL_debug("s=%s",A4GL_null_as_null(s));
   /*last_var_found = -1;*/
 
   /* MJA - NEWVARIABLE*/
@@ -849,7 +849,7 @@ A4GL_debug("s=%s",s);
 
 
 
-A4GL_debug("find_variable : %s",buff);
+A4GL_debug("find_variable : %s",A4GL_null_as_null(buff));
   vval = find_variable (buff, &dtype, &size, 0, 0);
 
   if (vval == 1)
@@ -929,9 +929,9 @@ A4GL_debug("find_variable : %s",buff);
 			  a++;
 			  continue;
 			}
-		      A4GL_debug (" ---> vn=%s %s %s %s", vars[a].var_name,
-			     vars[a].var_type, vars[a].var_arrsize,
-			     vars[a].var_size);
+		      A4GL_debug (" ---> vn=%s %s %s %s", A4GL_null_as_null(vars[a].var_name),
+			     A4GL_null_as_null(vars[a].var_type), A4GL_null_as_null(vars[a].var_arrsize),
+			     A4GL_null_as_null(vars[a].var_size));
 		      break;
 		    }
 
@@ -970,7 +970,7 @@ A4GL_debug("find_variable : %s",buff);
 	}
 
     }
-  A4GL_debug ("Variable not there : %s", s);
+  A4GL_debug ("Variable not there : %s", A4GL_null_as_null(s));
 
   return -1;
 #endif
@@ -1070,8 +1070,7 @@ isvartype (char *s, int mode)
 
 	  if (flg && mode == 1)
 	    {
-	      A4GL_debug ("Seems to A4GL_match %s %d", vars[a].var_name,
-		     vars[a].var_arrsize);
+	      A4GL_debug ("Seems to A4GL_match %s %d", A4GL_null_as_null(vars[a].var_name), vars[a].var_arrsize);
 	      return atoi (vars[a].var_arrsize);
 	    }
 
@@ -1102,7 +1101,7 @@ isarrvariable (char *s)
 {
   long a;
   a = isvartype (s, 1);
-  A4GL_debug ("Checking if %s is an array %d", s, a);
+  A4GL_debug ("Checking if %s is an array %d", A4GL_null_as_null(s), a);
   return a;
 }
 
@@ -1150,8 +1149,7 @@ scan_arr_variable (char *s)
   ptr = strtok (buff, ".");
   for (a = 0; a < varcnt; a++)
   {
-    A4GL_debug ("chk: %d %s %s %d %d\n", a, vars[a].var_name, ptr, vars[a].level,
-	     lvl);
+    A4GL_debug ("chk: %d %s %s %d %d\n", a, A4GL_null_as_null(vars[a].var_name), A4GL_null_as_null(ptr), vars[a].level, lvl);
 
     if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
 	  {
@@ -1169,7 +1167,7 @@ scan_arr_variable (char *s)
 	  }
   }
 
-  A4GL_debug ("// Warning    Couldnt find %s \n", s);
+  A4GL_debug ("// Warning    Couldnt find %s \n", A4GL_null_as_null(s));
 
   return -1;
 
@@ -1321,13 +1319,13 @@ open_db (char *s)
   char db[2048];
   char buff[256];
 
-  A4GL_debug ("open_db %s", s);
+  A4GL_debug ("open_db %s", A4GL_null_as_null(s));
   strcpy (db, s);
 
   if (has_default_database ())
     {
       strcpy (db, get_default_database ());
-      A4GL_debug ("Overriding default database with %s", db);
+      A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db));
       A4GL_trim (db);
     }
 
@@ -1335,8 +1333,8 @@ open_db (char *s)
   A4GLSQL_init_connection (db);
   if (A4GLSQL_get_status () != 0)
     {
-      sprintf (buff, "Could not connect to database %s (%s)", db,
-	       A4GLSQL_get_sqlerrm ());
+      sprintf (buff, "Could not connect to database %s (%s)", A4GL_null_as_null(db),
+	       A4GL_null_as_null(A4GLSQL_get_sqlerrm ()));
       a4gl_yyerror (buff);
     }
   if (db_used == 0)
@@ -1354,7 +1352,7 @@ rettype (char *s)
 {
   static char rs[20] = "long";
   int a;
-  A4GL_debug ("In rettype : %s", s);
+  A4GL_debug ("In rettype : %s", A4GL_null_as_null(s));
 
   a = atoi (s);
 
@@ -1367,7 +1365,7 @@ rettype (char *s)
       function = A4GL_get_datatype_function_i (a, "OUTPUT");
       A4GL_debug ("Copy");
       strcpy (rs, function ());
-      A4GL_debug ("Returning %s\n", rs);
+      A4GL_debug ("Returning %s\n", A4GL_null_as_null(rs));
       return rs;
     }
 
@@ -1512,7 +1510,7 @@ pushValidateAllTableColumns (char *tableName)
 
   A4GL_debug ("pushValidateAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
-  A4GL_debug ("Calling get_columns : %s\n", tableName);
+  A4GL_debug ("Calling get_columns : %s\n", A4GL_null_as_null(tableName));
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
@@ -1531,7 +1529,7 @@ pushValidateAllTableColumns (char *tableName)
       /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
       rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
-      A4GL_debug ("next column for table '%s' is '%s'", tableName, ccol);
+      A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null(tableName), A4GL_null_as_null(ccol));
 
       strcpy (colname, ccol);
 
@@ -1580,7 +1578,7 @@ pushLikeAllTableColumns (char *tableName)
 
   A4GL_debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
-  A4GL_debug ("Calling get_columns : %s\n", tableName);
+  A4GL_debug ("Calling get_columns : %s\n", A4GL_null_as_null(tableName));
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
@@ -1599,7 +1597,7 @@ pushLikeAllTableColumns (char *tableName)
       /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
       rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
-      A4GL_debug ("next column for table '%s' is '%s'", tableName, ccol);
+      A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null(tableName),A4GL_null_as_null(ccol));
 
       strcpy (colname, ccol);
 
@@ -1614,9 +1612,9 @@ pushLikeAllTableColumns (char *tableName)
       sprintf (cdtype, "%d", idtype & 15);
       sprintf (csize, "%d", isize);
       A4GL_debug ("%d %d", idtype, isize);
-      A4GL_debug ("---> %s %s", cdtype, csize);
-      A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,
-	     csize);
+      A4GL_debug ("---> %s %s", A4GL_null_as_null(cdtype), A4GL_null_as_null(csize));
+      A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", A4GL_null_as_null(colname), A4GL_null_as_null(cdtype),
+	     A4GL_null_as_null(csize));
       trim_spaces (colname);
       push_name (colname, 0);
       push_type (rettype (cdtype), csize, 0);
@@ -1654,7 +1652,7 @@ push_like2 (char *t2)
 
   tableName = strtok (buff, ".");	/* table name */
   columnName = strtok (0, ".");	/* column name */
-  A4GL_debug ("a='%s' b='%s'", tableName, columnName);
+  A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null(tableName), A4GL_null_as_null(columnName));
 
   if (columnName)
     {
@@ -1702,7 +1700,7 @@ push_validate (char *t2)
 
   tableName = strtok (buff, ".");	/* table name */
   columnName = strtok (0, ".");	/* column name */
-  A4GL_debug ("a='%s' b='%s'", tableName, columnName);
+  A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null(tableName), A4GL_null_as_null(columnName));
 
   if (columnName && strcmp(columnName,"*")!=0)
     {
@@ -1729,7 +1727,7 @@ void
 push_like (char *t)
 {
 
-  A4GL_debug (">>>>>> %s\n", t);
+  A4GL_debug (">>>>>> %s\n", A4GL_null_as_null(t));
   push_like2 (t);
   A4GL_debug ("<<<<<<\n");
 }
@@ -1964,7 +1962,7 @@ trim(char *s)
 void
 push_gen (int a, char *s)
 {
-  A4GL_debug ("Push %d %s - %d\n", a, s, gen_stack_cnt[a]);
+  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
   /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);*/
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
@@ -2028,9 +2026,9 @@ pop_all_gen (int a, char *s)
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
       if (z > 0)
- A4GL_debug ("%s ", s);
+ A4GL_debug ("%s ", A4GL_null_as_null(s));
 
-      A4GL_debug ("%s", gen_stack[a][z]);
+      A4GL_debug ("%s", A4GL_null_as_null(gen_stack[a][z]));
     }
   gen_stack_cnt[a] = 0;
 }
@@ -2066,7 +2064,7 @@ is_pk (char *s)
   int a;
   int cnt;
   char buff[256];
-  A4GL_debug ("Checking if %s is a pk in %s", s, pklist);
+  A4GL_debug ("Checking if %s is a pk in %s", A4GL_null_as_null(s),A4GL_null_as_null( pklist));
   a = linked_split (pklist, 0, 0);
   for (cnt = 1; cnt <= a; cnt++)
     {
@@ -2104,7 +2102,7 @@ add_bind (char i, char *var_i)
   long dtype;
 /*char c;*/
 char var[2048]="";
-A4GL_debug("add_bind: %c %s\n",i,var_i);
+A4GL_debug("add_bind: %c %s\n",i,A4GL_null_as_null(var_i));
 strcpy(var,var_i);
 
   if (var_i[0] == '"')
@@ -2127,7 +2125,7 @@ strcpy(var,var_i);
     }
 
 
-  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, var, i);
+  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, A4GL_null_as_null(var), i);
 
   if (i == 'i')
     {
@@ -2166,7 +2164,7 @@ strcpy(var,var_i);
 			&s_sstart, &s_send);
 	      if (a != 4)
 		{
-		A4GL_debug("Error processing : %s\n",buff2);
+		A4GL_debug("Error processing : %s\n",A4GL_null_as_null(buff2));
 		  a4gl_yyerror ("Internal error - (split substr)");
 		}
 	      if (s_send == 0)
@@ -2277,7 +2275,7 @@ strcpy(var,var_i);
 int
 start_bind (char i, char *var)
 {
-  A4GL_debug ("start_bind %c -  %s", i, var);
+  A4GL_debug ("start_bind %c -  %s", i, A4GL_null_as_null(var));
 
   if (i == 'i')
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.55 2004-03-23 13:10:21 mikeaubury Exp $
+# $Id: builtin.c,v 1.56 2004-03-24 11:45:48 mikeaubury Exp $
 #
 */
 
@@ -214,10 +214,10 @@ aclfgl_fgl_getenv (int nargs)
     }
   g = A4GL_char_pop ();
   A4GL_trim (g);
-  A4GL_debug ("Looking up %s", g);
+  A4GL_debug ("Looking up %s", A4GL_null_as_null(g));
   p = acl_getenv (g);
   A4GL_debug("Got back %p");
-  if (p) A4GL_debug(" %s = '%s'",g,p);
+  if (p) A4GL_debug(" %s = '%s'",A4GL_null_as_null(g),A4GL_null_as_null(p));
   if (p == 0)
     A4GL_push_char ("");
   else
@@ -343,7 +343,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
 
 #ifdef DEBUG
   {
-    A4GL_debug ("Start with %s", np);
+    A4GL_debug ("Start with %s", A4GL_null_as_null(np));
   }
   {
     A4GL_debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
@@ -364,7 +364,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   np2[b - a + 1] = 0;
 #ifdef DEBUG
   {
-    A4GL_debug (">>>>Set to %s", np2);
+    A4GL_debug (">>>>Set to %s", A4GL_null_as_null(np2));
   }
 #endif
   //printf ("np2= '%s'\n", np2);
@@ -392,7 +392,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
   A4GL_pad_string (ca, DECODE_SIZE (dtype));
 #ifdef DEBUG
   {
-    A4GL_debug ("Start with '%s'", ca);
+    A4GL_debug ("Start with '%s'", A4GL_null_as_null(ca));
   }
   {
     A4GL_debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
@@ -405,7 +405,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
   A4GL_pop_char (np, size);
 #ifdef DEBUG
   {
-    A4GL_debug ("   Stack contained %s\n", np);
+    A4GL_debug ("   Stack contained %s\n", A4GL_null_as_null(np));
   }
   {
     A4GL_debug ("   Size=%d", size);
@@ -414,7 +414,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
   strncpy (&ca[a - 1], np, size);
 #ifdef DEBUG
   {
-    A4GL_debug ("Set to %s", ca);
+    A4GL_debug ("Set to %s", A4GL_null_as_null(ca));
   }
 #endif
   return ca;
@@ -719,7 +719,7 @@ A4GL_startlog (char *fname, int l, int n)
 
   A4GL_trim (fname);
   A4GL_trim (s);
-  A4GL_debug ("START LOG (%s Line:%d) to file '%s'\n", fname, l, s);
+  A4GL_debug ("START LOG (%s Line:%d) to file '%s'\n", A4GL_null_as_null(fname), l, A4GL_null_as_null(s));
   error_log_file = fopen (s, "w");
 
   if (error_log_file == 0)
@@ -762,7 +762,7 @@ A4GL_errorlog (char *fname, int l, int n)
 
   //s = A4GL_char_pop ();
   s=A4GL_pull_off_data_for_display(n,DISPLAY_TYPE_DISPLAY_AT);
-  A4GL_debug ("ERROR LOG - %s Line:%d %s\n", fname, l, s);
+  A4GL_debug ("ERROR LOG - %s Line:%d %s\n", A4GL_null_as_null(fname), l, A4GL_null_as_null(s));
 
   if (error_log_file)
     {
@@ -901,7 +901,7 @@ acli_interval (char *s, int n)
 {
   struct_ival c;
   //char *ptr;
-  A4GL_debug ("acli_interval s=%s n=%d\n", s, n);
+  A4GL_debug ("acli_interval s=%s n=%d\n", A4GL_null_as_null(s), n);
   memset(&c,0,sizeof(c));
   c.ltime = n & 16;
   c.stime = n / 16;
@@ -924,7 +924,7 @@ acli_datetime (char *s, int n)
   //char *ptr;
   char buff[255];
 
-  A4GL_debug ("acli_datetime s=%s n=%d\n", s, n);
+  A4GL_debug ("acli_datetime s=%s n=%d\n", A4GL_null_as_null(s), n);
   c.ltime = n & 16;
   c.stime = n / 16;
   //printf("--1>%s\n",s);

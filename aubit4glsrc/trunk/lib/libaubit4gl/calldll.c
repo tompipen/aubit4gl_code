@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.39 2004-01-31 09:01:18 mikeaubury Exp $
+# $Id: calldll.c,v 1.40 2004-03-24 11:45:48 mikeaubury Exp $
 #
 */
 
@@ -394,7 +394,7 @@ A4GL_dl_openlibrary (char *type, char *p)
 #endif
 
 #ifdef DEBUG
-  A4GL_debug ("Attempting to open shared library : '%s'", buff);
+  A4GL_debug ("Attempting to open shared library : '%s'", A4GL_null_as_null(buff));
 #endif
 
 #ifdef USE_SHL
@@ -414,11 +414,11 @@ A4GL_dl_openlibrary (char *type, char *p)
       sprintf (buff2, "%s", dlerror ());
 #endif
 
-      printf ("Error: can't open DLL %s - STOP\n", buff);
-      printf ("Error msg: %s\n", buff2);
+      printf ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
+      printf ("Error msg: %s\n", A4GL_null_as_null(buff2));
 
-      A4GL_debug ("Error: can't open DLL %s - STOP\n", buff);
-      A4GL_debug ("Error msg: %s\n", buff2);
+      A4GL_debug ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
+      A4GL_debug ("Error msg: %s\n", A4GL_null_as_null(buff2));
 
       A4GL_exitwith ("Error: can't open DLL - STOP. See debug.out");
       //FIXME: why is A4GL_exitwith not exiting???
@@ -456,7 +456,7 @@ A4GL_find_func (void *dllhandle, char *func)
   sprintf (tempbuff, "%s", func);
 #endif
 
-  A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", tempbuff);
+  A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", A4GL_null_as_null(tempbuff));
 
   if (dllhandle == 0)
     {
@@ -490,7 +490,6 @@ A4GL_find_func (void *dllhandle, char *func)
       /* return badfunc; */
     }
 
-  /*  debug("calldll.c: before return func=%s\n",func); */
 
   return func_ptr;
 }
@@ -550,7 +549,7 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
   A4GL_debug ("find_func_allow_missing: Finding pointer to DLL function %s\n",
-	 func);
+	 A4GL_null_as_null(func));
 
 #if (defined(__MACH__) && defined(__APPLE__))
   sprintf (tempbuff, "_%s", func);
@@ -614,7 +613,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 	nfile[2]='G';
 	nfile[3]='L';
   }
-A4GL_debug("nfile=%s\n",nfile);
+A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
 
 #if (defined(__MACH__) && defined(__APPLE__))
   strcpy (nfunc, "aclfgl__");
@@ -625,38 +624,38 @@ A4GL_debug("nfile=%s\n",nfile);
   strcat (nfunc, function);
   A4GL_trim (nfunc);
   A4GL_trim (nfile);
-  A4GL_debug ("Calling %s in file %s with %d args", nfunc, nfile, args);
+  A4GL_debug ("Calling %s in file %s with %d args", A4GL_null_as_null(nfunc), A4GL_null_as_null(nfile), args);
 
-  A4GL_debug ("Trying %s", filename);
+  A4GL_debug ("Trying %s", A4GL_null_as_null(filename));
   dllhandle = dlopen (filename, RTLD_LAZY);
   if (dllhandle == 0)
-    A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
+    A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
 
   if (dllhandle == 0)
     {
       sprintf (buff, "%s/lib/lib%s.so", acl_getenv ("AUBITDIR"), nfile);
-      A4GL_debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
- A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
     }
 
   if (dllhandle == 0)
     {
       sprintf (buff, "./lib%s.so", nfile);
-      A4GL_debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
- A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
     }
 
   if (dllhandle == 0)
     {
       sprintf (buff, "./%s.so", nfile);
-      A4GL_debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
- A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
     }
 
 
