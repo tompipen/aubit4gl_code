@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.47 2005-03-07 14:53:11 mikeaubury Exp $
+# $Id: prompt.c,v 1.48 2005-03-09 15:15:24 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.47 2005-03-07 14:53:11 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.48 2005-03-09 15:15:24 mikeaubury Exp $";
 
 /**
  * @file
@@ -196,9 +196,6 @@ int
   A4GL_debug ("Initialized form");
   A4GLSQL_set_status (0, 0);
 
-  ////A4GL_gui_startprompt ((long) prompt);
-  //A4GL_gui_setfocus ((long) prompt->field);
-  //wrefresh (p);
   A4GL_mja_refresh ();
   A4GL_zrefresh();
   return 1;
@@ -315,7 +312,6 @@ struct aclfgl_event_list *evt;
 int was_aborted=0;
   FORM *mform;
 
-  //int kpress;
   struct s_prompt *prompt;
   prompt = vprompt;
   evt=vevt;
@@ -345,7 +341,6 @@ int was_aborted=0;
 
       A4GL_push_char (buff);
       prompt->mode = 2;
-      //A4GL_gui_endprompt ((long) prompt);	/* void    A4GL_gui_endprompt            (long ld); */
       unpost_form (prompt->f);
       A4GL_debug("Calling clear_prmpt");
       A4GL_clear_prompt (prompt);
@@ -374,7 +369,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
       		A4GL_push_null (DTYPE_CHAR,1);
       		prompt->mode = 2;
-      		//A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
       		unpost_form (prompt->f);
       		A4GL_debug("Calling clear_prmpt");
       		A4GL_clear_prompt (prompt);
@@ -388,10 +382,8 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   if (was_aborted) abort_pressed=1;
 
 
-  //prompt_last_key=prompt->lastkey;
 
   if (abort_pressed) {
-		//A4GL_error_nobox("ABORT - process",0);
 
 
   }
@@ -415,7 +407,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
     return a;
 
   A4GL_debug ("Requested..");
-  //if (prompt->lastkey == 10 || prompt->lastkey == 13)
   if (a == 10 || a == 13)
     {
 	prompt_last_key=0;
@@ -456,8 +447,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
     }
 
 
-  //prompt_last_key=0; // we'll do it now 
-  //return -90;
   return -1000;
 }
 
@@ -504,10 +493,6 @@ A4GL_debug("curses -> aubit a=%d %x\n",a,a);
   if (a == KEY_ENTER) return A4GLKEY_ENTER;
   if (a == 13) return A4GLKEY_ENTER;
 
-  //if (a==KEY_PGDN) return A4GLKEY_PGDN;
-  //if (a==KEY_PGUP) return A4GLKEY_PGUP;
-  //if (a==KEY_INS) return A4GLKEY_INS;
-  //if (a==KEY_DEL) return A4GLKEY_DEL;
 
   if (a==KEY_NPAGE) return A4GLKEY_PGDN;
   if (a==KEY_PPAGE) return A4GLKEY_PGUP;

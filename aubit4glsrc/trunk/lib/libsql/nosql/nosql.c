@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.34 2005-03-07 14:53:08 mikeaubury Exp $
+# $Id: nosql.c,v 1.35 2005-03-09 15:15:12 mikeaubury Exp $
 #*/
 
 /**

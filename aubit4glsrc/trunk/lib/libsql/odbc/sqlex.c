@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.22 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: sqlex.c,v 1.23 2005-03-09 15:15:13 mikeaubury Exp $
 #
 */
 

@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.27 2005-01-31 10:32:53 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.28 2005-03-09 15:14:42 mikeaubury Exp $
 #*/
 
 /**

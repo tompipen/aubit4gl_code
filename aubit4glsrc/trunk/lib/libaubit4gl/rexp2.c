@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.26 2005-02-15 08:45:54 mikeaubury Exp $
+# $Id: rexp2.c,v 1.27 2005-03-09 15:14:41 mikeaubury Exp $
 #
 */
 
@@ -575,50 +575,6 @@ convert_constr_buffer (char *str)
 }
 
 
-#ifdef NOTUSED
-/**
- *
- *
- * @return
- */
-void
-A4GL_doconstruct (char *s, char *whereclause)
-{
-  int a;
-  int t;
-  char buffer[2][800];
-  printf ("Here 1\n");
-  strcpy (whereclause, "");
-  strcpy (buffer[0], "");
-  strcpy (buffer[1], "");
-  printf ("s=%s\n", s);
-  t = 0;
-
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == CONSTR_SEP || s[a] == 0)
-	{
-
-	  if (t == 1)
-	    {
-	      if (strlen (whereclause) > 0)
-		strcat (whereclause, " AND ");
-	      if (buffer[0][0] == '*')
-		strcat (whereclause, A4GL_construct (&buffer[0][1], buffer[1], 1));
-	      else
-		strcat (whereclause, A4GL_construct (buffer[0], buffer[1], 0));
-	      strcpy (buffer[0], "");
-	      strcpy (buffer[1], "");
-	    }
-	  t = !t;
-	}
-      else
-	appendchr (buffer[t], s[a]);
-    }
-  if (strlen (whereclause) == 0)
-    strcpy (whereclause, " 1=1");
-}
-#endif
 
 
 /* ============================ EOF ================================== */

@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.11 2005-03-07 14:53:07 mikeaubury Exp $
+# $Id: init.c,v 1.12 2005-03-09 15:14:46 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: init.c,v 1.11 2005-03-07 14:53:07 mikeaubury Exp $";
+static char *module_id="$Id: init.c,v 1.12 2005-03-09 15:14:46 mikeaubury Exp $";
 void printc (char *fmt, ...);
 
 void print_function_variable_init (void);

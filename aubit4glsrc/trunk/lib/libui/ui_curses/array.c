@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.38 2005-03-07 14:53:09 mikeaubury Exp $
+# $Id: array.c,v 1.39 2005-03-09 15:15:15 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.38 2005-03-07 14:53:09 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.39 2005-03-09 15:15:15 mikeaubury Exp $";
 
 
 

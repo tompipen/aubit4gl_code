@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.17 2005-01-05 20:04:14 mikeaubury Exp $
+# $Id: display_array.c,v 1.18 2005-03-09 15:15:25 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.17 2005-01-05 20:04:14 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.18 2005-03-09 15:15:25 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array

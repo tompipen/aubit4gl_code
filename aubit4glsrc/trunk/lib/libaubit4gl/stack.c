@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.114 2005-03-04 20:23:43 mikeaubury Exp $
+# $Id: stack.c,v 1.115 2005-03-09 15:14:41 mikeaubury Exp $
 #
 */
 
@@ -2309,15 +2309,6 @@ A4GL_downshift_stk (void)
 #define FALSE 0
 #endif
 
-#ifdef NO_LONGER_USED
-int				//should be boll
-A4GL_isparamdate (void)
-{
-  if ((params[params_cnt - 1].dtype) & (DTYPE_MASK == DTYPE_DATE))
-    return TRUE;
-  return FALSE;
-}
-#endif
 
 
 /**

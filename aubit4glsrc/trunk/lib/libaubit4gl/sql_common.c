@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.2 2005-02-17 11:51:46 mikeaubury Exp $
+# $Id: sql_common.c,v 1.3 2005-03-09 15:14:41 mikeaubury Exp $
 #
 */
 
@@ -251,28 +251,6 @@ A4GLSQL_set_conn (char *sessname)
 }
 
 
-/**
- * Prepare a global SQL statement (not named).
- *
- * @param s A string with the SQL statement.
- * @param ni The number of input bind elements.
- * @param ibind A pointer to the input bind array.
- * @return A statement identification structure pointer.
- */
-/* int -- struct s_sid * in sql.c */
-
-#ifdef NO_LONGER_USED
-struct s_sid *
-A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
-{
-  if (must_convert)
-    {
-	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
-      s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
-    }
-  return (struct s_sid *) A4GLSQL_prepare_glob_sql_internal (s, ni, ibind);
-}
-#endif
 
 
 /**
@@ -306,23 +284,6 @@ struct s_sid* A4GLSQL_prepare_sql (char *s)
   return (struct s_sid *) A4GLSQL_prepare_select (0,0,0,0,s);
 }
 
-
-
-#ifdef NO_LONGER_USED
-/**
- * Used from load.c
- *
- * @param prepared statement name.
- * @param ni Number of binded input parameters.
- * @param The input bind array.
- * @return Allways 0
- */
-int
-A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
-{
-  return A4GLSQL_execute_sql_from_ptr_internal (pname, ni, *ibind);
-}
-#endif
 
 
 

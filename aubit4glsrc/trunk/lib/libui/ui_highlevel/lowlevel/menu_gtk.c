@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.4 2004-06-09 06:03:18 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.5 2005-03-09 15:15:26 mikeaubury Exp $
 #*/
 
 /**
@@ -67,7 +67,7 @@
 #include "menu_x.x.h"
 
 
-static char *module_id="$Id: menu_gtk.c,v 1.4 2004-06-09 06:03:18 mikeaubury Exp $";
+static char *module_id="$Id: menu_gtk.c,v 1.5 2005-03-09 15:15:26 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>

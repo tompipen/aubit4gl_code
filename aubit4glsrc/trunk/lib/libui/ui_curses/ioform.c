@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.120 2005-03-08 20:47:35 mikeaubury Exp $
+# $Id: ioform.c,v 1.121 2005-03-09 15:15:24 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.120 2005-03-08 20:47:35 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.121 2005-03-09 15:15:24 mikeaubury Exp $";
 /**
  * @file
  *
@@ -48,7 +48,6 @@ static char *module_id =
 #include <ctype.h>
 static void chk_for_picture (FIELD * f, char *buff);
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
-//void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 					     struct s_form_dets *formdets,
 					     int max_number,
@@ -82,7 +81,6 @@ static int get_inc_quotes(int a) ;
 */
 
 extern WINDOW *currwin;
-//int m_lastkey = 0;
 int tab_cnt = 0;
 int srec_cnt = 0;
 char delimiters[4];
@@ -98,7 +96,6 @@ int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 int A4GL_get_field_width_w (void *f);
 void A4GL_set_infield_from_parameter (int a);
 void A4GL_set_curr_infield (long a);
-//int A4GL_conversion_ok (int);
 
 int lastc = 0;
 int nline;
@@ -106,7 +103,6 @@ int fline;
 int ncol;
 char dbname[64];
 long inp_current_field = 0;
-//int do_input_nowrap = 0;
 
 /*
 =====================================================================
@@ -146,7 +142,6 @@ static void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 static void A4GL_set_field_attr (FIELD * field);
 
 
-//static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
 int A4GL_field_name_match (FIELD * f, char *s);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
@@ -326,13 +321,11 @@ A4GL_make_label (int frow, int fcol, char *label)
     }
 
 
-  ////A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
 
   if (f)
     {
       A4GL_debug ("99 set field buffer to label = **%s**", label);
       set_field_buffer (f, 0, label);
-      //A4GL_mja_set_field_buffer (f, 0, label);
       set_field_opts (f, field_opts (f) & ~O_ACTIVE);
     }
   else
@@ -594,10 +587,6 @@ A4GL_set_field_attr (FIELD * field)
       A4GL_debug ("removed- this may cause problems.....");
 
 
-      // Removed these - I think they are obsolete....
-      // 21/05/2004  MJA
-      //field_opts_off (field, O_ACTIVE);
-      //field_opts_off (field, O_EDIT);
     }
 
 
@@ -619,7 +608,6 @@ A4GL_set_field_attr (FIELD * field)
       field_opts_on (field, O_WRAP);
     }
 
-  //A4GL_set_field_colour_attr (field, f->do_reverse, f->colour); // MJA REMOVE COLOUR FROM X
 
 }
 
@@ -652,14 +640,9 @@ A4GL_set_field_attr_with_attr_already_determined (FIELD * field, int attr,
 						  int cmd_type)
 {
   int r;
-  //int nattr;
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
-  //nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
-  //A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
-  //attr, nattr);
-  //attr = nattr;
 
   if (attr & AUBIT_ATTR_REVERSE)
     r = 1;
@@ -879,7 +862,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
   FORM *mform;
   int pprval;
   int x, y;
-  //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
 
@@ -907,10 +889,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
      field_status (form->currentfield), field_status (current_field (mform)));
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
-      /*
-         A4GL_debug ("Setting focus");
-         //A4GL_gui_setfocus (current_field (mform));
-       */
       A4GL_debug ("Is different");
       fprop = 0;
 
@@ -929,8 +907,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 	      if (fprop != 0)
 		{
 
-		  //int d1,s1;
-		  //char *ptr1;
 
 		  if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
 		    {
@@ -1163,7 +1139,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		      strcpy (buff,
 			      field_buffer (sio->currform->currentfield, 0));
 		      A4GL_trim (buff);
-		      // 
 
 		      if (strlen (buff) == 0)
 			{
@@ -1404,7 +1379,6 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 int
 A4GL_get_field_width_w (void *f)
 {
-  //int x, y, a;
   int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
@@ -1509,7 +1483,6 @@ UILIB_A4GL_set_fields (void *vsio)
     {
       int a;
       int need_fix = 0;
-      // sio->constr contains a s_constr_list structure
       // this may need explanding if the column contains a '*'
       for (a = 0; a < nv; a++)
 	{
@@ -1591,7 +1564,6 @@ UILIB_A4GL_set_fields (void *vsio)
 
       if (sio->mode != MODE_CONSTRUCT)
 	{
-	  //strcpy (buff, field_buffer (field_list[a], 0));
 	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
 
 	  strcpy (buff,
@@ -1713,7 +1685,6 @@ A4GL_field_name_match (FIELD * f, char *s)
        z++)
     {
       int attr_no;
-      //int mno;
       attr_no =
 	fdets->fileform->records.records_val[srec_no].attribs.attribs_val[z];
       A4GL_debug ("attr_no=%d - %s %s", attr_no,
@@ -2045,7 +2016,6 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
 		  flist[cnt++] = (FIELD *) k->field;
-		  //set_field_status((FIELD *)k->field, 0);
 		  A4GL_debug ("aa");
 		  	if (fmetric==0&&strlen(tabname)==0) {
 				A4GL_debug("Are you Test 278...?");
@@ -2112,7 +2082,6 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
     {
       A4GL_exitwith ("after field : field number not found!");
       return 0;
-      //A4GL_bomb_out ();
     }
 
   if (sio->mode != MODE_CONSTRUCT)
@@ -2192,7 +2161,6 @@ A4GL_do_before_field (FIELD * f, struct s_screenio *sio)
   int a;
   char *ptr;
   A4GL_debug ("Before field....");
-  //A4GL_gui_setfocus ((long) f);
   a = A4GL_find_field_no (f, sio);
   if (a == -1)
     {
@@ -2265,7 +2233,6 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
 
   if (f)
     {
-      //A4GL_gui_mkfield (rows, cols, frow, fcol, f);
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
       A4GL_debug ("ZZZZ - SET OPTS");
@@ -2314,7 +2281,6 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   struct struct_scr_field *f;
   struct s_form_dets *fff;
   int a;
-  //int field_width;
   long oopt;
   int d1;
   int s1;
@@ -2423,12 +2389,8 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 	  return;
 	}
 
-// I think these 2 can be removed...
-      //A4GL_pop_char (ff, field_width );
-      //A4GL_push_char (ff);
       A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
       A4GL_pushop (OP_USING);
-      //A4GL_debug_print_stack();
     }
 
   if (!has_format && !ignore_formatting)
@@ -2722,7 +2684,6 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   b = A4GL_get_field_width_w (field);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff,
 	      buff2, a, b);
-  //A4GL_gui_setbuff (field, buff);
   if (a < A4GL_get_field_width_w (field))
     {
       A4GL_debug ("Adding padding");
@@ -2829,7 +2790,6 @@ UILIB_A4GL_push_constr (void *vs)
 		      (fprop->datatype) & 0xffff);
 
 
-	  //A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname, s->constr[a].colname);
 
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
@@ -2901,7 +2861,6 @@ A4GL_scan_for_field_n (char *s, int n)
   char buff[256];
   FIELD *fld;
   int a;
-  //sprintf(buff,"%s[%d]",s,n);
   strcpy (buff, s);
 
   f = UILIB_A4GL_get_curr_form (1);
@@ -2965,7 +2924,6 @@ A4GL_set_curr_infield (long a)
 int
 UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
 {
-  //struct s_form_dets *f;
   FIELD **field_list;
   struct s_screenio *s;
   int c;
@@ -3026,7 +2984,6 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
 int
 UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 {
-  //struct s_form_dets *f;
   FIELD **field_list;
   struct s_inp_arr *s;
   int c;
@@ -3559,20 +3516,14 @@ A4GL_int_form_driver (FORM * form, int a)
     {
       A4GL_debug ("Resetting focus");
       f = current_field (form);
-      //A4GL_gui_setfocus ((long) f);
     }
 
   if (field_pos != A4GL_get_curr_field_col (form))
     {
       A4GL_debug ("Resetting position");
       field_pos = A4GL_get_curr_field_col (form);
-      //A4GL_gui_setposition (field_pos);
     }
 
-  if (strcmp (buff, buff2) != 0)
-    {
-      //A4GL_gui_setbuff (f, buff2);
-    }
   A4GL_debug ("Buff2 now = %s", buff2);
   if (a != REQ_VALIDATION)
     A4GL_int_form_driver (form, REQ_VALIDATION);
@@ -3652,7 +3603,6 @@ UILIB_A4GL_clr_form (int to_default)
 
     }
 
-//A4GL_mja_wrefresh (A4GL_get_curr_win());
   UILIB_A4GL_zrefresh ();
 }
 
@@ -3688,7 +3638,6 @@ A4GL_curr_metric_is_last (void)
       A4GL_exitwith ("No valid metric....");
     }
 
-  //debug("pos_code : %d %d",form->fileform->metrics.metrics_val[a].pos_code , POS_LAST);
 
 
   if (form->fileform->metrics.metrics_val[a].pos_code & POS_LAST)
@@ -3876,14 +3825,12 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
   int c;
   int b;
   FIELD **field_list;
-  //int found;
   struct s_inp_arr *s;
   struct struct_scr_field *fprop;
   s = sv;
   A4GL_debug ("fgl_fieldtouched - input array");
 
 
-//debug_print_flags(sv,"ft");
 
 
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
@@ -4060,10 +4007,6 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	A4GL_default_attributes (field_list[a], f->datatype);
     }
 
-  //if (field_list) free(field_list);
-  //else {
-  //A4GL_exitwith("no fields found to clear...");
-  //}
 
 }
 
@@ -4079,7 +4022,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   FORM *mform;
   int x, y;
   int pprval;
-  //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
 
@@ -4108,10 +4050,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
      field_status (form->currentfield), field_status (current_field (mform)));
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
-      /*
-         A4GL_debug ("Setting focus");
-         //A4GL_gui_setfocus (current_field (mform));
-       */
       A4GL_debug ("Is different");
       fprop = 0;
 
@@ -4129,8 +4067,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 	    if (fprop != 0)
 	      {
 
-		//int d1,s1;
-		//char *ptr1;
 
 		A4GL_debug ("15 fprop!=0");
 		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)

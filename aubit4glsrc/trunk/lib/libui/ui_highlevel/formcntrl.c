@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.20 2005-03-07 17:10:50 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.21 2005-03-09 15:15:26 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.20 2005-03-07 17:10:50 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.21 2005-03-09 15:15:26 mikeaubury Exp $";
 /**
  * @file
  * Form movement control

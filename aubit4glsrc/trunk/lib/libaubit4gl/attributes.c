@@ -2,7 +2,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.28 2005-03-08 20:47:32 mikeaubury Exp $
+# $Id: attributes.c,v 1.29 2005-03-09 15:14:35 mikeaubury Exp $
 #*/
 
 /**
@@ -399,7 +399,6 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
       A4GL_debug ("30 Command is DISPLAY");
       int_options = A4GL_get_option_value ('d');
       int_disp_form = A4GL_get_curr_form_attr ();
-	if (int_disp_form==0xffff) int_disp_form=0;
       int_open_window = A4GL_get_curr_window_attr ();
       A4GL_debug ("30 int_options=%x int_disp_form=%x int_open_window=%x",
 		  int_options, int_disp_form, int_open_window);
@@ -410,11 +409,14 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
       A4GL_debug ("30 Command is INPUT");
       int_options = A4GL_get_option_value ('i');
       int_disp_form = A4GL_get_curr_form_attr ();
-	if (int_disp_form==0xffff) int_disp_form=0;
       int_open_window = A4GL_get_curr_window_attr ();
       break;
     }
 
+if (int_options==0xffff || int_options==-1) int_options=0;
+if (int_disp_form==0xffff || int_disp_form==-1) int_disp_form=0;
+if (int_open_window==0xffff || int_open_window==-1) int_open_window=0;
+A4GL_debug("INT OPTS : %x %x %x",int_options,int_disp_form,int_open_window);
 
   if (int_options)
     {
@@ -653,7 +655,8 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
   fprop = vfprop;
 /* Decode our current attribute */
   A4GL_debug("attrib_curr_int=0x%x (%d)",attrib_curr_int,attrib_curr_int);
-  if (attrib_curr_int!=-1  )
+
+  if (attrib_curr_int!=-1 && attrib_curr_int!=0)
     {
 		A4GL_debug("a - %x %d",attrib_curr_int,attrib_curr_int);
       		A4GL_attr_int_to_std (attrib_curr_int, &attrib_curr);
@@ -706,19 +709,9 @@ A4GL_debug("eval = %d",a);
 	      attrib_field.invisible = 1;
 	    }
 
-	  //if (A4GL_has_bool_attribute(fprop,FA_B_UNDERLINE)) { attrib_field.underline=1; }
-	  //if (A4GL_has_bool_attribute(fprop,FA_B_BOLD)) { attrib_field.bold=1; }
-	  //if (A4GL_has_bool_attribute(fprop,FA_B_BLINK)) { attrib_field.blink=1; }
-	  //if (A4GL_has_bool_attribute(fprop,FA_B_DIM)) { attrib_field.dim=1; }
-	  //if (A4GL_has_bool_attribute(fprop,FA_B_NORMAL)) { attrib_field.normal=1; }
 
+	A4GL_debug("attr before = %x",attr);
 
-
-	  //attr=attr+attrib_field.colour;
-
-
-
-A4GL_debug("attr before = %x",attr);
 	  if (attrib_field.normal)
 	    attr += AUBIT_ATTR_NORMAL;
 	  if (attrib_field.reverse)
@@ -771,6 +764,9 @@ A4GL_debug("attr after = %x",attr);
     }
 
 
+  if (r->colour=0xf00 && r->dim &&r->bold && r->blink) {
+		A4GL_assertion(1,"Too many options set - probably corrupt attribute");
+  }
   A4GL_debug (" MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d",
 	      r->colour, r->normal, r->reverse, r->underline, r->bold,
 	      r->blink, r->dim);

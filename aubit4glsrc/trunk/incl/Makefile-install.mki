@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0   binary install make include|
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-5 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.100 2005-03-04 08:07:14 afalout Exp $
+# $Id: Makefile-install.mki,v 1.101 2005-03-09 15:14:33 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
