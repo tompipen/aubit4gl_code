@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests empty foreach loops (bug reported by James Scott)"
+	@echo "This tests passing NULL values to DAY, MONTH, YEAR and MDY functions"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

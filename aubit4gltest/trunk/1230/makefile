@@ -82,9 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-	${DEFAULT_DIFF}
+#	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests empty foreach loops (bug reported by James Scott)"
+	@echo "MID 670 construct on date field (part 1)"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
