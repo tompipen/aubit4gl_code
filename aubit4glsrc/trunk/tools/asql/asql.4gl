@@ -88,10 +88,17 @@ if num_args() then
 			continue for
 		end if
 
+
 		if arg_val(lv_a)="-v" or arg_val(lv_a)="-V" then
 			display "(c) 2003 Aubit Computing Ltd"
 			display get_version()
 			exit program
+		end if
+
+		if arg_val(lv_a) matches "-*" and lv_a!="-" then
+			if arg_need_next(lv_a) then
+				exit for
+			end if
 		end if
 
 		let lv_args[lv_cnt]=arg_val(lv_a)
@@ -339,4 +346,13 @@ static char buff[256];
 }
 endcode
 end if
+end function
+
+
+
+
+function arg_need_next(lv_a) 
+define lv_a integer
+error "These types of options are not supported yet: ",arg_Val(lv_a)
+sleep 3
 end function

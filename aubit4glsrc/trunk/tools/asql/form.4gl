@@ -112,10 +112,10 @@ endcode
 call set_pick_cnt(a);
 
 if lv_ofname is null or lv_ofname matches " " then
-	error "SET PICK 1:",mv_lastused
+	#error "SET PICK 1:",mv_lastused
 	call set_picked_option(mv_lastused)
 else
-	error "SET PICK 2:",lv_ofname
+	#error "SET PICK 2:",lv_ofname
 	call set_picked_option(lv_ofname)
 end if
 sleep 1
@@ -633,9 +633,11 @@ end if
 
 if lv_formtype="GENERIC" THEN
 	let lv_packer=fgl_getenv("A4GL_PACKER")
+
 	if lv_packer is null or lv_packer matches " " then
 		let lv_packer=fgl_getenv("PACKER")
 	end if
+
 	case lv_packer
 		when "PACKED" 		let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT") clipped,fgl_getenv("A4GL_PACKED_EXT")
 		when "GZPACKED" 	let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT") clipped,fgl_getenv("A4GL_PACKED_EXT")
@@ -645,6 +647,8 @@ else
 	# Assume XDR or compatible
 	let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT")
 end if
-
+message "looking for extension : Ext='",lv_ext clipped,"'"
+sleep 2
 return lv_ext clipped
+
 end function
