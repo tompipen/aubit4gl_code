@@ -1,17 +1,106 @@
-#include "report.h"
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: data.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+#*/
+
+/**
+ * @file
+ *
+ *
+ *
+ *
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+
+	#include "report.h"
+
+#else
+
+    #include "a4gl_ace_int.h"
+
+#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 struct report this_report;
-void dif_add_bind_int (void *list, long a);
-extern int status;
-int A4GLSQL_next_column (char *colname, int *dtype, int *size);
-char *decode_datatype (int dtype, int dim);
+#ifdef OLD_INCL
+	extern int status;
+#endif
 extern char *outputfilename;
 extern char *ordby[256];
 extern int ordbycnt;
-void add_variable (char *name, char *dstring, int category, int pno, int dtype, int dim);
 
 
-init_report ()
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void dif_add_bind_int (void *list, long a);
+#ifdef OLD_INCL
+	int A4GLSQL_next_column (char *colname, int *dtype, int *size);
+#endif
+char *decode_datatype (int dtype, int dim);
+void yyerror_sql(char *s);
+void print_variables(char *s);
+char * add_zero_rows_where (struct select_stmts *ptr);
+int find_sql_var (int colno);
+void add_fmt (int cat, char *col, struct commands commands);
+
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+init_report (void)
 {
   this_report.output.top_margin = 3;
   this_report.output.bottom_margin = 3;
@@ -42,6 +131,10 @@ init_report ()
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 find_variable (char *name)
 {
@@ -59,6 +152,10 @@ find_variable (char *name)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 add_variable (char *name, char *dstring, int category, int pno, int dtype,
 	      int dim)
@@ -90,6 +187,10 @@ add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 add_function (char *name)
 {
@@ -106,6 +207,11 @@ add_function (char *name)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 add_select (char *sql, char *temptabname)
 {
   struct select_stmts *ptr;
@@ -116,12 +222,13 @@ add_select (char *sql, char *temptabname)
   char buffer[80];
 
 
-/*
-sql may contain newlines, these signify special data in the select statement...
+	/*
+	sql may contain newlines, these signify special data in the select 
+	statement...
 
-\n0 = start of additional "don't get any real data" code
-\n2(n) = start of variable use (variable ID)
-*/
+	\n0 = start of additional "don't get any real data" code
+	\n2(n) = start of variable use (variable ID)
+	*/
 
   this_report.getdata.select_or_read = 0;
   this_report.getdata.get_data_u.selects.selects_len++;
@@ -155,7 +262,7 @@ sql may contain newlines, these signify special data in the select statement...
   buff = strdup (sql);
 
   c = 0;
-printf("Examining : %s\n",sql);
+  printf("Examining : %s\n",sql);
   for (a = 0; a < strlen (sql); a++)
     {
       if (sql[a] == '\n')
@@ -232,6 +339,11 @@ printf("Examining : %s\n",sql);
   printf("Added : %d-%s\n",this_report.getdata.get_data_u.selects.selects_len,ptr->statement);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 add_inputs (char *prompt, char *variable)
 {
   int x;
@@ -257,7 +369,12 @@ add_inputs (char *prompt, char *variable)
 }
 
 
-void add_fmt (int cat, char *col, struct commands commands)
+/**
+ *
+ * @todo Describe function
+ */
+void
+add_fmt (int cat, char *col, struct commands commands)
 {
   this_report.fmt.fmt_len++;
   this_report.fmt.fmt_val =
@@ -283,7 +400,7 @@ we do need to have the tables/results created for us so we
 can determine datatypes and names.
 
 This means that we need to add a little bit to the where clause that
-hopefully any optimizier may make use of and return us zero results 
+hopefully any optimizier may make use of and return us zero results
 fairly quickly
 To do this - we're adding (1=0) to the where clause.
 When the select statement was parsed - it would have generated some codes, which
@@ -294,6 +411,10 @@ wherepos1 = Start of where clause
 wherepos2 = End if where clause
 */
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 add_zero_rows_where (struct select_stmts *ptr)
 {
@@ -327,6 +448,11 @@ add_zero_rows_where (struct select_stmts *ptr)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 find_sql_var (int colno)
 {
   struct variable *ptr;
@@ -347,13 +473,18 @@ find_sql_var (int colno)
 
 }
 
-execute_selects ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+execute_selects (void)
 {
   int a;
   int mx;
   struct select_stmts *ptr;
-  void *xi;
-  void *xo;
+  void *xi=0;
+  void *xo=0;
   void *psql;
   int b;
   char *nstatement;
@@ -366,16 +497,36 @@ execute_selects ()
   int colsize;
   int coltype;
   char colname[256];
-  int vid;
+  int vid=0;
 
-  int nval;
-//printf("Execute selects...\n");
+  /* char * nval; */
+  int nval = 0;
+
+
+  /* printf("Execute selects...\n"); */
   mx = this_report.getdata.get_data_u.selects.selects_len - 1;
 
-  xi = (void *) dif_start_bind ();	/* Start an input binding  */
-  xo = (void *) dif_start_bind ();	/* Start an output binding */
+  /*
+  see stack.c :
 
-  setnull (2, &nval, 4);	/* We need 1 null value */
+	  void
+	dif_start_bind (void)
+	{...
+
+
+  xi = (void *) dif_start_bind ();
+  xo = (void *) dif_start_bind ();
+  */
+
+  dif_start_bind ();		/* Start an input binding  */
+  /* dif_start_bind ();*/	/* Start an output binding */
+
+  /* We need 1 null value */
+  /* setnull (2, &nval, 4); */
+  setnull (2, (char *)nval, 4);
+  /*  warning: passing arg 2 of `setnull' from incompatible pointer type
+  	void 	setnull 			(int type, char *buff, int size);
+  */
 
 
   for (a = 0; a <= mx; a++)
@@ -388,7 +539,7 @@ execute_selects ()
 	{			/*  this isn't the last SQL  */
 	  if (strstr (ptr->statement, " INTO TEMP ") == 0)
 	    {
-	      //printf ("%s\n", ptr->statement);
+	      /* printf ("%s\n", ptr->statement); */
 	      yyerror
 		("An SQL statement which is not the last statement must be into a temporary table");
 	    }
@@ -398,9 +549,10 @@ execute_selects ()
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
 		printf("Add null value");
-	  dif_add_bind_int (xi, nval);
+	  /* void dif_add_bind_int (void *list, long a); */
+	  dif_add_bind_int (xi, (long) nval);
 	  xic++;
-		
+
 	}
       nstatement = add_zero_rows_where (ptr);
 
@@ -426,7 +578,7 @@ execute_selects ()
 	}
 
 
-      //printf("Executing... %s",nstatement);
+      /* printf("Executing... %s",nstatement); */
 
       if (A4GLSQL_execute_implicit_select (psql) != 0)
 	{
@@ -442,18 +594,28 @@ execute_selects ()
 	     into a temporary table too, so that we could easily get
 	     at its columns
 	   */
+
+       /* too few arguments to function `A4GLSQL_get_columns'
+       	int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
+
 	  if (A4GLSQL_get_columns ("a4gl_drep1234") == 0)
+      */
+	  if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
 	    {
 	      yyerror ("Unable to get column types for a temporary table");
 	    }
 
-	  while (A4GLSQL_next_column (colname, &coltype, &colsize))
+	  /*
+      passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+	  int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
+	  */
+	  while (A4GLSQL_next_column ((char **)colname, &coltype, &colsize))
 	    {
 	      trim (colname);
 	      add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
 	    }
 
-	  //printf ("ordbycnt=%d\n", ordbycnt);
+	  /* printf ("ordbycnt=%d\n", ordbycnt); */
 
 	  if (ordbycnt)
 	    {
@@ -462,12 +624,14 @@ execute_selects ()
 		malloc (sizeof (int) * ordbycnt);
 	      for (oby_cnt = 0; oby_cnt < ordbycnt; oby_cnt++)
 		{
-		//printf("---> %d %d\n",oby_cnt,ordbycnt);
+		/* printf("---> %d %d\n",oby_cnt,ordbycnt); */
 
 		 cptr = ordby[oby_cnt];
 
-		  //printf ("cptr=%p\n", cptr);
-		  //printf ("cptr=%s\n", cptr);
+		  /*
+		  printf ("cptr=%p\n", cptr);
+		  printf ("cptr=%s\n", cptr);
+          */
 		  if (cptr[0] == 'I')
 		    {
 		      vid = find_sql_var (atoi (&cptr[1]));
@@ -483,7 +647,7 @@ execute_selects ()
 		    }
 
 		  ptr->orderby_list.orderby_list_val[oby_cnt] = vid;
-		//printf("Adding %d to orderby list @ %d\n",vid,oby_cnt);
+		/* printf("Adding %d to orderby list @ %d\n",vid,oby_cnt); */
 		}
 	    }
 	}
@@ -493,29 +657,51 @@ execute_selects ()
 }
 
 
-void print_variables(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_variables(char *s)
+{
   struct variable *ptr;
   int a;
-//printf("---> %s\n",s);
+  /* printf("---> %s\n",s); */
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       ptr = &this_report.variables.variables_val[a];
-      //printf("%s\n",ptr->name);
+      /* printf("%s\n",ptr->name); */
     }
-//printf("----------------------------------------------------------\n");
+/* printf("----------------------------------------------------------\n"); */
 
 
 }
 
 
-yyerror_sql(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+yyerror_sql(char *s)
+{
 char buff[256];
-sprintf(buff,"%s - %d",s,status);
-yyerror(buff);
+	sprintf(buff,"%s - %d",s,(int)status); /*  warning: int format, long int arg (arg 4)
+ */
+	yyerror(buff);
 }
 
 
-print_lexpr(struct expr_list *l) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_lexpr(struct expr_list *l)
+{
 	printf("elem_len=%d\n",l->elem.elem_len);
 	printf("elem_val=%p\n",l->elem.elem_val);
 }
+
+
+/* ========================== EOF ================================= */

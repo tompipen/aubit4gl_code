@@ -1,12 +1,36 @@
 %{
 #define _BISON_SIMPLE_INCL_
-#include <stdio.h>
-#include <string.h>
-#include "report.h"
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <string.h>
+	#include "report.h"
+
+#else
+
+    #define _NO_YYPARSE_PROTO_
+//    #define _NO_YYLEX_PROTO_
+    #include "a4gl_ace_int.h"
+
+#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 extern struct report this_report;
-extern int status;
-void add_fmt (int cat, char *col, struct commands commands);
+#ifdef OLD_INCL
+	extern int status;
+#endif
 extern int lineno;
 extern int colno;
 extern int ignorekw;
@@ -17,18 +41,37 @@ int ordbycnt=0;
 #define DUP(x) memdup(&x,sizeof(x))
 #define COPY(x,y) memcpy(&x,&y,sizeof(x))
 
-void *memdup(void *p,int l) {
-void *ptr;
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void add_fmt (int cat, char *col, struct commands commands);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+void *
+memdup(void *p,int l)
+{
+	void *ptr;
 	ptr=malloc(l);
 	memcpy(ptr,p,l);
 	return ptr;
 }
 
 
-void set_expr_int(struct expr *e,int a) {
-e->type=EXPRTYPE_INT;
-e->expr_u.i=a;
+void
+set_expr_int(struct expr *e,int a)
+{
+	e->type=EXPRTYPE_INT;
+	e->expr_u.i=a;
 }
+
 
 %}
 

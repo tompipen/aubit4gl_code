@@ -1,13 +1,118 @@
-#include <stdio.h>
-#include "report.h"
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: dump.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+#*/
+
+/**
+ * @file
+ *
+ *
+ *
+ *
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include "report.h"
+
+#else
+
+    #include "a4gl_ace_int.h"
+
+#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 
 int lvl = 0;
 struct report this_report;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 void dump_command (struct command *cmd);
 void decode_expr (struct expr *e);
+void print_variable (int a);
+void decode_for (struct cmd_for *cmd);
+void decode_if (struct cmd_if *cmd);
+void decode_while (struct cmd_while *cmd);
+void decode_let (struct cmd_let *cmd);
+void decode_need (struct cmd_need *cmd);
+void decode_pause (struct cmd_pause *cmd);
+void decode_skip (struct cmd_skip *cmd);
+void decode_print (struct cmd_print *cmd);
+void decode_printfile (struct cmd_printfile *cmd);
+void decode_block (struct commands *cmd);
+void decode_call (struct cmd_call *cmd);
+void dump_commands (struct commands *cmd);
+char * decode_column(struct format *f);
+void dump_format (void);
+void print_lvl (void);
+char * decode_op(int op);
+void decode_complex(struct complex_expr *e);
+void decode_compare(struct compare_expr *e);
+void decode_simple(struct simple_expr *e);
+void decode_list(struct expr_list *e);
+void decode_fcall(struct expr_call *e);
+void dump_getdata (void);
+void dump_inputs (void);
+void dump_functions (void);
+void dump_ascii (void);
+void dump_output (void);
+void dump_variables (void);
+void dump_report (void);
 
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+int
 main (int argc, char *argv[])
 {
   FILE *f;
@@ -46,11 +151,21 @@ main (int argc, char *argv[])
 
 
   dump_report ();
+
+  return 0;
+
 }
 
 
 
-dump_report ()
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_report (void)
 {
   printf ("Magic  : %s\n", this_report.magic);
   printf ("dbname : %s\n", this_report.dbname);
@@ -70,12 +185,23 @@ dump_report ()
 }
 
 
-dump_ascii ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_ascii (void)
 {
   printf ("Dump Ascii not implemented\n");
 }
 
-dump_functions ()
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_functions (void)
 {
   int a;
   printf ("Functions\n");
@@ -87,7 +213,12 @@ dump_functions ()
     }
 }
 
-dump_variables ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_variables (void)
 {
   int a;
   printf ("Variables\n");
@@ -109,7 +240,12 @@ dump_variables ()
 
 
 
-dump_inputs ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_inputs (void)
 {
   int a;
   printf ("Inputs\n");
@@ -128,7 +264,12 @@ dump_inputs ()
 
 
 
-dump_output ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_output (void)
 {
   printf ("Output\n");
   printf ("------\n");
@@ -144,7 +285,12 @@ dump_output ()
 }
 
 
-dump_getdata ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_getdata (void)
 {
   int a;
   int b;
@@ -199,7 +345,12 @@ dump_getdata ()
 
 
 
-print_lvl ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+print_lvl (void)
 {
   int a;
   for (a = 0; a < lvl; a++)
@@ -209,12 +360,18 @@ print_lvl ()
 }
 
 
-
-char *decode_op(int op) {
-switch(op) {
-	case EXPR_AND: return "AND";
+/**
+ *
+ * @todo Describe function
+ */
+char *
+decode_op(int op)
+{
+	switch(op)
+	{
+		case EXPR_AND: return "AND";
         case EXPR_OR: return "OR";
-	case EXPR_ADD: return "+";
+		case EXPR_ADD: return "+";
         case EXPR_SUB: return "-";
         case EXPR_MUL: return "*";
         case EXPR_DIV: return "/";
@@ -227,20 +384,32 @@ switch(op) {
         case EXPR_CONCAT: return ",";
         case EXPR_ISNULL: return "IS NULL";
         case EXPR_ISNOTNULL: return "IS NOT NULL";
+	}
+
+	return "Dont know(?!)";
+
 }
 
-return "Dont know(?!)";
-
-}
-
-decode_complex(struct complex_expr *e) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_complex(struct complex_expr *e)
+{
 	decode_expr(&e->expr1);
 	printf("%s (%d)",decode_op(e->operand),e->operand);
 	decode_expr(&e->expr2);
 }
 
 
-decode_compare(struct compare_expr *e) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_compare(struct compare_expr *e)
+{
 	printf("(");
 	decode_expr(&e->expr1);
 	printf("%s",e->method);
@@ -248,29 +417,54 @@ decode_compare(struct compare_expr *e) {
 	printf(")");
 }
 
-decode_simple(struct simple_expr *e) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_simple(struct simple_expr *e)
+{
 	decode_expr(&e->expr);
 	decode_op(e->operand);
 }
 
 
-decode_list(struct expr_list *e) {
-int a;
-for (a=0;a<e->elem.elem_len;a++) {
-	if (a) printf(", ");
-	decode_expr(&e->elem.elem_val[a]);
-}
-}
-
-decode_fcall(struct expr_call *e) {
-printf(" %s(",e->fname);
-decode_list(e->lexpr);
-printf(")");
-}
-
-void decode_expr (struct expr *e)
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_list(struct expr_list *e)
 {
-  switch(e->type) {
+int a;
+	for (a=0;a<e->elem.elem_len;a++) {
+		if (a) printf(", ");
+		decode_expr(&e->elem.elem_val[a]);
+	}
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_fcall(struct expr_call *e)
+{
+	printf(" %s(",e->fname);
+	decode_list(e->lexpr);
+	printf(")");
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+void 
+decode_expr (struct expr *e)
+{
+  switch(e->type) 
+  {
 	case EXPRTYPE_INT    : printf("%d",e->expr_u.i); break;
 	case EXPRTYPE_DOUBLE : printf("%f",e->expr_u.d); break;
 	case EXPRTYPE_STRING : printf("%s",e->expr_u.s); break;
@@ -281,10 +475,15 @@ void decode_expr (struct expr *e)
 	case EXPRTYPE_SIMPLE: decode_simple(e->expr_u.sexpr);break;
 	case EXPRTYPE_LIST: decode_list(e->expr_u.lexpr);break;
 	case EXPRTYPE_FCALL: decode_fcall(e->expr_u.fcall);break;
-}
+  }
 
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_for (struct cmd_for *cmd)
 {
   printf ("FOR ");
@@ -298,6 +497,11 @@ decode_for (struct cmd_for *cmd)
   printf ("\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_if (struct cmd_if *cmd)
 {
   printf ("IF \n");
@@ -312,6 +516,11 @@ decode_if (struct cmd_if *cmd)
     }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_while (struct cmd_while *cmd)
 {
   printf ("WHILE (");
@@ -321,6 +530,11 @@ decode_while (struct cmd_while *cmd)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_let (struct cmd_let *cmd)
 {
   printf ("LET ");
@@ -330,18 +544,33 @@ decode_let (struct cmd_let *cmd)
   printf ("\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_need (struct cmd_need *cmd)
 {
   printf ("NEED %d LINES\n", cmd->nlines);
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_pause (struct cmd_pause *cmd)
 {
   printf ("PAUSE \"%s\"\n", cmd->message);
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_skip (struct cmd_skip *cmd)
 {
   if (cmd->nlines < 0)
@@ -351,6 +580,11 @@ decode_skip (struct cmd_skip *cmd)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_print (struct cmd_print *cmd)
 {
   printf ("PRINT ");
@@ -360,11 +594,21 @@ decode_print (struct cmd_print *cmd)
   printf ("\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_printfile (struct cmd_printfile *cmd)
 {
   printf ("PRINTFILE\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_block (struct commands *cmd)
 {
   int a;
@@ -376,12 +620,21 @@ decode_block (struct commands *cmd)
   printf ("END\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 decode_call (struct cmd_call *cmd)
 {
   printf ("CALL %s (",cmd->fcall->fname);
   decode_list(cmd->fcall->lexpr);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 dump_command (struct command *cmd)
 {
@@ -428,6 +681,11 @@ dump_command (struct command *cmd)
   lvl--;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 dump_commands (struct commands *cmd)
 {
   int a;
@@ -438,14 +696,24 @@ dump_commands (struct commands *cmd)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
-decode_column(struct format *f) {
+decode_column(struct format *f)
+{
 static char buff[256];
 	sprintf(buff,"%s",f->column);
 	return buff;
 }
 
-dump_format ()
+/**
+ *
+ * @todo Describe function
+ */
+void
+dump_format (void)
 {
   int a;
   printf ("Format\n");
@@ -464,7 +732,7 @@ dump_format ()
 	case FORMAT_AFTER_GROUP : printf("AFTER GROUP OF %s\n",decode_column(&this_report.fmt.fmt_val[a])); break;
 	case FORMAT_ON_LAST_ROW : printf("ON LAST ROW\n"); break;
       }
-//fflush(stdout);
+	/* fflush(stdout); */
 	lvl++;
       dump_commands (&this_report.fmt.fmt_val[a].commands);
 	lvl--;
@@ -474,11 +742,20 @@ dump_format ()
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_variable (int a)
 {
-if (a==-1) {
-	printf("Unknown...\n");
-} else {
-	      printf("%s",this_report.variables.variables_val[a].name);
+	if (a==-1) 
+	{
+		printf("Unknown...\n");
+	} else {
+		      printf("%s",this_report.variables.variables_val[a].name);
+	}
 }
-}
+
+
+/* =============================== EOF =========================== */
