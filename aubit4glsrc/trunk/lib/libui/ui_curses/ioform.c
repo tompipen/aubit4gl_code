@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.113 2005-02-01 09:08:56 mikeaubury Exp $
+# $Id: ioform.c,v 1.114 2005-02-01 11:21:45 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.113 2005-02-01 09:08:56 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.114 2005-02-01 11:21:45 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2393,7 +2393,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
   A4GL_debug ("In display_field_contents");
   f = (struct struct_scr_field *) (field_userptr (field));
-  ff = A4GL_new_string (field);
+  ff = malloc  (field_width+1);
 
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
   A4GL_debug ("Has format : %d  ", has_format);
