@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ ! -w fgl.yacc ]
+if [ ! -w generated/fgl.yacc ] &&  [ -f generated/fgl.yacc ]
 then
 	chmod 666 generated/fgl.yacc
 	touch generated/fgl.yacc

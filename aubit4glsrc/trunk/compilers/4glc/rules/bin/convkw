@@ -1,7 +1,7 @@
 #!/bin/sh
-awk  '
+awk '
 BEGIN {
-
+doverbose="0"
 while (getline < "generated/single_words") {
 	single_words[$1]=1
 	print "Defined " $1 " as single word"
@@ -24,7 +24,9 @@ issingle=0
 if (single_words[kw]==1)  {kw="KWS_" kw
 issingle=1
 }
+if (doverbose == "1") {
 print "Check : " kw " - "  def[kw]
+}
 if (def[kw]!=1) {
 		print "#define " kw " " a > "generated/kw.h"
 		print "%token " kw " " a > "generated/kw.yh"
@@ -50,5 +52,6 @@ print "};" > "generated/kw.c"
 }
 ' < data/kwords
 
+echo $0 : Done
 
 
