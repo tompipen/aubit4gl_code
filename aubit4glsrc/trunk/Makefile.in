@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:48 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-12 10:26:06 afalout Exp $
 #
 
 #If you are looking here because make could not find "/etc/aubitbuild.mk"
@@ -217,9 +217,12 @@ ifneq "$(ODBC)" "no"
 		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
     endif
 endif
+
+MKFILNAME	=Makefile
+
 TODOCS		=$(SOURCE)/docs/changelog.txt $(SOURCE)/docs/COPYING $(SOURCE)/docs/CREDITS $(SOURCE)/docs/LICENSE
-TOTEST		=$(TESTDIR)/*.4gl $(TESTDIR)/*.per $(TESTDIR)/makefile $(TESTDIR)/*.msg
-TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/makefile
+TOTEST		=$(TESTDIR)/*.4gl $(TESTDIR)/*.per $(TESTDIR)/${MKFILNAME} $(TESTDIR)/*.msg
+TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
 TOETC		=$(SOURCE)/etc/*.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
