@@ -60,9 +60,9 @@ define msgline char(HELPMAXLEN)
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
 code
-void HELPLIB_A4GLHELP_initlib(void) {
-// Does nothing...
-}
+//void HELPLIB_A4GLHELP_initlib(void) {
+	//A4GL_debug("initialized helplib");
+//}
 endcode
 ----------------------------------------------------------------------
 {  main section: comment this out when linking into libaubit  }

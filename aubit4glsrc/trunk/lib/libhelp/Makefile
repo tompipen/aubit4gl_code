@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.18 2004-05-12 08:15:56 mikeaubury Exp $
+# $Id: Makefile,v 1.19 2004-05-12 10:54:19 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -68,12 +68,12 @@ helplib.o: helplib.${FGLC_OUTPUT_EXT}
 
 helplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
-	${4GLC}  --namespace HELPLIB_ $^
+	${4GLC}  --namespace HELPLIB_aclfgl_ $^
 
 #For debugging only
 dbghelplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
-	gdb --args ${4GLC} --namespace "HELPLIB_" $^
+	gdb --args ${4GLC} --namespace "HELPLIB_aclfgl_" $^
 	
 	
 a4gl_xxhelp.afr.c: a4gl_xxhelp.per

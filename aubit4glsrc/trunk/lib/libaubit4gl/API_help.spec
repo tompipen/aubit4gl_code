@@ -23,10 +23,10 @@ LIB_PREFIX HELPLIB_
 /* TODO: extract function that creates compiled message file from mkmess */
 /* executable, and crate lib/libmsg/msg_native/writemsg.c */
 
-aclfgl_libhelp_showhelp int helpno -> int
-aclfgl_openiem int nparams -> int
-aclfgl_fetchiem int nparams -> int
-aclfgl_close int nparams -> int
+aclfgl_aclfgl_libhelp_showhelp int helpno -> int
+aclfgl_aclfgl_openiem int nparams -> int
+aclfgl_aclfgl_fetchiem int nparams -> int
+aclfgl_aclfgl_close int nparams -> int
 
 /* ------------------------ EOF ------------------------ */
 

@@ -34,7 +34,7 @@ fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
  * @param str The string to be converted.
  * @param dec A pointer to the decimal where the value will be inserted.
  */
-fgldecimal *A4GL_str_to_dec (char *str, fgldecimal *dec) {
+fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec) {
   char head[256];
   char head2[256];
   char tail[256];
@@ -49,6 +49,7 @@ fgldecimal *A4GL_str_to_dec (char *str, fgldecimal *dec) {
   long head_i;
   //char *ptr;
   char buff[256];
+char str[1024];
   int round_cnt;
   int carry;
   if (decimal_char==0) {

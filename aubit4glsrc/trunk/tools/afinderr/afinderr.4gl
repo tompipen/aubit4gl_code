@@ -33,11 +33,6 @@ define msgline char(HELPMAXLEN)
 
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
-code
-void A4GLHELP_initlib() {
-// Does nothing...
-}
-endcode
 
 
 main
