@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.128 2004-01-28 16:23:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.129 2004-01-28 20:37:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.128 2004-01-28 16:23:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.129 2004-01-28 20:37:45 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5347,7 +5347,7 @@ print_alloc_arr (char *s, char *d)
 
 	}
     }
-  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  printc ("/* ALLOC ARR %s -> %d %d %d */", s, dim[0], dim[1], dim[2]);
   if (dim[4] == 0)
     {
       dim[4] = 1;
@@ -5408,7 +5408,7 @@ print_realloc_arr (char *s, char *d)
 
 	}
     }
-  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  printc ("/* ALLOC ARR %s -> %d %d %d */", s, dim[0], dim[1], dim[2]);
   if (dim[4] == 0)
     {
       dim[4] = 1;
