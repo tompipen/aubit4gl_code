@@ -4,6 +4,11 @@
 	#define u_int unsigned int
 #endif
 
+#ifdef NO_AUBITLIB
+/* if we can't use aubit4gl libraries - we have to use XDR from rpcgen */
+#define RPCGEN_HEADERS
+#endif
+
 #ifdef RPCGEN_HEADERS
 	#include "npcode.h"
 	#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE	
