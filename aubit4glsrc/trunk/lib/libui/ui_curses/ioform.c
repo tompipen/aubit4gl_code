@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.103 2004-11-12 18:13:08 pjfalbe Exp $
+# $Id: ioform.c,v 1.104 2004-11-14 19:52:47 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.103 2004-11-12 18:13:08 pjfalbe Exp $";
+static char *module_id="$Id: ioform.c,v 1.104 2004-11-14 19:52:47 mikeaubury Exp $";
 /**
  * @file
  *
@@ -47,7 +47,7 @@ static char *module_id="$Id: ioform.c,v 1.103 2004-11-12 18:13:08 pjfalbe Exp $"
 #include <ctype.h>
 static void chk_for_picture(FIELD *f,char *buff) ;
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
-void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
+//void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form_dets *formdets, int max_number,  struct s_field_name_list *list);
 
 /*
@@ -1808,7 +1808,7 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form
   char tabname[40];
   FIELD *flist[1024];
   char *s;
-  int f;
+  int fmetric;
   struct struct_metrics *k;
   int attr_no;
   int srec_no;
@@ -1830,12 +1830,13 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form
 		break;
 	}
 
-      f = list->field_name_list[z1].fpos;
-      A4GL_debug (" got field number as %d ", f);
+      fmetric = list->field_name_list[z1].fpos;
+      A4GL_debug (" got field number as %d ", fmetric);
       ff = 0;
 
       /* get screen record/table name */
-
+	memset(tabname,0,sizeof(tabname));
+	memset(colname,0,sizeof(colname));
       A4GL_bname (s, tabname, colname);
       srec_no = A4GL_find_srec (formdets->fileform, tabname);
 
@@ -1880,10 +1881,16 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form
 		      A4GL_exitwith ("Dubious form\n");
 		      return -1;	// Was 0
 		    }
+
+		if (fmetric<0 || fmetric >formdets->fileform->fields.fields_val[fno].metric.metric_len) {
+		      A4GL_exitwith ("Field subscript out of bounds");
+			return -1;
+ 
+		}
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
-		    metric_val[f];
-		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, f,
+		    metric_val[fmetric];
+		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, fmetric,
 			      mno, metric_no);
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
@@ -1929,16 +1936,16 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form
 		    field_no;
 		  A4GL_debug ("Matched to field no %d - len=%d f=%d", fno,
 			      formdets->fileform->fields.fields_val[fno].
-			      metric.metric_len, f);
+			      metric.metric_len, fmetric);
 		  if (formdets->fileform->fields.fields_val[fno].metric.
-		      metric_len <= f || f < 0)
+		      metric_len <= fmetric || fmetric < 0)
 		    {
 		      A4GL_exitwith ("Field subscript out of bounds");
 		      return -1;
 		    }
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
-		    metric_val[f];
+		    metric_val[fmetric];
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
 		  {
@@ -1984,7 +1991,7 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form
 int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
 {
   struct s_field_name_list list;
-
+  list.field_name_list=0;
   A4GL_make_field_slist_from_ap(&list,ap);
 
   return A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
