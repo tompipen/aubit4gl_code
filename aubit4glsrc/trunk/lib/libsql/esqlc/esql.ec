@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.6 2002-03-14 22:29:43 saferreira Exp $
+# $Id: esql.ec,v 1.7 2002-03-14 23:48:41 saferreira Exp $
 #
 */
 
@@ -37,10 +37,13 @@
  * since on Windows only ESQL/C supported compiler is Visual C++,
  * we must be carefull not to include anything that will conflict with
  * MSVC here, since resulting .c need to be compiled and linked by MSVC
+ *
+ * @todo : Assertions
+ * @todo : Assign status with set_status
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.6 2002-03-14 22:29:43 saferreira Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.7 2002-03-14 23:48:41 saferreira Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -160,25 +163,6 @@ static char *getGlobalStatementName(void)
   return statementName;
 }
 
-
-/*
-void
-A4GLSQL_xset_status (int a)
-{
-  A4GLSQL_set_status (a, 0);
-}
-
-void
-A4GLSQL_set_status (int a, int sql)
-{
-
-  status = a;
-  if (sql)
-    sqlca.sqlcode = a;
-  debug ("Status set to %d", a);
-}
-*/
-
 /**
  * Initialize the default connection to the database.
  *
@@ -235,13 +219,6 @@ char *A4GLSQL_get_sqlerrm (void)
 }
 
 
-int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
-{
-  exitwith ("Could not read_columns - noODBC build");
-
-}
-
 /**
  * Connects to a database.
  *
@@ -280,10 +257,6 @@ int A4GLSQL_make_connection (
 }
 
 
-int A4GLSQL_get_datatype (char *db, char *tab, char *col)
-{
-  exitwith ("Could not get_datatype - noODBC build");
-}
 
 /**
  * Initialize the user name used to access the password.
@@ -484,8 +457,6 @@ static struct s_sid *prepareSqlStatement(
  * Prepare a global SQL statement (not named).
  *
  * @todo : Make all the assertions that i can.
- *
- * I should create this function if want to have create table
  *
  * @param s A string with the SQL statement.
  * @param ni The number of input bind elements.
@@ -969,8 +940,6 @@ static int executeStatement(struct s_sid *sid)
 /**
  * Execute an sql statement where the its execution is implicit in 4gl.
  *
- * I should make this to have create table
- *
  * @todo : Finish the statement execution.
  * @todo : See the bind array that is passed as simple pointer.
  * @todo : We could use same way that execute implicit select.
@@ -1047,12 +1016,6 @@ int A4GLSQL_close_session (char *sessname)
 }
 
 
-int
-A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
-		    char *service, int mode, char *info)
-{
-  exitwith ("Could not fill_array - noODBC build");
-}
 
 /**
  * Prepare an sql statement.
@@ -1304,13 +1267,6 @@ struct s_cid *A4GLSQL_declare_cursor(
   return cursorIdentification;
 }
 
-/*
-int A4GLSQL_set_sqlca_sqlcode (int a)
-{
-  status = a;
-  sqlca.sqlcode = a;
-}
-*/
 
 /**
  * Open a cursor already declared.
@@ -1607,3 +1563,51 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
   return 0;
 }
 
+/**
+ * Gets the current connection.
+ *
+ * @return The current connection.
+ */
+int A4GLSQL_get_curr_conn   (void)  {
+}
+
+int
+A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+{
+  exitwith ("Could not read_columns - noODBC build");
+}
+
+int A4GLSQL_get_datatype (char *db, char *tab, char *col)
+{
+  exitwith ("Could not get_datatype - noODBC build");
+}
+
+/**
+ * Close a cursor opened.
+ *
+ * @param currname The name of the cursor.
+ * @return
+ */
+int A4GLSQL_close_cursor   (char *currname)  {
+}
+
+int
+A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+		    char *service, int mode, char *info)
+{
+  exitwith ("Could not fill_array - noODBC build");
+}
+
+/*
+int A4GLSQL_set_sqlca_sqlcode (int a)
+{
+  status = a;
+  sqlca.sqlcode = a;
+}
+*/
+
+char *A4GLSQL_get_currdbname   (char *cursor)  {
+}
+
+long A4GLSQL_describe_stmt (char *stmt, int colno, int type) {
+}
