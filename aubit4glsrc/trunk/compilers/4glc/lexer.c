@@ -969,7 +969,7 @@ dumpstring(char *s,long n,char *fname) {
 static FILE *f;
 static int ident=0;
 int a;
-	if (acl_getenv("DUMPSTRINGS")) {
+	if (strlen(acl_getenv("DUMPSTRINGS"))) {
 		if (f==0) {
 			f=fopen("strings.lang","w");
 		}
