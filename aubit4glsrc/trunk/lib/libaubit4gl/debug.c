@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.29 2004-05-12 08:15:54 mikeaubury Exp $
+# $Id: debug.c,v 1.30 2004-06-14 18:53:23 mikeaubury Exp $
 #
 */
 
@@ -84,6 +84,7 @@ static void open_debugfile (void);
 */
 
 
+
 /**
  * Open the A4GL_debug file.
  *
@@ -92,7 +93,17 @@ static void open_debugfile (void);
 static void
 open_debugfile (void)
 {
-  debugfile = A4GL_mja_fopen ("debug.out", "w");
+static char debugfilename[256]="";
+if (strlen(debugfilename)==0) {
+	char *ptr;
+	strcpy(debugfilename,"debug.out");
+	ptr=acl_getenv("DEBUGFILE");
+	if (ptr) {
+		if (strlen(ptr)) strcpy(debugfilename,ptr);
+	}
+}
+
+  debugfile = A4GL_mja_fopen (debugfilename, "w");
   if (debugfile == 0)
     {
       printf ("Unable to open debug.out - check directory permissions...\n");
