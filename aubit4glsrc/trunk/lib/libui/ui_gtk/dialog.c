@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.8 2003-10-11 08:41:38 afalout Exp $
+# $Id: dialog.c,v 1.9 2003-11-27 21:56:30 mikeaubury Exp $
 #*/
 
 /**
@@ -77,8 +77,8 @@
 
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 	       char *msg);
-//void aclfgli_pr_message (int a, int wait);
-//void A4GL_display_error (int a, int wait);
+//void aclfgli_pr_message (int a, int xwait);
+//void A4GL_display_error (int a, int xwait);
 
 /*
 =====================================================================
@@ -270,10 +270,10 @@ main (int argc, char *argv[])
  * Print a message in GTK GUI mode.
  *
  * @param a Not used.
- * @param wait The time to wait during the message presentation.
+ * @param xwait The time to wait during the message presentation.
  */
 void
-aclfgli_pr_message_internal (int a, int wait,char *s)
+aclfgli_pr_message_internal (int a, int xwait,char *s)
 {
 //  char *p;
 	/** 
@@ -281,7 +281,7 @@ aclfgli_pr_message_internal (int a, int wait,char *s)
 	 * but the headers needs some clean.
 	 */
 
-  if (wait)
+  if (xwait)
     A4GL_gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, s);
   else
     A4GL_msg_window_gtk (s);
@@ -291,15 +291,15 @@ aclfgli_pr_message_internal (int a, int wait,char *s)
  * Display a error received by the char stack.
  *
  * @param a Not used
- * @param wait - 0 : The Do not wait for OK.
+ * @param xwait - 0 : The Do not wait for OK.
  *             - 1 : Show a window witj OK button.
  */
 void
-A4GL_display_error (int a, int wait)
+A4GL_display_error (int a, int xwait)
 {
   char *p;
   p = (char *) A4GL_char_pop ();
-  if (wait)
+  if (xwait)
     A4GL_gtkdialog ("Error", "", BUTTONS_OK, BUTTON_OK, 0, p);
   else
     A4GL_error_window_gtk (p);
