@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2002-06-23 07:51:50 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-06-25 02:43:56 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,6 +36,8 @@ include ../../incl/Makefile-common
 OBJS_XDR    =report_xdr.o
 OBJS		=${OBJS_XDR} y.tab.o main.o data.o output.o
 OBJS_DECOMP =${OBJS_XDR} dump.o
+
+#Mike's holding dump_4gl.c back for now - not in CVS
 OBJS_4GL    =${OBJS_XDR} dump_4gl.o
 REPORT_H    =report.h
 
@@ -50,17 +52,23 @@ REPORT_H    =report.h
 ##                    Targets
 ## ==================================================================
 
-all: aace decompile aace_4gl generate_aace
+all: aace adecompile
+#aace_4gl
+#generate_aace
 
 aace: ${OBJS}
 	${4GLPC} $(CFLAGS) $^ -o $@
+	${CP} $@ ../../bin
 
-decompile: ${REPORT_H} ${OBJS_DECOMP}
+adecompile: ${REPORT_H} ${OBJS_DECOMP}
 	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
+	${CP} $@ ../../bin
 
+#Cannot compile because dump_4gl.c is missing from CVS
 aace_4gl : ${REPORT_H} ${OBJS_4GL}
 	${CC} $(CFLAGS) ${OBJS_4GL} -o $@
 
+#test that depend on database name
 generate_aace : generate.4gl
 	${4GLPC} $^ -o $@
 	./$@ mips_3_3 systables
@@ -117,8 +125,9 @@ lclint: $(CMODS)
 ##                    Clean
 ## ==================================================================
 
-#ace.lex   CVS     dump.c        main.c    report.x
-#ace.yacc  data.c  generate.4gl  Makefile  output.c
+#ace.lex   CVS     dump.c        main.c    Makefile.in   output.c
+#ace.yacc  data.c  generate.4gl  Makefile  report.x
+
 
 clean:
 	${RM} *.bak lex.yy.c y.tab.c report_xdr.c ${REPORT_H} y.output *.o \
