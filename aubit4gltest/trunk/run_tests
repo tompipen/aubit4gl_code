@@ -8,8 +8,12 @@
 
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="240 670 706"
-#240 (numeric formating) 670 (syntax errors in generated EC code)
+EXPECT_TO_FAIL_TESTS="240 670 706 28 47 49 60 207 230 253 257 265 273 274 277 \
+	278 279 374 376 479 480 481 681 682 686 687 701 704 918 938 939 940 941 \
+	942 943 944 945 946 947"
+
+#240 (numeric formating) 
+#670 (syntax errors in generated EC code)
 #706 (expression in SQL syntax error)
 
 ######################
@@ -55,7 +59,7 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 684 105 705 229 707 752"
+INVALID_TESTS="375 377 684 105 705 229 707 752 258 280"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -64,6 +68,8 @@ INVALID_TESTS="375 377 684 105 705 229 707 752"
 #705 - "It is not possible to convert between the specified types." with -ifx-p
 #229 - missing *.infx files (should be .expected)
 #230 - diff: screen10_M.infx: No such file or directory - ...etc...
+#258 - DEFINE   t_tab1   RECORD LIKE tab1.* >> tab1 does not exist in the database (*)
+#280 - no makefile
 
 
 ##############################################################################
@@ -1857,6 +1863,8 @@ for a in $FLAGS; do
 		echo "   Run tests between 5 and 50, apply defaults but use Informix ESQL/C generation"
 		echo " -info 45"
 		echo "   Show information about test 45"
+		echo " -cert -short -silent"
+		echo "   Set defaults as for testing ceritfied results, hort summary, don't show programs execution"
 		echo ""		
         exit 0
         ;;
@@ -3072,7 +3080,6 @@ do
 	#see if Makefile contains description
 	desc_txt=`$MAKE -s -C $a desc 2>/dev/null`
 
-	echo "desc_txt = $desc_txt"
 	if test "$desc_txt" != "" ; then
 		#see if this description is unchanged from template, which 
 		#means that developer who added the test forgot to descibe it
@@ -3622,6 +3629,9 @@ do
 	if test "$SILENT" != "1"; then
 		echo " "
 		echo "------------------------- Running test #$a ---------------------------"
+		if test "$desc_txt" != "" -a "$VERBOSE" = "1" ; then
+			echo "Description: $desc_txt"
+		fi
 	else
 		echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."	
     fi

@@ -109,15 +109,15 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "Check if select with substring fecth the correct values. \
+		"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -174,7 +174,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped

@@ -109,8 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "Complex INPUT ARRAY test with ON KEY. \
+		"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -136,12 +136,12 @@ nosilent_test:
 #This core dumps on MinGW and messes up the terminal completely.
 #On Cygwin they don't core dump, but this tests fail:
 tui_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test uses .per form files:
 form_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test uses REPORT section
@@ -174,7 +174,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
