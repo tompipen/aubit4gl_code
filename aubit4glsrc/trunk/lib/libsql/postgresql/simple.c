@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.18 2004-10-28 22:05:02 mikeaubury Exp $
+# $Id: simple.c,v 1.19 2004-12-13 07:47:45 mikeaubury Exp $
 #*/
 
 
@@ -474,6 +474,11 @@ int a;
 }
 
 char* A4GLSQL_get_errmsg(int a) { return 0; }
+
+
+char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
+        return 0;
+}
 
 
 /* =============================== EOF ============================== */
