@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.42 2002-01-30 21:13:43 saferreira Exp $
+# $Id: mod.c,v 1.43 2002-02-03 17:42:27 saferreira Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.42 2002-01-30 21:13:43 saferreira Exp $
+* $Id: mod.c,v 1.43 2002-02-03 17:42:27 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.42  2002/01/30 21:13:43  saferreira
+*	Warning fixes
+*	
 *	Revision 1.41  2002/01/30 13:41:53  saferreira
 *	Comments added
 *	
@@ -325,6 +328,10 @@ struct s_constants
 }
 const_arr[MAXCONSTANTS];
 int const_cnt = 0;
+
+/**
+ * Array where all the WHENEVER conditions are stored.
+ */
 int when_code[8] = { WHEN_STOP,
   WHEN_NOTSET,
   WHEN_STOP,
