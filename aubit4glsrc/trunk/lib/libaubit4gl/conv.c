@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.15 2002-11-25 16:51:24 mikeaubury Exp $
+# $Id: conv.c,v 1.16 2002-12-31 02:50:39 psterry Exp $
 #
 */
 
@@ -1450,175 +1450,130 @@ ftod (void *aa, void *zz, int sz_ignore)
   return 1;
 }
 
+
 /**
- * Convert a string value to date.
+ * stod() - converts a string to an internal date type.
  *
- * @param zz The string value.
- * @param aa A pointer where to return the date value.
- * @param sz_ignore Not used.
+ * Uses DBDATE format info but does not assume the string is well
+ * formed, making it suitable for conversion of user data input.
+ *
+ * @ param str The string value
+ * @ param str A pointer where to return the date value
+ * @ param sz_ignore Not used
  * @return
- *   - 0 : There was a convertion error
- *   - 1 : Convertion made.
+ *   - 0 :  There was a conversion error
+ *   - 1 :  Conversion done.
  */
-int
-stod (void *zz, void *aa, int sz_ignore)
+int stod( char *str, int *date, int sz_ignore )
 {
-  int d[4];
-  char p1[10] = "ptr1";
-  char p2[10] = "ptr2";
-  char p3[10] = "ptr3";
-  char dbdate_y[10] = "";
-  char dbdate_m[10] = "";
-  char dbdate_d[10] = "";
-  int cnt = 0;
-  int ptr1;
-  char buff[5];
-  char dbdate[20];
-  int *c;
-  char *z;
-  c = (int *) aa;
-  z = (char *) zz;
-  ptr1 = 0;
-#ifdef DEBUG
-  {    debug ("stod %s", z);  }
-#endif
-  if (bname2 (z, p1, p2, p3)==0) return 0;
-#ifdef DEBUG
-  {    debug ("done bname2 '%s' '%s' '%s'", p1, p2, p3);  }
-#endif
-  strcpy (dbdate, acl_getenv ("DBDATE"));
-  debug ("DBDATE set to %s\n", dbdate);
+  static char dbdate[10] = "";    // holds current DBDATE value
+  static int d_pos,m_pos,y_pos;   // relative positions of day/month/year
+  char   num[3][10];              // date numbers extracted from string
+  char   *p;
+  int    n;
 
-  if (dbdate[0] == 'Y')
-    strcpy (dbdate_y, p1);
-  if (dbdate[0] == 'M')
-    strcpy (dbdate_m, p1);
-  if (dbdate[0] == 'D')
-    strcpy (dbdate_d, p1);
-
-  if (dbdate[1] == 'Y')
-    strcpy (dbdate_y, p2);
-  if (dbdate[1] == 'M')
-    strcpy (dbdate_m, p2);
-  if (dbdate[1] == 'D')
-    strcpy (dbdate_d, p2);
-
-  if (dbdate[2] == 'Y')
-    strcpy (dbdate_y, p3);
-  if (dbdate[2] == 'M')
-    strcpy (dbdate_m, p3);
-  if (dbdate[2] == 'D')
-    strcpy (dbdate_d, p3);
-
-  strcpy (p1, dbdate_d);
-  strcpy (p2, dbdate_m);
-  strcpy (p3, dbdate_y);
-
-  d[0] = atoi (p1);
-  d[1] = atoi (p2);
-  d[2] = atoi (p3);
-#ifdef DEBUG
-  {    debug ("Split to numbers : %d %d %d", d[0], d[1], d[2]);  }
-#endif
-  if (strlen (p1) > 0 && strlen (p2) > 0 && strlen (p3) > 0)
-    {
-      cnt = 3;
-    }
-  trim (p3);
-#ifdef DEBUG
-  {    debug ("trimmed");  }
-#endif
-  if (strlen (p3) <= 2)
-    {
-#ifdef DEBUG
-      {	debug ("Modify year");      }
-#endif
-      d[2] = modify_year (d[2]);
-    }
-#ifdef DEBUG
-  {    debug ("Modified year");  }
-#endif
-  if (cnt != 3)
-    {
-      /* could be all numbers */
-#ifdef DEBUG
-      {	debug ("Check numbers %s", z);      }
-#endif
-      if (strlen (z) == 6)
-	{
-#ifdef DEBUG
-	  {	    debug ("6 chars long");	  }
-#endif
-	  buff[0] = z[0];
-	  buff[1] = z[1];
-	  buff[2] = 0;
-	  d[0] = atoi (buff);
-	  buff[0] = z[2];
-	  buff[1] = z[3];
-	  buff[2] = 0;
-	  d[1] = atoi (buff);
-	  buff[0] = z[4];
-	  buff[1] = z[5];
-	  buff[2] = 0;
-	  d[2] = atoi (buff);
-	  d[2] = modify_year (d[2]);
-	  cnt = 3;
-	}
-#ifdef DEBUG
-      {	debug ("Checked 6");      }
-#endif
-      if (strlen (z) == 8)
-	{
-#ifdef DEBUG
-	  {	    debug ("8 chars long");	  }
-#endif
-	  buff[0] = z[0];
-	  buff[1] = z[1];
-	  buff[2] = 0;
-	  d[0] = atoi (buff);
-	  buff[0] = z[2];
-	  buff[1] = z[3];
-	  buff[2] = 0;
-	  d[1] = atoi (buff);
-	  buff[0] = z[4];
-	  buff[1] = z[5];
-	  buff[2] = z[6];
-	  buff[3] = z[7];
-	  buff[5] = 0;
-	  d[2] = atoi (buff);
-	  cnt = 3;
-	}
-#ifdef DEBUG
-      {	debug ("Checked 8");      }
-#endif
-    }
-#ifdef DEBUG
-  {    debug ("  (cnt=%d)", cnt);  }
-#endif
-  if (cnt == 3)
-    {
-#ifdef DEBUG
-      {	debug ("cnt=3 %d %d %d", d[0], d[1], d[2]);      }
-#endif
-      *c = gen_dateno (d[0], d[1], d[2]);
-#ifdef DEBUG
-      {	debug ("Generated date");      }
-#endif
-      if (*c != DATE_INVALID)
-	{
-#ifdef DEBUG
-	  {	    debug ("Made %d", *c);	  }
-#endif
-	  return 1;
-	}
-      else
+  // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
+  // for efficiency do this once, the first time stod() is called.
+  // note - for this conversion we need only the three letters DMY
+  // in their correct sequence, which we put into variables d/m/y_pos
+  if ( dbdate[0] == '\0' ) {
+     char dmy[4] = "";
+     strncpy( dbdate, acl_getenv("DBDATE"), 10);
+     if ( dbdate[0] == '\0' ) {
+        strcpy(dbdate, "MDY4/");
+     }
+     for ( p = dbdate; (*p > '\0') && (strlen(dmy) < 3); p++ ) {
+       if ( isalpha(*p) ) {
+	       *p = toupper(*p);
+	       strncat( dmy, p, 1 );
+       }
+     }
+     // store the positions (0-2) in dmy string of characters D,M,Y
+     d_pos = strcspn(dmy,"D");
+     m_pos = strcspn(dmy,"M");
+     y_pos = strcspn(dmy,"Y");
+     printf("d = %d, m = %d, y = %d \n", d_pos,m_pos,y_pos);
+     // each of these must be different and in the range 0-2
+     if ( (d_pos+m_pos+y_pos) != 3 || d_pos == m_pos ||
+           d_pos == y_pos || m_pos == y_pos )
+     {
+        // we have an invalid dbdate format - die ...
+        set_errm (dbdate);
+        exitwith("Invalid DBDATE format: %s");
 	return 0;
+     }
+  } // end of dbdate initialization
+
+  // first scan the string and extract contiguous sequences
+  // of digits, up to three of them ( for day/month/year )
+
+  num[0][0] = '\0';
+  num[1][0] = '\0';
+  num[2][0] = '\0';
+  n = 0;
+  for ( p = str; (*p > '\0') && (n < 3); p++ ) {
+    if ( isdigit( *p ) ) {
+       strncat(num[n], p, 1);
+       if ( strlen(num[n]) > 8 ) { n++; }
     }
-  else
-    return 0;
+    else {
+       if ( num[n][0] > '\0' ) { n++; }
+    }
+  }
 
+  // a single sequence of 6 digits is treated as three 2-digit numbers
+  if ( strlen(num[0]) == 6 ) {
+       strncpy(num[1],&num[0][2],2);
+       strncpy(num[2],&num[0][4],2);
+       num[0][2] = '\0';
+       num[1][2] = '\0';
+       num[2][2] = '\0';
+  }
+  else {
+    if ( strlen(num[0]) == 8 ) {
+    // a single sequence of 8 digits is treated as two 2-digit numbers
+    // and one 4-digit year (which four depends on DBDATE)
+       switch ( y_pos ) {
+	case 0: // year is the first number
+         strncpy(num[1],&num[0][4],2); num[1][2] = '\0';
+         strncpy(num[2],&num[0][6],2); num[2][2] = '\0';
+         num[0][4] = '\0';
+	 break;
+	case 1: // year is in the middle (v. unlikely)
+         strncpy(num[1],&num[0][2],4); num[1][4] = '\0';
+         strncpy(num[2],&num[0][6],2); num[2][2] = '\0';
+         num[0][2] = '\0';
+	 break;
+        default: // year is at the end, the usual case
+         strncpy(num[1],&num[0][2],2); num[1][2] = '\0';
+         strncpy(num[2],&num[0][4],4); num[2][4] = '\0';
+         num[0][2] = '\0';
+	 break;
+       }
+    }
+    else {
+      // otherwise, we expect exactly three separate numbers
+         if (! isdigit(num[2][0]) ) {
+	    *date = DATE_INVALID;
+	    return 0;
+         }
+    }
+  }
 
+  // convert d/m/y strings to integer, and then convert to informix-style
+  // internal date number  - but first check year for y2k conversion
+
+  if ( strlen(num[y_pos]) < 4 ) {
+    n = modify_year( atoi(num[y_pos]) );
+  }
+  else {
+    n = atoi(num[y_pos]);
+  }
+
+  return ( (*date = gen_dateno(atoi(num[d_pos]), atoi(num[m_pos]), n)) 
+           != DATE_INVALID );
 }
+
 
 /**
  * Convert a date to ???
