@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.14 2002-08-29 09:10:31 afalout Exp $
+# $Id: calldll.c,v 1.15 2002-09-26 08:12:22 afalout Exp $
 #
 */
 
@@ -173,11 +173,14 @@ dl_openlibrary (char *type, char *name)
 	#ifdef __CYGWIN__
 	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
 	#else
-	  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+		#if (defined(__MACH__) && defined(__APPLE__))
+		  sprintf (buff, "%s/lib/lib%s_%s.dylib", acl_getenv ("AUBITDIR"), type, name);
+        #else
+		  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+        #endif
 	#endif
 
   debug("Attempting to open shared library : '%s'",buff);
-
 
   dllhandle = dlopen (buff, RTLD_LAZY);
   if (dllhandle==0) {
