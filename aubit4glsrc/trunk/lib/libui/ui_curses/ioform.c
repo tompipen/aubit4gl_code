@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.115 2005-02-02 15:48:37 mikeaubury Exp $
+# $Id: ioform.c,v 1.116 2005-02-03 12:06:02 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.115 2005-02-02 15:48:37 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.116 2005-02-03 12:06:02 mikeaubury Exp $";
 /**
  * @file
  *
@@ -53,6 +53,7 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 					     struct s_form_dets *formdets,
 					     int max_number,
 					     struct s_field_name_list *list);
+static int get_inc_quotes(int a) ;
 
 /*
 =====================================================================
@@ -2166,9 +2167,8 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	      ptr =
 		(char *) A4GL_construct (sio->constr[a].tabname,
 					 sio->constr[a].colname,
-					 field_buffer (f, 0),
-					 (fprop->datatype == 0)
-					 || (fprop->datatype == 8));
+					 field_buffer (f, 0),get_inc_quotes(fprop->datatype)
+					);
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
 		{
@@ -2835,12 +2835,8 @@ UILIB_A4GL_push_constr (void *vs)
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname, field_buffer (f,
-									 0),
-				     ((fprop->datatype & 0xff) == DTYPE_CHAR
-				      || (fprop->datatype & 0xff) ==
-				      DTYPE_DATE
-				      || (fprop->datatype & 0xff) ==
-				      DTYPE_VCHAR));
+									 0),get_inc_quotes(fprop->datatype)
+		);
 	  if (strlen (ptr) > 0)
 	    {
 	      A4GL_debug ("ptr=%s\n", ptr);
@@ -4535,4 +4531,10 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 
   return pprval;
 
+}
+
+static int get_inc_quotes(int a) {
+     if ((a & 0xff) == DTYPE_CHAR || (a &0xff) == DTYPE_VCHAR) return 1;
+	if ((a & 0xff) == DTYPE_DATE) return 2;
+	return 0;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.23 2005-01-21 10:57:30 mikeaubury Exp $
+# $Id: rexp2.c,v 1.24 2005-02-03 12:06:01 mikeaubury Exp $
 #
 */
 
@@ -280,17 +280,19 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
       lastchar = z;
     }
   convert_constr_buffer (buffer);
-  if (!inc_quotes)
+
+
+  if (inc_quotes==0)
     {
       for (z = 0; z < constr_size; z++)
 	{
-	  if (isop (constr_bits[z], 0) == 0
-	      || (z > 1 && isop (constr_bits[z], 0) != OR))
+	  if (isop (constr_bits[z], 0) == 0 || (z > 1 && isop (constr_bits[z], 0) != OR))
 	    {
 
 		char *eptr;
 		k=1;
-		strtol(constr_bits[z], &eptr, 10);
+		strtod(constr_bits[z], &eptr);
+		//strtol(constr_bits[z], &eptr,10);
 		A4GL_debug("eptr=%p *eptr=%p\n",eptr,*eptr);
 		if (eptr==0) k=0;
 		if (eptr) {
@@ -310,6 +312,28 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	    }
 	}
     }
+
+
+  if (inc_quotes==2) /* Its a date */
+    {
+      for (z = 0; z < constr_size; z++)
+	{
+	  if (isop (constr_bits[z], 0) == 0 || (z > 1 && isop (constr_bits[z], 0) != OR))
+	    {
+		int n;
+		if (A4GL_stod(constr_bits[z], &n, 0) && !A4GL_isnull(DTYPE_DATE,(void *)&n)) {
+			A4GL_debug("CDATE Returns true for %s n=%d",constr_bits[z],n);
+		} else {
+			return 0;
+			A4GL_debug("CDATE Returns false for %s or its null",constr_bits[z]);
+		}
+
+	    }
+	}
+    }
+
+
+
   strcpy (buff2, "");
   z = isop (constr_bits[0], 0);
   if (constr_size > 1)

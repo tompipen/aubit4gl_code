@@ -8,8 +8,7 @@
 free_cmd :
 		FREE fetch_cursor_name
 		{
-		//print_niy("Free Cursor");
-		A4GL_lex_printcomment(" /* FIXME: Not implemented: Free Cursor */\n");;
+		print_free_cursor($<str>2);
 		strcpy($<str>$,"");
 		}
 ;

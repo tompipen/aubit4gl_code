@@ -14,7 +14,8 @@ define
 	mv_ansi_mode,
 	mv_show_errtail,
 	mv_esql_to_c_first,
-	mv_make_globals smallint
+	mv_make_globals smallint,
+	mv_static smallint
 
 
 
@@ -58,7 +59,6 @@ define
 
 function init()
 define lv_pack char(256)
-
 
 	if mv_verbose>=4 then display "Reading packs" end if
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
@@ -126,6 +126,7 @@ define lv_pack char(256)
 	let mv_verbose=0
 	let mv_make_globals=0
 	LET mv_esql_to_c_first=0
+	let mv_static=0
 
 	IF fgl_getenv("ESQL_TO_C")="Y" THEN
 		LET mv_esql_to_c_first=1
@@ -522,6 +523,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
 		WHEN "-g"			let mv_debug=1 continue for
 		WHEN "--debug"			let mv_debug=1 continue for
+		WHEN "-static"			let mv_static=1 continue for
 
 		WHEN "--as-dll"			let mv_make_dll=1 let mv_stage="DLL" 
 						if mv_output="" or mv_output is null then
@@ -810,7 +812,7 @@ END IF
 
 
 
-IF lv_to="EXE" and lv_from in ("EC","C") THEN
+IF (lv_to="EXE" OR lv_to="DLL") and lv_from in ("EC","C") THEN
 	# We need to get these to object code instead of EXE
 	CALL make_into(lv_fname,lv_from,"OBJ")
 	RETURN
@@ -1232,6 +1234,10 @@ let lv_runstr=mv_link clipped," ",mv_link_opts clipped," "
 
 if mv_make_dll then
 	let lv_runstr=lv_runstr clipped," ",mv_dll_opts
+end if
+
+if mv_static then
+	let lv_runstr=lv_runstr clipped, " -static" 
 end if
 
 if mv_debug then

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.69 2005-02-01 10:25:35 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.70 2005-02-03 12:06:02 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.69 2005-02-01 10:25:35 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.70 2005-02-03 12:06:02 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -54,7 +54,7 @@ static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
 static void A4GL_newMovement (struct s_screenio *arr, int attrib);
 static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
 static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
-static void do_key_move (char lr, struct s_screenio *s, int a,
+static void do_key_move_fc (char lr, struct s_screenio *s, int a,
 			 int has_picture, char *picture);
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 char *last_field_name;
@@ -562,8 +562,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  mform = sio->currform->form;
 		  if (a_strchr ("A#X", picture[mform->curcol]) == 0
 		      && picture[mform->curcol])
-		    do_key_move ('R', sio, sio->fcntrl[a].extent, has_picture,
-				 picture);
+		    do_key_move_fc ('R', sio, sio->fcntrl[a].extent, has_picture, picture);
 		}
 
 	    }
@@ -753,7 +752,15 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		      ptr[a] = picture[a];
 		    }
 		  //A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+
+
 		  A4GL_set_init_value (sio->currentfield, ptr, 0);
+		  if (picture[0]!='9'&&picture[0]!='#' && picture[0]!='X') {
+		  	do_key_move_fc ('R', sio, 0, 1, picture);
+	  		//pos_form_cursor (sio->currform->form);
+  			//A4GL_mja_wrefresh (currwin);
+		  }
+
 		  A4GL_debug ("XYX Set field : %s", ptr);
 		  acl_free (ptr);	// ? @todo....
 		}
@@ -1223,7 +1230,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 
 
 static void
-do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
+do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
 	     char *picture)
 {
   int at_last = 0;
@@ -1269,7 +1276,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
 	  if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
 		A4GL_debug("AT LAST <-----------------------------------------");
 	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
-					 a);
+					 some_a);
 	      return;
 	    }
 	  else
@@ -1294,7 +1301,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
       newpos = mform->curcol;
       if (a_strchr ("A#X", picture[newpos]))
 	return;
-      do_key_move (lr, s, a, has_picture, picture);
+      do_key_move_fc (lr, s, some_a, has_picture, picture);
     }
   return;
 
@@ -1411,7 +1418,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
       else
 	{			// Just like A4GLKEY_LEFT.....
-	  do_key_move ('L', s, a, has_picture, picture);
+	  do_key_move_fc ('L', s, a, has_picture, picture);
 	}
       break;
 
@@ -1453,11 +1460,11 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
     case A4GLKEY_LEFT:
-      do_key_move ('L', s, a, has_picture, picture);
+      do_key_move_fc ('L', s, a, has_picture, picture);
       break;
 
     case A4GLKEY_RIGHT:
-      do_key_move ('R', s, a, has_picture, picture);
+      do_key_move_fc ('R', s, a, has_picture, picture);
       break;
 
     case 4:			// Control - D
