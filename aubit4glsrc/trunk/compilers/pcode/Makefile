@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2004-06-13 08:49:09 mikeaubury Exp $
+# $Id: Makefile,v 1.20 2004-06-14 09:04:14 afalout Exp $
 #
 
 ROOT    =../..
@@ -210,7 +210,7 @@ common_io_fgl.o: common_io.c
 	$(CC) -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
 
 compiler_list.o: compiler_list.c
-	$(CC) ${LIST_CFLAGS} -c -o $@ $^
+	$(CC) ${CFLAGS} ${LIST_CFLAGS} -c -o $@ $^
 
 npcode.h : npcode.x
 	${RPCGEN_NPCODE}
