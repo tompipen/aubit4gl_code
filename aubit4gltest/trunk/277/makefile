@@ -82,9 +82,10 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
-	if diff ${DIFF_FLAGS} sized.out sized.out.expected; then exit 0; else exit 1; fi
-	if diff ${DIFF_FLAGS} sizing.out sizing.out.expected; then exit 0; else exit 1; fi	
+#	${DEFAULT_RUN}
+#	if diff ${DIFF_FLAGS} sized.out sized.out.expected; then exit 0; else exit 1; fi
+#	if diff ${DIFF_FLAGS} sizing.out sizing.out.expected; then exit 0; else exit 1; fi
+	${DEFAULT_DUMP_DIFF}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 

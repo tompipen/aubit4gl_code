@@ -3,7 +3,11 @@
 
 ################
 #All common settings and rules are included:
-include ${MAKEFILE_COMMON}
+ifdef MAKEFILE_COMMON
+	include ${MAKEFILE_COMMON}
+else
+	include ../incl/Makefile-common
+endif
 
 ## ======================================================================
 ##                  Local Setings - user modifiable
@@ -82,11 +86,14 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
-	if diff ${DIFF_FLAGS} t1.out t1.out.expected; then exit 0; else exit 1; fi
-	if diff ${DIFF_FLAGS} t2.out t2.out.expected; then exit 0; else exit 1; fi	
-	if diff ${DIFF_FLAGS} t3.out t3.out.expected; then exit 0; else exit 1; fi
-	if diff ${DIFF_FLAGS} t4.out t4.out.expected; then exit 0; else exit 1; fi	
+#	${DEFAULT_RUN}
+	${DEFAULT_DUMP_DIFF}
+#	if diff ${DIFF_FLAGS} t1.out t1.out.expected; then exit 0; else exit 1; fi
+#	if diff ${DIFF_FLAGS} t2.out t2.out.expected; then exit 0; else exit 1; fi	
+#	if diff ${DIFF_FLAGS} t3.out t3.out.expected; then exit 0; else exit 1; fi
+#	if diff ${DIFF_FLAGS} t4.out t4.out.expected; then exit 0; else exit 1; fi
+
+
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
@@ -217,5 +224,6 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
+	
 	
 # ============================= EOF ================================

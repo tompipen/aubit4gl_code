@@ -1,5 +1,4 @@
 ###########################################################################
-#
 # 		Use this script to run unit tests (see -help)
 #
 ###########################################################################
@@ -153,7 +152,78 @@ for a in $FLAGS; do
 		fi
 		exit $RET
 		;;
-   
+
+	-check-dump-screen)
+		#Make sure we have IS_DUMP_SCREEN_TEST set right
+		ALL_DIRS=[0-9]*
+		ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
+		for TEST_NO in $ALL_TESTS
+		do
+			IN_MAKE=0
+			IN_STRING=0
+			IS_DUMP_SCREEN_TEST=0
+			x=0
+			for b in $INVALID_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					x=1
+					continue
+				fi
+			done
+			if test "$x" = "1"; then 
+				continue
+			fi
+			
+			#check list
+			for b in $DUMP_SCREEN_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_DUMP_SCREEN_TEST=1
+					IN_STRING=1
+				fi
+			done
+			if test "$IS_DUMP_SCREEN_TEST" = "0"; then 
+				#check makefile
+				IS_DUMP_SCREEN_TEST=`$MAKE -s -C $TEST_NO dump_screen_test 2>/dev/null`
+				if test "$IS_DUMP_SCREEN_TEST" = ""; then
+					IS_DUMP_SCREEN_TEST=0
+				fi
+				if test "$IS_DUMP_SCREEN_TEST" = "1"; then
+					IN_MAKE=1
+				fi
+			fi
+			
+			#check for real
+			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_dump_screen {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_DUMP_SCREEN_TEST=1
+			else
+				REALLY_IS_DUMP_SCREEN_TEST=0
+			fi
+			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i A4GL_clr_window {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_CLR_WINDOW_TEST=1
+			else
+				REALLY_IS_CLR_WINDOW_TEST=0
+			fi
+			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_fgl_drawbox {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_FGL_DRAWBOX_TEST=1
+			else
+				REALLY_IS_FGL_DRAWBOX_TEST=0
+			fi
+			
+			if test "$REALLY_IS_FGL_DRAWBOX_TEST" = "1" -o "$REALLY_IS_CLR_WINDOW_TEST" = "1" -o "$REALLY_IS_DUMP_SCREEN_TEST" = "1"; then 
+				SHOULD_BE=1
+			else
+				SHOULD_BE=0
+			fi
+			if test "$SHOULD_BE" != "$IS_DUMP_SCREEN_TEST"; then
+				echo "$TEST_NO : SHOULD_BE=$SHOULD_BE but $IS_DUMP_SCREEN_TEST (IN_MAKE=$IN_MAKE IN_STRING=$IN_STRING)"
+				echo "DUMP_SCREEN=$REALLY_IS_DUMP_SCREEN_TEST CLR_WINDOW=$REALLY_IS_CLR_WINDOW_TEST FGL_DRAWBOX=$REALLY_IS_FGL_DRAWBOX_TEST"
+			fi
+		done
+		exit 0
+		;;
+		
 	-info) 	#Show information about the test; allready procesed before - skip it
         ;;
 
@@ -256,6 +326,10 @@ for a in $FLAGS; do
 	-skip-unknown-trans) #Skip tests with explicit pref for trans, when cant 
 						#determine state of trans in current RDBMS
 		SKIP_UNKNOWN_TRANS=1
+		;;
+		
+	-xterm)
+		export TERM=xterm
 		;;
 		
 	-skip-expectfail) #Skip tests expected to fail 
@@ -1484,9 +1558,9 @@ do
 	if test "$desc_txt" != "" ; then
 		#see if this description is unchanged from template, which 
 		#means that developer who added the test forgot to descibe it
-		TMP=`echo $desc_txt | grep "This is not a test but a Testing template"`
+		TMP1=`echo $desc_txt | grep "This is not a test but a Testing template"`
 	
-		if test "$TMP" != ""; then 
+		if test "$TMP1" != ""; then 
 			if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
 				TEMPLATE_COMMENT=1
 			fi
@@ -1500,7 +1574,7 @@ do
 		IS_DESCRIBED=0
 	fi
 
-	if test "$desc_txt" != "" ; then
+	if test "$IS_DESCRIBED" = "1" ; then
 
 		##############
 		#get info from makefile
@@ -1547,7 +1621,7 @@ do
 
 
 		OLD_DESC=0
-	else
+	else #old makefile - no descriptions
 			OLD_DESC=1
 			#get info from this script
 			
@@ -1636,7 +1710,7 @@ do
 					IS_NO_CRON_TEST=1
 				fi
 			done
-		fi
+	fi #IS_DESCRIBED
 
 		#Test information that is allways held only in this script, and NOT
 		#in makefiles	
@@ -1956,11 +2030,23 @@ do
 		#Obsolete-using PDcurses now, not CygWin Ncurses:
 	    #if test "$IS_TUI_TEST" = "1" -a "$TERM" != "xterm" -a "$PLATFORM" = "MINGW"; then
 		#	SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+		#	SKIP_TUI_NOT_XTERM_LIST="$SKIP_TUI_NOT_XTERM_LIST $TEST_NO"
 		#	if test "$VERBOSE" = "1"; then
 		#		echo "Skipping test #$TEST_NO - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
 		#	fi
 	    #    continue
 	    #fi
+		
+		if test "$IS_DUMP_SCREEN_TEST" = "1" -a "$TERM" != "xterm"; then
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			SKIP_DUMP_SCREEN_NOT_XTERM_LIST="$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $TEST_NO"
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$TEST_NO - cannot use dump_screen() with TERM=$TERM (need xterm)." >> $LOGFILE
+			fi
+			continue
+		fi
+		
+		
 	    if test "$IS_GRAPHIC_TEST" = "1" && test "$NO_GRAPHIC" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
@@ -1988,9 +2074,9 @@ do
 		fi
 		if test "$USE_COMP" != "aubit"; then
 			if test "$USE_COMP" = "4js-p"; then
-				TMP=""
-				TMP=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
-				if test "$TMP" != ""; then 
+				TMP1=""
+				TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
+				if test "$TMP1" != ""; then 
 					if test "$VERBOSE" = "1"; then
 						echo "Skip $TEST_NO - can't dump_screen with 4js"
 					fi
@@ -2150,6 +2236,9 @@ do
 	export EXPECT_CODE
 	export COMPILE_ONLY
 	export USE_COMP
+	#Exporting VERBOSE would propagate to 'aubit' and 'amake' too
+	MAKE_VERBOSE=$VERBOSE
+	export MAKE_VERBOSE
 
 	#make never exits with exit code of the program that caused the error,
 	#so we cannot expect EXPECT_CODE to be returned here
@@ -2295,8 +2384,8 @@ do
 	fi
 
 	if test "$WATCHIT" = "1"; then
-		TMP=`grep "Killing" /tmp/watchit.log`
-		if test "$TMP" != ""; then
+		TMP1=`grep "Killing" /tmp/watchit.log`
+		if test "$TMP1" != ""; then
 			if test "$VERBOSE" = "1" -o "$RUN_ONE" != ""; then
 				echo
 				echo "WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING!"
@@ -2575,10 +2664,16 @@ fi
 	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
 	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
-	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST"
+	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
+	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
-if test "$VERBOSE_RESULTS" = "1"; then 
+if test "$VERBOSE_RESULTS" = "1"; then
+
+	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
+		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $LOGFILE
+	fi
+
 	if test "$SKIP_PCODE_LIST" != "" ; then 
 		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $LOGFILE
 	fi

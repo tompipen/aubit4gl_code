@@ -19,6 +19,12 @@ ifeq "${AUBITDIR}" ""
 	endif	
 endif
 
+ifeq "${MAKE_VERBOSE}" "1"
+	SILENT=
+else
+	#prevent make commands from echo-ing
+	SILENT=@
+endif
 
 #############
 #While compiling source code, force priority of 'aubitrc' present in this 
@@ -38,6 +44,9 @@ ifeq "${USE_COMP}" ""
 endif
 
 OUT_EXPECTED=out.expected
+
+OUT_EXPECTED_LIST=$(wildcard *.expected)
+OUT_LIST=$(subst .expected,,$(OUT_EXPECTED_LIST))
 
 ifeq "${USE_COMP}" "aubit"
 
@@ -169,6 +178,7 @@ ifneq "${COMPILE_ONLY}" "1"
 #NOTE: should never exit with returned code here - make will not exit with
 # it anyway, so we must expect 0 for success in run_test script
 	
+	#Run explicitly named test program and test for exit code.
 	NAMED_RUN=${RUN_EXT}; \
 		RET=$$?; \
 		if test "$$RET" = "${EXPECT_CODE}"; then \
@@ -183,23 +193,67 @@ ifneq "${COMPILE_ONLY}" "1"
 				exit 1; \
 			fi \
 		fi
+	#Same as NAMED_RUN, but uses fixed default test program name (./progname)
+	DEFAULT_RUN=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_RUN}
+		
+		
+	#Snippet to be used after running a test program, when succcess
+	#is not only determined by exit code, but also by comparing 
+	#results. Used to prevent failure in program execution from 
+	#becoming masked by subsequent failure in comparing results
+	TEST_RUN=\
+		RET=$$?; \
+		if test "$$RET" != "${EXPECT_CODE}"; then \
+			if test "$$RET" != "0" -a "${EXPECT_CODE}" = "x"; then \
+				echo "Run OK ($$RET)"; \
+			else \
+				echo "Run FAILED ($$RET but expecting ${EXPECT_CODE})"; \
+				exit 1; \
+			fi \
+		fi
+		
+	#Snippet for use in NAMED_DIFF and therefore in DEFAULT_DIFF 
+	REDIRECT_RUN=${RUN_EXT} > ${OUT}; ${TEST_RUN}
 
-	DEFAULT_RUN=${RUNNER} ${DBG} ./progname${NAMED_RUN}
-	
-	DIFF_COMMON=if diff ${DIFF_FLAGS} ${OUT} ${OUT_EXPECTED}; then \
+	#Snipped for use in NAMED_DIFF and therefore in DEFAULT_DIFF
+	DIFF_COMMON=\
+		if diff ${DIFF_FLAGS} ${OUT} ${OUT_EXPECTED}; then \
 			echo "Success";  \
             exit 0; \
 		else \
 			exit 1; \
 		fi
+		
+	#Snippet to be used in NAMED_DUMP_DIFF and therefore in DEFAULT_DUMP_DIFF
+	DIFF_MULTI=\
+		for outfile in $(OUT_LIST); do \
+			if diff ${DIFF_FLAGS} $$outfile $$outfile.expected ; then \
+				echo "OK: $$outfile and $$outfile.expected"; \
+			else \
+				echo "ERROR: $$outfile and $$outfile.expected are DIFFERENT";  \
+				exit 1; \
+			fi; \
+		done; \
+		echo "Success";  \
+		exit 0; \
 
-	NAMED_DUMP_DIFF=${RUN_EXT}; ${DIFF_COMMON}
-	NAMED_DIFF=${RUN_EXT} > ${OUT}; ${DIFF_COMMON}
 	
-	DEFAULT_DUMP_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DUMP_DIFF}	
-	DEFAULT_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DIFF}
-
-else
+	#This runs named test program, checks exit code, and then compares 
+	#file created by running progams output redirection to file, with 
+	#.expected file (single file only)
+ 	NAMED_DIFF=${REDIRECT_RUN}; ${DIFF_COMMON}
+	#Same, but uses fixed default program name (./progname)	
+	DEFAULT_DIFF=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DIFF}
+	
+	#This runs named test program, checks exit code, and then compares 
+	#one or more out files created by dump_screen() function with one or more 
+	#out.expected files
+	NAMED_DUMP_DIFF=${RUN_EXT}; ${TEST_RUN}; ${DIFF_MULTI}
+	#Same, but uses fixed default program name (./progname)	
+	DEFAULT_DUMP_DIFF=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DUMP_DIFF}
+	
+else 
+	#Compile only
 	NAMED_RUN=@echo "** NOTE: Test is compile-time only, execution will not be attempted"
 	DEFAULT_RUN=${NAMED_RUN}
 	NAMED_DIFF=${NAMED_RUN}
@@ -271,6 +325,8 @@ show:
 	@echo 'DEFAULT_DIFF=${DEFAULT_DIFF}'
 	@echo 'MODULES=${MODULES}'
 	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
+	@echo "OUT_EXPECTED_LIST=$(OUT_EXPECTED_LIST)"
+	@echo "OUT_LIST=$(OUT_LIST)"
 	
 	
 

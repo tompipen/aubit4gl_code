@@ -123,7 +123,38 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 			fi
 		fi
     fi
-
+	USERNAME=`whoami`
+	if test "$USEERNAME" != "informix"; then 
+		echo "WARNING: you are not logged in as Informix super user (informix) but"
+		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"
+		echo "WARNING: to execute 'ontape' utility program (for switching logging mode)"
+	fi
+	if test "$INFORMIXDIR" != "" -a "$ONCONFIG" != ""; then 
+		if test -f "$INFORMIXDIR/etc/$ONCONFIG"; then 
+			LTAPEDEV_LINE=`grep LTAPEDEV "$INFORMIXDIR/etc/$ONCONFIG"`
+			if test "$LTAPEDEV_LINE" != ""; then 
+				LTAPEDEV_VALUE=`echo $LTAPEDEV_LINE | grep null`
+				if test "$LTAPEDEV_VALUE" = ""; then
+					echo "WARNING: in Informix config file $INFORMIXDIR/etc/$ONCONFIG"			
+					echo "WARNING: $LTAPEDEV_LINE"
+					echo "WARNING: should be 'LTAPEDEV=/dev/null')"
+					echo "WARNING: switching transaction logging mode will probably fail"
+				fi
+			else
+				echo "WARNING: Informix config file $INFORMIXDIR/etc/$ONCONFIG"
+				echo "WARNING: does not contain LTAPEDEV setting"
+				echo "WARNING: should be 'LTAPEDEV=/dev/null')"
+				echo "WARNING: switching transaction logging mode will probably fail"
+			fi
+		else
+			echo "WARNING: cannot find file $INFORMIXDIR/etc/$ONCONFIG"
+			echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"			
+		fi
+	else
+		echo "WARNING: INFORMIXDIR and/or ONCONFIG are empty"
+		echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"
+	fi
+	
     if test "$NEW_IFMX" = "1"; then
         exit
     fi
@@ -146,9 +177,14 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
-		PGDATA=`ps -ef | grep postmaster | head -1 | awk '{print $11}'`
+		#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PG_DATA status"
+		#We need wide output to get full command line:
+		PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
 		if test "$PGDATA" = ""; then
-			PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+			#This is a backup - but it will probably fail to give us 
+			#full command we need to determine PGDATA:
+			PGDATA=`ps -ef | grep postmaster | head -1 | awk '{print $11}'`
+			echo "WARNING: using 'ps -ef' - 'ps -auxw' returned nothing"
 		fi
 		if test "$PGDATA" = ""; then 
 			echo "WARNING: PostgreSQL not running or started without -D flag"

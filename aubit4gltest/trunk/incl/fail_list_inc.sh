@@ -175,7 +175,8 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #...949 950 951 952 953 954 955 957 958 959 964 966 918 938 939 940 941 
 #...942 943 944 945 946 947 - fails even with -ifx-p (.c files with informix headers)
 #926 missing function
-#934 284 no test files
+#934 no test files
+#284 no makefile
 #956 missing 4gl file
 #282 testtable does not exist in the database
 #498,499 no keys.in

@@ -163,7 +163,7 @@ console_prompt_test:
 #test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 #it won't work in CONSOLE mode
 dump_screen_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test takes more then 10 minutes to compile or run
