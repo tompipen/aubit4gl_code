@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.141 2004-03-04 17:45:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.142 2004-03-04 18:34:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.141 2004-03-04 17:45:15 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.142 2004-03-04 18:34:20 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2196,11 +2196,12 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
   int k;
   printc ("{\n");
   start_bind ('i', constr_str);
-  k = print_bind ('i');
+  k = print_bind_definition ('i');
   ccc = print_constr ();
   printc
     ("int _fld_dr= -100;int _exec_block= 0;char *fldname;char _sio[%d]; char _inp_io_type='C'; char *_sio_kw=\"s_screenio\";\n", sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
+   print_bind_set_value ('i');
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_exec_block == 0) {\n");
   printc ("SET(\"s_screenio\",_sio,\"vars\",ibind);\n");
@@ -2333,7 +2334,8 @@ print_display_by_name (char *attr)
 {
   int a;
   printc ("{\n");
-  a = print_bind ('i');
+  a = print_bind_definition ('i');
+  print_bind_set_value ('i');
   printc ("A4GL_push_disp_bind(&ibind,%d);\n", a);
   printc ("A4GL_disp_fields(%d,%s,", a, attr);
   print_field_bind (a);
@@ -2968,7 +2970,8 @@ print_init_table (char *s)
 {
   int cnt;
   printc ("{\n");
-  cnt = print_bind ('N');
+  cnt = print_bind_definition ('N');
+  cnt = print_bind_set_value ('N');
   printc ("A4GL_set_init(nullbind,%d);\n", cnt);
   printc ("}\n");
 }
@@ -3131,7 +3134,8 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
   push_blockcommand ("INPUT");
   printc ("*/");
   printc ("/* input by name */");
-  ccc = print_bind ('i');
+  ccc = print_bind_definition ('i');
+  print_bind_set_value ('i');
   printc
     ("SET(\"s_screenio\",_sio,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("if ((int)GET(\"s_screenio\",_sio,\"currform\")==0) break;\n");
@@ -5682,10 +5686,31 @@ print_bind_definition (char i)
 	{
 	  make_sql_bind (0, "O");
 	}
-      start_bind(i,0);
       return a;
     }
 
+  if (i == 'N')
+    {
+      expand_bind (&nullbind[0], 'N', nullbindcnt);
+      printc ("\n");
+      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/",
+              ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
+      if (nullbindcnt == 0)
+        {
+          printc ("{0,0,0}");
+        }
+      for (a = 0; a < nullbindcnt; a++)
+        {
+          if (a > 0)
+            printc (",\n");
+          chk_init_var (nullbind[a].varname);
+          printc ("{0,%d,%d}", 
+                  (int) nullbind[a].dtype & 0xffff,
+                  (int) nullbind[a].dtype >> 16);
+        }
+      printc ("\n}; /* end of binding */\n");
+      return a;
+    }
 
     printf("UNEXPECTED BINDING %c\n",i);
     exit(3);
@@ -5741,7 +5766,15 @@ print_bind_set_value (char i)
       return a;
     }
 
-
+  if (i == 'N')
+    {
+      for (a = 0; a < nullbindcnt; a++)
+        {
+	  printc ("nullbind[%d].ptr=&%s;", a,nullbind[a].varname);
+        }
+      start_bind (i, 0);
+      return a;
+    }
   return 0;
 }
 
