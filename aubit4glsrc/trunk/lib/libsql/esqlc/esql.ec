@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.59 2003-07-01 07:34:29 mikeaubury Exp $
+# $Id: esql.ec,v 1.60 2003-08-18 06:18:34 afalout Exp $
 #
 */
 
@@ -75,7 +75,13 @@
 //WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #define _SQLCA_DEFINED_
 
+
+//#ifndef __QUERIX__
 $include sqlca;
+//#else
+//not sure about this:
+//$include qxdefs.h;
+//#endif
 
 #include "a4gl_incl_4gldef.h"
 
@@ -133,7 +139,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.59 2003-07-01 07:34:29 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.60 2003-08-18 06:18:34 afalout Exp $";
 #endif
 
 
@@ -497,9 +503,8 @@ int A4GLSQL_make_connection
 
   dbName   = strdup(server);
   userName = strdup(uid_p);
-  passwd   = strdup(pwd_p);
-  EXEC SQL connect to :dbName as 'default' 
-    user :userName using :passwd;
+  passwd   = strdup(pwd_p); //Querix esql/c compiler chokes here....
+  EXEC SQL connect to :dbName as 'default' user :userName using :passwd;
   if ( isSqlError() )
     retval = 1;
   else
@@ -512,7 +517,7 @@ int A4GLSQL_make_connection
 
 /**
  * Initialize the user name used to access the password.
- * The username returned is allocated here, so need to be freed when 
+ * The username returned is allocated here, so need to be freed when
  * no longer needed.
  *
  * This function is a candidate to be in an sql suport library.

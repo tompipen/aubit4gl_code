@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2003-05-25 03:47:41 afalout Exp $
+# $Id: Makefile.in,v 1.22 2003-08-18 06:18:34 afalout Exp $
 #
 
 ROOT		=../../..
@@ -116,12 +116,43 @@ endif
 
 ALL: ${ALL}
 
+libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${OBJS}
 #	@echo "ONLY_IFX_LIBS=${ONLY_IFX_LIBS}"
 #	@echo "IFXLIBS_LIB=${IFXLIBS_LIB}"
 #	@echo "IFXLIBS_LIB_ESQL=${IFXLIBS_LIB_ESQL}"
 #	@echo "NON_IFX_LIBS=${NON_IFX_LIBS}"
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $^ ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+
+#Querix ESQL/C compier:
+libSQL_esqlQ${SO_EXT}: ${LIBROOT}/libSQL_esqlQ${SO_EXT}
+${LIBROOT}/libSQL_esqlQ${SO_EXT}:
+	esqlc -D__QUERIX__ -I"E:/Program files/W2000/QueriX/include" ${SRC} -o $@
+
+#SAP DB ESQL/C compier:
+libSQL_esqlSAP${SO_EXT}: ${LIBROOT}/libSQL_esqlSAP${SO_EXT}
+${LIBROOT}/libSQL_esqlSAP${SO_EXT}:
+	cpc -D__SAPDB__ ${SRC} -o $@
+
+#PostgreSQL ESQL/C compier:
+libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
+${LIBROOT}/libSQL_esqlPG${SO_EXT}:
+	ecpg -D__PG__ ${SRC} -o $@
+
+#Plexus also has esql/c compiler (c:\xdp32\esqlc.exe)
+
+#FIXME: what are this files doing?
+#esql_simple_ecpg.ec
+#esql_simple_infx.ec
+#esql_simple_template.ec
+#make_simple
+#make_static
+
+
+## ==================================================================
+##                              Sub-Targets
+## ==================================================================
+
 
 ${OBJS}: $(SRC)
 	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}

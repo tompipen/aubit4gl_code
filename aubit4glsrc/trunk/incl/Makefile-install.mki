@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.66 2003-07-27 06:08:43 afalout Exp $
+# $Id: Makefile-install.mki,v 1.67 2003-08-18 06:18:33 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -386,16 +386,328 @@ winsetup:
 
 
 ## ==================================================================
+##                    Third-party products installation settings
+## ==================================================================
+
+##################
+# 1: iODBC ODBC manager
+IODBC_INFO          =http://www.iodbc.org
+IODBC_PATH			=http://www.iodbc.org/dist
+#Archive contains Driver Manager Runtime (iODBC Shared Libraries &
+#Template ".odbc.ini" file) in a RPM (release 3.0.6)
+IODBC_RUNTIME_RPM   =libiodbc-3.0.6-2.i386-glibc21.rpm
+#Archive contains Driver Manager Development (iODBC Static Libraries &
+#Header files) in a RPM Package (release 3.0.6)
+IODBC_SDK_RPM       =libiodbc-devel-3.0.6-2.i386-glibc21.rpm
+#Archive contains graphical administrator and plugins in a RPM
+#package (release 3.0.6)
+IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
+
+
+##################
+# 2: PDF pdflib
+PDFLIB_INFO			=http://www.pdflib.com
+PDFLIB_PATH         =http://www.pdflib.com/pdflib/download
+PDFLIB_SRC          =pdflib-4.0.3
+PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
+#NOTE: Binary packages of PDFlib will require licansing, otherwise they will print
+#stuff on your pages!
+PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
+PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
+PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
+PDFLIB_WIN_ZIP		=${PDFLIB_WIN_NAME}.zip
+
+
+##################
+# 3: XML-RPC
+XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
+XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
+XMLRPC_RPM          =xmlrpc-c-0.9.9-1.i386.rpm
+XMLRPC_DEV_RPM      =xmlrpc-c-devel-0.9.9-1.i386.rpm
+#        xmlrpc-c is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_client.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmlparse.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+
+
+LIBWWW_PATH         =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
+endif
+ifeq "${LIBWWW_RPM}" ""
+	#default
+	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
+endif
+
+
+##################
+# 4: JABBER eksemel
+IKSEMEL_INFO		=http://iksemel.jabberstudio.org
+IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
+IKSEMEL_SRC         =iksemel-0.0.1
+IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
+
+##################
+# 5: swig
+SWIG_INFO           =http://www.swig.org
+SWIG_PATH           =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	SWIG_RPM			=swig-1.1p5-12.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	SWIG_RPM			=swig-1.1p5-20.i386.rpm
+endif
+ifeq "${SWIG_RPM}" ""
+	#default
+	SWIG_RPM			=swig-1.1p5-20.i386.rpm
+endif
+
+##################
+# 6: doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
+GRAPHVIZ_INFO		=http://www.research.att.com/sw/tools/graphviz/
+GRAPHVIZ_PATH       =http://www.graphviz.org/pub/graphviz
+GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
+
+##################
+# 7: SAPODBC
+SAPODBC_INFO        =http://www.sapdb.org
+SAPODBC_PATH		=ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
+
+##################
+# 8: DoxyGen
+DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
+DOXYGEN_PATH		=${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	DOXYGEN_RPM			=doxygen-1.2.14-4.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	DOXYGEN_RPM			=doxygen-1.2.14-8.i386.rpm
+endif
+ifeq "${DOXYGEN_RPM}" ""
+	#default
+	DOXYGEN_RPM			=doxygen-1.2.14-8.i386.rpm
+endif
+
+
+##################
+# 9: IFX ESQL/C and ODBC
+IFXESQLC_INFO       =http://www.ibm.com/informix
+#CSDK includes ESQL/C compiler
+IFXESQLC_PATH       =ftp://ftp.software.ibm.com/software/data/informix/downloads
+IFXESQLC_BIN_ZIP	=csdk280_uc21lin_ux.zip
+ifeq "${INFORMIXDIR}" ""
+	INFORMIXDIR=/opt/informix
+endif
+
+##################
+# 10: PGODBC
+PGODBC_INFO         =http://gborg.postgresql.org/project/psqlodbc
+PGODBC_PATH         =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
+endif
+ifeq "${PGODBC_RPM}" ""
+    #default
+	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
+endif
+PGODBC_SRC_PATH     =ftp://ftp.us.postgresql.org/odbc/versions/src
+PGODBC_SRC_SRC      =psqlodbc-7.2.5
+PGODBC_SRC_TGZ      =${PGODBC_SRC_SRC}.tar.gz
+
+##################
+# 11: unixODBC DEV headers
+#We will often find unixODBC already installed, but without header files...
+UNIXODBCDEV_INFO	=http://www.unixodbc.org
+UNIXODBCDEV_PATH    =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.2-3.i386.rpm
+endif
+ifeq "${UNIXODBCDEV_RPM}" ""
+    #default
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.2-3.i386.rpm
+endif
+
+
+##################
+# 12: unixODBC
+UNIXODBC_INFO		=http://www.unixodbc.org
+UNIXODBC_PATH       =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBC_RPM		=unixODBC-2.2.2-3.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.2-3.i386.rpm
+endif
+ifeq "${UNIXODBC_RPM}" ""
+    #default
+	UNIXODBC_RPM		=unixODBC-2.2.2-3.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.2-3.i386.rpm
+endif
+
+##################
+# 13: MPZ - gnu mp
+MPZ_INFO            =http://swox.com/gmp
+MPZ_MANUAL			=http://www.gnu.org/manual/gmp/html_mono/gmp.html
+MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
+MPZ_SRC             =gmp-4.1.2
+MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
+
+##################
+# 14: PG ESQL, also (USED TO) contain ODBC headers
+PGESQLC_INFO        =http://www.postgresql.org
+PGESQLC_PATH        =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	PGESQLC_RPM         =postgresql-devel-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGESQLC_RPM         =postgresql-devel-7.2.2-1.i386.rpm
+endif
+ifeq "${PGESQLC_RPM}" ""
+	#default
+	PGESQLC_RPM         =postgresql-devel-7.2.2-1.i386.rpm
+endif
+
+##################
+# 15: libcheck
+CHECK_INFO			=http://check.sourceforge.net/
+CHECK_PATH			=http://download.sourceforge.net/check
+CHECK_RPM			=check-0.8.3-1.i386.rpm
+
+##################
+# 16: SAPDB ESQL/C, also needed by ODBC drivers
+SAPDBESQL_INFO      =http://www.sapdb.org
+SAPDBESQL_PATH      =ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
+
+##################
+# 17: Sun RPC - XDR and Sun RPC
+SUNRPC_INFO         =
+
+##################
+# 18: GTK+ - GUI
+GTK_INFO			=http://www.gtk.org/
+
+##################
+# 19: curses - TUI
+CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
+
+##################
+# 20: SAP DB environment, neeed by ESQLC precompiler
+SAPDBENV_INFO       =http://www.sapdb.org
+SAPDBENV_PATH       =ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPDBENV_RPM        =sapdb-ind-7.3.0.29-1.i386.rpm
+
+#################
+# 21: GTK+ development packages - pkg-config info and headers
+GTK_DEV_INFO		=http://www.gtk.org/
+GTK_DEV_PATH        =${RH_RPM_PATH}
+
+ifeq "${RH_RPM_VER}" "8.0"
+	GTK_GTK_DEV_RPM		=gtk2-devel-2.0.6-8.i386.rpm
+	GTK_GDK_DEV_RPM		=gdk-pixbuf-devel-0.18.0-4.i386.rpm
+	GTK_GLIB_DEV_RPM	=glib2-devel-2.0.6-2.i386.rpm
+
+	GTK_PANGO_DEV_RPM   =pango-devel-1.1.1-1.i386.rpm
+	GTK_ATK_DEV_RPM     =atk-devel-1.0.3-1.i386.rpm
+	XFREE86_DEV_RPM     =XFree86-devel-4.2.0-72.i386.rpm
+	GNOME_LIBS_DEVEL    =gnome-libs-devel-1.4.1.2.90-22.i386.rpm
+
+	FREETYPE_DEV_RPM    =freetype-devel-2.1.2-7.i386.rpm
+	FONTCONFIG_DEV_RPM	=fontconfig-devel-2.0-3.i386.rpm
+	XFT_DEV_RPM         =Xft-devel-2.0-1.i386.rpm
+    GTKPLUS_DEV_RPM     =gtk+-devel-1.2.10-22.i386.rpm
+	ORBIT_DEV_RPM       =ORBit-devel-0.5.13-5.i386.rpm
+	IMLIB_DEV_RPM		=imlib-devel-1.9.13-9.i386.rpm
+	ESOUND_DEV_RPM      =esound-devel-0.2.28-1.i386.rpm
+
+	GLIB_DEV_RPM		=glib-devel-1.2.10-8.i386.rpm
+	LIBTIFF_DEV_RPM		=libtiff-devel-3.5.7-7.i386.rpm
+	LIBJPEG_DEV_RPM		=libjpeg-devel-6b-21.i386.rpm
+	LIBUNGIF_DEV_RPM	=libungif-devel-4.1.0-13.i386.rpm
+	AUDIOFILE_DEV_RPM	=audiofile-devel-0.2.3-3.i386.rpm
+endif
+ifeq "${GTK_GTK_DEV_RPM}" ""
+	#default
+	GTK_GTK_DEV_RPM=notset
+endif
+
+#################
+# 22: Yacc (Bison)
+#ftp://ftp.gnu.org/gnu/bison/bison-1.875.tar.gz
+
+
+#################
+# 23: Lclint (Splint) C code checker:
+#See http://www.splint.org
+
+
+##################
+# 24: Electric Fence
+#info: http://perens.com/FreeSoftware/ and http://freshmeat.net/projects/efence/?topic_id=47
+#ftp://ftp.perens.com/pub/ElectricFence/
+
+#################
+# 26: SQLite
+SQLITE_INFO=http://www.hwaci.com/sw/sqlite/index.html
+SQLITE_PATH=http://www.hwaci.com/sw/sqlite/
+#RPM containing documentation, header files, and static library:
+SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
+#RPM containing shared libraries and the sqlite command-line program.
+SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
+
+SQLITE_WIN_PATH=http://sqlite.org
+SQLITE_WIN_LIB=sqlitedll.zip
+SQLITE_WIN_EXE=sqlite.zip
+
+#ODBC driver for SQLite:
+SQLITE_ODBC_INFO=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_PATH=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_SRC=sqliteodbc-0.53
+SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
+SQLITE_ODBC_WIN=sqliteodbc-win32.zip
+
+
+#################
+# 27: libspopc
+SPOPC_INFO=http://brouits.free.fr/libspopc/
+SPOPC_PATH=http://brouits.free.fr/libspopc
+SPOPC_SRC=libspopc-0.5.7
+SPOPC_TGZ_SRC=${SPOPC_SRC}.tgz
+
+
+## ==================================================================
 ##                    Third-party products installation
 ## ==================================================================
 
 #NOTE: settings are in Makefiele-common.in
 
-
+install.optional: missing.optional
+install.missing: missing.optional
 missing.optional: ${INSTALL_MISSING_OPTIONAL}
 	@echo " "
 	@echo "All missing optional components installed. Please re-run 'configure' to detect changes."
 	@echo " "
+
+show.missing:
+	@echo "List of missing optional components not detected by Autoconf:"
+	@echo ""
+	@echo "${INSTALL_MISSING_OPTIONAL}"
+	@echo ""
+	@echo "Use 'make install.missing' to install them all, or invoke individual targets."
+	@echo ""
 
 ########################
 # 1: Install iODBC ODBC manager
@@ -421,9 +733,22 @@ install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
 
 ########################
 # 2: Install PDFlib:
+
+
+ifdef COMSPEC
+install.pdflib: ${PDFLIB_WIN_ZIP}
+	unzip $^ -d ${SYSTEMDRIVE}/tmp
+#Copy and rename only dll/h/lib files (must add lib prefix for Autoconf to find them)
+	${MKPATH} /usr/local/lib/
+	${MKPATH} /usr/local/include
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.dll /usr/local/lib/libpdf.dll
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.lib /usr/local/lib/libpdf.lib
+	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.h /usr/local/include
+else
 install.pdflib: ${PDFLIB_SRC_TGZ}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${PDFLIB_SRC}; ./configure; make; make install
+endif
 	@echo "Package info & manuals: ${PDFLIB_INFO}"
 	@echo " "
 	@echo "PDFlib compiled and installed.  Please re-run 'configure' to detect changes."
@@ -673,8 +998,29 @@ install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 
 #################
 # 26: SQLite
+
+ifdef COMSPEC
+install.sqlite: ${SQLITE_WIN_LIB} ${SQLITE_WIN_EXE}
+	unzip ${SQLITE_WIN_LIB} -d ${SYSTEMDRIVE}/tmp
+	unzip ${SQLITE_WIN_EXE} -d ${SYSTEMDRIVE}/WINNT
+#	@echo ${SYSTEMROOT} #='D:\WINNT'
+#	@echo ${WINDIR}	#='D:\WINNT'
+#	cp /tmp/sqlite.exe ${SYSTEMDRIVE}/WINNT
+#We need this two so sqlite.exe can work:
+	cp ${SYSTEMDRIVE}/tmp/sqlite.def ${SYSTEMDRIVE}/WINNT/sqlite.def
+	cp ${SYSTEMDRIVE}/tmp/sqlite.dll ${SYSTEMDRIVE}/WINNT/sqlite.dll
+#We need this two so we can link Aubit
+	cp ${SYSTEMDRIVE}/tmp/sqlite.def /lib/libsqlite.def
+	cp ${SYSTEMDRIVE}/tmp/sqlite.dll /lib/libsqlite.dll
+else
 install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 	${RPM} -i $^
+endif
+#/cygdrive/d/MinGW/bin:
+#/cygdrive/d/WINNT/system32:
+#/cygdrive/d/WINNT
+#/usr/bin:
+#/usr/local/bin:/usr/bin:/bin::/lib:
 	@echo " "
 	@echo "Package info & manuals: ${SQLITE_INFO}"
 	@echo " "
@@ -682,9 +1028,17 @@ install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 	@echo " "
 
 #SQLite ODBC driver:
+ifdef COMSPEC
+install.sqlite.odbc: ${SQLITE_ODBC_WIN}
+	unzip ${SQLITE_ODBC_WIN} -d ${SYSTEMDRIVE}/tmp/sqliteodbc
+	cd ${SYSTEMDRIVE}/tmp/sqliteodbc; inst.exe
+#There is no .a/.def file there, so we can't link with this anyway...
+#	cp ${SYSTEMDRIVE}/tmp/sqliteodbc/sqliteodbc.dll /lib/libsqliteodbc.dll
+else
 install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${SQLITE_ODBC_SRC}; ./configure; make; make install
+endif
 	@echo " "
 	@echo "Package info & manuals: ${SQLITE_ODBC_INFO}"
 	@echo " "
@@ -705,7 +1059,7 @@ install.libspopc: ${SPOPC_TGZ_SRC}
 
 
 ########################
-#Define how to get installation files:
+#Targets for downloading installation files:
 ${IODBC_RUNTIME_RPM}:
 	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
 ${IODBC_SDK_RPM}:
@@ -714,6 +1068,8 @@ ${IODBC_GUI_RPM}:
 	${WGET} ${IODBC_PATH}/${IODBC_GUI_RPM}
 ${PDFLIB_SRC_TGZ}:
 	${WGET} ${PDFLIB_PATH}/${PDFLIB_SRC_TGZ}
+${PDFLIB_WIN_ZIP}:
+	${WGET} ${PDFLIB_WIN_PATH}/$@
 ${IKSEMEL_TGZ}:
 	${WGET} ${IKSEMEL_PATH}/${IKSEMEL_TGZ}
 ${GRAPHVIZ_RPM}:
@@ -763,8 +1119,6 @@ ${XFREE86_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${XFREE86_DEV_RPM}
 ${GNOME_LIBS_DEVEL}:
 	${WGET} ${GTK_DEV_PATH}/${GNOME_LIBS_DEVEL}
-
-
 ${FREETYPE_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${FREETYPE_DEV_RPM}
 ${FONTCONFIG_DEV_RPM}:
@@ -779,7 +1133,6 @@ ${IMLIB_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${IMLIB_DEV_RPM}
 ${ESOUND_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/$@
-
 ${GLIB_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/$@
 ${LIBTIFF_DEV_RPM}:
@@ -796,11 +1149,19 @@ ${SQLITE_RPM_DEV}:
 	${WGET} ${SQLITE_PATH}/$@
 ${SQLITE_ODBC_TGZ_SRC}:
 	${WGET} ${SQLITE_ODBC_PATH}/$@
+${SQLITE_ODBC_WIN}:
+	${WGET} ${SQLITE_ODBC_PATH}/$@
+${SQLITE_WIN_LIB}:
+	${WGET} ${SQLITE_WIN_PATH}/$@
+${SQLITE_WIN_EXE}:
+	${WGET} ${SQLITE_WIN_PATH}/$@
 ${SPOPC_TGZ_SRC}:
 	${WGET} ${SPOPC_PATH}/$@
 
 
-
+#############################################
+#       SQLite tests
+#############################################
 
 test.sqlite.odbc: test_sqlite_odbc test_sqlite
 	export A4GL_LEXTYPE=C; aubit 4glc test_sqlite_odbc.4gl -o test_sqlite_odbc.4ae

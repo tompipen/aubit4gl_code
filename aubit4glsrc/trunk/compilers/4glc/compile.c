@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.37 2003-08-09 09:27:12 afalout Exp $
+# $Id: compile.c,v 1.38 2003-08-18 06:18:33 afalout Exp $
 #*/
 
 /**
@@ -345,7 +345,9 @@ initArguments (int argc, char *argv[])
 		  A4GL_debug ("Pass trough option: %s\n", optarg);
 		#endif
 	  strcat (extra_ldflags, "-L");
+	  strcat (extra_ldflags, "\"");
 	  strcat (extra_ldflags, optarg);
+	  strcat (extra_ldflags, "\"");
 	  strcat (extra_ldflags, " ");
 	  break;
 
@@ -470,8 +472,11 @@ initArguments (int argc, char *argv[])
 
   /* prepare CC flags */
   strcpy (incl_path, "-I");
+  strcat (incl_path, "\"");
   strcat (incl_path, acl_getenv ("AUBITDIR"));
-  strcat (incl_path, "/incl ");
+  strcat (incl_path, "/incl");
+  strcat (incl_path, "\"");
+  strcat (incl_path, " ");
 
   chrptr = acl_getenv ("GTK_INC_PATH");	//GTK_INC_PATH is set in aubitrc by Autoconf
   /* NOTE: when GTK_INC_PATH was not set, I got core dumps on Windows - this should not happen */
@@ -481,8 +486,10 @@ initArguments (int argc, char *argv[])
 
 
   strcpy (l_path, "-L");
+  strcat (l_path, "\"");
   strcat (l_path, acl_getenv ("AUBITDIR"));
   strcat (l_path, "/lib");
+  strcat (l_path, "\"");
 
   strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
   strcpy (gcc_exec, acl_getenv ("A4GL_C_COMP"));
@@ -805,7 +812,13 @@ initArguments (int argc, char *argv[])
 	  printf ("%s\n", buff);
 	}
     
-	sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
+	 #ifndef __MINGW32__
+	  	//this apparently works on NT, but not on W98:
+		sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
+     #else
+		sprintf (buff, "%s > %s.err", buff, output_object);
+	 #endif
+
 	#ifdef DEBUG
       A4GL_debug ("Runnung %s", buff);
 	#endif
@@ -842,8 +855,15 @@ initArguments (int argc, char *argv[])
 
 	      A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 
-	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"),
-		       output_object, output_object);
+		 #ifndef __MINGW32__
+			  sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"),
+			       output_object, output_object);
+        #else
+			  //suppress silly message from move command on w98
+			  sprintf (buff, "%s %s.err %s.warn > nul", acl_getenv ("A4GL_MV_CMD"),
+			       output_object, output_object);
+        #endif
+
 			#ifdef DEBUG
 	    	  A4GL_debug ("Runnung %s", buff);
 			#endif
@@ -1127,11 +1147,17 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
         }
 
 
-	  if (verbose)
-	    {
+	  if (verbose){
 	      printf ("%s\n", buff);
-	    }
-	  sprintf (buff, "%s > %s.c.err 2>&1", buff, aa);
+	  }
+	  
+	  #ifndef __MINGW32__
+	  	//this apparently works on NT, but not on W98:
+		sprintf (buff, "%s > %s.c.err 2>&1", buff, aa);
+      #else
+		sprintf (buff, "%s > %s.c.err", buff, aa);
+	  #endif
+
 		#ifdef DEBUG
 			A4GL_debug ("Runnung %s", buff);
 		#endif
@@ -1146,10 +1172,9 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	    }
 	  else
 	    {
-    	  if (verbose)
-			{
+    	  if (verbose) {
 			  printf ("C compilation of the object successfull.\n");
-			}
+		  }
 
 	      /* determine the c.err file size */
 		  sprintf (buff, "%s.c.err", aa);
@@ -1189,8 +1214,16 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		  #ifdef DEBUG
 		  	A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 		  #endif
-		  sprintf (buff, "%s %s.c.err %s.c.warn",
-			   acl_getenv ("A4GL_MV_CMD"), aa, aa);
+		  
+		 #ifndef __MINGW32__
+			  sprintf (buff, "%s %s.c.err %s.c.warn",
+				   acl_getenv ("A4GL_MV_CMD"), aa, aa);
+         #else
+			  //suppress silly message from move command on w98
+			  sprintf (buff, "%s %s.c.err %s.c.warn > nul",
+				   acl_getenv ("A4GL_MV_CMD"), aa, aa);
+         #endif
+
 		  #ifdef DEBUG
 		  	A4GL_debug ("Runnung %s", buff);
 		  #endif

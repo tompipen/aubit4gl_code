@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2003-01-24 08:36:23 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-08-18 06:18:34 afalout Exp $
 #
 
 ROOT        =../..
@@ -64,7 +64,10 @@ test_im:
 libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
 ${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel @IKSEMEL_L_FLAGS@
-#	${CP} $@ ../../lib
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} ${LIBROOT}/$@.a
+endif
+
 
 no_libs:
 	@echo "IksEmEl library was not detected on your system. Stop."

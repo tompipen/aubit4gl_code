@@ -2,7 +2,7 @@
  * @file sqliteodbc.c
  * SQLite ODBC Driver main module.
  *
- * $Id: sqliteodbc.c,v 1.2 2003-08-09 09:27:13 afalout Exp $
+ * $Id: sqliteodbc.c,v 1.3 2003-08-18 06:18:34 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -223,7 +223,10 @@ xstrdup_(char *str, char *file, int line)
 
 #endif
 
+
 #ifdef _WIN32
+//aubit change: orriginaly: #ifdef _WIN32
+//#if defined (__WIN32) && ! defined (__CYGWIN__)
 #define vsnprintf   _vsnprintf
 #define snprintf    _snprintf
 #define strncasecmp _strnicmp

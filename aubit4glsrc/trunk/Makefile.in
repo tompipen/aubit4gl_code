@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.123 2003-08-04 00:49:34 afalout Exp $
+# $Id: Makefile.in,v 1.124 2003-08-18 06:18:20 afalout Exp $
 #
 
 ## ==================================================================
@@ -951,6 +951,15 @@ settings.common:
 #For debugging of build system
 show:
 	@echo "GCC_MINGW=${GCC_MINGW}"
+	@echo "AUBITDIR=${AUBITDIR}"
+	@echo "CWARN=${CWARN}"
+	@echo "WIN_PATH=${WIN_PATH}"
+	@echo "C_IFLAGS=${C_IFLAGS}"
+	@echo "CFLAGS=${CFLAGS}"
+	@echo "TARGET_OS=${TARGET_OS}"
+	@echo "YYDEBUG=${YYDEBUG}"
+	@echo "C_DFLAGS=${C_DFLAGS}"
+
 
 
 show.platform: OUT="/tmp/showplatform"

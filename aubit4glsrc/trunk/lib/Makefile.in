@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.95 2003-08-09 09:27:13 afalout Exp $
+# $Id: Makefile.in,v 1.96 2003-08-18 06:18:34 afalout Exp $
 #
 
 ROOT    =..
@@ -274,9 +274,19 @@ libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
 libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
 	${MAKE} -C ${LIBSQLNOSQL_PATH}
 
+#Informix ESQL/C code SQL plug-in compiled with Informix ESQL/C compiler
 libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
-	${MAKE} -C ${LIBSQLESQL_PATH}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
+#Informix ESQL/C code SQL plug-in compiled with Querix ESQL/C compiler
+libSQL_esqlQ${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
+
+#Informix ESQL/C code SQL plug-in compiled with SAP DB ESQL/C compiler
+libSQL_esqlSAP$SO_EXT: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
+
+#Sergio never finished this one...
 libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
 	${MAKE} -C ${LIBSQLPG_PATH}
 

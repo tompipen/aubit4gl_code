@@ -45,7 +45,7 @@ MODIFICATIONS.
  * @file sqliteodbc.h
  * Header file for SQLite ODBC driver.
  *
- * $Id: sqliteodbc.h,v 1.3 2003-08-09 09:27:14 afalout Exp $
+ * $Id: sqliteodbc.h,v 1.4 2003-08-18 06:18:34 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -54,17 +54,26 @@ MODIFICATIONS.
  * DISCLAIMER OF ALL WARRANTIES.
  */
 
-#ifdef _WIN32
-#include <windows.h>
+//Aubit added:
+#if defined (__CYGWIN__)
+	#include <windows.h>
+    #undef _WIN32
+#endif
+//Aubit added:
+#define usleep a4gl_usleep
+
+#if defined (_WIN32)
+	#include <windows.h>
+    #undef _WIN32
 #else
-#include <sys/time.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+	#include <sys/time.h>
+	#include <sys/types.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <unistd.h>
 #endif
 #if defined(HAVE_LOCALECONV) || defined(_WIN32)
-#include <locale.h>
+	#include <locale.h>
 #endif
 #include <stdarg.h>
 #include <string.h>
@@ -92,7 +101,14 @@ MODIFICATIONS.
 #endif
 #endif
 
-#include "sqlite.h"
+//Aubit change:
+#if defined (__MINGW32__) || defined (__CYGWIN__)
+//SQLite Windows distribution does not include header files, so we have to use our own
+	#include "sqlite-local.h"
+#else
+	#include "sqlite.h"
+#endif
+
 #ifndef WITHOUT_DRIVERMGR
 	#ifdef HAVE_IODBC
 		#include <iodbcinst.h>

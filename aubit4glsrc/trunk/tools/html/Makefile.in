@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2003-07-20 06:53:25 afalout Exp $
+# $Id: Makefile.in,v 1.15 2003-08-18 06:18:34 afalout Exp $
 #
 
 ROOT    =../..
@@ -75,7 +75,8 @@ simple_html.sf:
 libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
 ${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.4gl
 	${FGLPCEXEC} -as-dll $^ -o $@
-#	${CP} $@ ../../../lib
+#FIXME: how are we going to link with this on Windows without .dll.a file ?
+#fix 4glpc -as-dll to create .a file, and migrate everything to 4glc...
 
 
 ## ==================================================================
