@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.23 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: nosql.c,v 1.24 2003-03-10 09:09:44 mikeaubury Exp $
 #*/
 
 /**
@@ -230,7 +230,7 @@ A4GLSQL_close_session (char *sessname)
  * @todo Describe function
  */
 int
-A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
   local_exitwith ("Could not fill_array - noODBC build");

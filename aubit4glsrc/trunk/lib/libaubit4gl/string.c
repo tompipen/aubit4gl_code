@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.13 2002-11-25 16:51:25 mikeaubury Exp $
+# $Id: string.c,v 1.14 2003-03-10 09:09:40 mikeaubury Exp $
 #
 */
 
@@ -112,7 +112,7 @@ string_set(char *ptr,char *b,int size)
         ptr[size]=0; /* MJA 16.08.2001 */
 	pad_string(ptr,size);
 	debug("..");
-	debug("ptr=%d\n",ptr);
+	debug("ptr=%p\n",ptr);
 }
 
 
@@ -126,8 +126,9 @@ char *
 new_string(int a)
 {
 char *ptr;
-
+	debug("In new_string %d\n",a);
 	ptr=(char *)acl_malloc(a+1,"New string"); /* 1 for NULL */
+	debug("Aclmalloc returns %p",ptr);
 	return ptr;
 }
 
@@ -143,11 +144,15 @@ char *
 new_string_set(int a,char *b)
 {
 	char *ptr;
+	debug("new_string_set 0 a=%d",a);
 	ptr=new_string(a);
+	debug("new_string_set 1");
 	string_set(ptr,b,a);
+	debug("new_string_set 2");
 	#ifdef DEBUG
 		{debug("added : '%s' ",ptr);}
 	#endif
+	debug("new_string_set 3");
 	return ptr;
 }
 

@@ -1,4 +1,4 @@
-# $Id: coxxq01.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $
+# $Id: coxxq01.4gl,v 1.2 2003-03-10 09:09:45 mikeaubury Exp $
 {******************************************************************************
 *    Filename     :   coxxq01.4gl                                             *
 *    System       :   Eunice 4GL - Common Module                              *
@@ -390,7 +390,7 @@ DEFINE   l_select                   CHAR(1000),
       IF l_wcol < 2 THEN LET l_wcol = 2 END IF
       OPEN WINDOW qdwin AT 6, l_wcol
       WITH l_depth ROWS, m_width COLUMNS
-	  ATTRIBUTE(BORDER, CYAN, MESSAGE LINE LAST)
+	  ATTRIBUTE(BORDER, CYAN, MESSAGE LINE LAST, MENU LINE l_menuline)
 #aubit
 #	  ATTRIBUTE(BORDER, CYAN, MESSAGE LINE LAST, MENU LINE l_menuline)
 #|___________________________________________________________________^
@@ -1332,5 +1332,5 @@ END FUNCTION
 
 FUNCTION coxxq01_id()
 DEFINE    l_id    CHAR(80)
-LET l_id = '$Id: coxxq01.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $'
+LET l_id = '$Id: coxxq01.4gl,v 1.2 2003-03-10 09:09:45 mikeaubury Exp $'
 END FUNCTION

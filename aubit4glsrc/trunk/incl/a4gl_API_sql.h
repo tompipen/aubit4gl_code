@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.11 2003-01-28 23:44:54 saferreira Exp $
+# $Id: a4gl_API_sql.h,v 1.12 2003-03-10 09:09:38 mikeaubury Exp $
 #
 */
 
@@ -128,8 +128,8 @@ extern "C" {
 	int		A4GLSQL_fetch_cursor	(char *cursor_name,int fetch_mode,int fetch_when,
 		int nibind, struct BINDING *ibind);
 
-	int 	A4GLSQL_fill_array		(int mx, char **arr1, int szarr1,
-		char **arr2, int szarr2, char *service, int mode, char *info);
+	int 	A4GLSQL_fill_array		(int mx, char *arr1, int szarr1,
+		char *arr2, int szarr2, char *service, int mode, char *info);
 
 	// used only in Informix ESQL plug-in
 	int A4GLSQL_close_connection(void);

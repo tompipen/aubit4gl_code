@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.18 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: newpanels.c,v 1.19 2003-03-10 09:09:45 mikeaubury Exp $
 #*/
 
 /**
@@ -1438,7 +1438,7 @@ int clr_end_of_line=0;
 	debug("s='%s' %p\n",s,s);
     }
 
-  debug ("display_at: Popped  '%s'", s);
+  debug ("display_at: Popped  '%s' x=%d y=%d", s,x,y);
 
   if (x == -1 && y == -1)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.5 2003-02-28 17:43:15 mikeaubury Exp $
+# $Id: array.c,v 1.6 2003-03-10 09:09:45 mikeaubury Exp $
 #
 */
 
@@ -460,7 +460,7 @@ HSTMT ret;
  * @return Number of rows filled
  */
 int
-A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	    char *service, int mode, char *info)
 {
 	#ifdef DEBUG

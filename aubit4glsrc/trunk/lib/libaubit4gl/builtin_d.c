@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.19 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.20 2003-03-10 09:09:39 mikeaubury Exp $
 #
 */
 
@@ -285,14 +285,17 @@ void
 push_char(char * p)
 {
 	char *ptr;
-	debug("Push_char %s\n",p);
+	debug("Push_char '%s'\n",p);
 	if (p[0]==0&&p[1]!=0) {
+		debug("pc1");
 		ptr=(char *)new_string_set(strlen(p)+1,p);
 		ptr[0]=0;
 		ptr[1]=1;
 	} else {
+		debug("pc2");
 		ptr=(char *)new_string_set(strlen(p),p);
 	}
+	debug("pc3");
 	push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(strlen(p))));
 	debug("ADDED : %s to stack...",p);
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.13 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: load.c,v 1.14 2003-03-10 09:09:40 mikeaubury Exp $
 #
 */
 
@@ -190,14 +190,14 @@ gen_insert_for_load(char *tabname,int ncols)
  * @param s The string where to strip new line
  */
 static void 
-stripnlload(char *s)
+stripnlload(char *s,char delim)
 {
   int a;
   a=strlen(s);
   if (s[a-1]=='\n') 
   {
-    if (s[a-2]!='|') 
-        s[a-1]='|';
+    if (s[a-2]!=delim) 
+        s[a-1]=delim;
     else
         s[a-1]=0;
   }
@@ -285,7 +285,7 @@ int a;
             debug("Got to end of the file");
             break;
       }
-      stripnlload(loadbuff);
+      stripnlload(loadbuff,delim);
       debug("Read line '%s'",loadbuff);
       nfields=find_delims(delim);
       debug("nfields=%d number of columns=%d",nfields,cnt);

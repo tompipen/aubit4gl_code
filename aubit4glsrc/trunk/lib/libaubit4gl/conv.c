@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.33 2003-03-02 15:23:43 mikeaubury Exp $
+# $Id: conv.c,v 1.34 2003-03-10 09:09:39 mikeaubury Exp $
 #
 */
 
@@ -1186,8 +1186,8 @@ dectos (void *z, void *w, int size)
 {
   char *buff;
   int r;
-  debug ("dectos: z = '%s', size=%d", z, size);
-  dump (z);
+  //debug ("dectos: z = '%s', size=%d", z, size);
+  //dump (z);
 
   buff = dec_to_str (z, size);
   debug("dec_to_str -> %s\n", buff);
@@ -2948,7 +2948,7 @@ dec_to_str (char *s, int size)
   x = l + OFFSET_DEC(s) - ( d%2==0 ? d/2 : (d+1)/2);
 
   debug("dec_to_str l=%d d=%d\n", l, d);
-  dump(s);
+  //dump(s);
 
   if (l == 0 && d == 0)
    {

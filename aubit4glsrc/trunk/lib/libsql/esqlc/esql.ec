@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.45 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: esql.ec,v 1.46 2003-03-10 09:09:43 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.45 2003-03-08 10:22:52 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.46 2003-03-10 09:09:43 mikeaubury Exp $";
 #endif
 
 
@@ -401,7 +401,8 @@ int A4GLSQL_init_connection (char *dbName)
   EXEC SQL BEGIN DECLARE SECTION;
     char *db = dbName;
   EXEC SQL END DECLARE SECTION;
-
+  trim(dbName);
+  printf("-->%s\n",dbName);
 
 // Have we got an active db session ?
   if (have_connected) {
@@ -753,10 +754,12 @@ static struct s_sid *prepareSqlStatement(
     char *statementName;
     char *statementText;
   EXEC SQL end declare section;
-
+  char *s_internal;
   struct s_sid *sid = newStatement(ibind,ni,obind,no,s);
-
-debug("PrepareSQL : %s",s);
+  s_internal=strdup(s);
+  trim(s_internal);
+  debug("PrepareSQL : %s",s_internal);
+  free(s_internal);
 
   statementName = sid->statementName;
   statementText = sid->select;
@@ -1264,9 +1267,13 @@ static int allocateOutputDescriptor(char *descName,
     int  bindCount = bCount;
   EXEC SQL end declare section;
   register int i;
-  debug("allocOutout - %s",descriptorName);
-
+  debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
+  bindCount+=256;
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+  if (sqlca.sqlcode=-480) {
+  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName ;
+  	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+  }
   debug("Done");
   if ( isSqlError() )
   {
@@ -1471,11 +1478,16 @@ static int processPreStatementBinds(struct s_sid *sid)
 
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
+
+
     sid->outputDescriptorName = getDescriptorName(
       sid->statementName,
       'O'
     );
-  debug("a3.1");
+
+  debug("a3.1 no=%d ",sid->no);
+
+debug("allocateOutputDescriptorName - %s\n",sid->outputDescriptorName);
     rv = allocateOutputDescriptor(
       sid->outputDescriptorName,
       sid->no,
@@ -1489,6 +1501,7 @@ static int processPreStatementBinds(struct s_sid *sid)
     descriptorName = sid->outputDescriptorName;
     statementName  = sid->statementName;
     EXEC SQL DESCRIBE :statementName USING SQL DESCRIPTOR :descriptorName;
+  debug("a4.1");
   }
 		debug("OK3");
   return 0;
@@ -2532,7 +2545,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   getColumnsMax = numberOfColumns;
   getColumnsOrder = 1;
   debug("COlumns max=%d",numberOfColumns);
-  return 1;
+  return numberOfColumns;
 }
 
 /**
@@ -2814,8 +2827,8 @@ int A4GLSQL_close_cursor(char *currname)
  * @param tableName The name of the table to be checked.
  * @param max The max of columns that can be readed.
  */
-static int fillColumnsArray(char *tableName,int max,char **colArray,
-  int sizeColArray,char **array2, int sizeArray2,int mode) 
+static int fillColumnsArray(char *tableName,int max,char *colArray,
+  int sizeColArray,char *array2, int sizeArray2,int mode) 
 {
   static char colname[64];
 	int dtype;
@@ -2825,25 +2838,31 @@ static int fillColumnsArray(char *tableName,int max,char **colArray,
 char *ccol;
 
 strcpy(colname,"");
+debug("fillColumnsArray\n");
+
+
   rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
-  while ( rv == 1 ) 
+  debug("Got rv as %d\n",rv);
+  while ( rv ) 
 	{
 	  rv = A4GLSQL_next_column(&ccol,&dtype,&size);
-	strcpy(colname,ccol);
+	if (!rv) break;
 
+		strcpy(colname,ccol);
+		trim(colname);
 		strncpy(&colArray[i*(sizeColArray+1)],colname,sizeColArray);
 
 
-		if ( array2 != (char **) 0 ) {
+		if ( array2 != (char *) 0 ) {
 
 
 	    switch ( mode ) {
 
 	      case COLUMN_SIZE:
-          sprintf(array2[i*(sizeArray2+1)],"%d",size);
+          sprintf(&array2[i*(sizeArray2+1)],"%d",size);
 		      break;
 	      case DATA_TYPE:
-          sprintf(array2[i*(sizeArray2+1)],"%d",dtype);
+          sprintf(&array2[i*(sizeArray2+1)],"%d",dtype);
 		      break;
 
 		    default:
@@ -2851,11 +2870,11 @@ strcpy(colname,"");
 	    }
 		}
 		i++;
-		if ( i >= max ) 
-		  break;
+		if ( i >= max ) break;
 	}
   rv = A4GLSQL_end_get_columns();
-	return rv;
+debug("returning %d columns rv=%d",i,rv);
+	return i;
 }
 
 /**
@@ -2926,9 +2945,10 @@ strcpy(colname,"");
  * 
  */
 int
-A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
+debug("fill_array");
 	if ( strcmp(service,"DATABASES") == 0 )
     exitwith ("Could not fill_array - DATABASES service not implemented !");
 	else if ( strcmp(service,"TABLES") == 0 )

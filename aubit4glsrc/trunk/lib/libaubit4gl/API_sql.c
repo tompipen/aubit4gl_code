@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.30 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: API_sql.c,v 1.31 2003-03-10 09:09:38 mikeaubury Exp $
 #
 */
 
@@ -106,8 +106,8 @@ static int 	(*func)					();
 /* int         A4GLSQL_prepare_glob_sql(char *s, int ni, struct BINDING *ibind); */
 /*int         A4GLSQL_execute_implicit_sql   (struct s_sid *sid); */
 /* int         A4GLSQL_close_session   (char *sessname); */
-/* int         A4GLSQL_fill_array     	(int mx, char **arr1, int szarr1,
-									char **arr2, int szarr2, char *service,
+/* int         A4GLSQL_fill_array     	(int mx, char *arr1, int szarr1,
+									char *arr2, int szarr2, char *service,
 									int mode, char *info  ); */
 /* int         A4GLSQL_prepare_sql   	(char *s); */
 /* int         A4GLSQL_add_prepare   	(char *pname, struct s_sid *sid); */
@@ -537,7 +537,7 @@ A4GLSQL_close_cursor   (char *currname)
  * @return
  */
 int
-A4GLSQL_fill_array     (int mx, char **arr1, int szarr1, char **arr2,
+A4GLSQL_fill_array     (int mx, char *arr1, int szarr1, char *arr2,
 						int szarr2, char *service, int mode, char *info)
 {
   if (libptr==0) A4GLSQL_initlib();

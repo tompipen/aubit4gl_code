@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.26 2003-03-02 16:35:40 mikeaubury Exp $
+# $Id: builtin.c,v 1.27 2003-03-10 09:09:38 mikeaubury Exp $
 #
 */
 
@@ -287,10 +287,14 @@ substr (char *ca, int dtype, int a, int b, ...)
     {
 #ifdef DEBUG
       {
-	debug ("NULL");
+	debug ("NULL - dtype=%x",dtype);
       }
 #endif
       //printf("PAD\n");
+	free(np);
+	np=malloc(DECODE_SIZE(dtype)+1);
+	free(np2);
+	np2=malloc(DECODE_SIZE(dtype)+1);
       pad_string (np, DECODE_SIZE (dtype));
     }
   a--;
@@ -312,6 +316,8 @@ substr (char *ca, int dtype, int a, int b, ...)
     debug (">>>>Allocated %d bytes", b - a + 2);
   }
 #endif
+
+  debug("a=%d b-a+1=%d");
 
   strncpy (np2, &np[a], b - a + 1);
   np2[b - a + 1] = 0;

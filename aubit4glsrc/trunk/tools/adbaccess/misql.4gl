@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.6 2003-03-08 11:57:37 afalout Exp $
+# $Id: misql.4gl,v 1.7 2003-03-10 09:09:45 mikeaubury Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -104,7 +104,7 @@ define
    IF arg_val(1) = "-v"
    OR arg_val(1) = "-V"
    THEN
-      CALL message_prompt("$Id: misql.4gl,v 1.6 2003-03-08 11:57:37 afalout Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.7 2003-03-10 09:09:45 mikeaubury Exp $","")
       EXIT PROGRAM
    END IF
 
@@ -132,9 +132,14 @@ define
    end if
 
 	   WHENEVER ANY ERROR CONTINUE            -- GPA added following test to figure
-	   LET m_text = "DATABASE ",m_database    -- out with to use argval(1) as dbase
-	   PREPARE test_database FROM m_text      -- or as table for $E4GLDBNAME
-	   EXECUTE test_database
+
+   #LET m_text = "DATABASE ",m_database    -- out with to use argval(1) as dbase
+   #PREPARE test_database FROM m_text      -- or as table for $E4GLDBNAME
+   #EXECUTE test_database
+
+	database m_database
+
+
 	   WHENEVER ANY ERROR STOP
 	   IF status!=0 THEN
 		 #maybe the only parameter was not db name, but table name?
@@ -148,10 +153,12 @@ define
          end if
 	   END IF
 
-   LET m_text = "database ",m_database
-   PREPARE oo_p FROM m_text
-   EXECUTE oo_p
+   
+#LET m_text = "database ",m_database
+#PREPARE oo_p FROM m_text
+#EXECUTE oo_p
 
+	database m_database
     whenever error continue
 	database m_database
 
@@ -895,9 +902,12 @@ FUNCTION new_database()
    PROMPT "Database: " FOR m_text
    IF m_text IS NOT NULL THEN
       LET m_database = m_text
-      LET m_text = "database ",m_database
-      PREPARE f_pr FROM m_text
-      EXECUTE f_pr
+      #LET m_text = "database ",m_database
+      #PREPARE f_pr FROM m_text
+      #EXECUTE f_pr
+
+	DATABASE m_database
+
       CALL disp_dbtable()
    END IF
 END FUNCTION

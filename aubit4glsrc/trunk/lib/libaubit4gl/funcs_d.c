@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.15 2003-02-16 14:20:10 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.16 2003-03-10 09:09:39 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,9 @@ void*
 acl_malloc_full(int size,char *why,char *f,long line)
 {
   void *p;
+  debug("About to alloc %d bytes",size);
   p=malloc(size);
+  debug("alloced");
   return p;
 }
 
