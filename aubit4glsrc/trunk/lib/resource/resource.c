@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.17 2002-09-23 10:24:01 afalout Exp $
+# $Id: resource.c,v 1.18 2002-09-23 11:06:07 afalout Exp $
 #
 */
 
@@ -587,54 +587,73 @@ build_user_resources(void)
 
 	/* ----------------- from /etc/opt/aubit4gl/aubitrc */
 
-	debug("From /etc/opt/aubit4gl/aubitrc");
 	sprintf(buff,"/etc/opt/aubit4gl/%s","aubitrc");
 	resourcefile=fopen(buff,"r");
-	if (resourcefile!=0) {add_resources_in(resourcefile); fclose(resourcefile);}
+	if (resourcefile!=0)
+	{
+		debug("From %s",buff);
+		add_resources_in(resourcefile); fclose(resourcefile);
+	}
         else {debug("cannot read %s",buff);};
 
 	/* -----------------  from $AUBITDIR/etc/aubitrc */
 
-	debug("Finding aubitdir from environment");
 	sprintf(buff,"%s/etc/%s",acl_getenv("AUBITDIR"),"aubitrc");
-	debug("From %s",buff);
 	resourcefile=fopen(buff,"r");
-	if (resourcefile!=0) {add_resources_in(resourcefile); fclose(resourcefile);}
+	if (resourcefile!=0) 
+	{
+		debug("From %s",buff);
+		add_resources_in(resourcefile); fclose(resourcefile);
+	}
         else {debug("cannot read %s",buff);};
 
 	/* -----------------  from ~/.aubit4gl/aubitrc */
 
-	debug("From ~/.aubit4gl/aubitrc");
-	sprintf(buff,"~/.aubit4gl/%s","aubitrc");
+	sprintf(buff,"%s/.aubit4gl/%s",acl_getenv("HOME"),"aubitrc");
 	resourcefile=fopen(buff,"r");
-	if (resourcefile!=0) {add_resources_in(resourcefile); fclose(resourcefile);}
+	if (resourcefile!=0)
+	{
+		debug("From %s",buff);
+		add_resources_in(resourcefile); fclose(resourcefile);
+	}
         else {debug("cannot read %s",buff);};
 
 	/* -----------------  from ~/aubitrc */
 
-	debug("From ~/aubitrc");
-	sprintf(buff,"~/%s","aubitrc");
+	//Whooops: ~ works on shell command line, not from here!
+	//debug("From ~/aubitrc");
+	//sprintf(buff,"~/%s","aubitrc");
+	sprintf(buff,"%s/%s",acl_getenv("HOME"),"aubitrc");
 	resourcefile=fopen(buff,"r");
-	if (resourcefile!=0) {add_resources_in(resourcefile); fclose(resourcefile);}
+	if (resourcefile!=0) 
+	{
+		debug("From %s",buff);
+		add_resources_in(resourcefile); fclose(resourcefile);
+	}
         else {debug("cannot read %s",buff);};
 
 	/* ----------------- from ./.aubtirc */
 
 	sprintf(buff,"./%s",".aubitrc");
-	debug("From %s",buff);
 	resourcefile=fopen(buff,"r");
-	if (resourcefile!=0) {add_resources_in(resourcefile); fclose(resourcefile);}
+	if (resourcefile!=0) 
+	{
+		debug("From %s",buff);
+		add_resources_in(resourcefile); fclose(resourcefile);
+	}
         else {debug("cannot read %s",buff);};
 
 	/* ----------------- from $A4GL_INIFILE */
 
-	debug("Finding INIfile from env");
 	sprintf(buff,"%s",acl_getenv("A4GL_INIFILE"));
 	if (strlen(buff))
 	{
-		debug("From $A4GL_INIFILE %s",buff);
 		resourcefile=fopen(buff,"r");
-		if (resourcefile!=0){add_resources_in(resourcefile);fclose(resourcefile);}
+		if (resourcefile!=0)
+		{
+			debug("From %s",buff);
+			add_resources_in(resourcefile);fclose(resourcefile);
+		}
 			else {debug("cannot read %s",buff);};
 	}
 
