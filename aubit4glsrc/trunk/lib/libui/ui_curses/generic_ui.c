@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.16 2004-08-31 20:46:55 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.17 2004-10-06 17:57:11 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -426,7 +426,7 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
                 {
                   A4GL_debug ("Attemp to turn on %d %d %d", option->attributes,
                          ACL_MN_HIDE, option->attributes & ACL_MN_HIDE);
-                  if (option->attributes & ACL_MN_HIDE)
+                  if (option->attributes & ACL_MN_HIDE && option->optlength)
                     {
                       A4GL_debug ("Turn on");
                       option->attributes = option->attributes - ACL_MN_HIDE;
