@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.75 2005-02-23 11:26:55 mikeaubury Exp $
+# $Id: ops.c,v 1.76 2005-02-23 11:36:24 mikeaubury Exp $
 #
 */
 
@@ -304,7 +304,7 @@ static void A4GL_char_char_ops (int op)
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
-  A4GL_debug("a='%s' b='%d' op=%d\n",a,b,op);
+  A4GL_debug("a='%s' b='%s' op=%d\n",a,b,op);
 
   if (A4GL_isnull (DTYPE_CHAR, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) &b)) { A4GL_push_null (DTYPE_CHAR, 0); free(a); free(b); return; }
   else { A4GL_debug ("OK - neither is null"); } 
@@ -313,7 +313,7 @@ static void A4GL_char_char_ops (int op)
   A4GL_trim(a);
 
 
-  A4GL_debug("a='%s' b='%d' op=%d and they're trimmed\n",a,b,op);
+  A4GL_debug("a='%s' b='%s' op=%d and they're trimmed\n",a,b,op);
 
   switch (op)
     {
@@ -369,7 +369,9 @@ static void A4GL_char_char_ops (int op)
       return;
 
     case OP_EQUAL:
+	A4GL_debug("Comparing %s %s - gives %d\n",(strcmp(a,b)==0));
       A4GL_push_int (strcmp(a,b)==0);
+	A4GL_debug("Freeing my two popped strings %p and %p",a,b);
 	free(a); free(b);
       return;
 
