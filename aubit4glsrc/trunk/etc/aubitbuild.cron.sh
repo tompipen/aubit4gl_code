@@ -15,6 +15,11 @@
 #!/bin/sh
 
 ############################
+#Debugging of this script
+DEBUG=0
+VERBOSE=0
+
+############################
 #Stamp the cron log with date
 date >> /tmp/cron_run.log
 
@@ -54,12 +59,16 @@ if test "$COMSPEC" = ""; then
 	#MAIL_SUBJECT="Aubit Linux nightly build"
 	MAIL_SUBJECT="Aubit_Linux_nightly_build"
 	if test "$AUBITDIR" = ""; then
-		echo "WARNING: AUBITDIR was empty"
+		if test "$DEBUG" = "1"; then
+			echo "WARNING: AUBITDIR was empty"
+		fi
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR="/opt/aubit/aubit4glsrc"
 	fi
 	if test "$AUBITDIR_SRC" = ""; then
-		echo "WARNING: AUBITDIR_SRC was empty"
+		if test "$DEBUG" = "1"; then
+			echo "WARNING: AUBITDIR_SRC was empty"
+		fi
 		#we should have got that by reading aubitrc ?!	
 		AUBITDIR_SRC="/opt/aubit/aubit4glsrc"
 	fi
@@ -77,13 +86,17 @@ else
 	MAILADDR=andrej@aptiva
 	MAILADDR_CC=root@aptiva
 	MAIL_SUBJECT="Aubit Windows nightly build"
-	if test "$AUBITDIR" = ""; then 
-		echo "WARNING: AUBITDIR was empty"
+	if test "$AUBITDIR" = ""; then
+		if test "$DEBUG" = "1"; then
+			echo "WARNING: AUBITDIR was empty"
+		fi
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR="/usr/src/aubit/aubit4glsrc"
 	fi
 	if test "$AUBITDIR_SRC" = ""; then
-		echo "WARNING: AUBITDIR_SRC was empty"
+		if test "$DEBUG" = "1"; then
+			echo "WARNING: AUBITDIR_SRC was empty"
+		fi
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR_SRC="/usr/src/aubit/aubit4glsrc"
 	fi
@@ -98,6 +111,16 @@ else
 	MAILCMD_TEST="$MAILEXEC -FCronDaemonIstation $MAILADDR"
 	FGLC="4glc.exe"	
 fi
+
+if test "$AUBITDIR" = ""; then
+	echo "AUBITDIR still empty. STOP."
+	exit 3
+fi
+if test "$AUBITDIR_SRC" = ""; then
+	echo "AUBITDIR_SRC still empty. STOP."
+	exit 3
+fi
+
 
 ############################
 #Contains output of running this cron script
@@ -120,10 +143,6 @@ BUILD_CMD="$AUBITDIR_SRC/bin/aubitbuild.sh"
 ############################
 #Parameters to pass to BUILD_CMD
 PARAMS="-anyday"
-
-############################
-#Debugging of this script
-DEBUG=1
 
 ############################
 #Need database ID/password for test scripts (run_tests)
@@ -154,7 +173,9 @@ if test "$DO_BUILD" = "1"; then
 	
 	if [ ! -f $BUILD_CMD ]; then
 		if test "$DEBUG" = "1"; then
-			echo "$BUILD_CMD missing...running autoconf/configure"
+			if test "$VERBOSE" = "1"; then
+				echo "$BUILD_CMD missing...running autoconf/configure"
+			fi
 		fi
 		echo "$BUILD_CMD missing...running autoconf/configure"  >> $LOGFILE
 		cd $AUBITDIR_SRC
@@ -167,15 +188,14 @@ if test "$DO_BUILD" = "1"; then
 		if [ ! -f $BUILD_CMD ]; then
 			echo 'Failed to run configure. Stop.' >> $LOGFILE
 			echo 'See /tmp/autoconf.log and /tmp/configure.log' >> $LOGFILE
-			if test "$DEBUG" = "1"; then 
-				echo "$BUILD_CMD still missing...autoconf/configure failed"
-			fi
+			echo "$BUILD_CMD still missing...autoconf/configure failed"
+			exit 5
 		fi
 	else
 		if test "$DEBUG" = "1"; then 
 			echo "OK (1): $BUILD_CMD"
 		fi
-		echo "OK (1): $BUILD_CMD"  >> $LOGFILE		
+		echo "OK (1): $BUILD_CMD"  >> $LOGFILE
 	fi
 	
 	######################
@@ -195,14 +215,12 @@ if test "$DO_BUILD" = "1"; then
 			echo "$SH $BUILD_CMD $PARAMS" >> $MAILFILE
 		fi
 		###############################
-		#echo "After..." >> $LOGFILE
-		#echo "After..." >> /tmp/cron_run.log
 		RET=$?
 		echo "Command returned code $RET" >> $LOGFILE
 		if test "$DEBUG" = "1"; then
 			echo "Command returned code $RET"
 		fi
-		#echo "2After..." >> $LOGFILE		
+
 		if test "$RET" = "66"; then
 				#54 - error comparing created and uploaded file
 				#1 - help
@@ -217,11 +235,11 @@ if test "$DO_BUILD" = "1"; then
 				#everything else - failed to run command
 				BUILD_FAILED=1
 		fi
-		#echo "3After..." >> $LOGFILE		
+
 	else
 		echo "ERROR: $BUILD_CMD is missing" >> $LOGFILE
 	fi
-	#echo "4After..." >> $LOGFILE	
+	
 	##################
 	#Finalize log file
 	date >> $LOGFILE
@@ -255,15 +273,14 @@ if test "$DO_BUILD" = "1"; then
 	
 	##################
 	#Send the email
-	echo "Sending mail with cmd: cat $TMPMAIL -pipe- $MAILCMD" >> $TMPMAIL
-	#echo "PATH:" >> $TMPMAIL
-	#echo $PATH >> $TMPMAIL
-	#if test "$COMSPEC" != ""; then
-	#	ping aptiva  >> $TMPMAIL 2>&1
-	#fi
+	if test "$DEBUG" = "1"; then
+		echo "Sending mail with cmd: cat $TMPMAIL -pipe- $MAILCMD" >> $TMPMAIL
+	fi
 	cat $TMPMAIL | $MAILCMD > /tmp/mailcmd.log 2>&1
 	RET=$?
-echo "after sending mail" >> $TMPMAIL	
+	if test "$DEBUG" = "1"; then
+		echo "after sending mail" >> $TMPMAIL
+	fi
 	if test "$RET" != "0"; then
 		 echo "sending mail failed with code $RET" >> $TMPMAIL
 		 echo "see file /tmp/mailcmd.log" >> $TMPMAIL
@@ -294,7 +311,9 @@ if test "$DO_TESTS" = "1"; then
 		fi
 		
 		if [ ! -f $AUBITDIR_SRC/Makefile ]; then
-			echo "$AUBITDIR_SRC/Makefile missing, running config.status..."
+			if test "$VERBOSE" = "1"; then
+				echo "$AUBITDIR_SRC/Makefile missing, running config.status..."
+			fi
 			cd $AUBITDIR_SRC; ./config.status
 		fi
 		
@@ -302,7 +321,9 @@ if test "$DO_TESTS" = "1"; then
 		#$SH $BUILD_CMD $PARAMS > /tmp/postbuild.log 2>&1
 		cd $AUBITDIR_SRC; make > /tmp/postbuild.log 2>&1
 		RET=$?
-		echo "Finished postbuild at `date`" >> /tmp/postbuild.log 2>&1
+		if test "$VERBOSE" = "1"; then
+			echo "Finished postbuild at `date`" >> /tmp/postbuild.log 2>&1
+		fi
 		if test $RET != "0"; then
 			echo "Command returned code $RET, see /tmp/postbuild.log" >> $LOGFILE
 			if test "$DEBUG" = "1"; then
@@ -357,7 +378,9 @@ if test "$DO_DOXY" = "1"; then
 	if test "$RET" != "0"; then 
 		echo "ERROR: make doxy failed - see /tmp/aubitdoxy.log"
 	else
-		echo "Created Aubit Doxy documentation (make doxy) See /tmp/aubitdoxy.log for details"
+		if test "$VERBOSE" = "1"; then
+			echo "Created Aubit Doxy documentation (make doxy) See /tmp/aubitdoxy.log for details"
+		fi
 	fi
 fi
 

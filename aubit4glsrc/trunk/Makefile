@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.9 2005-01-07 08:18:03 afalout Exp $
+# $Id: Makefile,v 1.10 2005-02-03 10:29:14 afalout Exp $
 #
 
 ## ==================================================================
@@ -85,7 +85,11 @@ endif
 ##                              Targets
 ## ==================================================================
 
-default: ${ALL}
+#default: ${ALL} default.msg
+default: ${ALL} default.msg.tmp
+	@echo " "
+
+default.msg.tmp:
 	@echo " "
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|      Successfully compiled Aubit compiler default targets          |"
@@ -97,11 +101,62 @@ default: ${ALL}
 	@echo "| Execute 'make extra' to compile additional components:             |"
 	@echo "| ${ALL_EXTRA}"
 	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
-	@echo "| Use 'make doxy' to create API covumentation.                       |"
+	@echo "| Use 'make doxy' to create API documentation.                       |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
+
+	
+default.msg: TITLE="Default Aubit targets compiled successfuly"
+default.msg: MSG=\
+		"Successfully compiled Aubit compiler default targets \n\
+		You MUST install it before you can use it - execute 'make install' \n\
+		Current default install settings : \n\
+		PREFIX=${PREFIX} (under ${AUBITNAME}) \n\
+		LIB_INSTALL_LINK=${LIB_INSTALL_LINK} \n\
+		BIN_INSTALL_LINK=${BIN_INSTALL_LINK} \n\
+		Execute 'make extra' to compile additional components: \n\
+		${ALL_EXTRA} \n\
+		Use Aubit regression tests available from CVS to test the build. \n\
+		Use 'make doxy' to create API documentation. \n\
+		\n\
+		Thank you for using Aubit 4gl compiler \n"
+default.msg:
+ifeq "${DIALOG_TYPE}" "no"
 	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|      Successfully compiled Aubit compiler default targets          |"
+	@echo "| You MUST install it before you can use it - execute 'make install' |"
+	@echo "| Current default install settings :                                 |"
+	@echo "| PREFIX           =${PREFIX} (under ${AUBITNAME}) "
+	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
+	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
+	@echo "| Execute 'make extra' to compile additional components:             |"
+	@echo "| ${ALL_EXTRA}"
+	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
+	@echo "| Use 'make doxy' to create API documentation.                       |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+	@echo "Thank you for using Aubit 4gl compiler"
+else
+#--msgbox
+ifeq "${DIALOG_TYPE}" "TUI"
+#--backtitle
+#--beep
+#--stdout
+	@${TUI_DIALOG} --stdout --cr-wrap --sleep 10 --title ${TITLE} --infobox ${MSG} 0 0
+else
+	@${XDIALOG} --title ${TITLE} --infobox ${MSG} 0 0 10000
+endif
+
+#		case $? in
+#		  0)
+#		    echo "OK";;
+#		  255)
+#		    echo "Box closed.";;
+#		esac
+
+endif
 
 #Target do make default and extra targets, and install everything
 all: default extra install
@@ -1447,5 +1502,85 @@ test.build:
 #	@echo "NOTE: build tests are no longer in Aubit 4GL compiler source code tree" 
 	-cd ${AUBIT_TEST_DIR}; unset A4GL_UI; ${SH} run_tests -cert -silent -verbose-results -cron -range 1 20
 
+	
+########################
+# Create source code metrics and statistical info
+DIRS_TOP=common compilers lib tools glade
+DIRS_COMPILERS=4glc ace fcompile helpcompile menus pcode sql xgen
+DIRS_LIB=extra_libs libaubit4gl libesql libexdata libform libhelp liblex \
+		liblogical libmenu libmsg libpacker libpdf librpc libsql libsqlparse \
+		libui 
+DIRS_TOOLS=4glpc afinderr asql aupscol configuration convertsql
+
+metrics: metrics.all metrics.top metrics.compilers metrics.lib metrics.tools metrics.indexpage
+
+metrics.all:
+	rm -rf ./docs/cccc
+	mkdir -p ./docs/cccc
+	find . -name "*.c" | cccc --outdir=./docs/cccc/all -
+metrics.top: 
+	$(foreach dir,${DIRS_TOP},${shell find ./${dir} -name "*.c" | cccc --outdir=./docs/cccc/${dir} -})
+metrics.compilers: 
+	$(foreach dir,${DIRS_COMPILERS},${shell find ./compilers/${dir} -name "*.c" | cccc --outdir=./docs/cccc/compilers/${dir} -})
+metrics.lib: 
+	$(foreach dir,${DIRS_LIB},${shell find ./lib/${dir} -name "*.c" | cccc --outdir=./docs/cccc/lib/${dir} -})
+metrics.tools: 
+	$(foreach dir,${DIRS_TOOLS},${shell find ./tools/${dir} -name "*.c" | cccc --outdir=./docs/cccc/tools/${dir} -})
+	
+OUTFILE=./docs/cccc/index.html
+metrics.indexpage:
+	@echo "<html><head><title>All sources</title></head><body>" > ${OUTFILE}
+	@echo "<h4 align='center'><font size="5">Aubit 4GL compiler</font></h4>" >> ${OUTFILE}
+	@echo "<h4 align='center'>measurements of source code related metrics</h4>" >> ${OUTFILE}
+	@echo "<hr>" >> ${OUTFILE}
+	@echo "<p><a href='all/cccc.html'>All sources</a></p><ul>" >> ${OUTFILE}
+	@echo "  <li><a href='compilers/cccc.html'>compilers</a><ul>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/4glc/cccc.html'>4glc</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/ace/cccc.html'>ace</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/fcompile/cccc.html'>fcompile</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/helpcompile/cccc.html'>helpcompile</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/menus/cccc.html'>menus</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/pcode/cccc.html'>pcode</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/sql/cccc.html'>sql</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='compilers/xgen/cccc.html'>xgen</a></li>" >> ${OUTFILE}
+	@echo "  </ul>" >> ${OUTFILE}
+	@echo "  </li>" >> ${OUTFILE}
+	@echo "  <li><a href='lib/cccc.html'>lib</a><ul>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/extra_libs/cccc.html'>extra_libs</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libaubit4gl/cccc.html'>libaubit4gl</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libesql/cccc.html'>libesql</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libexdata/cccc.html'>libexdata</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libform/cccc.html'>libform</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libhelp/cccc.html'>libhelp</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/liblex/cccc.html'>liblex</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/liblogical/cccc.html'>liblogical</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libmenu/cccc.html'>libmenu</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libmsg/cccc.html'>libmsg</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libpacker/cccc.html'>libpacker</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libpdf/cccc.html'>libpdf</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/librpc/cccc.html'>librpc</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libsql/cccc.html'>libsql</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libsqlparse/cccc.html'>libsqlparse</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='lib/libui/cccc.html'>libui</a></li>" >> ${OUTFILE}
+	@echo "  </ul>" >> ${OUTFILE}
+	@echo "  </li>" >> ${OUTFILE}
+	@echo "  <li><a href='tools/cccc.html'>tools</a><ul>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/4glpc/cccc.html'>4glpc</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/afinderr/cccc.html'>afinderr</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/asql/cccc.html'>asql</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/aupscol/cccc.html'>aupscol</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/configuration/cccc.html'>configuration</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/convertsql/cccc.html'>convertsql</a></li>" >> ${OUTFILE}
+	@echo "  </ul>" >> ${OUTFILE}
+	@echo "  </li>" >> ${OUTFILE}
+	@echo "  <li><a href='glade/cccc.html'>glade</a></li>" >> ${OUTFILE}
+	@echo "  <li><a href='common/cccc.html'>common</a></li>" >> ${OUTFILE}
+	@echo "</ul>" >> ${OUTFILE}
+	@echo "<hr>" >> ${OUTFILE}	
+	@echo "Created with CCCC - http://cccc.sourceforge.net" >> ${OUTFILE}
+	@echo "</body></html>" >> ${OUTFILE}
+#TODO: add notes about generated code: lex/yacc, .ec, .4gl, dlmagic, etc...
+#and note the difference when running on clean tree, or after aubit is compiled
+	
 ## ---------------------------- EOF ----------------------------------
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.178 2005-01-07 08:19:01 afalout Exp $
+# $Id: Makefile-common.in,v 1.179 2005-02-03 10:31:35 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -993,6 +993,13 @@ ORBIT_VERSION		=@ORBIT_VERSION@
 CAPI_LDFLAGS		=@CAPI_LDFLAGS@
 CAPI_CFLAGS			=@CAPI_CFLAGS@
 ORBIT_CONFIG		=@ORBIT_CONFIG@
+
+TUI_DIALOG			=@TUI_DIALOG@
+TUI_DIALOG_VERSION	=@TUI_DIALOG_VERSION@
+XDIALOG				=@XDIALOG@
+XDIALOG_VERSION		=@XDIALOG_VERSION@
+DIALOG				=@DIALOG@
+DIALOG_TYPE			=@DIALOG_TYPE@
 
 ## ==================================================================
 ##                      Moved from aubitrc:

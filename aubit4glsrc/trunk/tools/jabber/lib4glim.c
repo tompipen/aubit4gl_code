@@ -251,6 +251,7 @@ FILE * config;
 		if (!net.parser) {
 			return 3;
 		}
+/*		BAD code:
 		iks_set_log_hook (net.parser, j_on_log);
 		net.id = iks_id_new (NULL, net.username);
 		if (!net.id || !net.id->server || !net.id->user) {
@@ -260,6 +261,25 @@ FILE * config;
 			net.id->resource = "notify";
 		}
 		if (!iks_connect_tcp (net.parser, net.id->server, 0)) {
+*/
+//******************** START			
+		iks_set_log_hook (net.parser, j_on_log); 
+		net.id = iks_id_new (iks_stack_new(0,0), net.username); 
+		if (!net.id) {
+			return 1;
+		}
+		if (!net.id->resource) {
+			char *tmp;
+			//tmp = malloc(strlen(id.partial) + 6 + 1 + 1);
+			tmp = malloc(strlen(net.id) + 6 + 1 + 1);
+			//sprintf(tmp, "%s/%s", id.partial, "notify");
+			sprintf(tmp, "%s/%s", net.id, "notify");
+			net.id = iks_id_new(iks_id_new(0,0), tmp);
+			free(tmp);
+			if (!net.id) return 1;
+		}
+		if (!iks_connect_tcp (net.parser, net.id->server, 0)) {
+//******************** END
 			iks_disconnect (net.parser);
 			return 2;
 		}

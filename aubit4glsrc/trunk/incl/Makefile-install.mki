@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.97 2005-02-03 07:47:31 afalout Exp $
+# $Id: Makefile-install.mki,v 1.98 2005-02-03 10:31:43 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -927,12 +927,20 @@ ORBIT_INFO			=http://www.gnome.org/projects/ORBit2
 ORBIT_SRC_PATH		=ftp://ftp.gnome.org/pub/gnome/sources/ORBit2/2.12/
 ORBIT_SRC			=ORBit2-2.12.0
 ORBIT_SRC_TAR_GZ	=${ORBIT_SRC}.tar.gz
-
 ORBIT_WIN_PATH			=http://hei.unige.ch/~strba5
 ORBIT_WIN_BIN_NAME		=ORBit2-2.12.0
 ORBIT_WIN_BIN_ZIP		=${ORBIT_WIN_BIN_NAME}.zip
 ORBIT_IDL_WIN_BIN_NAME	=libIDL-0.8.4
 ORBIT_IDL_WIN_BIN_ZIP	=${ORBIT_IDL_WIN_BIN_NAME}.zip
+
+
+###################
+# 36: C and C++ Code Counter (CCCC) - source code metrics
+CCCC_INFO		=http://cccc.sourceforge.net/
+CCCC_PATH		=http://optusnet.dl.sourceforge.net/sourceforge/cccc
+CCCC_SRC_NAME	=cccc-3.pre84
+CCCC_SRC_TAR_GZ	=${CCCC_SRC_NAME}.tar.gz
+
 
 ## ==================================================================
 ##                    Third-party products installation
@@ -1880,6 +1888,18 @@ change.log:
 	@export CHANGE_LOG_NAME='Andrej Falout'; export CHANGE_LOG_EMAIL_ADDRESS='andrej_AT_falout_DOT_org'; \
 		perl tools/prepare-ChangeLog.pl
 		
+###################
+# 36: C and C++ Code Counter (CCCC) - source code metrics
+install.cccc: ${CCCC_SRC_TAR_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${CCCC_SRC_NAME}; ./configure; make; make install	
+	@echo " "
+	@echo "Package info & manuals: ${CCCC_INFO}"
+	@echo " "
+	@echo "SXML installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
 		
 ###########################################################################
 #			Targets for downloading installation files:
@@ -1919,7 +1939,7 @@ ${MPZ_SRC_TGZ}:
 ${SWIG_RPM}:
 	${WGET} ${SWIG_PATH}/${SWIG_RPM}
 ${DOXYGEN_RPM}:
-    ${WGET} ${DOXYGEN_PATH}/${DOXYGEN_RPM}
+	${WGET} ${DOXYGEN_PATH}/${DOXYGEN_RPM}
 ${CHECK_RPM}:
 #NOTE: ?download
 	${WGET} ${CHECK_PATH}/${CHECK_RPM}?download
@@ -2013,6 +2033,9 @@ ${ORBIT_WIN_BIN_ZIP}:
 	${WGET} ${ORBIT_WIN_PATH}/$@
 ${ORBIT_IDL_WIN_BIN_ZIP}:
 	${WGET} ${ORBIT_WIN_PATH}/$@
+${CCCC_SRC_TAR_GZ}:
+	${WGET} ${CCCC_PATH}/$@
+
 	
 #############################################
 #       SQLite tests

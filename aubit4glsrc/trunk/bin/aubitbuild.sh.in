@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.61 2004-12-31 03:20:38 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.62 2005-02-03 10:31:28 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -152,6 +152,10 @@ USE_WGET=1
 #####################
 #Do we want to increase build number:
 UPBUILD=1
+
+####################
+#How many times will we retry upload if it fails
+MAX_RETRY=1
 
 #####################
 #Location of log files to log this process to:
@@ -387,6 +391,7 @@ function runexec () {
 				TMPMSG="$TMPMSG Ignored."
 			fi
 		    echo "$TMPMSG See $LOGFILE"
+			echo ""
 		    echo "$TMPMSG"  >> $LOGFILE 2>&1
 		    if test "$STOPONERROR" = "1"; then
 				#Problem with this is that calling script (cron) will not
@@ -554,11 +559,13 @@ SIZE_COMPARES_OK=0
 		COMPARED_OK=0
 		return
 	fi
-	if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then 
-		echo "ERROR: filesize of local and uploaded file are different"
-		echo "$LOCAL_FILE"
-		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL ($FILESIZE_LOCAL_HUMAN)"
-		echo "----------------------------------------------------"				
+	if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then
+		if [ "$VERBOSE" = "1" ]; then
+			echo "ERROR: filesize of local and uploaded file are different"
+			echo "$LOCAL_FILE"
+			echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL ($FILESIZE_LOCAL_HUMAN)"
+			echo "----------------------------------------------------"
+		fi
 		COMPARED_OK=0
 		if test "$SH_DEBUG" = "1"; then
 			#Little point, allways downloaded file of same size as reported by 
@@ -812,6 +819,13 @@ old_STOPONERROR=$STOPONERROR
 #and maybe RPM (with dubious purpose and results), but NOT for 
 #binary tarballs. see 4glpc.obsolete -deps flag
 
+#export INSTALLDIR="$AUBITDIR"
+#export SOURCEDIR="$AUBITDIR_SRC"
+export INSTALLDIR="$AUBITBINDIR"
+export SOURCEDIR="$AUBITSRCDIR"
+
+
+
 	if test "$type" = "bin"; then
 		STOPONERROR=0   #Continue even if next statemets fails
 		#Just runs check script with -chk-install ; expects Aubit allready installed
@@ -820,7 +834,7 @@ old_STOPONERROR=$STOPONERROR
 		return
 	fi
 	
-	if test "$type" = "winsetup"; then
+	if test "$type" = "winsetup" -a "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1"; then
 		STOPONERROR=0   #Continue even if next statemets fails
 		#Expects Aubit Windows setup executable to exist
 		EXEC="make winsetup.deinstall"; runexec
@@ -1397,18 +1411,20 @@ UP_URLENCODED="$3"
 	fi
 
 
-#Do NOT single-quote file names to auto_sf_scp!
-	do_retry=0
-	MAX_RETRY=3
 	RETRY_CNT=0
+	TIMEOUT_WARN=0
 	while [ "1" = "1" ] ; do
+		do_retry=0
 		upload_file "$the_file"
 		if test "$VERBOSE" = "1"; then
 			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."
 		fi
 		if test "$TOOK_TIME" -gt "$timeout"; then
-			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."	
-			echo "WARNING: did 'expect' timeout kill scp?"
+			if test "$VERBOSE" = "1"; then
+				echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."	
+				echo "WARNING: did 'expect' timeout kill scp?"
+			fi
+			TIMEOUT_WARN=1
 			#do_retry=1
 		fi
 
@@ -1424,12 +1440,27 @@ UP_URLENCODED="$3"
 				echo " =============================================================="
 				echo "Reached maximum number of upload retries ($MAX_RETRY) - giving up."
 				echo "Upload of $the_file failed"
+				if test "$TIMEOUT_WARN" = "1"; then 
+					echo "WARNING: 'expect' timeout was exceeded"
+					echo "WARNING: last upload took $TOOK_TIME seconds (timeout=$timeout)."
+				fi
 				echo " =============================================================="
 				FAILED_UPLOAD_LIST="$FAILED_UPLOAD_LIST $the_file"
 				break
 			fi
 			let RETRY_CNT=RETRY_CNT+1
+			if test "$VERBOSE" = "1"; then
+				echo "Will retry upload, this will be retry # $RETRY_CNT"
+			fi
 		else
+			if test "$CHECK_SIZE_AFTER_UPLOAD" = "1"; then
+				#echo "Upload OK: $the_file"	
+				if test "$UP_URLENCODED" != ""; then
+					echo "Upload OK: $UP_URLENCODED ($FILESIZE_LOCAL_HUMAN)"
+				else
+					echo "Upload OK: $UP_FILE ($FILESIZE_LOCAL_HUMAN)"
+				fi
+			fi
 			break
 		fi
 
@@ -1519,6 +1550,11 @@ BASENAME_URLENCODE="$3"
 function func_compare_uploaded () {
 ######################################
 # compare created and uploaded files by size or byte-for-byte
+
+#We now check uploaded size after every upload, so we dont need this anymore
+return
+
+
 
 if test "$COMPARE" = "1"; then
 	if test "$VERBOSE" = "1"; then

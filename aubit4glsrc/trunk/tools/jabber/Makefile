@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-12-19 08:12:41 afalout Exp $
+# $Id: Makefile,v 1.3 2005-02-03 10:31:44 afalout Exp $
 #
 
 ROOT        =../..
@@ -138,6 +138,7 @@ show:
 	@echo "IKSEMEL_L_PATH_WIN=${IKSEMEL_L_PATH_WIN}"
 	@echo "IKSEMEL_L_PATH=${IKSEMEL_L_PATH}"
 	@echo "PATH=${PATH}"
+	@echo "SO_EXT=${SO_EXT}"
 	
 ## ==================================================================
 ##                              Clean
