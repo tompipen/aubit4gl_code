@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.37 2003-05-22 13:22:19 mikeaubury Exp $
+# $Id: newpanels.c,v 1.38 2003-05-25 04:32:41 afalout Exp $
 #*/
 
 /**
@@ -127,7 +127,6 @@ int A4GL_top_win (PANEL * p);
 char *A4GL_pointer_code (int c);
 //void  A4GL_clr_window                      (char *win_name);
 int A4GL_int_current_window (char *win_name);
-void A4GL_mja_gotoxy (int x, int y);
 int A4GL_get_curr_win (void);
 int A4GL_get_curr_height (void);
 int A4GL_get_curr_top (void);
@@ -1287,27 +1286,6 @@ A4GL_mja_setcolor (int typ)
   A4GL_debug ("Done..");
 }
 
-/**
- *
- * @todo Describe function
- */
-#ifdef IS_THIS_USED
-void
-display_at2 (char *z, int x, int y, int a)
-{
-  int b;
-  WINDOW *cwin;
-  cwin = A4GL_window_on_top ();
-  b = A4GL_xwattr_get (cwin);
-  A4GL_mja_gotoxy (x, y);
-  a4glattr_wattrset (cwin, a);
-  A4GL_gui_print (a, z);
-  A4GL_tui_print ("%s", z);
-  wattrset (cwin, b);
-  A4GL_mja_wrefresh (cwin);
-}
-#endif
-
 
 /**
  *
@@ -1479,12 +1457,8 @@ int
 A4GL_getmenu_line (void)
 {
 #ifdef DEBUG
-  {
     A4GL_debug ("In menu line... currwinno=%d ", currwinno);
-  }
-  {
     A4GL_debug ("name=%s ", windows[currwinno].name);
-  }
 #endif
 
   if (strcmp (windows[currwinno].name, "screen") == 0)

@@ -7,25 +7,24 @@
 #define WANTCURSES
 
 #if HAVE_PDCURSES
-#define _SKIP_AAAA_		//don't include anything from form.h
-#include <curses.h>
-#include <panel.h>
-#include <D:/cygwin/usr/include/ncurses/form.h>
+	#define _SKIP_AAAA_		//don't include anything from form.h
+	#include <curses.h>
+	#include <panel.h>
+	#include <D:/cygwin/usr/include/ncurses/form.h>
 #else
-#ifndef _NO_FORM_H_
-#include <form.h>
-#endif
-
-#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
-#ifndef PAN32
-#define PAN32
-#include <panel32.h>
-#endif
-#else
-#ifndef _NO_PANEL_H_
-#include <panel.h>
-#endif
-#endif
+	#ifndef _NO_FORM_H_
+		#include <form.h>
+	#endif
+	#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
+		#ifndef PAN32
+			#define PAN32
+			#include <panel32.h>
+		#endif
+	#else
+		#ifndef _NO_PANEL_H_
+			#include <panel.h>
+		#endif
+	#endif
 #endif
 
 
@@ -90,7 +89,7 @@ int A4GL_screen_width (void);
 int A4GL_find_ptr_debug (void *ptr);
 int A4GL_getprompt_line (void);
 void A4GL_tui_print (char *fmt, ...);
-
+void A4GL_mja_gotoxy (int x, int y);
 	//int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */

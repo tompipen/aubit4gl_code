@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.37 2003-05-19 20:11:02 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.38 2003-05-25 04:32:41 afalout Exp $
 #
 */
 
@@ -250,7 +250,12 @@ A4GL_fgl_start (int nargs, char *argv[])
 #ifdef _PRELOAD_REPORT_
   A4GLREPORT_initlib ();
 #endif
+  
+#if (! defined(WIN32) && ! defined(__MINGW32__))
+  //Mike, are you sure this is not going to work on MinGW, or where you just guessing,
+  //since it's on Windows?
   A4GL_set_core_dump ();
+#endif
   /* signal (SIGINT, fgl_end); */
   A4GL_nodef_init ();
 #ifdef DEBUG
@@ -738,8 +743,11 @@ set_intr_win32 (DWORD type)
 }
 #endif
 
-
+// ######################################################################
 #if (defined(WIN32) && ! defined(__CYGWIN__))
+// ######################################################################
+//This conditional will happen ONLy when compiling with native Windows compilers, like MinGW
+
 
 // implicit declaration of function `rpc_nt_init'
 // implicit declaration of function `sleep' -- should be in <unistd.h>
@@ -784,8 +792,12 @@ A4GL_def_int (void)
   SetConsoleCtrlHandler (set_intr_win32, 1);
 }
 
-#else
 
+// ######################################################################
+#else //#if (defined(WIN32) && ! defined(__CYGWIN__))
+// ######################################################################
+//This conditional will happen ONLY when NOT compiling on Windows, or when compiling on Windows
+// with CygWin compiler
 
 /**
  * Stop the DEFER INTERRUPT in unix systems.
@@ -811,8 +823,7 @@ A4GL_nodef_init ()
 }
 
 
-
-void A4GL_core_dump() {	
+void A4GL_core_dump() {
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -852,6 +863,8 @@ A4GL_set_core_dump ()
     }
 }
 
+
+
 /**
  * Start the defer interrupt in unix systems.
  */
@@ -874,7 +887,11 @@ A4GL_def_int (void)
       A4GL_exitwith ("Could not defer interrupt");
     }
 }
-#endif
+
+
+// ######################################################################
+#endif  //#if (defined(WIN32) && ! defined(__CYGWIN__))
+// ######################################################################
 
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.31 2003-05-22 13:22:19 mikeaubury Exp $
+# $Id: curslib.c,v 1.32 2003-05-25 04:32:41 afalout Exp $
 #*/
 
 /**
@@ -55,20 +55,20 @@
 =====================================================================
 */
 
+#define BLANK ' '
 #define MAXFORM 8
 #define A4GL_MAXWIDTH 80
 #define MAXFIELDS 256
 #define mja_strcmp(a,b) mja_strncmp(a,b,0)
 
 #ifndef strnicmp		/* typically in /usr/include/string.h */
-#define strnicmp(a,b,c) mja_strncmp(a,b,c)
+	#define strnicmp(a,b,c) mja_strncmp(a,b,c)
 #endif
 
 #ifndef stricmp			/* typically in /usr/include/string.h */
-#define stricmp(a,b) mja_strncmp(a,b,0)
+	#define stricmp(a,b) mja_strncmp(a,b,0)
 #endif
 
-//#define DEBUG
 #define MAXENTS 1000
 #define FILESIZE 64
 /*
@@ -123,7 +123,6 @@ int init_curses_mode = 0;
 
 char *A4GL_mfgets (char *s, int n, FILE * fp);
 void *A4GL_decode_clicked (void);
-int A4GL_mja_gotoxy (int x, int y);
 char *A4GL_get_currwin_name (void);
 int A4GL_gui_startmenu (char *s, long a);
 void A4GL_size_menu (ACL_Menu * menu);
@@ -231,62 +230,6 @@ A4GL_string_width (char *s)
   sprintf (buff2, buff, s);
   return buff2;
 }
-
-
-
-/**
- *
- * @todo Describe function
- */
-/* not used
-void
-banner (str, a, b, c)
-     char str[];
-     int a, b, c;
-{
-  int pos;
-  char disp[81];
-  for (pos = 0; pos <= 79; pos++)
-    disp[pos] = ' ';
-  disp[80] = 0;
-  pos = (c - strlen (str)) / 2;
-  A4GL_mja_gotoxy (b, a);
-  strcpy (&disp[pos], str);
-  disp[pos + strlen (str)] = ' ';
-  A4GL_mja_setcolor (TITLE_COL);
-	// YELLOW ON CYAN
-  A4GL_tui_print ("%s", disp);
-  A4GL_mja_refresh ();
-  A4GL_mja_setcolor (NORMAL_TEXT);
-}
-*/
-
-/**
- *
- * @todo Describe function
- */
-#ifdef NOT_USED_REMOVE_IT
-void
-title_box (str, a, x, l)
-     char str[];
-/*
-   str - string to print
-   a = y position
-   x = x position
-   l = length of limit
- */
-     int a, x, l;
-{
-  int pos;
-  pos = (l - strlen (str)) / 2;
-  A4GL_mja_gotoxy (pos + x, a);
-  A4GL_mja_setcolor (NORMAL_TEXT);
-  /*YELLOW ON CYAN */
-  A4GL_tui_print ("%s", str);
-  A4GL_zrefresh ();
-  A4GL_mja_setcolor (NORMAL_TEXT);
-}
-#endif
 
 
 /**
@@ -1312,8 +1255,6 @@ A4GLUI_ui_init (int argc, char *argv[])
 void
 A4GL_init_curses_stuff ()
 {
-#define BLANK ' '
-
 // Have we already done it ?
   if (init_curses_mode)
     return;
@@ -1349,31 +1290,31 @@ A4GL_init_curses_stuff ()
 
 
 #ifdef NCURSES_MOUSE_VERSION
-#ifdef DEBUG
-  A4GL_debug ("Turning Mouse on");
-#endif
-#ifdef WIN32
-#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
-#ifdef DEBUG
-  A4GL_debug ("Turning WIN32 mouse on\n");
-#endif
-  if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-#endif
-#else
-  if (A4GL_env_option_set ("ACL_MOUSE"))
-    {
-#ifdef DEBUG
-      A4GL_debug ("Turning UNIX mouse on\n");
-#endif
-      {
-	int mcode;
-	mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-#ifdef DEBUG
- A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-#endif
-      }
-    }
-#endif
+	#ifdef DEBUG
+	  A4GL_debug ("Turning Mouse on");
+	#endif
+	#ifdef WIN32
+		#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+			#ifdef DEBUG
+			  A4GL_debug ("Turning WIN32 mouse on\n");
+			#endif
+			if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+		#endif
+	#else
+		if (A4GL_env_option_set ("ACL_MOUSE"))
+	    {
+			#ifdef DEBUG
+				A4GL_debug ("Turning UNIX mouse on\n");
+			#endif
+			{
+			int mcode;
+			mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+			#ifdef DEBUG
+				A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+			#endif
+			}
+	    }
+	#endif
 #endif
 }
 
@@ -1654,9 +1595,7 @@ A4GL_disp_h_menu (ACL_Menu * menu)
     }
   menu->menu_offset = disp_cnt;
 #ifdef DEBUG
-  {
     A4GL_debug ("Menu line set to %d", A4GL_getmenu_line ());
-  }
 #endif
   menu->menu_line = 1;
   abort_pressed = 0;
@@ -1664,9 +1603,7 @@ A4GL_disp_h_menu (ACL_Menu * menu)
   A4GL_display_menu (menu);
   /* zrefresh(); */
 #ifdef DEBUG
-  {
     A4GL_debug ("completed disp_h_menu");
-  }
 #endif
   /*set_window(owin); */
 }
@@ -1822,10 +1759,7 @@ A4GL_display_menu (ACL_Menu * menu)
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
 #ifdef DEBUG
-	  {
-	    A4GL_debug ("OK to display - Page %d of %d", menu->curr_page,
-		   opt1->page);
-	  }
+	    A4GL_debug ("OK to display - Page %d of %d", menu->curr_page,opt1->page);
 #endif
 	  if (menu->curr_page == opt1->page)
 	    {
@@ -1895,12 +1829,8 @@ A4GL_clear_menu (ACL_Menu * menu)
   w = A4GL_find_pointer (menu->window_name, WINCODE);
 
 #ifdef DEBUG
-  {
     A4GL_debug ("Clearing Window..%p", w);
-  }
-  {
     A4GL_debug ("Clearing Panel %p", p);
-  }
 #endif
 
   del_panel (p);		/* this is causing problems INVESTIGATE */
@@ -1918,9 +1848,7 @@ A4GL_clear_prompt (struct s_prompt *prmt)
 {
   PANEL *p;
 #ifdef DEBUG
-  {
     A4GL_debug ("Clearing prompt...");
-  }
 #endif
   p = prmt->win;
   delwin ((WINDOW *) p);
@@ -2617,7 +2545,7 @@ A4GL_chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h)
   char pbuff[40];
   int sel;
 
-#define pos_chklistbox(p) mja_gotoxy(x+1,y+1+p-pg_top)
+#define pos_chklistbox(p) A4GL_mja_gotoxy(x+1,y+1+p-pg_top)
 
 
   if (h > elem)

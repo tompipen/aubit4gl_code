@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.26 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: readforms.c,v 1.27 2003-05-25 04:32:41 afalout Exp $
 #*/
 
 /**
@@ -202,8 +202,7 @@ real_read_form (char *fname, char *formname)
 
       if (chkint != FCOMILE_XDR_MAGIC)
 	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
+	  A4GL_exitwith ("Couldnt open form - does not appear to be a valid form file");
 	  return 0;
 	}
     }
@@ -226,8 +225,7 @@ real_read_form (char *fname, char *formname)
 
       if (chkint != FCOMILE_XDR_MAGIC)
 	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
+	  A4GL_exitwith ("Couldnt open form - does not appear to be a valid form file");
 	  return 0;
 	}
 

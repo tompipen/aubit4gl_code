@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.49 2003-04-08 17:15:38 mikeaubury Exp $
+# $Id: Makefile.in,v 1.50 2003-05-25 04:32:41 afalout Exp $
 #
 
 ROOT    	=../..
@@ -39,27 +39,29 @@ include ${ROOT}/incl/Makefile-common
 
 CMODS_PROJECT	=project.c
 
+#List of all Aubit API interfaces source files, part of libaubit4gl:
 CMODS_API   = \
 	API_ui.c API_exreport.c API_sql.c API_rpc.c \
 	API_lex.c API_form.c API_menu.c API_msg.c API_packer.c API_help.c
 
-#In alphabetical order:
+#List of all non-API source files of libaubit4gl, -- IN ALPHABETIC ORDER -- :
 COMMONSRC= \
-	attributes.c builtin.c builtin_d.c \
-	calldll.c conv.c \
-	data_if.c dates.c dmy.c  datatypes.c \
+	attributes.c \
+	builtin.c builtin_d.c \
+	calldll.c conv.c compat.c \
+	data_if.c dates.c dmy.c  datatypes.c dataio.c \
 	err.c error.c errfile.c extfile.c \
-	fglwrap.c funcs_d.c function_call_stack.c sqlca.c \
-	gtime.c gui_io.c gui.c compat.c \
+	fglwrap.c funcs_d.c function_call_stack.c \
+	gtime.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
 	keys.c \
-	load.c dataio.c \
-	match.c maths.c ops.c \
-	others.c \
-	pointers.c memfile.c \
+	load.c \
+	match.c maths.c memfile.c \
+	others.c ops.c \
+	pointers.c \
 	read_dty.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
-	screen.c sqlconvert.c stack_ops.c stack.c string.c \
+	screen.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \
 	translate.c
 
 CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
