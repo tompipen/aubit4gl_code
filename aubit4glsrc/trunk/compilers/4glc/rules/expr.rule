@@ -148,6 +148,66 @@ inc_counter();
 sprintf($<str>$,"push_long((long)%s);",$<str>1);
 inc_counter();
 }
+| variable THRU variable {
+char r1[256];
+char r2[256];
+char buff[256];
+char kp[40000];
+char *ptr1;
+char *ptr2;
+int v1;
+int v2;
+int a;
+
+debug("Got a thru...");
+        strcpy(r1,$<str>1);
+debug("r1=%s",r1);
+        ptr1=strrchr(r1,'.');
+	if (ptr1==0) {
+		yyerror("Must have a . in a thru");YYERROR;
+	}
+        *ptr1=0;
+        ptr1++;
+ 
+        strcpy(r2,$<str>3);
+	debug("r2=%s",r2);
+
+        ptr2=strrchr(r2,'.');
+	if (ptr2==0) {
+		yyerror("Must have a . in a thru");YYERROR;
+	}
+        *ptr2=0;
+ 
+	debug("Checking portions %s %s\n",r1,r2);
+
+        if (strcmp(r1,r2)!=0) {
+                yyerror("Records for thru look different...");YYERROR;
+        }
+ 
+	debug("Checking variables");
+        v1=scan_variable($<str>1);
+        if (v2==-1) {
+		debug("Variable not found..");
+                yyerror("Variable not found (first entry in thru)");YYERROR;
+        }
+        v1=last_var_found;
+        debug("v1=%d",v1);
+ 
+        v2=scan_variable($<str>3);
+        if (v2==-1) {
+		debug("Variable not found..");
+                yyerror("Variable not found (second entry in thru)");
+        }
+        v2=last_var_found;
+        debug("v2=%d",v2);
+ 
+	strcpy($<str>$,"");
+        for (a=v1;a<=v2;a++) {
+		strcpy(kp,$<str>$);
+                sprintf(buff,"%s.%s",r1,get_var_name(a));
+		sprintf($<str>$,"%s push_variable(%s,0x%x);",kp,buff,scan_variable(buff));
+        }
+}
 | variable  {
    int a;
    int incvcnt;
@@ -191,6 +251,7 @@ if (a==-2) {
         strcpy($<str>$,b);
         }
    }
+
 ;
 
 

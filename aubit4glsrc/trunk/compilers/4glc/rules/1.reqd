@@ -17,6 +17,7 @@
 #include "../../lib/libincl/prompt.h"
 extern int lineno;
 extern int charno;
+extern int last_var_found;
 int rordcnt;
 char menuhandler[256];
 char *downshift(char *);

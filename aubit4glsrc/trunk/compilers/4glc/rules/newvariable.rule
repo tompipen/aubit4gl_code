@@ -393,6 +393,7 @@ func_def_var : identifier;
 
 ibind_var : variable  {printcomment("/* Variable */\n");}
 	| variable THRU variable {
+			debug("Got an ibind thru...");
 			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 		}
 

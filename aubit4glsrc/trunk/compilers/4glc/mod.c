@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.6 2001-09-06 20:02:21 mikeaubury Exp $
+* $Id: mod.c,v 1.7 2001-09-07 21:35:38 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.6  2001/09/06 20:02:21  mikeaubury
+*	More fixes (incl. major one on passing records to functions/reports)
+*	
 *	Revision 1.5  2001/09/05 21:49:22  mikeaubury
 *	Small changes.
 *	
@@ -4439,3 +4442,10 @@ for (a=0;a<cnt;a++) {
 }
 
 }
+
+
+char *
+get_var_name(int z) {
+	return vars[z].var_name;
+}
+	

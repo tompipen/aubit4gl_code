@@ -904,9 +904,14 @@ curs_forupdate : {strcpy($<str>$,"0");}
 		| FOR_UPDATE_OF cur_update_list{strcpy($<str>$,"1");} 
 		;
 
-cur_update_list : identifier | cur_update_list identifier
-
+cur_update_list : colident | cur_update_list colident
 ;
+
+colident: identifier
+	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"%s.%s.%s",$<str>1,$<str>3,$<str>5);}
+;
+	
 
 cursor_specification_all:
 	cursor_specification_sel
