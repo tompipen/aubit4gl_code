@@ -15,37 +15,32 @@ In the apllication press CONTROL P
 the  screen is copied to the mentioned files, check which one you like.
 
 I tested it in D4gl 2.10 so I assume it will also work in 4JS version.
-NOTE: There is a similar environment variable called DBSCREENDUMP which includes some ESCape sequencing, so isn't as readable.
+NOTE: There is a similar environment variable called DBSCREENDUMP which 
+includes some ESCape sequencing, so isn't as readable.
+
 http://www1.4js.com/html/mlarchive/msg06037.html
-
 http://www1.4js.com/html/mlarchive/msg01421.html
-
 http://www1.4js.com/html/mlarchive/msg06753.html
-
-If anyone is interested, we have sucessfully built a work around to the
-screen capture in ASCII mode (i.e. FGLGUI=0).  It involves some C code
-but it works.
-
-
-"Joe Lewinski" <lewinski@icanon.com>
-
-ICANON Associates, Inc.
-215.653.0754 x 115
-Fax:  215.653.0829
-
 
 */
 
 
+static char * local_trim (char *s);
+
+#ifndef I4GL_RDS
+
 #include <stdio.h>
 #include <curses.h>
 
-#ifdef C4GL
-	//This header is apprently only present in Infomix-4GL C compiler - not in 
-	//RDS (p-code) version of 4gl
-	#include "fglsys.h"
-//#else
-//	#include "fgicfunc.h"
+#ifndef QUERIX  
+	#ifndef FOURJS
+		#ifndef I4GL_RDS
+			// ...so it must be Informix C compiled 4GL:
+			//This header is apprently only present in Infomix-4GL C compiler - not in 
+			//RDS (p-code) version of 4gl
+			#include "fglsys.h"
+		#endif
+	#endif
 #endif
 
 FILE *f;
@@ -53,22 +48,20 @@ FILE *f;
 int scr_width = 80;
 int scr_height = 24;
 
-static char * local_trim (char *s);
-
-
 int
 aclfgl_dump_screen (int n)
 {
-  int sh;
-  int sw;
-  int x, y;
-  int attr;
-  char *ptr = 0;
-  WINDOW *w;
-  int mode = 1;
-  char buffer[255];
-  char *buff;
+int sh;
+int sw;
+int x, y;
+int attr;
+char *ptr = 0;
+WINDOW *w;
+int mode = 1;
+char buffer[255];
+char *buff;
 
+#define DEBUG 1
 
 #ifdef DEBUG
 	long cur_date;
@@ -85,21 +78,15 @@ aclfgl_dump_screen (int n)
 /*w=find_pointer ("screen", WINCODE);*/
   
   w = curscr;
-
-#ifndef FOURJS
-  refresh(); //we crash here when using 4Js
-#endif
-
-  if (n == 1)
-    {
+  refresh(); 
+  if (n == 1) {
       popquote (buffer, 255);
-    }
+  }
 
-  if (n == 2)
-    {
+  if (n == 2) {
       popint (&mode);
       popquote (buffer, 255);
-    }
+  }
 
   ptr = buffer;
   local_trim (ptr);
@@ -124,7 +111,6 @@ aclfgl_dump_screen (int n)
   sh = 24;
   sw = 80;
 
-
   f = fopen (ptr, "w");
   if (f == 0) {
 	  #ifdef DEBUG
@@ -148,6 +134,24 @@ aclfgl_dump_screen (int n)
 
 	  if (mode == 1)
 	    {
+			#ifdef QUERIX
+				/* 
+					Querix translates some characters to more graphical ones
+					to make display nicer so we must translate them back to 
+					what was orriginally in .per file
+				*/
+					
+				buff = (char *) &attr;
+				#ifdef DEBUG
+					//fprintf(fptr,"attr=%c full=%c buff=%c\n",attr, attr & 255,buff[2]);
+				#endif
+				if ( buff[2] == '@' ) {
+					if ( (char) attr == 'q' ) {
+						attr='-';
+					}
+				}
+			#endif
+			
 	      fprintf (f, "%c", attr & 255);
 	    }
 	}
@@ -163,6 +167,129 @@ aclfgl_dump_screen (int n)
   return 0;
 }
 
+#else		//#ifndef I4GL_RDS
+
+/*
+**	Screen Dump for Informix 4GL in P-code (RDS) mode
+**	This relies on Informix-4GL essentially
+**	still using Curses(3X) primitives
+** From 4Js mailing list
+*/
+
+#include <curses.h>
+#include <stdio.h>
+
+int	
+//scrdump(int argc)
+aclfgl_dump_screen (int n)
+{
+extern	FILE	*popen() ;
+extern	char	*getenv() ;
+FILE	*fp ;
+char	*indent, *spooler, *output_to ;
+register int	ch, col, row ;
+int mode = 1;
+char buffer[255];
+char *buff;
+char *ptr = 0;
+
+	if ((output_to = getenv("A4GL_SCRDUMP")) == (char *) NULL) {
+		output_to="file";	
+	}
+	
+	if (strcmp (output_to, "file") != 0) {
+		printf ("Output to spooler");
+		/** determine spooler **/
+		if ((spooler = getenv("SPOOLER")) == (char *) NULL) {
+			spooler = "lp -s" ;
+		}
+	
+		/** open pipe to spooler **/
+		if ((fp = popen(spooler, "w")) == (FILE *) NULL) {
+			fprintf(stderr, "\r\nFATAL : cannot connect to spooler\n") ;
+			sleep(3) ;
+			return 0 ;
+		}
+	} else {
+		printf ("Output to file");
+		if (n == 1) {
+			popquote (buffer, 255);
+		}
+		if (n == 2) {
+			popint (&mode);
+			popquote (buffer, 255);
+		}
+		
+		ptr = buffer;
+		local_trim (ptr);
+		strcat (buffer, ".infx");
+		
+		fp = fopen (ptr, "w");
+		if (fp == 0) {
+			#ifdef DEBUG
+				fprintf(fptr,"Failed to open %s\n", ptr);
+				fclose(fptr);
+			#endif
+			return 0;
+		}
+	}
+
+	/*
+	**	UNIPLEX II Format
+	**
+	**	Graphics are static but
+	**	other attributes should be user definable
+	*/
+
+	if (strcmp (output_to, "file") != 0) {
+		if (strcmp (spooler, "lp -s") != 0) {
+			fprintf (fp,"<Next centre><UL on>SAMPLE SCREEN<UL off>\n\n") ;
+			fprintf (fp,"<Screen>\n") ;
+		}
+	}
+
+	/** now scan through screen and dump **/
+	for (row = 0 ; row < LINES ; row++) {
+		if (strcmp (output_to, "file") != 0) {		
+			if ((strcmp (spooler, "lp -s") != 0) && ((row == 2) || (row == 22))) {
+				fprintf (fp,"<Gs,24p>") ;
+			}
+		}
+		/** output text on this line **/
+		for (col = 0 ; col < COLS ; col++) {
+			ch = mvwinch(curscr, row, col) & 0x7f ;
+		if (
+				(strcmp(spooler, "lp -s") != 0) 
+				&& (ch == ' ') 
+				&& (strcmp (output_to, "file") != 0)
+			) {
+				fputc('~', fp) ;
+			} else {
+				fputc(ch, fp) ;
+			}
+		}
+		fputc('\n', fp) ;
+	}
+
+	if (strcmp (output_to, "file") != 0) {	
+		if (spooler != "lp -s") {
+			fprintf (fp,"\n<End screen>\n") ;
+		}
+	}
+
+	/** and end it **/
+	if (strcmp (output_to, "file") != 0) {	
+		pclose(fp) ;
+	} else {
+		fclose(fp) ;		
+	}
+
+	return 0 ;
+}
+
+#endif
+
+
 
 static char *
 local_trim (char *s)
@@ -177,6 +304,4 @@ local_trim (char *s)
     }
   return s;
 }
-
-
 
