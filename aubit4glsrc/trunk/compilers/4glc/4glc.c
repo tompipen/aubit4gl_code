@@ -1,7 +1,14 @@
-/**************************************************************/
+
+
+/**
+ * The main module for the x4gl compiler.
+ */
+
 /*
-/* $Id: 4glc.c,v 1.8 2001-11-21 22:56:15 saferreira Exp $
-/**/
+ *
+ * $Id: 4glc.c,v 1.9 2001-11-27 20:48:24 saferreira Exp $
+ */
+
 //#include "../libincl/compiler.h"
 #include <stdio.h>
 #ifdef YYDEBUG
@@ -30,8 +37,14 @@ int globals_only = 0;
 
 int lineno = 1;
 
-static
-bname (char *str, char *str1, char *str2)
+/**
+ * It breaks the file name to take the file name without extension and dir name
+ *
+ * @param str The file name 
+ * @param str1
+ * @param str2
+ */
+static bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -53,10 +66,13 @@ bname (char *str, char *str1, char *str2)
     str2[0] = 0;
 }
 
-
-main (argc, argv)
-     int argc;
-     char *argv[];
+/**
+ * The starting function.
+ *
+ * @param argc The argument count
+ * @param argv The argument values
+ */
+main (int argc, char *argv[])
 {
   char a[128];
   char b[128];
@@ -146,6 +162,39 @@ main (argc, argv)
 }
 
 
+/**
+ * Remove the quotes in the beginning and at the from a quoted string
+ *
+ * @param s The string to be unquoted
+ */
+rm_quote (char *s)
+{
+  char buff[256];
+  int a;
+  int b = 0;
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] != '"')
+	{
+	  buff[b++] = s[a];
+	}
+    }
+  for (a = strlen (buff) - 1; a >= 0; a--)
+    {
+      if (buff[a] == '.')
+	{
+	  buff[a] = 0;
+	  break;
+	}
+    }
+  strcpy (s, buff);
+}
+
+/**
+ * Read and parse the globals file (if found).
+ *
+ * @param fname The globals file name
+ */
 read_globals (char *fname)
 {
   char a[128];
@@ -176,30 +225,13 @@ read_globals (char *fname)
   return 0;
 }
 
-rm_quote (char *s)
-{
-  char buff[256];
-  int a;
-  int b = 0;
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] != '"')
-	{
-	  buff[b++] = s[a];
-	}
-    }
-  for (a = strlen (buff) - 1; a >= 0; a--)
-    {
-      if (buff[a] == '.')
-	{
-	  buff[a] = 0;
-	  break;
-	}
-    }
-  strcpy (s, buff);
-}
 
 
+/**
+ * Remove the quotes from a quoted string.
+ *
+ * @param s The string to be unquoted
+ */
 rm_quotes (char *s)
 {
   char buff[256];
@@ -216,6 +248,15 @@ rm_quotes (char *s)
 }
 
 extern long fpos;
+
+
+/**
+ * Treatment of an error ocurred in the parsing.
+ *
+ * It makes the proper treatment of an syntax error ocurred during the parsing
+ *
+ * @param s The string that contains the error
+ */
 yyerror (s)
      char *s;
 {
@@ -242,15 +283,29 @@ yyerror (s)
   exit (2);
 }
 
-adderr (s, p, q)
-     char *s;
-     char *p;
-     char *q;
+/**
+ *  Adds the parameters to the error buffer in the assigned with yyerror.
+ *
+ *  The purpose is to using sprintf with fixed number of parameters.
+ *  I Think that this only exists until we start using varargs.
+ *
+ * @param s The first parameter
+ * @param p The second parameter
+ * @param q The tird parameter
+ */
+adderr (char *s, char *p, char *q)
 {
   sprintf (errbuff, s, p, q);
 }
 
 
+/**
+ * Inform if we are just parsing the globals
+ *
+ * @return 
+ *   - 1 : if we are just doing globals
+ *   - 0 : otherwise
+ */
 only_doing_globals ()
 {
   if (globals_only)

@@ -1,12 +1,22 @@
-/******************************************************************************
+
+/**
+ * It looks like function to help the parsing of a module (a x4gl one). 
+ * For that the name mod.c
+ *
+ */
+
+/*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.27 2001-11-27 14:01:03 saferreira Exp $
+* $Id: mod.c,v 1.28 2001-11-27 20:48:24 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.27  2001/11/27 14:01:03  saferreira
+*	Removed old code inside #ifdefs
+*	
 *	Revision 1.26  2001/11/25 15:29:30  mikeaubury
 *	General updates
 *	
@@ -251,7 +261,6 @@ char curr_rep_name[256];
 int curr_rep_block;
 char *upshift (char *a);
 char *downshift (char *a);
-int findex (char *str, char c);
 
 int max_menu_no = 0;
 
@@ -307,10 +316,6 @@ int obindcnt = 0;
 
 int fbindcnt = 0;
 
-//int printc (char *fmt, ...);
-
-char *rettype (char *s);
-
 #define MAXVARS 2000
 
 
@@ -360,9 +365,12 @@ int in_record = 0;
 
 struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
 
-
-static char *
-print (char *z)
+/**
+ *
+ * @param z
+ * @return
+ */
+static char *print (char *z)
 {
 
   static char c[10] = "(null)";
@@ -376,8 +384,30 @@ print (char *z)
 
 }
 
-char *
-with_strip_bracket (char *buff)
+static strip_bracket (char *s)
+{
+  char buff[256];
+  int a;
+  int c = 0;
+  int f = 0;
+  //debug ("Stripping brackets from %s ", s);
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] == '[')
+	f++;
+      if (f == 0)
+	buff[c++] = s[a];
+      if (s[a] == ']')
+	f--;
+    }
+  strcpy (s, buff);
+  //debug ("-->%s ", s);
+}
+
+/**
+ * @param buff
+ */
+char *with_strip_bracket (char *buff)
 {
   static char bff[256];
   debug ("In with_strip_bracket\n");
@@ -386,6 +416,13 @@ with_strip_bracket (char *buff)
   return bff;
 }
 
+/**
+ * Adds a new variable found by the parser to the variable array
+ *
+ * @param name The variable name
+ * @param type The data type of the variable
+ * @paran n
+ */
 add_variable (char *name, char *type, char *n)
 {
 
@@ -458,6 +495,46 @@ inmod ()
 
   modlevel = varcnt;
 
+}
+
+static void dump_gvars(void)
+{
+
+  FILE *f;
+  int a;
+  char ii[64];
+  strcpy (ii, outputfilename);
+  strcat (ii, ".glb");
+  f = mja_fopen (ii, "w");
+
+  if (f == 0)
+    {
+      fprintf (stderr, "Couldnt open output file %s\n", ii);
+      exit (0);
+    }
+
+  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
+
+  for (a = 0; a < varcnt; a++)
+    {
+      fprintf (f, "%s %s %s %s %s %s %d\n",
+	       vars[a].var_name,
+	       vars[a].var_type,
+	       vars[a].var_size,
+	       vars[a].var_arrsize,
+	       vars[a].tabname, vars[a].pklist, vars[a].level);
+
+    }
+  fprintf (f, "***CONSTANTS***\n");
+
+  for (a = 0; a < const_cnt; a++)
+    {
+      if (const_arr[a].scope == 'g')
+	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
+		 const_arr[a].ptr);
+    }
+
+  fclose (f);
 }
 
 print_variables (int z)
@@ -635,6 +712,32 @@ pop_record ()
 
 }
 
+static isin_command (char *cmd_type)
+{
+
+  int z;
+  //printf ("Check for %s %d \n", cmd_type, ccnt);
+  if (ccnt == 0)
+    {
+      //printf ("Stack is empty\n");
+      return 0;
+    }
+
+  for (z = ccnt - 1; z >= 0; z--)
+    {
+
+      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
+	continue;
+
+      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
+	{
+	  debug ("OK\n");
+	  return 1;
+	}
+
+    }
+  return 0;
+}
 print_variable (int z, char ff)
 {
   char tmpbuff[80];
@@ -838,6 +941,17 @@ scan_variable (char *s)
       a = scan_variables (buff, 1);
     }
   return a;
+}
+
+static findex (char *str, char c)
+{
+  int a;
+  for (a = 0; a < strlen (str); a++)
+    {
+      if (str[a] == c)
+	return a;
+    }
+  return 0;
 }
 
 long
@@ -1240,6 +1354,11 @@ set_4gl_vars ()
   var_hdr_finished = varcnt;
 }
 
+/**
+ * Open a database.
+ *
+ * @param s The database name
+ */
 open_db (char *s)
 {
 
@@ -1266,6 +1385,47 @@ push_like (char *t)
   debug ("<<<<<<\n");
 }
 
+static char *rettype (char *s)
+{
+  static char rs[20] = "long";
+  debug ("In rettype : %s", s);
+
+  if (strcmp (s, "0") == 0)
+    strcpy (rs, "char");
+
+  if (strcmp (s, "1") == 0)
+    strcpy (rs, "short");
+
+  if (strcmp (s, "2") == 0)
+    strcpy (rs, "long");
+
+  if (strcmp (s, "3") == 0)
+    strcpy (rs, "double");
+
+  if (strcmp (s, "4") == 0)
+    strcpy (rs, "float");
+
+  if (strcmp (s, "5") == 0)
+    strcpy (rs, "fgldecimal");
+
+  if (strcmp (s, "6") == 0)
+    strcpy (rs, "long");
+
+  if (strcmp (s, "7") == 0)
+    strcpy (rs, "fgldate");
+
+  if (strcmp (s, "8") == 0)
+    strcpy (rs, "fglmoney");
+
+  if (strcmp (s, "11") == 0)
+    strcpy (rs, "fglbyte");
+  if (strcmp (s, "12") == 0)
+    strcpy (rs, "fgltext");
+  if (strcmp (s, "13") == 0)
+    strcpy (rs, "char");
+
+  return rs;
+}
 push_like2 (char *t2)
 {
   char buff[300];
@@ -1354,6 +1514,14 @@ push_rectab (char *t)
 
 }
 
+/**
+ * Dumps the contents of all of the array variable to a file named dumpvars.out.
+ *
+ * It only does this action if environment variable DUMPVARS is assigned.
+ *
+ * It is mainly used to debug the code generation
+ *
+ */
 dump_vars ()
 {
 
@@ -1382,11 +1550,16 @@ dump_vars ()
 
 }
 
+/**
+ * Insert a new menu title in the menu titles array.
+ *
+ * The parser have found a new menu.
+ *
+ * @param s The title of the menu
+ */
 push_menu_title (char *s)
 {
-
   strcpy (mmtitle[menu_cnt], s);
-
 }
 
 push_blockcommand (char *cmd_type)
@@ -1513,78 +1686,9 @@ in_command (char *cmd_type)
   return 0;
 }
 
-isin_command (char *cmd_type)
-{
 
-  int z;
-  //printf ("Check for %s %d \n", cmd_type, ccnt);
-  if (ccnt == 0)
-    {
-      //printf ("Stack is empty\n");
-      return 0;
-    }
 
-  for (z = ccnt - 1; z >= 0; z--)
-    {
-
-      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-	continue;
-
-      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
-	{
-	  debug ("OK\n");
-	  return 1;
-	}
-
-    }
-  return 0;
-}
-
-char *
-rettype (char *s)
-{
-  static char rs[20] = "long";
-  debug ("In rettype : %s", s);
-
-  if (strcmp (s, "0") == 0)
-    strcpy (rs, "char");
-
-  if (strcmp (s, "1") == 0)
-    strcpy (rs, "short");
-
-  if (strcmp (s, "2") == 0)
-    strcpy (rs, "long");
-
-  if (strcmp (s, "3") == 0)
-    strcpy (rs, "double");
-
-  if (strcmp (s, "4") == 0)
-    strcpy (rs, "float");
-
-  if (strcmp (s, "5") == 0)
-    strcpy (rs, "fgldecimal");
-
-  if (strcmp (s, "6") == 0)
-    strcpy (rs, "long");
-
-  if (strcmp (s, "7") == 0)
-    strcpy (rs, "fgldate");
-
-  if (strcmp (s, "8") == 0)
-    strcpy (rs, "fglmoney");
-
-  if (strcmp (s, "11") == 0)
-    strcpy (rs, "fglbyte");
-  if (strcmp (s, "12") == 0)
-    strcpy (rs, "fgltext");
-  if (strcmp (s, "13") == 0)
-    strcpy (rs, "char");
-
-  return rs;
-}
-
-static
-trim (char *s)
+static trim (char *s)
 {
   if (s[strlen (s) - 1] == '\n')
     s[strlen (s) - 1] = 0;
@@ -1602,8 +1706,10 @@ push_gen (int a, char *s)
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
 }
 
-char *
-pop_gen (int a)
+/**
+ * Not used
+ */
+static char *pop_gen (int a)
 {
   gen_stack_cnt[a]--;
   gen_stack[a][gen_stack_cnt[a]];
@@ -1621,8 +1727,10 @@ pop_all_gen (int a, char *s)
 }
 
 
-
-yyerrorf (char *fmt, ...)
+/**
+ * Not used
+ */
+static yyerrorf (char *fmt, ...)
 {
   char buff[256];
   va_list args;
@@ -1631,26 +1739,6 @@ yyerrorf (char *fmt, ...)
   yyerror (buff);
 }
 
-
-strip_bracket (char *s)
-{
-  char buff[256];
-  int a;
-  int c = 0;
-  int f = 0;
-  //debug ("Stripping brackets from %s ", s);
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == '[')
-	f++;
-      if (f == 0)
-	buff[c++] = s[a];
-      if (s[a] == ']')
-	f--;
-    }
-  strcpy (s, buff);
-  //debug ("-->%s ", s);
-}
 
 start_bind (char i, char *var)
 {
@@ -2009,8 +2097,7 @@ colour_code (int a)
 }
 
 
-static
-bname (char *str, char *str1, char *str2)
+static bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -2032,7 +2119,10 @@ bname (char *str, char *str1, char *str2)
     str2[0] = 0;
 }
 
-get_single_key (char *s)
+/**
+ * Not Used
+ */
+static get_single_key (char *s)
 {
   char buff[2];
   s[0] = s[1];
@@ -2044,8 +2134,16 @@ set_mod_level (int a)
   modlevel = a;
 }
 
-long
-get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
+static matoi (char *s)
+{
+  int a;
+  if (s == 0)
+    return 0;
+  a = atoi (s);
+  return a;
+}
+
+long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
 		   char *arr)
 {
   int a;
@@ -2094,19 +2192,7 @@ get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
   return -1;
 }
 
-matoi (char *s)
-{
-  int a;
-  if (s == 0)
-    return 0;
-  a = atoi (s);
-  return a;
-}
-
-//char *
-
-int
-push_bind_rec (char *s, char bindtype)
+int push_bind_rec (char *s, char bindtype)
 {
   int a;
   long z;
@@ -2296,12 +2382,14 @@ set_counter (int a)
 {
   counters[count_counters] = a;
 }
+
 inc_counter_by (int a)
 {
   counters[count_counters] += a;
   debug ("/* inc_by =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
 }
+
 dec_counter_by (int a)
 {
   counters[count_counters] -= a;
@@ -2412,8 +2500,7 @@ reset_constr ()
 }
 
 
-char *
-convstrsql (char *s)
+char *convstrsql (char *s)
 {
   static char buff[1024];
   int a;
@@ -2446,45 +2533,6 @@ convstrsql (char *s)
 }
 
 
-dump_gvars ()
-{
-
-  FILE *f;
-  int a;
-  char ii[64];
-  strcpy (ii, outputfilename);
-  strcat (ii, ".glb");
-  f = mja_fopen (ii, "w");
-
-  if (f == 0)
-    {
-      fprintf (stderr, "Couldnt open output file %s\n", ii);
-      exit (0);
-    }
-
-  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
-
-  for (a = 0; a < varcnt; a++)
-    {
-      fprintf (f, "%s %s %s %s %s %s %d\n",
-	       vars[a].var_name,
-	       vars[a].var_type,
-	       vars[a].var_size,
-	       vars[a].var_arrsize,
-	       vars[a].tabname, vars[a].pklist, vars[a].level);
-
-    }
-  fprintf (f, "***CONSTANTS***\n");
-
-  for (a = 0; a < const_cnt; a++)
-    {
-      if (const_arr[a].scope == 'g')
-	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
-		 const_arr[a].ptr);
-    }
-
-  fclose (f);
-}
 
 read_glob (char *s)
 {
@@ -2581,8 +2629,7 @@ read_glob (char *s)
   fclose (f);
 }
 
-char *
-upshift (char *a)
+char *upshift (char *a)
 {
   int i;
   static char buff[256];
@@ -2594,8 +2641,7 @@ upshift (char *a)
   return buff;
 }
 
-char *
-downshift (char *a)
+char *downshift (char *a)
 {
   int i;
   static char buff[256];
@@ -2607,16 +2653,6 @@ downshift (char *a)
   return buff;
 }
 
-findex (char *str, char c)
-{
-  int a;
-  for (a = 0; a < strlen (str); a++)
-    {
-      if (str[a] == c)
-	return a;
-    }
-  return 0;
-}
 
 add_report_agg (char t, char *s1, char *s2, int a)
 {
@@ -3237,121 +3273,7 @@ generate_globals_for (char *s)
 }
 
 
-
-
-
-
-int
-print_push_rec_old_delete_me (char *s, char *b)
-{
-  int a;
-  long z;
-  char buff[256];
-  int cnt = 0;
-  char bb[256];
-  char buffer[30000] = "";
-  char buffer2[30000];
-  char nbuff[30000];
-  char *ptr;
-  int lvf;
-  int lvl = 0;
-  debug ("/* pushing record  '%s' '%s' */\n", s, b);
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-
-  scan_variable (s);
-
-  if (last_var_found == -1)
-    {
-      yyerror ("Record or structure not defined");
-    }
-  lvf = last_var_found;
-
-  debug ("last_var_found=%d", lvf);
-
-  strcpy (buff, s);
-  strcat (buff, ".");
-  strcpy (bb, "");
-  ptr = strtok (buff, ".");
-
-
-  for (a = lvf; a < varcnt; a++)
-    {
-      debug ("a=%d ptr=%s vars[a].var_name=%s", a, ptr, vars[a].var_name);
-      if (ptr == 0)
-	{
-	  debug ("ptr=%s buff=%s", ptr, buff);
-	  yyerror ("Record structure is too complex for use here");
-	}
-      debug ("Check %s %s\n", vars[a].var_name, ptr);
-
-      if (
-	  (strcmp (ptr, "*") == 0
-	   || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0)
-	  && vars[a].level == lvl)
-	{
-	  debug (".* bit");
-	  if (ptr[0] != '*')
-	    {
-	      debug ("not .*");
-	      strcat (bb, ptr);
-	      strcat (bb, ".");
-	      ptr = strtok (0, ".");
-	    }
-	  else
-	    {
-	      debug (".*");
-	      cnt = 0;
-	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
-		{
-		  debug ("Print var at %d \n", a);
-		  z =
-		    find_type (vars[a].var_type) +
-		    (atoi (vars[a].var_size) << 16);
-		  debug ("z=%d\n", z);
-		  if (z != -2)
-		    {
-		      strcpy (buffer2, buffer);
-		      sprintf (buffer, "%s push_variable(&%s%s,0x%x);\n",
-			       buffer2, bb, vars[a].var_name, z);
-		      a++;
-		      cnt++;
-		    }
-		  else
-		    {
-		      int c;
-		      char nvar[256];
-		      strcpy (buffer2, buffer);
-		      sprintf (nvar, "%s%s.*", bb, vars[a].var_name);
-		      debug ("recursing with %s\n", nvar);
-		      c = print_push_rec (nvar, nbuff);
-		      sprintf (buffer, "%s %s\n", buffer2, nbuff);
-		      debug ("print_push_rec returns %d for %s\n",
-			     print_push_rec, nvar);
-		      cnt += c;
-		      a += c;
-		      a++;
-		    }
-		}
-	      debug ("/* Returning %d */", cnt);
-	      strcpy (b, buffer);
-	      return cnt;
-	    }
-
-	  lvl++;
-
-	}
-
-    }
-  return -1;
-}
-
-
-
-int
-print_push_rec (char *s, char *b)
+int print_push_rec (char *s, char *b)
 {
   int a;
   long z;
@@ -3489,8 +3411,7 @@ expand_bind (struct binding * bind, int btype, int cnt)
 }
 
 
-char *
-get_var_name (int z)
+char *get_var_name (int z)
 {
   return vars[z].var_name;
 }

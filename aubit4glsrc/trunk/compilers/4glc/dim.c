@@ -1,3 +1,7 @@
+/**
+ * Implements stack functions for helping in the parsing.
+ */
+
 #include <strings.h>
 #include <string.h>
 #include "../../lib/libincl/debug.h"
@@ -30,7 +34,15 @@ struct s_dimentry **dims = 0;
 int dimcnt = -1;
 int dimalloc = 0;
 
-dim_add (int a, char *s1, char *s2, char *s3)
+/**
+ * Adds a new item to the list
+ *
+ * @param a
+ * @param s1
+ * @param s2
+ * @param s3
+ */
+static dim_add (int a, char *s1, char *s2, char *s3)
 {
   char *ptr1;
   char *ptr2;
@@ -116,6 +128,12 @@ dim_add (int a, char *s1, char *s2, char *s3)
   debug ("all done\n");
 }
 
+/**
+ * Pushes a name to the stack
+ *
+ * @param a
+ * @param b
+ */
 dim_push_name (char *a, char *b)
 {
   dim_add (PUSH_NAME, a, b, 0);
@@ -162,24 +180,7 @@ dim_set_name (char *a)
   dim_add (SETNAME, a, 0, 0);
 }
 
-
-push_dim (char *a)
-{
-  int cnt;
-  for (cnt = 0; cnt <= dimcnt; cnt++)
-    {
-      if (strcmp (dims[cnt]->dimname, a) == 0)
-	{
-	  push_dim_records (cnt);
-	  return;
-	}
-    }
-
-  yyerror ("Unknown type");
-  return;
-}
-
-push_dim_records (int cnt)
+static void push_dim_records (int cnt)
 {
   int a;
   struct s_dimitem *ptr;
@@ -218,8 +219,24 @@ push_dim_records (int cnt)
     }
 }
 
+push_dim (char *a)
+{
+  int cnt;
+  for (cnt = 0; cnt <= dimcnt; cnt++)
+    {
+      if (strcmp (dims[cnt]->dimname, a) == 0)
+	{
+	  push_dim_records (cnt);
+	  return;
+	}
+    }
 
-split_pk_list (char *s, int mode)
+  yyerror ("Unknown type");
+  return;
+}
+
+
+static void split_pk_list (char *s, int mode)
 {
   char buff[1024];
   int a;
