@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.1 2003-10-10 06:55:22 mikeaubury Exp $
+# $Id: giarray.c,v 1.2 2003-10-10 09:27:37 afalout Exp $
 #*/
 
 /**
@@ -101,6 +101,11 @@ static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 
 static int A4GL_set_fields_inp_arr (void *vsio, int n);
 void set_current_field(void *ignore,GtkWidget *w) ;
+
+//dll_export 
+int A4GL_req_field_input_array (void *arrv, char type, va_list * ap);
+
+
 /*
 =====================================================================
                     Functions definitions

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.15 2003-10-10 08:50:33 mikeaubury Exp $
+# $Id: widget.c,v 1.16 2003-10-10 09:27:37 afalout Exp $
 #*/
 
 /**
@@ -526,9 +526,6 @@ int get_widget_next_size() {
         return widget_next_size;
 }
 
-char *field_buffer(GtkWidget *w,int n) {
-return A4GL_fld_val_generic (w);
-}
 
 #if GTK_CHECK_VERSION(2,0,0)
 void A4GL_ChangeWidgetFont(GtkLabel *label,char *font) {
@@ -553,5 +550,69 @@ A4GL_debug("A4GL_ChangeWidgetFont");
 }
 
 #endif
+
+char *
+field_buffer(GtkWidget *w,int n)
+{
+	// Not implemented yet..
+	return A4GL_fld_val_generic (w);
+}
+
+/*
+A4GL_set_field_attr_with_attr
+A4GL_set_field_attr_with_attr_already_determined
+A4GL_req_field_input_array
+A4GL_field_name_match
+A4GL_clr_field
+A4GL_get_curr_border
+A4GL_get_metric_for
+
+
+gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libUI_G
+TK.dll assist.o cr_funcs.o color.o display.o dialog.o d2.o disp_arr.o error.o fi
+elds.o frm.o get_fld_val.o gtk_4gl.o giarray.o handler.o input.o menu.o prompt.o
+ params.o signals.o window.o widget.o -LD:/cygwin/usr/lib   -ID:/cygwin/lib/glib
+-2.0/include -ID:/cygwin/lib/gtk-2.0/include  -LD:/cygwin/lib -L../.. -laubit4gl
+ -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpangowin32-1.0 -lg
+di32 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl-1 -liconv
+Info: resolving _a4gl_status by linking to __imp__a4gl_status (auto-import)
+Info: resolving _ui_mode by linking to __imp__ui_mode (auto-import)
+Info: resolving _a4gl_sqlca by linking to __imp__a4gl_sqlca (auto-import)
+Info: resolving _m_lastkey by linking to __imp__m_lastkey (auto-import)
+Info: resolving _abort_pressed by linking to __imp__abort_pressed (auto-import)
+Info: resolving _int_flag by linking to __imp__int_flag (auto-import)
+Creating library file: TMP.dll.a
+giarray.o: In function `process_control_stack':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:2442: undefined r
+eference to `A4GL_set_field_attr_with_attr'
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:2188: undefined r
+eference to `A4GL_set_field_attr_with_attr'
+giarray.o: In function `A4GL_iarr_arr_fields':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:2561: undefined r
+eference to `A4GL_set_field_attr_with_attr_already_determined'
+giarray.o: In function `A4GL_req_field_input_array':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:2640: undefined r
+eference to `A4GL_field_name_match'
+giarray.o: In function `A4GL_form_field_chk_iarr':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:2848: undefined r
+eference to `A4GL_clr_field'
+giarray.o: In function `A4GL_decode_line_ib':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:3224: undefined r
+eference to `A4GL_get_curr_border'
+giarray.o: In function `A4GL_copy_field_data':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:3378: undefined r
+eference to `A4GL_get_metric_for'
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:3380: undefined r
+eference to `A4GL_get_metric_for'
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/giarray.c:3422: undefined r
+eference to `A4GL_clr_field'
+make: *** [../../libUI_GTK.dll] Error 1
+
+
+
+gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libUI_GTK.dll assist.o cr_funcs.o color.o display.o dialog.o d2.o disp_arr.o error.o fields.o frm.o get_fld_val.o gtk_4gl.o giarray.o handler.o input.o menu.o prompt.o params.o signals.o window.o widget.o -LD:/cygwin/usr/lib   -ID:/cygwin/lib/glib-2.0/include -ID:/cygwin/lib/gtk-2.0/include  -LD:/cygwin/lib -L../.. -laubit4gl -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpangowin32-1.0 -lgdi32 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl-1 -liconv
+*/
+
+
 
 /* ============================== EOF =============================== */

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2003-04-25 15:23:22 mikeaubury Exp $
+# $Id: Makefile.in,v 1.15 2003-10-10 09:27:37 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -112,13 +112,14 @@ ALLOBJ= \
 	display.o dialog.o d2.o disp_arr.o \
 	error.o \
 	fields.o frm.o \
-	get_fld_val.o gtk_4gl.o \
+	get_fld_val.o gtk_4gl.o giarray.o \
 	handler.o \
 	input.o \
 	menu.o \
 	prompt.o params.o \
 	signals.o \
 	window.o widget.o
+
 
 ## ==================================================================
 ##                              Targets
