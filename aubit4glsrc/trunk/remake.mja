@@ -23,3 +23,6 @@ sh make_simple
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cp lib/*.so /home/aubit4gl/aubit4gl/lib
 cp incl/*.h /home/aubit4gl/aubit4gl/incl
+
+cd /home/aubit4gl/sourceforge/tools/afinderr
+make
