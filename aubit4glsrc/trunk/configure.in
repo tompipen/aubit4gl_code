@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.102 2002-09-25 05:41:52 afalout Exp $
+# $Id: configure.in,v 1.103 2002-09-25 07:01:08 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2435,7 +2435,7 @@ AC_CHECK_LIB([check], [suite_create])
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
-	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h search.h dlfcn.h])
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h search.h])
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
     #FIXME: stop if no search.h
@@ -2447,12 +2447,25 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#cp /usr/ports/libedit/libedit/search.h /usr/include/search.h
 
 
-    #FIXME: stop if no dlfcn.h
-	#libdl: Aubit loads plugins using the dlopen() interface (except on HP-UX). 
-	#This is not the OS X way, but Apple has supplied the dlcompat library to 
-	#simulate this interface. This library and its header file dlfcn.h are 
-	#required for Aubit to compile.
+	AC_CHECK_HEADERS([dlfcn.h])
+	if test `eval echo '${'$as_ac_Header'}'` != yes; then
+	#if test "$HAVE_DLFCN_H" != "1"; then
+		#libdl: Aubit loads plugins using the dlopen() interface (except on HP-UX).
+		#This is not the OS X way, but Apple has supplied the dlcompat library to
+		#simulate this interface. This library and its header file dlfcn.h are
+		#required for Aubit to compile.
 
+        #/sw/include/dlfcn.h
+        old_CLFAGS="$CFLAGS"
+        TMP_IFLAGS="-I/sw/include"
+		CFLAGS="$CFLAGS $TMP_IFLAGS"
+		AC_CHECK_HEADERS([dlfcn.h])
+
+		if test `eval echo '${'$as_ac_Header'}'` != yes; then
+			CFLAGS="$old_CFLAGS"
+			AC_MSG_ERROR(No dlfnc.h found - please install dl library. Stop.)
+        fi
+    fi
 fi
 
 ## ==================================================================
