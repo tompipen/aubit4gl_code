@@ -1,6 +1,6 @@
 export A4GL_KEYFILE=keys.in
 export A4GL_TRIMDUMP=24x80
-export A4GL_KEYDELAY=200000
+export A4GL_KEYDELAY=20000
 
 #olines=$LINES
 #ocolumns=$COLUMNS

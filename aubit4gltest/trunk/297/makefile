@@ -82,13 +82,13 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
+	#${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-#	${DEFAULT_DIFF}
+	#${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
-#	${DEFAULT_DUMP_DIFF}
+	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -109,14 +109,14 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Test for core dump when opening a cursor"
+	@echo "Tests the implementation of the time function"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -183,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -211,6 +211,6 @@ need_ifx_version:
 #If database this test runs against MUST NOT have transactions support, set to "2"
 #"0" means "don't care"
 transaction:
-	@echo "1"
+	@echo "0"
 	
 # ============================= EOF ================================

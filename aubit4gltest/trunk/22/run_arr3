@@ -1,6 +1,6 @@
 export A4GL_TRIMDUMP=24x80
 export A4GL_KEYFILE=keys.in
-export A4GL_KEYDELAY=100000
+export A4GL_KEYDELAY=10000
 
 $DBG ./arr3.4ae 
 if [ $? = 0 ]
