@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.13 2001-12-03 04:55:40 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.14 2002-04-24 08:12:21 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -21,7 +21,7 @@ else
 	SH=sh
 endif
 
-A4GL_CLEAN_FLAGS = *.ao *.bak *.h *.err *.glb *.hlp *.4ae
+A4GL_CLEAN_FLAGS = *.ao *.bak *.h *.err *.glb *.hlp *.4ae *.afr
 
 #C code to objects
 AUCC=gcc

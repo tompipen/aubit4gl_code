@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2002-03-31 07:05:32 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-04-24 08:12:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -43,4 +43,5 @@ adbload.4ae:
 
 clean:
 	rm -f *.err *.bak *.c *.h *.4ge *.4ae core *.out *.glb
+
 

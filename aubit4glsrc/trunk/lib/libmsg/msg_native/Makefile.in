@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
+# | Aubit 4gl Language Compiler Version $.0   libMSG_NATIVE makefile	 |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -22,138 +22,81 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
+
 #
-# $Id: Makefile.in,v 1.3 2002-04-24 08:12:21 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-04-24 08:12:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
-
-
-## ==================================================================
-##                      Settings
-## ==================================================================
-
-.SUFFIXES :
-.SUFFIXES : .4ge .a .o .4gl .ec .c .frm .per .arc .ace .exe .msg
-.SUFFIXES:  .4go .src .hlp
-
-#if not .IGNORE then test can't be used
-#.IGNORE :
-
-INFORMIXBIN 	=$(INFORMIXDIR)/bin
-C4GL 			= $(INFORMIXBIN)/c4gl
-CFORM			= form4gl
-CFLAGS 			= -O
-LIBS 			=
-MAKEFLAGS 		=""
+include ../../../incl/Makefile-common
+override NOINCL=0
 
 ## ==================================================================
-##                        Source and object files
+##                              Source files
 ## ==================================================================
 
-FILES.4gl 	=coxxc04.4gl coxxq01.4gl coxxx03.4gl misql.4gl
-
-FILES.per 	=misql.per coxxq01a.per coxxq01b.per coxxq01c.per \
-			coxxq01d.per coxxq01e.per coxxq01f.per coxxq01g.per \
-			coxxq01h.per coxxq01i.per coxxq01j.per
-
-FILES.ao    =${FILES.4gl:.4gl=.ao}
-FILES.afr   =${FILES.per:.per=.afr}
-BINS4GE 	=${FILES.4gl:.4gl=.o}
-BINS4GI 	=${FILES.4gl:.4gl=.4go}
-FORMS.frm	=${FILES.per:.per=.frm}
+#FIXME: extract writing functions from compilers/helpcpmpile/mkmess.c
+#and create writemsg.c
+CMODS 				=readmsg.c
+OBJS				=${CMODS:.c=.o}
 
 ## ==================================================================
-##                        Targets
+##                              Options
 ## ==================================================================
 
-all:
-	@echo "specify target: misql.4ge misql.4gi or misql.4ae"
-
-#Informix-4gl C-code
-misql.4ge: $(BINS4GE) ${FORMS.frm}
-	$(C4GL) $(CFLAGS) -o $@  $(BINS4GE)
-
-#Informix-4gl P-code
-misql.4gi: $(BINS4GI) ${FORMS.frm}
-	cat $(BINS4GI) > $@
-
-#Informix-4gl forms:
-forms: ${FORMS.frm}
-
-
-
-misql.4ae: ${FILES.ao} ${FILES.afr}
-#	4glpc coxxc04.4gl -c -o coxxc04.ao
-#	4glpc coxxq01.4gl -c -o coxxq01.ao
-#	4glpc coxxx03.4gl -c -o coxxx03.ao
-#	4glpc misql.4gl -c -o misql.ao
-#	4glpc *.per ${FILES.ao} -o misql.4ae
-	4glpc ${FILES.ao} -o $@
-
-amake:
-	amake misql.mk
+#CFLAGS				+=-I../../../compilers/fcompile -I../../libincl -I..
+ALL = libMSG_NATIVE.so
 
 ## ==================================================================
-##                        Clean
+##                              Targets
 ## ==================================================================
 
-clean:
-	rm -f *.ao *.h *.c *.glb *.4ae *.frm *.4go *.4ge *.4gi *.o *.bak *.err *.afr
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
 
-
-## ==================================================================
-##                        Aubit
-## ==================================================================
-
-.4gl.ao:
-	4glpc $< -c -o $@
-
-.per.afr:
-	fcompile $<
-
-%.afr:
-	fcompile $*.per
-
+libMSG_NATIVE.so : ${OBJS}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
 
 ## ==================================================================
-##                        Informix targets Rules
+##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.4gl.o:
-	cd $(<D); $(C4GL) $(CFLAGS) -c $(<F); rm -f $(*F).ec $(*F).c
+.PHONY : dllFORM_XDR
+dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
+	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/fcompile -I../incl"
+	${CP} libFORM_XDR.dll ../..
 
-.c.o:
-	cd $(<D);$(C4GL) $(CFLAGS) -c $(<F)
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
 
-.4gl.4ge:
-	cd $(<D); $(C4GL) $(CFLAGS) -o $@ $(<F); rm -f $(*F).ec $(*F).c
+ci: $(CMODS)
+	ci -l  $^
 
-.o.4ge:
-	$(C4GL) $(CFLAGS) -o $@ $<
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} $(OBJS) core *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll \
+	*.stackdump *.err *.base *.exp
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
 
 
-.c.a:
-	$(C4GL) $(CFLAGS) -c $<
-	ar rv $@ $*.o; rm -f $*.o
-	ranlib $@
 
-.ec.o:
-	$(C4GL) $(CFLAGS) -c $<; rm $(*F).ec $(*F).c
 
-.ec.4ge:
-	$(C4GL) $(CFLAGS) -o $(@) $<
-	rm -f $*.c
 
-.ace.arc:
-	cd $(<D); $(INFORMIXBIN)/saceprep $<
-
-.msg.exe:
-	$(INFORMIXBIN)/mkmessage $(*F).msg  $(*F).exe
-
-.4gl.4go:
-	$(INFORMIXDIR)/bin/fglpc $<
-
-.per.frm:
-	$(INFORMIXDIR)/bin/form4gl -q $<

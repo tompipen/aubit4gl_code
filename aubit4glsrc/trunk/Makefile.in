@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.60 2002-04-23 07:00:38 afalout Exp $
+# $Id: Makefile.in,v 1.61 2002-04-24 08:12:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -406,6 +406,10 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) -C tools/ide clean
 	$(MAKE) -C tools/html clean
 	$(MAKE) -C tools/jabber clean
+	$(MAKE) -C tools/adbaccess clean
+	$(MAKE) -C tools/adbload clean
+	$(MAKE) -C tools/odbctest clean
+	${RM} lib/swig/lib_wrap.doc
 	@echo Aubit 4gl compiler source tree is now clean
 
 clean.config: clean.configure
