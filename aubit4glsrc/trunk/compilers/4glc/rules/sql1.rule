@@ -135,9 +135,9 @@ fetch_place :
 	| CURRENT
 		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
 	| RELATIVE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE);}
 	| ABSOLUTE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE);}
 ;
 
 
