@@ -51,7 +51,7 @@ static char read_char ()
   char n;
   fread (&n, sizeof (n), 1, fin);
 	if (!isprint((int)n)) {
-		printf("Suspect read_char (%d %x %c)\n",n,n,n);
+		if (debug) printf("Suspect read_char (%d %x %c)\n",n,n,n);
 	}
 
   return n;
