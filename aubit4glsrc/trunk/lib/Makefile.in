@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.83 2003-02-25 04:15:35 afalout Exp $
+# $Id: Makefile.in,v 1.84 2003-03-09 07:26:47 afalout Exp $
 #
 
 ROOT    =..
@@ -47,6 +47,8 @@ include ${ROOT}/incl/Makefile-common
 
 #target names are maintained in configure.in
 ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
+
+ALL_H   =$(wildcard ${ROOT}/incl/*.h)
 
 LIBAUBIT4GL_PATH    =libaubit4gl
 LIBSQLODBC_PATH     =libsql/odbc
@@ -90,72 +92,74 @@ AUBITCONFIG_PATH	=resource
 #FIXME: do this for all libraries in this make file
 LIBAUBIT4GL_DEPS	=$(wildcard ${LIBAUBIT4GL_PATH}/*.c) $(wildcard ${LIBAUBIT4GL_PATH}/*.h) \
 					$(wildcard ${LIBAUBIT4GL_PATH}/*.spec) $(wildcard ${LIBAUBIT4GL_PATH}/Makefile) \
-                    ${AUBITCONFIG_PATH}/resource.c
-AUBITCONFIG_DEPS	=$(wildcard ${LIBRPCSUNRPC_PATH}/*.c) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
-LIBDATA_DEPS		=$(wildcard ${LIBRPCSUNRPC_PATH}/*.x) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
+                    ${AUBITCONFIG_PATH}/resource.c ${ALL_H}
+
+AUBITCONFIG_DEPS	=$(wildcard ${AUBITCONFIG_PATH}/*.c) $(wildcard ${AUBITCONFIG_PATH}/Makefile) ${ALL_H}
+
+LIBDATA_DEPS		=$(wildcard ${LIBRPCSUNRPC_PATH}/*.x) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile) ${ALL_H}
 LIBMSGNATIVE_DEPS	=$(wildcard ${LIBMSGNATIVE_PATH}/*.c) $(wildcard ${LIBMSGNATIVE_PATH}/*.h) \
-					$(wildcard ${LIBMSGNATIVE_PATH}/Makefile)
+					$(wildcard ${LIBMSGNATIVE_PATH}/Makefile) ${ALL_H}
 LIBIMJABBER_DEPS	=$(wildcard ${LIBIMJABBER_PATH}/*.c) $(wildcard ${LIBIMJABBER_PATH}/*.h) \
-					$(wildcard ${LIBIMJABBER_PATH}/Makefile) $(wildcard ${LIBIMJABBER_PATH}/*.4gl)
-LOADMAP_DEPS		=$(wildcard ${LOADMAP_PATH}/Makefile) $(wildcard ${LOADMAP_PATH}/*.4gl)
+					$(wildcard ${LIBIMJABBER_PATH}/Makefile) $(wildcard ${LIBIMJABBER_PATH}/*.4gl) ${ALL_H}
+LOADMAP_DEPS		=$(wildcard ${LOADMAP_PATH}/Makefile) $(wildcard ${LOADMAP_PATH}/*.4gl) ${ALL_H}
 LIBRPCSUNRPC_DEPS	=$(wildcard ${LIBRPCSUNRPC_PATH}/*.c) $(wildcard ${LIBRPCSUNRPC_PATH}/*.h) \
-					$(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
+					$(wildcard ${LIBRPCSUNRPC_PATH}/Makefile) ${ALL_H}
 LIBRPCNORPC_DEPS	=$(wildcard ${LIBRPCNORPC_PATH}/*.c) $(wildcard ${LIBRPCNORPC_PATH}/*.h) \
-					$(wildcard ${LIBRPCNORPC_PATH}/Makefile)
+					$(wildcard ${LIBRPCNORPC_PATH}/Makefile) ${ALL_H}
 LIBRPCXMLRPC_DEPS	=$(wildcard ${LIBRPCXMLRPC_PATH}/*.c) $(wildcard ${LIBRPCXMLRPC_PATH}/*.h) \
-					$(wildcard ${LIBRPCXMLRPC_PATH}/Makefile)
+					$(wildcard ${LIBRPCXMLRPC_PATH}/Makefile) ${ALL_H}
 LIBEXDATA_DEPS		=$(wildcard ${LIBEXDATA_PATH}/*.c) $(wildcard ${LIBEXDATA_PATH}/*.h) \
-					$(wildcard ${LIBEXDATA_PATH}/Makefile)
+					$(wildcard ${LIBEXDATA_PATH}/Makefile) ${ALL_H}
 LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_PATH}/*.h) \
-					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile)
+					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile) ${ALL_H}
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
-					$(wildcard ${LIBSQLPG_PATH}/Makefile)
+					$(wildcard ${LIBSQLPG_PATH}/Makefile) ${ALL_H}
 LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
-					$(wildcard ${LIBSQLODBC_PATH}/Makefile)
+					$(wildcard ${LIBSQLODBC_PATH}/Makefile) ${ALL_H}
 LIBMENUXDR_DEPS		=$(wildcard ${LIBMENUXDR_PATH}/*.c) $(wildcard ${LIBMENUXDR_PATH}/*.h) \
-					$(wildcard ${LIBMENUXDR_PATH}/Makefile)
+					$(wildcard ${LIBMENUXDR_PATH}/Makefile) ${ALL_H}
 LIBMENUNOMENU_DEPS	=$(wildcard ${LIBMENUNOMENU_PATH}/*.c) $(wildcard ${LIBMENUNOMENU_PATH}/*.h) \
-					$(wildcard ${LIBMENUNOMENU_PATH}/Makefile)
+					$(wildcard ${LIBMENUNOMENU_PATH}/Makefile) ${ALL_H}
 LIBMENUGENERIC_DEPS	=$(wildcard ${LIBMENUGENERIC_PATH}/*.c) $(wildcard ${LIBMENUGENERIC_PATH}/*.h) \
-					$(wildcard ${LIBMENUGENERIC_PATH}/Makefile)
+					$(wildcard ${LIBMENUGENERIC_PATH}/Makefile) ${ALL_H}
 LIBPACKERPACKED_DEPS=$(wildcard ${LIBPACKERPACKED_PATH}/*.c) $(wildcard ${LIBPACKERPACKED_PATH}/*.h) \
-					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile)
+					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile) ${ALL_H}
 LIBPACKERPERL_DEPS	=$(wildcard ${LIBPACKERPERL_PATH}/*.c) $(wildcard ${LIBPACKERPERL_PATH}/*.h) \
-					$(wildcard ${LIBPACKERPERL_PATH}/Makefile)
+					$(wildcard ${LIBPACKERPERL_PATH}/Makefile) ${ALL_H}
 LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXDR_PATH}/*.h) \
-					$(wildcard ${LIBPACKERXDR_PATH}/Makefile)
+					$(wildcard ${LIBPACKERXDR_PATH}/Makefile) ${ALL_H}
 LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXML_PATH}/*.h) \
-					$(wildcard ${LIBPACKERXML_PATH}/Makefile)
+					$(wildcard ${LIBPACKERXML_PATH}/Makefile) ${ALL_H}
 #LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
-#					$(wildcard ${LIBLEXC_PATH}/Makefile)
+#					$(wildcard ${LIBLEXC_PATH}/Makefile) ${ALL_H}
 LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) \
-					$(wildcard ${LIBLEXEC_PATH}/Makefile)
+					$(wildcard ${LIBLEXEC_PATH}/Makefile) ${ALL_H}
 LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) \
-					$(wildcard ${LIBLEXPERL_PATH}/Makefile)
+					$(wildcard ${LIBLEXPERL_PATH}/Makefile) ${ALL_H}
 LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
-					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile)
+					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile) ${ALL_H}
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
-					$(wildcard ${LIBFILE_PATH}/Makefile)
+					$(wildcard ${LIBFILE_PATH}/Makefile) ${ALL_H}
 LIBESQLCHELPER_DEPS	=$(wildcard ${LIBESQLCHELPER_PATH}/*.c) $(wildcard ${LIBESQLCHELPER_PATH}/*.h) \
-					$(wildcard ${LIBESQLCHELPER_PATH}/Makefile)
+					$(wildcard ${LIBESQLCHELPER_PATH}/Makefile) ${ALL_H}
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
-					$(wildcard ${LIBSTRING_PATH}/Makefile)
+					$(wildcard ${LIBSTRING_PATH}/Makefile) ${ALL_H}
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
-					$(wildcard ${LIBHTML_PATH}/Makefile)
+					$(wildcard ${LIBHTML_PATH}/Makefile) ${ALL_H}
 LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PATH}/*.h) \
-					$(wildcard ${LIBSQLESQL_PATH}/Makefile)
+					$(wildcard ${LIBSQLESQL_PATH}/Makefile) ${ALL_H}
 LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h) \
-					$(wildcard ${LIBUIGTK_PATH}/Makefile)
+					$(wildcard ${LIBUIGTK_PATH}/Makefile) ${ALL_H}
 LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
-					$(wildcard ${LIBUICURSES_PATH}/Makefile)
+					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}
 LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \
-					$(wildcard ${LIBUICONSOLE_PATH}/Makefile)
+					$(wildcard ${LIBUICONSOLE_PATH}/Makefile) ${ALL_H}
 LIBFORMNOFORM_DEPS	=$(wildcard ${LIBFORMNOFORM_PATH}/*.c) $(wildcard ${LIBFORMNOFORM_PATH}/*.h) \
-					$(wildcard ${LIBFORMNOFORM_PATH}/Makefile)
+					$(wildcard ${LIBFORMNOFORM_PATH}/Makefile) ${ALL_H}
 LIBFORMXDR_DEPS		=$(wildcard ${LIBFORMXDR_PATH}/*.c) $(wildcard ${LIBFORMXDR_PATH}/*.h) \
-					$(wildcard ${LIBFORMXDR_PATH}/Makefile)
+					$(wildcard ${LIBFORMXDR_PATH}/Makefile) ${ALL_H}
 LIBFORMGENERIC_DEPS	=$(wildcard ${LIBFORMGENERIC_PATH}/*.c) $(wildcard ${LIBFORMGENERIC_PATH}/*.h) \
-					$(wildcard ${LIBFORMGENERIC_PATH}/Makefile)
+					$(wildcard ${LIBFORMGENERIC_PATH}/Makefile) ${ALL_H}
 
 
 ## ==================================================================
@@ -403,6 +407,9 @@ clean.other:
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================
+
+show:
+	@echo ${LIBAUBIT4GL_DEPS}
 
 
 #----------------------------------- EOF -------------------------------

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.37 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.38 2003-03-09 07:26:47 afalout Exp $
 #
 */
 
@@ -1065,7 +1065,7 @@
 	struct str_resource
 	  {
 	    char name[20];
-	    char value[127];
+	    char value[1024]; //must be long enough to hold GTK include paths
 	  };
 
 	char * 	find_str_resource_int	(char *search, int a);

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.166 2003-03-07 08:10:54 afalout Exp $
+dnl # $Id: configure.in,v 1.167 2003-03-09 07:26:33 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2257,6 +2257,10 @@ AC_ARG_WITH(gtk,
 ])
 
 CUSTOM_WITHVAL=0
+
+#Fix silly GTK paths returned by pkg-config on Windows:
+GTK_INC_PATH=`echo $GTK_INC_PATH | sed -e 's/\/target\/build/\/usr/g' -e 's/\/target/\/usr/g'`
+
 
 AC_MSG_CHECKING(GTK+ support)
 AC_MSG_RESULT($GTKBUILD ($GTK_NAME $GDK_NAME $GLIB_NAME))

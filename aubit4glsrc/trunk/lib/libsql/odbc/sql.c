@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.56 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: sql.c,v 1.57 2003-03-09 07:26:47 afalout Exp $
 #
 */
 
@@ -2696,7 +2696,9 @@ short nColumns;
 		set_sqlca (hstmt, "getting column info", 0);
 		exitwith ("Error getting column info\n");
         //exitwith will not exit when running 4glc - must use a4gl_yyerror()
-        a4gl_yyerror("Error getting column info\n");
+        //a4gl_yyerror("Error getting column info\n");
+        //but can't do that unless I link libSQL_xxx.dll with lib4glc.dll - On Windows
+        //there can't be any unresolved sybols at linking!
 
 		return 0;
 	}

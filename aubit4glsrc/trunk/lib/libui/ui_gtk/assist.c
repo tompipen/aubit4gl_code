@@ -63,7 +63,7 @@ long int_flag;
 extern 
 long quit_flag;
 extern 
-long status;
+long a4gl_status;
 extern 
 struct {
 long sqlcode;
@@ -72,7 +72,7 @@ char sqlerrp [8+1];
 long sqlerrd[6];
 char sqlawarn [8+1];
 char sqlstate [9+1];
-} sqlca;
+} a4gl_sqlca;
 extern 
 fgldate today;
 extern 
@@ -99,6 +99,11 @@ extern
 long err_status;
 extern 
 long aiplib_status;
+static int _done_init_module_variables=1;
+static init_module_variables() {
+if (_done_init_module_variables==0) return;
+_done_init_module_variables=0;
+}
  
  
  
@@ -112,7 +117,8 @@ static char _functionName[] = "set_window_title";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    	trim(s);
@@ -134,7 +140,8 @@ static char _functionName[] = "get_window_title";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    	trim(s);
@@ -157,7 +164,8 @@ static char _functionName[] = "set_window_icon";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    	trim(s);
@@ -178,7 +186,8 @@ static char _functionName[] = "run_gui";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
      while (1) {
@@ -202,7 +211,8 @@ static char _functionName[] = "set_frame_style";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    frame_style=s;
@@ -220,7 +230,8 @@ static char _functionName[] = "yeild";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
      gui_run_til_no_more ();
@@ -241,7 +252,8 @@ static char _functionName[] = "set_window_type";
    "a"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    window_frame_type=a;
@@ -262,7 +274,8 @@ static char _functionName[] = "set_prompt_style";
    "a"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    gui_prompt_style(a);
@@ -302,7 +315,8 @@ static char _functionName[] = "get_filename";
    "pattern"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=3) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=3) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,3);
    {
    	GtkWidget *b;
@@ -350,11 +364,11 @@ static char _functionName[] = "get_filename";
    return 1;
    /* End command */
    {debug("Line 257 assist.4gl:");}
-   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+   if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(257,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) chk_err(257,_module_name);
    /* ERROR */
-      if (status<0) chk_err(257,_module_name);
+      if (a4gl_status<0) chk_err(257,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -370,7 +384,8 @@ static char _functionName[] = "app_top_get";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    a= (long)win_screen;
@@ -381,11 +396,11 @@ static char _functionName[] = "app_top_get";
    return 1;
    /* End command */
    {debug("Line 313 assist.4gl:");}
-   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+   if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(313,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) chk_err(313,_module_name);
    /* ERROR */
-      if (status<0) chk_err(313,_module_name);
+      if (a4gl_status<0) chk_err(313,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -400,7 +415,8 @@ static char _functionName[] = "app_hide";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    gtk_widget_hide(win_screen);
@@ -418,7 +434,8 @@ static char _functionName[] = "app_show";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    gtk_widget_show(win_screen);
@@ -436,7 +453,8 @@ static char _functionName[] = "app_maximize";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    // Needs coding
@@ -454,7 +472,8 @@ static char _functionName[] = "app_minimize";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    // Needs coding
@@ -472,7 +491,8 @@ static char _functionName[] = "app_restore";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    // Needs coding
@@ -498,7 +518,8 @@ static char _functionName[] = "entry_max_chars_set";
    "l"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=2) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=2) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,2);
    CHK_UI
    gtk_entry_set_max_length(GTK_ENTRY(g),l);
@@ -519,7 +540,8 @@ static char _functionName[] = "entry_selected_cut";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    {
    CHK_UI
@@ -542,7 +564,8 @@ static char _functionName[] = "entry_selected_copy";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    {
    CHK_UI
@@ -565,7 +588,8 @@ static char _functionName[] = "entry_selected_paste";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    {
    CHK_UI
@@ -580,8 +604,8 @@ static char _functionName[] = "entry_selected_paste";
  
 int aclfgl_entry_selection_set (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_selection_set";
-   long e;
    long s;
+   long e;
    long g;
    struct BINDING fbind[]={ /* print_param */
    {&g,2,0}
@@ -598,7 +622,8 @@ static char _functionName[] = "entry_selection_set";
    "e"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=3) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=3) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,3);
    {
    CHK_UI
@@ -621,7 +646,8 @@ static char _functionName[] = "entry_text_get";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    {
    	char *s;
@@ -649,7 +675,8 @@ static char _functionName[] = "field_hide";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    debug("Hiding field %p\n",g);fflush(stdout);
    //CHK_UI
@@ -672,7 +699,8 @@ static char _functionName[] = "field_show";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    gtk_widget_show((GtkWidget *)g);
@@ -690,7 +718,8 @@ static char _functionName[] = "form_caption_get";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    	//gtk_window_get_title(get_curr_win_gtk());
@@ -708,7 +737,8 @@ static char _functionName[] = "form_hide";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    	gtk_widget_hide(GTK_WIDGET(get_curr_win_gtk()));
@@ -726,7 +756,8 @@ static char _functionName[] = "form_show";
    char *_paramnames[]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=0) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=0) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,0);
    CHK_UI
    	gtk_widget_show(GTK_WIDGET(get_curr_win_gtk()));
@@ -747,7 +778,8 @@ static char _functionName[] = "form_is_open";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    	//void *find_param (char *name);
@@ -777,7 +809,8 @@ static char _functionName[] = "list_count_get";
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    	g=tolist(GTK_WIDGET(g));
@@ -800,7 +833,8 @@ static char _functionName[] = "list_current_get";
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=1) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,1);
    CHK_UI
    {
@@ -819,8 +853,8 @@ static char _functionName[] = "list_current_get";
  
 int aclfgl_list_delete (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_delete";
-   long n;
    long s;
+   long n;
    struct BINDING fbind[]={ /* print_param */
    {&s,2,0}
    ,
@@ -832,7 +866,8 @@ static char _functionName[] = "list_delete";
    "n"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=2) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=2) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,2);
    CHK_UI
    	s=tolist(GTK_WIDGET(s));
@@ -846,8 +881,8 @@ static char _functionName[] = "list_delete";
  
 int aclfgl_list_insert (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_insert";
-   long n;
    long s;
+   long n;
    char str [512+1];
    struct BINDING fbind[]={ /* print_param */
    {&s,2,0}
@@ -864,7 +899,8 @@ static char _functionName[] = "list_insert";
    "str"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=3) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=3) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,3);
    CHK_UI
    	s=tolist(GTK_WIDGET(s));
@@ -879,8 +915,8 @@ static char _functionName[] = "list_insert";
  
 int aclfgl_list_selected (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_selected";
-   long n;
    long s;
+   long n;
    struct BINDING fbind[]={ /* print_param */
    {&s,2,0}
    ,
@@ -892,7 +928,8 @@ static char _functionName[] = "list_selected";
    "n"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=2) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=2) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,2);
    CHK_UI
    {
@@ -924,18 +961,19 @@ static char _functionName[] = "splat_with_image";
    "w"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=2) {status=-30174;pop_args(nargs);return 0;}
+   if (nargs!=2) {a4gl_status=-30174;pop_args(nargs);return 0;}
+   init_module_variables();
    pop_params(fbind,2);
    aclfgli_clr_err_flg();
    push_long(100);
-   pop_var2(&w,2,0);
+   pop_var2(&w,2,0x0);
    /* End command */
    {debug("Line 616 assist.4gl:");}
-   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+   if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(616,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) chk_err(616,_module_name);
    /* ERROR */
-      if (status<0) chk_err(616,_module_name);
+      if (a4gl_status<0) chk_err(616,_module_name);
    }
    aclfgli_clr_err_flg();
    push_char("filename='");
@@ -950,14 +988,14 @@ static char _functionName[] = "splat_with_image";
    pushop(OP_CONCAT);
    push_char("'");
    pushop(OP_CONCAT);
-   pop_var2(&lv_config,0,512);
+   pop_var2(&lv_config,0,0x200);
    /* End command */
    {debug("Line 617 assist.4gl:");}
-   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+   if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(617,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) chk_err(617,_module_name);
    /* ERROR */
-      if (status<0) chk_err(617,_module_name);
+      if (a4gl_status<0) chk_err(617,_module_name);
    }
    aclfgli_clr_err_flg();
    CHK_UI
@@ -974,11 +1012,11 @@ static char _functionName[] = "splat_with_image";
    /* End of code */
    /* End command */
    {debug("Line 619 assist.4gl:");}
-   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+   if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(619,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) chk_err(619,_module_name);
    /* ERROR */
-      if (status<0) chk_err(619,_module_name);
+      if (a4gl_status<0) chk_err(619,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;

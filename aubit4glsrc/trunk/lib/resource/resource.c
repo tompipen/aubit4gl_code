@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.33 2003-03-03 23:05:44 afalout Exp $
+# $Id: resource.c,v 1.34 2003-03-09 07:26:48 afalout Exp $
 #
 */
 
@@ -264,13 +264,15 @@ struct str_resource builtin_resource[] =
   {"A4GL_OBJ_EXT", 		".ao"},         // .c/.4gl
   {"A4GL_LIB_EXT", 		".aox"},        // .c
   {"A4GL_EXE_EXT", 		".4ae"},        // .ao
+/*
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
   {"A4GL_EXE_EXT", 		".exe"},
   {"A4GL_DLL_EXT", 		".dll"},
 #else
+*/
   {"A4GL_EXE_EXT", 		".4ae"},
   {"A4GL_DLL_EXT", 		".so"},
-#endif
+//#endif
     /* can't use del on Windows, does not accept forward slash in the path */
   {"A4GL_RM_CMD", 		"rm -f"},
 
@@ -400,7 +402,7 @@ char *
 find_str_resource_int (char *search, int a)
 {
   char *ptr;
-  char s[256];
+  char s[1024];
   sprintf (s, "%s%d", search, a);
   /* look in user resources first */
   ptr = chk_str_resource (s, user_resource);
@@ -455,11 +457,14 @@ char *ptr;
 char *
 acl_getenv (char *s)
 {
-char prefixed_string[256];
+char prefixed_string[1024];
 //char *prefixed_string;
 //WHY was this static?
 //static char *ptr;
 char *ptr;
+
+//WARNING - strings returned by getenv() are linited to 125 charcters!
+//strings defined in aubitrc don't have this limitation.
 
   /* First try in environmet, with a prefix */
   sprintf(prefixed_string,"A4GL_%s",s);
@@ -471,17 +476,19 @@ char *ptr;
 	ptr = (char *)getenv (s);
   }
 
+
+
 #if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
   if ( ptr == 0 ) {
 	/* try in Windows registry */
     /* why was this static? */
-	//static char buff[256];
-    char buff[256];
-    if (get_regkey(s,buff,255)) {
+	//static char buff[1024];
+    char buff[1024];
+    if (get_regkey(s,buff,1023)) {
         //ptr = (char *)buff;
         ptr = buff;
     } else {
-		if (get_regkey(prefixed_string,buff,255)) {
+		if (get_regkey(prefixed_string,buff,1023)) {
 	        //ptr = (char *)buff;
             ptr = buff;
 	    }
@@ -722,7 +729,7 @@ get_anykey (HKEY whence, char *key, char *key2, char *data, int n)
 char *
 get_login (void)
 {
-  static char buff[255] = "";
+  static char buff[1024] = "";
   get_anykey (HKEY_LOCAL_MACHINE, "Network\\Logon", "username", buff, 255);
   return buff;
 }
@@ -737,7 +744,7 @@ get_login (void)
 struct str_resource *
 build_user_resources(void)
 {
-char buff[512];
+char buff[1024];
 int a;
 FILE *resourcefile=0;
 
@@ -903,7 +910,7 @@ FILE *resourcefile=0;
 static void
 add_resources_in(FILE *resourcefile)
 {
-char buff[512];
+char buff[1024];
 char *ptr;
 int a;
 	rewind(resourcefile);
@@ -1013,6 +1020,8 @@ int a;
 	}
 
 }
+
+
 
 
 

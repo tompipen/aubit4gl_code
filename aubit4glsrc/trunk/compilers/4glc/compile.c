@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.14 2003-03-08 04:23:04 afalout Exp $
+# $Id: compile.c,v 1.15 2003-03-09 07:26:47 afalout Exp $
 #*/
 
 /**
@@ -182,11 +182,17 @@ initArguments (int argc, char *argv[])
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
       strcpy (opt_list, "Gs:kKco::l::?hSVvft");
-    }
+		#ifdef DEBUG
+			debug ("Compiling to C code\n");
+		#endif
+	}
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
     {
       strcpy (opt_list, "Gs:?hSVvft");
+		#ifdef DEBUG
+			debug ("Compiling to Perl code\n");
+		#endif
     }
 
   /* this call will intercept -v and -vfull arguments, that can be only
@@ -202,7 +208,8 @@ initArguments (int argc, char *argv[])
     }
 
   while ((i = getopt_long (argc, argv, opt_list,
-			   long_options, &option_index)) != -1)
+			 //  long_options, &option_index)) != -1)
+               long_options, &option_index)) != EOF)
     {
       switch (i)
 	{
@@ -211,10 +218,18 @@ initArguments (int argc, char *argv[])
 	  /* this is more or less meaningless, and is here for compatibility with
 	     C compiler style flags */
 
+		#ifdef DEBUG
+			  debug ("Got -c\n");
+		#endif
+
 	  compile_object = 1;
 	  break;
 
 	case 'o':		/* compile and optionally Link resulting object(s) */
+		#ifdef DEBUG
+			debug ("Got -o flag\n");
+		#endif
+
 	  sprintf (output_object, "%s", (NULL == optarg) ? "" : optarg);
 	  if (strcmp (output_object, "") == 0)
 	    {
@@ -239,7 +254,7 @@ initArguments (int argc, char *argv[])
 	      bname (output_object, a, b);
 	      strcpy (ext, ".");
 	      strcat (ext, b);
-	      debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
+	      //debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
 
 	      if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0)
 		{
@@ -291,9 +306,9 @@ initArguments (int argc, char *argv[])
 	  break;
 
 	case 'l':		// Extra libraries to link with
-#ifdef DEBUG
-	  debug ("Pass trough option: %s\n", optarg);
-#endif
+		#ifdef DEBUG
+			  debug ("Pass trough option: %s\n", optarg);
+		#endif
 	  strcat (pass_options, "-l");
 	  strcat (pass_options, optarg);
 	  strcat (pass_options, " ");
@@ -323,6 +338,10 @@ initArguments (int argc, char *argv[])
 	  break;
 
 	case 'K':		/* clean intermedate files when done (--clean) */
+	  
+		#ifdef DEBUG
+			  debug ("Got --clean\n");
+		#endif
 	  clean_aftercomp = 1;
 	  break;
 
@@ -335,6 +354,9 @@ initArguments (int argc, char *argv[])
 	case 'V':		/* Verbose */
 	  verbose = 1;
 	  silent = 0;
+		#ifdef DEBUG
+			  debug ("Turned on verbose mode\n");
+		#endif
 	  break;
 
 	case 'v':		/* Show version - needed for long opts */
@@ -504,12 +526,15 @@ initArguments (int argc, char *argv[])
   if (compile_exec)
     {
       debug ("Linking exec\n");
-#ifndef __MINGW32__
-      sprintf (buff, "%s -rdynamic %s -o %s %s %s %s",
+#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
+
+    //We are on UNIX
+	  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
 	       pass_options);
 #else
-      //WARNING: libs must be at the end
+	  //We are on Windows
+	  //WARNING: libs must be at the end
       sprintf (buff, "%s %s -o %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, pass_options,
 	       l_libs);
@@ -651,6 +676,10 @@ initArguments (int argc, char *argv[])
 	{
 	  debug
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
+	  printf
+	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
+      return (5);
+
 	}
     }
 

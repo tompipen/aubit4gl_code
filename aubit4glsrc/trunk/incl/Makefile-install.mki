@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.62 2003-03-03 23:05:42 afalout Exp $
+# $Id: Makefile-install.mki,v 1.63 2003-03-09 07:26:47 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -77,7 +77,7 @@ endif
 #######################################
 #allow user to install amake without compiling aubit. All files installed
 #here are also included in default "install" target.
-install.amake: install.amake.files install.aubit-config.link
+install.amake: install.tree install.amake.files install.aubit-config.link
 	@echo "Amake installed"
 
 install.amake.files:
