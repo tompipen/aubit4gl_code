@@ -87,6 +87,7 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
 AC_CONFIG_FILES([Makefile
+                 etc/a4glrc
                  etc/aubitenv
                  etc/aubitbuild.mk
                  compilers/4glc/Makefile

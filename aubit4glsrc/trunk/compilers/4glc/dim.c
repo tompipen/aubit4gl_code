@@ -17,6 +17,7 @@
 #define POP_ASSOCIATE 8
 #define SETNAME 0
 
+/** Item of stack entry */
 struct s_dimitem
 {
   int type;
@@ -26,14 +27,20 @@ struct s_dimitem
   struct s_dimitem *next;
 };
 
+/** Stack entry */
 struct s_dimentry
 {
   char *dimname;
   struct s_dimitem *item;
 };
 
+/** Pointer to the global stack */
 struct s_dimentry **dims = 0;
+
+/** Dimension used in number of elements */
 int dimcnt = -1;
+
+/** Dimension in number of elements allocated */
 int dimalloc = 0;
 
 /**
@@ -222,6 +229,7 @@ void dim_push_associate (char *a, char *b)
 
 
 /**
+ * Adds an associative array to the stack.
  *
  * @param a 
  */
@@ -278,35 +286,14 @@ push_dim (char *a)
 {
   int cnt;
   for (cnt = 0; cnt <= dimcnt; cnt++)
-    {
-      if (strcmp (dims[cnt]->dimname, a) == 0)
-	{
-	  push_dim_records (cnt);
-	  return;
-	}
-    }
+  {
+    if (strcmp (dims[cnt]->dimname, a) == 0)
+	  {
+	    push_dim_records (cnt);
+	    return;
+	  }
+  }
 
   yyerror ("Unknown type");
   return;
-}
-
-
-static void split_pk_list (char *s, int mode)
-{
-  char buff[1024];
-  int a;
-  char *ptr[100];
-  int ptrcnt = 0;
-  strcpy (buff, s);
-  ptr[0] = buff;
-  for (a = 0; a < strlen (buff); a++)
-    {
-      if (buff[a] == ',' || a == 0)
-	{
-	  buff[0] = 0;
-	  ptr[++ptrcnt] = &buff[a] + 1;
-	}
-    }
-/* ptrs will now point to the columns */
-
 }

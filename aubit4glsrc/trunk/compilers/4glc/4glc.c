@@ -7,10 +7,9 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.12 2001-12-03 15:57:05 mikeaubury Exp $
+ * $Id: 4glc.c,v 1.13 2002-01-03 21:42:38 saferreira Exp $
  */
 
-//#include "../libincl/compiler.h"
 #include <stdio.h>
 #ifdef YYDEBUG
 extern int yydebug;
@@ -29,16 +28,11 @@ char *outputfilename;
 char outputfile[132];
 extern char infilename[132];
 char errbuff[1024] = "";
-/*
-FILE *mja_fopen (char *, char *);
-char *acl_getenv (char *);
-*/
+
 #include "aubit_lib.h"
 #include "../../lib/libincl/pointers.h"
 
 int globals_only = 0;
-
-int lineno = 1;
 
 /**
  * It breaks the file name to take the file name without extension and dir name
@@ -47,19 +41,19 @@ int lineno = 1;
  * @param str1
  * @param str2
  */
-static bname (char *str, char *str1, char *str2)
+static void bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
   char *ptr;
   strcpy (fn, str);
   for (a = strlen (fn); a >= 0; a--)
-    {
-      if (fn[a] == '.')
-	{
-	  fn[a] = 0;
-	  break;
-	}
+  {
+    if (fn[a] == '.')
+	  {
+	    fn[a] = 0;
+	    break;
+	  }
   }
   ptr = &fn[a];
   strcpy (str1, fn);
@@ -256,8 +250,8 @@ void rm_quotes (char *s)
   strcpy (s, buff);
 }
 
+/** The current file position for direct fseek */
 extern long fpos;
-
 
 /**
  * Treatment of an error ocurred in the parsing.
@@ -277,13 +271,6 @@ yyerror (char *s)
   sprintf (errfile, "%s.err", outputfile);
   a = 0;
   fseek (yyin, fpos, SEEK_SET);
-  //while (1) {
-  //a=fgetc(yyin);
-  //if (feof(yyin)) break;
-  //if (a=='\n') break;
-  //}
-
-  //ld=ftell(yyin);
   f = write_errfile (yyin, errfile, ld, yylineno);
   fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
   write_cont (yyin);
