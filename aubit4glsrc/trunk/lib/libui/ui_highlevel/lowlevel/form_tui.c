@@ -119,7 +119,7 @@ static char *buff = 0;
 static int buff_len = 0;
 int row;
 char *xbuff;
-PANEL *wot;
+WINDOW *wot;
 
 	A4GL_debug("Redraw field : %p",f);
 

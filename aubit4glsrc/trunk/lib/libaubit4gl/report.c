@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.62 2005-03-11 10:37:15 mikeaubury Exp $
+# $Id: report.c,v 1.63 2005-03-28 20:23:23 mikeaubury Exp $
 #
 */
 
@@ -869,6 +869,14 @@ A4GL_make_report_table (struct BINDING *b, int n)
 }
 
 
+
+void A4GL_unload_report_table(struct BINDING *b) {
+  char buff[1024];
+  struct BINDING *ibind=0;
+  sprintf (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
+	A4GLSQL_unload_data("zz9pa","|", buff,0,ibind);
+}
+
 /**
  *
  * @todo Describe function
@@ -892,7 +900,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   A4GL_debug ("Attempting to execute %s\n", buff);
   x = (void *) A4GLSQL_prepare_select ( b,n,0,0,buff);
   A4GL_debug ("x=%p\n", x);
-  A4GLSQL_execute_implicit_sql (x,0);
+  A4GLSQL_execute_implicit_sql (x,1);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
@@ -922,6 +930,8 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 
   sprintf (buff, "select * from %s order by ", gen_rep_tab_name (b));
+
+  //A4GL_unload_report_table(b) ; // This is useful for debugging....
 
   for (a1 = 0; a1 < no; a1++)
     {

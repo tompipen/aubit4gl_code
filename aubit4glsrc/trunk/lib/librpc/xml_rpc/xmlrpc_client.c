@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.10 2005-03-09 15:15:11 mikeaubury Exp $
+# $Id: xmlrpc_client.c,v 1.11 2005-03-28 20:23:24 mikeaubury Exp $
 #*/
 
 
@@ -283,7 +283,7 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
 	  break;
 	case (XMLRPC_TYPE_DATETIME):
 	  /* void push_dtime(struct a4gl_dtime *p); */
-	  A4GL_push_dtime ((struct a4gl_dtime *) get_timestamp (&env, in));
+	  A4GL_push_char (get_timestamp (&env, in));
 	  break;
 	case (XMLRPC_TYPE_STRING):
 	  A4GL_push_char (get_string (&env, in));

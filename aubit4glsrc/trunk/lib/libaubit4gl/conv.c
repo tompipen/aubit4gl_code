@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.102 2005-03-09 15:14:37 mikeaubury Exp $
+# $Id: conv.c,v 1.103 2005-03-28 20:23:22 mikeaubury Exp $
 #
 */
 
@@ -2852,7 +2852,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       return -1;
     }
 
-  A4GL_debug("Conv %d %d\n",dtype1 & DTYPE_MASK,dtype2 & DTYPE_MASK);
+  A4GL_debug("40 Conv %d %d\n",dtype1 & DTYPE_MASK,dtype2 & DTYPE_MASK);
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
 
   return rval;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.27 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: load.c,v 1.28 2005-03-28 20:23:22 mikeaubury Exp $
 #
 */
 
@@ -317,6 +317,8 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = 0;
+	  ibind[a].start_char_subscript = 0;
+	  ibind[a].end_char_subscript = 0;
 	
 	  if (strlen(colptr[a])==0) {
 	  ibind[a].size = 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.117 2005-03-18 10:44:58 mikeaubury Exp $
+# $Id: stack.c,v 1.118 2005-03-28 20:23:23 mikeaubury Exp $
 #
 */
 
@@ -781,9 +781,9 @@ A4GL_debug("51 Have data");
 	char *cp;
 	cp=(char *)p;
 	if (cp) {
-	  A4GL_debug ("7 Adding string '%s' size %d %d %d", A4GL_null_as_null(p), size,cp[0],cp[1]);
+	  A4GL_debug ("40 Adding string '%s' size %d %d %d", A4GL_null_as_null(p), size,cp[0],cp[1]);
 	} else {
-	  A4GL_debug ("7 Adding string '%s' size %d cp=null", A4GL_null_as_null(p), size);
+	  A4GL_debug ("40 Adding string '%s' size %d cp=null", A4GL_null_as_null(p), size);
 	}
 }
 #endif

@@ -34,6 +34,13 @@ define lv_args_cnt integer
 define lv_input char(255)
 define lv_quiet integer
 define lv_echo integer
+define lv_actions  array[100] of record
+		type char(1),
+		details char(80)
+end record
+define lv_actions_cnt integer
+define lv_actions_used integer
+	
 
 function is_echo()
 	return lv_echo
@@ -50,6 +57,8 @@ define lv_a integer
 define lv_cnt integer
 define lv_dummy char(255)
 initialize mv_curr_db to null
+let lv_actions_cnt=0
+let lv_actions_used=0
 call edit_init()
 
 
@@ -95,7 +104,7 @@ if num_args() then
 			exit program
 		end if
 
-		if arg_val(lv_a) matches "-*" and lv_a!="-" then
+		if arg_val(lv_a) matches "-*" and arg_val(lv_a)!="-" then
 			if arg_need_next(lv_a) then
 				exit for
 			end if
@@ -350,9 +359,43 @@ end function
 
 
 
+function add_menu_actions(lv_s)
+define lv_s char(80)
+define a integer
+
+for a=2 to length(lv_s)
+	let lv_actions_cnt=lv_actions_cnt+1
+	let lv_actions[lv_actions_cnt].type="M"
+	let lv_actions[lv_actions_cnt].details=lv_s[a]
+end for
+
+end function
+
+
+
+function add_pick_actions(lv_s)
+define lv_s char(80)
+define a integer
+let lv_actions_cnt=lv_actions_cnt+1
+let lv_actions[lv_actions_cnt].type="P"
+let lv_actions[lv_actions_cnt].details=lv_s
+end function
+
+
+
 
 function arg_need_next(lv_a) 
 define lv_a integer
-error "These types of options are not supported yet: ",arg_Val(lv_a)
-sleep 3
+
+for lv_a=1 to num_args()
+	if arg_val(lv_a) matches "-*" then
+		call add_menu_actions(arg_val(lv_a))
+	else
+		call add_pick_actions(arg_val(lv_a))
+	end if
+end for
+let lv_actions_used=lv_actions_cnt
 end function
+
+
+

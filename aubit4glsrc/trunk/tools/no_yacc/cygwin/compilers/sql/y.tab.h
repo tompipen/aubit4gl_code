@@ -490,7 +490,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 151 "sql.yacc"
+#line 152 "sql.yacc"
 typedef union YYSTYPE {
         char    str[1024];
    char *sql_string;
