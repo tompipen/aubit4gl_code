@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.86 2004-11-09 19:07:29 pjfalbe Exp $
+# $Id: iarray.c,v 1.87 2004-11-15 03:36:32 afalout Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.86 2004-11-09 19:07:29 pjfalbe Exp $";
+  "$Id: iarray.c,v 1.87 2004-11-15 03:36:32 afalout Exp $";
 /**
  * @file
  * Input array implementation
@@ -1605,9 +1605,9 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
   if (arr_line > 800000)
     {
-	A4GL_assertion(1,"Sanity check failed - do you really have  > 800000 lines in your array");
       char *ptr = 0;
       *ptr = 0;
+	  A4GL_assertion(1,"Sanity check failed - do you really have  > 800000 lines in your array");	  
     }
 
 // Sanity check the movements....
