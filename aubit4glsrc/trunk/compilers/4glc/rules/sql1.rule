@@ -19,9 +19,14 @@ sprintf($<str>$," %s %s",$<str>1,$<str>2);
 
 
 set_clause_list: 
-    OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+    special_upd_clause
+    | OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
     | upd_columns 
+;
+
+special_upd_clause : 
+	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	| MULTIPLY EQUAL upd_val_list  {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 upd_columns : col_1 | upd_columns COMMA col_1
@@ -31,7 +36,7 @@ sprintf($<str>$," %s , %s",$<str>1,$<str>3);
 ;
 
 
-upd_column_name : column_name  | MULTIPLY;
+upd_column_name : column_name  ;
 
 col_1 : upd_column_name EQUAL upd_val
 {
@@ -288,7 +293,7 @@ sprintf($<str>$,"insert");
 
 } 
 	| rollback_statement 
-	| select_statement {printc("execute_implicit_select(%s);\n}\n",$<str>1);
+	| select_statement_full {printc("execute_implicit_select(%s);\n}\n",$<str>1);
 sprintf($<str>$,"select");
 } 
 	| update_statement {
@@ -781,11 +786,8 @@ addmap('t',$<str>$,curr_func,yylineno,infilename);
 	| table_identifier {sprintf($<str>$,$<str>1);
 addmap('t',$<str>1,curr_func,yylineno,infilename);
 }
-	| db_name COLON table_identifier 
-{
-sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-addmap('t',$<str>$,curr_func,yylineno,infilename);
-}
+	| db_name COLON table_identifier { sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
+	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
 
 	;
 
@@ -816,7 +818,7 @@ sprintf($<str>$,"%s.%s%s",$<str>1,$<str>4,$<str>5);
 addmap('c',$<str>$,curr_func,yylineno,infilename);
 }
 	| table_name setident DOT MULTIPLY
-{
+ {
 sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
 addmap('c',$<str>$,curr_func,yylineno,infilename);
 }
@@ -919,6 +921,17 @@ cursor_specification_sel:
 
 
 
+select_statement_full : 
+	select_statement curs_forupdate
+	{
+	sprintf($<str>$,"%s",$<str>1);
+	if (atoi($<str>2)) {
+		printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
+	}
+
+	}
+;
+
 select_statement:
 	SELECT op_ad select_list {debug("Got select list...\n");}
         opt_into_sel 
@@ -984,7 +997,7 @@ query_specification:
 	;
 
 subquery:
-	OPEN_BRACKET SELECT setident op_ad result_specification table_expression CLOSE_BRACKET
+	OPEN_BRACKET SELECT setident op_ad select_list table_expression CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	;
 
@@ -1019,8 +1032,8 @@ value_expression:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression MINUS value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| literal
 	| var_ident_ibind
+	| literal
 	| KW_TRUE
 	| KW_FALSE
 	| USER

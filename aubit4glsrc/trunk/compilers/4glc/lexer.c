@@ -25,7 +25,7 @@ int word_cnt=0;
  
 long fpos;
 char *read_word(FILE *f,int *t);
-int ccat(char *s,char a) ;
+int ccat(char *s,char a,int instr) ;
 char *mk_word(int c) ;
 #define stricmp strcasecmp
 
@@ -153,7 +153,7 @@ strcpy(word,"");
 				if (a==';') {
 					break;
 				}
-				ccat(word,a);
+				ccat(word,a, instrs||instrd);
 				a=fgetc(f);
 			}
 			*t=CLINE;
@@ -166,7 +166,7 @@ strcpy(word,"");
                                 if (a=='\n'||a=='\r') {
                                         break;
                                 }
-                                ccat(word,a);
+                                ccat(word,a,instrs||instrd);
                                 a=fgetc(f);
                         }
                         *t=CLINE;
@@ -189,7 +189,7 @@ strcpy(word,"");
 				if (a=='\n'||a=='\r') {
 					break;
 				}
-				ccat(word,a);
+				ccat(word,a,instrs||instrd);
 			}
 			*t=KWS_COMMENT;
 			return word;
@@ -205,7 +205,7 @@ strcpy(word,"");
 					a=fgetc(f);
 					if (feof(f)) break;
 					if (a=='\n'||a=='\r') break;
-					ccat(word,a);
+					ccat(word,a,instrs||instrd);
 				}
 				*t=KWS_COMMENT;
 				return word;
@@ -232,7 +232,7 @@ strcpy(word,"");
 						a=fgetc(f);
 						if (feof(f)) break;
 						if (a=='}') break;
-						//ccat(word,a);
+						//ccat(word,a,instrs||instrd);
 					}
 				}
 			*t=KWS_COMMENT;
@@ -242,13 +242,15 @@ strcpy(word,"");
 
 		
 
-		if (a=='\n'||a=='\r') {
+		if ((a=='\n'||a=='\r')&&escp==0) {
 			if (instrs||instrd) {
+				printf("Unterminated string escp=%d?\n",escp);
 				*t=TYPE_USTRING;
 			}
 			if (strlen(word)>0) return word;
 			else continue;
 		}
+
 
 		if (instrs==0&&instrd==0&&(a==' '||a=='	')) {
 			if (strlen(word)>0) {
@@ -272,48 +274,59 @@ strcpy(word,"");
 					return word;
 				}
 			} else {
-				ccat(word,a);
+				ccat(word,a,instrs||instrd);
 				return word;
 			}
 		}
+
 		if (a=='\\'&&!escp) {
-		ccat(word,a);
+			ccat(word,a,instrs||instrd);
 			if  (escp==0) {escp=1;continue;}
 			else {escp==0;}
 		}
 
 		if (a=='"'&&!escp&&instrs==0) {
 			if (instrd==1) {
-				ccat(word,'"');
+				ccat(word,'"',instrs||instrd);
 				*t=CHAR_VALUE;
 				return word;
 			}
-			ccat(word,'"');
+			ccat(word,'"',instrs||instrd);
 			instrd=1;
 			continue;
 		}
 
 		if (a=='\''&&!escp&&instrd==0) {
 			if (instrs==1) {
-				ccat(word,'"');
+				ccat(word,'"',instrs||instrd);
 				*t=CHAR_VALUE;
 				return word;
 			}
-			ccat(word,'"');
+			ccat(word,'"',instrs||instrd);
 			instrs=1;
 			continue;
 		}
-		ccat(word,a);
+		ccat(word,a,instrs||instrd);
 		escp=0;
 	}
 
 }
 
-ccat(char *s,char a) {
-char buff[2];
-buff[0]=a;
-buff[1]=0;
-strcat(s,buff);
+ccat(char *s,char a,int instr) {
+char buff[3];
+if (instr==0||(a!='\n'&&a!='\r'&&a!='\t')) {
+	buff[0]=a;
+	buff[1]=0;
+	strcat(s,buff);
+} else {
+	buff[0]='\\';
+	if (a=='\n') buff[1]='n';
+	if (a=='\t') buff[1]='t';
+	if (a=='\r') buff[1]='r';
+	buff[2]=0;
+	strcat(s,buff);
+}
+
 }
 
 

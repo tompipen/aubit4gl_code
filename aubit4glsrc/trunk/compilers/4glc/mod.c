@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.5 2001-09-05 21:49:22 mikeaubury Exp $
+* $Id: mod.c,v 1.6 2001-09-06 20:02:21 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.5  2001/09/05 21:49:22  mikeaubury
+*	Small changes.
+*	
 *	Revision 1.4  2001/09/04 21:51:02  mikeaubury
 *	bug fixes.
 *	Added thru syntax for some commands (eg. Input)
@@ -206,17 +209,20 @@ constr_buff[256];
 
 int constr_cnt = 0;
 
-struct binding ibind[256];
-struct binding obind[256];
-struct binding fbind[256];
+#define NUMBINDINGS 256
 
-struct binding ordbind[256];
+struct binding ibind[NUMBINDINGS];
+struct binding obind[NUMBINDINGS];
+struct binding fbind[NUMBINDINGS];
+struct binding ordbind[NUMBINDINGS];
+
 int ordbindcnt = 0;
 
 int ibindcnt = 0;
 int obindcnt = 0;
 
 int fbindcnt = 0;
+
 int printc (char *fmt, ...);
 
 char *rettype (char *s);
@@ -740,7 +746,16 @@ setinc (a)
 long
 scan_variable (char *s)
 {
-  return scan_variables (s, 1);
+  char buff[256];
+  int a;
+  a=scan_variables (s, 1);
+
+  if (a==-1) {
+	strcpy(buff,s);
+	strcat(buff,".*");
+	a=scan_variables(buff,1);
+  }
+  return a;
 }
 
 long
@@ -1718,7 +1733,9 @@ start_bind (char i, char *var)
     }
 
   if (var != 0)
-    add_bind (i, var);
+    return add_bind (i, var);
+
+  return 0;
 }
 get_bind_cnt (char i)
 {
@@ -1736,7 +1753,7 @@ add_bind (char i, char *var)
   dtype = scan_variable (var);
 
 /*printc(" add_bind %c %s %d %ld\n",i,var,dtype); */
-  debug ("add_bind - dtype=%d\n", dtype);
+  debug ("add_bind - dtype=%d (%s)\n", dtype,var);
 
   if (i == 'i')
     {
@@ -1768,6 +1785,7 @@ add_bind (char i, char *var)
 	}
       return obindcnt;
     }
+
   if (i == 'O')
     {
       if (dtype == -2)
@@ -1783,10 +1801,16 @@ add_bind (char i, char *var)
 
   if (i == 'f')
     {
-      strcpy (fbind[fbindcnt].varname, var);
-      fbind[fbindcnt].dtype = dtype;
-      fbindcnt++;
-      return fbindcnt;
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	} else {
+      		strcpy (fbind[fbindcnt].varname, var);
+      		fbind[fbindcnt].dtype = dtype;
+      		fbindcnt++;
+      		return fbindcnt;
+	}
     }
 
 }
@@ -1794,20 +1818,27 @@ add_bind (char i, char *var)
 print_param (char i)
 {
   int a;
+  char buff[256];
   //dump_vars ();
   printc ("\n");
+
+  debug("Expanding binding.. - was %d entries",fbindcnt);
+  expand_bind(&fbind,'f',fbindcnt);
+  debug("Expanded - now %d entries",fbindcnt);
 
   if (i == 'r')
     {
       printc ("static");
     }
 
-  printc ("struct BINDING %cbind[]={\n", i);
+  printc ("struct BINDING %cbind[]={ /* print_param */\n", i);
   for (a = 0; a < fbindcnt; a++)
     {
+
       fbind[a].dtype = scan_variable (fbind[a].varname);
-      if (a > 0)
-	printc (",\n");
+
+      if (a > 0) printc (",\n");
+
       printc ("{&%s,%d,%d}", fbind[a].varname, (int) fbind[a].dtype & 0xffff,
 	      (int) fbind[a].dtype >> 16);
     }
@@ -1853,6 +1884,7 @@ print_bind (char i)
 
   if (i == 'o')
     {
+      
       printc ("\n");
       printc ("struct BINDING obind[]={\n");
       if (obindcnt == 0)
@@ -1875,6 +1907,7 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
+      expand_bind(&ordbind,'O',ordbindcnt);
       printc ("static struct BINDING _ordbind[]={\n");
       if (ordbindcnt == 0)
 	{
@@ -2438,6 +2471,11 @@ char save[256];
     return -1;
 
   strcpy (buff, s);
+
+  if (strchr(s,'.')==0) {
+	strcat(buff,".*");
+  }
+
   strcat (buff, ".");
   /*strip_bracket(buff); */
   strcpy (bb, "");
@@ -2446,6 +2484,7 @@ char save[256];
     {
       yyerror ("Record or structure not defined");
     }
+
 
   ptr = strtok (buff, ".");
 
@@ -4366,4 +4405,37 @@ debug("print_push_rec");
 		}
     }
   return -1;
+}
+
+
+// *************************************************************************
+//
+// When you've got a function definition which includes a record
+// You don't know when adding to the binding the structures involved
+// This copies the original binding and reapplies them.
+// This should be called after the structure is known - ie. just before you 
+// want to print it !
+//
+// *************************************************************************
+expand_bind(struct binding *bind,int btype,int cnt)  {
+struct binding save_bind[NUMBINDINGS];
+char buff[256];
+int a;
+for (a=0;a<cnt;a++) {
+	strcpy(save_bind[a].varname,bind[a].varname);
+	save_bind[a].dtype=bind[a].dtype;
+}
+
+start_bind(btype,0);
+
+for (a=0;a<cnt;a++) {
+	strcpy(buff,save_bind[a].varname);
+
+	if (scan_variable(buff)==-2) {
+		strcat(buff,".*");
+	}
+		
+	add_bind(btype,buff);
+}
+
 }

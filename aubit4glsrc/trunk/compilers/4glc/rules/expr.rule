@@ -111,9 +111,8 @@ NOT fgl_expr_c {
 {
         sprintf($<str>$,"push_int(0);");inc_counter();
 }
-| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  {
-	strcpy($<str>$,$<str>2);
-}
+| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { strcpy($<str>$,$<str>2); }
+| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { strcpy($<str>$,$<str>3); }
 ;
 
 initial_expr: 
