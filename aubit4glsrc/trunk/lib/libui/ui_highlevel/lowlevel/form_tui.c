@@ -723,14 +723,17 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
 		if (form->curcol<field_length) {
 		A4GL_debug("T2");
 			if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
+		A4GL_debug("T2.1");
 				memset(cfield_buffer,' ',field_length);
 			}
 			
 			if ((form->status&2)==0) { // Overwrite mode...
+		A4GL_debug("T2.2");
 				A4GL_debug("OVERWRITE CHARACTER : %c",c);
 				cfield_buffer[form->curcol]=c;
 			} else {
 				char *rest_of_line;
+		A4GL_debug("T2.3");
 				A4GL_debug("INSERT CHARACTER : %c",c);
 				rest_of_line=strdup(&cfield_buffer[form->curcol]);
 				cfield_buffer[form->curcol]=c;
@@ -741,6 +744,7 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
 	
 			/* Now advance one character */
 			if (form->curcol<(field_length-1)) {
+		A4GL_debug("T2.4");
 				form->curcol++;	
 			} 
 		}
