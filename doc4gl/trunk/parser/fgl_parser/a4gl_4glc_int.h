@@ -49,5 +49,5 @@ void start_state (char *s, int on_off);
 	/* =========================== y.tab.c ============================== */
 void set_clobber (char *c);
 
-int a4gl_yyparse (void *);
+//int a4gl_yyparse (void *,FglAst );
 /* ============================= EOF ================================= */

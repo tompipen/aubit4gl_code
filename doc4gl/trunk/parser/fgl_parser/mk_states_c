@@ -22,7 +22,7 @@ mawk '
 BEGIN  {
 	cnt=0
   print "#include \"FglAst.h\""
-  print "#include \"../fgl.tab.h\""
+  print "#include \"y.tab.h\""
 	print "const short *token_groups[]={" > "generated/mk_states_1.h";
 }
 

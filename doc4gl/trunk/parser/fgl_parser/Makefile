@@ -3,14 +3,16 @@
 
 CC=g++
 CXX=g++
-CXXFLAGS=-g -I ast
-CFLAGS=-g -I ast
+CXXFLAGS=-g -I ast -I syntax -I lexer -I error -I . -I keyword
+CFLAGS=-g -I ast -I syntax -I lexer -I error -I . -I keyword -I keyword
 
-FGL_PARSER_MOD= MemFile.o KeyWord.o KeyWordTextReader.o FglLexer.o fgl.o \
-fgl_parse.o generated/kw.o generated/mk_states.o 
+FGL_PARSER_MOD= syntax/fgl.o lexer/MemFile.o KeyWord.o KeyWordTextReader.o \
+lexer/FglLexer.o error/FglParseError.o error/ParserError.o \
+FglParse.o generated/kw.o generated/mk_states.o 
 fgl_parser.so : $(FGL_PARSER_MOD) 
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
 
+# To remove it
 fgl_parser:  $(FGL_PARSER_MOD)  m_fgl_parser.o
 	$(CXX) -o fgl_parser $(FGL_PARSER_MOD) m_fgl_parser.o -ldl ast/fgl_ast.so
 
@@ -27,26 +29,35 @@ generate:
 
 # Compile the .y with bison and compile(s) it to .o
 fgl.o : fgl.y
-	bison -d -k fgl.y
-	mv -f fgl.tab.c fgl.c
+	#bison -d -k fgl.y
+	./convkw_hash kwords 
+	bison -y -r all -d -v fgl.y
+	mv -f y.tab.c fgl.c
 	$(CC) $(CFLAGS) -c fgl.c
+	./mk_states_c y.output
 #bison -k -S glr.c fgl.y
 #gcc $(CFLAGS) -c fgl.c
 
 SO_LDFLAGS=-shared
 
-all: generate fgl_parser.so fgl_parser
+all: fgl_parser.so
+	make -C ast
+	make -C test all
 
+.PHONY : test
+test:
+	make -C test run
+
+syntax/fgl.o :
+	$(MAKE) -C syntax fgl.o
 
 fgl_parser.a : $(FGL_PARSER_MOD) 
 	ar rv fgl_parser.a $(FGL_PARSER_MOD)
-
-# Test some parsings
-.PHONY : test
-test:
-	make -C test
 
 clean:
 	rm -f *.o generated/* y.output y.tab.h fgl_parser.a *.so fgl_parser y.tab.c
 	make -C ast clean
 	make -C test clean
+	make -C syntax clean
+	make -C lexer clean
+	make -C error clean

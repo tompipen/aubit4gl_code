@@ -1,11 +1,7 @@
-/*
- */
 
 /**
  * @file
  * Lexical analisys.
- *
- * WARNING : THIS FILE IS NO LONGER USED. TO BE REMOVED IN CVS
  *
  * It reads the input file (the source.4gl) and returns a token to the
  * parser.
@@ -15,11 +11,10 @@
  * not reserved identifier xpto.
  *
  * Normaly is done with lex.
- * This one is implemented only in C.
- * This is a new version of the original freat aubit 4gl lexer made 
+ * This one is implemented only as a C++ class.
+ * This is a new version of the original great aubit 4gl lexer made 
  * by Mike Aubury.
  *
- * @todo : This lexer should be visible to parser just by yylex() function
  * @todo : Understand how this good lexer works.
  */
 
@@ -29,19 +24,18 @@
 =====================================================================
 */
 
-#include "FglAst.h"
-#include "fgl.tab.h"
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
-//prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would
-//mess up constants defined in y.tab.h generated with new version of Bison
-// To Mike: please resist the urge to name constants like "CHAR" "STRING" "COMMA" etc.
-// please use A4GL_ namespace.
-#define _NO_WINDOWS_H_
-#include "a4gl_4glc_int.h"
 
 #include "MemFile.h"
+#include "KeyWord.h"
+#include "FglLexer.h"
+#include "FglAst.h"
+#include "y.tab.h"
+// @todo : Remove this after cleaning more
+#include "a4gl_4glc_int.h"
 
 /*
 =====================================================================
@@ -68,101 +62,15 @@
 =====================================================================
 */
 
-// This flag should be assigned by a function.
-
-/**
- *  @todo : If we want that the parser is reentrant all global variables 
- *  should be removed.
- *   To do that we need to work with objects (in C or C++) but with objects.
- */
-static int sql_mode;
-
-static int idents_cnt = 0;
-
-/**
- * Current 4gl source file line number 
- */
-int yylineno = 1;		
-
-/**
- * 
- */
-static int lastlex = -2;
-
 #define NO_CODE 0
 #define C_CODE 1
 #define SQL_CODE 2
-/** Flag to help inside c ans SQL code parsing */
-static int xccode = NO_CODE; 
-
-/**
- *
- */
-static int word_cnt = 0;
-
-/** 
- * Current line read so far, incl. CR/LF 
- */
-static char yyline[2000] = "";	
-
-/**
- * Length of current line
- */
-static int yyline_len = 0;		  
-
-/**
- * FIle position of start of current line 
- */
-static long yyline_fpos = 0;		
-
-
-#define MAX_XWORDS 1024
-
-/**
- * 
- */
-static char xwords[MAX_XWORDS][256];
-
-/**
- *
- */
-static char idents[256][256];
-
-
-/** 
- * Extern reserved words table.
- * The reserved words table is synamicaly generated based on the kwords
- * file.
- * The lexer use it to see wich words are reserved.
- */
-struct s_kw *kwords;
-
-/**
- *
- */
-extern struct s_kw *hashed_list[];
-
-/** 
- * Current state to help in the identifier problem 
- * @todo : This is just assigned. No other usage.
- */
-static int current_yylex_state;
-
-/**
- * Flag that indicate that we want to trace the returned tokens
- * from the lexer to the syntax parser.
- */
-static char traceTokens;
-
-/** A reference to the memfile object used */
-static MemFile *memFile;
 
 
 /*
  * Modules that the lexer depends:
  *   MemFile.cpp
- * Other functions that this lexer depends:
- *    a4gl_yyerror ("");
+ *   KeyWord.cpp
  */
 
 /*
@@ -172,6 +80,23 @@ static MemFile *memFile;
 */
 
 /**
+ * The default constructor.
+ */
+FglLexer::FglLexer() 
+{
+  idents_cnt = 0;
+  yylineno = 1;		
+  lastlex = -2;
+  word_cnt = 0;
+  strcpy(yyline,"");
+  xccode = NO_CODE; 
+  yyline_len = 0;		  
+  yyline_fpos = 0;		
+
+	keyWord = new KeyWord();
+}
+
+/**
  * Read and return a new caracter from the input file.
  * Use the API that gets each caracter from the input. 
  * Currently each file is loaded to a memory buffer in the begining of
@@ -179,18 +104,19 @@ static MemFile *memFile;
  *
  * @return The caracter getted from the source file opened.
  */
-int lexer_fgetc (void)
+int FglLexer::getChar(void)
 {
-  int a;
+  int readedCh;
 
-  a = memFile->getchar();
-  if (a==0x0c) a=' ';
+  readedCh = memFile->getchar();
+  if (readedCh == 0x0c) 
+	  readedCh=' ';
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); 
 	 * DOS will end it with only 10(LF=\n) 
 	 */
 
-  if (a == '\n')		//ASCII 10 = LF
+  if (readedCh == '\n')		//ASCII 10 = LF
   {
     yylineno++;
   }
@@ -198,9 +124,10 @@ int lexer_fgetc (void)
   // maintain a buffer (yyline) holding current line being scanned
   if ((yyline_len == 0) || (yyline[yyline_len - 1] == '\n'))
   {    // we're starting a new line - clear and reset
-    yyline[0] = a;
+    yyline[0] = readedCh;
     yyline_len = 1;
     yyline_fpos = memFile->ftell ();
+		currSrcColumn = 0;
   }
   else
   {    // append char to line buffer - avoid overflow by shifting left
@@ -208,11 +135,12 @@ int lexer_fgetc (void)
 	  {
 	    memmove (yyline, &yyline[1], --yyline_len);
 	  }
-    yyline[yyline_len++] = a;
+    yyline[yyline_len++] = readedCh;
+		currSrcColumn++;
   }
   yyline[yyline_len] = '\0';
 
-  return a;
+  return readedCh;
 }
 
 
@@ -224,8 +152,7 @@ int lexer_fgetc (void)
  * @param a The Character to be ungeted
  * @param f The file pointer of file being read
  */
-static void
-lexer_ungetc (int a)
+void FglLexer::ungetChar (int a)
 {
   memFile->ungetchar(a);
 
@@ -237,24 +164,24 @@ lexer_ungetc (int a)
   // remove from current line buffer
   if (yyline_len > 0)
     yyline[--yyline_len] = '\0';
+	currSrcColumn = yyline_len;
 }
 
 /**
  * Checks if a string is possible identifier acording to the rules.
  * A string could be a alfabetical, number or underscore.
  *
- * @param p The string to be checked
+ * @param str The string to be checked
  * @return
  *   - 0 : Its NOT an identifier
- *   - 1 : Its an identifier
+ *   - 1 : Could be an identifier
  */
-static int
-isident (char *p)
+int FglLexer::isident (char *str)
 {
-  int a;
-  for (a = 0; a < strlen (p); a++)
+  int i;
+  for (i = 0; i < strlen (str); i++)
   {
-    if (isalnum (p[a]) || p[a] == '_')
+    if (isalnum (str[i]) || str[i] == '_')
 	    continue;
     return 0;
   }
@@ -270,17 +197,16 @@ isident (char *p)
  * @param a The caracter to be added.
  * @param instr
  */
-static void
-ccat (char *s, char a, int instr)
+void FglLexer::ccat (char *s, char ch, int instr)
 {
   char buff[3];
   if (strlen (s) >= 1023)
   {
     a4gl_yyerror ("Internal error - word overflow..");
   }
-  if (instr == 0 || (a != '\n' && a != '\r' && a != '\t'))
+  if (instr == 0 || (ch != '\n' && ch != '\r' && ch != '\t'))
   {
-    buff[0] = a;
+    buff[0] = ch;
     buff[1] = 0;
     strcat (s, buff);
   }
@@ -288,11 +214,11 @@ ccat (char *s, char a, int instr)
   {
     buff[0] = '\\';
 
-    if (a == '\n')
+    if (ch == '\n')
 	    buff[1] = 'n';
-    if (a == '\t')
+    if (ch == '\t')
 	    buff[1] = 't';
-    if (a == '\r')
+    if (ch == '\r')
 	    buff[1] = 'r';
 
     buff[2] = 0;
@@ -312,8 +238,7 @@ ccat (char *s, char a, int instr)
  * DECIMAL_NUMBER 1
  * FRAC_NUMBER 2
  */
-static int
-isnum (char *s)
+int FglLexer::isNum (char *s)
 {
   int a;
   int dp = 0;
@@ -410,11 +335,11 @@ isnum (char *s)
  * reading a operator (such as +) just return it.
  *
  * @param f The file pointer to the source being parsed
- * @param tokenType A pointer to a place where this function put the type of word
- *          founded.
+ * @param tokenType A pointer to a place where this function put the type 
+ *        of word founded.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word2 (int *tokenType)
+char *FglLexer::read_word2 (int *tokenType)
 {
   static char word[1024] = "";
   int escp = 0;
@@ -427,7 +352,7 @@ static char *read_word2 (int *tokenType)
 
   while (1)
   {
-    a = lexer_fgetc ();
+    a = getChar ();
 
     if (memFile->feof ())
 	  {
@@ -446,7 +371,7 @@ static char *read_word2 (int *tokenType)
 		    {
 		      if (strcasecmp (word, "endcode") == 0)
 		        break;
-		      a = lexer_fgetc ();
+		      a = getChar ();
 		      continue;
 		    }
 
@@ -455,7 +380,7 @@ static char *read_word2 (int *tokenType)
 		      break;
 		    }
 	      ccat (word, a, instrs || instrd);
-	      a = lexer_fgetc ();
+	      a = getChar ();
 	    }
 	    *tokenType = CLINE;
 	    return word;
@@ -473,7 +398,7 @@ static char *read_word2 (int *tokenType)
 		      break;
 		    }
 	      ccat (word, a, instrs || instrd);
-	      a = lexer_fgetc ();
+	      a = getChar ();
 	    }
 	    *tokenType = CLINE;
 	    return word;
@@ -488,13 +413,13 @@ static char *read_word2 (int *tokenType)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      lexer_ungetc (a);
+	      ungetChar (a);
 	      return word;
 	    }
   
 	    while (1)
 	    {
-	      a = lexer_fgetc ();
+	      a = getChar ();
 	      if (memFile->feof ())
 		      break;
 	      if (a == '\n' || a == '\r')
@@ -511,16 +436,16 @@ static char *read_word2 (int *tokenType)
 	  {
 	    int z;
       if (strlen (word) > 0) {                  
-        lexer_ungetc (a);                  
+        ungetChar (a);                  
 				return word;                
 		  }
-	    z = lexer_fgetc ();
-	    lexer_ungetc (z);
+	    z = getChar ();
+	    ungetChar (z);
 	    if (z == '-')
 	    {
 	        while (1)
 		      {
-		        a = lexer_fgetc ();
+		        a = getChar ();
 		        if (memFile->feof ())
 		          break;
 		        if (a == '\n' || a == '\r')
@@ -536,7 +461,7 @@ static char *read_word2 (int *tokenType)
     if (a == '!' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    char c;
-	    c = lexer_fgetc ();
+	    c = getChar ();
 	    if (c == '}')
 	    {
 	      strcpy (word, "!}");
@@ -545,26 +470,26 @@ static char *read_word2 (int *tokenType)
 	    }
 	    else
 	    {
-	      lexer_ungetc (c);
+	      ungetChar (c);
 	    }
 	  }
   
-		// Found a { comment.
+		// Found a open bracket comment.
 		// @todo : Refactor this into a function.
     if (a == '{' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      lexer_ungetc (a);
+	      ungetChar (a);
 	      return word;
 	    }
   
-	    a = lexer_fgetc ();
+	    a = getChar ();
 	    if (a != '!')
 	    {
 	      while (1)
 		    {
-		      a = lexer_fgetc ();
+		      a = getChar ();
 		      if (memFile->feof ())
 		        break;
 		      if (a == '}')
@@ -604,7 +529,7 @@ static char *read_word2 (int *tokenType)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      lexer_ungetc (a);
+	      ungetChar (a);
 	      return word;
 	    }
 	  }
@@ -614,10 +539,10 @@ static char *read_word2 (int *tokenType)
 	  {
 	    if (strlen (word) > 0)
 	    {
-	      if (isnum (word) && a == '.');
+	      if (isNum (word) && a == '.');
 	      else
 		    {
-		      lexer_ungetc (a);
+		      ungetChar (a);
 		      return word;
 		    }
 	    }
@@ -647,18 +572,20 @@ static char *read_word2 (int *tokenType)
 	    if (instrd == 1)
 	    {
 	      int x;
-	      x = lexer_fgetc ();
-	      lexer_ungetc (x);
+	      x = getChar ();
+	      ungetChar (x);
   
 	      if (x != '"')
 		    {
 		      ccat (word, '"', instrs || instrd);
 		      *tokenType = CHAR_VALUE;
+	        if ( traceTokens )
+					  printf("TOKEN STRING %s\n",word);
 		      return word;
 		    }
 	      else
 		    {
-		      x = lexer_fgetc ();
+		      x = getChar ();
 		      ccat (word, '\\', instrs || instrd);
 		      ccat (word, '"', instrs || instrd);
 		      continue;
@@ -696,11 +623,12 @@ static char *read_word2 (int *tokenType)
 
 /**
  * Point to add string translation when wanted.
+ * @todo : This should be a plugin
  *
  * @param s The string to be translated
  * @return The translated string.
  */
-char *A4GL_translate (char *s) {
+char *FglLexer::A4GL_translate (char *s) {
   return s;
 }
 
@@ -711,7 +639,7 @@ char *A4GL_translate (char *s) {
  *          readed.
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word (int *tokenType)
+char *FglLexer::read_word (int *tokenType)
 {
   char *ptr;
   char *s2;
@@ -751,56 +679,62 @@ static char *read_word (int *tokenType)
  * This function is called by check_word_more
  *
  * @param cnt The kwords array position.
- * @param pos The position in the vals array of the kwords array.
+ * @param pos The position in the words array of the kwords array.
  * @param p The token found.
  * @return
  *    0 - 
  *    1 -
  */
-static int
-words (int cnt, int pos,char *p)
+int FglLexer::words (int cnt, int pos,char *word)
 {
   int z;
   int t;
   char buff[132];
   int states = -1;
 
+	// Que estranho. Ele vem aqui mesmo que seja string
   strcpy (buff, kwords[cnt].vals[pos]);
 
+	// Se encontrou *
   if (buff[0] == '*' && strlen (buff) > 1)
   {
     strcpy (buff, &kwords[cnt].vals[pos][1]);
     states = 1;
   }
 
+	// Se encontro a dizer que quer um identificador verifica se recebeu uma
+	// coisa que pode ser identificador e copia para o array de 
+	// identificadores (idents).
+	// É estranho porque mesmo que seja string vem aqui
   if (stricmp (buff, "<ident>") == 0)
   {
 
-    /* printf("check %s\n",p); */
-    if (isident (p) == 0)
+    //printf("check %s\n",word);
+    if (isident (word) == 0)
+		{
 	    return 0;
-    strcpy (idents[idents_cnt++], p);
+		}
+    strcpy (idents[idents_cnt++], word);
 
   }
   else
   {
-    if (stricmp (p, buff) != 0)
+    if (stricmp (word, buff) != 0)
 	  {
 	    return 0;
 	  }
   }
 
-  if (states != -1)
-    start_state (buff, states);
-
+	// Se chegou ao fim da tabela de palavras 
   if (kwords[cnt].vals[pos + 1] == 0)
   {
     return 1;
   }
 
-  p = read_word (&t);
+  word = read_word (&t);
 
-  z = words (cnt, pos + 1, p);
+	//printf("word = %s\n", word);
+  z = words (cnt, pos + 1, word);
 
   if (z == 0)
   {
@@ -810,25 +744,26 @@ words (int cnt, int pos,char *p)
 }
 
 /**
- * Iterate the kwords.vals array until != 0.
+ * Iterate the kwords.vals array it arrives to the end.
  * @todo : Check if the text variable dimension it is not a problem
  *
  * @param c The index in the kwords array.
  * @return A static buffer containing the concatenation of the values in 
  *         the vals table. If it found <ident> concatenate ???? 
  */
-static char *
-mk_word (int c)
+char *FglLexer::mk_word (int c)
 {
   static char text[256];
   int a;
   int icnt = 0;
   strcpy (text, "");
+	// Iterate in the the words of the current multiword keyword
   for (a = 0; kwords[c].vals[a]; a++)
   {
     if (a > 0)
 	    strcat (text, " ");
 
+		// If the word tells that should be an identifier
     if (stricmp (kwords[c].vals[a], "<ident>") == 0)
 	  {
 	    strcat (text, idents[icnt++]);
@@ -842,59 +777,40 @@ mk_word (int c)
 }
 
 /**
- * Generate an Hash value to a string.
- *
- * @param s The string to wich we generate the hash.
- * @return The hash number that correspond to the string.
- */
-static int
-get_hash_val (char *s)
-{
-  int c;
-  c = toupper (s[0]);
-  if (c >= 'A' && c <= 'Z')
-  {
-    c = c - 'A' + 1;
-  }
-  else
-  {
-    c = 0;
-  }
-
-  return c;
-}
-
-/**
  * Check if it is a multi symbol reserved word.
  *
  * @param buff
- * @param p
- * @param str
+ * @param p The current keyword readed
+ * @param str The next word (lookahead)
  * @param tokenType The type of the token readed.
  * @return The type of the next token readed.
  */
-static int
-chk_word_more (char *buff, char *p, char *str, int tokenType)
+int FglLexer::chk_word_more (char *buff, char *p, char *str, int tokenType)
 {
   int cnt = 0;
   int oline;
   int a;
   cnt = 0;
-  oline = yylineno;
 
+  oline = yylineno;
 
   a = memFile->ftell ();
   /* check if the current word is a known reserved/key word */
 
-  kwords = hashed_list[get_hash_val (p)];
+	if ( traceTokens )
+	  printf("p = %s, str = %s\n",p,str);
 
+	kwords = keyWord->getKwords(p);
+
+	// Pesquisa no array de keywords até chegar ao fim
+	// ou encontrar  ???
   while (kwords[cnt].id > 0)
   {
     strcpy (p, buff);
     if (kwords[cnt].mode >= 1)
 	  {
 	    idents_cnt = 0;
-	    if (words (cnt, 0, p))
+	    if (words (cnt, 0, p))  // If it arrives to the end of the array and OK
 	    {
 	      strcpy (str, mk_word (cnt));
 	      return kwords[cnt].id;
@@ -928,7 +844,7 @@ chk_word_more (char *buff, char *p, char *str, int tokenType)
   /* check for literal numbers - these cannot be key words or identifiers */
   strcpy (str, p);
 
-  a = isnum (p);
+  a = isNum (p);
   if (a == DECIMAL_NUMBER)
   {
     strcpy (str, p);
@@ -943,18 +859,19 @@ chk_word_more (char *buff, char *p, char *str, int tokenType)
 }
 
 /**
- * Check if a token is a reserved word.
+ * Read and check what kind of word was readed.
+ * Check if a token is a reserved word (even with multi-word symbols).
  *
  * If so it returns an integer (wich is defined with #define generated by
  * yacc/bison) that easily identifies the reserved word.
  *
  * If its not a reserved word could be a NUMBER, IDENTIFIER, ???
  *
- * @param str A pointer to a string where ???? its appended.
+ * @param str A pointer to a string where the symbol found is returned.
  * @return The keyword integer identifier (please use the defines).
+ *         The string readed in str
  */
-static int
-chk_word (char *str)
+int FglLexer::chk_word (char *str)
 {
   char *p;
   int tokenType;
@@ -973,6 +890,9 @@ chk_word (char *str)
    * and ends with the word 'endcode'.
    */
 
+	// Adicionado por sérgio para corrigir ">"
+	if ( tokenType == CHAR_VALUE )
+	  return CHAR_VALUE;
   if ((strcasecmp (p, "--!code") == 0
        || strcasecmp (p, "code") == 0)
       && (xccode == NO_CODE) && (strncmp (yyline, p, strlen (p)) == 0))
@@ -1043,8 +963,7 @@ chk_word (char *str)
  *
  * @param c The string to be lowered
  */
-static void
-to_lower_str (char *s)
+void FglLexer::to_lower_str (char *s)
 {
   int a;
   for (a = 0; a < strlen (s); a++)
@@ -1055,12 +974,11 @@ to_lower_str (char *s)
 
 /**
  * Fixes up back-slash quoting in source code strings.
- * @todo : The maximum length of the string should be parametrized.
+ * @todo : The maximum length of the string should be parametrized or dynamic.
  *
  * @param s The string to be fixed
  */
-static void
-fix_bad_strings (char *s)
+void FglLexer::fix_bad_strings (char *s)
 {
   char buff[10000];
   int c;
@@ -1118,39 +1036,21 @@ fix_bad_strings (char *s)
  * @return The type of the token found. It corresponds to the %token defined 
  *         and used in the parser.
  */
-int
-a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
+int FglLexer::yyLex (void *pyylval, int yystate, short *yys1, short *yys2)
 {
   int tokenType;
   char text[1024];
   char buffval[20480];
   int allow;
 	YYSTYPE *yylval = (YYSTYPE *)pyylval;
-	// @todo : This static can fuck the reentrancy
-  static int last_pc = 0;
 
   current_yylex_state = yystate;
 
-	// Why this ???
-  tokenType = memFile->ftell();
-  if (memFile->getLength())
-  {
-    tokenType = tokenType * 100 / memFile->getLength();
-    if (tokenType > last_pc)
-	  {
-	    last_pc = tokenType;
-	  }
-  }
-	// /Why this ???
+	// Read and check what kind of word was readed.
+  tokenType = chk_word(text);
 
-	// Read and check what word was readed.
-  tokenType = chk_word (text);
-  //A4GL_debug("chk_word returns token=%d, text=%s state=%d\n", a, text, yystate);
-
-	// Calls the generated from y.output allow token state to see if the word
-	// found is to be returned as identifier or TOKEN
+	// See if the kind of keyword is alowed acording to the parser state.
   allow = allow_token_state (yystate, tokenType);
-  //A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 
 	// The bison parser nows that we are in SQL BLOCK. Read until it
 	// Threat things diferently
@@ -1161,7 +1061,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   {
     if (allow == 0) {
 		  int t;
-		  t = isnum(text);
+		  t = isNum(text);
 		  if (t == DECIMAL_NUMBER) 
 			  tokenType=INT_VALUE;
 		  if (t == FRAC_NUMBER) 
@@ -1191,56 +1091,6 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	    tokenType = SQL_TEXT;
   }
 
-  //A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
-
-	// Check if returned  ????
-	// I think that it found a constant.
-	// @todo : This should go to a separated function.
-	/* @todo : Remove this if possible because this should be in semantic 
-	 * validation
-  if (tokenType == 2 || tokenType == NAMED_GEN)
-  {
-    //A4GL_debug ("  Constant check returns %d", 
-								//check_for_constant (text, buffval));
-
-		// The checking for constant variables should be done in the semantic
-		// verification and not in syntax analisys
-		
-		//@todo : Uncomment this 
-    //switch (check_for_constant (text, buffval))
-		printf("TOKEN TYPE = %d : %s\n", tokenType, text);
-    switch (10)
-	  {
-	    case 0:
-	      break;
-
-	    case 1:
-	      //A4GL_debug (" Constant switch %s Char", buffval);
-	      strcpy (text, buffval);
-	      tokenType = CHAR_VALUE;
-	      break;		// 'c' 
-
-	    case 2:
-	      //A4GL_debug (" Constant switch %s Float", buffval);
-	      strcpy (text, buffval);
-	      tokenType = NUMBER_VALUE;
-	      break;		// 'f'
-	    case 3:
-	      //A4GL_debug (" Constant switch %s Integer", buffval);
-	      strcpy (text, buffval);
-	      tokenType = INT_VALUE;
-	      break;		// 'i' 
-	    case 4:
-	      //A4GL_debug (" Constant switch %s ident", buffval);
-	      strcpy (text, buffval);
-	      tokenType = NAMED_GEN;
-	      break;		// 'C' 
-	    default:
-	      a4gl_yyerror ("Unexpected Error");
-	  }
-  }
-	*/
-
   /* 4GL identifiers are case insensitive - force to lower case */
   if (tokenType == 2)
   {
@@ -1248,81 +1098,17 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   }
 
   fix_bad_strings (text);
-
-  /* call set_str() to send back to the parser the text/value 
-   * associated with the token.
-   */
-  //set_str (text);
-	// @todo : Uncomment because it is realy needed.
-  //set_str (pyylval, text);
-
   lastlex = tokenType;
   word_cnt = 0;
   //A4GL_debug ("lexer returns  tokenType=%d, text=%s\n", tokenType, text);
 
 		// @todo : Return diferent things if identifier or other things.
+	// Assign the value to send it to the parser.
 	yylval->token = new FglToken(yylineno,text);
 	if ( traceTokens )
-    printf("lexer returns  a=%d, text=%s, line=%d\n", tokenType, text, yylineno);
+    printf("lexer returns  tokenType=%d, text=%s, line=%d\n", 
+			tokenType, text, yylineno);
   return tokenType;
-}
-
-/**
- *
- * @param kw
- * @param v
- * @param arr
- */
-static void
-turn_state_all (int kw, int v, int arr)
-{
-  struct s_kw *local_kwords;
-  int a;
-  local_kwords = hashed_list[arr];
-
-/* debug("State changes %d to %d\n",kw,v); */
-  for (a = 0; local_kwords[a].id > 0; a++)
-    {
-      if (local_kwords[a].id == kw)
-	{
-
-	  /* debug("a=%d kw=%d\n",a,kw); */
-	  if (v)
-	    local_kwords[a].mode++;
-	  else
-	    local_kwords[a].mode--;
-	  /* return; */
-	}
-    }
-
-}
-
-/**
- * 
- *
- * @param kw
- * @param v
- */
-void
-turn_state (int kw, int v)
-{
-  int a;
-  for (a = 0; a <= 26; a++)
-  {
-    turn_state_all (kw, v, a);
-  }
-}
-
-/**
- * Get an element of the idents array.
- *
- * @param a The index in the array that we want to obtain.
- * @return A pointer to the identifier array.
- */
-char *
-get_idents (int a)
-{
-  return idents[a];
 }
 
 /**
@@ -1333,7 +1119,7 @@ get_idents (int a)
  *        0 - Do not trace
  *        otherwise - trace / log tokens
  */
-void setTraceTokens(char _traceTokens) {
+void FglLexer::setTraceTokens(char _traceTokens) {
   traceTokens = _traceTokens;
 }
 
@@ -1342,8 +1128,36 @@ void setTraceTokens(char _traceTokens) {
  *
  * @param _memFile A reference to the MemFile object.
  */
-void setMemFile(MemFile *_memFile) {
+void FglLexer::setMemFile(MemFile *_memFile) {
   memFile = _memFile;
+}
+
+/**
+ * Assign the error handler.
+ *
+ * @param _parserError A pointer to the error handler.
+ */
+void FglLexer::setParserError(ParserError *_parserError)
+{
+	parserError = _parserError;
+}
+
+/**
+ * Get the parser error handler.
+ *
+ * @return A pointer to the error handler.
+ */
+ParserError *FglLexer::getParserError(void)
+{
+	return parserError;
+}
+
+/**
+ * @return the current line where the lexer was reading the tokens.
+ */
+int FglLexer::getLine() 
+{
+	return yylineno;
 }
 
 /* ================================== EOF ========================= */
