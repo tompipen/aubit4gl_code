@@ -42,6 +42,7 @@ char *A4GLSQLCV_datetime_value(char *s) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
 char *A4GLSQLCV_generate_current(char *from,char *to) ;
+char *A4GLSQLCV_make_tablename(char *t,char *c);
 char *A4GLSQLCV_interval_value(char *s) ;
 char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) ;
 char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) ;

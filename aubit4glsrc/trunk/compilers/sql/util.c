@@ -598,13 +598,15 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 	if (ptr) {free(ptr);}
 	ptr=0;
 	for (a=0;a<stmts_cnt;a++) {
-		l+=strlen(stmts[a].val)+2;
-		if (ptr) {
-			ptr=realloc(ptr,l);
-			strcat(ptr,stmts[a].val);
+		l+=strlen(stmts[a].val)+1;
+		if (a+1!=stmts_cnt) l+=2;
+		if (ptr==0) {
+			ptr=malloc(l);
+			strcpy(ptr,"");
 		} else {
-			ptr=strdup(stmts[a].val);
+			ptr=realloc(ptr,l);
 		}
+		strcat(ptr,stmts[a].val);
 		if (a+1!=stmts_cnt) strcat(ptr,";\n");
 	}
 		
