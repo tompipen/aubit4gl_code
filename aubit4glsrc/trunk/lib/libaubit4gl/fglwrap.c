@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.41 2003-06-12 17:39:45 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.42 2003-06-15 23:55:21 afalout Exp $
 #
 */
 
@@ -1136,20 +1136,30 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
 
 
 
-static int initsig_child()
+static int 
+initsig_child()
 {
-struct sigaction ServerSig; 
-A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
-ServerSig.sa_handler = SIG_IGN;
-ServerSig.sa_flags = SA_NOCLDWAIT; 
+struct sigaction ServerSig;
 
-if (sigaction(SIGCLD, &ServerSig, NULL))
-{
-	A4GL_exitwith("Unable to attach SIGCLD handler");
-	return 0;
-} 
 
-return 1;
+#if (defined(WIN32) || defined(__CYGWIN__) || defined (__MINGW32__))
+	/*
+	fglwrap.c:1144: `SA_NOCLDWAIT' undeclared (first use in this function)
+	fglwrap.c:1146: `SIGCLD' undeclared (first use in this function)
+	*/
+    A4GL_exitwith("SA_NOCLDWAIT on Windows? FIXME!");
+#else
+	A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
+	ServerSig.sa_handler = SIG_IGN;
+	ServerSig.sa_flags = SA_NOCLDWAIT;
+
+	if (sigaction(SIGCLD, &ServerSig, NULL))
+	{
+		A4GL_exitwith("Unable to attach SIGCLD handler");
+		return 0;
+	}
+#endif
+	return 1;
 }
 
 
