@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.66 2003-10-13 08:48:06 mikeaubury Exp $
+# $Id: esql.ec,v 1.67 2003-10-31 18:31:14 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.66 2003-10-13 08:48:06 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.67 2003-10-31 18:31:14 mikeaubury Exp $";
 #endif
 
 
@@ -1870,7 +1870,7 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
       /** @todo : Fix the for update that hould be in prepared select */
 	  /*
 	     EXEC SQL DECLARE :cursorName CURSOR FOR :statementName FOR UPDATE;
-	   */
+	  */
 	  break;
 	case FOR_UPDATE_WITH_HOLD:
 	  /*

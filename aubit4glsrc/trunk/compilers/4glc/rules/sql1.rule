@@ -1012,39 +1012,39 @@ print_undo_use($<str>1);
 
 ;
 
-declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;} curs_forupdate {
-		print_declare($<str>8,$<sql_string>6,$<str>3,0,0);
+declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>6,$<str>3,0,0);
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 		doing_declare=0;
 	}
-	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
-		print_declare($<str>9,$<sql_string>7,$<str>3,2,0); 
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>7,$<str>3,2,0); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 		doing_declare=0;
 	}
 
-        | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
-		print_declare($<str>7,$<sql_string>5,$<str>3,0,1); 
+        | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>5,$<str>3,0,1); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 		doing_declare=0;
 	}
-       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
-		print_declare($<str>9,$<sql_string>7,$<str>3,2,1); 
+       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>7,$<str>3,2,1); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 		doing_declare=0;
 	}
 ;
-
-curs_forupdate : {strcpy($<str>$,"0");} 
-		| FOR_UPDATE {strcpy($<str>$,"1");} 
-		| FOR_UPDATE_OF cur_update_list {strcpy($<str>$,"1");} 
+ 
+curs_forupdate : {strcpy($<str>$,"");} 
+		| FOR_UPDATE {strcpy($<str>$," FOR UPDATE");} 
+		| FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);} 
 		;
 
-cur_update_list : colident | cur_update_list COMMA colident
+cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 colident: identifier
@@ -1075,11 +1075,10 @@ cursor_specification_sel_ss:
 
 
 
-select_statement_full_ss : 
-	select_statement_ss curs_forupdate
+select_statement_full_ss : select_statement_ss 
 	{
 	$<sql_string>$=$<sql_string>1;
-	if (atoi($<str>2)) {
+	if (strstr($<str>1,"FOR UPDATE")) {
 		printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
 	}
 }
@@ -1093,9 +1092,9 @@ select_statement_ss:
 	select_list_ss {A4GL_debug("Got select list...\n");}
         opt_into_sel_ss 
 	table_expression_ss
-        sel_p2_ss {
+        sel_p2_ss curs_forupdate {
 		char *ptr;
-                ptr=make_sql_string("SELECT ",$<str>2, $<sql_string>4," ", $<sql_string>6, " ",$<sql_string>7," ",$<sql_string>8,0);
+                ptr=make_sql_string("SELECT ",$<str>2, $<sql_string>4," ", $<sql_string>6, " ",$<sql_string>7," ",$<sql_string>8,$<str>9,0);
 
 		$<sql_string>$=strdup(print_select_all(ptr));
 		free(ptr);
@@ -1171,7 +1170,7 @@ query_specification_ss:
 	SELECT op_ad select_list_ss table_expression_ss {
 		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ", $<sql_string>3," ",$<sql_string>4,0);
 		free($<sql_string>3);
-		free($<sql_string>4);
+		//free($<sql_string>4);
 
 	}
 ;

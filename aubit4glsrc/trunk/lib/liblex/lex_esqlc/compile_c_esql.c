@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.57 2003-10-13 18:30:47 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.58 2003-10-31 18:31:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -794,7 +794,7 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
       printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
       printc ("char *s;");
       printc ("EXEC SQL END DECLARE SECTION;\n");
-      printc ("s=A4GL_char_pop();\n");
+      printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
       printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
       printc ("}");
     }
@@ -906,7 +906,7 @@ int intprflg=0;
     //}
 
 
-  if (atoi (a1) && h2)
+  if (strlen (a1) && h2)
     {
       a4gl_yyerror ("Updates are not allowed on a scroll cursor");
       return;
@@ -925,10 +925,13 @@ int intprflg=0;
 
   printc ("%s FOR", buff);
   printc ("     %s ", A4GL_strip_quotes (a2));
-  if (atoi (a1))
-    {
-      printc ("     FOR UPDATE");
-    }
+  //if (strlen (a1))
+    //{
+      //printc ("     FOR UPDATE");
+	//if (a1[0]!=' ') {
+		//printc(" OF %s",a1);
+	//}
+    //}
   printc (";");
   //printc(" /* A2='%s'*/",a2);
   print_copy_status ();

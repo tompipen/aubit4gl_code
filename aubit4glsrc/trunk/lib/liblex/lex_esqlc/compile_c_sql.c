@@ -399,8 +399,8 @@ print_flush_cursor (char *s)
  * update keyword at the end.
  *
  * @param a1 Indicate if the cursor is for update.
- *   - 1 : The cursor is for update.
- *   - 0 : The cursor is NOT for update.
+ *   - " ", "column,column" : The cursor is for update. (column list not handled in this mode..)
+ *   - "" : The cursor is NOT for update.
  * @param a2 The cursor specification generated struct s_sid variable name.
  * @param a3 The cursor name.
  * @param h1 Flag to indicate if the cursor is with hold.
@@ -411,9 +411,12 @@ print_flush_cursor (char *s)
  *   - 1 : The cursor is with scroll
  */
 void
-print_declare (char *a1, char *a2, char *a3, int h1, int h2)
+print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
 {
-  printc ("A4GLSQL_declare_cursor(%s+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);
+  int a1;
+  if (strlen(sa1)) a1=1; 
+  else a1=0;
+  printc ("A4GLSQL_declare_cursor(%d+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);
 }
 
 /**
