@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.42 2004-07-01 14:48:14 mikeaubury Exp $
+# $Id: report.c,v 1.43 2004-07-09 16:45:04 mikeaubury Exp $
 #
 */
 
@@ -52,16 +52,18 @@
 #define ENTRY_DATA 4
 #define ENTRY_ENTRY_START 5
 #define ENTRY_ENTRY_END 6
-static void report_write_entry(struct rep_structure *rep,char type) ;
-static void print_lvl(struct rep_structure *rep,int lvl) ;
-static void print_data(struct rep_structure *rep,char *buff,int entry) ;
-int A4GL_push_report_print(struct rep_structure *rep,char *mod,int lineno,char where,char *why,int rb) ;
-void A4GL_pop_report_print(struct rep_structure *rep,int pb, int rb) ;
-void A4GL_pop_report_section(struct rep_structure *rep, int rb) ;
-static void report_write_string(struct rep_structure *rep, char *s) ;
-static void report_write_int(struct rep_structure *rep, int n) ;
-static void report_write_char(struct rep_structure *rep, unsigned char n) ;
-static void report_write_why(struct rep_structure *rep,char where,char *why) ;
+static void report_write_entry (struct rep_structure *rep, char type);
+static void print_lvl (struct rep_structure *rep, int lvl);
+static void print_data (struct rep_structure *rep, char *buff, int entry);
+int A4GL_push_report_print (struct rep_structure *rep, char *mod, int lineno,
+			    char where, char *why, int rb);
+void A4GL_pop_report_print (struct rep_structure *rep, int pb, int rb);
+void A4GL_pop_report_section (struct rep_structure *rep, int rb);
+static void report_write_string (struct rep_structure *rep, char *s);
+static void report_write_int (struct rep_structure *rep, int n);
+static void report_write_char (struct rep_structure *rep, unsigned char n);
+static void report_write_why (struct rep_structure *rep, char where,
+			      char *why);
 
 /*
 =====================================================================
@@ -74,11 +76,13 @@ void A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt);
 void A4GL_set_column (struct rep_structure *rep);
 void A4GL_free_duplicate_binding (struct BINDING *b, int n);
 struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
-void A4GL_skip_top_of_page (struct rep_structure *rep,int n);
-int A4GL_push_report_section(struct rep_structure *rep,char *mod,char *repname,int lineno,char where,char *why,int rb) ;
+void A4GL_skip_top_of_page (struct rep_structure *rep, int n);
+int A4GL_push_report_section (struct rep_structure *rep, char *mod,
+			      char *repname, int lineno, char where,
+			      char *why, int rb);
 
 void A4GL_rep_print (struct rep_structure *rep, int a, int s,
-		     int right_margin,int entry);
+		     int right_margin, int entry);
 void A4GL_need_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
 static char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -99,7 +103,7 @@ extern sqlca_struct a4gl_sqlca;
 void A4GL_finished_report (void);
 
 
-int lvl=0;
+int lvl = 0;
 
 /*
 =====================================================================
@@ -114,55 +118,79 @@ int lvl=0;
 
 
 
-static void report_print(struct rep_structure *rep,int entry, char *fmt,...) {
-va_list ap;
-char buff[20000];
-va_start(ap,fmt);
-if (entry<=0) entry=0;
-vsprintf(buff,fmt,ap);
-A4GL_debug("'%s' - %d\n",buff,entry);
-if (rep->print_section==SECTION_NORMAL) {
+static void
+report_print (struct rep_structure *rep, int entry, char *fmt, ...)
+{
+  va_list ap;
+  char buff[20000];
+  va_start (ap, fmt);
+  if (entry <= 0)
+    entry = 0;
+  vsprintf (buff, fmt, ap);
+  A4GL_debug ("'%s' - %d\n", buff, entry);
+  if (rep->print_section == SECTION_NORMAL)
+    {
 
-	if (rep->header) {
-		fprintf(rep->output,"%s",rep->header);
-		free(rep->header);
-		rep->header=0;
+      if (rep->header)
+	{
+	  fprintf (rep->output, "%s", rep->header);
+	  free (rep->header);
+	  rep->header = 0;
 	}
-  	if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		print_data(rep,buff,entry);
-  	} else {
-		fprintf(rep->output,"%s",buff);
-  	}
+      if (rep->output_mode == 'C')
+	{
+	  print_data (rep, buff, entry);
+	}
+      else
+	{
+	  fprintf (rep->output, "%s", buff);
+	}
 
-}
+    }
 
-if (rep->print_section==SECTION_TRAILER) {
-	if (rep->header) {free(rep->header); rep->header=0;} // we've got a cached header - don't do anything..
-	else {
-  	if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		print_data(rep,buff,entry);
-  	} else {
-		fprintf(rep->output,"%s",buff);
-  	}
+  if (rep->print_section == SECTION_TRAILER)
+    {
+      if (rep->header)
+	{
+	  free (rep->header);
+	  rep->header = 0;
+	}			// we've got a cached header - don't do anything..
+      else
+	{
+	  if (rep->output_mode == 'C')
+	    {
+	      print_data (rep, buff, entry);
+	    }
+	  else
+	    {
+	      fprintf (rep->output, "%s", buff);
+	    }
 
 	}
-}
+    }
 
-if (rep->print_section==SECTION_HEADER) {
-  	if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		print_data(rep,buff,entry);
-  	} else {
-		if (rep->header) {
-			int a;
-			a=strlen(rep->header);
-			rep->header=realloc(rep->header,a+strlen(buff)+2);
-			rep->header[a]=0;
-			strcat(rep->header,buff);
-		} else {
-			rep->header=strdup(buff);
-		}
+  if (rep->print_section == SECTION_HEADER)
+    {
+      if (rep->output_mode == 'C')
+	{
+	  print_data (rep, buff, entry);
 	}
-}
+      else
+	{
+	  if (rep->header)
+	    {
+	      int a;
+	      a = strlen (rep->header);
+	      rep->header = realloc (rep->header, a + strlen (buff) + 2);
+	      rep->header[a] = 0;
+	      strcat (rep->header, buff);
+	    }
+	  else
+	    {
+	      rep->header = strdup (buff);
+	    }
+	}
+    }
 
 
 
@@ -197,59 +225,81 @@ gen_rep_tab_name (void *p)
  *  entry - unique identifier for this print within this block
  */
 void
-A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int entry)
+A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
+		int entry)
 {
   int b;
   int cnt;
   char *str;
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report,rep->page_no,rep->line_no,rep->col_no,entry);
-  
+  A4GL_debug
+    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d",
+     rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
+
   if (right_margin != 0)
     {
       A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
     }
-  
+
   if (rep->line_no == 0 && rep->page_no == 0 && a < 0)
     {
-      if (rep->output_mode == 'F')
-	{
-	  if (strcmp (rep->output_loc, "stdout") == 0)
-	    {
-	      A4GL_gotolinemode ();
-	      //A4GL_push_char ("");
-	      //A4GL_push_int (-1);
-	      //A4GL_push_int (-1);
-	      //A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-	      //A4GL_display_at (1, 0);
-	      rep->output = stdout;
-	      A4GL_gotolinemode ();
-	    }
-	  else
-	    {
-	      rep->output = A4GL_mja_fopen (rep->output_loc, "w");
-	      if (rep->output == 0)
-		{
-		  A4GL_exitwith ("Could not open report output");
-		  return;
-		}
 
-	    }
-	}
-      else
+      if (rep->output_mode == 'C')
 	{
-	 A4GL_debug("popen '%s'",rep->output_loc);
-	  rep->output = popen (rep->output_loc, "w");
+	  tmpnam (rep->output_loc);
+	  rep->output = fopen (rep->output_loc, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
 	      return;
 	    }
+
+	}
+      else
+	{
+
+	  if (rep->output_mode == 'F')
+	    {
+
+
+	      if (strcmp (rep->output_loc, "stdout") == 0)
+		{
+		  A4GL_gotolinemode ();
+		  rep->output = stdout;
+		  A4GL_gotolinemode ();
+		}
+	      else
+		{
+		  rep->output = A4GL_mja_fopen (rep->output_loc, "w");
+		  if (rep->output == 0)
+		    {
+		      A4GL_exitwith ("Could not open report output");
+		      return;
+		    }
+		}
+
+
+	    }
+	  else
+	    {
+	      A4GL_debug ("popen '%s'", rep->output_loc);
+	      rep->output = popen (rep->output_loc, "w");
+	      if (rep->output == 0)
+		{
+		  A4GL_exitwith ("Could not open report output");
+		  return;
+		}
+	    }
+
 	}
 
-  	if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		report_write_entry(rep,ENTRY_START);
-	}
+
+  if (rep->output_mode == 'C')
+    {
+      report_write_entry (rep, ENTRY_START);
     }
+
+    }
+
 
   if (a < 0)
     {				// We're just setting up...
@@ -262,14 +312,15 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
     {
       rep->line_no = 1;
       rep->page_no++;
-      rep->print_section=SECTION_HEADER;
+      rep->print_section = SECTION_HEADER;
       A4GL_debug ("Need page header ?");
 
-	if (rep->top_margin) {
-      		A4GL_debug ("Skip lines...");
-      		A4GL_push_int (rep->top_margin);
-      		A4GL_aclfgli_skip_lines (rep);
-      		A4GL_debug ("Done skip lines");
+      if (rep->top_margin)
+	{
+	  A4GL_debug ("Skip lines...");
+	  A4GL_push_int (rep->top_margin);
+	  A4GL_aclfgli_skip_lines (rep);
+	  A4GL_debug ("Done skip lines");
 	}
 
       if (rep->report == 0)
@@ -278,9 +329,9 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 	  A4GL_exitwith ("Internal error");
 	  exit (10);
 	}
-	//fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
+      //fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
-      rep->print_section=0;
+      rep->print_section = 0;
       A4GL_debug ("Done page header");
     }
 
@@ -296,7 +347,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 	{
 	  str = A4GL_report_char_pop ();
 	  A4GL_debug ("Popped '%s'...", str);
-	  report_print (rep, entry,"%s", str);
+	  report_print (rep, entry, "%s", str);
 	  rep->col_no += strlen (str);
 	  A4GL_debug ("Popped %s\n", str);
 	  acl_free (str);
@@ -310,35 +361,43 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
   if (s == 0)
     {
       rep->col_no = 0;
-      report_print (rep,-1, "\n");
+      report_print (rep, -1, "\n");
       rep->line_no++;
 
 
-      if (rep->print_section==SECTION_NORMAL) {
-      	if (rep->line_no > rep->page_length - rep->lines_in_trailer-rep->bottom_margin) {
-		//printf("Adding trailer..\n");
-		rep->print_section=SECTION_TRAILER;
-      		rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
-		rep->print_section=SECTION_NORMAL;
-      	}
+      if (rep->print_section == SECTION_NORMAL)
+	{
+	  if (rep->line_no >
+	      rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
+	    {
+	      //printf("Adding trailer..\n");
+	      rep->print_section = SECTION_TRAILER;
+	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
+	      rep->print_section = SECTION_NORMAL;
+	    }
 
-      	if (rep->line_no > rep->page_length - rep->bottom_margin)
+	  if (rep->line_no > rep->page_length - rep->bottom_margin)
+	    {
+	      //printf("Bottom margin %d",rep->bottom_margin);
+	      for (cnt = 0; cnt < rep->bottom_margin; cnt++)
 		{
-		//printf("Bottom margin %d",rep->bottom_margin);
-	  	for (cnt = 0; cnt < rep->bottom_margin; cnt++) {
-	      		report_print (rep, -1,"\n");
-			rep->line_no++;
-			//printf("--->%d\n",rep->line_no);
-	    	}
+		  report_print (rep, -1, "\n");
+		  rep->line_no++;
+		  //printf("--->%d\n",rep->line_no);
+		}
 
-	  	rep->line_no = 0;
-		if (a==0&&s==5)  {
-			return;
-		} else {
-			if (rep->lines_in_trailer) {
-				A4GL_debug("Calling rep_print");
-				A4GL_rep_print(rep,0,1,0,-10);
-			}
+	      rep->line_no = 0;
+	      if (a == 0 && s == 5)
+		{
+		  return;
+		}
+	      else
+		{
+		  if (rep->lines_in_trailer)
+		    {
+		      A4GL_debug ("Calling rep_print");
+		      A4GL_rep_print (rep, 0, 1, 0, -10);
+		    }
 		}
 	    }
 	}
@@ -356,10 +415,10 @@ A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
 {
   //int a;
   char *x;
-  x=malloc(cnt+1);
-  memset(x,c,cnt);
-  x[cnt]=0;
-  report_print(rep,-1,x);
+  x = malloc (cnt + 1);
+  memset (x, c, cnt);
+  x[cnt] = 0;
+  report_print (rep, -1, x);
   //for (a = 0; a < cnt; a++) fputc (c, f);
 }
 
@@ -374,8 +433,8 @@ A4GL_set_column (struct rep_structure *rep)
   long needn;
   a = A4GL_pop_long ();
   A4GL_push_char ("");
-A4GL_debug("Calling rep_print");
-  A4GL_rep_print (rep, 1, 1, 0,-2);
+  A4GL_debug ("Calling rep_print");
+  A4GL_rep_print (rep, 1, 1, 0, -2);
 #ifdef DEBUG
   /* {DEBUG} */
   {
@@ -443,7 +502,7 @@ A4GL_aclfgli_skip_lines (struct rep_structure *rep)
   a = A4GL_pop_long ();
   for (b = 0; b < a; b++)
     {
-      A4GL_rep_print (rep, 0, 0, 0,-3);
+      A4GL_rep_print (rep, 0, 0, 0, -3);
     }
 }
 
@@ -457,7 +516,7 @@ A4GL_need_lines (struct rep_structure *rep)
   int a;
   a = A4GL_pop_int ();
   if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
-    A4GL_skip_top_of_page (rep,2);
+    A4GL_skip_top_of_page (rep, 2);
 }
 
 /**
@@ -465,45 +524,54 @@ A4GL_need_lines (struct rep_structure *rep)
  * @todo Describe function
  */
 void
-A4GL_skip_top_of_page (struct rep_structure *rep,int n)
+A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 {
   int z;
   int a;
 
-a=rep->page_length-rep->line_no-rep->bottom_margin-rep->lines_in_trailer;
+  a =
+    rep->page_length - rep->line_no - rep->bottom_margin -
+    rep->lines_in_trailer;
 
 //printf("pl=%d lineno=%d bm=%d lt=%d\n",
 //rep->page_length,rep->line_no,rep->bottom_margin,
-	//rep->lines_in_trailer);
+  //rep->lines_in_trailer);
 
 //if (n==999 && rep->page_no<=1 && a) {
-		//rep->line_no++;
-		//A4GL_rep_print(rep,0,1,0);
-		//A4GL_rep_print(rep,0,0,0);
+  //rep->line_no++;
+  //A4GL_rep_print(rep,0,1,0);
+  //A4GL_rep_print(rep,0,0,0);
 //}
 
-  a=rep->page_length-rep->line_no-rep->bottom_margin-rep->lines_in_trailer;
+  a =
+    rep->page_length - rep->line_no - rep->bottom_margin -
+    rep->lines_in_trailer;
 
-if (n!=1 || rep->page_no) {
-  if (rep->header) return;
-  if (rep->line_no==0) return;
-}
+  if (n != 1 || rep->page_no)
+    {
+      if (rep->header)
+	return;
+      if (rep->line_no == 0)
+	return;
+    }
 
   //if (rep->page_no==1&& rep->lines_in_first_header) {
-	//a=a-rep->lines_in_first_header;
+  //a=a-rep->lines_in_first_header;
   //} else {
-	//a=a-rep->lines_in_header;
+  //a=a-rep->lines_in_header;
   //}
 
 //printf("Add %d lines %d %d\n",a,rep->print_section,n);
 
-if (a) {
-  for (z=0;z<a;z++) {
-      A4GL_rep_print (rep, 0, 0, 0,-4);
-    }
+  if (a)
+    {
+      for (z = 0; z < a; z++)
+	{
+	  A4GL_rep_print (rep, 0, 0, 0, -4);
+	}
 
-    A4GL_rep_print (rep, 0, 0, 0,-5);
-}
+      A4GL_rep_print (rep, 0, 0, 0, -5);
+    }
   //if (n==999&&rep->finishing&&rep->page_no==1) { A4GL_rep_print(rep,0,0,-11);  }
 
 
@@ -958,36 +1026,49 @@ A4GL_finished_report (void)
 
 
 
-static void print_report_block_start(struct rep_structure *rep,char *mod,char *repname,int lineno,char where,char *why,int rb) {
-  if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-	print_lvl(rep,lvl);
-	fprintf(rep->output,"<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",lineno,where,why,rb);
-  } else {
-	report_write_entry(rep,ENTRY_BLOCK);
+static void
+print_report_block_start (struct rep_structure *rep, char *mod, char *repname,
+			  int lineno, char where, char *why, int rb)
+{
+  if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
+    {
+      print_lvl (rep, lvl);
+      fprintf (rep->output,
+	       "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",
+	       lineno, where, why, rb);
+    }
+  else
+    {
+      report_write_entry (rep, ENTRY_BLOCK);
 
-	//report_write_string(rep,mod);
-	//report_write_string(rep,repname);
+      //report_write_string(rep,mod);
+      //report_write_string(rep,repname);
 
-	report_write_int(rep,lineno);
-	report_write_why(rep,where,why);
-	report_write_int(rep,rb);
-  }
+      report_write_int (rep, lineno);
+      report_write_why (rep, where, why);
+      report_write_int (rep, rb);
+    }
 }
 
-static void print_report_block_end(struct rep_structure *rep, int rb) {
-  if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-	print_lvl(rep,lvl);
-	fprintf(rep->output,"</ACL_ENTRY_BLOCK block=%d>\n",rb);
-   } else {
-	report_write_entry(rep,ENTRY_BLOCK_END);
-	//report_write_int(rep,rb);
-   }
+static void
+print_report_block_end (struct rep_structure *rep, int rb)
+{
+  if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
+    {
+      print_lvl (rep, lvl);
+      fprintf (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
+    }
+  else
+    {
+      report_write_entry (rep, ENTRY_BLOCK_END);
+      //report_write_int(rep,rb);
+    }
 
 }
 
 /*
 int A4GL_push_report_print_entry(struct rep_structure *rep, int lineno, int rb, int entry) {
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+  if (rep->output_mode=='C') {
   	if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
 		//print_lvl(rep,lvl);
 		//fprintf(rep->output,"<ACL_REPORT_PRINT_ENTRY lineno=%d block=%d entry=%d>\n",lineno,rb,entry);
@@ -1004,7 +1085,7 @@ return rb;
 
 int A4GL_pop_report_print_entry(struct rep_structure *rep, int rb, int entry) {
   //lvl--;
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+  if (rep->output_mode=='C') {
   	if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
 		//print_lvl(rep,lvl);
 		//fprintf(rep->output,"</ACL_REPORT_PRINT_ENTRY block=%d entry=%d>\n",rb,entry);
@@ -1020,66 +1101,88 @@ return 1;
 */
 
 
-int A4GL_push_report_section(struct rep_structure *rep,char *mod,char *repname,int lineno,char where,char *why,int rb) {
+int
+A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname,
+			  int lineno, char where, char *why, int rb)
+{
 /*printf("mod=%s where=%c why=%s\n",mod,where,why); */
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		print_report_block_start(rep,mod,repname,lineno,where,why,rb);
-  }
+  if (rep->output_mode == 'C')
+    {
+      print_report_block_start (rep, mod, repname, lineno, where, why, rb);
+    }
   lvl++;
-return rb;
+  return rb;
 }
 
 
-void A4GL_pop_report_section(struct rep_structure *rep, int rb) {
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-		lvl--;
-		print_report_block_end(rep,rb);
-  }
+void
+A4GL_pop_report_section (struct rep_structure *rep, int rb)
+{
+  if (rep->output_mode == 'C')
+    {
+      lvl--;
+      print_report_block_end (rep, rb);
+    }
 }
 
 
 
-static void print_lvl(struct rep_structure *rep,int lvl) {
-int a;
-	if (lvl==0) return;
+static void
+print_lvl (struct rep_structure *rep, int lvl)
+{
+  int a;
+  if (lvl == 0)
+    return;
 
-	for (a=0;a<lvl;a++) {
-		fprintf(rep->output,"  ");
+  for (a = 0; a < lvl; a++)
+    {
+      fprintf (rep->output, "  ");
+    }
+}
+
+
+static void
+print_data (struct rep_structure *rep, char *buff, int entry)
+{
+  char *s;
+  if (entry == -1)
+    {
+      return;
+    }
+
+  s = strdup (buff);
+  A4GL_trim (s);
+  if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
+    {
+
+      if (strlen (s) && strcmp (s, "\n") != 0)
+	{
+	  print_lvl (rep, lvl);
+	  fprintf (rep->output,
+		   "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
+		   rep->page_no, rep->line_no, rep->col_no, entry, s);
 	}
-}
-
-
-static void print_data(struct rep_structure *rep,char *buff,int entry) {
-char *s;
-if (entry==-1) {
-return;
-}
-
-s=strdup(buff);
-A4GL_trim(s);
-  if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-		
-	if (strlen(s)&& strcmp(s,"\n")!=0) {
-		print_lvl(rep,lvl);
-		fprintf(rep->output,"<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",rep->page_no,rep->line_no,rep->col_no,entry,s);
+    }
+  else
+    {
+      if (strlen (s) && strcmp (s, "\n") != 0)
+	{
+	  report_write_entry (rep, ENTRY_DATA);
+	  report_write_int (rep, rep->page_no);
+	  report_write_int (rep, rep->line_no);
+	  report_write_int (rep, rep->col_no);
+	  report_write_int (rep, entry);
+	  report_write_string (rep, s);
 	}
-  } else {
-	if (strlen(s)&& strcmp(s,"\n")!=0) {
-		report_write_entry(rep,ENTRY_DATA);
-		report_write_int(rep,rep->page_no);
-		report_write_int(rep,rep->line_no);
-		report_write_int(rep,rep->col_no);
-		report_write_int(rep,entry);
-		report_write_string(rep,s);
-	}
-  }
-free(s);
+    }
+  free (s);
 }
 
 
-static void report_write_int(struct rep_structure *rep, int n) {
+static void
+report_write_int (struct rep_structure *rep, int n)
+{
 //unsigned char c;
-short s;
 
 // Forget optimising for now...
 /*
@@ -1097,56 +1200,96 @@ short s;
 	report_write_char(rep,255);
 */
 
-	n=htonl(n);
-	fwrite(&n,sizeof(n),1,rep->output);
+  n = htonl (n);
+  fwrite (&n, sizeof (n), 1, rep->output);
 }
 
-static void report_write_char(struct rep_structure *rep, unsigned char n) {
-	fwrite(&n,sizeof(n),1,rep->output);
+static void
+report_write_char (struct rep_structure *rep, unsigned char n)
+{
+  fwrite (&n, sizeof (n), 1, rep->output);
 }
 
-static void report_write_string(struct rep_structure *rep, char *s) {
-	int n;
-	n=strlen(s);
-	report_write_int(rep,n);
-	fwrite(s,n,1,rep->output);
+static void
+report_write_string (struct rep_structure *rep, char *s)
+{
+  int n;
+  n = strlen (s);
+  report_write_int (rep, n);
+  fwrite (s, n, 1, rep->output);
 }
 
 
-static void report_write_why(struct rep_structure *rep,char where,char *why) {
-	report_write_char(rep,where);
-	report_write_string(rep,why);
+static void
+report_write_why (struct rep_structure *rep, char where, char *why)
+{
+  report_write_char (rep, where);
+  report_write_string (rep, why);
 }
 
 
 
-static void report_write_entry(struct rep_structure *rep,char type) {
-  if (!A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-	report_write_char(rep,type);
+static void
+report_write_entry (struct rep_structure *rep, char type)
+{
+  if (!A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
+    {
+      report_write_char (rep, type);
 
-	if (type==ENTRY_START) {
-		int version_no=2;
-		report_write_int(rep,version_no);
-		report_write_int(rep,time(0));
-		report_write_int(rep,rep->top_margin);
-		report_write_int(rep,rep->bottom_margin);
-		report_write_int(rep,rep->left_margin);
-		report_write_int(rep,rep->right_margin);
-		report_write_int(rep,rep->page_length);
-		report_write_string(rep,rep->repName);
-		report_write_string(rep,rep->modName);
+      if (type == ENTRY_START)
+	{
+	  int version_no = 2;
+	  report_write_int (rep, version_no);
+	  report_write_int (rep, time (0));
+	  report_write_int (rep, rep->top_margin);
+	  report_write_int (rep, rep->bottom_margin);
+	  report_write_int (rep, rep->left_margin);
+	  report_write_int (rep, rep->right_margin);
+	  report_write_int (rep, rep->page_length);
+	  report_write_string (rep, rep->repName);
+	  report_write_string (rep, rep->modName);
 	}
-  } else {
-	if (type==ENTRY_START) {
-		fprintf(rep->output,"<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",rep->modName,rep->repName,
-			rep->top_margin,
-			rep->bottom_margin,
-			rep->left_margin,
-			rep->right_margin,
-			rep->page_length,
-			(long)time(0));
+    }
+  else
+    {
+      if (type == ENTRY_START)
+	{
+	  fprintf (rep->output,
+		   "<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",
+		   rep->modName, rep->repName, rep->top_margin,
+		   rep->bottom_margin, rep->left_margin, rep->right_margin,
+		   rep->page_length, (long) time (0));
 	}
-  }
+    }
 }
 
+
+
+
+
+
+void A4GL_convert_report(struct rep_structure *rep, char *ofile,char *otype,char *layout) {
+char buff[1024];
+	A4GL_trim(ofile);
+	A4GL_trim(otype);
+	A4GL_trim(layout);
+
+if (strlen(layout)) {
+	sprintf(buff,"%s/bin/process_report -o '%s' '%s' '%s' '%s'",acl_getenv("AUBITDIR"),ofile, otype,rep->output_loc,layout);
+} else {
+	sprintf(buff,"%s/bin/process_report -o '%s' '%s' '%s' ",acl_getenv("AUBITDIR"),ofile, otype,rep->output_loc);
+}
+system(buff);
+
+free(ofile);
+free(otype);
+free(layout);
+}
+
+void A4GL_free_report(struct rep_structure *rep) {
+	if (rep->output_mode=='C') {
+		rep->output_mode=' ';
+		//unlink(rep->output_loc);
+	}
+}
 /* ============================= EOF ================================ */

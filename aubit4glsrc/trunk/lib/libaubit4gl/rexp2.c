@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.21 2004-05-18 13:38:35 mikeaubury Exp $
+# $Id: rexp2.c,v 1.22 2004-07-09 16:45:04 mikeaubury Exp $
 #
 */
 
@@ -230,8 +230,19 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   A4GL_debug("ptr2=%s",ptr2);
   for (a = 0; a < strlen (ptr2); a++)
     {
-      if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?')
-	ismatch = 1;
+
+      if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?') {
+	if (!A4GL_isyes(acl_getenv("CONSTRUCT_NO_MATCHES"))) {
+		ismatch = 1;
+	}
+      }
+
+      if (ptr2[a] == '%' || ptr2[a] == '_') {
+	if (A4GL_isyes(acl_getenv("CONSTRUCT_LIKE"))) {
+		if (ismatch!=1) ismatch = 2;
+	}
+      }
+
       lastchar = z;
       z = isop (ptr2, a);
 	A4GL_debug("z=%d",z);
@@ -305,10 +316,18 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
     }
   if (z == 0 && z2 == 0)
     {
-      if (ismatch)
-	strcat (buff2, " matches ");
-      else
+      if (ismatch) {
+	if (ismatch==1) {
+		strcat (buff2, " matches ");
+        }
+
+	if (ismatch==2) {
+		strcat (buff2, " like ");
+	}
+
+      } else {
 	strcat (buff2, "=");
+      }
       strcat (buff2, quote);
       for (cnt = 0; cnt < constr_size; cnt++)
 	{

@@ -62,6 +62,8 @@ char str[1024];
   }
 
 strcpy(str,str_orig);
+
+
 if (decimal_char!=',') {
        int b=0;
        for (a=0;a<strlen(str_orig);a++) {
@@ -72,8 +74,9 @@ if (decimal_char!=',') {
 }
 
 
+A4GL_trim(str);
 
-	A4GL_debug("XYXY str to dec : %s",str);
+	A4GL_debug("XYXY str to dec : '%s'",str);
 
 	digits  =dec->dec_data[0]&127;
 	decimals=dec->dec_data[1];
@@ -120,8 +123,10 @@ if (decimal_char!=',') {
 	  //
 	  A4GL_conversion_ok(0);
 	  if (A4GL_isyes(acl_getenv("A4GL_NULL_DECIMAL_IF_BAD"))) {
+		  A4GL_debug("Bad...");
 		  A4GL_setnull(DTYPE_DECIMAL,dec,dec->dec_data[0]*256+dec->dec_data[1]);
 	  } else {
+		  A4GL_debug("Bad...");
 		  return A4GL_str_to_dec("0",dec);
 	  }
 	  return dec;
@@ -137,6 +142,7 @@ if (decimal_char!=',') {
   if (strlen(head)>digits-decimals) {
 	  // Its too big..
 	  //printf("Num too big");
+	A4GL_debug("Bad %s %d - %d %d ",head,strlen(head),digits,decimals);
 	  A4GL_setnull(DTYPE_DECIMAL,dec,dec->dec_data[0]*256+dec->dec_data[1]);
 	  return dec;
   }

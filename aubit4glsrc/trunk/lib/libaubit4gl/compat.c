@@ -3,7 +3,7 @@
  * This is just for compatibility with informix(tm) 4GL.
  *
  * @FIXME : This does not work anymore with C compiled using Informix because 
- * this functions now are macros.
+ * this functions now are macros.  <--- THIS IS WHEN USING THE INFORMIX SUPPLIED HEADER FILE ?
  *
  */
 #include "a4gl_libaubit4gl_int.h"
@@ -187,6 +187,13 @@ pushquote (char *s, int n)
 }
 
 
+void popdec_aubit (fgldecimal *x) {
+	char *ptr;
+	char *eptr;
+	ptr=A4GL_char_pop();
+	eptr =A4GL_str_to_dec (ptr, x);
+	free(ptr);
+}
 
 
 void

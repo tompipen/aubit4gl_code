@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.93 2004-06-25 18:25:25 mikeaubury Exp $
+# $Id: stack.c,v 1.94 2004-07-09 16:45:04 mikeaubury Exp $
 #
 */
 
@@ -2274,6 +2274,9 @@ A4GL_setnull (int type, void *vbuff, int size)
       return;
     }
 
+
+
+
   if (type == DTYPE_BYTE || type == DTYPE_TEXT)
     {
       struct fgl_int_loc *ptr;
@@ -2325,6 +2328,20 @@ A4GL_setnull (int type, void *vbuff, int size)
     {
       A4GL_debug ("20 Set buff to %s\n", buff);
     }
+  if (type==DTYPE_DECIMAL || type==DTYPE_MONEY) {
+	int h;
+	int t;
+  	h = size;
+  	t = h;
+  	h = h / 256;
+  	t = t - h * 256;
+  	errno = 0;
+	if (h||t) {
+  		A4GL_init_dec (vbuff, h, t);
+	}
+
+}
+
 }
 
 /**
