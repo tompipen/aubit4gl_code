@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.22 2003-07-21 21:40:12 mikeaubury Exp $
+# $Id: pointers.c,v 1.23 2003-09-22 07:03:49 afalout Exp $
 #
 */
 
@@ -59,14 +59,6 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
-
-/*
-#ifndef WIN32
-#include <search.h>
-//#else
-//#define VISIT int
-#endif
-*/
 
 /*
 =====================================================================

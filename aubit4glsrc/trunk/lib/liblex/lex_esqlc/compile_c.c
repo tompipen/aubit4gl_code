@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.102 2003-09-20 07:48:09 mikeaubury Exp $
+# $Id: compile_c.c,v 1.103 2003-09-22 07:03:50 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -124,7 +124,11 @@ extern char *infilename;
 extern int yylineno;
 extern int lastlineno;
 extern int inp_flags;
-extern struct rep_structure rep_struct;
+
+
+dll_import struct rep_structure rep_struct;
+
+
 extern struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;

@@ -1,4 +1,13 @@
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+	/* missing from rpcgen generated .h on CygWin: */
+	#define bool_t int
+	#define u_int unsigned int
+#endif
+
 #include "npcode.h"
+#include <stdio.h>			/* needed for FILE symbol */
+
+#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE
 
 int
 process_xdr (char dir, void *s, char *filename)

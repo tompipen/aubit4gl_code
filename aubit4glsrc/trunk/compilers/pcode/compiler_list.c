@@ -1,6 +1,29 @@
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+	/* missing from rpcgen generated .h on CygWin: */
+	#define bool_t int
+	#define u_int unsigned int
+#endif
+
 #include "npcode.h"
 #include "npcode_defs.h"
-#include <search.h>
+
+#if HAVE_SEARCH_H
+	#include <search.h>		/* VISIT-used in pointers.c */
+#else
+	  
+	#include "../../tools/search.h"		/* VISIT-used in pointers.c */
+	  /* For tsearch */
+	  /*
+	  typedef enum
+	  {
+	    preorder,
+	    postorder,
+	    endorder,
+	    leaf
+	  }
+	  VISIT;
+        */
+#endif
 
 struct function *current_function;
 
@@ -26,7 +49,9 @@ add_label (char *label)
     }
   else
     {
-      hcreate (100000);
+#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
+	  hcreate (100000);
+#endif
     }
 
 
@@ -34,7 +59,11 @@ add_label (char *label)
 
   e.key = strdup (label);
   e.data = (char *) current_function->cmds.cmds_len;
+  
+#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
   ep = hsearch (e, ENTER);
+#endif
+
   if (!ep)
     {
       printf ("Unable to append to hash list\n");
@@ -52,7 +81,9 @@ find_label (char *label)
   ENTRY e, *ep;
   e.key = label;
 
+#if ! defined (__CYGWIN_) && ! defined (__MINGW32__)
   ep = hsearch (e, FIND);
+#endif
   if (!ep)
     return -1;
   return (long) ep->data;

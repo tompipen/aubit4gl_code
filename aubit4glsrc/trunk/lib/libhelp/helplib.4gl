@@ -20,8 +20,13 @@ code
 	-----------------------------------------------------------------------------
 	*/
 
-	#ifdef PORTABLE
-		#include <netinet/in.h>
+	#if defined (PORTABLE) && ! defined(__MINGW32__)
+		//#ifdef __MINGW32__
+			//#define __INSIDE_MSYS__
+			//#include <winsock.h>
+        //#else
+			#include <netinet/in.h>
+        //#endif
 	#else
 		#ifndef htonl
 			#define htonl(x) (x)

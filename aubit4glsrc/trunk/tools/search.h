@@ -25,7 +25,9 @@
 #define __need_size_t
 #include <stddef.h>
 
-__BEGIN_DECLS
+
+//something wrong with this:
+//__BEGIN_DECLS
 
 #if defined __USE_SVID || defined __USE_XOPEN_EXTENDED
 /* Prototype structure for a linked-list data structure.
@@ -52,6 +54,7 @@ extern void remque (void *__elem) __THROW;
 /* For use with hsearch(3).  */
 #ifndef __COMPAR_FN_T
 # define __COMPAR_FN_T
+
 typedef int (*__compar_fn_t) (__const void *, __const void *);
 
 # ifdef	__USE_GNU
@@ -85,6 +88,7 @@ struct _ENTRY;
    ACTION is `FIND' return found entry or signal error by returning
    NULL.  If ACTION is `ENTER' replace existing data (if any) with
    ITEM.data.  */
+#ifdef BOMB
 extern ENTRY *hsearch (ENTRY __item, ACTION __action) __THROW;
 
 /* Create a new hashing table which will at most contain NEL elements.  */
@@ -92,6 +96,7 @@ extern int hcreate (size_t __nel) __THROW;
 
 /* Destroy current internal hashing table.  */
 extern void hdestroy (void) __THROW;
+#endif
 
 #ifdef __USE_GNU
 /* Data type for reentrant functions.  */
@@ -170,6 +175,6 @@ extern void *lfind (__const void *__key, __const void *__base,
 extern void *lsearch (__const void *__key, void *__base,
 		      size_t *__nmemb, size_t __size, __compar_fn_t __compar);
 
-__END_DECLS
+//__END_DECLS
 
 #endif /* search.h */

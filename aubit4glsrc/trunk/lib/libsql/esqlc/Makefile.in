@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2003-09-17 11:55:42 afalout Exp $
+# $Id: Makefile.in,v 1.28 2003-09-22 07:03:51 afalout Exp $
 #
 
 ROOT		=../../..
@@ -44,10 +44,16 @@ OBJS				=${SRC_C:.c=.o}
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
 CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql \
-					-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
+					-I$(AUBITDIR)/incl
 
 ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
-					-I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
+					-I$(AUBITDIR)/incl ${C_IFLAGS}
+
+
+ifneq "${INFORMIXDIR}" ""
+	ESQL_INCLPATH	+=-I${INFORMIXDIR}
+endif
+
 
 LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
                     -L$(INFORMIXDIR)/lib/cli
@@ -93,11 +99,13 @@ endif
 
 ifdef COMSPEC
     #since we are using ESQL/C compiler, and then MSVC, this define is not automatic:
-	ESQL_FLAGS		=-D__CYGWIN__
+	ESQL_FLAGS		=-D__CYGWIN__ -e
+	# -e, -p          Preprocess only (no compilation or linking).
+
     #strange things happen to paths when invoking native Windows programs from CygWin make,
     #so we need to use explicit backslash, even though slash is understood by most
     #Windows programs:
-	ESQL_INCLPATH	+=-I${LIBROOT} -I${ROOT}\compilers\fcompile -I${LIBROOT}\libincl
+	ESQL_INCLPATH	+=-I${LIBROOT} -I${ROOT}\compilers\fcompile
 	#we must NOT use CygWin headers, on Windows we must compile with MSVC,
     #since it's the only supported compiler by esql/c on Windows
 	#-Ic:/cygwin/usr/include
@@ -105,8 +113,20 @@ ifdef COMSPEC
 
 	CFLAGS			+=-Ic:/INFORMIX
 
+
+    #FIXME!!!!! I'm using variable named TMP somewhere!!!!
+	TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+    PWD=
+    export TMP
+    export PWD
+
+
+	IFX_LIBS="E:\Program files\W2000\Informix\CSDK\lib\isqlt09a.lib" "E:\Program files\W2000\Informix\CSDK\lib\igl4n304.lib" "E:\Program files\W2000\Informix\CSDK\lib\iglxn304.lib" "E:\Program files\W2000\Informix\CSDK\lib\igo4n304.lib"
+	# netapi32.lib wsock32.lib user32.lib winmm.lib
+
+
 else
-#    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl
+#    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile
 	ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
 endif
 
@@ -158,9 +178,14 @@ ALL: ${ALL}
 libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
-	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+ifneq "${COMSPEC}" ""
+	"@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+#	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} -I"E:/Program files/W2000/Informix/CSDK/incl/esql"
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} -laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" -I../../../incl -I. -I.. -L../..
+else
+	INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
-
+endif
 
 #------------------------ esql_compatible.ec ----------------------------
 
@@ -169,7 +194,7 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
 ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
-	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c ifx_$^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ##################
@@ -256,6 +281,10 @@ show:
 	@echo "IFXLIBS_LIB=${IFXLIBS_LIB}"
 	@echo "IFXLIBS_LIB_ESQL=${IFXLIBS_LIB_ESQL}"
 	@echo "NON_IFX_LIBS=${NON_IFX_LIBS}"
+	@echo "INFORMIXDIR=${INFORMIXDIR}"
+	@echo "IFX_LIBS=${IFX_LIBS}"
+	@echo "Output of 'set':"
+	set
 
 ## ==================================================================
 ##                              Windows Targets

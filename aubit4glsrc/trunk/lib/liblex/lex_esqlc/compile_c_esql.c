@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.53 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.54 2003-09-22 07:03:51 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1327,60 +1327,6 @@ nm (int n)
       return "INTERVAL";
     }
   return "CHAR";
-}
-
-
-static char *dt_qual(int a) {
-	switch(a) {
-	case 1: return "YEAR";
-	case 2: return "MONTH";
-	case 3: return "DAY";
-	case 4: return "HOUR";
-	case 5: return "MINUTE";
-	case 6: return "SECOND";
-	} 
-	return "FRACTION(5)";
-}
-
-
-
-char *
-A4GL_dtype_sz (int d, int s)
-{
-  static char buff[256];
-  switch (d & 15)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 7:
-    case 6:
-    case 11:
-    case 12:
-      return "";
-
-    case 10:
-	strcpy(buff, " ");
-	strcat(buff,dt_qual(s>>4));
-	strcat(buff," TO ");
-	strcat(buff,dt_qual(s&0xf));
-	return buff;
-
-    case 8:
-    case 5:                     /* decimal */
-      return "(32,16)";
-
-    case 0:
-    case 13:
-      sprintf (buff, "(%d)", s);
-      return buff;
-
-    case 14:
-      sprintf (buff, " year to second(5)");
-      return buff;
-    }
-  return "";
 }
 
 

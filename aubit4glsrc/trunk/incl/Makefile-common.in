@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.139 2003-09-17 11:55:42 afalout Exp $
+# $Id: Makefile-common.in,v 1.140 2003-09-22 07:03:49 afalout Exp $
 #
 
 
@@ -945,9 +945,9 @@ LIB_EXPORTLIB   =@LIB_EXPORTLIB@
 TMP_LIBFILES	=$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}) $(addsuffix ${SO_EXT},@COMP_LIBS@ @ALL_LIBS@)
 LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES})
 
-ifneq "${COMSPEC}" ""
-	LIB_DEFAULT	+=$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB})
-endif
+#ifneq "${COMSPEC}" ""
+#	LIB_DEFAULT	+=$(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
+#endif
 
 #LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
 LIB_SO		=${LIB_DEFAULT}
@@ -985,7 +985,7 @@ LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
 ifneq "${COMSPEC}" ""
-	LIB_FILES 		+=${LIB_EXPORTLIB} lib4glc${SO_EXT}
+	LIB_FILES 		+=lib4glc${SO_EXT} $(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
 	LIB_ALLWAYSCLEAN+=libUI_TUI.dll
 endif
 

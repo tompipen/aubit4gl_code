@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2003-09-20 07:47:50 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2003-09-22 07:03:50 afalout Exp $
 #
 
 ROOT    	=../..
@@ -46,16 +46,19 @@ FCOMPILE=${ROOT}/bin/fcompile
 	#LINKLIBS=-lws2_32 -lwsock32 -lmswsock
 #endif
 
+LINKLIBS=-lwsock32
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc ${LINKLIBS} -g -DPORTABLE -as-dll $^ -o $@
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc -verbose -g -DPORTABLE -as-dll $^ -o $@ ${LINKLIBS}
 #	gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -I../../incl -o $@ $^ -L.. -laubit4gl
 #WARNING: cannot use 4glc directly, because of broken getopt_long() on CygWin (-o will not be recognized)
 #	export A4GL_SQLTYPE=nosql; ${4GLC} --shared $^ -o $@
+
+#gcc  -DSRC_TREE -g -DPORTABLE -shared helplib.c a4gl_xxhelp.afr.c -o  ../libHELP_std.dll -lwsock32 -ID:/cygwin/usr/src/aubit/aubit4glsrc/incl -ID:/cygwin/usr/src/aubit/aubit4glsrc/incl -LD:/cygwin/usr/src/aubit/aubit4glsrc/lib -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl -L/usr/local/lib
 
 ## ==================================================================
 ##                              Sub-targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2003-09-22 04:03:42 afalout Exp $
+# $Id: Makefile,v 1.8 2003-09-22 07:03:46 afalout Exp $
 #
 
 ROOT    =../..
@@ -39,7 +39,15 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS			=-Wall -O2 -g
-#CC=gcc
+
+ifneq "${COMSPEC}" ""
+	#for features.h
+	LIST_CFLAGS	=${CFLAGS} -I"D:/cygwin/usr/include"
+	#for rpc.h and in.h
+	RPC_CFLAGS	=${CFLAGS} -I"D:\cygwin\usr\src\aubit\aubit4glsrc\tools\no_rpc\cygwin" -I"d:\cygwin\usr\include"
+endif
+
+
 
 OBJ_COMMON      =npcode_xdr.o common_io.o common_print.o common_eval.o
 
@@ -99,6 +107,12 @@ endif
 
 XGENEXE    		=${ROOT}/bin/xgen
 
+
+ifneq "${COMSPEC}" ""
+	RPCLINKLIBS=-L"D:/cygwin/lib" -lrpclib 
+	#-lcygwin
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -110,7 +124,13 @@ ${BINROOT}/checker: $(OBJ_CHECKER) npcode.h
 	$(CC) -g -o $@ $(OBJ_CHECKER) ${LINKLIBS}
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE) npcode.h
-	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS}
+	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS} ${RPCLINKLIBS}
+#/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
+#/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
+
+#	-lrapi
+#	-L"D:\cygwin\lib\w32api" -lshlwapi
+#@RPCLIB_LFLAGS@ @RPCLIB_NAME@
 
 #open.c is missing from CVS:
 ${BINROOT}/open_pcode:  ${OBJ_OPEN}
@@ -135,13 +155,19 @@ npcode.xi.o npcode.xio.o npcode.xo.o: npcode.x ${XGENEXE}
 	${XGENEXE} $< something
 
 runner_calls_c.o : runner_calls.c
-	$(CC) -g -c $^ -DSTDCALLS -o $@
+	$(CC) ${CFLAGS} -g -c $^ -DSTDCALLS -o $@
 
 runner_calls_fgl.o : runner_calls.c
-	$(CC) -g -c $^ -DFGLCALLS -I$(ROOT)/incl -o $@
+	$(CC) ${CFLAGS} -g -c $^ -DFGLCALLS -I$(ROOT)/incl -o $@
 
 npcode_xdr.o: npcode_xdr.c
-	$(CC) -c -g -o $@ $^
+	$(CC) ${RPC_CFLAGS} -c -o $@ $^
+
+common_io.o: common_io.c
+	$(CC) ${RPC_CFLAGS} -c -o $@ $^
+
+compiler_list.o: compiler_list.c
+	$(CC) ${LIST_CFLAGS} -c -o $@ $^
 
 npcode.h : npcode.x
 	${RPCGEN_NPCODE}
@@ -150,7 +176,7 @@ y.tab.o : simple.yacc npcode.h
 #bison -y -r all -d -v $^
 # add -t for yacc debugging...
 	yacc  -t -d -v $<
-	$(CC) -g -c y.tab.c
+	$(CC) ${CFLAGS} -g -c y.tab.c
 
 lex.yy.c: simple.lex
 	flex -i $^

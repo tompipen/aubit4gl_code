@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.10 2003-09-17 11:55:42 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.11 2003-09-22 07:03:48 afalout Exp $
 ;
 
 
@@ -929,10 +929,23 @@ var
 	CurrSYSpath: String;
 	CurrUSERpath: String;
     CheckPath: String;
+    Test: String;
 	PathExists: Integer;
 begin
 
-	DebugPaths := True; 	//Debuggung of the installer script
+{
+function ParamStr(Index: Integer): String;
+Returns the Index-th command line parameter passed to Setup.
+
+function ParamCount: Integer;
+Returns the number of command line parameters passed to Setup.
+}
+
+    Test :=ExpandConstant('{param:DebugPaths|no}');
+	if Test = 'yes' then begin
+		DebugPaths := True; 	//Debuggung of the installer script ( /DebugPaths=yes )
+	end;
+
 	Abort := False; //Initialise Abort flag
 
 	Result := GetGWDInstalled ();
@@ -1224,6 +1237,8 @@ end;
 
 { Folowing code shows how to call DLL functions at runtime from a [Code] section. It needs isxdl.dll
 	added to [Files] section
+
+    from isx3demo.iss file
 }
 
 {

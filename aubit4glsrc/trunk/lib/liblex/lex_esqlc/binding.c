@@ -26,6 +26,19 @@ void printc (char *fmt, ...);
 void printh (char *fmt, ...);
 int esql_type (void);
 
+static char *dt_qual(int a) {
+	switch(a) {
+	case 1: return "YEAR";
+	case 2: return "MONTH";
+	case 3: return "DAY";
+	case 4: return "HOUR";
+	case 5: return "MINUTE";
+	case 6: return "SECOND";
+	}
+	return "FRACTION(5)";
+}
+
+
 static void print_sql_type_postgres (int a, char ioro);
 
 static char *decode_decimal_size_as_string(int n) {
@@ -478,4 +491,43 @@ static void print_sql_type_postgres (int a, char ioro)
 
 }
 
+
+char *
+A4GL_dtype_sz (int d, int s)
+{
+  static char buff[256];
+  switch (d & 15)
+    {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 7:
+    case 6:
+    case 11:
+    case 12:
+      return "";
+
+    case 10:
+	strcpy(buff, " ");
+	strcat(buff,dt_qual(s>>4));
+	strcat(buff," TO ");
+	strcat(buff,dt_qual(s&0xf));
+	return buff;
+
+    case 8:
+    case 5:                     /* decimal */
+      return "(32,16)";
+
+    case 0:
+    case 13:
+      sprintf (buff, "(%d)", s);
+      return buff;
+
+    case 14:
+      sprintf (buff, " year to second(5)");
+      return buff;
+    }
+  return "";
+}
 

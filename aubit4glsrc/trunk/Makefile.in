@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.127 2003-09-17 11:55:02 afalout Exp $
+# $Id: Makefile.in,v 1.128 2003-09-22 07:01:59 afalout Exp $
 #
 
 ## ==================================================================
@@ -96,7 +96,10 @@ corecompile:
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
 	$(MAKE) -C compilers/helpcompile
+ifneq "${GCC_MINGW}" "yes"
+	#cannot compile current pcode stuff without RPClib - none on Windows/MinGW
 	$(MAKE) -C compilers/pcode
+endif
 	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
 	@echo Aubit 4gl compiler core is now compiled

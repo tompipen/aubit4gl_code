@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.198 2003-09-22 04:02:06 afalout Exp $
+dnl # $Id: configure.in,v 1.199 2003-09-22 07:02:15 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1187,6 +1187,10 @@ case $host in
 
 		;;
 
+	*-*-mingw*)
+			GCC_MINGW=yes
+        ;;
+
     #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
 	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
 		ODBC=odbc32;
@@ -1195,6 +1199,18 @@ case $host in
         SO_EXT=.dll
         SO_EXT_LINKABLE=$SO_EXT
 		ARCHEXT=zip
+
+        #check if we are using MinGW GCC with CygWin:
+		TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+		if test "$TMP_TMP" != ""; then
+			set `echo $TMP_TMP`
+			if test "$1" != ""; then
+                if test "$3" = "mingw"; then
+					GCC_MINGW=yes
+                fi
+            fi
+        fi
+
 		;;
 
 	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
@@ -1450,23 +1466,23 @@ LIB_EXPORTLIB=aubit4gl
     COUNTER=0
 	for FILE in $LIB_EXPORTLIB ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$LIB_EXPORTLIB$SO_EXT_LINKABLE'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
+		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT_LINKABLE; DestDir: {app}/bin; Components: runtime'"
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		#Windows exports library:
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}/lib; Components: runtime'"
     done
 
 	for FILE in $COMP_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: compiler'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT; DestDir: {app}/lib; Components: compiler'"
 	done
 
 	for FILE in $ALL_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT; DestDir: {app}/lib; Components: runtime'"
 	done
 
 
@@ -1483,8 +1499,15 @@ AMAKE_BIN_EXE=aubit-config
 RUNTIME_EXE="loadmap fshow $AMAKE_BIN_EXE"
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl ecpg_wrap default_frm \
-        c2pcode checker runner runner_fgl"
+        aace adecompile convertsql aace_4gl aace_perl default_frm "
+
+PCODE_EXE="c2pcode checker runner runner_fgl"
+
+if test "$GCC_MINGW" != "yes"; then
+	#Pcode stuff needs RCPlib which does not exist on Windows/MinGW
+	COMP_EXE="$COMP_EXE $PCODE_EXE"
+fi
+
 #xgen
 
 #needs missing source code
@@ -1513,19 +1536,19 @@ COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
     COUNTER=0
 	for FILE in $COMP_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXE_EXT'"
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE$EXE_EXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE$EXEEXT; DestDir: {app}/bin; CopyMode: normal; Components: compiler'"
 	done
 
 	for FILE in $RUNTIME_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXE_EXT'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE$EXE_EXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE$EXEEXT; DestDir: {app}/bin; CopyMode: normal; Components: runtime'"
 	done
 
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/lib/lib4glc.dll; DestDir: {app}/bin; CopyMode: normal; Components: compiler'"
 
 
 
@@ -1548,7 +1571,7 @@ ALL_SH="4glpc aubit ecpg_wrap $AMAKE_SH"
 	for FILE in $ALL_SH ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "SHFILE_$COUNTER='$INST_BASE/bin/$FILE'"
-		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE; DestDir: {app}\bin; Components: Shell'"
+		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE; DestDir: {app}/bin; Components: Shell'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "SHFILE_$COUNTER='$INST_BASE/configure'"
@@ -1607,7 +1630,7 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 	for FILE in $ALL_INC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: compiler'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: compiler'"
 	done
 
     COUNTER2=0
@@ -1615,7 +1638,7 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		COUNTER2=`(expr $COUNTER2 + 1) 2>/dev/null`
 		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: Make'"
+		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: Make'"
 	done
 
 ## ==================================================================
@@ -1665,13 +1688,13 @@ ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
 	for FILE in $ALL_EXAMP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\$FILE; DestDir: {app}\tools\test; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE/tools/test/$FILE; DestDir: {app}/tools/test; Components: 4GLexamples'"
 	done
 
 	for FILE in $ALL_EXAMP_GUI ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/gui/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\$FILE; DestDir: {app}\tools\test\gui; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE/tools/test/gui/$FILE; DestDir: {app}/tools/test/gui; Components: 4GLexamples'"
 	done
 
 #Now add Makefile to be used for installation only:
@@ -1697,13 +1720,13 @@ ALL_MAKEFILE="tools/test/Makefile tools/test/gui/Makefile Makefile"
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "MAKEFILE_$COUNTER='$INST_BASE/$FILE'"
 		FILEDIR=`dirname $FILE`
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\$FILE; DestDir: {app}\$FILEDIR; Components: Make'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/$FILE; DestDir: {app}/$FILEDIR; Components: Make'"
 	done
 
 	for FILE in $INCL_MAKE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "MAKEFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: Make'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: Make'"
 	done
 
 
@@ -1733,13 +1756,13 @@ ROOT_FILES_DOC="README.txt"
 	for FILE in $ALL_DOC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "DOCFILE_$COUNTER='%doc $INST_BASE/docs/$FILE'"
-		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\docs\$FILE; DestDir: {app}\docs; Components: runtime'"
+		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/docs/$FILE; DestDir: {app}/docs; Components: runtime'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "DOCFILE_$COUNTER='%doc $INST_BASE/$ROOT_FILES_DOC'"
-	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help'"
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/tools/cygwin/readme-runtime.html; DestDir: {app}; Components: help'"
 
 ## ==================================================================
 ##       Define permanent list of conversion files to build/install
@@ -1753,7 +1776,7 @@ CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 	for FILE in $CONVSQL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "CONVFILE_$COUNTER='%doc $INST_BASE/etc/convertsql/$FILE'"
-		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\conversql\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
+		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE/etc/convertsql/$FILE; DestDir: {app}/etc/convertsql; Components: runtime'"
 	done
 
 
@@ -1977,12 +2000,16 @@ else
 fi
 
 ## ==================================================================
-##                  Checks for standard programs
+##     Checks for stuff needed only for compiling from source code
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking standard programs:)
 
 if test "$AUBIT_SOURCE" = "1" ; then
+
+## ==================================================================
+##  				   Checks for Bison/yacc
+## ==================================================================
 
 	#force this check even if not specified on command line:
 	if test "$with_bison" = ""; then
@@ -2048,6 +2075,28 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	])
 
 
+## ==================================================================
+##  				   Checks for Lex/flex
+## ==================================================================
+
+#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
+#we test for C, all sort of wireds things will happen, so we have to test
+#it even in binary distro, where we don't need it:
+dnl #AC_PROG_LEX
+AM_PROG_LEX
+if test "$LEX" = ":" || test "$LEX" = "" ; then
+    dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+	LEX="no"
+	if test "$AUBIT_SOURCE" = "1" ; then
+        WARN_LEX=1
+    fi
+fi
+
+## ==================================================================
+##                  Checks Efence
+## ==================================================================
+
+
 	#AC_MSG_CHECKING(Electric Fence debugging)
 	AC_ARG_WITH(efence,
 	[  --with-efence[=DIR]       Use Electric Fence library for debugging. DIR is the
@@ -2083,6 +2132,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	])
 
 
+## ==================================================================
+##  				   Checks for DoxyGen
+## ==================================================================
 
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
@@ -2115,27 +2167,17 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 fi
 
-#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
-#we test for C, all sort of wireds things will happen, so we have to test
-#it even in binary distro, where we don't need it:
-dnl #AC_PROG_LEX
-AM_PROG_LEX
-if test "$LEX" = ":" || test "$LEX" = "" ; then
-    dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
-	LEX="no"
-	if test "$AUBIT_SOURCE" = "1" ; then
-        WARN_LEX=1
-    fi
-fi
+## ==================================================================
+##  				   Checks for GCC
+## ==================================================================
 
-dnl Checks for programs:
 #AC_ISC_POSIX
 AC_PROG_CC
 
 if test "$CC" = "gcc"; then
 	AC_MSG_CHECKING(GCC version)
 
-	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
+	#TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
@@ -2189,6 +2231,9 @@ else
 	AC_MSG_ERROR(Aubit needs GNU 'C' compiler - please install it. Stop.)
 fi
 
+## ==================================================================
+##  				   Checks for Standard programs
+## ==================================================================
 
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -2620,15 +2665,15 @@ AC_ARG_WITH(esqlc,
 				AC_PATH_PROG(MSVC_LINK, link, no)
 				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
 				then
-	                ESQLCC_OK="OK"
+	                QESQLCC_OK="OK"
                     MSVC_LINK="$MSVC_LINK /nologo"
 				fi
 			else
                 #on non-Windows platforms, native C compiler will do:
-				ESQLCC_OK="OK"
+				QESQLCC_OK="OK"
 			fi
 
-			if test "$Q_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
+			if test "$Q_ESQLC" != "no" && test "$QESQLCC_OK" = "OK";
 			then
 				AC_MSG_RESULT(yes)
             else
@@ -2693,15 +2738,15 @@ AC_ARG_WITH(informix,
 				AC_PATH_PROG(MSVC_LINK, link, no)
 				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
 				then
-	                ESQLCC_OK="OK"
+	                IESQLCC_OK="OK"
                     MSVC_LINK="$MSVC_LINK /nologo"
 				fi
 			else
                 #on non-Windows platforms, native C compiler will do:
-				ESQLCC_OK="OK"
+				IESQLCC_OK="OK"
 			fi
 
-			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
+			if test "$IFMX_ESQLC" != "no" && test "$IESQLCC_OK" = "OK";
 			then
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
@@ -2753,6 +2798,7 @@ AC_ARG_WITH(informix,
             else
 				AC_MSG_CHECKING(if we can use esql)
 				AC_MSG_RESULT(esql not in path or no compatible C compiler)
+                IFMX_ESQLC="no"
             fi
 		fi
 	else
@@ -4987,8 +5033,8 @@ case "$host" in
 
 	AC_CYGWIN
 	AC_MINGW32
-	AC_OBJEXT
-	AC_EXEEXT
+	#AC_OBJEXT
+	#AC_EXEEXT
 
 	_LT_AC_LOCK                         #checking for dlfcn.h... yes
 	AC_LIBTOOL_DLOPEN_SELF              #checking for BSD-compatible nm... /usr/bin/nm -B
