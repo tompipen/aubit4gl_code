@@ -24,13 +24,16 @@
  * | contact licences@aubit4gl.org
  * +----------------------------------------------------------------------+
  *
- * $Id: decimal.h,v 1.2 2004-06-03 11:45:44 mikeaubury Exp $
+ * $Id: decimal.h,v 1.3 2004-10-01 10:44:28 afalout Exp $
  */
 
 /**
  * @file
  * Header file to define data types and macros to allow legacy c source files
  * to work without any change in an Informix 4gl to aubit 4gl porting.
+ * WARNING: POSTGRESQL ECPG COMPILER AND INFORMIX ESQL/C ALSO HAS FILE decimal.h !!!
+ * MAKE SURE YOU REFER TO THIS FILE WITH FIXED PATH IN INCLUDE STATMENT, LIKE THIS:
+ * #include "compat/decimal.h" 
  */
 
 #ifndef _DECIMAL_H

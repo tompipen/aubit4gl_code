@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.246 2004-10-01 00:50:27 afalout Exp $
+dnl # $Id: configure.in,v 1.247 2004-10-01 10:42:51 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2692,28 +2692,60 @@ AC_ARG_WITH(cint,
 		if test "$withval" != "yes"; then
 			#user specified path to cint
 			CINT_PATH=$withval
+			#Apprently not needed
+            #ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		else
 			CINT_PATH=/usr/local
+		fi
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "CINT_PATH=$withval"
 		fi
 	
 		#FIXME: despite listing all this paths, cint executable will only be found
 	    #if its in the PATH - no idea why
-#echo "x1 $LDFLAGS"
-#echo "xa $save_LDFLAGS"
+		if test "$enable_ac_debug2" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "save_LDFLAGS=$save_LDFLAGS"
+		fi
 
 		save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 		save_LDFLAGS="$LDFLAGS"
 		save_PATH="$PATH"
 		save_LIBS="$LIBS"
-#echo "w1 $LDFLAGS"
-#echo "wa $save_LDFLAGS"
+		if test "$enable_ac_debug2" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "save_LDFLAGS=$save_LDFLAGS"
+		fi
 		
 		LD_LIBRARY_PATH="$CINT_PATH:/usr/local/cint:/opt/cint:/usr/local/lib:/usr/lib/termcap:$LD_LIBRARY_PATH"
 		LDFLAGS="-L$CINT_PATH/lib -L/usr/lib/termcap $LDFLAGS"
-		PATH="$CINT_PATH:/opt/cint:/usr/local/bin:$PATH"
+		PATH="$CINT_PATH:$PATH" #/opt/cint:/usr/local/bin
+		export PATH
+		if test "$enable_ac_debug2" = "yes" ; then
+			echo "-------------DEBUG--------------"
+			echo "PATH=$PATH"
+			echo "LDFLAGS=$LDFLAGS"
+			echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+			export CINTSYSDIR=$CINT_PATH
+			unset CINT
+			unset ac_cv_path_CINT
+			AC_PATH_PROG(CINT, cint, no, $CINT_PATH $PATH /usr/local/cint /opt/cint )
+			unset CINT
+			unset ac_cv_path_CINT
+			AC_PATH_PROG(CINT, cint, no, $CINT_PATH, $PATH, /usr/local/cint, /opt/cint )
+			unset CINT
+			unset ac_cv_path_CINT
+			AC_PATH_PROG(CINT, cint, no, $CINT_PATH)
+			cint -Q dummy
+			echo "-------------END DEBUG--------------"
+		fi
 
-		AC_PATH_PROG(CINT, cint, no, $CINT_PATH $PATH /usr/local/cint /opt/cint )
-		AC_PATH_PROG(MAKECINT, makecint, no, $CINT_PATH $PATH /usr/local/cint /opt/cint )
+		unset CINT
+		unset ac_cv_path_CINT
+		#WARNING: search paths have to be specified with column separator -
+		#NOT WITH SPACE SEPARATOR!!!!! or maybe comma needs to be used?
+		AC_PATH_PROG(CINT, cint, no, $CINT_PATH:$PATH:/usr/local/cint:/opt/cint )
+		AC_PATH_PROG(MAKECINT, makecint, no, $CINT_PATH:$PATH:/usr/local/cint:/opt/cint )
 		
 		if test "$CINT" != "no" -a "$MAKECINT" != "no"; then
 			CINTSYSDIR=`dirname $CINT`
@@ -2769,9 +2801,15 @@ AC_ARG_WITH(cint,
   AC_MSG_RESULT(--with-cint not specified)
 ])
 
-#echo "1 $LDFLAGS"
-#echo "a $save_LDFLAGS"
-#echo "2 $LD_LIBRARY_PATH"
+if test "$enable_ac_debug" = "yes" ; then
+	echo "1 $LDFLAGS"
+	echo "a $save_LDFLAGS"
+	echo "2 $LD_LIBRARY_PATH"
+fi
+
+if test "$enable_stop_cint" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Determine RPM build location
@@ -3542,7 +3580,7 @@ AC_ARG_WITH(pgsql,
 		AC_CHECK_LIB([pq], [PQresultErrorField])
 		AC_CHECK_LIB([pq], [PQfreemem])
    		AC_CHECK_LIB([pq], [PQsetNoticeReceiver])
-		AC_CHECK_LIB([pq], [last_A4GL_PATH_SEP])
+		AC_CHECK_LIB([pq], [last_path_separator])
 
 	    #AC_CHECK_FUNC(PQresultErrorField,AC_DEFINE(HAVE_PQresultErrorField))
 
@@ -3658,10 +3696,27 @@ if test "$withval" != "no"; then
 		else 
 			AC_MSG_WARN(cannot determine library path under $withval)
 		fi	
-		if test -d "$ECPG_INCDIR/postgresql/informix/esql"; then
+		if test -f "$ECPG_INCDIR/postgresql/informix/esql/ecpg_informix.h"; then
 			ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/postgresql/informix/esql"
 		else
-			AC_MSG_WARN(cannot find Informix compatibility headers at $ECPG_INCDIR/postgresql/informix/esql)
+			if test -f "$ECPG_INCDIR/pgsql/informix/esql/ecpg_informix.h"; then
+				ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/pgsql/informix/esql"
+			else
+				#In Dave's patched tarball they are now in incl/
+				#/usr2/pg-ifx/install/include/ecpg_informix.h
+				if test -f "$ECPG_INCDIR/ecpg_informix.h"; then
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "Found ecpg_informix.h in $ECPG_INCDIR"
+					fi
+				else
+					AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
+					AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
+					AC_MSG_WARN(** ...or...)
+					AC_MSG_WARN(** $ECPG_INCDIR/pgsql/informix/esql)
+					AC_MSG_WARN(** ...or...)
+					AC_MSG_WARN(** $ECPG_INCDIR)
+				fi
+			fi
 		fi
 		
 		#In case we are working from not installed CVS code:
@@ -4798,7 +4853,7 @@ AC_ARG_WITH(gtk,
 
 			#First check if --list-all works
 			TMP=`$PKG_CONFIG --list-all 2>&1 | grep "was not found in the pkg-config search path"`
-			if test "$PKG_CONFIG" != ""; then 
+			if test "$TMP" != ""; then 
 				AC_MSG_WARN(** cannot use pkg-config --list-all option)
 				AC_MSG_WARN(** your pkg-config is missconfigured)
 				AC_MSG_WARN(** Will try guessing GTK2 names)
@@ -4823,7 +4878,11 @@ AC_ARG_WITH(gtk,
 						#No 2 info, no 1.2 info
 						GTK_VERSION="0"; 
 						AC_DEFINE(HAVE_GTK_VERSION,0,[ ])		
-						AC_MSG_WARN(cannot extract V 2 or V 1.2)
+						AC_MSG_WARN(cannot extract V 2 or V 1.2 using pkg-config)
+						if test "$GTK_CONFIG" != "no" ; then
+							AC_MSG_WARN(Will try gtk-config instead)						
+							GTK_USE_CONFIG=gtk
+						fi
 					else
 						GTK_VERSION="1.2"; 
 						AC_DEFINE(HAVE_GTK_VERSION,1.2,[ ])		
@@ -7314,7 +7373,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.246 2004-10-01 00:50:27 afalout Exp $
+| $Id: configure.in,v 1.247 2004-10-01 10:42:51 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

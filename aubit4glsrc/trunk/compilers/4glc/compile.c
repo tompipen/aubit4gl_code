@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.58 2004-09-16 13:35:41 afalout Exp $
+# $Id: compile.c,v 1.59 2004-10-01 10:44:27 afalout Exp $
 #*/
 
 /**
@@ -1210,7 +1210,8 @@ char ext[8];
 					  strcat (incl_path, "/include");
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, " ");
-
+					  
+					  //FIXME: this can be in different places - see ./configure
 					  ///opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h
 					  strcat (incl_path, "-I");
 					  strcat (incl_path, "\"");

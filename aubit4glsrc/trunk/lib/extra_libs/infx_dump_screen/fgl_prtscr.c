@@ -43,7 +43,20 @@ LET lv_out = " | lp -s -c "             # Send to printer
 #include <stdio.h>
 #include <stdlib.h> 
 #include <fcntl.h>
-#include "decimal.h"
+
+
+/*
+ * WARNING: POSTGRESQL ECPG COMPILER AND AUBIT (in incl/compat) ALSO HAVE FILE decimal.h !!!
+ [root@aptiva aubit4glsrc]# find /opt/informix/ -name decimal.h
+	/opt/informix/incl/tools/decimal.h
+	/opt/informix/incl/esql/decimal.h
+	/opt/informix/incl/public/decimal.h
+	/opt/informix/incl/dmi/decimal.h
+ * MAKE SURE YOU REFER TO THIS FILE WITH FIXED PATH IN INCLUDE STATMENT, LIKE THIS:
+ * #include "esql/decimal.h" 
+*/
+//#include "decimal.h"
+#include "esql/decimal.h"
 
 #ifdef C4GL
 	#ifdef OBSOLETE

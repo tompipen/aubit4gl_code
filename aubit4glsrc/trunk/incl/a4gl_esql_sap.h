@@ -13,7 +13,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "decimal.h"
+
+//SAP DB does not have decimal.h - But PG ecpg, IFX esql and Aubit (incl/compat)
+//do - if this decimal.h is really needed, which one are we using?
+//#include "decimal.h"
 #include "datetime.h"
 #include "sqltypes.h"
 #include "a4gl_incl_4gldef.h"

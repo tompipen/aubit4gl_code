@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.17 2004-09-28 09:49:17 afalout Exp $
+# $Id: Makefile,v 1.18 2004-10-01 10:44:29 afalout Exp $
 #
 
 ROOT    =../..
@@ -89,7 +89,6 @@ ifdef COMSPEC
 		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
 endif
 
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -103,7 +102,7 @@ ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
 	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LIBAUBIT4GL} -o $@
 else
-	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
+	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} 
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -136,11 +135,11 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
 ifneq "${COMSPEC}" ""
-	$(ESQL) $(ESQL_FLAGS) -e $<
-	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $(basename $<).c -o $@
+	$(ESQL) $(ESQL_FLAGS) -I"${INFORMIXDIR}/incl" -e $<
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -I"${INFORMIXDIR}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*
 else
-	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
+	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl -I"${INFORMIXDIR}/incl"
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
 #	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 

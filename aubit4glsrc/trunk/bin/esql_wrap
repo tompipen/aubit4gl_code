@@ -182,7 +182,7 @@ do
 	esac
 	
     GCC_COMPILE="gcc -c $outfile $other_args -I\"$INFORMIXDIR/incl/esql\" \
-		-I\"$INFORMIXDIR/CSDK/incl/esql\" -I$AUBITDIR/incl"
+		-I\"$INFORMIXDIR/incl\" -I\"$INFORMIXDIR/CSDK/incl/esql\" -I$AUBITDIR/incl "
 
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
 	    GCC_COMPILE="$GCC_COMPILE $output"

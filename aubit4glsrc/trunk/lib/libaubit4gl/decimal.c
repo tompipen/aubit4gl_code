@@ -4,7 +4,6 @@
  */
 
 #include "a4gl_libaubit4gl_int.h"
-//#include "a4gl_decimal.h"
 
 fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 int A4GL_conversion_ok(int);

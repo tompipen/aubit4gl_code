@@ -17,7 +17,20 @@ extern "C"
 #endif
 #include "a4gl_incl_4gldef.h"
 
-#include "decimal.h"
+#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
+	#include "pgsql/informix/esql/decimal.h"
+#else
+	#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
+		#include "postgresql/informix/esql/decimal.h"
+	#else
+		#if HAVE_DECIMAL_H
+			//This is dangerous; Informix esqlc and Aubit also have decimal.h
+			//Who knows which one we will actually include like this...
+			#include "decimal.h"
+		#endif
+	#endif
+#endif
+
 #include "sqltypes.h"
 
 #define COPY_DATA_IN_0(a4gl,pgres,size,x,y) A4GL_copy_char(pgres,a4gl,0,size,'i',x,y)

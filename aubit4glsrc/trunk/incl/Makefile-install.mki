@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.80 2004-09-28 09:49:15 afalout Exp $
+# $Id: Makefile-install.mki,v 1.81 2004-10-01 10:44:28 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -1236,14 +1236,19 @@ else
 #linux_RH7.3_gcc3 works on SuSE (after installing -ltermcap and linking 
 #libbsd-compat.a to libbsd.a)
 	cd /tmp/${CINT_SRC}; ${SH} ./setup platform/linux_RH7.3_gcc3
-#NOTE" bin and lib MUST be installed in same directory, since many scripts refer
-#to $CINTSYSDIR and expect both executables AND libraries there 
+#With GCC 2.96 (on Aptiva) use:	
+#	cd /tmp/${CINT_SRC}; ${SH} ./setup platform/linux_RH7.3
+#NOTE: bin and lib MUST be installed in same directory, since many scripts refer
+#to $CINTSYSDIR and expect both executables AND libraries there.
+#But Cint installation script will put cint and makecint executables into
+#--bindir and EVERYTHING ELSE under --libdir, under lib and include sub-dirs.
 	cd /tmp/${CINT_SRC}; ${SH} ./INSTALLBIN --bindir=/usr/local/cint --libdir=/usr/local/cint
 endif	
 	@echo " "
 	@echo "Package info & manuals: ${CINT_INFO}"
 	@echo " "
 	@echo "CINT installed.  Please re-run 'configure' to detect changes."
+	@echo "WARNING: you MUST use './configure --with-cint=/usr/local/cint'"
 	@echo " "
 
 ##################
