@@ -399,7 +399,7 @@ call_c_function (char *s, struct param *p, long *r)
 		if (list->list_param_id.list_param_id_val[a]!=-1) {
 			p=&PARAM_ID(list->list_param_id.list_param_id_val[a]);
 		} else {
-			p=get_param();
+			p=nget_param(0);
 		}
 	      switch (p->param_type)
 		{

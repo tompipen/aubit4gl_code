@@ -83,7 +83,7 @@ void optimize ();
 
 long add_set_var (struct use_variable *var, long value_i, int once);
 
-void set_param(struct param *p);
+void nset_param(struct param *p,int n);
 void execute_start_block (long pc, struct cmd_block *c);
 struct variable_element *param_variable (char *dtype, char *name, struct param *size);
 struct variable_element *append_param_variable (struct variable_element *orig, struct variable_element *next);
@@ -92,7 +92,7 @@ struct variable_element *new_variable_struct (struct define_variables *v);
 struct variable_element *new_variable_element_string (char *s);
 //void add_variable (int type, struct variable_element *e, char *id, struct param *set);
 void add_variable (int type, struct variable_element *e, char *id, long set);
-struct use_variable *mk_use_variable (long p, long arr, char *id, char indirection);
+struct use_variable * mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char indirection);
 int in_function (void);
 struct variable_element *new_variable_struct (struct define_variables *v);
 void print_params (long e);
@@ -155,7 +155,7 @@ long find_pcode_function (char *s);
 int add_string (char *s);
 #define PARAM_ID(x) this_module.params.params_val[x]
 long add_push_op(char *n);
-struct param *get_param(void);
+struct param *nget_param(int n);
 long add_set_stat(int a);
 long add_ecall(char *s,int a,int b);
 int get_expr_n(int n);

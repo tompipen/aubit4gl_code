@@ -60,15 +60,20 @@ print_use_variable (struct use_variable *v)
       int a;
       for (a = 0; a < v->sub.sub_len; a++)
 	{
-	  if (v->sub.sub_val[a].element != -1)
+	  if (v->sub.sub_val[a].x1element != -1)
 	    {
-	      printf (".%ld ", v->sub.sub_val[a].element);
+	      printf (".%ld ", v->sub.sub_val[a].x1element);
 	    }
-	  if (v->sub.sub_val[a].subscript_param_id != 0)
+
+	  if (v->sub.sub_val[a].x1subscript_param_id[0] != 0)
 	    {
-	      printf ("[");
-	      print_params (v->sub.sub_val[a].subscript_param_id);
-	      printf ("]");
+	        printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[0]); printf ("]");
+	      	if (v->sub.sub_val[a].x1subscript_param_id[1]!=0) {
+			printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[1]); printf ("]");
+	      		if (v->sub.sub_val[a].x1subscript_param_id[2]!=0) {
+	      			printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[2]); printf ("]");
+			}
+		}
 	    }
 	}
     }
@@ -396,7 +401,7 @@ static int lvl=0;
 int pa;
 struct param *e;
 
-if (e_l==-1) e=get_param();
+if (e_l==-1) e=nget_param(0);
 else e=&PARAM_ID(e_l);
 
 

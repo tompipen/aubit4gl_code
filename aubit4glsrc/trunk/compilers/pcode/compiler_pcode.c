@@ -771,7 +771,7 @@ add_function (char *function_name, struct define_variables *v, int is_static)
       for (a = 0; a < v->var_len; a++)
 	{
 	  struct use_variable *uv;
-	  uv = mk_use_variable (0, 0, GET_ID (v->var_val[a].name_id), 0);
+	  uv = mk_use_variable (0, 0,0,0, GET_ID (v->var_val[a].name_id), 0);
 	  uv->indirection = 0;
 	  memcpy (&curr_func->param_vars.param_vars_val[a], uv,
 		  sizeof (struct use_variable));

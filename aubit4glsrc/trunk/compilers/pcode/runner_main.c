@@ -126,7 +126,7 @@ run_module ()
   main_params.param_u.p_list = malloc (sizeof (struct param_list));
   main_params.param_u.p_list->list_param_id.list_param_id_len = 1;
   main_params.param_u.p_list->list_param_id.list_param_id_val = malloc(sizeof(long));
-  set_param(&main_params_2);
+  nset_param(&main_params_2,0);
 
   main_params.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
 
@@ -253,9 +253,7 @@ Now we've done our function startup - we can get on with actually running it...
 	}
 
       c = &this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
-      fprintf (logfile, "%-10.10s %03d\n", cmd_type_str[c->cmd_type],
-	       c->cmd_type);
-fflush(logfile);
+      fprintf (logfile, "%-10.10s %03d\n", cmd_type_str[c->cmd_type], c->cmd_type); fflush(logfile);
 
 
       switch (c->cmd_type)

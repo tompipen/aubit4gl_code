@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.94 2004-07-09 16:45:04 mikeaubury Exp $
+# $Id: stack.c,v 1.95 2004-07-10 09:48:34 mikeaubury Exp $
 #
 */
 
@@ -107,10 +107,10 @@ int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// INT
   {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},// FLOAT
   {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN}, 	// SMFLOAT
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
   {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// SERIAL
   {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// DATE
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},  	// EMPTY
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}, 	// DTIME
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// BYTE
@@ -125,10 +125,10 @@ int nset[MAX_DTYPE][9] = {
   {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// INT
   {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},// FLOAT
   {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN}, 	// SMFLOAT
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
   {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// SERIAL
   {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// DATE
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},  	// EMPTY
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}, 	// DTIME
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// BYTE
@@ -955,7 +955,7 @@ A4GL_debug("51 Have data");
 	struct BINDING *ibind;
 	struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
-	A4GLSQL_declare_cursor (0,
+	A4GLSQL_declare_cursor (0,(void *)
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
 							s), 0, cname);
       }
@@ -1018,7 +1018,7 @@ A4GL_debug("51 Have data");
       A4GL_debug ("s=%s\n", A4GL_null_as_null(s));
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
-      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s);
+      prep = (void *)A4GLSQL_prepare_select (dbind, n, obind, 0, s);
       A4GL_debug ("Declare");
       free (s);
       A4GLSQL_declare_cursor (0, prep, 0, cname);
@@ -2319,15 +2319,13 @@ A4GL_setnull (int type, void *vbuff, int size)
 	}
     }
 
-  if (!(A4GL_isnull (type, buff)))
-    {
-      A4GL_debug ("1 Opps - can't init to null");
-      A4GL_exitwith ("Could not initialize variable to null");
-    }
+
   if (type == 0)
     {
       A4GL_debug ("20 Set buff to %s\n", buff);
     }
+
+
   if (type==DTYPE_DECIMAL || type==DTYPE_MONEY) {
 	int h;
 	int t;
@@ -2337,10 +2335,18 @@ A4GL_setnull (int type, void *vbuff, int size)
   	t = t - h * 256;
   	errno = 0;
 	if (h||t) {
-  		A4GL_init_dec (vbuff, h, t);
+  		A4GL_init_dec ((void *)buff, h, t);
 	}
 
-}
+  }
+
+
+
+  if (!(A4GL_isnull (type, buff)))
+    {
+        A4GL_debug ("1 Opps - can't init to null");
+	A4GL_assertion(1,"Could not initialize variable to null");
+    }
 
 }
 

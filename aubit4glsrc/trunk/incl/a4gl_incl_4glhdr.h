@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.30 2004-04-15 21:16:37 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.31 2004-07-10 09:48:34 mikeaubury Exp $
 */
 
 /**
@@ -161,6 +161,8 @@ extern "C"
 #define REPORT_LASTDATA -13
 #define REPORT_PAGETRAILER -14
 #define REPORT_RESTART -15
+#define REPORT_CONVERT -16
+#define REPORT_FREE    -17
 #define REPORT_TERMINATE -9999
 
 

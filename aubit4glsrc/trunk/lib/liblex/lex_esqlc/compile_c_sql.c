@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.35 2004-03-25 18:07:51 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.36 2004-07-10 09:48:34 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -182,7 +182,7 @@ print_linked_cmd (int type, char *var)
 	}
       if (type == 'S')
 	printc
-	  ("A4GLSQL_execute_implicit_select(A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\"));",
+	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\"));",
 	   ni, no, buff);
       if (type == 'D' || type == 'U')
 	printc
@@ -252,7 +252,7 @@ print_put (char *cname,char *putvals)
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n",
+  printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s));\n",
 	  stmt, sqlvar);
 }
 

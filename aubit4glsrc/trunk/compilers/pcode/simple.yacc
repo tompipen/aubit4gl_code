@@ -749,26 +749,30 @@ assign_common: variable '=' expr {
 ;
 
 
-variable: IDENTIFIER 				{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,0    ,$<str>1,0));}
-	| IDENTIFIER '[' expr ']'  		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
-	| IDENTIFIER '[' expr ']' '[' expr ']' 		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
-	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'		{$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,$<e_id>3,$<str>1,0));}    
+variable: IDENTIFIER 					{
+		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,0, 0,0,   $<str>1,0));
+	}
+	| IDENTIFIER '[' expr ']'  			{
+	printf("XX2\n");
+		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,0,0,$<str>1,0));
+	}    
+	| IDENTIFIER '[' expr ']' '[' expr ']' 		{
+	printf("XX3\n");
+		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,$<e_id>6,0,$<str>1,0));
+	}    
+	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'	{
+		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,$<e_id>6,$<e_id>9,$<str>1,0));
+	}    
 	| variable '.' IDENTIFIER 		{
 		$<e_id>$=new_param_returns_long('V',
-	(void *)mk_use_variable(
-	$<e_id>1,
-	0    ,
-	$<str>3,0));
-	}    
-
+			(void *)mk_use_variable(
+				$<e_id>1,
+				0    ,0,0,
+				$<str>3,0));
+				}    
 	| variable '.' IDENTIFIER '[' expr ']'	{
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(
-			$<e_id>1,
-			$<e_id>5,
-			$<str>3,
-			0
-			)
-			);
+			$<e_id>1, $<e_id>5, 0,0, $<str>3, 0));
 	}    
 	| '*' variable  	{
 		$<e_id>$=$<e_id>2;

@@ -347,7 +347,7 @@ find_variable (int sid, char *s, short *block_no)
 
 
 struct use_variable *
-mk_use_variable (long p_i, long arr_i, char *id, char indirection)
+mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char indirection)
 {
   struct use_variable *u;
   struct use_variable_sub *sub = 0;
@@ -375,14 +375,17 @@ mk_use_variable (long p_i, long arr_i, char *id, char indirection)
 	}
       u->sub.sub_len = 0;
       u->sub.sub_val = 0;
-      if (arr_i)
+      if (arr_i1)
 	{
 	  sub = malloc (sizeof (struct use_variable_sub));
-	  sub->element = -1;
-	  sub->subscript_param_id = arr_i;
+	  sub->x1element = -1;
+	  sub->x1subscript_param_id[0] = arr_i1;
+	  sub->x1subscript_param_id[1] = arr_i2;
+	  sub->x1subscript_param_id[2] = arr_i3;
 	  u->sub.sub_len++;
 	  u->sub.sub_val = realloc (u->sub.sub_val, sizeof (struct use_variable_sub) * u->sub.sub_len);
 	  memcpy (&u->sub.sub_val[u->sub.sub_len - 1], sub, sizeof (struct use_variable_sub));
+	  printf("mk_use_variable arr : %d %d %d\n",arr_i1,arr_i2,arr_i3);
 	}
 
     }
@@ -409,7 +412,7 @@ mk_use_variable (long p_i, long arr_i, char *id, char indirection)
 	if (p_i!=-1) {
 		p=&PARAM_ID(p_i);
 	} else {
-		p=get_param();
+		p=nget_param(0);
 	}
 
 //
@@ -481,14 +484,14 @@ mk_use_variable (long p_i, long arr_i, char *id, char indirection)
 
       for (sub_cnt = 0; sub_cnt < parent->sub.sub_len; sub_cnt++)
 	{
-	  if (parent->sub.sub_val[sub_cnt].element != -1)
+	  if (parent->sub.sub_val[sub_cnt].x1element != -1)
 	    {
-	      if (parent->sub.sub_val[sub_cnt].element >= v->next.next_len)
+	      if (parent->sub.sub_val[sub_cnt].x1element >= v->next.next_len)
 		{
 		  printf ("Corrupt sub...\n");
 		  exit (2);
 		}
-	      v = &v->next.next_val[parent->sub.sub_val[sub_cnt].element];
+	      v = &v->next.next_val[parent->sub.sub_val[sub_cnt].x1element];
 	    }
 	}
 
@@ -514,14 +517,19 @@ mk_use_variable (long p_i, long arr_i, char *id, char indirection)
       sub = malloc (sizeof (struct use_variable_sub));
 
 
-      sub->element = next_element;
-      sub->subscript_param_id = 0;
+      sub->x1element = next_element;
+      sub->x1subscript_param_id[0] = 0;
+      sub->x1subscript_param_id[1] = 0;
+      sub->x1subscript_param_id[2] = 0;
 
 
-      if (arr_i)
+      if (arr_i1)
 	{
-	  sub->subscript_param_id = arr_i;
+	  sub->x1subscript_param_id[0] = arr_i1;
+	  sub->x1subscript_param_id[1] = arr_i2;
+	  sub->x1subscript_param_id[2] = arr_i3;
 	}
+      printf("Mk2 : %d %d %d\n",arr_i1,arr_i2,arr_i3);
       memcpy (&parent->sub.sub_val[u->sub.sub_len - 1], sub,
 	      sizeof (struct use_variable_sub));
       return parent;

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.173 2004-07-07 20:11:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.174 2004-07-10 09:48:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.173 2004-07-07 20:11:40 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.174 2004-07-10 09:48:34 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -639,10 +639,8 @@ print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
 
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-  	printc("A4GL_push_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
-	rep_print_entry=0;
-  }
+printc("A4GL_push_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+rep_print_entry=0;
 
 }
 
@@ -899,9 +897,7 @@ void
 /* print_rep_ret (void) */
 print_rep_ret (int report_cntx,int addit)
 {
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE")) && addit) {
-   	printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
-  }
+  if (addit) printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
 }
 
@@ -3565,21 +3561,11 @@ print_report_print (int type, char *semi, char *wordwrap)
 int semi_i;
  
   if (semi==0) semi_i=0; else semi_i=1;
-/*
-if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("A4GL_push_report_print_entry(&_rep,%d,%d,%d);",yylineno,rep_print_code,rep_print_entry);
-  }
-*/
   if (type == 0)
     printc ("A4GL_%srep_print(&_rep,0,%s,0,-1);\n", ispdf (), semi);
 
   if (type == 1)
     printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wordwrap,rep_print_entry++);
-/*
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("A4GL_pop_report_print_entry(&_rep,%d,%d);",rep_print_code,rep_print_entry++);
-  }
-*/
 }
 
 /**
@@ -3789,6 +3775,13 @@ print_report_2 (int pdf, char *repordby)
 
 
   printc (" ");
+  printc("if (acl_ctrl==REPORT_CONVERT) {");
+  printc("char *_f; char *_o; char *_l; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); \n");
+  printc("A4GL_convert_report(&_rep,_f,_o,_l);");
+  printc("return ;}");
+  printc("if (acl_ctrl==REPORT_FREE) {");
+  printc("A4GL_free_report(&_rep);");
+  printc("return ;}");
   printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
   printc ("   A4GL_pop_char(_rout2,254);\n");
   printc ("   A4GL_pop_char(_rout1,254);\n");
@@ -5948,6 +5941,14 @@ void print_reset_state_after_call(void) {
        printc("%s",get_reset_state_after_call());
 }
 
+
+void print_convert_report(char *repname, char* fname,char *otype, char *layout) {
+	printc("A4GL_push_char(%s);A4GL_push_char(%s);A4GL_push_char(%s);%s%s(3,REPORT_CONVERT);",fname,otype,layout,get_namespace (repname),repname);
+}
+
+void print_free_convertable(char *repname) {
+	printc("%s%s(3,REPORT_FREE);", get_namespace (repname),repname);
+}
 
 
 /* =========================== EOF ================================ */

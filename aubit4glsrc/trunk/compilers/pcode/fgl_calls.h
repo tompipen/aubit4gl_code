@@ -45,7 +45,7 @@ int A4GL_pcode_ecall(char *x,int a,int params) {
 	p.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
 	p2.param_type=PARAM_TYPE_LITERAL_INT;
 	p2.param_u.n=params;
-	set_param(&p2);
+	nset_param(&p2,0);
 
 
   npc = find_pcode_function (x);
@@ -200,6 +200,7 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->cmd_type==CMD_CHK_ERR) {
+			fprintf(logfile,"CHKERR %d %s\n",c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			return 1;
 	}
@@ -210,6 +211,7 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->cmd_type==CMD_ERRCHK) {
+			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;

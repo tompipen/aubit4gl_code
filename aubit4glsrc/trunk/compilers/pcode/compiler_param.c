@@ -181,19 +181,19 @@ return -1;
 
 int get_expr_n(int n) {
 struct param *p;
-	if (n!=-1) { p=&PARAM_ID(n); } else { p=get_param(); }
+	if (n!=-1) { p=&PARAM_ID(n); } else { p=nget_param(0); }
 	return p->param_u.n;
 }
 
 void set_expr_n(int n,int v) {
 struct param *p;
-	if (n!=-1) { p=&PARAM_ID(n); } else { p=get_param(); }
+	if (n!=-1) { p=&PARAM_ID(n); } else { p=nget_param(0); }
 	p->param_u.n=v;
 }
 
 struct use_variable *get_use_variable(int n) {
 struct param *p;
-	if (n!=-1) { p=&PARAM_ID(n); } else { p=get_param(); }
+	if (n!=-1) { p=&PARAM_ID(n); } else { p=nget_param(0); }
 	return p->param_u.uv;
 }
 

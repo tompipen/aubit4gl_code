@@ -121,6 +121,7 @@ write_more(struct module *objp) {
   int a;
 
 printf("Write more...\n");
+return;
 
 
   fxx = fopen ("out.string_table", "wb");

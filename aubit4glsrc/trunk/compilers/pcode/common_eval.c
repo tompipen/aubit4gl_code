@@ -36,25 +36,30 @@ static char *op_str[]={
 */
 
 
-struct param *last_set ;
+struct param *last_set[10] ;
 
-void set_param(struct param *p) {
-	last_set=p;
+void nset_param(struct param *p,int n) {
+	last_set[n]=p;
 }
 
-struct param *get_param(void) {
-	return last_set;
+
+struct param *nget_param(int n) {
+	return last_set[n];
 }
+
+
 
 int evaluate_param_i_into_integer (long e_i, long *x) {
 struct param *e;
 int a;
-if (e_i==-1) {
-	e=get_param();
+if (e_i<0) {
+	if (e_i==-1) e=nget_param(0);
+	if (e_i==-2) e=nget_param(1);
 } else {
 	e=&PARAM_ID(e_i);
 }
 a=evaluate_param_into_integer(e,x);
+//printf("PARAM %d --->%d\n",e_i,a);
 return a;
 }
 

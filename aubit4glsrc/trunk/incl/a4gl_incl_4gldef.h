@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.69 2004-05-12 08:15:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.70 2004-07-10 09:48:34 mikeaubury Exp $
 */
 
 /**
@@ -423,6 +423,7 @@ int a_isprint(int a);
   int aclfgl_load_datatype (int nargs);
 
 
+struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 #ifndef REP_STRUCTURE
 #define REP_STRUCTURE
   /* report stuff */

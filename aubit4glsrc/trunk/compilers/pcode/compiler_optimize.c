@@ -17,7 +17,7 @@ int really = 0;
 //#define DO_OPTIMIZE
 
 
-
+/*
 int
 compare_uv (struct param *pa, struct param *pb)
 {
@@ -33,12 +33,12 @@ compare_uv (struct param *pa, struct param *pb)
 
   if (a->sub.sub_len!=b->sub.sub_len) return 0;
   for(c=0;c<a->sub.sub_len;c++) {
-    if (a->sub.sub_val[c].subscript_param_id!=b->sub.sub_val[c].subscript_param_id) return 0;
-    if (a->sub.sub_val[c].element!=b->sub.sub_val[c].element) return 0;
+    	if (a->sub.sub_val[c].subscript_param_id!=b->sub.sub_val[c].subscript_param_id) return 0;
+    	if (a->sub.sub_val[c].element!=b->sub.sub_val[c].element) return 0;
   }
   return 1;
 }
-
+*/
 
 
 int
@@ -95,7 +95,7 @@ replace_param (int from, int to)
 	{
 	  struct param *list;
 	if (this_module.params.params_val[a].param_u.c_call-> func_params_param_id==-1) {
-	  list=get_param();
+	  list=nget_param(0);
 	} else {
 	  list = &PARAM_ID (this_module.params.params_val[a].param_u.c_call-> func_params_param_id);
 	}
@@ -133,12 +133,9 @@ replace_param (int from, int to)
 		   this_module.params.params_val[a].param_u.uv->sub.sub_len;
 		   aa++)
 		{
-		  if (this_module.params.params_val[a].param_u.uv->sub.
-		      sub_val[aa].subscript_param_id == from)
-		    {
-		      this_module.params.params_val[a].param_u.uv->sub.
-			sub_val[aa].subscript_param_id = to;
-		    }
+		  if (this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[0] == from) { this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[0] = to; }
+		  if (this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[1] == from) { this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[1] = to; }
+		  if (this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[2] == from) { this_module.params.params_val[a].param_u.uv->sub.  sub_val[aa].x1subscript_param_id[2] = to; }
 		}
 	    }
 	}
@@ -356,7 +353,7 @@ optimize ()
 		     case PARAM_TYPE_LITERAL_STRING:         if (pa->param_u.str_entry==pb->param_u.str_entry) {match=b;} break;
 		     case PARAM_TYPE_LITERAL_DOUBLE:         if (*pa->param_u.d==*pb->param_u.d) {match=b;} break;
 
-		     case PARAM_TYPE_USE_VAR: 			if (compare_uv(pa,pb)) {match=b;} break;
+		     //case PARAM_TYPE_USE_VAR: 			if (compare_uv(pa,pb)) {match=b;} break;
 		     case PARAM_TYPE_LIST:    			if (compare_list(pa,pb)) {match=b;} break; 
 		     case PARAM_TYPE_OP:      			if (compare_op(pa,pb)) {match=b;} break;    
 
