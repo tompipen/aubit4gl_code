@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.90 2003-01-11 17:05:50 mikeaubury Exp $
+# $Id: mod.c,v 1.91 2003-01-14 09:25:46 mikeaubury Exp $
 #
 */
 
@@ -4527,4 +4527,21 @@ add_ex_dtype(char *sx)
 }
 /* ================================= EOF ============================= */
 
+char *subtract_one(char *s) {
+static char buff[256];
+int a;
+int c;
 
+c=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]==',') {
+		buff[c++]='-';
+		buff[c++]='1';
+	}
+	buff[c++]=s[a];
+}
+buff[c++]='-';
+buff[c++]='1';
+buff[c]=0;
+return buff;
+}

@@ -176,6 +176,7 @@
 	char *	ispdf 				(void);
 	int 	print_push_rec 		(char *s, char *b);
 	void 	expand_obind 		(void);
+	char *subtract_one(char *s);
 	
     /* --------------------- from a4gl_4glc_compiledefs.h --------------------- */
 
