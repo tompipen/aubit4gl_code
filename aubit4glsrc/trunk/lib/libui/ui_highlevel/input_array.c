@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.15 2004-05-24 15:43:51 mikeaubury Exp $
+# $Id: input_array.c,v 1.16 2004-06-16 16:49:24 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.15 2004-05-24 15:43:51 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.16 2004-06-16 16:49:24 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -62,7 +62,7 @@ int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_conversion_ok(int);
 
 //void A4GL_set_field_attr_with_attr (void * field, int attr, int cmd_type);
-static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
+void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 //void A4GL_set_curr_infield (long a);
 //void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
@@ -359,7 +359,7 @@ iclear_srec (struct struct_screen_record *srec, struct s_inp_arr *inpa)
  *
  * @param
  */
-static void
+void
 A4GL_idraw_arr_all (struct s_inp_arr *inpa)
 {
   int a;

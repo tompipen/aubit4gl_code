@@ -11,6 +11,13 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <ctype.h>
 
 
+#ifndef WIN32
+#define a4gl_mvwaddwstr mvwaddwstr
+#else 
+#define a4gl_mvwaddwstr(win,y,x,wstr) (wmove(win,y,x) == ERR ? ERR : waddwstr(win,wstr))
+#endif
+
+
 #ifndef NO_CURSES_FORM
 #include "aubit_form.h"
 #include <form.h>
@@ -20,7 +27,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.25 2004-06-14 18:13:03 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.26 2004-06-16 16:51:01 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -2474,9 +2481,13 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
   if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
   else {
 		wattrset((WINDOW *)p,attr&0xffffff00);
-		mvwaddwstr(p,  y, x, buff);
+		a4gl_mvwaddwstr(p,  y, x, buff);
 	}
 }
 
 
 
+void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
+	A4GL_exitwith("Not in TUI mode");
+	return 0;
+}
