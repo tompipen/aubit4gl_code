@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.11 2004-03-01 00:59:52 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.12 2004-10-20 12:18:51 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -56,7 +56,7 @@ I4GL_CL_LDFLAGS = ${LDFLAGS}
 # I4GL P-code Compiler
 I4GL_PC_CMD     = fglpc
 I4GL_PC_ENV     =
-I4GL_PC_FLAGS   =
+I4GL_PC_FLAGS   +=
 
 # I4GL P-code Linker
 #I4GL_PL_CMD    = rdslink -o
@@ -215,6 +215,7 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #when dropping object in originating directory, had a lot of problems...
 #not sure why
 #	${I4GL_PC} -p $(<D) $<
+#	@echo "flags = ${I4GL_PC_FLAGS}"
 	${I4GL_PC} $<
 #	${A4GL_CC} $< -c -o ${OBJSTORE}$@
 #	${A4GL_CC} $< -c -o $@

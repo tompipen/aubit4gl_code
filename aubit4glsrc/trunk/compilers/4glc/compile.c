@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.65 2004-10-16 01:33:24 afalout Exp $
+# $Id: compile.c,v 1.66 2004-10-20 12:18:49 afalout Exp $
 #*/
 
 /**
@@ -345,7 +345,7 @@ initArguments (int argc, char *argv[])
 				compile_exec = 1;
 			} else if ((strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) ||
 				(strcmp (ext, ".a") == 0)){ 
-				//.aox or .a - static library
+				//.aox or .a - static library (multiple static objects in one file)
 				compile_object = 1;
 				compile_lib = 1;
 			} else if ((strcmp (ext, acl_getenv ("A4GL_SOB_EXT")) == 0) ||
@@ -622,47 +622,25 @@ initArguments (int argc, char *argv[])
 			#ifdef DEBUG
 				A4GL_debug ("Compiling %s\n", infilename);
 			#endif
-			/* nonsense
-			if (strcmp (output_object, "") == 0) {
-             If user did not name output file explicityl,
-            set output file name based on file name of the first 4gl file
-            found on the command line, and set it's extension base on
-			compilation type
-
-				strcpy (output_object,a);
-
-                if (compile_exec) {
-					strcat (output_object,acl_getenv ("A4GL_EXE_EXT"));
-                }
-                if (compile_so) {
-					strcat (output_object,acl_getenv ("A4GL_DLL_EXT<<-bull!"));
-                }
-                if (compile_lib) {
-					strcat (output_object,acl_getenv ("A4GL_LIB_EXT"));
-					strcat (output_object," ");
-                }
-
-            }
-			*/
-		  todo++;
-		  x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
+			todo++;
+			x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
 		  				output_object, win_95_98,informix_esql, pg_esql);
 		  
-		  if (x) {
-	    	  printf ("Exit code is: %d\n", x);
-		      /*FIXME: if I use x, I get 0 on the shell?????*/
-		      /*exit (x);*/
-	    	  exit (99);
-		  }
+			if (x) {
+				printf ("Exit code is: %d\n", x);
+				/*FIXME: if I use x, I get 0 on the shell?????*/
+				/*exit (x);*/
+				exit (99);
+			}
 		} else {
-		  /* just pass stuff you don't understand to CC */
+			/* just pass stuff you don't understand to CC */
 			#ifdef DEBUG
-			  A4GL_debug ("Pass trough option: %s\n", c);
+				A4GL_debug ("Pass trough option: %s\n", c);
 			#endif
-		  strcat (pass_options, c);
-		  strcat (pass_options, " ");
+			strcat (pass_options, c);
+			strcat (pass_options, " ");
 		}
-    }
+	}
 
     /*
         if (interpreter_run)
@@ -782,6 +760,21 @@ initArguments (int argc, char *argv[])
 	#endif //Windows/UNIX
     } //compile_exec
 
+	/* ----- make static library by linking static objects together ---- */
+	/* Actually...
+		gcc and esql don't know how to do that - only thing I can think 
+		of that can make archive of static libraries is 'ar'.
+		So why do we want to make library of static objects, and not a 
+		shared library anyway?
+	*/
+  if (compile_lib) {
+	//override  
+	#ifdef DEBUG
+		A4GL_debug ("Got compile_lib - changing to compile_so");
+	#endif
+	compile_lib=0;
+	compile_so=1;
+  }
   if (compile_lib) {
 	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		printf("Linking\n");fflush(stdout); //\r
@@ -806,7 +799,8 @@ initArguments (int argc, char *argv[])
 			       pass_options, extra_ldflags);
 			} else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/ {
 				//strcat (l_libs, " -lESQL_INFORMIX");
-				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+					informix_esql,get_rdynamic(),
 					all_objects, output_object, l_path, l_libs,
 					pass_options, extra_ldflags);
             }

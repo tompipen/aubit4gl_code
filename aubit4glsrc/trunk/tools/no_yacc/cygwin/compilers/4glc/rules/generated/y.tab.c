@@ -11568,7 +11568,7 @@ print_foreach_next(yyvsp[-3].str,yyvsp[-1].str,yyvsp[0].str);
 add_continue_blockcommand ("FOREACH");
 print_foreach_end(yyvsp[-6].str);
 pop_blockcommand("FOREACH"); 
-print_foreach_close(yyvsp[-6].str);
+//print_foreach_close($<str>3);
 }
     break;
 

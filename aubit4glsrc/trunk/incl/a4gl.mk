@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.50 2004-10-08 02:47:20 afalout Exp $
+#	 $Id: a4gl.mk,v 1.51 2004-10-20 12:18:51 afalout Exp $
 
 ##########################################################################
 #
@@ -151,7 +151,9 @@ ifeq "${USE_4GLPC}" "1"
 else
 	#default
 	USE_4GLPC		=0
-	A4GL_FGLC		=4glc
+	ifeq "${A4GL_FGLC}" ""
+		A4GL_FGLC		=4glc
+	endif
 	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 	#--clean
 endif
