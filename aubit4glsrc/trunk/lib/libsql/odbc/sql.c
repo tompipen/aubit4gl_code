@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 * 
-* $Id: sql.c,v 1.2 2001-12-10 20:17:30 mikeaubury Exp $
+* $Id: sql.c,v 1.3 2002-01-04 12:48:16 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.2  2001/12/10 20:17:30  mikeaubury
+*	Better PDF report handling...
+*	
 *	Revision 1.1  2001/12/03 15:44:37  mikeaubury
 *	New dl sql stuff
 *	
@@ -146,7 +149,6 @@ int find_prepare2 (char *pname);
 struct s_sid *find_prepare (char *pname, int mode);
 int find_cursor_for_decl (char *cname);
 struct s_cid *A4GLSQL_find_cursor (char *cname);
-char *acl_getenv (char *);
 int need_quotes (int d);
 void *find_pointer_val (char *name, char t);
 int obind_column_arr (int pos, char *s, HSTMT hstmt);

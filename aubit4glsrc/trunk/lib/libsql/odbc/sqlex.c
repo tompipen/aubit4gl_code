@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: sqlex.c,v 1.2 2001-12-21 04:14:41 afalout Exp $
+* $Id: sqlex.c,v 1.3 2002-01-04 12:48:16 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.2  2001/12/21 04:14:41  afalout
+*	RMP work
+*	
 *	Revision 1.1  2001/12/03 15:44:37  mikeaubury
 *	New dl sql stuff
 *	
@@ -115,9 +118,6 @@ struct
   }
 alloc_mem[MEMSIZE];
 
-struct str_resource *user_resource = 0;
-
-//char *acl_getenv (char *s);
 int line[80];
 FILE *f = 0;
 char invalid[] = "<Invalid>";
@@ -135,7 +135,6 @@ int clrline (int line[]);
 int rm_txt (int a, int line[], int ign);
 int remove_it (int a);
 char *getres (char *s);
-//char *acl_getenv (char *s);
 //char *chk_str_resource (char *s, struct str_resource *res);
 //char *find_str_resource (char *s);
 //int replace_str_resource (char *s, char *neww);
@@ -473,321 +472,6 @@ getres (char *s)
 
 
 
-
-
-
-
-/*
-char *
-wgetenv (char *s)
-{
-
-//#ifdef WIN32
-//  static char buff[256];
-//  if (get_regkey (s, buff, 255))
-//    return buff; // was strdup(buff)
-//  else
-//    return 0;
-//#else
-
-  return getenv (s);
-//#endif
-}
-*/
-
-/*
-char *
-acl_getenv (char *s)
-{
-  static char undef[] = "Undefined";
-  char *ptr;
-
-  ptr = wgetenv (s);
-  if (ptr == 0)
-    ptr = find_str_resource (s);
-
-  if (strcmp (s, "DBDATE") == 0)
-    {
-      chk_dbdate (ptr);
-    }
-
-  if (ptr==0) return "";
-
-  return ptr;
-}
-*/
-/*
-chk_dbdate (char *p)
-{
-  int d, m, y, del, ysize;
-  int cnt;
-  d = -1;
-  m = -1;
-  y = -1;
-
-  if (p == 0)
-    {
-      exitwith ("Invalid DBDATE format(1)");
-      return 0;
-    }
-
-  for (cnt = 0; cnt <= 2; cnt++)
-    {
-      if (toupper (p[cnt]) == 'Y')
-	y = cnt;
-      if (toupper (p[cnt]) == 'M')
-	m = cnt;
-      if (toupper (p[cnt]) == 'D')
-	d = cnt;
-    }
-
-  if (y == -1 || d == -1 || m == -1)
-    {
-      debug ("p=%s y=%d m=%d d=%d", p, y, m, d);
-      exitwith ("Invalid DBDATE format(2)");
-      return 0;
-    }
-
-
-  if (strlen (p) > 3)
-    {
-      if (p[3] != '2' && p[3] != '4')
-	{
-	  exitwith ("Invalid DBDATE format(3)");
-	  return 0;
-	}
-    }
-
-
-
-
-}
-*/
-
-
-/*
-struct str_resource builtin_resource[] =
-{
-// defaults for environment
-  {"AUBITGUI", "text"},
-  {"ACL_MOUSE", "N"},
-  {"NOCURSES", "N"},
-  {"GUIPORT", ""},
-  {"DBDATE", "MDY4/"},
-  {"DBANSIWARN", "N"},
-  {"DBBLOBBUF", "64"},
-  {"DBCENTURY", "C"},
-  {"DBDELIMITER", "|"},
-  {"DBEDIT", "vi"},
-  {"DBFLTMASK", "2"},
-  {"DBLANG", "<ACLDIR>"},
-  {"DBMONEY", "#."},
-  {"DBPATH", "."},
-  {"DBPRINT", "lp"},
-  {"ACLCCOMP", "cc"},
-  {"AUBIT_Y2K", "70"},
-  {"MAP4GL", "N"},
-  {"LOGNAME", "UNKNOWN"},
-  {"NOCLOBBER","N"},
-#ifdef WIN32
-  {"EXTENDED_FETCH", "Y"},
-#else
-  {"EXTENDED_FETCH", "Y"},
-#endif
-  {"ACLDIR", "/usr/acl"},
-  {"ACLTEMP", "tempdsn"},
-  {"HELPTEXT", "Help"},
-  {"ERROR_MSG", "Press Any Key"},
-  {"PAUSE_MSG", "Press Any Key"},
-  {"FIELD_ERROR_MSG","Error in field"},
-
-  {"MENUCSELECT", "0"},
-  {"MENUCTITLE", "0"},
-  {"MENUCNORMAL", "0"},
-  {"MENUCHIGHLIGHT", "<>"},
-
-  {"MENUMSELECT", "0"},
-  {"MENUMTITLE", "0"},
-  {"MENUMNORMAL", "0"},
-  {"MENUMHIGHLIGHT", "<>"},
-
-// abbr week days
-  {"_DAY0", "Sun"},
-  {"_DAY1", "Mon"},
-  {"_DAY2", "Tue"},
-  {"_DAY3", "Wed"},
-  {"_DAY4", "Thu"},
-  {"_DAY5", "Fri"},
-  {"_DAY6", "Sat"},
-
-// full week days
-  {"_FDAY0", "Sunday"},
-  {"_FDAY1", "Monday"},
-  {"_FDAY2", "Tuesday"},
-  {"_FDAY3", "Wednesday"},
-  {"_FDAY4", "Thursday"},
-  {"_FDAY5", "Friday"},
-  {"_FDAY6", "Saturday"},
-
-// abbr months
-  {"_MON1", "Jan"},
-  {"_MON2", "Feb"},
-  {"_MON3", "Mar"},
-  {"_MON4", "Apr"},
-  {"_MON5", "May"},
-  {"_MON6", "Jun"},
-  {"_MON7", "Jul"},
-  {"_MON8", "Aug"},
-  {"_MON9", "Sep"},
-  {"_MON10", "Oct"},
-  {"_MON11", "Nov"},
-  {"_MON12", "Dec"},
-
-// Full months
-  {"_FMON1", "January"},
-  {"_FMON2", "February"},
-  {"_FMON3", "March"},
-  {"_FMON4", "April"},
-  {"_FMON5", "May"},
-  {"_FMON6", "June"},
-  {"_FMON7", "July"},
-  {"_FMON8", "August"},
-  {"_FMON9", "September"},
-  {"_FMON10", "October"},
-  {"_FMON11", "November"},
-  {"_FMON12", "December"},
-
-// addition for days
-  {"_DAYTH1", "st"},
-  {"_DAYTH2", "nd"},
-  {"_DAYTH3", "rd"},
-  {"_DAYTH4", "th"},
-  {"_DAYTH5", "th"},
-  {"_DAYTH6", "th"},
-  {"_DAYTH7", "th"},
-  {"_DAYTH8", "th"},
-  {"_DAYTH9", "th"},
-  {"_DAYTH10", "th"},
-  {"_DAYTH11", "th"},
-  {"_DAYTH12", "th"},
-  {"_DAYTH13", "th"},
-  {"_DAYTH14", "th"},
-  {"_DAYTH15", "th"},
-  {"_DAYTH16", "th"},
-  {"_DAYTH17", "th"},
-  {"_DAYTH18", "th"},
-  {"_DAYTH19", "th"},
-  {"_DAYTH20", "th"},
-  {"_DAYTH21", "st"},
-  {"_DAYTH22", "nd"},
-  {"_DAYTH23", "rd"},
-  {"_DAYTH24", "th"},
-  {"_DAYTH25", "th"},
-  {"_DAYTH26", "th"},
-  {"_DAYTH27", "th"},
-  {"_DAYTH28", "th"},
-  {"_DAYTH29", "th"},
-  {"_DAYTH30", "th"},
-  {"_DAYTH31", "st"},
-// default lines...
-  {"_FORMLINE", "3"},
-  {"_MENULINE", "1"},
-  {"_PROMPTLINE", "1"},
-  {"_ERRORLINE", "-1"},
-  {"_MESSAGELINE", "-2"},
-  {"_COMMENTLINE", "-2"},
-
-// WINDOWS Compilation options
-  {"W32LIBSDIR", "-L/acl/lib"},
-  {"W32LIBS", "-lpdcurs -lgdi32 -luser32 -lwsock32"},
-  {"W32FGLLIBSDIR", "-L/acl/lib"},
-  {"W32FGLLIBS_SHARED", "-laclshared -lm"},
-  {"W32ODBC", "-lodbc32 -lodbccp32"},
-  {"W32FGLLIBS", "-laclall -lm"},
-  {"W32INCLDIR", "-I/acl/incl"},
-  {"W32GCC", "gcc -s -O"},
-
-// End of definitions
-  {"", 0}
-};
-
-*/
-/*
-char *
-chk_str_resource (char *s, struct str_resource *res)
-{
-  register int a;
-
-  if (res == 0)
-    {
-      return 0;
-    }
-
-  for (a = 0; strlen (res[a].name) != 0; a++)
-    {
-      if (strcmp (res[a].name, s) == 0)
-	{
-	  return res[a].value;
-	}
-    }
-  return 0;
-}
-*/
-/*
-char *
-find_str_resource_int (char *search, int a)
-{
-  char *ptr;
-  char s[256];
-  sprintf (s, "%s%d", search, a);
-  // look in user resources first
-  ptr = chk_str_resource (s, user_resource);
-  if (ptr)
-    return ptr;
-  // Check built-in resources next
-  ptr = chk_str_resource (s, builtin_resource);
-  if (ptr)
-    return ptr;
-  return 0;
-}
-*/
-/*
-char *
-find_str_resource (char *s)
-{
-  char *ptr;
-  // look in user resources first
-  ptr = chk_str_resource (s, user_resource);
-  if (ptr)
-    return ptr;
-  // Check built-in resources next
-  ptr = chk_str_resource (s, builtin_resource);
-  if (ptr)
-    return ptr;
-  return 0;
-}
-*/
-/*
-int
-replace_str_resource (char *s, char *neww)
-{
-  void *ptr;
-// use with care !
-  ptr = chk_str_resource (s, builtin_resource);
-  if (ptr)
-    strcpy (ptr, neww);
-  return 0;
-}
-*/
-
-int
-add_userptr (void *ptr)
-{
-  user_resource = ptr;
-  return 0;
-}
-
-
 ctol (char s)
 {
   char buff[2];
@@ -877,97 +561,6 @@ generate_using_for_dmy (char *s, int size)
 
 
 
-
-
-
-/* the following are all win32 specific.... */
-#ifdef WIN32
-
-//set_regkey("UseSystemLogon","Yes");
-//get_regkey("MipsUser",buff,255);
-
-
-/*******************************************************************************/
-	/* set a value in the registry                                     
-	   Eg. 
-	   set_regkey("User","maubu");
-	   set_regkey("Password","password");
-	   set_regkey("Host","sisco");                                                     */
-/*******************************************************************************/
-
-int
-set_regkey (char *key, char *data)
-{
-  LONG a;
-  if (newkey == 0)
-    createkey ();
-  a = RegSetValueEx (newkey, key, 0, REG_SZ, data, strlen (data));
-  return (a == 0);
-}
-
-
-/*******************************************************************************/
-	/* get a value from the registry                                               */
-/*******************************************************************************/
-int
-get_regkey (char *key, char *data, int n)
-{
-  LONG a;
-  DWORD l;
-  l = REG_SZ;
-  if (newkey == 0)
-    createkey ();
-  a = RegQueryValueEx (newkey, key, 0, &l, data, &n);
-  return (a == 0);
-}
-
-/*******************************************************************************/
-	/* helper program to generate the registry key                                 */
-/*******************************************************************************/
-void
-createkey ()
-{
-  LONG a;
-  DWORD disp;
-  a = RegCreateKeyEx (
-		       HKEY_LOCAL_MACHINE, "Software\\Aubit Computing Ltd.\\A4GL", 0, "AclClass", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, &disp);
-}
-
-
-/*******************************************************************************/
-	/* get any key value from registry                                             */
-/*******************************************************************************/
-void
-get_anykey (HKEY whence, char *key, char *key2, char *data, int n)
-{
-  LONG a;
-  DWORD l;
-  HKEY nkey;
-  a = RegOpenKeyEx (whence, key, 0, KEY_ALL_ACCESS, &nkey);
-  if (a != ERROR_SUCCESS)
-    {
-      MessageBox (NULL, "Couldnt open registry entry!", key, 0);
-      data[0] = 0;
-      return;
-    }
-  l = REG_SZ;
-  a = RegQueryValueEx (nkey, key2, 0, &l, data, &n);
-}
-
-
-
-/*******************************************************************************/
-	/* get the NT logon username                                                   */
-/*******************************************************************************/
-char *
-get_login ()
-{
-  static char buff[255] = "";
-  get_anykey (HKEY_LOCAL_MACHINE, "Network\\Logon", "username", buff, 255);
-  //set_regkey("MipsUser",buff);
-  return buff;
-}
-#endif
 
 
 
@@ -1093,6 +686,11 @@ readfile_for_preload (char *f)
   debug ("}\n};\n");
 }
 
+/******************************************************************
+
+			        BLOB relatad functions
+
+******************************************************************/
 
 get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
@@ -1329,11 +927,6 @@ set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 			return cnt;
 	}
 }
-
-
-
-
-
 
 
 //--------------------------- EOF --------------------------

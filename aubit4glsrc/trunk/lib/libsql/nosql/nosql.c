@@ -16,7 +16,6 @@ char *find_str_resource (char *s);
 typedef unsigned char UCHAR;
 
 struct s_sid *find_prepare (char *pname, int mode);
-char *acl_getenv (char *s);
 void A4GLSQL_set_status (int a, int sql);
 char lasterrorstr[1024] = "";
 
