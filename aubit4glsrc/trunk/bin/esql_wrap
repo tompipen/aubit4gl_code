@@ -1,5 +1,9 @@
-SH_DEBUG=0
+#
+# FIXME: this cript don't know how to make a shared library (.so/.dll)
+#
 
+
+SH_DEBUG=0
 if test "$SH_DEBUG" = "1"; then
 	echo "In esql_wrap : $@"
 fi

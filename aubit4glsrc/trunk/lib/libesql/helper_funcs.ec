@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.10 2003-09-30 14:59:55 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.11 2004-03-25 04:55:45 afalout Exp $
 #
 */
 
@@ -275,7 +275,8 @@ if (*infx==0) indicat=-1;
  * @todo describe function
  */
 void 
-A4GL_copy_interval() 
+//A4GL_copy_interval(void * a, void * b, int c, int d, char e, int f, int g)
+A4GL_copy_interval(void * a, void * b, int c, int d, char e)
 {
 	printf("A4GL_copy_interval not implemented yet");
 }

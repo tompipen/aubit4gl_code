@@ -59,5 +59,11 @@ popdec void* vx -> void
 retdec void* vx -> void
 popdtime void* vx -> void
 retdtime void* vx -> void
+/* A4GL_copy_interval -> void 
+A4GL_copy_interval void* a,void* b,int c,int d,char e,int f,int g -> void
+*/
+A4GL_copy_interval void* a,void* b,int c,int d,char e -> void
+
+
 
 

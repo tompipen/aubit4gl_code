@@ -151,7 +151,12 @@ a4gl=a4glv;
 
 }
 
-void A4GL_copy_interval() {
+// A4GL_copy_interval(pgres,a4gl,0,size,'i')
+// COPY_DATA_OUT_14(obind[4].ptr,native_binding_o[4].ptr,0,581);
+void 
+//A4GL_copy_interval(void * a, void * b, int c, int d, char e, int f, int g)
+A4GL_copy_interval(void * a, void * b, int c, int d, char e)
+{
 	printf("A4GL_copy_interval not implemented yet");
 }
 

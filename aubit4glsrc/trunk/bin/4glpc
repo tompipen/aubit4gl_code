@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.125 2004-03-22 00:15:53 afalout Exp $
+# $Id: 4glpc,v 1.126 2004-03-25 04:54:33 afalout Exp $
 #
 
 ########################################################################
@@ -134,8 +134,7 @@ AUBITETC=/etc/opt/aubit4gl
 #...etc...
 #...but NOT on UNIX: Why?????
 
-if [ $# -lt 1 -o "$1" = "--help" ]
-then
+if [ $# -lt 1 -o "$1" = "--help" ]; then
     echo
 	echo Aubit 4gl main compiler script: $0
     echo
@@ -157,14 +156,13 @@ then
 	exit 6
 fi
 
-if [ $# -lt 1 -o "$1" = "--help-options" ]
-then
+if [ $# -lt 1 -o "$1" = "--help-options" ]; then
     echo
 	echo Aubit 4gl main compiler script: $0
     echo
 	echo Options:
     echo '  -o'
-    echo '  -c : falg to C compiler'
+    echo '  -c : flag to C compiler (compile only, no linking)'
 	echo '  -shared/static ($USE_SHARED=Yes/no) compile with shared libraries'
     echo '  -echo  ($DOIT=echo) display CC command only, do not execute'
     echo '              this inhibits C compiler only, not the 4gl compiler'
@@ -187,8 +185,7 @@ then
 	exit 6
 fi
 
-if [ $# -lt 1 -o "$1" = "--help-env" ]
-then
+if [ $# -lt 1 -o "$1" = "--help-env" ]; then
 #FIXME: find and list all env var's recognised
 	echo
 	echo Aubit 4gl main compiler script: $0
@@ -216,8 +213,7 @@ then
 fi
 
 
-if [ $# -lt 1 -o "$1" = "--help-types" ]
-then
+if [ $# -lt 1 -o "$1" = "--help-types" ]; then
     echo
 	echo Aubit 4gl main compiler script: $0
     echo
@@ -238,8 +234,7 @@ then
 	exit 6
 fi
 
-if [ $# -lt 1 -o "$1" = "--help-examples" ]
-then
+if [ $# -lt 1 -o "$1" = "--help-examples" ]; then
 #FIXME: describe this:
 	echo Examples:
     echo
@@ -434,6 +429,7 @@ fi
 
 PATH=$AUBITDIR/bin:$PATH
 
+#Enables user to pass CFLAGS from command line/environment
 if [ "$COMPCC_OPTIONS" != "" ]
 then
 	COMPCC="$COMPCC_OPTIONS"
@@ -497,13 +493,15 @@ fi
 
 NCC_PG="ecpg_wrap"
 NCC_IFX="esql"
-
+#NCC_IFX="esql_wrap"
+#CC is set via aubitrc config file:
+NCC_C="$CC" # -O2
+NCC_PCODE="c2pcode_fgl "
 
 if test "$A4GL_FAKELEXTYPE" = "PCODE"; then
-    NCC="c2pcode_fgl "
+    NCC="$NCC_PCODE"
 else
-	#CC is set via aubitrc config file:
-	NCC="$CC " # -O2
+	NCC="$NCC_C "
 fi
 
 #  -save-temps              Do not delete intermediate files
@@ -513,18 +511,16 @@ fi
 
 FGLC_OUTPUT_EXT=c
 
-if [ "$A4GL_LEXTYPE" = "EC" ]
-then
-	if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
-	then
+if [ "$A4GL_LEXTYPE" = "EC" ]; then
+	if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]; then
 		FGLC_OUTPUT_EXT=cpc
         NCC=$NCC_PG
 	else
+		#default, assumes A4GL_LEXDIALECT="INFORMIX"
 		FGLC_OUTPUT_EXT=ec
         NCC=$NCC_IFX
 	fi
 fi
-
 
 #This may help while compiling, but compiled programs will not run
 #if it's not in his environmnet. So set your environment!
@@ -542,29 +538,61 @@ if [ "$TIMEIT" = "1" ]; then
 	FGLCEXEC="$TIME $FGLCEXEC"
 fi
 
-counter=0
 
+#when making shred library, we need to first create objects, and then 
+#do linking as separate stage (hint: esql don't know no .so)
+#this separation should probably be default anyway. 
+#Only allready compiled objects/libraries should reach linking stage
+TO_OBJECT=1
+
+counter=0
 ALL_FLAGS=$@
 
-#First check for flags that affect processing of the flags:
-
+###################
+#Pre-process cimmand line flags that we must know about BEFORE we process
+#the rest of the flags, because they affect how other flags behave and to 
+#assure position-independence of flags on command line
+###################
 for a in $ALL_FLAGS
+###################
 do
+   let counter=counter+1
 	case $a in
-
-	   -verbose)
-	   		A4GLVERBOSE="yes"
-			SHOWERRCODE=1
-            echo "Verbose mode ON"
+	-verbose)
+	   A4GLVERBOSE="yes"
+	   SHOWERRCODE=1
+	   echo "Verbose mode ON"
 	   ;;
-
+	-o)
+		let lookfor=counter+1
+		let cnt=0
+		for b in $ALL_FLAGS; do
+			let cnt=cnt+1
+			if test "$cnt" = "$lookfor"; then 
+				OUTFILE=$b
+				break
+			fi
+		done
+		;;
+	#-as-dll) #WARNING: NOT the same as -shared
+		#when making shred library, we need to first create objects, and then 
+		#do linking as separate stage (hint: esql don't know no .so)
+		
+		#TODO: this separation should probably be default anyway. 
+		#Only allready compiled objects/libraries should reach linking stage
+		#TO_OBJECT=1
+		#;;
+	   -c) #Do not link, compile to object only. Also implies only one object
+   		NO_LINKING=1
+		;;
 	esac
 done
 
-
-############
-for a in $@
-############
+counter=0
+#Now process the rest of the flags
+###################
+for a in $ALL_FLAGS
+###################
 do
    let counter=counter+1
 
@@ -685,9 +713,9 @@ do
 		ALLMK=`find . -name "*.mk" | sort `
 		CNT=0
 		CNT2=0
-		############
+		################
 		for a in $ALL4GL
-		############
+		#################
 		do
             let CNT=CNT+1
             FOUND=`grep $a $ALLMK`
@@ -834,52 +862,29 @@ do
         then
 			exit 0
         fi
-
-   ;;
-
-   *.a) COMPCC="$COMPCC $a"
-   ;;
-
-   #.ao behaves same as .o, needed to distinguish from I4GL objects in universal makefiles:
-   *.o | *.ao) COMPCC="$COMPCC $a"
+		;;
+   *.a) # Library file
+   		COMPCC="$COMPCC $a"
+		;;
+   *.o | *.ao) # compiled object file
+	   #.ao behaves same as .o, needed to distinguish from I4GL objects in 
+	   #universal makefiles
+   		COMPCC="$COMPCC $a"
 		EXECNAME="1"
-   ;;
-
-   #this is supposed to be linked collection of compiled library files (.ao)
-   *.aox) COMPCC="$COMPCC $a"
-		EXECNAME="1"
-   ;;
-
-
-
-   *.c) COMPCC="$COMPCC $a"
-   ;;
-
-   *.ec) 
-	if [ "$A4GL_LEXDIALECT" = POSTGRES ]
-	then
-		NCC=$NCC_PG
-	else
-		NCC=$NCC_IFX
-	fi
-
-   	COMPCC="$COMPCC $a"
-	;;
-
-   *.cpc)
-	if [ "$A4GL_LEXDIALECT" = POSTGRES ]
-	then
-		NCC=$NCC_PG
-	else
-		NCC=$NCC_IFX
-	fi
-
-   	COMPCC="$COMPCC $a"
-
-   ;;
-
-
-   *.per)
+		;;
+   *.aox) 	   #linked collection of compiled object files (.ao or .o) 
+   		COMPCC="$COMPCC $a"
+   		EXECNAME="1"
+		;;
+   *.ec)	#Informix ESQL/C compiler source code 
+		NCC="$NCC_IFX"
+		COMPCC="$COMPCC $a"
+		;;
+   *.cpc)	#PostgreSQL ESQL/C compiler source code
+		NCC="$NCC_PG"
+		COMPCC="$COMPCC $a"
+		;;
+   *.per)	#4GL form file source code
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
             $output Compiling form $a
@@ -920,33 +925,30 @@ do
 	        COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
           fi
 
-   ;;
-
-
-   *.per-old) fcompile -c $a
-          fname=`basename $a .per`
-        COMPCC="$COMPCC $fname.c"
-   ;;
-
-   *.per-direct) fcompile $a
-   ;;
-
-
-
+   		#if test "$PER_C" = "1"; then 
+   		#	fcompile -c $a
+		#	fname=`basename $a .per`
+		#	COMPCC="$COMPCC $fname.c"
+		#else
+	   	#	fcompile $a
+		#fi
+		;;
    *.msg)
         fname=`basename $a .msg`
-		mkmess $fname
+		#mkmess $fname
+		amkmessage $fname
 		#COMPCC="$COMPCC $fname.c"
-   ;;
-
-   *.menu) mcompile -c $a
-          fname=`basename $a .menu`
-        COMPCC="$COMPCC $fname.c"
-   ;;
-
-
+		;;
+   *.menu)
+   		if test "MENU_C" = "1"; then
+   			mcompile -c $a
+			fname=`basename $a .menu`
+			COMPCC="$COMPCC $fname.c"
+		else
+			mcompile $a
+		fi
+		;;
    *.4gl)
-
 		dirn=`dirname $a`
         if [ "$dirn" != "." ]; then
 			if [ "$MINGW" = "1" ]; then
@@ -964,13 +966,11 @@ do
 
         #if we did not invoked 4gl compile from inside directory where 4gl is,
         #CC will not be able to find it's .h file:
-		if [ "$dirn" != "" ] && [ "$dirn" != "." ]
-		then
+		if [ "$dirn" != "" ] && [ "$dirn" != "." ]; then
 			 COMPCC="$COMPCC -I./$dirn"
         fi
 
-        if ! [ -f $fname3 ]
-        then
+        if ! [ -f $fname3 ]; then
           echo "$fname3 not found"
           exit 10
         fi
@@ -978,16 +978,16 @@ do
         # Create the blank...
         touch $fname.$FGLC_OUTPUT_EXT
 
-        if [ -f "$fname".err ]
-        then
+        if [ -f "$fname".err ]; then
         	rm "$fname".err
         fi
 
-		if [ "$A4GLVERBOSE" = "yes" ]
-		then
-			$output "$fname: "
-			$output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
-			$output AUBITDIR=$AUBITDIR, PATH=$PATH
+		if [ "$A4GLVERBOSE" = "yes" ]; then
+			if [ "$A4GLDEBUG" = "yes" ]; then
+				$output "$fname: "
+				$output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
+				$output AUBITDIR=$AUBITDIR, PATH=$PATH
+			fi
 			$output "Executing (1) : $FGLCEXEC $a"
 		fi
 
@@ -997,31 +997,25 @@ do
 		err_msg=`eval "$FGLCEXEC" "$a"`
 		err_code=$?
 
-		if [ "$err_code" != "0" ]
-		then
-			##############################
+		if [ "$err_code" != "0" ]; then
+			#################################
 			#$FGLCEXEC returned an error code
-            ##############################
-			if [ "$err_code" = "139" ]
-	        then
+            #################################
+			if [ "$err_code" = "139" ]; then
 	        	echo "$FGLCEXEC core dump"
-				if [ "$A4GLDEBUG" = "yes" ]
-				then
+				if [ "$A4GLDEBUG" = "yes" ]; then
 					env
                 fi
-				exit 139
+				exit $err_code
 			fi
 
-			if [ -f $errfname ]
-            then
+			if [ -f $errfname ]; then
 				showerror
 			else
-				if [ -f $dirn/$errfname ]
-                then
+				if [ -f $dirn/$errfname ]; then
 					errfname=$dirn/$errfname
 					showerror
-					if [ "$A4GLVERBOSE" = "yes" ]
-					then
+					if [ "$A4GLVERBOSE" = "yes" ]; then
 		            	$output err_msg is: $err_msg
 		            fi
                 else
@@ -1029,38 +1023,28 @@ do
 	            	$output err_msg is: $err_msg
                 fi
             fi
-
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
+			if [ "$A4GLVERBOSE" = "yes" ]; then
 				echo "Exiting with code $err_code"
 			fi
-
 			exit $err_code
 		fi
-
-
 		
-		if [ -f $fname.$FGLC_OUTPUT_EXT ]
-        then
+		if [ -f $fname.$FGLC_OUTPUT_EXT ]; then
             ###########################################
 			#C file was created, no error was reported
             ###########################################
-			if ! [ -s $fname.$FGLC_OUTPUT_EXT  ]
-    	    then
+			if ! [ -s $fname.$FGLC_OUTPUT_EXT  ]; then
 				##############################################
 				#C file is empty!
                 ##############################################
                 echo "Created $fname.$FGLC_OUTPUT_EXT is zero size ! Message is:"
                 echo $err_msg
 
-				if [ "$A4GLVERBOSE" = "yes" ]
-				then
-				  	if [ -f $errfname ]
-	    	        then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+				  	if [ -f $errfname ]; then
                         showerror
 					else
-						if [ -f $dirn/$errfname ]
-		                then
+						if [ -f $dirn/$errfname ]; then
 							errfname=$dirn/$errfname
 							showerror
 							#$output "Error compiling $fname.$FGLC_OUTPUT_EXT - see file $errfname"
@@ -1076,69 +1060,65 @@ do
 				fi
 	            #we don't want to exit with 0 here:
 	            err_code=9
-				if [ "$A4GLVERBOSE" = "yes" ]
-				then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
 					echo "Exiting with code $err_code"
 				fi
 				exit $err_code
 			fi
 
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
+			if [ "$A4GLVERBOSE" = "yes" ]; then
 				$output $FGLCEXEC "$a" OK, continue...
 			fi
-
-			if [ "$MAP4GL" = "Y" ]
-			then
-				if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]
-				then
+			if [ "$MAP4GL" = "Y" ];	then
+				if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]; then
 					$output "Loading map file for $a into database"
 					loadmap $fname.map > /dev/null 2> $fname.map.err
 				fi
 			fi
-
-			PRETTYC=${PRETTYC:-"indent"}
-			if [ "$AUTOINDENT" = "Y" ]
-			then
+			if [ "$AUTOINDENT" = "Y" ];	then
+				PRETTYC=${PRETTYC:-"indent"}			
 			 	$PRETTYC "$fname.$FGLC_OUTPUT_EXT"
 			fi
-
-			if [ "$LINKIT" = "1" ]
-			then
-                #we got this .4gl in linking command so we need to make object
-                #for linking to succedde, or we where explicity requested to
-				#make an object from 4gl file :
+			if test "$TO_OBJECT"; then
+                #make an object from 4gl file
+				if test "$NO_LINKING"; then
+					#got -c flag, single object only on command line
+					if test "$OUTFILE" = ""; then
+						OUTFILE="$fname.ao"
+					fi
+				else
+					#no -c flag, can have multiple object on command line,
+					#so -o may or may not not be the same thing
+					OUTFILE="$fname.ao"
+				fi
 				#if [ "$COMSPEC" = "" ]
 				#then
-					EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname.ao $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+					EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $OUTFILE $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#else
 				#	EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname.ao $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
                 #    #remove this duplication
 				#	#EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -o $fname.ao -c $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#fi
 
-				if [ "$A4GLVERBOSE" = "yes" ]
-				then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
 					$output "executing (2) : $EXEC"
 				fi
 
                 ########################
-				#Invoke C compiler
+				#Invoke compiler
 				########################
 				eval $EXEC
 				err_code=$?
                 ########################
-
-				if [ "$err_code" != "0" ]
-				then
+				if [ "$err_code" != "0" ]; then
                     #we got error from C compiler
 					showerror
 					echo "error compiling $fname.$FGLC_OUTPUT_EXT. STOP."
 					exit $err_code
                 else
 					if [ -f "$fname.$FGLC_OUTPUT_EXT.err" ]; then
-						#C compiler did not return error code, but .err file was
-                        #created, and we know it will only contain C compiler,
+						#compiler did not return error code, but .err file was
+                        #created, and we know it will only contain compiler,
                         #warnings, so we don't want to confuse things and people:
 
 						#-s is True if file exists and has a size greater than zero.
@@ -1157,14 +1137,14 @@ do
 	       		        fi
 					fi
 				fi
-
 				COMPCC="$COMPCC $fname.ao"
             else
 				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
             fi
         else
             ###################################
-			#C file was _NOT_ created by FGLCEXEC, but FGLCEXEC did _NOT_ return an error code
+			#C file was _NOT_ created by FGLCEXEC, 
+			#but FGLCEXEC did _NOT_ return an error code
             ###################################
             #is this a 0 length 4gl file?
 			FGLFILESIZE=$(ls -al $fname3 | $AWK '{print $5}')
@@ -1211,81 +1191,108 @@ do
 				exit $err_code
             fi
 		fi
-   ;;
+		;;
+   *.c) 	#C source code file
+   		COMPCC="$COMPCC $a"
+   		if test "$NO_LINKING" = "1"; then 
+			#there was -c on command line (which also indicate only one input 
+			#file on command line) and input file is a C file - so we want to 
+			#use linking stage to create output file (object)
+			NO_LINKING=0
+		fi
+		;;
 
-   -echo) DOIT="echo"
-   ;;
-   -e) NO_COMPILE=1
-	ISMAKE=-1
-	LINKIT=0
-   ;;
-
-   -i) IGNORE_ERRORS="1"
-	
-   ;;
-
-   -jabber) USE_JABBER=1
-   ;;
-
-
-   -verbose) 	A4GLVERBOSE="yes"
-				SHOWERRCODE=1
-   ;;
-
+   -echo)	#Don't execute any command, just show what you would do 
+   		DOIT="echo"
+		;;
+   -e) #Pre-process only, no compiling or linking - for use with Informix ESQL/C only 
+	   	NO_COMPILE=1
+		ISMAKE=-1
+		TO_OBJECT=0
+		;;
+   -i) #Ifnore any errors and continue
+   		IGNORE_ERRORS="1"
+		;;
+	-jabber) 
+		USE_JABBER=1
+		;;
+   -verbose)
+   		#Got that earlier
+		;;
    -noerrcode)
         SHOWERRCODE=0
-   ;;
-
+		;;
    -map)
         echo "Setting map file on"
         MAP4GL="Y"
         export MAP4GL
-   ;;
-
-   -maponly) 		export MAP4GL="Y"
-             		NOCFILE="Y"
-   ;;
-
-   -make-compile) 	export MAKE4GLPC="Yes"
-
-   ;;
-
-   -nomap) unset MAP4GL
-   ;;
-
-   -debug) export INCLINES=""
-           export DEBUG=ALL
-		   #DDEBUG="_g"
-           COMPCC="$COMPCC -g"
-   ;;
-
+		;;
+   -maponly) 		
+		export MAP4GL="Y"
+		NOCFILE="Y"
+		;;
+   -make-compile) 	
+   		export MAKE4GLPC="Yes"
+		;;
+   -nomap) 
+   		unset MAP4GL
+		;;
+   -debug) 
+   		export INCLINES=""
+        export DEBUG=ALL
+		#DDEBUG="_g"
+        COMPCC="$COMPCC -g"
+		;;
    -as-dll)		#creates shared library- .so on UNIX, .dll on Windows
-   				COMPCC="$COMPCC -shared"
-   ;;
-
-   -shared)
-			USE_SHARED="Yes"
-   ;;
-
-   -static)
-			USE_SHARED="No"
-
-   ;;
-
-   -o) COMPCC="$COMPCC -o "
-       ISMAKE=-1
-       LINKIT=1
-
-       ERREXT=.err
-
-       ERRFILE="$fname$ERREXT"
-       LAST="2> $ERRFILE"
-	   DEFAULTCOMPCC="$COMPCC $fname"
-       EXECNAME="-1"
-
-
-   ;;
-
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			if test "$A4GL_LEXDIALECT" = "POSTGRES"; then
+				echo "not implemented"; exit 6
+			elif test "$A4GL_LEXDIALECT" = "INFORMIX"; then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Note: Using IFX_LIBS:"
+					echo "$IFX_LIBS"
+					echo "COMPCC=$COMPCC"
+				fi
+				#Informix ESQL compiler don't kno whow to link to shared librry
+				#so we must use CC
+				NCC_LINK="$NCC_C -shared -L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql $IFX_LIBS"
+			else
+				echo "ERROR: don't know how to make shared library for A4GL_LEXDIALECT=$A4GL_LEXDIALECT"
+				exit 5			
+			fi
+		elif test "$A4GL_LEXTYPE" = "C"; then
+   			COMPCC="$COMPCC -shared"
+		else
+			echo "ERROR: don't know how to make shared library for A4GL_LEX=$A4GL_LEXTYPE"
+			exit 5
+		fi
+		AS_DLL="1"
+		;;
+   -shared) #When linking, use STATIC libraries
+   		#NOTE: has nothing to do with type of objects/libraries/execitables 
+		#that will be CREATED by this script
+   		USE_SHARED="Yes"
+		;;
+   -static)	#When linking, use STATIC libraries
+   		#NOTE: has nothing to do with type of objects/libraries/execitables 
+		#that will be CREATED by this script
+		USE_SHARED="No"
+		;;
+   -o) 
+   		#Note: allready in flags pre-processing ...
+		COMPCC="$COMPCC -o "
+		ISMAKE=-1 #flag to indicate that folowing flag is object name
+		TO_OBJECT=1
+		ERREXT=.err
+		if test "$fname" = ""; then
+			echo "WARNING: output file not (yet) named. Using 'unknown' for log file"
+			fname='unknown'
+		fi
+		ERRFILE="$fname$ERREXT"
+		LAST="2> $ERRFILE"
+		DEFAULTCOMPCC="$COMPCC $fname"
+		EXECNAME="-1"
+		;;
    -noprefix)  #Something for Mike, to be passed to FGLCEXEC, NOT to CC
 	pass="-N \"$next\""
         FGLCEXEC="$FGLCEXEC $pass"
@@ -1295,19 +1302,18 @@ do
 
    ;;
 
-
-   *) if [ "$ISMAKE" = "-1" ]
-      then
-         EXECNAME="$a"
-		 ISMAKE=1
-	     ERREXT=.err
-		 ERRFILE="$a$ERREXT"
-		 LAST="2> $ERRFILE"
-
-      fi
-
-      COMPCC="$COMPCC $a"
-  ;;
+   *)	#everything else on command line 
+	if [ "$ISMAKE" = "-1" ]; then
+		#previous flag was -o
+		EXECNAME="$a"
+		ISMAKE=1
+		ERREXT=.err
+		ERRFILE="$a$ERREXT"
+		LAST="2> $ERRFILE"
+	fi
+	#Whatever it is, add it to link line we will pass to linker 
+    COMPCC="$COMPCC $a"
+	;;
 
   ####
   esac
@@ -1315,6 +1321,13 @@ do
 ####
 done
 ####
+
+if test "$NO_LINKING" = "1"; then 
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+		echo "got -c flag (no linking). Done"
+	fi
+	exit 0
+fi
 
 
 if [ "$EXECNAME" = "-1" ]
@@ -1352,9 +1365,6 @@ fi
 FGLLIBS_STATIC="$FGLLIBS_COMMON -static"
 FGLLIBS_SHARED="$FGLLIBS_COMMON"
 
-
-
-
 if [ "$A4GLDEBUG" = "yes" ]
 then
 	echo ------------------------------------------------------------------
@@ -1390,8 +1400,7 @@ fi
 
 if [ "$NOCFILE" = "Y" ]
 then
-   if [ "$A4GLVERBOSE" = "yes" ]
-   then
+   if [ "$A4GLVERBOSE" = "yes" ]; then
 	   $output No C files to compile.
    fi
 	if [ "$A4GLVERBOSE" = "yes" ]
@@ -1401,14 +1410,11 @@ then
 	exit 8
 fi
 
-if [ "$COMPCC" = "" ]
-then
-   if [ "$A4GLVERBOSE" = "yes" ]
-   then
+if [ "$COMPCC" = "" ]; then
+   if [ "$A4GLVERBOSE" = "yes" ]; then
 	   $output No C files to compile.
    fi
-	if [ "$A4GLVERBOSE" = "yes" ]
-	then
+	if [ "$A4GLVERBOSE" = "yes" ]; then
 		echo "Exiting with code 8"
     fi
 	exit 8
@@ -1421,73 +1427,64 @@ then
 	echo $MAKE4GLPC
 fi
 
-if [ "$NO_COMPILE" = 1 ]
-then
-
-
+if [ "$NO_COMPILE" = 1 ]; then
 	eval "$DOIT $NCC -e $CFLAGS $COMPCC $INCLDIR $LAST"
 	err_code=$?
-	
-	if [ "$A4GLVERBOSE" = "yes" ]
-	then
-		echo "Exiting after esql first stage with code 0"
+	if [ "$A4GLVERBOSE" = "yes" ]; then
+		echo "Exiting after pre-processing stage with code $err_code"
 	fi
 	exit $err_code
 fi
 
-
-if [ "$ISMAKE" != "1" ]
-then
-	if [ "$COMSPEC" = "" ]
-	then
-		EXEC="$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $LAST"
-    else
-        EXEC="$DOIT $NCC $CFLAGS $COMPCC -c $INCLDIR $LAST"
+if [ "$ISMAKE" != "1" ]; then
+	if [ "$COMSPEC" != "" ]; then
+		echo "WARNING: susspicious - adding -c flag"
+        COMPCC="$COMPCC -c"
     fi
-
-   if [ "$A4GLVERBOSE" = "yes" ]
-   then
+	EXEC="$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $LAST"
+	if [ "$A4GLVERBOSE" = "yes" ]; then
         $output "executing (3) : $EXEC"
-   fi
+		echo ----------------------------------
+		echo "DOIT $DOIT"
+		echo "NCC $NCC"
+		echo "CFLAGS $CFLAGS"
+		echo "COMPCC $COMPCC"
+		echo "INCLDIR $INCLDIR"
+		echo "LAST $LAST"
+		echo ----------------------------------
+	
+	fi
     ##################
-   	#invoke C compiler
+   	#invoke compiler
     ##################
 	eval $EXEC
 	err_code=$?
-
-	if [ $err_code != 0 ]
-	then
-		if [ "$LAST" != "" ]
-		then
+	if [ $err_code != 0 ]; then
+		if [ "$LAST" != "" ]; then
 			errfname=`expr "$LAST" : "..\(.*\)"`
 			showerror
 			cerrfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.err
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
+			if [ "$A4GLVERBOSE" = "yes" ]; then
 				echo "Moving $errfname to $cerrfname"
             fi
 			mv $errfname $cerrfname
 			$output "Error compiling - check $cerrfname"
-
 		else
 			$output "Error compiling - no LAST data."
 		fi
-
-		if [ "$A4GLVERBOSE" = "yes" ]
-		then
+		if [ "$A4GLVERBOSE" = "yes" ]; then
 	        echo "Exiting with code $err_code"
 	    fi
 		exit $err_code
    else
-        #C compiler did not return error code
+        #compiler did not return error code
 		errfname=`expr "$LAST" : "..\(.*\)"`
         if [ -f "$errfname" ]; then
 			#-s is True if file exists and has a size greater than zero.
 			if [ -s $errfname ]; then
 				#this must be warnings, since we got no error code...
 				warnfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.warn
-				if [ "$A4GLVERBOSE" = "yes" ]
-				then
+				if [ "$A4GLVERBOSE" = "yes" ]; then
 					echo "Moving $errfname to $warnfname (2)"
 	            fi
 				mv $errfname $warnfname
@@ -1497,16 +1494,24 @@ then
             fi
         fi
    fi
+else # ISMAKE=1
+	if test "$NCC_LINK" = ""; then
+		NCC_LINK="$NCC"
+	fi
+	EXEC="$DOIT $NCC_LINK $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR \
+		$FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
 
-else
-   if [ "$A4GLVERBOSE" = "yes" ]
-   then
-	   $output "Generating Exec"
-	   echo "executing (4) : $DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
-
+   	if [ "$A4GLVERBOSE" = "yes" ]; then
+   		if test "$AS_DLL" ; then 
+			$output "Generating shared library"
+		else
+   			$output "Generating Exec"
+		fi
+		echo "executing (4) : $EXEC"
 		if [ "$A4GLDEBUG" = "yes" ]; then
 		   echo $DOIT
-		   echo $NCC
+		   echo $NCC_LINK
+		   echo $CFLAGS
 		   echo $COMPCC
 		   echo $INCLDIR
 		   echo $FGLLIBSDIR
@@ -1519,24 +1524,18 @@ else
 		   echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 	       echo "PWD is `pwd`"
 	    fi
-   fi
-
-	eval "$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+	fi
+	eval "$EXEC"
 	err_code=$?
-
-	if [ $err_code != 0 ]
-	then
-		if [ "$LAST" != "" ]
-		then
+	if [ $err_code != 0 ]; then
+		if [ "$LAST" != "" ]; then
 			errfname=`expr "$LAST" : "..\(.*\)"`
 			showerror
 			echo "Error compiling... check $errfname"
-
-	  else
-		  $output "Error compiling."
-      fi
-	if [ "$A4GLVERBOSE" = "yes" ]
-	then
+		else
+			$output "Error compiling."
+		fi
+	if [ "$A4GLVERBOSE" = "yes" ]; then
         echo "Exiting with code $err_code"
     fi
 	exit $err_code

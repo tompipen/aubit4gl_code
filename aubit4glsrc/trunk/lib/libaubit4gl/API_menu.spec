@@ -54,7 +54,6 @@ A4GL_show_menu char* menuid,void* handler -> void
 /* void write_menu () */
 A4GL_write_menu void* menul -> void
 
-
 /*  ============================ EOF ============================   */
 
 

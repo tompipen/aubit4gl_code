@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.21 2004-02-02 15:36:53 mikeaubury Exp $
+# $Id: Makefile,v 1.22 2004-03-25 04:55:45 afalout Exp $
 #
 
 ROOT    		=../..
@@ -34,7 +34,7 @@ ROOT    		=../..
 include 		${ROOT}/incl/Makefile-common
 
 #Include rules for compiling 4GL source code using Aubit compiler
-include 	${ROOT}/incl/a4gl.mk
+include 		${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Source files
@@ -106,9 +106,10 @@ endif
 ################
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
-#4GLPCFLAGS		=-g
-4GLPCFLAGS		= -g -O2 
-
+4GLPCFLAGS		=-g -O2
+ifeq "${VERBOSE}" "1"
+	4GLPCFLAGS	+=-verbose
+endif
 ################
 #Full make line to use when compiling 4gl objects
 COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
