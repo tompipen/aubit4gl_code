@@ -4,17 +4,23 @@
  * It looks like function to help the parsing of a module (a x4gl one). 
  * For that the name mod.c
  *
+ * @todo Doxygen comments in all functions
+ * @todo static in modular variables
+ * @todo const in read only strings
  */
 
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.31 2001-11-29 22:26:57 saferreira Exp $
+* $Id: mod.c,v 1.32 2001-11-30 21:34:00 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.31  2001/11/29 22:26:57  saferreira
+*	Some more warnings fixed and Doxygen comments added
+*	
 *	Revision 1.30  2001/11/28 23:12:14  saferreira
 *	Small modifications for warning fix (Prototypes)
 *	
@@ -223,6 +229,7 @@ int word_cnt = 0;
 extern int menu_cnt;
 extern int yylineno;
 extern char *infilename;
+
 int db_used = 0;
 int last_var_found = -1;
 int var_hdr_finished;
@@ -279,8 +286,6 @@ int report_cnt = 1;
 
 int nblock_no = 1;
 
-FILE *curr_db = 0;
-FILE *ferr = 0;
 #define GEN_STACKS 10
 char gen_stack[GEN_STACKS][100][80];
 int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -307,6 +312,7 @@ int fbindcnt = 0;
 #define MAXVARS 2000
 
 
+/// Array of variables found. The level gives us the scope variable
 struct variables
 {
 
@@ -324,6 +330,14 @@ struct variables
 }
 vars[MAXVARS];
 
+/**
+ * Module current scope level for variable declaration.
+ *
+ * It contains:
+ *   - -1  : Global variables
+ *   - 0   : Modular variables
+ *   - > 0 : Function local variables
+ */
 int modlevel = -1;
 
 struct cmds
@@ -343,6 +357,7 @@ extern int ccnt;
 
 #define EMPTY "----"
 
+/// Array index to the last variable filled in the variables array 
 int varcnt = 0;
 
 int in_record = 0;
@@ -372,33 +387,41 @@ static char *print (char *z)
 
 }
 
-static strip_bracket (char *s)
+/**
+ * Strip square brackets "[]" from a string.
+ * 
+ * @param s The string to be stripped
+ */
+static void strip_bracket (char *s)
 {
   char buff[256];
   int a;
   int c = 0;
   int f = 0;
-  //debug ("Stripping brackets from %s ", s);
+
+  debug ("strip_bracket\n");
   for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == '[')
-	f++;
-      if (f == 0)
-	buff[c++] = s[a];
-      if (s[a] == ']')
-	f--;
-    }
+  {
+    if (s[a] == '[')
+      f++;
+    if (f == 0)
+      buff[c++] = s[a];
+    if (s[a] == ']')
+      f--;
+  }
   strcpy (s, buff);
-  //debug ("-->%s ", s);
 }
 
 /**
- * @param buff
+ * Strips square brackets "[]" from a string at leaves it just as it was.
+ * 
+ * @param buff The original string to be stripped
+ * @return static buffer with string stripped
  */
-static char *with_strip_bracket (char *buff)
+static char *with_strip_bracket (const char *buff)
 {
   static char bff[256];
-  debug ("In with_strip_bracket\n");
+  debug ("with_strip_bracket\n");
   strcpy (bff, buff);
   strip_bracket (bff);
   return bff;
@@ -433,13 +456,8 @@ static void add_variable (char *name, char *type, char *n)
   else
     strcpy (vars[varcnt].var_type, EMPTY);
 
-//  debug ("In mod.c : add_variable (3)\n");
-
   if (n != 0)
     {
-      //debug ("In mod.c : add_variable (3a)\n");
-      //debug ("/* global variables: name = %d */\n", name);      /* global variables: name = 50439268 */
-      //debug ("/* global variables: varcnt = %d */\n", varcnt);      /* global variables: varcnt = 18 */
       //debug ("/* global variables: n = %d */\n", n);                            /* global variables: n = 2563 */
       // we core dump here on CygWin:
 
@@ -451,11 +469,8 @@ static void add_variable (char *name, char *type, char *n)
     }
   else
     {
-//      debug ("In mod.c : add_variable (3b)\n");
       strcpy (vars[varcnt].var_size, EMPTY);
     }
-
-//  debug ("In mod.c : add_variable (4)\n");
 
   strcpy (vars[varcnt].var_arrsize, EMPTY);
 
@@ -471,6 +486,9 @@ static void add_variable (char *name, char *type, char *n)
 
 }
 
+/**
+ *
+ */
 void clr_variable (void)
 {
   varcnt = modlevel;
@@ -581,11 +599,25 @@ void setinc (a)
   inc += a;
 }
 
+/**
+ * Print the variable in variables array by is index.
+ *
+ * The result is composed in a temporary buffer and the called the function
+ * that generates the variable declaration in the target language to the
+ * target generated file.
+ *
+ * @param z The variable index in the array
+ * @param ff
+ *   - L : The variable is local to function
+ *   - G : The variable have global scope
+ *   - n
+ *   - M : The variable is with modular scope
+ */
 static void print_variable (int z, char ff)
 {
   char tmpbuff[80];
 
-  debug ("Printing variable %d %s", ff, vars[z].var_name);
+  debug ("Printing variable %c %s", ff, vars[z].var_name);
 
   if (strcmp (vars[z].var_name, "time") == 0)
     return;
@@ -677,6 +709,9 @@ static void print_variable (int z, char ff)
 
 }
 
+/**
+ * Dumps the global variables to a file named <target_file>.glb
+ */
 static void dump_gvars(void)
 {
 
@@ -717,8 +752,15 @@ static void dump_gvars(void)
   fclose (f);
 }
 
-
-static char *ignull (char *ptr)
+/**
+ * Tests if a char pointer is null (char *)0
+ *
+ * @param ptr The variable to be checked
+ * @return 
+ *   - The parameter pointer if not null
+ *   - An empty string otherwise (with just one NULL caracter)
+ */
+static char *ignull (const char *ptr)
 {
   static char *empty = "";
   if (ptr)
@@ -763,6 +805,13 @@ void dump_vars (void)
 
 }
 
+/**
+ * Print variable declaration for the scope wanted.
+ *
+ * The scope level is defined by the global modlevel
+ *
+ * @param z Not used
+ */
 void print_variables (int z)
 {
 
@@ -967,6 +1016,15 @@ static findex (char *str, char c)
   return 0;
 }
 
+/**
+ * Identifies the data type from a string and convert it to numeric with
+ * the goal of being more easyli used.
+ *
+ * @todo organize some defines to the data types.
+ *
+ * @param s The string where the data type will be scanned
+ * @return The data type in numeric code 
+ */
 static int find_type (char *s)
 {
   char errbuff[80];
@@ -1032,6 +1090,24 @@ static int find_type (char *s)
   yyerror (errbuff);
   return 0;
 }
+
+/**
+ * Scan a string to find what kind of variable is declared or used inside 
+ * it.
+ *
+ * @todo Complete the folowing comment 
+ *
+ * Transform the sting making the folowing actions:
+ *   - Strip eventual square brackets []
+ *   - 
+ *
+ * @param s The string containing the variable declaration
+ * @param mode Not used
+ * @return A code with one the folowing meanings:
+ *   - -1 No variable detected
+ *   - -2 Is a variable thru variable
+ *   - A numeric code number identifiing the data type (@see find_type())
+ */
 static long scan_variables (char *s, int mode)
 {
   int a;
@@ -1044,7 +1120,7 @@ static long scan_variables (char *s, int mode)
   int lvl = 0;
   last_var_found = -1;
 
-  if (s[0] == '.' && s[1] == 0)
+  if (s[0] == '.' && s[1] == '\0')
     return -1;
 
   if (s[0] == 0)
@@ -1169,6 +1245,13 @@ static long scan_variables (char *s, int mode)
 
 }
 
+/**
+ * Scan a string to see if its a variable declaration, and if so
+ * gets the data type.
+ *
+ * @param s The string eventualy containing the variable
+ * @return The data type in numeric code
+ */
 long scan_variable (char *s)
 {
   char buff[256];
@@ -1176,11 +1259,11 @@ long scan_variable (char *s)
   a = scan_variables (s, 1);
 
   if (a == -1)
-    {
-      strcpy (buff, s);
-      strcat (buff, ".*");
-      a = scan_variables (buff, 1);
-    }
+  {
+    strcpy (buff, s);
+    strcat (buff, ".*");
+    a = scan_variables (buff, 1);
+  }
   return a;
 }
 
@@ -1311,6 +1394,18 @@ static int scan_arr_variable (char *s)
 
 }
 
+/**
+ * Adds a new variable to the variable array.
+ *
+ * Fills the structure whit received parameters.
+ * Increment the index that indicates the number of elements in the array
+ *
+ * @param name The variable name
+ * @param type The variable data type
+ * @param n The size of the variable (wich one ?)
+ * @param as The size of the array if the variable is of that type
+ * @param lvl Scope level (Global, Modular or Local)
+ */
 static void set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
 
@@ -1380,6 +1475,9 @@ int add_constant (char t, char *ptr, char *name)
   const_cnt++;
 }
 
+/**
+ * Set the internal 4gl variables in the array.
+ */
 void set_4gl_vars(void)
 {
 
@@ -1447,6 +1545,12 @@ void open_db (char *s)
     db_used = 1;
 }
 
+/**
+ * Gets the C data type corresponding to 4gl data type
+ *
+ * @param s A string with the numeric 4gl data type (@see find_type()) 
+ * @return The string (static) with the C declaration
+ */
 static char *rettype (char *s)
 {
   static char rs[20] = "long";
@@ -1489,16 +1593,21 @@ static char *rettype (char *s)
   return rs;
 }
 
+/**
+ * Trim the spaces at the right part of a string.
+ *
+ * @param s The string to be trimmed
+ */
 static void trim_spaces (char *s)
 {
   int l;
   for (l = strlen (s) - 1; l >= 0; l--)
-    {
-      if (s[l] == ' ')
-	s[l] = 0;
-      else
-	break;
-    }
+  {
+    if (s[l] == ' ')
+      s[l] = 0;
+    else
+      break;
+  }
 }
 
 static int push_like2 (char *t2)
@@ -2933,12 +3042,6 @@ void set_whenever (int c, char *p)
 }
 
 
-static void pcopy (char *s)
-{
-  if (ferr)
-    fprintf (ferr, "%s\n", s);
-}
-
 void clr_function_constants (void)
 {
   int a;
@@ -3527,6 +3630,8 @@ int length_expr (struct expr_str * ptr)
 
 /** 
  * This is something internal for MikeA
+ *
+ * @param s
  */
 void tr_glob_fname (char *s)
 {
