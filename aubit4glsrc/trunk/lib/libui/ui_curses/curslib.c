@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.76 2004-01-02 18:12:35 mikeaubury Exp $
+# $Id: curslib.c,v 1.77 2004-01-02 21:02:47 mikeaubury Exp $
 #*/
 
 /**
@@ -238,6 +238,9 @@ A4GL_error_nobox (char *str, int attr)
   //A4GL_display_at (1, AUBIT_ATTR_REVERSE);
   curr_error_window = w;
   curr_error_panel = p;
+	A4GL_debug("Beeping because of error : %s",str);
+	if (A4GL_isyes(acl_getenv("BEEPONERROR"))) { beep(); }
+	if (A4GL_isyes(acl_getenv("FLASHONERROR"))) { flash(); }
   UILIB_A4GL_zrefresh ();
 }
 
@@ -3093,8 +3096,11 @@ A4GL_flatten_menu (ACL_Menu * menu)
 
 
 int UILIB_A4GL_get_key(int timeout) {
+int x;
 	A4GL_chkwin();
-	return  A4GL_getch_win();
+	x=A4GL_getch_win();
+	A4GL_debug("get_key returns %d (%x)",x,x);
+	return x;
 }
 
 /* ============================== EOF ============================== */

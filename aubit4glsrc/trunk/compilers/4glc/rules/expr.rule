@@ -133,24 +133,10 @@ NOT fgl_expr_c {
 | OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
 /*| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; } */
 | EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	char buff[256];
-	int n;
-	$<ptr>$=A4GL_new_expr($<sql_string>3);
-	A4GL_append_expr($<ptr>$,"{");
-	n=print_bind_expr($<ptr>$,'i');
-	sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
-	A4GL_append_expr($<ptr>$,buff);
-	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_EXISTS);");
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'E');
 }
 | NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	char buff[256];
-	int n;
-	$<ptr>$=A4GL_new_expr($<sql_string>3);
-	A4GL_append_expr($<ptr>$,"{");
-	n=print_bind_expr($<ptr>$,'i');
-	sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
-	A4GL_append_expr($<ptr>$,buff);
-	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTEXISTS);");
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'e');
 }
 ;	
 
@@ -332,25 +318,11 @@ inexpr_list : fgl_expr_c  {
 
 in_expr:
  IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	char buff[256];
-	int n;
-	$<ptr>$=A4GL_new_expr($<sql_string>3);
-	A4GL_append_expr($<ptr>$,"{");
-	n=print_bind_expr($<ptr>$,'i');
-	sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
-	A4GL_append_expr($<ptr>$,buff);
-	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_IN_SELECT);");
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'I');
 }
 	
  | NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	char buff[256];
-	int n;
-	$<ptr>$=A4GL_new_expr($<sql_string>3);
-	A4GL_append_expr($<ptr>$,"{");
-	n=print_bind_expr($<ptr>$,'i');
-	sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
-	A4GL_append_expr($<ptr>$,buff);
-	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTIN_SELECT);");
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'i');
 }
  |IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET {
 	char buff[256];

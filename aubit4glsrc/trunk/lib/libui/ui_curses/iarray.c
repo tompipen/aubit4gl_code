@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.61 2004-01-02 15:17:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.62 2004-01-02 21:02:47 mikeaubury Exp $
 #*/
 
 /**
@@ -940,6 +940,7 @@ int
   int rval;
   //int a;
 
+  
   struct s_inp_arr *inpa;
   inpa = (struct s_inp_arr *) vinpa;
 
@@ -973,6 +974,7 @@ int
 #ifdef DEBUG
       {
 	A4GL_debug ("inpa->currform=%p", inpa->currform);
+	A4GL_debug ("inpa->fcntrl_cnt=%d", inpa->fcntrl_cnt);
       }
 #endif
       inpa->last_arr = -1;
@@ -1680,13 +1682,18 @@ process_control_stack (struct s_inp_arr *arr)
 
 
   a = arr->fcntrl_cnt - 1;
-
+ A4GL_debug("arr->fcntrl_cnt=0x%x a=0x%x",arr->fcntrl_cnt,a);
 // Should already have been handled...
   //if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
   //{
   //new_state = 0;
   //rval = -99;
   //}
+
+  if (a>10||a<0) {
+		A4GL_assertion(1==1,"formcontrol count variable out of range");
+  }
+
 
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
     {
@@ -2474,7 +2481,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
   int flg;
   struct s_form_dets *formdets;
   char *cptr;
-  char buff[256];
+  static char buff[256];
   int da;
   int attr;
 
@@ -2534,6 +2541,7 @@ A4GL_debug("Attrib %x - %d fprop=%p %d %d",a,attr,fprop);
 	  strcpy (buff, "");
 	  cptr = buff;
 	  A4GL_push_null (DTYPE_CHAR, 1);
+	A4GL_debug("ZZZZZ : %d %p %x",arr->binding[a].dtype, cptr, arr->binding[a].size);
 	  A4GL_setnull (arr->binding[a].dtype, cptr, arr->binding[a].size);
 	}
 

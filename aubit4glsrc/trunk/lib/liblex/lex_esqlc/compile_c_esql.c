@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.60 2003-12-04 19:06:12 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.61 2004-01-02 21:02:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -80,6 +80,7 @@
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
+char * A4GL_dtype_sz (int d, int s);
 
 /*
 =====================================================================
@@ -1519,7 +1520,7 @@ if (type=='M') { /* Make the table */
 		l_sz=DECODE_SIZE(fbind[a].dtype);
 		strcat(tmpbuff, nm (l_dt));
 		
-		strcat(tmpbuff, A4GL_dtype_sz (l_dt,l_sz));
+		strcat(tmpbuff, (char *)A4GL_dtype_sz (l_dt,l_sz));
 		
       		strcat (buff, tmpbuff);
 		strcat (ins_str,"?");
@@ -1543,6 +1544,68 @@ if (type=='M') { /* Make the table */
 void A4GL_add_put_string(char *s) {
 }
 
+
+void *get_in_exists_sql(char *sql, char type) {
+char buff[256];
+char cname[256];
+char *buffer;
+int n;
+static int ncnt=0;
+void *ptr;
+extern char buff_in[];
+	sprintf(cname,"aclfgl_c%d_%d",type,ncnt++);
+        buffer=malloc(255+strlen(sql));
+
+        ptr=A4GL_new_expr("{ EXEC SQL BEGIN DECLARE SECTION;\nint _npc;char _np[256];\nEXEC SQL END DECLARE SECTION;");
+
+
+        n=print_bind_expr(ptr,'i');
+        A4GL_append_expr(ptr,buff_in);
+	sprintf(buffer,"EXEC SQL DECLARE %s CURSOR for %s;",cname,sql);
+        A4GL_append_expr(ptr,buffer);
+
+
+        sprintf(buff,"if (sqlca.sqlcode==0) {\nEXEC SQL OPEN %s;\n",cname);
+        A4GL_append_expr(ptr,buff);
+
+	if (type=='E') {
+        	sprintf(buff,"EXEC SQL FETCH %s;\n",cname);
+        	A4GL_append_expr(ptr,buff);
+		sprintf(buff,"} if (sqlca.sqlcode==0) A4GL_push_int(1);");
+        	A4GL_append_expr(ptr,buff);
+		sprintf(buff,"else A4GL_push_int(0);\n}");
+        	A4GL_append_expr(ptr,buff);
+		return ptr;
+	}
+
+	if (type=='e') {
+        	sprintf(buff,"EXEC SQL FETCH %s;\n",cname);
+        	A4GL_append_expr(ptr,buff);
+		sprintf(buff,"} if (sqlca.sqlcode==100) A4GL_push_int(1);");
+        	A4GL_append_expr(ptr,buff);
+		sprintf(buff,"else A4GL_push_int(0);\n}");
+        	A4GL_append_expr(ptr,buff);
+		return ptr;
+	}
+
+
+       	sprintf(buff,"_npc=0;while (1) {\n");
+       	A4GL_append_expr(ptr,buff);
+      	sprintf(buff,"EXEC SQL FETCH %s INTO $_np;\n",cname);
+       	A4GL_append_expr(ptr,buff);
+      	sprintf(buff,"if (sqlca.sqlcode!=0) break;\n");
+       	A4GL_append_expr(ptr,buff);
+   	sprintf(buff,"A4GL_push_char(_np);_npc++;\n");
+       	A4GL_append_expr(ptr,buff);
+	sprintf(buff,"}\nA4GL_push_int(_npc);");
+       	A4GL_append_expr(ptr,buff);
+	if (type=='I') 	sprintf(buff," A4GL_pushop(OP_IN);");
+	else 		sprintf(buff," A4GL_pushop(OP_NOTIN);");
+       	A4GL_append_expr(ptr,buff);
+        sprintf(buff,"} else {A4GL_push_int(0);}\n}");
+       	A4GL_append_expr(ptr,buff);
+        return ptr;
+}
 
 /* ================================== EOF =============================== */
 

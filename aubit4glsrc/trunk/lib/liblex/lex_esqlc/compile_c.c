@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.119 2003-12-18 20:41:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.120 2004-01-02 21:02:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -160,6 +160,7 @@ dll_import struct s_constr_buff constr_buff[256];
 dll_import char when_to[64][8];
 int doing_esql (void);
 void make_sql_bind (char *sql, char *type);
+char *make_sql_bind_expr (char *sql, char *type);
 //long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
 int split_arrsizes (char *s, int *arrsizes);
 int esql_type (void);
@@ -1703,6 +1704,10 @@ print_bind_expr (void *ptr, char i)
 	  A4GL_append_expr (ptr, buff);
 	}
       A4GL_append_expr (ptr, "};");
+      if (doing_esql ())
+        {
+          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
+        }
       start_bind (i, 0);
       return a;
     }
@@ -2866,7 +2871,9 @@ print_init (void)
 {
   int cnt;
   printc ("{\n");
-  expand_bind (&nullbind[0], 'N', nullbindcnt);
+
+  
+  expand_bind (nullbind, 'N', nullbindcnt);
 
   for (cnt = 0; cnt < nullbindcnt; cnt++)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.145 2003-12-30 15:23:56 mikeaubury Exp $
+# $Id: mod.c,v 1.146 2004-01-02 21:02:39 mikeaubury Exp $
 #
 */
 
@@ -3625,24 +3625,26 @@ ispdf (void)
 void
 expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
-  struct binding_comp save_bind[NUMBINDINGS];
   char buff[256];
-  int a;
   int b1;
   int b2;
   int b3;
-int dim;
-  for (a = 0; a < cnt; a++)
+  int dim;
+  int xxxa;
+  struct binding_comp save_bind[20000];
+xxxa=0;
+
+  for (xxxa = 0; xxxa < cnt; xxxa++)
     {
-      strcpy (save_bind[a].varname, bind[a].varname);
-      save_bind[a].dtype = bind[a].dtype;
+      strcpy (save_bind[xxxa].varname, bind[xxxa].varname);
+      save_bind[xxxa].dtype = bind[xxxa].dtype;
     }
 
   start_bind (btype, 0);
 
-  for (a = 0; a < cnt; a++)
+  for (xxxa = 0; xxxa < cnt; xxxa++)
     {
-      strcpy (buff, save_bind[a].varname);
+      strcpy (buff, save_bind[xxxa].varname);
 
 
 

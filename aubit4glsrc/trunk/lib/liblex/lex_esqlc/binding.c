@@ -17,14 +17,19 @@ dll_import struct binding_comp obind[NUMBINDINGS];
 char buff_in[100000];
 char buff_out[100000];
 
+#define ONE_NOT_ZERO(x) (x?x:1)
 
 void print_conversions (char i);
 void make_sql_bind (char *sql, char *type);
-void print_sql_type (int a, char ioro);
+char *
+make_sql_bind_expr (char *sql, char *type);
+static char *get_sql_type (int a, char ioro);
 void printc (char *fmt, ...);
 void printh (char *fmt, ...);
 int esql_type (void);
-static void print_sql_type_infx (int a, char ioro);
+void liblex_add_ibind(int dtype,char *var) ;
+static char* get_sql_type_infx (int a, char ioro);
+static char *get_sql_type_postgres (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
 
 static char *dt_qual(int a) {
@@ -40,7 +45,6 @@ static char *dt_qual(int a) {
 }
 
 
-static void print_sql_type_postgres (int a, char ioro);
 
 static char *decode_decimal_size_as_string(int n) {
 static char buff[256];
@@ -101,7 +105,7 @@ make_sql_bind (char *sql, char *type)
 	    {
 	      for (a = 0; a < ibindcnt; a++)
 		{
-		  print_sql_type (a, 'i');
+		  printc("%s",get_sql_type (a, 'i'));
 		if ((ibind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d);\n",
 			   ibind[a].dtype & 0xffff, 
@@ -141,7 +145,7 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < obindcnt; a++)
 		{
 		char indicat[40];
-		  	print_sql_type (a, 'o');
+		  	printc("%s",get_sql_type (a, 'o'));
 
  			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
 				strcpy(indicat,"0");
@@ -180,7 +184,7 @@ make_sql_bind (char *sql, char *type)
 	if (strchr (type, 'i')) {
 
 		char comma=' ';
-      		printc("struct BINDING native_binding_i[]={\n");
+      		printc("struct BINDING native_binding_i[%d]={\n",ONE_NOT_ZERO(ibindcnt));
 		if(ibindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<ibindcnt;a++) {
 			printc("   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
@@ -194,7 +198,7 @@ make_sql_bind (char *sql, char *type)
 
 	if (strchr (type, 'o')) {
 		char comma=' ';
-      		printc("struct BINDING native_binding_o[]={\n");
+      		printc("struct BINDING native_binding_o[%d]={\n",ONE_NOT_ZERO(obindcnt));
 		if(obindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			printc(" %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
@@ -223,75 +227,248 @@ make_sql_bind (char *sql, char *type)
 }
 
 
+static char *addstr(char *p,int *n,char *new) {
+int sz;
+int isnew;
+	if (p) {
+		sz=strlen(p)+strlen(new)+2;
+		isnew=0;
+	} else {
+		sz=strlen(new)+2;
+		isnew=1;
+	}
 
-void
-print_sql_type (int a, char ioro)
+	if (sz>*n) {
+		p=realloc(p,sz);
+	}
+	*n=sz;
+	if (isnew) strcpy(p,new);
+	else strcat(p,new);
+return p;
+}
+
+char *
+make_sql_bind_expr (char *sql, char *type)
 {
-  // Need to do some check to determine which ESQL/C to use...
-  if (esql_type()==1) {
-  	print_sql_type_infx (a, ioro);
-  }
-  if (esql_type()==2) {
-  	print_sql_type_postgres (a, ioro);
-  }
+  char buff_small[256];
+  char b2[256];
+  char *ptr=0;
+   int sz=0;
+  int a;
+
+
+  ptr=addstr(ptr,&sz,"EXEC SQL BEGIN DECLARE SECTION;\n");
+  strcpy(b2,"");
+
+
+  if (sql == 0)
+    {
+      if (strchr (type, 'i'))
+	{
+	  strcpy (buff_in, "");
+	  if (ibindcnt)
+	    {
+	      for (a = 0; a < ibindcnt; a++)
+		{
+		  sprintf(b2,"%s\n",get_sql_type (a, 'i'));
+      			ptr=addstr(ptr,&sz, b2);
+		if ((ibind[a].dtype & 0xffff)==0) {
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d); /*E*/\n",
+			   ibind[a].dtype & 0xffff, 
+					//ibind[a].varname, 
+					a,
+					
+				a,
+			   ibind[a].dtype >> 16,
+			ibind[a].start_char_subscript,
+			ibind[a].end_char_subscript
+);
+		} else {
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d); /*E*/\n",
+			   ibind[a].dtype & 0xffff, 
+					//ibind[a].varname, 
+					a,
+					
+				a,
+			   ibind[a].dtype >> 16
+);
+
+		}
+		  strcat (buff_in, buff_small);
+		}
+	      //printc ("/* %s */", buff_in);
+	    }
+	}
+
+      if (strchr (type, 'o'))
+	{
+	  strcpy (buff_out, "");
+	  if (obindcnt)
+	    {
+
+	      sprintf (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
+	      strcpy (buff_out, buff_small);
+	      for (a = 0; a < obindcnt; a++)
+		{
+		char indicat[40];
+		  	sprintf(b2,"%s\n",get_sql_type (a, 'o'));
+      			ptr=addstr(ptr,&sz, b2);
+
+ 			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+				strcpy(indicat,"0");
+			} else {
+				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
+			}
+		if ((obind[a].dtype & 0xffff)==0) {
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
+			   obind[a].dtype & 0xffff, 
+				//obind[a].varname, 
+				a,
+				a,
+				indicat,
+			   obind[a].dtype >> 16,
+			obind[a].start_char_subscript,
+			obind[a].end_char_subscript);
+
+		} else {
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d);\n",
+			   obind[a].dtype & 0xffff, 
+				//obind[a].varname, 
+				a,
+				a,
+				indicat,
+			   obind[a].dtype >> 16
+			);
+
+		}
+		  strcat (buff_out, buff_small);
+		}
+	    }
+	}
+
+	
+      ptr=addstr(ptr,&sz, "EXEC SQL END DECLARE SECTION;\n");
+
+
+	if (strchr (type, 'i')) {
+
+		char comma=' ';
+      		ptr=addstr(ptr,&sz,"struct BINDING native_binding_i[]={\n");
+		if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+		for (a=0;a<ibindcnt;a++) {
+			char buff[255];
+			sprintf(buff,"   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
+			ptr=addstr(ptr,&sz,buff);
+			comma=',';
+		}
+ 		ptr=addstr(ptr,&sz,"};\n");
+
+
+
+	}
+
+	if (strchr (type, 'o')) {
+		char comma=' ';
+      		ptr=addstr(ptr,&sz,"struct BINDING native_binding_o[]={\n");
+		if(obindcnt==0) { printc("{0,0,0}"); }
+		for (a=0;a<obindcnt;a++) {
+			char buff[255];
+			sprintf(buff," %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
+			ptr=addstr(ptr,&sz,buff);
+			comma=',';
+		}
+ 		ptr=addstr(ptr,&sz,"};\n");
+		
+ 		if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+		char comma=' ';
+      		ptr=addstr(ptr,&sz,"struct BINDING native_binding_o_ind[]={\n");
+		if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+		for (a=0;a<obindcnt;a++) {
+			char buff[255];
+			sprintf(buff," %c{&_voi_%d,%d,%d}",comma,a,2,4);
+			ptr=addstr(ptr,&sz,buff);
+			comma=',';
+		}
+ 		ptr=addstr(ptr,&sz,"};\n");
+		
+		}
+	}
+    }
+	return ptr;
 }
 
 
-static void
-print_sql_type_infx (int a, char ioro)
+char *
+get_sql_type (int a, char ioro)
 {
+  // Need to do some check to determine which ESQL/C to use...
+  if (esql_type()==1) {
+  	return get_sql_type_infx (a, ioro);
+  }
+  if (esql_type()==2) {
+  	return get_sql_type_postgres (a, ioro);
+  }
+return 0;
+}
+
+
+static char *
+get_sql_type_infx (int a, char ioro)
+{
+static char buff[255];
+char buff_ind[255];
 
   if (ioro == 'i')
     {
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:
-	  printc ("char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
 	  break;
 	case 1:
-	  printc ("short _vi_%d;", a);
+	  sprintf (buff,"short _vi_%d;", a);
 	  break;
 	case 2:
-	  printc ("int _vi_%d;", a);
+	  sprintf (buff,"int _vi_%d;", a);
 	  break;
 	case 3:
-	  printc ("double _vi_%d;", a);
+	  sprintf (buff,"double _vi_%d;", a);
 	  break;
 	case 4:
-	  printc ("float _vi_%d;", a);
+	  sprintf (buff,"float _vi_%d;", a);
 	  break;
 
 	case 5:
-	  printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 
 	case 6:
-	  printc ("int _vi_%d;", a);
+	  sprintf (buff,"int _vi_%d;", a);
 	  break;
 
 	case 7:
-	  printc ("date _vi_%d;", a);
+	  sprintf (buff,"date _vi_%d;", a);
 	  break;
 	case 8:
-	  printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  sprintf (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 	case 9:
-	  printc ("Blah _vi_%d;", a);
+	  sprintf (buff,"Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
+	  sprintf (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
 	  break;
 	case 11:
-	  printc ("interval _vi_%d;", a);
+	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	case 12:
-	  printc ("text _vi_%d;", a);
+	  sprintf (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  printc ("varchar _vi_%d;", a);
+	  sprintf (buff,"varchar _vi_%d;", a);
 	  break;
 	case 14:
-	  printc ("interval _vi_%d;", a);
+	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	}
     }
@@ -300,126 +477,130 @@ print_sql_type_infx (int a, char ioro)
   if (ioro == 'o')
     {
  	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
-		printc("  short _voi_%d;",a);
+		sprintf(buff_ind,"  short _voi_%d;",a);
+	} else {
+		strcpy(buff_ind,"");
 	}
 
       switch (obind[a].dtype & 0xffff)
 	{
 	case 0:
-	  printc ("char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
 	  break;
 	case 1:
-	  printc ("short _vo_%d;", a);
+	  sprintf (buff,"short _vo_%d;", a);
 	  break;
 	case 2:
-	  printc ("int _vo_%d;", a);
+	  sprintf (buff,"int _vo_%d;", a);
 	  break;
 	case 3:
-	  printc ("double _vo_%d;", a);
+	  sprintf (buff,"double _vo_%d;", a);
 	  break;
 	case 4:
-	  printc ("float _vo_%d;", a);
+	  sprintf (buff,"float _vo_%d;", a);
 	  break;
 	case 5:
-	  	printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  	break;
 	case 6:
-	  printc ("int _vo_%d;", a);
+	  sprintf (buff,"int _vo_%d;", a);
 	  break;
 	case 7:
-	  printc ("date _vo_%d;", a);
+	  sprintf (buff,"date _vo_%d;", a);
 	  break;
 	case 8:
-	  	printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	sprintf (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  break;
 	case 9:
-	  printc ("Blah _vo_%d;", a);
+	  sprintf (buff,"Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
+	  sprintf (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
 	  break;
 	case 11:
-	  printc ("interval _vo_%d;", a);
+	  sprintf (buff,"interval _vo_%d;", a);
 	  break;
 	case 12:
-	  printc ("text _vo_%d;", a);
+	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  printc ("varchar _vo_%d;", a);
+	  sprintf (buff,"varchar _vo_%d;", a);
 	  break;
 	case 14:
-	  printc ("interval _vo_%d;", a);
+	  sprintf (buff,"interval _vo_%d;", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
-  printc ("\n");
 
+    return buff;
 }
 
 
 
-static void print_sql_type_postgres (int a, char ioro)
+static char *get_sql_type_postgres (int a, char ioro)
 {
-
+static char buff[255];
+static char buff_ind[255];
   if (ioro == 'i')
     {
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:
-	  printc ("char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
 	  break;
 	case 1:
-	  printc ("short _vi_%d;", a);
+	  sprintf (buff,"short _vi_%d;", a);
 	  break;
 	case 2:
-	  printc ("int _vi_%d;", a);
+	  sprintf (buff,"int _vi_%d;", a);
 	  break;
 	case 3:
-	  printc ("double _vi_%d;", a);
+	  sprintf (buff,"double _vi_%d;", a);
 	  break;
 	case 4:
-	  printc ("float _vi_%d;", a);
+	  sprintf (buff,"float _vi_%d;", a);
 	  break;
 
 	case 5:
-	  printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 
 	case 6:
-	  printc ("int _vi_%d;", a);
+	  sprintf (buff,"int _vi_%d;", a);
 	  break;
 
 	case 7:
-	  printc ("date _vi_%d;", a);
+	  sprintf (buff,"date _vi_%d;", a);
 	  break;
 	case 8:
 	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
-	  	printc ("money _vi_%d;", a);
+	  	sprintf (buff,"money _vi_%d;", a);
 	  } else {
 	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
-	  		printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
 		} else {
-	  		printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  		sprintf (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 		}
 	  }
 	  break;
 	case 9:
-	  printc ("Blah _vi_%d;", a);
+	  sprintf (buff,"Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vi_%d;",  a); // Datetimes can't be qualified in ecpg
+	  sprintf (buff,"datetime _vi_%d;",  a); // Datetimes can't be qualified in ecpg
 	  break;
 	case 11:
-	  printc ("interval _vi_%d;", a);
+	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	case 12:
-	  printc ("text _vi_%d;", a);
+	  sprintf (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  printc ("varchar _vi_%d;", a);
+	  sprintf (buff,"varchar _vi_%d;", a);
 	  break;
 	case 14:
-	  printc ("interval _vi_%d;", a);
+	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	}
     }
@@ -428,67 +609,70 @@ static void print_sql_type_postgres (int a, char ioro)
   if (ioro == 'o')
     {
  	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
-		printc("  short _voi_%d;",a);
+		sprintf(buff_ind,"  short _voi_%d;",a);
+	} else {
+		strcpy(buff_ind,"");
 	}
 
       switch (obind[a].dtype & 0xffff)
 	{
 	case 0:
-	  printc ("char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
 	  break;
 	case 1:
-	  printc ("short _vo_%d;", a);
+	  sprintf (buff,"short _vo_%d;", a);
 	  break;
 	case 2:
-	  printc ("int _vo_%d;", a);
+	  sprintf (buff,"int _vo_%d;", a);
 	  break;
 	case 3:
-	  printc ("double _vo_%d;", a);
+	  sprintf (buff,"double _vo_%d;", a);
 	  break;
 	case 4:
-	  printc ("float _vo_%d;", a);
+	  sprintf (buff,"float _vo_%d;", a);
 	  break;
 	case 5:
-	  	printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  break;
 	case 6:
-	  printc ("int _vo_%d;", a);
+	  sprintf (buff,"int _vo_%d;", a);
 	  break;
 	case 7:
-	  printc ("date _vo_%d;", a);
+	  sprintf (buff,"date _vo_%d;", a);
 	  break;
 	case 8:
 	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
-	  	printc ("money _vo_%d;", a);
+	  	sprintf (buff,"money _vo_%d;", a);
 	  } else {
 	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
-	  		printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
 		} else {
-	  		printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  		sprintf (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 		}
 	   }
 	  	break;
 	case 9:
-	  printc ("Blah _vo_%d;", a);
+	  sprintf (buff,"Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vo_%d;",  a); // Datetimes can't be qualified in ecpg
+	  sprintf (buff,"datetime _vo_%d;",  a); // Datetimes can't be qualified in ecpg
 	  break;
 	case 11:
-	  printc ("interval _vo_%d;", a);
+	  sprintf (buff,"interval _vo_%d;", a);
 	  break;
 	case 12:
-	  printc ("text _vo_%d;", a);
+	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  printc ("varchar _vo_%d;", a);
+	  sprintf (buff,"varchar _vo_%d;", a);
 	  break;
 	case 14:
-	  printc ("interval _vo_%d;", a);
+	  sprintf (buff,"interval _vo_%d;", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
-  printc ("\n");
+	return buff;
 
 }
 

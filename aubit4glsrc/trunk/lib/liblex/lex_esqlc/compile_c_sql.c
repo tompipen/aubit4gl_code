@@ -611,3 +611,26 @@ if (s[0]=='\'') {
 }
 
 }
+
+
+
+void *get_in_exists_sql(char *sql, char type) {
+char buff[256];
+int n;
+void *ptr;
+char *x;
+	x=malloc(strlen(sql)+255);
+	sprintf(x,"A4GL_push_char(\"%s\");",sql);
+        ptr=A4GL_new_expr(x);
+	
+        A4GL_append_expr(ptr,"{");
+        n=print_bind_expr(ptr,'i');
+        sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
+        A4GL_append_expr(ptr,buff);
+	if (type=='E') A4GL_append_expr(ptr,"A4GL_pushop(OP_EXISTS);");
+	if (type=='e') A4GL_append_expr(ptr,"A4GL_pushop(OP_NOTEXISTS);");
+ 	if (type=='I') A4GL_append_expr(ptr,"A4GL_pushop(OP_IN_SELECT);");
+ 	if (type=='i') A4GL_append_expr(ptr,"A4GL_pushop(OP_NOTIN_SELECT);");
+	free(x);
+	return ptr;
+}

@@ -1111,7 +1111,8 @@ select_statement_ss:
 
 in_select_statement_ss:
 	SELECT op_ad select_list_ss table_expression_ss sel_p2_ss {
-		$<sql_string>$=make_sql_string("A4GL_push_char(\"", $<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5, "\");",0);
+		/*$<sql_string>$=make_sql_string("A4GL_push_char(\"", $<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5, "\");",0); */
+		$<sql_string>$=make_sql_string($<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5,0);
 	free($<sql_string>3);
 	free($<sql_string>4);
 	free($<sql_string>5);
