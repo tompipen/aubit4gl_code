@@ -217,6 +217,7 @@ if (strcmp($<str>2,"?")==0) {
 
 
 var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
+	| var_ident ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
 	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 
@@ -1000,6 +1001,7 @@ s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 
 dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
+		|       identifier ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
 		|	CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 		;
 
