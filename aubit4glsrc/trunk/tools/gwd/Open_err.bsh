@@ -1,0 +1,186 @@
+/*
+ * Open_err.bsh - a BeanShell macro script for the jEdit text editor 
+ * 
+ * Swaps .4gl or .per file with coresponding .err file and vice versa.
+ *
+ 
+ - If the current buffer is .4gl or .per file:
+ 	- looks for coresponding .err file in same directory, and checks for
+	  possible existance of both per and 4gl with same basename
+	- if succesfull, closes current buffer, opens .err file and
+	  positions cursor on first error
+ 
+ - If the current buffer is .err file:
+    - determines if .err file originated in .per or .4gl file
+	- strips all error messages
+	- saves .err file
+	- closes current buffer (.err)
+	- moves originating 4gl or per file to .4gl.bak or .per.bak
+	- moves saved .err file to .4gl or .per file
+	- opens this .4gl or .per file
+	- positions cursor on line number cursor was on before .err file was closed
+ 
+ * Copyright (C) 2004 Andrej Falout
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with the jEdit program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id: Open_err.bsh,v 1.1 2004-10-31 08:17:36 afalout Exp $
+ *
+ * Checked for jEdit 4.0 API
+ *
+ */
+
+/* Main function
+ *
+ *
+ */
+void swapErr()
+{
+	//save curent buffer
+	if(buffer.isNewFile())
+		buffer.saveAs(view, true);
+	else
+		buffer.save(view, buffer.getPath());
+	
+	//get curent editing "mode" (file type)
+	mode = buffer.getMode().getName();
+
+	//file name of the curent buffer including path
+	//path = buffer.getPath() + " ";
+	String path = buffer.getPath();
+	//Get OS type
+	os = System.getProperty("os.name");
+
+	//add quotes if on Windows (for handling of spaces in file name)
+	//probably a good idea on all platforms ?
+	if(os.indexOf("Windows") != -1)
+		path = "\"" + path + "\"";
+	
+	//file name (without full path)
+	fileName = buffer.getName();
+  	
+	//file name without extension (without path)
+	fileBaseName=MiscUtilities.getFileNameNoExtension(path);
+
+	//full path to the file without file name
+	PathOnly = buffer.getDirectory();
+	
+	//file extension
+	//fileExt = ????();
+
+	errFile = PathOnly + fileBaseName + ".err";
+	//errFile = path;
+	
+	//Macros.error(view,
+	//Macros.message(view,	
+	//	"About to open " + errFile);	
+	
+	
+	//check the file type
+	if(mode.equals("i4gl")) {
+		/*
+		we are openining .err files in i4gl mode to be able to use
+		same syntax highlighting as we use for .4gl files, so we must
+		check actual file extension to see what is in current buffer
+		*/
+		
+		if (path.endsWith(".err")) {
+			// current buffer is .err file, find out if it was per of 4gl:
+			Macros.error(view,"This is .err file - not implemented");
+			
+			
+		} else {
+			openErr(errFile);
+		}
+	}
+	else if(mode.equals("4GL_PER")) {
+		//execScript("awk", "awk -f " + path);
+		openErr(errFile);
+	}
+	else {
+		Macros.error(view,
+			"The current file does not appear to be a .4gl, .per or .err file.");
+	}
+
+
+}
+
+void openErr(errFile)
+{
+	
+	
+	if(errFile == null)
+		view.getToolkit().beep();
+	else
+	{
+		//Macros.message(view,"About to open " + errFile);	
+		jEdit.openFile(view,errFile);
+		
+		//Now position cursor on first error line
+		
+		
+		
+	}
+
+	// close current buffer (curent .4gl file)
+	//jEdit.closeBuffer(view, buffer);
+
+}	
+
+goToColumn(col)
+{
+	line = textArea.getCaretLine();
+	len = textArea.getLineLength(line) + 1;
+	while(true)
+	{
+		//col = Macros.input(view, "Column (between 1 and " + len + "):");
+		if(col == null)
+			return;
+		else
+		{
+			try
+			{
+				col = Integer.parseInt(col);
+				if(col >= 1 && col <= len)
+				{
+					lineStartOffset = textArea.getLineStartOffset(line);
+					textArea.setCaretPosition(lineStartOffset + (col-1));
+					textArea.requestFocus();
+					return;
+				}
+			}catch(NumberFormatException e){
+			}
+		}
+	}
+}
+
+//Call main function
+swapErr();
+
+/*
+	Macro index data (in DocBook format)
+
+<listitem>
+    <para><filename>Open_err.bsh</filename></para>
+    <abstract><para>
+        Swaps .4gl or .per file with coresponding .err file and vice versa.
+    </para></abstract>
+</listitem>
+
+*/
+
+
+// end Open_err.bsh
+
