@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.14 2002-01-10 11:38:13 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-01-11 03:02:12 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -516,6 +516,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) ${MKNAME} -C lib clean
 	$(MAKE) ${MKNAME} -C lib/libgui clean
+	$(MAKE) ${MKNAME} -C lib/extra_libs/file clean
 	$(MAKE) ${MKNAME} -C compilers/4glc/rules clean
 	$(MAKE) ${MKNAME} -C compilers/4glc clean
 	$(MAKE) ${MKNAME} -C compilers/fcompile clean
@@ -545,6 +546,7 @@ clean.makefiles:
 	${RM} lib/libpdf/Makefile
 	${RM} lib/libsql/nosql/Makefile
 	${RM} lib/libsql/odbc/Makefile
+	${RM} lib/extra_libs/file/Makefile
 	${RM} tools/adbaccess/Makefile
 	${RM} tools/adbload/Makefile
 	${RM} tools/html/Makefile

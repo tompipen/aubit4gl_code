@@ -110,6 +110,7 @@ AC_CONFIG_FILES([Makefile
                  lib/libgui/Makefile
                  lib/libsql/nosql/Makefile
                  lib/libsql/odbc/Makefile
+		lib/extra_libs/file/Makefile
                  lib/Makefile
                  tools/adbaccess/Makefile
                  tools/adbload/Makefile

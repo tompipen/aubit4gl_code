@@ -1,28 +1,48 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
 #
-# $Id: Makefile.in,v 1.3 2001-12-28 19:56:39 saferreira Exp $
+# $Id: Makefile.in,v 1.4 2002-01-11 03:02:16 afalout Exp $
 #
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-RM =rm -f
 4GLPCFLAGS=
-FGLPCEXEC=sh 4glpc
+FGLPCEXEC=${SH} 4glpc
+
 
 ifdef COMSPEC
-	SH=bash
-else
-	SH=sh
-endif
-
-ifdef COMSPEC
-	FGLPCEXEC=bash 4glpc
 	ifdef MONOLIT
 		4GLPCFLAGS += -mno-cygwin
 	endif
-else
-	FGLPCEXEC=sh 4glpc
 endif
 
 #ifdef NOGTK
