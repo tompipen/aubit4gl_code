@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.14 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: decompile.c,v 1.15 2004-03-24 11:06:28 mikeaubury Exp $
 #*/
 
 /**
@@ -87,6 +87,7 @@ XDR xdrp; */
    */
 
   memset (&the_menus, 0, sizeof (menu_list));
+  A4GL_build_user_resources ();
 
   /*
      int      isolated_xdr_decompile                  (void* the_menus,void* xdrp,void* f);

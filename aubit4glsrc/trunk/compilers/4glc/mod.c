@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.167 2004-03-19 19:23:52 mikeaubury Exp $
+# $Id: mod.c,v 1.168 2004-03-24 11:06:16 mikeaubury Exp $
 #
 */
 
@@ -632,7 +632,7 @@ push_name (char *a, char *n)
 void
 push_type (char *a, char *n, char *as)
 {
-  A4GL_debug ("push_type : %s %s %s", a, n, as);
+  A4GL_debug ("push_type : %s %s %s", A4GL_null_as_null(a), A4GL_null_as_null(n), A4GL_null_as_null(as));
 
   variable_action (-1, a, n, as, "push_type");
 

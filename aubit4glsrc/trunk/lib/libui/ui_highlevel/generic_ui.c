@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.12 2004-03-23 13:10:22 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.13 2004-03-24 11:06:30 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -105,12 +105,13 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 {
   ACL_Menu_Opts *opt1;
   int fc;
-  if (A4GL_is_special_key(a,A4GLKEY_LEFT)) a = A4GLKEY_LEFT;
-  if (A4GL_is_special_key(a,A4GLKEY_RIGHT)) a = A4GLKEY_RIGHT;
-  if (A4GL_is_special_key(a,A4GLKEY_UP)) a = A4GLKEY_UP;
-  if (A4GL_is_special_key(a,A4GLKEY_DOWN)) a = A4GLKEY_DOWN;
-  if (A4GL_is_special_key(a,A4GLKEY_LEFT)) a = A4GLKEY_LEFT;
-  if (A4GL_is_special_key(a,A4GLKEY_ENTER)) a = 13;
+
+  //if (A4GL_is_special_key(a,A4GLKEY_LEFT)) a = A4GLKEY_LEFT;
+  //if (A4GL_is_special_key(a,A4GLKEY_RIGHT)) a = A4GLKEY_RIGHT;
+  //if (A4GL_is_special_key(a,A4GLKEY_UP)) a = A4GLKEY_UP;
+  //if (A4GL_is_special_key(a,A4GLKEY_DOWN)) a = A4GLKEY_DOWN;
+  //if (A4GL_is_special_key(a,A4GLKEY_LEFT)) a = A4GLKEY_LEFT;
+  //if (A4GL_is_special_key(a,A4GLKEY_ENTER)) a = 13;
 
 
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
@@ -138,7 +139,7 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
       return 0;
     }
 
-  if (a == 13)
+  if (a == 13 || a==A4GLKEY_ENTER )
     {
       A4GL_debug ("CR..");
       return 1;

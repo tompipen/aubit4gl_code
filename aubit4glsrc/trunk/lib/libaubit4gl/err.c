@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.8 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: err.c,v 1.9 2004-03-24 11:06:29 mikeaubury Exp $
 #
 */
 
@@ -53,6 +53,7 @@
 #include "a4gl_libaubit4gl_int.h"
 
 #endif
+
 
 
 /*
@@ -100,8 +101,14 @@ A4GL_err_print (int a, char *s)
   k = A4GL_get_errm (a * -1);
   A4GL_debug ("Got %s", k);
   sprintf (static_err, k, s);
+
   return static_err;
+
 }
 
+
+void Never_called_but_I_wanted_a_dummy_function() {
+A4GL_exitwith("Unknown error");
+}
 
 /* =============================== EOF ============================== */

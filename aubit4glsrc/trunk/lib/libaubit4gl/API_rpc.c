@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.14 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: API_rpc.c,v 1.15 2004-03-24 11:06:29 mikeaubury Exp $
 #
 */
 
@@ -105,7 +105,7 @@ A4GLRPC_initlib (void)
 int
 A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
 {
-  A4GL_debug ("remote_func_call - libptr=%p\n");
+  A4GL_debug ("remote_func_call - libptr=%p\n",libptr);
   if (libptr == 0)
     A4GLRPC_initlib ();
   A4GL_func = A4GL_find_func (libptr, "A4GL_remote_func_call");

@@ -52,7 +52,7 @@ A4GL_show_menu char* menuid,void* handler -> void
 /* void error_with (char *s, char *a, char *b) */
 
 /* void write_menu () */
-A4GL_write_menu -> void
+A4GL_write_menu void* menul -> void
 
 
 /*  ============================ EOF ============================   */

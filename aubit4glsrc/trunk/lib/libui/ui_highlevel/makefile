@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.13 2004-02-12 11:04:13 afalout Exp $
+# $Id: makefile,v 1.14 2004-03-24 11:06:30 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -155,7 +155,7 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  ${CURSES_LIB_PATH}
 
-${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o
+${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
 
 ## ==================================================================
@@ -189,6 +189,9 @@ lowlevel_gtk.o: lowlevel/lowlevel_gtk.c API_lowlevel.h
 
 widget_gtk.o: lowlevel/widget_gtk.c
 	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
+
+menu_gtk.o: lowlevel/menu_gtk.c
+	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I../../../common/dataio -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
 
 #All objects depend on API headers:
 ${OBJS}: ${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h ${ROOT}/incl/a4gl_API_menu.h \

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.119 2004-03-23 13:10:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.120 2004-03-24 11:06:29 mikeaubury Exp $
 #
 */
 
@@ -1750,6 +1750,7 @@ A4GL_clr_error_nobox (char *dbg_fromwhere);
 void A4GL_core_dump(void);
 void
 A4GL_set_core_dump (void);
+char *A4GL_null_as_null(char *s);
 int A4GL_has_errorlog (void);
 int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 void A4GL_close_errorlog_file (void);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.42 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.43 2004-03-24 11:06:29 mikeaubury Exp $
 #
 */
 
@@ -97,7 +97,6 @@ struct s_funcs builtin_funcs[] = {
 	{"exp",func_exp,2,1},
 	{"logn",func_logn,2,1},
 	{"log10",func_log10,1,1},
-	{"length",func_length,1,1},
 	{"date",func_date,1,1},
 	{"day",func_day,1,1},
 	{"month",aclfgl_month,1,1},
@@ -125,7 +124,6 @@ void A4GL_func_round (void);
 void A4GL_func_exp (void);
 void A4GL_func_logn (void);
 void A4GL_func_log10 (void);
-void A4GL_func_length (void);
 int aclfgl_ord(int n) ;
 
 static void push_byte (void *ptr);
@@ -519,16 +517,6 @@ A4GL_func_log10 (void)
   A4GL_exitwith ("log not implemented\n");
 }
 
-/**
- *
- *
- * @todo Describe function
- */
-void
-A4GL_func_length (void)
-{
-  A4GL_exitwith ("length not implemented\n");
-}
 
 
 /**
