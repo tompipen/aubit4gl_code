@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #####################################################
 #This script is used to update Aubit 4gl web site
 #and on-line doccumentation from Aubit CVS on
