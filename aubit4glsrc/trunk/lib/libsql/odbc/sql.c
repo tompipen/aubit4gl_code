@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.108 2005-02-03 09:11:53 mikeaubury Exp $
+# $Id: sql.c,v 1.109 2005-02-03 15:34:50 mikeaubury Exp $
 #
 */
 
@@ -1999,6 +1999,9 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 
     case 91:
       return 12;		/* date */
+
+    case 10:
+	return 8;
     default:
       printf ("Unknown datatype, %d\n", coltype);
       return (0);
@@ -2964,6 +2967,12 @@ conv_sqldtype (int sqldtype, int sdim)
 #endif
 
 
+if (sqldtype==SQL_TIME) {
+	return DTYPE_DTIME;
+}
+
+
+
   if (sqldtype >= 0)
     ndtype = convpos_sql_to_4gl[sqldtype];
   else
@@ -3337,8 +3346,9 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
       return 0;
     }
   *colname = cn;
-  *size = prec;
   *dtype = conv_sqldtype (dt, prec);
+  if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
+  *size = prec;
   return 1;
 }
 
@@ -3563,8 +3573,9 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       return 0;
     }
   strcpy (colname, cn);
-  *size = prec;
   *dtype = conv_sqldtype (dt, prec);
+  if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
+  *size = prec;
 #ifdef DEBUG
   A4GL_debug ("Set dtype to %d\n", *dtype);
 #endif
