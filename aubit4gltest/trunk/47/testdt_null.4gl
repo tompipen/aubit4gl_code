@@ -27,7 +27,7 @@ let i=1 units day
 display "i=",i
 
 
-let xdttm="1970-02-13 11:22"
+let xdttm="1970-02-13 11:22:00"
 let xdt=xdttm - i
 
 if xdt is null then

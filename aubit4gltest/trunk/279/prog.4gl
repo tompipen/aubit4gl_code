@@ -21,7 +21,8 @@ main
  let edate = edate - 1 units day 
  display "edate=",edate using "dd/mm/yyyy"
 
- let edate = extend(edate,year to second) + 1 units month - 1 units day 
+ let edate = edatec 
+ let edate = extend(edate) + 1 units month - 1 units day 
  display "edate=",edate using "dd/mm/yyyy"
 
 end main 
