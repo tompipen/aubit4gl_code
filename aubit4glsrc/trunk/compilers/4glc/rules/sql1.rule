@@ -677,10 +677,13 @@ in_predicate:
 	;
 
 in_value_list:
-	  value_specification
-	| in_value_list COMMA value_specification
+	  in_value_specification
+	| in_value_list COMMA in_value_specification
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
+
+in_value_specification : var_ident_ibind | literal
+;
 
 op_not: {strcpy($<str>$,"");}
 	| NOT
