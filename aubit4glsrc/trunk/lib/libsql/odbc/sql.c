@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.20 2002-03-01 07:41:46 mikeaubury Exp $
+# $Id: sql.c,v 1.21 2002-03-14 12:17:59 mikeaubury Exp $
 #
 */
 
@@ -3039,6 +3039,7 @@ int A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   static int rc;
   static int fetch_mode;
   static int cnt;
+short nColumns;
 
   if (hdbc == 0)
     {
@@ -3072,35 +3073,59 @@ int A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 		       NULL, 0
 	);
 
+      if (rc!=SQL_SUCCESS) {
+		debug("Some problem with SQLColumns");
+      }
+
       if (rc == SQL_ERROR)
 	{
 	  debug ("SQLColumns failed for table '%s'\n",tabname);
+          set_sqlca (hstmt, "getting column info", 0);
 	  exitwith ("Error getting column info\n");
 	  return 0;
 	}
-      set_sqlca (hstmt, "getting column info", 0);
 
       debug ("rc=%d\n", rc);
 
+       if (SQLNumResultCols( hstmt, &nColumns)!=SQL_SUCCESS) {
+		debug("No NumResultCols");
+		nColumns=-1;
+       }
+
+     debug("nColumns=%d",nColumns);
+
       a = 79;
       b = 254;
-      SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
-      SQLBindCol (hstmt, 2, SQL_C_CHAR, to, 255, &outlen[2]);
-      SQLBindCol (hstmt, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
-      SQLBindCol (hstmt, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
-      SQLBindCol (hstmt, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
-      SQLBindCol (hstmt, 12, SQL_C_CHAR, remarks, 255, &outlen[12]);
-
-      SQLBindCol (hstmt, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
-      SQLBindCol (hstmt, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
-      SQLBindCol (hstmt, 8, SQL_C_LONG, &len, 4, &outlen[8]);
-      SQLBindCol (hstmt, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
-      SQLBindCol (hstmt, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
-      SQLBindCol (hstmt, 11, SQL_C_LONG, &nullable, 4, &outlen[11]);
+      rc=SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 2, SQL_C_CHAR, to, 255, &outlen[2]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 8, SQL_C_LONG, &len, 4, &outlen[8]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 11, SQL_C_LONG, &nullable, 4, &outlen[11]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmt, 12, SQL_C_CHAR, remarks, 255, &outlen[12]);
+	debug("Rc=%d",rc);
       debug ("Bound columns\n");
-    }
+    
+  }
 
   rc = SQLFetch (hstmt);
+
 #ifdef DEBUG
 /* {DEBUG} */
   {

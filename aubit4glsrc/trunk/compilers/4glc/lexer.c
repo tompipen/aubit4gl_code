@@ -39,6 +39,7 @@ int yylineno = 1;
 extern int chk4var;
 char *lastword;
 int lastlex = -2;
+extern int yyin_len;
 
 extern int in_define;
 
@@ -741,13 +742,21 @@ yylex ()
   int a;
   char buff[1024];
   char buffval[20480];
+  static int last_pc=0;
   debug ("In yylex...");
+
   if (yyin == 0)
     {
       printf ("No input...\n");
       exit (0);
     }
 
+  a=ftell(yyin);
+  a=a*100/yyin_len;
+  if (a>last_pc) {
+		last_pc=a;
+		if (strcmp(acl_getenv("PRINTPROGRESS"),"Y")==0) printf("%d %% complete\n",last_pc);
+  }
 
   a = chk_word (yyin, buff);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.18 2002-02-14 22:11:44 saferreira Exp $
+# $Id: 4glc.c,v 1.19 2002-03-14 12:17:53 mikeaubury Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.18 2002-02-14 22:11:44 saferreira Exp $
+ * $Id: 4glc.c,v 1.19 2002-03-14 12:17:53 mikeaubury Exp $
  */
 
 #include <stdio.h>
@@ -51,6 +51,7 @@ char yytext[] = "";
 extern int chk4var;
 extern int lcnt;
 extern FILE *yyin;
+int yyin_len;
 extern int glob_only;
 char *outputfilename;
 
@@ -166,6 +167,10 @@ main (int argc, char *argv[])
       printf ("Error opening file : %s\n", c);
       exit (1);
     }
+
+  fseek(yyin,0,SEEK_END);
+  yyin_len=ftell(yyin);
+  rewind(yyin);
 
   if (yydebug)
     {
