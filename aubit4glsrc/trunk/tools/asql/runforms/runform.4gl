@@ -64,8 +64,9 @@ main
 define a integer
 	#defer interrupt
 
+	options message line last-1
 	let mv_field_list_for=""
-
+	message "Please wait..."
 
 	for a=1 to mv_cnt_taglines
 		initialize mv_taglines[a] to null
@@ -78,11 +79,11 @@ define a integer
 		let mv_max_Rows[a]=0
 	end for
 
-	options message line last-1
+	message "Please wait - loading form..."
 	if num_args()=0 then
-	call runform("cust1")
+		call runform("cust1")
 	else
-	call runform(arg_val(1))
+		call runform(arg_val(1))
 	end if
 end main
 
@@ -155,6 +156,10 @@ let mv_taglines[14]="Return to Main Menu."
 
 let mv_taglines[20]="Removes this row from the current table."
 let mv_taglines[21]="Does NOT remove this row from the current table."
+let mv_taglines[22]="Appends to the end of an existing file"
+let mv_taglines[23]="Creates a new file"
+let mv_taglines[24]="All currently queried rows"
+let mv_taglines[25]="Just this row"
 
 
 
@@ -255,6 +260,7 @@ while lv_next_option!="ALLDONE"
 			exit menu
 	
 		command "Screen" mv_taglines[9]
+			
 			let mv_table_code=0
 			call do_screen()
 	
@@ -892,13 +898,63 @@ end function
 
 ################################################################################
 function do_screen()
-	error "do_screen not implemented yet"
+define lv_screen integer
+define lv_max_screen integer
+
+let lv_screen=a4gl_get_page()
+let lv_screen=lv_screen+1
+call a4gl_get_info("form","fxx","screens") returning lv_max_screen
+if lv_screen>=lv_max_screen then
+	let lv_screen=0
+end if
+call a4gl_set_page(lv_screen)
+error "Screen ", lv_screen," of ",lv_max_screen
 end function
 
 
 ################################################################################
 function do_output()
-	error "do_output not implemented yet"
+define lv_fname char(255)
+define lv_mode char(1)
+define lv_what char(1)
+define lv_format char(1)
+
+	let int_flag=false
+
+	prompt "Enter output file (default is aperform.out):" for lv_fname
+
+	if int_Flag=true then	
+		return
+	end if
+
+	if lv_fname is null or lv_fname=" " then
+		let lv_fname="aperform.out"
+	end if
+
+	menu "Output File"
+		command "Append" mv_taglines[22]
+			let lv_mode="A" exit menu
+
+		command "Create" mv_taglines[23]
+			let lv_mode="C" exit menu
+	end menu
+
+	menu "Output File List"
+		command "Current-list" mv_taglines[24]
+			let lv_what="A" exit menu
+		command "One-page" mv_taglines[25]
+			let lv_what="A" exit menu
+	end menu
+
+	menu "Format"
+		command "Screen-format" mv_taglines[24]
+			let lv_format="S" exit menu
+
+		command "Unload-format" mv_taglines[25]
+			let lv_format="U" exit menu
+	end menu
+	
+	error "That was a little pointless - not implemented"
 end function
 
 
@@ -943,8 +999,6 @@ let sql=sql clipped," WHERE ",dbi_get_unique_where(mv_table_cnt,mv_acurrent_posi
 if not dbi_execute_sql_using_obind_u(sql) then
 	# didn't work...
 end if
-
-
 end function
 
 
