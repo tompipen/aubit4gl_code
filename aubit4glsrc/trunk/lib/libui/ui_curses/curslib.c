@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.82 2004-01-17 11:10:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.83 2004-01-18 09:37:54 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.82 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.83 2004-01-18 09:37:54 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -989,7 +989,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
     UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0);
     while ((int) GET ("s_prompt", _p, "mode") != 2)
       {
-	_fld_dr = UILIB_A4GL_prompt_loop (&_p, 0,0);
+	_fld_dr = UILIB_A4GL_prompt_loop_v2 (&_p, 0,0);
       //CONTINUE_BLOCK_1:;	/* add_continue */
       }
     A4GL_pop_var (&lv_cmd, 6553600);
