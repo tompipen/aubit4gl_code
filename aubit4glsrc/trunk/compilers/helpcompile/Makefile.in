@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-08-19 07:58:17 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-09-22 02:51:10 afalout Exp $
 #
 
 ROOT        =../..
@@ -42,16 +42,21 @@ CFLAGS			+=${C_LOCAL_IFLAGS}
 EXE_CFLAGS		+=-L${ROOT}/lib ${C_LOCAL_IFLAGS} ${C_IFLAGS}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 CMODS           =mkmess.c
+OBJS			=${CMODS:.c=.o}
+
+ALL             =${ROOT}/bin/mkmess
 
 ## ==================================================================
 ##                    Targets
 ## ==================================================================
 
-all: mkmess
+all: ${ALL}
+	@echo "Default targets (${ALL}) successfuly compiled."
 
-mkmess: ${CMODS}
-	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
-	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
+${ROOT}/bin/mkmess: ${OBJS}
+#	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
+	${LD_EXE} $^ -o $@ ${AUBIT_LIB}
+#	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
 
 ## ==================================================================
 ##                    Clean
