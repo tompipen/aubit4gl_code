@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.124 2005-03-23 10:32:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.125 2005-03-23 12:58:57 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.124 2005-03-23 10:32:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.125 2005-03-23 12:58:57 mikeaubury Exp $";
 #endif
 
 
@@ -3911,11 +3911,6 @@ A4GLSQL_close_cursor (char *currname)
   EXEC SQL END DECLARE SECTION;
 
   EXEC SQL CLOSE:cursorName;
-  if (A4GL_has_pointer (currname, CURCODE)) {
-		ptr=A4GL_find_pointer(currname,CURCODE);
-		if (ptr) free(ptr);
-		A4GL_del_pointer(currname,CURCODE);
-  }
   if (isSqlError ())
     return 1;
   return 0;
