@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
+# $Id: iarray.c,v 1.3 2002-09-26 01:32:15 afalout Exp $
 #*/
 
 /**
@@ -54,7 +54,7 @@
 
 extern int m_lastkey;
 extern WINDOW *currwin;
-struct s_inp_arr *curr_arr;
+struct s_inp_arr *curr_arr_inp;
 
 /*
 =====================================================================
@@ -304,7 +304,7 @@ static void debug_print_field(FIELD *f)
  *
  * @param
  */
-static void 
+static void
 debug_print_field_list(FIELD **fld_list)
 {
   int a;
@@ -349,7 +349,7 @@ idisp_loop (struct s_inp_arr *arr)
   int a;
   int redisp;
   FORM *mform;
-  curr_arr = arr;
+  curr_arr_inp = arr;
   form = arr->currform;
   set_array_mode ('I');
   
@@ -680,7 +680,7 @@ inp_arr (struct s_inp_arr *disp, void *ptr, char *srecname, int attrib)
 FIELD ***fld_list;
 int a;
 
-  curr_arr = disp;
+  curr_arr_inp = disp;
   debug ("In disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
   if (disp->srec == 0)
     {
@@ -850,9 +850,9 @@ set_scrline_ia (int np)
       return 0;
     }
   a = pop_int ();
-  curr_arr->scr_line = a;
+  curr_arr_inp->scr_line = a;
   set_scr_line (a);
-  idraw_arr_all (curr_arr);
+  idraw_arr_all (curr_arr_inp);
 #ifdef DEBUG
   {    debug ("Set scrline...%d", a);  }
 #endif
@@ -874,9 +874,9 @@ set_arrline_ia (int np)
       return 0;
     }
   a = pop_int ();
-  curr_arr->arr_line = a;
+  curr_arr_inp->arr_line = a;
   set_arr_curr (a);
-  idraw_arr_all (curr_arr);
+  idraw_arr_all (curr_arr_inp);
 #ifdef DEBUG
   {    debug ("Set arrline... %d", a);  }
 #endif

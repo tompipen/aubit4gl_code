@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: array.c,v 1.2 2002-09-26 01:32:15 afalout Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@
 
 extern int m_lastkey;
 extern WINDOW *currwin;
-struct s_disp_arr *curr_arr;
+struct s_disp_arr *curr_arr_disp;
 int cmode=0;
 
 /*
@@ -262,7 +262,7 @@ int disp_loop (struct s_disp_arr *arr)
   int a;
   int redisp;
   FORM *mform;
-  curr_arr = arr;
+  curr_arr_disp = arr;
   form = arr->currform;
   m_lastkey = 0;
   set_array_mode('D');
@@ -398,7 +398,7 @@ int
 disp_arr(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap)
 {
   int a;
-  curr_arr = disp;
+  curr_arr_disp = disp;
   debug ("In disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
   if (disp->srec == 0)
     {
@@ -499,9 +499,9 @@ set_scrline_da (int np)
       return 0;
     }
   a = pop_int ();
-  curr_arr->scr_line = a;
+  curr_arr_disp->scr_line = a;
   set_scr_line (a);
-  draw_arr_all (curr_arr);
+  draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
   {    debug ("Set scrline...%d", a);  }
 #endif
@@ -525,9 +525,9 @@ set_arrline_da (int np)
       return 0;
     }
   a = pop_int ();
-  curr_arr->arr_line = a;
+  curr_arr_disp->arr_line = a;
   set_arr_curr (a);
-  draw_arr_all (curr_arr);
+  draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
   {    debug ("Set arrline... %d", a);  }
 #endif
