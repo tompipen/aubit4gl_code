@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.50 2005-01-03 16:01:16 mikeaubury Exp $
+# $Id: calldll.c,v 1.51 2005-02-08 18:52:55 mikeaubury Exp $
 #
 */
 
@@ -269,6 +269,12 @@ A4GL_nullfunc (void)
 {
   A4GL_debug ("Calling DLL where no function defined (Allowed)");
   return 1;
+}
+
+
+int A4GL_isnullfunc(void *ptr) {
+if (ptr==A4GL_nullfunc) return 1;
+else return 0;
 }
 
 /**

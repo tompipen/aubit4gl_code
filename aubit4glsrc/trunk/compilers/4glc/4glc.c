@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.59 2004-12-10 19:03:00 mikeaubury Exp $
+# $Id: 4glc.c,v 1.60 2005-02-08 18:48:05 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,7 @@ extern int initArguments (int argc, char *argv[]);
 */
 
 
+void init_blk(void);
 /**
  * The main entry point function of 4glc compiler.
  *

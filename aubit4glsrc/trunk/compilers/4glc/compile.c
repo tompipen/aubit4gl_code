@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.75 2005-01-25 16:19:43 mikeaubury Exp $
+# $Id: compile.c,v 1.76 2005-02-08 18:48:09 mikeaubury Exp $
 #*/
 
 /**
@@ -111,6 +111,7 @@ void setGenStackInfo (int _genStackInfo);
 //void set_yytext (char *s);
 int has_default_database (void);
 char *get_default_database (void);
+int A4GL_db_used(void );
 
 
 

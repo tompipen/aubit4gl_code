@@ -331,6 +331,8 @@ void set_str (void *y, char *s);
 void set_hdrdbname (char *s);
 char *get_hdrdbname (void);
 char *fix_update_expr (int mode);
+char *fix_insert_expr (int mode);
+char *A4GL_generate_ins_string(char *s);
 void A4GL_new_events(void) ;
 void A4GL_drop_events(void) ;
 void A4GL_add_event(int n,char *s) ;

@@ -12,29 +12,43 @@ rollback_statement:
 
 insert_statement_ss:
 	INSERT_INTO { insql=1;start_bind('i',0);} 
-	table_name op_insert_column_list ins_2_ss {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>3),kw_space,strdup($<str>4),kw_space,$<sql_string>5,0); }
+	table_name  { strcpy(current_ins_table,$<str>3);}
+	op_insert_column_list 
+	ins_2_ss {
+		
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>3),kw_space,strdup($<str>5),kw_space,$<sql_string>6,0); 
+		$<sql_string>$=A4GL_generate_ins_string($<sql_string>$);
+			pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!"); 
+	}
 ;
 
 ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { insql=0; $<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" ("),$<sql_string>4,kw_cb,0);}
 	| query_specification_ss {$<sql_string>$=$<sql_string>1;}
 ;
 
-op_insert_column_list: {strcpy($<str>$,"");}
+op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 
 insert_column_list:
-	column_name
-	| insert_column_list KW_COMMA column_name {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	column_name {
+		push_gen(INSCOL,$<str>1);
+	}
+	| insert_column_list KW_COMMA column_name {
+			sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+			push_gen(INSCOL,$<str>3);
+	}
 ;
 
 insert_value_list_ss:
 	insert_value_ss {
 		$<sql_string>$=$<sql_string>1;
+		push_gen(INSVAL,$<sql_string>1);
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
+		push_gen(INSVAL,$<sql_string>3);
 	}
 ;
 
@@ -57,11 +71,11 @@ delete_statement_search_ss:
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 		}
 ;
-
+/*
 order_by_clause_ss: order_by_clause {
 	$<sql_string>$=strdup($<str>1);
 }
-;
+;*/
 
 
 order_by_clause:
@@ -487,6 +501,7 @@ tname: table_name  { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,0));}
 tname_list : table_reference | tname_list KW_COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 ;
 
+/*
 table_expression_old_ss:
 	from_clause  
 	op_where_clause_ss
@@ -498,7 +513,7 @@ table_expression_old_ss:
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,kw_space,$<sql_string>3,kw_space,$<sql_string>4,0);
 	}
 ;
-
+*/
 
 table_expression_2_ss: from_clause  op_where_clause_2_ss
 		{$<sql_string>$=make_sql_string_and_free($<str>1," ",$<sql_string>2,0);}
@@ -529,28 +544,30 @@ op_having_clause_2_ss :  {$<sql_string>$=strdup("");}
 
 
 
-
+/*
 op_order_by_clause_ss:
 	{$<sql_string>$=strdup("");}
 	| order_by_clause_ss {$<sql_string>$=$<sql_string>1;}
+*/
 
 
 op_where_clause_ss:  { $<sql_string>$=strdup("");}
 	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
 ;
-
-op_group_by_clause_ss: /*empty */ {
+/*
+op_group_by_clause_ss:  {
 	$<sql_string>$=strdup("");
 }
 	| group_by_clause_ss {
 		$<sql_string>$=$<sql_string>1;
 }
 ;
-
+*/
+/*
 op_having_clause_ss: {$<sql_string>$=strdup("");}
 	| having_clause_ss {$<sql_string>$=$<sql_string>1;}
 ;
-
+*/
 
 search_condition_ss:
 	boolean_term_ss {

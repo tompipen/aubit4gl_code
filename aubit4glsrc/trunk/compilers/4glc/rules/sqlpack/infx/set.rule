@@ -26,16 +26,19 @@ SQLSEON {A4GL_CV_print_exec_sql($<str>1);}
 ;
 
 op_conn_id : 
-{strcpy($<str>$,"\"default\"");} | conn_id;
+	{strcpy($<str>$,"\"default\"");} | conn_id
+;
 
 
 
 op_int_val :
-{strcpy($<str>$,"");} | INT_VALUE;
+	{strcpy($<str>$,"");} | INT_VALUE
+;
 
+/*
 op_fgl_expr :
 {strcpy($<str>$,"");} | fgl_expr;
-
+*/
 
 /* ================================================================ */
 

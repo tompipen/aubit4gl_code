@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.103 2005-01-12 11:15:09 mikeaubury Exp $
+# $Id: lexer.c,v 1.104 2005-02-08 18:48:14 mikeaubury Exp $
 #*/
 
 /**
@@ -1481,7 +1481,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   if (a==CONCAT_PIPES) { strcpy(buff,"||"); }
 
-  if (a==NAMED_GEN||a==CHAR_VALUE) ; else { a4gl_toupper(buff); }
+  if (a==NAMED_GEN||a==CHAR_VALUE) ; else { 
+		/* a4gl_upshift(buff);  */ /* This would appear to be a bad idea... */
+	}
 
   set_str (pyylval, buff);
 

@@ -20,10 +20,6 @@ var_ident :  var2_vu
 ;
 
 
-var2_as_string : var2_vu {
-		strcpy($<str>$,variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
-	}
-;
 
 var2_vu :
 	DOLLAR  var3_vu {
@@ -125,7 +121,7 @@ char buff[256];
 char *str1;
 char *str3;
 char was_str[40000];
-char lstr[1024];
+//char lstr[1024];
 int z = 0,a = 0;
 str1=strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
 str3=strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
@@ -145,8 +141,8 @@ free(str3);
 
 array_r_variable_or_ident_vu: identifier arr_subscripts_al
 {
-  int type,arrsize,size,level;
-  char arrbuff[256];
+  //int type,arrsize,size,level;
+  //char arrbuff[256];
   struct num_list *array;
   struct num_list *substr;
   struct array_list *al;

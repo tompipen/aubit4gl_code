@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.109 2005-02-03 15:34:50 mikeaubury Exp $
+# $Id: sql.c,v 1.110 2005-02-08 18:53:29 mikeaubury Exp $
 #
 */
 
@@ -2570,7 +2570,8 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
   if (bind->dtype == DTYPE_DATE)
     {
-      ACLDATE *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+      ACLDATE *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - 
+				// NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
       void *ptr;
       int d, m, y;
       A4GL_debug ("Binding Date original pointer=%p", bind->ptr);
@@ -2579,7 +2580,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       A4GL_get_date (*(int *) ptr, &d, &m, &y);
 
 
-ensure_as_char();
+	ensure_as_char();
       if (date_as_char)
 	{
 	  sprintf (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
@@ -4040,14 +4041,16 @@ if (date_as_char) {
 		  {
 		    A4GL_debug ("Calling gen_dateno");
 		    zz = A4GL_gen_dateno (d, m, y);
-		    *((long *) date1->ptr) = zz;
+		    //*((long *) date1->ptr) = zz;
+	  		*(long *) use_binding[bind_counter].ptr = zz;
 		    continue;
 		  }
 		else
 		  {
 		    A4GL_push_char (date1->uDate.date_c);
 		    zz = A4GL_pop_date ();
-		    *((long *) date1->ptr) = zz;
+		    //*((long *) date1->ptr) = zz;
+	  		*(long *) use_binding[bind_counter].ptr = zz;
 		    continue;
 		  }
 	      }
@@ -4077,7 +4080,7 @@ if (date_as_char) {
 			     date1->uDate.date_ds.month,
 			     date1->uDate.date_ds.year);
 }
-	  *((long *) date1->ptr) = zz;
+	  *(long *) use_binding[bind_counter].ptr = zz;
 	  continue;
 
 	}
@@ -4230,7 +4233,27 @@ ensure_as_char();
 	  {
 	    if ((dtype & 15) == DTYPE_DTIME || (dtype & 15) == DTYPE_DATE)
 	      {
-		A4GL_push_char ("<date/datetime>");
+	    		if ((dtype & 15) == DTYPE_DATE) {
+				 ACLDATE *date1;
+				ensure_as_char();
+      				date1 = use_binding[a].ptr;
+				if (date_as_char) {
+					A4GL_push_char (date1->uDate.date_c);
+				} else {
+					int xd;
+					int xm;
+					int xy;
+					char buff[40];
+	  				xy=date1->uDate.date_ds.year ;
+	  				xm=date1->uDate.date_ds.month ;
+	  				xd=date1->uDate.date_ds.day ;
+					sprintf(buff,"%d-%d-%d",xy,xm,xd);
+					A4GL_push_char (buff);
+				}
+			} else {
+
+				A4GL_push_char ("<datetime>");
+			}
 	      }
 	    else
 	      {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.60 2004-12-19 10:38:50 mikeaubury Exp $
+# $Id: 1.reqd,v 1.61 2005-02-08 18:52:49 mikeaubury Exp $
 #
 */
 
@@ -94,6 +94,9 @@
 #define PUTVAL 		3
 #define UPDVAL2 	4
 
+#define INSCOL 		5
+#define INSVAL 		6
+
 // Hehe - This one is pretty cool if you have a fairly recent version of bison
 #define YYERROR_VERBOSE
 
@@ -156,6 +159,7 @@ char 		varstring[100];
 char 		infilename[132]="";
 char 		hdr_dbname[64]="";
 char 		current_upd_table[64]="";
+char 		current_ins_table[64]="";
 
 int 		is_schema=0;
 int 		in_define=0;
@@ -235,6 +239,7 @@ struct sql_statement {
 =====================================================================
 */
 
+void init_blk(void);
 
 %}
 %name-prefix="a4gl_yy"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.43 2005-01-29 11:35:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.44 2005-02-08 18:52:58 mikeaubury Exp $
 #
 */
 
@@ -118,6 +118,8 @@ char *cvsql_names[]={
   "CVSQL_NO_FETCH_WITHOUT_INTO",
   "CVSQL_NO_SELECT_WITHOUT_INTO",
   "CVSQL_NO_PUT",
+  "CVSQL_FULL_INSERT",
+  "CVSQL_INSERT_ALIAS",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -193,6 +195,8 @@ enum cvsql_type
   CVSQL_NO_FETCH_WITHOUT_INTO,
   CVSQL_NO_SELECT_WITHOUT_INTO,
   CVSQL_NO_PUT,
+  CVSQL_FULL_INSERT,
+  CVSQL_INSERT_ALIAS,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -570,6 +574,85 @@ return buff;
 }
 
 
+
+
+char *A4GLSQLCV_insert_alias(char *t,char *c,char *v) {
+int b;
+char s[256];
+char sv[512];
+sprintf(s,"%s.%s",t,c);
+snprintf(sv,512,"%s.%s.%s",t,c,v);
+sv[511]=0;
+A4GL_debug("Alias : '%s'\n",s);
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+		if (A4GL_strwscmp(sv,conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+
+if (strchr(sv,'(')) {
+	static char buff[256];
+	static char *ptr=0;
+	char *ptr2;
+	if (ptr) free(ptr);
+	ptr=strdup(sv);
+	ptr2=strchr(ptr,'(');
+	*ptr2=0;
+	ptr2++;
+	for (b=0;b<conversion_rules_cnt;b++) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				return buff;
+			}
+		}
+	}
+}
+
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+
+if (strchr(s,'(')) {
+	static char buff[256];
+	static char *ptr=0;
+	char *ptr2;
+	if (ptr) free(ptr);
+	ptr=strdup(s);
+	ptr2=strchr(ptr,'(');
+	*ptr2=0;
+	ptr2++;
+	for (b=0;b<conversion_rules_cnt;b++) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				return buff;
+			}
+		}
+	}
+}
+
+
+A4GL_debug("No substitute for '%s'\n",s);
+return v;
+}
+
+
+
 char *A4GLSQLCV_dtype_alias(char *s ) {
 int b;
 A4GL_debug("Alias : '%s'\n",s);
@@ -612,6 +695,9 @@ if (strchr(s,'(')) {
 A4GL_debug("No substitute for '%s'\n",s);
 return s;
 }
+
+
+
 
 void A4GL_cvsql_replace_str (char *buff, char *from,char *to) {
 int a;
@@ -902,6 +988,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "NO_FETCH_WITHOUT_INTO", len) == 0) return CVSQL_NO_FETCH_WITHOUT_INTO;
   if (strncasecmp (p, "NO_SELECT_WITHOUT_INTO", len) == 0) return CVSQL_NO_SELECT_WITHOUT_INTO;
   if (strncasecmp (p, "NO_PUT", len) == 0) return CVSQL_NO_PUT;
+  if (strncasecmp (p, "FULL_INSERT", len) == 0) return CVSQL_FULL_INSERT;
+  if (strncasecmp (p, "INSERT_ALIAS", len) == 0) return CVSQL_INSERT_ALIAS;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -2062,8 +2150,9 @@ return 0;
 
 
 
-char *A4GLSQLCV_add_temp_table(char *tabname) {
+void A4GLSQLCV_add_temp_table(char *tabname) {
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
+	
 }
 
 char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char *oplog) {

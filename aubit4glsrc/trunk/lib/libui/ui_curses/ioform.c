@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.117 2005-02-04 14:59:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.118 2005-02-08 18:53:32 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.117 2005-02-04 14:59:08 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.118 2005-02-08 18:53:32 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2848,7 +2848,7 @@ UILIB_A4GL_push_constr (void *vs)
 		}
 	      else
 		{
-		  A4GL_push_char (" AND ");
+		  A4GL_push_char (" and ");
 		  A4GL_push_char (ptr);
 		  A4GL_pushop (OP_CONCAT);
 		  A4GL_pushop (OP_CONCAT);

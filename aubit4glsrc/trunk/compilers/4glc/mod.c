@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.193 2005-01-24 10:34:55 mikeaubury Exp $
+# $Id: mod.c,v 1.194 2005-02-08 18:48:27 mikeaubury Exp $
 #
 */
 
@@ -67,6 +67,9 @@
 #define UPDCOL 0
 #define UPDVAL 1
 #define UPDVAL2 4
+#define INSCOL 5
+#define INSVAL 6
+
 #define a0_width         (float) 2380.0
 #define a0_height        (float) 3368.0
 #define a1_width         (float) 1684.0
@@ -132,6 +135,7 @@ long fpos;
 */
 
 void dump_updvals (void);
+void dump_insvals (void);
 char *pop_gen (int a);
 /*int gen_cnt (int a);*/
 void copy_gen (int a, int b);
@@ -146,6 +150,7 @@ static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
 extern char current_upd_table[64];
+extern char current_ins_table[64];
 /*static int    const_cnt = 0;*/
 
 int rep_type = 0;	      /** The report type */
@@ -287,7 +292,9 @@ char *make_sql_string_and_free (char *first, ...);
 /*void do_print_menu_block_end(void) ;*/
 /*int get_blk_no(void) ;*/
 char *do_clobbering(char *f,char *s) ;
+char * pg_make_sql_string_and_free (char *first, ...);
 
+int A4GL_db_used(void );
 /*
 =====================================================================
                     Functions definitions
@@ -316,7 +323,7 @@ static char *print (char *z)
 }
 */
 
-int A4GL_db_used() { return db_used; }
+int A4GL_db_used(void ) { return db_used; }
 
 #ifdef OLD_STUFF
 /**
@@ -4278,6 +4285,88 @@ dump_updvals();
 }
 
 
+char *
+fix_insert_expr (int mode)
+{
+  static char big_buff[20000];
+  int a;
+  int rval;
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
+  /*char csize[20];*/
+  /*char cdtype[20];*/
+  char buff[1000];
+  char *ccol;
+  strcpy (big_buff, "");
+
+
+  if (mode == 1)
+    {
+      if (db_used == 0)
+	{
+	  sprintf (buff, "You cannot use insert int this table without specifying a database");
+	  a4gl_yyerror (buff);
+	  return 0;
+	}
+
+      /* It will only be a '*' anyway....*/
+      gen_stack_cnt[INSCOL] = 0;
+      strcpy (colname, "");
+      rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
+      if (rval == 0)
+	{
+	  a4gl_yyerror ("Table is not in the database");
+	  return 0;
+	}
+
+
+      while (1)
+	{
+	  colname[0] = 0;
+	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  strcpy (colname, ccol);
+	  if (rval == 0)
+	    break;
+	  trim_spaces (colname);
+	  push_gen (INSCOL, colname);
+	}
+      A4GLSQL_end_get_columns ();
+    }
+
+  if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
+    {
+	dump_insvals();
+      a4gl_yyerror
+	("Number of columns in update not the same as number of values");
+    }
+
+  strcpy(big_buff,"(");
+
+  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+    {
+      if (a) strcat (big_buff, ",");
+      sprintf (buff, "%s", gen_stack[INSCOL][a]);
+      strcat (big_buff, buff);
+    }
+
+
+
+
+  strcat(big_buff,") VALUES (");
+
+  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+    {
+      if (a) strcat (big_buff, ",");
+      sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],gen_stack[INSVAL][a]));
+      //sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],0));
+      strcat (big_buff, buff);
+    }
+   strcat(big_buff,")");
+
+  return big_buff;
+}
+
 
 char *
 make_sql_string_and_free (char *first, ...)
@@ -4328,8 +4417,7 @@ make_sql_string_and_free (char *first, ...)
   return ptr;
 }
 
-char *
-pg_make_sql_string_and_free (char *first, ...)
+char * pg_make_sql_string_and_free (char *first, ...)
 {
   va_list ap;
   char *ptr = 0;
@@ -4390,6 +4478,23 @@ dump_updvals ()
       printf ("UPDVAL2[%d]: %s\n", a,gen_stack[UPDVAL2][a]);
     }
 }
+
+
+void
+dump_insvals ()
+{
+  int a;
+  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+    {
+      printf ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
+    }
+
+  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+    {
+      printf ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
+    }
+}
+
 
 
 void do_print_menu_1(void) {
@@ -4770,6 +4875,19 @@ int A4GL_escape_quote_owner(void) {
 	}
 	return 1;
 }
+
+
+char *A4GL_generate_ins_string(char *s) {
+	char buff[40000];
+	if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
+		sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
+		free(s);
+		return strdup(buff);
+	} else {
+		return s;
+	}
+}
+
 
 
 #ifdef MOVED
