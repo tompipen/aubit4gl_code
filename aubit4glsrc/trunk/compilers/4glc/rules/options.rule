@@ -13,7 +13,7 @@ print_options('E',$<str>2);
 print_options('F',$<str>2);
 }
 		| MENU_LINE line_no {
-printc("set_option_value('M',%s);\n",$<str>2);
+lex_printc("set_option_value('M',%s);\n",$<str>2);
 }
 		| MSG_LINE line_no {
 print_options('m',$<str>2);

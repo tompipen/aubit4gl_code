@@ -10,35 +10,22 @@
 LIBRARY LEX
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_LEXTYPE
-*
+* Add prefix for created API punctions:
+*API_PREFIX LEXAPI_
+* Add prefix for existing library functions:
+*LIB_PREFIX LEXLIB_
+
+* ======================================================================
 * Function calls definitions:
 * func-name param-type param-name ... -> returns"
 *
 
 //
-// ----- functions from compile_c.c
+// ------------ functions from compile_[c|perl].c --------------
 //
 
-//Functions apparently not called from outside libLEX_  :
-//static void print_space(void)
-//int print_arr_bind (char i)
-//int print_constr ()
-//int print_field_bind_constr ()
-//void print_output_rep (struct rep_structure *rep)
-//pdf_print_output_rep (struct pdf_rep_structure *rep)
-//pr_report_agg ()
-//pr_report_agg_clr ()
-//pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
-//void print_form_attrib (struct form_attr *form_attrib)
-//int print_field_bind (int ccc)
-//static void print_menu (int mn)
-//void print_free_cursor (char *s)
-
-
-*4glc.c readglobals():  printc ("/***********************************************************/\n");
-*lexer.c chk_word():      printc ("/* End of code */");
 //void printc(char *fmt, ...)
-printc char* fmt ... -> void
+lex_printc char* fmt ... -> void
 
 //printh (char *fmt, ...)
 printh char* fmt ... -> void
@@ -550,9 +537,6 @@ print_load char* file,char* delim,char* tab,char* list -> void
 print_use_session char *sess -> void
 
 //char * get_undo_use (void)
-*FIXME
-*API_lex.c: In function `get_undo_use':
-*API_lex.c:746: warning: return makes pointer from integer without a cast
 get_undo_use -> char*
 
 //void print_next_form_field (char *form, char *field)
@@ -596,7 +580,7 @@ printPopFunction -> void
 
 
 //
-// --------- functions from compile_c_gtk.c
+// ----------- functions from compile_[c|perl]_gtk.c ------------------
 //
 
 
@@ -640,7 +624,7 @@ print_gtk_menuhandler_on_end -> void
 print_gtk_menuhandler_end -> void
 
 
-// ======================== EOF =========================
+// ============================== EOF =================================
 
 
 

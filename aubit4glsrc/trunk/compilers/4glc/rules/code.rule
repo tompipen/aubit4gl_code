@@ -1,4 +1,4 @@
-code_cmd : KW_CSTART 
+code_cmd : KW_CSTART
 emb_code 
 KW_CEND
 ;
@@ -8,7 +8,7 @@ sql_code : sql_code_part | sql_code sql_code_part
 ;
 
 sql_code_part: SQLLINE {
-			printc("%s",$<str>1);
+			lex_printc("%s",$<str>1);
 }
 ;
 
@@ -17,6 +17,6 @@ c_code : c_code_part | c_code c_code_part
 ;
 
 c_code_part  : CLINE {
-			printc("%s\n",$<str>1);
+			lex_printc("%s\n",$<str>1);
 }
 ;

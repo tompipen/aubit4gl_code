@@ -1,4 +1,4 @@
-ext_cmd : EXIT_WHILE 
+ext_cmd : EXIT_WHILE
         { if (in_command("WHILE")) { exit_loop("WHILE"); } else { YYERROR;} }
 	| EXIT_INPUT
         { if (in_command("INPUT")) { exit_loop("INPUT"); } else { YYERROR;} }
@@ -13,7 +13,7 @@ ext_cmd : EXIT_WHILE
 	| EXIT_MENU  {
 	if (in_command("MENU")) {
 		exit_loop("MENU");
-		//printc("cmd_no=-3;continue;\n");
+		//lex_printc("cmd_no=-3;continue;\n");
 	} 
               else YYERROR;}
 	| EXIT_CASE

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.9 2002-05-08 21:32:56 saferreira Exp $
+# $Id: compile_c.c,v 1.10 2002-05-11 05:51:19 afalout Exp $
 #
 */
 
@@ -133,7 +133,8 @@ extern void set_clobber(char *c);
  * Print spaces to the increment acording to scope level generated in 
  * target C code.
  */
-static void print_space(void)
+static void
+print_space(void)
 {
   char buff[256];
   memset (buff, ' ', 255);
@@ -144,7 +145,8 @@ static void print_space(void)
 /**
  * Open the ouput target C file
  */
-static void open_outfile(void)
+static void 
+open_outfile(void)
 {
   char h[132];
   char c[132];
@@ -208,6 +210,41 @@ static void open_outfile(void)
   }
 }
 
+/*
+this redirects all calls to printc function originaling from LEX
+library itself, to LEXLIB_printc(). All calls from outside are made
+vi LEXAPI_printc() This was done because otherwise we would have
+discrepancy betweenm number of parameters passed to function between
+(...) and (va_list *args)
+*/
+
+static void printc(char* fmt,... )
+{
+va_list ap;
+
+	debug("via printc in lib");
+   va_start(ap,fmt);
+//   func(fmt,&ap);
+	real_lex_printc(fmt,&ap);
+}
+
+
+void lex_printc(char *fmt, va_list *ap)
+{
+//va_list ap;
+  char buff[40960]="ERROR-empty init";
+
+	debug("via lex_printc in lib");
+//   va_start(ap,fmt);
+//   func(fmt,&ap);
+//	vsprintf (buff, fmt, *ap);
+
+	//real_lex_printc(fmt,&ap);
+	real_lex_printc(fmt,ap);
+//    real_lex_printc(fmt,buff);
+}
+
+
 /**
  * Print the instructions to be generated to the target C file.
  *
@@ -219,7 +256,14 @@ static void open_outfile(void)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void lex_printc(char *fmt, va_list *ap)
+/*
+<<<<<<< compile_c.c
+//void printc(char *fmt, ...)
+void
+LEXLIB_printc(char *fmt, va_list *args)
+=======
+*/
+void real_lex_printc(char *fmt, va_list *ap)
 {
   //va_list args;
   char buff[40960]="ERROR-empty init";
@@ -296,6 +340,7 @@ debug("fmt in lib=%s\n",buff2);
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
+void
 printh (char *fmt, ...)
 {
   va_list args;
@@ -586,7 +631,8 @@ print_exit_loop (int type, int n)
  *  a report.
  */
 void
-print_rep_ret ()
+//print_rep_ret (void)
+print_rep_ret (int report_cnt)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
@@ -599,7 +645,7 @@ print_rep_ret ()
  *
  * @param rep The report control structure.
  */
-void
+static void
 print_output_rep (struct rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
@@ -624,13 +670,14 @@ print_output_rep (struct rep_structure *rep)
 }
 
 /**
- * Called by print_report_2() generate the C code taht implements the 
+ * Called by print_report_2() generate the C code taht implements the
  * assignments that should be done when an output to report is executed.
  *
  * This implementation is specific for pdf reports only.
  *
  * @param rep The report control structure.
  */
+static void
 pdf_print_output_rep (struct pdf_rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
@@ -665,13 +712,15 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
 /**
  * Prints the generated C code that implements the AFTER GROUP(s) actions
  */
-pr_report_agg ()
+static void
+pr_report_agg (void)
 {
   int z;
   int a;
   int t;
   char s1[5024];
   char s2[5024];
+
   for (z = 0; z < sreports_cnt; z++)
     {
 	  strcpy (s2, sreports[z].rep_cond);
@@ -723,7 +772,8 @@ pr_report_agg ()
 /**
  * Generate the C code to clear the report agregate conditions.
  */
-pr_report_agg_clr ()
+static void
+pr_report_agg_clr (void)
 {
   int z;
   int a;
@@ -731,6 +781,7 @@ pr_report_agg_clr ()
   int in_b;
   char s1[1024];
   char s2[1024];
+
   for (z = 0; z < sreports_cnt; z++)
     {
       strcpy (s2, sreports[z].rep_cond);
@@ -765,7 +816,7 @@ pr_report_agg_clr ()
  * Do not do nothing. - called from /compilers/4glc/mod.c
  */
 void
-print_clr_status ()
+print_clr_status (void)
 {
 //  printc ("set_status(0);\n");
 
@@ -782,6 +833,7 @@ print_clr_status ()
  * @param l The line number of the 4gl source code.
  * @param f The source 4gl file name.
  */
+void
 prchkerr (int l, char *f)
 {
   int a;
@@ -837,7 +889,7 @@ prchkerr (int l, char *f)
 	  "   if (sqlca.sqlcode==0&&status==0)",
 	  when_code[A_WHEN_SUCCESS], 
 		l, 
-		f, 
+		f,
 		when_to[A_WHEN_SUCCESS]
 	);
   printc ("}\n");
@@ -854,6 +906,7 @@ prchkerr (int l, char *f)
  * @param f The 4gl source file name.
  * @param when_to
  */
+static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
@@ -909,7 +962,7 @@ print_expr (struct expr_str *ptr)
  * @param form_attrib A Pointer to the structure form_attrib that describes
  * the form attributes.
  */
-void
+static void
 print_form_attrib (struct form_attr *form_attrib)
 {
   printc ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)",
@@ -934,7 +987,7 @@ print_form_attrib (struct form_attr *form_attrib)
  * @param ccc
  * @return
  */
-int
+static int
 print_field_bind (int ccc)
 {
   char tabname[40];
@@ -994,7 +1047,7 @@ print_bind_pop1 (char i)
  *   - o : Output bind (4gl variables to be assigned.
  * @return The number of elements in the binding array, 0 if invalid bind type.
  */
-int
+static int
 print_arr_bind (char i)
 {
   int a;
@@ -1034,8 +1087,8 @@ print_arr_bind (char i)
 }
 
 
-int
-print_constr ()
+static int
+print_constr (void)
 {
   int a;
   printc
@@ -1050,8 +1103,8 @@ print_constr ()
   return a;
 }
 
-int
-print_field_bind_constr ()
+static int
+print_field_bind_constr (void)
 {
   char tabname[40];
   char colname[40];
@@ -1304,7 +1357,7 @@ print_start_server (char * port, char *funclist)
  * This statement makes that the program stops to act as a RPC server.
  */
 void
-print_stop_external ()
+print_stop_external (void)
 {
   printc ("stop_serving();");
 }
@@ -1382,7 +1435,7 @@ print_getfldbuf (char *fields)
  * Print the C implementation of the returning substatement of CALL statement.
  */
 void
-print_returning ()
+print_returning (void)
 {
   int cnt;
   printc ("{\n");
@@ -1478,7 +1531,7 @@ print_call_shared (char *libfile, char *funcname, int nargs)
  * call.
  */
 void
-print_end_call_shared ()
+print_end_call_shared (void)
 {
   //printc ("}\n");
 }
@@ -1502,7 +1555,7 @@ print_call_external (char *host, char *func, char *port, int nargs)
  * Print the C implementation of te last part of a call to a remote function.
  */
 void
-print_end_call_external ()
+print_end_call_external (void)
 {
   printc ("\n");
 }
@@ -1599,14 +1652,14 @@ print_close (char type, char *name)
  * Print the C implementation of the first part of CONSTRUCT statement.
  */
 void
-print_construct_1 ()
+print_construct_1 (void)
 {
   printc ("} /* end of initialization */\n");
 }
 
 
 
-/** 
+/**
  * Print the second part of C implementation of CONSTRUCT statement
  *
  * @param driver
@@ -1697,7 +1750,7 @@ print_befaft_field_1 (char *fieldexpr)
  * in the construct statement.
  */
 void
-print_befaft_field_2 ()
+print_befaft_field_2 (void)
 {
   printc ("}\n");
 }
@@ -1719,13 +1772,13 @@ print_onkey_1 (char *key_list_str)
  * statement.
  */
 void
-print_onkey_2 ()
+print_onkey_2 (void)
 {
   printc ("}\n");
 }
 
 void
-print_onkey_2_prompt ()
+print_onkey_2_prompt (void)
 {
   printc ("continue;}\n");
 }
@@ -1753,7 +1806,7 @@ print_defer (int quit)
  * Generate the C code that implements it.
  */
 void
-print_display_line ()
+print_display_line (void)
 {
   printc ("push_int(-1);push_int(-1);\n");
 }
@@ -1884,7 +1937,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
  *
  */
 void
-print_display_array_p2 ()
+print_display_array_p2 (void)
 {
   printc ("}\n}\n");
   printcomment ("/* end display */\n");
@@ -1948,7 +2001,7 @@ print_for_start (char *var)
  *  Just finishes a C block.
  */
 void
-print_for_end ()
+print_for_end (void)
 {
   printc ("}\n");
 }
@@ -1958,7 +2011,7 @@ print_for_end ()
  * it generates a push of 1 as default.
  */
 void
-print_for_default_step ()
+print_for_default_step (void)
 {
   printc ("push_int(1);\n");
 }
@@ -1970,7 +2023,7 @@ print_for_default_step ()
  * Called by the parser when it found FOREACH <cursor_name>.
  */
 void
-print_foreach_start ()
+print_foreach_start (void)
 {
   printc ("{");
 }
@@ -2003,7 +2056,7 @@ print_foreach_next (char *cursorname, char *into)
  * this statement (that is a C block close with }).
  */
 void
-print_foreach_end ()
+print_foreach_end (void)
 {
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
@@ -2018,7 +2071,7 @@ print_foreach_end ()
  *
  * @param c The cursor name.
  */
-void
+static void
 print_free_cursor (char *s)
 {
   printc ("/* FREE CUROSR .. FIXME */\n");
@@ -2120,7 +2173,7 @@ print_gui_do_form (char *name, char *list, int mode)
  *
  */
 void
-print_if_start ()
+print_if_start (void)
 {
   printc ("if (pop_bool()) {\n");
 }
@@ -2131,7 +2184,7 @@ print_if_start ()
  * Generate the C implementation to the generated output file.
  */
 void
-print_if_else ()
+print_if_else (void)
 {
   printc ("} else {\n");
 }
@@ -2140,7 +2193,7 @@ print_if_else ()
  * The parser found END IF and it generate the corresponding C end of block.
  */
 void
-print_if_end ()
+print_if_end (void)
 {
   printc ("}");
 }
@@ -2187,7 +2240,7 @@ print_import (char *func, int nargs)
  * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
 void
-print_init ()
+print_init (void)
 {
   int cnt;
   printc ("{\n");
@@ -2250,7 +2303,7 @@ print_next_field (char *s)
  * It generates the C implementation for the statement.
  */
 void
-print_input_1 ()
+print_input_1 (void)
 {
   printc ("} /* end of initialization */\n");
 }
@@ -2461,7 +2514,7 @@ print_let_manyvars (char *nexprs)
  * implementation push a null to the stack.
  */
 void
-print_push_null ()
+print_push_null (void)
 {
   printc ("push_null();\n");
 }
@@ -2631,7 +2684,7 @@ print_finish_report (char *repname)
  * Generate the C implementation to the output file.
  */
 void
-print_format_every_row ()
+print_format_every_row (void)
 {
   push_report_block ("EVERY", 'E');
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
@@ -2644,14 +2697,16 @@ print_format_every_row ()
   printc ("push_char(\" \");rep_print(&rep,1,1,0); rep_print(&rep,0,0,0);");
   printc ("}");
   //printc ("#error FORMAT EVERY ROW not implemented yet");
-  print_rep_ret ();
+//  print_rep_ret ();
+	print_rep_ret (report_cnt);
+
 }
 
 /**
  * Print the C implementation of NEED <number> LINES statement.
  */
 void
-print_need_lines ()
+print_need_lines (void)
 {
   printc ("%sneed_lines(&rep);\n", ispdf ());
 }
@@ -2660,7 +2715,7 @@ print_need_lines ()
  * Print the C implementation of SKIP <number> LINES statement.
  */
 void
-print_skip_lines ()
+print_skip_lines (void)
 {
   printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
@@ -2669,7 +2724,7 @@ print_skip_lines ()
  * Print the C implementation of the SKIP TO TOP OF PAGE statement.
  */
 void
-print_skip_top ()
+print_skip_top (void)
 {
   printc ("%sskip_top_of_page(&rep);\n", ispdf ());
 }
@@ -2761,7 +2816,7 @@ print_report_print_img (char *scaling, char *blob, char *type, char *semi)
  *  It generates a default scale to the generated C code.
  */
 char *
-get_default_scaling ()
+get_default_scaling (void)
 {
   return "push_double(1.0);push_double(1.0);";
 }
@@ -2800,7 +2855,7 @@ print_report_1 (char *name)
  * The parser found the END REPORT and closes the generated C function.
  */
 void
-print_report_end ()
+print_report_end (void)
 {
   printc ("\n} /* end of report */\n");
 }
@@ -2854,7 +2909,8 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
-  print_rep_ret ();
+//  print_rep_ret ();
+	print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   printc ("    if (fgl_rep_orderby==1) {\n");
@@ -2882,7 +2938,8 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-  print_rep_ret ();
+//  print_rep_ret ();
+	print_rep_ret (report_cnt);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else
@@ -2974,7 +3031,8 @@ print_message (int type, char *attr, int wait)
  *   - 2 : In background
  * @param rvar The variable name to where the exit status should be returned.
  */
-void print_system_run (int type, char *rvar)
+void 
+print_system_run (int type, char *rvar)
 {
   printc ("system_run(%d);", type);
 
@@ -3046,7 +3104,7 @@ print_while_3 (void)
  * insert cursors.
  */
 void
-print_put ()
+print_put (void)
 {
   int n;
   printc ("{\n");
@@ -3072,7 +3130,7 @@ print_prepare (char *stmt, char *sqlvar)
 }
 
 /**
- * 
+ *
  */
 void
 print_undo_use (char *s)
@@ -3130,7 +3188,7 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
  * Print the C implementation of PROMPT FOR CHAR cbreak prompt.
  */
 void
-print_prompt_forchar ()
+print_prompt_forchar (void)
 {
   printc ("if (_fld_dr) break;\n");
 }
@@ -3324,7 +3382,7 @@ print_show_menu (char *mname, char *mhand)
  * It is used for the menu extensions to informix 4gl.
  */
 void
-print_def_mn_file ()
+print_def_mn_file (void)
 {
   printc ("push_char(\"menu\"); /* default menu file */\n");
 }
@@ -3373,7 +3431,8 @@ print_menu_1 (void)
  * @param mn The index of the menu information in the menu stack, filled
  * by the parser.
  */
-static void print_menu (int mn)
+static void 
+print_menu (int mn)
 {
   int a;
   int c;
@@ -3420,7 +3479,8 @@ print_end_menu_1 (void)
 /**
  * Print the execution of the menu loop to the generated C code.
  */
-void print_end_menu_2(void)
+void 
+print_end_menu_2(void)
 {
   printc ("cmd_no=menu_loop(m);\n}free_menu(m);\n");
   printcomment ("/* end cwhile */\n");
@@ -3594,7 +3654,7 @@ print_func_args (int c)
  * the C generated code.
  */
 void
-print_func_defret0 ()
+print_func_defret0 (void)
 {
   printc ("return 0;\n");
 }
@@ -3603,7 +3663,7 @@ print_func_defret0 ()
  * The parser found the END FUNCTION and it closes the C function generated.
  */
 void
-print_func_end ()
+print_func_end (void)
 {
   printc ("}\n");
 }
@@ -3613,7 +3673,7 @@ print_func_end ()
  * of C main function in the generated file.
  */
 void
-print_main_1 ()
+print_main_1 (void)
 {
   printc ("\n\nmain(int argc,char *argv[]) {\n");
 }
@@ -3642,7 +3702,7 @@ print_fgllib_start (char *db)
  * Prints the call to the fgl_end() function.
  */
 void
-print_main_end ()
+print_main_end (void)
 {
   printc ("fgl_end();\n}\n");
 }
@@ -3731,7 +3791,7 @@ print_sql_commit (int t)
  * Executed by the parser imediatly after found the keyword FETCH.
  */
 void
-print_fetch_1 ()
+print_fetch_1 (void)
 {
   printc ("{");
 }
@@ -3743,7 +3803,7 @@ print_fetch_1 ()
  * Prints a new part in the output C file.
  */
 void
-print_fetch_2 ()
+print_fetch_2 (void)
 {
   printc ("{");
 }
@@ -4137,7 +4197,7 @@ get_push_literal (char type, char *value)
     {
       sprintf (buff, "push_char(%s);\n", value);
     }
-  
+
   //FIXME: and if it's not D, L or S?
 
   return buff;
@@ -4148,7 +4208,8 @@ get_push_literal (char type, char *value)
  *
  * @param s
  */
-char *decode_array_string(char *s) {
+char *
+decode_array_string(char *s) {
 static char buff[2000]="";
 int a;
 char tmp[2]="X"; // Just to get a terminator on it
@@ -4163,5 +4224,8 @@ strcpy(buff,"(");
 		}
 	}
 	strcat(buff,")-1");
-return buff;
+	return buff;
 }
+
+
+// =========================== EOF ================================

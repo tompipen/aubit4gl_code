@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.6 2002-05-07 09:02:47 afalout Exp $
+# $Id: mkyacc,v 1.7 2002-05-11 05:51:19 afalout Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -42,16 +42,16 @@ echo "commands : | command1 ;" >> generated/fgl.yacc
 echo "all_commands : commands_all | commands_all SEMICOLON ;" >> generated/fgl.yacc
 
 echo 'command1	: all_commands  {
-chk4var=0;printcomment("/* [Comm:%s] */\n",$<str>$); 
+chk4var=0;printcomment("/* [Comm:%s] */\n",$<str>$);
 if (acl_getenv("INCLINES"))
-	printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+	lex_printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 	prchkerr(lastlineno,infilename);
 	lastlineno=yylineno;
 }
 | command1  all_commands {
-printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;   
+printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
 if (acl_getenv("INCLINES"))
-printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+lex_printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 if (aubit_strcasecmp($<str>$,"whenever")!=0) prchkerr(lastlineno,infilename);
 lastlineno=yylineno;
 } 

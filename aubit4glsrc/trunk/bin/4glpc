@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.75 2002-04-29 03:30:00 afalout Exp $
+# $Id: 4glpc,v 1.76 2002-05-11 05:51:12 afalout Exp $
 #
 
 ########################################################################
@@ -438,6 +438,13 @@ do
    ##########
    case $a in
    ##########
+
+   -findfunc)
+		nm -A --defined-only `find $AUBITDIR/lib -name '*.so'` | grep $2
+        exit 0
+   ;;
+
+
 
    -dups)
 		#list all duplicated files in tree below current location

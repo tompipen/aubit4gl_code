@@ -606,7 +606,7 @@ debug("p=%s\n",p);
 )
 && xccode)
     {
-      printc ("/* End of code */");
+      lex_printc ("/* End of code */");
       xccode = 0;
       return KW_CEND;
     }

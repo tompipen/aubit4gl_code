@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.4 2002-05-06 07:21:16 afalout Exp $
+# $Id: compile_perl.c,v 1.5 2002-05-11 05:51:19 afalout Exp $
 #
 */
 
@@ -46,24 +46,6 @@
 #include "a4gl_errors.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
-
-
-/*
-compile_perl.c:1090: conflicting types for `print_start_server'
-print_protos_c.h:32: previous declaration of `print_start_server'
-
-compile_perl.c:1428: conflicting types for `print_display_by_name'
-print_protos_c.h:62: previous declaration of `print_display_by_name'
-
-compile_perl.c:1475: conflicting types for `print_display_array_p1'
-print_protos_c.h:66: previous declaration of `print_display_array_p1'
-
-compile_perl.c:2726: warning: type mismatch with previous implicit declaration
-
-compile_perl.c:2401: warning: previous implicit declaration of `print_menu'
-compile_perl.c:2726: warning: `print_menu' was previously implicitly declared to return `int'
-*/
-
 
 //#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
 	#include "../lex_c/a4gl_lex_print_protos_c.h"
@@ -181,7 +163,8 @@ printc (char *fmt, ...)
     }
 }
 
-print_space ()
+static void
+print_space (void)
 {
   char buff[256];
   memset (buff, ' ', 255);
@@ -456,7 +439,7 @@ print_rep_ret ()
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
 
-void
+static void
 print_output_rep (struct rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
@@ -480,6 +463,7 @@ print_output_rep (struct rep_structure *rep)
   print_rep_ret (report_cnt);
 }
 
+static void
 pdf_print_output_rep (struct pdf_rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
@@ -511,13 +495,15 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   print_rep_ret (report_cnt);
 }
 
-pr_report_agg ()
+static void
+pr_report_agg (void)
 {
   int z;
   int a;
   int t;
   char s1[5024];
   char s2[5024];
+
   for (z = 0; z < sreports_cnt; z++)
     {
       strcpy (s2, sreports[z].rep_cond);
@@ -566,8 +552,8 @@ pr_report_agg ()
 }
 
 
-
-pr_report_agg_clr ()
+static void
+pr_report_agg_clr (void)
 {
   int z;
   int a;
@@ -665,6 +651,7 @@ prchkerr (int l, char *f)
   printc ("}\n");
 }
 
+static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
@@ -710,7 +697,7 @@ print_expr (struct expr_str *ptr)
     }
 }
 
-void
+static void
 print_form_attrib (struct form_attr *form_attrib)
 {
   printc ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)",
@@ -730,7 +717,7 @@ print_form_attrib (struct form_attr *form_attrib)
 	 form_attrib->message_line, form_attrib->attrib);
 }
 
-int
+static int
 print_field_bind (int ccc)
 {
   char tabname[40];
@@ -777,7 +764,7 @@ print_bind_pop1 (char i)
 
 
 
-int
+static int
 print_arr_bind (char i)
 {
   int a;
@@ -817,7 +804,7 @@ print_arr_bind (char i)
 
 
 
-int
+static int
 print_constr ()
 {
   int a;
@@ -833,7 +820,7 @@ print_constr ()
   return a;
 }
 
-int
+static int
 print_field_bind_constr ()
 {
   char tabname[40];
@@ -1593,7 +1580,7 @@ print_foreach_end ()
 }
 
 /************************************************************************/
-void
+static void
 print_free_cursor (char *s)
 {
   printc ("/* FREE CUROSR .. FIXME */\n");
@@ -2742,7 +2729,7 @@ print_end_record (char *vname, int arrsize)
 
 
 
-void
+static void
 print_menu (int mn)
 {
 

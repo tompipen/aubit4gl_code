@@ -38,27 +38,35 @@ then
 	exit 0
 fi
 
+specfile=$1
 lib=$2
 env=$3
+lib_prefix=
+api_prefix=
 
-if grep LIBRARY $1 > /dev/null
+if grep LIBRARY $specfile > /dev/null
 then
-	lib=`awk '/^LIBRARY /{print $2}' $1`
+	lib=`awk '/^LIBRARY /{print $2}' $specfile`
 fi
 
-if grep VARIABLE $1 > /dev/null
+if grep VARIABLE $specfile > /dev/null
 then
-	env=`awk '/^VARIABLE /{print $2}' $1`
+	env=`awk '/^VARIABLE /{print $2}' $specfile`
 fi
 
-#if you want prefix to be added to API function names, uncomment this:
-#api_prefix="$lib"API_
-#if you want prefix to be added to LIB functions calls, uncomment this:
-#lib_prefix="$lib"LIB_
+#if you want prefix to be added to API function names
+if grep API_PREFIX $specfile > /dev/null
+then
+	api_prefix=`awk '/^API_PREFIX /{print $2}' $specfile`
+fi
+
+#if you want prefix to be added to LIB functions calls
+if grep LIB_PREFIX $specfile > /dev/null
+then
+	lib_prefix=`awk '/^LIB_PREFIX /{print $2}' $specfile`
+fi
 
 echo "//Library=$lib env=$env"
-
-
 
 awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" '
 
@@ -211,7 +219,7 @@ else
 print "}"
 print ""
 
-}' < $1
+}' < $specfile
 
 
 exit

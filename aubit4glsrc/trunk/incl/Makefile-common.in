@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.35 2002-05-06 07:21:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.36 2002-05-11 05:51:19 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -199,6 +199,12 @@ MKPATH      		=mkdir -p
 CPPFLAGS 			=
 #LDFLAGS 			=-s
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
+
+#FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared', 
+#use 'gcc -shared'.  If you MUST pass linker specific options to ld, use 
+#'-Wl,--my-ld-option' in your gcc. On Cygwin, using 'ld' directly will not 
+#automatically pick up the w32api libraries, even if they are installed.
+#command line.
 LD                  =ld
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
@@ -622,6 +628,22 @@ GLIB_NAME="@GLIB_NAME@"
 MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
 DLL_CFLAGS="-shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--export-all-symbols"
+
+
+#gcc -shared -o cyg${module}.dll -Wl,--out-implib=lib${module}.dll.a \
+#                  -Wl,--export-all-symbols \
+#                  -Wl,--enable-auto-import \
+#                  -Wl,--whole-archive $old_lib \
+#                  -Wl,--no-whole-archive ${dependency_libs}
+#
+#The last (-Wl,--no-whole-archive) is important, even if you have no
+#dependency_libs.  Don't miss it!
+#${module} is 'mylib' to stay with your example and $old_lib is libmylib.a,
+#the static lib.  As an alternativ you can list all the objects here instead
+#of a static lib which is in fact just a bundle of object files.
+
+
+
 
 ## ==================================================================
 ##                      Common rules

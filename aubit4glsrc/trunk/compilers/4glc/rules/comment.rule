@@ -1,6 +1,6 @@
 comment_cmd : COMMENT {
 /* This aint used - its filtered by the lexer first... */
-	printc("FIXME : Comment : %s\n");
+	lex_printc("FIXME : Comment : %s\n");
 }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.59 2002-05-07 22:52:21 saferreira Exp $
+# $Id: mod.c,v 1.60 2002-05-11 05:51:19 afalout Exp $
 #
 */
 
@@ -202,15 +202,14 @@ struct variables
   char var_type[20];     /**< The data type of the variable */
   char var_size[20];     /**< The size in bytes of the variables */
   char var_arrsize[20];  /**< The number of elements if the variable is array */
-  int alev1;     
+  int alev1;
   int alev2;
   int alev3;
   int level;             /**< _The level. I think the record */
   char *tabname;         /**< The name of the name if like */
   char *pklist;
-  char globflg
-}
-vars[MAXVARS];
+  char globflg;
+} vars[MAXVARS];
 
 /**
  * Module current scope level for variable declaration.
