@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.29 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.30 2004-04-15 21:16:37 mikeaubury Exp $
 */
 
 /**
@@ -69,44 +69,44 @@ extern "C"
 //#define set_status(a) set_status(a,0)
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
-#define OP_MASK 512|1024
+#define OP_MASK (512|1024)
 #define OP_MASK_BASE 512
 
 
-#define NUMERIC_OP_2  1*OP_MASK_BASE
-#define STRING_OP_S1 2*OP_MASK_BASE
-#define STRING_OP_S2 4*OP_MASK_BASE
-#define STRING_OP_N1 8*OP_MASK_BASE
-#define STRING_OP_N2 16*OP_MASK_BASE
-#define FUNCTION_OP 32*OP_MASK_BASE
-#define BOOLEAN_OP 64*OP_MASK_BASE
-#define OTHER_OP 128*OP_MASK_BASE
+#define NUMERIC_OP_2  (1*OP_MASK_BASE)
+#define STRING_OP_S1 (2*OP_MASK_BASE)
+#define STRING_OP_S2 (4*OP_MASK_BASE)
+#define STRING_OP_N1 (8*OP_MASK_BASE)
+#define STRING_OP_N2 (16*OP_MASK_BASE)
+#define FUNCTION_OP (32*OP_MASK_BASE)
+#define BOOLEAN_OP (64*OP_MASK_BASE)
+#define OTHER_OP (128*OP_MASK_BASE)
 
 
   /* add no more than 15 items to any of the following groups */
-#define OP_ADD 1|NUMERIC_OP_2
-#define OP_SUB 2|NUMERIC_OP_2
-#define OP_MULT 3|NUMERIC_OP_2
-#define OP_DIV 4|NUMERIC_OP_2
-#define OP_POWER 5|NUMERIC_OP_2
-#define OP_MOD 6|NUMERIC_OP_2
+#define OP_ADD (1|NUMERIC_OP_2)
+#define OP_SUB (2|NUMERIC_OP_2)
+#define OP_MULT (3|NUMERIC_OP_2)
+#define OP_DIV (4|NUMERIC_OP_2)
+#define OP_POWER (5|NUMERIC_OP_2)
+#define OP_MOD (6|NUMERIC_OP_2)
 
-#define OP_CLIP 1|STRING_OP_S1
-#define OP_CONCAT 1|STRING_OP_S2
-#define OP_COPY 2|STRING_OP_S2
-#define OP_USING 3|STRING_OP_S2
-#define OP_MATCHES 4|STRING_OP_S2
-#define OP_LIKE 5|STRING_OP_S2
+#define OP_CLIP (1|STRING_OP_S1)
+#define OP_CONCAT (1|STRING_OP_S2)
+#define OP_COPY (2|STRING_OP_S2)
+#define OP_USING (3|STRING_OP_S2)
+#define OP_MATCHES (4|STRING_OP_S2)
+#define OP_LIKE (5|STRING_OP_S2)
 
-#define OP_YEAR 1|STRING_OP_N1
-#define OP_MONTH 2|STRING_OP_N1
-#define OP_DAY 3|STRING_OP_N1
-#define OP_HOUR 4|STRING_OP_N1
-#define OP_MINUTE 5|STRING_OP_N1
-#define OP_SECOND 6|STRING_OP_N1
+#define OP_YEAR (1|STRING_OP_N1)
+#define OP_MONTH (2|STRING_OP_N1)
+#define OP_DAY (3|STRING_OP_N1)
+#define OP_HOUR (4|STRING_OP_N1)
+#define OP_MINUTE (5|STRING_OP_N1)
+#define OP_SECOND (6|STRING_OP_N1)
 
-#define OP_SUBSTR1 1|STRING_OP_N2
-#define OP_SUBSTR2 1|STRING_OP_N3
+#define OP_SUBSTR1 (1|STRING_OP_N2)
+#define OP_SUBSTR2 (1|STRING_OP_N3)
 
 #define OP_EQUAL (1|BOOLEAN_OP)
 #define OP_LESS_THAN (2|BOOLEAN_OP)

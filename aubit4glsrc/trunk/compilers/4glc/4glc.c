@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.49 2004-01-29 09:38:53 mikeaubury Exp $
+# $Id: 4glc.c,v 1.50 2004-04-15 21:15:37 mikeaubury Exp $
 #
 */
 
@@ -92,9 +92,9 @@ main (int argc, char *argv[])
 
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
+  import_package("default");
 
   x = initArguments (argc, argv);
-
   if (a4gl_yydebug)
     {
       printf ("Exit\n");

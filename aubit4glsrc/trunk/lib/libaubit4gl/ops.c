@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.47 2004-03-29 09:11:24 mikeaubury Exp $
+# $Id: ops.c,v 1.48 2004-04-15 21:16:37 mikeaubury Exp $
 #
 */
 
@@ -1112,13 +1112,16 @@ A4GL_dt_dt_ops (int op)
   //double d_d2;
 
 
-  if (op != (OP_SUB) && op!=(OP_EQUAL) && op!=(OP_NOT_EQUAL))
+  if (op != (OP_SUB) && op!=(OP_EQUAL) && op!=(OP_NOT_EQUAL) 
+		&& op!=(OP_LESS_THAN) && op!=(OP_GREATER_THAN)
+		&& op!=(OP_LESS_THAN_EQ) && op!=(OP_GREATER_THAN_EQ)
+)
     {
 	
 	A4GL_drop_param();
 	A4GL_drop_param();
 
-      A4GL_debug ("Can only subtract, == and != datetimes at the minute...");
+      A4GL_debug ("Can only subtract, ==, != , <, <=, >,>= datetimes at the minute...");
       A4GL_push_int (0);
       return;
     }
@@ -1199,8 +1202,9 @@ if (op==(OP_EQUAL)||op==(OP_NOT_EQUAL)) {
 }
 	
 
-  if (op==(OP_SUB)) {
 
+  if (op==(OP_SUB) || op==(OP_LESS_THAN) || op==(OP_GREATER_THAN) ||op==(OP_LESS_THAN_EQ) || op==(OP_GREATER_THAN_EQ) ) {
+	A4GL_debug("Op LT : %d (-%d <%d >%d",op,OP_SUB,OP_LESS_THAN,OP_GREATER_THAN);
   dtime_data2[0] -= dtime_data1[0];	// Y
   dtime_data2[1] -= dtime_data1[1];	//
   dtime_data2[2] -= dtime_data1[2];
@@ -1256,27 +1260,91 @@ A4GL_debug("Y %d M %d D %d H %d M %d S %d", dtime_data2[0], dtime_data2[1], dtim
 
 A4GL_debug("Y %d M %d D %d H %d M %d S %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
-  if (dtime_data2[0] || dtime_data2[1])
-    {
-      // YEAR TO MONTH interval
-      sprintf (buff, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
-
-      A4GL_ctoint (buff, &in, 1298);
-      A4GL_push_interval (&in);
 
 
-    }
-  else
-    {
-      sprintf (buff, "%d %02d:%02d:%02d.%05d", dtime_data2[2], dtime_data2[3],
-	       dtime_data2[4], dtime_data2[5], dtime_data2[6]);
-      A4GL_debug ("Got buff as : %s\n", buff);
-      A4GL_ctoint (buff, &in, 0x53b);
-      A4GL_debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in, in.stime,
-	     in.ltime);
-      A4GL_debug ("Buff = %s %x %x", buff);
-      A4GL_push_interval (&in);
-    }
+
+
+if (op == (OP_SUB))
+  {
+    if (dtime_data2[0] || dtime_data2[1])
+      {
+	// YEAR TO MONTH interval
+	sprintf (buff, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
+
+	A4GL_ctoint (buff, &in, 1298);
+	A4GL_push_interval (&in);
+      }
+    else
+      {
+	sprintf (buff, "%d %02d:%02d:%02d.%05d", dtime_data2[2],
+		 dtime_data2[3], dtime_data2[4], dtime_data2[5],
+		 dtime_data2[6]);
+	A4GL_debug ("Got buff as : %s - op=%d\n", buff,op);
+	A4GL_ctoint (buff, &in, 0x53b);
+	A4GL_debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in,
+		    in.stime, in.ltime);
+	A4GL_debug ("Buff = %s %x %x", buff);
+	A4GL_push_interval (&in);
+      }
+  } else {
+	int eq;
+	int lt;
+	int gt;
+	eq=0;
+	lt=0;
+	gt=0;
+
+    	if (dtime_data2[0] || dtime_data2[1]) {
+		int y;
+		y=dtime_data2[0]*12+dtime_data2[1];
+		if (y>0) gt=1;
+		if (y<0) lt=1;
+		if(y==0) eq=1;
+	} else {
+		long d;
+		d=0;
+		d+=dtime_data2[2];
+		d*=32;
+		d+=dtime_data2[3];
+		d*=24;
+		d+=dtime_data2[4];
+		d*=60;
+		d+=dtime_data2[5];
+		if (d>0) gt=1;
+		if (d==0) eq=1;
+		if (d<0) lt=1;
+	}
+	A4GL_debug(" Boolean values ->    %d %d %d",lt,eq, gt);
+
+	if (op==(OP_LESS_THAN)) {
+		if (lt) A4GL_push_int(1);
+		else A4GL_push_int(0);
+		return;
+	}
+	if (op==(OP_GREATER_THAN)) {
+		if (gt) A4GL_push_int(1);
+		else A4GL_push_int(0);
+		return;
+	}
+	
+	if (op==(OP_LESS_THAN_EQ)) {
+		if (lt||eq) A4GL_push_int(1);
+		else A4GL_push_int(0);
+		return;
+	}
+	if (op==(OP_GREATER_THAN_EQ)) {
+		if (gt||eq) A4GL_push_int(1);
+		else A4GL_push_int(0);
+		return;
+	}
+	
+	A4GL_push_int(0);
+	
+
+
+  }
+
+
 }
 
 

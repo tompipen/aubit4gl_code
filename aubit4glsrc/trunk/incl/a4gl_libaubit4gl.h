@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.120 2004-03-24 11:06:29 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.121 2004-04-15 21:16:37 mikeaubury Exp $
 #
 */
 
@@ -904,32 +904,32 @@ enum cmd_types {
 
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
-#define OP_MASK 		512|1024
+#define OP_MASK 		(512|1024)
 #define OP_MASK_BASE 	512
 
-#define NUMERIC_OP_2  	1*OP_MASK_BASE
-#define STRING_OP_S1 	2*OP_MASK_BASE
-#define STRING_OP_S2 	4*OP_MASK_BASE
-#define STRING_OP_N1 	8*OP_MASK_BASE
-#define STRING_OP_N2 	16*OP_MASK_BASE
-#define FUNCTION_OP 	32*OP_MASK_BASE
-#define BOOLEAN_OP 		64*OP_MASK_BASE
-#define OTHER_OP 		128*OP_MASK_BASE
+#define NUMERIC_OP_2  	(1*OP_MASK_BASE)
+#define STRING_OP_S1 	(2*OP_MASK_BASE)
+#define STRING_OP_S2 	(4*OP_MASK_BASE)
+#define STRING_OP_N1 	(8*OP_MASK_BASE)
+#define STRING_OP_N2 	(16*OP_MASK_BASE)
+#define FUNCTION_OP 	(32*OP_MASK_BASE)
+#define BOOLEAN_OP 		(64*OP_MASK_BASE)
+#define OTHER_OP 		(128*OP_MASK_BASE)
 
   /* add no more than 15 items to any of the following groups */
-#define OP_ADD 			1|NUMERIC_OP_2
-#define OP_SUB 			2|NUMERIC_OP_2
-#define OP_MULT 		3|NUMERIC_OP_2
-#define OP_DIV 			4|NUMERIC_OP_2
-#define OP_POWER 		5|NUMERIC_OP_2
-#define OP_MOD 			6|NUMERIC_OP_2
+#define OP_ADD 			(1|NUMERIC_OP_2)
+#define OP_SUB 			(2|NUMERIC_OP_2)
+#define OP_MULT 		(3|NUMERIC_OP_2)
+#define OP_DIV 			(4|NUMERIC_OP_2)
+#define OP_POWER 		(5|NUMERIC_OP_2)
+#define OP_MOD 			(6|NUMERIC_OP_2)
 
-#define OP_CLIP 		1|STRING_OP_S1
-#define OP_CONCAT 		1|STRING_OP_S2
-#define OP_COPY 		2|STRING_OP_S2
-#define OP_USING 		3|STRING_OP_S2
-#define OP_MATCHES 		4|STRING_OP_S2
-#define OP_LIKE 		5|STRING_OP_S2
+#define OP_CLIP 		(1|STRING_OP_S1)
+#define OP_CONCAT 		(1|STRING_OP_S2)
+#define OP_COPY 		(2|STRING_OP_S2)
+#define OP_USING 		(3|STRING_OP_S2)
+#define OP_MATCHES 		(4|STRING_OP_S2)
+#define OP_LIKE 		(5|STRING_OP_S2)
 
   /* This one is a special case and should **NOT** be
      used anywhere except for grouping others together in stack.c and
@@ -937,17 +937,17 @@ enum cmd_types {
      Used for A4GL_add_op_function & find_op_function
    */
 
-#define OP_MATH 		12|BOOLEAN_OP
+#define OP_MATH 		(12|BOOLEAN_OP)
 
-#define OP_YEAR 		1|STRING_OP_N1
-#define OP_MONTH 		2|STRING_OP_N1
-#define OP_DAY 			3|STRING_OP_N1
-#define OP_HOUR 		4|STRING_OP_N1
-#define OP_MINUTE 		5|STRING_OP_N1
-#define OP_SECOND 		6|STRING_OP_N1
+#define OP_YEAR 		(1|STRING_OP_N1)
+#define OP_MONTH 		(2|STRING_OP_N1)
+#define OP_DAY 			(3|STRING_OP_N1)
+#define OP_HOUR 		(4|STRING_OP_N1)
+#define OP_MINUTE 		(5|STRING_OP_N1)
+#define OP_SECOND 		(6|STRING_OP_N1)
 
-#define OP_SUBSTR1 		1|STRING_OP_N2
-#define OP_SUBSTR2 		1|STRING_OP_N3
+#define OP_SUBSTR1 		(1|STRING_OP_N2
+#define OP_SUBSTR2 		(1|STRING_OP_N3
 
 #define OP_EQUAL 		(1|BOOLEAN_OP)
 #define OP_LESS_THAN 	(2|BOOLEAN_OP)
@@ -1278,7 +1278,7 @@ void A4GL_display_at (int n, int a);
 
   /* ============================ from a4gl_stack.h ================= */
 
-#define OP_MASK 		512|1024
+#define OP_MASK 		(512|1024)
 #define OP_MASK_BASE 	512
 
   /* add no more than 15 items to any of the following groups */

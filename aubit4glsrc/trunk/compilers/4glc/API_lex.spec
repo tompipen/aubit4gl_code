@@ -651,7 +651,6 @@ print_cmd_start -> void
 
 print_import_legacy char* s -> void
 
-print_import_package char* s -> void
 
 print_cmd_end -> void
 
