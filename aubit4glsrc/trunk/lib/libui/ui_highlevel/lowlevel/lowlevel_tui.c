@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.46 2005-01-05 20:04:15 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.47 2005-03-08 09:27:23 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -83,7 +83,7 @@ Looks like it was removed in Curses 5.3???!
 #endif
 
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.46 2005-01-05 20:04:15 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.47 2005-03-08 09:27:23 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -459,7 +459,12 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
   int ch2;
   int attr;
   void *p;
-  attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
+
+  attr=ch & 0xffffff00;
+  //A4GL_debug("attr before=%x",attr);
+  attr = A4GL_LL_decode_aubit_attr (attr, 'w') ;
+  //A4GL_debug("attr after=%x",attr);
+
   ch2 = ch & 0xff;
   //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p = panel_window (win);
@@ -472,8 +477,8 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
       || y > UILIB_A4GL_get_curr_height ());
   else {
 		if (ch2==0) ch2='*';
-		//A4GL_debug("waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
-    		mvwaddch (p, y, x, attr + ch2);
+		//A4GL_debug("waddch  p=%p y=%d x=%d ch=%x ATTR=%x CH=%x",p,y,x,ch,attr,ch2);
+    		mvwaddch (p, y, x,  attr|ch2);
 	}
 }
 
@@ -3010,6 +3015,7 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
   int attr;
   void *p;
   wchar_t buff[2];
+A4GL_debug("xy_col");
   attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
   buff[0]=ch;
   buff[1]=0;
@@ -3035,6 +3041,7 @@ A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch)
   int attr;
   void *p;
   wchar_t buff[2];
+A4GL_debug("xy_col_w");
   attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
   buff[0]=ch;
   buff[1]=0;

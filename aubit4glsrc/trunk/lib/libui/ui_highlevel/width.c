@@ -23,6 +23,7 @@ void
 A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc) 
 {
   int a;
+  unsigned char c;
 
 #ifdef WIDEC
 {
@@ -68,9 +69,13 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
     {
 
       if (pfunc==0) {
-		A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + (attr&0xffffff00));
+		c=buff[a];
+		A4GL_debug("Add1 : %x ", c);
+		A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr&0xffffff00));
 	} else {
-		A4GL_LL_wadd_char_xy_col_w (win, x, y, buff[a] + (attr&0xffffff00));
+		A4GL_debug("Add2");
+		c=buff[a];
+		A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr&0xffffff00));
 	}
       x++;
     }
