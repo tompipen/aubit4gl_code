@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.192 2004-11-09 20:28:42 pjfalbe Exp $
+# $Id: compile_c.c,v 1.193 2004-11-10 00:45:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.192 2004-11-09 20:28:42 pjfalbe Exp $";
+static char *module_id="$Id: compile_c.c,v 1.193 2004-11-10 00:45:27 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3696,6 +3696,9 @@ print_report_2 (int pdf, char *repordby)
   printc ("static int _started=0;\n");
   printc ("static int _assigned_ordbind=0;\n");
   cnt = print_param ('r');
+if (!A4GL_doing_pcode()) {
+  printc ("init_module_variables();");
+}
   printc(" if (_assigned_ordbind==0) { _assigned_ordbind=1;"); print_bind_set_value('O'); printc("}");
 
   printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");

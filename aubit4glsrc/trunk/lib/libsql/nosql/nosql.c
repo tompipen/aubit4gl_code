@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.30 2004-10-23 13:36:34 mikeaubury Exp $
+# $Id: nosql.c,v 1.31 2004-11-10 00:46:50 mikeaubury Exp $
 #*/
 
 /**
@@ -429,5 +429,10 @@ A4GL_local_exitwith (char *s)
   exit (1);
 
 }
+
+void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+return 0;
+}
+
 
 /* =============================== EOF ============================== */
