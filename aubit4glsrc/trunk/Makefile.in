@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.56 2002-04-12 12:22:50 afalout Exp $
+# $Id: Makefile.in,v 1.57 2002-04-15 00:22:52 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -68,7 +68,7 @@ TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO
 
 ifneq "@PERLBUILD@" "no"
 	#Perl compiler is compiled in "extra" and is optional
-	ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT})" ""
+	ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT} 2> /dev/null)" ""
 		TOLIBCUI	+=$(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT}
 		TOBIN		+=$(SOURCE)/bin/4glp${EXEEXT}
     endif
@@ -140,9 +140,52 @@ TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
 TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
-TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/acl4glgui.h \
+TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/4gldef.h $(SOURCE)/incl/acl4glgui.h \
 				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
+
+
+#FIXME: results of extra compilations should be in install/deinstall
+#and RPM target too: (also add to clean.all)
+
+
+ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI	+=$(SOURCE)/lib/libA4GL_file${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libA4GL_string${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI	+=$(SOURCE)/lib/libA4GL_string${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI	+=$(SOURCE)/lib/libIM_JABBER${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
+	TOBIN		+=$(SOURCE)/bin/odbctest-unixODBC${EXE}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc3${EXE} 2> /dev/null)" ""
+	TOBIN		+=$(SOURCE)/bin/odbctest-iodbc3${EXE}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
+	TOBIN		+=$(SOURCE)/bin/odbctest-iodbc2${EXE}
+endif
+
+
+#IDE installs:
+#/usr/local/bin/ide
+#/usr/local/4glide/ide.4ae
+#/usr/local/4glide/d4glinpt.afr d4glopts.afr
+#/usr/local/4glide/d4glhelp.iem
+
+#stuff made by doxy make no sense in binary distro
+
+#broken: libA4GL_html.so, adbaccess files, adbload, perl compiler
+
+
+
 
 ##################################################
 #definitions of names for bynary distro file name:
@@ -272,20 +315,6 @@ gtkgui:
 ## ==================================================================
 ##                              Extra
 ## ==================================================================
-
-#FIXME: results of this compilations should be in install/deinstall
-#and RPM target too: (also add to clean.all)
-#libA4GL_file.so libA4GL_string.so  libIM_JABBER.so odbctest-unixODBC odbctest-iodbc3[2]
-
-#IDE installs:
-#/usr/local/bin/ide
-#/usr/local/4glide/ide.4ae
-#/usr/local/4glide/d4glinpt.afr d4glopts.afr
-#/usr/local/4glide/d4glhelp.iem
-
-#stuff made by doxy make no sense in binary distro
-
-#broken: libA4GL_html.so, adbaccess files, adbload, perl compiler
 
 ide:
 	$(MAKE) -C tools/ide

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.45 2002-04-06 06:33:40 afalout Exp $
+# $Id: Makefile.in,v 1.46 2002-04-15 00:22:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -128,7 +128,7 @@ else
     endif
 
 	ifneq "@XML_RPC@" "no"
-		ALL			+=libRPC_XML${SO_EXT}
+		ALL			+=libRPC_XMLRPC${SO_EXT}
     endif
 endif
 

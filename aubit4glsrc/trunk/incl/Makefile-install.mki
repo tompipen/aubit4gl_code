@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.17 2002-04-06 06:33:40 afalout Exp $
+# $Id: Makefile-install.mki,v 1.18 2002-04-15 00:22:56 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -126,12 +126,14 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/bin/amakeallo $(INSTALL_DIR)/bin/amakeallf \
 		$(INSTALL_DIR)/bin/loadmap${EXEEXT} $(INSTALL_DIR)/bin/aubit $(INSTALL_DIR)/bin/aubit-config${EXEEXT} \
 		$(INSTALL_DIR)/bin/genmake $(INSTALL_DIR)/bin/mdecompile${EXEEXT} $(INSTALL_DIR)/bin/prepmake \
-		$(INSTALL_DIR)/bin/fdecompile${EXEEXT} $(INSTALL_DIR)/bin/fshow${EXEEXT} $(INSTALL_DIR)/bin/fshow-gtk${EXEEXT}
+		$(INSTALL_DIR)/bin/fdecompile${EXEEXT} $(INSTALL_DIR)/bin/fshow${EXEEXT} \
+		$(INSTALL_DIR)/bin/fshow-gtk${EXEEXT} $(INSTALL_DIR)/bin/4glp${EXEEXT}
 
-	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile
-	${RM} $(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h $(INSTALL_DIR)/incl/*.mk \
-		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common
-	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
+	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
+		$(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h \
+		$(INSTALL_DIR)/incl/4gldef.h $(INSTALL_DIR)/incl/*.mk \
+		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common \
+		$(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
 		$(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \
 		$(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libSQL_nosql${SO_EXT} \
     	$(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} \
@@ -146,7 +148,8 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} \
 		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT} \
         $(INSTALL_DIR)/lib/libRPC_XDR${SO_EXT} $(INSTALL_DIR)/lib/libEXREPORT_PDF${SO_EXT} \
-        $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT}
+        $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libA4GLLEX_C${SO_EXT} \
+		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT}
 
 #windows dll export libraries:
 ifneq "${COMSPEC}" ""

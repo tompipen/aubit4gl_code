@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.54 2002-04-06 06:33:37 afalout Exp $
+# $Id: configure.in,v 1.55 2002-04-15 00:22:52 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -206,6 +206,7 @@ AC_SUBST(A4GL_RPCTYPE)
 
 #XML RPC
 AC_SUBST(XML_RPC)
+AC_SUBST(XMLRPC_C_CONFIG)
 
 #PDF
 AC_SUBST(USE_PDF)
@@ -1762,15 +1763,40 @@ AC_ARG_WITH(rpc,
 ## ==================================================================
 ##                  Check for XML RPC support
 ## ==================================================================
-#Needs w3c-libwww-5.3.2.tar.gz & xmlrpc-c-0.9.9.tar.gz
-#from http://xmlrpc-c.sourceforge.net/downloading.php
 
+AC_MSG_CHECKING(XML-RPC support)
 
-AC_PATH_PROG(XML_RPC, xmlrpc-c-config, no)
+old_CFLAGS="$CFLAGS"
 
-#if test "$XML_RPC" != no; then
-#
-#fi
+#This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
+CLIENT_LIBS="-L/usr/local/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
+CFLAGS="$CFLAGS $CLIENT_LIBS"
+AC_CHECK_LIB([xmlrpc], [main])
+CFLAGS="$old_CFLAGS"
+
+if test $ac_cv_lib_xmlrpc_main = yes; then
+
+    #xmlrpc-c-config executable is NOT in current RPM!
+	AC_PATH_PROG(XMLRPC_C_CONFIG, xmlrpc-c-config, no)
+
+	if test "$AUBIT_SOURCE" = "1" ; then
+	    #to compile from source code, we need headers too:
+		AC_CHECK_HEADERS([ xmlrpc.h xmlrpc_client.h ])
+
+		if test "$ac_cv_header_xmlrpc_h" = "yes" && test "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
+			XML_RPC=yes
+        else
+			XML_RPC=no
+        fi
+    else
+		XML_RPC=yes
+    fi
+else
+	XML_RPC=no
+fi
+
+AC_MSG_CHECKING(XML-RPC support)
+AC_MSG_RESULT($XML_RPC)
 
 
 ## ==================================================================
