@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.185 2005-03-09 15:14:33 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.186 2005-03-21 00:43:15 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -493,10 +493,19 @@ NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings, using Splint instead
 
 ifeq "${TARGET_OS}" "linux"
-	CWARN    		=-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+	CWARN    		=-Wall -Wredundant-decls -Wmissing-declarations \
+						-Wmissing-prototypes -Wstrict-prototypes
 else
 	CWARN			=
 endif
+
+#This is unfortunate, and we will no doubth accumulate significant 
+#ammount of unused variables in the future, but since we started using 
+#static char *module_id=""; for CVS IDs I cant find a sollution to ignore 
+#resulting warnings, other then to disable it completely:
+#add VOLATILE - static volatile char rcsid[] = "xxx"; - DOES NOT HELP
+#CWARN	+=-Wno-unused-variable
+
 
 ifeq "${WIN_PATH}" "1"
 	C_IFLAGS            =-I$(AUBITDIR)/incl

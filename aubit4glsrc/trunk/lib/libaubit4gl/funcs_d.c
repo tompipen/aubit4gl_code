@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.59 2005-03-18 10:44:57 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.60 2005-03-21 00:43:16 afalout Exp $
 #
 */
 
@@ -649,7 +649,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
   variable_called_b = 0;
 
 
-  sprintf(new_str,"%1.*lf",strlen(fm2)+1,num_dec);
+  sprintf(new_str,"%1.*lf",(int)strlen(fm2)+1,num_dec); 
   ptr2=&new_str[2];
   A4GL_debug("str=%s fm1=%s fm2=%s ptr2=%s",str,fm1,fm2,ptr2);
 

@@ -218,6 +218,32 @@ void popdec_aubit (fgldecimal *x) {
 }
 
 
+/* this funcs are used in API_esql.spec as
+	popdec_native void* vx -> void
+	retdec_native void* vx -> void
+	popdtime_native void* vx -> void
+	retdtime_native void* vx -> void
+	
+	defined in helper_funcs.ec
+	
+	no code in Aubit makes calls to this functions in any form:
+	(popdtime or popdtime_native or ESQLAPI_popdtime_native)
+	so it seems only legacy C code functions used with I-4GL would need it.
+	
+	Since only header file with this purpose we have is incl/compat/decimal.h
+	which we cant include here (because it would conflict with Aubit internals)
+	I will declare prototypes here, and let user worry about prototypes for his 
+	own C code.
+	
+	Note: prototypes for ESQLAPI_xxx_native() and xxxx_native() 
+	are in generated a4gl_API_esql.h so we will include it here
+*/
+
+#include "a4gl_API_esql.h"
+void popdtime(void* vx);
+void retdtime(void* vx);
+void retdec(void* vx);
+
 void popdtime(void* vx) { popdtime_native(vx); }
 void retdtime(void* vx) { retdtime_native(vx); }
 void retdec(void* vx)   { retdec_native(vx); }

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.17 2005-03-20 04:25:37 afalout Exp $
+# $Id: Makefile,v 1.18 2005-03-21 00:42:01 afalout Exp $
 #
 
 ## ==================================================================
@@ -541,7 +541,7 @@ clean.makefiles:
     tools/html/Makefile tools/ide/Makefile \
     tools/odbctest/Makefile \
     tools/test/Makefile tools/test/gui/Makefile \
-	common/dataio/Makefile compilers/ace/Makefile compilers/xgen/Makefile \
+	common/dataio/Makefile compilers/ace/Makefile \
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
 	lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_xdr/Makefile \
 	lib/libmsg/msg_native/Makefile lib/libpacker/packed/Makefile \
