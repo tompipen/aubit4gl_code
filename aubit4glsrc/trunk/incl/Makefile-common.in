@@ -25,32 +25,8 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.20 2002-02-26 07:54:04 afalout Exp $
+# $Id: Makefile-common.in,v 1.21 2002-03-07 06:55:46 afalout Exp $
 #
-
-
-#It looks like this "if" is not working - .EXPORT_ALL_VARIABLES: is probably
-#a make directive, not a statement?
-#ifneq "${NO_EXPORT_VAR}" "1"
-	#.EXPORT_ALL_VARIABLES: will cause this wires error when vatiable is
-	#appended to depending on lable like:
-	#libSQL_iodbc.so: CFLAGS+=-DIODBC
-	#in lib/libsql/odbc/Makefile.in :
-	#make: expand.c:489: allocated_variable_append: Assertion `current_variable_set_list->next != 0' failed.
-	#Aborted
-
-#tells make to export all variables to child processes by default.
-#Warning: this will export EVERITHING you define here to sub-makefiles
-#and all commands/shell scripts that are called in make process, You
-#can use "unexport VARIABLE", if you need to prevent something from exporting:
-#.EXPORT_ALL_VARIABLES: statement MUST be on the beginning of the line
-
-
-#we no longer need to export varibles, since all make files already include
-#this file, and we should be using autoconf anyway
-#.EXPORT_ALL_VARIABLES:
-
-#endif
 
 #If we later need to know if this makefile was included or not:
 MAKEFILE_COMMON_INCLUDED=1
@@ -218,9 +194,10 @@ MKPATH      		=mkdir -p
 CPPFLAGS 			=
 LDFLAGS 			=-s
 ALL_LIBS			=@LIBS@
-CFLAGS				+=@CFLAGS@ -O2 -DAUTOBANG -DDEBUG -I/usr/local/include
+AUTOCONF_CFLAGS     =@CFLAGS@
+#fixme: set -DDEBUG from configure:
+CFLAGS				+=-O2 -DAUTOBANG -DDEBUG -I/usr/local/include
 #-I.
-#LIBCFLAGS			=${CLFAGS} -Ilibincl
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
 #To let know 4glpc we are in process of making compiler, and not
@@ -255,7 +232,8 @@ ifdef COMSPEC
     #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
 	#USE_RPCGEN  =no
 else
-    CFLAGS      +=-g
+    #FIXME: add -g from configure
+	CFLAGS      +=-g
 	EXEEXT		=
 	SO_EXT      =.so
 	CPEXE		=ln -f

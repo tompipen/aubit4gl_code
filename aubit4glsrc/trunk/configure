@@ -1285,7 +1285,7 @@ COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
 test_rpclib="1"
 GTKBUILD=no
-AUBITGUI=text
+AUBITGUI=TUI
 A4GL_SQLTYPE=nosql
 
 HAVE_IODBC=no
@@ -6044,7 +6044,7 @@ cat >>confdefs.h <<\EOF
 EOF
 
 					GTKBUILD=yes
-					AUBITGUI=gtk
+					AUBITGUI=GTK
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself

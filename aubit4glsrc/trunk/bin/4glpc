@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.54 2002-03-07 03:55:45 afalout Exp $
+# $Id: 4glpc,v 1.55 2002-03-07 06:55:46 afalout Exp $
 #
 
 ########################################################################
@@ -47,7 +47,8 @@
 	OVERWRITE_CONFIG=0
 #	USE_CONFIGURE=1
 
-FIXME: we should use shared linking on UNIX too:
+#FIXME: we should use shared linking on UNIX too:
+
 if [ ! "$COMSPEC" = "" ]
 then
 	USE_SHARED="Yes"
@@ -1507,16 +1508,16 @@ else
    if [ "$A4GLVERBOSE" = "yes" ]
    then
 	   echo "executing (2) : $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
-	   echo $DOIT
-	   echo $GCC
-	   echo $COMPCC
-	   echo $INCLDIR
-	   echo $FGLLIBSDIR
-	   echo $FGLLIBS
-	   echo $LIBSDIR
-	   echo $LIBS
-	   echo $GTKLIBS
-	   echo $LAST
+#	   echo $DOIT
+#	   echo $GCC
+#	   echo $COMPCC
+#	   echo $INCLDIR
+#	   echo $FGLLIBSDIR
+#	   echo $FGLLIBS
+#	   echo $LIBSDIR
+#	   echo $LIBS
+#	   echo $GTKLIBS
+#	   echo $LAST
 
 	   echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
        echo "PWD is `pwd`"
