@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.40 2004-12-09 23:59:14 afalout Exp $
+# $Id: Makefile,v 1.1 2005-01-07 08:19:02 afalout Exp $
 #
 
 ROOT		=../../..
@@ -57,9 +57,6 @@ endif
 
 LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
                     -L$(INFORMIXDIR)/lib/cli
-
-IFX_LIBS            =@IFX_LIBS@
-
 
 ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 	
@@ -121,7 +118,8 @@ ifdef COMSPEC
     #export TMP
     #export PWD
 
-	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	#IFX_CSDK_DIR=/CSDK
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}${IFX_CSDK_DIR}
 	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
 		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
 
@@ -178,10 +176,8 @@ ifdef COMSPEC
 	ESQL=esql
 	ESQL_FLAGS= -thread
 	LDFLAGS=
-	
-	#INFORMIXDIR=CRAP-HARD-CODED-E:/Program files/W2000/Informix/CSDK
-	
-	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	#IFX_CSDK_DIR=/CSDK
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}${IFX_CSDK_DIR}
 	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
 		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
 		
@@ -226,7 +222,7 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
-	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} \
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
@@ -238,7 +234,7 @@ endif
 libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
 ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
-	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ##################
@@ -268,22 +264,22 @@ ${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #cpc will allways add .cpc extension to any source files
 	cpp ${CPP_FLAGS} $^ -D__SAP__  -I${SAPDBROOT}/interfaces/precompiler/incl > sap_$^.cpc
 	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1
-	${CC} -c @SAPDB_INCDIR@ -I${ROOT}/incl -o sap_$^.o sap_$^.c
+	${CC} -c ${SAPDB_INCDIR} -I${ROOT}/incl -o sap_$^.o sap_$^.c
 #-I${SAPDBROOT}/interfaces/precompiler/incl
 #	rm sap_$^.cpc
 #	${CPCLNK} -shared sap_esql_compatible.ec.o
-	${CC} -shared sap_$^.o -o $@ @SAPDB_LIBDIR@ -lpcrl -lsqlca -ldl
+	${CC} -shared sap_$^.o -o $@ ${SAPDB_LIBDIR} -lpcrl -lsqlca -ldl
 #-L${SAPDBROOT}/interfaces/precompiler/lib
 
 ##################
 #PostgreSQL ESQL/C compiler:
 libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
 ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
-#@PGSQL_LFLAGS@ @PGSQL_LIBS@ @PGSQL_INCLUDE@
+
 #	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ -I/opt/ecpg-cvs/include > pg_$^
-	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ @PGSQL_INCLUDE@ > pg_$^
+	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ ${PGSQL_INCLUDE} > pg_$^
 #	${PG_ESQLC} -I/opt/ecpg-cvs/include -C INFORMIX -t pg_$^
-	${PG_ESQLC} @PGSQL_INCLUDE@ -C INFORMIX -t pg_$^
+	${PG_ESQLC} ${PGSQL_INCLUDE} -C INFORMIX -t pg_$^
 #	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 
 ##################
@@ -296,7 +292,7 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 #FIXME: Not sure what is this good for, when we already have working one?
 libSQL_c_esql${SO_EXT}: ${LIBROOT}/libSQL_c_esql${SO_EXT}
 ${LIBROOT}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
-	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 
@@ -344,7 +340,7 @@ dllSQL_esql: ${SRC} ${DEF}
 #  -e, -p          Preprocess only (no compilation or linking).
 #-dcmdl          Displays command lines of all programs invoked.
 #-c              Preprocess and compile only (no linking).
-	@IFMX_ESQLC@ -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
+	${IFMX_ESQLC} -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
 		-I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ${LIBROOT}/libaubit4gl.dll.a
 	${CP} libSQL_esql.dll ${LIBROOT}
 

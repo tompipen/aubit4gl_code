@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.8 2004-12-29 11:41:13 afalout Exp $
+# $Id: Makefile,v 1.9 2005-01-07 08:18:03 afalout Exp $
 #
 
 ## ==================================================================
@@ -468,7 +468,7 @@ clean.makefiles:
 	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
 	compilers/menus/Makefile incl/Makefile-common \
     lib/libui/ui_console/Makefile lib/libpdf/Makefile \
-    lib/libsql/nosql/Makefile lib/libsql/esqlc/Makefile \
+    lib/libsql/nosql/Makefile \
     lib/extra_libs/file/Makefile \
     lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.95 2004-12-29 11:42:12 afalout Exp $
+# $Id: Makefile-install.mki,v 1.96 2005-01-07 08:19:01 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -912,7 +912,7 @@ PGIFX_SRC_GZ			=${PGIFX_SRC}.tar.gz
 PGIFX_INSTPATH			=/opt/pg-ifx/${PGIFX_SRC}
 PGIFX_CTL				=${PGIFX_INSTPATH}/pg-ifx-ctl-${PGIFX_SRC}
 
-
+##################
 # 34: LibVNCserver:
 install.libvncserver:
 #CVS modules: libvncserver rdp2vnc vncterm
@@ -921,32 +921,13 @@ install.libvncserver:
 	cd /tmp/libvncserver; cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/libvncserver co libvncserver
 
 	
-# ORBit docs and examples (examples need ORBit2) :
-install.orbit.example:
-	${WGET} http://www.gnome.org/projects/ORBit2/orbit-docs.tar.gz
+###################
+# 35: ORBit CORBA
+ORBIT_INFO			=http://www.gnome.org/projects/ORBit2
+ORBIT_SRC_PATH		=ftp://ftp.gnome.org/pub/gnome/sources/ORBit2/2.12/
+ORBIT_SRC			=ORBit2-2.12.0
+ORBIT_SRC_TAR_GZ	=${ORBIT_SRC}.tar.gz
 
-orbit.test:
-	cd /tmp; gunzip -c ${AUBIT_SRC_ROOT}/orbit-docs.tar.gz | tar -xvf -
-#This should build a documentation directory that contains this documentation 
-#in both sgml (docbook) and html, and an examples directory. Move to the 
-#examples directory, and go
-#	cd /tmp/orbit-docs; ./configure
-	cd /tmp/orbit-docs/examples/echo; make
-#Proceed similarly for the calculator example.
-#To actually run the echo example, open two windows up. Run echo-server in one 
-#and echo-client in the other (echo-server writes out the file echo.ref which 
-#echo-client reads). If you want to have fun now, compile orbit on a different 
-#machine, make echo-client on the different machine, move echo.ref from the
-#first machine to the second and run echo-client: eh voila - client/server 
-#over tcp/ip with the same code that ran using unix sockets on a single machine. 	
-#NOTE:
-#From ORBit 0.5.3, IIOP communications over IP sockets are disabled by default for security reasons. You should create an  /etc/orbitrc  (for a system-wide settings), or an  ~/.orbitrc  (for one user's setting) containing something like :
-#
-#ORBIIOPUSock=1
-#ORBIIOPIPv4=1
-#ORBIIOPIPv6=0
-#
-#Alternatively, you can also use command line parameters.
 
 ## ==================================================================
 ##                    Third-party products installation
@@ -1741,9 +1722,140 @@ install.pgifx.ctl:
 	chmod a+x ${PGIFX_CTL}
 	@echo "Use script ${PGIFX_CTL}"
 	@echo "to start/stop/status PG engine"
+
+##############################
+# 34 :
 	
-########################
-#Targets for downloading installation files:
+##############################
+# 35 : ORBit Corba:
+ifdef ORBIT_USE_TARBALL
+install.orbit: ${ORBIT_SRC_TAR_GZ}
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^	
+else
+install.orbit: ORBIT_SRC=ORBit2
+install.orbit:
+#fails because of uppercase/lowercase duplicate ORBit2/src/idl/interop/CONV_FRAME.idl
+#	-cd ${SYSTEMDRIVE}/tmp; cvs -d :pserver:anonymous@anoncvs.gnome.org:/cvs/gnome -z3 co ORBit2
+#	cd ${SYSTEMDRIVE}/tmp; cvs -d :pserver:anonymous@anoncvs.gnome.org:/cvs/gnome -z3 co gnome-common
+	@echo "CVS check-out completed"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${ORBIT_SRC}; \
+		export PATH=\"../gnome-common/macros2;$$PATH\"; echo $$PATH; \
+		./autogen.sh --prefix=/opt"	
+endif
+ifdef COMSPEC
+#Compile from source code (Windows)
+#if installing to /opt set environment variables as follows:
+#export PKG_CONFIG_PATH=/opt/lib/pkgconfig
+#export GNOME2_DIR=/opt
+#export LD_LIBRARY_PATH=/opt/lib:${LIBRARY_PATH}
+#export PATH=/opt/bin:${PATH}
+	@echo "Starting compilation..."
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${ORBIT_SRC}; ./configure"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${ORBIT_SRC}; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${ORBIT_SRC}; make install"
+	@echo " "
+	@echo "Package info & manuals: ${ORBIT_INFO}"
+	@echo " "
+	@echo "ORBit installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+else
+	@echo "You should allready have ORBit on UNIX?"
+	@echo "I don't want to mess up your GNOME installation..."
+endif
+
+#ORBit - Cant find headers:
+#linc-protocol.h:21:24: sys/socket.h /cygdrive/d/msys/1.0/xyz/include/socket.h
+#linc-protocol.h:22:19: netdb.h: NOT IN MSYS OR MINGW 
+#linc-connection.h:19:21: sys/uio.h: NOT IN MSYS OR MINGW
+
+
+#libIDL is needed for ORBit on Windows
+LIBIDL_INFO=http://andrewtv.org/libIDL/
+LIBIDL_SRC_PATH=http://andrewtv.org/libIDL/
+#WARNING: Minumum version required by ORBit is 0.7.4
+#maybe use CVS? http://developer.gnome.org/tools/cvs.html
+LIBIDL_SRC=	libIDL-0.6.8
+LIBIDL_SRC_TAR_GZ=${LIBIDL_SRC}.tar.gz
+
+${LIBIDL_SRC_TAR_GZ}:
+	${WGET} ${LIBIDL_SRC_PATH}/$@ 
+
+install.libidl: ${LIBIDL_SRC_TAR_GZ} install.libidl.pkg-config
+ifdef COMSPEC
+#Compile from source code (Windows)
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/${LIBIDL_SRC_TAR_GZ}
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBIDL_SRC}; \
+		CFLAGS=\"`eval 'pkg-config glib-2.0 --cflags'`\"; \
+		LDFLAGS=\"`eval 'pkg-config glib-2.0 --libs'`\"; \
+		export CFLAGS; ./configure"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBIDL_SRC}; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBIDL_SRC}; make install"
+# /cygdrive/d/msys/1.0/local/bin/libIDL-config	
+	@echo " "
+	@echo "Package info & manuals: ${LIBIDL_INFO}"
+	@echo " "
+	@echo "libIDL installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+endif
+
+LIBIDL_PREFIX_WINPATH=${shell cygpath -m /cygdrive/d/msys/1.0/local}
+LIBIDL_PC_PATH=F:/GTK/lib/pkgconfig/libIDL-2.0.pc
+#Create pkg-config file for libIDL, which is missing, since ORBit 
+#configure will use pkg-confing to check for libIDL:
+install.libidl.pkg-config:
+	@echo "prefix=${LIBIDL_PREFIX_WINPATH} LIBIDL_PC_PATH=${LIBIDL_PC_PATH}"
+	@echo "prefix=${LIBIDL_PREFIX_WINPATH}" > ${LIBIDL_PC_PATH}
+	@echo "exec_prefix=${LIBIDL_PREFIX_WINPATH}/bin" >> ${LIBIDL_PC_PATH}
+	@echo "libdir=${LIBIDL_PREFIX_WINPATH}/lib" >> ${LIBIDL_PC_PATH}
+	@echo "includedir=${LIBIDL_PREFIX_WINPATH}/include" >> ${LIBIDL_PC_PATH}
+	@echo "" >> ${LIBIDL_PC_PATH}
+	@echo "Name: libIDL-2.0" >> ${LIBIDL_PC_PATH}
+	@echo "Description: libIDL". >> ${LIBIDL_PC_PATH}
+#LIBIDL_REQUIRED=0.7.4
+#and we have 0.6.8!!!!!
+	@echo "Version: 0.7.4" >> ${LIBIDL_PC_PATH}
+#	@echo "Version: 0.6.8" >> ${LIBIDL_PC_PATH}
+#	@echo "Requires: glib-2.0 gmodule-2.0 gthread-2.0" >> ${LIBIDL_PC_PATH}
+	@echo "Libs: -L${LIBIDL_PREFIX_WINPATH}/lib -lIDL" >> ${LIBIDL_PC_PATH}
+	@echo "Cflags: -I${LIBIDL_PREFIX_WINPATH}/include/libIDL" >> ${LIBIDL_PC_PATH}
+	@echo "" >> ${LIBIDL_PC_PATH}	
+
+##########################################
+# CORBA ORBit docs and examples (examples need ORBit2) :
+install.orbit.example:
+	${WGET} http://www.gnome.org/projects/ORBit2/orbit-docs.tar.gz
+
+orbit.test:
+	cd /tmp; gunzip -c ${AUBIT_SRC_ROOT}/orbit-docs.tar.gz | tar -xvf -
+#This should build a documentation directory that contains this documentation 
+#in both sgml (docbook) and html, and an examples directory. Move to the 
+#examples directory, and go
+#	cd /tmp/orbit-docs; ./configure
+	cd /tmp/orbit-docs/examples/echo; make
+#Proceed similarly for the calculator example.
+#To actually run the echo example, open two windows up. Run echo-server in one 
+#and echo-client in the other (echo-server writes out the file echo.ref which 
+#echo-client reads). If you want to have fun now, compile orbit on a different 
+#machine, make echo-client on the different machine, move echo.ref from the
+#first machine to the second and run echo-client: eh voila - client/server 
+#over tcp/ip with the same code that ran using unix sockets on a single machine. 	
+#NOTE:
+#From ORBit 0.5.3, IIOP communications over IP sockets are disabled by default for security reasons. You should create an  /etc/orbitrc  (for a system-wide settings), or an  ~/.orbitrc  (for one user's setting) containing something like :
+#
+#ORBIIOPUSock=1
+#ORBIIOPIPv4=1
+#ORBIIOPIPv6=0
+#
+#Alternatively, you can also use command line parameters.
+
+change.log:
+	@export CHANGE_LOG_NAME='Andrej Falout'; export CHANGE_LOG_EMAIL_ADDRESS='andrej_AT_falout_DOT_org'; \
+		perl tools/prepare-ChangeLog.pl
+		
+		
+###########################################################################
+#			Targets for downloading installation files:
+###########################################################################
 ${IODBC_RUNTIME_RPM}:
 	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
 ${IODBC_SDK_RPM}:
@@ -1867,7 +1979,8 @@ ${PDCURSES_SRC_TAR_GZ}:
 	${WGET} ${PDCURSES_WIN_PATH}/$@
 ${SQLITE_SRC_TAR_GZ}:
 	${WGET} ${SQLITE_PATH}/$@
-	
+${ORBIT_SRC_TAR_GZ}:
+	${WGET} ${ORBIT_SRC_PATH}/$@
 	
 	
 #############################################

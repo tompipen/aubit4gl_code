@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2004-12-09 23:59:13 afalout Exp $
+# $Id: Makefile,v 1.25 2005-01-07 08:19:02 afalout Exp $
 #
 
 ROOT    =../..
@@ -88,7 +88,8 @@ ifdef COMSPEC
 	ESQL		=esql
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
-	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	#IFX_CSDK_DIR=/CSDK
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}${IFX_CSDK_DIR}
 	IFX_WIN_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
 		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
 endif
@@ -156,7 +157,6 @@ ifneq "${COMSPEC}" ""
 #that may contain spaces. If you get message "Input file name has invalid suffix ''"
 #that is probably what happened. You must double-quote it ('"..."')
 	$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
-#-I"${INFORMIXDIR}/CSDK/incl"	
 	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR_CSDK}/incl/esql" \
 		-I"${INFORMIXDIR_CSDK}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*

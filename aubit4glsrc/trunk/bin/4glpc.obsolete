@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.7 2004-12-28 23:37:41 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.8 2005-01-07 08:19:01 afalout Exp $
 #
 
 ########################################################################
@@ -1051,7 +1051,7 @@ do
 		ALLDIRS="bin docs etc etc/import etc/config etc/convertsql \
 			incl tools/test tools/test/gui lib ."
 		
-		#Files to ignore - not needed in binary installation
+		#Files to ignore - not needed in binary installations
 		IGNORE_LIST="xgen$EXE_EXT .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
 			-strip$EXE_EXT .err .warn asql .#* adbload.4ae \
 			manaual_to-do.txt ~ .bak .BAK Makefile-install \
@@ -1060,9 +1060,14 @@ do
 			.out .glb .ao .c .o .4pe.dat .xpm .zip .tar.gz .tgz .log noddy.txt .html .htm\
 			aubit4glsrc-*.txt configure.in .tmp .status \
 			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h \
-			etc/config/bootstrap etc/config/ltmain.sh"
+			etc/config/bootstrap etc/config/ltmain.sh ChangeLog"
 
-			
+#Comparing binary install at d:/tmp/aubit4gl-silent
+#with compiled source tree at F:/cygwin/usr/src/aubit/aubit4glsrc
+#/bin/find: bin/aubitbuild.sh: No such file or directory
+#Missing conf4404.file
+#Missing conf4404
+
 		#Directories to ignore:
 		IGNORE_LIST="$IGNORE_LIST \
 			lib/libaubit4gl lib/libesql lib/libexdata lib/libform lib/libgui \

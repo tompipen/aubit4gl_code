@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.277 2005-01-04 03:34:53 afalout Exp $
+dnl # $Id: configure.in,v 1.278 2005-01-07 08:18:58 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2612,17 +2612,8 @@ if test "$COMSPEC" != ""; then
 		#Note: sed/dirname are to remove trailing backslash from registry,
 		#otherwise cygpath chokes (backslash escapes closing quote)
 		PG_REG_BASEDIR=`regtool.exe get "$PG_REG_ROOT/$PG_REG_INST_NAME/Base Directory" | sed -e 's/\\\\/\//g'`
-#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"		
 		PG_REG_BASEDIR=`dirname "$PG_REG_BASEDIR/ddd"`
-#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"
-
-		#$ $CYGPATH -ws "E:/Program Files/PostgreSQL/8.0.0-beta5"
-		#E:\PROGRA~1\POSTGR~1\803920~1.0-B
 		PG_REG_BASEDIR=`$CYGPATH -ws "$PG_REG_BASEDIR"`
-#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"		
-
-		#$ $CYGPATH -u "E:\PROGRA~1\POSTGR~1\803920~1.0-B"
-		#/cygdrive/e/PROGRA~1/POSTGR~1/803920~1.0-B
 		PG_REG_BASEDIR_CYGPATH=`$CYGPATH -u "$PG_REG_BASEDIR"`
 	fi
 	
@@ -2640,6 +2631,38 @@ if test "$COMSPEC" != ""; then
 		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
 		MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
 		MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+	fi
+	
+	#IFX_REG_PATH="/HKEY_CURRENT_USER/Software/Informix"
+	IFX_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Informix"
+	regtool.exe check  "$IFX_REG_PATH/Environment" > /dev/null 2>&1
+	RET=$?
+	if test "$RET" = "0"; then
+		REG_INFORMIXDIR=`regtool get "$IFX_REG_PATH/Environment/INFORMIXDIR" | sed -e 's/\\\\/\//g'`
+		
+		#Note: sed/dirname are to remove trailing backslash from registry,
+		#otherwise cygpath chokes (backslash escapes closing quote)
+		REG_INFORMIXDIR=`dirname "$REG_INFORMIXDIR/ddd"`
+		REG_INFORMIXDIR=`$CYGPATH -ms "$REG_INFORMIXDIR"`
+		REG_INFORMIXDIR_CYGPATH=`$CYGPATH -u "$REG_INFORMIXDIR"`
+		
+		IFX_INSTDIR_REGPATH="$IFX_REG_PATH/Setup/InstalledDirectories"
+		#echo "IFX_INSTDIR_REGPATH=$IFX_INSTDIR_REGPATH"
+		regtool.exe check  "$IFX_INSTDIR_REGPATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			#FIXME: cant read it because resulting string looks like:
+			#regtool get '/HKEY_LOCAL_MACHINE/SOFTWARE/Informix/Setup/InstalledDirectories/E:\PROGRA~1\W2000\Informix\CSDK'
+			#so regtool thiks its all a path, not a key
+			echo "regtool get '$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR'"
+			DATE_INFORMIXDIR_INSTALLED=`regtool get "$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR" 2>/dev/null`
+		fi
+	fi
+
+	if test "$INFORMIXDIR" = "" -a "$REG_INFORMIXDIR" != "" ; then
+		export INFORMIXDIR="$REG_INFORMIXDIR"
+		echo "NOTE: INFORMIXDIR set based on registry, to:"
+		echo "$INFORMIXDIR"
 	fi
 	
 #ISTool:
@@ -2672,6 +2695,8 @@ if test "$COMSPEC" != ""; then
 			echo "PG_REG_INST_NAME=$PG_REG_INST_NAME"
 			echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"
 			echo "PG_REG_BASEDIR_CYGPATH=$PG_REG_BASEDIR_CYGPATH"
+			echo "REG_INFORMIXDIR=$REG_INFORMIXDIR"
+			echo "DATE_INFORMIXDIR_INSTALLED=$DATE_INFORMIXDIR_INSTALLED"
 		fi
 
 fi	
@@ -4463,6 +4488,11 @@ AC_ARG_WITH(informix,
 		else
 			if test "$withval" = "yes"; then
 				if test "$INFORMIXDIR" = ""; then
+					echo "########################################################"
+					echo "THIS SHOULD NOT HAPPEN ANYMORE"
+					echo "since we get INFORMIXDIR from registry??!!"
+					echo "and on UNIX INFORMIXDIR _MUST_ be set for anything Informix to work"
+					echo "########################################################"
 					if test "$enable_ac_debug" = "yes" ; then
 						echo "INFORMIXDIR='$INFORMIXDIR'"
 					fi
@@ -4475,17 +4505,19 @@ AC_ARG_WITH(informix,
 						TMP1=`dirname "$TMPIFMX_ESQLC"`
 						#remove bin
 						TMP2=`dirname "$TMP1"`
-						#remove CSDK
-						#INFORMIXDIR="'`dirname "$TMP2"`'"
-						INFORMIXDIR="`dirname "$TMP2"`"
-						case "$INFORMIXDIR" in
-							*cygdrive*)
-								if test "$GCC_MINGW" = "yes"; then
-									#convert Cygwin path mapping back to native
-									INFORMIXDIR=`echo "$INFORMIXDIR" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
-								fi
+						if test "$COMSPEC" != ""; then 
+							echo "remove CSDK - THIS SHOULD NOT HAPPEN ANYMORE"
+							echo "since we get INFORMIXDIR from registry??!!"
+							INFORMIXDIR="`dirname "$TMP2"`"
+							case "$INFORMIXDIR" in
+								*cygdrive*)
+									if test "$GCC_MINGW" = "yes"; then
+										#convert Cygwin path mapping back to native
+										INFORMIXDIR=`echo "$INFORMIXDIR" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
+									fi
 								;;
-						esac
+							esac
+						fi
 						AC_MSG_WARN(INFORMIXDIR set based on location of esql)
 						AC_MSG_WARN(executable to $INFORMIXDIR)
 					else
@@ -8520,7 +8552,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libui/ui_curses/Makefile
                 lib/resource/Makefile
                 lib/libsql/nosql/Makefile
-                lib/libsql/esqlc/Makefile
                 lib/libsql/postgresql/Makefile
                 lib/libsql/sapdb/Makefile
                 lib/librpc/no_rpc/Makefile
@@ -8872,7 +8903,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.277 2005-01-04 03:34:53 afalout Exp $
+| $Id: configure.in,v 1.278 2005-01-07 08:18:58 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
