@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.92 2005-01-11 15:08:07 mikeaubury Exp $
+# $Id: resource.c,v 1.93 2005-01-13 12:25:55 mikeaubury Exp $
 #
 */
 
@@ -552,7 +552,10 @@ find_str_resource (char *s)
 
 
 char * acl_getenv (char *s) {
-	return acl_getenv_internal(s,1);
+	char *ptr;
+	if (strstr(s,"HELP")) A4GL_pause_execution();
+	ptr=acl_getenv_internal(s,1);
+	return ptr;
 }
 
 char * acl_getenv_only (char *s) {
@@ -629,9 +632,9 @@ if (ptr)  {
 	if (strncmp(s,"A4GL_",5)!=0) { // No point looking for an A4GL_A4GL_...
         	sprintf (prefixed_string, "A4GL_%s", s);
 		ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
-		
 	} else {
 		ptr_env_A4GL = 0;
+		strcpy(prefixed_string,"");
 	}
 
 	ptr_env = getenv (s); /* in environment, but without the prefix */
@@ -643,8 +646,13 @@ if (ptr)  {
 #endif
         ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
 
+
+    ptr_resources_A4GL=0;
+    ptr_resources=0;
     if (rcfiles) {
+	if (strlen(prefixed_string)) {
 	ptr_resources_A4GL = find_str_resource (prefixed_string); 	/* Try in resources */
+	}
 	ptr_resources = find_str_resource (s); 		/* Try in resources */
     }
 
