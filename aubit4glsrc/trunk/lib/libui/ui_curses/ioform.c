@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.27 2003-05-23 17:51:28 mikeaubury Exp $
+# $Id: ioform.c,v 1.28 2003-05-29 14:07:53 mikeaubury Exp $
 #*/
 
 /**
@@ -3054,6 +3054,7 @@ A4GL_int_form_driver (FORM * form, int a)
     {
       A4GL_gui_setbuff (f, buff2);
     }
+ if (a!=REQ_VALIDATION) A4GL_int_form_driver (form, REQ_VALIDATION);
 
 }
 

@@ -39,13 +39,13 @@ GTK
 
 
 UI
-	Implement proper message stack (current way doesn't work properly)
+	Implement proper message stack (current way doesn't work properly) (started)
 	Add fldbuf & infield for multiple fields
 	
 
 Other unimplemented functions
-	put_insert
-	INPUT ARRAY
+	put_insert *partial
+	INPUT ARRAY *partial in ui_curses
 	ERROR - needs a window...
 	get_fldbuf 
 	check infield etc

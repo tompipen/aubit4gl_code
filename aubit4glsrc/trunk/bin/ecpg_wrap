@@ -47,5 +47,5 @@ do
 done
 
 echo gcc $other_args $cfiles
-gcc $other_args $cfiles
+gcc -I$POSTGRESDIR/include $other_args $cfiles
 		
