@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.67 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.68 2003-03-28 08:07:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2814,7 +2814,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec); printc ("_fld_dr=-1;continue;\n");
-  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s);\n", defs, srec, attr);
+  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec, attr);
   return buff2;
 }
 

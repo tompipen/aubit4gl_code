@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.17 2003-03-24 15:07:01 mikeaubury Exp $
+# $Id: curslib.c,v 1.18 2003-03-28 08:07:21 mikeaubury Exp $
 #*/
 
 /**
@@ -320,7 +320,7 @@ error_nobox (char *str)
   #ifdef DEBUG
   	debug ("YY REVERSE");
   #endif
-  display_at (1, A_REVERSE);
+  display_at (1, AUBIT_ATTR_REVERSE);
 }
 
 
@@ -337,8 +337,10 @@ WINDOW *x;
   /*YELLOW ON RED */
   mja_setcolor (ERROR_COL);
   a = 4;
-  /*pos = (get_curr_width() - strlen (str)) / 2; */
   pos = (screen_width () - (strlen (str))) / 2;
+
+debug("error_box - screen_width=%d pos=%d",screen_width(),pos);
+
   x = create_blank_window ("error", pos, a, strlen (str), 3, 1);
   /*wmove(x,2,2); */
   mja_gotoxy (1, 1);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.2 2003-03-23 07:19:42 afalout Exp $
+# $Id: attributes.c,v 1.3 2003-03-28 08:07:19 mikeaubury Exp $
 #*/
 
 /**
@@ -49,40 +49,119 @@
 */
 
 
-struct all_attributes {
+/*
+CONSTRUCT 
+DISPLAY
+DISPLAY ARRAY
+DISPLAY FORM
+INPUT
+INPUT ARRAY
+MESSAGE
+PROMPT
+*/
+struct s_std_attr {
 	int color;
+
 	int reverse;
-	int blink;
 	int underline;
-	int border;
-	int normal;
-	int invisible;
 	int bold;
 	int dim;
+	int invisible;
+
+	int normal;
+	int help_no;
+};
+
+/*
+OPEN WINDOW 
+*/
+
+struct s_win_attr {
+	int color;
+
+	int normal;
+	int bold;
+	int dim;
+	int reverse;
+	int border;
 
 	int comment_line;
 	int form_line;
 	int menu_line;
 	int message_line;
 	int prompt_line;
-	int error_line;
+};
 
+
+/* 
+OPTIONS INPUT ATTRIBUTE 
+OPTIONS DISPLAY ATTRIBUTE 
+*/
+struct s_options_inpdisp_attr {
+	int color;
+	int reverse;
+	int underline;
+	int blink;
+	int bold;
+	int dim;
+	int invisible;
+	int normal;
+	int form;
+	int window;
+};
+
+/* 
+OPTIONS
+*/
+struct s_options_attr {
+	int comment_line;
+	int error_line;
+	int form_line;
+	int menu_line;
+	int message_line;
+	int prompt_line;
 	int accept_key;
 	int delete_key;
 	int insert_key;
 	int next_key;
 	int previous_key;
 	int help_key;
-	char *help_file;
-
-	int display_attrib;
-	int display_attrib_type;
-	int input_attrib;
-	int input_attrib_type;
-
-	int input_wrapmode;
-	int field_order_mode;
+	char *helpfile;
+	struct s_options_inpdisp_attr *display_attribute;
+	struct s_options_inpdisp_attr *input_attribute;
+	int input_wrap;
+	int field_order;
 	int sql_interrupt;
+};
+
+
+struct s_field_attr {
+	int screen_records_subscript;
+	struct colours *field_cols;
+	int field_cols_len;
+};
+
+
+
+enum e_attribute_type {
+	ATTR_STD,
+	ATTR_WIN,
+	ATTR_OPTIONS_INPDISP,
+	ATTR_OPTIONS,
+	ATTR_FIELD,
+	ATTR_STRING 
+};
+
+struct s_all_attributes {
+	int attribute_type;
+	union {
+		struct s_std_attr;
+		struct s_win_attr;
+		struct s_options_inpdisp_attr;
+		struct s_options_attr;
+		struct s_field_attr;
+		char *string_summary;
+	} u_all;
 };
 
 

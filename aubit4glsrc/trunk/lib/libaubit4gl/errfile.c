@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.9 2002-10-20 12:02:37 afalout Exp $
+# $Id: errfile.c,v 1.10 2003-03-28 08:07:19 mikeaubury Exp $
 #
 */
 
@@ -99,6 +99,10 @@ write_errfile(FILE *f,char *fname,long as,int lineno)
   int errorno;
 
   fout=mja_fopen(fname,"w");
+  if (fout==0) {
+	printf("Unable to open %s\n",fname);
+	exit(2);
+  }
   errorno=ferror(f);
   /* find the nearest NL */
   find_nl(f,as,&s2,&e);

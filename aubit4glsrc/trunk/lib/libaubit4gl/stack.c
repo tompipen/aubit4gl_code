@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.47 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: stack.c,v 1.48 2003-03-28 08:07:20 mikeaubury Exp $
 #
 */
 
@@ -1780,6 +1780,20 @@ push_bind (struct BINDING *b, int n, int no, int elemsize)
       /* {DEBUG} */ debug ("Push param %d -> %p %lx", a, b[a].ptr,
 			   b[a].dtype + ENCODE_SIZE (b[a].size));
 #endif
+      push_param ((char *) b[a].ptr + elemsize * (no - 1), b[a].dtype);
+    }
+}
+
+/**
+ *
+ *
+ * @return
+ */
+void
+push_bind_reverse (struct BINDING *b, int n, int no, int elemsize)
+{
+  int a;
+  for (a = 0;a<n;a++) {
       push_param ((char *) b[a].ptr + elemsize * (no - 1), b[a].dtype);
     }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.20 2003-03-24 15:07:01 mikeaubury Exp $
+# $Id: newpanels.c,v 1.21 2003-03-28 08:07:23 mikeaubury Exp $
 #*/
 
 /**
@@ -2583,7 +2583,7 @@ screen_width (void)
     {
       
       getmaxyx (stdscr, scr_height, scr_width);
-      if (acl_getenv("COLUMNS")) {
+      if (atoi(acl_getenv("COLUMNS"))) {
 		scr_width =atoi(acl_getenv("COLUMNS"));
 		scr_height=atoi(acl_getenv("LINES"));
       }
@@ -2602,7 +2602,7 @@ screen_height (void)
   if (scr_width == -1)
     {
       getmaxyx (stdscr, scr_height, scr_width);
-      if (acl_getenv("COLUMNS")) {
+      if (atoi(acl_getenv("COLUMNS"))) {
                 scr_width =atoi(acl_getenv("COLUMNS"));
                 scr_height=atoi(acl_getenv("LINES"));
       }

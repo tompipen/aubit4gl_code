@@ -43,7 +43,7 @@ n=scan_variable(buff);
 
 
 var_int :
-	var | ATSIGN var {strcpy($<str>$,$<str>2);}
+	var | DOLLAR var {strcpy($<str>$,$<str>2);}
 ;
 
 varsetidentdot : var setident DOT

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.28 2003-03-20 09:53:15 afalout Exp $
+# $Id: fcompile.c,v 1.29 2003-03-28 08:07:17 mikeaubury Exp $
 #*/
 
 /**
@@ -224,6 +224,7 @@ main (int argc, char *argv[])
     }
 
 
+
   yyin = mja_fopen (c, "r");
 
 
@@ -268,12 +269,12 @@ a4gl_form_yyerror (char *s)
   long ld;
 
   ld = buffpos ();
-  sprintf (errfile, "%s.err", outputfile);
+  sprintf (errfile, "%s.err", outputfilename);
   f = write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
   write_cont (yyin);
   printf ("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
-	  outputfile, outputfile, lineno, yylineno);
+	  outputfilename, outputfilename, lineno, yylineno);
 #ifdef DO_DEBUG
   printf ("%s\n", yylval.str);
 #endif

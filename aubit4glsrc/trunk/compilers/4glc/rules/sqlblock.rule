@@ -21,9 +21,8 @@ sql_block_entry:
 	;
 
 in_var :
-	DOLLAR var_ident_ibind {
-		printf("---> %s\n",$<str>2);
-		strcpy($<str>$,$<str>2);
+	DOLLAR var_ident_ibind_ss {
+		strcpy($<str>$,$<sql_string>2);
 	}
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.20 2003-02-04 13:19:24 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.21 2003-03-28 08:07:20 mikeaubury Exp $
 #*/
 
 /**
@@ -868,6 +868,7 @@ struct_form *ptr;
   if (fxx == 0)
   {
     error_with("Couldnt open file for write (%s)\n", fname, 0);
+	exit(1);
   }
   translate_form();
   xdrstdio_create(&xdrp, fxx, XDR_ENCODE);

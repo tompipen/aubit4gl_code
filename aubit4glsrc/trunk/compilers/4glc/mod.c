@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.112 2003-03-10 18:41:27 mikeaubury Exp $
+# $Id: mod.c,v 1.113 2003-03-28 08:07:16 mikeaubury Exp $
 #
 */
 
@@ -3615,7 +3615,7 @@ int c;
  * @param mode If mode is set to 1 - expect a '*' as column names...
 */
 char *fix_update_expr(int mode) {
-  char big_buff[20000];
+  static char big_buff[20000];
 int a;
   int rval;
   int isize = 0;

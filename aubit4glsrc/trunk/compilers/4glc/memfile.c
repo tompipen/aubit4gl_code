@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.2 2003-02-19 22:28:37 afalout Exp $
+# $Id: memfile.c,v 1.3 2003-03-28 08:07:16 mikeaubury Exp $
 #
 */
 
@@ -148,9 +148,15 @@ int memfile_ungetc(int c,FILE *f) {
 }
 
 int memfile_feof(FILE *f) {
+	char buffer[255];
 	if (f!=in) {
+		debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
+		strncpy(buffer,&buff[pos],255);
+		buff[255]=0;
+		a4gl_yyerror("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
 		return feof(f);
 	} else {
+		//printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
 		return pos>buff_len;
 	}
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.11 2003-02-26 22:28:09 mikeaubury Exp $
+# $Id: data_if.c,v 1.12 2003-03-28 08:07:19 mikeaubury Exp $
 #
 */
 
@@ -188,6 +188,7 @@ get_set_s_inp_arr(void *ptr,int mode,char *name,long var)
 {
 struct s_s_inp_arr_1 {
 int  mode;
+int  nbind;
 void * currform;
 void * currentfield;
 void * currentmetrics;
@@ -200,17 +201,18 @@ int  no_lines;
 int  no_arr;
 int  inp_flags;
 int  arr_size;
-int  last_arr;
+int  last_arr_line;
+int  last_scr_line;
 void * srec;
 int  arr_elemsize;
 int  scr_line;
 int  arr_line;
 int  highlight;
 void * binding;
-int  nbind;
-int  cntrl;
+int cntrl;
 int  help_no;
 int  curr_attrib;
+void *screen_io;
 };
 
 struct s_s_inp_arr_1 *val;
@@ -224,7 +226,7 @@ struct s_s_inp_arr_1 *val;
 
 	 val=(struct s_s_inp_arr_1 *)ptr;
 
-	debug("val=%p\n",val);
+	debug("val=%p nbind=%d\n",val,val->nbind);
 	if (strcmp(name,"mode")==0) {
 	if (mode==GETSETGET) return (void *)val->mode;
 	if (mode==GETSETGETPTR) return (void *)&(val->mode);
@@ -305,10 +307,10 @@ struct s_s_inp_arr_1 *val;
 	 if (mode==GETSETSET) { val->no_arr=(int )var;return (void *)1;}
 	 }
 
-	if (strcmp(name,"last_arr")==0) {
-	if (mode==GETSETGET) return (void *)val->last_arr;
-	if (mode==GETSETGETPTR) return (void *)&(val->last_arr);
-	 if (mode==GETSETSET) { val->last_arr=(int )var;return (void *)1;}
+	if (strcmp(name,"last_arr_line")==0) {
+	if (mode==GETSETGET) return (void *)val->last_arr_line;
+	if (mode==GETSETGETPTR) return (void *)&(val->last_arr_line);
+	 if (mode==GETSETSET) { val->last_arr_line=(int )var;return (void *)1;}
 	 }
 
 	if (strcmp(name,"srec")==0) {
@@ -349,6 +351,7 @@ struct s_s_inp_arr_1 *val;
 
 
 	if (strcmp(name,"nbind")==0) {
+		debug("Setting nbind=%d",(int) var);
 	if (mode==GETSETGET) return (void *)val->nbind;
 	if (mode==GETSETGETPTR) return (void *)&(val->nbind);
 	 if (mode==GETSETSET) { val->nbind=(int )var;return (void *)1;}

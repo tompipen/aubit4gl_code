@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.22 2003-03-14 07:55:54 afalout Exp $
+# $Id: compile_c.c,v 1.23 2003-03-28 08:07:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1903,7 +1903,7 @@ int k;
 	       attr);}
 
 	printc
-	  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+	  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
 	printc ("_fld_dr=-99;\n");
 }
 
@@ -2676,7 +2676,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
       printc ("if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   printc
-    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr=-99;\n");
 }
 
@@ -2696,12 +2696,13 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 {
   static char buff2[256];
   int cnt;
+  int ccc;
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");
   printcomment ("/* input */\n");
-  printc ("{int _fld_dr=-100;\nchar *fldname;\nint _forminit;");
-  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr));
+  printc ("{int _fld_dr=-100;\nchar *fldname;\nint _forminit=1;");
+  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr)+10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr==-100) {\n");
@@ -2725,7 +2726,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec); printc ("_fld_dr=-1;continue;\n");
-  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s);\n", defs, srec, attr);
+  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec, attr);
   return buff2;
 }
 
@@ -4172,7 +4173,7 @@ char *get_into_part(int no)
 char *set_var_sql(int n) 
 {
 	int a;
-	static char buff[2000];
+	static char buff[8000];
 
 	if (doing_esql()) {
 		int z;

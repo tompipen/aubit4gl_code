@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.40 2003-03-14 07:55:53 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.41 2003-03-28 08:07:18 mikeaubury Exp $
 #
 */
 
@@ -147,6 +147,7 @@
 	#define MODE_CONSTRUCT 				3
 	#define MODE_DISPLAY_ARRAY 			4
 	#define MODE_PROMPT 				5
+	#define MODE_INPUT_ARRAY 			6
 
 	#define FETCH_ABSOLUTE 				1
 	#define FETCH_RELATIVE 				2
@@ -281,6 +282,7 @@
 	#define DROPSHADOW 		'D'
 	#define COMPILED_FORM 	'E'
 	#define MESSAGEWIN 		'F'
+	#define PTR_ATTRIBUTE 		'G'
 
 	/* ========================= from a4gl_ui.h ====================== */
 	#define DESCLENGTH 		10
@@ -1100,6 +1102,7 @@
 	int 	chknull_boolean 	(int n, int n1, int n2);
 	int 	chknull 			(int n, int n1, int n2);
 	void 	push_bind 			(struct BINDING *b, int n, int no, int elemsize);
+	void 	push_bind_reverse 		(struct BINDING *b, int n, int no, int elemsize);
 
 	/* ============================ calldll.c ============================== */
 	void * 	dl_openlibrary 		(char *type, char *name);
@@ -1282,8 +1285,8 @@
 		void **	field_list;
 		int 	field_changed;
 		int 	help_no;
-		struct 	s_formcontrol msgs[10];
-		int 	msg_cnt;
+		//struct 	s_formcontrol msgs[10];
+		//int 	msg_cnt;
 
 	};
 
@@ -1305,6 +1308,7 @@
 
 	struct s_inp_arr {
 		int 	mode;
+		int 	nbind;
 		struct 	s_form_dets *currform;
 		void *	currentfield;
 		struct 	s_metrics *currentmetrics;
@@ -1317,17 +1321,20 @@
 		int 	no_arr;
 		int 	inp_flags;
 		int 	arr_size;
-		int 	last_arr;
+
+		int 	last_arr_line;
+		int 	last_scr_line;
+
 		struct 	struct_screen_record *srec;
 		int 	arr_elemsize;
 		int 	scr_line;
 		int 	arr_line;
 		int 	highlight;
 		struct 	BINDING *binding;
-		int 	nbind;
 		int 	cntrl;
 		int 	help_no;
 		int 	curr_attrib;
+		struct s_screenio *screen_io;
 	};
 
 
@@ -1346,7 +1353,7 @@
 
 	void * 	get_curr_form 	(void); /* in API_ui.c libtui/newpanels.c libgui/input.c */
 	int 	load_data		(char *fname,char *delims,char *tabname,...);
-	int 	inp_arr 		(struct s_inp_arr *disp, void *ptr, char *srecname, int attrib);
+	int 	inp_arr 		(struct s_inp_arr *disp, void *ptr, char *srecname, int attrib,int init);
 	int 	set_scrline_ia 	(int np);
 	int 	set_arrline_ia 	(int np);
 	struct 	struct_screen_record *get_srec (char *name);

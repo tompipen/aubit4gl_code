@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.10 2003-03-24 15:07:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.11 2003-03-28 08:07:22 mikeaubury Exp $
 #*/
 
 /**
@@ -538,7 +538,8 @@ form_loop (struct s_screenio * s)
 
   if (form != get_curr_form ())
     {
-      exitwith ("Input form is not current");
+	debug("form=%p curr_form=%p",form,get_curr_form());
+        exitwith ("Input form is not current");
 	return 0;
     }
 
@@ -996,6 +997,8 @@ form_field_chk (struct s_screenio *sio, int m)
                           }
                         else
                           {
+			//push_char(acl_getenv("FIELD_ERROR_MSG"));
+			//display_error(1,0);
                             error_box (acl_getenv ("FIELD_ERROR_MSG"));
                             debug ("Couldnt read datatype...");
                             mja_set_field_buffer (form->currentfield, 0, " ");
@@ -1252,7 +1255,7 @@ set_fields (struct s_screenio *sio)
   
   
   wid = 0;
-  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS)
+  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS || sio->mode==MODE_INPUT_ARRAY)
     wid = 1;
   debug ("in set fields");
   formdets = sio->currform;
@@ -2002,6 +2005,8 @@ set_init_pop_attr (FIELD * field, int attr)
 
 
 
+
+#ifdef NOLONGERUSED
 /**
  *
  * @todo Describe function
@@ -2039,7 +2044,7 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
         }
     }
 }
-
+#endif
 
 
 
@@ -2777,6 +2782,8 @@ copy_field_data (struct s_form_dets * form)
                       }
                     else
                       {
+			//push_char(acl_getenv("FIELD_ERROR_MSG"));
+			//display_error(1,0);
                         error_box (acl_getenv ("FIELD_ERROR_MSG"));
                         mja_set_field_buffer (form->currentfield, 0, " ");
                         set_current_field (mform, form->currentfield);

@@ -17,7 +17,7 @@ var_ident :  var2
 
 
 var2 :
-	ATSIGN  var3 {strcpy($<str>$,$<str>2);} | var3
+	DOLLAR  var3 {strcpy($<str>$,$<str>2);} | var3
 ;
 
 var3:
@@ -33,16 +33,17 @@ aft_dot :
 	| identifier
 ;
 
-var_ident_ibind :  var2  
+var_ident_ibind_ss :  var2  
 {
 	if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
 	{
 		int z = 0,a = 0;
 		a=get_bind_cnt('i');
 		z=add_bind('i',$<str>1);
-
 		z-=a;
-		strcpy($<str>$,set_var_sql(z));
+		$<sql_string>$=strdup(set_var_sql(z));
+	} else {
+		$<sql_string>$=strdup($<str>1);
 	}
 }
 | var2 THRU var2 
@@ -50,65 +51,16 @@ var_ident_ibind :  var2
 char r1[256];
 char r2[256];
 char buff[256];
-char kp[40000];
+char was_str[40000];
 char *ptr1;
 char *ptr2;
-/*
-int v1;
-int v2 = 0;
-*/
 int aa;
 int z = 0,a = 0;
 struct variable *v_r;
 struct variable *v_1;
 struct variable *v_2;
 struct variable *v_loop;
-
- /*
-        strcpy(r1,$<str>1);
-        ptr1=strrchr(r1,'.');
-        if (ptr1==0) {
-                a4gl_yyerror("Must have a . in a thru");YYERROR;
-        }
-        *ptr1=0;
-        ptr1++;
-
-        strcpy(r2,$<str>3);
-        debug("r2=%s",r2);
-
-        ptr2=strrchr(r2,'.');
-
-        if (ptr2==0) {
-                a4gl_yyerror("Must have a . in a thru");YYERROR;
-        }
-        *ptr2=0;
-
-        debug("Checking portions %s %s\n",r1,r2);
-
-        if (strcmp(r1,r2)!=0) {
-                a4gl_yyerror("Records for thru look different...");YYERROR;
-        }
-
-        debug("Checking variables");
-        v1=scan_variable($<str>1);
-
-        if (v2==-1) {
-                debug("Variable not found..");
-                a4gl_yyerror("Variable not found (first entry in thru)");YYERROR;
-        }
-        v1=last_var_found;
-        debug("v1=%d",v1);
-
-        v2=scan_variable($<str>3);
-        if (v2==-1) {
-                debug("Variable not found..");
-                a4gl_yyerror("Variable not found (second entry in thru)");
-        }
-        v2=last_var_found;
-        debug("v2=%d",v2);
-
-*/
-        strcpy($<str>$,"");
+        strcpy(was_str,"");
 
 
 	split_record($<str>3,&v_r,&v_1,&v_2);
@@ -116,7 +68,7 @@ struct variable *v_loop;
 	v_loop=v_1;
 
 	while (1) {
-                strcpy(kp,$<str>$);
+                //strcpy(kp,was_str);
                 sprintf(buff,"%s.%s",r1,v_loop->names.name);
 
 		if (scan_variable(buff)!=-1&&(!system_var(buff))) {
@@ -126,11 +78,12 @@ struct variable *v_loop;
         	}
 
 		for (a=0;a<z;a++)  {
-			if (strlen($<str>$)) {strcat($<str>$,",");}
-         		strcat($<str>$,"?");
+			if (strlen(was_str)) {strcat(was_str,",");}
+         		strcat(was_str,"?");
 		}
 		v_loop=get_next_variable(v_r,v_loop,v_2);
 	}
+	$<sql_string>$=strdup(was_str);
 }
 
 ;

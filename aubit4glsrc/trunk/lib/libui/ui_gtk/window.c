@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.4 2003-01-14 08:26:29 mikeaubury Exp $
+# $Id: window.c,v 1.5 2003-03-28 08:07:23 mikeaubury Exp $
 #*/
 
 /**
@@ -412,5 +412,9 @@ int a;
 	}
 }
 
+aclfgl_fgl_drawbox(int n) {
+while (n) {pop_int();n--;}
+return 0;
+}
 /* =============================== EOF ============================= */
 

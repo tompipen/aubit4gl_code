@@ -659,6 +659,7 @@ number_value : NUMBER_VALUE | PLUS NUMBER_VALUE | MINUS NUMBER_VALUE {sprintf($<
 incl_entry : 
 CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
 | NAMED   {strcpy($<str>$,$<str>1); }
+| NAMED TO NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
 | CH   {strcpy($<str>$,$<str>1);}
 | number_value 
 | number_value TO number_value {
@@ -670,7 +671,9 @@ CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
 }
 | KW_NULL {
 	sprintf($<str>$,"NULL");
-};
+}
+
+;
 
 opt_dec_ext : {strcpy($<str>$,"");}
 	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"16.%d",atoi($<str>2));}

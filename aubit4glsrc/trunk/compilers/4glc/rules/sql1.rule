@@ -802,7 +802,10 @@ in_value_list:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-in_value_specification : var_ident_ibind | literal
+in_value_specification : var_ident_ibind_ss {
+		strcpy($<str>$,$<sql_string>1);
+	}
+	 | literal
 ;
 
 op_not: {strcpy($<str>$,"");}
@@ -970,7 +973,16 @@ col_arr : {strcpy($<str>$,"");}
 	| OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);}
 ;
 
-column_name: identifier col_arr
+column_name : 
+	column_name_specific {
+		strcpy($<str>$,$<str>1);
+	}
+	| ATSIGN column_name_specific {
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+column_name_specific: identifier col_arr
 { 
 addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
 sprintf($<str>$,"%s%s",$<str>1,$<str>2);
@@ -985,8 +997,6 @@ addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
 addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 }
-
-
 	;
 
 correlation_name:
@@ -1274,11 +1284,17 @@ value_expression_ss:
 			}
 		$<sql_string>$=$<sql_string>1;
 	}
-	| var_ident_ibind 	{
-		$<sql_string>$=strdup($<str>1);
+	| var_ident_ibind_ss 	{
+		$<sql_string>$=$<sql_string>1;
 	}
 	| subquery_ss {
 		$<sql_string>$=$<sql_string>1;
+	}
+	| ATSIGN identifier {
+		$<sql_string>$=strdup($<str>2);
+	}
+	| ATSIGN identifier DOT identifier {
+		$<sql_string>$=make_sql_string($<str>2,".",$<str>4);
 	}
 ;
 

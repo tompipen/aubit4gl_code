@@ -58,6 +58,7 @@ Other unimplemented functions
 	put_insert
 	Pause in reports  *** done using prompt...
 	INPUT ARRAY
+	ERROR - needs a window...
 
 
 SQL Parser

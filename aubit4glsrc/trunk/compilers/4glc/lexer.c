@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.65 2003-03-12 23:52:11 afalout Exp $
+# $Id: lexer.c,v 1.66 2003-03-28 08:07:15 mikeaubury Exp $
 #*/
 
 /**
@@ -98,7 +98,9 @@ long yyline_fpos = 0;		/* FIle position of start of current line */
 
 char *lastword;
 
-char xwords[256][256];
+#define MAX_XWORDS 1024
+
+char xwords[MAX_XWORDS][256];
 char idents[256][256];
 long fpos;
 
@@ -242,6 +244,9 @@ static void
 ccat (char *s, char a, int instr)
 {
   char buff[3];
+   if (strlen(s)>=1023) {
+	a4gl_yyerror("Internal error - word overflow..");
+   }
   if (instr == 0 || (a != '\n' && a != '\r' && a != '\t'))
     {
       buff[0] = a;
@@ -610,6 +615,9 @@ read_word (FILE * f, int *t)
     }
 
   /* if (s) ptr=s; */
+	if (word_cnt>=MAX_XWORDS) {
+		a4gl_yyerror("Internal error - xwords overflow..");
+	}
   strcpy (xwords[word_cnt], ptr);
   word_cnt++;
 
