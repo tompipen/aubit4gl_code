@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.21 2003-04-09 07:12:58 mikeaubury Exp $
+# $Id: compile.c,v 1.22 2003-04-10 04:00:49 afalout Exp $
 #*/
 
 /**
@@ -45,8 +45,6 @@
 
 #include "a4gl_4glc_int.h"
 #include "memfile.h"
-int has_default_database(void) ;
-char *get_default_database(void) ;
 
 /*
 =====================================================================
@@ -96,11 +94,13 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
 			int silent, int verbose, char output_object[128]);
-void printUsage (char *argv[]);
-static void printUsage_help (char *argv[]);
-int initArguments (int argc, char *argv[]);
-void setGenStackInfo (int _genStackInfo);
-void set_yytext (char *s);
+void 		printUsage 				(char *argv[]);
+static void printUsage_help 		(char *argv[]);
+int 		initArguments 			(int argc, char *argv[]);
+void 		setGenStackInfo 		(int _genStackInfo);
+void 		set_yytext 				(char *s);
+int 		has_default_database	(void) ;
+char *		get_default_database	(void) ;
 
 
 /*
@@ -157,19 +157,20 @@ char extra_ldflags[1024] = "";
   static FILE *filep = 0;
   static char output_object[128] = "";
   static struct option long_options[] = {
-    {"globals", 0, 0, 'G'},
-    {"namespace", 1, 0, 'N'},
+    {"globals", 	0, 0, 'G'},
+    {"namespace", 	1, 0, 'N'},
     {"stack_trace", 1, 0, 's'},
-    {"help", 0, 0, '?'},
-    {"silent", 0, 0, 'S'},
-    {"verbose", 0, 0, 'V'},
-    {"version", 0, 0, 'v'},
-    {"version_full", 0, 0, 'f'},
-    {"lextype", 0, 0, 't'},
-    {"keep", 0, 0, 'k'},
-    {"clean", 0, 0, 'K'},
-    {"database", 1, 0, 'd'},
-    {"system4gl", 0, 0, '4'},
+    {"help", 		0, 0, '?'},
+    {"silent", 		0, 0, 'S'},
+    {"shared", 		0, 0, 'h'},
+    {"verbose", 	0, 0, 'V'},
+    {"version", 	0, 0, 'v'},
+    {"version_full",0, 0, 'f'},
+    {"lextype", 	0, 0, 't'},
+    {"keep", 		0, 0, 'k'},
+    {"clean", 		0, 0, 'K'},
+    {"database", 	1, 0, 'd'},
+    {"system4gl", 	0, 0, '4'},
     {0, 0, 0, 0},
   };
 
@@ -222,16 +223,25 @@ char extra_ldflags[1024] = "";
       switch (i)
 	{
 
-	case 'c':		// Compile resulting C file(s) to object
+	case 'c':		/* Compile resulting C file(s) to object */
 	  /* this is more or less meaningless, and is here for compatibility with
-	     C compiler style flags */
+	     C compiler style flags, because we decite linking tipe based on extension of the target object.
+	   */
 
 		#ifdef DEBUG
 			  debug ("Got -c\n");
 		#endif
 
-	  compile_object = 1;
-	  break;
+		compile_object = 1;
+		break;
+
+	case 'h':		/* Link resulting object(s) to shared library */
+	  /* this is more or less meaningless, and is here for compatibility with
+	     C compiler style flags, because we decite linking tipe based on extension of the target object.
+	  */
+
+		compile_so = 1;
+		break;;
 
 	case 'o':		/* compile and optionally Link resulting object(s) */
 		#ifdef DEBUG
@@ -340,9 +350,9 @@ char extra_ldflags[1024] = "";
 	  break;
 
 
-	case 'N': 
+	case 'N':       // User specified namespace prefix
 		if (optarg==0) optarg="";
-		printf("Using specified namespace : %s\n",optarg);
+		debug("Using specified namespace : %s\n",optarg);
 		set_namespace(optarg);
 		break;
 
@@ -361,7 +371,6 @@ char extra_ldflags[1024] = "";
 	  break;
 
 	case '?':		/* Help */
-	case 'h':
 	  printUsage_help (argv);
 	  exit (0);
 
@@ -370,7 +379,7 @@ char extra_ldflags[1024] = "";
 	  break;
 
 	case 'K':		/* clean intermedate files when done (--clean) */
-	  
+
 		#ifdef DEBUG
 			  debug ("Got --clean\n");
 		#endif
@@ -595,9 +604,11 @@ char extra_ldflags[1024] = "";
     {
       debug ("Linking shared library\n");
 	#ifndef __MINGW32__
-      sprintf (buff, "%s -shared %s -o %s %s %s %s %s",
+      sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options,extra_ldflags);
+	       pass_options,extra_ldflags,incl_path);
+    //FIXME: add incl_path only if there are .c files in all_objects
+
 	#else
       /*
          NOTE: we are acutally making a Window dll here.
@@ -617,10 +628,10 @@ char extra_ldflags[1024] = "";
 	{
 	  printf ("%s\n", buff);
 	}
-      sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
-#ifdef DEBUG
-      debug ("Runnung %s", buff);
-#endif
+		sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
+		#ifdef DEBUG
+			debug ("Runnung %s", buff);
+		#endif
       ret = system (buff);
       if (ret)
 	{

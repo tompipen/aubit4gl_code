@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.50 2003-02-22 01:52:20 afalout Exp $
+# $Id: Makefile.in,v 1.51 2003-04-10 04:01:25 afalout Exp $
 #
 
 ROOT        =../..
@@ -115,7 +115,7 @@ ${ROOT}/bin/fshow : fshow.4gl
 #clean.fshow
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<
-	(export DEBUG=ALL; ${ROOT}/bin/4glc -o$@ $<)
+	(export DEBUG=ALL; export A4GL_SQLTYPE=nosql; ${ROOT}/bin/4glc -o$@ $<)
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.1 2003-04-07 16:26:37 mikeaubury Exp $
+# $Id: memfile.c,v 1.2 2003-04-10 04:01:31 afalout Exp $
 #
 */
 
@@ -42,10 +42,13 @@
 */
 #include "a4gl_libaubit4gl_int.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "memfile.h"
+// Not needed - all already in a4gl_libaubit4gl.h :
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+
+
+#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
 
 int opened=0;
 char *buff;

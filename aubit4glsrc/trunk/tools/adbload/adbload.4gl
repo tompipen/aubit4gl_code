@@ -13,7 +13,7 @@
 #   fopen
 #	readoneline(p_fileid)
 #   params()
-#   showhelp()
+#   myshowhelp()
 #
 
 #include needed for c functions:
@@ -561,7 +561,7 @@ define
 		NUM_ARGS() = 0
     then
         #return
-        call showhelp()
+        call myshowhelp()
         exit program
     end if
 
@@ -599,7 +599,7 @@ define
 			when ARGUMENTstringUP = "-H" or ARGUMENTstringUP = "--H"
 	            or ARGUMENTstringUP = "-HELP" or ARGUMENTstringUP = "--HELP"
 
-				call showhelp()
+				call myshowhelp()
 		        exit program
 
 			when ARGUMENTstringUP = "-examples"
@@ -661,25 +661,25 @@ define
         when load_db_name is null
             display "Load database name not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 
 		when uname is null
             display "User name not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 
 		when passwd is null
             display "Password not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 
 		when target_db is null
             display "Target database type  not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 
 	end case
@@ -690,34 +690,34 @@ define
 if length(load_db_name) < 1 then
             display "Load database name not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 end if
 
 if length(uname) < 1 then
             display "User name not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 end if
 
 if length(passwd) < 1 then
             display "Password not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 end if
 if length (target_db) < 1 then
             display "Target database type  not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 end if
 
 if length (dbexportname) < 1 then
             display "dbexport directory name not specified"
             display " "
-            call showhelp()
+            call myshowhelp()
             exit program
 end if
 
@@ -725,7 +725,7 @@ end function #params()
 
 
 ####################
-function showhelp()
+function myshowhelp()
 ####################
 
     display " "
@@ -759,7 +759,7 @@ end function #showwhelp()
 #########################
 function show_examples()
 #########################
-    
+
 	display " "
     display "adbload - Aubit 4gl database schemma and data load/unload utillity"
     display " "

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.35 2003-04-08 19:05:10 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.36 2003-04-10 04:01:29 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.35 2003-04-08 19:05:10 mikeaubury Exp $
+#   @(#)$Id: a4gl.mk,v 1.36 2003-04-10 04:01:29 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -109,7 +109,8 @@ A4GL_FC_FLAGS   =
 
 ###########################
 # A4GL Message Compiler
-A4GL_MC_CMD     = ${AUBIT_WRAPER} mkmess
+#A4GL_MC_CMD     = ${AUBIT_WRAPER} mkmess
+A4GL_MC_CMD     = ${AUBIT_WRAPER} amkmessage
 A4GL_MC_FLAGS   =
 
 ###########################

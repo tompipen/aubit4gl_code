@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.63 2003-03-09 07:26:47 afalout Exp $
+# $Id: Makefile-install.mki,v 1.64 2003-04-10 04:01:27 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -661,6 +661,13 @@ install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 	@echo " "
 	@echo "GTK+ development packages installed.  Please re-run 'configure' to detect changes."
 	@echo " "
+
+#########################
+# 22: DBIx::Informix::Perform has been added to the CPAN module taxonomy and the
+#file DBIx-Informix-Perform-0.01.tar.gz will be available therein on or about 2 Apr. 2003.
+#
+#Tim Bunce has convinced the other interested person(s) in the CPAN Module Namespace group that the proper name is DBIx::Perform. The original downloads file is restored (was just hidden anyway) and the change to DBIx::Informix::Perform will become a branch on the CVS tree, which can be merged to the trunk if we ever need it
+
 
 ########################
 #Define how to get installation files:
