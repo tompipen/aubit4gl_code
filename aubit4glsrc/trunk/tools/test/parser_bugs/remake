@@ -1,0 +1,6 @@
+#!/bin/sh
+rm *.err *.c *.glb *.h
+for a in *.4gl
+do
+	4glc $a
+done
