@@ -1,5 +1,9 @@
 export CINTSYSDIR=/usr/local/cint
 export PATH=$PATH:$CINTSYSDIR
-makecint -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l$AUBITDIR/lib/libaubit4gl.so
+
+rm makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h
+
+makecint -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l $AUBITDIR/lib/libaubit4gl.so
+
 make -f makefile
-cp libA4GL_cint.so ../lib
+cp libA4GL_cint.so ../lib/libA4GL_cint.so
