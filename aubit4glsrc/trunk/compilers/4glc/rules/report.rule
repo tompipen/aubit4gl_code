@@ -216,7 +216,16 @@ print_command : PRINT {doing_a_print=1;} opt_rep_expr_list opt_semi {
 	}
 } ;
 
-print_file_command : PRINT_FILE char_or_var opt_semi { 
+
+pf_char_or_var:
+	char_or_var
+	| OPEN_BRACKET char_or_var CLOSE_BRACKET {
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+
+print_file_command : PRINT_FILE pf_char_or_var opt_semi { 
 	print_report_print_file($<str>2,$<str>3);
 } ;
 
