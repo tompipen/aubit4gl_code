@@ -15,7 +15,6 @@ define abc char(20)
 			exit menu
 	end menu
 
-	sleep 2
 	call aclfgl_dump_screen("menu.out")
 
 	clear screen
