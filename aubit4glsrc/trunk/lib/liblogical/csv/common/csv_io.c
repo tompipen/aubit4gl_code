@@ -113,15 +113,13 @@ static struct csv_report_layout csv_report_layout;
 struct csv_entry *entry;
 
 
-//printf("Default csv\n");
-
 
 
   for (a = 0; a < rbs; a++)
     {
+	printf("rbx[a].where=%c\n",rbx[a].where);
 	if (rbx[a].where=='E') every=a;
     }
-
 
    if (every==-1) {
 		strcpy(errbuff,"There does not appear to be an on every row in this report.\n" 
@@ -150,17 +148,17 @@ struct csv_entry *entry;
   csv_report_layout.blocks[every].matrix[0]=0;
   for (a = 0; a < rbs; a++)
     {
-      	//printf ("%d %d %c %s \n", a, rbx[a].rb, rbx[a].where, rbx[a].why);
-      	//printf ("%d entries to print of %d..\n", rbx[a].nentry_nos, rbx[a].max_entry);
+      	printf ("%d %d %c %s \n", a, rbx[a].rb, rbx[a].where, rbx[a].why);
+      	printf ("%d entries to print of %d..\n", rbx[a].nentry_nos, rbx[a].max_entry);
 
 
 	if (rbx[a].where=='B'|| rbx[a].where=='E') {
-		//printf("Add - its a before or on every row...\n");
+		printf("Add - its a before or on every row...\n");
 		for (b=0;b<rbx[a].nentry_nos;b++) {
 			if (rbx[a].max_size_entry[b]) n++;
 			csv_report_layout.blocks[every].matrix[0]=realloc( csv_report_layout.blocks[every].matrix[0], sizeof(struct csv_entry)*n);
   			entry=csv_report_layout.blocks[every].matrix[0];
-			//printf("Entry %d - %d/%d\n",n-1,a,rbx[a].entry_nos[b]);
+			printf("Entry %d - %d/%d\n",n-1,a,rbx[a].entry_nos[b]);
                         entry[n-1].rb=a;
                         entry[n-1].entry=rbx[a].entry_nos[b];
                         entry[n-1].special=0;
