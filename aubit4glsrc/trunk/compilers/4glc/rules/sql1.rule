@@ -8,6 +8,7 @@ update_statement:
 where_upd : {strcpy($<str>$,"");}
 	| WHERE_CURRENT_OF fetch_cursor_name { 
 pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); 
+rm_quotes($<str>2);
 sprintf($<str>$," %s %s",$<str>1,$<str>2);
 }
 	| WHERE search_condition 
@@ -786,17 +787,15 @@ scale:
 	;
 
 table_name:
-	CHAR_VALUE
-{
-sprintf($<str>$," %s",strip_quotes($<str>1));
-addmap('t',$<str>$,curr_func,yylineno,infilename);
-}
-
+	CHAR_VALUE {
+		sprintf($<str>$," %s",strip_quotes($<str>1));
+		addmap('t',$<str>$,curr_func,yylineno,infilename);
+	}
 	| table_identifier {sprintf($<str>$,$<str>1);
 addmap('t',$<str>1,curr_func,yylineno,infilename);
 }
-	| db_name COLON table_identifier { sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
-	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
+	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
+	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
 
 	;
 
@@ -884,7 +883,8 @@ dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
 		;
 
 flush_cmd : opt_use
-	FLUSH fetch_cursor_name  {printc("flush_cursor(%s);\n\n",$<str>2);
+	FLUSH fetch_cursor_name  {
+		printc("flush_cursor(%s);\n\n",$<str>3);
 		addmap('D',$<str>3,curr_func,yylineno,infilename);
 		printc($<str>1);
 		}
@@ -925,7 +925,7 @@ cur_update_list : colident | cur_update_list COMMA colident
 
 colident: identifier
 	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"%s.%s.%s",$<str>1,$<str>3,$<str>5);}
+	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
 ;
 	
 

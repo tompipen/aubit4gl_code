@@ -161,7 +161,7 @@ opt_rep_expr_list : {strcpy($<str>$,"");}
 
 print_command : PRINT opt_rep_expr_list  opt_semi { printc("%srep_print(&rep,0,%s,0);\n",ispdf(),$<str>3); } ;
 
-print_file_command : PRINT_FILE char_or_var opt_semi { printc("%srep_file_print_(&rep,%s,%s,%s);\n",$<str>2,ispdf(),$<str>3); } ;
+print_file_command : PRINT_FILE char_or_var opt_semi { printc("%srep_file_print(&rep,%s,%s);\n",ispdf(),$<str>2,$<str>3); } ;
 
 
 print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { printc("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n",$<str>4,$<str>2,$<str>3,$<str>5);} 
@@ -207,7 +207,7 @@ rep_expr_list :
 ;
 
 rep_expr : fgl_expr op_wordwrap {
-	strcpy($<str>$,$<str>2);
+	strcpy($<str>$,$<str>2); // CHECK THIS MJA MJA MJA FIXME
 	}
 	;
 
