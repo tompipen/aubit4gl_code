@@ -3,6 +3,8 @@
 #include "a4gl_API_ui.h"
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
+
+static char *module_id="$Id: generic_ui.c,v 1.5 2004-01-17 11:13:34 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 

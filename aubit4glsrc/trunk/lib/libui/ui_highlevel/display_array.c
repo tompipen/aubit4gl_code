@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.3 2004-01-17 11:10:40 mikeaubury Exp $
+# $Id: display_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $
 #*/
-
+static char *module_id="$Id: display_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array

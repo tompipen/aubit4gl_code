@@ -4,7 +4,7 @@
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-
+static char *module_id="$Id: misc.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 

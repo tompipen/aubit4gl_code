@@ -8,6 +8,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
+static char *module_id="$Id: lowlevel_tui.c,v 1.4 2004-01-17 11:13:35 mikeaubury Exp $";
 
 int inprompt = 0;
 

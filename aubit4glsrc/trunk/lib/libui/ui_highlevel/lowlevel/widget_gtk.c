@@ -1,3 +1,4 @@
+static char *module_id="$Id: widget_gtk.c,v 1.2 2004-01-17 11:13:35 mikeaubury Exp $";
 #include "../API_lowlevel.h"
 #include "a4gl_libaubit4gl.h"
 

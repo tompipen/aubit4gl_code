@@ -2,6 +2,7 @@
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui.h"
 #include "menu.h"
+static char *module_id="$Id: menu.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -233,8 +234,6 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 void
 A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
-  //A4GL_debug ("h_disp_title : %s", str);
-  //A4GL_wprintw(A4GL_get_currwin(),0,1,menu->gw_y,"%s:",menu->menu_title);
   A4GL_wprintw (A4GL_get_currwin (), 0, 1, menu->gw_y, "%s", str);
 }
 
@@ -389,8 +388,6 @@ A4GL_highlevel_menu_loop (void *menuv)
       if (key_pressed)
 	break;
     }
-  //A4GL_menu_setcolor (menu, NORMAL_TEXT);
-
 
 
   if (menu->gw_x < 0)
@@ -481,18 +478,6 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	  A4GL_LL_screen_refresh ();
 	  continue;
 	}
-
-      /*
-         Provides equivalent of Informix bang() functionality -
-         User gets the shell prompt after the SHIFT+! key sequence while
-         in MENU, or other input statement, and can enter single line command
-         that will be passed to the shell for execution.
-
-         FIXME: this should not use -D, but acl_getenv(A4GL_AUTOBANG) instead
-
-       */
-
-      A4GL_debug ("Check for autobang");
 
 
       A4GL_debug ("Returning A=%d\n", a);

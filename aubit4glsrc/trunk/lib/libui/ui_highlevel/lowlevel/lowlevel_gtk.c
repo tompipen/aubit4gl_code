@@ -5,6 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
+static char *module_id="$Id: lowlevel_gtk.c,v 1.10 2004-01-17 11:13:35 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
