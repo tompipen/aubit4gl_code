@@ -1,15 +1,17 @@
-#ifdef __sun__
-	#ifdef __sparc__
-		// On Solaris bool_t not defined in RPC lib headers
-		#define bool_t int
+#if (defined(__sun__) && defined(__sparc__))
+	// On Solaris bool_t not defined in RPC lib headers
+	#define bool_t int
 
-        // On solaris needed for auth_stat
-        #include "rpc/auth.h"
-    #endif
+	// On solaris needed for auth_stat
+    #include "rpc/auth.h"
 #endif
 
 #include "a4gl_lib_rpc_int.h"
 
+#if (defined(__MACH__) && defined(__APPLE__))
+	/* need to include it explicity */
+	#include "rpc/xdr.h"
+#endif
 
 #include "rpc/auth.h"
 #include "rpc/pmap_clnt.h" /* pmap_unset() */
@@ -28,9 +30,6 @@
 
 #ifndef _RPC_STACK_H_RPCGEN
 #define _RPC_STACK_H_RPCGEN
-
-
-
 
 	/*
 	to force LCLint to process <sys/types.h>, since rpc.h needs fd_set.
