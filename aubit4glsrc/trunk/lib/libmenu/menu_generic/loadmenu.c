@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.7 2003-09-08 08:11:25 afalout Exp $
+# $Id: loadmenu.c,v 1.8 2003-09-14 09:52:40 mikeaubury Exp $
 #*/
 
 /**
@@ -327,7 +327,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   /* Create a new menubar */
   menubar = gtk_menu_bar_new ();
 
-  gtk_widget_set_usize (GTK_WIDGET (menubar), A4GL_get_curr_width_gtk () * XWIDTH,
+  gtk_widget_set_usize (GTK_WIDGET (menubar), A4GL_get_curr_width () * XWIDTH,
 			YHEIGHT);
 
 
