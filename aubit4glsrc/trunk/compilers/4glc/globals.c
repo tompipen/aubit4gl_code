@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.19 2003-07-27 17:28:12 mikeaubury Exp $
+# $Id: globals.c,v 1.20 2003-07-30 07:23:12 mikeaubury Exp $
 #
 */
 
@@ -555,7 +555,7 @@ read_glob (char *s)
     }
 
   read_global_string (f, "DATABASE", &dbname, 1);
-  read_global_string (f, "SCHEMA_ONLY", &is_schema, 1);
+  read_global_int (f, "SCHEMA_ONLY", &is_schema);
 
   if (strlen (dbname) > 0)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.79 2003-07-29 20:34:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.80 2003-07-30 07:23:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -835,7 +835,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("if (strlen(_rout1)==0)\n");
   printc ("rep.output_mode='%c';\n", rep->output_mode);
   printc ("else rep.output_mode=_rout1[0];\n");
-  printc ("rep.report=&%s;\n", get_curr_rep_name ());
+  printc ("rep.report=(void *)&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(rep.output_loc);");
   print_rep_ret (report_cnt);
 }
@@ -4111,12 +4111,16 @@ extern int is_schema;
   if (doing_cs()) 	{ printc ("\nA4GL_fgl_start(argv.Count(),argv);\n"); }
   else 			{ printc ("\nA4GL_fgl_start(argc,argv);\n"); }
 
-  if (db[0] != 0&&!is_schema)
+  if (db[0] != 0) {
+if (!is_schema)
     {
       print_init_conn (db);
       printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
 	      lastlineno);
-    }
+    } else {
+	printc("/* NO DATABASE - SCHEMA ONLY */");
+	}
+}
   print_function_variable_init ();
 }
 
