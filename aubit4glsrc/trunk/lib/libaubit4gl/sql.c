@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.7 2004-05-24 20:04:40 whaslbeck Exp $
+# $Id: sql.c,v 1.8 2004-07-20 14:20:44 mikeaubury Exp $
 #
 */
 
@@ -563,5 +563,52 @@ if (t=='i') { p->ibind=bind; p->ni=cnt; }
 if (t=='o') { p->obind=bind; p->no=cnt; }
 return 1;
 }
+
+
+
+int A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
+{
+	  struct s_sid *sid;
+	struct BINDING *ibind;
+		ibind=vibind;
+	    A4GL_debug("ESQL : A4GLSQL_execute_sql");
+	      /** @todo : Fix the mode that is not used now  - done remove comment */
+      sid = A4GLSQL_find_prepare (pname); // ,0
+      sid->ibind = ibind;
+      sid->ni    = ni;
+
+
+return A4GLSQL_execute_implicit_sql(sid);
+
+}
+
+
+/**
+ *  * Find a prepared statement.
+ *  *
+ *  * There should be a global strucutre or array where to store all the
+ *  * prepared statements.
+ *  *
+ *  * @todo : The mode should be used for something.
+ *  *
+ *  * @param pname The statement name.
+ *  * @param mode
+ *  * @return
+ *  *   - A pointer to the structure found in the tree.
+ *  *   - 0 : The structure was not found
+ *  */
+void *A4GLSQL_find_prepare (char *pname)
+{
+	  struct s_sid *ptr;
+
+  A4GL_set_errm (pname);
+  ptr = (struct s_sid *)A4GL_find_pointer_val (pname, PRECODE);
+  if (ptr) return (void *)ptr;
+  return (void *)0;
+//struct s_sid 
+}
+
+
+
 
 /* =============================== EOF ============================== */
