@@ -128,6 +128,11 @@ endcode
 options message line last
 
 
+if upshift(fgl_getenv("ASQL_BANNER"))="N" THEN
+	call  get_version() returning lv_dummy
+	let lv_quiet=1
+end if
+
 if not lv_quiet then
 	call copyright_banner()
 end if

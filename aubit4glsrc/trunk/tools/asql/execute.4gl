@@ -43,7 +43,7 @@ int fetchFirst=0;
 int display_lines=-1;
 
 void open_display_file_c() ;
-void set_outfname();
+void set_outfname(void);
 
 
 FILE *out=0;
@@ -83,6 +83,22 @@ void display_mode_unload(int a) {
 	
 }
 
+
+
+int set_outlines_c(char *fname) {
+FILE *f;
+char buff[300];
+A4GL_trim(fname);
+f=fopen(fname,"r");
+outlines=0;
+if (!f)  return;
+while (1) {
+	fgets(buff,300,f);
+	if (feof(f)) break;
+	outlines++;
+}
+fclose(f);
+}
 
 endcode
 
@@ -506,22 +522,6 @@ end function
 
 code
 
-int set_outlines_c(char *fname) {
-FILE *f;
-char buff[300];
-A4GL_trim(fname);
-f=fopen(fname,"r");
-outlines=0;
-if (!f)  return;
-while (1) {
-	fgets(buff,300,f);
-	if (feof(f)) break;
-	outlines++;
-}
-fclose(f);
-}
-
-
 
 
 int isSqlError () {
@@ -534,7 +534,7 @@ int get_exec_mode_c() {
 	return exec_mode;
 }
 
-void set_outfname() {
+void set_outfname(void) {
 	sprintf(outfname,"/tmp/out%d.txt",getpid());
 }
 

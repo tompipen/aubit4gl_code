@@ -59,6 +59,19 @@ FILE *unloadFile=0;
 #define LOADBUFFSIZE 32000
 char loadbuff[LOADBUFFSIZE];
 
+void trim_trailing_0(char *buffer) {
+int a;
+char *ptr;
+ptr=strrchr(buffer,'.');
+if (ptr==0) return;
+for (a=strlen(buffer)-1;a>=0;a--) {
+if (&buffer[a]<=ptr) break;
+if (buffer[a]=='0') buffer[a]=0;
+else break;
+}
+if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
+}
+
 
 endcode
 
@@ -1659,19 +1672,6 @@ int ec_check_and_report_error() {
 int get_sqlcode() { return sqlca.sqlcode; }
 int set_sqlcode(int n) { sqlca.sqlcode=n; }
 
-
-void trim_trailing_0(char *buffer) {
-int a;
-char *ptr;
-ptr=strrchr(buffer,'.');
-if (ptr==0) return;
-for (a=strlen(buffer)-1;a>=0;a--) {
-if (&buffer[a]<=ptr) break;
-if (buffer[a]=='0') buffer[a]=0;
-else break;
-}
-if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
-}
 
 
 
