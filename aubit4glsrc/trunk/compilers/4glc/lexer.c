@@ -568,7 +568,7 @@ for (a=1;a<strlen(s);a++) {
 		buff[c++]=s[a];continue;
 	}
 
-	if (s[a+1]=='['||s[a+1]==']'||s[a+1]=='^') {
+	if (s[a+1]=='['||s[a+1]==']'||s[a+1]=='^'||s[a+1]=='/') {
 		buff[c++]=s[a+1];
 		a++;
 		continue;

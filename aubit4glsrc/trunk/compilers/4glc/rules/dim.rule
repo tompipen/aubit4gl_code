@@ -46,9 +46,9 @@ CLOSE_BRACKET {dim_push_type("fglmoney",0,0);}
                               |            BYTE {dim_push_type("fglbyte",0,0);}
                               |            TEXT {dim_push_type("fgltext",0,0);}
                               |            DATETIME datetime_qual {
-dim_push_type("struct dtime ",$<str>2,0);
+dim_push_type("struct_dtime ",$<str>2,0);
 }
-                              |            INTERVAL interval_qual {dim_push_type("struct ival ",0,0);}
+                              |            INTERVAL interval_qual {dim_push_type("struct_ival ",0,0);}
                               |            dim_like_var
 {dim_push_like($<str>1);fflush(stdout);printcomment("/*added(XXXXX)\n */");} 
               ;

@@ -124,14 +124,14 @@ int_sign real_number
 }
 | int_sign INT_VALUE 
 {
-        debug("init expr int %s %s",$<str>1,$<str>2);
-sprintf($<str>$,"push_long((long)%s%s);",$<str>1,$<str>2);
-inc_counter();
+        debug("init expr int %s %d",$<str>1,atoi($<str>2));
+	sprintf($<str>$,"push_long((long)%s%d);",$<str>1,atoi($<str>2));
+	inc_counter();
 }
 ;
 
 literal_expr: 
-ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%s);",$<str>2);inc_counter(); }
+ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter(); }
 | ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); inc_counter();}
 |
 CHAR_VALUE  {
@@ -145,7 +145,7 @@ inc_counter();
 }
 | INT_VALUE 
 {
-sprintf($<str>$,"push_long((long)%s);",$<str>1);
+sprintf($<str>$,"push_long((long)%d);",atoi($<str>1));
 inc_counter();
 }
 | variable THRU variable {
@@ -439,7 +439,7 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 { sprintf($<str>$,"%s upshift_stk();",$<str>3);}
 |               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 { sprintf($<str>$,"%s upshift_stk();",$<str>3);}
-| ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3);}
+| ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));}
 | ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3);}
 ;
 

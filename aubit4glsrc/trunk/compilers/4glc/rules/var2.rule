@@ -17,7 +17,7 @@ var3:
         array_r_varid
 	| identifier  
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"%s.%s.%s",$<str>1,$<str>3,$<str>5);}
+	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
 ;
 
 aft_dot :

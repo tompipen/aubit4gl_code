@@ -467,3 +467,24 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 }
 ;
 
+init_bind_var_list:	init_bind_var {
+printcomment("/*STarted bind %s*/\n",$<str>1);
+start_bind('N',$<str>1);
+printcomment("/*STarted bind 2*/\n");
+sprintf($<str>$,"");
+}
+	|	
+init_bind_var_list COMMA init_bind_var {
+printcomment("/* Added */\n");
+add_bind('N',$<str>3);
+sprintf($<str>$,""); 
+}
+;
+
+init_bind_var : variable  {
+		strcpy($<str>$,$<str>1);
+	}
+	| variable THRU variable {
+			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
+		}
+;

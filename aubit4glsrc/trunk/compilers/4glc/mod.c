@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.11 2001-09-16 16:19:21 mikeaubury Exp $
+* $Id: mod.c,v 1.12 2001-09-17 21:12:37 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.11  2001/09/16 16:19:21  mikeaubury
+*	more updates
+*	
 *	Revision 1.10  2001/09/10 17:47:39  mikeaubury
 *	Bugfix - overflow in bindings (manifesting as a 'FUNC' was not the last block...)
 *	
@@ -166,8 +169,8 @@ int max_menu_no = 0;
 
 struct s_report
 {
-  char rep_cond[256];
-  char rep_expr[256];
+  char rep_cond[2000];
+  char rep_expr[2000];
   int a;
   int t;
   int in_b;
@@ -228,6 +231,7 @@ int constr_cnt = 0;
 #define NUMBINDINGS 2048
 
 struct binding ibind[NUMBINDINGS];
+struct binding nullbind[NUMBINDINGS];
 struct binding obind[NUMBINDINGS];
 struct binding fbind[NUMBINDINGS];
 struct binding ordbind[NUMBINDINGS];
@@ -235,6 +239,7 @@ struct binding ordbind[NUMBINDINGS];
 int ordbindcnt = 0;
 
 int ibindcnt = 0;
+int nullbindcnt = 0;
 int obindcnt = 0;
 
 int fbindcnt = 0;
@@ -594,8 +599,8 @@ print_variable (int z, char ff)
     }
   else
     {
-      sprintf (tmpbuff, "%s %s[%s]", vars[z].var_type,
-	       vars[z].var_name, vars[z].var_arrsize);
+      sprintf (tmpbuff, "%s %s[%d]", vars[z].var_type,
+	       vars[z].var_name, atoi(vars[z].var_arrsize));
     }
 
   if (isin_command ("REPORT"))
@@ -603,10 +608,10 @@ print_variable (int z, char ff)
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
 	  if (ff != '-')
-	    printc ("static %s [%s+1]; /* ?5 */\n", tmpbuff,
-		    vars[z].var_size);
+	    printc ("static %s [%d+1]; /* ?5 */\n", tmpbuff,
+		    atoi(vars[z].var_size));
 	  else
-	    printc ("%s [%s+1]; /* ?4 */\n", tmpbuff, vars[z].var_size);
+	    printc ("%s [%d+1]; /* ?4 */\n", tmpbuff, atoi(vars[z].var_size));
 	}
       else
 	{
@@ -621,9 +626,9 @@ print_variable (int z, char ff)
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
 	  if (ff != 'G')
-	    printc ("%s [%s+1];\n", tmpbuff, vars[z].var_size);
+	    printc ("%s [%d+1];\n", tmpbuff, atoi(vars[z].var_size));
 	  if (ff == 'G')
-	    printc ("extern %s [%s+1];\n", tmpbuff, vars[z].var_size);
+	    printc ("extern %s [%d+1];\n", tmpbuff, atoi(vars[z].var_size));
 	}
       else
 	{
@@ -689,7 +694,7 @@ print_record (int z, char ff)
 
   else
     {
-      printc ("} %s[%s];\n", vars[z].var_name, vars[z].var_arrsize);
+      printc ("} %s[%d];\n", vars[z].var_name, atoi(vars[z].var_arrsize));
     }
 
   return a;
@@ -1081,10 +1086,10 @@ find_type (char *s)
   if (strcmp ("fglmoney", s) == 0)
     return 8;
 
-  if (strcmp ("struct dtime ", s) == 0)
+  if (strcmp ("struct_dtime ", s) == 0)
     return 10;
 
-  if (strcmp ("struct dtime ", s) == 0)
+  if (strcmp ("struct_dtime ", s) == 0)
     return 10;
 
   if (strcmp ("fglbyte", s) == 0)
@@ -1096,7 +1101,7 @@ find_type (char *s)
   if (strcmp ("varchar", s) == 0)
     return 13;
 
-  if (strcmp ("struct ival ", s) == 0)
+  if (strcmp ("struct_ival ", s) == 0)
     return 14;
 
   if (strcmp ("_RECORD", s) == 0)
@@ -1739,6 +1744,10 @@ start_bind (char i, char *var)
     {
       ibindcnt = 0;
     }
+  if (i == 'N')
+    {
+      nullbindcnt = 0;
+    }
 
   if (i == 'o')
     {
@@ -1764,6 +1773,8 @@ get_bind_cnt (char i)
 {
   if (i == 'i')
     return ibindcnt;
+  if (i == 'N')
+    return nullbindcnt;
   if (i == 'o')
     return obindcnt;
   if (i == 'f')
@@ -1798,6 +1809,25 @@ add_bind (char i, char *var)
 	}
       return ibindcnt;
     }
+
+  if (i == 'N')
+    {
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (nullbind[nullbindcnt].varname, var);
+	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbindcnt++;
+	}
+      return nullbindcnt;
+    }
+
+
+
   if (i == 'o')
     {
       if (dtype == -2)
@@ -1878,6 +1908,8 @@ how_many_in_bind (char i)
 {
   if (i == 'i')
     return ibindcnt - 1;
+  if (i == 'N')
+    return nullbindcnt - 1;
   if (i == 'o')
     return obindcnt - 1;
   if (i == 'O')
@@ -1904,6 +1936,30 @@ print_bind (char i)
 	    printc (",\n");
 	  printc ("{&%s,%d,%d}", ibind[a].varname,
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	}
+      printc ("\n}; /* end of binding */\n");
+      start_bind (i, 0);
+      return a;
+    }
+
+  if (i == 'N')
+    {
+      expand_bind(&nullbind,'N',nullbindcnt) ;
+      printc ("\n");
+      printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
+      if (nullbindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
+      for (a = 0; a < nullbindcnt; a++)
+	{
+	  if (a > 0)
+	    printc (",\n");
+
+	  chk_init_var(nullbind[a].varname);
+
+	  printc ("{&%s,%d,%d}", nullbind[a].varname,
+		  (int) nullbind[a].dtype & 0xffff, (int) nullbind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
       start_bind (i, 0);
@@ -2649,6 +2705,10 @@ start_arr_bind (char i, char *var)
     {
       ibindcnt = 0;
     }
+  if (i == 'N')
+    {
+      nullbindcnt = 0;
+    }
   if (i == 'o')
     {
       obindcnt = 0;
@@ -2691,6 +2751,19 @@ add_arr_bind (char i, char *nvar)
 	  ibindcnt++;
 	}
       return ibindcnt;
+    }
+
+  if (i == 'N')
+    {
+      if (dtype == -2)
+	push_bind_rec (var, i);
+      else
+	{
+	  strcpy (nullbind[nullbindcnt].varname, var);
+	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbindcnt++;
+	}
+      return nullbindcnt;
     }
 
   if (i == 'o')
@@ -2914,7 +2987,7 @@ read_glob (char *s)
     }
 
   debug ("DBNAME=%s from globals", dbname);
-  while (!feof (f))
+  while ( !feof (f))
     {
 
       fscanf (f, "%s %s %s %s %s %s %d\n",
@@ -2922,6 +2995,7 @@ read_glob (char *s)
 	      vars[varcnt].var_type,
 	      vars[varcnt].var_size,
 	      vars[varcnt].var_arrsize, tname, pklist, &vars[varcnt].level);
+
 
       vars[varcnt].tabname = strdup (tname);
       vars[varcnt].pklist = strdup (pklist);
@@ -2941,10 +3015,16 @@ read_glob (char *s)
       varcnt++;
     }
   fclose (f);
+
+
+#ifdef NOLONGERUSED
   read_glob_var = 1;
   print_variables (1);
   read_glob_var = 0;
-  set_mod_level (varcnt);
+#endif
+
+
+  //set_mod_level (varcnt);
 }
 
 char *
@@ -3048,8 +3128,8 @@ pr_report_agg ()
   int z;
   int a;
   int t;
-  char s1[1024];
-  char s2[1024];
+  char s1[5024];
+  char s2[5024];
   for (z = 0; z < sreports_cnt; z++)
     {
       strcpy (s2, sreports[z].rep_cond);
@@ -3143,7 +3223,7 @@ pr_report_agg_clr ()
 	{
 	  printc ("if (nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
 	  printc ("/* t=%c */\n", t);
-	  if (t == 'C' || t == 'N' || t == 'X')
+	  if (t == 'C' || t == 'N' || t == 'X'||t=='S')
 	    {
 	      printc ("_g%d=0;\n", a);
 	    }
@@ -3153,7 +3233,7 @@ pr_report_agg_clr ()
 	      printc ("_g%dused=0;\n", a);
 	    }
 
-	  if (t == 'P' || t == 'S' || t == 'A')
+	  if (t == 'P' ||  t == 'A')
 	    {
 	      printc ("_g%d=0;_g%d=0;\n", a + 1, a);
 	    }
@@ -4436,6 +4516,9 @@ debug("print_push_rec");
   return -1;
 }
 
+expand_obind() {
+expand_bind(&obind,'o',obindcnt) ;
+}
 
 // *************************************************************************
 //
@@ -4458,8 +4541,7 @@ for (a=0;a<cnt;a++) {
 start_bind(btype,0);
 
 for (a=0;a<cnt;a++) {
-	strcpy(buff,save_bind[a].varname);
-
+ 	strcpy(buff,save_bind[a].varname);
 	if (scan_variable(buff)==-2) {
 		strcat(buff,".*");
 	}
@@ -4475,3 +4557,47 @@ get_var_name(int z) {
 	return vars[z].var_name;
 }
 	
+
+
+chk_init_var(char *s) {
+char buff[1024];
+char *ptr;
+
+if (strcmp(s,"")==0) return ;
+
+strcpy(buff,s);
+ptr=strchr(buff,'.');
+if (strchr(buff,'[')) { /* This need fixing */
+// This should check for arrays within arrays...
+// but this doesn't
+	return;
+}
+
+if (ptr==0) {
+	if (isarrvariable(s)) {
+		printf("Warning: Only initializing first element in array %s\n",s);
+		strcat(s,"[0]");
+		return;
+	} else {
+		return;
+	}
+} 
+
+
+*ptr=0;
+if (isarrvariable (buff)) {
+			char buff[1024];
+			char *ptr;
+		printf("Warning: Only initializing first element in array %s\n",s);
+			strcpy(buff,s);
+			ptr=strchr(s,'.');
+			*ptr=0;
+			strcat(s,"[0].");
+
+			ptr=strchr(buff,'.');
+			debug("ptr=%s\n",ptr);
+			ptr++;
+			strcat(s,ptr);
+		}
+
+}

@@ -16,8 +16,11 @@
 #include "../../lib/libincl/constats.h"
 #include "../../lib/libincl/prompt.h"
 extern int lineno;
+extern int read_glob_var;
+extern int modlevel;
 extern int charno;
 extern int last_var_found;
+extern int varcnt;
 int rordcnt;
 char menuhandler[256];
 char *downshift(char *);

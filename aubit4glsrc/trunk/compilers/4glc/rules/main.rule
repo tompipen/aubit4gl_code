@@ -1,6 +1,12 @@
 
 module	:	op_code op_template db_section op_code globals_section op_code 
-{set_4gl_vars();set_mod_level(0);} define_section op_code {inmod();} func_main_def
+{
+int a;
+modlevel=-1;
+read_glob_var = 1; 
+print_variables(1);
+read_glob_var = 0; 
+set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);} define_section op_code {inmod();} func_main_def
 	;
 
 func_main_def	: /* could be empty file */
@@ -104,7 +110,18 @@ db_section	:	 /*empty*/ {strcpy($<str>$,"");lastlineno=yylineno;}
 set_database 	: DATABASE dbase_name {open_db($<str>2);strcpy($<str>$,$<str>2);lastlineno=yylineno;};
 
 globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
-| actual_globals_section;
+| actual_globals_section {
+	if (glob_only==1) {
+       	debug("Read globals section so Im done\n");
+       	YYACCEPT;
+	}
+
+  	//read_glob_var = 1;
+  	//print_variables (1);
+  	//read_glob_var = 0;
+	set_mod_level(varcnt);
+}
+;
 
 actual_globals_section : 
 	globals_entry
@@ -126,15 +143,13 @@ glob_section : define_section END_GLOBALS {
 printcomment("/* end of globals */");
 debug("end of globals\n");
 lastlineno=yylineno;
-if (glob_only==1) {
-       debug("Read globals section so Im done\n");
-       YYACCEPT;
-}}
+}
 | file_name {
 int a;
 char b[256];
 lastlineno=yylineno;
 strcpy(b,$<str>1);
+debug("Reading globals file %s\n",b);
 rm_quote(b);
 read_glob(b);
 /*

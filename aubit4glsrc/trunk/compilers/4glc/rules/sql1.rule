@@ -861,7 +861,7 @@ curr_clause : CURRENT  cur_part
 {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
 ;
 
-cur_part: {strcpy($<str>$,"");}
+cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 | s_curr TO e_curr
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
