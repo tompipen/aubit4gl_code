@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.87 2004-05-26 12:20:41 mikeaubury Exp $
+# $Id: esql.ec,v 1.88 2004-05-26 12:52:04 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.87 2004-05-26 12:20:41 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.88 2004-05-26 12:52:04 mikeaubury Exp $";
 #endif
 
 
@@ -192,8 +192,10 @@ static int getColumnsMax = 0;
 static void
 esqlErrorHandler (void)
 {
-  A4GL_debug ("In esqlErrorHandler..");
+  A4GL_debug ("In esqlErrorHandler..'%s' '%s'",sqlca.sqlerrm,sqlca.sqlerrp);
   A4GLSQL_set_status (sqlca.sqlcode, 1);
+	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
 }
 
 /**
@@ -215,6 +217,22 @@ static int
 isSqlError ()
 {
   A4GL_set_a4gl_sqlca_sqlcode (sqlca.sqlcode);
+  strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+  strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+#ifdef _FGL_ 
+	strncpy(a4gl_sqlca.sqlawarn, sqlca.sqlawarn,8);
+#else
+	a4gl_sqlca.sqlawarn[0]=sqlca.sqlwarn.sqlwarn0;
+	a4gl_sqlca.sqlawarn[1]=sqlca.sqlwarn.sqlwarn1;
+	a4gl_sqlca.sqlawarn[2]=sqlca.sqlwarn.sqlwarn2;
+	a4gl_sqlca.sqlawarn[3]=sqlca.sqlwarn.sqlwarn3;
+	a4gl_sqlca.sqlawarn[4]=sqlca.sqlwarn.sqlwarn4;
+	a4gl_sqlca.sqlawarn[5]=sqlca.sqlwarn.sqlwarn5;
+	a4gl_sqlca.sqlawarn[6]=sqlca.sqlwarn.sqlwarn6;
+	a4gl_sqlca.sqlawarn[7]=sqlca.sqlwarn.sqlwarn7;
+#endif
+
+  
   if (SQLSTATE[0] != '0' || (SQLSTATE[1] != '0' &&
 			     SQLSTATE[1] != '1' && SQLSTATE[1] != '2'))
     return 1;
