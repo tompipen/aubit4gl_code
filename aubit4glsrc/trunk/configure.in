@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.203 2003-10-14 11:25:41 afalout Exp $
+dnl # $Id: configure.in,v 1.204 2003-10-16 09:46:09 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -4723,6 +4723,9 @@ fi
 
 		LDFLAGS="$CURSES_LIB_PATH $LDFLAGS"
 		CFLAGS="$CURSES_INC_PATH $CFLAGS"
+
+		#cygncurses6.dll cygncurses5.dll cygncurses7.dll
+		#AC_CHECK_LIB([cygncurses6], [main])
 
 		#First test for New Curses (ncurses)
 		# FIXME: Replace `main' with a function in `-lncurses':

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.13 2003-10-14 11:26:16 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.14 2003-10-16 09:46:24 afalout Exp $
 ;
 
 
@@ -651,7 +651,10 @@ Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Component
 
 ;=========================
 ;PDFlib (evaluation version)
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
+;apparently it stores the name of the original dll somewhere?
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
 
 ;=========================
 ;Helpers:
@@ -664,9 +667,12 @@ Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\tmp\libUI_TUI.dll; DestDir: {app}\lib; Comp
 
 ;=========================
 ; CygWin Curses libs
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses6.dll; DestDir: {app}\bin; Components: TUI
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform6.dll; DestDir: {app}\bin; Components: TUI
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel6.dll; DestDir: {app}\bin; Components: TUI
+;used to be 6, bu now is 7 - need to find a way to automate this (using chgcheck?)
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses7.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform7.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
+
+
 ;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
 ;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
 Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
@@ -955,7 +961,7 @@ Returns the number of command line parameters passed to Setup.
 	if Test = 'yes' then begin
 		MsgBox ('/DebugPaths=yes' #13 '''' +
 				'/DebugOptions=yes' #13 '''' +
-				'/help');
+				'/help', mbInformation, MB_OK);
         //FIXME: exit installation here...
 	end;
 

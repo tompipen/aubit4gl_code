@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.29 2003-10-09 13:02:20 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.30 2003-10-16 09:46:24 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -319,10 +319,29 @@ CLEAN=0
 WARNINGS=1
 COMPARE=0
 
+ALL_FLAGS=$@
+
 if [ $# -lt 1 ]; then
     DO_ALL=1
 else
-	for a in $@
+	
+	#First catch flags that affect other flags processing
+	for a in $ALL_FLAGS
+	do
+		case $a in
+			-anyday)
+				ANYDAY=1
+	            ;;
+
+		    -verbose)
+			    VERBOSE=1
+			    ;;
+
+        esac
+    done
+
+
+	for a in $ALL_FLAGS
 	do
 		case $a in
 

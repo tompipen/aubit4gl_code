@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.143 2003-10-09 13:02:53 afalout Exp $
+# $Id: Makefile-common.in,v 1.144 2003-10-16 09:46:24 afalout Exp $
 #
 
 
@@ -202,9 +202,21 @@ GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
 
 #Version of GCC to treat specially:
 
-ifeq "${TARGET_OS}" "cygwin"
-	GCC_VER_SPEC1=3.2
+#ifeq "${TARGET_OS}" "cygwin"
+	#GCC_VER_SPEC1=3.2
+ifeq "${GCC_VER}" "3.2"
+	GCC_NEW_STYLE=1
 endif
+ifeq "${GCC_VER}" "3.3"
+	GCC_NEW_STYLE=1
+endif
+
+ifeq "${GCC_NEW_STYLE}" "1"
+    GCC_NO_rdynamic=1
+    GCC_NO_PIC=1
+    GCC_NO_native-struct=1
+endif
+
 
 GCC_MINGW=@GCC_MINGW@
 
@@ -315,7 +327,8 @@ STRIP_EXECUTABLES   =@STRIP_EXECUTABLES@
 #          options for ld, which again forces the allocation of the symbol
 #          table in the code produced (see ld(1) on a Sun).
 
-ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+ifneq "${GCC_NO_rdynamic}" "1"
 	#gcc: unrecognized option `-rdynamic'
 	RDYNAMIC            =-rdynamic
 endif
@@ -430,7 +443,8 @@ FAIL_OK             =-
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
 
-ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+ifneq "${GCC_NO_PIC}" "1"
 	#cc1: warning: -fPIC ignored for target (all code is position independent)
 	PIC					=@PIC@
 endif
@@ -551,7 +565,8 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 
 	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
     #error with GCC 3.2 on CygWin
-	ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+	#ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+    ifneq "${GCC_NO_native-struct}" "1"
 		CFLAGS		+=-fnative-struct
     else
 		CFLAGS		+=-mms-bitfields

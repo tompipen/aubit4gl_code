@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: Makefile.in,v 1.10 2003-10-16 09:46:25 afalout Exp $
 #
 
 LIBROOT=../..
@@ -77,6 +77,12 @@ all : ${ALL}
 
 ${LIBROOT}/libUI_TUI${SO_EXT}: ${ALLOBJ}
 	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_NAME@ @CURSES_LIB_PATH@ ${LINKLIBS}
+#If on CygWin, store libUI_TUI so we can package it with native Windows installer (MinGW)
+ifneq "${COMSPEC}" ""
+ifneq "${GCC_MINGW}" "yes"
+	cp $@ /tmp
+endif
+endif
 
 ## ==================================================================
 ##                            Sub Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2003-09-22 08:37:06 afalout Exp $
+# $Id: Makefile,v 1.14 2003-10-16 09:46:25 afalout Exp $
 #
 
 ROOT    	=../..
@@ -40,6 +40,7 @@ include ${ROOT}/incl/Makefile-common
 4GLC	=${ROOT}/bin/4glc
 FCOMPILE=${ROOT}/bin/fcompile
 
+
 #ifneq "${COMSPEC}" ""
 	#LINKLIBS=-lD:/WINNT/system32/winsock.dll
 	#LINKLIBS=-lwsock32
@@ -51,12 +52,15 @@ FCOMPILE=${ROOT}/bin/fcompile
 ## ==================================================================
 
 ${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc -verbose -g -DPORTABLE -as-dll $^ -o $@ ${LINKLIBS}
+#	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc -verbose -g -DPORTABLE -as-dll -I../../incl -L../../lib $^ -o $@ ${LINKLIBS}
 #	gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -I../../incl -o $@ $^ -L.. -laubit4gl
 #WARNING: cannot use 4glc directly, because of broken getopt_long() on CygWin (-o will not be recognized)
-#	export A4GL_SQLTYPE=nosql; ${4GLC} --shared $^ -o $@
-
+#	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose --shared -DPORTABLE $^ -o $@ -I../../incl -L../../lib ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -g -DPORTABLE -o $@ $^ -I${ROOT}/incl -L${ROOT}/lib -laubit4gl
+#gcc -shared  -o  -L"/usr/src/aubit/aubit4glsrc/lib" -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll -I../../incl -L../../lib  -DPORTABLE  -I"/usr/src/aubit/aubit4glsrc/incl" -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 #gcc  -DSRC_TREE -g -DPORTABLE -shared helplib.c a4gl_xxhelp.afr.c -o  ../libHELP_std.dll -lwsock32 -ID:/cygwin/usr/src/aubit/aubit4glsrc/incl -ID:/cygwin/usr/src/aubit/aubit4glsrc/incl -LD:/cygwin/usr/src/aubit/aubit4glsrc/lib -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl -L/usr/local/lib
+	@echo "Help library sucesfully compiled."
+
 
 ## ==================================================================
 ##                              Sub-targets

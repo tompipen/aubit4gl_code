@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.23 2003-09-22 07:03:49 afalout Exp $
+# $Id: pointers.c,v 1.24 2003-10-16 09:46:25 afalout Exp $
 #
 */
 
@@ -85,8 +85,12 @@ struct s_node
 =====================================================================
 */
 
-#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+//#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 //actually, should use  #if HAVE_SEARCH_H
+#if HAVE_SEARCH_H
+//#  include <search.h>
+#else
+
 
 	/* search internal node for windows and platforms without this library function */
 
@@ -440,8 +444,11 @@ A4GL_has_pointer (char *pname, char t)
  * Totally public domain.
  */
  /*LINTLIBRARY*/
-#if defined(__DARWIN__) || defined (WIN32) || defined (__CYGWIN__)
+//#if defined(__DARWIN__) || defined (WIN32) || defined (__CYGWIN__)
 //actually, should use  #if HAVE_SEARCH_H
+#if HAVE_SEARCH_H
+
+#else
 /**
  * find or insert datum into search tree
  *

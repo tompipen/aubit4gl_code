@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.43 2003-10-14 11:26:16 afalout Exp $
+# $Id: compile.c,v 1.44 2003-10-16 09:46:24 afalout Exp $
 #*/
 
 /**
@@ -643,7 +643,7 @@ initArguments (int argc, char *argv[])
   if (compile_exec)
     {
       A4GL_debug ("Linking exec\n");
-	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		printf("Compiling\r");fflush(stdout);
 	}
 	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
@@ -721,7 +721,7 @@ initArguments (int argc, char *argv[])
 
   if (compile_lib)
     {
-	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		printf("Linking\r");fflush(stdout);
 	}
 	#ifndef __MINGW32__
@@ -775,7 +775,7 @@ initArguments (int argc, char *argv[])
 
   if (compile_so)
     {
-	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		printf("Linking Shared Library\r");fflush(stdout);
 	}
       A4GL_debug ("Linking shared library\n");
@@ -835,11 +835,10 @@ initArguments (int argc, char *argv[])
 
 
   if (compile_exec || compile_so || compile_lib)
-    {
-      if (verbose)
-	{
-	  printf ("%s\n", buff);
-	}
+  {
+      if (verbose) {
+		  printf ("%s\n", buff);
+	  }
     
 	 #ifndef __MINGW32__
 	  	//this apparently works on NT, but not on W98:

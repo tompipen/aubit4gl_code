@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2003-09-08 08:11:25 afalout Exp $
+# $Id: Makefile,v 1.9 2003-10-16 09:46:24 afalout Exp $
 #
 
 ROOT    =../../..
@@ -39,6 +39,11 @@ include ${ROOT}/incl/Makefile-common
 
 4GLPC_EXEC=export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc
 
+ALL=${LIBROOT}/libA4GL_pop${SO_EXT} 
+#test.4ae
+
+4GLC	=${ROOT}/bin/4glc
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -47,16 +52,25 @@ include ${ROOT}/incl/Makefile-common
 
 
 ######### !!!!!!!!! PLEASE keep A4GL_ in UPPERCASE !!!!!!!!! ###############
-all : ${LIBROOT}/libA4GL_pop${SO_EXT} test.4ae
+all : ${ALL}
 
-${LIBROOT}/libA4GL_pop${SO_EXT}: pop.4gl
-	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
+${LIBROOT}/libA4GL_pop${SO_EXT}: pop.c
+#	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
+	@echo "POP library sucesfully compiled."
+
+
+pop.c: pop.4gl
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
 
 
 #Move this test in tools/test/build_test
 test.4ae: test.4gl test.per
-	${4GLPC_EXEC} test.4gl -o test.4ae
+	${4GLPC_EXEC} $< -o $@
 	${ROOT}/bin/fcompile test.per
+
+pop_killer.4ae: pop_killer.4gl
+	${4GLPC_EXEC} $^ -o $@
 
 ## ==================================================================
 ##                              Clean
@@ -64,7 +78,7 @@ test.4ae: test.4gl test.per
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h \
-	*.4ae ${LIBROOT}/libA4GL_pop${SO_EXT} *.afr.dat *.afr.xml *.afr
+	*.4ae *.afr.dat *.afr.xml *.afr  ${ALL} *.stackdump
 
 
 
