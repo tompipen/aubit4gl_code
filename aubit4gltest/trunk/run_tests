@@ -2993,7 +2993,7 @@ do
 		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
 		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp"
 		")" -exec rm {} \;'
-	
+
 		eval $EXEC
 		
 		if test "$VERBOSE" = "1"; then 
@@ -3004,7 +3004,9 @@ do
 		RET=$?
 		#Old makefiles do not have 'clean' target so this will allways fail
 		if test "$RET" != "0"; then
-			echo "WARNING: make clean failed - old makefile? (no 'clean' target)"
+			if test "$VERBOSE" = "1"; then
+				echo "WARNING: make clean failed - old makefile? (no 'clean' target)"
+			fi
 		fi
 		if test "$CLEAN" = "1" -a "$RUN_ONE" != ""; then
 			echo "Clean only - done."
