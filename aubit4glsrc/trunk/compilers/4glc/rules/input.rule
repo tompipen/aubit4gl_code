@@ -5,7 +5,9 @@
 */
 
 end_input :
-| field_commands END_INPUT ;
+| field_commands END_INPUT 
+| END_INPUT
+;
 
 opt_defs : {
 sprintf($<str>$,"0");

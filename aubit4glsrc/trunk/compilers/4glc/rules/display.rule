@@ -70,7 +70,7 @@ display_attr	:	opt_attributes {
 			}
 		;
 
-disp_rest : | disp_field_commands END_DISPLAY;
+disp_rest : | disp_field_commands END_DISPLAY | END_DISPLAY;
 
 
 
