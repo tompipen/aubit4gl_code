@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.109 2003-10-29 08:59:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.110 2003-11-13 15:06:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1683,7 +1683,7 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-      sprintf (buff, "struct BINDING ibind[%d]", ONE_NOT_ZERO (ibindcnt));
+      sprintf (buff, "struct BINDING ibind[%d]={", ONE_NOT_ZERO (ibindcnt));
       A4GL_append_expr (ptr, buff);
       if (ibindcnt == 0)
 	{
