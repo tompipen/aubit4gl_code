@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.167 2004-05-24 13:36:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.168 2004-05-25 17:50:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.167 2004-05-24 13:36:13 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.168 2004-05-25 17:50:19 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1299,7 +1299,7 @@ ptr=optr;
 printh("int _arr_fcall_%d;",arr_print);
 printc("/* START FCALL */\n");
 real_print_expr(ptr);
-printc("_arr_fcall_%d=A4GL_pop_int();",arr_print);
+printc("_arr_fcall_%d=A4GL_pop_long();",arr_print);
 printc("/* END FCALL */\n");
 sprintf(buff,"_arr_fcall_%d",arr_print);
 arr_print++;
@@ -2551,7 +2551,7 @@ print_exit_program (int has_expr)
     }
 
   if (has_expr)
-    printc ("A4GL_fgl_end();exit(A4GL_pop_int());");
+    printc ("A4GL_fgl_end();exit(A4GL_pop_long());");
   else
     printc ("A4GL_fgl_end();exit(0);");
 }
@@ -2569,7 +2569,7 @@ void
 print_for_start (char *var)
 {
   printc
-    ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_int();_e=A4GL_pop_int();_s=A4GL_pop_int();\n");
+    ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_long();_e=A4GL_pop_long();_s=A4GL_pop_long();\n");
   printc
     ("for (%s=_s; (%s<=_e&&_step>0)||(%s>=_e&&_step<0);%s+=_step) {\n",
      var, var, var, var);
@@ -2773,7 +2773,7 @@ print_import (char *func, int nargs)
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
-      printc ("   _argc[%d]=A4GL_pop_int();\n", nargs - a);
+      printc ("   _argc[%d]=A4GL_pop_long();\n", nargs - a);
     }
   sprintf (buff, "_retval=(long)%s(", func);
   for (a = 0; a <= nargs - 1; a++)
