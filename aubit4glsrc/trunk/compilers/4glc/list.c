@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 extern int yylineno;
 struct list
@@ -22,7 +23,7 @@ char *list_prompt (char *s)
 {
   static char buff[256];
   printf ("Please enter %s:\n", s);
-  gets (buff);
+  fgets (buff,255,stdin);
   stripnl (buff);
   return buff;
 }
