@@ -173,7 +173,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -228,5 +228,8 @@ sql_features_used:
 ansi_sql_compat:
 	@echo "0"
 
+need_rdbms:
+	@echo "PG-ANY"
+	
 	
 # ============================= EOF ================================

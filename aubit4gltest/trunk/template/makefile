@@ -241,5 +241,18 @@ ansi_sql_compat:
 runtime_err_check:
 	@echo ""
 
+#################
+# If test needs a particular RDBMS to compile or run, specify it here
+# You can use -ANY to cause matching of names (-ANY is transformed into -*)
+# Full list of valid RDBMS names can be found in function define_sql_features()
+# in function_inc.sh file
+# PLEASE CONSIDER USING FEATURE BASED MECHANISM TO SKIP INCOMPATIBLE TESTS
+# IN PREFERENCE TO USING THIS METHOD, BY DESCRIBING THE FEATURES TEST USES 
+# IN sql_features_used TARGET ABOVE; THEN ASSIGN CORRECT SUPPORT STATUS FOR 
+# THAT FEATURE IN etc/db_features.conf FOR RDBMS THAT IS INCOMPATIBLE
+need_rdbms:
+	@echo ""
+
+	
 	
 # ============================= EOF ================================

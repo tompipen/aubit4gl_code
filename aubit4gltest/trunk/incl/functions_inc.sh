@@ -2036,6 +2036,8 @@ check_postgresql () {
 	#This is apparently needed only with PostgreSQL (with IFX compatibility patches)
 	export SWAP_SQLCA62=Y 
 
+	#See also settigs under -ecp flag in run_tests - AND MERGE THEM ALL IN ONE PLACE! 
+	
 }
 
 
@@ -3002,7 +3004,7 @@ compare_settings() {
 # Change setting in makefile
 #
 ##
-change_setting() {
+function change_setting() {
 look_for="$1:"
 change_to=$2
 test_no=$3
@@ -3696,6 +3698,32 @@ function check_skip() {
 		SKIP_REASON="invalid test"
 		SKIP_REASON_CODES="$SKIP_REASON_CODES 1"
 	else
+		if test "$NEED_RDBMS" != ""; then
+			IS_OK=0
+			for RDBMS in $NEED_RDBMS ; do
+				#echo "RDBMS=$RDBMS"
+				MATCH_THIS="$RDBMS"
+				case $RDBMS in
+					*-ANY)
+						#echo "sed-ing"
+						MATCH_THIS=`echo "$RDBMS" | sed -e 's/-ANY/-\*/'`
+						#echo "sed-ing done"
+					;;
+				esac
+				#echo "Matching $DB_TYPE with $MATCH_THIS"
+				case $DB_TYPE in 
+					$MATCH_THIS) IS_OK=1 ;;
+				esac
+				if test "$IS_OK" = "1"; then
+					break
+				fi
+			done
+			if test "$IS_OK" != "1"; then
+				SKIP_REASON="RDBMS $DB_TYPE incompatible with test (need $NEED_RDBMS)"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 67"
+				SKIP_RDBMS_LIST="$SKIP_RDBMS_LIST $TEST_NO"
+			fi
+		fi
 	
 		if test "$A4GL_FAKELEXTYPE" = "PCODE" -a "$IS_PCODE_ENABLED" = "0"; then
 			SKIP_REASON="not p-code enabled"
@@ -4099,6 +4127,10 @@ fi
 	if test "$SKIP_TRANS_LIST" != "" ; then 
 		echo "Skipped 'cant determine trans state' or 'cant swich trans mode': $SKIP_TRANS_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
+	if test "$SKIP_RDBMS_LIST" != ""; then 
+		echo "Skipped tests incompatbile with used RDBMS: $SKIP_RDBMS_LIST" >> $VERBOSE_RESULTS_LOG	
+	fi
+
 	
 	if test "$PASS_FULL_LIST" = "1"; then 
 		if test "$PASS_DB_TESTS" != "" ; then 

@@ -660,6 +660,9 @@ for a in $FLAGS; do
         fi
 		#Test #1 fails without it:
 		export A4GL_USE_INDICATOR=Y
+		
+		#See also check_postgresql () in functions_inc.sh 
+		
 		;;
 
 
@@ -1883,6 +1886,7 @@ do
 	SKIP_REASON_CODES=""
 	IS_MAKE_ANSI_SQL_COMPAT=""
 	NEED_TRANSACTION=""
+	NEED_RDBMS=""
 	SQL_FEATURES_USED=""
 	SQL_FEATURES_COMPATIBLE=""
 	
@@ -1930,6 +1934,7 @@ do
 			#We are intereste in this features only if test is a db test,
 			SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
 			NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
+			NEED_RDBMS=`$MAKE -s -C $TEST_NO need_rdbms 2>/dev/null`
 		else
 			SE_REQUIRED=
 			NEED_IFX_VERSION=
