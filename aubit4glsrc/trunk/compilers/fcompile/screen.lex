@@ -111,7 +111,6 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "," 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 "thru" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 "through" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
-"not" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT;}
 "delimiters" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 "delimiter" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 "char" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CHAR;}

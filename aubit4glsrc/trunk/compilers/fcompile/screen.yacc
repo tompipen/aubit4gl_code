@@ -72,7 +72,7 @@ char *chk_alias(char *s);
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
 %token SEMICOLON
-%token OPEN_BRACKET CLOSE_BRACKET STAR PLUS MINUS RECORD COMMA THROUGH LIKE TYPE NOT DELIMITERS
+%token OPEN_BRACKET CLOSE_BRACKET STAR PLUS MINUS RECORD COMMA THROUGH LIKE TYPE DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL
 %token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW REVERSE LEFT BLINK UNDERLINE
 %token   AUTONEXT COLOR COMMENTS DEFAULT DISPLAY DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOENTRY PICTURE PROGRAM
@@ -358,12 +358,10 @@ OPEN_SQUARE NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_SQUARE {
 
 
 
-field_datatype_null : field_datatype  {
-			strcpy($<str>$,$<str>1);
-			}
-		| field_datatype NOT KW_NULL {
-			sprintf($<str>$,"%d",atoi($<str>1)+256);
-		}
+field_datatype_null : 
+		field_datatype KWNOT KW_NULL 	{ sprintf($<str>$,"%d",atoi($<str>1)+256); }
+		| field_datatype  		{ strcpy($<str>$,$<str>1); }
+;
 
 field_datatype : {strcpy($<str>$,"0");}
 	| 	TYPE LIKE named_or_kw DOT named_or_kw {
@@ -377,7 +375,7 @@ field_datatype : {strcpy($<str>$,"0");}
 		}
 ;
 
-field_type : FORMONLY DOT field_name field_datatype {
+field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
         fld->datatype=atoi($<str>4);
@@ -567,7 +565,9 @@ field_list_item  | field_list_item THROUGH field_list_item {add_srec_attribute("
 ;
 
 
-field_name : named_or_kw
+field_name : named_or_kw {
+	strcpy($<str>$,$<str>1);
+}
 ;
 
 field_tag_name : 
@@ -690,7 +690,7 @@ clause:
 	| value KWIN OPEN_BRACKET value_list CLOSE_BRACKET {
 		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN");
 	}
-	| NOT clause {
+	| KWNOT clause {
 		$<expr>$=create_not_expr($<expr>2);
 	}
 	| OPEN_BRACKET clause CLOSE_BRACKET {
@@ -738,8 +738,6 @@ any_kword :
 | DATABASE
 | DATETIME
 | DEFAULT
-| TYPE
-| LIKE
 | DELIMITERS
 | DOWNSHIFT
 | DYNAMIC 
@@ -767,7 +765,7 @@ any_kword :
 | MONEY
 | NOENTRY
 | NONCOMPRESS 
-| NOT 
+| KWNOT 
 | PICTURE
 | PROGRAM
 | RECORD 
@@ -792,6 +790,8 @@ any_kword :
 | WITHOUT
 | WORDWRAP 
 | YELLOW
+| TYPE
+| LIKE
 
 ;
 %%
