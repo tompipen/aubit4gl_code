@@ -5,6 +5,12 @@ then
 	./configure  --with-pgsql=/usr/local/pgsql
 fi
 make log
+if [ $? != 0 ]
+then
+	echo "Make failed..."
+	tail -10 make.log
+	exit
+fi
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/libui/ui_curses
 sh make_static

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.68 2003-07-21 21:40:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.69 2003-07-22 19:32:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1658,7 +1658,7 @@ void
 print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(%s,0,0);\n", fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_type,%s,0,0);\n", fields);
   start_bind ('i', 0);
 }
 
@@ -1707,13 +1707,17 @@ print_form_is_compiled (char *s, char *packer, char *formtype)
  *   - T : fieldtouched() function used.
  */
 void
-print_field_func (char type, char *name, char *var)
+print_field_func (char type, char *name,char *var)
 {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+
+
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(%s));", name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io_type,%s,0,0));", name);
+
   if (type == 'T')
-    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(%s,0,0));", name);
+    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io_type,%s,0,0));", name);
+
 
   print_pop_variable (var);
 }
@@ -1969,7 +1973,7 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
   start_bind ('i', constr_str);
   k = print_bind ('i');
   ccc = print_constr ();
-  printc ("int _fld_dr= -100;char *fldname;char _inp_io[%d];\n",
+  printc ("int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='C';\n",
 	  sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
@@ -2715,12 +2719,12 @@ print_next_field (char *s)
 {
 
   if (strcpy(s,"\"+\"")) {
-  	printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'+',%s,0,0);\n", s);
+  	printc ("A4GL_req_field(&_inp_io,_inp_io_type,'+',%s,0,0);\n", s);
   } else {
   	if (strcpy(s,"\"-\"")) {
-  		printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'-',%s,0,0);\n", s);
+  		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'-',%s,0,0);\n", s);
   	} else {
-  		printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),'!',%s,0,0);\n", s);
+  		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'!',%s,0,0);\n", s);
 	}
    }
 
@@ -2819,7 +2823,7 @@ void
 print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
 {
   int ccc;
-  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d];", sizeof (struct s_screenio));
+  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='I';", sizeof (struct s_screenio)+10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -2881,7 +2885,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("*/");
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
-  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr) );
+  printc ("char _inp_io[%d];char _inp_io_type='A';\n", sizeof (struct s_inp_arr)+10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr== -100) {\n");

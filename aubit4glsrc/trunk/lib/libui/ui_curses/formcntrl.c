@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.19 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.20 2003-07-22 19:32:55 mikeaubury Exp $
 #*/
 
 /**
@@ -388,9 +388,13 @@ process_control_stack (struct s_screenio *sio)
       	  struct struct_scr_field *fprop;
 	  new_state=0;
 
-      			fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
-		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255 && isprint(sio->fcntrl[a].extent)) {
+      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  	A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
+		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255 && (
+(isprint(sio->fcntrl[a].extent) || sio->fcntrl[a].extent==1 || sio->fcntrl[a].extent==4)
+)
+
+) {
 
                 	if ((fprop->flags & 1)==0)  {
 					switch (sio->vars[sio->curr_attrib].dtype) {
@@ -402,6 +406,7 @@ process_control_stack (struct s_screenio *sio)
 					case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
 					}
 			}
+			A4GL_debug("SETTING FLAGS ");
                 	fprop->flags|=2; // Set the field status flag
 			A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
 	  		A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);

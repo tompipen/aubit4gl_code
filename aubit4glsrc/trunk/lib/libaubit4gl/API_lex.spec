@@ -123,7 +123,7 @@ print_returning -> void
 /* void print_form_is_compiled (char *s) */
 print_form_is_compiled char* s char* packer char* formtype -> void
 
-/* void print_field_func (char type, char *name, char *var) */
+/* void print_field_func (char type, char *name, char *var ) */
 print_field_func char type,char* name,char* var -> void
 
 /* void print_func_call (char *identifier, struct expr_str *args, int args_cnt) */

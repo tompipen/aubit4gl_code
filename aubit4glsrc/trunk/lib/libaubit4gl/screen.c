@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.10 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: screen.c,v 1.11 2003-07-22 19:32:55 mikeaubury Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@ extern int ui_mode;
 */
 
 
-char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
+//char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
 //int A4GL_chk_iskey (char *keys);
 
 /*

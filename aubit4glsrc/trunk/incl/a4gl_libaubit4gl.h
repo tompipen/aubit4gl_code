@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.75 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.76 2003-07-22 19:32:55 mikeaubury Exp $
 #
 */
 
@@ -1088,7 +1088,7 @@ enum cmd_types {
 
   /* ===================== from builtin.c =================== */
 
-  int A4GL_fgl_fieldtouched (void *i,int n, ...);
+  int A4GL_fgl_fieldtouched (void *i,char itype, ...);
   void A4GL_close_database (void);
 
 /* These two need a4gl in lower case... */
@@ -1692,6 +1692,7 @@ void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
 char *A4GL_init_dec (char *s, int len, int d);
 void A4GL_fgl_end_4gl_0 (void);
+void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 
 /* 
    used by display routines to convert a datatype 
@@ -1756,6 +1757,7 @@ int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
 int A4GL_endis_fields (int en_dis, ...);
 int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
 int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
+int A4GL_fgl_infield (void *inp,char itype,...);
 
 
 

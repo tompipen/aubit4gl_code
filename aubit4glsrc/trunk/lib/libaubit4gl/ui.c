@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.3 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: ui.c,v 1.4 2003-07-22 19:32:55 mikeaubury Exp $
 #
 */
 
@@ -150,20 +150,20 @@ int A4GL_disp_form_fields (int n, int attr, char *formname, ...)
  *
  * @todo Describe function
  */
-int A4GL_req_field (void *s, int size, char type, ...)
+int A4GL_req_field (void *s, char itype, char type, ...)
 {
 va_list ap;
 int a=0;
 int found=0;
   va_start(ap,type);
 
-  if (size == sizeof (struct s_screenio))
+  if (itype=='I'||itype=='C') 
     {
 	a=A4GL_req_field_input(s,type,&ap);
 	found=1;
     }
 
-  if (size == sizeof (struct s_inp_arr))
+  if (itype=='A')
     {
 	a=A4GL_req_field_input_array(s,type,&ap);
 	found=1;
@@ -172,7 +172,7 @@ int found=0;
 
   if (found == 0)
     {
-      A4GL_debug ("Unable to determine current action... - size=%d inp=%d inp_arr=%d",size,sizeof(struct s_screenio),sizeof(struct s_inp_arr));
+      A4GL_debug ("Unable to determine current action... - itype='%c'",itype);
       A4GL_exitwith ("Unable to determine current action...");
     }
 
@@ -426,18 +426,44 @@ void A4GL_clr_fields (int to_defaults, ...)
  * WARNING: exists only in UI Curses!!!!
  * @todo Describe function
  */
-int A4GL_fgl_getfldbuf (char *fields, int fno,...)
+int A4GL_fgl_getfldbuf (void *inp,char itype,...)
 {
 int a=-1;
   va_list ap;
 
-  va_start (ap, fno);
-  a=A4GL_fgl_getfldbuf_ap (fields,fno,&ap); 
+  va_start (ap, itype);
+
+  if (itype=='I' || itype=='C') {
+  	a=A4GL_fgl_getfldbuf_ap (inp,&ap); 
+  } else {
+  	a=A4GL_fgl_getfldbuf_ia_ap (inp,&ap); 
+  }
+
   va_end(ap);
 
   return a;
 
 }
+
+int A4GL_fgl_infield (void *inp,char itype,...)
+{
+int a=-1;
+  va_list ap;
+
+  va_start (ap, itype);
+
+  if (itype=='I' || itype=='C') {
+  	a=A4GL_fgl_infield_ap (inp,&ap); 
+  } else {
+  	a=A4GL_fgl_infield_ia_ap (inp,&ap); 
+  }
+
+  va_end(ap);
+
+  return a;
+
+}
+
 
 
 int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)))
@@ -478,18 +504,18 @@ int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int 
  * @param fieldname
  * @param fieldno
  */
-int A4GL_fgl_fieldtouched (void *input,int ns, ...)
+int A4GL_fgl_fieldtouched (void *input,char itype, ...)
 {
   int a=-1;
   va_list ap;
   
-  va_start (ap, ns);
-  if (ns == sizeof (struct s_screenio))
+  va_start (ap, itype);
+  if (itype == 'I' || itype=='C') 
     {
 	a=A4GL_fgl_fieldtouched_input_ap(input,&ap);
     }
 
-  if (ns == sizeof (struct s_inp_arr))
+  if (itype=='A') 
     {
      a=A4GL_fgl_fieldtouched_input_array_ap(input,&ap);
     }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.15 2003-07-21 21:40:11 mikeaubury Exp $
+# $Id: attributes.c,v 1.16 2003-07-22 19:32:55 mikeaubury Exp $
 #*/
 
 /**
@@ -175,9 +175,10 @@ struct s_all_attributes
   u_all;
 };
 
+int A4GL_get_attr_from_string (char *s);
 
 struct s_std_attr *A4GL_determine_attribute_as_std_attr(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field);
-//void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
+void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
 struct s_std_attr *A4GL_determine_attribute_internal( struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field, struct s_std_attr *syscol, struct s_std_attr *options, struct s_std_attr *disp_form, struct s_std_attr *open_window) ;
 void A4GL_attr_int_to_std(int attr,struct s_std_attr *p) ;
 int A4GL_determine_attribute_as_int(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) ;
@@ -229,8 +230,7 @@ return 0;
 * @param col_str Pointer to character string to store the colour
 * @param col_str Pointer to character string to store the attributes
 */
-void
-A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
+void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 {
   int col_int;
 
@@ -293,8 +293,7 @@ A4GL_debug("30 Attr=%x\n",attr);
  *  @param s The string to decode - should contain a single colour or attribute
  *
  */
-int
-A4GL_get_attr_from_string (char *s)
+int A4GL_get_attr_from_string (char *s)
 {
   if (strcasecmp (s, "BLACK") == 0)
     return AUBIT_COLOR_BLACK;

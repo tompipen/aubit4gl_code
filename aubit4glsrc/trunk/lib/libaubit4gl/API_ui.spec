@@ -77,8 +77,10 @@ A4GL_movewin char* winname int absol -> int
 A4GL_hide_window char* winname -> void
 /* void A4GL_show_window (char* winname)*/
 A4GL_show_window char* winname -> void
-/* int A4GL_fgl_infield (char* s, int a)*/
-A4GL_fgl_infield char* s int a -> int
+
+A4GL_fgl_infield_ap void* inp,va_list* ap -> int
+A4GL_fgl_infield_ia_ap void* inp,va_list* ap -> int
+
 /* void A4GL_clr_window (char* winname)*/
 A4GL_clr_window char* winname -> void
 /* void A4GL_sleep_i (void)*/
@@ -101,8 +103,10 @@ A4GL_clr_form int to_defaults -> void
 A4GL_clr_form_fields int to_defaults char* defs -> void
 /* void A4GL_clr_fields_ap (int to_defaults, va_list* ap)*/
 A4GL_clr_fields_ap int to_defaults va_list* ap -> void
-/* int A4GL_fgl_getfldbuf_ap (char* fields, int fno, va_list* ap)*/
-A4GL_fgl_getfldbuf_ap char* fields int fno va_list* ap -> int
+/* int A4GL_fgl_getfldbuf_ap (va_list* ap)*/
+A4GL_fgl_getfldbuf_ap void* inp va_list* ap -> int
+/* int A4GL_fgl_getfldbuf_ia_ap (va_list* ap)*/
+A4GL_fgl_getfldbuf_ia_ap void* inp va_list* ap -> int
 /* void A4GL_zrefresh (void)*/
 A4GL_zrefresh -> void
 /* void A4GL_gotolinemode (void)*/

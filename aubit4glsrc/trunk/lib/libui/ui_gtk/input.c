@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.13 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: input.c,v 1.14 2003-07-22 19:32:55 mikeaubury Exp $
 #*/
 
 /**
@@ -892,11 +892,11 @@ A4GL_push_constr (void *vs)
  * @return The current feld number.
  */
 int
-A4GL_fgl_infield (char *s, int a)
+A4GL_fgl_infield_ap (void *inp,va_list *ap)
 {
-  long fld;
+  //long fld;
 
-  fld = A4GL_get_curr_infield ();
+  //fld = A4GL_get_curr_infield ();
   return 1;
 
 }
