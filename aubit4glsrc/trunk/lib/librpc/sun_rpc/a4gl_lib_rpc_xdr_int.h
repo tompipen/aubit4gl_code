@@ -17,8 +17,9 @@
 	#include "rpc/xdr.h"
 #endif
 
-#include "rpc/auth.h"
-#include "rpc/pmap_clnt.h" /* pmap_unset() */
+//why was I including this explicitly, it was all supposed to be included via /rpc/rpc.h ????
+//#include "rpc/auth.h"
+//#include "rpc/pmap_clnt.h" /* pmap_unset() */
 
 
 /* ======================== from a4gl_xdr_rpc_stack.h ================ */

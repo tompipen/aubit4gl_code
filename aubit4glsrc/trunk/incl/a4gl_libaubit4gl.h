@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.25 2002-10-22 06:43:36 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.26 2002-10-24 08:24:22 afalout Exp $
 #
 */
 
@@ -67,14 +67,6 @@
 		/* missing from rpcgen generated form_x.h on CygWin: */
 		#define bool_t int
 		#define u_int unsigned int
-
-
-	    /* this is all wrong: where is TRUE/FALS usualy defined? */
-		#ifndef BOOLEAN
-			#define BOOLEAN int
-			#define TRUE 1
-			#define FALSE 0
-		#endif
 
         #define __NEED_DLL_IMPORT__
 
@@ -589,12 +581,6 @@
                     Variables definitions
 =====================================================================
 */
-
-	#ifndef TRUE
-		#define TRUE 1
-	#endif
-
-
 
 	/* ========================= from a4gl_ui.h ====================== */
 
