@@ -340,6 +340,8 @@ A4GL_ANSI_WARN=Yes
 #IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
 #SQLUID=mydbusername
 #SQLPWD=mydbpassword
+SQLUID=@SQLUID@
+SQLPWD=@SQLPWD@
 
 
 

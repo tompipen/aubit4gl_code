@@ -298,7 +298,7 @@ A4GL_DUMP_CORE DEBUG/RUNTIME Action to perform when aubit/4gl programs crash
 =YES|NO
 	either print a sorry message (Internal Error...) , or dump core (seg fault)
 A4GL_ERROR_MSG
-A4GL_ESQL_UNLOAD ESQL/RUNTIME
+A4GL_ESQL_UNLOAD ESQL/RUNTIME PostgreSQL ecpg Informix compatibility
 =YES|NO
 A4GL_EXTENDED_ERRORLOG  DEBUG/RUNTIME Error log handling
 	Add module and line when writing to the error log from CALL errorlog(..)
@@ -462,7 +462,7 @@ A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
 	WARNING!! BE CAREFULL NOT TO HAVE A TAB OR OTHER SPECIAL CHARACTRS
 	IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
 
-A4GL_SQL_CURRENT_FUNCTION SQL
+A4GL_SQL_CURRENT_FUNCTION SQL PostgreSQL ecpg Informix compatibility
 A4GL_SYSTEM
 A4GL_SYSTEMDIR
 A4GL_SYSUSER

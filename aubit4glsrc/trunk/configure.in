@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.221 2004-03-09 07:12:08 afalout Exp $
+dnl # $Id: configure.in,v 1.222 2004-03-10 09:14:13 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -345,6 +345,9 @@ AC_SUBST(A4GL_PACKER)
 AC_SUBST(A4GL_PACKER_DETECTED)
 
 AC_SUBST(A4GL_DBPATH)
+
+AC_SUBST(SQLUID)
+AC_SUBST(SQLPWD)
 
 #SQL
 AC_SUBST(ODBC_LIB_NAME)
@@ -1438,10 +1441,13 @@ ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
 
-#examlpe - USE iT
-#AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.221 2004-03-09 07:12:08 afalout Exp $
-
+AC_ARG_WITH(sqluid,
+	[  --with-sqluid=username  Specify defauld A4GL_SQLUID database user ID (ODBC)],
+	[SQLUID="$withval"])
+	
+AC_ARG_WITH(sqlpwd,
+	[  --with-sqlpwd=password  Specify default A4GL_SQLPWD database password (ODBC)],
+	[SQLPWD="$withval"])
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
 AC_ARG_WITH(all,
@@ -5123,14 +5129,16 @@ fi
 		AC_MSG_RESULT(--with-curses not specified)
 	])
 
-	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail
-	#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
-    #Hovewer, we can compile Aubit TUI plug-in with CygWin Curses using CygWin GCC, and then use
-    #that with the rest of Aubit compielr compiled natively (using MinGW GCC) - if we make
+	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using 
+	#MingW GCC would fail because CygWin libraries need cygwin1.dll, and 
+	#MinGW GCC would not link it in. Hovewer, we can compile Aubit TUI plug-in 
+	#with CygWin Curses using CygWin GCC, and then use that with the rest 
+	#of Aubit compielr compiled natively (using MinGW GCC) - if we make
     #cygwin1.dll accessible at run-time.
 
-	#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go - no forms support -
-    #check again in some time
+	#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go 
+	#- no forms support - check again in some time
+	#We have TUIN now !!!!!
 		
 	PHP_CONFIGURE_PART(Checking for PDcurses:)
 	AC_ARG_WITH(pdcurses,
@@ -5905,7 +5913,7 @@ else
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
 		#A4GL_UI="TUI"
         A4GL_UI="HL_TUI"
-		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
     fi
 
 	if test "$GTKBUILD" != "no"; then
@@ -5976,11 +5984,11 @@ PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
-        PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI"
+        PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#Does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI"
+			PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN"
 			#Will be on all known Linux installations, but not by default on CygWin
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
         fi
@@ -6617,7 +6625,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.221 2004-03-09 07:12:08 afalout Exp $
+| $Id: configure.in,v 1.222 2004-03-10 09:14:13 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
