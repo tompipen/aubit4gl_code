@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-12-09 23:59:12 afalout Exp $
+# $Id: makefile,v 1.6 2004-12-14 06:52:14 afalout Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -51,14 +51,8 @@
 ROOT    =../../..
 LIBROOT =${ROOT}/lib
 
-ifdef COMSPEC
-	IFLAGS	=-I${ROOT}/tools/cygwin
-	LFLAGS	=-L${PCRE_LIB_PATH}/bin -lpcre
-	#PCRE_INC_PATH
-else
-	LFLAGS	=-lpcre
-endif
-
+LFLAGS	=-L${PCRE_LIB_PATH}/bin -lpcre
+IFLAGS	=-I${PCRE_INC_PATH}
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common

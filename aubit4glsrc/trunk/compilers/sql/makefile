@@ -1,6 +1,5 @@
-
 #
-# $Id: makefile,v 1.6 2004-12-09 07:26:45 mikeaubury Exp $
+# $Id: makefile,v 1.7 2004-12-14 06:52:14 afalout Exp $
 #
 
 ROOT		=../..
@@ -13,8 +12,20 @@ include ${ROOT}/incl/Makefile-common
 ##                   Settings
 ## ==================================================================
 
+#LEX=no
+#YACC=no
+
+ifeq "${YACC}" "no"
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/sql/y.tab.c
+	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.yy.c
+	CFLAGS      +=-I${ROOT}/tools/no_yacc/cygwin/compilers/sql
+else
+	Y_TAB_C		=y.tab.c
+	LEX_YY_C	=lex.yy.c
+endif
+
 ALL					=${ROOT}/bin/sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}
-CFLAGS				=-g -fPIC -I$(ROOT)/incl
+CFLAGS				+=-g -fPIC -I$(ROOT)/incl -I.
 LDFLAGS				=-g
 SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
 
@@ -39,6 +50,7 @@ ${ROOT}/bin/sql_parse: y.tab.o main.o
 $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
 	${CC} -g -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -laubit4gl 
 
+	
 ## ==================================================================
 ##                   Sub-targets
 ## ==================================================================
@@ -58,24 +70,23 @@ sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	80.reqd 99.reqd
 	${CAT} $^ > $@
 	
-y.tab.c: sql.yacc
+${Y_TAB_C}: sql.yacc
 ifneq "${YACC}" "no"
 	${YACC} -v -t -d $<
 else
-	@echo "No yacc (${YACC})"
-	exit 4
+	@echo "No yacc (${YACC}) Using ${Y_TAB_C}"
 endif	
 
-lex.yy.c: m2.lex
+${LEX_YY_C}: m2.lex
 ifneq "${LEX}" "no"
 	${LEX} -i $<
 else
-	@echo "No lex (${LEX})"
-	exit 4
+	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
 
-y.tab.o: y.tab.c lex.yy.c util.c
-
+y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c
+	${CC} ${CFLAGS} -c $< -o $@
+	
 ## ==================================================================
 ##                   Clean
 ## ==================================================================

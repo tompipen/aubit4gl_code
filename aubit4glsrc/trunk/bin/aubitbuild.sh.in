@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.49 2004-12-13 13:05:07 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.50 2004-12-14 06:52:12 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -1238,7 +1238,9 @@ the_file="$1"
 	EXEC="$AUTO_SF_SCP $the_file"; runexec
 	EXIT_TIME=`date +%s`
 	let TOOK_TIME=EXIT_TIME - START_TIME
-	if test "$VERBOSE" = "1"; then	
+	if test "$VERBOSE" = "1"; then
+
+#winsetup took 6769.1 seconds to upload	
 		the_script="`type auto_sf_scp | awk '{print $3}'`"
 		timeout="`grep timeout $the_script | awk '{print $3}'`"
 		echo "Upload took $TOOK_TIME seconds (timeout=$timeout)."
