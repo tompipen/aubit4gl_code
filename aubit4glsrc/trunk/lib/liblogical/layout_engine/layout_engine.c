@@ -327,7 +327,7 @@ void open_rv (void)
 
 void open_pal (void)
 {
-  printf ("Not implemented yet..");
+  printf ("Not implemented yet open_pal");
 }
 
 static void

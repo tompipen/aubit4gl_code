@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.83 2004-07-21 06:36:46 mikeaubury Exp $
+# $Id: sql.c,v 1.84 2004-09-22 14:39:05 afalout Exp $
 #
 */
 
@@ -3875,9 +3875,9 @@ A4GLSQL_put_insert ( void *vibind, int n)
 struct BINDING *ibind;
 ibind=vibind;
 #ifdef DEBUG
-  A4GL_debug ("Not implemented");
+  A4GL_debug ("Not implemented A4GLSQL_put_insert");
 #endif
-  A4GL_exitwith ("Not implemented");
+  A4GL_exitwith ("Not implemented A4GLSQL_put_insert");
 }
 
 /**
@@ -3890,9 +3890,9 @@ void
 A4GLSQL_flush_cursor (char *cursor)
 {
 #ifdef DEBUG
-  A4GL_debug ("Not implemented");
+  A4GL_debug ("Not implemented A4GLSQL_flush_cursor");
 #endif
-  A4GL_exitwith ("Not implemented");
+  A4GL_exitwith ("Not implemented A4GLSQL_flush_cursor");
 }
 
 /**

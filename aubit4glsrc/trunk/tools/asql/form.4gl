@@ -67,7 +67,7 @@ end function
 
 
 function run_form()
-	error "Not implemented"
+	error "Not implemented run_form"
 end function
 
 
@@ -208,15 +208,15 @@ end function
 
 
 function new_form()
-	error "Not implemented"
+	error "Not implemented new_form"
 end function
 
 function compile_form()
-	error "Not implemented"
+	error "Not implemented compile_form"
 end function
 
 function drop_form()
-	error "Not implemented"
+	error "Not implemented drop_form"
 end function
 
 

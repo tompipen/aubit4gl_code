@@ -598,6 +598,8 @@ A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels
 SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
 =Y|N
 	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
-
+A4GL_SYSCOL_VAL UNKNOWN a4gl_syscolval
+A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
+A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
 
 

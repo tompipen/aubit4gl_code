@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.134 2004-09-12 03:00:05 afalout Exp $
+# $Id: 4glpc,v 1.135 2004-09-22 14:39:03 afalout Exp $
 #
 
 ########################################################################
@@ -1275,14 +1275,20 @@ do
    -as-dll)		#creates shared library- .so on UNIX, .dll on Windows
 		if test "$A4GL_LEXTYPE" = "EC"; then
 			if test "$A4GL_LEXDIALECT" = "POSTGRES"; then
-				echo "not implemented"; exit 6
+				PG_LIBS="-lecpg_compat -lpgtypes -lpq"			
+				if [ "$A4GLVERBOSE" = "yes" ]; then
+					echo "Note: Using PG_LIBS:"
+					echo "$PG_LIBS"
+					echo "COMPCC=$COMPCC"
+				fi
+				NCC_LINK="$NCC_C -shared -L$POSTGRESDIR/lib $PG_LIBS"
 			elif test "$A4GL_LEXDIALECT" = "INFORMIX"; then
 				if [ "$A4GLVERBOSE" = "yes" ]; then
 					echo "Note: Using IFX_LIBS:"
 					echo "$IFX_LIBS"
 					echo "COMPCC=$COMPCC"
 				fi
-				#Informix ESQL compiler don't kno whow to link to shared librry
+				#Informix ESQL compiler don't know how to link to shared library
 				#so we must use CC
 				NCC_LINK="$NCC_C -shared -L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql $IFX_LIBS"
 			else

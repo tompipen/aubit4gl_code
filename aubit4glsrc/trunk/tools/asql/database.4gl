@@ -37,7 +37,7 @@ menu "DATABASE"
 		call create_db()
 
 	command "Info"  "Retrieve information about a database."
-		error "Not Implemented"
+		error "Not Implemented - Info"
 
 	command "Drop"  "Drop a database."
 		call drop_db()

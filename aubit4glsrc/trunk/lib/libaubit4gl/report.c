@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.44 2004-07-17 07:10:27 mikeaubury Exp $
+# $Id: report.c,v 1.45 2004-09-22 14:39:04 afalout Exp $
 #
 */
 
@@ -948,8 +948,8 @@ A4GL_free_duplicate_binding (struct BINDING *b, int n)
 void
 A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
 {
-  A4GL_debug ("Not implemented");
-  A4GL_exitwith ("Not implemented");
+  A4GL_debug ("Not implemented A4GL_rep_file_print");
+  A4GL_exitwith ("Not implemented A4GL_rep_file_print");
 }
 
 

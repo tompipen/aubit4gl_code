@@ -84,6 +84,22 @@ fi
 #FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
 #used and give us bunch of errors in 4glpc. We need to recognize and fix this here
 
+#List of all Aubit tools that are supposed to run only on command line in
+#TUI mode - not GUI mode
+CMD_LINE_TOOLS="4glc aubit-config default_frm mcompile 4glc-strip aupscol \
+	ecpg_wrap mdecompile 4glpc amkmessage aupscol.err c2pcode esql_wrap \
+    prepmake aace asql_g.4ae c2pcode_fgl process_report aace_4gl asql_i.4ae \
+	fcompile aace_perl asql_p.4ae checker fdecompile runner abug.sh checker_fgl \
+    runner_fgl adecompile  unmkmessage afinderr aubitbuild.sh convertsql genmake \
+	amake xgen"
+
+for CMD in $CMD_LINE_TOOLS; do
+	if test "$1" = "$CMD"; then 
+		IS_CMD_LINE_TOOL=1
+		export A4GL_UI=TUI
+	fi
+done	
+
 FLAGS=$@
 EXEC=""
 FLAG_CNT=0
@@ -93,11 +109,12 @@ for FLAG in $FLAGS; do
    case $FLAG in
    ################
 
-   --verbose)
+   --verbose | -verbose)
         echo "AUBITDIR=$AUBITDIR"
         echo "PATH=$PATH"
         echo "DBPATH=$DBPATH"
         echo "A4GL_DBPATH=$A4GL_DBPATH"
+		VERBOSE=1
         $2 $3 $4 $5 $6 $7 $8 $9
    ;;
 
@@ -115,8 +132,9 @@ for FLAG in $FLAGS; do
   esac
   ####
 done
-
-echo "Running: $EXEC"
+if test "$VERBOSE"; then 
+	echo "Running: $EXEC"
+fi
 eval $EXEC
 RET=$?
 exit $RET

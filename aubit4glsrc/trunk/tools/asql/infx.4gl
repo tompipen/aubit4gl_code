@@ -1242,7 +1242,7 @@ function load_info_ref(lv_tabname)
 define lv_tabname char(255)
 define lv_tabid integer
 let lv_tabid=get_tabid(lv_tabname)
-error "Not Implemented"
+error "Not Implemented load_info_ref" 
 
 return 0
 end function
@@ -1312,7 +1312,7 @@ define lv_tabname char(255)
 define lv_tabid integer
 let lv_tabid=get_tabid(lv_tabname)
 
-error "Not Implemented"
+error "Not Implemented load_info_constraints"
 return  0
 
 end function
@@ -1441,7 +1441,7 @@ define lv_tabname char(255)
 define lv_tabid integer
 
 let lv_tabid=get_tabid(lv_tabname)
-error "Not Implemented"
+error "Not Implemented load_info_fragments"
 return 1
 
 end function

@@ -47,7 +47,7 @@ return dbname
 end function
 
 function connection_connect()
-error "Not Implemented"
+error "Not Implemented connection_connect"
 end function
 
 FUNCTION do_paginate()
@@ -69,11 +69,11 @@ END FUNCTION
 
 
 function drop_db()
-	error "Not implemented"
+	error "Not implemented drop_db"
 end function
 
 function qry_translate()
-	error "Not Implemented"
+	error "Not Implemented qry_translate"
 end function
 
 function get_db_err_msg(lv_code)
@@ -89,31 +89,31 @@ end function
 
 
 function load_info_columns()
-error "Not Implemented Yet"
+error "Not Implemented Yet load_info_columns"
 end function
 
 function load_info_indexes()
-error "Not Implemented Yet"
+error "Not Implemented Yet load_info_indexes"
 end function
 
 function load_info_priv()
-error "Not Implemented Yet"
+error "Not Implemented Yet load_info_priv"
 end function
 
 function load_info_status()
-error "Not Implemented Yet"
+error "Not Implemented Yet load_info_status"
 end function
 
 function load_info_tables()
-error "Not Implemented Yet"
+error "Not Implemented Yet load_info_tables"
 end function
 
 function table_info()
-error "Not Implemented Yet"
+error "Not Implemented Yet table_info"
 end function
 
 function table_select()
-error "Not Implemented Yet"
+error "Not Implemented Yet table_select"
 end function
 
 

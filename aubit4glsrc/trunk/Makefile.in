@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.157 2004-09-18 06:31:11 afalout Exp $
+# $Id: Makefile.in,v 1.158 2004-09-22 14:36:44 afalout Exp $
 #
 
 ## ==================================================================
@@ -384,8 +384,6 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/adbaccess clean
 	$(MAKE) -C tools/aupscol clean
 	$(MAKE) -C help clean
-
-#	cd tools/test/build_tests; ${SH} run_tests -clean
 	@echo " "	
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Aubit 4gl compiler source tree is now clean                        |"
@@ -1277,7 +1275,7 @@ test.build:
 #available libraries in lib
 #	-cd tools/test/build_tests; ${SH} run_tests -alltests
 #	@echo "NOTE: build tests are no longer in Aubit 4GL compiler source code tree" 
-	-cd /opt/aubit/aubit4gltest; ${SH} run_tests -cert -silent -verbose-results -noprogress -range 1 20
+	-cd /opt/aubit/aubit4gltest; ${SH} run_tests -cert -silent -verbose-results -cron -range 1 20
 
 ## ---------------------------- EOF ----------------------------------
 

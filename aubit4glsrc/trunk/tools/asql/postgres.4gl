@@ -1070,14 +1070,14 @@ end function
 
 function load_info_priv(lv_tabname)
 define lv_tabname char(255)
-error "Not Implemented"
+error "Not Implemented load_info_priv"
 return 0
 end function
 
 
 function load_info_ref(lv_tabname)
 define lv_tabname char(255)
-error "Not Implemented"
+error "Not Implemented load_info_ref"
 return 0
 end function
 
@@ -1090,7 +1090,7 @@ end function
 
 function load_info_constraints(lv_tabname)
 define lv_tabname char(255)
-error "Not Implemented"
+error "Not Implemented load_info_constraints"
 return 0
 end function
 
@@ -1103,7 +1103,7 @@ end function
 
 function load_info_fragments(lv_tabname)
 define lv_tabname char(255)
-error "Not Implemented"
+error "Not Implemented load_info_fragments"
 return 0
 end function
 
@@ -1218,7 +1218,7 @@ endcode
 END FUNCTION
 
 FUNCTION load_info_tables()
-	display "Not implemented" at 24,1
+	display "Not implemented load_info_tables" at 24,1
 	sleep 1
 end function
 

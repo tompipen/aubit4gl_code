@@ -13,7 +13,7 @@ end function
 
 
 function run_user_menu()
-	error "Not implemented"
+	error "Not implemented run_user_menu"
 end function
 
 
