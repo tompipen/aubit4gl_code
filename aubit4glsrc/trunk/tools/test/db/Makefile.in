@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.12 2003-01-12 22:09:19 saferreira Exp $
+# $Id: Makefile.in,v 1.13 2003-01-14 08:45:10 saferreira Exp $
 #
 
 ROOT    =../../..
@@ -45,8 +45,6 @@ CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
 SOURCES_4GL		=fgl_dml_suite.4gl
 
 OBJECTS         = ${SOURCES_ESQL:.ec=.o}
-
-LIBS			=-lcheck -laubit4gl
 
 ALL=test_db.4ae
 

@@ -5,7 +5,7 @@
  */
 
 #include <check.h>
-#include "informix_test.h"
+#include "postgresql_test.h"
 
 #ifndef WIN32
 	#include <dlfcn.h>
