@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.63 2004-08-31 20:46:52 mikeaubury Exp $
+# $Id: builtin.c,v 1.64 2004-10-25 18:53:46 whaslbeck Exp $
 #
 */
 
@@ -97,6 +97,7 @@ int aclfgl_winexecwait (char *exec_string);
 
 int aclfgl_winexec (char *exec_string);
 int aclfgli_show_help (int a);
+int aclfgl_fgl_scr_size(int n);
 
 /**
  * Does nothing
@@ -1205,9 +1206,18 @@ A4GL_generateError (s, fname, lineno);
 
 int aclfgl_fgl_scr_size(int n)  {
 // fgl_scr_size(char *srecname)
+        struct struct_screen_record *srec;
 	char *s;
-	s=A4GL_char_pop();
-	return 0;
+
+        s=A4GL_char_pop();
+        srec=A4GL_get_srec(s);
+        if(!srec) {
+                A4GL_debug("screen record '%s' not found in current form", s);
+	        A4GL_push_long(-1);
+                return 1;
+        }
+        A4GL_push_long(srec->dim);
+	return 1;
 }
 
 int aclfgl_fgl_dialog_setcurrline(int n) {
