@@ -417,7 +417,7 @@ A4GL_assertion(out==0,"No output file (2)");
 					if (!execute_select_free()) goto end_query;
 					
 				} else {
-					A4GL_debug("Error with %s",p);
+					A4GL_debug("Error with %s - %d",p,sqlca.sqlcode);
 					goto end_query;
 					
 				}

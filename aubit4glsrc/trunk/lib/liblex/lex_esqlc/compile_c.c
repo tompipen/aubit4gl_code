@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.159 2004-04-27 22:28:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.160 2004-04-30 19:09:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.159 2004-04-27 22:28:21 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.160 2004-04-30 19:09:10 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4372,10 +4372,13 @@ printDeclareFunctionStack (char *_functionName)
 #ifdef DEBUG
   A4GL_debug ("Function %s\n", _functionName);
 #endif
+
+#ifdef FGL_PLUS_PLUS
   extern int class_cnt;
   if (class_cnt) {
 	CLASS_add_method(_functionName,"");
   }
+#endif
   if (isGenStackInfo ())
     {
       if (doing_cs ())

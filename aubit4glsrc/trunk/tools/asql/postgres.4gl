@@ -70,13 +70,13 @@ static int done_alloc=0;
 if (done_alloc) {
 	EXEC SQL deallocate descriptor descExec;
 	done_alloc=0;
-	if (sqlca.sqlcode<0) return 0;
+	if (sqlca.sqlcode<0) {A4GL_debug("Err1");return 0;}
 }
 	
 
 if (!done_alloc) {
 	EXEC SQL allocate descriptor descExec ;cp_sqlca();
-	if (sqlca.sqlcode<0) return 0;
+	if (sqlca.sqlcode<0) {A4GL_debug("Err2"); return 0;}
 	done_alloc=1;
 }
 
@@ -86,16 +86,16 @@ if (need_cursor_free) {
 }
 	
 	EXEC SQL declare crExec CURSOR FOR stExec;cp_sqlca();
-       	if (sqlca.sqlcode<0) return 0;
+       	if (sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
 
 	need_cursor_free=1;
 
 	EXEC SQL open crExec ;cp_sqlca();
-	if (sqlca.sqlcode<0) return 0;
+	if (sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
 	need_cursor_free=3;
 
 	firstFetchInit=1;
-
+return 1;
 }
 
 
