@@ -88,11 +88,6 @@ op_insert_column_list: {strcpy($<str>$,"");}
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-columns_list:
-	column_name
-	| insert_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
 
 insert_column_list:
 	column_name
@@ -190,10 +185,6 @@ sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
 {sprintf($<str>$,"%d,pop_int()",FETCH_ABSOLUTE);}
 ;
 
-fetch_target_list:
-	variable
-	| fetch_target_list COMMA variable
-	;
 
 delete_statement_position:
 	DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
@@ -209,19 +200,6 @@ delete_statement_search:
 	DELETE_FROM table_name op_where_clause
               {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
-query_expression:
-	  query_term
-	| query_expression UNION op_all query_term 
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	;
-
-query_term:
-	query_specification
-	| OPEN_BRACKET query_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
-
-op_order_by_clause: {strcpy($<str>$,"");} | order_by_clause;
 
 order_by_clause:
 	ORDER BY sort_specification_list
@@ -530,9 +508,6 @@ schema_element:
 
 
 
-result_specification:
-	value_expression
-	;
 
 
 having_clause:
@@ -744,19 +719,8 @@ op_all: {strcpy($<str>$,"");}
 
 
 
-target_specification:
-	  parameter_specification  {sprintf($<str>$,$<str>1);}
-	;
 
 
-parameter_specification:
-        var_ident_ibind {sprintf($<str>$," *?* ");}
-	;
-
-variable_specification:
-	COLON identifier  identifier
-	| var_ident_ibind
-	;
 
 data_type:
 	  char_string_type
@@ -1048,19 +1012,11 @@ sel_p2 : {strcpy($<str>$,"");}
 
 tmp_tabname: identifier;
 
-op_into_temp :
-{strcpy($<str>$,"");} | INTO_TEMP tmp_tabname op_no_log
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-;
 
 opt_into_sel :  { start_bind('o',0);strcpy($<str>$,""); }
 	| INTO  obind_var_list { strcpy($<str>$,""); }
 ;
 
-select_target_list:
-	  target_specification {sprintf($<str>$,"{%s}",$<str>1);}
-	| select_target_list COMMA target_specification {sprintf($<str>$,"[%s,%s]\n",$<str>1,$<str>3);}
-	;
 
 
 query_specification:
@@ -1183,32 +1139,9 @@ strcpy($<str>$,get_undo_use());
 
 conn_id : ident_or_var;
 
-associate_select_statement:
-	SELECT op_ad select_list_associate
-	table_expression_associate
-;
-
-select_list_associate: 
-	value_expression_pls 
-	| select_list_associate COMMA value_expression_pls { sprintf($<str>$," %s,%s",$<str>1,$<str>3);}
-	;
 
 
-table_expression_associate:
-	from_clause
-	where_clause_associate
-	op_group_by_clause
-	op_having_clause 
-{
-sprintf($<str>$,"%s %s %s %s",
-$<str>1,$<str>2,
-$<str>3,$<str>4);
-}
-	;
 
-where_clause_associate:
-	WHERE search_condition {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-	;
 
 misc_sql :
 	lock_stmt

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.12 2002-09-21 12:02:18 afalout Exp $
+# $Id: mkyacc,v 1.13 2002-10-03 14:50:15 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -43,11 +43,13 @@ fi
 cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule generated/single_words.rule > generated/fgl.yacc
 echo "/* ========================== from mkyacc =========================== */" >> generated/fgl.yacc
 echo "commands : | command1 ;" >> generated/fgl.yacc
-echo "all_commands : commands_all | commands_all SEMICOLON ;" >> generated/fgl.yacc
+
+echo "all_commands : commands_all opt_semi ;" >> generated/fgl.yacc
 
 echo 'command1	: all_commands  {
 chk4var=0;lex_printcomment("/* [Comm:%s] */\n",$<str>$);
 if (acl_getenv("INCLINES"))
+lex_printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 	prchkerr(lastlineno,infilename);
 	lastlineno=yylineno;
 }
@@ -60,7 +62,7 @@ lastlineno=yylineno;
 }
 ;' >> generated/fgl.yacc
 echo "
-commands_all :  commands_all1 ;
+commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
 commands_all1 	:" >> generated/fgl.yacc
 grep -h "^[^ ]*_cmd.*:" *.rule  | $AWK '
 (NR==1) {print " 		" $1 >> "generated/fgl.yacc"}

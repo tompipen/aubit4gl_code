@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.12 2002-09-17 09:38:01 afalout Exp $
+# $Id: error.c,v 1.13 2002-10-03 14:50:16 mikeaubury Exp $
 #
 */
 
@@ -84,6 +84,7 @@ char errorbuff[256]="";
 char lasterrorstr[1024]="";
 int cache_status=0;
 int cache_statusno=0;
+int int_err_flg;
 
 /*
 =====================================================================
@@ -130,7 +131,7 @@ int a;
 		    cache_status=(errors[a].errno+30000);
 			debug("Setting statusno");
 		    cache_statusno=a;
-			//return;
+			return;
 			printf ("Error:\n %s \nSTOP\n ", s);
 			debug("Exiting program.");
 			exit (errors[a].errno);
@@ -215,6 +216,21 @@ int a=0;
 	debug("Returning %p",lasterrorstr);
 	debug("Returning %s",lasterrorstr);
 	return lasterrorstr;
+}
+
+
+
+
+aclfgli_clr_err_flg() {
+	int_err_flg=0;
+}
+
+aclfgli_set_err_flg() {
+	int_err_flg=1;
+}
+
+aclfgli_get_err_flg() {
+	return int_err_flg;
 }
 
 /* ======================== EOF ======================= */

@@ -18,6 +18,7 @@ initial_expr
 | literal_expr {
 	debug("Got literal ptr=%p",$<ptr>1);
 }
+
 | MINUS fgl_expr_c {
 	$<ptr>$=new_expr("push_int(0);");
 	$<ptr>$=append_expr_expr($<ptr>$,$<ptr>2);
@@ -26,6 +27,7 @@ initial_expr
 | PLUS fgl_expr_c {
 	$<ptr>$=$<ptr>2;
 }
+
 ;
 
 fgl_next:
@@ -77,15 +79,7 @@ fgl_expr_list 	: fgl_expr
 }
 ;
 
-opt_expr_list 	: 	{strcpy($<str>$,"0");printf("NOthing\n");}
-| opt_expr_actlist {debug("Expr list\n");}
-;
 
-opt_expr_actlist :
-fgl_expr {debug("L1\n");set_counter(1);sprintf($<str>$,"1");}
-| opt_expr_actlist COMMA fgl_expr {debug("L2\n");sprintf($<str>$,"%d",get_counter_val());}
-
-;
 
 
 fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
@@ -97,14 +91,12 @@ fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
 ;
 
 
-fgl_expr: fgl_expr_c {
+fgl_expr:  fgl_expr_c {
 	debug("Print expr (2)");
 	print_expr($<ptr>1);
 }
 ;
 
-op_int_sign : {strcpy($<str>$,"");} | int_sign
-;
 
 int_sign	: PLUS
 {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.20 2002-09-09 06:51:01 afalout Exp $
+# $Id: API_sql.c,v 1.21 2002-10-03 14:50:16 mikeaubury Exp $
 #
 */
 
@@ -165,8 +165,8 @@ A4GLSQL_set_status (int a, int sql)
   debug("A4GLSQL_set_status");
 
   status = a;
-  if (sql)
-    sqlca.sqlcode = a;
+  if (sql) sqlca.sqlcode = a;
+  if (a!=0||sql!=0) aclfgli_set_err_flg();
   debug ("Status set to %d", a);
 }
 

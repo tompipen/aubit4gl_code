@@ -29,9 +29,6 @@ print_start_report("","\"\"",$<str>2);
 
 
 
-database_name : var_ident;
-
-
 
 rout : CHAR_VALUE | cvariable;
 
@@ -431,9 +428,6 @@ rep_where :  { strcpy($<str>$,"");
 }
 ;
 
-commands_else : commands | commands ELSE {
-print_if_else();
-} commands ;
 
 
 pause_command: PAUSE pause_msg

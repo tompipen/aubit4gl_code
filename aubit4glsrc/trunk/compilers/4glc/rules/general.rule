@@ -45,9 +45,6 @@ cursor_name	:	ident_or_var {
 			}
 ;
 
-foreach_cursor_name	:	ident_or_var {sprintf($<str>$,"push_char(%s);\n",$<str>1);
-	addmap("Cursor",last_var,curr_func,yylineno,infilename);
-};
 
 fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
 

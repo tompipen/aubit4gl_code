@@ -174,15 +174,7 @@ func_call_args	: func_arg
 
 ;
 
-rcvd_variables	:	variable {
-print_pop_variable($<str>1);
-cnt=1;sprintf($<str>$,"%d",cnt);
-}
-		| rcvd_variables COMMA variable {
-print_pop_variable($<str>1);
-cnt++;sprintf($<str>$,"%d",cnt);
-}
-;
+
 
 func_arg 	:	fgl_expr_c 
 ;

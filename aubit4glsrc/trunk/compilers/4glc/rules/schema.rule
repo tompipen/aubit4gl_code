@@ -8,7 +8,6 @@ drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
 	| DROP_INDEX  {sprintf($<str>$,"%s",$<str>1);}
 ;
 
-view_name : identifier;
 
 create_cmd : create_c_1 {
 	print_exec_sql($<str>1);
@@ -41,7 +40,6 @@ idx_column :
 | identifier DESC
 | identifier;
 
-idx_name : identifier;
 
 table_element_list:
 	  table_element

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
+# $Id: builtin.c,v 1.10 2002-10-03 14:50:16 mikeaubury Exp $
 #
 */
 
@@ -538,11 +538,15 @@ own messages in the error log file by using the ERRORLOG( ).
  * @param statusnumber 
  */
 int
-aclfgl_err_get(int statusnumber)
+aclfgl_err_get(int n) 
 {
-
+int a;
+static char buff[200];
+	a=pop_int();
 	/* A4GLSQL_set_status(-3001,0); */
-      return 0;
+	sprintf(buff,"Error : %d ",a);
+	push_char(buff);
+      return 1;
 }
 
 

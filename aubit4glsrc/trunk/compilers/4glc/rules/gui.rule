@@ -63,18 +63,33 @@ msg_box_cmd : MESSAGEBOX {start_state("messagebox",1);} fgl_expr_list
 ;
 
 op_disable_msg :
-| DISABLE_PROGRAM | DISABLE_ALL
+|  gm_disable_msg
 ;
 
-op_returning_msg :
-        | RETURNING variable
+
+gm_disable_msg: DISABLE_PROGRAM | DISABLE_ALL
 ;
 
-op_caption : | CAPTION fgl_expr_list ;
 
-op_icon : | ICON INT_VALUE  ;
+op_returning_msg : 
+        | gm_returning_msg
+;
 
-op_buttons : | BUTTONS INT_VALUE op_def_but;
+gm_returning_msg: RETURNING variable
+;
+
+op_caption : | gm_caption
+;
+
+gm_caption: CAPTION fgl_expr_list ;
+
+op_icon : | gm_icon
+;
+
+gm_icon: ICON INT_VALUE  ;
+
+op_buttons : | gm_buttons;
+gm_buttons : BUTTONS INT_VALUE op_def_but;
 
 op_def_but : | DEFAULT INT_VALUE;
 

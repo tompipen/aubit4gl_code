@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.32 2002-09-08 10:38:19 afalout Exp $
+# $Id: compile_c.c,v 1.33 2002-10-03 14:50:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -961,7 +961,7 @@ prchkerr (int l, char *f)
 /* 2 = call */
 /* 3 = goto */
   debug ("MJA prchkerr %d %s", l, f);
-  printc ("if (sqlca.sqlcode !=0 || status !=0 || %d) {\n",
+  printc ("if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || %d)) {\n",
 	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
 	  || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
   /*printc("debug(\"status=%%d sqlca.sqlcode=%%d\",status,sqlca.sqlcode);\n"); */
@@ -996,7 +996,7 @@ prchkerr (int l, char *f)
   printcomment ("/* WARNING */");
   a =
     pr_when_do
-    ("   if (sqlca.sqlcode==0&&(sqlca.sqlawarn[0]=='w'||sqlca.sqlawarn[0]=='W'))",
+    ("   if (aclfgli_get_err_flg()&&sqlca.sqlcode==0&&(sqlca.sqlawarn[0]=='w'||sqlca.sqlawarn[0]=='W'))",
      when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
   printcomment ("/* SQLSUCCESS */");
   a =
@@ -4437,6 +4437,16 @@ strcpy(buff,"(");
 	}
 	strcat(buff,")-1");
 	return buff;
+}
+
+
+void print_cmd_start() {
+	printc("\n\naclfgli_clr_err_flg();\n\n");
+}
+
+void print_cmd_end() {
+	//printc("\naclfgli_clr_err_flg()\n\n");
+	printc("\n/* End command */\n");
 }
 
 /* =========================== EOF ================================ */

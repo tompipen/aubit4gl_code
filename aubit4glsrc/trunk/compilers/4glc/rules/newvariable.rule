@@ -31,13 +31,17 @@ if (scan_variable (buff) == -1&&buff[0]!=' ') {
 var_int :
 	var | ATSIGN var {strcpy($<str>$,$<str>2);}
 ;
+
+varsetidentdot : var setident DOT
+;
+
 var: 
- var setident DOT dot_part_var { 
-         sprintf ($<str>$, "%s.%s", $<str>1, $<str>4); 
+ varsetidentdot dot_part_var { 
+         sprintf ($<str>$, "%s.%s", $<str>1, $<str>2); 
          lex_printcomment("/* record building -> %s */\n",$<str>$);
          }
 | 
- var setident DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE {
+ varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE {
 
          int type,arrsize,size,level;
          char buff[256];
@@ -46,7 +50,7 @@ var:
 
          lex_printcomment("/* OPEN_SQUARE.. */\n");
 
-         sprintf(buff,"%s.%s",$<str>1,$<str>4);
+         sprintf(buff,"%s.%s",$<str>1,$<str>2);
          if (scan_variable(buff)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
            yyerror(buff2);
@@ -60,14 +64,14 @@ var:
          if (arrsize>0)
          {
              debug("Is array...");
-             sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>6));
-             lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>6),num_arr_elem(arrbuff));
+             sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>4));
+             lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
          }
          else
          {
              debug ("Is string...");
              sprintf ($<str>$, " substr(%s,%d,%s,0)", buff,
-                      (int)scan_variable (buff), $<str>6);
+                      (int)scan_variable (buff), $<str>4);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
              lex_printcomment ("/*character variable %s*/\n", $<str>$);
@@ -169,21 +173,6 @@ identifier arr_subscripts
 
 
 
-var_list:var
-{
-  debug ("Variable:%s\n", $<str>$);
-  cnt = 1;
-  sprintf ($<str>$, "1");
-}
-|var_list COMMA var
-{
-  cnt++;
-  sprintf ($<str>$, "%d", cnt);
-  debug ("next variable %s", $<str>3);
-  sprintf ($<str>$, "%s,%s", $<str>1, $<str>3);
-};
-
-
 
 arr_subscripts : 
 	OPEN_SQUARE num_list CLOSE_SQUARE {
@@ -216,21 +205,6 @@ num_list_element: arr_expr
   sprintf ($<str>$, "%s", $<str>1);
 };
 
-arr_num_list:arr_num_list_element
-{
-  sprintf ($<str>$, "%s", $<str>1);
-}
-|arr_num_list COMMA arr_num_list_element
-{
-  sprintf ($<str>$, "%s,%s", $<str>1, $<str>3);
-}
-
-;
-
-arr_num_list_element:arr_expr
-{
-  sprintf ($<str>$, "(%s-1)", $<str>1);
-};
 
 let_variable: let_var
 {
@@ -381,18 +355,6 @@ sprintf($<str>$,"%d",c);
 ;
 
 
-
-param_var_list:	ibind_var {
-start_bind('f',$<str>1);
-sprintf($<str>$,"1");
-}
-	|	
-param_var_list COMMA ibind_var {
-int c;
-c=add_bind('f',$<str>3);
-sprintf($<str>$,"%d",c); 
-}
-;
 
 
 ibind_var_list:	ibind_var {
