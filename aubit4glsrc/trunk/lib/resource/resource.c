@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.78 2004-08-10 13:42:24 mikeaubury Exp $
+# $Id: resource.c,v 1.79 2004-08-16 19:55:29 mikeaubury Exp $
 #
 */
 
@@ -532,7 +532,7 @@ find_str_resource (char *s)
     }
 }
 
-#define DEBUG_VARIABLE_USAGE 0
+//#define DEBUG_VARIABLE_USAGE 0
 
 /**
  * Get the contents of an resources or environment variable.
