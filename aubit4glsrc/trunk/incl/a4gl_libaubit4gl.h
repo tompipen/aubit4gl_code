@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.76 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.77 2003-07-25 22:04:53 mikeaubury Exp $
 #
 */
 
@@ -961,7 +961,7 @@ enum cmd_types {
   long A4GL_pop_long (void);
   long A4GL_pop_date (void);
   float A4GL_pop_float (void);
-  double A4GL_pop_double (void);
+  //double A4GL_pop_double (void);
   int A4GL_pop_var (void *p, int d);
   int A4GL_pop_var2 (void *p, int d, int s);
   double A4GL_ret_var (void *p, int d);
@@ -1317,7 +1317,7 @@ enum cmd_types {
   /* ============================ rexp2.c ================================= */
   void A4GL_stripnl (char *buff);
   int A4GL_mja_match (char *str1, char *str2, int likeormatch);
-  char *A4GL_construct (char *colname, char *val, int inc_quotes);
+  char *A4GL_construct (char *tabname,char *colname, char *val, int inc_quotes);
 
   /* =========================== stack.c ================================ */
 

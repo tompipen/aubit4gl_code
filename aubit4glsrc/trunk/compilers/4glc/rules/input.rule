@@ -182,10 +182,11 @@ scroll_cmd :
 	}
 ;
 
-up_or_down : UP {strcpy($<str>$,"1");} 
-	| DOWN {strcpy($<str>$,"-1");}
-	| UP_BY INT_VALUE {sprintf($<str>$,"%s",$<str>2);}
-	| DOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
+up_or_down :
+	 KWUP_BY INT_VALUE {sprintf($<str>$,"%s",$<str>2);}
+	| KWDOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
+	| KWUP {strcpy($<str>$,"1");} 
+	| KWDOWN {strcpy($<str>$,"-1");}
 ;
 
 op_help : {strcpy($<str>$,"");} | HELP INT_VALUE

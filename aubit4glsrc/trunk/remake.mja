@@ -1,10 +1,22 @@
+A4GL_LEXTYPE=C
+export A4GL_LEXTYPE
+
 if [ "$1" != "" ] 
 then
 	cvs update -d 
 	make cleanall
 	./configure  --with-pgsql=/usr/local/pgsql
 fi
+
+cd /home/aubit4gl/sourceforge/aubit4glsrc
+cd lib/extra_libs/esqlc
+sh make_static
+sh make_simple
+
+
+cd /home/aubit4gl/sourceforge/aubit4glsrc
 make log
+
 if [ $? != 0 ]
 then
 	echo "Make failed..."
@@ -20,10 +32,7 @@ cd lib/libsql/esqlc
 sh make_static
 sh make_simple
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc
-cd lib/extra_libs/esqlc
-sh make_static
-sh make_simple
+
 
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc

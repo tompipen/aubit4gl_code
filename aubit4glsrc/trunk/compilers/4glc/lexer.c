@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.74 2003-06-25 21:46:31 mikeaubury Exp $
+# $Id: lexer.c,v 1.75 2003-07-25 22:04:53 mikeaubury Exp $
 #*/
 
 /**
@@ -824,7 +824,7 @@ chk_word (FILE * f, char *str)
 
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);
-
+  set_yytext(p);
   A4GL_debug ("chk_word: read_word returns %s\n", p);
 
   /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
@@ -1144,8 +1144,17 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   if (sql_mode == 0)
     {
-      if (allow == 0 && isident (buff))
-	a = NAMED_GEN;
+      if (allow == 0) {
+		int t;
+		t=isnum(buff);
+		if (t==1) a=INT_VALUE;
+		if (t==2) a=NUMBER_VALUE;
+		if (t!=1&&t!=2) {
+		 	if (isident (buff)) {
+				a = NAMED_GEN;
+			}
+		}
+	}
 
       if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
 	{

@@ -141,14 +141,14 @@ void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int indicat,in
 
 }
 
-A4GL_copy_interval() {
+void A4GL_copy_interval() {
 	printf("A4GL_copy_interval not implemented yet");
 }
 
 
 
 
-A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) {
+void A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) {
 	
 	if (mode=='i') {
 		if (A4GL_isnull(0,(void *)a4gl)) {
@@ -168,7 +168,8 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 
 
 
-A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) {
+
+void A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) {
 short  mdy[3];
 int mdy_i[3];
 long orig_date;
@@ -200,7 +201,7 @@ long orig_date;
 
 
 
-A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
+void A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
 		*infx=*a4gl;
@@ -212,7 +213,7 @@ A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 }
 
 
-A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
+void A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
 		*infx=*a4gl;
@@ -224,7 +225,7 @@ A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
 }
 
 
-A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
+void A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(CFLOATTYPE,(void *)infx);return;}
 		*infx=*a4gl;
@@ -236,7 +237,7 @@ A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
 }
 
 
-A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) {
+void A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
 		*infx=*a4gl;

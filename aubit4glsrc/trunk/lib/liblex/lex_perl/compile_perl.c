@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.40 2003-07-23 14:41:13 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.41 2003-07-25 22:04:54 mikeaubury Exp $
 #
 */
 
@@ -2128,14 +2128,15 @@ print_foreach_start (void)
  * @return
  */
 void
-print_foreach_next (char *cursorname, char *into)
+print_foreach_next (char *cursorname, char *using, char *into)
 {
   printc ("set_sqlca_sqlcode(0);\n");
-  printc ("open_cursor(0,%s);\n", cursorname);
+  //printc ("open_cursor(0,%s);\n", cursorname);
+  print_open_cursor(cursorname,using);
+  printc("if ($aubit4gl_pl::sqlca_sqlcode==0) {");
   printc ("while (1) {\n");
   printc ("fetch_cursor(%s,%d,1,%s);\n", cursorname, FETCH_RELATIVE, into);
-  printc
-    ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
+  printc ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
 }
 
 
@@ -2151,6 +2152,7 @@ print_foreach_end (void)
   printcomment ("# end of foreach while loop \n");
 
   printc ("}\n");
+  printc("}");
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.48 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.49 2003-07-25 22:04:53 mikeaubury Exp $
 */
 
 /**
@@ -174,6 +174,7 @@ extern "C"
     long i_fractions;
   };
 
+struct s_constr_list {char *tabname;char *colname;};
 
 	/** 4gl Datetime data type definition */
   typedef struct ival FglInterval;
@@ -292,6 +293,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void A4GL_fgl_end (void);
   void A4GL_system_run (int a);
   void A4GL_push_time (void);
+  double A4GL_pop_double(void);
   /* ======================= API_ui.c ===================== */
 
 //does not A4GL_match actual function definition:

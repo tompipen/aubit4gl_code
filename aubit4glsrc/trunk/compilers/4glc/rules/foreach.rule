@@ -14,9 +14,10 @@ fetch_cursor_name
 print_foreach_start();
 A4GL_lex_printcomment(" /* foreach */\n");
 }
-opt_foreach_into_fetch_part
+opt_foreach_using_part
+opt_foreach_into_fetch_part 
 {
-print_foreach_next($<str>3,$<str>5);
+print_foreach_next($<str>3,$<str>5,$<str>6);
 }
 commands
 END_FOREACH {
@@ -26,5 +27,10 @@ pop_blockcommand("FOREACH");
 } ;
 
 
+
+opt_foreach_using_part: {strcpy($<str>$,"0");}
+	| KW_USING reset_cnt fgl_expr_list {
+		strcpy($<str>$,$<str>3);
+	}
 /* ====================== foreach.rule ============================== */
 

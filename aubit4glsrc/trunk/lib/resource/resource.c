@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.44 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: resource.c,v 1.45 2003-07-25 22:04:54 mikeaubury Exp $
 #
 */
 
@@ -132,6 +132,7 @@ struct str_resource builtin_resource[] = {
   {"ACL_MOUSE", "N"},
   {"AUBIT_Y2K", "70"},
   {"MAP4GL", "N"},
+  {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
   {"NOCLOBBER", "N"},
 #ifdef WIN32

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.11 2003-07-21 21:40:13 mikeaubury Exp $
+# $Id: array.c,v 1.12 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -222,7 +222,7 @@ draw_arr_all (struct s_disp_arr *disp)
 #endif
   for (a = 0; a < disp->srec->dim; a++)
     {
-      if (a + topline < disp->no_arr)
+      if (a + topline <= disp->no_arr)
 
 	{
 
@@ -233,7 +233,20 @@ draw_arr_all (struct s_disp_arr *disp)
 	    A4GL_debug ("after draw_arr (6)");
 	  }
 #endif
+	} else {
+  		char srec2[256];
+  		strcpy (srec2, disp->srec->name);
+  		strcat (srec2, ".*");
+        	A4GL_disp_arr_fields_v2 (disp,
+                                1,  // blank
+                                0,  // Attribute
+                                0,  // arr_line
+                                0, // first_only
+                                srec2, // screen record
+                                a+1, // field line
+                                0,0);
 	}
+
     }
 
   draw_arr (disp, 1, disp->arr_line);
@@ -359,20 +372,86 @@ draw_arr (arr, -1, arr->arr_line);
 	a=27;
   }
 
+
+  if (a == A4GL_key_val ("NEXT"))
+    {
+      a = A4GLKEY_PGDN;
+    }
+
+  if (a == A4GL_key_val ("PREV"))
+    {
+      a = A4GLKEY_PGUP;
+    }
+
+
+
+
   switch (a)
     {
+    case A4GLKEY_PGUP :
+      if (arr->arr_line > arr->srec->dim || (arr->arr_line>1&&A4GL_isyes(acl_getenv("SCROLLBACKTO1")))) {
+		arr->cntrl=0-A4GLKEY_PGUP;
+		return -11;
+	} else {
+		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+	}
+	break;
+
+     case 0-A4GLKEY_PGUP:
+        arr->last_arr = arr->arr_line;
+	if (arr->arr_line<=arr->srec->dim) { // Aubit Enhancement 
+	 arr->scr_line=1;
+        }
+	arr->arr_line = arr->arr_line - arr->srec->dim;
+	while (arr->arr_line-arr->scr_line<0) arr->arr_line++;
+
+	if (arr->arr_line<1) {
+		 A4GL_error_nobox (" Balls Up That Shouldn't Happen ", 0);
+		 arr->arr_line=1;
+		 arr->scr_line=1;
+	}
+ 	redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+        return -10;
+	break;
+
+     case 0-A4GLKEY_PGDN:
+        arr->last_arr = arr->arr_line;
+	arr->arr_line = arr->arr_line + arr->srec->dim;
+	if (arr->arr_line >arr->no_arr) {
+		arr->scr_line=1;
+		arr->arr_line=arr->no_arr;
+	}
+ 	redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+        return -10;
+	break;
+
+
+
+    case A4GLKEY_PGDN :
+      if (arr->arr_line+1 < arr->no_arr) {
+		arr->cntrl=0-A4GLKEY_PGDN;
+		return -11;
+	} else {
+		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+        }
+	break;
+
+
     case '\t':
     case A4GLKEY_RIGHT:
     case A4GLKEY_DOWN:
       A4GL_debug ("Key down");
       if (arr->arr_line < arr->no_arr)
 	{
-
 	  arr->cntrl = 0 - A4GLKEY_DOWN;
-
 	  return -11;
-
-	}
+	} else {
+		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+        }
       break;
 
     case 0 - A4GLKEY_DOWN:
@@ -401,15 +480,12 @@ draw_arr (arr, -1, arr->arr_line);
 
     case A4GLKEY_LEFT:
     case A4GLKEY_UP:
-      if (arr->arr_line > 1)
-
-	{
-
+      if (arr->arr_line > 1) {
 	  arr->cntrl = 0 - A4GLKEY_UP;
-
 	  return -11;
-
-	}
+	} else {
+		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+        }
       break;
 
     case 0 - A4GLKEY_UP:

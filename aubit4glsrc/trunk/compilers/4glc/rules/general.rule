@@ -30,13 +30,13 @@ field_name	:
 		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id(%s.%s)",$<str>1,$<str>5); }
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
 {sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}
-			| identifier DOT MULTIPLY
+		| identifier DOT MULTIPLY
 {sprintf($<str>$,"\"%s.*\",1",$<str>1);}
-			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY
 {sprintf($<str>$,"\"%s.*\",%s",$<str>1,$<str>3);}
-			| identifier DOT identifier 
+		| identifier DOT identifier 
 {sprintf($<str>$,"\"%s.%s\",1",$<str>1,$<str>3);}
-			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
 {sprintf($<str>$,"\"%s.%s\",%s",$<str>1,$<str>6,$<str>3);}
 ;
 
@@ -149,7 +149,7 @@ reserved_word :
 	|DESCENDING
 	|DIM
 	|DISABLE
-	|DOWN
+	|KWDOWN
 	|DOWNSHIFT
 	|DROP
 	|FOREIGN

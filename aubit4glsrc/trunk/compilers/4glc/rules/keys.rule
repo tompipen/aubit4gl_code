@@ -10,7 +10,7 @@ accept_key :  ACCEPTKEY key_value {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>
 ;
 
 
-single_key_val : KEY {start_state("keymode",1);iskey=1;} key_do {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>3);iskey=0;start_state("keymode",0);}
+single_key_val : KEY key_do {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>2);iskey=0;}
 ;
 
 key_do	: key_value  {strcpy($<str>$,$<str>1);}
@@ -22,7 +22,7 @@ key_value_list : key_value | key_value_list COMMA key_value {
 }
 ;
 
-key_value : {start_state("keymode",1);} key_value_1 {start_state("keymode",0);strcpy($<str>$,$<str>2);} 
+key_value : key_value_1 
 ;
 
 key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
@@ -31,9 +31,9 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 	| 	ACCEPT /* {strcpy($<str>$,"accept");}*/
 	|       SINGLE_KEY {strcpy($<str>$,$<str>1);}
         |       ESCAPE {strcpy($<str>$,"escape");}
-        |       UP {strcpy($<str>$,"up");}
+        |       KWUP {strcpy($<str>$,"up");}
         |       HELP {strcpy($<str>$,"help");}
-        |       DOWN {strcpy($<str>$,"down");}
+        |       KWDOWN {strcpy($<str>$,"down");}
         |       RETURN {strcpy($<str>$,"return");}
         |       DELETE {strcpy($<str>$,"delete");}
         |       TAB {strcpy($<str>$,"tab");}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.44 2003-07-23 19:03:40 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.45 2003-07-25 22:04:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -187,15 +187,20 @@ print_close (char type, char *name)
  * @param into The variable list where the cursor is fetched in.
  */
 void
-print_foreach_next (char *cursorname, char *into)
+print_foreach_next (char *cursorname, char *using, char *into)
 {
   int ni;
   int no;
   printc ("a4gl_sqlca.sqlcode=0;\n");
-  printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cursorname));
-  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname),
-	  into);
-  print_copy_status ();
+
+
+  print_open_cursor(cursorname,using);
+
+  //printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cursorname));
+  //printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname), into);
+  //print_copy_status ();
+
+
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
   ni = print_bind ('i');
@@ -1317,6 +1322,21 @@ nm (int n)
   return "CHAR";
 }
 
+
+static char *dt_qual(int a) {
+	switch(a) {
+	case 1: return "YEAR";
+	case 2: return "MONTH";
+	case 3: return "DAY";
+	case 4: return "HOUR";
+	case 5: return "MINUTE";
+	case 6: return "SECOND";
+	} 
+	return "FRACTION(5)";
+}
+
+
+
 static char *
 sz (int d, int s)
 {
@@ -1334,7 +1354,11 @@ sz (int d, int s)
       return "";
 
     case 10:
-      return " YEAR TO FRACTION(5)";
+	strcpy(buff, " ");
+	strcat(buff,dt_qual(s>>4));
+	strcat(buff," TO ");
+	strcat(buff,dt_qual(s&0xf));
+	return buff;
 
     case 8:
     case 5:                     /* decimal */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.54 2003-07-23 14:42:12 mikeaubury Exp $
+# $Id: ioform.c,v 1.55 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -2102,8 +2102,10 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	{
 	  if (fprop->colname != 0)
 	    {
-	      ptr =
-		(char *) A4GL_construct (fprop->colname, field_buffer (f, 0),
+		A4GL_debug("Calling constr with : '%s' '%s'",sio->constr[a].tabname,sio->constr[a].colname);
+
+
+	      ptr = (char *) A4GL_construct (sio->constr[a].tabname,sio->constr[a].colname, field_buffer (f, 0),
 					 (fprop->datatype == 0)
 					 || (fprop->datatype == 8));
 	      A4GL_debug ("ptr=%s", ptr);
@@ -2771,8 +2773,9 @@ A4GL_push_constr (void *vs)
 	  A4GL_debug ("getting ptr", fprop);
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
 		      (fprop->datatype) & 0xffff);
+		A4GL_debug("Calling constr with : '%s' '%s'",s->constr[a].tabname,s->constr[a].colname);
 	  ptr =
-	    (char *) A4GL_construct (fprop->colname, field_buffer (f, 0),
+	    (char *) A4GL_construct (s->constr[a].tabname,s->constr[a].colname, field_buffer (f, 0),
 				     ((fprop->datatype & 0xffff) == 0)
 				     || ((fprop->datatype & 0xffff) == 8));
 	  if (strlen (ptr) > 0)
@@ -2888,7 +2891,23 @@ A4GL_fgl_infield_ap (void *inp,va_list *ap)
   struct s_screenio *s;
   int c;
   int a;
-int rval=0;
+  int rval=0;
+  char *colname;
+  int field_no;
+
+  while (1) {
+      colname = va_arg (*ap, char *);	/* This is suspect.... */
+	if (colname==0) break;
+      field_no=va_arg (*ap,int);
+      if (A4GL_field_name_match ((FIELD *)A4GL_get_curr_infield(), colname)) {
+		return 1;
+      }
+  }
+  return 0;
+
+
+
+
   s=inp;
 
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
@@ -2913,7 +2932,21 @@ A4GL_fgl_infield_ia_ap (void *inp,va_list *ap)
   int c;
   int a;
 int rval=0;
+char *colname;
+int field_no;
   s=inp;
+
+  while (1) {
+      colname = va_arg (*ap, char *);   /* This is suspect.... */
+        if (colname==0) break;
+      field_no=va_arg (*ap,int);
+      if (A4GL_field_name_match ((FIELD *)A4GL_get_curr_infield(), colname)) {
+                return 1;
+      }
+  }
+  return 0;
+
+
 
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   for (a=0;a<=c;a++) {

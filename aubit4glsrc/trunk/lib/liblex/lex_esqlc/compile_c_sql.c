@@ -69,11 +69,13 @@ print_close (char type, char *name)
  * @param into The variable list where the cursor is fetched in.
  */
 void
-print_foreach_next (char *cursorname, char *into)
+print_foreach_next (char *cursorname, char *using, char *into)
 {
   int ni;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
-  printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
+  print_open_cursor(cursorname,using);
+  //printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
+  printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
   ni = print_bind ('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
@@ -561,6 +563,7 @@ print_foreach_end (void)
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
 
+  printc("}");
   printc ("}\n");
 }
 

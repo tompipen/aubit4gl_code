@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.21 2003-07-23 14:42:12 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.22 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -317,10 +317,6 @@ process_control_stack (struct s_screenio *sio)
   rval = -1;
   new_state = 99;
 
-      if (sio->curr_attrib>=0) {
-		A4GL_debug ("process control stack isnull = %d", 
-					A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
-	}
 
   a = sio->fcntrl_cnt - 1;
 

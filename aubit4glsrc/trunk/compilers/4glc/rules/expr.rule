@@ -604,6 +604,10 @@ op_extend_i: interval_qual
 function_call_expr:
 function_callb
 | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET {
+	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   		a4gl_yyerror("get_fldbuf can only be used in an input or construct");
+   		YYERROR;
+	}
 sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_type,%s,0,0);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n",
 	$<str>3, lastlineno,infilename); 
 	$<ptr>$=A4GL_new_expr($<str>$);	
@@ -617,7 +621,13 @@ addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
 	inc_counter();
 }
 
-| INFIELD OPEN_BRACKET fld_list CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));",$<str>3); 
+| INFIELD OPEN_BRACKET fld_list CLOSE_BRACKET {
+/* Informix allows this outside of a input/construct... */
+	if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));",$<str>3); 
+	} else {
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",$<str>3); 
+	}
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();
 }

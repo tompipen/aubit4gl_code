@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.14 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: input.c,v 1.15 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -856,7 +856,7 @@ A4GL_push_constr (void *vs)
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
 		 (fprop->datatype) & 0xffff);
 
-	  ptr = (char *) A4GL_construct (fprop->colname,
+	  ptr = (char *) A4GL_construct (fprop->tabname, fprop->colname, // @ FIXME 
 				    A4GL_fld_val_generic (f),
 				    ((fprop->datatype & 0xffff) == 0)
 				    || ((fprop->datatype & 0xffff) == 8));

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.73 2003-07-23 19:03:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.74 2003-07-25 22:04:53 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1725,13 +1725,20 @@ void
 print_field_func (char type, char *name,char *var)
 {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-
+  if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
 
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io_type,%s,0,0));", name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));", name);
+
+  if (type == 'T') return;
+
+  } 
+
+  if (type == 'I')
+    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));", name);
 
   if (type == 'T')
-    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io_type,%s,0,0));", name);
+    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io,_inp_io_type,%s,0,0));", name);
 
 
   print_pop_variable (var);
@@ -2742,10 +2749,10 @@ void
 print_next_field (char *s)
 {
 
-  if (strcpy(s,"\"+\"")) {
+  if (strcmp(s,"\"+\"")==0) {
   	printc ("A4GL_req_field(&_inp_io,_inp_io_type,'+',%s,0,0);\n", s);
   } else {
-  	if (strcpy(s,"\"-\"")) {
+  	if (strcmp(s,"\"-\"")==0) {
   		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'-',%s,0,0);\n", s);
   	} else {
   		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'!',%s,0,0);\n", s);

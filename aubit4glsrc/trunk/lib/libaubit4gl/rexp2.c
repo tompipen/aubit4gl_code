@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: rexp2.c,v 1.15 2003-07-25 22:04:53 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,7 @@ int constr_size;
 */
 
 
-void A4GL_doconstruct (char *s, char *whereclause);
+//void A4GL_doconstruct (char *s, char *whereclause);
 int mja_matchcmp (char *a, char *s_match);
 static int isop (char *str, int i);
 static void convert_constr_buffer (char *str);
@@ -176,7 +176,7 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
  * @return
  */
 char *
-A4GL_construct (char *colname, char *val, int inc_quotes)
+A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 {
   char *ptr2;
   int a;
@@ -190,6 +190,13 @@ A4GL_construct (char *colname, char *val, int inc_quotes)
   int k, k2 = 0;
   char lastchar;
   int ismatch;
+  char colname[256];
+  A4GL_debug("A4GL_construct : %s %s %s",tabname,colname_s,val);
+  if (strlen(tabname)) {
+		sprintf(colname,"%s.%s",tabname,colname_s);
+  } else {
+		strcpy(colname,colname_s);
+  }
 
   A4GL_trim (val);
   ptr2 = val;
@@ -460,6 +467,7 @@ convert_constr_buffer (char *str)
 }
 
 
+#ifdef NOTUSED
 /**
  *
  *
@@ -502,6 +510,7 @@ A4GL_doconstruct (char *s, char *whereclause)
   if (strlen (whereclause) == 0)
     strcpy (whereclause, "1=1");
 }
+#endif
 
 
 /* ============================ EOF ================================== */

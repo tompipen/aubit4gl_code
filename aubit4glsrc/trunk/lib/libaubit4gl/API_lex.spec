@@ -226,8 +226,8 @@ print_for_default_step -> void
 /* void print_foreach_start () */
 print_foreach_start -> void
 
-/* void print_foreach_next (char *cursorname, char *into) */
-print_foreach_next char* cursorname,char* into -> void
+/* void print_foreach_next (char *cursorname, char *using, char *into) */
+print_foreach_next char* cursorname,char* using, char* into -> void
 
 /* void print_foreach_end () */
 print_foreach_end -> void

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.21 2003-07-15 22:52:33 mikeaubury Exp $
+# $Id: prompt.c,v 1.22 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -84,6 +84,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   int width;
   char buff[300];
   int a;
+  int field_cnt=0;
   A4GL_chkwin();
   prompt = vprompt;
   A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
@@ -111,21 +112,23 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
-  sarr[0] = (FIELD *) A4GL_make_label (0, 0, promptstr);
-  set_new_page (sarr[0], 1);
+  if (strlen(promptstr)) {
+	sarr[field_cnt++] = (FIELD *) A4GL_make_label (0, 0, promptstr);
+  }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  sarr[1] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
-  sarr[2] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
+  set_new_page (sarr[field_cnt], 1);
+  sarr[field_cnt++] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
+  prompt->field = sarr[field_cnt-1];
+  sarr[field_cnt++] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
 
   /* set_field_pad(sarr[1],' '); */
-  prompt->field = sarr[1];
   A4GL_debug ("set field to =%p", prompt->field);
-  A4GL_debug ("Field=%p", sarr[1]);
+  A4GL_debug ("Field=%p", prompt->field);
 
   /* A4GL_default_attributes (sarr[0], 0); */
 
-  A4GL_default_attributes (sarr[1], 0);
-  field_opts_off (sarr[1], O_STATIC);
+  A4GL_default_attributes (prompt->field, 0);
+  field_opts_off (prompt->field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
   ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0);
@@ -133,31 +136,35 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   if (ap)
     {
-      set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
-      set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b')); // maybe need 'B' for whole field..
+      if (strlen(promptstr)) {
+      		set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
+      		set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b')); // maybe need 'B' for whole field..
+	}
     }
+
   if (af)
     {
-      set_field_back (sarr[1], A4GL_decode_aubit_attr (af, 'f'));
-      set_field_fore (sarr[1], A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
+      set_field_back (prompt->field, A4GL_decode_aubit_attr (af, 'f'));
+      set_field_fore (prompt->field, A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
       if (af&AUBIT_ATTR_INVISIBLE) {
           A4GL_debug ("Invisible");
-          field_opts_off (sarr[1], O_PUBLIC);
+          field_opts_off (prompt->field, O_PUBLIC);
           }
 
     }
 
-  field_opts_on (sarr[1], O_NULLOK);
+  field_opts_on (prompt->field, O_NULLOK);
   A4GL_debug ("Set attributes");
 
   buff[0] = 0;			/* -2 */
-  A4GL_debug ("Setting Buffer %p to '%s'", sarr[1], buff);
-  set_field_buffer (sarr[1], 0, buff);
+  A4GL_debug ("Setting Buffer %p to '%s'", prompt->field, buff);
+  set_field_buffer (prompt->field, 0, buff);
   A4GL_debug ("Set buffer ");
-  sarr[2] = 0;
+
+  //sarr[2] = 0;
 
   A4GL_debug ("Made fields");
-  A4GL_debug ("Field attr : %d", field_opts (sarr[1]));
+  A4GL_debug ("Field attr : %d", field_opts (prompt->field));
 
   f = new_form (sarr);
   A4GL_debug ("Form f = %p", f);
@@ -179,7 +186,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GLSQL_set_status (0, 0);
 
   A4GL_gui_startprompt ((long) prompt);
-  A4GL_gui_setfocus ((long) sarr[1]);
+  A4GL_gui_setfocus ((long) prompt->field);
   wrefresh (p);
   A4GL_mja_refresh ();
 
@@ -420,6 +427,11 @@ A4GL_curses_to_aubit (int a)
   //if (a==KEY_PGUP) return A4GLKEY_PGUP;
   //if (a==KEY_INS) return A4GLKEY_INS;
   //if (a==KEY_DEL) return A4GLKEY_DEL;
+
+  if (a==KEY_NPAGE) return A4GLKEY_PGDN;
+  if (a==KEY_PPAGE) return A4GLKEY_PGUP;
+
+
 
   if (a == KEY_HOME) return A4GLKEY_HOME;
   if (a == KEY_END) return A4GLKEY_END;

@@ -14,6 +14,10 @@ call_ext :
 		print_pop_variable($<str>3);
 	}
    | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING  {
+        if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
+                a4gl_yyerror("get_fldbuf can only be used in an input or construct");
+                YYERROR;
+        }
 	print_getfldbuf($<str>3);
 	}
 	ibind_var_list {
@@ -24,10 +28,14 @@ call_ext :
 	}
 
    | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable {
-	print_field_func('I',$<str>3,$<str>6);
+		print_field_func('I',$<str>3,$<str>6);
    }
    | pdf_functions
    | FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET RETURNING variable { 
+        if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
+                a4gl_yyerror("get_fldbuf can only be used in an input or construct");
+                YYERROR;
+        }
 	print_field_func('T',$<str>3,$<str>6);
    } 
    | variable COLON identifier OPEN_BRACKET   {

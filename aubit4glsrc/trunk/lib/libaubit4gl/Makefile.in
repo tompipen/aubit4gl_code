@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.53 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: Makefile.in,v 1.54 2003-07-25 22:04:53 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -42,7 +42,7 @@ CMODS_PROJECT	=project.c
 #List of all Aubit API interfaces source files, part of libaubit4gl:
 CMODS_API   = \
 	API_ui.c API_exreport.c API_sql.c API_rpc.c \
-	API_lex.c API_form.c API_menu.c API_msg.c API_packer.c API_help.c
+	API_lex.c API_form.c API_menu.c API_msg.c API_packer.c API_help.c API_esql.c
 
 #List of all non-API source files of libaubit4gl, -- IN ALPHABETIC ORDER -- :
 COMMONSRC= \
@@ -253,6 +253,10 @@ API_form.c: API_form.spec
 	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 API_lex.c: API_lex.spec
+	${SH} ${DLMAGIC} $^ > $@
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
+
+API_esql.c: API_esql.spec
 	${SH} ${DLMAGIC} $^ > $@
 	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.28 2003-07-23 12:05:23 mikeaubury Exp $
+# $Id: iarray.c,v 1.29 2003-07-25 22:04:54 mikeaubury Exp $
 #*/
 
 /**
@@ -547,10 +547,6 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
 
 
 
-  if (a == A4GLKEY_LEFT && mform->curcol == 0 && mform->currow == 0)
-    {
-      a = A4GLKEY_BACKSPACE;
-    }
 
   if (a == A4GL_key_val ("ACCEPT"))
     {
@@ -640,8 +636,14 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
       break;
 
     case A4GLKEY_LEFT:
-      A4GL_debug ("Key_left");
+
+
+  if (a == A4GLKEY_LEFT && mform->curcol == 0 && mform->currow == 0)
+    {
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1);
+    } else {
       A4GL_int_form_driver (mform, REQ_PREV_CHAR);
+    }
       break;
 
 
@@ -669,8 +671,7 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
       break;
 
     //case A4GLKEY_BACKSPACE:
-      //A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			//arr->curr_attrib - 1);
+      //A4GL_newMovement (arr, arr->scr_line, arr->arr_line, //arr->curr_attrib - 1);
       //break;
 
     case A4GLKEY_UP:
@@ -883,6 +884,8 @@ int rval;
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
       A4GL_newMovement (inpa, 0, 0, 0);
+      inpa->last_scr_line = 1;
+      inpa->last_arr_line = 1;
       A4GL_debug("inp_arr - returning -99  BEFORE INPUT....");
       return -99;
     }
@@ -1239,9 +1242,12 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 // Sanity check the movements....
 
-  if (arr_line < 1)
+  if (arr_line < 1 ) 
     {
       // Attempt to move off the top program array...
+	if (arr->last_scr_line>0) {
+		A4GL_error_nobox (" There are no more rows in the direction you are going 1", 0);
+      	} 
       A4GL_newMovement (arr, scr_line, 1, attrib);
       return;
     }
@@ -1272,7 +1278,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       A4GL_newMovement (arr, scr_line, arr_line, attrib);
       return;
     }
-
+	
   if ((arr_line + 1) - scr_line < 0)
     {
       A4GL_debug ("scr lines too big for current line %d %d", scr_line,
@@ -1614,23 +1620,33 @@ process_control_stack (struct s_inp_arr *arr)
 	      A4GL_debug ("Checking key state.. %d", arr->fcntrl[a].extent);
 	      if (arr->fcntrl[a].extent >= 0 && arr->fcntrl[a].extent <= 255)
 		{
-		  A4GL_int_form_driver (arr->currform->form,
-					arr->fcntrl[a].extent);
-		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
-		  if (isprint (arr->fcntrl[a].extent))
-		    {
-		      switch (arr->binding[arr->curr_attrib].dtype)
-			{
-			case DTYPE_SMINT:
-			case DTYPE_INT:
-			case DTYPE_FLOAT:
-			case DTYPE_SMFLOAT:
-			case DTYPE_DECIMAL:
-			case DTYPE_MONEY:
-			  A4GL_int_form_driver (arr->currform->form,
-						REQ_CLR_EOF);
-			}
-		    }
+          		struct struct_scr_field *fprop;
+
+
+                fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
+                if (arr->fcntrl[a].extent>=0 && arr->fcntrl[a].extent<=255 && ( (isprint(arr->fcntrl[a].extent) || arr->fcntrl[a].extent==1 || arr->fcntrl[a].extent==4)) ) {
+
+                        if ((fprop->flags & 1)==0)  {
+                                        switch (arr->binding[arr->curr_attrib].dtype) {
+                                        case DTYPE_SMINT:
+                                        case DTYPE_INT:
+                                        case DTYPE_FLOAT:
+                                        case DTYPE_SMFLOAT:
+                                        case DTYPE_DECIMAL:
+                                        case DTYPE_MONEY:  A4GL_int_form_driver (arr->currform->form, REQ_CLR_EOF);
+                                        }
+                        }
+                        A4GL_debug("SETTING FLAGS ");
+                        fprop->flags|=2; // Set the field status flag
+                }
+		A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
+		A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
+                fprop->flags|=1; // Clear the before field flag
+
+
+
+
+
 		}
 	}
     }
@@ -1709,6 +1725,7 @@ process_control_stack (struct s_inp_arr *arr)
 
 	  A4GL_comments (fprop);
 	  pos_form_cursor (arr->currform->form);
+	if ((fprop->flags & 1) ) fprop->flags-=1;
 	  new_state = 0;
 	}
 

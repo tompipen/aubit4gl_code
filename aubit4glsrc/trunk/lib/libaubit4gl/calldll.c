@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.35 2003-07-21 21:40:11 mikeaubury Exp $
+# $Id: calldll.c,v 1.36 2003-07-25 22:04:53 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,13 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+#if defined(__hpux__) //HP-UX UNIX OS
+#define USE_SHL 1
+#endif
+
+#ifdef USE_SHL
+#include <dl.h>
+#endif
 /*
  **********************************************************************
  * Under Cygwin, we can use the dl family of calls, but we need to jump
@@ -390,14 +397,22 @@ A4GL_dl_openlibrary (char *type, char *p)
   A4GL_debug ("Attempting to open shared library : '%s'", buff);
 #endif
 
+#ifdef USE_SHL
+  dllhandle=shl_load(buff,BIND_IMMEDIATE+BIND_NONFATAL,0);
+#else
   dllhandle = dlopen (buff, RTLD_LAZY);
+#endif
   if (dllhandle == 0)
     {
 
       /* Sometimes dlerror() returns empty string? */
       /* dllerror is nulled after first call - can't call it twice, so we
          have to store it to be able to use it twice */
+#ifdef USE_SHL
+	sprintf(buff2,"Error loading.. (1)");
+#else
       sprintf (buff2, "%s", dlerror ());
+#endif
 
       printf ("Error: can't open DLL %s - STOP\n", buff);
       printf ("Error msg: %s\n", buff2);
@@ -449,7 +464,16 @@ A4GL_find_func (void *dllhandle, char *func)
       A4GL_exitwith ("Could not open shared library");
       /* return badfunc; */
     }
+#ifdef USE_SHL
+  //printf("USE_SHL\n");
+  if (!shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { 
+	//printf("Splat via return value...\n");
+  func_ptr=0; 
+  }
+  //printf("Done\n");
+#else
   func_ptr = dlsym (dllhandle, tempbuff);
+#endif
   A4GL_debug ("35 Got %p", func_ptr);
   if (func_ptr == 0)
     {
@@ -500,7 +524,13 @@ A4GL_find_func_double (void *dllhandle, char *func)
       A4GL_exitwith ("Could not open share library");
       return badfunc;
     }
+#ifdef USE_SHL
+//printf("U1\n");
+  if (shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { func_ptr=0; }
+//printf("/U1\n");
+#else
   func_ptr = dlsym (dllhandle, tempbuff);
+#endif
   A4GL_debug ("Got %p", func_ptr);
   if (func_ptr == 0)
     {
@@ -534,7 +564,13 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
       /*  A4GL_exitwith ("2: Non-existing function (%s) called in DLL",func); */
       return &badfunc;
     }
+#ifdef USE_SHL
+//printf("U2\n");
+  if (shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { func_ptr=0; }
+//printf("/U2\n");
+#else
   func_ptr = dlsym (dllhandle, tempbuff);
+#endif
 
   if (func_ptr == 0)
     return &A4GL_nullfunc;
