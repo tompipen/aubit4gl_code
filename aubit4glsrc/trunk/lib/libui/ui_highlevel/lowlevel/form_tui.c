@@ -645,8 +645,10 @@ A4GL_form_pos_form_cursor (FORM * form)
 {
   if (form->current) {
   	A4GL_debug("pos_form_cursor %p %d %d", Get_Form_Window(form), form->current->frow, form->current->fcol+form->curcol);
-  	wmove(Get_Form_Window(form), form->current->frow, form->current->fcol+form->curcol);
-  	wcursyncup(Get_Form_Window(form));
+  	//wmove(Get_Form_Window(form), form->current->frow, form->current->fcol+form->curcol);
+
+  	wmove(Get_Form_Window(form), form->current->frow, form->current->fcol+form->curcol); A4GL_LL_screen_update();
+  	wcursyncup(Get_Form_Window(form)); A4GL_LL_screen_update();
   } else {
 	A4GL_debug("pos_form_cursor called when form current = 0....");
   }

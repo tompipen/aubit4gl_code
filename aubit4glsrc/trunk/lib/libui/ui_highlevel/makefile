@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.25 2004-07-01 11:51:41 afalout Exp $
+# $Id: makefile,v 1.26 2004-07-05 11:04:51 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -187,7 +187,7 @@ ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o widt
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
-${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_wide.o
+${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform_wide.o form_tui.o width_wide.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw -lncursesw
 
 libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
@@ -220,6 +220,10 @@ lowlevel_tui.o: lowlevel/lowlevel_tui.c
 
 lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+
+lowlevel_tui_noform_wide.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -DWIDEC -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+
 form_tui.o: lowlevel/form_tui.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 

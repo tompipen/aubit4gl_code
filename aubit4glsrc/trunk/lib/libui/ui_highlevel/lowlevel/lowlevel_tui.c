@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.29 2004-06-28 12:33:50 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.30 2004-07-05 11:05:46 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.29 2004-06-28 12:33:50 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.30 2004-07-05 11:05:46 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1976,6 +1976,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   void *d;
   void *cw;
   void *f;
+  WINDOW *pp;
   int width;
   char buff[300];
   int a;
@@ -2098,12 +2099,10 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 	lowlevel/lowlevel_tui.c:2087: warning: dereferencing `void *' pointer
 	lowlevel/lowlevel_tui.c:2087: request for member `_begx' in something not a structure or union
 */
-#if ! defined(__MINGW32__)
-	d = derwin (p, 0, 0, width + 1, 1);
-#else
-	A4GL_debug ("see note in code. Exit.");
-	exit (3);
-#endif
+
+
+  pp=(WINDOW *) p;
+  d = derwin (pp, 0, 0, width + 1, 1);
   A4GL_form_set_form_win (f, d);
   A4GL_form_set_form_sub (f, p);
   A4GL_debug ("Set form win");
@@ -2539,9 +2538,7 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
   if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
   else {
 		wattrset((WINDOW *)p,attr&0xffffff00);
-		a4gl_mvwaddwstr(p,  y, x, buff);
-		A4GL_debug ("See comment on top of file. EXIT");
-		exit (2);
+		mvwaddwstr(p,  y, x, buff);
 	}
 }
 

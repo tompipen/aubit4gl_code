@@ -56,7 +56,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 	if (w<0) break;
 	memset(buff,0,255);
 	wc_single_to_str(buff,wp[a]);
-	A4GL_debug("Printing character %d - w=%d (%s)\n",a,w,buff);
+	A4GL_debug("Printing wide character %d - w=%d (%s)\n",a,w,buff);
         A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, wp[a]);
         x+=w;
     }
