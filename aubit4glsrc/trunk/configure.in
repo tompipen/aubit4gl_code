@@ -13,10 +13,6 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-laclall':
-AC_CHECK_LIB([aclall], [main])
-# FIXME: Replace `main' with a function in `-lansic':
-AC_CHECK_LIB([ansic], [main])
 # FIXME: Replace `main' with a function in `-lc':
 AC_CHECK_LIB([c], [main])
 # FIXME: Replace `main' with a function in `-lclint':
