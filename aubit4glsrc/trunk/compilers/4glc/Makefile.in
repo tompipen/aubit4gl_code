@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2002-03-27 11:57:02 afalout Exp $
+# $Id: Makefile.in,v 1.23 2002-03-29 06:38:41 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,9 +35,9 @@ override NOINCL=0
 ##                    Options
 ## ==================================================================
 
+#FIXME: use 4glpc ONLY for 4gl code
 4GLPC			=${SH} ../../bin/4glpc
 4GLPCFLAGS		=-make-compile -Irules -L/lib -L../../lib -g -verbose -L. -I.
-#-nogtk -DDEBUG
 
 ifndef COMSPEC
 	4GLPCFLAGS	+=${LINK_COMPILERS} #-ldl

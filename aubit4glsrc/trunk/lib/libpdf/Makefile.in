@@ -24,8 +24,21 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-03-29 06:38:41 afalout Exp $
 #
+
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+
+override NOINCL=0
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+
 ifneq "${COMSPEC}" ""
 	ifeq "${PDFBUILD}" "no"
 	    ALL = NOPDF.dll
@@ -40,19 +53,8 @@ else
 	endif
 endif
 
-#All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
-
-override NOINCL=0
-
 OBJECTS_NOPDF	=nopdf.o
 OBJECTS_PDF		=has_pdf.o
-
-## ==================================================================
-##                              Options
-## ==================================================================
-
-override CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
 ## ==================================================================
 ##                              Targets
@@ -72,6 +74,9 @@ NOPDF.dll: ${OBJECTS_NOPDF}
 	${MAKE} libPDF_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
 	cp libPDF_NOPDF.dll ..
 	cp libPDF_NOPDF.dll.a ..
+
+PDF.dll:
+	@echo "Ooops: PDFlib on Windows?"
 
 
 ## ==================================================================

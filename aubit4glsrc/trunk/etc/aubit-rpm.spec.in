@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.3 2002-03-09 10:45:09 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.4 2002-03-29 06:38:41 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -126,8 +126,6 @@ make install
 /opt/aubit4gl/lib/libSQL_esql.so
 /opt/aubit4gl/lib/libSQL_ifxodbc.so
 /opt/aubit4gl/lib/libSQL_pgodbc.so
-/opt/aubit4gl/bin/fshow-gtk
-
 
 #now obsolete:
 #/opt/aubit4gl/lib/libaclallgui.a
@@ -167,7 +165,7 @@ make install
 
 
 #FIXME: remove static libraries from future distros:
-/opt/aubit4gl/lib/libaclall.a
+#/opt/aubit4gl/lib/libaclall.a
 
 #Shared libraries:
 /opt/aubit4gl/lib/libaclshared.so

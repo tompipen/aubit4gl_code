@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.48 2002-03-28 07:18:57 afalout Exp $
+# $Id: Makefile.in,v 1.49 2002-03-29 06:38:36 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -111,7 +111,7 @@ include incl/Makefile-common
 #redhat 7.2
 RPMBUILDROOT=/usr/src/redhat
 
-#SOURCE 		= $(AUBITDIR)
+
 SOURCE 		=.
 #installation files
 TESTDIR     =$(SOURCE)/tools/test
@@ -240,11 +240,11 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 ## ==================================================================
 
 #obsolete - AUBITCVSNAME=Aubit4gl
-#obsolete - AUBITCVSSFNAME=aubit4glsrc
+AUBITCVSSFNAME=aubit4glsrc
 #obsolete - AUBITCVSSFMANNAME=aubit4gldoc
 #obsolete - CVSROOTSF=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
 
-#obsolete - NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
+NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 #Download page processing temp file names:
 #Warning: if you change this names, you will need to manually change existing
@@ -402,12 +402,12 @@ PLATFORMINFO	=${PLATFORMSTRING}.txt
 #obsolete - 	UNIXSRCBUILDNAMES=unixsrcbuildnames.tmp
 #obsolete - endif
 
-#obsolete - SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
+SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
 #obsolete - MANFILEBASENAME=aubit4gl-doc-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
 #obsolete - #FIXME: remove SOURCEZIPBASENAME
 #obsolete - SOURCEZIPBASENAME=${SOURCETARBASENAME}
 
-#obsolete - SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
+SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
 #obsolete - #FIXME: remove SOURCEZIPNAME (and all duplicate functions)
 #obsolete - SOURCEZIPNAME	=$(SOURCE)/$(SOURCEZIPBASENAME)
 #obsolete - MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
@@ -1345,7 +1345,8 @@ endif
 		fi; \
 		${CP} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ${SRCTMP} ; \
 	else \
-        echo "Have ${SRCTMP} use RPM=new on make line to force refresh"; \
+        echo "Have ${SRCTMP}"; \
+		echo "use RPM=new on make line to force refresh"; \
 	fi
 #	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
