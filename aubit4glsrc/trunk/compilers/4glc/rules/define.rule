@@ -16,8 +16,8 @@ define_section :
 
 
 define_multiple :
-		define_set
-	|	define_multiple define_set
+		define_set {file_out_nl();}
+	|	define_multiple define_set {file_out_nl();}
 ;
 
 

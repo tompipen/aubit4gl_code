@@ -80,7 +80,8 @@ create_c_1  :
 		sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4);
 	}
 	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE {
-		sprintf($<str>$,"CREATE AUDIT FOR %s IN \\\"%s\\\"",$<str>2,A4GL_strip_quotes($<str>4));
+		
+		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4));
 	}
 	| DROP_AUDIT_FOR table_name  {
 		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2);

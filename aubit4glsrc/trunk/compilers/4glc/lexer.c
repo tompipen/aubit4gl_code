@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.94 2004-09-13 09:34:09 mikeaubury Exp $
+# $Id: lexer.c,v 1.95 2004-09-18 18:32:44 mikeaubury Exp $
 #*/
 
 /**
@@ -1512,25 +1512,36 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, ccnt, a, buff, xccode, fpos, chk4var);
   word_cnt = 0;
   if (file_out) { 
-		char buff2[1024];
-		strcpy(buff2,buff);
+		char*buff2;
+		buff2=strdup(buff);
 		if (a==NAMED_GEN) {
 			downshift(buff2);
 		} else {
 			upshift(buff2);
 		}
-		fprintf(file_out,"%s ",buff2);fflush(file_out); 
+		fprintf(file_out,":%s\n",buff2);
+		free(buff2);
 	}
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
   return a;
 }
 
 
-void file_out_nl() {
+void file_out_nl(char *why) {
 if (file_out) {
-	fprintf(file_out,"\n");
+	fprintf(file_out,"NL %s\n",why);
 }
 }
+
+void file_out_indent(int cnt) {
+if (file_out) {
+	fprintf(file_out,"INDENT %d\n",cnt);
+}
+}
+
+
+
+
 /**
  *
  * @param kw

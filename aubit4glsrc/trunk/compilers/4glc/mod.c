@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.178 2004-08-12 15:15:52 mikeaubury Exp $
+# $Id: mod.c,v 1.179 2004-09-18 18:32:44 mikeaubury Exp $
 #
 */
 
@@ -1801,6 +1801,7 @@ push_blockcommand (char *cmd_type)
     }
   A4GL_debug (" Added new block");
   ccnt++;
+  file_out_indent(ccnt);
 }
 
 /**
@@ -1875,6 +1876,7 @@ pop_blockcommand (char *cmd_type)
   /* more checks here ! */
 
   ccnt--;
+  file_out_indent(ccnt);
   if (command_stack[ccnt].block_no > 0)
     {
 

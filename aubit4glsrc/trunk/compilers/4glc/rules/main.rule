@@ -195,12 +195,14 @@ db_section	:	  DATABASE dbase_name {
 					strcpy(hdr_dbname,$<str>2);
 					lastlineno=yylineno;
 					is_schema=0;
+				file_out_nl("1");
 			}
 		| SCHEMA dbase_name {
 					open_db($<str>2);
 					strcpy(hdr_dbname,$<str>2);
 					lastlineno=yylineno;
 					is_schema=1;
+				file_out_nl("2");
 			}
 ;
 
@@ -221,7 +223,9 @@ strcpy(curr_func,"[Globals]");
 set_current_variable_scope('g');
 A4GL_lex_printcomment("/* start of globals */\n");
 } 
-glob_section 
+glob_section  {
+				file_out_nl("3");
+}
 ;
 
 glob_section : define_section END_GLOBALS {
