@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.5 2004-01-18 12:57:40 mikeaubury Exp $
+# $Id: display_array.c,v 1.6 2004-01-28 17:53:10 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.5 2004-01-18 12:57:40 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.6 2004-01-28 17:53:10 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -469,12 +469,13 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 
 
     case A4GLKEY_PGDN:
+if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
       if (arr->arr_line + 1 < arr->no_arr)
 	{
 	  arr->cntrl = 0 - A4GLKEY_PGDN;
 	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
 	}
-      else
+} else
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
 	  A4GL_LL_set_carat(form->form);
