@@ -1,0 +1,52 @@
+#!/bin/sh
+
+#This is Aubit 4gl compiler warper script
+
+AUBITDIR=`aubit-config AUBITDIR`
+export AUBITDIR
+
+PATH=$AUBITDIR/bin:$PATH
+export PATH
+
+if [ $# -lt 1 -o "$1" = "--help" ]
+then
+    echo
+	echo Aubit 4gl compiler warper script: $0
+    echo
+    echo Usage:
+    echo '  aubit <command> <parameters...>'
+	echo
+    echo ' For details, try: '
+    echo '    aubit <command> --help'
+    echo '    where <command> is one of the following:'
+	echo ' 4glpc - main compiler script'
+    echo ' 4glc - 4gl to C-code compiler'
+    echo ' 4glc - 4gl to Perl-code compiler'
+	echo ' fcompile - form file (.per) compiler'
+    echo ' mcompile - menu file (.menu) compiler'
+    echo ' mkemess  - help file (.hlp) compiler'
+    echo
+    echo ' Use "aubit-config -a" to inspect Aubit compiler configuration '
+    echo
+	exit 1
+fi
+
+COMMAND=$1
+
+   ################
+   case $COMMAND in
+   ################
+
+   *)
+		#$2 $3 $4 $5 $6 $7 $8 $9
+        $@
+
+   ;;
+
+  ####
+  esac
+  ####
+
+
+#----------------------------- EOF --------------------------
+

@@ -23,86 +23,31 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2002-01-04 07:20:53 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-01-07 09:42:55 afalout Exp $
 #
 
-
-#############
-#this internal variable points to default location of Aubit config files
-#Default=/etc/opt/aubit4gl
-AUBITETC=/etc/opt/aubit4gl
-
-#if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
-#if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
-#if this make file is named "Makefile", DO NOT edit it!
-MKNAME=
-
-
-
-#PREFIX=${AUBITDIR}/install
-PREFIX=/opt/aubit4gl
-
-#If you are looking here because make could not find "/etc/aubitbuild.mk"
-#then look at $AUBITDIR/etc/aubitbuild.mk.example for instructions
-
-ifndef NOINCL
-    NOINCL=0
-endif
-
-
-ifeq "$(NOINCL)" "0"
-	ifdef AUBITBUILDMK
-		include $(AUBITBUILDMK)
-	else
-		include ${AUBITETC}/aubitbuild.mk
-	endif
-
-	ifdef AUBITBUILDMKMULTI
-		include $(AUBITBUILDMKMULTI)
-	endif
-endif
-
-
+#All stuff common to more then one Aubit compiler make file is there:
+include incl/Makefile-common.in
 
 #we don't want sub-makefiles to include above again: But we dont't went
 #to export this gloably, since it would affect 4glpc sctipt!
 #NOINCL=1
 #Instead, we want tp pass it to makefiles as command line parameter,
 #only for make files that use it, but don't call 4glpc
-#compilers/4glc
-#lib/libgui
-
 
 #WARNING! cannot use ${MAKEFLAGS} because of make bug (see showbug:)
 #all replaced with BUGMAKEFLAGS
-
 
 #tells make to export all variables to child processes by default.
 #Warning: this will export EVERITHING you define here to sub-makefiles
 #and all commands/shell scripts that are called in make process, You
 #can use "unexport VARIABLE", if you need to prevent something from exporting:
-.EXPORT_ALL_VARIABLES:
+#.EXPORT_ALL_VARIABLES:
 
 
 ## ==================================================================
-##                              Settings
+##                    ODBC Settings
 ## ==================================================================
-
-#C compiler flags for Aubit libraries compilation: you should not
-#need to change this
-LIBCFLAGS			=-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
-
-OUTPUTLANG			=c
-
-
-#On Windows, we have no choice of ODBC pr PDF, so override it in any case:
-ifdef COMSPEC
-	ifneq "$(ODBC)" "no"
-		ODBC		=odbc32
-        ODBCMANAGER	=${ODBC}
-    endif
-	PDFBUILD		=no
-endif
 
 ifeq "$(ODBC)" "unix"
 	#Human readable name, for archinve file name, etc.
@@ -122,8 +67,6 @@ ifeq "$(ODBC)" "no"
 	ODBC_LIB_NAME   = noodbc
 endif
 
-LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
-
 ifneq "$(ODBC)" "no"
 	#make sure we will pick up correct ODBC libraries:
 	LD_LIBRARY_PATH := ${ODBC_LIB_DIR}:${LD_LIBRARY_PATH}
@@ -136,15 +79,9 @@ ifneq "$(ODBCLIBDIR)" ""
     endif
 endif
 
-#To let know 4glpc we are in process of making compiler, and not
-#compiling 4gl programs
-MAKINGAUBIT			=1
-export MAKINGAUBIT
-
-#if user forgot to set AUBITDIR:
-ifndef AUBITDIR
-    AUBITDIR		=${PWD}
-endif
+## ==================================================================
+##                    GTK Settings
+## ==================================================================
 
 #Human readable names for archive file names:
 ifeq "$(GTKBUILD)" "yes"
@@ -152,6 +89,11 @@ ifeq "$(GTKBUILD)" "yes"
 else
 	GUITYPE			=noGTK
 endif
+
+## ==================================================================
+##                    PDF Settings
+## ==================================================================
+
 ifeq "$(PDFBUILD)" "yes"
 	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
 	PDFTYPE			=PDF
@@ -159,52 +101,42 @@ else
 	PDFTYPE			=noPDF
 endif
 
+
+## ==================================================================
+##                    Automatic Build Settings
+## ==================================================================
+
 #When we package all binary builds using make allbindist, what we will build
 ALLBINDISTNAMESNOPDF=unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
 ALLBINDISTNAMESPDF	=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
 ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 
+## ==================================================================
+##                    Install Settings
+## ==================================================================
 
-#Lclint C code checker flags:
-LCLINTFLAGS			= -weak
-LCLINTLOG  			= lclint.log
-LCLINTLOGCMD		= ${LCLINTLOG} 2>&1
-
-####################
-#commands to use:
-MAKE		= make
-MKDIR 		= mkdir
-CD 			= cd
-CP 			= cp
-RM 			= rm -f
-RMDIR		= rm -rf
-SH 			= /bin/sh
-CC 			= gcc
-LN_S 		= ln -s
-AR 			= ar rc
-YACC 		= bison -y
-INSTALL_USR	= nobody
-INSTALL_GRP = nobody
-INSTALL_CMD = install
-INSTALL     = ${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
-MKPATH      = mkdir -p
-
+#install location:
+PREFIX=/opt
+INSTALL_DIR=${PREFIX}/aubit4gl
 
 #RPM setup:
 RPMBUILDROOT=/root/redhat
 
-
-########################
-#installation locations:
 SOURCE 		= $(AUBITDIR)
 #installation files
 TESTDIR     =$(SOURCE)/tools/test
 DOCDIR     	=$(SOURCE)/docs
 IDEDIR     	=$(SOURCE)/tools/ide
-TOBIN		=$(SOURCE)/bin/4glc $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile $(SOURCE)/bin/mcompile $(SOURCE)/bin/mkmess $(SOURCE)/bin/amake $(SOURCE)/bin/amakeallo $(SOURCE)/bin/amakeallf $(SOURCE)/bin/loadmap
+TOBIN		=$(SOURCE)/bin/4glc $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile \
+			$(SOURCE)/bin/mcompile $(SOURCE)/bin/mkmess $(SOURCE)/bin/amake \
+			$(SOURCE)/bin/amakeallo $(SOURCE)/bin/amakeallf \
+			$(SOURCE)/bin/loadmap $(SOURCE)/bin/aubit $(SOURCE)/bin/aubit-config \
+            $(SOURCE)/bin/genmake $(SOURCE)/bin/mdecompile $(SOURCE)/bin/prepmake
+
 ifneq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
-		TOBIN	+=$(SOURCE)/bin/4glc-noodbc $(SOURCE)/bin/fcompile-noodbc $(SOURCE)/bin/mcompile-noodbc
+		TOBIN	+=$(SOURCE)/bin/4glc-noodbc $(SOURCE)/bin/fcompile-noodbc \
+					$(SOURCE)/bin/mcompile-noodbc
     endif
 endif
 
@@ -224,7 +156,8 @@ ifndef COMSPEC
 	TOLIBGTK	+=$(SOURCE)/lib/libgtk4gl_x.so
 endif
 
-TOLIBCUI	=$(SOURCE)/lib/libaclall.a
+TOLIBCUI	=$(SOURCE)/lib/libaclall.a $(SOURCE)/lib/libaclshared.so \
+            $(SOURCE)/lib/libPDF_NOPDF.so $(SOURCE)/lib/libSQL_nosql.so
 ifneq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
 		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
@@ -244,10 +177,12 @@ TODOCS		=$(SOURCE)/docs/changelog.txt $(SOURCE)/docs/COPYING $(SOURCE)/docs/CRED
 TOTEST		=$(TESTDIR)/*.4gl $(TESTDIR)/*.per $(TESTDIR)/${MKFILNAME} $(TESTDIR)/*.msg
 TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
 #TOETC		=$(SOURCE)/etc/*.example
-TOETC		=$(SOURCE)/etc/a4glrc.example $(SOURCE)/etc/aubitenv.example $(SOURCE)/etc/odbc.ini.example $(SOURCE)/etc/aubitbuild.mk.example
+#TOETC		=$(SOURCE)/etc/a4glrc.example $(SOURCE)/etc/aubitenv.example $(SOURCE)/etc/odbc.ini.example $(SOURCE)/etc/aubitbuild.mk.example
+TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
-TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/acl4glgui.h $(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki
+TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/acl4glgui.h \
+				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common.in
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
 
 ##################################################
@@ -255,6 +190,12 @@ TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDED
 AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
 AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
+
+
+
+## ==================================================================
+##                    CVS Settings
+## ==================================================================
 
 AUBITCVSNAME=Aubit4gl
 AUBITCVSSFNAME=aubit4glsrc
@@ -271,6 +212,11 @@ DLTMP2=tmpdlpage2.html
 
 SCPPATH=/home/groups/a/au/aubit4gl/htdocs/files
 
+
+## ==================================================================
+##                    Platform dependent Settings
+## ==================================================================
+
 ifdef COMSPEC #############Windows platform - CygWin related:################
 
 	#Under CygWin/Windows, cron cannot use network shares, and also
@@ -283,11 +229,11 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	EXE				=.exe
 	#for packcygwin
 	CYSOURCE 		= $(AUBITDIR)
-	CYDLLTARGET		=${PREFIX}/dll
-	CYLIBTARGET1	=${PREFIX}/extralibs
+	CYDLLTARGET		=${INSTALL_DIR}/dll
+	CYLIBTARGET1	=${INSTALL_DIR}/extralibs
 	LIBTARGET2		=/lib
-	LIBTARGET1		=${PREFIX}/extralibs
-	DLLTARGET		=${PREFIX}/dll
+	LIBTARGET1		=${INSTALL_DIR}/extralibs
+	DLLTARGET		=${INSTALL_DIR}/dll
 	RUNEXE			=$(CYSOURCE)/tools/cygwin/run.exe
 	CYTOBIN			=$(CYSOURCE)/bin/4glc${EXE} $(CYSOURCE)/bin/4glpc \
 					$(CYSOURCE)/bin/fcompile${EXE} $(CYSOURCE)/bin/mcompile${EXE} \
@@ -369,6 +315,11 @@ else ####################### Platform is UNIX ##############################
     LDDCMD          =ldd
 endif
 
+
+## ==================================================================
+##                    Nightly builds Settings
+## ==================================================================
+
 FTPLOCATION		=$(WWW)${DIRSEP}projects${DIRSEP}Aubit4GL${DIRSEP}download
 
 #FIXME: add CPU to file name (i385,i586, etc.) instead of "bin"
@@ -418,6 +369,11 @@ SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
 #FIXME: remove SOURCEZIPNAME (and all duplicate functions)
 SOURCEZIPNAME	=$(SOURCE)/$(SOURCEZIPBASENAME)
 MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
+
+
+## ==================================================================
+##                    Define default target
+## ==================================================================
 
 ALL             = Makefile settings ${MAKERPC} corecompile
 
@@ -643,59 +599,88 @@ clean.project:
 #FIXME: which files go to TOLIBCUI, when not compiled with GTK?
 #make icons for KDE and GNOME: to IDE, to manual
 
-install: install.tree install.core install.example installmanual install.config
+install: install.core install.example install.manual install.config install.links
+	@echo Aubit compiler installed to $(INSTALL_DIR)
 #platform
 #etc/aubit-auto.spec
 
 install.core: install.tree install.gtk
-	${CP} $(TOBIN) $(PREFIX)/bin
-	$(CP) $(TOROOT) $(PREFIX)
-	$(CP) $(TOINCL) $(PREFIX)/incl
-	$(CP) $(TOLIBCUI) $(PREFIX)/lib
+	${CP} $(TOBIN) $(INSTALL_DIR)/bin
+	$(CP) $(TOROOT) $(INSTALL_DIR)
+	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
+	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
 	@echo Aubit 4gl compiler is now installed
 
 install.gtk:
 ifeq "${GTKBUILD}" "yes"
-	$(CP) $(TOLIBGTK) $(PREFIX)/lib
+	$(CP) $(TOLIBGTK) $(INSTALL_DIR)/lib
 endif
 
 install.config:
-	$(CP) ${TOETC} $(PREFIX)/etc
+	$(CP) ${TOETC} $(INSTALL_DIR)/etc
 
 install.example:
-	$(CP) $(TOTEST) $(PREFIX)/test
-	$(CP) $(TOTESTGUI) $(PREFIX)/test/gui
+	$(CP) $(TOTEST) $(INSTALL_DIR)/tools/test
+	$(CP) $(TOTESTGUI) $(INSTALL_DIR)/tools/test/gui
 	@echo Aubit 4gl compiler programming examples are now installed
 
-installmanual:
-	$(CP) $(TODOCS) $(PREFIX)/docs
-#	$(CP) $(TODOCS2) $(PREFIX)/docs/manual/html
+install.manual:
+	$(CP) $(TODOCS) $(INSTALL_DIR)/docs
+#	$(CP) $(TODOCS2) $(INSTALL_DIR)/docs/manual/html
 	@echo Aubit 4gl compiler manual is now installed
 
 installide:
 	${MAKE} ${MKNAME} -C tools/ide install.aubit
 	@echo Aubit 4gl compiler IDE is now installed
 
+fix.aubitdir:
+	TOREPLACE="^AUBITDIR"
+	INFILE=$AUBITDIR/etc/$AUBITRCSRC
+	OLDVALUE=$(grep "$TOREPLACE" $INFILE | awk '{print $1}' | sed -e "s/\//\\\\\//g")
+	NEWVALUE=$(echo "AUBITDIR=$AUBITDIR" | sed -e "s/\//\\\\\//g")
+	STARTWITH="^$OLDVALUE"
+	REPLACEWITH="$NEWVALUE"
+	sed -e "/$STARTWITH/s/$STARTWITH/$REPLACEWITH/" $INFILE > $AUBITETC/aubitrc
+	chmod a+r $AUBITETC/aubitrc
+
+
+
 packide:
-	${CP} ${TOIDE} $(PREFIX)/IDE
+	${CP} ${TOIDE} $(INSTALL_DIR)/IDE
 
 installdrop:
-	${RMDIR} $(PREFIX)
+	${RMDIR} $(INSTALL_DIR)
 
 #install.tree.mkpath:
 install.tree:
-#	${MKPATH} $(PREFIX)
-	${MKPATH} $(PREFIX)/bin
-	${MKPATH} $(PREFIX)/lib
-	${MKPATH} $(PREFIX)/etc
-	${MKPATH} $(PREFIX)/incl
-	${MKPATH} $(PREFIX)/IDE
-#	${MKPATH} $(PREFIX)/test
-	${MKPATH} $(PREFIX)/test/gui
-#	${MKPATH} $(PREFIX)/docs
-#	${MKPATH} $(PREFIX)/docs/manual
-	${MKPATH} $(PREFIX)/docs/manual/html
+#	${MKPATH} $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)/bin
+	${MKPATH} $(INSTALL_DIR)/lib
+	${MKPATH} $(INSTALL_DIR)/etc
+	${MKPATH} $(INSTALL_DIR)/incl
+#	${MKPATH} $(INSTALL_DIR)/tools/ide
+#	${MKPATH} $(INSTALL_DIR)/test
+	${MKPATH} $(INSTALL_DIR)/tools/test/gui
+	${MKPATH} $(INSTALL_DIR)/docs
+#	${MKPATH} $(INSTALL_DIR)/docs/manual
+#	${MKPATH} $(INSTALL_DIR)/docs/manual/html
 	@echo "Aubit 4gl compiler instalation tree created"
+
+install.links.source:
+#this links bin programs to location of Aubit source code:
+	${MKPATH} $(PREFIX)/bin
+	${LN_S} ${AUBITDIR}/bin/aubit-config $(PREFIX)/bin/aubit-config
+	${LN_S} ${AUBITDIR}/bin/aubit $(PREFIX)/bin/aubit
+
+install.links:
+#This links bin programs to location of Aubit bynary installation:
+	${MKPATH} $(PREFIX)/bin
+	${LN_S} $(INSTALL_DIR)/bin/aubit-config $(PREFIX)/bin/aubit-config
+	${LN_S} $(INSTALL_DIR)/bin/aubit $(PREFIX)/bin/aubit
+
+deinstall: installdrop
+#deinstall does not remove configuration files
+	${RM} $(PREFIX)/bin/aubit-config $(PREFIX)/bin/aubit
 
 
 tarinstall: platform
@@ -1422,11 +1407,11 @@ help.targets:
 	@echo "  cleanall - delete ALL compiled object and temp files that where"
 	@echo "          created with make. This will result in clan source code"
 	@echo "          tree, as exported form CVS"
-	@echo "  installall - install.tree install install.example installmanual"
+	@echo "  installall - install.tree install install.example install.manual"
 	@echo "  createcleantar - installdrop installall tarinstall"
 	@echo "  install - installs Aubit 4gl compiler in installation tree"
 	@echo "  install.example - installs 4gl examples in installation tree"
-	@echo "  installmanual - installs manual in installation tree"
+	@echo "  install.manual - installs manual in installation tree"
 	@echo "  installdrop - DELETES installation tree. WARNING: uses ${RMDIR}"
 	@echo "  install.tree - creates installation tree"
 	@echo "  tarinstall - creates ${ARCHEXT} file from installation tree"

@@ -1,0 +1,187 @@
+##########################################################################
+# 			Aubit 4gl configuration file.
+# This file replaces "aubitenv" and "a4glrc" files
+##########################################################################
+
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/aubit4gl
+AUBITETC=/etc/opt/aubit4gl
+
+############
+#Defines location where you installed Aubit4gl:
+#Default for source distribution:/opt/aubit/aubit4glsrc
+#Default for binary distribution:/opt/aubit4gl
+#AUBITDIR=@top_src_dir@
+AUBITDIR=/opt/aubit4gl
+
+
+############
+#name of SQL library to use
+#when compiler was build with dynamic SQL support
+#Options: static nosql iodbc unixodbc
+#Default=nosql
+#A4GL_SQLTYPE=nosql
+
+############
+#A4GL_PDFTYPE determine which library to link with when using
+#4glpc. You need to set this to PDF
+#if you want to use PDF reports.  Options: PDF, NOPDF
+#Default=NOPDF
+#A4GL_PDFTYPE=NOPDF
+
+############
+#Default output language for 4gl compiler:
+#OUTPUTLANG      =perl
+OUTPUTLANG=c
+
+############
+#if you specify NOINCL, we will not try to propagate variables from
+#a4glrc and aubitbuild.mk, and main makefile will not try to read
+#aubitbuild.mk:
+#Default=0
+#NOINCL=1
+
+############
+#Location of primary compiler script (4glpc) configuration file (a4glrc):
+#If $A4GLRC is defined, it will be the only one used
+#if $A4GLRC is not defined, 4glpc will look for configuration file in this
+#order:
+#1: in $AUBITETC/a4glrc
+#2: in $AUBITDIR/etc/.a4glrc but only if 1: is not found
+#3: in $HOME/.a4glrc, overriding settings from 1: or 2: it they where found
+#Default=$AUBITETC/a4glrc
+#A4GLRC=$AUBITETC/a4glrc
+
+############
+#Location of make file include that defines how to build Aubit compiler
+#from source code. If not defined, $AUBITETC/aubitbuild.mk will be used
+#Default=$AUBITETC/aubitbuild.mk
+#AUBITBUILDMK=$AUBITETC/aubitbuild.mk
+
+############
+#Define additional make configuration file, if you need to build multiple
+#configuration of Aubit libraries on same computer. This file will NOT
+#be read from anywhere else, only form main makefile, since it will need
+#to contain conditional statements understood only by make. See
+#$AUBITDIR/etc/aubitbuild-multi.mk.example:
+#Default=$AUBITETC/aubitbuild-multi.mk
+#AUBITBUILDMKMULTI=$AUBITETC/aubitbuild-multi.mk
+
+############
+#When you encouter programs that chrash, use this for debugging - it will
+#create file 'debug.out' that can be very usefull when you don't get core
+#dump, so you don't have file 'core' to run 'gdb' on. WARNING: do not set
+#this under normal circumstanced - all programs will create debug.out file
+#when they run, files can be VERY large, and they will slow down progrms
+#execution considerably:
+#Default=<not set>
+#DEBUG=ALL
+
+############
+#FIXME: is not odbc.ini supposed to have default login name and password?
+#Defines username and password for accessing database server via ODBC:
+#needed for DATABASE and DEFINE LIKE statements at compile time, and
+#procedural DATABASE statement ar run-time. You can use OPEN SESSION and
+#supply login information at run-time, but NOT at compile time:
+#Default=<no default value>
+#SQLUID=mydbusername
+#SQLPWD=mydbpassword
+
+#############
+#Defines in which UI mode will programs run. If you compiled them with -gtk
+#option, which is default, you can choose GUI (GTK is identical to GUI
+#at the moment) All options are: text, curses, gtk, gui.
+#Default=text
+#AUBITGUI=text
+
+##################
+#If you compiled compiler with PDF libraries (PDFBUILD=yes), you MUST
+#(Why?) instruct 4glpc linker to add libraries for PDF report generation, 
+#but then again, maybe you don't want to link every 4gl program for use
+#with them, but you MUST at the moment (you can also use -pdf flag to
+#4glpc instead):
+#Affects: 4glpc
+USE_PDF=no
+
+
+##################
+#defines command executed as C compiler for your system, when used by 4glpc:
+#Affects: 4glpc
+GCC="gcc -O"
+
+#GTK GUI interface: yes or no (needs GTK libraries on system)
+#Affects: main makefile
+GTKBUILD=no
+
+#PDF report library: yes or no (needs PDF libraries on system)
+#Affects: main makefile
+PDFBUILD=no
+
+#Jabber/XML libraries: yes or no (need iksemel libraries on system)
+#Affects: main makefile
+JABBERBUILD=no
+
+#If you want to build compiler that will generate Perl code, not only
+#C code, set PERLBUILD to yes
+PERLBUILD=no
+
+#defines how will SQL support be built into compiler: dynamic is default.
+#if you enter "static", only SQL/ODBC library defined with "ODBC"
+#parameter will be linked. Patrameters "ODBC"
+ODBC_LINK=dynamic
+
+#If linking SQL support dynamically, you can have more then one SQL
+#manager/driver installed on your system, and compiled Aubit to use them
+#selecting it ar run time with environment variable :
+#A4GL_SQLTYPE=libSQL_<name>.so [name of library to use (defaults to nosql)]
+#if you define more then one HAVE_xxxx variable here as "yes" you MUST use
+#AUBITBUILDMKMULTI to define multiple libraries paths
+HAVE_UNIXODBC=no
+HAVE_IODBC=no
+
+#If linking SQL support statically: ODBC manager: "unix" "iodbc" "odbc32"
+#Affects: main makefile Options: unix, iodbc, so
+ODBC=no
+
+#If linking SQL support statically: name of library to link compiler with
+#typically, "odbc" for unixODBC, "iodbc" for iODBC manager
+#Affects: main makefile and 4glpc
+ODBC_LIB_NAME=noodbc
+
+#where can we find ODBC header files for this ODBC manager/driver
+#(odbc.h, sql.h ...etc.)
+#fixme: rename this to ODBC_LIB_HEADERS
+#Affects: main makefile, 4glpc and run-time encironment
+#ODBCLIBDIR=/opt/unixODBC/include
+ODBCLIBDIR=/usr/include
+
+#where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
+#Affects: main makefile
+#ODBC_LIB_DIR=/opt/unixODBC/lib
+ODBC_LIB_DIR=/usr/lib
+
+
+
+###############################
+#GTK+ 2.0 configuration
+
+#To use GTK "pkg-config" utility, set GLIBVER, GDKVER and GTKVER to
+#version strings reported by "pkg-config --list-all"
+#This will also be used in makefiles for
+#GLIB_CFLAGS=`pkg-config --cflags ${GLIBVER}`
+#GLIB_LIBS=`pkg-config --libs ${GLIBVER}`
+#unless GLIBVER=old, when hard-coded flags and GTK libs will be used
+#GTKVER is used in "4glpc" script
+
+#GLIBVER=old
+#GLIBVER=glib-2.0
+#GDKVER=gdk-1.3-win32-production
+#GTKVER=gtk+-1.3-win32-production
+
+#Your GTK/GDK/GLIB installation path; don't forget to include
+#$GTKPATH/bin and $GTKPATH/lib in yout PATH
+#GTKPATH=/usr/src/gtk
+
+
+#-------------------------------- EOF -----------------------------
