@@ -1,3 +1,9 @@
+4GL
+	implement extend() 4GL function
+	'thru' on display etc
+	initialize array/record containing array
+
+
 ESQL/C
 	Fix OPEN USING in esql/c (sql and lex)
 	Fix FETCH (relative/absolute etc)
@@ -5,13 +11,12 @@ ESQL/C
 	Other fixes in ESQL/C output driver
 
 
-implement extend() 4GL function
-add extend() SQL function into parser
+FIXME's
+	Fix 'em
 
 
-implement Field attribute hierarchy
-implement Field expression parsing
-implement attribute 'lines' hierarchy
+GTK
+	Make it work
 
 
 Other unimplemented functions
@@ -20,4 +25,18 @@ Other unimplemented functions
 	INPUT ARRAY
 	clean up construct...
 
-Fix FIXME's
+
+SQL Parser
+	IN (variable,variable)
+	add extend() SQL function into parser
+	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
+
+
+
+TUI
+	implement Field attribute hierarchy
+	implement Field expression parsing
+	implement attribute 'lines' hierarchy
+
+
+
