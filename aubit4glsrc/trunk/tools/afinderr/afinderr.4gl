@@ -137,6 +137,18 @@ local function openiem( filename, n )
 	let msgnotfound = 0
 code
 {
+
+#if defined (PORTABLE) && ! defined (__MINGW32__)
+	#include <netinet/in.h>
+#else
+	#ifndef htonl
+		#define htonl(x) (x)
+		#define htons(x) (x)
+		#define ntohl(x) (x)
+		#define ntohs(x) (x)
+	#endif
+#endif
+
 	static unsigned char header[4];
 	char errmsg[HELPMAXLEN];
 

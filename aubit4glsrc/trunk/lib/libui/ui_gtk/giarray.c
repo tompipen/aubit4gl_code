@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.6 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: giarray.c,v 1.7 2004-01-17 05:49:30 afalout Exp $
 #*/
 
 /**
@@ -81,6 +81,13 @@ struct s_movement
 
 
 int mform=0;
+
+
+
+//Not sure what happened here; this used to be in ui.c but was taken out as 'bad kludge'
+int processed_onkey;
+
+
 /*
 =====================================================================
                     Functions prototypes
@@ -646,7 +653,13 @@ iarr_loop (struct s_inp_arr *arr)
 
 
       abort_pressed = 0;
-      A4GL_reset_processed_onkey ();
+     // A4GL_reset_processed_onkey ();
+
+
+//void A4GL_reset_processed_onkey() {
+	processed_onkey=0;
+//}
+
 
 
 
@@ -1971,7 +1984,18 @@ A4GL_debug("Process_control_stack : %d",arr->fcntrl[a].op);
 	{
 	  //struct struct_scr_field *fprop;
 	  new_state = 25;
-	  if (!A4GL_has_processed_onkey ())
+//	  if (!A4GL_has_processed_onkey ())
+
+
+//int A4GL_has_processed_onkey() {
+//	return processed_onkey;
+//}
+
+  if (! processed_onkey )
+
+
+
+
 	    {
 	      A4GL_debug ("process_key_press");
 		//if (field_opts(arr->currentfield)&O_BLANK) { A4GL_debug("O_BLANK MMMM"); }

@@ -34,8 +34,11 @@ define zz integer
  		display current year to second at 1,1 attribute(magenta)
  		set pause mode off
  		let y=y+1
+
+#Mike, what's wrong with 4Gl's SLEEP? if you don't like it, please remember that there is no
+#usleep() on Windows - please use a4gl_usleep()
 code
-usleep(500000);
+	a4gl_usleep(500000);
 endcode
 	end while
 

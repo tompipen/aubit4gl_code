@@ -634,12 +634,54 @@ int A4GL_LL_getch_swin(void* window_ptr) {
 	keypressed=0;
 	A4GL_debug("KEYPRESS : %d (%x)\n",a,A4GL_which_key_aubit(a));
 	if (a==3) {
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+		set_intr_win32 (SIGINT);
+#else
 		kill(0,SIGINT);
+#endif
+
 	}
 
 	return A4GL_which_key_aubit(a);
 }
 
+
+/*
+kill() call is supposed to call the signal handler as if ^c had been pressed (under linux
+- by sending the SIGINT signal...)
+
+I'm trying to figure out what to call instead - but fglwrap.c looks a little
+complicated to follow.
+
+(I'm not sure the ungetch is required...)
+
+So it should probably call set_intr_win32(CTRL_C_EVENT) instead of kill...
+
+Under mingw I think it should be calling :
+*/
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+/**
+ * Initilaizes the signals in windows systems.
+ *
+ * @param type
+ * @return
+ */
+BOOL __stdcall
+set_intr_win32 (DWORD type)
+{
+  if (type == CTRL_C_EVENT || type == CTRL_BREAK_EVENT)
+    {
+#ifdef DEBUG
+      A4GL_debug ("-------------INTERRUPT----------------");
+#endif
+      int_flag = TRUE;
+      errno = -1;
+      ungetch (A4GLKEY_CANCEL);
+      A4GL_set_abort (1);
+    }
+  return TRUE;
+}
+#endif
 
 int
 A4GL_which_key_aubit(int gdk_key)
@@ -678,13 +720,23 @@ a=gdk_key;
 }
 
 
+
+
 void A4GL_LL_gui_run_til_no_more(void ) {
   if (A4GL_screen_mode (-1))
     {
       while (gtk_events_pending ())
         gtk_main_iteration ();
 	if (keypressed==3) {
+
+
+
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+		set_intr_win32 (SIGINT);
+#else
 		kill(0,SIGINT);
+#endif
+
 	}
     }
   else

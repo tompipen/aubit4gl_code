@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.54 2003-10-05 22:48:37 afalout Exp $
+# $Id: Makefile.in,v 1.55 2004-01-17 05:49:14 afalout Exp $
 #
 
 ROOT        =../..
@@ -126,6 +126,10 @@ ${ROOT}/bin/fshow : fshow.4gl
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<
 	(export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<)
+
+fshow.gdb:
+	@echo "set args -ofshow fshow.4gl"
+	(export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; gdb ${ROOT}/bin/4glc )
 
 
 ## ==================================================================

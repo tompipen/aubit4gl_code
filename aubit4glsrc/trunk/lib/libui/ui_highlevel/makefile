@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-01-15 05:44:05 afalout Exp $
+# $Id: makefile,v 1.5 2004-01-17 05:49:31 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -62,7 +62,7 @@ GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
 GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
 
-
+#-mms-bitfields or -fnative-struct
 
 ifeq "${WIN_PATH}" "1"
 	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib
@@ -90,7 +90,7 @@ ifeq "${NON_PEDANTIC_OK}" "1"
 endif
 
 ifeq "${GTKBUILD}" "yes"
-	ALL+=${LIBROOT}/libUI_HL_GTK.so
+	ALL+=${LIBROOT}/libUI_HL_GTK${SO_EXT}
 endif
 
 ## ==================================================================
@@ -101,10 +101,10 @@ endif
 CFLAGS			:=${CURSES_INC_PATH} ${CFLAGS} -I.. -I. -I${ROOT}/incl
 
 ifneq "${HAVE_CURSES}" "0"
-	ALL			+=${LIBROOT}/libUI_HL_TUI.so
+	ALL			+=${LIBROOT}/libUI_HL_TUI${SO_EXT}
 else
 	ifneq "${HAVE_PDCURSES}" "0"
-		ALL			+=${LIBROOT}/libUI_HL_TUI.so
+		ALL			+=${LIBROOT}/libUI_HL_TUI${SO_EXT}
 	endif
 endif
 
@@ -123,7 +123,7 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
-ALL				+=${LIBROOT}/libUI_HLGENERIC.so testit
+ALL				+=${LIBROOT}/libUI_HLGENERIC${SO_EXT} testit
 
 
 #old stuff - replace/remove
@@ -159,19 +159,19 @@ OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc
 all: ${ALL}
 	@echo "Default trgets (${ALL}) compiled sucessfuly."
 
-${LIBROOT}/libUI_HLGENERIC.so: $(OBJS) API_lowlevel.o
-#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o libUI_HLGENERIC.so -laubit4gl
-#	cp *.so ../..
+${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
+#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o libUI_HLGENERIC${SO_EXT} -laubit4gl
+#	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libUI_HL_TUI.so: $(OBJS) lowlevel_tui.o
-#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) lowlevel_tui.o -o libUI_HL_TUI.so -laubit4gl -lform -lpanel -lcurses
-#	cp *.so ../..
+${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
+#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) lowlevel_tui.o -o libUI_HL_TUI${SO_EXT} -laubit4gl -lform -lpanel -lcurses
+#	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
 
-${LIBROOT}/libUI_HL_GTK.so: $(OBJS) lowlevel_gtk.o widget_gtk.o
-#	gcc -rdynamic -shared $(OBJS) lowlevel_gtk.o widget_gtk.o  -o libUI_HL_GTK.so -laubit4gl $(GTK_INC_PATH) $(GTK_LIB_PATH) $(GTKLIBS)
-#	cp *.so ../..
+${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o
+#	gcc -rdynamic -shared $(OBJS) lowlevel_gtk.o widget_gtk.o  -o libUI_HL_GTK${SO_EXT} -laubit4gl $(GTK_INC_PATH) $(GTK_LIB_PATH) $(GTKLIBS)
+#	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
 
 ## ==================================================================
@@ -179,31 +179,36 @@ ${LIBROOT}/libUI_HL_GTK.so: $(OBJS) lowlevel_gtk.o widget_gtk.o
 ## ==================================================================
 
 
-API_lowlevel.c: ${LIBROOT}/libaubit4gl/API_lowlevel.spec API_lowlevel.h
+API_lowlevel.c: ${LIBROOT}/libaubit4gl/API_lowlevel.spec API_lowlevel.h a4gl_API_lowlevel.h
 	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec > ../libui/ui_highlevel/API_lowlevel.c)
 
+#is this now obsolete?
 API_lowlevel.h: ../../libaubit4gl/API_lowlevel.spec
 	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec -h > ../libui/ui_highlevel/API_lowlevel.h)
 
 
-lowlevel_tui.o: lowlevel/lowlevel_tui.c
-	${CC} -g -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+#so is it now only this one, or...
+a4gl_API_lowlevel.h: ../../libaubit4gl/API_lowlevel.spec
+	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec -h > ../libui/ui_highlevel/a4gl_API_lowlevel.h)
 
+
+lowlevel_tui.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
 lowlevel_gtk.o: lowlevel/lowlevel_gtk.c API_lowlevel.h
-	${CC} -g -c -I$(ROOT)/incl -I. -Ilowlevel $< -o $@ $(GTK_INC_PATH)
+	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $< -o $@ $(GTK_INC_PATH)
 
 widget_gtk.o: lowlevel/widget_gtk.c
-	${CC} -g -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
-
+	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
 
 #All objects depend on API headers:
 ${OBJS}: ${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h ${ROOT}/incl/a4gl_API_menu.h \
-	${ROOT}/incl/a4gl_API_msg.h ${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h
+	${ROOT}/incl/a4gl_API_msg.h ${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h a4gl_API_lowlevel.h
 
 #Rule to generate API's:
 ${ROOT}/incl/a4gl_API_%.h :
 	${MAKE} -C ${LIBROOT}/libaubit4gl api
+
 
 ## ==================================================================
 ##                              Test
@@ -217,6 +222,6 @@ testit:  $(OBJS) testit.o API_lowlevel.o
 ## ==================================================================
 
 clean:
-	${RM} *.so *.o *.bak testit API_lowlevel.c API_lowlevel.h lowlevel/*.bak
+	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h lowlevel/*.bak
 
 
