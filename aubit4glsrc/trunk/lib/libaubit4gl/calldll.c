@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.23 2002-11-28 06:48:12 afalout Exp $
+# $Id: calldll.c,v 1.24 2003-01-15 22:29:15 saferreira Exp $
 #
 */
 
@@ -106,6 +106,18 @@ char *dlerror(void);
 
 static char errbuf[512];
 
+/**
+ * Windows dlopen wraper function.
+ *
+ * This function simulate the unix dlopen in order to
+ * let aubit4gl work.
+ *
+ * @param name The name of the library to load.
+ * @param mode Not used here.
+ * @return 
+ *   - A pointer to the lib handle 
+ *   - NULL if it cant find it
+ */
 void *dlopen(const char *name, int mode)
 {
   HINSTANCE hdll;
@@ -125,6 +137,15 @@ void *dlopen(const char *name, int mode)
   return (void *) hdll;
 }
 
+/**
+ * Windows specific implementation.
+ *
+ * Get a pointer to a function loaded in a library
+ *
+ * @param lib The dll handle.
+ * @param name The name of the function to be found.
+ * @return A pointer to the function.
+ */
 void *dlsym(void *lib, const char *name)
 {
   HMODULE hdll = (HMODULE) lib;
@@ -254,8 +275,13 @@ nullfunc(void)
  *
  * @todo : provide more debugging info when load fails
  *
- * @param type The type of the library to open.
- * @param name The name of the library to open.
+ * @param type The type of the library to open. Examples are:
+ *   - SQL - The database connectors.
+ *   - MENU
+ *   - MSG
+ *   - FORM
+ * @param p The name of the plugin. Example for SQL:
+ *   - esql ; odbc ; pgsql
  * @return A pointer to the dynamic library handle.
  */
 void *

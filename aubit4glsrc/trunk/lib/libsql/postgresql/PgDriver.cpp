@@ -94,6 +94,7 @@ PgConnection *PgDriver::connect(
     throw ConnectionException("Cant establish the connection");
   }
 
+  printf("\n=======\nConnection established\n==========");
   PgConnection *pgConnection;
   pgConnection = new PgConnection;
   pgConnection->setPgConn(libpqConnection);
@@ -116,6 +117,8 @@ PgConnection& PgDriver::connect(const char *url)
 /**
  * Utility method to make the connection to the database.
  *
+ * This is the method that is called by the C connector.
+ *
  * @param connectionName The name of the connection.
  * @param databaseName The name of the database to connect to.
  * @param userName The name of the user.
@@ -126,7 +129,18 @@ PgConnection& PgDriver::connect(const char *connectionName,
 				const char *userName,
 				const char *password)
 {
-	// @todo : Implement it
+  return *connect(
+    connectionName,
+    NULL,
+    NULL,
+    NULL,
+    databaseName,
+    userName,
+    password,
+    NULL,
+    NULL,
+    false
+  );
 }
 
 /**
@@ -140,7 +154,7 @@ void PgDriver::setConnParam(char *conninfo,
                             const char *paramName,
                             const char *paramValue)
 {
-  static const char *separator = ";";
+  static const char *separator = " ";
 
   if ( paramValue != NULL )
   {
@@ -183,12 +197,13 @@ PgConnection& PgDriver::getCurrentConnection()
  * @param connectionName The name of the existing connection to be 
  *   the current.
  */
-void PgDriver::setCurrentConnection(const string& connectionName)
+bool PgDriver::setCurrentConnection(const string& connectionName)
 {
   if ( existConnection(connectionName) )
     currentConnection = &connectionList[connectionName];
   else
-    throw new ConnectionException("Connection does not exist");
+    return false;
+  return true;
 }
 
 /**
@@ -200,7 +215,13 @@ void PgDriver::setCurrentConnection(const string& connectionName)
  *   - true : Exist.
  *   - false : Does not exist.
  */
-bool PgDriver::existConnection(const string connectionName)
+bool PgDriver::existConnection(char *connectionName)
+{
+  const string conn(connectionName);
+  return existConnection(conn);
+}
+
+bool PgDriver::existConnection(const string& connectionName) 
 {
   if ( connectionList.find(connectionName) == connectionList.end() )
     return false;
@@ -210,14 +231,15 @@ bool PgDriver::existConnection(const string connectionName)
 /**
  * Disconnect a connection by is name.
  *
+ * @todo : Should i remove the connection!... I think so.
+ *
  * @param connectionName The name of the connection wanted
  */
 void PgDriver::disconnect(const char *connectionName)
 {
   string connName(connectionName);
   PgConnection &connection = connectionList[connName];
-
-  // @todo : Disconnect from postgresql
+  connection.disconnect();
 }
 
 /**

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.8 2003-01-14 06:22:50 psterry Exp $
+# $Id: a4gl_API_sql.h,v 1.9 2003-01-15 22:29:07 saferreira Exp $
 #
 */
 
@@ -49,6 +49,9 @@ define it in any case? */
 
 /* ==================== from a4gl_database.h ============== */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 	/**
 	 * An SQL statement identification structure.
 	 */
@@ -142,6 +145,9 @@ define it in any case? */
 
 void convert_sql( int dbms, char *sql );
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* ifndef DLSQLDEF_INCL */
 
 

@@ -26,10 +26,13 @@
 # ====================================================================
 # Makefile for compiling the unit tests of the Aubit4gl to postgresql
 # direct connector.
+#
+# The unit tests depends on the compilation of ../connection_suite.o
+# that is the generic connection tests to the C interface functions.
 # ====================================================================
 
 #
-# $Id: Makefile.in,v 1.1 2003-01-10 23:13:18 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2003-01-15 22:29:16 saferreira Exp $
 #
 
 ROOT    =../../../..
@@ -44,7 +47,7 @@ include ${ROOT}/incl/Makefile-common
 4GLPC			=${SH} ${ROOT}/bin/4glpc
 CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
 
-SOURCES_C       =test_postgresql.c connection_suite.c 
+SOURCES_C       =test_postgresql.c ../connection_suite.c 
 
 OBJECTS         =${SOURCES_C:.c=.o} 
 

@@ -24,11 +24,12 @@ namespace Aubit4glSql_postgresql {
      PgConnection(const char *_dbName, const char *_connName);
      ~PgConnection();
      void setPgConn(PGconn *PGconn);
-     const char *getConnectionName();
-     const char *getDatabaseName();
-     char *getErrorMessage();
-     int getError();
+     const char *getConnectionName(void);
+     const char *getDatabaseName(void);
+     char *getErrorMessage(void);
+     int getError(void);
      char *getGlobalStatementName(void);
+     void disconnect(void);
   };
 }
 

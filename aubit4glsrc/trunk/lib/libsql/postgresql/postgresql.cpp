@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.5 2003-01-15 11:43:33 afalout Exp $
+# $Id: postgresql.cpp,v 1.6 2003-01-15 22:29:15 saferreira Exp $
 #
 */
 
@@ -71,8 +71,9 @@
 	#endif
 #endif
 
-  #include "PgConnection.h"
+
   #include "ConnectionException.h"
+  #include "PgConnection.h"
   #include "PgDriver.h"
   #include "PreparedStatement.h"
 
@@ -97,7 +98,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.5 2003-01-15 11:43:33 afalout Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.6 2003-01-15 22:29:15 saferreira Exp $";
 #endif
 
 
@@ -202,7 +203,6 @@ char *usr, char *pwd)
   
   if ( pgDriver.existConnection(sessname) == true )
   {
-    // Error - Connection allready maded : setStatus
     // set the message with PQErrorMessage()
     // @todo : Set the message
     return 1;
@@ -212,7 +212,7 @@ char *usr, char *pwd)
     PgConnection &pgConnection = pgDriver.connect(sessname,dsn,usr,pwd);
   }
   catch (ConnectionException& e) {
-    // Error - Error connecting to the database : setStatus
+    printf("=========== Connection exception",e.getMessage());
     // @todo : Set the message
     return 1;
   }
@@ -272,7 +272,7 @@ extern "C" int A4GLSQL_init_connection (char *dbName)
  */
 extern "C" int A4GLSQL_close_session (char *sessname)
 {
-  if ( !pgDriver.existConnection(sessname) )
+  if ( pgDriver.existConnection(sessname) == false)
   {
     // Error - Connection with that name does not exist
     // @todo : Set the status, sqlca and error code.

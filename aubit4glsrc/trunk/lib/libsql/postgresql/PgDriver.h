@@ -10,6 +10,8 @@
 #include <string>
 #include <map>
 
+using namespace std;
+
 namespace Aubit4glSql_postgresql {
 
  class PgDriver {
@@ -45,9 +47,10 @@ namespace Aubit4glSql_postgresql {
                            const char *databaseName,
                            const char *userName,
                            const char *password);
-     bool existConnection(const string connectionName);
+     bool existConnection(char *connectionName);
+     bool existConnection(const string& connectionName);
      void disconnect(const char *connectionName);
-     void setCurrentConnection(const string& connectionName);
+     bool setCurrentConnection(const string& connectionName);
      PgConnection& getCurrentConnection();
      PgConnection getConnectionToDatabase(const char *dbName);
      const char *PgDriver::getConnectionNameToDatabase(const char *dbName);

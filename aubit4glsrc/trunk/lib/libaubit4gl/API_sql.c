@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.24 2003-01-14 06:27:06 psterry Exp $
+# $Id: API_sql.c,v 1.25 2003-01-15 22:29:15 saferreira Exp $
 #
 */
 
@@ -36,8 +36,6 @@
  * libraries to establish the database connection.
  *
  * This is the begining of the SQL driver manager.
- *
- * @todo Does this file belong in lib/ directory, or?
  *
  */
 
@@ -137,24 +135,40 @@ extern void aclfgli_set_err_flg(void);
 int
 A4GLSQL_initlib (void)
 {
-char *ptr;
+  char *ptr;
 
-	ptr=acl_getenv("A4GL_SQLTYPE");
-	//printf("calling dl_openlibrary with %s\n",ptr);
+  ptr=acl_getenv("A4GL_SQLTYPE");
+  if (A4GLSQL_loadConnector(ptr) == 0)
+    return 0;
 
-	//libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
-    libptr=(void *)dl_openlibrary("SQL",ptr);
-	debug("libptr=%p\n",libptr);
-	if (libptr==0) {
-		exitwith("Unable to open SQL library.");
-		return 0;
-	}
-	func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
+  func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
 
-	if (func)
-		return func();
-	else
-		return 1;
+  if (func)
+    return func();
+  else
+    return 1;
+}
+
+/**
+ * Load the database connector and leaves the
+ * dll handler in a static variable.
+ *
+ * <BR>This function was separated from initlib due to needs
+ * in unit connector testing.
+ *
+ * @param name The name of the SQL lib (ESQL, PG, etc).
+ * @return - 0 : Impossible to open the dynamic SQL library.
+ *         - 1 : The library was openend.
+ */
+int A4GLSQL_loadConnector(char *name) 
+{
+  libptr=(void *)dl_openlibrary("SQL",name);
+  debug("libptr=%p\n",libptr);
+  if (libptr==0) {
+    exitwith("Unable to open SQL library.");
+    return 0;
+  }
+  return 1;
 }
 
 /**

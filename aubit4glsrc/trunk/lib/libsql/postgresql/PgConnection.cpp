@@ -60,7 +60,7 @@ void PgConnection::setPgConn(PGconn *_pgConn)
  *
  * @return The name of the connection.
  */
-const char *PgConnection::getConnectionName()
+const char *PgConnection::getConnectionName(void)
 {
   return connectionName;
 }
@@ -70,9 +70,17 @@ const char *PgConnection::getConnectionName()
  *
  * @return The name of the database
  */
-const char *PgConnection::getDatabaseName()
+const char *PgConnection::getDatabaseName(void)
 {
   return databaseName;
+}
+
+/**
+ * Disconnect from the database.
+ */
+void PgConnection::disconnect(void) 
+{
+  PQfinish(pgConn);
 }
 
 /**
@@ -80,7 +88,7 @@ const char *PgConnection::getDatabaseName()
  *
  * @return The error message
  */
-char *PgConnection::getErrorMessage()
+char *PgConnection::getErrorMessage(void)
 {
   return errorMessage;
 }
@@ -104,6 +112,7 @@ char *PgConnection::getGlobalStatementName(void)
  */
 PgConnection::~PgConnection()
 {
+  disconnect();
   free(databaseName);
   free(connectionName);
 }

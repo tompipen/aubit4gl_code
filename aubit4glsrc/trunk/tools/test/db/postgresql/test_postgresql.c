@@ -2,10 +2,16 @@
  * @file
  * Unit test to the postgresql connection functions.
  *
+ * This main is specific does the specific postgresql actions
+ * and execute the generic tests (those that are usable in the severall 
+ * connectors. Due to this the modules from .. must
+ * be linked to this one.
+ *
  */
 
 #include <check.h>
-#include "postgresql_test.h"
+#include <a4gl_libaubit4gl.h>
+#include "../connection_suite.h"
 
 #ifndef WIN32
 	#include <dlfcn.h>
@@ -30,7 +36,7 @@ void setErrorMessage(char  *_errorMessage)
 
 
 /**
- * Entry point to execute the informix connection test suite.
+ * Entry point to execute the postgresql connection test suite.
  *
  * @todo : get the parameters of the test as argument or environment variables
  *
@@ -40,33 +46,25 @@ void setErrorMessage(char  *_errorMessage)
 int main(void)
 {
   int nf; 
-  Suite *s = makeInformixConnectionSuite(); 
+  Suite *s = makeConnectionSuite(); 
 
   SRunner *sr = srunner_create(s); 
-  //SRunner *sr = srunner_create(makeDdlSuite());
-  srunner_add_suite(sr,makeDdlSuite());
-  srunner_add_suite(sr,makeDmlSuite());
+  //srunner_add_suite(sr,makeDdlSuite());
+  //srunner_add_suite(sr,makeDmlSuite());
   srunner_set_fork_status (sr, CK_NOFORK); 
 
-  /* Load the esql library */
-  sql_lib = (void *)dlopen("SQL","postgresql");
-  /* Create the database using a specific esql/c */
-  /*
-  connectToTestInstance();
-  createDatabase("test");
-  disconnectFromTestInstance();
-  */
+  /* Load the postgresql connector dynamic library */
+  if (A4GLSQL_loadConnector("pg") == 0)
+  {
+    printf("Cant load the SQL library\n");
+    exit(1);
+  }
 
   srunner_run_all (sr, CK_VERBOSE); 
   nf = srunner_ntests_failed(sr); 
   srunner_free(sr); 
   suite_free(s); 
 
-  /*
-  connectToTestInstance();
-  dropDatabase("test");
-  disconnectFromTestInstance();
-  */
   //return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 
   return 0;
