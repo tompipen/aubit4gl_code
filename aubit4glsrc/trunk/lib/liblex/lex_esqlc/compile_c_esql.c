@@ -1,12 +1,115 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: compile_c_esql.c,v 1.40 2003-07-13 04:11:40 afalout Exp $
+# @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
+# with struct expr_str equivalent
+*/
+
+/**
+ * @file
+ * Generate .C & .H modules for compiling with Informix or PostgreSQL 
+ * ESQL/C pre-compilers.
+ *
+ * Most of the functions implemented here are called by the parser.
+ *
+ * The goal is to generate a ESQL/C program that implement the functionality of
+ * the 4gl being compiled.
+ */
+
+/*
+=====================================================================
+
+
+
+
+
+
+
+
+                WHEN EDITING THIS FILE, PLEASE REMEMBER TO DO
+                THE SAME CHANGES TO EQUIVALENT FILE(s) IN OTHER
+                LANGUAGE OUTPUT TARGETS, LIKE:
+
+                    compile_c.c
+                    compile_c_gtk.c
+                    compile_perl.c
+                    API_lex.c
+                    ...etc...
+
+
+
+
+
+
+
+
+
+
+
+=====================================================================
+*/
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "a4gl_lib_lex_esqlc_int.h"
-void printc (char *fmt, ...);
-static void print_copy_status (void);
-void print_conversions (char i);
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 int last_ni;
 int last_no;
-void printcomment (char *fmt, ...);
-int esql_type (void);
-extern void printh (char *fmt, ...);
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void 		printcomment 	(char *fmt, ...);
+int 		esql_type 		(void);
+extern void printh 			(char *fmt, ...);
+void 		printc 			(char *fmt, ...);
+static void print_copy_status (void);
+void 		print_conversions (char i);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
@@ -42,6 +145,12 @@ print_exec_sql_bound (char *s)
   printc ("}\n");
 }
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_close (char type, char *name)
 {
@@ -233,6 +342,12 @@ print_locate (char where, char *var, char *fname)
 
 /* *************************** REPORT **********************/
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_set_conn (char *conn)
 {
@@ -418,6 +533,12 @@ print_open_cursor (char *cname, char *using)
   print_copy_status ();
 }
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_sql_commit (int t)
 {
@@ -683,7 +804,7 @@ print_flush_cursor (char *s)
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
-  char buff[256];
+char buff[256];
 int intprflg=0;
 
   if (a2[0]=='"') { 
@@ -763,18 +884,18 @@ int intprflg=0;
   printh("acli_nbo_%s=no;\n",A4GL_strip_quotes(a3));
   printh("}\n");
 
-intprflg=0;
-if (last_ni) intprflg++;
-if (last_no) intprflg+=2;
-printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
-switch (intprflg) {
-	case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3)); break;
-	case 2: printc("internal_set_%s(0,obind,0,native_binding_o);",A4GL_strip_quotes(a3)); break;
-	case 1: printc("internal_set_%s(ibind,0,native_binding_i,0);",A4GL_strip_quotes(a3)); break;
-	case 0: printc("internal_set_%s(0,0,0,0);",A4GL_strip_quotes(a3)); break;
-	default: printc("#error No internal_set written\n");break;
-	
-}
+	intprflg=0;
+	if (last_ni) intprflg++;
+	if (last_no) intprflg+=2;
+	printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
+	switch (intprflg) {
+		case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3)); break;
+		case 2: printc("internal_set_%s(0,obind,0,native_binding_o);",A4GL_strip_quotes(a3)); break;
+		case 1: printc("internal_set_%s(ibind,0,native_binding_i,0);",A4GL_strip_quotes(a3)); break;
+		case 0: printc("internal_set_%s(0,0,0,0);",A4GL_strip_quotes(a3)); break;
+		default: printc("#error No internal_set written\n");break;
+
+	}
 
   printc("}\n");
 
@@ -972,6 +1093,12 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
   //printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_load_str (char *file, char *delim, char *str)
 {
@@ -1014,6 +1141,12 @@ A4GL_get_undo_use (void)
 }
 
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 static void
 print_copy_status ()
 {
@@ -1023,6 +1156,12 @@ print_copy_status ()
 }
 
 
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_sql_block_cmd (char *s)
 {
@@ -1045,7 +1184,16 @@ print_foreach_end (void)
   printc ("}\n");
 }
 
-char *get_column_transform(char *s) {
+
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
+char *
+get_column_transform(char *s) 
+{
 char buff[256];
 static char buff2[256];
 char *ptr1;
@@ -1088,3 +1236,8 @@ if (strchr(s,'[')==0) return s;
 	}
 	return s;
 }
+
+
+/* ================================== EOF =============================== */
+
+

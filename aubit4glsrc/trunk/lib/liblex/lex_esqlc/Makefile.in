@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2003-06-27 11:09:48 mikeaubury Exp $
+# $Id: Makefile.in,v 1.8 2003-07-13 04:11:40 afalout Exp $
 #
 
 ROOT        =../../..
@@ -39,13 +39,13 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: does compile_c_gtk.o belong here, or in 4GLCAOBJ ?
 
-
-
 #Since compile_c.c includes calls to make_sql_bind, which is defined in binding.c, binding.c, must
 #be linked in C as well, because there cannot be any unsresolved symbols at link time on Windows:
-4GLCOBJ_C		=compile_c.o compile_c_gtk.o compile_c_sql.o binding.o init.o bad_idents.o
-4GLCOBJ_CS		=compile_c.o compile_c_gtk.o compile_c_sql.o binding.o init.o bad_idents.o
-4GLCOBJ_EC		=compile_c.o compile_c_gtk.o compile_c_esql.o binding.o init.o bad_idents.o
+COMMON_OBJ      =compile_c.o compile_c_gtk.o binding.o init.o bad_idents.o
+
+4GLCOBJ_C		=compile_c_sql.o ${COMMON_OBJ}
+4GLCOBJ_CS		=compile_c_sql.o ${COMMON_OBJ}
+4GLCOBJ_EC		=compile_c_esql.o ${COMMON_OBJ}
 
 ## ==================================================================
 ##                    Options
@@ -82,19 +82,23 @@ ALL         	+=${LIBROOT}/libLEX_EC${SO_EXT}
 ## ==================================================================
 
 ALL: ${ALL}
+	@echo "All targets (${ALL}) successfully compiled"
 
+#Pure C output for C compiler
 ${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_C} ${LINKLIBS}
 
+#What is this?
 ${LIBROOT}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_CS} ${LINKLIBS}
 
+#Embededd SQL/C output, for Informix ESQL/C or PostgreSQL EC compilers:
 ${LIBROOT}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_EC} ${LINKLIBS}
 
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ## ==================================================================
 ##                            Sub Targets
@@ -121,7 +125,7 @@ ${LIBROOT}/lib4glc${SO_EXT}:
 #rules/generated/y.tab.o: ../fcompile/form_x.h
 
 
-compile_c.o: ${KW_H} ${Y_TAB_H}
+compile_c.o compile_c_sql.o: ${KW_H} ${Y_TAB_H}
 
 ${KW_H} ${Y_TAB_H}:
 	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c

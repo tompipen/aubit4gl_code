@@ -35,6 +35,7 @@
      KW_OR = 1609,
      KW_AND = 1564,
      KW_USING = 1500,
+     NOT = 1584,
      MATCHES = 1378,
      POWER = 1486,
      LESS_THAN = 1482,
@@ -627,7 +628,6 @@
      LOG = 1579,
      XMAX = 1580,
      XMIN = 1581,
-     NOT = 1584,
      PAD = 1585,
      PUT = 1586,
      RED = 1587,
@@ -701,6 +701,7 @@
 #define KW_OR 1609
 #define KW_AND 1564
 #define KW_USING 1500
+#define NOT 1584
 #define MATCHES 1378
 #define POWER 1486
 #define LESS_THAN 1482
@@ -1293,7 +1294,6 @@
 #define LOG 1579
 #define XMAX 1580
 #define XMIN 1581
-#define NOT 1584
 #define PAD 1585
 #define PUT 1586
 #define RED 1587
@@ -1364,7 +1364,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 202 "fgl.yacc"
+#line 206 "fgl.yacc"
 typedef union YYSTYPE {
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.37 2003-06-27 15:02:10 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.38 2003-07-13 04:11:41 afalout Exp $
 #
 */
 
@@ -107,7 +107,7 @@ extern int rep_type;
 extern int sreports_cnt;
 extern char when_to_tmp[64];
 
-//#ifdef __NEED_DLL_IMPORT__
+
 dll_import int when_code[8];
 dll_import struct s_report sreports[1024];
 dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -119,22 +119,6 @@ dll_import struct binding_comp ordbind[NUMBINDINGS];
 dll_import struct s_constr_buff constr_buff[256];
 dll_import char when_to[64][8];
 dll_import struct s_report_stack report_stack[REPORTSTACKSIZE];
-/*
-#else
-	extern int 			when_code[8];
-	extern struct 		s_report sreports[1024];
-	extern struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-	extern struct 		binding_comp ibind[NUMBINDINGS];
-	extern struct 		binding_comp nullbind[NUMBINDINGS];
-	extern struct 		binding_comp obind[NUMBINDINGS];
-	extern struct 		binding_comp fbind[NUMBINDINGS];
-	extern struct 		binding_comp ordbind[NUMBINDINGS];
-	extern struct 		s_constr_buff constr_buff[256];
-	extern char 		when_to[64][8];
-	extern struct 		s_report_stack report_stack[REPORTSTACKSIZE];
-#endif
-*/
-
 
 extern int ordbindcnt;
 extern int ibindcnt;
@@ -177,9 +161,9 @@ static void printcomment (char *fmt, ...);
 void dump_unwind (void);
 
 
-void internal_lex_printc (char *fmt, va_list * ap);
-void internal_lex_printcomment (char *fmt, va_list * ap);
-void internal_lex_printh (char *fmt, va_list * ap);
+void A4GL_internal_lex_printc (char *fmt, va_list * ap);
+void A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
+void A4GL_internal_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,

@@ -63,7 +63,7 @@ A4GL_UI=@A4GL_UI@
 
 ############
 #Default output language driver for 4gl compiler:
-#When used: compie-time only
+#When used: compile-time only
 #Options: PERL, (C)
 A4GL_LEXTYPE=@A4GL_LEXTYPE@
 

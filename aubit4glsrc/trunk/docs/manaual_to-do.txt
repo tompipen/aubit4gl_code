@@ -1632,7 +1632,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.17 2003-07-10 08:43:40 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.18 2003-07-13 04:11:40 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4107,6 +4107,33 @@ and I'll put them up..
 
 
 =============================================================================
+
+
+The easiest way to connect to an informix database is to install the informix
+Client SDK.
+You can then use set the A4GL_LEXTYPE environment variable :
+
+$ export A4GL_LEXTYPE=EC
+
+You should then be able to compile your programs :
+
+4glpc myprog.4gl -o myprog.4ae
+
+And it will write and compile a .ec file using esql
+
+In your other message - you mentioned postgres - you can do this using ESQL/C
+using ecpg..
+
+You'll need to tell aubit :
+
+export A4GL_LEXDIALECT=POSTGRES
+
+(LEXDIALECT defaults to INFORMIX)
+
+
+If you want to connect via ODBC - you'll need to install and configure and ODBC
+driver - which very much depends on which one you choose...
+
 
 =============================================================================
 

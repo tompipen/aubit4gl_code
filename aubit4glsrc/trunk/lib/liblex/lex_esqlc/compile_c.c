@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.62 2003-07-09 16:19:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.63 2003-07-13 04:11:40 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -73,12 +73,6 @@
 */
 
 
-void add_function_to_header (char *identifier, int parms);
-char *get_namespace (char *s);
-void print_init_var (char *name, char *prefix, int alvl);
-void printcomment (char *fmt, ...);
-int is_builtin_func (char *s);
-int cs_ticker=0;
 /*
 =====================================================================
 		                    Includes
@@ -93,6 +87,7 @@ int cs_ticker=0;
 =====================================================================
 */
 
+int cs_ticker=0;
 
 /** Pointer to the output C file */
 static FILE *outfile = 0;
@@ -151,22 +146,21 @@ void print_function_variable_init (void);
 =====================================================================
 */
 
-void printc (char *fmt, ...);
+void 		printc (char *fmt, ...);
 static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
-static int print_field_bind (int ccc);
-static int print_arr_bind (char i);
-static int print_constr (void);
-static int print_field_bind_constr (void);
-static int pr_when_do (char *when_str, int when_code, int l, char *f,
-		       char *when_to);
+static int 	print_field_bind (int ccc);
+static int 	print_arr_bind (char i);
+static int 	print_constr (void);
+static int 	print_field_bind_constr (void);
+static int 	pr_when_do (char *when_str, int when_code, int l, char *f,char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn, int n);
 
-void internal_A4GL_lex_printc (char *fmt, va_list * ap);
-void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
-void internal_A4GL_lex_printh (char *fmt, va_list * ap);
+void 		A4GL_internal_lex_printc (char *fmt, va_list * ap);
+void 		A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
+void 		A4GL_internal_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,
@@ -177,6 +171,13 @@ static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 void printh (char *fmt, ...);
 
+void 		add_function_to_header 	(char *identifier, int parms);
+char *		get_namespace 			(char *s);
+void 		print_init_var 			(char *name, char *prefix, int alvl);
+void 		printcomment 			(char *fmt, ...);
+int 		is_builtin_func 		(char *s);
+
+
 /*
 =====================================================================
                     Functions definitions
@@ -184,7 +185,7 @@ void printh (char *fmt, ...);
 */
 
 /**
- * Print spaces to the increment acording to scope level generated in 
+ * Print spaces to the increment acording to scope level generated in
  * target C code.
  */
 static void
@@ -366,11 +367,11 @@ printc (char *fmt, ...)
   va_list ap;
   //A4GL_debug("via printc (a) in lib\n");
   va_start (ap, fmt);
-  internal_A4GL_lex_printc (fmt, &ap);
+  A4GL_internal_lex_printc (fmt, &ap);
 }
 
 void
-internal_A4GL_lex_printc (char *fmt, va_list * ap)
+A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
 /* va_list args; */
   char buff[40960] = "ERROR-empty init";
@@ -451,12 +452,12 @@ printh (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  internal_A4GL_lex_printh (fmt, &ap);
+  A4GL_internal_lex_printh (fmt, &ap);
 }
 
 void
 /* printh (char *fmt, ...) */
-internal_A4GL_lex_printh (char *fmt, va_list * ap)
+A4GL_internal_lex_printh (char *fmt, va_list * ap)
 {
 /* va_list args; */
   if (outfile == 0)
@@ -487,12 +488,12 @@ printcomment (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  internal_A4GL_lex_printcomment (fmt, &ap);
+  A4GL_internal_lex_printcomment (fmt, &ap);
 }
 
 void
-/* internal_printcomment (char *fmt,...) */
-internal_A4GL_lex_printcomment (char *fmt, va_list * ap)
+/* A4GL_internal_printcomment (char *fmt,...) */
+A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
 {
 #ifdef USE_PRINTCOMMENT
 /*  va_list args; */

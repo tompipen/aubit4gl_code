@@ -1,3 +1,59 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Files in this directory are obsolete; libLEX_C is now created from files
+in lib/liblex/lex_ec
+
+
+This directory and all files should be removed from CVS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0   lib/liblex/lex_c makefile	 |
 # +----------------------------------------------------------------------+
@@ -24,7 +80,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2003-02-22 01:52:21 afalout Exp $
+# $Id: Makefile.in,v 1.16 2003-07-13 04:11:40 afalout Exp $
 #
 
 ROOT        =../../..
