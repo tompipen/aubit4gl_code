@@ -1,43 +1,88 @@
-all : sql_parse libSQLPARSE_INFORMIX.so
-CFLAGS=-g -fPIC -I$(AUBITDIR)/incl
-LDFLAGS=-g
+
+#
+# $Id: makefile,v 1.2 2004-11-26 03:57:52 afalout Exp $
+#
+
+ROOT		=../..
+LIBROOT		=../../lib
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                   Settings
+## ==================================================================
+
+ALL					=sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX.so
+CFLAGS				=-g -fPIC -I$(ROOT)/incl
+LDFLAGS				=-g
+SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
+
+## ==================================================================
+##                   Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Run-time SQL parser compiled"
 
 sql_parse: y.tab.o main.o   
-	gcc -I$(AUBITDIR)/incl y.tab.o main.o     -o sql_parse -L$(AUBITDIR)/lib -laubit4gl
+	${CC} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -laubit4gl
 
-libSQLPARSE_INFORMIX.so : y.tab.o    
-	gcc -shared -I$(AUBITDIR)/incl y.tab.o  -o libSQLPARSE_INFORMIX.so -L$(AUBITDIR)/lib -laubit4gl 
-	cp libSQLPARSE_INFORMIX.so $(AUBITDIR)/lib
+$(LIBROOT)/libSQLPARSE_INFORMIX.so : y.tab.o    
+	${CC} -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -laubit4gl 
 
+## ==================================================================
+##                   Sub-targets
+## ==================================================================
+	
 lex.yy.c: m2.lex
-	flex -i m2.lex
+ifeq "${LEX}" "no"
+	@echo "No lex (${LEX})"
+	exit 4
+else
+	${NICE} ${LEX} -i $<
+endif
 
 main.o: main.c
-	gcc -c -DTEST main.c
+	${CC} -c -DTEST $<
 
-sql1.rule: ../4glc/rules/sqlpack/infx/sql1.rule
-	cp ../4glc/rules/sqlpack/infx/sql1.rule .
+sql1.rule: ${SQLPACK_IFX_PATH}/sql1.rule
+	cp $< .
 
-schema.rule: ../4glc/rules/sqlpack/infx/schema.rule
-	cp ../4glc/rules/sqlpack/infx/schema.rule .
+schema.rule: ${SQLPACK_IFX_PATH}/schema.rule
+	cp $< .
 
-update.rule: ../4glc/rules/sqlpack/infx/update.rule
-	cp ../4glc/rules/sqlpack/infx/update.rule .
+update.rule: ${SQLPACK_IFX_PATH}/update.rule
+	cp $< .
 
 m2.lex: gen_lex 2.reqd
-	sh gen_lex > m2.lex
+	${SH} gen_lex > $@
 
 2.reqd:	../4glc/rules/generated/kw.yh not_used
-	cp ../4glc/rules/generated/kw.yh ./2.reqd.in
-	fgrep -f not_used -v 2.reqd.in > 2.reqd
+	cp $< ./$@.in
+	fgrep -f not_used -v $@.in > $@
 
-sql.yacc: 1.reqd 2.reqd 10.reqd *.rule 80.reqd 99.reqd 
-	cat 1.reqd 2.reqd 10.reqd *.rule 80.reqd 99.reqd > sql.yacc
+sql.yacc: 1.reqd 2.reqd 10.reqd 80.reqd 99.reqd
+#no .rule files in curr dir???
+	${CAT} $^ *.rule > $@
 
-y.tab.c: sql.yacc 
-	yacc -v -t -d sql.yacc
+
+y.tab.c: sql.yacc
+ifneq "${YACC}" "no"
+	${YACC} -v -t -d $<
+else
+	@echo "No yacc (${YACC})"
+	exit 4
+endif	
 
 y.tab.o: y.tab.c lex.yy.c util.c
 
+## ==================================================================
+##                   Clean
+## ==================================================================
+
+clean:
+	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ 2.reqd.in sql.yacc
 
 
+	

@@ -53,9 +53,15 @@ if test "$COMSPEC" = ""; then
 	MAILADDR_CC=root@falout.org
 	#MAIL_SUBJECT="Aubit Linux nightly build"
 	MAIL_SUBJECT="Aubit_Linux_nightly_build"
-	if test "$AUBITDIR" = ""; then 
+	if test "$AUBITDIR" = ""; then
+		echo "WARNING: AUBITDIR was empty"
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR="/opt/aubit/aubit4glsrc"
+	fi
+	if test "$AUBITDIR_SRC" = ""; then
+		echo "WARNING: AUBITDIR_SRC was empty"
+		#we should have got that by reading aubitrc ?!	
+		AUBITDIR_SRC="/opt/aubit/aubit4glsrc"
 	fi
 	SH=/bin/bash
 	#Quote problem - works from cmd line but not from cron:
@@ -72,9 +78,16 @@ else
 	MAILADDR_CC=root@aptiva
 	MAIL_SUBJECT="Aubit Windows nightly build"
 	if test "$AUBITDIR" = ""; then 
+		echo "WARNING: AUBITDIR was empty"
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR="/usr/src/aubit/aubit4glsrc"
 	fi
+	if test "$AUBITDIR_SRC" = ""; then
+		echo "WARNING: AUBITDIR_SRC was empty"
+		#we should have got that by reading aubitrc ?!
+		AUBITDIR_SRC="/usr/src/aubit/aubit4glsrc"
+	fi
+	
 	SH=/usr/bin/bash
 	if test -f /usr/sbin/ssmtp ; then 
 		MAILEXEC="/usr/sbin/ssmtp"
@@ -102,7 +115,7 @@ rm -f $LOGFILE $MAILFILE $TMPMAIL
 
 ############################
 #command to execute to build Aubit
-BUILD_CMD="$AUBITDIR/bin/aubitbuild.sh"
+BUILD_CMD="$AUBITDIR_SRC/bin/aubitbuild.sh"
 
 ############################
 #Parameters to pass to BUILD_CMD
@@ -137,15 +150,15 @@ if test "$DO_BUILD" = "1"; then
 	#Check for aubitbuild.sh script, recreate it if missing
 	
 	#Make sure we are using th latest aubitbuild.sh
-	cd $AUBITDIR; ./config.status --file bin/aubitbuild.sh
+	cd $AUBITDIR_SRC; ./config.status --file bin/aubitbuild.sh
 	
 	if [ ! -f $BUILD_CMD ]; then
 		if test "$DEBUG" = "1"; then
 			echo "$BUILD_CMD missing...running autoconf/configure"
 		fi
 		echo "$BUILD_CMD missing...running autoconf/configure"  >> $LOGFILE
-		cd $AUBITDIR
-		if [ ! -f $AUBITDIR/configure ]; then
+		cd $AUBITDIR_SRC
+		if [ ! -f $AUBITDIR_SRC/configure ]; then
 			autoconf > /tmp/autoconf.log  2>&1
 		fi
 	
@@ -273,21 +286,21 @@ fi
 ############################### testing ################################
 
 if test "$DO_TESTS" = "1"; then 
-	cd $AUBITDIR
+	cd $AUBITDIR_SRC
 	#re-build local Aubit source code, if needed
 	if test ! -f "$FGLC"; then 
 		if test "$DEBUG" = "1"; then
 			echo "Re-building Aubit source code tree."
 		fi
 		
-		if [ ! -f $AUBITDIR/Makefile ]; then
-			echo "$AUBITDIR/Makefile missing, running config.status..."
-			cd $AUBITDIR; ./config.status
+		if [ ! -f $AUBITDIR_SRC/Makefile ]; then
+			echo "$AUBITDIR_SRC/Makefile missing, running config.status..."
+			cd $AUBITDIR_SRC; ./config.status
 		fi
 		
 		#We are NOT invoking nightly build here!!!! Just re-build compiler
 		#$SH $BUILD_CMD $PARAMS > /tmp/postbuild.log 2>&1
-		cd $AUBITDIR; make > /tmp/postbuild.log 2>&1
+		cd $AUBITDIR_SRC; make > /tmp/postbuild.log 2>&1
 		RET=$?
 		echo "Finished postbuild at `date`" >> /tmp/postbuild.log 2>&1
 		if test $RET != "0"; then
@@ -304,7 +317,7 @@ if test "$DO_TESTS" = "1"; then
 	fi
 
 	#Make sure compiler is installed for tests
-	cd $AUBITDIR; make install > /tmp/postinstall.log 2>&1	
+	cd $AUBITDIR_SRC; make install > /tmp/postinstall.log 2>&1	
 	RET=$?
 	if test $RET != "0"; then
 		echo "Install failed"
@@ -332,7 +345,7 @@ if test "$DO_DOXY" = "1"; then
 	if test "$DEBUG" = "1"; then
 		echo "Creating Doxy documentation..."
 	fi
-	cd $AUBITDIR 
+	cd $AUBITDIR_SRC 
 	make doxy > /tmp/aubitdoxy.log 2>&1
 	RET=$?
 	if test "$RET" != "0"; then 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.84 2004-09-28 09:49:10 afalout Exp $
+# $Id: Makefile.in,v 1.85 2004-11-26 03:57:51 afalout Exp $
 #
 
 ROOT		=../..
@@ -40,7 +40,6 @@ include ${ROOT}/incl/Makefile-common
 WANTKW_C		= mk_states.c
 Y_OUTPUT		= rules/generated/y.output
 
-
 ifeq "${YACC}" "no"
 	GENRULES    =${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
@@ -55,8 +54,6 @@ ifeq "${GCC_MINGW}" "yes"
 	CFLAGS		+=-I${ROOT}/tools/getopt
 endif
 
-
-
 #temp. workarounds for older versions of bizon y.output format:
 HOSTNAME_SPEC   =xxaptiva
 
@@ -66,13 +63,19 @@ ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 endif
 
 CMODS_EXE       =4glc.c
+#--- KEEP IN APLPABETIC ORDER ---
 CMODS_LIB       =\
-				compile.c \
+				API_lex.c \
+				compile.c class.c \
 				dim.c \
-				list.c lexer.c memfile.c ../../lib/generated/std_funcs.c field_handling.c \
-				mod.c map.c var_handling.c variables.c globals.c lex.c API_lex.c import.c class.c \
-				rules/generated/states.c \
+				field_handling.c \
+				globals.c \
+				import.c \
 				rules/generated/kw.c \
+				list.c lexer.c lex.c \
+				memfile.c mod.c map.c \
+				../../lib/generated/std_funcs.c rules/generated/states.c \
+				var_handling.c variables.c \
                 ${Y_TAB_C} \
                 ${WANTKW_C}
 
@@ -172,7 +175,7 @@ endif
 #	${MAKE} -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C}
-	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
+	${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 	${MAKE} -C rules
@@ -180,12 +183,11 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
 
-
-API_lex.c: API_lex.spec
-	${SH} ../../lib/bin/dlmagic API_lex.spec > API_lex.c
-	${SH} ../../lib/bin/dlmagic  API_lex.spec -h > API_lex.h
-	cp API_lex.h ../../incl
-
+API_lex.c: API_lex.spec ../../incl/API_lex.h
+	${SH} ../../lib/bin/dlmagic $< > $@
+	
+../../incl/API_lex.h: API_lex.spec	
+	${SH} ../../lib/bin/dlmagic -h $< > $@
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
@@ -195,7 +197,7 @@ ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 endif
 	@echo "Y_OUTPUT=${Y_OUTPUT}"
 ifneq "${YACC}" "no"
-	@SH@ $<
+	${SH} $<
 #the "t" file is some kind of temporary file created by wantkw_gen.pl
 	${RM} t
 else

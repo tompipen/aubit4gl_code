@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.74 2004-11-19 13:31:26 mikeaubury Exp $
+# $Id: Makefile.in,v 1.75 2004-11-26 03:57:53 afalout Exp $
 #
 
 ROOT    	=../..
@@ -42,24 +42,25 @@ CMODS_PROJECT	=project.c
 #List of API specification files used to generate .c/.h pair
 #created headers are included via a4gl_libaubit4gl_int.h
 API_SPEC    =API_esql.spec API_help.spec API_menu.spec API_packer.spec \
-			API_form.spec API_msg.spec API_ui.spec  API_sqlparse.spec API_sql.spec API_rpc.spec \
-			API_exreport.spec
+			API_form.spec API_msg.spec API_ui.spec  API_sqlparse.spec \
+			API_sql.spec API_rpc.spec API_exreport.spec
 
-#List of API .c files that do not have coresponding .spec file
-#looks like we have them all now
-#API_C       =API_sql.c API_rpc.c API_exreport.c
+#List of API .c files that do not have coresponding .spec file (should no 
+#longer be the case)
+API_C       =
 
 #../../incl/a4gl_API_exdata.h     ??????
 
-#List of all Aubit API interfaces source files, part of libaubit4gl:
+#List of all Aubit API interfaces source files, part of libaubit4gl, both 
+#generated from .spec files and written in C:
 CMODS_API   =${API_C} ${API_SPEC:.spec=.c}
 
 #List of all non-API source files of libaubit4gl, -- IN ALPHABETIC ORDER -- :
 COMMONSRC= \
-	attributes.c ns.c \
+	attributes.c \
 	builtin.c builtin_d.c \
 	calldll.c conv.c compat.c \
-	data_if.c dates.c dmy.c  datatypes.c dataio.c decimal.c dynmem.c \
+	data_if.c dates.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c extfile.c eval_field.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c \
@@ -68,6 +69,7 @@ COMMONSRC= \
 	keys.c  \
 	load.c \
 	match.c maths.c memfile.c \
+	ns.c \
 	others.c ops.c \
 	pointers.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
@@ -75,7 +77,8 @@ COMMONSRC= \
 	translate.c \
 	ui.c
 
-CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
+CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} \
+						${CMODS_API}
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${CMODS:.c=.o}
 
@@ -106,12 +109,9 @@ endif
 
 LCLINT_CFLAGS   	=${C_IFLAGS}
 
-
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
-
-
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
@@ -132,8 +132,6 @@ ifeq "${GCC_MINGW}" "yes"
 	#strcasecmp():
 	LINK_LIBS		+=-lmoldname
 endif
-
-
 
 ifeq "${TARGET_OS}" "darwin"
 		#This is to make ONLY dlopen() loadable library, not a standard

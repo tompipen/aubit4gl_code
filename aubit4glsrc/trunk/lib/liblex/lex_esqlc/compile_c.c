@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.198 2004-11-25 15:38:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.199 2004-11-26 03:57:53 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.198 2004-11-25 15:38:57 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.199 2004-11-26 03:57:53 afalout Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1371,11 +1371,12 @@ print_form_attrib (struct form_attr *form_attrib)
 #ifdef DEBUG
   A4GL_debug ("Printing attributes\n");
   A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
-#endif
 	      form_attrib->form_line, form_attrib->error_line,
 	      form_attrib->prompt_line, form_attrib->menu_line,
 	      form_attrib->border, form_attrib->comment_line,
 	      form_attrib->message_line, form_attrib->attrib);
+  
+#endif
 }
 
 /**

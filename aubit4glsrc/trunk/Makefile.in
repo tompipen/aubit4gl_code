@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.164 2004-10-04 13:49:24 afalout Exp $
+# $Id: Makefile.in,v 1.165 2004-11-26 03:56:28 afalout Exp $
 #
 
 ## ==================================================================
@@ -529,7 +529,7 @@ clean.etc:
 	rm -rf etc/Output
 
 clean.incl:
-	${RM} incl/*.bak .\#*
+	${RM} incl/*.bak .\#* *~ incl/a4gl_API_* 
 
 clean.docs:
 	rm -rf docs/doxy/html
