@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.71 2003-12-05 22:12:35 mikeaubury Exp $
+# $Id: sql.c,v 1.72 2003-12-10 20:45:19 mikeaubury Exp $
 #
 */
 
@@ -3840,6 +3840,40 @@ A4GLSQL_initsqllib (void)
   A4GLSQL_make_connection (0, 0, 0);
   return 1;
 }
+
+
+
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+char *ptr2;
+char *ptrn;
+char buff[256];
+A4GL_trim(val);
+ptr2=val;
+while (1) {
+        ptrn=strtok(ptr2,",");
+        if (ptrn==0) break;
+        if (ptr2) {ptr2=0;}
+
+        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+
+        if (ptr==0) {
+                ptr=A4GL_new_expr(buff);
+        } else {
+                A4GL_append_expr(ptr,buff);
+        }
+
+}
+return ptr;
+}
+
+
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+printf("Warning Validation feature not implemented in ODBC SQL Driver");
+return 0;
+}
+
+
+
 
 
 /* =================================================== */

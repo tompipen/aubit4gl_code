@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.54 2003-12-05 22:12:36 mikeaubury Exp $
+# $Id: resource.c,v 1.55 2003-12-10 20:45:20 mikeaubury Exp $
 #
 */
 
@@ -88,6 +88,8 @@ struct str_resource builtin_resource[] = {
 #else
   {"A4GL_SQLTYPE", "nosql"},
 #endif
+  {"A4GL_UPSCOL_ATT","syscolatt"},
+  {"A4GL_UPSCOL_VAL","syscolval"},
   {"A4GL_UI", "TUI"}, 			//should this be CONSOLE ?
   {"A4GL_FORMTYPE", "GENERIC"},
   {"A4GL_PACKER", "XML"},       //should this be PACKED?

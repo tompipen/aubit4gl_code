@@ -132,7 +132,7 @@ FIELD_CONSTR_EXPR UI/TUI Message to display when a fields value cannot be used f
 FIELD_ERROR_MSG UI/TUI Message to display when a fields value is invalid (eg non numeric in numeric field)
 FIELD_INCL_MSG UI/TUI Message to display when a value in a field is not in the include list
 FIELD_PICTURE_MSG UI/TUI Message to display when a pressed which is invalid for picture fields
-FIELD_REQD_MSG UI/TUI Message to display when a field required a value to be entered
+FIELD_REQD_MSG UI/TUI Message to display when a field requires a value to be entered
 FIXUPDATE
 =YES|NO
 FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
@@ -218,7 +218,7 @@ USE_DATABASE_STMT
 =YES|NO
 USE_FORM_SIZE
 =YES|NO
-USE_INDICATOR
+USE_INDICATOR ESQL Use indicator variables in ESQL/C generated code
 =YES|NO
 VISUAL
 YYDEBUG

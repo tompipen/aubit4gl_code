@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.6 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.7 2003-12-10 20:45:19 mikeaubury Exp $
 #
 */
 
@@ -41,7 +41,7 @@ A4GL_process_stack_op_other (int d)
   int d1;
   int s1;
   int ptr1;
-
+A4GL_debug("A4GL_process_stack_op_other");
   if (d == OP_IN || d == OP_NOTIN)
     {
       int a;
@@ -54,14 +54,15 @@ A4GL_process_stack_op_other (int d)
 	  A4GL_debug ("Getting base value from stack.. a=%d", a);
 	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
 	  A4GL_debug ("Got %p 0x%x %d\n", ptr1, d1, s1);
-	  A4GL_debug (" *ptr1=%d", *(int *) ptr1);
+	  //A4GL_debug (" *ptr1=%d", *(int *) ptr1);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  A4GL_pushop (OP_EQUAL);
 	  A4GL_debug ("Pushed OP_EQUAL");
-	  eql = A4GL_pop_int ();
-	  A4GL_debug ("Got OP_EQUAL  = %d\n", eql);
-	  if (eql)
-	    ok = 1;
+	  eql = A4GL_pop_long ();
+	  if (A4GL_isnull(DTYPE_INT,(void *)&eql)) eql=0;
+	  if (eql) ok = 1;
+	  A4GL_debug ("Got OP_EQUAL  = %d (%x) ok=%d\n", eql,eql,ok);
+	
 	  a--;
 	}
       A4GL_debug ("Setting ok=%d\n", ok);

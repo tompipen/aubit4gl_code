@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.37 2003-07-09 16:19:22 mikeaubury Exp $
+# $Id: API_sql.c,v 1.38 2003-12-10 20:45:19 mikeaubury Exp $
 #
 */
 
@@ -786,6 +786,13 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
 }
 
 
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname, char *colname)
+{
+  if (libptr == 0) A4GLSQL_initlib ();
+  A4GL_func = A4GL_find_func (libptr, "A4GLSQL_get_validation_expr");
+  return A4GL_func (tabname,colname);
+}
+
 /**
  *
  *
@@ -1182,5 +1189,8 @@ A4GL_apisql_must_convert (void)
       must_convert = 1;
     }
 }
+
+
+
 
 /* =============================== EOF ============================== */

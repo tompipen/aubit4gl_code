@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.77 2003-12-04 19:06:12 mikeaubury Exp $
+# $Id: stack.c,v 1.78 2003-12-10 20:45:19 mikeaubury Exp $
 #
 */
 
@@ -892,22 +892,27 @@ A4GL_debug("51 Have data");
       int a;
       int ok = 0;
       int eql;
+	A4GL_debug("OP IN\n");
       a = A4GL_pop_int ();
       while (a >= 1)
 	{
 	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
+	A4GL_debug("Comparing...");
 	  A4GL_pushop (OP_EQUAL);
 	  eql = A4GL_pop_int ();
-	  if (eql)
-	    ok = 1;
+		A4GL_debug("GOT MATCH @ %d = %d\n",a,eql);
+	  if (eql) ok = 1;
 	  a--;
 	}
       A4GL_drop_param ();		/* Get rid of the base... */
-      if (d == OP_IN)
- A4GL_push_int (ok);
-      else
- A4GL_push_int (!ok);
+      if (d == OP_IN) {
+ 		A4GL_push_int (ok);
+		A4GL_debug("OK=%d\n",ok);
+	} else {
+ 		A4GL_push_int (!ok);
+		A4GL_debug("OK=%d\n",!ok);
+	}
       return;
     }
 
@@ -1638,7 +1643,7 @@ A4GL_pushop (int a)
     }
 
 
-  A4GL_debug ("PUSHOP : %d", a);
+  A4GL_debug ("PUSHOP : %x", a);
   if (a == OP_IN || a == OP_NOTIN
       || a == OP_IN_SELECT || a == OP_NOTIN_SELECT
       || a == OP_EXISTS || a == OP_NOTEXISTS)

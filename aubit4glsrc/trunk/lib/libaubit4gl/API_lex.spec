@@ -271,6 +271,9 @@ print_init -> void
 /* void print_init_table (char *s) */
 print_init_table char* s -> void
 
+/* void print_validate () */
+print_validate  -> void
+
 /* void generate_or (char *out, char *in1, char *in2) */
 A4GL_generate_or char* out,char* in1,char* in2 -> void
 

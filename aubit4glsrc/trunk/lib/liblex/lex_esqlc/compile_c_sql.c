@@ -605,7 +605,7 @@ if (s[0]=='\'') {
 	ptr[strlen(ptr)-1]=0;
 	sprintf(buff,"a4gl_putstr_%d",put_string_no);
 	printh("static char %s[]=\"%s\";\n",buff,ptr);
-	liblex_add_ibind(0+strlen(ptr)<<16,buff);
+	liblex_add_ibind(0+(strlen(ptr)<<16),buff);
 	free(ptr);
 	strcpy(s,"?");
 }

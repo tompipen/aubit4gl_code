@@ -570,6 +570,55 @@ if (strlen(acl_getenv("LEXDIALECT"))) {
 A4GLSQL_initlib() {
 }
 
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+char *ptr2;
+char *ptrn;
+char buff[256];
+A4GL_trim(val);
+ptr2=val;
+while (1) {
+        ptrn=strtok(ptr2,",");
+        if (ptrn==0) break;
+        if (ptr2) {ptr2=0;}
+
+        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+
+        if (ptr==0) {
+                ptr=A4GL_new_expr(buff);
+        } else {
+                A4GL_append_expr(ptr,buff);
+        }
+
+}
+return ptr;
+}
+
+
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+EXEC SQL BEGIN DECLARE SECTION;
+char buff[300];
+char val[65];
+struct expr_str *ptr=0;
+EXEC SQL END DECLARE SECTION;
+int cnt;
+sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+EXEC SQL PREPARE p_get_val FROM :buff;
+if (sqlca.sqlcode!=0) return 0;
+EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
+if (sqlca.sqlcode!=0) return 0;
+EXEC SQL OPEN c_get_val ;
+if (sqlca.sqlcode!=0) return 0;
+
+
+while (1) {
+        EXEC SQL FETCH c_get_val INTO  $val;
+        if (sqlca.sqlcode!=0) break;
+        ptr=A4GL_add_validation_elements_to_expr(ptr,val);
+        // Process it...
+}
+return ptr;
+
+}
 /* ================================= EOF ============================== */
 
 

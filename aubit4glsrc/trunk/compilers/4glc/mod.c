@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.139 2003-10-09 13:02:51 afalout Exp $
+# $Id: mod.c,v 1.140 2003-12-10 20:45:08 mikeaubury Exp $
 #
 */
 
@@ -150,6 +150,7 @@ int lines_printed=0;
 int lines_printed_true=0;
 int lines_printed_false=0;
 
+static int push_construct_table (char *tableName);
 
 char when_to_tmp[64];
 char when_to[64][8];
@@ -252,6 +253,7 @@ char *rettype (char *s);
 int yywrap (void);
 struct sreports *get_sreports (int z);
 void a4gl_add_variable (char *name, char *type, char *n);
+static void push_validate_column(char *tabname,char *colname) ;
 
 char *get_namespace (char *s);
 char *make_sql_string (char *first, ...);
@@ -1373,6 +1375,95 @@ pushLikeTableColumn (char *tableName, char *columnName)
   return 1;
 }
 
+
+static int
+pushValidateTableColumn (char *tableName, char *columnName)
+{
+  int rval;
+  int idtype;
+  int isize;
+  //char csize[20];
+  //char cdtype[20];
+  char buff[300];
+
+  A4GL_debug ("pushValidateTableColumn()");
+  rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
+  if (rval == 0)
+    {
+      sprintf (buff, "%s.%s does not exist in the database", tableName,
+	       columnName);
+      a4gl_yyerror (buff);
+      return 0;
+    }
+  //sprintf (cdtype, "%d", idtype & 15);
+  //sprintf (csize, "%d", isize);
+  trim_spaces (columnName);
+  push_validate_column (tableName,columnName);
+  return 1;
+}
+
+static int
+pushValidateAllTableColumns (char *tableName)
+{
+  int rval;
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
+  //char csize[20];
+  //char cdtype[20];
+  char buff[300];
+  char *ccol;
+
+  A4GL_debug ("pushValidateAllTableColumns()");
+  /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
+  A4GL_debug ("Calling get_columns : %s\n", tableName);
+  rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
+  A4GL_debug ("rval = %d", rval);
+  if (rval == 0 && tableName)
+    {
+      sprintf (buff, "%s does not exist in the database", tableName);
+      a4gl_yyerror (buff);
+      return 1;
+    }
+
+  A4GL_debug ("Rval !=0");
+
+  while (1)
+    {
+      colname[0] = 0;
+
+      /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+      A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
+      A4GL_debug ("next column for table '%s' is '%s'", tableName, ccol);
+
+      strcpy (colname, ccol);
+
+      /*
+         warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+         we are sending char ARRAY to function expecting char POINTER !!!!
+       */
+
+      if (rval == 0)
+	break;
+
+      //sprintf (cdtype, "%d", idtype & 15);
+      //sprintf (csize, "%d", isize);
+      //A4GL_debug ("%d %d", idtype, isize);
+      //A4GL_debug ("---> %s %s", cdtype, csize);
+      //A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,
+	     //csize);
+      trim_spaces (colname);
+      push_validate_column (tableName,colname);
+
+      //push_name (colname, 0);
+      //push_type (rettype (cdtype), csize, 0);
+    }
+  A4GLSQL_end_get_columns ();
+  return 0;
+}
+
+
 /**
  * Find all columns of a table from the database to declare a record like
  * table.*
@@ -1478,6 +1569,45 @@ push_like2 (char *t2)
   pushLikeAllTableColumns (tableName);
   return;
 }
+
+
+void
+push_validate (char *t2)
+{
+  char buff[300];
+  char *tableName;
+  char *columnName;
+  char t[256];
+  A4GL_debug ("In push_validate");
+
+  if (db_used == 0)
+    {
+      sprintf (buff, "You cannot use VALIDATE without specifying a database");
+      a4gl_yyerror (buff);
+      return;
+    }
+
+  strcpy (t, t2);
+  strcpy (buff, t);
+  strcat (buff, ".");
+
+  tableName = strtok (buff, ".");	/* table name */
+  columnName = strtok (0, ".");	/* column name */
+  A4GL_debug ("a='%s' b='%s'", tableName, columnName);
+
+  if (columnName && strcmp(columnName,"*")!=0)
+    {
+      pushValidateTableColumn (tableName, columnName);
+      return;
+    }
+
+  pushValidateAllTableColumns (tableName);
+  return;
+}
+
+
+
+
 
 /**
  * The parser found a new variable like table.column.
@@ -3584,6 +3714,8 @@ dump_expr (struct expr_str *orig_ptr)
   A4GL_debug ("---------------------------------------------------");
 }
 
+
+#ifdef MOVED_TO_LIBAUBIT4GL
 /**
  * Allocate space and create a new expression structure.
  *
@@ -3630,6 +3762,7 @@ A4GL_append_expr (struct expr_str *orig_ptr, char *value)
   //dump_expr(start);
   return start;
 }
+#endif
 
 /**
  * Insert a new expression at the end of anoher one.
@@ -4059,5 +4192,48 @@ int get_rep_no_orderby() {
 	return rep_no_orderby;
 }
 
+struct s_validate {
+	char tabname[65];
+	char colname[65];
+	struct expr_str *expr;
+};
+
+struct s_validate *validate_list=0;
+int validate_list_cnt=0;
+
+int get_validate_list_cnt() {
+int a;
+	//printf("Return count : %d\n",validate_list_cnt);
+//for (a=0;a<validate_list_cnt;a++) {
+	//printf("   %s %s %p\n",validate_list[a].tabname,validate_list[a].colname,validate_list[a].expr);
+//}
+	return validate_list_cnt;
+}
+	
+void clr_validate_list() {
+	//printf("Clear list\n");
+	if (validate_list) free(validate_list);	
+	validate_list_cnt=0;
+	validate_list=0;
+}
+
+static void push_validate_column(char *tabname,char *colname) {
+	validate_list_cnt++;
+	//printf("Add to list %s %s\n",tabname,colname);
+	validate_list=realloc(validate_list,sizeof(struct s_validate)*validate_list_cnt);
+	//A4GL_trim(tabname);
+	//A4GL_trim(colname);
+	strcpy(validate_list[validate_list_cnt-1].tabname,tabname);
+	strcpy(validate_list[validate_list_cnt-1].colname,colname);
+	validate_list[validate_list_cnt-1].expr=A4GLSQL_get_validation_expr(tabname,colname);
+	//printf("-->%p (%d)\n",validate_list[validate_list_cnt-1].expr,validate_list_cnt-1);
+	//printf("%d elements\n",length_expr(validate_list[validate_list_cnt-1].expr));
+	
+}
+
+struct expr_str *A4GL_get_validate_expr(int n) {
+	//printf("-->%p for %d\n",validate_list[n].expr,n);
+	return validate_list[n].expr;
+}
 /* ================================= EOF ============================= */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.24 2003-08-20 20:36:50 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.25 2003-12-10 20:45:19 mikeaubury Exp $
 #
 */
 
@@ -697,4 +697,51 @@ int A4GL_esql_db_open(int a) {
 	return dbopen;
 }
 
+struct expr_str
+{
+  char *expr;
+  struct expr_str *next;
+};
+
+
+void *
+A4GL_new_expr (char *value)
+{
+  struct expr_str *ptr;
+  A4GL_debug ("new_expr - %s", value);
+  ptr = malloc (sizeof (struct expr_str));
+  ptr->next = 0;
+  ptr->expr = strdup (value);
+  A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
+  //dump_expr(ptr);
+  return ptr;
+}
+
+/**
+ * Insert a new value to the expression.
+ *
+ * @param orig_expr
+ * @param value
+ * @return
+ */
+void *
+A4GL_append_expr (struct expr_str *orig_ptr, char *value)
+{
+  struct expr_str *ptr;
+  struct expr_str *start;
+  start = orig_ptr;
+
+  A4GL_debug ("MJA A4GL_append_expr %p (%s)", orig_ptr, value);
+
+  ptr = A4GL_new_expr (value);
+  if (orig_ptr->next != 0)
+    {
+      while (orig_ptr->next != 0)
+        orig_ptr = orig_ptr->next;
+    }
+  orig_ptr->next = ptr;
+  A4GL_debug ("Appended expr");
+  //dump_expr(start);
+  return start;
+}
 /* ============================== EOF ========================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.5 2003-07-21 12:42:26 afalout Exp $
+# $Id: schema_in_file.c,v 1.6 2003-12-10 20:45:20 mikeaubury Exp $
 #*/
 
 /**
@@ -247,6 +247,35 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   A4GL_debug ("Got cname as %s\n", cname);
   return 1;
 
+}
+
+
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+char *ptr2;
+char *ptrn;
+char buff[256];
+A4GL_trim(val);
+ptr2=val;
+while (1) {
+        ptrn=strtok(ptr2,",");
+        if (ptrn==0) break;
+        if (ptr2) {ptr2=0;}
+
+        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+
+        if (ptr==0) {
+                ptr=A4GL_new_expr(buff);
+        } else {
+                A4GL_append_expr(ptr,buff);
+        }
+
+}
+return ptr;
+}
+
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+        printf("Warning Validation feature not implemented in SCHEMA_IN_FILE  SQL Driver");
+        return 0;
 }
 
 /* =============================== EOF ============================== */

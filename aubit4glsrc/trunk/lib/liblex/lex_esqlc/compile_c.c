@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.115 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.116 2003-12-10 20:45:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1353,8 +1353,7 @@ print_bind_pop1 (char i)
       //A4GL_debug ("print_bind_pop1 i='i'\n");
 #endif
       if (scan_variable (obind[a].varname) != -1)
-	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
-		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
       else
 	printc ("%s;\n", ibind[a].varname);
     }
@@ -2892,6 +2891,37 @@ print_init_table (char *s)
   cnt = print_bind ('N');
   printc ("A4GL_set_init(nullbind,%d);\n", cnt);
   printc ("}\n");
+}
+
+void
+print_validate ()
+{
+  int cnt;
+  int z;
+  int a;
+
+  z = get_bind_cnt ('N');
+  cnt=get_validate_list_cnt();
+  if (z!=cnt) {
+	  set_yytext("");
+	  printf("%d %d\n",z,cnt);
+	  a4gl_yyerror ("Mismatch in number of variables and number of columns");
+	  return;
+  }
+  printc("/* VALIDATE */");
+  printc ("    A4GLSQL_set_status(0,0);\n");
+  for (a=0;a<z;a++) {
+        char buff[256];
+	struct expr_str *p;
+	p=A4GL_get_validate_expr(a);
+	if (p==0) continue;
+	printc ("A4GL_push_variable(&%s,0x%x);\n", nullbind[a].varname, nullbind[a].dtype );
+        sprintf(buff,"A4GL_push_int(%d);",length_expr(p));
+        p=A4GL_append_expr(p,buff);
+        p=A4GL_append_expr(p,"A4GL_pushop(OP_IN);");
+	print_expr(p);
+	printc("if (!A4GL_pop_bool()) {A4GLSQL_set_status(-1321,0);}");
+  }
 }
 
 /**
@@ -5333,6 +5363,29 @@ void
 print_dealloc_arr (char *s)
 {
   printc ("A4GL_dynarr_free(&%s,%s);", s,s);
+}
+
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+char *ptr2;
+char *ptrn;
+char buff[256];
+A4GL_trim(val);
+ptr2=val;
+while (1) {
+        ptrn=strtok(ptr2,",");
+        if (ptrn==0) break;
+        if (ptr2) {ptr2=0;}
+
+        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+
+        if (ptr==0) {
+                ptr=A4GL_new_expr(buff);
+        } else {
+                A4GL_append_expr(ptr,buff);
+        }
+
+}
+return ptr;
 }
 
 /* =========================== EOF ================================ */
