@@ -1,8 +1,15 @@
 code
+EXEC SQL include sqltypes;
+EXEC SQL BEGIN DECLARE SECTION;
+int numberOfColumns=0;
+EXEC SQL END DECLARE SECTION;
 extern FILE *out;
 extern FILE *exec_out;
 extern int outlines;
 extern int display_mode;
+extern int fetchFirst;
+static int get_size(int dtype,int size) ;
+
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
 extern char **columnNames;
@@ -398,6 +405,13 @@ end function
 
 
 code
+
+
+void cp_sqlca() {
+a4gl_sqlca.sqlcode=sqlca.sqlcode;
+}
+
+
 int
 printField (FILE * outputFile, int idx, char *descName)
 {
@@ -431,28 +445,28 @@ A4GL_assertion(out==0,"No output file (3)");
 
   EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator =
     INDICATOR,:dataType = TYPE;
-
+cp_sqlca();
 if (indicator!=-1) {
   switch (dataType&0xf)
     {
     case SQLCHAR:
     case SQLVCHAR:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length =
-        LENGTH;
+        LENGTH;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
           break;
         }
       char_var = (char *)malloc (length + 1);
-      EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
+      EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;cp_sqlca();
       A4GL_trim (char_var);
       sprintf (buffer, "%s", char_var);
       free (char_var);
       break;
     case SQLSMINT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smint_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -464,7 +478,7 @@ if (indicator!=-1) {
     case 6:
     case SQLINT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -474,7 +488,7 @@ if (indicator!=-1) {
       break;
     case SQLFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -484,7 +498,7 @@ if (indicator!=-1) {
       break;
     case SQLSMFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smfloat_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -494,7 +508,7 @@ if (indicator!=-1) {
       break;
     case SQLDECIMAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:decimal_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -514,7 +528,7 @@ if (indicator!=-1) {
       break;
     case SQLDATE:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -528,7 +542,7 @@ if (indicator!=-1) {
       break;
     case SQLMONEY:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -548,7 +562,7 @@ if (indicator!=-1) {
 
     case SQLDTIME:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:dtime_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -566,7 +580,7 @@ if (indicator!=-1) {
       break;
     case SQLINTERVAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:interval_var =
-        DATA;
+        DATA;cp_sqlca();
       if (isSqlError ())
         {
           rc = 1;
@@ -616,4 +630,368 @@ if (indicator!=-1) {
 
   return 0;
 }
+
+
+int prepare_query_1(char *s) {
+EXEC SQL BEGIN DECLARE SECTION;
+char *p;
+EXEC SQL END DECLARE SECTION;
+int qry_type;
+p=s;
+                        EXEC SQL PREPARE stExec from :p;cp_sqlca();
+                        if (ec_check_and_report_error()) { return -1; }
+
+                        EXEC SQL DEALLOCATE DESCRIPTOR "d1";cp_sqlca();
+
+                        EXEC SQL ALLOCATE DESCRIPTOR "d1";cp_sqlca();
+                        if (ec_check_and_report_error()) { return -1; }
+                        EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1"; cp_sqlca();
+                        qry_type=sqlca.sqlcode;
+			return qry_type;
+}
+
+
+
+int execute_query_1(int *raffected) {
+		*raffected=0;
+                         EXEC SQL EXECUTE stExec; cp_sqlca();
+                         if (ec_check_and_report_error()) { return 0; }
+                         *raffected=sqlca.sqlerrd[0];
+                         EXEC SQL FREE stExec; cp_sqlca();
+                         if (ec_check_and_report_error()) { return 0; }
+	return 1;
+}
+
+
+
+execute_select_free() {
+                          EXEC SQL CLOSE crExec; cp_sqlca();
+                          EXEC SQL free stExec; cp_sqlca();
+                          EXEC SQL free crExec; cp_sqlca();
+
+                          if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); return 0; }
+	return 1;
+}
+
+
+
+static int field_widths() {
+EXEC SQL BEGIN DECLARE SECTION;
+int index;
+int datatype;
+int size;
+char columnName[64];
+EXEC SQL END DECLARE SECTION;
+int totsize=0;
+
+if (columnNames) {
+        int a;
+        for (a=0;columnNames[a];a++) free(columnNames[a]);
+        free(columnNames);
+        columnNames=0;
+}
+
+if (columnWidths) {
+        free(columnWidths);
+        columnWidths=0;
+}
+
+
+columnNames=malloc(sizeof(char*) * (numberOfColumns+1));
+columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
+
+
+for(index=1;index<=numberOfColumns;index++) {
+        EXEC SQL GET DESCRIPTOR 'descExec' VALUE: index :size=LENGTH , :datatype=TYPE,
+                :columnName=NAME
+        ; cp_sqlca();
+        A4GL_trim(columnName);
+        columnNames[index-1]=strdup(columnName);
+
+        size=get_size(datatype,size);
+        if (size<strlen(columnNames[index-1])) size=strlen(columnNames[index-1]);
+
+
+        if (strlen(columnName)>size) {
+                size=strlen(columnName);
+        }
+        columnWidths[index-1]=size;
+        totsize+=size+1;
+}
+
+columnNames[numberOfColumns]=0;
+return totsize;
+
+}
+
+
+int execute_select_prepare() {
+
+open_display_file_c();
+
+EXEC SQL whenever error continue;
+EXEC SQL deallocate descriptor 'descExec'; cp_sqlca();
+
+EXEC SQL allocate descriptor 'descExec' ; cp_sqlca();
+        if (sqlca.sqlcode<0) return 0;
+
+EXEC SQL describe stExec USING SQL DESCRIPTOR 'descExec'; cp_sqlca();
+        if (sqlca.sqlcode<0) return 0;
+
+EXEC SQL get descriptor 'descExec' :numberOfColumns=COUNT; cp_sqlca();
+        if (sqlca.sqlcode<0) return 0;
+        A4GL_debug("numberOfColumns : %d\n",numberOfColumns);
+
+EXEC SQL declare crExec CURSOR FOR stExec; cp_sqlca();
+        if (sqlca.sqlcode<0) return 0;
+
+EXEC SQL open crExec ; cp_sqlca();
+        if (sqlca.sqlcode<0) return 0;
+
+
+if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
+        if (field_widths()>A4GL_get_curr_width()) {
+                display_mode=DISPLAY_DOWN;
+        } else {
+                display_mode=DISPLAY_ACROSS;
+        }
+} else {
+
+        if (field_widths()>132) {
+                display_mode=DISPLAY_DOWN;
+        } else {
+                display_mode=DISPLAY_ACROSS;
+        }
+}
+}
+
+/******************************************************************************/
+int execute_sql_fetch(int *raffected) {
+int a;
+
+
+
+        EXEC SQL FETCH crExec USING SQL DESCRIPTOR 'descExec'; cp_sqlca();
+
+        if (sqlca.sqlcode<0) {
+                A4GL_push_char("Fetch error...");
+                A4GL_display_error(0,0);
+                sleep(1);
+                return sqlca.sqlcode;
+        }
+
+        if (sqlca.sqlcode==100) {
+                return 100;
+        }
+        (*raffected)++;
+
+        if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
+                for (a=0;a<numberOfColumns;a++) {
+                        if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+
+                                A4GL_assertion(out==0,"No output file (5)");
+                                fprintf(out,"%-*s ",columnWidths[a],columnNames[a]);
+                        }
+                        else {
+                                A4GL_assertion(exec_out==0,"No output file (6)");
+                                fprintf(exec_out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
+                        }
+                }
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        A4GL_assertion(out==0,"No output file (7)");
+                        fprintf(out,"\n\n");
+                } else {
+                        A4GL_assertion(exec_out==0,"No output file (8)");
+                        fprintf(exec_out,"\n\n");
+                }
+
+                outlines+=2;
+                fetchFirst=0;
+        }
+        for (a=1;a<=numberOfColumns;a++) {
+                if (printField(out,a,"descExec")==1) {
+                        A4GL_debug("Break Early %d of %d because I can't print it",a,numberOfColumns);
+                        break;
+                }
+
+                if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
+                        if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                                fprintf(out," ");
+                        else
+                                fprintf(exec_out," ");
+                }
+        }
+
+        if (display_mode==DISPLAY_ACROSS) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                        fprintf(out,"\n");
+                else
+                        fprintf(exec_out,"\n");
+                outlines++;
+        }
+
+        if (display_mode==DISPLAY_DOWN) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                        fprintf(out,"\n");
+                else
+                        fprintf(exec_out,"\n");
+
+                outlines++;
+        }
+
+        return sqlca.sqlcode;
+}
+/******************************************************************************/
+static int get_size(int dtype,int size) {
+        switch(dtype ) {
+                case SQLCHAR:   return size;
+                case SQLSMINT:  return  5;
+                case SQLINT:    return  10;
+                case SQLFLOAT:  return  10;
+                case SQLSMFLOAT:        return  10;
+                case SQLDECIMAL:        return  16;
+                case SQLSERIAL:         return  10;
+                case SQLDATE:   return  12;
+                case SQLMONEY:  return  17;
+                case SQLDTIME:  return  17;
+                case SQLBYTES:  return  20;
+                case SQLTEXT:   return  20;
+                case SQLVCHAR:  return size;
+                case SQLINTERVAL:       return 20;
+        }
+return 10;
+}
+
+
+
+
 endcode
+
+
+function select_db()
+define lv_cnt integer
+define lv_curr_db char(255)
+define lv_name char(255)
+define lv_newname char(255)
+define ndbs integer
+define a integer
+let lv_curr_db=get_db();
+
+code
+{
+#define MAXDBS 100
+#define FASIZ (MAXDBS * 19)
+char *dbsname[MAXDBS+1];
+char            dbsarea[FASIZ];
+
+ sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+
+endcode
+
+if sqlca.sqlcode!=0 then
+        call check_and_report_error()
+        return
+end if
+for a=1 to ndbs
+code
+        strcpy(lv_name,dbsname[a-1]);
+endcode
+        call set_pick(a,lv_name)
+end for
+code
+}
+endcode
+
+call set_pick_cnt(ndbs)
+let lv_newname=prompt_pick("SELECT DATABASE >>","")
+if lv_newname is null then
+        let lv_newname=lv_curr_db
+end if
+
+if lv_newname is not null and lv_newname not matches " " then
+        whenever error continue
+
+        close database
+        database lv_newname
+
+        if sqlca.sqlcode=0 then
+                call set_curr_db(lv_newname)
+                call display_banner()
+                message "Database Opened" attribute(reverse)
+        else
+                call check_and_report_error()
+        end if
+end if
+
+end function
+
+
+
+function drop_db()
+define lv_cnt integer
+define lv_curr_db char(255)
+define lv_name char(255)
+define lv_newname char(255)
+define ndbs integer
+define lv_sql char(255)
+define a integer
+let lv_curr_db=get_db();
+
+code
+{
+#define MAXDBS 100
+#define FASIZ (MAXDBS * 19)
+char *dbsname[MAXDBS+1];
+char            dbsarea[FASIZ];
+
+ sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+
+endcode
+
+if sqlca.sqlcode!=0 then
+        call check_and_report_error()
+        return
+end if
+for a=1 to ndbs
+code
+        strcpy(lv_name,dbsname[a-1]);
+endcode
+        call set_pick(a,lv_name)
+end for
+code
+}
+endcode
+
+
+call set_pick_cnt(ndbs)
+let lv_newname=prompt_pick("DROP DATABASE >>","")
+if lv_newname is null then
+        let lv_newname=lv_curr_db
+end if
+
+
+
+if lv_newname is not null and lv_newname not matches " " then
+        whenever error continue
+
+        menu "CONFIRM >>"
+                command "YES" "Really Drop the database"
+
+                        let lv_sql="drop database ",lv_newname
+                        prepare p_drop from lv_sql
+                        execute p_drop
+
+                        if sqlca.sqlcode=0 then
+                                call set_curr_db("")
+                                call display_banner()
+                                message "Database dropped..."
+                        else
+                                call check_and_report_error()
+                        end if
+                        exit menu
+                command "NO" "Don't drop it"
+                        exit menu
+        end menu
+end if
+
+end function

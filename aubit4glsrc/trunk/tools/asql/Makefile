@@ -1,7 +1,14 @@
-all : asql.4ae qryfrm.afr.dat
+all : check asql_i.4ae qryfrm.afr.dat
 
-asql.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o infx.o
-	4glpc -g  $^ -o asql.4ae  -lUI_TUI
+check:
+	./check_for_env
+
+asql_i.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o infx.o
+	4glpc -g  $^ -o asql_i.4ae  -lUI_TUI
+	cp asql_i.4ae asql.4ae
+
+asql_p.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o postgres.o
+	4glpc -g  $^ -o asql_p.4ae  -lUI_TUI
 
 qryfrm.afr.dat: qryfrm.per
 	fcompile qryfrm.per
@@ -43,6 +50,9 @@ paginate.o: paginate.4gl
 infx.o:infx.4gl
 	4glpc -g -c $^
 
+postgres.o:postgres.4gl
+	4glpc -g -c $^
+
 dir.o: dir.c
 	gcc -g -c dir.c 
 
@@ -60,5 +70,5 @@ clean:
 	session.c session.ec session.glb session.h session.o \
 	simple_parse.o \
 	table.c table.ec table.glb table.h table.o \
-	paginate.c paginate.ec paginate.glb paginate.h paginate.o
-
+	paginate.c paginate.ec paginate.glb paginate.h paginate.o \
+	infx.c infx.ec infx.glb infx.h infx.o

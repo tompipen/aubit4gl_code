@@ -160,7 +160,6 @@ let lv_runnext=0
 	end if
 
 while true
-	call display_qry()
 	set pause mode off
 
 	menu "SQL"
@@ -219,14 +218,17 @@ while true
 			if qry_new() then
 				let lv_runnext=1
 			end if
+			call display_qry()
 	
 		when 2
 			Call set_exec_mode(0)
 			call qry_run()
+
 		when 3
 			if qry_modify() then
 				let lv_runnext=1
 			end if
+			call display_qry()
 		when 4
 			if qry_edit() then
 				let lv_runnext=1
@@ -238,20 +240,25 @@ while true
 				error "Some SQL error"
 			end if
 			Call set_exec_mode(0)
+			call display_qry()
 
 		when 6
 			if qry_choose() then
 				let lv_runnext=1
 			end if
+			call display_qry()
 
 		when 7
 			call qry_save()
+			call display_qry()
 
 		when 8
 			call qry_info()
 	
 		when 9
 			call qry_drop()
+			call display_qry()
+
 		when 10 exit while
 	end case
 end while
@@ -336,7 +343,6 @@ while (1) {
 	if (feof((FILE *)mv_fin)) break;
 	memset(buff,0,255);
 	fgets(buff,255,(FILE *)mv_fin);
-	if (feof((FILE *)mv_fin)) break;
 	// Our current line is too short
 	// pad it with spaces
 	if (buff[strlen(buff)-1]=='\n')
@@ -653,6 +659,9 @@ function qry_modify()
 	call clear_screen_portion()
 	call read_tmpfile()
 
+	display "NEW:    ESC    = Done editing      CTRL-A = Typeover/Insert     CTRL-R = Redraw","" at 1,1
+	display "        CTRL-X = Delete character  CTRL-D = Delete rest of line","" at 2,1
+
 	if not frm_is_open then
 		open window w1 at 6,1 with form "qryfrm" attributes(form line 1)
 	end if
@@ -660,6 +669,10 @@ function qry_modify()
 	let int_flag=false
 
 	let mv_qry=mv_qry clipped
+code
+A4GL_trim(mv_qry);
+A4GL_debug("Query=%s",mv_qry);
+endcode
 	input mv_qry without defaults from info_line  attribute(green)
 
 	on key(up)

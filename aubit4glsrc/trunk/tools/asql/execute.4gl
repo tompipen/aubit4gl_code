@@ -3,10 +3,7 @@ code
 #include <stdlib.h>
 
 
-EXEC SQL include sqltypes;
-EXEC SQL BEGIN DECLARE SECTION;
-int numberOfColumns=0;
-EXEC SQL END DECLARE SECTION;
+extern int numberOfColumns;
 
 
 int width;
@@ -28,8 +25,7 @@ int outlines=0;
 char outfname[255]="";
 int first_open=0;
 
-static int get_size(int dtype,int size) ;
-static int field_widths(void) ;
+int field_widths(void) ;
 char **columnNames=0;
 int *columnWidths=0;
 
@@ -149,30 +145,29 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 
 	for (a=0;a<list_cnt;a++) {
-		EXEC SQL BEGIN DECLARE SECTION;
 		char *p;
-		EXEC SQL END DECLARE SECTION;
 		qry_type=0;
 
 		raffected=0;
 
 		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
-//if (exec_mode==EXEC_MODE_FILE) { printf(" Executing statement %d of %d \n",a,list_cnt); }
 		p=list[a].stmt;
 
-			EXEC SQL PREPARE stExec from :p;
-			if (ec_check_and_report_error()) {
-						goto end_query; }
 
-			EXEC SQL ALLOCATE DESCRIPTOR "d1";
-			if (ec_check_and_report_error()) { goto end_query; }
-        		EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
-			qry_type=sqlca.sqlcode;
+			qry_type=prepare_query_1(p);
+			if (qry_type==-1) { goto end_query; }
+
+			//EXEC SQL PREPARE stExec from :p;
+			//if (ec_check_and_report_error()) { goto end_query; }
+			//EXEC SQL ALLOCATE DESCRIPTOR "d1";
+			//if (ec_check_and_report_error()) { goto end_query; }
+        		//EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
+			//qry_type=sqlca.sqlcode;
+
+
 			if (qry_type==1) {
 				strcpy(l_db,&p[9]);
 			}
-			EXEC SQL DEALLOCATE DESCRIPTOR "d1";
-			if (ec_check_and_report_error()) { goto end_query; }
 
 
 endcode
@@ -196,13 +191,15 @@ code
 			// @todo - this needs refining as a select .. into temp would get caught..
 			if (list[a].type!='S') {
 
-				EXEC SQL EXECUTE stExec;
-				if (ec_check_and_report_error()) { goto end_query; }
+				if (!execute_query_1(&raffected)) goto end_query;
 
-				raffected=sqlca.sqlerrd[0];
-				EXEC SQL FREE stExec;
+				//EXEC SQL EXECUTE stExec;
+				//if (ec_check_and_report_error()) { goto end_query; }
+				//raffected=sqlca.sqlerrd[0];
+				//EXEC SQL FREE stExec;
+				//if (ec_check_and_report_error()) { goto end_query; }
 
-				if (ec_check_and_report_error()) { goto end_query; }
+
 			} else {
 				rpaginate=0;
 repeat_query: ;
@@ -212,7 +209,7 @@ repeat_query: ;
 					int b;
 					char buff[244];
 						A4GL_debug("Fetching..");
-						b=execute_sql_fetch();
+						b=execute_sql_fetch(&raffected);
 
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
@@ -254,11 +251,14 @@ code
 A4GL_assertion(out==0,"No output file (2)");
 					if (out) {fprintf(out,"\n");fclose(out);out=0;}
 
-					EXEC SQL CLOSE crExec;
-					EXEC SQL free stExec;
-					EXEC SQL free crExec;
-					if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); goto end_query; }
-					sqlca.sqlerrd[0]=raffected;
+					if (!execute_select_free()) goto end_query;
+
+
+					//EXEC SQL CLOSE crExec;
+					//EXEC SQL free stExec;
+					//EXEC SQL free crExec;
+					//if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); goto end_query; }
+
 					
 				} else {
 					A4GL_push_char("Error executing select");
@@ -357,203 +357,14 @@ if (out==0) {
 }
 
 
-int execute_select_prepare() {
-
-open_display_file_c();
-
-EXEC SQL whenever error continue;
-EXEC SQL deallocate descriptor 'descExec';
-
-EXEC SQL allocate descriptor 'descExec' ;
-	if (sqlca.sqlcode<0) return 0;
-
-EXEC SQL describe stExec USING SQL DESCRIPTOR 'descExec';
-	if (sqlca.sqlcode<0) return 0;
-
-EXEC SQL get descriptor 'descExec' :numberOfColumns=COUNT;
-	if (sqlca.sqlcode<0) return 0;
-	A4GL_debug("numberOfColumns : %d\n",numberOfColumns);
-
-EXEC SQL declare crExec CURSOR FOR stExec;
-	if (sqlca.sqlcode<0) return 0;
-
-EXEC SQL open crExec ;
-	if (sqlca.sqlcode<0) return 0;
-
-
-if (exec_mode==0||exec_mode==2) {
-	if (field_widths()>A4GL_get_curr_width()) {
-		display_mode=DISPLAY_DOWN;
-	} else {
-		display_mode=DISPLAY_ACROSS;
-	}
-} else {
-
-	if (field_widths()>132) {
-		display_mode=DISPLAY_DOWN;
-	} else {
-		display_mode=DISPLAY_ACROSS;
-	}
-}
-}
-
 
 
 
 /******************************************************************************/
-int execute_sql_fetch() {
-int a;
-	
-
-
-	EXEC SQL FETCH crExec USING SQL DESCRIPTOR 'descExec';
-
-	if (sqlca.sqlcode<0) {
-		A4GL_push_char("Fetch error...");
-		A4GL_display_error(0,0);
-		sleep(1);
-		return sqlca.sqlcode;
-	}
-
-	if (sqlca.sqlcode==100) {
-		return 100;
-	}
-	raffected++;
-
-	if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
-		for (a=0;a<numberOfColumns;a++) {
-			if (exec_mode==EXEC_MODE_INTERACTIVE)  {
-				A4GL_assertion(out==0,"No output file (5)");
-				fprintf(out,"%-*s ",columnWidths[a],columnNames[a]);
-			}
-			else {
-				A4GL_assertion(exec_out==0,"No output file (6)");
-				fprintf(exec_out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
-			}
-		}
-		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
-			A4GL_assertion(out==0,"No output file (7)");
-			fprintf(out,"\n\n");
-		} else {
-			A4GL_assertion(exec_out==0,"No output file (8)");
-			fprintf(exec_out,"\n\n");
-		}
-
-		outlines+=2;
-		fetchFirst=0;
-	}
-	
-
-	for (a=1;a<=numberOfColumns;a++) {
-		if (printField(out,a,"descExec")==1) {
-			A4GL_debug("Break Early %d of %d",a,numberOfColumns);
-			break;
-		}
-
-		if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
-			if (exec_mode==EXEC_MODE_INTERACTIVE)
-				fprintf(out," ");
-			else
-				fprintf(exec_out," ");
-		}
-	}
-
-	if (display_mode==DISPLAY_ACROSS) {
-		if (exec_mode==EXEC_MODE_INTERACTIVE)
-			fprintf(out,"\n");
-		else
-			fprintf(exec_out,"\n");
-		outlines++;
-	}
-
-	if (display_mode==DISPLAY_DOWN) {
-		if (exec_mode==EXEC_MODE_INTERACTIVE)
-			fprintf(out,"\n");
-		else
-			fprintf(exec_out,"\n");
-
-		outlines++;
-	}
-
-	return sqlca.sqlcode;
-}
-
-
-
-/******************************************************************************/
-static int field_widths() {
-EXEC SQL BEGIN DECLARE SECTION;
-int index;
-int datatype;
-int size;
-char columnName[64];
-EXEC SQL END DECLARE SECTION;
-int totsize=0;
-
-if (columnNames) {
-	int a;
-	for (a=0;columnNames[a];a++) free(columnNames[a]);
-	free(columnNames);
-	columnNames=0;
-}
-
-if (columnWidths) {
-	free(columnWidths);
-	columnWidths=0;
-}
-
-
-columnNames=malloc(sizeof(char*) * (numberOfColumns+1));
-columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
-
-
-for(index=1;index<=numberOfColumns;index++) {
-	EXEC SQL GET DESCRIPTOR 'descExec' VALUE: index :size=LENGTH , :datatype=TYPE,
-		:columnName=NAME
-	;
-	A4GL_trim(columnName);
-	columnNames[index-1]=strdup(columnName);
-
-	size=get_size(datatype,size);
-	if (size<strlen(columnNames[index-1])) size=strlen(columnNames[index-1]);
-
-
-	if (strlen(columnName)>size) {
-		size=strlen(columnName);
-	}
-	columnWidths[index-1]=size;
-	totsize+=size+1;
-}
-
-columnNames[numberOfColumns]=0;
-return totsize;
-
-}
 
 
 
 
-
-/******************************************************************************/
-static int get_size(int dtype,int size) {
-	switch(dtype ) {
-		case SQLCHAR: 	return size;
-		case SQLSMINT: 	return  5;
-		case SQLINT: 	return  10;
-		case SQLFLOAT: 	return  10;
-		case SQLSMFLOAT: 	return  10;
-		case SQLDECIMAL: 	return  16;
-		case SQLSERIAL: 	return  10;
-		case SQLDATE: 	return  12;
-		case SQLMONEY: 	return  17;
-		case SQLDTIME: 	return  17;
-		case SQLBYTES: 	return  20;
-		case SQLTEXT: 	return  20;
-		case SQLVCHAR: 	return size; 
-		case SQLINTERVAL: 	return 20; 
-	}
-return 10;
-}
 
 
 
