@@ -1,13 +1,14 @@
-   /* $Id: mcompile.c,v 1.1.1.1 2001-08-20 02:35:55 afalout Exp $
+   /* $Id: mcompile.c,v 1.2 2001-11-21 22:56:18 saferreira Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 extern int as_c;
 #include "menu_x.h"
+FILE *mja_fopen(char *name, char *mode);
+FILE *write_errfile(FILE *f,char *s,long p,int l);
 #ifdef YYDEBUG
 extern int yydebug;
-FILE *write_errfile(FILE *f,char *s,long p,int l);
 
 
 #else /*  */
@@ -180,7 +181,7 @@ init_menu() {
 	the_menus.menus.menus_val=malloc(sizeof(menu)*MAXMENUS); // MAX 256 Menus
 }
 
-nmenu() {
+menu *nmenu() {
 menu *m;
 int l;
 	l=++the_menus.menus.menus_len;

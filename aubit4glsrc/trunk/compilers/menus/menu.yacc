@@ -21,6 +21,12 @@ extern char *outputfilename;
 extern FILE *yyin;
 struct menu *m;
 
+/* Functions prototipes */
+menu *nmenu();
+menu_option_item *new_option(menu *m);
+void *get_menu();
+char *char_val (char *s);
+
 %}
 %start menu_def
 

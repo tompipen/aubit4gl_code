@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.7 2001-11-20 23:39:40 saferreira Exp $
+/* $Id: 4glc.c,v 1.8 2001-11-21 22:56:15 saferreira Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -23,6 +23,7 @@ char outputfile[132];
 extern char infilename[132];
 char errbuff[1024] = "";
 FILE *mja_fopen (char *, char *);
+char *acl_getenv (char *);
 #include "../../lib/libincl/pointers.h"
 
 int globals_only = 0;

@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.24 2001-11-19 10:31:13 mikeaubury Exp $
+* $Id: mod.c,v 1.25 2001-11-21 22:56:16 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.24  2001/11/19 10:31:13  mikeaubury
+*	new stuff - compile_<lang> changes
+*	
 *	Revision 1.23  2001/11/16 11:05:35  mikeaubury
 *	Phase 2.1 of printc changes
 *	Also fixed small bug in GTK stuff - still lots to do on GUI side though....
@@ -4106,6 +4109,20 @@ chk_init_var (char *s)
 
 }
 
+void dump_expr (struct expr_str *orig_ptr)
+{
+  struct expr_str *ptr;
+  struct expr_str *start;
+  start = orig_ptr;
+
+debug("DUMP EXPR : ");
+      while (orig_ptr) {
+	debug ("     %s",orig_ptr->expr);
+	orig_ptr = orig_ptr->next;
+    }
+debug("---------------------------------------------------");
+}
+
 void *
 new_expr (char *value)
 {
@@ -4138,20 +4155,6 @@ append_expr (struct expr_str *orig_ptr, char *value)
   debug ("Appended expr");
   dump_expr(start);
   return start;
-}
-
-void dump_expr (struct expr_str *orig_ptr)
-{
-  struct expr_str *ptr;
-  struct expr_str *start;
-  start = orig_ptr;
-
-debug("DUMP EXPR : ");
-      while (orig_ptr) {
-	debug ("     %s",orig_ptr->expr);
-	orig_ptr = orig_ptr->next;
-    }
-debug("---------------------------------------------------");
 }
 
 void *

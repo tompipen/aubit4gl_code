@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: map.c,v 1.3 2001-11-16 11:05:35 mikeaubury Exp $
+* $Id: map.c,v 1.4 2001-11-21 22:56:16 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.3  2001/11/16 11:05:35  mikeaubury
+*	Phase 2.1 of printc changes
+*	Also fixed small bug in GTK stuff - still lots to do on GUI side though....
+*	
 *	Revision 1.2  2001/11/11 20:04:08  mikeaubury
 *	Major upgrade - first phase commit.
 *	Includes :
@@ -34,6 +38,7 @@
 #include <stdio.h>
 #include "../../lib/libincl/debug.h"
 static FILE *mapfile = 0;
+char *acl_getenv (char *);
 
 openmap (char *s)
 {

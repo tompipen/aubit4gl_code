@@ -719,7 +719,7 @@ fix_bad_strings (char *s)
   int c;
   int a;
   if (s[0] != '"')
-    return s;
+    return;
 
   buff[0] = s[0];
   c = 1;
@@ -745,5 +745,5 @@ fix_bad_strings (char *s)
   buff[c] = 0;
   debug ("Fixstring changed %s to %s", s, buff);
   strcpy (s, buff);
-  return s;
+  return;
 }

@@ -1,12 +1,13 @@
-   /* $Id: fcompile.c,v 1.3 2001-09-14 01:40:38 afalout Exp $
+   /* $Id: fcompile.c,v 1.4 2001-11-21 22:56:18 saferreira Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
+FILE *mja_fopen(char *name, char *mode);
+FILE *write_errfile(FILE *f,char *s,long p,int l);
 extern int as_c;
 #ifdef YYDEBUG
 extern int yydebug;
-FILE *write_errfile(FILE *f,char *s,long p,int l);
 
 
 #else /*  */

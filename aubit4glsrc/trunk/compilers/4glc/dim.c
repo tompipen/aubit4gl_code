@@ -1,4 +1,5 @@
 #include <strings.h>
+#include <string.h>
 #include "../../lib/libincl/debug.h"
 #define PUSH_NAME  1
 #define PUSH_LIKE 2

@@ -216,7 +216,7 @@ list_print (char *cid)
 }
 
 
-new_id ()
+char *new_id ()
 {
   static char buff[256];
   sprintf (buff, "_list_%d", list_cnt);
