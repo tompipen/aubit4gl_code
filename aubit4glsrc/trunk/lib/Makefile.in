@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-03-01 07:41:45 mikeaubury Exp $
+# $Id: Makefile.in,v 1.29 2002-03-07 03:55:45 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -370,6 +370,7 @@ clean.generated:
 
 clean.all: clean
 	${MAKE} $(MKNAME) -C libgui clean
+	${MAKE} $(MKNAME) -C libtui clean
 
 clean.libincl:
 	${RM} libincl/*.bak

@@ -963,13 +963,13 @@ char buff[TRANSLINESIZE];
 		if (buff[a]==':'&&buff[a+1]=='='&&buff[a-1]!='/') {
 			ptr2=&buff[a+2];
 			buff[a]=0;
-			add_translate(1,buff,ptr2);
+			add_translate(1,buff,ptr2,1);
 		}
 
 		if (buff[a]==':'&&buff[a+1]=='>'&&buff[a-1]!='/') {
 			ptr2=&buff[a+2];
 			buff[a]=0;
-			add_translate(2,buff,ptr2);
+			add_translate(2,buff,ptr2,1);
 		}
 
 

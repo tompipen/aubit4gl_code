@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.35 2002-03-01 07:41:42 mikeaubury Exp $
+# $Id: Makefile.in,v 1.36 2002-03-07 03:55:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -151,7 +151,7 @@ endif
 
 
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libaclsharedgui${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
-TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} $(SOURCE)/lib/libSQL_nosql${SO_EXT}
+TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} $(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_TUI${SO_EXT}
 
 ifneq "${STATICLIB_INST}" "no"
 	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libUI_GTK_x.a
@@ -563,6 +563,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) ${MKNAME} -C lib clean
 	$(MAKE) ${MKNAME} -C lib/libgui clean
+	${MAKE} $(MKNAME) -C lib/libtui clean
 	$(MAKE) ${MKNAME} -C lib/extra_libs/file clean
 	$(MAKE) ${MKNAME} -C compilers/4glc/rules clean
 	$(MAKE) ${MKNAME} -C compilers/4glc clean
@@ -579,7 +580,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings
 	${RM} config.log config.status incl/config.h docs/doxy/doxyfile \
-            etc/aubit-rpm.spec 
+            etc/aubit-rpm.spec
 #incl/a4gl-rules.mki
 
 clean.settings:
@@ -686,7 +687,7 @@ endif
 #etc/aubit-auto.spec
 
 install.core: install.tree install.gtk
-	${CP} $(TOBIN) $(INSTALL_DIR)/bin
+	-${CP} $(TOBIN) $(INSTALL_DIR)/bin
 	chmod a+x $(INSTALL_DIR)/bin/*
 	$(CP) $(TOROOT) $(INSTALL_DIR)
 	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
