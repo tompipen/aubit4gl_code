@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.78 2004-12-29 11:42:13 afalout Exp $
+# $Id: fglwrap.c,v 1.79 2005-01-11 14:37:05 pjfalbe Exp $
 #
 */
 
@@ -872,7 +872,7 @@ if (core_dumping==1) {
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
+      A4GL_debug ("In screen mode - ending curses - caught a core dump");
 #endif
       A4GL_gotolinemode ();
     }
@@ -886,6 +886,7 @@ if (core_dumping==1) {
    printf("\n");
    printf("%s\n",A4GLSTK_getStackTrace ());
 
+
    if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -897,9 +898,10 @@ if (core_dumping==1) {
    if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
 	char buff[256];
 	sprintf(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
-	
 	system(buff);
    }
+
+   if (A4GL_isyes(acl_getenv("WAIT_FOR_GDB_ATTACH"))) { printf("Waiting for a debugger to come online\n"); while (1) { sleep(300); } }
 
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
