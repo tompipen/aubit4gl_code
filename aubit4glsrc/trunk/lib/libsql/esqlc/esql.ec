@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.37 2003-02-17 11:53:17 saferreira Exp $
+# $Id: esql.ec,v 1.38 2003-02-17 19:54:11 saferreira Exp $
 #
 */
 
@@ -113,7 +113,6 @@
 
 #include "a4gl_lib_sql_esqlc_int.h"
 
-static long fixlength(int dtype,int length) ;
 static error_just_in_case() ;
 static int processPreStatementBinds(struct s_sid *sid);
 
@@ -128,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.37 2003-02-17 11:53:17 saferreira Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.38 2003-02-17 19:54:11 saferreira Exp $";
 #endif
 
 /*
@@ -2456,6 +2455,7 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *
  * @param tabname The table that we wish to get information about it.
  * @param colname The column name to get information about it.
+ *                It is not used, now.
  * @param dtype A pointer to the variable where to put the data type.
  * @param size A pointer to the variable where to put the size of the column
  *  returned by the database.
@@ -2517,6 +2517,46 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   return 1;
 }
 
+/**
+ * Convert the length qualifiers for a datetime from the
+ *  informix notation to the A4GL notation
+ */
+int Infx_dt_to_A4gl_dt(int n) {
+	switch(n) {
+		case TU_YEAR: return 1;
+		case TU_MONTH: return 2;
+		case TU_DAY: return 3;
+		case TU_HOUR: return 4;
+		case TU_MINUTE: return 5;
+		case TU_SECOND: return 6;
+		case TU_F1: return 7;
+		case TU_F2: return 8;
+		case TU_F3: return 9;
+		case TU_F4: return 10;
+		case TU_F5: return 11;
+	}
+	// Shouldn't get to here
+	return 3;
+}
+
+/**
+ *
+ * @param length The length of the datatype.
+ * @param dtype The data type.
+ * @return The lnegth calculated.
+ */
+static long fixlength(int dtype,int length) {
+	int n1,n2;
+	if (dtype>255) dtype-=256;
+	debug("Got datatype : %d length %d\n");
+	if (dtype==10) {
+		n1=Infx_dt_to_A4gl_dt(TU_START(length));
+		n2=Infx_dt_to_A4gl_dt(TU_END(length));
+		return (n1*16)+n2;
+	}
+	
+	return length;
+}
 
 /**
  * Iterate in getting information about all columns from a table from the
@@ -2534,9 +2574,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-/* int A4GLSQL_next_column(char *colname, int *dtype,int *size) */
-int 
-A4GLSQL_next_column(char **colname, int *dtype,int *size)
+int A4GLSQL_next_column(char **colname, int *dtype,int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     int idx = getColumnsOrder;
@@ -2554,7 +2592,6 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
     return 0;
   *dtype = dataType;
   *size = fixlength(dataType,length);
-  //strcpy((char *)colname,columnName);
   *colname=columnName;
   getColumnsOrder++;
   return 1;
@@ -2748,6 +2785,49 @@ int A4GLSQL_close_cursor(char *currname)
   return 0;
 }
 
+#define COLUMN_SIZE 0
+#define DATA_TYPE   1
+
+/**
+ * Fill the array for columns.
+ * 
+ * @param tableName The name of the table to be checked.
+ * @param max The max of columns that can be readed.
+ */
+static int fillColumnsArray(char *tableName,int max,char **colArray,
+  int sizeColArray,char **array2, int sizeArray2,int mode) 
+{
+  static char colname[64];
+	int dtype;
+	int size;
+	int rv;
+	int i = 0;
+
+  rv = A4GLSQL_get_columns (tableName, "", &dtype, &size);
+  while ( rv == 1 ) 
+	{
+	  rv = A4GLSQL_next_column(colname,&dtype,&size);
+		strncpy(colArray[i],colname,sizeColArray);
+		if ( array2 != (char **) 0 ) {
+	    switch ( mode ) {
+	      case COLUMN_SIZE:
+          sprintf(array2[i],"%d",size);
+		      break;
+	      case DATA_TYPE:
+          sprintf(array2[i],"%d",dtype);
+		      break;
+		    default:
+          exitwith ("Could not fill_array - Wrong mode asked!");
+	    }
+		}
+		i++;
+		if ( i >= max ) 
+		  break;
+	}
+  rv = A4GLSQL_end_get_columns();
+	return rv;
+}
+
 /**
  *
  * The fill_array are supposed to populate an array with information on
@@ -2784,17 +2864,20 @@ int A4GLSQL_close_cursor(char *currname)
  *
  *
  * @param mx Maximum rows to fill in arr1/arr2.
+ *
  * @param arr1 The adress where to return the information asked:
  *    DBName if service = DATABASES.
  *    Table name if service = TABLES.
  *    Column name if service = COLUMNS
+ *
  * @param szarr1 Size of each item in array 1.
- * @param arr2 adress of seconr array used to return information:
+ *
+ * @param arr2 adress of second array used to return information:
  *    - Description if service = DATABASES
  *    - Table description if service = TABLES
- *    - No value if service = COLUMNS
+ *
  * @param szarr2 Size of each item in array 2.
- * @param service A string that defines the servce wanted:
+ * @param service A string that defines the service wanted:
  *                  - DATABASES
  *                  - TABLES
  *                  - COLUMNS
@@ -2822,9 +2905,10 @@ A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
     exitwith ("Could not fill_array - TABLES service not implemented !");
 	// This is the important to implement
 	else if ( strcmp(service,"COLUMNS") == 0 )
-    exitwith ("Could not fill_array - COLUMNS service not implemented !");
+	  return fillColumnsArray(info,mx,arr1,szarr1,arr2,szarr2,mode);
 	else
     exitwith ("Could not fill_array - Invalid service asked !");
+  return 0;
 }
 
 /**
@@ -2861,41 +2945,6 @@ long A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   printf("Describe smtm\n");
 }
 
-
-/**
- * Convert the length qualifiers for a datetime from the
- *  informix notation to the A4GL notation
- */
-int Infx_dt_to_A4gl_dt(int n) {
-	switch(n) {
-		case TU_YEAR: return 1;
-		case TU_MONTH: return 2;
-		case TU_DAY: return 3;
-		case TU_HOUR: return 4;
-		case TU_MINUTE: return 5;
-		case TU_SECOND: return 6;
-		case TU_F1: return 7;
-		case TU_F2: return 8;
-		case TU_F3: return 9;
-		case TU_F4: return 10;
-		case TU_F5: return 11;
-	}
-	// Shouldn't get to here
-	return 3;
-}
-
-static long fixlength(int dtype,int length) {
-	int n1,n2;
-	if (dtype>255) dtype-=256;
-	debug("Got datatype : %d length %d\n");
-	if (dtype==10) {
-		n1=Infx_dt_to_A4gl_dt(TU_START(length));
-		n2=Infx_dt_to_A4gl_dt(TU_END(length));
-		return (n1*16)+n2;
-	}
-	
-	return length;
-}
 
 /**
  * Returns the dialect of SQL spoken by the currently
