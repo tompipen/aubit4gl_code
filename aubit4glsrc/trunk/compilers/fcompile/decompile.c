@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.11 2002-06-29 13:12:01 afalout Exp $
+# $Id: decompile.c,v 1.12 2002-07-11 09:25:22 mikeaubury Exp $
 #
 */
 
@@ -70,7 +70,7 @@ main(int argc,char *argv[])
 {
 struct struct_form the_form;
 FILE *f;
-XDR xdrp;
+//XDR xdrp;
 int a;
 
 	if (argc!=2) {
@@ -78,30 +78,32 @@ int a;
 		exit(0);
 	}
 
-	f=fopen(argv[1],"rb");
+	//f=fopen(argv[1],"rb");
 
-	if (f==0) {
-		printf("Unable to open file %s\n",argv[1]);
-		exit(2);
-	}
+	//if (f==0) {
+		//printf("Unable to open file %s\n",argv[1]);
+		//exit(2);
+	//}
 
-	xdrstdio_create(&xdrp,f,XDR_DECODE);
-	xdr_int(&xdrp,&a);
+	//xdrstdio_create(&xdrp,f,XDR_DECODE);
+	//xdr_int(&xdrp,&a);
 
-	printf("Magic number : %x\n",a);
-	rewind(f);
+	//printf("Magic number : %x\n",a);
+	//rewind(f);
 
 
-	if (a != FCOMILE_XDR_MAGIC) {
-		printf("This does not appear to be a valid form\n(Bad magic number - got %x rather than %x)\n",a,FCOMILE_XDR_MAGIC);
-		exit(0);
-	}
+	//if (a != FCOMILE_XDR_MAGIC) {
+		//printf("This does not appear to be a valid form\n(Bad magic number - got %x rather than %x)\n",a,FCOMILE_XDR_MAGIC);
+		//exit(0);
+	//}
 
 	memset(&the_form,0,sizeof(struct_form));
 
-	xdrstdio_create(&xdrp,f,XDR_DECODE);
+	//xdrstdio_create(&xdrp,f,XDR_DECODE);
 
-	a=isolated_xdr_struct_form(&xdrp,&the_form); /* in lib/libform/form_xdr/formwrite2.c */
+	//a=isolated_xdr_struct_form(&xdrp,&the_form); /* in lib/libform/form_xdr/formwrite2.c */
+
+	a=read_data_from_file("struct_form",&the_form,argv[1]);
 
 	if (!a) {
 		printf("Bad format\n");

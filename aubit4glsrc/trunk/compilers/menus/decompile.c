@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.9 2002-06-29 13:12:01 afalout Exp $
+# $Id: decompile.c,v 1.10 2002-07-11 09:25:22 mikeaubury Exp $
 #*/
 
 /**
@@ -92,7 +92,7 @@ main(int argc,char *argv[])
 {
 struct menu_list the_menus;
 FILE *f;
-XDR xdrp;
+//XDR xdrp;
 int a = 0;
 
 	if (argc!=2) {
@@ -100,12 +100,12 @@ int a = 0;
 		exit(0);
 	}
 
-	f=fopen(argv[1],"rb");
+	//f=fopen(argv[1],"rb");
 
-	if (f==0) {
-		printf("Unable to open file %s\n",argv[1]);
-		exit(2);
-	}
+	//if (f==0) {
+		//printf("Unable to open file %s\n",argv[1]);
+		//exit(2);
+	//}
 
 	memset(&the_menus,0,sizeof(menu_list));
 
@@ -113,7 +113,7 @@ int a = 0;
 	int 	isolated_xdr_decompile			(void* the_menus,void* xdrp,void* f);
 	int 	isolated_xdr_decompile			(struct menu_list the_menus,XDR xdrp,FILE* f);
     */
-    isolated_xdr_decompile(&the_menus,&xdrp,f);
+    a=read_data_from_file("menu_list",&the_menus,argv[1]);
 
 	if (!a) {
 		printf("Bad format\n");

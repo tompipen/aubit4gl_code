@@ -1425,7 +1425,7 @@ So it will be included only in gui.c
 
 
     #ifndef _NO_FORM_X_H_
-		#include "../compilers/fcompile/form_x.h"   /* struct_form */
+		#include "../common/dataio/form_x.x.h"   /* struct_form */
     #endif
 
 	/* ============================ others.c ================================ */
