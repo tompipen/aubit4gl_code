@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.13 2004-05-21 13:34:11 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.14 2004-05-24 15:43:51 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.13 2004-05-21 13:34:11 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.14 2004-05-24 15:43:51 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -597,8 +597,8 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
 				k=A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]");
 	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
-      				if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = tolower (a); }
-      				if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = toupper (a); }
+      				if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = a4gl_tolower (a); }
+      				if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = a4gl_toupper (a); }
   				A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
 				A4GL_LL_set_field_buffer (sio->currentfield,0,rbuff);
 			}
@@ -1162,13 +1162,13 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
       if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
 	  && isalpha (a))
 	{
-	  a = tolower (a);
+	  a = a4gl_tolower (a);
 	}
       A4GL_debug ("Upshift ?");
       if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
 	  && isalpha (a))
 	{
-	  a = toupper (a);
+	  a = a4gl_toupper (a);
 	}
     }
 
@@ -1332,13 +1332,13 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
 	      && isalpha (a))
 	    {
-	      a = tolower (a);
+	      a = a4gl_tolower (a);
 	    }
 	  A4GL_debug ("Upshift ?");
 	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
 	      && isalpha (a))
 	    {
-	      a = toupper (a);
+	      a = a4gl_toupper (a);
 	    }
 	}
 

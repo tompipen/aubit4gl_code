@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.14 2004-04-01 17:48:38 mikeaubury Exp $
+# $Id: input_array.c,v 1.15 2004-05-24 15:43:51 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.14 2004-04-01 17:48:38 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.15 2004-05-24 15:43:51 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -662,13 +662,13 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
 	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
 	      && isalpha (a))
 	    {
-	      a = tolower (a);
+	      a = a4gl_tolower (a);
 	    }
 	  A4GL_debug ("Upshift ?");
 	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
 	      && isalpha (a))
 	    {
-	      a = toupper (a);
+	      a = a4gl_toupper (a);
 	    }
 	}
     }
