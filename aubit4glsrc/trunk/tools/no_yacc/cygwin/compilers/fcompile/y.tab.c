@@ -3522,7 +3522,7 @@ yyreturn:
 }
 
 
-#line 1036 "screen.yacc"
+#line 98 "screen.yacc"
 
 
 
