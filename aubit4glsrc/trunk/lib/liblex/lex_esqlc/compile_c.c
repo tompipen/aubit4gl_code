@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.28 2003-04-07 16:26:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.29 2003-04-11 13:09:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3124,8 +3124,8 @@ print_report_2 (int pdf, char *repordby)
   printc ("    if (fgl_rep_orderby==1) {\n");
   printc ("        struct BINDING *reread;\n");
   printc ("        fgl_rep_orderby=-1;\n");
-  printc ("   push_char(_rout1,254);\n");
-  printc ("   push_char(_rout2,254);\n");
+  printc ("   push_char(_rout1);\n");
+  printc ("   push_char(_rout2);\n");
   printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
   printc
     ("        init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",

@@ -116,10 +116,13 @@ void print_sql_type_infx(int a,char ioro) {
 			printc("double _vi_%d;",a);break;
 			case 4:
 			printc("float _vi_%d;",a);break;
+
 			case 5:
 			printc("decimal _vi_%d;",a);break;
+
 			case 6:
 			printc("int _vi_%d;",a);break;
+
 			case 7:
 			printc("int _vi_%d;",a);break;
 			case 8:

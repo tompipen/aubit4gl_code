@@ -10,6 +10,8 @@
                     Functions prototypes
 =====================================================================
 */
+#include "decimal.h"
+#include "a4gl_incl_4gldef.h"
 
 
 
@@ -48,3 +50,5 @@ void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
 
 
 #define COPY_SQLCA 
+#define popdec(x) {fgldecimal _s;pop_var(&_s,0x1e100005);copy_decimal(x,&_s,0x1e10,'i');}
+#define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x20100005);}

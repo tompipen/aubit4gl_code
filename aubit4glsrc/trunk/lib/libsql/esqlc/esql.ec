@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.50 2003-03-12 23:52:12 afalout Exp $
+# $Id: esql.ec,v 1.51 2003-04-11 13:09:45 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.50 2003-03-12 23:52:12 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.51 2003-04-11 13:09:45 mikeaubury Exp $";
 #endif
 
 
@@ -3020,7 +3020,8 @@ A4GLSQL_dbms_dialect( void ) {
     return "INFORMIX";
 }
 
-A4GLSQL_initlib() {
+int A4GLSQL_initlib() {
+// Does nothing
 }
 
 /* ================================= EOF ============================== */

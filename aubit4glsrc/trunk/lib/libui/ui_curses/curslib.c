@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.20 2003-04-07 16:26:48 mikeaubury Exp $
+# $Id: curslib.c,v 1.21 2003-04-11 13:09:46 mikeaubury Exp $
 #*/
 
 /**
@@ -1709,7 +1709,7 @@ menu_loop (ACL_Menu * menu)
 	      hlp = menu->curr_option->help_no;
 	      debug ("Curroption=%p", menu->curr_option);
 	      	push_int(hlp);
-	      aclfgl_show_help (1);
+	      aclfgl_a4gl_show_help (1);
 	      debug ("After show help Curroption=%p", menu->curr_option);
 	      continue;
 	    }

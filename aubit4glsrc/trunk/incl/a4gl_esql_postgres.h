@@ -11,6 +11,9 @@
 =====================================================================
 */
 
+#include "a4gl_incl_4gldef.h"
+
+#include "decimal.h"
 
 
 // Conversion functions between informix types and A4GL datatypes
@@ -49,3 +52,10 @@
 
 
 #define copy_sqlca
+
+#define dtime_t datetime
+
+
+#define popdec(x) {char *s;s=char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }
+#define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x1e100005);}
+

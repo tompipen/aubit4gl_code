@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2003-03-03 21:11:00 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2003-04-11 13:09:37 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -37,12 +37,20 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+all: ${LIBROOT}/libesqlhelper_funcs.so 
+
 ${LIBROOT}/libesqlhelper_funcs.so: helper_funcs.o
 	esql -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
 
-helper_funcs.o: helper_funcs.ec
-	esql -g -c -o $@ $^ -I${ROOT}/incl
+${LIBROOT}/libesqlhelper_funcs_p.so: helper_funcs_p.o
+	gcc -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
 
+helper_funcs.o: helper_funcs.ec
+	esql -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
+
+helper_funcs_p.o: helper_funcs.ec
+	ecpg helper_funcs.ec
+	gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I$(POSTGRESDIR)/include -I${ROOT}/incl
 clean:
 	${RM} -f *.o *.c *.so
 
