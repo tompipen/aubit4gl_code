@@ -48,11 +48,13 @@ print "static struct s_err {"
 /exitwith2/ {next}
 /local_exitwith/ {next}
 /exitwith/ {
+gsub("\\\\\"","\"")
 b=substr($0,index($0,":")-1)
 a=substr($0,index($0,"exitwith")+9)
 a=substr(a,index(a,"\"")+1)
 a=substr(a,1,index(a,"\"")-1)
-a=substr(a,1,index(a,"\\")-1)
+
+#    a=substr(a,1,index(a,"\\")-1) # WHY WAS THIS PUT IN ?
 a4gl_errno=errors[a]
 if (a4gl_errno==0&&done[a]==0) a4gl_errno=errcnt++
 if (done[a]==0) {
