@@ -9,7 +9,7 @@
  */
 
  /*
-  * $Id: fcompile.c,v 1.15 2002-05-20 11:41:12 afalout Exp $
+  * $Id: fcompile.c,v 1.16 2002-05-24 13:30:02 afalout Exp $
   */
 
 //here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
@@ -207,6 +207,29 @@ void yyerror(char *s)
   );
   exit (2);
 }
+
+/********************************** same finction from 4glc.c :
+
+void
+yyerror (char *s)
+{
+  char errfile[256];
+  FILE *f;
+  long ld;
+  char a;
+
+  ld = ftell (yyin);
+  sprintf (errfile, "%s.err", outputfile);
+  a = 0;
+  fseek (yyin, fpos, SEEK_SET);
+  f = write_errfile (yyin, errfile, ld, yylineno);
+  fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
+  write_cont (yyin);
+  printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+  exit (2);
+}
+
+*********************************************************************/
 
 
 /**

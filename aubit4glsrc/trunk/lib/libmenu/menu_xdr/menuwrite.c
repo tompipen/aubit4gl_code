@@ -1,14 +1,65 @@
-//#include "menu_x.h"
-#include "a4gl_menuxw.h"
-#include "a4gl_compiler.h"
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: menuwrite.c,v 1.5 2002-05-24 13:30:03 afalout Exp $
+#*/
+
+/**
+ * @file
+ *
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include "a4gl_debug.h"
+
 #ifdef __CYGWIN__
-#include <rpc/rpc.h>
+	#include <rpc/rpc.h>
 #endif
 
+#include "a4gl_menuxw.h"
+#include "a4gl_compiler.h"
+#include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 //int as_c=1;
 extern int as_c;
@@ -41,8 +92,17 @@ char *chk_alias (char *s);
 FILE *fxx;
 FILE *fyy;
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
-//is this not the same as exitwith() ?
+/**
+ * is this not the same as exitwith() ?
+ *
+ * @todo Describe function
+ */
 void
 error_with (char *s, char *a, char *b)
 {
@@ -59,14 +119,18 @@ error_with (char *s, char *a, char *b)
 }
 
 
-//write the compiled menu data to file in Sun RPC XDR format
+/**
+ * write the compiled menu data to file in Sun RPC XDR format
+ *
+ * @todo Describe function
+ */
 void
-write_menu ()
+write_menu (void)
 {
   char fname[132];
   char fname2[132];
   int a;
-  int outfile;
+//  int outfile;
   XDR xdrp;
   menu_list *ptr;
   ptr=&the_menus;
@@ -123,4 +187,4 @@ write_menu ()
 }
 
 
-
+// =============================== EOF ===============================

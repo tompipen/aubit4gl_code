@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.14 2002-05-23 09:29:36 afalout Exp $
+# $Id: esql.ec,v 1.15 2002-05-24 13:30:03 afalout Exp $
 #
 */
 
@@ -58,7 +58,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.14 2002-05-23 09:29:36 afalout Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.15 2002-05-24 13:30:03 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -2343,7 +2343,7 @@ int A4GLSQL_end_get_columns(void)
  *   - 0 : Information readed.
  *   - 1 : Error ocurred.
  */
-static int getDataType(char *connName, char *tabname,char *colname,
+static int getSQLDataType(char *connName, char *tabname,char *colname,
   int *dtype,int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
@@ -2396,7 +2396,7 @@ static int getDataType(char *connName, char *tabname,char *colname,
  * table.
  *
  * @todo : Put this working with .*
- * @todo : Use the getDataType()
+ * @todo : Use the getSQLDataType()
  *
  * @param tabname The table that we wish to get information about it.
  * @param colname The column name to get information about it.
@@ -2474,7 +2474,7 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col)
   if ( connectionName == NULL )
     return -1;
 
-  if ( getDataType(connectionName,tab,col,&dataType,&length) == 1 )
+  if ( getSQLDataType(connectionName,tab,col,&dataType,&length) == 1 )
     return -1;
   return dataType;
 }

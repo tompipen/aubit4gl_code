@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
+# $Id: compile_perl.c,v 1.9 2002-05-24 13:30:03 afalout Exp $
 #
 */
 
@@ -52,10 +52,10 @@
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
 #include "a4gl_aubit_lib.h"
-
 //#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
 	#include "../lex_c/a4gl_lex_print_protos_c.h"
 //#endif
+#include "a4gl_4glc_4glc.h"
 #include "a4gl_debug.h"
 
 /*
@@ -176,8 +176,8 @@ printc (char *fmt, ...)
 		}
 	      else
 		{
-		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno,
-			   outputfilename);
+		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
+			 //  outputfilename);
 		}
 	    }
 	  else
@@ -814,9 +814,9 @@ static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
-  if (when_code & 15 == WHEN_CONTINUE)
+  if ((when_code & 15) == WHEN_CONTINUE)
     return 0;
-  if (when_code & 15 == WHEN_NOTSET)
+  if ((when_code & 15) == WHEN_NOTSET)
     return 0;
   if (when_code == WHEN_STOP)
     {
@@ -952,7 +952,7 @@ static int
 print_arr_bind (char i)
 {
   int a;
-  int dtype;
+//  int dtype;
   debug ("/* %c */\n", i);
   //dump_vars ();
   if (i == 'i')
@@ -984,6 +984,8 @@ print_arr_bind (char i)
       printc ("\n}; # /* end of binding */\n");
       return a;
     }
+
+return 0;
 }
 
 
@@ -1017,8 +1019,8 @@ print_constr (void)
 static int
 print_field_bind_constr (void)
 {
-  char tabname[40];
-  char colname[40];
+//  char tabname[40];
+//  char colname[40];
   int a;
   for (a = 0; a < constr_cnt; a++)
     {
@@ -1045,9 +1047,10 @@ int
 print_param (char i)
 {
   int a;
-  char buff[256];
+//  char buff[256];
   debug ("Expanding binding.. - was %d entries", fbindcnt);
-  expand_bind (&fbind, 'F', fbindcnt);
+  //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
+  expand_bind ((void *)&fbind, 'F', fbindcnt);
   debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
@@ -1080,7 +1083,7 @@ int
 print_bind (char i)
 {
   int a;
-  int dtype;
+//  int dtype;
 
   int bcnt;
   char name[256];
@@ -1182,7 +1185,8 @@ print_bind (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind, 'N', nullbindcnt);
+      //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
+	  expand_bind ((void *)&nullbind, 'N', nullbindcnt);
       printc ("\n");
       printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
       if (nullbindcnt == 0)
@@ -1227,7 +1231,8 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind, 'O', ordbindcnt);
+      //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
+	  expand_bind ( (void *)&ordbind, 'O', ordbindcnt);
       printc ("static struct BINDING _ordbind[]={\n");
       if (ordbindcnt == 0)
 	{
@@ -1246,6 +1251,7 @@ print_bind (char i)
       return a;
     }
 
+return 0;
 }
 
 /**
@@ -1253,11 +1259,12 @@ print_bind (char i)
  * @param
  * @return
  */
-int 
+void
 dump_unwind(void)
 {
 int a;
-	for (a=unwindcnt-1;a>=0;a--) {
+	for (a=unwindcnt-1;a>=0;a--)
+	{
 		printc("%s",unwind[a]);
 	}
 }
@@ -1275,22 +1282,26 @@ print_bind_expr (void *ptr, char i)
   if (i == 'i')
     {
       append_expr (ptr, "struct BINDING ibind[]={");
-      if (ibindcnt == 0)
-	{
-	  append_expr (ptr, "{0,0,0}");
-	}
-      for (a = 0; a < ibindcnt; a++)
-	{
-	  if (a > 0)
-	    append_expr (ptr, ",");
-	  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
-		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-	  append_expr (ptr, buff);
-	}
-      append_expr (ptr, "};");
+		if (ibindcnt == 0)
+        {
+			append_expr (ptr, "{0,0,0}");
+        }
+
+		for (a = 0; a < ibindcnt; a++)
+		{
+		  if (a > 0)
+			append_expr (ptr, ",");
+		  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
+			   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+		  append_expr (ptr, buff);
+		}
+
+	  append_expr (ptr, "};");
       start_bind (i, 0);
       return a;
     }
+
+return 0;
 }
 
 
@@ -2016,7 +2027,7 @@ print_foreach_end (void)
  * @param
  * @return
  */
-static void
+void
 print_free_cursor (char *s)
 {
   printc ("/* FREE CUROSR .. FIXME */\n");
@@ -2315,8 +2326,8 @@ char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr)
 {
-  int ccc;
-  char buff[132];
+//  int ccc;
+//  char buff[132];
   static char buff2[256];
   int cnt;
   printc ("/*");
@@ -2362,6 +2373,8 @@ get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
     return "form_loop(&_inp_io,_forminit)";
+
+return 0;
 }
 
 
@@ -2435,13 +2448,13 @@ print_linked_cmd (int type, char *var)
 {
   char tabname[64];
   char pklist[256];
-  int no;
+//  int no;
   int ni;
   if (last_var_is_linked (tabname, pklist))
     {
       char buff[80];
       char buff2[80];
-      int no;
+      int no = 0;
       int no_keys;
       int azcnt;
       printc ("{\n");
@@ -3805,6 +3818,7 @@ return buff;
 
     exitwith ("decode_array_string not implemented");
 
+    return 0;
 }
 
 
@@ -3823,3 +3837,4 @@ print_set_langfile (char *s)
 }
 
 // ================================ EOF ==============================
+

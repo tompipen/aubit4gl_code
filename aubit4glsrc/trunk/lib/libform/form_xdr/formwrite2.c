@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.5 2002-05-17 07:08:33 afalout Exp $
+# $Id: formwrite2.c,v 1.6 2002-05-24 13:30:02 afalout Exp $
 #*/
 
 /**
@@ -43,15 +43,18 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <time.h> //time()
 
-#include "a4gl_formxw.h"
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>
 #endif
 
+#include "a4gl_formxw.h"
 #include "a4gl_fcomp_fcompile.h"
 #include "a4gl_compiler.h"
 #include "a4gl_dbform.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_compiler.h"	//fgl_comp_error
 #include "a4gl_debug.h"
 
 /*
@@ -97,8 +100,8 @@ FILE *fyy;
 */
 
 static void translate_form(void);
-extern char * translate(char *s); //translate.c
-
+extern char * translate(char *s); 	//translate.c
+extern void yyerror(char *s); 		//fcompile.c
 
 /*
 =====================================================================
@@ -608,7 +611,7 @@ add_table (char *s, char *a)
   the_form.tables.tables_val=realloc(
   the_form.tables.tables_val,
  	(the_form.tables.tables_len+1)*sizeof(struct struct_tables));
-	
+
   the_form.tables.tables_val[the_form.tables.tables_len].tabname=strdup( s);
   the_form.tables.tables_val[the_form.tables.tables_len].alias=strdup(a);
   add_srec ();
@@ -617,20 +620,20 @@ add_table (char *s, char *a)
 }
 
 /**
- * Find the attribute for table and column name 
+ * Find the attribute for table and column name
  *
  * @param ptr An array pointer where the field will be putted
  * @param tab The table name
  * @param colname The column name
  * @return The index of the attribute in the array
  */
-static int 
+static int
 find_attribs (int **ptr, char *tab, char *colname)
 {
   static int attrib_list[256];
   int a;
   int cnt = 0;
-  int flg;
+//  int flg;
   debug("find_attribs\n");
   *ptr = (int *)&attrib_list;
 
@@ -668,7 +671,7 @@ proc_thru (void)
   int a;
   int b;
   int z;
-  int *p;
+//  int *p;
 
   debug("proc_thru\n");
   a = curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len - 2];
@@ -750,14 +753,15 @@ add_srec_attribute (char *tab, char *col, char *thru)
  * @param fno The field number wanted
  * @return The index of the array of field number wanted
  */
-static int 
+/*
+static int
 find_field_attr(int fno)
 {
   int a;
   debug("find_field_attr\n");
-  for (a=0;a<the_form.attributes.attributes_len;a++) 
+  for (a=0;a<the_form.attributes.attributes_len;a++)
   {
-    if (the_form.attributes.attributes_val[a].field_no==fno) 
+    if (the_form.attributes.attributes_val[a].field_no==fno)
     {
       return a;
       debug("Field %d found at %d",fno,a);
@@ -766,6 +770,7 @@ find_field_attr(int fno)
   debug("Not found (%d)",fno);
   return -1;
 }
+*/
 
 /**
  * Find the fields that are wordwrap for big strings input.
@@ -773,7 +778,8 @@ find_field_attr(int fno)
  * It seems not used
  * @todo Understand if its or not used and if so remove it
  */
-static void 
+/*
+static void
 chk_for_wordwrap(void)
 {
   int a,b;
@@ -825,7 +831,7 @@ chk_for_wordwrap(void)
     }
   }
 }
-
+*/
 
 /**
  * Write the frm file with the information parsed from the .per to memory
@@ -839,7 +845,7 @@ write_form (void)
   char ext[132];
 
   int a;
-  int outfile;
+//  int outfile;
   XDR xdrp;
   struct_form *ptr;
 
@@ -905,11 +911,11 @@ write_form (void)
 
 /**
  * Gets the datatype of the column from the database
- *
+ * called from y.tab.c
  * @col The column name
  * @tab The table name
  */
-int 
+int
 getdatatype(char *col,char *tab)
 {
   char tabs[100][32];
@@ -917,7 +923,7 @@ getdatatype(char *col,char *tab)
   int a;
   debug("getdatatype\n");
 
-  for (a=0;a<the_form.tables.tables_len;a++) 
+  for (a=0;a<the_form.tables.tables_len;a++)
 	{
     strcpy(tabs[a],the_form.tables.tables_val[a].tabname);
   }
@@ -925,10 +931,11 @@ getdatatype(char *col,char *tab)
   tabs[the_form.tables.tables_len][0]=0;
 
   debug("Calling get_dtype with %s %s %s",the_form.dbname,tab,col);
-  a=get_dtype(tab,col,the_form.dbname,the_form.tables.tables_val);
+  //int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]);
+  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);   // warning: passing arg 4 of `get_dtype' from incompatible pointer type
   debug("get_dtype returns %d",a);
   /* 6-2 ? CHECK */
-  if (a==6) a==2;
+  if (a==6) a=2;
 
   if (a==-1) {
 	  debug("get_dtype failed\n");
@@ -943,7 +950,7 @@ getdatatype(char *col,char *tab)
  * Intialize the memory needed to compile a 4gl screen form in order to
  * the lexical and sintatic parser to load the information found
  */
-void 
+void
 init_form(void)
 {
   debug("init_form\n");
@@ -981,14 +988,15 @@ init_form(void)
  * It seems that its not used
  * @toto Confirm if its used and if not remove it
  */
-static void 
+/*
+static void
 new_field_bool_attribute(void)
 {
   int cnt;
-  
+
   debug("new_field_bool_attr\n");
   cnt= the_form.attributes.attributes_len-1;
-  
+
   the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_len++;
   the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val=realloc(
     the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val,
@@ -996,14 +1004,16 @@ new_field_bool_attribute(void)
     sizeof(enum FIELD_ATTRIBUTES_BOOL)
   );
 }
+*/
 
 /**
  * It seems that its not used
  *
  * @todo Confirm if its used and if not remove it
  */
+/*
 static void
-new_field_str_attribute(void) 
+new_field_str_attribute(void)
 {
 	int cnt;
 
@@ -1016,6 +1026,7 @@ new_field_str_attribute(void)
 	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len*
 		sizeof(struct struct_field_attr_string));
 }
+*/
 
 /**
  * If necessary locate memory to field attributes and insert it to the 
@@ -1061,7 +1072,7 @@ add_str_attr(struct struct_scr_field *f,int type,char *str)
  * @param type The type of the boolean attribute:
  *   
  */
-void 
+void
 add_bool_attr(struct struct_scr_field *f,int type)
 {
   char *attrs[]={
@@ -1155,6 +1166,7 @@ translate_form(void)
 		}
 	}
 }
+
 
 
 //============== from decompile.c =====================

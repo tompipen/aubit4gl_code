@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.9 2002-05-23 09:29:35 afalout Exp $
+# $Id: readforms.c,v 1.10 2002-05-24 13:30:02 afalout Exp $
 #*/
 
 /**
@@ -56,6 +56,7 @@
 #include "a4gl_stack.h"
 #include "a4gl_pointers.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_io.h"
 #include "a4gl_debug.h"
 
 
@@ -198,16 +199,16 @@ ret_string (char *str)
 struct s_form_dets *
 read_form (char *fname, char *formname)
 {
-  FILE *ofile;
-  int a;
+FILE *ofile = 0;
+int a;
 //  struct s_form_attr *form;
-  struct s_form_dets *formdets;
+struct s_form_dets *formdets;
 //  FILE *f;
-  char buff[80];
-  char *ptr = 0;
-  XDR xdrp;
-  trim (fname);
-  trim (formname);
+char buff[80];
+char *ptr = 0;
+XDR xdrp;
+trim (fname);
+trim (formname);
 
   debug ("in read_form fname=%s formname=%s", fname, formname);
   strcpy (buff, fname);

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.66 2002-05-14 09:27:10 afalout Exp $
+# $Id: Makefile.in,v 1.67 2002-05-24 13:29:54 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -299,6 +299,11 @@ log:
 	@echo "Logging make process to make.log, please wait..."
 	@${MAKE} ${MKNAME} ${BUGMAKEFLAGS} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
+#	WARNLINES=`grep -c "warning:" make.log`
+#	@echo "Toatal compiler warnings: ${WARNLINES}"
+#	@echo "Toatal compiler warnings: $(shell grep -c "warning:" make.log)"
+	@echo "Toatal compiler warnings: `grep -c 'warning:' make.log`"
+
 
 corecompile:
 	$(MAKE) -C lib

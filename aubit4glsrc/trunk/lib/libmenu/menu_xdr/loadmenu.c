@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.6 2002-05-14 09:27:27 afalout Exp $
+# $Id: loadmenu.c,v 1.7 2002-05-24 13:30:03 afalout Exp $
 #*/
 
 /**
@@ -47,18 +47,21 @@
 #include <stdio.h>
 #include <strings.h>
 
-#include "a4gl_gtk_dims.h"
-#include "a4gl_menuxw.h"
-#include "a4gl_io.h"
 // 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
 #ifdef __CYGWIN__
 	#define GETENV_OK
 	#include <rpc/rpc.h>
 #endif
-#include "a4gl_debug.h"
+
+#include "a4gl_gtk_dims.h"
+#include "a4gl_menuxw.h"
+#include "a4gl_io.h"
 #include "a4gl_incl_4glhdr.h"
 #include "a4gl_gtk_cr_funcs.h"
+#include "a4gl_dbform.h"// struct s_form_dets
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 
 /*
@@ -281,12 +284,12 @@ make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm,
 static GtkWidget *
 create_menu (menu_list *m, char *id, int mode, void *handler)
 {
-  int a;
-  int b;
-  menu *mm;
+//  int a;
+//  int b;
+//  menu *mm;
   GtkWidget *menubar;
   GtkWindow *cwin;
-  GtkWidget *w;
+//  GtkWidget *w;
 
 	// Get the vbox associated with the current window..
   cwin = GTK_WINDOW(get_curr_win_gtk ());
@@ -340,7 +343,7 @@ load_menu (char *fname, char *menu_id, int mode, void *handler)
   FILE *f;
   XDR xdrp;
   int a;
-  GtkWidget *w;
+  GtkWidget *w = 0;
   char buff[256];
 
   sprintf (buff, "%s.mnu", fname);
@@ -408,12 +411,12 @@ show_menu (char *menuid, void *handler)
 void
 endis_menuitems (int en_dis, ...)
 {
-  int a;
+//  int a;
   va_list ap;
   GtkWidget *cwin;
   GtkWidget *menubar;
   GtkWidget *w;
-  char *ptr;
+  char *ptr = 0;
   char buff[256];
   va_start (ap, en_dis);
   printf("endis....%d\n",en_dis);

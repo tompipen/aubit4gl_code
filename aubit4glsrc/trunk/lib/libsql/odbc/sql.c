@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.31 2002-05-23 09:29:36 afalout Exp $
+# $Id: sql.c,v 1.32 2002-05-24 13:30:03 afalout Exp $
 #
 */
 
@@ -55,6 +55,7 @@
 #include "a4gl_aubit_lib.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
+#include "a4gl_runtime_tui.h"	//push_variable
 
 #ifdef __CYGWIN__
 	#include <windows.h>
@@ -177,6 +178,15 @@ void chrcat (char *s, char a);
 char *conv_binding (struct BINDING *b);
 char *char_pop (void);
 HSTMT *new_hstmt (HSTMT * hstmt);
+static int conv_sqldtype (int sqldtype, int sdim);
+
+
+// in sqlx.c
+extern int set_blob_data(HSTMT hstmt);
+extern int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+extern int scan_conn (char *s, char *p, HDBC conn);
+extern int scan_stmt (char *s, char *p, HSTMT hstmt);
+
 
 /*
 =====================================================================
@@ -802,7 +812,7 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
 
   if (sid==0) {
 	exitwith("Can't execute unprepared statement");
-	return;
+	return 0;
   }
 #ifdef DEBUG
 	/* {DEBUG} */ { debug (" prepare statement - Sid=%p ", sid); }
@@ -1055,7 +1065,7 @@ A4GLSQL_execute_implicit_select (struct s_sid *sid)
  * @param s The cursor name.
  * @return
  */
-int 
+int
 A4GLSQL_open_cursor (int ni, char *s)
 {
 
@@ -1136,7 +1146,7 @@ A4GLSQL_open_cursor (int ni, char *s)
   if (cid->hstmt != 0)
     {
       exitwith ("Cursor already open");
-      return;
+      return 0;
     }
   else
     {
@@ -1458,7 +1468,7 @@ A4GLSQL_free_cursor (char *cname)
  *   - -1 A cursor with that name was not found
  *   - 1 Cursor closed
  */
-int 
+int
 A4GLSQL_close_cursor (char *cname)
 {
   struct s_cid *ptr;
@@ -1768,7 +1778,7 @@ ODBC_exec_sql (UCHAR * sqlstr)
  * Execute the sql statement trough ODBC.
  *
  * @param hstmt The statement handle.
- * @return 
+ * @return
  *   - 1 : The statement was correctly executed.
  *   - 0 : There was an error.
  */
@@ -2566,7 +2576,7 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
  * @param sdim
  * @return The 4gl data type.
  */
-int 
+static int
 conv_sqldtype (int sqldtype, int sdim)
 {
   int ndtype;
@@ -2739,15 +2749,15 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
  * @param dtype A pointer to the variable where to put the data type.
  * @param size A pointer to the variable where to put the size of the column
  *  returned by the database.
- * @return 
+ * @return
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-int 
+int
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-  static char buff1[80];
-  static char buff2[255];
+//  static char buff1[80];
+//  static char buff2[255];
   static char tq[256];
   static char to[256];
   static char tn[256];
@@ -2759,8 +2769,8 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   static char remarks[256];
   static int a, b;
   static int rc;
-  static int fetch_mode;
-  static int cnt;
+//  static int fetch_mode;
+//  static int cnt;
 short nColumns;
 
   hstmtGetColumns = 0;
@@ -2840,6 +2850,7 @@ short nColumns;
       debug ("Bound columns\n");
     
   }
+return 1;
 }
 
 
@@ -2905,16 +2916,16 @@ A4GLSQL_end_get_columns(void)
  * @param dtype A pointer to the variable where to put the data type.
  * @param size A pointer to the variable where to put the size of the column
  *  returned by the database.
- * @return 
+ * @return
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-int 
+int
 A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   static HSTMT hstmt = 0;
-  static char buff1[80];
-  static char buff2[255];
+//  static char buff1[80];
+//  static char buff2[255];
   static char tq[256];
   static char to[256];
   static char tn[256];
@@ -2931,8 +2942,8 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   static char szcolsize[20];
   static int a, b;
   static int rc;
-  static int fetch_mode;
-  static int cnt;
+//  static int fetch_mode;
+//  static int cnt;
 short nColumns;
 
   if (hdbc == 0)
@@ -3092,12 +3103,12 @@ execute_sql_from_ptr (char *pname, int ni, char **ibind)
 #endif
   return ODBC_exec_prepared_sql (sid->hstmt);
 }
-/*
+*/
 
 /**
  * Not used.
  *
- * @todo : Understand if not used 
+ * @todo : Understand if not used
  */
 /*
 char *
@@ -3167,7 +3178,7 @@ ibind_column_arr (int pos, char *s, HSTMT hstmt)
   int size;
 /* DATE_STRUCT *tmp; */
 /*review */
-  int d, m, y;
+//  int d, m, y;
 
   size = strlen (s);
 
@@ -3193,12 +3204,12 @@ ibind_column_arr (int pos, char *s, HSTMT hstmt)
 int
 A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
-  HDBC *ptr;
-  int nFields;
-  int i, j;
+//  HDBC *ptr;
+//  int nFields;
+//  int i, j;
   char empty[10] = "None";
-  char *s, *u, *p;
-  char buff[132];
+  char *u, *p = 0;
+//  char buff[132];
   HDBC *hh;
 
   hh = find_pointer_val (sessname, SESSCODE);
@@ -3210,7 +3221,7 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
     }
 
   if (strcmp (sessname, sess_name) == 0)
-    return;
+    return 0;
 
   set_errm (dsn);
 
@@ -3311,7 +3322,7 @@ set_stmt_options (char *cursname, char *opt, char *val)
 
 
   scan_stmt (opt, val, stmt);
-
+return 1;
 }
 
 /**
@@ -3363,7 +3374,7 @@ aclfgl_hstmt_get (int np)
       stmt = &ptr_cid->statement->hstmt; // warning: assignment makes pointer from integer without a cast
     }
 
-  push_long (stmt);
+  push_long ((int)stmt);
   return 1;
 }
 
@@ -3385,6 +3396,7 @@ set_conn_options (char *sessname, char *opt, char *val)
   hdbc = (HDBC *) find_pointer (sessname, SESSCODE);
   debug ("Ok here... %p", hdbc);
   scan_conn (opt, val, *hdbc);
+return 1;
 }
 
 /**
@@ -3417,6 +3429,7 @@ A4GLSQL_set_conn (char *sessname)
 	  strcpy (sess_name, "default");
 	}
     }
+return 1;
 }
 
 /**
@@ -3496,10 +3509,13 @@ post_fetch_proc_bind(struct BINDING *use_binding,int use_nbind,HSTMT hstmt)
       if (outlen[a+1]==-1) {
       		if (use_binding[a].dtype == DTYPE_DATE) {
 	  		date1 = use_binding[a].ptr;
-	  		setnull(DTYPE_DATE,date1->ptr,0);
+
+            //void 	setnull 			(int type, char *buff, int size);
+			setnull(DTYPE_DATE,(char *)date1->ptr,0);
 			continue;
 		}
-		setnull(use_binding[a].dtype,use_binding[a].ptr ,use_binding[a].size); 
+		//void 	setnull 			(int type, char *buff, int size);
+		setnull(use_binding[a].dtype,(char *)use_binding[a].ptr ,use_binding[a].size);
 		continue;
       }
 
@@ -3537,7 +3553,7 @@ post_fetch_proc_bind(struct BINDING *use_binding,int use_nbind,HSTMT hstmt)
 		push_variable(use_binding[a].ptr,dtype);
 	}
 	cptr=char_pop();
-	sprintf(bf,"%d) %d %d : %s",a,use_binding[a].dtype,use_binding[a].size,cptr);
+	sprintf(bf,"%d) %d %d : %s",a,use_binding[a].dtype,(int)use_binding[a].size,cptr);
 	if (a>0) strcat(buffstr,",\n");
 	strcat(buffstr,bf);
 	free(cptr);
@@ -3549,7 +3565,7 @@ post_fetch_proc_bind(struct BINDING *use_binding,int use_nbind,HSTMT hstmt)
 }
 
 /**
- * Implementationin ODBC of the transaction statements (BEGIN WORK, 
+ * Implementationin ODBC of the transaction statements (BEGIN WORK,
  * COMMIT WORK, ROLLBACK WORK).
  *
  * @param mode The transaction statement to execute:
@@ -3804,7 +3820,7 @@ RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
 int 
 chk_need_blob(int rc,HSTMT hstmt)  
 {
-struct fgl_int_loc *ptr=0;
+//struct fgl_int_loc *ptr=0;
 	debug("In chk_need_blob rc=%d",rc);
 	if (rc!=SQL_NEED_DATA) return rc;
 	debug("Need data for %p",hstmt);
@@ -3817,7 +3833,7 @@ struct fgl_int_loc *ptr=0;
  *
  * @param a The value to be assigned.
  */
-void 
+void
 A4GLSQL_set_sqlca_sqlcode(int a)
 {
 	status=a;
@@ -3886,13 +3902,14 @@ A4GLSQL_flush_cursor(char *cursor)
  *
  * Not used.
  */
+/*
 int
 A4GLSQL_initsqllib(void)
 {
     A4GLSQL_make_connection(0,0,0);
 	return 1;
 }
-
+*/
 
 // ================================ EOF ================================
 

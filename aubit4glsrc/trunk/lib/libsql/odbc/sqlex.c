@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.13 2002-05-08 21:32:56 saferreira Exp $
+# $Id: sqlex.c,v 1.14 2002-05-24 13:30:03 afalout Exp $
 #
 */
 
@@ -38,57 +38,99 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <stdarg.h>
+
 #include "a4gl_dtypes.h"
 
-//#ifdef WIN32
 #ifdef __CYGWIN__
+	#define __ODBC_DEFINED__
 	#define WIN32
 	#include <windows.h>
 	#include <sql.h>
 	#include <sqlext.h>
 #else
 	#ifdef UNIXODBC
+	    #define __ODBC_DEFINED__
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
 	#endif
 
 	#ifdef IODBC
+	    #define __ODBC_DEFINED__
 		#ifdef OLDIODBC
 			#include <iodbc.h>
 			#include <isql.h>
 			#include <isqlext.h>
-                #else
+        #else
 			#include <sql.h>
-                        #include <sqlext.h>
-                        #include <sqltypes.h>
-                #endif
+			#include <sqlext.h>
+			#include <sqltypes.h>
+         #endif
 	#endif
 
 	#ifdef IFXODBC
+	    #define __ODBC_DEFINED__
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
 		//#include <incl/cli/sqlucode.h>
 	#endif
 
 	#ifdef PGODBC
-			#include <pgsql/iodbc/iodbc.h>
-			#include <pgsql/iodbc/isql.h>
-			#include <pgsql/iodbc/isqlext.h>
+	    #define __ODBC_DEFINED__
+		#include <pgsql/iodbc/iodbc.h>
+		#include <pgsql/iodbc/isql.h>
+		#include <pgsql/iodbc/isqlext.h>
+	#endif
+
+    #ifndef __ODBC_DEFINED__
+        //default for tesing, when we don't use makefile we will not have -Dxxx
+		// unixODBC headers:
+		#include <sql.h>
+		#include <sqlext.h>
+		#include <odbcinst.h>
+		#define __UCHAR_DEFINED__
+	    #define __ODBC_DEFINED__
 	#endif
 
 #endif
 
+#include "a4gl_dbform.h" //struct s_form_dets
+#include "a4gl_aubit_lib.h"
 // stack.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
 #include "a4gl_stack.h"
 #define GETENV_OK
 #include "a4gl_debug.h"
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)
+#define WIDTH 19
+#define MEMSIZE 1024
+#define USES_RESOURCE int acl_rescnt;acl_rescnt=new_rescnt()
+#define ALLOC(a) allocate_mem(a,(void*)acl_rescnt)
+#define RELEASE() dealloc_mem((void *)acl_rescnt)
+#define USERS_STRING 0
+#define USERS_LONG 0
+#define streq(a,b) (strcmp(a,b)==0)
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 struct xxsql_options //struct sql_options
   {
@@ -98,19 +140,13 @@ struct xxsql_options //struct sql_options
     long param_id;
   };
 
+/*
 struct str_resource
   {
     char name[20];
     char value[40];
   };
-#define WIDTH 19
-
-static char buff[30000];
-
-#define MEMSIZE 1024
-#define USES_RESOURCE int acl_rescnt;acl_rescnt=new_rescnt()
-#define ALLOC(a) allocate_mem(a,(void*)acl_rescnt)
-#define RELEASE() dealloc_mem((void *)acl_rescnt)
+*/
 
 struct
   {
@@ -119,14 +155,17 @@ struct
   }
 alloc_mem[MEMSIZE];
 
+//static char buff[30000];
 int line[80];
 FILE *f = 0;
 char invalid[] = "<Invalid>";
 //char *find_str_resource (char *s);
 
-#define USERS_STRING 0
-#define USERS_LONG 0
-
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 //int scan_options (struct sql_options options[], char *s, char *p, long *r1, long *r2);
 int scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *r2);
@@ -140,164 +179,174 @@ char *getres (char *s);
 //char *find_str_resource (char *s);
 //int replace_str_resource (char *s, char *neww);
 int add_userptr (void *ptr);
+long set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
+int set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob);
+long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+int alloc_find_ptr (void *ptr);
 
 
-
-//#ifdef WIN32
-#define streq(a,b) (strcmp(a,b)==0)
-
-#ifdef __CYGWIN__
-int need_logon ();
-int set_regkey (char *key, char *data);
-int get_regkey (char *key, char *data, int n);
-void createkey ();
-HKEY newkey = 0;
-//void get_anykey (int whence, char *key, char *key2, char *data, int n);
-void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
-void MBox (char *s, char *fmt,...);
-void set_default_logon ();
 /*
-#endif
-
-
-#define streq(a,b) (strcmp(a,b)==0)
-
-#ifdef WIN32
-struct sql_options conn_options[] =
+=====================================================================
+                    Platform specific definitions
+=====================================================================
 */
 
-/** Connection options memory table - Windows version */
-struct xxsql_options conn_options[] =
-{
-  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
-  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
-  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
-  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
-  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
-  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
-  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
-  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
-  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
-  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
-  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
-  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
-  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
-  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
-  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
-  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
-{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
-  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
-  {"", 0, 0, 0}
-};
+#ifdef __CYGWIN__
+	int need_logon ();
+	int set_regkey (char *key, char *data);
+	int get_regkey (char *key, char *data, int n);
+	void createkey ();
+	HKEY newkey = 0;
+	//void get_anykey (int whence, char *key, char *key2, char *data, int n);
+	void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
+	void MBox (char *s, char *fmt,...);
+	void set_default_logon ();
+	/*
+	#endif
 
 
-//struct sql_options stmt_options[] =
-/** Statement options memory table - Windows version */
-struct xxsql_options stmt_options[] =
-{
-  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
-  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
-  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
-  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
-  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_CURSOR_FORWARD_ONLY},
-  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_CURSOR_STATIC},
-{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_CURSOR_KEYSET_DRIVEN},
-  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_CURSOR_DYNAMIC},
-  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
-  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
-  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
-  {"NOSCAN", "OFF", SQL_NOSCAN, SQL_NOSCAN_OFF},
-  {"NOSCAN", "ON", SQL_NOSCAN, SQL_NOSCAN_ON},
-  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
-  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, SQL_RD_ON},
-  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, SQL_RD_OFF},
-  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_NON_UNIQUE},
-  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_TRY_UNIQUE},
-  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_UNIQUE},
-  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, SQL_UB_ON},
-  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, SQL_UB_OFF},
-  {"", 0, 0, 0}
-};
+	#define streq(a,b) (strcmp(a,b)==0)
 
-#else
+	#ifdef WIN32
+	struct sql_options conn_options[] =
+	*/
 
-//struct sql_options conn_options[] =
-/** Connection options memory table - unix version */
-struct xxsql_options conn_options[] =
-{
-  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
-  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
-  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
-  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
-  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
-  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
-  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
-  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
-  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
-  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
-  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
-  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
-  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
-  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
-  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
-  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
-{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
-  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
-  {"", 0, 0, 0}
-};
+	/** Connection options memory table - Windows version */
+	struct xxsql_options conn_options[] =
+	{
+	  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
+	  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
+	  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
+	  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
+	  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
+	  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
+	  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
+	  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
+	  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
+	  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
+	  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
+	  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
+	  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
+	  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
+	  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
+	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
+	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
+	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
+	//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
+	  {"", 0, 0, 0}
+	};
 
 
-//struct sql_options stmt_options[] =
-/** Statement options memory table - unix version */
-struct xxsql_options stmt_options[] =
-{
-  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
-  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
-  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
-  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
-  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_SCROLL_FORWARD_ONLY},
-  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_SCROLL_STATIC},
-{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_SCROLL_KEYSET_DRIVEN},
-  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_SCROLL_DYNAMIC},
-  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
-  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
-  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
-  {"NOSCAN", "OFF", SQL_NOSCAN, 0},
-  {"NOSCAN", "ON", SQL_NOSCAN, 1},
-/*{"BIND TYPE","ON",              SQL_BIND_TYPE,USERS_LONG}, */
-  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
-  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, 1},
-  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, 0},
-  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, 0},
-  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, 1},
-  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, 2},
-  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, 1},
-  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, 0},
-  {"", 0, 0, 0}
-};
+	//struct sql_options stmt_options[] =
+	/** Statement options memory table - Windows version */
+	struct xxsql_options stmt_options[] =
+	{
+	  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
+	  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
+	  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
+	  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
+	  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_CURSOR_FORWARD_ONLY},
+	  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_CURSOR_STATIC},
+	{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_CURSOR_KEYSET_DRIVEN},
+	  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_CURSOR_DYNAMIC},
+	  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
+	  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
+	  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
+	  {"NOSCAN", "OFF", SQL_NOSCAN, SQL_NOSCAN_OFF},
+	  {"NOSCAN", "ON", SQL_NOSCAN, SQL_NOSCAN_ON},
+	  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
+	  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, SQL_RD_ON},
+	  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, SQL_RD_OFF},
+	  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_NON_UNIQUE},
+	  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_TRY_UNIQUE},
+	  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_UNIQUE},
+	  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, SQL_UB_ON},
+	  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, SQL_UB_OFF},
+	  {"", 0, 0, 0}
+	};
+
+#else //#ifdef __CYGWIN__
+
+	//struct sql_options conn_options[] =
+	/** Connection options memory table - unix version */
+	struct xxsql_options conn_options[] =
+	{
+	  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
+	  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
+	  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
+	  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
+	  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
+	  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
+	  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
+	  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
+	  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
+	  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
+	  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
+	  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
+	  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
+	  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
+	  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
+	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
+	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
+	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
+	//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
+	  {"", "0", 0, 0}
+	};
 
 
-#endif
+	//struct sql_options stmt_options[] =
+	/** Statement options memory table - unix version */
+	struct xxsql_options stmt_options[] =
+	{
+	  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
+	  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
+	  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
+	  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
+	  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_SCROLL_FORWARD_ONLY},
+	  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_SCROLL_STATIC},
+	{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_SCROLL_KEYSET_DRIVEN},
+	  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_SCROLL_DYNAMIC},
+	  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
+	  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
+	  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
+	  {"NOSCAN", "OFF", SQL_NOSCAN, 0},
+	  {"NOSCAN", "ON", SQL_NOSCAN, 1},
+	/*{"BIND TYPE","ON",              SQL_BIND_TYPE,USERS_LONG}, */
+	  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
+	  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, 1},
+	  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, 0},
+	  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, 0},
+	  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, 1},
+	  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, 2},
+	  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, 1},
+	  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, 0},
+	  {"", "0", 0, 0}
+	};
 
 
+#endif //#ifdef __CYGWIN__
 
-//scan_options (struct sql_options options[], char *s, char *p, long *r1, long *r2)
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * @deprecated This a deprecation candidate.
- * 
+ *
  * @param options Options array to be scanned.
  * @param s
  * @param p
  * @param r1
  * @param r2
  */
+int
 scan_options(struct xxsql_options options[],char *s,char *p,long *r1,long *r2)
 {
   int a;
-  long val;
+  long val = 0;
   int type;
   int foundit = 0;
 
@@ -346,7 +395,9 @@ scan_options(struct xxsql_options options[],char *s,char *p,long *r1,long *r2)
  * @param p
  * @param conn
  */
-int scan_conn (char *s, char *p, HDBC conn)
+/*
+int
+scan_conn (char *s, char *p, HDBC conn)
 {
   long a, b;
   int rc;
@@ -385,6 +436,7 @@ int scan_conn (char *s, char *p, HDBC conn)
   debug ("Set Option...rc=%d", rc);
   return 1;
 }
+*/
 
 /**
  * @deprecated This a deprecation candidate.
@@ -393,7 +445,9 @@ int scan_conn (char *s, char *p, HDBC conn)
  * @param p
  * @paramhstmt The statement handle.
  */
-int scan_stmt (char *s, char *p, HSTMT hstmt)
+/*
+int
+scan_stmt (char *s, char *p, HSTMT hstmt)
 {
   UWORD a;
   UDWORD b;
@@ -420,6 +474,7 @@ int scan_stmt (char *s, char *p, HSTMT hstmt)
   set_sqlca (hstmt, "SetStmtOption", 0);
   return 1;
 }
+*/
 
 /**
  * @deprecated This a candidate for cleaning.
@@ -428,7 +483,7 @@ int
 add_txt (char *s, int x, int hwnd)
 {
   int b;
-  int z;
+  int z = 0;
   for (b = x - 1; b < x - 1 + (int) strlen (s); b++)
     {
       if (line[b])
@@ -480,6 +535,7 @@ remove_it (int a)
 /**
  * @deprecated This a candidate for cleaning.
  */
+int
 ctol (char s)
 {
   char buff[2];
@@ -575,7 +631,7 @@ generate_using_for_dmy (char *s, int size)
 void *
 allocate_mem (int size, void *parent)
 {
-  void *ptr;
+//  void *ptr;
   int a;
   a = alloc_find_ptr (0);
 
@@ -601,7 +657,8 @@ allocate_mem (int size, void *parent)
 /**
  * @deprecated This a candidate for cleaning.
  */
-init_mem ()
+void
+init_mem (void)
 {
   int a;
   for (a = 0; a < MEMSIZE; a++)
@@ -614,6 +671,7 @@ init_mem ()
 /**
  * @deprecated This a candidate for cleaning.
  */
+int
 alloc_find_ptr (void *ptr)
 {
   int a;
@@ -628,6 +686,7 @@ alloc_find_ptr (void *ptr)
 /**
  * @deprecated This a candidate for cleaning.
  */
+int
 alloc_find_parent (void *ptr, int start)
 {
   int a;
@@ -642,6 +701,7 @@ alloc_find_parent (void *ptr, int start)
 /**
  * @deprecated This a candidate for cleaning.
  */
+void
 dealloc_mem (void *ptr)
 {
   int a = -1;
@@ -663,8 +723,12 @@ dealloc_mem (void *ptr)
     }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
-new_rescnt ()
+new_rescnt (void)
 {
   static int rescnt = 1;
   return rescnt++;
@@ -673,6 +737,8 @@ new_rescnt ()
 /**
  * @deprecated This a candidate for cleaning.
  */
+/*
+void
 readfile_for_preload (char *f)
 {
   FILE *fi;
@@ -706,6 +772,8 @@ readfile_for_preload (char *f)
     }
   debug ("}\n};\n");
 }
+*/
+
 
 /* *****************************************************************
 
@@ -720,9 +788,10 @@ readfile_for_preload (char *f)
  * @param hstmt The statement handle.
  * @param colno the column number.
  */
+int
 get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
-  FILE *f;
+//  FILE *f;
   int cnt;
 
 
@@ -763,7 +832,8 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	{
 	  free (blob->ptr);
 	}
-      cnt = get_blob_data_int (0, hstmt, colno, &blob->ptr);
+      //long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+	  cnt = get_blob_data_int (0, hstmt, colno, (char **)&blob->ptr);
 
     }
   if (cnt < 0)
@@ -785,6 +855,7 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
  * @param colno The column number.
  * @param cptr 
  */
+long
 get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
 {
   char buff[64000];
@@ -861,6 +932,7 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
  *
  * @param hstmt The statement handle.
  */
+int
 set_blob_data(HSTMT hstmt)
 {
   int rc;
@@ -882,9 +954,10 @@ set_blob_data(HSTMT hstmt)
  * @param hstmt The statement handle.
  * @param blob Pointer to the the blob  location.
  */
+int
 set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
 {
-  FILE *f;
+//  FILE *f;
   int cnt;
 
 
@@ -936,7 +1009,7 @@ set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
     }
 
   blob->memsize = cnt;
-/* everything is ok */
+	/* everything is ok */
   return 1;
 }
 
@@ -947,6 +1020,7 @@ set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
  * @param hstmt The statement handle.
  * @param b Pointer to the blob location.
  */
+long
 set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 {
   char buff[64000];
@@ -980,7 +1054,8 @@ set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 			b->memsize=cnt;
 			return cnt;
 	}
+return 0;
 }
 
 
-//--------------------------- EOF --------------------------
+// =============================== EOF ===============================

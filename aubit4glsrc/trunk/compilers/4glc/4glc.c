@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.25 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: 4glc.c,v 1.26 2002-05-24 13:30:02 afalout Exp $
 #
 */
 
@@ -443,6 +443,28 @@ yyerror (char *s)
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
   exit (2);
 }
+
+/************************* same finction from fcompile:
+
+void yyerror(char *s)
+{
+  char errfile[256];
+  FILE *f;
+  long ld;
+
+  ld=buffpos();
+  sprintf(errfile,"%s.err",outputfile);
+  f=write_errfile(yyin,errfile,ld-1,yylineno);
+  fprintf (f, "| %s", s);
+  write_cont(yyin);
+  printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
+	  outputfile,outputfile,lineno,yylineno
+  );
+  exit (2);
+}
+
+**************************************************************/
+
 
 /**
  *  Adds the parameters to the error buffer in the assigned with yyerror.

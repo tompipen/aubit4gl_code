@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-04-28 04:45:19 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-05-24 13:30:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -87,10 +87,7 @@ else #GLIBVER="old"
     endif
 endif
 
-CFLAGS+=-I../libincl -I../../incl -I.. ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I../../compilers/menus -I../../compilers/fcompile
-
-
-
+CFLAGS+=${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I../../../compilers/fcompile
 
 ifdef COMSPEC
 	ALL=dllMENU_NOMENU
