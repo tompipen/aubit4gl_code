@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.38 2003-06-19 18:22:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.39 2003-06-20 14:50:32 mikeaubury Exp $
 #*/
 
 /**
@@ -1724,6 +1724,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   A4GL_debug ("Number of fields=%d ", nofields,n);
 
   if (nofields<0) {
+	A4GL_debug("Failed to find fields");
 	return ;
   }
   
@@ -1841,6 +1842,12 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 
       A4GL_bname (s, tabname, colname);
       srec_no = A4GL_find_srec (formdets->fileform, tabname);
+
+      if (strlen(tabname)&&strlen(colname)&&srec_no==-1) {
+		A4GL_exitwith("Table/Screen record does not exist in form");
+		return -1;
+	}
+
       A4GL_debug ("srec_no=%d", srec_no);
       if (srec_no != -1)
 	{
@@ -1893,6 +1900,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		      A4GL_debug ("cnt=%d a=%d", cnt, a);
 		      A4GL_exitwith
 			("Too few variables for the number of fields");
+			return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
 		  flist[cnt++] = (FIELD *) k->field;
@@ -1939,9 +1947,9 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		  if (cnt >= a)	/* was >= */
 		    {
 		      A4GL_debug ("cnt=%d a=%d", cnt, a);
-		      A4GL_debug ("Too few variable");
-		      A4GL_exitwith
-			("Too few variables for the number of fields");
+		      A4GL_debug ("Too few variables");
+		      A4GL_exitwith ("Too few variables for the number of fields");
+			return -1;
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
 		  flist[cnt++] = (FIELD *) k->field;

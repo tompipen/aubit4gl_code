@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.26 2003-05-22 21:59:07 mikeaubury Exp $
+# $Id: others.c,v 1.27 2003-06-20 14:50:18 mikeaubury Exp $
 #
 */
 
@@ -485,9 +485,11 @@ A4GL_find_srec (struct_form * fd, char *name)
 
   for (a = 0; a < fd->records.records_len; a++)
     {
-	A4GL_debug("MJA MJA %s\n",fd->records.records_val[a].name);
-      if (strcasecmp (name, fd->records.records_val[a].name) == 0)
+	A4GL_debug("MJA MJA %s - %s\n",fd->records.records_val[a].name,name);
+      if (strcasecmp (name, fd->records.records_val[a].name) == 0) {
+		A4GL_debug("Found it...");
 	return a;
+	}
     }
   return -1;
 }

@@ -21,7 +21,7 @@ endcode
 define constant HELPMAXLEN 78
 ---------   Module (static) Vars  ------------------------------------
 #define no integer	-- message no we are seeking
-define msgno integer	-- message no found (while looping thru index)
+define msgno smallint	-- message no found (while looping thru index)
 define len integer	-- length of full message (while looping)
 define msglen integer	-- length of full message (when found)
 define msgcount integer -- count of messages in helpfile
@@ -253,8 +253,10 @@ code
 		for(i=0; i<msgcount; i++)
 		{
 			if(fread(indexrec,1,8,infile)< 8) ok = 0;
-			if(ok )
-				msgno = indexrec[0]*256 + indexrec[1];
+			if(ok ) {
+                                memcpy(&msgno,indexrec,2);
+                                msgno=ntohs(msgno);
+			}
 			else
 			{
 				sprintf(errmsg, "Failed to get 8 byte rec\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.27 2003-05-25 04:32:41 afalout Exp $
+# $Id: readforms.c,v 1.28 2003-06-20 14:50:32 mikeaubury Exp $
 #*/
 
 /**
@@ -806,6 +806,7 @@ A4GL_get_str_attribute (struct struct_scr_field *f, int str)
 
 
 
+
 A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
@@ -820,6 +821,7 @@ debug("No of records : %d",fd->records.records_len);
     }
   return -1;
 }
+
 
 
 
