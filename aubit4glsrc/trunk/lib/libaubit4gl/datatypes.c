@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.11 2002-08-31 06:19:59 afalout Exp $
+# $Id: datatypes.c,v 1.12 2002-09-27 04:45:38 afalout Exp $
 #
 */
 
@@ -104,7 +104,7 @@ static void *libptr = 0;
 */
 
 int add_datatype_function_i (int a, char *funcname, void *func);
-void add_default_operations (void);
+extern void add_default_operations (void); /* in ops.c */
 void add_default_datatypes (void);
 static int (*func) (void);
 int call_datatype_function_i (void *obj, int dtype, char *funcname,int nparam);
@@ -162,6 +162,7 @@ init_datatypes (void)
 	}
       add_default_datatypes ();
     }
+	debug("Finished initializing data types");
 }
 
 
@@ -170,7 +171,7 @@ init_datatypes (void)
  * Returns function pointer on success
  * return 0 on failure
  *
- *  This function gets finds a datatype function for a given datatype ID
+ * This function gets finds a datatype function for a given datatype ID
  */
 void *
 get_datatype_function_i (int a, char *funcname)
@@ -497,6 +498,8 @@ add_default_datatypes (void)
   add_datatype ("INTERVAL", 14, 0);
   add_datatype ("NCHAR", 15, 0);
   add_default_operations ();
+
+	debug("Finished adding default data types");
 }
 
 

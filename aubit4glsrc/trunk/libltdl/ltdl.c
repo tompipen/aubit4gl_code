@@ -61,7 +61,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 
 
-
 /* --- WINDOWS SUPPORT --- */
 
 
@@ -81,7 +80,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 
 
-
 /* --- MANIFEST CONSTANTS --- */
 
 
@@ -100,7 +98,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 
 
-
 /* --- TYPE DEFINITIONS -- */
 
 
@@ -112,7 +109,6 @@ typedef struct {
 
 
 
-
 /* --- OPAQUE STRUCTURES DECLARED IN LTDL.H --- */
 
 
@@ -175,7 +171,6 @@ static	const char	sys_search_path[]	= LTDL_SYSSEARCHPATH;
 
 
 
-
 /* --- MUTEX LOCKING --- */
 
 
@@ -246,7 +241,6 @@ lt_dlmutex_register (lock, unlock, seterror, geterror)
 
 
 
-
 /* --- MEMORY HANDLING --- */
 
 
@@ -268,7 +262,6 @@ static		  lt_ptr	rpl_realloc	LT_PARAMS((lt_ptr ptr,
 						} LT_STMT_END
 
 
-
 /* --- ERROR MESSAGES --- */
 
 
@@ -335,7 +328,7 @@ lt_dlseterror (index)
 
 
 
-
+
 /* --- REPLACEMENT FUNCTIONS --- */
 
 
@@ -514,7 +507,6 @@ rpl_realloc (ptr, size)
 
 
 
-
 /* --- DLOPEN() INTERFACE LOADER --- */
 
 
@@ -635,7 +627,6 @@ static struct lt_user_dlloader sys_dl =
 #endif /* HAVE_LIBDL */
 
 
-
 /* --- SHL_LOAD() INTERFACE LOADER --- */
 
 #if HAVE_SHL_LOAD

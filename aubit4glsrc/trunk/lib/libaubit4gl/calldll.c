@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.17 2002-09-27 03:57:39 afalout Exp $
+# $Id: calldll.c,v 1.18 2002-09-27 04:45:37 afalout Exp $
 #
 */
 
@@ -209,6 +209,15 @@ void *
 find_func (void *dllhandle, char *func)
 {
 int (*func_ptr) (void);
+
+/*
+ FIXME:
+ We should be using system independent dlopen wrapper provided by
+ libtool 1.4, which is fully integrated with Autoconf/Automake, and did I say,
+ platform independent?
+ see $AUBITDIR/libltdl/ltdl.c
+*/
+
 
 	#if (defined(__MACH__) && defined(__APPLE__))
 		sprintf (tempbuff, "_%s",func);
