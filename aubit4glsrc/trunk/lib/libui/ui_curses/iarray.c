@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.72 2004-03-03 13:18:07 mikeaubury Exp $
+# $Id: iarray.c,v 1.73 2004-03-03 14:46:57 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.72 2004-03-03 13:18:07 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.73 2004-03-03 14:46:57 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1619,6 +1619,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 	  		A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
 		        A4GL_debug ("Too far down - should really error at this point");
 			dir=0;
+	      		A4GL_newMovement (arr, scr_line-1, arr_line-1, 0);	// So keep going...
 		      return;
 		    }
 		}

@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.8 2004-03-03 13:18:07 mikeaubury Exp $
+# $Id: input_array.c,v 1.9 2004-03-03 14:47:00 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.8 2004-03-03 13:18:07 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.9 2004-03-03 14:47:00 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1601,7 +1601,9 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		  if (arr_line > arr->arr_size)
 		    {		// Attempting to move off the bottom of the array...
 	  		A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
+			dir=0;
 		      A4GL_debug ("Too far down - should really error at this point");
+ 			A4GL_newMovement (arr, scr_line-1, arr_line-1, 0);
 		      return;
 		    }
 		}
@@ -1616,6 +1618,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	  else
 	    {
 	      A4GL_debug ("Found somewhere free...");
+		dir=0;
 	      A4GL_newMovement (arr, scr_line, arr_line, attrib);	// So keep going...
 	      return;
 	    }
