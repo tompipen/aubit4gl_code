@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.141 2003-01-25 01:46:39 afalout Exp $
+dnl # $Id: configure.in,v 1.142 2003-01-25 04:04:15 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1109,39 +1109,33 @@ AC_ARG_WITH(sapdb,
 			#First check if we have cpc installed at all:
 			AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
 
-			#if test "$cygwin" = "1"; then
-				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
-			#	AC_PATH_PROG(MSVC_COMP, cl, no)
-			#	AC_PATH_PROG(MSVC_LINK, link, no)
-			#	if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
-			#	then
-	        #        SAPDBESQLCC_OK="OK"
-            #    fi
-			#else
-                #on non-Windows platforms, native C compiler will do:
-				SAPDBESQLCC_OK="OK"
-			#fi
-			
-			AC_MSG_CHECKING(if we can use cpc)
-			if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK";
-			then
-				SAPDB_INCLUDE=$SAPDB_INCDIR
-				SAPDB_LFLAGS=$SAPDB_LIBDIR
+			#any C (gcc) compiler is OK fro SAP (?)
+			SAPDBESQLCC_OK="OK"
 
-                old_CFLAGS="$CFLAGS"
-                old_LDFLAGS="$LDFLAGS"
+			if test "$SAPDB_ESQLC" != "no"; then
+				AC_MSG_CHECKING(if we can use cpc)
+				if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK";
+				then
+					SAPDB_INCLUDE=$SAPDB_INCDIR
+					SAPDB_LFLAGS=$SAPDB_LIBDIR
 
-				CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
-				LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
+	                old_CFLAGS="$CFLAGS"
+	                old_LDFLAGS="$LDFLAGS"
 
-				AC_DEFINE(HAVE_SAPDB)
-				AC_MSG_RESULT(Yes)
+					CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
+					LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
 
-				CFLAGS="$old_CFLAGS"
-                LDFLAGS="$old_LDFLAGS"
+					AC_DEFINE(HAVE_SAPDB)
+					AC_MSG_RESULT(Yes)
 
+					CFLAGS="$old_CFLAGS"
+	                LDFLAGS="$old_LDFLAGS"
+
+	            else
+					AC_MSG_RESULT(cpc not working or no compatible C compiler)
+	            fi
             else
-				AC_MSG_RESULT(cpc not in path or no compatible C compiler)
+				AC_MSG_RESULT(cpc not in path)
             fi
 
             PATH="$old_PATH"
@@ -1214,10 +1208,10 @@ AC_ARG_WITH(informix,
 				ESQLCC_OK="OK"
 			fi
 
-			AC_MSG_CHECKING(if we can use esql)
 			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
 			then
-				AC_MSG_RESULT(Yes)
+				AC_MSG_CHECKING(if we can use esql)
+
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
 				if test -z "$IFX_LIBS"; then
@@ -1258,11 +1252,14 @@ AC_ARG_WITH(informix,
 				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
 				AC_MSG_RESULT($IFX_VERSION)
 				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+				
+				AC_MSG_RESULT(Yes)
 
 				CFLAGS="$old_CFLAGS"
                 LDFLAGS="$old_LDFLAGS"
 
             else
+				AC_MSG_CHECKING(if we can use esql)
 				AC_MSG_RESULT(esql not in path or no compatible C compiler)
             fi
 		fi
@@ -1757,6 +1754,7 @@ AC_ARG_WITH(unixodbc,
             else
 				AC_MSG_WARN(unixODBC libraries present but headers are missing.)
 				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
+				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
             fi
 		else
 		    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
@@ -2984,16 +2982,6 @@ else
 		A4GL_SQLTYPE=ifxodbc
 	fi
 
-	############# native ####################
-	#non existant:
-	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
-	#	A4GL_SQLTYPE=pgsql
-    #fi
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_SQLTYPE=esql
-	fi
-
-
 	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
@@ -3007,6 +2995,17 @@ else
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_SQLTYPE=odbc32
 	fi
+
+	############# native ####################
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
+	fi
+
+
 fi
 
 ## ==================================================================
@@ -3291,12 +3290,16 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
-	if test "$DOT" = "no"; then
+	if test "$DOTTOOL" = "no"; then
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.dot"
     fi
 
 	if test "$DOXYGEN" = "no"; then
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.doxygen"
+    fi
+
+	if test "$HAS_CHECK" != "1"; then
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libcheck"
     fi
 
 	#RPMFILE_25=$LIB_PREFIX/
@@ -3538,6 +3541,16 @@ cat<<X
 | installed, you should be able to install them automaticall by using|
 | command 'make missing.perlmods'. Otherwise, please install this    |
 | Perl modules manually: $MISSING_PERLMODS
+X
+fi
+if test "$A4GL_SQLTYPE" = "nosql"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| No SQL connection options are available. Abut compiler will be     |
+| with only dummy NOSQL library - you will not be able to connect to |
+| any databases ! Please install at least one supported database     |
+| connectivity library, and re-run configure                         |
 X
 fi
 if test "$WARN_LD_LIBRARY_PATH" != ""; then

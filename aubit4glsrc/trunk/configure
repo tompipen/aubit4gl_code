@@ -9990,58 +9990,53 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-			#if test "$cygwin" = "1"; then
-				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
-			#	AC_PATH_PROG(MSVC_COMP, cl, no)
-			#	AC_PATH_PROG(MSVC_LINK, link, no)
-			#	if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
-			#	then
-	        #        SAPDBESQLCC_OK="OK"
-            #    fi
-			#else
-                #on non-Windows platforms, native C compiler will do:
-				SAPDBESQLCC_OK="OK"
-			#fi
+			#any C (gcc) compiler is OK fro SAP (?)
+			SAPDBESQLCC_OK="OK"
 
-			echo "$as_me:10006: checking if we can use cpc" >&5
+			if test "$SAPDB_ESQLC" != "no"; then
+				echo "$as_me:9997: checking if we can use cpc" >&5
 echo $ECHO_N "checking if we can use cpc... $ECHO_C" >&6
-			if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK";
-			then
-				SAPDB_INCLUDE=$SAPDB_INCDIR
-				SAPDB_LFLAGS=$SAPDB_LIBDIR
+				if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK";
+				then
+					SAPDB_INCLUDE=$SAPDB_INCDIR
+					SAPDB_LFLAGS=$SAPDB_LIBDIR
 
-                old_CFLAGS="$CFLAGS"
-                old_LDFLAGS="$LDFLAGS"
+	                old_CFLAGS="$CFLAGS"
+	                old_LDFLAGS="$LDFLAGS"
 
-				CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
-				LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
+					CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
+					LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
 
-				cat >>confdefs.h <<\EOF
+					cat >>confdefs.h <<\EOF
 #define HAVE_SAPDB 1
 EOF
 
-				echo "$as_me:10023: result: Yes" >&5
+					echo "$as_me:10014: result: Yes" >&5
 echo "${ECHO_T}Yes" >&6
 
-				CFLAGS="$old_CFLAGS"
-                LDFLAGS="$old_LDFLAGS"
+					CFLAGS="$old_CFLAGS"
+	                LDFLAGS="$old_LDFLAGS"
 
+	            else
+					echo "$as_me:10021: result: cpc not working or no compatible C compiler" >&5
+echo "${ECHO_T}cpc not working or no compatible C compiler" >&6
+	            fi
             else
-				echo "$as_me:10030: result: cpc not in path or no compatible C compiler" >&5
-echo "${ECHO_T}cpc not in path or no compatible C compiler" >&6
+				echo "$as_me:10025: result: cpc not in path" >&5
+echo "${ECHO_T}cpc not in path" >&6
             fi
 
             PATH="$old_PATH"
 		fi
 	else
 		SAPDBDIR=
-		echo "$as_me:10038: result: no" >&5
+		echo "$as_me:10033: result: no" >&5
 echo "${ECHO_T}no" >&6
 	fi
 
 else
 
-  echo "$as_me:10044: result: --with-sapdb not specified" >&5
+  echo "$as_me:10039: result: --with-sapdb not specified" >&5
 echo "${ECHO_T}--with-sapdb not specified" >&6
 
 fi;
@@ -10058,9 +10053,9 @@ if test "$with_informix" = ""; then
 	force_informix=yes
 fi
 
-  echo "$as_me:10061: result: " >&5
+  echo "$as_me:10056: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:10063: result: ${T_MD}Checking for Informix ESQL/C support:${T_ME}" >&5
+  echo "$as_me:10058: result: ${T_MD}Checking for Informix ESQL/C support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Informix ESQL/C support:${T_ME}" >&6
 
 # Check whether --with-informix or --without-informix was given.
@@ -10071,7 +10066,7 @@ if test "${with_informix+set}" = set; then
 		if test "$INFORMIXDIR" = "" && test "$force_informix" != "yes" ; then
 			INFORMIX_WARNING=1
 			#IFX_C_MAKE='touch functions/ifx.c'
-			echo "$as_me:10074: result: no" >&5
+			echo "$as_me:10069: result: no" >&5
 echo "${ECHO_T}no" >&6
 		else
 			if test "$withval" = "yes"; then
@@ -10097,7 +10092,7 @@ echo "${ECHO_T}no" >&6
 			#First check if we have esql installed at all:
 			# Extract the first word of "esql", so it can be a program name with args.
 set dummy esql; ac_word=$2
-echo "$as_me:10100: checking for $ac_word" >&5
+echo "$as_me:10095: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_IFMX_ESQLC+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10114,7 +10109,7 @@ for ac_dir in $ac_dummy; do
   test -z "$ac_dir" && ac_dir=.
   if $as_executable_p "$ac_dir/$ac_word"; then
    ac_cv_path_IFMX_ESQLC="$ac_dir/$ac_word"
-   echo "$as_me:10117: found $ac_dir/$ac_word" >&5
+   echo "$as_me:10112: found $ac_dir/$ac_word" >&5
    break
 fi
 done
@@ -10126,10 +10121,10 @@ fi
 IFMX_ESQLC=$ac_cv_path_IFMX_ESQLC
 
 if test -n "$IFMX_ESQLC"; then
-  echo "$as_me:10129: result: $IFMX_ESQLC" >&5
+  echo "$as_me:10124: result: $IFMX_ESQLC" >&5
 echo "${ECHO_T}$IFMX_ESQLC" >&6
 else
-  echo "$as_me:10132: result: no" >&5
+  echo "$as_me:10127: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
@@ -10137,7 +10132,7 @@ fi
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
 				# Extract the first word of "cl", so it can be a program name with args.
 set dummy cl; ac_word=$2
-echo "$as_me:10140: checking for $ac_word" >&5
+echo "$as_me:10135: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_MSVC_COMP+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10154,7 +10149,7 @@ for ac_dir in $ac_dummy; do
   test -z "$ac_dir" && ac_dir=.
   if $as_executable_p "$ac_dir/$ac_word"; then
    ac_cv_path_MSVC_COMP="$ac_dir/$ac_word"
-   echo "$as_me:10157: found $ac_dir/$ac_word" >&5
+   echo "$as_me:10152: found $ac_dir/$ac_word" >&5
    break
 fi
 done
@@ -10166,16 +10161,16 @@ fi
 MSVC_COMP=$ac_cv_path_MSVC_COMP
 
 if test -n "$MSVC_COMP"; then
-  echo "$as_me:10169: result: $MSVC_COMP" >&5
+  echo "$as_me:10164: result: $MSVC_COMP" >&5
 echo "${ECHO_T}$MSVC_COMP" >&6
 else
-  echo "$as_me:10172: result: no" >&5
+  echo "$as_me:10167: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
 				# Extract the first word of "link", so it can be a program name with args.
 set dummy link; ac_word=$2
-echo "$as_me:10178: checking for $ac_word" >&5
+echo "$as_me:10173: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_MSVC_LINK+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10192,7 +10187,7 @@ for ac_dir in $ac_dummy; do
   test -z "$ac_dir" && ac_dir=.
   if $as_executable_p "$ac_dir/$ac_word"; then
    ac_cv_path_MSVC_LINK="$ac_dir/$ac_word"
-   echo "$as_me:10195: found $ac_dir/$ac_word" >&5
+   echo "$as_me:10190: found $ac_dir/$ac_word" >&5
    break
 fi
 done
@@ -10204,10 +10199,10 @@ fi
 MSVC_LINK=$ac_cv_path_MSVC_LINK
 
 if test -n "$MSVC_LINK"; then
-  echo "$as_me:10207: result: $MSVC_LINK" >&5
+  echo "$as_me:10202: result: $MSVC_LINK" >&5
 echo "${ECHO_T}$MSVC_LINK" >&6
 else
-  echo "$as_me:10210: result: no" >&5
+  echo "$as_me:10205: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
@@ -10220,12 +10215,11 @@ fi
 				ESQLCC_OK="OK"
 			fi
 
-			echo "$as_me:10223: checking if we can use esql" >&5
-echo $ECHO_N "checking if we can use esql... $ECHO_C" >&6
 			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
 			then
-				echo "$as_me:10227: result: Yes" >&5
-echo "${ECHO_T}Yes" >&6
+				echo "$as_me:10220: checking if we can use esql" >&5
+echo $ECHO_N "checking if we can use esql... $ECHO_C" >&6
+
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
 				if test -z "$IFX_LIBS"; then
@@ -10249,7 +10243,7 @@ echo "${ECHO_T}Yes" >&6
 #define HAVE_IFX 1
 EOF
 
-				echo "$as_me:10252: checking Informix version" >&5
+				echo "$as_me:10246: checking Informix version" >&5
 echo $ECHO_N "checking Informix version... $ECHO_C" >&6
 				IFX_VERSION=`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`
 				if test $IFX_VERSION -ge "900"; then
@@ -10270,35 +10264,40 @@ EOF
 #define IFX_VERSION $IFX_VERSION
 EOF
 
-				echo "$as_me:10273: result: $IFX_VERSION" >&5
+				echo "$as_me:10267: result: $IFX_VERSION" >&5
 echo "${ECHO_T}$IFX_VERSION" >&6
 				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+
+				echo "$as_me:10271: result: Yes" >&5
+echo "${ECHO_T}Yes" >&6
 
 				CFLAGS="$old_CFLAGS"
                 LDFLAGS="$old_LDFLAGS"
 
             else
-				echo "$as_me:10281: result: esql not in path or no compatible C compiler" >&5
+				echo "$as_me:10278: checking if we can use esql" >&5
+echo $ECHO_N "checking if we can use esql... $ECHO_C" >&6
+				echo "$as_me:10280: result: esql not in path or no compatible C compiler" >&5
 echo "${ECHO_T}esql not in path or no compatible C compiler" >&6
             fi
 		fi
 	else
 		INFORMIXDIR=
 		IFX_C_MAKE='touch functions/ifx.c'
-		echo "$as_me:10288: result: no" >&5
+		echo "$as_me:10287: result: no" >&5
 echo "${ECHO_T}no" >&6
 	fi
 
 else
 
-  echo "$as_me:10294: result: --with-informix not specified" >&5
+  echo "$as_me:10293: result: --with-informix not specified" >&5
 echo "${ECHO_T}--with-informix not specified" >&6
 
 fi;
 
 if test "$cygwin" = "1"; then
 
-	{ echo "$as_me:10301: WARNING: ESQL/C support on Windows temporaraly disabled." >&5
+	{ echo "$as_me:10300: WARNING: ESQL/C support on Windows temporaraly disabled." >&5
 echo "$as_me: WARNING: ESQL/C support on Windows temporaraly disabled." >&2;}
 
 	IFMX_ESQLC=no
@@ -10319,9 +10318,9 @@ if test "$with_pgsql" = ""; then
 	with_pgsql=yes
 fi
 
-  echo "$as_me:10322: result: " >&5
+  echo "$as_me:10321: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:10324: result: ${T_MD}Checking for PostgresSQL ESQL and library support:${T_ME}" >&5
+  echo "$as_me:10323: result: ${T_MD}Checking for PostgresSQL ESQL and library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PostgresSQL ESQL and library support:${T_ME}" >&6
 
 # Check whether --with-pgsql or --without-pgsql was given.
@@ -10362,7 +10361,7 @@ if test "${with_pgsql+set}" = set; then
 
 	# FIXME: Replace `main' with a function in `-lc':
 
-echo "$as_me:10365: checking for main in -lpq" >&5
+echo "$as_me:10364: checking for main in -lpq" >&5
 echo $ECHO_N "checking for main in -lpq... $ECHO_C" >&6
 if test "${ac_cv_lib_pq_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10370,7 +10369,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lpq  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 10373 "configure"
+#line 10372 "configure"
 #include "confdefs.h"
 
 int
@@ -10382,16 +10381,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10385: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10384: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10388: \$? = $ac_status" >&5
+  echo "$as_me:10387: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10391: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10390: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10394: \$? = $ac_status" >&5
+  echo "$as_me:10393: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_pq_main=yes
 else
@@ -10402,7 +10401,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:10405: result: $ac_cv_lib_pq_main" >&5
+echo "$as_me:10404: result: $ac_cv_lib_pq_main" >&5
 echo "${ECHO_T}$ac_cv_lib_pq_main" >&6
 if test $ac_cv_lib_pq_main = yes; then
   cat >>confdefs.h <<EOF
@@ -10418,23 +10417,23 @@ fi
 for ac_header in  pgsql/libpq-fe.h postgresql/libpq-fe.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:10421: checking for $ac_header" >&5
+echo "$as_me:10420: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 10427 "configure"
+#line 10426 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:10431: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:10430: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:10437: \$? = $ac_status" >&5
+  echo "$as_me:10436: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -10453,7 +10452,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:10456: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:10455: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -10472,7 +10471,7 @@ done
         HAVE_PG_ESQL_HEADERS=no
     fi
 
-	echo "$as_me:10475: checking PG ESQL connector support" >&5
+	echo "$as_me:10474: checking PG ESQL connector support" >&5
 echo $ECHO_N "checking PG ESQL connector support... $ECHO_C" >&6
 	if test "$ac_cv_lib_pq_main" = "yes" ; then
 		if test "$HAVE_PG_ESQL_HEADERS" = "yes"; then
@@ -10481,15 +10480,15 @@ echo $ECHO_N "checking PG ESQL connector support... $ECHO_C" >&6
 EOF
 
     	    HAVE_PGSQL_LIB=yes
-	    	echo "$as_me:10484: result: Yes" >&5
+	    	echo "$as_me:10483: result: Yes" >&5
 echo "${ECHO_T}Yes" >&6
-		    echo "$as_me:10486: checking for PQcmdTuples" >&5
+		    echo "$as_me:10485: checking for PQcmdTuples" >&5
 echo $ECHO_N "checking for PQcmdTuples... $ECHO_C" >&6
 if test "${ac_cv_func_PQcmdTuples+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 10492 "configure"
+#line 10491 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char PQcmdTuples (); below.  */
@@ -10520,16 +10519,16 @@ f = PQcmdTuples;
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10523: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10522: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10526: \$? = $ac_status" >&5
+  echo "$as_me:10525: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10529: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10528: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10532: \$? = $ac_status" >&5
+  echo "$as_me:10531: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_func_PQcmdTuples=yes
 else
@@ -10539,7 +10538,7 @@ ac_cv_func_PQcmdTuples=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 fi
-echo "$as_me:10542: result: $ac_cv_func_PQcmdTuples" >&5
+echo "$as_me:10541: result: $ac_cv_func_PQcmdTuples" >&5
 echo "${ECHO_T}$ac_cv_func_PQcmdTuples" >&6
 if test $ac_cv_func_PQcmdTuples = yes; then
   cat >>confdefs.h <<\EOF
@@ -10549,24 +10548,24 @@ EOF
 fi
 
         else
-			echo "$as_me:10552: result: NO (missing headers)" >&5
+			echo "$as_me:10551: result: NO (missing headers)" >&5
 echo "${ECHO_T}NO (missing headers)" >&6
         fi
     else
         HAVE_PGSQL_LIB=no
-		echo "$as_me:10557: result: NO (missing library)" >&5
+		echo "$as_me:10556: result: NO (missing library)" >&5
 echo "${ECHO_T}NO (missing library)" >&6
     fi
 
 	CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS
   else
-    echo "$as_me:10563: result: disabled" >&5
+    echo "$as_me:10562: result: disabled" >&5
 echo "${ECHO_T}disabled" >&6
   fi
 
 else
 
-  echo "$as_me:10569: result: --with-pgsql not specified" >&5
+  echo "$as_me:10568: result: --with-pgsql not specified" >&5
 echo "${ECHO_T}--with-pgsql not specified" >&6
 
 fi;
@@ -10577,9 +10576,9 @@ fi;
 
 #FIXME: use: AC_ARG_WITH here, this is non-standard!
 
-  echo "$as_me:10580: result: " >&5
+  echo "$as_me:10579: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:10582: result: ${T_MD}Checking for Informix ODBC driver:${T_ME}" >&5
+  echo "$as_me:10581: result: ${T_MD}Checking for Informix ODBC driver:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Informix ODBC driver:${T_ME}" >&6
 
 if test "$cygwin" = "1"; then
@@ -10589,7 +10588,7 @@ if test "$cygwin" = "1"; then
 		#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
         #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
 
-echo "$as_me:10592: checking for main in -livif7912" >&5
+echo "$as_me:10591: checking for main in -livif7912" >&5
 echo $ECHO_N "checking for main in -livif7912... $ECHO_C" >&6
 if test "${ac_cv_lib_ivif7912_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10597,7 +10596,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-livif7912  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 10600 "configure"
+#line 10599 "configure"
 #include "confdefs.h"
 
 int
@@ -10609,16 +10608,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10612: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10611: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10615: \$? = $ac_status" >&5
+  echo "$as_me:10614: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10618: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10617: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10621: \$? = $ac_status" >&5
+  echo "$as_me:10620: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_ivif7912_main=yes
 else
@@ -10629,7 +10628,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:10632: result: $ac_cv_lib_ivif7912_main" >&5
+echo "$as_me:10631: result: $ac_cv_lib_ivif7912_main" >&5
 echo "${ECHO_T}$ac_cv_lib_ivif7912_main" >&6
 if test $ac_cv_lib_ivif7912_main = yes; then
   cat >>confdefs.h <<EOF
@@ -10655,7 +10654,7 @@ else
 		LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
 		# FIXME: Replace `main' with a function in `-lifcli':
 
-echo "$as_me:10658: checking for main in -lifcli" >&5
+echo "$as_me:10657: checking for main in -lifcli" >&5
 echo $ECHO_N "checking for main in -lifcli... $ECHO_C" >&6
 if test "${ac_cv_lib_ifcli_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10663,7 +10662,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lifcli  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 10666 "configure"
+#line 10665 "configure"
 #include "confdefs.h"
 
 int
@@ -10675,16 +10674,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10678: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10677: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10681: \$? = $ac_status" >&5
+  echo "$as_me:10680: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10684: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10683: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10687: \$? = $ac_status" >&5
+  echo "$as_me:10686: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_ifcli_main=yes
 else
@@ -10695,7 +10694,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:10698: result: $ac_cv_lib_ifcli_main" >&5
+echo "$as_me:10697: result: $ac_cv_lib_ifcli_main" >&5
 echo "${ECHO_T}$ac_cv_lib_ifcli_main" >&6
 if test $ac_cv_lib_ifcli_main = yes; then
   cat >>confdefs.h <<EOF
@@ -10724,7 +10723,7 @@ fi
 		#		ivif7912.xx           INTERSOLV Informix ODBC driver - UNIX
 		#        Driver=/opt/informix/lib/ivinf7912.so
 
-echo "$as_me:10727: checking for main in -livif7912" >&5
+echo "$as_me:10726: checking for main in -livif7912" >&5
 echo $ECHO_N "checking for main in -livif7912... $ECHO_C" >&6
 if test "${ac_cv_lib_ivif7912_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10732,7 +10731,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-livif7912  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 10735 "configure"
+#line 10734 "configure"
 #include "confdefs.h"
 
 int
@@ -10744,16 +10743,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10747: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10746: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10750: \$? = $ac_status" >&5
+  echo "$as_me:10749: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10753: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10752: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10756: \$? = $ac_status" >&5
+  echo "$as_me:10755: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_ivif7912_main=yes
 else
@@ -10764,7 +10763,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:10767: result: $ac_cv_lib_ivif7912_main" >&5
+echo "$as_me:10766: result: $ac_cv_lib_ivif7912_main" >&5
 echo "${ECHO_T}$ac_cv_lib_ivif7912_main" >&6
 if test $ac_cv_lib_ivif7912_main = yes; then
   cat >>confdefs.h <<EOF
@@ -10813,9 +10812,9 @@ fi
 #.c.o:
 #        $(CC) -c -DSQLODBC $(CCFLAGS) $(UNDEF) $(DEFINES) $(INCL) $<
 
-  echo "$as_me:10816: result: " >&5
+  echo "$as_me:10815: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:10818: result: ${T_MD}Checking for SAP DB ODBC driver support:${T_ME}" >&5
+  echo "$as_me:10817: result: ${T_MD}Checking for SAP DB ODBC driver support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SAP DB ODBC driver support:${T_ME}" >&6
 
 #force this check even if not specified on command line:
@@ -10848,7 +10847,7 @@ if test "${with_sapodbc+set}" = set; then
 		LDFLAGS="$LDFLAGS $TMP_SAPODBC_LFLAGS $TMP_SAPODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lsqlod':
 
-echo "$as_me:10851: checking for main in -lsqlod" >&5
+echo "$as_me:10850: checking for main in -lsqlod" >&5
 echo $ECHO_N "checking for main in -lsqlod... $ECHO_C" >&6
 if test "${ac_cv_lib_sqlod_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10856,7 +10855,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lsqlod  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 10859 "configure"
+#line 10858 "configure"
 #include "confdefs.h"
 
 int
@@ -10868,16 +10867,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:10871: \"$ac_link\"") >&5
+if { (eval echo "$as_me:10870: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:10874: \$? = $ac_status" >&5
+  echo "$as_me:10873: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:10877: \"$ac_try\"") >&5
+  { (eval echo "$as_me:10876: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:10880: \$? = $ac_status" >&5
+  echo "$as_me:10879: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_sqlod_main=yes
 else
@@ -10888,7 +10887,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:10891: result: $ac_cv_lib_sqlod_main" >&5
+echo "$as_me:10890: result: $ac_cv_lib_sqlod_main" >&5
 echo "${ECHO_T}$ac_cv_lib_sqlod_main" >&6
 if test $ac_cv_lib_sqlod_main = yes; then
   cat >>confdefs.h <<EOF
@@ -10904,23 +10903,23 @@ fi
 for ac_header in  sql.h sqlext.h sqltypes.h WINDOWS.H
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:10907: checking for $ac_header" >&5
+echo "$as_me:10906: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 10913 "configure"
+#line 10912 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:10917: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:10916: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:10923: \$? = $ac_status" >&5
+  echo "$as_me:10922: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -10939,7 +10938,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:10942: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:10941: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -10970,7 +10969,7 @@ cat >>confdefs.h <<\EOF
 #define HAVE_SAPODBC 0
 EOF
 
-				echo "$as_me:10973: result: no header files" >&5
+				echo "$as_me:10972: result: no header files" >&5
 echo "${ECHO_T}no header files" >&6
 			else
 				HAVE_SAPODBC=yes
@@ -10990,13 +10989,13 @@ EOF
 
 		fi
 	else
-		echo "$as_me:10993: result: disabled" >&5
+		echo "$as_me:10992: result: disabled" >&5
 echo "${ECHO_T}disabled" >&6
 	fi
 
 else
 
-	echo "$as_me:10999: result: --with-sapodbc not specified" >&5
+	echo "$as_me:10998: result: --with-sapodbc not specified" >&5
 echo "${ECHO_T}--with-sapodbc not specified" >&6
 
 fi;
@@ -11005,9 +11004,9 @@ fi;
 ##                 Checks for PostgreSQL ODBC driver
 ## ==================================================================
 
-  echo "$as_me:11008: result: " >&5
+  echo "$as_me:11007: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:11010: result: ${T_MD}Checking for PostgreSQL ODBC driver support:${T_ME}" >&5
+  echo "$as_me:11009: result: ${T_MD}Checking for PostgreSQL ODBC driver support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PostgreSQL ODBC driver support:${T_ME}" >&6
 
 #force this check even if not specified on command line:
@@ -11040,7 +11039,7 @@ if test "${with_pgodbc+set}" = set; then
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 
-echo "$as_me:11043: checking for main in -lpsqlodbc" >&5
+echo "$as_me:11042: checking for main in -lpsqlodbc" >&5
 echo $ECHO_N "checking for main in -lpsqlodbc... $ECHO_C" >&6
 if test "${ac_cv_lib_psqlodbc_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11048,7 +11047,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lpsqlodbc  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 11051 "configure"
+#line 11050 "configure"
 #include "confdefs.h"
 
 int
@@ -11060,16 +11059,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:11063: \"$ac_link\"") >&5
+if { (eval echo "$as_me:11062: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:11066: \$? = $ac_status" >&5
+  echo "$as_me:11065: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:11069: \"$ac_try\"") >&5
+  { (eval echo "$as_me:11068: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:11072: \$? = $ac_status" >&5
+  echo "$as_me:11071: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_psqlodbc_main=yes
 else
@@ -11080,7 +11079,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:11083: result: $ac_cv_lib_psqlodbc_main" >&5
+echo "$as_me:11082: result: $ac_cv_lib_psqlodbc_main" >&5
 echo "${ECHO_T}$ac_cv_lib_psqlodbc_main" >&6
 if test $ac_cv_lib_psqlodbc_main = yes; then
   cat >>confdefs.h <<EOF
@@ -11102,23 +11101,23 @@ fi
 for ac_header in  pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:11105: checking for $ac_header" >&5
+echo "$as_me:11104: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 11111 "configure"
+#line 11110 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:11115: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:11114: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:11121: \$? = $ac_status" >&5
+  echo "$as_me:11120: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -11137,7 +11136,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:11140: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:11139: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -11152,7 +11151,7 @@ done
 		LDFLAGS="$old_LDFLAGS"
         CPPFLAGS="$old_CPPFLAGS"
 
-		echo "$as_me:11155: checking PG ODBC connector support" >&5
+		echo "$as_me:11154: checking PG ODBC connector support" >&5
 echo $ECHO_N "checking PG ODBC connector support... $ECHO_C" >&6
 		if test $ac_cv_lib_psqlodbc_main = yes; then
 
@@ -11170,7 +11169,7 @@ cat >>confdefs.h <<\EOF
 #define HAVE_PGODBC 0
 EOF
 
-				echo "$as_me:11173: result: NO (missing header files)" >&5
+				echo "$as_me:11172: result: NO (missing header files)" >&5
 echo "${ECHO_T}NO (missing header files)" >&6
 			else
 				HAVE_PGODBC=yes
@@ -11181,7 +11180,7 @@ cat >>confdefs.h <<\EOF
 #define HAVE_PGODBC 1
 EOF
 
-			    echo "$as_me:11184: result: yes" >&5
+			    echo "$as_me:11183: result: yes" >&5
 echo "${ECHO_T}yes" >&6
             fi
 		else
@@ -11190,17 +11189,17 @@ cat >>confdefs.h <<\EOF
 #define HAVE_PGODBC 0
 EOF
 
-		    echo "$as_me:11193: result: No (missing library)" >&5
+		    echo "$as_me:11192: result: No (missing library)" >&5
 echo "${ECHO_T}No (missing library)" >&6
 		fi
 	else
-		echo "$as_me:11197: result: disabled" >&5
+		echo "$as_me:11196: result: disabled" >&5
 echo "${ECHO_T}disabled" >&6
 	fi
 
 else
 
-	echo "$as_me:11203: result: --with-pgodbc not specified" >&5
+	echo "$as_me:11202: result: --with-pgodbc not specified" >&5
 echo "${ECHO_T}--with-pgodbc not specified" >&6
 
 fi;
@@ -11216,9 +11215,9 @@ fi;
 
 #if test -z "$ODBC_TYPE"; then
 
-  echo "$as_me:11219: result: " >&5
+  echo "$as_me:11218: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:11221: result: ${T_MD}Checking for iODBC support:${T_ME}" >&5
+  echo "$as_me:11220: result: ${T_MD}Checking for iODBC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for iODBC support:${T_ME}" >&6
 
 #force this check even if not specified on command line:
@@ -11249,7 +11248,7 @@ if test "${with_iodbc+set}" = set; then
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-liodbc':
 
-echo "$as_me:11252: checking for main in -liodbc" >&5
+echo "$as_me:11251: checking for main in -liodbc" >&5
 echo $ECHO_N "checking for main in -liodbc... $ECHO_C" >&6
 if test "${ac_cv_lib_iodbc_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11257,7 +11256,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-liodbc  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 11260 "configure"
+#line 11259 "configure"
 #include "confdefs.h"
 
 int
@@ -11269,16 +11268,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:11272: \"$ac_link\"") >&5
+if { (eval echo "$as_me:11271: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:11275: \$? = $ac_status" >&5
+  echo "$as_me:11274: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:11278: \"$ac_try\"") >&5
+  { (eval echo "$as_me:11277: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:11281: \$? = $ac_status" >&5
+  echo "$as_me:11280: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_iodbc_main=yes
 else
@@ -11289,7 +11288,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:11292: result: $ac_cv_lib_iodbc_main" >&5
+echo "$as_me:11291: result: $ac_cv_lib_iodbc_main" >&5
 echo "${ECHO_T}$ac_cv_lib_iodbc_main" >&6
 if test $ac_cv_lib_iodbc_main = yes; then
   cat >>confdefs.h <<EOF
@@ -11328,13 +11327,13 @@ EOF
 		    #AC_MSG_RESULT(no)
 		fi
 	else
-		echo "$as_me:11331: result: disabled" >&5
+		echo "$as_me:11330: result: disabled" >&5
 echo "${ECHO_T}disabled" >&6
 	fi
 
 else
 
-	echo "$as_me:11337: result: --with-iodbc not specified" >&5
+	echo "$as_me:11336: result: --with-iodbc not specified" >&5
 echo "${ECHO_T}--with-iodbc not specified" >&6
 
 fi;
@@ -11343,9 +11342,9 @@ fi;
 ##            Checks for unixODBC ODBC manager support
 ## ==================================================================
 
-  echo "$as_me:11346: result: " >&5
+  echo "$as_me:11345: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:11348: result: ${T_MD}Checking for unixODBC support:${T_ME}" >&5
+  echo "$as_me:11347: result: ${T_MD}Checking for unixODBC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for unixODBC support:${T_ME}" >&6
 
 #force this check even if not specified on command line:
@@ -11377,7 +11376,7 @@ if test "${with_unixodbc+set}" = set; then
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-lodbc':
 
-echo "$as_me:11380: checking for main in -lodbc" >&5
+echo "$as_me:11379: checking for main in -lodbc" >&5
 echo $ECHO_N "checking for main in -lodbc... $ECHO_C" >&6
 if test "${ac_cv_lib_odbc_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11385,7 +11384,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lodbc  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 11388 "configure"
+#line 11387 "configure"
 #include "confdefs.h"
 
 int
@@ -11397,16 +11396,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:11400: \"$ac_link\"") >&5
+if { (eval echo "$as_me:11399: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:11403: \$? = $ac_status" >&5
+  echo "$as_me:11402: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:11406: \"$ac_try\"") >&5
+  { (eval echo "$as_me:11405: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:11409: \$? = $ac_status" >&5
+  echo "$as_me:11408: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_odbc_main=yes
 else
@@ -11417,7 +11416,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:11420: result: $ac_cv_lib_odbc_main" >&5
+echo "$as_me:11419: result: $ac_cv_lib_odbc_main" >&5
 echo "${ECHO_T}$ac_cv_lib_odbc_main" >&6
 if test $ac_cv_lib_odbc_main = yes; then
   cat >>confdefs.h <<EOF
@@ -11438,23 +11437,23 @@ fi
 for ac_header in sql.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:11441: checking for $ac_header" >&5
+echo "$as_me:11440: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 11447 "configure"
+#line 11446 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:11451: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:11450: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:11457: \$? = $ac_status" >&5
+  echo "$as_me:11456: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -11473,7 +11472,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:11476: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:11475: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -11489,23 +11488,23 @@ done
 for ac_header in sqlext.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:11492: checking for $ac_header" >&5
+echo "$as_me:11491: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 11498 "configure"
+#line 11497 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:11502: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:11501: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:11508: \$? = $ac_status" >&5
+  echo "$as_me:11507: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -11524,7 +11523,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:11527: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:11526: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -11540,23 +11539,23 @@ done
 for ac_header in odbcinst.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-echo "$as_me:11543: checking for $ac_header" >&5
+echo "$as_me:11542: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 11549 "configure"
+#line 11548 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 _ACEOF
-if { (eval echo "$as_me:11553: \"$ac_cpp conftest.$ac_ext\"") >&5
+if { (eval echo "$as_me:11552: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
   egrep -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:11559: \$? = $ac_status" >&5
+  echo "$as_me:11558: \$? = $ac_status" >&5
   (exit $ac_status); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -11575,7 +11574,7 @@ else
 fi
 rm -f conftest.err conftest.$ac_ext
 fi
-echo "$as_me:11578: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "$as_me:11577: result: `eval echo '${'$as_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
 if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -11609,13 +11608,14 @@ cat >>confdefs.h <<\EOF
 EOF
 
             else
-				{ echo "$as_me:11612: WARNING: unixODBC libraries present but headers are missing." >&5
+				{ echo "$as_me:11611: WARNING: unixODBC libraries present but headers are missing." >&5
 echo "$as_me: WARNING: unixODBC libraries present but headers are missing." >&2;}
 
 cat >>confdefs.h <<\EOF
 #define HAVE_UNIXODBC 0
 EOF
 
+				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
             fi
 		else
 
@@ -19179,15 +19179,6 @@ else
 		A4GL_SQLTYPE=ifxodbc
 	fi
 
-	############# native ####################
-	#non existant:
-	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
-	#	A4GL_SQLTYPE=pgsql
-    #fi
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_SQLTYPE=esql
-	fi
-
 	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
@@ -19201,6 +19192,16 @@ else
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_SQLTYPE=odbc32
 	fi
+
+	############# native ####################
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
+	fi
+
 fi
 
 ## ==================================================================
@@ -19482,12 +19483,16 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
-	if test "$DOT" = "no"; then
+	if test "$DOTTOOL" = "no"; then
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.dot"
     fi
 
 	if test "$DOXYGEN" = "no"; then
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.doxygen"
+    fi
+
+	if test "$HAS_CHECK" != "1"; then
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libcheck"
     fi
 
 	#RPMFILE_25=$LIB_PREFIX/
@@ -19526,9 +19531,9 @@ else
 
 fi
 
-  echo "$as_me:19529: result: " >&5
+  echo "$as_me:19534: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:19531: result: ${T_MD}Creating files:${T_ME}" >&5
+  echo "$as_me:19536: result: ${T_MD}Creating files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Creating files:${T_ME}" >&6
 
 cat >confcache <<\_ACEOF
@@ -19610,7 +19615,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:19613: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:19618: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -19786,7 +19791,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:19789: error: ambiguous option: $1
+    { { echo "$as_me:19794: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -19805,7 +19810,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:19808: error: unrecognized option: $1
+  -*) { { echo "$as_me:19813: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -19912,7 +19917,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:19915: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:19920: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -20357,7 +20362,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:20360: creating $ac_file" >&5
+    { echo "$as_me:20365: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -20375,7 +20380,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20378: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20383: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -20388,7 +20393,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:20391: error: cannot find input file: $f" >&5
+           { { echo "$as_me:20396: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -20449,7 +20454,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:20452: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:20457: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -20460,7 +20465,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20463: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20468: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -20473,7 +20478,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:20476: error: cannot find input file: $f" >&5
+           { { echo "$as_me:20481: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -20590,7 +20595,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:20593: $ac_file is unchanged" >&5
+      { echo "$as_me:20598: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -20803,6 +20808,16 @@ cat<<X
 | Perl modules manually: $MISSING_PERLMODS
 X
 fi
+if test "$A4GL_SQLTYPE" = "nosql"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| No SQL connection options are available. Abut compiler will be     |
+| with only dummy NOSQL library - you will not be able to connect to |
+| any databases ! Please install at least one supported database     |
+| connectivity library, and re-run configure                         |
+X
+fi
 if test "$WARN_LD_LIBRARY_PATH" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -20902,13 +20917,13 @@ X
 
 fi
 
-echo "$as_me:20905: result: " >&5
+echo "$as_me:20920: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:20907: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:20922: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:20909: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:20924: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:20911: result: " >&5
+echo "$as_me:20926: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

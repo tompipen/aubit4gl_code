@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.48 2003-01-25 01:46:59 afalout Exp $
+# $Id: Makefile-install.mki,v 1.49 2003-01-25 04:04:55 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -393,22 +393,6 @@ missing.optional: ${INSTALL_MISSING_OPTIONAL}
 	@echo "All missing optional components installed. Please re-run 'configure' to detect changes."
 	@echo " "
 
-
-########################
-#Define how to get installation files:
-${IODBC_RUNTIME_RPM}:
-	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
-${IODBC_SDK_RPM}:
-	${WGET} ${IODBC_PATH}/${IODBC_SDK_RPM}
-${IODBC_GUI_RPM}:
-	${WGET} ${IODBC_PATH}/${IODBC_GUI_RPM}
-${PDFLIB_SRC_TGZ}:
-	${WGET} ${PDFLIB_PATH}/${PDFLIB_SRC_TGZ}
-${IKSEMEL_TGZ}:
-	${WGET} ${IKSEMEL_PATH}/${IKSEMEL_TGZ}
-${GRAPHVIZ_RPM}:
-	${WGET} ${GRAPHVIZ_PATH}/${GRAPHVIZ_RPM}
-
 ########################
 # Install iODBC ODBC manager
 install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
@@ -434,7 +418,7 @@ install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
 ########################
 #Install PDFlib:
 install.pdflib: ${PDFLIB_SRC_TGZ}
-	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/${PDFLIB_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${PDFLIB_SRC}; ./configure; make; make install
 	@echo "Package info & manuals: ${PDFLIB_INFO}"
 	@echo " "
@@ -448,7 +432,7 @@ install.pdflib: ${PDFLIB_SRC_TGZ}
 ######################
 #Install IksEmEl lib:
 install.iksemel: ${IKSEMEL_TGZ}
-	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/${IKSEMEL_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
 	@echo "Package info & manuals: ${IKSEMEL_INFO}"
 	@echo " "
@@ -459,31 +443,72 @@ install.iksemel: ${IKSEMEL_TGZ}
 ######################
 #install GRAPHVIZ that contains Dot tool
 install.dot: ${GRAPHVIZ_RPM}
-	${RPM} -i ${GRAPHVIZ_RPM}
+	${RPM} -i $^
 	@echo "Package info & manuals: ${GRAPHVIZ_INFO}"
 	@echo " "
 	@echo "Graphviz and Dot tool installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
-install.doxygen:
-	@echo "FIXME: TO-DO"
+######################
+#Install SAP DB ODBC driver
+install.sapdb.odbc: ${SAPODBC_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SAPODBC_INFO}"
+	@echo " "
+	@echo "SAP DB ODBC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
 
-install.pg.esql:
-	@echo "FIXME: TO-DO"
+######################
+#install XML-RPC and libWWW
+install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM}
+	${RPM} -Uvh $^
+	@echo "Package info & manuals: ${XMLRPC_INFO}"
+	@echo " "
+	@echo "libWWW and XML-RPC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
 
-install.sapdb.odbc:
+######################
+#Install Informix ESQL/C compiler
+install.ifx.esql: ${IFXESQLC_BIN_ZIP}
+	mkdir -p /tmp/ifxcsdk
+	unzip $^ -d /tmp/ifxcsdk
+	@echo "Package info & manuals: ${IFXESQLC_INFO}"
+	@echo " "
+	@echo "Informix CSDK (contains ESQL/C compiler) installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+#install unixODBC development package, including header files
+install.unixodbcdev: ${UNIXODBCDEV_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${UNIXODBCDEV_INFO}"
+	@echo " "
+	@echo "unixODBC DEV package installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+######################
+# Install unixODBC libraries, development and GUI manager packages
+install.unixodbc: ${UNIXODBCDEV_RPM} ${UNIXODBC_RPM} ${UNIXODBCDEV_GUI_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${UNIXODBC_INFO}"
+	@echo " "
+	@echo "unixODBC installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+install.libcheck:
 	@echo "FIXME: TO-DO"
 
 install.mpz:
 	@echo "FIXME: TO-DO"
 
-install.sunrpc:
+install.gtk:
 	@echo "FIXME: TO-DO"
 
-install.xmmlrpc:
+install.doxygen:
 	@echo "FIXME: TO-DO"
 
-install.unixodbc:
+install.pg.esql:
 	@echo "FIXME: TO-DO"
 
 install.ifx.odbc:
@@ -492,11 +517,33 @@ install.ifx.odbc:
 install.pg.odbc:
 	@echo "FIXME: TO-DO"
 
-install.ifx.esql:
+install.sunrpc:
 	@echo "FIXME: TO-DO"
 
-install.gtk:
-	@echo "FIXME: TO-DO"
 
+########################
+#Define how to get installation files:
+${IODBC_RUNTIME_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
+${IODBC_SDK_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_SDK_RPM}
+${IODBC_GUI_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_GUI_RPM}
+${PDFLIB_SRC_TGZ}:
+	${WGET} ${PDFLIB_PATH}/${PDFLIB_SRC_TGZ}
+${IKSEMEL_TGZ}:
+	${WGET} ${IKSEMEL_PATH}/${IKSEMEL_TGZ}
+${GRAPHVIZ_RPM}:
+	${WGET} ${GRAPHVIZ_PATH}/${GRAPHVIZ_RPM}
+${IFXESQLC_BIN_ZIP}:
+	${WGET} ${IFXESQLC_PATH}/${IFXESQLC_BIN_ZIP}
+${XMLRPC_RPM}:
+	${WGET} ${XMLRPC_PATH}/${XMLRPC_RPM}
+${LIBWWW_RPM}:
+	${WGET} ${LIBWWW_PATH}/${LIBWWW_RPM}
+${SAPODBC_RPM}:
+    ${WGET}  ${SAPODBC_PATH}/ ${SAPODBC_RPM}
+${UNIXODBCDEV_RPM}:
+	${WGET} ${UNIXODBCDEV_PATH}/${UNIXODBCDEV_RPM}
 # ============================== EOF ================================
 

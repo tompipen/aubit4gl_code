@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.102 2003-01-24 08:36:21 afalout Exp $
+# $Id: Makefile-common.in,v 1.103 2003-01-25 04:04:55 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1045,6 +1045,7 @@ IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
 ##################
 #swig
 SWIG_INFO           =http://www.swig.org
+#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/swig-1.1p5-12.i386.rpm
 
 ##################
 #doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
@@ -1055,6 +1056,7 @@ GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
 ##################
 #DoxyGen
 DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
+#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/doxygen-1.2.14-4.i386.rpm
 
 ##################
 #GTK+ - GUI
@@ -1071,7 +1073,9 @@ SUNRPC_INFO         =
 ##################
 #IFX ESQL/C
 IFXESQLC_INFO       =http://www.ibm.com/informix
-
+#CSDK includes ESQL/C compiler
+IFXESQLC_PATH       =ftp://ftp.software.ibm.com/software/data/informix/downloads
+IFXESQLC_BIN_ZIP	=csdk280_uc21lin_ux.zip
 
 ##################
 #IFXODBC
@@ -1081,19 +1085,34 @@ IFXODBC_INFO        =http://www.ibm.com/informix
 ##################
 #PGODBC
 PGODBC_INFO         =http://www.postgresql.org
+#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/postgresql-odbc-7.2.1-5.i386.rpm
 
 ##################
 #PG ESQL
 PGESQLC_INFO        =http://www.postgresql.org
-
+#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/postgresql-devel-7.2.1-5.i386.rpm
 
 ##################
 #unixODBC
 UNIXODBC_INFO		=http://www.unixodbc.org
+UNIXODBC_PATH       =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
+UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
+INIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
+
+##################
+#unixODBC DEV headers
+#We will often find unixODBC already installed, but without header files...
+UNIXODBCDEV_INFO	=http://www.unixodbc.org
+UNIXODBCDEV_PATH    =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
+UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
 
 ##################
 #XML-RPC
 XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
+XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
+XMLRPC_RPM          =xmlrpc-c-devel-0.9.9-1.i386.rpm
+LIBWWW_PATH         =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
+LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
 
 ##################
 #MPZ - gnu mp
@@ -1107,6 +1126,17 @@ MPZ_SRC_TGZ			=${MPZ_SRC}/.tar.gz
 ##################
 #SAPODBC
 SAPODBC_INFO        =http://www.sapdb.org
+SAPODBC_PATH		=ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
+
+##################
+#SAPDB ESQL/C
+ASPDBESQL_INFO      =http://www.sapdb.org
+SAPDBESQL_PATH      =ftp://ftp.sap.com/pub/sapdb/bin/linux
+ASPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
+
+##################
+#libcheck
 
 
 #=================================== EOF ================================
