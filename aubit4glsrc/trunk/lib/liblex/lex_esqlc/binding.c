@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.39 2005-01-12 11:15:17 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.40 2005-01-24 09:14:33 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -102,7 +102,6 @@ make_sql_bind (char *sql, char *type)
     {
       set_suppress_lines();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*A2*/\n");
-      clr_suppress_lines();
       if (strchr (type, 'i'))
 	{
 	  strcpy (buff_in, "");
@@ -184,6 +183,7 @@ make_sql_bind (char *sql, char *type)
 	    }
 	}
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
+      clr_suppress_lines();
 
 
 	if (strchr (type, 'i')) {

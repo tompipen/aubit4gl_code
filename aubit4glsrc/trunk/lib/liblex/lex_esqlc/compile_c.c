@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.210 2005-01-19 09:55:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.211 2005-01-24 09:14:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.210 2005-01-19 09:55:33 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.211 2005-01-24 09:14:33 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2514,6 +2514,9 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
   printc ("SET(\"s_screenio\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"constr\",constr_flds);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"mode\",%d);\n",sio_id, MODE_CONSTRUCT);
+  printc ("SET(\"s_screenio\",_sio_%d,\"processed_onkey\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
+
   if (byname == 1)
     {
       printc (" /* byname */");
@@ -3455,6 +3458,10 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
   printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%d);\n",sio_id, attr);
   printc ("SET(\"s_screenio\",_sio_%d,\"novars\",%d);\n",sio_id, ccc);
   printc ("SET(\"s_screenio\",_sio_%d,\"help_no\",%s);\n",sio_id, helpno);
+
+  printc ("SET(\"s_screenio\",_sio_%d,\"processed_onkey\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
+
   printc ("SET(\"s_screenio\",_sio_%d,\"currentfield\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"mode\",%d+%s);\n",sio_id, MODE_INPUT, defs);
