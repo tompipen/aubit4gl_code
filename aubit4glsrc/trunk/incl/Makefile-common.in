@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.112 2003-01-29 02:57:09 afalout Exp $
+# $Id: Makefile-common.in,v 1.113 2003-01-30 11:54:38 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -257,6 +257,14 @@ CPPFLAGS 			=
 LDFLAGS             =@LDFLAGS@
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
+STRIP               =@STRIP@
+
+#Default strip difference :
+#-rwxr-xr-x    1 root     root       701702 Jan 28 18:25 bin/4glc
+#-rwxr-xr-x    1 root     root       424636 Jan 28 18:25 bin/4glc-strip
+
+#Do we want to strip executables: yes/no
+STRIP_EXECUTABLES   =@STRIP_EXECUTABLES@
 
 #-rdynamic is needed when calling functions that are defineds in
 #executable, from shared libraries that are dlopen at run-time,

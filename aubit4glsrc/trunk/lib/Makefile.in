@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.79 2003-01-27 03:50:30 afalout Exp $
+# $Id: Makefile.in,v 1.80 2003-01-30 11:54:38 afalout Exp $
 #
 
 ROOT    =..
@@ -43,6 +43,8 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+4GLC    =${ROOT}/bin/4glc
+
 #target names are maintained in configure.in
 ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
 
@@ -60,13 +62,52 @@ LIBLEXPERL_PATH   	=liblex/lex_perl
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
 LIBSTRING_PATH		=extra_libs/string
-LIBHTML_PATH        =../tools/html
+LIBHTML_PATH        =${ROOT}/tools/html
+LIBSQLESQL_PATH     =libsql/esqlc
+LIBUIGTK_PATH       =libui/ui_gtk
+LIBUICURSES_PATH	=libui/ui_curses
+LIBUICONSOLE_PATH	=libui/ui_console
+LIBFORMNOFORM_PATH	=libform/noform
+LIBFORMXDR_PATH		=libform/form_xdr
+LIBFORMGENERIC_PATH	=libform/form_generic
+LIBSQLNOSQL_PATH	=libsql/nosql
+LIBSQLPG_PATH		=libsql/postgresql
+LIBRPCSUNRPC_PATH	=librpc/sun_rpc
+LIBRPCNORPC_PATH	=librpc/no_rpc
+LIBRPCXMLRPC_PATH	=librpc/xml_rpc
+LIBEXDATA_PATH		=libexdata
+LIBDATA_PATH		=${ROOT}/common/dataio
+LIBMSGNATIVE_PATH	=libmsg/msg_native
+LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
+LOADMAP_PATH		=${ROOT}/tools/loadmap
+AUBITCONFIG_PATH	=resource
+
+
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
 #FIXME: do this for all libraries in this make file
 LIBAUBIT4GL_DEPS	=$(wildcard ${LIBAUBIT4GL_PATH}/*.c) $(wildcard ${LIBAUBIT4GL_PATH}/*.h) \
 					$(wildcard ${LIBAUBIT4GL_PATH}/*.spec) $(wildcard ${LIBAUBIT4GL_PATH}/Makefile) \
-                    resource/resource.c
+                    ${AUBITCONFIG_PATH}/resource.c
+AUBITCONFIG_DEPS	=$(wildcard ${LIBRPCSUNRPC_PATH}/*.c) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
+LIBDATA_DEPS		=$(wildcard ${LIBRPCSUNRPC_PATH}/*.x) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
+LIBMSGNATIVE_DEPS	=$(wildcard ${LIBMSGNATIVE_PATH}/*.c) $(wildcard ${LIBMSGNATIVE_PATH}/*.h) \
+					$(wildcard ${LIBMSGNATIVE_PATH}/Makefile)
+LIBIMJABBER_DEPS	=$(wildcard ${LIBIMJABBER_PATH}/*.c) $(wildcard ${LIBIMJABBER_PATH}/*.h) \
+					$(wildcard ${LIBIMJABBER_PATH}/Makefile) $(wildcard ${LIBIMJABBER_PATH}/*.4gl)
+LOADMAP_DEPS		=$(wildcard ${LOADMAP_PATH}/Makefile) $(wildcard ${LOADMAP_PATH}/*.4gl)
+LIBRPCSUNRPC_DEPS	=$(wildcard ${LIBRPCSUNRPC_PATH}/*.c) $(wildcard ${LIBRPCSUNRPC_PATH}/*.h) \
+					$(wildcard ${LIBRPCSUNRPC_PATH}/Makefile)
+LIBRPCNORPC_DEPS	=$(wildcard ${LIBRPCNORPC_PATH}/*.c) $(wildcard ${LIBRPCNORPC_PATH}/*.h) \
+					$(wildcard ${LIBRPCNORPC_PATH}/Makefile)
+LIBRPCXMLRPC_DEPS	=$(wildcard ${LIBRPCXMLRPC_PATH}/*.c) $(wildcard ${LIBRPCXMLRPC_PATH}/*.h) \
+					$(wildcard ${LIBRPCXMLRPC_PATH}/Makefile)
+LIBEXDATA_DEPS		=$(wildcard ${LIBEXDATA_PATH}/*.c) $(wildcard ${LIBEXDATA_PATH}/*.h) \
+					$(wildcard ${LIBEXDATA_PATH}/Makefile)
+LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_PATH}/*.h) \
+					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile)
+LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
+					$(wildcard ${LIBSQLPG_PATH}/Makefile)
 LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
 					$(wildcard ${LIBSQLODBC_PATH}/Makefile)
 LIBMENUXDR_DEPS		=$(wildcard ${LIBMENUXDR_PATH}/*.c) $(wildcard ${LIBMENUXDR_PATH}/*.h) \
@@ -89,16 +130,26 @@ LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PAT
 					$(wildcard ${LIBLEXPERL_PATH}/Makefile)
 LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
 					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile)
-
-
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
 					$(wildcard ${LIBFILE_PATH}/Makefile)
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
 					$(wildcard ${LIBSTRING_PATH}/Makefile)
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
 					$(wildcard ${LIBHTML_PATH}/Makefile)
-
-
+LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PATH}/*.h) \
+					$(wildcard ${LIBSQLESQL_PATH}/Makefile)
+LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h) \
+					$(wildcard ${LIBUIGTK_PATH}/Makefile)
+LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
+					$(wildcard ${LIBUICURSES_PATH}/Makefile)
+LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \
+					$(wildcard ${LIBUICONSOLE_PATH}/Makefile)
+LIBFORMNOFORM_DEPS	=$(wildcard ${LIBFORMNOFORM_PATH}/*.c) $(wildcard ${LIBFORMNOFORM_PATH}/*.h) \
+					$(wildcard ${LIBFORMNOFORM_PATH}/Makefile)
+LIBFORMXDR_DEPS		=$(wildcard ${LIBFORMXDR_PATH}/*.c) $(wildcard ${LIBFORMXDR_PATH}/*.h) \
+					$(wildcard ${LIBFORMXDR_PATH}/Makefile)
+LIBFORMGENERIC_DEPS	=$(wildcard ${LIBFORMGENERIC_PATH}/*.c) $(wildcard ${LIBFORMGENERIC_PATH}/*.h) \
+					$(wildcard ${LIBFORMGENERIC_PATH}/Makefile)
 
 
 ## ==================================================================
@@ -130,26 +181,26 @@ libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
 ##############
 #libUI_
 
-libUI_GTK${SO_EXT}:
-	$(MAKE) -C libui/ui_gtk
+libUI_GTK${SO_EXT}: ${LIBUIGTK_DEPS}
+	$(MAKE) -C ${LIBUIGTK_PATH}
 
-libUI_TUI${SO_EXT}:
-	$(MAKE) -C libui/ui_curses
+libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
+	$(MAKE) -C ${LIBUICURSES_PATH}
 
-libUI_CONSOLE${SO_EXT}:
-	$(MAKE) -C libui/ui_console
+libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
+	$(MAKE) -C ${LIBUICONSOLE_PATH}
 
 ##############
 #libFORM_
 
-libFORM_NOFORM${SO_EXT} :
-	${MAKE} -C libform/noform
+libFORM_NOFORM${SO_EXT} : ${LIBFORMNOFORM_DEPS}
+	${MAKE} -C ${LIBFORMNOFORM_PATH}
 
-libFORM_XDR${SO_EXT} :
-	${MAKE} -C libform/form_xdr
+libFORM_XDR${SO_EXT} : ${LIBFORMXDR_DEPS}
+	${MAKE} -C ${LIBFORMXDR_PATH}
 
-libFORM_GENERIC${SO_EXT}:
-	${MAKE} -C libform/form_generic
+libFORM_GENERIC${SO_EXT}: ${LIBFORMGENERIC_DEPS}
+	${MAKE} -C ${LIBFORMGENERIC_PATH}
 
 ##############
 #libMENU_
@@ -188,13 +239,17 @@ libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
 	${MAKE} -C ${LIBPACKERXML_PATH}
 
 ##############
-#libSQL_
+#libSQL_ native
 
-libSQL_nosql${SO_EXT}:
-	${MAKE} -C libsql/nosql
+libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
+	${MAKE} -C ${LIBSQLNOSQL_PATH}
 
-libSQL_esql${SO_EXT}:
-	${MAKE} -C libsql/esqlc
+libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH}
+
+libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
+	${MAKE} -C ${LIBSQLPG_PATH}
+
 
 ##############
 #libSQL_ (ODBC)
@@ -220,98 +275,94 @@ libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 ##############
 #libRPC_
 
-libRPC_XDR${SO_EXT}:
-	${MAKE} -C librpc/sun_rpc
+libRPC_XDR${SO_EXT}: ${LIBRPCSUNRPC_DEPS}
+	${MAKE} -C ${LIBRPCSUNRPC_PATH}
 
-libRPC_NORPC${SO_EXT}:
-	${MAKE} -C librpc/no_rpc
+libRPC_NORPC${SO_EXT}: ${LIBRPCNORPC_DEPS}
+	${MAKE} -C ${LIBRPCNORPC_PATH}
 
-libRPC_XMLRPC${SO_EXT}:
-	${MAKE} -C librpc/xml_rpc
+libRPC_XMLRPC${SO_EXT}: ${LIBRPCXMLRPC_DEPS}
+	${MAKE} -C ${LIBRPCXMLRPC_PATH}
 
 ##############
 #libEXDTYPE_
 
-libEXDTYPE_mpz${SO_EXT}:
-	${MAKE} -C libexdata $@
+libEXDTYPE_mpz${SO_EXT}: ${LIBEXDATA_DEPS}
+	${MAKE} -C ${LIBEXDATA_PATH} $@
 
 ##############
 #libDATA_ & libXDRPACKER_
 
 libDATA_menu_list${SO_EXT} libDATA_struct_form${SO_EXT} libDATA_report${SO_EXT}\
 libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} \
-libXDRPACKER_report${SO_EXT}:
-	${MAKE} -C ../common/dataio
+libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
+	${MAKE} -C ${LIBDATA_PATH}
 
-libMSG_NATIVE${SO_EXT}:
-	${MAKE} -C libmsg/msg_native
+libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
+	${MAKE} -C ${LIBMSGNATIVE_PATH}
 
-libIM_JABBER${SO_EXT_LINKABLE}:
-	$(MAKE) -C ../tools/jabber $@
+libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
+	$(MAKE) -C ${LIBIMJABBER_PATH} $@
 
-libA4GL_file${SO_EXT}: ${ROOT}/bin/4glc ${LIBFILE_DEPS}
+libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
 #	@echo "Disabled because it needs 4glc - $@"
 #	@touch $@
 
-libA4GL_string${SO_EXT}: ${ROOT}/bin/4glc ${LIBSTRING_DEPS}
+libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
 #	@echo "Disabled because it needs 4glc - $@"
 #	@touch $@
 
-libA4GL_HTML${SO_EXT_LINKABLE}: ${ROOT}/bin/4glc ${LIBHTML_DEPS}
+libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 #	@echo "Disabled because it needs 4glc - $@"
 #	@touch $@
 
-aubit-config:
-	${MAKE} -C resource
+aubit-config: ${AUBITCONFIG_DEPS}
+	${MAKE} -C ${AUBITCONFIG_PATH}
 
-loadmap:
-	${FAIL_OK}${MAKE} -C ${ROOT}/tools/loadmap
+loadmap: ${LOADMAP_DEPS}
+	${FAIL_OK}${MAKE} -C ${LOADMAP_PATH}
 
-${ROOT}/bin/4glc:
+${4GLC}:
 	${MAKE} -C ${ROOT}/compilers/4glc
-
-
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
+clean.all: clean
 clean : \
-	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
+	clean.generated clean.libsql clean.libpdf clean.librpc clean.libroot \
 	clean.other clean.libui clean.libmenu clean.libform clean.libpacker
-	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
-    bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak
+
+clean.libroot:
+	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err \
+    bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak *.base *.exp
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h \
 	generated/project.c generated/project.o generated/.*.bak
 
-clean.all: clean
-
 clean.libui:
-	${MAKE} -C libui/ui_gtk clean
-	${MAKE} -C libui/ui_console clean
-	${MAKE} -C libui/ui_curses clean
-
-clean.libincl:
-	${RM} libincl/*.bak
+	${MAKE} -C ${LIBUIGTK_PATH} clean
+	${MAKE} -C ${LIBUICONSOLE_PATH} clean
+	${MAKE} -C ${LIBUICURSES_PATH} clean
 
 clean.libsql:
-	${MAKE} -C libsql/nosql clean
+	${MAKE} -C ${LIBSQLNOSQL_PATH} clean
 	${MAKE} -C ${LIBSQLODBC_PATH} clean
-	${MAKE} -C libsql/esqlc clean
-	${MAKE} -C libsql/postgresql clean
+	${MAKE} -C ${LIBSQLESQL_PATH} clean
+	${MAKE} -C ${LIBSQLPG_PATH} clean
 
 clean.libpdf:
-	${MAKE} -C libpdf clean
+	${MAKE} -C ${LIBEXREPORTPDF_PATH} clean
 
 clean.librpc:
-	${MAKE} -C librpc/no_rpc clean
-	${MAKE} -C librpc/sun_rpc clean
-	${MAKE} -C librpc/xml_rpc clean
+	${MAKE} -C ${LIBRPCXMLRPC_PATH} clean
+	${MAKE} -C ${LIBRPCNORPC_PATH} clean
+	${MAKE} -C ${LIBRPCSUNRPC_PATH} clean
 
 clean.libmenu:
 	${MAKE} -C ${LIBMENUNOMENU_PATH} clean
@@ -319,9 +370,9 @@ clean.libmenu:
 	${MAKE} -C ${LIBMENUXDR_PATH} clean
 
 clean.libform:
-	${MAKE} -C libform/form_xdr clean
-	${MAKE} -C libform/noform clean
-	${MAKE} -C libform/form_generic clean
+	${MAKE} -C ${LIBFORMGENERIC_PATH} clean
+	${MAKE} -C ${LIBFORMNOFORM_PATH} clean
+	${MAKE} -C ${LIBFORMXDR_PATH} clean
 
 clean.libpacker:
 	${MAKE} -C ${LIBPACKERPACKED_PATH} clean
@@ -331,12 +382,12 @@ clean.libpacker:
 
 clean.other:
 	${MAKE} -C ${LIBAUBIT4GL_PATH} clean
-	${MAKE} -C libmsg/msg_native clean
-	${MAKE} -C resource clean
-	${MAKE} -C ${ROOT}/tools/loadmap clean
+	${MAKE} -C ${LIBMSGNATIVE_PATH} clean
+	${MAKE} -C ${AUBITCONFIG_PATH} clean
+	${MAKE} -C ${LOADMAP_PATH} clean
 	${MAKE} -C ${LIBLEXC_PATH} clean
 	${MAKE} -C ${LIBLEXPERL_PATH} clean
-	${MAKE} -C libexdata clean
+	${MAKE} -C ${LIBEXDATA_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean
 	${MAKE} -C ${LIBFILE_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean

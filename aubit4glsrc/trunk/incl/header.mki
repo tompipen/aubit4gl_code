@@ -83,7 +83,7 @@ endif
 
 ####################
 #define compiler dependent extension, for use in vpath:
-ifeq "$(MKTARGET)" "aubit"
+ifeq "$(DEFAULT)" "aubit"
 	FRM=${A4GL_FRM_EXT}
 	OBJ=${A4GL_OBJ_EXT}
 	PRG=${A4GL_PRG_EXT}
@@ -93,7 +93,7 @@ ifeq "$(MKTARGET)" "aubit"
 
 endif
 
-ifeq "$(MKTARGET)" "i4gl-pcode"
+ifeq "$(DEFAULT)" "i4gl-pcode"
 	FRM=${I4GL_FRM_EXT}
 	OBJ=${I4GL_OBJ_EXT}
 	PRG=${I4GL_PRG_EXT}
@@ -102,7 +102,7 @@ ifeq "$(MKTARGET)" "i4gl-pcode"
 
 endif
 
-ifeq "$(MKTARGET)" "d4gl-pcode"
+ifeq "$(DEFAULT)" "d4gl-pcode"
 	FRM=${D4GL_FRM_EXT}
 	OBJ=${D4GL_OBJ_EXT}
 	PRG=${D4GL_PRG_EXT}
@@ -110,7 +110,7 @@ ifeq "$(MKTARGET)" "d4gl-pcode"
 	LIB=${D4GL_LIB_EXT}
 endif
 
-ifeq "$(MKTARGET)" "querix"
+ifeq "$(DEFAULT)" "querix"
 	FRM=${Q4GL_FRM_EXT}
 	OBJ=${Q4GL_OBJ_EXT}
 	PRG=${Q4GL_PRG_EXT}

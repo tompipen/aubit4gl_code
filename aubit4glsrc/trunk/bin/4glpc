@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.92 2003-01-17 23:03:57 afalout Exp $
+# $Id: 4glpc,v 1.93 2003-01-30 11:54:38 afalout Exp $
 #
 
 ########################################################################
@@ -664,48 +664,54 @@ do
 
    *.4gl)
 
-		  dirn=`dirname $a`
-          fname=`basename $a .4gl`
-          errfname=`basename $a .4gl`.err;
+		dirn=`dirname $a`
+        fname=`basename $a .4gl`
+        errfname=`basename $a .4gl`.err;
 
-          fname2="$dirn/$fname"
-          fname3="$dirn/$fname.4gl"
-		  fname=$fname2
+        fname2="$dirn/$fname"
+        fname3="$dirn/$fname.4gl"
+		fname=$fname2
 
-          #if we did not invoked 4gl compile from out of dir where 4gl is,
-          #CC will not be able to find it's .h file:
-		  if [ "$dirn" != "" ] && [ "$dirn" != "." ]
-		  then
-			  COMPCC="$COMPCC -I./$dirn"
-          fi
+        #if we did not invoked 4gl compile from inside directory where 4gl is,
+        #CC will not be able to find it's .h file:
+		if [ "$dirn" != "" ] && [ "$dirn" != "." ]
+		then
+			 COMPCC="$COMPCC -I./$dirn"
+        fi
 
-          if ! [ -f $fname3 ]
-          then
-            echo "$fname3 not found"
-            exit 10
-          fi
+        if ! [ -f $fname3 ]
+        then
+          echo "$fname3 not found"
+          exit 10
+        fi
 
-          # Create the blank...
-          touch $fname.c
+        # Create the blank...
+        touch $fname.c
 
-          if [ -f "$fname".err ]
-          then
-                rm "$fname".err
-          fi
+        if [ -f "$fname".err ]
+        then
+        	rm "$fname".err
+        fi
 
-		  if [ "$A4GLVERBOSE" = "yes" ]
-		  then
-	          $output "$fname: "
-			  $output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
-              $output AUBITDIR=$AUBITDIR, PATH=$PATH
-              $output "Executing (3) : $FGLCEXEC $a"
-          fi
+		if [ "$A4GLVERBOSE" = "yes" ]
+		then
+			$output "$fname: "
+			$output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
+			$output AUBITDIR=$AUBITDIR, PATH=$PATH
+			$output "Executing (3) : $FGLCEXEC $a"
+		fi
 
-          err_msg=`"$FGLCEXEC" "$a"`
-          err_code=$?
+		########################
+		#Invoke 4GL compiler
+		########################
+		err_msg=`"$FGLCEXEC" "$a"`
+		err_code=$?
 
-          if [ "$err_code" != "0" ]
-          then
+		if [ "$err_code" != "0" ]
+		then
+			##############################
+			#4glc returned an error code
+            ##############################
 			if [ "$err_code" = "139" ]
 	        then
 	        	echo "$FGLCEXEC core dump"
@@ -740,14 +746,18 @@ do
 			fi
 
 			exit $err_code
-          fi
+		fi
 
 		if [ -f $fname.c ]
         then
-
+            ###########################################
+			#C file was created, no error was reported
+            ###########################################
 			if ! [ -s $fname.c ]
     	    then
-				#True if file exists and has  a  size  greater  than  zero.
+				##############################################
+				#C file is empty!
+                ##############################################
                 echo "Created $fname.c is zero size ! Message is:"
                 echo $err_msg
 
@@ -781,49 +791,51 @@ do
 				exit $err_code
 			fi
 
-		  if [ "$A4GLVERBOSE" = "yes" ]
-		  then
-            $output $FGLCEXEC "$a" OK, continue...
-		  fi
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+				$output $FGLCEXEC "$a" OK, continue...
+			fi
 
-          if [ "$AUTOINDENT" = "Y" ]
-          then
-                indent $fname.c
-          fi
-
-          if [ "$MAP4GL" = "Y" ]
-          then
-			if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]
-            then
-                        $output "Loading map file for $a into database"
-                        loadmap $fname.map > /dev/null 2> $fname.map.err
-            fi
-          fi
+			if [ "$MAP4GL" = "Y" ]
+			then
+				if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]
+				then
+					$output "Loading map file for $a into database"
+					loadmap $fname.map > /dev/null 2> $fname.map.err
+				fi
+			fi
 
 			PRETTYC=${PRETTYC:-"indent"}
 			if [ "$AUTOINDENT" = "Y" ]
 			then
-			 	$PRETTYC $fname.c
+			 	$PRETTYC "$fname.c"
 			fi
 
 			if [ "$LINKIT" = "1" ]
 			then
-                #we got this .4gl in linking command, we need to make .ao
-                #for linking to succedde:
-				if [ "$COMSPEC" = "" ]
-				then
-					EXEC="$DOIT $CC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.err"
-				else
-					EXEC="$DOIT $CC $CFLAGS $fname.c -o $fname.ao -c $INCLDIR 2> $fname.err"
-				fi
+                #we got this .4gl in linking command so we need to make object
+                #for linking to succedde, or we where explicity requested to 
+				#make an object from 4gl file :
+				#if [ "$COMSPEC" = "" ]
+				#then
+					EXEC="$DOIT $CC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+				#else
+				#	EXEC="$DOIT $CC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+                #    #remove this duplication
+				#	#EXEC="$DOIT $CC $CFLAGS $fname.c -o $fname.ao -c $INCLDIR 2> $fname.c.err"
+				#fi
 
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
 					$output "executing (1) : $EXEC"
 				fi
 
+                ########################
+				#Invoke C compiler
+				########################
 				eval $EXEC
 				err_code=$?
+                ########################
 
 				if [ "$err_code" != "0" ]
 				then
@@ -831,14 +843,24 @@ do
 					showerror
 					echo "error compiling $fname.c. STOP."
 					exit 17
-                fi
+                else
+                    if [ -f "$fname.c.err" ]; then
+                        #C compiler did not return error code, but .err file was
+                        #created, and we know it will only contain C compiler,
+                        #warnings, so we don't want to confuse things and people:
+						mv "$fname.c.err" "$fname.c.warn"
+                    fi
+				fi
 
 				COMPCC="$COMPCC $fname.ao"
             else
 				COMPCC="$COMPCC $fname.c"
             fi
         else
-            #is this a 0 length file?
+            ###################################
+			#C file was _NOT_ created by 4glc, but 4glc did _NOT_ return an error code
+            ###################################
+            #is this a 0 length 4gl file?
 			FGLFILESIZE=$(ls -al $fname3 | $AWK '{print $5}')
 
 			if [ "$FGLFILESIZE" = "0" ]

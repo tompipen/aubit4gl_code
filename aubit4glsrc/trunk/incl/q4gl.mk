@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.6 2003-01-22 10:55:38 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.7 2003-01-30 11:54:38 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -172,15 +172,14 @@ Q4GL_LIB_EXT=.qox
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
 4GL_SRC_SUFFIXES	= .4gl .per .msg
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
-Q4GL_TMP_SUFFIXES_DELETE=${Q4GL_OBJ_EXT} .err .glb
+Q4GL_TMP_SUFFIXES_DELETE=${Q4GL_OBJ_EXT} .err
 #Files that compiler created, but are not neded at run-time:
 Q4GL_TMP_SUFFIXES   = ${Q4GL_TMP_SUFFIXES_DELETE} .c .h
 #Files that compiler created, needed at run-time
 Q4GL_SUFFIXES 		= ${Q4GL_PRG_EXT} ${Q4GL_FRM_EXT} ${Q4GL_HLP_EXT}
+#Make directive to recognize sufixes:
 .SUFFIXES:	${Q4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${Q4GL_TMP_SUFFIXES}
-
-#Files we need to delete, to clean everything Querix compiler creates
-#Q4GL_CLEAN_FLAGS 	= *${Q4GL_OBJ_EXT} *{Q4GL_PRG_EXT} *${Q4GL_FRM_EXT} *${Q4GL_HLP_EXT} *.bak *.c *.h *.err
+#Files we need to delete, to clean everything compiler creates
 Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4GL_SUFFIXES)) *.bak
 
 

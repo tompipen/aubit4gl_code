@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.4 2003-01-24 08:36:22 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.5 2003-01-30 11:54:38 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -85,14 +85,30 @@ RM            = rm -f       # Delete files
 ###############################################################################
 # Define suffixes which are recognised.
 
-I4GL_PRG_EXT=.4gi
-I4GL_OBJ_EXT=.4go
-I4GL_FRM_EXT=.frm
-I4GL_HLP_EXT=.iem
-I4GL_LIB_EXT=.4gx
+I4GL_PRG_EXT		=.4gi
+I4GL_OBJ_EXT		=.4go
+I4GL_FRM_EXT		=.frm
+I4GL_HLP_EXT		=.iem
+I4GL_LIB_EXT		=.4gx
 
-I4GL_SUFFIXES = .o .4go .4gl .ec .c .4ge .frm .per .iem .msg .4gi
-.SUFFIXES:	${I4GL_SUFFIXES}
+#WARNING:
+I4GL_C_SUFFIXES 	=.ec .c .4ge
+
+#Files compiler uses as source files:
+#FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
+4GL_SRC_SUFFIXES	=.4gl .per .msg
+#Files that compiler created, but are not neded at run-time, that are safe to delete:
+I4GL_TMP_SUFFIXES_DELETE=${I4GL_OBJ_EXT} .err
+#Files that compiler created, but are not neded at run-time:
+I4GL_TMP_SUFFIXES   =${I4GL_TMP_SUFFIXES_DELETE}
+#Files that compiler created, needed at run-time
+I4GL_SUFFIXES 		=${I4GL_PRG_EXT} ${I4GL_FRM_EXT} ${I4GL_HLP_EXT}
+#Make directive to recognize as sufixes:
+.SUFFIXES:	${I4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${I4GL_TMP_SUFFIXES}
+#Files we need to delete, to clean everything compiler creates
+I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4GL_SUFFIXES)) *.bak
+
+#=============================================================================
 
 # Rules for compiling I4GL (assuming 4.12/6.00 or later with -nokeep as default)
 #is this rule needed?

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.12 2003-01-20 09:50:37 mikeaubury Exp $
+# $Id: builtin.c,v 1.13 2003-01-30 11:54:38 afalout Exp $
 #
 */
 
@@ -708,7 +708,7 @@ fgl_fieldtouched(char *fieldname)
 
 /**
  * close database
- * secufunc.ao(.text+0x1ed4f): undefined reference to `close_database'
+ *
  */
 void
 close_database(void)
@@ -725,11 +725,13 @@ close_database(void)
 
 
 
-char *aclfgli_str_to_id(char *name) {
+char *aclfgli_str_to_id(char *name) 
+{
 static char buff[1024];
-strcpy(buff,name);
-trim(buff);
-return buff;
+	
+	strcpy(buff,name);
+	trim(buff);
+	return buff;
 }
 /* ================================== EOF ============================= */
 

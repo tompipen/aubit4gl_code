@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.31 2003-01-30 07:50:14 mikeaubury Exp $
+# $Id: esql.ec,v 1.32 2003-01-30 11:54:38 afalout Exp $
 #
 */
 
@@ -126,7 +126,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.31 2003-01-30 07:50:14 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.32 2003-01-30 11:54:38 afalout Exp $";
 #endif
 
 /*
@@ -2299,6 +2299,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL BEGIN DECLARE SECTION;
     char strSelect[640];
     int numberOfColumns;
+    int MaxColumns = 245; //we will be able to process tables with maximum 254 columns
   EXEC SQL END DECLARE SECTION;
 
   sprintf(strSelect,"select * from %s\n",tabname);
@@ -2311,7 +2312,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	return 0;
   }
 
-  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX 256;
+  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX :MaxColumns;
   if ( isSqlError() )
   {
 	#ifdef DEBUG
@@ -2324,7 +2325,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   if ( isSqlError() )
   {
 	#ifdef DEBUG
-		debug("Error in EXEC SQL DESCRIBE");   //here we crash on large row count
+		debug("Error in EXEC SQL DESCRIBE");
     #endif
 	return 0;
   }

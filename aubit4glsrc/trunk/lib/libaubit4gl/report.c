@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.11 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: report.c,v 1.12 2003-01-30 11:54:38 afalout Exp $
 #
 */
 
@@ -44,23 +44,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include "a4gl_dbform.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_report.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dlsql.h"
-	#include "a4gl_runtime_tui.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================

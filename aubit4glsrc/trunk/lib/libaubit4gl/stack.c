@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.32 2003-01-29 14:35:07 mikeaubury Exp $
+# $Id: stack.c,v 1.33 2003-01-30 11:54:38 afalout Exp $
 #
 */
 
@@ -1292,6 +1292,26 @@ push_current (int a, int b)
   push_char (buff2);
   debug ("All done...");
 }
+
+
+
+/* this is just for some testong - remove it */
+/*
+int
+current_second (void)
+{
+struct tm *local_time;
+time_t now;
+char buff[50];
+
+  (void) time (&now);
+  local_time = localtime (&now);
+  sprintf (buff, "%d",local_time->tm_sec);
+  debug ("Time is %s", buff);
+	return local_time->tm_sec;
+}
+*/
+
 
 
 /**

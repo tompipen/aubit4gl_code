@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.27 2003-01-21 08:25:57 afalout Exp $
+# $Id: resource.c,v 1.28 2003-01-30 11:54:39 afalout Exp $
 #
 */
 
@@ -105,6 +105,8 @@ struct str_resource builtin_resource[] =
 		#line 2 "../tools/test/test_build.4gl"
 	*/
   {"INCLINES",			"yes"},
+
+  {"A4GL_RESERVEWORDS", "NO"},
   {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
   {"DBDATE", 			"MDY4/"},
   {"DBANSIWARN", 		"N"},

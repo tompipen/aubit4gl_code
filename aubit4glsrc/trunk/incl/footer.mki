@@ -5,7 +5,7 @@
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.17 2003-01-24 08:36:21 afalout Exp $
+# $Id: footer.mki,v 1.18 2003-01-30 11:54:38 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
@@ -49,7 +49,8 @@ ifeq "$(PROGTYPE)" ".lib"
 		TARGETCMD=@echo Name dummy.lib was used, final linking skipped.
     else
 		#-fPIC will apparently not work on AIX - we should autoconf this file
-		TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+		#TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+		TARGETCMD=ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
         #$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
     endif
 
@@ -334,6 +335,15 @@ show:
 	@echo USESTORE=${USESTORE}
 	@echo MOVETOSTORE=${MOVETOSTORE}
 	@echo FILES.per = ${FILES.per}
+	@echo SET_VPATH_GLOB  =${SET_VPATH_GLOB}
+	@echo SET_VPATH_4GL	  =${SET_VPATH_4GL}
+	@echo SET_VPATH_MK    =${SET_VPATH_MK}
+	@echo SET_VPATH_PER   =${SET_VPATH_PER}
+	@echo SET_VPATH_FRM   =${SET_VPATH_FRM}
+	@echo SET_VPATH_OBJ   =${SET_VPATH_OBJ}
+	@echo SET_VPATH_PRG   =${SET_VPATH_PRG}
+	@echo SET_VPATH_LIB   =${SET_VPATH_LIB}
+	@echo EXTENSIONS: ${FRM} ${OBJ} ${PRG} ${LIB}
 
 
 # =============================== EOF ==================================

@@ -23,17 +23,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.32 2003-01-22 10:55:39 afalout Exp $
+# $Id: Makefile.in,v 1.33 2003-01-30 11:54:39 afalout Exp $
 #
-
-#note: I plan to use amake for this; this is just for now
 
 ROOT    =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
-#override MAKINGAUBIT=0
 
 #rules for making Aubit targets:
 include ${ROOT}/incl/a4gl.mk
@@ -44,27 +40,32 @@ include ${ROOT}/incl/a4gl.mk
 
 #4GLPCFLAGS		=-verbose -settings
 
-ifdef COMSPEC
-	ifdef MONOLIT
-		4GLPCFLAGS += -mno-cygwin
-	endif
-endif
 
-.PHONY: other 4gldemo testmenu
+#KEEP IN MIND THAT THIS MAKE FILE IS ALSO IN BINARY DISTRIBUTION - DO NOT ADD
+#ANY MORE TARGETS HERE UNLESS YOU WILL ALSO MODIFY THE INSTALLER TO PACK NEEDED
+#SOURCE FILES IN BYNARY DISTROS - OTHERWISE MAKE WILL FAIL BECAUSE OF MISSING
+#SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
+#ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
+#CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
+DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml \
+		form.afr.xml helpfile.hlp
 
-DEFAULT=other 4gldemo testmenu
-
-SUB=guidemos
+SUB		=guidemos
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
-	#We hav this dirs only in source tree:
+	#We have this dirs only in source code tree - not in bunary distros:
 	SUB+=langdemos
 	REGRES=regressiontests dbtests
 endif
 
-ALL_FAIL=test_select
+#Targets still expected to fail, that need fixing:
+ALL_FAIL=
 
-ALL=${DEFAULT} assoc solitaire pdf_report file testmenu testmpz ${SUB} ${REGRES} ${ALL_FAIL}
+ALL		=${DEFAULT} test_select.4ae assoc2.4ae solitaire.4ae pdf_report.4ae file.4ae testmenu \
+		 testmpz.4ae ${SUB} ${REGRES} ${ALL_FAIL}
+
+.PHONY: default all sub test.build test.perl ${SUB} ${REGRES} \
+		help clean clean.sub
 
 ## ==================================================================
 ##                              Targets
@@ -86,68 +87,31 @@ all: ${ALL}
 	@echo "all targets successfully compiled"
 	@echo "Tests that are expected to fail: ${ALL_FAIL}"
 
-sub: ${SUB}
-	@echo targets in sub directories successfully compiled
 
-4gldemo: hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml
-#KEEP IN MIND THAT THIS MAKE FILE IS ALSO IN BINARY DISTRIBUTION - DO NOT ADD
-#ANY MORE TARGETS HERE UNLESS YOU WILL ALSO MODIFY THE INSTALLER TO PACK NEEDED
-#SOURCE FILES IN BYNARY DISTROS - OTHERWISE MAKE WILL FAIL BECAUSE OF MISSING
-#SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
-#ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
-#CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
-#	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
-#	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
-#	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
-	@echo 4gl demo targets successfully compiled
-
-
-solitaire:
-	${FGLPCEXEC} ${4GLPCFLAGS} sol.4gl random.4gl -o solitaire
-
-pdf_report: pdf_report.4gl
+solitaire.4ae: sol.4gl random.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
-assoc: assoc2.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
+## ==================================================================
+##              Targets for testing compiler build success
+## ==================================================================
 
 #This is used from root makefile, to test if compiler is working after building it:
 test.build: test_build.4gl
 	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-#ifeq "${FCONVERT}" "yes"
-#	${FCONVERT_CMD} $^
-#endif
 	(DEBUG=ALL;export DEBUG;${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} $^ -o test_build)
 #FIXME: use 4glc directly: 4glc -o test_build.4gl
 
-test.perl:
-	cd tools/test; 4glc_perl test_build.4gl
-	cd tools/test; perl test_build.pl
-
-file: file.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
-
-testmpz: testmpz.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
-
-test_select: test_select.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
-
-#Move this to gui/
-#testmenu: testmenu.mnu
-#	${FGLPCEXEC} ${4GLPCFLAGS} $@.4gl -o $@
-
-#testmenu.mnu: testmenu.menu
-#	${MCOMPILE} $^
-
-other: form.afr.xml helpfile.hlp
-#	${FCOMPILE} form.per
-#	${MKMESS} helpfile
-	@echo "Successfuly compiled demo resource files"
+#Same purpose as test.build target, but for Perl compiler:
+test.perl: test_build.4gl
+	4glc_perl $^
+	@PERL@ test_build.pl
 
 ## ==================================================================
-##                          Targets in sub-makefiles
+##                    Targets in sub-makefiles
 ## ==================================================================
+
+sub: ${SUB}
+	@echo targets in sub directories successfully compiled
 
 #GUI demo code
 guidemos:
@@ -173,19 +137,15 @@ help:
 	@echo "use 'make' to compile examples"
 
 ## ==================================================================
-##                           Clean targets
+##                      Clean targets
 ## ==================================================================
 
 
 clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
-	hello hello2 hello_db test_build filetest *.hlp *.exe *.stackdump *.exe \
-	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
-	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.ao *.log *.4ge *.pl *.pm \
-	test_build.c .\#* .*.bak assoc *.frm.xml testmpz file testmenu *.afr.xml \
-	*.mnu.xml solitaire
-
-
+	test_build *.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
+	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm \
+	test_build.c .\#* .*.frm.xml *.afr.xml *.mnu.xml
 
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"

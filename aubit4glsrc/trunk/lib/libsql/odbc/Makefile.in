@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2002-11-08 02:03:01 afalout Exp $
+# $Id: Makefile.in,v 1.27 2003-01-30 11:54:39 afalout Exp $
 #
 
 ROOT    =../../..
@@ -109,29 +109,23 @@ endif
 ${LIBROOT}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
-#	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC @UNIXODBC_LFLAGS@ ${CFLAGS}
 #@UNIXODBC_INCLUDE@
 ${LIBROOT}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
-#	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
 ${LIBROOT}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli ${IFX_RPATH} -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -lifdmr ${IFX_RPATH} -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
-#	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC @SAPODBC_INCLUDE@ @SAPODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm @SAPODBC_LFLAGS@
-#	${CP} $@ ${LIBROOT}
-
 
 ## ==================================================================
 ##                              Clean

@@ -1,6 +1,6 @@
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.19 2003-01-24 08:36:21 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.20 2003-01-30 11:54:38 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -94,6 +94,7 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 
 A4GL_PRG_EXT=.4ae
 A4GL_OBJ_EXT=.ao
+A4GL_SOB_EXT=.aso
 A4GL_FRM_EXT=.afr.xml
 A4GL_HLP_EXT=.hlp
 A4GL_LIB_EXT=.aox
@@ -150,14 +151,19 @@ ifneq "${FAIL_CMPL_4GL}" "-"
 endif
 endif
 
+####################################
+# Rule to compile an shared object file from a 4gl file
+%${A4GL_SOB_EXT} : %.4gl
+	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -as-dll -o $@
+
 
 ####################################
 # Rule for making a library using .mk make file
 #
 %${A4GL_LIB_EXT}:  %.mk
 	@echo "Making library $*.aox using $^"
-	${AMAKE} -f $<
-
+#	${AMAKE} -f $<
+	${AMAKE} $<
 
 ####################################
 # Rule for compiling form files

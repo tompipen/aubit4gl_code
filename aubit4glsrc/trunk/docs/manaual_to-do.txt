@@ -621,6 +621,7 @@ SQL.. I'll fix this soon.. ]
 
 (Is MATCHES allowed in 4gl ?) MATCHES should already be in there...
 
+IF exists (variable_name )  THEN - is NOT implemented
 
 ===================================================================
 
@@ -1629,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.5 2003-01-25 01:46:59 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.6 2003-01-30 11:54:38 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3496,6 +3497,44 @@ Software architect, MakeTXT.com
 PLEASE NOTE: All HTML email sent to me WILL BE DELETED AUTOMATICALLY WITHOUT READING.
 
 ==========================================================================
+
+
+if a<=1 then
+        display "1"
+elsif a>=1 then
+        display "2"
+elsif a=3 then
+        display "3"
+end if
+
+
+I've just added it now...
+(For now - i've put both 'elif' and 'elsif' as valid words for the 'elif'
+token - ideally we should probably pick and stick to just one)
+
+On Monday 27 January 2003 5:00 pm, Jonathan Leffler wrote:
+> It depends on your viewpoint.  No, it isn't necessary; the language has
+> survived over 15 years without it.  And CASE WHEN exp ... (as opposed to
+> CASE exp WHEN ...) covers for it.  But personally, I'd like to see it in
+> classic I4GL -- it bugs me every time I have to modify an IF/ELSE to deal
+> with a third alternative that I have to rewrite so many lines of code.
+
+
+Of course, 'elif' is used by the Bourne Shell and derivatives; Perl uses
+'elsif' because Larry Wall chose not to use keywords which are another word
+spelled backward -- a jibe at the Algol-like use of 'fi' and 'esac' in
+Bourne Shell.  Of course, Bourne Shell is not self-consistent; for ... do
+... done should use 'od' instead of 'done', but there was already a command
+'od' - octal dump - when it was introduced, so the keyword was pre-empted
+by the command.  I'd probably nominate ELSIF as 'the' choice for I4GL/A4GL,
+but I'm not going to be fussed if you go with ELIF for some other reason.
+
+
+
+
+==========================================================================
+
+
 
 sh aubit sh 4glpc   P29f.4gl -c -o P29f.ao
 ============ FIRST ERROR: ==============

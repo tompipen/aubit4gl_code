@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.14 2003-01-29 02:57:09 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.15 2003-01-30 11:54:38 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -72,6 +72,11 @@
 #Source system environment: important when running from cron
 . /etc/profile
 
+#This is to work around one of Informix installer screwing up libphtread:
+#[afalout@aptiva menu]$ tar
+#tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by tar)
+#tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by /lib/librt.so.1)
+export LD_LIBRARY_PATH="/lib:$LD_LIBRARY_PATH"
 
 #####################
 #Where to get CVS from: "sf-ssh" for SSH SourceForge, "falout.com",
@@ -131,9 +136,10 @@ STOPONERROR=1
 UPBUILD=1
 
 #####################
-#Location of log file to log this process to:
+#Location of log files to log this process to:
 LOGFILE=/tmp/aubitbuild.log
 MAINLOG=$LOGFILE
+#Some commands will override LOGFILE, to keep main log file readable:
 CLEANLOG=/tmp/clean.log
 CONFIGLOG=/tmp/config.log
 TARLOG=/tmp/tar.log
