@@ -18,6 +18,7 @@ struct s_assign {
 
 #ifdef USE_A4GL_DEBUG
 int A4GL_set_line (char *s, long l);
+void A4GL_debug_full(char *fmt, ...);
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
 #ifndef A4GL_debug
