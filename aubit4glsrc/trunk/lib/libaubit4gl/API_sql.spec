@@ -3,8 +3,8 @@ LIBRARY SQL
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_SQLTYPE
 
-# A4GLSQL_add_prepare char* pname void* sid -> int
-# A4GLSQL_close_connection -> int
+* A4GLSQL_add_prepare char* pname void* sid -> int
+* A4GLSQL_close_connection -> int
 
 A4GLSQL_close_session_internal char* sessname -> int
 A4GLSQL_close_cursor char* currname -> int
@@ -23,13 +23,13 @@ A4GLSQL_describe_stmt char* stmt int colno int type -> long
 A4GLSQL_execute_implicit_select void* sid -> int
 A4GLSQL_execute_implicit_sql void* sid -> int
 
-#A4GLSQL_execute_sql char* pname int ni void* ibind -> int
+*A4GLSQL_execute_sql char* pname int ni void* ibind -> int
 
 
 A4GLSQL_fetch_cursor char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
 
-#A4GLSQL_find_prepare char* pname -> void*
-#
+*A4GLSQL_find_prepare char* pname -> void*
+*
 A4GLSQL_flush_cursor char* cursor -> void
 
 A4GLSQL_fill_array int mx char* arr1 int szarr1 char* arr2 int szarr2 char* service int mode char* info -> int
