@@ -6,11 +6,11 @@
 
 line_no		:
 	LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
-	| LAST {sprintf($<str>$,"-1");}
+	| LAST {strcpy($<str>$,"-1");}
 	| FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
-	| FIRST {sprintf($<str>$,"1");}
-	| INT_VALUE {sprintf($<str>$,$<str>1);}
-	| variable {sprintf($<str>$,$<str>1);}
+	| FIRST {strcpy($<str>$,"1");}
+	| INT_VALUE {strcpy($<str>$,$<str>1);}
+	| variable {strcpy($<str>$,$<str>1);}
 ;
 
 file_name	:	CHAR_VALUE | cvariable 
@@ -25,8 +25,8 @@ display_coords	:	coords;
 
 field_name	:	
 		identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
-		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id($<str>3)"); }
-		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id($<str>3)"); }
+		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id(%s)",$<str>3); }
+		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id(%s.%s)",$<str>1,$<str>5); }
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
 {sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}
 			| identifier DOT MULTIPLY

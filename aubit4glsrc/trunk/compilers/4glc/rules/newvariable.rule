@@ -145,8 +145,8 @@ identifier arr_subscripts
 	char rbuff[256];
 	char tmpbuff[256];
 	char *ptr;
-	sprintf(lbuff,$<str>2);
-	sprintf(rbuff,strchr($<str>2,':')+1);
+	strcpy(lbuff,$<str>2);
+	strcpy(rbuff,strchr($<str>2,':')+1);
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
@@ -296,8 +296,8 @@ identifier arr_subscripts
 	char rbuff[256];
 	char tmpbuff[256];
 	char *ptr;
-	sprintf(lbuff,$<str>2);
-	sprintf(rbuff,strchr($<str>2,':')+1);
+	strcpy(lbuff,$<str>2);
+	strcpy(rbuff,strchr($<str>2,':')+1);
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));

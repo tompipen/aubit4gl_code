@@ -135,7 +135,7 @@ addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
 
 opt_into_fetch_part: {
 debug("no into\n");
-sprintf($<str>$,"0,0");
+strcpy($<str>$,"0,0");
 } | 
 	INTO {
 	debug("FETCH INTO  ...");
@@ -152,7 +152,7 @@ sprintf($<str>$,"0,0");
 
 opt_foreach_into_fetch_part: {
 debug("no into\n");
-sprintf($<str>$,"0,0");
+strcpy($<str>$,"0,0");
 } | 
 	INTO {
 	debug("FETCH INTO  ...");
@@ -265,13 +265,13 @@ insql=0;strcpy($<str>$,$<str>3);}
 sql_commands :  schema {lex_printcomment("/*  schema */\n");
 	print_exec_sql($<str>1);
 
-sprintf($<str>$,"Schema");
+strcpy($<str>$,"Schema");
 } 
 	| schema_element {lex_printcomment("/*  schema  2*/\n");
 
 	print_exec_sql($<str>1);
 
-sprintf($<str>$,"Schema Element");
+strcpy($<str>$,"Schema Element");
 } 
 	| commit_statement 
 	| misc_sql {
@@ -283,17 +283,17 @@ sprintf($<str>$,"Schema Element");
 lex_printcomment("/*  delete 1 */\n");
 
 print_exec_sql_bound($<str>1);
-sprintf($<str>$,"Delete where current...");
+strcpy($<str>$,"Delete where current...");
 } 
 	| delete_statement_search {
 
 lex_printcomment("/*  delete 2 */\n");
 
 print_exec_sql_bound($<str>1);
-sprintf($<str>$,"Delete where ...");
+strcpy($<str>$,"Delete where ...");
 } 
 	| fetch_statement {
-sprintf($<str>$,"Fetch");
+strcpy($<str>$,"Fetch");
 lex_printcomment("/*  fetch */\n");
 } 
 	| insert_statement {
@@ -303,18 +303,18 @@ lex_printcomment("/*  insert */\n");
 print_exec_sql_bound($<str>1);
 
 
-sprintf($<str>$,"insert");
+strcpy($<str>$,"insert");
 
 } 
 	| rollback_statement 
 	| select_statement_full {
 	print_do_select($<str>1);
-	sprintf($<str>$,"select");
+	strcpy($<str>$,"select");
 } 
 	| update_statement {
 
 print_exec_sql_bound($<str>1);
-sprintf($<str>$,"update");
+strcpy($<str>$,"update");
 } 
 	;
 
@@ -691,15 +691,15 @@ comparison_predicate:
 
 comp_op:
 	  EQUAL
-	| NOT_EQUAL {sprintf($<str>$,"!=");}
+	| NOT_EQUAL {strcpy($<str>$,"!=");}
 	| LESS_THAN
 	| GREATER_THAN 
         | NOT_MATCHES
         | NOT_LIKE
 	| MATCHES
-	| LIKE {sprintf($<str>$,"likE");}
-	| LESS_THAN_EQ {sprintf($<str>$,"<=");}
-	| GREATER_THAN_EQ {sprintf($<str>$,">=");}
+	| LIKE {strcpy($<str>$,"likE");}
+	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
+	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
 	;
 
 
@@ -791,7 +791,7 @@ table_name:
 		sprintf($<str>$," %s",strip_quotes($<str>1));
 		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
 	}
-	| table_identifier {sprintf($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
+	| table_identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
 	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 
 	;
@@ -803,7 +803,7 @@ authorization_identifier:
 	;
 
 table_identifier:
-	identifier {sprintf($<str>$,$<str>1);}
+	identifier {strcpy($<str>$,$<str>1);}
 	;
 
 
@@ -836,7 +836,10 @@ correlation_name:
 	;
 
 
-literal: CHAR_VALUE {sprintf($<str>$,convstrsql($<str>1));}
+literal: CHAR_VALUE {
+	strcpy($<str>$,convstrsql($<str>1));
+	debug("Set $<str>$ to %s\n",$<str>$);
+}
 	| NUMERIC
 	| real_number
 	| INT_VALUE
@@ -1045,9 +1048,9 @@ subquery:
 	;
 
 op_ad: {strcpy($<str>$,"");}
-	| ALL {sprintf($<str>$,"ALL");}
-	| DISTINCT {sprintf($<str>$,"DISTINCT");}
-	| UNIQUE {sprintf($<str>$,"DISTINCT");}
+	| ALL {strcpy($<str>$,"ALL");}
+	| DISTINCT {strcpy($<str>$,"DISTINCT");}
+	| UNIQUE {strcpy($<str>$,"DISTINCT");}
 	;
 
 select_list: 
@@ -1132,7 +1135,7 @@ if ((scan_variable($<str>1)&15)!=0) {yyerror("Variable must be of type char for 
 }
 ;
 
-opt_col_list: {sprintf($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
+opt_col_list: {strcpy($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
 sprintf($<str>$,"%s,0",$<str>2);
 };
 
@@ -1202,12 +1205,12 @@ share_or_exclusive :
 
 
 units_qual:
-	UNITS_YEAR {sprintf($<str>$,"UNITS YEAR");}
-	| UNITS_MONTH {sprintf($<str>$,"UNITS MONTH"); }
-	| UNITS_DAY {sprintf($<str>$,"UNITS DAY);"); }
-	| UNITS_HOUR {sprintf($<str>$,"UNITS HOUR);"); }
-	| UNITS_MINUTE {sprintf($<str>$,"UNITS MINUTE);"); }
-	| UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); }
+	UNITS_YEAR {strcpy($<str>$,"UNITS YEAR");}
+	| UNITS_MONTH {strcpy($<str>$,"UNITS MONTH"); }
+	| UNITS_DAY {strcpy($<str>$,"UNITS DAY);"); }
+	| UNITS_HOUR {strcpy($<str>$,"UNITS HOUR);"); }
+	| UNITS_MINUTE {strcpy($<str>$,"UNITS MINUTE);"); }
+	| UNITS_SECOND {strcpy($<str>$,"UNITS SECOND);"); }
 ;
 
 

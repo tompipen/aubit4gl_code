@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.14 2002-10-20 12:02:37 afalout Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.15 2003-02-11 13:24:02 mikeaubury Exp $
 */
 
 /**
@@ -45,6 +45,7 @@
 #ifndef FGLHDR_INCL
 #define FGLHDR_INCL
 	#include <stdio.h>
+	#include <string.h>
 	#include "a4gl_incl_4gldef.h"
 
 

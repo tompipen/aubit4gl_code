@@ -114,18 +114,15 @@ int_sign	: PLUS
 boolean_expr:
 NOT fgl_expr_c {
 	
-        /* sprintf($<str>$,"%s pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT);");
 }
 | KW_TRUE  
 {
-        /* sprintf($<str>$,"push_int(1);"); */
 	$<ptr>$=new_expr("push_int(1);");
         inc_counter();
 }
 | KW_FALSE 
 {
-        /* sprintf($<str>$,"push_int(0);"); */
 	inc_counter();
 	$<ptr>$=new_expr("push_int(0);");
 }
@@ -159,7 +156,6 @@ int_sign real_number
 	debug("init expr %s %s",$<str>1,$<str>2);
 	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
 	sprintf($<str>$,"%s",get_push_literal('D',$<str>$));
-        /* sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2); */
 	$<ptr>$=new_expr($<str>$);
         inc_counter();
 }
@@ -178,14 +174,12 @@ literal_expr:
 |*/
 CHAR_VALUE  {
 	sprintf($<str>$,"%s",get_push_literal('S',$<str>1));
-	/* sprintf($<str>$,"push_char(%s);",$<str>1); */
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 | real_number
 {
 	sprintf($<str>$,"%s",get_push_literal('D',$<str>1));
-	/* sprintf($<str>$,"push_double((double)%s);",$<str>1); */
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
@@ -224,21 +218,21 @@ variable_entry :
    		if (a>=0) {
           		if (aubit_strcasecmp($<str>1,"today")==0) {
                		flg=1;
-               		sprintf($<str>$,"push_today();");
+               		strcpy($<str>$,"push_today();");
           		}
 		
           		if (aubit_strcasecmp($<str>1,"time")==0) {
                		flg=1;
-               		sprintf($<str>$,"push_time();");
+               		strcpy($<str>$,"push_time();");
           		}
 		
           		if (aubit_strcasecmp($<str>1,"pageno")==0) {
                		flg=1;
-               		sprintf($<str>$,"push_variable(&rep.page_no,2);");
+               		strcpy($<str>$,"push_variable(&rep.page_no,2);");
                   		}
           		if (aubit_strcasecmp($<str>1,"lineno")==0) {
                		flg=1;
-               		sprintf($<str>$,"push_variable(&rep.line_no,2);");
+               		strcpy($<str>$,"push_variable(&rep.line_no,2);");
           		}
 
          		if (flg==0) {
@@ -303,7 +297,7 @@ insql=0;
       } 
       insql=0; 
 	lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
-        sprintf(buff,$<str>3);
+        strcpy(buff,$<str>3);
 	debug("report aggregate :  %s",buff);
 	$<ptr>$=new_expr(buff);
       }
@@ -314,12 +308,10 @@ insql=0;
 and_or_expr: 
 KW_AND fgl_expr_c 
 {
-	/* sprintf($<str>$,"%s pushop(OP_AND);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_AND);");
 }
 | KW_OR fgl_expr_c 
 {
-	/* sprintf($<str>$,"%s pushop(OP_OR);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
 }
 ;
@@ -374,12 +366,12 @@ in_expr:
 null_expr:
 IS_NULL  
 { 
-	sprintf($<str>$,"pushop(OP_ISNULL);");
+	strcpy($<str>$,"pushop(OP_ISNULL);");
 	$<ptr>$=new_expr($<str>$);
 }
 | IS_NOT_NULL
 {
-	sprintf($<str>$,"pushop(OP_ISNOTNULL);");
+	strcpy($<str>$,"pushop(OP_ISNOTNULL);");
 	$<ptr>$=new_expr($<str>$);
 }
 ;
@@ -387,22 +379,18 @@ IS_NULL
 string_match_expr:
  MATCHES fgl_expr_c
 {
-	/* sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
 }
 | NOT_MATCHES fgl_expr_c
 {
-	/* sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
 }
 | LIKE fgl_expr_c
 {
-	/* sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
 }
 | NOT_LIKE fgl_expr_c
 {
-	/* sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
 }
 ;
@@ -410,7 +398,7 @@ string_match_expr:
 clip_expr: 
 CLIPPED 
 {
-	sprintf($<str>$,"pushop(OP_CLIP);");
+	strcpy($<str>$,"pushop(OP_CLIP);");
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
@@ -457,7 +445,6 @@ EQUAL           fgl_expr_c {
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
 }
 | EQUAL_EQUAL   fgl_expr_c {
-	sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
 }
 | LESS_THAN       fgl_expr_c
@@ -585,7 +572,7 @@ builtin_expr : curr_v_clause {
                sprintf($<str>$,"push_current(%s);",$<str>1);
 		$<ptr>$=new_expr($<str>$);
           	}
-               | DATE  { inc_counter(); sprintf($<str>$,"push_today();");
+               | DATE  { inc_counter(); strcpy($<str>$,"push_today();");
 		$<ptr>$=new_expr($<str>$);
 		}
 

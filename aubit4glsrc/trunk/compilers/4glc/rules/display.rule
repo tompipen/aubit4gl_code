@@ -56,9 +56,9 @@ display_array_cmd : DISPLAY_ARRAY {
 
 opt_scroll: 
 {
-sprintf($<str>$,"0,0");
+strcpy($<str>$,"0,0");
 } | SCROLL_USING field_name {
-	sprintf($<str>$,$<str>2);
+	strcpy($<str>$,$<str>2);
 }
 ;
 

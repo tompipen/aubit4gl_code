@@ -62,7 +62,7 @@ print_finish_report($<str>2);
 }
 ;
 
-report_section: op_output_section op_rep_order_by  { sprintf($<str>$,$<str>2); } ;
+report_section: op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
 
 format_section: FORMAT EVERY_ROW {
 	print_format_every_row();
@@ -465,7 +465,7 @@ print_pause($<str>2) ;
 
 ;
 
-pause_msg : {sprintf($<str>$,"\"\"");}
+pause_msg : {strcpy($<str>$,"\"\"");}
 	|
 	var_or_char 
 ;
@@ -510,7 +510,7 @@ END_REPORT {
 }
 ;
 
-pdf_report_section: pdf_op_output_section op_rep_order_by  { sprintf($<str>$,$<str>2); } ;
+pdf_report_section: pdf_op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
 
 
 pdf_functions :
@@ -533,7 +533,7 @@ pdf_functions :
 
 op_wordwrap:
 	{strcpy($<str>$,"0");}
- 	| WORDWRAP { sprintf($<str>$,"rep.right_margin"); }
+ 	| WORDWRAP { strcpy($<str>$,"rep.right_margin"); }
 	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
 	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
 ;

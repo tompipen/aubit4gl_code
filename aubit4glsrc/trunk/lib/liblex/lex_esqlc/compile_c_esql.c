@@ -368,6 +368,7 @@ print_sql_commit (int t)
 void
 print_fetch_3 (char *ftp, char *into)
 {
+  printc("/* ftp=%s into=%s */\n",ftp,into);
   printc ("\nEXEC SQL FETCH  %s INTO %s; /*fetch3*/\n", strip_quotes(ftp), into);
   print_copy_status();
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.98 2003-02-06 23:45:11 mikeaubury Exp $
+# $Id: mod.c,v 1.99 2003-02-11 13:24:00 mikeaubury Exp $
 #
 */
 
@@ -3155,6 +3155,7 @@ convstrsql (char *s)
   static char buff[1024];
   int a;
   int b = 0;
+  debug("Convstrsql ... %s",s);
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
@@ -3179,6 +3180,7 @@ convstrsql (char *s)
       buff[b++] = s[a];
 
     }
+  debug("Convstrsql ... %s => %s",s,buff);
   return buff;
 }
 
