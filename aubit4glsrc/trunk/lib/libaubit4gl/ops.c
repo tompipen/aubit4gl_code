@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.51 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: ops.c,v 1.52 2004-05-12 16:52:41 whaslbeck Exp $
 #
 */
 
@@ -2244,7 +2244,7 @@ DTYPE_SMINT
 DTYPE_DATE
 DTYPE_SERIAL
 */
-void *ptr;
+//void *ptr;
 
   A4GL_add_op_function (DTYPE_INT, DTYPE_INT, OP_MATH,  A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SMINT, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);

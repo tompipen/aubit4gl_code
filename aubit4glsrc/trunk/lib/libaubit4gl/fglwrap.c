@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.63 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.64 2004-05-12 16:52:41 whaslbeck Exp $
 #
 */
 
@@ -105,6 +105,7 @@ void A4GL_set_intr (void);
 void A4GL_def_int (void);
 void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
+int A4GLUI_initlib(void);
 
 static char running_program[256];
 

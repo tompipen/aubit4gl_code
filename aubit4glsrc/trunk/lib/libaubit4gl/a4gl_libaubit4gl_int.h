@@ -31,6 +31,22 @@
 #endif
 
 int A4GL_dlclose (void *);
+
+/* Prototypes from funcs_d.c */
+char *a_strchr(char *s,int c);
+
+/* Prototypes from fglwrap.c */
+void A4GL_fgl_die_with_msg(int n,char *s);
+
+/* Prototypes from compat.c */
+int fgl_getkey(void);
+void popdub (double *s);
+int rgetkey(void);
+
+/* Prototypes from builtin.c */
+int aclfgl_fgl_getkey(int n) ;
+
+
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 
 
