@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.10 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.11 2004-02-20 14:58:56 mikeaubury Exp $
 #
 */
 
@@ -173,4 +173,14 @@ A4GL_set_line (void)
 }
 
 
+void *A4GL_find_pointer(char *s,char c) {
+	return 0;
+}
+int A4GL_has_pointer(char *s,char c) {
+	return 0;
+}
+
+int A4GL_add_pointer(char *s,char c,void *x) {
+return 0;
+}
 /* -------------------------- EOF ------------------------ */
