@@ -1630,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.9 2003-02-20 05:37:22 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.10 2003-02-22 01:02:26 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3621,4 +3621,23 @@ I've also included code for auto initializing module and function local
 variables (but you need to set A4GL_AUTONULL=YES to get this)...
 
 ===========================================================================
+
+
+2) I've added an ansi warning mode.
+
+You can enable it by setting either :
+
+	A4GL_ANSI_WARN=Yes
+or
+	A4GL_ANSI_ERROR=Yes
+
+At the minute this only picks up two errors - but we can expand it as we go
+along.
+
+
+For ANSI_WARN - it will display a warning if it sees anything amiss...
+For ANSI_ERROR - it will bomb the compile (.err file etc)
+
+If neither of these is set - then nothing happens at all and the compiler is
+happy....
 

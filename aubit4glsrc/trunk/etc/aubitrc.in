@@ -141,6 +141,17 @@ A4GL_SQLCONVERT=YES
 #auto initializing module and function local variables
 A4GL_AUTONULL=YES
 
+
+############
+# ansi SQL warning mode.
+#For ANSI_WARN - it will display a warning if it sees anything amiss...
+#For ANSI_ERROR - it will bomb the compile (.err file etc)
+#If neither of these is set - then nothing happens
+A4GL_ANSI_WARN=Yes
+#A4GL_ANSI_ERROR=Yes
+
+
+
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
 ## ===================================================================

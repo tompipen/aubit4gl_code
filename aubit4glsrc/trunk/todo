@@ -1,3 +1,10 @@
+ FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
+ FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
+ FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
+ FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
+
+
+
 4GL
 	implement extend() 4GL function
 	implement datetime() & interval() 4GL functions
@@ -40,7 +47,8 @@ Enhancements
 
 	Host variables
 
-	SQL blocks can include host variables to be passed to the backend, the dollar character must prefix 4GL variables:
+	SQL blocks can include host variables to be passed to the backend, the 
+	dollar character must prefix 4GL variables:
 
 	Example:
 
@@ -206,9 +214,11 @@ SQL plugins
 	unixODBC bug (see bug db on SF)
     Finish native PostgreSQL plugin (Sergio), create SAP DB native
     show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
+    Handle DSN-less connections (should be able to connect using CONNECT stmt, even without explicit DSN in odbc.ini)
+    Befor using SQLUID and SQLPWD, odbc.ini should be examined for default username/password
 
 ACE
-	ace still uses rpcgen, can't port to windows - use xgen ** DONE
+	ace now uses xgen - enable Windows make files
 
 XML-RPC
     create server part
@@ -220,7 +230,8 @@ TUI
 	General cleanups..
 	clean up construct...
     Windows TUI uses strange characters
-    DISPLAY without AT erises the screen completely - sends to stdout - should display _OVER_ existing display/screen
+    DISPLAY without AT erises the screen completely - sends to stdout 
+		- should display _OVER_ existing display/screen
 		(** THIS IS CURSES FAULT **NOT** Aubit...)
 
 PERL
@@ -228,6 +239,15 @@ PERL
 
 CVS
     start branch tagging in CVS
+
+Buils system & make files
+    Create commit and update targets to handle CVS commits and updates
+    in Commit: 
+		handle update of no_yacc, no_perl...etc files before commit
+        handle build number
+    in Update: 
+		handle "configure" file to prevent meaningless merginig
+
 
 MANUALS
     need complete update

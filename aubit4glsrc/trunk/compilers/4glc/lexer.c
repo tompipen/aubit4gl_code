@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.59 2003-02-20 23:01:09 mikeaubury Exp $
+# $Id: lexer.c,v 1.60 2003-02-22 01:02:11 afalout Exp $
 #*/
 
 /**
@@ -1018,7 +1018,7 @@ short *stack_cnt;
 
   a = chk_word (yyin, buff);
 
- printf ("chk_word returns token=%d, buff=%s state=%d\n", a, buff,yystate);
+ debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff,yystate);
 
   //if (chk4var)
   //a = NAMED_GEN;
@@ -1040,7 +1040,7 @@ if (sql_mode==0) {
 	if (allow==0) a=SQL_TEXT;
 }
 
-printf("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
+debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 #ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
    * can easily be confused - any keyword tokens (they start from 1000) 
