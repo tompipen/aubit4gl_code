@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.14 2004-02-11 19:45:02 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.15 2004-02-12 19:10:55 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -2390,3 +2390,15 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 
   return 0;
 }
+
+
+int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
+	return 0;
+}
+
+
+int A4GL_LL_menu_loop(ACL_Menu *menu) {
+	return -1;
+}
+
+

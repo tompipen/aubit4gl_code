@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.4 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.5 2004-02-12 19:10:03 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -29,6 +29,9 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
   ACL_Menu *menu;
   menu = menuv;
+
+
+  if (A4GL_LL_disp_h_menu(menu)) return;
 
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
@@ -334,8 +337,16 @@ A4GL_highlevel_menu_loop (void *menuv)
   int a;
   int key_pressed;
   ACL_Menu *menu;
+
+
+
   menu = menuv;
   A4GL_chkwin ();
+
+  a=A4GL_LL_menu_loop(menu);
+  if (a>=0) return a;
+
+
   if (menu->gw_x < 0)
     {
       char *ptr = 0;

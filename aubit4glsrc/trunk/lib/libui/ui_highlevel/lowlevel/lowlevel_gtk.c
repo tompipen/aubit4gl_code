@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.22 2004-02-12 18:27:27 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.23 2004-02-12 19:10:55 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -565,12 +565,16 @@ void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
 
 
 if (x==0&&y==0&&h==0&&w==0) {
+	GtkWidget *vbox;
+	GtkWidget *bb;
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
         gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+1)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
         gtk_window_set_title (GTK_WINDOW (win), "4GL Application");
         gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
+	vbox=gtk_vbox_new(0,0);
 	//printf("set_name appwindow");
 	fixed = gtk_fixed_new ();
+	bb=gtk_vbutton_box_new();
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
@@ -578,9 +582,11 @@ if (x==0&&y==0&&h==0&&w==0) {
 #endif
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
-        gtk_container_add (GTK_CONTAINER (win), fixed);
+        gtk_container_add (GTK_CONTAINER (vbox), fixed);
+        gtk_container_add (GTK_CONTAINER (vbox), bb);
+        gtk_container_add (GTK_CONTAINER (win), vbox);
 	win_screen=fixed;
-        gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width())*gui_xwidth, (A4GL_LL_screen_height())*gui_yheight);
+        gtk_widget_set_usize (GTK_WIDGET (fixed), (A4GL_LL_screen_width())*gui_xwidth, (A4GL_LL_screen_height())*gui_yheight);
         gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
 	//gtk_widget_show (GTK_WIDGET (win));
         gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (A4GL_delete_event), win);
@@ -2790,5 +2796,23 @@ printf("Add vbox to fixed..");
 
 int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
 	        return 0;
+}
+
+
+int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
+	if (A4GL_isyes(acl_getenv("TRADMENU"))) {
+	        return 0;
+	}
+	return 1;
+}
+
+
+
+int A4GL_LL_menu_loop(ACL_Menu *menu) {
+	if (A4GL_isyes(acl_getenv("TRADMENU"))) {
+	        return -1;
+	}
+	sleep (2);
+	return 0;
 }
 
