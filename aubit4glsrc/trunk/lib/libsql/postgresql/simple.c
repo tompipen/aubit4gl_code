@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.11 2004-03-25 18:07:51 mikeaubury Exp $
+# $Id: simple.c,v 1.12 2004-03-29 08:15:45 mikeaubury Exp $
 #*/
 
 
@@ -393,6 +393,30 @@ fixtype (char *type, int *d, int *s)
 
 }
 
+
+
+static struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+char *ptr2;
+char *ptrn;
+char buff[256];
+A4GL_trim(val);
+ptr2=val;
+while (1) {
+        ptrn=strtok(ptr2,",");
+        if (ptrn==0) break;
+        if (ptr2) {ptr2=0;}
+
+        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+
+        if (ptr==0) {
+                ptr=(struct expr_str *)A4GL_new_expr(buff);
+        } else {
+                A4GL_append_expr(ptr,buff);
+        }
+
+}
+return ptr;
+}
 void *
 A4GLSQL_get_validation_expr(char *tabname,char *colname) 
 {
@@ -401,27 +425,18 @@ char val[65];
 char *ptr=0;
 int nrows=0;
 int a;
-
-    A4GL_debug ("Ooops - A4GLSQL_get_validation_expr not implemented in simple PG plug-in");
-	return 0;
-	
-	
-	
-	
 	
 	
 	sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
 
-
   res = PQexec (con, buff);
-
 
   switch (PQresultStatus (res))
     {
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
       	nrows = PQntuples (res);
-      	A4GL_debug ("Returns %d fields", nfields);
+      	A4GL_debug ("Returns %d fields", nfields);break;
 
     case PGRES_EMPTY_QUERY:
     case PGRES_COPY_OUT:
@@ -437,13 +452,11 @@ int a;
   if (!nrows) {
 	return 0;
   }
-
   for (a=0;a<nrows;a++) {
 		strcpy(val,PQgetvalue(res,a,0));
 		ptr=A4GL_add_validation_elements_to_expr(ptr,val);
 
   }
-  PQclear(res);
 
   return ptr;
 	
