@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.72 2004-01-13 17:34:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.73 2004-03-04 08:29:54 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.72 2004-01-13 17:34:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.73 2004-03-04 08:29:54 mikeaubury Exp $";
 #endif
 
 
@@ -2416,7 +2416,7 @@ printField (FILE * unloadFile, int idx, char *descName)
 /* 	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
+A4GLSQL_unload_data (char *fname_o, char *delims, char *sqlStr, int nbind,
 		     struct BINDING *ibind)
 {
   int cnt = 0;
@@ -2430,20 +2430,25 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
   int colcnt;
   int coltype;
   EXEC SQL END DECLARE SECTION;
-
+  char *fname;
   A4GL_debug ("Unload data..");
+  fname=strdup(fname_o); A4GL_trim(fname);
   unloadFile = (FILE *) A4GL_mja_fopen (fname, "wt");
   if (unloadFile == (FILE *) 0)
     {
     /** @todo : Generate some error code compatible with informix 4gl */
+	free(fname);
       return;			/* return 1; */
     }
 
 
-
+  A4GL_debug("prepare : %s",strSql);
   EXEC SQL PREPARE stUnload FROM:strSql;
-  if (isSqlError ())
-    return;			/* return 1; */
+  A4GL_debug("Prepared..");
+  if (isSqlError ()) {
+	free(fname);
+    	return;			/* return 1; */
+  }
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descUnload' WITH MAX 1024;
 
@@ -2452,24 +2457,30 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
   if (isSqlError ())
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+	free(fname);
       return;			/* return 1; */
     }
 
 
+  A4GL_debug("Described");
 
   EXEC SQL GET DESCRIPTOR 'descUnload':numberOfColumns = COUNT;
 
   if (isSqlError ())
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+	free(fname);
       return;			/* return 1; */
     }
 
 
+  A4GL_debug("Declare.");
   EXEC SQL DECLARE crUnload CURSOR FOR stUnload;
+  A4GL_debug("Declared");
   if (isSqlError ())
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+	free(fname);
       return;			/* return 1; */
     }
   processInputBind ("escInpUnload", nbind, ibind);
@@ -2487,6 +2498,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
   if (isSqlError ())
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+	free(fname);
       return;			/* return 1; */
     }
 
@@ -2499,6 +2511,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
       if (isSqlError ())
 	{
 	  EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+	free(fname);
 	  return;		/* return 1; */
 	}
       if (strcmp (SQLSTATE, "02000") == 0)
@@ -2526,6 +2539,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
   if (isSqlError ())
     rc = 1;
+	free(fname);
   return;			/* return 0; */
 }
 

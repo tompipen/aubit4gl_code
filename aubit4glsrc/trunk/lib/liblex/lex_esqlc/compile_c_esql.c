@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.72 2004-03-03 13:18:05 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.73 2004-03-04 08:29:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.72 2004-03-03 13:18:05 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.73 2004-03-04 08:29:17 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1245,7 +1245,11 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 		if (ptr[a]=='\n') ptr[a]=' ';
 	}
   print_conversions('i');
+  if (scan_variable (sql) == -1) {
   	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
+  } else {
+  	printc ("A4GLSQL_unload_data(%s,%s, %s,%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
+  }
 	printc("}");
   }
 }
