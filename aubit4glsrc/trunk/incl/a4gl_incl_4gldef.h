@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.67 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.68 2004-05-11 11:15:16 saferreira Exp $
 */
 
 /**
@@ -55,7 +55,7 @@
 	#endif
 #endif // _NO_SYSINCL_
 
-#ifdef __cplusplus
+ifdef __cplusplus
 
 extern "C"
 {
