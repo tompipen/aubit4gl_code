@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.14 2003-05-25 03:47:40 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.15 2003-07-21 09:22:08 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -192,13 +192,22 @@ make install
 /opt/aubit4gl/bin/fdecompile
 /opt/aubit4gl/bin/mcompile
 /opt/aubit4gl/bin/mdecompile
-/opt/aubit4gl/bin/mkmess
+#/opt/aubit4gl/bin/mkmess
+/opt/aubit4gl/bin/amkmessage
+/opt/aubit4gl/bin/unmkmessage
+
 /opt/aubit4gl/bin/loadmap
 /opt/aubit4gl/bin/fshow
 /opt/aubit4gl/bin/aubit-config
 /opt/aubit4gl/bin/xgen
 /opt/aubit4gl/bin/aace
 /opt/aubit4gl/bin/adecompile
+
+#FIXME:
+#error: File not found: /opt/aubit4gl/bin/convertsql
+#error: File not found: /opt/aubit4gl/bin/aace_4gl
+#error: File not found: /opt/aubit4gl/bin/aace_perl
+#error: File not found: /opt/aubit4gl/bin/ecpg_wrap
 
 #Shell scripts:
 /opt/aubit4gl/bin/4glpc
@@ -208,6 +217,7 @@ make install
 /opt/aubit4gl/bin/aubit
 /opt/aubit4gl/bin/genmake
 /opt/aubit4gl/bin/prepmake
+
 
 #Include files:
 /opt/aubit4gl/incl/a4gl_incl_4glhdr.h

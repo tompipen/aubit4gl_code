@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.177 2003-07-20 06:53:17 afalout Exp $
+dnl # $Id: configure.in,v 1.178 2003-07-21 09:21:47 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1600,6 +1600,45 @@ AC_ARG_WITH(pgsql,
 
 	#PostgreSQL ESQL/C pre-compiler:
 	AC_PATH_PROG(PG_ESQLC, ecpg, no)
+
+    if test "$PG_ESQLC" != "no"; then
+		AC_MSG_CHECKING(PG ESQL Informix compatibility)
+		PG_ESQLC_VERSION=`ecpg -v 2>&1  | head -1 | sed -e 's/ecpg - the postgresql preprocessor, version: //'`
+		#Thu Feb 13 14:06:28 CET 2003
+		#        - Started working on an Informix compatibility mode. With option "-C
+		#          INFORMIX" set, ecpg now accepts "$" as alias for "exec sql" and to
+		#          denote variables inside SQL statements.
+		#
+		#Fri Jul 18 16:31:10 CEST 2003
+		#
+		#        - Added some more compatibility features to the parser.
+		#        - Set ecpg version to 3.0.0
+		#        - Set ecpg library to 4.0.0
+		#        - Set pgtypes library to 1.0.0
+		#        - Set compat library to 1.0.0
+
+		if test "$PG_ESQLC_VERSION" != ""; then
+			case "$PG_ESQLC_VERSION" in
+
+				2.* | 1.*)
+			    	AC_MSG_RESULT(No-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=no
+				    ;;
+				*.*.*) #3.0.0 and up
+			    	AC_MSG_RESULT(Yes-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=yes
+		            ;;
+				*)
+			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=no
+				    ;;
+
+	        esac
+        else
+	    	AC_MSG_RESULT(No-Cannot read version number)
+			PG_ESQLC_IFXCOMPAT=no
+        fi
+    fi
 
 	AC_MSG_CHECKING(PG ESQL connector support)
 	if test "$ac_cv_lib_pq_main" = "yes" ; then
@@ -3544,16 +3583,18 @@ else
 	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
     #setting - this will limit Aubit DB connectivity to PostgreSQL ONLY.
     #Postgres - the ecpg needs to be the absolute latest CVS
-	#version which has support for the "-C INFORMIX" flag (IIRC).
+	#version which has support for the "-C INFORMIX" flag.
 	#Also - this version relies on a few backend changes for more Informix
 	#compatibilty - some of which won't make it into the official postgres
 	#releases and will need special patches...
 	#All these are available (open source etc) - they are just not what most people
 	#will have..
-	#if test "$PG_ESQLC" != "no" ; then
-	#	A4GL_LEXTYPE=EC
-	#	A4GL_LEXDIALECT=POSTGRES
-    #fi
+	if test "$PG_ESQLC" != "no" ; then
+		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+			A4GL_LEXTYPE=EC
+			A4GL_LEXDIALECT=POSTGRES
+        fi
+    fi
 
     #If we have Informix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
     #setting - this will limit Aubit DB connectivity to Informix ONLY.

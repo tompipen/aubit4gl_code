@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.19 2003-07-20 06:53:24 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.20 2003-07-21 09:22:08 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4163,4 +4163,117 @@ driver - which very much depends on which one you choose...
 
 =============================================================================
 
+On Sunday 20 July 2003 7:58 am, Andrej Falout wrote:
+>
+> 1) What is the version number of required ecpg - so I can autoconf-igure
+> for that?
+
+Don't know - I'd just leave this out for now - most of the changes will be in
+postgres 7.4 when it goes live...
+So I'd probably wait and check for that..
+
+>
+> 2) Where are the PG patches required?
+
+I'll load them up to www.aubit.com/aubit4gl
+
+>
+> 3) Is there a way to test if the patch was applied to postmaster? Maybe
+> test for a particular function in particular library file?
+
+Not to my knowledge (but I'm not handling that side of things)
+
+>
+> 4) Will PG patched like that handle all Informix SQL dialect, or...?
+>
+Almost all..
+There are a couple of exceptions, serials don't return sqlca.sqlerrd[2] and
+datetimes are synonyms for timestamp - so you can't datetime year to day..
+
+> > so how do you get created serial?
+>
+> You need to look at the oid (like rowid) of the last row inserted, and
+> reselect it IIRC.
+
+
+>
+> 5) What is the status of libLEX_CS at the moment?
+Still in the planning stage..
+
+>
+> 6) Which C# compiler do you use? Mono? What is the name of the executable
+> of the C# compiler I need to test for in configure?
+
+Mono - however I've only managed to get this installed on my laptop - not my
+development box
+
+>
+> 7) What is the easiest way to test this functionality?
+>
+
+Don't for now - Its still very experimental, it will be a fair while until its
+usable
+
+>
+> While on the subject, do you plan to update SWIG definitions to re-enable
+> Aubit Perl output?
+
+Yes - mostly from .spec files
+
+
+
 =============================================================================
+> lib/libDATA_menu_list.so
+> lib/libDATA_report.so
+> lib/libDATA_struct_form.so
+
+These are used by the generic packers to detail the format of the output and
+are required for a binary dist.
+
+> lib/libesqlhelper_funcs.so
+
+This is a set of functions that copy from and to a native datatype and Aubits.
+For example - decimal - Informix, Postgres and Aubit have different types for
+this, we need to copy from the database type to something neutral (like a
+string for example), then down to Aubit, or from Aubit to something neutral
+and down to a database type.
+When compiling Aubit down to esql/ecpg - you need to add -lesqlhelper_funcs to
+get these included (otherwise you get missing A4GL_copy_datatype functions).
+Depending on which database you are targetting - you'd use a different
+esqlhelper_funcs..
+The one thats there at the minute compiles fine for Informix and Postgres.
+
+> lib/libXDRPACKER_menu_list.so
+> lib/libXDRPACKER_report.so
+> lib/libXDRPACKER_struct_form.so
+
+These are used by the XDR packers (in the same way as the libDATA stuff is for
+Generic) and are required for a binary dist.
+
+==============================================================================
+
+Subject: Informix to PostgreSQL (JDBC)
+From: "Nicolas Bazin" <nbazin@ingenico.com.au>
+Date: Fri, 12 Apr 2002 10:31:16 +1000
+
+Just to let you know that you can use the transfer tool of the hsqldb JAVA database to transfer database from Informix to Postgres. I have used it  to transfer my application from IDS 7.3 to Postgres 7.2.1. Because it relies on JDBC, it can be used/expended to support other databases.
+
+It supports:
+- tables structure creation,
+- default field value,
+- index creation (unique or not),
+- data transfer,
+- foreign keys creation,
+- it supports schema (to read the source)
+- autoincrement fields
+
+As it's  based on JDBC, it cannot extract VIEWs or store procedures. User privilege are not created even though it is available from the JDBC.
+A further extension would then be:
+support of GRANT and also the possibility to transfer to a specific schema.
+
+You can download it at http://prdownloads.sourceforge.net/hsqldb/hsqldb_1_7_0_RC4.zip
+The transfer tool is independent of the database. It's in the src/org/hsqldb/util directory you also need the src/org/hsqldb/lib directory.
+
+
+==============================================================================
+
