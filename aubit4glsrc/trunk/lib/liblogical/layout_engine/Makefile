@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2004-08-08 01:42:17 afalout Exp $
+# $Id: Makefile,v 1.8 2004-08-31 13:45:50 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -114,7 +114,7 @@ all: ${ALL}
 
 ${ROOT}/bin/layout_engine: API_layout.h ${OBJS}
 #	${CC} -rdynamic -g ${OBJS} -o $@ ${LFLAGS}  
-	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${SO_LDFLAGS} ${CFLAGS} -o $@ ${OBJS} ${LINKLIBS} ${GTKLIBS}
+	${LD} -g ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ ${OBJS} ${LINKLIBS} ${GTKLIBS}
 #	-Wl,--export-dynamic
 
 API_layout.c: API_layout.spec
