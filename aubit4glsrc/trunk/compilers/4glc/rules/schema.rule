@@ -43,7 +43,7 @@ op_no_log :
 {strcpy($<str>$,"");} 
 | WITH_NO_LOG
 {
-if (A4GL_isyes(acl_getenv("OMIT_NO_LOG"))) {
+if (A4GL_isyes(acl_getenv("A4GL_OMIT_NO_LOG"))) {
 	strcpy($<str>$,"");
 } else {
 	sprintf($<str>$," %s ",$<str>1);
