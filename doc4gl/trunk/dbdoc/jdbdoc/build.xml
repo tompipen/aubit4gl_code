@@ -1,9 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Written to assume that classpath is rooted in the current directory. --><!-- So this should be OK if you make this script in the root of a filesystem. --><!-- If not, you may prefer to adjust the basedir, or move some directories around. --><!-- The idea is that both Ant and NetBeans have to know what the package root is --><!-- for the classes in your application. --><project basedir="." default="all" name="myapp">
+<!-- Written to assume that classpath is rooted in the current directory. -->
+<!-- So this should be OK if you make this script in the root of a filesystem. -->
+<!-- If not, you may prefer to adjust the basedir, or move some directories around. -->
+<!-- The idea is that both Ant and NetBeans have to know what the package root is -->
+<!-- for the classes in your application. -->
+
+<project basedir="." default="all" name="myapp">
 
     <!-- Don't worry if you don't know the Ant syntax completely or need help on some tasks! -->
     <!-- The standard Ant documentation can be downloaded from AutoUpdate and -->
     <!-- and then you can access the help in menu Help | Help Sets | Ant 1.5.1 Manual. -->
+
+
+
+<!-- ===================== Property Definitions =========================== -->
+
+
+<!--
+
+  Each of the following properties are used in the build script.
+  Values for these properties are set by the first place they are
+  defined, from the following list:
+
+  * Definitions on the "ant" command line (ant -Dfoo=bar compile).
+
+  * Definitions from a "build.properties" file in the top level
+    source directory of this application.
+
+  * Definitions from a "build.properties" file in the developer's
+    home directory.
+
+  * Default definitions in this build.xml file.
+
+  You will note below that property values can be composed based on the
+  contents of previously defined properties.  This is a powerful technique
+  that helps you minimize the number of changes required when your development
+  environment is modified.  Note that property composition is allowed within
+  "build.properties" files as well as in the "build.xml" script.
+
+-->
+
+  <property file="build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+<!-- ================== Custom Ant Task Definitions ======================= -->
+
+
+<!--
+
+  These properties define custom tasks for the Ant build tool that interact
+  with the "/manager" web application installed with Tomcat 4.  Before they
+  can be successfully utilized, you must perform the following steps:
+
+  - Copy the file "server/lib/catalina-ant.jar" from your Tomcat 4
+    installation into the "lib" directory of your Ant installation.
+
+  - Create a "build.properties" file in your application's top-level
+    source directory (or your user login home directory) that defines
+    appropriate values for the "manager.password", "manager.url", and
+    "manager.username" properties described above.
+
+  For more information about the Manager web application, and the functionality
+  of these tasks, see <http://localhost:8080/tomcat-docs/manager-howto.html>.
+
+-->
+
+
+  <taskdef name="list"    classname="org.apache.catalina.ant.ListTask"/>
+  
+
+<!-- not used currently: -->
+  <taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
+  <taskdef name="reload"  classname="org.apache.catalina.ant.ReloadTask"/>
+  <taskdef name="remove"  classname="org.apache.catalina.ant.RemoveTask"/>
+
+  <taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+  <taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
+  <taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
+  <taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
+  <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+
+
 
     <target name="init">
         <!-- You can set up any variables you want used throughout the script here. -->
@@ -100,7 +178,7 @@
       </javac>
     </target>
     
-    
+
     <!-- Compile only the perform tools --> 
     <target depends="init,compile.perform.parser" description="Compilation of perform tools." 
             name="compile.perform">
@@ -119,5 +197,37 @@
          <classpath><pathelement location="/usr/local/antlr"/></classpath>
       </antlr>
     </target>
+
+
+<!-- ====================== List Target =================================== -->
+
+<!--
+
+  The "list" target asks the specified Tomcat 4 installation to list the
+  currently running web applications, either loaded at startup time or
+  installed dynamically.  It is useful to determine whether or not the
+  application you are currently developing has been installed.
+
+-->
+
+  <target name="list"
+   description="List installed applications on servlet container">
+
+    <echo message="servlet container URL=${manager.url}"/>
+
+    <list    url="${manager.url}"
+        username="${manager.username}"
+        password="${manager.password}"/>
+
+  </target>
+
+
+  <target name="show"
+   description="Show stuff">
+
+    <echo message="servlet container URL=${manager.url}"/>
+
+  </target>
+
 
 </project>

@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.9 2003-05-15 10:23:26 afalout Exp $
+#  $Id: Makefile.in,v 1.10 2003-07-15 07:14:41 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -109,6 +109,10 @@ endif
 else
 	@echo "Ant tool not found - cannot compile"
 endif
+
+list:
+	@echo "APP_INSTALLED=${APP_INSTALLED}"
+
 
 # =========================================================================
 #                              Install

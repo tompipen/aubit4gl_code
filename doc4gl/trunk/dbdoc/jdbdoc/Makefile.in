@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.2 2003-07-13 06:11:07 afalout Exp $
+#  $Id: Makefile.in,v 1.3 2003-07-15 07:15:19 afalout Exp $
 #  =========================================================================
 
 ROOT=../..
@@ -60,17 +60,30 @@ TOMCAT_ANT_F=catalina-ant.jar
 #path and name of the Tomcat extensions to Ant:
 TOMCAT_ANT  =${JAVA_SHARED}/${TOMCAT_ANT_F}
 
-#additional CLASSPATH values needed for the execution of Ant:
-DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
-
 #Declare targets that do not generate any files, to avoid conflicts:
 .PHONY : all install clean deinstall
 
+#Info : http://jakarta.apache.org/log4j/docs/index.html
+LOG4J=jakarta-log4j-1.2.8
+LOG4J_TAR=${LOG4J}.tar.gz
+LOG4J_URL=http://www.apache.org/dist/jakarta/log4j/binaries/${LOG4J_TAR}
+LOG4J_CLASSPATH=./${LOG4J}/dist/lib/log4j-1.2.8.jar
+
+
+#MoreData OLTP library, used for database connections:
+#OLTP_CLASSPATH=../navigator/jsp/oltp-stable-src.jar
+
+#additional CLASSPATH values needed for the execution of Ant:
+DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${LOG4J_CLASSPATH}:${OLTP_CLASSPATH}:${CLASSPATH}
+
+
+
+#BUILD FAILED
+#XML parser factory has not been configured correctly: Provider for javax.xml.parsers.SAXParserFactory cannot be found
 
 #Find out if ${JSP_APP_NAME} was already installed under Tomcat:
 #FIXME: make evaluates this no mater which target we are invoking, causig a
 #delay EVERY TIME WE INVOKE MAKE !
-
 ALL_APPS	:=$(shell export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list)
 TMP			:=$(findstring ${JSP_APP_NAME},$(ALL_APPS))
 ifeq "$(TMP)" "${JSP_APP_NAME}"
@@ -82,7 +95,6 @@ else
 endif
 
 
-
 # =========================================================================
 #                        	   Targets
 # =========================================================================
@@ -90,6 +102,8 @@ endif
 #############################
 #Default make target, invokes "ant" target
 all: ant
+#build.xml for some reason has a definition for directory "lib":
+	mkdir -p lib
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             Doc4gl browser successfully compiled.                  |"
@@ -97,9 +111,9 @@ all: ant
 	@echo ""
 
 #############################
-#Invokes ant with default settings to compile all .java files and create 
+#Invokes ant with default settings to compile all .java files and create
 #build tree:
-ant: ${TOMCAT_ANT}
+ant: ${TOMCAT_ANT} ${LOG4J_TAR}
 ifneq "${ANT}" "no"
 ifneq "${JAVAC}" "no"
 #directory missing on some Tomcat installations, but needed by build.xml:
@@ -111,6 +125,14 @@ endif
 else
 	@echo "Ant tool not found - cannot compile"
 endif
+
+${LOG4J_TAR}:
+	wget ${LOG4J_URL}
+	tar xvzf ${LOG4J_TAR}
+#	cp ${LOG4J}/dist/lib/*.jar .
+
+list:
+	@echo "APP_INSTALLED=${APP_INSTALLED}"
 
 # =========================================================================
 #                              Install
@@ -449,7 +471,8 @@ show:
 #############################
 # Clean the source code tree; leave only files that are in the CVS:
 clean:
-	$(RM) *.class *.jar *.bak *.log
+#Do not remove *.jar in root - this would remove Log4J jar file !
+	$(RM) *.class *.bak *.log
 	$(RM) web/*.bak
 	$(RM) web/WEB-INF/*.bak
 	$(RM) src/org/aubit4gl/cui/*.bak

@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.16 2003-07-13 06:11:00 afalout Exp $
+#  $Id: Makefile.in,v 1.17 2003-07-15 07:13:53 afalout Exp $
 #
 #  ==========================================================================
 
@@ -33,7 +33,7 @@ ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
 .PHONY:all parser manager browser install clean install.parser \
 		install.manager install.browser deinstall install.cpan install.dbi \
 		install.tk install.unit install.dbd-informix missing.perlmods \
-        all.perlmods test
+        all.perlmods test dbdoc
 
 
 # =========================================================================
