@@ -38,6 +38,11 @@ if (mode==3) {
 sh=screen_height();
 sw=screen_width();
 
+if (strcasecmp(acl_getenv("TRIMDUMP"),"24x80")==0) { if (sh>24) sh=24; if (sw>80) sw=80; }
+if (strcasecmp(acl_getenv("TRIMDUMP"),"25x80")==0) { if (sh>24) sh=25; if (sw>80) sw=80; }
+if (strcasecmp(acl_getenv("TRIMDUMP"),"24x132")==0) { if (sh>24) sh=24; if (sw>132) sw=132; }
+if (strcasecmp(acl_getenv("TRIMDUMP"),"25x132")==0) { if (sh>24) sh=25; if (sw>132) sw=132; }
+
 f=fopen(ptr,"w");
 if (f==0) {
 	debug("Unable to open dump file");

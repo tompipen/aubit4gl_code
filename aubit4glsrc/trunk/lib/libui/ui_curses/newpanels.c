@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.26 2003-04-23 16:37:26 mikeaubury Exp $
+# $Id: newpanels.c,v 1.27 2003-04-27 17:14:54 mikeaubury Exp $
 #*/
 
 /**
@@ -815,8 +815,11 @@ display_form (struct s_form_dets *f)
   debug ("Scale form returns %d %d", rows, cols);
   debug ("Current window %d %d", windows[currwinno].h,
 	 windows[currwinno].w);
-  /* rows+=fl; */
-  rows++;
+
+  if (windows[currwinno].winattr.border) {
+	rows++;
+  } else {
+  }
 
   if (rows - windows[currwinno].winattr.border > windows[currwinno].h + 1)
     {
@@ -830,8 +833,9 @@ display_form (struct s_form_dets *f)
     }
 
 
-	/* fix - not sure whats going on here bit form_details.border is set to 1
-   for the screen! */
+	/* fix - not sure whats going on here bit form_details.border is set to 1 for the screen! */
+
+
   f->form_details.border = windows[currwinno].winattr.border;
 
   if (f->form_details.border)
@@ -851,12 +855,16 @@ display_form (struct s_form_dets *f)
     {
       debug ("Window details returns it has *NO* border ");
     }
-
   debug("derwin - %d rows %d cols form line=%d",rows,cols,fl);
-  if (windows[currwinno].winattr.border)
-    drwin = derwin (w, rows, cols, fl, 1);
-  else
-    drwin = derwin (w, rows, cols, fl - 1, 0);
+
+  if (windows[currwinno].winattr.border) {
+		debug("MJAPASS1");
+    		 drwin = derwin (w, rows, cols, fl+1, 1);
+	} else {
+		 debug("MJAPASS2 rows=%d cols=%d fl=%d",rows,cols,fl);
+		 drwin = derwin (w, rows, cols, fl-1, 0);
+		
+   	}
 
 #ifdef DEBUG
   {    debug ("drwin=%p", drwin);  }
@@ -867,6 +875,8 @@ display_form (struct s_form_dets *f)
       exitwith ("Window is too small to display this form");
       return 0;
     }
+
+  wclear(drwin);
   a = set_form_win (f->form, w);
 
   if (a == E_POSTED)
@@ -920,12 +930,17 @@ WINDOW *
 display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 {
   WINDOW *w;
+int nlines;
   int rows, cols;
   char buff[80];
   chkwin ();
   debug("display_form_new_win - name=%s\n",name);
   scale_form (f->form, &rows, &cols);
-  rows = f->fileform->maxline;
+  if (f->form_details.border) {
+  	rows = f->fileform->maxline-1;
+  } else {
+  	rows = f->fileform->maxline;
+  }
   cols = f->fileform->maxcol;
   debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x, y);
 
@@ -934,7 +949,11 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 #ifdef DEBUG
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */  }
 #endif
-  w = create_window (name, x, y, cols, rows + f->form_details.form_line,
+  nlines=rows+f->form_details.form_line-1;
+  if (f->form_details.border) {
+	nlines++;
+  }
+  w = create_window (name, x, y, cols, nlines,
 		     1,
 		     f->form_details.form_line,
 		     f->form_details.error_line,
