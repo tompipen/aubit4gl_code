@@ -62,8 +62,10 @@ fi
 rm -rf $WWW/*
 cd aubit4glwww
 cp -r * $WWW
-cd $WWW
 
+echo "Aubit web site pages (aubit4glwww) refreshed from CVS"
+
+cd $WWW
 
 if [ "$1" = "-anon" ]
 then
@@ -73,6 +75,6 @@ else
 	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
 fi
 
-echo "Aubit web site refreshed from CVS"
+echo "Aubit web site doccumentation (aubit4gldoc) refreshed from CVS"
 sh refresh_hy4gl.sh $1
 
