@@ -1,8 +1,8 @@
 
 
-cvs update -d 
-make cleanall
-./configure --with-efence=/usr/lib
+#cvs update -d 
+#make cleanall
+#./configure --with-efence=/usr/lib
 make log
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/libui/ui_curses
@@ -11,6 +11,7 @@ sh make_static
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/libsql/esqlc
 sh make_static
+sh make_simple
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/extra_libs/esqlc

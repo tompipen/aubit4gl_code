@@ -43,6 +43,15 @@
         sprintf(yylval.str, "\n%s",yytext);
         return (CH);
 }
+
+[v<>+^] {
+        if (graphics_mode==0) REJECT;
+	if (!A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))) REJECT;
+        colno++;
+        sprintf(yylval.str, "\n%s",yytext);
+        return (CH);
+}
+
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
 "attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}

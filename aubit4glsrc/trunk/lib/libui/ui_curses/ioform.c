@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.34 2003-06-15 12:20:23 mikeaubury Exp $
+# $Id: ioform.c,v 1.35 2003-06-16 06:51:01 mikeaubury Exp $
 #*/
 
 /**
@@ -184,17 +184,25 @@ A4GL_make_label (int frow, int fcol, char *label)
 {
   FIELD *f;
   int l;
+  int is_graphics=0;
   l = strlen (label);
   A4GL_debug ("A4GL_make_label : '%s'", label);
   
   if (l==2 && label[0]=='\n') {
 	A4GL_debug("Making graphic character %c @ frow=%d fcol=%d\n",label[1],frow,fcol);
   	f = new_field (1, 1, frow, fcol, 0, 0);
+  } else {
+	A4GL_debug("Making normal label %s @ frow=%d fcol=%d\n",label,frow,fcol);
+  	f = new_field (1, l, frow, fcol, 0, 0);
+  }
 
-	if (f==0) {
-		A4GL_exitwith("Unable to create field");
-		return 0;
-	}
+  if (f==0) {
+	A4GL_exitwith("Unable to create field");
+	return 0;
+  }
+
+  if (l==2 && label[0]=='\n') {
+	is_graphics=1;
 
 	if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
 		switch (label[1]) {
@@ -204,32 +212,51 @@ A4GL_make_label (int frow, int fcol, char *label)
 			case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
 			case '-': A4GL_mja_set_field_buffer_contrl (f, 0, '-'); break;
 			case '|': A4GL_mja_set_field_buffer_contrl (f, 0, '|'); break;
+			default : A4GL_debug("Unknown graphic : %c",label[1]); is_graphics=0;
 		}
 	} else {
-		set_field_back(f, A_ALTCHARSET);
-		switch(label[1]) {
-			case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
-			case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
-			case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
-			case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
-			case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
-			case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
-			default : A4GL_debug("Unknown graphic : %c",label[1]); 
-					A4GL_exitwith("Unknown graphic"); return 0;
+		if (!A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS")))  {
+			set_field_back(f, A_ALTCHARSET);
+			switch(label[1]) {
+				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
+				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
+				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
+				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
+				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
+				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
+				default : A4GL_debug("Unknown graphic : %c",label[1]); is_graphics=0;
+			}
+		} else {
+			set_field_back(f, A_ALTCHARSET);
+			A4GL_debug("Extended graphics : %c",label[1]);
+			switch(label[1]) {
+				case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
+				case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
+				case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
+				case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
+				case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
+				case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
+
+				case '>': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LTEE&0xff); break;
+				case '<': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_RTEE&0xff); break;
+				case '^': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_BTEE&0xff); break;
+				case 'v': 
+				case 'V': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_TTEE&0xff); break;
+				case '+': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_PLUS&0xff); break;
+				default : A4GL_debug("Unknown graphic : %c",label[1]); is_graphics=0;
+			}
 		}
 	}
-        set_field_opts (f, field_opts (f) & ~O_ACTIVE);
-
-
-	return f;
+	if (is_graphics) {
+        	set_field_opts (f, field_opts (f) & ~O_ACTIVE);
+		return f;
+	} else {
+		label[0]=label[1];
+		label[1]=label[0];
+	}
   }
 
 
-  f = new_field (1, l, frow, fcol, 0, 0);
-	if (f==0) {
-		A4GL_exitwith("Unable to create table field");
-		return 0;
-	}
   A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
 
   if (f)

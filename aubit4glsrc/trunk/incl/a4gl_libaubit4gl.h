@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.59 2003-06-10 22:20:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.60 2003-06-16 06:51:00 mikeaubury Exp $
 #
 */
 
@@ -795,6 +795,95 @@ extern "C"
   /* not strictly voids - but saves getting into the details */
   void *prepare_glob_sql (char *s, int ni, void *b);
 
+
+
+enum cmd_types {
+	FGL_CMD_PAUSE,
+	FGL_CMD_START_RPC,
+	FGL_CMD_STOP_RPC,
+	FGL_CMD_CALL,
+	FGL_CMD_CLOSE,
+	FGL_CMD_CODE,
+	FGL_CMD_COMMENT,
+	FGL_CMD_CONSTRUCT,
+	FGL_CMD_DEFER,
+	FGL_CMD_DISPLAY_CMD,  // DISPLAY / DISPLAY @
+	FGL_CMD_DISPLAY_FIELD_CMD,  // DISPLAY TO, DISPLAY BY NAME
+	FGL_CMD_DISPLAY_FORM,
+	FGL_CMD_ERROR,
+	FGL_CMD_EXIT,
+	FGL_CMD_CONTINUE,
+	FGL_CMD_EXIT_PROGRAM,
+	FGL_CMD_FOR,
+	FGL_CMD_FOREACH,
+	FGL_CMD_FREE,
+	FGL_CMD_GOTO,
+	FGL_CMD_CHECK_MENU,
+	FGL_CMD_UNHECK_MENU,
+	FGL_CMD_DISABLE,
+	FGL_CMD_ENABLE,
+	FGL_CMD_MSG_BOX,
+	FGL_CMD_IF,
+	FGL_CMD_INIT,
+	FGL_CMD_NEXT_FIELD,
+	FGL_CMD_NEXT_FORM,
+	FGL_CMD_INPUT,
+	FGL_CMD_SCROLL,
+	FGL_CMD_LABEL,
+	FGL_CMD_LET,
+	FGL_CMD_LINKED,
+	FGL_CMD_LINKED_DEL,
+	FGL_CMD_LINKED_UPD,
+	FGL_CMD_LOCATE,
+	FGL_CMD_AT_TERM,
+	FGL_CMD_RETURN,
+	FGL_CMD_MENU,
+	FGL_CMD_NEXT_OPTION,
+	FGL_CMD_SHOW_OPTION,
+	FGL_CMD_HIDE_OPTION,
+	FGL_CMD_MESSAGE,
+	FGL_CMD_OPEN_WINDOW,
+	FGL_CMD_OPEN_STATUSBOX,
+	FGL_CMD_OPEN_FORM,
+	FGL_CMD_OPEN_SESSION,
+	FGL_CMD_OPEN_CURSOR,
+	FGL_CMD_CONNECT,
+	FGL_CMD_OPTIONS,
+	FGL_CMD_PREPARE,
+	FGL_CMD_EXECUTE,
+	FGL_CMD_PROMPT,
+	FGL_CMD_GUI_PROMPT,
+	FGL_CMD_PUT,
+	FGL_CMD_START,
+	FGL_CMD_OUTPUT,
+	FGL_CMD_FINISH,
+	FGL_CMD_TERM_REP,
+	FGL_CMD_REPORT,
+	FGL_CMD_RUN,
+	FGL_CMD_DROPS,
+	FGL_CMD_CREATE,
+	FGL_CMD_UPD_STATS,
+	FGL_CMD_ALTER,
+	FGL_CMD_SET,
+	FGL_CMD_SLEEP,
+	FGL_CMD_SET_DATABASE,
+	FGL_CMD_SQL,
+	FGL_CMD_FLUSH,
+	FGL_CMD_DECLARE,
+	FGL_CMD_UNLOAD,
+	FGL_CMD_LOAD,
+	FGL_CMD_SQL_BLOCK,
+	FGL_CMD_WHENEVER,
+	FGL_CMD_CLEAR,
+	FGL_CMD_CURRENT_WIN,
+	FGL_CMD_SHOW,
+	FGL_CMD_HIDE,
+	FGL_CMD_MOVE
+};
+	
+	
+
+
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
 #define OP_MASK 		512|1024
@@ -953,6 +1042,13 @@ extern "C"
   };
 
 #endif
+
+
+
+
+
+
+
   double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 
 #define REP_TYPE_PDF 			1

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.5 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: attributes.c,v 1.6 2003-06-16 06:51:00 mikeaubury Exp $
 #*/
 
 /**
@@ -284,5 +284,77 @@ A4GL_get_attr_from_string (char *s)
   return -1;
 }
 
+
+struct s_std_attr *A4GL_determine_attribute(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) {
+struct s_std_attr  std_options;
+struct s_std_attr  std_disp_form;
+struct s_std_attr  std_open_window;
+struct s_std_attr  *ptr_std_options;
+struct s_std_attr  *ptr_std_disp_form;
+struct s_std_attr  *ptr_std_open_window;
+
+int int_options=0;
+int int_disp_form=0;
+int int_open_window=0;
+
+switch(cmd_type) {
+        case FGL_CMD_DISPLAY_CMD:  // DISPLAY / DISPLAY @
+        case FGL_CMD_DISPLAY_FIELD_CMD:  // DISPLAY TO, DISPLAY BY NAME
+        case FGL_CMD_DISPLAY_FORM:
+  		int_options	=A4GL_get_option_value('d',4608);
+  		int_disp_form	=A4GL_get_curr_form_attr();
+  		int_open_window	=A4GL_get_curr_window_attr();
+}
+
+return 0;
+
+}
+
+
+struct s_std_attr *A4GL_determine_attribute_internal(
+struct s_std_attr *attrib_curr,
+struct s_std_attr *attrib_field,
+struct s_std_attr *syscol,
+struct s_std_attr *options,
+struct s_std_attr *disp_form,
+struct s_std_attr *open_window
+) {
+static struct s_std_attr rval;
+
+/*
+
+1. The ATTRIBUTE clause of the current statement. 
+
+2. The attributes from the field descriptions in the ATTRIBUTES section of the current form file. (See  Field Attribute Syntax  on page 6-34.) 
+
+3. The default attributes specified in the syscolatt table of any fields linked to database columns. To modify the syscolatt table, use the upscol utility. For information on using this utility, see Appendix B,  IBM Informix 4GL Utility Programs.  
+
+4. The ATTRIBUTE clause of the most recent OPTIONS statement. 
+
+5. The ATTRIBUTE clause of the current form in the most recent DISPLAY FORM statement. 
+
+6. The ATTRIBUTE clause of the current 4GL window in the most recent OPEN WINDOW statement. 
+
+7. The default reserved line positions and the default foreground color on your terminal.
+
+*/
+
+if (attrib_curr)  { memcpy(&rval,attrib_curr,	sizeof(struct s_std_attr)); return &rval; }
+if (attrib_field) { memcpy(&rval,attrib_field,	sizeof(struct s_std_attr)); return &rval; }
+if (syscol)       { memcpy(&rval,syscol,	sizeof(struct s_std_attr)); return &rval; }
+if (options)      { memcpy(&rval,options,	sizeof(struct s_std_attr)); return &rval; }
+if (disp_form)    { memcpy(&rval,disp_form,	sizeof(struct s_std_attr)); return &rval; }
+if (open_window)  { memcpy(&rval,open_window,	sizeof(struct s_std_attr)); return &rval; }
+
+
+
+}
+
+A4GL_get_curr_form_attr() {
+}
+A4GL_get_option_value() {
+}
+A4GL_get_curr_window_attr() {
+}
 
 /* =============================== EOF ================================== */
