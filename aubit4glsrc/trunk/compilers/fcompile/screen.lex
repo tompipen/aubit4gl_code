@@ -225,6 +225,15 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
 if (ignorekw!=1) REJECT;
+if (graphics_mode) {
+	if (strchr(yytext,'p')) REJECT;
+	if (strchr(yytext,'q')) REJECT;
+	if (strchr(yytext,'b')) REJECT;
+	if (strchr(yytext,'d')) REJECT;
+	if (strchr(yytext,'-')) REJECT;
+	if (strchr(yytext,'|')) REJECT;
+	if (strchr(yytext,'+')) REJECT;
+}
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
 return(NAMED);}
