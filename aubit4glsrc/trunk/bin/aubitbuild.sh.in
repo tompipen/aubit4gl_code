@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.32 2003-11-12 22:22:45 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.33 2004-08-22 10:13:52 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -34,7 +34,6 @@
 #directories for source archives
 
 # Am I forced to enter my password for every cvs command?
-
 #No, you can upload a shared key that will allow SSH sessions to be
 #established without the need to enter you password every time. Go to your
 #Account Maintainance page, click on the Edit Keys link and follow the
@@ -171,7 +170,6 @@ SRCSHORTNAME=@SHORTNAME@src
 BINSHORTNAME=@SHORTNAME@bin
 WINSETUPEXE_BASENAME=setup.exe
 FULLNAME='@FULLNAME@'
-#FULLNAME=Aubit
 AUBIT_VERSION=@AUBIT_VERSION@
 AUBIT_BUILD=@AUBIT_BUILD@
 
@@ -189,9 +187,20 @@ RPM_PATH=$RPM_ROOT/RPMS/i586
 RPMBUILD_PATH=$RPM_ROOT/BUILD
 RPMSRC_PATH=$RPM_ROOT/SOURCES
 
-ANYDAY=0
+#Do we build on any (every) day of the week, or every 5th day
+ANYDAY=1
 
-
+if test "$COMSPEC" != "" ; then 
+	#On Windows, do we build CygWin
+	#Note: with PDcurses TUI, there is little reason left to build for CygWin
+	BUILD_CYGWIN=0
+	
+	#On Windows, do we build MinGW
+	BUILD_MINGW=1
+else
+	BUILD_CYGWIN=0
+	BUILD_MINGW=0
+fi
 ## ==================================================================
 ##                      Platform dependent Configuration
 ## ==================================================================
@@ -482,7 +491,6 @@ fi
 
 chmod a+x $AUBITSRCDIR/bin/amake
 
-
 if test "$MAKE" = "1"; then
 
 		STOPONERROR=0   #Continue even if next statemets fails
@@ -502,8 +510,8 @@ if test "$MAKE" = "1"; then
 			EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
         fi
 
-        #deinall first, so that we don't accidentally link with CygWin dependent/non-dependent
-		#libaubit4gl still in the path:
+        #deinstall first, so that we don't accidentally link with CygWin 
+		#dependent/non-dependent libaubit4gl still in the path:
 		EXEC="make deinstall"; runexec
 
         LOGFILE=$CLEANLOG
@@ -528,7 +536,7 @@ if test "$MAKE" = "1"; then
         fi
 
 		TMP=`echo $PATH | grep MinGW`
-        if test "$TMP" != ""; then
+        if test "$TMP" != "" ; then
             #we already have MinGW in the path, but we first need to make CygWin version
             #for binary tarball:
             NEWPATH=`echo $PATH | sed -e 's/MinGW/M-i-n-G-W/'g`
@@ -569,6 +577,8 @@ if test "$MAKE" = "1"; then
 		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
 		#auto_cvs commit -m 'commit.build by aubitbuild.sh' failed with code 1
 		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
+		
+	if test "$BUILD_CYGWIN" = "1" -o "$COMSPEC" = "" ; then
 		EXEC="make log"; runexec
 		if [ "$VERBOSE" = "1" ]
 		then
@@ -581,7 +591,8 @@ if test "$MAKE" = "1"; then
 	        if test "$TMP" = ""; then
 	            echo "ERROR: libaubit4gl.dll DOES NOT depend on cygwin1.dll"
 	        fi
-            #store libUI_TUI.dll so we can package it with cygwin1.dll for native windows port later:
+            #store libUI_TUI.dll so we can package it with cygwin1.dll 
+			#for native windows port later:
             cp lib/libUI_TUI.dll /tmp
 		fi
 
@@ -622,6 +633,7 @@ if test "$MAKE" = "1"; then
 		EXEC="make clean"; runexec
 		LOGFILE=$TARLOG
 		EXEC="make tar.bin"; runexec
+	fi
 
 else
     echo "MAKE disabled ($MAKE)"
@@ -652,8 +664,13 @@ if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
     TARBALLBASENAME=`basename $TARBALL`
 else
 	if test "$MAKE" = "1"; then
-		echo "ERROR: binary archive not created."
-	    exit 8
+		if test "$BUILD_CYGWIN" = "1"; then
+			echo "ERROR: binary archive not created."
+			exit 8
+		else
+			TARBALL=NONE
+		    TARBALLBASENAME=NONE
+		fi
     fi
 fi
 
@@ -697,13 +714,16 @@ else
 	BINRPMBASENAME=`basename $BINRPM`
 fi
 
-if test "$WINSETUP" = "1"; then
+if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
     ################## make Windows installer #######################
 
-    #Move already created tarball out of the way, since we will need to do a "make clean.all"
-	NEWTARBALL=/var/tmp/$TARBALLBASENAME
-	mv $TARBALL $NEWTARBALL
-    TARBALL=$NEWTARBALL
+	if test "$TARBALL" != "NONE"; then
+		#Move already created tarball out of the way, since we will need to 
+		#do a "make clean.all"
+		NEWTARBALL=/var/tmp/$TARBALLBASENAME
+		mv $TARBALL $NEWTARBALL
+		TARBALL=$NEWTARBALL
+	fi
 
 
     NEWPATH=
@@ -720,6 +740,7 @@ if test "$WINSETUP" = "1"; then
 		TMP=`echo $PATH | grep MinGW`
         if test "$TMP" = ""; then
         #echo "--------------------------there is no MinGW in the path at all, add it:"
+			#FIXME: do not hard-code
 			NEWPATH="D:/MinGW/bin:/cygdrive/d/MinGW/bin:$PATH"
        		if test "$VERBOSE" = "1"; then
 				echo "Added MinGW to the PATH"
@@ -901,7 +922,9 @@ fi
 if test "$UPLOAD" = "1"; then
 	    #################### Upload all ##########################
 		EXEC="$AUTO_SF_SCP $SOURCETARNAME"; runexec
-		EXEC="$AUTO_SF_SCP $TARBALL"; runexec
+		if test "$TARBALL" != "NONE"; then
+			EXEC="$AUTO_SF_SCP $TARBALL"; runexec
+		fi
 
         if test "$SOURCERPM" != ""; then
 			EXEC="$AUTO_SF_SCP $SOURCERPM"; runexec
@@ -953,7 +976,7 @@ if test "$COMPARE" = "1"; then
         fi
     fi
 
-	if test "$TARBALLBASENAME" != ""; then
+	if test "$TARBALLBASENAME" != "" -a "$TARBALL" != "NONE"; then
 		if test " -f /tmp/$TARBALLBASENAME"; then
 			rm -f /tmp/$TARBALLBASENAME
 	    fi

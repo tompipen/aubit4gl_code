@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.130 2004-07-27 16:50:33 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.131 2004-08-22 10:13:52 afalout Exp $
 #
 */
 
@@ -74,6 +74,8 @@
 	#define bool_t int
 	#define u_int unsigned int
 
+	#include <limits.h> // SHRT_MIN SHRT_MAX
+	
 	//remove        #define __NEED_DLL_IMPORT__
 
 #endif
@@ -105,6 +107,9 @@
      #define __GNUC__ 3
      #define __VERSION__ "3.2 (mingw special 20020817-1)"
    */
+   
+	#include <limits.h> // SHRT_MIN SHRT_MAX   
+   
 #endif
 
 #if (defined(__MACH__) && defined(__APPLE__))
@@ -492,6 +497,9 @@
 	#include <time.h>
 	#include <math.h>		/* pow() */
 	#include <locale.h>		/* setlocale() */
+	
+	//on CygWin cause conflicts with glib-2.0/glib/gwin32.h
+	// with g_win32_ftruncate
 	#include <unistd.h>		/* sleep() close() write() usleep() */
 	#include <signal.h>		/* SIGINT */
 
