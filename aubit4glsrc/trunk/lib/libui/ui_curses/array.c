@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.13 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: array.c,v 1.14 2003-08-22 22:35:01 mikeaubury Exp $
 #*/
 
 /**
@@ -563,6 +563,8 @@ disp=dispv;
       disp->arr_line = 1;
       disp->cntrl = 1;
       disp->highlight = 0;
+      disp->attribute=attrib;
+
       A4GL_debug ("disparr2");
       if (disp->srec == 0)
 	{
@@ -773,11 +775,21 @@ int orig_set=0;
 	}
 
   for (a=nofields;a>=0;a--) {
+	int nattr;
   	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
 	A4GL_debug("f=%p",f);
-  	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, f);
+  	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, disp->attribute, f);
+	A4GL_debug("XXXX3 nattr=%d",nattr);
+
+	if (attr&AUBIT_ATTR_REVERSE) {
+		if (nattr&AUBIT_ATTR_REVERSE) 	nattr=nattr-AUBIT_ATTR_REVERSE;
+		else 				nattr=nattr+AUBIT_ATTR_REVERSE;
+	}
+
+
+	A4GL_debug("XXXX3 nattr now =%d (reverse=%d)",nattr,attr&AUBIT_ATTR_REVERSE);
 	A4GL_debug("Attr=%d",attr);
-  	if (attr != 0) A4GL_set_field_attr_with_attr (field_list[a], attr,FGL_CMD_DISPLAY_CMD);
+  	if (nattr != 0) A4GL_set_field_attr_with_attr (field_list[a], nattr,FGL_CMD_DISPLAY_CMD);
 
   	if (!blank) {
 			A4GL_debug("Displaying something..");
@@ -795,7 +807,7 @@ int orig_set=0;
   	A4GL_display_field_contents(field_list[a],disp->binding[a].dtype,disp->binding[a].size,cptr);
 
 	if (first_only) {
-		int was_disabled=0;
+		//int was_disabled=0;
 
 		set_current_field (formdets->form, field_list[a]);
 		pos_form_cursor(formdets->form);

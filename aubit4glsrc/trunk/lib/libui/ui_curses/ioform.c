@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.67 2003-08-20 20:36:50 mikeaubury Exp $
+# $Id: ioform.c,v 1.68 2003-08-22 22:35:01 mikeaubury Exp $
 #*/
 
 /**
@@ -903,24 +903,55 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 			  {
-				int allow_it_anyway=0;
+			    int allow_it_anyway = 0;
 
-				// We'll still allow it - so long as there is null in the include list
-				if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))  {
-                			if (A4GL_check_field_for_include ("",A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype))  {
-						allow_it_anyway=1;
-					}
-				} 
+			    // We'll still allow it - so long as there is null in the include list
+			    if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			      {
+				if (A4GL_check_field_for_include
+				    ("",
+				     A4GL_get_str_attribute (fprop,
+							     FA_S_INCLUDE),
+				     fprop->datatype))
+				  {
+				    allow_it_anyway = 1;
+				  }
+			      }
 
-			    	if (!allow_it_anyway) {
-					// Well there wasn't - so it is required....
-			    		A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
-			    		set_current_field (mform, form->currentfield);
-			    		return -4;
-				}
+			    if (!allow_it_anyway)
+			      {
+				// Well there wasn't - so it is required....
+				A4GL_error_nobox (acl_getenv
+						  ("FIELD_REQD_MSG"), 0);
+				set_current_field (mform, form->currentfield);
+				return -4;
+			      }
 
 
 			  }
+
+			// Could still be thrown out if we have an include without a null in it....
+			A4GL_debug ("X2222 MAYBE");
+			if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			  {
+			    if (A4GL_check_field_for_include
+				("",
+				 A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+				 fprop->datatype))
+			      {
+				return 1;
+			      }
+			    else
+			      {
+				A4GL_debug
+				  ("X2222 Check for include has null...");
+				A4GL_error_nobox (acl_getenv
+						  ("FIELD_INCL_MSG"), 0);
+				return -4;
+			      }
+			  }
+
+
 			return 0;
 		      }
 
@@ -943,7 +974,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 
 
-		if (A4GL_check_field_for_include (field_buffer (sio->currform->currentfield, 0),
+		if (A4GL_check_field_for_include
+		    (field_buffer (sio->currform->currentfield, 0),
 		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 		     fprop->datatype) == 0)
 		  {
@@ -956,26 +988,49 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 		  {
 		    char buff[8024];
-		    strcpy (buff, field_buffer (sio->currform->currentfield, 0));
+		    strcpy (buff,
+			    field_buffer (sio->currform->currentfield, 0));
 		    A4GL_trim (buff);
 		    // 
 
 		    if (strlen (buff) == 0)
 		      {
-				int allow_it_anyway=0;
+			int allow_it_anyway = 0;
 
-				// We'll still allow it - so long as there is null in the include list
-				if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))  {
-                			if (A4GL_check_field_for_include ("",A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype))  {
-						allow_it_anyway=1;
-					}
-				} 
-			if (!allow_it_anyway) {
-				A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
-				set_current_field (mform, form->currentfield);
-				return -4;
-			}
+			// We'll still allow it - so long as there is null in the include list
+			if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			  {
+			    if (A4GL_check_field_for_include
+				("",
+				 A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+				 fprop->datatype))
+			      {
+				allow_it_anyway = 1;
+			      }
+			  }
+			if (!allow_it_anyway)
+			  {
+			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
+					      0);
+			    set_current_field (mform, form->currentfield);
+			    return -4;
+			  }
 
+		      }
+		  }
+
+		// Could still be thrown out if we have an include without a null in it....
+		if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		  {
+		    if (A4GL_check_field_for_include
+			("", A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+			 fprop->datatype))
+		      {
+			return 1;
+		      }
+		    else
+		      {
+			return 0;
 		      }
 		  }
 
@@ -993,76 +1048,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
     }
 
 
-
   return 0;
-
-  A4GL_debug ("fprop=%p", fprop);
-  A4GL_debug ("form->currentfield=%p", form->currentfield);
-  if (fprop)
-    {
-      A4GL_debug ("fprop->include=%p",
-		  A4GL_get_str_attribute (fprop, FA_S_INCLUDE));
-      A4GL_debug ("fprop->datatype=%d", fprop->datatype);
-    }
-
-  if (form->currentfield != current_field (mform) || m < 0
-      || sio->field_changed)
-    {
-      sio->field_changed = 0;
-      fprop =
-	(struct struct_scr_field *) (field_userptr (current_field (mform)));
-
-      if (fprop != 0)
-	{
-	  /* A4GL_push_long (form->currentfield); */
-	  A4GL_push_long ((long) current_field (mform));
-	  A4GL_push_char (fprop->colname);
-	}
-      else
-	{
-	  A4GL_push_long ((long) 0);
-	  A4GL_push_char ("THIS FIELD IS AT THE START");
-	}
-
-      fprop =
-	(struct struct_scr_field *) (field_userptr (form->currentfield));
-      if (fprop != 0)
-	{
-	  A4GL_do_after_field (form->currentfield, sio);
-	  /* A4GL_push_long (current_field (mform)); */
-	  A4GL_push_long ((long) form->currentfield);
-	  A4GL_push_char (fprop->colname);
-	}
-      else
-	{
-	  A4GL_push_long ((long) 0);
-	  A4GL_push_char ("THIS FIELD IS AT THE START");
-	}
-      flg = -1;
-    }
-#ifdef DEBUG
-  {
-    A4GL_debug ("Setting current field");
-  }
-#endif
-  form->currentfield = current_field (mform);
-  A4GL_debug ("Set to %p", form->currentfield);
-  fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
-#ifdef DEBUG
-  {
-    A4GL_debug ("Adding A4GL_comments %p");
-  }
-#endif
-  if (fprop != 0)
-    A4GL_comments (fprop);
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("returning");
-  }
-#endif
-  return flg;
-
 }
 
 /**
@@ -3364,34 +3350,39 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
 {
   int a;
   int fno = -1;
-  int last_usable=-1;
+  int last_usable = -1;
   struct struct_scr_field *fprop;
-  
+
   for (a = 0; a <= s->nfields; a++)
     {
-      A4GL_debug ("MMM a=%d Current field=%p field_list=%p", a,f, s->field_list[a]);
-      if (f == s->field_list[a]) fno = a;
+      A4GL_debug ("MMM a=%d Current field=%p field_list=%p", a, f,
+		  s->field_list[a]);
+      if (f == s->field_list[a])
+	fno = a;
 
-      fprop=(struct struct_scr_field *) (field_userptr (s->field_list[a]));
+      fprop = (struct struct_scr_field *) (field_userptr (s->field_list[a]));
 
-      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY)) {
-		A4GL_debug("Field is not noentry");
-		last_usable=a;
+      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+	{
+	  A4GL_debug ("Field is not noentry");
+	  last_usable = a;
 	}
-	else {
-		A4GL_debug("MMM Field is noentry");
+      else
+	{
+	  A4GL_debug ("MMM Field is noentry");
 	}
     }
 
-  A4GL_debug ("MMM curr_metric_is_used_last_s_screenio fno=%d nfields=%d", fno, s->nfields);
+  A4GL_debug ("MMM curr_metric_is_used_last_s_screenio fno=%d nfields=%d",
+	      fno, s->nfields);
 
   if (fno == last_usable)
     {
-	A4GL_debug("MMM Is last");
+      A4GL_debug ("MMM Is last");
       return 1;
     }
 
-A4GL_debug("MMM Not last");
+  A4GL_debug ("MMM Not last");
   return 0;
 }
 
@@ -3675,7 +3666,9 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 	if (field_userptr (form->currentfield) != 0)
 	  {
 	    A4GL_debug ("Is a proper field");
-	    fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+	    fprop =
+	      (struct struct_scr_field
+	       *) (field_userptr (form->currentfield));
 	    A4GL_debug ("fprop=%p", fprop);
 
 
@@ -3706,13 +3699,58 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 		    if (strlen (buff2) == 0)
 		      {
+
 			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 			  {
-			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
-					      0);
-			    set_current_field (mform, form->currentfield);
-			    return -4;
+			    int allow_it_anyway = 0;
+
+			    // We'll still allow it - so long as there is null in the include list
+			    if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			      {
+				if (A4GL_check_field_for_include
+				    ("",
+				     A4GL_get_str_attribute (fprop,
+							     FA_S_INCLUDE),
+				     fprop->datatype))
+				  {
+				    allow_it_anyway = 1;
+				  }
+			      }
+
+			    if (!allow_it_anyway)
+			      {
+				// Well there wasn't - so it is required....
+				A4GL_error_nobox (acl_getenv
+						  ("FIELD_REQD_MSG"), 0);
+				set_current_field (mform, form->currentfield);
+				return -4;
+			      }
+
+
 			  }
+
+			// Could still be thrown out if we have an include without a null in it....
+			A4GL_debug ("X2222 MAYBE");
+			if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			  {
+			    if (A4GL_check_field_for_include
+				("",
+				 A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+				 fprop->datatype))
+			      {
+				return 1;
+			      }
+			    else
+			      {
+				A4GL_debug
+				  ("X2222 Check for include has null...");
+				A4GL_error_nobox (acl_getenv
+						  ("FIELD_INCL_MSG"), 0);
+				return -4;
+			      }
+			  }
+
+
 			return 0;
 		      }
 
@@ -3732,32 +3770,79 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 
 		A4GL_debug ("CHECK FOR INCLUDE");
-		if (A4GL_check_field_for_include
-		    (field_buffer (sio->currform->currentfield, 0),
-		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
-		     fprop->datatype) == 0)
-		  {
-		    A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
-		    //set_current_field (mform, form->currentfield);
-		    return -4;
-		  }
 
-
-		if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+		strcpy (buff, field_buffer (sio->currform->currentfield, 0));
+		if (strlen (buff) == 0)
 		  {
-		    char buff[8024];
-		    strcpy (buff,
-			    field_buffer (sio->currform->currentfield, 0));
-		    A4GL_trim (buff);
-		    //
-		    if (strlen (buff) == 0)
+		    if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 		      {
-			A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
-			set_current_field (mform, form->currentfield);
-			return -4;
+			int allow_it_anyway = 0;
+
+			// We'll still allow it - so long as there is null in the include list
+			if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			  {
+			    if (A4GL_check_field_for_include
+				("",
+				 A4GL_get_str_attribute (fprop,
+							 FA_S_INCLUDE),
+				 fprop->datatype))
+			      {
+				allow_it_anyway = 1;
+			      }
+			  }
+
+			if (!allow_it_anyway)
+			  {
+			    // Well there wasn't - so it is required....
+			    A4GL_error_nobox (acl_getenv
+					      ("FIELD_REQD_MSG"), 0);
+			    set_current_field (mform, form->currentfield);
+			    return -4;
+			  }
+
 
 		      }
+
+
+
+		    A4GL_debug ("X2222 MAYBE");
+
+		    if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		      {
+			if (A4GL_check_field_for_include
+			    ("",
+			     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+			     fprop->datatype))
+			  {
+			    return 1;
+			  }
+			else
+			  {
+			    A4GL_debug
+			      ("X2222 Check for include has null...");
+			    A4GL_error_nobox (acl_getenv
+					      ("FIELD_INCL_MSG"), 0);
+			    return -4;
+			  }
+		      }
+
 		  }
+
+
+
+		if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		  {
+		    if (A4GL_check_field_for_include
+			(field_buffer (sio->currform->currentfield, 0),
+			 A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+			 fprop->datatype) == 0)
+		      {
+			A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+			set_current_field (mform, form->currentfield);
+			return -4;
+		      }
+		  }
+
 
 
 
@@ -3768,6 +3853,3 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   return 0;
 
 }
-
-
-/* ================================ EOF ============================== */

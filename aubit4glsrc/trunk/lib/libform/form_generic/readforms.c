@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.16 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: readforms.c,v 1.17 2003-08-22 22:35:00 mikeaubury Exp $
 #*/
 
 /**
@@ -375,6 +375,13 @@ include_range_check (char *ss, char *ptr, int dtype)
   s = strdup (ss);
   A4GL_trim (s);
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+	if (strcasecmp(ptr,"NULL")==0) {
+		// Check for a null...
+		A4GL_debug("NULL ALLOWED");
+		if (strlen(s)==0) {
+			return 1;
+		}
+	}
 
   ptr3 = strchr (ptr, INC_RANGE);
 
@@ -388,6 +395,8 @@ include_range_check (char *ss, char *ptr, int dtype)
   if (dtype != 0)
     {
 	int dim=0;
+	A4GL_debug("X111 - dtype!=0 %s (%s)\n",ptr2,ptr1);
+
 
       if (dtype==5||dtype==6) {
 		dim=0x2010;
@@ -426,7 +435,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 	if ((dtype&255)==0) {
 		A4GL_debug("checking equal for %s %s",ptr1,ptr2);
 	}
-
+/*
 	if (strcasecmp(ptr2,"NULL")==0) {
 		// Check for a null...
 		A4GL_trim(ptr1);
@@ -434,6 +443,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 			return 1;
 		}
 	}
+*/
 
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);

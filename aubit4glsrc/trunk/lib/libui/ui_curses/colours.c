@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.12 2003-08-08 13:52:24 mikeaubury Exp $
+# $Id: colours.c,v 1.13 2003-08-22 22:35:01 mikeaubury Exp $
 #*/
 
 /**
@@ -236,6 +236,10 @@ A4GL_decode_aubit_attr (int a, char s)
 	ca += A_INVIS;
     }
 A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
+if (A4GL_isyes(acl_getenv("NO_INVIS_ATTR"))) {
+	if (ca&A_INVIS) ca-=A_INVIS;
+}
+
   return ca;
 }
 

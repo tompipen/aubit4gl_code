@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.86 2003-08-20 07:39:32 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.87 2003-08-22 22:34:40 mikeaubury Exp $
 #
 */
 
@@ -1476,6 +1476,7 @@ void A4GL_display_at (int n, int a);
     struct BINDING *binding;
     int nbind;
     int cntrl;
+    int attribute;
   };
 
   struct s_inp_arr

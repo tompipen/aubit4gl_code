@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.42 2003-08-19 08:37:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.43 2003-08-22 22:35:01 mikeaubury Exp $
 #*/
 
 /**
@@ -283,7 +283,6 @@ A4GL_idraw_arr_all (struct s_inp_arr *inpa)
     A4GL_debug ("after draw_arr (7)");
   }
 #endif
-  //mja_refresh ();
 }
 
 /**
@@ -935,7 +934,6 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 
       A4GL_set_arr_count (inpa->no_arr);
 
-      //mja_wrefresh (currwin);
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
       A4GL_newMovement (inpa, 0, 0, 0);
@@ -2143,8 +2141,9 @@ A4GL_debug("req_field_input_array - %c",type);
   if (type == '+')
     {				// Next field next
       A4GL_debug ("Init control stack");
-      A4GL_init_control_stack (arr, 0);
       arr->currform->currentfield = 0;
+      arr->currentfield = 0;
+      A4GL_init_control_stack (arr, 0);
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 			arr->curr_attrib + 1);
       return 1;
@@ -2155,6 +2154,7 @@ A4GL_debug("req_field_input_array - %c",type);
       A4GL_debug ("Init control stack");
       A4GL_init_control_stack (arr, 0);
       arr->currform->currentfield = 0;
+      arr->currentfield = 0;
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 			arr->curr_attrib - 1);
       return 1;
@@ -2195,6 +2195,7 @@ A4GL_debug("req_field_input_array - %c",type);
 		{
 		  // How risky is this ?
 		  arr->currform->currentfield = 0;
+      			arr->currentfield = 0;
 		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a);
 		}
 	      return 1;

@@ -26,13 +26,13 @@ popint (int *s)
 void
 popquote (char *s, int size)
 {
-  A4GL_pop_char (s, size);
+  A4GL_pop_char (s, size-1); // Informix takes includes the terminator in this size, aubit doesn't
 }
 
 void
 popstring (char *s, int size)
 {
-  A4GL_pop_char (s, size);
+  A4GL_pop_char (s, size-1);
 }
 
 void

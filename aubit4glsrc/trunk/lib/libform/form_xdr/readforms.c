@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.32 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: readforms.c,v 1.33 2003-08-22 22:35:00 mikeaubury Exp $
 #*/
 
 /**
@@ -486,6 +486,15 @@ include_range_check (char *ss, char *ptr, int dtype)
   s = strdup (ss);
   A4GL_trim (s);
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+
+        if (strcasecmp(ptr,"NULL")==0) {
+                // Check for a null...
+                A4GL_debug("NULL ALLOWED");
+                if (strlen(s)==0) {
+                        return 1;
+                }
+        }
+
 
   ptr3 = strchr (ptr, INC_RANGE);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.27 2003-08-19 08:37:42 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.28 2003-08-22 22:35:01 mikeaubury Exp $
 #*/
 
 /**
@@ -876,7 +876,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
     A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
 
-  A4GL_mja_refresh ();
+  //A4GL_mja_refresh ();   // removed mja 22/08/2003
+	//usleep(100000);
   return -1;
 }
 
