@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.20 2002-01-26 02:27:05 afalout Exp $
+# $Id: configure.in,v 1.21 2002-01-26 04:18:01 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -102,6 +102,10 @@ AC_SUBST(GTK_NAME)
 AC_SUBST(GDK_NAME)
 AC_SUBST(GLIB_NAME)
 
+#RPC
+AC_SUBST(RPCGEN)
+AC_SUBST(RPCLIB_INCLUDE)
+AC_SUBST(RPCLIB_LFLAGS)
 
 
 #PDF
@@ -235,14 +239,6 @@ AC_PATH_PROG(CVS_CLIENT, cvs, no)
 AC_PATH_PROG(LDD, ldd, no)
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 
-#FIXME: stop if rpcgen is not found on any platform other then Windows
-AC_PATH_PROG(RPCGEN, rpcgen, no)
-
-if test "$RPCGEN" = "no"; then
-	if test "$cygwin" = "1"; then
-		AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
-    fi
-fi
 
 #Fixme: set GTKBUILD=no if one of this two is not found, even if libraries
 #are installed
@@ -996,8 +992,10 @@ AC_ARG_WITH(gtk,
 
 	                    else
                             #try to assign paths manually:
+					        AC_MSG_WARN(cannot find pkg-config or gtk-config)
+					        AC_MSG_WARN(Trying to guess GTK configuration manually)
 							GTK_LIB_PATH="-L$withval/lib"
-							GTK_INC_PATH="-I$withval/include -I$withval/include/gdk -I$withval/lib/gtk+/include"
+							GTK_INC_PATH="-I$withval/include -I$withval/include/gdk -I$withval/lib/gtk+/include -I$withval -I$withval/gdk"
 							GTKLIBS="-lgtk -lgdk"
 
 							#Some GTK distros on CygWin have a naming probem!
@@ -1007,6 +1005,12 @@ AC_ARG_WITH(gtk,
 		                    else
 			                    GTKLIBS="$GTKLIBS -lglib"
 		                    fi
+
+                            #This way user can specify explicit path to GLIB using --with-glib=path
+							if test "$with_glib" != ""; then
+								GTK_INC_PATH="$GTK_INC_PATH -I$with_glib"
+							fi
+
 	                    fi
                     fi
 				fi
@@ -1068,8 +1072,8 @@ else
 	AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
 fi
 
-AC_ARG_WITH(rpclib,
-[  --with-rpclib[=DIR]   Include RPClib support.  DIR is the RPClib base
+AC_ARG_WITH(rpc,
+[  --with-rpc[=DIR]   Include RPC support.  DIR is the RPC base
                           install directory, defaults to /usr/local.],
 [
 
@@ -1083,15 +1087,32 @@ AC_ARG_WITH(rpclib,
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$withval/lib -I$withval/include"
+        old_PATH=$PATH
+        PATH=$withval/rpcgen:$PATH
+        TEST_I_FLAGS="-I$withval/include -I$withval/rpc -I$withval"
+        TEST_L_FLAGS="-L$withval/lib"
+		LDFLAGS="$LDFLAGS $TEST_I_FLAGS $TEST_L_FLAGS"
 		# FIXME: Replace `main' with a function in `-lrpclib':
 		AC_CHECK_LIB([rpclib], [main])
+		AC_PATH_PROG(RPCGEN, rpcgen, no)
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
+        PATH=$old_PATH
+
+
+
+		if test "$RPCGEN" = "no"; then
+			if test "$cygwin" = "0"; then
+				AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
+		    fi
+		    AC_DEFINE(HAVE_RPCGEN,0,[ ])
+		else
+		    AC_DEFINE(HAVE_RPCGEN,1,[ ])
+		fi
 
 		if test $ac_cv_lib_rpclib_main = yes; then
-		    RPCLIB_INCLUDE=-I$withval/include
-		    RPCLIB_LFLAGS=-L$withval/lib
+		    RPCLIB_INCLUDE="$TEST_I_FLAGS"
+		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
 		else
 			AC_MSG_ERROR( "-lrpclib" not found. Please install RPC library. Stop.)
@@ -1176,7 +1197,11 @@ AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp 
 
 #Should we check here for rpclib finctions on Linux?
 
-
+case $host in
+	*linux*)
+		AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
+    ;;
+esac
 
 ## ==================================================================
 ##                   Checks for Cygwin specifics

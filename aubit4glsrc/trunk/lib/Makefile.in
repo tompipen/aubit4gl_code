@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2002-01-26 02:27:07 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-01-26 04:18:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -101,7 +101,7 @@ else
 endif
 
 #ifndef CFLAGS
-	CFLAGS			=${LOCALCFLAGS}
+	CFLAGS			=${LOCALCFLAGS} @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@
 #endif
 
 override	CFLAGS			+=-I../compilers/fcompile #-I../compilers/mcompile
