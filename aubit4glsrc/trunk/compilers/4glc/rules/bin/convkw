@@ -45,9 +45,11 @@ while (getline < "generated/single_words") {
 		print "Defined " $1 " as single word"
     } else {
 		print "Input line: " $1 " was empty. Stop."
-		exit
+#		exit
     }
 }
+
+close (generated/single_words)
 }
 ' < data/kwords
 exit

@@ -8,9 +8,10 @@
     #endif
 #endif
 
-
 #include "a4gl_lib_rpc_int.h"
 
+
+#include "rpc/auth.h"
 #include "rpc/pmap_clnt.h" /* pmap_unset() */
 
 
@@ -27,6 +28,9 @@
 
 #ifndef _RPC_STACK_H_RPCGEN
 #define _RPC_STACK_H_RPCGEN
+
+
+
 
 	/*
 	to force LCLint to process <sys/types.h>, since rpc.h needs fd_set.
