@@ -52,6 +52,8 @@ typedef struct fgw_iodesc
 } fgw_fdesc;
 
 extern fgw_fdesc *fgw_findfd();
+extern fgw_fdesc *fgw_fileopen();
+extern fgw_fdesc *fgw_pipeopen();
 
 #define CFIOC_H
 #endif

@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -56,8 +56,8 @@
 #define FLD_f 9
 #define FLD_NFMT -1
 
-fgw_heaptype *fgw_heapstart();
-char *fgw_heapnew();
+fgw_fmttype *fgw_fmtstart();
+char *fgw_fmtnew();
 fgw_listtype stlist =
 {
     NULL, NULL, 0, 0, EBADSTMT
@@ -81,7 +81,6 @@ static leftmargin_sql();
 static strlen_sql();
 static addstring_sql();
 static padline_sql();
-static fgw_localflush();
 
 static int fgw_fieldcount=0;
 static fgw_fdesc *ofd=NULL;
@@ -91,99 +90,52 @@ static int txtlines=0;
 /*
 ** sets output stream
 */
-sql_openfile(txtvar, cfd, dfd)
+sql_openfile(txtvar, fd)
 loc_t *txtvar;
-int cfd, dfd;
+fgw_fdesc *fd;
 {
-    int rfd;
-
-/*
-** logic is easy. if error on input, use def fd, and if invalid, dump to text var
-*/
-    if (status)
-    {
-	fgw_setfork(status, 0);
-	if (rfd=dfd)
-	    if (!(ofd=fgw_findfd(rfd)))
-		rfd=0;
-	else
-	    ofd=NULL;
-    }
-/*
-** else if this is not going to the text var, see if the current stream
-** can be used
-*/
-    else if (rfd=cfd)
-    {
-	if (!(ofd=fgw_findfd(rfd)))
-	{
-/*
-** if not, as above
-*/
-	    fgw_setfork(EBADF, 0);
-	    if (rfd=dfd)
-	    {
-		if (!(ofd=fgw_findfd(rfd)))
-		    rfd=0;
-	    }
-	    else
-		ofd=NULL;
-	}
-/*
-** plus if it is a pipe, see if we can write to it, or child has gone
-** away
-*/
-	else if (ofd->fd_pid)
-	{
-/*
-** give the child shell the time to exec the correct image
-** FIXME - older SYSV might not know about usleep
-*/
-	    (void) usleep(100000);
-	    fgw_fdwrite(ofd, "", 0);
-	    status=0;           /* avoid sql errors */
-	    if (errno)
-	    {
-		fgw_setfork(errno, 0);
-		if (rfd=dfd)
-		{
-		    if (!(ofd=fgw_findfd(rfd)))
-			rfd=0;
-		}
-		else
-		    ofd=NULL;
-		status=0;
-	    }
-	}
-    }
-    else
-	ofd=NULL;
-    if (ofd)
+    ofd=fd;
+    if (ofd && ofd!=(fgw_fdesc *) -1)
     {
 	txtoffset=txtvar->loc_size;
 	txtlines=fgw_text(txtvar)->nolines;
     }
-    return(rfd);
 }
 
 /*
 ** flushes output stream
 */
-sql_flush(txtvar, current)
+sql_flush(txtvar, all)
 loc_t *txtvar;
-int current;
+int all;
 {
-    if (ofd)
+    int l;
+ 
+    if (!(txtvar->loc_size-txtoffset) || !ofd)
+	return;
+    if (ofd==(fgw_fdesc *)-1)
     {
-	fgw_localflush(txtvar, 1);
-	if (current)
-	    fgw_setfork(status, fgw_fdclose(ofd));
-	else
-	    fgw_setfork(0, 0);
+	txtlines=0;
+	txtoffset=0;
+	txtvar->loc_size=0;
+	fgw_recompindex(txtvar, 0);
     }
+    if (all || *(txtvar->loc_buffer+txtvar->loc_size-1)=='\n')
+	l=txtvar->loc_size;
     else
-	fgw_setfork(0, 0);
-    ofd=NULL;
+	l=fgw_text(txtvar)->textindex[fgw_text(txtvar)->nolines-1];
+    if (l-txtoffset)
+    {
+/*
+** FIXME: formalize IO error handling. right now a display will fail
+** a select might survive
+*/
+	fgw_fdwrite(ofd, txtvar->loc_buffer+txtoffset, l-txtoffset);
+	fgw_move(txtvar->loc_buffer+txtoffset, txtvar->loc_buffer+l,
+	    txtvar->loc_size-l);
+	txtvar->loc_size-=(l-txtoffset);
+	fgw_recompindex(txtvar, txtlines);
+    }
 }
 
 /*
@@ -216,7 +168,7 @@ char *f;
         return explicit;
     }
     status=0;
-    st_p->formats=fgw_heapstart();
+    st_p->formats=fgw_fmtstart();
     s=f;
     field=0;
     fieldlen=0;
@@ -235,12 +187,12 @@ char *f;
 **  see if we have a string to save, first
 */
 	if (l=t-s)
-	    if (p=fgw_heapnew(&st_p->formats, l+1))
+	    if (p=fgw_fmtnew(&st_p->formats, l+1))
 	    {
 		strncpy(p, s, l);
 		*(p+l)=0;
 		html=html && (strspn(p, " ")==l);
-		st_p->formats->heap[st_p->formats->entries-1].etype=FLD_STRING;
+		st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_STRING;
 		SET_HEADER_SIZE(fieldlen, l);
 	    }
 	switch (*t)
@@ -262,12 +214,12 @@ char *f;
 */
 	  case '\t':
 	    html=0;
-	    if (!fgw_heapadd(&st_p->formats, NULL))
+	    if (!fgw_fmtadd(&st_p->formats, NULL))
 	    {
 		status=-1319;
 		return 0;
 	    }
-	    st_p->formats->heap[st_p->formats->entries-1].etype=FLD_TAB;
+	    st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_TAB;
 	    l=DO_MOD((fieldlen+fieldpos), st_p->width);
 	    SET_HEADER_SIZE(fieldlen, 8*(1+l/8));
 	    s=++t;
@@ -278,7 +230,7 @@ char *f;
 	  case '\n':
 TOKEN_n:
 	    html=0;
-	    if (!fgw_heapadd(&st_p->formats, NULL))
+	    if (!fgw_fmtadd(&st_p->formats, NULL))
 	    {
 		status=-1319;
 		return 0;
@@ -286,7 +238,7 @@ TOKEN_n:
 /*
 **  for NL we just pretend the current line is filled with blanks
 */
-	    st_p->formats->heap[st_p->formats->entries-1].etype=FLD_NL;
+	    st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_NL;
 	    l=DO_MOD((fieldlen+fieldpos), st_p->width);
 	    SET_HEADER_SIZE(fieldlen, st_p->width-l);
 	    s=++t;
@@ -302,12 +254,12 @@ TOKEN_n:
 */
 	    if (*t==*(t+1))
 	    {
-		if (!(p=fgw_heapnew(&st_p->formats, 2)))
+		if (!(p=fgw_fmtnew(&st_p->formats, 2)))
 		{
 		    status=-1319;
 		    return 0;
 		}
-		st_p->formats->heap[st_p->formats->entries-1].etype=FLD_STRING;
+		st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_STRING;
 		*p++=*t;
 		*p=0;
 		s=t+2;
@@ -408,7 +360,7 @@ TOKEN_n:
 		implicit=(*t!='|');
 		if (haveheader)
 		{
-		    st_p->headers->heap[field].etype=fieldlen;
+		    st_p->headers->fmt[field].etype=fieldlen;
 		    haveheader=st_p->headers->entries>field+1;
 		}
 /*
@@ -422,12 +374,12 @@ TOKEN_n:
 		    fieldpos=0;
 		fieldlen=0;
 		field++;
-		if (!fgw_heapadd(&st_p->formats, NULL))
+		if (!fgw_fmtadd(&st_p->formats, NULL))
 		{
 		    status=-1319;
 		    return 0;
 		}
-		st_p->formats->heap[st_p->formats->entries-1].etype=FLD_NEXT;
+		st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_NEXT;
 	    }
 /*
 **  field separator, we're thru with this one
@@ -437,7 +389,7 @@ TOKEN_n:
 /*
 **  we have the format entry, go store it
 */
-	    if (!(p=fgw_heapnew(&st_p->formats, l+1)))
+	    if (!(p=fgw_fmtnew(&st_p->formats, l+1)))
 	    {
 		status=-1319;
 		return 0;
@@ -458,7 +410,7 @@ TOKEN_n:
 		    if (*q==*++q)
 			et=FLD_date;
 #endif
-	    st_p->formats->heap[st_p->formats->entries-1].etype=et;
+	    st_p->formats->fmt[st_p->formats->entries-1].etype=et;
 	    SET_HEADER_SIZE(fieldlen, templen);
 	}
     }
@@ -466,10 +418,10 @@ TOKEN_n:
 **  enter any remainder string
 */
     if (l=strlen(s))
-	if (p=fgw_heapnew(&st_p->formats, l+1))
+	if (p=fgw_fmtnew(&st_p->formats, l+1))
 	{
 	    strcpy(p, s);
-	    st_p->formats->heap[st_p->formats->entries-1].etype=FLD_STRING;
+	    st_p->formats->fmt[st_p->formats->entries-1].etype=FLD_STRING;
 	    SET_HEADER_SIZE(fieldlen, l);
 	}
 /*
@@ -477,7 +429,7 @@ TOKEN_n:
 **  prescribed width
 */
     if (haveheader && fieldlen)
-	st_p->headers->heap[field].etype=fieldlen;
+	st_p->headers->fmt[field].etype=fieldlen;
     return (explicit || html);
 }
 
@@ -498,49 +450,20 @@ char *c;
 	return;
     if (!st_p->headers)
     {
-	st_p->headers=fgw_heapstart();
+	st_p->headers=fgw_fmtstart();
 	st_p->headwidth=0;
     }
     l=strlen(c);
-    if (!(d=fgw_heapnew(&st_p->headers, l)))
+    if (!(d=fgw_fmtnew(&st_p->headers, l)))
 	status=-1319;
     else
     {
 	strcpy(d, c); 
 	if (strlen(c)>st_p->headwidth)
 	    st_p->headwidth=strlen(c);
-	st_p->headers->heap[st_p->headers->entries-1].etype=FLD_NFMT;
+	st_p->headers->fmt[st_p->headers->entries-1].etype=FLD_NFMT;
     }
 }
-
-/*
-** sets next destination variable
-*/
-sql_setdest(st_p, c)
-fgw_stmttype *st_p;
-char *c;
-{
-    if (st_p==NULL)
-	return;
-    if (!st_p->intovars)
-	st_p->intovars=fgw_heapstart();
-    if (!fgw_heapadd(&st_p->intovars, c))
-	status=-1319;
-}
-
-/*
-** empties var list (used in case of parse error)
-*/
-sql_freedest(st_p)
-fgw_stmttype *st_p;
-{
-    if (st_p &&
-	st_p->intovars)
-    {
-	fgw_heapclear(st_p->intovars);
-	st_p->intovars=NULL;
-    }
-} 
 
 /*
 **  gets pre & post row/header/columns html strings
@@ -630,11 +553,13 @@ int w;
 /*
 **  executes a statement
 */
-sql_dorows(st_p, textvar, vars, dorows, finish)
+sql_dorows(st_p, textvar, vars, finish)
 fgw_stmttype *st_p;
 loc_t *textvar, *vars;
-int dorows, finish;
 {
+    int display;
+
+    display=st_p->fmt_type!=FMT_NULL;
     if (fgw_testtext(textvar))
     {
 	status=-717;
@@ -646,9 +571,9 @@ int dorows, finish;
     {
 	if (!nextrow_sql(st_p))
 	    return 0;
-	if (dorows && st_p->pretable)
+	if (display && st_p->pretable)
 	    addstring_sql(textvar, st_p->pretable);
-	if (dorows && st_p->fmt_type==FMT_FULL)
+	if (display && st_p->fmt_type==FMT_FULL)
 	    ffheaders_sql(st_p, textvar);
     }
     else if (st_p->curstate!=ST_OPENED)
@@ -669,64 +594,64 @@ int dorows, finish;
 	int fld_id=0;
 	sqlva *col;
 	double d;
+	fgw_tsstype *into=st_p->intovars;
 
-	while (fld_id<st_p->intovars->entries &&
-	       (col=nexttoken_sql(fld_id, st_p)))
+	while (into && (col=nexttoken_sql(fld_id++, st_p)))
 	{
 	    switch (col->sqltype)
 	    {
 	      case CDATETYPE:
 	      case SQLDATE:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CDATETYPE, (char *) col->sqldata);
 		break;
 	      case CINTTYPE:
 	      case SQLINT:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CINTTYPE, (char *) col->sqldata);
 		break;
 	      case SQLBYTES:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CSTRINGTYPE, "");
 		break;
 	      case SQLTEXT:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CSTRINGTYPE, blobfixup_sql((loc_t *) col->sqldata));
 		break;
 	      case CSTRINGTYPE:
 	      case CVCHARTYPE:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CSTRINGTYPE, (char *) col->sqldata);
 		break;
 	      case CDTIMETYPE:
 	      case SQLDTIME:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CDTIMETYPE, (char *) col->sqldata);
 		break;
 	      case CINVTYPE:
 	      case SQLINTERVAL:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CINVTYPE, (char *) col->sqldata);
 		break;
 	      case CDECIMALTYPE:
 	      case SQLDECIMAL:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CDECIMALTYPE, (char *) col->sqldata);
 		break;
 	      case CMONEYTYPE:
 	      case SQLMONEY:
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CMONEYTYPE, (char *) col->sqldata);
 		break;
 	      default:
 		d=col2dub_sql(col);
-		fgw_hstadd(vars, st_p->intovars->heap[fld_id].entry,
+		fgw_hstadd(vars, &into->string,
 			CDOUBLETYPE, (char *) &d);
 	    }
-	    fld_id++;
+	    into=into->next;
 	}
     }
-    if (dorows)
+    if (display)
 	switch(st_p->fmt_type)
 	{
 	  case FMT_BRIEF:
@@ -744,7 +669,7 @@ int dorows, finish;
 	    break;
 	}
 allrows_end:
-    if (dorows && finish && st_p->posttable)
+    if (display && finish && st_p->posttable)
 	addstring_sql(textvar, st_p->posttable);
     if (st_p->field>fgw_fieldcount && st_p->countfields)
 	fgw_fieldcount=st_p->field;
@@ -829,7 +754,7 @@ loc_t *textvar;
 	addstring_sql(textvar, st_p->posttable);
     if (st_p->field>fgw_fieldcount && st_p->countfields)
 	fgw_fieldcount=st_p->field;
-    fgw_localflush(textvar, 0);
+    sql_flush(textvar, 0);
 }
 
 /*
@@ -852,10 +777,10 @@ loc_t *textvar;
 	if (st_p->preheader)
 	    for (c=0; c<st_p->headers->entries; c++)
 	    {
-		if (st_p->headers->heap[c].etype)
+		if (st_p->headers->fmt[c].etype)
 		{
 		    addstring_sql(textvar, st_p->preheader);
-		    addstring_sql(textvar, st_p->headers->heap[c].entry);
+		    addstring_sql(textvar, st_p->headers->fmt[c].entry);
 		    addstring_sql(textvar, st_p->postheader);
 		}
 	    }
@@ -871,27 +796,27 @@ loc_t *textvar;
 **  has already been worked out in sql_setformat. will enter the header
 **  padded to that length
 */
-		if (st_p->headers->heap[c].etype==FLD_NFMT)
+		if (st_p->headers->fmt[c].etype==FLD_NFMT)
 		{
 /*
 ** no format for this header - just stick it in
 */
-		    addstring_sql(textvar, st_p->headers->heap[c].entry);
+		    addstring_sql(textvar, st_p->headers->fmt[c].entry);
 		    addstring_sql(textvar, " ");
 		}
-		else if (st_p->headers->heap[c].etype)
+		else if (st_p->headers->fmt[c].etype)
 		{
 /*
 **  make sure that the header does not exceed the calculated width
 */
 		    if (p=(char *) malloc(20))
 		    {
-			if (q=(char *) malloc(st_p->headers->heap[c].etype+1))
+			if (q=(char *) malloc(st_p->headers->fmt[c].etype+1))
 			{
 			    sprintf(p, "%%-%i.%is",
-				    st_p->headers->heap[c].etype,
-				    st_p->headers->heap[c].etype);
-			    sprintf(q, p, st_p->headers->heap[c].entry);
+				    st_p->headers->fmt[c].etype,
+				    st_p->headers->fmt[c].etype);
+			    sprintf(q, p, st_p->headers->fmt[c].entry);
 			    addstring_sql(textvar, q);
 			    free(q);
 			}
@@ -939,7 +864,7 @@ loc_t *textvar;
     if (st_p->postrow)
 	addstring_sql(textvar, st_p->postrow);
     addstring_sql(textvar, "\n");
-    fgw_localflush(textvar, 0);
+    sql_flush(textvar, 0);
 }
 
 /*
@@ -958,18 +883,18 @@ int o;
 ** headers first, if we have them
 */
     doable=(!st_p->headers) || (st_p->headers->entries<=st_p->field) ||
-	   (st_p->headers->heap[st_p->field].etype);
+	   (st_p->headers->fmt[st_p->field].etype);
     if (st_p->preheader && doable)
 	 addstring_sql(textvar, st_p->preheader);
     s=o+1;
     if (st_p->headers && doable && st_p->headers->entries>st_p->field)
     {
 	addstring_sql(textvar,
-		      st_p->headers->heap[st_p->field].entry);
+		      st_p->headers->fmt[st_p->field].entry);
 /*
 **  work out how much padding we might need
 */
-	s-=strlen(st_p->headers->heap[st_p->field].entry);
+	s-=strlen(st_p->headers->fmt[st_p->field].entry);
     }
     if (doable)
 	if (st_p->postheader)
@@ -1036,7 +961,7 @@ int finish;
 		addstring_sql(textvar, st_p->postrow);
 	    else
 		addstring_sql(textvar, "\n");
-	    fgw_localflush(textvar, 0);
+	    sql_flush(textvar, 0);
 	    if (finish)
 		st_p->format=0;
 	    else
@@ -1074,7 +999,7 @@ loc_t *textvar;
 	ll+=l;
     }
     addstring_sql(textvar, "\n");
-    fgw_localflush(textvar, 0);
+    sql_flush(textvar, 0);
 }
 
 /*
@@ -1282,7 +1207,7 @@ loc_t *b;
 static format_sql(t, col, flist, fidx, rl, ro)
 loc_t *t;
 sqlva *col;
-fgw_heaptype *flist;
+fgw_fmttype *flist;
 int fidx, rl, ro;
 {
     int tok, nl, i, r;
@@ -1310,7 +1235,7 @@ int fidx, rl, ro;
 /*
 ** if valid format entry
 */
-	else if ((tok=flist->heap[fidx].etype)!=FLD_NEXT)
+	else if ((tok=flist->fmt[fidx].etype)!=FLD_NEXT)
 	{
 /*
 ** if start of line & offset, pad with blanks here
@@ -1340,7 +1265,7 @@ int fidx, rl, ro;
 		nl++;
 		break;
 	      case FLD_STRING:
-		addstring_sql(t, flist->heap[fidx].entry);
+		addstring_sql(t, flist->fmt[fidx].entry);
 		break;
 	      case FLD_TAB:
 		if (*(t->loc_buffer+t->loc_size-1)=='\n')
@@ -1358,40 +1283,40 @@ int fidx, rl, ro;
 		  case CDOUBLETYPE:
 		  case SQLFLOAT:
 		    i=rfmtdouble(*(double *) col->sqldata,
-		                 flist->heap[fidx].entry, fld);
+		                 flist->fmt[fidx].entry, fld);
 		    break;
 		  case CDATETYPE:
 		  case SQLDATE:
 		    i=rfmtdate(*(int *) col->sqldata,
-			       flist->heap[fidx].entry, fld);
+			       flist->fmt[fidx].entry, fld);
 		    break;
 #ifdef HAS_DTFMT
 		  case SQLDTIME:
 		  case CDTIMETYPE:
 		    i=dttofmtasc((dtime_t *) col->sqldata,
-				 fld, sizeof(fld), flist->heap[fidx].entry);
+				 fld, sizeof(fld), flist->fmt[fidx].entry);
 		    break;
 		  case SQLINTERVAL:
 		  case CINVTYPE:
 		    i=intofmtasc((intrvl_t *) col->sqldata,
-				 fld, sizeof(fld), flist->heap[fidx].entry);
+				 fld, sizeof(fld), flist->fmt[fidx].entry);
 		    break;
 #endif
 		  case CINTTYPE:
 		  case SQLINT:
 		    i=rfmtlong(*(int *) col->sqldata,
-		               flist->heap[fidx].entry, fld);
+		               flist->fmt[fidx].entry, fld);
 		    break;
 		  case CDECIMALTYPE:
 		  case SQLDECIMAL:
 		  case CMONEYTYPE:
 		  case SQLMONEY:
 		    i=rfmtdec((dec_t *) col->sqldata,
-		              flist->heap[fidx].entry, fld);
+		              flist->fmt[fidx].entry, fld);
 		    break;
 		  default:
 		    i=rfmtdouble(col2dub_sql(col),
-		                 flist->heap[fidx].entry, fld);
+		                 flist->fmt[fidx].entry, fld);
 		}
 		if (!i)
 		    addstring_sql(t, fld);
@@ -1402,7 +1327,7 @@ int fidx, rl, ro;
 		    status=rstrdate(col2str_sql(col, &fld), &i);
 		else
 		    i=*(int *) col->sqldata;
-		if (!rfmtdate(i, flist->heap[fidx].entry, fld))
+		if (!rfmtdate(i, flist->fmt[fidx].entry, fld))
 		    addstring_sql(t, fld);
 		break;
 #endif
@@ -1433,7 +1358,7 @@ int fidx, rl, ro;
 /*
 **  then format & recompute index
 */
-		sprintf(t->loc_buffer+t->loc_size, flist->heap[fidx].entry,
+		sprintf(t->loc_buffer+t->loc_size, flist->fmt[fidx].entry,
 			col2str_sql(col, &fld));
 		t->loc_size+=strlen(t->loc_buffer+t->loc_size);
 		if (fgw_text(t)->nolines)
@@ -1446,7 +1371,7 @@ int fidx, rl, ro;
                 i=col2int_sql(col);
                 if (!risnull(SQLINT, (char *) &i))
                 {
-                    sprintf(fld, flist->heap[fidx].entry, i);
+                    sprintf(fld, flist->fmt[fidx].entry, i);
                     addstring_sql(t, fld);
                 }
 		break;
@@ -1454,7 +1379,7 @@ int fidx, rl, ro;
                 d=col2dub_sql(col);
                 if (!risnull(SQLFLOAT, (char *) &d))
                 {
-                    sprintf(fld, flist->heap[fidx].entry, d);
+                    sprintf(fld, flist->fmt[fidx].entry, d);
                     addstring_sql(t, fld);
                 }
 		break;
@@ -1687,89 +1612,60 @@ int c;
 }
 
 /*
-**  flushes output stream
+**  allocates a fmt structure
 */
-static fgw_localflush(txtvar, all)
-loc_t *txtvar;
-int all;
+fgw_fmttype *fgw_fmtstart()
 {
-    int l;
- 
-    if (!((txtvar->loc_size-txtoffset) && ofd))
-	return;
-    if (all || *(txtvar->loc_buffer+txtvar->loc_size-1)=='\n')
-	l=txtvar->loc_size;
-    else
-	l=fgw_text(txtvar)->textindex[fgw_text(txtvar)->nolines-1];
-    if (l-txtoffset)
-    {
-/*
-** FIXME: formalize IO error handling. right now a display will fail
-** a select might survive
-*/
-	fgw_fdwrite(ofd, txtvar->loc_buffer+txtoffset, l-txtoffset);
-	fgw_move(txtvar->loc_buffer+txtoffset, txtvar->loc_buffer+l,
-	    txtvar->loc_size-l);
-	txtvar->loc_size-=(l-txtoffset);
-	fgw_recompindex(txtvar, txtlines);
-    }
-}
+    fgw_fmttype *h;
 
-/*
-**  allocates a heap structures
-*/
-fgw_heaptype *fgw_heapstart()
-{
-    fgw_heaptype *h;
-
-    h=(fgw_heaptype *) malloc(sizeof(fgw_heaptype)+
-			  (STARTENTRYSIZE-1)*sizeof(fgw_heapentry));
+    h=(fgw_fmttype *) malloc(sizeof(fgw_fmttype)+
+			  (STARTENTRYSIZE-1)*sizeof(fgw_fmtentry));
     h->entries=0;
     h->size=STARTENTRYSIZE;
     return(h);
 }
 
 /*
-**  adds an entry to a heap start
+**  adds an entry to a fmt structure
 */
-fgw_heapadd(h, e)
-fgw_heaptype **h;
+fgw_fmtadd(h, e)
+fgw_fmttype **h;
 char *e;
 {
-    fgw_heaptype *s;
+    fgw_fmttype *s;
     int c;
 
     if ((*h)->size==(*h)->entries)
     {
 	s=*h;
 	(*h)->size+=STARTENTRYSIZE;
-	if (!(*h=(fgw_heaptype *) realloc(*h, sizeof(fgw_heaptype)+
-			((*h)->size-1)*sizeof(fgw_heapentry))))
+	if (!(*h=(fgw_fmttype *) realloc(*h, sizeof(fgw_fmttype)+
+			((*h)->size-1)*sizeof(fgw_fmtentry))))
 	{
 /*
 ** not enough space to realloc - we have lost whatever entry we had in
-** the fgw_heap struct, thus free everything there to avoid a memory leak
+** the fgw_fmt struct, thus free everything there to avoid a memory leak
 */
 	    for (c=0; c<s->entries; c++)
-		free(s->heap[c].entry);
+		free(s->fmt[c].entry);
 	    return(0);
 	}
     }
-    (*h)->heap[(*h)->entries++].entry=e;
+    (*h)->fmt[(*h)->entries++].entry=e;
     return(1);
 }
 
 /*
-**  allocates & adds an entry to a heap start
+**  allocates & adds an entry to a fmt structure
 */
-char *fgw_heapnew(h, s)
-fgw_heaptype **h;
+char *fgw_fmtnew(h, s)
+fgw_fmttype **h;
 int s;
 {
     char *c;
 
     if (c=(char *) malloc(s))
-	if (!fgw_heapadd(h, c))
+	if (!fgw_fmtadd(h, c))
 	{
 	    free(c);
 	    c=NULL;
@@ -1778,14 +1674,14 @@ int s;
 }
 
 /*
-**  deallocates a heap structure
+**  deallocates a fmt structure
 */
-fgw_heapclear(h)
-fgw_heaptype *h;
+fgw_fmtclear(h)
+fgw_fmttype *h;
 {
     int i;
 
     for (i=0; i<h->entries; i++)
-	free(h->heap[i].entry);
+	free(h->fmt[i].entry);
     free(h);
 }

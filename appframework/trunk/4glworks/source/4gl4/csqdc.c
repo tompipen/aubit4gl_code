@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -46,8 +46,8 @@
 */
 static _SQCURSOR _SQ1;
 
-extern fgw_heaptype *fgw_heapstart();
-extern char *fgw_heapnew();
+extern fgw_fmttype *fgw_fmtstart();
+extern char *fgw_fmtnew();
 extern fgw_listtype stlist;
 extern int status;
 static int prepare_sql();
@@ -87,27 +87,9 @@ fgw_stmttype *sql_newstatement()
 
     if ((st_n=(struct fgw_stmt *) malloc(sizeof(struct fgw_stmt)))!=NULL)
     {
-	st_n->fmt_type=0;
-	st_n->headwidth=0;
+	byfill(st_n, sizeof(struct fgw_stmt), 0);
 	st_n->width=MINWIDTH;
-	st_n->formats=NULL;
-	st_n->headers=NULL;
-	st_n->pretable=NULL;
-	st_n->posttable=NULL;
-	st_n->prerow=NULL;
-	st_n->postrow=NULL;
-	st_n->preheader=NULL;
-	st_n->postheader=NULL;
-	st_n->prefield=NULL;
-	st_n->postfield=NULL;
-        st_n->countfields=0;
 	st_n->curstate=ST_UNINITIALIZED;
-	st_n->curname[0]='\0';
-	st_n->sqlbuf=NULL;
-	st_n->sqlda_ptr=NULL;
-	st_n->sqlda_in.sqld=0;
-	st_n->sqlda_in.sqlvar=NULL;
-	st_n->intovars=NULL;
 	fgw_newentry(st_n, &stlist);
     }
     return st_n;
@@ -135,7 +117,7 @@ fgw_stmttype *st_p;
 	if (st_p->curstate>=ST_PREPARED)
 	    _iqfree(&_SQ1);
 	if (st_p->intovars)
-	    fgw_heapclear(st_p->intovars);
+	    fgw_tssdrop(&st_p->intovars);
 /*
 **  output sqlda: look for blob columns & free buffer
 */
@@ -163,9 +145,9 @@ fgw_stmttype *st_p;
 	if (st_p->sqlbuf)
 	    free(st_p->sqlbuf);
 	if (st_p->formats)
-	    fgw_heapclear(st_p->formats);
+	    fgw_fmtclear(st_p->formats);
 	if (st_p->headers)
-	    fgw_heapclear(st_p->headers);
+	    fgw_fmtclear(st_p->headers);
 	if (st_p->pretable)
 	{
 	    free(st_p->pretable);
@@ -388,8 +370,6 @@ char *query;
     else
 	r=EBADSTMT;
 badexit:
-    if (query)
-	free(query);
     if (st_p)
 	fgw_move((void *) &st_p->_SQ1, (void *) &_SQ1, sizeof(_SQCURSOR));
     return r;
@@ -468,25 +448,7 @@ char *c;
     }
     st_p->sqlda_in.sqld++;
 badexit:
-    if (c)
-	free(c);
 }
-
-/*
-** empties placeholder list (used in case of parse error)
-*/
-sql_freeholder(st_p)
-fgw_stmttype *st_p;
-{
-
-    if (st_p!=NULL &&
-	st_p->sqlda_in.sqld)
-    {
-	free(st_p->sqlda_in.sqlvar);
-	st_p->sqlda_in.sqld=0;
-	st_p->sqlda_in.sqlvar=NULL;
-    }
-} 
 
 /*
 /*

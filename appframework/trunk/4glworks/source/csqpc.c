@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Mar 00
-	Current release: Jan 02
+	Current release: May 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,8 @@
 #define BUFSIZE	32768
 #define CHARSIZE 32767
 
+extern fgw_fdesc *sql_openfile();
+extern fgw_fdesc *fgw_findfd();
 extern char *fgw_getvar();
 extern int fgw_scanreserved();
 extern char *fgw_getstring();
@@ -151,7 +153,7 @@ loc_t *txtvar;
 	state.touch=0;
 
     state.width=width;
-    state.def_fd=def_fd;
+    state.def_fd=fgw_findfd(def_fd);
     state.txtvar=txtvar;
 /*
 **  verbose is positive if interactive client
@@ -170,7 +172,7 @@ loc_t *txtvar;
 	    state.verbose=-1;
     }
     fgw_locatetext(state.txtvar);
-    state.curr_fd=sql_openfile(state.txtvar, state.def_fd, state.def_fd);
+    state.curr_fd=sql_openfile(state.txtvar, state.def_fd);
     if (state.verbose>0)
     {
 /*
@@ -467,19 +469,23 @@ loc_t *txtvar;
 	    {
 		state.parseroptions=0;
 		lastcode=sql_parser(&state);
-		if (risnull(CINTTYPE, (char *) &lastcode) && state.verbose)
+		if (risnull(CINTTYPE, (char *) &lastcode))
 		{
-		    char txt1[256], txt2[256];
+		    lastcode=0;
+		    if (state.verbose)
+		    {
+			char txt1[256], txt2[256];
 
 /* FIXME: using 4gl user interaction */
-		    pushquote("cdbm.nm", 7);
-		    fgl_call(txt_retrieve, 1);
-		    popquote(&txt1, 255);
-		    fgw_clip(txt1);
-		    sprintf(txt2, "%s %i", txt1, sqlca.sqlerrd[2]);
-		    pushquote(txt2, strlen(txt2));
-		    fgl_call(usr_notify, 1);
+			pushquote("cdbm.mn", 7);
+			fgl_call(txt_retrieve, 1);
+			popquote(&txt1, 255);
+			fgw_clip(txt1);
+			sprintf(txt2, "%s %i", txt1, sqlca.sqlerrd[2]);
+			pushquote(txt2, strlen(txt2));
+			fgl_call(usr_notify, 1);
 /* */
+		    }
 		}
 		else if (lastcode && lastcode!=SQLNOTFOUND)
 		    goto bad_exit;
@@ -518,6 +524,12 @@ loc_t *txtvar;
     if (state.control.count)
 	lastcode=-201;
 bad_exit:
+    if (state.curr_fd && state.curr_fd!=(fgw_fdesc *) -1)
+    {
+	sql_flush(state.txtvar, 1);
+	if (state.curr_fd!=state.def_fd)
+	    fgw_fdclose(state.curr_fd);
+    }
 /*
 **  if necessary, output error message
 */

@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Mar 00
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #include <locator.h>
 #include <sqlda.h>
 #include "ccmnc.h"
+#include "cfioc.h"
 
 typedef struct phase1state
 {
@@ -51,8 +52,7 @@ typedef struct exprstack
 	intrvl_t *interval;	/* intervals */
 	short range[2];		/* VAR substring range */
     } val; 
-    int count;
-    struct exprstack *next;	/* function call parameter list */
+    int count;			/* # of expressions in list */
 } exprstack_t;
 
 typedef struct controlstack
@@ -79,6 +79,8 @@ typedef struct parserstate
     int s_size;
 
     char *ibufp;
+    char *sqlstart;
+    char *sqlend;
     char *tokstart;
 
     int parseroptions;
@@ -87,7 +89,8 @@ typedef struct parserstate
     fgw_stacktype exprlist;
     loc_t *vars;
 
-    int def_fd;
+    fgw_fdesc *def_fd;		/* pointer to default stream:	NULL to blob
+								-1 ignore */
     int width;
     int touch;
     int verbose;
@@ -95,7 +98,7 @@ typedef struct parserstate
     int error_cont;
 
     int done_display;
-    int curr_fd;
+    fgw_fdesc *curr_fd;		/* same meaning as def_fd */
     loc_t *txtvar;
 } parserstate_t;
 

@@ -1,4 +1,4 @@
-4glWorks 2.0b11 release notes                                 Dec, 26 2001
+4glWorks 2.0b11 release notes                                 Mar, 28 2002
 
 1) Roadmap
 An appropriate directory structure and naming scheme for files, functions,
@@ -78,14 +78,15 @@ containing a demo minimal working application. Each is organized as follows:
 			forms, text and help files in a particular language
 <dirname>/objcode	.o files
 <dirname>/pcode		.4go files, and .o files for the runner
-<dirname>/etc		shell scripts, release notes, sql files, etc
+<dirname>/etc		shell scripts, release notes (including this file),
+			sql files, etc
 
-The only exception is ierrl.4gh, a 4gl include file that contains
-text constants related to error handling (I've preferred to
-string error handling related text to the application, rather
-than put it in a file loaded at run time, to be sure the user
-gets meaningful info should text files be unavailable), which
-is put (correctly) in the appropriate 4glworks/<language>/ directories.
+The only exception to this scheme is ierrl.4gh, a 4gl include file that
+contains text constants related to error handling (I've preferred to
+string error handling related text to the application, rather than put
+it in a file loaded at run time, to be sure the user gets meaningful
+info should text files be unavailable), which is put (correctly) in the
+appropriate 4glworks/<language>/ directories.
 
 1.4) Function names
 Function names mostly follow a mdl_methodname format for public functions

@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,16 +38,16 @@ typedef struct sqlvar_struct sqlva;
 
 typedef struct
 {
-    char *entry;	/* pointer to entry allocated in heap */
+    char *entry;	/* pointer to entry string */
     int etype;		/* type of entry, or size for headers */
-} fgw_heapentry;
+} fgw_fmtentry;
 
 typedef struct
 {
     int size;			/* max no of entries */
     int entries;		/* cur no of entries */
-    fgw_heapentry heap[1];
-} fgw_heaptype;
+    fgw_fmtentry fmt[1];
+} fgw_fmttype;
 
 #define IDLENGTH 18
 typedef struct fgw_stmt
@@ -57,7 +57,7 @@ typedef struct fgw_stmt
     int fmt_type,		/* type of format */
 	headwidth,		/* max header width */
 	width;			/* format width */
-    fgw_heaptype *headers,	/* headers list */
+    fgw_fmttype *headers,	/* headers list */
 		 *formats;	/* formats list */
     char *pretable,		/* various (html) strings */
 	 *posttable,
@@ -74,7 +74,7 @@ typedef struct fgw_stmt
     char *sqlbuf;		/* data returned from engine */
     struct sqlda *sqlda_ptr;	/* sqlda area */
     struct sqlda sqlda_in;	/* input sqlda area */
-    fgw_heaptype *intovars;	/* destination variables list */
+    fgw_tsstype *intovars;	/* destination variables list */
     int field;			/* field count (needed for HTML field count
 				   & vertical & brief formats displays) */
     int format;			/* format count (displays) */

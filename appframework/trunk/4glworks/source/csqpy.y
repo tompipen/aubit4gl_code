@@ -6,7 +6,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Mar 00
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,7 @@
 #include <sqltypes.h> 
 
 #include "ccmnc.h"
+#include "cfioc.h"
 #include "chstc.h"
 #include "csqdc.h"
 #include "csqec.h"
@@ -85,9 +86,10 @@
 			}
 
 extern fgw_stmttype *sql_newstatement();
+extern fgw_fdesc *sql_openfile();
 extern int status;
 
-#define NUMTOKENS 110
+#define NUMTOKENS 119
 #define STRINGCONVSIZE 30
 
 /*
@@ -120,6 +122,7 @@ typedef struct tokenlist
 */
 static parserstate_t *pstate;
 static int delimident=-1;
+static int prevtoken=-1;
 
 /*
 ** html styles
@@ -159,7 +162,6 @@ static int nullind;
 ** current statement
 */
 static fgw_stmttype *curstmt=NULL;
-static int ssize=0, slen=0;
 
 /*
 ** fork/exec status
@@ -173,7 +175,8 @@ static int childstatus=0;
 */
 char *fgw_getstring();
 char *fgw_getvar();
-static int fgw_parmcount();
+static exprstack_t *arglist_sqp();
+static void pushresult_sqp();
 static void yyerror();
 static int yylex();
 static int fgw_exprtype();
@@ -214,19 +217,20 @@ static void fgw_freetssstack();
 char		*var;		/* variables */
 tokenlist_t	*func;		/* functions */
 exprstack_t	stack;		/* expression result */
+char 		*token;		/* token start in source - for sql hacks */
+fgw_fdesc	*fd;		/* output statements */
 }
 
-%type <stack>	format1, ftype, fspec
-%type <stack>	elist
-%type <stack>	allexp
-%type <stack>	exp, casecl, lcasecl, elsecl, nullcl, unitcl, qualcl
-%type <stack>	boolexp, betweencl, mrexcl, lrexcl, escape, parms
-%type <stack>   rangecl
+%type <fd>	output, append
+%type <stack>	exitcl, format1, ftype, fspec
+%type <stack>	nullcl, unitcl
+%type <stack>	betweencl, mrexcl, lrexcl
 
-%nonassoc FOR FOREACH WHILE IF ELIF ELSE FI DONE CONTINUE BREAK
-%nonassoc DISPLAY LET LOAD UNLOAD PIPE APPEND OUTPUT
+%nonassoc FOR FOREACH WHILE IF ELIF ELSE FI DONE CONTINUE BREAK EXIT
+%nonassoc DISPLAY LET LOAD UNLOAD WHENEVER PIPE APPEND OUTPUT
 %nonassoc SELECT INSERT DELETE UPDATE EXECUTE CREATE END
-%nonassoc PROCEDURE FUNCTION
+%nonassoc SQLTOK PROCEDURE FUNCTION
+%nonassoc ERROR STOP DEFAULT
 %nonassoc IN INTO USING FORMAT FROM TO DELIMITER
 %nonassoc BRIEF VERTICAL FULL HEADERS
 %nonassoc TEMP SCRATCH EXTERNAL
@@ -236,10 +240,12 @@ exprstack_t	stack;		/* expression result */
 
 %right ASSIGN
 
-%token <stack>	CNST SQLTOK
+%token <stack>	CNST
+%token <token>	SELECT EXECUTE INTO USING FORMAT
 %token <var>	VAR
 %token <func>	FNCT FNDP FNDN /* need to differentiate between datetime
 				  functions with & without args */
+
 %left AND OR
 %right NOT
 %nonassoc '=' EQ NEQ '<' LEQ '>' GEQ
@@ -260,7 +266,6 @@ target:	    {
 		    YYFAIL;
 	    }
 	  allexp	{
-			    fgw_stackpush(&pstate->exprlist, &($2));
 			    YYACCEPT;
 			}
 	|   {
@@ -271,11 +276,177 @@ target:	    {
 ;
 stmt:	  plain
 ;
-plain:	  assign
-	| display	{
-			    pstate->done_display=1;
+plain:	  display
+	| assign
+	| output		{
+/*
+** if it is a pipe, see if we can write to it, or child has gone away
+*/
+				    if (!status && $<fd>1 &&
+					$<fd>1!=(fgw_fdesc *) -1 && $<fd>1->fd_pid)
+				    {
+/*
+** give the child shell the time to exec the correct image
+** FIXME - older SYSV might not know about usleep
+*/
+				        (void) usleep(100000);
+				        fgw_fdwrite($<fd>1, "", 0);
+				        if (status)
+					{
+					    errcode=status;
+					    childstatus=fgw_fdclose($<fd>1);
+					}
+				    }
+				    if (!status)
+				    {
+					if (pstate->curr_fd &&
+					    pstate->curr_fd!=(fgw_fdesc *) -1)
+					{
+					    sql_flush(pstate->txtvar, 1);
+/* FIXME: close flag */
+					    if (pstate->curr_fd!=pstate->def_fd)
+					    {
+						childstatus=fgw_fdclose(pstate->curr_fd);
+						errcode=status;
+					    }
+					}
+				    }
+				    if (!status)
+				    {
+					sql_openfile(pstate->txtvar, $<fd>1);
+					pstate->curr_fd=$<fd>1;
+				    }
+				    else
+					status=0;
+				}
+        | sql
+	| WHENEVER ERROR errcl
+	| LOAD FROM exp del	{
+			    exprstack_t f, d;
+
+			    fgw_freetssstack(&yylval.stack);
+			    d=*(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    f=*(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    fgw_2string(&f, &d);
+/* FIXME: using 4gl internals */
+			    _ffload(sholder1,  sholder2,  pstate->tokstart);
+			    fgw_freetssstack(&f);
+			    fgw_freetssstack(&d);
+			    status=sqlca.sqlcode;
+			    FAILCHECK
+			    rsetnull(CINTTYPE, (char *) &status);
+			    YYACCEPT
+			}
+	| UNLOAD TO exp del	{
+			    exprstack_t *f, *d;
+
+			    fgw_freetssstack(&yylval.stack);
+			    d=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    f=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    fgw_2string(f, d);
+/* FIXME: using 4gl internals */
+			    _ffunload(sholder1, sholder2, pstate->tokstart,
+				      0, (struct sqlvar_struct *)0);
+			    fgw_freetssstack(f);
+			    fgw_freetssstack(d);
+			    status=sqlca.sqlcode;
+			    FAILCHECK
+			    rsetnull(CINTTYPE, (char *) &status);
+			    YYACCEPT
+			}
+	| EXIT exitcl	{
+			    if (is_child)
+			    {
+				if (pstate->curr_fd &&
+				    pstate->curr_fd!=(fgw_fdesc *)-1)
+				{
+				    sql_flush(pstate->txtvar, 1);
+				    if (pstate->curr_fd!=pstate->def_fd)
+					fgw_fdclose(pstate->curr_fd);
+				}
+				exit($2.type);
+			    }
+			    else
+			    {
+/*
+** this is a dirty hack, but it causes the external layer to stop
+*/
+				pstate->i_size=0;
+				pstate->o_size=0;
+			    }
 			}
 	| /* empty */
+;
+output:	  APPEND TO append	{
+				    $$=$3;
+				}
+	| OUTPUT TO exp	{
+			    exprstack_t *s;
+			    char cbuf[STRINGCONVSIZE];
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    $<fd>$=fgw_fileopen(fgw_tostring(s, &cbuf, NULL), "w");
+			    fgw_freetssstack(s);
+			}
+	| PIPE TO exp	{
+			    exprstack_t *s;
+			    char cbuf[STRINGCONVSIZE];
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    $<fd>$=fgw_pipeopen(fgw_tostring(s, &cbuf, NULL), "w");
+			    fgw_freetssstack(s);
+			}
+;
+append:	  DEFAULT	{
+			    $<fd>$=pstate->def_fd;
+			}
+	| exp		{
+			    exprstack_t *s;
+			    char cbuf[STRINGCONVSIZE];
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    $<fd>$=fgw_fileopen(fgw_tostring(s, &cbuf, NULL), "a");
+			    fgw_freetssstack(s);
+			}
+;
+errcl:	  CONTINUE	{
+			    pstate->error_cont=1;
+			}
+	| STOP		{
+			    pstate->error_cont=0;
+			}
+;
+del:	  DELIMITER exp
+	| /* empty */	{
+			    exprstack_t s;
+
+			    s.type=FGWVAR;
+			    s.val.string="|";
+			    fgw_stackpush(&pstate->exprlist, &s);
+			}
+;
+exitcl:	  /* empty */	{
+			    $$.type=0;
+			}
+	| exp		{
+			    if (is_child)
+			    {
+				exprstack_t *e;
+				int r, n;
+
+				e=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				r=fgw_toint(e, &n);
+				fgw_freetssstack(e);
+				if (n || r<0 || r>127)
+				{
+				    status=-385;
+				    YYFAIL;
+				}
+				$$.type=r;
+			    }
+			    else
+				YYFAIL;
+			}
 ;
 display:  DISPLAY
 	    {
@@ -289,9 +460,8 @@ display:  DISPLAY
 			    int i, c;
 
 			    sql_initdisplay(curstmt, pstate->txtvar);
-			    s=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
-			    c=s->count;
-			    for (i=0, s=s-c+1; i<c; i++, s++)
+			    s=arglist_sqp(&pstate->exprlist, &c);
+			    for (i=0; i<c; i++, s++)
 			    {
 				switch(s->type)
 				{
@@ -326,85 +496,186 @@ display:  DISPLAY
 ** assignments as a production external to exp!
 */
 assign:	  LET VAR '=' allexp %prec ASSIGN	{
-			    switch ($4.type)
+			    exprstack_t *s;
+
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    switch (s->type)
 			    {
 			      case CSTRINGTYPE:
 			      case FGWVAR:
 				fgw_hstadd(pstate->vars, $<var>2, CSTRINGTYPE,
-					   $4.val.string);
+					   s->val.string);
 				break;
 			      case CDOUBLETYPE:
 			      case CINTTYPE:
 			      case CDATETYPE:
-				fgw_hstadd(pstate->vars, $<var>2, $4.type,
-					   (char *) &($4.val.real));
+				fgw_hstadd(pstate->vars, $<var>2, s->type,
+					   (char *) &(s->val.real));
 				break;
 			      default:
-				fgw_hstadd(pstate->vars, $<var>2, $4.type,
-					   (char *) $4.val.datetime);
+				fgw_hstadd(pstate->vars, $<var>2, s->type,
+					   (char *) s->val.datetime);
 			    }
 			    fgw_sfree($<var>2);
-			    fgw_freetssstack(&($4));
+			    fgw_freetssstack(s);
 			}
 	| LET VAR rangecl '=' allexp %prec ASSIGN	{
-			    exprstack_t s;
+			    exprstack_t *r, *s1, s2;
 			    int vl, el, ol, n1, n2, sp;
 			    char *e, ebuf[STRINGCONVSIZE];
 			    char *v, *t, vbuf[STRINGCONVSIZE];
 
+			    s1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    r=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 /* FIXME: this could be optimized */
-			    fgw_cvvar(&s, fgw_hstget(pstate->vars, $<var>2));
-			    v=fgw_tostring(&s, &vbuf, &n1);
+			    fgw_cvvar(&s2, fgw_hstget(pstate->vars, $<var>2));
+			    v=fgw_tostring(&s2, &vbuf, &n1);
 			    vl=stleng(v);
-			    if (!(t=fgw_smalloc(ol=$3.val.range[1]-
-						  $3.val.range[0]+1)))
+			    if (!(t=fgw_smalloc(ol=r->val.range[1]-
+						  r->val.range[0]+1)))
 				FAIL(-208)
 			    stcopy(v, t);
-			    e=fgw_tostring(&($5), &ebuf, &n2);
+			    e=fgw_tostring(s1, &ebuf, &n2);
 			    if ((el=stleng(e))>ol)
 				el=ol;
-			    bycopy(e, t+$3.val.range[0], el);
+			    bycopy(e, t+r->val.range[0], el);
 /*
 ** fill with spaces as appropriate
 */
-			    if ($3.val.range[0]>vl)
-				byfill(t+vl, $3.val.range[0]-vl, ' ');
-			    if ((sp=$3.val.range[0]+el)<=$3.val.range[1])
-				byfill(t+sp, $3.val.range[1]-sp+1, ' ');
+			    if (r->val.range[0]>vl)
+				byfill(t+vl, r->val.range[0]-vl, ' ');
+			    if ((sp=r->val.range[0]+el)<=r->val.range[1])
+				byfill(t+sp, r->val.range[1]-sp+1, ' ');
 /*
 ** zero terminate if appropriate
 */
-			    if ($3.val.range[1]>=vl)
-			        *(t+$3.val.range[1]+1)='\0';
+			    if (r->val.range[1]>=vl)
+			        *(t+r->val.range[1]+1)='\0';
 			    fgw_hstadd(pstate->vars, $<var>2, CSTRINGTYPE, t);
 			    fgw_sfree(t);
 			    fgw_sfree($<var>2);
-			    fgw_freetssstack(&($5));
+			    fgw_freetssstack(s1);
 			}
 ;
-elist:	  elist ',' allexp 	{
-				    exprstack_t *s;
+/*
+** what we don't understand from the first token, we just pass to the engine
+*/
+sql:	    {
+		 if (!(curstmt=sql_newstatement()))
+		    FAIL(-208)
+	    } sql1	{
+			    if (!risnull(CINTTYPE, (char *) &status))
+				if (pstate->error_cont)
+				    status=0;
+				else
+				    FAILCHECK
+			    YYACCEPT
+			}
+;
+/*
+** be warned: actions require that format follows into
+*/
+sql1:	   select using into format	{
+			    int r;
 
-				    s=(exprstack_t *) fgw_stackpeek(
-							&pstate->exprlist);
-				    $3.count=s->count+1;
-				    fgw_stackpush(&pstate->exprlist, &($3));
-				}
-	| allexp	{
-			    $1.count=1;
-			    fgw_stackpush(&pstate->exprlist, &($1));
+			    *pstate->sqlend='\0';
+			    if (!(r=sql_run(pstate->sqlstart, curstmt,
+					    pstate->touch)))
+				sql_dorows(curstmt, pstate->txtvar, pstate->vars,
+					   !curstmt->intovars);
+			    sql_freestatement(curstmt);
+			    curstmt=NULL;
+			    if (!status)
+				status=r;
+			}
+	 | squsing	{
+			    int r;
+ 
+			    *pstate->sqlend='\0';
+			    r=sql_run(pstate->sqlstart, curstmt, pstate->touch);
+			    sql_freestatement(curstmt);
+			    curstmt=NULL;
+			    if (!status)
+				status=r;
+			}
+	 | sqother	{
+			    int r;
+ 
+			    if (yychar==VAR)
+				fgw_sfree(&yylval.var);
+			    r=sql_run(pstate->sqlstart, curstmt, pstate->touch);
+			    sql_freestatement(curstmt);
+			    curstmt=NULL;
+			    if (!status)
+				status=r;
+			}
+;
+select:	  SELECT	{}
+	| EXECUTE	{}
+;
+squsing:  dml using	{}
+	| SELECT SQLTOK using	{}
+;
+sqother:  CREATE	{}
+	| SQLTOK	{}
+;
+dml:	  INSERT	{}
+	| UPDATE	{}
+	| DELETE	{}
+;
+into:	  /* empty */
+	| INTO vlist	{
+			    if ($<token>1<pstate->sqlend)
+				pstate->sqlend=$<token>1;
+			}
+;
+vlist:	  vlist ',' VAR {
+			    fgw_tssdetach(&pstate->tsshead, $3);
+			    fgw_tssattach(&curstmt->intovars, $3);
+			}
+	| VAR		{
+			    fgw_tssdetach(&pstate->tsshead, $1);
+			    fgw_tssattach(&curstmt->intovars, $1);
+			}
+;
+using:	  /* empty */
+	| USING ulist	{
+			    if ($<token>1<pstate->sqlend)
+				pstate->sqlend=$<token>1;
+			}
+;
+ulist:	  ulist ',' VAR	{
+			    sql_setholder(curstmt, pstate->vars, $3);
+			    fgw_sfree($<var>3);
+			}
+	| VAR		{
+			    sql_setholder(curstmt, pstate->vars, $1);
+			    fgw_sfree($<var>1);
 			}
 ;
 format:	  format1	{
+			    if (curstmt->fmt_type!=FMT_NULL)
+				pstate->done_display=1;
 			}
 ;
 format1:  /* empty */	{
-			    curstmt->fmt_type=pstate->html? FMT_FULL: FMT_BRIEF;
+/*
+** turn off output if INTO clause and no explicit FORMAT clause
+*/
+			    curstmt->fmt_type=(curstmt->intovars? FMT_NULL:
+/*
+** default format is BRIEF
+*/
+				(pstate->html? FMT_FULL: FMT_BRIEF));
+			    curstmt->width=pstate->width;
 			    $$.type=1;
 			}
 	| FORMAT ftype	{
 			    char cbuf[STRINGCONVSIZE];
 
+			    if ($<token>1<pstate->sqlend)
+				pstate->sqlend=$<token>1;
+			    curstmt->width=pstate->width;
 /* need to set format string after headers */
 			    if (fgw_isnull(&($2)))
 				$$.type=1;
@@ -415,6 +686,10 @@ format1:  /* empty */	{
 			}
 ;
 ftype:	  BRIEF		{
+/*
+** no BRIEF format in html mode - we just use FULL with no format specifier
+** or headers
+*/
 			    fgw_setnull(&($$));
 			    curstmt->fmt_type=pstate->html? FMT_FULL: FMT_BRIEF;
 			}
@@ -430,122 +705,143 @@ ftype:	  BRIEF		{
 fspec:	  /* empty */	{
 			    fgw_setnull(&($$));
 			}
-	| CNST		{
-			    $$=$1;
+	| allexp	{
+			    $$=*(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 			}
 ;
 headers:  /* empty */
 	| HEADERS hlist
 ;
 hlist:	  hlist ',' allexp 	{
+				    exprstack_t *s;
 				    char cbuf[STRINGCONVSIZE];
 
-				    sql_setheader(curstmt, fgw_tostring(&($3),
+				    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    sql_setheader(curstmt, fgw_tostring(s,
 								&cbuf, NULL));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(s);
 				}
 	| allexp	{
+			    exprstack_t *s;
 			    char cbuf[STRINGCONVSIZE];
 
-			    sql_setheader(curstmt, fgw_tostring(&($1), 
-							&cbuf, NULL));
-			    fgw_freetssstack(&($1));
+			    s=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+			    sql_setheader(curstmt, fgw_tostring(s, &cbuf, NULL));
+			    fgw_freetssstack(s);
 			}
 ;
 /*
 ** had a single exp rule, but the BETWEEN and ESCAPE clauses would result
 ** in 40 s/r & 7 r/r conflicts. This grammar is less powerful, but cleaner
 */
-allexp:	  boolexp		{
-				    $$=$1;
-				}
-	| exp			{
-				    $$=$1;
-				}
+allexp:	  boolexp
+	| exp
 ;
 exp:	  CNST			{
-				    $$=$1;
+				    $1.count=0;
+				    fgw_stackpush(&pstate->exprlist, &($1));
 				}
 	| NULLVALUE		{
-				    fgw_setnull(&($$));
+				    exprstack_t n;
+
+				    fgw_setnull(&n);
+				    n.count=0;
+				    fgw_stackpush(&pstate->exprlist, &n);
 				}
 	| VAR			{
-				    fgw_cvvar(&($$), fgw_hstget(pstate->vars,
+				    exprstack_t v;
+				    fgw_cvvar(&v, fgw_hstget(pstate->vars,
 								$<var>1));
 				    FAILCHECK
+				    v.count=0;
+				    fgw_stackpush(&pstate->exprlist, &v);
 				    fgw_sfree($<var>1);
 				}
 /* FIXME: index, replace, pads & substrings use byte (as opposed to char)
    starts & ends/lengths. they should be ok as far as GLS goes, but this 
    needs to be checked */
 	| VAR rangecl		{
-				    exprstack_t s;
+				    exprstack_t v, e, *r;
 				    int l, n1;
 				    char *c, sbuf[STRINGCONVSIZE];
 
-				    fgw_cvvar(&s, fgw_hstget(pstate->vars,
+				    r=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    fgw_cvvar(&v, fgw_hstget(pstate->vars,
 							     $<var>1));
-				    c=fgw_tostring(&s, &sbuf, &n1);
-				    $$.type=CSTRINGTYPE;
-				    if (!($$.val.string=
-					   fgw_smalloc(l=$2.val.range[1]-
-							 $2.val.range[0]+1)))
+				    c=fgw_tostring(&v, &sbuf, &n1);
+				    e.type=CSTRINGTYPE;
+				    if (!(e.val.string=
+					   fgw_smalloc(l=r->val.range[1]-
+							 r->val.range[0]+1)))
 					FAIL(-208)
-				    if ($2.val.range[0]>stleng(c) || n1)
-					rsetnull(CSTRINGTYPE,$$.val.string);
+				    if (r->val.range[0]>stleng(c) || n1)
+					rsetnull(CSTRINGTYPE, e.val.string);
 				    else
 				    {
-					bycopy(c+$2.val.range[0],
-					       $$.val.string, l);
-					*($$.val.string+l)='\0';
+					bycopy(c+r->val.range[0],
+					       e.val.string, l);
+					*(e.val.string+l)='\0';
 				    }
+				    e.count=0;
+				    fgw_stackpush(&pstate->exprlist, &e);
 				    fgw_sfree($<var>1);
-			}
+				}
 	| CASE casecl elsecl END	{
-				    if ($2.type==ELSE)
-					$$=$3;
-				    else
+				    exprstack_t *e, *w;
+
+				    e=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    w=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    if (w->type==ELSE)
 				    {
-					$$=$2;
-					fgw_freetssstack(&($3));
+					fgw_stackdrop(&pstate->exprlist, 1);
+					fgw_freetssstack(w);
+					fgw_stackpush(&pstate->exprlist, e);
 				    }
+				    else
+					fgw_freetssstack(e);
 				}
 	| CASE exp lcasecl elsecl END	{
-/* FIXME: should be finding a solution that uses left recursion */
-				    exprstack_t *s;
+				    exprstack_t *a, *e, *s1, *s2, r;
+				    int i, c;
 
-				    s=&($3);
-				    if (fgw_isnull(&($2)))
-					$$=$4;
-				    else
+				    e=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    s1=arglist_sqp(&pstate->exprlist, &c);
+				    s2=s1;
+				    a=s1-1;
+				    r=*e;
+				    if (!fgw_isnull(a))
 				    {
-					while (s)
+					for (i=0; i<c; i+=2, s1+=2)
 					{
-					    int r;
+					    int t;
 
-					    r=fgw_compare($2.type, &($2), s);
-					    if (!nullind && !r)
+					    t=fgw_compare(a->type, a, s1);
+					    if (!nullind && !t)
 					    {
-						$$=*s->next;
+						r=*++s1;
+						fgw_freetssstack(e);
+						s1->type=CINTTYPE;
 						break;
 					    }
-					    else
-						s=s->next->next;
 					}
-					if (!s)
-					     $$=$4;
 				    }
-				    fgw_freetssstack(&($2));
+				    for (i=0; i<c; i++, s2++)
+					fgw_freetssstack(s2);
+				    fgw_freetssstack(a);
+				    fgw_stackdrop(&pstate->exprlist, c+1);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| FNCT 			{
 				    if ($1->parms)
 					FAIL(-664)
-				    (*($1->func))(&($$));
+				    (*($1->func))(&pstate->exprlist);
 				    FAILCHECK
 				}
-	| FNCT '(' parms ')'	{
+	| FNCT '(' elist ')'	{
 				    exprstack_t *s;
 
+				    s=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
 /*
 ** check parm count
 */
@@ -556,29 +852,20 @@ exp:	  CNST			{
 				      case -1:
 					break;
 				      default:
-					if (fgw_parmcount(&($3))!=$1->parms)
+					if (s->count!=$1->parms)
 					    FAIL(-664)
 				    }
 /*
 ** call func & abort if error
 */
-				    (*($1->func))(&($3), &($$));
+				    (*($1->func))(&pstate->exprlist);
 				    FAILCHECK
-/*
-** otherwise free strings
-*/
-				    s=&($3);
-				    while (s)
-				    {
-					fgw_freetssstack(s);
-					s=s->next;
-				    }
 				}
 	| FNDN { pstate->parseroptions|=QUALIFIERHACK; } qualcl {
 				    pstate->parseroptions&=~QUALIFIERHACK;
 				    if ($1->parms)
 					FAIL(-664)
-				    (*($1->func))(&($$), $3.type);
+				    (*($1->func))(&pstate->exprlist);
 				    FAILCHECK
 				}
 /*
@@ -589,9 +876,10 @@ exp:	  CNST			{
 **
 ** for true datetime/interval syntax
 */
-	| FNDP '(' parms ')' { pstate->parseroptions|=QUALIFIERHACK; } qualcl	{
+	| FNDP '(' elist ')' { pstate->parseroptions|=QUALIFIERHACK; } qualcl	{
 				    exprstack_t *s;
 
+				    s=(exprstack_t *) fgw_stackpeek(&pstate->exprlist)-1;
 				    pstate->parseroptions&=~QUALIFIERHACK;
 				    switch ($1->parms)
 				    {
@@ -600,703 +888,840 @@ exp:	  CNST			{
 				      case -1:
 					break;
 				      default:
-					if (fgw_parmcount(&($3))!=$1->parms)
+					if (s->count!=$1->parms)
 					    FAIL(-664)
 				    }
-				    (*($1->func))(&($3), &($$), $6.type);
+				    (*($1->func))(&pstate->exprlist);
 				    FAILCHECK
-				    s=&($3);
-				    while (s)
-				    {
-					fgw_freetssstack(s);
-					s=s->next;
-				    }
 				}
 	| exp DPIPE exp		{
-				    fgw_2string(&($1), &($3));
+				    exprstack_t *o1, *o2, r;
+
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    fgw_2string(o1, o2);
 /*
 ** allocate memory - if none available, nullify result (dirty hack)
 */
-				    $$.val.string=(char *) fgw_smalloc(
+				    r.val.string=(char *) fgw_smalloc(
 							strlen(sholder1)+
 							strlen(sholder2));
-				    if (!($$.val.string))
-					fgw_setnull(&($$));
+				    if (!(r.val.string))
+					fgw_setnull(&r);
 				    else
 				    {
-					$$.type=CSTRINGTYPE;
-					stcopy(sholder1, $$.val.string);
-					stcat(sholder2, $$.val.string);
+					r.type=CSTRINGTYPE;
+					stcopy(sholder1, r.val.string);
+					stcat(sholder2, r.val.string);
 				    }
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp USING exp		{
 				    char *f;
+				    exprstack_t *o1, *o2, r;
 
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 				    if (!(f=fgw_smalloc(64)))
 					FAIL(-208)
 				    else
 				    {
-					switch($1.type)
+					switch(o1->type)
 					{
 					  case CDECIMALTYPE:
 					  case CMONEYTYPE:
-					    status=rfmtdec($1.val.decimal,
-							 $3.val.string, f);
+					    status=rfmtdec(o1->val.decimal,
+							 o2->val.string, f);
 					    break;
 					  case CDOUBLETYPE:
-					    status=rfmtdouble($1.val.real,
-							 $3.val.string, f);
+					    status=rfmtdouble(o1->val.real,
+							 o2->val.string, f);
 					    break;
 					  case CDATETYPE:
-					    status=rfmtdate($1.val.intvalue,
-							 $3.val.string, f);
+					    status=rfmtdate(o1->val.intvalue,
+							 o2->val.string, f);
 					    break;
 #ifdef HAS_DTFMT
 					  case CDTIMETYPE:
-					    status=dttofmtasc($1.val.datetime,
-					                 f, 64, $3.val.string);
+					    status=dttofmtasc(o1->val.datetime,
+					                 f, 64, o2->val.string);
 					    break;
 					  case CINVTYPE:
-					    status=intofmtasc($1.val.interval,
-					                 f, 64, $3.val.string);
+					    status=intofmtasc(o1->val.interval,
+					                 f, 64, o2->val.string);
 					    break;
 #endif 
 					  case CINTTYPE:
-					    status=rfmtlong($1.val.intvalue,
-							 $3.val.string, f);
+					    status=rfmtlong(o1->val.intvalue,
+							 o2->val.string, f);
 					    break;
 					  default:
-					    stcopy($3.val.string, f);
+					    stcopy(o2->val.string, f);
 					}
 					FAILCHECK
-					$$.type=CSTRINGTYPE;
-					$$.val.string=f;
+					r.type=CSTRINGTYPE;
+					r.val.string=f;
 				    }
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 /* $%^&! 8 s/r conflicts from this one */
 	| exp PFIXFNCT		{
-				    (*($2->func))(&($1), &($$));
+				    exprstack_t *t;
+
+				    t=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    t->count=1;
+				    (*($2->func))(&pstate->exprlist);
 				    FAILCHECK
-				    fgw_freetssstack(&($1));
 				}
 	| exp '+' exp		{
 				    exprstack_t *l, *r;
+				    exprstack_t *o1, *o2, d;
 				    intrvl_t in1, in2;
 
-				    switch ($$.type=fgw_optype(&($1), &($3),
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    switch (d.type=fgw_optype(o1, o2,
 							       &l, &r))
 				    {
 				      case CDTIMETYPE:
-					dtaddinv_sqp(l, r, &($$));
+					dtaddinv_sqp(l, r, &d);
 					break;
 				      case CDATETYPE:
 					if (fgw_isnull(l)||fgw_isnull(r))
 					    rsetnull(CDATETYPE,
-						(char *) &($$.val.intvalue));
+						(char *) &(d.val.intvalue));
 					else switch (r->type)
 					{
 					  case CINTTYPE:
 					  case CDOUBLETYPE:
-					    $$.type=CDATETYPE;
-					    $$.val.intvalue=l->val.intvalue+
+					    d.type=CDATETYPE;
+					    d.val.intvalue=l->val.intvalue+
 						fgw_toint(r, NULL);
 					    break;
 					  default:
-					    dtaddinv_sqp(l, r, &($$));
+					    dtaddinv_sqp(l, r, &d);
 					}
 					break;
 				      case CINVTYPE:
-					if (inaddsub_sqp(&($1), &($3),
-							 &in1, &in2, &($$)))
+					if (inaddsub_sqp(o1, o2,
+							 &in1, &in2, &d))
 					    status=inadd(&in1, &in2,
-							 $$.val.interval);
+							 d.val.interval);
 					break;
 				      case CDECIMALTYPE:
 				      case CMONEYTYPE:
-					if (fgw_2decimal(&($1), &($3), &($$)))
+					if (fgw_2decimal(o1, o2, &d))
 					    status=decadd(dholder1, dholder2,
-							  $$.val.decimal);
+							  d.val.decimal);
 					break;
 				      case CDOUBLETYPE:
 				      case CSTRINGTYPE:
-					fgw_2double(&($1), &($3));
-					fgw_setdouble(&($$), fholder1+fholder2);
+					fgw_2double(o1, o2);
+					fgw_setdouble(&d, fholder1+fholder2);
 					break;
 				      case CINTTYPE:
-					fgw_2int(&($1), &($3));
-					fgw_setint(&($$), iholder1+iholder2);
+					fgw_2int(o1, o2);
+					fgw_setint(&d, iholder1+iholder2);
 					break;
 				      default:
-					fgw_setnull(&($$));
+					fgw_setnull(&d);
 				    }
 				    FAILCHECK
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    d.count=0;
+				    fgw_stackpush(&pstate->exprlist, &d);
 				}
 	| exp '-' exp		{
 				    int d;
 				    intrvl_t in1, in2;
+				    exprstack_t *o1, *o2, r;
 
-				    if ($1.type==CDTIMETYPE)
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    if (o1->type==CDTIMETYPE)
 				    {
-					if ($3.type==CINVTYPE)
-					    dtsubinv_sqp(&($1), &($3), &($$));
+					if (o2->type==CINVTYPE)
+					    dtsubinv_sqp(o1, o2, &r);
 					else
-					    dtsub_sqp(&($1), &($3), &($$));
+					    dtsub_sqp(o1, o2, &r);
 				    }
-				    else if ($1.type==CDATETYPE)
+				    else if (o1->type==CDATETYPE)
 				    {
-					if (fgw_isnull(&($1))||fgw_isnull(&($3)))
+					if (fgw_isnull(o1)||fgw_isnull(o2))
 					    rsetnull(CDATETYPE,
-						(char *) &($$.val.intvalue));
-					else switch ($3.type)
+						(char *) &(r.val.intvalue));
+					else switch (o2->type)
 					{
 					  case CINTTYPE:
 					  case CDOUBLETYPE:
-					    $$.type=CDATETYPE;
-					    $$.val.intvalue=$1.val.intvalue-
-						fgw_toint(&($3), NULL);
+					    r.type=CDATETYPE;
+					    r.val.intvalue=o1->val.intvalue-
+						fgw_toint(o2, NULL);
 					    break;
 					  case CINVTYPE:
-					    dtsubinv_sqp(&($1), &($3), &($$));
+					    dtsubinv_sqp(o1, o2, &r);
 					    break;
 					  case CDTIMETYPE:
-					    dtsub_sqp(&($1), &($3), &($$));
+					    dtsub_sqp(o1, o2, &r);
 					    break;
 					  default:
-					    d=fgw_todate(&($3), NULL);
-					    $$.type=CINTTYPE;
-					    $$.val.intvalue=$1.val.intvalue-d;
+					    d=fgw_todate(o2, NULL);
+					    r.type=CINTTYPE;
+					    r.val.intvalue=o1->val.intvalue-d;
 					}
 				    }
-				    else if ($1.type==CINVTYPE)
+				    else if (o1->type==CINVTYPE)
 				    {
-					if (inaddsub_sqp(&($1), &($3),
-							 &in1, &in2, &($$)))
+					if (inaddsub_sqp(o1, o2,
+							 &in1, &in2, &r))
 					    status=insub(&in1, &in2,
-							 $$.val.interval);
+							 r.val.interval);
 				    }
-				    else switch ($$.type=fgw_exprtype($1.type,
-								      $3.type))
+				    else switch (r.type=fgw_exprtype(o1->type,
+								     o2->type))
 				    {
 				      case CDECIMALTYPE:
 				      case CMONEYTYPE:
-					if (fgw_2decimal(&($1), &($3), &($$)))
+					if (fgw_2decimal(o1, o2, &r))
 					    status=decadd(dholder1, dholder2,
-							  $$.val.decimal);
+							  r.val.decimal);
 					break;
 				      case CSTRINGTYPE:
 				      case CDOUBLETYPE:
-					fgw_2double(&($1), &($3));
-					fgw_setdouble(&($$), fholder1-fholder2);
+					fgw_2double(o1, o2);
+					fgw_setdouble(&r, fholder1-fholder2);
 					break;
 				      case CINTTYPE:
-					fgw_2int(&($1), &($3));
-					fgw_setint(&($$), iholder1-iholder2);
+					fgw_2int(o1, o2);
+					fgw_setint(&r, iholder1-iholder2);
 					break;
 				      default:
-					fgw_setnull(&($$));
+					fgw_setnull(&r);
 				    }
 				    FAILCHECK
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp '*' exp		{
 				    exprstack_t *l, *r;
+				    exprstack_t *o1, *o2, d;
 				    intrvl_t *ip1, in1;
 				    int n1, n2;
 				    double f;
 
-				    switch ($$.type=fgw_optype(&($1), &($3),
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    switch (d.type=fgw_optype(o1, o2,
 							       &l, &r))
 				    {
 				      case CDECIMALTYPE:
 				      case CMONEYTYPE:
-					if (fgw_2decimal(&($1), &($3), &($$)))
+					if (fgw_2decimal(o1, o2, &d))
 					    status=decmul(dholder1, dholder2,
-							  $$.val.decimal);
+							  d.val.decimal);
 					break;
 				      case CDOUBLETYPE:
 				      case CSTRINGTYPE:
-					fgw_2double(&($1), &($3));
-					fgw_setdouble(&($$), fholder1*fholder2);
+					fgw_2double(o1, o2);
+					fgw_setdouble(&d, fholder1*fholder2);
 					break;
 				      case CINTTYPE:
-					fgw_2int(&($1), &($3));
-					fgw_setint(&($$), iholder1*iholder2);
+					fgw_2int(o1, o2);
+					fgw_setint(&d, iholder1*iholder2);
 					break;
 				      case CINVTYPE:
 					ip1=fgw_toinv(l, &in1, -1, &n1);
 					f=fgw_todouble(r, &n2);
-					if (!($$.val.interval=(intrvl_t *)
+					if (!(d.val.interval=(intrvl_t *)
 						fgw_smalloc(sizeof(intrvl_t))))
 					    FAIL(-208)
-					$$.type=CINVTYPE;
+					d.type=CINVTYPE;
 					if (n1||n2)
 					    rsetnull(CINVTYPE,
-						     (char *) $$.val.interval);
+						     (char *) d.val.interval);
 					status=invmuldbl(ip1, f,
-							 $$.val.interval);
+							 d.val.interval);
 					break;
 				      default:
-					fgw_setnull(&($$));
+					fgw_setnull(&d);
 				    }
 				    FAILCHECK
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    d.count=0;
+				    fgw_stackpush(&pstate->exprlist, &d);
 				}
 	| exp '/' exp		{
-				    if ($1.type==CINVTYPE)
+				    exprstack_t *o1, *o2, r;
+
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    if (o1->type==CINVTYPE)
 				    {
 					int n1, n2;
 					intrvl_t *ip1, *ip2, in2;
 					double f;
 
-					if ($3.type==CINTTYPE ||
-					    $3.type==CDOUBLETYPE)
+					if (o2->type==CINTTYPE ||
+					    o2->type==CDOUBLETYPE)
 					{
-					    ip1=fgw_toinv(&($1), &in2, -1, &n1);
-					    f=fgw_todouble(&($3), &n2);
-					    $$.type=CINVTYPE;
-					    if (!($$.val.interval=(intrvl_t *)
+					    ip1=fgw_toinv(o1, &in2, -1, &n1);
+					    f=fgw_todouble(o2, &n2);
+					    r.type=CINVTYPE;
+					    if (!(r.val.interval=(intrvl_t *)
 						  fgw_smalloc(sizeof(intrvl_t))))
 						FAIL(-208)
-					    $$.val.interval->in_qual=ip1->in_qual;
+					    r.val.interval->in_qual=ip1->in_qual;
 					    if (n1||n2)
 						rsetnull(CINVTYPE, (char *)
-							  $$.val.interval);
+							  r.val.interval);
 					    else
 						status=invdivdbl(ip1, f,
-							    $$.val.interval);
+							    r.val.interval);
 					}
 					else
 					{
-					    ip1=fgw_toinv(&($1), &in2, -1, &n1);
-					    ip2=fgw_toinv(&($3), &in2, -1, &n2);
+					    ip1=fgw_toinv(o1, &in2, -1, &n1);
+					    ip2=fgw_toinv(o2, &in2, -1, &n2);
 					    if (n1||n2)
-						fgw_setnull(&($$));
+						fgw_setnull(&r);
 					    else
 					    {
-						$$.type=CDOUBLETYPE;
+						r.type=CDOUBLETYPE;
 						status=invdivinv(ip1, ip2,
-							&($$.val.real));
+							&(r.val.real));
 					    }
 					}
 				    }
-				    else switch ($$.type=fgw_exprtype($1.type,
-								      $3.type))
+				    else switch (r.type=fgw_exprtype(o1->type,
+								     o2->type))
 				    {
 				      case CDECIMALTYPE:
 				      case CMONEYTYPE:
-					if (fgw_2decimal(&($1), &($3), &($$)))
+					if (fgw_2decimal(o1, o2, &r))
 					    status=decdiv(dholder1, dholder2,
-							  $$.val.decimal);
+							  r.val.decimal);
 					break;
 				      case CSTRINGTYPE:
 				      case CDOUBLETYPE:
-					fgw_2double(&($1), &($3));
+					fgw_2double(o1, o2);
 /*
 ** avoid problems with null or 0 divisors...
 */
 					if (nullind)
 					{
-					    $$.type=CDOUBLETYPE;
+					    r.type=CDOUBLETYPE;
 					    rsetnull(CDOUBLETYPE,
-						    (char *) &($$.val.real));
+						    (char *) &(r.val.real));
 					}
 					else if (fholder2==0)
 					    FAIL(-1202)
 					else
-					    fgw_setdouble(&($$),
+					    fgw_setdouble(&r,
 							 fholder1/fholder2);
 					break;
 				      case CINTTYPE:
-					fgw_2int(&($1), &($3));
+					fgw_2int(o1, o2);
 					if (nullind)
-					    fgw_setnull(&($$));
+					    fgw_setnull(&r);
 					else if (iholder2==0)
 					    FAIL(-1202)
 					else
-					    fgw_setint(&($$),
+					    fgw_setint(&r,
 						iholder1/iholder2);
 					break;
 				      default:
-					fgw_setnull(&($$));
+					fgw_setnull(&r);
 				    }
 				    FAILCHECK
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp UNITS { pstate->parseroptions|=QUALIFIERHACK; } unitcl {
-				    exprstack_t r;
+				    exprstack_t i, *o, r;
 				    int n;
 
+				    o=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 /*
 **  we complicate things a bit to have units behave as in the engine
 **  rather than an interval shorthand
 */
 				    pstate->parseroptions&=~QUALIFIERHACK;
-				    r.type=CINTTYPE;
-				    r.val.intvalue=fgw_toint(&($1), NULL);
-				    $$.type=CINVTYPE;
-				    if (!($$.val.interval=(intrvl_t *)
+				    i.type=CINTTYPE;
+				    i.val.intvalue=fgw_toint(o, NULL);
+				    r.type=CINVTYPE;
+				    if (!(r.val.interval=(intrvl_t *)
 					     fgw_smalloc(sizeof(intrvl_t))))
 					FAIL(-208)
-				    fgw_toinv(&r, $$.val.interval,
+				    fgw_toinv(&i, r.val.interval,
 					TU_IENCODE(5, $4.type, $4.type), &n);
 				    if (n)
 					rsetnull(CINVTYPE,
-						 (char *) $$.val.interval);
-				    fgw_freetssstack(&($1));
+						 (char *) r.val.interval);
+				    fgw_freetssstack(o);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| '-' exp  %prec NEG	{
 				    dec_t dec1;
+				    exprstack_t *o, r;
 
-				    if (fgw_isnull(&($2)))
-					$$=$2;
+				    o=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    if (fgw_isnull(o))
+					r=*o;
 				    else
-					switch ($2.type)
+					switch (o->type)
 				 	{
 				 	  case CSTRINGTYPE:
 				 	  case FGWVAR:
-					    fgw_setdouble(&($$),
-						-fgw_todouble(&($2), &nullind));
+					    fgw_setdouble(&r,
+						-fgw_todouble(o, &nullind));
 					    break;
 					  case CDECIMALTYPE:
 					  case CMONEYTYPE:
 					    status=deccvlong(-1, &dec1);
-					    $$.type=$2.type;
-					    if (!($$.val.decimal=
+					    r.type=o->type;
+					    if (!(r.val.decimal=
 						   (dec_t *) fgw_smalloc(
 							    sizeof(dec_t))))
 						FAIL(-208)
 					    else
-						decmul($2.val.decimal,
-						   &dec1, $$.val.decimal);
+						decmul(o->val.decimal,
+						   &dec1, r.val.decimal);
 					    break;
 				 	  case CDOUBLETYPE:
-					    $$.type=$2.type;
-					    $$.val.real=-$2.val.real;
+					    r.type=o->type;
+					    r.val.real=-o->val.real;
 					    break;
 					  case CINTTYPE:
-					    $$.type=$2.type;
-					    $$.val.intvalue=-$2.val.intvalue;
+					    r.type=o->type;
+					    r.val.intvalue=-o->val.intvalue;
 					    break;
 					  case CINVTYPE:
-					    $$.type=$2.type;
-					    if (!($$.val.interval=
+					    r.type=o->type;
+					    if (!(r.val.interval=
 						   (intrvl_t *) fgw_smalloc(
 							    sizeof(intrvl_t))))
 						FAIL(-208)
 					    else
-						invmuldbl($2.val.interval,
-						   -1.0, $$.val.interval);
+						invmuldbl(o->val.interval,
+						   -1.0, r.val.interval);
 					    break;
 					  default:
-					    fgw_setnull(&($$));
+					    fgw_setnull(&r);
 					}
-				    fgw_freetssstack(&($2));
+				    fgw_freetssstack(o);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| '+' exp  %prec PLUS	{
-				    if (fgw_isnull(&($2)))
-					$$=$2;
+				    exprstack_t *o, r;
+
+				    o=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    if (fgw_isnull(o))
+					r=*o;
 				    else
-					switch ($2.type)
+					switch (o->type)
 				 	{
 				 	  case CSTRINGTYPE:
 				 	  case FGWVAR:
-					    fgw_setdouble(&($$),
-						fgw_todouble(&($2), &nullind));
+					    fgw_setdouble(&r,
+						fgw_todouble(o, &nullind));
 					    break;
 				 	  case CDECIMALTYPE:
 				 	  case CMONEYTYPE:
 				 	  case CDOUBLETYPE:
 					  case CINTTYPE:
 					  case CINVTYPE:
-					    $$=$2;
+					    r=*o;
 					    break;
 					  default:
-					    fgw_setnull(&($$));
+					    fgw_setnull(&r);
 					}
-				    fgw_freetssstack(&($2));
+				    fgw_freetssstack(o);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
-	| '(' exp ')'		{
-				    $$=$2;
-				}
+	| '(' exp ')'
 ;
-boolexp:	exp IN '(' parms ')'	{
-/* FIXME: should be finding a solution that uses left recursion */
-				    exprstack_t *s;
+boolexp:	exp IN '(' elist ')'	{
+				    exprstack_t *s, *e, r;
+				    int i, c;
 
-				    s=&($4);
-				    if (fgw_isnull(&($1)))
-					fgw_setnull(&($$));
+				    s=arglist_sqp(&pstate->exprlist, &c);
+				    e=s-1;
+				    if (fgw_isnull(e))
+					fgw_setnull(&r);
 				    else
 				    {
-					$$.type=CINTTYPE;
-					$$.val.intvalue=0;
-					while (s)
+					r.type=CINTTYPE;
+					r.val.intvalue=0;
+					for (i=0; i<c; i++, s++)
 					{
-					    int r;
+					    int t;
 
-					    r=fgw_compare($1.type, &($1), s);
-					    if (!nullind && !r)
+					    t=fgw_compare(e->type, e, s);
+					    if (!nullind && !t)
 					    {
-						$$.val.intvalue=1;
+						r.val.intvalue=1;
 						break;
 					    }
-					    s=s->next;
+					    fgw_freetssstack(s);
 					}
-					fgw_freetssstack(&($1));
+					fgw_freetssstack(e);
 				    }
-				    while (s)
-				    {
+				    for (; i<c; i++, s++);
 					fgw_freetssstack(s);
-					s=s->next;
-				    }
+				    fgw_stackdrop(&pstate->exprlist, c);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
-	| exp NOT IN '(' parms ')'	{
-/* FIXME: should be finding a solution that uses left recursion */
-				    exprstack_t *s;
+	| exp NOT IN '(' elist ')'	{
+				    exprstack_t *s, *e, r;
+				    int i, c;
 
-				    s=&($5);
-				    if (fgw_isnull(&($1)))
-					fgw_setnull(&($$));
+				    s=arglist_sqp(&pstate->exprlist, &c);
+				    e=s-1;
+				    if (fgw_isnull(e))
+					fgw_setnull(&r);
 				    else
 				    {
-					$$.type=CINTTYPE;
-					$$.val.intvalue=1;
-					while (s)
+					r.type=CINTTYPE;
+					r.val.intvalue=1;
+					for (i=0; i<c; i++, s++)
 					{
-					    int r;
+					    int t;
 
-					    r=fgw_compare($1.type, &($1), s);
+					    t=fgw_compare(e->type, e, s);
 /*
 ** a null in a NOT IN clause will yield NULL
 ** (NOT exp IN & exp NOT IN are semantically different. is this right?)
 */
 					    if (nullind)
 					    {
-						fgw_setnull(&($$));
+						fgw_setnull(&r);
 						break;
 					    }
-					    else if (!r)
+					    else if (!t)
 					    {
-						$$.val.intvalue=0;
+						r.val.intvalue=0;
 						break;
 					    }
-					    s=s->next;
+					    fgw_freetssstack(s);
 					}
-					fgw_freetssstack(&($1));
+					fgw_freetssstack(e);
 				    }
-				    while (s)
-				    {
+				    for (; i<c; i++, s++);
 					fgw_freetssstack(s);
-					s=s->next;
-				    }
+				    fgw_stackdrop(&pstate->exprlist, c);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp betweencl exp AND exp	{
 				    int rl, rh;
+				    exprstack_t *e, *el, *eh, r;
 
-				    if (fgw_isnull(&($1)))
-					fgw_setnull(&($$));
+				    eh=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    el=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    e=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    if (fgw_isnull(e))
+					fgw_setnull(&r);
 				    else
 				    {
 /*
-** $3 needs to be smaller than $5, but that's ok the engine
+** el needs to be smaller than eh, but that's ok the engine
 ** behaves the same way
 */
-					rl=fgw_compare($1.type, &($1), &($3));
+					rl=fgw_compare(e->type, e, el);
 					if (nullind)
-					    fgw_setnull(&($$));
+					    fgw_setnull(&r);
 					else
 					{
-					    rh=fgw_compare($1.type, &($1), &($5));
+					    rh=fgw_compare(e->type, e, eh);
 					    if (nullind)
-						fgw_setnull(&($$));
+						fgw_setnull(&r);
 					    else if ($2.type==BETWEEN)
-						fgw_setint(&($$),
+						fgw_setint(&r,
 							   rl>=0 && rh<=0);
 					    else
-						fgw_setint(&($$), 
+						fgw_setint(&r, 
 							   rl<0 || rh>0);
 					}
 				    }
-				    fgw_freetssstack(&($1));
+				    fgw_freetssstack(e);
+				    fgw_freetssstack(el);
+				    fgw_freetssstack(eh);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp mrexcl exp escape {
-				    int r;
+				    int t;
 				    char *e, esc[STRINGCONVSIZE];
+				    exprstack_t *o1, *o2, *o3, r;
 
-				    fgw_2string(&($1), &($3));
+				    o3=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    fgw_2string(o1, o2);
 				    if (nullind)
-					fgw_setnull(&($$));
+					fgw_setnull(&r);
 				    else
 				    {
 					retquote(sholder1);
 					retquote(sholder2);
-				 	e=fgw_tostring(&($4), &esc, NULL);
+				 	e=fgw_tostring(o3, &esc, NULL);
 /* FIXME: should I be testing for a null escape here? */
 /* FIXME: using 4gl internals */
 					_domatches((char) *e);
-					popint(&r);
+					popint(&t);
 					if ($2.type==MATCHES)
-					    fgw_setint(&($$), r);
+					    fgw_setint(&r, t);
 					else
 
-					    fgw_setint(&($$), !r);
+					    fgw_setint(&r, !t);
 				    }
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
-				    fgw_freetssstack(&($4));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    fgw_freetssstack(o3);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp lrexcl exp escape {
-				    int r;
+				    int t;
 				    char *e, esc[STRINGCONVSIZE];
+				    exprstack_t *o1, *o2, *o3, r;
 
-				    fgw_2string(&($1), &($3));
+				    o3=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    fgw_2string(o1, o2);
 				    if (nullind)
-					fgw_setnull(&($$));
+					fgw_setnull(&r);
 				    else
 				    {
 					retquote(sholder1);
 					retquote(sholder2);
-				 	e=fgw_tostring(&($4), &esc, NULL);
+				 	e=fgw_tostring(o3, &esc, NULL);
 /* FIXME: should I be testing for a null escape here? */
 /* FIXME: using 4gl internals */
 					_dolike((char) *e);
-					popint(&r);
+					popint(&t);
 					if ($2.type==LIKE)
-					    fgw_setint(&($$), r);
+					    fgw_setint(&r, t);
 					else
-					    fgw_setint(&($$), !r);
+					    fgw_setint(&r, !t);
 				    }
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
-				    fgw_freetssstack(&($4));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    fgw_freetssstack(o3);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| allexp OR allexp	{
 				    int b1, b2, n1, n2;
+				    exprstack_t *o1, *o2, r;
 
-				    b1=fgw_toboolean(&($1), &n1);
-				    b2=fgw_toboolean(&($3), &n2);
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    b1=fgw_toboolean(o1, &n1);
+				    b2=fgw_toboolean(o2, &n2);
 				    nullind=n1||n2;
-				    fgw_setint(&($$), b1 || b2);
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_setint(&r, b1 || b2);
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| allexp AND allexp	{
 				    int b1, b2, n1, n2;
+				    exprstack_t *o1, *o2, r;
 
-				    b1=fgw_toboolean(&($1), &n1);
-				    b2=fgw_toboolean(&($3), &n2);
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    b1=fgw_toboolean(o1, &n1);
+				    b2=fgw_toboolean(03, &n2);
 				    nullind=n1||n2;
-				    fgw_setint(&($$), b1 && b2);
-				    fgw_freetssstack(&($1));
-				    fgw_freetssstack(&($3));
+				    fgw_setint(&r, b1 && b2);
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| NOT allexp		{
-				    int b1;
+				    int b;
+				    exprstack_t *o, r;
 
-				    b1=fgw_toboolean(&($2), &nullind);
-				    fgw_setint(&($$), !b1);
-				    fgw_freetssstack(&($2));
+				    o=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    b=fgw_toboolean(o, &nullind);
+				    fgw_setint(&r, !b);
+				    fgw_freetssstack(o);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp IS nullcl		{
-				    int r;
+				    int t;
+				    exprstack_t *o, r;
 
+				    o=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
 				    nullind=0;
-				    r=fgw_isnull(&($1));
+				    t=fgw_isnull(o);
 				    if ($3.type==NULLVALUE)
-					fgw_setint(&($$), r);
+					fgw_setint(&r, t);
 				    else
-					fgw_setint(&($$), !r);
-				    fgw_freetssstack(&($1));
+					fgw_setint(&r, !t);
+				    fgw_freetssstack(o);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp eqcl exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), !r);
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, !t);
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp NEQ exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), (r!=0));
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, (t!=0));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp LEQ exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), (r<=0));
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, (t<=0));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp '<' exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), (r<0));
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, (t<0));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp GEQ exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), (r>=0));
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, (t>=0));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 	| exp '>' exp		{
-				    int r;
+				    int t;
+				    exprstack_t *o1, *o2, r;
 
-				    r=fgw_compare(fgw_exprtype($1.type, $3.type),
-						  &($1), &($3));
-				    fgw_setint(&($$), (r>0));
-				    fgw_freetssstack(&($1));
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+
+				    t=fgw_compare(fgw_exprtype(o1->type, o2->type),
+						  o1, o2);
+				    fgw_setint(&r, (t>0));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
-	| '(' boolexp ')'	{
-				    $$=$2;
-				}
+	| '(' boolexp ')'
 ;
 rangecl:  '[' exp ']'		{
 				    int i, n;
+				    exprstack_t *o;
 
-				    i=fgw_toint(&($2), &n);
+				    o=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    i=fgw_toint(o, &n);
 				    if (i<=0 || iholder1>0x7fff || n)
 					FAIL(-307)
-				    $$.val.range[0]=i-1;
-				    $$.val.range[1]=i-1;
-				    fgw_freetssstack(&($2));
+				    fgw_freetssstack(o);
+				    o->val.range[0]=i-1;
+				    o->val.range[1]=i-1;
 				}
 	| '[' exp ',' exp ']'	{
-				    fgw_2int(&($2), &($4));
+				    exprstack_t *o1, *o2;
+
+				    o2=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    o1=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    fgw_2int(o1, o2);
 				    if (iholder1<=0 || iholder2<iholder1 ||
 					nullind || iholder2>0x7fff)
 					FAIL(-307)
-				    $$.val.range[0]=iholder1-1;
-				    $$.val.range[1]=iholder2-1;
-				    fgw_freetssstack(&($2));
-				    fgw_freetssstack(&($4));
+				    fgw_freetssstack(o1);
+				    fgw_freetssstack(o2);
+				    o1->val.range[0]=iholder1-1;
+				    o1->val.range[1]=iholder2-1;
 				}
 ;
 qualcl:	/* empty */		{
-				    $$.type=-1;
+				    exprstack_t q;
+
+				    q.type=CINTTYPE;
+				    q.val.intvalue=-1;
+				    q.count=0;
+				    fgw_stackpush(&pstate->exprlist, &q);
 				}
 	| unitcl TO unitcl	{
+				    exprstack_t q;
+
 				    if ($1.type>$3.type)
 					FAIL(-201)
-				    $$.type=TU_DTENCODE($1.type, $3.type);
+				    q.type=CINTTYPE;
+				    q.val.intvalue=TU_DTENCODE($1.type, $3.type);
+				    q.count=0;
+				    fgw_stackpush(&pstate->exprlist, &q);
 				}
 ;
 unitcl:	  YEAR			{
@@ -1322,45 +1747,62 @@ unitcl:	  YEAR			{
 				}
 ;
 casecl:	  casecl WHEN allexp THEN exp	{
-				    iholder1=fgw_toboolean(&($3), &nullind);
-				    if ($1.type!=ELSE)
+				    exprstack_t *c, *w, *t;
+
+				    t=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    w=(exprstack_t *) fgw_stackpop(&pstate->exprlist);
+				    c=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    iholder1=fgw_toboolean(w, &nullind);
+				    if (c->type!=ELSE)
 				    {
-					$$=$1;
-					fgw_freetssstack(&($3));
-					fgw_freetssstack(&($5));
+					fgw_freetssstack(w);
+					fgw_freetssstack(t);
 				    }
 				    else if (iholder1)
 				    {
-					$$=$5;
-					fgw_freetssstack(&($3));
+					*c=*t;
+					fgw_freetssstack(w);
 				    }
 				    else
 				    {
-					$$.type=ELSE;
-					fgw_freetssstack(&($3));
-					fgw_freetssstack(&($5));
+					c->type=ELSE;	/* superfluous, but... */
+					fgw_freetssstack(w);
+					fgw_freetssstack(t);
 				    }
 				}
 	| /* empty */		{
-					$$.type=ELSE;
+				    exprstack_t r;
+
+				    r.type=ELSE;
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 ;
-lcasecl:  WHEN exp THEN exp lcasecl	{
-				     $2.next=&($4);
-				     $4.next=&($5);
-				     $$=$2;
+lcasecl:  lcasecl WHEN exp THEN exp 	{
+				    exprstack_t *c, *w, *t;
+
+				    t=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    w=t-1;
+				    c=w-1;
+				    w->count=c->count+1;
+				    t->count=w->count+1;
 				}
-	| WHEN exp THEN exp	{
-				     $2.next=&($4);
-				     $4.next=NULL;
-				     $$=$2;
+	| WHEN exp THEN exp 	{
+				    exprstack_t *w, *t;
+
+				    t=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+				    w=t-1;
+				    w->count=1;
+				    t->count=2;
 				}
 ;
-elsecl:	  ELSE exp		{
-				    $$=$2;
-				}
+elsecl:	  ELSE exp
 	| /* empty */		{
-				    fgw_setnull(&($$));
+				    exprstack_t r;
+
+				    fgw_setnull(&r);
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 ;
 nullcl:	  NULLVALUE		{
@@ -1373,18 +1815,20 @@ nullcl:	  NULLVALUE		{
 eqcl:	  '='
 	| EQ
 ;
-parms:	  allexp		{
-				    $1.next=NULL;
-				    $$=$1;
+elist:	  elist ',' allexp 	{
+				    exprstack_t *t, *t1;
+
+				    t=(exprstack_t *) fgw_stackpeek(
+							&pstate->exprlist);
+				    t1=t-1;
+				    t->count=t1->count+1;
 				}
-/*
-** we want right recursion, as our aim is to have a linked
-** list of elements on the stack
-*/
-	| allexp ',' parms	{	
-				    $1.next=&($3);
-				    $$=$1;
-				}
+	| allexp	{
+			    exprstack_t *t;
+
+			    t=(exprstack_t *) fgw_stackpeek(&pstate->exprlist);
+			    t->count=1;
+			}
 ;
 betweencl:  BETWEEN		{
 				    $$.type=BETWEEN;
@@ -1407,12 +1851,14 @@ lrexcl:	  LIKE			{
 				    $$.type=~LIKE;
 				}
 ;
-escape:	  ESCAPE exp		{
-				    $$=$2;
-				}
+escape:	  ESCAPE exp
 	| /* empty */		{
-				    $$.type=FGWVAR;
-				    $$.val.string="\\";
+				    exprstack_t r;
+
+				    r.type=FGWVAR;
+				    r.val.string="\\";
+				    r.count=0;
+				    fgw_stackpush(&pstate->exprlist, &r);
 				}
 
 ;
@@ -1432,7 +1878,11 @@ parserstate_t *state;
     pstate=state;
     if (pstate->parseroptions)
 	pstate->parseroptions=EXPRONLY;
+    else
+  	pstate->parseroptions=SQLHACK;
     pstate->ibufp=pstate->o_query+pstate->phase1.stmt_start;
+    pstate->sqlstart=pstate->ibufp;
+    pstate->sqlend=pstate->ibufp+strlen(pstate->ibufp);
     init_sqp();
     status=0;
     yyparse();
@@ -1490,37 +1940,45 @@ int ec, cs;
 **
 ** ascii
 */
-static void ascii_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void ascii_sqp(s)
+fgw_stacktype *s;
 {
     int c, n;
+    exprstack_t *i, o;
 
+    i=arglist_sqp(s, NULL);
 /* FIXME: not GLS aware */
-    if (!(funcout->val.string=fgw_smalloc(1)))
+    if (!(o.val.string=fgw_smalloc(1)))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
-	c=fgw_toint(s, &n);
+	o.type=CSTRINGTYPE;
+	c=fgw_toint(i, &n);
 	if (n)
-	   rsetnull(CSTRINGTYPE, funcout->val.string);
+	   rsetnull(CSTRINGTYPE, o.val.string);
 	else if (c<1 || c>255)
 	   status=-717;
 	else
-	    *funcout->val.string=(char) c;
+	{
+	    *o.val.string=(char) c;
+	    *(o.val.string+1)='\0';
+	}
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** clipped
 */
-static void clipped_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void clipped_sqp(s)
+fgw_stacktype *s;
 {
     int n, l;
+    exprstack_t *i, o;
     char *c, cbuf[STRINGCONVSIZE], *p;
 
-    c=fgw_tostring(s, &cbuf, &n);
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
     if (n)
 	l=0;
     else if (l=stleng(c))
@@ -1529,20 +1987,21 @@ exprstack_t *s, *funcout;
 	while (*p--==' ')
 	    l--;
     }
-    if (!(funcout->val.string=fgw_smalloc(l)))
+    if (!(o.val.string=fgw_smalloc(l)))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
+	o.type=CSTRINGTYPE;
 	if (n)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o.val.string);
 	else
 	{
 	    if (l)
-		bycopy(c, funcout->val.string, l);
-	    *(funcout->val.string+l)='\0';
+		bycopy(c, o.val.string, l);
+	    *(o.val.string+l)='\0';
 	}
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
@@ -1566,950 +2025,1144 @@ char *ist, *ost;
 /*
 ** spaces
 */
-static void spaces_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void spaces_sqp(s)
+fgw_stacktype *s;
 {
     int sp, n;
+    exprstack_t *i, o;
 
-    sp=fgw_toint(s, &n);
+    i=arglist_sqp(s, NULL);
+    sp=fgw_toint(i, &n);
     if (n)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else if (sp<=0)
 	status=-717;
-    else if (!(funcout->val.string=(char *) fgw_smalloc(sp)))
+    else if (!(o.val.string=(char *) fgw_smalloc(sp)))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
-	dopadding_sqp(sp, " ", funcout->val.string);
-	*(funcout->val.string+sp)='\0';
+	o.type=CSTRINGTYPE;
+	dopadding_sqp(sp, " ", o.val.string);
+	*(o.val.string+sp)='\0';
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** exec
 */
-static void exec_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void exec_sqp(s)
+fgw_stacktype *s;
 {
     int n;
     char *c, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
+    i=arglist_sqp(s, NULL);
     if (pstate->parseroptions & EXPRONLY)
-    {
 	status=-201;
-	return;
-    }
-    c=fgw_tostring(s, &cbuf, &n);
+    else
+    {
+	c=fgw_tostring(i, &cbuf, &n);
 /*
 ** a bit too overprotective, but only childs can exec
 */
-    if (is_child)
-    {
-	execl("/bin/sh", "sh", "-c", c, NULL);
-	errcode=errno;
+	if (is_child)
+	{
+	    execl("/bin/sh", "sh", "-c", c, NULL);
+	    errcode=errno;
+	}
+	else
+	    status=1;
+	o.type=CINTTYPE;
+	o.val.intvalue=-1;
     }
-    else
-	status=1;
-    funcout->type=CINTTYPE;
-    funcout->val.intvalue=-1;
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** fork
 */
-static void fork_sqp(funcout)
-exprstack_t *funcout;
+static void fork_sqp(s)
+fgw_stacktype *s;
 {
+    exprstack_t o;
+
     if (pstate->parseroptions & EXPRONLY)
     {
 	status=-201;
 	return;
     }
-    funcout->type=CINTTYPE;
-    funcout->val.intvalue=(int) fork();
+    o.type=CINTTYPE;
+    o.val.intvalue=(int) fork();
 /*
 ** parent branch
 */
-    if (funcout->val.intvalue)
+    if (o.val.intvalue)
 	errcode=errno;
 /*
 ** child branch
 */
     else
     {
+/*
+** children do not have a default output and don't mess with the parent
+** current output
+*/
+	pstate->def_fd=(fgw_fdesc *) -1;
+	pstate->curr_fd=sql_openfile(pstate->def_fd);
+	sql_flush(pstate->curr_fd, 1);
 	sqldetach();
 	is_child=1;
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** getenv
 */
-static void getenv_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void getenv_sqp(s)
+fgw_stacktype *s;
 {
     int n, l;
     char *e, ebuf[STRINGCONVSIZE], *v;
+    exprstack_t *i, o;
 
     l=0;
-    e=fgw_tostring(s, &ebuf, &n);
+    i=arglist_sqp(s, NULL);
+    e=fgw_tostring(i, &ebuf, &n);
     if (!n && (v=getenv(e)))
 	l=stleng(v);
-    if (!(funcout->val.string=fgw_smalloc(l)))
+    if (!(o.val.string=fgw_smalloc(l)))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
+	o.type=CSTRINGTYPE;
 	if (n)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o.val.string);
 	else
 	{
 	    if (l)
-		bycopy(v, funcout->val.string, l);
-	    *(funcout->val.string+l)='\0';
+		bycopy(v, o.val.string, l);
+	    *(o.val.string+l)='\0';
 	}
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** wait
 */
-static void wait_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void wait_sqp(s)
+fgw_stacktype *s;
 {
+    exprstack_t o;
+
     if (pstate->parseroptions & EXPRONLY)
     {
 	status=-201;
 	return;
     }
-    funcout->type=CINTTYPE;
+    o.type=CINTTYPE;
     do
     {
-        funcout->val.intvalue=wait(&childstatus);
-    } while (funcout->val.intvalue==-1 && errno==EINTR);
-    if (funcout->val.intvalue==-1)
+        o.val.intvalue=wait(&childstatus);
+    } while (o.val.intvalue==-1 && errno==EINTR);
+    if (o.val.intvalue==-1)
         errcode=errno;
     else
         childstatus=childstatus>>8;
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** waitpid
 */
-static void waitpid_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void waitpid_sqp(s)
+fgw_stacktype *s;
 {
     int pid, n1;
+    exprstack_t *i, o;
 
+    i=arglist_sqp(s, NULL);
     if (pstate->parseroptions & EXPRONLY)
-    {
 	status=-201;
-	return;
-    }
-    pid=fgw_toint(s, &n1);
-    funcout->type=CINTTYPE;
-    do
-    {
-	funcout->val.intvalue=waitpid(pid, &childstatus, WUNTRACED);
-    } while (funcout->val.intvalue==-1 && errno==EINTR);
-    if (funcout->val.intvalue==-1)
-	errcode=errno;
     else
-	childstatus=childstatus>>8;
+    {
+	pid=fgw_toint(i, &n1);
+	o.type=CINTTYPE;
+	do
+	{
+	    o.val.intvalue=waitpid(pid, &childstatus, WUNTRACED);
+	} while (o.val.intvalue==-1 && errno==EINTR);
+	if (o.val.intvalue==-1)
+	    errcode=errno;
+	else
+	    childstatus=childstatus>>8;
+    }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** index
 */
-static void index_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void index_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_2string(s, s->next);
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    fgw_2string(i, i+1);
     if (nullind)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else
     {
-	funcout->type=CINTTYPE;
-	funcout->val.intvalue=fgw_pos(sholder1, sholder2);
+	o.type=CINTTYPE;
+	o.val.intvalue=fgw_pos(sholder1, sholder2);
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** pad
 */
-static void pad_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void pad_sqp(s)
+fgw_stacktype *s;
 {
     int sp, n1, n2;
     char *ps, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
-    sp=fgw_toint(s, &n1);
-    ps=fgw_tostring(s->next, &cbuf, &n2);
+    i=arglist_sqp(s, NULL);
+    ps=fgw_tostring(i++, &cbuf, &n2);
+    sp=fgw_toint(i, &n1);
     if (n1||n2)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else if (sp<=0)
 	status=-717;
-    else if (!(funcout->val.string=(char *) fgw_smalloc(sp)))
+    else if (!(o.val.string=(char *) fgw_smalloc(sp)))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
-	dopadding_sqp(sp, ps, funcout->val.string);
-	*(funcout->val.string+sp)='\0';
+	o.type=CSTRINGTYPE;
+	dopadding_sqp(sp, ps, o.val.string);
+	*(o.val.string+sp)='\0';
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** random
 */
-static void random_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void random_sqp(s)
+fgw_stacktype *s;
 {
-    int newseed, top, n;
+    int newseed, top, p, n;
+    exprstack_t *i, o;
 
-    funcout->type=CINTTYPE;
-    if (s->next)
-	if (s->next->next)
+    i=arglist_sqp(s, &p);
+    o.type=CINTTYPE;
+    switch (p)
+    {
+      case 2:
+	newseed=fgw_toint(i+1, &n);
+	if (n)
 	{
-	    status=-664;
-	    return;
+	    status=-717;	
+	    break;
 	}
 	else
-	{
-	    newseed=fgw_toint(s->next, &n);
-	    if (n)
-	    {
-		status=-717;	
-		return;
-	    }
-	    else
-		srand48(newseed);
-	}
-    top=fgw_toint(s, &n);
-    if (n)
-	rsetnull(CINTTYPE, (char *) &funcout->val.intvalue);
-    else
-	funcout->val.intvalue=lrand48() % top;
+	    srand48(newseed);
+      case 1:
+	top=fgw_toint(i, &n);
+	if (n)
+	    rsetnull(CINTTYPE, (char *) &o.val.intvalue);
+	else
+	    o.val.intvalue=lrand48() % top;
+	break;
+      default:
+	status=-664;
+    }
+    pushresult_sqp(s, &o, p);
 }
 
 /*
 ** current
 */
-static void current_sqp(funcout, q)
-exprstack_t *funcout;
-int q;
+static void current_sqp(s)
+fgw_stacktype *s;
 {
-    if (q<0)
+    int q;
+    exprstack_t *i, o;
+
+    i=(exprstack_t *) fgw_stackpop(s);
+    if ((q=i->val.intvalue)<0)
 	q=TU_DTENCODE(TU_YEAR, TU_SECOND);
-    funcout->type=CDTIMETYPE;
-    if (!(funcout->val.datetime=(dtime_t *) fgw_smalloc(sizeof(dtime_t))))
+    o.type=CDTIMETYPE;
+    if (!(o.val.datetime=(dtime_t *) fgw_smalloc(sizeof(dtime_t))))
 	status=-208;
     else
     {
-	funcout->val.datetime->dt_qual=q;
-	dtcurrent(funcout->val.datetime);
+	o.val.datetime->dt_qual=q;
+	dtcurrent(o.val.datetime);
     }
+    pushresult_sqp(s, &o, 0);
 }
 
 /*
 ** today
 */
-static void today_sqp(funcout)
-exprstack_t *funcout;
+static void today_sqp(s)
+fgw_stacktype *s;
 {
-    funcout->type=CDATETYPE;
-    rtoday(&funcout->val.intvalue);
+    exprstack_t o;
+
+    o.type=CDATETYPE;
+    rtoday(&o.val.intvalue);
+    pushresult_sqp(s, &o, 0);
 }
 
 /*
 ** user
 */
-static void user_sqp(funcout)
-exprstack_t *funcout;
+static void user_sqp(s)
+fgw_stacktype *s;
 {
     struct passwd *p;
+    exprstack_t o;
 
+    o.type=CSTRINGTYPE;
     if (p=getpwuid(getuid()))
     {
-	funcout->type=CSTRINGTYPE;
-	if (funcout->val.string=fgw_smalloc(strlen(p->pw_name)))
-	    stcopy(p->pw_name, funcout->val.string);
+	if (o.val.string=fgw_smalloc(strlen(p->pw_name)))
+	    stcopy(p->pw_name, o.val.string);
 	else
 	    status=-208;
     }
     else
-        fgw_setnull(&funcout);
+        fgw_setnull(&o);
+    pushresult_sqp(s, &o, 0);
 }
 
 /*
 ** decode
 */
-static void decode_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void decode_sqp(s)
+fgw_stacktype *s;
 {
-    exprstack_t *w;
+    exprstack_t *i, *w, o;
+    int p, c;
 
-    fgw_setnull(funcout);
-    w=s->next;
-    while (w)
+    i=arglist_sqp(s, &p);
+    fgw_setnull(&o);
+    w=i+1;
+    c=p-1;
+    while (c)
     {
 	int r;
 
-	if (w->next)
+	if (c>1)
 	{
-	    r=fgw_compare(s->type, s, w);
-	    w=w->next;
+	    r=fgw_compare(i->type, i, w);
+	    w++;
+	    c--;
 	    if (r)
 	    {
-		w=w->next;
+		w++;
+		c--;
 		continue;
 	    }
 	}
-	*funcout=*w;
+	o=*w;
 	fgw_setint(w, 0);		/* hack: avoid freeing strings */
 	break;
     }
+    pushresult_sqp(s, &o, p);
 }
 
 /*
 ** nvl
 */
-static void nvl_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void nvl_sqp(s)
+fgw_stacktype *s;
 {
-    if (fgw_isnull(s))
-        s=s->next;
-    *funcout=*s;
-    fgw_setint(s, 0);		/* hack: avoid freeing strings */
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    if (fgw_isnull(i))
+        i++;
+    o=*i;
+    fgw_setint(i, 0);		/* hack: avoid freeing strings */
+    pushresult_sqp(s, &o, 2);
 }
 
 /*
 ** abs
 */
-static void abs_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void abs_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=fabs(f);
+	o.val.real=fabs(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** mod
 */
-static void mod_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void mod_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_2int(s, s->next);
-    funcout->type=CINTTYPE;
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    fgw_2int(i, i+1);
+    o.type=CINTTYPE;
     if (nullind)
-	rsetnull(CINTTYPE, (char *) &(funcout->val.intvalue));
+	rsetnull(CINTTYPE, (char *) &(o.val.intvalue));
     else if (iholder2==0)
 	status=-717;
     else
-	funcout->val.intvalue=iholder1-(iholder1/iholder2)*iholder2;
+	o.val.intvalue=iholder1-(iholder1/iholder2)*iholder2;
+    pushresult_sqp(s, &o, 2);
 }
 
 /*
 ** pow
 */
-static void pow_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void pow_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_2double(s, s->next);
-    funcout->type=CDOUBLETYPE;
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    fgw_2double(i, i+1);
+    o.type=CDOUBLETYPE;
     if (nullind)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=pow(fholder1, fholder2);
+	o.val.real=pow(fholder1, fholder2);
+    pushresult_sqp(s, &o, 2);
 }
 
 /*
 ** root
 */
-static void root_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void root_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_2double(s, s->next);
-    funcout->type=CDOUBLETYPE;
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    fgw_2double(i, i+1);
+    o.type=CDOUBLETYPE;
     if (nullind)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else if (fholder2==0.0)
 	status=-717;
     else
-	funcout->val.real=pow(fholder1, 1.0/fholder2);
+	o.val.real=pow(fholder1, 1.0/fholder2);
+    pushresult_sqp(s, &o, 2);
 }
 
 /*
 ** does actual rounding
 */
-static void fgw_round(s, r, funcout)
-exprstack_t *s;
+static void fgw_round(s, r)
+fgw_stacktype *s;
 double r;
-exprstack_t *funcout;
 {
     double f;
-    int i, n1, n2;
+    int k, n1, n2, p;
+    exprstack_t *i, o;
 
 /*
 ** check args & convert
 */
-    f=fgw_todouble(s, &n1);
-    if (s->next)
-	if (s->next->next)
-	{
-	    status=-664;
-	    return;
-	}
-	else
-	    i=fgw_toint(s->next, &n2);
-    else
-	i=0;
-    funcout->type=CDOUBLETYPE;
-    if (n1||n2)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+    i=arglist_sqp(s, &p);
+    f=fgw_todouble(i, &n1);
+    if (p>2)
+	status=-664;
     else
     {
-	double d;
-
-	d=pow(10.0, -i);
-	if (f>0.0)
-	    funcout->val.real=floor((f/d)+r)*d;
+	if (p==2)
+	    k=fgw_toint(i+1, &n2);
 	else
-	    funcout->val.real=floor((f/d)-r)*d;
+	{
+	    k=0;
+	    n2=0;
+	}
+	o.type=CDOUBLETYPE;
+	if (n1||n2)
+	    rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
+	else
+	{
+	    double d;
+
+	    d=pow(10.0, -k);
+	    if (f>0.0)
+		o.val.real=floor((f/d)+r)*d;
+	    else
+		o.val.real=floor((f/d)-r)*d;
+	}
     }
+    pushresult_sqp(s, &o, p);
 }
 
 /*
 ** round
 */
-static void round_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void round_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_round(s, 0.5, funcout);
+    fgw_round(s, 0.5);
 }
 
 /*
 ** sqrt
 */
-static void sqrt_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void sqrt_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=sqrt(f);
+	o.val.real=sqrt(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** trunc
 */
-static void trunc_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void trunc_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_round(s, 0.0, funcout);
+    fgw_round(s, 0.0);
 }
 
 /*
 ** dbinfo
 */
-static void dbinfo_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void dbinfo_sqp(s)
+fgw_stacktype *s;
 {
     int n;
     char *c, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
-    funcout->type=CINTTYPE;
-    c=fgw_tostring(s, &cbuf, &n);
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
 /* FIXME: don't check for GLS overruns */
     rdownshift(c);
+    o.type=CINTTYPE;
     if (n)
 	status=-728;
     else if (!strcmp(c, "sqlca.sqlerrd1"))
-	funcout->val.intvalue=sqlca.sqlerrd[1];
+	o.val.intvalue=sqlca.sqlerrd[1];
     else if (!strcmp(c, "sqlca.sqlerrd2"))
-	funcout->val.intvalue=sqlca.sqlerrd[2];
+	o.val.intvalue=sqlca.sqlerrd[2];
     else if (!strcmp(c, "sqlca.sqlcode"))
-	funcout->val.intvalue=sqlca.sqlcode;
+	o.val.intvalue=sqlca.sqlcode;
     else if (!strcmp(c, "errno"))
-	funcout->val.intvalue=errcode;
+	o.val.intvalue=errcode;
     else if (!strcmp(c, "$?"))
-	funcout->val.intvalue=childstatus;
+	o.val.intvalue=childstatus;
     else
 	status=-728;
+    pushresult_sqp(s, &o, 1);
+}
+
+/*
+** sqlcode
+*/
+static void sqlcode_sqp(s)
+fgw_stacktype *s;
+{
+    struct passwd *p;
+    exprstack_t o;
+
+    o.type=CINTTYPE;
+    o.val.intvalue=sqlca.sqlcode;
+    pushresult_sqp(s, &o, 0);
+}
+
+/*
+** sqlerrd1
+*/
+static void sqlerrd1_sqp(s)
+fgw_stacktype *s;
+{
+    struct passwd *p;
+    exprstack_t o;
+
+    o.type=CINTTYPE;
+    o.val.intvalue=sqlca.sqlerrd[1];
+    pushresult_sqp(s, &o, 0);
+}
+
+/*
+** sqlerrd2
+*/
+static void sqlerrd2_sqp(s)
+fgw_stacktype *s;
+{
+    struct passwd *p;
+    exprstack_t o;
+
+    o.type=CINTTYPE;
+    o.val.intvalue=sqlca.sqlerrd[2];
+    pushresult_sqp(s, &o, 0);
+}
+
+/*
+** errno
+*/
+static void errno_sqp(s)
+fgw_stacktype *s;
+{
+    struct passwd *p;
+    exprstack_t o;
+
+    o.type=CINTTYPE;
+    o.val.intvalue=errcode;
+    pushresult_sqp(s, &o, 0);
 }
 
 /*
 ** exp
 */
-static void exp_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void exp_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=exp(f);
+	o.val.real=exp(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** log10
 */
-static void log10_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void log10_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else if (f<=0.0)
 	status=-717;
     else
-	funcout->val.real=log10(f);
+	o.val.real=log10(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** logn
 */
-static void logn_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void logn_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else if (f<=0.0)
 	status=-717;
     else
-	funcout->val.real=log(f);
+	o.val.real=log(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** hex
 */
-static void hex_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void hex_sqp(s)
+fgw_stacktype *s;
 {
-    int i, n;
+    int k, n;
+    exprstack_t *i, o;
 
-    if (!(funcout->val.string=fgw_smalloc(11)))
+    i=arglist_sqp(s, NULL);
+    if (!(o.val.string=fgw_smalloc(11)))
 	status=-208;
     else
     {
-	i=fgw_toint(s, &n);
-	funcout->type=CSTRINGTYPE;
+	k=fgw_toint(i, &n);
+	o.type=CSTRINGTYPE;
 	if (n)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o.val.string);
 	else
-	    sprintf(funcout->val.string, "0x%x", i);
+	    sprintf(o.val.string, "0x%x", k);
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** char_length
 */
-static void charlength_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void charlength_sqp(s)
+fgw_stacktype *s;
 {
     char *c, cbuf[STRINGCONVSIZE];
     int n;
+    exprstack_t *i, o;
 
-    c=fgw_tostring(s, &cbuf, &n);
-    funcout->type=CINTTYPE;
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
+    o.type=CINTTYPE;
     if (n)
-	funcout->val.intvalue=0;
+	o.val.intvalue=0;
     else
-	funcout->val.intvalue=stleng(c);
+	o.val.intvalue=stleng(c);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** length
 */
-static void length_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void length_sqp(s)
+fgw_stacktype *s;
 {
     char *c, *p, cbuf[STRINGCONVSIZE];
     int l, n;
+    exprstack_t *i, o;
 
-    c=fgw_tostring(s, &cbuf, &n);
-    funcout->type=CINTTYPE;
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
+    o.type=CINTTYPE;
     if (n || !(l=stleng(c)))
-	funcout->val.intvalue=0;
+	o.val.intvalue=0;
     else
     {
 	p=c+l-1;
 	while (l && *p--==' ')
 	    l--;
-	funcout->val.intvalue=l;
+	o.val.intvalue=l;
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** datetime
 */
-static void datetime_sqp(s, funcout, q)
-exprstack_t *s, *funcout;
-int q;
+static void datetime_sqp(s)
+fgw_stacktype *s;
 {
-    int n1, n2;
+    int n1, n2, q, pc;
+    exprstack_t *i, o;
 
-     if (q<0)
+    i=(exprstack_t *) fgw_stackpop(s);
+    if ((q=i->val.intvalue)<0)
 	q=TU_DTENCODE(TU_YEAR, TU_SECOND);
-     funcout->type=CDTIMETYPE;
-     if (!(funcout->val.datetime=(dtime_t *) fgw_smalloc(sizeof(dtime_t))))
-     {
+    i=arglist_sqp(s, &pc);
+    o.type=CDTIMETYPE;
+    if (!(o.val.datetime=(dtime_t *) fgw_smalloc(sizeof(dtime_t))))
+    {
 	status=-208;
 	return;
-     }
+    }
 #ifdef HAS_DTFMT
-    if (s->next)
-	if (s->next->next)
-	{
-	    status=-664;
-	    return;
-	}
-	else
-	{
-	    fgw_2string(s, s->next);
-	    status=dtcvfmtasc(sholder1, sholder2, funcout->val.datetime);
-	}
+    if (pc==2)
+    {
+	fgw_2string(i, i+1);
+	status=dtcvfmtasc(sholder1, sholder2, o.val.datetime);
+    }
+    else if (pc>2)
+    {
+	status=-664;
+	return;
+    }
     else
 #endif
     {
-	fgw_todtime(s, funcout->val.datetime, q, &n1);
+	fgw_todtime(i, o.val.datetime, q, &n1);
 	if (n1)
-	    rsetnull(CDTIMETYPE, funcout->val.string);
+	    rsetnull(CDTIMETYPE, o.val.string);
     }
+    pushresult_sqp(s, &o, pc);
 }
 
 /*
 ** interval
 */
-static void interval_sqp(s, funcout, q)
-exprstack_t *s, *funcout;
-int q;
+static void interval_sqp(s)
+fgw_stacktype *s;
 {
-    int n1, n2;
+    int n1, n2, q, pc;
+    exprstack_t *i, o;
 
-    if (q<0)
+    i=(exprstack_t *) fgw_stackpop(s);
+    if ((q=i->val.intvalue)<0)
 	q=TU_IENCODE(5, TU_DAY, TU_F5);
     else
 	q=TU_IENCODE(5, TU_START(q), TU_END(q));
-    funcout->type=CINVTYPE;
-    if (!(funcout->val.interval=(intrvl_t *) fgw_smalloc(sizeof(intrvl_t))))
+    i=arglist_sqp(s, &pc);
+    o.type=CINVTYPE;
+    if (!(o.val.interval=(intrvl_t *) fgw_smalloc(sizeof(intrvl_t))))
     {
 	status=-208;
 	return;
     }
 #ifdef HAS_DTFMT
-    if (s->next)
-	if (s->next->next)
-	{
-	    status=-664;
-	    return;
-	}
-	else
-	{
-	    fgw_2string(s, s->next);
-	    status=incvfmtasc(sholder1, sholder2, funcout->val.interval);
-	}
+    if (pc==2)
+    {
+	fgw_2string(i, i+1);
+	status=incvfmtasc(sholder1, sholder2, o.val.interval);
+    }
+    else if (pc>2)
+    {
+	status=-664;
+	return;
+    }
     else
 #endif
     {
-	fgw_toinv(s, funcout->val.interval, q, &n1);
+	fgw_toinv(i, o.val.interval, q, &n1);
 	if (n1)
-	    rsetnull(CINVTYPE, (char *) funcout->val.interval);
+	    rsetnull(CINVTYPE, o.val.string);
     }
+    pushresult_sqp(s, &o, pc);
 }
 
 /*
 ** date
 */
-static void date_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void date_sqp(s)
+fgw_stacktype *s;
 {
-    int n1, n2;
+    int n1, n2, p;
+    exprstack_t *i, o;
 
-    funcout->type=CDATETYPE;
-    if (s->next)
-	if (s->next->next)
-	{
-	    status=-664;
-	    return;
-	}
-	else
-	{
-	    fgw_2string(s, s->next);
-	    status=rdefmtdate(&funcout->val.intvalue, sholder2, sholder1);
-	}
-    else
+    i=arglist_sqp(s, &p);
+    o.type=CDATETYPE;
+    switch(p)
     {
-	funcout->val.intvalue=fgw_todate(s, &n1);
+      case 1:
+	o.val.intvalue=fgw_todate(i, &n1);
 	if (n1)
-	    rsetnull(CDATETYPE, (char *) &funcout->val.intvalue);
+	    rsetnull(CDATETYPE, (char *) &o.val.intvalue);
+	break;
+      case 2:
+	fgw_2string(i, i+1);
+	status=rdefmtdate(&o.val.intvalue, sholder2, sholder1);
+	break;
+      default:
+	status=-664;
     }
+    pushresult_sqp(s, &o, p);
 }
 
 /*
 ** day
 */
-static void day_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void day_sqp(s)
+fgw_stacktype *s;
 {
     short mdy[3];
     int d, n;
+    exprstack_t *i, o;
 
-    d=fgw_todate(s, &n);
+    i=arglist_sqp(s, NULL);
+    d=fgw_todate(i, &n);
     if (n)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else
     {
-	funcout->type=CINTTYPE;
+	o.type=CINTTYPE;
 	status=rjulmdy(d, mdy);
-	funcout->val.intvalue=mdy[1];
+	o.val.intvalue=mdy[1];
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** month
 */
-static void month_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void month_sqp(s)
+fgw_stacktype *s;
 {
     short mdy[3];
     int d, n;
+    exprstack_t *i, o;
 
-    d=fgw_todate(s, &n);
+    i=arglist_sqp(s, NULL);
+    d=fgw_todate(i, &n);
     if (n)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else
     {
-	funcout->type=CINTTYPE;
+	o.type=CINTTYPE;
 	status=rjulmdy(d, mdy);
-	funcout->val.intvalue=mdy[0];
+	o.val.intvalue=mdy[0];
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** year
 */
-static void year_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void year_sqp(s)
+fgw_stacktype *s;
 {
     short mdy[3];
     int d, n;
+    exprstack_t *i, o;
 
-    d=fgw_todate(s, &n);
+    i=arglist_sqp(s, NULL);
+    d=fgw_todate(i, &n);
     if (n)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else
     {
-	funcout->type=CINTTYPE;
+	o.type=CINTTYPE;
 	status=rjulmdy(d, mdy);
-	funcout->val.intvalue=mdy[2];
+	o.val.intvalue=mdy[2];
     }
 }
 
 /*
 ** weekday
 */
-static void weekday_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void weekday_sqp(s)
+fgw_stacktype *s;
 {
     int d, n;
+    exprstack_t *i, o;
 
-    d=fgw_todate(s, n);
+    i=arglist_sqp(s, NULL);
+    d=fgw_todate(i, &n);
     if (n)
-	fgw_setnull(funcout);
+	fgw_setnull(&o);
     else
     {
-	funcout->type=CINTTYPE;
-	funcout->val.intvalue=rdayofweek(d);
+	o.type=CINTTYPE;
+	o.val.intvalue=rdayofweek(d);
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** mdy
 */
-static void mdy_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void mdy_sqp(s)
+fgw_stacktype *s;
 {
     short mdy[3];
-    int i, c, n;
+    int c, d, n;
+    exprstack_t *i, o;
 
-    for (c=0; c<3; c++, s=s->next)
+    i=arglist_sqp(s, NULL);
+    for (c=0; c<3; c++, i++)
     {
-	i=fgw_toint(s, &n);
+	d=fgw_toint(i, &n);
 	if (n)
 	{
-	    fgw_setnull(funcout);
-	    return;
+	    fgw_setnull(&o);
+	    break;
 	}
-	mdy[c]=i;
+	mdy[c]=d;
     }
-    funcout->type=CDATETYPE;
-    status=rmdyjul(mdy, &funcout->val.intvalue);
+    o.type=CDATETYPE;
+    status=rmdyjul(mdy, &o.val.intvalue);
+    pushresult_sqp(s, &o, 3);
 }
 
 /*
 ** cos
 */
-static void cos_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void cos_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=cos(f);
+	o.val.real=cos(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** sin
 */
-static void sin_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void sin_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=sin(f);
+	o.val.real=sin(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** tan
 */
-static void tan_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void tan_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=tan(f);
+	o.val.real=tan(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** acos
 */
-static void acos_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void acos_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
 /* if not in [-1..1] will return nan on most systems */
-	funcout->val.real=acos(f);
+	o.val.real=acos(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** asin
 */
-static void asin_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void asin_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
 /* if not in [-1..1] will return nan on most systems */
-	funcout->val.real=asin(f);
+	o.val.real=asin(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** atan
 */
-static void atan_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void atan_sqp(s)
+fgw_stacktype *s;
 {
     double f;
     int n;
+    exprstack_t *i, o;
 
-    f=fgw_todouble(s, &n);
-    funcout->type=CDOUBLETYPE;
+    i=arglist_sqp(s, NULL);
+    f=fgw_todouble(i, &n);
+    o.type=CDOUBLETYPE;
     if (n)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=atan(f);
+	o.val.real=atan(f);
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** atan2
 */
-static void atan2_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void atan2_sqp(s)
+fgw_stacktype *s;
 {
-    fgw_2double(s, s->next);
-    funcout->type=CDOUBLETYPE;
+    exprstack_t *i, o;
+
+    i=arglist_sqp(s, NULL);
+    fgw_2double(i, i+1);
+    o.type=CDOUBLETYPE;
     if (nullind)
-	rsetnull(CDOUBLETYPE, (char *) &(funcout->val.real));
+	rsetnull(CDOUBLETYPE, (char *) &(o.val.real));
     else
-	funcout->val.real=atan2(fholder1, fholder2);
+	o.val.real=atan2(fholder1, fholder2);
+    pushresult_sqp(s, &o, 2);
 }
 
 /*
 ** substr
 */
-static void substr_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void substr_sqp(s)
+fgw_stacktype *s;
 {
     int l, n;
     char *c, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
-    funcout->type=CSTRINGTYPE;
-    c=fgw_tostring(s, &cbuf, &n);
-    fgw_2int(s->next, s->next->next);
+    i=arglist_sqp(s, NULL);
+    o.type=CSTRINGTYPE;
+    c=fgw_tostring(i, &cbuf, &n);
+    fgw_2int(i+1, i+2);
     if (n||nullind)
     {
-	if (!(funcout->val.string=fgw_smalloc(0)))
+	if (!(o.val.string=fgw_smalloc(0)))
 	    status=-208;
 	else
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
-	return;
+	    rsetnull(CSTRINGTYPE, o.val.string);
+	goto end;
     }
 /*
 ** can't have a negative length
@@ -2517,7 +3170,7 @@ exprstack_t *s, *funcout;
     if (iholder2<1)
     {
 	status=717;
-	return;
+	goto end;
     }
 /*
 **  if start is negative, we count from the tail
@@ -2533,32 +3186,34 @@ exprstack_t *s, *funcout;
     if (iholder1<0)
     {
 	status=717;
-	return;
+	goto end;
     }
 /*
 ** and avoid stupid segvs
 */
     if (iholder1+iholder2>l)
 	iholder2=l-iholder1;
-    if (!(funcout->val.string=fgw_smalloc(iholder2+1)))
+    if (!(o.val.string=fgw_smalloc(iholder2+1)))
     {
 	status=-208;
-	return;
+	goto end;
     }
     if (iholder1>l)
-	*funcout->val.string='\0';
+	*o.val.string='\0';
     else
     {
-	bycopy(c+iholder1, funcout->val.string, iholder2);
-	*(funcout->val.string+iholder2)='\0';
+	bycopy(c+iholder1, o.val.string, iholder2);
+	*(o.val.string+iholder2)='\0';
     }
+end:
+    pushresult_sqp(s, &o, 3);
 }
 
 /*
 ** replace
 */
-static void replace_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void replace_sqp(s)
+fgw_stacktype *s;
 {
     int pc, n, ni, idx, st, l, fl, tl, ol, il;
     exprstack_t *p;
@@ -2566,19 +3221,21 @@ exprstack_t *s, *funcout;
     char *sb, sbuf[STRINGCONVSIZE];
     char *fb, fbuf[STRINGCONVSIZE];
     char *tb, tbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
 /*
 ** sort out parms:
 */
-    if ((pc=fgw_parmcount(s))<2 || pc>5)
+    i=arglist_sqp(s, &pc);
+    if (pc<2 || pc>5)
     {
 	status=-664;
-	return;
+	goto end;
     }
 /*
 ** original string
 */
-    sb=fgw_tostring(s, &sbuf, &n);
+    sb=fgw_tostring(i, &sbuf, &n);
     if (n)
 	ol=0;
     else
@@ -2586,8 +3243,7 @@ exprstack_t *s, *funcout;
 /*
 ** from string
 */
-    p=s->next;
-    fb=fgw_tostring(p, &fbuf, &ni);
+    fb=fgw_tostring(i+1, &fbuf, &ni);
     if (ni)
 	fl=0;
     else
@@ -2598,13 +3254,12 @@ exprstack_t *s, *funcout;
 */
     if (pc>2)
     {
-	p=p->next;
-	tb=fgw_tostring(p, &tbuf, &ni);
+	tb=fgw_tostring(i+2, &tbuf, &ni);
 	if (ni)
 	    tl=0;
 	else
 	    tl=stleng(tb);
-/*	n|=ni; */
+/*	n|=ni; */	/* we allow removal of substrings */
     }
     else
     {
@@ -2617,8 +3272,7 @@ exprstack_t *s, *funcout;
 */
     if (pc>3)
     {
-	p=p->next;
-	st=fgw_toint(p, &ni);
+	st=fgw_toint(i+3, &ni);
 	n|=ni;
 	if (st<0)
 	   st=ol+st;
@@ -2632,8 +3286,7 @@ exprstack_t *s, *funcout;
 */
     if (pc>4)
     {
-	p=p->next;
-	il=fgw_toint(p, &ni);
+	il=fgw_toint(i+4, &ni);
 	n|=ni;
     }
     else
@@ -2641,17 +3294,17 @@ exprstack_t *s, *funcout;
 /*
 ** allocate memory
 */
-    funcout->type=CSTRINGTYPE;
-    if (!(funcout->val.string=fgw_smalloc(ol)))
+    o.type=CSTRINGTYPE;
+    if (!(o.val.string=fgw_smalloc(ol)))
     {
 	status=-208;
-	return;
+	goto end;
     }
 /*
 ** & return null if any parm null
 */
     if (n)
-	rsetnull(CSTRINGTYPE, funcout->val.string);
+	rsetnull(CSTRINGTYPE, o.val.string);
 /*
 ** wrong parms
 */
@@ -2661,11 +3314,11 @@ exprstack_t *s, *funcout;
 ** empty from string, nothing to change
 */
     else if (!*fb)
-	stcopy(sb, funcout->val.string);
+	stcopy(sb, o.val.string);
     else
     {
 	l=0;
-	ob=funcout->val.string;
+	ob=o.val.string;
 	if (st)
 	{
 	    bycopy(sb, ob, st);
@@ -2687,7 +3340,7 @@ exprstack_t *s, *funcout;
 ** not there or beyond limit
 */
 		stcopy(sb, ob);
-		return;
+		goto end;
 	    }
 	    if (l+il+tl-fl>ol)
 /*
@@ -2695,15 +3348,15 @@ exprstack_t *s, *funcout;
 */
 	    	if (ob=fgw_smalloc(l+il+tl-fl))
 		{
-		    bycopy(funcout->val.string, ob, l);
-		    fgw_sfree(funcout->val.string);
-		    funcout->val.string=ob;
+		    bycopy(o.val.string, ob, l);
+		    fgw_sfree(o.val.string);
+		    o.val.string=ob;
 		    ob+=l;
 		}
 		else
 		{
 		    status=-208;
-		    return;
+		    goto end;
 		}
 /*
 ** copy and adjust pointers
@@ -2719,43 +3372,47 @@ exprstack_t *s, *funcout;
 	    il-=(idx+fl);
 	}
     }
+end:
+    pushresult_sqp(s, &o, pc);
 }
 
 /*
 ** common bit of lpad & rpad
 */
-static dorlpad_sqp(s, funcout, c, cbuf, p, pbuf, l , il)
-exprstack_t *s, *funcout;
+static dorlpad_sqp(s, o, c, cbuf, p, pbuf, l , il, pc)
+fgw_stacktype *s;
+exprstack_t *o;
 char **c, *cbuf, **p, *pbuf;
-int *l, *il;
+int *l, *il, *pc;
 {
-    int pc, n1, n2, n3;
+    exprstack_t *i;
+    int n1, n2, n3;
 
-    pc=fgw_parmcount(s);
-    if (pc!=2 && pc!=3)
+    i=arglist_sqp(s, pc);
+    if (*pc!=2 && *pc!=3)
 	status=-664;
     else
     {
-	funcout->type=CSTRINGTYPE;
-	*c=fgw_tostring(s, cbuf, &n1);
-	*l=fgw_toint(s->next, &n2);
-	if (pc==3)
-	    *p=fgw_tostring(s->next->next, pbuf, &n3);
+	o->type=CSTRINGTYPE;
+	*c=fgw_tostring(i, cbuf, &n1);
+	*l=fgw_toint(i+1, &n2);
+	if (*pc==3)
+	    *p=fgw_tostring(i+2, pbuf, &n3);
 	else
 	{
 	    *p=" ";
 	    n3=0;
 	}
 	if (n2)
-	   fgw_setnull(funcout);
-	else if (!(funcout->val.string=fgw_smalloc(*l)))
+	   fgw_setnull(o);
+	else if (!(o->val.string=fgw_smalloc(*l)))
 	    status=-208;
 	else if (n1 || n3)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o->val.string);
 	else if (*l<=(*il=stleng(*c)))
 	{
-	    bycopy(*c, funcout->val.string, *l);
-	    *(funcout->val.string+*l)='\0';
+	    bycopy(*c, o->val.string, *l);
+	    *(o->val.string+*l)='\0';
 	}
     }
 }
@@ -2763,108 +3420,120 @@ int *l, *il;
 /*
 ** lpad
 */
-static void lpad_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void lpad_sqp(s)
+fgw_stacktype *s;
 {
+    exprstack_t o;
     char *c, cbuf[STRINGCONVSIZE], *p, pbuf[STRINGCONVSIZE];
-    int l, il;
+    int l, il, pc;
 
-    dorlpad_sqp(s, funcout, &c, &cbuf, &p, &pbuf, &l , &il);
+    dorlpad_sqp(s, o, &c, &cbuf, &p, &pbuf, &l , &il, &pc);
     if (l>il && !status)
     {
-	dopadding_sqp(l-il, p, funcout->val.string);
-	bycopy(c, funcout->val.string+l-il, il);
-	*(funcout->val.string+l)='\0';
+	dopadding_sqp(l-il, p, o.val.string);
+	bycopy(c, o.val.string+l-il, il);
+	*(o.val.string+l)='\0';
     }
+    pushresult_sqp(s, &o, pc);
 }
 
 /*
 ** rpad
 */
-static void rpad_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void rpad_sqp(s)
+fgw_stacktype *s;
 {
+    exprstack_t o;
     char *c, cbuf[STRINGCONVSIZE], *p, pbuf[STRINGCONVSIZE];
-    int l, il;
+    int l, il, pc;
 
-    dorlpad_sqp(s, funcout, &c, &cbuf, &p, &pbuf, &l , &il);
+    dorlpad_sqp(s, o, &c, &cbuf, &p, &pbuf, &l , &il, &pc);
     if (l>il && !status)
     {
-	bycopy(c, funcout->val.string, il);
-	dopadding_sqp(l-il, p, funcout->val.string+il);
-	*(funcout->val.string+l)='\0';
+	bycopy(c, o.val.string, il);
+	dopadding_sqp(l-il, p, o.val.string+il);
+	*(o.val.string+l)='\0';
     }
+    pushresult_sqp(s, &o, pc);
 }
 
 /*
 ** upper
 */
-static void upper_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void upper_sqp(s)
+fgw_stacktype *s;
 {
     int n;
     char *c, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
-    c=fgw_tostring(s, &cbuf, &n);
-    if (funcout->val.string=fgw_smalloc(strlen(c)*2))
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
+    if (o.val.string=fgw_smalloc(strlen(c)*2))
     {
-	funcout->type=CSTRINGTYPE;
+	o.type=CSTRINGTYPE;
 	if (n)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o.val.string);
 	else
 	{
-	    stcopy(c, funcout->val.string);
-	    rupshift(funcout->val.string);
+	    stcopy(c, o.val.string);
+	    rupshift(o.val.string);
 	}
     }
     else
 	status=-208;
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** lower
 */
-static void lower_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void lower_sqp(s)
+fgw_stacktype *s;
 {
     int n;
     char *c, cbuf[STRINGCONVSIZE];
+    exprstack_t *i, o;
 
-    c=fgw_tostring(s, &cbuf, &n);
-    if (funcout->val.string=fgw_smalloc(strlen(c)*2))
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
+    if (o.val.string=fgw_smalloc(strlen(c)*2))
     {
-	funcout->type=CSTRINGTYPE;
+	o.type=CSTRINGTYPE;
 	if (n)
-	    rsetnull(CSTRINGTYPE, funcout->val.string);
+	    rsetnull(CSTRINGTYPE, o.val.string);
 	else
 	{
-	    stcopy(c, funcout->val.string);
-	    rdownshift(funcout->val.string);
+	    stcopy(c, o.val.string);
+	    rdownshift(o.val.string);
 	}
     }
     else
 	status=-208;
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
 ** initcap
 */
-static void initcap_sqp(s, funcout)
-exprstack_t *s, *funcout;
+static void initcap_sqp(s)
+fgw_stacktype *s;
 {
     char *c, *ip, *op, cbuf[STRINGCONVSIZE];
     int notaletter, n;
+    exprstack_t *i, o;
 
-    c=fgw_tostring(s, &cbuf, &n);
+    i=arglist_sqp(s, NULL);
+    c=fgw_tostring(i, &cbuf, &n);
     if (n)
-	funcout->val.intvalue=0;
-    else if (!(funcout->val.string=fgw_smalloc(stleng(c))))
+	o.val.intvalue=0;
+    else if (!(o.val.string=fgw_smalloc(stleng(c))))
 	status=-208;
     else
     {
-	funcout->type=CSTRINGTYPE;
+	o.type=CSTRINGTYPE;
 	ip=c;
-	op=funcout->val.string;
+	op=o.val.string;
 	notaletter=1;
 /* FIXME: not GLS aware */
 	for (;;)
@@ -2880,26 +3549,50 @@ exprstack_t *s, *funcout;
 		    break;
 	    }
     }
+    pushresult_sqp(s, &o, 1);
 }
 
 /*
-** counts parameters
+** expression stack ops
+**
+** returns first element in list, element count
 */
-static int fgw_parmcount(s)
-exprstack_t *s;
+static exprstack_t *arglist_sqp(s, c)
+fgw_stacktype *s;
+int *c;
 {
-    int p;
+    exprstack_t *i;
 
-    p=1;
-    while (s->next)
-    {
-        s=s->next;
-        p++;
-    }
-    return p;
+    i=(exprstack_t *) fgw_stackpeek(s);
+    if (c)
+	*c=i->count;
+    return i-i->count+1;
 }
+
 /*
-** ancillary data & routines
+** pops parameters, pushes return value
+*/
+static void pushresult_sqp(s, o, d)
+fgw_stacktype *s;
+exprstack_t *o;
+int d;
+{
+    exprstack_t *i;
+    int c;
+ 
+    if (d)
+    {
+	i=(exprstack_t *) fgw_stackpeek(s);
+	for (c=d; c; c--, i--)
+	    fgw_freetssstack(i);
+	fgw_stackdrop(s, d);
+    }
+    o->count=0;
+    fgw_stackpush(s, o);
+}
+
+/*
+** scanner & parser hacks
 **
 ** reserved words list
 */
@@ -2915,6 +3608,7 @@ static tokenlist_t tokenlist[NUMTOKENS]=
     "done", NULL, DONE, 0, NULL,
     "continue", NULL, CONTINUE, 0, NULL,
     "break", NULL, BREAK, 0, NULL,
+    "exit", NULL, EXIT, 0, NULL,
 
     "display", NULL, DISPLAY, 0, NULL,
     "let", NULL, LET, 0, NULL,
@@ -2923,6 +3617,7 @@ static tokenlist_t tokenlist[NUMTOKENS]=
     "pipe", NULL, PIPE, 0, NULL,
     "append", NULL, APPEND, 0, NULL,
     "output", NULL, OUTPUT, 0, NULL,
+    "whenever", NULL, WHENEVER, 0, NULL,
 
     "select", NULL, SELECT, 0, NULL,
     "insert", NULL, INSERT, 0, NULL,
@@ -2934,6 +3629,10 @@ static tokenlist_t tokenlist[NUMTOKENS]=
     "end", NULL, END, 0, NULL,
     "procedure", NULL, PROCEDURE, 0, NULL,
     "function", NULL, FUNCTION, 0, NULL,
+
+    "default", NULL, DEFAULT, 0, NULL,
+    "error", NULL, ERROR, 0, NULL,
+    "stop", NULL, STOP, 0, NULL,
 
     "in", NULL, IN, 0, NULL,
     "into", NULL, INTO, 0, NULL,
@@ -3002,6 +3701,10 @@ static tokenlist_t tokenlist[NUMTOKENS]=
     "trunc", trunc_sqp, FNCT, -1, NULL,
 
     "dbinfo", dbinfo_sqp, FNCT, 1, NULL,
+    "sqlcode", sqlcode_sqp, FNCT, 0, NULL,
+    "sqlerrd1", sqlerrd1_sqp, FNCT, 0, NULL,
+    "sqlerrd2", sqlerrd2_sqp, FNCT, 0, NULL,
+    "errno", errno_sqp, FNCT, 0, NULL,
 
     "exp", exp_sqp, FNCT, 1, NULL,
     "log10", log10_sqp, FNCT, 1, NULL,
@@ -3066,12 +3769,13 @@ char *s;
 */
     if (curstmt)
 	sql_freestatement(curstmt);
+    prevtoken=-1;
 }
 
 /*
 ** scanner
 */
-static int yylex()
+static int scanner_sql()
 {
     char c;
     int r;
@@ -3080,7 +3784,7 @@ static int yylex()
 /* if we ever want to revert to true datetime/interval constant syntax,
    here's the place to
 
-    if (pstate->parseroptions&DTHACK)
+    if (pstate->parseroptions & DTHACK)
     {
 	pstate->parseroptions&=~DTHACK;
 	while (c=*pstate->ibufp++!=')')
@@ -3160,6 +3864,7 @@ static int yylex()
 			    yylval.func=t;
 			    return FNCT;
 			}
+			yylval.token=pstate->tokstart;
 			return t->type;
 		    }
 		}
@@ -3217,7 +3922,86 @@ static int yylex()
 */
 	return c;
     }
+    pstate->tokstart=pstate->ibufp-1;
     return 0;
+}
+
+/*
+** parser hacks
+*/
+static int yylex()
+{
+    YYSTYPE svlval, swlval;
+    int t;
+
+    if (prevtoken>=0)
+    {
+	t=prevtoken;
+	prevtoken=-1;
+	yylval=svlval;
+	return t;
+    }
+    else if (pstate->parseroptions & (DMLHACK | SELECTHACK))
+    {
+	for(;;)
+	{
+	    t=scanner_sql();
+	    switch (t)
+	    {
+	      case VAR:
+		fgw_sfree(yylval.var);
+		break;
+	      case CNST:
+		if (yylval.stack.type==CSTRINGTYPE)
+		    fgw_freetssstack(&yylval.stack);
+		break;
+	      case INTO:
+		if (pstate->parseroptions & DMLHACK)
+		    break;
+		swlval=yylval;
+		t=scanner_sql();
+		if (t==VAR)
+		{
+		    pstate->parseroptions&=~(DMLHACK | SELECTHACK);
+		    prevtoken=t;
+		    svlval=yylval;
+		    yylval=swlval;
+		    return INTO;
+		}
+		if (t==CNST && yylval.stack.type==CSTRINGTYPE)
+		    fgw_freetssstack(&yylval.stack);
+		break;
+	      case FORMAT:
+		if (pstate->parseroptions & DMLHACK)
+		    break;
+	      case USING:
+	      case 0:
+		pstate->parseroptions&=~(DMLHACK | SELECTHACK);
+		return t;
+	    }
+	}
+    }
+    t=scanner_sql();
+    if (pstate->parseroptions & SQLHACK)
+    {
+	pstate->parseroptions&=~SQLHACK;
+	switch (t)
+	{
+	  case VAR:
+	    t=SQLTOK;
+	    fgw_sfree(yylval.var);
+	    break;
+	  case INSERT:
+	  case DELETE:
+	  case UPDATE:
+	    pstate->parseroptions|=DMLHACK;
+	    break;
+	  case EXECUTE:
+	  case SELECT:
+	    pstate->parseroptions|=SELECTHACK;
+	}
+    }
+    return t;
 }
 
 /*
@@ -3389,6 +4173,8 @@ bad_exit:
 }
 
 /*
+** expression related stuff
+**
 ** determines overall expression type
 */
 static int fgw_exprtype(t1, t2)
@@ -3433,7 +4219,7 @@ exprstack_t *s1, *s2, **sl, **sr;
 }
 
 /*
-** compares r1 & r2 converting to type t first. frees r2 
+** compares r1 & r2 converting to type t first
 */
 static int fgw_compare(t, r1, r2)
 int t;
@@ -3516,7 +4302,6 @@ exprstack_t *r1, *r2;
 	    }
 	}
     }
-    fgw_freetssstack(r2);
     return r;
 }
 

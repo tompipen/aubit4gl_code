@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Jan 97
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,7 @@
 
 #define	EBADSTMT -276
 
+#define FMT_NULL -1
 #define FMT_BRIEF 1
 #define FMT_FULL 2
 #define FMT_VERTICAL 3

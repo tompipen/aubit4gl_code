@@ -5,7 +5,7 @@
 	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
 
 	Initial release: Oct 92
-	Current release: Jan 02
+	Current release: Jun 02
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -88,13 +88,27 @@ int nargs;
     char f[90];
     char m[3];
     fgw_fdesc *fd_p;
-    int flags;
-    int mode;
-    int fd_id;
 
     popquote(m, sizeof(m));
     popquote(f, sizeof(f));
     fgw_clip(f);
+    if (fd_p=fgw_fileopen(f, m))
+	retint(fd_p->fd_id);
+    else
+	retquote("");
+    return(1);
+}
+
+/*
+**  opens a file (internal)
+*/
+fgw_fdesc *fgw_fileopen(f, m)
+char *f, *m;
+{
+    fgw_fdesc *fd_p;
+    int flags;
+    int mode;
+
     status=0;
     switch (m[0])
     {
@@ -112,7 +126,7 @@ int nargs;
 	break;
       default:
 	status=EINVAL;
-	break;
+	return NULL;
     }
     switch (m[1])
     {
@@ -124,24 +138,18 @@ int nargs;
 	break;
       default:
 	status=EINVAL;
-	break;
-    }
-    if (status)
-    {
-	retquote("");
-	return(1);
+	return NULL;
     }
     if ((fd_p=fgw_newdesc())==NULL)
     {
 	status=ENFILE;
-	retquote("");
-	return(1);
+	return NULL;
     }
     if ((fd_p->fd=open(f, mode|flags, 0600))==-1)
     {
 	status=errno;
-	retquote("");
 	fgw_dropentry(fd_p, &fd_list);
+	return NULL;
     }
     else
     {
@@ -149,9 +157,8 @@ int nargs;
 	fd_p->fd_read=read;
 	fd_p->fd_write=write;
 	fd_p->fd_close=close;
-	retint(fd_p->fd_id);
+	return fd_p;
     }
-    return(1);
 }
 
 /*
@@ -162,9 +169,7 @@ int nargs;
 {
     char *c;
     char m[2];
-    fgw_fdesc *fd_p, *fd_f;
-    int new_fds[2];
-    int p_pipe, c_pipe;
+    fgw_fdesc *fd_p;
 
     popquote(m, sizeof(m));
     if (!(c=fgw_popquote()))
@@ -173,6 +178,24 @@ int nargs;
 	retquote("");
 	return(1);
     }
+    if (fd_p=fgw_pipeopen(c, m))
+	retint(fd_p->fd_id);
+    else
+	retquote("");
+    free(c);
+    return(1);
+}
+
+/*
+**  opens a pipe & spawns a child (internal)
+*/
+fgw_fdesc *fgw_pipeopen(c, m)
+char *c, *m;
+{
+    fgw_fdesc *fd_p, *fd_f;
+    int new_fds[2];
+    int p_pipe, c_pipe;
+
     status=0;
     switch (m[0])
     {
@@ -186,24 +209,18 @@ int nargs;
 	break;
       default:
 	status=EINVAL;
-	retquote("");
-	free(c);
-	return(1);
+	return NULL;
     }
     if ((fd_p=fgw_newdesc())==NULL)
     {
 	status=ENFILE;
-	retquote("");
-	free(c);
-	return(1);
+	return NULL;
     }
     if (pipe(new_fds)<0)
     {
 	fgw_dropentry(fd_p, &fd_list);
 	status=errno;
-	retquote("");
-	free(c);
-	return(1);
+	return NULL;
     }
     fd_p->fd_pid=fork();
     if (fd_p->fd_pid==0)
@@ -247,7 +264,7 @@ int nargs;
 	close(new_fds[p_pipe]);
 	status=fd_p->fd_pid;
 	fgw_dropentry(fd_p, &fd_list);
-	retquote("");
+	return NULL;
     }
     else
     {
@@ -255,10 +272,8 @@ int nargs;
 	fd_p->fd_read=read;
 	fd_p->fd_write=write;
 	fd_p->fd_close=close;
-	retint(fd_p->fd_id);
+	return fd_p;
     }
-    free(c);
-    return(1);
 }
 
 /*
@@ -1050,7 +1065,7 @@ int nargs;
 }
 
 /*
-**  closes a stream(internal)
+**  closes a stream (internal)
 */
 fgw_fdclose(fd_p)
 fgw_fdesc *fd_p;

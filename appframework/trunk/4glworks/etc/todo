@@ -1,13 +1,14 @@
 syntax extensions:
 
-INPUT|PIPE FROM <expr>
-    PATTERN <expr>|DELIMITED
-    [REJECT WHEN <expr> [[TO <expr>|STOP]]...]
-    [TRANSFORM <exprandassignlist>]
-    [[INTO <varlist>] [FORMAT <formatcl>]| INSERT INTO TABLE]
-($0....$n, $R, $F, support for $. assignment? - eg reevaluation a la awk)
+INPUT|PIPE FROM <string expr>
+    PATTERN <string expr>|DELIMITED
+    [REJECT WHEN <bool expr> [[TO <string expr>|STOP]]...]
+    [TRANSFORM <expr and assign list>]
+    [[INTO <varlist>] [FORMAT <format clause>]| INSERT INTO TABLE]
+($0....$n, $R, $F, support for $. assignment? - eg reevaluation a la awk;
+consider commit interval)
 
-SPLIT <expr> PATTERN <expr>|DELIMITED INTO <varlist>
+SPLIT <expr> [PATTERN <expr>|DELIMITED] INTO <var list>
 
 FOREACH [<cursor> FOR] [SELECT|EXECUTE PROCEDURE]
 FOREACH [INPUT|PIPE]
@@ -18,26 +19,25 @@ DISCONNECT...
 
 FORMAT DELIMITED
 
-functions errno, sqlcode, sqerrd1, sqerrd2?
-
 hashes
 
 PREPARE, EXECUTE, FREE? (performance reasons only, PREPARE will have USING & INTO
 clauses, so that multiple executes can be done without rebinding)
 
-functions, signals, sockets, input (or alternative io?) - huge leap, is there
-really a need for this?
+stdio like ops (fopen, popen, pipe), network ops (listen, accept, connect) +
+close,  READ FROM <int expr> and WRITE TO <int expr>: would allow to quickly
+implement daemons/gateways
 
-commit interval?
-
-quick redirects? (OUTPUT|APPEND|PIPE TO expr SELECT|EXECUTE PROCEDURE|INPUT|PIPE)
-or stdio like ops? (popen, fopen, close, WRITE TO <expr> SELECT|EXECUTE PROCEDURE|
-INPUT|PIPE, READ FROM <expr> ...)
+quick redirects? (OUTPUT|APPEND|PIPE|WRITE TO expr SELECT|EXECUTE PROCEDURE|
+INPUT|PIPE)
 
 construct to switch HTML output on & off (could be used to switch to other
 formats too)
 
-construct to change autowrap
+construct to change wrap width
+
+functions, signals? (might be worth considering after having implemented the
+REJECT and TRANSFORM clauses of INPUT/READ/PIPE FROM)
 
 Various:
 - WHENEVER ERROR applies to the INPUT and PIPE commands too, except that
@@ -48,18 +48,11 @@ Various:
   rather than stdio, pass delimiter & escape), however that returns sqlvars,
   and we need a stack structure to filter and transform, but need an
   sqlvar to assign and display
-- convert the whole expression parser and fuctions to use the expression stack
-  rather than the parser stack
-- break yylex into  yylex & yylex1 to implement dynamic sql hacks
 - HTML output needs context to change not only with FOREACH's, but with OUTPUT
   (etc) too, and with HTML switch (see above) as well
 - children do not output to default, or the child default is null, or...
   document this
-- have variable wrapping limits (and hrz scrollbars in iunis! available keys?)
-  and possibly construct to set limit
-- need to have functions to read & write text & byte vars (could use stream id
-  from cfioc, wouldn't need to define fopen, popen, fclose)
-- 4gwmenus & 4gwed to take advantage of above funct + sql_execute2
+- variable wrapping limits require hrz scrollbars in iunis! available keys?
 - will need to implement byte delimited format, could it by an idea to have a
   %t & %b PATTERN? - might as well display <BYTE value>
 - 4gl v4 hack:
@@ -75,8 +68,8 @@ Various:
 - ipanl & scrollers handle pane (dis)abilitation
 - print blobs for rds
 
-- mkfgwgo & cbuild need to recursively expand variables and expansion (infinite
-  loop checks!)
+- mkfgwgo & cbuild need infinite loop checks in nested variable substitution
+- mkfgwgo & cbuild: swap brace expandion and variable evaluation
 - fglpp, mkfgwgo, cbuild have if(n)defs, elif(n)defs, else, endif
 - fglpp, mkfgwgo, cbuild have a mechanism to pass defines (-D) and/or
   evaluate environmental variables
