@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
+# $Id: menu.c,v 1.5 2002-11-10 06:45:20 afalout Exp $
 #*/
 
 /**
@@ -156,20 +156,28 @@ menu_loop (void *m)
   GtkWidget *menubar;
   GtkWindow *cwin;
 
+  #ifdef DEBUG
+    debug("Seting up menu");
+  #endif
+
 /* Check were still up... */
   cwin = (GtkWindow *)gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
 
   menubar = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
   if (menubar == 0)
   {
-    debug ("no current menu - must have been a child\n");
+	#ifdef DEBUG
+		debug ("no current menu - must have been a child\n");
+    #endif
     /* v=gtk_object_get_data(cwin,"vbox"); */
     gtk_widget_show (m);
     gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
     gtk_widget_show (m);
     printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
     gtk_fixed_put ((GtkFixed *)cwin, m, 0, 0);
-    debug ("Redisplayed menu\n");
+	#ifdef DEBUG
+		debug ("Redisplayed menu\n");
+    #endif
   }
   else
   {
@@ -179,6 +187,10 @@ menu_loop (void *m)
 
   gtk_object_set_data (GTK_OBJECT (m), "selected", (gpointer)-1);
 
+  #ifdef DEBUG
+    debug("Entering menu loop");
+  #endif
+
   while (1)
   {
     a4gl_usleep (100);
@@ -187,18 +199,24 @@ menu_loop (void *m)
     a = (int)gtk_object_get_data (GTK_OBJECT (m), "selected");
 
     if (a != -1) {
+	  #ifdef DEBUG
 		debug("A=%x",a);
+      #endif
 	}
 
     if (a != -1) {
-		  clr_error_gtk();   
-	    	return a;
+		  clr_error_gtk();
+			#ifdef DEBUG
+                debug ("Exiting menu loop");
+            #endif
+			return a;
 	  }
   }
 }
 
 /**
  * Not used - NOT SO! IT IS USED.
+ * OK, so how about a little descripton on HOW and WHERE it's used? TIA.
  *
  * 4GL call
  */

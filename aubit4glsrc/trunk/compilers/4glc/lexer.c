@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.37 2002-11-09 05:40:41 afalout Exp $
+# $Id: lexer.c,v 1.38 2002-11-10 06:45:19 afalout Exp $
 #*/
 
 /**
@@ -61,12 +61,10 @@
 	#define KWS_COMMENT COMMENT
 #endif
 
-//#define stricmp strcasecmp
 #define stricmp 		aubit_strcasecmp
 #define TYPE_EOF  		-1
 #define TYPE_USTRING  	-2	/* unterminated string */
 #define TYPE_NUM 		3
-#define DBG
 
 /*
 =====================================================================
@@ -114,45 +112,50 @@ extern int 		ccnt; 				/* defined in others.c */
 
 char *	translate	(char *s);
 
-
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
 
-
 /**
  * Read and return a new caracter from the input file.
  *
  * @param f The file pointer to the file where the parsing is made
- * @return 
+ * @return
  */
-int 
+int
 mja_fgetc (FILE * f)
 {
-  int a;
-  a = fgetc (f);
- 
-  if (a == '\n')
-    {
-      yylineno++;
-      fpos = ftell (f);
+int a;
+
+
+	a = getc (f);
+
+  /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); DOS will end it with only 10(LF=\n) */
+  
+  if (a == '\n') //ASCII 10 = LF
+	{
+		yylineno++;
+		fpos = ftell (f);
     }
+
   return a;
 }
+
 
 /**
  * @param a The Character to be ungeted
  * @param f The file pointer of file being read
  */
-static void 
+static void
 mja_ungetc (int a, FILE * f)
 {
-  ungetc (a, f);
-  if (a == '\n')
+	ungetc (a, f);
+
+	if (a == '\n')
     {
-      yylineno--;
+	  yylineno--;
       fpos = ftell (f);
     }
 }
@@ -165,7 +168,7 @@ mja_ungetc (int a, FILE * f)
  *   - 0 : Its NOT an identifier
  *   - 1 : Its an identifier
  */
-static int 
+static int
 isident (char *p)
 {
   int a;
@@ -183,7 +186,7 @@ isident (char *p)
  * @param a
  * @param instr
  */
-static void 
+static void
 ccat (char *s, char a, int instr)
 {
   char buff[3];
@@ -196,14 +199,18 @@ ccat (char *s, char a, int instr)
   else
   {
     buff[0] = '\\';
-    if (a == '\n')
+
+	if (a == '\n')
 	    buff[1] = 'n';
     if (a == '\t')
 	    buff[1] = 't';
     if (a == '\r')
 	    buff[1] = 'r';
-    buff[2] = 0;
+	
+	buff[2] = 0;
+
     strcat (s, buff);
+
   }
 }
 
@@ -211,7 +218,7 @@ ccat (char *s, char a, int instr)
  * It check if a string represents a number.
  * 
  * @param s
- * @return 
+ * @return
  *   - 0 : Its not a number
  *   - 1 : Its a number with just decimal part
  *   - 2 : Its a number with fractionary part
@@ -254,262 +261,266 @@ isnum(char *s)
 static char *
 read_word2 (FILE * f, int *t)
 {
-  static char word[1024] = "";
-  int escp = 0;
-  int instrs = 0;
-  int instrd = 0;
-  int a;
-  strcpy (word, "");
-  *t = NAMED_GEN;
+static char word[1024] = "";
+int escp = 0;
+int instrs = 0;
+int instrd = 0;
+int a;
+	
+	strcpy (word, "");
+	*t = NAMED_GEN;
+
   while (1)
     {
-      a = mja_fgetc (f);
-      if (feof (f))
-	{
-	  *t = TYPE_EOF;
-	  return word;
-	}
+		a = mja_fgetc (f);
 
-      if (xccode == 2)
-	{
-	  while (1)
-	    {
-	      if (feof (f))
-		break;
-	      if (a == '\n' || a == '\r')
+		if (feof (f))
+        {
+		  *t = TYPE_EOF;
+		  return word;
+		}
+
+		if (xccode == 2)
 		{
-		  if (aubit_strcasecmp (word, "endcode") == 0)
-		    break;
-		  a = mja_fgetc (f);
+			while (1)
+		    {
+		      if (feof (f))
+				break;
+		      if (a == '\n' || a == '\r')
+				{
+				  if (aubit_strcasecmp (word, "endcode") == 0)
+				    break;
+				  a = mja_fgetc (f);
+				  continue;
+				}
+
+		      if (a == ';')
+				{
+				  break;
+				}
+		      ccat (word, a, instrs || instrd);
+		      a = mja_fgetc (f);
+		    }
+			*t = CLINE;
+		  	return word;
+		}
+
+		if (xccode == 1)
+		{
+			while (1)
+		    {
+		      if (feof (f))
+				break;
+		      if (a == '\n' || a == '\r')
+				{
+				  break;
+				}
+		      ccat (word, a, instrs || instrd);
+		      a = mja_fgetc (f);
+		    }
+			*t = CLINE;
+			return word;
+		}
+
+
+        /* printf("Read %d = %c\n",a,a); */
+
+	    if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
+		{
+		  if (strlen (word) > 0)
+		    {
+		      mja_ungetc (a, f);
+		      return word;
+		    }
+
+		  while (1)
+		    {
+		      a = mja_fgetc (f);
+		      if (feof (f))
+			break;
+		      if (a == '\n' || a == '\r')
+			{
+			  break;
+			}
+		      ccat (word, a, instrs || instrd);
+		    }
+		  *t = KWS_COMMENT;
+		  return word;
+
+		}
+
+	    if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
+		{
+		  int z;
+		  z = mja_fgetc (f);
+		  mja_ungetc (z, f);
+		  if (z == '-')
+		    {
+		      while (1)
+			{
+			  a = mja_fgetc (f);
+			  if (feof (f))
+			    break;
+			  if (a == '\n' || a == '\r')
+			    break;
+			  ccat (word, a, instrs || instrd);
+			}
+		      *t = KWS_COMMENT;
+		      return word;
+		    }
+		}
+
+
+	    if (a == '!' && instrs == 0 && instrd == 0 && xccode == 0)
+		{
+		  char c;
+		  c = mja_fgetc (f);
+		  if (c == '}')
+		    {
+		      strcpy (word, "!}");
+		      *t = KWS_COMMENT;
+		      return word;
+		    }
+		  else
+		    {
+		      mja_ungetc (c, f);
+		    }
+		}
+
+		if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
+		{
+			a = mja_fgetc (f);
+			if (a != '!')
+		    {
+				while (1)
+	            {
+					a = mja_fgetc (f);
+					if (feof (f))
+						break;
+					if (a == '}')
+						break;
+					/* ccat(word,a,instrs||instrd); */
+				}
+			}
+			*t = KWS_COMMENT;
+			return word;
+		}
+
+
+
+
+	    if ((a == '\n' || a == '\r') && escp == 0)
+		{
+		  if (instrs || instrd)
+		    {
+		      printf ("Unterminated string escp=%d?\n", escp);
+		      *t = TYPE_USTRING;
+		    }
+		  if (strlen (word) > 0)
+		    return word;
+		  else
+		    continue;
+		}
+
+
+	    if (instrs == 0 && instrd == 0 && (a == ' ' || a == '	'))
+		{
+		  if (strlen (word) > 0)
+		    {
+		      return word;
+		    }
+		  else
+		    continue;
+		}
+
+	    if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
+		{
+		  if (strlen (word) > 0)
+		    {
+		      mja_ungetc (a, f);
+		      return word;
+		    }
+		}
+
+	    if (instrs == 0 && instrd == 0 && (ispunct (a)) && a != '"' && a != '\''
+		  && a != '_')
+		{
+		  if (strlen (word) > 0)
+		    {
+		      if (isnum (word) && a == '.');
+		      else
+			{
+			  mja_ungetc (a, f);
+			  return word;
+			}
+		    }
+		  else
+		    {
+		      ccat (word, a, instrs || instrd);
+		      return word;
+		    }
+		}
+
+	    if (a == '\\' && !escp)
+		{
+		  ccat (word, a, instrs || instrd);
+		  if (escp == 0)
+		    {
+		      escp = 1;
+		      continue;
+		    }
+		  else
+		    {
+		      escp = 0;
+		    }
+		}
+
+	    if (a == '"' && !escp && instrs == 0)
+		{
+		  if (instrd == 1)
+		    {
+		      ccat (word, '"', instrs || instrd);
+		      *t = CHAR_VALUE;
+		      return word;
+		    }
+		  ccat (word, '"', instrs || instrd);
+		  instrd = 1;
 		  continue;
 		}
 
-	      if (a == ';')
+	        /*
+	      if (a == '\"' && instrs == 1)
 		{
-		  break;
+		  ccat (word, '\\', instrs || instrd);
+		  ccat (word, '\"', instrs || instrd);
+		  continue;
 		}
-	      ccat (word, a, instrs || instrd);
-	      a = mja_fgetc (f);
-	    }
-	  *t = CLINE;
-	  return word;
-	}
+	    */
 
-      if (xccode == 1)
-	{
-	  while (1)
-	    {
-	      if (feof (f))
-		break;
-	      if (a == '\n' || a == '\r')
+
+	    if (a == '\'' && !escp && instrd == 0)
 		{
-		  break;
+		  if (instrs == 1)
+		    {
+		      ccat (word, '"', instrs || instrd);
+		      *t = CHAR_VALUE;
+		      return word;
+		    }
+		  ccat (word, '"', instrs || instrd);
+		  instrs = 1;
+		  continue;
 		}
-	      ccat (word, a, instrs || instrd);
-	      a = mja_fgetc (f);
-	    }
-	  *t = CLINE;
-	  return word;
-	}
 
 
-
-      /* DBG printf("Read %c\n",a); */
-
-      if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  if (strlen (word) > 0)
-	    {
-	      mja_ungetc (a, f);
-	      return word;
-	    }
-
-	  while (1)
-	    {
-	      a = mja_fgetc (f);
-	      if (feof (f))
-		break;
-	      if (a == '\n' || a == '\r')
+	    if (a=='"' && !escp && instrs==1) 
 		{
-		  break;
-		}
-	      ccat (word, a, instrs || instrd);
+		  ccat (word, '\\', instrs || instrd);
 	    }
-	  *t = KWS_COMMENT;
-	  return word;
 
-	}
-
-      if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  int z;
-	  z = mja_fgetc (f);
-	  mja_ungetc (z, f);
-	  if (z == '-')
-	    {
-	      while (1)
-		{
-		  a = mja_fgetc (f);
-		  if (feof (f))
-		    break;
-		  if (a == '\n' || a == '\r')
-		    break;
-		  ccat (word, a, instrs || instrd);
-		}
-	      *t = KWS_COMMENT;
-	      return word;
-	    }
-	}
-
-
-      if (a == '!' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  char c;
-	  c = mja_fgetc (f);
-	  if (c == '}')
-	    {
-	      strcpy (word, "!}");
-	      *t = KWS_COMMENT;
-	      return word;
-	    }
-	  else
-	    {
-	      mja_ungetc (c, f);
-	    }
-	}
-
-      if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  a = mja_fgetc (f);
-	  if (a != '!')
-	    {
-	      while (1)
-		{
-		  a = mja_fgetc (f);
-		  if (feof (f))
-		    break;
-		  if (a == '}')
-		    break;
-		  /* ccat(word,a,instrs||instrd); */
-		}
-	    }
-	  *t = KWS_COMMENT;
-	  return word;
-	}
-
-
-
-
-      if ((a == '\n' || a == '\r') && escp == 0)
-	{
-	  if (instrs || instrd)
-	    {
-	      printf ("Unterminated string escp=%d?\n", escp);
-	      *t = TYPE_USTRING;
-	    }
-	  if (strlen (word) > 0)
-	    return word;
-	  else
-	    continue;
-	}
-
-
-      if (instrs == 0 && instrd == 0 && (a == ' ' || a == '	'))
-	{
-	  if (strlen (word) > 0)
-	    {
-	      return word;
-	    }
-	  else
-	    continue;
-	}
-
-      if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
-	{
-	  if (strlen (word) > 0)
-	    {
-	      mja_ungetc (a, f);
-	      return word;
-	    }
-	}
-
-      if (instrs == 0 && instrd == 0 && (ispunct (a)) && a != '"' && a != '\''
-	  && a != '_')
-	{
-	  if (strlen (word) > 0)
-	    {
-	      if (isnum (word) && a == '.');
-	      else
-		{
-		  mja_ungetc (a, f);
-		  return word;
-		}
-	    }
-	  else
-	    {
-	      ccat (word, a, instrs || instrd);
-	      return word;
-	    }
-	}
-
-      if (a == '\\' && !escp)
-	{
-	  ccat (word, a, instrs || instrd);
-	  if (escp == 0)
-	    {
-	      escp = 1;
-	      continue;
-	    }
-	  else
-	    {
-	      escp = 0;
-	    }
-	}
-
-      if (a == '"' && !escp && instrs == 0)
-	{
-	  if (instrd == 1)
-	    {
-	      ccat (word, '"', instrs || instrd);
-	      *t = CHAR_VALUE;
-	      return word;
-	    }
-	  ccat (word, '"', instrs || instrd);
-	  instrd = 1;
-	  continue;
-	}
-
-        /*
-      if (a == '\"' && instrs == 1)
-	{
-	  ccat (word, '\\', instrs || instrd);
-	  ccat (word, '\"', instrs || instrd);
-	  continue;
-	}
-    */
-
-
-      if (a == '\'' && !escp && instrd == 0)
-	{
-	  if (instrs == 1)
-	    {
-	      ccat (word, '"', instrs || instrd);
-	      *t = CHAR_VALUE;
-	      return word;
-	    }
-	  ccat (word, '"', instrs || instrd);
-	  instrs = 1;
-	  continue;
-	}
-
-
-     if (a=='"' && !escp && instrs==1) {
-	  ccat (word, '\\', instrs || instrd);
-    }
-		
       ccat (word, a, instrs || instrd);
       escp = 0;
-    }
+    
+	} // while loop ends here
 
 }
 
@@ -550,9 +561,9 @@ char *s2;
  * @param pos
  * @param f The file pointer to the file being parsed
  * @param p
- * @return 
+ * @return
  */
-static int 
+static int
 words (int cnt, int pos, FILE * f, char *p)
 {
 int z;
@@ -572,10 +583,10 @@ int states = -1;
     {
 
       /* printf("check %s\n",p); */
-      if (isident (p) == 0) 
+      if (isident (p) == 0)
 	return 0;
       strcpy (idents[idents_cnt++], p);
-	
+
     }
   else
     {
@@ -643,7 +654,7 @@ mk_word (int c)
  * @param str
  * @return The keyword integer identifier (please use the defines)
  */
-static int 
+static int
 chk_word (FILE * f, char *str)
 {
 long a;
@@ -721,25 +732,25 @@ cnt = 0;
 
 	/* printf("Read word %s\n",p); */
 
-  while (kwords[cnt].id > 0)
-    {
-      strcpy (p, buff);
-      /* debug("Check %s against ID %d (%s) (%d)\n",p,kwords[cnt].id,kwords[cnt].vals[0],kwords[cnt].mode); */
-      if (kwords[cnt].mode >= 1)
+	while (kwords[cnt].id > 0)
 	{
-	  idents_cnt = 0;
-	  if (words (cnt, 0, f, p))
-	    {
-	      /* printf("Matches to %d\n",kwords[cnt].id); */
-	      strcpy (str, mk_word (cnt));
-	      return kwords[cnt].id;
-	    }
-	}
+		strcpy (p, buff);
+		/* debug("Check %s against ID %d (%s) (%d)\n",p,kwords[cnt].id,kwords[cnt].vals[0],kwords[cnt].mode); */
+		if (kwords[cnt].mode >= 1)
+		{
+	  		idents_cnt = 0;
+			if (words (cnt, 0, f, p))
+		    {
+	    	  /* printf("Matches to %d\n",kwords[cnt].id); */
+		      strcpy (str, mk_word (cnt));
+		      return kwords[cnt].id;
+	    	}
+		}
 
-      fseek (f, a, SEEK_SET);
-      yylineno = oline;
-      cnt++;
-    }
+    	fseek (f, a, SEEK_SET);
+		yylineno = oline;
+		cnt++;
+	}
 
   strcpy (str, p);
   a = isnum (str);
@@ -755,7 +766,7 @@ cnt = 0;
  *
  * @param c The string to be lowered
  */
-static void 
+static void
 to_lower_str (char *s)
 {
   int a;
@@ -886,41 +897,6 @@ yylex (void)
   word_cnt = 0;
   return a;
 }
-
-/**
- * I think this is not used anywhere
- *
- * @lc 
- */
-/*
-static int
-relex (int lc)
-{
-  int a;
-  fprintf (stderr, ">>>> %d %s (%d)\n", lastlex, lastword, lc);
-
-  if (lastlex != NAMED_GEN)
-    return lc;
-  a = 0;
-  while (kwords[a].id > 0)
-    {
-      if (kwords[a].vals[1] == 0)
-	{
-	  if (aubit_strcasecmp (kwords[a].vals[0], lastword) == 0)
-	    {
-	      if (kwords[a].mode >= 1)
-		{
-		  lastlex = kwords[a].id;
-		  return lastlex;
-		}
-	    }
-	}
-      a++;
-    }
-  return lc;
-}
-*/
-
 
 /**
  *

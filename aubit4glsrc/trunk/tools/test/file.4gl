@@ -1,6 +1,8 @@
 {
 
 This is example for new SHARED handling - removed the old method
+
+
 (which looked bad) and introduced the "::" syntax as per perl (as someone
 here suggested a while ago)
 

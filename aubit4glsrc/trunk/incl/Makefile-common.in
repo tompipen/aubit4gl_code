@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.97 2002-11-08 02:02:28 afalout Exp $
+# $Id: Makefile-common.in,v 1.98 2002-11-10 06:45:19 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -530,6 +530,14 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 	LN_S_LIB    =cp
 	CPEXE		=cp
 
+	#ifeq "${GCC_MINGW}" "yes"
+		#Native Windows - perform file format conversion:
+		#FCONVERT=yes
+    #
+	#Output will be in DOS format:
+	#FCONVERT_CMD=unix2dos -D
+	#Output will be in UNIX format:
+	#FCONVERT_CMD=unix2dos -U
 
 endif
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
+# $Id: prompt.c,v 1.5 2002-11-10 06:45:20 afalout Exp $
 #*/
 
 /**
@@ -76,10 +76,33 @@ int prompt_loop (struct s_prompt * prompt);
 void
 a4gl_usleep(int a) {
 
+/* cygwin headers has no prototype for usleep(), but have the function
+    on POSIX/ANSI sustems thsi is usually in unistd.h:
+	extern int usleep (__useconds_t __useconds) __THROW;
+
+    Mingwin header stdlib.h has _sleep() but suggest to use Windows API
+    finstion Sleep() instead (see winbase.h) .
+
+	The usleep() function will cause the calling thread to be suspended
+	from execution until either the number of real-time microseconds
+	specified by the argument useconds has elapsed or a signal is
+	delivered to the calling thread and its action is to invoke a
+	signal-catching function or to terminate the process.
+	The suspension time may be longer than requested due to the
+	scheduling of other activity by the system.
+
+*/
+
 #ifdef __MINGW32__
-	sleep (a);
+    #include <winbase.h>
+    DWORD b;
+
+	b = a / 1000;
+
+	//There is no usleep provided on MinGW
+	Sleep (b);  /* SECONDS - __NOT__ micro!!! */
 #else
-	usleep (a);
+	usleep (a); /* microseconds !!!!! */
 #endif
 
 }

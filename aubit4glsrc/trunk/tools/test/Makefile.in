@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.26 2002-10-22 06:43:38 afalout Exp $
+# $Id: Makefile.in,v 1.27 2002-11-10 06:45:20 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -86,11 +86,8 @@ sub: ${SUB}
 
 4gldemo:
 #	@echo AUBITDIR in Makefile=${AUBITDIR}
-ifeq "${GCC_MINGW}" "yes"
-#Output will be in DOS format
-	unix2dos -D $^ hello.4gl hello2.4gl hello_db.4gl
-#Output will be in UNIX format
-#	unix2dos -U $^
+ifeq "${FCONVERT}" "yes"
+	${FCONVERT_CMD} hello.4gl hello2.4gl hello_db.4gl
 endif
 	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
 	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
@@ -106,11 +103,8 @@ assoc: assoc2.4gl
 #This is used from root makefile, to test if compiler is working after building it:
 test.build: test_build.4gl
 	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-ifeq "${GCC_MINGW}" "yes"
-#Output will be in DOS format
-	unix2dos -D $^
-#Output will be in UNIX format
-#	unix2dos -U $^
+ifeq "${FCONVERT}" "yes"
+	${FCONVERT_CMD} $^
 endif
 	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} $^ -o test_build
 

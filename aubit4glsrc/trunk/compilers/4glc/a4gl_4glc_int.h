@@ -1,3 +1,4 @@
+
 //	#define __GNU_LIBRARY__
 
 //#if ! (defined(__sun__) && ! defined(__sparc__))
@@ -21,6 +22,24 @@
 #endif
 */
 #include "a4gl_libaubit4gl.h"
+
+
+#ifdef __MINGW32__
+	/*
+	prevent MinGW headers that are not needed here from re-defining:
+	HIDE_WINDOW ABSOLUTE CONST RELATIVE DELETE ERROR TEXT IN
+	that we defined in rules/generated/kw.h
+    */
+    #undef HIDE_WINDOW
+	#undef ABSOLUTE
+	#undef CONST
+	#undef RELATIVE
+	#undef DELETE
+	#undef ERROR
+	#undef TEXT
+	#undef IN
+
+#endif
 
 #include "rules/generated/kw.h"
 

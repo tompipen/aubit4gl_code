@@ -26,7 +26,7 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.5 2002-10-30 01:46:45 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-11-10 06:45:20 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -49,8 +49,8 @@ all: ${ALL}
 
 loadmap : ${ROOT}/bin/loadmap
 ${ROOT}/bin/loadmap : loadmap.4gl
-ifeq "${GCC_MINGW}" "yes"
-	unix2dos -D $^
+ifeq "${FCONVERT}" "yes"
+	${FCONVERT_CMD} $^
 endif
 	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} $^ -o $@
 

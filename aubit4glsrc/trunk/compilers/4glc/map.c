@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.15 2002-10-30 23:44:44 afalout Exp $
+# $Id: map.c,v 1.16 2002-11-10 06:45:19 afalout Exp $
 #*/
 
 /**
@@ -51,26 +51,25 @@
 =====================================================================
 */
 
-/* The map file pointer opened file */
-static FILE *mapfile = 0;
+static FILE *mapfile = 0; 		/* The map file pointer opened file */
+static char outputfile[132]; 	/** The output file name */
+static int 	genStackInfo = 1;
 
-//moved from 4glc.c:
 extern FILE *yyin;
 extern int 	glob_only;
-extern long fpos; /** The current file position for direct fseek */
-static char outputfile[132]; /** The output file name */
+extern long fpos; 				/** current file position for direct fseek */
 extern int 	yylineno;
+extern char *outputfilename; 	/* Defined in libaubit4gl */
+extern char infilename[132];
+
 char 		errbuff[1024] = "";
 char 		yytext[] = "";
 int 		globals_only = 0;
-static int 	genStackInfo = 1;
-extern char *outputfilename; /* Defined in libaubit4gl */
-extern char infilename[132];
 int 		yyin_len;
 #ifdef YYDEBUG
-	extern int yydebug; /* defined in y.tab.c _IF_ -DYYDEBUG is set */
+	extern int yydebug; 		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
-	int yydebug; /* if -DYYDEBUG is not set, we need to define it here */
+	int yydebug; 				/* if !-DYYDEBUG, we need to define it here */
 #endif
 
 
@@ -82,7 +81,7 @@ int 		yyin_len;
 */
 
 void 		setGenStackInfo		(int _genStackInfo);
-static int compile_4gl(void);
+static int  compile_4gl			(char c[128],int compile_object, char a[128],char incl_path[128]);
 
 /*
 =====================================================================
@@ -102,21 +101,29 @@ void
 openmap (char *s)
 {
   char buff[256];
-  debug ("openmap...");
+  #ifdef DEBUG
+	  debug ("openmap...");
+  #endif
   if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile==0)
     {
-      debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
-      debug ("Yep...\n");
+	  #ifdef DEBUG
+		  debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+    	  debug ("Yep...\n");
+      #endif
       sprintf (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
 
       if (mapfile == 0)
 	{
-	  debug ("Unable to open map file");
+	  #ifdef DEBUG
+		  debug ("Unable to open map file");
+      #endif
 	  printf ("Unable to open map file\n");
 	  exit (1);
 	}
-      debug ("Mapfile=%p", mapfile);
+	  #ifdef DEBUG
+		  debug ("Mapfile=%p", mapfile);
+      #endif
     }
 }
 
@@ -139,7 +146,9 @@ openmap (char *s)
 void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
-  debug ("Adding to map... %p", mapfile);
+  #ifdef DEBUG
+	  debug ("Adding to map... %p", mapfile);
+  #endif
   if (mapfile)
     fprintf (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);
 }
@@ -173,7 +182,9 @@ fin = yyin;
 
   glob_only = 1;
   rm_quote (fname);
-/* printf("Opening %s",fname); */
+  #ifdef DEBUG
+	  debug("Opening %s",fname);
+  #endif
   yyin = mja_fopen (fname, "r");
 
   if (yyin == 0)
@@ -198,9 +209,10 @@ fin = yyin;
 void
 rm_quotes (char *s)
 {
-  char buff[256];
-  int a;
-  int b = 0;
+char buff[256];
+int a;
+int b = 0;
+  
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
@@ -219,9 +231,10 @@ rm_quotes (char *s)
 void
 rm_quote (char *s)
 {
-  char buff[256];
-  int a;
-  int b = 0;
+char buff[256];
+int a;
+int b = 0;
+  
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
@@ -251,10 +264,10 @@ rm_quote (char *s)
 void
 yyerror (char *s)
 {
-  char errfile[256];
-  FILE *f;
-  long ld;
-  char a;
+char errfile[256];
+FILE *f;
+long ld;
+char a;
 
   ld = ftell (yyin);
   sprintf (errfile, "%s.err", outputfile);
@@ -267,7 +280,7 @@ yyerror (char *s)
   exit (2);
 }
 
-/************************* same finction from fcompile:
+/************************* same function from fcompile:
 
 void yyerror(char *s)
 {
@@ -352,14 +365,29 @@ isGenStackInfo(void)
 static void
 printUsage(char *argv[])
 {
-  printf("Usage %s [options] filename[.4gl]\n", argv[0]);
+  printf("Usage %s [options] file.4gl [file.4gl ...]\n", argv[0]);
   printf("Options:\n");
+  printf("\n");
+  
+  printf("When A4GL_LEX=C :\n");
+  printf("  -c compile to object(s), do not link\n");
+  printf("  -o [outfile] compile to object(s), link into executable\n");
+  printf("  -d [outfile] compile to object(s), link into shared library\n");
+  printf("  -l [outfile] compile to object(s), link into static library\n");
+  printf("  (no flags) compile to C only\n");
+  printf("\n");
+  
+  printf("When A4GL_LEX=PERL :\n");
+  printf("  (no flags) compile to Perl only\n");
+  printf("\n");
+
+  printf("Other options :\n");
   printf("  -G     | --globals         : Generate the globals map file\n");
-  printf("  -s 0|1 | --stack_trace 0|1 : Instruct the stack trace inclusion in file:\n");
+  printf("  -s 0|1 | --stack_trace 0|1 : Include the stack trace in file:\n");
   printf("     0 - Don't generate\n");
   printf("     1 - Generate(Default)\n");
-  printf("  -c compile to object\n");
-  printf("  -o compile to object and link to executable\n");
+  printf("  If 'outfile' was not specified, it is generated from first 4gl file name specified\n");
+  printf("\n");
 }
 
 
@@ -380,9 +408,12 @@ int i;
 int option_index = 0;
 int compile_object = 0;
 int compile_exec = 0;
+int compile_so = 0;
+int compile_lib = 0;
 int si;
 int x;
 int ret;
+char opt_list[40];
 char a[128];
 char b[128];
 char c[128];
@@ -398,15 +429,23 @@ static struct option long_options[] =
     {0, 0, 0, 0},
   };
 
-//    {"object", 		0, 0, 'c'},
-//    {"exec", 		0, 0, 'o'},
+	#ifdef DEBUG
+		debug ("Parsing the comand line arguments\n");
+    #endif
 
+	/* see http://www.gnu.org/software/gengetopt for inspiration */
 
-	debug ("Parsing the comand line arguments\n");
+  if (strcmp (acl_getenv ("A4GL_LEX"), "C") == 0)
+  {
+    strcpy(opt_list,"Gs:codl?h");
+  }
 
- /* see http://www.gnu.org/software/gengetopt for inspiration */
+  if (strcmp (acl_getenv ("A4GL_LEX"), "PERL") == 0)
+  {
+    strcpy(opt_list,"Gs:?h");
+  }
 
-  while ( ( i = getopt_long (argc, argv, "Gs:co?h",
+  while ( ( i = getopt_long (argc, argv, opt_list,
                         long_options, &option_index) ) != -1)
   {
     switch(i)
@@ -425,16 +464,26 @@ static struct option long_options[] =
         setGenStackInfo(si);
         break;
 
-      case 'c':              /* Compile resulting C file to object */
+      case 'c':              /* Compile resulting C file(s) to object */
 		compile_object = 1;
 		break;
 
-      case 'o':              /* Compile resulting C file to executable */
+      case 'o':              /* Link resulting object(s) into executable */
 		compile_exec = 1;
+		compile_object = 1;
 		break;
 
+      case 'd':              /* Link resulting object(s) into shared library */
+		compile_so = 1;
+		compile_object = 1;
+		break;
 
-      case '?':
+      case 'l':              /* Link resulting object(s) into static library */
+		compile_lib = 1;
+		compile_object = 1;
+		break;
+
+      case '?':             /* Help */
       case 'h':
 		printUsage(argv);
         exit(0);
@@ -447,11 +496,23 @@ static struct option long_options[] =
     printUsage(argv);
     exit(1);
   }
-  check_and_show_id ("4GL Compiler", argv[optind]);
-  outputfilename = outputfile;
+
+	#if YYDEBUG != 0
+    	#ifdef DEBUG
+			debug ("YYDEBUG was set while compiling\n");
+    	#endif
+		#ifdef YYPRINT
+	    	#ifdef DEBUG
+				debug ("YYPRINT was set while compiling\n");
+            #endif
+		#endif
+	#endif
+
   if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
   {
-    printf ("Yacc Debugging on\n");
+   	#ifdef DEBUG
+		debug ("Yacc Debugging on\n");
+    #endif
     yydebug = 1;
   }
   else
@@ -459,54 +520,60 @@ static struct option long_options[] =
     yydebug = 0;
   }
 
+  init_datatypes();
+  #ifdef DEBUG
+	  debug("after init_datatypes\n");
+  #endif
+
+  if (!A4GLSQL_initlib()) {
+	printf("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
+	exit(1);
+  }
+
+  check_and_show_id ("4GL Compiler", argv[optind]);
+  outputfilename = outputfile; /* set in check_and_show_id ? */
   strcpy (c, argv[optind]);
   bname (c, a, b);
+
+  /* whe now have to specify extensions, since we can put multiple source files
+    on command line.
   if (b[0] == 0)
   {
-    strcat (c, ".4gl");
+    strcat (c, ".4gl");  // use ommited the extension
+	bname (c, a, b);
   }
-  bname (c, a, b);
-  strcpy (outputfilename, a);
-  yyin = fopen (c, "r");
+  */
 
-  strcpy (infilename, c);
+  	strcpy (outputfilename, a);
+	strcpy (infilename, c);
 
-  x = compile_4gl();
+    /* prepare CC flags */
+    /* FIXME: migrate this to user resources */
+	strcpy (incl_path,"-I");
+	strcat (incl_path,acl_getenv ("AUBITDIR"));
+	strcat (incl_path,"/incl");
+    strcpy (l_path,"-L");
+	strcat (l_path,acl_getenv ("AUBITDIR"));
+	strcat (l_path,"/lib");
+    strcpy (l_libs,"-laubit4gl");
+
+
+    //fixme: put all 4gl files on command line in array, and loop here:
+    //while (1) 
+	//{
+		x = compile_4gl(c,compile_object,a,incl_path);
+    //}
 
   debug("after compile_4gl()");
 
-  if ( x == 0 ) {
-
-	  strcpy (incl_path,"-I");
-	  strcat (incl_path,acl_getenv ("AUBITDIR"));
-	  strcat (incl_path,"/incl");
-
-	  strcpy (l_path,"-L");
-	  strcat (l_path,acl_getenv ("AUBITDIR"));
-	  strcat (l_path,"/lib");
-
-	  strcpy (l_libs,"-laubit4gl");
-
-	if (compile_object) {
-	    //gcc hello.c -c -o hello.o -I../../incl
-		sprintf (buff, "gcc %s.c -c -o %s.o %s",a,a,incl_path);
-		printf ("%s\n",buff);
-		sprintf (buff,"%s > %s.err 2>&1",buff,a);
-		debug("Runnung $s",buff);
-		ret=system (buff);
-        //see function system_run() in fglwrap.c
-		if (ret) {
-			printf ("Error compiling %s.c - check %s.err\n",a,a);
-			//fixme: show err file
-        }
-	}
-
-
-    if (compile_exec) {
+  if ( x == 0 )
+  {
+    if (compile_exec)
+	{
+		//FIXME: change this to linking
 		sprintf (buff,"gcc %s.c -o %s %s %s %s",a,a,incl_path,l_path,l_libs);
 		printf ("%s\n",buff);
 		sprintf (buff,"%s > %s.err 2>&1",buff,a);
-		//printf ("%s\n",buff);
 		debug("Runnung $s",buff);
 		ret=system (buff);
 		if (ret) {
@@ -515,6 +582,18 @@ static struct option long_options[] =
         }
 
 	}
+
+    if (compile_so)
+	{
+		printf ("Shared lib linking not implemented");
+	}
+
+    if (compile_lib)
+	{
+		printf ("Static lib linking not implemented");
+	}
+
+
   }
 
   return x;
@@ -522,29 +601,29 @@ static struct option long_options[] =
 
 
 /**
- * Compile one 4gl file to output language
+ * Compile one 4gl file to output language, and optionally to object
  *
  *
  * @param
  * @param
  */
 static int
-compile_4gl(void)
+compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128])
 {
-int x;
+int x, ret;
+char buff[456];
+
+  /*
+  File MUST be opened in binary mode on Windows, to be able to process
+  source file in DOS format - otherwise fpos/ftell gets completely dissoriented:
+  */
+  yyin = mja_fopen (c, "rb");
 
   if (yyin == 0)
   {
-    printf ("Error opening file : %s\n", infilename);
+    printf ("Error opening file : %s\n", c);
     exit (1);
   }
-
-	#if YYDEBUG != 0
-    	printf ("YYDEBUG was set while compiling\n");
-		#ifdef YYPRINT
-    		printf ("YYPRINT was set while compiling\n");
-		#endif
-	#endif
 
   fseek(yyin,0,SEEK_END);
   yyin_len=ftell(yyin);
@@ -552,19 +631,15 @@ int x;
 
   if (yydebug)
     {
-      printf ("Opened : %s\n", infilename); //c);
+      printf ("Opened : %s\n", c);
     }
 
   openmap(outputfilename);
-  if (!A4GLSQL_initlib()) {
-	printf("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
-	exit(1);
-  }
 
-  init_datatypes();
-  debug("after init_datatypes\n");
   x = yyparse (); /* we core dump here on Darwin */
-  debug("after yyparse\n");
+  #ifdef DEBUG
+	  debug("after yyparse\n");
+  #endif
 
   if (yydebug)
     {
@@ -572,7 +647,29 @@ int x;
     }
 
   closemap ();
-  debug("after closemap");
+  #ifdef DEBUG
+	  debug("after closemap");
+  #endif
+
+  if ( x == 0 )
+  {
+	if (compile_object)
+	{
+		sprintf (buff, "gcc %s.c -c -o %s.o %s",a,a,incl_path);
+		printf ("%s\n",buff);
+		sprintf (buff,"%s > %s.err 2>&1",buff,a);
+		#ifdef DEBUG
+			debug("Runnung $s",buff);
+        #endif
+		ret=system (buff);
+        //see function system_run() in fglwrap.c
+		if (ret) {
+			printf ("Error compiling %s.c - check %s.err\n",a,a);
+			//fixme: show err file
+            return ret;
+        }
+	}
+  }
 
   return x;
 

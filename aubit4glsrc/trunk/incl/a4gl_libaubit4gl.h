@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.26 2002-10-24 08:24:22 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.27 2002-11-10 06:45:19 afalout Exp $
 #
 */
 
@@ -485,7 +485,7 @@
 	#include <time.h>
 	#include <math.h> 				/* pow() */
 	#include <locale.h>             /* setlocale() */
-	#include <unistd.h> 			/* sleep() close() write() */
+	#include <unistd.h> 			/* sleep() close() write() usleep() */
 	#include <signal.h>             /* SIGINT */
 
 	

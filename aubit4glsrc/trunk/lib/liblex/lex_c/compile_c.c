@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.38 2002-10-22 06:43:37 afalout Exp $
+# $Id: compile_c.c,v 1.39 2002-11-10 06:45:19 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -124,31 +124,16 @@ extern int 		fbindcnt;
 extern int 		constr_cnt;
 
 
-//#ifdef __NEED_DLL_IMPORT__
-	dll_import int 		when_code[8];
-	dll_import struct 	s_report sreports[1024];
-    dll_import struct 	s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-	dll_import struct 	binding_comp ibind[NUMBINDINGS];
-	dll_import struct 	binding_comp nullbind[NUMBINDINGS];
-	dll_import struct 	binding_comp obind[NUMBINDINGS];
-	dll_import struct 	binding_comp fbind[NUMBINDINGS];
-	dll_import struct 	binding_comp ordbind[NUMBINDINGS];
-	dll_import struct 	s_constr_buff constr_buff[256];
-	dll_import char 	when_to[64][8];
-/*
-#else
-	extern int 			when_code[8];
-	extern struct 		s_report sreports[1024];
-	extern struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-	extern struct 		binding_comp ibind[NUMBINDINGS];
-	extern struct 		binding_comp nullbind[NUMBINDINGS];
-	extern struct 		binding_comp obind[NUMBINDINGS];
-	extern struct 		binding_comp fbind[NUMBINDINGS];
-	extern struct 		binding_comp ordbind[NUMBINDINGS];
-	extern struct 		s_constr_buff constr_buff[256];
-	extern char 		when_to[64][8];
-#endif
-*/
+dll_import int      when_code[8];
+dll_import struct   s_report sreports[1024];
+dll_import struct   s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+dll_import struct   binding_comp ibind[NUMBINDINGS];
+dll_import struct   binding_comp nullbind[NUMBINDINGS];
+dll_import struct   binding_comp obind[NUMBINDINGS];
+dll_import struct   binding_comp fbind[NUMBINDINGS];
+dll_import struct   binding_comp ordbind[NUMBINDINGS];
+dll_import struct   s_constr_buff constr_buff[256];
+dll_import char     when_to[64][8];
 
 /*
 =====================================================================
@@ -264,7 +249,7 @@ open_outfile(void)
 
   hfile = mja_fopen (h, "w");
 
-#ifdef OBSOLETE_COSE
+#ifdef OBSOLETE_CODE
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
 	/*
   	strange: was this supposed to be A4GL_UI and not GTKGUI?
@@ -302,7 +287,7 @@ void
 printc(char* fmt,... )
 {
 va_list ap;
-	debug("via printc (a) in lib");
+	debug("via printc (a) in lib\n");
 	va_start(ap,fmt);
 	internal_lex_printc(fmt,&ap);
 }
@@ -553,48 +538,39 @@ print_report_ctrl(void)
   for (a = 0; a < report_stack_cnt; a++)
     {
 	/* on last row */
-		/* if (report_stack[a].whytype == 'L') */
 		if (*get_report_stack_whytype(a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
 	/* on every row */
-		/* if (report_stack[a].whytype == 'E') */
 		if (*get_report_stack_whytype(a) == 'E')
 	printc
 	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
 	/* before group of */
-		/*      if (report_stack[a].whytype == 'B') */
 		if (*get_report_stack_whytype(a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-		/*	   report_stack[a].why, report_cnt, a); */
 	   get_report_stack_why(a), report_cnt, a);
 
 	/* after group of */
-		/*       if (report_stack[a].whytype == 'A') */
 		if (*get_report_stack_whytype(a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-		/* 	   report_stack[a].why, report_cnt, a); */
 	   get_report_stack_why(a), report_cnt, a);
 
-		/*      if (report_stack[a].whytype == 'T') */
 		if (*get_report_stack_whytype(a) == 'T')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		/*      if (report_stack[a].whytype == 'P')   */
 		if (*get_report_stack_whytype(a) == 'P')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		/*      if (report_stack[a].whytype == 'p') */
 		if (*get_report_stack_whytype(a) == 'p')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
@@ -808,7 +784,10 @@ pr_report_agg (void)
 
       a = sreports[z].a;
       t = sreports[z].t;
-debug("pr_report_agg - %c %d z=%d\n",t,a,z);
+
+    #ifdef DEBUG
+		debug("pr_report_agg - %c %d z=%d\n",t,a,z);
+    #endif
 
       if (t == 'C')
 	{
@@ -875,11 +854,6 @@ pr_report_agg_clr (void)
   int t;
   int in_b;
 
-/*
-  char s1[1024];
-  char s2[1024];
-*/
-
   for (z = 0; z < sreports_cnt; z++)
     {
 /*
@@ -935,11 +909,15 @@ void
 prchkerr (int l, char *f)
 {
   int a;
-/* 0 = continue */
-/* 1 = stop */
-/* 2 = call */
-/* 3 = goto */
-  debug ("MJA prchkerr %d %s", l, f);
+/* 0 = continue
+ * 1 = stop
+ * 2 = call
+ * 3 = goto 
+ */
+  
+  #ifdef DEBUG
+	  debug ("MJA prchkerr %d %s", l, f);
+  #endif
   printc ("if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || %d)) {\n",
 	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
 	  || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
@@ -1040,7 +1018,9 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 void
 print_expr(void* ptr)
 {
+  #ifdef DEBUG
 	debug("via print_expr in lib");
+  #endif
 	real_print_expr(ptr);
 }
 static void
@@ -1080,8 +1060,10 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->border,
 	  form_attrib->comment_line,
 	  form_attrib->message_line, form_attrib->attrib);
-  debug ("Printing attributes\n");
-  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  #ifdef DEBUG
+	  debug ("Printing attributes\n");
+	  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  #endif
 	 form_attrib->form_line, form_attrib->error_line,
 	 form_attrib->prompt_line, form_attrib->menu_line,
 	 form_attrib->border, form_attrib->comment_line,
@@ -1168,8 +1150,11 @@ print_bind_pop1 (char i)
 static int
 print_arr_bind (char i)
 {
-  int a;
-  debug ("/* %c */\n", i);
+int a;
+  
+  #ifdef DEBUG
+	  debug ("/* %c */\n", i);
+  #endif
   /* dump_vars (); */
   if (i == 'i')
     {
@@ -1329,8 +1314,10 @@ print_param (char i)
 int
 print_bind (char i)
 {
-  int a;
-  debug ("/* %c */\n", i);
+int a;
+  #ifdef DEBUG
+	  debug ("/* %c */\n", i);
+  #endif
   if (i == 'i')
     {
       printc ("\n");
@@ -1526,7 +1513,7 @@ print_remote_func (char *identifier)
 
 
 /**
- * Print the C implementation of the execution of the SQL statement allready 
+ * Print the C implementation of the execution of the SQL statement allready
  * readed.
  *
  * @param The string with the sql statement to be executed.
@@ -1539,6 +1526,13 @@ print_exec_sql (char *s)
      s);
 }
 
+
+/**
+ * @todo Desribe
+ *
+ *
+ * @param
+ */
 void
 print_exec_sql_bound (char *s)
 {
@@ -1646,6 +1640,10 @@ print_func_call(char *identifier, void* args, int args_cnt)
 	real_print_func_call(identifier,args,args_cnt);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 print_class_func_call(char *var,char *identifier, void* args, int args_cnt)
 {
@@ -1655,6 +1653,10 @@ print_class_func_call(char *var,char *identifier, void* args, int args_cnt)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static void
 real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
@@ -1665,6 +1667,10 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 static void
 real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt)
 {
@@ -3057,7 +3063,7 @@ print_report_end (void)
 }
 
 /**
- * Called in the middle of the REPORT definition after the parser found 
+ * Called in the middle of the REPORT definition after the parser found
  * the optional output and (or) order external by.
  * @param pdf :
  *   - 0 : Its not a PDF report.
@@ -3775,7 +3781,10 @@ void printInitFunctionStack(void)
  */
 void printDeclareFunctionStack(char *_functionName)
 {
-  printf("Function %s\n",_functionName);
+  //printf("Function %s\n",_functionName);
+  #ifdef DEBUG
+	  debug("Function %s\n",_functionName);
+  #endif
   if (isGenStackInfo())
     printc ("\nstatic char _functionName[] = \"%s\";\n",_functionName);
 }
@@ -4412,7 +4421,8 @@ get_push_literal (char type, char *value)
  * @param s
  */
 char *
-decode_array_string(char *s) {
+decode_array_string(char *s) 
+{
 static char buff[2000]="";
 int a;
 char tmp[2]="X"; /*  Just to get a terminator on it */
@@ -4431,10 +4441,18 @@ strcpy(buff,"(");
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void print_cmd_start() {
 	printc("\n\naclfgli_clr_err_flg();\n\n");
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void print_cmd_end() {
 	//printc("\naclfgli_clr_err_flg()\n\n");
 	printc("\n/* End command */\n");

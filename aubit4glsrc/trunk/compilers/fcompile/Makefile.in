@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.45 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.46 2002-11-10 06:45:19 afalout Exp $
 #
 
 ROOT        =../..
@@ -115,8 +115,8 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 
 fshow : ${ROOT}/bin/fshow
 ${ROOT}/bin/fshow : fshow.4gl
-ifeq "${GCC_MINGW}" "yes"
-	unix2dos -D $^
+ifeq "${FCONVERT}" "yes"
+	${FCONVERT_CMD} $^
 endif
 	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 

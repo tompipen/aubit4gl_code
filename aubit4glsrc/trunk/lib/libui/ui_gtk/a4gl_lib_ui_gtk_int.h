@@ -206,3 +206,12 @@
 
 	void *find_param (char *name);
 
+
+    /* prompt.c */
+
+	void a4gl_usleep(int a);
+
+
+
+/* ================================ EOF =============================== */
+

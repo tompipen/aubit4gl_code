@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.101 2002-11-09 05:40:26 afalout Exp $
+# $Id: Makefile.in,v 1.102 2002-11-10 06:45:00 afalout Exp $
 #
 
 ## ==================================================================
@@ -205,10 +205,10 @@ clean:
 
 #will clean EVERYTHING that is not source file from CVS
 distclean: clean.all clean.config
+	@echo Aubit 4gl compiler source tree now distribution clean
 
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
-distclean: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
@@ -245,8 +245,9 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 #This will clean everything created with Autoconf configure script:
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings clean.splint
+#"configure" _IS_ in CVS
 	${RM} config.log config.status incl/config.h incl/a4gl_incl_config.h \
-	docs/doxy/Doxyfile etc/aubit-rpm.spec configure configure.lineno libtool
+	docs/doxy/Doxyfile etc/aubit-rpm.spec configure.lineno libtool
 
 clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
