@@ -21816,6 +21816,8 @@ fi
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
+if test "$cygwin" != "1"; then
+#Don't know how to link this on Windows...
 	if test "$Q_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
 if test "disabled" = ""; then
@@ -21825,7 +21827,8 @@ fi
 	else
         PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
-    fi
+	fi
+fi
 
 	if test "$SAPDB_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"
@@ -21879,7 +21882,7 @@ fi
 #install.dot
 #install.libcheck
 
-echo "$as_me:21882: result: done." >&5
+echo "$as_me:21885: result: done." >&5
 echo "${ECHO_T}done." >&6
 
 ## ==================================================================
@@ -21931,9 +21934,9 @@ else
 
 fi
 
-  echo "$as_me:21934: result: " >&5
+  echo "$as_me:21937: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:21936: result: ${T_MD}Creating files:${T_ME}" >&5
+  echo "$as_me:21939: result: ${T_MD}Creating files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Creating files:${T_ME}" >&6
 
 cat >confcache <<\_ACEOF
@@ -22015,7 +22018,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:22018: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:22021: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -22191,7 +22194,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:22194: error: ambiguous option: $1
+    { { echo "$as_me:22197: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -22210,7 +22213,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:22213: error: unrecognized option: $1
+  -*) { { echo "$as_me:22216: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -22321,7 +22324,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:22324: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:22327: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -22891,7 +22894,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:22894: creating $ac_file" >&5
+    { echo "$as_me:22897: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -22909,7 +22912,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:22912: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:22915: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -22922,7 +22925,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:22925: error: cannot find input file: $f" >&5
+           { { echo "$as_me:22928: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -22983,7 +22986,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:22986: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:22989: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -22994,7 +22997,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:22997: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:23000: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -23007,7 +23010,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:23010: error: cannot find input file: $f" >&5
+           { { echo "$as_me:23013: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -23124,7 +23127,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:23127: $ac_file is unchanged" >&5
+      { echo "$as_me:23130: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -23459,13 +23462,13 @@ X
 
 fi
 
-echo "$as_me:23462: result: " >&5
+echo "$as_me:23465: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:23464: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:23467: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:23466: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:23469: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:23468: result: " >&5
+echo "$as_me:23471: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

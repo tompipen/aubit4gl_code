@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.66 2003-08-26 05:27:04 afalout Exp $
+# $Id: sql.c,v 1.67 2003-09-01 00:01:12 afalout Exp $
 #
 */
 
@@ -1322,7 +1322,8 @@ char empty[10] = "None";
 char *u, *p;
 HDBC *hh = 0;
 int rc;
-#ifdef SQLITEODBC
+//#ifdef SQLITEODBC
+#ifdef SQLITE_DIRECT
 char a[128], b[128], tmp[2048];
 char *FullPathDBname;
 

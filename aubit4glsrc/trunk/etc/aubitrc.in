@@ -96,7 +96,7 @@ A4GL_DBPATH=@A4GL_DBPATH@
 ############
 #Name of default SQL library plug-in to use.
 #When used: run-time and compile-time
-#Options: (nosql) 
+#Options: (nosql)
 #   <ODBC MANAGERS> iodbc unixodbc odbc32 (Windows only)
 #	<DIRECT ODBC> 	ifxodbc pgodbc  sapodbc sqliteodbc
 #   <NATIVE> 		esql esqpPG esqlSAP esqlQ sqlite sqliteS pg
@@ -105,7 +105,8 @@ A4GL_DBPATH=@A4GL_DBPATH@
 #doesn't exist yet - or you can't get immediate access to it.
 #This takes the 'database' as a filename (with a .schema extension) and uses
 #that to collect the data used by compiler(s)
-#Warning: this setting is ignored when A4GL_LEXTYPE is set to EC
+#Warning: this setting is ignored at run-rime when A4GL_LEXTYPE is set to "EC".
+#At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 
 ############
@@ -114,7 +115,7 @@ A4GL_SQLTYPE=@A4GL_SQLTYPE@
 #Options: (C), PERL, EC, CS
 #Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler, Querix
 #esqlc or PostgreSQL ecpg.
-#using EC will limit Aubit DB connectivity to that of used EC compiler, ignoring
+#using EC will limit Aubit DB connectivity at run-time to that of used EC compiler, ignoring
 #setting of A4GL_SQLTYPE
 #Note: CS is C#
 A4GL_LEXTYPE=@A4GL_LEXTYPE@

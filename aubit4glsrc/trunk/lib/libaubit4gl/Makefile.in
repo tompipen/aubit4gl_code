@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.56 2003-08-24 17:54:14 mikeaubury Exp $
+# $Id: Makefile.in,v 1.57 2003-09-01 00:01:11 afalout Exp $
 #
 
 ROOT    	=../..
@@ -210,6 +210,9 @@ stack_ops.o: stack_ops.c
 debug.o: debug.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
+${ROOT}/common/dataio/form_x.x.h:
+	${MAKE} -C ${ROOT}/common/dataio
+
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
@@ -217,7 +220,8 @@ debug.o: debug.c
 error.c : ${LIBROOT}/generated/tmperrs.h
 array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
 builtin.o API_ui.c: ${ROOT}/compilers/fcompile/form_x.h
-
+${COMMONSRC}: api ${ROOT}/common/dataio/form_x.x.h
+${CMODS_API}: ${ROOT}/common/dataio/form_x.x.h
 
 ## ==================================================================
 ##                         Other Targets

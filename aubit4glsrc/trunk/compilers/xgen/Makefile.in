@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.6 2003-02-22 11:06:56 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-09-01 00:01:11 afalout Exp $
 #
 
 ROOT        =../..
@@ -47,6 +47,10 @@ endif
 
 CMODS		=y.tab.c main.c
 OBJS		=${CMODS:.c=.o}
+
+API_HEADERS =${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h \
+			${ROOT}/incl/a4gl_API_menu.h ${ROOT}/incl/a4gl_API_msg.h \
+			${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h
 
 ALL			=${ROOT}/bin/xgen
 #use_xgen
@@ -88,6 +92,11 @@ endif
 #${ROOT}/common/dataio/form_x.x.h:
 #	${MAKE} -C ${ROOT}/common/dataio form_x.xo.c
 
+
+${API_HEADERS}:
+	${MAKE} -C ../../lib/libaubit4gl api.headers
+
+y.tab.o: ${API_HEADERS}
 
 ## ==================================================================
 ##                          Clean

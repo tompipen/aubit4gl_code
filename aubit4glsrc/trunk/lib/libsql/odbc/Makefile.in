@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.35 2003-08-26 05:27:04 afalout Exp $
+# $Id: Makefile.in,v 1.36 2003-09-01 00:01:12 afalout Exp $
 #
 
 ROOT    =../../..
@@ -164,7 +164,9 @@ ${LIBROOT}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC @SAPODBC_INCLUDE@ @SAPODBC
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm @SAPODBC_LFLAGS@
 
-${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl
+
+#${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl
+${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${CFLAGS_SQLITE}
 ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
 
@@ -173,12 +175,12 @@ ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 #DATABSE 'xyz' should be resolved to <full_path>xyz.db before calling dbopen()
 #* Find out why Aubit generates "Error: Could not disconnect from database" when program exits.
 #* Test SQL compatibility
-${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
+${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -lsqlite ${LINKLIBS}
 
 #SQLite plug-in statically linked with SQLite library/engine:
-${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
+${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
 #	${LD} ${SO_LDFLAGS} $^ -o $@ @SQLITE_LDPATH@/libsqlite.a
 	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L@SQLITE_LDPATH@ ${SQLITE_LINKLIBS} -lsqlite ${LINKLIBS}

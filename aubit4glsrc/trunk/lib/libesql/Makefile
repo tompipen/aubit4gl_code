@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2003-08-26 05:27:04 afalout Exp $
+# $Id: Makefile,v 1.8 2003-09-01 00:01:11 afalout Exp $
 #
 
 ROOT    =../..
@@ -54,10 +54,15 @@ ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
 ifneq "${COMSPEC}" ""
 	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
 	QUERIX_LFLAGS=-L"${QUERIXDIR}/lib"
+    QUERIX_LIBS="${QUERIXDIR}/lib/libesql.lib" "${QUERIXDIR}/lib/libesql.lib" \
+				"${QUERIXDIR}/lib/libfgl.lib"
+	#"${QUERIXDIR}/lib/libsqlc.lib"
+	#"${QUERIXDIR}/bin/libfgl.dll"
 else
 	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
 	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
     STATIC=-static
+    QUERIX_LIBS=-lesql
 endif
 
 ## ==================================================================
@@ -83,11 +88,8 @@ ${LIBROOT}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
 
 libESQL_QUERIX${SO_EXT}: ${LIBROOT}/libESQL_QUERIX${SO_EXT}
 ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} "${QUERIXDIR}/lib/libesql.lib" \
-	"${QUERIXDIR}/lib/libesql.lib" "${QUERIXDIR}/lib/libfgl.lib"
-#"${QUERIXDIR}/lib/libsqlc.lib"
-#"${QUERIXDIR}/bin/libfgl.dll"
-#-lesql
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
+
 
 ## ==================================================================
 ##                              Sub-targets
