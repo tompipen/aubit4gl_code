@@ -59,13 +59,27 @@ define lv_pack char(256)
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_PLATFORM")
+
+	let lv_pack=fgl_getenv("A4GL_TARGET_OS")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_PLATFORM"),"__",fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=fgl_getenv("A4GL_TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_PLATFORM"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	let lv_pack=fgl_getenv("A4GL_TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+
+
+
+	let lv_pack=fgl_getenv("A4GL_TARGET")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_TARGET"),"__",fgl_getenv("A4GL_LEXTYPE")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_TARGET"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+
+
+
 	call read_pack(lv_pack)
 
 	initialize 	mv_db, 

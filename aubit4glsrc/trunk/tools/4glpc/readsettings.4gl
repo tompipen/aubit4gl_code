@@ -14,6 +14,24 @@ call read_pack(lv_type)
 end function
 
 
+function has_pack(lv_type)
+define lv_type char(1024)
+define lv_ok integer
+let lv_type=fgl_getenv("AUBITDIR") clipped,"/tools/4glpc/settings/",lv_type clipped
+code
+{
+FILE *fin;
+lv_ok=1;
+A4GL_trim(lv_type);
+fin=fopen(lv_type,"r");
+if (fin!=0) {fclose(fin); lv_ok=1;}
+else {lv_ok=0;}
+}
+endcode
+return lv_ok
+end function
+
+
 
 
 function read_pack(lv_type)
