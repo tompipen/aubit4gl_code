@@ -21,30 +21,27 @@ define mv_editor char(255)
 define mv_db char(255)
 
 function form_menu()
-        if not has_db() then
-                call select_db()
-        end if
 
-        if not has_db() then
-                return
-        end if
-
-	let mv_db=get_db()
+	if mv_editor is null then
+		let mv_editor=fgl_getenv("DBEDIT") 
+	end if
 
   	call clear_screen_portion()
+	call init_filename()
 
 	menu "FORM"
 		command "Run" "Run a form"
 			call run_form()
 	
 		command "Modify" "Modify a form"
-			if modify_form() then
+			if modify_form("") then
 				message ""
 			else
 				message ""
 			end if
 		
 		command "Generate" "Generate a form"
+        		if not has_db() then call select_db() end if let mv_db=get_db()
 			if generate_form() then
 				message ""
 			end if
@@ -53,7 +50,10 @@ function form_menu()
 			call new_form()
 	
 		command "Compile" "Compile a form"
-			call compile_form()
+			if compile_form("") then
+				# ...
+			end if
+
 	
 		command "Drop" "Drop a form"
 			call drop_form()
@@ -74,15 +74,17 @@ end function
 
 
 
-function modify_form()
+function modify_form(lv_fname)
 define lv_fname char(255)
 define a integer
 define lv_runstr char(512)
 define lv_backup char(255)
 
-display "Choose a file to modify","" at 2,1
 
-let a=0
+if lv_fname is null or lv_fname matches "" then
+	display "Choose a file to modify","" at 2,1
+
+	let a=0
 
 code
 {
@@ -101,14 +103,18 @@ code
 }
 endcode
 
-call set_pick_cnt(a);
-call prompt_pick("CHOOSE >> ","") returning lv_fname
+	call set_pick_cnt(a);
+	call prompt_pick("CHOOSE >> ","") returning lv_fname
+end if
 
 if lv_fname is not null then
 	let lv_backup=get_tmp_fname("PER")
-	call copy_file(lv_fname,lv_backup)
+	call copy_file(lv_fname,lv_backup,".per")
 
-        let lv_fname=lv_fname clipped,".per"
+	if lv_fname not matches "*.[Pp][Ee][Rr]" then
+        	let lv_fname=lv_fname clipped,".per"
+	end if
+
 	if mv_editor is null or mv_editor=" " then
 		prompt "Editor ?" for mv_editor
 	end if
@@ -130,15 +136,15 @@ if lv_fname is not null then
 
 	menu "Modify Form"
 
-		command "Compile"
-			call compile_form(lv_fname)
+		command "Compile" "Compile the form"
+			return compile_form(lv_fname) 
 
-		command "Save-and-exit"
+		command "Save-and-exit" "Save the form"
 			call remove_tmpfile("PER")
 			return 1
 
 		command "Discard-and-exit"
-			call copy_file(lv_backup,lv_fname)
+			call copy_file(lv_backup,lv_fname,".per")
 			return 1
 	end menu
 			
@@ -149,6 +155,67 @@ end if
 return 0
 end function
 
+
+function compile_form(lv_fname)
+define lv_fname char(255)
+define a integer
+define lv_runstr char(512)
+define lv_backup char(255)
+
+if lv_fname is null or lv_fname matches " " then
+	display "Choose a file to compile","" at 2,1
+	let a=0
+
+code
+{
+        char **dir;
+        dir=read_directory(".",".per");
+        if (dir) {
+                for (a=0;dir[a];a++) {
+                        A4GL_debug("READ FILE: %s",dir[a]);
+                        strcpy(lv_fname,dir[a]);
+endcode
+                        call set_pick(a+1,lv_fname);
+code
+                }
+                free_directory(dir);
+        }
+}
+endcode
+
+call set_pick_cnt(a);
+call prompt_pick("CHOOSE >> ","") returning lv_fname
+end if
+
+if lv_fname is not null then
+	let lv_backup=get_tmp_fname("PER")
+	call copy_file(lv_fname,lv_backup,".per")
+
+	if lv_fname not matches "*.[Pp][Ee][Rr]" then
+        	let lv_fname=lv_fname clipped,".per"
+	end if
+
+	let lv_runstr=fgl_getenv("AUBITDIR") clipped,"/bin/fcompile ",lv_fname
+	run lv_runstr returning a
+
+	let a=a/256
+
+	if a=0 then
+		display "The screen form specification was successfully compiled." at 24,1 attribute(reverse)
+	else
+		menu "COMPILE FORM"
+			command "Correct"
+				return modify_form(lv_fname)
+				exit menu
+			command "Exit"
+				exit menu
+				return 0
+		end menu
+	end if
+
+end if
+return 0
+end function
 
 
 
@@ -211,9 +278,6 @@ function new_form()
 	error "Not implemented new_form"
 end function
 
-function compile_form()
-	error "Not implemented compile_form"
-end function
 
 function drop_form()
 	error "Not implemented drop_form"

@@ -5,6 +5,7 @@ function user_menu()
 
 		command "Modify"
 			call modify_user_menu()
+
 		command "Exit"
 			exit menu
 	end menu
@@ -63,5 +64,7 @@ if bad then
 	execute p_cr_umi
 end if
 
-
 end function
+
+
+

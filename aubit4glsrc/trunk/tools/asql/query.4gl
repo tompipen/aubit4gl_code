@@ -349,7 +349,7 @@ call prompt_pick("CHOOSE >> ","") returning lv_fname
 if lv_fname is not null then
 	let lv_fname=lv_fname clipped,".sql"
 	error "Filename : ",lv_fname
-	call copy_file(lv_fname,get_tmp_fname("SQL"))
+	call copy_file(lv_fname,get_tmp_fname("SQL"),".sql")
 	call display_tmp_file()
 	return 1
 end if
@@ -365,7 +365,7 @@ define lv_fname char(255)
 	call set_exec_mode(1)
 
 	if lv_fname!="-" then
-		call copy_file(lv_fname,get_tmp_fname("SQL"))
+		call copy_file(lv_fname,get_tmp_fname("SQL"),".sql")
 		call open_tmpfile("SQL","r")
 	else
 		call open_tmpfile_as_stdin("SQL")
@@ -383,7 +383,7 @@ if lv_fname not matches "*.sql" then
 end if
 
 if lv_fname != " " then
-	call copy_file(get_tmp_fname("SQL"),lv_fname)
+	call copy_file(get_tmp_fname("SQL"),lv_fname,".sql")
 end if
 end function
 

@@ -66,6 +66,7 @@ A4GL_get_curr_form int warn_if_no_form -> void*
 A4GL_widget_name_match void* w char* name -> int
 /* int A4GL_gen_field_chars_ap (void* field_list, void* formdets, va_list* ap)*/
 A4GL_gen_field_chars_ap void* field_list void* formdets va_list* ap -> int
+A4GL_gen_field_list_from_slist void* field_listv void* formdetsv void* listv -> int
 /* int A4GL_form_loop (void* s,int init)*/
 A4GL_form_loop_v2 void* s int init void* evt -> int
 /* int A4GL_push_constr (void* s)*/

@@ -28,7 +28,7 @@ int pdf_load_file(FILE *fin) {
 	int size;
 	int ver;
 	// We don't need to add anything to the output file
-	printf("load file\n");
+	//printf("load file\n");
 	fread(&size,4,1,fin);
 	fread(&ver,4,1,fin);
 
@@ -43,8 +43,8 @@ int pdf_load_file(FILE *fin) {
 	}
 
 	fread(&layout,sizeof(layout),1,fin);
-	printf("LOADING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
-	printf("Img = %s\n",layout.img_src);
+	//printf("LOADING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
+	//printf("Img = %s\n",layout.img_src);
 	return 1;
 }
 
@@ -56,7 +56,7 @@ int pdf_save_file(FILE *fin) {
 	ver=VERSION;
 	fwrite(&size,4,1,fin);
 	fwrite(&ver,4,1,fin);
-	printf("SAVING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
+	//printf("SAVING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
 	fwrite(&layout,sizeof(layout),1,fin);
 	return 1;
 }

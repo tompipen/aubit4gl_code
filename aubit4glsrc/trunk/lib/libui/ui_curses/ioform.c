@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.102 2004-11-09 19:07:30 pjfalbe Exp $
+# $Id: ioform.c,v 1.103 2004-11-12 18:13:08 pjfalbe Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.102 2004-11-09 19:07:30 pjfalbe Exp $";
+static char *module_id="$Id: ioform.c,v 1.103 2004-11-12 18:13:08 pjfalbe Exp $";
 /**
  * @file
  *
@@ -47,6 +47,8 @@ static char *module_id="$Id: ioform.c,v 1.102 2004-11-09 19:07:30 pjfalbe Exp $"
 #include <ctype.h>
 static void chk_for_picture(FIELD *f,char *buff) ;
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
+void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
+int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form_dets *formdets, int max_number,  struct s_field_name_list *list);
 
 /*
 =====================================================================
@@ -1769,22 +1771,24 @@ int
 
   field_list = field_listv;
   formdets = formdetsv;
-#ifdef DEBUG
-  {
-    A4GL_debug ("Starting A4GL_gen_field_chars %p %p", field_list, formdets);
-  }
-  {
-    A4GL_debug ("Genfldlist 3");
-  }
-#endif
-  A4GL_debug ("gen_field_chars");
+
   a = A4GL_gen_field_list (field_list, formdets, 9999, ap);
-#ifdef DEBUG
-  {
-    A4GL_debug ("--------------------------------------END gen_field_chars");
-  }
-#endif
-  A4GL_debug ("Gen_field_list returned %d", a);
+  return a;
+}
+
+int
+ UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
+{
+  int a;
+  FIELD ***field_list;
+  struct s_form_dets *formdets;
+  struct s_field_name_list *list;
+
+  field_list = field_listv;
+  formdets = formdetsv;
+  list = listv;
+
+  a = A4GL_gen_field_list_from_slist_internal (field_list, formdets, 9999, list);
   return a;
 }
 
@@ -1792,7 +1796,7 @@ int
  *
  * @todo Describe function
  */
-int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
+int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list, struct s_form_dets *formdets, int max_number,  struct s_field_name_list *list)
 {
   int z;
   int z1;
@@ -1816,34 +1820,18 @@ int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int
 		A4GL_exitwith("No form displayed");
 		return -1;
   }
-#ifdef DEBUG
-  {
-    A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, max_number, ap);
-  }
-#endif
-  A4GL_debug ("field_list=%p", field_list);
-  A4GL_debug ("Here 2 a=%d",max_number);
 
   for (z1 = 0; z1 <= max_number; z1++)
     {
-      A4GL_debug ("Getting first %d", z1);
-      s = va_arg (*ap, char *);	/* This is suspect.... */
 
-      if (s == 0) {
-		A4GL_debug("Nothing left to look for");
-	break;
+	if (z1>=list->nfields) break;
+	s=list->field_name_list[z1].fname;
+        if (s == 0) {
+		break;
 	}
 
-      A4GL_debug ("Got first %s:", s);
-
-      f = (int) va_arg (*ap, int *);
-      A4GL_debug ("f=%d\n", f);
-      if (f > 0)
-	f--;
-
+      f = list->field_name_list[z1].fpos;
       A4GL_debug (" got field number as %d ", f);
-
-
       ff = 0;
 
       /* get screen record/table name */
@@ -1983,16 +1971,24 @@ int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int
 	}
 
     }
-/*
-  s = va_arg (*ap, char *);
-  if (s != 0)
-    A4GL_debug ("Trailing fields ignored");
-*/
-
 
   *field_list = calloc (cnt + 1, sizeof (FIELD *));
   memcpy (*field_list, flist, sizeof (FIELD *) * (cnt + 1));
   return cnt - 1;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
+{
+  struct s_field_name_list list;
+
+  A4GL_make_field_slist_from_ap(&list,ap);
+
+  return A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
+
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.27 2004-11-11 16:23:20 mikeaubury Exp $
+# $Id: ui.c,v 1.28 2004-11-12 18:12:53 pjfalbe Exp $
 #
 */
 
@@ -840,6 +840,22 @@ b=0;
 	memset(buff,' ',b);
 	buff[b]=0;
 	return buff;
+}
+
+void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap) {
+        int f;
+        char *s;
+        list->nfields=0;
+        while (1) {
+                s = va_arg (*ap, char *);
+                if (s==0)  break;
+                f = (int) va_arg (*ap, int *);
+                if (f > 0) f--;
+                list->nfields++;
+                list->field_name_list=realloc(list->field_name_list, sizeof(list->field_name_list[0])*list->nfields);
+                list->field_name_list[list->nfields-1].fname=s;
+                list->field_name_list[list->nfields-1].fpos=f;
+        }
 }
 
 /* ============================= EOF ================================ */

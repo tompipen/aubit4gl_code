@@ -73,7 +73,6 @@ output_page (PDF *p, int w, int h,char **lines)
 		y=layout.img_y;
 		PDF_fit_image(p, image, x, y, "fitmethod auto"); 
 		PDF_close_image(p, image); 
-		printf("Got Image (%s)\n",layout.img_src);
 	}
   }
 

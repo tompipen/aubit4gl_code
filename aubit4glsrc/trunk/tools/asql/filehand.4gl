@@ -104,6 +104,12 @@ int get_type_id(char *s) {
 	if (strcmp(s,"4GL")==0) return 2;
 	if (strcmp(s,"ACE")==0) return 3;
 	if (strcmp(s,"MSG")==0) return 4;
+
+	if (strcmp(s,"FRM")==0) return 5;
+	if (strcmp(s,"C")==0) return 6;
+	if (strcmp(s,"EC")==0) return 7;
+	if (strcmp(s,"IEM")==0) return 8;
+	if (strcmp(s,"ARC")==0) return 9;
 	return 9;
 }
 endcode
@@ -124,6 +130,9 @@ sprintf(mv_tmpinfile[get_type_id("PER")],"/tmp/a4gl_per_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("4GL")],"/tmp/a4gl_4gl_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("ACE")],"/tmp/a4gl_ace_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("MSG")],"/tmp/a4gl_msg_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("FRM")],"/tmp/a4gl_frm_%d",getpid());
+
+sprintf(mv_tmpinfile[get_type_id("C")],"/tmp/a4gl_frm_%d",getpid());
 endcode
 
 call open_tmpfile("SQL","w")
@@ -170,9 +179,10 @@ call close_tmpfile("SQL")
 end function
 
 
-function copy_file(src,dest)
+function copy_file(src,dest,type)
 define src char(255)
 define dest char(255)
+define type char(255)
 define lv_str char(600)
 define buff char(255);
 define f integer
@@ -183,10 +193,11 @@ code
 
 A4GL_trim(src);
 A4GL_trim(dest);
+A4GL_trim(type);
 f=(long)fopen(src,"r");
 
 if (!f)  {
-	strcat(src,".sql");
+	strcat(src,type);
 	f=(long)fopen(src,"r");
 } 
 
@@ -214,8 +225,8 @@ if (fo&&f) {
 endcode
 
 if not ok then
-	error "Unable to open file ",src
-	sleep 1 # After an error opening a file
+	error "Unable to open file src=",src, " dest=", dest," type=",type
+	sleep 3 # After an error opening a file
 end if
 end function
 
