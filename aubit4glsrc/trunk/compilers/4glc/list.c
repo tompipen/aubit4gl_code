@@ -1,5 +1,60 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: list.c,v 1.7 2002-05-25 12:12:44 afalout Exp $
+#*/
+
+/**
+ * @file
+ *
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> //exit()
+
+#include <a4gl_4glc_4glc.h>
+#include <a4gl_aubit_lib.h>
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 extern int yylineno;
 struct list
 {
@@ -12,6 +67,11 @@ struct list
 int list_cnt = 0;
 struct list lists[256];
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Prompts for user to insert something from standard input.
@@ -19,7 +79,8 @@ struct list lists[256];
  * @todo Get rid of gets
  * @param s The string added at the end of the prompt
  */
-char *list_prompt (char *s)
+char *
+list_prompt (char *s)
 {
   static char buff[256];
   printf ("Please enter %s:\n", s);
@@ -38,7 +99,8 @@ char *list_prompt (char *s)
  * @param id
  * @param s The string to be added at the end of the prompt
  */
-void list_prompt_many(char *id, char *s)
+void 
+list_prompt_many(char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -62,7 +124,8 @@ void list_prompt_many(char *id, char *s)
  * @param id
  * @param s The string to be added at the end of the prompt
  */
-void list_prompt_single (char *id, char *s)
+void 
+list_prompt_single (char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -74,9 +137,14 @@ void list_prompt_single (char *id, char *s)
 }
 
 
-void list_set_single (char *id, char *s)
+/**
+ *
+ * @todo Describe function
+ */
+void
+list_set_single (char *id, char *s)
 {
-  char *buff;
+//  char *buff;
   strcpy (lists[list_cnt].list_id, id);
   lists[list_cnt].list_count = 0;
   strcpy (lists[list_cnt].list_values[lists[list_cnt].list_count], s);
@@ -84,7 +152,12 @@ void list_set_single (char *id, char *s)
   list_cnt++;
 }
 
-static int list_find_id (char *id)
+/**
+ *
+ * @todo Describe function
+ */
+static int
+list_find_id (char *id)
 {
   int a;
   char buff[256];
@@ -102,7 +175,13 @@ static int list_find_id (char *id)
   exit (0);
 }
 
-static void list_prepend (char *id, char *id2, char *str)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+list_prepend (char *id, char *id2, char *str)
 {
   int a;
   int orig_id;
@@ -119,8 +198,14 @@ static void list_prepend (char *id, char *id2, char *str)
     }
   list_cnt++;
 }
+*/
 
-void list_append (char *id, char *id2, char *str)
+/**
+ *
+ * @todo Describe function
+ */
+void
+list_append (char *id, char *id2, char *str)
 {
   int a;
   int orig_id;
@@ -138,7 +223,12 @@ void list_append (char *id, char *id2, char *str)
   list_cnt++;
 }
 
-void list_copy (char *id, char *id2)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+list_copy (char *id, char *id2)
 {
   int a;
   int orig_id;
@@ -153,7 +243,13 @@ void list_copy (char *id, char *id2)
 
 }
 
-static list_use (char *id1, char *id2, char *str, char *idnew)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+list_use (char *id1, char *id2, char *str, char *idnew)
 {
   int iid1;
   int iid2;
@@ -180,8 +276,15 @@ static list_use (char *id1, char *id2, char *str, char *idnew)
     }
   list_cnt++;
 }
+*/
 
-static list_gen (char *id, char *newid, char *sep)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+list_gen (char *id, char *newid, char *sep)
 {
   char buff[256];
   int a;
@@ -203,8 +306,14 @@ static list_gen (char *id, char *newid, char *sep)
   list_cnt++;
 
 }
+*/
 
-void list_print_all(void)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+list_print_all(void)
 {
   int id;
   int a;
@@ -221,7 +330,13 @@ void list_print_all(void)
 }
 
 
-static list_print (char *cid)
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+list_print (char *cid)
 {
   int id;
   int a;
@@ -233,21 +348,37 @@ static list_print (char *cid)
       printf ("%s", lists[id].list_values[a]);
     }
 }
+*/
 
-
-char *new_id (void)
+/**
+ *
+ * @todo Describe function
+ */
+char *
+new_id (void)
 {
   static char buff[256];
   sprintf (buff, "_list_%d", list_cnt);
   return buff;
 }
 
-void list_columns (char *id, char *s)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+list_columns (char *id, char *s)
 {
   list_set_single (id, s);
-};
+}
 
-void list_set_plus (char *newid, char *cid1, char *cid2)
+
+/**
+ *
+ * @todo Describe function
+ */
+void 
+list_set_plus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
   int a, b;
@@ -279,7 +410,12 @@ void list_set_plus (char *newid, char *cid1, char *cid2)
 }
 
 
-void list_set_minus (char *newid, char *cid1, char *cid2)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+list_set_minus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
   int a, b;
@@ -308,6 +444,15 @@ void list_set_minus (char *newid, char *cid1, char *cid2)
 }
 
 
-void list_in(void)
+/**
+ *
+ * @todo Describe function
+ */
+
+void
+list_in(void)
 {
 };
+
+
+// =============================== EOF ============================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.29 2002-05-23 09:29:34 afalout Exp $
+# $Id: lexer.c,v 1.30 2002-05-25 12:12:44 afalout Exp $
 #*/
 
 /**
@@ -52,7 +52,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "a4gl_aubit_lib.h" // acl_getenv()
+#include "a4gl_aubit_lib.h" 			// acl_getenv()
+#include "a4gl_4glc_4glc.h"
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
 #include "a4gl_debug.h"
@@ -162,7 +163,7 @@ mja_ungetc (int a, FILE * f)
  * Checks if a string is an identifier.
  *
  * @param p The string to be checked
- * @return 
+ * @return
  *   - 0 : Its NOT an identifier
  *   - 1 : Its an identifier
  */
@@ -463,7 +464,7 @@ read_word2 (FILE * f, int *t)
 	    }
 	  else
 	    {
-	      escp == 0;
+	      escp = 0;
 	    }
 	}
 
@@ -520,7 +521,7 @@ static char *
 read_word (FILE * f, int *t)
 {
   char *ptr;
-  char *s=0;
+//  char *s=0;
 char *s2;
   ptr = read_word2 (f, t);
   if (*t==CHAR_VALUE) {
@@ -551,7 +552,7 @@ char *s2;
 static int 
 words (int cnt, int pos, FILE * f, char *p)
 {
-  int f_pos;
+//  int f_pos;
   int z;
   int t;
   char buff[132];
@@ -597,6 +598,7 @@ words (int cnt, int pos, FILE * f, char *p)
       //fseek(f,f_pos,SEEK_SET);
       return 0;
     }
+return 1;
 }
 
 /**
@@ -648,7 +650,7 @@ chk_word (FILE * f, char *str)
   int t;
   char buff[256];
   int oline;
-  int ocharno;
+//  int ocharno;
   cnt = 0;
 
   p = read_word (f, &t);
@@ -891,7 +893,8 @@ yylex (void)
  *
  * @lc 
  */
-static int 
+/*
+static int
 relex (int lc)
 {
   int a;
@@ -917,6 +920,7 @@ relex (int lc)
     }
   return lc;
 }
+*/
 
 
 /**

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.64 2002-05-14 09:27:10 afalout Exp $
+# $Id: configure.in,v 1.65 2002-05-25 12:12:37 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2052,14 +2052,6 @@ if test "$default_odbc" != ""; then
 	#User can force SQL driver default with --default-odbc=xxxx switch
 	A4GL_SQLTYPE="$default_odbc"
 else
-    ############# native ####################
-	#non existant:
-	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
-	#	A4GL_SQLTYPE=pgsql
-    #fi
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_SQLTYPE=esql
-	fi
 	############# ODBC drivers ##############
 	if test "$HAVE_PGODBC" = "yes" ; then
 		A4GL_SQLTYPE=pgodbc
@@ -2067,14 +2059,28 @@ else
 	if test "$HAVE_IFXODBC" = "yes" ; then
 		A4GL_SQLTYPE=ifxodbc
 	fi
-	############# ODBC managers #############
-	if test "$HAVE_IODBC" = "yes" ; then
-		A4GL_SQLTYPE=iodbc
+
+	############# native ####################
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
 	fi
+
+
+	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
 	fi
+	if test "$HAVE_IODBC" = "yes" ; then
+		#we want iodbc to have highest priority, when we have a choice,
+        #sine we still have problems with unixODBC
+		A4GL_SQLTYPE=iodbc
+	fi
 	if test "$cygwin" = "1"; then
+		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_SQLTYPE=odbc32
 
         #echo "WARNING: SQL on Windows temporaraly disabled"

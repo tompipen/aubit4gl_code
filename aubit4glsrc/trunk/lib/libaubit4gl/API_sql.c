@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
+# $Id: API_sql.c,v 1.9 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -220,11 +220,12 @@ A4GLSQL_get_sqlerrm   (void)
  *   - 0 : Error ocurred.
  */
 int 
-A4GLSQL_get_columns(char *tabname)
+//A4GLSQL_get_columns(char *tabname)
+A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_get_columns");
-  return func(tabname);
+  return func(tabname,colname,dtype,size);
 }
 
 

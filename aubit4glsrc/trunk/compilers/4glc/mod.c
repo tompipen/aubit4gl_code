@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.64 2002-05-23 09:29:34 afalout Exp $
+# $Id: mod.c,v 1.65 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -65,6 +65,7 @@
 #include "a4gl_4glc_compiledefs.h"
 #include "a4gl_aubit_lib.h"
 #include "a4gl_4glc_print_protos.h"
+#include "a4gl_4glc_4glc.h"
 #include "a4gl_dlsql.h"
 
 /*
@@ -79,6 +80,32 @@
 #define EMPTY "----"
 #define MAXMENU 10
 #define MAXMENUOPTS 10
+
+#define a0_width         (float) 2380.0
+#define a0_height        (float) 3368.0
+#define a1_width         (float) 1684.0
+#define a1_height        (float) 2380.0
+#define a2_width         (float) 1190.0
+#define a2_height        (float) 1684.0
+#define a3_width         (float) 842.0
+#define a3_height        (float) 1190.0
+#define a4_width         (float) 595.0
+#define a4_height        (float) 842.0
+#define a5_width         (float) 421.0
+#define a5_height        (float) 595.0
+#define a6_width         (float) 297.0
+#define a6_height        (float) 421.0
+#define b5_width         (float) 501.0
+#define b5_height        (float) 709.0
+#define letter_width     (float) 612.0
+#define letter_height    (float) 792.0
+#define legal_width      (float) 612.0
+#define legal_height     (float) 1008.0
+#define ledger_width     (float) 1224.0
+#define ledger_height    (float) 792.0
+#define p11x17_width     (float) 792.0
+#define p11x17_height    (float) 1224.0
+
 
 /*
 =====================================================================
@@ -431,14 +458,14 @@ isin_command (char *cmd_type)
  *   - G
  * @param vname The record variable name
  */
-static int 
+static int
 print_record(int z, char ff,char *vname)
 {
   int a;
   // It should be declared here because the two function are tighly coupled
   static void print_variable(int z, char ff);
 
-  int lvl = 1;
+//  int lvl = 1;
   debug("Print record %s\n",vname);
 
   if (isin_command ("REPORT")||
@@ -649,8 +676,8 @@ dump_gvars(void)
   for (a = 0; a < const_cnt; a++)
     {
       if (const_arr[a].scope == 'g')
-	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
-		 const_arr[a].ptr);
+	fprintf (f, "%c %s %p\n", const_arr[a].type, const_arr[a].name,
+		 const_arr[a].ptr); // warning: char format, void arg (arg 5)
     }
 
   fclose (f);
@@ -722,10 +749,9 @@ print_variables (void)
 {
 
   int a;
-  int flg = 0;
-  int oz;
-
-  int record;
+//  int flg = 0;
+//  int oz;
+//  int record;
 
   //dump_vars ();
 
@@ -1272,7 +1298,7 @@ static long
 isvartype (char *s, int mode)
 {
   int a;
-  long z;
+//  long z;
   char buff[256];
   char *ptr;
   int flg;
@@ -1461,7 +1487,7 @@ set_variable (char *name, char *type, char *n, char *as, int lvl)
  * @param ptr
  * @param name
  */
-int 
+void
 add_constant (char t, char *ptr, char *name)
 {
   char scope = 'm';
@@ -1710,15 +1736,16 @@ static int
 pushLikeAllTableColumns(char *tableName)
 {
   int rval;
-  int isize;
-  int idtype;
-  char colname[256];
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
   char csize[20];
   char cdtype[20];
   char buff[300];
 
   debug ("pushLikeAllTableColumns()");
-  rval = A4GLSQL_get_columns(tableName);
+  //A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+  rval = A4GLSQL_get_columns(tableName,colname,idtype, isize);
   if (rval == 0 && tableName)
   {
     sprintf (buff, "%s does not exist in the database", tableName);
@@ -1760,10 +1787,10 @@ static void
 push_like2 (char *t2)
 {
   char buff[300];
-  char buffer[300];
+//  char buffer[300];
   char *tableName;
   char *columnName;
-  char *c;
+//  char *c;
   char t[256];
   debug ("In push_like2");
 
@@ -1870,16 +1897,15 @@ push_blockcommand (char *cmd_type)
 /**
  * The parser found a CONTINUE statement.
  *
- * @param cmd_type The type of continue found (the keyword found after 
+ * @param cmd_type The type of continue found (the keyword found after
  * the CONTINUE token).
  */
 void
 add_continue_blockcommand (char *cmd_type)
 {
-  int z;
+//  int z;
   int a;
-
-  char err[80];
+//  char err[80];
 	
 	/* more checks here ! */
 
@@ -1932,7 +1958,7 @@ iscontinuecmd (char *s)
 void 
 pop_blockcommand (char *cmd_type)
 {
-  int z;
+//  int z;
   int a;
 
   char err[80];
@@ -2023,12 +2049,18 @@ in_command (char *cmd_type)
  * 
  * @param s The string to be trimmed
  */
+/* in funcs_d.c :
+
+void 	trim				(char *p);
+
 static void
 trim(char *s)
 {
   if (s[strlen (s) - 1] == '\n')
     s[strlen (s) - 1] = 0;
 }
+
+*/
 
 /**
  *
@@ -2101,7 +2133,7 @@ static yyerrorf (char *fmt, ...)
  *   - 1 : The column is part of PK 
  *   - 0 : The column is not part of PK 
  */
-static int 
+static int
 is_pk (char *s)
 {
   int a;
@@ -2157,7 +2189,7 @@ push_bind_rec (char *s, char bindtype)
   if (strchr (s, '\n'))
     {
       int v1;
-      int v2;
+      int v2 = 0;
       char *ptr1;
       char *ptr2;
 
@@ -2211,7 +2243,7 @@ push_bind_rec (char *s, char bindtype)
 	  sprintf (buff, "%s.%s", r1, vars[a].var_name);
 	  add_bind (bindtype, buff);
 	}
-      return;
+      return 0;
     }
 
   if (s[0] == '.' && s[1] == 0)
@@ -2400,6 +2432,7 @@ add_bind (char i, char *var)
 	}
     }
 
+return 0;
 }
 
 /**
@@ -2494,6 +2527,8 @@ how_many_in_bind (char i)
     return obindcnt - 1;
   if (i == 'O')
     return ordbindcnt - 1;
+
+return 0;
 }
 
 /**
@@ -2553,7 +2588,7 @@ continue_loop (char *cmd_type)
  *   - DISPLAY
  *   - MENU
  *
- *   Finds backwards the opened corresponding command. 
+ *   Finds backwards the opened corresponding command.
  *   This means that if we have a EXIT WHILE then it belongs to the
  *   last founded (and not yet closed) WHILE.
  *
@@ -2691,31 +2726,6 @@ debug("ZZ1 init structure...");
   strcpy (rep->output_loc, "\"stdout\"");
 }
 
-#define a0_width         (float) 2380.0
-#define a0_height        (float) 3368.0
-#define a1_width         (float) 1684.0
-#define a1_height        (float) 2380.0
-#define a2_width         (float) 1190.0
-#define a2_height        (float) 1684.0
-#define a3_width         (float) 842.0
-#define a3_height        (float) 1190.0
-#define a4_width         (float) 595.0
-#define a4_height        (float) 842.0
-#define a5_width         (float) 421.0
-#define a5_height        (float) 595.0
-#define a6_width         (float) 297.0
-#define a6_height        (float) 421.0
-#define b5_width         (float) 501.0
-#define b5_height        (float) 709.0
-#define letter_width     (float) 612.0
-#define letter_height    (float) 792.0
-#define legal_width      (float) 612.0
-#define legal_height     (float) 1008.0
-#define ledger_width     (float) 1224.0
-#define ledger_height    (float) 792.0
-#define p11x17_width     (float) 792.0
-#define p11x17_height    (float) 1224.0
-
 /**
  *
  *
@@ -2815,74 +2825,20 @@ reset_attrib (struct form_attr * form_attrib)
   form_attrib->attrib = 0;
 }
 
-#ifdef NOLONGERUSED
-	/**
-	 *
-	 *
-	 * @param
-	 */
-	static int
-	colour_code (int a)
-	{
-	  int z, b;
-	  z = 1;
-
-	  return a;
-
-	#ifdef WIN32
-	  return COLOR_PAIR (a + 1);
-	#else
-	  return COLOR_PAIR (a + 1);
-	#endif
-	}
-#endif
 
 /**
  *
  *
  * @param
  */
-int 
+int
 attr_code (char *s)
 {
- 
+
  debug ("Decoding colour %s\n", s);
 
   return get_attr_from_string(s);
 
-#ifdef REMOVED_BECAUSE_OF_CURSES
-  if (strcmp (s, "BLACK") == 0) 
-    return colour_code (COLOR_BLACK);
-  if (strcmp (s, "YELLOW") == 0)
-    return colour_code (COLOR_YELLOW);
-  if (strcmp (s, "BLUE") == 0)
-    return colour_code (COLOR_BLUE);
-  if (strcmp (s, "CYAN") == 0)
-    return colour_code (COLOR_CYAN);
-  if (strcmp (s, "MAGENTA") == 0)
-    return colour_code (COLOR_MAGENTA);
-  if (strcmp (s, "GREEN") == 0)
-    return colour_code (COLOR_GREEN);
-  if (strcmp (s, "RED") == 0)
-    return colour_code (COLOR_RED);
-  if (strcmp (s, "WHITE") == 0)
-    return colour_code (COLOR_WHITE);
-  if (strcmp (s, "REVERSE") == 0)
-    return A_REVERSE;
-  if (strcmp (s, "BLINK") == 0)
-    return A_BLINK;
-  if (strcmp (s, "UNDERLINE") == 0)
-    return A_UNDERLINE;
-  if (strcmp (s, "BOLD") == 0)
-    return A_BOLD;
-  if (strcmp (s, "NORMAL") == 0)
-    return A_NORMAL;
-  if (strcmp (s, "INVISIBLE") == 0)
-    return colour_code (COLOR_BLACK);
-  if (strcmp (s, "DIM") == 0)
-    return A_DIM;
-#endif
-  return 0;
 }
 
 /**
@@ -2950,7 +2906,7 @@ set_mod_level (int a)
  *
  * @param
  */
-static
+static int
 matoi (char *s)
 {
   int a;
@@ -3128,7 +3084,7 @@ dec_counter_by (int a)
  *
  * @param
  */
-static
+static int
 add_arr_bind (char i, char *nvar)
 {
   long dtype;
@@ -3194,6 +3150,7 @@ add_arr_bind (char i, char *nvar)
       return fbindcnt;
     }
 
+return 0;
 }
 
 
@@ -3341,7 +3298,7 @@ void
 read_glob (char *s)
 {
   FILE *f;
-  int a;
+//  int a;
   char line[256];
   char ii[64];
   char dbname[64];
@@ -3425,7 +3382,7 @@ read_glob (char *s)
       if (feof (f))
 	break;
       trim (line);
-      sscanf (line, "%c %s %s", &ct, &cn, &cv);
+      sscanf (line, "%c %s %s", &ct, cn, cv); //: warning: char format, different type arg (arg 5)
       add_constant (ct, cv, cn);
     }
 
@@ -4452,35 +4409,7 @@ tr_glob_fname (char *s)
 }
 
 
-/* folowing functions are to work around problem with exporting struct in Windows dll
-
-#compile_c.o: In function `print_report_ctrl':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:398: variable 'report_stack' can't be auto-imported.
-
-#compile_c.o: In function `pr_report_agg':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:632: variable 'sreports' can't be auto-imported.
-
-#compile_c.o: In function `prchkerr':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:750: variable 'when_code' can't be auto-imported.
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:756: variable 'when_to' can'tbe auto-imported.
-
-#compile_c.o: In function `print_bind_pop1':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:927: variable 'ibind' can't be auto-imported.
-
-#compile_c.o: In function `print_bind_pop1':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:936: variable 'obind' can't be auto-imported.
-
-#compile_c.o: In function `print_constr':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:1000: variable 'constr_buff' can't be auto-imported.
-
-#compile_c.o: In function `print_bind':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:1178: variable 'ordbind' can't be auto-imported.
-
-#compile_c.o: In function `print_menu':
-#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:3345: variable 'menu_stack' can't be auto-imported.
-
-
-*/
+/* folowing functions are to work around problem with exporting struct in Windows dll */
 
 /**
  *
@@ -4516,11 +4445,12 @@ get_sreports(int z)
 }
 
 
-
-add_ex_dtype(char *sx) {
+void
+add_ex_dtype(char *sx)
+{
 	char s[256];
 	char ss[256];
-	int a;
+//	int a;
 	strcpy(s,sx);
 	trim(s);
 	strcpy(s,downshift(s));
@@ -4534,7 +4464,7 @@ add_ex_dtype(char *sx) {
         	char *(*function) ();
 		debug("yep");
 
-        	function=get_datatype_function_n(s,"INCLUDE");
+        function=get_datatype_function_n(s,"INCLUDE");
 
 		debug("function=%s\n",function);
 

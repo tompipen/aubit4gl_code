@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.2 2002-05-21 14:18:06 mikeaubury Exp $
+# $Id: datatypes.c,v 1.3 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -41,12 +41,23 @@
  * This is very much a work in progress....
  *
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
+#include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
 
-void add_default_datatypes() ;
-
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 int inited=0;
 
@@ -86,9 +97,30 @@ struct s_datatype dtypes[MAX_DTYPE];
 
 
 static void *libptr = 0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void add_default_datatypes() ;
 static int (*func) ();
 
-int A4GLEXDATA_initlib (char *f)
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GLEXDATA_initlib (char *f)
 {
 
   libptr = (void *) dl_openlibrary ("EXDTYPE", f);
@@ -108,7 +140,13 @@ int A4GLEXDATA_initlib (char *f)
 
 
 // Initialize all the datatypes
-void init_datatypes() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+init_datatypes(void)
+{
 	int a;
 	if (inited==0) {
 		inited=1;
@@ -127,7 +165,13 @@ void init_datatypes() {
 
 // Returns 1 on success
 // return 0 on failure
-void *get_datatype_function_i(int a,char *funcname) {
+/**
+ *
+ * @todo Describe function
+ */
+void *
+get_datatype_function_i(int a,char *funcname)
+{
 int n;
 	if (!inited) init_datatypes();
 	for (n=0;n<dtypes[a].funcs_len;n++) {
@@ -141,7 +185,13 @@ int n;
 
 // Returns 1 on success
 // return 0 on failure
-int has_datatype_function_i(int a,char *funcname) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+has_datatype_function_i(int a,char *funcname)
+{
 int n;
 	if (!inited) init_datatypes();
 	debug("Looking for function %s for datatype %d (%d elements)",funcname,a,dtypes[a].funcs_len);
@@ -172,7 +222,13 @@ int n;
 //             Therefore - if you are comparing a smallint to a float - you'd convert both to 'float'
 // returns the datatype  ID if successfull
 // or -1
-int add_datatype(char *name,int rq,int precision) {
+/**
+ *
+ * @todo Describe function
+ */
+int 
+add_datatype(char *name,int rq,int precision) 
+{
 	int a;
 
 	if (!inited) init_datatypes();
@@ -197,7 +253,13 @@ int add_datatype(char *name,int rq,int precision) {
 
 }
 
-int find_datatype_out(char *name) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+find_datatype_out(char *name)
+{
 	int a;
 	if (!inited) init_datatypes();
 
@@ -217,7 +279,13 @@ int find_datatype_out(char *name) {
 }
 
 
-int find_datatype(char *name) {
+/**
+ *
+ * @todo Describe function
+ */
+int 
+find_datatype(char *name) 
+{
 	int a;
 
 	if (!inited) init_datatypes();
@@ -236,7 +304,13 @@ int find_datatype(char *name) {
 
 // Returns 1 on success
 // return 0 on failure
-int add_datatype_function_i(int a,char *funcname,void *func) {
+/**
+ *
+ * @todo Describe function
+ */
+int 
+add_datatype_function_i(int a,char *funcname,void *func) 
+{
 	if (!inited) init_datatypes();
 	debug("Adding function %s to datatype %d (%p)",funcname,a,func);
 
@@ -257,7 +331,13 @@ int add_datatype_function_i(int a,char *funcname,void *func) {
 
 // Returns 1 on success
 // return 0 on failure
-int add_datatype_function_n(char *name,char *funcname,void *func) {
+/**
+ *
+ * @todo Describe function
+ */
+int 
+add_datatype_function_n(char *name,char *funcname,void *func) 
+{
 	int a;
 	if (!inited) init_datatypes();
 	debug("Add_datatype_function_n : %s %s %p",name,funcname,func);
@@ -271,7 +351,13 @@ int add_datatype_function_n(char *name,char *funcname,void *func) {
 
 // Returns 1 on success
 // return 0 on failure
-int has_datatype_function_n(char *name,char *funcname) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+has_datatype_function_n(char *name,char *funcname)
+{
 	int a;
 	if (!inited) init_datatypes();
 	a=find_datatype(name);
@@ -282,7 +368,13 @@ int has_datatype_function_n(char *name,char *funcname) {
 
 // Returns 1 on success
 // return 0 on failure
-void *get_datatype_function_n(char *name,char *funcname) {
+/**
+ *
+ * @todo Describe function
+ */
+void *
+get_datatype_function_n(char *name,char *funcname)
+{
 	int a;
 	if (!inited) init_datatypes();
 	a=find_datatype(name);
@@ -290,25 +382,36 @@ void *get_datatype_function_n(char *name,char *funcname) {
 	return get_datatype_function_i(a,funcname);
 }
 
-void add_conversion (char *from,char *to,void *func) {
+/**
+ *
+ * @todo Describe function
+ */
+void add_conversion (char *from,char *to,void *func) 
+{
 int a;
 int b;
-if (!inited) init_datatypes();
-debug("In Adding conversions... with %p",func);
-a=find_datatype(from);
-b=find_datatype(to);
+	if (!inited) init_datatypes();
+	debug("In Adding conversions... with %p",func);
+	a=find_datatype(from);
+	b=find_datatype(to);
 
-if (a==-1||b==-1) {
-	debug("Unable to resolve either from or to");
-	return;
+	if (a==-1||b==-1) {
+		debug("Unable to resolve either from or to");
+		return;
+	}
+	debug("Adding conversion from %s(%d) to %s(%d) with %p",from,a,to,b,func);
+	set_convmatrix(a,b,func);
+
 }
-debug("Adding conversion from %s(%d) to %s(%d) with %p",from,a,to,b,func);
-set_convmatrix(a,b,func);
-
-}
 
 
-void add_default_datatypes() {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+add_default_datatypes(void)
+{
 	add_datatype("CHAR",      0, 0);
 	add_datatype("SMALLINT",  1, 1);
 	add_datatype("INTEGER",   2, 2);
@@ -329,13 +432,13 @@ void add_default_datatypes() {
 }
 
 
-
-
-
-
-
-
-int aclfgl_load_datatype (int nargs){
+/**
+ *
+ * @todo Describe function
+ */
+int 
+aclfgl_load_datatype (int nargs)
+{
    	char *s;
 
 	s=char_pop();
@@ -347,3 +450,5 @@ int aclfgl_load_datatype (int nargs){
    /* End of code */
    	return 0;
 }
+
+// =============================== EOF ================================

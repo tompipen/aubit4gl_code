@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.26 2002-05-24 13:30:02 afalout Exp $
+# $Id: 4glc.c,v 1.27 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -42,7 +42,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+
+#include "a4gl_4glc_4glc.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_dlsql.h"
 #include "a4gl_pointers.h"
 
 
@@ -86,8 +89,7 @@ extern long fpos; /** The current file position for direct fseek */
 =====================================================================
 */
 
-void setGenStackInfo(int _genStackInfo);
-
+void 		setGenStackInfo		(int _genStackInfo);
 
 /*
 =====================================================================
@@ -104,6 +106,7 @@ void setGenStackInfo(int _genStackInfo);
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
+/* already in io.c
 static void
 bname (char *str, char *str1, char *str2)
 {
@@ -126,6 +129,7 @@ bname (char *str, char *str1, char *str2)
   else
     str2[0] = 0;
 }
+*/
 
 /**
  * Print the usage message when executing the 4gl compiler.
@@ -155,7 +159,7 @@ initArguments(int argc, char *argv[])
 {
   int i;
   extern char *optarg;
-  int this_option_optind = optind ? optind : 1;
+//  int this_option_optind = optind ? optind : 1;
   int option_index = 0;
   int si;
   char a[128];
@@ -236,7 +240,7 @@ main(int argc, char *argv[])
   char b[128];
   char c[128];
   int x;
-  FILE *fopn;
+//  FILE *fopn;
   int fname_arg_no = 1;
 
   /** @todo : Remove things that are to use */
@@ -260,9 +264,9 @@ main(int argc, char *argv[])
         globals_only = 1;
         fname_arg_no = 2;
       }
-  
+
       check_and_show_id ("4GL Compiler", argv[fname_arg_no]);
-  
+
       outputfilename = outputfile;
   
       if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
@@ -318,7 +322,7 @@ main(int argc, char *argv[])
 
   if (yydebug)
     {
-      printf ("Closing map : %s\n", x);
+      printf ("Closing map : %d\n", x);
     }
 
   closemap ();
@@ -369,11 +373,11 @@ rm_quote (char *s)
 int 
 read_globals (char *fname)
 {
-  char a[128];
-  char b[128];
-  char c[128];
-  FILE *fopn;
-  char ofname[256];
+//  char a[128];
+//  char b[128];
+//  char c[128];
+//  FILE *fopn;
+//  char ofname[256];
   FILE *fin;
   fin = yyin;
 

@@ -1,11 +1,55 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: dim.c,v 1.10 2002-05-25 12:12:44 afalout Exp $
+#*/
+
 /**
  * @file
  * Implements stack functions for helping in the parsing.
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <strings.h>
 #include <string.h>
+#include <stdlib.h> 			//realloc()
+
+#include "a4gl_4glc_4glc.h"
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define PUSH_NAME  1
 #define PUSH_LIKE 2
@@ -16,6 +60,12 @@
 #define POP_RECORD 7
 #define POP_ASSOCIATE 8
 #define SETNAME 0
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 /** Item of stack entry */
 struct s_dimitem
@@ -43,25 +93,41 @@ int dimcnt = -1;
 /** Dimension in number of elements allocated */
 int dimalloc = 0;
 
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+
 /**
  * Adds a new item to the list pointed by global variable dims
  *
- * @param a The type of the information stored in a stack (there are defines 
+ * @param a The type of the information stored in a stack (there are defines
  *          to code it.
  * @param s1
  * @param s2
  * @param s3
  */
-static void 
+static void
 dim_add (int a, char *s1, char *s2, char *s3)
 {
-  char *ptr1;
-  char *ptr2;
-  char *ptr3;
+//  char *ptr1;
+//  char *ptr2;
+//  char *ptr3;
   struct s_dimentry *ent;
   struct s_dimitem *itm;
   struct s_dimitem *itm2;
-  
+
   debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
 
   if (a == SETNAME)
@@ -247,13 +313,22 @@ dim_pop_associate (char *a)
   dim_add (POP_ASSOCIATE, a, 0, 0);
 }
 
-void 
+/**
+ *
+ * @todo Describe function
+ */
+void
 dim_set_name (char *a)
 {
   dim_add (SETNAME, a, 0, 0);
 }
 
-static void push_dim_records (int cnt)
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+push_dim_records (int cnt)
 {
   int a;
   struct s_dimitem *ptr;
@@ -292,6 +367,10 @@ static void push_dim_records (int cnt)
   }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 push_dim (char *a)
 {
@@ -308,3 +387,6 @@ push_dim (char *a)
   yyerror ("Unknown type");
   return;
 }
+
+
+// ================================ EOF =============================

@@ -29,6 +29,10 @@ VARIABLE A4GL_FORMTYPE
 //dump_srec (struct s_form_dets * fd)
 dump_srec void* fd -> void
 
+
+//void set_default_form (struct s_form_attr *form)
+set_default_form void* form -> void
+
 //struct s_form_dets * read_form (char *fname, char *formname)
 read_form char* fname,char* formname -> void*
 

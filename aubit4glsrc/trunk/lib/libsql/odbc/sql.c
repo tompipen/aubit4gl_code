@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.32 2002-05-24 13:30:03 afalout Exp $
+# $Id: sql.c,v 1.33 2002-05-25 12:12:45 afalout Exp $
 #
 */
 
@@ -3900,16 +3900,16 @@ A4GLSQL_flush_cursor(char *cursor)
 /**
  * Initialization of the sql dynamic library.
  *
- * Not used.
+ * Used to initialise SQL library, ater loading it with dlopen,
+ * called from fglwrap.c
  */
-/*
 int
 A4GLSQL_initsqllib(void)
 {
     A4GLSQL_make_connection(0,0,0);
 	return 1;
 }
-*/
+
 
 // ================================ EOF ================================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.15 2002-05-23 09:29:35 afalout Exp $
+# $Id: compile_c.c,v 1.16 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -453,13 +453,19 @@ print_repctrl_block (void)
 }
 
 
-print_include(char *s) {
+/**
+ * Print the C include statement for header file
+ */
+void
+print_include(char *s)
+{
 	printc("#include <%s.h>\n",s);
 }
+
 /**
  * Print the C implementation of the current report control block
  */
-void 
+void
 print_report_ctrl(void)
 {
   int a;

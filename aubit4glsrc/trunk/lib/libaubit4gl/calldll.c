@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.7 2002-05-23 09:29:35 afalout Exp $
+# $Id: calldll.c,v 1.8 2002-05-25 12:12:44 afalout Exp $
 #
 */
 
@@ -191,7 +191,7 @@ find_func (void *dllhandle, char *func)
   {
 	debug("Function Not found");
 	exitwith("Could not find function in shared library");
-    	//return badfunc;
+		//return badfunc;
   }
 
 	//  debug("calldll.c: before return func=%s\n",func);
