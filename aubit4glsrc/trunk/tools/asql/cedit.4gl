@@ -74,6 +74,19 @@ define key_home		integer
 define key_end		integer
 define key_pgup		integer
 define key_pgdn		integer
+code
+int not_blank(char *s) {
+static int lastl=-1;
+int a;
+char buff[1024];
+if (strlen(s)!=lastl) {
+	lastl=strlen(s);
+	memset(buff,' ',lastl);
+	buff[lastl]=0;
+	}
+return memcmp(buff,s,lastl);
+}
+endcode
 
 function display()
 define a integer
@@ -83,12 +96,11 @@ define t integer
 define rest char(line_length)
 
 
-set pause mode on
 let c=edit_top
+set pause mode on
 let max_x=0
 let max_y=0
 let t=edit_top
-
 
 for a=topline to topline+edit_lines-1
 	if length(lines[a])>max_x then
@@ -104,13 +116,13 @@ for a=topline to topline+edit_lines-1
 	let c=c+1
 end for
 let max_y=0
-for a=1 to max_buff
-	if lines[a]!=" " then
-		let max_y=a
-	end if
-end for
 
 code
+for (a=0;a<2001;a++) {
+	if (not_blank(lines[a])) {
+		max_y=a+1;
+	}
+}
 move(y+t-2,x-1);
 //refresh();
 endcode
