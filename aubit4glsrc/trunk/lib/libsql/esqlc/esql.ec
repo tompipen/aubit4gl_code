@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.94 2004-09-20 15:19:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.95 2004-09-20 16:38:04 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.94 2004-09-20 15:19:48 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.95 2004-09-20 16:38:04 mikeaubury Exp $";
 #endif
 
 
@@ -459,6 +459,7 @@ A4GLSQL_init_connection_internal (char *dbName)
 
   addESQLConnection ("default", dbName, NULL, NULL);
   have_connected = 1;
+  copy_sqlca_Stuff(1);
 
   return 0;
 }
@@ -1741,6 +1742,7 @@ processPosStatementBinds (struct s_sid *sid)
 exec sql begin declare section;
 char *n;
 int numberOfColumns;
+  char warnbuff[10];
 exec sql end declare section;
 
  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
@@ -1748,6 +1750,14 @@ exec sql end declare section;
 n=sid->outputDescriptorName;
 if (n) {
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+	warnbuff[0]=sqlca.sqlwarn.sqlwarn0;
+	warnbuff[1]=sqlca.sqlwarn.sqlwarn1;
+	warnbuff[2]=sqlca.sqlwarn.sqlwarn2;
+	warnbuff[3]=sqlca.sqlwarn.sqlwarn3;
+	warnbuff[4]=sqlca.sqlwarn.sqlwarn4;
+	warnbuff[5]=sqlca.sqlwarn.sqlwarn5;
+	warnbuff[6]=sqlca.sqlwarn.sqlwarn6;
+	warnbuff[7]=sqlca.sqlwarn.sqlwarn7;
 
   EXEC SQL GET DESCRIPTOR :n:numberOfColumns = COUNT;
   if (numberOfColumns!=sid->no) {
@@ -1780,7 +1790,16 @@ if (n) {
       A4GL_debug ("Deallocating failed..");
       return 1;
     }
-
+  if (warnbuff[0]=='W') {
+		sqlca.sqlwarn.sqlwarn0='W';
+		if (warnbuff[1]) sqlca.sqlwarn.sqlwarn1='W';
+		if (warnbuff[2]) sqlca.sqlwarn.sqlwarn2='W';
+		if (warnbuff[3]) sqlca.sqlwarn.sqlwarn3='W';
+		if (warnbuff[4]) sqlca.sqlwarn.sqlwarn4='W';
+		if (warnbuff[5]) sqlca.sqlwarn.sqlwarn5='W';
+		if (warnbuff[6]) sqlca.sqlwarn.sqlwarn6='W';
+		if (warnbuff[7]) sqlca.sqlwarn.sqlwarn7='W';
+  }
   A4GL_debug ("All Ok in posStatementBinds");
   return 0;
 }
@@ -2485,6 +2504,7 @@ printField (FILE * unloadFile, int idx, char *descName)
 	}
       fprintf (unloadFile, "%d", smint_var);
       break;
+    case DTYPE_SERIAL:
     case DTYPE_INT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
@@ -2530,6 +2550,7 @@ printField (FILE * unloadFile, int idx, char *descName)
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
+	A4GL_trim(char_var);
       fprintf (unloadFile, "%s", char_var);
       free (fgl_decimal);
       break;
@@ -2544,7 +2565,9 @@ printField (FILE * unloadFile, int idx, char *descName)
       /** @todo : Print as date field */
       char_var = malloc (sizeof (char) * 10);
       A4GL_dtos (&date_var, char_var, 10);
+	A4GL_trim(char_var);
       fprintf (unloadFile, "%s", char_var);
+
       free (char_var);
       break;
     case DTYPE_MONEY:
@@ -2563,6 +2586,7 @@ printField (FILE * unloadFile, int idx, char *descName)
 	  return 1;
 	}
       fprintf (unloadFile, "%s", char_var);
+	A4GL_trim(char_var);
       free (fgl_money);
       break;
     case DTYPE_DTIME:
