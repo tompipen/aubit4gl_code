@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.36 2003-02-13 08:57:58 afalout Exp $
+# $Id: esql.ec,v 1.37 2003-02-17 11:53:17 saferreira Exp $
 #
 */
 
@@ -128,7 +128,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.36 2003-02-13 08:57:58 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.37 2003-02-17 11:53:17 saferreira Exp $";
 #endif
 
 /*
@@ -2749,13 +2749,82 @@ int A4GLSQL_close_cursor(char *currname)
 }
 
 /**
- * @todo : Understand if this function is used.
+ *
+ * The fill_array are supposed to populate an array with information on
+ * databases, tables or columns.
+ * 
+ * The returns are into an char[szarr], so arr1 should really be something like
+ * char arr1[mx][szarr1] (if you see what I mean)...
+ * 
+ * The main interface is via fill_array where 'service' points to one of
+ * the other functions (DATABASES, TABLES or COLUMNS)...
+ * 
+ * With service = DATABASES
+ *   Mode  - not used
+ *   Info - not used
+ *   Arr1 = DBName
+ *   Arr2 = Description ?
+ * 
+ * With service = TABLES
+ *   Mode =1 Exclude system tables
+ *   otherwise include them
+ * 
+ *   arr1 = Table name
+ *   arr2 = Table description
+ * 
+ * With servce = COLUMNS
+ *   Mode= 0 - Fill arr2 with colsize
+ *         1 - Fill arr2 with datatype name
+ *   Otherwise - fill it with the table name
+ *   Info - Table name we're looking at
+ *   arr1 = Column name
+ * 
+ * In all cases if the pointer the the array(arr1 or arr2) is 0 (or C-NULL) then
+ * don't bother to fill it :-)
+ *
+ *
+ * @param mx Maximum rows to fill in arr1/arr2.
+ * @param arr1 The adress where to return the information asked:
+ *    DBName if service = DATABASES.
+ *    Table name if service = TABLES.
+ *    Column name if service = COLUMNS
+ * @param szarr1 Size of each item in array 1.
+ * @param arr2 adress of seconr array used to return information:
+ *    - Description if service = DATABASES
+ *    - Table description if service = TABLES
+ *    - No value if service = COLUMNS
+ * @param szarr2 Size of each item in array 2.
+ * @param service A string that defines the servce wanted:
+ *                  - DATABASES
+ *                  - TABLES
+ *                  - COLUMNS
+ * @param mode specifies what data to load into the arrays.
+ *   With service = TABLES
+ *     - 1 Exclude system tables.
+ *   With service = COLUMNS
+ *     - 0 - Fill arr2 with colsize.
+ *     - 1 - Fill arr2 with datatype name.
+ * @param info passes some extra details into the functions (like table names 
+ *             etc).
+ *    With service = COLUMNS
+ *      - Table name we're looking at
+ *
+ * @return The number of rows filled.
+ * 
  */
 int
 A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
-  exitwith ("Could not fill_array - noODBC build");
+	if ( strcmp(service,"DATABASES") == 0 )
+    exitwith ("Could not fill_array - DATABASES service not implemented !");
+	else if ( strcmp(service,"TABLES") == 0 )
+    exitwith ("Could not fill_array - TABLES service not implemented !");
+	// This is the important to implement
+	else if ( strcmp(service,"COLUMNS") == 0 )
+    exitwith ("Could not fill_array - COLUMNS service not implemented !");
+	else
+    exitwith ("Could not fill_array - Invalid service asked !");
 }
 
 /**
