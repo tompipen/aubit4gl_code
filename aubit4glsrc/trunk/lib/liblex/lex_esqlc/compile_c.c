@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.205 2004-12-02 09:53:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.206 2004-12-02 11:42:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.205 2004-12-02 09:53:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.206 2004-12-02 11:42:33 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1804,6 +1804,7 @@ print_bind_expr (void *ptr, char i)
         {
           A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
         }
+
       for (a=0;a<ibindcnt;a++) {
       		sprintf(buff,"ibind[%d].ptr=&%s;",a,ibind[a].varname);
 	  	A4GL_append_expr (ptr, buff);
@@ -1876,6 +1877,138 @@ print_bind_expr (void *ptr, char i)
   return 0;
 }
 
+int
+print_bind_expr_portion (void *ptr, char i, int portion)
+{
+  int a=0;
+
+  char buff[256];
+  if (i == 'i')
+    {
+
+      if (portion == 1)
+	{
+	  sprintf (buff, "struct BINDING ibind[%d]={",
+		   ONE_NOT_ZERO (ibindcnt));
+	  A4GL_append_expr (ptr, buff);
+	  if (ibindcnt == 0)
+	    {
+	      A4GL_append_expr (ptr, "{0,0,0}");
+	    }
+	  for (a = 0; a < ibindcnt; a++)
+	    {
+	      if (a > 0)
+		A4GL_append_expr (ptr, ",");
+	      sprintf (buff, "{0,%d,%d}",
+		       (int) ibind[a].dtype & 0xffff,
+		       (int) ibind[a].dtype >> 16);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  A4GL_append_expr (ptr, "};");
+
+	  if (doing_esql ())
+	    {
+	      A4GL_append_expr (ptr, make_sql_bind_expr (0, "i"));
+	    }
+
+	}
+
+      if (portion == 2)
+	{
+	  for (a = 0; a < ibindcnt; a++)
+	    {
+	      sprintf (buff, "ibind[%d].ptr=&%s;", a, ibind[a].varname);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  start_bind (i, 0);
+	}
+      return a;
+
+    }
+
+
+  if (i == 'o')
+    {
+
+
+      if (portion == 1)
+	{
+	  sprintf (buff, "struct BINDING obind[%d]={",
+		   ONE_NOT_ZERO (obindcnt));
+	  A4GL_append_expr (ptr, buff);
+
+	  if (obindcnt == 0)
+	    {
+	      A4GL_append_expr (ptr, "{0,0,0}");
+	    }
+
+	  for (a = 0; a < obindcnt; a++)
+	    {
+	      if (a > 0)
+		A4GL_append_expr (ptr, ",");
+	      sprintf (buff, "{0,%d,%d}",
+		       (int) obind[a].dtype & 0xffff,
+		       (int) obind[a].dtype >> 16);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  A4GL_append_expr (ptr, "};");
+
+	  if (doing_esql ())
+	    {
+	      A4GL_append_expr (ptr, make_sql_bind_expr (0, "i"));
+	    }
+	}
+      if (portion == 2)
+	{
+	  for (a = 0; a < obindcnt; a++)
+	    {
+	      sprintf (buff, "obind[%d].ptr=&%s;", a, obind[a].varname);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  start_bind (i, 0);
+	}
+      return a;
+    }
+
+  if (i == 'e')
+    {
+      if (portion == 1)
+	{
+	  sprintf (buff, "struct BINDING ebind[%d]={",
+		   ONE_NOT_ZERO (ebindcnt));
+	  A4GL_append_expr (ptr, buff);
+	  if (ebindcnt == 0)
+	    {
+	      A4GL_append_expr (ptr, "{0,0,0}");
+	    }
+	  for (a = 0; a < ebindcnt; a++)
+	    {
+	      if (a > 0)
+		A4GL_append_expr (ptr, ",");
+	      sprintf (buff, "{0,%d,%d}",
+		       (int) ebind[a].dtype & 0xffff,
+		       (int) ebind[a].dtype >> 16);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  A4GL_append_expr (ptr, "};");
+	}
+
+      if (portion == 2)
+	{
+	  for (a = 0; a < ebindcnt; a++)
+	    {
+	      sprintf (buff, "ebind[%d].ptr=&%s;", a, ebind[a].varname);
+	      A4GL_append_expr (ptr, buff);
+	    }
+	  start_bind (i, 0);
+	}
+      return a;
+    }
+
+
+
+  return 0;
+}
 
 /* ***************************************************************************/
 /* The rest of this file is the stuff called from the parser..               */
@@ -2180,8 +2313,10 @@ void *get_call_shared_bound_expr(char *lname,char *fname) {
 	int no;
 	void *ptr;
 	ptr=A4GL_new_expr("{");
-	ni=print_bind_expr(ptr,'i');
-	no=print_bind_expr(ptr,'e');
+	print_bind_expr_portion(ptr,'i',1);
+	print_bind_expr_portion(ptr,'e',1);
+	ni=print_bind_expr_portion(ptr,'i',2);
+	no=print_bind_expr_portion(ptr,'e',2);
 	sprintf(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}}\n", lname, fname, ni,no,yylineno);
   	return A4GL_append_expr(ptr,buff_small);
 }
