@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.80 2003-12-05 22:12:36 mikeaubury Exp $
+# $Id: ioform.c,v 1.81 2003-12-12 13:05:26 mikeaubury Exp $
 #*/
 
 /**
@@ -1051,8 +1051,14 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 		A4GL_debug("Pushing to validate : %s\n",buff2);
 
-		    A4GL_push_param (buff2, DTYPE_CHAR);
 
+
+
+
+		   pprval=A4GL_check_and_copy_field_to_data_area(form,fprop,buff2,buff);
+
+/*
+		    A4GL_push_param (buff2, DTYPE_CHAR);
 		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
 		    if (pprval) {
 				A4GL_debug("Looks like pprval is ok ... ");
@@ -1064,18 +1070,18 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 						pprval=0;
 					}
 				}
+				if (!A4GL_conversion_ok(-1)) { pprval=0; }
 
-
-		    		//if ((fprop->datatype==DTYPE_DATE|| (fprop->datatype&0x15)==DTYPE_DECIMAL||(fprop->datatype&0x15)==DTYPE_MONEY||(fprop->datatype&0x15)==DTYPE_DTIME ) && A4GL_isnull(fprop->datatype,buff)) {
-						//A4GL_debug("Looks like a null conversion..");
-						//pprval=0;
-		    		//}
 
 		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
 						A4GL_debug("Looks like a decimal in a numeric field");
 						pprval=0;
 		    		}
 			}
+
+*/
+
+
 
 		    A4GL_debug("pprval = %d\n",pprval);
 		    if (!pprval)
@@ -2274,7 +2280,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
   field_width = A4GL_get_field_width (field);
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
-  A4GL_debug ("Has format : %d",has_format);
+  A4GL_debug ("Has format : %d  ",has_format);
 
 // 'Format' is valid for a lot of datatypes -
 // but not all...
@@ -2309,6 +2315,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
       //A4GL_push_char (ff);
       A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
       A4GL_pushop (OP_USING);
+	//A4GL_debug_print_stack();
     }
 
   if (!has_format && !ignore_formatting)
@@ -3181,6 +3188,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
   char buff[8000] = "";
   char buff2[8000] = "";
   FORM *mform;
+int ppr;
   int x, y;
   struct struct_scr_field *fprop;
   mform = form->form;
@@ -3222,8 +3230,36 @@ A4GL_copy_field_data (struct s_form_dets *form)
 #ifdef DEBUG
 		    A4GL_debug ("Pushing param %p");
 #endif
+
+
+
+
+		   ppr=A4GL_check_and_copy_field_to_data_area(form,fprop,buff2,buff);
+
+
+/*
 		    A4GL_push_param (buff2, DTYPE_CHAR);
-		    if (A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield)))
+		    ppr=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
+
+			if (A4GL_isnull(fprop->datatype,buff)) {
+				A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
+					if (strlen(buff2)) {
+						ppr=0;
+					}
+				}
+
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
+					A4GL_debug("Looks like a decimal in a numeric field");
+					ppr=0;
+		    		}
+*/
+			
+
+
+
+
+
+		    if (ppr) 
 		      {
 #ifdef DEBUG
 			A4GL_debug ("Pushing param %p %d", buff,
@@ -3985,9 +4021,14 @@ int pprval;
 			return 0;
 		      }
 
+
+
+		   pprval=A4GL_check_and_copy_field_to_data_area(form,fprop,buff2,buff);
+
+
+
+/*
 		    A4GL_push_param (buff2, DTYPE_CHAR);
-
-
 		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
 
 		    if (pprval) {
@@ -3998,16 +4039,16 @@ int pprval;
 					}
 				}
 
-		    		//if (fprop->datatype==DTYPE_DATE && A4GL_isnull(DTYPE_DATE,buff)) {
-					//A4GL_debug("Looks like a null date..");
-					//pprval=0;
-		    		//}
-	
+				if (!A4GL_conversion_ok(-1)) { pprval=0; }
 		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
 					A4GL_debug("Looks like a decimal in a numeric field");
 					pprval=0;
 		    		}
 			}
+*/
+
+
+
 
 		    if (!pprval)
 		      {
@@ -4182,3 +4223,40 @@ char *picture;
                         }
 A4GL_trim(buff);
 }
+
+
+
+
+
+
+
+int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data,char *data_area) {
+int pprval;
+
+		    A4GL_push_param (fld_data, DTYPE_CHAR);
+		    pprval=A4GL_pop_param (data_area, fprop->datatype, A4GL_get_field_width (form->currentfield));
+
+		    if (pprval) {
+				if (A4GL_isnull(fprop->datatype,data_area)) {
+					A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(fld_data),fprop->datatype,DTYPE_DTIME);
+					if (strlen(fld_data)) {
+						pprval=0;
+					}
+				}
+
+				if (!A4GL_conversion_ok(-1)) { pprval=0; }
+
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(fld_data,'.') ) {
+					A4GL_debug("Looks like a decimal in a numeric field");
+					pprval=0;
+		    		}
+			}
+
+	return pprval;
+
+}
+
+
+
+
+

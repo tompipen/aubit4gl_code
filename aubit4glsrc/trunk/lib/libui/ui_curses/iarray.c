@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.56 2003-12-09 11:23:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.57 2003-12-12 13:05:26 mikeaubury Exp $
 #*/
 
 /**
@@ -204,13 +204,13 @@ insert_line_in_array (struct s_inp_arr *inpa)
       return;
     }
 
-  for (a = inpa->no_arr; a >= inpa->arr_line; a--)
+  for (a = inpa->no_arr+1; a >= inpa->arr_line; a--)
     {
       src_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 2);
       dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
       memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
     }
-  //inpa->no_arr++;
+  inpa->no_arr++;
   A4GL_set_arr_count (inpa->no_arr);
 
   init_arr_line (inpa, inpa->arr_line);
@@ -523,9 +523,10 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 	{
 	  A4GL_push_null (b[x].dtype, b[x].size);
 	}
-      A4GL_debug ("Pushed field buffer");
+      A4GL_debug ("Pushed field buffer :'%s'",ptr);
 
       A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
+	free(ptr);
       A4GL_debug ("Popped field buffer into variable");
       return 1;
     }
@@ -710,7 +711,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	  if (arr->no_arr < arr->arr_size)
 	    {
 	      act_as = A4GLKEY_INS;
-	a=act_as;
+		a=act_as;
 	    }
 	  else
 	    {
@@ -1902,7 +1903,7 @@ process_control_stack (struct s_inp_arr *arr)
 	{			// BEFORE INSERT 
 	  new_state = 0;
 	  rval = -14;
-		arr->curr_line_is_new=1;
+	  arr->curr_line_is_new=1;
 	}
 
     }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.77 2003-12-09 11:23:45 mikeaubury Exp $
+# $Id: newpanels.c,v 1.78 2003-12-12 13:05:26 mikeaubury Exp $
 #*/
 
 /**
@@ -810,11 +810,14 @@ A4GL_zrefresh (void)
   if (A4GL_screen_mode (-1))
     {
       A4GL_chkwin ();
+
       //clearok(curscr,TRUE);
+
       update_panels ();
       doupdate ();
+
       /* A4GL_mja_wrefresh (currwin); */
-      A4GL_mja_refresh ();
+      //A4GL_mja_refresh ();  // REMOVED MJA 12/12/2003
     }
 }
 
@@ -1832,26 +1835,10 @@ A4GL_chkwin (void)
 
   if (A4GL_islinemode ())
     {
-	//if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH1"))) {
-		//A4GL_debug("INIT_COL_REFRESH1 TRIGGERED...");
-		//if (has_colors()) {
-			//A4GL_debug("init_col_refresh1 - init_colour_pairs");
-			//A4GL_init_colour_pairs ();
-		//}
-	//}
 
 	A4GL_debug(" API_ui Was linemode..");
 	//clearok(curscr,1);
       	A4GL_init_curses_stuff ();
-
-	//if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH2"))) {
-		//A4GL_debug("INIT_COL_REFRESH2 TRIGGERED...");
-		//if (has_colors()) {
-			//A4GL_debug("init_col_refresh2 - init_colour_pairs");
-			//A4GL_init_colour_pairs ();
-			//A4GL_zrefresh();
-		//}
-	//}
 
 
       	A4GL_set_scrmode ('S');
@@ -1862,14 +1849,15 @@ A4GL_chkwin (void)
 			A4GL_debug("init_col_refresh2_0 - init_colour_pairs");
 			A4GL_init_colour_pairs ();
 			A4GL_zrefresh();
-			clearok(curscr,1);
+			if (!A4GL_isyes(acl_getenv("NO_INIT_COL_CLR"))) {
+				clearok(curscr,1);
+			}
 			A4GL_init_colour_pairs ();
 		}
 	}
 
 
 	A4GL_zrefresh();
-
       	A4GL_mja_refresh ();
 
 
@@ -1946,29 +1934,7 @@ A4GL_cr_window_form (char *namet,
   strcpy(name,namet);
   A4GL_trim(name);
   A4GL_chkwin();
-/*
-  if (form_line == 0xff)
-    {
-	A4GL_debug("Defaulting form_line from std_dbscr... %d",std_dbscr.form_line);
-      form_line = std_dbscr.form_line;
-    }
-  if (menu_line == 0xff)
-    {
-      menu_line = std_dbscr.menu_line;
-    }
-  if (comment_line == 0xff)
-    {
-      comment_line = std_dbscr.comment_line;
-    }
-  if (error_line == 0xff)
-    {
-      error_line = std_dbscr.error_line;
-    }
-  if (prompt_line == 0xff)
-    {
-      prompt_line = std_dbscr.prompt_line;
-    }
-*/
+
   s = A4GL_char_pop ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
