@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.2 2002-04-24 07:46:01 afalout Exp $
+# $Id: resource.c,v 1.3 2002-05-11 08:31:21 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,7 @@ struct str_resource builtin_resource[] =
   {"A4GL_SQLTYPE", "nosql"},
   {"NOCURSES", "N"},            //FIXME: NOCURSES is now AUBITGUI=CONSOLE
   {"GUIPORT", ""},
+  {"A4GL_LEXTYPE","C"},
   {"DBDATE", "MDY4/"},
   {"DBANSIWARN", "N"},
   {"DBBLOBBUF", "64"},
