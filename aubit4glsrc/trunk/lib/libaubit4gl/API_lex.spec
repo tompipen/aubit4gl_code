@@ -19,7 +19,7 @@ VARIABLE A4GL_LEXTYPE
 
 * ======================================================================
 * Function calls definitions:
-* func-name param-type param-name ... -> returns"
+* func-name param-type param-name ... -> returns
 *
 
 /* ------------ functions from compile_[c|perl].c -------------- */
@@ -636,6 +636,7 @@ set_var_sql int n -> char*
 
 lex_parsed_fgl -> void
 bad_identifiers char* ident -> int
+print_sql_block_cmd char* sql -> void
 /*  ============================== EOF ================================= */
 
 

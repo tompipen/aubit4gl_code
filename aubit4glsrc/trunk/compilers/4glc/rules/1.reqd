@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.27 2003-02-20 21:34:12 mikeaubury Exp $
+# $Id: 1.reqd,v 1.28 2003-02-20 23:02:26 mikeaubury Exp $
 #
 */
 
@@ -128,6 +128,8 @@ extern int 	varcnt;
 extern int 	in_record;
 extern int 	rep_type;
 extern int 	yylineno;
+
+int sql_mode=0;
 
 char 		menuhandler[256];
 char 		last_var [256];

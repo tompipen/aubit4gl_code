@@ -641,3 +641,8 @@ get_undo_use (void)
 static void print_copy_status() {
 	printc("A4GLSQL_set_status(sqlca.sqlcode,1);");
 }
+
+
+void print_sql_block_cmd(char *s) {
+	printc("EXEC SQL %s;",s);
+}

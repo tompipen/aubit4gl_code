@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.58 2003-02-20 21:33:31 mikeaubury Exp $
+# $Id: lexer.c,v 1.59 2003-02-20 23:01:09 mikeaubury Exp $
 #*/
 
 /**
@@ -82,6 +82,7 @@
 */
 
 
+extern int sql_mode;
 static int chk_word_more (FILE * f, char *buff, char *p, char *str, int t);
 int idents_cnt = 0;
 FILE *yyin = 0;			/* Pointer to the source file openen being parsed */
@@ -1027,12 +1028,16 @@ allow=allow_token_state(yystate,a);
 debug("Allow_token_State = %d\n",allow);
 
 
-if (allow==0&&isident(buff)) a=NAMED_GEN;
+if (sql_mode==0) {
+	if (allow==0&&isident(buff)) a=NAMED_GEN;
 
-if (allow_token_state(yystate,USER_DTYPE)&&a==NAMED_GEN) {
-	if (find_datatype(upshift(buff))) {
-		a=USER_DTYPE;
+	if (allow_token_state(yystate,USER_DTYPE)&&a==NAMED_GEN) {
+		if (find_datatype(upshift(buff))) {
+			a=USER_DTYPE;
+		}
 	}
+} else {
+	if (allow==0) a=SQL_TEXT;
 }
 
 printf("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);

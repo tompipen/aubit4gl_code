@@ -532,4 +532,8 @@ get_undo_use (void)
   return "A4GLSQL_set_conn(_sav_cur_conn);}";
 }
 
+void print_sql_block_cmd(char *s) {
+	printc("/* %s */",s);
+}
+
 
