@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.71 2002-06-06 12:31:12 afalout Exp $
+# $Id: mod.c,v 1.72 2002-06-12 07:19:21 mikeaubury Exp $
 #
 */
 
@@ -1740,6 +1740,7 @@ pushLikeAllTableColumns(char *tableName)
   char csize[20];
   char cdtype[20];
   char buff[300];
+  char *ccol;
 
   debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
@@ -1756,8 +1757,11 @@ pushLikeAllTableColumns(char *tableName)
     colname[0] = 0;
     debug ("Looking for table '%s' col '%s'", tableName, colname);
 
-    /* int A4GLSQL_next_column(char *colname, int *dtype,int *size); */
-    rval = A4GLSQL_next_column(colname,&idtype,&isize);
+    /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+    rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
+	strcpy(colname,ccol);
+	free(ccol);
+
 	/*
 	warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
     we are sending char ARRAY to function expecting char POINTER !!!!
