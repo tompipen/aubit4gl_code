@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.3 2002-09-08 10:38:20 afalout Exp $
+# $Id: curslib.c,v 1.4 2002-09-21 12:11:53 afalout Exp $
 #*/
 
 /**
@@ -169,7 +169,7 @@ int menu_getkey (ACL_Menu * menu);
 void horiz_disp_opt (int row, int x, int y, int type);
 void puttext (int x1, int y1, int x2, int y2, char *buf);
 void gettextinfo (struct text_info r);
-void gettext (int l, int t, int r, int b, char *buf);
+static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 /* void    strip_nl 		(char *str); */
 /* void    do_pause 			(void);  */
 void newbox (textarea * area, int l, int t, int r, int b, int typ);
@@ -540,7 +540,7 @@ set_combi_opts (int n, char *lst, int lstwidth, int scwidth, char *nme)
 void
 newbox (textarea * area, int l, int t, int r, int b, int typ)
 {
-  gettext (l, t, r, b, area->buf);
+  a4gl_gettext (l, t, r, b, area->buf);
   area->win_no = subwin (stdscr, b - t + 1, r - l + 1, t - 1, l - 1);
   touchwin (stdscr);
   werase (area->win_no);
@@ -1230,11 +1230,11 @@ gettextinfo (struct text_info r)
  *
  * @todo Describe function
  */
-void
-gettext (int l, int t, int r, int b, char *buf)
+static void
+a4gl_gettext (int l, int t, int r, int b, char *buf)
 {
   int cnt = 0;
-/*   gettext(l,t,r,b,area->buf); */
+/*   a4gl_gettext(l,t,r,b,area->buf); */
   int x, y;
   chtype retval;
 
