@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.61 2004-10-08 02:47:19 afalout Exp $
+# $Id: compile.c,v 1.62 2004-10-08 04:16:36 afalout Exp $
 #*/
 
 /**
@@ -168,6 +168,7 @@ initArguments (int argc, char *argv[])
   int silent = 0;
   int verbose = 0;
   int todo = 0;
+  int c_to_o = 0;
   int flength = 0;
 
   char *chrptr;
@@ -362,6 +363,7 @@ initArguments (int argc, char *argv[])
 				//.asx or .so or .dll- shared library
 				compile_object = 1;
 				compile_so = 1;
+				compile_exec = 0;
 			} else {
 				//compile_so can be set with --shared flag allready
 				if (! compile_so) { 
@@ -505,11 +507,10 @@ initArguments (int argc, char *argv[])
 	}
     }
 
-  if (optind >= argc)
-    {
-      printf ("No file name defined\n");
-      printUsage (argv);
-      exit (1);
+	if (optind >= argc) {
+		printf ("No file name defined\n");
+		printUsage (argv);
+		exit (1);
     }
 
 #if YYDEBUG != 0
@@ -546,6 +547,7 @@ initArguments (int argc, char *argv[])
 	strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
 	strcpy (gcc_exec, acl_getenv ("A4GL_C_COMP"));
 
+	/* ============================================== */
 	for (index = optind; index < argc; index++) {
 		for (skip_cnt = 0; skip_cnt < skip_param_idx; skip_cnt++) {
 			if (strcmp (s_param[skip_cnt].param, argv[index]) == 0) {
@@ -564,13 +566,47 @@ initArguments (int argc, char *argv[])
 		outputfilename = outputfile;	/* C file name - set where ? */
 		strcpy (c, argv[index]);
 		A4GL_bname (c, a, b);
-
-		if (strcmp (b, ".o") == 0) {
+		/* ============================================== */
+		if (strcmp (b, "o") == 0) {
 			//not sure about this...
 			//check if .o or .ao file exists
 			//if not, check if .c file exists, and compile it
 		}
-		
+		/* ============================================== */
+		if (strcmp (b, "c") == 0) {
+			//make .o from .c
+			#ifndef __MINGW32__
+			  sprintf (buff, "%s %s -c -o %s.o %s %s",
+				   gcc_exec, c, a, incl_path, pass_options);
+			#else
+			  sprintf (buff, "%s -mms-bitfields %s -c -o %s.o %s %s",
+				   gcc_exec, c, a, incl_path, pass_options);
+			#endif
+
+			if (verbose){ printf ("%s\n", buff); }
+			if ( ! win_95_98 ) {
+				/*this apparently works on NT, but not on W98:*/
+				sprintf (buff, "%s > %s.c.err 2>&1", buff, a);
+			} else {
+				sprintf (buff, "%s > %s.c.err", buff, a);
+			}
+			#ifdef DEBUG
+		  		A4GL_debug ("Runnung %s", buff);
+			#endif
+			ret = system (buff);
+			/*see function system_run() in fglwrap.c*/
+			if (ret) {
+				printf ("Error compiling %s.c - check %s.c.err\n", a, a);
+				printf ("Failed command was: %s\n", buff);
+				/*fixme: show err file*/
+				return ret;
+			} else {
+				sprintf (all_objects, "%s %s.o ",all_objects,a);
+				c_to_o=1;
+				/* TODO: if -o specified .o, then we are done - exit here */
+			}
+		}
+		/* ============================================== */
 		if (strcmp (b, "4gl") == 0) {
 			strcpy (outputfilename, a);
 			sprintf (all_objects, "%s %s%s ",all_objects,a,acl_getenv ("A4GL_OBJ_EXT"));
@@ -741,7 +777,7 @@ initArguments (int argc, char *argv[])
 	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		printf("Linking\n");fflush(stdout); //\r
 	}
-	#ifndef __MINGW32__
+	#ifndef __MINGW32__ /* UNIX */
 		A4GL_debug ("Linking static library\n");
 		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
             /* When using Embedded C output, we need to run appropriate ESQL/C
@@ -771,7 +807,7 @@ initArguments (int argc, char *argv[])
 		    	gcc_exec, all_objects, output_object, pass_options, l_path,
 				l_libs, extra_ldflags);
         }
-	#else
+	#else /* Windows - MinGW */
 	      /* On Windows, there can be no unresolved dependencies at link time - so we allways must
 	         link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
 	         must link with .dll - meaning that we must force shared linking even when user specified
@@ -779,7 +815,7 @@ initArguments (int argc, char *argv[])
 	      A4GL_debug ("Static linking specified - forcing shared linking on Windows\n");
 	      compile_lib = 0;
 	      compile_so = 1;
-	#endif
+	#endif /* UNIX or Windows */
     }
 
   if (compile_so) {
@@ -787,7 +823,7 @@ initArguments (int argc, char *argv[])
 		printf("Linking Shared Library\n");fflush(stdout); //\r
 	}
 	A4GL_debug ("Linking shared library\n");
-	#ifndef __MINGW32__
+	#ifndef __MINGW32__ /* UNIX */
 		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
             /* When using Embedded C output, we need to run appropriate ESQL/C
             compiler to do the linking */
@@ -806,9 +842,10 @@ initArguments (int argc, char *argv[])
 			       pass_options, extra_ldflags);
 			} else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/ {
 					//strcat (l_libs, " -lESQL_INFORMIX");
-				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
-			       all_objects, output_object, l_path, l_libs,
-			       pass_options, extra_ldflags);
+				  sprintf (buff, "%s -Wl,-shared %s %s -o %s %s %s %s %s ",
+				  	informix_esql,get_rdynamic(),
+					all_objects, output_object, l_path, l_libs,
+					pass_options, extra_ldflags);
             }
 /*FIXME ENDS*/
 	    } else { /* Pure C compiler output */
@@ -818,7 +855,7 @@ initArguments (int argc, char *argv[])
 				/*FIXME: add incl_path only if there are .c files in all_objects*/
 				/*gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include*/
         }
-	#else
+	#else /* MinGW */
 	      /*
 	         NOTE: we are acutally making a Window dll here.
 	         WARNING: libs must be at the end
@@ -830,7 +867,7 @@ initArguments (int argc, char *argv[])
 		       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
 		       gcc_exec, output_object, all_objects, output_object,
 		       pass_options, l_path, l_libs, extra_ldflags, incl_path);
-	#endif
+	#endif /* UNIX or MinGW */
     }
 
 	if (compile_exec || compile_so || compile_lib) {
@@ -913,7 +950,7 @@ initArguments (int argc, char *argv[])
 		}
 	}
 } else {
-	if (!todo) {
+	if ((!todo) && (!c_to_o))  {
 	  A4GL_debug
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  printf
