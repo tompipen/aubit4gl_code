@@ -24,16 +24,15 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-10-13 11:44:40 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-14 00:02:32 afalout Exp $
 #
 
 LIBROOT=../..
 ROOT=../../..
 
-
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -41,45 +40,13 @@ override NOINCL=0
 
 4GLPC=${SH} ${ROOT}/bin/4glpc
 
-ifneq "$(GLIBVER)" "old"
-	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
-		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
-			GTKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GLIBVER))
-			GDKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GDKVER))
-        endif
-		GLIB_CFLAGS		=$(GTKLIB_CFLAGS) $(GDKLIB_CFLAGS) -I${GTKPATH}/include
-    else #GLIBVER is empty
-		ifneq "@GTK_CONFIG@" "no" #GTK_CONFIG
-			GLIB_CFLAGS		:=$(shell @GTK_CONFIG@ --cflags)
-			xxGTKLIBS		:=$(shell @GTK_CONFIG@ --libs)
-			#we cannot have -rdynamic and -shared at the same time:
-			GTKLIBS			=$(subst -rdynamic,,${xxGTKLIBS})
-        else
-			ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
-                #for this we already set CFLAGS in configure
-				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags glib)
-				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags @GTK_NAME@)
-				#-lgtk -lgdk -lgmodule-1.3 -lglib-1.3 -liconv -lintl
-				#GLIB_LIBS		:=$(shell @PKG_CONFIG@ --libs-only-l gtk+-1.3-win32-production)
-            endif
-        endif
-    endif
-else #GLIBVER="old"
-	GLIB_CFLAGS=-I/usr/lib/glib/include
-	ifdef COMSPEC
-		GLIB_CFLAGS+=-I/usr/src/gtk+ -I/usr/src/gtk+/gdk -I/usr/src/glib
-    else
-		GLIB_CFLAGS+=-I/usr/include/gtk-1.2 -I/usr/include/glib-1.2
-    endif
-endif
+GLIB_CFLAGS		=@GLIB_CFLAGS@
+GTKLIBS			=$(subst -rdynamic,,${@GTKLIBS@})
 
-CFLAGS+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
+CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@
+#-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
-#ifdef COMSPEC
-#    ALL				+=dlllibUI_GTK
-#else
-    ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
-#endif
+ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -124,16 +91,15 @@ ALLOBJ= \
 	menu.o \
 	prompt.o params.o \
 	signals.o \
-	window.o widget.o \
-    ${ROOT}/compilers/fcompile/form_x_xdr.o
+	window.o widget.o
 
+#no more: remove this:
+#	${ROOT}/compilers/fcompile/form_x_xdr.o
 #FIXME: ${ROOT}/compilers/fcompile/form_x_xdr.o is here only because
 #xdr_struct_form is defined there, and we need it for ONE call in
 #gtk_4gl.c - this makes libUI_GTK dependent on SUN RPClib - we need to
 #get rid of this dependency
 
-#now in libMENU_ :
-#    loadmenu.o ${ROOT}/compilers/menus/menu_x_xdr.o \
 
 ## ==================================================================
 ##                              Targets
@@ -167,12 +133,13 @@ ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
 ##                              Sub Targets
 ## ==================================================================
 
-#both assist.c and assist.4gl are in CVS, to preven ciclicay dependency
+#both assist.c and assist.4gl are in CVS, to preven cyclical dependency
 #between 4glc and some libraries.
 assist.c: assist.4gl
 #	${ASSISTCMD}
 #	${SH} ${4GLPC} ${FGLPCFLAGS} ${CFLAGS} assist.4gl -c -o assist.ao
-	${4GLPC} $^
+#	${4GLPC} $^
+	${ROOT}/bin/4glc $^
 
 assist.o: assist.c
 	${CC} ${CFLAGS_4GLC} -c -o $@ $^

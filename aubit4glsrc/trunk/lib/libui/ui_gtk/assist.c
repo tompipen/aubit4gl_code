@@ -13,28 +13,7 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 		                    Includes
 =====================================================================
 */
-#ifdef OLD_INCL
-	
-	#include <unistd.h> //usleep()
-	#include <string.h> //strcpy()
-	#include <gdk/gdk.h>
-	#include <gtk/gtk.h>
-	#include <glib.h>
-	#include "a4gl_pointers.h"
-	#include "a4gl_gtk_gtk_4gl.h" //get_curr_win_gtk()
-	#include "a4gl_aubit_lib.h" //get_curr_win_gtk()
-	#include "a4gl_gtk_cr_funcs.h" //make_pixmap()
-	#include "a4gl_gtk_params.h" //find_param()
-	#include "a4gl_runtime_tui.h" //push_variable()
-	/*
-	a4gl_runtime_tui.h will eventually include stdlib.h, which uses getenv(), so
-	we need to set GETENV_OK and only then include debug.h
-	*/
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-#else
-    #include "a4gl_lib_ui_gtk_int.h"
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 /*
 =====================================================================
                     Variables definitions
@@ -58,7 +37,7 @@ extern GtkWidget *currwindow;
 */
 void * find_curr_window(void);
 void store_filename(GtkFileSelection *selector, gpointer user_data);
-/* This protorypes should be created by 4glc, in assis.h, but they are not:
+/* This prototypes should be created by 4glc, in assist.h, but they are not:
 assist.c:70: warning: no previous declaration for `aclfgl_set_window_title'
 assist.c:92: warning: no previous declaration for `aclfgl_get_window_title'
 assist.c:114: warning: no previous declaration for `aclfgl_set_window_icon'
@@ -353,14 +332,17 @@ static char _functionName[] = "get_filename";
    strcpy(fname,selected_filename);
    }
    /* End of code */
+   aclfgli_clr_err_flg();
    push_variable(&fname,0x1000000);
    A4GLSTK_popFunction();
    return 1;
-   if (sqlca.sqlcode !=0 || status !=0 || 0) {
+   /* End command */
+   {debug("Line 293 assist.4gl:");}
+   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(324,_module_name);
+      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(293,_module_name);
    /* ERROR */
-      if (status<0) chk_err(324,_module_name);
+      if (status<0) chk_err(293,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -381,14 +363,17 @@ static char _functionName[] = "app_top_get";
    CHK_UI
    a= (long)win_screen;
    /* End of code */
+   aclfgli_clr_err_flg();
    push_variable(&a,0x2);
    A4GLSTK_popFunction();
    return 1;
-   if (sqlca.sqlcode !=0 || status !=0 || 0) {
+   /* End command */
+   {debug("Line 345 assist.4gl:");}
+   if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(376,_module_name);
+      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(345,_module_name);
    /* ERROR */
-      if (status<0) chk_err(376,_module_name);
+      if (status<0) chk_err(345,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
