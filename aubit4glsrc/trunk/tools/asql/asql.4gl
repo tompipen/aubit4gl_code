@@ -1,3 +1,4 @@
+
 define mv_curr_db char(256)
 define lv_args array[100] of char(100)
 define lv_args_cnt integer
@@ -34,9 +35,17 @@ end if
 if lv_args_cnt then
 	let lv_input=get_next_arg()
 	call execute_file(lv_input)
-
 	exit program
 end if
+code
+if (!isatty(fileno(stdin))) {
+endcode
+	call  execute_file("-")
+	exit program
+code
+}
+endcode
+
 options message line last
 
 
