@@ -1,0 +1,157 @@
+# $1 = Input File
+# $2 = Library (will be overwritten by anything in the file)
+# $3 = Environment variable to switch on (will be overwritten by anything in the file)
+# 
+# Input file should be of the format:
+#         func-name param-type param-name ... -> returns
+# Any line beginning with a * is a comment
+# Any line beginning with a # is included in the output...
+
+lib=$2
+env=$3
+
+if grep LIBRARY $1 > /dev/null
+then
+	lib=`awk '/^LIBRARY /{print $2}' $1`
+fi
+
+if grep VARIABLE $1 > /dev/null
+then
+	env=`awk '/^VARIABLE /{print $2}' $1`
+fi
+echo "//Library=$lib env=$env"
+
+awk -v lib="$lib" -v env="$env" '
+
+BEGIN {
+FS="[ 	,]"
+print "/** lib=" lib " env=" env
+print "* @file"
+print "* File definition"
+print "*"
+print "* @todo Add Doxygen comments to file"
+print "* @todo Take the prototypes here declared. See if the functions are static"
+print "* or to be externally seen"
+print "* @todo Doxygen comments to add to functions"
+print "*/"
+print "/******************************************************************************"
+print "* (c) 1997-2002 Aubit Computing Ltd."
+print "*"
+print "*"
+print "*******************************************************************************/"
+print "#include <stdio.h>"
+print ""
+print "#include \"../libincl/dbform.h\""
+print "#include \"../libincl/report.h\""
+print "#include \"../libincl/debug.h\""
+print "#include \"../libincl/stack.h\""
+print ""
+print "static void *libptr=0;"
+print "static int (*func)();"
+print "static double (*func_d)();"
+print "void *find_func(void *p,char *s);"
+print "void *find_func_allow_missing(void *p,char *s);"
+print ""
+print ""
+print "int A4GL" lib "_initlib (void) {"
+print "   libptr=(void *)dl_openlibrary(\"" lib "\",acl_getenv(\"" var "\"));"
+print "   if (libptr==0) {"
+print "      exitwith(\"Unable to open " $lib " library...\");"
+print "      return 0;"
+print "   }"
+print "   func=find_func_allow_missing(libptr,\"A4GL" lib "_initlib\");"
+print ""
+print "   if (func)"
+print "      return func();"
+print "   else"
+print "      return 1;"
+print "}"
+print ""
+print ""
+}
+/^LIBRARY / {next}
+/^VARIABLE / {next}
+/^#/ {print
+	next
+}
+/^\*/ {next}
+/^$/ {next}
+/^[ 	]*$/ {next}
+{
+fname=$1
+rtype="void"
+
+c=0
+for (a=2;a<=NF;a++) {
+param_type[c]=$a
+
+if (param_type[c]=="->") {
+	param_type[c]=""
+	a++
+	rtype=$a
+	break
+}
+
+if (param_type[c]=="...") {
+	param_name[c]=""
+	a++
+	c++
+	break
+}
+
+
+a++
+param_name[c]=$a
+c++;
+}
+
+printf rtype " " fname "("
+va_start=""
+args=""
+for (b=0;b<c;b++) {
+	printf("%s %s",param_type[b],param_name[b]);
+	if (param_type[b]=="...") {
+		va_start=last;
+		args=args ",&ap"
+	}
+	else {
+		args=args "," param_name[b]
+	}
+	last=param_name[b]
+	if (b<c-1) {
+		printf(",");
+	}
+}
+args=substr(args,2)
+print ") {"
+if (va_start!="") {print "va_list ap;"}
+
+print "   if (libptr==0) A4GL" lib "_initlib();"
+print "   func=find_func(libptr,\"" fname "\");"
+if (va_start!="") {
+	print "   va_start(ap," va_start ");"
+}
+
+if (rtype=="void") 
+	print "   func(" args ");"
+else
+	print "   return func(" args ");"
+
+
+print "}"
+print ""
+
+}' < $1
+
+
+exit
+
+
+Example File :
+
+LIBRARY TEST
+VARIABLE VTEST
+#include <stdio.h>
+* This is a comment
+pdf_rep_print void* rep,int a,int s,int right_margin -> int*
+disp_fields int n int attr ... -> int
