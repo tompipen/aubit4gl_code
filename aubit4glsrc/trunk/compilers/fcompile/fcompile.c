@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.25 2003-03-07 04:37:35 afalout Exp $
+# $Id: fcompile.c,v 1.26 2003-03-10 16:13:32 mikeaubury Exp $
 #*/
 
 /**
@@ -50,37 +50,37 @@
 =====================================================================
 */
 
-extern int as_c; /* defined in libaubit4gl */
+extern int as_c;		/* defined in libaubit4gl */
 //int as_c=1;
 
 //#ifdef YYDEBUG
-	extern int a4gl_form_yydebug; /* defined in y.tab.c */
+extern int a4gl_form_yydebug;	/* defined in y.tab.c */
 //#else /*  */
-//	int yydebug;
+//      int yydebug;
 //#endif /*  */
 
-extern int 		yylineno;
-extern long 	fileseek;
-extern int 		yyleng;
-extern char 	yytext[];
-extern int 		chk4var;
-extern int 		lcnt;
-extern int 		lineno;
-extern FILE *	yyin;
-extern char *	outputfilename; /* defined in libaubit4gl */
-extern struct 	struct_scr_field *fld; /* defined in libaubit4gl */
-extern struct 	struct_form the_form;  /* defined in libaubit4gl */
+extern int yylineno;
+extern long fileseek;
+extern int yyleng;
+extern char yytext[];
+extern int chk4var;
+extern int lcnt;
+extern int lineno;
+extern FILE *yyin;
+extern char *outputfilename;	/* defined in libaubit4gl */
+extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
+extern struct struct_form the_form;	/* defined in libaubit4gl */
 
-char 			outputfile[132];
-int 			ignorekw = 0;
-int 			colno = 0;
-int 			lineno = 0;
-int 			openwith = 0;
-char 			currftag[256];
-int 			fldno;
-int 			scr = 0;
-int 			newscreen = 0;
-int 			fstart;
+char outputfile[132];
+int ignorekw = 0;
+int colno = 0;
+int lineno = 0;
+int openwith = 0;
+char currftag[256];
+int fldno;
+int scr = 0;
+int newscreen = 0;
+int fstart;
 
 /*
 =====================================================================
@@ -127,19 +127,19 @@ static bname (char *str, char *str1, char *str2)
  * @param argc The argument count
  * @param argv The argument values
  */
-int 
+int
 main (int argc, char *argv[])
 {
-char a[128];
-char b[128];
-char c[128];
-char d[128];
+  char a[128];
+  char b[128];
+  char c[128];
+  char d[128];
 
-	setarg0(argv[0]);
-	debug("Initializing fcompile\n");
+  setarg0 (argv[0]);
+  debug ("Initializing fcompile\n");
 
-	/* load settings from config file(s): */
-	build_user_resources();
+  /* load settings from config file(s): */
+  build_user_resources ();
 
 
 
@@ -147,55 +147,58 @@ char d[128];
 
   if (argc > 1)
     {
-      	check_and_show_id("4GL Form Compiler",argv[1]);
+      check_and_show_id ("4GL Form Compiler", argv[1]);
 
-      	outputfilename = outputfile;
+      outputfilename = outputfile;
 
-      	if (strcmp(argv[1],"-c")==0)
-		{
-			as_c=1;
-      		strcpy (c, argv[2]);
-			if (argc > 3)
-		    {
-				strcpy (d, argv[3]);
-            }
-        }
-		else
-		{
-			as_c=0;
-      		strcpy (c, argv[1]);
-			if (argc > 2)
-		    {
-				strcpy (d, argv[2]);
-            }
-		}
-
-
-     	bname (c, a, b);
-
-      	if (b[0] == 0)
-		{
-        strcat (c, ".per");
-		}
-
-
-	    if (strcmp(d,"")==0)  {
-	      strcpy (outputfilename, a);
-		}
-	    else {
-	      strcpy (outputfilename, d);
+      if (strcmp (argv[1], "-c") == 0)
+	{
+	  as_c = 1;
+	  strcpy (c, argv[2]);
+	  if (argc > 3)
+	    {
+	      strcpy (d, argv[3]);
 	    }
+	}
+      else
+	{
+	  as_c = 0;
+	  strcpy (c, argv[1]);
+	  if (argc > 2)
+	    {
+	      strcpy (d, argv[2]);
+	    }
+	}
+
+
+      bname (c, a, b);
+
+      if (b[0] == 0)
+	{
+	  strcat (c, ".per");
+	}
+
+
+      if (strcmp (d, "") == 0)
+	{
+	  strcpy (outputfilename, a);
+	}
+      else
+	{
+	  strcpy (outputfilename, d);
+	}
 
 /* 	printf ("Output to %s \n", outputfilename); */
 
-      	yyin = mja_fopen (c, "r");
+      yyin = mja_fopen (c, "r");
 
     }
 
   else
     {
 
-      printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n", argv[0]);
+      printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n",
+	      argv[0]);
 
       exit (0);
 
@@ -211,7 +214,7 @@ char d[128];
       exit (0);
 
     }
-  init_form();
+  init_form ();
 
   return (a4gl_form_yyparse ());
 
@@ -220,10 +223,12 @@ char d[128];
 #define DO_DEBUG
 
 #ifdef DO_DEBUG
-typedef union     {
-        char    str[1024];
-        u_expression *expr;
-} YYSTYPE;
+typedef union
+{
+  char str[1024];
+  u_expression *expr;
+}
+YYSTYPE;
 
 YYSTYPE yylval;
 
@@ -233,23 +238,22 @@ YYSTYPE yylval;
  *
  * @param s String with error message sended by the parser
  */
-void 
-a4gl_form_yyerror(char *s)
+void
+a4gl_form_yyerror (char *s)
 {
   char errfile[256];
   FILE *f;
   long ld;
 
-  ld=buffpos();
-  sprintf(errfile,"%s.err",outputfile);
-  f=write_errfile(yyin,errfile,ld-1,yylineno);
+  ld = buffpos ();
+  sprintf (errfile, "%s.err", outputfile);
+  f = write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
-  write_cont(yyin);
-  printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
-	  outputfile,outputfile,lineno,yylineno
-  );
+  write_cont (yyin);
+  printf ("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
+	  outputfile, outputfile, lineno, yylineno);
 #ifdef DO_DEBUG
-  printf("%s\n",yylval.str);
+  printf ("%s\n", yylval.str);
 #endif
   exit (2);
 }
@@ -283,24 +287,26 @@ yyerror (char *s)
  *
  *  @return 
  */
-int 
-yywrap(void)
+int
+yywrap (void)
 {
   return 1;
 }
 
 
 
-int getdatatype_fcompile(char *col,char *tab) {
-int a;
-	a=getdatatype(col,tab);
-	if (a==-1) {
-		a4gl_form_yyerror("Column/Table not found");
-		return -1;
-	}
-	debug("%s.%s = %d\n",tab,col,a);
-	return a;
+int
+getdatatype_fcompile (char *col, char *tab)
+{
+  int a;
+  a = getdatatype (col, tab);
+  if (a == -1)
+    {
+      a4gl_form_yyerror ("Column/Table not found");
+      return -1;
+    }
+  debug ("%s.%s = %d\n", tab, col, a);
+  return a;
 }
+
 /* ================================== EOF ============================= */
-
-
