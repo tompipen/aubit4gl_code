@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.91 2004-12-19 08:12:38 afalout Exp $
+# $Id: Makefile-install.mki,v 1.92 2004-12-19 10:09:16 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -536,9 +536,7 @@ LIBWWW_SRC_ZIP		=${LIBWWW_SRC_NAME}.zip
 ##################
 # 4: eksemel library (JABBER IM protocol)
 IKSEMEL_INFO		=http://iksemel.jabberstudio.org
-#IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
 IKSEMEL_PATH        =http://www.jabberstudio.org/files/iksemel
-#IKSEMEL_SRC         =iksemel-0.0.1
 IKSEMEL_SRC         =iksemel-1.2
 IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
 
@@ -775,14 +773,10 @@ SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
 SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
 
 SQLITE_WIN_PATH=http://sqlite.org
-#SQLITE_WIN_LIB=sqlitedll.zip
 SQLITE_WIN_LIB=sqlitedll-3_0_8.zip
-#SQLITE_WIN_EXE=sqlite.zip
 SQLITE_WIN_EXE=sqlite-3_0_8.zip
-
 SQLITE_SRC_NAME=sqlite-3.0.8
 SQLITE_SRC_TAR_GZ=${SQLITE_SRC_NAME}.tar.gz
-
 
 #ODBC driver for SQLite:
 SQLITE_ODBC_INFO=http://www.ch-werner.de/sqliteodbc
@@ -790,7 +784,6 @@ SQLITE_ODBC_PATH=http://www.ch-werner.de/sqliteodbc
 SQLITE_ODBC_SRC=sqliteodbc-0.65
 SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
 SQLITE_ODBC_WIN=sqliteodbc-win32.zip
-
 
 #################
 # 27: libspopc
@@ -1050,7 +1043,10 @@ ifdef COMSPEC
 	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${IKSEMEL_SRC}; make install"
 else	
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
-	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
+#	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
+	cd /tmp/${IKSEMEL_SRC}; ./configure
+	cd /tmp/${IKSEMEL_SRC}; make
+	cd /tmp/${IKSEMEL_SRC}; make install
 endif	
 	@echo "Package info & manuals: ${IKSEMEL_INFO}"
 	@echo " "
@@ -1335,7 +1331,7 @@ else
 ###################################
 #Compile from source code (Windows)
 install.sqlite: ${SQLITE_SRC_TAR_GZ}
-#warning: not path in tarball!
+#warning: path in tarball is just 'sqlite' !
 	${MKPATH} ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}
 	cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}; tar --gunzip -xf ${CYG_AUBITDIR}/$^
 	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; ./configure"
@@ -1349,8 +1345,18 @@ install.sqlite: ${SQLITE_SRC_TAR_GZ}
 	@echo "Installed SQLite to /usr/local"
 endif
 else
+ifdef SQLITE_BIN
 install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 	${RPM} -i $^
+else
+install.sqlite: ${SQLITE_SRC_TAR_GZ}
+#warning: path in tarball is just 'sqlite' !
+	${MKPATH} /tmp/${SQLITE_SRC_NAME}
+	cd /tmp/${SQLITE_SRC_NAME}; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SQLITE_SRC_NAME}/sqlite; ./configure
+	cd /tmp/${SQLITE_SRC_NAME}/sqlite; make
+	cd /tmp/${SQLITE_SRC_NAME}/sqlite; make install
+endif
 endif
 	@echo " "
 	@echo "Package info & manuals: ${SQLITE_INFO}"
