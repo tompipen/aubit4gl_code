@@ -22,6 +22,26 @@ endcode
 
 
 ####################################
+FUNCTION popen(p_command,mode)
+####################################
+DEFINE p_command char(256)
+DEFINE mode char(3)
+DEFINE r INTEGER
+
+code
+	trim(p_command);
+	trim(mode);
+	r=popen(p_command,mode);
+endcode
+
+	IF r=0 THEN
+		LET status=-101
+	END IF
+	RETURN r
+END FUNCTION
+
+
+####################################
 FUNCTION fopen(filename,mode)
 ####################################
 DEFINE filename char(256)

@@ -32,9 +32,9 @@ display_cmd : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr
 	| DISPLAY_ARRAY {
 		push_blockcommand("DISPLAY");
 		} 
-	use_arr_var TO identifier DOT MULTIPLY opt_attributes 
+	use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes 
 		{
-		print_display_array_p1($<str>3,$<str>5,$<str>8);
+		print_display_array_p1($<str>3,$<str>5,$<str>8,$<str>9);
 		}
 	disp_rest {
 		add_continue_blockcommand ("DISPLAY");  
@@ -43,6 +43,13 @@ display_cmd : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr
 }
 ;
 
+opt_scroll: 
+{
+sprintf($<str>$,"0,0");
+} | SCROLL USING field_name {
+	sprintf($<str>$,$<str>3);
+}
+;
 
 display_attr	:	opt_attributes {
 				sprintf($<str>$,"0x%lx",atol($<str>1));
