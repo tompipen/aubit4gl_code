@@ -3,7 +3,6 @@ main
  
  let dt1 = current 
  let dt2 = current + 1 units day 
-
  if dt2 > dt1 then 
  	display "true" 
  else 
