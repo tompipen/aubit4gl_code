@@ -136,18 +136,18 @@ bool_t xdr_call ();
 
 #ifdef __cplusplus
 #define CALL_REMOTE_FUNC ((u_long)1)
-extern "C" return_values * call_remote_func_1 (call, CLIENT *);
-extern "C" return_values * call_remote_func_1_svc (call, struct svc_req *);
+extern "C" return_values * A4GL_call_remote_func_1 (call, CLIENT *);
+extern "C" return_values * A4GL_call_remote_func_1_svc (call, struct svc_req *);
 
 #elif __STDC__
 #define CALL_REMOTE_FUNC ((u_long)1)
-extern return_values *call_remote_func_1 (call, CLIENT *);
-extern return_values *call_remote_func_1_svc (call, struct svc_req *);
+extern return_values *A4GL_call_remote_func_1 (call, CLIENT *);
+extern return_values *A4GL_call_remote_func_1_svc (call, struct svc_req *);
 
 #else /* Old Style C */
 #define CALL_REMOTE_FUNC ((u_long)1)
-extern return_values *call_remote_func_1 ();
-extern return_values *call_remote_func_1_svc ();
+extern return_values *A4GL_call_remote_func_1 ();
+extern return_values *A4GL_call_remote_func_1_svc ();
 #endif /* Old Style C */
 
     /* this was in rpc_client.c, not sure why:
@@ -165,6 +165,6 @@ extern return_values *call_remote_func_1_svc ();
 
 	/* rpc_svc.c */
 
-void fgl_rpc_reply (void *result);
+void A4GL_fgl_rpc_reply (void *result);
 
 #endif /* !_RPC_STACK_H_RPCGEN */

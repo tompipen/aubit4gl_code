@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.5 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: memfile.c,v 1.6 2003-05-15 07:10:20 mikeaubury Exp $
 #
 */
 
@@ -53,11 +53,11 @@ char *buff;
 long buff_len;
 FILE *in;
 long pos = 0;
-FILE *mja_fopen (char *name, char *mode);
+FILE *A4GL_mja_fopen (char *name, char *mode);
 
 
 FILE *
-memfile_fopen (char *f, char *mode)
+A4GL_memfile_fopen (char *f, char *mode)
 {
 
   if (opened > 1)
@@ -75,7 +75,7 @@ memfile_fopen (char *f, char *mode)
 
   opened++;
 
-  in = mja_fopen (f, mode);
+  in = A4GL_mja_fopen (f, mode);
 
   if (in == 0)
     return 0;
@@ -99,7 +99,7 @@ memfile_fopen (char *f, char *mode)
 
 
 int
-memfile_fseek (FILE * f, long offset, int whence)
+A4GL_memfile_fseek (FILE * f, long offset, int whence)
 {
   if (f != in)
     {
@@ -128,7 +128,7 @@ memfile_fseek (FILE * f, long offset, int whence)
 
 
 int
-memfile_getc (FILE * f)
+A4GL_memfile_getc (FILE * f)
 {
   int a;
   if (f != in)
@@ -145,7 +145,7 @@ memfile_getc (FILE * f)
 
 
 void
-memfile_fclose (FILE * f)
+A4GL_memfile_fclose (FILE * f)
 {
   if (f != in)
     {
@@ -159,7 +159,7 @@ memfile_fclose (FILE * f)
 }
 
 void
-memfile_rewind (FILE * f)
+A4GL_memfile_rewind (FILE * f)
 {
   if (f != in)
     {
@@ -172,7 +172,7 @@ memfile_rewind (FILE * f)
 }
 
 long
-memfile_ftell (FILE * f)
+A4GL_memfile_ftell (FILE * f)
 {
   if (f != in)
     {
@@ -185,7 +185,7 @@ memfile_ftell (FILE * f)
 }
 
 int
-memfile_ungetc (int c, FILE * f)
+A4GL_memfile_ungetc (int c, FILE * f)
 {
   if (f != in)
     {
@@ -199,12 +199,12 @@ memfile_ungetc (int c, FILE * f)
 }
 
 int
-memfile_feof (FILE * f)
+A4GL_memfile_feof (FILE * f)
 {
   char buffer[255];
   if (f != in)
     {
-      debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+      A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
       strncpy (buffer, &buff[pos], 255);
       buff[255] = 0;
       a4gl_yyerror
@@ -219,7 +219,7 @@ memfile_feof (FILE * f)
 }
 
 int
-memfile_fread (char *ptr, int s, int n, FILE * f)
+A4GL_memfile_fread (char *ptr, int s, int n, FILE * f)
 {
   if (f != in)
     {

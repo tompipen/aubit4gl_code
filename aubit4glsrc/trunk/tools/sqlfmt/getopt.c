@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: getopt.c,v $
-@(#)Version:         $Revision: 1.2 $
-@(#)Last changed:    $Date: 2003-05-12 14:24:42 $
+@(#)Version:         $Revision: 1.3 $
+@(#)Last changed:    $Date: 2003-05-15 07:10:51 $
 @(#)Purpose:         GNU version of GETOPT(3)
 @(#)Copyright:       (C) 1987 Free Software Foundation, Inc.
 @(#)Amendments:      J Leffler, JLSS
@@ -15,7 +15,7 @@
   
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: getopt.c,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $";
+  "@(#)$Id: getopt.c,v 1.3 2003-05-15 07:10:51 mikeaubury Exp $";
 
 #endif	/*  */
   
@@ -58,7 +58,7 @@ static const char rcs[] =
 */ 
   
 /*
-**	Format of code and comments revised to suit local conventions.
+**	Format of code and A4GL_comments revised to suit local conventions.
 **	Function completely unaltered, though appended memcpy() removed.
 **	Default compilation changed to SYSV mode -- unless BSD is defined,
 **	it will be compiled using strchr and memcpy.
@@ -350,7 +350,7 @@ exchange (char **argv)
 **	it is returned in `optarg'.
 **
 **	If OPTSTRING starts with `-', it requests a different method of handling the
-**	non-option ARGV-elements.  See the comments about RETURN_IN_ORDER, above.
+**	non-option ARGV-elements.  See the A4GL_comments about RETURN_IN_ORDER, above.
 */ 
   int
 gnu_getopt (int argc, char **argv, const char *optstring) 

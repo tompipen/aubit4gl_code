@@ -57,16 +57,16 @@ dim_push_type("struct_dtime",$<str>2,0);
 }
                               |            INTERVAL interval_qual {dim_push_type("struct_ival",0,0);}
                               |            dim_like_var
-{dim_push_like($<str>1);lex_printcomment("/*added(XXXXX)\n */");}
+{dim_push_like($<str>1);A4GL_lex_printcomment("/*added(XXXXX)\n */");}
               ;
 
 
 
 dim_like_var      : 
 LIKE  tab_name  DOT col_name  {
-lex_printcomment("/*column like(ZZZ)\n*/");
+A4GL_lex_printcomment("/*column like(ZZZ)\n*/");
 sprintf($<str>$,"%s.%s",$<str>2,$<str>4)
-; lex_printcomment ("/*set col...(ZZZ)\n*/");}
+; A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
 
@@ -93,8 +93,8 @@ OF dim_dtype  {
 
 dim_record_variable        : RECORD {dim_push_record();} dim_def_part END_RECORD
 {dim_pop_record();}
-|            RECORD_LIKE {dim_push_record();debug("Like\n");} identifier DOT MULTIPLY
-                                  {debug("Table:%s\n",$<str>3);
+|            RECORD_LIKE {dim_push_record();A4GL_debug("Like\n");} identifier DOT MULTIPLY
+                                  {A4GL_debug("Table:%s\n",$<str>3);
                                   dim_push_rectab($<str>3);
                                   dim_pop_record();} 
 

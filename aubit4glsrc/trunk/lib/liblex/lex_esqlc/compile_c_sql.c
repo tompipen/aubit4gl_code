@@ -39,13 +39,13 @@ print_close (char type, char *name)
   switch (type)
     {
     case 'F':
-      printc ("close_form(%s);\n", name);
+      printc ("A4GL_close_form(%s);\n", name);
       break;
     case 'W':
-      printc ("remove_window(%s);\n", name);
+      printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-      printc ("close_database();\n");
+      printc ("A4GL_close_database();\n");
       break;
     case 'S':
       printc ("A4GLSQL_close_session(%s);\n", name);
@@ -127,9 +127,9 @@ print_linked_cmd (int type, char *var)
 	  add_bind ('o', buff);
 	}
 
-      debug ("Finding number of keys...\n");
+      A4GL_debug ("Finding number of keys...\n");
       no_keys = linked_split (pklist, 0, 0);
-      debug ("No of keys=%d", no_keys);
+      A4GL_debug ("No of keys=%d", no_keys);
       start_bind ('i', 0);
       if (type == 'U')
 	{
@@ -140,12 +140,12 @@ print_linked_cmd (int type, char *var)
 	}
       for (azcnt = 1; azcnt <= no_keys; azcnt++)
 	{
-	  debug ("Getting key no %d", azcnt);
+	  A4GL_debug ("Getting key no %d", azcnt);
 	  linked_split (pklist, azcnt, buff2);
 	  sprintf (buff, "%s.%s", var, buff2);
-	  debug ("Adding linked %s", buff);
+	  A4GL_debug ("Adding linked %s", buff);
 	  add_bind ('i', buff);
-	  debug (" key count %d %d\n", azcnt, no_keys);
+	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
       if (type == 'S')
 	no = print_bind ('o');
@@ -535,7 +535,7 @@ print_use_session (char *sess)
  * @return The C implementation for seving current connection.
  */
 char *
-get_undo_use (void)
+A4GL_get_undo_use (void)
 {
   return "A4GLSQL_set_conn(_sav_cur_conn);}";
 }

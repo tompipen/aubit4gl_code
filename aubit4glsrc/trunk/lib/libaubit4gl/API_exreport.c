@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.14 2003-05-12 14:24:01 mikeaubury Exp $
+# $Id: API_exreport.c,v 1.15 2003-05-15 07:10:38 mikeaubury Exp $
 #
 */
 
@@ -32,10 +32,10 @@
  * @file
  * PDF Report Implementation functions.
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -77,27 +77,27 @@ static void *libptr = 0;
 */
 
 
-static int (*func) ();
+static int (*A4GL_func) ();
 
 /* static double 	(*func_d)			(); */
-static double (*func_d) (double f, char c, struct pdf_rep_structure * p);
+static double (*A4GL_func_d) (double f, char c, struct pdf_rep_structure * p);
 
 
 /* void *			find_func			(void *p,char *s); in calldll.c */
-extern void *find_func_double (void *dllhandle, char *func);	/* in calldll.c */
-void pdf_skip_by (void *rep, double a);
-double pdf_metric (int a, char c, void *rep);
-void pdf_aclfgli_skip_lines (void *rep);
-void pdf_fputmanyc (FILE * f, int c, int cnt);
-void pdf_set_column (void *rep);
-void pdf_rep_print (void *rep, int a, int s, int right_margin);
-void pdf_skip_to (void *rep, double a);
-void pdf_need_lines (void *rep);
-void pdf_skip_top_of_page (void *rep);
-void pdf_add_spaces (void);
-void pdf_rep_close (void *p);
-void pdf_pdffunc (void *p, char *fname, int n);
-void pdf_blob_print (void *p, void *blob, char *type, int cr);
+extern void *A4GL_find_func_double (void *dllhandle, char *func);	/* in calldll.c */
+void A4GL_pdf_skip_by (void *rep, double a);
+double A4GL_pdf_metric (int a, char c, void *rep);
+void A4GL_pdf_aclfgli_skip_lines (void *rep);
+void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt);
+void A4GL_pdf_set_column (void *rep);
+void A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin);
+void A4GL_pdf_skip_to (void *rep, double a);
+void A4GL_pdf_need_lines (void *rep);
+void A4GL_pdf_skip_top_of_page (void *rep);
+void A4GL_pdf_add_spaces (void);
+void A4GL_pdf_rep_close (void *p);
+void A4GL_pdf_pdffunc (void *p, char *fname, int n);
+void A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr);
 
 /*
 =====================================================================
@@ -114,18 +114,18 @@ void
 A4GLREPORT_initlib (void)
 {
 
-  libptr = (void *) dl_openlibrary ("EXREPORT", acl_getenv ("A4GL_PDFTYPE"));
+  libptr = (void *) A4GL_dl_openlibrary ("EXREPORT", acl_getenv ("A4GL_PDFTYPE"));
 
-  debug ("libptr=%p\n", libptr);
-  debug ("A4GL_PDFTYPE=%s\n", acl_getenv ("A4GL_PDFTYPE"));
+  A4GL_debug ("libptr=%p\n", libptr);
+  A4GL_debug ("A4GL_PDFTYPE=%s\n", acl_getenv ("A4GL_PDFTYPE"));
 
   if (libptr == 0)
     {
-      exitwith ("Unable to open EXREPORT library.");
+      A4GL_exitwith ("Unable to open EXREPORT library.");
       return;
     }
 
-  func = find_func_allow_missing (libptr, "A4GLREPORT_initlib");
+  A4GL_func = A4GL_find_func_allow_missing (libptr, "A4GLREPORT_initlib");
 
   /*
      if (func)
@@ -134,7 +134,7 @@ A4GLREPORT_initlib (void)
      return 1;
    */
 
-  func ();
+  A4GL_func ();
 }
 
 
@@ -143,12 +143,12 @@ A4GLREPORT_initlib (void)
  * @todo Describe function
  */
 void
-pdf_rep_print (void *rep, int a, int s, int right_margin)
+A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_rep_print");
-  func (rep, a, s, right_margin);
+  A4GL_func = A4GL_find_func (libptr, "pdf_rep_print");
+  A4GL_func (rep, a, s, right_margin);
 }
 
 
@@ -157,12 +157,12 @@ pdf_rep_print (void *rep, int a, int s, int right_margin)
  * @todo Describe function
  */
 void
-pdf_fputmanyc (FILE * f, int c, int cnt)
+A4GL_pdf_fputmanyc (FILE * f, int c, int cnt)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_fputmanyc");
-  func (f, c, cnt);
+  A4GL_func = A4GL_find_func (libptr, "pdf_fputmanyc");
+  A4GL_func (f, c, cnt);
 }
 
 /**
@@ -170,26 +170,12 @@ pdf_fputmanyc (FILE * f, int c, int cnt)
  * @todo Describe function
  */
 void
-pdf_set_column (void *rep)
+A4GL_pdf_set_column (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_set_column");
-  func (rep);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-void
-pdf_skip_to (void *rep, double a)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_skip_to");
-  func (rep, a);
+  A4GL_func = A4GL_find_func (libptr, "pdf_set_column");
+  A4GL_func (rep);
 }
 
 
@@ -198,12 +184,26 @@ pdf_skip_to (void *rep, double a)
  * @todo Describe function
  */
 void
-pdf_skip_by (void *rep, double a)
+A4GL_pdf_skip_to (void *rep, double a)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_skip_by");
-  func (rep, a);
+  A4GL_func = A4GL_find_func (libptr, "pdf_skip_to");
+  A4GL_func (rep, a);
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+A4GL_pdf_skip_by (void *rep, double a)
+{
+  if (libptr == 0)
+    A4GLREPORT_initlib ();
+  A4GL_func = A4GL_find_func (libptr, "pdf_skip_by");
+  A4GL_func (rep, a);
 }
 
 /**
@@ -211,12 +211,12 @@ pdf_skip_by (void *rep, double a)
  * @todo Describe function
  */
 void
-pdf_aclfgli_skip_lines (void *rep)
+A4GL_pdf_aclfgli_skip_lines (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_aclfgli_skip_lines");
-  func (rep);
+  A4GL_func = A4GL_find_func (libptr, "pdf_aclfgli_skip_lines");
+  A4GL_func (rep);
 }
 
 /**
@@ -224,12 +224,12 @@ pdf_aclfgli_skip_lines (void *rep)
  * @todo Describe function
  */
 void
-pdf_need_lines (void *rep)
+A4GL_pdf_need_lines (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_need_lines");
-  func (rep);
+  A4GL_func = A4GL_find_func (libptr, "pdf_need_lines");
+  A4GL_func (rep);
 }
 
 /**
@@ -237,12 +237,12 @@ pdf_need_lines (void *rep)
  * @todo Describe function
  */
 void
-pdf_skip_top_of_page (void *rep)
+A4GL_pdf_skip_top_of_page (void *rep)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_skip_top_of_page");
-  func (rep);
+  A4GL_func = A4GL_find_func (libptr, "pdf_skip_top_of_page");
+  A4GL_func (rep);
 }
 
 /**
@@ -250,12 +250,12 @@ pdf_skip_top_of_page (void *rep)
  * @todo Describe function
  */
 void
-pdf_add_spaces (void)
+A4GL_pdf_add_spaces (void)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_add_spaces");
-  func ();
+  A4GL_func = A4GL_find_func (libptr, "pdf_add_spaces");
+  A4GL_func ();
 }
 
 /*
@@ -271,7 +271,7 @@ void pdf_new_page(void *p) {
 
 
 
-void pdf_set_info (void *p,char *creator) {
+void A4GL_pdf_set_info (void *p,char *creator) {
   if (libptr==0) A4GLREPORT_initlib();
   func=find_func(libptr,"pdf_set_info");
   func(p,creator);
@@ -290,12 +290,12 @@ pdf_move(void *p) {
  * @todo Describe function
  */
 void
-pdf_rep_close (void *p)
+A4GL_pdf_rep_close (void *p)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_rep_close");
-  func (p);
+  A4GL_func = A4GL_find_func (libptr, "pdf_rep_close");
+  A4GL_func (p);
 }
 
 
@@ -305,16 +305,16 @@ pdf_rep_close (void *p)
  */
 double
 /* pdf_size(double f, char c,void *p) */
-pdf_size (double f, char c, struct pdf_rep_structure *p)
+A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
 {
   double d;
-  debug ("Trying to find pdf_size - libptr=%p", libptr);
+  A4GL_debug ("Trying to find A4GL_pdf_size - libptr=%p", libptr);
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func_d = find_func_double (libptr, "pdf_size");
+  A4GL_func_d = A4GL_find_func_double (libptr, "pdf_size");
 
-  d = func_d (f, c, p);
-  debug ("Got size as : %lf", d);
+  d = A4GL_func_d (f, c, p);
+  A4GL_debug ("Got size as : %lf", d);
   return d;
 }
 
@@ -325,12 +325,12 @@ pdf_size (double f, char c, struct pdf_rep_structure *p)
  * @todo Describe function
  */
 void
-pdf_pdffunc (void *p, char *fname, int n)
+A4GL_pdf_pdffunc (void *p, char *fname, int n)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_pdffunc");
-  func (p, fname, n);
+  A4GL_func = A4GL_find_func (libptr, "pdf_pdffunc");
+  A4GL_func (p, fname, n);
 }
 
 
@@ -340,12 +340,12 @@ pdf_pdffunc (void *p, char *fname, int n)
  * @todo Describe function
  */
 void
-pdf_blob_print (void *p, void *blob, char *type, int cr)
+A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr)
 {
   if (libptr == 0)
     A4GLREPORT_initlib ();
-  func = find_func (libptr, "pdf_blob_print");
-  func (p, blob, type, cr);
+  A4GL_func = A4GL_find_func (libptr, "pdf_blob_print");
+  A4GL_func (p, blob, type, cr);
 }
 
 /* ================================= EOF ============================= */

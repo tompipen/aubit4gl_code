@@ -2,7 +2,7 @@
 
 
 int
-bad_identifiers (char *s)
+A4GL_bad_identifiers (char *s)
 {
   if (strcasecmp (s, "case") == 0)
     return 1;

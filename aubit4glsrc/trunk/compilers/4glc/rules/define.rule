@@ -15,7 +15,7 @@ define_multiple	:
 ;
 
 define_set :
-	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");} opt_semi
+	DEFINE {dtypelist[0]=0;A4GL_lex_printcomment("/* define */\n");} def_part  {A4GL_lex_printcomment("/*end def */\n");} opt_semi
 	| dim_section
 	| whenever_cmd
 ;
@@ -27,7 +27,7 @@ def_part : def_part2 |  def_part COMMA def_part2
 
 define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);
                         set_yytext($<str>$);
-                        if (bad_identifiers($<str>$)) {
+                        if (A4GL_bad_identifiers($<str>$)) {
                                 a4gl_yyerror("You can't use this identifier as it is a reserved word in the target language");
                         }
 }
@@ -80,7 +80,7 @@ op_char : | CHAR;
 
 array_variable	: 
 ARRAY OPEN_SQUARE  number_arr_list CLOSE_SQUARE {
-	debug("defines array %s",$<str>3);
+ A4GL_debug("defines array %s",$<str>3);
 	push_type(0,0,$<str>3);
 }
 OF dtype_ident
@@ -108,10 +108,10 @@ assoc_close_bracket: CLOSE_BRACKET | CLOSE_SHEV ;
 number_arr_assoc: INT_VALUE;
 
 number_arr_list	:number_value_arr COMMA number_value_arr COMMA number_value_arr 
-	 {sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5); debug("Triplet");}
+	 {sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5); A4GL_debug("Triplet");}
 		| number_value_arr COMMA number_value_arr 
-	 {sprintf($<str>$,"%s][%s",$<str>1,$<str>3); debug("double");}
-		| number_value_arr {debug("Single");}
+	 {sprintf($<str>$,"%s][%s",$<str>1,$<str>3); A4GL_debug("double");}
+		| number_value_arr {A4GL_debug("Single");}
 	;
 
 number_value_arr: INT_VALUE 
@@ -119,16 +119,16 @@ number_value_arr: INT_VALUE
 /*{push_type(0,0,$<str>1); }*/
 
 record_variable	: RECORD {push_record();in_record++;} def_part END_RECORD {pop_record();in_record--;}
-| 	RECORD_LIKE {in_record++;push_record();debug("Like\n");} define_ident DOT MULTIPLY
-                  {debug("Link Table : %s\n",$<str>3);
+| 	RECORD_LIKE {in_record++;push_record();A4GL_debug("Like\n");} define_ident DOT MULTIPLY
+                  {A4GL_debug("Link Table : %s\n",$<str>3);
                   push_rectab($<str>3);
                   pop_record();in_record--;} 
 | 	LINKED_TO {
-		push_record();debug("Like\n");} define_ident PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
+		push_record();A4GL_debug("Like\n");} define_ident PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
                {
-		  debug("Table:%s\n",$<str>3);
+		  A4GL_debug("Table:%s\n",$<str>3);
 		  add_link_to($<str>3,$<str>6);
-	          debug("Push record...\n");
+	          A4GL_debug("Push record...\n");
                   push_rectab($<str>3);
                   pop_record();
 } 
@@ -168,7 +168,7 @@ push_type("char",$<str>3,0);
 		|	VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
 		|	INTEGER {push_type("long",0,0);}
 		| 	AS define_ident {
-debug("Using specified type...");
+A4GL_debug("Using specified type...");
 push_dim($<str>2);}
 		|	SMALLINT {push_type("int",0,0);}
 		|	KWFORM {push_type("form",0,0);}
@@ -209,27 +209,27 @@ push_type("fglmoney",buff,0);}
 push_type("struct_dtime",$<str>2,0);
 }
 		| 	INTERVAL interval_qual {push_type("struct_ival",$<str>2,0);}
-		|  like_var {push_like($<str>1);lex_printcomment("/*added(XXXXX)\n */");}
+		|  like_var {push_like($<str>1);A4GL_lex_printcomment("/*added(XXXXX)\n */");}
 		|  USER_DTYPE {
 			char buff[256];
 			strcpy(buff,$<str>1);
-			debug("Got a rogue datatype");
+		 A4GL_debug("Got a rogue datatype");
 
-			if (find_datatype(upshift(buff))) 
+			if (A4GL_find_datatype(upshift(buff))) 
 			{
 				char *(*function) (void);
-				debug("Checking ...");
-				function=get_datatype_function_n(upshift(buff),"OUTPUT");
-				debug("Got function as %p",function);
+			 A4GL_debug("Checking ...");
+				function=A4GL_get_datatype_function_n(upshift(buff),"OUTPUT");
+			 A4GL_debug("Got function as %p",function);
 
                 /*  warning: comparison between pointer and integer */
 				if ((int)function != -1 && (int)function != 0)
 				{
-					debug("call returns %s\n",function());
+				 A4GL_debug("call returns %s\n",function());
 					strcpy(buff,function());
-					debug("Set up buff as %s");
+				 A4GL_debug("Set up buff as %s");
 					push_type(function(),0,0);
-					debug("Pushed type : %s\n",function());
+				 A4GL_debug("Pushed type : %s\n",function());
 				}
 			} else {
 				/* yyerror("Unknown datatype : %s",$<str>1); */
@@ -243,17 +243,17 @@ push_type("struct_dtime",$<str>2,0);
 
 like_var 	: 
 LIKE  tab_name  DOT col_name  {
-lex_printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); lex_printcomment ("/*set col...(ZZZ)\n*/");}
+A4GL_lex_printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
-tab_name : define_ident {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
+tab_name : define_ident {A4GL_debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 
-col_name : define_ident {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
+col_name : define_ident {A4GL_debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 
 datetime_qual :  {strcpy($<str>$,"0");} | dtime_start
 TO 
 dtime_end {
-debug("Real datetime %s to %s\n",$<str>1,$<str>3);
+A4GL_debug("Real datetime %s to %s\n",$<str>1,$<str>3);
 sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); }
 ;
 
@@ -273,25 +273,25 @@ YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
 {
-debug("opt_frac returns %s",$<str>2);
+A4GL_debug("opt_frac returns %s",$<str>2);
 sprintf($<str>$,"%d",atoi($<str>2)+6); }
 ;
 
-dtime_end : {start_state("dtime_val",1);} dtime_val { debug ("Got end");start_state("dtime_val",0);  strcpy($<str>$,$<str>2);}
+dtime_end : {start_state("dtime_val",1);} dtime_val { A4GL_debug ("Got end");start_state("dtime_val",0);  strcpy($<str>$,$<str>2);}
 ;
 
 opt_frac: {
-debug("Nothing in fraction - assume 2");
+A4GL_debug("Nothing in fraction - assume 2");
 strcpy($<str>$,"2");} |  OPEN_BRACKET dtfrac CLOSE_BRACKET {
-debug("Read fraction .. ");
-debug("    %s",$<str>2);
+A4GL_debug("Read fraction .. ");
+A4GL_debug("    %s",$<str>2);
 strcpy($<str>$,$<str>2);
 };
 
 opt_unit_size: {
-debug("Nothing in fraction - assume 2");
+A4GL_debug("Nothing in fraction - assume 2");
 strcpy($<str>$,"2");} |  OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-debug("    %s",$<str>2);
+A4GL_debug("    %s",$<str>2);
 strcpy($<str>$,$<str>2);
 };
 
@@ -315,7 +315,7 @@ int_start_unit : YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
   {
-debug("opt_frac returns %s",$<str>2);
+A4GL_debug("opt_frac returns %s",$<str>2);
 sprintf($<str>$,"%d",atoi($<str>2)+6); }
 ;
 

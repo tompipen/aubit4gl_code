@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_clnt.c,v 1.6 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: rpc_stack_clnt.c,v 1.7 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 /**
@@ -35,7 +35,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -85,7 +85,7 @@ static struct timeval TIMEOUT = { 25, 0 };
  *
  */
 return_values *
-call_remote_func_1 (call arg1, CLIENT * clnt)
+A4GL_call_remote_func_1 (call arg1, CLIENT * clnt)
 {
   static return_values clnt_res;
 

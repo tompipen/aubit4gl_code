@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.6 2003-04-09 07:16:54 mikeaubury Exp $
+# $Id: assist.4gl,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
 
 # ASSIST.4gl
 #
@@ -67,7 +67,7 @@ extern GtkWidget *currwindow;
 =====================================================================
 */
 
-#define CHK_UI if (ui_mode!=1) {exitwith("Not in GUI mode");return 0;} else {debug("UI mode ok");}
+#define CHK_UI if (ui_mode!=1) {exitwith("Not in GUI mode");return 0;} else {A4GL_debug("UI mode ok");}
 
 
 /*
@@ -95,7 +95,7 @@ find_curr_window(void)
 void *w;
 	w=get_curr_win_gtk();
 	if (gtk_object_get_data(w,"TOP")) {
-		debug("Has parent...");
+		A4GL_debug("Has parent...");
 		w=gtk_object_get_data(w,"TOP");
 	}
 	return w;
@@ -445,7 +445,7 @@ code
 {
 	char *s;
 CHK_UI
-	debug("g=%d %x",g,g);
+	A4GL_debug("g=%d %x",g,g);
 	s=gtk_editable_get_chars(GTK_EDITABLE(g),0,-1);
 	push_char(s);
 	g_free(s);
@@ -461,9 +461,9 @@ end function
 function field_hide(g)
 define g integer
 code
-debug("Hiding field %p\n",g);fflush(stdout);
+A4GL_debug("Hiding field %p\n",g);fflush(stdout);
 //CHK_UI
-debug("g=%p\n",g);
+A4GL_debug("g=%p\n",g);
 gtk_widget_hide((GtkWidget *)g);
 endcode
 end function

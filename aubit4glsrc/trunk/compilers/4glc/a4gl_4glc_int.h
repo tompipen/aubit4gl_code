@@ -247,9 +247,9 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt);
 char *get_var_name (int z);
 void chk_init_var (char *s);
 void dump_expr (struct expr_str *orig_ptr);
-void *new_expr (char *value);
-void *append_expr (struct expr_str *orig_ptr, char *value);
-void *append_expr_expr (struct expr_str *orig_ptr,
+void *A4GL_new_expr (char *value);
+void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+void *A4GL_append_expr_expr (struct expr_str *orig_ptr,
 			struct expr_str *second_ptr);
 int length_expr (struct expr_str *ptr);
 void tr_glob_fname (char *s);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: get_fld_val.c,v 1.5 2003-05-12 14:24:30 mikeaubury Exp $
+# $Id: get_fld_val.c,v 1.6 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -54,7 +54,7 @@
 */
 
 #ifdef OLD_INCL
-char *fld_val_generic (GtkWidget * k);
+char *A4GL_fld_val_generic (GtkWidget * k);
 #endif
 
 /*
@@ -74,21 +74,21 @@ char *fld_val_generic (GtkWidget * k);
  * @return  The value in the widget.
  */
 char *
-fld_val_generic (GtkWidget * k)
+A4GL_fld_val_generic (GtkWidget * k)
 {
   char *ptr;
   char *txt;
-  debug ("in fld_val_generic k=%p\n", k);
+  A4GL_debug ("in A4GL_fld_val_generic k=%p\n", k);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WidgetType");
 
   if (ptr == NULL)
     {
-      debug ("Cant find tyhe widget!");
+      A4GL_debug ("Cant find tyhe widget!");
       return (char *) 1;
     }
 
-  debug ("Widgettye=%s\n", ptr);
+  A4GL_debug ("Widgettye=%s\n", ptr);
 
   if (strcasecmp (ptr, "LABEL") == 0)
     {
@@ -130,12 +130,12 @@ fld_val_generic (GtkWidget * k)
       static char buff[256];
 
       gtk_calendar_get_date (GTK_CALENDAR (k), &y, &m, &d);
-      push_variable (&m, 0x2);
-      push_variable (&d, 0x2);
-      push_variable (&y, 0x2);
+      A4GL_push_variable (&m, 0x2);
+      A4GL_push_variable (&d, 0x2);
+      A4GL_push_variable (&y, 0x2);
       aclfgl_mdy (3);
-      pop_var2 (&buff, 0, 20);
-      trim (buff);
+      A4GL_pop_var2 (&buff, 0, 20);
+      A4GL_trim (buff);
       return buff;
     }
 

@@ -38,11 +38,11 @@ current_win_cmd	:	CWIS {
 };
 
 window_type	:	fgl_expr ROWS COMMA fgl_expr COLUMNS {
-sprintf($<str>$,"cr_window");
+sprintf($<str>$,"A4GL_cr_window");
 reset_attrib(&form_attrib);
 }
 		|	KWFORM fgl_expr {
-sprintf($<str>$,"cr_window_form");
+sprintf($<str>$,"A4GL_cr_window_form");
 reset_attrib(&form_attrib);
 };
 

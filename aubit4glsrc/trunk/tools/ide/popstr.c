@@ -1,8 +1,8 @@
 /*
 @(#)File:            $RCSfile: popstr.c,v $
-@(#)Version:         $Revision: 1.2 $
-@(#)Last changed:    $Date: 2003-05-12 14:24:34 $
-@(#)Purpose:         Pop string and strip trailing blanks
+@(#)Version:         $Revision: 1.3 $
+@(#)Last changed:    $Date: 2003-05-15 07:10:48 $
+@(#)Purpose:         Pop string and A4GL_strip trailing blanks
 @(#)Author:          J Leffler
 @(#)Copyright:       (C) JLSS 1988,1990,1998
 */
@@ -18,7 +18,7 @@
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: popstr.c,v 1.2 2003-05-12 14:24:34 mikeaubury Exp $";
+  "@(#)$Id: popstr.c,v 1.3 2003-05-15 07:10:48 mikeaubury Exp $";
 #endif
 
 /* -- Routine: popstring		*/

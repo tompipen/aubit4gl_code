@@ -54,4 +54,4 @@ void free_form_entries ();
 char *retrieve_form_entry (char *field_name);
 int load_cmdln_entries ();
 char *retrieve_cmdln_entry (char *field_name);
-char *trim (char *trim_str);
+char *A4GL_trim (char *trim_str);

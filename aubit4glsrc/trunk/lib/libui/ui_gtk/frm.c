@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.4 2003-05-12 14:24:30 mikeaubury Exp $
+# $Id: frm.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -51,12 +51,12 @@
 =====================================================================
 */
 
-int find_attrib_from_field (struct_form * f, int field_no);
-int find_fields_no_metric (struct_form * f, int metric_no);
+int A4GL_find_attrib_from_field (struct_form * f, int field_no);
+int A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 
 #ifdef OLD_INCL
-char *make_colname_from_metric (struct_form * f, int metric_no);
-char *make_field_from_metric (struct_form * f, int metric_no);
+char *A4GL_make_colname_from_metric (struct_form * f, int metric_no);
+char *A4GL_make_field_from_metric (struct_form * f, int metric_no);
 #endif
 
 //void clr_form(int to_default);
@@ -76,9 +76,9 @@ char *make_field_from_metric (struct_form * f, int metric_no);
  * @return
  */
 int
-find_attrib_from_metric (struct_form * f, int metric_no)
+A4GL_find_attrib_from_metric (struct_form * f, int metric_no)
 {
-  return find_attrib_from_field (f, find_fields_no_metric (f, metric_no));
+  return A4GL_find_attrib_from_field (f, A4GL_find_fields_no_metric (f, metric_no));
 }
 
 /**
@@ -89,10 +89,10 @@ find_attrib_from_metric (struct_form * f, int metric_no)
  * @return The metric number.
  */
 int
-find_fields_no_metric (struct_form * f, int metric_no)
+A4GL_find_fields_no_metric (struct_form * f, int metric_no)
 {
   int a, b;
-  debug ("BB\n");
+  A4GL_debug ("BB\n");
   for (a = 0; a < f->fields.fields_len; a++)
     {
       for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
@@ -114,13 +114,13 @@ find_fields_no_metric (struct_form * f, int metric_no)
  * @return
  */
 char *
-make_colname_from_metric (struct_form * f, int metric_no)
+A4GL_make_colname_from_metric (struct_form * f, int metric_no)
 {
   int a, b;
   int c;
   static char buff[256];
-  debug ("BB metric_no=%d\n", metric_no);
-  a = find_fields_no_metric (f, metric_no);
+  A4GL_debug ("BB metric_no=%d\n", metric_no);
+  a = A4GL_find_fields_no_metric (f, metric_no);
 
   for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
     {
@@ -130,17 +130,17 @@ make_colname_from_metric (struct_form * f, int metric_no)
 	}
     }
 
-  debug ("a3\n");
+  A4GL_debug ("a3\n");
 
-  c = find_attrib_from_field (f, a);
+  c = A4GL_find_attrib_from_field (f, a);
   if (c == -1)
     {
       return "";
     }
 
-  debug ("Here a=%d b=%d c=%d\n", a, b, c);
+  A4GL_debug ("Here a=%d b=%d c=%d\n", a, b, c);
   sprintf (buff, "%s", f->attributes.attributes_val[c].colname);
-  debug ("Buff=%s\n", buff);
+  A4GL_debug ("Buff=%s\n", buff);
   return buff;
 }
 
@@ -150,13 +150,13 @@ make_colname_from_metric (struct_form * f, int metric_no)
  * @return
  */
 char *
-make_field_from_metric (struct_form * f, int metric_no)
+A4GL_make_field_from_metric (struct_form * f, int metric_no)
 {
   int a, b;
   int c;
   static char buff[256];
-  debug ("BB metric_no=%d\n", metric_no);
-  a = find_fields_no_metric (f, metric_no);
+  A4GL_debug ("BB metric_no=%d\n", metric_no);
+  a = A4GL_find_fields_no_metric (f, metric_no);
 
   for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
     {
@@ -166,20 +166,20 @@ make_field_from_metric (struct_form * f, int metric_no)
 	}
     }
 
-  debug ("a3\n");
+  A4GL_debug ("a3\n");
 
-  c = find_attrib_from_field (f, a);
+  c = A4GL_find_attrib_from_field (f, a);
   if (c == -1)
     {
       return "";
     }
 
-  debug ("Here a=%d b=%d c=%d\n", a, b, c);
+  A4GL_debug ("Here a=%d b=%d c=%d\n", a, b, c);
 
   sprintf (buff, "%s.%s[%d]", f->attributes.attributes_val[c].tabname,
 	   f->attributes.attributes_val[c].colname, b);
 
-  debug ("Buff=%s\n", buff);
+  A4GL_debug ("Buff=%s\n", buff);
   return buff;
 }
 
@@ -190,22 +190,22 @@ make_field_from_metric (struct_form * f, int metric_no)
  * @return
  */
 int
-find_attrib_from_field (struct_form * f, int field_no)
+A4GL_find_attrib_from_field (struct_form * f, int field_no)
 {
   int a;
-  debug ("AA\n");
-  debug ("field_no=%d\n", field_no);
+  A4GL_debug ("AA\n");
+  A4GL_debug ("field_no=%d\n", field_no);
 
   for (a = 0; a < f->attributes.attributes_len; a++)
     {
-      debug ("   a=%d\n", a);
+      A4GL_debug ("   a=%d\n", a);
       if (f->attributes.attributes_val[a].field_no == field_no)
 	{
-	  debug ("Found field %d @ %d\n", field_no, a);
+	  A4GL_debug ("Found field %d @ %d\n", field_no, a);
 	  return a;
 	}
     }
-  debug ("Not found\n");
+  A4GL_debug ("Not found\n");
   return -1;
 
 }
@@ -220,23 +220,23 @@ find_attrib_from_field (struct_form * f, int field_no)
  * @param panel_to_add_to_window
  */
 void
-make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window)
+A4GL_make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window)
 {
   int a;
-  debug ("Making Widgets..\n");
+  A4GL_debug ("Making Widgets..\n");
   for (a = 0; a < f->metrics.metrics_len; a++)
     {
-      debug ("Making Widget %d\n", a);
-      add_widget (a, f, panel_to_add_to_window);
+      A4GL_debug ("Making Widget %d\n", a);
+      A4GL_add_widget (a, f, panel_to_add_to_window);
     }
-  debug_last_field_created ("make_widgets");
+  A4GL_debug_last_field_created ("make_widgets");
 }
 
 /**
  * Not implemented yet.
  */
 void
-clr_form (int to_default)
+A4GL_clr_form (int to_default)
 {
   /* Not implemented yet */
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.19 2003-05-12 14:24:13 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.20 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -59,8 +59,8 @@
 =====================================================================
 */
 
-int bname2 (char *str, char *str1, char *str2, char *str3);
-void trim_nl (char *p);
+int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
+void A4GL_trim_nl (char *p);
 
 /*
 =====================================================================
@@ -77,7 +77,7 @@ void trim_nl (char *p);
  * @param str3
  */
 int
-bname2 (char *str, char *str1, char *str2, char *str3)
+A4GL_bname2 (char *str, char *str1, char *str2, char *str3)
 {
   char ss[256];
   char b1[10];
@@ -91,80 +91,80 @@ bname2 (char *str, char *str1, char *str2, char *str3)
 
 #ifdef DEBUG
   {
-    debug ("%p %p %p %p", str, str1, str2, str3);
+    A4GL_debug ("%p %p %p %p", str, str1, str2, str3);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("(1)%s %s %s", str1, str2, str3);
+    A4GL_debug ("(1)%s %s %s", str1, str2, str3);
   }
 #endif
   strcpy (ss, str);
 #ifdef DEBUG
   {
-    debug ("(1.1)%s %s %s", str1, str2, str3);
+    A4GL_debug ("(1.1)%s %s %s", str1, str2, str3);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("In bname2 %s");
+    A4GL_debug ("In A4GL_bname2 %s");
   }
 #endif
-  trim (ss);
+  A4GL_trim (ss);
 #ifdef DEBUG
   {
-    debug ("(2)%s %s %s", str1, str2, str3);
+    A4GL_debug ("(2)%s %s %s", str1, str2, str3);
   }
 #endif
-  bnamexxx (ss, b2, b3);
+  A4GL_bnamexxx (ss, b2, b3);
 #ifdef DEBUG
   {
-    debug ("(1) Splits to %s %s", b2, b3);
+    A4GL_debug ("(1) Splits to %s %s", b2, b3);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("(3)%s %s %s", str1, str2, str3);
+    A4GL_debug ("(3)%s %s %s", str1, str2, str3);
   }
 #endif
   strcpy (ss, b2);
-  bnamexxx (ss, b1, b2);
+  A4GL_bnamexxx (ss, b1, b2);
 #ifdef DEBUG
   {
-    debug ("(2) Splits to '%s' '%s'", b1, b2);
+    A4GL_debug ("(2) Splits to '%s' '%s'", b1, b2);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("(4)%s %s %s", str1, str2, str3);
+    A4GL_debug ("(4)%s %s %s", str1, str2, str3);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("'%s' '%s' '%s'", b1, b2, b3);
+    A4GL_debug ("'%s' '%s' '%s'", b1, b2, b3);
   }
 #endif
 #ifdef DEBUG
   {
-    debug ("%s %s %s", str1, str2, str3);
+    A4GL_debug ("%s %s %s", str1, str2, str3);
   }
 #endif
   strcpy (str1, b1);
 #ifdef DEBUG
   {
-    debug ("1");
+    A4GL_debug ("1");
   }
 #endif
   strcpy (str2, b2);
 #ifdef DEBUG
   {
-    debug ("1");
+    A4GL_debug ("1");
   }
 #endif
   strcpy (str3, b3);
 #ifdef DEBUG
   {
-    debug ("Copied...");
+    A4GL_debug ("Copied...");
   }
 #endif
   return 1;
@@ -174,7 +174,7 @@ bname2 (char *str, char *str1, char *str2, char *str3)
 /**
  * Aubit compiler malloc.
  *
- * It was used to make some debug about memory allocations.
+ * It was used to make some A4GL_debug about memory allocations.
  * Right now just encapsulate standard C malloc.
  *
  * @param size The size in bytes to be allocated
@@ -187,9 +187,9 @@ void *
 acl_malloc_full (int size, char *why, char *f, long line)
 {
   void *p;
-  debug ("About to alloc %d bytes", size);
+  A4GL_debug ("About to alloc %d bytes", size);
   p = malloc (size);
-  debug ("alloced");
+  A4GL_debug ("alloced");
   return p;
 }
 
@@ -210,7 +210,7 @@ acl_free_full (void *ptr, char *f, long line)
  * @param p The string to be trimmed.
  */
 void
-trim (char *p)
+A4GL_trim (char *p)
 {
   int a;
   for (a = strlen (p) - 1; a >= 0; a--)
@@ -227,7 +227,7 @@ trim (char *p)
  * @param p The string to be trimmed.
  */
 void
-trim_nl (char *p)
+A4GL_trim_nl (char *p)
 {
   int a;
   for (a = strlen (p) - 1; a >= 0; a--)
@@ -247,7 +247,7 @@ trim_nl (char *p)
  * @param str2
  */
 void
-bnamexxx (char *str, char *str1, char *str2)
+A4GL_bnamexxx (char *str, char *str1, char *str2)
 {
   static char fn[132];
   int a;
@@ -256,16 +256,16 @@ bnamexxx (char *str, char *str1, char *str2)
   strcpy (fn, str);
 #ifdef DEBUG
   {
-    debug ("In bnamexxx - splitting %s", str);
+    A4GL_debug ("In A4GL_bnamexxx - splitting %s", str);
   }
 #endif
   for (a = strlen (fn); a >= 0; a--)
     {
-      if (date_sep (fn[a]))
+      if (A4GL_date_sep (fn[a]))
 	{
 #ifdef DEBUG
 	  {
-	    debug ("separator found at %d", a);
+	    A4GL_debug ("separator found at %d", a);
 	  }
 #endif
 	  fn[a] = 0;
@@ -274,19 +274,19 @@ bnamexxx (char *str, char *str1, char *str2)
     }
 #ifdef DEBUG
   {
-    debug ("a=%d", a);
+    A4GL_debug ("a=%d", a);
   }
 #endif
   ptr = &fn[a];
 #ifdef DEBUG
   {
-    debug ("ptr=%p", ptr);
+    A4GL_debug ("ptr=%p", ptr);
   }
 #endif
   strcpy (str1, fn);
 #ifdef DEBUG
   {
-    debug ("Str1 now = '%s'", str1);
+    A4GL_debug ("Str1 now = '%s'", str1);
   }
 #endif
   if (a >= 0)
@@ -295,7 +295,7 @@ bnamexxx (char *str, char *str1, char *str2)
     str2[0] = 0;
 #ifdef DEBUG
   {
-    debug ("Str2='%s'", str2);
+    A4GL_debug ("Str2='%s'", str2);
   }
 #endif
 }
@@ -307,7 +307,7 @@ bnamexxx (char *str, char *str1, char *str2)
  * @param The size of the string.
  */
 void
-pad_string (char *ptr, int size)
+A4GL_pad_string (char *ptr, int size)
 {
   int a;
   for (a = strlen (ptr); a < size; a++)
@@ -330,7 +330,7 @@ pad_string (char *ptr, int size)
  * @return Allways 1.
  */
 int
-digittoc (int *a, char *z, char *fmt, int dtype, int size)
+A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size)
 {
   static char buff[100];
 
@@ -338,14 +338,14 @@ digittoc (int *a, char *z, char *fmt, int dtype, int size)
 
 #ifdef DEBUG
   {
-    debug ("digittoc");
+    A4GL_debug ("digittoc");
   }
 #endif
   sprintf (buff, fmt, *a);
 
 #ifdef DEBUG
   {
-    debug ("digittoc: %s", buff);
+    A4GL_debug ("digittoc: %s", buff);
   }
 #endif
 
@@ -372,13 +372,13 @@ digittoc (int *a, char *z, char *fmt, int dtype, int size)
 
 #ifdef DEBUG
   {
-    debug ("digittoc: buff set to %s", buff);
+    A4GL_debug ("digittoc: buff set to %s", buff);
   }
 #endif
   strcpy (fmt, buff);
 #ifdef DEBUG
   {
-    debug ("digittoc: returns");
+    A4GL_debug ("digittoc: returns");
   }
 #endif
   return 1;
@@ -410,7 +410,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
   int isprnt = 0;
   double ad;
 
-  debug ("In using... fmt=%s, num=%lf", fmt, num);
+  A4GL_debug ("In using... fmt=%s, num=%lf", fmt, num);
   for (a = 0; a < MAXPNT; a++)
     {
       pnt[a] = 0;
@@ -455,7 +455,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
       strcpy (fm2, "");
     }
   ad = 0.5;
-  trim (fm2);
+  A4GL_trim (fm2);
 
   for (a = 1; a <= strlen (fm2); a++)
     {
@@ -495,7 +495,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
 
     if (f_cnt < n_cnt)
       {
-	debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
+ A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
 	a = strlen (fmt);
 	if (a > s)
 	  a = s;
@@ -524,7 +524,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	    if ((a - n_cnt > d_cnt) ||
 		(strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
-		debug ("trying fmt=%s", fmt);
+	 A4GL_debug ("trying fmt=%s", fmt);
 		return (a4gl_using (str, s, fmt, num));
 	      }
 	  }
@@ -685,7 +685,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
       buff[b] = 0;
       strcpy (str, buff);
     }
-  debug ("using: result str=%s", str);
+  A4GL_debug ("using: result str=%s", str);
 }
 
 /* ============================== EOF ========================== */

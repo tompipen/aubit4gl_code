@@ -43,7 +43,7 @@ menu_option_item *new_option(menu *m);
 void *get_menu(void);
 
 #ifdef OLD_INCL
-	char *char_val (char *s);
+	char *A4GL_char_val (char *s);
 #endif
 
 /* from mcompile.c */
@@ -140,17 +140,17 @@ identifier: NAMED
 menu_item :
 	KW_OPTION identifier op_image op_string op_key op_attr {
 		menu_option_item *o;
-		debug("New option %s for menu %p\n",$<str>2,get_menu());
+		A4GL_debug("New option %s for menu %p\n",$<str>2,get_menu());
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->caption=strdup($<str>4);
 		o->image=img_val;
 		o->key_list=strdup($<str>5);
 		o->align=atoi($<str>6);
-	 	debug("Ok option\n"); }
+	 	A4GL_debug("Ok option\n"); }
 	| KW_SUBMENU identifier op_image op_string op_key op_attr KW_USE identifier {
 		menu_option_item *o;
-		debug("Submenu with use\n");
+		A4GL_debug("Submenu with use\n");
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->image=img_val;
@@ -161,7 +161,7 @@ menu_item :
 	}
 	| KW_SUBMENU identifier op_image op_string op_key op_attr {
 		menu_option_item *o;
-		debug("Submenu without use\n");
+		A4GL_debug("Submenu without use\n");
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->image=img_val;
@@ -178,8 +178,8 @@ menu_item :
 ;
 
 op_string: {strcpy($<str>$,"");} 
-| CHAR_VALUE { strcpy($<str>$,char_val($<str>1));}
-| CHAR_VALUE CHAR_VALUE { sprintf($<str>$,"%s\n%s",strdup(char_val($<str>1)),strdup(char_val($<str>2)));}
+| CHAR_VALUE { strcpy($<str>$,A4GL_char_val($<str>1));}
+| CHAR_VALUE CHAR_VALUE { sprintf($<str>$,"%s\n%s",strdup(A4GL_char_val($<str>1)),strdup(A4GL_char_val($<str>2)));}
 ;
 
 op_key : {strcpy($<str>$,"");} | key
@@ -187,7 +187,7 @@ op_key : {strcpy($<str>$,"");} | key
 
 key :
 	KW_KEY CHAR_VALUE {
-	strcpy($<str>$,char_val($<str>2));}
+	strcpy($<str>$,A4GL_char_val($<str>2));}
 ;
 
 op_attr: {strcpy($<str>$,"");} | ATTRIBUTES OPEN_BRACKET attr CLOSE_BRACKET
@@ -205,7 +205,7 @@ attr_elem:
 op_image  : {
 		img_val="";
 	} | KW_IMAGE EQUAL CHAR_VALUE {
-		img_val=strdup(char_val($<str>3));
+		img_val=strdup(A4GL_char_val($<str>3));
 	}
 ;
 %%

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.12 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: prompt.c,v 1.13 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -63,8 +63,8 @@ int prompt_style = 0;
 */
 
 
-//int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
-//int prompt_loop (struct s_prompt * prompt);
+//int A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//int A4GL_prompt_loop (struct s_prompt * prompt);
 
 /*
 =====================================================================
@@ -85,7 +85,7 @@ int prompt_style = 0;
  * @param af The attributes.
  */
 int
-start_prompt (void *vprompt, int ap, int c, int h, int af)
+A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int promptline;
@@ -99,15 +99,15 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   win = GTK_HBOX (gtk_hbox_new (0, 0));
 
-  debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
+  A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
 
   memset (buff, ' ', 255);
 
   if (prompt_style == 0)
     {
-      promptline = getprompt_line_gtk ();
-      width = get_curr_width ();
-      cw = GTK_WIDGET (get_curr_win_gtk ());
+      promptline = A4GL_getprompt_line_gtk ();
+      width = A4GL_get_curr_width ();
+      cw = GTK_WIDGET (A4GL_get_curr_win_gtk ());
     }
   else
     {
@@ -141,9 +141,9 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
 	cw = gtk_window_new (GTK_WINDOW_POPUP);
       gtk_widget_show (cw);
     }
-  debug ("Promptline=%d", promptline);
+  A4GL_debug ("Promptline=%d", promptline);
   prompt->win = win;
-  promptstr = char_pop ();
+  promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
   prompt->charmode = c;
@@ -166,10 +166,10 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
   gtk_object_set_data (GTK_OBJECT (win), "CW", cw);
 
   gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-		      GTK_SIGNAL_FUNC (keypress), win);
+		      GTK_SIGNAL_FUNC (A4GL_keypress), win);
 
   gtk_signal_connect (GTK_OBJECT (sarr[1]), "key-press-event",
-		      GTK_SIGNAL_FUNC (keypress), sarr[1]);
+		      GTK_SIGNAL_FUNC (A4GL_keypress), sarr[1]);
 
   prompt->field = (void *) sarr[1];
 
@@ -182,14 +182,14 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   if (ap)
     {
-      gui_set_field_fore (sarr[0], ap);
-      gui_set_field_back (sarr[0], ap);
+      A4GL_gui_set_field_fore (sarr[0], ap);
+      A4GL_gui_set_field_back (sarr[0], ap);
     }
 
   if (af)
     {
-      gui_set_field_back (sarr[1], af);
-      gui_set_field_fore (sarr[1], af);
+      A4GL_gui_set_field_back (sarr[1], af);
+      A4GL_gui_set_field_fore (sarr[1], af);
     }
 
   buff[0] = 0;			/* -2 */
@@ -213,7 +213,7 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
  * it is stored.
  */
 int
-prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt)
 {
   GtkWidget *p;
   int action;
@@ -231,8 +231,8 @@ prompt_loop (void *vprompt)
       char buff[1024];
 
       strcpy (buff, gtk_entry_get_text (GTK_ENTRY (prompt->field)));
-      trim (buff);
-      push_char (buff);
+      A4GL_trim (buff);
+      A4GL_push_char (buff);
       prompt->mode = 2;
       style = (int) gtk_object_get_data (GTK_OBJECT (p), "STYLE");
       cw = gtk_object_get_data (GTK_OBJECT (p), "CW");
@@ -248,11 +248,11 @@ prompt_loop (void *vprompt)
   if (prompt->mode > 0)
     return 0;
 
-  clear_something ();
+  A4GL_clear_something ();
 
   while (1)
     {
-      action = user_has_done_something ();
+      action = A4GL_user_has_done_something ();
       /* printf("Action=%d\n",action); */
       if (action)
 	{
@@ -268,13 +268,13 @@ prompt_loop (void *vprompt)
   if (action == 1)
     {				/*  key pressed... */
       int k;
-      k = which_key ();
+      k = A4GL_which_key ();
       //printf ("KEY PRESSED 0x%x\n", k);fflush(stdout);
-      set_last_key (k);
-      clear_something ();
+      A4GL_set_last_key (k);
+      A4GL_clear_something ();
     }
 
-  prompt->lastkey = gui_get_lastkey ();
+  prompt->lastkey = A4GL_gui_get_lastkey ();
 
   //printf("lastkey = %x\n",prompt->lastkey);
 
@@ -287,7 +287,7 @@ prompt_loop (void *vprompt)
 
   if (prompt->charmode)
     {
-      push_char (gtk_entry_get_text (GTK_ENTRY (prompt->field)));
+      A4GL_push_char (gtk_entry_get_text (GTK_ENTRY (prompt->field)));
     }
 
   return -90;
@@ -300,7 +300,7 @@ prompt_loop (void *vprompt)
  * @param a The prompt style
  */
 void
-gui_prompt_style (int a)
+A4GL_gui_prompt_style (int a)
 {
   if (a >= 0 && a <= 3)
     prompt_style = a;

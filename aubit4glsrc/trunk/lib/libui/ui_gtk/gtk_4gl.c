@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.15 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.16 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -79,9 +79,9 @@ GtkWindow *console = 0;
 GtkWidget *console_list;
 char currwinname[256];
 static void show_form (GtkWindow * mainfrm, GtkFixed * form);
-struct s_form_dets *read_form (char *fname, char *formname);
-void dump_object (GtkObject * o);
-char *get_currwin_name (void);
+struct s_form_dets *A4GL_read_form (char *fname, char *formname);
+void A4GL_dump_object (GtkObject * o);
+char *A4GL_get_currwin_name (void);
 /*
 =====================================================================
                     Functions prototypes
@@ -89,15 +89,15 @@ char *get_currwin_name (void);
 */
 
 
-void *read_form_gtk (char *fname, char *formname);
-void show_console (void);
-void hide_console (void);
-void add_to_console (char *s);
-void create_console (void);
-void decode_gui_winname (char *name);
+void *A4GL_read_form_gtk (char *fname, char *formname);
+void A4GL_show_console (void);
+void A4GL_hide_console (void);
+void A4GL_add_to_console (char *s);
+void A4GL_create_console (void);
+void A4GL_decode_gui_winname (char *name);
 
 #ifdef MOVED_TO_4GLDEF
-GtkWindow *cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
+GtkWindow *A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
 		      int prompt_line,	/* Ignored */
 		      int menu_line,	/* Ignored */
 		      int border,	/* Ignored */
@@ -105,8 +105,8 @@ GtkWindow *cr_window (char *s, int iswindow, int form_line, int error_line,	/*  
 		      int message_line, int attrib);
 
 
-//GtkFixed * read_form_gtk (char *fname);
-void cr_window_form (char *s,
+//GtkFixed * A4GL_read_form_gtk (char *fname);
+void A4GL_cr_window_form (char *s,
 		     int iswindow,
 		     int form_line,
 		     int error_line,
@@ -116,15 +116,15 @@ void cr_window_form (char *s,
 		     int comment_line, int message_line, int attrib);
 #endif
 
-//void open_form (char *form_id);
-//int disp_form (char *form_id, int a);
-//void current_window (char *s);
-//void sleep_i (void);
-void clear_console (char *s);
-//int close_form (char *name);
-/* int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
-//int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
-struct struct_screen_record *get_srec_gtk (char *name);
+//void A4GL_open_form (char *form_id);
+//int A4GL_disp_form (char *form_id, int a);
+//void A4GL_current_window (char *s);
+//void A4GL_sleep_i (void);
+void A4GL_clear_console (char *s);
+//int A4GL_close_form (char *name);
+/* int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
+//int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
+struct struct_screen_record *A4GL_get_srec_gtk (char *name);
 
 /*
 =====================================================================
@@ -136,17 +136,17 @@ struct struct_screen_record *get_srec_gtk (char *name);
  *
  */
 void
-gui_run_til_no_more (void)
+A4GL_gui_run_til_no_more (void)
 {
 
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
       while (gtk_events_pending ())
 	gtk_main_iteration ();
     }
   else
     {
-      debug ("Skipping run_til_no_more - in pause mode");
+      A4GL_debug ("Skipping run_til_no_more - in pause mode");
     }
 
 }
@@ -166,7 +166,7 @@ gui_run_til_no_more (void)
  * @param prompt_line The line where the PROMPT statement is prcessed.
  * @param menu_line The line where the 4gl MENU statement is displayed.
  * @param border Flag that indicate if the window should have a border.
- * @param comment_line The line the comments are showed (form comments).
+ * @param comment_line The line the A4GL_comments are showed (form comments).
  * @param message_line The line where the messages from MESSAGE statement is
  *   showed.
  * @param attrib The attributes used
@@ -187,7 +187,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
   GtkWidget *wxx = 0;
   int isscreenwin = 0;
 
-  debug ("AAA - Message Line %d\n", message_line);
+  A4GL_debug ("AAA - Message Line %d\n", message_line);
   if (form_line == 0xff)
     {
       form_line = std_dbscr.form_line;
@@ -211,11 +211,11 @@ create_window_gtk (char *name, int x, int y, int w, int h,
   if (message_line == 0xff)
     {
       message_line = std_dbscr.message_line;
-      debug ("Setting message line to default : %d\n", message_line);
+      A4GL_debug ("Setting message line to default : %d\n", message_line);
     }
 
 
-  debug ("gui_create_window %s %d %d %d %d", name, x, y, w, h);
+  A4GL_debug ("gui_create_window %s %d %d %d %d", name, x, y, w, h);
 
   if (strcmp (name, "screen") == 0)	/* Background screen */
     {
@@ -223,7 +223,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
       y = 0;
       h = 24;
       w = 80;
-      debug ("h=%d w=%d\n", h, w);
+      A4GL_debug ("h=%d w=%d\n", h, w);
       isscreenwin = 1;
     }
   else
@@ -246,8 +246,8 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 
       if (win == 0)
 	{
-	  debug ("No window created!");
-	  exitwith ("Unable to create new window");
+	  A4GL_debug ("No window created!");
+	  A4GL_exitwith ("Unable to create new window");
 	  return 0;
 	}
       fixed = gtk_fixed_new ();
@@ -276,11 +276,11 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 
 	  if (wxx == 0)
 	    {
-	      exitwith ("Invalid window style type");
+	      A4GL_exitwith ("Invalid window style type");
 	      return 0;
 	    }
 
-	  debug ("Event box=%p\n", wxx);
+	  A4GL_debug ("Event box=%p\n", wxx);
 
 
 	  gtk_fixed_put (GTK_FIXED (win_screen), wxx, x - XWIDTH,
@@ -288,7 +288,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 
 
 	  frame = (GtkFrame *) gtk_frame_new (0);
-	  debug ("Frame=%p\n", frame);
+	  A4GL_debug ("Frame=%p\n", frame);
 	  gtk_frame_set_shadow_type (GTK_FRAME (frame), frame_style);
 
 	  gtk_widget_set_usize (GTK_WIDGET (frame), w + 2 * XWIDTH,
@@ -306,7 +306,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 	  fixed = win_screen;
 	}
 
-      debug ("w=%d h=%d\n", w / XWIDTH, h / YHEIGHT);
+      A4GL_debug ("w=%d h=%d\n", w / XWIDTH, h / YHEIGHT);
       win = gtk_fixed_new ();
       gtk_widget_set_usize (GTK_WIDGET (win), w, h);
 
@@ -356,7 +356,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 		       (void *) message_line);
   gtk_object_set_data (GTK_OBJECT (win), "ATTRIB", (void *) attrib);
 
-  add_pointer (name, WINCODE, win);
+  A4GL_add_pointer (name, WINCODE, win);
   /*
      vbox = gtk_vbox_new (0, 0);
      gtk_container_add (fixed, vbox);
@@ -366,24 +366,24 @@ create_window_gtk (char *name, int x, int y, int w, int h,
   gtk_widget_show (win);
 
   gtk_signal_connect (GTK_OBJECT (win), "delete_event",
-		      GTK_SIGNAL_FUNC (delete_event), win);
+		      GTK_SIGNAL_FUNC (A4GL_delete_event), win);
 
   if (isscreenwin == 1)
     {
       gtk_signal_connect (GTK_OBJECT (win), "destroy",
-			  GTK_SIGNAL_FUNC (destroy_event), win);
+			  GTK_SIGNAL_FUNC (A4GL_destroy_event), win);
     }
 
   gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-		      GTK_SIGNAL_FUNC (keypress), win);
+		      GTK_SIGNAL_FUNC (A4GL_keypress), win);
 
-  debug ("Currwindow=%p MJA MJAMJA\n", win);
+  A4GL_debug ("Currwindow=%p MJA MJAMJA\n", win);
 
-  set_current_window (GTK_WINDOW (win));
+  A4GL_set_current_window (GTK_WINDOW (win));
 
 
-  gtkwin_stack ((GtkWindow *) win, '+');
-  gui_run_til_no_more ();
+  A4GL_gtkwin_stack ((GtkWindow *) win, '+');
+  A4GL_gui_run_til_no_more ();
   gtk_object_set_data (GTK_OBJECT (win), "FORM_LINE", (void *) form_line);
   return currwindow;
 }
@@ -411,26 +411,26 @@ A4GLUI_ui_init (int argc, char *argv[])
   /*
      shouldn't need this any more as we won't be starting curses mode
      in the first place
-     mja_endwin ();
+     A4GL_mja_endwin ();
    */
 
   if (acl_getenv ("GTKRC"))
     {
       char buff[256];
-      debug ("Read GTKRC\n");
+      A4GL_debug ("Read GTKRC\n");
       sprintf (buff, "/usr/share/themes/%s/gtk/gtkrc", acl_getenv ("GTKRC"));
       gtk_rc_parse (buff);
     }
-  alloc_colors ();
+  A4GL_alloc_colors ();
 
-  debug ("******************Done\n");
+  A4GL_debug ("******************Done\n");
   create_window_gtk ("screen", 0, 0, 80, 24, 1, 3, -1, -2, 1, 0, -2, 1,
 		     (0x0));
   wait = 1;
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 
   gtk_key_snooper_install (KeySnooper, 0);
-  create_console ();
+  A4GL_create_console ();
 
   if (tooltips == 0)
     tooltips = (GtkWidget *) gtk_tooltips_new ();
@@ -449,7 +449,7 @@ A4GLUI_ui_init (int argc, char *argv[])
  * @param prompt_line The line where the PROMPT statement is prcessed. Ignored.
  * @param menu_line The line where the 4gl MENU statement is displayed. Ignored.
  * @param border Flag that indicate if the window should have a border. Ignored.
- * @param comment_line The line the comments are showed (form comments). 
+ * @param comment_line The line the A4GL_comments are showed (form comments). 
  *   Ignored.
  * @param message_line The line where the messages from MESSAGE statement is 
  *   showed. Ignored.
@@ -457,7 +457,7 @@ A4GLUI_ui_init (int argc, char *argv[])
  * @return The widget window created.
  */
 void *
-cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
+A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
 	   int prompt_line,	/* Ignored */
 	   int menu_line,	/* Ignored */
 	   int border,		/* Ignored */
@@ -470,10 +470,10 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
 
 
   int x, y, w, h;
-  w = pop_int ();
-  h = pop_int ();
-  x = pop_int ();
-  y = pop_int ();
+  w = A4GL_pop_int ();
+  h = A4GL_pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
 
 
 
@@ -498,16 +498,16 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
       prompt_line = std_dbscr.prompt_line;
     }
 
-  if (has_pointer (s, WINCODE))
+  if (A4GL_has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
       /* {DEBUG} */
       {
-	debug ("Window already exists");
+ A4GL_debug ("Window already exists");
       }
 #endif
-      set_errm (s);
-      exitwith ("Window already exists (%s)");
+      A4GL_set_errm (s);
+      A4GL_exitwith ("Window already exists (%s)");
       return 0;
     }
 
@@ -518,7 +518,7 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
 			   prompt_line,
 			   menu_line,
 			   border, comment_line, message_line, attrib);
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
   return (void *) win;
 
 }
@@ -530,7 +530,7 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
  * @return The panel where the form is showed.
  */
 void *
-read_form_gtk (char *fname, char *formname)
+A4GL_read_form_gtk (char *fname, char *formname)
 {
   struct s_form_dets *f;
   struct struct_form *the_form;
@@ -542,18 +542,18 @@ read_form_gtk (char *fname, char *formname)
 
   /*
 
-     debug ("Opening file %s\n", fname);
-     f = (FILE *) open_file_dbpath (fname);
+     A4GL_debug ("Opening file %s\n", fname);
+     f = (FILE *) A4GL_open_file_dbpath (fname);
 
      if (f == 0)
      {
-     exitwith ("Unable to open file.\n");
+     A4GL_exitwith ("Unable to open file.\n");
      return 0;
      }
-     debug ("Clearing memory...");
+     A4GL_debug ("Clearing memory...");
    */
 
-  f = read_form (fname, formname);
+  f = A4GL_read_form (fname, formname);
 
   the_form = f->fileform;
 
@@ -576,17 +576,17 @@ read_form_gtk (char *fname, char *formname)
   a = 1;
   if (!a)
     {
-      debug ("Bad form file format, form returned=%d\n", a);
-      exitwith ("Bad form file format\n");
+      A4GL_debug ("Bad form file format, form returned=%d\n", a);
+      A4GL_exitwith ("Bad form file format\n");
       exit (27);
       /* return 0; */
     }
 
-  debug ("XDR form read");
-  debug ("DB         : '%s'\n", the_form->dbname);
-  debug ("Delimiters : '%s'\n", the_form->delim);
-  debug ("maxcol     : %d\n", the_form->maxcol);
-  debug ("Here\n");
+  A4GL_debug ("XDR form read");
+  A4GL_debug ("DB         : '%s'\n", the_form->dbname);
+  A4GL_debug ("Delimiters : '%s'\n", the_form->delim);
+  A4GL_debug ("maxcol     : %d\n", the_form->maxcol);
+  A4GL_debug ("Here\n");
 
   /* How many screens ? */
   if (the_form->snames.snames_len > 1)
@@ -597,12 +597,12 @@ read_form_gtk (char *fname, char *formname)
       GtkFixed *fixedpage;
       notebook = gtk_notebook_new ();
       rwindow = notebook;
-      debug ("Made notebook");
+      A4GL_debug ("Made notebook");
       gtk_widget_show (notebook);
       for (a = 0; a < the_form->snames.snames_len; a++)
 	{
 	  char buff[256];
-	  debug ("Making page %d\n", a);
+	  A4GL_debug ("Making page %d\n", a);
 	  fixedpage = (GtkFixed *) gtk_fixed_new ();
 	  gtk_widget_set_usize (GTK_WIDGET (fixedpage),
 				the_form->maxcol * XWIDTH,
@@ -620,7 +620,7 @@ read_form_gtk (char *fname, char *formname)
     }
   else
     {
-      debug ("Creating new fixed container for widgets\n");
+      A4GL_debug ("Creating new fixed container for widgets\n");
       fixed = gtk_fixed_new ();
       windows[0] = fixed;
       rwindow = fixed;
@@ -629,20 +629,20 @@ read_form_gtk (char *fname, char *formname)
   if (tooltips == 0)
     tooltips = (GtkWidget *) gtk_tooltips_new ();
 
-  debug ("Making widgets\n");
+  A4GL_debug ("Making widgets\n");
 
   mfrm_width = the_form->maxcol;
   mfrm_height = the_form->maxline;
 
-  debug ("maxline    : %d\n", the_form->maxline);
-  make_widgets (the_form, rwindow);
-  debug_last_field_created ("after make_widgets");
-  debug ("Done\n");
-  gui_run_til_no_more ();
-  debug ("adding ref from %p (rwindow) to %p xdr_form", rwindow, the_form);
-  debug_last_field_created ("after make_widgets 2");
+  A4GL_debug ("maxline    : %d\n", the_form->maxline);
+  A4GL_make_widgets (the_form, rwindow);
+  A4GL_debug_last_field_created ("after make_widgets");
+  A4GL_debug ("Done\n");
+  A4GL_gui_run_til_no_more ();
+  A4GL_debug ("adding ref from %p (rwindow) to %p xdr_form", rwindow, the_form);
+  A4GL_debug_last_field_created ("after A4GL_make_widgets 2");
   gtk_object_set_data (GTK_OBJECT (rwindow), "xdr_form", the_form);
-  debug_last_field_created ("after make_widgets 3");
+  A4GL_debug_last_field_created ("after A4GL_make_widgets 3");
   return (GtkFixed *) rwindow;
 }
 
@@ -654,7 +654,7 @@ read_form_gtk (char *fname, char *formname)
  * @param w A pointer to the GTK window to be made current.
  */
 void
-set_current_window (GtkWindow * w)
+A4GL_set_current_window (GtkWindow * w)
 {
 
   /*
@@ -664,7 +664,7 @@ set_current_window (GtkWindow * w)
      }
    */
 
-  debug ("setting current window=%p from %p", w, currwindow);
+  A4GL_debug ("setting current window=%p from %p", w, currwindow);
   currwindow = w;
 
 
@@ -684,9 +684,9 @@ show_form (GtkWindow * mainfrm, GtkFixed * form)
   GtkObject *a;
   int off;
 
-  debug ("SHow form mainfrm=%p form=%p", mainfrm, form);
-  debug ("Foreach..");
-  debug ("Remove old\n");
+  A4GL_debug ("SHow form mainfrm=%p form=%p", mainfrm, form);
+  A4GL_debug ("Foreach..");
+  A4GL_debug ("Remove old\n");
 
 /* Is there a form there already ? */
   a = gtk_object_get_data (GTK_OBJECT (mainfrm), "currform");
@@ -695,34 +695,34 @@ show_form (GtkWindow * mainfrm, GtkFixed * form)
 
   if (a)
     {
-      debug ("gtk_remove\n");
+      A4GL_debug ("gtk_remove\n");
       gtk_container_remove (GTK_CONTAINER (mainfrm), GTK_WIDGET (a));
-      debug ("done gtk_remove\n");
+      A4GL_debug ("done gtk_remove\n");
     }
 
-  debug ("Add %p %p", mainfrm, form);
-  debug ("Add %p %p", mainfrm, form);
+  A4GL_debug ("Add %p %p", mainfrm, form);
+  A4GL_debug ("Add %p %p", mainfrm, form);
 
 
   /* gtk_box_pack_end_defaults (v, form); */
   off = (int) gtk_object_get_data (GTK_OBJECT (mainfrm), "FORM_LINE");
-  debug ("Off [FORM_LINE] = %d\n", off);
+  A4GL_debug ("Off [FORM_LINE] = %d\n", off);
   gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0,
 		 (off - 1) * YHEIGHT);
 
-  debug ("Added mainfrm=%p form =%p as currform\n", mainfrm, form);
+  A4GL_debug ("Added mainfrm=%p form =%p as currform\n", mainfrm, form);
   gtk_object_set_data (GTK_OBJECT (mainfrm), "currform", form);
 
 
-  debug ("Show");
+  A4GL_debug ("Show");
   gtk_widget_show (GTK_WIDGET (form));
-  debug ("Done");
+  A4GL_debug ("Done");
   gtk_widget_show_all (GTK_WIDGET (mainfrm));
-  debug ("Shown");
+  A4GL_debug ("Shown");
 
-  set_current_window (mainfrm);
-  gui_run_til_no_more ();
-  debug ("Finished showing");
+  A4GL_set_current_window (mainfrm);
+  A4GL_gui_run_til_no_more ();
+  A4GL_debug ("Finished showing");
 }
 
 /**
@@ -737,13 +737,13 @@ show_form (GtkWindow * mainfrm, GtkFixed * form)
  * @param prompt_line The line where the PROMPT statement is prcessed.
  * @param menu_line The line where the 4gl MENU statement is displayed.
  * @param border Flag that indicate if the window should have a border.
- * @param comment_line The line the comments are showed (form comments). 
+ * @param comment_line The line the A4GL_comments are showed (form comments). 
  * @param message_line The line where the messages from MESSAGE statement is 
  *   showed.
  * @param attrib The attributes used.
  */
 int
-cr_window_form (char *s,
+A4GL_cr_window_form (char *s,
 		int iswindow,
 		int form_line,
 		int error_line,
@@ -778,22 +778,22 @@ cr_window_form (char *s,
       prompt_line = std_dbscr.prompt_line;
     }
 
-  fname = char_pop ();
-  trim (fname);
-  debug ("fname=%s", fname);
-  x = pop_long ();
-  y = pop_long ();
-  debug ("x,y=%d,%d", x, y);
+  fname = A4GL_char_pop ();
+  A4GL_trim (fname);
+  A4GL_debug ("fname=%s", fname);
+  x = A4GL_pop_long ();
+  y = A4GL_pop_long ();
+  A4GL_debug ("x,y=%d,%d", x, y);
 
-  debug ("Create window & form");
+  A4GL_debug ("Create window & form");
   //sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
   //
-  form = (GtkFixed *) read_form_gtk (fname, s);
-  debug_last_field_created ("read form");
+  form = (GtkFixed *) A4GL_read_form_gtk (fname, s);
+  A4GL_debug_last_field_created ("read form");
 
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 
-  debug ("Read form");
+  A4GL_debug ("Read form");
 
   win = create_window_gtk (s, x, y, mfrm_width, mfrm_height + form_line, iswindow, form_line, error_line,	/* Ignored */
 			   prompt_line,	/* Ignored */
@@ -801,12 +801,12 @@ cr_window_form (char *s,
 			   border,	/* Ignored */
 			   comment_line,	/* Ignored */
 			   message_line, attrib);
-  debug ("Made window win=%p", win);
-  debug_last_field_created ("make window");
+  A4GL_debug ("Made window win=%p", win);
+  A4GL_debug_last_field_created ("make window");
 
   show_form (win, form);
-  debug_last_field_created ("after show_form");
-  debug ("SHown form");
+  A4GL_debug_last_field_created ("after show_form");
+  A4GL_debug ("SHown form");
   return 1;
 }
 
@@ -818,22 +818,22 @@ cr_window_form (char *s,
  * @param form_id The form file name.
  */
 int
-open_form (char *form_id)
+A4GL_open_form (char *form_id)
 {
   char *filename;
   GtkFixed *form;
   //char buff[256];
-  filename = char_pop ();
-  trim (filename);
+  filename = A4GL_char_pop ();
+  A4GL_trim (filename);
   //sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
-  form = read_form_gtk (filename, form_id);
-  debug_last_field_created ("after reading form");
-  debug ("Adding form code for %s", form_id);
+  form = A4GL_read_form_gtk (filename, form_id);
+  A4GL_debug_last_field_created ("after reading form");
+  A4GL_debug ("Adding form code for %s", form_id);
   gtk_object_ref (GTK_OBJECT (form));
-  add_pointer (form_id, FORMCODE, form);
-  gui_run_til_no_more ();
-  debug_last_field_created ("form is open");
-  debug ("Form has been opened form=%p\n", form);
+  A4GL_add_pointer (form_id, FORMCODE, form);
+  A4GL_gui_run_til_no_more ();
+  A4GL_debug_last_field_created ("form is open");
+  A4GL_debug ("Form has been opened form=%p\n", form);
   return 1;
 }
 
@@ -844,25 +844,25 @@ open_form (char *form_id)
  * @param a Attributes. Ignored
  */
 int
-disp_form (char *form_id, int a)
+A4GL_disp_form (char *form_id, int a)
 {
   GtkFixed *ptr;
-  debug ("Disp form\n");
-  debug ("Displaying form\n");
-  ptr = (GtkFixed *) find_pointer (form_id, FORMCODE);
-  debug_last_field_created ("disp_form 1");
+  A4GL_debug ("Disp form\n");
+  A4GL_debug ("Displaying form\n");
+  ptr = (GtkFixed *) A4GL_find_pointer (form_id, FORMCODE);
+  A4GL_debug_last_field_created ("disp_form 1");
   if (ptr == 0)
     {
-      exitwith ("Form not open");
+      A4GL_exitwith ("Form not open");
       return 0;
     }
-  debug ("Showing form...%p MJA MJAMJA", ptr);
+  A4GL_debug ("Showing form...%p MJA MJAMJA", ptr);
   show_form (currwindow, ptr);
 
-  debug ("Done");
+  A4GL_debug ("Done");
   gtk_widget_show_all (GTK_WIDGET (currwindow));
-  debug_last_field_created ("disp_form 2");
-  gui_run_til_no_more ();
+  A4GL_debug_last_field_created ("disp_form 2");
+  A4GL_gui_run_til_no_more ();
   return 1;
 }
 
@@ -872,9 +872,9 @@ disp_form (char *form_id, int a)
  * @param a The window number.
  */
 GtkWidget *
-get_window_gtk (int a)
+A4GL_get_window_gtk (int a)
 {
-  debug ("Looking up window for screen %d\n", a);
+  A4GL_debug ("Looking up window for screen %d\n", a);
   return windows[a - 1];
 }
 
@@ -882,11 +882,11 @@ get_window_gtk (int a)
  * Make a refresh in the windows in GUI mode in the z axys.
  */
 void
-zrefresh (void)
+A4GL_zrefresh (void)
 {
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
-      gui_run_til_no_more ();
+      A4GL_gui_run_til_no_more ();
     }
 
 }
@@ -898,7 +898,7 @@ zrefresh (void)
  * @param s The window name.
  */
 int
-current_window (char *s)
+A4GL_current_window (char *s)
 {
   GtkWindow *w;
   static GtkWidget *b = 0;
@@ -906,20 +906,20 @@ current_window (char *s)
   /* If we are not using formhandlers then we need to
      ensure modality with the currwindow...
    */
-  debug ("Finding window to make current %s\n", s);
-  w = find_pointer (s, WINCODE);
+  A4GL_debug ("Finding window to make current %s\n", s);
+  w = A4GL_find_pointer (s, WINCODE);
 
-  debug (" Found : %p\n", w);
-  gtkwin_stack (w, '^');
+  A4GL_debug (" Found : %p\n", w);
+  A4GL_gtkwin_stack (w, '^');
 
-  if (!has_pointer (s, WINCODE))
+  if (!A4GL_has_pointer (s, WINCODE))
     {
-      exitwith ("Window is not open");
+      A4GL_exitwith ("Window is not open");
       return 0;
     }
 
-  debug ("Set_current %p", w);
-  set_current_window (w);
+  A4GL_debug ("Set_current %p", w);
+  A4GL_set_current_window (w);
 
   strcpy (currwinname, s);
   if (strcmp (s, "screen") != 0)
@@ -929,13 +929,13 @@ current_window (char *s)
       if (b)
 	{
 	  b = gtk_object_get_data (GTK_OBJECT (w), "FRAME");
-	  debug ("2. Hiding (%s) %p\n", s, b);
+	  A4GL_debug ("2. Hiding (%s) %p\n", s, b);
 	  gtk_widget_hide (b);
 	  gtk_widget_show (b);
 	}
 
       b = gtk_object_get_data (GTK_OBJECT (w), "TOP");
-      debug ("1.Hiding (%s) %p\n", s, b);
+      A4GL_debug ("1.Hiding (%s) %p\n", s, b);
       if (b == 0)
 	b = (GtkWidget *) w;
 
@@ -948,7 +948,7 @@ current_window (char *s)
       gtk_widget_hide (b);
       gtk_widget_show_all (b);
     }
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
   return 1;
 }
 
@@ -959,16 +959,16 @@ current_window (char *s)
  * @return The current window
  */
 void *
-get_curr_win_gtk (void)
+A4GL_get_curr_win_gtk (void)
 {
-  debug ("Current window : %p", currwindow);
+  A4GL_debug ("Current window : %p", currwindow);
   return (void *) GTK_WINDOW (currwindow);
 }
 
 
 
 void
-display_internal (int x, int y, char *s, int a, int clr_line)
+A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
   GtkFixed *cwin;
   GtkLabel *lab;
@@ -976,13 +976,13 @@ display_internal (int x, int y, char *s, int a, int clr_line)
   if (x == -1 && y == -1)
     {
       printf ("%s\n", s);
-      add_to_console (s);
+      A4GL_add_to_console (s);
     }
   else
     {
       x--;
       y--;
-      cwin = (GtkFixed *) get_curr_win_gtk ();
+      cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
 
@@ -990,8 +990,8 @@ display_internal (int x, int y, char *s, int a, int clr_line)
 	{
 	  if (strlen (s))
 	    {
-	      gui_set_field_fore ((GtkWidget *) lab,
-				  decode_colour_attr_aubit (a));
+	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
+				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_label_set_text (lab, s);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
@@ -1006,8 +1006,8 @@ display_internal (int x, int y, char *s, int a, int clr_line)
 	  if (strlen (buff))
 	    {
 	      lab = (GtkLabel *) gtk_label_new (s);
-	      gui_set_field_fore ((GtkWidget *) lab,
-				  decode_colour_attr_aubit (a));
+	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
+				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
@@ -1015,7 +1015,7 @@ display_internal (int x, int y, char *s, int a, int clr_line)
 	    }
 	}
     }
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 
 
 }
@@ -1028,7 +1028,7 @@ display_internal (int x, int y, char *s, int a, int clr_line)
  * @param a The column where the display is made.
  */
 void
-display_at (int n, int a)
+A4GL_display_at (int n, int a)
 {
   int x, y;
   int z;
@@ -1039,33 +1039,33 @@ display_at (int n, int a)
   GtkLabel *lab;
   char buff[256];
 
-  x = pop_int ();
-  y = pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
   s = malloc (2);
   s[0] = 0;
-  debug ("Got %d arguments");
+  A4GL_debug ("Got %d arguments");
   for (z = 0; z <= n - 1; z++)
     {
-      ptr = char_pop ();
-      debug ("DISPLAY_AT : '%s'\n", ptr);
+      ptr = A4GL_char_pop ();
+      A4GL_debug ("DISPLAY_AT : '%s'\n", ptr);
       buff2 = realloc (buff2, strlen (s) + strlen (ptr) + 1);
       s = realloc (s, strlen (s) + strlen (ptr) + 1);
       sprintf (buff2, "%s%s", ptr, s);
       strcpy (s, buff2);
-      debug ("s='%s' %p\n", s, s);
+      A4GL_debug ("s='%s' %p\n", s, s);
     }
-  debug ("Display @ x=%d y=%d s=%s\n", x, y, s);
+  A4GL_debug ("Display @ x=%d y=%d s=%s\n", x, y, s);
 
   if (x == -1 && y == -1)
     {
       printf ("%s\n", s);
-      add_to_console (s);
+      A4GL_add_to_console (s);
     }
   else
     {
       x--;
       y--;
-      cwin = (GtkFixed *) get_curr_win_gtk ();
+      cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
 
@@ -1073,8 +1073,8 @@ display_at (int n, int a)
 	{
 	  if (strlen (s))
 	    {
-	      gui_set_field_fore ((GtkWidget *) lab,
-				  decode_colour_attr_aubit (a));
+	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
+				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_label_set_text (lab, s);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
@@ -1089,8 +1089,8 @@ display_at (int n, int a)
 	  if (strlen (buff))
 	    {
 	      lab = (GtkLabel *) gtk_label_new (s);
-	      gui_set_field_fore ((GtkWidget *) lab,
-				  decode_colour_attr_aubit (a));
+	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
+				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
@@ -1098,7 +1098,7 @@ display_at (int n, int a)
 	    }
 	}
     }
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 
   free (s);
 
@@ -1108,19 +1108,19 @@ display_at (int n, int a)
  * GTK GUI implementation of SLEEP 4gl statement.
  */
 void
-sleep_i (void)
+A4GL_sleep_i (void)
 {
   int a;
   int c;
   int b;
-  a = pop_int ();
+  a = A4GL_pop_int ();
 
   for (c = 0; c < a; c++)
     {
       for (b = 0; b <= 9; b++)
 	{
 	  a4gl_usleep (100000);
-	  gui_run_til_no_more ();
+	  A4GL_gui_run_til_no_more ();
 	}
     }
 
@@ -1132,21 +1132,21 @@ sleep_i (void)
  * If its shown hide it, otherwise show it.
  */
 void
-console_toggle (void)
+A4GL_console_toggle (void)
 {
   static int shown = 0;
   shown = 1 - shown;
   if (shown)
-    show_console ();
+    A4GL_show_console ();
   else
-    hide_console ();
+    A4GL_hide_console ();
 }
 
 /**
  * Show the console widget.
  */
 void
-show_console (void)
+A4GL_show_console (void)
 {
   gtk_widget_show (GTK_WIDGET (console));
 }
@@ -1156,7 +1156,7 @@ show_console (void)
  * Hide the console widget.
  */
 void
-hide_console (void)
+A4GL_hide_console (void)
 {
   gtk_widget_hide (GTK_WIDGET (console));
 }
@@ -1165,7 +1165,7 @@ hide_console (void)
  * Append a string to the console list widget.
  */
 void
-add_to_console (char *s)
+A4GL_add_to_console (char *s)
 {
   gtk_clist_append (GTK_CLIST (console_list), &s);
 }
@@ -1174,7 +1174,7 @@ add_to_console (char *s)
  * Clear the data showed n the console.
  */
 void
-clear_console (char *s)
+A4GL_clear_console (char *s)
 {
   gtk_clist_clear (GTK_CLIST (console_list));
 }
@@ -1186,7 +1186,7 @@ clear_console (char *s)
  * @todo : Define what is the console widget.
  */
 void
-create_console (void)
+A4GL_create_console (void)
 {
   GtkWidget *scroll;
 
@@ -1222,17 +1222,17 @@ create_console (void)
  * @param The form name.
  */
 void
-close_form (char *name)
+A4GL_close_form (char *name)
 {
-  debug ("close_form_gtk: Not implemented");
+  A4GL_debug ("close_form_gtk: Not implemented");
 }
 
 /**
  * @todo 
  */
 int
-/* open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
-open_gui_form (char *name_orig, int absolute, int nat, char *like,
+/* A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
+A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
 	       int disable, void *handler_e, void (*handler_c (int a, int b)))
 {
   GtkWindow *win;
@@ -1244,7 +1244,7 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
   int a;
 
   strcpy (name, name_orig);
-  decode_gui_winname (name);
+  A4GL_decode_gui_winname (name);
   if (like && strlen (like))
     {
       strcpy (formname, like);
@@ -1262,8 +1262,8 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
 
   if (win == 0)
     {
-      debug ("No window created!");
-      exitwith ("Unable to create new window");
+      A4GL_debug ("No window created!");
+      A4GL_exitwith ("Unable to create new window");
       return 0;
     }
 
@@ -1274,11 +1274,11 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
   gtk_container_add (GTK_CONTAINER (win), GTK_WIDGET (fixed));
 
 
-  set_current_window (win);
+  A4GL_set_current_window (win);
   /* win = fixed; */
 
-  /* add_pointer (name, WINCODE, fixed); */
-  add_pointer (name, WINCODE, win);
+  /* A4GL_add_pointer (name, WINCODE, fixed); */
+  A4GL_add_pointer (name, WINCODE, win);
 
   gtk_signal_connect (GTK_OBJECT (win), "delete_event",
 		      GTK_SIGNAL_FUNC (handler_e), win);
@@ -1300,12 +1300,12 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
      GTK_SIGNAL_FUNC (handler_e), win);
    */
 
-  form = (GtkFixed *) read_form_gtk (formname, "uhmmm");
+  form = (GtkFixed *) A4GL_read_form_gtk (formname, "uhmmm");
   printf (">>>>      Setting currform...\n");
-  debug (">>>>      Setting currform... for %p  to %p\n", fixed, form);
+  A4GL_debug (">>>>      Setting currform... for %p  to %p\n", fixed, form);
   if (form == 0)
     {
-      exitwith ("Unable to open form");
+      A4GL_exitwith ("Unable to open form");
       return 0;
     }
   gtk_object_set_data (GTK_OBJECT (win), "currform", form);
@@ -1320,7 +1320,7 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
 
   for (a = 0; a < the_form->metrics.metrics_len; a++)
     {
-      debug ("%p -> ", the_form->metrics.metrics_val[a].field);
+      A4GL_debug ("%p -> ", the_form->metrics.metrics_val[a].field);
       gtk_object_set_data ((GtkObject *) the_form->metrics.metrics_val[a].
 			   field, "HANDLER", handler_c);
     }
@@ -1328,7 +1328,7 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
 
   gtk_widget_show (GTK_WIDGET (win));
 
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 
   return 1;
 }
@@ -1337,17 +1337,17 @@ open_gui_form (char *name_orig, int absolute, int nat, char *like,
  *
  */
 void
-decode_gui_winname (char *name)
+A4GL_decode_gui_winname (char *name)
 {
   char buff[256];
   char *ptr;
   strcpy (buff, name);
   ptr = strchr (name, '_');
-  debug ("Decoding name %s - ptr=%p", name, ptr);
+  A4GL_debug ("Decoding name %s - ptr=%p", name, ptr);
   if (ptr)
     {
       strcpy (buff, ptr + 1);
-      debug ("Buff=%s\n", buff);
+      A4GL_debug ("Buff=%s\n", buff);
       strcpy (name, buff);
     }
 }
@@ -1358,20 +1358,20 @@ decode_gui_winname (char *name)
  *
  */
 void
-gotolinemode (void)
+A4GL_gotolinemode (void)
 {
-  debug ("Set gotolinemode");
+  A4GL_debug ("Set gotolinemode");
 }
 
 /**
  *
  */
 int
-decode_colour_attr_aubit (int a)
+A4GL_decode_colour_attr_aubit (int a)
 {
   char colour[20];
   char attr[256];
-  get_strings_from_attr (a, colour, attr);
+  A4GL_get_strings_from_attr (a, colour, attr);
   if (strcmp (colour, "BLACK") == 0)
     return 0;
   if (strcmp (colour, "RED") == 0)
@@ -1395,21 +1395,21 @@ decode_colour_attr_aubit (int a)
  *
  */
 struct struct_screen_record *
-get_srec_gtk (char *name)
+A4GL_get_srec_gtk (char *name)
 {
   int a;
   struct_form *formdets;
   void *fd1;
   void *cwin;
 
-  cwin = (GtkFixed *) get_curr_win_gtk ();
+  cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
   fd1 = gtk_object_get_data (GTK_OBJECT (cwin), "currform");
-  debug ("fd1=%p\n", fd1);
+  A4GL_debug ("fd1=%p\n", fd1);
   formdets = gtk_object_get_data (fd1, "xdr_form");
 
-  a = find_srec (formdets, name);
+  a = A4GL_find_srec (formdets, name);
 
-  debug ("Got %d", a);
+  A4GL_debug ("Got %d", a);
 
   if (a == -1)
     return (struct struct_screen_record *) 0;
@@ -1420,7 +1420,7 @@ get_srec_gtk (char *name)
 
 
 char *
-get_currwin_name ()
+A4GL_get_currwin_name ()
 {
   return currwinname;
 }
@@ -1430,11 +1430,11 @@ get_currwin_name ()
 
 
 void
-dump_object (GtkObject * o)
+A4GL_dump_object (GtkObject * o)
 {
-  debug ("Object : %p\n");
+  A4GL_debug ("Object : %p\n");
 /*
-	debug("type:%d ",o->klass->type);
+	A4GL_debug("type:%d ",o->klass->type);
 
 gtk_4gl.c: In function `dump_object':
 gtk_4gl.c:1296: structure has no member named `klass'

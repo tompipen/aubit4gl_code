@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.3 2003-05-12 14:24:20 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.4 2003-05-15 07:10:41 mikeaubury Exp $
 #
 */
 
@@ -99,7 +99,7 @@ char lname[256];
 
 
 extern void printc (char *fmt, ...);	/* in API_lex.c */
-extern void lex_printh (char *fmt, ...);	/* in API_lex.c */
+extern void A4GL_lex_printh (char *fmt, ...);	/* in API_lex.c */
 extern void printh (char *fmt, ...);	/* in API_lex.c */
 
 /*
@@ -133,7 +133,7 @@ print_formhandler (char *name)
   lex_printh
     ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data);\n",
      name);
-  lex_printh ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n", name);
+  A4GL_lex_printh ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n", name);
   lex_printh
     ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n",
      name);

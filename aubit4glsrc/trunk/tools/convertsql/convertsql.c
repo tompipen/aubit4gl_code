@@ -44,7 +44,7 @@ process_stdin (char *dialect_in, char *dialect_out)
 	  /* we have an unquoted semi-colon; process what we have
 	     * in the statement buffer, then clear for the next one
 	   */
-	  convert_sql (dialect_in, dialect_out, buff);
+	  A4GL_convert_sql (dialect_in, dialect_out, buff);
 	  trimbuff ();
 	  printf ("%s\n", buff);
 	  clearbuff ();
@@ -77,7 +77,7 @@ process_stdin (char *dialect_in, char *dialect_out)
   /* anything in the buffer but not terminated with semi-colon ? */
   if (bc > 1)
     {
-      convert_sql (dialect_in, dialect_out, buff);
+      A4GL_convert_sql (dialect_in, dialect_out, buff);
       trimbuff ();
       printf ("%s\n", buff);
     }

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.6 2003-05-12 14:24:23 mikeaubury Exp $
+# $Id: nopdf.c,v 1.7 2003-05-15 07:10:43 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * PDF Report Implementation functions used in absence of PDF libraries on system.
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*

@@ -90,11 +90,11 @@ addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
 ;
 
 opt_into_fetch_part: {
-debug("no into\n");
+A4GL_debug("no into\n");
 strcpy($<str>$,"0,0");
 } | 
 	INTO {
-	debug("FETCH INTO  ...");
+ A4GL_debug("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
     start_bind('o',0);
 }
@@ -107,11 +107,11 @@ strcpy($<str>$,"0,0");
 ;
 
 opt_foreach_into_fetch_part: {
-debug("no into\n");
+A4GL_debug("no into\n");
 strcpy($<str>$,"0,0");
 } | 
 	INTO {
-	debug("FETCH INTO  ...");
+ A4GL_debug("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
     start_bind('o',0);
 }
@@ -138,9 +138,9 @@ fetch_place :
 	| CURRENT
 		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
 	| RELATIVE fgl_expr
-		{sprintf($<str>$,"%d,pop_int()",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_RELATIVE);}
 	| ABSOLUTE fgl_expr
-		{sprintf($<str>$,"%d,pop_int()",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_ABSOLUTE);}
 ;
 
 
@@ -215,7 +215,7 @@ if (strcmp($<str>2,"?")==0) {
 
 
 var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
-	| CHAR_VALUE {strcpy($<str>$,strip_quotes($<str>1));}
+	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 
 sql_cmd : opt_use {insql=1;} sql_commands {
@@ -224,12 +224,12 @@ insql=0;strcpy($<str>$,$<str>3);}
 ;
 
 sql_commands :  schema_ss {
-			lex_printcomment("/*  schema */\n");
+		 A4GL_lex_printcomment("/*  schema */\n");
 			print_exec_sql($<sql_string>1);
 			strcpy($<str>$,"Schema");
 	} 
 	| schema_element_ss {
-		lex_printcomment("/*  schema  2*/\n");
+	 A4GL_lex_printcomment("/*  schema  2*/\n");
 		print_exec_sql($<sql_string>1);
 		strcpy($<str>$,"Schema Element");
 	} 
@@ -239,21 +239,21 @@ sql_commands :  schema_ss {
  	}
 	| begin_statement 
 	| delete_statement_position {
-		lex_printcomment("/*  delete 1 */\n");
+	 A4GL_lex_printcomment("/*  delete 1 */\n");
 		print_exec_sql_bound($<str>1);
 		strcpy($<str>$,"Delete where current...");
 	} 
 	| delete_statement_search_ss {
-		lex_printcomment("/*  delete 2 */\n");
+	 A4GL_lex_printcomment("/*  delete 2 */\n");
 		print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"Delete where ...");
 	} 
 	| fetch_statement {
 		strcpy($<str>$,"Fetch");
-		lex_printcomment("/*  fetch */\n");
+	 A4GL_lex_printcomment("/*  fetch */\n");
 	} 
 	| insert_statement_ss {
-		lex_printcomment("/*  insert */\n");
+	 A4GL_lex_printcomment("/*  insert */\n");
 		print_exec_sql_bound($<sql_string>1);
 		strcpy($<str>$,"insert");
 	} 
@@ -832,9 +832,9 @@ scale:
 	;
 
 table_name:
-	 CHAR_VALUE DOT identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	 CHAR_VALUE DOT identifier { sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 	| CHAR_VALUE {
-		sprintf($<str>$," %s",strip_quotes($<str>1));
+		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
 		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
 	}
 	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
@@ -894,7 +894,7 @@ correlation_name:
 
 literal: CHAR_VALUE {
 	strcpy($<str>$,convstrsql($<str>1));
-	debug("Set $<str>$ to %s\n",$<str>$);
+ A4GL_debug("Set $<str>$ to %s\n",$<str>$);
 }
 	| NUMERIC
 	| real_number
@@ -947,7 +947,7 @@ s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 
 dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
-		|	CHAR_VALUE {strcpy($<str>$,strip_quotes($<str>1));}
+		|	CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 		;
 
 flush_cmd : opt_use
@@ -992,7 +992,7 @@ cur_update_list : colident | cur_update_list COMMA colident
 
 colident: identifier
 	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
+	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
 ;
 	
 
@@ -1031,7 +1031,7 @@ select_statement_ss:
 	SELECT 
 	op_ad 
 	{ start_bind('i',0); }
-	select_list_ss {debug("Got select list...\n");}
+	select_list_ss {A4GL_debug("Got select list...\n");}
         opt_into_sel_ss 
 	table_expression_ss
         sel_p2_ss {
@@ -1083,7 +1083,7 @@ sel_p2_ss : {
 		$<sql_string>$=strdup("");
 		}
 | UNION op_all select_statement2_ss {
-       lex_printcomment("/* UNION */");
+       A4GL_lex_printcomment("/* UNION */");
 	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
        }
 | order_by_clause  {
@@ -1101,7 +1101,7 @@ tmp_tabname: identifier;
 
 opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string("",0); }
 	| INTO  obind_var_list { 
-		$<sql_string>$=make_sql_string(get_into_part(get_bind_cnt('o')),0 ); 
+		$<sql_string>$=make_sql_string(A4GL_get_into_part(get_bind_cnt('o')),0 ); 
 
 	}
 ;
@@ -1292,7 +1292,7 @@ ufile : CHAR_VALUE | variable;
 
 opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
 print_use_session($<str>3);
-strcpy($<str>$,get_undo_use());
+strcpy($<str>$,A4GL_get_undo_use());
 }
 ;
 

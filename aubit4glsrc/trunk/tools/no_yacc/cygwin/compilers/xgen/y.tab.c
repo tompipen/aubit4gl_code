@@ -1301,7 +1301,7 @@ yyparse ()
   YYSIZE_T yystacksize = YYINITDEPTH;
 
   /* The variables used to return semantic value and location from the
-     action routines.  */
+     A4GL_action routines.  */
   YYSTYPE yyval;
 
 
@@ -1440,7 +1440,7 @@ yybackup:
       YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
-  /* If the proper action on seeing token YYTOKEN is to reduce or to
+  /* If the proper A4GL_action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
   if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
@@ -1477,7 +1477,7 @@ yybackup:
 
 
 /*-----------------------------------------------------------.
-| yydefault -- do the default action for the current state.  |
+| yydefault -- do the default A4GL_action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];

@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: stderr.c,v $
-@(#)Version:         $Revision: 1.2 $
-@(#)Last changed:    $Date: 2003-05-12 14:24:43 $
+@(#)Version:         $Revision: 1.3 $
+@(#)Last changed:    $Date: 2003-05-15 07:10:51 $
 @(#)Purpose:         Error reporting routines -- using stdio
 @(#)Author:          J Leffler
 @(#)Copyright:       (C) JLSS 1988-91,1996-98
@@ -24,7 +24,7 @@
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: stderr.c,v 1.2 2003-05-12 14:24:43 mikeaubury Exp $";
+  "@(#)$Id: stderr.c,v 1.3 2003-05-15 07:10:51 mikeaubury Exp $";
 
 #endif	/* lint */
   
@@ -38,7 +38,7 @@ static const char rcs[] =
   return (old);
 }
 const char *
-getarg0 (void) 
+A4GL_getarg0 (void) 
 {
   return (arg0);
 }
@@ -81,7 +81,7 @@ err_rcs_string (const char *s2, char *buffer, size_t buflen)
   
     /*
        ** Bother RCS!  We've probably been given something like:
-       ** "$Revision: 1.2 $ ($Date: 2003-05-12 14:24:43 $)"
+       ** "$Revision: 1.3 $ ($Date: 2003-05-15 07:10:51 $)"
        ** We only want to emit the revision number and the date/time.
        ** Skip the components between '$' and ': ', copy up to ' $',
        ** repeating as necessary.  And we have to test for overflow!
@@ -148,7 +148,7 @@ version (const char *s1, const char *s2)
 /* Store basename of command, excluding trailing slashes */ 
 /* Doesn't handle two pathological cases -- "/" and "" */ 
   void
-setarg0 (const char *argv0) 
+A4GL_setarg0 (const char *argv0) 
 {
   const char *cp;
   size_t nbytes = sizeof (arg0) - 1;
@@ -253,7 +253,7 @@ err_logmsg (FILE * fp, int flags, int estat, const char *string, ...)
 
 /* Cover function for err_fprint() using default output file (normally stderr) */ 
   void
-err_print (int flags, int estat, const char *string, va_list args) 
+A4GL_err_print (int flags, int estat, const char *string, va_list args) 
 {
   err_fprint (errout, flags, estat, string, args);
 }
@@ -310,7 +310,7 @@ main (int argc, char **argv)
       strcpy (data, *name);
       printf ("name = <<%s>>; ", *name);
       setarg0 (*name);
-      printf (" (<<%s>>) arg0 = <<%s>>\n", *name, getarg0 ());
+      printf (" (<<%s>>) arg0 = <<%s>>\n", *name, A4GL_getarg0 ());
       free (data);
     }
   setarg0 (argv[0]);
@@ -318,7 +318,7 @@ main (int argc, char **argv)
   while (*++argv != (char *) 0)
     remark2 ("next argument", *argv);
   remark ("reporting on version!");
-  version ("STDERR", "$Revision: 1.2 $ ($Date: 2003-05-12 14:24:43 $)");
+  version ("STDERR", "$Revision: 1.3 $ ($Date: 2003-05-15 07:10:51 $)");
   return (0);
 }
 

@@ -4,7 +4,7 @@
 
 #include "menu_x.x.h"
 
-#include "a4gl_lib_ui_gtk_int.h"	/* make_pixmap */
+#include "a4gl_lib_ui_gtk_int.h"	/* A4GL_make_pixmap */
 
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.6 2003-05-12 14:24:26 mikeaubury Exp $
+# $Id: console.c,v 1.7 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -66,24 +66,24 @@
 =====================================================================
 */
 
-void menu_attrib (ACL_Menu * menu, int attr, va_list ap);
+void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
 
 void A4GL_ui_init (int argc, char *argv[]);
 //void aclfgli_pr_message (int attr,int wait);
-//void display_error (int a,int wait);
-ACL_Menu *new_menu_create (char *title, int x, int y, int mn_type,
+//void A4GL_display_error (int a,int wait);
+ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			   int help_no);
-void add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
+void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 		      int help_no, int attr);
-void finish_create_menu (ACL_Menu * menu);
-char *disp_h_menu (ACL_Menu * menu);
-void redisplay_menu (ACL_Menu * menu);
-int menu_loop (ACL_Menu * menu);
-void free_menu (ACL_Menu * menu);
+void A4GL_finish_create_menu (ACL_Menu * menu);
+char *A4GL_disp_h_menu (ACL_Menu * menu);
+void A4GL_redisplay_menu (ACL_Menu * menu);
+int A4GL_menu_loop (ACL_Menu * menu);
+void A4GL_free_menu (ACL_Menu * menu);
 //void sleep_i(void);
-void menu_hide (ACL_Menu * menu, va_list * ap);
-void menu_show (ACL_Menu * menu, va_list * ap);
-//void start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+void A4GL_menu_hide (ACL_Menu * menu, va_list * ap);
+void A4GL_menu_show (ACL_Menu * menu, va_list * ap);
+//void A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 //void prompt_loop(struct s_prompt * prompt);
 
 /*
@@ -122,8 +122,8 @@ void
 aclfgli_pr_message (int attr, int wait)
 {
   char *s;
-  s = char_pop ();
-  trim (s);
+  s = A4GL_char_pop ();
+  A4GL_trim (s);
   printf ("%s\n", s);
   free (s);
 }
@@ -133,11 +133,11 @@ aclfgli_pr_message (int attr, int wait)
  * @todo Describe function
  */
 void
-display_error (int a, int wait)
+A4GL_display_error (int a, int wait)
 {
   char *s;
-  s = char_pop ();
-  trim (s);
+  s = A4GL_char_pop ();
+  A4GL_trim (s);
   printf ("%s\n", s);
   free (s);
 
@@ -148,7 +148,7 @@ display_error (int a, int wait)
  * @todo Describe function
  */
 void
-display_internal (int x, int y, char *s, int a, int clr_line)
+A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
   printf ("%s\n", s);
 }
@@ -159,16 +159,16 @@ display_internal (int x, int y, char *s, int a, int clr_line)
  * @todo Describe function
  */
 ACL_Menu *
-new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   char buff[256];
   ACL_Menu *menu;
 
   strcpy (buff, title);
-  trim (buff);
+  A4GL_trim (buff);
   menu = nalloc (ACL_Menu);
   strcpy (menu->menu_title, buff);
-  trim (menu->menu_title);
+  A4GL_trim (menu->menu_title);
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
@@ -187,7 +187,7 @@ new_menu_create (char *title, int x, int y, int mn_type, int help_no)
  * @todo Describe function
  */
 void
-add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
+A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 		 int help_no, int attr)
 {
   ACL_Menu_Opts *opt1;
@@ -200,11 +200,11 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   opt1->prev_option = 0;
   menu->num_opts++;
 
-  debug ("In add menu option : %s\n", txt);
+  A4GL_debug ("In add menu option : %s\n", txt);
 
   if (menu->first == 0)
     {
-      debug ("Setting first..\n");
+      A4GL_debug ("Setting first..\n");
       menu->first = opt1;
       menu->last = opt1;
     }
@@ -219,15 +219,15 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
       opt1->prev_option = opt2;
     }
 
-  debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
-  debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
-  debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
+  A4GL_debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
+  A4GL_debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
+  A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
 
   if (strlen (txt))
     {
       strcpy (opt1->opt_title, " ");
       strcpy (op1, txt);
-      trim (op1);
+      A4GL_trim (op1);
       strcat (opt1->opt_title, op1);
       strcat (opt1->opt_title, " ");
     }
@@ -252,7 +252,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
  * @todo Describe function
  */
 void
-finish_create_menu (ACL_Menu * menu)
+A4GL_finish_create_menu (ACL_Menu * menu)
 {
   (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
@@ -274,7 +274,7 @@ finish_create_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 char *
-disp_h_menu (ACL_Menu * menu)
+A4GL_disp_h_menu (ACL_Menu * menu)
 {
 /* Does nothing */
   return 0;
@@ -286,7 +286,7 @@ disp_h_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 void
-redisplay_menu (ACL_Menu * menu)
+A4GL_redisplay_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1;
   int cnt = 1;
@@ -328,14 +328,14 @@ redisplay_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 int
-menu_loop (ACL_Menu * menu)
+A4GL_menu_loop (ACL_Menu * menu)
 {
   char buff[21];
   int a;
   int r;
   ACL_Menu_Opts *opt1;
 
-  redisplay_menu (menu);
+  A4GL_redisplay_menu (menu);
   fgets (buff, 20, stdin);
   a = atoi (buff);
   opt1 = (ACL_Menu_Opts *) menu->first;
@@ -364,7 +364,7 @@ menu_loop (ACL_Menu * menu)
  * @todo Describe function
  */
 void
-free_menu (ACL_Menu * menu)
+A4GL_free_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1, *opt2;
   opt1 = (ACL_Menu_Opts *) menu->first;
@@ -381,10 +381,10 @@ free_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 void
-sleep_i (void)
+A4GL_sleep_i (void)
 {
   int a;
-  a = pop_int ();
+  a = A4GL_pop_int ();
   sleep (a);
 }
 
@@ -395,12 +395,12 @@ sleep_i (void)
  * @todo Describe function
  */
 void
-gotolinemode (void)
+A4GL_gotolinemode (void)
 {
 /* Does nothing - we are already in line mode when using UI=CONSOLE
 but we need dummy finction to satisfy API_ui
 */
-  debug ("in console gotolinemode...");
+  A4GL_debug ("in console gotolinemode...");
   return;
 }
 
@@ -410,9 +410,9 @@ but we need dummy finction to satisfy API_ui
  * @todo Describe function
  */
 void
-menu_hide (ACL_Menu * menu, va_list * ap)
+A4GL_menu_hide (ACL_Menu * menu, va_list * ap)
 {
-  menu_attrib (menu, 0, *ap);
+  A4GL_menu_attrib (menu, 0, *ap);
 }
 
 /**
@@ -420,9 +420,9 @@ menu_hide (ACL_Menu * menu, va_list * ap)
  * @todo Describe function
  */
 void
-menu_show (ACL_Menu * menu, va_list * ap)
+A4GL_menu_show (ACL_Menu * menu, va_list * ap)
 {
-  menu_attrib (menu, 1, *ap);
+  A4GL_menu_attrib (menu, 1, *ap);
 }
 
 /**
@@ -430,7 +430,7 @@ menu_show (ACL_Menu * menu, va_list * ap)
  * @todo Describe function
  */
 void
-menu_attrib (ACL_Menu * menu, int attr, va_list ap)
+A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap)
 {
   int a;
   ACL_Menu_Opts *option;
@@ -438,32 +438,32 @@ menu_attrib (ACL_Menu * menu, int attr, va_list ap)
   char s[256];
   int flg;
 
-  debug ("Menu attrib %d\n", attr);
+  A4GL_debug ("Menu attrib %d\n", attr);
   while ((argp = (va_arg (ap, char *))))
     {
-      trim (argp);
-      debug ("change attrib to %d of %s", attr, argp);
+      A4GL_trim (argp);
+      A4GL_debug ("change attrib to %d of %s", attr, argp);
       option = (ACL_Menu_Opts *) menu->first;
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  debug ("before copy");
+	  A4GL_debug ("before copy");
 	  strcpy (s, &option->opt_title[1]);
-	  debug ("after copy '%s' '%s'", s, option->opt_title);
-	  trim (s);
-	  debug ("trim %s", s);
+	  A4GL_debug ("after copy '%s' '%s'", s, option->opt_title);
+	  A4GL_trim (s);
+	  A4GL_debug ("trim %s", s);
 	  flg = 0;
 
 	  if (strcmp (argp, MENU_ALL) != 0)
 	    {
-	      debug ("Cmp '%s' to '%s'", s, argp);
+	      A4GL_debug ("Cmp '%s' to '%s'", s, argp);
 	      if (strcmp (s, argp) == 0)
 		{
-		  debug ("Cmpok\n");
+		  A4GL_debug ("Cmpok\n");
 		  flg = 1;
 		}
 	      else
 		{
-		  debug ("Cmpbad\n");
+		  A4GL_debug ("Cmpbad\n");
 		}
 	    }
 	  else
@@ -471,33 +471,33 @@ menu_attrib (ACL_Menu * menu, int attr, va_list ap)
 
 	  if (flg == 1)
 	    {
-	      debug ("   FOund it : %s , %s (%x) %d", s, argp,
+	      A4GL_debug ("   FOund it : %s , %s (%x) %d", s, argp,
 		     option->attributes & ACL_MN_HIDE, attr);
 	      if (attr)
 		{
-		  debug ("Turn On ?");
-		  debug ("Attemp to turn on %d %d %d", option->attributes,
+		  A4GL_debug ("Turn On ?");
+		  A4GL_debug ("Attemp to turn on %d %d %d", option->attributes,
 			 ACL_MN_HIDE, option->attributes & ACL_MN_HIDE);
 		  if (option->attributes & ACL_MN_HIDE)
 		    {
-		      debug ("Turn on");
+		      A4GL_debug ("Turn on");
 		      option->attributes = option->attributes - ACL_MN_HIDE;
 		    }
 		}
 	      else
 		{
-		  debug ("Turn off ?");
+		  A4GL_debug ("Turn off ?");
 		  if (!(option->attributes & ACL_MN_HIDE))
 		    {
-		      debug ("Turn off");
+		      A4GL_debug ("Turn off");
 		      option->attributes = option->attributes + ACL_MN_HIDE;
 		    }
 		}
 	    }
-	  debug ("chk next");
+	  A4GL_debug ("chk next");
 	  (ACL_Menu_Opts *) option =
 	    (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
-	  debug ("set next");
+	  A4GL_debug ("set next");
 	}
     }
   va_end (ap);
@@ -509,14 +509,14 @@ menu_attrib (ACL_Menu * menu, int attr, va_list ap)
  * @todo Describe function
  */
 int
-start_prompt (void *vprompt, int ap, int c, int h, int af)
+A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int width;
   struct s_prompt *prompt;
   prompt = vprompt;
 
-  promptstr = char_pop ();
+  promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
   prompt->charmode = c;
@@ -536,26 +536,26 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
  * @todo Describe function
  */
 int
-prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt)
 {
   char buff[256];
   struct s_prompt *prompt;
   prompt = vprompt;
   fgets (buff, 256, stdin);
   prompt->mode = 2;
-  stripnl (buff);
-  push_char (buff);
+  A4GL_stripnl (buff);
+  A4GL_push_char (buff);
   return 1;
 }
 
 int
-iscurrborder (void)
+A4GL_iscurrborder (void)
 {
   return 0;
 }
 
 int
-get_curr_width (void)
+A4GL_get_curr_width (void)
 {
   return 132;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.30 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: map.c,v 1.31 2003-05-15 07:10:20 mikeaubury Exp $
 #*/
 
 /**
@@ -79,12 +79,12 @@ openmap (char *s)
 {
   char buff[256];
 #ifdef DEBUG
-  debug ("openmap");
+  A4GL_debug ("openmap");
 #endif
   if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile == 0)
     {
 #ifdef DEBUG
-      debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+      A4GL_debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
 #endif
       sprintf (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
@@ -92,13 +92,13 @@ openmap (char *s)
       if (mapfile == 0)
 	{
 #ifdef DEBUG
-	  debug ("Unable to open map file");
+	  A4GL_debug ("Unable to open map file");
 #endif
 	  printf ("Unable to open map file\n");
 	  exit (1);
 	}
 #ifdef DEBUG
-      debug ("Mapfile=%p", mapfile);
+      A4GL_debug ("Mapfile=%p", mapfile);
 #endif
     }
 }
@@ -123,7 +123,7 @@ void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
 #ifdef DEBUG
-  debug ("Adding to map: %p", mapfile);
+  A4GL_debug ("Adding to map: %p", mapfile);
 #endif
   if (mapfile)
     fprintf (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.16 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: load.c,v 1.17 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -117,7 +117,7 @@ find_delims (char delim)
 
   for (a = 0; a < cnt; a++)
     {
-      debug ("Field %d = %s", a, colptr[a]);
+      A4GL_debug ("Field %d = %s", a, colptr[a]);
     }
   return cnt;
 }
@@ -176,7 +176,7 @@ gen_insert_for_load (char *tabname, int ncols)
  *
  * @todo Take the fixed definition of pipe delimiter
  *
- * @param s The string where to strip new line
+ * @param s The string where to A4GL_strip new line
  */
 static void
 stripnlload (char *s, char delim)
@@ -224,14 +224,14 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   int a;
   delim = delims[0];
 
-  debug ("In load_data");
+  A4GL_debug ("In load_data");
   strcpy (filename, fname);
-  trim (filename);
-  p = mja_fopen (filename, "r");
+  A4GL_trim (filename);
+  p = A4GL_mja_fopen (filename, "r");
 
   if (p == 0)
     {
-      exitwith ("Could not open file for load");
+      A4GL_exitwith ("Could not open file for load");
       return 0;
     }
 
@@ -241,7 +241,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       colname = va_arg (ap, char *);
       if (colname == 0)
 	break;
-      debug ("Adding %s to col_list", colname);
+      A4GL_debug ("Adding %s to col_list", colname);
       strcpy (col_list[cnt], colname);
       cnt++;
     }
@@ -249,31 +249,31 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   if (cnt == 0)
     {
       /* get columns from database */
-      debug ("Getting columns from database");
+      A4GL_debug ("Getting columns from database");
       cnt =
 	A4GLSQL_fill_array (MAXLOADCOLS, (char **) col_list, MAXCOLLENGTH - 1,
 			    0, 0, "COLUMNS", 0, tabname);
 
     }
 
-  debug ("Read %d columns", cnt);
+  A4GL_debug ("Read %d columns", cnt);
 
   if (cnt == 0)
     {
-      exitwith ("Error in getting number of columns for load");
+      A4GL_exitwith ("Error in getting number of columns for load");
       return 0;
     }
-  debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
+  A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
   insertstr = gen_insert_for_load (tabname, cnt);
 
-  debug ("Adding prepare..");
+  A4GL_debug ("Adding prepare..");
   if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (insertstr)) != 1)
     {
-      exitwith ("Internal Error : Error generating insert string for load");
+      A4GL_exitwith ("Internal Error : Error generating insert string for load");
       return 0;
     }
 
-  debug ("Insert string=%s & prepared\n", insertstr);
+  A4GL_debug ("Insert string=%s & prepared\n", insertstr);
 
   while (1)
     {
@@ -281,19 +281,19 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
       if (feof (p))
 	{
-	  debug ("Got to end of the file");
+	  A4GL_debug ("Got to end of the file");
 	  break;
 	}
       stripnlload (loadbuff, delim);
-      debug ("Read line '%s'", loadbuff);
+      A4GL_debug ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
-      debug ("nfields=%d number of columns=%d", nfields, cnt);
+      A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
 
       if (nfields != cnt)
 	{
 	  sprintf (buff, "%d", cnt);
-	  set_errm (buff);
-	  exitwith
+	  A4GL_set_errm (buff);
+	  A4GL_exitwith
 	    ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;
 	}
@@ -306,19 +306,19 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       ibind = malloc (sizeof (struct BINDING) * cnt);
       for (a = 0; a < cnt; a++)
 	{
-	  debug ("Binding %s @ %d", colptr[a], a);
+	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = 0;
 	  ibind[a].size = strlen (colptr[a]);
 	}
-      debug ("EXECUTE SQL cnt=%d", cnt);
+      A4GL_debug ("EXECUTE SQL cnt=%d", cnt);
       A4GLSQL_execute_sql ("load", cnt, ibind);
 
       if (a4gl_status != 0)
 	{
 	  sprintf (buff, "%d", cnt);
-	  set_errm (buff);
-	  exitwith ("Error reading load file at line %s");
+	  A4GL_set_errm (buff);
+	  A4GL_exitwith ("Error reading load file at line %s");
 	}
     }
   fclose (p);

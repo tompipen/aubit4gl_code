@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: color.c,v 1.3 2003-05-12 14:24:27 mikeaubury Exp $
+# $Id: color.c,v 1.4 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -111,9 +111,9 @@ void MyStyleSetItemColor (GdkColor color,	/* The allocated color to be added to 
 
 
 #ifdef OLD_INCL
-void alloc_colors (void);
-void gui_set_field_fore (GtkWidget * w, int attr);
-void gui_set_field_back (GtkWidget * w, int attr);
+void A4GL_alloc_colors (void);
+void A4GL_gui_set_field_fore (GtkWidget * w, int attr);
+void A4GL_gui_set_field_back (GtkWidget * w, int attr);
 #endif
 
 
@@ -128,7 +128,7 @@ void gui_set_field_back (GtkWidget * w, int attr);
  * Allocate the colors and assigns it to the styles used.
  */
 void
-alloc_colors (void)
+A4GL_alloc_colors (void)
 {
   int a;
   GtkStyle *default_style;
@@ -213,15 +213,15 @@ void MyStyleSetItemColor (GdkColor color,	/* The allocated color to be added to 
  * @param attr The index of the style wanted.
  */
 void
-gui_set_field_fore (GtkWidget * w, int attr)
+A4GL_gui_set_field_fore (GtkWidget * w, int attr)
 {
-  debug ("Setting style to %x", attr);
+  A4GL_debug ("Setting style to %x", attr);
   if (allocated_colors == 0)
-    alloc_colors ();
+    A4GL_alloc_colors ();
 
   if (attr & AUBIT_ATTR_REVERSE)
     {
-      debug ("REVERSE VIDEO!!!");
+      A4GL_debug ("REVERSE VIDEO!!!");
       gtk_widget_set_style (w, rcolorStyles[attr & 7]);
     }
   else
@@ -236,10 +236,10 @@ gui_set_field_fore (GtkWidget * w, int attr)
  * @param attr The index of the style wanted.
  */
 void
-gui_set_field_back (GtkWidget * w, int attr)
+A4GL_gui_set_field_back (GtkWidget * w, int attr)
 {
   if (allocated_colors == 0)
-    alloc_colors ();
+    A4GL_alloc_colors ();
   gtk_widget_set_style (w, colorStyles[attr & 7]);
 }
 

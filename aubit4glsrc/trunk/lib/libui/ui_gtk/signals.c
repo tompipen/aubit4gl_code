@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: signals.c,v 1.3 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: signals.c,v 1.4 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -61,21 +61,21 @@ char *widgettype;
 =====================================================================
 */
 
-void clicked_handler (GtkWidget * w, gpointer user_data);
-void changed_handler (GtkWidget * w, gpointer user_data);
+void A4GL_clicked_handler (GtkWidget * w, gpointer user_data);
+void A4GL_changed_handler (GtkWidget * w, gpointer user_data);
 void
-select_row_handler (GtkWidget * w,
+A4GL_select_row_handler (GtkWidget * w,
 		    gint row,
 		    gint column, GdkEventButton * event, gpointer user_data);
 
-void grab_focus_handler (GtkWidget * w, gpointer user_data);
+void A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data);
 
 
 #ifdef OLD_INCL
-void add_signal_clicked (GtkWidget * widget, void *funcptr);
-void add_signal_grab_focus (GtkWidget * widget, void *funcptr);
-void add_signal_changed (GtkWidget * widget, void *funcptr);
-void add_signal_select_row (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_changed (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
 #endif
 
 /*
@@ -106,7 +106,7 @@ set_widget_data (GtkWidget * widget)
  * event.
  */
 void
-clicked_handler (GtkWidget * w, gpointer user_data)
+A4GL_clicked_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -115,9 +115,9 @@ clicked_handler (GtkWidget * w, gpointer user_data)
   if (user_data)
     ptr = user_data;
   else
-    ptr = func;
+    ptr = A4GL_func;
 
-  debug ("Clicked... %p %p", w, user_data);
+  A4GL_debug ("Clicked... %p %p", w, user_data);
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   if (l)
     {
@@ -127,7 +127,7 @@ clicked_handler (GtkWidget * w, gpointer user_data)
     {
       nw = w;
     }
-  debug ("\nclicked - ptr=%p w=%p\n", ptr, nw);
+  A4GL_debug ("\nclicked - ptr=%p w=%p\n", ptr, nw);
 
   set_widget_data (nw);
   ptr (nw, "clicked");
@@ -139,7 +139,7 @@ clicked_handler (GtkWidget * w, gpointer user_data)
  * @param user_data
  */
 void
-changed_handler (GtkWidget * w, gpointer user_data)
+A4GL_changed_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -149,7 +149,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
   if (user_data)
     ptr = user_data;
   else
-    ptr = func;
+    ptr = A4GL_func;
 
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   /* Is this a change on part of a larger widget  (eg combo/radio) */
@@ -161,7 +161,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
     {
       nw = w;			/* No - keep the signal for this widget */
     }
-  debug ("\nchanged - ptr=%p w=%p\n", ptr, nw);
+  A4GL_debug ("\nchanged - ptr=%p w=%p\n", ptr, nw);
   set_widget_data (nw);
   ptr (nw, "on");
 }
@@ -172,7 +172,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
  * @todo Describe function
  */
 void
-select_row_handler (GtkWidget * w,
+A4GL_select_row_handler (GtkWidget * w,
 		    gint row,
 		    gint column, GdkEventButton * event, gpointer user_data)
 {
@@ -184,7 +184,7 @@ select_row_handler (GtkWidget * w,
   if (user_data)
     ptr = user_data;
   else
-    ptr = func;
+    ptr = A4GL_func;
 
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   /* Is this a change on part of a larger widget  (eg combo/radio) */
@@ -215,7 +215,7 @@ select_row_handler (GtkWidget * w,
  * @todo Describe function
  */
 void
-grab_focus_handler (GtkWidget * w, gpointer user_data)
+A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -223,12 +223,12 @@ grab_focus_handler (GtkWidget * w, gpointer user_data)
 
   char *l;
 
-  debug ("Focus change ");
+  A4GL_debug ("Focus change ");
 
   if (user_data)
     ptr = user_data;
   else
-    ptr = func;
+    ptr = A4GL_func;
 
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   if (l)
@@ -241,7 +241,7 @@ grab_focus_handler (GtkWidget * w, gpointer user_data)
     }
 
   set_widget_data (nw);
-  debug ("\nGrab focus w=%p ptr=%p\n", nw, ptr);
+  A4GL_debug ("\nGrab focus w=%p ptr=%p\n", nw, ptr);
 
   ptr (nw, "grab_focus");
 }
@@ -253,10 +253,10 @@ grab_focus_handler (GtkWidget * w, gpointer user_data)
  * @param funcptr A pointer to an aditional listener callback.
  */
 void
-add_signal_clicked (GtkWidget * widget, void *funcptr)
+A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr)
 {
   gtk_signal_connect (GTK_OBJECT (widget), "clicked",
-		      GTK_SIGNAL_FUNC (clicked_handler), funcptr);
+		      GTK_SIGNAL_FUNC (A4GL_clicked_handler), funcptr);
 }
 
 
@@ -265,10 +265,10 @@ add_signal_clicked (GtkWidget * widget, void *funcptr)
  * @todo Describe function
  */
 void
-add_signal_grab_focus (GtkWidget * widget, void *funcptr)
+A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr)
 {
   gtk_signal_connect (GTK_OBJECT (widget), "grab-focus",
-		      GTK_SIGNAL_FUNC (grab_focus_handler), funcptr);
+		      GTK_SIGNAL_FUNC (A4GL_grab_focus_handler), funcptr);
 }
 
 /**
@@ -276,10 +276,10 @@ add_signal_grab_focus (GtkWidget * widget, void *funcptr)
  * @todo Describe function
  */
 void
-add_signal_changed (GtkWidget * widget, void *funcptr)
+A4GL_add_signal_changed (GtkWidget * widget, void *funcptr)
 {
   gtk_signal_connect (GTK_OBJECT (widget), "changed",
-		      GTK_SIGNAL_FUNC (changed_handler), funcptr);
+		      GTK_SIGNAL_FUNC (A4GL_changed_handler), funcptr);
 }
 
 
@@ -288,10 +288,10 @@ add_signal_changed (GtkWidget * widget, void *funcptr)
  * @todo Describe function
  */
 void
-add_signal_select_row (GtkWidget * widget, void *funcptr)
+A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr)
 {
   gtk_signal_connect (GTK_OBJECT (widget), "select_row",
-		      GTK_SIGNAL_FUNC (select_row_handler), funcptr);
+		      GTK_SIGNAL_FUNC (A4GL_select_row_handler), funcptr);
 }
 
 

@@ -143,7 +143,7 @@ static void form_summ (void);
 static void usage (void);
 
 /* local data */
-static Fnode *cmod, *cfun;	/* current module, func */
+static Fnode *cmod, *cfun;	/* current module, A4GL_func */
 static Fnode *modr, *funr, *rptr, *frmr;	/* root nodes */
 static char prog[11];		/* program name */
 static int nmods, nfuns, nreps, nfrms;	/* counts */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.9 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: match.c,v 1.10 2003-05-15 07:10:40 mikeaubury Exp $
 #*/
 
 /**
@@ -71,20 +71,20 @@
 # define FALSE 0
 #endif
 
-/* match defines */
+/* A4GL_match defines */
 #define MATCH_PATTERN  6	/* bad pattern */
-#define MATCH_LITERAL  5	/* match failure on literal match */
-#define MATCH_RANGE    4	/* match failure on [..] construct */
+#define MATCH_LITERAL  5	/* A4GL_match failure on literal A4GL_match */
+#define MATCH_RANGE    4	/* A4GL_match failure on [..] A4GL_construct */
 #define MATCH_ABORT    3	/* premature end of text string */
 #define MATCH_END      2	/* premature end of pattern string */
-#define MATCH_VALID    1	/* valid match */
+#define MATCH_VALID    1	/* valid A4GL_match */
 
 /* pattern defines */
 #define PATTERN_VALID  0	/* valid pattern */
 #define PATTERN_ESC   -1	/* literal escape at end of pattern */
-#define PATTERN_RANGE -2	/* malformed range in [..] construct */
-#define PATTERN_CLOSE -3	/* no end bracket in [..] construct */
-#define PATTERN_EMPTY -4	/* [..] construct is empty */
+#define PATTERN_RANGE -2	/* malformed range in [..] A4GL_construct */
+#define PATTERN_CLOSE -3	/* no end bracket in [..] A4GL_construct */
+#define PATTERN_EMPTY -4	/* [..] A4GL_construct is empty */
 
 #define        min(a,b)        (a < b ? a : b)
 
@@ -102,12 +102,12 @@
 */
 
 
-BOOLEAN is_pattern (char *pattern);
-BOOLEAN is_valid_pattern (char *pattern, int *error_type);
-int matche_after_star (register char *pattern, register char *text);
+BOOLEAN A4GL_is_pattern (char *pattern);
+BOOLEAN A4GL_is_valid_pattern (char *pattern, int *error_type);
+int A4GL_matche_after_star (register char *pattern, register char *text);
 int fast_match_after_star (register char *pattern, register char *text);
 
-BOOLEAN match (char *p, char *t);
+BOOLEAN A4GL_match (char *p, char *t);
 
 
 /*
@@ -126,7 +126,7 @@ BOOLEAN match (char *p, char *t);
  *   - FALSE : The pattern dont have wildcards.
  */
 BOOLEAN
-is_pattern (char *p)
+A4GL_is_pattern (char *p)
 {
   while (*p)
     {
@@ -154,15 +154,15 @@ is_pattern (char *p)
  *
  *  - PATTERN_VALID - pattern is well formed
  *  - PATTERN_ESC   - pattern has invalid escape ('\' at end of pattern)
- *  - PATTERN_RANGE - [..] construct has a no end range in a '-' pair (ie [a-])
- *  - PATTERN_CLOSE - [..] construct has no end bracket (ie [abc-g )
- *  - PATTERN_EMPTY - [..] construct is empty (ie [])
+ *  - PATTERN_RANGE - [..] A4GL_construct has a no end range in a '-' pair (ie [a-])
+ *  - PATTERN_CLOSE - [..] A4GL_construct has no end bracket (ie [abc-g )
+ *  - PATTERN_EMPTY - [..] A4GL_construct is empty (ie [])
  *
  * @return TRUE if PATTERN has is a well formed regular expression according
  * to the above syntax
  */
 BOOLEAN
-is_valid_pattern (char *p, int *error_type)
+A4GL_is_valid_pattern (char *p, int *error_type)
 {
   /* init error_type */
   *error_type = PATTERN_VALID;
@@ -183,7 +183,7 @@ is_valid_pattern (char *p, int *error_type)
 	  p++;
 	  break;
 
-	  /* the [..] construct must be well formed */
+	  /* the [..] A4GL_construct must be well formed */
 	case '[':
 	  p++;
 
@@ -201,7 +201,7 @@ is_valid_pattern (char *p, int *error_type)
 	      return FALSE;
 	    }
 
-	  /* loop to end of [..] construct */
+	  /* loop to end of [..] A4GL_construct */
 	  while (*p != ']')
 	    {
 	      /* check for literal escape */
@@ -274,14 +274,14 @@ is_valid_pattern (char *p, int *error_type)
  *  otherwise:
  *
  *            MATCH_PATTERN  - bad pattern
- *            MATCH_LITERAL  - match failure on literal mismatch
- *            MATCH_RANGE    - match failure on [..] construct
+ *            MATCH_LITERAL  - A4GL_match failure on literal mismatch
+ *            MATCH_RANGE    - A4GL_match failure on [..] construct
  *            MATCH_ABORT    - premature end of text string
  *            MATCH_END      - premature end of pattern string
  *            MATCH_VALID    - valid match
  *
  *
- *  A match means the entire string TEXT is used up in matching.
+ *  A A4GL_match means the entire string TEXT is used up in matching.
  *
  *  In the pattern string:
  *       `*' matches any sequence of characters (zero or more)
@@ -296,14 +296,14 @@ is_valid_pattern (char *p, int *error_type)
  *  will support them.
  *
  *  To suppress the special syntactic significance of any of `[]*?!^-\',
- *  and match the character exactly, precede it with a `\'.
+ *  and A4GL_match the character exactly, precede it with a `\'.
  *
  *  @param The pattern to be used.
  *  @param The text to be checked.
  *
  */
 int
-matche (register char *p, register char *t)
+A4GL_matche (register char *p, register char *t)
 {
   register char range_start, range_end;	/* start and end in range */
 
@@ -311,11 +311,11 @@ matche (register char *p, register char *t)
   BOOLEAN member_match;		/* have I matched the [..] construct? */
   BOOLEAN loop;			/* should I terminate? */
 
-  debug ("In matche...");
+  A4GL_debug ("In matche...");
   for (; *p; p++, t++)
     {
       /* if this is the end of the text
-         then this is the end of the match */
+         then this is the end of the A4GL_match */
 
       if (!*t)
 	{
@@ -324,23 +324,23 @@ matche (register char *p, register char *t)
 
       /* determine and react to pattern type */
 
-      debug ("Looking at %c\n", *p);
+      A4GL_debug ("Looking at %c\n", *p);
       switch (*p)
 	{
-	case C_QUERY:		/* single any character match */
+	case C_QUERY:		/* single any character A4GL_match */
 	  break;
 
-	case C_STAR:		/* multiple any character match */
-	  return matche_after_star (p, t);
+	case C_STAR:		/* multiple any character A4GL_match */
+	  return A4GL_matche_after_star (p, t);
 
-	  /* [..] construct, single member/exclusion character match */
+	  /* [..] construct, single member/exclusion character A4GL_match */
 	case '[':
 	  {
 	    /* move to beginning of range */
 
 	    p++;
 
-	    /* check if this is a member match or exclusion match */
+	    /* check if this is a member A4GL_match or exclusion A4GL_match */
 
 	    invert = FALSE;
 	    if (*p == '!' || *p == '^')
@@ -348,7 +348,7 @@ matche (register char *p, register char *t)
 		invert = TRUE;
 		p++;
 	      }
-	    debug ("A1");
+	    A4GL_debug ("A1");
 	    /* if closing bracket here or at range start then we have a
 	       malformed pattern */
 
@@ -356,15 +356,15 @@ matche (register char *p, register char *t)
 	      {
 		return MATCH_PATTERN;
 	      }
-	    debug ("A1");
+	    A4GL_debug ("A1");
 
 	    member_match = FALSE;
 	    loop = TRUE;
 
-	    debug ("A1");
+	    A4GL_debug ("A1");
 	    while (loop)
 	      {
-		/* if end of construct then loop is done */
+		/* if end of A4GL_construct then loop is done */
 
 		if (*p == ']')
 		  {
@@ -416,7 +416,7 @@ matche (register char *p, register char *t)
 		    p++;
 		  }
 
-		/* if the text character is in range then match found.
+		/* if the text character is in range then A4GL_match found.
 		   make sure the range letters have the proper
 		   relationship to one another before comparison */
 
@@ -438,14 +438,14 @@ matche (register char *p, register char *t)
 		  }
 	      }
 
-	    /* if there was a match in an exclusion set then no match */
-	    /* if there was no match in a member set then no match */
+	    /* if there was a A4GL_match in an exclusion set then no A4GL_match */
+	    /* if there was no A4GL_match in a member set then no A4GL_match */
 
 	    if ((invert && member_match) || !(invert || member_match))
 	      return MATCH_RANGE;
 
 	    /* if this is not an exclusion then skip the rest of
-	       the [...] construct that already matched. */
+	       the [...] A4GL_construct that already matched. */
 
 	    if (member_match)
 	      {
@@ -455,7 +455,7 @@ matche (register char *p, register char *t)
 		    if (!*p)
 		      return MATCH_PATTERN;
 
-		    /* skip exact match */
+		    /* skip exact A4GL_match */
 		    //if (*p == '\\')
 		    //{
 		    //p++;
@@ -474,7 +474,7 @@ matche (register char *p, register char *t)
 	      }
 	    break;
 	  }
-	case '\\':		/* next character is quoted and must match exactly */
+	case '\\':		/* next character is quoted and must A4GL_match exactly */
 
 	  ///* move pattern pointer to quoted char and fall through */
 
@@ -485,7 +485,7 @@ matche (register char *p, register char *t)
 	  if (!*p)
 	    return MATCH_PATTERN;
 
-	  ///* must match this character exactly */
+	  ///* must A4GL_match this character exactly */
 
 	default:
 	  if (*p != *t)
@@ -511,7 +511,7 @@ matche (register char *p, register char *t)
  * @param t The text to be checked.
  */
 int
-matche_after_star (register char *p, register char *t)
+A4GL_matche_after_star (register char *p, register char *t)
 {
   register int match = 0;
   register int nextp;
@@ -562,12 +562,12 @@ matche_after_star (register char *p, register char *t)
          text pointer as we go here */
 
       if (nextp == *t || nextp == '[')
-	match = matche (p, t);
+ match = A4GL_matche (p, t);
 
       /* if the end of text is reached then no match */
 
       if (!*t++)
-	match = MATCH_ABORT;
+ match = MATCH_ABORT;
 
     }
   while (match != MATCH_VALID &&
@@ -587,12 +587,12 @@ matche_after_star (register char *p, register char *t)
  * @param t The text to be checked.
  */
 BOOLEAN
-match (char *p, char *t)
+A4GL_match (char *p, char *t)
 {
   int error_type;
 
-  error_type = matche (p, t);
-  debug ("error_type=%d - VALID=%d\n", error_type, MATCH_VALID);
+  error_type = A4GL_matche (p, t);
+  A4GL_debug ("error_type=%d - VALID=%d\n", error_type, MATCH_VALID);
   return (error_type == MATCH_VALID) ? TRUE : FALSE;
 }
 
@@ -601,8 +601,8 @@ match (char *p, char *t)
 
 /*
 ** This test main expects as first arg the pattern and as second arg
-** the match string.  Output is yea or nay on match.  If nay on
-** match then the error code is parsed and written.
+** the A4GL_match string.  Output is yea or nay on match.  If nay on
+** A4GL_match then the error code is parsed and written.
 */
 
 #include <stdio.h>
@@ -624,8 +624,8 @@ main (int argc, char *argv[])
 	printf ("    First Argument Is Not A Pattern\n");
       else
 	{
-	  error = matche (argv[1], argv[2]);
-	  is_valid_pattern (argv[1], &is_valid_error);
+	  error = A4GL_matche (argv[1], argv[2]);
+	  A4GL_is_valid_pattern (argv[1], &is_valid_error);
 
 	  switch (error)
 	    {
@@ -701,7 +701,7 @@ main (int argc, char *argv[])
  * @todo Describe function
  */
 int
-aubit_strcasecmp (char *a, char *b)
+A4GL_aubit_strcasecmp (char *a, char *b)
 {
   int c;
   for (c = 0; c <= min (strlen (a), strlen (b)); c++)

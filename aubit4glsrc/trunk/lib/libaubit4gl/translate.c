@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.13 2003-05-12 14:24:18 mikeaubury Exp $
+# $Id: translate.c,v 1.14 2003-05-15 07:10:41 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  */
 
 /*
@@ -65,7 +65,7 @@
 */
 
 //#define stricmp strcasecmp
-#define stricmp aubit_strcasecmp
+#define stricmp A4GL_aubit_strcasecmp
 #define TRANSLINESIZE 2048
 
 /*
@@ -95,9 +95,9 @@ int list_of_strings_len = 0;
 =====================================================================
 */
 
-void add_translate (int mode, char *from, char *to, int quote);
-void make_trans_list (void);
-char *translate (char *s);
+void A4GL_add_translate (int mode, char *from, char *to, int quote);
+void A4GL_make_trans_list (void);
+char *A4GL_translate (char *s);
 
 
 /*
@@ -113,19 +113,19 @@ char *translate (char *s);
  * @return
  */
 char *
-translate (char *s)
+A4GL_translate (char *s)
 {
   int a;
-  make_trans_list ();
+  A4GL_make_trans_list ();
   for (a = 0; a < translate_list_cnt; a++)
     {
       if (strcmp (translate_list[a].from, s) == 0)
 	{
-	  debug ("TRANSLATION FOUND for %s", s);
+	  A4GL_debug ("TRANSLATION FOUND for %s", s);
 
 	  if (translate_list[a].to != 0)
 	    {
-	      debug ("->%s\n", translate_list[a].to);
+	      A4GL_debug ("->%s\n", translate_list[a].to);
 	      return translate_list[a].to;
 	    }
 
@@ -133,7 +133,7 @@ translate (char *s)
 	    {
 	      return translate_list[a].identifier;
 	    }
-	  debug ("Shouldn't happen");
+	  A4GL_debug ("Shouldn't happen");
 	}
     }
 
@@ -146,7 +146,7 @@ translate (char *s)
  * @return
  */
 void
-make_trans_list (void)
+A4GL_make_trans_list (void)
 {
   char *filename;
   FILE *file;
@@ -161,7 +161,7 @@ make_trans_list (void)
     return;
   if (strlen (filename) == 0)
     return;
-  file = (FILE *) open_file_dbpath (filename);
+  file = (FILE *) A4GL_open_file_dbpath (filename);
 
   if (file == 0)
     {
@@ -178,7 +178,7 @@ make_trans_list (void)
       fgets (buff, TRANSLINESIZE, file);
       if (feof (file))
 	break;
-      stripnl (buff);
+      A4GL_stripnl (buff);
       if (buff[0] == '#')
 	continue;
 
@@ -188,14 +188,14 @@ make_trans_list (void)
 	    {
 	      ptr2 = &buff[a + 2];
 	      buff[a] = 0;
-	      add_translate (1, buff, ptr2, 0);
+	      A4GL_add_translate (1, buff, ptr2, 0);
 	    }
 
 	  if (buff[a] == ':' && buff[a + 1] == '>' && buff[a - 1] != '/')
 	    {
 	      ptr2 = &buff[a + 2];
 	      buff[a] = 0;
-	      add_translate (2, buff, ptr2, 0);
+	      A4GL_add_translate (2, buff, ptr2, 0);
 	    }
 
 
@@ -209,7 +209,7 @@ make_trans_list (void)
  * @return
  */
 void
-dumpstring (char *s, long n, char *fname)
+A4GL_dumpstring (char *s, long n, char *fname)
 {
   static FILE *f;
   static int ident = 0;
@@ -256,7 +256,7 @@ dumpstring (char *s, long n, char *fname)
  * @return
  */
 void
-add_translate (int mode, char *from, char *to, int quote)
+A4GL_add_translate (int mode, char *from, char *to, int quote)
 {
   char buff[2048];
 
@@ -266,7 +266,7 @@ add_translate (int mode, char *from, char *to, int quote)
 					 sizeof (struct translate_string) *
 					 translate_list_cnt);
   translate_list[translate_list_cnt - 1].from = strdup (from);
-  debug ("Adding %s -> %s mode %d", from, to, mode);
+  A4GL_debug ("Adding %s -> %s mode %d", from, to, mode);
   if (mode == 1)
     {
       if (quote == 0)

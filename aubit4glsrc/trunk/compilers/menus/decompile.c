@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.13 2003-05-12 14:23:58 mikeaubury Exp $
+# $Id: decompile.c,v 1.14 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -92,7 +92,7 @@ XDR xdrp; */
      int      isolated_xdr_decompile                  (void* the_menus,void* xdrp,void* f);
      int      isolated_xdr_decompile                  (struct menu_list the_menus,XDR xdrp,FILE* f);
    */
-  a = read_data_from_file ("menu_list", &the_menus, argv[1]);
+  a = A4GL_read_data_from_file ("menu_list", &the_menus, argv[1]);
 
   if (!a)
     {

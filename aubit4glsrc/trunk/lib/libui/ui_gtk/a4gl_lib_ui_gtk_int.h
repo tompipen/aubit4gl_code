@@ -53,29 +53,29 @@ struct s_widgets
 int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 		gpointer func_data);
 
-char *fld_val_generic (GtkWidget * k);
+char *A4GL_fld_val_generic (GtkWidget * k);
 
 
 
-void alloc_colors (void);
-void gui_set_field_fore (GtkWidget * w, int attr);
-void gui_set_field_back (GtkWidget * w, int attr);
+void A4GL_alloc_colors (void);
+void A4GL_gui_set_field_fore (GtkWidget * w, int attr);
+void A4GL_gui_set_field_back (GtkWidget * w, int attr);
 
-GtkWidget *cr_textbox (void);
-GtkWidget *cr_button (void);
-GtkWidget *cr_check (void);
-GtkWidget *cr_label (void);
-GtkWidget *cr_picture (void);
-GtkWidget *cr_combo (void);
-GtkWidget *cr_radio (void);
-GtkWidget *cr_list (void);
-GtkWidget *cr_calendar (void);
-GtkWidget *cr_scrollbar (void);
-GtkWidget *make_pixmap_gw (char *filename);
+GtkWidget *A4GL_cr_textbox (void);
+GtkWidget *A4GL_cr_button (void);
+GtkWidget *A4GL_cr_check (void);
+GtkWidget *A4GL_cr_label (void);
+GtkWidget *A4GL_cr_picture (void);
+GtkWidget *A4GL_cr_combo (void);
+GtkWidget *A4GL_cr_radio (void);
+GtkWidget *A4GL_cr_list (void);
+GtkWidget *A4GL_cr_calendar (void);
+GtkWidget *A4GL_cr_scrollbar (void);
+GtkWidget *A4GL_make_pixmap_gw (char *filename);
 
 
-gint delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
-void destroy_event (GtkWidget * widget, gpointer data);
+gint A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
+void A4GL_destroy_event (GtkWidget * widget, gpointer data);
 
 
 #ifndef DECLARE_DIMENSIONS
@@ -91,13 +91,13 @@ int gui_yheight = 20;
 
 
 
-int display_generic (GtkWidget * k, char *s);
-GtkWidget *find_widget (GtkWindow * form, char *ident);
+int A4GL_display_generic (GtkWidget * k, char *s);
+GtkWidget *A4GL_find_widget (GtkWindow * form, char *ident);
 
 
 
-char *make_colname_from_metric (struct_form * f, int metric_no);
-char *make_field_from_metric (struct_form * f, int metric_no);
+char *A4GL_make_colname_from_metric (struct_form * f, int metric_no);
+char *A4GL_make_field_from_metric (struct_form * f, int metric_no);
 
 
 
@@ -113,81 +113,81 @@ GtkWindow *cr_window_gtk (char *s,
 			  int border,
 			  int comment_line, int message_line, int attrib);
 
-void gui_prompt_style (int a);
+void A4GL_gui_prompt_style (int a);
 
 	/* signals.c */
-void add_signal_grab_focus (GtkWidget * widget, void *funcptr);
-void add_signal_clicked (GtkWidget * widget, void *funcptr);
-void add_signal_changed (GtkWidget * widget, void *funcptr);
-void add_signal_select_row (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_changed (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
 
 
 	/* error.c */
-void msg_window_gtk (char *s);
-void error_window_gtk (char *s);
-void clr_error_gtk (void);
+void A4GL_msg_window_gtk (char *s);
+void A4GL_error_window_gtk (char *s);
+void A4GL_clr_error_gtk (void);
 
 
 	/* input.c */
-void gui_set_field_pop_attr (GtkWidget * w, int attr);
-int gui_proc_key_display_array (int a);
-int gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
+void A4GL_gui_set_field_pop_attr (GtkWidget * w, int attr);
+int A4GL_gui_proc_key_display_array (int a);
+int A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 			va_list * ap);
 
 
 	/* fields.c */
-void gui_set_active (GtkWidget * w, int en_dis);
+void A4GL_gui_set_active (GtkWidget * w, int en_dis);
 
 	/* handler.c */
-void clear_something (void);
-int which_key (void);
-int user_has_done_something (void);
-int gui_get_lastkey (void);
+void A4GL_clear_something (void);
+int A4GL_which_key (void);
+int A4GL_user_has_done_something (void);
+int A4GL_gui_get_lastkey (void);
 
 
 	/* window.c */
-int decode_line_gtk (int l);
-int geterr_line_gtk (void);
-int getmsg_line_gtk (void);
-void gtkwin_stack (GtkWindow * w, int op);
-int getprompt_line_gtk (void);
+int A4GL_decode_line_gtk (int l);
+int A4GL_geterr_line_gtk (void);
+int A4GL_getmsg_line_gtk (void);
+void A4GL_gtkwin_stack (GtkWindow * w, int op);
+int A4GL_getprompt_line_gtk (void);
 
 
 	/* widget.c */
-void debug_last_field_created (char *txt);
+void A4GL_debug_last_field_created (char *txt);
 /* #include "a4gl_formxw.h" *//* struct struct_form */
-void add_widget (int metric_no, struct_form * f,
+void A4GL_add_widget (int metric_no, struct_form * f,
 		 GtkWidget * panel_to_add_to_window);
 
 	/* frm.c */
-void make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window);
-int find_attrib_from_metric (struct_form * f, int metric_no);
+void A4GL_make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window);
+int A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
 
 
 	/* gtk_4gl.c */
-void set_current_window (GtkWindow * w);
-int decode_colour_attr_aubit (int a);
-void console_toggle (void);
-GtkWidget *get_window_gtk (int a);
+void A4GL_set_current_window (GtkWindow * w);
+int A4GL_decode_colour_attr_aubit (int a);
+void A4GL_console_toggle (void);
+GtkWidget *A4GL_get_window_gtk (int a);
 
 	/* display.c */
 
-void dump_mem (char *ptr);
+void A4GL_dump_mem (char *ptr);
 
 	/* cr_funcs.c */
 
-void size_widget (GtkWidget * w, int width);
+void A4GL_size_widget (GtkWidget * w, int width);
 
 	/* params.c */
-void split_config (char *str);
+void A4GL_split_config (char *str);
 
 
-GtkWidget *get_which_field (void);
-int keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
-void func (GtkWidget * w, char *mode);
+GtkWidget *A4GL_get_which_field (void);
+int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
+void A4GL_func (GtkWidget * w, char *mode);
 
 
-void *find_param (char *name);
+void *A4GL_find_param (char *name);
 
 #endif
 

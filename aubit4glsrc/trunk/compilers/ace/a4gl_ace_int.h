@@ -18,7 +18,7 @@ int buffpos (void);
 int yylex (void);
 	//void yylex ( void );
 #endif
-void *memdup (void *p, int l);
+void *A4GL_memdup (void *p, int l);
 void set_expr_int (struct expr *e, int a);
 
 
@@ -38,7 +38,7 @@ int find_sql_var (int colno);
 
 /* ================= from output.c =========================== */
 
-void write_report (void);
+void A4GL_write_report (void);
 
 
 /* ================= from main.c =========================== */

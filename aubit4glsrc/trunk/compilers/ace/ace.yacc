@@ -342,7 +342,7 @@ prompt_section: prompt_element | prompt_section prompt_element
 ;
 
 prompt_element: PROMPT FOR variable USING string {
-	add_inputs((char *)strip_quotes($<str>5),$<str>3);
+	add_inputs((char *)A4GL_strip_quotes($<str>5),$<str>3);
 }
 ;
 
@@ -767,10 +767,10 @@ char_string_type:
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
         ;
 table_name:
-	CHAR_VALUE { sprintf($<str>$," %s",(char *)strip_quotes($<str>1)); }
+	CHAR_VALUE { sprintf($<str>$," %s",(char *)A4GL_strip_quotes($<str>1)); }
 	| table_identifier {sprintf($<str>$,$<str>1); }
 	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);  }
-	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",(char *)strip_quotes($<str>1),$<str>2,$<str>3);  }
+	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes($<str>1),$<str>2,$<str>3);  }
 
 	;
 

@@ -1512,8 +1512,8 @@ typedef union YYSTYPE
 
 
 
-  //char  str[3100];  /* This would core dump in CygWin on call to */
-  char str[1024];		/* This would core dump in CygWin on call to */
+  //char  str[3100];  /* This would core A4GL_dump in CygWin on call to */
+  char str[1024];		/* This would core A4GL_dump in CygWin on call to */
   /* yyparse in y.tab.c - 3100 in maximum. */
   /* Was: char    str[20000]; */
 
@@ -6815,7 +6815,7 @@ yyparse ()
   YYSIZE_T yystacksize = YYINITDEPTH;
 
   /* The variables used to return semantic value and location from the
-     action routines.  */
+     A4GL_action routines.  */
   YYSTYPE yyval;
 
 
@@ -6954,7 +6954,7 @@ yybackup:
       YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
-  /* If the proper action on seeing token YYTOKEN is to reduce or to
+  /* If the proper A4GL_action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
   if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
@@ -6991,7 +6991,7 @@ yybackup:
 
 
 /*-----------------------------------------------------------.
-| yydefault -- do the default action for the current state.  |
+| yydefault -- do the default A4GL_action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];
@@ -7177,7 +7177,7 @@ yyreduce:
     case 23:
 #line 990 "fgl.yacc"
       {
-	debug ("Using default attribute of WHITE");
+ A4GL_debug ("Using default attribute of WHITE");
 	sprintf (yyval.str, "%d", 0);
       }
       break;
@@ -7200,7 +7200,7 @@ yyreduce:
 #line 996 "fgl.yacc"
       {
 	strcpy (yyval.str, yyvsp[-1].str);
-	debug ("Got Attributes : %s", yyvsp[-1].str);
+ A4GL_debug ("Got Attributes : %s", yyvsp[-1].str);
 	start_state ("attribute", 0);
       }
       break;
@@ -7335,9 +7335,9 @@ yyreduce:
     case 48:
 #line 1032 "fgl.yacc"
       {
-	debug ("win_attributes_def");
+ A4GL_debug ("win_attributes_def");
 	start_state ("attribute", 1);
-	debug ("Started states");
+ A4GL_debug ("Started states");
 	form_attrib.attrib = 0;
       }
       break;
@@ -7423,7 +7423,7 @@ yyreduce:
 #line 1070 "fgl.yacc"
       {
 	form_attrib.menu_line = atoi (yyvsp[0].str);
-	debug ("Set menu line to %s", yyvsp[0].str);
+ A4GL_debug ("Set menu line to %s", yyvsp[0].str);
       }
       break;
 
@@ -7451,7 +7451,7 @@ yyreduce:
     case 62:
 #line 1141 "fgl.yacc"
       {
-	debug ("print_expr (3)");
+ A4GL_debug ("print_expr (3)");
 	print_expr (yyvsp[-2].ptr);
 	print_pop_variable (yyvsp[0].str);
       }
@@ -7507,7 +7507,7 @@ yyreduce:
 	dump_expr (yyvsp[-1].ptr);
 	a = get_counter_val ();
 	drop_counter ();
-	debug ("Printing call_func_call...");
+ A4GL_debug ("Printing call_func_call...");
 	print_class_func_call (yyvsp[-6].str, yyvsp[-4].str, yyvsp[-1].ptr,
 			       a);
       }
@@ -7532,7 +7532,7 @@ yyreduce:
     case 73:
 #line 1192 "fgl.yacc"
       {
-	debug ("Got args");
+ A4GL_debug ("Got args");
       }
       break;
 
@@ -7604,7 +7604,7 @@ yyreduce:
       {
 	char buff[256];
 	char *ptr;
-	debug ("STR6 = %s", yyvsp[-4].str);
+ A4GL_debug ("STR6 = %s", yyvsp[-4].str);
 	strcpy (buff, yyvsp[-4].str);
 	ptr = strchr (buff, ',');
 	*ptr = 0;
@@ -7638,7 +7638,7 @@ yyreduce:
     case 84:
 #line 1255 "fgl.yacc"
       {
-	debug ("print_expr (6)");
+ A4GL_debug ("print_expr (6)");
 	print_expr (yyvsp[-2].ptr);
       }
       break;
@@ -7762,7 +7762,7 @@ yyreduce:
       {
 	push_blockcommand ("CASE");
 	setinc (1);
-	incprint ();
+ A4GL_incprint ();
 	print_case (1);
 	setinc (1);
       }
@@ -7781,7 +7781,7 @@ yyreduce:
       {
 	push_blockcommand ("CASE");
 	setinc (1);
-	incprint ();
+ A4GL_incprint ();
 	print_case (0);
 	setinc (1);
       }
@@ -7799,21 +7799,21 @@ yyreduce:
 #line 1378 "fgl.yacc"
       {
 	setinc (-1);
-	incprint ();
+ A4GL_incprint ();
       }
       break;
 
     case 110:
 #line 1381 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
       }
       break;
 
     case 111:
 #line 1383 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
 	print_after_when (0);
       }
       break;
@@ -7821,14 +7821,14 @@ yyreduce:
     case 113:
 #line 1389 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
       }
       break;
 
     case 114:
 #line 1391 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
 	print_after_when (0);
       }
       break;
@@ -7838,14 +7838,14 @@ yyreduce:
       {
 	print_when (0);
 
-	incprint ();
+ A4GL_incprint ();
       }
       break;
 
     case 116:
 #line 1401 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
 	print_after_when (1);
 	setinc (-1);
       }
@@ -7854,7 +7854,7 @@ yyreduce:
     case 117:
 #line 1407 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
 	print_when (1);
       }
       break;
@@ -7862,7 +7862,7 @@ yyreduce:
     case 118:
 #line 1411 "fgl.yacc"
       {
-	incprint ();
+ A4GL_incprint ();
 	print_after_when (1);
 	setinc (-1);
       }
@@ -7913,14 +7913,14 @@ yyreduce:
     case 130:
 #line 1463 "fgl.yacc"
       {
-	lex_printc ("%s", yyvsp[0].str);
+ A4GL_lex_printc ("%s", yyvsp[0].str);
       }
       break;
 
     case 133:
 #line 1472 "fgl.yacc"
       {
-	lex_printc ("%s\n", yyvsp[0].str);
+ A4GL_lex_printc ("%s\n", yyvsp[0].str);
       }
       break;
 
@@ -7928,7 +7928,7 @@ yyreduce:
 #line 1482 "fgl.yacc"
       {
 /* This aint used - its filtered by the lexer first... */
-	lex_printc ("FIXME : Comment : %s\n");
+ A4GL_lex_printc ("FIXME : Comment : %s\n");
       }
       break;
 
@@ -8076,7 +8076,7 @@ yyreduce:
       {
 	char buff[80];
 	sprintf (buff, "BEF_FIELD_CHK(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, buff);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, buff);
       }
       break;
 
@@ -8092,7 +8092,7 @@ yyreduce:
       {
 	char buff[80];
 	sprintf (buff, "AFT_FIELD_CHK(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, buff);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, buff);
       }
       break;
 
@@ -8197,14 +8197,14 @@ yyreduce:
 #line 1691 "fgl.yacc"
       {
 	dtypelist[0] = 0;
-	lex_printcomment ("/* define */\n");
+ A4GL_lex_printcomment ("/* define */\n");
       }
       break;
 
     case 179:
 #line 1691 "fgl.yacc"
       {
-	lex_printcomment ("/*end def */\n");
+ A4GL_lex_printcomment ("/*end def */\n");
       }
       break;
 
@@ -8221,7 +8221,7 @@ yyreduce:
 	in_define = 0;
 	strcpy (yyval.str, yyvsp[0].str);
 	set_yytext (yyval.str);
-	if (bad_identifiers (yyval.str))
+	if (A4GL_bad_identifiers (yyval.str))
 	  {
 	    a4gl_yyerror
 	      ("You can't use this identifier as it is a reserved word in the target language");
@@ -8307,7 +8307,7 @@ yyreduce:
     case 203:
 #line 1755 "fgl.yacc"
       {
-	debug ("defines array %s", yyvsp[-1].str);
+ A4GL_debug ("defines array %s", yyvsp[-1].str);
 	push_type (0, 0, yyvsp[-1].str);
       }
       break;
@@ -8334,7 +8334,7 @@ yyreduce:
       {
 	sprintf (yyval.str, "%s][%s][%s", yyvsp[-4].str, yyvsp[-2].str,
 		 yyvsp[0].str);
-	debug ("Triplet");
+ A4GL_debug ("Triplet");
       }
       break;
 
@@ -8342,14 +8342,14 @@ yyreduce:
 #line 1786 "fgl.yacc"
       {
 	sprintf (yyval.str, "%s][%s", yyvsp[-2].str, yyvsp[0].str);
-	debug ("double");
+ A4GL_debug ("double");
       }
       break;
 
     case 214:
 #line 1787 "fgl.yacc"
       {
-	debug ("Single");
+ A4GL_debug ("Single");
       }
       break;
 
@@ -8374,14 +8374,14 @@ yyreduce:
       {
 	in_record++;
 	push_record ();
-	debug ("Like\n");
+ A4GL_debug ("Like\n");
       }
       break;
 
     case 219:
 #line 1796 "fgl.yacc"
       {
-	debug ("Link Table : %s\n", yyvsp[-2].str);
+ A4GL_debug ("Link Table : %s\n", yyvsp[-2].str);
 	push_rectab (yyvsp[-2].str);
 	pop_record ();
 	in_record--;
@@ -8392,16 +8392,16 @@ yyreduce:
 #line 1799 "fgl.yacc"
       {
 	push_record ();
-	debug ("Like\n");
+ A4GL_debug ("Like\n");
       }
       break;
 
     case 221:
 #line 1801 "fgl.yacc"
       {
-	debug ("Table:%s\n", yyvsp[-4].str);
+ A4GL_debug ("Table:%s\n", yyvsp[-4].str);
 	add_link_to (yyvsp[-4].str, yyvsp[-1].str);
-	debug ("Push record...\n");
+ A4GL_debug ("Push record...\n");
 	push_rectab (yyvsp[-4].str);
 	pop_record ();
       }
@@ -8471,7 +8471,7 @@ yyreduce:
     case 238:
 #line 1843 "fgl.yacc"
       {
-	debug ("Using specified type...");
+ A4GL_debug ("Using specified type...");
 	push_dim (yyvsp[0].str);
       }
       break;
@@ -8620,7 +8620,7 @@ yyreduce:
 #line 1885 "fgl.yacc"
       {
 	push_like (yyvsp[0].str);
-	lex_printcomment ("/*added(XXXXX)\n */");
+ A4GL_lex_printcomment ("/*added(XXXXX)\n */");
       }
       break;
 
@@ -8629,23 +8629,23 @@ yyreduce:
       {
 	char buff[256];
 	strcpy (buff, yyvsp[0].str);
-	debug ("Got a rogue datatype");
+ A4GL_debug ("Got a rogue datatype");
 
-	if (find_datatype (upshift (buff)))
+	if (A4GL_find_datatype (upshift (buff)))
 	  {
 	    char *(*function) (void);
-	    debug ("Checking ...");
-	    function = get_datatype_function_n (upshift (buff), "OUTPUT");
-	    debug ("Got function as %p", function);
+	    A4GL_debug ("Checking ...");
+	    function = A4GL_get_datatype_function_n (upshift (buff), "OUTPUT");
+	    A4GL_debug ("Got function as %p", function);
 
 	    /*  warning: comparison between pointer and integer */
 	    if ((int) function != -1 && (int) function != 0)
 	      {
-		debug ("call returns %s\n", function ());
+	 A4GL_debug ("call returns %s\n", function ());
 		strcpy (buff, function ());
-		debug ("Set up buff as %s");
+	 A4GL_debug ("Set up buff as %s");
 		push_type (function (), 0, 0);
-		debug ("Pushed type : %s\n", function ());
+	 A4GL_debug ("Pushed type : %s\n", function ());
 	      }
 	  }
 	else
@@ -8659,16 +8659,16 @@ yyreduce:
     case 259:
 #line 1918 "fgl.yacc"
       {
-	lex_printcomment ("/*column like(ZZZ)\n*/");
+ A4GL_lex_printcomment ("/*column like(ZZZ)\n*/");
 	sprintf (yyval.str, "%s.%s", yyvsp[-2].str, yyvsp[0].str);
-	lex_printcomment ("/*set col...(ZZZ)\n*/");
+ A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
       }
       break;
 
     case 260:
 #line 1922 "fgl.yacc"
       {
-	debug ("--->%s\n", yyvsp[0].str);
+ A4GL_debug ("--->%s\n", yyvsp[0].str);
 	strcpy (yyval.str, yyvsp[0].str);
       }
       break;
@@ -8676,7 +8676,7 @@ yyreduce:
     case 261:
 #line 1924 "fgl.yacc"
       {
-	debug ("--->%s\n", yyvsp[0].str);
+ A4GL_debug ("--->%s\n", yyvsp[0].str);
 	strcpy (yyval.str, yyvsp[0].str);
       }
       break;
@@ -8691,7 +8691,7 @@ yyreduce:
     case 263:
 #line 1928 "fgl.yacc"
       {
-	debug ("Real datetime %s to %s\n", yyvsp[-2].str, yyvsp[0].str);
+ A4GL_debug ("Real datetime %s to %s\n", yyvsp[-2].str, yyvsp[0].str);
 	sprintf (yyval.str, "%d",
 		 (atoi (yyvsp[-2].str) * 16) + atoi (yyvsp[0].str));
       }
@@ -8765,7 +8765,7 @@ yyreduce:
     case 273:
 #line 1948 "fgl.yacc"
       {
-	debug ("opt_frac returns %s", yyvsp[0].str);
+ A4GL_debug ("opt_frac returns %s", yyvsp[0].str);
 	sprintf (yyval.str, "%d", atoi (yyvsp[0].str) + 6);
       }
       break;
@@ -8780,7 +8780,7 @@ yyreduce:
     case 275:
 #line 1953 "fgl.yacc"
       {
-	debug ("Got end");
+ A4GL_debug ("Got end");
 	start_state ("dtime_val", 0);
 	strcpy (yyval.str, yyvsp[0].str);
       }
@@ -8789,7 +8789,7 @@ yyreduce:
     case 276:
 #line 1956 "fgl.yacc"
       {
-	debug ("Nothing in fraction - assume 2");
+ A4GL_debug ("Nothing in fraction - assume 2");
 	strcpy (yyval.str, "2");
       }
       break;
@@ -8797,8 +8797,8 @@ yyreduce:
     case 277:
 #line 1958 "fgl.yacc"
       {
-	debug ("Read fraction .. ");
-	debug ("    %s", yyvsp[-1].str);
+ A4GL_debug ("Read fraction .. ");
+ A4GL_debug ("    %s", yyvsp[-1].str);
 	strcpy (yyval.str, yyvsp[-1].str);
       }
       break;
@@ -8806,7 +8806,7 @@ yyreduce:
     case 278:
 #line 1964 "fgl.yacc"
       {
-	debug ("Nothing in fraction - assume 2");
+ A4GL_debug ("Nothing in fraction - assume 2");
 	strcpy (yyval.str, "2");
       }
       break;
@@ -8814,7 +8814,7 @@ yyreduce:
     case 279:
 #line 1966 "fgl.yacc"
       {
-	debug ("    %s", yyvsp[-1].str);
+ A4GL_debug ("    %s", yyvsp[-1].str);
 	strcpy (yyval.str, yyvsp[-1].str);
       }
       break;
@@ -8891,7 +8891,7 @@ yyreduce:
     case 289:
 #line 1990 "fgl.yacc"
       {
-	debug ("opt_frac returns %s", yyvsp[0].str);
+ A4GL_debug ("opt_frac returns %s", yyvsp[0].str);
 	sprintf (yyval.str, "%d", atoi (yyvsp[0].str) + 6);
       }
       break;
@@ -9055,16 +9055,16 @@ yyreduce:
 #line 2062 "fgl.yacc"
       {
 	dim_push_like (yyvsp[0].str);
-	lex_printcomment ("/*added(XXXXX)\n */");
+ A4GL_lex_printcomment ("/*added(XXXXX)\n */");
       }
       break;
 
     case 318:
 #line 2068 "fgl.yacc"
       {
-	lex_printcomment ("/*column like(ZZZ)\n*/");
+ A4GL_lex_printcomment ("/*column like(ZZZ)\n*/");
 	sprintf (yyval.str, "%s.%s", yyvsp[-2].str, yyvsp[0].str);
-	lex_printcomment ("/*set col...(ZZZ)\n*/");
+ A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
       }
       break;
 
@@ -9109,14 +9109,14 @@ yyreduce:
 #line 2098 "fgl.yacc"
       {
 	dim_push_record ();
-	debug ("Like\n");
+ A4GL_debug ("Like\n");
       }
       break;
 
     case 326:
 #line 2099 "fgl.yacc"
       {
-	debug ("Table:%s\n", yyvsp[-2].str);
+ A4GL_debug ("Table:%s\n", yyvsp[-2].str);
 	dim_push_rectab (yyvsp[-2].str);
 	dim_pop_record ();
       }
@@ -9133,14 +9133,14 @@ yyreduce:
 #line 2130 "fgl.yacc"
       {
 	print_display_line ();
-	strcpy (yyval.str, get_display_str (0, 0, 0));
+	strcpy (yyval.str, A4GL_get_display_str (0, 0, 0));
       }
       break;
 
     case 334:
 #line 2134 "fgl.yacc"
       {
-	strcpy (yyval.str, get_display_str (1, 0, 0));	/* FIXME */
+	strcpy (yyval.str, A4GL_get_display_str (1, 0, 0));	/* FIXME */
       }
       break;
 
@@ -9154,28 +9154,28 @@ yyreduce:
     case 336:
 #line 2140 "fgl.yacc"
       {
-	strcpy (yyval.str, get_display_str (4, 0, 0));
+	strcpy (yyval.str, A4GL_get_display_str (4, 0, 0));
       }
       break;
 
     case 337:
 #line 2141 "fgl.yacc"
       {
-	strcpy (yyval.str, get_display_str (2, yyvsp[0].str, 0));
+	strcpy (yyval.str, A4GL_get_display_str (2, yyvsp[0].str, 0));
       }
       break;
 
     case 338:
 #line 2142 "fgl.yacc"
       {
-	strcpy (yyval.str, get_display_str (3, yyvsp[0].str, yyvsp[-2].str));
+	strcpy (yyval.str, A4GL_get_display_str (3, yyvsp[0].str, yyvsp[-2].str));
       }
       break;
 
     case 339:
 #line 2143 "fgl.yacc"
       {
-	strcpy (yyval.str, get_display_str (5, yyvsp[-1].str, 0));
+	strcpy (yyval.str, A4GL_get_display_str (5, yyvsp[-1].str, 0));
       }
       break;
 
@@ -9570,7 +9570,7 @@ yyreduce:
     case 388:
 #line 2329 "fgl.yacc"
       {
-	debug ("Got literal ptr=%p", yyvsp[0].ptr);
+ A4GL_debug ("Got literal ptr=%p", yyvsp[0].ptr);
       }
       break;
 
@@ -9623,7 +9623,7 @@ yyreduce:
       {
 	/*set_counter(0); */
 	sprintf (yyval.str, "%d", get_counter_val ());
-	lex_printcomment ("/*L1 %s*/\n", yyval.str);
+ A4GL_lex_printcomment ("/*L1 %s*/\n", yyval.str);
       }
       break;
 
@@ -9631,7 +9631,7 @@ yyreduce:
 #line 2374 "fgl.yacc"
       {
 	sprintf (yyval.str, "%d", get_counter_val ());
-	lex_printcomment ("/*L2 %s*/\n", yyval.str);
+ A4GL_lex_printcomment ("/*L2 %s*/\n", yyval.str);
       }
       break;
 
@@ -9640,7 +9640,7 @@ yyreduce:
       {
 	/*set_counter(0); */
 	sprintf (yyval.str, "%d", get_counter_val ());
-	lex_printcomment ("/*L1 %s*/\n", yyval.str);
+ A4GL_lex_printcomment ("/*L1 %s*/\n", yyval.str);
       }
       break;
 
@@ -9648,7 +9648,7 @@ yyreduce:
 #line 2388 "fgl.yacc"
       {
 	sprintf (yyval.str, "%d", get_counter_val ());
-	lex_printcomment ("/*L2 %s*/\n", yyval.str);
+ A4GL_lex_printcomment ("/*L2 %s*/\n", yyval.str);
       }
       break;
 
@@ -9671,7 +9671,7 @@ yyreduce:
     case 411:
 #line 2406 "fgl.yacc"
       {
-	debug ("Print expr (2)");
+ A4GL_debug ("Print expr (2)");
 	print_expr (yyvsp[0].ptr);
       }
       break;
@@ -9752,9 +9752,9 @@ yyreduce:
     case 420:
 #line 2467 "fgl.yacc"
       {
-	debug ("init expr %s %s", yyvsp[-1].str, yyvsp[0].str);
+ A4GL_debug ("init expr %s %s", yyvsp[-1].str, yyvsp[0].str);
 	sprintf (yyval.str, "%s%p", yyvsp[-1].str, yyvsp[0].str);
-	sprintf (yyval.str, "%s", get_push_literal ('D', yyval.str));
+	sprintf (yyval.str, "%s", A4GL_get_push_literal ('D', yyval.str));
 	yyval.ptr = new_expr (yyval.str);
 	inc_counter ();
       }
@@ -9763,9 +9763,9 @@ yyreduce:
     case 421:
 #line 2475 "fgl.yacc"
       {
-	debug ("init expr int %s %d", yyvsp[-1].str, atoi (yyvsp[0].str));
+ A4GL_debug ("init expr int %s %d", yyvsp[-1].str, atoi (yyvsp[0].str));
 	sprintf (yyval.str, "%s%p", yyvsp[-1].str, yyvsp[0].str);
-	sprintf (yyval.str, "%s", get_push_literal ('L', yyval.str));
+	sprintf (yyval.str, "%s", A4GL_get_push_literal ('L', yyval.str));
 	yyval.ptr = new_expr (yyval.str);
 	inc_counter ();
       }
@@ -9774,7 +9774,7 @@ yyreduce:
     case 422:
 #line 2487 "fgl.yacc"
       {
-	sprintf (yyval.str, "%s", get_push_literal ('S', yyvsp[0].str));
+	sprintf (yyval.str, "%s", A4GL_get_push_literal ('S', yyvsp[0].str));
 	yyval.ptr = new_expr (yyval.str);
 	inc_counter ();
       }
@@ -9783,7 +9783,7 @@ yyreduce:
     case 423:
 #line 2493 "fgl.yacc"
       {
-	sprintf (yyval.str, "%s", get_push_literal ('D', yyvsp[0].str));
+	sprintf (yyval.str, "%s", A4GL_get_push_literal ('D', yyvsp[0].str));
 	yyval.ptr = new_expr (yyval.str);
 	inc_counter ();
       }
@@ -9792,7 +9792,7 @@ yyreduce:
     case 424:
 #line 2499 "fgl.yacc"
       {
-	sprintf (yyval.str, "%s", get_push_literal ('L', yyvsp[0].str));
+	sprintf (yyval.str, "%s", A4GL_get_push_literal ('L', yyvsp[0].str));
 	yyval.ptr = new_expr (yyval.str);
 	inc_counter ();
       }
@@ -9827,24 +9827,24 @@ yyreduce:
 
 	if (a >= 0)
 	  {
-	    if (aubit_strcasecmp (yyvsp[0].str, "today") == 0)
+	    if (A4GL_aubit_strcasecmp (yyvsp[0].str, "today") == 0)
 	      {
 		flg = 1;
 		strcpy (yyval.str, "push_today();");
 	      }
 
-	    if (aubit_strcasecmp (yyvsp[0].str, "time") == 0)
+	    if (A4GL_aubit_strcasecmp (yyvsp[0].str, "time") == 0)
 	      {
 		flg = 1;
 		strcpy (yyval.str, "push_time();");
 	      }
 
-	    if (aubit_strcasecmp (yyvsp[0].str, "pageno") == 0)
+	    if (A4GL_aubit_strcasecmp (yyvsp[0].str, "pageno") == 0)
 	      {
 		flg = 1;
 		strcpy (yyval.str, "push_variable(&rep.page_no,2);");
 	      }
-	    if (aubit_strcasecmp (yyvsp[0].str, "lineno") == 0)
+	    if (A4GL_aubit_strcasecmp (yyvsp[0].str, "lineno") == 0)
 	      {
 		flg = 1;
 		strcpy (yyval.str, "push_variable(&rep.line_no,2);");
@@ -9933,9 +9933,9 @@ yyreduce:
 	    YYERROR;
 	  }
 	insql = 0;
-	lex_printcomment ("/* rep_Agg = %s\n*/", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* rep_Agg = %s\n*/", yyvsp[0].str);
 	strcpy (buff, yyvsp[0].str);
-	debug ("report aggregate :  %s", buff);
+ A4GL_debug ("report aggregate :  %s", buff);
 	yyval.ptr = new_expr (buff);
       }
       break;
@@ -9964,7 +9964,7 @@ yyreduce:
     case 437:
 #line 2634 "fgl.yacc"
       {
-	debug ("Adding to list...");
+ A4GL_debug ("Adding to list...");
 	yyval.ptr = append_expr_expr (yyvsp[-2].ptr, yyvsp[0].ptr);
       }
       break;
@@ -10127,7 +10127,7 @@ yyreduce:
     case 454:
 #line 2751 "fgl.yacc"
       {
-	debug ("PLUS in math_expr $<ptr>2 = %p", yyvsp[0].ptr);
+ A4GL_debug ("PLUS in math_expr $<ptr>2 = %p", yyvsp[0].ptr);
 	yyval.ptr = append_expr (yyvsp[0].ptr, "pushop(OP_ADD);");
       }
       break;
@@ -10236,7 +10236,7 @@ yyreduce:
 #line 2824 "fgl.yacc"
       {
 	sprintf (yyval.str, "%d", get_counter_val ());
-	lex_printcomment ("/*function_call_expr2 %s*/\n", yyval.str);
+ A4GL_lex_printcomment ("/*function_call_expr2 %s*/\n", yyval.str);
 	drop_counter ();
       }
       break;
@@ -10246,11 +10246,11 @@ yyreduce:
       {
 	int cnt;
 	cnt = 1;
-	debug ("Print expr (1)");
+ A4GL_debug ("Print expr (1)");
 	/* print_expr($<ptr>4); */
 
 	strcpy (yyval.str,
-		expr_for_call (yyvsp[-5].str, yyvsp[-1].str, lastlineno,
+	 A4GL_expr_for_call (yyvsp[-5].str, yyvsp[-1].str, lastlineno,
 			       infilename));
 	yyval.ptr = append_expr (yyvsp[-2].ptr, yyval.str);
 	inc_counter ();
@@ -10261,7 +10261,7 @@ yyreduce:
 #line 2840 "fgl.yacc"
       {
 	sprintf (yyval.str, "\"%s\",\"%s\"", yyvsp[-3].str, yyvsp[-1].str);
-	debug ("NEWFORMAT : %s\n", yyval.str);
+ A4GL_debug ("NEWFORMAT : %s\n", yyval.str);
 	A4GLSQL_set_status (0, 0);
 	new_counter ();
       }
@@ -10694,7 +10694,7 @@ yyreduce:
     case 531:
 #line 3040 "fgl.yacc"
       {
-	debug ("For_cmds\n");
+ A4GL_debug ("For_cmds\n");
       }
       break;
 
@@ -10704,7 +10704,7 @@ yyreduce:
 
 	pop_blockcommand ("FOR");
 	print_for_end ();
-	lex_printcomment (" /*END FOR*/\n");
+ A4GL_lex_printcomment (" /*END FOR*/\n");
       }
       break;
 
@@ -10726,7 +10726,7 @@ yyreduce:
 #line 3069 "fgl.yacc"
       {
 	print_foreach_start ();
-	lex_printcomment (" /* foreach */\n");
+ A4GL_lex_printcomment (" /* foreach */\n");
       }
       break;
 
@@ -10903,7 +10903,7 @@ yyreduce:
 #line 3221 "fgl.yacc"
       {
 	//print_niy("Free Cursor");
-	lex_printcomment (" /* FIXME: Not implemented: Free Cursor */\n");;
+ A4GL_lex_printcomment (" /* FIXME: Not implemented: Free Cursor */\n");;
 
 	strcpy (yyval.str, "");
       }
@@ -11152,7 +11152,7 @@ yyreduce:
     case 622:
 #line 3341 "fgl.yacc"
       {
-	debug ("Scanvar=%d", scan_variable (yyvsp[0].str) & 15);
+ A4GL_debug ("Scanvar=%d", scan_variable (yyvsp[0].str) & 15);
 	if ((scan_variable (yyvsp[0].str) & 15) != 0)
 	  {
 	    a4gl_yyerror ("Only a character variable can be used for this");
@@ -11327,7 +11327,7 @@ yyreduce:
     case 711:
 #line 3562 "fgl.yacc"
       {
-	debug ("init to\n");
+ A4GL_debug ("init to\n");
       }
       break;
 
@@ -11425,7 +11425,7 @@ yyreduce:
     case 730:
 #line 3618 "fgl.yacc"
       {
-	lex_printcomment ("/* before row */ \n");
+ A4GL_lex_printcomment ("/* before row */ \n");
 	print_befaft_field_1 ("BEF_ROW");
       }
       break;
@@ -11482,7 +11482,7 @@ yyreduce:
     case 738:
 #line 3639 "fgl.yacc"
       {
-	lex_printcomment ("/* before insert/delete */ \n");
+ A4GL_lex_printcomment ("/* before insert/delete */ \n");
 	print_befaft_field_1 (yyvsp[0].str);
       }
       break;
@@ -11520,7 +11520,7 @@ yyreduce:
       {
 	char buff[256];
 	sprintf (buff, "(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, buff);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, buff);
       }
       break;
 
@@ -11550,7 +11550,7 @@ yyreduce:
       {
 	char buff[80];
 	sprintf (buff, "(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, yyvsp[0].str);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, yyvsp[0].str);
       }
       break;
 
@@ -11580,7 +11580,7 @@ yyreduce:
       {
 	char buff[80];
 	sprintf (buff, "BEF_FIELD_CHK(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, buff);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, buff);
       }
       break;
 
@@ -11596,7 +11596,7 @@ yyreduce:
       {
 	char buff[80];
 	sprintf (buff, "AFT_FIELD_CHK(%s)", yyvsp[0].str);
-	generate_or (yyval.str, yyvsp[-2].str, buff);
+ A4GL_generate_or (yyval.str, yyvsp[-2].str, buff);
       }
       break;
 
@@ -11646,7 +11646,7 @@ yyreduce:
 #line 3731 "fgl.yacc"
       {
 	print_input (1, yyvsp[-2].str, yyvsp[-1].str, 0);
-	strcpy (yyval.str, get_formloop_str (0));
+	strcpy (yyval.str, A4GL_get_formloop_str (0));
       }
       break;
 
@@ -11654,7 +11654,7 @@ yyreduce:
 #line 3736 "fgl.yacc"
       {
 	print_input (0, yyvsp[-4].str, yyvsp[-1].str, yyvsp[-2].str);
-	strcpy (yyval.str, get_formloop_str (0));
+	strcpy (yyval.str, A4GL_get_formloop_str (0));
       }
       break;
 
@@ -11911,9 +11911,9 @@ yyreduce:
 #line 3814 "fgl.yacc"
       {
 	char buff[256];
-	debug ("Label : %s\n", get_idents (0));
+ A4GL_debug ("Label : %s\n", get_idents (0));
 	strcpy (buff, get_idents (0));
-	convlower (buff);
+ A4GL_convlower (buff);
 	print_label (buff);
       }
       break;
@@ -11930,7 +11930,7 @@ yyreduce:
       {
 	chk4var = 0;
 	expand_obind ();
-	lex_printcomment ("/*let3*/\n");
+ A4GL_lex_printcomment ("/*let3*/\n");
       }
       break;
 
@@ -11939,7 +11939,7 @@ yyreduce:
       {
 	int to_vars;
 
-	debug ("/*processing let*/\n");
+ A4GL_debug ("/*processing let*/\n");
 	expand_obind ();
 	to_vars = how_many_in_bind ('o');
 	if (to_vars >= 1)
@@ -12037,7 +12037,7 @@ yyreduce:
       {
 	if (glob_only == 1)
 	  {
-	    debug ("Read globals section so Im done\n");
+	    A4GL_debug ("Read globals section so Im done\n");
 	    YYACCEPT;
 	  }
 
@@ -12123,9 +12123,9 @@ yyreduce:
     case 850:
 #line 4031 "fgl.yacc"
       {
-	lex_printcomment ("/* new function %s parameters*/\n", yyvsp[-1].str);
+ A4GL_lex_printcomment ("/* new function %s parameters*/\n", yyvsp[-1].str);
 	push_blockcommand ("FUNC");
-	lex_printcomment ("/* define section */\n");
+ A4GL_lex_printcomment ("/* define section */\n");
       }
       break;
 
@@ -12133,7 +12133,7 @@ yyreduce:
 #line 4037 "fgl.yacc"
       {
 	int c;
-	lex_printcomment ("/*end of define section */\n");
+ A4GL_lex_printcomment ("/*end of define section */\n");
 	print_variables ();
 	c = print_param ('f');
 	printPushFunction ();
@@ -12149,7 +12149,7 @@ yyreduce:
 	pop_blockcommand ("FUNC");
 	print_func_end ();
 	clr_function_constants ();
-	lex_printcomment ("/*end function*/\n");
+ A4GL_lex_printcomment ("/*end function*/\n");
       }
       break;
 
@@ -12182,7 +12182,7 @@ yyreduce:
       {
 	pop_blockcommand ("MAIN");
 	print_main_end ();
-	lex_printcomment ("/*end main */\n");
+ A4GL_lex_printcomment ("/*end main */\n");
       }
       break;
 
@@ -12204,7 +12204,7 @@ yyreduce:
     case 859:
 #line 4095 "fgl.yacc"
       {
-	lex_printcomment ("/* Got expr list */");
+ A4GL_lex_printcomment ("/* Got expr list */");
 	sprintf (yyval.str, "%s", yyvsp[0].str);
       }
       break;
@@ -12229,15 +12229,15 @@ yyreduce:
       {
 	strcpy (curr_func, "[Globals]");
 	set_current_variable_scope ('g');
-	lex_printcomment ("/* start of globals */\n");
+ A4GL_lex_printcomment ("/* start of globals */\n");
       }
       break;
 
     case 869:
 #line 4125 "fgl.yacc"
       {
-	lex_printcomment ("/* end of globals */");
-	debug ("end of globals\n");
+ A4GL_lex_printcomment ("/* end of globals */");
+ A4GL_debug ("end of globals\n");
 	lastlineno = yylineno;
 	set_current_variable_scope ('m');
       }
@@ -12251,7 +12251,7 @@ yyreduce:
 	strcpy (b, yyvsp[0].str);
 	set_current_variable_scope ('G');
 	tr_glob_fname (b);
-	debug ("Reading globals file %s\n", b);
+ A4GL_debug ("Reading globals file %s\n", b);
 	rm_quote (b);
 	read_glob (b);
 	set_current_variable_scope ('m');
@@ -12277,9 +12277,9 @@ yyreduce:
 	printDeclareFunctionStack (buff);
 
 	cnt = 0;
-	lex_printcomment ("/* new function %s parameters*/\n", yyvsp[-1].str);
+ A4GL_lex_printcomment ("/* new function %s parameters*/\n", yyvsp[-1].str);
 	push_blockcommand ("FUNC");
-	lex_printcomment ("/* define section */\n");
+ A4GL_lex_printcomment ("/* define section */\n");
       }
       break;
 
@@ -12287,7 +12287,7 @@ yyreduce:
 #line 4162 "fgl.yacc"
       {
 	print_variables ();
-	lex_printcomment ("/*end of define section */\n");
+ A4GL_lex_printcomment ("/*end of define section */\n");
 	print_param ('f');
 	printPushFunction ();
 	print_func_args (atoi (yyvsp[-3].str));
@@ -12326,7 +12326,7 @@ yyreduce:
     case 878:
 #line 4204 "fgl.yacc"
       {
-	lex_printcomment ("/* Block%d_m2 (Before menu) */", menu_cnt);
+ A4GL_lex_printcomment ("/* Block%d_m2 (Before menu) */", menu_cnt);
 	print_menu_block (-2);
       }
       break;
@@ -12341,10 +12341,10 @@ yyreduce:
     case 880:
 #line 4215 "fgl.yacc"
       {
-	debug ("Menu=%d menu cnt=%d", menu_cnt, menu_cmd_cnt[menu_cnt]);
+ A4GL_debug ("Menu=%d menu cnt=%d", menu_cnt, menu_cmd_cnt[menu_cnt]);
 	push_command (menu_cnt, menu_cmd_cnt[menu_cnt], yyvsp[-3].str,
 		      yyvsp[-2].str, yyvsp[-1].str, yyvsp[0].str);
-	lex_printcomment ("/* Block%d_%d */", menu_cnt,
+ A4GL_lex_printcomment ("/* Block%d_%d */", menu_cnt,
 			  menu_cmd_cnt[menu_cnt] - 1);
 	print_menu_block (menu_cmd_cnt[menu_cnt] - 1);
 	menu_cmd_cnt[menu_cnt]++;
@@ -12615,20 +12615,20 @@ yyreduce:
 	    strcpy (yyvsp[0].str, xbuff);
 	  }
 	strcpy (buff, yyvsp[0].str);
-	lex_printcomment ("/* .. var %s*/", buff);
+ A4GL_lex_printcomment ("/* .. var %s*/", buff);
 	if (buff[0] != ' ')
 	  addmap ("Use Variable", buff, curr_func, yylineno, infilename);
 
 	if (strncmp (buff, " ASSOCIATE_", 11) != 0)
 	  {
-	    convlower (buff);
+	    A4GL_convlower (buff);
 	  }
 
 	strcpy (yyval.str, buff);
-	debug ("Checking variable '%s'", buff);
+ A4GL_debug ("Checking variable '%s'", buff);
 	n = scan_variable (buff);
 
-	debug ("scan variable returns -> %d\n", n);
+ A4GL_debug ("scan variable returns -> %d\n", n);
 
 	if (n == -1 && buff[0] != ' ')
 	  {
@@ -12662,7 +12662,7 @@ yyreduce:
 #line 4429 "fgl.yacc"
       {
 	sprintf (yyval.str, "%s.%s", yyvsp[-1].str, yyvsp[0].str);
-	lex_printcomment ("/* record building -> %s */\n", yyval.str);
+ A4GL_lex_printcomment ("/* record building -> %s */\n", yyval.str);
       }
       break;
 
@@ -12675,7 +12675,7 @@ yyreduce:
 	char buff2[256];
 	char arrbuff[256];
 
-	lex_printcomment ("/* OPEN_SQUARE.. */\n");
+ A4GL_lex_printcomment ("/* OPEN_SQUARE.. */\n");
 
 	if (strcmp (yyvsp[-4].str, "sqlca") == 0)
 	  {
@@ -12690,13 +12690,13 @@ yyreduce:
 	    YYERROR;
 	  }
 
-	lex_printcomment ("/*variable with [...]*/");
+ A4GL_lex_printcomment ("/*variable with [...]*/");
 	get_variable_dets (buff, &type, &arrsize, &size, &level, arrbuff);
-	lex_printcomment ("/* Arrsize = %d size = %d*/", arrsize, size);
+ A4GL_lex_printcomment ("/* Arrsize = %d size = %d*/", arrsize, size);
 
 	if (arrsize > 0)
 	  {
-	    debug ("Is array...");
+	    A4GL_debug ("Is array...");
 	    sprintf (yyval.str, "%s[%s]", buff,
 		     change_arr_elem (yyvsp[-1].str));
 	    lex_printcomment
@@ -12706,12 +12706,12 @@ yyreduce:
 	  }
 	else
 	  {
-	    debug ("Is string...");
+	    A4GL_debug ("Is string...");
 	    sprintf (yyval.str, " substr(%s , %d , %s , 0 ) /*1*/", buff,
 		     (int) scan_variable (buff), yyvsp[-1].str);
 
 	    addmap ("Use Variable", buff, curr_func, yylineno, infilename);
-	    lex_printcomment ("/*character variable %s*/\n", yyval.str);
+	    A4GL_lex_printcomment ("/*character variable %s*/\n", yyval.str);
 	  }
 
 	mcnt++;
@@ -12730,7 +12730,7 @@ yyreduce:
 	    YYERROR;
 	  }
 
-	lex_printcomment ("/*Associative Variable : %s*/\n", yyvsp[-1].str);
+ A4GL_lex_printcomment ("/*Associative Variable : %s*/\n", yyvsp[-1].str);
 	sprintf (yyval.str, " ASSOCIATE_%s(%s,1)", upshift (yyvsp[-3].str),
 		 yyvsp[-1].str);
       }
@@ -12747,7 +12747,7 @@ yyreduce:
 	    a4gl_yyerror (buff2);
 	    YYERROR;
 	  }
-	lex_printcomment ("/*Associative Variable : %s*/\n", yyvsp[-1].str);
+ A4GL_lex_printcomment ("/*Associative Variable : %s*/\n", yyvsp[-1].str);
 	sprintf (yyval.str, " ASSOCIATE_%s(%s,0)", upshift (yyvsp[-3].str),
 		 yyvsp[-1].str);
       }
@@ -12761,10 +12761,10 @@ yyreduce:
 	char arrbuff[256];
 	printf ("ARRAY (array_r_variable) : %s %s", yyvsp[-1].str,
 		yyvsp[0].str);
-	lex_printcomment ("/*array variable nnn */");
+ A4GL_lex_printcomment ("/*array variable nnn */");
 	get_variable_dets (yyvsp[-1].str, &type, &arrsize, &size, &level,
 			   arrbuff);
-	lex_printcomment ("/*here %s %x */", yyvsp[-1].str, type);
+ A4GL_lex_printcomment ("/*here %s %x */", yyvsp[-1].str, type);
 	if (scan_variable (yyvsp[-1].str) == -1)
 	  {
 	    sprintf (buff2, "'%s' does not represent a defined variable (7)",
@@ -12775,7 +12775,7 @@ yyreduce:
 	  }
 
 
-	debug ("Type=%d (%d) arrsize=%d", type, type & 0xffff, arrsize);
+ A4GL_debug ("Type=%d (%d) arrsize=%d", type, type & 0xffff, arrsize);
 
 	if (strchr (yyvsp[0].str, ':'))
 	  {
@@ -12797,11 +12797,11 @@ yyreduce:
 
 	    if ((type & (0xffff != 0)) || (arrsize > 0))
 	      {
-		lex_printcomment ("/* changing optbase for array: %s */\n",
+	 A4GL_lex_printcomment ("/* changing optbase for array: %s */\n",
 				  yyvsp[0].str);
 		sprintf (yyval.str, "%s[%s]", yyvsp[-1].str,
 			 change_arr_elem (yyvsp[0].str));
-		lex_printcomment ("/* array variable %s*/\n", yyval.str);
+	 A4GL_lex_printcomment ("/* array variable %s*/\n", yyval.str);
 	      }
 	    else
 	      {
@@ -12810,7 +12810,7 @@ yyreduce:
 			 yyvsp[0].str);
 		addmap ("Use Variable", yyvsp[-1].str, curr_func, yylineno,
 			infilename);
-		lex_printcomment ("/*character variable %s*/\n", yyval.str);
+	 A4GL_lex_printcomment ("/*character variable %s*/\n", yyval.str);
 		dec_counter ();
 		mcnt--;
 	      }
@@ -12828,10 +12828,10 @@ yyreduce:
 	char arrbuff[256];
 	printf ("ARRAY (array_r_variable) : %s %s", yyvsp[-1].str,
 		yyvsp[0].str);
-	lex_printcomment ("/*array variable nnn */");
+ A4GL_lex_printcomment ("/*array variable nnn */");
 	get_variable_dets (yyvsp[-1].str, &type, &arrsize, &size, &level,
 			   arrbuff);
-	lex_printcomment ("/*here %s %x */", yyvsp[-1].str, type);
+ A4GL_lex_printcomment ("/*here %s %x */", yyvsp[-1].str, type);
 	if (scan_variable (yyvsp[-1].str) == -1)
 	  {
 	    sprintf (yyval.str, "%s%s", yyvsp[-1].str, yyvsp[0].str);
@@ -12840,7 +12840,7 @@ yyreduce:
 	  {
 
 
-	    debug ("Type=%d (%d) arrsize=%d", type, type & 0xffff, arrsize);
+	    A4GL_debug ("Type=%d (%d) arrsize=%d", type, type & 0xffff, arrsize);
 
 	    if (strchr (yyvsp[0].str, ':'))
 	      {
@@ -12867,7 +12867,7 @@ yyreduce:
 		       yyvsp[0].str);
 		    sprintf (yyval.str, "%s[%s]", yyvsp[-1].str,
 			     change_arr_elem (yyvsp[0].str));
-		    lex_printcomment ("/* array variable %s*/\n", yyval.str);
+		    A4GL_lex_printcomment ("/* array variable %s*/\n", yyval.str);
 		  }
 		else
 		  {
@@ -12877,7 +12877,7 @@ yyreduce:
 			     yyvsp[0].str);
 		    addmap ("Use Variable", yyvsp[-1].str, curr_func,
 			    yylineno, infilename);
-		    lex_printcomment ("/*character variable %s*/\n",
+		    A4GL_lex_printcomment ("/*character variable %s*/\n",
 				      yyval.str);
 		    dec_counter ();
 		    mcnt--;
@@ -12892,7 +12892,7 @@ yyreduce:
     case 944:
 #line 4630 "fgl.yacc"
       {
-	debug ("---> Subscript or substring");
+ A4GL_debug ("---> Subscript or substring");
 	strcpy (yyval.str, yyvsp[-1].str);
       }
       break;
@@ -12900,7 +12900,7 @@ yyreduce:
     case 945:
 #line 4635 "fgl.yacc"
       {
-	debug ("---> Subscript & substring");
+ A4GL_debug ("---> Subscript & substring");
 	sprintf (yyval.str, "%s:%s", yyvsp[-4].str, yyvsp[-1].str);
       }
       break;
@@ -12908,7 +12908,7 @@ yyreduce:
     case 946:
 #line 4643 "fgl.yacc"
       {
-	debug ("List element");
+ A4GL_debug ("List element");
 	sprintf (yyval.str, "%s", yyvsp[0].str);
       }
       break;
@@ -12916,7 +12916,7 @@ yyreduce:
     case 947:
 #line 4648 "fgl.yacc"
       {
-	debug ("List element continues");
+ A4GL_debug ("List element continues");
 	sprintf (yyval.str, "%s,%s", yyvsp[-2].str, yyvsp[0].str);
       }
       break;
@@ -12949,13 +12949,13 @@ yyreduce:
 	addmap ("Let Variable", buff, curr_func, yylineno, infilename);
 	if (strncmp (buff, " ASSOCIATE_", 11) != 0)
 	  {
-	    convlower (buff);
+	    A4GL_convlower (buff);
 	  }
 	strcpy (yyval.str, buff);
-	lex_printcomment ("/* %s */\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* %s */\n", yyvsp[0].str);
 	if (scan_variable (buff) == -1 && buff[0] != ' ')
 	  {
-	    lex_printcomment ("/*NOt a variable*/");
+	    A4GL_lex_printcomment ("/*NOt a variable*/");
 	    sprintf (buff, "%s is not a variable", yyvsp[0].str);
 	    a4gl_yyerror (buff);
 	  }
@@ -12967,7 +12967,7 @@ yyreduce:
     case 950:
 #line 4690 "fgl.yacc"
       {
-	debug ("Array..");
+ A4GL_debug ("Array..");
       }
       break;
 
@@ -12985,7 +12985,7 @@ yyreduce:
 	int b;
 	char buff[256];
 	char buff2[256];
-	lex_printcomment ("/*array variable .let. */");
+ A4GL_lex_printcomment ("/*array variable .let. */");
 	if (strcmp (yyvsp[-5].str, "status") == 0)
 	  {
 	    strcpy (yyvsp[-5].str, "a4gl_status");
@@ -13004,17 +13004,17 @@ yyreduce:
 	    YYERROR;
 	  }
 
-	debug ("?1arrvar=%s", yyval.str);
+ A4GL_debug ("?1arrvar=%s", yyval.str);
 	b = isarrvariable (yyval.str);
 	a = scan_variable (yyval.str);
 
-	lex_printcomment ("/*a=%x b=%x */\n", a, b);
+ A4GL_lex_printcomment ("/*a=%x b=%x */\n", a, b);
 
 	if (b != 0)
 	  {
 	    sprintf (yyval.str, "%s.%s[%s-1] ", yyvsp[-5].str, yyvsp[-3].str,
 		     yyvsp[-1].str);
-	    lex_printcomment ("/* array variable %s*/\n", yyval.str);
+	    A4GL_lex_printcomment ("/* array variable %s*/\n", yyval.str);
 	  }
 	else
 	  {
@@ -13022,7 +13022,7 @@ yyreduce:
 	    sprintf (yyval.str, " let_substr(%s,%d,%s,0)", buff, a,
 		     yyvsp[-1].str);
 	    addmap ("Let Variable", buff, curr_func, yylineno, infilename);
-	    lex_printcomment ("/*character variable %s*/\n", yyval.str);
+	    A4GL_lex_printcomment ("/*character variable %s*/\n", yyval.str);
 	  }
 
 	mcnt++;
@@ -13037,9 +13037,9 @@ yyreduce:
 	int a;
 	int b;
 	char buff2[256];
-	lex_printcomment ("/*.let. array variable */");
+ A4GL_lex_printcomment ("/*.let. array variable */");
 
-	debug ("?2 arrvar=%s", yyvsp[-1].str);
+ A4GL_debug ("?2 arrvar=%s", yyvsp[-1].str);
 	if (strchr (yyvsp[0].str, ':'))
 	  {
 	    char lbuff[256];
@@ -13070,13 +13070,13 @@ yyreduce:
 	      }
 
 
-	    debug ("/*a=%d b=%d*/\n", a, b);
+	    A4GL_debug ("/*a=%d b=%d*/\n", a, b);
 
 	    if (b != 0)
 	      {
 		sprintf (yyval.str, "%s[%s]", yyvsp[-1].str,
-			 decode_array_string (yyvsp[0].str));
-		debug ("/* array variable %s*/\n", yyval.str);
+			 A4GL_decode_array_string (yyvsp[0].str));
+	 A4GL_debug ("/* array variable %s*/\n", yyval.str);
 	      }
 	    else
 	      {
@@ -13085,7 +13085,7 @@ yyreduce:
 
 		addmap ("Let Variable", yyvsp[-1].str, curr_func, yylineno,
 			infilename);
-		debug ("/*character variable %s*/\n", yyval.str);
+	 A4GL_debug ("/*character variable %s*/\n", yyval.str);
 	      }
 	  }
 	mcnt++;
@@ -13124,9 +13124,9 @@ yyreduce:
     case 962:
 #line 4822 "fgl.yacc"
       {
-	lex_printcomment ("/*STarted bind %s*/\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/*STarted bind %s*/\n", yyvsp[0].str);
 	start_bind ('i', yyvsp[0].str);
-	lex_printcomment ("/*STarted bind 2*/\n");
+ A4GL_lex_printcomment ("/*STarted bind 2*/\n");
 	strcpy (yyval.str, "");
       }
       break;
@@ -13134,7 +13134,7 @@ yyreduce:
     case 963:
 #line 4829 "fgl.yacc"
       {
-	lex_printcomment ("/* Added */\n");
+ A4GL_lex_printcomment ("/* Added */\n");
 	add_bind ('i', yyvsp[0].str);
 	strcpy (yyval.str, "");
       }
@@ -13150,14 +13150,14 @@ yyreduce:
     case 966:
 #line 4840 "fgl.yacc"
       {
-	lex_printcomment ("/* Variable */\n");
+ A4GL_lex_printcomment ("/* Variable */\n");
       }
       break;
 
     case 967:
 #line 4841 "fgl.yacc"
       {
-	debug ("Got an ibind thru...");
+ A4GL_debug ("Got an ibind thru...");
 	sprintf (yyval.str, "%s\n%s", yyvsp[-2].str, yyvsp[0].str);
       }
       break;
@@ -13201,7 +13201,7 @@ yyreduce:
     case 974:
 #line 4859 "fgl.yacc"
       {
-	debug ("Got an obind thru...");
+ A4GL_debug ("Got an obind thru...");
 	sprintf (yyval.str, "%s\n%s", yyvsp[-2].str, yyvsp[0].str);
       }
       break;
@@ -13209,7 +13209,7 @@ yyreduce:
     case 975:
 #line 4863 "fgl.yacc"
       {
-	lex_printcomment ("/* start obind with  %s*/\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* start obind with  %s*/\n", yyvsp[0].str);
 	start_bind ('o', yyvsp[0].str);
       }
       break;
@@ -13217,7 +13217,7 @@ yyreduce:
     case 976:
 #line 4867 "fgl.yacc"
       {
-	lex_printcomment ("/* add to obind %s */\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* add to obind %s */\n", yyvsp[0].str);
 	add_bind ('o', yyvsp[0].str);
 	strcpy (yyval.str, "");
       }
@@ -13226,16 +13226,16 @@ yyreduce:
     case 977:
 #line 4874 "fgl.yacc"
       {
-	lex_printcomment ("/* Read variable %s*/\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* Read variable %s*/\n", yyvsp[0].str);
       }
       break;
 
     case 978:
 #line 4879 "fgl.yacc"
       {
-	lex_printcomment ("/* use_arr_var */\n");
+ A4GL_lex_printcomment ("/* use_arr_var */\n");
 	start_arr_bind ('o', yyvsp[0].str);
-	lex_printcomment ("/* use_arr_var complete */\n");
+ A4GL_lex_printcomment ("/* use_arr_var complete */\n");
       }
       break;
 
@@ -13259,7 +13259,7 @@ yyreduce:
       {
 	int type, arrsize, size, level;
 	char arrbuff[256];
-	lex_printcomment ("/*..array_r_varid..*/");
+ A4GL_lex_printcomment ("/*..array_r_varid..*/");
 
 	printf ("Got array %s %s\n", yyvsp[-3].str, yyvsp[-1].str);
 	if (get_variable_dets
@@ -13283,9 +13283,9 @@ yyreduce:
     case 986:
 #line 4921 "fgl.yacc"
       {
-	lex_printcomment ("/*STarted bind %s*/\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/*STarted bind %s*/\n", yyvsp[0].str);
 	start_bind ('N', yyvsp[0].str);
-	lex_printcomment ("/*STarted bind 2*/\n");
+ A4GL_lex_printcomment ("/*STarted bind 2*/\n");
 	strcpy (yyval.str, "");
       }
       break;
@@ -13293,7 +13293,7 @@ yyreduce:
     case 987:
 #line 4928 "fgl.yacc"
       {
-	lex_printcomment ("/* Added */\n");
+ A4GL_lex_printcomment ("/* Added */\n");
 	add_bind ('N', yyvsp[0].str);
 	strcpy (yyval.str, "");
       }
@@ -13540,7 +13540,7 @@ yyreduce:
     case 1029:
 #line 5084 "fgl.yacc"
       {
-	lex_printc ("set_option_value('M',%s);\n", yyvsp[0].str);
+ A4GL_lex_printc ("set_option_value('M',%s);\n", yyvsp[0].str);
       }
       break;
 
@@ -13721,7 +13721,7 @@ yyreduce:
 	add_continue_blockcommand ("PROMPT");
 	print_prompt_end (yyvsp[-4].str);
 	pop_blockcommand ("PROMPT");
-	lex_printcomment ("/* END OF PROMPT */");
+ A4GL_lex_printcomment ("/* END OF PROMPT */");
       }
       break;
 
@@ -13971,7 +13971,7 @@ yyreduce:
       {
 	int a;
 	char buff[80];
-	debug ("rordcnt=%d", rordcnt);
+ A4GL_debug ("rordcnt=%d", rordcnt);
 	a = scan_orderby (yyvsp[0].str, rordcnt);
 	if (a < 0)
 	  {
@@ -13998,7 +13998,7 @@ yyreduce:
 	int a;
 	char buff[80];
 
-	debug ("rordcnt=%d", rordcnt);
+ A4GL_debug ("rordcnt=%d", rordcnt);
 	a = scan_orderby (yyvsp[0].str, rordcnt);
 	if (a < 0)
 	  {
@@ -14156,7 +14156,7 @@ yyreduce:
     case 1131:
 #line 5483 "fgl.yacc"
       {
-	strcpy (yyval.str, get_default_scaling ());
+	strcpy (yyval.str, A4GL_get_default_scaling ());
       }
       break;
 
@@ -14439,7 +14439,7 @@ yyreduce:
 #line 5619 "fgl.yacc"
       {
 	pdf_rep_struct.left_margin = atof (yyvsp[0].str);
-	debug ("Left margin=%s\n", yyvsp[0].str);
+ A4GL_debug ("Left margin=%s\n", yyvsp[0].str);
       }
       break;
 
@@ -14581,7 +14581,7 @@ yyreduce:
 	a = print_bind ('O');
 	print_order_by_type (1);
 	sprintf (yyval.str, "%d", a);
-	debug ("Order by Gives :%d\n", a);
+ A4GL_debug ("Order by Gives :%d\n", a);
       }
       break;
 
@@ -14592,7 +14592,7 @@ yyreduce:
 	a = print_bind ('O');
 	print_order_by_type (2);
 	sprintf (yyval.str, "%d", a);
-	debug ("Order by Gives :%d\n", a);
+ A4GL_debug ("Order by Gives :%d\n", a);
       }
       break;
 
@@ -14639,7 +14639,7 @@ yyreduce:
       {
 	print_report_2 (0, yyvsp[0].str);
 	rordcnt = atoi (yyvsp[0].str);
-	debug ("SET rordcnt=%d %s", rordcnt, yyvsp[0].str);
+ A4GL_debug ("SET rordcnt=%d %s", rordcnt, yyvsp[0].str);
       }
       break;
 
@@ -14739,7 +14739,7 @@ yyreduce:
 //print_variables();
 	resize_paper (&pdf_rep_struct);
 	print_report_2 (1, yyvsp[0].str);
-	debug ("SET rordcnt=%d (%s)", rordcnt, yyvsp[0].str);
+ A4GL_debug ("SET rordcnt=%d (%s)", rordcnt, yyvsp[0].str);
 	rordcnt = atoi (yyvsp[0].str);
       }
       break;
@@ -15470,7 +15470,7 @@ yyreduce:
     case 1334:
 #line 6230 "fgl.yacc"
       {
-	debug ("no into\n");
+ A4GL_debug ("no into\n");
 	strcpy (yyval.str, "0,0");
       }
       break;
@@ -15478,7 +15478,7 @@ yyreduce:
     case 1335:
 #line 6234 "fgl.yacc"
       {
-	debug ("FETCH INTO  ...");
+ A4GL_debug ("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
 	start_bind ('o', 0);
       }
@@ -15496,7 +15496,7 @@ yyreduce:
     case 1337:
 #line 6247 "fgl.yacc"
       {
-	debug ("no into\n");
+ A4GL_debug ("no into\n");
 	strcpy (yyval.str, "0,0");
       }
       break;
@@ -15504,7 +15504,7 @@ yyreduce:
     case 1338:
 #line 6251 "fgl.yacc"
       {
-	debug ("FETCH INTO  ...");
+ A4GL_debug ("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
 	start_bind ('o', 0);
       }
@@ -15680,7 +15680,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1366:
 #line 6361 "fgl.yacc"
       {
-	lex_printcomment ("/*  schema */\n");
+ A4GL_lex_printcomment ("/*  schema */\n");
 	print_exec_sql (yyvsp[0].sql_string);
 	strcpy (yyval.str, "Schema");
       }
@@ -15689,7 +15689,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1367:
 #line 6366 "fgl.yacc"
       {
-	lex_printcomment ("/*  schema  2*/\n");
+ A4GL_lex_printcomment ("/*  schema  2*/\n");
 	print_exec_sql (yyvsp[0].sql_string);
 	strcpy (yyval.str, "Schema Element");
       }
@@ -15705,7 +15705,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1371:
 #line 6376 "fgl.yacc"
       {
-	lex_printcomment ("/*  delete 1 */\n");
+ A4GL_lex_printcomment ("/*  delete 1 */\n");
 	print_exec_sql_bound (yyvsp[0].str);
 	strcpy (yyval.str, "Delete where current...");
       }
@@ -15714,7 +15714,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1372:
 #line 6381 "fgl.yacc"
       {
-	lex_printcomment ("/*  delete 2 */\n");
+ A4GL_lex_printcomment ("/*  delete 2 */\n");
 	print_exec_sql_bound (yyvsp[0].sql_string);
 	strcpy (yyval.str, "Delete where ...");
       }
@@ -15724,14 +15724,14 @@ sprintf($<str>$,"%d,ibind",ni);
 #line 6386 "fgl.yacc"
       {
 	strcpy (yyval.str, "Fetch");
-	lex_printcomment ("/*  fetch */\n");
+ A4GL_lex_printcomment ("/*  fetch */\n");
       }
       break;
 
     case 1374:
 #line 6390 "fgl.yacc"
       {
-	lex_printcomment ("/*  insert */\n");
+ A4GL_lex_printcomment ("/*  insert */\n");
 	print_exec_sql_bound (yyvsp[0].sql_string);
 	strcpy (yyval.str, "insert");
       }
@@ -16612,7 +16612,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1540:
 #line 6970 "fgl.yacc"
       {
-	sprintf (yyval.str, "\\\"%s\\\"%s%s", strip_quotes (yyvsp[-2].str),
+	sprintf (yyval.str, "\\\"%s\\\"%s%s", A4GL_strip_quotes (yyvsp[-2].str),
 		 yyvsp[-1].str, yyvsp[0].str);
 	addmap ("Use Table", yyval.str, curr_func, yylineno, infilename);
       }
@@ -16621,7 +16621,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1541:
 #line 6971 "fgl.yacc"
       {
-	sprintf (yyval.str, " %s", strip_quotes (yyvsp[0].str));
+	sprintf (yyval.str, " %s", A4GL_strip_quotes (yyvsp[0].str));
 	addmap ("Use Table", yyval.str, curr_func, yylineno, infilename);
       }
       break;
@@ -16707,7 +16707,7 @@ sprintf($<str>$,"%d,ibind",ni);
 #line 7030 "fgl.yacc"
       {
 	strcpy (yyval.str, convstrsql (yyvsp[0].str));
-	debug ("Set $<str>$ to %s\n", yyval.str);
+ A4GL_debug ("Set $<str>$ to %s\n", yyval.str);
       }
       break;
 
@@ -16997,7 +16997,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1613:
 #line 7130 "fgl.yacc"
       {
-	sprintf (yyval.str, "\\\"%s\\\".%s.%s", strip_quotes (yyvsp[-4].str),
+	sprintf (yyval.str, "\\\"%s\\\".%s.%s", A4GL_strip_quotes (yyvsp[-4].str),
 		 yyvsp[-2].str, yyvsp[0].str);
       }
       break;
@@ -17054,7 +17054,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1620:
 #line 7169 "fgl.yacc"
       {
-	debug ("Got select list...\n");
+ A4GL_debug ("Got select list...\n");
       }
       break;
 
@@ -17128,7 +17128,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1627:
 #line 7220 "fgl.yacc"
       {
-	lex_printcomment ("/* UNION */");
+ A4GL_lex_printcomment ("/* UNION */");
 	yyval.sql_string =
 	  make_sql_string (yyvsp[-2].str, " ", yyvsp[-1].str, " ",
 			   yyvsp[0].sql_string, 0);
@@ -17172,7 +17172,7 @@ sprintf($<str>$,"%d,ibind",ni);
 #line 7238 "fgl.yacc"
       {
 	yyval.sql_string =
-	  make_sql_string (get_into_part (get_bind_cnt ('o')), 0);
+	  make_sql_string (A4GL_get_into_part (get_bind_cnt ('o')), 0);
 
       }
       break;
@@ -17598,7 +17598,7 @@ sprintf($<str>$,"%d,ibind",ni);
 #line 7428 "fgl.yacc"
       {
 	print_use_session (yyvsp[0].str);
-	strcpy (yyval.str, get_undo_use ());
+	strcpy (yyval.str, A4GL_get_undo_use ());
       }
       break;
 
@@ -17747,7 +17747,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1723:
 #line 7525 "fgl.yacc"
       {
-	strcpy (yyval.str, get_into_part (get_bind_cnt ('o')));
+	strcpy (yyval.str, A4GL_get_into_part (get_bind_cnt ('o')));
       }
       break;
 
@@ -17820,7 +17820,7 @@ sprintf($<str>$,"%d,ibind",ni);
 	  make_sql_string ("(", yyvsp[-5].str, ")=(", yyvsp[-1].sql_string,
 			   ")", 0);
 
-	if (isyes (acl_getenv ("FIXUPDATE")))
+	if (A4GL_isyes (acl_getenv ("FIXUPDATE")))
 	  {
 	    yyval.sql_string = strdup (fix_update_expr (0));
 	    ansi_violation ("Update (..)=(..)", 0);
@@ -17839,7 +17839,7 @@ sprintf($<str>$,"%d,ibind",ni);
 	yyval.sql_string =
 	  make_sql_string ("*=(", yyvsp[-1].sql_string, ")", 0);
 	push_gen (UPDCOL, "*");
-	if (isyes (acl_getenv ("FIXUPDATE")))
+	if (A4GL_isyes (acl_getenv ("FIXUPDATE")))
 	  {
 	    yyval.sql_string = strdup (fix_update_expr (1));
 	    ansi_violation ("Update (..)=(..)", 0);
@@ -17880,7 +17880,7 @@ sprintf($<str>$,"%d,ibind",ni);
 			       yyvsp[0].sql_string, ")", 0);
 	  }
 
-	if (isyes (acl_getenv ("FIXUPDATE")))
+	if (A4GL_isyes (acl_getenv ("FIXUPDATE")))
 	  {
 	    yyval.sql_string = strdup (fix_update_expr (1));
 	    ansi_violation ("Update (..)=(..)", 0);
@@ -18242,7 +18242,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1781:
 #line 7856 "fgl.yacc"
       {
-	sprintf (yyval.str, "\\\"%s\\\".%s.%s", strip_quotes (yyvsp[-4].str),
+	sprintf (yyval.str, "\\\"%s\\\".%s.%s", A4GL_strip_quotes (yyvsp[-4].str),
 		 yyvsp[-2].str, yyvsp[0].str);
       }
       break;
@@ -18257,7 +18257,7 @@ sprintf($<str>$,"%d,ibind",ni);
 	    a = get_bind_cnt ('i');
 	    z = add_bind ('i', yyvsp[0].str);
 	    z -= a;
-	    yyval.sql_string = strdup (set_var_sql (z));
+	    yyval.sql_string = strdup (A4GL_set_var_sql (z));
 
 	  }
 	else
@@ -18347,7 +18347,7 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1791:
 #line 7943 "fgl.yacc"
       {
-	debug ("Whenever error...%d %d", WHEN_ERROR, atoi (yyvsp[0].str));
+ A4GL_debug ("Whenever error...%d %d", WHEN_ERROR, atoi (yyvsp[0].str));
 	set_whenever (WHEN_ERROR + atoi (yyvsp[0].str), 0);
       }
       break;
@@ -18615,11 +18615,11 @@ sprintf($<str>$,"%d,ibind",ni);
 #line 8114 "fgl.yacc"
       {
 	chk4var = 0;
-	lex_printcomment ("/* [Comm:%s] */\n", yyval.str);
+ A4GL_lex_printcomment ("/* [Comm:%s] */\n", yyval.str);
 	if (acl_getenv ("INCLINES"))
-	  lex_printc ("{debug(\"Line %d %s:%s\");}", lastlineno, infilename,
+	  A4GL_lex_printc ("{debug(\"Line %d %s:%s\");}", lastlineno, infilename,
 		      convstrsql (larr));
-	prchkerr (lastlineno, infilename);
+ A4GL_prchkerr (lastlineno, infilename);
 	lastlineno = yylineno;
       }
       break;
@@ -18627,13 +18627,13 @@ sprintf($<str>$,"%d,ibind",ni);
     case 1838:
 #line 8121 "fgl.yacc"
       {
-	lex_printcomment ("/* [COMM:%s] */\n", yyvsp[0].str);
+ A4GL_lex_printcomment ("/* [COMM:%s] */\n", yyvsp[0].str);
 	chk4var = 0;
 	if (acl_getenv ("INCLINES"))
-	  lex_printc ("{debug(\"Line %d %s:%s\");}", lastlineno, infilename,
+	  A4GL_lex_printc ("{debug(\"Line %d %s:%s\");}", lastlineno, infilename,
 		      convstrsql (larr));
-	if (aubit_strcasecmp (yyval.str, "whenever") != 0)
-	  prchkerr (lastlineno, infilename);
+	if (A4GL_aubit_strcasecmp (yyval.str, "whenever") != 0)
+	  A4GL_prchkerr (lastlineno, infilename);
 	lastlineno = yylineno;
       }
       break;

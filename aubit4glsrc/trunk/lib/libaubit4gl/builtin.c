@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.35 2003-05-12 14:24:02 mikeaubury Exp $
+# $Id: builtin.c,v 1.36 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -74,7 +74,33 @@ FILE *error_log_file = 0;
 =====================================================================
 */
 
+int aclfgl_ddepoke (char *progname, char *ddemessage, char *ddecommand, char *ddeparam);
 
+char * aclfgl_ddefinish (char *progname, char *ddemessage);
+
+int aclfgl_ddeexecute (char *progname, char *ddemessage, char *ddecommand);
+
+
+char * aclfgl_ddegeterror (void);
+
+int aclfgl_ddeconnect (char *progname, char *ddemessage);
+
+void aclfgl_ddefinishall (void);
+
+char * aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand);
+
+void aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType);
+
+char * aclfgl_fgl_strtosend (char *str);
+
+int aclfgl_winexecwait (char *exec_string);
+
+int aclfgl_winexec (char *exec_string);
+void
+A4GL_close_errorlog_file (void);
+int aclfgli_show_help (int a);
+
+int A4GL_has_errorlog (void);
 /**
  * Does nothing
  * fglwrap calls this to make sure this file is included in any
@@ -82,7 +108,7 @@ FILE *error_log_file = 0;
  *
  */
 void
-include_builtin_in_exe (void)
+A4GL_include_builtin_in_exe (void)
 {
   /* Does nothing */
 }
@@ -102,13 +128,13 @@ aclfgl_set_count (int nargs)
   if (nargs != 1)
     {
       /* pop_args(nargs);set_status(-3001); */
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
 
       return 0;
     }
   A4GLSQL_set_status (0, 0);
-  pop_params (fbind, 1);
+  A4GL_pop_params (fbind, 1);
   m_arr_count = a;
 /* a is now set to set_Count */
   return 0;
@@ -124,11 +150,11 @@ aclfgl_arr_count (int nargs)
 {
   if (nargs != 0)
     {
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  push_int (m_arr_count);
+  A4GL_push_int (m_arr_count);
 /* a is now set to set_Count */
   return 1;
 }
@@ -143,11 +169,11 @@ aclfgl_scr_line (int nargs)
 {
   if (nargs != 0)
     {
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  push_int (m_scr_line);
+  A4GL_push_int (m_scr_line);
   return 1;
 }
 
@@ -161,11 +187,11 @@ aclfgl_arr_curr (int nargs)
 {
   if (nargs != 0)
     {
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  push_int (m_arr_curr);
+  A4GL_push_int (m_arr_curr);
   return 1;
 }
 
@@ -184,18 +210,18 @@ aclfgl_fgl_getenv (int nargs)
 
   if (nargs != 1)
     {
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  g = char_pop ();
-  trim (g);
-  debug ("Looking up %s", g);
+  g = A4GL_char_pop ();
+  A4GL_trim (g);
+  A4GL_debug ("Looking up %s", g);
   p = acl_getenv (g);
   if (p == 0)
-    push_char ("");
+    A4GL_push_char ("");
   else
-    push_char (acl_getenv (g));
+    A4GL_push_char (acl_getenv (g));
   acl_free (g);
   return 1;
 }
@@ -216,9 +242,9 @@ aclfgl_dbms_dialect (void)
 
   p = A4GLSQL_dbms_dialect ();
   if (p == 0)
-    push_char ("");
+    A4GL_push_char ("");
   else
-    push_char (A4GLSQL_dbms_dialect ());
+    A4GL_push_char (A4GLSQL_dbms_dialect ());
   //acl_free (g); // Is this here for a reason ?
   return 1;
 }
@@ -241,14 +267,14 @@ aclfgl_length (int nargs)
   int p;
   if (nargs != 1)
     {
-      pop_args (nargs);
+      A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  g = char_pop ();
-  trim (g);
+  g = A4GL_char_pop ();
+  A4GL_trim (g);
   p = strlen (g);
-  push_int (p);
+  A4GL_push_int (p);
   acl_free (g);
   return 1;
 }
@@ -264,7 +290,7 @@ aclfgl_length (int nargs)
  * @param ...
  */
 char *
-substr (char *ca, int dtype, int a, int b, ...)
+a4gl_substr (char *ca, int dtype, int a, int b, ...)
 {
   static char *np = 0;
   static char *np2 = 0;
@@ -275,7 +301,7 @@ substr (char *ca, int dtype, int a, int b, ...)
 
 #ifdef DEBUG
   {
-    debug ("substr");
+    A4GL_debug ("substr");
   }
 #endif
   if (np != 0)
@@ -295,7 +321,7 @@ substr (char *ca, int dtype, int a, int b, ...)
     {
 #ifdef DEBUG
       {
-	debug ("NULL - dtype=%x", dtype);
+ A4GL_debug ("NULL - dtype=%x", dtype);
       }
 #endif
       //printf("PAD\n");
@@ -303,17 +329,17 @@ substr (char *ca, int dtype, int a, int b, ...)
       np = malloc (DECODE_SIZE (dtype) + 1);
       free (np2);
       np2 = malloc (DECODE_SIZE (dtype) + 1);
-      pad_string (np, DECODE_SIZE (dtype));
+      A4GL_pad_string (np, DECODE_SIZE (dtype));
     }
   a--;
   b--;
 
 #ifdef DEBUG
   {
-    debug (">>>>Start with %s", np);
+    A4GL_debug (">>>>Start with %s", np);
   }
   {
-    debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
+    A4GL_debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
   }
 #endif
 
@@ -321,17 +347,17 @@ substr (char *ca, int dtype, int a, int b, ...)
     b = a;
 #ifdef DEBUG
   {
-    debug (">>>>Allocated %d bytes", b - a + 2);
+    A4GL_debug (">>>>Allocated %d bytes", b - a + 2);
   }
 #endif
 
-  debug ("a=%d b-a+1=%d");
+  A4GL_debug ("a=%d b-a+1=%d");
 
   strncpy (np2, &np[a], b - a + 1);
   np2[b - a + 1] = 0;
 #ifdef DEBUG
   {
-    debug (">>>>Set to %s", np2);
+    A4GL_debug (">>>>Set to %s", np2);
   }
 #endif
   //printf ("np2= '%s'\n", np2);
@@ -346,41 +372,41 @@ substr (char *ca, int dtype, int a, int b, ...)
  * @param b The end index.
  */
 char *
-let_substr (char *ca, int dtype, int a, int b, ...)
+a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
 {
   char *np;
   int size;
 #ifdef DEBUG
   {
-    debug ("let_substr");
+    A4GL_debug ("let_substr");
   }
 #endif
-  pad_string (ca, DECODE_SIZE (dtype));
+  A4GL_pad_string (ca, DECODE_SIZE (dtype));
 #ifdef DEBUG
   {
-    debug ("Start with '%s'", ca);
+    A4GL_debug ("Start with '%s'", ca);
   }
   {
-    debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
+    A4GL_debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
   }
 #endif
   if (b == 0)
     b = a;
   size = b - a + 1;
   np = (char *) acl_malloc (size + 1, "let_substr");
-  pop_char (np, size);
+  A4GL_pop_char (np, size);
 #ifdef DEBUG
   {
-    debug ("   Stack contained %s\n", np);
+    A4GL_debug ("   Stack contained %s\n", np);
   }
   {
-    debug ("   Size=%d", size);
+    A4GL_debug ("   Size=%d", size);
   }
 #endif
   strncpy (&ca[a - 1], np, size);
 #ifdef DEBUG
   {
-    debug ("Set to %s", ca);
+    A4GL_debug ("Set to %s", ca);
   }
 #endif
   return ca;
@@ -390,7 +416,7 @@ let_substr (char *ca, int dtype, int a, int b, ...)
  * The get count for INPUT ARRAY.
  */
 int
-get_count (void)
+A4GL_get_count (void)
 {
   return m_arr_count;
 }
@@ -401,10 +427,10 @@ get_count (void)
  * @param a The position to be setted.
  */
 void
-set_arr_curr (int a)
+A4GL_set_arr_curr (int a)
 {
   m_arr_curr = a;
-  gui_scrollpos (a);
+  A4GL_gui_scrollpos (a);
 }
 
 /**
@@ -413,10 +439,10 @@ set_arr_curr (int a)
  * @param a The index of the last array position used.
  */
 void
-set_arr_count (int a)
+A4GL_set_arr_count (int a)
 {
   m_arr_count = a;
-  gui_scroll (a);
+  A4GL_gui_scroll (a);
 }
 
 /**
@@ -425,7 +451,7 @@ set_arr_count (int a)
  * @param a The screen line to be setted.
  */
 void
-set_scr_line (int a)
+A4GL_set_scr_line (int a)
 {
   m_scr_line = a;
 }
@@ -604,10 +630,10 @@ aclfgl_err_get (int n)
 {
   int a;
   static char buff[200];
-  a = pop_int ();
+  a = A4GL_pop_int ();
   /* A4GLSQL_set_status(-3001,0); */
   sprintf (buff, "Error : %d ", a);
-  push_char (buff);
+  A4GL_push_char (buff);
   return 1;
 }
 
@@ -680,16 +706,16 @@ int
 A4GL_startlog (char *fname, int l, int n)
 {
   char *s;
-  s = char_pop ();
+  s = A4GL_char_pop ();
 
-  trim (fname);
-  trim (s);
-  debug ("START LOG (%s Line:%d) to file '%s'\n", fname, l, s);
+  A4GL_trim (fname);
+  A4GL_trim (s);
+  A4GL_debug ("START LOG (%s Line:%d) to file '%s'\n", fname, l, s);
   error_log_file = fopen (s, "w");
 
   if (error_log_file == 0)
     {
-      exitwith ("Unable to open Error Log file");
+      A4GL_exitwith ("Unable to open Error Log file");
     }
 
   free (s);
@@ -701,7 +727,7 @@ A4GL_startlog (char *fname, int l, int n)
  *
  */
 int
-has_errorlog (void)
+A4GL_has_errorlog (void)
 {
   if (error_log_file)
     return 1;
@@ -723,20 +749,20 @@ A4GL_errorlog (char *fname, int l, int n)
   char *s;
   char *date_str;
   char *time_str;
-  int d;
-  s = char_pop ();
-  debug ("ERROR LOG - %s Line:%d %s\n", fname, l, s);
+  //int d;
+  s = A4GL_char_pop ();
+  A4GL_debug ("ERROR LOG - %s Line:%d %s\n", fname, l, s);
 
   if (error_log_file)
     {
-      push_current (1, 3);
-      date_str = char_pop ();
+      A4GL_push_current (1, 3);
+      date_str = A4GL_char_pop ();
 
-      push_current (4, 6);
-      time_str = char_pop ();
+      A4GL_push_current (4, 6);
+      time_str = A4GL_char_pop ();
 
       fprintf (error_log_file, "Date: %s    Time: %s\n", date_str, time_str);
-      if (isyes (acl_getenv ("EXTENDED_ERRORLOG")))
+      if (A4GL_isyes (acl_getenv ("EXTENDED_ERRORLOG")))
 	{
 	  fprintf (error_log_file, "MODULE : %s    Line: %d\n", fname, l);
 
@@ -747,7 +773,7 @@ A4GL_errorlog (char *fname, int l, int n)
     }
   else
     {
-      exitwith ("Error Log file is not open");
+      A4GL_exitwith ("Error Log file is not open");
     }
 
   free (s);
@@ -758,7 +784,7 @@ A4GL_errorlog (char *fname, int l, int n)
 
 
 void
-A4GL_close_errorlog_file ()
+A4GL_close_errorlog_file (void)
 {
   if (error_log_file)
     {
@@ -795,7 +821,7 @@ int
 aclfgl_showhelp (int helpnumber)
 /* show_help(string, 4glmode, 4gllinenumber) */
 {
-  push_long (helpnumber);
+  A4GL_push_long (helpnumber);
   aclfgli_show_help (1);
 
   return 0;
@@ -842,10 +868,10 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
  * @param fieldno
  */
 int
-fgl_fieldtouched (char *fieldname, int fieldno, ...)
+A4GL_fgl_fieldtouched (char *fieldname, int fieldno, ...)
 {
   /* fieldname should be array */
-  exitwith ("NIY");
+  A4GL_exitwith ("NIY");
   return 0;
 }
 
@@ -856,12 +882,12 @@ fgl_fieldtouched (char *fieldname, int fieldno, ...)
  *
  */
 void
-close_database (void)
+A4GL_close_database (void)
 {
-  if (has_pointer ("default", SESSCODE))
+  if (A4GL_has_pointer ("default", SESSCODE))
     {
       A4GLSQL_close_session ("default");
-      del_pointer ("default", SESSCODE);
+      A4GL_del_pointer ("default", SESSCODE);
     }
   return;
   return;
@@ -878,7 +904,7 @@ close_database (void)
 void
 aclfgli_current (int a, int b)
 {
-  push_current (a, b);
+  A4GL_push_current (a, b);
 }
 
 /**
@@ -890,9 +916,9 @@ aclfgli_extend (void)
 {
   struct A4GLSQL_dtime c;
   int n;
-  n = pop_int ();
-  pop_var2 (&c, DTYPE_DTIME, n);
-  push_dtime (&c);
+  n = A4GL_pop_int ();
+  A4GL_pop_var2 (&c, DTYPE_DTIME, n);
+  A4GL_push_dtime (&c);
 }
 
 /**
@@ -905,13 +931,13 @@ void
 acli_interval (char *s, int n)
 {
   struct_ival c;
-  char *ptr;
-  debug ("acli_interval s=%s n=%d\n", s, n);
+  //char *ptr;
+  A4GL_debug ("acli_interval s=%s n=%d\n", s, n);
   c.ltime = n & 16;
   c.stime = n / 16;
-  ctoint (s, &c, n);
-  debug ("acli_interval - pop'd c - n=%x", n);
-  push_interval (&c);
+  A4GL_ctoint (s, &c, n);
+  A4GL_debug ("acli_interval - pop'd c - n=%x", n);
+  A4GL_push_interval (&c);
 
 }
 
@@ -925,21 +951,21 @@ void
 acli_datetime (char *s, int n)
 {
   struct_dtime c;
-  char *ptr;
+  //char *ptr;
   char buff[255];
 
-  debug ("acli_datetime s=%s n=%d\n", s, n);
+  A4GL_debug ("acli_datetime s=%s n=%d\n", s, n);
   c.ltime = n & 16;
   c.stime = n / 16;
   //printf("--1>%s\n",s);
-  ctodt (s, &c, n);
+  A4GL_ctodt (s, &c, n);
   //printf("acli_dtime - pop'd c - n=%x\ndata=%s\n",n,c.data);
-  push_dtime (&c);
-  debug ("ADDED DATETIME TO STACK - %d %d", c.stime, c.ltime);
+  A4GL_push_dtime (&c);
+  A4GL_debug ("ADDED DATETIME TO STACK - %d %d", c.stime, c.ltime);
 
-  pop_char (buff, 40);
+  A4GL_pop_char (buff, 40);
   //printf("DOUBLE CHECK GIVES : %s\n",buff);
-  push_dtime (&c);
+  A4GL_push_dtime (&c);
 
 }
 
@@ -956,7 +982,7 @@ aclfgli_str_to_id (char *name)
   static char buff[1024];
 
   strcpy (buff, name);
-  trim (buff);
+  A4GL_trim (buff);
   return buff;
 }
 
@@ -968,7 +994,7 @@ aclfgli_str_to_id (char *name)
 int
 aclfgl_ascii (int n)
 {
-  push_ascii ();
+  A4GL_push_ascii ();
   return 1;
 }
 
@@ -983,7 +1009,7 @@ aclfgl_ascii (int n)
 int
 acli_scroll (void *s, int n)
 {
-  exitwith ("acli_scroll not implemented");
+  A4GL_exitwith ("acli_scroll not implemented");
   return 0;
 }
 
@@ -1008,7 +1034,7 @@ int
 aclfgl_ddepoke (char *progname, char *ddemessage, char *ddecommand,
 		char *ddeparam)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1018,7 +1044,7 @@ aclfgl_ddepoke (char *progname, char *ddemessage, char *ddecommand,
 char *
 aclfgl_ddefinish (char *progname, char *ddemessage)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1037,7 +1063,7 @@ aclfgl_ddefinish (char *progname, char *ddemessage)
 int
 aclfgl_ddeexecute (char *progname, char *ddemessage, char *ddecommand)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1045,7 +1071,7 @@ aclfgl_ddeexecute (char *progname, char *ddemessage, char *ddecommand)
 char *
 aclfgl_ddegeterror (void)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1065,7 +1091,7 @@ aclfgl_ddegeterror (void)
 int
 aclfgl_ddeconnect (char *progname, char *ddemessage)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1074,7 +1100,7 @@ aclfgl_ddeconnect (char *progname, char *ddemessage)
 void
 aclfgl_ddefinishall (void)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
 }
 
 
@@ -1092,7 +1118,7 @@ aclfgl_ddefinishall (void)
 char *
 aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1104,7 +1130,7 @@ aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
 void
 aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType)
 {
-  exitwith ("4Js winmessage function not implemented");
+  A4GL_exitwith ("4Js winmessage function not implemented");
   //return 0;
 }
 
@@ -1117,7 +1143,7 @@ aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType)
 char *
 aclfgl_fgl_strtosend (char *str)
 {
-  exitwith ("4Js DDE functions not implemented");
+  A4GL_exitwith ("4Js DDE functions not implemented");
   return 0;
 }
 
@@ -1126,7 +1152,7 @@ aclfgl_fgl_strtosend (char *str)
 int
 aclfgl_winexecwait (char *exec_string)
 {
-  exitwith ("4Js winexecwait function not implemented");
+  A4GL_exitwith ("4Js winexecwait function not implemented");
   return 0;
 }
 
@@ -1134,7 +1160,7 @@ aclfgl_winexecwait (char *exec_string)
 int
 aclfgl_winexec (char *exec_string)
 {
-  exitwith ("4Js winexec function not implemented");
+  A4GL_exitwith ("4Js winexec function not implemented");
   return 0;
 }
 

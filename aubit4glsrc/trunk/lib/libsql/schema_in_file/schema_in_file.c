@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.3 2003-05-12 14:24:26 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.4 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 /**
@@ -92,7 +92,7 @@ A4GLSQL_set_status (int a, int sql)
   status = a;
   if (sql)
     sqlca.sqlcode = a;
-  debug ("Status set to %d", a);
+  A4GL_debug ("Status set to %d", a);
 }
 #endif
 
@@ -105,11 +105,11 @@ A4GLSQL_init_connection (char *dbName)
 {
   char fname[256];
   sprintf (fname, "%s.schema", dbName);
-  f_db_in = open_file_dbpath (fname);
+  f_db_in = A4GL_open_file_dbpath (fname);
   if (f_db_in == 0)
     {
-      set_errm (fname);
-      exitwith ("Couldn't open schema file");
+      A4GL_set_errm (fname);
+      A4GL_exitwith ("Couldn't open schema file");
     }
 
   return 0;
@@ -132,7 +132,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-  return global_A4GLSQL_get_sqlerrm ();
+  return A4GL_global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -145,10 +145,10 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   char *buff;
   if (f_db_in == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
-  debug ("READ COLUMNS\n");
+  A4GL_debug ("READ COLUMNS\n");
   A4GLSQL_get_columns (tabname, colname, dtype, size);
 
   while (A4GLSQL_next_column (&buff, dtype, size))
@@ -176,7 +176,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   char tname[256];
   if (f_db_in == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
 
@@ -187,7 +187,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
       if (feof (f_db_in))
 	break;
       fgets (buff, 255, f_db_in);
-      debug ("%s\n", buff);
+      A4GL_debug ("%s\n", buff);
       if (buff[0] == '[')
 	{
 	  char *ptr;
@@ -195,13 +195,13 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	  ptr = strchr (tname, ']');
 	  if (!ptr)
 	    {
-	      exitwith ("Parse error in schema file - no ']'");
+	      A4GL_exitwith ("Parse error in schema file - no ']'");
 	      return 0;
 	    }
 
 	  *ptr = 0;
 
-	  debug ("Checking table : %s %s\n", tname, tabname);
+	  A4GL_debug ("Checking table : %s %s\n", tname, tabname);
 	  if (strcasecmp (tname, tabname) == 0)
 	    {
 	      // Found it...
@@ -209,8 +209,8 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	    }
 	}
     }
-  set_errm (tabname);
-  exitwith ("Table not found\n");
+  A4GL_set_errm (tabname);
+  A4GL_exitwith ("Table not found\n");
   return 0;
 }
 
@@ -230,7 +230,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   int a;
   if (f_db_in == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
 
@@ -244,7 +244,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   if (a != 3)
     return 0;
   *colname = cname;
-  debug ("Got cname as %s\n", cname);
+  A4GL_debug ("Got cname as %s\n", cname);
   return 1;
 
 }

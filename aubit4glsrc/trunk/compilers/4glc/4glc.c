@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.46 2003-05-12 14:23:44 mikeaubury Exp $
+# $Id: 4glc.c,v 1.47 2003-05-15 07:10:19 mikeaubury Exp $
 #
 */
 
@@ -85,13 +85,13 @@ main (int argc, char *argv[])
   struct str_resource *user_resource = 0;
 
 
-  setarg0 (argv[0]);
-  debug ("Initializing 4glc\n");
+  A4GL_setarg0 (argv[0]);
+  A4GL_debug ("Initializing 4glc\n");
   init_states ();
   yydebug = 1;
 
   /* load settings from config file(s): */
-  user_resource = build_user_resources ();
+  user_resource = A4GL_build_user_resources ();
 
   x = initArguments (argc, argv);
 
@@ -101,7 +101,7 @@ main (int argc, char *argv[])
     }
 
   //dump_var_records();
-  debug ("Exiting 4glc");
+  A4GL_debug ("Exiting 4glc");
   exit (x);
 }
 

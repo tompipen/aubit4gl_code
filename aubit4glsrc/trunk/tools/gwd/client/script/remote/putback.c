@@ -255,7 +255,7 @@ ScriptMain (HDOC hDoc)
 //af debug:
 MsgBox(szTakeOutFile, MB_OK);
 MsgBox(szDocFileName, MB_OK);
-//af debug end
+//af A4GL_debug end
 */ 
       if (strcmpi (szDocFileName, szTakeOutFile))
       
@@ -414,7 +414,7 @@ PutBack (void)
   
 // MsgBox(g_GWDlocation, MB_OK);
     
-    //now strip gwd.exe ad replace it with putback.bat
+    //now A4GL_strip gwd.exe ad replace it with putback.bat
     
     // Call to BAT program to witch we will pass all the parameters
     strcpy (szCmdLine, "bat\\putback.bat ");

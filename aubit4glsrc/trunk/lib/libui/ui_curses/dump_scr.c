@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
-int screen_height (void);
+int A4GL_screen_height (void);
 
 
 FILE *f;
@@ -23,16 +23,16 @@ aclfgl_aclfgl_dump_screen (int n)
 
   if (n == 1)
     {
-      ptr = char_pop ();
+      ptr = A4GL_char_pop ();
     }
 
   if (n == 2)
     {
-      mode = pop_int ();
-      ptr = char_pop ();
+      mode = A4GL_pop_int ();
+      ptr = A4GL_char_pop ();
     }
 
-  trim (ptr);
+  A4GL_trim (ptr);
 
   if (mode == 3)
     {
@@ -40,8 +40,8 @@ aclfgl_aclfgl_dump_screen (int n)
       return 0;
     }
 
-  sh = screen_height ();
-  sw = screen_width ();
+  sh = A4GL_screen_height ();
+  sw = A4GL_screen_width ();
 
   if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0)
     {
@@ -75,7 +75,7 @@ aclfgl_aclfgl_dump_screen (int n)
   f = fopen (ptr, "w");
   if (f == 0)
     {
-      debug ("Unable to open dump file");
+      A4GL_debug ("Unable to open A4GL_dump file");
       return 0;
     }
 

@@ -12,7 +12,7 @@ push_blockcommand("FOREACH");
 fetch_cursor_name
 {
 print_foreach_start();
-lex_printcomment(" /* foreach */\n");
+A4GL_lex_printcomment(" /* foreach */\n");
 }
 opt_foreach_into_fetch_part
 {

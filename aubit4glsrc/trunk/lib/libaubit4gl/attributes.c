@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.4 2003-05-12 14:24:02 mikeaubury Exp $
+# $Id: attributes.c,v 1.5 2003-05-15 07:10:39 mikeaubury Exp $
 #*/
 
 /**
@@ -188,7 +188,7 @@ struct s_all_attributes
 * @param col_str Pointer to character string to store the attributes
 */
 void
-get_strings_from_attr (int attr, char *col_str, char *attr_str)
+A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 {
   int col_int;
 
@@ -196,7 +196,7 @@ get_strings_from_attr (int attr, char *col_str, char *attr_str)
   strcpy (attr_str, "");
 
   col_int = (attr & 0xf00);
-  debug ("col_int=%x\n", col_int);
+  A4GL_debug ("col_int=%x\n", col_int);
   /* Work out the colours first */
   switch (col_int)
     {
@@ -239,7 +239,7 @@ get_strings_from_attr (int attr, char *col_str, char *attr_str)
     strcat (attr_str, "BLINK ");
   if (attr & AUBIT_ATTR_DIM)
     strcat (attr_str, "DIM ");
-  debug ("get_strings returning %s %s", col_str, attr_str);
+  A4GL_debug ("get_strings returning %s %s", col_str, attr_str);
 }
 
 /**
@@ -249,7 +249,7 @@ get_strings_from_attr (int attr, char *col_str, char *attr_str)
  *
  */
 int
-get_attr_from_string (char *s)
+A4GL_get_attr_from_string (char *s)
 {
   if (strcasecmp (s, "BLACK") == 0)
     return AUBIT_COLOR_BLACK;

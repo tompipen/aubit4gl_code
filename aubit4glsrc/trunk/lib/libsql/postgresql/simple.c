@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.3 2003-05-12 14:24:26 mikeaubury Exp $
+# $Id: simple.c,v 1.4 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 
@@ -109,8 +109,8 @@ A4GLSQL_init_connection (char *dbName)
   if (con == NULL)
     {
 
-      set_errm (dbName);
-      exitwith ("Could not connect to database");
+      A4GL_set_errm (dbName);
+      A4GL_exitwith ("Could not connect to database");
       return -1;
     }
 
@@ -121,8 +121,8 @@ A4GLSQL_init_connection (char *dbName)
       else
 	sprintf (buff2, "%s - No explanation from the backend", dbName);
 
-      set_errm (buff2);
-      exitwith ("Could not connect to database ");
+      A4GL_set_errm (buff2);
+      A4GL_exitwith ("Could not connect to database ");
       return -1;
 
     }
@@ -147,7 +147,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-  return (char *) global_A4GLSQL_get_sqlerrm ();
+  return (char *) A4GL_global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -160,7 +160,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   char *buff;
   if (con == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
   A4GLSQL_get_columns (tabname, colname, dtype, size);
@@ -195,7 +195,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   curr_colno = 0;
   if (con == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
 
@@ -213,11 +213,11 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
       nfields = PQntuples (res);
-      debug ("Returns %d fields", nfields);
+      A4GL_debug ("Returns %d fields", nfields);
       return 1;
     }
-  set_errm (tabname);
-  exitwith ("Table not found\n");
+  A4GL_set_errm (tabname);
+  A4GL_exitwith ("Table not found\n");
   return 0;
 }
 
@@ -239,7 +239,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   char *colptr;
   if (con == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
   if (curr_colno >= nfields)
@@ -363,8 +363,8 @@ fixtype (char *type, int *d, int *s)
   if (*d == -1)
     {
       printf ("BAD DATATYPE");
-      debug ("Ooops - Unknown datatype : %s", type);
-      exitwith ("Invalid datatype for Aubit4GL");
+      A4GL_debug ("Ooops - Unknown datatype : %s", type);
+      A4GL_exitwith ("Invalid datatype for Aubit4GL");
     }
   return;
 

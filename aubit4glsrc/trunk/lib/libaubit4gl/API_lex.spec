@@ -25,13 +25,13 @@ VARIABLE A4GL_LEXTYPE
 /* ------------ functions from compile_[c|perl].c -------------- */
 
 /* void printc(char *fmt, ...) */
-lex_printc char* fmt ... -> void
+A4GL_lex_printc char* fmt ... -> void
 
 /* printh (char *fmt, ...) */
-lex_printh char* fmt ... -> void
+A4GL_lex_printh char* fmt ... -> void
 
 /* void printcomment (char *fmt,...) */
-lex_printcomment char* fmt ... -> void
+A4GL_lex_printcomment char* fmt ... -> void
 
 /* void print_sleep (void) */
 print_sleep -> void
@@ -46,7 +46,7 @@ print_push_variable char* s -> void
 print_clr_status -> void
 
 /* void incprint(void) */
-incprint -> void
+A4GL_incprint -> void
 
 /* void print_repctrl_block (void) */
 print_repctrl_block -> void
@@ -76,7 +76,7 @@ print_exit_loop int type,int n -> void
 print_rep_ret int report_cnt -> void
 
 /* prchkerr (int l, char *f) */
-prchkerr int l,char* f -> void
+A4GL_prchkerr int l,char* f -> void
 
 /* void print_expr (struct expr_str *ptr) */
 print_expr void* ptr -> void
@@ -194,7 +194,7 @@ print_display_line -> void
 print_display_by_name char* attr -> void
 
 /* char * get_display_str (int type, char *s, char *f) */
-get_display_str int type,char* s,char* f -> char*
+A4GL_get_display_str int type,char* s,char* f -> char*
 
 /* void print_display (char *fmt, char *expr, char *attr) */
 print_display char* fmt,char* expr,char* attr -> void
@@ -267,7 +267,7 @@ print_init -> void
 print_init_table char* s -> void
 
 /* void generate_or (char *out, char *in1, char *in2) */
-generate_or char* out,char* in1,char* in2 -> void
+A4GL_generate_or char* out,char* in1,char* in2 -> void
 
 /* void print_next_field (char *s) */
 print_next_field char* s -> void
@@ -285,7 +285,7 @@ print_input int byname,char* defs,char* helpno,char* fldlist -> void
 print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr -> char*
 
 /* char * get_formloop_str (int type) */
-get_formloop_str int type -> char*
+A4GL_get_formloop_str int type -> char*
 
 /* void print_scroll (char *flds, char *updown) */
 print_scroll char* flds,char* updown -> void
@@ -344,7 +344,7 @@ print_report_print_file char* fname,char* semi -> void
 print_report_print_img char* scaling,char* blob,char* type,char* semi -> void
 
 /* char * get_default_scaling () */
-get_default_scaling -> char*
+A4GL_get_default_scaling -> char*
 
 /* void print_order_by_type (int type) */
 print_order_by_type int type -> void
@@ -543,7 +543,7 @@ print_load_str char* file,char* delim,char* sql -> void
 print_use_session char *sess -> void
 
 /* char * get_undo_use (void) */
-get_undo_use -> char*
+A4GL_get_undo_use -> char*
 
 /* void print_next_form_field (char *form, char *field) */
 print_next_form_field char* form,char* field -> void
@@ -567,10 +567,10 @@ print_start_record int isstatic_extern,char* varname -> void
 print_end_record char* vname,char* arrsize -> void
 
 /* char * get_push_literal (char type, char *value) */
-get_push_literal char type,char* value -> char*
+A4GL_get_push_literal char type,char* value -> char*
 
 /* char *decode_array_string(char *s) */
-decode_array_string char* s -> char*
+A4GL_decode_array_string char* s -> char*
 
 /* void printInitFunctionStack(void) */
 printInitFunctionStack -> void
@@ -635,14 +635,14 @@ print_import_legacy char* s -> void
 
 print_cmd_end -> void
 
-get_into_part int n -> char*
+A4GL_get_into_part int n -> char*
 
-set_var_sql int n -> char*
+A4GL_set_var_sql int n -> char*
 
-lex_parsed_fgl -> void
-bad_identifiers char* ident -> int
+A4GL_lex_parsed_fgl -> void
+A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
-expr_for_call char* ident char* params int line char* file -> char*
+A4GL_expr_for_call char* ident char* params int line char* file -> char*
 /*  ============================== EOF ================================= */
 
 

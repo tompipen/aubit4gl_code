@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-void bname (char *str, char *str1, char *str2);
+void A4GL_bname (char *str, char *str1, char *str2);
 
 int compile_ace_report (char *filename);
 int conv_out (char *fname);
@@ -45,7 +45,7 @@ conv_out (char *fname)
   char b[256];
   char a[256];
   strcpy (c, fname);
-  bname (c, a, b);
+  A4GL_bname (c, a, b);
 
   sprintf (buff, "%s.aarc.pl", a);
   f_in = fopen (buff, "r");

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.11 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: read_dty.c,v 1.12 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -66,7 +66,7 @@
 
 
 #ifdef OLD_INCL
-int get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
+int A4GL_get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
 #endif
 
 
@@ -127,7 +127,7 @@ split_tab_col_type(char *str,char *str1,char *str2,char *str3)
  *   - Otherwise : The datatype found
  */
 int
-get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
+A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 {
   int a, b;
   int rval;
@@ -147,7 +147,7 @@ get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
   if (tablist == 0)
     {
-      debug ("Column not found");
+      A4GL_debug ("Column not found");
       return -1;
     }
 

@@ -24,16 +24,16 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.10 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: rpc_svc.c,v 1.11 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -65,7 +65,7 @@ extern unsigned long serviceport;
 SVCXPRT *stransp;
 int funcs_registered = 0;
 int do_stop_serving = 0;
-int rpc_svc_run (void);
+int A4GL_rpc_svc_run (void);
 
 /*
 =====================================================================
@@ -73,10 +73,10 @@ int rpc_svc_run (void);
 =====================================================================
 */
 
-int server_run (long port);
-int register_func (char *s, void *ptr);
-int unregister_func (char *s);
-void stop_serving (void);
+int A4GL_server_run (long port);
+int A4GL_register_func (char *s, void *ptr);
+int A4GL_unregister_func (char *s);
+void A4GL_stop_serving (void);
 
 /*
 =====================================================================
@@ -90,7 +90,7 @@ void stop_serving (void);
 static return_values *
 _call_remote_func_1 (call * argp, struct svc_req *rqstp)
 {
-  return (call_remote_func_1_svc (*argp, rqstp));
+  return (A4GL_call_remote_func_1_svc (*argp, rqstp));
 }
 
 /**
@@ -98,7 +98,7 @@ _call_remote_func_1 (call * argp, struct svc_req *rqstp)
  * @todo Describe function
  */
 static void
-fgl_rpc_1 (struct svc_req *rqstp, register SVCXPRT * transp)
+A4GL_fgl_rpc_1 (struct svc_req *rqstp, register SVCXPRT * transp)
 {
   union
   {
@@ -138,7 +138,7 @@ fgl_rpc_1 (struct svc_req *rqstp, register SVCXPRT * transp)
     }
   if (!svc_freeargs (transp, xdr_argument, (caddr_t) & argument))
     {
-      exitwith ("unable to free arguments");
+      A4GL_exitwith ("unable to free arguments");
       return;
     }
   return;
@@ -150,22 +150,22 @@ fgl_rpc_1 (struct svc_req *rqstp, register SVCXPRT * transp)
  * @todo Describe function
  */
 int
-server_run (long port)
+A4GL_server_run (long port)
 {
   register SVCXPRT *transp;
   serviceport = port;
-  debug ("Starting server on port %ld", port);
+  A4GL_debug ("Starting server on port %ld", port);
   (void) pmap_unset (FGL_RPC, FGL_RPC_VER);
 
   transp = svcudp_create (RPC_ANYSOCK);
   if (transp == NULL)
     {
-      exitwith ("cannot create udp service.");
+      A4GL_exitwith ("cannot create udp service.");
       return 0;
     }
-  if (!svc_register (transp, FGL_RPC, FGL_RPC_VER, fgl_rpc_1, IPPROTO_UDP))
+  if (!svc_register (transp, FGL_RPC, FGL_RPC_VER, A4GL_fgl_rpc_1, IPPROTO_UDP))
     {
-      exitwith ("unable to register (FGL_RPC, FGL_RPC_VER, udp).");
+      A4GL_exitwith ("unable to register (FGL_RPC, FGL_RPC_VER, udp).");
       return 0;
     }
 
@@ -173,20 +173,20 @@ server_run (long port)
 
   if (transp == NULL)
     {
-      exitwith ("cannot create tcp service.");
+      A4GL_exitwith ("cannot create tcp service.");
       return 0;
     }
 
-  if (!svc_register (transp, FGL_RPC, FGL_RPC_VER, fgl_rpc_1, IPPROTO_TCP))
+  if (!svc_register (transp, FGL_RPC, FGL_RPC_VER, A4GL_fgl_rpc_1, IPPROTO_TCP))
     {
-      exitwith ("unable to register (FGL_RPC, FGL_RPC_VER, tcp).");
+      A4GL_exitwith ("unable to register (FGL_RPC, FGL_RPC_VER, tcp).");
       return 0;
     }
-  debug ("Start loop");
-  rpc_svc_run ();
-  debug ("Finished RPC loop (%d)", funcs_registered);
+  A4GL_debug ("Start loop");
+  A4GL_rpc_svc_run ();
+  A4GL_debug ("Finished RPC loop (%d)", funcs_registered);
   svc_unregister (FGL_RPC, FGL_RPC_VER);
-  debug ("Server unregistered reset funcs_registered");
+  A4GL_debug ("Server unregistered reset funcs_registered");
   do_stop_serving = 0;
   return 1;
 }
@@ -197,19 +197,19 @@ server_run (long port)
  * @todo Describe function
  */
 int
-register_func (char *s, void *ptr)
+A4GL_register_func (char *s, void *ptr)
 {
-  debug ("Registering function %s", s);
-  if (has_pointer (s, RPC_FUNC))
+  A4GL_debug ("Registering function %s", s);
+  if (A4GL_has_pointer (s, RPC_FUNC))
     {
-      debug ("its already there !");
-      exitwith ("Function Already registered");
+      A4GL_debug ("its already there !");
+      A4GL_exitwith ("Function Already registered");
       return 0;
     }
-  debug ("Adding pointer");
-  add_pointer (s, RPC_FUNC, ptr);
+  A4GL_debug ("Adding pointer");
+  A4GL_add_pointer (s, RPC_FUNC, ptr);
   funcs_registered++;
-  debug ("%d functions currently registered", funcs_registered);
+  A4GL_debug ("%d functions currently registered", funcs_registered);
   return 1;
 }
 
@@ -219,21 +219,21 @@ register_func (char *s, void *ptr)
  * @todo Describe function
  */
 int
-unregister_func (char *s)
+A4GL_unregister_func (char *s)
 {
-  if (has_pointer (s, RPC_FUNC))
+  if (A4GL_has_pointer (s, RPC_FUNC))
     {
-      debug ("unregistering rpc %s", s);
-      del_pointer (s, RPC_FUNC);
-      debug ("done");
+      A4GL_debug ("unregistering rpc %s", s);
+      A4GL_del_pointer (s, RPC_FUNC);
+      A4GL_debug ("done");
     }
   else
     {
-      exitwith ("Function not registered");
+      A4GL_exitwith ("Function not registered");
       return 0;
     }
   funcs_registered--;
-  debug ("Unregistered %s", s);
+  A4GL_debug ("Unregistered %s", s);
   return 1;
 }
 
@@ -242,9 +242,9 @@ unregister_func (char *s)
  * @todo Describe function
  */
 void
-stop_serving (void)
+A4GL_stop_serving (void)
 {
-  debug ("Stopping server");
+  A4GL_debug ("Stopping server");
   do_stop_serving = 1;
 }
 
@@ -253,7 +253,7 @@ stop_serving (void)
  * @todo Describe function
  */
 int
-rpc_svc_run (void)
+A4GL_rpc_svc_run (void)
 {
   fd_set readfdset;
   static int tsize = 0;
@@ -271,7 +271,7 @@ rpc_svc_run (void)
 		      (fd_set *) NULL, (fd_set *) NULL, &tv))
 	{
 	case -1:		/* if (errno==EBADF) continue; */
-	  exitwith ("RPC server failed");
+	  A4GL_exitwith ("RPC server failed");
 	  return 0;
 	case 0:
 	  if (do_stop_serving == 0 && funcs_registered > 0)
@@ -292,14 +292,14 @@ rpc_svc_run (void)
  * @todo Describe function
  */
 void
-fgl_rpc_reply (void *result)
+A4GL_fgl_rpc_reply (void *result)
 {
   xdrproc_t xdr_result;
 
   xdr_result = (xdrproc_t) xdr_return_values;
   if (result != NULL && !svc_sendreply (stransp, xdr_result, result))
     {
-      exitwith ("Unable to send asynchronous reply!");
+      A4GL_exitwith ("Unable to send asynchronous reply!");
     }
   return;
 }

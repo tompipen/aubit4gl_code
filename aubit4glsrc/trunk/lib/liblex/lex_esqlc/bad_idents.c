@@ -58,7 +58,7 @@ char *reserved_words_in_c[] = {
 };
 
 int
-bad_identifiers (char *s)
+A4GL_bad_identifiers (char *s)
 {
   int a;
   for (a = 0; reserved_words_in_c[a]; a++)

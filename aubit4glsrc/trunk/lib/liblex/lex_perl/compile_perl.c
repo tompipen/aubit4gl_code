@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.28 2003-05-12 14:24:21 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.29 2003-05-15 07:10:42 mikeaubury Exp $
 #
 */
 
@@ -200,7 +200,7 @@ void
 printc (char *fmt, ...)
 {
   va_list ap;
-  debug ("via printc in lib");
+  A4GL_debug ("via printc in lib");
   va_start (ap, fmt);
   /* real_lex_printc(fmt,&ap); */
   internal_lex_printc (fmt, &ap);
@@ -212,7 +212,7 @@ void
 internal_lex_printc(char* fmt,... )
 {
 va_list ap;
-	debug("via lex_printc (2) in lib");
+	debug("via A4GL_lex_printc (2) in lib");
 	va_start(ap,fmt);
 	real_lex_printc(fmt,&ap);
         debug("Done....");
@@ -253,9 +253,9 @@ printc (char *fmt, ...)
   /* va_start (args, fmt); */
   vsprintf (buff, fmt, *ap);
 
-  debug ("buff in lib=%s\n", buff);
+  A4GL_debug ("buff in lib=%s\n", buff);
   strcpy (buff2, fmt);
-  debug ("fmt in lib=%s\n", buff2);
+  A4GL_debug ("fmt in lib=%s\n", buff2);
 
 
   if (acl_getenv ("INCLINES"))
@@ -347,7 +347,7 @@ open_outfile (void)
   char *ptr;
   if (outputfilename == 0)
     {
-      debug ("NO output file name");
+      A4GL_debug ("NO output file name");
     }
 
   strcpy (c, outputfilename);
@@ -356,11 +356,11 @@ open_outfile (void)
 
   if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
     {
-      debug ("Clobbering...");
+      A4GL_debug ("Clobbering...");
       set_clobber (outputfilename);
     }
 
-  debug ("Opening output map");
+  A4GL_debug ("Opening output map");
 
   openmap (outputfilename);
 
@@ -369,7 +369,7 @@ open_outfile (void)
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')
 	{
-	  debug (">>> NO C FILES... %s", ptr);
+	  A4GL_debug (">>> NO C FILES... %s", ptr);
 	  return;
 	}
     }
@@ -377,7 +377,7 @@ open_outfile (void)
   strcat (c, ".pl");
   strcat (h, ".pm");
   strcat (err, ".err");
-  outfile = mja_fopen (c, "w");
+  outfile = A4GL_mja_fopen (c, "w");
   if (outfile == 0)
     {
       printf ("Unable to open file %s (Check permissions)\n", c);
@@ -391,7 +391,7 @@ open_outfile (void)
     fprintf (outfile, "require aubit4gl_gtk\n");
 /*  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ()); */
   fprintf (outfile, "$aubit_module_name=\"%s.4gl\";\n", outputfilename);
-  hfile = mja_fopen (h, "w");
+  hfile = A4GL_mja_fopen (h, "w");
 }
 
 
@@ -401,7 +401,7 @@ open_outfile (void)
  * @return
  */
 void
-incprint (void)
+A4GL_incprint (void)
 {
 
   int a;
@@ -833,14 +833,14 @@ print_clr_status (void)
  * @return
  */
 void
-prchkerr (int l, char *f)
+A4GL_prchkerr (int l, char *f)
 {
   int a;
 /* 0 = continue */
 /* 1 = stop */
 /* 2 = call */
 /* 3 = goto */
-  debug ("MJA prchkerr %d %s", l, f);
+  A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
   printc
     ("if ($aubit4gl_pl::sqlca_sqlcode !=0 || $aubit4gl_pl::status !=0 || %d) {\n",
      when_code[A_WHEN_SUCCESS] == WHEN_CALL
@@ -929,21 +929,21 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 void
 print_expr (void *ptr)
 {
-  debug ("via print_expr in lib");
+  A4GL_debug ("via print_expr in lib");
   real_print_expr (ptr);
 }
 static void
 real_print_expr (struct expr_str *ptr)
 {
   void *optr;
-  debug ("Print expr... %p", ptr);
+  A4GL_debug ("Print expr... %p", ptr);
   while (ptr)
     {
-      debug ("Printing %p", ptr->expr);
+      A4GL_debug ("Printing %p", ptr->expr);
       printc ("%s\n", ptr->expr);
       free (ptr->expr);
       optr = ptr;
-      debug ("going to %p", ptr->next);
+      A4GL_debug ("going to %p", ptr->next);
       ptr = ptr->next;
       free (optr);
     }
@@ -966,8 +966,8 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->border,
 	  form_attrib->comment_line,
 	  form_attrib->message_line, form_attrib->attrib);
-  debug ("Printing attributes\n");
-  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  A4GL_debug ("Printing attributes\n");
+  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
 	 form_attrib->form_line, form_attrib->error_line,
 	 form_attrib->prompt_line, form_attrib->menu_line,
 	 form_attrib->border, form_attrib->comment_line,
@@ -985,10 +985,10 @@ print_field_bind (int ccc)
   char tabname[40];
   char colname[40];
   int a;
-  debug ("%d\n", ibindcnt);
+  A4GL_debug ("%d\n", ibindcnt);
   for (a = 0; a < ccc; a++)
     {
-      bname (ibind[a].varname, tabname, colname);
+      A4GL_bname (ibind[a].varname, tabname, colname);
       if (a > 0)
 	printc (",");
       if (colname[0] != 0)
@@ -1041,7 +1041,7 @@ print_arr_bind (char i)
 {
   int a;
 
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
   /* dump_vars (); */
   if (i == 'i')
     {
@@ -1135,9 +1135,9 @@ print_param (char i)
 {
   int a;
 
-  debug ("Expanding binding.. - was %d entries", fbindcnt);
+  A4GL_debug ("Expanding binding.. - was %d entries", fbindcnt);
   expand_bind ((void *) &fbind, 'F', fbindcnt);
-  debug ("Expanded - now %d entries", fbindcnt);
+  A4GL_debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
       printc ("static ");
@@ -1180,7 +1180,7 @@ print_bind (char i)
 
   unwindcnt = 0;
 
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
   if (i == 'i')
     {
       printc ("\n");
@@ -1596,7 +1596,7 @@ print_field_func (char type, char *name, char *var)
 void
 print_func_call (char *identifier, void *args, int args_cnt)
 {
-  debug ("via print_func_call in lib");
+  A4GL_debug ("via print_func_call in lib");
   real_print_func_call (identifier, args, args_cnt);
 }
 static void
@@ -1617,7 +1617,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 void
 print_pdf_call (char *a1, void *args, char *a3)
 {
-  debug ("via print_pdf_call in lib");
+  A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
 }
 static void
@@ -1957,7 +1957,7 @@ print_display_by_name (char *attr)
  * @return
  */
 char *
-get_display_str (int type, char *s, char *f)
+A4GL_get_display_str (int type, char *s, char *f)
 {
   static char buff[1024];
   if (type == 0)
@@ -2345,7 +2345,7 @@ print_init_table (char *s)
  * @return
  */
 void
-generate_or (char *out, char *in1, char *in2)
+A4GL_generate_or (char *out, char *in1, char *in2)
 {
   sprintf (out, "%s||%s", in1, in2);
 }
@@ -2499,7 +2499,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
  * @return
  */
 char *
-get_formloop_str (int type)
+A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
     return "form_loop(&_inp_io,_forminit)";
@@ -2594,9 +2594,9 @@ print_linked_cmd (int type, char *var)
 	  add_bind ('o', buff);
 	}
 
-      debug ("Finding number of keys...\n");
+      A4GL_debug ("Finding number of keys...\n");
       no_keys = linked_split (pklist, 0, 0);
-      debug ("No of keys=%d", no_keys);
+      A4GL_debug ("No of keys=%d", no_keys);
       start_bind ('i', 0);
       if (type == 'U')
 	{
@@ -2607,12 +2607,12 @@ print_linked_cmd (int type, char *var)
 	}
       for (azcnt = 1; azcnt <= no_keys; azcnt++)
 	{
-	  debug ("Getting key no %d", azcnt);
+	  A4GL_debug ("Getting key no %d", azcnt);
 	  linked_split (pklist, azcnt, buff2);
 	  sprintf (buff, "%s.%s", var, buff2);
-	  debug ("Adding linked %s", buff);
+	  A4GL_debug ("Adding linked %s", buff);
 	  add_bind ('i', buff);
-	  debug (" key count %d %d\n", azcnt, no_keys);
+	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
       if (type == 'S')
 	no = print_bind ('o');
@@ -2814,7 +2814,7 @@ print_report_print_img (char *scaling, char *blob, char *type, char *semi)
  * @return
  */
 char *
-get_default_scaling (void)
+A4GL_get_default_scaling (void)
 {
   return "push_double(1.0);push_double(1.0);";
 }
@@ -3725,7 +3725,7 @@ print_use_session (char *sess)
  * @return
  */
 char *
-get_undo_use (void)
+A4GL_get_undo_use (void)
 {
   return "set_conn(_sav_cur_conn);}";
 }
@@ -3909,7 +3909,7 @@ print_menu (int mn)
  * @return
  */
 char *
-get_push_literal (char type, char *value)
+A4GL_get_push_literal (char type, char *value)
 {
   static char buff[80];
   if (type == 'D')
@@ -3935,7 +3935,7 @@ get_push_literal (char type, char *value)
  * @param s
  */
 char *
-decode_array_string (char *s)
+A4GL_decode_array_string (char *s)
 {
 /*
 static char buff[2000]="";
@@ -3955,7 +3955,7 @@ strcpy(buff,"(");
 return buff;
 */
 
-  exitwith ("decode_array_string not implemented");
+  A4GL_exitwith ("decode_array_string not implemented");
 
   return 0;
 }
@@ -3972,7 +3972,7 @@ void
 print_set_langfile (char *s)
 {
   /*  printc ("set_lang_file(%s);\n", s); */
-  exitwith ("print_set_langfile not implemented");
+  A4GL_exitwith ("print_set_langfile not implemented");
 }
 
 
@@ -3980,7 +3980,7 @@ print_set_langfile (char *s)
 
 
 /**
- * Print comments to the C output file.
+ * Print A4GL_comments to the C output file.
  *
  * If the output file is not opened call the open function.
  *
@@ -4023,7 +4023,7 @@ internal_lex_printcomment (char *fmt, va_list * ap)
 #else
 	/**
 	 * Empty function for linking purposes when compiling without generation of
-	 * comments in the output C module
+	 * A4GL_comments in the output C module
 	 */
 
   /* Do nothing... */

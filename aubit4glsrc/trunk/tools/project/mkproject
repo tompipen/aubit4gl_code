@@ -92,9 +92,9 @@ echo "
 */
 
 
-int 		internal_build		(void);
-char * 		internal_version	(void);
-void 		set_version			(int a,char *m,char *id);
+int 		A4GL_internal_build		(void);
+char * 		A4GL_internal_version	(void);
+void 		A4GL_set_version			(int a,char *m,char *id);
 
 /*
 =====================================================================
@@ -108,7 +108,7 @@ void 		set_version			(int a,char *m,char *id);
  * @todo Describe function
  */
 int
-internal_build(void)
+A4GL_internal_build(void)
 {
 	return $build;
 }
@@ -118,7 +118,7 @@ internal_build(void)
  * @todo Describe function
  */
 char *
-internal_version(void)
+A4GL_internal_version(void)
 {
 	return \"$version\";
 }
@@ -155,7 +155,7 @@ print " *"
 print " * @todo Describe function"
 print " */"
 print "void"
-print "set_version(int a,char *m,char *id)"
+print "A4GL_set_version(int a,char *m,char *id)"
 print "{"
 print "	strcpy(m,internal_versions[a].module);"
 print "	strcpy(id,internal_versions[a].id);"

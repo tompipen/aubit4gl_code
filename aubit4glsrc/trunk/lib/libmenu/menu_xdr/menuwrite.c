@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.11 2003-05-12 14:24:22 mikeaubury Exp $
+# $Id: menuwrite.c,v 1.12 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -82,10 +82,10 @@ FILE *fyy;
 =====================================================================
 */
 
-void error_with (char *s, char *a, char *b);
+void A4GL_error_with (char *s, char *a, char *b);
 
 #ifdef OLD_INCL
-void write_menu (void);
+void A4GL_write_menu (void);
 #endif
 
 /*
@@ -100,7 +100,7 @@ void write_menu (void);
  * @todo Describe function
  */
 void
-error_with (char *s, char *a, char *b)
+A4GL_error_with (char *s, char *a, char *b)
 {
   static char z[2];
   z[0] = 0;
@@ -110,7 +110,7 @@ error_with (char *s, char *a, char *b)
     b = z;
   printf (s, a, b);
 
-  debug ("\n");
+  A4GL_debug ("\n");
   exit (7);
 }
 
@@ -121,7 +121,7 @@ error_with (char *s, char *a, char *b)
  * @todo Describe function
  */
 void
-write_menu (void)
+A4GL_write_menu (void)
 {
   char fname[132];
   char fname2[132];
@@ -138,13 +138,13 @@ write_menu (void)
 
   fxx = fopen (fname, "wb");
 
-  debug ("has %d menus\n", the_menus.menus.menus_len);
+  A4GL_debug ("has %d menus\n", the_menus.menus.menus_len);
 
-  debug ("writing in XDR format file %s\n", fname);
+  A4GL_debug ("writing in XDR format file %s\n", fname);
 
   if (fxx == 0)
     {
-      error_with ("Couldnt open file for write (%s)\n", fname, 0);
+      A4GL_error_with ("Couldnt open file for write (%s)\n", fname, 0);
     }
 
   xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
@@ -152,8 +152,8 @@ write_menu (void)
 
   if (!a)
     {
-      debug ("*** Write FAILED ***\n");
-      error_with ("Unable to write data\n", 0, 0);
+      A4GL_debug ("*** Write FAILED ***\n");
+      A4GL_error_with ("Unable to write data\n", 0, 0);
     }
 
   xdr_destroy (&xdrp);
@@ -163,7 +163,7 @@ write_menu (void)
     {
       int cnt = 0;
       int a;
-      debug ("Asc\n");
+      A4GL_debug ("Asc\n");
       fxx = fopen (fname, "r");
       fyy = fopen (fname2, "w");
       fprintf (fyy, "char compiled_menu_%s[]={\n", outputfilename);

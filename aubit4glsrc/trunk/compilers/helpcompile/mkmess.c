@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.11 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: mkmess.c,v 1.12 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -80,14 +80,14 @@ main (int argc, char *argv[])
 //char tmpnum[6];
   int num;
 
-  setarg0 (argv[0]);
+  A4GL_setarg0 (argv[0]);
 
 #ifdef DEBUG
-  debug ("Starting mkmess");
+  A4GL_debug ("Starting mkmess");
 #endif
 
   /* load settings from config file(s): */
-  build_user_resources ();
+  A4GL_build_user_resources ();
 
 
   if (argc == 1 || (strcmp (argv[1], "--help") == 0))
@@ -97,11 +97,11 @@ main (int argc, char *argv[])
       exit (0);
     }
 
-  bname (argv[1], pathfilename, ext);
+  A4GL_bname (argv[1], pathfilename, ext);
 
 #ifdef DEBUG
-  debug ("pathfilename=%s", pathfilename);
-  debug ("ext=%s", ext);
+  A4GL_debug ("pathfilename=%s", pathfilename);
+  A4GL_debug ("ext=%s", ext);
 #endif
 
   if (pathfilename[0] == 0)
@@ -121,7 +121,7 @@ main (int argc, char *argv[])
     }
 
 #ifdef DEBUG
-  debug ("Input file is %s\n", fname_msg);
+  A4GL_debug ("Input file is %s\n", fname_msg);
 #endif
 
   if (argc == 3)
@@ -137,9 +137,9 @@ main (int argc, char *argv[])
   sprintf (fname_tmp, "%s.tmp", pathfilename);
 
 #ifdef DEBUG
-  debug ("Input file is %s\n", fname_msg);
-  debug ("Output file is %s\n", fname_hlp);
-  debug ("TMP file is %s\n", fname_tmp);
+  A4GL_debug ("Input file is %s\n", fname_msg);
+  A4GL_debug ("Output file is %s\n", fname_hlp);
+  A4GL_debug ("TMP file is %s\n", fname_tmp);
 #endif
 
 
@@ -154,7 +154,7 @@ main (int argc, char *argv[])
   else
     {
 #ifdef DEBUG
-      debug ("Opened File %s\n", fname_msg);
+      A4GL_debug ("Opened File %s\n", fname_msg);
 #endif
     }
 
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   else
     {
 #ifdef DEBUG
-      debug ("Opened File %s\n", fname_hlp);
+      A4GL_debug ("Opened File %s\n", fname_hlp);
 #endif
     }
 
@@ -180,7 +180,7 @@ main (int argc, char *argv[])
   else
     {
 #ifdef DEBUG
-      debug ("Opened File %s\n", fname_tmp);
+      A4GL_debug ("Opened File %s\n", fname_tmp);
 #endif
     }
 
@@ -206,7 +206,7 @@ main (int argc, char *argv[])
     }
 
 
-  retcode = writemsg (offset, msg, tmp, hlp);
+  retcode = A4GL_writemsg (offset, msg, tmp, hlp);
 
   /* copy content of tmp file to actual output file, lien by line */
   /* FIXME: why are we not writing directly to output file? */
@@ -226,7 +226,7 @@ main (int argc, char *argv[])
 
 
 #ifdef DEBUG
-  debug ("Exiting mkmess");
+  A4GL_debug ("Exiting mkmess");
 #endif
 
   exit (retcode);
@@ -237,7 +237,7 @@ main (int argc, char *argv[])
 #ifdef _MOVED_TO_WRITEMSG_C_
 
 int
-writemsg (int offset2)
+A4GL_writemsg (int offset2)
 {
   int flg = 0;
 

@@ -1337,8 +1337,8 @@ typedef union YYSTYPE
 
 
 
-  //char  str[3100];  /* This would core dump in CygWin on call to */
-  char str[1024];		/* This would core dump in CygWin on call to */
+  //char  str[3100];  /* This would core A4GL_dump in CygWin on call to */
+  char str[1024];		/* This would core A4GL_dump in CygWin on call to */
   /* yyparse in y.tab.c - 3100 in maximum. */
   /* Was: char    str[20000]; */
 

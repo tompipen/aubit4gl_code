@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.50 2003-05-12 14:24:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.51 2003-05-15 07:10:38 mikeaubury Exp $
 #
 */
 
@@ -342,15 +342,15 @@ extern "C"
 #define RES_CURSWINDOW 	3
 #define RES_ACLFORM 	4
 
-#define getptr_PANEL(b) 		(PANEL *)find_pointer(b,RES_PANEL)
-#define getptr_s_windows(b) 	(struct s_windows *)find_pointer(b,RES_ACLWINDOW)
-#define getptr_WINDOW(b) 		(WINDOW *)find_pointer(b,RES_CURSWINDOW)
-#define getptr_s_form_dets(b) 	(struct s_form_dets *)find_pointer(b,RES_ACLFORM)
+#define getptr_PANEL(b) 		(PANEL *)A4GL_find_pointer(b,RES_PANEL)
+#define getptr_s_windows(b) 	(struct s_windows *)A4GL_find_pointer(b,RES_ACLWINDOW)
+#define getptr_WINDOW(b) 		(WINDOW *)A4GL_find_pointer(b,RES_CURSWINDOW)
+#define getptr_s_form_dets(b) 	(struct s_form_dets *)A4GL_find_pointer(b,RES_ACLFORM)
 
-#define pushptr_PANEL(b,p)      	add_pointer(b,RES_PANEL,p)
-#define pushptr_s_windows(b,p)   	add_pointer(b,RES_ACLWINDOW,p)
-#define pushptr_WIN(b,p)         	add_pointer(b,RES_CURSWINDOW,p)
-#define pushptr_s_form_dets(b,p) 	add_pointer(b,RES_ACLFORM,p)
+#define pushptr_PANEL(b,p)      	A4GL_add_pointer(b,RES_PANEL,p)
+#define pushptr_s_windows(b,p)   	A4GL_add_pointer(b,RES_ACLWINDOW,p)
+#define pushptr_WIN(b,p)         	A4GL_add_pointer(b,RES_CURSWINDOW,p)
+#define pushptr_s_form_dets(b,p) 	A4GL_add_pointer(b,RES_ACLFORM,p)
 
 
   /* available only to this library */
@@ -375,7 +375,7 @@ extern "C"
 
 
   /* ==================== from incl_4glhdr.h ========================= */
-#define fglerror(a,b) 			fgl_error(__LINE__,__FILE__,a,b)
+#define A4GL_fglerror(a,b) 			A4GL_fgl_error(__LINE__,__FILE__,a,b)
 #define AFT_FIELD_CHK(zzz,xxx) 	(_fld_dr==-98&&strcmp(fldname,zzz)==0)
 #define BEF_FIELD_CHK(zzz,xxx) 	(_fld_dr==-97&&strcmp(fldname,zzz)==0)
 #define BEF_DELETE  			(_fld_dr==-12)
@@ -386,9 +386,9 @@ extern "C"
 #define AFT_ROW  				(_fld_dr==-11)
 #define BEFORE_INP  			(_fld_dr==-99)
 #define AFTER_INP  				(_fld_dr==-95)
-#define ON_KEY(zzz) 			if (_fld_dr==-90&&chk_iskey(zzz))
+#define ON_KEY(zzz) 			if (_fld_dr==-90&&A4GL_chk_iskey(zzz))
 
-#define set_status(a) 			set_status(a,0)
+#define set_status(a) 			A4GL_set_status(a,0)
 
   /* ========================== from a4gl_dtypes.h ==================== */
 #define DTYPE_CHAR      0
@@ -642,21 +642,21 @@ extern "C"
   int disp_menu (char *str, int x, int y);	/* display a menu with title 'str' at position y */
   void banner (char str[], int a, int b, int c);
   void title_box (char str[], int a, int x, int l);
-  void error_box (char *str);	/*print error message */
+  void A4GL_error_box (char *str);	/*print error message */
 
   /* from curslib.c: */
-  void disp_opt (int row, int x, int y, int l, int type);
-  int do_key_menu (void);	/*internal function */
-  void do_pause (void);		/*waits for a key press */
-  int edit (char *string, char type, int length, int x, int y);
-  int check_type (char c, char type, int flg, int len);
-  int ask_int (char *prompt);	/*  prompt for an integer from user  */
-  double ask_dbl (char *prompt);	/*  prompt for an integer from user  */
-  int ask_verify (char *prompt);	/*  prompt for verification  */
+  void A4GL_disp_opt (int row, int x, int y, int l, int type);
+  int A4GL_do_key_menu (void);	/*internal function */
+  void A4GL_do_pause (void);		/*waits for a key press */
+  int A4GL_edit (char *string, char type, int length, int x, int y);
+  int A4GL_check_type (char c, char type, int flg, int len);
+  int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */
+  double A4GL_ask_dbl (char *prompt);	/*  prompt for an integer from user  */
+  int A4GL_ask_verify (char *prompt);	/*  prompt for verification  */
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
-  void strip_nl (char *str);
+  void A4GL_strip_nl (char *str);
 
-  ACL_Menu *new_menu (char *title, int x, int y, int mn_type, int help_no,
+  ACL_Menu *A4GL_new_menu (char *title, int x, int y, int mn_type, int help_no,
 		      int nopts, va_list * ap);
 
   struct text_info
@@ -708,10 +708,10 @@ extern "C"
   };
 
 
-  void *create_blank_window (char *name, int x, int y, int w, int h,
+  void *A4GL_create_blank_window (char *name, int x, int y, int w, int h,
 			     int border);
-  char *glob_window (int x, int y, int w, int h, int border);
-  void *find_pointer (const char *pname, char t);
+  char *A4GL_glob_window (int x, int y, int w, int h, int border);
+  void *A4GL_find_pointer (const char *pname, char t);
 
   /* OBJECTMODULE is defined ONLY in keys.c */
 #ifdef OBJECTMODULE
@@ -736,13 +736,13 @@ extern "C"
   /* ======================== from debug.h ======================== */
 
 
-  void debug_full (char *fmt, ...);
-  void exitwith_sql (char *s);
-  void set_errm (char *s);
+  void A4GL_debug_full (char *fmt, ...);
+  void A4GL_exitwith_sql (char *s);
+  void A4GL_set_errm (char *s);
 
   /* in debug.c */
-  void setarg0 (const char *argv0);
-  const char *getarg0 (void);
+  void A4GL_setarg0 (const char *argv0);
+  const char *A4GL_getarg0 (void);
 
   /* ========================== from a4gl_dtypes.h ==================== */
 
@@ -813,7 +813,7 @@ extern "C"
   /* This one is a special case and should **NOT** be
      used anywhere except for grouping others together in stack.c and
      when processing maths operations.
-     Used for add_op_function & find_op_function
+     Used for A4GL_add_op_function & find_op_function
    */
 
 #define OP_MATH 		12|BOOLEAN_OP
@@ -850,29 +850,29 @@ extern "C"
 #define ENCODE_SIZE(x) 	(x<<16)
 #define DECODE_SIZE(x) 	(x>>16)
 
-  char *new_string (int a);
-  int pop_bool (void);
-  short pop_int (void);
-  long pop_long (void);
-  long pop_date (void);
-  float pop_float (void);
-  double pop_double (void);
-  int pop_var (void *p, int d);
-  int pop_var2 (void *p, int d, int s);
-  double ret_var (void *p, int d);
-  int pop_char (char *z, int size);
-  //char *        char_pop                (void);
-  int pop_param (void *p, int d, int size);
-  void pop_params (struct BINDING *b, int n);
-  void push_param (void *p, int d);
-  void push_params (struct BINDING *b, int n);
-  void push_user (void);
-  void push_today (void);
-  int opboolean (void);
-  void pop_args (int a);
-  void debug_print_stack (void);
+  char *A4GL_new_string (int a);
+  int A4GL_pop_bool (void);
+  short A4GL_pop_int (void);
+  long A4GL_pop_long (void);
+  long A4GL_pop_date (void);
+  float A4GL_pop_float (void);
+  double A4GL_pop_double (void);
+  int A4GL_pop_var (void *p, int d);
+  int A4GL_pop_var2 (void *p, int d, int s);
+  double A4GL_ret_var (void *p, int d);
+  int A4GL_pop_char (char *z, int size);
+  //char *        A4GL_char_pop                (void);
+  int A4GL_pop_param (void *p, int d, int size);
+  void A4GL_pop_params (struct BINDING *b, int n);
+  void A4GL_push_param (void *p, int d);
+  void A4GL_push_params (struct BINDING *b, int n);
+  void A4GL_push_user (void);
+  void A4GL_push_today (void);
+  int A4GL_opboolean (void);
+  void A4GL_pop_args (int a);
+  void A4GL_debug_print_stack (void);
   void print_stack (void);
-  void locate_var (struct fgl_int_loc *p, char where, char *filename);
+  void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
 
 #define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 #define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
@@ -883,11 +883,11 @@ extern "C"
 #define GETSETSET 		2
 #define GETSETGETPTR 	3
 
-#define GETPTR(struct,ptr,element) get_set(struct,ptr,GETSETGETPTR,element,0)
-#define GET(struct,ptr,element) get_set(struct,ptr,GETSETGET,element,0)
-#define SET(struct,ptr,element,value) get_set(struct,ptr,GETSETSET,element,(long)value)
-#define NEW(struct) get_set(struct,0,GETSETNEW,0,0)
-#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
+#define GETPTR(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGETPTR,element,0)
+#define GET(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGET,element,0)
+#define SET(struct,ptr,element,value) A4GL_get_set(struct,ptr,GETSETSET,element,(long)value)
+#define NEW(struct) A4GL_get_set(struct,0,GETSETNEW,0,0)
+#define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
 
   /* report stuff */
 #ifndef REP_STRUCTURE
@@ -939,7 +939,7 @@ extern "C"
   };
 
 #endif
-  double pdf_size (double f, char c, struct pdf_rep_structure *p);
+  double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 
 #define REP_TYPE_PDF 			1
 #define REP_TYPE_NORMAL 		2
@@ -963,51 +963,55 @@ extern "C"
 #define WARN 					2
 
 #ifndef NODEBUG
-  int set_line (char *s, long l);
-#define debug set_line(__FILE__,__LINE__);debug_full
+  int A4GL_set_line (char *s, long l);
+#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
-#define debug null_func
+#define A4GL_debug null_func
 #endif
 
   /* ====================== from data_if.c =================== */
 
-  void *get_set (char *str, void *ptr, int mode, char *name, long var);
+  void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
 
 
   /* ===================== from builtin.c =================== */
 
-  int fgl_fieldtouched (char *fieldname, int fno, ...);
-  void close_database (void);
-  char *let_substr (char *ca, int dtype, int a, int b, ...);
-  char *substr (char *s, int dtype, int a, int b, ...);
-  void include_builtin_in_exe (void);
-  void set_scr_line (int a);
-  void set_arr_curr (int a);
-  int get_count (void);
-  void set_arr_count (int a);
+  int A4GL_fgl_fieldtouched (char *fieldname, int fno, ...);
+  void A4GL_close_database (void);
+
+/* These two need a4gl in lower case... */
+  char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
+  char *a4gl_substr (char *s, int dtype, int a, int b, ...);
+
+
+  void A4GL_include_builtin_in_exe (void);
+  void A4GL_set_scr_line (int a);
+  void A4GL_set_arr_curr (int a);
+  int A4GL_get_count (void);
+  void A4GL_set_arr_count (int a);
   int aclfgl_dbms_dialect (void);
   void aclfgli_extend (void);
 
 
   /* ======================= From buildtin_d.c ==================== */
 
-  void push_dtime (struct A4GLSQL_dtime *p);
-  void push_int (int p);
-  void push_long (long p);
-  void push_date (long p);
-  void push_float (float p);
-  void push_dec (char *p, int ismoney);
-  void push_double (double p);
-  void push_chars (char *p, int dtype, int size);
-  void push_char (char *p);
-  void push_variable (void *ptr, int dtype);
-  void push_interval (struct ival *p);
+  void A4GL_push_dtime (struct A4GLSQL_dtime *p);
+  void A4GL_push_int (int p);
+  void A4GL_push_long (long p);
+  void A4GL_push_date (long p);
+  void A4GL_push_float (float p);
+  void A4GL_push_dec (char *p, int ismoney);
+  void A4GL_push_double (double p);
+  void A4GL_push_chars (char *p, int dtype, int size);
+  void A4GL_push_char (char *p);
+  void A4GL_push_variable (void *ptr, int dtype);
+  void A4GL_push_interval (struct ival *p);
 
-  int func_clip (void);
-  void func_concat (void);
-  void func_using (void);
-  int find_function (char *a);
-  double power (double a, double b);
+  int A4GL_func_clip (void);
+  void A4GL_func_concat (void);
+  void A4GL_func_using (void);
+  int A4GL_find_function (char *a);
+  double A4GL_power (double a, double b);
 
   /* ============================ resource.c ============================= */
   struct str_resource
@@ -1016,84 +1020,84 @@ extern "C"
     char value[1024];		//must be long enough to hold GTK include paths
   };
 
-  char *find_str_resource_int (char *search, int a);
-  struct str_resource *build_user_resources (void);
-  int env_option_set (char *s);
+  char *A4GL_find_str_resource_int (char *search, int a);
+  struct str_resource *A4GL_build_user_resources (void);
+  int A4GL_env_option_set (char *s);
   char *acl_getenv (char *);
 
 
   /* ========================== gui_io.c ================================= */
-  void gui_scrollpos (int a);
-  void gui_scroll (int a);
-  void gui_error (char *txt, int errline);
-  void gui_endform (void);
-  void gui_currwin (long a);
-  void gui_wrefresh (void *d);
-  void gui_print (int a, char *fmt, ...);
-  void gui_dispform (char *s, int line);
-  void gui_setcolor (int a);
-  void gui_refresh (void);
-  void gui_move (int x, int y);
-  void gui_closewin (char *name);
-  void gui_win (char *name, int h, int w, int y, int x, int b, long d);
-  void gui_setposition (long ld);
-  void gui_setbuff (void *a, char *n);
-  void gui_mkfield (int h, int w, int y, int x, void *p);
-  void gui_setfocus (long ld);
-  void gui_setattr (long a, int f, int b);
-  void gui_mklabel (int h, int w, int y, int x, char *s);
-  void gui_startform (char *name);
-  void gui_endmenu (long ld);
-  void gui_menuopt (char *title, long id);
-  void gui_message (char *txt, int msgline);
-  void gui_rmmenu (long ld);
-  void gui_endprompt (long ld);
-  void gui_startprompt (long ld);
+  void A4GL_gui_scrollpos (int a);
+  void A4GL_gui_scroll (int a);
+  void A4GL_gui_error (char *txt, int errline);
+  void A4GL_gui_endform (void);
+  void A4GL_gui_currwin (long a);
+  void A4GL_gui_wrefresh (void *d);
+  void A4GL_gui_print (int a, char *fmt, ...);
+  void A4GL_gui_dispform (char *s, int line);
+  void A4GL_gui_setcolor (int a);
+  void A4GL_gui_refresh (void);
+  void A4GL_gui_move (int x, int y);
+  void A4GL_gui_closewin (char *name);
+  void A4GL_gui_win (char *name, int h, int w, int y, int x, int b, long d);
+  void A4GL_gui_setposition (long ld);
+  void A4GL_gui_setbuff (void *a, char *n);
+  void A4GL_gui_mkfield (int h, int w, int y, int x, void *p);
+  void A4GL_gui_setfocus (long ld);
+  void A4GL_gui_setattr (long a, int f, int b);
+  void A4GL_gui_mklabel (int h, int w, int y, int x, char *s);
+  void A4GL_gui_startform (char *name);
+  void A4GL_gui_endmenu (long ld);
+  void A4GL_gui_menuopt (char *title, long id);
+  void A4GL_gui_message (char *txt, int msgline);
+  void A4GL_gui_rmmenu (long ld);
+  void A4GL_gui_endprompt (long ld);
+  void A4GL_gui_startprompt (long ld);
 
   /* ========================== funcs_d.c ================================ */
-  void trim (char *p);
-  void bnamexxx (char *str, char *str1, char *str2);
-  void pad_string (char *ptr, int size);
+  void A4GL_trim (char *p);
+  void A4GL_bnamexxx (char *str, char *str1, char *str2);
+  void A4GL_pad_string (char *ptr, int size);
   void *acl_malloc_full (int size, char *why, char *f, long line);
   void acl_free_full (void *ptr, char *f, long line);
   void a4gl_using (char *str, int s, char *fmt, double num);
-  int digittoc (int *a, char *z, char *fmt, int dtype, int size);
+  int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
 
 
   /* =========================== dates.c ================================= */
-  long gen_dateno (int day, int month, int year);
-  int get_date (int d, int *day, int *mn, int *yr);
-  int day_in_week (int, int, int);
-  int modify_year (int a);
-  int date_sep (int z);
+  long A4GL_gen_dateno (int day, int month, int year);
+  int A4GL_get_date (int d, int *day, int *mn, int *yr);
+  int A4GL_day_in_week (int, int, int);
+  int A4GL_modify_year (int a);
+  int A4GL_date_sep (int z);
 
 
 /* == memfile.c == */
-  FILE *memfile_fopen (char *f, char *mode);
-  int memfile_fseek (FILE * f, long offset, int whence);
-  int memfile_getc (FILE * f);
-  void memfile_fclose (FILE * f);
-  void memfile_rewind (FILE * f);
-  long memfile_ftell (FILE * f);
-  int memfile_ungetc (int c, FILE * F);
-  int memfile_feof (FILE * f);
-  int memfile_fread (char *ptr, int s, int n, FILE * f);
+  FILE *A4GL_memfile_fopen (char *f, char *mode);
+  int A4GL_memfile_fseek (FILE * f, long offset, int whence);
+  int A4GL_memfile_getc (FILE * f);
+  void A4GL_memfile_fclose (FILE * f);
+  void A4GL_memfile_rewind (FILE * f);
+  long A4GL_memfile_ftell (FILE * f);
+  int A4GL_memfile_ungetc (int c, FILE * F);
+  int A4GL_memfile_feof (FILE * f);
+  int A4GL_memfile_fread (char *ptr, int s, int n, FILE * f);
   /* ============================ dmy.c ================================== */
 
-  char *using_date (int dn, char *us);
-  char *dbdate_to_using (char *dbdate);
-  char *get_dbdate (void);
+  char *A4GL_using_date (int dn, char *us);
+  char *A4GL_dbdate_to_using (char *dbdate);
+  char *A4GL_get_dbdate (void);
 
 
   /* =========================== string.c ================================ */
-  char *new_string_set (int a, char *b);
-  void string_set (char *ptr, char *b, int size);
-  int mja_strncmp (char *str1, char *str2, int n);
+  char *A4GL_new_string_set (int a, char *b);
+  void A4GL_string_set (char *ptr, char *b, int size);
+  int A4GL_mja_strncmp (char *str1, char *str2, int n);
 
 
   /* ============================ error.c ================================ */
-  void exitwith (char *s);
-  void set_error (char *fmt, ...);
+  void A4GL_exitwith (char *s);
+  void A4GL_set_error (char *fmt, ...);
 
   /* ============================ from a4gl_stack.h ================= */
 
@@ -1121,67 +1125,67 @@ extern "C"
 
 
 
-  void pushop (int a);
-  char *params_on_stack (char *_paramnames[], int n);
-  int isnull (int type, char *buff);
-  void setnull (int type, void *buff, int size);
-  char *lrtrim (char *z);
-  void get_top_of_stack (int a, int *d, int *s, void **ptr);
-  void drop_param (void);
-  void push_null (void);
-  void init_blob (struct fgl_int_loc *p);
-  int read_param (void *p, int d, int size, int c);
-  int conv_to_interval (int a);
-  int chknull_boolean (int n, int n1, int n2);
-  int chknull (int n, int n1, int n2);
-  void push_bind (struct BINDING *b, int n, int no, int elemsize);
-  void push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
+  void A4GL_pushop (int a);
+  char *A4GL_params_on_stack (char *_paramnames[], int n);
+  int A4GL_isnull (int type, char *buff);
+  void A4GL_setnull (int type, void *buff, int size);
+  char *A4GL_lrtrim (char *z);
+  void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
+  void A4GL_drop_param (void);
+  void A4GL_push_null (void);
+  void A4GL_init_blob (struct fgl_int_loc *p);
+  int A4GL_read_param (void *p, int d, int size, int c);
+  int A4GL_conv_to_interval (int a);
+  int A4GL_chknull_boolean (int n, int n1, int n2);
+  int A4GL_chknull (int n, int n1, int n2);
+  void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
+  void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
 
   /* ============================ calldll.c ============================== */
-  void *dl_openlibrary (char *type, char *name);
-  void *find_func_allow_missing (void *dllhandle, char *func);
-  void *find_func (void *dllhandle, char *func);
+  void *A4GL_dl_openlibrary (char *type, char *name);
+  void *A4GL_find_func_allow_missing (void *dllhandle, char *func);
+  void *A4GL_find_func (void *dllhandle, char *func);
 
 
   /* ============================ conv.c ================================= */
-  void decode_interval (struct ival *ival, int *data);
-  int stod (void *zz, void *aa, int sz_ignore);
-  int conv (int dtype1, void *p1, int dtype2, void *p2, int size);
-  void set_convmatrix (int dtype1, int dtype2, void *ptr);
-  void assertion (int a, char *s);
+  void A4GL_decode_interval (struct ival *ival, int *data);
+  int A4GL_stod (void *zz, void *aa, int sz_ignore);
+  int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size);
+  void A4GL_set_convmatrix (int dtype1, int dtype2, void *ptr);
+  void A4GL_assertion (int a, char *s);
 
   /* ============================ fglwrap.c ============================== */
-  void chk_err (int lineno, char *fname);
-  int fgl_error (int a, char *s, int err, int stat);
-  int isyes (char *s);
+  void A4GL_chk_err (int lineno, char *fname);
+  int A4GL_fgl_error (int a, char *s, int err, int stat);
+  int A4GL_isyes (char *s);
   char *get_serno (void);
-  void set_abort (int a);
-  void check_and_show_id (char *program, char *arg1);
+  void A4GL_set_abort (int a);
+  void A4GL_check_and_show_id (char *program, char *arg1);
 
   /* ========================= errfile.c================================== */
-  FILE *mja_fopen (char *name, char *mode);
-  FILE *write_errfile (FILE * f, char *fname, long as, int lineno);
+  FILE *A4GL_mja_fopen (char *name, char *mode);
+  FILE *A4GL_write_errfile (FILE * f, char *fname, long as, int lineno);
 
 
   /* ============================ extfile.c ============================== */
 
-  char *get_translated_id (char *no_c);
-  char *get_help_disp (int n);
-  int has_helpfile (void);
+  char *A4GL_get_translated_id (char *no_c);
+  char *A4GL_get_help_disp (int n);
+  int A4GL_has_helpfile (void);
 
   /* =========================== from a4gl_io.h ================ */
 
-  FILE *open_file_dbpath (char *fname);
+  FILE *A4GL_open_file_dbpath (char *fname);
 
   /* ========================== match.c ================================== */
-  int aubit_strcasecmp (char *a, char *b);
-  int matche (register char *p, register char *t);
+  int A4GL_aubit_strcasecmp (char *a, char *b);
+  int A4GL_matche (register char *p, register char *t);
 
   /* =========================== gui.c =================================== */
-  int isgui (void);
-  void proc_it (char *buff);
-  int get_gui_char (void);
-  void gui_actmenu (long ld);
+  int A4GL_isgui (void);
+  void A4GL_proc_it (char *buff);
+  int A4GL_get_gui_char (void);
+  void A4GL_gui_actmenu (long ld);
 
   /* ============================ function_call_stack.c =================== */
   int A4GLSTK_isStackInfo (void);
@@ -1190,18 +1194,18 @@ extern "C"
   void A4GLSTK_popFunction (void);
 
   /* ============================ err.c =================================== */
-  char *err_print (int a, char *s);
+  char *A4GL_err_print (int a, char *s);
 
   /* =========================== project.c =============================== */
   /* (created using mkproject script) */
-  void set_version (int a, char *m, char *id);
-  char *internal_version (void);
-  int internal_build (void);
+  void A4GL_set_version (int a, char *m, char *id);
+  char *A4GL_internal_version (void);
+  int A4GL_internal_build (void);
 
   /* ============================ rexp2.c ================================= */
-  void stripnl (char *buff);
-  int mja_match (char *str1, char *str2, int likeormatch);
-  char *construct (char *colname, char *val, int inc_quotes);
+  void A4GL_stripnl (char *buff);
+  int A4GL_mja_match (char *str1, char *str2, int likeormatch);
+  char *A4GL_construct (char *colname, char *val, int inc_quotes);
 
   /* =========================== stack.c ================================ */
 
@@ -1225,62 +1229,62 @@ extern "C"
 
   int atoport (char *service, char *proto);
 #ifndef __MINGW32__
-  int get_connection (int socket_type, u_short port, int *listener);
+  int A4GL_get_connection (int socket_type, u_short port, int *listener);
 #endif
-  int sock_read (int sockfd, char *buf, size_t count);
-  int sock_write (int sockfd, char *buf, size_t count);
-  int sock_gets (int sockfd, char *str, size_t count);
-  int sock_puts (int sockfd, char *str);
+  int A4GL_sock_read (int sockfd, char *buf, size_t count);
+  int A4GL_sock_write (int sockfd, char *buf, size_t count);
+  int A4GL_sock_gets (int sockfd, char *str, size_t count);
+  int A4GL_sock_puts (int sockfd, char *str);
 
   /* ============================ others.c ================================ */
 
 
-  int net_keyval (char *v);
-  void convupper (char *s);
+  int A4GL_net_keyval (char *v);
+  void A4GL_convupper (char *s);
 #ifndef _NO_FORM_X_H_		/* if we don't include form_x.h, this would generate errors : */
-  int find_srec (struct_form * fd, char *name);
+  int A4GL_find_srec (struct_form * fd, char *name);
   /* struct struct_scr_field defined in fcompile/form_x.h */
-  int has_str_attribute (struct struct_scr_field *f, int str);
-  int attr_name_match (struct struct_scr_field *field, char *s);
-  char *get_str_attribute (struct struct_scr_field *f, int str);
+  int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
+  int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
+  char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
 #endif
-  void set_last_key (int a);
-  char *strip_quotes (char *s);
-  void convlower (char *s);
-  int get_lastkey (void);
+  void A4GL_set_last_key (int a);
+  char *A4GL_strip_quotes (char *s);
+  void A4GL_convlower (char *s);
+  int A4GL_get_lastkey (void);
 
   /* ============================ io.c =================================== */
-  void bname (char *str, char *str1, char *str2);
+  void A4GL_bname (char *str, char *str1, char *str2);
 
   /* ============================ keys.c ================================= */
-  int key_val (char *str);
-  int check_keys (int val, char *str2);
-  int check_key (int val, char *a, int ln);
+  int A4GL_key_val (char *str);
+  int A4GL_check_keys (int val, char *str2);
+  int A4GL_check_key (int val, char *a, int ln);
 
 
   /* ============================ pointers.c ============================= */
-  int has_pointer (char *pname, char t);
-  void add_pointer (char *orig_name, char type, void *ptr);
-  void del_pointer (char *pname, char t);
-  int find_pointer_ptr (char *name, char *type, void *ptr);
-  void *find_pointer_val (char *pname, char t);
+  int A4GL_has_pointer (char *pname, char t);
+  void A4GL_add_pointer (char *orig_name, char type, void *ptr);
+  void A4GL_del_pointer (char *pname, char t);
+  int A4GL_find_pointer_ptr (char *name, char *type, void *ptr);
+  void *A4GL_find_pointer_val (char *pname, char t);
 
   /* ============================ screen.c =============================== */
-  int screen_mode (int a);
+  int A4GL_screen_mode (int a);
 
   /* ============================ maths.c ================================ */
-  void *find_op_function (int dtype1, int dtype2, int op);
-  void add_op_function (int dtype1, int dtype2, int op, void *function);
+  void *A4GL_find_op_function (int dtype1, int dtype2, int op);
+  void A4GL_add_op_function (int dtype1, int dtype2, int op, void *function);
 
   /* ============================ translate.c ============================ */
 
-  void dumpstring (char *s, long n, char *fname);
+  void A4GL_dumpstring (char *s, long n, char *fname);
 
 
-  void set_a4gl_status (int a);
-  int get_a4gl_status (void);
-  void set_a4gl_sqlca_sqlcode (int a);
-  int get_a4gl_sqlca_sqlcode (void);
+  void A4GL_set_a4gl_status (int a);
+  int A4GL_get_a4gl_status (void);
+  void A4GL_set_a4gl_sqlca_sqlcode (int a);
+  int A4GL_get_a4gl_sqlca_sqlcode (void);
 
   /* ========================== from a4gl_screen.h ==================== */
 
@@ -1403,22 +1407,22 @@ extern "C"
     int h;
   };
 
-  void *get_curr_form (void);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
+  void *A4GL_get_curr_form (void);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
   int load_data (char *fname, char *delims, char *tabname, ...);
-  int inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
+  int A4GL_inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
   int set_scrline_ia (int np);
   int set_arrline_ia (int np);
-  struct struct_screen_record *get_srec (char *name);
+  struct struct_screen_record *A4GL_get_srec (char *name);
 
   /* From sql.c */
   char *get_currdbname (void);
   long describe_stmt (char *stmt, int colno, int type);
 
   /* From curslib.c (not completed) */
-  ACL_Menu *new_menu_tui (char *title,
+  ACL_Menu *A4GL_new_menu_tui (char *title,
 			  int x, int y,
 			  int mn_type, int help_no, int nopts, va_list * ap);
-  ACL_Menu *new_menu_create_tui (char *title, int x, int y, int mn_type,
+  ACL_Menu *A4GL_new_menu_create_tui (char *title, int x, int y, int mn_type,
 				 int help_no);
   char *disp_h_menu_tui (ACL_Menu * menu);
   int endis_fields_tui (int en_dis, ...);
@@ -1428,13 +1432,13 @@ extern "C"
   struct s_form_dets *get_curr_form_tui (void);
 
   /* ====================== From formwrite2.c ====================== */
-  char *char_val (char *s);
+  char *A4GL_char_val (char *s);
 
   /* ============================ read_dty.c ============================= */
-  int get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
+  int A4GL_get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
 
   /* ========================= from a4gl_acl_string.h ============ */
-  void modify_size (char *z, int a);
+  void A4GL_modify_size (char *z, int a);
 
   /* ==================== from a4gl_aclform.h =================== */
 
@@ -1454,11 +1458,11 @@ extern "C"
 
 
   /* ============================ errfile.c =============================== */
-  void write_cont (FILE * f);
+  void A4GL_write_cont (FILE * f);
 
   /* =========================== dataio.c ============================= */
-  int read_data_from_file (char *datatype, void *ptr, char *filename);
-  int write_data_to_file (char *datatype, void *ptr, char *filename);
+  int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
+  int A4GL_write_data_to_file (char *datatype, void *ptr, char *filename);
 
 
   /* prompt.c */

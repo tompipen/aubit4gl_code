@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.69 2003-05-12 14:24:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.70 2003-05-15 07:10:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -198,7 +198,7 @@ open_outfile (void)
   char *ptr;
   if (outputfilename == 0)
     {
-      debug ("NO output file name");
+      A4GL_debug ("NO output file name");
     }
 
   strcpy (c, outputfilename);
@@ -207,11 +207,11 @@ open_outfile (void)
 
   if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
     {
-      debug ("Clobbering...");
+      A4GL_debug ("Clobbering...");
       set_clobber (outputfilename);
     }
 
-  debug ("Opening output map");
+  A4GL_debug ("Opening output map");
 
   openmap (outputfilename);
 
@@ -220,7 +220,7 @@ open_outfile (void)
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')
 	{
-	  debug (">>> NO C FILES... %s", ptr);
+	  A4GL_debug (">>> NO C FILES... %s", ptr);
 	  return;
 	}
     }
@@ -228,7 +228,7 @@ open_outfile (void)
   strcat (c, ".c");
   strcat (h, ".h");
   strcat (err, ".err");
-  outfile = mja_fopen (c, "w");
+  outfile = A4GL_mja_fopen (c, "w");
   if (outfile == 0)
     {
       printf ("Unable to open file %s (Check permissions)\n", c);
@@ -251,7 +251,7 @@ open_outfile (void)
   fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
 	   outputfilename);
 
-  hfile = mja_fopen (h, "w");
+  hfile = A4GL_mja_fopen (h, "w");
 
 #ifdef OBSOLETE_CODE
   if (strncmp (acl_getenv ("GTKGUI"), "Y", 1) == 0)
@@ -329,7 +329,7 @@ internal_lex_printc (char *fmt, va_list * ap)
   //debug("fmt in lib=%s\n",buff2);
 
 
-  if (isyes (acl_getenv ("INCLINES")))
+  if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
       for (a = 0; a < strlen (buff); a++)
 	{
@@ -406,7 +406,7 @@ internal_lex_printh (char *fmt, va_list * ap)
 }
 
 /**
- * Print comments to the C output file.
+ * Print A4GL_comments to the C output file.
  *
  * If the output file is not opened call the open function.
  *
@@ -446,7 +446,7 @@ internal_lex_printcomment (char *fmt, va_list * ap)
 #else
 	/**
 	 * Empty function for linking purposes when compiling without generation of
-	 * comments in the output C module
+	 * A4GL_comments in the output C module
 	 */
 
   /* Do nothing... */
@@ -459,7 +459,7 @@ internal_lex_printcomment (char *fmt, va_list * ap)
  * identation in the output source.
  */
 void
-incprint (void)
+A4GL_incprint (void)
 {
   int a;
 
@@ -692,7 +692,7 @@ print_exit_loop (int type, int n)
 
 
 /**
- *  Print the C code corresponding to the last action in a format action of
+ *  Print the C code corresponding to the last A4GL_action in a format A4GL_action of
  *  a report.
  */
 void
@@ -799,7 +799,7 @@ pr_report_agg (void)
       t = sreports[z].t;
 
 #ifdef DEBUG
-      debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
+      A4GL_debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
 #endif
 
       if (t == 'C')
@@ -817,13 +817,13 @@ pr_report_agg (void)
 
       if (t == 'S')
 	{
-	  debug ("X0");
+	  A4GL_debug ("X0");
 	  print_expr (sreports[z].rep_where_expr);
-	  debug ("X1");
+	  A4GL_debug ("X1");
 	  printc ("if (pop_bool()) {double _res;");
-	  debug ("X2");
+	  A4GL_debug ("X2");
 	  print_expr (sreports[z].rep_cond_expr);
-	  debug ("X3");
+	  A4GL_debug ("X3");
 	  printc ("_res=pop_double(); _g%d+=_res;}\n ", a);
 	}
 
@@ -923,7 +923,7 @@ print_clr_status (void)
  * @param f The source 4gl file name.
  */
 void
-prchkerr (int l, char *f)
+A4GL_prchkerr (int l, char *f)
 {
   int a;
 /* 0 = continue
@@ -933,7 +933,7 @@ prchkerr (int l, char *f)
  */
 
 #ifdef DEBUG
-  debug ("MJA prchkerr %d %s", l, f);
+  A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
   printc
     ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
@@ -1033,7 +1033,7 @@ void
 print_expr (void *ptr)
 {
 #ifdef DEBUG
-  debug ("via print_expr in lib");
+  A4GL_debug ("via print_expr in lib");
 #endif
   real_print_expr (ptr);
 }
@@ -1041,17 +1041,17 @@ static void
 real_print_expr (struct expr_str *ptr)
 {
   void *optr;
-  debug ("Print expr... %p", ptr);
+  A4GL_debug ("Print expr... %p", ptr);
   while (ptr)
     {
-      debug ("Printing %p", ptr->expr);
+      A4GL_debug ("Printing %p", ptr->expr);
       printc ("%s\n", ptr->expr);
 
       free (ptr->expr);
       optr = ptr;
-      debug ("going to %p", ptr->next);
+      A4GL_debug ("going to %p", ptr->next);
       ptr = ptr->next;
-      debug ("Freeing old value %p", optr);
+      A4GL_debug ("Freeing old value %p", optr);
       free (optr);
     }
 }
@@ -1075,8 +1075,8 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->comment_line,
 	  form_attrib->message_line, form_attrib->attrib);
 #ifdef DEBUG
-  debug ("Printing attributes\n");
-  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  A4GL_debug ("Printing attributes\n");
+  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
 #endif
 	 form_attrib->form_line, form_attrib->error_line,
 	 form_attrib->prompt_line, form_attrib->menu_line,
@@ -1095,10 +1095,10 @@ print_field_bind (int ccc)
   char tabname[40];
   char colname[40];
   int a;
-  debug ("%d\n", ibindcnt);
+  A4GL_debug ("%d\n", ibindcnt);
   for (a = 0; a < ccc; a++)
     {
-      bname (ibind[a].varname, tabname, colname);
+      A4GL_bname (ibind[a].varname, tabname, colname);
       if (a > 0)
 	printc (",");
       if (colname[0] != 0)
@@ -1167,7 +1167,7 @@ print_arr_bind (char i)
   int a;
 
 #ifdef DEBUG
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
 #endif
   /* dump_vars (); */
   if (i == 'i')
@@ -1261,9 +1261,9 @@ print_param (char i)
   int a;
   int b;
   char *ptr;
-  debug ("Expanding binding.. - was %d entries", fbindcnt);
+  A4GL_debug ("Expanding binding.. - was %d entries", fbindcnt);
   expand_bind (&fbind[0], 'F', fbindcnt);
-  debug ("Expanded - now %d entries", fbindcnt);
+  A4GL_debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
       printc ("static ");
@@ -1331,7 +1331,7 @@ print_bind (char i)
 {
   int a;
 #ifdef DEBUG
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
 #endif
   if (i == 'i')
     {
@@ -1471,7 +1471,7 @@ print_bind_expr (void *ptr, char i)
 /**
  * Generate the C implementation of SET PAUSE MODE 4gl statement.
  *
- * @param n The action to do:
+ * @param n The A4GL_action to do:
  *   - 0 : ON.
  *   - 1 : OFF.
  */
@@ -1652,7 +1652,7 @@ print_field_func (char type, char *name, char *var)
 void
 print_func_call (char *identifier, void *args, int args_cnt)
 {
-  debug ("via print_func_call in lib");
+  A4GL_debug ("via print_func_call in lib");
   real_print_func_call (identifier, args, args_cnt);
 }
 
@@ -1663,7 +1663,7 @@ print_func_call (char *identifier, void *args, int args_cnt)
 void
 print_class_func_call (char *var, char *identifier, void *args, int args_cnt)
 {
-  debug ("via print_func_call in lib");
+  A4GL_debug ("via print_func_call in lib");
   real_print_class_func_call (var, identifier, args, args_cnt);
 }
 
@@ -1712,7 +1712,7 @@ real_print_class_func_call (char *var, char *identifier,
 void
 print_pdf_call (char *a1, void *args, char *a3)
 {
-  debug ("via print_pdf_call in lib");
+  A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
 }
 static void
@@ -1756,7 +1756,7 @@ print_end_call_shared (void)
  * Print the C implementation of a call to a remote function (RPC call).
  *
  * @param host The hostname where the RPC server is working.
- * @param func The remote function name to e called.
+ * @param A4GL_func The remote function name to e called.
  * @param port The TCP portnumber where the server is receiving requests.
  * @param nargs The number of arguments to pass to the remote function.
  */
@@ -1906,7 +1906,7 @@ print_construct_2 (char *driver)
  * Print the third phase of the CONSTRUCT C implementation in the 
  * generated C output file.
  *
- * @param byname Flag that indicates if the construct is made or not BY NAME:
+ * @param byname Flag that indicates if the A4GL_construct is made or not BY NAME:
  *    - 0 : Its not BY NAME.
  *    - 1 : Its BY NAME.
  * @param constr_str : The name of the string where the where is to be build 
@@ -1967,7 +1967,7 @@ print_befaft_field_1 (char *fieldexpr)
 
 /**
  * Print the second part of the C implementation of AFTER/BEFORE FIELD
- * in the construct statement.
+ * in the A4GL_construct statement.
  */
 void
 print_befaft_field_2 (void)
@@ -2073,7 +2073,7 @@ print_display_by_name (char *attr)
  *   - 0 : No form name.
  */
 char *
-get_display_str (int type, char *s, char *f)
+A4GL_get_display_str (int type, char *s, char *f)
 {
   static char buff[1024];
   if (type == 0)
@@ -2328,7 +2328,7 @@ print_pushchar (char *s)
 void
 print_goto (char *label)
 {
-  convlower (label);
+  A4GL_convlower (label);
   printc ("goto %s;\n", label);
 }
 
@@ -2377,7 +2377,7 @@ print_gui_do_fields (char *list, int mode)
  *
  * @param name The form name.
  * @param list The field list to be afected.
- * @param mode The action to be set:
+ * @param mode The A4GL_action to be set:
  *   - D : Disable.
  *   - E : Enable.
  */
@@ -2431,7 +2431,7 @@ print_if_end (void)
  *
  * This statement is not a informix 4gl original.
  *
- * @param func The function name to be imported.
+ * @param A4GL_func The function name to be imported.
  * @param nargs The number of arguments that the function imported receive.
  */
 void
@@ -2697,7 +2697,7 @@ print_init_table (char *s)
  * @param in2 The right part of boolean expression.
  */
 void
-generate_or (char *out, char *in1, char *in2)
+A4GL_generate_or (char *out, char *in1, char *in2)
 {
   sprintf (out, "%s||%s", in1, in2);
 }
@@ -2888,7 +2888,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
  * @return A string with the C code that calls form_loop().
  */
 char *
-get_formloop_str (int type)
+A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
     return "form_loop(&_inp_io,_forminit)";
@@ -2921,7 +2921,7 @@ print_scroll (char *flds, char *updown)
 void
 print_label (char *s)
 {
-  convlower (s);
+  A4GL_convlower (s);
   printc ("%s:\n", s);
 }
 
@@ -2935,15 +2935,15 @@ print_let_manyvars (char *nexprs)
 {
   int from_exprs;
   int to_vars;
-  debug ("1");
-  debug ("In print_let_manyvars\n");
+  A4GL_debug ("1");
+  A4GL_debug ("In print_let_manyvars\n");
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
 
   if (to_vars != from_exprs)
     {
-      debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
+      A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
       return 0;
     }
   printc ("pop_params(obind,%d);\n", from_exprs);
@@ -2995,9 +2995,9 @@ print_linked_cmd (int type, char *var)
 	  add_bind ('o', buff);
 	}
 
-      debug ("Finding number of keys...\n");
+      A4GL_debug ("Finding number of keys...\n");
       no_keys = linked_split (pklist, 0, 0);
-      debug ("No of keys=%d", no_keys);
+      A4GL_debug ("No of keys=%d", no_keys);
       start_bind ('i', 0);
       if (type == 'U')
 	{
@@ -3008,12 +3008,12 @@ print_linked_cmd (int type, char *var)
 	}
       for (azcnt = 1; azcnt <= no_keys; azcnt++)
 	{
-	  debug ("Getting key no %d", azcnt);
+	  A4GL_debug ("Getting key no %d", azcnt);
 	  linked_split (pklist, azcnt, buff2);
 	  sprintf (buff, "%s.%s", var, buff2);
-	  debug ("Adding linked %s", buff);
+	  A4GL_debug ("Adding linked %s", buff);
 	  add_bind ('i', buff);
-	  debug (" key count %d %d\n", azcnt, no_keys);
+	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
       if (type == 'S')
 	no = print_bind ('o');
@@ -3258,7 +3258,7 @@ print_report_print_img (char *scaling, char *blob, char *type, char *semi)
  *  It generates a default scale to the generated C code.
  */
 char *
-get_default_scaling (void)
+A4GL_get_default_scaling (void)
 {
   return "push_double(1.0);push_double(1.0);";
 }
@@ -3470,7 +3470,7 @@ print_message (int type, char *attr, int wait)
 
 /**
  * The parser found a SYSTEM 4gl instruction.
- * The call to system_run function in C mode it will be generated.
+ * The call to A4GL_system_run function in C mode it will be generated.
  *
  * @param type The type of the run:
  *   - 0 : Normal run
@@ -3976,7 +3976,7 @@ print_menu_block_end ()
  * Its executed when the parser found in the 4gl source NEXT OPTION, 
  * HIDE OPTION or SHOW OPTION.
  *
- * @todo : Understand if in the H type should call menu_hide instead.
+ * @todo : Understand if in the H type should call A4GL_menu_hide instead.
  *
  * @param type The type of instruction:
  *   - N : Next option.
@@ -4031,7 +4031,7 @@ printDeclareFunctionStack (char *_functionName)
 {
   //printf("Function %s\n",_functionName);
 #ifdef DEBUG
-  debug ("Function %s\n", _functionName);
+  A4GL_debug ("Function %s\n", _functionName);
 #endif
   if (isGenStackInfo ())
     printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
@@ -4497,7 +4497,7 @@ print_use_session (char *sess)
  * @return The C implementation for seving current connection.
  */
 char *
-get_undo_use (void)
+A4GL_get_undo_use (void)
 {
   return "A4GLSQL_set_conn(_sav_cur_conn);}";
 }
@@ -4652,7 +4652,7 @@ print_end_record (char *vname, char *arrsize)
  */
 char *
 /* char */
-get_push_literal (char type, char *value)
+A4GL_get_push_literal (char type, char *value)
 {
   static char buff[80];
   if (type == 'D')		/* Double */
@@ -4681,7 +4681,7 @@ get_push_literal (char type, char *value)
  * @param s
  */
 char *
-decode_array_string (char *s)
+A4GL_decode_array_string (char *s)
 {
   static char buff[2000] = "";
   int a;
@@ -4727,14 +4727,14 @@ print_cmd_end ()
 }
 
 char *
-get_into_part (int no)
+A4GL_get_into_part (int no)
 {
   return "";
 }
 
 
 char *
-set_var_sql (int n)
+A4GL_set_var_sql (int n)
 {
   int a;
   static char buff[2000];
@@ -4752,7 +4752,7 @@ set_var_sql (int n)
 }
 
 void
-lex_parsed_fgl ()
+A4GL_lex_parsed_fgl ()
 {
   if (outfile)
     fclose (outfile);

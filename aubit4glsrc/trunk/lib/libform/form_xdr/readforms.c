@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.25 2003-05-12 14:24:19 mikeaubury Exp $
+# $Id: readforms.c,v 1.26 2003-05-15 07:10:41 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
  /*
@@ -46,11 +46,11 @@
 #include "a4gl_lib_form_xdr_int.h"
 
 /* FIXME: duplicated from a4gl_libaubit4gl.h : */
-int find_srec (struct_form * fd, char *name);
+int A4GL_find_srec (struct_form * fd, char *name);
 	/* struct struct_scr_field defined in fcompile/form_x.h */
-int has_str_attribute (struct struct_scr_field *f, int str);
-int attr_name_match (struct struct_scr_field *field, char *s);
-char *get_str_attribute (struct struct_scr_field *f, int str);
+int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
+int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
+char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
 
 /*
 =====================================================================
@@ -114,7 +114,7 @@ static int include_range_check (char *ss, char *ptr, int dtype);
 static int real_has_bool_attribute (struct struct_scr_field *f, int bool);
 
 char *read_string_dup (FILE * ofile);
-char *string_width (char *a);
+char *A4GL_string_width (char *a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 
 static void real_comments (struct struct_scr_field *fprop);
@@ -132,7 +132,7 @@ static void real_dump_srec (struct s_form_dets *fd);
 
 /* not used in libFORM_ so moved into libaubit4gl in screen.c
 char *
-find_attribute (struct s_form_dets *f, int field_no)
+A4GL_find_attribute (struct s_form_dets *f, int field_no)
 {
   int a;
 
@@ -141,11 +141,11 @@ find_attribute (struct s_form_dets *f, int field_no)
 
       if (f->fileform->attributes.attributes_val[a].field_no == field_no)
 	{
-	  debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
+	  A4GL_debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
 	  return (char *) &f->fileform->attributes.attributes_val[a];
 	}
     }
-  debug ("Couldnt find entry for field no %d\n", field_no);
+  A4GL_debug ("Couldnt find entry for field no %d\n", field_no);
   return 0;
 }
 */
@@ -170,9 +170,9 @@ ret_string (char *str)
  *
  */
 void *
-read_form_internal (char *fname, char *formname)
+A4GL_read_form_internal (char *fname, char *formname)
 {
-  debug ("via read_form in lib");
+  A4GL_debug ("via A4GL_read_form in lib");
   return real_read_form (fname, formname);
 }
 
@@ -185,17 +185,17 @@ real_read_form (char *fname, char *formname)
   char buff[80];
   char *ptr = 0;
   XDR xdrp;
-  trim (fname);
-  trim (formname);
+  A4GL_trim (fname);
+  A4GL_trim (formname);
 
-  debug ("in read_form fname=%s formname=%s", fname, formname);
+  A4GL_debug ("in A4GL_read_form fname=%s formname=%s", fname, formname);
   strcpy (buff, fname);
   buff[strlen (buff) - 4] = 0;
 
-  if (has_pointer (buff, COMPILED_FORM))
+  if (A4GL_has_pointer (buff, COMPILED_FORM))
     {
       int chkint;		/* INT4 */
-      ptr = find_pointer (buff, COMPILED_FORM);
+      ptr = A4GL_find_pointer (buff, COMPILED_FORM);
 
       xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
       xdr_int (&xdrp, &chkint);
@@ -210,16 +210,16 @@ real_read_form (char *fname, char *formname)
   else
     {
       int chkint;		/*  INT4 */
-      debug ("Opening file");
-      ofile = (FILE *) open_file_dbpath (fname);
+      A4GL_debug ("Opening file");
+      ofile = (FILE *) A4GL_open_file_dbpath (fname);
 
       if (ofile == 0)
 	{
-	  exitwith ("Couldnt open form");
+	  A4GL_exitwith ("Couldnt open form");
 	  return 0;
 	}
 
-      debug ("Checking magic header");
+      A4GL_debug ("Checking magic header");
 
       xdrstdio_create (&xdrp, ofile, XDR_DECODE);
       xdr_int (&xdrp, &chkint);
@@ -237,11 +237,11 @@ real_read_form (char *fname, char *formname)
 
 #ifdef DEBUG
   {
-    debug ("fname=%s formname=%s", fname, formname);
+    A4GL_debug ("fname=%s formname=%s", fname, formname);
   }
 #endif
 
-  gui_startform (formname);
+  A4GL_gui_startform (formname);
   formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
@@ -253,13 +253,13 @@ real_read_form (char *fname, char *formname)
 
   if (ptr == 0)
     {
-      debug ("Reading form from file");
+      A4GL_debug ("Reading form from file");
       xdrstdio_create (&xdrp, ofile, XDR_DECODE);
     }
   else
     {
-      debug ("Reading form from memory");
-      xdrmem_create (&xdrp, find_pointer (buff, COMPILED_FORM), 128 * 1024,
+      A4GL_debug ("Reading form from memory");
+      xdrmem_create (&xdrp, A4GL_find_pointer (buff, COMPILED_FORM), 128 * 1024,
 		     XDR_DECODE);
     }
 
@@ -267,15 +267,15 @@ real_read_form (char *fname, char *formname)
 
   if (!a)
     {
-      exitwith ("Unable to read form");
+      A4GL_exitwith ("Unable to read form");
       return 0;
     }
 
   if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
     {
-      debug ("Form version %d - my version %d",
+      A4GL_debug ("Form version %d - my version %d",
 	     formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
-      exitwith ("This form has a version number that I can't handle");
+      A4GL_exitwith ("This form has a version number that I can't handle");
       return 0;
     }
 
@@ -283,16 +283,16 @@ real_read_form (char *fname, char *formname)
   do_translate_form (formdets->fileform);
 
   formdets->currentfield = 0;
-  debug ("formdets=%p", formdets);
+  A4GL_debug ("formdets=%p", formdets);
   read_attributes (formdets);
-  debug ("formdets=%p", formdets);
-  read_metrics (formdets);
-  debug ("formdets=%p", formdets);
-  read_fields (formdets);
-  debug ("formdets=%p", formdets);
-  debug ("Loaded form...");
-  gui_endform ();
-  debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
+  A4GL_debug ("formdets=%p", formdets);
+  A4GL_read_metrics (formdets);
+  A4GL_debug ("formdets=%p", formdets);
+  A4GL_read_fields (formdets);
+  A4GL_debug ("formdets=%p", formdets);
+  A4GL_debug ("Loaded form...");
+  A4GL_gui_endform ();
+  A4GL_debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
 	 formdets->fileform->maxline);
   return formdets;
 }
@@ -303,7 +303,7 @@ real_read_form (char *fname, char *formname)
  * Called from lib/libtui/newpanels.c so it should be in API_form
  */
 void
-set_default_form (void *form)
+A4GL_set_default_form (void *form)
 {
   real_set_default_form (form);
 }
@@ -328,10 +328,10 @@ static void
 read_attributes (struct s_form_dets *f)
 {
   int a;
-  debug ("read_attributes %d", f->fileform->attributes.attributes_len);
+  A4GL_debug ("read_attributes %d", f->fileform->attributes.attributes_len);
   for (a = 0; a < f->fileform->attributes.attributes_len; a++)
     {
-      debug ("a=%d colour=%d", a,
+      A4GL_debug ("a=%d colour=%d", a,
 	     f->fileform->attributes.attributes_val[a].colour);
       if (f->fileform->attributes.attributes_val[a].colour == -1)
 	f->fileform->attributes.attributes_val[a].colour = 7;
@@ -340,9 +340,9 @@ read_attributes (struct s_form_dets *f)
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
       else
 	f->fileform->attributes.attributes_val[a].do_reverse = 0;
-      debug ("moving onto next\n");
+      A4GL_debug ("moving onto next\n");
     }
-  debug ("returning\n");
+  A4GL_debug ("returning\n");
 }
 
 
@@ -350,9 +350,9 @@ read_attributes (struct s_form_dets *f)
  * Called from lib/libtui/ioform.c
  */
 void
-comments (void *fprop)
+A4GL_comments (void *fprop)
 {
-  debug ("via comments in lib");
+  A4GL_debug ("via A4GL_comments in lib");
   real_comments (fprop);
 }
 static void
@@ -360,11 +360,11 @@ real_comments (struct struct_scr_field *fprop)
 {
   if (fprop)
     {
-      debug ("Has property");
-      if (has_str_attribute (fprop, FA_S_COMMENTS))
+      A4GL_debug ("Has property");
+      if (A4GL_has_str_attribute (fprop, FA_S_COMMENTS))
 	{
-	  debug ("Adding comment %s",
-		 strip_quotes (get_str_attribute (fprop, FA_S_COMMENTS)));
+	  A4GL_debug ("Adding comment %s",
+		 A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_COMMENTS)));
 	}
     }
 }
@@ -377,7 +377,7 @@ real_comments (struct struct_scr_field *fprop)
  *
  */
 void
-dump_srec (void *fd)
+A4GL_dump_srec (void *fd)
 {
   real_dump_srec (fd);
 }
@@ -389,17 +389,17 @@ real_dump_srec (struct s_form_dets *fd)
 
   return;
 
-  debug ("fd=%p srecs_cnt=%ld", fd, fd->fileform->records.records_len);
+  A4GL_debug ("fd=%p srecs_cnt=%ld", fd, fd->fileform->records.records_len);
   for (a = 0; a < fd->fileform->records.records_len; a++)
     {
-      debug ("Screen record : %s [%d] (%d)\n",
+      A4GL_debug ("Screen record : %s [%d] (%d)\n",
 	     fd->fileform->records.records_val[a].name,
 	     fd->fileform->records.records_val[a].dim,
 	     fd->fileform->records.records_val[a].attribs.attribs_len);
       for (b = 0;
 	   b < fd->fileform->records.records_val[a].attribs.attribs_len; b++)
 	{
-	  debug ("                    %d\n",
+	  A4GL_debug ("                    %d\n",
 		 fd->fileform->records.records_val[a].attribs.attribs_val[b]);
 	}
     }
@@ -411,26 +411,26 @@ real_dump_srec (struct s_form_dets *fd)
  */
 /* moved to others.c
 struct struct_screen_record *
-get_srec (char *name)
+A4GL_get_srec (char *name)
 {
   int a;
   struct s_form_dets *form;
-  debug ("Get_srec");
-  form = get_curr_form ();
-  debug ("found form");
+  A4GL_debug ("Get_srec");
+  form = A4GL_get_curr_form ();
+  A4GL_debug ("found form");
 
-  debug ("Got form %p", form);
+  A4GL_debug ("Got form %p", form);
 
   if (form == 0)
     {
-      debug ("No form...");
+      A4GL_debug ("No form...");
       return (struct struct_screen_record *) 0;
     }
 
   debug("fileform=%p name=%p(%s)",form->fileform,name,name);
 
-  a = find_srec (form->fileform, name);
-  debug ("Got %d", a);
+  a = A4GL_find_srec (form->fileform, name);
+  A4GL_debug ("Got %d", a);
   if (a == -1)
     return (struct struct_screen_record *) 0;
   else
@@ -443,11 +443,11 @@ get_srec (char *name)
  * called from lib/libtui/ioform.c so it should be in API_form
  */
 int
-check_field_for_include (char *s, char *inc, int dtype)
+A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[1024];
   char *ptr;
-  debug ("check_field_for_include (%s,'%s',%d)", s, inc, dtype);
+  A4GL_debug ("check_field_for_include (%s,'%s',%d)", s, inc, dtype);
 /* no include specified - must be OK */
 
   if (inc == 0)
@@ -455,14 +455,14 @@ check_field_for_include (char *s, char *inc, int dtype)
   if (strlen (inc) == 0)
     return TRUE;
 
-  debug ("Checking include");
+  A4GL_debug ("Checking include");
   dtype = dtype & DTYPE_MASK;
   strcpy (buff, inc);
   ptr = strtok (buff, INC_EACH);
 
   while (ptr)
     {
-      debug ("Checking token '%s'", ptr);
+      A4GL_debug ("Checking token '%s'", ptr);
       if (include_range_check (s, ptr, dtype))
 	return TRUE;
       ptr = strtok (0, INC_EACH);
@@ -485,8 +485,8 @@ include_range_check (char *ss, char *ptr, int dtype)
   char *s;
 
   s = strdup (ss);
-  trim (s);
-  debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+  A4GL_trim (s);
+  A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
 
   ptr3 = strchr (ptr, INC_RANGE);
 
@@ -494,23 +494,23 @@ include_range_check (char *ss, char *ptr, int dtype)
     {
       ptr3[0] = 0;
       ptr3++;
-      debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
+      A4GL_debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
     }
 
   if (dtype != 0)
     {
-      debug ("Not a string expression");
-      push_char (s);
-      pop_param (&buff, dtype, 0);
+      A4GL_debug ("Not a string expression");
+      A4GL_push_char (s);
+      A4GL_pop_param (&buff, dtype, 0);
 
-      push_char (ptr);
-      pop_param (&buff2, dtype, 0);
+      A4GL_push_char (ptr);
+      A4GL_pop_param (&buff2, dtype, 0);
 
       /* do we have a range of values to check ? */
       if (ptr3)
 	{
-	  push_char (ptr3);
-	  pop_param (&buff3, dtype, 0);
+	  A4GL_push_char (ptr3);
+	  A4GL_pop_param (&buff3, dtype, 0);
 	}
       ptr1 = buff;
       ptr2 = buff2;
@@ -519,7 +519,7 @@ include_range_check (char *ss, char *ptr, int dtype)
     }
   else
     {
-      debug ("String expression");
+      A4GL_debug ("String expression");
       ptr1 = s;
       ptr2 = ptr;
     }
@@ -528,37 +528,37 @@ include_range_check (char *ss, char *ptr, int dtype)
   if (ptr3 == 0)
     {
       /* Not a range */
-      push_param (ptr1, dtype);
-      push_param (ptr2, dtype);
-      debug_print_stack ();
-      pushop (OP_EQUAL);
-      debug ("Checking for equal");
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr2, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_EQUAL);
+      A4GL_debug ("Checking for equal");
       free (s);
-      return pop_bool ();
+      return A4GL_pop_bool ();
 
     }
   else
     {
-      debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
-      push_param (ptr1, dtype);
-      push_param (ptr2, dtype);
-      debug_print_stack ();
-      pushop (OP_GREATER_THAN_EQ);
-      debug ("Checking for <=");
-      if (pop_bool () == 0)
+      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr2, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_GREATER_THAN_EQ);
+      A4GL_debug ("Checking for <=");
+      if (A4GL_pop_bool () == 0)
 	{
 	  free (s);
 	  return FALSE;
 	}
 
-      debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
-      push_param (ptr1, dtype);
-      push_param (ptr3, dtype);
-      debug_print_stack ();
-      pushop (OP_LESS_THAN_EQ);
-      debug ("Checking for >=");
+      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr3, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_LESS_THAN_EQ);
+      A4GL_debug ("Checking for >=");
       free (s);
-      if (pop_bool () == 0)
+      if (A4GL_pop_bool () == 0)
 	return FALSE;
       return TRUE;
     }
@@ -570,7 +570,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 /* moved to others.c, because it is also used by 4glc
 
 char *
-strip_quotes (char *s)
+A4GL_strip_quotes (char *s)
 {
   static char buff[1024];
   if (s[0] == '"' || s[0] == '\'')
@@ -582,7 +582,7 @@ strip_quotes (char *s)
     {
       strcpy (buff, s);
     }
-  debug ("Returning %s", buff);
+  A4GL_debug ("Returning %s", buff);
   return buff;
 }
 
@@ -593,23 +593,23 @@ strip_quotes (char *s)
  *
  */
 int
-has_bool_attribute (void *f, int bool)
+A4GL_has_bool_attribute (void *f, int bool)
 {
-  debug ("via has_bool_attribute in lib");
+  A4GL_debug ("via A4GL_has_bool_attribute in lib");
   real_has_bool_attribute (f, bool);
 }
 static int
 real_has_bool_attribute (struct struct_scr_field *f, int bool)
 {
   int a;
-  debug ("Checking %p for %d\n", f, bool);
+  A4GL_debug ("Checking %p for %d\n", f, bool);
   for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
     {
-      debug ("%d %d %d\n", bool, a, f->bool_attribs.bool_attribs_len);
+      A4GL_debug ("%d %d %d\n", bool, a, f->bool_attribs.bool_attribs_len);
       if (f->bool_attribs.bool_attribs_val[a] == bool)
 	return 1;
     }
-  debug ("Nope");
+  A4GL_debug ("Nope");
   return 0;
 }
 
@@ -649,7 +649,7 @@ do_translate_form (struct_form * the_form)
 	   18) == 0)
 	{
 	  ptr = &the_form->metrics.metrics_val[a].label[18];
-	  ptr = (char *) get_translated_id (ptr);
+	  ptr = (char *) A4GL_get_translated_id (ptr);
 	  the_form->metrics.metrics_val[a].label = ptr;
 	}
     }
@@ -671,7 +671,7 @@ do_translate_form (struct_form * the_form)
 		  ptr =
 		    &the_form->attributes.attributes_val[b].str_attribs.
 		    str_attribs_val[a].value[18];
-		  ptr = (char *) get_translated_id (ptr);
+		  ptr = (char *) A4GL_get_translated_id (ptr);
 		  if (ptr)
 		    the_form->attributes.attributes_val[b].str_attribs.
 		      str_attribs_val[a].value = ptr;
@@ -687,13 +687,13 @@ do_translate_form (struct_form * the_form)
  */
 /*
 int
-chk_iskey (char *keys)
+A4GL_chk_iskey (char *keys)
 {
   char *k;
   char s[256];
   strcpy (s, keys);
   strcat (s, "|");
-  debug ("Chk keys %s\n", s);
+  A4GL_debug ("Chk keys %s\n", s);
 
   if (strcmp (keys, "->ANY") == 0)
     return 1;
@@ -701,8 +701,8 @@ chk_iskey (char *keys)
   k = strtok (s, "|");
   while (1)
     {
-      debug ("Chk keys (%s - %d %d )\n", k, key_val (k), get_lastkey ());
-      if (key_val (k) == get_lastkey ())
+      A4GL_debug ("Chk keys (%s - %d %d )\n", k, A4GL_key_val (k), A4GL_get_lastkey ());
+      if (A4GL_key_val (k) == A4GL_get_lastkey ())
         {
           return 1;
         }
@@ -716,13 +716,13 @@ chk_iskey (char *keys)
 
 /* moved to lib/libaubit4gl/others.c because it is used by other modules too, not just forms
 
-char *replace_sql_var (char *s);
-int attr_name_match (struct struct_scr_field *field, char *s);
-char *get_str_attribute (struct struct_scr_field *f, int str);
+char *A4GL_replace_sql_var (char *s);
+int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
+char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
 
 
 char *
-replace_sql_var (char *s)
+A4GL_replace_sql_var (char *s)
 {
   static char buff[1024];
   char *ptr;
@@ -734,19 +734,19 @@ replace_sql_var (char *s)
 
   if (strcmp (buff, "today") == 0)
     {
-      push_today ();
-      ptr = char_pop ();
+      A4GL_push_today ();
+      ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
     }
   if (strcmp (buff, "user") == 0)
     {
-      push_user ();
-      ptr = char_pop ();
+      A4GL_push_user ();
+      ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
     }
-  debug ("replace_sql_var :Returning %s", buff);
+  A4GL_debug ("replace_sql_var :Returning %s", buff);
   return buff;
 
 }
@@ -754,7 +754,7 @@ replace_sql_var (char *s)
 
 
 
-attr_name_match (struct struct_scr_field * field, char *s)
+A4GL_attr_name_match (struct struct_scr_field * field, char *s)
 {
   char colname[40];
   char tabname[40];
@@ -763,7 +763,7 @@ attr_name_match (struct struct_scr_field * field, char *s)
   int ab;
   //debug ("Field : %p\n", field);
   //debug ("attr_name_match : %s", s);
-  bname (s, tabname, colname);
+  A4GL_bname (s, tabname, colname);
 
   //debug ("Splits to %s & %s", tabname, colname);
   //debug ("field is [%s %s]", field->tabname, field->colname);
@@ -773,12 +773,12 @@ attr_name_match (struct struct_scr_field * field, char *s)
   //debug ("Matches = %d %d ", aa, ab);
   if ((ab == 0) || (colname[0] == '*'))
     {
-      debug ("Match on *");
+      A4GL_debug ("Match on *");
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
-      debug ("Matched");
+      A4GL_debug ("Matched");
       return 1;
     }
   //debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
@@ -789,11 +789,11 @@ attr_name_match (struct struct_scr_field * field, char *s)
 
 
 char *
-get_str_attribute (struct struct_scr_field *f, int str)
+A4GL_get_str_attribute (struct struct_scr_field *f, int str)
 {
   int a;
 
-  if (!has_str_attribute (f, str))
+  if (!A4GL_has_str_attribute (f, str))
     {
       return 0;
     }
@@ -808,7 +808,7 @@ get_str_attribute (struct struct_scr_field *f, int str)
 
 
 
-find_srec (struct_form * fd, char *name)
+A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
   int b;
@@ -825,7 +825,7 @@ debug("No of records : %d",fd->records.records_len);
 
 
 
-has_str_attribute (struct struct_scr_field * f, int str)
+A4GL_has_str_attribute (struct struct_scr_field * f, int str)
 {
   int a;
   for (a = 0; a < f->str_attribs.str_attribs_len; a++)

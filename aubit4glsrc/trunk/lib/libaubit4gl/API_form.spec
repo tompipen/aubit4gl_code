@@ -27,22 +27,22 @@ VARIABLE A4GL_FORMTYPE
 
 /* this should be probably removed, together with function in readforms.c: */
 /* dump_srec (struct s_form_dets * fd) */
-dump_srec void* fd -> void
+A4GL_dump_srec void* fd -> void
 
 /* void comments (struct struct_scr_field *fprop); */
-comments void* fprop -> void
+A4GL_comments void* fprop -> void
 
 /* void set_default_form (struct s_form_attr *form) */
-set_default_form void* form -> void
+A4GL_set_default_form void* form -> void
 
 /* struct s_form_dets * read_form (char *fname, char *formname) */
-read_form_internal char* fname,char* formname -> void*
+A4GL_read_form_internal char* fname,char* formname -> void*
 
 /* int has_bool_attribute (struct struct_scr_field *f, int bool) */
-has_bool_attribute void* f,int boolval -> int
+A4GL_has_bool_attribute void* f,int boolval -> int
 
 /* int check_field_for_include (char *s, char *inc, int dtype) */
-check_field_for_include char* s,char* inc,int dtype -> int
+A4GL_check_field_for_include char* s,char* inc,int dtype -> int
 
 /*  -------- Function calls from formwrite2.c ------------------------ */
 
@@ -54,7 +54,7 @@ check_field_for_include char* s,char* inc,int dtype -> int
  * element.
  */
 /* void init_fld (void) */
-init_fld -> void
+A4GL_init_fld -> void
 
 /**
  * Find a tag name from the fields array of the form
@@ -63,13 +63,13 @@ init_fld -> void
  * @return -1 if not found, the index in the array otherwise
  */
 /* int find_field (char *s) */
-find_field char* s -> int
+A4GL_find_field char* s -> int
 
 /**
  * Add / Initialize a new screen array
  */
 /* void add_srec(void) */
-add_srec -> void
+A4GL_add_srec -> void
 
 /**
  *  Assigns a new name and size to de current screen array
@@ -78,7 +78,7 @@ add_srec -> void
  *  @param a The array size
  */
 /* void set_dim_srec (char *s, int a) */
-set_dim_srec char* s,int a -> void
+A4GL_set_dim_srec char* s,int a -> void
 
 /**
  * Lower all the caracters of a string
@@ -86,7 +86,7 @@ set_dim_srec char* s,int a -> void
  * @param s The string to be lowered
  */
 /* void make_downshift(char *s) */
-make_downshift char* s -> void
+A4GL_make_downshift char* s -> void
 
 /**
  * Makes some validations and assigns default values on a new field description
@@ -97,7 +97,7 @@ make_downshift char* s -> void
  * @param f The field attributes filled in a struct (struct_scr_field)
  */
 /* void set_field (char *s, struct struct_scr_field *f) */
-set_field char* s,void* f -> void
+A4GL_set_field char* s,void* f -> void
 
 /**
  * Add(s) a new field found inside the screen section to the fields array
@@ -115,7 +115,7 @@ set_field char* s,void* f -> void
  * @param label The screen label
  */
 /* int add_field(char *s, int x, int y, int wid, int scr, int delim,char *label) */
-add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
+A4GL_add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
 
 /**
  * Adds a new table to the form tables array
@@ -124,7 +124,7 @@ add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
  * @param a table alias
  */
 /* void add_table (char *s, char *a) */
-add_table char* s,char* a -> void
+A4GL_add_table char* s,char* a -> void
 
 /**
  * Adds a new attribute / field, field pattern to the current screen record
@@ -134,13 +134,13 @@ add_table char* s,char* a -> void
  * @param thru
  */
 /* void add_srec_attribute (char *tab, char *col, char *thru) */
-add_srec_attribute char* tab,char* col,char* thru -> void
+A4GL_add_srec_attribute char* tab,char* col,char* thru -> void
 
 /**
  * Write the frm file with the information parsed from the .per to memory
  */
 /* void write_form (void) */
-write_form -> void
+A4GL_write_form -> void
 
 /**
  * Gets the datatype of the column from the database
@@ -148,15 +148,15 @@ write_form -> void
  * @col The column name
  * @tab The table name
  */
-/* int getdatatype(char *col,char *tab) */
-getdatatype char* col,char* tab -> int
+/* int A4GL_getdatatype(char *col,char *tab) */
+A4GL_getdatatype char* col,char* tab -> int
 
 /**
  * Intialize the memory needed to compile a 4gl screen form in order to
  * the lexical and sintatic parser to load the information found
  */
-/* void init_form(void) */
-init_form -> void
+/* void A4GL_init_form(void) */
+A4GL_init_form -> void
 
 /**
  * If necessary locate memory to field attributes and insert it to the
@@ -169,7 +169,7 @@ init_form -> void
  * @param str The attribute to add
  */
 /* void add_str_attr(struct struct_scr_field *f,int type,char *str) */
-add_str_attr void* f,int type,char* str -> void
+A4GL_add_str_attr void* f,int type,char* str -> void
 
 /**
  * Try to find the attribute and if not alocate memory and insert it in
@@ -180,7 +180,7 @@ add_str_attr void* f,int type,char* str -> void
  *
  */
 /* void add_bool_attr(struct struct_scr_field *f,int type) */
-add_bool_attr void* f,int type -> void
+A4GL_add_bool_attr void* f,int type -> void
 
 /* no longer required... */
 * chk_iskey char* keys -> int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: params.c,v 1.3 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: params.c,v 1.4 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -81,8 +81,8 @@ static int args_type[256];
 */
 
 #ifdef OLD_INCL
-void split_config (char *str);
-void *find_param (char *name);
+void A4GL_split_config (char *str);
+void *A4GL_find_param (char *name);
 #endif
 
 
@@ -100,7 +100,7 @@ void *find_param (char *name);
  * @param str The string with the parameters.
  */
 void
-split_config (char *str)
+A4GL_split_config (char *str)
 {
   char *ptr;
   char *s;
@@ -144,7 +144,7 @@ split_config (char *str)
 	  args_type[a] = TYPE_INT;
 	}
 
-      debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a], args_type[a]);
+      A4GL_debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a], args_type[a]);
     }
 }
 
@@ -155,7 +155,7 @@ split_config (char *str)
  * @return A pointer to the bytes that have the values stored.
  */
 void *
-find_param (char *name)
+A4GL_find_param (char *name)
 {
   int a;
   int reqd = 1;
@@ -177,7 +177,7 @@ find_param (char *name)
 
   if (reqd)
     {
-      debug ("Required Parameter not found %s\n", name);
+      A4GL_debug ("Required Parameter not found %s\n", name);
       return 0;
     }
   else

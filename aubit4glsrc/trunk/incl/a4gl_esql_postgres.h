@@ -39,16 +39,16 @@
 #define COPY_DATA_OUT_2(a4gl,pgres,size) *(a4gl)=*(pgres)
 #define COPY_DATA_OUT_3(a4gl,pgres,size) *(a4gl)=*(pgres)
 #define COPY_DATA_OUT_4(a4gl,pgres,size) *(a4gl)=*(pgres)
-#define COPY_DATA_OUT_5(a4gl,pgres,size) copy_decimal(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_5(a4gl,pgres,size) A4GL_copy_decimal(pgres,a4gl,size,'o')
 #define COPY_DATA_OUT_6(a4gl,pgres,size) *(a4gl)=*(pgres)
 #define COPY_DATA_OUT_7(a4gl,pgres,size) *(a4gl)=*(pgres)
-#define COPY_DATA_OUT_8(a4gl,pgres,size) copy_money(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_8(a4gl,pgres,size) A4GL_copy_money(pgres,a4gl,size,'o')
 #define COPY_DATA_OUT_9(a4gl,pgres,size) *(a4gl)=*(pgres)
-#define COPY_DATA_OUT_10(a4gl,pgres,size) copy_datetime(pgres,a4gl,size,'o')
-#define COPY_DATA_OUT_11(a4gl,pgres,size) copy_blob_byte(pgres,a4gl,size,'o')
-#define COPY_DATA_OUT_12(a4gl,pgres,size) copy_blob_text(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_10(a4gl,pgres,size) A4GL_copy_datetime(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_11(a4gl,pgres,size) A4GL_copy_blob_byte(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_12(a4gl,pgres,size) A4GL_copy_blob_text(pgres,a4gl,size,'o')
 #define COPY_DATA_OUT_13(a4gl,pgres,size) *strcpy(*(a4gl),*(pgres))
-#define COPY_DATA_OUT_14(a4gl,pgres,size) copy_interval(pgres,a4gl,size,'o')
+#define COPY_DATA_OUT_14(a4gl,pgres,size) A4GL_copy_interval(pgres,a4gl,size,'o')
 
 
 #define copy_sqlca
@@ -56,5 +56,5 @@
 #define dtime_t datetime
 
 
-#define popdec(x) {char *s;s=char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }
-#define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x1e100005);}
+#define popdec(x) {char *s;s=A4GL_char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }
+#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}

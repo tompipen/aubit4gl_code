@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.11 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: keys.c,v 1.12 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  */
 
 /*
@@ -41,7 +41,7 @@
 */
 
 #define OBJECTMODULE
-#define mja_strcmp(a,b) mja_strncmp(a,b,0)
+#define mja_strcmp(a,b) A4GL_mja_strncmp(a,b,0)
 
 /*
 =====================================================================
@@ -58,8 +58,8 @@
 =====================================================================
 */
 
-int key_val2 (char *str);
-void set_option_value (char type, int keyval);
+int A4GL_key_val2 (char *str);
+//void A4GL_set_option_value (char type, int keyval);
 
 /*
 =====================================================================
@@ -74,7 +74,7 @@ void set_option_value (char type, int keyval);
  * @todo Describe function
  */
 int
-check_keys (int val, char *str2)
+A4GL_check_keys (int val, char *str2)
 {
   char *ptr;
   int a;
@@ -86,14 +86,14 @@ check_keys (int val, char *str2)
 	{
 	  if (str2[a] == '|' && str2[a + 1] == '|')
 	    {
-	      if (check_key (val, ptr, (int) (&str2[a] - ptr)))
+	      if (A4GL_check_key (val, ptr, (int) (&str2[a] - ptr)))
 		return 1;
 	      ptr = &str2[a + 2];
 	      a++;
 	    }
 	}
     }
-  if (check_key (val, ptr, (int) (&str2[a] - ptr)))
+  if (A4GL_check_key (val, ptr, (int) (&str2[a] - ptr)))
     return 1;
   return 0;
 }
@@ -103,13 +103,13 @@ check_keys (int val, char *str2)
  * @todo Describe function
  */
 int
-check_key (int val, char *a, int ln)
+A4GL_check_key (int val, char *a, int ln)
 {
   char buff[20];
 
   strncpy (buff, a, ln);
   buff[ln] = 0;
-  debug ("Checking key %d against %s  ln=%d", val, a, ln);
+  A4GL_debug ("Checking key %d against %s  ln=%d", val, a, ln);
   if (ln == 1)
     {
       if (tolower (buff[0]) == tolower (val))
@@ -117,7 +117,7 @@ check_key (int val, char *a, int ln)
       if (toupper (buff[0]) == tolower (val))
 	return 1;
     }
-  else if (key_val (buff) == val)
+  else if (A4GL_key_val (buff) == val)
     return 1;
   return 0;
 }
@@ -127,11 +127,11 @@ check_key (int val, char *a, int ln)
  * @todo Describe function
  */
 int
-key_val (char *str)
+A4GL_key_val (char *str)
 {
   int a;
-  a = key_val2 (str);
-  debug ("key_val : '%s' = %d", str, a);
+  a = A4GL_key_val2 (str);
+  A4GL_debug ("key_val : '%s' = %d", str, a);
   return a;
 }
 
@@ -140,12 +140,12 @@ key_val (char *str)
  * @todo Describe function
  */
 int
-key_val2 (char *str)
+A4GL_key_val2 (char *str)
 {
   int a;
   char b[3];
 
-  debug ("In key_val str=%s", str);
+  A4GL_debug ("In A4GL_key_val str=%s", str);
 
   if (strlen (str) == 1)
     {
@@ -190,9 +190,9 @@ key_val2 (char *str)
   if (mja_strcmp ("ESCAPE", str) == 0)
     return 27;
 
-  if (mja_strncmp ("CONTROL", str, 7) == 0)
+  if (A4GL_mja_strncmp ("CONTROL", str, 7) == 0)
     {
-      debug ("control key '%s' - returning '%c'\n", str, str[10]);
+      A4GL_debug ("control key '%s' - returning '%c'\n", str, str[10]);
       return toupper (str[10]) - 'A' + 1;
     }
 
@@ -206,10 +206,10 @@ key_val2 (char *str)
       b[0] = str[1];
       b[1] = str[2];
       b[2] = 0;
-      debug ("Function key..");
+      A4GL_debug ("Function key..");
       a = atoi (b);
       a = A4GLKEY_F (a);
-      debug ("F%s = %d", b, a);
+      A4GL_debug ("F%s = %d", b, a);
       return a;
     }
   return -1;
@@ -221,9 +221,9 @@ key_val2 (char *str)
  * @todo Describe function
  */
 void
-set_option_value (char type, int keyval)
+A4GL_set_option_value (char type, int keyval)
 {
-  debug ("Set option value : %c %d", type, keyval);
+  A4GL_debug ("Set option value : %c %d", type, keyval);
   switch (type)
     {
     case 'C':

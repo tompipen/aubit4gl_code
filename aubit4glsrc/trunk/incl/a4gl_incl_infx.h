@@ -8,7 +8,7 @@ extern "C"
   void retint (int a);
   void retflo (float *a);
   void pushint (int a);
-  void strip (char *s);
+  void A4GL_strip (char *s);
 //void rsetnull(int d,void *ptr);
 
   void retshort (short x);

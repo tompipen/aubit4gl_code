@@ -182,10 +182,10 @@ XDR;
  * You create an array of xdrdiscrim structures, terminated with
  * a entry with a null procedure pointer.  The xdr_union routine gets
  * the discriminant value and then searches the array of structures
- * for a matching value.  If a match is found the associated xdr routine
+ * for a matching value.  If a A4GL_match is found the associated xdr routine
  * is called to handle that part of the union.  If there is
  * no match, then a default routine may be called.
- * If there is no match and no default routine it is an error.
+ * If there is no A4GL_match and no default routine it is an error.
  */
 #define NULL_xdrproc_t ((xdrproc_t)0)
 struct xdr_discrim

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.6 2003-05-12 14:24:28 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -62,7 +62,7 @@ extern int widget_next_size;
 =====================================================================
 */
 
-GtkWidget *make_pixmap_from_mem (char *img);
+GtkWidget *A4GL_make_pixmap_from_mem (char *img);
 
 /*
 =====================================================================
@@ -82,19 +82,19 @@ GtkWidget *make_pixmap_from_mem (char *img);
  * @param width The width wanted for the widget.
  */
 void
-size_widget (GtkWidget * w, int width)
+A4GL_size_widget (GtkWidget * w, int width)
 {
   int x, y;
 
   /* If we have a specified width - use it */
-  x = (int) find_param ("*WIDTH");
+  x = (int) A4GL_find_param ("*WIDTH");
   if (x)
     x = x * XWIDTH;
   else
     x = (width + 2) * XWIDTH;	/* use the fields width in chars.. */
 
   /* DO we have a specified height ? */
-  y = (int) find_param ("*HEIGHT");
+  y = (int) A4GL_find_param ("*HEIGHT");
   if (y)
     y = y * YHEIGHT;
   else
@@ -111,23 +111,23 @@ size_widget (GtkWidget * w, int width)
  * @return The pixmap widget.
  */
 GtkWidget *
-make_pixmap_gw (char *filename)
+A4GL_make_pixmap_gw (char *filename)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
-  debug ("Making pixmap from file:%s\n", filename);
+  A4GL_debug ("Making pixmap from file:%s\n", filename);
   p = gdk_pixmap_colormap_create_from_xpm (0,
 					   gdk_colormap_get_system (), NULL,
 					   NULL, filename);
   if (p == 0)
     {
       printf ("Bad pixmap...");
-      exitwith ("Error creating pixmap");
+      A4GL_exitwith ("Error creating pixmap");
       return 0;
     }
 
   pixmap = gtk_pixmap_new (p, 0);
-  debug ("New pixmap : %p\n", pixmap);
+  A4GL_debug ("New pixmap : %p\n", pixmap);
   return pixmap;
 }
 
@@ -138,17 +138,17 @@ make_pixmap_gw (char *filename)
  * @return The widget with the image.
  */
 GtkWidget *
-make_pixmap_from_mem (char *img)
+A4GL_make_pixmap_from_mem (char *img)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
-  debug ("Adding pixmap from memory : %p", img);
+  A4GL_debug ("Adding pixmap from memory : %p", img);
   p = gdk_pixmap_colormap_create_from_xpm_d (0,
 					     gdk_colormap_get_system (), NULL,
 					     NULL, &img);
-  debug ("Done gdk bit");
+  A4GL_debug ("Done gdk bit");
   pixmap = gtk_pixmap_new (p, 0);
-  debug ("created pixmap");
+  A4GL_debug ("created pixmap");
 
   return pixmap;
 }
@@ -159,17 +159,17 @@ make_pixmap_from_mem (char *img)
  * @return A pointer to the widget created.
  */
 GtkWidget *
-cr_picture (void)
+A4GL_cr_picture (void)
 {
   GtkWidget *pixmap;
   char *filename;
-  filename = find_param ("FILENAME");
+  filename = A4GL_find_param ("FILENAME");
 
-  debug ("Making picture filename=%s\n", filename);
-  pixmap = make_pixmap_gw (filename);
+  A4GL_debug ("Making picture filename=%s\n", filename);
+  pixmap = A4GL_make_pixmap_gw (filename);
 
-  add_signal_grab_focus (pixmap, 0);
-  add_signal_clicked (pixmap, 0);
+  A4GL_add_signal_grab_focus (pixmap, 0);
+  A4GL_add_signal_clicked (pixmap, 0);
   return pixmap;
 
 }
@@ -181,7 +181,7 @@ cr_picture (void)
  * @return A pointer to the widget created.
  */
 GtkWidget *
-cr_button (void)
+A4GL_cr_button (void)
 {
   char *label;
   char *image;
@@ -190,8 +190,8 @@ cr_button (void)
   GtkVBox *v;
   GtkWidget *pixmap = 0;
 
-  label = find_param ("*LABEL");
-  image = find_param ("*IMAGE");
+  label = A4GL_find_param ("*LABEL");
+  image = A4GL_find_param ("*IMAGE");
 
   b = (GtkButton *) gtk_button_new ();
   v = (GtkVBox *) gtk_vbox_new (0, 3);
@@ -213,7 +213,7 @@ cr_button (void)
     {
       if (strlen (image))
 	{
-	  pixmap = make_pixmap_gw (image);
+	  pixmap = A4GL_make_pixmap_gw (image);
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
 	  gtk_widget_show (pixmap);
 	  gtk_object_set_data (GTK_OBJECT (b), "IMAGE", image);
@@ -222,8 +222,8 @@ cr_button (void)
   gtk_widget_show (GTK_WIDGET (v));	/* Vbox */
   gtk_widget_show (GTK_WIDGET (b));	/* Button itself.. */
 
-  add_signal_clicked ((GtkWidget *) b, 0);
-  add_signal_grab_focus ((GtkWidget *) b, 0);
+  A4GL_add_signal_clicked ((GtkWidget *) b, 0);
+  A4GL_add_signal_grab_focus ((GtkWidget *) b, 0);
   return GTK_WIDGET (b);
 }
 
@@ -234,7 +234,7 @@ cr_button (void)
  * @return A pointer to the newly created radio button widget.
  */
 GtkWidget *
-cr_radio (void)
+A4GL_cr_radio (void)
 {
   int a;
   char buff[40];
@@ -250,37 +250,37 @@ cr_radio (void)
    V1..VNum  = Values
 */
 
-  n = (int) find_param ("NUM");
-  debug ("Radio group with %d buttons\n", n);
+  n = (int) A4GL_find_param ("NUM");
+  A4GL_debug ("Radio group with %d buttons\n", n);
   btn_grp = NULL;
   hbox = (GtkHBox *) gtk_hbox_new (FALSE, 5);
   for (a = 0; a < n; a++)
     {
       sprintf (buff, "L%d", a + 1);
-      debug ("Finding label %s\n", buff);
-      ptr = find_param (buff);
-      debug ("   %s\n", ptr);
+      A4GL_debug ("Finding label %s\n", buff);
+      ptr = A4GL_find_param (buff);
+      A4GL_debug ("   %s\n", ptr);
 
       btn = gtk_radio_button_new_with_label (btn_grp, ptr);
       btn_grp = (GSList *) gtk_radio_button_group (GTK_RADIO_BUTTON (btn));
       gtk_box_pack_start (GTK_BOX (hbox), btn, TRUE, TRUE, 0);
       gtk_widget_show (btn);
       sprintf (buff, "V%d", a + 1);
-      ptr = find_param (buff);
-      debug ("Finding value %s = %s\n", buff, ptr);
+      ptr = A4GL_find_param (buff);
+      A4GL_debug ("Finding value %s = %s\n", buff, ptr);
       gtk_object_set_data (GTK_OBJECT (btn), "Value", ptr);
       gtk_object_set_data (GTK_OBJECT (btn), "Parent", hbox);
 
 
       sprintf (buff, "B%d", a + 1);
       gtk_object_set_data (GTK_OBJECT (hbox), buff, btn);
-      debug ("Adding %s to %p\n", buff, hbox);
-      add_signal_clicked (btn, 0);
-      add_signal_grab_focus (btn, 0);
+      A4GL_debug ("Adding %s to %p\n", buff, hbox);
+      A4GL_add_signal_clicked (btn, 0);
+      A4GL_add_signal_grab_focus (btn, 0);
     }
   gtk_widget_show (GTK_WIDGET (hbox));
   /* add_signal_clicked(hbox,0); */
-  add_signal_grab_focus ((GtkWidget *) hbox, 0);
+  A4GL_add_signal_grab_focus ((GtkWidget *) hbox, 0);
   return GTK_WIDGET (hbox);
 }
 
@@ -292,12 +292,12 @@ cr_radio (void)
  * @return A pointer to the created textbox.
  */
 GtkWidget *
-cr_textbox (void)
+A4GL_cr_textbox (void)
 {
   GtkWidget *entry;
   int maxchars;
-  debug ("Making textbox");
-  maxchars = (int) find_param ("*MAXCHARS");
+  A4GL_debug ("Making textbox");
+  maxchars = (int) A4GL_find_param ("*MAXCHARS");
   if (maxchars)
     {
       entry = gtk_entry_new_with_max_length (maxchars);
@@ -306,10 +306,10 @@ cr_textbox (void)
     {
       entry = gtk_entry_new ();
     }
-  debug ("Created textbox widget %p", entry);
+  A4GL_debug ("Created textbox widget %p", entry);
   gtk_widget_show (entry);
-  add_signal_changed (entry, 0);
-  add_signal_grab_focus (entry, 0);
+  A4GL_add_signal_changed (entry, 0);
+  A4GL_add_signal_grab_focus (entry, 0);
   return entry;
 }
 
@@ -320,15 +320,15 @@ cr_textbox (void)
  * @return A pointer to the label widget.
  */
 GtkWidget *
-cr_label (void)
+A4GL_cr_label (void)
 {
   GtkWidget *label;
   char *caption;
-  caption = find_param ("CAPTION");
+  caption = A4GL_find_param ("CAPTION");
   label = gtk_label_new (caption);
   gtk_widget_show (label);
-  add_signal_grab_focus (label, 0);
-  add_signal_clicked (label, 0);
+  A4GL_add_signal_grab_focus (label, 0);
+  A4GL_add_signal_clicked (label, 0);
   return label;
 }
 
@@ -338,13 +338,13 @@ cr_label (void)
  * @return A pointer to the created check box widget.
  */
 GtkWidget *
-cr_check (void)
+A4GL_cr_check (void)
 {
   GtkWidget *checkbox;
   char *label = 0;
   char *value = 0;
-  label = find_param ("*LABEL");
-  value = find_param ("*VALUE");
+  label = A4GL_find_param ("*LABEL");
+  value = A4GL_find_param ("*VALUE");
 
   if (label)
     {
@@ -365,8 +365,8 @@ cr_check (void)
     }
 
   gtk_widget_show (checkbox);
-  add_signal_clicked (checkbox, 0);
-  add_signal_grab_focus (checkbox, 0);
+  A4GL_add_signal_clicked (checkbox, 0);
+  A4GL_add_signal_grab_focus (checkbox, 0);
   return checkbox;
 }
 
@@ -376,14 +376,14 @@ cr_check (void)
  * @return A pointer to the created combo box widget.
  */
 GtkWidget *
-cr_combo (void)
+A4GL_cr_combo (void)
 {
   GtkCombo *combo;
   combo = (GtkCombo *) gtk_combo_new ();
   gtk_object_set_data (GTK_OBJECT (combo->entry), "Parent", combo);
   gtk_widget_show (GTK_WIDGET (combo));
-  add_signal_changed (combo->entry, 0);
-  add_signal_grab_focus (combo->entry, 0);
+  A4GL_add_signal_changed (combo->entry, 0);
+  A4GL_add_signal_grab_focus (combo->entry, 0);
   return (GtkWidget *) combo;
 }
 
@@ -394,7 +394,7 @@ cr_combo (void)
  * @return A pointer to the list.
  */
 GtkWidget *
-cr_list (void)
+A4GL_cr_list (void)
 {
   GtkWidget *w;
   GtkWidget *scroll;		/* CList needs to be in a scrolled window.. */
@@ -405,7 +405,7 @@ cr_list (void)
      convert it to a list
      but for now lets keep things simple....
    */
-  debug ("Making list\n");
+  A4GL_debug ("Making list\n");
   scroll = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
 				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -429,9 +429,9 @@ cr_list (void)
   gtk_object_set_data (GTK_OBJECT (scroll), "Child", w);
   gtk_widget_show (w);
 
-  add_signal_select_row (w, 0);
-  add_signal_grab_focus (w, 0);
-  debug ("Made list w=%p", w);
+  A4GL_add_signal_select_row (w, 0);
+  A4GL_add_signal_grab_focus (w, 0);
+  A4GL_debug ("Made list w=%p", w);
   gtk_widget_set_sensitive (w, 0);
   return scroll;
 }
@@ -443,16 +443,16 @@ cr_list (void)
  * @return A pointer to the created widget.
  */
 GtkWidget *
-cr_calendar (void)
+A4GL_cr_calendar (void)
 {
   GtkWidget *cal;
-  debug ("Making calendar...");
+  A4GL_debug ("Making calendar...");
   cal = gtk_calendar_new ();
-  debug ("showing");
+  A4GL_debug ("showing");
   gtk_widget_show (cal);
-  add_signal_changed (cal, 0);
-  add_signal_grab_focus (cal, 0);
-  debug ("added signals");
+  A4GL_add_signal_changed (cal, 0);
+  A4GL_add_signal_grab_focus (cal, 0);
+  A4GL_debug ("added signals");
   return cal;
 }
 
@@ -466,13 +466,13 @@ NEWWIDGET - Add cr_ function in this file
  * @todo Describe function
  */
 GtkWidget *
-cr_scrollbar (void)
+A4GL_cr_scrollbar (void)
 {
   GtkWidget *sb;
   int x, y;
 
-  x = (int) find_param ("*WIDTH");
-  y = (int) find_param ("*HEIGHT");
+  x = (int) A4GL_find_param ("*WIDTH");
+  y = (int) A4GL_find_param ("*HEIGHT");
 
   if (x == 0 && y == 0)
     x = 3;
@@ -488,11 +488,11 @@ cr_scrollbar (void)
       sb = gtk_hscrollbar_new (0);
       /* Its horizontal */
     }
-  debug ("showing");
+  A4GL_debug ("showing");
   gtk_widget_show (sb);
-  add_signal_changed (sb, 0);
-  add_signal_grab_focus (sb, 0);
-  debug ("added signals");
+  A4GL_add_signal_changed (sb, 0);
+  A4GL_add_signal_grab_focus (sb, 0);
+  A4GL_debug ("added signals");
   return sb;
 }
 

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.13 2003-05-12 14:23:59 mikeaubury Exp $
+# $Id: a4gl_API_sql.h,v 1.14 2003-05-15 07:10:38 mikeaubury Exp $
 #
 */
 
@@ -146,7 +146,7 @@ extern "C"
 
 /* ======================= sqlconvert.c ==================== */
 
-  void convert_sql (char *source_dialect, char *target_dialect, char *sql);
+  void A4GL_convert_sql (char *source_dialect, char *target_dialect, char *sql);
 
 #ifdef __cplusplus
 }

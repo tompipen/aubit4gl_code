@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.38 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: resource.c,v 1.39 2003-05-15 07:10:46 mikeaubury Exp $
 #
 */
 
@@ -33,10 +33,10 @@
  * Defined default settings for configuration variables, and functionality needed
  * to read configuration setting from configuration file(s) like "aubitrc"
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -312,15 +312,15 @@ struct str_resource builtin_resource[] = {
 static int has_resource (char *s);
 static void add_resources_in (FILE * resourcefile);
 static int next_resource (void);
-int chk_dbdate (char *p);
+int A4GL_chk_dbdate (char *p);
 
-extern void trim_nl (char *p);	/* in aubit-config.c when used to make aubit-config executable. */
+extern void A4GL_trim_nl (char *p);	/* in aubit-config.c when used to make aubit-config executable. */
 
 static char *chk_str_resource (char *s, struct str_resource *res);
 static int add_userptr (void *ptr);
 static char *find_str_resource (char *s);
-int replace_str_resource (char *s, char *neww);
-void dump_all_resource_vars (int export);
+int A4GL_replace_str_resource (char *s, char *neww);
+void A4GL_dump_all_resource_vars (int export);
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 
@@ -409,7 +409,7 @@ static char *wgetenv (char *s)
  * @param
  */
 char *
-find_str_resource_int (char *search, int a)
+A4GL_find_str_resource_int (char *search, int a)
 {
   char *ptr;
   char s[1024];
@@ -525,7 +525,7 @@ acl_getenv (char *s)
 
   if (strcmp (s, "DBDATE") == 0)
     {
-      chk_dbdate (ptr);
+      A4GL_chk_dbdate (ptr);
     }
 
   if (ptr == 0)
@@ -563,7 +563,7 @@ acl_getenv (char *s)
  * @param p The DBDATE variable string.
  */
 int
-chk_dbdate (char *p)
+A4GL_chk_dbdate (char *p)
 {
   int d, m, y;
   int cnt;
@@ -573,7 +573,7 @@ chk_dbdate (char *p)
 
   if (p == 0)
     {
-      exitwith ("Invalid DBDATE format(1)");
+      A4GL_exitwith ("Invalid DBDATE format(1)");
       return 0;
     }
 
@@ -589,7 +589,7 @@ chk_dbdate (char *p)
 
   if (y == -1 || d == -1 || m == -1)
     {
-      exitwith ("Invalid DBDATE format(2)");
+      A4GL_exitwith ("Invalid DBDATE format(2)");
       return 0;
     }
 
@@ -598,7 +598,7 @@ chk_dbdate (char *p)
   //    {
   //      if (p[3] != '2' && p[3] != '4')
   //        {
-  //          exitwith ("Invalid DBDATE format(3)");
+  //          A4GL_exitwith ("Invalid DBDATE format(3)");
   //          return 0;
   //        }
   //    }
@@ -614,7 +614,7 @@ chk_dbdate (char *p)
  * @param
  */
 int
-replace_str_resource (char *s, char *neww)
+A4GL_replace_str_resource (char *s, char *neww)
 {
   void *ptr;
   /* use with care ! */
@@ -671,7 +671,7 @@ get_regkey (char *key, char *data, int n)
      WARNING!!!!
 
      DO __NOT__ call debug() from this function - it will cause loop when looking for
-     value of DEBUG variable - and eventually core dump !!!!
+     value of DEBUG variable - and eventually core A4GL_dump !!!!
 
      #ifdef DEBUG
      debug("serching Windows registry for %s",key);
@@ -763,14 +763,14 @@ get_login (void)
  * and invokes parser/loader
  */
 struct str_resource *
-build_user_resources (void)
+A4GL_build_user_resources (void)
 {
   char buff[1024];
   int a;
   FILE *resourcefile = 0;
 
 #ifdef DEBUG
-  debug ("Loading resources");
+  A4GL_debug ("Loading resources");
 #endif
 
   if (loaded_resources)
@@ -787,7 +787,7 @@ build_user_resources (void)
   if (resourcefile != 0)
     {
 #ifdef DEBUG
-      debug ("1:From %s", buff);
+      A4GL_debug ("1:From %s", buff);
 #endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
@@ -795,7 +795,7 @@ build_user_resources (void)
   else
     {
 #ifdef DEBUG
-      debug ("1:cannot read %s", buff);
+      A4GL_debug ("1:cannot read %s", buff);
 #endif
     };
 
@@ -827,7 +827,7 @@ build_user_resources (void)
   if (resourcefile != 0)
     {
 #ifdef DEBUG
-      debug ("2:From %s", buff);
+      A4GL_debug ("2:From %s", buff);
 #endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
@@ -835,7 +835,7 @@ build_user_resources (void)
   else
     {
 #ifdef DEBUG
-      debug ("2:cannot read %s", buff);
+      A4GL_debug ("2:cannot read %s", buff);
 #endif
     };
 
@@ -847,7 +847,7 @@ build_user_resources (void)
   if (resourcefile != 0)
     {
 #ifdef DEBUG
-      debug ("From %s", buff);
+      A4GL_debug ("From %s", buff);
 #endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
@@ -855,7 +855,7 @@ build_user_resources (void)
   else
     {
 #ifdef DEBUG
-      debug ("cannot read %s", buff);
+      A4GL_debug ("cannot read %s", buff);
 #endif
     };
 
@@ -869,7 +869,7 @@ build_user_resources (void)
   if (resourcefile != 0)
     {
 #ifdef DEBUG
-      debug ("From %s", buff);
+      A4GL_debug ("From %s", buff);
 #endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
@@ -877,7 +877,7 @@ build_user_resources (void)
   else
     {
 #ifdef DEBUG
-      debug ("cannot read %s", buff);
+      A4GL_debug ("cannot read %s", buff);
 #endif
     };
 
@@ -888,7 +888,7 @@ build_user_resources (void)
   if (resourcefile != 0)
     {
 #ifdef DEBUG
-      debug ("From %s", buff);
+      A4GL_debug ("From %s", buff);
 #endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
@@ -896,7 +896,7 @@ build_user_resources (void)
   else
     {
 #ifdef DEBUG
-      debug ("cannot read %s", buff);
+      A4GL_debug ("cannot read %s", buff);
 #endif
     };
 
@@ -909,7 +909,7 @@ build_user_resources (void)
       if (resourcefile != 0)
 	{
 #ifdef DEBUG
-	  debug ("From %s", buff);
+	  A4GL_debug ("From %s", buff);
 #endif
 	  add_resources_in (resourcefile);
 	  fclose (resourcefile);
@@ -917,7 +917,7 @@ build_user_resources (void)
       else
 	{
 #ifdef DEBUG
-	  debug ("cannot read %s", buff);
+	  A4GL_debug ("cannot read %s", buff);
 #endif
 	};
     }
@@ -925,12 +925,12 @@ build_user_resources (void)
   if (build_resource_cnt)
     {
 #ifdef DEBUG
-      debug ("User resources\n --------------");
+      A4GL_debug ("User resources\n --------------");
 #endif
       for (a = 0; a < build_resource_cnt; a++)
 	{
 #ifdef DEBUG
-	  debug ("%d. %s = %s", a, build_resource[a].name,
+	  A4GL_debug ("%d. %s = %s", a, build_resource[a].name,
 		 build_resource[a].value);
 #endif
 	}
@@ -939,7 +939,7 @@ build_user_resources (void)
 
   add_userptr (build_resource);
 #ifdef DEBUG
-  debug ("Finished reading configuration");
+  A4GL_debug ("Finished reading configuration");
 #endif
   return build_resource;
 }
@@ -968,14 +968,14 @@ add_resources_in (FILE * resourcefile)
 	{
 	  *ptr = 0;
 	}
-      trim_nl (buff);
+      A4GL_trim_nl (buff);
       ptr = strchr (buff, '=');
       if (ptr)
 	{
 	  *ptr = 0;
 	  ptr++;
-	  trim_nl (buff);
-	  trim_nl (ptr);
+	  A4GL_trim_nl (buff);
+	  A4GL_trim_nl (ptr);
 	  a = has_resource (buff);
 	  if (a != -1)
 	    {			/* overwrite an existing entry */
@@ -1045,7 +1045,7 @@ has_resource (char *s)
  * @param
  */
 void
-dump_all_resource_vars (int export)
+A4GL_dump_all_resource_vars (int export)
 {
   struct str_resource *res;
   int a;
@@ -1100,7 +1100,7 @@ dump_all_resource_vars (int export)
  * @param
  */
 int
-env_option_set (char *s)
+A4GL_env_option_set (char *s)
 {
   char *a;
   a = acl_getenv (s);

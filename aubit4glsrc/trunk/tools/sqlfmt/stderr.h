@@ -1,7 +1,7 @@
 /*
 @(#)File:           $RCSfile: stderr.h,v $
-@(#)Version:        $Revision: 1.2 $
-@(#)Last changed:   $Date: 2003-05-12 14:24:43 $
+@(#)Version:        $Revision: 1.3 $
+@(#)Last changed:   $Date: 2003-05-15 07:10:51 $
 @(#)Purpose:        Header file for standard error functions
 @(#)Author:         J Leffler
 @(#)Copyright:      (C) JLSS 1989-93,1996-98
@@ -14,7 +14,7 @@
 #ifdef MAIN_PROGRAM
 #ifndef lint
 static const char stderr_h[] =
-  "@(#)$Id: stderr.h,v 1.2 2003-05-12 14:24:43 mikeaubury Exp $";
+  "@(#)$Id: stderr.h,v 1.3 2003-05-15 07:10:51 mikeaubury Exp $";
 
 #endif	/*  */
 #endif	/*  */
@@ -45,8 +45,8 @@ static const char stderr_h[] =
 #define ERR_LOG	(ERR_STAMP|ERR_PID|ERR_COMM|ERR_FLUSH)
   
 /* -- Global definitions */ 
-extern const char *getarg0 (void);
-extern void setarg0 (const char *argv0);
+extern const char *A4GL_getarg0 (void);
+extern void A4GL_setarg0 (const char *argv0);
 extern FILE *err_stderr (FILE * fp);
 extern const char *err_rcs_string (const char *s, char *buffer,
 				    size_t buflen);
@@ -55,7 +55,7 @@ static const char stderr_h[] =
 			 va_list args);
 extern void err_logmsg (FILE * fp, int flags, int estat, const char *string,
 			 ...);
-extern void err_print (int flags, int estat, const char *string,
+extern void A4GL_err_print (int flags, int estat, const char *string,
 			va_list args);
 extern void err_remark (const char *format, ...);
 extern void err_report (int flags, int estat, const char *string, ...);

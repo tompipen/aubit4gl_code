@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.7 2003-05-12 14:24:25 mikeaubury Exp $
+# $Id: array.c,v 1.8 2003-05-15 07:10:45 mikeaubury Exp $
 #
 */
 
@@ -94,7 +94,7 @@ extern HENV henv;
 extern HDBC hdbc;
 SDWORD outlen[512];
 
-#define chk_rc(rc,stmt,call) chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
+#define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 
 
 /*
@@ -103,11 +103,11 @@ SDWORD outlen[512];
 =====================================================================
 */
 
-int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
+int A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
 			  int szarr2);
-int fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+int A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		       int mode);
-int fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
+int A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 			int szarr2, int mode, char *info);
 
 
@@ -129,7 +129,7 @@ int fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
  * @return Number of rows filled
  */
 int
-fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
+A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
 {
   char buff1[80];
   char buff2[255];
@@ -141,33 +141,33 @@ fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
   a = 0;
   b = 0;
 #ifdef DEBUG
-  debug ("arr1=%p", arr1);
+  A4GL_debug ("arr1=%p", arr1);
 #endif
   fetch_mode = SQL_FETCH_FIRST;
   cnt = 0;
 #ifdef DEBUG
-  debug ("Filling database array...");
+  A4GL_debug ("Filling database array...");
 #endif
   while (cnt < mx)
     {
 #ifdef DEBUG
-      debug ("Fetch mode=%d", fetch_mode);
+      A4GL_debug ("Fetch mode=%d", fetch_mode);
 #endif
       rc = SQLDataSources (henv, fetch_mode, buff1, 79, &a, buff2, 254, &b);
       chk_rc (rc, 0, "SQLDataSources");
 #ifdef DEBUG
-      debug ("  rc=%d", rc);
-      debug ("  Buff1=%s Buff2=%s", buff1, buff2);
-      debug ("  a=%d b=%d", a, b);
+      A4GL_debug ("  rc=%d", rc);
+      A4GL_debug ("  Buff1=%s Buff2=%s", buff1, buff2);
+      A4GL_debug ("  a=%d b=%d", a, b);
 #endif
       fetch_mode = SQL_FETCH_NEXT;
       if (rc == SQL_NO_DATA_FOUND)
 	break;
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
 	{
-	  set_sqlca (0, "fill_array_database", 0);
+	  A4GL_set_sqlca (0, "fill_array_database", 0);
 #ifdef DEBUG
-	  debug ("Some error getting data....");
+	  A4GL_debug ("Some error getting data....");
 #endif
 	  break;
 	}
@@ -178,11 +178,11 @@ fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
 	strncpy (&arr2[cnt * (szarr2 + 1)], buff2, szarr2);
       cnt++;
 #ifdef DEBUG
-      debug ("fill array databases : Rc= %d", rc);
-      debug ("    Buff1=%s", buff1);
-      debug ("    Buff2=%s", buff2);
-      debug ("    a=%d", a);
-      debug ("    b=%d", b);
+      A4GL_debug ("fill array databases : Rc= %d", rc);
+      A4GL_debug ("    Buff1=%s", buff1);
+      A4GL_debug ("    Buff2=%s", buff2);
+      A4GL_debug ("    a=%d", a);
+      A4GL_debug ("    b=%d", b);
 #endif
     }
 
@@ -204,7 +204,7 @@ fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
  * @return Number of rows filled
  */
 int
-fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		   int mode)
 {
   HSTMT hstmt;
@@ -219,13 +219,13 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 
   if (hdbc == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
 #ifdef DEBUG
-  debug ("STart get tables ... Mode=%d", mode);
+  A4GL_debug ("STart get tables ... Mode=%d", mode);
 #endif
-  new_hstmt (&hstmt);
+  A4GL_new_hstmt (&hstmt);
 
   rc = SQLTables (hstmt, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
 
@@ -233,7 +233,7 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
   a = 79;
   b = 254;
 #ifdef DEBUG
-  debug ("arr1=%p", arr1);
+  A4GL_debug ("arr1=%p", arr1);
 #endif
   cnt = 0;
 
@@ -259,7 +259,7 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
 	{
 #ifdef DEBUG
-	  debug ("Some error getting data....");
+	  A4GL_debug ("Some error getting data....");
 #endif
 	  SQLFreeStmt (hstmt, SQL_DROP);
 	  chk_rc (rc, 0, "SQLFreeStmt");
@@ -267,17 +267,17 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	}
 
 #ifdef DEBUG
-      debug (" tq= %s to= %s", tq, to);
-      debug (" tn= %s tt= %s", tn, tt);
-      debug (" tr= %s", tr);
-      debug ("Mode=%d", mode);
+      A4GL_debug (" tq= %s to= %s", tq, to);
+      A4GL_debug (" tn= %s tt= %s", tn, tt);
+      A4GL_debug (" tr= %s", tr);
+      A4GL_debug ("Mode=%d", mode);
 #endif
       if (mode == 1)
 	{
 	  if (strstr (tt, "SYSTEM"))
 	    {
 #ifdef DEBUG
-	      debug ("Is system table");
+	      A4GL_debug ("Is system table");
 #endif
 	      continue;
 	    }
@@ -289,9 +289,9 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	strncpy (&arr2[cnt * (szarr2 + 1)], tr, szarr2);
       cnt++;
 #ifdef DEBUG
-      debug ("fill array tables : Rc= %d", rc);
-      debug ("    a=%d", a);
-      debug ("    b=%d", b);
+      A4GL_debug ("fill array tables : Rc= %d", rc);
+      A4GL_debug ("    a=%d", a);
+      A4GL_debug ("    b=%d", b);
 #endif
     }
 
@@ -316,7 +316,7 @@ fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
  * @return Number of rows filled
  */
 int
-fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    int mode, char *info)
 {
   HSTMT hstmt;
@@ -342,19 +342,19 @@ fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 
 
 #ifdef DEBUG
-  debug ("Fill array columns for table %s", info);
+  A4GL_debug ("Fill array columns for table %s", info);
 #endif
 
   if (hdbc == 0)
     {
-      exitwith ("Not connected to database");
+      A4GL_exitwith ("Not connected to database");
       return 0;
     }
 
-  ret = new_hstmt (&hstmt);
+  ret = A4GL_new_hstmt (&hstmt);
 
 #ifdef DEBUG
-  debug ("Getting columns for '%s'", info);
+  A4GL_debug ("Getting columns for '%s'", info);
 #endif
 
   rc = SQLColumns (hstmt, NULL, 0, NULL, 0, info, SQL_NTS, NULL, 0);
@@ -362,12 +362,12 @@ fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
   chk_rc (rc, hstmt, "SQLColumns");
 
 #ifdef DEBUG
-  debug (" SQLColumns returned rc=%d", rc);
+  A4GL_debug (" SQLColumns returned rc=%d", rc);
 #endif
   a = 79;
   b = 254;
 #ifdef DEBUG
-  debug ("arr1=%p", arr1);
+  A4GL_debug ("arr1=%p", arr1);
 #endif
 
   cnt = 0;
@@ -391,23 +391,23 @@ fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
       if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
 	{
 #ifdef DEBUG
-	  debug ("Done fetch - got %d", rc);
+	  A4GL_debug ("Done fetch - got %d", rc);
 #endif
 	  break;
 	}
 #ifdef DEBUG
-      debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
-      debug ("column %s %s %s %s", tq, to, tn, cn);
-      debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec,
+      A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
+      A4GL_debug ("column %s %s %s %s", tq, to, tn, cn);
+      A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec,
 	     len, scale, radix, nullable, remarks);
 #endif
-      colsize = display_size (dt, prec, "");
+      colsize = A4GL_display_size (dt, prec, "");
       sprintf (szcolsize, "%d", colsize);
 
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
 	{
 #ifdef DEBUG
-	  debug ("Some error getting data....");
+	  A4GL_debug ("Some error getting data....");
 #endif
 	  SQLFreeStmt (hstmt, SQL_DROP);
 	  break;
@@ -432,8 +432,8 @@ fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	}
       cnt++;
 #ifdef DEBUG
-      debug ("fill array columns : Rc= %d", rc);
-      debug ("    cb=%s dtname=%s", cn, dtname);
+      A4GL_debug ("fill array columns : Rc= %d", rc);
+      A4GL_debug ("    cb=%s dtname=%s", cn, dtname);
 #endif
     }
   SQLFreeStmt (hstmt, SQL_DROP);
@@ -460,7 +460,7 @@ A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
 #ifdef DEBUG
-  debug ("Fill array.... mode = %d", mode);
+  A4GL_debug ("Fill array.... mode = %d", mode);
 #endif
 
 /*
@@ -479,28 +479,28 @@ array.c:451: warning: passing arg 4 of `fill_array_columns' from incompatible po
   if (strcmp (service, "DATABASES") == 0)
     {
 #ifdef DEBUG
-      debug ("Get Databases");
+      A4GL_debug ("Get Databases");
 #endif
-      return fill_array_databases (mx, arr1, szarr1, arr2, szarr2);
+      return A4GL_fill_array_databases (mx, arr1, szarr1, arr2, szarr2);
     }
 
   if (strcmp (service, "TABLES") == 0)
     {
 #ifdef DEBUG
-      debug ("Get Tables");
+      A4GL_debug ("Get Tables");
 #endif
-      return fill_array_tables (mx, arr1, szarr1, arr2, szarr2, mode);
+      return A4GL_fill_array_tables (mx, arr1, szarr1, arr2, szarr2, mode);
     }
 
   if (strcmp (service, "COLUMNS") == 0)
     {
 #ifdef DEBUG
-      debug ("Get columns");
+      A4GL_debug ("Get columns");
 #endif
-      return fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
+      return A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
     }
 #ifdef DEBUG
-  debug ("****** ERROR unknown service :%s", service);
+  A4GL_debug ("****** ERROR unknown service :%s", service);
 #endif
   return (0);
 }

@@ -20,7 +20,7 @@ ext_cmd : EXIT_WHILE
 	| EXIT_MENU  {
 	if (in_command("MENU")) {
 		exit_loop("MENU");
-		/* lex_printc("cmd_no=-3;continue;\n"); */
+		/* A4GL_lex_printc("cmd_no=-3;continue;\n"); */
 	} 
               else YYERROR;}
 	| EXIT_CASE

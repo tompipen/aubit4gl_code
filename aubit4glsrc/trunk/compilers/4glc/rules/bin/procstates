@@ -72,7 +72,7 @@ END {
 		print "      if (on_off==1) statecnt[" cnt "]++;"
 		print "      else           statecnt[" cnt "]--;"
 		print " "
-		print "      debug(\"Start state %s %d\\n\",s,on_off);"
+		print "      A4GL_debug(\"Start state %s %d\\n\",s,on_off);"
 		#print "      if (statecnt[" cnt "]>0&&on_off==0) return;"
 		print " "
 		for (b=0;b<states[a];b++) {

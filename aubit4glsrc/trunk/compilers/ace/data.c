@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.18 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: data.c,v 1.19 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -52,7 +52,7 @@
 
 #endif
 
-#define debug set_line(__FILE__,__LINE__);debug_full
+#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 /*
 =====================================================================
                     Variables definitions
@@ -84,7 +84,7 @@ void init_report (void);
 int find_variable (char *name);
 void add_function (char *name);
 #endif
-char *decode_datatype (int dtype, int dim);
+char *A4GL_decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
 char *add_zero_rows_where (struct select_stmts *ptr);
@@ -148,7 +148,7 @@ find_variable (char *name)
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       ptr = &this_report.variables.variables_val[a];
-      if (aubit_strcasecmp (ptr->name, name) == 0)
+      if (A4GL_aubit_strcasecmp (ptr->name, name) == 0)
 	{
 	  return a;
 	}
@@ -228,7 +228,7 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
   if (dstring == 0)
     {
-      strcpy (buff, decode_datatype (dtype, dim));
+      strcpy (buff, A4GL_decode_datatype (dtype, dim));
       dstring = buff;
     }
 
@@ -633,10 +633,10 @@ execute_selects (void)
 
 
   /* We need 1 null value */
-  /* setnull (2, &nval, 4); */
-  setnull (2, (char *) &nval, 4);
+  /* A4GL_setnull (2, &nval, 4); */
+  A4GL_setnull (2, (char *) &nval, 4);
   /*  warning: passing arg 2 of `setnull' from incompatible pointer type
-     void       setnull                         (int type, char *buff, int size);
+     void       A4GL_setnull                         (int type, char *buff, int size);
    */
 
 
@@ -672,9 +672,9 @@ execute_selects (void)
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
 
-      debug ("1");
-      debug ("Executing select..");
-      debug ("%s", nstatement);
+      A4GL_debug ("1");
+      A4GL_debug ("Executing select..");
+      A4GL_debug ("%s", nstatement);
 
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
@@ -727,7 +727,7 @@ execute_selects (void)
 	   */
 	  while (A4GLSQL_next_column (&colname, &coltype, &colsize))
 	    {
-	      trim (colname);
+	      A4GL_trim (colname);
 	      ace_add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
 	    }
 

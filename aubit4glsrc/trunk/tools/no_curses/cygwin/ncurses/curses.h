@@ -31,7 +31,7 @@
  *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
  ****************************************************************************/
 
-/* $Id: curses.h,v 1.2 2003-05-12 14:24:35 mikeaubury Exp $ */
+/* $Id: curses.h,v 1.3 2003-05-15 07:10:48 mikeaubury Exp $ */
 
 #ifndef __NCURSES_H
 #define __NCURSES_H
@@ -178,7 +178,7 @@ extern "C"
 /*
  * These aren't documented, but a lot of System Vs have them anyway
  * (you can spot pprryyzz{{||}} in a lot of AT&T terminfo strings).
- * The ACS_names may not match AT&T's, our source didn't know them.
+ * The ACS_names may not A4GL_match AT&T's, our source didn't know them.
  */
 #define ACS_S3		(acs_map['p'])	/* scan line 3 */
 #define ACS_S7		(acs_map['r'])	/* scan line 7 */

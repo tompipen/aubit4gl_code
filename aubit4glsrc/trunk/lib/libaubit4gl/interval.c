@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.12 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: interval.c,v 1.13 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -64,13 +64,13 @@ double rval_double;		/* 2 */
 =====================================================================
 */
 
-/* int 			valid_int 		(char *s, int *data,int size); *//* in conv.c */
-int mk_int_size (int s, int l);
+/* int 		 A4GL_valid_int 		(char *s, int *data,int size); *//* in conv.c */
+int A4GL_mk_int_size (int s, int l);
 
-double get_rval_double (void);
-struct ival *get_rval_ival (void);
-int conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
-int op_ival (struct ival *a, struct ival *b,
+double A4GL_get_rval_double (void);
+struct ival *A4GL_get_rval_ival (void);
+int A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
+int A4GL_op_ival (struct ival *a, struct ival *b,
 	     double double_val, char op, char param);
 
 
@@ -85,7 +85,7 @@ int op_ival (struct ival *a, struct ival *b,
  * @todo Describe function
  */
 double
-get_rval_double (void)
+A4GL_get_rval_double (void)
 {
   return rval_double;
 }
@@ -97,7 +97,7 @@ get_rval_double (void)
  * @todo Describe function
  */
 struct ival *
-get_rval_ival (void)
+A4GL_get_rval_ival (void)
 {
   return &rval_ival;
 }
@@ -109,21 +109,21 @@ get_rval_ival (void)
  * @todo Describe function
  */
 int
-conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
+A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 {
   char fractions[6];
   char *buff;
   buff = i->data;
 
-  debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
+  A4GL_debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
 
-  debug ("Y %d\n", data[0]);
-  debug ("M %d\n", data[1]);
-  debug ("D %d\n", data[2]);
-  debug ("H %d\n", data[3]);
-  debug ("m %d\n", data[4]);
-  debug ("S %d\n", data[5]);
-  debug ("F %d\n", data[6]);
+  A4GL_debug ("Y %d\n", data[0]);
+  A4GL_debug ("M %d\n", data[1]);
+  A4GL_debug ("D %d\n", data[2]);
+  A4GL_debug ("H %d\n", data[3]);
+  A4GL_debug ("m %d\n", data[4]);
+  A4GL_debug ("S %d\n", data[5]);
+  A4GL_debug ("F %d\n", data[6]);
   sprintf (fractions, "%05d", data[6]);
 
   while (data[5] >= 60)
@@ -165,7 +165,7 @@ conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
     }
 
 
-  debug ("Normalized data..");
+  A4GL_debug ("Normalized data..");
 
   i->i_years = data[0];
   i->i_months = data[1];
@@ -178,7 +178,7 @@ conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   if (v1 >= 7)
     {
       fractions[v1 - 6] = 0;
-      debug ("Set fractions to %s\n", fractions);
+      A4GL_debug ("Set fractions to %s\n", fractions);
     }
 
   if (v2 == 1)
@@ -204,7 +204,7 @@ conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   if (v2 >= 7)
     sprintf (buff, "000000000000000%s", fractions);
 
-  debug ("Copied data");
+  A4GL_debug ("Copied data");
   return 1;
 }
 
@@ -228,7 +228,7 @@ conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
  */
 
 int
-op_ival (struct ival *a, struct ival *b, double double_val, char op,
+A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	 char param)
 {
   int data_a[10];
@@ -240,13 +240,13 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   int val2;
   int val3;
   int size;
-  char buff[256];
+  //char buff[256];
 
   double v1 = 0;
   double v2;
   double r1 = 0;
 
-  debug ("In op_ival a=%p b=%p dv=%lf op=%c param=%c", a, b, double_val, op,
+  A4GL_debug ("In A4GL_op_ival a=%p b=%p dv=%lf op=%c param=%c", a, b, double_val, op,
 	 param);
 
   if (param == 'd')		/* We're using a double - so ignore 'b' */
@@ -258,26 +258,26 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   /* Extract the time stuff.. */
 
 
-  debug ("Converting intervals to strings...");
+  A4GL_debug ("Converting intervals to strings...");
 
 
   /*
      inttoc(a, &a_str, mk_int_size(a->stime,a->ltime));
-     debug("Converted first...");
-     debug("a=%p b=%p\n",a,b);
+     A4GL_debug("Converted first...");
+     A4GL_debug("a=%p b=%p\n",a,b);
      inttoc(b, &b_str, mk_int_size(b->stime,b->ltime));
 
-     debug("Converted second...");
-     debug("INtervals as strings = %s  & %s",a_str,b_str);
+     A4GL_debug("Converted second...");
+     A4GL_debug("INtervals as strings = %s  & %s",a_str,b_str);
 
-     valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
-     valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
+     A4GL_valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
+     A4GL_valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
    */
 
-  decode_interval (a, data_a);
-  decode_interval (b, data_b);
+  A4GL_decode_interval (a, data_a);
+  A4GL_decode_interval (b, data_b);
 
-  debug ("Got interval data");
+  A4GL_debug ("Got interval data");
   /* Clear down the return variable.. */
   for (cnt = 0; cnt < 10; cnt++)
     {
@@ -285,7 +285,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       data_r[cnt] = 0;
     }
 
-  debug ("Cleared down..");
+  A4GL_debug ("Cleared down..");
 
   /* Are we dealing with a sensible sum ? */
 
@@ -294,7 +294,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       mode = 1;
       if (b->stime > 1)
 	{
-	  exitwith ("Cannot add a month/day and a non-month day interval");
+	  A4GL_exitwith ("Cannot add a month/day and a non-month day interval");
 	  return 0;
 	}
     }
@@ -303,7 +303,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       mode = 0;
       if (b->stime <= 1)
 	{
-	  exitwith ("Cannot add a month/day and a non-month day interval");
+	  A4GL_exitwith ("Cannot add a month/day and a non-month day interval");
 	  return 0;
 	}
     }
@@ -321,7 +321,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
     {				/* Number of seconds... */
       rval_ival.stime = 0x53;
       rval_ival.ltime = 0xb;
-      debug ("v1 = %d + %d + %d + %d + %lf", data_a[2] * 60 * 60 * 24,
+      A4GL_debug ("v1 = %d + %d + %d + %d + %lf", data_a[2] * 60 * 60 * 24,
 	     data_a[3] * 60 * 60, data_a[4] * 60, data_a[5],
 	     (double) (data_a[6]) / 100000.0);
 
@@ -346,11 +346,11 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       switch (op)
 	{
 	case '+':
-	  exitwith ("Can't add an interval to a number");
+	  A4GL_exitwith ("Can't add an interval to a number");
 	  return 0;
 
 	case '-':
-	  exitwith ("Can't subtract numbers and interval");
+	  A4GL_exitwith ("Can't subtract numbers and interval");
 	  return 0;
 
 	case '/':
@@ -359,7 +359,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	  break;
 
 	case '*':
-	  debug ("v1=%lf dv=%lf\n", v1, double_val);
+	  A4GL_debug ("v1=%lf dv=%lf\n", v1, double_val);
 	  r1 = v1 * double_val;
 	  rval_type = 1;	/* Interval */
 	  break;
@@ -382,7 +382,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	  rval_type = 2;	/* Number */
 	  break;
 	case '*':
-	  exitwith ("Can't multiply two intervals");
+	  A4GL_exitwith ("Can't multiply two intervals");
 	  return 0;
 	  break;
 	}
@@ -396,7 +396,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       rval_double = r1;
       return 2;
     }
-  debug ("r1=%lf mode=%d\n", r1, mode);
+  A4GL_debug ("r1=%lf mode=%d\n", r1, mode);
 
 
   if (mode == 1)
@@ -415,7 +415,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
       int s;
       sd = floor (r1);
       fd = r1 - sd;
-      debug ("sd=%lf fd=%lf\n", sd, fd);
+      A4GL_debug ("sd=%lf fd=%lf\n", sd, fd);
       data_r[6] = fd * 100000;
       s = sd;
       data_r[5] = s % 60;
@@ -429,14 +429,14 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
   /* data_r should be set up now... */
 
-  debug ("stime=%x ltime=%x", rval_ival.stime, rval_ival.ltime);
+  A4GL_debug ("stime=%x ltime=%x", rval_ival.stime, rval_ival.ltime);
   val1 = rval_ival.ltime;
   val2 = rval_ival.stime & 15;
   val3 = (rval_ival.stime >> 4) & 15;
 
-  size = mk_int_size (rval_ival.stime, rval_ival.ltime);
+  size = A4GL_mk_int_size (rval_ival.stime, rval_ival.ltime);
 
-  conv_invdatatoc (data_r, val1, val2, val3, &rval_ival);
+  A4GL_conv_invdatatoc (data_r, val1, val2, val3, &rval_ival);
 
   return rval_type;
 }
@@ -447,7 +447,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
  * @todo Describe function
  */
 int
-mk_int_size (int s, int l)
+A4GL_mk_int_size (int s, int l)
 {
   return l + (s << 4);
 }
@@ -458,7 +458,7 @@ mk_int_size (int s, int l)
  * @param data
  */
 void
-decode_interval (struct ival *ival, int *data)
+A4GL_decode_interval (struct ival *ival, int *data)
 {
   char buff[256];
   int i;
@@ -486,7 +486,7 @@ decode_interval (struct ival *ival, int *data)
     5
   };
 
-  debug ("Decoding interval into component parts");
+  A4GL_debug ("Decoding interval into component parts");
 
   for (i = 0; i < 10; i++)
     {
@@ -495,7 +495,7 @@ decode_interval (struct ival *ival, int *data)
 
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
-  debug ("s1=%d s2=%d", s1, s2);
+  A4GL_debug ("s1=%d s2=%d", s1, s2);
 
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
@@ -509,22 +509,22 @@ decode_interval (struct ival *ival, int *data)
 	   ival->data[19], ival->data[20], ival->data[21],
 	   ival->data[22], ival->data[23]);
 
-  debug ("buff=%s\n", buff);
+  A4GL_debug ("buff=%s\n", buff);
 
   cnt = 0;
   for (c = 1; c < s1; c++)
     {
-      debug ("c=%d cnt=%d\n", c, cnt);
+      A4GL_debug ("c=%d cnt=%d\n", c, cnt);
       cnt += spc[c];
     }
 
-  debug ("Cnt=%d\n", cnt);
-  debug ("Taking first part (size=%d) from %d", s2, cnt);
+  A4GL_debug ("Cnt=%d\n", cnt);
+  A4GL_debug ("Taking first part (size=%d) from %d", s2, cnt);
 
   c = s2;
   strncpy (buff2, &buff[cnt], s2);
   buff2[s2] = 0;
-  debug ("buff2 = '%s'\n", buff2);
+  A4GL_debug ("buff2 = '%s'\n", buff2);
 
   c2 = c;
   ltime = ival->ltime;
@@ -533,7 +533,7 @@ decode_interval (struct ival *ival, int *data)
 
   for (cpc = s1; cpc < ltime; cpc++)
     {
-      debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
+      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
 	     cnt + c2);
       data[cpc - 1] = atoi (buff2);
 
@@ -559,14 +559,14 @@ decode_interval (struct ival *ival, int *data)
 	}
     }
 
-  debug ("cpc=%d buff2=%s", cpc, buff2);
+  A4GL_debug ("cpc=%d buff2=%s", cpc, buff2);
   data[cpc - 1] = atoi (buff2);
   for (c = 0; c < 7; c++)
     {
-      debug ("Data : %s %d\n", codes[c], data[c]);
+      A4GL_debug ("Data : %s %d\n", codes[c], data[c]);
     }
 
-  debug ("Internals....");
+  A4GL_debug ("Internals....");
   data[0] = ival->i_years;
   data[1] = ival->i_months;
   data[2] = ival->i_days;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.7 2003-05-12 14:24:03 mikeaubury Exp $
+# $Id: dataio.c,v 1.8 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -66,7 +66,7 @@
 */
 
 static void *libptr = 0;
-static int (*func) (void *ptr, char *filename);	/*FIXME-warning: function declaration isn't a prototype */
+static int (*A4GL_func) (void *ptr, char *filename);	/*FIXME-warning: function declaration isn't a prototype */
 
 /*
 =====================================================================
@@ -89,22 +89,22 @@ static int (*func) (void *ptr, char *filename);	/*FIXME-warning: function declar
  * @param
  */
 int
-read_data_from_file (char *datatype, void *ptr, char *filename)
+A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
 {
   char buff[256];
 #ifdef DEBUG
-  debug ("Read_data_from_file : %s %p %s", datatype, ptr, filename);
+  A4GL_debug ("Read_data_from_file : %s %p %s", datatype, ptr, filename);
 #endif
-  libptr = (void *) dl_openlibrary ("DATA", datatype);
+  libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
   if (libptr == 0)
     {
-      exitwith ("Unable to open library");
+      A4GL_exitwith ("Unable to open library");
       return 0;
     }
 
   sprintf (buff, "read_%s", datatype);
-  func = find_func (libptr, buff);
-  return func (ptr, filename);
+  A4GL_func = A4GL_find_func (libptr, buff);
+  return A4GL_func (ptr, filename);
 }
 
 
@@ -116,36 +116,36 @@ read_data_from_file (char *datatype, void *ptr, char *filename)
  * @param
  */
 int
-write_data_to_file (char *datatype, void *ptr, char *filename)
+A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
 {
   char buff[256];
   int result;
 #ifdef DEBUG
-  debug ("Write data to file : datatype=%s ptr=%p file=%s\n",
+  A4GL_debug ("Write data to file : datatype=%s ptr=%p file=%s\n",
 	 datatype, ptr, filename);
 #endif
-  libptr = (void *) dl_openlibrary ("DATA", datatype);
+  libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
   if (libptr == 0)
     {
-      exitwith ("Unable to open library");
+      A4GL_exitwith ("Unable to open library");
       return 0;
     }
 
   sprintf (buff, "write_%s", datatype);
 
 #ifdef DEBUG
-  debug ("Looking for function : %s", buff);
+  A4GL_debug ("Looking for function : %s", buff);
 #endif
 
-  func = find_func (libptr, buff);
+  A4GL_func = A4GL_find_func (libptr, buff);
 #ifdef DEBUG
-  debug ("Calling %s(ptr=%p,filename=%s)", buff, ptr, filename);
+  A4GL_debug ("Calling %s(ptr=%p,filename=%s)", buff, ptr, filename);
 #endif
 
-  result = func (ptr, filename);
+  result = A4GL_func (ptr, filename);
 
 #ifdef DEBUG
-  debug ("Returned from %s\n", buff);
+  A4GL_debug ("Returned from %s\n", buff);
 #endif
 
   return result;

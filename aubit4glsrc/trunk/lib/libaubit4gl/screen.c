@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.8 2003-05-12 14:24:18 mikeaubury Exp $
+# $Id: screen.c,v 1.9 2003-05-15 07:10:40 mikeaubury Exp $
 #*/
 
 /**
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -46,7 +46,7 @@
 
 #ifdef OLD_INCL
 
-#include "a4gl_dbform.h"	/* needed for struct s_form_dets in function find_attribute */
+#include "a4gl_dbform.h"	/* needed for struct s_form_dets in function A4GL_find_attribute */
 #include "a4gl_aubit_lib.h"	/* zrefresh() */
 #include "a4gl_debug.h"		/* debug() */
 
@@ -71,8 +71,8 @@ extern int ui_mode;
 */
 
 
-char *find_attribute (struct s_form_dets *f, int field_no);
-int chk_iskey (char *keys);
+char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
+int A4GL_chk_iskey (char *keys);
 
 /*
 =====================================================================
@@ -85,7 +85,7 @@ int chk_iskey (char *keys);
  * @param a
  */
 int
-screen_mode (int a)
+A4GL_screen_mode (int a)
 {
   static int smode = 1;
   if (a == -1)
@@ -99,7 +99,7 @@ screen_mode (int a)
       return smode;
     }
   smode = 1;
-  zrefresh ();
+  A4GL_zrefresh ();
   return smode;
 }
 
@@ -110,7 +110,7 @@ screen_mode (int a)
  * @param a
  */
 char *
-find_attribute (struct s_form_dets *f, int field_no)
+A4GL_find_attribute (struct s_form_dets *f, int field_no)
 {
   int a;
 
@@ -119,11 +119,11 @@ find_attribute (struct s_form_dets *f, int field_no)
 
       if (f->fileform->attributes.attributes_val[a].field_no == field_no)
 	{
-	  debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
+	  A4GL_debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
 	  return (char *) &f->fileform->attributes.attributes_val[a];
 	}
     }
-  debug ("Couldnt find entry for field no %d\n", field_no);
+  A4GL_debug ("Couldnt find entry for field no %d\n", field_no);
   return 0;
 
 }
@@ -131,13 +131,13 @@ find_attribute (struct s_form_dets *f, int field_no)
 
 
 int
-chk_iskey (char *keys)
+A4GL_chk_iskey (char *keys)
 {
   char *k;
   char s[256];
   strcpy (s, keys);
   strcat (s, "|");
-  debug ("Chk keys %s\n", s);
+  A4GL_debug ("Chk keys %s\n", s);
 
   if (strcmp (keys, "->ANY") == 0)
     return 1;
@@ -145,8 +145,8 @@ chk_iskey (char *keys)
   k = strtok (s, "|");
   while (1)
     {
-      debug ("Chk keys (%s - %d %d )\n", k, key_val (k), get_lastkey ());
-      if (key_val (k) == get_lastkey ())
+      A4GL_debug ("Chk keys (%s - %d %d )\n", k, A4GL_key_val (k), A4GL_get_lastkey ());
+      if (A4GL_key_val (k) == A4GL_get_lastkey ())
 	{
 	  return 1;
 	}

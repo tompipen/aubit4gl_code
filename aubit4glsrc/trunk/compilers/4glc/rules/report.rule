@@ -95,7 +95,7 @@ commands {print_rep_ret(0);}
 	| BEFGROUP variable  {
 int a;
 char buff[80];
-debug("rordcnt=%d",rordcnt);
+A4GL_debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
@@ -112,7 +112,7 @@ commands {print_rep_ret(0);}
 int a;
 char buff[80];
 
-debug("rordcnt=%d",rordcnt);
+A4GL_debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
@@ -208,7 +208,7 @@ print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi {
 ;
 
 opt_scaling :
-	{ strcpy($<str>$,get_default_scaling());}
+	{ strcpy($<str>$,A4GL_get_default_scaling());}
 	| SCALED_BY fgl_expr_c { strcpy($<str>$,$<str>2); strcat($<str>$,$<str>2); }
 	| SCALED_BY fgl_expr_c COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
 ;
@@ -256,21 +256,21 @@ SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('S',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double(_g%d);\n",racnt);
+sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
 racnt+=a;
 }
 | COUNT_MULTIPLY rep_where
 {
 int a;
 a=add_report_agg('C',0,$<ptr>2,racnt);
-sprintf($<str>$,"push_int(_g%d);\n",racnt);
+sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
 racnt+=a;
 }
 | COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET rep_where
 {
 int a;
 a=add_report_agg('C',0,$<ptr>5,racnt);
-sprintf($<str>$,"push_int(_g%d);\n",racnt);
+sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
 racnt+=a;
 }
 
@@ -279,35 +279,35 @@ racnt+=a;
 {
 int a;
 a=add_report_agg('P',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
+sprintf($<str>$,"A4GL_push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
 racnt+=a;
 }
 | AVERAGE   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
+sprintf($<str>$,"A4GL_push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
 racnt+=a;
 }
 | AVG       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double(_g%d/_g%d);\n",racnt,racnt+1);
+sprintf($<str>$,"A4GL_push_double(_g%d/_g%d);\n",racnt,racnt+1);
 racnt+=a;
 }
 | XMIN       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('N',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double(_g%d);\n",racnt);
+sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
 racnt+=a;
 }
 | XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('X',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"push_double(_g%d);\n",racnt);
+sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
 racnt+=a;
 }
 ;
@@ -344,7 +344,7 @@ nval_number: real_number | INT_VALUE
 pdf_op_output_section : | OUTPUT pdf_output_commands ;
 
 pdf_output_command : 
-  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);debug("Left margin=%s\n",$<str>2);}
+  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);A4GL_debug("Left margin=%s\n",$<str>2);}
 | RIGHT_MARGIN nval {pdf_rep_struct.right_margin=atof($<str>2);}
 | TOP_MARGIN nval {pdf_rep_struct.top_margin=atof($<str>2);}
 | BOTTOM_MARGIN nval {pdf_rep_struct.bottom_margin=atof($<str>2);}
@@ -386,14 +386,14 @@ int a;
 a=print_bind('O');
 print_order_by_type(1);
 sprintf($<str>$,"%d",a);
-debug("Order by Gives :%d\n",a);
+A4GL_debug("Order by Gives :%d\n",a);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 int a;
 a=print_bind('O');
 print_order_by_type(2);
 sprintf($<str>$,"%d",a);
-debug("Order by Gives :%d\n",a);
+A4GL_debug("Order by Gives :%d\n",a);
 }
 ;
 
@@ -430,7 +430,7 @@ report_def : REPORT
 	{
 		print_report_2(0,$<str>11);
 		rordcnt=atoi($<str>11);
-		debug("SET rordcnt=%d %s",rordcnt,$<str>11);
+	 A4GL_debug("SET rordcnt=%d %s",rordcnt,$<str>11);
 		}
 	format_section 
 	{
@@ -505,7 +505,7 @@ pdf_report_section
 //print_variables();
 resize_paper(&pdf_rep_struct);
 	print_report_2(1,$<str>11);
-debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
+A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
 	rordcnt=atoi($<str>11);
 }
 format_section 

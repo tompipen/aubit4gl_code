@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.21 2003-05-12 14:24:25 mikeaubury Exp $
+# $Id: sqlex.c,v 1.22 2003-05-15 07:10:45 mikeaubury Exp $
 #
 */
 
@@ -32,10 +32,10 @@
  * @file
  * SQL
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -52,7 +52,7 @@
 =====================================================================
 */
 
-#define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)
+#define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,stmt,call,__LINE__,__FILE__)
 #define WIDTH 		19
 #define MEMSIZE 	1024
 #define USES_RESOURCE int acl_rescnt;acl_rescnt=new_rescnt()
@@ -94,29 +94,29 @@ char invalid[] = "<Invalid>";
 =====================================================================
 */
 
-int scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
+int A4GL_scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
 		  long *r2);
 //int scan_stmt (char *s, char *p, HSTMT hstmt);
-int add_txt (char *s, int x, int hwnd);
-int clrline (int line[]);
-int rm_txt (int a, int line[], int ign);
-int remove_it (int a);
+int A4GL_add_txt (char *s, int x, int hwnd);
+int A4GL_clrline (int line[]);
+int A4GL_rm_txt (int a, int line[], int ign);
+int A4GL_remove_it (int a);
 char *getres (char *s);
 int add_userptr (void *ptr);
-long set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
-int set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob);
-long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
-int alloc_find_ptr (void *ptr);
+long A4GL_set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
+int A4GL_set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob);
+long A4GL_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+int A4GL_alloc_find_ptr (void *ptr);
 
-int ctol (char s);
-char *generate_using_for_dmy (char *s, int size);
-void *allocate_mem (int size, void *parent);
-void init_mem (void);
-int alloc_find_parent (void *ptr, int start);
-void dealloc_mem (void *ptr);
-int new_rescnt (void);
-int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
-int set_blob_data (HSTMT hstmt);
+int A4GL_ctol (char s);
+char *A4GL_generate_using_for_dmy (char *s, int size);
+void *A4GL_allocate_mem (int size, void *parent);
+void A4GL_init_mem (void);
+int A4GL_alloc_find_parent (void *ptr, int start);
+void A4GL_dealloc_mem (void *ptr);
+int A4GL_new_rescnt (void);
+int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+int A4GL_set_blob_data (HSTMT hstmt);
 
 /*
 =====================================================================
@@ -275,7 +275,7 @@ struct xxsql_options stmt_options[] = {
  * @param r2
  */
 int
-scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
+A4GL_scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
 	      long *r2)
 {
   int a;
@@ -335,38 +335,38 @@ scan_conn (char *s, char *p, HDBC conn)
   long a, b;
   int rc;
   int z;
-  debug ("Checking %s %s %p", s, p, conn);
-  z = scan_options (conn_options, s, p, &a, &b);
+  A4GL_debug ("Checking %s %s %p", s, p, conn);
+  z = A4GL_scan_options (conn_options, s, p, &a, &b);
 
-  debug ("z=%d\n", z);
+  A4GL_debug ("z=%d\n", z);
   if (z == -2)
     {
-      z = scan_options (stmt_options, s, p, &a, &b);
+      z = A4GL_scan_options (stmt_options, s, p, &a, &b);
     }
 
   if (z == -1)
     {
-      exitwith ("Parameter is not applicable to option");
+      A4GL_exitwith ("Parameter is not applicable to option");
       return 0;
     }
 
   if (z == -2)
     {
-      exitwith ("Option was not found");
+      A4GL_exitwith ("Option was not found");
     }
   if (b < 1000)
     {
-      debug ("Got %ld %ld on statement %p\n", a, b, conn);
+      A4GL_debug ("Got %ld %ld on statement %p\n", a, b, conn);
     }
   else
     {
-      debug ("Got %ld %s on statement %p\n", a, b, conn);
+      A4GL_debug ("Got %ld %s on statement %p\n", a, b, conn);
     }
-  debug ("Calling setconnectoption with %ld %ld %ld", conn, a, b);
+  A4GL_debug ("Calling setconnectoption with %ld %ld %ld", conn, a, b);
   rc = SQLSetConnectOption ((HDBC) conn, (UWORD) a, (UDWORD) b);
 
-  set_sqlca (SQL_NULL_HSTMT, "SetConnect", 0);
-  debug ("Set Option...rc=%d", rc);
+  A4GL_set_sqlca (SQL_NULL_HSTMT, "SetConnect", 0);
+  A4GL_debug ("Set Option...rc=%d", rc);
   return 1;
 }
 */
@@ -386,25 +386,25 @@ scan_stmt (char *s, char *p, HSTMT hstmt)
   UDWORD b;
   int z;
   int rc;
-  debug ("Checking %s %s %ld", s, p, hstmt);
-  z = scan_options (stmt_options, s, p, (long *)&a, (long *)&b);
+  A4GL_debug ("Checking %s %s %ld", s, p, hstmt);
+  z = A4GL_scan_options (stmt_options, s, p, (long *)&a, (long *)&b);
 
   if (z == -1)
     {
-      exitwith ("Parameter is not applicable to option");
+      A4GL_exitwith ("Parameter is not applicable to option");
       return 0;
     }
 
   if (z == -2)
     {
-      exitwith ("Option was not found");
+      A4GL_exitwith ("Option was not found");
       return 0;
     }
 
-  debug ("Got %ld %ld stmt=%p\n", a, b, hstmt);
+  A4GL_debug ("Got %ld %ld stmt=%p\n", a, b, hstmt);
   rc = SQLSetStmtOption (hstmt, a, b);
-  debug ("rc=%d", rc);
-  set_sqlca (hstmt, "SetStmtOption", 0);
+  A4GL_debug ("rc=%d", rc);
+  A4GL_set_sqlca (hstmt, "SetStmtOption", 0);
   return 1;
 }
 */
@@ -413,14 +413,14 @@ scan_stmt (char *s, char *p, HSTMT hstmt)
  * @deprecated This a candidate for cleaning.
  */
 int
-add_txt (char *s, int x, int hwnd)
+A4GL_add_txt (char *s, int x, int hwnd)
 {
   int b;
   int z = 0;
   for (b = x - 1; b < x - 1 + (int) strlen (s); b++)
     {
       if (line[b])
-	rm_txt (z, line, b);
+ A4GL_rm_txt (z, line, b);
       line[b] = hwnd;
     }
   return 0;
@@ -430,7 +430,7 @@ add_txt (char *s, int x, int hwnd)
  * @deprecated This a candidate for cleaning.
  */
 int
-clrline (int line[])
+A4GL_clrline (int line[])
 {
   int a;
   for (a = 0; a < 80; a++)
@@ -444,14 +444,14 @@ clrline (int line[])
  * @deprecated This a candidate for cleaning.
  */
 int
-rm_txt (int a, int line[], int ign)
+A4GL_rm_txt (int a, int line[], int ign)
 {
   int b;
   for (b = 0; b < 80; b++)
     if (line[b] == a && b != ign)
       return 0;
 
-  remove_it (a);
+  A4GL_remove_it (a);
   return 0;
 }
 
@@ -459,9 +459,9 @@ rm_txt (int a, int line[], int ign)
  * @deprecated This a candidate for cleaning.
  */
 int
-remove_it (int a)
+A4GL_remove_it (int a)
 {
-  debug ("Clr %d\n", a);
+  A4GL_debug ("Clr %d\n", a);
   return 0;
 }
 
@@ -469,7 +469,7 @@ remove_it (int a)
  * @deprecated This a candidate for cleaning.
  */
 int
-ctol (char s)
+A4GL_ctol (char s)
 {
   char buff[2];
   buff[0] = s;
@@ -481,7 +481,7 @@ ctol (char s)
  * @deprecated This a candidate for cleaning.
  */
 char *
-generate_using_for_dmy (char *s, int size)
+A4GL_generate_using_for_dmy (char *s, int size)
 {
   static char using_str[20] = "";
   int v = 0;
@@ -499,19 +499,19 @@ generate_using_for_dmy (char *s, int size)
   if (strlen (s) == 4)
     {
       v = 2;
-      yr = ctol (s[3]);
+      yr = A4GL_ctol (s[3]);
     }
 
   if (strlen (s) == 5)
     {
       v = 3;
-      yr = ctol (s[3]);
+      yr = A4GL_ctol (s[3]);
       sep = s[4];
     }
 
   if (yr != 2 && yr != 4)
     {
-      debug ("DMY setting - only 2 or 4 digits for year!");
+      A4GL_debug ("DMY setting - only 2 or 4 digits for year!");
       return using_str;
     }
 
@@ -562,15 +562,15 @@ generate_using_for_dmy (char *s, int size)
  * @deprecated This a candidate for cleaning.
  */
 void *
-allocate_mem (int size, void *parent)
+A4GL_allocate_mem (int size, void *parent)
 {
   int a;
 
-  a = alloc_find_ptr (0);
+  a = A4GL_alloc_find_ptr (0);
 
   if (a == -1)
     {
-      debug ("No free space...");
+      A4GL_debug ("No free space...");
       exit (0);
     }
 
@@ -578,12 +578,12 @@ allocate_mem (int size, void *parent)
 
   if (alloc_mem[a].ptr == 0)
     {
-      debug ("No free memory...");
+      A4GL_debug ("No free memory...");
       exit (0);
     }
 
   alloc_mem[a].parent = parent;
-  debug (">%p\n", alloc_mem[a].ptr);
+  A4GL_debug (">%p\n", alloc_mem[a].ptr);
   return alloc_mem[a].ptr;
 }
 
@@ -591,7 +591,7 @@ allocate_mem (int size, void *parent)
  * @deprecated This a candidate for cleaning.
  */
 void
-init_mem (void)
+A4GL_init_mem (void)
 {
   int a;
   for (a = 0; a < MEMSIZE; a++)
@@ -605,7 +605,7 @@ init_mem (void)
  * @deprecated This a candidate for cleaning.
  */
 int
-alloc_find_ptr (void *ptr)
+A4GL_alloc_find_ptr (void *ptr)
 {
   int a;
   for (a = 0; a < MEMSIZE; a++)
@@ -620,7 +620,7 @@ alloc_find_ptr (void *ptr)
  * @deprecated This a candidate for cleaning.
  */
 int
-alloc_find_parent (void *ptr, int start)
+A4GL_alloc_find_parent (void *ptr, int start)
 {
   int a;
   for (a = start; a < MEMSIZE; a++)
@@ -635,24 +635,24 @@ alloc_find_parent (void *ptr, int start)
  * @deprecated This a candidate for cleaning.
  */
 void
-dealloc_mem (void *ptr)
+A4GL_dealloc_mem (void *ptr)
 {
   int a = -1;
   while (1)
     {
-      a = alloc_find_parent (ptr, a + 1);
+      a = A4GL_alloc_find_parent (ptr, a + 1);
       if (a == -1)
 	break;
 /* delete anything with this as as a parent */
-      dealloc_mem (alloc_mem[a].ptr);
+      A4GL_dealloc_mem (alloc_mem[a].ptr);
     }
-  a = alloc_find_ptr (ptr);
+  a = A4GL_alloc_find_ptr (ptr);
   if (a != -1)
     {
       alloc_mem[a].ptr = 0;
       alloc_mem[a].parent = 0;
       free (ptr);
-      debug ("-%p\n", ptr);
+      A4GL_debug ("-%p\n", ptr);
     }
 }
 
@@ -661,7 +661,7 @@ dealloc_mem (void *ptr)
  * @todo Describe function
  */
 int
-new_rescnt (void)
+A4GL_new_rescnt (void)
 {
   static int rescnt = 1;
   return rescnt++;
@@ -682,23 +682,23 @@ new_rescnt (void)
  * @param colno the column number.
  */
 int
-get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
+A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
   int cnt;
 
-  debug ("blob=%p", blob);
-  debug ("blob->where=%c", blob->where);
-  debug ("blob->filename=%s", blob->filename);
+  A4GL_debug ("blob=%p", blob);
+  A4GL_debug ("blob->where=%c", blob->where);
+  A4GL_debug ("blob->filename=%s", blob->filename);
 
   if (blob->where != 'F' && blob->where != 'M')
     {
-      exitwith ("Blob not located");
+      A4GL_exitwith ("Blob not located");
       return 0;
     }
 
   if (blob->where == 'F')
     {
-      debug ("Writing blob to %s", blob->filename);
+      A4GL_debug ("Writing blob to %s", blob->filename);
 
       if (blob->f == 0)
 	{
@@ -706,24 +706,24 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 
 	  if (blob->f == 0)
 	    {
-	      exitwith ("Unable to open blob");
+	      A4GL_exitwith ("Unable to open blob");
 	      return 0;
 	    }
 	}
 
-      cnt = get_blob_data_int (blob->f, hstmt, colno, 0);
+      cnt = A4GL_get_blob_data_int (blob->f, hstmt, colno, 0);
 
       fclose (blob->f);
       blob->f = 0;
     }
   else
     {
-      debug ("Writing blob to memory");
+      A4GL_debug ("Writing blob to memory");
       if (blob->ptr)
 	{
 	  free (blob->ptr);
 	}
-      cnt = get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
+      cnt = A4GL_get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
 
     }
   if (cnt < 0)
@@ -746,7 +746,7 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
  * @param cptr 
  */
 long
-get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
+A4GL_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
 {
   char buff[64000];
   char *ptr = 0;
@@ -754,18 +754,18 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
   int rc;
   SDWORD i;
 
-  debug ("In get_blob_data_int");
+  A4GL_debug ("In get_blob_data_int");
 
   if (blob)
     rewind (blob);
 
   while (1)
     {
-      debug ("In loop");
+      A4GL_debug ("In loop");
 
       if (blob == 0)
 	{
-	  debug ("Memory...");
+	  A4GL_debug ("Memory...");
 	  ptr = realloc (ptr, cnt + sizeof (buff));
 	  if (ptr == 0)
 	    {
@@ -823,7 +823,7 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
  * @param hstmt The statement handle.
  */
 int
-set_blob_data (HSTMT hstmt)
+A4GL_set_blob_data (HSTMT hstmt)
 {
   int rc;
   struct fgl_int_loc *blob;
@@ -831,7 +831,7 @@ set_blob_data (HSTMT hstmt)
   while (rc == SQL_NEED_DATA)
     {
       rc = SQLParamData (hstmt, (PTR) & blob);
-      set_blob_data_repeat (hstmt, blob);
+      A4GL_set_blob_data_repeat (hstmt, blob);
     }
   return rc;
 }
@@ -846,24 +846,24 @@ set_blob_data (HSTMT hstmt)
  * @param blob Pointer to the the blob  location.
  */
 int
-set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
+A4GL_set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
 {
   int cnt;
 
 
-  debug ("blob=%p", blob);
-  debug ("blob->where=%c", blob->where);
-  debug ("blob->filename=%s", blob->filename);
+  A4GL_debug ("blob=%p", blob);
+  A4GL_debug ("blob->where=%c", blob->where);
+  A4GL_debug ("blob->filename=%s", blob->filename);
 
   if (blob->where != 'F' && blob->where != 'M')
     {
-      exitwith ("Blob not located");
+      A4GL_exitwith ("Blob not located");
       return 0;
     }
 
   if (blob->where == 'F')
     {
-      debug ("Reading blob from %s", blob->filename);
+      A4GL_debug ("Reading blob from %s", blob->filename);
 
       if (blob->f == 0)
 	{
@@ -871,24 +871,24 @@ set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
 
 	  if (blob->f == 0)
 	    {
-	      exitwith ("Unable to open blob");
+	      A4GL_exitwith ("Unable to open blob");
 	      return 0;
 	    }
 	}
 
-      cnt = set_blob_data_int (blob->f, hstmt, blob);
+      cnt = A4GL_set_blob_data_int (blob->f, hstmt, blob);
 
       fclose (blob->f);
       blob->f = 0;
     }
   else
     {
-      debug ("reading blob from memory");
+      A4GL_debug ("reading blob from memory");
       if (blob->ptr)
 	{
 	  free (blob->ptr);
 	}
-      cnt = set_blob_data_int (0, hstmt, blob);
+      cnt = A4GL_set_blob_data_int (0, hstmt, blob);
 
     }
 
@@ -911,7 +911,7 @@ set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
  * @param b Pointer to the blob location.
  */
 long
-set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
+A4GL_set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 {
   char buff[64000];
   char *ptr = 0;
@@ -920,7 +920,7 @@ set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
   int i;
   int write_bytes;
 
-  debug ("In set_blob_data_int");
+  A4GL_debug ("In set_blob_data_int");
 
   if (blob)
     rewind (blob);

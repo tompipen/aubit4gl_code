@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.23 2003-05-12 14:24:04 mikeaubury Exp $
+# $Id: debug.c,v 1.24 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * The debug utility functions.
+ * The A4GL_debug utility functions.
  */
 
 /*
@@ -85,14 +85,14 @@ static void open_debugfile (void);
 
 
 /**
- * Open the debug file.
+ * Open the A4GL_debug file.
  *
  * @todo Describe function
  */
 static void
 open_debugfile (void)
 {
-  debugfile = mja_fopen ("debug.out", "w");
+  debugfile = A4GL_mja_fopen ("debug.out", "w");
   if (debugfile == 0)
     {
       printf ("Unable to open debug.out - check directory permissions...\n");
@@ -101,13 +101,13 @@ open_debugfile (void)
 }
 
 /**
- * The debug function.
+ * The A4GL_debug function.
  * The function is used because it exist a define that calls
- * it, if debug is set.
+ * it, if A4GL_debug is set.
  *
  */
 void
-debug_full (char *fmt, ...)
+A4GL_debug_full (char *fmt, ...)
 {
   va_list args;
   static char buff[40960];
@@ -147,15 +147,15 @@ debug_full (char *fmt, ...)
 
 
 
-      /* This code is so we can debug the GTK messages we get */
+      /* This code is so we can A4GL_debug the GTK messages we get */
       if (strcmp (acl_getenv ("A4GL_UI"), "GTK") == 0)
 	{
 	  /* but not if we are running one of the compilers - this should
 	     happen only when running Aubit compiled programs: */
-	  if ((!strcmp (getarg0 (), "4glc") == 0)
-	      && (!strcmp (getarg0 (), "fcompile") == 0)
-	      && (!strcmp (getarg0 (), "mcompile") == 0)
-	      && (!strcmp (getarg0 (), "mkmess") == 0))
+	  if ((!strcmp (A4GL_getarg0 (), "4glc") == 0)
+	      && (!strcmp (A4GL_getarg0 (), "fcompile") == 0)
+	      && (!strcmp (A4GL_getarg0 (), "mcompile") == 0)
+	      && (!strcmp (A4GL_getarg0 (), "mkmess") == 0))
 	    {
 	      fprintf (stderr, "%s\n", buff);
 	      fflush (stderr);
@@ -174,7 +174,7 @@ debug_full (char *fmt, ...)
  * @todo Describe function
  */
 int
-set_line (char *fname, long lineno)
+A4GL_set_line (char *fname, long lineno)
 {
   if (nodebug == 1)
     {
@@ -192,7 +192,7 @@ set_line (char *fname, long lineno)
  *
  */
 void
-setarg0 (const char *argv0)
+A4GL_setarg0 (const char *argv0)
 {
   const char *cp;
 #if ( defined (__MINGW32__) )
@@ -249,11 +249,11 @@ setarg0 (const char *argv0)
   arg0[nbytes] = '\0';
 
 #if ( defined (__MINGW32__) )
-  /* strip .exe extension */
+  /* A4GL_strip .exe extension */
 
 
   strcpy (c, arg0);
-  bname (c, a, b);
+  A4GL_bname (c, a, b);
   strcpy (arg0, a);
 
 #endif
@@ -267,7 +267,7 @@ setarg0 (const char *argv0)
  */
 
 const char *
-getarg0 (void)
+A4GL_getarg0 (void)
 {
   return (arg0);
 }

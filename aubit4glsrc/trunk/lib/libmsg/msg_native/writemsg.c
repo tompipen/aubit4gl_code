@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: writemsg.c,v 1.2 2003-05-12 14:24:22 mikeaubury Exp $
+# $Id: writemsg.c,v 1.3 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -75,7 +75,7 @@
  * @param hlp output file handle
  */
 int
-writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
+A4GL_writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
 {
   int flg = 0;
   char tmpbuf[80];

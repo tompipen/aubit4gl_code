@@ -92,18 +92,18 @@ REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 
 /* rules */
 form_def : 
-database_section screen_section op_table_section attribute_section op_instruction_section {write_form();}
+database_section screen_section op_table_section attribute_section op_instruction_section {A4GL_write_form();}
 ;
 database_section :
 DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
 | DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);
-if (open_db($<str>2)) {
+if (A4GLF_open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
 }
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
 | DATABASE dbname {the_form.dbname=strdup($<str>2);
-if (open_db($<str>2)) {
+if (A4GLF_open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
 }
@@ -205,25 +205,25 @@ screen_element :
 some_text {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
+	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 }
 | field  
 | CH {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
+	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
 | PIPE {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
+	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
 
 
 | CHAR_VALUE {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
+	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 } 
 
 ;
@@ -241,9 +241,9 @@ CLOSE_SQUARE
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	if (openwith=='[')
-		add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,3,"");
+		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,3,"");
 	else
-		add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,2,"");
+		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,2,"");
 };
 
 
@@ -260,9 +260,9 @@ field elements = name x y width screen_no endswith'|'
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	if (openwith=='[')
-		add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,1,"");
+		A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,1,"");
 	else
-		add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,0,"");
+		A4GL_add_field($<str>1,fstart+1,lineno,colno-fstart-1,scr,0,"");
 	fstart=colno;
 	openwith='|';
 }
@@ -283,9 +283,9 @@ table_def
 ;
 
 table_def : named_or_kw opequal { 
-make_downshift($<str>1);
-make_downshift($<str>2);
-add_table($<str>2,$<str>1); 
+A4GL_make_downshift($<str>1);
+A4GL_make_downshift($<str>2);
+A4GL_add_table($<str>2,$<str>1); 
 } 
 ;
 
@@ -313,9 +313,9 @@ field_tag | field_tag_list field_tag
 
 field_tag : 
 field_tag_name {
-	make_downshift($<str>1);
+	A4GL_make_downshift($<str>1);
 	strcpy(currftag,$<str>1);
-	fldno=find_field($<str>1);
+	fldno=A4GL_find_field($<str>1);
 } 
 fpart_list SEMICOLON
 ;
@@ -325,29 +325,29 @@ fpart | fpart_list fpart;
 
 fpart : 
 EQUAL { 
-init_fld();
+A4GL_init_fld();
 }
 field_type op_att 
 {
-	make_downshift(fld->tabname);
-	make_downshift(fld->colname);
+	A4GL_make_downshift(fld->tabname);
+	A4GL_make_downshift(fld->colname);
 
 	fld->colour=FA_C_WHITE;
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
-	debug("add color %d\n",FA_C_WHITE);
+	A4GL_debug("add color %d\n",FA_C_WHITE);
 }
 op_field_desc
 {
-	if (fld->datatype==90&&!(has_str_attribute(fld,FA_S_DEFAULT)))
+	if (fld->datatype==90&&!(A4GL_has_str_attribute(fld,FA_S_DEFAULT)))
 	{
 	        extern FILE *yyin;
 
-			debug("Currpos = %ld\n",ftell(yyin));
+			A4GL_debug("Currpos = %ld\n",ftell(yyin));
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
 	}
-	set_field(currftag,fld);
+	A4GL_set_field(currftag,fld);
 };
 
 
@@ -371,10 +371,10 @@ field_datatype_null :
 
 field_datatype : {strcpy($<str>$,"0");}
 	| 	TYPE LIKE named_or_kw DOT named_or_kw {
-			sprintf($<str>$,"%d",getdatatype_fcompile($<str>5,$<str>3));
+			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3));
 		}
 	| 	TYPE LIKE named_or_kw {
-			sprintf($<str>$,"%d",getdatatype_fcompile($<str>3,""));
+			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,""));
 		}
 	| 	TYPE datatype {
 			strcpy($<str>$,$<str>2);
@@ -390,11 +390,11 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 | named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
-        fld->datatype=getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
 }
 | named_or_kw {
 	fld->colname=strdup($<str>1);
-        fld->datatype=getdatatype_fcompile(fld->colname,"");
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
 };
 
 
@@ -406,7 +406,7 @@ op_desc_list :
 desc | op_desc_list COMMA desc;
 
 desc :  
-AUTONEXT { add_bool_attr(fld,FA_B_AUTONEXT); }
+AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | COLOR EQUAL colors  op_where {
 		if ($<expr>4==0) 
 			fld->colour=atoi($<str>3); 
@@ -419,42 +419,42 @@ AUTONEXT { add_bool_attr(fld,FA_B_AUTONEXT); }
 			fld->colours.colours_val[a-1].whereexpr=$<expr>4;
 		}
 } 
-| COMMENTS EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
-| DEFAULT EQUAL def_val { add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
-| DISPLAY LIKE named_or_kw {	debug("WARNING : DISPLAY LIKE not really implemented");}
-| DISPLAY LIKE named_or_kw DOT named_or_kw {	debug("WARNING : DISPLAY LIKE not really implemented");}
-| DOWNSHIFT { add_bool_attr(fld,FA_B_DOWNSHIFT); }
-| UPSHIFT { add_bool_attr(fld,FA_B_UPSHIFT); }
-| FORMAT EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_FORMAT,$<str>3); }
-| INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); add_str_attr(fld,FA_S_INCLUDE,$<str>$); }
-| WIDGET EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_WIDGET,$<str>3); }
-| CONFIG EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_CONFIG,$<str>3); }
-| INVISIBLE { add_bool_attr(fld,FA_B_INVISIBLE); }
+| COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
+| DEFAULT EQUAL def_val { A4GL_add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
+| DISPLAY LIKE named_or_kw {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
+| DISPLAY LIKE named_or_kw DOT named_or_kw {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
+| DOWNSHIFT { A4GL_add_bool_attr(fld,FA_B_DOWNSHIFT); }
+| UPSHIFT { A4GL_add_bool_attr(fld,FA_B_UPSHIFT); }
+| FORMAT EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_FORMAT,$<str>3); }
+| INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(fld,FA_S_INCLUDE,$<str>$); }
+| WIDGET EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_WIDGET,$<str>3); }
+| CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_CONFIG,$<str>3); }
+| INVISIBLE { A4GL_add_bool_attr(fld,FA_B_INVISIBLE); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
-debug("fld->dynamic=%d",fld->dynamic); }
-| DYNAMIC  { fld->dynamic=-1; debug("dynamic=-1"); }
+A4GL_debug("fld->dynamic=%d",fld->dynamic); }
+| DYNAMIC  { fld->dynamic=-1; A4GL_debug("dynamic=-1"); }
 | SQLONLY  { printf("Warining %s is not implemented for 4GL\n",$<str>1); }
-| NOENTRY { add_bool_attr(fld,FA_B_NOENTRY); }
-| PICTURE EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_PICTURE,$<str>3); }
-| PROGRAM EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_PROGRAM,$<str>3); }
+| NOENTRY { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
+| PICTURE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PICTURE,$<str>3); }
+| PROGRAM EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PROGRAM,$<str>3); }
 | REQUIRED {
-	add_bool_attr(fld,FA_B_REQUIRED);
+	A4GL_add_bool_attr(fld,FA_B_REQUIRED);
 }
 | REVERSE {
-	add_bool_attr(fld,FA_B_REVERSE);
+	A4GL_add_bool_attr(fld,FA_B_REVERSE);
 }
 | VERIFY {
-	add_bool_attr(fld,FA_B_VERIFY);
+	A4GL_add_bool_attr(fld,FA_B_VERIFY);
 }
 | WORDWRAP  {
-	add_bool_attr(fld,FA_B_WORDWRAP);
+	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
 }
 | WORDWRAP  COMPRESS {
-	add_bool_attr(fld,FA_B_WORDWRAP);
-	add_bool_attr(fld,FA_B_COMPRESS);
+	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
+	A4GL_add_bool_attr(fld,FA_B_COMPRESS);
 }
 | WORDWRAP NONCOMPRESS {
-	add_bool_attr(fld,FA_B_WORDWRAP);
+	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
 };
 
 
@@ -494,16 +494,16 @@ BLACK {
 	strcpy($<str>$,"3");
 }
 | REVERSE {
-	sprintf($<str>$,"%d",get_attr_from_string("REVERSE"));
+	sprintf($<str>$,"%d",A4GL_get_attr_from_string("REVERSE"));
 }
 | LEFT {
-	sprintf($<str>$,"%d",get_attr_from_string("LEFT"));
+	sprintf($<str>$,"%d",A4GL_get_attr_from_string("LEFT"));
 }
 | BLINK {
-	sprintf($<str>$,"%d",get_attr_from_string("BLINK"));
+	sprintf($<str>$,"%d",A4GL_get_attr_from_string("BLINK"));
 }
 | UNDERLINE {
-	sprintf($<str>$,"%d",get_attr_from_string("UNDERLINE"));
+	sprintf($<str>$,"%d",A4GL_get_attr_from_string("UNDERLINE"));
 };
 
 op_instruction_section : 
@@ -519,7 +519,7 @@ instruct_op_1 : instruct_op | instruct_op SEMICOLON;
 instruct_op :
 DELIMITERS CHAR_VALUE {
 	char buff[4];
-	strcpy(buff,char_val($<str>2));
+	strcpy(buff,A4GL_char_val($<str>2));
 	if (strlen(buff)==1) {
 		buff[1]=buff[0];
 		buff[2]=buff[0];
@@ -528,7 +528,7 @@ DELIMITERS CHAR_VALUE {
 	the_form.delim=strdup(buff);
 }
 | KW_SCREEN RECORD {
-add_srec();
+A4GL_add_srec();
 } srec_dim OPEN_BRACKET field_list CLOSE_BRACKET op_ltype op_semi
 | KW_PANEL OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET TO OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET 
 ;
@@ -539,10 +539,10 @@ op_semi: | SEMICOLON;
 
 srec_dim : 
 named_or_kw  {
-   set_dim_srec($<str>1,1);
+   A4GL_set_dim_srec($<str>1,1);
 }
 | named_or_kw OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
-   set_dim_srec($<str>1,atoi($<str>3));
+   A4GL_set_dim_srec($<str>1,atoi($<str>3));
 };
 
 
@@ -556,19 +556,19 @@ field_list_element {
 
 field_list_item :
 named_or_kw	
-{add_srec_attribute("",$<str>1,""); }
+{A4GL_add_srec_attribute("",$<str>1,""); }
 | named_or_kw DOT named_or_kw	 
-{add_srec_attribute($<str>1,$<str>3,""); }
+{A4GL_add_srec_attribute($<str>1,$<str>3,""); }
 | FORMONLY DOT named_or_kw	 
-{add_srec_attribute("formonly",$<str>3,""); }
+{A4GL_add_srec_attribute("formonly",$<str>3,""); }
 | named_or_kw DOT STAR 
-{add_srec_attribute($<str>1,"*",""); }
+{A4GL_add_srec_attribute($<str>1,"*",""); }
 | FORMONLY DOT STAR 
-{add_srec_attribute("formonly","*",""); }
+{A4GL_add_srec_attribute("formonly","*",""); }
 ;
 
 field_list_element :
-field_list_item  | field_list_item THROUGH field_list_item {add_srec_attribute("","","THROUGH");} 
+field_list_item  | field_list_item THROUGH field_list_item {A4GL_add_srec_attribute("","","THROUGH");} 
 ;
 
 
@@ -580,7 +580,7 @@ field_name : named_or_kw {
 field_tag_name : 
 named_or_kw {
 	strcpy($<str>$,$<str>1);
-	make_downshift($<str>$);
+	A4GL_make_downshift($<str>$);
 	}
 	;
 
@@ -657,7 +657,7 @@ number_value : NUMBER_VALUE | PLUS NUMBER_VALUE | MINUS NUMBER_VALUE {sprintf($<
 
 
 incl_entry : 
-CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
+CHAR_VALUE   { strcpy($<str>$,A4GL_char_val($<str>1)); }
 | NAMED   {strcpy($<str>$,$<str>1); }
 | NAMED TO NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
 | CH   {strcpy($<str>$,$<str>1);}
@@ -666,8 +666,8 @@ CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
 	sprintf($<str>$,"%s\t%s",$<str>1,$<str>3);
 }
 | CHAR_VALUE TO CHAR_VALUE {
-	sprintf($<str>$,"%s\t",char_val($<str>1));
-	sprintf($<str>$,"%s%s",$<str>$,char_val($<str>3));
+	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
+	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));
 }
 | KW_NULL {
 	sprintf($<str>$,"NULL");
@@ -689,9 +689,9 @@ opt_int_ext : {strcpy($<str>$,"");}
 
 
 opt_unit_size: {
-debug("Nothing in fraction - assume 2");
+A4GL_debug("Nothing in fraction - assume 2");
 strcpy($<str>$,"2");} |  OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {
-debug("    %s",$<str>2);
+A4GL_debug("    %s",$<str>2);
 strcpy($<str>$,$<str>2);
 };
 
@@ -714,7 +714,7 @@ int_start_unit : YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
   {
-  debug("opt_frac returns %s",$<str>2);
+  A4GL_debug("opt_frac returns %s",$<str>2);
   sprintf($<str>$,"%d",atoi($<str>2)+6); }
   ;
 
@@ -739,15 +739,15 @@ YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
 {
-debug("opt_frac returns %s",$<str>2);
+A4GL_debug("opt_frac returns %s",$<str>2);
 sprintf($<str>$,"%d",atoi($<str>2)+6); }
 ;
 
 opt_frac: {
-debug("Nothing in fraction - assume 2");
+A4GL_debug("Nothing in fraction - assume 2");
 strcpy($<str>$,"2");} |  OPEN_BRACKET dtfrac CLOSE_BRACKET {
-debug("Read fraction .. ");
-debug("    %s",$<str>2);
+A4GL_debug("Read fraction .. ");
+A4GL_debug("    %s",$<str>2);
 strcpy($<str>$,$<str>2);
 };
 

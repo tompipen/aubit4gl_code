@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.2 2003-05-12 14:24:22 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.3 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
  * @file
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -91,8 +91,8 @@ char *infile = 0;
 =====================================================================
 */
 
-char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);	/* Extract the tag contents from a string */
+char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
+char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
 int input_short (char *name, short *val, int ptr, int isarr);
 
@@ -132,7 +132,7 @@ input_start_array (char *s, int type, int *len)
 {
   int a;
   a = input_int (s, len, 0, -1);
-  debug ("ARRAY %s - Length of array=%d", s, *len);
+  A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
   return a;
 }
 
@@ -154,8 +154,8 @@ int
 input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
-  debug ("Input short %s", name);
-  a = memfile_fread (val, 1, sizeof (short), infile);
+  A4GL_debug ("Input short %s", name);
+  a = A4GL_memfile_fread (val, 1, sizeof (short), infile);
   *val = ntohs (*val);
   return a;
 
@@ -188,10 +188,10 @@ input_long (char *name, long *val, int ptr, int isarr)
 {
   /* long n; */
   int a;
-  debug ("Reading long %s", name);
-  a = memfile_fread (val, 1, sizeof (long), infile);
+  A4GL_debug ("Reading long %s", name);
+  a = A4GL_memfile_fread (val, 1, sizeof (long), infile);
   *val = ntohl (*val);
-  debug ("->Got long %s  as %x\n", name, *val);
+  A4GL_debug ("->Got long %s  as %x\n", name, *val);
   return a;
 }
 
@@ -216,13 +216,13 @@ input_string (char *name, char **val, int ptr, int isarr)
 {
   long l;
   int a;
-  debug ("Inputing string %s", name);
+  A4GL_debug ("Inputing string %s", name);
   if (!input_long ("", &l, 0, -1))
     return 0;
-  debug ("Got length as %d", l);
+  A4GL_debug ("Got length as %d", l);
   *val = malloc (l + 1);	/* Extra 1 for the \0 */
   memset (*val, 0, l + 1);
-  a = memfile_fread (*val, 1, l, infile);
+  a = A4GL_memfile_fread (*val, 1, l, infile);
   if (a == 0 && l == 0)
     return 1;
   return a;
@@ -235,7 +235,7 @@ input_string (char *name, char **val, int ptr, int isarr)
 int
 input_double (char *name, double *val, int ptr, int isarr)
 {
-  return memfile_fread (&val, 1, sizeof (val), infile);
+  return A4GL_memfile_fread (&val, 1, sizeof (val), infile);
 }
 
 /**
@@ -276,7 +276,7 @@ int
 input_ptr_ok ()
 {
   char n;
-  memfile_fread (&n, 1, sizeof (n), infile);
+  A4GL_memfile_fread (&n, 1, sizeof (n), infile);
   if (n)
     return 1;
   else
@@ -322,28 +322,28 @@ input_enum (char *name, int *d)
  * @todo Describe function
  */
 int
-open_packer (char *basename, char dir)
+A4GL_open_packer (char *basename, char dir)
 {
   char buff[256];
   char *ptr = 0;
-  debug ("MEMPACKER : basename=%s\n", basename);
+  A4GL_debug ("MEMPACKER : basename=%s\n", basename);
   ptr = strchr (basename, '.');
   *ptr = 0;
 
-  if (has_pointer (basename, COMPILED_FORM))
+  if (A4GL_has_pointer (basename, COMPILED_FORM))
     {
-      ptr = find_pointer_val (basename, COMPILED_FORM);
+      ptr = A4GL_find_pointer_val (basename, COMPILED_FORM);
     }
 
   if (ptr == 0)
     {
-      exitwith ("Unable to open form in memory");
+      A4GL_exitwith ("Unable to open form in memory");
     }
 
   if (toupper (dir) == 'I')
     {
       int n;
-      infile = memfile_fopen_buffer (ptr, -1);
+      infile = A4GL_memfile_fopen_buffer (ptr, -1);
 
       if (infile)
 	{
@@ -361,7 +361,7 @@ open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-close_packer (char dir)
+A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'I')
     {
@@ -374,7 +374,7 @@ close_packer (char dir)
 
 
 int
-can_pack_all (char *name)
+A4GL_can_pack_all (char *name)
 {
   return 0;
 }

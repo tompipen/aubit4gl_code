@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.14 2003-05-12 14:24:03 mikeaubury Exp $
+# $Id: data_if.c,v 1.15 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -33,10 +33,10 @@
  *
  * Used by C compiled 4gl code
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -57,7 +57,7 @@
 
 #ifdef OLD_INCL
 
-void *get_set (char *str, void *ptr, int mode, char *name, long var);
+void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
 
 #endif
 
@@ -103,7 +103,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 
   struct s_s_screenio_1 *val;
 
-  debug ("screenio - %p mode=%d name=%s var=%x", ptr, mode, name, var);
+  A4GL_debug ("screenio - %p mode=%d name=%s var=%x", ptr, mode, name, var);
   if (mode == GETSETNEW)
     {
       return (void *) malloc (sizeof (struct s_s_screenio_1));
@@ -259,7 +259,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
-  debug ("No found name %s\n", name);
+  A4GL_debug ("No found name %s\n", name);
 
   return (void *) 0;		/* unknown value */
 };
@@ -308,7 +308,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
   struct s_s_inp_arr_1 *val;
 
 
-  debug ("mode = %d ptr=%x  name=%s size=%d", mode, ptr, name,
+  A4GL_debug ("mode = %d ptr=%x  name=%s size=%d", mode, ptr, name,
 	 sizeof (struct s_s_inp_arr_1));
   if (mode == GETSETNEW)
     {
@@ -323,7 +323,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 
   val = (struct s_s_inp_arr_1 *) ptr;
 
-  debug ("val=%p nbind=%d\n", val, val->nbind);
+  A4GL_debug ("val=%p nbind=%d\n", val, val->nbind);
   if (strcmp (name, "mode") == 0)
     {
       if (mode == GETSETGET)
@@ -589,7 +589,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 
   if (strcmp (name, "nbind") == 0)
     {
-      debug ("Setting nbind=%d", (int) var);
+      A4GL_debug ("Setting nbind=%d", (int) var);
       if (mode == GETSETGET)
 	return (void *) val->nbind;
       if (mode == GETSETGETPTR)
@@ -640,8 +640,8 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	}
     }
 
-  assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_inp_arr");
-  debug ("CRITICAL - UNKNOWN VALUE FOR  s_inp_arr - %s\n", name);
+  A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_inp_arr");
+  A4GL_debug ("CRITICAL - UNKNOWN VALUE FOR  s_inp_arr - %s\n", name);
 
   return (void *) 0;		/* unknown value */
 };
@@ -1274,7 +1274,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 	}
     }
 
-  assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_disp_arr");
+  A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_disp_arr");
   return (void *) 0;		/* unknown value */
 };
 
@@ -1290,11 +1290,11 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
  * @param var Value to assign
  */
 void *
-get_set (char *str, void *ptr, int mode, char *name, long var)
+A4GL_get_set (char *str, void *ptr, int mode, char *name, long var)
 {
   int a;
 
-  debug ("Get_set %s\n", str);
+  A4GL_debug ("Get_set %s\n", str);
   if ((a = atoi (str)) != 0)
     {
       if (a == 0)
@@ -1339,7 +1339,7 @@ get_set (char *str, void *ptr, int mode, char *name, long var)
     {
       return get_set_s_disp_arr (ptr, mode, name, var);
     }
-  debug ("No found %s\n", str);
+  A4GL_debug ("No found %s\n", str);
   return (void *) 0;
 }
 

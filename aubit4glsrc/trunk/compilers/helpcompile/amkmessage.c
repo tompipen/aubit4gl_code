@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.4 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.5 2003-05-15 07:10:37 mikeaubury Exp $
 #*/  
   
 /**
@@ -164,7 +164,7 @@ main (int argc, char *argv[])
       fprintf (stderr, "%s: %s contains no messages!\n", argv[0], argv[1]);
       exit (2);
     }
-  debug ("%d messages found\n", count);
+  A4GL_debug ("%d messages found\n", count);
   
     //fputs("FE68\n",outfile);
     fwrite2 ("\xFE\x68", outfile);

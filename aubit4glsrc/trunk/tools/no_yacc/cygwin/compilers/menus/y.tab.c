@@ -190,7 +190,7 @@ menu_option_item *new_option (menu * m);
 void *get_menu (void);
 
 #ifdef OLD_INCL
-char *char_val (char *s);
+char *A4GL_char_val (char *s);
 #endif
 
 /* from mcompile.c */
@@ -934,7 +934,7 @@ yyparse ()
   YYSIZE_T yystacksize = YYINITDEPTH;
 
   /* The variables used to return semantic value and location from the
-     action routines.  */
+     A4GL_action routines.  */
   YYSTYPE yyval;
 
 
@@ -1073,7 +1073,7 @@ yybackup:
       YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
-  /* If the proper action on seeing token YYTOKEN is to reduce or to
+  /* If the proper A4GL_action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
   if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
@@ -1110,7 +1110,7 @@ yybackup:
 
 
 /*-----------------------------------------------------------.
-| yydefault -- do the default action for the current state.  |
+| yydefault -- do the default A4GL_action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];
@@ -1143,7 +1143,7 @@ yyreduce:
     case 2:
 #line 118 "menu.yacc"
       {
-	write_menu ();
+ A4GL_write_menu ();
       }
       break;
 
@@ -1167,14 +1167,14 @@ yyreduce:
 #line 141 "menu.yacc"
       {
 	menu_option_item *o;
-	debug ("New option %s for menu %p\n", yyvsp[-4].str, get_menu ());
+ A4GL_debug ("New option %s for menu %p\n", yyvsp[-4].str, get_menu ());
 	o = new_option (get_menu ());
 	o->id = strdup (yyvsp[-4].str);
 	o->caption = strdup (yyvsp[-2].str);
 	o->image = img_val;
 	o->key_list = strdup (yyvsp[-1].str);
 	o->align = atoi (yyvsp[0].str);
-	debug ("Ok option\n");
+ A4GL_debug ("Ok option\n");
       }
       break;
 
@@ -1182,7 +1182,7 @@ yyreduce:
 #line 151 "menu.yacc"
       {
 	menu_option_item *o;
-	debug ("Submenu with use\n");
+ A4GL_debug ("Submenu with use\n");
 	o = new_option (get_menu ());
 	o->id = strdup (yyvsp[-6].str);
 	o->image = img_val;
@@ -1197,7 +1197,7 @@ yyreduce:
 #line 162 "menu.yacc"
       {
 	menu_option_item *o;
-	debug ("Submenu without use\n");
+ A4GL_debug ("Submenu without use\n");
 	o = new_option (get_menu ());
 	o->id = strdup (yyvsp[-4].str);
 	o->image = img_val;
@@ -1230,15 +1230,15 @@ yyreduce:
     case 15:
 #line 181 "menu.yacc"
       {
-	strcpy (yyval.str, char_val (yyvsp[0].str));
+	strcpy (yyval.str, A4GL_char_val (yyvsp[0].str));
       }
       break;
 
     case 16:
 #line 182 "menu.yacc"
       {
-	sprintf (yyval.str, "%s\n%s", strdup (char_val (yyvsp[-1].str)),
-		 strdup (char_val (yyvsp[0].str)));
+	sprintf (yyval.str, "%s\n%s", strdup (A4GL_char_val (yyvsp[-1].str)),
+		 strdup (A4GL_char_val (yyvsp[0].str)));
       }
       break;
 
@@ -1252,7 +1252,7 @@ yyreduce:
     case 19:
 #line 189 "menu.yacc"
       {
-	strcpy (yyval.str, char_val (yyvsp[0].str));
+	strcpy (yyval.str, A4GL_char_val (yyvsp[0].str));
       }
       break;
 
@@ -1280,7 +1280,7 @@ yyreduce:
     case 26:
 #line 207 "menu.yacc"
       {
-	img_val = strdup (char_val (yyvsp[0].str));
+	img_val = strdup (A4GL_char_val (yyvsp[0].str));
       }
       break;
 

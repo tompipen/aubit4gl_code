@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.5 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: output.c,v 1.6 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -78,7 +78,7 @@ FILE *fxx;
  * @todo Describe function
  */
 void
-write_report (void)
+A4GL_write_report (void)
 {
   char fname[132];
   char fname2[132];
@@ -94,7 +94,7 @@ write_report (void)
   strcpy (fname, outputfilename);
 
   /* ace_bname(outputfilename, ext, base); */
-  bname (outputfilename, ext, base);
+  A4GL_bname (outputfilename, ext, base);
 
   if (ext[0] == 0)
     {
@@ -105,7 +105,7 @@ write_report (void)
   strcat (fname2, ".c");
 
 
-  a = write_data_to_file ("report", ptr, fname);
+  a = A4GL_write_data_to_file ("report", ptr, fname);
 
 
 
@@ -121,7 +121,7 @@ write_report (void)
 
   if (!a)
     {
-      debug ("*** Write FAILED ***\n");
+      A4GL_debug ("*** Write FAILED ***\n");
       printf ("Unable to write data\n");
     }
 

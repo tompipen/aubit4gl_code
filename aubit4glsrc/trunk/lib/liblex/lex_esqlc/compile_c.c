@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.39 2003-05-12 14:24:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.40 2003-05-15 07:10:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -162,9 +162,9 @@ static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn);
 
-void internal_lex_printc (char *fmt, va_list * ap);
-void internal_lex_printcomment (char *fmt, va_list * ap);
-void internal_lex_printh (char *fmt, va_list * ap);
+void internal_A4GL_lex_printc (char *fmt, va_list * ap);
+void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
+void internal_A4GL_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,
@@ -207,7 +207,7 @@ open_outfile (void)
 
   if (outputfilename == 0)
     {
-      debug ("NO output file name");
+      A4GL_debug ("NO output file name");
     }
 
   strcpy (c, outputfilename);
@@ -216,11 +216,11 @@ open_outfile (void)
 
   if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
     {
-      debug ("Clobbering...");
+      A4GL_debug ("Clobbering...");
       set_clobber (outputfilename);
     }
 
-  debug ("Opening output map");
+  A4GL_debug ("Opening output map");
 
   openmap (outputfilename);
 
@@ -229,7 +229,7 @@ open_outfile (void)
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')
 	{
-	  debug (">>> NO C FILES... %s", ptr);
+	  A4GL_debug (">>> NO C FILES... %s", ptr);
 	  return;
 	}
     }
@@ -253,7 +253,7 @@ open_outfile (void)
     }
   strcat (h, ".h");
   strcat (err, ".err");
-  outfile = mja_fopen (c, "w");
+  outfile = A4GL_mja_fopen (c, "w");
   if (outfile == 0)
     {
       printf ("Unable to open file %s (Check permissions)\n", c);
@@ -295,7 +295,7 @@ open_outfile (void)
 	   outputfilename);
 
 
-  hfile = mja_fopen (h, "w");
+  hfile = A4GL_mja_fopen (h, "w");
   if (hfile == 0)
     {
       printf ("Unable to open file %s (Check permissions)\n", h);
@@ -346,11 +346,11 @@ printc (char *fmt, ...)
   va_list ap;
   //debug("via printc (a) in lib\n");
   va_start (ap, fmt);
-  internal_lex_printc (fmt, &ap);
+  internal_A4GL_lex_printc (fmt, &ap);
 }
 
 void
-internal_lex_printc (char *fmt, va_list * ap)
+internal_A4GL_lex_printc (char *fmt, va_list * ap)
 {
 /* va_list args; */
   char buff[40960] = "ERROR-empty init";
@@ -378,7 +378,7 @@ internal_lex_printc (char *fmt, va_list * ap)
   //debug("fmt in lib=%s\n",buff2);
 
 
-  if (isyes (acl_getenv ("INCLINES")))
+  if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
       for (a = 0; a < strlen (buff); a++)
 	{
@@ -431,12 +431,12 @@ printh (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  internal_lex_printh (fmt, &ap);
+  internal_A4GL_lex_printh (fmt, &ap);
 }
 
 void
 /* printh (char *fmt, ...) */
-internal_lex_printh (char *fmt, va_list * ap)
+internal_A4GL_lex_printh (char *fmt, va_list * ap)
 {
 /* va_list args; */
   if (outfile == 0)
@@ -455,7 +455,7 @@ internal_lex_printh (char *fmt, va_list * ap)
 }
 
 /**
- * Print comments to the C output file.
+ * Print A4GL_comments to the C output file.
  *
  * If the output file is not opened call the open function.
  *
@@ -467,12 +467,12 @@ printcomment (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  internal_lex_printcomment (fmt, &ap);
+  internal_A4GL_lex_printcomment (fmt, &ap);
 }
 
 void
 /* internal_printcomment (char *fmt,...) */
-internal_lex_printcomment (char *fmt, va_list * ap)
+internal_A4GL_lex_printcomment (char *fmt, va_list * ap)
 {
 #ifdef USE_PRINTCOMMENT
 /*  va_list args; */
@@ -495,7 +495,7 @@ internal_lex_printcomment (char *fmt, va_list * ap)
 #else
 	/**
 	 * Empty function for linking purposes when compiling without generation of
-	 * comments in the output C module
+	 * A4GL_comments in the output C module
 	 */
 
   /* Do nothing... */
@@ -508,7 +508,7 @@ internal_lex_printcomment (char *fmt, va_list * ap)
  * identation in the output source.
  */
 void
-incprint (void)
+A4GL_incprint (void)
 {
   int a;
 
@@ -553,14 +553,14 @@ void
 print_report_ctrl (void)
 {
   int a;
-  debug
+  A4GL_debug
     ("/* ********************************************************** */\n");
-  debug
+  A4GL_debug
     ("/*                 Report Control Block                       */\n");
-  debug
+  A4GL_debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
-  printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
+  printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
   printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   /* check for after group of */\n");
@@ -581,7 +581,7 @@ print_report_ctrl (void)
   else
     {
       printc
-	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;pdf_rep_close(&rep);return;}\n",
+	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;A4GL_pdf_rep_close(&rep);return;}\n",
 	 get_curr_rep_name ());
 
     }
@@ -595,7 +595,7 @@ print_report_ctrl (void)
   else
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;pdf_rep_close(&rep);return;}\n",
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;A4GL_pdf_rep_close(&rep);return;}\n",
 	 get_curr_rep_name ());
 
     }
@@ -658,7 +658,7 @@ print_report_ctrl (void)
 void
 print_range_check (char *var, char *size)
 {
-  printc ("range_chk(%s,%d);\n", var, atoi (size));
+  printc ("A4GL_range_chk(%s,%d);\n", var, atoi (size));
 }
 
 /**
@@ -754,7 +754,7 @@ print_exit_loop (int type, int n)
 
 
 /**
- *  Print the C code corresponding to the last action in a format action of
+ *  Print the C code corresponding to the last A4GL_action in a format A4GL_action of
  *  a report.
  */
 void
@@ -792,7 +792,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("rep.output_mode='%c';\n", rep->output_mode);
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
-  printc ("trim(rep.output_loc);");
+  printc ("A4GL_trim(rep.output_loc);");
   print_rep_ret (report_cnt);
 }
 
@@ -812,12 +812,12 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("rep.font_size=%f;\n", rep->font_size);
   printc ("rep.paper_size=%d;\n", rep->paper_size);
 
-  printc ("rep.top_margin=pdf_size(%f,'l',&rep);\n", rep->top_margin);
-  printc ("rep.bottom_margin=pdf_size(%f,'l',&rep);\n", rep->bottom_margin);
-  printc ("rep.page_length=pdf_size(%f,'l',&rep);\n", rep->page_length);
-  printc ("rep.left_margin=pdf_size(%f,'c',&rep);\n", rep->left_margin);
-  printc ("rep.right_margin=pdf_size(%f,'c',&rep);\n", rep->right_margin);
-  printc ("rep.page_width=pdf_size(%f,'c',&rep);\n", rep->page_width);
+  printc ("rep.top_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->top_margin);
+  printc ("rep.bottom_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->bottom_margin);
+  printc ("rep.page_length=A4GL_pdf_size(%f,'l',&rep);\n", rep->page_length);
+  printc ("rep.left_margin=A4GL_pdf_size(%f,'c',&rep);\n", rep->left_margin);
+  printc ("rep.right_margin=A4GL_pdf_size(%f,'c',&rep);\n", rep->right_margin);
+  printc ("rep.page_width=A4GL_pdf_size(%f,'c',&rep);\n", rep->page_width);
 
   printc ("rep.page_no=%d;\n", rep->page_no);
   printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
@@ -832,7 +832,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("rep.output_mode='%c';\n", rep->output_mode);
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
-  printc ("trim(rep.output_loc);");
+  printc ("A4GL_trim(rep.output_loc);");
   print_rep_ret (report_cnt);
 }
 
@@ -861,60 +861,60 @@ pr_report_agg (void)
       t = sreports[z].t;
 
 #ifdef DEBUG
-      debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
+      A4GL_debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
 #endif
 
       if (t == 'C')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) _g%d++;\n", a);
+	  printc ("if (A4GL_pop_bool()) _g%d++;\n", a);
 	}
 
       if (t == 'P')
 	{
 	  printc ("_g%d++;", a + 1);
 	  print_expr (sreports[z].rep_where_expr);
-	  printc (" if (pop_bool()) _g%d++; \n", a);
+	  printc (" if (A4GL_pop_bool()) _g%d++; \n", a);
 	}
 
       if (t == 'S')
 	{
-	  debug ("X0");
+	  A4GL_debug ("X0");
 	  print_expr (sreports[z].rep_where_expr);
-	  debug ("X1");
-	  printc ("if (pop_bool()) {double _res;");
-	  debug ("X2");
+	  A4GL_debug ("X1");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
+	  A4GL_debug ("X2");
 	  print_expr (sreports[z].rep_cond_expr);
-	  debug ("X3");
-	  printc ("_res=pop_double(); _g%d+=_res;}\n ", a);
+	  A4GL_debug ("X3");
+	  printc ("_res=A4GL_pop_double(); _g%d+=_res;}\n ", a);
 	}
 
       if (t == 'A')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 
-	  printc ("_res=pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
+	  printc ("_res=A4GL_pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
 	}
 
       if (t == 'N')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 	  printc
-	    ("_res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	    ("_res=A4GL_pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
 	     a, a, a, a);
 	}
 
       if (t == 'X')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 	  printc
-	    ("_res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	    ("_res=A4GL_pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
 	     a, a, a, a);
 	}
 
@@ -985,7 +985,7 @@ print_clr_status (void)
  * @param f The source 4gl file name.
  */
 void
-prchkerr (int l, char *f)
+A4GL_prchkerr (int l, char *f)
 {
   int a;
 /* 0 = continue
@@ -995,13 +995,13 @@ prchkerr (int l, char *f)
  */
 
 #ifdef DEBUG
-  debug ("MJA prchkerr %d %s", l, f);
+  A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
   printc
     ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
      when_code[A_WHEN_SUCCESS] == WHEN_CALL
      || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("debug(\"a4gl_status=%%d a4gl_sqlca.sqlcode=%%d\",a4gl_status,a4gl_sqlca.sqlcode);\n"); */
+  /*printc("A4GL_debug(\"a4gl_status=%%d a4gl_sqlca.sqlcode=%%d\",a4gl_status,a4gl_sqlca.sqlcode);\n"); */
   printcomment ("/* NOTFOUND */");
 
   a =
@@ -1068,7 +1068,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
     return 0;
   if (when_code == WHEN_STOP)
     {
-      printc ("%s chk_err(%d,_module_name);\n", when_str, l, f);
+      printc ("%s A4GL_chk_err(%d,_module_name);\n", when_str, l, f);
       printcomment ("/* WHENSTOP */");
     }
   if (when_code == WHEN_CALL)
@@ -1096,7 +1096,7 @@ void
 print_expr (void *ptr)
 {
 #ifdef DEBUG
-  debug ("via print_expr in lib");
+  A4GL_debug ("via print_expr in lib");
 #endif
   real_print_expr (ptr);
 }
@@ -1104,17 +1104,17 @@ static void
 real_print_expr (struct expr_str *ptr)
 {
   void *optr;
-  debug ("Print expr... %p", ptr);
+  A4GL_debug ("Print expr... %p", ptr);
   while (ptr)
     {
-      debug ("Printing %p", ptr->expr);
+      A4GL_debug ("Printing %p", ptr->expr);
       printc ("%s\n", ptr->expr);
 
       free (ptr->expr);
       optr = ptr;
-      debug ("going to %p", ptr->next);
+      A4GL_debug ("going to %p", ptr->next);
       ptr = ptr->next;
-      debug ("Freeing old value %p", optr);
+      A4GL_debug ("Freeing old value %p", optr);
       free (optr);
     }
 }
@@ -1138,8 +1138,8 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->comment_line,
 	  form_attrib->message_line, form_attrib->attrib);
 #ifdef DEBUG
-  debug ("Printing attributes\n");
-  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  A4GL_debug ("Printing attributes\n");
+  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
 #endif
 	 form_attrib->form_line, form_attrib->error_line,
 	 form_attrib->prompt_line, form_attrib->menu_line,
@@ -1158,10 +1158,10 @@ print_field_bind (int ccc)
   char tabname[40];
   char colname[40];
   int a;
-  debug ("%d\n", ibindcnt);
+  A4GL_debug ("%d\n", ibindcnt);
   for (a = 0; a < ccc; a++)
     {
-      bname (ibind[a].varname, tabname, colname);
+      A4GL_bname (ibind[a].varname, tabname, colname);
       if (a > 0)
 	printc (",");
       if (colname[0] != 0)
@@ -1194,7 +1194,7 @@ print_bind_pop1 (char i)
       //debug ("print_bind_pop1 i='i'\n");
 #endif
       if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
+	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
 		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
       else
 	printc ("%s;\n", ibind[a].varname);
@@ -1206,7 +1206,7 @@ print_bind_pop1 (char i)
       //debug ("print_bind_pop1 i='o'\n");
 #endif
       if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
+	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
 		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
       else
 	printc ("%s;\n", obind[a].varname);
@@ -1230,7 +1230,7 @@ print_arr_bind (char i)
   int a;
 
 #ifdef DEBUG
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
 #endif
   /* dump_vars (); */
   if (i == 'i')
@@ -1324,9 +1324,9 @@ print_param (char i)
   int a;
   int b;
   char *ptr;
-  debug ("Expanding binding.. - was %d entries", fbindcnt);
+  A4GL_debug ("Expanding binding.. - was %d entries", fbindcnt);
   expand_bind (&fbind[0], 'F', fbindcnt);
-  debug ("Expanded - now %d entries", fbindcnt);
+  A4GL_debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
       printc ("static ");
@@ -1394,7 +1394,7 @@ print_bind (char i)
 {
   int a;
 #ifdef DEBUG
-  debug ("/* %c */\n", i);
+  A4GL_debug ("/* %c */\n", i);
 #endif
   if (i == 'i')
     {
@@ -1512,20 +1512,20 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-      append_expr (ptr, "struct BINDING ibind[]={");
+      A4GL_append_expr (ptr, "struct BINDING ibind[]={");
       if (ibindcnt == 0)
 	{
-	  append_expr (ptr, "{0,0,0}");
+	  A4GL_append_expr (ptr, "{0,0,0}");
 	}
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
-	    append_expr (ptr, ",");
+	    A4GL_append_expr (ptr, ",");
 	  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
 		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-	  append_expr (ptr, buff);
+	  A4GL_append_expr (ptr, buff);
 	}
-      append_expr (ptr, "};");
+      A4GL_append_expr (ptr, "};");
       start_bind (i, 0);
       return a;
     }
@@ -1541,14 +1541,14 @@ print_bind_expr (void *ptr, char i)
 /**
  * Generate the C implementation of SET PAUSE MODE 4gl statement.
  *
- * @param n The action to do:
+ * @param n The A4GL_action to do:
  *   - 0 : ON.
  *   - 1 : OFF.
  */
 void
 print_screen_mode (int n)
 {
-  printc ("screen_mode(%d);", n);
+  printc ("A4GL_screen_mode(%d);", n);
 }
 
 /**
@@ -1566,7 +1566,7 @@ print_screen_mode (int n)
 void
 print_start_server (char *port, char *funclist)
 {
-  printc ("server_run(%s+0x2000000);", port);
+  printc ("A4GL_server_run(%s+0x2000000);", port);
 
   printc ("%s\n", funclist);
 }
@@ -1580,7 +1580,7 @@ print_start_server (char *port, char *funclist)
 void
 print_stop_external (void)
 {
-  printc ("stop_serving();");
+  printc ("A4GL_stop_serving();");
 }
 
 /**
@@ -1594,7 +1594,7 @@ print_remote_func (char *identifier)
   //printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);
   add_function_to_header (identifier, 1);
   printc
-    ("a4gl_status=0;register_func(\"%s\",%s%s);if (a4gl_status<0) chk_err(%d,_module_name);\n",
+    ("a4gl_status=0;register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n",
      identifier, get_namespace (identifier), yylineno);
 }
 
@@ -1608,7 +1608,7 @@ print_remote_func (char *identifier)
 void
 print_pop_variable (char *s)
 {
-  printc ("pop_var(&%s,%d);\n", s, scan_variable (s));
+  printc ("A4GL_pop_var(&%s,%d);\n", s, scan_variable (s));
 }
 
 
@@ -1624,7 +1624,7 @@ void
 print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=fgl_getfldbuf(%s);\n", fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(%s);\n", fields);
   start_bind ('i', 0);
 }
 
@@ -1641,9 +1641,9 @@ print_returning (void)
     /* warning! :       void    A4GLSQL_set_status      (int a, int sql); */
 // I've added the check back in - even if its -1....
 // I'm not sure why it went in...
-    ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
+    ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
-  printc ("pop_params(ibind,%d);}\n", cnt);
+  printc ("A4GL_pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
   printc ("}\n");
 }
@@ -1657,7 +1657,7 @@ void
 print_form_is_compiled (char *s, char *packer, char *formtype)
 {
   //printf("%s - %s - %s\n",s,packer,formtype);
-  printc ("add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s, packer,
+  printc ("A4GL_add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s, packer,
 	  formtype, s);
   printh ("extern char compiled_form_%s[];\n", s);
 }
@@ -1677,9 +1677,9 @@ print_field_func (char type, char *name, char *var)
 {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   if (type == 'I')
-    printc ("push_int(fgl_infield(%s));", name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(%s));", name);
   if (type == 'T')
-    printc ("push_int(fgl_fieldtouched(%s,0,0));", name);
+    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(%s,0,0));", name);
 
   print_pop_variable (var);
 }
@@ -1695,7 +1695,7 @@ print_field_func (char type, char *name, char *var)
 void
 print_func_call (char *identifier, void *args, int args_cnt)
 {
-  debug ("via print_func_call in lib");
+  A4GL_debug ("via print_func_call in lib");
   real_print_func_call (identifier, args, args_cnt);
 }
 
@@ -1706,7 +1706,7 @@ print_func_call (char *identifier, void *args, int args_cnt)
 void
 print_class_func_call (char *var, char *identifier, void *args, int args_cnt)
 {
-  debug ("via print_func_call in lib");
+  A4GL_debug ("via print_func_call in lib");
   real_print_class_func_call (var, identifier, args, args_cnt);
 }
 
@@ -1757,7 +1757,7 @@ real_print_class_func_call (char *var, char *identifier,
 void
 print_pdf_call (char *a1, void *args, char *a3)
 {
-  debug ("via print_pdf_call in lib");
+  A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
 }
 static void
@@ -1801,7 +1801,7 @@ print_end_call_shared (void)
  * Print the C implementation of a call to a remote function (RPC call).
  *
  * @param host The hostname where the RPC server is working.
- * @param func The remote function name to e called.
+ * @param A4GL_func The remote function name to e called.
  * @param port The TCP portnumber where the server is receiving requests.
  * @param nargs The number of arguments to pass to the remote function.
  */
@@ -1834,7 +1834,7 @@ void
 print_case (int has_expr)
 {
   if (has_expr)
-    printc ("while (1==1) {char *s=0;if (s==0) {s=char_pop();}\n");
+    printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
   else
     printc ("while (1==1) {\n");
 }
@@ -1870,10 +1870,10 @@ print_when (int has_expr)
 {
   if (has_expr)
     {
-      printc ("push_char(s);");
-      printc ("pushop(OP_EQUAL);\n");
+      printc ("A4GL_push_char(s);");
+      printc ("A4GL_pushop(OP_EQUAL);\n");
     }
-  printc ("if (pop_bool()) {\n");
+  printc ("if (A4GL_pop_bool()) {\n");
 }
 
 
@@ -1901,16 +1901,16 @@ print_construct_2 (char *driver)
   printc ("   break;\n}\n");
   printc ("if (_fld_dr== -98) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
   printc ("_fld_dr= %s;\n", driver);
   printc ("if (_fld_dr== -1) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  printc ("debug(\"form_loop=%%d\",_fld_dr);");
-  printc ("\n}\n push_constr(&_inp_io);\n pop_params(ibind,1);\n }\n");
+  printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
+  printc ("\n}\n A4GL_push_constr(&_inp_io);\n A4GL_pop_params(ibind,1);\n }\n");
   pop_blockcommand ("CONSTRUCT");	/* FIXME */
 }
 
@@ -1918,7 +1918,7 @@ print_construct_2 (char *driver)
  * Print the third phase of the CONSTRUCT C implementation in the 
  * generated C output file.
  *
- * @param byname Flag that indicates if the construct is made or not BY NAME:
+ * @param byname Flag that indicates if the A4GL_construct is made or not BY NAME:
  *    - 0 : Its not BY NAME.
  *    - 1 : Its BY NAME.
  * @param constr_str : The name of the string where the where is to be build 
@@ -1940,7 +1940,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   printc ("if (_fld_dr== -100) {\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
@@ -1948,19 +1948,19 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   if (byname == 1)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind_constr ();
       printc (" /* */,0));\n");
     }
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 attr);
     }
 
   printc
-    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -99;\n");
 }
 
@@ -1979,7 +1979,7 @@ print_befaft_field_1 (char *fieldexpr)
 
 /**
  * Print the second part of the C implementation of AFTER/BEFORE FIELD
- * in the construct statement.
+ * in the A4GL_construct statement.
  */
 void
 print_befaft_field_2 (void)
@@ -2026,9 +2026,9 @@ void
 print_defer (int quit)
 {
   if (quit)
-    printc ("def_quit();");
+    printc ("A4GL_def_quit();");
   else
-    printc ("def_int();");
+    printc ("A4GL_def_int();");
 }
 
 
@@ -2040,7 +2040,7 @@ print_defer (int quit)
 void
 print_display_line (void)
 {
-  printc ("push_int(-1);push_int(-1);\n");
+  printc ("A4GL_push_int(-1);A4GL_push_int(-1);\n");
 }
 
 
@@ -2055,8 +2055,8 @@ print_display_by_name (char *attr)
   int a;
   printc ("{\n");
   a = print_bind ('i');
-  printc ("push_disp_bind(&ibind,%d);\n", a);
-  printc ("disp_fields(%d,%s,", a, attr);
+  printc ("A4GL_push_disp_bind(&ibind,%d);\n", a);
+  printc ("A4GL_disp_fields(%d,%s,", a, attr);
   print_field_bind (a);
   printc (",0);\n");
   printc ("}\n");
@@ -2085,21 +2085,21 @@ print_display_by_name (char *attr)
  *   - 0 : No form name.
  */
 char *
-get_display_str (int type, char *s, char *f)
+A4GL_get_display_str (int type, char *s, char *f)
 {
   static char buff[1024];
   if (type == 0)
-    strcpy (buff, "display_at(%s,%s);\n");
+    strcpy (buff, "A4GL_display_at(%s,%s);\n");
   if (type == 1)
-    strcpy (buff, "display_at(%s,%s);");
+    strcpy (buff, "A4GL_display_at(%s,%s);");
   if (type == 2)
-    sprintf (buff, "disp_fields(%%s,%%s,%s,0);\n", s);
+    sprintf (buff, "A4GL_disp_fields(%%s,%%s,%s,0);\n", s);
   if (type == 3)
-    sprintf (buff, "disp_form_fields(%%s,%%s,\"%s\",%s,0);\n", f, s);
+    sprintf (buff, "A4GL_disp_form_fields(%%s,%%s,\"%s\",%s,0);\n", f, s);
   if (type == 4)
-    sprintf (buff, "disp_main_caption();\n");
+    sprintf (buff, "A4GL_disp_main_caption();\n");
   if (type == 5)
-    sprintf (buff, "disp_form_caption(%s);\n", s);
+    sprintf (buff, "A4GL_disp_form_caption(%s);\n", s);
   return buff;
 }
 
@@ -2127,7 +2127,7 @@ print_display (char *fmt, char *expr, char *attr)
 void
 print_display_form (char *s, char *a)
 {
-  printc ("disp_form(%s,%s);\n", s, a);
+  printc ("A4GL_disp_form(%s,%s);\n", s, a);
 }
 
 /**
@@ -2149,7 +2149,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr)
   printc ("{int _fld_dr;\nchar _dispio[%d];\n",
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
-  printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
+  printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",A4GL_get_count());\n");
   printc ("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
   printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
@@ -2157,7 +2157,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr)
     ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
   printc ("_fld_dr= -1;\n");
   printc ("while (_fld_dr!=0) {\n");
-  printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec, attr,
+  printc ("_fld_dr=A4GL_disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec, attr,
 	  scroll);
 }
 
@@ -2187,7 +2187,7 @@ print_display_array_p2 (void)
 void
 print_error (char *s, int wait)
 {
-  printc ("display_error(%s,%d);\n", s, wait);
+  printc ("A4GL_display_error(%s,%d);\n", s, wait);
 }
 
 /**
@@ -2203,9 +2203,9 @@ void
 print_exit_program (int has_expr)
 {
   if (has_expr)
-    printc ("fgl_end();exit(pop_int());");
+    printc ("A4GL_fgl_end();exit(A4GL_pop_int());");
   else
-    printc ("fgl_end();exit(0);");
+    printc ("A4GL_fgl_end();exit(0);");
 }
 
 
@@ -2221,7 +2221,7 @@ void
 print_for_start (char *var)
 {
   printc
-    ("\n{int _s,_e,_step;\n_step=pop_int();_e=pop_int();_s=pop_int();\n");
+    ("\n{int _s,_e,_step;\n_step=A4GL_pop_int();_e=A4GL_pop_int();_s=A4GL_pop_int();\n");
   printc
     ("for (%s=_s; (%s<=_e&&_step>0)||(%s>=_e&&_step<0);%s+=_step) {\n",
      var, var, var, var);
@@ -2246,7 +2246,7 @@ print_for_end (void)
 void
 print_for_default_step (void)
 {
-  printc ("push_int(1);\n");
+  printc ("A4GL_push_int(1);\n");
 }
 
 /**
@@ -2289,7 +2289,7 @@ print_foreach_end (void)
 void
 print_pushchar (char *s)
 {
-  printc ("push_char(%s);\n", s);
+  printc ("A4GL_push_char(%s);\n", s);
 }
 
 /**
@@ -2320,13 +2320,13 @@ void
 print_gui_do_menuitems (char *list, int mode)
 {
   if (mode == 'U')
-    printc ("uncheck_menuitems(%s,0);\n", list);
+    printc ("A4GL_uncheck_menuitems(%s,0);\n", list);
   if (mode == 'C')
-    printc ("check_menuitems(%s,0);\n", list);
+    printc ("A4GL_check_menuitems(%s,0);\n", list);
   if (mode == 'D')
-    printc ("endis_menuitems(0,%s,0);\n", list);
+    printc ("A4GL_endis_menuitems(0,%s,0);\n", list);
   if (mode == 'E')
-    printc ("endis_menuitems(1,%s,0);\n", list);
+    printc ("A4GL_endis_menuitems(1,%s,0);\n", list);
 }
 
 /**
@@ -2341,9 +2341,9 @@ void
 print_gui_do_fields (char *list, int mode)
 {
   if (mode == 'D')
-    printc ("endis_fields(0,%s,0);\n", list);
+    printc ("A4GL_endis_fields(0,%s,0);\n", list);
   if (mode == 'E')
-    printc ("endis_fields(1,%s,0);\n", list);
+    printc ("A4GL_endis_fields(1,%s,0);\n", list);
 }
 
 /**
@@ -2351,7 +2351,7 @@ print_gui_do_fields (char *list, int mode)
  *
  * @param name The form name.
  * @param list The field list to be afected.
- * @param mode The action to be set:
+ * @param mode The A4GL_action to be set:
  *   - D : Disable.
  *   - E : Enable.
  */
@@ -2359,9 +2359,9 @@ void
 print_gui_do_form (char *name, char *list, int mode)
 {
   if (mode == 'D')
-    printc ("endis_form(0,%s,%s,0);\n", name, list);
+    printc ("A4GL_endis_form(0,%s,%s,0);\n", name, list);
   if (mode == 'E')
-    printc ("endis_form(1,%s,%s,0);\n", name, list);
+    printc ("A4GL_endis_form(1,%s,%s,0);\n", name, list);
 }
 
 /**
@@ -2376,7 +2376,7 @@ print_gui_do_form (char *name, char *list, int mode)
 void
 print_if_start (void)
 {
-  printc ("if (pop_bool()) {\n");
+  printc ("if (A4GL_pop_bool()) {\n");
 }
 
 /**
@@ -2405,7 +2405,7 @@ print_if_end (void)
  *
  * This statement is not a informix 4gl original.
  *
- * @param func The function name to be imported.
+ * @param A4GL_func The function name to be imported.
  * @param nargs The number of arguments that the function imported receive.
  */
 void
@@ -2418,11 +2418,11 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
+    ("   if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
-      printc ("   _argc[%d]=pop_int();\n", nargs - a);
+      printc ("   _argc[%d]=A4GL_pop_int();\n", nargs - a);
     }
   sprintf (buff, "_retval=(long)%s(", func);
   for (a = 0; a <= nargs - 1; a++)
@@ -2432,7 +2432,7 @@ print_import (char *func, int nargs)
       sprintf (buff2, "_argc[%d]", a);
       strcat (buff, buff2);
     }
-  strcat (buff, ");\n   push_int(_retval);\n   return 1;\n");
+  strcat (buff, ");\n   A4GL_push_int(_retval);\n   return 1;\n");
   strcat (buff, "}\n\n\n");
   printc (buff);
 }
@@ -2595,7 +2595,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	  alvl++;
 	}
     }
-  printc ("setnull(%d,&%s,%d);", d & 0xffff, prefix2, size);
+  printc ("A4GL_setnull(%d,&%s,%d);", d & 0xffff, prefix2, size);
   if (printing_arr)
     {
       for (acnt = 0; acnt < cnt; acnt++)
@@ -2624,7 +2624,7 @@ print_init (void)
     }
 
   //cnt = print_bind ('N');
-  //printc ("set_init(nullbind,%d);\n", cnt);
+  //printc ("A4GL_set_init(nullbind,%d);\n", cnt);
   printc ("}\n");
 }
 
@@ -2639,7 +2639,7 @@ print_init_table (char *s)
   int cnt;
   printc ("{\n");
   cnt = print_bind ('N');
-  printc ("set_init(nullbind,%d);\n", cnt);
+  printc ("A4GL_set_init(nullbind,%d);\n", cnt);
   printc ("}\n");
 }
 
@@ -2653,7 +2653,7 @@ print_init_table (char *s)
  * @param in2 The right part of boolean expression.
  */
 void
-generate_or (char *out, char *in1, char *in2)
+A4GL_generate_or (char *out, char *in1, char *in2)
 {
   sprintf (out, "%s||%s", in1, in2);
 }
@@ -2672,7 +2672,7 @@ void
 print_next_field (char *s)
 {
 
-  printc ("req_field(&_inp_io,sizeof(_inp_io),%s);\n", s);
+  printc ("A4GL_req_field(&_inp_io,sizeof(_inp_io),%s);\n", s);
 
   if (isin_command ("INPUT") > isin_command ("CONSTRUCT"))
     {
@@ -2716,11 +2716,11 @@ print_input_2 (char *s)
       printc ("   break;\n}\n");
       printc ("if (_fld_dr== -98) {/* before field */\n");
       printc
-	("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
       printc ("_fld_dr=%s;_forminit=0;\n", s);
       printc ("if (_fld_dr== -1) {/* after field */\n");
       printc
-	("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
       printc ("if (_fld_dr==0) { /* after input 2 */\n");
       printc ("   _fld_dr= -95;continue;\n}\n");
       add_continue_blockcommand ("INPUT");
@@ -2735,11 +2735,11 @@ print_input_2 (char *s)
       printc ("   break;\n}\n");
       printc ("if (_fld_dr== -197) {/* before field */\n");
       printc
-	("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
       printc ("_fld_dr=%s;_forminit=0;\n", s);
       printc ("if (_fld_dr== -198) {/* after field */\n");
       printc
-	("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
       printc ("if (_fld_dr==0) { /* after input 2 */\n");
       printc ("   _fld_dr= -95;continue;\n}\n");
       add_continue_blockcommand ("INPUT");
@@ -2779,7 +2779,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   printc ("*/");
   printc ("/* input by name */");
   ccc = print_bind ('i');
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
   printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
@@ -2790,7 +2790,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind (ccc);
       printc
 	(",0)); if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
@@ -2798,13 +2798,13 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 fldlist);
       printc
 	("if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   printc
-    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -99;\n");
 }
 
@@ -2834,7 +2834,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr== -100) {\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",A4GL_get_count());\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
@@ -2845,17 +2845,17 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",
      arrvar, arrvar);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",get_curr_form());\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
   printc ("if ((int)GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
+    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec);
   printc ("_fld_dr= -1;continue;\n");
-  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec,
+  sprintf (buff2, "A4GL_inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec,
 	   attr);
   return buff2;
 }
@@ -2871,10 +2871,10 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
  * @return A string with the C code that calls form_loop().
  */
 char *
-get_formloop_str (int type)
+A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
-    return "form_loop(&_inp_io)";
+    return "A4GL_form_loop(&_inp_io)";
 
   return "";
 }
@@ -2891,7 +2891,7 @@ get_formloop_str (int type)
 void
 print_scroll (char *flds, char *updown)
 {
-  printc ("acli_scroll(gen_field_chars(%s),%s);\n", flds, updown);
+  printc ("A4GL_acli_scroll(A4GL_gen_field_chars(%s),%s);\n", flds, updown);
 }
 
 
@@ -2917,18 +2917,18 @@ print_let_manyvars (char *nexprs)
 {
   int from_exprs;
   int to_vars;
-  debug ("1");
-  debug ("In print_let_manyvars\n");
+  A4GL_debug ("1");
+  A4GL_debug ("In print_let_manyvars\n");
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
 
   if (to_vars != from_exprs)
     {
-      debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
+      A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
       return 0;
     }
-  printc ("pop_params(obind,%d);\n", from_exprs);
+  printc ("A4GL_pop_params(obind,%d);\n", from_exprs);
   printc ("}\n");
   return 1;
 }
@@ -2940,7 +2940,7 @@ print_let_manyvars (char *nexprs)
 void
 print_push_null (void)
 {
-  printc ("push_null();\n");
+  printc ("A4GL_push_null();\n");
 }
 
 /* Linked stuff */
@@ -2966,8 +2966,8 @@ void
 print_start_report (char *where, char *out, char *repname)
 {
   add_function_to_header (repname, 2);
-  printc ("push_char(\"%s\");\n", where);
-  printc ("push_char(%s);\n", out);
+  printc ("A4GL_push_char(\"%s\");\n", where);
+  printc ("A4GL_push_char(%s);\n", out);
   printc ("%s%s(2,REPORT_START);", get_namespace (repname), repname);
 }
 
@@ -3026,13 +3026,13 @@ print_format_every_row (void)
 {
   push_report_block ("EVERY", 'E');
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
-  printc ("push_char(rbindvarname[_rr]);\n");
+  printc ("A4GL_push_char(rbindvarname[_rr]);\n");
   printc
-    ("rep_print(&rep,1,1,0); push_long(19); set_column(&rep);rep_print(&rep,1,1,0); \n");
-  printc ("push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
-  printc ("rep_print(&rep,1,1,0); rep_print(&rep,0,0,0);\n");
+    ("A4GL_rep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_rep_print(&rep,1,1,0); \n");
+  printc ("A4GL_push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
+  printc ("A4GL_rep_print(&rep,1,1,0); A4GL_rep_print(&rep,0,0,0);\n");
   printc ("}");
-  printc ("push_char(\" \");rep_print(&rep,1,1,0); rep_print(&rep,0,0,0);");
+  printc ("A4GL_push_char(\" \");A4GL_rep_print(&rep,1,1,0); A4GL_rep_print(&rep,0,0,0);");
   printc ("}");
   /* printc ("#error FORMAT EVERY ROW not implemented yet");
      print_rep_ret (); */
@@ -3046,7 +3046,7 @@ print_format_every_row (void)
 void
 print_need_lines (void)
 {
-  printc ("%sneed_lines(&rep);\n", ispdf ());
+  printc ("A4GL_%sneed_lines(&rep);\n", ispdf ());
 }
 
 /**
@@ -3055,7 +3055,7 @@ print_need_lines (void)
 void
 print_skip_lines (void)
 {
-  printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
+  printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
 /**
@@ -3064,7 +3064,7 @@ print_skip_lines (void)
 void
 print_skip_top (void)
 {
-  printc ("%sskip_top_of_page(&rep);\n", ispdf ());
+  printc ("A4GL_%sskip_top_of_page(&rep);\n", ispdf ());
 }
 
 /**
@@ -3073,7 +3073,7 @@ print_skip_top (void)
 void
 print_skip_by (char *nval)
 {
-  printc ("pdf_skip_by(&rep,%s);\n", nval);
+  printc ("A4GL_pdf_skip_by(&rep,%s);\n", nval);
 }
 
 /**
@@ -3082,7 +3082,7 @@ print_skip_by (char *nval)
 void
 print_skip_to (char *nval)
 {
-  printc ("pdf_skip_to(&rep,%s);\n", nval);
+  printc ("A4GL_pdf_skip_to(&rep,%s);\n", nval);
 }
 
 /**
@@ -3104,10 +3104,10 @@ print_report_print (int type, char *semi, char *wordwrap)
 {
 
   if (type == 0)
-    printc ("%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+    printc ("A4GL_%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
 /**
@@ -3155,9 +3155,9 @@ print_report_print_img (char *scaling, char *blob, char *type, char *semi)
  *  It generates a default scale to the generated C code.
  */
 char *
-get_default_scaling (void)
+A4GL_get_default_scaling (void)
 {
-  return "push_double(1.0);push_double(1.0);";
+  return "A4GL_push_double(1.0);A4GL_push_double(1.0);";
 }
 
 /**
@@ -3229,22 +3229,22 @@ print_report_2 (int pdf, char *repordby)
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
-  printc ("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
+  printc ("A4GL_fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return 0;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
   printc
     ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
   printc ("}\n");
   printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-  printc ("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}", cnt,
+  printc ("A4GL_pop_params(rbind,%d);A4GL_add_row_report(&rbind,%d);\nreturn;}", cnt,
 	  cnt);
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
-  printc ("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
+  printc ("   _g=A4GL_chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
-  printc ("   pop_params(rbind,%d);\n", cnt);
+  printc ("   A4GL_pop_params(rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
@@ -3257,24 +3257,24 @@ print_report_2 (int pdf, char *repordby)
   printc ("    if (fgl_rep_orderby==1) {\n");
   printc ("        struct BINDING *reread;\n");
   printc ("        fgl_rep_orderby=-1;\n");
-  printc ("   push_char(_rout1);\n");
-  printc ("   push_char(_rout2);\n");
+  printc ("   A4GL_push_char(_rout1);\n");
+  printc ("   A4GL_push_char(_rout2);\n");
   printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
   printc
-    ("        init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",
+    ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",
      cnt);
   printc
-    ("        while (report_table_fetch(reread,%d,&rbind)) %s(%d,REPORT_SENDDATA);\n",
+    ("        while (A4GL_report_table_fetch(reread,%d,&rbind)) %s(%d,REPORT_SENDDATA);\n",
      cnt, get_curr_rep_name (), cnt);
   printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
-  printc ("        end_report_table(&rbind,%d,reread);\nreturn;", cnt);
+  printc ("        A4GL_end_report_table(&rbind,%d,reread);\nreturn;", cnt);
   printc ("    }\n");
   printc ("}\n");
   printc ("if (acl_ctrl==REPORT_START) {\n");
-  printc ("   pop_char(_rout2,254);\n");
-  printc ("   pop_char(_rout1,254);\n");
+  printc ("   A4GL_pop_char(_rout2,254);\n");
+  printc ("   A4GL_pop_char(_rout1,254);\n");
   printc
-    ("    if (fgl_rep_orderby==1) {make_report_table(&rbind,%d);return;}\n",
+    ("    if (fgl_rep_orderby==1) {A4GL_make_report_table(&rbind,%d);return;}\n",
      cnt);
   printc ("   _useddata=0;\n");
   printc ("   _started=1;\n");
@@ -3311,7 +3311,7 @@ print_pause (char *msg)
 void
 print_sleep (void)
 {
-  printc ("sleep_i();\n");
+  printc ("A4GL_sleep_i();\n");
 }
 
 
@@ -3324,7 +3324,7 @@ print_sleep (void)
 void
 print_op (char *type)
 {
-  printc ("pushop(%s);\n", type);
+  printc ("A4GL_pushop(%s);\n", type);
 }
 
 
@@ -3348,7 +3348,7 @@ print_niy (char *type)
 void
 print_push_variable (char *s)
 {
-  printc ("push_param(&%s,0x%x);\n", s, scan_variable (s));
+  printc ("A4GL_push_param(&%s,0x%x);\n", s, scan_variable (s));
 }
 
 /**
@@ -3369,7 +3369,7 @@ print_message (int type, char *attr, int wait)
 
 /**
  * The parser found a SYSTEM 4gl instruction.
- * The call to system_run function in C mode it will be generated.
+ * The call to A4GL_system_run function in C mode it will be generated.
  *
  * @param type The type of the run:
  *   - 0 : Normal run
@@ -3380,7 +3380,7 @@ print_message (int type, char *attr, int wait)
 void
 print_system_run (int type, char *rvar)
 {
-  printc ("system_run(%d);", type);
+  printc ("A4GL_system_run(%d);", type);
 
   if (rvar)
     print_pop_variable (rvar);
@@ -3401,7 +3401,7 @@ print_system_run (int type, char *rvar)
 void
 print_set_options (char *type, char *id, char *var, char *val)
 {
-  printc ("set_%s_options(%s,%s,%s);\n", type, id, var, val);
+  printc ("A4GL_set_%s_options(%s,%s,%s);\n", type, id, var, val);
 }
 
 /**
@@ -3422,7 +3422,7 @@ print_while_1 (void)
 void
 print_while_2 (void)
 {
-  printc ("if (!(pop_bool())) break;\n");
+  printc ("if (!(A4GL_pop_bool())) break;\n");
 }
 
 /**
@@ -3462,9 +3462,9 @@ void
 print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
-  printc ("start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
+  printc ("A4GL_start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
   printc
-    ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
+    ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p);\n");
 }
 
 /**
@@ -3535,7 +3535,7 @@ print_open_form (char *fmt, char *a1, char *a2)
 void
 print_clr_window (char *s)
 {
-  printc ("clr_window(%s);\n", s);
+  printc ("A4GL_clr_window(%s);\n", s);
 }
 
 /**
@@ -3553,10 +3553,10 @@ void
 print_clr_form (char *formname, char *clr, char *defs)
 {
   if (formname == 0)
-    printc ("clr_form(%d);", atoi (defs));
+    printc ("A4GL_clr_form(%d);", atoi (defs));
   else
     //print_niy ("Clear Form fields");
-    printc ("clr_form_fields(%d,%s);", atoi (defs), clr);
+    printc ("A4GL_clr_form_fields(%d,%s);", atoi (defs), clr);
 }
 
 /**
@@ -3573,7 +3573,7 @@ void
 print_clr_fields (char *flds, char *defs)
 {
 
-  printc ("clr_fields(%d,%s);", atoi (defs), flds);
+  printc ("A4GL_clr_fields(%d,%s);", atoi (defs), flds);
 
   //print_niy ("Clear Fields");
 }
@@ -3589,7 +3589,7 @@ print_clr_fields (char *flds, char *defs)
 void
 print_current_window (char *s)
 {
-  printc ("current_window(%s);\n", s);
+  printc ("A4GL_current_window(%s);\n", s);
 }
 
 /**
@@ -3601,7 +3601,7 @@ print_current_window (char *s)
 void
 print_show_window (char *s)
 {
-  printc ("show_window(%s);\n", s);
+  printc ("A4GL_show_window(%s);\n", s);
 }
 
 /**
@@ -3613,7 +3613,7 @@ print_show_window (char *s)
 void
 print_hide_window (char *s)
 {
-  printc ("hide_window(%s);\n", s);
+  printc ("A4GL_hide_window(%s);\n", s);
 }
 
 /**
@@ -3627,7 +3627,7 @@ void
 print_show_menu (char *mname, char *mhand)
 {
   printh ("void aclfglmn_%s(char *);\n", mhand);
-  printc ("show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
+  printc ("A4GL_show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
 }
 
 /**
@@ -3638,7 +3638,7 @@ print_show_menu (char *mname, char *mhand)
 void
 print_def_mn_file (void)
 {
-  printc ("push_char(\"menu\"); /* default menu file */\n");
+  printc ("A4GL_push_char(\"menu\"); /* default menu file */\n");
 }
 
 /**
@@ -3656,9 +3656,9 @@ void
 print_move_window (char *n, int rel)
 {
   if (rel == 0)
-    printc ("movewin(%s,1);", n);
+    printc ("A4GL_movewin(%s,1);", n);
   else
-    printc ("movewin(%s,0);", n);
+    printc ("A4GL_movewin(%s,0);", n);
 }
 
 /* ********** MENU *********/
@@ -3696,20 +3696,20 @@ print_menu (int mn)
        menu_stack[mn][a].menu_key[0] != 0 ||
        menu_stack[mn][a].menu_help[0] != 0; a++)
     c = a;
-  printc ("m=(void *)new_menu_create(%s,1,1,%d,0);\n", mmtitle[mn], 2);
+  printc ("m=(void *)A4GL_new_menu_create(%s,1,1,%d,0);\n", mmtitle[mn], 2);
   for (a = 0;
        menu_stack[mn][a].menu_title[0] != 0
        || menu_stack[mn][a].menu_key[0] != 0
        || menu_stack[mn][a].menu_help[0] != 0; a++)
     {
 
-      printc ("add_menu_option(m, %s,%s,%s,%d,0);\n",
+      printc ("A4GL_add_menu_option(m, %s,%s,%s,%d,0);\n",
 	      menu_stack[mn][a].menu_title,
 	      menu_stack[mn][a].menu_key,
 	      menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
     }
 
-  printc ("finish_create_menu(m);\ndisp_h_menu(m);cmd_no=-2;continue;\n");
+  printc ("A4GL_finish_create_menu(m);\nA4GL_disp_h_menu(m);cmd_no=-2;continue;\n");
 }
 
 
@@ -3734,7 +3734,7 @@ print_end_menu_1 (void)
 void
 print_end_menu_2 (void)
 {
-  printc ("cmd_no=menu_loop(m);\n}free_menu(m);\n");
+  printc ("cmd_no=A4GL_menu_loop(m);\n}A4GL_free_menu(m);\n");
   printcomment ("/* end cwhile */\n");
   printcomment ("/* end menu */\n \n");
   printc ("}\n");
@@ -3776,7 +3776,7 @@ print_menu_block_end ()
  * Its executed when the parser found in the 4gl source NEXT OPTION, 
  * HIDE OPTION or SHOW OPTION.
  *
- * @todo : Understand if in the H type should call menu_hide instead.
+ * @todo : Understand if in the H type should call A4GL_menu_hide instead.
  *
  * @param type The type of instruction:
  *   - N : Next option.
@@ -3788,13 +3788,13 @@ void
 print_option_op (int type, char *n)
 {
   if (type == 'N')
-    printc ("next_option(m,%s);\n", n);
+    printc ("A4GL_next_option(m,%s);\n", n);
 
   if (type == 'S')
-    printc ("menu_show(m,%s,0);\n", n);
+    printc ("A4GL_menu_show(m,%s,0);\n", n);
 
   if (type == 'H')
-    printc ("menu_hide(m,%s,0);\n", n);
+    printc ("A4GL_menu_hide(m,%s,0);\n", n);
 }
 
 /**
@@ -3831,7 +3831,7 @@ printDeclareFunctionStack (char *_functionName)
 {
   //printf("Function %s\n",_functionName);
 #ifdef DEBUG
-  debug ("Function %s\n", _functionName);
+  A4GL_debug ("Function %s\n", _functionName);
 #endif
   if (isGenStackInfo ())
     printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
@@ -3901,10 +3901,10 @@ print_func_start (char *isstatic, char *fname, int type)
 void
 print_func_args (int c)
 {
-  printc ("if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
+  printc ("if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
 	  c, yylineno);
   print_function_variable_init ();
-  printc ("pop_params(fbind,%d);\n", c);
+  printc ("A4GL_pop_params(fbind,%d);\n", c);
 
 }
 
@@ -3950,11 +3950,11 @@ void
 print_fgllib_start (char *db)
 {
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
-  printc ("\nfgl_start(argc,argv);\n");
+  printc ("\nA4GL_fgl_start(argc,argv);\n");
   if (db[0] != 0)
     {
       print_init_conn (db);
-      printc ("if (a4gl_sqlca.sqlcode<0) chk_err(%d,_module_name);\n",
+      printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
 	      lastlineno);
     }
   print_function_variable_init ();
@@ -3969,7 +3969,7 @@ print_fgllib_start (char *db)
 void
 print_main_end (void)
 {
-  printc ("fgl_end();\n}\n");
+  printc ("A4GL_fgl_end();\n}\n");
 }
 
 /**
@@ -4002,7 +4002,7 @@ print_return (int n)
 void
 print_options (char n, char *s)
 {
-  printc ("set_option_value('%c',%s);\n", n, s);
+  printc ("A4GL_set_option_value('%c',%s);\n", n, s);
 }
 
 /**
@@ -4015,7 +4015,7 @@ print_options (char n, char *s)
 void
 print_set_helpfile (char *s)
 {
-  printc ("set_help_file(%s);\n", s);
+  printc ("A4GL_set_help_file(%s);\n", s);
 }
 
 /**
@@ -4028,7 +4028,7 @@ print_set_helpfile (char *s)
 void
 print_set_langfile (char *s)
 {
-  printc ("set_lang_file(%s);\n", s);
+  printc ("A4GL_set_lang_file(%s);\n", s);
 }
 
 
@@ -4234,23 +4234,23 @@ print_end_record (char *vname, char *arrsize)
  */
 char *
 /* char */
-get_push_literal (char type, char *value)
+A4GL_get_push_literal (char type, char *value)
 {
   static char buff[80];
   strcpy (buff, "SOME ERROR");
   if (type == 'D')		/* Double */
     {
-      sprintf (buff, "push_double(%f);\n", atof (value));
+      sprintf (buff, "A4GL_push_double(%f);\n", atof (value));
     }
 
   if (type == 'L')		/* Integer (Long) */
     {
-      sprintf (buff, "push_long(%d);\n", atoi (value));
+      sprintf (buff, "A4GL_push_long(%d);\n", atoi (value));
     }
 
   if (type == 'S')		/* Char/String */
     {
-      sprintf (buff, "push_char(%s);\n", value);
+      sprintf (buff, "A4GL_push_char(%s);\n", value);
     }
 
   /* FIXME: and if it's not D, L or S? */
@@ -4264,7 +4264,7 @@ get_push_literal (char type, char *value)
  * @param s
  */
 char *
-decode_array_string (char *s)
+A4GL_decode_array_string (char *s)
 {
   static char buff[2000] = "";
   int a;
@@ -4314,7 +4314,7 @@ print_cmd_end ()
  * @todo Describe function
  */
 char *
-get_into_part (int no)
+A4GL_get_into_part (int no)
 {
   static char buffer[10000];
   int a;
@@ -4346,7 +4346,7 @@ get_into_part (int no)
  * @todo Describe function
  */
 char *
-set_var_sql (int n)
+A4GL_set_var_sql (int n)
 {
   int a;
   static char buff[8000];
@@ -4442,7 +4442,7 @@ esql_type ()
  * @todo Describe function
  */
 void
-lex_parsed_fgl ()
+A4GL_lex_parsed_fgl ()
 {
   if (outfile)
     fclose (outfile);
@@ -4467,9 +4467,9 @@ add_function_to_header (char *identifier, int params)
 {
   if (is_builtin_func (identifier))
     return;
-  if (!has_pointer (identifier, 'X'))
+  if (!A4GL_has_pointer (identifier, 'X'))
     {
-      add_pointer (identifier, 'X', (void *) 1);
+      A4GL_add_pointer (identifier, 'X', (void *) 1);
       if (params == 1)
 	printh ("int %s%s (int n);\n", get_namespace (identifier),
 		identifier);
@@ -4481,11 +4481,11 @@ add_function_to_header (char *identifier, int params)
 
 
 char *
-expr_for_call (char *ident, char *params, int line, char *file)
+A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
   sprintf (buff,
-	   "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n",
+	   "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
 	   get_namespace (ident), ident, params, line, file);
   add_function_to_header (ident, 1);
   return buff;

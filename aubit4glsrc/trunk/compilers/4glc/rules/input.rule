@@ -35,7 +35,7 @@ field_command :
 	print_befaft_field_2();
 }
 	| BEFROW {
-		lex_printcomment("/* before row */ \n");
+		A4GL_lex_printcomment("/* before row */ \n");
 		print_befaft_field_1("BEF_ROW");
 } commands {
 	print_befaft_field_2();
@@ -55,7 +55,7 @@ field_command :
 } commands {
 	print_befaft_field_2();
 }
-	| BEFORE b_ins_or_delete_row {lex_printcomment("/* before insert/delete */ \n");
+	| BEFORE b_ins_or_delete_row {A4GL_lex_printcomment("/* before insert/delete */ \n");
 		print_befaft_field_1($<str>2);
 } commands {
 	print_befaft_field_2();
@@ -72,7 +72,7 @@ a_ins_or_delete_row :
 	| a_ins_or_delete_row COMMA a_ins_or_delete {
 	char buff[256];
 	sprintf(buff,"(%s)",$<str>3);
-	generate_or($<str>$,$<str>1,buff);
+	A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
@@ -87,7 +87,7 @@ b_ins_or_delete_row :
 	| b_ins_or_delete_row COMMA b_ins_or_delete {
 	char buff[80];
 		sprintf(buff,"(%s)",$<str>3);
-		generate_or($<str>$,$<str>1,$<str>3);
+		A4GL_generate_or($<str>$,$<str>1,$<str>3);
  }
 
 ;
@@ -105,7 +105,7 @@ bef_field_list :
 	| bef_field_list COMMA field_name {
 	char buff[80];
 	sprintf(buff,"BEF_FIELD_CHK(%s)",$<str>3);
-	generate_or($<str>$,$<str>1,buff);
+	A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
@@ -114,7 +114,7 @@ aft_field_list :
 	|aft_field_list COMMA field_name {
 	char buff[80];
 	sprintf(buff,"AFT_FIELD_CHK(%s)",$<str>3);
-	generate_or($<str>$,$<str>1,buff);
+	A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
@@ -149,12 +149,12 @@ inp_rest:
 BY_NAME ibind_var_list opt_defs opt_help_no opt_attributes 
 {
 print_input(1,$<str>3,$<str>4,0);
-strcpy($<str>$,get_formloop_str(0));
+strcpy($<str>$,A4GL_get_formloop_str(0));
 }
 | ibind_var_list opt_defs FROM fld_list  opt_help_no opt_attributes 
 {
 print_input(0,$<str>2,$<str>5,$<str>4);
-strcpy($<str>$,get_formloop_str(0));
+strcpy($<str>$,A4GL_get_formloop_str(0));
 }
 | ARRAY use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no {
 inp_flags=0;} opt_attributes

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.5 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: memfile.c,v 1.6 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -55,12 +55,14 @@ char *buff;
 long buff_len;
 FILE *in;
 long pos = 0;
-FILE *mja_fopen (char *name, char *mode);
-void *memdup (void *ptr, int size);
-void dump_buffer (char *s, int l);
+//FILE *A4GL_mja_fopen (char *name, char *mode);
+void *A4GL_memdup (void *ptr, int size);
+void A4GL_dump_buffer (char *s, int l);
+FILE *
+A4GL_memfile_fopen_buffer (char *ptr, int len);
 
 FILE *
-memfile_fopen (char *f, char *mode)
+A4GL_memfile_fopen (char *f, char *mode)
 {
 
   if (opened > 1)
@@ -78,7 +80,7 @@ memfile_fopen (char *f, char *mode)
 
   opened++;
 
-  in = mja_fopen (f, mode);
+  in = A4GL_mja_fopen (f, mode);
 
   if (in == 0)
     return 0;
@@ -100,7 +102,7 @@ memfile_fopen (char *f, char *mode)
 }
 
 void *
-memdup (void *ptr, int size)
+A4GL_memdup (void *ptr, int size)
 {
   void *p2;
   p2 = malloc (size);
@@ -110,7 +112,7 @@ memdup (void *ptr, int size)
 
 
 FILE *
-memfile_fopen_buffer (char *ptr, int len)
+A4GL_memfile_fopen_buffer (char *ptr, int len)
 {
   pos = 0;
   if (len == -1)
@@ -134,8 +136,8 @@ memfile_fopen_buffer (char *ptr, int len)
     }
   //debug("open_packer - length=%d",len);
   buff_len = len;
-  buff = memdup (ptr, len);
-  dump_buffer (ptr, 30);
+  buff = A4GL_memdup (ptr, len);
+  A4GL_dump_buffer (ptr, 30);
   in = (FILE *) buff;
   return (FILE *) buff;
 }
@@ -143,7 +145,7 @@ memfile_fopen_buffer (char *ptr, int len)
 
 
 int
-memfile_fseek (FILE * f, long offset, int whence)
+A4GL_memfile_fseek (FILE * f, long offset, int whence)
 {
   if (f != in)
     {
@@ -172,7 +174,7 @@ memfile_fseek (FILE * f, long offset, int whence)
 
 
 int
-memfile_getc (FILE * f)
+A4GL_memfile_getc (FILE * f)
 {
   int a;
   if (f != in)
@@ -189,7 +191,7 @@ memfile_getc (FILE * f)
 
 
 void
-memfile_fclose (FILE * f)
+A4GL_memfile_fclose (FILE * f)
 {
   if (f != in)
     {
@@ -203,7 +205,7 @@ memfile_fclose (FILE * f)
 }
 
 void
-memfile_rewind (FILE * f)
+A4GL_memfile_rewind (FILE * f)
 {
   if (f != in)
     {
@@ -216,7 +218,7 @@ memfile_rewind (FILE * f)
 }
 
 long
-memfile_ftell (FILE * f)
+A4GL_memfile_ftell (FILE * f)
 {
   if (f != in)
     {
@@ -229,7 +231,7 @@ memfile_ftell (FILE * f)
 }
 
 int
-memfile_ungetc (int c, FILE * f)
+A4GL_memfile_ungetc (int c, FILE * f)
 {
   if (f != in)
     {
@@ -243,7 +245,7 @@ memfile_ungetc (int c, FILE * f)
 }
 
 int
-memfile_feof (FILE * f)
+A4GL_memfile_feof (FILE * f)
 {
   char buffer[255];
   if (f != in)
@@ -251,7 +253,7 @@ memfile_feof (FILE * f)
       //debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
       strncpy (buffer, &buff[pos], 255);
       buff[255] = 0;
-      debug
+      A4GL_debug
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       printf
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
@@ -266,11 +268,11 @@ memfile_feof (FILE * f)
 }
 
 int
-memfile_fread (char *ptr, int s, int n, FILE * f)
+A4GL_memfile_fread (char *ptr, int s, int n, FILE * f)
 {
   if (f != in)
     {
-      debug ("Reading from fread with a file...This is bad!!!");
+      A4GL_debug ("Reading from fread with a file...This is bad!!!");
       return fread (ptr, s, n, f);
     }
   else
@@ -302,14 +304,14 @@ memfile_fread (char *ptr, int s, int n, FILE * f)
 }
 
 void
-dump_buffer (char *s, int l)
+A4GL_dump_buffer (char *s, int l)
 {
   int a;
   char buff[256];
   char buffx[256];
   strcpy (buff, "");
   return;
-  debug ("Dump buffer");
+  A4GL_debug ("Dump buffer");
   for (a = 0; a < l; a++)
     {
       sprintf (buffx, "0x%02x,", s[a] & 0xff);
@@ -317,9 +319,9 @@ dump_buffer (char *s, int l)
       if (strlen (buff) >= 80)
 	{
 	  strcat (buff, ":");
-	  debug ("%s", buff);
+	  A4GL_debug ("%s", buff);
 	  strcpy (buff, "");
 	}
     }
-  debug ("%s", buff);
+  A4GL_debug ("%s", buff);
 }

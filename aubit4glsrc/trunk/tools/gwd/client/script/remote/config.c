@@ -368,7 +368,7 @@ OpenTOC (void)
 //af debug:
 //MsgBox(szTakeOutFile, MB_OK);
 //MsgBox(szDocFileName, MB_OK);
-//af debug end
+//af A4GL_debug end
 
       if(strcmpi(szDocFileName, szTakeOutFile))
       {

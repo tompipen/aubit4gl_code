@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.54 2003-05-01 09:42:41 mikeaubury Exp $
+# $Id: esql.ec,v 1.55 2003-05-15 07:10:44 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.54 2003-05-01 09:42:41 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.55 2003-05-15 07:10:44 mikeaubury Exp $";
 #endif
 
 
@@ -181,7 +181,7 @@ static int getColumnsMax = 0;
  */
 static void esqlErrorHandler(void)
 {
-  debug("In esqlErrorHandler..");
+  A4GL_debug("In esqlErrorHandler..");
   A4GLSQL_set_status(sqlca.sqlcode,1);
 }
 
@@ -201,7 +201,7 @@ static void esqlWarningHandler(void)
  */
 static int isSqlError()
 {
-set_a4gl_sqlca_sqlcode(sqlca.sqlcode);
+A4GL_set_a4gl_sqlca_sqlcode(sqlca.sqlcode);
   if ( SQLSTATE[0] != '0' || (SQLSTATE[1] != '0' &&
        SQLSTATE[1] != '1' && SQLSTATE[1] != '2' ) )
     return 1;
@@ -308,7 +308,7 @@ static DbConnection *getCurrentESQLConnection(void)
 
   if ( currentConnection == NULL )
     return (DbConnection *)0;
-  currConnection = (DbConnection *)find_pointer_val (
+  currConnection = (DbConnection *)A4GL_find_pointer_val (
     currentConnection, 
     SESSCODE
   );
@@ -347,10 +347,10 @@ static int setCurrentESQLConnection(char *connectionName)
  */
 static int removeESQLConnection(char *connectionName)
 {
-  if ( !has_pointer (connectionName, SESSCODE))
+  if ( !A4GL_has_pointer (connectionName, SESSCODE))
     return 1;
 
-  del_pointer (connectionName, CURCODE);
+  A4GL_del_pointer (connectionName, CURCODE);
   return 0;
 }
 
@@ -371,7 +371,7 @@ static int addESQLConnection(char *connectionName,char *dbName,
   char *userName,char *passwd)
 {
   DbConnection *connection;
-  if ( has_pointer (connectionName, SESSCODE))
+  if ( A4GL_has_pointer (connectionName, SESSCODE))
     return 1;
   connection = NewDbConnection();
   connection->connectionName = strdup(connectionName);
@@ -380,7 +380,7 @@ static int addESQLConnection(char *connectionName,char *dbName,
   connection->userName       = userName;
   connection->password       = passwd;
   connection->connectionInfo = 0;
-  add_pointer (connectionName, SESSCODE,connection);
+  A4GL_add_pointer (connectionName, SESSCODE,connection);
   return 0;
 }
 
@@ -405,9 +405,9 @@ int A4GLSQL_init_connection (char *dbName)
   EXEC SQL END DECLARE SECTION;
 
   strcpy(buff,dbName);
-  trim(buff);
+  A4GL_trim(buff);
   db=buff;
-  debug("-->%s<--\n",buff);
+  A4GL_debug("-->%s<--\n",buff);
 
 // Have we got an active db session ?
   if (have_connected) {
@@ -418,7 +418,7 @@ int A4GLSQL_init_connection (char *dbName)
 
   EXEC SQL connect to :db as "default";
 
-  debug("Sqlca=%d",sqlca.sqlcode);
+  A4GL_debug("Sqlca=%d",sqlca.sqlcode);
 
   if ( isSqlError() )
     return 1;
@@ -574,7 +574,7 @@ int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 
   if ( dsn == NULL )
   {
-    exitwith ("Database name not seted");
+    A4GL_exitwith ("Database name not seted");
     return 1;
   }
 
@@ -585,7 +585,7 @@ int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
   if ( SQLSTATE[0] == '0' && (SQLSTATE[1] == '0' ||
        SQLSTATE[1] == '1' || SQLSTATE[1] == '2' ))
   {
-    exitwith ("Session already opened");
+    A4GL_exitwith ("Session already opened");
     return 1;
   }
 
@@ -700,7 +700,7 @@ static char *getConnectionForDatabase(char *databaseName)
   /*
    This is not working.
    For doing this i need an iterator trough the tree.
-  hh = find_pointer_val ("default", SESSCODE);
+  hh = A4GL_find_pointer_val ("default", SESSCODE);
   for (i = 0 ; i < connectionIdx ; i++)
   {
     if (strcmp(databaseName,connections[i].databaseName) == 0 )
@@ -765,8 +765,8 @@ static struct s_sid *prepareSqlStatement(
   char *s_internal;
   struct s_sid *sid = newStatement(ibind,ni,obind,no,s);
   s_internal=strdup(s);
-  trim(s_internal);
-  debug("PrepareSQL : %s",s_internal);
+  A4GL_trim(s_internal);
+  A4GL_debug("PrepareSQL : %s",s_internal);
   free(s_internal);
 
   statementName = sid->statementName;
@@ -784,7 +784,7 @@ static struct s_sid *prepareSqlStatement(
         //error_just_in_case();
         //return 0;
    //}
-  debug("Prepared OK\n");
+  A4GL_debug("Prepared OK\n");
   return sid;
 }
 
@@ -801,9 +801,9 @@ static struct s_sid *prepareSqlStatement(
 struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
   struct s_sid *ptr;
-  debug("S=%s\n",s);
+  A4GL_debug("S=%s\n",s);
   ptr=prepareSqlStatement(ibind,ni,(struct BINDING *)0,0,s);
-  debug("Got ptr as %p",ptr);
+  A4GL_debug("Got ptr as %p",ptr);
   return ptr;
 }
 
@@ -876,9 +876,9 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
 
   dataType = getIfmxDataType(bind[idx].dtype);
   length   = bind[idx].size; // unfix_length...
-debug("In binding - %d %d",dataType,length);
+A4GL_debug("In binding - %d %d",dataType,length);
 
-  if ( isnull(dataType,bind[idx].ptr) )
+  if ( A4GL_isnull(dataType,bind[idx].ptr) )
   {
     EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
       TYPE = :dataType,
@@ -963,12 +963,12 @@ debug("In binding - %d %d",dataType,length);
 
       fgl_dtime = (FglDatetime *)bind[idx].ptr;
 
-      dttoc(fgl_dtime,&genData,30);
-      debug("DT = '%s'\n",genData);
+      A4GL_dttoc(fgl_dtime,&genData,30);
+      A4GL_debug("DT = '%s'\n",genData);
       dtime_var.dt_qual = 3594;
       if ( dtcvasc(genData,&dtime_var) )
       {
-		debug("Invalid datetime!!");
+		A4GL_debug("Invalid datetime!!");
 	/** @todo : We need to store this error */
         return 1;
       }
@@ -980,9 +980,9 @@ debug("In binding - %d %d",dataType,length);
         DATA = :char_var,
 	LENGTH = :length;
 	if (sqlca.sqlcode!=0) {
-			debug("Bugger - bombed");
+			A4GL_debug("Bugger - bombed");
 	} else {
-			debug("Bound ok");
+			A4GL_debug("Bound ok");
 	}
       break;
 
@@ -1002,13 +1002,13 @@ debug("In binding - %d %d",dataType,length);
     case DTYPE_BYTE:
       break;
     default:
-      exitwith ("Invalid data type\n");
+      A4GL_exitwith ("Invalid data type\n");
   }
   if ( isSqlError() ) {
-	debug("Problem");
+	A4GL_debug("Problem");
     return 1;
   }
-	debug("OK");
+	A4GL_debug("OK");
   return 0;
 }
 
@@ -1045,7 +1045,7 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
 
   for ( i = 0 ; i < bindCount ; i++ )
     if ( bindInputValue(descriptorName,i,bind) == 1 ) {
-		debug("Failed binding %d\n",i);
+		A4GL_debug("Failed binding %d\n",i);
       return 1;
     }
   return 0;
@@ -1108,19 +1108,19 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
   EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
     :indicator = INDICATOR, :length = LENGTH;
   if ( isSqlError() ) {
-	debug("Err1");
+	A4GL_debug("Err1");
     return 1;
   }
 
   if ( indicator == -1 )
   {
-    debug("Calling setnull %d %p %d\n",dataType,bind[idx].ptr,length);
-    setnull(dataType,bind[idx].ptr,length);      /* Something wrong with this */
+    A4GL_debug("Calling A4GL_setnull %d %p %d\n",dataType,bind[idx].ptr,length);
+    A4GL_setnull(dataType,bind[idx].ptr,length);      /* Something wrong with this */
     //if (dataType==0) { debug("ptr=%s\n",bind[idx].ptr); }
     return 0;
   }
 
-  debug("MJAMJA datatype : %d",dataType);fflush(stdout);
+  A4GL_debug("MJAMJA datatype : %d",dataType);fflush(stdout);
   switch (dataType)
   {
     case DTYPE_CHAR:
@@ -1174,9 +1174,9 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :decimal_var = DATA;
-         debug("DECIMAL...");
+         A4GL_debug("DECIMAL...");
       if ( isSqlError() ) {
-         debug("isSqlError...");
+         A4GL_debug("isSqlError...");
         return 1;
 	}
 
@@ -1185,8 +1185,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       {
         return 1;
       }
-	debug("tmpbuff=%s\n",tmpbuff);
-      stodec(tmpbuff,bind[idx].ptr,bind[idx].size);
+	A4GL_debug("tmpbuff=%s\n",tmpbuff);
+      A4GL_stodec(tmpbuff,bind[idx].ptr,bind[idx].size);
       break;
 
 
@@ -1226,7 +1226,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
 		return 1;
       }
 	printf("tmpbuff=%s\n",tmpbuff);
-      ctodt(tmpbuff, (FglDatetime *)bind[idx].ptr,bind[idx].size);
+      A4GL_ctodt(tmpbuff, (FglDatetime *)bind[idx].ptr,bind[idx].size);
       break;
 
 
@@ -1250,14 +1250,14 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
     case DTYPE_TEXT:
       break;
     default:
-      exitwith ("Invalid data type\n");
+      A4GL_exitwith ("Invalid data type\n");
   }
-  debug("Got to here");
+  A4GL_debug("Got to here");
   if ( isSqlError() ) {
-	debug("Some isSqlError..");
+	A4GL_debug("Some isSqlError..");
     return 1;
   }
-  debug("Ok");
+  A4GL_debug("Ok");
   return 0;
 }
 
@@ -1280,18 +1280,18 @@ static int allocateOutputDescriptor(char *descName,
     int  bindCount = bCount;
   EXEC SQL end declare section;
   register int i;
-  debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
+  A4GL_debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
   bindCount+=256;
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
-  debug("Status=%d",sqlca.sqlcode);
+  A4GL_debug("Status=%d",sqlca.sqlcode);
   if (sqlca.sqlcode==-480) {
 	sqlca.sqlcode=0;
-	set_a4gl_sqlca_sqlcode(0);
-	debug("Try dealloc and alloc");
+	A4GL_set_a4gl_sqlca_sqlcode(0);
+	A4GL_debug("Try dealloc and alloc");
   	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
   	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
   }
-  debug("Done");
+  A4GL_debug("Done");
   if ( isSqlError() )
   {
     return 1;
@@ -1320,7 +1320,7 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
 
   for ( i = 0 ; i < bindCount ; i++ )
     if ( bindOutputValue(descriptorName,i,bind) == 1 ) {
-	debug("Failed bind @ %d\n",i);
+	A4GL_debug("Failed bind @ %d\n",i);
       return 1;
     }
   return 0;
@@ -1385,7 +1385,7 @@ static int executeStatement(struct s_sid *sid)
   statementName        = sid->statementName;
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
-  debug("ExecuteStatement");
+  A4GL_debug("ExecuteStatement");
   switch (getStatementBindType(sid))
   {
     case NO_BIND:
@@ -1405,7 +1405,7 @@ static int executeStatement(struct s_sid *sid)
         USING SQL DESCRIPTOR :inputDescriptorName;
       break;
     otherwise:
-      exitwith ("Invalid bind\n");
+      A4GL_exitwith ("Invalid bind\n");
   }
 
   if ( isSqlError() )
@@ -1441,7 +1441,7 @@ int A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 {
   if (sid)
   {
-    add_pointer (pname, PRECODE, sid);
+    A4GL_add_pointer (pname, PRECODE, sid);
     return 1;
   }
   else
@@ -1480,18 +1480,18 @@ static int processPreStatementBinds(struct s_sid *sid)
     char *descriptorName;
   EXEC SQL END DECLARE SECTION;
   int rv = 0;
-  debug("a1");
+  A4GL_debug("a1");
   if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0 && sid->inputDescriptorName==0)
   {
-  debug("a2");
+  A4GL_debug("a2");
     sid->inputDescriptorName = getDescriptorName(sid->statementName,'I');
 
     if ( processInputBind(sid->inputDescriptorName,sid->ni,sid->ibind) == 1) {
-		debug("Fail1 ");
+		A4GL_debug("Fail1 ");
       return 1;
 	}
   }
-  debug("a3");
+  A4GL_debug("a3");
 
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
@@ -1502,25 +1502,25 @@ static int processPreStatementBinds(struct s_sid *sid)
       'O'
     );
 
-  debug("a3.1 no=%d ",sid->no);
+  A4GL_debug("a3.1 no=%d ",sid->no);
 
-debug("allocateOutputDescriptorName - %s\n",sid->outputDescriptorName);
+A4GL_debug("allocateOutputDescriptorName - %s\n",sid->outputDescriptorName);
     rv = allocateOutputDescriptor(
       sid->outputDescriptorName,
       sid->no,
       sid->obind
     );
     if ( rv == 1) {
-		debug("Fail2");
+		A4GL_debug("Fail2");
       return 1;
 	}
-  debug("a4");
+  A4GL_debug("a4");
     descriptorName = sid->outputDescriptorName;
     statementName  = sid->statementName;
     EXEC SQL DESCRIBE :statementName USING SQL DESCRIPTOR :descriptorName;
-  debug("a4.1");
+  A4GL_debug("a4.1");
   }
-		debug("OK3");
+		A4GL_debug("OK3");
   return 0;
 }
 
@@ -1575,19 +1575,19 @@ static int processPosStatementBinds(struct s_sid *sid)
 {
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
-    debug("calling processOutputBind");
+    A4GL_debug("calling processOutputBind");
     if ( processOutputBind(sid->outputDescriptorName,sid->no,sid->obind) == 1) {
-		debug("Failed..");
+		A4GL_debug("Failed..");
       		return 1;
 	}
   }
 
   if ( deallocateDescriptors(sid) == 1 ) {
-	debug("Deallocating failed..");
+	A4GL_debug("Deallocating failed..");
         return 1;
   }
 
-  debug("All Ok in posStatementBinds");
+  A4GL_debug("All Ok in posStatementBinds");
   return 0;
 }
 
@@ -1610,35 +1610,35 @@ int A4GLSQL_execute_implicit_select (struct s_sid *sid)
     char *statementText;
   EXEC SQL end declare section;
 
-  debug("ESQL : execute_implicit_select");
+  A4GL_debug("ESQL : execute_implicit_select");
   if (sid == 0) {
-	debug("SID=0");
+	A4GL_debug("SID=0");
     return -1;
   }
 
-  debug("ESQL : pre");
+  A4GL_debug("ESQL : pre");
   if ( processPreStatementBinds(sid) == 1 ) {
-	debug("processPreStatementBinds failed ?");
+	A4GL_debug("processPreStatementBinds failed ?");
 	error_just_in_case();
     	return 1;
    }
 
-  debug("ESQL : exec");
+  A4GL_debug("ESQL : exec");
   if ( executeStatement(sid) == 1 ) {
-	debug("executeStatement failed ?");
+	A4GL_debug("executeStatement failed ?");
 	error_just_in_case();
     	return 1;
   }
   if (sqlca.sqlcode==0) {
-  debug("ESQL : post");
+  A4GL_debug("ESQL : post");
 
   if ( processPosStatementBinds(sid) == 1 ) {
-	debug("processPosStatementBinds failed ?");
+	A4GL_debug("processPosStatementBinds failed ?");
 	error_just_in_case();
     return 1;
   }
   }
-  debug("All ok ?");
+  A4GL_debug("All ok ?");
   A4GLSQL_set_status(sqlca.sqlcode,1);
   return 0;
 }
@@ -1676,30 +1676,30 @@ int A4GLSQL_execute_implicit_sql (struct s_sid *sid)
     int  inputBindCount;
   EXEC SQL end declare section;
   int rc = 0;
-  debug("In execute_implicit_sql");
+  A4GL_debug("In execute_implicit_sql");
   if ( sid == (struct s_sid *)0 )
   {
-    debug("Bugger - failed");
+    A4GL_debug("Bugger - failed");
     /** @todo : I should store the error message and number somwehere */
     return 1;
   }
 
   if ( processPreStatementBinds(sid) == 1 ) {
-	debug("Pre failed");
+	A4GL_debug("Pre failed");
 	error_just_in_case();
     return 1;
   }
   if ( executeStatement(sid) == 1 ) {
-	debug("Execute failed");
+	A4GL_debug("Execute failed");
 	error_just_in_case();
     return 1;
   }
   if ( processPosStatementBinds(sid) == 1 ) {
-	debug("Pos failed");
+	A4GL_debug("Pos failed");
 	error_just_in_case();
     return 1;
   }
-debug("OK");
+A4GL_debug("OK");
   return 0;
 }
 
@@ -1816,11 +1816,11 @@ struct s_cid *A4GLSQL_declare_cursor(
       return (struct s_cid *)0;
   }
   if ( isSqlError() ) {
-	debug("Declare failed");
+	A4GL_debug("Declare failed");
     return (struct s_cid *)0;
   }
-  debug("Declared OK");
-  add_pointer (cursname, PRECODE, cursorIdentification);
+  A4GL_debug("Declared OK");
+  A4GL_add_pointer (cursname, PRECODE, cursorIdentification);
 
 
   if ( processPreStatementBinds(sid) == 1 ) return (struct s_cid *)0;
@@ -1855,15 +1855,15 @@ int A4GLSQL_open_cursor (int ni, char *s)
   
   EXEC SQL END DECLARE SECTION;
 
-  debug("Open Cursor");
+  A4GL_debug("Open Cursor");
 
-  cursorIdentification=find_pointer (s, PRECODE);
+  cursorIdentification=A4GL_find_pointer (s, PRECODE);
 
-  debug("Got cursorIdentification as : %p",cursorIdentification);
+  A4GL_debug("Got cursorIdentification as : %p",cursorIdentification);
   sid=cursorIdentification->statement;
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
-  debug("Descritors : %s %s",inputDescriptorName,outputDescriptorName);
+  A4GL_debug("Descritors : %s %s",inputDescriptorName,outputDescriptorName);
   
   switch (getStatementBindType(sid)) {
     case NO_BIND:
@@ -1876,12 +1876,12 @@ int A4GLSQL_open_cursor (int ni, char *s)
 	break;
 
     case OUTPUT_BIND:
-    	debug("Into on an open ?");
+    	A4GL_debug("Into on an open ?");
   	EXEC SQL OPEN :cursorName
         //INTO SQL DESCRIPTOR :outputDescriptorName;
 	break;
     case INPUT_OUTPUT_BIND:
-    	debug("Into on an open ?");
+    	A4GL_debug("Into on an open ?");
   	EXEC SQL OPEN :cursorName
         //INTO SQL DESCRIPTOR :outputDescriptorName
         USING SQL DESCRIPTOR :inputDescriptorName;
@@ -1920,7 +1920,7 @@ static int getFetchType(int fetch_mode,int fetch_when)
     else if ( fetch_mode == FETCH_RELATIVE )
       return FETCH_NEXT;
     else
-      exitwith ("Invalid cursor type");
+      A4GL_exitwith ("Invalid cursor type");
   }
 
   if ( fetch_when == -1 )
@@ -1930,7 +1930,7 @@ static int getFetchType(int fetch_mode,int fetch_when)
     else if ( fetch_mode == FETCH_RELATIVE )
       return FETCH_PREVIOUS;
     else
-      exitwith ("Invalid cursor type");
+      A4GL_exitwith ("Invalid cursor type");
   }
 
   if ( fetch_mode == FETCH_ABSOLUTE )
@@ -1938,7 +1938,7 @@ static int getFetchType(int fetch_mode,int fetch_when)
 
   if ( fetch_mode == FETCH_RELATIVE )
     return FETCH__RELATIVE;
-  exitwith ("Invalid cursor type");
+  A4GL_exitwith ("Invalid cursor type");
   return -1;
 }
 
@@ -1972,7 +1972,7 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
   struct s_sid *sid;
   struct s_cid *cid;
 
-  cid = (struct s_cid *)find_pointer_val (cursorName, PRECODE);
+  cid = (struct s_cid *)A4GL_find_pointer_val (cursorName, PRECODE);
   sid = (struct s_sid *) cid->statement;
   if ( sid == (struct s_sid *)0 )
   {
@@ -2013,7 +2013,7 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
         USING SQL DESCRIPTOR :descriptorName;
       break;
     otherwise:
-      exitwith ("Invalid fetch");
+      A4GL_exitwith ("Invalid fetch");
   }
   if ( isSqlError() )
     return 1;
@@ -2047,7 +2047,7 @@ exec sql begin declare section;
 char *descriptorName;
 exec sql end declare section;
 
-  cursorName=char_pop();
+  cursorName=A4GL_char_pop();
    
 
   if ( ibind != (struct BINDING *)0 && n > 0 )
@@ -2055,7 +2055,7 @@ exec sql end declare section;
     descriptorName=getDescriptorName(cursorName,'I');
 
     if ( processInputBind(descriptorName,n,ibind) == 1)
-      exitwith ("Error binding");
+      A4GL_exitwith ("Error binding");
   }
   
    EXEC SQL PUT :cursorName USING SQL DESCRIPTOR $descriptorName ;
@@ -2125,7 +2125,7 @@ static int printField(FILE *unloadFile,int idx,char *descName)
       char_var = malloc(length + 1);
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :char_var = DATA;
-      trim(char_var);
+      A4GL_trim(char_var);
       fprintf(unloadFile,"%s",char_var);
       free(char_var);
       break;
@@ -2202,7 +2202,7 @@ static int printField(FILE *unloadFile,int idx,char *descName)
       }
       /** @todo : Print as date field */
       char_var = malloc(sizeof(char)*10);
-      dtos(&date_var,char_var,10);
+      A4GL_dtos(&date_var,char_var,10);
       fprintf(unloadFile,"%s",char_var);
       free(char_var);
       break;
@@ -2265,7 +2265,7 @@ static int printField(FILE *unloadFile,int idx,char *descName)
     case DTYPE_TEXT:
       break;
     default:
-      exitwith ("Invalid data type\n");
+      A4GL_exitwith ("Invalid data type\n");
   }
   return 0;
 }
@@ -2303,7 +2303,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
     int coltype;
   EXEC SQL END DECLARE SECTION;
 
-  unloadFile = (FILE *)mja_fopen(fname,"wt");
+  unloadFile = (FILE *)A4GL_mja_fopen(fname,"wt");
   if ( unloadFile == (FILE *)0 )
   {
     /** @todo : Generate some error code compatible with informix 4gl */
@@ -2399,7 +2399,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
 void
 A4GLSQL_commit_rollback (int mode)
 {
-  debug ("In commit_rollback");
+  A4GL_debug ("In commit_rollback");
 #ifndef NO_TRANSACTIONS
   switch (mode)
   {
@@ -2439,8 +2439,8 @@ struct s_sid *A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
 
-  set_errm (pname);
-  ptr = (struct s_sid *)find_pointer_val (pname, PRECODE);
+  A4GL_set_errm (pname);
+  ptr = (struct s_sid *)A4GL_find_pointer_val (pname, PRECODE);
   if (ptr)
     return ptr;
   return (struct s_sid *)0;
@@ -2487,7 +2487,7 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 {
   struct s_sid *sid;
 
-  debug("ESQL : A4GLSQL_execute_sql");
+  A4GL_debug("ESQL : A4GLSQL_execute_sql");
   /** @todo : Fix the mode that is not used now  - done remove comment */
   sid = A4GLSQL_find_prepare (pname); // ,0
   sid->ibind = ibind;
@@ -2528,12 +2528,12 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL END DECLARE SECTION;
 
   sprintf(strSelect,"select * from %s\n",tabname);
-  debug("strSelect : %s\n",strSelect);
+  A4GL_debug("strSelect : %s\n",strSelect);
   EXEC SQL PREPARE stReadAllColumns FROM :strSelect;
   if ( isSqlError() )
   {
 	#ifdef DEBUG
-		debug("Error in EXEC SQL PREPARE");
+		A4GL_debug("Error in EXEC SQL PREPARE");
     #endif
 	return 0;
   }
@@ -2546,7 +2546,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   if ( isSqlError() )
   {
 	#ifdef DEBUG
-		debug("Error in EXEC SQL ALLOCATE DESCRIPTOR");
+		A4GL_debug("Error in EXEC SQL ALLOCATE DESCRIPTOR");
     #endif
 	return 0;
   }
@@ -2555,7 +2555,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   if ( isSqlError() )
   {
 	#ifdef DEBUG
-		debug("Error in EXEC SQL DESCRIBE");
+		A4GL_debug("Error in EXEC SQL DESCRIBE");
     #endif
 	return 0;
   }
@@ -2564,16 +2564,16 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   if ( isSqlError() )
   {
 	#ifdef DEBUG
-		debug("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s", numberOfColumns);
+		A4GL_debug("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s", numberOfColumns);
         //FIXME: can we read error returned by ESQL/C lib here, and sent it to debug() ?
-		debug("ESQL/C Error message:%s", A4GLSQL_get_sqlerrm());
+		A4GL_debug("ESQL/C Error message:%s", A4GLSQL_get_sqlerrm());
     #endif
 	return 0;
   }
 
   getColumnsMax = numberOfColumns;
   getColumnsOrder = 1;
-  debug("COlumns max=%d",numberOfColumns);
+  A4GL_debug("COlumns max=%d",numberOfColumns);
   return numberOfColumns;
 }
 
@@ -2608,7 +2608,7 @@ int Infx_dt_to_A4gl_dt(int n) {
 static long fixlength(int dtype,int length) {
 	int n1,n2;
 	if (dtype>255) dtype-=256;
-	debug("Got datatype : %d length %d\n",dtype,length);
+	A4GL_debug("Got datatype : %d length %d\n",dtype,length);
 	if (dtype==10) {
 		n1=Infx_dt_to_A4gl_dt(TU_START(length));
 		n2=Infx_dt_to_A4gl_dt(TU_END(length));
@@ -2654,7 +2654,7 @@ int A4GLSQL_next_column(char **colname, int *dtype,int *size)
   *dtype = dataType;
   *colname=columnName;
   *size = fixlength(dataType,length);
-  debug("dtype=%d size=%d colname=%s\n",*dtype,*size,*colname);
+  A4GL_debug("dtype=%d size=%d colname=%s\n",*dtype,*size,*colname);
   getColumnsOrder++;
   return 1;
 }
@@ -2702,7 +2702,7 @@ static int getSQLDataType(char *connName, char *tabname,char *colname,
   EXEC SQL END DECLARE SECTION;
 
   sprintf(strSelect,"select %s from %s",colname,tabname);
-debug("SQL = %s",strSelect);
+A4GL_debug("SQL = %s",strSelect);
   EXEC SQL PREPARE stReadColumns FROM :strSelect;
   if ( isSqlError() )
   {
@@ -2867,18 +2867,18 @@ static int fillColumnsArray(char *tableName,int max,char *colArray,
 char *ccol;
 
 strcpy(colname,"");
-debug("fillColumnsArray\n");
+A4GL_debug("fillColumnsArray\n");
 
 
   rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
-  debug("Got rv as %d\n",rv);
+  A4GL_debug("Got rv as %d\n",rv);
   while ( rv ) 
 	{
 	  rv = A4GLSQL_next_column(&ccol,&dtype,&size);
 	if (!rv) break;
 
 		strcpy(colname,ccol);
-		trim(colname);
+		A4GL_trim(colname);
 		strncpy(&colArray[i*(sizeColArray+1)],colname,sizeColArray);
 
 
@@ -2895,14 +2895,14 @@ debug("fillColumnsArray\n");
 		      break;
 
 		    default:
-          exitwith ("Could not fill_array - Wrong mode asked!");
+          A4GL_exitwith ("Could not fill_array - Wrong mode asked!");
 	    }
 		}
 		i++;
 		if ( i >= max ) break;
 	}
   rv = A4GLSQL_end_get_columns();
-debug("returning %d columns rv=%d",i,rv);
+A4GL_debug("returning %d columns rv=%d",i,rv);
 	return i;
 }
 
@@ -2977,16 +2977,16 @@ int
 A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
-debug("fill_array");
+A4GL_debug("fill_array");
 	if ( strcmp(service,"DATABASES") == 0 )
-    exitwith ("Could not fill_array - DATABASES service not implemented !");
+    A4GL_exitwith ("Could not fill_array - DATABASES service not implemented !");
 	else if ( strcmp(service,"TABLES") == 0 )
-    exitwith ("Could not fill_array - TABLES service not implemented !");
+    A4GL_exitwith ("Could not fill_array - TABLES service not implemented !");
 	// This is the important to implement
 	else if ( strcmp(service,"COLUMNS") == 0 )
 	  return fillColumnsArray(info,mx,arr1,szarr1,arr2,szarr2,mode);
 	else
-    exitwith ("Could not fill_array - Invalid service asked !");
+    A4GL_exitwith ("Could not fill_array - Invalid service asked !");
   return 0;
 }
 
@@ -3004,7 +3004,7 @@ debug("fill_array");
 void
 A4GLSQL_set_sqlca_sqlcode (int a)
 {
-	set_a4gl_status(a);
+	A4GL_set_a4gl_status(a);
   /* return 0; */
 }
 

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.13 2003-05-12 14:24:18 mikeaubury Exp $
+# $Id: rexp2.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -63,18 +63,18 @@
 #define is_match_decimal "[\\+\\-]{0,1}[0-9]{0,}\\.[0-9]{0,}"
 #define is_match_integer "[\\+\\-]{0,1}[0-9]{1,}"
 
-#define MATCH_LITERAL  5	/* match failure on literal match */
-#define MATCH_RANGE    4	/* match failure on [..] construct */
+#define MATCH_LITERAL  5	/* A4GL_match failure on literal A4GL_match */
+#define MATCH_RANGE    4	/* A4GL_match failure on [..] A4GL_construct */
 #define MATCH_ABORT    3	/* premature end of text string */
 #define MATCH_END      2	/* premature end of pattern string */
-#define MATCH_VALID    1	/* valid match */
+#define MATCH_VALID    1	/* valid A4GL_match */
 
 /* pattern defines */
 #define PATTERN_VALID  0	/* valid pattern */
 #define PATTERN_ESC   -1	/* literal escape at end of pattern */
-#define PATTERN_RANGE -2	/* malformed range in [..] construct */
-#define PATTERN_CLOSE -3	/* no end bracket in [..] construct */
-#define PATTERN_EMPTY -4	/* [..] construct is empty */
+#define PATTERN_RANGE -2	/* malformed range in [..] A4GL_construct */
+#define PATTERN_CLOSE -3	/* no end bracket in [..] A4GL_construct */
+#define PATTERN_EMPTY -4	/* [..] A4GL_construct is empty */
 
 /*
 =====================================================================
@@ -100,7 +100,7 @@ int constr_size;
 */
 
 
-void doconstruct (char *s, char *whereclause);
+void A4GL_doconstruct (char *s, char *whereclause);
 int mja_matchcmp (char *a, char *s_match);
 static int isop (char *str, int i);
 static void convert_constr_buffer (char *str);
@@ -137,16 +137,16 @@ appendchr (char *s, char c)
  * @return
  */
 int
-mja_match (char *str1, char *str2, int likeormatch)
+A4GL_mja_match (char *str1, char *str2, int likeormatch)
 {
   char MULTICHAR, SINGLECHAR;
   int error;
 
-  trim (str1);
-  trim (str2);
+  A4GL_trim (str1);
+  A4GL_trim (str2);
 #ifdef DEBUG
   {
-    debug ("Match '%s' '%s' %c", str1, str2, likeormatch);
+    A4GL_debug ("Match '%s' '%s' %c", str1, str2, likeormatch);
   }
 #endif
 
@@ -161,8 +161,8 @@ mja_match (char *str1, char *str2, int likeormatch)
       SINGLECHAR = '?';
     }
 
-  debug ("Calling matche...");
-  error = matche (str2, str1);
+  A4GL_debug ("Calling matche...");
+  error = A4GL_matche (str2, str1);
   if (error == MATCH_VALID)
     return 1;
   else
@@ -176,7 +176,7 @@ mja_match (char *str1, char *str2, int likeormatch)
  * @return
  */
 char *
-construct (char *colname, char *val, int inc_quotes)
+A4GL_construct (char *colname, char *val, int inc_quotes)
 {
   char *ptr2;
   int a;
@@ -191,12 +191,12 @@ construct (char *colname, char *val, int inc_quotes)
   char lastchar;
   int ismatch;
 
-  trim (val);
+  A4GL_trim (val);
   ptr2 = val;
   strcpy (buff3, "");
 #ifdef DEBUG
   {
-    debug ("Colname = %s , val = %s incq=%d\n", colname, val, inc_quotes);
+    A4GL_debug ("Colname = %s , val = %s incq=%d\n", colname, val, inc_quotes);
   }
 #endif
   if (strcmp (val, "") == 0)
@@ -281,7 +281,7 @@ construct (char *colname, char *val, int inc_quotes)
     {
 #ifdef DEBUG
       {
-	debug ("Expression error");
+ A4GL_debug ("Expression error");
       }
 #endif
       return 0;
@@ -393,7 +393,7 @@ construct (char *colname, char *val, int inc_quotes)
    */
 #ifdef DEBUG
   {
-    debug ("buff3= [ %s ]\n", buff3);
+    A4GL_debug ("buff3= [ %s ]\n", buff3);
   }
 #endif
   return buff3;
@@ -466,7 +466,7 @@ convert_constr_buffer (char *str)
  * @return
  */
 void
-doconstruct (char *s, char *whereclause)
+A4GL_doconstruct (char *s, char *whereclause)
 {
   int a;
   int t;
@@ -488,9 +488,9 @@ doconstruct (char *s, char *whereclause)
 	      if (strlen (whereclause) > 0)
 		strcat (whereclause, " AND ");
 	      if (buffer[0][0] == '*')
-		strcat (whereclause, construct (&buffer[0][1], buffer[1], 1));
+		strcat (whereclause, A4GL_construct (&buffer[0][1], buffer[1], 1));
 	      else
-		strcat (whereclause, construct (buffer[0], buffer[1], 0));
+		strcat (whereclause, A4GL_construct (buffer[0], buffer[1], 0));
 	      strcpy (buffer[0], "");
 	      strcpy (buffer[1], "");
 	    }

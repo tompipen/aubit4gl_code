@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.11 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: io.c,v 1.12 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -58,9 +58,9 @@ FILE *oufile = 0;
 =====================================================================
 */
 
-int read_int (FILE * ofile);
-void write_int (FILE * ofile, int la);
-FILE *try_to_open (char *path, char *name, int keepopen);
+int A4GL_read_int (FILE * ofile);
+void A4GL_write_int (FILE * ofile, int la);
+FILE *A4GL_try_to_open (char *path, char *name, int keepopen);
 
 
 /*
@@ -77,7 +77,7 @@ FILE *try_to_open (char *path, char *name, int keepopen);
  * @return The int readed.
  */
 int
-read_int (FILE * ofile)
+A4GL_read_int (FILE * ofile)
 {
   int a;
 
@@ -85,7 +85,7 @@ read_int (FILE * ofile)
     ofile = oufile;
   fread (&a, 1, sizeof (int), ofile);
   /* a=(int)sa; */
-  debug ("read_int returns %d", a);
+  A4GL_debug ("read_int returns %d", a);
   return a;
 
 }
@@ -97,15 +97,15 @@ read_int (FILE * ofile)
  * @param la The integer to be writed in the file.
  */
 void
-write_int (FILE * ofile, int la)
+A4GL_write_int (FILE * ofile, int la)
 {
   static int locala;
   int sizeo;
 
   if (ofile == 0)
     ofile = oufile;
-  debug ("File=%p", ofile);
-  debug ("&locala=%p", &locala);
+  A4GL_debug ("File=%p", ofile);
+  A4GL_debug ("&locala=%p", &locala);
   sizeo = sizeof (locala);
   locala = la;
 
@@ -158,7 +158,7 @@ form_out_close()
 read_hasmore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
-    return read_int (ofile);
+    return A4GL_read_int (ofile);
 
 }
 */
@@ -171,7 +171,7 @@ read_hasmore (FILE * ofile)
 write_hasmore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
-    write_int (ofile, 255);
+    A4GL_write_int (ofile, 255);
 
 }
 */
@@ -184,7 +184,7 @@ write_hasmore (FILE * ofile)
 write_nomore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
-    write_int (ofile, 0);
+    A4GL_write_int (ofile, 0);
 
 }
 */
@@ -201,7 +201,7 @@ read_string_dup (FILE * ofile)
 
     char *a;
   if (ofile==0) ofile=oufile;
-    c = read_int (ofile);
+    c = A4GL_read_int (ofile);
 
     if (c == 0)
     {
@@ -226,7 +226,7 @@ read_string (FILE * ofile, char *a)
 
     int c;
   if (ofile==0) ofile=oufile;
-    c = read_int (ofile);
+    c = A4GL_read_int (ofile);
 
     if (c == 0)
     {
@@ -256,7 +256,7 @@ if (ofile==0) ofile=oufile;
     if (a == 0 || a[0] == 0)
     {
 
-	write_int (ofile, 0);
+ A4GL_write_int (ofile, 0);
 
 	return;
 
@@ -264,7 +264,7 @@ if (ofile==0) ofile=oufile;
 
     c = strlen (a) + 1;		//include 0x0
 
-    write_int (ofile, c);	//store length first
+    A4GL_write_int (ofile, c);	//store length first
 
   //fwrite(&c,1,1,ofile);
     fwrite (a, 1, strlen (a) + 1, ofile);
@@ -285,7 +285,7 @@ if (ofile==0) ofile=oufile;
  * @param str2 A pointer to the place where to return the right part.
  */
 void
-bname (char *str, char *str1, char *str2)
+A4GL_bname (char *str, char *str1, char *str2)
 {
 
   static char fn[FNAMESIZE];
@@ -343,7 +343,7 @@ bname (char *str, char *str1, char *str2)
  * @return The pointer of the file opened.
  */
 FILE *
-try_to_open (char *path, char *name, int keepopen)
+A4GL_try_to_open (char *path, char *name, int keepopen)
 {
   char buff[2048];
   FILE *f;
@@ -360,7 +360,7 @@ try_to_open (char *path, char *name, int keepopen)
     {
       sprintf (buff, name);
     }
-  debug ("Opening path '%s'", buff);
+  A4GL_debug ("Opening path '%s'", buff);
   if (strlen (name) == 0)
     return 0;
 
@@ -374,7 +374,7 @@ try_to_open (char *path, char *name, int keepopen)
       fclose (f);
       return (FILE *) 1;
     }
-  debug ("opened file %s in path %s", name, path);
+  A4GL_debug ("opened file %s in path %s", name, path);
   return f;			/* We want it opened.. */
 }
 
@@ -385,7 +385,7 @@ try_to_open (char *path, char *name, int keepopen)
  * @return The pointer to the file opened. 0 otherwise.
  */
 FILE *
-open_file_dbpath (char *fname)
+A4GL_open_file_dbpath (char *fname)
 {
   char str_path[2048];
   int cnt;
@@ -394,14 +394,14 @@ open_file_dbpath (char *fname)
 
   memset (str_path, 0, 2048);
 
-  if (try_to_open ("", fname, 0))
+  if (A4GL_try_to_open ("", fname, 0))
     {
-      return try_to_open ("", fname, 1);
+      return A4GL_try_to_open ("", fname, 1);
     }
 
-  if (try_to_open (".", fname, 0))
+  if (A4GL_try_to_open (".", fname, 0))
     {
-      return try_to_open (".", fname, 1);
+      return A4GL_try_to_open (".", fname, 1);
     }
 
   if (strlen (acl_getenv ("DBPATH")))
@@ -424,9 +424,9 @@ open_file_dbpath (char *fname)
 	  str_path[cnt] = 0;
 	  if (strlen (ptr))
 	    {
-	      if (try_to_open (ptr, fname, 0))
+	      if (A4GL_try_to_open (ptr, fname, 0))
 		{
-		  return try_to_open (ptr, fname, 1);
+		  return A4GL_try_to_open (ptr, fname, 1);
 		}
 	      else
 		{
@@ -439,9 +439,9 @@ open_file_dbpath (char *fname)
 
   if (strlen (ptr))
     {
-      if (try_to_open (ptr, fname, 0))
+      if (A4GL_try_to_open (ptr, fname, 0))
 	{
-	  return try_to_open (ptr, fname, 1);
+	  return A4GL_try_to_open (ptr, fname, 1);
 	}
     }
 

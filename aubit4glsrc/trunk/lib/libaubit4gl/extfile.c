@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.14 2003-05-12 14:24:07 mikeaubury Exp $
+# $Id: extfile.c,v 1.15 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  */
 
 /*
@@ -62,9 +62,15 @@ char last_outfile[256] = "";
 =====================================================================
 */
 
-void set_help_file (char *fname);
-void set_lang_file (char *fname_orig);
+void A4GL_set_help_file (char *fname);
+void A4GL_set_lang_file (char *fname_orig);
 
+int aclfgl_a4gl_show_help (int a);
+int aclfgli_show_help (int n);
+char * A4GL_get_helpfilename (void);
+int aclfgli_libhelp_showhelp(int helpno);
+void A4GL_set_last_outfile (char *s);
+char * A4GL_get_last_outfile (void);
 
 /*
 =====================================================================
@@ -81,7 +87,7 @@ void set_lang_file (char *fname_orig);
  * @param fname file name containing compiled help messages
  */
 void
-set_help_file (char *fname)
+A4GL_set_help_file (char *fname)
 {
   char a[128] = "";
   char b[128] = "";
@@ -94,7 +100,7 @@ set_help_file (char *fname)
     free (curr_help_filename);
   curr_help_filename = strdup (fname);
 
-  helpfile = (FILE *) open_file_dbpath (fname);
+  helpfile = (FILE *) A4GL_open_file_dbpath (fname);
 
   if (helpfile == 0)
     {
@@ -106,23 +112,23 @@ set_help_file (char *fname)
        */
 
       strcpy (c, fname);
-      bname (c, a, b);
+      A4GL_bname (c, a, b);
 
       //if (strcmp (b, "iem") == 0)
 
       strcat (a, acl_getenv ("A4GL_HLP_EXT"));
 
-      helpfile = (FILE *) open_file_dbpath (a);
+      helpfile = (FILE *) A4GL_open_file_dbpath (a);
 
 
       if (helpfile == 0)
 	{
-	  exitwith ("Unable to open help file");
+	  A4GL_exitwith ("Unable to open help file");
 	}
     }
 
 #ifdef DEBUG
-  debug ("Helpfile=%p", helpfile);
+  A4GL_debug ("Helpfile=%p", helpfile);
 #endif
 }
 
@@ -133,24 +139,24 @@ set_help_file (char *fname)
  * @todo Describe function
  */
 void
-set_lang_file (char *fname_orig)
+A4GL_set_lang_file (char *fname_orig)
 {
   long l;
   long a;
   char *fname;
 
   fname = strdup (fname_orig);
-  trim (fname);
-  debug ("Language file='%s'", fname);
+  A4GL_trim (fname);
+  A4GL_debug ("Language file='%s'", fname);
 
   if (language_file_contents != 0)
     free (language_file_contents);
-  langfile = (FILE *) open_file_dbpath (fname);
+  langfile = (FILE *) A4GL_open_file_dbpath (fname);
 
   if (langfile == 0)
     {
       language_file_contents = 0;
-      exitwith ("Unable to open language file");
+      A4GL_exitwith ("Unable to open language file");
       free (fname);
       return;
     }
@@ -164,7 +170,7 @@ set_lang_file (char *fname_orig)
   language_file_contents[l] = 0x0;
 
   fclose (langfile);
-  debug ("langfile=%p", langfile);
+  A4GL_debug ("langfile=%p", langfile);
 
   for (a = 0; a < l; a++)
     {
@@ -184,7 +190,7 @@ set_lang_file (char *fname_orig)
 int
 aclfgl_a4gl_show_help (int a)
 {
-  a = pop_int ();
+  a = A4GL_pop_int ();
   aclfgli_show_help (a);
   return 0;
 }
@@ -195,7 +201,7 @@ aclfgl_a4gl_show_help (int a)
  * @todo Describe function
  */
 char *
-get_translated_id (char *no_c)
+A4GL_get_translated_id (char *no_c)
 {
   short pos;
   int cnt;
@@ -210,7 +216,7 @@ get_translated_id (char *no_c)
   cptr = language_file_contents;
   if (cptr == 0)
     {
-      exitwith ("No language file");
+      A4GL_exitwith ("No language file");
       return "<unknown>";
     }
 
@@ -220,31 +226,31 @@ get_translated_id (char *no_c)
   while (1)
     {
       pos = *(short *) cptr;
-      debug ("pos=%d", pos);
+      A4GL_debug ("pos=%d", pos);
 
       cptr += 2;
 
       if (pos == -1 || pos > no)
 	{
-	  debug ("Out of range 1");
-	  exitwith ("message not found");
+	  A4GL_debug ("Out of range 1");
+	  A4GL_exitwith ("message not found");
 	  return 0;
 	  break;
 	}
 
       num = *(short *) cptr;
       cptr += 2;
-      debug ("num=%d", num);
+      A4GL_debug ("num=%d", num);
 
       if (pos == no)
 	{
 	  cptr = language_file_contents + num + 3;
-	  debug ("returning %p", cptr);
+	  A4GL_debug ("returning %p", cptr);
 	  return cptr;
 
 	}
     }
-  exitwith ("Could not read lang text");
+  A4GL_exitwith ("Could not read lang text");
   return "<unknown>";
 
 }
@@ -255,7 +261,7 @@ get_translated_id (char *no_c)
  * @todo Describe function
  */
 int
-has_helpfile (void)
+A4GL_has_helpfile (void)
 {
   if (helpfile)
     return 1;
@@ -271,18 +277,20 @@ int
 aclfgli_show_help (int n)
 {
   long a;
-  a = pop_long ();
-  if (has_helpfile ())
+  a = A4GL_pop_long ();
+  if (A4GL_has_helpfile ())
     {
-      push_char ((char *) get_helpfilename ());
-      push_long (a);
+      A4GL_push_char ((char *) A4GL_get_helpfilename ());
+      A4GL_push_long (a);
       aclfgli_libhelp_showhelp (2);
     }
+	return 1;
+
 }
 
 
 char *
-get_helpfilename (void)
+A4GL_get_helpfilename (void)
 {
   if (helpfile)
     return curr_help_filename;
@@ -295,7 +303,7 @@ get_helpfilename (void)
  * @todo Describe function
  */
 char *
-get_help_disp (int n)
+A4GL_get_help_disp (int n)
 {
   return disp[n];
 }
@@ -306,9 +314,9 @@ get_help_disp (int n)
  * @todo Describe function
  */
 void
-set_last_outfile (char *s)
+A4GL_set_last_outfile (char *s)
 {
-  debug ("last_outfile=%s", s);
+  A4GL_debug ("last_outfile=%s", s);
   strcpy (last_outfile, s);
 }
 
@@ -317,9 +325,9 @@ set_last_outfile (char *s)
  * @todo Describe function
  */
 char *
-get_last_outfile (void)
+A4GL_get_last_outfile (void)
 {
-  debug ("Returning last_outfile=%s", last_outfile);
+  A4GL_debug ("Returning last_outfile=%s", last_outfile);
   return last_outfile;
 }
 

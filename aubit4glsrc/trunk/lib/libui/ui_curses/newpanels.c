@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.33 2003-05-12 14:24:27 mikeaubury Exp $
+# $Id: newpanels.c,v 1.34 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * Pannels implementation, like windows, prompts lines, etc
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -110,66 +110,66 @@ struct s_windows windows[MAXWIN];
 */
 /** @todo Take this prototypes of from here */
 
-int mja_vwprintw (WINDOW * win, char *fmt, va_list * args);
-//int   current_window          (char *win_name);
+int A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args);
+//int   A4GL_current_window          (char *win_name);
 void print_panel_stack (void);
-void init_stddbscr (void);
-void do_update_panels (void);
-void change_currwinno (int a, char *s);
-void change_currwin (WINDOW * a, char *s);
-void inc_winname (char *b);
-int getch_swin (WINDOW * window_ptr);
-int getform_line (void);
-int find_win (PANEL * p);
-int chkwin (void);
-int screen_height (void);
-int top_win (PANEL * p);
-char *pointer_code (int c);
-//void  clr_window                      (char *win_name);
-int int_current_window (char *win_name);
-void mja_gotoxy (int x, int y);
-int get_curr_win (void);
-int get_curr_height (void);
-int get_curr_top (void);
-char *get_currwin_name (void);
-int get_curr_border (void);
+void A4GL_init_stddbscr (void);
+void A4GL_do_update_panels (void);
+void A4GL_change_currwinno (int a, char *s);
+void A4GL_change_currwin (WINDOW * a, char *s);
+void A4GL_inc_winname (char *b);
+int A4GL_getch_swin (WINDOW * window_ptr);
+int A4GL_getform_line (void);
+int A4GL_find_win (PANEL * p);
+int A4GL_chkwin (void);
+int A4GL_screen_height (void);
+int A4GL_top_win (PANEL * p);
+char *A4GL_pointer_code (int c);
+//void  A4GL_clr_window                      (char *win_name);
+int A4GL_int_current_window (char *win_name);
+void A4GL_mja_gotoxy (int x, int y);
+int A4GL_get_curr_win (void);
+int A4GL_get_curr_height (void);
+int A4GL_get_curr_top (void);
+char *A4GL_get_currwin_name (void);
+int A4GL_get_curr_border (void);
 void display_at2 (char *z, int x, int y, int a);
-int decode_line (int l);
-//void  display_error           (int a,int wait);
-void add_compiled_form (char *s, char *frm);
-//int   open_form                       (char *name);
-//void  close_form                      (char *formname);
-//int   disp_form                       (char *name, int attr);
-int set_window (int a);
-int subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...);
-int subwin_setcolor (WINDOW * win, int typ);
-int getcomment_line (void);
-void set_attr_win (char s, int wattr);
-char *windowname_on_top (void);
-int invert_color (int a);
-//void  sleep_i                         (void);
+int A4GL_decode_line (int l);
+//void  A4GL_display_error           (int a,int wait);
+void A4GL_add_compiled_form (char *s, char *frm);
+//int   A4GL_open_form                       (char *name);
+//void  A4GL_close_form                      (char *formname);
+//int   A4GL_disp_form                       (char *name, int attr);
+int A4GL_set_window (int a);
+int A4GL_subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...);
+int A4GL_subwin_setcolor (WINDOW * win, int typ);
+int A4GL_getcomment_line (void);
+void A4GL_set_attr_win (char s, int wattr);
+char *A4GL_windowname_on_top (void);
+int A4GL_invert_color (int a);
+//void  A4GL_sleep_i                         (void);
 
-WINDOW *window_on_top (void);
-WINDOW *display_form_new_win (char *name, struct s_form_dets *f, int x,
+WINDOW *A4GL_window_on_top (void);
+WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
 			      int y);
-WINDOW *display_form (struct s_form_dets *f);
-WINDOW *create_window (char *name, int x, int y, int w, int h, int iswindow,
+WINDOW *A4GL_display_form (struct s_form_dets *f);
+WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h, int iswindow,
 		       int form_line, int error_line, int prompt_line,
 		       int menu_line, int border, int comment_line,
 		       int message_line, int attrib);
-WINDOW *display_form_win (WINDOW * w, char *name, struct s_form_dets *f);
+WINDOW *A4GL_display_form_win (WINDOW * w, char *name, struct s_form_dets *f);
 
-//void *        cr_window                       (char *s,int iswindow,int form_line,int error_line,int prompt_line,
+//void *        A4GL_cr_window                       (char *s,int iswindow,int form_line,int error_line,int prompt_line,
 					//int menu_line,int border,int comment_line,int message_line,int attrib);
-//int   cr_window_form          (char *name,int iswindow,int form_line,int error_line,
+//int   A4GL_cr_window_form          (char *name,int iswindow,int form_line,int error_line,
 					//int prompt_line,int menu_line,int border,int comment_line,int message_line,
 					//int attrib);
 
 
-void *read_form (char *fname, char *formname);
-//LIBEXPORT void hide_window    (char *winname);
-//LIBEXPORT void show_window    (char *winname);
-//LIBEXPORT int movewin                 (char *winname, int absol);
+void *A4GL_read_form (char *fname, char *formname);
+//LIBEXPORT void A4GL_hide_window    (char *winname);
+//LIBEXPORT void A4GL_show_window    (char *winname);
+//LIBEXPORT int A4GL_movewin                 (char *winname, int absol);
 
 
 /*
@@ -191,7 +191,7 @@ void *read_form (char *fname, char *formname);
  * @return a string that identifies the pointer type
  */
 char *
-pointer_code (int c)
+A4GL_pointer_code (int c)
 {
   switch (c)
     {
@@ -227,17 +227,17 @@ pointer_code (int c)
  * @todo Describe function
  */
 LIBUSEONLY int
-init_windows (void)
+A4GL_init_windows (void)
 {
   int a;
   for (a = 0; a < MAXWIN; a++)
     {
       windows[a].name[0] = 0;
     }
-  create_blank_window ("screen", 1, 1, 79, 23, 0);
-  current_window ("screen");
+  A4GL_create_blank_window ("screen", 1, 1, 79, 23, 0);
+  A4GL_current_window ("screen");
   /*error_box("Currwin=screen"); */
-  init_stddbscr ();
+  A4GL_init_stddbscr ();
   return 0;
 
 }
@@ -247,9 +247,9 @@ init_windows (void)
  * @todo Describe function
  */
 LIBUSEONLY void *
-create_blank_window (char *name, int x, int y, int w, int h, int border)
+A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
-  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1,
+  return A4GL_create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1,
 			0xffff);
 }
 
@@ -258,7 +258,7 @@ create_blank_window (char *name, int x, int y, int w, int h, int border)
  * @todo Describe function
  */
 WINDOW *
-create_window (char *name, int x, int y, int w, int h,
+A4GL_create_window (char *name, int x, int y, int w, int h,
 	       int iswindow,
 	       int form_line,
 	       int error_line,
@@ -270,10 +270,10 @@ create_window (char *name, int x, int y, int w, int h,
   WINDOW *dswin;
   PANEL *pan;
   int a;
-  chkwin ();
+  A4GL_chkwin ();
 
 #ifdef DEBUG
-  debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y,
+  A4GL_debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y,
 	 w, h, border, attrib);
 #endif
 
@@ -326,19 +326,19 @@ create_window (char *name, int x, int y, int w, int h,
 
   if (strcmp (name, "screen") == 0)
     {
-      h = screen_height () - 1;
-      w = screen_width () - 1;
-      debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
-      debug ("win = newwin (%d,%d,0,0)", screen_height (), screen_width ());
-      win = newwin (screen_height (), screen_width (), 0, 0);
-      debug ("Calling screen height");
-      debug ("h=%d", h);
-      debug ("Calling screen width");
-      debug ("w=%d", w);
-      set_bkg (win, attrib);
+      h = A4GL_screen_height () - 1;
+      w = A4GL_screen_width () - 1;
+      A4GL_debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
+      A4GL_debug ("win = newwin (%d,%d,0,0)", A4GL_screen_height (), A4GL_screen_width ());
+      win = newwin (A4GL_screen_height (), A4GL_screen_width (), 0, 0);
+      A4GL_debug ("Calling screen height");
+      A4GL_debug ("h=%d", h);
+      A4GL_debug ("Calling screen width");
+      A4GL_debug ("w=%d", w);
+      A4GL_set_bkg (win, attrib);
 
-      gui_win (name, screen_height (), screen_width (), 1, 1, 0, (long) win);
-      add_pointer (name, WINCODE, win);
+      A4GL_gui_win (name, A4GL_screen_height (), A4GL_screen_width (), 1, 1, 0, (long) win);
+      A4GL_add_pointer (name, WINCODE, win);
     }
   else
     {
@@ -347,20 +347,20 @@ create_window (char *name, int x, int y, int w, int h,
 	{
 	  win = newwin (h + 2, w + 2, y - 2, x - 2);
 	  if (toupper (name[0]) != name[0])
-	    gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
-	  add_pointer (name, WINCODE, win);
+	    A4GL_gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
+	  A4GL_add_pointer (name, WINCODE, win);
 	}
 
       if (border == 2)
 	{
 	  dswin = newwin (h + 4, w + 4, y - 2, x - 2);
 	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  add_pointer (name, WINCODE, win);
-	  add_pointer (name, DROPSHADOW, dswin);
-	  set_bkg (dswin, '+');
-	  debug ("XX3 REVERSE");
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  A4GL_set_bkg (dswin, '+');
+	  A4GL_debug ("XX3 REVERSE");
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
-	  mja_wrefresh (dswin);
+	  A4GL_mja_wrefresh (dswin);
 	  sleep (2);
 	}
 
@@ -368,11 +368,11 @@ create_window (char *name, int x, int y, int w, int h,
 	{
 	  dswin = newwin (h + 4, w + 4, y - 1, x - 1);
 	  win = newwin (h, w, y - 2, x - 2);
-	  add_pointer (name, WINCODE, win);
-	  add_pointer (name, DROPSHADOW, dswin);
-	  debug ("XX4 REVERSE");
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  A4GL_debug ("XX4 REVERSE");
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
-	  mja_wrefresh (dswin);
+	  A4GL_mja_wrefresh (dswin);
 	  sleep (2);
 	}
 
@@ -380,68 +380,68 @@ create_window (char *name, int x, int y, int w, int h,
 	{
 	  win = newwin (h, w, y - 1, x - 1);
 	  if (toupper (name[0]) != name[0])
-	    gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
-	  add_pointer (name, WINCODE, win);
-	  debug ("Window = %p", win);
+	    A4GL_gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_debug ("Window = %p", win);
 	}
 
     }
 
 #ifdef DEBUG
-  debug ("Window created");
+  A4GL_debug ("Window created");
 #endif
 
   if (win == 0)
     {
 #ifdef DEBUG
-      debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
+      A4GL_debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
 #endif
-      exitwith ("Couldnt create window");
+      A4GL_exitwith ("Couldnt create window");
       return 0;
     }
 
-  mja_wrefresh (win);
+  A4GL_mja_wrefresh (win);
 
   //attrib=attrib&0xff00;
 
   if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
     {
       attrib = attrib + ' ';
-      debug ("Set pad char to space");
+      A4GL_debug ("Set pad char to space");
     }
-  debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
+  A4GL_debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
 
 
 
-  set_bkg (win, attrib);
+  A4GL_set_bkg (win, attrib);
 
 
-  add_pointer (name, ATTRIBUTE, (void *) attrib);
+  A4GL_add_pointer (name, ATTRIBUTE, (void *) attrib);
   if (border)
     {
       //wbkgdset (win, attrib);
-      debug ("Adding border %x", attrib);
+      A4GL_debug ("Adding border %x", attrib);
 
-      set_bkg (win, attrib);
+      A4GL_set_bkg (win, attrib);
 
       wborder (win, 0, 0, 0, 0, 0, 0, 0, 0);
       //wbkgdset (win, 0);
-      mja_wrefresh (win);
+      A4GL_mja_wrefresh (win);
     }
 
   pan = new_panel (win);
   set_panel_userptr (pan, strdup (name));
-  add_pointer (name, PANCODE, pan);
+  A4GL_add_pointer (name, PANCODE, pan);
 
 #ifdef DEBUG
   {
-    debug ("Panel created at %p for window %p", pan, win);
+    A4GL_debug ("Panel created at %p for window %p", pan, win);
   }
 #endif
 
   if (pan == 0)
     {
-      error_box ("Couldnt create panel");
+      A4GL_error_box ("Couldnt create panel");
     }
 
 
@@ -451,16 +451,16 @@ create_window (char *name, int x, int y, int w, int h,
 	{
 #ifdef DEBUG
 	  {
-	    debug ("Adding window at %d panel id = %p", a, pan);
+	    A4GL_debug ("Adding window at %d panel id = %p", a, pan);
 	  }
 #endif
 	  strcpy (windows[a].name, name);
-	  add_pointer (name, S_WINDOWSCODE, &windows[a]);
+	  A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
 	  windows[a].pan = pan;
 	  windows[a].form = 0;
 	  windows[a].winattr.comment_line = comment_line;
 	  windows[a].winattr.menu_line = menu_line;
-	  debug ("Setting prompt line to %d", prompt_line);
+	  A4GL_debug ("Setting prompt line to %d", prompt_line);
 	  windows[a].winattr.prompt_line = prompt_line;
 	  windows[a].winattr.form_line = form_line;
 	  windows[a].winattr.message_line = message_line;
@@ -471,41 +471,41 @@ create_window (char *name, int x, int y, int w, int h,
 	  windows[a].w = w;
 	  windows[a].h = h;
 	  windows[a].win = win;
-	  /* change_currwin (win); */
+	  /* A4GL_change_currwin (win); */
 	  break;
 	}
     }
-  if (!(has_pointer (name, S_WINDOWSCODE)))
+  if (!(A4GL_has_pointer (name, S_WINDOWSCODE)))
     {
-      exitwith ("No spare windows left...");
+      A4GL_exitwith ("No spare windows left...");
       return 0;
     }
 
   keypad (win, TRUE);
 
-  debug ("Deciding what to do... %s\n", name);
+  A4GL_debug ("Deciding what to do... %s\n", name);
   if (toupper (name[0]) != name[0])
     {
 #ifdef DEBUG
       {
-	debug ("Making proper window....for %s", name);
+ A4GL_debug ("Making proper window....for %s", name);
       }
 #endif
-      change_currwin (win, "Marker 1");
-      change_currwinno (a, "Marker 2");
+      A4GL_change_currwin (win, "Marker 1");
+      A4GL_change_currwinno (a, "Marker 2");
       top_panel (pan);
 
-      if (screen_mode (-1))
+      if (A4GL_screen_mode (-1))
 	{
 	  update_panels ();
 	  doupdate ();
 	}
 #ifdef DEBUG
       {
-	debug ("Adding new pointer to window...");
+ A4GL_debug ("Adding new pointer to window...");
       }
       {
-	debug ("Done...");
+ A4GL_debug ("Done...");
       }
 #endif
     }
@@ -513,14 +513,14 @@ create_window (char *name, int x, int y, int w, int h,
     {
 #ifdef DEBUG
       {
-	debug ("Adding window pointers for menu %p > %p", currwin, win);
+ A4GL_debug ("Adding window pointers for menu %p > %p", currwin, win);
       }
 #endif
-      add_pointer (name, MNPARCODE, currwin);
-      add_pointer (name, MNWINCODE, win);
+      A4GL_add_pointer (name, MNPARCODE, currwin);
+      A4GL_add_pointer (name, MNWINCODE, win);
 
       top_panel (pan);
-      if (screen_mode (-1))
+      if (A4GL_screen_mode (-1))
 	{
 	  update_panels ();
 	  doupdate ();
@@ -535,34 +535,34 @@ create_window (char *name, int x, int y, int w, int h,
  * @todo Describe function
  */
 void
-clr_window (char *win_name)
+A4GL_clr_window (char *win_name)
 {
   int a;
   WINDOW *w;
   struct s_windows *win;
-  chkwin ();
-  if (!(has_pointer (win_name, WINCODE)))
+  A4GL_chkwin ();
+  if (!(A4GL_has_pointer (win_name, WINCODE)))
     {
-      set_error ("Window not found %s", win_name);
-      exitwith ("Window not found");
-      set_errm (win_name);
+      A4GL_set_error ("Window not found %s", win_name);
+      A4GL_exitwith ("Window not found");
+      A4GL_set_errm (win_name);
       return;
     }
 #ifdef DEBUG
   {
-    debug ("Clr window .... %s", win_name);
+    A4GL_debug ("Clr window .... %s", win_name);
   }
 #endif
-  w = find_pointer (win_name, WINCODE);
-  win = find_pointer (win_name, S_WINDOWSCODE);
+  w = A4GL_find_pointer (win_name, WINCODE);
+  win = A4GL_find_pointer (win_name, S_WINDOWSCODE);
   wclear (w);
 
   if (win->winattr.border)
     {
-      debug ("Clr screen - redraw border");
+      A4GL_debug ("Clr screen - redraw border");
       wborder (w, 0, 0, 0, 0, 0, 0, 0, 0);
     }
-  zrefresh ();
+  A4GL_zrefresh ();
   return;
 
   for (a = 0; a < MAXWIN; a++)
@@ -573,7 +573,7 @@ clr_window (char *win_name)
 	  break;
 	}
     }
-  zrefresh ();
+  A4GL_zrefresh ();
 }
 
 
@@ -583,24 +583,24 @@ clr_window (char *win_name)
  * @todo Describe function
  */
 void
-remove_window (char *win_name)
+A4GL_remove_window (char *win_name)
 {
   int a;
   WINDOW *win = 0;
   PANEL *panel = 0;
-  chkwin ();
+  A4GL_chkwin ();
 #ifdef DEBUG
-  gui_closewin (win_name);
+  A4GL_gui_closewin (win_name);
   {
-    debug ("Remove Window : %s", win_name);
+    A4GL_debug ("Remove Window : %s", win_name);
   }
 #endif
 
-  if (!(has_pointer (win_name, WINCODE)))
+  if (!(A4GL_has_pointer (win_name, WINCODE)))
     {
-      set_error ("Window not found %s", win_name);
-      exitwith ("Window not found");
-      set_errm (win_name);
+      A4GL_set_error ("Window not found %s", win_name);
+      A4GL_exitwith ("Window not found");
+      A4GL_set_errm (win_name);
       return;
     }
 
@@ -612,25 +612,25 @@ remove_window (char *win_name)
 	  panel = windows[a].pan;
 #ifdef DEBUG
 	  {
-	    debug ("Deleting window and panel at %d", a);
+	    A4GL_debug ("Deleting window and panel at %d", a);
 	  }
 	  {
-	    debug ("Window found ... deleting... %p", win);
+	    A4GL_debug ("Window found ... deleting... %p", win);
 	  }
 	  {
-	    debug ("Deleted window.. deleting panel %p", panel);
+	    A4GL_debug ("Deleted window.. deleting panel %p", panel);
 	  }
 #endif
 	  del_panel (panel);
 #ifdef DEBUG
 	  {
-	    debug ("Deleted panel ... removing window");
+	    A4GL_debug ("Deleted panel ... removing window");
 	  }
 #endif
 	  delwin (win);
 #ifdef DEBUG
 	  {
-	    debug ("Here...");
+	    A4GL_debug ("Here...");
 	  }
 #endif
 	  windows[a].name[0] = 0;
@@ -639,20 +639,20 @@ remove_window (char *win_name)
     }
 #ifdef DEBUG
   {
-    debug ("Finding top window number");
+    A4GL_debug ("Finding top window number");
   }
 #endif
-  top_win (0);
+  A4GL_top_win (0);
   update_panels ();
   doupdate ();
   refresh ();
-  zrefresh ();
+  A4GL_zrefresh ();
 #ifdef DEBUG
   {
-    debug ("Deleting pointer %s", win_name);
+    A4GL_debug ("Deleting pointer %s", win_name);
   }
 #endif
-  del_pointer (win_name, WINCODE);
+  A4GL_del_pointer (win_name, WINCODE);
 
 }
 
@@ -661,28 +661,28 @@ remove_window (char *win_name)
  * @todo Describe function
  */
 int
-int_current_window (char *win_name)
+A4GL_int_current_window (char *win_name)
 {
   PANEL *p;
   WINDOW *w;
-  chkwin ();
-  p = find_pointer (win_name, PANCODE);
-  w = find_pointer (win_name, WINCODE);
+  A4GL_chkwin ();
+  p = A4GL_find_pointer (win_name, PANCODE);
+  w = A4GL_find_pointer (win_name, WINCODE);
   if (!(p))
     {
-      set_error ("%s", win_name);
-      exitwith ("Window not found");
-      set_errm (win_name);
+      A4GL_set_error ("%s", win_name);
+      A4GL_exitwith ("Window not found");
+      A4GL_set_errm (win_name);
       return 0;
     }
   top_panel (p);
 
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
     }
-  zrefresh ();
+  A4GL_zrefresh ();
   return 0;
 }
 
@@ -691,63 +691,63 @@ int_current_window (char *win_name)
  * @todo Describe function
  */
 int
-current_window (char *win_name)
+A4GL_current_window (char *win_name)
 {
   int a = 0;
   PANEL *p;
   WINDOW *w;
-  debug ("Current window....");
-  debug ("currwinno=%d currwin=%p", currwinno, currwin);
+  A4GL_debug ("Current window....");
+  A4GL_debug ("currwinno=%d currwin=%p", currwinno, currwin);
 
-  chkwin ();
+  A4GL_chkwin ();
 #ifdef DEBUG
   {
-    debug ("In current window %s", win_name);
+    A4GL_debug ("In current window %s", win_name);
   }
 #endif
-  p = find_pointer (win_name, PANCODE);
-  w = find_pointer (win_name, WINCODE);
+  p = A4GL_find_pointer (win_name, PANCODE);
+  w = A4GL_find_pointer (win_name, WINCODE);
   if (!(p))
     {
-      set_error ("%s", win_name);
-      exitwith ("Window not found");
-      set_errm (win_name);
+      A4GL_set_error ("%s", win_name);
+      A4GL_exitwith ("Window not found");
+      A4GL_set_errm (win_name);
       return 0;
     }
   top_panel (p);
 #ifdef DEBUG
   {
-    debug ("Resetting current window %d", a);
+    A4GL_debug ("Resetting current window %d", a);
   }
 #endif
-  change_currwin (panel_window (p), "Marker 5");
-  change_currwinno (find_win (p), "Marker 6");
+  A4GL_change_currwin (panel_window (p), "Marker 5");
+  A4GL_change_currwinno (A4GL_find_win (p), "Marker 6");
 #ifdef DEBUG
   {
-    debug ("Changed windows...");
+    A4GL_debug ("Changed windows...");
   }
 #endif
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
     }
 #ifdef DEBUG
   {
-    debug ("Updated screen %p", currwin);
+    A4GL_debug ("Updated screen %p", currwin);
   }
 #endif
-  mja_wrefresh (currwin);
+  A4GL_mja_wrefresh (currwin);
 #ifdef DEBUG
   {
-    debug ("wrefresh");
+    A4GL_debug ("wrefresh");
   }
 #endif
-  zrefresh ();
-  mja_refresh ();
+  A4GL_zrefresh ();
+  A4GL_mja_refresh ();
 #ifdef DEBUG
   {
-    debug ("Refreshed screen");
+    A4GL_debug ("Refreshed screen");
   }
 #endif
   return 0;
@@ -759,16 +759,16 @@ current_window (char *win_name)
  * @todo Describe function
  */
 void
-zrefresh (void)
+A4GL_zrefresh (void)
 {
-  gui_refresh ();
-  if (screen_mode (-1))
+  A4GL_gui_refresh ();
+  if (A4GL_screen_mode (-1))
     {
-      chkwin ();
+      A4GL_chkwin ();
       update_panels ();
       doupdate ();
-      /* mja_wrefresh (currwin); */
-      mja_refresh ();
+      /* A4GL_mja_wrefresh (currwin); */
+      A4GL_mja_refresh ();
     }
 }
 
@@ -777,34 +777,34 @@ zrefresh (void)
  * @todo Describe function
  */
 void
-mja_gotoxy (int x, int y)
+A4GL_mja_gotoxy (int x, int y)
 {
   int a;
-  chkwin ();
+  A4GL_chkwin ();
 
-  debug ("In move - %d %d current window=%p", x, y, window_on_top ());
-  gui_move (x, y);
-  debug ("In move - %d %d", x, y);
+  A4GL_debug ("In move - %d %d current window=%p", x, y, A4GL_window_on_top ());
+  A4GL_gui_move (x, y);
+  A4GL_debug ("In move - %d %d", x, y);
   if (windows[currwinno].winattr.border)
     {
-      debug ("In move border - %d %d", x, y);
+      A4GL_debug ("In move border - %d %d", x, y);
       a = wmove (currwin, y, x);
     }
   else
     {
-      debug ("In move no border - %d %d", x, y);
+      A4GL_debug ("In move no border - %d %d", x, y);
       a = wmove (currwin, y - 1, x - 1);
     }
-  debug ("In move - %d %d", x, y);
+  A4GL_debug ("In move - %d %d", x, y);
   if (a == OK)
     {
-      debug ("Move to %d,%d - %d", x, y, a);
+      A4GL_debug ("Move to %d,%d - %d", x, y, a);
     }
   else
     {
-      debug ("Move to %d %d fails", x, y);
+      A4GL_debug ("Move to %d %d fails", x, y);
     }
-  mja_refresh ();
+  A4GL_mja_refresh ();
 }
 
 /**
@@ -812,22 +812,22 @@ mja_gotoxy (int x, int y)
  * @todo Describe function
  */
 void
-tui_print (char *fmt, ...)
+A4GL_tui_print (char *fmt, ...)
 {
   va_list args;
   char buff[256];
 #ifdef DEBUG
   {
-    debug ("In tui_print");
+    A4GL_debug ("In tui_print");
   }
 #endif
-  chkwin ();
+  A4GL_chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
   //wprintw (currwin, "%s", buff);
   waddstr (currwin, buff);
 
-  mja_wrefresh (currwin);
+  A4GL_mja_wrefresh (currwin);
 }
 
 /**
@@ -840,13 +840,13 @@ erase_form (FORM * f)
 {
   WINDOW *w = form_win (f);
   WINDOW *s = form_sub (f);
-  chkwin ();
+  A4GL_chkwin ();
   unpost_form (f);
   werase (w);
-  mja_wrefresh (w);
+  A4GL_mja_wrefresh (w);
 #ifdef DEBUG
-  {    debug ("Removing Window %p", s);  }
-  {    debug ("Removing Window %w", s);  }
+  {    A4GL_debug ("Removing Window %p", s);  }
+  {    A4GL_debug ("Removing Window %w", s);  }
 #endif
   delwin (s);
   delwin (w);
@@ -858,7 +858,7 @@ erase_form (FORM * f)
  * @todo Describe function
  */
 WINDOW *
-display_form (struct s_form_dets *f)
+A4GL_display_form (struct s_form_dets *f)
 {
   int rows, cols;
   char buff[80];
@@ -869,24 +869,24 @@ display_form (struct s_form_dets *f)
   /*  FIELD **p; */
 
   int fl;
-  chkwin ();
-  debug ("In display_form");
+  A4GL_chkwin ();
+  A4GL_debug ("In display_form");
   w = currwin;
 
   if (w == 0)
     {
-      error_box ("NO WINDOW");
+      A4GL_error_box ("NO WINDOW");
     }
-  debug ("scale form %p", f->form);
+  A4GL_debug ("scale form %p", f->form);
 
-  fl = getform_line ();
+  fl = A4GL_getform_line ();
   scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline - 1;
   cols = f->fileform->maxcol;
 
-  debug ("Form line=%d", fl);
-  debug ("Scale form returns %d %d", rows, cols);
-  debug ("Current window %d %d", windows[currwinno].h, windows[currwinno].w);
+  A4GL_debug ("Form line=%d", fl);
+  A4GL_debug ("Scale form returns %d %d", rows, cols);
+  A4GL_debug ("Current window %d %d", windows[currwinno].h, windows[currwinno].w);
 
   if (windows[currwinno].winattr.border)
     {
@@ -898,12 +898,12 @@ display_form (struct s_form_dets *f)
 
   if (rows - windows[currwinno].winattr.border > windows[currwinno].h + 1)
     {
-      exitwith ("Window is too small to display this form (too high)");
+      A4GL_exitwith ("Window is too small to display this form (too high)");
       return 0;
     }
   if (cols - windows[currwinno].winattr.border > windows[currwinno].w + 1)
     {
-      exitwith ("Window is too small to display this form (too wide)");
+      A4GL_exitwith ("Window is too small to display this form (too wide)");
       return 0;
     }
 
@@ -921,44 +921,44 @@ display_form (struct s_form_dets *f)
 
   if (f->form_details.border)
     {
-      debug ("Form details returns it has border");
+      A4GL_debug ("Form details returns it has border");
     }
   else
     {
-      debug ("Form details returns it has *NO* border");
+      A4GL_debug ("Form details returns it has *NO* border");
     }
 
   if (windows[currwinno].winattr.border)
     {
-      debug ("Window details returns it has border");
+      A4GL_debug ("Window details returns it has border");
     }
   else
     {
-      debug ("Window details returns it has *NO* border ");
+      A4GL_debug ("Window details returns it has *NO* border ");
     }
-  debug ("derwin - %d rows %d cols form line=%d", rows, cols, fl);
+  A4GL_debug ("derwin - %d rows %d cols form line=%d", rows, cols, fl);
 
   if (windows[currwinno].winattr.border)
     {
-      debug ("MJAPASS1");
+      A4GL_debug ("MJAPASS1");
       drwin = derwin (w, rows, cols, fl + 1, 1);
     }
   else
     {
-      debug ("MJAPASS2 rows=%d cols=%d fl=%d", rows, cols, fl);
+      A4GL_debug ("MJAPASS2 rows=%d cols=%d fl=%d", rows, cols, fl);
       drwin = derwin (w, rows, cols, fl - 1, 0);
 
     }
 
 #ifdef DEBUG
   {
-    debug ("drwin=%p", drwin);
+    A4GL_debug ("drwin=%p", drwin);
   }
 #endif
 
   if (drwin == 0)
     {
-      exitwith ("Window is too small to display this form");
+      A4GL_exitwith ("Window is too small to display this form");
       return 0;
     }
 
@@ -973,7 +973,7 @@ display_form (struct s_form_dets *f)
 
   a = set_form_sub (f->form, drwin);
 
-  debug ("setup windows");
+  A4GL_debug ("setup windows");
   keypad (w, TRUE);
   sprintf (buff, "Currwinno=%d", currwinno);
   /*error_box(buff); */
@@ -981,30 +981,30 @@ display_form (struct s_form_dets *f)
 
   if (f->form == 0)
     {
-      exitwith ("Unable to create form");
+      A4GL_exitwith ("Unable to create form");
       return 0;
     }
 
-  debug ("post the form s_form_dets=%p form=%p", f, f->form);
+  A4GL_debug ("post the form s_form_dets=%p form=%p", f, f->form);
   a = post_form (f->form);
 
   if (a == E_POSTED)
     {
-      debug ("Form posted already - dumping and re-doing");
+      A4GL_debug ("Form posted already - dumping and re-doing");
       unpost_form (f->form);
       a = post_form (f->form);
     }
 
   if (f->form_details.border)
     {
-      debug ("Form has border");
+      A4GL_debug ("Form has border");
       wborder (currwin, 0, 0, 0, 0, 0, 0, 0, 0);
     }
-  debug ("start the form");
-  start_form (f);
+  A4GL_debug ("start the form");
+  A4GL_start_form (f);
 
-  mja_wrefresh (w);
-  debug ("And return");
+  A4GL_mja_wrefresh (w);
+  A4GL_debug ("And return");
   return w;
 }
 
@@ -1014,14 +1014,14 @@ display_form (struct s_form_dets *f)
  * @todo Describe function
  */
 WINDOW *
-display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
+A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 {
   WINDOW *w;
   int nlines;
   int rows, cols;
   char buff[80];
-  chkwin ();
-  debug ("display_form_new_win - name=%s\n", name);
+  A4GL_chkwin ();
+  A4GL_debug ("display_form_new_win - name=%s\n", name);
   scale_form (f->form, &rows, &cols);
   if (f->form_details.border)
     {
@@ -1032,10 +1032,10 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
       rows = f->fileform->maxline;
     }
   cols = f->fileform->maxcol;
-  debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x,
+  A4GL_debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x,
 	 y);
 
-  debug ("display_form_new_win - border=%d", f->form_details.border);
+  A4GL_debug ("display_form_new_win - border=%d", f->form_details.border);
   sprintf (buff, "%d %d", cols, rows);
 #ifdef DEBUG
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */
@@ -1046,7 +1046,7 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
     {
       nlines++;
     }
-  w = create_window (name, x, y, cols, nlines,
+  w = A4GL_create_window (name, x, y, cols, nlines,
 		     1,
 		     f->form_details.form_line,
 		     f->form_details.error_line,
@@ -1056,8 +1056,8 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 		     f->form_details.comment_line,
 		     f->form_details.message_line, f->form_details.colour);
 
-  gui_dispform (name, getform_line ());
-  if (display_form (f))
+  A4GL_gui_dispform (name, A4GL_getform_line ());
+  if (A4GL_display_form (f))
     return w;
   else
     return 0;
@@ -1068,21 +1068,21 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
  * @todo Describe function
  */
 WINDOW *
-display_form_win (WINDOW * w, char *name, struct s_form_dets * f)
+A4GL_display_form_win (WINDOW * w, char *name, struct s_form_dets * f)
 {
-  chkwin ();
+  A4GL_chkwin ();
 #ifdef DEBUG
   {
-    debug ("setting form window for %p to %p", f->form, w);
+    A4GL_debug ("setting form window for %p to %p", f->form, w);
   }
 #endif
 
   set_form_win (f->form, w);
   set_form_sub (f->form, derwin (w, 8, 58, 1, 1));
   keypad (w, TRUE);
-  gui_dispform (name, getform_line ());
+  A4GL_gui_dispform (name, A4GL_getform_line ());
   post_form (f->form);
-  start_form (f->form);
+  A4GL_start_form (f->form);
   return w;
 }
 
@@ -1091,7 +1091,7 @@ display_form_win (WINDOW * w, char *name, struct s_form_dets * f)
  * @todo Describe function
  */
 int
-get_curr_win (void)
+A4GL_get_curr_win (void)
 {
   return currwinno;
 }
@@ -1101,21 +1101,21 @@ get_curr_win (void)
  * @todo Describe function
  */
 void *
-get_curr_form (void)
+A4GL_get_curr_form (void)
 {
   char buff[80];
   sprintf (buff, "currwinno=%d", currwinno);
 
 #ifdef DEBUG
   {
-    debug ("currwinno=%d", currwinno);
+    A4GL_debug ("currwinno=%d", currwinno);
   }
 #endif
 
   /*error_box(buff); */
   if (windows[currwinno].form == 0)
     {
-      exitwith ("No current form");
+      A4GL_exitwith ("No current form");
       return 0;
     }
   return windows[currwinno].form;
@@ -1126,7 +1126,7 @@ get_curr_form (void)
  * @todo Describe function
  */
 int
-get_curr_left (void)
+A4GL_get_curr_left (void)
 {
   return windows[currwinno].x;
 /* + windows[currwinno].winattr.border; */
@@ -1137,7 +1137,7 @@ get_curr_left (void)
  * @todo Describe function
  */
 int
-get_curr_height (void)
+A4GL_get_curr_height (void)
 {
   return windows[currwinno].h;
 }
@@ -1147,11 +1147,11 @@ get_curr_height (void)
  * @todo Describe function
  */
 int
-get_curr_print_top (void)
+A4GL_get_curr_print_top (void)
 {
 #ifdef DEBUG
   {
-    debug ("In curr_print_top %d %d", windows[currwinno].winattr.border,
+    A4GL_debug ("In curr_print_top %d %d", windows[currwinno].winattr.border,
 	   windows[currwinno].y);
   }
 #endif
@@ -1164,7 +1164,7 @@ get_curr_print_top (void)
  * @todo Describe function
  */
 int
-get_curr_top (void)
+A4GL_get_curr_top (void)
 {
   return windows[currwinno].y;
 }
@@ -1174,10 +1174,10 @@ get_curr_top (void)
  * @todo Describe function
  */
 int
-get_curr_width (void)
+A4GL_get_curr_width (void)
 {
-  chkwin ();
-  debug ("get curr width, currwinno=%d windows name =%s %d", currwinno,
+  A4GL_chkwin ();
+  A4GL_debug ("get curr width, currwinno=%d windows name =%s %d", currwinno,
 	 windows[currwinno].name, windows[currwinno].w);
   return windows[currwinno].w;
 }
@@ -1187,7 +1187,7 @@ get_curr_width (void)
  * @todo Describe function
  */
 char *
-get_currwin_name (void)
+A4GL_get_currwin_name (void)
 {
   return windows[currwinno].name;
 }
@@ -1198,9 +1198,9 @@ get_currwin_name (void)
  * @todo Describe function
  */
 int
-get_curr_border (void)
+A4GL_get_curr_border (void)
 {
-  debug ("get curr border, currwinno=%d windows name =%s %d", currwinno,
+  A4GL_debug ("get curr border, currwinno=%d windows name =%s %d", currwinno,
 	 windows[currwinno].name, windows[currwinno].winattr.border);
   return windows[currwinno].winattr.border;
 }
@@ -1211,40 +1211,40 @@ get_curr_border (void)
  * @todo Describe function
  */
 void
-mja_setcolor (int typ)
+A4GL_mja_setcolor (int typ)
 {
-  gui_setcolor (typ);
-  debug ("Set color.");
+  A4GL_gui_setcolor (typ);
+  A4GL_debug ("Set color.");
   if (has_colors ())
     {
-      debug ("Has color\n");
+      A4GL_debug ("Has color\n");
       switch (typ)
 	{
 	case ERROR_COL:
-	  debug ("XX4 REVERSE");
-	  currwin->_attrs = colour_code (COLOR_RED) | A_REVERSE;
+	  A4GL_debug ("XX4 REVERSE");
+	  currwin->_attrs = A4GL_colour_code (COLOR_RED) | A_REVERSE;
 	  break;
 	case MESSAGE:
-	  debug ("XX4 REVERSE");
-	  currwin->_attrs = colour_code (COLOR_CYAN) | A_REVERSE;
+	  A4GL_debug ("XX4 REVERSE");
+	  currwin->_attrs = A4GL_colour_code (COLOR_CYAN) | A_REVERSE;
 	  break;
 	case NORMAL_MENU:
 	  standend ();
-	  /* currwin->_attrs = colour_code (COLOR_WHITE); */
+	  /* currwin->_attrs = A4GL_colour_code (COLOR_WHITE); */
 	  break;
 	case INVERT_MENU:
 	  standout ();
-	  debug ("XX4 REVERSE");
-	  /* currwin->_attrs = colour_code (COLOR_WHITE) | A_REVERSE; */
+	  A4GL_debug ("XX4 REVERSE");
+	  /* currwin->_attrs = A4GL_colour_code (COLOR_WHITE) | A_REVERSE; */
 	  break;
 	case TITLE_COL:
-	  currwin->_attrs = colour_code (COLOR_WHITE);
+	  currwin->_attrs = A4GL_colour_code (COLOR_WHITE);
 	  break;
 	case EDIT_FIELD:
-	  currwin->_attrs = colour_code (COLOR_WHITE);
+	  currwin->_attrs = A4GL_colour_code (COLOR_WHITE);
 	  break;
 	case NORMAL_TEXT:
-	  /* currwin->_attrs = colour_code (COLOR_WHITE); */
+	  /* currwin->_attrs = A4GL_colour_code (COLOR_WHITE); */
 	  standend ();
 	  break;
 	}
@@ -1255,7 +1255,7 @@ mja_setcolor (int typ)
       switch (typ)
 	{
 	case ERROR_COL:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case MESSAGE:
@@ -1266,15 +1266,15 @@ mja_setcolor (int typ)
 	  break;
 	case INVERT_MENU:
 	  standout ();
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  /* currwin->_attrs = A_REVERSE; */
 	  break;
 	case TITLE_COL:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case EDIT_FIELD:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case NORMAL_TEXT:
@@ -1282,7 +1282,7 @@ mja_setcolor (int typ)
 	  break;
 	}
     }
-  debug ("Done..");
+  A4GL_debug ("Done..");
 }
 
 /**
@@ -1295,14 +1295,14 @@ display_at2 (char *z, int x, int y, int a)
 {
   int b;
   WINDOW *cwin;
-  cwin = window_on_top ();
-  b = xwattr_get (cwin);
-  mja_gotoxy (x, y);
+  cwin = A4GL_window_on_top ();
+  b = A4GL_xwattr_get (cwin);
+  A4GL_mja_gotoxy (x, y);
   a4glattr_wattrset (cwin, a);
-  gui_print (a, z);
-  tui_print ("%s", z);
+  A4GL_gui_print (a, z);
+  A4GL_tui_print ("%s", z);
   wattrset (cwin, b);
-  mja_wrefresh (cwin);
+  A4GL_mja_wrefresh (cwin);
 }
 #endif
 
@@ -1312,10 +1312,10 @@ display_at2 (char *z, int x, int y, int a)
  * @todo Describe function
  */
 int
-getch_win (void)
+A4GL_getch_win (void)
 {
-  debug ("getch_win called...");
-  return getch_swin (window_on_top ());
+  A4GL_debug ("getch_win called...");
+  return A4GL_getch_swin (A4GL_window_on_top ());
 }
 
 /**
@@ -1323,16 +1323,16 @@ getch_win (void)
  * @todo Describe function
  */
 int
-getch_swin (WINDOW * window_ptr)
+A4GL_getch_swin (WINDOW * window_ptr)
 {
   int a;
-  if (isgui ())
+  if (A4GL_isgui ())
     {
-      return get_gui_char ();
+      return A4GL_get_gui_char ();
     }
 
-  debug ("Reading from keyboard on window %p", window_ptr);
-  set_abort (0);
+  A4GL_debug ("Reading from keyboard on window %p", window_ptr);
+  A4GL_set_abort (0);
 
   while (1)
     {
@@ -1342,25 +1342,25 @@ getch_swin (WINDOW * window_ptr)
 
       if (a == KEY_MOUSE)
 	{
-	  debug ("Mouse event...");
+	  A4GL_debug ("Mouse event...");
 	}
 
       if (abort_pressed)
 	{
-	  debug ("MJAC Aborted!");
+	  A4GL_debug ("MJAC Aborted!");
 	  a = KEY_CANCEL;
 	  break;
 	}
 
       if (a != -1)
 	{
-	  debug ("MJAC Key Pressed %d", a);
+	  A4GL_debug ("MJAC Key Pressed %d", a);
 	  break;
 	}
 
     }
   cbreak ();
-  debug ("Got char from keyboard : %d", a);
+  A4GL_debug ("Got char from keyboard : %d", a);
   return a;
 }
 
@@ -1371,29 +1371,29 @@ getch_swin (WINDOW * window_ptr)
  * @todo Describe function
  */
 int
-decode_line (int l)
+A4GL_decode_line (int l)
 {
   if (l > 0)
     {
-      if (get_curr_border ())
+      if (A4GL_get_curr_border ())
 	{
-	  debug ("Decoded line %d to %d (because of border)", l, l - 1);
+	  A4GL_debug ("Decoded line %d to %d (because of border)", l, l - 1);
 	  return l - 1;
 	}
       else
 	{
-	  debug ("Decoded line %d to %d", l, l);
+	  A4GL_debug ("Decoded line %d to %d", l, l);
 	  return l;
 	}
     }
 /* -1 = last */
 /* -2 = last -1 */
-  if (get_curr_border ())
+  if (A4GL_get_curr_border ())
     {
       if (l < 0)
 	{
-	  debug ("Decoded line %d to %d  %d ", l, get_curr_height ());
-	  return get_curr_height () + l;
+	  A4GL_debug ("Decoded line %d to %d  %d ", l, A4GL_get_curr_height ());
+	  return A4GL_get_curr_height () + l;
 	}
 
     }
@@ -1401,8 +1401,8 @@ decode_line (int l)
     {
       if (l < 0)
 	{
-	  debug ("Decoded line %d to %d  %d ", l, get_curr_height ());
-	  return get_curr_height () + l + 1;
+	  A4GL_debug ("Decoded line %d to %d  %d ", l, A4GL_get_curr_height ());
+	  return A4GL_get_curr_height () + l + 1;
 	}
 
     }
@@ -1414,36 +1414,36 @@ decode_line (int l)
  * @todo Describe function
  */
 char *
-glob_window (int x, int y, int w, int h, int border)
+A4GL_glob_window (int x, int y, int w, int h, int border)
 {
   static char winname[20];
   int f;
 #ifdef DEBUG
   {
-    debug ("In glob_window");
+    A4GL_debug ("In glob_window");
   }
 #endif
-  chkwin ();
+  A4GL_chkwin ();
   memset (winname, 'A', 19);
   f = 1;
   winname[19] = 0;
 
 #ifdef DEBUG
   {
-    debug ("Finding free window ... starting with %s", winname);
+    A4GL_debug ("Finding free window ... starting with %s", winname);
   }
 #endif
 
-  while (has_pointer (winname, WINCODE))
+  while (A4GL_has_pointer (winname, WINCODE))
     {
-      inc_winname (winname);
+      A4GL_inc_winname (winname);
     }
-  create_blank_window (winname, x, y + 1, w, h, border);
+  A4GL_create_blank_window (winname, x, y + 1, w, h, border);
 #ifdef DEBUG
   {				/*debug("Adding window @ %d %s",a,winname); */
   }
 #endif
-  /*add_pointer (winname, WINCODE, win); */
+  /*A4GL_add_pointer (winname, WINCODE, win); */
   return winname;
 }
 
@@ -1452,7 +1452,7 @@ glob_window (int x, int y, int w, int h, int border)
  * @todo Describe function
  */
 void
-inc_winname (char *b)
+A4GL_inc_winname (char *b)
 {
   int a;
   for (a = 0; a < 10; a++)
@@ -1471,27 +1471,27 @@ inc_winname (char *b)
  * @todo Describe function
  */
 int
-getmenu_line (void)
+A4GL_getmenu_line (void)
 {
 #ifdef DEBUG
   {
-    debug ("In menu line... currwinno=%d ", currwinno);
+    A4GL_debug ("In menu line... currwinno=%d ", currwinno);
   }
   {
-    debug ("name=%s ", windows[currwinno].name);
+    A4GL_debug ("name=%s ", windows[currwinno].name);
   }
 #endif
 
   if (strcmp (windows[currwinno].name, "screen") == 0)
     {
       /* use screen default */
-      return decode_line (std_dbscr.menu_line);
+      return A4GL_decode_line (std_dbscr.menu_line);
     }
 
-  debug ("form=%p", windows[currwinno].form);
-  debug ("menu line=%d (%s)", windows[currwinno].winattr.menu_line,
+  A4GL_debug ("form=%p", windows[currwinno].form);
+  A4GL_debug ("menu line=%d (%s)", windows[currwinno].winattr.menu_line,
 	 windows[currwinno].name);
-  return decode_line (windows[currwinno].winattr.menu_line);
+  return A4GL_decode_line (windows[currwinno].winattr.menu_line);
 }
 
 /**
@@ -1499,14 +1499,14 @@ getmenu_line (void)
  * @todo Describe function
  */
 void
-display_internal (int x, int y, char *s, int a, int clr_line)
+A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
   if (x == -1 && y == -1)
     {
-      debug ("Line mode display");
-      if (isscrmode ())
+      A4GL_debug ("Line mode display");
+      if (A4GL_isscrmode ())
 	{
-	  mja_endwin ();
+	  A4GL_mja_endwin ();
 	}
       printf ("%s\n", s);
       fflush (stdout);
@@ -1517,24 +1517,24 @@ display_internal (int x, int y, char *s, int a, int clr_line)
       int line_length;
       /* WINDOW *win; */
 
-      chkwin ();
-      b = xwattr_get (currwin);
-      a4glattr_wattrset (window_on_top (), a);
-      gui_print (a, s);
-      mja_gotoxy (x, y);
-      tui_print ("%s", s);
+      A4GL_chkwin ();
+      b = A4GL_xwattr_get (currwin);
+      a4glattr_wattrset (A4GL_window_on_top (), a);
+      A4GL_gui_print (a, s);
+      A4GL_mja_gotoxy (x, y);
+      A4GL_tui_print ("%s", s);
       if (clr_line)
 	{
-	  debug ("Clearing line...");
-	  wclrtoeol (window_on_top ());
+	  A4GL_debug ("Clearing line...");
+	  wclrtoeol (A4GL_window_on_top ());
 	}
 
-      debug (">> printed %s", s);
+      A4GL_debug (">> printed %s", s);
 
       /* b was got via curses - so we can use the curses version */
-      wattrset (window_on_top (), b);
-      mja_wrefresh (window_on_top ());
-      mja_refresh ();
+      wattrset (A4GL_window_on_top (), b);
+      A4GL_mja_wrefresh (A4GL_window_on_top ());
+      A4GL_mja_refresh ();
     }
 }
 
@@ -1544,24 +1544,24 @@ display_internal (int x, int y, char *s, int a, int clr_line)
  * @todo Describe function
  */
 void
-display_error (int a, int wait)
+A4GL_display_error (int a, int wait)
 {
   char *s;
-  debug ("Cr string");
-  s = char_pop ();
-  debug ("ZZ2 going to print an error : %s", s);
-  trim (s);
-  debug ("trimmed -> %s", s);
-  if (isgui ())
-    gui_error (s, geterror_line ());
+  A4GL_debug ("Cr string");
+  s = A4GL_char_pop ();
+  A4GL_debug ("ZZ2 going to print an error : %s", s);
+  A4GL_trim (s);
+  A4GL_debug ("trimmed -> %s", s);
+  if (A4GL_isgui ())
+    A4GL_gui_error (s, A4GL_geterror_line ());
   else
     {
       if (wait)
-	error_box (s);
+ A4GL_error_box (s);
       else
-	error_nobox (s);
+ A4GL_error_nobox (s);
     }
-  debug ("error_box done");
+  A4GL_debug ("error_box done");
   acl_free (s);
   a4gl_status = 0;
 }
@@ -1572,11 +1572,11 @@ display_error (int a, int wait)
  * @todo Describe function
  */
 void
-mja_endwin (void)
+A4GL_mja_endwin (void)
 {
-  if (isscrmode ())
+  if (A4GL_isscrmode ())
     {
-      set_scrmode ('L');
+      A4GL_set_scrmode ('L');
       printf ("\n");
       fflush (stdout);
       endwin ();
@@ -1588,20 +1588,20 @@ mja_endwin (void)
  * @todo Describe function
  */
 int
-chkwin (void)
+A4GL_chkwin (void)
 {
-  if (env_option_set ("NOCURSES"))
+  if (A4GL_env_option_set ("NOCURSES"))
     {				/* FIXME: this is now A4GL_UI=CONSOLE */
-      exitwith ("NOCURSES Mode has been specified - operation not permitted");
+      A4GL_exitwith ("NOCURSES Mode has been specified - operation not permitted");
       exit (0);
       return 0;
     }
 
-  if (islinemode ())
+  if (A4GL_islinemode ())
     {
       A4GL_init_curses_stuff ();
-      set_scrmode ('S');
-      mja_refresh ();
+      A4GL_set_scrmode ('S');
+      A4GL_mja_refresh ();
     }
   return 1;
 }
@@ -1612,7 +1612,7 @@ chkwin (void)
  * @todo Describe function
  */
 void *
-cr_window (char *s,
+A4GL_cr_window (char *s,
 	   int iswindow,
 	   int form_line,
 	   int error_line,
@@ -1622,22 +1622,22 @@ cr_window (char *s,
 {
   WINDOW *win;
   int x, y, w, h;
-  w = pop_int ();
-  h = pop_int ();
-  x = pop_int ();
-  y = pop_int ();
-  if (has_pointer (s, WINCODE))
+  w = A4GL_pop_int ();
+  h = A4GL_pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
+  if (A4GL_has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
       {
-	debug ("Window already exists");
+ A4GL_debug ("Window already exists");
       }
 #endif
-      set_errm (s);
-      exitwith ("Window already exists (%s)");
+      A4GL_set_errm (s);
+      A4GL_exitwith ("Window already exists (%s)");
       return 0;
     }
-  win = create_window (s, x, y, w, h,
+  win = A4GL_create_window (s, x, y, w, h,
 		       iswindow,
 		       form_line,
 		       error_line,
@@ -1652,7 +1652,7 @@ cr_window (char *s,
  * @todo Describe function
  */
 int
-cr_window_form (char *name,
+A4GL_cr_window_form (char *name,
 		int iswindow,
 		int form_line,
 		int error_line,
@@ -1665,7 +1665,7 @@ cr_window_form (char *name,
   char buff[132];
   struct s_form_dets *form;
   WINDOW *win;
-  debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
+  A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
 	 name, iswindow, form_line, error_line, prompt_line, menu_line,
 	 border, comment_line, message_line, attrib);
 
@@ -1690,57 +1690,57 @@ cr_window_form (char *name,
       prompt_line = std_dbscr.prompt_line;
     }
 
-  s = char_pop ();
-  x = pop_int ();
-  y = pop_int ();
+  s = A4GL_char_pop ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
   strcpy (buff, s);
-  trim (buff);
+  A4GL_trim (buff);
   //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
-  debug ("reading file %s - name=%s", buff, name);
+  A4GL_debug ("reading file %s - name=%s", buff, name);
   a4gl_status = 0;
-  form = read_form (buff, name);
+  form = A4GL_read_form (buff, name);
   if (a4gl_status != 0)
     return 0;
 
   if (form == 0)
     {
-      exitwith ("Unable to create form");
+      A4GL_exitwith ("Unable to create form");
       return 0;
     }
   else
     {
-      debug ("Created form %p", form);
+      A4GL_debug ("Created form %p", form);
     }
 
   scale_form (form->form, &w, &h);
 
   w = form->fileform->maxcol;
   h = form->fileform->maxline;
-  debug ("Scaling on %s gives %d %d border = %d", buff, w, h, border);
+  A4GL_debug ("Scaling on %s gives %d %d border = %d", buff, w, h, border);
 
   /* ignore error line for now */
 
   form->form_details.comment_line = comment_line;
   form->form_details.menu_line = menu_line;
-  debug ("Setting prompt line to ", prompt_line);
+  A4GL_debug ("Setting prompt line to ", prompt_line);
   form->form_details.prompt_line = prompt_line;
   form->form_details.form_line = form_line;
   form->form_details.message_line = message_line;
-  debug ("border=%d\n", border);
+  A4GL_debug ("border=%d\n", border);
   form->form_details.border = border;
   form->form_details.colour = attrib;
-  add_pointer (name, S_FORMDETSCODE, form);
+  A4GL_add_pointer (name, S_FORMDETSCODE, form);
 
-  win = display_form_new_win (name, form, x, y);
+  win = A4GL_display_form_new_win (name, form, x, y);
   if (win)
     {
-      add_pointer (name, WINCODE, win);
-      mja_wrefresh (currwin);
+      A4GL_add_pointer (name, WINCODE, win);
+      A4GL_mja_wrefresh (currwin);
     }
   else
     {
-      exitwith ("Error displaying form in window");
+      A4GL_exitwith ("Error displaying form in window");
     }
   acl_free (s);
   return 0;
@@ -1756,39 +1756,39 @@ cr_window_form (char *name,
  * @todo Describe function
  */
 int
-open_form (char *name)
+A4GL_open_form (char *name)
 {
   int w, h;
   char *s;
   char buff[256];
   struct s_form_dets *form;
-  s = char_pop ();
+  s = A4GL_char_pop ();
   strncpy (buff, s, 256);
   buff[255] = 0;
-  trim (buff);
+  A4GL_trim (buff);
   //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
-  debug ("reading file %s ?", buff);
+  A4GL_debug ("reading file %s ?", buff);
   A4GLSQL_set_status (0, 0);
 
-  form = read_form (buff, name);
-  debug ("Read form returns %d status = %d\n", form);
+  form = A4GL_read_form (buff, name);
+  A4GL_debug ("Read form returns %d status = %d\n", form);
   if (a4gl_status != 0)
     {
-      debug ("Some problem opening form...");
+      A4GL_debug ("Some problem opening form...");
       acl_free (s);
       return -1;
     }
-  set_default_form (&form->form_details);
+  A4GL_set_default_form (&form->form_details);
   scale_form (form->form, &h, &w);
   /*
      form->w=w; // MJA 2707
      form->h=h; // MJA 2707
    */
-  debug ("adding pointer F to %s", name);
-  add_pointer (name, S_FORMDETSCODE, form);
-  debug ("Freeing s");
+  A4GL_debug ("adding pointer F to %s", name);
+  A4GL_add_pointer (name, S_FORMDETSCODE, form);
+  A4GL_debug ("Freeing s");
   acl_free (s);
-  debug ("Freed - form has been opened");
+  A4GL_debug ("Freed - form has been opened");
   return 0;
 }
 
@@ -1797,9 +1797,9 @@ open_form (char *name)
  * @todo Describe function
  */
 void
-close_form (char *formname)
+A4GL_close_form (char *formname)
 {
-  debug ("FIXME : close_form not implemented");
+  A4GL_debug ("FIXME : A4GL_close_form not implemented");
 }
 
 
@@ -1808,32 +1808,32 @@ close_form (char *formname)
  * @todo Describe function
  */
 int
-disp_form (char *name, int attr)
+A4GL_disp_form (char *name, int attr)
 {
   struct s_form_dets *f;
   WINDOW *w;
   char buff[80];
 
-  debug ("attr=%d\n", attr);
-  attr = decode_aubit_attr (attr, 'w');
+  A4GL_debug ("attr=%d\n", attr);
+  attr = A4GL_decode_aubit_attr (attr, 'w');
 
-  debug ("attr=%x\n", attr);
+  A4GL_debug ("attr=%x\n", attr);
 
-  debug ("Disp_form_tui");
-  f = (struct s_form_dets *) find_pointer_val (name, S_FORMDETSCODE);
-  debug ("Got pointer to form as %p", f);
+  A4GL_debug ("Disp_form_tui");
+  f = (struct s_form_dets *) A4GL_find_pointer_val (name, S_FORMDETSCODE);
+  A4GL_debug ("Got pointer to form as %p", f);
   if (f == 0)
     {
-      exitwith ("The form has not been opened");
+      A4GL_exitwith ("The form has not been opened");
       return 0;
     }
-  w = display_form (f);
+  w = A4GL_display_form (f);
   if (w == 0)
     {
 #ifdef DEBUG
 /* {DEBUG} */
       {
-	debug ("Error display window");
+ A4GL_debug ("Error display window");
       }
 #endif
       return 0;
@@ -1842,10 +1842,10 @@ disp_form (char *name, int attr)
   windows[currwinno].form = f;
   sprintf (buff, "currwinno=%d f=%p", currwinno, f);
   /*error_box(buff); */
-  mja_wrefresh (currwin);
-  gui_dispform (name, getform_line ());
-  debug ("Diplay form");
-  mja_refresh ();
+  A4GL_mja_wrefresh (currwin);
+  A4GL_gui_dispform (name, A4GL_getform_line ());
+  A4GL_debug ("Diplay form");
+  A4GL_mja_refresh ();
   return 0;
 }
 
@@ -1857,9 +1857,9 @@ disp_form (char *name, int attr)
  * @todo Describe function
  */
 int
-set_window (int a)
+A4GL_set_window (int a)
 {
-  current_window (windows[a].name);
+  A4GL_current_window (windows[a].name);
 /*error_box(windows[a].name); */
   return 0;
 }
@@ -1869,44 +1869,44 @@ set_window (int a)
  * @todo Describe function
  */
 int
-refresh_menu_window (char *name, int top)
+A4GL_refresh_menu_window (char *name, int top)
 {
   PANEL *ptr;
   int rc;
   char nm[40];
   char s;
 
-  debug ("In refresh_menu_window %s", name);
+  A4GL_debug ("In A4GL_refresh_menu_window %s", name);
   print_panel_stack ();
-  ptr = find_pointer (name, MNPARCODE);
-  find_pointer_ptr (nm, &s, ptr);
+  ptr = A4GL_find_pointer (name, MNPARCODE);
+  A4GL_find_pointer_ptr (nm, &s, ptr);
 
   if (nm)
     {
-      debug ("Making menus parent window current %s", nm);
-      ptr = find_pointer (nm, PANCODE);
-      debug ("Parent window=%p", ptr);
+      A4GL_debug ("Making menus parent window current %s", nm);
+      ptr = A4GL_find_pointer (nm, PANCODE);
+      A4GL_debug ("Parent window=%p", ptr);
       rc = top_panel (ptr);
 
-      debug ("Rc=%d", rc);
+      A4GL_debug ("Rc=%d", rc);
     }
   else
     {
-      debug ("Not found parent window - %p", ptr);
+      A4GL_debug ("Not found parent window - %p", ptr);
     }
 
-  debug ("Setting menu (%s) panel to top", name);
-  ptr = find_pointer (name, PANCODE);
-  debug ("refresh menu with pointer to %p", ptr);
+  A4GL_debug ("Setting menu (%s) panel to top", name);
+  ptr = A4GL_find_pointer (name, PANCODE);
+  A4GL_debug ("refresh menu with pointer to %p", ptr);
   if (top)
     rc = top_panel (ptr);
   else
     rc = bottom_panel (ptr);
-  debug ("Rc=%d", rc);
-  debug ("Topped");
+  A4GL_debug ("Rc=%d", rc);
+  A4GL_debug ("Topped");
   update_panels ();
   doupdate ();
-  zrefresh ();
+  A4GL_zrefresh ();
   print_panel_stack ();
   return 0;
 }
@@ -1916,13 +1916,13 @@ refresh_menu_window (char *name, int top)
  * @todo Describe function
  */
 int
-subwin_gotoxy (WINDOW * win, int x, int y)
+A4GL_subwin_gotoxy (WINDOW * win, int x, int y)
 {
   int a;
   a = wmove (win, y - 1, x - 1);
   if (a == ERR)
     {
-      debug ("Failed to move cursor!");
+      A4GL_debug ("Failed to move cursor!");
     }
   return 0;
 }
@@ -1932,14 +1932,14 @@ subwin_gotoxy (WINDOW * win, int x, int y)
  * @todo Describe function
  */
 int
-subwin_print (WINDOW * win, char *fmt, ...)
+A4GL_subwin_print (WINDOW * win, char *fmt, ...)
 {
   va_list args;
-  chkwin ();
-  debug ("subwin_print '%s' on window %p", fmt, win);
+  A4GL_chkwin ();
+  A4GL_debug ("subwin_print '%s' on window %p", fmt, win);
   va_start (args, fmt);
-  mja_vwprintw (win, fmt, &args);	/*  MJAMJAMJA */
-  mja_wrefresh (win);
+  A4GL_mja_vwprintw (win, fmt, &args);	/*  MJAMJAMJA */
+  A4GL_mja_wrefresh (win);
   return 0;
 }
 
@@ -1949,14 +1949,14 @@ subwin_print (WINDOW * win, char *fmt, ...)
  * @todo Describe function
  */
 int
-subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
+A4GL_subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
 {
   va_list args;
-  chkwin ();
+  A4GL_chkwin ();
   va_start (args, fmt);
   wmove (win, y - 1, x - 1);
-  mja_vwprintw (win, fmt, &args);
-  mja_wrefresh (win);
+  A4GL_mja_vwprintw (win, fmt, &args);
+  A4GL_mja_wrefresh (win);
   return 0;
 }
 
@@ -1967,22 +1967,22 @@ subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
  * @todo Describe function
  */
 int
-subwin_setcolor (WINDOW * win, int typ)
+A4GL_subwin_setcolor (WINDOW * win, int typ)
 {
   WINDOW *currwin;
   long attr;
   currwin = win;
   attr = getbkgd (currwin);
-  debug ("Window background = %x", attr);
+  A4GL_debug ("Window background = %x", attr);
   if (attr == 0)
     {
       attr = A_NORMAL & ' ';
     }
-  debug ("Subwin - setcolor");
+  A4GL_debug ("Subwin - setcolor");
   if (has_colors ())
     {
-      debug ("XX4 REVERSE");
-      debug ("Color display - %d current attrib is reverse %d", typ,
+      A4GL_debug ("XX4 REVERSE");
+      A4GL_debug ("Color display - %d current attrib is reverse %d", typ,
 	     attr & A_REVERSE);
       switch (typ)
 	{
@@ -1992,37 +1992,37 @@ subwin_setcolor (WINDOW * win, int typ)
 
 	  break;
 	case INVERT_MENU:
-	  debug ("Invert...");
+	  A4GL_debug ("Invert...");
 	  if (attr & A_REVERSE)
 	    {
-	      debug ("XX4 REVERSE");
-	      if (((attr) & (colour_code (COLOR_WHITE))) ==
-		  colour_code (COLOR_WHITE))
+	      A4GL_debug ("XX4 REVERSE");
+	      if (((attr) & (A4GL_colour_code (COLOR_WHITE))) ==
+		  A4GL_colour_code (COLOR_WHITE))
 		{
-		  debug ("Use red %x", colour_code (COLOR_RED));
-		  debug ("XX4 REVERSE");
-		  wattrset (currwin, A_REVERSE | colour_code (COLOR_RED));
+		  A4GL_debug ("Use red %x", A4GL_colour_code (COLOR_RED));
+		  A4GL_debug ("XX4 REVERSE");
+		  wattrset (currwin, A_REVERSE | A4GL_colour_code (COLOR_RED));
 		}
 	      else
 		{
-		  debug ("Ops - try green instead of red...\n");
-		  debug ("XX4 REVERSE");
-		  wattrset (currwin, A_REVERSE + colour_code (COLOR_WHITE));
+		  A4GL_debug ("Ops - try green instead of red...\n");
+		  A4GL_debug ("XX4 REVERSE");
+		  wattrset (currwin, A_REVERSE + A4GL_colour_code (COLOR_WHITE));
 		}
 	    }
 	  else
 	    {
-	      debug ("Off for invert");
-	      debug ("XX4 REVERSE");
+	      A4GL_debug ("Off for invert");
+	      A4GL_debug ("XX4 REVERSE");
 	      wattron (currwin, A_REVERSE);
 	    }
 
 	  break;
 	case TITLE_COL:
-	  wattrset (currwin, colour_code (COLOR_WHITE));
+	  wattrset (currwin, A4GL_colour_code (COLOR_WHITE));
 	  break;
 	case EDIT_FIELD:
-	  wattrset (currwin, colour_code (COLOR_WHITE));
+	  wattrset (currwin, A4GL_colour_code (COLOR_WHITE));
 	  break;
 	}
       currattr = typ;
@@ -2032,23 +2032,23 @@ subwin_setcolor (WINDOW * win, int typ)
       switch (typ)
 	{
 	case ERROR_COL:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case MESSAGE:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case NORMAL_MENU:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case INVERT_MENU:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case TITLE_COL:
-	  debug ("XX4 REVERSE");
+	  A4GL_debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case EDIT_FIELD:
@@ -2070,23 +2070,23 @@ subwin_setcolor (WINDOW * win, int typ)
  * @todo Describe function
  */
 int
-mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
+A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 {
   char buff[256];
   vsprintf (buff, fmt, *args);
-  debug ("mja_vwprintw..> '%s' attribute %x", buff, xwattr_get (win));
-  if (xwattr_get (win) == 0x20)
+  A4GL_debug ("mja_vwprintw..> '%s' attribute %x", buff, A4GL_xwattr_get (win));
+  if (A4GL_xwattr_get (win) == 0x20)
     {
       wattrset (win, 0);
     }
   else
     {
       int a;
-      a = xwattr_get (win);
+      a = A4GL_xwattr_get (win);
       a = a - (a & 0xff);
       wattrset (win, a);
     }
-  debug ("Attribute : %x on win %p\n", xwattr_get (win), win);
+  A4GL_debug ("Attribute : %x on win %p\n", A4GL_xwattr_get (win), win);
   wprintw (win, "%s", buff);
   return 0;
 }
@@ -2096,11 +2096,11 @@ mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
  * @todo Describe function
  */
 int
-init_colour_pairs (void)
+A4GL_init_colour_pairs (void)
 {
 
 #ifndef WIN32
-  debug ("Non WIN32 color scheme");
+  A4GL_debug ("Non WIN32 color scheme");
   init_pair (1, COLOR_BLACK, COLOR_BLACK);
   init_pair (2, COLOR_RED, COLOR_BLACK);
   init_pair (3, COLOR_GREEN, COLOR_BLACK);
@@ -2112,7 +2112,7 @@ init_colour_pairs (void)
 
 #else
 
-  debug ("WIN32 color scheme");
+  A4GL_debug ("WIN32 color scheme");
   init_pair (1, COLOR_BLACK, COLOR_BLACK);
   init_pair (2, COLOR_BLUE, COLOR_BLACK);
   init_pair (3, COLOR_GREEN, COLOR_BLACK);
@@ -2131,15 +2131,15 @@ init_colour_pairs (void)
  * @todo Describe function
  */
 void
-mja_wrefresh (WINDOW * w)
+A4GL_mja_wrefresh (WINDOW * w)
 {
-  if (screen_mode (-1) && w)
+  if (A4GL_screen_mode (-1) && w)
     {
       update_panels ();
       doupdate ();
       wrefresh (w);
     }
-  gui_wrefresh (w);
+  A4GL_gui_wrefresh (w);
 }
 
 /**
@@ -2147,15 +2147,15 @@ mja_wrefresh (WINDOW * w)
  * @todo Describe function
  */
 void
-mja_refresh (void)
+A4GL_mja_refresh (void)
 {
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
       refresh ();
     }
-  gui_refresh ();
+  A4GL_gui_refresh ();
 }
 
 /**
@@ -2163,14 +2163,14 @@ mja_refresh (void)
  * @todo Describe function
  */
 void
-change_currwin (WINDOW * a, char *s)
+A4GL_change_currwin (WINDOW * a, char *s)
 {
 #ifdef DEBUG
   {
-    debug ("Changing currwin to %p (%s)", a, s);
+    A4GL_debug ("Changing currwin to %p (%s)", a, s);
   }
 #endif
-  gui_currwin ((long) a);
+  A4GL_gui_currwin ((long) a);
   currwin = a;
 
 }
@@ -2180,11 +2180,11 @@ change_currwin (WINDOW * a, char *s)
  * @todo Describe function
  */
 void
-change_currwinno (int a, char *s)
+A4GL_change_currwinno (int a, char *s)
 {
 #ifdef DEBUG
   {
-    debug ("Changing currwinno to %d (%s)", a, s);
+    A4GL_debug ("Changing currwinno to %d (%s)", a, s);
   }
 #endif
   currwinno = a;
@@ -2196,11 +2196,11 @@ change_currwinno (int a, char *s)
  * @todo Describe function
  */
 int
-top_win (PANEL * p)
+A4GL_top_win (PANEL * p)
 {
   int a;
   PANEL *z;
-  a = find_win (0);		/* current window top window */
+  a = A4GL_find_win (0);		/* current window top window */
 
   if (a == -1)
     return 1;
@@ -2208,8 +2208,8 @@ top_win (PANEL * p)
   /* a is now the top window */
 
   z = windows[a].pan;
-  change_currwin (panel_window (z), "Marker 3");
-  change_currwinno (a, "Marker 4");
+  A4GL_change_currwin (panel_window (z), "Marker 3");
+  A4GL_change_currwinno (a, "Marker 4");
   return 0;
 }
 
@@ -2218,14 +2218,14 @@ top_win (PANEL * p)
  * @todo Describe function
  */
 int
-find_win (PANEL * p)
+A4GL_find_win (PANEL * p)
 {
   int a;
   if (p == 0)
-    return find_win (panel_below (0));
+    return A4GL_find_win (panel_below (0));
 #ifdef DEBUG
   {
-    debug ("Finding window %p", p);
+    A4GL_debug ("Finding window %p", p);
   }
 #endif
 
@@ -2233,7 +2233,7 @@ find_win (PANEL * p)
     {
 #ifdef DEBUG
       {
-	debug ("Checking windows   : %p %p %p", panel_window (windows[a].pan),
+ A4GL_debug ("Checking windows   : %p %p %p", panel_window (windows[a].pan),
 	       windows[a].pan, p);
       }
 #endif
@@ -2245,16 +2245,16 @@ find_win (PANEL * p)
 	    {
 #ifdef DEBUG
 	      {
-		debug ("window is a menu - finding parent of %s",
+	 A4GL_debug ("window is a menu - finding parent of %s",
 		       windows[a].name);
 	      }
 #endif
-	      return find_win (find_pointer (windows[a].name, MNPARCODE));
+	      return A4GL_find_win (A4GL_find_pointer (windows[a].name, MNPARCODE));
 	    }
 	  return a;
 	}
     }
-  exitwith ("Panel not found....");
+  A4GL_exitwith ("Panel not found....");
   return -1;
 }
 
@@ -2263,14 +2263,14 @@ find_win (PANEL * p)
  * @todo Describe function
  */
 LIBEXPORT void
-hide_window (char *winname)
+A4GL_hide_window (char *winname)
 {
   PANEL *p;
   int a;
-  p = find_pointer (winname, PANCODE);
+  p = A4GL_find_pointer (winname, PANCODE);
 #ifdef DEBUG
   {
-    debug ("hiding window %s %p", winname, p);
+    A4GL_debug ("hiding window %s %p", winname, p);
   }
 #endif
   if (p)
@@ -2278,12 +2278,12 @@ hide_window (char *winname)
       a = hide_panel (p);
 #ifdef DEBUG
       {
-	debug ("a=%d", a);
+ A4GL_debug ("a=%d", a);
       }
 #endif
     }
-  do_update_panels ();
-  top_win (0);
+  A4GL_do_update_panels ();
+  A4GL_top_win (0);
 }
 
 /**
@@ -2291,19 +2291,19 @@ hide_window (char *winname)
  * @todo Describe function
  */
 LIBEXPORT void
-show_window (char *winname)
+A4GL_show_window (char *winname)
 {
   PANEL *p;
-  p = find_pointer (winname, PANCODE);
+  p = A4GL_find_pointer (winname, PANCODE);
 #ifdef DEBUG
   {
-    debug ("showing window %s %p", winname, p);
+    A4GL_debug ("showing window %s %p", winname, p);
   }
 #endif
   if (p)
     show_panel (p);
-  do_update_panels ();
-  top_win (0);
+  A4GL_do_update_panels ();
+  A4GL_top_win (0);
 }
 
 /**
@@ -2311,9 +2311,9 @@ show_window (char *winname)
  * @todo Describe function
  */
 void
-do_update_panels (void)
+A4GL_do_update_panels (void)
 {
-  if (screen_mode (-1))
+  if (A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -2325,18 +2325,18 @@ do_update_panels (void)
  * @todo Describe function
  */
 int
-getform_line (void)
+A4GL_getform_line (void)
 {
   if (strcmp (windows[currwinno].name, "screen") == 0)
     {
-      return decode_line (std_dbscr.form_line);
+      return A4GL_decode_line (std_dbscr.form_line);
     }
 #ifdef DEBUG
   {
-    debug ("Use window value of : %d", windows[currwinno].winattr.form_line);
+    A4GL_debug ("Use window value of : %d", windows[currwinno].winattr.form_line);
   }
 #endif
-  return decode_line (windows[currwinno].winattr.form_line);
+  return A4GL_decode_line (windows[currwinno].winattr.form_line);
 }
 
 /**
@@ -2344,13 +2344,13 @@ getform_line (void)
  * @todo Describe function
  */
 int
-getcomment_line (void)
+A4GL_getcomment_line (void)
 {
   if (windows[currwinno].form == 0)
     {				/* use screen default */
-      return decode_line (std_dbscr.comment_line);
+      return A4GL_decode_line (std_dbscr.comment_line);
     }
-  return decode_line (windows[currwinno].form->form_details.comment_line);
+  return A4GL_decode_line (windows[currwinno].form->form_details.comment_line);
 }
 
 /**
@@ -2358,20 +2358,20 @@ getcomment_line (void)
  * @todo Describe function
  */
 int
-geterror_line (void)
+A4GL_geterror_line (void)
 {
   if (windows[currwinno].form == 0)
     {				/* use screen default */
-      debug ("Get error line - no form\n");
-      return decode_line (std_dbscr.error_line);
+      A4GL_debug ("Get error line - no form\n");
+      return A4GL_decode_line (std_dbscr.error_line);
     }
-  debug ("Get error line - form : %d",
+  A4GL_debug ("Get error line - form : %d",
 	 windows[currwinno].form->form_details.error_line);
   if (currwinno == 0)
     {
-      return decode_line (std_dbscr.error_line);
+      return A4GL_decode_line (std_dbscr.error_line);
     }
-  return decode_line (windows[currwinno].form->form_details.error_line);
+  return A4GL_decode_line (windows[currwinno].form->form_details.error_line);
 }
 
 
@@ -2380,17 +2380,17 @@ geterror_line (void)
  * @todo Describe function
  */
 int
-getmessage_line (void)
+A4GL_getmessage_line (void)
 {
-  debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
+  A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
   if (windows[currwinno].form == 0)
     {				/* use screen default */
-      debug ("getmessage_line - std_dbscr...");
-      return decode_line (std_dbscr.message_line);
+      A4GL_debug ("getmessage_line - std_dbscr...");
+      return A4GL_decode_line (std_dbscr.message_line);
     }
-  debug ("getmessage_line - window...");
+  A4GL_debug ("getmessage_line - window...");
   return windows[currwinno].winattr.message_line;
-  //return decode_line (windows[currwinno].form->form_details.message_line);
+  //return A4GL_decode_line (windows[currwinno].form->form_details.message_line);
 }
 
 
@@ -2399,17 +2399,17 @@ getmessage_line (void)
  * @todo Describe function
  */
 int
-getprompt_line (void)
+A4GL_getprompt_line (void)
 {
-  debug (">> %p ", windows[currwinno].name);
-  debug (">> %s ", windows[currwinno].name);
+  A4GL_debug (">> %p ", windows[currwinno].name);
+  A4GL_debug (">> %s ", windows[currwinno].name);
   if (strcmp (windows[currwinno].name, "screen") == 0)
     {
-      debug ("...std_dbscr");
-      return decode_line (std_dbscr.prompt_line);
+      A4GL_debug ("...std_dbscr");
+      return A4GL_decode_line (std_dbscr.prompt_line);
     }
-  debug ("...windows");
-  return decode_line (windows[currwinno].winattr.prompt_line);
+  A4GL_debug ("...windows");
+  return A4GL_decode_line (windows[currwinno].winattr.prompt_line);
 }
 
 /**
@@ -2417,24 +2417,24 @@ getprompt_line (void)
  * @todo Describe function
  */
 LIBEXPORT int
-movewin (char *winname, int absol)
+A4GL_movewin (char *winname, int absol)
 {
   PANEL *p;
   int x, y;
   int r = 0;
   int nx, ny;
   struct s_windows *w;
-  x = pop_int ();
-  y = pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
 #ifdef DEBUG
   {
-    debug ("x=%d y=%d winname=%s", x, y, winname);
+    A4GL_debug ("x=%d y=%d winname=%s", x, y, winname);
   }
 #endif
-  w = find_pointer (winname, S_WINDOWSCODE);
+  w = A4GL_find_pointer (winname, S_WINDOWSCODE);
 #ifdef DEBUG
   {
-    debug ("w=%p", w);
+    A4GL_debug ("w=%p", w);
   }
 #endif
   if (w)
@@ -2450,7 +2450,7 @@ movewin (char *winname, int absol)
 	{
 #ifdef DEBUG
 	  {
-	    debug ("Moving absolute to %d %d", y - 1, x - 1);
+	    A4GL_debug ("Moving absolute to %d %d", y - 1, x - 1);
 	  }
 #endif
 	  r = move_panel (p, y - 1, x - 1);
@@ -2461,35 +2461,35 @@ movewin (char *winname, int absol)
 	{
 #ifdef DEBUG
 	  {
-	    debug ("Moving relative by %d %d", y, x);
+	    A4GL_debug ("Moving relative by %d %d", y, x);
 	  }
 #endif
 	  r = move_panel (p, w->y + y - 1, w->x + x - 1);
 	  nx = w->x + x + 1;
 	  ny = w->y + y + 1;
 	}
-      do_update_panels ();
+      A4GL_do_update_panels ();
     }
   else
     {
-      exitwith ("Window to move was not found");
+      A4GL_exitwith ("Window to move was not found");
       return 0;
     }
 #ifdef DEBUG
   {
-    debug ("r=%d", r);
+    A4GL_debug ("r=%d", r);
   }
 #endif
 
   if (r != 0)
     {
-      exitwith ("Couldnt move window");
+      A4GL_exitwith ("Couldnt move window");
       return 0;
     }
 
 #ifdef DEBUG
   {
-    debug ("Old %d %d  new %d %d", x, y, nx, ny);
+    A4GL_debug ("Old %d %d  new %d %d", x, y, nx, ny);
   }
 #endif
 
@@ -2504,7 +2504,7 @@ movewin (char *winname, int absol)
  * @todo Describe function
  */
 int
-find_ptr_debug (void *ptr)
+A4GL_find_ptr_debug (void *ptr)
 {
   return 0;
 }
@@ -2515,7 +2515,7 @@ find_ptr_debug (void *ptr)
  * @todo Describe function
  */
 void
-init_stddbscr (void)
+A4GL_init_stddbscr (void)
 {
   std_dbscr.mode = 0;
   std_dbscr.colour = 0;
@@ -2544,7 +2544,7 @@ init_stddbscr (void)
  * @todo Describe function
  */
 WINDOW *
-get_currwin (void)
+A4GL_get_currwin (void)
 {
   return currwin;
 }
@@ -2554,11 +2554,11 @@ get_currwin (void)
  * @todo Describe function
  */
 int
-iscurrborder (void)
+A4GL_iscurrborder (void)
 {
-  debug ("currwinno=%d", currwinno);
-  debug ("Winattr=%p", windows[currwinno].winattr);
-  debug ("border=%p", windows[currwinno].winattr.border);
+  A4GL_debug ("currwinno=%d", currwinno);
+  A4GL_debug ("Winattr=%p", windows[currwinno].winattr);
+  A4GL_debug ("border=%p", windows[currwinno].winattr.border);
   return windows[currwinno].winattr.border;
 }
 
@@ -2568,9 +2568,9 @@ iscurrborder (void)
  * @todo Describe function
  */
 void
-set_attr_win (char s, int wattr)
+A4GL_set_attr_win (char s, int wattr)
 {
-  set_bkg (currwin, wattr);
+  A4GL_set_bkg (currwin, wattr);
 }
 
 
@@ -2582,11 +2582,11 @@ void
 print_panel_stack (void)
 {
   PANEL *ptr;
-  debug ("Printing panel stack");
+  A4GL_debug ("Printing panel stack");
   ptr = panel_below (0);
   while (ptr != 0)
     {
-      debug ("Panel : %p (%s)", ptr, panel_userptr (ptr));
+      A4GL_debug ("Panel : %p (%s)", ptr, panel_userptr (ptr));
       ptr = panel_below (ptr);
     }
 }
@@ -2598,7 +2598,7 @@ print_panel_stack (void)
  * @todo Describe function
  */
 char *
-windowname_on_top (void)
+A4GL_windowname_on_top (void)
 {
   PANEL *ptr;
   char *s;
@@ -2613,14 +2613,14 @@ windowname_on_top (void)
  * @todo Describe function
  */
 WINDOW *
-window_on_top (void)
+A4GL_window_on_top (void)
 {
   PANEL *ptr;
   const char *s;
   void *winptr;
   ptr = panel_below (0);
   s = panel_userptr (ptr);	/* get name of panel */
-  winptr = find_pointer (s, WINCODE);
+  winptr = A4GL_find_pointer (s, WINCODE);
   return winptr;
 }
 
@@ -2629,7 +2629,7 @@ window_on_top (void)
  * @todo Describe function
  */
 int
-invert_color (int a)
+A4GL_invert_color (int a)
 {
   return 7 - a;
 }
@@ -2639,7 +2639,7 @@ invert_color (int a)
  * @todo Describe function
  */
 int
-xwattr_get (WINDOW * w)
+A4GL_xwattr_get (WINDOW * w)
 {
   return getattrs (w);
 }
@@ -2650,7 +2650,7 @@ xwattr_get (WINDOW * w)
  * @todo Describe function
  */
 int
-screen_width (void)
+A4GL_screen_width (void)
 {
   if (scr_width == -1)
     {
@@ -2662,7 +2662,7 @@ screen_width (void)
 	  scr_height = atoi (acl_getenv ("LINES"));
 	}
     }
-  debug ("screen_width returning %d", scr_width);
+  A4GL_debug ("screen_width returning %d", scr_width);
   return scr_width;
 }
 
@@ -2671,7 +2671,7 @@ screen_width (void)
  * @todo Describe function
  */
 int
-screen_height (void)
+A4GL_screen_height (void)
 {
   if (scr_width == -1)
     {
@@ -2683,7 +2683,7 @@ screen_height (void)
 	}
 
     }
-  debug ("screen_height returning %d", scr_height);
+  A4GL_debug ("screen_height returning %d", scr_height);
   return scr_height;
 }
 
@@ -2692,10 +2692,10 @@ screen_height (void)
  * @todo Describe function
  */
 void
-sleep_i (void)
+A4GL_sleep_i (void)
 {
   int a;
-  a = pop_int ();
+  a = A4GL_pop_int ();
   sleep (a);
 }
 

@@ -82,9 +82,9 @@
 #endif
 
     /*  -------------- in sql.c ------------------ */
-HSTMT *new_hstmt (HSTMT * hstmt);
-void chk_rc_full (int rc, void *hstmt, char *c, int line, char *file);
-void set_sqlca (HSTMT hstmt, char *s, int reset);
-UDWORD display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
+HSTMT *A4GL_new_hstmt (HSTMT * hstmt);
+void A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file);
+void A4GL_set_sqlca (HSTMT hstmt, char *s, int reset);
+UDWORD A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
 
 #include "a4gl_lib_sql_int.h"

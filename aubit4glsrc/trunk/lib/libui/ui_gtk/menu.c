@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.8 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: menu.c,v 1.9 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -67,17 +67,17 @@ extern GtkWidget *tooltips;
 =====================================================================
 */
 
-void disp_h_menu (void *m);
-int menu_loop (void *m);
-void free_menu (void *m);
-void next_option (void *menu, char *nextopt);
-void menu_hide (void *m, va_list * ap);
-void menu_show (void *m, va_list * ap);
-GtkWidget *new_menu_create (char *title, int x, int y, int mn_type,
+void A4GL_disp_h_menu (void *m);
+int A4GL_menu_loop (void *m);
+void A4GL_free_menu (void *m);
+void A4GL_next_option (void *menu, char *nextopt);
+void A4GL_menu_hide (void *m, va_list * ap);
+void A4GL_menu_show (void *m, va_list * ap);
+GtkWidget *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			    int help_no);
-void add_menu_option (void *menubar, char *txt, char *keys, char *desc,
+void A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc,
 		      int helpno, int attr);
-void finish_create_menu (void *menubar);
+void A4GL_finish_create_menu (void *menubar);
 
 /*
 =====================================================================
@@ -99,10 +99,10 @@ static void
 handler (GtkMenuItem * w, int p)
 {
   GtkWidget *k;
-  debug ("Menu Option %p %p\n", w, p);
-  debug ("menu click");
+  A4GL_debug ("Menu Option %p %p\n", w, p);
+  A4GL_debug ("menu click");
   k = (GtkWidget *) gtk_object_get_data ((GtkObject *) p, "Parent");
-  debug ("Parent k=%p\n", k);
+  A4GL_debug ("Parent k=%p\n", k);
   gtk_object_set_data (GTK_OBJECT (k), "selected", w);
 }
 
@@ -119,19 +119,19 @@ handler (GtkMenuItem * w, int p)
  * ACL_Menu pointer here.
  */
 void
-disp_h_menu (void *m)
+A4GL_disp_h_menu (void *m)
 {
   GtkWidget *a;
   GtkWindow *cwin;
 
-  clr_error_gtk ();
+  A4GL_clr_error_gtk ();
   cwin = (GtkWindow *) gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
 
   a = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
-  debug ("in gui_disp_h_menu\n");
+  A4GL_debug ("in gui_disp_h_menu\n");
   if (a == 0)
     {
-      debug
+      A4GL_debug
 	("no current menu - must have been a child thats not there anymore\n");
       /* v=gtk_object_get_data(cwin,"vbox"); */
       gtk_widget_show (m);
@@ -140,7 +140,7 @@ disp_h_menu (void *m)
       printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
       gtk_fixed_put ((GtkFixed *) cwin, m, 0, 0);
       /* gtk_box_pack_start_defaults(v, m); */
-      debug ("Redisplayed me\n");
+      A4GL_debug ("Redisplayed me\n");
     }
 }
 
@@ -151,14 +151,14 @@ disp_h_menu (void *m)
  * @return 
  */
 int
-menu_loop (void *m)
+A4GL_menu_loop (void *m)
 {
   int a;
   GtkWidget *menubar;
   GtkWindow *cwin;
 
 #ifdef DEBUG
-  debug ("Seting up menu");
+  A4GL_debug ("Seting up menu");
 #endif
 
 /* Check were still up... */
@@ -168,7 +168,7 @@ menu_loop (void *m)
   if (menubar == 0)
     {
 #ifdef DEBUG
-      debug ("no current menu - must have been a child\n");
+      A4GL_debug ("no current menu - must have been a child\n");
 #endif
       /* v=gtk_object_get_data(cwin,"vbox"); */
       gtk_widget_show (m);
@@ -177,7 +177,7 @@ menu_loop (void *m)
       printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
       gtk_fixed_put ((GtkFixed *) cwin, m, 0, 0);
 #ifdef DEBUG
-      debug ("Redisplayed menu\n");
+      A4GL_debug ("Redisplayed menu\n");
 #endif
     }
   else
@@ -189,28 +189,28 @@ menu_loop (void *m)
   gtk_object_set_data (GTK_OBJECT (m), "selected", (gpointer) - 1);
 
 #ifdef DEBUG
-  debug ("Entering menu loop");
+  A4GL_debug ("Entering menu loop");
 #endif
 
   while (1)
     {
       a4gl_usleep (100);
-      gui_run_til_no_more ();
+      A4GL_gui_run_til_no_more ();
 
       a = (int) gtk_object_get_data (GTK_OBJECT (m), "selected");
 
       if (a != -1)
 	{
 #ifdef DEBUG
-	  debug ("A=%x", a);
+	  A4GL_debug ("A=%x", a);
 #endif
 	}
 
       if (a != -1)
 	{
-	  clr_error_gtk ();
+	  A4GL_clr_error_gtk ();
 #ifdef DEBUG
-	  debug ("Exiting menu loop");
+	  A4GL_debug ("Exiting menu loop");
 #endif
 	  return a;
 	}
@@ -224,15 +224,15 @@ menu_loop (void *m)
  * 4GL call
  */
 void
-free_menu (void *m)
+A4GL_free_menu (void *m)
 {
   GtkWindow *cwin;
-  debug ("Free menu...");
+  A4GL_debug ("Free menu...");
   cwin = (GtkWindow *) gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
   gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", (gpointer) 0);
   /* v=gtk_object_get_data(cwin,"vbox"); */
   gtk_container_remove ((GtkContainer *) cwin, m);
-  debug ("Freed menu\n");
+  A4GL_debug ("Freed menu\n");
 }
 
 /**
@@ -252,12 +252,12 @@ find_menu_item (void *m, char *s)
   for (a = 0;; a++)
     {
       sprintf (buff, "MENUITEM%d", a);
-      debug ("MNTEST Looking for menuitem %s in menu %p", s, m);
+      A4GL_debug ("MNTEST Looking for menuitem %s in menu %p", s, m);
       widget = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (m), buff);
 
       if (widget)
 	{
-	  debug ("MNTEST Found..");
+	  A4GL_debug ("MNTEST Found..");
 	  ptr = (char *) gtk_object_get_data (GTK_OBJECT (widget), "Caption");
 	  if (ptr)
 	    {
@@ -266,7 +266,7 @@ find_menu_item (void *m, char *s)
 	    }
 	}
     }
-  debug ("MNTEST Not found..");
+  A4GL_debug ("MNTEST Not found..");
   return (GtkWidget *) 0;
 }
 
@@ -279,31 +279,31 @@ find_menu_item (void *m, char *s)
  * @param nextop.
  */
 void
-next_option (void *menu, char *nextopt)
+A4GL_next_option (void *menu, char *nextopt)
 {
-  debug ("next option - Has no effect in GUI mode");
+  A4GL_debug ("next option - Has no effect in GUI mode");
 }
 
 /**
  * Not used but maybe should be.
  */
 void
-menu_hide (void *m, va_list * ap)
+A4GL_menu_hide (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
 
-  debug ("menu_hide - %p", m);
+  A4GL_debug ("menu_hide - %p", m);
   while (1)
     {
       argp_c = va_arg (*ap, char *);
       if (argp_c == 0)
 	break;
-      debug ("Finding %s\n", argp_c);
+      A4GL_debug ("Finding %s\n", argp_c);
       w = find_menu_item (m, argp_c);
       if (w == 0)
 	{
-	  exitwith ("Bad option - not in the menu");
+	  A4GL_exitwith ("Bad option - not in the menu");
 	  return;
 	}
       gtk_widget_hide (w);
@@ -317,7 +317,7 @@ menu_hide (void *m, va_list * ap)
  * @param ap The optionlist to be showed.
  */
 void
-menu_show (void *m, va_list * ap)
+A4GL_menu_show (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
@@ -330,7 +330,7 @@ menu_show (void *m, va_list * ap)
       w = find_menu_item (m, argp_c);
       if (w == 0)
 	{
-	  exitwith ("Bad option - not in the menu");
+	  A4GL_exitwith ("Bad option - not in the menu");
 	  return;
 	}
       gtk_widget_show (w);
@@ -343,7 +343,7 @@ menu_show (void *m, va_list * ap)
  */
 /*
 GtkWidget *
-new_menu (char *title, int x, int y, int mn_type, int help_no, int nopts,
+A4GL_new_menu (char *title, int x, int y, int mn_type, int help_no, int nopts,
 va_list *ap)
 {
 
@@ -361,7 +361,7 @@ va_list *ap)
   if (nopts < 1)
     return 0;
 
-  debug ("Create window - title=%s", title);
+  A4GL_debug ("Create window - title=%s", title);
   cwin = (GtkWindow *)get_curr_win_gtk ();
   //v=gtk_object_get_data(cwin,"vbox");
   menubar = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
@@ -383,7 +383,7 @@ va_list *ap)
 
   gtk_fixed_put((GtkFixed *)cwin, menubar, 0, 0);
   //fglmenu=gtk_menu_new();
-  trim (title);
+  A4GL_trim (title);
   if (strlen (title))
     {
       w = gtk_menu_item_new_with_label (title);
@@ -398,7 +398,7 @@ va_list *ap)
       argp_c = va_arg (*ap, char *);
       w = gtk_menu_item_new_with_label (argp_c);
 
-      debug ("Add item %s", argp_c);
+      A4GL_debug ("Add item %s", argp_c);
 
       gtk_signal_connect_object (
 			  GTK_OBJECT (w), 
@@ -443,15 +443,15 @@ va_list *ap)
  * @return A pointer to the widget that implements the menu.
  */
 GtkWidget *
-new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   GtkWidget *menubar;
   GtkWindow *cwin;
   GtkWidget *w;
 
-  debug ("Create window - title=%s", title);
-  cwin = GTK_WINDOW (get_curr_win_gtk ());
-  debug ("Got cwin as %p\n", cwin);
+  A4GL_debug ("Create window - title=%s", title);
+  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
+  A4GL_debug ("Got cwin as %p\n", cwin);
 
   menubar = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
@@ -465,12 +465,12 @@ new_menu_create (char *title, int x, int y, int mn_type, int help_no)
   gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", menubar);
   gtk_object_set_data (GTK_OBJECT (menubar), "MASTERWIN", cwin);
   gtk_widget_show (menubar);
-  gtk_widget_set_usize (GTK_WIDGET (menubar), get_curr_width () * XWIDTH,
+  gtk_widget_set_usize (GTK_WIDGET (menubar), A4GL_get_curr_width () * XWIDTH,
 			YHEIGHT);
   gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) 0);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
   gtk_fixed_put ((GtkFixed *) cwin, menubar, 0, 0);
-  trim (title);
+  A4GL_trim (title);
 
   if (strlen (title))
     {
@@ -497,7 +497,7 @@ new_menu_create (char *title, int x, int y, int mn_type, int help_no)
  * @param attr The attributes
  */
 void
-add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
+A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
 		 int attr)
 {
   GtkWidget *w;
@@ -515,7 +515,7 @@ add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
 			     "activate",
 			     GTK_SIGNAL_FUNC (handler), (gpointer) cnt - 1);
   sprintf (buff, "MENUITEM%d", cnt);
-  debug ("MJA - cnt = %d\n", cnt);
+  A4GL_debug ("MJA - cnt = %d\n", cnt);
   gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
   gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) cnt);
   gtk_widget_show (w);
@@ -543,7 +543,7 @@ add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
  * @param menu The menu structure (GtkWidget).
  */
 void
-finish_create_menu (void *menubar)
+A4GL_finish_create_menu (void *menubar)
 {
   gtk_object_set_data (GTK_OBJECT (menubar), "selected", (gpointer) - 1);
 }

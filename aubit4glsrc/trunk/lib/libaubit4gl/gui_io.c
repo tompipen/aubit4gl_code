@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.10 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: gui_io.c,v 1.11 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -40,7 +40,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -74,8 +74,8 @@
 */
 
 static void gui_send (char *c, char *s);
-void gui_startmenu (char *mnname, long mn);
-void gui_user (char *txt);
+void A4GL_gui_startmenu (char *mnname, long mn);
+void A4GL_gui_user (char *txt);
 
 /*
 =====================================================================
@@ -95,17 +95,17 @@ gui_send (char *c, char *s)
 {
   char buff[25600];
   sprintf (buff, "%s %s\n", c, s);
-  proc_it (buff);
+  A4GL_proc_it (buff);
 
   /*
      strcat(buffer,buff);
      if (strcmp(c,"REFRESH")==0||strcmp(c,"WREFRESH")==0||strcmp(c,"ERROR")==0) {
-     debug("Calling proc_it with %s",buff);
+     A4GL_debug("Calling A4GL_proc_it with %s",buff);
      proc_it(buffer);
      buffer[0]=0;
      }
    */
-  debug ("Sent");
+  A4GL_debug ("Sent");
 }
 
 /**
@@ -114,12 +114,12 @@ gui_send (char *c, char *s)
  * @param a The color code to send to the client.
  */
 void
-gui_setcolor (int a)
+A4GL_gui_setcolor (int a)
 {
   char buff[256];
   sprintf (buff, "%d", a);
   gui_send ("COLOUR", buff);
-  debug ("Set color..");
+  A4GL_debug ("Set color..");
 }
 
 /**
@@ -128,7 +128,7 @@ gui_setcolor (int a)
  * @param
  */
 void
-gui_actmenu (long ld)
+A4GL_gui_actmenu (long ld)
 {
   char buff[256];
   sprintf (buff, "%lx", ld);
@@ -141,11 +141,11 @@ gui_actmenu (long ld)
  * @param
  */
 void
-gui_mkfield (int h, int w, int y, int x, void *p)
+A4GL_gui_mkfield (int h, int w, int y, int x, void *p)
 {
   char buff[256];
   sprintf (buff, "%lx %d %d %d %d", (long unsigned int) p, x, y, w, h);
-  debug ("gui_mkfield:Make field");
+  A4GL_debug ("gui_mkfield:Make field");
   gui_send ("MKFIELD", buff);
 }
 
@@ -155,7 +155,7 @@ gui_mkfield (int h, int w, int y, int x, void *p)
  * @param
  */
 void
-gui_mklabel (int h, int w, int y, int x, char *s)
+A4GL_gui_mklabel (int h, int w, int y, int x, char *s)
 {
   char buff[256];
   sprintf (buff, "\"%s\" %d %d %d %lx", s, x, y, w, (long unsigned int) h);
@@ -169,14 +169,14 @@ gui_mklabel (int h, int w, int y, int x, char *s)
  * @param
  */
 void
-gui_wrefresh (void *d)
+A4GL_gui_wrefresh (void *d)
 {
   char buff[256];
   sprintf (buff, "%lx", (long unsigned int) d);
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("gui_refresh");
+    A4GL_debug ("gui_refresh");
   }
 #endif
   gui_send ("WREFRESH", buff);
@@ -189,12 +189,12 @@ gui_wrefresh (void *d)
  * @param
  */
 void
-gui_refresh (void)
+A4GL_gui_refresh (void)
 {
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("gui_refresh");
+    A4GL_debug ("gui_refresh");
   }
 #endif
   gui_send ("REFRESH", "");
@@ -206,7 +206,7 @@ gui_refresh (void)
  * @param
  */
 void
-gui_print (int a, char *fmt, ...)
+A4GL_gui_print (int a, char *fmt, ...)
 {
   va_list args;
   char buff[25600];
@@ -215,7 +215,7 @@ gui_print (int a, char *fmt, ...)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Format =%s", fmt);
+    A4GL_debug ("Format =%s", fmt);
   }
 #endif
   va_start (args, fmt);
@@ -225,7 +225,7 @@ gui_print (int a, char *fmt, ...)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Sending %s", buff2);
+    A4GL_debug ("Sending %s", buff2);
   }
 #endif
   gui_send ("PRINT", buff2);
@@ -238,7 +238,7 @@ gui_print (int a, char *fmt, ...)
  * @param
  */
 void
-gui_move (int x, int y)
+A4GL_gui_move (int x, int y)
 {
   char buff[256];
   sprintf (buff, "%d %d", x, y);
@@ -251,11 +251,11 @@ gui_move (int x, int y)
  * @param
  */
 void
-gui_win (char *name, int h, int w, int y, int x, int b, long d)
+A4GL_gui_win (char *name, int h, int w, int y, int x, int b, long d)
 {
   char buff[256];
   sprintf (buff, "%s %d %d %d %d %d %lx", name, x, y, w, h, b, d);
-  debug ("Sending %s", buff);
+  A4GL_debug ("Sending %s", buff);
   gui_send ("MKWIN", buff);
 }
 
@@ -265,7 +265,7 @@ gui_win (char *name, int h, int w, int y, int x, int b, long d)
  * @param
  */
 void
-gui_endmenu (long ld)
+A4GL_gui_endmenu (long ld)
 {
   char buff[256];
   sprintf (buff, "%lx", ld);
@@ -278,7 +278,7 @@ gui_endmenu (long ld)
  * @param
  */
 void
-gui_startform (char *name)
+A4GL_gui_startform (char *name)
 {
   char buff[256];
 
@@ -293,7 +293,7 @@ gui_startform (char *name)
  * @param
  */
 void
-gui_endform (void)
+A4GL_gui_endform (void)
 {
   gui_send ("ENDFORM", "");
 }
@@ -304,7 +304,7 @@ gui_endform (void)
  * @param
  */
 void
-gui_startmenu (char *mnname, long mn)
+A4GL_gui_startmenu (char *mnname, long mn)
 {
   char buff[256];
   sprintf (buff, "\"%s\" %lx", mnname, mn);
@@ -317,7 +317,7 @@ gui_startmenu (char *mnname, long mn)
  * @param
  */
 void
-gui_rmmenu (long ld)
+A4GL_gui_rmmenu (long ld)
 {
   char buff[256];
   sprintf (buff, "%lx", ld);
@@ -331,12 +331,12 @@ gui_rmmenu (long ld)
  * @param
  */
 void
-gui_menuopt (char *title, long id)
+A4GL_gui_menuopt (char *title, long id)
 {
   char buff[256];
 
   sprintf (buff, "\"%s\" %lx", title, id);
-  debug ("Menu opt %s ", buff);
+  A4GL_debug ("Menu opt %s ", buff);
   gui_send ("MKOPT", buff);
 }
 
@@ -346,7 +346,7 @@ gui_menuopt (char *title, long id)
  * @param
  */
 void
-gui_dispform (char *s, int line)
+A4GL_gui_dispform (char *s, int line)
 {
   char buff[256];
   sprintf (buff, "%s %d", s, line);
@@ -359,7 +359,7 @@ gui_dispform (char *s, int line)
  * @param
  */
 void
-gui_setbuff (void *a, char *n)
+A4GL_gui_setbuff (void *a, char *n)
 {
   char buff[1024];
   sprintf (buff, "%lx %s", (long unsigned int) a, n);
@@ -372,7 +372,7 @@ gui_setbuff (void *a, char *n)
  * @param
  */
 void
-gui_closewin (char *name)
+A4GL_gui_closewin (char *name)
 {
   gui_send ("RMWIN", name);
 }
@@ -383,7 +383,7 @@ gui_closewin (char *name)
  * @param
  */
 void
-gui_currwin (long a)
+A4GL_gui_currwin (long a)
 {
   char buff[1024];
   sprintf (buff, "%lx", a);
@@ -396,7 +396,7 @@ gui_currwin (long a)
  * @param
  */
 void
-gui_scroll (int a)
+A4GL_gui_scroll (int a)
 {
   char buff[1024];
   sprintf (buff, "%d", a);
@@ -409,7 +409,7 @@ gui_scroll (int a)
  * @param
  */
 void
-gui_scrollpos (int a)
+A4GL_gui_scrollpos (int a)
 {
   char buff[1024];
   sprintf (buff, "%d", a);
@@ -422,7 +422,7 @@ gui_scrollpos (int a)
  * @param
  */
 void
-gui_setattr (long a, int f, int b)
+A4GL_gui_setattr (long a, int f, int b)
 {
   char buff[256];
   sprintf (buff, "%lx %d %d", a, f, b);
@@ -435,7 +435,7 @@ gui_setattr (long a, int f, int b)
  * @param
  */
 void
-gui_startprompt (long ld)
+A4GL_gui_startprompt (long ld)
 {
   char buff[256];
   sprintf (buff, "%lx", ld);
@@ -449,7 +449,7 @@ gui_startprompt (long ld)
  * @param
  */
 void
-gui_endprompt (long ld)
+A4GL_gui_endprompt (long ld)
 {
   char buff[256];
   sprintf (buff, "%lx", ld);
@@ -462,10 +462,10 @@ gui_endprompt (long ld)
  * @param
  */
 void
-gui_setfocus (long ld)
+A4GL_gui_setfocus (long ld)
 {
   char buff[256];
-  debug ("gui_set focus %lx", ld);
+  A4GL_debug ("gui_set focus %lx", ld);
   sprintf (buff, "%lx", ld);
   gui_send ("SETFOCUS", buff);
 }
@@ -476,10 +476,10 @@ gui_setfocus (long ld)
  * @param
  */
 void
-gui_setposition (long ld)
+A4GL_gui_setposition (long ld)
 {
   char buff[256];
-  debug ("gui_set position %lx", ld);
+  A4GL_debug ("gui_set position %lx", ld);
   sprintf (buff, "%lx", ld);
   gui_send ("SETPOSITION", buff);
 }
@@ -490,12 +490,12 @@ gui_setposition (long ld)
  * @param
  */
 void
-gui_message (char *txt, int msgline)
+A4GL_gui_message (char *txt, int msgline)
 {
   char buff[256];
   char buff2[256];
   strcpy (buff2, txt);
-  trim (buff2);
+  A4GL_trim (buff2);
   sprintf (buff, "\"%s\" %d", buff2, msgline);
   gui_send ("MESSAGE", buff);
 }
@@ -508,13 +508,13 @@ gui_message (char *txt, int msgline)
  * @param errline The place where the error ocurred.
  */
 void
-gui_error (char *txt, int errline)
+A4GL_gui_error (char *txt, int errline)
 {
   char buff[256];
   char buff2[256];
   strcpy (buff2, txt);
-  trim (buff2);
-  debug ("In gui_error");
+  A4GL_trim (buff2);
+  A4GL_debug ("In gui_error");
   sprintf (buff, "\"%s\" %d", buff2, errline);
   gui_send ("ERROR", buff);
 }
@@ -526,7 +526,7 @@ gui_error (char *txt, int errline)
  * @param
  */
 void
-gui_user (char *txt)
+A4GL_gui_user (char *txt)
 {
   gui_send ("USER", txt);
 }

@@ -19,7 +19,7 @@ prompt_cmd	:
 		add_continue_blockcommand ("PROMPT");
 		print_prompt_end($<str>6);
                 pop_blockcommand("PROMPT");
-                lex_printcomment("/* END OF PROMPT */");
+                A4GL_lex_printcomment("/* END OF PROMPT */");
                 }
 
 ;

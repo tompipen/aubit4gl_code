@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.19 2003-05-12 14:23:59 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.20 2003-05-15 07:10:38 mikeaubury Exp $
 */
 
 /**
@@ -55,7 +55,7 @@ extern "C"
 #include "a4gl_incl_4gldef.h"
 
 
-#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
+#define A4GL_fglerror(a,b) A4GL_fgl_error(__LINE__,__FILE__,a,b)
 #define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
 #define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
 #define BEF_DELETE  (_fld_dr==-12)
@@ -66,7 +66,7 @@ extern "C"
 #define AFT_ROW  (_fld_dr==-11)
 #define BEFORE_INP  (_fld_dr==-99)
 #define AFTER_INP  (_fld_dr==-95)
-#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
+#define ON_KEY(zzz) if (_fld_dr==-90&&A4GL_chk_iskey(zzz))
 #define set_status(a) set_status(a,0)
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
@@ -141,11 +141,11 @@ extern "C"
 #define GETSETGET 1
 #define GETSETSET 2
 #define GETSETGETPTR 3
-#define GETPTR(struct,ptr,element) get_set(struct,ptr,GETSETGETPTR,element,0)
-#define GET(struct,ptr,element) get_set(struct,ptr,GETSETGET,element,0)
-#define SET(struct,ptr,element,value) get_set(struct,ptr,GETSETSET,element,(long)value)
-#define NEW(struct) get_set(struct,0,GETSETNEW,0,0)
-#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
+#define GETPTR(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGETPTR,element,0)
+#define GET(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGET,element,0)
+#define SET(struct,ptr,element,value) A4GL_get_set(struct,ptr,GETSETSET,element,(long)value)
+#define NEW(struct) A4GL_get_set(struct,0,GETSETNEW,0,0)
+#define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
 
 #define REPORT_START -1
 #define REPORT_FINISH -2
@@ -169,9 +169,9 @@ extern "C"
 #define WARN 2
 
 #ifndef NODEBUG
-#define debug set_line(__FILE__,__LINE__);debug_full
+#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
-#define debug null_func
+#define A4GL_debug null_func
 #endif
 
 #define MENU_ALL "_AlL_"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.35 2003-05-04 08:49:32 mikeaubury Exp $
+# $Id: 1.reqd,v 1.36 2003-05-15 07:10:36 mikeaubury Exp $
 #
 */
 
@@ -176,6 +176,9 @@ struct 		rep_structure rep_struct;
 struct 		pdf_rep_structure pdf_rep_struct;
 struct 		form_attr form_attrib;
 char *		make_sql_string(char *first,...);
+void copy_gen (int a, int b);
+char *get_namespace (char *s);
+void set_yytext (char *s);
 
 #include "../generic.h"
 

@@ -41,7 +41,7 @@ set_clause_list_ss:
     XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string("SET (",$<str>2,")=(",$<sql_string>6,")",0);
 
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
 			$<sql_string>$=strdup(fix_update_expr(0)); 
 			ansi_violation("Update (..)=(..)",0);
 		}  else {
@@ -51,7 +51,7 @@ set_clause_list_ss:
     | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
 		$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
 		push_gen(UPDCOL,"*");
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
 			$<sql_string>$=strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -61,7 +61,7 @@ set_clause_list_ss:
     | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
 		$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
 		push_gen(UPDCOL,"*");
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
 			$<sql_string>$=strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -85,7 +85,7 @@ set_clause_list_ss:
 			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
 		}
 
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
 			$<sql_string>$=strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -104,7 +104,7 @@ set_clause_list_ss:
 			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
 		}
 
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
 			$<sql_string>$=strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {

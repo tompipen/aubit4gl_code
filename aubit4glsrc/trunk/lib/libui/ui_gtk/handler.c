@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.4 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: handler.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -82,18 +82,18 @@ int lastkey = 0;
 */
 
 #ifdef OLD_INCL
-void clear_something (void);
-int user_has_done_something (void);
-GtkWidget *get_which_field (void);
-int which_key (void);
-int keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
-void func (GtkWidget * w, char *mode);
-int gui_get_lastkey (void);
+void A4GL_clear_something (void);
+int A4GL_user_has_done_something (void);
+GtkWidget *A4GL_get_which_field (void);
+int A4GL_which_key (void);
+int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
+void A4GL_func (GtkWidget * w, char *mode);
+int A4GL_gui_get_lastkey (void);
 #endif
 
 
 void
-upshift_insert_text_handler (GtkEntry * entry,
+A4GL_upshift_insert_text_handler (GtkEntry * entry,
 			     const gchar * text,
 			     gint length, gint * position, gpointer data);
 
@@ -108,7 +108,7 @@ upshift_insert_text_handler (GtkEntry * entry,
  * Clear something that could been ocurred.
  */
 void
-clear_something (void)
+A4GL_clear_something (void)
 {
   onfield = -1;
   beforefield = -1;
@@ -120,9 +120,9 @@ clear_something (void)
 /**
  * The user as done something.
  *
- * Find what he does and return the action code.
+ * Find what he does and return the A4GL_action code.
  *
- * @return The action code:
+ * @return The A4GL_action code:
  *   - 0 : The user does not done nothing.
  *   - 1 : Some key pressed.
  *   - 2 : Before field ocurred.
@@ -130,7 +130,7 @@ clear_something (void)
  *
  */
 int
-user_has_done_something (void)
+A4GL_user_has_done_something (void)
 {
 /* printf("%d %d %d\n",keypressed,beforefield,onfield); */
   if (keypressed != -1)
@@ -146,15 +146,15 @@ user_has_done_something (void)
 }
 
 /**
- * Return the action field.
+ * Return the A4GL_action field.
  *
- * @todo Define what is the action field.
+ * @todo Define what is the A4GL_action field.
  */
 GtkWidget *
-get_which_field (void)
+A4GL_get_which_field (void)
 {
   {
-    debug ("Returning action field : %p", actionfield);
+    A4GL_debug ("Returning A4GL_action field : %p", actionfield);
   }
   return actionfield;
 }
@@ -163,7 +163,7 @@ get_which_field (void)
  * Return the key that the user has pressed.
  */
 int
-which_key (void)
+A4GL_which_key (void)
 {
   return keypressed;
 }
@@ -191,10 +191,10 @@ mja_keyval_from_name(char *s)
  * @return
  */
 int
-keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
+A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 
-  debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
+  A4GL_debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
 	 gdk_keyval_name (event->keyval));
   fflush (stdout);
 
@@ -211,44 +211,44 @@ keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
     }
 
   lastkey = keypressed;
-  set_last_key (lastkey);
-  debug ("setting action field=%p", widget);
+  A4GL_set_last_key (lastkey);
+  A4GL_debug ("setting A4GL_action field=%p", widget);
   actionfield = widget;
   return 0;
 }
 
 /**
- * Default func to be used as a listener callback for handling an event.
+ * Default A4GL_func to be used as a listener callback for handling an event.
  * @param w The widget where the event ocurred.
  * @param mode
  */
 void
-func (GtkWidget * w, char *mode)
+A4GL_func (GtkWidget * w, char *mode)
 {
 
-  debug ("MJAMJA (func)- widget=%p\n", w);
+  A4GL_debug ("MJAMJA (func)- widget=%p\n", w);
   if (gtk_object_get_data (GTK_OBJECT (w), "HANDLER") != 0)
     {
       /* void (*hand)(); */
       void (*hand) (GtkWidget * w, char *mode);
 
-      debug ("MJAMJA------------> Own handler....\n");
+      A4GL_debug ("MJAMJA------------> Own handler....\n");
       hand = gtk_object_get_data (GTK_OBJECT (w), "HANDLER");
       hand (w, mode);
       return;
     }
 
-  debug ("in func");
-  debug ("!**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
+  A4GL_debug ("in func");
+  A4GL_debug ("!**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
   fflush (stdout);
-  debug ("**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
+  A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
 
   if (strcasecmp (mode, "grab_focus") == 0)
     {
-      debug ("grab focus detected...\n");
+      A4GL_debug ("grab focus detected...\n");
       fflush (stdout);
 
-      debug ("setting action field=%p", w);
+      A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
       beforefield = 1;
@@ -260,17 +260,17 @@ func (GtkWidget * w, char *mode)
       char *key;
       int m;
       onfield = 1;
-      debug ("setting action field=%p", w);
+      A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
       key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-      debug ("Key=%p\n", key);
+      A4GL_debug ("Key=%p\n", key);
       fflush (stdout);
 
       if (key)
 	{
-	  debug ("Substituting specified key: %s\n", key);
+	  A4GL_debug ("Substituting specified key: %s\n", key);
 	  fflush (stdout);
 
 	  if (strcasecmp (key, "ACCEPT") == 0)
@@ -290,7 +290,7 @@ func (GtkWidget * w, char *mode)
 		  if (m & 4 && tolower (keypressed) >= 'a'
 		      && tolower (keypressed) <= 'z')
 		    keypressed = tolower (keypressed) - 'a' + 1;
-		  debug ("keypressed=%x m=%x\n", keypressed, m);
+		  A4GL_debug ("keypressed=%x m=%x\n", keypressed, m);
 		  fflush (stdout);
 		}
 	    }
@@ -309,7 +309,7 @@ func (GtkWidget * w, char *mode)
 #endif
 
 
-  debug ("All done");
+  A4GL_debug ("All done");
   return;
 }
 
@@ -324,7 +324,7 @@ func (GtkWidget * w, char *mode)
  * @param data
  */
 void
-upshift_insert_text_handler (GtkEntry * entry,
+A4GL_upshift_insert_text_handler (GtkEntry * entry,
 			     const gchar * text,
 			     gint length, gint * position, gpointer data)
 {
@@ -341,11 +341,11 @@ upshift_insert_text_handler (GtkEntry * entry,
     {
       gtk_signal_handler_block_by_func (GTK_OBJECT (editable),
 					GTK_SIGNAL_FUNC
-					(upshift_insert_text_handler), data);
+					(A4GL_upshift_insert_text_handler), data);
       gtk_editable_insert_text (editable, result, count, position);
       gtk_signal_handler_unblock_by_func (GTK_OBJECT (editable),
 					  GTK_SIGNAL_FUNC
-					  (upshift_insert_text_handler),
+					  (A4GL_upshift_insert_text_handler),
 					  data);
     }
   gtk_signal_emit_stop_by_name (GTK_OBJECT (editable), "insert_text");
@@ -359,7 +359,7 @@ upshift_insert_text_handler (GtkEntry * entry,
  * @return The last key typed.
  */
 int
-gui_get_lastkey (void)
+A4GL_gui_get_lastkey (void)
 {
   return lastkey;
 }

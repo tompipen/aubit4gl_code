@@ -487,11 +487,11 @@ _getopt_initialize (argc, argv, optstring)
 
    If OPTSTRING starts with `-' or `+', it requests different methods of
    handling the non-option ARGV-elements.
-   See the comments about RETURN_IN_ORDER and REQUIRE_ORDER, above.
+   See the A4GL_comments about RETURN_IN_ORDER and REQUIRE_ORDER, above.
 
    Long-named options begin with `--' instead of `-'.
    Their names may be abbreviated as long as the abbreviation is unique
-   or is an exact match for some defined option.  If they have an
+   or is an exact A4GL_match for some defined option.  If they have an
    argument, it follows the option name in the same ARGV-element, separated
    from the option name by a `=', or else the in next ARGV-element.
    When `getopt' finds a long-named option, it returns 0 if that option's
@@ -667,7 +667,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	    if ((unsigned int) (nameend - nextchar)
 		== (unsigned int) strlen (p->name))
 	      {
-		/* Exact match found.  */
+		/* Exact A4GL_match found.  */
 		pfound = p;
 		indfound = option_index;
 		exact = 1;
@@ -675,14 +675,14 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	      }
 	    else if (pfound == NULL)
 	      {
-		/* First nonexact match found.  */
+		/* First nonexact A4GL_match found.  */
 		pfound = p;
 		indfound = option_index;
 	      }
 	    else if (long_only
 		     || pfound->has_arg != p->has_arg
 		     || pfound->flag != p->flag || pfound->val != p->val)
-	      /* Second or later nonexact match found.  */
+	      /* Second or later nonexact A4GL_match found.  */
 	      ambig = 1;
 	  }
 
@@ -858,7 +858,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	    {
 	      if ((unsigned int) (nameend - nextchar) == strlen (p->name))
 		{
-		  /* Exact match found.  */
+		  /* Exact A4GL_match found.  */
 		  pfound = p;
 		  indfound = option_index;
 		  exact = 1;
@@ -866,12 +866,12 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 		}
 	      else if (pfound == NULL)
 		{
-		  /* First nonexact match found.  */
+		  /* First nonexact A4GL_match found.  */
 		  pfound = p;
 		  indfound = option_index;
 		}
 	      else
-		/* Second or later nonexact match found.  */
+		/* Second or later nonexact A4GL_match found.  */
 		ambig = 1;
 	    }
 	if (ambig && !exact)

@@ -20,7 +20,8 @@ print_options('E',$<str>2);
 print_options('F',$<str>2);
 }
 		| MENU_LINE line_no {
-lex_printc("set_option_value('M',%s);\n",$<str>2);
+//A4GL_lex_printc("A4GL_set_option_value('M',%s);\n",$<str>2);
+print_options('M',$<str>2);
 }
 		| MSG_LINE line_no {
 print_options('m',$<str>2);

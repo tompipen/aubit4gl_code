@@ -35,7 +35,7 @@ print_conversions (char i)
     }
   if (i == 'o')
     {
-      printc ("%s /* buff_in */\n", buff_out);
+      printc ("%s /* buff_out */\n", buff_out);
     }
 }
 
@@ -78,7 +78,7 @@ make_sql_bind (char *sql, char *type)
 	  if (obindcnt)
 	    {
 
-	      sprintf (buff_small, "set_init(obind,%d);\n", obindcnt);
+	      sprintf (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
 	      strcpy (buff_out, buff_small);
 	      for (a = 0; a < obindcnt; a++)
 		{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.18 2003-05-12 14:24:05 mikeaubury Exp $
+# $Id: error.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -34,10 +34,10 @@
  * WARNING: errno renamed to a4gl_errno here and in mkerrors because of the
  * conflict with function mane in errno.h
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -72,9 +72,9 @@ char lasterrorstr[1024] = "";
 int cache_status = 0;
 int cache_statusno = 0;
 int int_err_flg;
-void aclfgli_clr_err_flg (void);
+//void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
-int aclfgli_get_err_flg (void);
+//int aclfgli_get_err_flg (void);
 
 /*
 =====================================================================
@@ -82,7 +82,7 @@ int aclfgli_get_err_flg (void);
 =====================================================================
 */
 
-char *get_errm (int z);
+char *A4GL_get_errm (int z);
 
 /*
 =====================================================================
@@ -98,13 +98,13 @@ char *get_errm (int z);
  */
 void
 // IGNOREEXITWITH exit-with(char *s)
-exitwith (char *s)
+A4GL_exitwith (char *s)
 {
   int a;
 
 #ifdef DEBUG
   {
-    debug ("Error... %s", s);
+    A4GL_debug ("Error... %s", s);
   }
 #endif
 
@@ -116,23 +116,23 @@ exitwith (char *s)
 	{
 #ifdef DEBUG
 	  {
-	    debug ("Found error = %d", errors[a].a4gl_errno);
+	    A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
 	  }
 #endif
-	  debug ("Setting status");
+	  A4GL_debug ("Setting status");
 	  A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 0);
-	  debug ("Setting cache_status");
+	  A4GL_debug ("Setting cache_status");
 	  cache_status = (errors[a].a4gl_errno + 30000);
-	  debug ("Setting statusno");
+	  A4GL_debug ("Setting statusno");
 	  cache_statusno = a;
 	  return;
 	  printf ("Error:\n %s \nSTOP\n ", s);
-	  debug ("Exiting program.");
+	  A4GL_debug ("Exiting program.");
 	  exit (errors[a].a4gl_errno);
 	}
     }
 
-  exitwith ("Unknown error");
+  A4GL_exitwith ("Unknown error");
 #endif
 }
 
@@ -142,13 +142,13 @@ exitwith (char *s)
  */
 void
 //IGNOREEXITWITH exitwith_sql(char *s)
-exitwith_sql (char *s)
+A4GL_exitwith_sql (char *s)
 {
   int a;
 
 #ifdef DEBUG
   {
-    debug ("Error... %s", s);
+    A4GL_debug ("Error... %s", s);
   }
 #endif
 
@@ -160,7 +160,7 @@ exitwith_sql (char *s)
 	{
 #ifdef DEBUG
 	  {
-	    debug ("Found error = %d", errors[a].a4gl_errno);
+	    A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
 	  }
 #endif
 	  A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 1);
@@ -184,7 +184,7 @@ exitwith_sql (char *s)
  * @todo Describe function
  */
 void
-set_error (char *fmt, ...)
+A4GL_set_error (char *fmt, ...)
 {
   va_list args;
   va_start (args, fmt);
@@ -192,7 +192,7 @@ set_error (char *fmt, ...)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("%s", errorbuff);
+    A4GL_debug ("%s", errorbuff);
   }
 #endif
 }
@@ -202,17 +202,17 @@ set_error (char *fmt, ...)
  * @todo Describe function
  */
 char *
-get_errm (int z)
+A4GL_get_errm (int z)
 {
   int a = 0;
-  debug ("In get errm");
+  A4GL_debug ("In get errm");
   if (z == cache_status)
     {
-      debug ("Cached...");
+      A4GL_debug ("Cached...");
       return errors[cache_statusno].errmsg;
     }
 
-  debug ("Looking up error... %d", a);
+  A4GL_debug ("Looking up error... %d", a);
   for (a = 0; errors[a].a4gl_errno; a++)
     {
       if (errors[a].a4gl_errno + 30000 == z)
@@ -220,9 +220,9 @@ get_errm (int z)
 	  return errors[a].errmsg;
 	}
     }
-  debug ("Not found...");
-  debug ("Returning %p", lasterrorstr);
-  debug ("Returning %s", lasterrorstr);
+  A4GL_debug ("Not found...");
+  A4GL_debug ("Returning %p", lasterrorstr);
+  A4GL_debug ("Returning %s", lasterrorstr);
   return lasterrorstr;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.17 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: dim.c,v 1.18 2003-05-15 07:10:19 mikeaubury Exp $
 #*/
 
 /**
@@ -120,7 +120,7 @@ dim_add (int a, char *s1, char *s2, char *s3)
   struct s_dimitem *itm;
   struct s_dimitem *itm2;
 
-  debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
+  A4GL_debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
 
   if (a == SETNAME)
     {
@@ -129,31 +129,31 @@ dim_add (int a, char *s1, char *s2, char *s3)
 	  long size_space;
 	  dimalloc += 10;
 	  size_space = sizeof (struct s_dimentry *) * dimalloc;
-	  debug ("Allocating space for %d dims of %d bytes\n", dimalloc,
+	  A4GL_debug ("Allocating space for %d dims of %d bytes\n", dimalloc,
 		 size_space);
 	  dims = (struct s_dimentry **) realloc (dims, size_space);
-	  debug ("dims=%p\n", dims);
+	  A4GL_debug ("dims=%p\n", dims);
 	}
-      debug ("Allocating entry\n");
+      A4GL_debug ("Allocating entry\n");
       ent = (struct s_dimentry *) malloc (sizeof (struct s_dimentry));
-      debug ("ent=%p\n", ent);
+      A4GL_debug ("ent=%p\n", ent);
 
       ent->dimname = (char *) strdup (s1);
       ent->item = 0;
       dimcnt += 1;
-      debug ("Adding to array at %d\n", dimcnt);
+      A4GL_debug ("Adding to array at %d\n", dimcnt);
       dims[dimcnt] = ent;
-      debug ("Ok\n");
+      A4GL_debug ("Ok\n");
       return;
     }
   if (dimcnt < 0 || dimalloc <= 0)
     {
       a4gl_yyerror ("Internal error allocating dim space\n");
     }
-  debug ("Adding item dimcnt=%d dimalloc=%d dims=%p\n", dimcnt, dimalloc,
+  A4GL_debug ("Adding item dimcnt=%d dimalloc=%d dims=%p\n", dimcnt, dimalloc,
 	 dims);
   itm = (struct s_dimitem *) malloc (sizeof (struct s_dimitem));
-  debug ("itm=%p\n", itm);
+  A4GL_debug ("itm=%p\n", itm);
   itm->type = a;
 
   if (s1)
@@ -170,31 +170,31 @@ dim_add (int a, char *s1, char *s2, char *s3)
     itm->c = strdup (s3);
   else
     itm->c = 0;
-  debug ("set strings\n");
+  A4GL_debug ("set strings\n");
 
   itm->next = 0;
   itm2 = dims[dimcnt]->item;
-  debug ("Setting link\n");
+  A4GL_debug ("Setting link\n");
   if (itm2 == 0)
     {
-      debug ("First item\n");
+      A4GL_debug ("First item\n");
       dims[dimcnt]->item = itm;
-      debug ("Done\n");
+      A4GL_debug ("Done\n");
     }
   else
     {
-      debug (">First item\n");
+      A4GL_debug (">First item\n");
       itm2 = dims[dimcnt]->item;
-      debug ("itm2=%p\n");
+      A4GL_debug ("itm2=%p\n");
       while (itm2->next != 0)
 	{
-	  debug ("Keep going %p %p\n", itm2, itm2->next);
+	  A4GL_debug ("Keep going %p %p\n", itm2, itm2->next);
 	  itm2 = itm2->next;
 	}
-      debug ("itm2=%p\n", itm2);
+      A4GL_debug ("itm2=%p\n", itm2);
       itm2->next = itm;
     }
-  debug ("all done\n");
+  A4GL_debug ("all done\n");
 }
 
 /**
@@ -325,7 +325,7 @@ push_dim_records (int cnt)
   int a;
   struct s_dimitem *ptr;
   a = 0;
-  debug ("In push_dim...");
+  A4GL_debug ("In push_dim...");
   ptr = dims[cnt]->item;
   while (ptr)
     {

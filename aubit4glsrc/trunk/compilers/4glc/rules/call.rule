@@ -9,7 +9,7 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
 call_ext :
-    function_callb RETURNING variable { debug("print_expr (3)"); 
+    function_callb RETURNING variable { A4GL_debug("print_expr (3)"); 
 		print_expr($<ptr>1);
 		print_pop_variable($<str>3);
 	}
@@ -47,7 +47,7 @@ ibind_var_list {
 	dump_expr($<ptr>6);
 	a=get_counter_val();
 	drop_counter();
-	debug("Printing call_func_call...");
+ A4GL_debug("Printing call_func_call...");
   	print_class_func_call($<str>1,$<str>3,$<ptr>6,a);
    }
    opt_return 
@@ -61,7 +61,7 @@ ibind_var_list {
    } 
    opt_func_call_args 
    {
-	debug("Got args");
+ A4GL_debug("Got args");
    }
    CLOSE_BRACKET 
    {
@@ -99,7 +99,7 @@ opt_func_call_args {
 CLOSE_BRACKET opt_return {
 	char buff[256];
 	char *ptr;
-	debug("STR6 = %s",$<str>5);
+ A4GL_debug("STR6 = %s",$<str>5);
 	strcpy(buff,$<str>5);
 	ptr=strchr(buff,',');
 	*ptr=0;
@@ -124,7 +124,7 @@ CLOSE_BRACKET opt_return {
    }
    CLOSE_BRACKET 
    {
-	 debug("print_expr (6)");print_expr($<ptr>10);
+	 A4GL_debug("print_expr (6)");print_expr($<ptr>10);
    }
    opt_return_remote
    { 
@@ -161,7 +161,7 @@ opt_return_remote 	: {start_bind('i',0);strcpy($<str>$,"0");}
 
 opt_func_call_args : 
 		/*empty*/ {
-			$<ptr>$=new_expr("");
+			$<ptr>$=A4GL_new_expr("");
 		}
 		| func_call_args  {
 			$<ptr>$=$<ptr>1;
@@ -173,7 +173,7 @@ func_call_args	: func_arg
 	$<ptr>$=$<ptr>1;
 }
 		| func_call_args COMMA func_arg {
-		$<ptr>$=append_expr_expr($<ptr>1,$<ptr>3);
+		$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);
 }
 
 ;

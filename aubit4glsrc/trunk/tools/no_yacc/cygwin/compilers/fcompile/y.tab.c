@@ -1684,7 +1684,7 @@ yyparse ()
   YYSIZE_T yystacksize = YYINITDEPTH;
 
   /* The variables used to return semantic value and location from the
-     action routines.  */
+     A4GL_action routines.  */
   YYSTYPE yyval;
 
 
@@ -1823,7 +1823,7 @@ yybackup:
       YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
-  /* If the proper action on seeing token YYTOKEN is to reduce or to
+  /* If the proper A4GL_action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
   if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
@@ -1860,7 +1860,7 @@ yybackup:
 
 
 /*-----------------------------------------------------------.
-| yydefault -- do the default action for the current state.  |
+| yydefault -- do the default A4GL_action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];
@@ -1893,7 +1893,7 @@ yyreduce:
     case 2:
 #line 95 "screen.yacc"
       {
-	write_form ();
+ A4GL_write_form ();
       }
       break;
 
@@ -2046,7 +2046,7 @@ yyreduce:
 	  the_form.maxcol = colno;
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
-	add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno,
+ A4GL_add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno,
 		   strlen (yyvsp[0].str), scr, 0, yyvsp[0].str);
       }
       break;
@@ -2058,7 +2058,7 @@ yyreduce:
 	  the_form.maxcol = colno;
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
-	add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno, 1,
+ A4GL_add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno, 1,
 		   scr, 0, yyvsp[0].str);
       }
       break;
@@ -2070,7 +2070,7 @@ yyreduce:
 	  the_form.maxcol = colno;
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
-	add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno, 1,
+ A4GL_add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno, 1,
 		   scr, 0, yyvsp[0].str);
       }
       break;
@@ -2082,7 +2082,7 @@ yyreduce:
 	  the_form.maxcol = colno;
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
-	add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno,
+ A4GL_add_field ("_label", 1 + colno - strlen (yyvsp[0].str), lineno,
 		   strlen (yyvsp[0].str), scr, 0, yyvsp[0].str);
       }
       break;
@@ -2103,10 +2103,10 @@ yyreduce:
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
 	if (openwith == '[')
-	  add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
+	  A4GL_add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
 		     scr, 3, "");
 	else
-	  add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
+	  A4GL_add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
 		     scr, 2, "");
       }
       break;
@@ -2129,10 +2129,10 @@ yyreduce:
 	if (lineno > the_form.maxline)
 	  the_form.maxline = lineno;
 	if (openwith == '[')
-	  add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
+	  A4GL_add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
 		     scr, 1, "");
 	else
-	  add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
+	  A4GL_add_field (yyvsp[-1].str, fstart + 1, lineno, colno - fstart - 1,
 		     scr, 0, "");
 	fstart = colno;
 	openwith = '|';
@@ -2149,9 +2149,9 @@ yyreduce:
     case 44:
 #line 285 "screen.yacc"
       {
-	make_downshift (yyvsp[-1].str);
-	make_downshift (yyvsp[0].str);
-	add_table (yyvsp[0].str, yyvsp[-1].str);
+ A4GL_make_downshift (yyvsp[-1].str);
+ A4GL_make_downshift (yyvsp[0].str);
+ A4GL_add_table (yyvsp[0].str, yyvsp[-1].str);
       }
       break;
 
@@ -2211,44 +2211,44 @@ yyreduce:
     case 55:
 #line 315 "screen.yacc"
       {
-	make_downshift (yyvsp[0].str);
+ A4GL_make_downshift (yyvsp[0].str);
 	strcpy (currftag, yyvsp[0].str);
-	fldno = find_field (yyvsp[0].str);
+	fldno = A4GL_find_field (yyvsp[0].str);
       }
       break;
 
     case 59:
 #line 327 "screen.yacc"
       {
-	init_fld ();
+ A4GL_init_fld ();
       }
       break;
 
     case 60:
 #line 331 "screen.yacc"
       {
-	make_downshift (fld->tabname);
-	make_downshift (fld->colname);
+ A4GL_make_downshift (fld->tabname);
+ A4GL_make_downshift (fld->colname);
 
 	fld->colour = FA_C_WHITE;
 	fld->colours.colours_len = 0;
 	fld->colours.colours_val = 0;
-	debug ("add color %d\n", FA_C_WHITE);
+ A4GL_debug ("add color %d\n", FA_C_WHITE);
       }
       break;
 
     case 61:
 #line 341 "screen.yacc"
       {
-	if (fld->datatype == 90 && !(has_str_attribute (fld, FA_S_DEFAULT)))
+	if (fld->datatype == 90 && !(A4GL_has_str_attribute (fld, FA_S_DEFAULT)))
 	  {
 	    extern FILE *yyin;
 
-	    debug ("Currpos = %ld\n", ftell (yyin));
+	    A4GL_debug ("Currpos = %ld\n", ftell (yyin));
 	    yyerror ("A button must have a default value for its caption");
 	    YYERROR;
 	  }
-	set_field (currftag, fld);
+ A4GL_set_field (currftag, fld);
       }
       break;
 
@@ -2340,7 +2340,7 @@ yyreduce:
     case 78:
 #line 409 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_AUTONEXT);
+ A4GL_add_bool_attr (fld, FA_B_AUTONEXT);
       }
       break;
 
@@ -2364,49 +2364,49 @@ yyreduce:
     case 80:
 #line 422 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_COMMENTS, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_COMMENTS, yyvsp[0].str);
       }
       break;
 
     case 81:
 #line 423 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_DEFAULT, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_DEFAULT, yyvsp[0].str);
       }
       break;
 
     case 82:
 #line 424 "screen.yacc"
       {
-	debug ("WARNING : DISPLAY LIKE not really implemented");
+ A4GL_debug ("WARNING : DISPLAY LIKE not really implemented");
       }
       break;
 
     case 83:
 #line 425 "screen.yacc"
       {
-	debug ("WARNING : DISPLAY LIKE not really implemented");
+ A4GL_debug ("WARNING : DISPLAY LIKE not really implemented");
       }
       break;
 
     case 84:
 #line 426 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_DOWNSHIFT);
+ A4GL_add_bool_attr (fld, FA_B_DOWNSHIFT);
       }
       break;
 
     case 85:
 #line 427 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_UPSHIFT);
+ A4GL_add_bool_attr (fld, FA_B_UPSHIFT);
       }
       break;
 
     case 86:
 #line 428 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_FORMAT, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_FORMAT, yyvsp[0].str);
       }
       break;
 
@@ -2414,28 +2414,28 @@ yyreduce:
 #line 429 "screen.yacc"
       {
 	sprintf (yyval.str, "\n%s", yyvsp[-1].str);
-	add_str_attr (fld, FA_S_INCLUDE, yyval.str);
+ A4GL_add_str_attr (fld, FA_S_INCLUDE, yyval.str);
       }
       break;
 
     case 88:
 #line 430 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_WIDGET, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_WIDGET, yyvsp[0].str);
       }
       break;
 
     case 89:
 #line 431 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_CONFIG, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_CONFIG, yyvsp[0].str);
       }
       break;
 
     case 90:
 #line 432 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_INVISIBLE);
+ A4GL_add_bool_attr (fld, FA_B_INVISIBLE);
       }
       break;
 
@@ -2443,7 +2443,7 @@ yyreduce:
 #line 433 "screen.yacc"
       {
 	fld->dynamic = atoi (yyvsp[0].str);
-	debug ("fld->dynamic=%d", fld->dynamic);
+ A4GL_debug ("fld->dynamic=%d", fld->dynamic);
       }
       break;
 
@@ -2451,7 +2451,7 @@ yyreduce:
 #line 435 "screen.yacc"
       {
 	fld->dynamic = -1;
-	debug ("dynamic=-1");
+ A4GL_debug ("dynamic=-1");
       }
       break;
 
@@ -2465,64 +2465,64 @@ yyreduce:
     case 94:
 #line 437 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_NOENTRY);
+ A4GL_add_bool_attr (fld, FA_B_NOENTRY);
       }
       break;
 
     case 95:
 #line 438 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_PICTURE, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_PICTURE, yyvsp[0].str);
       }
       break;
 
     case 96:
 #line 439 "screen.yacc"
       {
-	add_str_attr (fld, FA_S_PROGRAM, yyvsp[0].str);
+ A4GL_add_str_attr (fld, FA_S_PROGRAM, yyvsp[0].str);
       }
       break;
 
     case 97:
 #line 440 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_REQUIRED);
+ A4GL_add_bool_attr (fld, FA_B_REQUIRED);
       }
       break;
 
     case 98:
 #line 443 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_REVERSE);
+ A4GL_add_bool_attr (fld, FA_B_REVERSE);
       }
       break;
 
     case 99:
 #line 446 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_VERIFY);
+ A4GL_add_bool_attr (fld, FA_B_VERIFY);
       }
       break;
 
     case 100:
 #line 449 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_WORDWRAP);
+ A4GL_add_bool_attr (fld, FA_B_WORDWRAP);
       }
       break;
 
     case 101:
 #line 452 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_WORDWRAP);
-	add_bool_attr (fld, FA_B_COMPRESS);
+ A4GL_add_bool_attr (fld, FA_B_WORDWRAP);
+ A4GL_add_bool_attr (fld, FA_B_COMPRESS);
       }
       break;
 
     case 102:
 #line 456 "screen.yacc"
       {
-	add_bool_attr (fld, FA_B_WORDWRAP);
+ A4GL_add_bool_attr (fld, FA_B_WORDWRAP);
       }
       break;
 
@@ -2599,28 +2599,28 @@ yyreduce:
     case 116:
 #line 496 "screen.yacc"
       {
-	sprintf (yyval.str, "%d", get_attr_from_string ("REVERSE"));
+	sprintf (yyval.str, "%d", A4GL_get_attr_from_string ("REVERSE"));
       }
       break;
 
     case 117:
 #line 499 "screen.yacc"
       {
-	sprintf (yyval.str, "%d", get_attr_from_string ("LEFT"));
+	sprintf (yyval.str, "%d", A4GL_get_attr_from_string ("LEFT"));
       }
       break;
 
     case 118:
 #line 502 "screen.yacc"
       {
-	sprintf (yyval.str, "%d", get_attr_from_string ("BLINK"));
+	sprintf (yyval.str, "%d", A4GL_get_attr_from_string ("BLINK"));
       }
       break;
 
     case 119:
 #line 505 "screen.yacc"
       {
-	sprintf (yyval.str, "%d", get_attr_from_string ("UNDERLINE"));
+	sprintf (yyval.str, "%d", A4GL_get_attr_from_string ("UNDERLINE"));
       }
       break;
 
@@ -2634,7 +2634,7 @@ yyreduce:
 #line 520 "screen.yacc"
       {
 	char buff[4];
-	strcpy (buff, char_val (yyvsp[0].str));
+	strcpy (buff, A4GL_char_val (yyvsp[0].str));
 	if (strlen (buff) == 1)
 	  {
 	    buff[1] = buff[0];
@@ -2648,21 +2648,21 @@ yyreduce:
     case 128:
 #line 530 "screen.yacc"
       {
-	add_srec ();
+ A4GL_add_srec ();
       }
       break;
 
     case 135:
 #line 541 "screen.yacc"
       {
-	set_dim_srec (yyvsp[0].str, 1);
+ A4GL_set_dim_srec (yyvsp[0].str, 1);
       }
       break;
 
     case 136:
 #line 544 "screen.yacc"
       {
-	set_dim_srec (yyvsp[-3].str, atoi (yyvsp[-1].str));
+ A4GL_set_dim_srec (yyvsp[-3].str, atoi (yyvsp[-1].str));
       }
       break;
 
@@ -2683,42 +2683,42 @@ yyreduce:
     case 139:
 #line 559 "screen.yacc"
       {
-	add_srec_attribute ("", yyvsp[0].str, "");
+ A4GL_add_srec_attribute ("", yyvsp[0].str, "");
       }
       break;
 
     case 140:
 #line 561 "screen.yacc"
       {
-	add_srec_attribute (yyvsp[-2].str, yyvsp[0].str, "");
+ A4GL_add_srec_attribute (yyvsp[-2].str, yyvsp[0].str, "");
       }
       break;
 
     case 141:
 #line 563 "screen.yacc"
       {
-	add_srec_attribute ("formonly", yyvsp[0].str, "");
+ A4GL_add_srec_attribute ("formonly", yyvsp[0].str, "");
       }
       break;
 
     case 142:
 #line 565 "screen.yacc"
       {
-	add_srec_attribute (yyvsp[-2].str, "*", "");
+ A4GL_add_srec_attribute (yyvsp[-2].str, "*", "");
       }
       break;
 
     case 143:
 #line 567 "screen.yacc"
       {
-	add_srec_attribute ("formonly", "*", "");
+ A4GL_add_srec_attribute ("formonly", "*", "");
       }
       break;
 
     case 145:
 #line 571 "screen.yacc"
       {
-	add_srec_attribute ("", "", "THROUGH");
+ A4GL_add_srec_attribute ("", "", "THROUGH");
       }
       break;
 
@@ -2733,7 +2733,7 @@ yyreduce:
 #line 581 "screen.yacc"
       {
 	strcpy (yyval.str, yyvsp[0].str);
-	make_downshift (yyval.str);
+ A4GL_make_downshift (yyval.str);
       }
       break;
 
@@ -2874,7 +2874,7 @@ yyreduce:
     case 168:
 #line 660 "screen.yacc"
       {
-	strcpy (yyval.str, char_val (yyvsp[0].str));
+	strcpy (yyval.str, A4GL_char_val (yyvsp[0].str));
       }
       break;
 
@@ -2909,8 +2909,8 @@ yyreduce:
     case 174:
 #line 668 "screen.yacc"
       {
-	sprintf (yyval.str, "%s\t", char_val (yyvsp[-2].str));
-	sprintf (yyval.str, "%s%s", yyval.str, char_val (yyvsp[0].str));
+	sprintf (yyval.str, "%s\t", A4GL_char_val (yyvsp[-2].str));
+	sprintf (yyval.str, "%s%s", yyval.str, A4GL_char_val (yyvsp[0].str));
       }
       break;
 
@@ -2961,7 +2961,7 @@ yyreduce:
     case 181:
 #line 691 "screen.yacc"
       {
-	debug ("Nothing in fraction - assume 2");
+ A4GL_debug ("Nothing in fraction - assume 2");
 	strcpy (yyval.str, "2");
       }
       break;
@@ -2969,7 +2969,7 @@ yyreduce:
     case 182:
 #line 693 "screen.yacc"
       {
-	debug ("    %s", yyvsp[-1].str);
+ A4GL_debug ("    %s", yyvsp[-1].str);
 	strcpy (yyval.str, yyvsp[-1].str);
       }
       break;
@@ -3038,7 +3038,7 @@ yyreduce:
     case 191:
 #line 716 "screen.yacc"
       {
-	debug ("opt_frac returns %s", yyvsp[0].str);
+ A4GL_debug ("opt_frac returns %s", yyvsp[0].str);
 	sprintf (yyval.str, "%d", atoi (yyvsp[0].str) + 6);
       }
       break;
@@ -3117,7 +3117,7 @@ yyreduce:
     case 203:
 #line 741 "screen.yacc"
       {
-	debug ("opt_frac returns %s", yyvsp[0].str);
+ A4GL_debug ("opt_frac returns %s", yyvsp[0].str);
 	sprintf (yyval.str, "%d", atoi (yyvsp[0].str) + 6);
       }
       break;
@@ -3125,7 +3125,7 @@ yyreduce:
     case 204:
 #line 746 "screen.yacc"
       {
-	debug ("Nothing in fraction - assume 2");
+ A4GL_debug ("Nothing in fraction - assume 2");
 	strcpy (yyval.str, "2");
       }
       break;
@@ -3133,8 +3133,8 @@ yyreduce:
     case 205:
 #line 748 "screen.yacc"
       {
-	debug ("Read fraction .. ");
-	debug ("    %s", yyvsp[-1].str);
+ A4GL_debug ("Read fraction .. ");
+ A4GL_debug ("    %s", yyvsp[-1].str);
 	strcpy (yyval.str, yyvsp[-1].str);
       }
       break;

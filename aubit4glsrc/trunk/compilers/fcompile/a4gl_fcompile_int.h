@@ -9,7 +9,7 @@
 
 
 	/* ====================== From formwrite2.c ====================== */
-	/* char *       char_val                (char *s); */
+	/* char *       A4GL_char_val                (char *s); */
 
 	/* ===================== From screen.lex ========================= */
 int buffpos (void);
@@ -24,6 +24,8 @@ int yylex (void);
 
 	/* ====================== From fcompile.c ======================== */
 void yyerror (char *s);
+int A4GLF_open_db (char *s);
+int A4GLF_getdatatype_fcompile (char *col, char *tab);
 
 
 

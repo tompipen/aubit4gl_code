@@ -6,22 +6,22 @@
 
 interval_expr:
 	UNITS_YEAR {
-        	$<ptr>$=new_expr("pushop(OP_YEAR);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_YEAR);");
 	}
 	| UNITS_MONTH {
-        	$<ptr>$=new_expr("pushop(OP_MONTH);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MONTH);");
 	}
 	| UNITS_DAY {
-        	$<ptr>$=new_expr("pushop(OP_DAY);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_DAY);");
 	}
 	| UNITS_HOUR {
-        	$<ptr>$=new_expr("pushop(OP_HOUR);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_HOUR);");
 	}
 	| UNITS_MINUTE {
-        	$<ptr>$=new_expr("pushop(OP_MINUTE);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MINUTE);");
 	}
 	| UNITS_SECOND {
-        	$<ptr>$=new_expr("pushop(OP_SECOND);");
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_SECOND);");
 	}
 ;
 
@@ -30,7 +30,7 @@ extend_parameters: OPEN_BRACKET
 			fgl_expr_c
 			op_datetime_qual
 		CLOSE_BRACKET {
-			$<ptr>$=append_expr_expr($<ptr>2,$<ptr>3);
+			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>3);
 		}
 ;
 
@@ -39,12 +39,12 @@ extend_parameters: OPEN_BRACKET
 
 op_datetime_qual:  { 
 	char buff[50];
-	sprintf(buff,"push_int(%d);",(19*16)+10); 
-	$<ptr>$=new_expr(buff);
+	sprintf(buff,"A4GL_push_int(%d);",(19*16)+10); 
+	$<ptr>$=A4GL_new_expr(buff);
 }
 | COMMA dtime_start TO dtime_end { 
 	char buff[50];
-	sprintf(buff,"push_int(%d);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
-	$<ptr>$=new_expr(buff);
+	sprintf(buff,"A4GL_push_int(%d);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
+	$<ptr>$=A4GL_new_expr(buff);
 }
 ;

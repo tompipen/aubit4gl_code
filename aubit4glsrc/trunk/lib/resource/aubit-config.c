@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.9 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.10 2003-05-15 07:10:46 mikeaubury Exp $
 #
 */
 
@@ -57,14 +57,14 @@
 =====================================================================
 */
 
-extern void build_user_resources (void);
-extern void exitwith (void);
-extern void dump_all_resource_vars (int export);
+extern void A4GL_build_user_resources (void);
+extern void A4GL_exitwith (void);
+extern void A4GL_dump_all_resource_vars (int export);
 extern char *acl_getenv (char *s);
 
-void trim_nl (char *p);
-void debug_full (char *fmt, ...);
-void set_line (void);
+void A4GL_trim_nl (char *p);
+void A4GL_debug_full (char *fmt, ...);
+void A4GL_set_line (void);
 
 //char * DEBUG_CFG;
 
@@ -93,16 +93,16 @@ main (int argc, char *argv[])
 //      DEBUG_CFG = acl_getenv ("DEBUG_CFG");
 
   /* load settings from config file(s): */
-  build_user_resources ();
+  A4GL_build_user_resources ();
 
   if (strcmp (argv[1], "-a") == 0)
     {
-      dump_all_resource_vars (0);
+      A4GL_dump_all_resource_vars (0);
       exit (0);
     }
   if (strcmp (argv[1], "-ae") == 0)
     {
-      dump_all_resource_vars (1);
+      A4GL_dump_all_resource_vars (1);
       exit (0);
     }
 
@@ -117,7 +117,7 @@ main (int argc, char *argv[])
  *  @param p The string to be trimmed.
  */
 void
-trim_nl (char *p)
+A4GL_trim_nl (char *p)
 {
   int a;
   for (a = strlen (p) - 1; a >= 0; a--)
@@ -133,12 +133,12 @@ trim_nl (char *p)
  * with libaubit4gl
  */
 void
-debug_full (char *fmt, ...)
+A4GL_debug_full (char *fmt, ...)
 {
   va_list args;
   static char buff[4096];
 
-  /* Problem here is that when DEBUG is set, this will dump ALL settings
+  /* Problem here is that when DEBUG is set, this will A4GL_dump ALL settings
      to stdout. But when we are debugging, for instance, 4glc, and set DEBUG,
      we need aubit-config to return us things like AUBITDIR.
 
@@ -160,7 +160,7 @@ debug_full (char *fmt, ...)
  * Dummy function
  */
 void
-exitwith (void)
+A4GL_exitwith (void)
 {
 }
 
@@ -168,7 +168,7 @@ exitwith (void)
  * Dummy function
  */
 void
-set_line (void)
+A4GL_set_line (void)
 {
 }
 

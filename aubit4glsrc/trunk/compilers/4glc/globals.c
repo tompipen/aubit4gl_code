@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.14 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: globals.c,v 1.15 2003-05-15 07:10:19 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@
  * Processing of 4GL GLOBALS declarations and files
  *
  *
- * @todo Doxygen comments in all functions
+ * @todo Doxygen A4GL_comments in all functions
  * @todo static in modular variables
  * @todo const in read only strings
  */
@@ -168,7 +168,7 @@ dump_gvars (void)
 
   strcpy (ii, outputfilename);
   strcat (ii, ".glb");
-  f = mja_fopen (ii, "w");
+  f = A4GL_mja_fopen (ii, "w");
 
   if (f == 0)
     {
@@ -183,7 +183,7 @@ dump_gvars (void)
     {
       v = list_global[a];
       /* Output the standard header stuff */
-      debug ("Output Global Entry %d - %p\n", a, v);
+      A4GL_debug ("Output Global Entry %d - %p\n", a, v);
       write_variable_header (f, v);
     }
 
@@ -407,7 +407,7 @@ generate_globals_for (char *s)
   char nocfile[256];
 
 #ifdef DEBUG
-  debug ("In generate_globals_for\n");
+  A4GL_debug ("In generate_globals_for\n");
 #endif
 
   strcpy (buff, s);
@@ -443,12 +443,12 @@ generate_globals_for (char *s)
   ptr = strchr (fname, '.');
   *ptr = 0;
 #ifdef DEBUG
-  debug ("Trying to compile globals file %s in %s\n", fname, dirname);
+  A4GL_debug ("Trying to compile globals file %s in %s\n", fname, dirname);
 
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
       sprintf (buff, "mv debug.out debug1.out");
-      debug ("Preserving debug.out: %s\n", buff);
+      A4GL_debug ("Preserving debug.out: %s\n", buff);
       system (buff);
     }
 #endif
@@ -456,7 +456,7 @@ generate_globals_for (char *s)
   //sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);
   sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname);
 #ifdef DEBUG
-  debug ("Executing system call: %s\n", buff);
+  A4GL_debug ("Executing system call: %s\n", buff);
 #endif
   system (buff);
   setenv ("NOCFILE", nocfile, 1);
@@ -464,10 +464,10 @@ generate_globals_for (char *s)
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
       sprintf (buff, "mv debug.out debug-globals.out");
-      debug ("Preserving debug.out: %s\n", buff);
+      A4GL_debug ("Preserving debug.out: %s\n", buff);
       system (buff);
       sprintf (buff, "mv debug1.out debug.out");
-      debug ("Restoring debug.out: %s\n", buff);
+      A4GL_debug ("Restoring debug.out: %s\n", buff);
       system (buff);
     }
 #endif
@@ -495,18 +495,18 @@ read_glob (char *s)
   strcpy (ii, s);
   strcat (ii, ".glb");
 #ifdef DEBUG
-  debug ("Trying to open globals file %s\n", ii);
+  A4GL_debug ("Trying to open globals file %s\n", ii);
 #endif
 
-  f = mja_fopen (ii, "r");
+  f = A4GL_mja_fopen (ii, "r");
 
   if (f == 0)
     {
 #ifdef DEBUG
-      debug ("Trying to compile globals file %s", ii);
+      A4GL_debug ("Trying to compile globals file %s", ii);
 #endif
       generate_globals_for (ii);
-      f = mja_fopen (ii, "r");
+      f = A4GL_mja_fopen (ii, "r");
     }
 
   if (f == 0)
@@ -514,17 +514,17 @@ read_glob (char *s)
       /* try with same path supplied with call to 4glc for 4gl file we are actually compiling globals file for */
 
 #ifdef DEBUG
-      debug ("Couldnt open globals file %s\n", ii);
+      A4GL_debug ("Couldnt open globals file %s\n", ii);
 #endif
       // add path
       strcpy (iii, currinfile_dirname);
       strcat (iii, "/");
       strcat (iii, ii);
 #ifdef DEBUG
-      debug ("Trying globals file %s", iii);
+      A4GL_debug ("Trying globals file %s", iii);
 #endif
       generate_globals_for (iii);
-      f = mja_fopen (iii, "r");
+      f = A4GL_mja_fopen (iii, "r");
       if (f == 0)
 	{
 	  fprintf (stderr, "Couldnt open globals file %s, in . and %s\n", ii,
@@ -674,7 +674,7 @@ read_variable_header (FILE * f, struct variable *v)
   read_global_string (f, "NAME", &v->names.name, 1);
   v->names.next = 0;
 #ifdef DEBUG
-  debug ("Read variable : %s", v->names.name);
+  A4GL_debug ("Read variable : %s", v->names.name);
 #endif
 
   read_global_int (f, "TYPE", &v->variable_type);

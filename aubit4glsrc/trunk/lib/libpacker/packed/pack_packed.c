@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.7 2003-05-12 14:24:23 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.8 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -38,7 +38,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -101,8 +101,8 @@ int is_in_mem = 0;
 =====================================================================
 */
 
-char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);	/* Extract the tag contents from a string */
+char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
+char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
 /*
 int input_int (char *name, int *val, int ptr, int isarr);
@@ -132,8 +132,8 @@ int output_okptr (char *s);
 int output_end_union (char *s, char *n);
 int output_enum (char *name, char *s, int d);
 
-int open_packer (char *basename,char dir);
-void close_packer (char dir);
+int A4GL_open_packer (char *basename,char dir);
+void A4GL_close_packer (char dir);
 int output_start_array (char *s, int type, int len);
 int output_end_array (char *s, int type);
 int can_pack_all(void);
@@ -184,7 +184,7 @@ chk (void *x)
  * @todo Describe function
  */
 int
-open_packer (char *basename, char dir)
+A4GL_open_packer (char *basename, char dir)
 {
   char buff[256];
   is_in_mem = 0;
@@ -196,7 +196,7 @@ open_packer (char *basename, char dir)
 
       if (outfile)
 	{
-	  set_last_outfile (buff);
+	  A4GL_set_last_outfile (buff);
 	  return 1;
 	}
       return 0;
@@ -205,7 +205,7 @@ open_packer (char *basename, char dir)
   if (toupper (dir) == 'I')
     {
       sprintf (buff, "%s.dat", basename);
-      infile = open_file_dbpath (buff);
+      infile = A4GL_open_file_dbpath (buff);
       if (infile)
 	return 1;
       return 0;
@@ -225,7 +225,7 @@ open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-close_packer (char dir)
+A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'O')
     fclose (outfile);
@@ -270,7 +270,7 @@ output_end_array (char *s, int type)
 int
 output_short (char *name, short val, int ptr, int isarr)
 {
-  debug ("Outputing SHORT %s : 0x%x", name, val);
+  A4GL_debug ("Outputing SHORT %s : 0x%x", name, val);
   val = htons (val);
   return fwrite (&val, 1, sizeof (val), outfile);
 }
@@ -301,10 +301,10 @@ int
 output_long (char *name, long val, int ptr, int isarr)
 {
   int a;
-  debug ("Outputing LONG %s - 0x%x\n", name, val);
+  A4GL_debug ("Outputing LONG %s - 0x%x\n", name, val);
   val = htonl (val);
   a = fwrite (&val, 1, sizeof (val), outfile);
-  debug ("a=%d\n", a);
+  A4GL_debug ("a=%d\n", a);
   return a;
 }
 
@@ -328,15 +328,15 @@ int
 output_string (char *name, char *val, int ptr, int isarr)
 {
   int a;
-  debug ("Output string - length first (%d) pos=%d", strlen (val),
+  A4GL_debug ("Output string - length first (%d) pos=%d", strlen (val),
 	 ftell (outfile));
   output_long (name, strlen (val), ptr, isarr);
-  debug ("outputing string itself (%s)", val);
+  A4GL_debug ("outputing string itself (%s)", val);
   a = fwrite (val, 1, strlen (val), outfile);
 
   if (strlen (val) == 0)
     a = 1;
-  debug ("pos now = %d", ftell (outfile));
+  A4GL_debug ("pos now = %d", ftell (outfile));
   return a;
 }
 
@@ -358,7 +358,7 @@ output_double (char *name, double val, int ptr, int isarr)
 int
 output_start_struct (char *s, char *n, int ptr, int isarr)
 {
-  debug ("Starting struct %s\n", s);
+  A4GL_debug ("Starting struct %s\n", s);
   return 1;
 }
 
@@ -441,7 +441,7 @@ input_start_array (char *s, int type, int *len)
 {
   int a;
   a = input_int (s, len, 0, -1);
-  debug ("ARRAY %s - Length of array=%d", s, *len);
+  A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
   return a;
 }
 
@@ -496,12 +496,12 @@ input_long (char *name, long *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
-  debug ("Input_long val=%p", val);
+  A4GL_debug ("Input_long val=%p", val);
   a = fread (val, 1, sizeof (long), infile);
 
-  debug ("Got long as %d\n", *val);
+  A4GL_debug ("Got long as %d\n", *val);
   *val = ntohl (*val);
-  debug ("->Got long as %d\n", *val);
+  A4GL_debug ("->Got long as %d\n", *val);
   return a;
 }
 
@@ -526,10 +526,10 @@ input_string (char *name, char **val, int ptr, int isarr)
 {
   long l;
   int a;
-  debug ("Inputing string %s", name);
+  A4GL_debug ("Inputing string %s", name);
   if (!input_long ("", &l, 0, -1))
     return 0;
-  debug ("Got length as %d", l);
+  A4GL_debug ("Got length as %d", l);
   *val = malloc (l + 1);	/* Extra 1 for the \0 */
   a = fread (*val, 1, l, infile);
   if (a == 0 && l == 0)
@@ -618,7 +618,7 @@ input_enum (char *name, int *d)
  */
 int
 //can_pack_all(void)
-can_pack_all (char *name)
+A4GL_can_pack_all (char *name)
 {
   return 0;
 }

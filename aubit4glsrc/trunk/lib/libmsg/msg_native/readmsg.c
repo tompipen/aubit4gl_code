@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.9 2003-05-12 14:24:22 mikeaubury Exp $
+# $Id: readmsg.c,v 1.10 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -32,10 +32,10 @@
  * Functions for reading help message file in native format
  *
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -69,7 +69,7 @@ FILE *helpfile = 0;
  * @todo Describe function
  */
 int
-read_help_f (int no, int *maxwidth)
+A4GL_read_help_f (int no, int *maxwidth)
 {
   short pos;
   int cnt;
@@ -94,7 +94,7 @@ read_help_f (int no, int *maxwidth)
      between files that are obviously not compatible.
 
      Therefore, we should not just blindly take "helpfile" variable, but instead
-     first strip it's extension, and add Aubit one.
+     first A4GL_strip it's extension, and add Aubit one.
 
      We also need to try using $DBPATH, as Informix does, to search for this
      file, if it's not in current directory.
@@ -102,43 +102,43 @@ read_help_f (int no, int *maxwidth)
    */
 
 
-  debug ("Reading : %d (%p)", no, helpfile);
+  A4GL_debug ("Reading : %d (%p)", no, helpfile);
   while (1)
     {
       fread (&pos, 2, 1, helpfile);
-      debug ("pos=%d", pos);
+      A4GL_debug ("pos=%d", pos);
 
       if (pos == -1 || pos > no)
 	{
-	  debug ("Out of range 1");
-	  exitwith ("Help message not found");
+	  A4GL_debug ("Out of range 1");
+	  A4GL_exitwith ("Help message not found");
 	  break;
 	}
 
       if (feof (helpfile))
 	{
-	  debug ("End of file");
-	  exitwith ("Help message not found");
+	  A4GL_debug ("End of file");
+	  A4GL_exitwith ("Help message not found");
 	  return 0;
 	  break;
 	}
 
       fread (&num, 2, 1, helpfile);
 
-      debug ("num=%d", num);
+      A4GL_debug ("num=%d", num);
 
       if (pos == no)
 	{
-	  debug ("Got it...");
+	  A4GL_debug ("Got it...");
 	  fseek (helpfile, (long) num + 3, SEEK_SET);
 	  while (1 == 1)
 	    {
 	      if (feof (helpfile))
 		break;
 	      fgets (tmpbuf, 80, helpfile);
-	      debug ("Buff=%s", tmpbuf);
+	      A4GL_debug ("Buff=%s", tmpbuf);
 	      strcat (helpbuff, tmpbuf);
-	      stripnl (tmpbuf);
+	      A4GL_stripnl (tmpbuf);
 	      strcpy (disp[cnt++], tmpbuf);
 	      if (strlen (tmpbuf) > max_width)
 		max_width = strlen (tmpbuf);
@@ -155,11 +155,11 @@ read_help_f (int no, int *maxwidth)
       *maxwidth = max_width;
       if (pos == no)
 	{
-	  debug ("Got it...");
+	  A4GL_debug ("Got it...");
 	  return cnt;
 	}
     }
-  exitwith ("Could not read help message");
+  A4GL_exitwith ("Could not read help message");
   return 0;
 
 }

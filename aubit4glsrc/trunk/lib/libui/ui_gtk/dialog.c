@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.4 2003-05-12 14:24:28 mikeaubury Exp $
+# $Id: dialog.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -75,10 +75,10 @@
 =====================================================================
 */
 
-int gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
+int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 	       char *msg);
 void aclfgli_pr_message (int a, int wait);
-void display_error (int a, int wait);
+void A4GL_display_error (int a, int wait);
 
 /*
 =====================================================================
@@ -97,10 +97,10 @@ dialog_callback (GtkWidget * widget, gpointer data)
 {
   GtkObject *win;
   win = GTK_OBJECT (widget);
-  debug ("Win=%p\n", win);
+  A4GL_debug ("Win=%p\n", win);
   gtk_object_set_data (GTK_OBJECT (win),
 		       "RETURNS", gtk_object_get_data (data, "BUTCODE"));
-  debug ("Set code to %d\n", gtk_object_get_data (win, "RETURNS"));
+  A4GL_debug ("Set code to %d\n", gtk_object_get_data (win, "RETURNS"));
   /* gtk_main_quit(); */
 }
 
@@ -172,7 +172,7 @@ add_button (GtkDialog * win, int but_code)
  * @return
  */
 int
-gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
+A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 	   char *msg)
 {
   int rval;
@@ -183,7 +183,7 @@ gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 /* Only do modal for now... */
   dis = DIALOG_DISABLE_ALL;
   win = (GtkDialog *) gtk_dialog_new ();
-  debug ("In gtkdialog msg=%s\n", msg);
+  A4GL_debug ("In A4GL_gtkdialog msg=%s\n", msg);
 
   gtk_window_set_modal ((GtkWindow *) win, 1);
 
@@ -259,9 +259,9 @@ main (int argc, char *argv[])
   int a;
   gtk_init (&argc, &argv);
   a =
-    gtkdialog ("Warning", "Warn.gif", BUTTONS_YES_NO_CANCEL, BUTTON_CANCEL, 0,
+    A4GL_gtkdialog ("Warning", "Warn.gif", BUTTONS_YES_NO_CANCEL, BUTTON_CANCEL, 0,
 	       "Are you really really sure ?");
-  debug ("Returned %d\n", a);
+  A4GL_debug ("Returned %d\n", a);
 }
 
 #endif
@@ -281,12 +281,12 @@ aclfgli_pr_message (int a, int wait)
 	 * but the headers needs some clean.
 	 */
 
-  p = (char *) char_pop ();
-  debug ("In aclfgli_pr_message (GUI)- p=%s", p);
+  p = (char *) A4GL_char_pop ();
+  A4GL_debug ("In aclfgli_pr_message (GUI)- p=%s", p);
   if (wait)
-    gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, p);
+    A4GL_gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, p);
   else
-    msg_window_gtk (p);
+    A4GL_msg_window_gtk (p);
 }
 
 /**
@@ -297,14 +297,14 @@ aclfgli_pr_message (int a, int wait)
  *             - 1 : Show a window witj OK button.
  */
 void
-display_error (int a, int wait)
+A4GL_display_error (int a, int wait)
 {
   char *p;
-  p = (char *) char_pop ();
+  p = (char *) A4GL_char_pop ();
   if (wait)
-    gtkdialog ("Error", "", BUTTONS_OK, BUTTON_OK, 0, p);
+    A4GL_gtkdialog ("Error", "", BUTTONS_OK, BUTTON_OK, 0, p);
   else
-    error_window_gtk (p);
+    A4GL_error_window_gtk (p);
 
   free (p);
 }

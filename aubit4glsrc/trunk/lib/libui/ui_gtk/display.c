@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.6 2003-05-12 14:24:29 mikeaubury Exp $
+# $Id: display.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -65,9 +65,9 @@ extern GtkWindow *currwindow;
 
 
 #ifdef OLD_INCL
-int display_generic (GtkWidget * k, char *s);
-GtkWidget *find_widget (GtkWindow * form, char *ident);
-void dump_mem (char *ptr);
+int A4GL_display_generic (GtkWidget * k, char *s);
+GtkWidget *A4GL_find_widget (GtkWindow * form, char *ident);
+void A4GL_dump_mem (char *ptr);
 #endif
 
 /*
@@ -89,20 +89,20 @@ void dump_mem (char *ptr);
  *   - 0 :idget type not found.
  */
 int
-display_generic (GtkWidget * k, char *s)
+A4GL_display_generic (GtkWidget * k, char *s)
 {
   char *ptr;
-  debug ("in display_generic k=%p s='%s'\n", k, s);
+  A4GL_debug ("in A4GL_display_generic k=%p s='%s'\n", k, s);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WidgetType");
 
   if (ptr == 0)
     {
-      debug ("Cant find tyhe widget!");
+      A4GL_debug ("Cant find tyhe widget!");
       return 1;
     }
 
-  debug ("Widgettye=%s\n", ptr);
+  A4GL_debug ("Widgettye=%s\n", ptr);
 
   if (strcasecmp (ptr, "BUTTON") == 0)
     {
@@ -149,16 +149,16 @@ display_generic (GtkWidget * k, char *s)
       for (a = 0;; a++)
 	{
 	  sprintf (buff, "B%d", a + 1);
-	  debug ("Looking for button %s\n", buff);
+	  A4GL_debug ("Looking for button %s\n", buff);
 	  btn = gtk_object_get_data (GTK_OBJECT (k), buff);
-	  debug ("Got btn=%p\n", btn);
+	  A4GL_debug ("Got btn=%p\n", btn);
 	  if (btn == 0)
 	    break;
 	  ptr = gtk_object_get_data (GTK_OBJECT (btn), "Value");
-	  debug ("Got value=%s - compare to %s\n", ptr, s);
+	  A4GL_debug ("Got value=%s - compare to %s\n", ptr, s);
 	  if (strcmp (ptr, s) == 0)
 	    {
-	      debug ("Ok - set it\n");
+	      A4GL_debug ("Ok - set it\n");
 	      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (btn), 1);
 	      return 1;
 	    }
@@ -173,33 +173,33 @@ display_generic (GtkWidget * k, char *s)
       char ss[21];
       strcpy (ss, s);
       A4GLSQL_set_status (0, 0);
-      trim (ss);
+      A4GL_trim (ss);
       if (strlen (ss) == 0)
 	{
 	  gtk_calendar_clear_marks (GTK_CALENDAR (k));
 	  return 0;
 	}
 
-      debug ("s set to %s\n", ss);
-      push_variable (&ss, 0x140000);
-      pop_var2 (&da, 7, 0);
-      debug ("Got date as %d\n", da);
+      A4GL_debug ("s set to %s\n", ss);
+      A4GL_push_variable (&ss, 0x140000);
+      A4GL_pop_var2 (&da, 7, 0);
+      A4GL_debug ("Got date as %d\n", da);
 
       if (a4gl_status != 0)
 	return 1;
-      debug ("Everything seems ok...");
+      A4GL_debug ("Everything seems ok...");
 
-      push_variable (&da, 0x7);
+      A4GL_push_variable (&da, 0x7);
       aclfgl_day (1);
-      pop_var2 (&d, 2, 0);
+      A4GL_pop_var2 (&d, 2, 0);
 
-      push_variable (&da, 0x7);
+      A4GL_push_variable (&da, 0x7);
       aclfgl_month (1);
-      pop_var2 (&m, 2, 0);
+      A4GL_pop_var2 (&m, 2, 0);
 
-      push_variable (&da, 0x7);
+      A4GL_push_variable (&da, 0x7);
       aclfgl_year (1);
-      pop_var2 (&y, 2, 0);
+      A4GL_pop_var2 (&y, 2, 0);
 
       gtk_calendar_select_month (GTK_CALENDAR (k), m, y);
       gtk_calendar_select_day (GTK_CALENDAR (k), d);
@@ -233,11 +233,11 @@ display_generic (GtkWidget * k, char *s)
  * @return The widget founded.
  */
 GtkWidget *
-find_widget (GtkWindow * form, char *ident)
+A4GL_find_widget (GtkWindow * form, char *ident)
 {
   GtkWidget *w;
 
-  debug ("find_widget");
+  A4GL_debug ("find_widget");
   if (form == 0)
     form = currwindow;
 
@@ -246,13 +246,13 @@ find_widget (GtkWindow * form, char *ident)
 
   if (w == 0)
     {
-      debug ("Bad form displayed\n");
+      A4GL_debug ("Bad form displayed\n");
       return 0;			/* Can't find form.. */
     }
   w = gtk_object_get_data (GTK_OBJECT (w), ident);
   if (w == 0)
     {
-      debug ("Field not found displayed\n");
+      A4GL_debug ("Field not found displayed\n");
       return 0;			/* Can't find widget.. */
     }
   return w;
@@ -260,18 +260,18 @@ find_widget (GtkWindow * form, char *ident)
 
 
 /**
- * Dump the content of a string to the debug as integers.
+ * Dump the content of a string to the A4GL_debug as integers.
  *
  * @param ptr A pointer to the information that we want to dump.
  */
 void
-dump_mem (char *ptr)
+A4GL_dump_mem (char *ptr)
 {
   int a;
-  debug ("Mem dump for %p\n", ptr);
+  A4GL_debug ("Mem A4GL_dump for %p\n", ptr);
   for (a = 0; a < 32; a++)
     {
-      debug ("%d : %x", a, ptr[a]);
+      A4GL_debug ("%d : %x", a, ptr[a]);
     }
 }
 

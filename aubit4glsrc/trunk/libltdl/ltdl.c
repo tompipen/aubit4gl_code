@@ -187,7 +187,7 @@ static const char sys_search_path[] = LTDL_SYSSEARCHPATH;
 	if (mutex_unlock) (*mutex_unlock)();	} LT_STMT_END
 #define MUTEX_SETERROR(errormsg)		LT_STMT_START {	\
 	if (mutex_seterror) (*mutex_seterror) (errormsg);	\
-	else last_error = (errormsg);		} LT_STMT_END
+	else A4GL_last_error = (errormsg);		} LT_STMT_END
 #define MUTEX_GETERROR(errormsg)		LT_STMT_START {	\
 	if (mutex_seterror) errormsg = (*mutex_geterror)();	\
 	else (errormsg) = last_error;		} LT_STMT_END
@@ -198,7 +198,7 @@ static lt_dlmutex_lock *mutex_lock = 0;
 static lt_dlmutex_unlock *mutex_unlock = 0;
 static lt_dlmutex_seterror *mutex_seterror = 0;
 static lt_dlmutex_geterror *mutex_geterror = 0;
-static const char *last_error = 0;
+static const char *A4GL_last_error = 0;
 
 
 /* Either set or reset the mutex functions.  Either all the arguments must
@@ -591,7 +591,7 @@ sys_dl_close (loader_data, module)
 {
   int errors = 0;
 
-  if (dlclose (module) != 0)
+  if (A4GL_dlclose (module) != 0)
     {
       MUTEX_SETERROR (DLERROR (CANNOT_CLOSE));
       ++errors;
@@ -633,7 +633,7 @@ static struct lt_user_dlloader sys_dl = {
 
 #if HAVE_SHL_LOAD
 
-/* dynamic linking with shl_load (HP-UX) (comments from gmodule) */
+/* dynamic linking with shl_load (HP-UX) (A4GL_comments from gmodule) */
 
 #ifdef HAVE_DL_H
 #  include <dl.h>
@@ -831,7 +831,7 @@ sys_wll_open (loader_data, filename)
 
   /* libltdl expects this function to fail if it is unable
      to physically load the library.  Sadly, LoadLibrary
-     will search the loaded libraries for a match and return
+     will search the loaded libraries for a A4GL_match and return
      one of them if the path search load fails.
 
      We check whether LoadLibrary is returning a handle to
@@ -1498,7 +1498,7 @@ tryall_dlopen (handle, filename)
     }
 
   cur->loader = loader;
-  last_error = saved_error;
+  A4GL_last_error = saved_error;
 
 done:
   MUTEX_UNLOCK ();
@@ -1950,7 +1950,7 @@ unload_deplibs (handle)
 }
 
 static int
-trim (dest, str)
+A4GL_trim (dest, str)
      char **dest;
      const char *str;
 {
@@ -1967,7 +1967,7 @@ trim (dest, str)
       tmp = LT_DLMALLOC (char, end - str);
       if (!tmp)
 	{
-	  last_error = LT_DLSTRERROR (NO_MEMORY);
+	  A4GL_last_error = LT_DLSTRERROR (NO_MEMORY);
 	  return 1;
 	}
 
@@ -2192,7 +2192,7 @@ lt_dlopen (filename)
 #define STR_DLNAME	"dlname="
 	  if (strncmp (line, STR_DLNAME, sizeof (STR_DLNAME) - 1) == 0)
 	    {
-	      error = trim (&dlname, &line[sizeof (STR_DLNAME) - 1]);
+	      error = A4GL_trim (&dlname, &line[sizeof (STR_DLNAME) - 1]);
 	    }
 
 #undef  STR_OLD_LIBRARY
@@ -2200,13 +2200,13 @@ lt_dlopen (filename)
 	  else if (strncmp (line, STR_OLD_LIBRARY,
 			    sizeof (STR_OLD_LIBRARY) - 1) == 0)
 	    {
-	      error = trim (&old_name, &line[sizeof (STR_OLD_LIBRARY) - 1]);
+	      error = A4GL_trim (&old_name, &line[sizeof (STR_OLD_LIBRARY) - 1]);
 	    }
 #undef  STR_LIBDIR
 #define STR_LIBDIR	"libdir="
 	  else if (strncmp (line, STR_LIBDIR, sizeof (STR_LIBDIR) - 1) == 0)
 	    {
-	      error = trim (&libdir, &line[sizeof (STR_LIBDIR) - 1]);
+	      error = A4GL_trim (&libdir, &line[sizeof (STR_LIBDIR) - 1]);
 	    }
 
 #undef  STR_DL_DEPLIBS
@@ -2214,7 +2214,7 @@ lt_dlopen (filename)
 	  else if (strncmp (line, STR_DL_DEPLIBS,
 			    sizeof (STR_DL_DEPLIBS) - 1) == 0)
 	    {
-	      error = trim (&deplibs, &line[sizeof (STR_DL_DEPLIBS) - 1]);
+	      error = A4GL_trim (&deplibs, &line[sizeof (STR_DL_DEPLIBS) - 1]);
 	    }
 	  else if (strcmp (line, "installed=yes\n") == 0)
 	    {
@@ -2231,7 +2231,7 @@ lt_dlopen (filename)
 				       sizeof (STR_LIBRARY_NAMES) - 1) == 0)
 	    {
 	      char *last_libname;
-	      error = trim (&dlname, &line[sizeof (STR_LIBRARY_NAMES) - 1]);
+	      error = A4GL_trim (&dlname, &line[sizeof (STR_LIBRARY_NAMES) - 1]);
 	      if (!error && dlname &&
 		  (last_libname = strrchr (dlname, ' ')) != NULL)
 		{
@@ -2632,7 +2632,7 @@ lt_dladdsearchdir (search_dir)
       user_search_path = strdup (search_dir);
       if (!user_search_path)
 	{
-	  last_error = LT_DLSTRERROR (NO_MEMORY);
+	  A4GL_last_error = LT_DLSTRERROR (NO_MEMORY);
 	  ++errors;
 	}
     }
@@ -2958,7 +2958,7 @@ lt_dlloader_add (place, dlloader, loader_name)
 
       if (ptr->next != place)
 	{
-	  last_error = LT_DLSTRERROR (INVALID_LOADER);
+	  A4GL_last_error = LT_DLSTRERROR (INVALID_LOADER);
 	  ++errors;
 	}
       else

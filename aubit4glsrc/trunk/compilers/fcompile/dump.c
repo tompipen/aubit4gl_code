@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.10 2003-03-10 16:13:32 mikeaubury Exp $
+# $Id: dump.c,v 1.11 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -141,7 +141,7 @@ dump_form_desc (struct_form * f)
 }
 
 /**
- * Make a text dump of the form attributes
+ * Make a text A4GL_dump of the form attributes
  *
  * @param f A pointer to a form description record
  */
@@ -210,7 +210,7 @@ dump_attributes (struct_form * f)
 }
 
 /**
- * Make a text dump of all text elements from the screen image
+ * Make a text A4GL_dump of all text elements from the screen image
  *
  * @param f A pointer to a form description record
  */
@@ -252,7 +252,7 @@ dump_fields_desc (struct_form * f)
 }
 
 /**
- * Make a text dump of the screen record information
+ * Make a text A4GL_dump of the screen record information
  *
  * @param f A pointer to a form description record
  */

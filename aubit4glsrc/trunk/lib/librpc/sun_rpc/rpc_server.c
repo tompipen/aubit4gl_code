@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.12 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: rpc_server.c,v 1.13 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 /**
@@ -36,7 +36,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -67,7 +67,7 @@ static int call_func (char *s, int a);
  * @todo Describe function
  */
 return_values *
-call_remote_func_1_svc (call arg, struct svc_req *rqstp)
+A4GL_call_remote_func_1_svc (call arg, struct svc_req *rqstp)
 {
   int a;
   int z;
@@ -87,35 +87,35 @@ call_remote_func_1_svc (call arg, struct svc_req *rqstp)
       async = 1;
     }
 
-  debug ("%s\n", arg1->function_name);
-  debug ("%d arguments\n", arg1->parameters.parameters_len);
+  A4GL_debug ("%s\n", arg1->function_name);
+  A4GL_debug ("%d arguments\n", arg1->parameters.parameters_len);
   for (a = arg1->parameters.parameters_len - 1; a >= 0; a--)
     {
       ptr = arg1->parameters.parameters_val;
-      debug (" %d Type %d : ", a, ptr[a].dtype);
+      A4GL_debug (" %d Type %d : ", a, ptr[a].dtype);
       switch (arg1->parameters.parameters_val[a].dtype)
 	{
 	case 0:
-	  push_char (ptr[a].single_dtype_u.chardata);
+	  A4GL_push_char (ptr[a].single_dtype_u.chardata);
 	  break;
 	case 1:
-	  push_int (ptr[a].single_dtype_u.shortval);
+	  A4GL_push_int (ptr[a].single_dtype_u.shortval);
 	  break;
 	case 2:
 	case 6:
 	case 7:
 	case 8:
-	  push_long (ptr[a].single_dtype_u.longval);
+	  A4GL_push_long (ptr[a].single_dtype_u.longval);
 	  break;
 	case 3:
-	  debug ("RPC Double:%lf", ptr[a].single_dtype_u.floatval);
-	  push_double (ptr[a].single_dtype_u.floatval);
+	  A4GL_debug ("RPC Double:%lf", ptr[a].single_dtype_u.floatval);
+	  A4GL_push_double (ptr[a].single_dtype_u.floatval);
 	  break;
 	case 4:
-	  push_float (ptr[a].single_dtype_u.smfltval);
+	  A4GL_push_float (ptr[a].single_dtype_u.smfltval);
 	  break;
 	default:
-	  exitwith ("Unprintable datatype");
+	  A4GL_exitwith ("Unprintable datatype");
 	  return 0;
 	}
     }
@@ -128,9 +128,9 @@ call_remote_func_1_svc (call arg, struct svc_req *rqstp)
       result.return_values_val[0].dtype = 2;
       result.return_values_val[0].single_dtype_u.longval = 0;
 
-      exitwith ("serious bug in rpc_server.c");
+      A4GL_exitwith ("serious bug in rpc_server.c");
 
-      fgl_rpc_reply ((void *) &result);
+      A4GL_fgl_rpc_reply ((void *) &result);
       /*
          warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
 
@@ -159,7 +159,7 @@ call_remote_func_1_svc (call arg, struct svc_req *rqstp)
 
 	/************************************************************/
 
-  debug ("Function returns %d values", z);
+  A4GL_debug ("Function returns %d values", z);
   result.return_values_len = z;
 
   if (result.return_values_val)
@@ -172,34 +172,34 @@ call_remote_func_1_svc (call arg, struct svc_req *rqstp)
   for (a = z; a > 1; a--)
     {
       ptr = result.return_values_val;
-      get_top_of_stack (1, &d, &s, &p);
+      A4GL_get_top_of_stack (1, &d, &s, &p);
 
-      debug ("Top of stack return %d %d %p (%d)", d, s, p);
+      A4GL_debug ("Top of stack return %d %d %p (%d)", d, s, p);
       ptr[a - 1].dtype = d & 15;
 
       switch (d & 15)
 	{
 	case 0:
-	  ptr[a - 1].single_dtype_u.chardata = (char *) char_pop ();
+	  ptr[a - 1].single_dtype_u.chardata = (char *) A4GL_char_pop ();
 	  break;
 	case 1:
-	  ptr[a - 1].single_dtype_u.shortval = pop_int ();
+	  ptr[a - 1].single_dtype_u.shortval = A4GL_pop_int ();
 	  break;
 	case 6:
 	case 7:
 	case 8:
 	case 2:
-	  ptr[a - 1].single_dtype_u.longval = pop_long ();
+	  ptr[a - 1].single_dtype_u.longval = A4GL_pop_long ();
 	  break;
 
 	case 3:
-	  ptr[a - 1].single_dtype_u.floatval = pop_double ();
+	  ptr[a - 1].single_dtype_u.floatval = A4GL_pop_double ();
 	  break;
 	case 4:
-	  ptr[a - 1].single_dtype_u.smfltval = pop_float ();
+	  ptr[a - 1].single_dtype_u.smfltval = A4GL_pop_float ();
 	  break;
 	default:
-	  exitwith ("Untransmittable data");
+	  A4GL_exitwith ("Untransmittable data");
 	}
     }
 
@@ -226,18 +226,18 @@ static int
 call_func (char *s, int a)
 {
   int z;
-  int (*func) (int a);
-  debug ("In call_func");
-  if (has_pointer (s, RPC_FUNC))
+  int (*A4GL_func) (int a);
+  A4GL_debug ("In call_func");
+  if (A4GL_has_pointer (s, RPC_FUNC))
     {
-      debug ("Function has been registered");
-      func = find_pointer (s, RPC_FUNC);
-      z = func (a);
+      A4GL_debug ("Function has been registered");
+      A4GL_func = A4GL_find_pointer (s, RPC_FUNC);
+      z = A4GL_func (a);
       return z + 1;
     }
   else
     {
-      exitwith ("Function not registered");
+      A4GL_exitwith ("Function not registered");
       return 1;
     }
 }

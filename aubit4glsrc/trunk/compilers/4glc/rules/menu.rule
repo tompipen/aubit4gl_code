@@ -29,7 +29,7 @@ print_end_menu_2();
 menu_block_command : 
 	BEFORE_MENU 
 		{
-	 lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
+	 A4GL_lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
 		print_menu_block(-2) ;
                   }  
 	commands {
@@ -40,9 +40,9 @@ menu_block_command :
         menu_opt_name menu_optional_desc 
 	opt_help_no
 		{
-debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
+A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
-		lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
+	 A4GL_lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
 		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
@@ -65,7 +65,7 @@ debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 menu_commands : menu_block_command | menu_commands menu_block_command;
 
 opt_key	:	{strcpy($<str>$,"\"EMPTY\"");}
-	|	key_val {sprintf($<str>$,"\"%s\"",$<str>1);};
+	| key_val {sprintf($<str>$,"\"%s\"",$<str>1);};
 
 menu_opt_name	:	CHAR_VALUE {strcpy($<str>$,$<str>1); }
 | variable {strcpy($<str>$,$<str>1);}

@@ -28,7 +28,7 @@ VARIABLE A4GL_MENUTYPE
 
 
 /* int mn_itemexists (char *menuitem) */
-mn_itemexists char* menuitem -> int
+A4GL_mn_itemexists char* menuitem -> int
 
 
 /* char *mn_caption(char *s) */
@@ -40,10 +40,10 @@ mn_itemexists char* menuitem -> int
 /* static GtkWidget * create_menu (menu_list *m, char *id, int mode, void *handler) */
 
 /* GtkWidget * load_menu (char *fname, char *menu_id, int mode, void *handler) */
-load_menu char* fname,char* menu_id,int mode,void* handler -> void*
+A4GL_load_menu char* fname,char* menu_id,int mode,void* handler -> void*
 
 /* void show_menu (char *menuid, void *handler) */
-show_menu char* menuid,void* handler -> void
+A4GL_show_menu char* menuid,void* handler -> void
 
 /* void endis_menuitems (int en_dis, ...) */
 
@@ -52,7 +52,7 @@ show_menu char* menuid,void* handler -> void
 /* void error_with (char *s, char *a, char *b) */
 
 /* void write_menu () */
-write_menu -> void
+A4GL_write_menu -> void
 
 
 /*  ============================ EOF ============================   */

@@ -7,18 +7,18 @@
 
 opt_at : {
 	print_display_line();
-		strcpy($<str>$,get_display_str(0,0,0));
+		strcpy($<str>$,A4GL_get_display_str(0,0,0));
 	} 
 	| AT display_coords {
-		strcpy($<str>$,get_display_str(1,0,0)); /* FIXME */
+		strcpy($<str>$,A4GL_get_display_str(1,0,0)); /* FIXME */
 	}
 	| TO_MENUITEM identifier { 
 	strcpy($<str>$,"#error not implemented yet");
 	}
-	| TO_MAIN_CAPTION { strcpy($<str>$, get_display_str(4,0,0)); }
-	| TO fld_list { strcpy($<str>$, get_display_str(2,$<str>2,0)); }
-	| TO KWFORM identifier KWFIELD fld_list { strcpy($<str>$, get_display_str(3,$<str>5,$<str>3)); }
-	| TO KWFORM identifier CAPTION { strcpy($<str>$, get_display_str(5,$<str>3,0)); }
+	| TO_MAIN_CAPTION { strcpy($<str>$, A4GL_get_display_str(4,0,0)); }
+	| TO fld_list { strcpy($<str>$, A4GL_get_display_str(2,$<str>2,0)); }
+	| TO KWFORM identifier KWFIELD fld_list { strcpy($<str>$, A4GL_get_display_str(3,$<str>5,$<str>3)); }
+	| TO KWFORM identifier CAPTION { strcpy($<str>$, A4GL_get_display_str(5,$<str>3,0)); }
 	| TO_STATUSBOX identifier { 
 	strcpy($<str>$,"#error not implemented yet");
  }

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.10 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: maths.c,v 1.11 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -67,10 +67,10 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 */
 
 
-void init_arr_math (void);
+void A4GL_init_arr_math (void);
 
 #ifdef OLD_INCL
-void *find_op_function (int dtype1, int dtype2, int op);
+void *A4GL_find_op_function (int dtype1, int dtype2, int op);
 #endif
 
 /*
@@ -125,7 +125,7 @@ nparam_op (int op)
  * @todo Describe function
  */
 void
-init_arr_math (void)
+A4GL_init_arr_math (void)
 {
   int a, b;
   if (inited == 0)
@@ -147,15 +147,15 @@ init_arr_math (void)
  * @todo Describe function
  */
 void
-add_op_function (int dtype1, int dtype2, int op, void *function)
+A4GL_add_op_function (int dtype1, int dtype2, int op, void *function)
 {
   struct s_math *ptr_orig;
   struct s_math *ptr_new;
 
-  debug ("Adding %x function for %d,%d (%p)", op, dtype1, dtype2, function);
+  A4GL_debug ("Adding %x function for %d,%d (%p)", op, dtype1, dtype2, function);
 
   if (inited == 0)
-    init_arr_math ();
+    A4GL_init_arr_math ();
 
   if (nparam_op (op) == 0)
     {
@@ -195,16 +195,16 @@ add_op_function (int dtype1, int dtype2, int op, void *function)
  * @todo Describe function
  */
 void *
-find_op_function (int dtype1, int dtype2, int op)
+A4GL_find_op_function (int dtype1, int dtype2, int op)
 {
   struct s_math *ptr_orig;
   if (inited == 0)
-    init_arr_math ();
+    A4GL_init_arr_math ();
 
   dtype1 = dtype1 & DTYPE_MASK;
   dtype2 = dtype2 & DTYPE_MASK;
 
-  debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
+  A4GL_debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
 
   if (nparam_op (op) == 0)
     {
@@ -219,7 +219,7 @@ find_op_function (int dtype1, int dtype2, int op)
 
   if (ptr_orig == 0)
     {
-      debug ("No ptr_orig - so no...");
+      A4GL_debug ("No ptr_orig - so no...");
       return 0;
     }
 
@@ -227,12 +227,12 @@ find_op_function (int dtype1, int dtype2, int op)
     {
       if (ptr_orig->op == op)
 	{
-	  debug ("Got it -> %p", ptr_orig->function);
+	  A4GL_debug ("Got it -> %p", ptr_orig->function);
 	  return ptr_orig->function;
 	}
       ptr_orig = ptr_orig->next;
     }
-  debug ("Nope - use standard");
+  A4GL_debug ("Nope - use standard");
   return 0;
 
 }

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.10 2003-05-12 14:24:27 mikeaubury Exp $
+# $Id: prompt.c,v 1.11 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * Prompt implementation for Text User Interface
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -52,9 +52,9 @@
 =====================================================================
 */
 
-int curses_to_aubit (int a);
-int proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
-int chkwin (void);
+int A4GL_curses_to_aubit (int a);
+int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
+int A4GL_chkwin (void);
 
 /*
 =====================================================================
@@ -68,7 +68,7 @@ int chkwin (void);
  * @todo Describe function
  */
 int
-start_prompt (void *vprompt, int ap, int c, int h, int af)
+A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int promptline;
@@ -83,20 +83,20 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
   int a;
 
   prompt = vprompt;
-  debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
+  A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
 
   memset (buff, ' ', 255);
-  promptline = getprompt_line ();
-  debug ("promptline=%d", promptline);
-  width = get_curr_width ();
-  debug ("create window %d %d", 1, promptline);
-  debug ("%d %d", width - 1, 2);
-  cw = (WINDOW *) get_currwin ();
+  promptline = A4GL_getprompt_line ();
+  A4GL_debug ("promptline=%d", promptline);
+  width = A4GL_get_curr_width ();
+  A4GL_debug ("create window %d %d", 1, promptline);
+  A4GL_debug ("%d %d", width - 1, 2);
+  cw = (WINDOW *) A4GL_get_currwin ();
   p =
-    derwin (cw, 1, width, promptline - 1 + iscurrborder () * 2,
-	    iscurrborder ());
+    derwin (cw, 1, width, promptline - 1 + A4GL_iscurrborder () * 2,
+	    A4GL_iscurrborder ());
   prompt->win = p;
-  promptstr = char_pop ();
+  promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
   prompt->charmode = c;
@@ -104,49 +104,49 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
-  sarr[0] = (FIELD *) make_label (0, 0, promptstr);
+  sarr[0] = (FIELD *) A4GL_make_label (0, 0, promptstr);
   set_new_page (sarr[0], 1);
-  debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  sarr[1] = (FIELD *) make_field (0, strlen (promptstr), 1, width + 1);
-  sarr[2] = 0;			/* (FIELD *) make_label (0, strlen(promptstr)+width-1,"|"); */
+  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
+  sarr[1] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
+  sarr[2] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
 
   /* set_field_pad(sarr[1],' '); */
   prompt->field = sarr[1];
-  debug ("set field to =%p", prompt->field);
-  debug ("Field=%p", sarr[1]);
+  A4GL_debug ("set field to =%p", prompt->field);
+  A4GL_debug ("Field=%p", sarr[1]);
 
-  /* default_attributes (sarr[0], 0); */
+  /* A4GL_default_attributes (sarr[0], 0); */
 
-  default_attributes (sarr[1], 0);
+  A4GL_default_attributes (sarr[1], 0);
   field_opts_off (sarr[1], O_STATIC);
 
-  debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
+  A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
 
   if (ap)
     {
-      set_field_fore (sarr[0], decode_aubit_attr (ap, 'f'));
-      set_field_back (sarr[0], decode_aubit_attr (ap, 'b'));
+      set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
+      set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b'));
     }
   if (af)
     {
-      set_field_back (sarr[1], decode_aubit_attr (af, 'f'));
-      set_field_fore (sarr[1], decode_aubit_attr (af, 'b'));
+      set_field_back (sarr[1], A4GL_decode_aubit_attr (af, 'f'));
+      set_field_fore (sarr[1], A4GL_decode_aubit_attr (af, 'b'));
     }
 
   field_opts_on (sarr[1], O_NULLOK);
-  debug ("Set attributes");
+  A4GL_debug ("Set attributes");
 
   buff[0] = 0;			/* -2 */
-  debug ("Setting Buffer %p to '%s'", sarr[1], buff);
+  A4GL_debug ("Setting Buffer %p to '%s'", sarr[1], buff);
   set_field_buffer (sarr[1], 0, buff);
-  debug ("Set buffer ");
+  A4GL_debug ("Set buffer ");
   sarr[2] = 0;
 
-  debug ("Made fields");
-  debug ("Field attr : %d", field_opts (sarr[1]));
+  A4GL_debug ("Made fields");
+  A4GL_debug ("Field attr : %d", field_opts (sarr[1]));
 
   f = new_form (sarr);
-  debug ("Form f = %p", f);
+  A4GL_debug ("Form f = %p", f);
   prompt->f = f;
   A4GLSQL_set_status (0, 0);
   if (a4gl_status != 0)
@@ -154,20 +154,20 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
   d = derwin (p, 0, 0, width + 1, 1);
   set_form_win (f, p);
   set_form_sub (f, d);
-  debug ("Set form win");
+  A4GL_debug ("Set form win");
   a = post_form (f);
-  debug ("Posted form=%d", a);
-  int_form_driver (f, REQ_FIRST_FIELD);
-  int_form_driver (f, REQ_INS_MODE);
+  A4GL_debug ("Posted form=%d", a);
+  A4GL_int_form_driver (f, REQ_FIRST_FIELD);
+  A4GL_int_form_driver (f, REQ_INS_MODE);
   wrefresh (p);
-  debug ("Initialized form");
+  A4GL_debug ("Initialized form");
 /* zrefresh(); */
   A4GLSQL_set_status (0, 0);
 
-  gui_startprompt ((long) prompt);
-  gui_setfocus ((long) sarr[1]);
+  A4GL_gui_startprompt ((long) prompt);
+  A4GL_gui_setfocus ((long) sarr[1]);
   wrefresh (p);
-  mja_refresh ();
+  A4GL_mja_refresh ();
 
   return 1;
 }
@@ -178,19 +178,19 @@ start_prompt (void *vprompt, int ap, int c, int h, int af)
  * @todo Describe function
  */
 int
-proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
+A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 {
   FIELD *f;
 
   f = current_field (mform);
 
-  set_last_key (curses_to_aubit (a));
+  A4GL_set_last_key (A4GL_curses_to_aubit (a));
 
-  debug ("In proc_key_prompt.... for %d", a);
+  A4GL_debug ("In proc_key_prompt.... for %d", a);
   switch (a)
     {
     case 18:
-      zrefresh ();
+      A4GL_zrefresh ();
       break;
     case -1:
 
@@ -205,16 +205,16 @@ proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
     case KEY_DC:
     case KEY_DL:
     case KEY_BACKSPACE:
-      debug ("Req del prev");
-      if (get_curr_field_col (mform))
+      A4GL_debug ("Req del prev");
+      if (A4GL_get_curr_field_col (mform))
 	{
-	  int_form_driver (mform, REQ_DEL_PREV);
-	  debug ("Done...");
+	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
+	  A4GL_debug ("Done...");
 	}
       return 0;
 
     case 24:
-      int_form_driver (mform, REQ_DEL_CHAR);
+      A4GL_int_form_driver (mform, REQ_DEL_CHAR);
       return 0;
 
     case '\t':
@@ -223,31 +223,31 @@ proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
     case 10:
     case KEY_DOWN:
 #ifdef DEBUG
-      debug ("Next field in a prompt - they must mean enter");
+      A4GL_debug ("Next field in a prompt - they must mean enter");
 #endif
       return 10;
 
     case KEY_LEFT:
-      int_form_driver (mform, REQ_PREV_CHAR);
+      A4GL_int_form_driver (mform, REQ_PREV_CHAR);
       return 0;
 
     case KEY_RIGHT:
-      int_form_driver (mform, REQ_NEXT_CHAR);
+      A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
       return 0;
 
     case 4:
-      int_form_driver (mform, REQ_CLR_FIELD);
+      A4GL_int_form_driver (mform, REQ_CLR_FIELD);
       return 0;
     }
 
-  /* mja_refresh (); */
-  if (a == key_val ("HELP"))
+  /* A4GL_mja_refresh (); */
+  if (a == A4GL_key_val ("HELP"))
     {
       aclfgl_a4gl_show_help (prompt->h);
       a = 0;
     }
 
-  debug ("Returning %d from proc_key_prompt\n", a);
+  A4GL_debug ("Returning %d from proc_key_prompt\n", a);
   return a;
 }
 
@@ -257,7 +257,7 @@ proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
  * @todo Describe function
  */
 int
-prompt_loop (void *vprompt)
+A4GL_prompt_loop (void *vprompt)
 {
   int a;
   WINDOW *p;
@@ -265,12 +265,12 @@ prompt_loop (void *vprompt)
   struct s_prompt *prompt;
   prompt = vprompt;
 
-  chkwin ();
+  A4GL_chkwin ();
   mform = prompt->f;
   p = prompt->win;
 #ifdef DEBUG
   {
-    debug ("In prompt loop mode = %d", prompt->mode);
+    A4GL_debug ("In prompt loop mode = %d", prompt->mode);
   }
 #endif
   if (prompt->mode == 1)
@@ -278,76 +278,76 @@ prompt_loop (void *vprompt)
       char buff[1024];
 #ifdef DEBUG
       {
-	debug ("Mode=1 - prepare to quit field=%p", prompt->field);
+ A4GL_debug ("Mode=1 - prepare to quit field=%p", prompt->field);
       }
       {
-	debug ("Buffer='%s'", field_buffer (prompt->field, 0));
+ A4GL_debug ("Buffer='%s'", field_buffer (prompt->field, 0));
       }
 #endif
       strcpy (buff, field_buffer (prompt->field, 0));
-      trim (buff);
+      A4GL_trim (buff);
 
-      push_char (buff);
+      A4GL_push_char (buff);
       prompt->mode = 2;
-      gui_endprompt ((long) prompt);	/* void    gui_endprompt            (long ld); */
+      A4GL_gui_endprompt ((long) prompt);	/* void    A4GL_gui_endprompt            (long ld); */
       unpost_form (prompt->f);
-      clear_prompt (prompt);
+      A4GL_clear_prompt (prompt);
       return 0;
     }
   if (prompt->mode > 0)
     return 0;
 
   pos_form_cursor (mform);
-  a = getch_win ();
+  a = A4GL_getch_win ();
 
 
-  a = proc_key_prompt (a, mform, prompt);
-  prompt->lastkey = get_lastkey ();
+  a = A4GL_proc_key_prompt (a, mform, prompt);
+  prompt->lastkey = A4GL_get_lastkey ();
 
   if (a == 0)
     {
 #ifdef DEBUG
       {
-	debug ("a==0");
+ A4GL_debug ("a==0");
       }
 #endif
       return 0;
     }
 #ifdef DEBUG
   {
-    debug ("a==%d", a);
+    A4GL_debug ("a==%d", a);
   }
 #endif
 
   if (a < 0)
     return a;
 
-  debug ("Requested..");
+  A4GL_debug ("Requested..");
   if (prompt->lastkey == 10 || prompt->lastkey == 13)
     {
-      int_form_driver (mform, REQ_VALIDATION);
+      A4GL_int_form_driver (mform, REQ_VALIDATION);
       wrefresh (p);
-      debug ("Return pressed");
+      A4GL_debug ("Return pressed");
       prompt->mode = 1;
       return 0;
     }
 
-  debug ("Requesting Validation : %p %x %d", mform, a, a);
+  A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
   if (isprint (a))
-    int_form_driver (mform, a);
-  debug ("Called int_form_driver");
-  int_form_driver (mform, REQ_VALIDATION);
-  debug ("Called formdriver(validation)");
+    A4GL_int_form_driver (mform, a);
+  A4GL_debug ("Called int_form_driver");
+  A4GL_int_form_driver (mform, REQ_VALIDATION);
+  A4GL_debug ("Called formdriver(validation)");
   wrefresh (p);
-  debug ("Refreshed screen");
+  A4GL_debug ("Refreshed screen");
 #ifdef DEBUG
   {
-    debug (">>>Buffer='%s'", field_buffer (prompt->field, 0));
+    A4GL_debug (">>>Buffer='%s'", field_buffer (prompt->field, 0));
   }
 #endif
   if (prompt->charmode)
     {
-      push_char (field_buffer (prompt->field, 0));
+      A4GL_push_char (field_buffer (prompt->field, 0));
     }
   return -90;
 }
@@ -357,7 +357,7 @@ prompt_loop (void *vprompt)
  * @todo Describe function
  */
 int
-curses_to_aubit (int a)
+A4GL_curses_to_aubit (int a)
 {
   int b;
   for (b = 0; b < 64; b++)

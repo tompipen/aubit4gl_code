@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_server.c,v 1.4 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: xmlrpc_server.c,v 1.5 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 
@@ -33,10 +33,10 @@
  *
  * Still to write
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -57,7 +57,7 @@
 #include <xmlrpc_client.h>
 
 #include "a4gl_stack.h"
-#include "a4gl_runtime_tui.h"	/* push_dtime */
+#include "a4gl_runtime_tui.h"	/* A4GL_push_dtime */
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
 

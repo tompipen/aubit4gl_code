@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtime.c,v 1.6 2003-05-12 14:24:16 mikeaubury Exp $
+# $Id: gtime.c,v 1.7 2003-05-15 07:10:40 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * Gettime function
- * Cannot use calls to debug here!
+ * Cannot use calls to A4GL_debug here!
  */
 
 /*
@@ -42,7 +42,7 @@
 #include <time.h>
 
 /* #include "a4gl_debug.h" - causes wired errors */
-extern void debug_full (char *fmt, ...);
+extern void A4GL_debug_full (char *fmt, ...);
 
 
 /*
@@ -51,8 +51,8 @@ extern void debug_full (char *fmt, ...);
 =====================================================================
 */
 
-long gettime (void);
-void debug (char *s);
+long A4GL_gettime (void);
+void A4GL_debug (char *s);
 
 /*
 =====================================================================
@@ -67,7 +67,7 @@ void debug (char *s);
  * @return The time in seconds.
  */
 long
-gettime (void)
+A4GL_gettime (void)
 {
   return time (0);
 }
@@ -75,20 +75,20 @@ gettime (void)
 
 
 /**
- * Write a debug message
+ * Write a A4GL_debug message
  *
- * @param s The debug message
+ * @param s The A4GL_debug message
  */
 /* what is this doing here?
-    a4gl_debug.h defines debug as:
-    #define debug set_line(__FILE__,__LINE__); debug_full
+    a4gl_debug.h defines A4GL_debug as:
+    #define A4GL_debug set_line(__FILE__,__LINE__); debug_full
 
     it is needed but how/why ?
 */
 void
-debug (char *s)
+A4GL_debug (char *s)
 {
-  debug_full ("ERROR  - debug called in full with %s", s);
+  A4GL_debug_full ("ERROR  - A4GL_debug called in full with %s", s);
 }
 
 /* ================================= EOF ============================= */

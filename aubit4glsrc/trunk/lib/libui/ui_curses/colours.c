@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.4 2003-05-12 14:24:26 mikeaubury Exp $
+# $Id: colours.c,v 1.5 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@
 */
 
 #ifdef OLD_INCL
-int get_strings_from_attr (int attr, char *col_str, char *attr_str);
+int A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
 #endif
 
 /*
@@ -78,7 +78,7 @@ int get_strings_from_attr (int attr, char *col_str, char *attr_str);
  * @param  The integer color code.
  */
 int
-colour_code (int a)
+A4GL_colour_code (int a)
 {
   int z, b;
   z = 1;
@@ -92,7 +92,7 @@ colour_code (int a)
 	}
       return z;
     }
-  debug ("Returning color code (%d+1)\n", a);
+  A4GL_debug ("Returning color code (%d+1)\n", a);
   if (a == 0)
     return 0;
   return COLOR_PAIR (a + 1);
@@ -104,32 +104,32 @@ colour_code (int a)
 * @param a the attribute to decode 
 **/
 int
-decode_colour_attr_aubit (int a)
+A4GL_decode_colour_attr_aubit (int a)
 {
   char colour[20];
   char attr[256];
 //int col;
-  debug ("Decoding a");
-  get_strings_from_attr (a, colour, attr);
+  A4GL_debug ("Decoding a");
+  A4GL_get_strings_from_attr (a, colour, attr);
 
-  debug ("Got colour as : %s", colour);
+  A4GL_debug ("Got colour as : %s", colour);
 
   if (strcmp (colour, "BLACK") == 0)
-    return colour_code (COLOR_BLACK);
+    return A4GL_colour_code (COLOR_BLACK);
   if (strcmp (colour, "RED") == 0)
-    return colour_code (COLOR_RED);
+    return A4GL_colour_code (COLOR_RED);
   if (strcmp (colour, "GREEN") == 0)
-    return colour_code (COLOR_GREEN);
+    return A4GL_colour_code (COLOR_GREEN);
   if (strcmp (colour, "YELLOW") == 0)
-    return colour_code (COLOR_YELLOW);
+    return A4GL_colour_code (COLOR_YELLOW);
   if (strcmp (colour, "BLUE") == 0)
-    return colour_code (COLOR_BLUE);
+    return A4GL_colour_code (COLOR_BLUE);
   if (strcmp (colour, "MAGENTA") == 0)
-    return colour_code (COLOR_MAGENTA);
+    return A4GL_colour_code (COLOR_MAGENTA);
   if (strcmp (colour, "CYAN") == 0)
-    return colour_code (COLOR_CYAN);
+    return A4GL_colour_code (COLOR_CYAN);
   if (strcmp (colour, "WHITE") == 0)
-    return colour_code (COLOR_WHITE);
+    return A4GL_colour_code (COLOR_WHITE);
 
   return 0;
 }
@@ -143,7 +143,7 @@ decode_colour_attr_aubit (int a)
 void
 a4glattr_wattrset (WINDOW * w, int a)
 {
-  wattrset (w, decode_aubit_attr (a, 'w'));
+  wattrset (w, A4GL_decode_aubit_attr (a, 'w'));
 }
 
 /**
@@ -152,17 +152,17 @@ a4glattr_wattrset (WINDOW * w, int a)
 * @param a original aubit attribute
 **/
 int
-decode_aubit_attr (int a, char s)
+A4GL_decode_aubit_attr (int a, char s)
 {
   char colour[20];
   char attr[256];
   int ca;			/* Curses attribute */
 
-  get_strings_from_attr (a, colour, attr);
+  A4GL_get_strings_from_attr (a, colour, attr);
   ca = A_NORMAL;
   if (s == 'w')
     {
-      ca = decode_colour_attr_aubit (a);
+      ca = A4GL_decode_colour_attr_aubit (a);
       if (strstr (attr, "NORMAL"))
 	ca += A_NORMAL;
       if (strstr (attr, "REVERSE"))
@@ -179,7 +179,7 @@ decode_aubit_attr (int a, char s)
     }
   if (s == 'f')
     {
-      ca = decode_colour_attr_aubit (a);
+      ca = A4GL_decode_colour_attr_aubit (a);
       if (strstr (attr, "NORMAL"))
 	ca += A_NORMAL;
       if (strstr (attr, "REVERSE"))
@@ -196,7 +196,7 @@ decode_aubit_attr (int a, char s)
 
   if (s == 'b')
     {
-      ca = decode_colour_attr_aubit (a);
+      ca = A4GL_decode_colour_attr_aubit (a);
     }
 
 

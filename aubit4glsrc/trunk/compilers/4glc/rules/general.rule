@@ -110,7 +110,7 @@ field_name2	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
 ;
 
 cvariable : variable {
-debug("Scanvar=%d",scan_variable($<str>1)&15);
+A4GL_debug("Scanvar=%d",scan_variable($<str>1)&15);
 if ((scan_variable($<str>1)&15)!=0) {
 a4gl_yyerror("Only a character variable can be used for this");
 YYERROR;

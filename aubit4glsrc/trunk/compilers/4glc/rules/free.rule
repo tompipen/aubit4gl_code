@@ -9,7 +9,7 @@ free_cmd :
 		FREE cursor_name
 		{
 		//print_niy("Free Cursor");
-		lex_printcomment(" /* FIXME: Not implemented: Free Cursor */\n");;
+		A4GL_lex_printcomment(" /* FIXME: Not implemented: Free Cursor */\n");;
 
 		strcpy($<str>$,"");
 		}

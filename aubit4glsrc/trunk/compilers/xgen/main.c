@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.7 2003-05-12 14:23:58 mikeaubury Exp $
+# $Id: main.c,v 1.8 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -90,12 +90,12 @@ extern int yyparse (void);	/* in y.tab.c */
 */
 
 /**
- * FIXME: we should ling xgen with libaubit4gl.so and use bname that is defined there
+ * FIXME: we should ling xgen with libaubit4gl.so and use A4GL_bname that is defined there
  * @todo Describe function
  */
 /* static */
 void
-bname (char *str, char *str1, char *str2)
+A4GL_bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
 	}
 
 
-      bname (c, a, b);
+      A4GL_bname (c, a, b);
 
       if (b[0] == 0)
 	{
@@ -301,22 +301,22 @@ write_genout (void)
 	   export_name, export_name);
   fprintf (cfio, "%s s_s;\n", export_name);
   fprintf (cfio, "memcpy(&s_s,s,sizeof(s_s));\n");
-  fprintf (cfio, "if (!open_packer(filename,'O')) return 0;\n");
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'O')) return 0;\n");
   fprintf (cfio,
-	   "if (can_pack_all(\"%s\"))\n   a=pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",
+	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",
 	   export_name, export_name, export_name, export_name);
-  fprintf (cfio, "close_packer('O');\n");
+  fprintf (cfio, "A4GL_close_packer('O');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");
 
   fprintf (cfio, "\n\nint read_%s(%s *s,char *filename) {\nint a;\n",
 	   export_name, export_name);
-  fprintf (cfio, "if (!open_packer(filename,'I')) return 0;\n");
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'I')) return 0;\n");
   fprintf (cfio,
-	   "if (can_pack_all(\"%s\"))\n   a=unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",
+	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",
 	   export_name, export_name, export_name, export_name);
-  fprintf (cfio, "close_packer('I');\n");
+  fprintf (cfio, "A4GL_close_packer('I');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");

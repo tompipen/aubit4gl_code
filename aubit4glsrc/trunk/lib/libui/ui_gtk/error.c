@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.5 2003-05-12 14:24:30 mikeaubury Exp $
+# $Id: error.c,v 1.6 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -49,7 +49,7 @@
 =====================================================================
 */
 
-void set_red (void);
+void A4GL_set_red (void);
 
 /*
 =====================================================================
@@ -64,7 +64,7 @@ void set_red (void);
  * @param s The message to be shoed.
  */
 void
-error_window_gtk (char *s)
+A4GL_error_window_gtk (char *s)
 {
   GtkWidget *cw;
   GtkWidget *label;
@@ -78,7 +78,7 @@ error_window_gtk (char *s)
   rc_style->color_flags[GTK_STATE_NORMAL] |= GTK_RC_BG;
 
 
-  cw = (GtkWidget *) get_curr_win_gtk ();
+  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
 
   if (win)
@@ -86,11 +86,11 @@ error_window_gtk (char *s)
   if (strlen (s) == 0)
     return;
 
-  errline = decode_line_gtk (geterr_line_gtk ());
-  debug ("Error line :%d", errline);
+  errline = A4GL_decode_line_gtk (A4GL_geterr_line_gtk ());
+  A4GL_debug ("Error line :%d", errline);
 
   win = gtk_fixed_new ();
-  gtk_widget_set_usize (win, get_curr_width () * XWIDTH, YHEIGHT);
+  gtk_widget_set_usize (win, A4GL_get_curr_width () * XWIDTH, YHEIGHT);
   label = gtk_label_new (s);
   gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
   gtk_widget_show (win);
@@ -106,12 +106,12 @@ error_window_gtk (char *s)
  * Clear an error in GTK GUI mode.
  */
 void
-clr_error_gtk (void)
+A4GL_clr_error_gtk (void)
 {
   GtkWidget *cw;
   GtkWidget *win;
 
-  cw = (GtkWidget *) get_curr_win_gtk ();
+  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
   if (win)
     {
@@ -128,7 +128,7 @@ clr_error_gtk (void)
  * @todo : Understand if this function is not used.
  */
 void
-set_red (void)
+A4GL_set_red (void)
 {
   GdkColormap *cmap;
   GdkColor color;
@@ -148,15 +148,15 @@ set_red (void)
  * @param s A string with the message to be showed.
  */
 void
-msg_window_gtk (char *s)
+A4GL_msg_window_gtk (char *s)
 {
   GtkWidget *cw;
   GtkWidget *label;
   GtkWidget *win;
   int msgline;
-  debug ("A0");
-  cw = (GtkWidget *) get_curr_win_gtk ();
-  debug ("A0.1");
+  A4GL_debug ("A0");
+  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  A4GL_debug ("A0.1");
   win = gtk_object_get_data (GTK_OBJECT (cw), "MESSAGELABELWIN");
 
   if (win)
@@ -164,23 +164,23 @@ msg_window_gtk (char *s)
   if (strlen (s) == 0)
     return;
 
-  msgline = decode_line_gtk (getmsg_line_gtk ());
-  debug ("A1 - msgline = %d", msgline);
+  msgline = A4GL_decode_line_gtk (A4GL_getmsg_line_gtk ());
+  A4GL_debug ("A1 - msgline = %d", msgline);
   win = gtk_fixed_new ();
-  debug ("A2");
-  gtk_widget_set_usize (GTK_WIDGET (win), get_curr_width () * XWIDTH,
+  A4GL_debug ("A2");
+  gtk_widget_set_usize (GTK_WIDGET (win), A4GL_get_curr_width () * XWIDTH,
 			YHEIGHT);
-  debug ("A2.1");
+  A4GL_debug ("A2.1");
   label = gtk_label_new (s);
-  debug ("A3");
+  A4GL_debug ("A3");
   gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
   gtk_widget_show (win);
 
-  debug ("A4");
+  A4GL_debug ("A4");
   gtk_fixed_put (GTK_FIXED (cw), win, 0, (msgline - 1) * YHEIGHT);
-  debug ("A5");
+  A4GL_debug ("A5");
   gtk_widget_show (label);
-  debug ("A6");
+  A4GL_debug ("A6");
   gtk_object_set_data (GTK_OBJECT (cw), "MESSAGELABELWIN", win);
 }
 

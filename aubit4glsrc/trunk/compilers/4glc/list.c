@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.12 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: list.c,v 1.13 2003-05-15 07:10:19 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -81,7 +81,7 @@ list_prompt (char *s)
   static char buff[256];
   printf ("Please enter %s:\n", s);
   fgets (buff, 255, stdin);
-  stripnl (buff);
+  A4GL_stripnl (buff);
   return buff;
 }
 

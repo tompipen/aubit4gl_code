@@ -38,63 +38,63 @@ typedef struct
 textarea;
 
 	/* ======================= in colours.c  ======================= */
-int decode_aubit_attr (int a, char t);
+int A4GL_decode_aubit_attr (int a, char t);
 void a4glattr_wattrset (WINDOW * w, int a);
-int decode_colour_attr_aubit (int a);
-int colour_code (int a);
+int A4GL_decode_colour_attr_aubit (int a);
+int A4GL_colour_code (int a);
 
 
 	/* ======================= in curslib.c  ======================= */
-void error_nobox (char *str);
-void set_bkg (WINDOW * win, int attr);
-void clear_prompt (struct s_prompt *prmt);
+void A4GL_error_nobox (char *str);
+void A4GL_set_bkg (WINDOW * win, int attr);
+void A4GL_clear_prompt (struct s_prompt *prmt);
 
 
 	/*  ======================= in ioform.c ======================= */
-void start_form (struct s_form_dets *s);
-void set_arr_fields (int n, int attr, ...);
-void disp_arr_fields (int n, int fonly, int attr, ...);
-int gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
+void A4GL_start_form (struct s_form_dets *s);
+void A4GL_set_arr_fields (int n, int attr, ...);
+void A4GL_disp_arr_fields (int n, int fonly, int attr, ...);
+int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
 		    va_list * ap);
-void int_form_driver (FORM * form, int a);
-int copy_field_data (struct s_form_dets *form);
-void iarr_arr_fields (int n, int fonly, int attr, ...);
-int get_curr_field_col (FORM * mform);
-void default_attributes (FIELD * f, int dtype);
-FIELD *make_field (int, int, int, int);
-FIELD *make_label (int frow, int fcol, char *label);
+void A4GL_int_form_driver (FORM * form, int a);
+int A4GL_copy_field_data (struct s_form_dets *form);
+void A4GL_iarr_arr_fields (int n, int fonly, int attr, ...);
+int A4GL_get_curr_field_col (FORM * mform);
+void A4GL_default_attributes (FIELD * f, int dtype);
+FIELD *A4GL_make_field (int, int, int, int);
+FIELD *A4GL_make_label (int frow, int fcol, char *label);
 
 
     /* =======================  in newpanels.c  ======================= */
-void mja_refresh (void);
-void mja_wrefresh (WINDOW * w);
-int getch_win (void);
-int xwattr_get (WINDOW * w);
-    //int               iscurrborder            (void);
-int getmessage_line (void);
-WINDOW *get_currwin (void);
-int subwin_print (WINDOW * win, char *fmt, ...);
-int subwin_gotoxy (WINDOW * win, int x, int y);
-int refresh_menu_window (char *name, int top);
-int getmenu_line (void);
-int get_curr_print_top (void);
-int get_curr_left (void);
-void mja_endwin (void);
-LIBUSEONLY int init_windows (void);
-int init_colour_pairs (void);
-int geterror_line (void);
-void mja_setcolor (int typ);
-int screen_width (void);
-    //int               get_curr_width          (void);
-    //void              remove_window           (char *win_name);
-int find_ptr_debug (void *ptr);
-int getprompt_line (void);
-void tui_print (char *fmt, ...);
+void A4GL_mja_refresh (void);
+void A4GL_mja_wrefresh (WINDOW * w);
+int A4GL_getch_win (void);
+int A4GL_xwattr_get (WINDOW * w);
+    //int               A4GL_iscurrborder            (void);
+int A4GL_getmessage_line (void);
+WINDOW *A4GL_get_currwin (void);
+int A4GL_subwin_print (WINDOW * win, char *fmt, ...);
+int A4GL_subwin_gotoxy (WINDOW * win, int x, int y);
+int A4GL_refresh_menu_window (char *name, int top);
+int A4GL_getmenu_line (void);
+int A4GL_get_curr_print_top (void);
+int A4GL_get_curr_left (void);
+void A4GL_mja_endwin (void);
+LIBUSEONLY int A4GL_init_windows (void);
+int A4GL_init_colour_pairs (void);
+int A4GL_geterror_line (void);
+void A4GL_mja_setcolor (int typ);
+int A4GL_screen_width (void);
+    //int               A4GL_get_curr_width          (void);
+    //void              A4GL_remove_window           (char *win_name);
+int A4GL_find_ptr_debug (void *ptr);
+int A4GL_getprompt_line (void);
+void A4GL_tui_print (char *fmt, ...);
 
 	//int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */
-void set_array_mode (int type);
+void A4GL_set_array_mode (int type);
 
 
 	/* =============== from a4gl_tui_attr_list.h ============== */

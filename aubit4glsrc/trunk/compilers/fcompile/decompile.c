@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.14 2003-03-10 16:13:31 mikeaubury Exp $
+# $Id: decompile.c,v 1.15 2003-05-15 07:10:37 mikeaubury Exp $
 #
 */
 
@@ -85,7 +85,7 @@ main (int argc, char *argv[])
 
   //a=isolated_xdr_struct_form(&xdrp,&the_form); /* in lib/libform/form_xdr/formwrite2.c */
 
-  a = read_data_from_file ("struct_form", &the_form, argv[1]);
+  a = A4GL_read_data_from_file ("struct_form", &the_form, argv[1]);
 
   if (!a)
     {

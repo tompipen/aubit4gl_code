@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.7 2003-05-12 14:24:23 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.8 2003-05-15 07:10:43 mikeaubury Exp $
 #*/
 
 /**
@@ -36,7 +36,7 @@
  * and then - call it...
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -55,7 +55,7 @@
 
 int A4GLPACKER_initlib (void);
 
-static int (*func) ();		/*  warning: function declaration isn't a prototype */
+static int (*A4GL_func) ();		/*  warning: function declaration isn't a prototype */
 static int process_xdr (char dir, char *name, void *s, char *filename);
 
 /*
@@ -80,10 +80,10 @@ A4GLPACKER_initlib (void)
  * @todo Describe function
  */
 int
-can_pack_all (char *name)
+A4GL_can_pack_all (char *name)
 {
   void *libptr;
-  libptr = (void *) dl_openlibrary ("XDRPACKER", name);
+  libptr = (void *) A4GL_dl_openlibrary ("XDRPACKER", name);
   if (libptr)
     return 1;
   return -1;
@@ -96,13 +96,13 @@ can_pack_all (char *name)
    as we're doing the whole thing in one go using xdr
 */
 int
-open_packer (char *fname, char dir)
+A4GL_open_packer (char *fname, char dir)
 {
   return 1;
 }
 
 void
-close_packer (char dir)
+A4GL_close_packer (char dir)
 {
   return;
 }
@@ -113,9 +113,9 @@ close_packer (char dir)
  * @todo Describe function
  */
 int
-pack_all (char *name, void *s, char *filename)
+A4GL_pack_all (char *name, void *s, char *filename)
 {
-  debug ("Pack all ...");
+  A4GL_debug ("Pack all ...");
   return process_xdr ('O', name, s, filename);
 }
 
@@ -125,7 +125,7 @@ pack_all (char *name, void *s, char *filename)
  * @todo Describe function
  */
 int
-unpack_all (char *name, void *s, char *filename)
+A4GL_unpack_all (char *name, void *s, char *filename)
 {
   return process_xdr ('I', name, s, filename);
 }
@@ -145,7 +145,7 @@ process_xdr (char dir, char *name, void *s, char *filename)
 
   sprintf (buff, "xdr_%s", name);
 
-  libptr = (void *) dl_openlibrary ("XDRPACKER", name);
+  libptr = (void *) A4GL_dl_openlibrary ("XDRPACKER", name);
   if (libptr == 0)
     return 0;
 
@@ -156,15 +156,15 @@ process_xdr (char dir, char *name, void *s, char *filename)
   if (dir == 'O')
     {
       fxx = fopen (filename, "wb");
-      set_last_outfile (filename);
+      A4GL_set_last_outfile (filename);
     }
   else
-    fxx = (FILE *) open_file_dbpath (filename);
+    fxx = (FILE *) A4GL_open_file_dbpath (filename);
 
 
   if (fxx == 0)
     {
-      debug ("Can't open file %s\n", filename);
+      A4GL_debug ("Can't open file %s\n", filename);
 
       return 0;
     }
@@ -175,11 +175,11 @@ process_xdr (char dir, char *name, void *s, char *filename)
   else
     xdrstdio_create (&xdrp, fxx, XDR_DECODE);
 
-  func = (void *) find_func (libptr, buff);
-  if (func == 0)
+  A4GL_func = (void *) A4GL_find_func (libptr, buff);
+  if (A4GL_func == 0)
     return 0;
 
-  func (&xdrp, s);
+  A4GL_func (&xdrp, s);
 
   xdr_destroy (&xdrp);
   fclose (fxx);

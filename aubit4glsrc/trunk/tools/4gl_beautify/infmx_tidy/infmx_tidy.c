@@ -229,7 +229,7 @@ doline (ibuf, obuf)
   /* Not a comment - must be a real line */
 
 
-  /* strip leading spaces */
+  /* A4GL_strip leading spaces */
   if (*ip == ' ' || *ip == '\t')
     for (; *ip == ' ' || *ip == '\t'; ip++);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_nomenu.c,v 1.4 2003-05-12 14:24:21 mikeaubury Exp $
+# $Id: menu_nomenu.c,v 1.5 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -56,7 +56,7 @@ FILE *fyy = 0;
 extern int as_c;
 
 
-void error_with (char *s, char *a, char *b);
+void A4GL_error_with (char *s, char *a, char *b);
 
 /* what do we need here? */
 
@@ -67,7 +67,7 @@ void error_with (char *s, char *a, char *b);
  * @todo Describe function
  */
 void
-write_menu (void)
+A4GL_write_menu (void)
 {
   char fname[132];
   char fname2[132];
@@ -83,18 +83,18 @@ write_menu (void)
 
 
 
-  debug ("has %d menus\n", the_menus.menus.menus_len);
+  A4GL_debug ("has %d menus\n", the_menus.menus.menus_len);
 
-  debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
+  A4GL_debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
 
-  a = write_data_to_file ("menu_list", &the_menus, fname);
+  a = A4GL_write_data_to_file ("menu_list", &the_menus, fname);
 
-  debug ("returned from write_data_to_file()");
+  A4GL_debug ("returned from write_data_to_file()");
 
   if (!a)
     {
-      debug ("*** Write FAILED ***\n");
-      error_with ("Unable to write data\n", 0, 0);
+      A4GL_debug ("*** Write FAILED ***\n");
+      A4GL_error_with ("Unable to write data\n", 0, 0);
     }
 
 
@@ -109,7 +109,7 @@ write_menu (void)
     {
       int cnt = 0;
       int a;
-      debug ("Asc\n");
+      A4GL_debug ("Asc\n");
       fxx = fopen (fname, "r");
       fyy = fopen (fname2, "w");
       fprintf (fyy, "char compiled_menu_%s[]={\n", outputfilename);
@@ -138,7 +138,7 @@ write_menu (void)
       /* unlink(fname); */
     }
 
-  debug ("Exiting write_menu()");
+  A4GL_debug ("Exiting write_menu()");
 
 }
 
@@ -148,7 +148,7 @@ write_menu (void)
  * @todo Describe function
  */
 void
-error_with (char *s, char *a, char *b)
+A4GL_error_with (char *s, char *a, char *b)
 {
   static char z[2];
   z[0] = 0;
@@ -158,6 +158,6 @@ error_with (char *s, char *a, char *b)
     b = z;
   printf (s, a, b);
 
-  debug ("\n");
+  A4GL_debug ("\n");
   exit (8);
 }

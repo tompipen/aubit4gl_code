@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.17 2003-05-12 14:24:18 mikeaubury Exp $
+# $Id: string.c,v 1.18 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -71,7 +71,7 @@
 =====================================================================
 */
 
-int strnullcmp (char *s1, char *s2);
+int A4GL_strnullcmp (char *s1, char *s2);
 
 
 
@@ -80,13 +80,13 @@ int strnullcmp (char *s1, char *s2);
  * @todo Desctibe function
  */
 void
-string_set (char *ptr, char *b, int size)
+A4GL_string_set (char *ptr, char *b, int size)
 {
   strncpy (ptr, b, size);
   ptr[size] = 0;		/* MJA 16.08.2001 */
-  pad_string (ptr, size);
-  debug ("..");
-  debug ("ptr=%p\n", ptr);
+  A4GL_pad_string (ptr, size);
+  A4GL_debug ("..");
+  A4GL_debug ("ptr=%p\n", ptr);
 }
 
 
@@ -97,13 +97,13 @@ string_set (char *ptr, char *b, int size)
  * @return A pointer to the string created.
  */
 char *
-new_string (int a)
+A4GL_new_string (int a)
 {
   char *ptr;
-  debug ("In new_string %d\n", a);
+  A4GL_debug ("In A4GL_new_string %d\n", a);
   ptr = (char *) acl_malloc (a + 2, "New string");	/* 1 for NULL 1 for extra */
   memset (ptr, 0, a + 2);
-  debug ("Aclmalloc returns %p", ptr);
+  A4GL_debug ("Aclmalloc returns %p", ptr);
   return ptr;
 }
 
@@ -116,20 +116,20 @@ new_string (int a)
  * @return A pointer to the string created.
  */
 char *
-new_string_set (int a, char *b)
+A4GL_new_string_set (int a, char *b)
 {
   char *ptr;
-  debug ("new_string_set 0 a=%d", a);
-  ptr = new_string (a);
-  debug ("new_string_set 1");
-  string_set (ptr, b, a);
-  debug ("new_string_set 2");
+  A4GL_debug ("new_string_set 0 a=%d", a);
+  ptr = A4GL_new_string (a);
+  A4GL_debug ("new_string_set 1");
+  A4GL_string_set (ptr, b, a);
+  A4GL_debug ("new_string_set 2");
 #ifdef DEBUG
   {
-    debug ("added : '%s' ", ptr);
+    A4GL_debug ("added : '%s' ", ptr);
   }
 #endif
-  debug ("new_string_set 3");
+  A4GL_debug ("new_string_set 3");
   return ptr;
 }
 
@@ -139,11 +139,11 @@ new_string_set (int a, char *b)
  * @todo Describe function
  */
 void
-modify_size (char *z, int a)
+A4GL_modify_size (char *z, int a)
 {
   char *zzz;
 #ifdef DEBUG
-  debug ("Modify size has been called !");
+  A4GL_debug ("Modify size has been called !");
 #endif
   zzz = z - sizeof (int);
   *(int *) zzz = a;
@@ -175,7 +175,7 @@ strncasecmp (char *a, char *b, int c)
  * @todo Describe function
  */
 int
-mja_strncmp (char *str1, char *str2, int n)
+A4GL_mja_strncmp (char *str1, char *str2, int n)
 {
   int a, b;
   int len1, len2;
@@ -202,7 +202,7 @@ mja_strncmp (char *str1, char *str2, int n)
 
 
 int
-strnullcmp (char *s1, char *s2)
+A4GL_strnullcmp (char *s1, char *s2)
 {
   if (s1 == 0)
     return -1;

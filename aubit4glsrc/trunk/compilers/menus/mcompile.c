@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.21 2003-05-12 14:23:58 mikeaubury Exp $
+# $Id: mcompile.c,v 1.22 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -122,15 +122,15 @@ main (int argc, char *argv[])
   char b[128];
   char c[128];			// menu source file name
 
-  setarg0 (argv[0]);
-  debug ("Initializing mcompile\n");
+  A4GL_setarg0 (argv[0]);
+  A4GL_debug ("Initializing mcompile\n");
 
   /* load settings from config file(s): */
-  build_user_resources ();
+  A4GL_build_user_resources ();
 
   if (argc > 1)
     {
-      check_and_show_id ("4GL Menu Compiler", argv[1]);
+      A4GL_check_and_show_id ("4GL Menu Compiler", argv[1]);
 
       outputfilename = outputfile;
 
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
 	  strcpy (c, argv[1]);
 	}
 
-      bname (c, a, b);
+      A4GL_bname (c, a, b);
       //printf("c=%s a=%s b=%s\n",c,a,b);
 
       if (a[0] == 0)
@@ -155,13 +155,13 @@ main (int argc, char *argv[])
 	  strcat (c, ".menu");
 	}
 
-      bname (c, a, b);
+      A4GL_bname (c, a, b);
       strcpy (outputfilename, a);
 
       //extendion will be added later:
       //strcat (outputfilename, acl_getenv ("A4GL_MNU_EXT"));
 
-      yyin = mja_fopen (c, "r");
+      yyin = A4GL_mja_fopen (c, "r");
 
     }
   else
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
       exit (0);
     }
 
-  debug ("Outfile = %s\n", outputfilename);
+  A4GL_debug ("Outfile = %s\n", outputfilename);
 
   yydebug = 1;
 
@@ -202,9 +202,9 @@ a4gl_menu_yyerror (char *s)
 
 
   sprintf (errfile, "%s.err", outputfile);
-  f = write_errfile (yyin, errfile, ld - 1, yylineno);
+  f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
-  write_cont (yyin);
+  A4GL_write_cont (yyin);
   printf ("Error compiling %s.menu - check %s.err (%d %d)\n", outputfile,
 	  outputfile, lineno, yylineno);
   exit (3);
@@ -246,7 +246,7 @@ nmenu (void)
   l = ++the_menus.menus.menus_len;
   if (l >= MAXMENUS)
     {
-      debug ("Too many menus/submenus\n");
+      A4GL_debug ("Too many menus/submenus\n");
       printf ("Too many menus/submenus\n");
       exit (7);
     }
@@ -257,7 +257,7 @@ nmenu (void)
 
   m->options.options_len = 0;
   m->options.options_val = 0;
-  debug ("New menu %p\n", m);
+  A4GL_debug ("New menu %p\n", m);
   return m;
 }
 
@@ -273,7 +273,7 @@ new_option (menu * m)
   m->options.options_len++;
   if (m->options.options_len > 1000)
     {
-      debug ("Corrupt\n");
+      A4GL_debug ("Corrupt\n");
       printf ("Corrupt\n");
       exit (4);
     }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.13 2003-05-12 14:24:14 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
 #*/
 
 /**
@@ -74,7 +74,7 @@
 */
 
 #ifdef OLD_INCL
-extern char *params_on_stack (char *_paramnames[], int n);
+extern char *A4GL_params_on_stack (char *_paramnames[], int n);
 void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
 void A4GLSTK_popFunction (void);
 char *A4GLSTK_getStackTrace (void);
@@ -136,7 +136,7 @@ void
 A4GLSTK_initFunctionCallStack (void)
 {
 #ifdef DEBUG
-  debug ("Initializing Function Call Stack");
+  A4GL_debug ("Initializing Function Call Stack");
 #endif
 
   functionCallStack = (FunctionCall *) calloc (sizeof (FunctionCall),
@@ -144,7 +144,7 @@ A4GLSTK_initFunctionCallStack (void)
   functionCallPointer = 0;
   stackInfoInitialized = 1;
 #ifdef DEBUG
-  debug ("Done Initializing Function Call Stack");
+  A4GL_debug ("Done Initializing Function Call Stack");
 #endif
 }
 
@@ -172,17 +172,17 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
   int a;
   //printf("Call from Module : %s line %d to %s",currentModuleName,currentFglLineNumber,functionName);
   //fflush(stdout);
-  debug ("Call from Module : %s line %d", currentModuleName,
+  A4GL_debug ("Call from Module : %s line %d", currentModuleName,
 	 currentFglLineNumber);
-  debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
+  A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
   for (a = 0; a < n; a++)
     {
-      debug (" Param %d (%s)=", a + 1, params[a]);
+      A4GL_debug (" Param %d (%s)=", a + 1, params[a]);
     }
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
-  functionCallStack[functionCallPointer].params = params_on_stack (params, n);
+  functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
   functionCallPointer++;
 }
 

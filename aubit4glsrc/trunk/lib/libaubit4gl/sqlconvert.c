@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.6 2003-05-12 14:24:18 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.7 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -95,32 +95,32 @@ char empty[] = "";
 =====================================================================
 */
 
-struct fnlist *cv_fnlist (char *source, char *target);
-func_t cv_str_to_func (char *p, int len);
+struct fnlist *A4GL_cv_fnlist (char *source, char *target);
+func_t A4GL_cv_str_to_func (char *p, int len);
 
-void cvsql_double_single (char *sql, char *args);
-void cvsql_rowid (char *sql, char *oid);
-void cvsql_split_update (char *sql, char *args);
-void cvsql_matches_like (char *sql, char *args);
-void cvsql_matches_regex (char *sql, char *args);
-void cvsql_matches (char *sql, char *typ);
-void cvsql_substring (char *sql, char *func);
-void cvsql_tab_alias (char *sql, char *args);
-void cvsql_col_alias (char *sql, char *args);
-void cvsql_replace (char *sql, char *args);
+void A4GL_cvsql_double_single (char *sql, char *args);
+void A4GL_cvsql_rowid (char *sql, char *oid);
+void A4GL_cvsql_split_update (char *sql, char *args);
+void A4GL_cvsql_matches_like (char *sql, char *args);
+void A4GL_cvsql_matches_regex (char *sql, char *args);
+void A4GL_cvsql_matches (char *sql, char *typ);
+void A4GL_cvsql_substring (char *sql, char *func);
+void A4GL_cvsql_tab_alias (char *sql, char *args);
+void A4GL_cvsql_col_alias (char *sql, char *args);
+void A4GL_cvsql_replace (char *sql, char *args);
 
-char *cv_nth_list_item (char *p, int n, int *len);
-char *cv_find_token (char *p, char *str, int skipb);
-char *cv_find_closing (char *p);
-int cv_num_tokens (char *p);
-char *cv_nth_token (char *p, int n, int *len);
-char *cv_next_token (char *p, int *len, int dot);
-int cv_is_clause_word (char *p, int len);
-void cv_replacestr (char *p, int n, char *s);
-void cv_inschstr (char *p, char c);
-void cv_delchstr (char *p, int n);
-char *cv_unqstrstr (char *str, char *word);
-char *cv_lastnonblank (char *str);
+char *A4GL_cv_nth_list_item (char *p, int n, int *len);
+char *A4GL_cv_find_token (char *p, char *str, int skipb);
+char *A4GL_cv_find_closing (char *p);
+int A4GL_cv_num_tokens (char *p);
+char *A4GL_cv_nth_token (char *p, int n, int *len);
+char *A4GL_cv_next_token (char *p, int *len, int dot);
+int A4GL_cv_is_clause_word (char *p, int len);
+void A4GL_cv_replacestr (char *p, int n, char *s);
+void A4GL_cv_inschstr (char *p, char c);
+void A4GL_cv_delchstr (char *p, int n);
+char *A4GL_cv_unqstrstr (char *str, char *word);
+char *A4GL_cv_lastnonblank (char *str);
 
 /*
 =====================================================================
@@ -137,11 +137,11 @@ char *cv_lastnonblank (char *str);
  * @param  sql      SQL command string
 */
 void
-convert_sql (char *source_dialect, char *target_dialect, char *sql)
+A4GL_convert_sql (char *source_dialect, char *target_dialect, char *sql)
 {
   struct fnlist *p = NULL;
 
-  debug ("convert_sql: source=%s, target=%s, sql=%s",
+  A4GL_debug ("convert_sql: source=%s, target=%s, sql=%s",
 	 source_dialect, target_dialect, sql);
 
   if ((source_dialect == NULL) || (target_dialect == NULL) ||
@@ -150,7 +150,7 @@ convert_sql (char *source_dialect, char *target_dialect, char *sql)
       return;
     }
 
-  p = cv_fnlist (source_dialect, target_dialect);
+  p = A4GL_cv_fnlist (source_dialect, target_dialect);
 
   while (p)
     {
@@ -161,7 +161,7 @@ convert_sql (char *source_dialect, char *target_dialect, char *sql)
       p = p->next;
     }
 
-  debug ("  convert_sql returns %s", sql);
+  A4GL_debug ("  A4GL_convert_sql returns %s", sql);
 }
 
 /*
@@ -172,7 +172,7 @@ convert_sql (char *source_dialect, char *target_dialect, char *sql)
  * @param  target  target dialect
  */
 struct fnlist *
-cv_fnlist (char *source, char *target)
+A4GL_cv_fnlist (char *source, char *target)
 {
   char buff[201];
   struct cvlist *cv;
@@ -213,11 +213,11 @@ cv_fnlist (char *source, char *target)
   len = strlen (buff);
   sprintf (&buff[len], "/%s-%s.cnv", source, target);
 
-  debug ("loading sql conversion file %s", buff);
+  A4GL_debug ("loading sql conversion file %s", buff);
 
   if ((fh = fopen (buff, "r")) == NULL)
     {
-      debug ("failed to open file");
+      A4GL_debug ("failed to open file");
       return cvlistptr->fnlistp;	/* NULL */
     }
 
@@ -226,7 +226,7 @@ cv_fnlist (char *source, char *target)
    */
   while (fgets (buff, 200, fh))
     {
-      if ((t = cv_next_token (buff, &len, 0)) == NULL)
+      if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL)
 	continue;
       if (*t == '#')
 	continue;
@@ -241,14 +241,14 @@ cv_fnlist (char *source, char *target)
 	    (struct fnlist *) malloc (sizeof (struct fnlist));
 	  p = cvlistptr->fnlistp;
 	}
-      p->funcp = cv_str_to_func (t, len);
+      p->funcp = A4GL_cv_str_to_func (t, len);
       p->args = &empty[0];
       p->next = NULL;
-      /* get the argument list, strip off leading = sign */
+      /* get the argument list, A4GL_strip off leading = sign */
       t += len;
-      t = cv_next_token (t, &len, 0);
+      t = A4GL_cv_next_token (t, &len, 0);
       if (t && len == 1 && *t == '=')
-	t = cv_next_token ((t + len), &len, 0);
+	t = A4GL_cv_next_token ((t + len), &len, 0);
       if (t)
 	{
 	  len = strlen (t);
@@ -268,51 +268,51 @@ cv_fnlist (char *source, char *target)
 }
 
 func_t
-cv_str_to_func (char *p, int len)
+A4GL_cv_str_to_func (char *p, int len)
 {
 
   if (strncasecmp (p, "REPLACE", len) == 0)
     {
-      return &cvsql_replace;
+      return &A4GL_cvsql_replace;
     }
   if (strncasecmp (p, "REPLACE_EXPR", len) == 0)
     {
-      return &cvsql_replace;
+      return &A4GL_cvsql_replace;
     }
   if (strncasecmp (p, "REPLACE_COMMAND", len) == 0)
     {
-      return &cvsql_replace;
+      return &A4GL_cvsql_replace;
     }
   if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
     {
-      return &cvsql_double_single;
+      return &A4GL_cvsql_double_single;
     }
   if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
     {
-      return &cvsql_matches_like;
+      return &A4GL_cvsql_matches_like;
     }
   if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
     {
-      return &cvsql_matches_regex;
+      return &A4GL_cvsql_matches_regex;
     }
   if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
     {
-      return &cvsql_substring;
+      return &A4GL_cvsql_substring;
     }
   if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
     {
-      return &cvsql_tab_alias;
+      return &A4GL_cvsql_tab_alias;
     }
   if (strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0)
     {
-      return &cvsql_col_alias;
+      return &A4GL_cvsql_col_alias;
     }
   if (strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0)
     {
-      return &cvsql_split_update;
+      return &A4GL_cvsql_split_update;
     }
 
-  debug ("NOT IMPLEMENTED: %s", p);
+  A4GL_debug ("NOT IMPLEMENTED: %s", p);
 
   return NULL;
 }
@@ -326,7 +326,7 @@ cv_str_to_func (char *p, int len)
  * @param  sql  string holding SQL statement
  */
 void
-cvsql_double_single (char *sql, char *args)
+A4GL_cvsql_double_single (char *sql, char *args)
 {
   char *p;
   int quote = 0;
@@ -369,7 +369,7 @@ cvsql_double_single (char *sql, char *args)
 	      quote = 0;
 	      break;
 	    case 2:
-	      cv_inschstr (p, '\\');
+	      A4GL_cv_inschstr (p, '\\');
 	      p++;
 	      break;
 	    }
@@ -385,13 +385,13 @@ cvsql_double_single (char *sql, char *args)
  * @param   oid   string to replace "rowid", usually "oid"
  */
 void
-cvsql_rowid (char *sql, char *oid)
+A4GL_cvsql_rowid (char *sql, char *oid)
 {
   char *t;
   int len;
 
   t = sql;
-  while ((t = cv_next_token (t, &len, 0)) != NULL)
+  while ((t = A4GL_cv_next_token (t, &len, 0)) != NULL)
     {
       char *p = 0;
       if (strncasecmp (t, "rowid", len) == 0)
@@ -405,7 +405,7 @@ cvsql_rowid (char *sql, char *oid)
 	}
       if (p > 0)
 	{
-	  cv_replacestr (p, 5, oid);
+	  A4GL_cv_replacestr (p, 5, oid);
 	  t += strlen ("rowid") - strlen (oid);
 	}
       t += len;
@@ -422,7 +422,7 @@ cvsql_rowid (char *sql, char *oid)
  * @param  sql   SQL statement string
  */
 void
-cvsql_split_update (char *sql, char *args)
+A4GL_cvsql_split_update (char *sql, char *args)
 {
   char *t;
   char *p;
@@ -435,28 +435,28 @@ cvsql_split_update (char *sql, char *args)
 
   /* the statement must start with "update tablename set ( " ... 
    */
-  t = cv_next_token (sql, &n, 0);
+  t = A4GL_cv_next_token (sql, &n, 0);
   if (strncasecmp (t, "update", n) != 0)
     return;
-  t = cv_next_token (&t[n], &n, 0);
-  t = cv_next_token (&t[n], &n, 0);
+  t = A4GL_cv_next_token (&t[n], &n, 0);
+  t = A4GL_cv_next_token (&t[n], &n, 0);
   if (strncasecmp (t, "set", n) != 0)
     return;
-  t = cv_next_token (&t[n], &n, 0);
+  t = A4GL_cv_next_token (&t[n], &n, 0);
   if (*t != '(')
     return;
   ob1 = t;
 
-  if ((cb1 = cv_find_closing (ob1)) == NULL)
+  if ((cb1 = A4GL_cv_find_closing (ob1)) == NULL)
     return;
-  t = cv_next_token (&cb1[1], &n, 0);
+  t = A4GL_cv_next_token (&cb1[1], &n, 0);
   if (*t != '=')
     return;
-  t = cv_next_token (&t[n], &n, 0);
+  t = A4GL_cv_next_token (&t[n], &n, 0);
   if (*t != '(')
     return;
   ob2 = t;
-  if ((cb2 = cv_find_closing (ob2)) == NULL)
+  if ((cb2 = A4GL_cv_find_closing (ob2)) == NULL)
     return;
 
   /* create a temp. buffer to build the new 'set' clause */
@@ -473,9 +473,9 @@ cvsql_split_update (char *sql, char *args)
   {
     char *o1 = ob1;
     char *o2 = ob2;
-    while ((p = cv_find_token (++o1, ",", 1)))
+    while ((p = A4GL_cv_find_token (++o1, ",", 1)))
       {
-	t = cv_find_token (++o2, ",", 1);
+	t = A4GL_cv_find_token (++o2, ",", 1);
 	strncat (s, o1, (p - o1));
 	strcat (s, "=");
 	strncat (s, o2, (t - o2));
@@ -492,22 +492,22 @@ cvsql_split_update (char *sql, char *args)
   *cb1 = ' ';
   *cb2 = ' ';
 
-  cv_replacestr (ob1, (cb2 - ob1 + 1), s);
+  A4GL_cv_replacestr (ob1, (cb2 - ob1 + 1), s);
 
   free (s);
 }
 
 
 void
-cvsql_matches_like (char *sql, char *args)
+A4GL_cvsql_matches_like (char *sql, char *args)
 {
-  cvsql_matches (sql, "like");
+  A4GL_cvsql_matches (sql, "like");
 }
 
 void
-cvsql_matches_regex (char *sql, char *args)
+A4GL_cvsql_matches_regex (char *sql, char *args)
 {
-  cvsql_matches (sql, "~");
+  A4GL_cvsql_matches (sql, "~");
 }
 
 /*
@@ -521,19 +521,19 @@ cvsql_matches_regex (char *sql, char *args)
  * @param   typ   "like" or "~"
  */
 void
-cvsql_matches (char *sql, char *typ)
+A4GL_cvsql_matches (char *sql, char *typ)
 {
   char *t_matches;
   char *t_string;
   char *p;
   int len;
 
-  while ((t_matches = cv_find_token (sql, "matches", 0)))
+  while ((t_matches = A4GL_cv_find_token (sql, "matches", 0)))
     {
       /* found 'matches', proceed only if next token is a quoted string
        */
       sql = &t_matches[7];
-      if (!(t_string = cv_next_token (sql, &len, 0)))
+      if (!(t_string = A4GL_cv_next_token (sql, &len, 0)))
 	break;
       sql = &t_string[len];
       if (!isquote (*t_string))
@@ -542,15 +542,15 @@ cvsql_matches (char *sql, char *typ)
       if (typ[0] == '~')
 	{
 	  /* regex: pattern must start with "^" anchor */
-	  cv_inschstr (t_string + 1, '^');
+	  A4GL_cv_inschstr (t_string + 1, '^');
 	}
 
       /* replace "matches" with "like" or "~",
          sql has changed, so find quoted string again
        */
-      cv_replacestr (t_matches, 7, typ);
+      A4GL_cv_replacestr (t_matches, 7, typ);
       sql = &t_matches[strlen (typ)];
-      t_string = cv_next_token (sql, &len, 0);
+      t_string = A4GL_cv_next_token (sql, &len, 0);
       sql = &t_string[len];
 
       /* convert the quoted string ... */
@@ -563,7 +563,7 @@ cvsql_matches (char *sql, char *typ)
 	      switch (*p)
 		{
 		case '*':
-		  cv_inschstr (p++, '.');
+		  A4GL_cv_inschstr (p++, '.');
 		  break;
 		case '?':
 		  if (typ[0] == '~')
@@ -584,7 +584,7 @@ cvsql_matches (char *sql, char *typ)
 		{
 		case '%':
 		case '_':
-		  cv_inschstr (p++, '\\');
+		  A4GL_cv_inschstr (p++, '\\');
 		  break;
 		case '*':
 		  *p = '%';
@@ -602,10 +602,10 @@ cvsql_matches (char *sql, char *typ)
  * Converts col[a,b] style column subscripts to substr(col,a,b-a+1)
  *
  * @param  sql   SQL statement string
- * @param  func  name of substring function
+ * @param  A4GL_func  name of substring function
  */
 void
-cvsql_substring (char *sql, char *func)
+A4GL_cvsql_substring (char *sql, char *func)
 {
   char *t, *p;
   char *t_col = 0;
@@ -613,7 +613,7 @@ cvsql_substring (char *sql, char *func)
   int len;
 
   /* seek and convert anything like  " (table.)column [ ... ] " */
-  while ((t = cv_next_token (sql, &len, 0)))
+  while ((t = A4GL_cv_next_token (sql, &len, 0)))
     {
       sql = &t[len];
 
@@ -636,25 +636,25 @@ cvsql_substring (char *sql, char *func)
 	{
 	  /* we have a closing right bracket with a previous 
 	   * (table.)column name and an opening left bracket
-	   * column [a,b] -> func (column,a,b)
+	   * column [a,b] -> A4GL_func (column,a,b)
 	   */
 	  *t = ')';
 	  /* assume [a,1] if we have [a] instead of [a,b] */
 	  if ((p = index (t_left, ',')) == NULL || p > t)
 	    {
-	      cv_replacestr (t, 0, ",1");
+	      A4GL_cv_replacestr (t, 0, ",1");
 	    }
 	  else
 	    {
-	      cv_replacestr (t, 0, "+1");
+	      A4GL_cv_replacestr (t, 0, "+1");
 	      *p = '\0';
-	      cv_replacestr (t, 0, &t_left[1]);
+	      A4GL_cv_replacestr (t, 0, &t_left[1]);
 	      *p = ',';
-	      cv_replacestr (t, 0, "-");
+	      A4GL_cv_replacestr (t, 0, "-");
 	    }
 	  *t_left = ',';
-	  cv_inschstr (t_col, '(');
-	  cv_replacestr (t_col, 0, func);
+	  A4GL_cv_inschstr (t_col, '(');
+	  A4GL_cv_replacestr (t_col, 0, func);
 	  t_col = 0;
 	  t_left = 0;
 	}
@@ -668,7 +668,7 @@ cvsql_substring (char *sql, char *func)
  * @param  sql   SQL statement string
  */
 void
-cvsql_tab_alias (char *sql, char *args)
+A4GL_cvsql_tab_alias (char *sql, char *args)
 {
   char *t;
   int len;
@@ -678,7 +678,7 @@ cvsql_tab_alias (char *sql, char *args)
    * are possible in 'union' selects
    */
   t = sql;
-  while ((t = cv_next_token (t, &len, 0)))
+  while ((t = A4GL_cv_next_token (t, &len, 0)))
     {
       /* don't start alias checking until we reach a 'from' clause */
       if (state == 0)
@@ -696,7 +696,7 @@ cvsql_tab_alias (char *sql, char *args)
       else
 	{
 	  /* check for any keyword that marks the end of the from clause */
-	  if (cv_is_clause_word (t, len))
+	  if (A4GL_cv_is_clause_word (t, len))
 	    {
 	      state = 0;
 	    }
@@ -714,11 +714,11 @@ cvsql_tab_alias (char *sql, char *args)
 		   */
 		  if (strncasecmp (t, "as", len) == 0)
 		    {
-		      t = cv_next_token ((t + len), &len, 0);
+		      t = A4GL_cv_next_token ((t + len), &len, 0);
 		    }
 		  else
 		    {
-		      cv_replacestr (t, 0, "as ");
+		      A4GL_cv_replacestr (t, 0, "as ");
 		      t += 3;
 		    }
 		  state = 1;
@@ -741,7 +741,7 @@ cvsql_tab_alias (char *sql, char *args)
  * @param  sql   SQL statement string
  */
 void
-cvsql_col_alias (char *sql, char *args)
+A4GL_cvsql_col_alias (char *sql, char *args)
 {
   char *t;
   char *p;
@@ -752,7 +752,7 @@ cvsql_col_alias (char *sql, char *args)
    * can appear more than once, in unions and sub-queries.
    */
   t = sql;
-  while ((t = cv_next_token (t, &len, 0)))
+  while ((t = A4GL_cv_next_token (t, &len, 0)))
     {
       /* don't start alias checking until we reach a 'select' clause */
 
@@ -766,7 +766,7 @@ cvsql_col_alias (char *sql, char *args)
 
       /* presumably in a select, so locate the terminating 'from'
        * */
-      if ((from = cv_find_token (t, "from", 1)) == NULL)
+      if ((from = A4GL_cv_find_token (t, "from", 1)) == NULL)
 	continue;
 
       /* temporarily null-terminate up to the 'from', and look
@@ -774,7 +774,7 @@ cvsql_col_alias (char *sql, char *args)
        */
       *from = '\0';
       n = 0;
-      while ((p = cv_nth_list_item (t, ++n, &len)))
+      while ((p = A4GL_cv_nth_list_item (t, ++n, &len)))
 	{
 	  if (len > 2)
 	    {
@@ -787,12 +787,12 @@ cvsql_col_alias (char *sql, char *args)
 	      /* expect more than 1 token, the last is a valid column
 	       * identifier and the second last is anything except an
 	       * operator (+,-,/, etc.) */
-	      if ((i = cv_num_tokens (p)) > 1)
+	      if ((i = A4GL_cv_num_tokens (p)) > 1)
 		{
-		  a = cv_nth_token (p, i, &l);
+		  a = A4GL_cv_nth_token (p, i, &l);
 		  if (isalnum (*a))
 		    {
-		      b = cv_nth_token (p, (i - 1), &l);
+		      b = A4GL_cv_nth_token (p, (i - 1), &l);
 		      if (isoperator (*b) || (strncasecmp (b, "as", l) == 0))
 			{
 			  b = NULL;
@@ -807,7 +807,7 @@ cvsql_col_alias (char *sql, char *args)
 	      if (b)
 		{
 		  *from = 'f';
-		  cv_replacestr (b, 0, "as ");
+		  A4GL_cv_replacestr (b, 0, "as ");
 		  from += 3;
 		  *from = '\0';
 		}
@@ -830,7 +830,7 @@ cvsql_col_alias (char *sql, char *args)
  * @param   str   search/replace as "before = after"
  */
 void
-cvsql_replace (char *sql, char *args)
+A4GL_cvsql_replace (char *sql, char *args)
 {
   char srch[100];
   char *rplc;
@@ -843,7 +843,7 @@ cvsql_replace (char *sql, char *args)
     return;
   if ((t = strchr (args, '=')) == NULL)
     return;
-  rplc = cv_next_token ((t + 1), &len, 0);
+  rplc = A4GL_cv_next_token ((t + 1), &len, 0);
   if (rplc == NULL)
     rplc = empty;
   if ((slen = t - args + 1) < 1)
@@ -855,13 +855,13 @@ cvsql_replace (char *sql, char *args)
 
   /* locate any token that matches the start of the search string */
   t = sql;
-  while ((t = cv_next_token (t, &len, 1)) != NULL)
+  while ((t = A4GL_cv_next_token (t, &len, 1)) != NULL)
     {
       if (strncasecmp (t, srch, len) == 0)
 	{
 	  if (strncasecmp (t, srch, slen) == 0)
 	    {
-	      cv_replacestr (t, slen, rplc);
+	      A4GL_cv_replacestr (t, slen, rplc);
 	      t += strlen (rplc) - slen;
 	    }
 	}
@@ -893,15 +893,15 @@ cvsql_replace (char *sql, char *args)
  * @param  *len   points to an int that'll hold the string length
  */
 char *
-cv_nth_list_item (char *p, int n, int *len)
+A4GL_cv_nth_list_item (char *p, int n, int *len)
 {
   char *p2 = NULL;
 
   while (n-- > 0)
     {
-      if ((p2 = cv_find_token (p, ",", 1)) == NULL)
+      if ((p2 = A4GL_cv_find_token (p, ",", 1)) == NULL)
 	{
-	  p2 = cv_lastnonblank (p);
+	  p2 = A4GL_cv_lastnonblank (p);
 	  p2--;
 	  break;
 	}
@@ -928,17 +928,17 @@ cv_nth_list_item (char *p, int n, int *len)
  * @param  skipb  set to true to skip over text inside brackets
  */
 char *
-cv_find_token (char *p, char *str, int skipb)
+A4GL_cv_find_token (char *p, char *str, int skipb)
 {
   int len = 0;
   int l = strlen (str);
-  while ((p = cv_next_token (p, &len, 0)))
+  while ((p = A4GL_cv_next_token (p, &len, 0)))
     {
       if (len == l && strncasecmp (p, str, len) == 0)
 	return p;
       if (skipb && *p == '(')
 	{
-	  p = cv_find_closing (p);
+	  p = A4GL_cv_find_closing (p);
 	  if (p == NULL)
 	    return p;
 	  len = 1;
@@ -954,7 +954,7 @@ cv_find_token (char *p, char *str, int skipb)
  * @param  p    points to opening bracket ([{
  */
 char *
-cv_find_closing (char *p)
+A4GL_cv_find_closing (char *p)
 {
   int len = 0;
   char ob, cb;
@@ -977,7 +977,7 @@ cv_find_closing (char *p)
     }
 
   lv = 1;
-  while ((p = cv_next_token (p, &len, 0)))
+  while ((p = A4GL_cv_next_token (p, &len, 0)))
     {
       if (*p == cb)
 	{
@@ -1000,11 +1000,11 @@ cv_find_closing (char *p)
  * @param  p     pointer into SQL statement string
  */
 int
-cv_num_tokens (char *p)
+A4GL_cv_num_tokens (char *p)
 {
   int n = 0;
   int len;
-  while (p && (p = cv_next_token (p, &len, 0)))
+  while (p && (p = A4GL_cv_next_token (p, &len, 0)))
     {
       p += len;
       n++;
@@ -1020,11 +1020,11 @@ cv_num_tokens (char *p)
  * @param  *len  pointer to location to store token length
  */
 char *
-cv_nth_token (char *p, int n, int *len)
+A4GL_cv_nth_token (char *p, int n, int *len)
 {
   while (n-- > 0)
     {
-      if ((p = cv_next_token (p, len, 0)) == NULL)
+      if ((p = A4GL_cv_next_token (p, len, 0)) == NULL)
 	break;
       if (n == 0)
 	return p;
@@ -1041,7 +1041,7 @@ cv_nth_token (char *p, int n, int *len)
  * @param  dot  treat dot (.) as a separate token
  */
 char *
-cv_next_token (char *p, int *len, int dot)
+A4GL_cv_next_token (char *p, int *len, int dot)
 {
   char *p2;
   int slash = 0;
@@ -1127,7 +1127,7 @@ cv_next_token (char *p, int *len, int dot)
  * @param  len  length of token string
  */
 int
-cv_is_clause_word (char *p, int len)
+A4GL_cv_is_clause_word (char *p, int len)
 {
 
   if (strncasecmp (p, "select", 6) == 0 || strncasecmp (p, "from", 4) == 0 ||
@@ -1138,7 +1138,7 @@ cv_is_clause_word (char *p, int len)
     }
   if (strncasecmp (p, "group", 5) == 0 || strncasecmp (p, "order", 5) == 0)
     {
-      if (strncasecmp (cv_next_token (p, NULL, 0), "by", 2) == 0)
+      if (strncasecmp (A4GL_cv_next_token (p, NULL, 0), "by", 2) == 0)
 	return 1;
     }
   return 0;
@@ -1155,7 +1155,7 @@ cv_is_clause_word (char *p, int len)
  * Replace a string inside another string
  */
 void
-cv_replacestr (char *p, int n, char *s)
+A4GL_cv_replacestr (char *p, int n, char *s)
 {
   while (*s > 0)
     {
@@ -1165,18 +1165,18 @@ cv_replacestr (char *p, int n, char *s)
 	}
       else
 	{
-	  cv_inschstr (p++, *s++);
+	  A4GL_cv_inschstr (p++, *s++);
 	}
     }
   if (n > 0)
-    cv_delchstr (p, n);
+    A4GL_cv_delchstr (p, n);
 }
 
 /*
  * Insert one char into a string, and drop the last char.
  */
 void
-cv_inschstr (char *p, char c)
+A4GL_cv_inschstr (char *p, char c)
 {
   char x;
   while ((x = *p) > 0)
@@ -1190,7 +1190,7 @@ cv_inschstr (char *p, char c)
  * Delete chars from a string, and pad end with spaces
  */
 void
-cv_delchstr (char *str, int n)
+A4GL_cv_delchstr (char *str, int n)
 {
   char *p;
   while (n-- > 0)
@@ -1210,7 +1210,7 @@ cv_delchstr (char *str, int n)
  * @return p      Pointer to start of word
  */
 char *
-cv_unqstrstr (char *str, char *word)
+A4GL_cv_unqstrstr (char *str, char *word)
 {
   char *p;
   char w1;
@@ -1265,7 +1265,7 @@ cv_unqstrstr (char *str, char *word)
  * @param  str   A null terminated string
  */
 char *
-cv_lastnonblank (char *str)
+A4GL_cv_lastnonblank (char *str)
 {
   char *p;
   int n;

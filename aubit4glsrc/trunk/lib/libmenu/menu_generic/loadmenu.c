@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.4 2003-05-12 14:24:21 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.5 2003-05-15 07:10:42 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -100,10 +100,10 @@ GtkWidget *tooltips = 0;
 static GtkWidget *real_load_menu (char *fname, char *menu_id, int mode,
 				  void *handler);
 
-char *mn_caption (char *s);
-char *mn_help (char *s);
-//void  show_menu               (char *menuid, void *handler);
-void endis_menuitems (int en_dis, ...);
+char *A4GL_mn_caption (char *s);
+char *A4GL_mn_help (char *s);
+//void  A4GL_show_menu               (char *menuid, void *handler);
+void A4GL_endis_menuitems (int en_dis, ...);
 
 /*
 =====================================================================
@@ -120,7 +120,7 @@ void endis_menuitems (int en_dis, ...);
  * @return The caption part.
  */
 char *
-mn_caption (char *s)
+A4GL_mn_caption (char *s)
 {
   static char buff[256];
   char *ptr;
@@ -141,7 +141,7 @@ mn_caption (char *s)
  * @return A pointer to the string wanted.
  */
 char *
-mn_help (char *s)
+A4GL_mn_help (char *s)
 {
   static char buff[256];
   char *ptr;
@@ -177,25 +177,25 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
   int cnt = 0;
   char buff[256];
 
-  debug ("Trying to make menu %s parent=%p\n", id, parent);
+  A4GL_debug ("Trying to make menu %s parent=%p\n", id, parent);
 
   for (a = 0; a < xdrm->menus.menus_len; a++)
     {
       mm = &xdrm->menus.menus_val[a];
-      debug ("Found menu %s - %s\n", mm->id, id);
+      A4GL_debug ("Found menu %s - %s\n", mm->id, id);
       if (strcasecmp (mm->id, id) == 0)
 	{			/* We've found our menu */
-	  debug ("Found it\n");
+	  A4GL_debug ("Found it\n");
 	  nmenu = gtk_menu_new ();
-	  debug ("Create new menu\n");
-	  debug ("has %d options\n", mm->options.options_len);
+	  A4GL_debug ("Create new menu\n");
+	  A4GL_debug ("has %d options\n", mm->options.options_len);
 	  for (b = 0; b < mm->options.options_len; b++)
 	    {
 	      o = &mm->options.options_val[b];
-	      debug ("Adding option %s %s %s\n", o->caption, o->id, o->image);
+	      A4GL_debug ("Adding option %s %s %s\n", o->caption, o->id, o->image);
 	      if (strlen (o->submenu_id) != 0)
 		{
-		  debug ("Has a submenu\n");
+		  A4GL_debug ("Has a submenu\n");
 		  submenu =
 		    make_menus (menubar, nmenu, xdrm, o->submenu_id, 2,
 				handler);
@@ -206,17 +206,17 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 		}
 	      /* o = &mm->options.options_val[b]; */
 
-	      trim (o->image);
-	      trim (o->caption);
+	      A4GL_trim (o->image);
+	      A4GL_trim (o->caption);
 
-	      if (strlen (mn_caption (o->image)) == 0)
+	      if (strlen (A4GL_mn_caption (o->image)) == 0)
 		{
-		  debug ("Caption - no image");
-		  w = gtk_menu_item_new_with_label (mn_caption (o->caption));
-		  if (strlen (mn_help (o->caption)))
+		  A4GL_debug ("Caption - no image");
+		  w = gtk_menu_item_new_with_label (A4GL_mn_caption (o->caption));
+		  if (strlen (A4GL_mn_help (o->caption)))
 		    gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltips), w,
-					  mn_help (o->caption),
-					  mn_help (o->caption));
+					  A4GL_mn_help (o->caption),
+					  A4GL_mn_help (o->caption));
 		  gtk_widget_show (w);
 		}
 	      else
@@ -224,19 +224,19 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 		  GtkHBox *h;
 		  GtkLabel *l;
 		  GtkWidget *pixmap;
-		  debug ("Caption & image ?");
+		  A4GL_debug ("Caption & image ?");
 		  w = gtk_menu_item_new ();
 		  h = GTK_HBOX (gtk_hbox_new (0, 0));
 		  gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (h));
-		  debug ("Added hbox");
-		  if (strlen (mn_caption (o->caption)))
+		  A4GL_debug ("Added hbox");
+		  if (strlen (A4GL_mn_caption (o->caption)))
 		    {
-		      if (strlen (mn_caption (o->caption)))
+		      if (strlen (A4GL_mn_caption (o->caption)))
 			{
-			  debug ("Adding label");
+			  A4GL_debug ("Adding label");
 			  l =
 			    GTK_LABEL (gtk_label_new
-				       (mn_caption (o->caption)));
+				       (A4GL_mn_caption (o->caption)));
 			  gtk_label_set_justify (l, GTK_JUSTIFY_LEFT);
 			  gtk_box_pack_start (GTK_BOX (h), GTK_WIDGET (l), 0,
 					      0, 0);
@@ -244,13 +244,13 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 			}
 		    }
 
-		  debug ("making image");
-		  pixmap = make_pixmap (o->image);
+		  A4GL_debug ("making image");
+		  pixmap = A4GL_make_pixmap (o->image);
 
-		  debug ("Make image from pixmap");
+		  A4GL_debug ("Make image from pixmap");
 		  gtk_box_pack_end (GTK_BOX (h), GTK_WIDGET (pixmap), 0, 0,
 				    0);
-		  debug ("SHowing");
+		  A4GL_debug ("SHowing");
 		  gtk_widget_show (GTK_WIDGET (pixmap));
 		  gtk_widget_show (GTK_WIDGET (h));
 
@@ -258,7 +258,7 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 
 	      gtk_object_set_data (GTK_OBJECT (w), "Parent", menubar);
 	      gtk_object_set_data (GTK_OBJECT (w), "Caption",
-				   mn_caption (o->caption));
+				   A4GL_mn_caption (o->caption));
 	      gtk_object_set_data (GTK_OBJECT (w), "ID", o->id);
 	      sprintf (buff, "ID:%s", o->id);
 	      gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
@@ -290,11 +290,11 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 		}
 
 	    }
-	  debug ("All done\n");
+	  A4GL_debug ("All done\n");
 	  return nmenu;
 	}
     }
-  debug ("Menu not found\n");
+  A4GL_debug ("Menu not found\n");
   return 0;
 }
 
@@ -314,7 +314,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   GtkWindow *cwin;
 
   /* Get the vbox associated with the current window */
-  cwin = GTK_WINDOW (get_curr_win_gtk ());
+  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
 
   /* Is there a menu bar there already ? */
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
@@ -327,7 +327,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   /* Create a new menubar */
   menubar = gtk_menu_bar_new ();
 
-  gtk_widget_set_usize (GTK_WIDGET (menubar), get_curr_width_gtk () * XWIDTH,
+  gtk_widget_set_usize (GTK_WIDGET (menubar), A4GL_get_curr_width_gtk () * XWIDTH,
 			YHEIGHT);
 
 
@@ -344,7 +344,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   /* gtk_box_pack_start (GTK_BOX (v), menubar, FALSE, FALSE, 2); */
   gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (menubar), 0, 0);
   make_menus (menubar, menubar, m, id, 1, handler);
-  debug ("Make menubar\n");
+  A4GL_debug ("Make menubar\n");
 
   gtk_object_set_data (GTK_OBJECT (menubar), "selected", (void *) -1);
   return menubar;
@@ -362,7 +362,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
  * @return A pointer to the menu widget created.
  */
 void *
-load_menu (char *fname, char *menu_id, int mode, void *handler)
+A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
   return real_load_menu (fname, menu_id, mode, handler);
 }
@@ -386,19 +386,19 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 //char buff[256];
   memset (&the_menus, 0, sizeof (menu_list));
 
-  a = read_data_from_file ("menu_list", &the_menus, fname);
+  a = A4GL_read_data_from_file ("menu_list", &the_menus, fname);
 
   if (!a)
     {
-      debug ("Bad format\n");
+      A4GL_debug ("Bad format\n");
     }
   else
     {
       w = create_menu (&the_menus, menu_id, mode, handler);
 
     }
-  debug ("All done - menubar should be displayed\n");
-  gui_run_til_no_more ();
+  A4GL_debug ("All done - menubar should be displayed\n");
+  A4GL_gui_run_til_no_more ();
   return w;
 }
 
@@ -408,7 +408,7 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
  * FIXME: not implemented
  */
 int
-mn_itemexists (char *menuitem)
+A4GL_mn_itemexists (char *menuitem)
 {
   return 1;
 }
@@ -420,21 +420,21 @@ mn_itemexists (char *menuitem)
  * @param handler The menu handler name.
  */
 void
-show_menu (char *menuid, void *handler)
+A4GL_show_menu (char *menuid, void *handler)
 {
   char *fname;
   void (*p) (char *);
   char buff[256];
 
-  fname = char_pop ();
+  fname = A4GL_char_pop ();
   p = handler;
 
   sprintf (buff, "%s%s", fname, acl_getenv ("A4GL_MNU_EXT"));	// .xml is added later in libPACKER_
 
   fname = (char *) buff;
-  debug ("show_menu >%s<", fname);
+  A4GL_debug ("show_menu >%s<", fname);
 
-  load_menu (fname, menuid, 0, handler);
+  A4GL_load_menu (fname, menuid, 0, handler);
   p ("__BSM__");
 }
 
@@ -447,7 +447,7 @@ show_menu (char *menuid, void *handler)
  * @param ... The list of the items to be afected.
  */
 void
-endis_menuitems (int en_dis, ...)
+A4GL_endis_menuitems (int en_dis, ...)
 {
   va_list ap;
   GtkWidget *cwin;
@@ -457,18 +457,18 @@ endis_menuitems (int en_dis, ...)
   char buff[256];
   va_start (ap, en_dis);
   printf ("endis:%d\n", en_dis);
-  debug ("*****enable/disable menuitems\n");
-  cwin = GTK_WIDGET (get_curr_win_gtk ());
+  A4GL_debug ("*****enable/disable menuitems\n");
+  cwin = GTK_WIDGET (A4GL_get_curr_win_gtk ());
 
   /* v=gtk_object_get_data(cwin,"vbox"); */
 
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
-  debug ("menubar=%d", menubar);
+  A4GL_debug ("menubar=%d", menubar);
 
   if (menubar == 0)
     {
       printf ("No menu");
-      exitwith ("No menu displayed");
+      A4GL_exitwith ("No menu displayed");
       return;
     }
 
@@ -479,18 +479,18 @@ endis_menuitems (int en_dis, ...)
       if (ptr == 0)
 	break;
       sprintf (buff, "ID:%s", ptr);
-      debug ("Looking for %s", buff);
+      A4GL_debug ("Looking for %s", buff);
       w = gtk_object_get_data (GTK_OBJECT (menubar), buff);
       if (w)
 	{
-	  debug ("Found");
+	  A4GL_debug ("Found");
 	  gtk_widget_set_sensitive (w, en_dis);
 	}
       else
 	{
 	  printf ("No Widget\n");
-	  debug ("No widget\n");
-	  exitwith ("Invalid menu ID");
+	  A4GL_debug ("No widget\n");
+	  A4GL_exitwith ("Invalid menu ID");
 	  return;
 	}
     }

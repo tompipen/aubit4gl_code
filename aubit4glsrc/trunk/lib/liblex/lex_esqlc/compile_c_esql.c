@@ -43,20 +43,20 @@ print_close (char type, char *name)
   switch (type)
     {
     case 'F':
-      printc ("close_form(%s);\n", name);
+      printc ("A4GL_close_form(%s);\n", name);
       break;
     case 'W':
-      printc ("remove_window(%s);\n", name);
+      printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-      printc ("close_database();\n");
+      printc ("A4GL_close_database();\n");
       break;
     case 'S':
-      printc ("EXEC SQL CLOSE SESSION %s;\n", strip_quotes (name));
+      printc ("EXEC SQL CLOSE SESSION %s;\n", A4GL_strip_quotes (name));
       print_copy_status ();
       break;
     case 'C':
-      printc ("EXEC SQL CLOSE %s;\n", strip_quotes (name));
+      printc ("EXEC SQL CLOSE %s;\n", A4GL_strip_quotes (name));
       print_copy_status ();
       break;
     }
@@ -76,7 +76,7 @@ print_foreach_next (char *cursorname, char *into)
   int ni;
   int no;
   printc ("a4gl_sqlca.sqlcode=0;\n");
-  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes (cursorname),
+  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname),
 	  into);
   print_copy_status ();
   printc ("while (1) {\n");
@@ -84,7 +84,7 @@ print_foreach_next (char *cursorname, char *into)
   no = print_bind ('o');
   print_conversions ('i');
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
-	  strip_quotes (cursorname), get_into_part (no), ni, no);
+	  A4GL_strip_quotes (cursorname), A4GL_get_into_part (no), ni, no);
   print_copy_status ();
   print_conversions ('o');
 
@@ -139,9 +139,9 @@ print_linked_cmd (int type, char *var)
 	  add_bind ('o', buff);
 	}
 
-      debug ("Finding number of keys...\n");
+      A4GL_debug ("Finding number of keys...\n");
       no_keys = linked_split (pklist, 0, 0);
-      debug ("No of keys=%d", no_keys);
+      A4GL_debug ("No of keys=%d", no_keys);
       start_bind ('i', 0);
       if (type == 'U')
 	{
@@ -152,12 +152,12 @@ print_linked_cmd (int type, char *var)
 	}
       for (azcnt = 1; azcnt <= no_keys; azcnt++)
 	{
-	  debug ("Getting key no %d", azcnt);
+	  A4GL_debug ("Getting key no %d", azcnt);
 	  linked_split (pklist, azcnt, buff2);
 	  sprintf (buff, "%s.%s", var, buff2);
-	  debug ("Adding linked %s", buff);
+	  A4GL_debug ("Adding linked %s", buff);
 	  add_bind ('i', buff);
-	  debug (" key count %d %d\n", azcnt, no_keys);
+	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
       if (type == 'S')
 	no = print_bind ('o');
@@ -244,7 +244,7 @@ print_put (char *cname)
   printc ("{\n");
   n = print_bind ('i');
   print_conversions ('i');
-  printc ("EXEC SQL PUT %s \n", strip_quotes (cname));
+  printc ("EXEC SQL PUT %s \n", A4GL_strip_quotes (cname));
   if (n)
     {
       printc ("FROM ");
@@ -278,7 +278,7 @@ print_prepare (char *stmt, char *sqlvar)
   printc ("char *_s;\n");
   printc ("EXEC SQL END DECLARE SECTION;\n");
   printc ("_s=strdup(%s);\n", sqlvar);
-  printc ("EXEC SQL PREPARE %s FROM :_s;\n", strip_quotes (stmt), sqlvar);
+  printc ("EXEC SQL PREPARE %s FROM :_s;\n", A4GL_strip_quotes (stmt), sqlvar);
 
   printc ("free(_s);\n}\n");
   print_copy_status ();
@@ -301,7 +301,7 @@ print_execute (char *stmt, int using)
 
   if (using == 0)
     {
-      printc ("EXEC SQL EXECUTE %s;\n", strip_quotes (stmt));
+      printc ("EXEC SQL EXECUTE %s;\n", A4GL_strip_quotes (stmt));
       print_copy_status ();
     }
   else
@@ -310,7 +310,7 @@ print_execute (char *stmt, int using)
       printc ("{ /* EXECUTE */\n");
       ni = print_bind ('i');
       print_conversions ('i');
-      printc ("EXEC SQL EXECUTE %s USING \n", strip_quotes (stmt));
+      printc ("EXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
       for (a = 0; a < ni; a++)
 	{
 	  if (a)
@@ -345,7 +345,7 @@ print_open_session (char *s, char *v, char *user)
 
   if (strcmp (user, "?") == 0)
     {
-      printc (",char_pop(),%s);\n", user);
+      printc (",A4GL_char_pop(),%s);\n", user);
     }
   else
     {
@@ -381,11 +381,11 @@ print_open_cursor (char *cname, char *using)
 
       for (a = n - 1; a >= 0; a--)
 	{
-	  printc ("_using_%d=char_pop();\n", a);
+	  printc ("_using_%d=A4GL_char_pop();\n", a);
 	}
 
       printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",
-	      strip_quotes (cname), n);
+	      A4GL_strip_quotes (cname), n);
       for (a = 0; a < n; a++)
 	{
 	  if (a)
@@ -403,7 +403,7 @@ print_open_cursor (char *cname, char *using)
     }
   else
     {
-      printc ("\nEXEC SQL OPEN  %s; /* No using */\n", strip_quotes (cname));
+      printc ("\nEXEC SQL OPEN  %s; /* No using */\n", A4GL_strip_quotes (cname));
     }
   print_copy_status ();
 }
@@ -518,10 +518,10 @@ print_fetch_3 (char *ftp, char *into)
 	    {
 	    case 1:
 	      sprintf (buff, "EXEC SQL FETCH FIRST %s ",
-		       strip_quotes (cname));
+		       A4GL_strip_quotes (cname));
 	      break;
 	    case -1:
-	      sprintf (buff, "EXEC SQL FETCH LAST %s ", strip_quotes (cname));
+	      sprintf (buff, "EXEC SQL FETCH LAST %s ", A4GL_strip_quotes (cname));
 	      break;
 
 	    }
@@ -531,11 +531,11 @@ print_fetch_3 (char *ftp, char *into)
 	  if (fp2 != 1)
 	    {
 	      sprintf (buff, "EXEC SQL FETCH RELATIVE %d %s ", fp2,
-		       strip_quotes (cname));
+		       A4GL_strip_quotes (cname));
 	    }
 	  else
 	    {
-	      sprintf (buff, "EXEC SQL FETCH %s", strip_quotes (cname));
+	      sprintf (buff, "EXEC SQL FETCH %s", A4GL_strip_quotes (cname));
 	    }
 	}
     }
@@ -544,12 +544,12 @@ print_fetch_3 (char *ftp, char *into)
       if (fp1 == 1)
 	{			// FETCH ABSOLUTE
 	  sprintf (buff, "EXEC SQL FETCH ABSOLUTE :_fp %s",
-		   strip_quotes (cname));
+		   A4GL_strip_quotes (cname));
 	}
       else
 	{
 	  sprintf (buff, "EXEC SQL FETCH RELATIVE :_fp %s",
-		   strip_quotes (cname));
+		   A4GL_strip_quotes (cname));
 	}
     }
 
@@ -560,7 +560,7 @@ print_fetch_3 (char *ftp, char *into)
     }
 
 
-  printc ("%s %s ;", buff, get_into_part (no));
+  printc ("%s %s ;", buff, A4GL_get_into_part (no));
   if (strcmp (into, "0,0") != 0)
     {
       print_copy_status ();
@@ -592,7 +592,7 @@ print_init_conn (char *db)
       printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
       printc ("char *s;");
       printc ("EXEC SQL END DECLARE SECTION;\n");
-      printc ("s=char_pop();\n");
+      printc ("s=A4GL_char_pop();\n");
       printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
       printc ("}");
     }
@@ -696,7 +696,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
       return;
     }
 
-  sprintf (buff, "EXEC SQL DECLARE %s", strip_quotes (a3));
+  sprintf (buff, "EXEC SQL DECLARE %s", A4GL_strip_quotes (a3));
   if (h2)
     {
       strcat (buff, " SCROLL");
@@ -708,7 +708,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
     }
 
   printc ("%s FOR", buff);
-  printc ("     %s ", strip_quotes (a2));
+  printc ("     %s ", A4GL_strip_quotes (a2));
   if (atoi (a1))
     {
       printc ("     FOR UPDATE");
@@ -847,7 +847,7 @@ print_use_session (char *sess)
  * @return The C implementation for seving current connection.
  */
 char *
-get_undo_use (void)
+A4GL_get_undo_use (void)
 {
   //return "A4GLSQL_set_conn(_sav_cur_conn);}";
   return "";

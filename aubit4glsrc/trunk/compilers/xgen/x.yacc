@@ -400,7 +400,7 @@ enum: ENUM NAMED {
 	fprintf(hf,"int input_%s(char *rn,enum %s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,enum %s *r,int isptr,int arr){\n",$<str>2,$<str>2);
 
-	fprintf(cfo,"char *name=\"%s\";\ndebug(\"Writing %s\");\n",$<str>2,$<str>2);
+	fprintf(cfo,"char *name=\"%s\";\nA4GL_debug(\"Writing %s\");\n",$<str>2,$<str>2);
 //	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
 
 	fprintf(cfi,"char *name;\n");

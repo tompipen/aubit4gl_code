@@ -10,7 +10,7 @@
 module: op_module_header
 	{
 		if (glob_only==1) {
-       			debug("Read globals section so Im done\n");
+       			A4GL_debug("Read globals section so Im done\n");
        			YYACCEPT;
 		}
 	
@@ -112,14 +112,14 @@ if (strcmp($<str>1,"static ")!=0) {
 }
 op_param_var_list CLOSE_BRACKET 
 {
-  lex_printcomment("/* new function %s parameters*/\n",$<str>6);
+  A4GL_lex_printcomment("/* new function %s parameters*/\n",$<str>6);
   push_blockcommand("FUNC");
-  lex_printcomment("/* define section */\n");
+  A4GL_lex_printcomment("/* define section */\n");
 }
 define_section 
 {
   int c;
-  lex_printcomment("/*end of define section */\n");
+  A4GL_lex_printcomment("/*end of define section */\n");
 	print_variables();
   c=print_param('f');
   printPushFunction();
@@ -138,7 +138,7 @@ end_func_command :
     pop_blockcommand("FUNC");
     print_func_end();
     clr_function_constants ();
-    lex_printcomment("/*end function*/\n");
+    A4GL_lex_printcomment("/*end function*/\n");
   }
 ;
 
@@ -165,7 +165,7 @@ main_def:
 commands END_MAIN {
 pop_blockcommand("MAIN");
 print_main_end();
-lex_printcomment("/*end main */\n");} ;
+A4GL_lex_printcomment("/*end main */\n");} ;
 
 return_cmd : 
   RETURN op_fgl_expr_ret_list 
@@ -176,7 +176,7 @@ return_cmd :
 ;
 
 op_fgl_expr_list : reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_list {
-lex_printcomment("/* Got expr list */");
+A4GL_lex_printcomment("/* Got expr list */");
 sprintf($<str>$,"%s",$<str>2);}
 ;
 
@@ -200,14 +200,14 @@ xglobals_entry : globals_entry | module_code  | db_section
 globals_entry: GLOBALS {
 strcpy(curr_func,"[Globals]");
 set_current_variable_scope('g');
-lex_printcomment("/* start of globals */\n");
+A4GL_lex_printcomment("/* start of globals */\n");
 } 
 glob_section 
 ;
 
 glob_section : define_section END_GLOBALS {
-	lex_printcomment("/* end of globals */");
-	debug("end of globals\n");
+ A4GL_lex_printcomment("/* end of globals */");
+	A4GL_debug("end of globals\n");
 	lastlineno=yylineno;
 	set_current_variable_scope('m');
 }
@@ -217,7 +217,7 @@ char b[256];
 	strcpy(b,$<str>1);
 	set_current_variable_scope('G');
 	tr_glob_fname(b);
-	debug("Reading globals file %s\n",b);
+	A4GL_debug("Reading globals file %s\n",b);
 	rm_quote(b);
 	read_glob(b);
 	set_current_variable_scope('m');
@@ -237,14 +237,14 @@ op_param_var_list CLOSE_BRACKET
   printDeclareFunctionStack(buff);
 
   cnt=0;
-  lex_printcomment("/* new function %s parameters*/\n",$<str>7);
+  A4GL_lex_printcomment("/* new function %s parameters*/\n",$<str>7);
   push_blockcommand("FUNC");
-  lex_printcomment("/* define section */\n");
+  A4GL_lex_printcomment("/* define section */\n");
 }
 define_section
 {
 	print_variables();
-  lex_printcomment("/*end of define section */\n");
+  A4GL_lex_printcomment("/*end of define section */\n");
   print_param('f');
   printPushFunction();
   print_func_args(atoi($<str>7));

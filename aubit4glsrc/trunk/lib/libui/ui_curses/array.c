@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.5 2003-05-12 14:24:26 mikeaubury Exp $
+# $Id: array.c,v 1.6 2003-05-15 07:10:45 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * Implementation of Display Array
  *
- * @todo Doxygen comments to add
+ * @todo Doxygen A4GL_comments to add
  */
 
 /*
@@ -48,8 +48,8 @@
 =====================================================================
 */
 
-//extern struct         struct_screen_record *get_srec (char *name);
-/* struct struct_screen_record *get_srec (char *); */
+//extern struct         struct_screen_record *A4GL_get_srec (char *name);
+/* struct struct_screen_record *A4GL_get_srec (char *); */
 
 /*
 =====================================================================
@@ -68,7 +68,7 @@ int cmode = 0;
 =====================================================================
 */
 
-int disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
+int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
 		 int attrib, va_list * ap);
 
 /*
@@ -88,22 +88,22 @@ clear_srec (struct struct_screen_record *srec)
   int a;
   int b;
   char srec1[256];
-  debug ("Clearing %s", srec->name);
+  A4GL_debug ("Clearing %s", srec->name);
   strcpy (srec1, srec->name);
   strcat (srec1, ".*");
-  debug ("Got fields as %s", srec1);
+  A4GL_debug ("Got fields as %s", srec1);
   for (b = 0; b < srec->dim; b++)
     {
       for (a = 0; a < srec->attribs.attribs_len + 1; a++)
 
 	{
 
-	  push_char (" ");
+	  A4GL_push_char (" ");
 
 	}
-      debug ("disp_fields(%d,%d,%s,%d,%d)", srec->attribs.attribs_len + 1, 0,
+      A4GL_debug ("disp_fields(%d,%d,%s,%d,%d)", srec->attribs.attribs_len + 1, 0,
 	     srec1, b, 0, 0);
-      disp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, b + 1, 0,
+      A4GL_disp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, b + 1, 0,
 		       0);
     }
 }
@@ -123,7 +123,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   int first_only = 0;
 #ifdef DEBUG
   {
-    debug ("in draw_arr %p %d %d", disp, type, no);
+    A4GL_debug ("in draw_arr %p %d %d", disp, type, no);
   }
 #endif
   if (type < 0)
@@ -137,34 +137,34 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   strcat (srec2, ".*");
   if (type == 2)
     {
-      debug ("calling set_arr_Fields");
-      set_arr_fields (disp->nbind, 0, srec2, scr_line, 0, 0);
+      A4GL_debug ("calling set_arr_Fields");
+      A4GL_set_arr_fields (disp->nbind, 0, srec2, scr_line, 0, 0);
 #ifdef DEBUG
       {
-	debug ("Done");
+ A4GL_debug ("Done");
       }
 #endif
       return;
     }
 
   if (first_only)
-    push_bind (disp->binding, 1, no, disp->arr_elemsize);
+    A4GL_push_bind (disp->binding, 1, no, disp->arr_elemsize);
   else
-    push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
+    A4GL_push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
 
-  debug ("Print array no %d to scr %d", no, disp->scr_line);
-  debug ("calling disp_arR_fields");
+  A4GL_debug ("Print array no %d to scr %d", no, disp->scr_line);
+  A4GL_debug ("calling disp_arR_fields");
 
   if (disp->highlight)
     {
-      debug ("With highlight");
-      disp_arr_fields (disp->nbind, first_only, type * A_REVERSE, srec2,
+      A4GL_debug ("With highlight");
+      A4GL_disp_arr_fields (disp->nbind, first_only, type * A_REVERSE, srec2,
 		       scr_line, 0, 0);
     }
   else
     {
-      debug ("Without highlight");
-      disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
+      A4GL_debug ("Without highlight");
+      A4GL_disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
     }
 }
 
@@ -181,7 +181,7 @@ draw_arr_all (struct s_disp_arr *disp)
   topline = disp->arr_line - disp->scr_line + 1;
 #ifdef DEBUG
   {
-    debug ("Draw_arr_all");
+    A4GL_debug ("Draw_arr_all");
   }
 #endif
   for (a = 0; a < disp->srec->dim; a++)
@@ -194,7 +194,7 @@ draw_arr_all (struct s_disp_arr *disp)
 
 #ifdef DEBUG
 	  {
-	    debug ("after draw_arr (6)");
+	    A4GL_debug ("after draw_arr (6)");
 	  }
 #endif
 	}
@@ -202,10 +202,10 @@ draw_arr_all (struct s_disp_arr *disp)
   draw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
   {
-    debug ("after draw_arr (7)");
+    A4GL_debug ("after draw_arr (7)");
   }
 #endif
-  mja_refresh ();
+  A4GL_mja_refresh ();
 }
 
 /**
@@ -218,27 +218,27 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
 {
   if (redisp == 1)
     {
-      debug ("Redisplay one");
+      A4GL_debug ("Redisplay one");
       draw_arr (arr, 0, arr->last_arr);
 #ifdef DEBUG
       {
-	debug ("after draw_arr (4)");
+ A4GL_debug ("after draw_arr (4)");
       }
 #endif
-      debug ("Display one");
+      A4GL_debug ("Display one");
       draw_arr (arr, 1, arr->arr_line);
 #ifdef DEBUG
       {
-	debug ("after draw_arr (5)");
+ A4GL_debug ("after draw_arr (5)");
       }
 #endif
     }
   if (redisp == 2)
     {
-      debug ("Redisplay all");
+      A4GL_debug ("Redisplay all");
       draw_arr_all (arr);
     }
-  mja_wrefresh (currwin);
+  A4GL_mja_wrefresh (currwin);
 }
 
 /**
@@ -249,7 +249,7 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
  *   - D : Display.
  */
 void
-set_array_mode (int type)
+A4GL_set_array_mode (int type)
 {
   cmode = type;
 }
@@ -272,22 +272,22 @@ disp_loop (struct s_disp_arr *arr)
   curr_arr_disp = arr;
   form = arr->currform;
   m_lastkey = 0;
-  set_array_mode ('D');
+  A4GL_set_array_mode ('D');
 
 #ifdef DEBUG
   {
-    debug ("Currform=%p (s_form_dets)", form);
+    A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != get_curr_form ())
+  if (form != A4GL_get_curr_form ())
     {
-      exitwith ("Input form is not the current form!");
+      A4GL_exitwith ("Input form is not the current form!");
       exit (0);
     }
   mform = form->form;
 #ifdef DEBUG
   {
-    debug ("FORM=%p", mform);
+    A4GL_debug ("FORM=%p", mform);
   }
 #endif
   if (arr->cntrl != 0)
@@ -300,35 +300,35 @@ disp_loop (struct s_disp_arr *arr)
       draw_arr (arr, 2, arr->arr_line);
 #ifdef DEBUG
       {
-	debug ("after draw_arr (3) mform=%p", mform);
+ A4GL_debug ("after draw_arr (3) mform=%p", mform);
       }
       {
-	debug ("Searching for form");
+ A4GL_debug ("Searching for form");
       }
       {
-	find_ptr_debug (form);
+ A4GL_find_ptr_debug (form);
       }
       {
-	debug ("Searching for mform");
+ A4GL_debug ("Searching for mform");
       }
       {
-	find_ptr_debug (mform);
+ A4GL_find_ptr_debug (mform);
       }
       {
-	debug ("form_win(mform)=%p", form_win (mform));
+ A4GL_debug ("form_win(mform)=%p", form_win (mform));
       }
 #endif
 
       draw_arr (arr, -1, arr->arr_line);
-      mja_wrefresh (currwin);
-      a = getch_win ();
+      A4GL_mja_wrefresh (currwin);
+      a = A4GL_getch_win ();
       m_lastkey = a;
     }
   redisp = 0;
   switch (a)
     {
     case KEY_DOWN:
-      debug ("Key down");
+      A4GL_debug ("Key down");
       if (arr->arr_line < arr->no_arr)
 	{
 
@@ -340,10 +340,10 @@ disp_loop (struct s_disp_arr *arr)
       break;
 
     case 0 - KEY_DOWN:
-      debug ("Keydown +");
+      A4GL_debug ("Keydown +");
       arr->last_arr = arr->arr_line;
       arr->arr_line++;
-      debug ("Is really down %d", arr->arr_line);
+      A4GL_debug ("Is really down %d", arr->arr_line);
       redisp = 1;
       arr->scr_line++;
       if (arr->scr_line > arr->srec->dim)
@@ -358,8 +358,8 @@ disp_loop (struct s_disp_arr *arr)
 	{
 	  redisplay_arr (arr, 1);
 	}
-      set_arr_curr (arr->arr_line);
-      set_scr_line (arr->scr_line);
+      A4GL_set_arr_curr (arr->arr_line);
+      A4GL_set_scr_line (arr->scr_line);
       return -10;
       break;
 
@@ -378,7 +378,7 @@ disp_loop (struct s_disp_arr *arr)
     case 0 - KEY_UP:
       arr->last_arr = arr->arr_line;
       arr->arr_line--;
-      debug ("Is really up");
+      A4GL_debug ("Is really up");
       arr->scr_line--;
       if (arr->scr_line == 0)
 
@@ -393,8 +393,8 @@ disp_loop (struct s_disp_arr *arr)
 	{
 	  redisplay_arr (arr, 1);
 	}
-      set_arr_curr (arr->arr_line);
-      set_scr_line (arr->scr_line);
+      A4GL_set_arr_curr (arr->arr_line);
+      A4GL_set_scr_line (arr->scr_line);
       return -10;
       break;
 
@@ -418,28 +418,28 @@ disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
+A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 	     va_list * ap)
 {
   int a;
   curr_arr_disp = disp;
-  debug ("In disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
+  A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
   if (disp->srec == 0)
     {
-      debug ("disparr1");
-      disp->srec = get_srec (srecname);
+      A4GL_debug ("disparr1");
+      disp->srec = A4GL_get_srec (srecname);
 
 
       if (disp->srec == 0)
 	{
-	  exitwith ("Screen record not found");
+	  A4GL_exitwith ("Screen record not found");
 	  return 0;
 	}
 
-      disp->currform = get_curr_form ();
+      disp->currform = A4GL_get_curr_form ();
 #ifdef DEBUG
       {
-	debug ("disp->currform=%p", disp->currform);
+ A4GL_debug ("disp->currform=%p", disp->currform);
       }
 #endif
       disp->last_arr = -1;
@@ -447,19 +447,19 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
       disp->arr_line = 1;
       disp->cntrl = 1;
       disp->highlight = 0;
-      debug ("disparr2");
+      A4GL_debug ("disparr2");
       if (disp->srec == 0)
 	{
-	  exitwith ("Screen record does not exist");
+	  A4GL_exitwith ("Screen record does not exist");
 
 	  return 0;
 
 	}
-      debug ("disparr3");
+      A4GL_debug ("disparr3");
 
       if (disp->srec->attribs.attribs_len != disp->nbind)
 	{
-	  debug ("Too many or too few variables for fields %d %d %d",
+	  A4GL_debug ("Too many or too few variables for fields %d %d %d",
 		 disp->srec->dim, disp->nbind,
 		 disp->srec->attribs.attribs_len);
 
@@ -467,9 +467,9 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 
 	}
 
-      debug ("Clearing Record");
+      A4GL_debug ("Clearing Record");
       clear_srec (disp->srec);
-      debug ("Cleared record");
+      A4GL_debug ("Cleared record");
       for (a = 0; a < disp->srec->dim; a++)
 
 	{
@@ -480,14 +480,14 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 
 #ifdef DEBUG
 	      {
-		debug ("call draw_arr (1)");
+	 A4GL_debug ("call draw_arr (1)");
 	      }
 #endif
 	      draw_arr (disp, a + 1 == disp->arr_line, a + 1);
 
 #ifdef DEBUG
 	      {
-		debug ("after draw_arr (1)");
+	 A4GL_debug ("after draw_arr (1)");
 	      }
 #endif
 	    }
@@ -495,23 +495,23 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 	}
 #ifdef DEBUG
       {
-	debug ("call draw_arr (2)");
+ A4GL_debug ("call draw_arr (2)");
       }
 #endif
       draw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
       {
-	debug ("after draw_arr (2)");
+ A4GL_debug ("after draw_arr (2)");
       }
 #endif
-      gui_scroll (disp->no_arr);
-      set_arr_curr (disp->arr_line);
-      set_scr_line (disp->scr_line);
-      mja_wrefresh (currwin);
+      A4GL_gui_scroll (disp->no_arr);
+      A4GL_set_arr_curr (disp->arr_line);
+      A4GL_set_scr_line (disp->scr_line);
+      A4GL_mja_wrefresh (currwin);
 
       return -10;
     }
-  debug ("disparr4");
+  A4GL_debug ("disparr4");
   return disp_loop (disp);
 }
 
@@ -530,15 +530,15 @@ set_scrline_da (int np)
   int a;
   if (np != 1)
     {
-      exitwith ("set_scrline requires 1 parameter");
+      A4GL_exitwith ("set_scrline requires 1 parameter");
       return 0;
     }
-  a = pop_int ();
+  a = A4GL_pop_int ();
   curr_arr_disp->scr_line = a;
-  set_scr_line (a);
+  A4GL_set_scr_line (a);
   draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
-  {    debug ("Set scrline...%d", a);  }
+  {    A4GL_debug ("Set scrline...%d", a);  }
 #endif
     return 1;
 }
@@ -556,15 +556,15 @@ set_arrline_da (int np)
   int a;
   if (np != 1)
     {
-      exitwith ("set_arrline requires 1 parameter");
+      A4GL_exitwith ("set_arrline requires 1 parameter");
       return 0;
     }
-  a = pop_int ();
+  a = A4GL_pop_int ();
   curr_arr_disp->arr_line = a;
-  set_arr_curr (a);
+  A4GL_set_arr_curr (a);
   draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
-  {    debug ("Set arrline... %d", a);  }
+  {    A4GL_debug ("Set arrline... %d", a);  }
 #endif
     return 1;
 }

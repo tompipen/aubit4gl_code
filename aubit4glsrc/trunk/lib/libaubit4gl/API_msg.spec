@@ -23,11 +23,11 @@ VARIABLE A4GL_MSGTYPE
 /* executable, and crate lib/libmsg/msg_native/writemsg.c */
 
 /*int read_help_f (int no,int *maxwidth) */
-read_help_f int no,int *maxwidth -> int
+A4GL_read_help_f int no,int *maxwidth -> int
 
 
 /*int writemsg(int offset,FILE *msg,FILE *tmp,FILE *hlp) */
-writemsg int offset,FILE* msg,FILE* tmp,FILE* hlp -> int
+A4GL_writemsg int offset,FILE* msg,FILE* tmp,FILE* hlp -> int
 
 
 /* ------------------------ EOF ------------------------ */

@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.11 2003-05-12 14:24:02 mikeaubury Exp $
+# $Id: API_rpc.c,v 1.12 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  */
 
 /*
@@ -56,7 +56,7 @@ static void *libptr = 0;
 =====================================================================
 */
 
-static int (*func) ();
+static int (*A4GL_func) ();
 
 /*
 =====================================================================
@@ -73,21 +73,21 @@ int
 A4GLRPC_initlib (void)
 {
 
-  debug ("Opening RPC library");
-  libptr = (void *) dl_openlibrary ("RPC", acl_getenv ("RPCTYPE"));
+  A4GL_debug ("Opening RPC library");
+  libptr = (void *) A4GL_dl_openlibrary ("RPC", acl_getenv ("RPCTYPE"));
 
-  debug ("libptr=%p\n", libptr);
+  A4GL_debug ("libptr=%p\n", libptr);
 
   if (libptr == 0)
     {
-      exitwith ("Unable to open RPC library.");
+      A4GL_exitwith ("Unable to open RPC library.");
       return 0;
     }
 
-  func = find_func_allow_missing (libptr, "A4GLRPC_initlib");
+  A4GL_func = A4GL_find_func_allow_missing (libptr, "A4GLRPC_initlib");
 
-  if (func)
-    return func ();
+  if (A4GL_func)
+    return A4GL_func ();
   else
     return 1;
 }
@@ -100,13 +100,13 @@ A4GLRPC_initlib (void)
  * @todo Describe function
  */
 int
-remote_func_call (char *host, int async, char *funcname, int port, int np)
+A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
 {
-  debug ("remote_func_call - libptr=%p\n");
+  A4GL_debug ("remote_func_call - libptr=%p\n");
   if (libptr == 0)
     A4GLRPC_initlib ();
-  func = find_func (libptr, "remote_func_call");
-  return func (host, async, funcname, port, np);
+  A4GL_func = A4GL_find_func (libptr, "remote_func_call");
+  return A4GL_func (host, async, funcname, port, np);
 }
 
 

@@ -8,11 +8,16 @@
 //void rsetnull(int d,void *ptr);
 
 
+void trim(char *s) {
+	A4GL_trim(s);
+}
+
+
 void
 popint (int *s)
 {
   int a;
-  a = pop_int ();
+  a = A4GL_pop_int ();
   *s = (a & 0xffff);
 
 }
@@ -20,51 +25,51 @@ popint (int *s)
 void
 popquote (char *s, int size)
 {
-  pop_char (s, size);
+  A4GL_pop_char (s, size);
 }
 
 
 void
 retquote (char *s)
 {
-  push_char (s);
+  A4GL_push_char (s);
 }
 
 
 void
 pushint (int a)
 {
-  push_int (a);
+  A4GL_push_int (a);
 }
 
 void
 retint (int a)
 {
-  push_int (a);
+  A4GL_push_int (a);
 }
 
 void
 pushshort (short a)
 {
-  push_int (a & 0xffff);
+  A4GL_push_int (a & 0xffff);
 }
 
 void
 pushlong (long a)
 {
-  push_long (a);
+  A4GL_push_long (a);
 }
 
 void
 popvchar (char *x, int y)
 {
-  pop_char (x, y);
+  A4GL_pop_char (x, y);
 }
 
 void
 retdub (double *x)
 {
-  push_double (*x);
+  A4GL_push_double (*x);
 }
 
 
@@ -74,7 +79,7 @@ retflo (float *a)
 {
   float b;
   b = *a;
-  push_float (b);
+  A4GL_push_float (b);
 
 }
 
@@ -86,30 +91,30 @@ retflo (float *a)
 
 
 void
-strip (char *s)
+A4GL_strip (char *s)
 {
-  trim (s);
+  A4GL_trim (s);
 }
 
 
 void
 retshort (short x)
 {
-  push_int (x & 0xffff);
+  A4GL_push_int (x & 0xffff);
 }
 
 void
 poplong (long *x)
 {
   long a;
-  a = pop_long ();
+  a = A4GL_pop_long ();
   *x = a;
 }
 
 void
 retlong (long x)
 {
-  push_long (x);
+  A4GL_push_long (x);
 }
 
 void
@@ -119,7 +124,7 @@ pushquote (char *s, int n)
   ptr = malloc (n + 1);
   strncpy (ptr, s, n);
   ptr[n] = 0;
-  push_char (ptr);
+  A4GL_push_char (ptr);
   free (ptr);
 }
 
@@ -130,7 +135,7 @@ void
 popshort (short *x)
 {
   int a;
-  a = pop_int ();
+  a = A4GL_pop_int ();
   *x = a & 0xffff;
 }
 
@@ -138,7 +143,7 @@ popshort (short *x)
 void
 retstring (char *s)
 {
-  push_char (s);
+  A4GL_push_char (s);
 }
 
 /*

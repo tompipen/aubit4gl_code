@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.25 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: nosql.c,v 1.26 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 /**
@@ -56,10 +56,10 @@ char lasterrorstr[1024] = "";
 =====================================================================
 */
 
-void local_exitwith (char *s);
+void A4GL_local_exitwith (char *s);
 char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname);
-extern char *global_A4GLSQL_get_sqlerrm (void);	/* in API_sql.c */
+extern char *A4GL_global_A4GLSQL_get_sqlerrm (void);	/* in API_sql.c */
 
 
 /*
@@ -88,7 +88,7 @@ A4GLSQL_set_status (int a, int sql)
   a4gl_status = a;
   if (sql)
     a4gl_sqlca.sqlcode = a;
-  debug ("Status set to %d", a);
+  A4GL_debug ("Status set to %d", a);
 }
 
 /**
@@ -98,7 +98,7 @@ A4GLSQL_set_status (int a, int sql)
 int
 A4GLSQL_init_connection (char *dbName)
 {
-  debug ("Connection with database not available: A4GL_SQLTYPE=nosql");
+  A4GL_debug ("Connection with database not available: A4GL_SQLTYPE=nosql");
   local_exitwith
     ("Could not init_connection - Connection with database not available: A4GL_SQLTYPE=nosql");
   return 0;
@@ -121,7 +121,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-  return global_A4GLSQL_get_sqlerrm ();
+  return A4GL_global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -131,7 +131,7 @@ A4GLSQL_get_sqlerrm (void)
 int
 A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-  local_exitwith ("Could not read_columns - noODBC build");
+  A4GL_local_exitwith ("Could not read_columns - noODBC build");
   return 0;
 
 }
@@ -144,7 +144,7 @@ int
 A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
   /*
-     local_exitwith ("Could not make ODBC connection - noODBC build");
+     A4GL_local_exitwith ("Could not make ODBC connection - noODBC build");
      FIXME: do we want to show some message here????
 
      FIXME: programs that do not use DATBASE or CONNECT or SESSION,
@@ -161,7 +161,7 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 int
 A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
-  local_exitwith ("Could not get_datatype - noODBC build");
+  A4GL_local_exitwith ("Could not get_datatype - noODBC build");
   return 0;
 }
 
@@ -178,7 +178,7 @@ functions required to create executable from 4gl code that uses SQL
 int
 A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
-  local_exitwith ("Could not init_session - noODBC build");
+  A4GL_local_exitwith ("Could not init_session - noODBC build");
   return 0;
 }
 
@@ -189,7 +189,7 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 int
 A4GLSQL_set_conn (char *sessname)
 {
-  local_exitwith ("Could not set_session - noODBC build");
+  A4GL_local_exitwith ("Could not set_session - noODBC build");
   return 0;
 }
 
@@ -200,7 +200,7 @@ A4GLSQL_set_conn (char *sessname)
 struct s_sid *
 A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
-  local_exitwith ("Could not prepare_global_sql - noODBC build");
+  A4GL_local_exitwith ("Could not prepare_global_sql - noODBC build");
   return 0;
 }
 
@@ -211,7 +211,7 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 int
 A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
-  local_exitwith ("Could not execute_implicit_sql - noODBC build");
+  A4GL_local_exitwith ("Could not execute_implicit_sql - noODBC build");
   return 0;
 }
 
@@ -222,7 +222,7 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 int
 A4GLSQL_close_session (char *sessname)
 {
-  local_exitwith ("Could not close_session - noODBC build");
+  A4GL_local_exitwith ("Could not close_session - noODBC build");
   return 0;
 }
 
@@ -234,7 +234,7 @@ int
 A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
-  local_exitwith ("Could not fill_array - noODBC build");
+  A4GL_local_exitwith ("Could not fill_array - noODBC build");
   return 0;
 }
 
@@ -245,7 +245,7 @@ A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 struct s_sid *
 A4GLSQL_prepare_sql (char *s)
 {
-  local_exitwith ("Could not prepare_sql - noODBC build");
+  A4GL_local_exitwith ("Could not prepare_sql - noODBC build");
   return 0;
 }
 
@@ -256,7 +256,7 @@ A4GLSQL_prepare_sql (char *s)
 int
 A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 {
-  local_exitwith ("Could not add_prepare - noODBC build");
+  A4GL_local_exitwith ("Could not add_prepare - noODBC build");
   return 0;
 }
 
@@ -267,7 +267,7 @@ A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 int
 A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
 {
-  local_exitwith ("Could not execute_sql_from_ptr - noODBC build");
+  A4GL_local_exitwith ("Could not execute_sql_from_ptr - noODBC build");
   return 0;
 }
 
@@ -278,7 +278,7 @@ A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
 int
 A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
-  local_exitwith ("Could not execute_implicit_select - noODBC build");
+  A4GL_local_exitwith ("Could not execute_implicit_select - noODBC build");
   return 0;
 }
 
@@ -290,7 +290,7 @@ struct s_sid *
 A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
 			int no, char *s)
 {
-  local_exitwith ("Could not prepare_select - noODBC build");
+  A4GL_local_exitwith ("Could not prepare_select - noODBC build");
   return 0;
 }
 
@@ -302,7 +302,7 @@ struct s_cid *
 A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
 			char *cursname)
 {
-  local_exitwith ("Could not declare_cursor - noODBC build");
+  A4GL_local_exitwith ("Could not declare_cursor - noODBC build");
   return 0;
 }
 
@@ -324,7 +324,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
 int
 A4GLSQL_open_cursor (int ni, char *s)
 {
-  local_exitwith ("Could not open_cursor - noODBC build");
+  A4GL_local_exitwith ("Could not open_cursor - noODBC build");
   return 0;
 }
 
@@ -337,7 +337,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nibind,
 		      struct BINDING *ibind)
 {
-  local_exitwith ("Could not fetch_cursor - noODBC build");
+  A4GL_local_exitwith ("Could not fetch_cursor - noODBC build");
   return 0;
 }
 
@@ -348,7 +348,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 void
 A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
-  local_exitwith ("Could not put_insert - noODBC build");
+  A4GL_local_exitwith ("Could not put_insert - noODBC build");
 }
 
 /**
@@ -358,7 +358,7 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
 void
 A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
 {
-  local_exitwith ("Could not unload_data - noODBC build");
+  A4GL_local_exitwith ("Could not unload_data - noODBC build");
 }
 
 /**
@@ -368,7 +368,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
 void
 A4GLSQL_commit_rollback (int mode)
 {
-  local_exitwith ("Could not commit_rollback - noODBC build");
+  A4GL_local_exitwith ("Could not commit_rollback - noODBC build");
 }
 
 /**
@@ -378,7 +378,7 @@ A4GLSQL_commit_rollback (int mode)
 struct s_sid *
 A4GLSQL_find_prepare (char *pname)
 {
-  local_exitwith ("Could not find_prepare - noODBC build");
+  A4GL_local_exitwith ("Could not find_prepare - noODBC build");
   return 0;
 }
 
@@ -389,7 +389,7 @@ A4GLSQL_find_prepare (char *pname)
 void
 A4GLSQL_flush_cursor (char *cursor)
 {
-  local_exitwith ("Could not flush_cursor - noODBC build");
+  A4GL_local_exitwith ("Could not flush_cursor - noODBC build");
 }
 
 /**
@@ -399,7 +399,7 @@ A4GLSQL_flush_cursor (char *cursor)
 int
 A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 {
-  local_exitwith ("Could not execute_sql - noODBC build");
+  A4GL_local_exitwith ("Could not execute_sql - noODBC build");
   return 0;
 }
 
@@ -418,11 +418,11 @@ A4GLSQL_initsqllib (void)
  * @todo Describe function
  */
 void
-local_exitwith (char *s)
+A4GL_local_exitwith (char *s)
 {
 #ifdef DEBUG
   {
-    debug ("ending because : %s", s);
+    A4GL_debug ("ending because : %s", s);
   }
 #endif
   printf ("\n\n\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.27 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: compile.c,v 1.28 2003-05-15 07:10:19 mikeaubury Exp $
 #*/
 
 /**
@@ -183,8 +183,8 @@ initArguments (int argc, char *argv[])
   int skip_cnt = 0, skipit = 0;
 
 #ifdef DEBUG
-  debug ("Parsing the comand line arguments\n");
-  debug ("Arg 0 set to >%s<", getarg0 ());
+  A4GL_debug ("Parsing the comand line arguments\n");
+  A4GL_debug ("Arg 0 set to >%s<", A4GL_getarg0 ());
 #endif
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0
@@ -193,7 +193,7 @@ initArguments (int argc, char *argv[])
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
       strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
 #ifdef DEBUG
-      debug ("Compiling to C code\n");
+      A4GL_debug ("Compiling to C code\n");
 #endif
     }
 
@@ -201,7 +201,7 @@ initArguments (int argc, char *argv[])
     {
       strcpy (opt_list, "G4s:N:?hSVvftd:");
 #ifdef DEBUG
-      debug ("Compiling to Perl code\n");
+      A4GL_debug ("Compiling to Perl code\n");
 #endif
     }
 
@@ -209,7 +209,7 @@ initArguments (int argc, char *argv[])
      arguments on command line anyway */
   if (argc > 1)
     {
-      check_and_show_id ("4GL Compiler", argv[1]);
+      A4GL_check_and_show_id ("4GL Compiler", argv[1]);
     }
   else
     {
@@ -231,7 +231,7 @@ initArguments (int argc, char *argv[])
 	   */
 
 #ifdef DEBUG
-	  debug ("Got -c\n");
+	  A4GL_debug ("Got -c\n");
 #endif
 
 	  compile_object = 1;
@@ -247,7 +247,7 @@ initArguments (int argc, char *argv[])
 
 	case 'o':		/* compile and optionally Link resulting object(s) */
 #ifdef DEBUG
-	  debug ("Got -o flag\n");
+	  A4GL_debug ("Got -o flag\n");
 #endif
 
 	  sprintf (output_object, "%s", (NULL == optarg) ? "" : optarg);
@@ -271,7 +271,7 @@ initArguments (int argc, char *argv[])
 	  if (strcmp (output_object, "") != 0)
 	    {
 
-	      bname (output_object, a, b);
+	      A4GL_bname (output_object, a, b);
 	      strcpy (ext, ".");
 	      strcat (ext, b);
 	      //debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
@@ -306,7 +306,7 @@ initArguments (int argc, char *argv[])
 
 			  /* we will have to assume executable when there is no 
 			     textension, as this is a common practioce on UNIX */
-			  debug
+			  A4GL_debug
 			    ("assuming executable, there was no extension on -o parameter");
 			  compile_object = 1;
 			  compile_exec = 1;
@@ -331,7 +331,7 @@ initArguments (int argc, char *argv[])
 
 	case 'l':		// Extra libraries to link with
 #ifdef DEBUG
-	  debug ("Pass trough option: %s\n", optarg);
+	  A4GL_debug ("Pass trough option: %s\n", optarg);
 #endif
 	  strcat (extra_ldflags, "-l");
 	  strcat (extra_ldflags, optarg);
@@ -340,7 +340,7 @@ initArguments (int argc, char *argv[])
 
 	case 'L':		// LD -L flags for linking extra libraries
 #ifdef DEBUG
-	  debug ("Pass trough option: %s\n", optarg);
+	  A4GL_debug ("Pass trough option: %s\n", optarg);
 #endif
 	  strcat (extra_ldflags, "-L");
 	  strcat (extra_ldflags, optarg);
@@ -356,7 +356,7 @@ initArguments (int argc, char *argv[])
 	case 'N':		// User specified namespace prefix
 	  if (optarg == 0)
 	    optarg = "";
-	  debug ("Using specified namespace : %s\n", optarg);
+	  A4GL_debug ("Using specified namespace : %s\n", optarg);
 	  set_namespace (optarg);
 	  break;
 
@@ -385,7 +385,7 @@ initArguments (int argc, char *argv[])
 	case 'K':		/* clean intermedate files when done (--clean) */
 
 #ifdef DEBUG
-	  debug ("Got --clean\n");
+	  A4GL_debug ("Got --clean\n");
 #endif
 	  clean_aftercomp = 1;
 	  break;
@@ -400,16 +400,16 @@ initArguments (int argc, char *argv[])
 	  verbose = 1;
 	  silent = 0;
 #ifdef DEBUG
-	  debug ("Turned on verbose mode\n");
+	  A4GL_debug ("Turned on verbose mode\n");
 #endif
 	  break;
 
 	case 'v':		/* Show version - needed for long opts */
-	  check_and_show_id ("4GL Compiler", "-v");
+	  A4GL_check_and_show_id ("4GL Compiler", "-v");
 	  exit (0);
 
 	case 'f':		/* Show version - needed for long opts */
-	  check_and_show_id ("4GL Compiler", "-vfull");
+	  A4GL_check_and_show_id ("4GL Compiler", "-vfull");
 	  exit (0);
 
 	default:		/* Everything else we did not define - should
@@ -431,11 +431,11 @@ initArguments (int argc, char *argv[])
 
 #if YYDEBUG != 0
 #ifdef DEBUG
-  debug ("YYDEBUG was set while compiling\n");
+  A4GL_debug ("YYDEBUG was set while compiling\n");
 #endif
 #ifdef YYPRINT
 #ifdef DEBUG
-  debug ("YYPRINT was set while compiling\n");
+  A4GL_debug ("YYPRINT was set while compiling\n");
 #endif
 #endif
 #endif
@@ -443,7 +443,7 @@ initArguments (int argc, char *argv[])
   if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
     {
 #ifdef DEBUG
-      debug ("Yacc Debugging on\n");
+      A4GL_debug ("Yacc Debugging on\n");
 #endif
       yydebug = 1;
     }
@@ -452,14 +452,14 @@ initArguments (int argc, char *argv[])
       yydebug = 0;
     }
 
-  init_datatypes ();
+  A4GL_init_datatypes ();
 
-  if (!A4GLSQL_initlib ())
-    {
-      printf ("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n",
-	      acl_getenv ("A4GL_SQLTYPE"));
-      exit (1);
-    }
+  //if (!A4GLSQL_initlib ())
+   // {
+    //  printf ("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n",
+//	      acl_getenv ("A4GL_SQLTYPE"));
+ //     exit (1);
+  //  }
 
   /* prepare CC flags */
   strcpy (incl_path, "-I");
@@ -501,7 +501,7 @@ initArguments (int argc, char *argv[])
       outputfilename = outputfile;	/* C file name - set where ? */
 
       strcpy (c, argv[index]);
-      bname (c, a, b);
+      A4GL_bname (c, a, b);
 
       if (strcmp (b, "4gl") == 0)
 	{
@@ -511,7 +511,7 @@ initArguments (int argc, char *argv[])
 	  strcat (all_objects, " ");
 	  strcpy (infilename, c);
 #ifdef DEBUG
-	  debug ("Compiling %s\n", infilename);
+	  A4GL_debug ("Compiling %s\n", infilename);
 #endif
 
 /* nonsense
@@ -553,7 +553,7 @@ initArguments (int argc, char *argv[])
 	{
 	  /* just pass stuff you don't understand to CC */
 #ifdef DEBUG
-	  debug ("Pass trough option: %s\n", c);
+	  A4GL_debug ("Pass trough option: %s\n", c);
 #endif
 
 	  strcat (pass_options, c);
@@ -567,26 +567,26 @@ initArguments (int argc, char *argv[])
 	{
 	  printf ("Linking only - no 4gl input files.\n");
 	}
-      debug ("Linking only - no 4gl input files.\n");
+      A4GL_debug ("Linking only - no 4gl input files.\n");
     }
 
 
 #ifdef DEBUG
-  debug ("gcc_exec=%s", gcc_exec);
-  debug ("all_objects=%s", all_objects);
-  debug ("output_object=%s", output_object);
-  debug ("l_path=%s", l_path);
-  debug ("l_libs=%s", l_libs);
-  debug ("pass_options=%s", pass_options);
-  debug ("extra_ldflags=%s", extra_ldflags);
-  debug ("incl_path=%s", incl_path);
+  A4GL_debug ("gcc_exec=%s", gcc_exec);
+  A4GL_debug ("all_objects=%s", all_objects);
+  A4GL_debug ("output_object=%s", output_object);
+  A4GL_debug ("l_path=%s", l_path);
+  A4GL_debug ("l_libs=%s", l_libs);
+  A4GL_debug ("pass_options=%s", pass_options);
+  A4GL_debug ("extra_ldflags=%s", extra_ldflags);
+  A4GL_debug ("incl_path=%s", incl_path);
 #endif
 
 
 
   if (compile_exec)
     {
-      debug ("Linking exec\n");
+      A4GL_debug ("Linking exec\n");
 #if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
       //We are on UNIX
       sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
@@ -604,7 +604,7 @@ initArguments (int argc, char *argv[])
   if (compile_lib)
     {
 #ifndef __MINGW32__
-      debug ("Linking static library\n");
+      A4GL_debug ("Linking static library\n");
 
       sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
 	       gcc_exec, all_objects, output_object, pass_options, l_path,
@@ -623,7 +623,7 @@ initArguments (int argc, char *argv[])
 
   if (compile_so)
     {
-      debug ("Linking shared library\n");
+      A4GL_debug ("Linking shared library\n");
 #ifndef __MINGW32__
       sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
@@ -661,7 +661,7 @@ initArguments (int argc, char *argv[])
 	}
       sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
 #ifdef DEBUG
-      debug ("Runnung %s", buff);
+      A4GL_debug ("Runnung %s", buff);
 #endif
       ret = system (buff);
       if (ret)
@@ -679,7 +679,7 @@ initArguments (int argc, char *argv[])
 
 	  sprintf (buff, "%s.err", output_object);
 	  filep = fopen (buff, "r");
-	  //  f = mja_fopen (ii, "r");
+	  //  f = A4GL_mja_fopen (ii, "r");
 	  fseek (filep, 0, SEEK_END);
 	  flength = ftell (filep);
 	  fclose (filep);
@@ -696,12 +696,12 @@ initArguments (int argc, char *argv[])
 	         linker warnings only
 	       */
 
-	      debug ("%s file size is not zero %d\n", buff, flength);
+	      A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 
 	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"),
 		       output_object, output_object);
 #ifdef DEBUG
-	      debug ("Runnung %s", buff);
+	      A4GL_debug ("Runnung %s", buff);
 #endif
 	      ret = system (buff);
 
@@ -727,7 +727,7 @@ initArguments (int argc, char *argv[])
 	      sprintf (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"),
 		       output_object);
 #ifdef DEBUG
-	      debug ("Runnung %s\n", buff);
+	      A4GL_debug ("Runnung %s\n", buff);
 #endif
 	      ret = system (buff);
 	      if (ret)
@@ -744,7 +744,7 @@ initArguments (int argc, char *argv[])
     {
       if (!todo)
 	{
-	  debug
+	  A4GL_debug
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  printf
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
@@ -788,7 +788,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
   sprintf (c, "%s%s", aa, ".4gl");
   strcpy (buff, c);
-  debug ("Compiling: %s\n", c);
+  A4GL_debug ("Compiling: %s\n", c);
 
   if (strchr (buff, '/'))
     {
@@ -803,15 +803,15 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 
 #ifdef DEBUG
-  debug ("Set currinfile_dirname to: %s\n", currinfile_dirname);
-  debug ("Opening in memory: %s\n", c);
+  A4GL_debug ("Set currinfile_dirname to: %s\n", currinfile_dirname);
+  A4GL_debug ("Opening in memory: %s\n", c);
 #endif
 
   /*
      File MUST be opened in binary mode on Windows, to be able to process
      source file in DOS format - otherwise fpos/ftell gets completely dissoriented:
    */
-  yyin = memfile_fopen (c, "rb");
+  yyin = A4GL_memfile_fopen (c, "rb");
 
   //printf("Buffer size : %d\n",BUFSIZ);
   //file_buffer=malloc(30000);
@@ -820,16 +820,16 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
   if (yyin == 0)
     {
 #ifdef DEBUG
-      debug ("Error opening file : %s\n", c);
+      A4GL_debug ("Error opening file : %s\n", c);
 #endif
       printf ("Error opening file : %s\n", c);
       exit (1);
     }
 
 
-  memfile_fseek (yyin, 0, SEEK_END);
-  yyin_len = memfile_ftell (yyin);
-  memfile_rewind (yyin);
+  A4GL_memfile_fseek (yyin, 0, SEEK_END);
+  yyin_len = A4GL_memfile_ftell (yyin);
+  A4GL_memfile_rewind (yyin);
 
   if (yydebug)
     {
@@ -848,7 +848,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	      printf ("Preparing globals file for: %s\n", c);
 	    }
 #ifdef DEBUG
-	  debug ("Preparing globals file for: %s\n", c);
+	  A4GL_debug ("Preparing globals file for: %s\n", c);
 #endif
 	}
       else
@@ -859,16 +859,16 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		      c);
 	    }
 #ifdef DEBUG
-	  debug ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"), c);
+	  A4GL_debug ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"), c);
 #endif
 	}
     }
 
-  x = a4gl_yyparse ();		/* we core dump here on Darwin */
+  x = a4gl_yyparse ();		/* we core A4GL_dump here on Darwin */
 #ifdef DEBUG
-  debug ("after yyparse\n");
+  A4GL_debug ("after yyparse\n");
 #endif
-  lex_parsed_fgl ();
+  A4GL_lex_parsed_fgl ();
 
   if (yydebug)
     {
@@ -878,7 +878,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
   dump_gvars ();
   closemap ();
 #ifdef DEBUG
-  debug ("after closemap");
+  A4GL_debug ("after closemap");
 #endif
 
   if (x == 0)
@@ -890,7 +890,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
       if (compile_object)
 	{
-	  bname (output_object, a, b);
+	  A4GL_bname (output_object, a, b);
 	  strcpy (ext, ".");
 	  strcat (ext, b);
 
@@ -908,7 +908,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 
 	      {
-		/* strip path from input file name, so our object allways and up in
+		/* A4GL_strip path from input file name, so our object allways and up in
 		   current directory - otherwise make file will not be able to find it using
 		   VPATH when making objects for current explicit target.
 		   FIXME: this should be done ONLY when -o option on command line did not have
@@ -951,7 +951,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	    }
 	  sprintf (buff, "%s > %s.c.err 2>&1", buff, aa);
 #ifdef DEBUG
-	  debug ("Runnung %s", buff);
+	  A4GL_debug ("Runnung %s", buff);
 #endif
 	  ret = system (buff);
 	  //see function system_run() in fglwrap.c
@@ -968,7 +968,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	      /* determine the c.err file size */
 	      sprintf (buff, "%s.c.err", aa);
 	      filep = fopen (buff, "r");
-	      //  f = mja_fopen (ii, "r");
+	      //  f = A4GL_mja_fopen (ii, "r");
 	      fseek (filep, 0, SEEK_END);
 	      flength = ftell (filep);
 	      fclose (filep);
@@ -1001,12 +1001,12 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		   */
 
 #ifdef DEBUG
-		  debug ("%s file size is not zero %d\n", buff, flength);
+		  A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 #endif
 		  sprintf (buff, "%s %s.c.err %s.c.warn",
 			   acl_getenv ("A4GL_MV_CMD"), aa, aa);
 #ifdef DEBUG
-		  debug ("Runnung %s", buff);
+		  A4GL_debug ("Runnung %s", buff);
 #endif
 		  ret = system (buff);
 
@@ -1023,7 +1023,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		  sprintf (buff, "%s %s.err %s.c.err %s.h %s.c ",	//%s.glb
 			   acl_getenv ("A4GL_RM_CMD"), aa, aa, aa, aa);	//,aa
 #ifdef DEBUG
-		  debug ("Runnung %s", buff);
+		  A4GL_debug ("Runnung %s", buff);
 #endif
 		  ret = system (buff);
 		  if (ret)
@@ -1155,16 +1155,16 @@ a4gl_yyerror (char *s)
   long ld;
   char a;
 
-  ld = memfile_ftell (yyin);
+  ld = A4GL_memfile_ftell (yyin);
   sprintf (errfile, "%s.err", outputfile);
   a = 0;
 
 
 /* Need a real fseek here */
   fseek (yyin, fpos, SEEK_SET);
-  f = write_errfile (yyin, errfile, ld, yylineno);
+  f = A4GL_write_errfile (yyin, errfile, ld, yylineno);
   fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
-  write_cont (yyin);
+  A4GL_write_cont (yyin);
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
   exit (2);
 }
@@ -1276,12 +1276,12 @@ get_ansi_mode (void)
 
       ansi_mode = ANSI_MODE_IGNORE;
 
-      if (isyes (acl_getenv ("ANSI_WARN")))
+      if (A4GL_isyes (acl_getenv ("ANSI_WARN")))
 	{
 	  ansi_mode = ANSI_MODE_WARN;
 	}
 
-      if (isyes (acl_getenv ("ANSI_ERROR")))
+      if (A4GL_isyes (acl_getenv ("ANSI_ERROR")))
 	{
 	  ansi_mode = ANSI_MODE_ERROR;
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.13 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: ops.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -57,50 +57,50 @@
 =====================================================================
 */
 
-void int_int_ops (int op);
+void A4GL_int_int_ops (int op);
 #ifdef OLD_INCL
-void push_long (long a);
-void push_int (int a);
+void A4GL_push_long (long a);
+void A4GL_push_int (int a);
 #endif
-void add_default_operations (void);
-void dt_in_ops (int op);
-void in_dt_ops (int op);
-void decode_datetime (struct A4GLSQL_dtime *d, int *data);
-void dt_dt_ops (int op);
-int ctodt (void *a, void *b, int size);
-int ctoint (void *a, void *b, int size);
+void A4GL_add_default_operations (void);
+void A4GL_dt_in_ops (int op);
+void A4GL_in_dt_ops (int op);
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+void A4GL_dt_dt_ops (int op);
+int A4GL_ctodt (void *a, void *b, int size);
+int A4GL_ctoint (void *a, void *b, int size);
 
 
-char *display_int (void *ptr, int size, int size_c,
+char *A4GL_display_int (void *ptr, int size, int size_c,
 		   struct struct_scr_field *field_details, int display_type);
-char *display_smint (void *ptr, int size, int size_c,
+char *A4GL_display_smint (void *ptr, int size, int size_c,
 		     struct struct_scr_field *field_details,
 		     int display_type);
-char *display_float (void *ptr, int size, int size_c,
+char *A4GL_display_float (void *ptr, int size, int size_c,
 		     struct struct_scr_field *field_details,
 		     int display_type);
-char *display_smfloat (void *ptr, int size, int size_c,
+char *A4GL_display_smfloat (void *ptr, int size, int size_c,
 		       struct struct_scr_field *field_details,
 		       int display_type);
-char *display_date (void *ptr, int size, int size_c,
+char *A4GL_display_date (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
-char *display_char (void *ptr, int size, int size_c,
+char *A4GL_display_char (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
-char *display_decimal (void *ptr, int size, int size_c,
+char *A4GL_display_decimal (void *ptr, int size, int size_c,
 		       struct struct_scr_field *field_details,
 		       int display_type);
-char *display_money (void *ptr, int size, int size_c,
+char *A4GL_display_money (void *ptr, int size, int size_c,
 		     struct struct_scr_field *field_details,
 		     int display_type);
-char *display_dtime (void *ptr, int size, int size_c,
+char *A4GL_display_dtime (void *ptr, int size, int size_c,
 		     struct struct_scr_field *field_details,
 		     int display_type);
-char *display_interval (void *ptr, int size, int size_c,
+char *A4GL_display_interval (void *ptr, int size, int size_c,
 			struct struct_scr_field *field_details,
 			int display_type);
-char *display_byte (void *ptr, int size, int size_c,
+char *A4GL_display_byte (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
-char *display_text (void *ptr, int size, int size_c,
+char *A4GL_display_text (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
 
 /*
@@ -114,23 +114,23 @@ char *display_text (void *ptr, int size, int size_c,
  * @return
  */
 void
-dt_in_ops (int op)
+A4GL_dt_in_ops (int op)
 {
   struct A4GLSQL_dtime dt;
   struct ival in;
   int ival_data[10];
 
 #ifdef DEBUG
-  debug ("In dt_in_ops");
+  A4GL_debug ("In dt_in_ops");
 #endif
   //printf("DTIN Here\n");
   //fflush(stdout);
-  pop_param (&in, DTYPE_INTERVAL, -1);
-  pop_param (&dt, DTYPE_DTIME, -1);
+  A4GL_pop_param (&in, DTYPE_INTERVAL, -1);
+  A4GL_pop_param (&dt, DTYPE_DTIME, -1);
   //printf("DTIN Here2\n");
   //fflush(stdout);
 
-  decode_interval (&in, &ival_data[0]);
+  A4GL_decode_interval (&in, &ival_data[0]);
   //printf("Interval : Y=%d\n",ival_data[0]);
   //printf("Interval : M=%d\n",ival_data[1]);
 
@@ -140,7 +140,7 @@ dt_in_ops (int op)
   //printf("Interval : S=%d\n",ival_data[5]);
   //printf("Interval : F=%d\n",ival_data[6]);
   fflush (stdout);
-  push_int (0);
+  A4GL_push_int (0);
 }
 
 
@@ -151,7 +151,7 @@ dt_in_ops (int op)
  * @return
  */
 void
-in_dt_ops (int op)
+A4GL_in_dt_ops (int op)
 {
   struct A4GLSQL_dtime dt;
   struct ival in;
@@ -167,9 +167,9 @@ in_dt_ops (int op)
   int start;
   char *ptr;
 
-  get_top_of_stack (2, &d1, &s1, (void **) &pd);
+  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
 
-  get_top_of_stack (1, &d1, &s1, (void **) &pi);
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
@@ -182,13 +182,13 @@ in_dt_ops (int op)
   in.ltime = pi->ltime;
   dt.stime = pd->stime;
   dt.ltime = pd->ltime;
-  pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
+  A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
 
 
-  pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
+  A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
 
 
-  decode_interval (&in, &ival_data[0]);
+  A4GL_decode_interval (&in, &ival_data[0]);
 /*
 	//printf("\n\nInterval : Y=%d\n",ival_data[0]);
 	//printf("Interval : M=%d\n",ival_data[1]);
@@ -199,7 +199,7 @@ in_dt_ops (int op)
 	//printf("Interval : F=%d\n",ival_data[6]);
 */
 
-  decode_datetime (&dt, &dtime_data[0]);
+  A4GL_decode_datetime (&dt, &dtime_data[0]);
 
 /*
 	printf("Datetime : Y=%d\n",dtime_data[0]);
@@ -401,15 +401,15 @@ in_dt_ops (int op)
 		}
 */
 
-      ctodt (ptr, &dt, dt.stime * 16 + dt.ltime);
+      A4GL_ctodt (ptr, &dt, dt.stime * 16 + dt.ltime);
 
-      push_dtime (&dt);
+      A4GL_push_dtime (&dt);
       return;
     }
 
 
 
-  push_int (0);
+  A4GL_push_int (0);
 }
 
 
@@ -419,87 +419,87 @@ in_dt_ops (int op)
  * @return
  */
 void
-int_int_ops (int op)
+A4GL_int_int_ops (int op)
 {
   long a;
   long b;
   long c;
   long d;
 
-  b = pop_long ();
-  a = pop_long ();
+  b = A4GL_pop_long ();
+  a = A4GL_pop_long ();
 
 #ifdef DEBUG
-  debug ("int_int_ops : %d %d %d", a, b, op);
+  A4GL_debug ("int_int_ops : %d %d %d", a, b, op);
 #endif
 
   switch (op)
     {
     case OP_ADD:
-      push_long (a + b);
+      A4GL_push_long (a + b);
       return;
     case OP_SUB:
-      push_long (a - b);
+      A4GL_push_long (a - b);
       return;
     case OP_MULT:
-      push_long (a * b);
+      A4GL_push_long (a * b);
       return;
 
 
     case OP_DIV:
       if (a % b == 0)
 	{
-	  push_long (a / b);
+	  A4GL_push_long (a / b);
 	  return;
 	}
       else
 	{
-	  push_double ((double) a / (double) b);
+	  A4GL_push_double ((double) a / (double) b);
 	  return;
 	}
 
     case OP_MOD:
-      push_long (a % b);
+      A4GL_push_long (a % b);
       return;
     case OP_POWER:
       if (b == 0)
 	{
-	  push_long (1);
+	  A4GL_push_long (1);
 	  return;
 	}
       if (b == 1)
 	{
-	  push_long (a);
+	  A4GL_push_long (a);
 	  return;
 	}
       c = a;
       for (d = 1; d <= b; d++)
 	c *= b;
-      push_long (c);
+      A4GL_push_long (c);
       return;
 
     case OP_LESS_THAN:
-      push_int (a < b);
+      A4GL_push_int (a < b);
       return;
     case OP_GREATER_THAN:
-      push_int (a > b);
+      A4GL_push_int (a > b);
       return;
     case OP_LESS_THAN_EQ:
-      push_int (a <= b);
+      A4GL_push_int (a <= b);
       return;
     case OP_GREATER_THAN_EQ:
-      push_int (a >= b);
+      A4GL_push_int (a >= b);
       return;
     case OP_EQUAL:
-      push_int (a == b);
+      A4GL_push_int (a == b);
       return;
     case OP_NOT_EQUAL:
-      push_int (a != b);
+      A4GL_push_int (a != b);
       return;
     }
 
-  exitwith ("Unknown operation");
-  push_int (0);
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
   return;
 }
 
@@ -510,7 +510,7 @@ int_int_ops (int op)
  * @return
  */
 void
-in_in_ops (int op)
+A4GL_in_in_ops (int op)
 {
   struct ival in2;
   struct ival in1;
@@ -532,8 +532,8 @@ in_in_ops (int op)
   double d_i2;
 
 // d2 op d1
-  get_top_of_stack (2, &d2, &s2, (void **) &pi2);
-  get_top_of_stack (1, &d1, &s1, (void **) &pi1);
+  A4GL_get_top_of_stack (2, &d2, &s2, (void **) &pi2);
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi1);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
@@ -557,7 +557,7 @@ in_in_ops (int op)
 
   if (se1 != se2)
     {
-      exitwith ("Can't use interval YEAR-MONTH and DAY-FRACTION together");
+      A4GL_exitwith ("Can't use interval YEAR-MONTH and DAY-FRACTION together");
       return;
     }
 
@@ -582,12 +582,12 @@ in_in_ops (int op)
       in.ltime = in1.ltime;
     }
 
-  pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
-  pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+  A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+  A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
 
 
-  decode_interval (&in1, &ival_data1[0]);
-  decode_interval (&in2, &ival_data2[0]);
+  A4GL_decode_interval (&in1, &ival_data1[0]);
+  A4GL_decode_interval (&in2, &ival_data2[0]);
 
   if (se1 == 2)
     {
@@ -634,46 +634,46 @@ in_in_ops (int op)
 
 
     case OP_MULT:		// Multiplying two Intervals ?
-      exitwith ("You can't multiply two intervals...");
+      A4GL_exitwith ("You can't multiply two intervals...");
       return;
 
 
     case OP_DIV:
       d_i1 = d_i2 / d_i1;
-      push_double (d_i1);	// This should be a number - not an interval
+      A4GL_push_double (d_i1);	// This should be a number - not an interval
       return;
 
     case OP_MOD:
-      exitwith ("You can't mod two intervals...");
+      A4GL_exitwith ("You can't mod two intervals...");
       return;
 
     case OP_POWER:
-      exitwith ("You can't raise the power of intervals...");
+      A4GL_exitwith ("You can't raise the A4GL_power of intervals...");
       return;
 
     case OP_LESS_THAN:
-      push_int (d_i2 < d_i1);
+      A4GL_push_int (d_i2 < d_i1);
       return;
     case OP_GREATER_THAN:
-      push_int (d_i2 > d_i1);
+      A4GL_push_int (d_i2 > d_i1);
       return;
     case OP_LESS_THAN_EQ:
-      push_int (d_i2 <= d_i1);
+      A4GL_push_int (d_i2 <= d_i1);
       return;
     case OP_GREATER_THAN_EQ:
-      push_int (d_i2 >= d_i1);
+      A4GL_push_int (d_i2 >= d_i1);
       return;
     case OP_EQUAL:
-      push_int (d_i2 == d_i1);
+      A4GL_push_int (d_i2 == d_i1);
       return;
     case OP_NOT_EQUAL:
-      push_int (d_i2 != d_i1);
+      A4GL_push_int (d_i2 != d_i1);
       return;
     }
 
   printf ("In in_in_ops.... op=%x d_i1=%f d_i2=%f\n", op, d_i1, d_i2);
 
-  assertion (1, "in_in - not implemented yet...");
+  A4GL_assertion (1, "in_in - not implemented yet...");
 
 }
 
@@ -686,7 +686,7 @@ in_in_ops (int op)
  * @return
  */
 void
-dt_dt_ops (int op)
+A4GL_dt_dt_ops (int op)
 {
   struct A4GLSQL_dtime dt2;
   struct A4GLSQL_dtime dt1;
@@ -707,13 +707,13 @@ dt_dt_ops (int op)
 
   if (op != (OP_SUB))
     {
-      debug ("Can only subtract datetimes...");
-      push_int (0);
+      A4GL_debug ("Can only subtract datetimes...");
+      A4GL_push_int (0);
       return;
     }
 // d2 - d1
-  get_top_of_stack (2, &d1, &s1, (void **) &pd);
-  get_top_of_stack (1, &d2, &s2, (void **) &pi);
+  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
+  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_DTIME)
@@ -728,20 +728,20 @@ dt_dt_ops (int op)
   dt2.stime = pd->stime;
   dt2.ltime = pd->ltime;
 
-  pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
-  pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime);
+  A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
+  A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime);
 
 
-  decode_datetime (&dt1, &dtime_data1[0]);
-  decode_datetime (&dt2, &dtime_data2[0]);
+  A4GL_decode_datetime (&dt1, &dtime_data1[0]);
+  A4GL_decode_datetime (&dt2, &dtime_data2[0]);
 
-  debug ("Dtime1=%d %d %d %d %d %d %d",
+  A4GL_debug ("Dtime1=%d %d %d %d %d %d %d",
 	 dtime_data1[0],
 	 dtime_data1[1],
 	 dtime_data1[2],
 	 dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]);
 
-  debug ("Dtime2=%d %d %d %d %d %d %d",
+  A4GL_debug ("Dtime2=%d %d %d %d %d %d %d",
 	 dtime_data2[0],
 	 dtime_data2[1],
 	 dtime_data2[2],
@@ -804,8 +804,8 @@ dt_dt_ops (int op)
       // YEAR TO MONTH interval
       sprintf (buff, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
 
-      ctoint (buff, &in, 1298);
-      push_interval (&in);
+      A4GL_ctoint (buff, &in, 1298);
+      A4GL_push_interval (&in);
 
 
     }
@@ -813,12 +813,12 @@ dt_dt_ops (int op)
     {
       sprintf (buff, "%d %02d:%02d:%02d.%05d", dtime_data2[2], dtime_data2[3],
 	       dtime_data2[4], dtime_data2[5], dtime_data2[6]);
-      debug ("Got buff as : %s\n", buff);
-      ctoint (buff, &in, 0x53b);
-      debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in, in.stime,
+      A4GL_debug ("Got buff as : %s\n", buff);
+      A4GL_ctoint (buff, &in, 0x53b);
+      A4GL_debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in, in.stime,
 	     in.ltime);
-      debug ("Buff = %s %x %x", buff);
-      push_interval (&in);
+      A4GL_debug ("Buff = %s %x %x", buff);
+      A4GL_push_interval (&in);
     }
 
 
@@ -845,7 +845,7 @@ dt_dt_ops (int op)
 
 
 char *
-display_int (void *ptr, int size, int size_c,
+A4GL_display_int (void *ptr, int size, int size_c,
 	     struct struct_scr_field *field_details, int display_type)
 {
   long a;
@@ -864,15 +864,15 @@ display_int (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      push_long (a);
-      pop_char (buff, size_c);
+      A4GL_push_long (a);
+      A4GL_pop_char (buff, size_c);
     }
 
   return buff;
 }
 
 char *
-display_smint (void *ptr, int size, int size_c,
+A4GL_display_smint (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
   short a;
@@ -891,8 +891,8 @@ display_smint (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      push_int (a);
-      pop_char (buff, size_c);
+      A4GL_push_int (a);
+      A4GL_pop_char (buff, size_c);
     }
 
   return buff;
@@ -900,7 +900,7 @@ display_smint (void *ptr, int size, int size_c,
 }
 
 char *
-display_float (void *ptr, int size, int size_c,
+A4GL_display_float (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
   double a;
@@ -932,15 +932,15 @@ display_float (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      push_double (a);
-      pop_char (buff, size_c);
+      A4GL_push_double (a);
+      A4GL_pop_char (buff, size_c);
     }
   return buff;
 
 }
 
 char *
-display_smfloat (void *ptr, int size, int size_c,
+A4GL_display_smfloat (void *ptr, int size, int size_c,
 		 struct struct_scr_field *field_details, int display_type)
 {
   float a;
@@ -972,8 +972,8 @@ display_smfloat (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      push_float (a);
-      pop_char (buff, size_c);
+      A4GL_push_float (a);
+      A4GL_pop_char (buff, size_c);
     }
 
   return buff;
@@ -981,56 +981,56 @@ display_smfloat (void *ptr, int size, int size_c,
 }
 
 char *
-display_date (void *ptr, int size, int size_c,
+A4GL_display_date (void *ptr, int size, int size_c,
 	      struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_char (void *ptr, int size, int size_c,
+A4GL_display_char (void *ptr, int size, int size_c,
 	      struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_decimal (void *ptr, int size, int size_c,
+A4GL_display_decimal (void *ptr, int size, int size_c,
 		 struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_money (void *ptr, int size, int size_c,
+A4GL_display_money (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_dtime (void *ptr, int size, int size_c,
+A4GL_display_dtime (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_interval (void *ptr, int size, int size_c,
+A4GL_display_interval (void *ptr, int size, int size_c,
 		  struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_byte (void *ptr, int size, int size_c,
+A4GL_display_byte (void *ptr, int size, int size_c,
 	      struct struct_scr_field *field_details, int display_type)
 {
   return 0;
 }
 
 char *
-display_text (void *ptr, int size, int size_c,
+A4GL_display_text (void *ptr, int size, int size_c,
 	      struct struct_scr_field *field_details, int display_type)
 {
   return 0;
@@ -1042,7 +1042,7 @@ display_text (void *ptr, int size, int size_c,
  * @return
  */
 void
-add_default_operations (void)
+A4GL_add_default_operations (void)
 {
 
 
@@ -1054,48 +1054,48 @@ DTYPE_DATE
 DTYPE_SERIAL
 */
 
-  add_op_function (DTYPE_INT, DTYPE_INT, OP_MATH, int_int_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
 
-  add_op_function (DTYPE_SMINT, DTYPE_SMINT, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_INT, DTYPE_SMINT, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SMINT, DTYPE_INT, OP_MATH, int_int_ops);
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
 
-  add_op_function (DTYPE_DATE, DTYPE_DATE, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_INT, DTYPE_DATE, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SMINT, DTYPE_DATE, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_DATE, DTYPE_SMINT, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_DATE, DTYPE_INT, OP_MATH, int_int_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_DATE, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_DATE, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_DATE, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
 
-  add_op_function (DTYPE_SERIAL, DTYPE_SERIAL, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SERIAL, DTYPE_INT, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SERIAL, DTYPE_SMINT, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SERIAL, DTYPE_DATE, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_INT, DTYPE_SERIAL, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_SMINT, DTYPE_SERIAL, OP_MATH, int_int_ops);
-  add_op_function (DTYPE_DATE, DTYPE_SERIAL, OP_MATH, int_int_ops);
+  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_DATE, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
 
-  add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, in_in_ops);
-  add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, dt_in_ops);
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, A4GL_in_in_ops);
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, A4GL_dt_in_ops);
 
-  add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, in_dt_ops);
+  A4GL_add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, A4GL_in_dt_ops);
 
-  add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, dt_dt_ops);
+  A4GL_add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, A4GL_dt_dt_ops);
 
-  debug ("Finished adding default operations");
+  A4GL_debug ("Finished adding default operations");
 
 
-  add_datatype_function_i (DTYPE_INT, "DISPLAY", display_int);
-  add_datatype_function_i (DTYPE_SMINT, "DISPLAY", display_smint);
-  add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", display_float);
-  add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", display_smfloat);
-  add_datatype_function_i (DTYPE_DATE, "DISPLAY", display_date);
-  add_datatype_function_i (DTYPE_CHAR, "DISPLAY", display_char);
-  add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", display_decimal);
-  add_datatype_function_i (DTYPE_MONEY, "DISPLAY", display_money);
-  add_datatype_function_i (DTYPE_DTIME, "DISPLAY", display_dtime);
-  add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", display_interval);
-  add_datatype_function_i (DTYPE_BYTE, "DISPLAY", display_byte);
-  add_datatype_function_i (DTYPE_TEXT, "DISPLAY", display_text);
+  A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", A4GL_display_int);
+  A4GL_add_datatype_function_i (DTYPE_SMINT, "DISPLAY", A4GL_display_smint);
+  A4GL_add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", A4GL_display_float);
+  A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", A4GL_display_smfloat);
+  A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", A4GL_display_date);
+  A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", A4GL_display_char);
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", A4GL_display_decimal);
+  A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", A4GL_display_money);
+  A4GL_add_datatype_function_i (DTYPE_DTIME, "DISPLAY", A4GL_display_dtime);
+  A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", A4GL_display_interval);
+  A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", A4GL_display_byte);
+  A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", A4GL_display_text);
 
 
 }

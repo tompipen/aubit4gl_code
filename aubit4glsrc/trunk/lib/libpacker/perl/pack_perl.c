@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.5 2003-05-12 14:24:23 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.6 2003-05-15 07:10:43 mikeaubury Exp $
 #*/
 
 /**
@@ -38,7 +38,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -84,8 +84,8 @@ int structs_cnt = 0;
 =====================================================================
 */
 
-char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);	/* Extract the tag contents from a string */
+char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
+char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
 /*
 int input_int (char *name, int *val, int ptr, int isarr);
@@ -114,8 +114,8 @@ int output_enum (char *name, char *s, int d);
 
 int input_start_array (char *s, int type, int *len);
 int input_end_array (char *s, int type);
-int open_packer (char *basename, char dir);
-void close_packer (char dir);
+int A4GL_open_packer (char *basename, char dir);
+void A4GL_close_packer (char dir);
 int output_start_array (char *s, int type, int len);
 int output_end_array (char *s, int type);
 
@@ -124,9 +124,9 @@ int can_pack_all(char *name);
 
 */
 
-char *escape_str (char *s, char q, char e);
-void pr_nl (void);
-void pr1 (void);
+char *A4GL_escape_str (char *s, char q, char e);
+void A4GL_pr_nl (void);
+void A4GL_pr1 (void);
 
 /*
 --------------------------------
@@ -163,7 +163,7 @@ static void out_only (void);
  * @todo Describe function
  */
 int
-open_packer (char *basename, char dir)
+A4GL_open_packer (char *basename, char dir)
 {
   char buff[256];
   sprintf (buff, "%s.pl", basename);
@@ -197,7 +197,7 @@ open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-close_packer (char dir)
+A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'O')
     {
@@ -223,11 +223,11 @@ close_packer (char dir)
 int
 output_start_array (char *s, int type, int len)
 {
-  pr1 ();
+  A4GL_pr1 ();
   structs_cnt++;
   structs[structs_cnt] = 0;
   fprintf (outfile, "\"%s\"=>{", s);	/* Was [ */
-  pr_nl ();
+  A4GL_pr_nl ();
   return 1;
 }
 
@@ -240,7 +240,7 @@ output_end_array (char *s, int type)
 {
   fprintf (outfile, "}");	/* Was ] */
   structs_cnt--;
-  pr_nl ();
+  A4GL_pr_nl ();
   return 1;
 }
 
@@ -249,12 +249,12 @@ output_end_array (char *s, int type)
  * @todo Describe function
  */
 void
-pr1 (void)
+A4GL_pr1 (void)
 {
   if (structs[structs_cnt])
     {
       fprintf (outfile, ",");
-      pr_nl ();
+      A4GL_pr_nl ();
     }
   structs[structs_cnt]++;
 }
@@ -266,7 +266,7 @@ pr1 (void)
 int
 output_int (char *name, int val, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   if (isarr >= 0)
     fprintf (outfile, "%d => %d", isarr, val);
   else
@@ -281,7 +281,7 @@ output_int (char *name, int val, int ptr, int isarr)
 int
 output_long (char *name, long val, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   if (isarr >= 0)
     fprintf (outfile, "%d=>%d", isarr, (int) val);
   else
@@ -297,7 +297,7 @@ output_long (char *name, long val, int ptr, int isarr)
 int
 output_bool (char *name, int val, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   if (isarr >= 0)
     fprintf (outfile, "%d=>%d", isarr, val);
   else
@@ -313,11 +313,11 @@ output_bool (char *name, int val, int ptr, int isarr)
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   if (isarr >= 0)
-    fprintf (outfile, "%d=>\'%s\'", isarr, escape_str (val, '\'', '\\'));
+    fprintf (outfile, "%d=>\'%s\'", isarr, A4GL_escape_str (val, '\'', '\\'));
   else
-    fprintf (outfile, "\"%s\"=>\'%s\'", name, escape_str (val, '\'', '\\'));
+    fprintf (outfile, "\"%s\"=>\'%s\'", name, A4GL_escape_str (val, '\'', '\\'));
   return 1;
 }
 
@@ -328,7 +328,7 @@ output_string (char *name, char *val, int ptr, int isarr)
 int
 output_double (char *name, double val, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   if (isarr >= 0)
     fprintf (outfile, "%d=>%f", isarr, val);
   else
@@ -343,7 +343,7 @@ output_double (char *name, double val, int ptr, int isarr)
 int
 output_start_struct (char *s, char *n, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   structs_cnt++;
   structs[structs_cnt] = 0;
 
@@ -363,7 +363,7 @@ output_end_struct (char *s, char *n)
 {
   structs_cnt--;
   fprintf (outfile, "}");	/*, n, s); */
-  pr_nl ();
+  A4GL_pr_nl ();
   return 1;
 }
 
@@ -374,7 +374,7 @@ output_end_struct (char *s, char *n)
 int
 output_start_union (char *s, char *n, int ptr, int isarr)
 {
-  pr1 ();
+  A4GL_pr1 ();
   structs_cnt++;
   structs[structs_cnt] = 0;
   if (isarr == -1)
@@ -395,7 +395,7 @@ output_start_union (char *s, char *n, int ptr, int isarr)
 int
 output_nullptr (char *s)
 {
-  pr1 ();
+  A4GL_pr1 ();
   fprintf (outfile, " \"hasvalue\"=>0 ");
   return 1;
 }
@@ -407,7 +407,7 @@ output_nullptr (char *s)
 int
 output_okptr (char *s)
 {
-  pr1 ();
+  A4GL_pr1 ();
   fprintf (outfile, " \"hasvalue\"=>1 ");
   return 1;
 }
@@ -421,7 +421,7 @@ output_end_union (char *s, char *n)
 {
   structs_cnt--;
   fprintf (outfile, "}");
-  pr_nl ();
+  A4GL_pr_nl ();
   return 1;
 }
 
@@ -432,7 +432,7 @@ output_end_union (char *s, char *n)
 int
 output_enum (char *name, char *s, int d)
 {
-  pr1 ();
+  A4GL_pr1 ();
   fprintf (outfile, "\"%s\"=>\"%s\"", name, s);
   return 1;
 }
@@ -444,7 +444,7 @@ output_enum (char *name, char *s, int d)
  * @todo Describe function
  */
 void
-pr_nl (void)
+A4GL_pr_nl (void)
 {
   int a;
   fprintf (outfile, "\n");
@@ -620,7 +620,7 @@ input_enum (char *name, int *d)
  * @todo Describe function
  */
 char *
-escape_str (char *s, char q, char e)
+A4GL_escape_str (char *s, char q, char e)
 {
   static char buff[2000];
   int buffcnt = 0;
@@ -654,7 +654,7 @@ escape_str (char *s, char q, char e)
  * @todo Describe function
  */
 int
-can_pack_all (char *name)
+A4GL_can_pack_all (char *name)
 {
   return 0;
 }

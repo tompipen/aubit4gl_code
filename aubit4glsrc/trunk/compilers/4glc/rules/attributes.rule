@@ -6,13 +6,13 @@
 
 
 opt_attributes:	/*empty*/ {
-		debug("Using default attribute of WHITE");
+	 A4GL_debug("Using default attribute of WHITE");
 		sprintf($<str>$,"%d",0);}
 		| attributes_def {strcpy($<str>$,$<str>1);}
 ;
 
 attributes_def	: ATTRIBUTES OPEN_BRACKET {start_state("attribute",1);} attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4);
-debug("Got Attributes : %s",$<str>4);
+A4GL_debug("Got Attributes : %s",$<str>4);
 start_state("attribute",0);
 }
 | SIZE OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
@@ -48,9 +48,9 @@ win_attributes:	/*empty*/
 ;
 
 win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
-debug("win_attributes_def");
+A4GL_debug("win_attributes_def");
 start_state("attribute",1);
-debug("Started states");
+A4GL_debug("Started states");
 form_attrib.attrib=0;} wattribs_sec CLOSE_BRACKET {start_state("attribute",0);strcpy($<str>$,"");
 }
 ;
@@ -86,7 +86,7 @@ form_attrib.attrib=form_attrib.attrib+' ';
 { form_attrib.error_line  =atoi($<str>2); }
 		|	MENU_LINE line_no
 { form_attrib.menu_line   =atoi($<str>2); 
-debug("Set menu line to %s",$<str>2);
+A4GL_debug("Set menu line to %s",$<str>2);
 }
 		|	MSG_LINE line_no
 { form_attrib.message_line=atoi($<str>2); }

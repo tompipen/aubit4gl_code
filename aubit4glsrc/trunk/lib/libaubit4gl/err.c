@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.7 2003-05-12 14:24:05 mikeaubury Exp $
+# $Id: err.c,v 1.8 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -61,10 +61,10 @@
 =====================================================================
 */
 
-extern char *get_errm (int a);
+extern char *A4GL_get_errm (int a);
 
 #ifdef OLD_INCL
-char *err_print (int a, char *s);
+char *A4GL_err_print (int a, char *s);
 #endif
 
 
@@ -83,22 +83,22 @@ char *err_print (int a, char *s);
  * @param s Aditional string to compose the error.
  */
 char *
-err_print (int a, char *s)
+A4GL_err_print (int a, char *s)
 {
   char *k;
   static char static_err[256];
-  debug ("In err print");
+  A4GL_debug ("In err print");
   sprintf (static_err, "Unknown error %d (%s)", a, s);
   k = static_err;
   if (a == -3001)
     {
-      debug ("Ignore wrong number of variables..");
+      A4GL_debug ("Ignore wrong number of variables..");
       strcpy (static_err, "Wrong number of variables returned from function");
       return k;
     }
-  debug ("Calling get_errm");
-  k = get_errm (a * -1);
-  debug ("Got %s", k);
+  A4GL_debug ("Calling get_errm");
+  k = A4GL_get_errm (a * -1);
+  A4GL_debug ("Got %s", k);
   sprintf (static_err, k, s);
   return static_err;
 }

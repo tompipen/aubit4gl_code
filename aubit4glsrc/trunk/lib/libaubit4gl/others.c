@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.24 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: others.c,v 1.25 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -76,11 +76,11 @@ int m_lastkey = 0;
 
 
 #ifdef OLD_INCL
-char *char_val (char *s);
+char *A4GL_char_val (char *s);
 #endif
 
-char *replace_sql_var (char *s);
-int fgl_keyval (int _np);
+char *A4GL_replace_sql_var (char *s);
+int A4GL_fgl_keyval (int _np);
 
 /*
 =====================================================================
@@ -103,13 +103,13 @@ aclfgl_fgl_lastkey (int _np)
   long _r;
   if (_np != 0)
     {
-      fgl_error (-3000, "", 0, 0);
+      A4GL_fgl_error (-3000, "", 0, 0);
     }
 
-  _r = get_lastkey ();
-  debug ("TST1 Lastkey=%d", _r);
+  _r = A4GL_get_lastkey ();
+  A4GL_debug ("TST1 Lastkey=%d", _r);
 
-  push_long (_r);
+  A4GL_push_long (_r);
   return 1;
 }
 
@@ -123,8 +123,8 @@ int
 aclfgl_fgl_keyval (int _np)
 {
   int a;
-  a = fgl_keyval (_np);
-  debug ("TST1 Got %d\n", a);
+  a = A4GL_fgl_keyval (_np);
+  A4GL_debug ("TST1 Got %d\n", a);
   return a;
 }
 
@@ -139,7 +139,7 @@ aclfgl_fgl_keyval (int _np)
  * @return Allways 1
  */
 int
-fgl_keyval (int _np)
+A4GL_fgl_keyval (int _np)
 {
   long _r;
   char *v0;
@@ -148,21 +148,21 @@ fgl_keyval (int _np)
   if (_np != 1)
     {
       A4GLSQL_set_status (-3000, 0);
-      debug ("Bad number of arguments to fgl_keyval got %d - expected 1",
+      A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1",
 	     _np);
 
       for (_r = 0; _r < _np; _r++)
 	{
-	  pop_char (buff, 10);
+	  A4GL_pop_char (buff, 10);
 	}
     }
 
-  v0 = char_pop ();
-  debug ("TST1 - v0=%s", v0);
+  v0 = A4GL_char_pop ();
+  A4GL_debug ("TST1 - v0=%s", v0);
 
-  _r = key_val (v0);
-  debug ("TST1 - r=%d\n", _r);
-  push_int (_r);
+  _r = A4GL_key_val (v0);
+  A4GL_debug ("TST1 - r=%d\n", _r);
+  A4GL_push_int (_r);
   acl_free (v0);
   return 1;
 }
@@ -183,11 +183,11 @@ aclfgl_upshift (int _np)
   char *v1;
   if (_np != 1)
     {
-      fgl_error (-3000, "", 0, 0);
+      A4GL_fgl_error (-3000, "", 0, 0);
     }
-  v1 = char_pop ();
-  convupper (v1);
-  push_char (v1);
+  v1 = A4GL_char_pop ();
+  A4GL_convupper (v1);
+  A4GL_push_char (v1);
   acl_free (v1);
   return 1;
 }
@@ -208,13 +208,13 @@ aclfgl_downshift (int _np)
   char *v1;
   if (_np != 1)
     {
-      fgl_error (-3000, "", 0, 0);
+      A4GL_fgl_error (-3000, "", 0, 0);
     }
   /* char_pop(v1); */
-  v1 = char_pop ();
+  v1 = A4GL_char_pop ();
   /* convupper(v1); */
-  convlower (v1);
-  push_char (v1);
+  A4GL_convlower (v1);
+  A4GL_push_char (v1);
   acl_free (v1);
   return 1;
 }
@@ -225,7 +225,7 @@ aclfgl_downshift (int _np)
  * @param s The string to be converted.
  */
 void
-convupper (char *s)
+A4GL_convupper (char *s)
 {
   int a;
   for (a = 0; s[a]; a++)
@@ -240,7 +240,7 @@ convupper (char *s)
  * @param s The string to be converted.
  */
 void
-convlower (char *s)
+A4GL_convlower (char *s)
 {
   int a;
   for (a = 0; s[a]; a++)
@@ -257,16 +257,16 @@ convlower (char *s)
  * @return The integer key representation.
  */
 int
-net_keyval (char *v)
+A4GL_net_keyval (char *v)
 {
   char v0[800];
   long _r;
 
-  debug ("In net_keyval");
+  A4GL_debug ("In net_keyval");
   strcpy (v0, v);
-  trim (v);
-  stripnl (v);
-  debug ("Decoding ...%s...", v0);
+  A4GL_trim (v);
+  A4GL_stripnl (v);
+  A4GL_debug ("Decoding ...%s...", v0);
   if (strlen (v0) == 1)
     {
       return v0[0];
@@ -318,7 +318,7 @@ net_keyval (char *v)
     {
       return (v0[1] - 'A' + 1);
     }
-  debug ("Not found in here");
+  A4GL_debug ("Not found in here");
   return 0;
 }
 
@@ -327,7 +327,7 @@ net_keyval (char *v)
  * @todo Describe function
  */
 int
-get_lastkey (void)
+A4GL_get_lastkey (void)
 {
   return m_lastkey;
 }
@@ -338,7 +338,7 @@ get_lastkey (void)
  * @todo Describe function
  */
 void
-set_last_key (int a)
+A4GL_set_last_key (int a)
 {
   m_lastkey = a;
 }
@@ -349,7 +349,7 @@ set_last_key (int a)
  * @todo Describe function
  */
 char *
-strip_quotes (char *s)
+A4GL_strip_quotes (char *s)
 {
   static char buff[1024];
   if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
@@ -361,7 +361,7 @@ strip_quotes (char *s)
     {
       strcpy (buff, s);
     }
-  debug ("Returning %s", buff);
+  A4GL_debug ("Returning %s", buff);
   return buff;
 }
 
@@ -371,7 +371,7 @@ strip_quotes (char *s)
  * @todo Describe function
  */
 char *
-replace_sql_var (char *s)
+A4GL_replace_sql_var (char *s)
 {
   static char buff[1024];
   char *ptr;
@@ -383,19 +383,19 @@ replace_sql_var (char *s)
 
   if (strcmp (buff, "today") == 0)
     {
-      push_today ();
-      ptr = char_pop ();
+      A4GL_push_today ();
+      ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
     }
   if (strcmp (buff, "user") == 0)
     {
-      push_user ();
-      ptr = char_pop ();
+      A4GL_push_user ();
+      ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
     }
-  debug ("replace_sql_var :Returning %s", buff);
+  A4GL_debug ("replace_sql_var :Returning %s", buff);
   return buff;
 
 }
@@ -408,39 +408,39 @@ replace_sql_var (char *s)
  * @todo Describe function
  */
 int
-attr_name_match (struct struct_scr_field *field, char *s)
+A4GL_attr_name_match (struct struct_scr_field *field, char *s)
 {
   char colname[40];
   char tabname[40];
   int aa;
   int ab;
   /*
-     debug ("Field : %p\n", field);
-     debug ("attr_name_match : %s", s);
+     A4GL_debug ("Field : %p\n", field);
+     A4GL_debug ("attr_name_match : %s", s);
    */
 
-  bname (s, tabname, colname);
+  A4GL_bname (s, tabname, colname);
 
   /*
-     debug ("Splits to %s & %s", tabname, colname);
-     debug ("field is [%s %s]", field->tabname, field->colname);
+     A4GL_debug ("Splits to %s & %s", tabname, colname);
+     A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
    */
 
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
-  /* debug ("Matches = %d %d ", aa, ab); */
+  /* A4GL_debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
-      debug ("Match on *");
+      A4GL_debug ("Match on *");
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
-      debug ("Matched");
+      A4GL_debug ("Matched");
       return 1;
     }
   /*
-     debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
+     A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
      field->colname, colname);
    */
   return 0;
@@ -453,11 +453,11 @@ attr_name_match (struct struct_scr_field *field, char *s)
  * @todo Describe function
  */
 char *
-get_str_attribute (struct struct_scr_field *f, int str)
+A4GL_get_str_attribute (struct struct_scr_field *f, int str)
 {
   int a;
 
-  if (!has_str_attribute (f, str))
+  if (!A4GL_has_str_attribute (f, str))
     {
       return 0;
     }
@@ -477,11 +477,11 @@ get_str_attribute (struct struct_scr_field *f, int str)
  * @todo Describe function
  */
 int
-find_srec (struct_form * fd, char *name)
+A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
 
-  debug ("No of records : %d", fd->records.records_len);
+  A4GL_debug ("No of records : %d", fd->records.records_len);
 
   for (a = 0; a < fd->records.records_len; a++)
     {
@@ -498,12 +498,12 @@ find_srec (struct_form * fd, char *name)
  * @todo Describe function
  */
 int
-has_str_attribute (struct struct_scr_field *f, int str)
+A4GL_has_str_attribute (struct struct_scr_field *f, int str)
 {
   int a;
   if (f == 0)
     {
-      assertion (1, "has_str_attribute passed null pointer..");
+      A4GL_assertion (1, "has_str_attribute passed null pointer..");
     }
   for (a = 0; a < f->str_attribs.str_attribs_len; a++)
     {
@@ -519,7 +519,7 @@ has_str_attribute (struct struct_scr_field *f, int str)
  * @todo Describe function
  */
 char *
-char_val (char *s)
+A4GL_char_val (char *s)
 {
   static char str[800];
   int a;
@@ -539,26 +539,26 @@ char_val (char *s)
  *
  */
 struct struct_screen_record *
-get_srec (char *name)
+A4GL_get_srec (char *name)
 {
   int a;
   struct s_form_dets *form;
-  debug ("Get_srec");
-  form = get_curr_form ();
-  debug ("found form");
+  A4GL_debug ("Get_srec");
+  form = A4GL_get_curr_form ();
+  A4GL_debug ("found form");
 
-  debug ("Got form %p", form);
+  A4GL_debug ("Got form %p", form);
 
   if (form == 0)
     {
-      debug ("No form...");
+      A4GL_debug ("No form...");
       return (struct struct_screen_record *) 0;
     }
 
-  debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
+  A4GL_debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
 
-  a = find_srec (form->fileform, name);
-  debug ("Got %d", a);
+  a = A4GL_find_srec (form->fileform, name);
+  A4GL_debug ("Got %d", a);
   if (a == -1)
     return (struct struct_screen_record *) 0;
   else
@@ -597,7 +597,7 @@ a4gl_usleep (int a)
 	The usleep() function will cause the calling thread to be suspended
 	from execution until either the number of real-time microseconds
 	specified by the argument useconds has elapsed or a signal is
-	delivered to the calling thread and its action is to invoke a
+	delivered to the calling thread and its A4GL_action is to invoke a
 	signal-catching function or to terminate the process.
 	The suspension time may be longer than requested due to the
 	scheduling of other activity by the system.

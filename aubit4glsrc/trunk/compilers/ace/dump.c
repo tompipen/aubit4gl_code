@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.7 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: dump.c,v 1.8 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -136,7 +136,7 @@ main (int argc, char *argv[])
 
   //a = xdr_report (&xdrp, &this_report);       //in lib/libform/form_xdr/formwrite2.c
 
-  a = read_data_from_file ("report", &this_report, argv[1]);
+  a = A4GL_read_data_from_file ("report", &this_report, argv[1]);
 
   if (!a)
     {

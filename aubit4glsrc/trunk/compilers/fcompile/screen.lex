@@ -187,15 +187,15 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext);
-	debug("NAMED : %s\n",yytext);
+	A4GL_debug("NAMED : %s\n",yytext);
  return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
 if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); 
- debug("NAMED : %s\n",yytext); 
+ A4GL_debug("NAMED : %s\n",yytext); 
 return(NAMED);}
 .	{strcpy(yylval.str,yytext);colno++;
- debug("CH : %s\n",yytext);  
+ A4GL_debug("CH : %s\n",yytext);  
 return CH;}
 %%
 

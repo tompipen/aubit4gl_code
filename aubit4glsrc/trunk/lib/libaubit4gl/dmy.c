@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.9 2003-05-12 14:24:04 mikeaubury Exp $
+# $Id: dmy.c,v 1.10 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -135,7 +135,7 @@ char *g_mnamesfull[] = {
 =====================================================================
 */
 
-char *dategsub (char *s, char *r, char *p);
+char *A4GL_dategsub (char *s, char *r, char *p);
 
 /*
 =====================================================================
@@ -153,7 +153,7 @@ char *dategsub (char *s, char *r, char *p);
  *  @return The formated date.
  */
 char *
-using_date (int dn, char *us)
+A4GL_using_date (int dn, char *us)
 {
   int d;
   int m;
@@ -177,15 +177,15 @@ using_date (int dn, char *us)
   /* if no format is given, use DBDATE */
   if ((us == 0) || (*us == '\0'))
     {
-      strcpy (buff, dbdate_to_using (""));
+      strcpy (buff, A4GL_dbdate_to_using (""));
     }
   else
     {
       strcpy (buff, us);
     }
 
-  get_date (dn, &d, &m, &y);
-  dno = day_in_week (d, m, y);
+  A4GL_get_date (dn, &d, &m, &y);
+  dno = A4GL_day_in_week (d, m, y);
   /*
      g_dnamesfull[dno]);
      g_dnames[dno]);
@@ -193,23 +193,23 @@ using_date (int dn, char *us)
      g_mnames[m]);
    */
 
-  strcpy (rep_strs[0], (char *) find_str_resource_int ("_FDAY", dno));
-  strcpy (rep_strs[1], (char *) find_str_resource_int ("_DAY", dno));
+  strcpy (rep_strs[0], (char *) A4GL_find_str_resource_int ("_FDAY", dno));
+  strcpy (rep_strs[1], (char *) A4GL_find_str_resource_int ("_DAY", dno));
   sprintf (rep_strs[2], "%02d", d);
-  strcpy (rep_strs[3], (char *) find_str_resource_int ("_FMON", m));
-  strcpy (rep_strs[4], (char *) find_str_resource_int ("_MON", m));
+  strcpy (rep_strs[3], (char *) A4GL_find_str_resource_int ("_FMON", m));
+  strcpy (rep_strs[4], (char *) A4GL_find_str_resource_int ("_MON", m));
   sprintf (rep_strs[5], "%02d", m);
   sprintf (rep_strs[6], "%04d", y);
   sprintf (rep_strs[7], "%02d", y % 100);
-  debug ("--DNO=%d", dno);
-  sprintf (rep_strs[8], (char *) find_str_resource_int ("_DAYTH", d));
+  A4GL_debug ("--DNO=%d", dno);
+  sprintf (rep_strs[8], (char *) A4GL_find_str_resource_int ("_DAYTH", d));
   sprintf (rep_strs[9], "%d", d);
   sprintf (rep_strs[10], "%d", m);
 
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)
     {
-      strcpy (buff2, dategsub (buff, using_strs[a], rusing_strs[a]));
+      strcpy (buff2, A4GL_dategsub (buff, using_strs[a], rusing_strs[a]));
       strcpy (buff, buff2);
     }
 
@@ -221,7 +221,7 @@ using_date (int dn, char *us)
       if (strstr (buff, rusing_strs[a]) != 0)
 	{
 	  flg = 1;
-	  strcpy (buff2, dategsub (buff, rusing_strs[a], rep_strs[a]));
+	  strcpy (buff2, A4GL_dategsub (buff, rusing_strs[a], rep_strs[a]));
 	  strcpy (buff, buff2);
 	}
     }
@@ -237,7 +237,7 @@ using_date (int dn, char *us)
  * @todo Describe function
  */
 char *
-dategsub (char *s, char *r, char *p)
+A4GL_dategsub (char *s, char *r, char *p)
 {
   static char buff[256];
   char buff2[256];
@@ -264,7 +264,7 @@ dategsub (char *s, char *r, char *p)
  * @return	pointer to buffer holding 'using' format string
  */
 char *
-dbdate_to_using (char *dbdate)
+A4GL_dbdate_to_using (char *dbdate)
 {
   static char buff[20];
   char dmy[5] = " mdY";
@@ -279,7 +279,7 @@ dbdate_to_using (char *dbdate)
   /* if no dbdate format given, use the current environment variable */
   if ((dbdate == 0) || (*dbdate == '\0'))
     {
-      strncpy (buff, get_dbdate (), 10);
+      strncpy (buff, A4GL_get_dbdate (), 10);
     }
   else
     {
@@ -368,7 +368,7 @@ dbdate_to_using (char *dbdate)
  *
  */
 char *
-get_dbdate (void)
+A4GL_get_dbdate (void)
 {
   static char dbdate[10] = "";	// holds current DBDATE value
   char *p;
@@ -419,8 +419,8 @@ get_dbdate (void)
     }
 
   /* we have an invalid dbdate format - die ... */
-  set_errm (dbdate);
-  exitwith ("dmy.c - Invalid DBDATE format: %s");
+  A4GL_set_errm (dbdate);
+  A4GL_exitwith ("dmy.c - Invalid DBDATE format: %s");
   exit (1);
   return 0;
 }

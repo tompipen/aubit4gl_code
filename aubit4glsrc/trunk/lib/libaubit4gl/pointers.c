@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.18 2003-05-12 14:24:17 mikeaubury Exp $
+# $Id: pointers.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -48,9 +48,9 @@
 
 #define TXT_LEN 128
 
-#define  FIND(a) (tfind(a,(void *)&root,strcmpare))
-#define  ADD(a) (tsearch(a,(void *)&root,strcmpare))
-#define  DELETE(a) (tdelete(a,(void *)&root,strcmpare))
+#define  FIND(a) (tfind(a,(void *)&root,A4GL_strcmpare))
+#define  ADD(a) (tsearch(a,(void *)&root,A4GL_strcmpare))
+#define  DELETE(a) (tdelete(a,(void *)&root,A4GL_strcmpare))
 
 /*
 =====================================================================
@@ -111,7 +111,7 @@ ACTION;
 	/** The type of the visit made to an element of the tree */
 	//why are this two lines commented out:
 	//typedef enum { preorder, postorder, endorder, leaf } VISIT;
-	//void action (const void *nodep, const VISIT which, const int depth);
+	//void A4GL_action (const void *nodep, const VISIT which, const int depth);
 
 	/** A node tree information */
 typedef struct node_t
@@ -134,8 +134,8 @@ node *tfind (char *key, node ** rootp, int (*compar) ());
 =====================================================================
 */
 
-int strcmpare (const void *a, const void *b);
-void action (const void *nodep, const VISIT which, const int depth);
+int A4GL_strcmpare (const void *a, const void *b);
+void A4GL_action (const void *nodep, const VISIT which, const int depth);
 void print_ptr_stack (void);
 
 /*
@@ -155,7 +155,7 @@ void print_ptr_stack (void);
  *   - greater than zero if a greater b
  */
 int
-strcmpare (const void *a, const void *b)
+A4GL_strcmpare (const void *a, const void *b)
 {
   return strcmp (a, b);
 }
@@ -174,7 +174,7 @@ strcmpare (const void *a, const void *b)
  * @param depth
  */
 void
-action (const void *nodep, const VISIT which, const int depth)
+A4GL_action (const void *nodep, const VISIT which, const int depth)
 {
   struct s_node *datap;
   char buff[800];
@@ -187,13 +187,13 @@ action (const void *nodep, const VISIT which, const int depth)
       break;
     case postorder:
       datap = *(struct s_node **) nodep;
-      debug ("%s%s %p :", buff, datap->name, datap->ptr);
+      A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     case endorder:
       break;
     case leaf:
       datap = *(struct s_node **) nodep;
-      debug ("%s%s %p :", buff, datap->name, datap->ptr);
+      A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     }
   return;
@@ -207,7 +207,7 @@ action (const void *nodep, const VISIT which, const int depth)
  * @param ptr A pointer to the information to store.
  */
 void
-add_pointer (char *orig_name, char type, void *ptr)
+A4GL_add_pointer (char *orig_name, char type, void *ptr)
 {
   void *a;
   struct s_node *buff;
@@ -215,58 +215,58 @@ add_pointer (char *orig_name, char type, void *ptr)
   struct s_node buff2;
   struct s_node *node;
   char ptrchar[800];
-  trim (orig_name);
-  debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
+  A4GL_trim (orig_name);
+  A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
   buff = (struct s_node *) malloc (sizeof (struct s_node));
   buff->name[0] = type;
   buff->name[1] = 0;
   strcat (buff->name, orig_name);
   buff->ptr = ptr;
-  debug ("Buff=%p\n", buff);
+  A4GL_debug ("Buff=%p\n", buff);
   a = FIND (buff);
 
   if (a)
     {
-      debug ("Found an existing one %p\n", a);
+      A4GL_debug ("Found an existing one %p\n", a);
       node = *(struct s_node **) a;
-      debug ("Node = %p\n", node);
-      debug ("Node=%p name=%s\n", node, node->name);
+      A4GL_debug ("Node = %p\n", node);
+      A4GL_debug ("Node=%p name=%s\n", node, node->name);
       sprintf (ptrchar, ">%p", buff->ptr);
-      debug ("Copied ptr\n");
+      A4GL_debug ("Copied ptr\n");
       node->ptr = ptr;
-      debug ("Copy buffer %s\n", ptrchar);
+      A4GL_debug ("Copy buffer %s\n", ptrchar);
       strcpy (buff2.name, ptrchar);
-      debug ("And find its pointer\n");
+      A4GL_debug ("And find its pointer\n");
       a = FIND (&buff2);
       if (a)
 	{
-	  debug ("Found ptr... \n");
+	  A4GL_debug ("Found ptr... \n");
 	  node = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE (&buff2);
 #endif
 
-	  debug ("Try to free %p\n", node);
+	  A4GL_debug ("Try to free %p\n", node);
 	  strcpy (node->name, "======");
 	  free (node);
 	}
       else
 	{
-	  debug ("No pointer\n");
+	  A4GL_debug ("No pointer\n");
 	}
     }
   else
     {
-      debug ("tfind ... a=%p\n", a);
+      A4GL_debug ("tfind ... a=%p\n", a);
       a = ADD (buff);
-      debug ("tsearch ... a=%p %p\n", a, buff);
+      A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
   buff_add = (struct s_node *) malloc (sizeof (struct s_node));
   sprintf (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
-  debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
+  A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD (buff_add);
-  debug ("Added...");
+  A4GL_debug ("Added...");
 }
 
 
@@ -280,29 +280,29 @@ add_pointer (char *orig_name, char type, void *ptr)
  * @return The pointer to the memory location information.
  */
 void *
-find_pointer (const char *pname, char t)
+A4GL_find_pointer (const char *pname, char t)
 {
   struct s_node buff;
   struct s_node *node;
   void *a;
 
-  debug ("Finding pointer to %s %c", pname, t);
+  A4GL_debug ("Finding pointer to %s %c", pname, t);
   buff.name[0] = t;
   buff.name[1] = 0;
   strcat (buff.name, pname);
   buff.ptr = 0;
-  debug ("Finding %s", buff.name);
+  A4GL_debug ("Finding %s", buff.name);
   a = FIND (&buff);
-  debug ("A=%p", a);
+  A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
       node = *(struct s_node **) a;
-      debug ("Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
+      A4GL_debug ("Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
       return node->ptr;
     }
   else
     {
-      debug ("Opps - not found pname=%s t=%c a=%p", pname, t, a);
+      A4GL_debug ("Opps - not found pname=%s t=%c a=%p", pname, t, a);
       return 0;
     }
 }
@@ -317,7 +317,7 @@ find_pointer (const char *pname, char t)
 void
 print_ptr_stack (void)
 {
-  twalk (root, action);
+  twalk (root, A4GL_action);
 }
 
 /**
@@ -327,7 +327,7 @@ print_ptr_stack (void)
  * @param t The type of the information stired in the tree.
  */
 void
-del_pointer (char *pname, char t)
+A4GL_del_pointer (char *pname, char t)
 {
   void *a;
   struct s_node *buff;
@@ -338,7 +338,7 @@ del_pointer (char *pname, char t)
   buff->name[0] = t;
   buff->name[1] = 0;
   strcat (buff->name, pname);
-  debug ("Buff=%p\n", buff);
+  A4GL_debug ("Buff=%p\n", buff);
   a = FIND (buff);
   if (a)
     {
@@ -372,9 +372,9 @@ del_pointer (char *pname, char t)
  * @return The pointer to the values found.
  */
 void *
-find_pointer_val (char *pname, char t)
+A4GL_find_pointer_val (char *pname, char t)
 {
-  return find_pointer (pname, t);
+  return A4GL_find_pointer (pname, t);
 }
 
 /**
@@ -388,31 +388,31 @@ find_pointer_val (char *pname, char t)
  *   - 1 :
  */
 int
-find_pointer_ptr (char *name, char *type, void *ptr)
+A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
 {
   struct s_node buff;
   struct s_node *node;
   void *a;
-  debug ("Finding pointer to pointer %p", ptr);
+  A4GL_debug ("Finding pointer to pointer %p", ptr);
   sprintf (buff.name, ">%p", ptr);
-  debug ("Finding %s", buff.name);
+  A4GL_debug ("Finding %s", buff.name);
   buff.ptr = 0;
 
   a = FIND (&buff);
-  debug ("Find returns %p", a);
+  A4GL_debug ("Find returns %p", a);
   if (a)
     {
       node = *(struct s_node **) a;
       node = (struct s_node *) node->ptr;
 
-      debug ("Copying.. %s", node->name);
+      A4GL_debug ("Copying.. %s", node->name);
       *type = node->name[0];
       strcpy (name, &node->name[1]);
       return 1;
     }
   else
     {
-      debug ("Not found");
+      A4GL_debug ("Not found");
       return 0;
     }
 }
@@ -427,10 +427,10 @@ find_pointer_ptr (char *name, char *type, void *ptr)
  *   - 1 : Exist in the tree
  */
 int
-has_pointer (char *pname, char t)
+A4GL_has_pointer (char *pname, char t)
 {
   void *a;
-  a = find_pointer (pname, t);
+  a = A4GL_find_pointer (pname, t);
   if (a)
     return 1;
   else

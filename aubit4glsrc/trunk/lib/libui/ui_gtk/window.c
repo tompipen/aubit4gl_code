@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.8 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: window.c,v 1.9 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -64,15 +64,15 @@ static int win_stack_cnt = 0;
 =====================================================================
 */
 
-void dump_gtkwinstack (void);
-//void hide_window (char *s);
-//void show_window (char *s);
-//void movewin (char *s, int to_by);
-//void remove_window (char *s);
-int get_curr_border_gtk (void);
-int get_curr_height_gtk (void);
+void A4GL_dump_gtkwinstack (void);
+//void A4GL_hide_window (char *s);
+//void A4GL_show_window (char *s);
+//void A4GL_movewin (char *s, int to_by);
+//void A4GL_remove_window (char *s);
+int A4GL_get_curr_border_gtk (void);
+int A4GL_get_curr_height_gtk (void);
 //void clr_window(char *name);
-void dump_object (GtkObject * o);
+void A4GL_dump_object (GtkObject * o);
 
 /*
 =====================================================================
@@ -102,16 +102,16 @@ has_top (GtkWidget * cwin)
  * @param s The 4gl window name to be hidded.
  */
 void
-hide_window (char *s)
+A4GL_hide_window (char *s)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  cwin = (GtkWidget *) A4GL_find_pointer (s, WINCODE);
   printf ("cwin=%p", cwin);
   if (has_top (cwin))
     cwin = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
   printf ("Hide %p\n", cwin);
   gtk_widget_hide (cwin);
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 }
 
 /**
@@ -120,15 +120,15 @@ hide_window (char *s)
  * @param s The window name.
  */
 void
-show_window (char *s)
+A4GL_show_window (char *s)
 {
   GtkWidget *cwin;
 
-  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  cwin = (GtkWidget *) A4GL_find_pointer (s, WINCODE);
   if (has_top (cwin))
     cwin = gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
   gtk_widget_show (cwin);
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
 }
 
 /**
@@ -142,7 +142,7 @@ show_window (char *s)
  *   - 1 : The move is relative to the current position.
  */
 int
-movewin (char *s, int to_by)
+A4GL_movewin (char *s, int to_by)
 {
   int x;
   int y;
@@ -151,10 +151,10 @@ movewin (char *s, int to_by)
   GtkWidget *cwin;
 
 
-  x = pop_int ();
-  y = pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
 
-  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  cwin = (GtkWidget *) A4GL_find_pointer (s, WINCODE);
   yo = (int) gtk_object_get_data (GTK_OBJECT (cwin), "Y_OFF");
   xo = (int) gtk_object_get_data (GTK_OBJECT (cwin), "X_OFF");
 
@@ -162,7 +162,7 @@ movewin (char *s, int to_by)
 
   gtk_fixed_move ((GtkFixed *) win_screen, cwin, (x - 1) * XWIDTH + xo,
 		  (y - 1) * YHEIGHT + yo);
-  gui_run_til_no_more ();
+  A4GL_gui_run_til_no_more ();
   return 1;
 }
 
@@ -178,12 +178,12 @@ movewin (char *s, int to_by)
  *   - ^ : The window is made current.
  */
 void
-gtkwin_stack (GtkWindow * w, int op)
+A4GL_gtkwin_stack (GtkWindow * w, int op)
 {
   int a;
   int b;
 
-  debug ("gtkwin_stack : %p %c", w, op);
+  A4GL_debug ("gtkwin_stack : %p %c", w, op);
 
   if (op == '+')
     win_stack[win_stack_cnt++] = w;
@@ -200,8 +200,8 @@ gtkwin_stack (GtkWindow * w, int op)
 		  win_stack[b - 1] = win_stack[b];
 		}
 	      win_stack_cnt--;
-	      debug ("win_stack_cnt=%d", win_stack_cnt);
-	      set_current_window (win_stack[win_stack_cnt - 1]);
+	      A4GL_debug ("win_stack_cnt=%d", win_stack_cnt);
+	      A4GL_set_current_window (win_stack[win_stack_cnt - 1]);
 	      break;
 	    }
 	}
@@ -211,8 +211,8 @@ gtkwin_stack (GtkWindow * w, int op)
 
   if (op == '^')
     {
-      gtkwin_stack (w, '-');
-      gtkwin_stack (w, '+');
+      A4GL_gtkwin_stack (w, '-');
+      A4GL_gtkwin_stack (w, '+');
     }
 }
 
@@ -222,36 +222,36 @@ gtkwin_stack (GtkWindow * w, int op)
  * @param win_name The window name.
  */
 void
-remove_window (char *s)
+A4GL_remove_window (char *s)
 {
   GtkWidget *cwin;
   GtkWidget *cwin_2;
 
-  debug ("Removing window %s", s);
+  A4GL_debug ("Removing window %s", s);
 
-  if (!(has_pointer (s, WINCODE)))
+  if (!(A4GL_has_pointer (s, WINCODE)))
     {
-      set_error ("Window not found %s", s);
-      exitwith ("Window not found");
-      set_errm (s);
+      A4GL_set_error ("Window not found %s", s);
+      A4GL_exitwith ("Window not found");
+      A4GL_set_errm (s);
       return;
     }
 
-  cwin_2 = (GtkWidget *) find_pointer (s, WINCODE);
-  dump_object ((GtkObject *) cwin_2);
+  cwin_2 = (GtkWidget *) A4GL_find_pointer (s, WINCODE);
+  A4GL_dump_object ((GtkObject *) cwin_2);
 
   cwin = gtk_object_get_data (GTK_OBJECT (cwin_2), "TOP");
-  dump_object ((GtkObject *) cwin);
+  A4GL_dump_object ((GtkObject *) cwin);
 
-  debug ("cwin_2=%p cwin=%p win_screen=%p", cwin_2, cwin, win_screen);
+  A4GL_debug ("cwin_2=%p cwin=%p win_screen=%p", cwin_2, cwin, win_screen);
 
   gtk_widget_destroy (cwin);
   gtk_widget_destroy (cwin_2);
-  del_pointer (s, WINCODE);
-  gui_run_til_no_more ();
-  dump_gtkwinstack ();
-  gtkwin_stack ((GtkWindow *) cwin_2, '-');
-  dump_gtkwinstack ();
+  A4GL_del_pointer (s, WINCODE);
+  A4GL_gui_run_til_no_more ();
+  A4GL_dump_gtkwinstack ();
+  A4GL_gtkwin_stack ((GtkWindow *) cwin_2, '-');
+  A4GL_dump_gtkwinstack ();
 }
 
 
@@ -261,11 +261,11 @@ remove_window (char *s)
  * @return The width of the current window.
  */
 int
-get_curr_width (void)
+A4GL_get_curr_width (void)
 {
   GtkWidget *cwin;
   int width;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   width = (int) gtk_object_get_data (GTK_OBJECT (cwin), "WIDTH");
   return width;
 }
@@ -276,15 +276,15 @@ get_curr_width (void)
  * @return The prompt line.
  */
 int
-getprompt_line_gtk (void)
+A4GL_getprompt_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
-      return decode_line_gtk (std_dbscr.prompt_line);
+      return A4GL_decode_line_gtk (std_dbscr.prompt_line);
     }
-  return decode_line_gtk ((int)
+  return A4GL_decode_line_gtk ((int)
 			  gtk_object_get_data (GTK_OBJECT (cwin),
 					       "PROMPT_LINE"));
 }
@@ -295,13 +295,13 @@ getprompt_line_gtk (void)
  * @return The line used to display an error.
  */
 int
-geterr_line_gtk (void)
+A4GL_geterr_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
-      return decode_line_gtk (std_dbscr.error_line);
+      return A4GL_decode_line_gtk (std_dbscr.error_line);
     }
   return (int) gtk_object_get_data (GTK_OBJECT (cwin), "ERROR_LINE");
 }
@@ -312,10 +312,10 @@ geterr_line_gtk (void)
  * @return The line used to display a message.
  */
 int
-getmsg_line_gtk (void)
+A4GL_getmsg_line_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
     {
       return (int) std_dbscr.message_line;
@@ -332,18 +332,18 @@ getmsg_line_gtk (void)
  * @return The border type.
  */
 int
-get_curr_border_gtk (void)
+A4GL_get_curr_border_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   return (int) gtk_object_get_data (GTK_OBJECT (cwin), "BORDER");
 
 }
 
 int
-iscurrborder ()
+A4GL_iscurrborder ()
 {
-  if (get_curr_border_gtk ())
+  if (A4GL_get_curr_border_gtk ())
     return 1;
   else
     return 0;
@@ -355,10 +355,10 @@ iscurrborder ()
  * @return The heigth of thr current window.
  */
 int
-get_curr_height_gtk (void)
+A4GL_get_curr_height_gtk (void)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) get_curr_win_gtk ();
+  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
   return (int) gtk_object_get_data (GTK_OBJECT (cwin), "HEIGHT");
 }
 
@@ -366,12 +366,12 @@ get_curr_height_gtk (void)
  * Clear the window in GTK GUI mode.
  */
 void
-clr_window (char *name)
+A4GL_clr_window (char *name)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *) find_pointer (name, WINCODE);
+  cwin = (GtkWidget *) A4GL_find_pointer (name, WINCODE);
   cwin = gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
-  debug ("FIXME : clr_window NOT IMPLEMENTED YET");
+  A4GL_debug ("FIXME : A4GL_clr_window NOT IMPLEMENTED YET");
 }
 
 /**
@@ -383,29 +383,29 @@ clr_window (char *name)
  * @return  The decoded line.
  */
 int
-decode_line_gtk (int l)
+A4GL_decode_line_gtk (int l)
 {
   if (l > 0)
     {
-      if (get_curr_border_gtk ())
+      if (A4GL_get_curr_border_gtk ())
 	{
-	  debug ("1. Decoded line %d to %d (because of border)", l, l - 1);
+	  A4GL_debug ("1. Decoded line %d to %d (because of border)", l, l - 1);
 	  return l - 1;
 	}
       else
 	{
-	  debug ("Decoded line %d to %d", l, l);
+	  A4GL_debug ("Decoded line %d to %d", l, l);
 	  return l;
 	}
     }
   /* -1 = last */
   /* -2 = last -1 */
-  if (get_curr_border_gtk ())
+  if (A4GL_get_curr_border_gtk ())
     {
       if (l < 0)
 	{
-	  debug ("2. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
-	  return get_curr_height_gtk () + l;
+	  A4GL_debug ("2. Decoded line %d to %d  %d ", l, A4GL_get_curr_height_gtk ());
+	  return A4GL_get_curr_height_gtk () + l;
 	}
 
     }
@@ -413,8 +413,8 @@ decode_line_gtk (int l)
     {
       if (l < 0)
 	{
-	  debug ("3. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
-	  return get_curr_height_gtk () + l + 1;
+	  A4GL_debug ("3. Decoded line %d to %d  %d ", l, A4GL_get_curr_height_gtk ());
+	  return A4GL_get_curr_height_gtk () + l + 1;
 	}
     }
 
@@ -422,15 +422,15 @@ decode_line_gtk (int l)
 }
 
 /**
- * Dump the window stack into the debug mechanism.
+ * Dump the window stack into the A4GL_debug mechanism.
  */
 void
-dump_gtkwinstack (void)
+A4GL_dump_gtkwinstack (void)
 {
   int a;
   for (a = 0; a < win_stack_cnt; a++)
     {
-      debug ("Winstack : %d %p", a, win_stack[a]);
+      A4GL_debug ("Winstack : %d %p", a, win_stack[a]);
     }
 }
 
@@ -439,7 +439,7 @@ aclfgl_fgl_drawbox (int n)
 {
   while (n)
     {
-      pop_int ();
+      A4GL_pop_int ();
       n--;
     }
   return 0;

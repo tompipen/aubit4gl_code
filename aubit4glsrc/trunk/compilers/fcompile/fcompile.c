@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.29 2003-03-28 08:07:17 mikeaubury Exp $
+# $Id: fcompile.c,v 1.30 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -82,7 +82,7 @@ int scr = 0;
 int newscreen = 0;
 int fstart;
 char *default_database = 0;
-int open_db (char *s);
+//int A4GLF_open_db (char *s);
 void usage (char *s);
 
 /*
@@ -100,7 +100,7 @@ void usage (char *s);
  *  @param str2 Pointer to the place where the extension will be inserted
  */
 /* this function is in libaubit4gl
-static bname (char *str, char *str1, char *str2)
+static A4GL_bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -140,17 +140,17 @@ main (int argc, char *argv[])
   int cnt;
   int cnt_files = 0;
 
-  setarg0 (argv[0]);
+  A4GL_setarg0 (argv[0]);
 
   if (argc == 1)
     {
       usage (argv[0]);
     }
 
-  debug ("Initializing fcompile\n");
+  A4GL_debug ("Initializing fcompile\n");
 
   /* load settings from config file(s): */
-  build_user_resources ();
+  A4GL_build_user_resources ();
 
   strcpy (d, "");
 
@@ -161,13 +161,13 @@ main (int argc, char *argv[])
 
       if (strcmp (argv[cnt], "-v") == 0)
 	{
-	  check_and_show_id ("4GL Form Compiler", argv[cnt]);
+	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
 	  continue;
 	}
 
       if (strcmp (argv[cnt], "-vfull") == 0)
 	{
-	  check_and_show_id ("4GL Form Compiler", argv[cnt]);
+	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
 	  continue;
 	}
 
@@ -206,7 +206,7 @@ main (int argc, char *argv[])
     }
 
 
-  bname (c, a, b);
+  A4GL_bname (c, a, b);
 
   if (b[0] == 0)
     {
@@ -225,7 +225,7 @@ main (int argc, char *argv[])
 
 
 
-  yyin = mja_fopen (c, "r");
+  yyin = A4GL_mja_fopen (c, "r");
 
 
   a4gl_form_yydebug = 0;
@@ -237,7 +237,7 @@ main (int argc, char *argv[])
       exit (1);
 
     }
-  init_form ();
+  A4GL_init_form ();
 
   return (a4gl_form_yyparse ());
 
@@ -270,9 +270,9 @@ a4gl_form_yyerror (char *s)
 
   ld = buffpos ();
   sprintf (errfile, "%s.err", outputfilename);
-  f = write_errfile (yyin, errfile, ld - 1, yylineno);
+  f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
-  write_cont (yyin);
+  A4GL_write_cont (yyin);
   printf ("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
 	  outputfilename, outputfilename, lineno, yylineno);
 #ifdef DO_DEBUG
@@ -295,9 +295,9 @@ yyerror (char *s)
   sprintf (errfile, "%s.err", outputfile);
   a = 0;
   fseek (yyin, fpos, SEEK_SET);
-  f = write_errfile (yyin, errfile, ld, yylineno);
+  f = A4GL_write_errfile (yyin, errfile, ld, yylineno);
   fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
-  write_cont (yyin);
+  A4GL_write_cont (yyin);
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
   exit (2);
 }
@@ -319,16 +319,16 @@ yywrap (void)
 
 
 int
-getdatatype_fcompile (char *col, char *tab)
+A4GLF_getdatatype_fcompile (char *col, char *tab)
 {
   int a;
-  a = getdatatype (col, tab);
+  a = A4GL_getdatatype (col, tab);
   if (a == -1)
     {
       a4gl_form_yyerror ("Column/Table not found");
       return -1;
     }
-  debug ("%s.%s = %d\n", tab, col, a);
+  A4GL_debug ("%s.%s = %d\n", tab, col, a);
   return a;
 }
 
@@ -340,7 +340,7 @@ usage (char *s)
 }
 
 int
-open_db (char *s)
+A4GLF_open_db (char *s)
 {
   if (default_database == 0)
     {

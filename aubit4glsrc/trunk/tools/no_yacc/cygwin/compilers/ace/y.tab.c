@@ -441,7 +441,7 @@ void add_fmt (int cat, char *col, struct commands commands);
 */
 
 void *
-memdup (void *p, int l)
+A4GL_memdup (void *p, int l)
 {
   void *ptr;
   ptr = malloc (l);
@@ -2012,7 +2012,7 @@ yyparse ()
   YYSIZE_T yystacksize = YYINITDEPTH;
 
   /* The variables used to return semantic value and location from the
-     action routines.  */
+     A4GL_action routines.  */
   YYSTYPE yyval;
 
 
@@ -2151,7 +2151,7 @@ yybackup:
       YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
     }
 
-  /* If the proper action on seeing token YYTOKEN is to reduce or to
+  /* If the proper A4GL_action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
   yyn += yytoken;
   if (yyn < 0 || YYLAST < yyn || yycheck[yyn] != yytoken)
@@ -2188,7 +2188,7 @@ yybackup:
 
 
 /*-----------------------------------------------------------.
-| yydefault -- do the default action for the current state.  |
+| yydefault -- do the default A4GL_action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
   yyn = yydefact[yystate];
@@ -2404,7 +2404,7 @@ yyreduce:
     case 41:
 #line 344 "ace.yacc"
       {
-	add_inputs ((char *) strip_quotes (yyvsp[0].str), yyvsp[-2].str);
+	add_inputs ((char *) A4GL_strip_quotes (yyvsp[0].str), yyvsp[-2].str);
       }
       break;
 
@@ -2980,7 +2980,7 @@ yyreduce:
     case 181:
 #line 770 "ace.yacc"
       {
-	sprintf (yyval.str, " %s", (char *) strip_quotes (yyvsp[0].str));
+	sprintf (yyval.str, " %s", (char *) A4GL_strip_quotes (yyvsp[0].str));
       }
       break;
 
@@ -3003,7 +3003,7 @@ yyreduce:
 #line 773 "ace.yacc"
       {
 	sprintf (yyval.str, "\\\"%s\\\"%s%s",
-		 (char *) strip_quotes (yyvsp[-2].str), yyvsp[-1].str,
+		 (char *) A4GL_strip_quotes (yyvsp[-2].str), yyvsp[-1].str,
 		 yyvsp[0].str);
       }
       break;

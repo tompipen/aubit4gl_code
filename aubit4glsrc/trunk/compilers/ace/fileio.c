@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.5 2003-05-12 14:23:57 mikeaubury Exp $
+# $Id: fileio.c,v 1.6 2003-05-15 07:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -94,9 +94,9 @@ a4gl_ace_yyerror (char *s)
 
   ld = buffpos ();
   sprintf (errfile, "%s.err", outputfile);
-  f = (FILE *) write_errfile (yyin, errfile, ld - 1, lineno);
+  f = (FILE *) A4GL_write_errfile (yyin, errfile, ld - 1, lineno);
   fprintf (f, "| %s", s);
-  write_cont (yyin);
+  A4GL_write_cont (yyin);
   printf ("Error compiling %s.ace - check %s.err (xline=%d yline=%d)\n",
 	  outputfile, outputfile, lineno, lineno);
   exit (2);
@@ -146,18 +146,18 @@ compile_ace_report (char *filename)
   int rval;
 
   /* load settings from config file(s): */
-  build_user_resources ();
+  A4GL_build_user_resources ();
 
   a4gl_ace_yydebug = 0;
   strcpy (d, "");
 
-  check_and_show_id ("4GL ACE Compiler", filename);
+  A4GL_check_and_show_id ("4GL ACE Compiler", filename);
 
   outputfilename = outputfile;
 
   strcpy (c, filename);
 
-  bname (c, a, b);
+  A4GL_bname (c, a, b);
 
   if (b[0] == 0)
     {
@@ -169,7 +169,7 @@ compile_ace_report (char *filename)
   /* strcat(outputfilename,".aarc"); */
 
 
-  yyin = (FILE *) mja_fopen (c, "r");
+  yyin = (FILE *) A4GL_mja_fopen (c, "r");
 
   a4gl_ace_yydebug = 0;
 
@@ -186,7 +186,7 @@ compile_ace_report (char *filename)
   if (rval == 0)
     {
       check_sql_columns ();
-      write_report ();
+      A4GL_write_report ();
       printf ("Ok\n");
       return 0;
     }

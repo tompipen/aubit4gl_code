@@ -34,8 +34,8 @@ input_end_union char* s,char* n -> int
 input_enum char* name,int* d -> int
 input_start_array char* s,int type,int* len -> int
 input_end_array char* s,int type -> int
-open_packer char* basename,char dir -> int
-close_packer char dir -> void
-can_pack_all char* name -> int
-pack_all char* name,void* ptr,char* fname -> int
-unpack_all char* name,void* ptr,char* fname -> int
+A4GL_open_packer char* basename,char dir -> int
+A4GL_close_packer char dir -> void
+A4GL_can_pack_all char* name -> int
+A4GL_pack_all char* name,void* ptr,char* fname -> int
+A4GL_unpack_all char* name,void* ptr,char* fname -> int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_xdr.c,v 1.7 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: rpc_stack_xdr.c,v 1.8 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 /**
@@ -34,10 +34,10 @@
  * allows it to act as both a client and a server, in the same C code
  * (which isn't normally possible).
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*

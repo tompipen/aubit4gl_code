@@ -21,7 +21,7 @@
 static void j_on_packet (void *udata, ikspak * pak);
 static int finished;
 static int retry;
-static int debug = 0;
+static int A4GL_debug = 0;
 static FILE *log;
 char *MsgFrom;
 char *MsgBody;

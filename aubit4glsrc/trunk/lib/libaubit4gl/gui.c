@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.18 2003-05-12 14:24:16 mikeaubury Exp $
+# $Id: gui.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
 #
 */
 
@@ -42,7 +42,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
  /*
@@ -114,18 +114,18 @@ oh, and in a4gl_libaubit4gl_int.h!!!!!!! Can we remove this one?
 =====================================================================
 */
 
-void init_wsock (void);
-void proc_format (char *s, int a);
-int proc_gui_in (char *buff);
-void gui_kpress (void);
-void gui_click (void);
-int last_error (void);
+void A4GL_init_wsock (void);
+void A4GL_proc_format (char *s, int a);
+int A4GL_proc_gui_in (char *buff);
+void A4GL_gui_kpress (void);
+void A4GL_gui_click (void);
+int A4GL_last_error (void);
 
-void start_gui (void);
-void gui_close (void);
+void A4GL_start_gui (void);
+void A4GL_gui_close (void);
 static int find_str_in (char *s);
-char *read_clicked (void);
-void *decode_clicked (void);
+char *A4GL_read_clicked (void);
+void *A4GL_decode_clicked (void);
 
 
 /*
@@ -153,10 +153,10 @@ struct s_in
 defs[] =
 {
   {
-  "KeyPress", "IIII", gui_kpress}
+  "KeyPress", "IIII", A4GL_gui_kpress}
   ,
   {
-  "Click", "IIII", gui_click}
+  "Click", "IIII", A4GL_gui_click}
   ,
   {
   "0", "0", 0}
@@ -173,13 +173,13 @@ defs[] =
  * @todo Describe function
  */
 void
-proc_it (char *buff)
+A4GL_proc_it (char *buff)
 {
   int a;
-  debug ("Use gui=%d sock=%d", use_gui, sock);
+  A4GL_debug ("Use gui=%d sock=%d", use_gui, sock);
   if (use_gui > 0 && sock)
     {
-      debug ("Sending %s to front end", buff);
+      A4GL_debug ("Sending %s to front end", buff);
       a = write (sock, buff, strlen (buff));
       if (a <= 0)
 	connected = 0;
@@ -196,16 +196,16 @@ proc_it (char *buff)
  * @return Nothing.
  */
 void
-start_gui (void)
+A4GL_start_gui (void)
 {
 #ifdef __OBSOLETE_CODE__
   char *p;
   int port = -1;
 
 
-  debug ("Start gui...");
+  A4GL_debug ("Start gui...");
   p = acl_getenv ("GUIPORT");
-  init_wsock ();
+  A4GL_init_wsock ();
 
   if (p)
     {
@@ -215,7 +215,7 @@ start_gui (void)
 
   if (p == 0)
     {
-      debug ("No Port");
+      A4GL_debug ("No Port");
       use_gui = -1;
       return;
     }
@@ -223,17 +223,17 @@ start_gui (void)
 
   port = atoport (p, "tcp");
 
-  debug ("GUI PORT %d %s", port, p);
+  A4GL_debug ("GUI PORT %d %s", port, p);
   if (port == -1)
     {
-      debug ("Unable to find service: %s\n", p);
-      exitwith ("Unable to start TCP session");
+      A4GL_debug ("Unable to find service: %s\n", p);
+      A4GL_exitwith ("Unable to start TCP session");
     }
 
-  sock = get_connection (SOCK_STREAM, port, &listensock);
-  debug ("Socket %d", sock);
+  sock = A4GL_get_connection (SOCK_STREAM, port, &listensock);
+  A4GL_debug ("Socket %d", sock);
   connectsock = sock;
-  if (sock_puts (sock, "STARTGUI\n"))
+  if (A4GL_sock_puts (sock, "STARTGUI\n"))
     use_gui = 1;
   else
     connected = 0;
@@ -262,17 +262,17 @@ read_gui (void)
 //proc_it("KEEPALIVE");
   if (retval == 0)
     return 0;
-  if (sock_read (sock, buffer, 1024) < 0)
+  if (A4GL_sock_read (sock, buffer, 1024) < 0)
     {
       connected = 0;
-      exitwith ("Front end closed unexpectedly");
+      A4GL_exitwith ("Front end closed unexpectedly");
       return 0;
     }
-  stripnl (buffer);
-  debug ("Got %s over network", buffer);
+  A4GL_stripnl (buffer);
+  A4GL_debug ("Got %s over network", buffer);
   if (strncmp (buffer, "GotKey", 6) == 0)
     {
-      return net_keyval (&buffer[7]);
+      return A4GL_net_keyval (&buffer[7]);
     }
 
   return 0;
@@ -283,7 +283,7 @@ read_gui (void)
  * Close the socket to the client.
  */
 void
-gui_close (void)
+A4GL_gui_close (void)
 {
   close (sock);
 }
@@ -379,7 +379,7 @@ atoaddr (char *address)
  *   - otherwise :
  */
 int
-get_connection (int socket_type, u_short port, int *listener)
+A4GL_get_connection (int socket_type, u_short port, int *listener)
 {
 #ifdef __OBSOLETE_CODE__
 
@@ -430,7 +430,7 @@ get_connection (int socket_type, u_short port, int *listener)
 	    {
 	      /* Either a real error occured, or blocking was interrupted for
 	         some reason.  Only abort execution if a real error occured. */
-	      if (last_error () != EINTR)
+	      if (A4GL_last_error () != EINTR)
 		{
 		  perror ("accept");
 		  close (listening_socket);
@@ -556,7 +556,7 @@ make_connection (service, type, netaddress)
  * @return The number of byted read.
  */
 int
-sock_read (int sockfd, char *buf, size_t count)
+A4GL_sock_read (int sockfd, char *buf, size_t count)
 {
   size_t bytes_read = 0;
   int this_read;
@@ -565,7 +565,7 @@ sock_read (int sockfd, char *buf, size_t count)
     {
       do
 	this_read = read (sockfd, buf, count - bytes_read);
-      while ((this_read < 0) && (last_error () == EINTR));
+      while ((this_read < 0) && (A4GL_last_error () == EINTR));
       if (this_read < 0)
 	return this_read;
       else if (this_read == 0)
@@ -586,7 +586,7 @@ sock_read (int sockfd, char *buf, size_t count)
  * @return
  */
 int
-sock_write (int sockfd, char *buf, size_t count)
+A4GL_sock_write (int sockfd, char *buf, size_t count)
 {
   size_t bytes_sent = 0;
   int this_write;
@@ -595,7 +595,7 @@ sock_write (int sockfd, char *buf, size_t count)
     {
       do
 	this_write = write (sockfd, buf, count - bytes_sent);
-      while ((this_write < 0) && (last_error () == EINTR));
+      while ((this_write < 0) && (A4GL_last_error () == EINTR));
       if (this_write <= 0)
 	return this_write;
       bytes_sent += this_write;
@@ -619,7 +619,7 @@ sock_write (int sockfd, char *buf, size_t count)
  * of bytes readed.
  */
 int
-sock_gets (int sockfd, char *str, size_t count)
+A4GL_sock_gets (int sockfd, char *str, size_t count)
 {
 
 #ifdef __OBSOLETE_CODE__
@@ -633,7 +633,7 @@ sock_gets (int sockfd, char *str, size_t count)
   int retval;
 
 
-  debug ("Waiting for a string...");
+  A4GL_debug ("Waiting for a string...");
   current_position = str;
 
   while (last_read != 10)
@@ -656,7 +656,7 @@ sock_gets (int sockfd, char *str, size_t count)
 	    bytes_read = recv (sockfd, &last_read, 1, 0);
 	  else
 	    {
-	      proc_it ("KEEPALIVE\n");
+	      A4GL_proc_it ("KEEPALIVE\n");
 	      if (connected == 0)
 		break;
 	      continue;
@@ -664,9 +664,9 @@ sock_gets (int sockfd, char *str, size_t count)
 	  if (bytes_read < 0 || retval < 0 || connected == 0)
 	    {
 	      /* The other side may have closed unexpectedly */
-	      debug ("Its gone down !");
-	      exitwith ("Connection Dropped");
-	      gotolinemode ();
+	      A4GL_debug ("Its gone down !");
+	      A4GL_exitwith ("Connection Dropped");
+	      A4GL_gotolinemode ();
 	      exit (0);
 	      return -1;	/* Is this effective on other platforms than linux? */
 	    }
@@ -683,7 +683,7 @@ sock_gets (int sockfd, char *str, size_t count)
     }
   if (count > 0)
     current_position[0] = 0;
-  debug ("Got %s\n", str);
+  A4GL_debug ("Got %s\n", str);
   return total_count;
 
 #endif
@@ -698,9 +698,9 @@ sock_gets (int sockfd, char *str, size_t count)
  * @return -1 if the connection is closed while it is trying to write.
  */
 int
-sock_puts (int sockfd, char *str)
+A4GL_sock_puts (int sockfd, char *str)
 {
-  return sock_write (sockfd, str, strlen (str));
+  return A4GL_sock_write (sockfd, str, strlen (str));
 }
 
 
@@ -712,7 +712,7 @@ sock_puts (int sockfd, char *str)
  * error!
  */
 int
-isgui (void)
+A4GL_isgui (void)
 {
   if (use_gui > 0 && sock)
     return 1;
@@ -724,16 +724,16 @@ isgui (void)
  * @todo Describe function
  */
 int
-get_gui_char (void)
+A4GL_get_gui_char (void)
 {
   static char buff[256];
-  debug ("Waiting for char...");
-  sock_gets (sock, buff, 255);
-  debug ("Got %s\n", buff);
+  A4GL_debug ("Waiting for char...");
+  A4GL_sock_gets (sock, buff, 255);
+  A4GL_debug ("Got %s\n", buff);
   strcpy (params[0], "");
   m_retval = 0;
   strcpy (m_cretval, "");
-  return proc_gui_in (buff);
+  return A4GL_proc_gui_in (buff);
 }
 
 
@@ -742,11 +742,11 @@ get_gui_char (void)
  * @todo Describe function
  */
 void
-gui_kpress (void)
+A4GL_gui_kpress (void)
 {
-  debug ("Getting key val for %s from net_netval", params[0]);
-  m_retval = net_keyval (params[0]);
-  debug ("Key value=%d", m_retval);
+  A4GL_debug ("Getting key val for %s from net_netval", params[0]);
+  m_retval = A4GL_net_keyval (params[0]);
+  A4GL_debug ("Key value=%d", m_retval);
 }
 
 /**
@@ -754,12 +754,12 @@ gui_kpress (void)
  * @todo Describe function
  */
 void
-gui_click (void)
+A4GL_gui_click (void)
 {
-  debug ("In gui_click...");
+  A4GL_debug ("In gui_click...");
   strcpy (m_cretval, params[0]);
-  debug ("Params[0]=%s", params[0]);
-  debug ("m_cretval=%s", m_cretval);
+  A4GL_debug ("Params[0]=%s", params[0]);
+  A4GL_debug ("m_cretval=%s", m_cretval);
   m_retval = 0xffff;
 }
 
@@ -793,19 +793,19 @@ find_str_in (char *s)
  * @todo Describe function
  */
 int
-proc_gui_in (char *buff)
+A4GL_proc_gui_in (char *buff)
 {
   int a;
-  debug ("Processing (proc_gui_in) %s", buff);
+  A4GL_debug ("Processing (proc_gui_in) %s", buff);
   a = find_str_in (buff);
-  debug ("a=%d", a);
+  A4GL_debug ("a=%d", a);
   if (a < 0)
     return 0;
-  debug ("Found...%d", a);
-  proc_format (buff, a);
-  debug ("Calling..");
+  A4GL_debug ("Found...%d", a);
+  A4GL_proc_format (buff, a);
+  A4GL_debug ("Calling..");
   defs[a].func ();
-  debug ("Returning %d", m_retval);
+  A4GL_debug ("Returning %d", m_retval);
   return m_retval;
 }
 
@@ -814,7 +814,7 @@ proc_gui_in (char *buff)
  * @todo Describe function
  */
 char *
-read_clicked (void)
+A4GL_read_clicked (void)
 {
   return m_cretval;
 }
@@ -824,17 +824,17 @@ read_clicked (void)
  * @todo Describe function
  */
 void *
-decode_clicked (void)
+A4GL_decode_clicked (void)
 {
   void *ptr = 0;
   char buff[40];
-  debug ("In decode_clicked");
-  debug ("m_retval=%s", m_cretval);
+  A4GL_debug ("In decode_clicked");
+  A4GL_debug ("m_retval=%s", m_cretval);
   sprintf (buff, "0x%s", m_cretval);
-  debug ("Buff set to %s", buff);
+  A4GL_debug ("Buff set to %s", buff);
 /*  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3) */
   sscanf (buff, "%px", &ptr);
-  debug ("Ptr set to %p", ptr);
+  A4GL_debug ("Ptr set to %p", ptr);
   return ptr;
 }
 
@@ -843,7 +843,7 @@ decode_clicked (void)
  * @todo Describe function
  */
 void
-proc_format (char *s, int a)
+A4GL_proc_format (char *s, int a)
 {
   int slen = 0;
   int b;
@@ -855,7 +855,7 @@ proc_format (char *s, int a)
   slen = strlen (defs[a].name);
   strcpy (buff, &s[slen + 1]);
   sptr = 0;
-  debug ("In proc_format...");
+  A4GL_debug ("In proc_format...");
   for (b = 0; b <= strlen (buff); b++)
     {
       if (buff[b] == '"')
@@ -874,7 +874,7 @@ proc_format (char *s, int a)
 	  strcpy (buff2, &buff[sptr]);
 	  buff2[eptr - sptr] = 0;
 	  sptr = b + 1;
-	  debug ("Param %d = %s", pcnt, buff2);
+	  A4GL_debug ("Param %d = %s", pcnt, buff2);
 	  strcpy (params[pcnt++], buff2);
 	}
     }
@@ -884,7 +884,7 @@ proc_format (char *s, int a)
  * Initialize windows sockets.
  */
 void
-init_wsock (void)
+A4GL_init_wsock (void)
 {
 #ifdef __OBSOLETE_CODE__
 #ifdef USE_WINSOCK
@@ -896,9 +896,9 @@ init_wsock (void)
       err = WSAStartup (MAKEWORD (1, 1), &wsaData);
       if (err)
 	{
-	  debug ("Error starting wsock");
-	  exitwith ("Error Starting Winsock");
-	  mja_endwin ();
+	  A4GL_debug ("Error starting wsock");
+	  A4GL_exitwith ("Error Starting Winsock");
+	  A4GL_mja_endwin ();
 	  exit (0);
 	}
     }
@@ -912,7 +912,7 @@ init_wsock (void)
  * @todo Describe function
  */
 int
-last_error (void)
+A4GL_last_error (void)
 {
   return errno;
 /* return WSAGetLastError(); */

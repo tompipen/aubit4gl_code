@@ -22,13 +22,13 @@ constr_rest:
 BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
 {
 	print_construct_3(1,$<str>2,$<str>7);
-	strcpy($<str>$,"form_loop(&_inp_io[0])"); /* FIXME */
+	strcpy($<str>$,"A4GL_form_loop(&_inp_io[0])"); /* FIXME */
 	reset_constr();
 }
 | variable ON constr_col_list opt_defs FROM fld_list op_help opt_attributes
 {
 	print_construct_3(0,$<str>1,$<str>8);
-	strcpy($<str>$,"form_loop(&_inp_io[0])"); /* FIXME */
+	strcpy($<str>$,"A4GL_form_loop(&_inp_io[0])"); /* FIXME */
 	reset_constr();
 }
 ;
@@ -99,7 +99,7 @@ bef_c_field_list :
 	| bef_c_field_list COMMA field_name2 {
 	  char buff[80];
 	  sprintf(buff,"BEF_FIELD_CHK(%s)",$<str>3);
-	  generate_or($<str>$,$<str>1,buff);
+	  A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
@@ -108,7 +108,7 @@ aft_c_field_list :
 	|aft_c_field_list COMMA field_name2 {
 	  char buff[80];
 	  sprintf(buff,"AFT_FIELD_CHK(%s)",$<str>3);
-	  generate_or($<str>$,$<str>1,buff);
+	  A4GL_generate_or($<str>$,$<str>1,buff);
 	}
 ;
 

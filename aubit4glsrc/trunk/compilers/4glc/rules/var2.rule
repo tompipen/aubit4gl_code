@@ -24,7 +24,7 @@ var3:
         array_r_variable_or_ident // MJA 010503
 	| identifier
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
+	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
 ;
 
 aft_dot :
@@ -43,7 +43,7 @@ var_ident_ibind_ss :  var2
 		a=get_bind_cnt('i');
 		z=add_bind('i',$<str>1);
 		z-=a;
-		$<sql_string>$=strdup(set_var_sql(z));
+		$<sql_string>$=strdup(A4GL_set_var_sql(z));
 
 	} else {
 		$<sql_string>$=strdup($<str>1);

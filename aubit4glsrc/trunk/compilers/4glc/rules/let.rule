@@ -8,11 +8,11 @@
 let_cmd :
 LET {chk4var=1;} obind_var_let_list {chk4var=0;
 expand_obind();
-lex_printcomment("/*let3*/\n");}  EQUAL reset_cnt op_expr_null
+A4GL_lex_printcomment("/*let3*/\n");}  EQUAL reset_cnt op_expr_null
 {
 int to_vars;
 	
-	debug("/*processing let*/\n");
+	A4GL_debug("/*processing let*/\n");
 	expand_obind();
 	to_vars=how_many_in_bind('o');
 	if (to_vars>=1)

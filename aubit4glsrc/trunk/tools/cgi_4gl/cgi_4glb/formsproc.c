@@ -356,7 +356,7 @@ retrieve_cmdln_entry (char *field_name)
 }
 
 char *
-trim (char *trim_str)
+A4GL_trim (char *trim_str)
 {
   int index;
 

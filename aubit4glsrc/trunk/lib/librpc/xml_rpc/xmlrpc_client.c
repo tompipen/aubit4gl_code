@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.8 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: xmlrpc_client.c,v 1.9 2003-05-15 07:10:44 mikeaubury Exp $
 #*/
 
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -70,7 +70,7 @@ xmlrpc_env env;
 =====================================================================
 */
 
-int fgl_rpc_1 (char *host, char *func, int np);
+int A4GL_fgl_rpc_1 (char *host, char *func, int np);
 
 /*
 =====================================================================
@@ -87,9 +87,9 @@ die_if_fault_occurred (xmlrpc_env * env, int line)
 {
   if (env->fault_occurred)
     {
-      debug ("XML-RPC Fault: %s (%d) @ line %d\n", env->fault_string,
+      A4GL_debug ("XML-RPC Fault: %s (%d) @ line %d\n", env->fault_string,
 	     env->fault_code, line);
-      exitwith ("XMLRPC Error");
+      A4GL_exitwith ("XMLRPC Error");
       return 1;
     }
   return 0;
@@ -186,7 +186,7 @@ get_int (xmlrpc_env * env, xmlrpc_value * in)
  * @todo Describe function
  */
 int
-fgl_rpc_1 (char *host, char *func, int np)
+A4GL_fgl_rpc_1 (char *host, char *func, int np)
 {
   int a;
   void *p;
@@ -209,33 +209,33 @@ fgl_rpc_1 (char *host, char *func, int np)
   for (a = 0; a < np; a++)
     {
       item_value = 0;
-      /* void get_top_of_stack (int a, int *d, int *s, void **ptr); */
-      get_top_of_stack (1, &d, (int *) &s, &p);
-      debug ("Top of stack return %d %d %p (%d)", d, s, p);
+      /* void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr); */
+      A4GL_get_top_of_stack (1, &d, (int *) &s, &p);
+      A4GL_debug ("Top of stack return %d %d %p (%d)", d, s, p);
 
 
       switch (d & 15)
 	{
 	case 0:
-	  item_value = xmlrpc_build_value (&env, "s", char_pop ());
+	  item_value = xmlrpc_build_value (&env, "s", A4GL_char_pop ());
 	  break;
 	case 1:
-	  item_value = xmlrpc_build_value (&env, "i", pop_long ());
+	  item_value = xmlrpc_build_value (&env, "i", A4GL_pop_long ());
 	  break;
 	case 6:
 	case 7:
 	case 8:
 	case 2:
-	  item_value = xmlrpc_build_value (&env, "i", pop_long ());
+	  item_value = xmlrpc_build_value (&env, "i", A4GL_pop_long ());
 	  break;
 	case 3:
-	  item_value = xmlrpc_build_value (&env, "i", pop_double ());
+	  item_value = xmlrpc_build_value (&env, "i", A4GL_pop_double ());
 	  break;
 	case 4:
-	  item_value = xmlrpc_build_value (&env, "d", pop_double ());
+	  item_value = xmlrpc_build_value (&env, "d", A4GL_pop_double ());
 	  break;
 	default:
-	  exitwith ("Untransmittable data");
+	  A4GL_exitwith ("Untransmittable data");
 	}
 
 
@@ -248,7 +248,7 @@ fgl_rpc_1 (char *host, char *func, int np)
     }
 
 
-  debug ("Calling %s %s with array", host, func);
+  A4GL_debug ("Calling %s %s with array", host, func);
   result = xmlrpc_client_call (&env, host, func, "()", array);
 
   if (die_if_fault_occurred (&env))
@@ -257,12 +257,12 @@ fgl_rpc_1 (char *host, char *func, int np)
 
   if (result == NULL)
     {
-      exitwith ("Call failed");
+      A4GL_exitwith ("Call failed");
       return 0;
     }
   nret = xmlrpc_array_size (&env, result);
 
-  debug ("Got %d values returned");
+  A4GL_debug ("Got %d values returned");
 
   for (i = 0; i < nret; i++)
     {
@@ -273,44 +273,44 @@ fgl_rpc_1 (char *host, char *func, int np)
       switch (xmlrpc_value_type (in))
 	{
 	case (XMLRPC_TYPE_INT):
-	  push_long (get_int (&env, in));
+	  A4GL_push_long (get_int (&env, in));
 	  break;
 	case (XMLRPC_TYPE_BOOL):
-	  push_int (get_boolean (&env, in));
+	  A4GL_push_int (get_boolean (&env, in));
 	  break;
 	case (XMLRPC_TYPE_DOUBLE):
-	  push_double (get_double (&env, in));
+	  A4GL_push_double (get_double (&env, in));
 	  break;
 	case (XMLRPC_TYPE_DATETIME):
 	  /* void push_dtime(struct a4gl_dtime *p); */
-	  push_dtime ((struct a4gl_dtime *) get_timestamp (&env, in));
+	  A4GL_push_dtime ((struct a4gl_dtime *) get_timestamp (&env, in));
 	  break;
 	case (XMLRPC_TYPE_STRING):
-	  push_char (get_string (&env, in));
+	  A4GL_push_char (get_string (&env, in));
 	  break;
 
 	case (XMLRPC_TYPE_BASE64):
-	  exitwith ("Can't Handle Base64 Data");
+	  A4GL_exitwith ("Can't Handle Base64 Data");
 	  return 0;
 	  break;
 	case (XMLRPC_TYPE_ARRAY):
-	  exitwith ("Can't Handle Complex Data");
+	  A4GL_exitwith ("Can't Handle Complex Data");
 	  return 0;
 	  break;
 	case (XMLRPC_TYPE_STRUCT):
-	  exitwith ("Can't Handle Complex Data");
+	  A4GL_exitwith ("Can't Handle Complex Data");
 	  return 0;
 	  break;
 	case (XMLRPC_TYPE_C_PTR):
-	  exitwith ("Can't Handle Pointers");
+	  A4GL_exitwith ("Can't Handle Pointers");
 	  return 0;
 	  break;
 	case (XMLRPC_TYPE_DEAD):
-	  exitwith ("Got a 0xDEAD");
+	  A4GL_exitwith ("Got a 0xDEAD");
 	  return 0;
 	  break;
 	default:
-	  exitwith ("UNKNOWN XML TYPE");
+	  A4GL_exitwith ("UNKNOWN XML TYPE");
 	  return 0;
 	  break;
 	}
@@ -326,12 +326,12 @@ fgl_rpc_1 (char *host, char *func, int np)
  *
  * @param host The host where to call the remote function.
  * @param async
- * @param func The name of the remote function to call.
+ * @param A4GL_func The name of the remote function to call.
  * @param port The port number to use when making the call.
  * @param np The number of parameters.
  */
 int
-remote_func_call (char *host, int async, char *func, int port, int np)
+A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
 {
   int a;
   char buff[64];
@@ -350,9 +350,9 @@ remote_func_call (char *host, int async, char *func, int port, int np)
       strcpy (buff, func);
     }
 
-  debug ("Calling host %s func %s on port %ld with %d entries", host, buff,
+  A4GL_debug ("Calling host %s A4GL_func %s on port %ld with %d entries", host, buff,
 	 port, np);
-  a = fgl_rpc_1 (host, buff, np);
+  a = A4GL_fgl_rpc_1 (host, buff, np);
   return a;
 }
 

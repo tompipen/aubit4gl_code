@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.6 2003-05-12 14:24:31 mikeaubury Exp $
+# $Id: widget.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -92,28 +92,28 @@ char *desc_bool[] = {
 
 struct s_widgets widgets[] = {
   /*   Widget Type  cr_ function     parameters (placeholder).. */
-  {"", cr_textbox, {"MAXCHARS", 0}},
-  {"TEXT", cr_textbox, {"MAXCHARS", 0}},
-  {"ENTRY", cr_textbox, {"MAXCHARS", 0}},
-  {"BUTTON", cr_button, {"*LABEL", "*IMAGE", 0}},
-  {"CHECK", cr_check, {0}},
-  {"LABEL", cr_label, {"CAPTION", 0}},
-  {"PIXMAP", cr_picture, {"FILENAME", 0}},
-  {"COMBO", cr_combo, {0}},
-  {"RADIO", cr_radio, {"NUM", 0}},
-  {"LIST", cr_list, {0}},
+  {"", A4GL_cr_textbox, {"MAXCHARS", 0}},
+  {"TEXT", A4GL_cr_textbox, {"MAXCHARS", 0}},
+  {"ENTRY", A4GL_cr_textbox, {"MAXCHARS", 0}},
+  {"BUTTON", A4GL_cr_button, {"*LABEL", "*IMAGE", 0}},
+  {"CHECK", A4GL_cr_check, {0}},
+  {"LABEL", A4GL_cr_label, {"CAPTION", 0}},
+  {"PIXMAP", A4GL_cr_picture, {"FILENAME", 0}},
+  {"COMBO", A4GL_cr_combo, {0}},
+  {"RADIO", A4GL_cr_radio, {"NUM", 0}},
+  {"LIST", A4GL_cr_list, {0}},
 
   /* NOTE : Calendar needs about 22 characters wide by 7 lines */
-  {"CALENDAR", cr_calendar, {0}},
+  {"CALENDAR", A4GL_cr_calendar, {0}},
   /*      NEWWIDGET       */
-  {"SCROLLBAR", cr_scrollbar, {0}},
+  {"SCROLLBAR", A4GL_cr_scrollbar, {0}},
   /*
-     { "IMAGE"    , gtk_image_new ,{0}                                            },
-     { "LIST"     , gtk_list_new  ,{0}                                            },
-     { "MENU"     , gtk_menu_new  ,{0}                                            },
-     { "PROGRESS", gtk_progress_bar_new, {0}                              },
-     { "ARROW"    , cr_arrow              ,{"TYPE","SHADOW",0}            },
-     { "CALENDAR", gtk_calendar_new,{"MONTH","YEAR",0}            },
+     { "IMAGE"    , A4GL_gtk_image_new ,{0}                                            },
+     { "LIST"     , A4GL_gtk_list_new  ,{0}                                            },
+     { "MENU"     , A4GL_gtk_menu_new  ,{0}                                            },
+     { "PROGRESS", A4GL_gtk_progress_bar_new, {0}                              },
+     { "ARROW"    , A4GL_cr_arrow              ,{"TYPE","SHADOW",0}            },
+     { "CALENDAR", A4GL_gtk_calendar_new,{"MONTH","YEAR",0}            },
    */
   {0}
 };
@@ -130,20 +130,20 @@ struct s_widgets widgets[] = {
 this should be in a4gl_aubit_lib.h but it's different all over the
 place - see a4gl_aubit_lib.h
 */
-int gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
+int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
-GtkWidget *make_widget (char *widget, char *config, int w);
-char *decode_config (struct_form * f, int a);
-char *decode_comments (struct_form * f, int a);
-char *decode_widget (struct_form * f, int a);
+GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
+char *A4GL_decode_config (struct_form * f, int a);
+char *A4GL_decode_comments (struct_form * f, int a);
+char *A4GL_decode_widget (struct_form * f, int a);
 //int fgl_fieldnametoid(char *f,char *s,int n);
 
 #ifdef OLD_INCL
 int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 		gpointer func_data);
 #endif
-int strnullcmp (char *s1, char *s2);
-int widget_name_match (GtkWidget * w, char *name);
+int A4GL_strnullcmp (char *s1, char *s2);
+int A4GL_widget_name_match (GtkWidget * w, char *name);
 
 /*
 =====================================================================
@@ -160,27 +160,27 @@ int widget_name_match (GtkWidget * w, char *name);
  * @param w The width of the widget.
  */
 GtkWidget *
-make_widget (char *widget, char *config, int w)
+A4GL_make_widget (char *widget, char *config, int w)
 {
   int a;
   GtkWidget *ptr;
   char *buff;
 
   buff = strdup (config);
-  split_config (buff);
-  debug ("Making widget %s, %s\n", widget, config);
+  A4GL_split_config (buff);
+  A4GL_debug ("Making widget %s, %s\n", widget, config);
   for (a = 0; widgets[a].name; a++)
     {
       if (strcasecmp (widget, widgets[a].name) == 0)
 	{
 	  char *key;
 	  widget_next_size = w;
-	  debug ("Making type %d", a);
+	  A4GL_debug ("Making type %d", a);
 	  ptr = widgets[a].make ();
-	  debug ("SIzing widget (%p)", ptr);
-	  size_widget (ptr, w);
-	  dump_mem ((char *) ptr);
-	  key = find_param ("*KEY");
+	  A4GL_debug ("SIzing widget (%p)", ptr);
+	  A4GL_size_widget (ptr, w);
+	  A4GL_dump_mem ((char *) ptr);
+	  key = A4GL_find_param ("*KEY");
 	  if (key)
 	    {
 	      gtk_object_set_data (GTK_OBJECT (ptr), "KEY", key);
@@ -199,8 +199,8 @@ make_widget (char *widget, char *config, int w)
     }
 
 
-  debug ("No widget of that type available...");
-  exitwith ("Invalid Widget");
+  A4GL_debug ("No widget of that type available...");
+  A4GL_exitwith ("Invalid Widget");
   return 0;
 }
 
@@ -216,7 +216,7 @@ make_widget (char *widget, char *config, int w)
  * @return The config value
  */
 char *
-decode_config (struct_form * f, int a)
+A4GL_decode_config (struct_form * f, int a)
 {
   int b;
   for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len;
@@ -239,7 +239,7 @@ decode_config (struct_form * f, int a)
  * @return
  */
 char *
-decode_comments (struct_form * f, int a)
+A4GL_decode_comments (struct_form * f, int a)
 {
   int b;
   for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len;
@@ -265,10 +265,10 @@ decode_comments (struct_form * f, int a)
  * @return The widget type or an empty string if its not a specific wodget.
  */
 char *
-decode_widget (struct_form * f, int a)
+A4GL_decode_widget (struct_form * f, int a)
 {
   int b;
-  debug ("Decode widget a=%d\n", a);
+  A4GL_debug ("Decode widget a=%d\n", a);
   for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len;
        b++)
     {
@@ -279,20 +279,20 @@ decode_widget (struct_form * f, int a)
 	    str_attribs_val[b].value;
 	}
     }
-  debug ("   Not found...\n");
+  A4GL_debug ("   Not found...\n");
   return "";
 }
 
 
 /**
- * Debug function to debug what was the last field created.
+ * Debug function to A4GL_debug what was the last field created.
  *
  * @param txt A message to help in the debugging process.
  */
 void
-debug_last_field_created (char *txt)
+A4GL_debug_last_field_created (char *txt)
 {
-  debug ("Doing some debugging stuff on widget %p - %s\n", last_field_created,
+  A4GL_debug ("Doing some debugging stuff on widget %p - %s\n", last_field_created,
 	 txt);
 }
 
@@ -311,7 +311,7 @@ debug_last_field_created (char *txt)
  * @panel panel_to_add_to_window Panel where the widgets are layed out.
  */
 void
-add_widget (int metric_no, struct_form * f,
+A4GL_add_widget (int metric_no, struct_form * f,
 	    GtkWidget * panel_to_add_to_window)
 {
   struct_metrics *metric;
@@ -319,16 +319,16 @@ add_widget (int metric_no, struct_form * f,
   char buff[256];
 
 
-  debug ("In add_widget");
+  A4GL_debug ("In add_widget");
   metric = &f->metrics.metrics_val[metric_no];
 
   if (strlen (metric->label) != 0)
     {
-      debug ("Is a label");
+      A4GL_debug ("Is a label");
       /* Just a peice of text - create a label */
       new_widget = gtk_label_new (metric->label);
 
-      gtk_fixed_put (GTK_FIXED (get_window_gtk (metric->scr)), new_widget,
+      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,
 		     metric->x * XWIDTH, metric->y * 20);
       gtk_widget_show (new_widget);
       metric->field = 0;
@@ -341,32 +341,32 @@ add_widget (int metric_no, struct_form * f,
       char *ptr;
       char *comments;
       /* Got a proper field.. */
-      debug ("Is a field");
+      A4GL_debug ("Is a field");
       w = metric->w;
 
-      attr = find_attrib_from_metric (f, metric_no);
+      attr = A4GL_find_attrib_from_metric (f, metric_no);
 
       if (attr == -1)
 	{
-	  debug ("attr=-1");
+	  A4GL_debug ("attr=-1");
 	  return;
 	}
 
-      ptr = decode_widget (f, attr);
-      debug ("decode_widget returns %s\n", ptr);
+      ptr = A4GL_decode_widget (f, attr);
+      A4GL_debug ("decode_widget returns %s\n", ptr);
       if (strcmp (ptr, "") == 0)
 	{
-	  debug ("Must be an entry..");
+	  A4GL_debug ("Must be an entry..");
 	  ptr = "ENTRY";
 	}
 
-      comments = decode_comments (f, attr);
+      comments = A4GL_decode_comments (f, attr);
 
-      new_widget = make_widget (ptr, decode_config (f, attr), w);
+      new_widget = A4GL_make_widget (ptr, A4GL_decode_config (f, attr), w);
 
       if (new_widget == 0)
 	{
-	  debug ("Error new_widget=0 ptr='%s'\n", ptr);
+	  A4GL_debug ("Error new_widget=0 ptr='%s'\n", ptr);
 	  exit (0);
 	}
 
@@ -375,36 +375,36 @@ add_widget (int metric_no, struct_form * f,
 
       gtk_object_set_data (GTK_OBJECT (new_widget), "Metric", metric);
 
-      debug ("Adding WidgetType '%s'....to %p\n", ptr, new_widget);
+      A4GL_debug ("Adding WidgetType '%s'....to %p\n", ptr, new_widget);
       gtk_object_set_data (GTK_OBJECT (new_widget), "WidgetType", ptr);
 
 
 
       /* Get the form.field[sub] identifier */
-      strcpy (buff, make_field_from_metric (f, metric_no));
+      strcpy (buff, A4GL_make_field_from_metric (f, metric_no));
       gtk_object_set_data (GTK_OBJECT (new_widget), "Field", strdup (buff));
 
-      strcpy (buff, make_colname_from_metric (f, metric_no));
-      debug ("Adding colname for %p - %s", new_widget, strdup (buff));
+      strcpy (buff, A4GL_make_colname_from_metric (f, metric_no));
+      A4GL_debug ("Adding colname for %p - %s", new_widget, strdup (buff));
 
       gtk_object_set_data (GTK_OBJECT (new_widget), "Colname", strdup (buff));
 
 
-      debug ("Setting metric->field=%p", new_widget);
+      A4GL_debug ("Setting metric->field=%p", new_widget);
       metric->field = (int) new_widget;
 
       gtk_object_set_data (GTK_OBJECT (panel_to_add_to_window), strdup (buff),
 			   new_widget);
 
       /* Add this to the current form as an object... */
-      gtk_object_set_data ((GtkObject *) get_window_gtk (metric->scr),
+      gtk_object_set_data ((GtkObject *) A4GL_get_window_gtk (metric->scr),
 			   buff, new_widget);
 
-      gtk_fixed_put (GTK_FIXED (get_window_gtk (metric->scr)), new_widget,
+      gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,
 		     (metric->x - 1) * XWIDTH, metric->y * 20);
 
 
-      debug ("Comments='%s'\n", comments);
+      A4GL_debug ("Comments='%s'\n", comments);
 
       if (strlen (comments) == 0)
 	{
@@ -416,7 +416,7 @@ add_widget (int metric_no, struct_form * f,
 
       gtk_widget_show (new_widget);
       last_field_created = new_widget;
-      debug_last_field_created ("add_widget");
+      A4GL_debug_last_field_created ("add_widget");
     }
 
 }
@@ -429,7 +429,7 @@ add_widget (int metric_no, struct_form * f,
  * @return w A pointer too the widget with the name passed.
  */
 int
-fgl_fieldnametoid (char *f, char *s, int n)
+A4GL_fgl_fieldnametoid (char *f, char *s, int n)
 {
   GtkWidget *formdets;
   GtkWidget *w;
@@ -438,32 +438,32 @@ fgl_fieldnametoid (char *f, char *s, int n)
 
   if (ui_mode != 1)
     {
-      exitwith ("Not in GUI mode");
+      A4GL_exitwith ("Not in GUI mode");
       return 0;
     }
 
-  debug ("fgl_fieldnametoid (%p,%d)", s, n);
+  A4GL_debug ("fgl_fieldnametoid (%p,%d)", s, n);
 
 
-  formdets = (GtkWidget *) get_curr_form ();
-  debug ("Getting field list formdets=%p parent=%p", formdets,
+  formdets = (GtkWidget *) A4GL_get_curr_form ();
+  A4GL_debug ("Getting field list formdets=%p parent=%p", formdets,
 	 gtk_object_get_data ((GtkObject *) formdets, "PARENT"));
 
   /* debug("Getting field list formdets=%p parent=%p",formdets,gtk_object_get_data(formdets,"TOP")); */
 
 
-  exitwith ("serious bug in widget.c");
+  A4GL_exitwith ("serious bug in widget.c");
 
   nofields =
-    gen_field_chars ((void ***) &field_list, (GtkWindow *) formdets, s, n, 0);
+    A4GL_gen_field_chars ((void ***) &field_list, (GtkWindow *) formdets, s, n, 0);
 
-  debug ("done Getting field list - nofields=%d", nofields);
+  A4GL_debug ("done Getting field list - nofields=%d", nofields);
 
   if (nofields != -1)
     w = field_list[0];
   else
     w = 0;
-  debug ("field_list=%p\n", field_list);
+  A4GL_debug ("field_list=%p\n", field_list);
   free (field_list);
   return (int) w;
 }
@@ -479,20 +479,20 @@ fgl_fieldnametoid (char *f, char *s, int n)
 int
 KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
 {
-  debug ("Key Snooper... %p %p %p\n", grab_widget, event, func_data);
-  debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
+  A4GL_debug ("Key Snooper... %p %p %p\n", grab_widget, event, func_data);
+  A4GL_debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
 	 gtk_accelerator_name (event->keyval, event->state));
 
 
   if (event->keyval == 0xffbe && event->state == 1)
     {
-      debug ("Toggle console...");
-      console_toggle ();
+      A4GL_debug ("Toggle console...");
+      A4GL_console_toggle ();
     }
 
   fflush (stdout);
-  keypress (grab_widget, event, func_data);
-  clr_error_gtk ();
+  A4GL_keypress (grab_widget, event, func_data);
+  A4GL_clr_error_gtk ();
   return 0;
 }
 
@@ -507,7 +507,7 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
  * @return
  */
 int
-widget_name_match (GtkWidget * w, char *name)
+A4GL_widget_name_match (GtkWidget * w, char *name)
 {
   void *s;
   if (w == 0)
@@ -515,7 +515,7 @@ widget_name_match (GtkWidget * w, char *name)
   s = gtk_object_get_data (GTK_OBJECT (w), "Attribute");
   if (s == 0)
     return 0;
-  return attr_name_match (s, name);
+  return A4GL_attr_name_match (s, name);
 
 }
 

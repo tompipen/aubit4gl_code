@@ -40,7 +40,7 @@ open_form_cmd :
 
 open_form_rest: open_form_gui
 	| FROM fgl_expr 
-	{ form_attrib.iswindow=0;strcpy($<str>$,"open_form(%s);"); }
+	{ form_attrib.iswindow=0;strcpy($<str>$,"A4GL_open_form(%s);"); }
 
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.71 2003-05-12 14:23:45 mikeaubury Exp $
+# $Id: lexer.c,v 1.72 2003-05-15 07:10:19 mikeaubury Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@
 #define KWS_COMMENT COMMENT
 #endif
 
-#define stricmp 		aubit_strcasecmp
+#define stricmp 		A4GL_aubit_strcasecmp
 #define TYPE_EOF  		-1
 #define TYPE_USTRING  	-2	/* unterminated string */
 #define TYPE_NUM 		3
@@ -146,7 +146,7 @@ int current_yylex_state;
 =====================================================================
 */
 
-char *translate (char *s);
+char *A4GL_translate (char *s);
 
 /*
 =====================================================================
@@ -166,14 +166,14 @@ mja_fgetc (FILE * f)
   int a;
 
 
-  a = memfile_getc (f);
+  a = A4GL_memfile_getc (f);
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); DOS will end it with only 10(LF=\n) */
 
   if (a == '\n')		//ASCII 10 = LF
     {
       yylineno++;
-      fpos = memfile_ftell (f);
+      fpos = A4GL_memfile_ftell (f);
     }
 
 // maintain a buffer (yyline) holding current line being scanned
@@ -182,7 +182,7 @@ mja_fgetc (FILE * f)
     {
       yyline[0] = a;
       yyline_len = 1;
-      yyline_fpos = memfile_ftell (f);
+      yyline_fpos = A4GL_memfile_ftell (f);
     }
   else
     // append char to line buffer - avoid overflow by shifting left
@@ -206,12 +206,12 @@ mja_fgetc (FILE * f)
 static void
 mja_ungetc (int a, FILE * f)
 {
-  memfile_ungetc (a, f);
+  A4GL_memfile_ungetc (a, f);
 
   if (a == '\n')
     {
       yylineno--;
-      fpos = memfile_ftell (f);
+      fpos = A4GL_memfile_ftell (f);
     }
 
   // remove from current line buffer
@@ -305,7 +305,10 @@ isnum (char *s)
 	}
       if (s[a] >= '0' && s[a] <= '9')
 	continue;
-      if (s[a] == 'e' || s[a] == 'E')
+
+
+      if (a&&(s[a] == 'e' || s[a] == 'E'))
+
 	{
 	  is_e++;
 	  continue;
@@ -382,7 +385,7 @@ isnum (char *s)
 
 
 /**
- * Continuation of the action of read a new word from the source file
+ * Continuation of the A4GL_action of read a new word from the source file
  *
  * It reads sequentialy chracters until found a separator, or if
  * reading a operator (such as +) just return it.
@@ -407,7 +410,7 @@ read_word2 (FILE * f, int *t)
     {
       a = mja_fgetc (f);
 
-      if (memfile_feof (f))
+      if (A4GL_memfile_feof (f))
 	{
 	  *t = TYPE_EOF;
 	  return word;
@@ -417,11 +420,11 @@ read_word2 (FILE * f, int *t)
 	{
 	  while (1)
 	    {
-	      if (memfile_feof (f))
+	      if (A4GL_memfile_feof (f))
 		break;
 	      if (a == '\n' || a == '\r')
 		{
-		  if (aubit_strcasecmp (word, "endcode") == 0)
+		  if (A4GL_aubit_strcasecmp (word, "endcode") == 0)
 		    break;
 		  a = mja_fgetc (f);
 		  continue;
@@ -442,7 +445,7 @@ read_word2 (FILE * f, int *t)
 	{
 	  while (1)
 	    {
-	      if (memfile_feof (f))
+	      if (A4GL_memfile_feof (f))
 		break;
 	      if (a == '\n' || a == '\r')
 		{
@@ -469,7 +472,7 @@ read_word2 (FILE * f, int *t)
 	  while (1)
 	    {
 	      a = mja_fgetc (f);
-	      if (memfile_feof (f))
+	      if (A4GL_memfile_feof (f))
 		break;
 	      if (a == '\n' || a == '\r')
 		{
@@ -492,7 +495,7 @@ read_word2 (FILE * f, int *t)
 	      while (1)
 		{
 		  a = mja_fgetc (f);
-		  if (memfile_feof (f))
+		  if (A4GL_memfile_feof (f))
 		    break;
 		  if (a == '\n' || a == '\r')
 		    break;
@@ -534,7 +537,7 @@ read_word2 (FILE * f, int *t)
 	      while (1)
 		{
 		  a = mja_fgetc (f);
-		  if (memfile_feof (f))
+		  if (A4GL_memfile_feof (f))
 		    break;
 		  if (a == '}')
 		    break;
@@ -693,8 +696,8 @@ read_word (FILE * f, int *t)
       char *s;
       s = strdup (ptr + 1);
       s[strlen (s) - 1] = 0;
-      dumpstring (s, yylineno, infilename);
-      s2 = translate (s);
+      A4GL_dumpstring (s, yylineno, infilename);
+      s2 = A4GL_translate (s);
       if (s2)
 	ptr = s2;
     }
@@ -822,7 +825,7 @@ chk_word (FILE * f, char *str)
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);
 
-  debug ("chk_word: read_word returns %s\n", p);
+  A4GL_debug ("chk_word: read_word returns %s\n", p);
 
   /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
    * These are handled entirely by the lexer, so we test for this
@@ -832,9 +835,9 @@ chk_word (FILE * f, char *str)
    * and ends with the word 'endcode'.
    */
 
-  if ((aubit_strcasecmp (p, "--!code") == 0
-       || aubit_strcasecmp (p, "code") == 0)
-      && (xccode == 0) && (mja_strncmp (yyline, p, strlen (p)) == 0))
+  if ((A4GL_aubit_strcasecmp (p, "--!code") == 0
+       || A4GL_aubit_strcasecmp (p, "code") == 0)
+      && (xccode == 0) && (A4GL_mja_strncmp (yyline, p, strlen (p)) == 0))
     {
       xccode = 1;
       return KW_CSTART;
@@ -852,12 +855,12 @@ chk_word (FILE * f, char *str)
       exit (0);
     }
 
-  if (xccode && (aubit_strcasecmp (p, "endcode") == 0
-		 || aubit_strcasecmp (p, "--!endcode") == 0
-		 || aubit_strcasecmp (p, "--!end code") == 0
-		 || aubit_strcasecmp (p, "end code") == 0))
+  if (xccode && (A4GL_aubit_strcasecmp (p, "endcode") == 0
+		 || A4GL_aubit_strcasecmp (p, "--!endcode") == 0
+		 || A4GL_aubit_strcasecmp (p, "--!end code") == 0
+		 || A4GL_aubit_strcasecmp (p, "end code") == 0))
     {
-      lex_printc ("/* End of code */");
+      A4GL_lex_printc ("/* End of code */");
       xccode = 0;
       return KW_CEND;
     }
@@ -928,7 +931,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   oline = yylineno;
 
 
-  a = memfile_ftell (f);
+  a = A4GL_memfile_ftell (f);
   /* check if the current word is a known reserved/key word */
 
 #ifdef NEWLIST
@@ -960,19 +963,19 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 #ifndef OLDWAY
 	  int tl;
 	  static char tmpbuff[2000];
-	  memfile_fseek (f, yyline_fpos, SEEK_SET);
-	  tl = memfile_ftell (f);
+	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
+	  tl = A4GL_memfile_ftell (f);
 	  //printf("a-tl = %d\n",a-tl);
-	  memfile_fread (tmpbuff, a - tl, 1, f);
+	  A4GL_memfile_fread (tmpbuff, a - tl, 1, f);
 	  tmpbuff[a - tl] = 0;
 	  strcpy (&yyline[yyline_len], tmpbuff);
 	  yyline_len += a - tl;
 
 #else
-	  memfile_fseek (f, yyline_fpos, SEEK_SET);
-	  while (memfile_ftell (f) < a)
+	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
+	  while (A4GL_memfile_ftell (f) < a)
 	    {
-	      yyline[yyline_len++] = memfile_getc (f);
+	      yyline[yyline_len++] = A4GL_memfile_getc (f);
 	      yyline[yyline_len] = '\0';
 	    }
 #endif
@@ -983,7 +986,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 	}
       else
 	{
-	  memfile_fseek (f, a, SEEK_SET);
+	  A4GL_memfile_fseek (f, a, SEEK_SET);
 	}
 
     }
@@ -1063,7 +1066,7 @@ fix_bad_strings (char *s)
     }
 
   buff[c] = 0;
-  debug ("Fixstring changed %s to %s", s, buff);
+  A4GL_debug ("Fixstring changed %s to %s", s, buff);
   strcpy (s, buff);
   return;
 }
@@ -1115,7 +1118,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
       exit (0);
     }
 
-  a = memfile_ftell (yyin);
+  a = A4GL_memfile_ftell (yyin);
   if (yyin_len)
     {
       a = a * 100 / yyin_len;
@@ -1129,14 +1132,14 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   a = chk_word (yyin, buff);
 
-  debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
+  A4GL_debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
 
   //if (chk4var)
   //a = NAMED_GEN;
 
 
   allow = allow_token_state (yystate, a);
-  debug ("Allow_token_State = %d state=%d\n", allow, yystate);
+  A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 
 
   if (sql_mode == 0)
@@ -1146,7 +1149,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
       if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
 	{
-	  if (find_datatype (upshift (buff)))
+	  if (A4GL_find_datatype (upshift (buff)))
 	    {
 	      a = USER_DTYPE;
 	    }
@@ -1158,7 +1161,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	a = SQL_TEXT;
     }
 
-  debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
+  A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
 #ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
    * can easily be confused - any keyword tokens (they start from 1000) 
@@ -1208,7 +1211,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   if (a == 2 || a == NAMED_GEN)
     {
-      debug ("  Constant check returns %d",
+      A4GL_debug ("  Constant check returns %d",
 	     check_for_constant (buff, buffval));
 
       switch (check_for_constant (buff, buffval))
@@ -1216,23 +1219,23 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	case 0:
 	  break;
 	case 1:
-	  debug (" Constant switch %s Char", buffval);
+	  A4GL_debug (" Constant switch %s Char", buffval);
 	  strcpy (buff, buffval);
 	  a = CHAR_VALUE;
 	  break;		/* 'c' */
 
 	case 2:
-	  debug (" Constant switch %s Float", buffval);
+	  A4GL_debug (" Constant switch %s Float", buffval);
 	  strcpy (buff, buffval);
 	  a = NUMBER_VALUE;
 	  break;		/* 'f' */
 	case 3:
-	  debug (" Constant switch %s Integer", buffval);
+	  A4GL_debug (" Constant switch %s Integer", buffval);
 	  strcpy (buff, buffval);
 	  a = INT_VALUE;
 	  break;		/* 'i' */
 	case 4:
-	  debug (" Constant switch %s ident", buffval);
+	  A4GL_debug (" Constant switch %s ident", buffval);
 	  strcpy (buff, buffval);
 	  a = NAMED_GEN;
 	  break;		/* 'C' */
@@ -1262,12 +1265,12 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   lastlex = a;
   if (acl_getenv ("DEBUG"))
     {
-      debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d",
+      A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d",
 	     yylineno, ccnt, a, buff, xccode, fpos, chk4var);
     }
   word_cnt = 0;
 
-  debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+  A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
 
   return a;
 }

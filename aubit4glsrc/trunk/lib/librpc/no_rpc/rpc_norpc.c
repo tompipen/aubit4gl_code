@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.7 2003-05-12 14:24:24 mikeaubury Exp $
+# $Id: rpc_norpc.c,v 1.8 2003-05-15 07:10:43 mikeaubury Exp $
 #
 */
 
@@ -32,10 +32,10 @@
  * @file
  * RPC Implementation functions used in absence of RPC libraries on system.
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 /*
 =====================================================================
@@ -142,7 +142,7 @@ typedef struct menu_list menu_list;
 */
 
 void xdrmem_create (XDR * xdrs, caddr_t addr, u_int size, enum xdr_op op);
-static void local_exitwith (char *s);
+static void A4GL_local_exitwith (char *s);
 bool_t xdr_menu_list (XDR * xdrs, menu_list * objp);
 bool_t xdr_struct_form (XDR * xdrs, struct_form * objp);
 bool_t xdr_int (XDR * xdrs, int *ip);
@@ -167,7 +167,7 @@ xdrmem_create (XDR * xdrs, caddr_t addr, u_int size, enum xdr_op op)
 	enum xdr_op op;
 */
 {
-  local_exitwith ("Could not xdrmem_create - noRPC build");
+  A4GL_local_exitwith ("Could not xdrmem_create - noRPC build");
 }
 
 
@@ -178,7 +178,7 @@ xdrmem_create (XDR * xdrs, caddr_t addr, u_int size, enum xdr_op op)
 bool_t
 xdr_int (XDR * xdrs, int *ip)
 {
-  local_exitwith ("Could not xdr_int - noRPC build");
+  A4GL_local_exitwith ("Could not xdr_int - noRPC build");
   return 0;
 }
 
@@ -190,7 +190,7 @@ xdr_int (XDR * xdrs, int *ip)
 void
 xdrstdio_create (XDR * xdrs, FILE * file, enum xdr_op op)
 {
-  local_exitwith ("Could not xdrstdio_create - noRPC build");
+  A4GL_local_exitwith ("Could not xdrstdio_create - noRPC build");
 }
 
 
@@ -206,7 +206,7 @@ xdr_struct_form(xdrs, objp)
 */
 xdr_struct_form (XDR * xdrs, struct_form * objp)
 {
-  local_exitwith ("Could not xdr_struct_form - noRPC build");
+  A4GL_local_exitwith ("Could not xdr_struct_form - noRPC build");
   return 0;
 }
 
@@ -218,7 +218,7 @@ xdr_struct_form (XDR * xdrs, struct_form * objp)
 bool_t
 xdr_menu_list (XDR * xdrs, menu_list * objp)
 {
-  local_exitwith ("Could not xdr_menu_list - noRPC build");
+  A4GL_local_exitwith ("Could not xdr_menu_list - noRPC build");
   return 0;
 }
 
@@ -227,11 +227,11 @@ xdr_menu_list (XDR * xdrs, menu_list * objp)
  * @todo Describe function
  */
 static void
-local_exitwith (char *s)
+A4GL_local_exitwith (char *s)
 {
 #ifdef DEBUG
   {
-    debug ("ending because : %s", s);
+    A4GL_debug ("ending because : %s", s);
   }
 #endif
   printf ("\n\n\n");

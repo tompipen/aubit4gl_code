@@ -76,8 +76,8 @@ getopt_long (argc, argv, options, long_options, opt_index)
 }
 
 /* Like getopt_long, but '-' as well as '--' can indicate a long option.
-   If an option that starts with '-' (not '--') doesn't match a long option,
-   but does match a short option, it is parsed as a short option
+   If an option that starts with '-' (not '--') doesn't A4GL_match a long option,
+   but does A4GL_match a short option, it is parsed as a short option
    instead.  */
 
 int

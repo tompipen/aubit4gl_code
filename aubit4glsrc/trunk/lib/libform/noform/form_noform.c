@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_noform.c,v 1.2 2003-05-12 14:24:19 mikeaubury Exp $
+# $Id: form_noform.c,v 1.3 2003-05-15 07:10:41 mikeaubury Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 
@@ -76,7 +76,7 @@
  */
 /* struct s_form_dets * */
 void *
-read_form (char *fname, char *formname)
+A4GL_read_form (char *fname, char *formname)
 {
 
   printf ("Unable to open form - using libFORM_NOFORM.\n");

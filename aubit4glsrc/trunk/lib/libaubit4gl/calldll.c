@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.30 2003-05-12 14:24:03 mikeaubury Exp $
+# $Id: calldll.c,v 1.31 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -75,9 +75,9 @@ char tempbuff[1024];
 */
 
 static void badfunc (void);
-int nullfunc (void);
-int call_4gl_dll (char *filename, char *function, int args);
-void *find_func_double (void *dllhandle, char *func);
+int A4GL_nullfunc (void);
+int A4GL_call_4gl_dll (char *filename, char *function, int args);
+void *A4GL_find_func_double (void *dllhandle, char *func);
 
 /*
 =====================================================================
@@ -213,16 +213,16 @@ freelibrary.
  * @param args
  */
 int
-call_4gl_dll (char *filename, char *function, int args)
+A4GL_call_4gl_dll (char *filename, char *function, int args)
 {
-  exitwith ("DLL functions not available yet for WIN32 platforms");
+  A4GL_exitwith ("DLL functions not available yet for WIN32 platforms");
   return 0;
 }
 
 /*
 
 void *
-find_func (void *dllhandle, char *func)
+A4GL_find_func (void *dllhandle, char *func)
 {
 int (*func_ptr) (void);
 
@@ -230,14 +230,14 @@ int (*func_ptr) (void);
 }
 
 void *
-find_func_allow_missing (void *dllhandle, char *func)
+A4GL_find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
   return func_ptr;
 }
 
 void *
-dl_openlibrary (char *type, char *name)
+A4GL_dl_openlibrary (char *type, char *name)
 {
   void *dllhandle;
   return dllhandle;
@@ -259,8 +259,8 @@ dl_openlibrary (char *type, char *name)
 static void
 badfunc (void)
 {
-  /* exitwith ("No DLL Loaded"); */
-  exitwith ("0: Non-existing function called in DLL\n");
+  /* A4GL_exitwith ("No DLL Loaded"); */
+  A4GL_exitwith ("0: Non-existing function called in DLL\n");
 }
 
 /**
@@ -268,9 +268,9 @@ badfunc (void)
  * @todo Describe function
  */
 int
-nullfunc (void)
+A4GL_nullfunc (void)
 {
-  debug ("Calling DLL where no function defined (Allowed)");
+  A4GL_debug ("Calling DLL where no function defined (Allowed)");
   return 1;
 }
 
@@ -293,7 +293,7 @@ nullfunc (void)
  * @return A pointer to the dynamic library handle.
  */
 void *
-dl_openlibrary (char *type, char *p)
+A4GL_dl_openlibrary (char *type, char *p)
 {
   void *dllhandle;
   static char buff[1024];
@@ -310,8 +310,8 @@ dl_openlibrary (char *type, char *p)
   if ((!acl_getenv ("AUBITDIR"))
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
     {
-      exitwith ("Error: Cannot determine AUBITDIR - STOP.");
-      //FIXME: why is exitwith not exiting???
+      A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
+      //FIXME: why is A4GL_exitwith not exiting???
       exit (43);
     }
 
@@ -365,7 +365,7 @@ dl_openlibrary (char *type, char *p)
 #endif
 
 #ifdef DEBUG
-  debug ("Attempting to open shared library : '%s'", buff);
+  A4GL_debug ("Attempting to open shared library : '%s'", buff);
 #endif
 
   dllhandle = dlopen (buff, RTLD_LAZY);
@@ -380,11 +380,11 @@ dl_openlibrary (char *type, char *p)
       printf ("Error: can't open DLL %s - STOP\n", buff);
       printf ("Error msg: %s\n", buff2);
 
-      debug ("Error: can't open DLL %s - STOP\n", buff);
-      debug ("Error msg: %s\n", buff2);
+      A4GL_debug ("Error: can't open DLL %s - STOP\n", buff);
+      A4GL_debug ("Error msg: %s\n", buff2);
 
-      exitwith ("Error: can't open DLL - STOP. See debug.out");
-      //FIXME: why is exitwith not exiting???
+      A4GL_exitwith ("Error: can't open DLL - STOP. See debug.out");
+      //FIXME: why is A4GL_exitwith not exiting???
       exit (44);
 
     }
@@ -395,12 +395,12 @@ dl_openlibrary (char *type, char *p)
  * Try to find a function in a dll loaded.
  *
  * @param dllhandle The dynamic library handler.
- * @param func The function name.
+ * @param A4GL_func The function name.
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */
 void *
-find_func (void *dllhandle, char *func)
+A4GL_find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
 
@@ -419,27 +419,27 @@ find_func (void *dllhandle, char *func)
   sprintf (tempbuff, "%s", func);
 #endif
 
-  debug ("find_func: Finding pointer to DLL function %s\n", tempbuff);
+  A4GL_debug ("find_func: Finding pointer to DLL function %s\n", tempbuff);
 
   if (dllhandle == 0)
     {
-      debug ("Not found - bad handle");
-      exitwith ("Could not open shared library");
+      A4GL_debug ("Not found - bad handle");
+      A4GL_exitwith ("Could not open shared library");
       /* return badfunc; */
     }
   func_ptr = dlsym (dllhandle, tempbuff);
-  debug ("Got %p", func_ptr);
+  A4GL_debug ("Got %p", func_ptr);
   if (func_ptr == 0)
     {
-      debug ("Function Not found");
-      exitwith ("Could not find function in shared library");
+      A4GL_debug ("Function Not found");
+      A4GL_exitwith ("Could not find function in shared library");
       // This is so critical - we're out of here...
 
-      gotolinemode ();
+      A4GL_gotolinemode ();
       printf
 	("Critical error - Unable to find function %s in shared library\n",
 	 func);
-      fgl_end ();
+      A4GL_fgl_end ();
       exit (1);
       /* return badfunc; */
     }
@@ -453,15 +453,15 @@ find_func (void *dllhandle, char *func)
  * Try to find a function in a dll loaded.
  *
  * @param dllhandle The dynamic library handler.
- * @param func The function name.
+ * @param A4GL_func The function name.
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */
 void *
-find_func_double (void *dllhandle, char *func)
+A4GL_find_func_double (void *dllhandle, char *func)
 {
   double (*func_ptr) (void);
-  debug
+  A4GL_debug
     ("find_func_double: Finding pointer to DLL function %s which returns a double\n",
      func);
 
@@ -474,16 +474,16 @@ find_func_double (void *dllhandle, char *func)
 
   if (dllhandle == 0)
     {
-      debug ("Not found - bad handle");
-      exitwith ("Could not open share library");
+      A4GL_debug ("Not found - bad handle");
+      A4GL_exitwith ("Could not open share library");
       return badfunc;
     }
   func_ptr = dlsym (dllhandle, tempbuff);
-  debug ("Got %p", func_ptr);
+  A4GL_debug ("Got %p", func_ptr);
   if (func_ptr == 0)
     {
-      debug ("Function Not found");
-      exitwith ("Could not find function in shared library");
+      A4GL_debug ("Function Not found");
+      A4GL_exitwith ("Could not find function in shared library");
       return badfunc;
     }
   return func_ptr;
@@ -494,10 +494,10 @@ find_func_double (void *dllhandle, char *func)
  * @todo Describe function
  */
 void *
-find_func_allow_missing (void *dllhandle, char *func)
+A4GL_find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
-  debug ("find_func_allow_missing: Finding pointer to DLL function %s\n",
+  A4GL_debug ("find_func_allow_missing: Finding pointer to DLL function %s\n",
 	 func);
 
 #if (defined(__MACH__) && defined(__APPLE__))
@@ -509,13 +509,13 @@ find_func_allow_missing (void *dllhandle, char *func)
 
   if (dllhandle == 0)
     {
-      /*  exitwith ("2: Non-existing function (%s) called in DLL",func); */
+      /*  A4GL_exitwith ("2: Non-existing function (%s) called in DLL",func); */
       return &badfunc;
     }
   func_ptr = dlsym (dllhandle, tempbuff);
 
   if (func_ptr == 0)
-    return &nullfunc;
+    return &A4GL_nullfunc;
   return func_ptr;
 }
 
@@ -529,7 +529,7 @@ find_func_allow_missing (void *dllhandle, char *func)
  * @param args The arguments ???
  */
 int
-call_4gl_dll (char *filename, char *function, int args)
+A4GL_call_4gl_dll (char *filename, char *function, int args)
 {
   void *dllhandle;
   char buff[512];
@@ -541,8 +541,8 @@ call_4gl_dll (char *filename, char *function, int args)
   if ((!acl_getenv ("AUBITDIR"))
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
     {
-      exitwith ("Error: Cannot determine AUBITDIR - STOP.");
-      //FIXME: why is exitwith not exiting???
+      A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
+      //FIXME: why is A4GL_exitwith not exiting???
       exit (43);
 
     }
@@ -557,48 +557,48 @@ call_4gl_dll (char *filename, char *function, int args)
 #endif
 
   strcat (nfunc, function);
-  trim (nfunc);
-  trim (nfile);
-  debug ("Calling %s in file %s with %d args", nfunc, nfile, args);
+  A4GL_trim (nfunc);
+  A4GL_trim (nfile);
+  A4GL_debug ("Calling %s in file %s with %d args", nfunc, nfile, args);
 
-  debug ("Trying %s", filename);
+  A4GL_debug ("Trying %s", filename);
   dllhandle = dlopen (filename, RTLD_LAZY);
   if (dllhandle == 0)
-    debug ("Opps - can't open DLL - %s", dlerror ());
+    A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
 
   if (dllhandle == 0)
     {
       sprintf (buff, "%s/lib/lib%s.so", acl_getenv ("AUBITDIR"), filename);
-      debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
-	debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
     }
 
   if (dllhandle == 0)
     {
       sprintf (buff, "./lib%s.so", filename);
-      debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
-	debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
     }
 
   if (dllhandle == 0)
     {
       sprintf (buff, "./%s.so", filename);
-      debug ("Trying %s", buff);
+      A4GL_debug ("Trying %s", buff);
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
-	debug ("Opps - can't open DLL - %s", dlerror ());
+ A4GL_debug ("Opps - can't open DLL - %s", dlerror ());
     }
 
 
 
   if (dllhandle == 0)
     {
-      debug ("No library handle");
-      exitwith ("Unable to load shared library file");
+      A4GL_debug ("No library handle");
+      A4GL_exitwith ("Unable to load shared library file");
       return 0;
     }
 
@@ -606,14 +606,14 @@ call_4gl_dll (char *filename, char *function, int args)
 
   if (func_ptr == 0)
     {
-      debug ("No function handle");
-      exitwith ("Unable to load function from shared libary");
+      A4GL_debug ("No function handle");
+      A4GL_exitwith ("Unable to load function from shared libary");
       return 0;
     }
 
-  debug ("Calling function");
+  A4GL_debug ("Calling function");
   a = func_ptr (args);
-  debug ("Closing handle");
+  A4GL_debug ("Closing handle");
   dlclose (dllhandle);
   return a;
 

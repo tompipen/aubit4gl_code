@@ -31,7 +31,7 @@
 #include "formsproc.h"
 
 int
-load_form (int nargs)
+A4GL_load_form (int nargs)
 {
   int num_ent;
 
@@ -74,7 +74,7 @@ get_entry (int nargs)
 
   /* Pop field_name */
   popquote (field_name, ENTRY_SIZE);
-  trim (field_name);
+  A4GL_trim (field_name);
 
   field_value = retrieve_form_entry (field_name);
 
@@ -114,7 +114,7 @@ get_cmdln (int nargs)
 
   /* Pop field_name */
   popquote (field_name, ENTRY_SIZE);
-  trim (field_name);
+  A4GL_trim (field_name);
 
   field_value = retrieve_cmdln_entry (field_name);
 

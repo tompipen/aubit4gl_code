@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "../../common/dataio/report.xs.h"
 /*
 # 4GL code generator
@@ -68,7 +69,8 @@ char *generate_order_by (struct select_stmts *ptr);
 char *decode_op (int op);
 void decode_call (struct cmd_call *cmd);
 char *decode_column (struct format *f);
-int read_data_from_file (char *datatype, void *ptr, char *filename);
+int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
+char * trans (char *s);
 
 
 int
@@ -88,7 +90,7 @@ main (int argc, char *argv[])
 
   memset (&this_report, 0, sizeof (struct report));
 
-  a = read_data_from_file ("report", &this_report, argv[1]);
+  a = A4GL_read_data_from_file ("report", &this_report, argv[1]);
 
   if (!a)
     {

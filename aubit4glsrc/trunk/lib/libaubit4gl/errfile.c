@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.11 2003-05-12 14:24:05 mikeaubury Exp $
+# $Id: errfile.c,v 1.12 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -32,10 +32,10 @@
  * @file
  * File error writing
  *
- * @todo Add Doxygen comments to file
+ * @todo Add Doxygen A4GL_comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -70,8 +70,8 @@ int errline;
 =====================================================================
 */
 
-void find_nl (FILE * f, long fp, long *s, long *e);
-void prerrmark (FILE * f, int a);
+void A4GL_find_nl (FILE * f, long fp, long *s, long *e);
+void A4GL_prerrmark (FILE * f, int a);
 
 /*
 =====================================================================
@@ -91,14 +91,14 @@ void prerrmark (FILE * f, int a);
  * @param lineno Line number on the source file.
  */
 FILE *
-write_errfile (FILE * f, char *fname, long as, int lineno)
+A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
 {
   int a;
   long s2, e;
   long s;
   int errorno;
 
-  fout = mja_fopen (fname, "w");
+  fout = A4GL_mja_fopen (fname, "w");
   if (fout == 0)
     {
       printf ("Unable to open %s\n", fname);
@@ -106,14 +106,14 @@ write_errfile (FILE * f, char *fname, long as, int lineno)
     }
   errorno = ferror (f);
   /* find the nearest NL */
-  find_nl (f, as, &s2, &e);
+  A4GL_find_nl (f, as, &s2, &e);
   if ((as - s2) <= 0)
     {
       as -= 2;
-      find_nl (f, as, &s2, &e);
+      A4GL_find_nl (f, as, &s2, &e);
     }
 #ifdef DEBUG
-  debug ("s2=%d e=%d", s2, e);
+  A4GL_debug ("s2=%d e=%d", s2, e);
 #endif
   s = e + 1;
   errline = lineno;
@@ -128,7 +128,7 @@ write_errfile (FILE * f, char *fname, long as, int lineno)
       s -= a;
     }
   le = as - s2;
-  prerrmark (fout, (int) (as - s2));
+  A4GL_prerrmark (fout, (int) (as - s2));
   return fout;
 }
 
@@ -138,7 +138,7 @@ write_errfile (FILE * f, char *fname, long as, int lineno)
  * @param f A pointer to the input source file.
  */
 void
-write_cont (FILE * f)
+A4GL_write_cont (FILE * f)
 {
   int a, s = 1;
   a = 2048;
@@ -164,7 +164,7 @@ write_cont (FILE * f)
  *   after.
  */
 void
-find_nl (FILE * f, long fp, long *s, long *e)
+A4GL_find_nl (FILE * f, long fp, long *s, long *e)
 {
   char buff[10];
 
@@ -193,7 +193,7 @@ find_nl (FILE * f, long fp, long *s, long *e)
  * @todo Describe function
  */
 void
-prerrmark (FILE * f, int a)
+A4GL_prerrmark (FILE * f, int a)
 {
   int b;
   fprintf (f, "|");
@@ -224,7 +224,7 @@ write_cont(f);
  * @return The pointer to the opened file.
  */
 FILE *
-mja_fopen (char *name, char *mode)
+A4GL_mja_fopen (char *name, char *mode)
 {
   return fopen (name, mode);
 }

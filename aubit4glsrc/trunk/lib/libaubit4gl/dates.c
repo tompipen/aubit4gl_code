@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.11 2003-05-12 14:24:04 mikeaubury Exp $
+# $Id: dates.c,v 1.12 2003-05-15 07:10:39 mikeaubury Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen comments to add to functions
+ * @todo Doxygen A4GL_comments to add to functions
  */
 
 /*
@@ -106,12 +106,12 @@ struct s_days {
 */
 
 void day_array (int, int, int *);
-int day_in_year (int, int, int);
-int y2kmode (int yr);
+int A4GL_day_in_year (int, int, int);
+int A4GL_y2kmode (int yr);
 
 static long gen_dateno2 (int day, int month, int year);
 static int get_yr (int d);
-int get_month (int d);
+int A4GL_get_month (int d);
 
 /*
 =====================================================================
@@ -124,7 +124,7 @@ int get_month (int d);
  * @todo Describe function
  */
 int
-date_sep (int z)
+A4GL_date_sep (int z)
 {
   if (z == '/' || z == '-' || z == '.')
     return 1;
@@ -135,7 +135,7 @@ date_sep (int z)
  * @return the 1 based day number within the year
  */
 int
-day_in_year (day, month, year)
+A4GL_day_in_year (day, month, year)
      int day, month, year;
 {
   int i, leap;
@@ -153,13 +153,13 @@ day_in_year (day, month, year)
  *	missing days.
  */
 int
-day_in_week (day, month, year)
+A4GL_day_in_week (day, month, year)
      int day, month, year;
 {
   long temp;
 
   temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
-    + day_in_year (day, month, year);
+    + A4GL_day_in_year (day, month, year);
   if (temp < FIRST_MISSING_DAY)
     return ((temp - 1 + SATURDAY) % 7);
   if (temp >= (FIRST_MISSING_DAY + NUMBER_MISSING_DAYS))
@@ -187,7 +187,7 @@ gen_dateno2 (int day, int month, int year)
   if (day > days_in_month[leap_year (year)][month])
     return DATE_INVALID;
   temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
-    + day_in_year (day, month, year);
+    + A4GL_day_in_year (day, month, year);
   return temp - EPOCH;
 }
 
@@ -201,18 +201,18 @@ gen_dateno2 (int day, int month, int year)
  * @return The date in internal format
  */
 long
-gen_dateno (int day, int month, int year)
+A4GL_gen_dateno (int day, int month, int year)
 {
   int z;
 #ifdef DEBUG
   {
-    debug ("In gen_dateno %d %d %d", day, month, year);
+    A4GL_debug ("In A4GL_gen_dateno %d %d %d", day, month, year);
   }
 #endif
   z = gen_dateno2 (day, month, year);
   if (z == DATE_INVALID)
     {
-      exitwith ("Invalid date");
+      A4GL_exitwith ("Invalid date");
     }
   return z;
 }
@@ -228,11 +228,11 @@ get_yr (int d)
 {
   int e;
   int h, l;
-  debug ("D=%d\n", d);
+  A4GL_debug ("D=%d\n", d);
   if (d == DATE_INVALID || d < 1000)
     return d;
   e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
-  h = gen_dateno (31, 12, e);
+  h = A4GL_gen_dateno (31, 12, e);
   /*l=gen_dateno(1,1,e); */
   while (1)
     {
@@ -267,7 +267,7 @@ get_yr (int d)
  *  @return The month (?)
  */
 int
-get_month (int d)
+A4GL_get_month (int d)
 {
   int i, leap;
   int year;
@@ -275,7 +275,7 @@ get_month (int d)
   if (d == DATE_INVALID)
     return d;
   year = get_yr (d);
-  day = d - gen_dateno (1, 1, year) + 1;
+  day = d - A4GL_gen_dateno (1, 1, year) + 1;
   leap = leap_year (year);
   for (i = 1; i <= 12; i++)
     {
@@ -294,15 +294,15 @@ get_month (int d)
  * @todo Describe function
  */
 int
-get_date (int d, int *day, int *mn, int *yr)
+A4GL_get_date (int d, int *day, int *mn, int *yr)
 {
   int i, leap;
   int year;
-  debug ("d=%d\n", d);
+  A4GL_debug ("d=%d\n", d);
   if (d == DATE_INVALID || d < 10000)
     return 0;
   year = get_yr (d);
-  *day = d - gen_dateno (1, 1, year) + 1;
+  *day = d - A4GL_gen_dateno (1, 1, year) + 1;
   leap = leap_year (year);
   for (i = 1; i <= 12; i++)
     {
@@ -323,15 +323,15 @@ get_date (int d, int *day, int *mn, int *yr)
  * @todo Describe function
  */
 int
-modify_year (int a)
+A4GL_modify_year (int a)
 {
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Modify year");
+    A4GL_debug ("Modify year");
   }
 #endif
-  a = y2kmode (a);
+  a = A4GL_y2kmode (a);
   return a;
 }
 
@@ -341,7 +341,7 @@ modify_year (int a)
  * @todo Describe function
  */
 int
-y2kmode (int yr)
+A4GL_y2kmode (int yr)
 {
   char *ptr;
   int z;
@@ -351,7 +351,7 @@ y2kmode (int yr)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("y2kmode");
+    A4GL_debug ("y2kmode");
   }
 #endif
   if (yr > 99)
@@ -359,7 +359,7 @@ y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
-	debug ("Year is ok");
+ A4GL_debug ("Year is ok");
       }
 #endif
       return yr;
@@ -370,7 +370,7 @@ y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
-	debug ("y2ktype not set");
+ A4GL_debug ("y2ktype not set");
       }
 #endif
       ptr = acl_getenv ("AUBIT_Y2K");
@@ -381,7 +381,7 @@ y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
-	debug ("y2ktype set to %d", y2ktype);
+ A4GL_debug ("y2ktype set to %d", y2ktype);
       }
 #endif
       if (y2ktype == 0)
@@ -416,7 +416,7 @@ y2kmode (int yr)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Y2K1");
+    A4GL_debug ("Y2K1");
   }
 #endif
   if (y2ktype == 999)
@@ -427,7 +427,7 @@ y2kmode (int yr)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Y2K2");
+    A4GL_debug ("Y2K2");
   }
 #endif
   if (y2ktype == -999)
@@ -438,7 +438,7 @@ y2kmode (int yr)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    debug ("Y2K3");
+    A4GL_debug ("Y2K3");
   }
 #endif
   if (y2ktype >= 1000 && y2ktype % 100 == 0)

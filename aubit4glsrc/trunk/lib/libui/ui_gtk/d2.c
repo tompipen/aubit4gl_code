@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: d2.c,v 1.4 2003-05-12 14:24:28 mikeaubury Exp $
+# $Id: d2.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
 #*/
 
 /**
@@ -76,7 +76,7 @@ GtkWidget *tooltips;
  * @return FALSE
  */
 gint
-delete_event (GtkWidget * widget, GdkEvent * event, gpointer data)
+A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data)
 {
 
   g_print ("delete event occurred\n");
@@ -94,9 +94,9 @@ delete_event (GtkWidget * widget, GdkEvent * event, gpointer data)
  * @param data
  */
 void
-destroy_event (GtkWidget * widget, gpointer data)
+A4GL_destroy_event (GtkWidget * widget, gpointer data)
 {
-  debug (" destroy_event : widget=%p data=%x\n", widget, data);
+  A4GL_debug (" A4GL_destroy_event : widget=%p data=%x\n", widget, data);
   gtk_main_quit ();
 }
 

@@ -28,7 +28,7 @@ in_var :
 
 sql_block_into: 
 	INTO obind_var_list {
- 		strcpy($<str>$,get_into_part(get_bind_cnt('o')));
+ 		strcpy($<str>$,A4GL_get_into_part(get_bind_cnt('o')));
 	}
 ;
 
