@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.20 2002-10-22 06:43:37 afalout Exp $
+# $Id: resource.c,v 1.21 2002-10-22 08:57:05 afalout Exp $
 #
 */
 
@@ -68,7 +68,12 @@
 =====================================================================
 */
 
-HKEY 	newkey = 0; //not sure if this is correct!!!
+#ifdef __MINGW32__
+	HKEY 	newkey = 0; //not sure if this is correct!!!
+#endif
+
+
+
 
 struct str_resource *user_resource = 0;
 int loaded_resources=0;

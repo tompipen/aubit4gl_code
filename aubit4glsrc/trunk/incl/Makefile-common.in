@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.93 2002-10-22 06:43:36 afalout Exp $
+# $Id: Makefile-common.in,v 1.94 2002-10-22 08:57:02 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1052,12 +1052,9 @@ endif
 
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
-#ifneq "${COMSPEC}" ""
-	#libexportlib4glcomp.dll is really a 4glc executable compiled as dll !!!!
-	#but it is needed by libLEX_C.dll - don't ask me why...
-	#LIB_FILES +=${LIB_EXPORTLIB} libexportlib4glcomp.dll
-	LIB_FILES +=${LIB_EXPORTLIB} lib4glc.dll
-#endif
+ifneq "${COMSPEC}" ""
+	LIB_FILES +=${LIB_EXPORTLIB} lib4glc${SO_EXT}
+endif
 
 ## ==================================================================
 ##                    To docs directory

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.23 2002-08-13 11:56:48 afalout Exp $
+# $Id: esql.ec,v 1.24 2002-10-22 08:57:03 afalout Exp $
 #
 */
 
@@ -64,14 +64,18 @@
 =====================================================================
 */
 
-#define DEFINE_SQLCA
+//Not referenced anywhere:
+//#define DEFINE_SQLCA
 
 /** Informix ESQL/C database connector type */
 #define ESQL_CONNECTOR   0
 
+//Prevent Aubit headers from definig sqlc record; we will use the one
+//provided in Informix headers instead.
+//WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #define _SQLCA_DEFINED_
 
-#ifdef WIN32
+#if defined (WIN32) || defined (__CYGWIN__)
 	#define _NO_FORM_H_
 	#define _NO_CURSES_H_
 	#define _NO_PANEL_H_
@@ -80,25 +84,25 @@
 	#define _NO_DBFORM_H_
 #endif
 
-#define INPUT_OUTPUT_BIND 0
-#define INPUT_BIND        1
-#define OUTPUT_BIND       2
-#define NO_BIND           3
+#define INPUT_OUTPUT_BIND 		0
+#define INPUT_BIND        		1
+#define OUTPUT_BIND       		2
+#define NO_BIND           		3
 
 
-#define SIMPLE                0
-#define SIMPLE_SCROLL         1
-#define FOR_UPDATE            2
-#define FOR_UPDATE_WITH_HOLD  3
-#define WITH_HOLD             4
+#define SIMPLE                	0
+#define SIMPLE_SCROLL         	1
+#define FOR_UPDATE            	2
+#define FOR_UPDATE_WITH_HOLD  	3
+#define WITH_HOLD             	4
 
-#define FETCH_FIRST     0
-#define FETCH_LAST      1
-#define FETCH_NEXT      2
-#define FETCH_PREVIOUS  3
-#define FETCH_CURRENT   4
-#define FETCH__RELATIVE 5
-#define FETCH__ABSOLUTE 6
+#define FETCH_FIRST    			0
+#define FETCH_LAST      		1
+#define FETCH_NEXT      		2
+#define FETCH_PREVIOUS  		3
+#define FETCH_CURRENT   		4
+#define FETCH__RELATIVE 		5
+#define FETCH__ABSOLUTE 		6
 
 
 /*
@@ -119,16 +123,20 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.23 2002-08-13 11:56:48 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.24 2002-10-22 08:57:03 afalout Exp $";
 #endif
 
+/*
 #ifdef WIN32
 	int status;
 #endif
+*/
 
+/*
 #ifdef OLD_INCL
 	typedef unsigned char UCHAR;
 #endif
+*/
 
 char lasterrorstr[1024] = "";
 
