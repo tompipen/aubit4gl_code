@@ -117,7 +117,8 @@ typedef struct formnode {
 #define O_NL_OVERLOAD           (0x0001)
 #define O_BS_OVERLOAD           (0x0002)
 
-
+#undef KEY_MAX
+#define KEY_MAX 0x6000
 
 #define REQ_NEXT_PAGE    (KEY_MAX + 1)  /* move to next page            */
 #define REQ_PREV_PAGE    (KEY_MAX + 2)  /* move to previous page        */
@@ -238,7 +239,7 @@ typedef struct formnode {
        OPTIONS A4GL_form_field_opts(const FIELD *field);
        int A4GL_form_set_field_userptr(FIELD *field, void*userptr);
        void *A4GL_form_field_userptr(const FIELD *field);
-       int A4GL_form_form_driver(FORM *form, int c);
+       int A4GL_form_form_driver(FORM *form, long c);
        int A4GL_form_set_form_userptr(FORM *form, void *userptr);
        void* A4GL_form_form_userptr(const FORM *form);
        FORM *A4GL_form_new_form(FIELD **fields);

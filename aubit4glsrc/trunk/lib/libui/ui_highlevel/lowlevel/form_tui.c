@@ -667,13 +667,17 @@ A4GL_form_dynamic_field_info (const FIELD * field, int *rows, int *cols,
 
 
 int
-A4GL_form_form_driver (FORM * form, int c)
+A4GL_form_form_driver (FORM * form, long c)
 {
 char *cfield_buffer;
 FIELD *current;
 int field_length;
 int a;
 A4GL_debug("TTT - form_driver %d %x",c,c);
+if (c>=0x100 && c<0x6000) {
+	A4GL_debug("FX1 INVALID CALL TO FORM DRIVER : %x",c);
+	A4GL_pause_execution();
+}
 if (c==REQ_FIRST_FIELD) {
 	A4GL_debug("REQ FIRST FIELD detected");
 }

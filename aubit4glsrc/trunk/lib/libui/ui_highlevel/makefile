@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.32 2004-12-07 01:43:58 afalout Exp $
+# $Id: makefile,v 1.33 2004-12-08 16:16:18 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -36,7 +36,7 @@ HOSTNAME		:=$(shell echo $$HOSTNAME)
 ## ==================================================================
 ##                              GTK+ Options
 ## ==================================================================
-CFLAGS+=${GTK_INC_PATH} ${GTK_LIB_PATH}
+CFLAGS+=-g ${GTK_INC_PATH} ${GTK_LIB_PATH}
 
 ifeq "${WIN_PATH}" "1"
 #ifeq "" "$(findstring cygdrive,${GTK_INC_PATH})"
@@ -188,19 +188,19 @@ all: ${ALL}
 #Standard Curses based plug-in
 libUI_HL_TUI${SO_EXT}: ${LIBROOT}/libUI_HL_TUI${SO_EXT}
 ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
+	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
 
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
 libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
+	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
 libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
 ${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
+	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
 		${PD_CURSES_LIB_NAME}
 #		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a		
 

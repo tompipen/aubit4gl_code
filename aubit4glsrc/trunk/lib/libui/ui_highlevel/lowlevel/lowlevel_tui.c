@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.38 2004-12-08 13:07:38 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.39 2004-12-08 16:18:43 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.38 2004-12-08 13:07:38 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.39 2004-12-08 16:18:43 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1408,6 +1408,7 @@ A4GL_LL_getch_swin (void *window_ptr)
     {
       halfdelay (1);
       //a = wgetch (window_ptr);
+	abort_pressed=0;
       a = getch ();
 #ifdef __MINGW32__
 if (a==3) abort_pressed=1;
@@ -1455,8 +1456,34 @@ int
 A4GL_LL_int_form_driver (void *mform, int mode)
 {
 int a;
-  a=A4GL_form_form_driver (mform, mode);
-  A4GL_debug("int_form_Driver %p %x = %d",mform,mode,a);
+int nmode;
+
+if (mode>=0x6000) {
+	A4GL_debug("FX1 Should be called with AUBIT_REQ not REQ %x\n",mode);
+	A4GL_pause_execution();
+}
+
+nmode=-1;
+
+switch(mode) {
+	case AUBIT_REQ_BEG_FIELD: nmode= REQ_BEG_FIELD; break;
+	case AUBIT_REQ_END_FIELD: nmode= REQ_END_FIELD;break;
+	case AUBIT_REQ_CLR_EOF: nmode= REQ_CLR_EOF; break;
+	case AUBIT_REQ_CLR_FIELD: nmode=REQ_CLR_FIELD; break;
+	case AUBIT_REQ_DEL_CHAR: nmode= REQ_DEL_CHAR; break;
+	case AUBIT_REQ_DEL_PREV: nmode= REQ_DEL_PREV;break;
+	case AUBIT_REQ_FIRST_FIELD: nmode= REQ_FIRST_FIELD; break;
+	case AUBIT_REQ_FIRST_PAGE: nmode= REQ_FIRST_PAGE; break;
+	case AUBIT_REQ_INS_MODE: nmode= REQ_INS_MODE; break;
+	case AUBIT_REQ_NEXT_CHAR: nmode= REQ_NEXT_CHAR;break;
+	case AUBIT_REQ_OVL_MODE: nmode= REQ_OVL_MODE; break;
+	case AUBIT_REQ_PREV_CHAR: nmode= REQ_PREV_CHAR; break;
+	case AUBIT_REQ_VALIDATION: nmode= REQ_VALIDATION; break;
+	default : nmode=mode;
+}
+  if (mode==-1) return 0;
+  a=A4GL_form_form_driver (mform, nmode);
+  A4GL_debug("int_form_Driver %p %x = %d",mform,nmode,a);
 	return a;
 	//return 1;
 }
@@ -1974,8 +2001,9 @@ int rblock;
     {
 	A4GL_debug("Printable");
       A4GL_LL_int_form_driver (mform, a);
-      A4GL_debug ("Called int_form_driver");
+      A4GL_debug ("Called int_form_driver - now calling REQ VALIDATION (%d) PREV_CHAR (%d)",AUBIT_REQ_VALIDATION,AUBIT_REQ_PREV_CHAR);
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
+      A4GL_debug ("Called int_form_driver - REQ VALIDATION");
     }
 
 
