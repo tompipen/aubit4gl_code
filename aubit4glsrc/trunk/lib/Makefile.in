@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2002-03-16 12:15:11 afalout Exp $
+# $Id: Makefile.in,v 1.33 2002-03-17 09:36:12 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -294,7 +294,8 @@ libaclsharedgui.so : $(OBJS) ${GUI_GTK}
 
 .PHONY : dllaclshared
 dllaclshared : $(OBJS) ${GUI_TUI}
-	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
+#	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="@CURSES_LIB_NAME@ ${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
+	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 #$RPCLIB_NAME
 
 #when this is linked with -gtk4gl that is linked with -rpclib, linking will fail with duplicated definitions;

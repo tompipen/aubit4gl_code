@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.42 2002-03-16 11:59:57 afalout Exp $
+# $Id: configure.in,v 1.43 2002-03-17 09:36:00 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -120,9 +120,9 @@ else
 fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
-    echo "Configuring source code"
+    echo "Configuring Aubit compiler source code"
 else
-    echo "Configuring binary distribution"
+    echo "Configuring Aubit compiler binary distribution"
 fi
 
 #FIXME: what is this?
@@ -239,8 +239,11 @@ AC_SUBST(ADD_LD_LIBRARY_PATH)
 AC_SUBST(PIC)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
+
+#curses:
 AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(HAVE_CURSES)
+AC_SUBST(CURSES_LIB_NAME)
 
 #debug
 AC_SUBST(DEBUG_BISON)
@@ -265,7 +268,7 @@ COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
 test_rpclib="1"
 GTKBUILD=no
-AUBITGUI=TUI
+AUBITGUI=CONSOLE
 A4GL_SQLTYPE=nosql
 
 HAVE_IODBC=no
@@ -325,10 +328,23 @@ if test "$enable_debug" = "no" ; then
 	AUBIT_DEBUG=0
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
-	DEBUG_BISON="--debug"
+    CLFAGS="$CFLAGS -g -Wall -DDEBUG"
+	echo "Debugging enabled"
+fi
+
+if test "$enable_yy_debug" = "yes" ; then
 	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
 	YYDEBUG="-DYYDEBUG=1"
-    CLFAGS="$CFLAGS -g -Wall -DDEBUG"
+	echo "YY Debugging enabled"
+else
+	echo "YY Debugging disabled"
+fi
+
+if test "$enable_yacc_debug" = "yes" ; then
+	DEBUG_BISON="--debug"
+	echo "Yacc Debugging enabled"
+else
+	echo "Yacc Debugging disabled"
 fi
 
 
@@ -383,30 +399,32 @@ GLIBC_VER=2.2.4
 ##                  Checks for standard programs
 ## ==================================================================
 
+AC_PATH_PROG(MAKE, make, no)
+if test "$MAKE" = "no" ; then
+	if test "$AUBIT_SOURCE" = "1" ; then
+		AC_MSG_ERROR(Cannot compile Aubit from source code without 'make' - please install it. Stop.)
+    else
+		AC_MSG_WARN(It will be much easier if you would install 'make')
+    fi
+fi
+
+
 if test "$AUBIT_SOURCE" = "1" ; then
 	AC_PROG_YACC
 	if test "$YACC" != "bison -y"; then
 		#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
 		YACC=no
-		AC_MSG_WARN(Will use pre-compiled y.tab.c files from tools/no_yacc)
+		AC_MSG_WARN(Will use pre-compiled parser files from tools/no_yacc)
 		AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
-	    #AC_MSG_ERROR(Current Aubit source distribution will not work without Bison. Stop.)
-
 	else
 		AC_MSG_CHECKING(bison version)
-	#   set `bison --version| sed -e 's/^GNU Bison version //' -e 's/\./ /g'`
 		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
-
 	    if test "$1" = "1" -a "$2" -lt "25"; then
 	        AC_MSG_WARN(You will need bison 1.25 if you'd want to regenerate the Aubit parsers (found $1.$2).)
-	    fi
-	    AC_MSG_RESULT($1.$2 (ok))
+        else
+		    AC_MSG_RESULT($1.$2 (ok))
+        fi
 	fi
-
-	AC_PATH_PROG(MAKE, make, no)
-    if test "$MAKE" = "no" ; then
-		AC_MSG_ERROR(Cannot compile Aubit from source code without 'make' - please install it. Stop.)
-    fi
 
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 
@@ -453,9 +471,8 @@ if test "$LEX" = ":"; then
     #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
 	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
-		#AC_MSG_ERROR(Current Aubit source distribution will not work without Lex. Stop.)
-		AC_MSG_WARN(Will use pre-compiled lex.yy.c files from tools/no_yacc)
-		AC_MSG_WARN(You will need lex if you'd want to regenerate Aubit fcompile parsers.)
+		AC_MSG_WARN(Will use pre-compiled parser files from tools/no_yacc)
+		AC_MSG_WARN(You will need lex if you'd want to regenerate the Aubit parsers.)
 
     fi
 fi
@@ -1670,6 +1687,7 @@ AC_ARG_WITH(rpc,
                         #FIXME: if needed, set this path to appropriate subdir of "no_rpc" depending
                         #on platform. It is not clear is this files are platform dependent.
 						RPCLIB_INCLUDE="-I$aubitdir/tools/no_rpc/cygwin"
+				        AC_MSG_WARN("rpcgen" not found. Will use pre-compiled RPC files from tools/cygwin/)
 						;;
 
 		            *)
@@ -1699,7 +1717,14 @@ AC_ARG_WITH(rpc,
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
 				AC_DEFINE(HAVE_RPCLIB,0,[ ])
 				HAVE_RPCLIB=0
-				#FIXME: put warning here, about reduced functionality
+		        AC_MSG_WARN('rpclib' not found. You will not be able to compile or open form and menu files or)
+				AC_MSG_WARN(use Sun RPC functionality of Aubit 4gl compiler. Consider installing Sun RPC.)
+				AC_MSG_WARN(Will use header files from tools/no_rpc/.)
+                #FIXME: if we link fcompile and mcompile statically with rpclib for binary distro, will
+                #it be able to compile forms and menus on systems without rpclib installed?
+				
+				#FIXME: if we link libRPC_SUNRPC statically with rpclib for binary distro, will RPC work
+				#on system without rpclib installed?
             else
 				AC_DEFINE(HAVE_RPCLIB,1,[ ])
 				HAVE_RPCLIB=1
@@ -1790,29 +1815,39 @@ AC_CHECK_LIB([c], [main])
 AC_CHECK_LIB([curses], [main])
 
 	if test "$ac_cv_lib_curses_main" = "yes"; then
+		#fixme: check version of curses - how?
+		CURSES_LIB_NAME="-lcurses -lform -lpanel"
 		AC_DEFINE(HAVE_CURSES)
+        HAVE_CURSES=1
 	    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
 		CURSES_LIB_PATH="-L/lib"
+		if [ "$AUBITGUI" = "CONSOLE" ]; then
+			AUBITGUI=TUI
+        fi
+	else
+		HAVE_CURSES=0
+		if [ "$AUBITGUI" = "CONSOLE" ]; then
+			AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
+        else
+			AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
+        fi
+		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE MENUS OR FORMS - ONLY 'DISPLAY' WILL WORK!)
+		AC_MSG_WARN(Considder installing 'curses' libraries)
 	fi
 
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
+
+#FIXME form and panel are part of curses?
+#AIX: Both form and panel h files are part of ncurses. Install it.
 # FIXME: Replace `main' with a function in `-lform':
 AC_CHECK_LIB([form], [main])
-# FIXME: Replace `main' with a function in `-lodbc32':
-#not much point in checking this, it will allways be available on Windows,
-#and does not exist anywhere else:
-#AC_CHECK_LIB([odbc32], [main])
 # FIXME: Replace `main' with a function in `-lpanel':
 AC_CHECK_LIB([panel], [main])
 
+#unit test sw for C code, used in tools/test/db
 AC_CHECK_LIB([check], [suite_create])
 
-#fixme: check version of curses
-#AIX: Both form and panel h files are part of ncurses. Install it.
-
-
-#fixme: stop if we don;t have any of above.
 
 ## ==================================================================
 ##                       Checks for header files
@@ -2027,7 +2062,12 @@ if test "$WARN_LD_LIBRARY_PATH" != ""; then
     echo ""
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
-	    make ldconfig
+		#FIXME: make this call only if make is detected (this can happen with binary distro)
+		if test "$MAKE" != "no" ; then
+			make ldconfig
+        else
+            echo "Ooops! No 'make' installed, you will have to do it manually!"
+        fi
     else
 		echo "ERROR: ADD_LD_LIBRATY_PATH is empty."
     fi

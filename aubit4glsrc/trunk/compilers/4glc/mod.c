@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.46 2002-02-17 21:10:47 saferreira Exp $
+# $Id: mod.c,v 1.47 2002-03-17 09:36:12 afalout Exp $
 #
 */
 
 
 /**
  * @file
- * It looks like functions to help the parsing of a module (a x4gl one). 
+ * It looks like functions to help the parsing of a module (a x4gl one).
  * For that the name mod.c
  *
  * @todo Doxygen comments in all functions
@@ -43,245 +43,6 @@
  * @todo -pedantic
  */
 
-/*
-* (c) 1997-1998 Aubit Computing Ltd.
-*
-* $Id: mod.c,v 1.46 2002-02-17 21:10:47 saferreira Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.45  2002/02/16 21:25:00  saferreira
-*	Doxygen comments added
-*	
-*	Revision 1.44  2002/02/14 22:11:44  saferreira
-*	Code commented
-*	
-*	Revision 1.43  2002/02/03 17:42:27  saferreira
-*	Comments added
-*	
-*	Revision 1.42  2002/01/30 21:13:43  saferreira
-*	Warning fixes
-*	
-*	Revision 1.41  2002/01/30 13:41:53  saferreira
-*	Comments added
-*	
-*	Revision 1.40  2002/01/20 14:42:12  mikeaubury
-*	Error handling fix.
-*	This really needs examining as to what happens with
-*	SQLERROR, ERROR and ANYERROR
-*	I've set it so that WHENEVER ANY ERROR is top
-*	followed by WHENEVER ERROR, then WHENEVER SQLERROR
-*	
-*	This means :
-*	WHENEVER SQLERROR STOP
-*	WHENEVER ERROR CONTINUE
-*	WHENEVER ANYERROR CALL myfunc
-*	
-*	would call myfunc for any SQLERROR, but :
-*	
-*	WHENEVER ERROR CONTINUE
-*	WHENEVER ANYERROR CALL myfunc
-*	WHENEVER SQLERROR STOP
-*	
-*	Would stop (the WHENEVER SQLERROR was after the ANYERROR).
-*	
-*	Revision 1.39  2002/01/13 10:58:57  mikeaubury
-*	Fixed bug #492094
-*	
-*	Revision 1.38  2002/01/13 09:40:46  afalout
-*	Make install and autoconf for GTK
-*	
-*	Revision 1.37  2002/01/06 11:24:46  afalout
-*	Configuration work
-*	
-*	Revision 1.36  2002/01/06 10:20:29  mikeaubury
-*	Fixes for resources
-*
-*	Revision 1.35  2001/12/07 18:20:07  mikeaubury
-*	dl stuff
-*	
-*	Revision 1.33  2001/12/02 22:34:45  saferreira
-*	Some prototypes declared, warnings fixed and Doxygen comments added
-*
-*	Revision 1.32  2001/11/30 21:34:00  saferreira
-*	Warnigs and prototypes fixed and Doxygen comments added
-*	
-*	Revision 1.31  2001/11/29 22:26:57  saferreira
-*	Some more warnings fixed and Doxygen comments added
-*	
-*	Revision 1.30  2001/11/28 23:12:14  saferreira
-*	Small modifications for warning fix (Prototypes)
-*	
-*	Revision 1.29  2001/11/27 23:50:52  saferreira
-*	Some more warning fixes, documentation added and prototypes declared
-*	
-*	Revision 1.28  2001/11/27 20:48:24  saferreira
-*	Some cleaning, statics, prototype warnings and doxygen comments.
-*	
-*	Revision 1.27  2001/11/27 14:01:03  saferreira
-*	Removed old code inside #ifdefs
-*	
-*	Revision 1.26  2001/11/25 15:29:30  mikeaubury
-*	General updates
-*	
-*	Revision 1.25  2001/11/21 22:56:16  saferreira
-*	Some compiler warnings fixed
-*	
-*	Revision 1.24  2001/11/19 10:31:13  mikeaubury
-*	new stuff - compile_<lang> changes
-*	
-*	Revision 1.23  2001/11/16 11:05:35  mikeaubury
-*	Phase 2.1 of printc changes
-*	Also fixed small bug in GTK stuff - still lots to do on GUI side though....
-*	
-*	Revision 1.22  2001/11/14 07:45:33  mikeaubury
-*	phase 1.1
-*	
-*	Revision 1.21  2001/11/11 20:04:08  mikeaubury
-*	Major upgrade - first phase commit.
-*	Includes :
-*	changes to usage of printc & addmap
-*	changes to include some extra AD 4gl constructs (not implemented in the library)
-*	& changes for constant handling (these are now passed in the globals)
-*	
-*	Revision 1.20  2001/10/29 14:42:00  mikeaubury
-*	Allow varibles in IN and EXISTS when using SQL
-*	
-*	Revision 1.19  2001/10/28 17:10:36  mikeaubury
-*	Added IN and EXISTS, (and NOT IN and NOT EXISTS) tests for 4gl, so
-*		if exists (select * from systables where tabid=1) then
-*		...
-*		end if
-*	
-*	and
-*	
-*		define a integer
-*		let a=1
-*		if a in (1,2,3,4) then
-*			display "OK"
-*		end if
-*	
-*	and
-*	
-*		if a in (select tabid from systables) then
-*		...
-*		end if
-*	
-*	and
-*	
-*		if a not in (select tabid from systables) then
-*		...
-*		end if
-*	
-*	should all now work ..
-*	
-*	Revision 1.18  2001/10/28 14:46:38  mikeaubury
-*	Major major expression handling updates
-*	
-*	Minor changes for messages and errors (doesn't prompt on errors anymore)
-*	
-*	Revision 1.17  2001/10/18 01:31:01  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.16  2001/10/18 00:01:30  afalout
-*	NoODBC build on CygWin
-*	
-*	Revision 1.15  2001/10/05 18:16:40  mikeaubury
-*	Fixes
-*	
-*	Revision 1.14  2001/09/22 20:09:59  mikeaubury
-*	Fixes
-*	
-*	Revision 1.13  2001/09/18 08:32:23  mikeaubury
-*	More fixes..
-*	
-*	Revision 1.12  2001/09/17 21:12:37  mikeaubury
-*	new and improved...
-*	But still working in it..
-*	
-*	Revision 1.11  2001/09/16 16:19:21  mikeaubury
-*	more updates
-*	
-*	Revision 1.10  2001/09/10 17:47:39  mikeaubury
-*	Bugfix - overflow in bindings (manifesting as a 'FUNC' was not the last block...)
-*	
-*	Revision 1.9  2001/09/08 09:57:41  mikeaubury
-*	Does anyone know another phrase for 'yet more changes' ?
-*	They are too numerous and small to mention individually....
-*	
-*	Revision 1.8  2001/09/07 23:15:46  afalout
-*	Exit codes
-*	
-*	Revision 1.7  2001/09/07 21:35:38  mikeaubury
-*	yet more fixes
-*	
-*	Revision 1.6  2001/09/06 20:02:21  mikeaubury
-*	More fixes (incl. major one on passing records to functions/reports)
-*	
-*	Revision 1.5  2001/09/05 21:49:22  mikeaubury
-*	Small changes.
-*	
-*	Revision 1.4  2001/09/04 21:51:02  mikeaubury
-*	bug fixes.
-*	Added thru syntax for some commands (eg. Input)
-*	
-*	Revision 1.3  2001/09/01 19:57:31  mikeaubury
-*	major bug fixes...
-*	Be care with records - new print_push_record ...
-*	
-*	Revision 1.2  2001/08/31 18:22:31  mikeaubury
-*	minor fixes,
-*	incl requirement for a : on a label
-*	
-*	major fixes:
-*	automatically compiles a globals 4gl (ie. you don't need to precompile to obtain a glb to compile a module that uses that glb file...)
-*	
-*	Revision 1.1.1.1  2001/08/20 02:35:38  afalout
-*	Initial import to SF
-*	
-*	Revision 1.12  2001/08/17 10:20:42  maubury
-*	loop updates
-*	
-*	Revision 1.11  2001/08/16 07:01:41  maubury
-*	updates
-*	
-*	Revision 1.10  2001/08/10 17:22:22  maubury
-*	Updates for bug fixes (regression-fails)
-*	
-*	Revision 1.9  2001/07/18 17:51:33  maubury
-*	Interval Changes
-*	
-*	Revision 1.8  2001/06/17 07:48:44  maubury
-*	Bug fixes
-*	
-*	Revision 1.7  2001/06/16 10:33:22  maubury
-*	Many bug fixes
-*	
-*	Revision 1.6  2001/06/15 17:32:59  maubury
-*	*** empty log message ***
-*	
-*	Revision 1.5  2001/06/12 03:37:15  afalout
-*	make install, make clean
-*	
-*	Revision 1.4  2001/05/26 12:40:56  maubury
-*	Lib GUI Stuff.....
-*	
-*	Revision 1.3  2001/04/30 17:31:04  maubury
-*	*** empty log message ***
-*	
-*	Revision 1.2  2000/09/28 02:08:58  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:43  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.3  1998/08/11 20:23:54  fglcomp
-*	Added header
-*
-*
-*******************************************************************************/
 int inc = 0;
 //#include "../libincl/compiler.h"
 #include <string.h>
@@ -314,6 +75,7 @@ char xwords[256][256];
 int word_cnt = 0;
 #endif
 
+//should not be here, makes building whithout curses impossible:
 #include <curses.h>
 #define USE_PRINTCOMMENT
 extern int menu_cnt;
