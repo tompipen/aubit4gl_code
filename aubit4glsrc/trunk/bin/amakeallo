@@ -34,6 +34,17 @@ function shortstats {
 function clean {
 ##################
 
+	ls *.4gl > /dev/null 2>&1
+	RET=$?
+	if test $RET != "0"
+	then
+		if [ "$VERBOSE" = "1" ]
+    	then
+			echo "No .4gl files in current directory."
+    	    return
+        fi
+    fi
+
 	if [ "$VERBOSE" = "1" ]
     then
 		echo "Cleaning..."
@@ -85,7 +96,7 @@ function clean {
 		fi
     fi
 
-    if test $FULLCLEAN
+    if test $FULLCLEAN = "1"
     then
         #his can be dangerous, tere might be some C code in there?
 		ls *.c > /dev/null 2>&1
@@ -127,6 +138,14 @@ function compileit {
 
 
 	pwd=`pwd`
+	HFILE=`basename $i .4gl`.h;
+	GFILE=`basename $i .4gl`.glb;
+
+    HAVEERRFILE=0
+    HAVECFILE=0
+    HAVEHFILE=0
+	HAVEGFILE=0
+
 
 	if [ "$COMPILER" = "aubit" ]
 	then
@@ -175,30 +194,72 @@ function compileit {
 	$A4GLPC >> $ERRORLOG 2>&1;
 	RET=$?
 
+	if [ -f $ERR ]
+    then
+		cp $ERR $ERRFILESDIR   #err file
+        HAVEERRFILE=1
+    fi
+
+	if [ "$COMPILER" = "aubit" ]
+	then
+		if [ -f $CFILE ]
+        then
+			cp $CFILE $ERRFILESDIR
+            HAVECFILE=1
+        fi
+		if [ -f $HFILE ]
+        then
+			cp $HFILE $ERRFILESDIR
+            HAVEHFILE=1
+        fi
+		if [ -f $GFILE ]
+        then
+			cp $GFILE $ERRFILESDIR
+            HAVEGFILE=1
+        fi
+    fi
+
 	if test $RET != "0"
 	then
         #does this fails in 4Js too?
         if [ "$COMPILER" = "aubit" ] && [ "$COMPATIBLE" = "1" ]
         then
-		    if [ "$VERBOSE" = "1" ]
+			if [ "$VERBOSE" = "1" ]
 		    then
-				echo "Trying same in 4Js compiler:"
+				echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"
             fi
+
 			if [ -d $FJSERRFILESDIR ]
 	        then
-	            #this depends on amakeallo -4js executed previously:
-				if [ -f FJSERRFILESDIR/$i ]
+			    if [ "$VERBOSE" = "1" ]
+			    then
+					echo "Using previous 4Js run results in $FJSERRFILESDIR"
+                fi
+				#this depends on amakeallo -4js executed previously:
+				if [ -f $FJSERRFILESDIR/$i ]
 		        then
 	                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
 				    if [ "$VERBOSE" = "1" ]
 				    then
-						echo "Ignoring error - fails with 4Js too."
+						echo "Ignoring error - fails with 4Js too (previous)."
                     fi
 		            return
-		        fi
+		        else
+				    if [ "$VERBOSE" = "1" ]
+				    then
+						echo "NOT EXIST: $FJSERRFILESDIR/$i - so 4Js was OK."
+                    fi
+				fi
 	        else
 		        #this would take a long time since it will try to compile again
 		        #every file that fails:
+
+				if [ "$VERBOSE" = "1" ]
+			    then
+                    echo "$FJSERRFILESDIR don't exist"
+					echo "fglcomp $i:"
+	            fi
+
 				fglcomp $i
 		        RET=$?
 				if test $RET != "0"
@@ -206,14 +267,14 @@ function compileit {
 	                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
 				    if [ "$VERBOSE" = "1" ]
 				    then
-						echo "Ignoring error - fails with 4Js too."
+						echo "Ignoring error - fails with 4Js too (now)."
                     fi
 			        return
 			    fi
 			fi
 			if [ "$VERBOSE" = "1" ]
 		    then
-        	    echo "I compiled OK with 4Js"
+        	    echo "It compiled OK with 4Js"
             fi
 		fi
 
@@ -222,7 +283,6 @@ function compileit {
 		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
 		if [ -f $ERR ]
 		then
-			cp $ERR $ERRFILESDIR   #err file
 		    if [ "$VERBOSE" = "1" ]
 		    then
 				echo "$FGLCOMPILER failed: $PWD/$FGL"
@@ -234,7 +294,6 @@ function compileit {
 			OBJERR=$OBJERR.err
 			if [ -f $OBJERR ]
             then
-				cp $OBJERR $ERRFILESDIR   #err file
 			    if [ "$VERBOSE" = "1" ]
 			    then
 					echo "cc failed: $PWD/$FGL"
@@ -284,16 +343,6 @@ function compileit {
 	else
 		WASERROR=1
 		cp $i $ERRFILESDIR   #4gl file
-		cp $ERR $ERRFILESDIR   #err file
-
-		if [ "$COMPILER" = "aubit" ]
-		then
-			cp $CFILE $ERRFILESDIR   #c file
-			HFILE=`basename $i .4gl`.c;
-			GFILE=`basename $i .4gl`.glb;
-			cp $HFILE $ERRFILESDIR
-			cp $GFILE $ERRFILESDIR
-        fi
 	    if [ "$VERBOSE" = "1" ]
     	then
 			echo "failed in C, no object, no ret code from $FGLCOMPILER : $PWD/$FGL "
@@ -453,7 +502,9 @@ function doit {
 		ERR=`basename $i .4gl`.err;
 		CFILE=`basename $i .4gl`.c;
 
-		    compileit
+		    #########
+			compileit
+            #########
 
 		#####
 		done
@@ -487,6 +538,7 @@ function doit {
     FJSERRFILESDIR=$ERRFILESDIR-4js
 	AUBITERRFILESDIR=$ERRFILESDIR-aubit
     VERBOSE=0
+    MAXMODE=1
 
 	###############
 	#initialise:
@@ -566,6 +618,10 @@ function doit {
             exit 0
         ;;
 
+        *)
+            echo "Unknown parametar: $a : try '-help'. STOP."
+            exit 1
+        ;;
 
 	  ####
 	  esac
@@ -584,8 +640,14 @@ function doit {
 
 		if ! [ "$DESTDIR" = "/tmp/amakeallo-objects" ]
         then
-			DESTDIR=$ROOTDIR/aprog
-        fi
+			if [ -d $MAXDIR/aprog ]
+	        then
+				DESTDIR=$MAXDIR/aprog
+            else
+                echo "NOTE: using /tmp/amakeallo-objects for objects store"
+				DESTDIR=/tmp/amakeallo-objects
+            fi
+		fi
 
 		if [ -f $AUBITDIR/aubitenv ]
 		then
@@ -608,7 +670,13 @@ function doit {
 		COMPEXT2=
 		if ! [ "$DESTDIR" = "/tmp/amakeallo-objects" ]
         then
-			DESTDIR=$ROOTDIR/gprog
+			if [ -d $MAXDIR/gprog ]
+	        then
+				DESTDIR=$MAXDIR/gprog
+            else
+                echo "NOTE: using /tmp/amakeallo-objects for objects store"
+				DESTDIR=/tmp/amakeallo-objects
+            fi
         fi
 	fi
 
@@ -635,9 +703,20 @@ function doit {
         for subsystem in $ALLSUBDIRS; do
 		#################################################################################
 
-		    #echo $subsystem
-        	#continue
+                if [ "$subsystem" = "$DESTDIR" ]
+				then
+					continue
+                fi
 
+				#if test $MAXMODE = "1"
+                #then
+                    #FIXME: this is not working - we need to skip all this sirectories in
+                    #Maximise mode:
+					#if [ "$subsystem" in "aform aprog forms prog gform gprog qform qprog" ]
+                    #then
+                    #    continue
+                    #fi
+                #fi
 
 			   if [ -d $ROOTDIR/$subsystem ]
 	           then
@@ -656,12 +735,15 @@ function doit {
 					if [ "$COMPILER" = "aubit" ]
 					then
                         #Aubit needs GLOBALS files compiled first:
+						GLOBERRORS=0
 						###########
 						compglobals
 						###########
 
             	      	#Aubit NEEDS glb files, and we cannot assume we have
                 	    #them if we had errors when compiling GLOBALS files:
+
+                        #FIXME: is this returned correctly?
 						if [ "$GLOBERRORS" = "0" ]
 	                    then
 					        ####
