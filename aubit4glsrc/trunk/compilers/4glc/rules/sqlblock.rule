@@ -1,0 +1,36 @@
+sql_block_cmd : SQL {
+		sql_mode=1;
+		start_bind('i',0);
+		start_bind('o',0);
+	} sql_block END_SQL {
+			sql_mode=0;
+			print_sql_block_cmd($<str>3);
+	}
+;
+
+
+sql_block :
+	sql_block_entry 
+	| sql_block sql_block_entry  {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+;
+
+sql_block_entry:
+	SQL_TEXT 
+	| in_var {strcpy($<str>$,$<str>1);}
+	| sql_block_into {strcpy($<str>$,$<str>1);}
+	;
+
+in_var :
+	DOLLAR var_ident_ibind {
+		printf("---> %s\n",$<str>2);
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+sql_block_into: 
+	INTO obind_var_list {
+ 		strcpy($<str>$,get_into_part(get_bind_cnt('o')));
+	}
+;
+
+
