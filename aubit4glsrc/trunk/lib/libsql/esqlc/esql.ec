@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.35 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: esql.ec,v 1.36 2003-02-13 08:57:58 afalout Exp $
 #
 */
 
@@ -128,7 +128,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.35 2003-02-08 17:40:52 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.36 2003-02-13 08:57:58 afalout Exp $";
 #endif
 
 /*
@@ -2012,7 +2012,7 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
 
 /**
  * Print the information to the file acording to the data type
- * 
+ *
  * @param unloadFile A pointer to the opened unload file
  * @param idx The index of the column to be printed
  * @return 
@@ -2562,7 +2562,7 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
 
 /**
  * Free all resources allocated in getting information about columns
- * 
+ *
  * @return 
  *   - 0 : Descriptor dealocated
  *   - 1 : Error ocurred.
@@ -2827,6 +2827,18 @@ static long fixlength(int dtype,int length) {
 	
 	return length;
 }
+
+/**
+ * Returns the dialect of SQL spoken by the currently
+ * connected DBMS.
+ *
+ * @return  a char string "INFORMIX"
+ */
+char *
+A4GLSQL_dbms_dialect( void ) {
+    return "INFORMIX";
+}
+
 
 /* ================================= EOF ============================== */
 

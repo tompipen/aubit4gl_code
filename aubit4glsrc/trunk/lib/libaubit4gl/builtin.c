@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.18 2003-02-11 10:44:02 mikeaubury Exp $
+# $Id: builtin.c,v 1.19 2003-02-13 08:57:07 afalout Exp $
 #
 */
 
@@ -176,8 +176,8 @@ aclfgl_arr_curr (int nargs)
 int
 aclfgl_fgl_getenv (int nargs)
 {
-  char *g;
-  char *p;
+char *g;
+char *p;
 
   if (nargs != 1)
     {
@@ -195,6 +195,30 @@ aclfgl_fgl_getenv (int nargs)
   acl_free (g);
   return 1;
 }
+
+
+/**
+ * enable A4GLSQL_dbms_dialect() to be callable from 4gl code
+ * Returns the dialect of SQL spoken by the currently
+ * connected DBMS. a char string, eg. "INFORMIX", "ORACLE", "SAPDB"
+ *
+ * @return allways 1
+ */
+int
+aclfgl_dbms_dialect() {
+char *g;
+char *p;
+
+  p = A4GLSQL_dbms_dialect();
+  if (p == 0)
+    push_char ("");
+  else
+    push_char (A4GLSQL_dbms_dialect());
+  acl_free (g);
+  return 1;
+}
+
+
 
 /**
  * Make a string length to the string in the stack and return the length by

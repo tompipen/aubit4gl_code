@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.27 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: API_sql.c,v 1.28 2003-02-13 08:57:06 afalout Exp $
 #
 */
 
@@ -918,6 +918,7 @@ A4GLSQL_dbms_dialect( void )
   if (func == nullfunc ) return "";
   return (char *) func();
 }
+
 
 /**
  * Returns name/description of the currently connected DBMS.
