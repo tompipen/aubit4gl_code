@@ -551,18 +551,21 @@ function_call_expr2:
 ;
 
 function_callb:
-DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_date(1);");
-inc_counter();}
-| MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+}
+| MONTH OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_month(1);");
-inc_counter();} 
-| DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
+| DAY OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_day(1);");
-inc_counter();} 
-| YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
+| YEAR OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_year(1);");
-inc_counter();} 
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
 | INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_i {
 	char buff[256];
 	sprintf(buff,"acli_interval(%s,%s);",$<str>3,$<str>5);

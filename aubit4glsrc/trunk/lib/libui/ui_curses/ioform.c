@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.53 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: ioform.c,v 1.54 2003-07-23 14:42:12 mikeaubury Exp $
 #*/
 
 /**
@@ -1007,6 +1007,7 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
 A4GL_debug("A4GL_set_init_value %p %x",ptr,dtype);
 if (ptr) {
         A4GL_push_param (ptr, dtype);
+A4GL_debug("Calling display_field_contents");
 	A4GL_display_field_contents(f,dtype&DTYPE_MASK,DECODE_SIZE(dtype),ptr);
 	return;
 } 
@@ -1487,9 +1488,7 @@ A4GL_set_fields (void *vsio)
   sio = vsio;
 
   wid = 0;
-  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS
-      || sio->mode == MODE_INPUT_ARRAY)
-    wid = 1;
+  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS || sio->mode == MODE_INPUT_ARRAY) wid = 1;
   A4GL_debug ("in set fields");
   formdets = sio->currform;
   if (formdets == 0)
@@ -1547,6 +1546,7 @@ A4GL_set_fields (void *vsio)
 
       if (wid)
 	{
+	  A4GL_debug("99 wid set_init_value as in variable");
 	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr, sio->vars[a].dtype+ENCODE_SIZE(sio->vars[a].size));
 
 
@@ -1557,6 +1557,7 @@ A4GL_set_fields (void *vsio)
 	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
 	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT))
 	    {
+	  A4GL_debug("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",
 			  A4GL_get_str_attribute (prop, FA_S_DEFAULT));
 	      A4GL_set_init_value (field_list[a],
@@ -1568,6 +1569,7 @@ A4GL_set_fields (void *vsio)
 	    }
 	  else
 	    {
+	  A4GL_debug("99  set_init_value as nothing...");
 	      A4GL_set_init_value (field_list[a], 0, 0);
 	    }
 	}
@@ -1672,8 +1674,10 @@ set_fields2 (int nv, struct BINDING *vars, int d, int n, ...)
   for (a = 0; a <= nofields; a++)
     {
       A4GL_turn_field_on (field_list[a]);
-      if (d)
+      if (d) {
+	A4GL_debug("set_init_value");
 	A4GL_set_init_value (field_list[a], vars[a].ptr, vars[a].dtype);
+      }
 
       if (flg == 0)
 	{
@@ -2277,7 +2281,7 @@ void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
   f->do_reverse = a;
   A4GL_debug ("done ");
   set_field_opts (field, oopt);
-
+A4GL_debug("Calling display_field_contents");
   A4GL_display_field_contents(field,d1,s1,ptr1);
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.27 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: ops.c,v 1.28 2003-07-23 14:42:12 mikeaubury Exp $
 #
 */
 
@@ -58,6 +58,8 @@
 */
 
 void A4GL_int_int_ops (int op);
+int A4GL_dectos (void *z, void *w, int size);
+
 #ifdef OLD_INCL
 void A4GL_push_long (long a);
 void A4GL_push_int (int a);
@@ -1261,12 +1263,15 @@ A4GL_debug("Display_money");
         if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
                     strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
         } else {
-                memset(using_buff,'-',255);
-                using_buff[size_c]=0;
-                using_buff[size_c-4]='&';
-                using_buff[size_c-3]='.';
-                using_buff[size_c-2]='&';
-                using_buff[size_c-1]='&';
+		char *ptr2;
+		ptr2=ptr;
+                //memset(using_buff,'-',255);
+                //using_buff[size_c]=0;
+                //using_buff[size_c-4]='&';
+                //using_buff[size_c-3]='.';
+                //using_buff[size_c-2]='&';
+                //using_buff[size_c-1]='&';
+        	strcpy(using_buff,make_using_sz(ptr2,size_c,NUM_DIG(ptr2)*2,NUM_DEC(ptr2)));
         }
         A4GL_push_dec (ptr,0,size);
         A4GL_push_char(using_buff);
@@ -1422,13 +1427,43 @@ l=1; // '-'
 l+=dec;
 if (dec) l++; // '.'
 l+=dig-dec;
-if (l>sz && dec) return make_using_sz(ptr,sz,dig,dec-1);
+
 if (l>sz) {
-	// Can't do it...
-	memset(buff,'*',sz);
-	buff[sz]=0;
-	return buff;
+	A4GL_dectos(ptr,buff,64);
+	A4GL_ltrim(buff);
+	A4GL_trim(buff);
+	A4GL_debug("make_using_sz dectos returns ---> %s",buff);
+
+	
+	if (strlen(buff)>sz) {
+		char *ptr;	
+		// It doesn't fit - 
+		// what happens if we remove all the decimal places ?
+		ptr=strchr(buff,'.');
+
+		if (ptr) {
+			*ptr=0;
+		}
+
+		if (strlen(buff)>sz) {
+			// Still doesn't fit - we're stuffed...
+			memset(buff,'*',sz);
+			buff[sz]=0;
+			A4GL_debug("make_using_sz - doesn't fit");
+			return buff;
+		} 
+
+		dig=strlen(buff);
+		// Trim the decimals..
+		if (dec>sz-2-dig) {
+			dec=sz-2-dig;
+		}
+		dig=sz-2-dec;
+		return make_using_sz(ptr,sz,dig,dec);
+	} 
 }
+
+
 memset(buff,'-',255);
 buff[sz]=0; // Maximum length
 c=sz-1;

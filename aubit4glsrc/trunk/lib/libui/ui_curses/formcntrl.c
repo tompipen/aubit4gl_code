@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.20 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.21 2003-07-23 14:42:12 mikeaubury Exp $
 #*/
 
 /**
@@ -447,7 +447,10 @@ process_control_stack (struct s_screenio *sio)
       		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
       		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
       		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
-      		A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+		if (sio->mode != MODE_CONSTRUCT) {
+      			A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+		}
+
       		A4GL_comments (fprop);
 		if ((fprop->flags & 1) ) fprop->flags-=1; // Clear a flag to indicate that we're just starting on this field
       		new_state = 0;
@@ -473,29 +476,32 @@ process_control_stack (struct s_screenio *sio)
 	A4GL_debug("form_Field_chk returns %d\n",a);
 
 	if (ffc_rval!=-4) {
-		int field_no;
-		char buff[1024];
-		field_no=sio->curr_attrib;
       		new_state = 0;
-		strcpy(buff,field_buffer (sio->currentfield, 0));
-		A4GL_trim(buff);
-		A4GL_push_char(buff);
-		if (strlen(buff)) {
-			A4GL_debug("Field is not null");
-	        	A4GL_push_char (buff);
-		} else {
-			A4GL_debug("Field is null");
-		 	A4GL_push_null(DTYPE_CHAR,0);
-		}
+		if (sio->mode != MODE_CONSTRUCT) {
+			int field_no;
+			char buff[1024];
+			field_no=sio->curr_attrib;
+			strcpy(buff,field_buffer (sio->currentfield, 0));
+			A4GL_trim(buff);
+			A4GL_push_char(buff);
+			if (strlen(buff)) {
+				A4GL_debug("Field is not null");
+	        		A4GL_push_char (buff);
+			} else {
+				A4GL_debug("Field is null");
+		 		A4GL_push_null(DTYPE_CHAR,0);
+			}
 
+		
+			A4GL_debug("Calling A4GL_pop_var2 : %p dtype=%d size=%d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+          		A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+			A4GL_debug("Calling display_field_contents");
+			A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
-		A4GL_debug("Calling A4GL_pop_var2 : %p dtype=%d size=%d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-          	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
-
+	}
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);
-      		rval = -198;
+      	rval = -198;
 	} else {
 		A4GL_init_control_stack (sio,0);
 		return -1;

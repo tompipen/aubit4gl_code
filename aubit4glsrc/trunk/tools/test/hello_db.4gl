@@ -350,18 +350,18 @@ define
 
 
                 #USE SESSION s_id1 FOR
-				declare c3 scroll cursor for select typname from pg_type
+				declare c3x scroll cursor for select typname from pg_type
 
-		        foreach c3 into p_tabname
+		        foreach c3x into p_tabname
 		            display p_tabname
 		        end foreach
 
                 sleep 2
 
-                fetch first c3 into p_tabname
+                fetch first c3x into p_tabname
 		            display "First: ", p_tabname
 
-                fetch last c3 into p_tabname
+                fetch last c3x into p_tabname
 		            display "Last: ", p_tabname
 
                 sleep 3

@@ -166,8 +166,8 @@ print_construct_1 -> void
 /* void print_construct_2 (char *driver) */
 print_construct_2 char* driver -> void
 
-/* void print_construct_3 (int byname, char *constr_str, char *attr) */
-print_construct_3 int byname,char* constr_str,char* attr,int cattr -> void
+/* void print_construct_3 (int byname, char *constr_str, char *field_list, char *attr) */
+print_construct_3 int byname,char* constr_str,char* field_list,char* attr,int cattr -> void
 
 /* void print_befaft_field_1 (char *fieldexpr) */
 print_befaft_field_1 char* fieldexpr -> void
