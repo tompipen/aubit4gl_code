@@ -138,8 +138,7 @@ A4GL_fgl_fieldnametoid char* f char* s int n -> int
 /* int aclfgl_set_window_title (int nargs)*/
 aclfgl_set_window_title int nargs -> int
 
-
-
+A4GL_finish_screenio void* sio char* siotype -> void
 
 /* void*  A4GL_make_pixmap_gw (char* filename)*/
 A4GL_make_pixmap_gw char* filename -> void*

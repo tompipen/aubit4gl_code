@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.165 2004-03-15 20:16:54 mikeaubury Exp $
+# $Id: mod.c,v 1.166 2004-03-17 13:33:54 mikeaubury Exp $
 #
 */
 
@@ -442,6 +442,57 @@ isin_command (char *cmd_type)
   return 0;
 }
 
+
+char *command_type_for_stack_pos(int n) {
+	return command_stack[n].cmd_type;
+}
+/**
+ * This function gets the last command of type s
+ * and returns the an ID for it - this is just the stack position - but
+ * later maybe made into something unique for a module
+ * This ensures that we can have lots of concurrent _sio's running...
+ * (prompts within inputs etc)
+ * @param cmt_type - Command type to look for ("ALL" for any sio based command, "ALLINPUT" to exclude display array)
+ * @return stack ID
+**/
+
+int get_sio_id(char *cmd_type) {
+int stack_ids[10];
+int a;
+int max_id=0;
+int anymode=0;
+for (a=0;a<10;a++) stack_ids[a]=0;
+//printf("Looking for cmd_type = %s\n",cmd_type);
+/* Are we looking for anything ? */
+if (strcmp(cmd_type,"ALL")==0) { anymode=1; }
+if (strcmp(cmd_type,"ALLINPUT")==0) { anymode=2; }
+if (anymode) { /* used for getfldbuf etc */
+	stack_ids[0]=isin_command("INPUT");
+	stack_ids[1]=isin_command("CONSTRUCT");
+	if (anymode!=2) stack_ids[2]=isin_command("DISPLAY");
+
+	for (a=0;a<3;a++) {
+		if (stack_ids[a]>max_id) max_id=stack_ids[a];
+	}
+	return max_id;
+}
+
+a=isin_command(cmd_type);
+if (a==0) {
+	int z;
+	printf("Looking for cmd_type = %s - not found\n",cmd_type);
+  	for (z = ccnt - 1; z >= 0; z--)
+    	{
+      	if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
+		continue;
+	printf("%d %s\n",z,command_stack[z].cmd_type);
+	}
+	a4gl_yyerror("Internal error - unable to find sio_id for command");
+	return 0;
+}
+return a;
+
+}
 /**
  * Print the declaration of a record.
  *
@@ -4484,7 +4535,7 @@ void A4GL_get_event(int n,int *i,char **s) {
 }
 
 
-void A4GL_copy_fbind_to_Obind() {
+void A4GL_copy_fbind_to_Obind(void) {
 //printf("Copying fbind %d %d\n",fbindcnt,ordbindcnt);
 memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
 ordbindcnt=fbindcnt;

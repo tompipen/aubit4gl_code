@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.66 2004-03-04 16:27:47 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.67 2004-03-17 13:33:55 mikeaubury Exp $
 */
 
 /**
@@ -451,6 +451,7 @@ int a_isprint(int a);
 	int finishing;
 	char *repName;
 	char *modName;
+	int convertable;
   };
 
 
@@ -485,6 +486,7 @@ int a_isprint(int a);
 	int finishing;
 	char *repName;
 	char *modName;
+	int convertable;
   };
 #endif
 

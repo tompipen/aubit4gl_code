@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.45 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: ops.c,v 1.46 2004-03-17 13:33:55 mikeaubury Exp $
 #
 */
 
@@ -223,8 +223,8 @@ void A4GL_in_date_ops(int op) {
   struct A4GLSQL_dtime dt;
   struct ival in;
 
-  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &x_date);
-  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
+  A4GL_get_top_of_stack (2, &d1, &s1, (void *) &x_date);
+  A4GL_get_top_of_stack (1, &d2, &s2,  (void *)&pi);
 
 memset(&in,0,sizeof(in));
   in.stime = pi->stime;
@@ -280,8 +280,8 @@ A4GL_in_dt_ops (int op)
   char *ptr;
 
 A4GL_debug("in_dt_ops");
-  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
-  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
+  A4GL_get_top_of_stack (2, &d1, &s1, (void *) &pd);
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_DTIME)
@@ -918,8 +918,8 @@ A4GL_in_in_ops (int op)
 
 A4GL_debug("in_in_ops");
 // d2 op d1
-  A4GL_get_top_of_stack (2, &d2, &s2, (void **) &pi2);
-  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi1);
+  A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &pi1);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
@@ -1124,8 +1124,8 @@ A4GL_dt_dt_ops (int op)
     }
   
 // d2 - d1
-  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
-  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
+  A4GL_get_top_of_stack (2, &d1, &s1, (void *) &pd);
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
 
   if ((d1 & DTYPE_MASK) != DTYPE_DTIME)
@@ -1733,6 +1733,8 @@ A4GL_display_money (void *ptr, int size, int size_c,
 {
 static char s[256];
 static char buff[256];
+char *ubuff;
+int a;
 
 A4GL_debug("Display_money");
   //if (size_c==-1) { return 0; }
@@ -1756,10 +1758,21 @@ A4GL_debug("Display_money");
                 l=NUM_DEC(ptr2);
                 n=n-l+1;
                 size_c=n+1;
+		A4GL_debug("Forcing size : %x",size_c);
         }
 
-A4GL_debug("Calling make_using..");
-	A4GL_push_char(make_using(ptr));
+	A4GL_debug("Calling make_using.. ");
+	strcpy(buff,"-");
+	ubuff=make_using_tostring(ptr,size>>8,size&255);
+	strcat(buff,ubuff);
+	for (a=strlen(buff)-1;a>=0;a--) {
+		 if (buff[a]=='-') {
+			buff[a]='$'; break;
+		}
+	}
+	//printf("buff=%s\n",buff);
+        A4GL_push_char(buff);
+	//A4GL_push_char(make_using(ptr));
 	A4GL_pushop(OP_USING);	
 	ptr=A4GL_char_pop();
 	strcpy(s,ptr);
@@ -1945,10 +1958,10 @@ int dig;
 int dec;
 
 A4GL_assertion (ptr==0, "make_using has been passed a null pointer..");
-
 strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
 dig=NUM_DIG(ptr)*2;
 dec=NUM_DEC(ptr);
+A4GL_debug("In make_using : dig=%d dec=%d",dig,dec);
 buff[dig-dec]=0;
 
 if  (dec) 	strcat(buff,"&.");

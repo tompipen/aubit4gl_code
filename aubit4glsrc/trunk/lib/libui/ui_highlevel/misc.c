@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.10 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.11 2004-03-17 13:33:58 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1333,3 +1333,14 @@ int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
 
 
 
+
+void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
+        if (strcmp(siotype,"s_inp_arr")==0) {
+                A4GL_comments(0);
+        }
+
+        if (strcmp(siotype, "s_screenio")==0) {
+                A4GL_comments(0);
+        }
+
+}

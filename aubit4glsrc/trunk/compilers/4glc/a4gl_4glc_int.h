@@ -145,6 +145,8 @@ void push_gen (int a, char *s);
 void pop_all_gen (int a, char *s);
 int start_bind (char i, char *var);
 int get_bind_cnt (char i);
+int get_sio_id(char *cmd_type);
+char *command_type_for_stack_pos(int n);
 int add_bind (char i, char *var);
 int how_many_in_bind (char i);
 void continue_loop (char *cmd_type);

@@ -271,23 +271,32 @@ end function
  *}
  function show_firstrun()
 
- 	#open window...
+ 	open window wmenu at 1,1 with 3 rows, 80 columns 
+	open window wdisplay at 5,9 with 14 rows,62 columns attribute(border)
 	
-	let lv_txt[1]="Welcome to Aubit 4GL configuration utility, 'configurator'. When Aubit 4GL was" 
-	let lv_txt[2]="compiled from source code, or installed from 'tarball' package (folowed by " 
-	let lv_txt[3]="'make install' command) or installed from RPM package, a script called" 
-	let lv_txt[4]="'configure' was automatically executed to detect your current system" 
-	let lv_txt[5]="configuration, and based on this Aubit global configuration file"
-	let lv_txt[6]="(/etc/opt/aubit4gl/aubitrc) was created. This utility allows you to inspect" 
-	let lv_txt[7]="and change settings that apply to Aubit compile-time and run-time programs."
+              # "--------------------------------------------------------------	
+	display " ","" 								at 1,1 attribute(cyan,reverse)
+	display "        Welcome to Aubit 4GL configuration utility,","" 	at 2,1 attribute(cyan,reverse)
+	display " ","" 								at 3,1 attribute(cyan,reverse)
+	display " " 								at 4,1
+	display " When Aubit 4GL was compiled from source code, or installed  "	at 5,1
+	display " from a 'tarball' package (followed by 'make install')" 	at 6,1
+	display " or installed from RPM package, a script called 'configure' " 	at 7,1
+	display " was automatically executed to detect your current system"	at 8,1
+	display " configuration, and based on this Aubit global configuration"	at 9,1
+	display "  file (/etc/opt/aubit4gl/aubitrc) was created. "		at 10,1
+	display " " 								at 11,1
+	display " This utility allows you to inspect and change settings that"	at 12,1
+	display " apply to  Aubit compile-time and run-time programs."		at 13,1
 	
-	call display_txt()
-
+	current window is wmenu
 	menu "Introduction Window"
 		command "Close" "Close introduction window"
 			#close window...
 			exit menu
 	end menu
+	close window wmenu
+	close window wdisplay
  
  end function
   

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.79 2004-03-14 10:41:49 mikeaubury Exp $
+# $Id: esql.ec,v 1.80 2004-03-17 13:33:57 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.79 2004-03-14 10:41:49 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.80 2004-03-17 13:33:57 mikeaubury Exp $";
 #endif
 
 
@@ -1245,6 +1245,7 @@ int type;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
       A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
+
       break;
 
 
@@ -1264,16 +1265,23 @@ int type;
     case DTYPE_MONEY:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
 	DATA;
+
+      A4GL_debug ("MONEY...");
       if (isSqlError ())
-	return 1;
-      fgl_money = malloc (sizeof (fglmoney));
-	char_var=(char *)&fgl_money->dec_data[2];
-      if (dectoasc (&money_var, char_var, 64, -1))
 	{
-	/** @todo : Store the error somewhere */
+	  A4GL_debug ("isSqlError...");
 	  return 1;
 	}
-       bind[idx].ptr = (void *)fgl_decimal;
+
+      memset (tmpbuff, 0, 255);
+      if (dectoasc (&decimal_var, tmpbuff, 64, -1))
+	{
+	  return 1;
+	}
+      A4GL_debug ("tmpbuff=%s\n", tmpbuff);
+      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
+
+
       break;
 
 

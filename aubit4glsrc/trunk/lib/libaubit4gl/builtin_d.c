@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.41 2004-03-15 20:17:11 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.42 2004-03-17 13:33:55 mikeaubury Exp $
 #
 */
 
@@ -232,8 +232,8 @@ A4GL_push_dec (char *p, int ismoney,int size)
   A4GL_debug("push_dec with size=%x\n",size);
 
   if (p==0) {
-	if (ismoney) A4GL_push_param(0,DTYPE_MONEY+DTYPE_MALLOCED+ENCODE_SIZE(size));
-	else A4GL_push_param(0,DTYPE_DECIMAL+DTYPE_MALLOCED+ENCODE_SIZE(size));
+	if (ismoney) A4GL_push_param(0,DTYPE_MONEY+  DTYPE_MALLOCED+ENCODE_SIZE(size));
+	else         A4GL_push_param(0,DTYPE_DECIMAL+DTYPE_MALLOCED+ENCODE_SIZE(size));
 	return;
 	
   }

@@ -1023,7 +1023,7 @@ let lv_curr_db=get_db();
 code
 {
 #define MAXDBS 100
-#define FASIZ (MAXDBS * 19)
+#define FASIZ (MAXDBS * 128)
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 

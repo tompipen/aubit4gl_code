@@ -3,7 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../../common/a4gl_lle.h"
+#include "../common/csv_io.h"
 
+void msgbox (char *title, char *txt);
 
 #define DRAG_TARGET_NAME_0 "ReportEntry"
 #define DRAG_TARGET_INFO_0 0
@@ -14,6 +16,7 @@ GtkTargetEntry target_entry[] = {
   {DRAG_TARGET_NAME_0, 0, DRAG_TARGET_INFO_0}
 };
 
+int fake_clicked(int a,int b);
 
 GtkTargetEntry target_block[] = {
   {DRAG_TARGET_NAME_1, 0, DRAG_TARGET_INFO_1}
@@ -39,7 +42,6 @@ void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 			      GtkSelectionData * selection_data, guint info,
 			      guint t, gpointer data);
 extern struct r_report *report;
-static void start_lle (void);
 /*
 struct s_rbx {
 	int rb;
@@ -82,19 +84,18 @@ save_file (void)
 
 /* ******************************************************************************** */
 
-void
-LR_show_layout_rest (GtkWidget * vbox_in_sw)
+void LR_show_layout_rest (GtkWidget * vbox_in_sw)
 {
   /* create a new window */
-  char desc[255];
-  char buff[1024];
+  //char desc[255];
+  //char buff[1024];
 
-  GtkItemFactory *ifac;
-  GtkAccelGroup *acc;
-  GtkWidget *menu_bar;
-  GtkWidget *vbox;
-  GtkWidget *sw;
-  GtkWidget *l;
+  //GtkItemFactory *ifac;
+  //GtkAccelGroup *acc;
+  //GtkWidget *menu_bar;
+  //GtkWidget *vbox;
+  //GtkWidget *sw;
+  //GtkWidget *l;
   int block;
 
   gtk_rc_parse_string (style_cell);
@@ -117,7 +118,8 @@ GtkWidget *
 create_integer_spin_button (void)
 {
 
-  GtkWidget *window, *spinner;
+  //GtkWidget *window, 
+	GtkWidget *spinner;
   GtkAdjustment *spinner_adj;
 
   spinner_adj =
@@ -248,6 +250,10 @@ make_table (GtkWidget * table, int ncols, int nrows, int src_block)
     {
       disable = 0;
     }
+
+  if (ncols<0) {
+	ncols=10; // some nice default value..
+  }
 
   if (table == 0)
     {
@@ -412,18 +418,16 @@ make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 }
 
 void
-resize_table (GtkWidget * table, int nlines, int src_block)
+resize_table (GtkWidget * table, int nlines, int ncols,int src_block)
 {
   printf ("Resize %p to %d lines\n", table, nlines);
-  table = make_table (table, 10, nlines, src_block);
+  table = make_table (table, ncols, nlines, src_block);
 }
 
 void
 sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
 {
-  resize_table (GTK_WIDGET (user_data),
-		gtk_spin_button_get_value_as_int (spinbutton),
-		(int) gtk_object_get_data (GTK_OBJECT (spinbutton), "BLOCK"));
+  resize_table (GTK_WIDGET (user_data), gtk_spin_button_get_value_as_int (spinbutton), -1,(int) gtk_object_get_data (GTK_OBJECT (spinbutton), "BLOCK"));
 }
 
 GtkWidget *
@@ -431,7 +435,7 @@ create_block (int n)
 {
   GtkWidget *vbox;
   GtkWidget *label;
-  GtkWidget *nlines;
+  //GtkWidget *nlines;
   GtkWidget *sb;
   GtkWidget *hbox;
   GtkWidget *hsep;
@@ -470,7 +474,7 @@ create_block (int n)
   gtk_object_set_data (GTK_OBJECT (sb), "BLOCK", (void *) n);
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
 
-  table = make_table (0, 10, 1, n);
+  table = make_table (0, -1, 1, n);
   gtk_container_add (GTK_CONTAINER (vbox), table);
   gtk_object_set_data (GTK_OBJECT (sb), "TABLE", table);
 
@@ -593,10 +597,8 @@ LR_default_file ()
   printf ("rbs=%d\n", rbs + 1);
   for (a = 0; a < rbs; a++)
     {
-      printf ("%d %d %c %s %s\n", a, rbx[a].rb, rbx[a].where, rbx[a].why,
-	      rbx[a].desc);
-      printf ("%d entries to print of %d..\n", rbx[a].nentry_nos,
-	      rbx[a].max_entry);
+      printf ("%d %d %c %s %s\n", a, rbx[a].rb, rbx[a].where, rbx[a].why, rbx[a].desc);
+      printf ("%d entries to print of %d..\n", rbx[a].nentry_nos, rbx[a].max_entry);
     }
 }
 
@@ -606,3 +608,155 @@ LR_preview_file ()
 {
   printf ("preview_file not implemented\n");
 }
+
+
+int LR_save_file(FILE *fout) {
+int a;
+GtkWidget *table;
+int x;
+int y;
+int rows;
+int cols;
+char buff[256];
+GtkWidget *label;
+char *s;
+int rb;
+int entry;
+struct csv_entry *centry;
+struct csv_report_layout out;
+struct csv_report_layout *csv_report_layout;
+
+
+
+
+
+/* 
+   First we need to copy out of the tables and into some
+   generic structure that we can easily read & write
+*/
+out.nblocks=rbs;
+out.blocks=malloc(sizeof(struct csv_blocks)*(out.nblocks+1));
+
+for (a=0;a<rbs;a++) {
+	table=block_tables[a];
+	if (!table) {
+			printf("Internal error - no table\n");
+			return 0;
+	}
+  	cols=(int)gtk_object_get_data (GTK_OBJECT (table), "COLS");
+  	rows=(int)gtk_object_get_data (GTK_OBJECT (table), "ROWS");
+	out.blocks[a].nrows=rows;
+	out.blocks[a].ncols=cols;
+	out.blocks[a].matrix=malloc(sizeof(struct csv_entry *)*(out.blocks[a].nrows+1));
+
+        for (y=0;y<out.blocks[a].nrows;y++) {
+                out.blocks[a].matrix[y]=(struct csv_entry *)malloc(sizeof(struct csv_entry)*(out.blocks[a].ncols+1));
+		memset(out.blocks[a].matrix[y],0,sizeof(struct csv_entry)*(out.blocks[a].ncols+1));
+
+        	for (x=0;x<out.blocks[a].ncols;x++) {
+			centry=out.blocks[a].matrix[y];
+			centry[x].rb=-1;
+			centry[x].entry=-1;
+			centry[x].special=0;
+		}
+	}
+
+	for (y=0;y<rows;y++) {
+		for (x=0;x<cols;x++) {
+	  		sprintf (buff, "CELL_LABEL_%d_%d", x, y);
+			label=gtk_object_get_data(GTK_OBJECT(table),buff);
+			if (label) {
+				s=(char *)gtk_label_get_text(GTK_LABEL(label));
+				if (s&&strlen(s)&&strcmp(s,"____")!=0) {
+					rb=-1;
+					entry=-1;
+					sscanf(s,"%d/%d",&rb,&entry);
+					if (rb!=-1) {
+						centry=out.blocks[a].matrix[y];
+						centry[x].rb=rb;
+						centry[x].entry=entry;
+						centry[x].special=0;
+					} 
+				} 
+			} 
+		}
+	}
+}
+
+
+csv_report_layout=&out;
+
+write_csv(fout,csv_report_layout);
+
+return 1;
+}
+
+
+
+
+
+
+
+int LR_load_file(FILE *fin) {
+int a;
+GtkWidget *table;
+int x;
+int y;
+int rows;
+int cols;
+char buff[256];
+GtkWidget *label;
+//char *s;
+int rb;
+int entry;
+//int nrbs;
+struct csv_entry *centry;
+
+
+struct csv_report_layout *in;
+in=read_csv(fin);
+
+if (!in) {
+	msgbox("Unable to load","Report layout appears bad");
+}
+
+if (in->nblocks!=rbs) {
+	msgbox("Unable to load","Report layout appears bad");
+	return 0;
+}
+
+
+for (a=0;a<rbs;a++) {
+	table=block_tables[a];
+	if (!table) {
+		printf("Internal error - no table\n");
+		return 0;
+	}
+
+	rows=in->blocks[a].nrows;
+	cols=in->blocks[a].ncols;
+
+	resize_table(table,rows,cols,a);
+
+	for (y=0;y<rows;y++) {
+		for (x=0;x<cols;x++) {
+			centry=in->blocks[a].matrix[y];
+			rb=centry[x].rb;
+			entry=centry[x].entry;
+			printf("rb=%d entry=%d x=%d y=%d block=%d\n",rb,entry,x,y,a);
+  			sprintf (buff, "CELL_LABEL_%d_%d", x, y);
+			label=gtk_object_get_data(GTK_OBJECT(table),buff);
+			if (rb>=0) {
+				sprintf(buff,"%d/%d",rb,entry);
+				gtk_label_set_text(GTK_LABEL(label),buff);
+			} else {
+				gtk_label_set_text(GTK_LABEL(label),"____");
+			}
+		}
+	}
+}
+return 1;
+}
+
+
+

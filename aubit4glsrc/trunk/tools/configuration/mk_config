@@ -119,7 +119,7 @@ END {
 		print "         call details_" var "()"
 		print " "
 	}
-	print "   COMMAND KEY (\"Q\",\"q\") \"Quit\" \"Exit the configurator program\" HELP 2 exit menu"
+	print "   COMMAND KEY (\"Q\",\"q\",\"F1\") \"Quit\" \"Exit the configurator program\" HELP 2 exit menu"
 	print "   END MENU"
 	print "   CALL ask_save()"
 	print "END MAIN"

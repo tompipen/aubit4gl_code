@@ -183,7 +183,7 @@ A4GL_ANSI_WARN SQL/COMPILE ANSI SQL 92 warning checking mode
 	When ANSI_WARN is set to Yes compiler will display a warning if it encounters
 	static SQL statement not confitming to ANSI SQL 92 specification
 	If neither A4GL_ANSI_WARN or A4GL_ANSI_ERROR is set, no checking is performed.
-A4GL_ARR_DIR_MSG UI/TUI Display/Input array message 'There are no more rows in that direction'
+A4GL_ARR_DIR_MSG UI/TUI/LANG Display/Input array message 'There are no more rows in that direction'
 
 AUBITDIR COMPILE/RUNTIME Specify the location of the aubit source tree or installation
 	Default for source distribution:/opt/aubit/aubit4glsrc
@@ -317,11 +317,11 @@ A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from for
 
 A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
 A4GL_FAKE_IMMEDIATE
-A4GL_FIELD_CONSTR_EXPR UI/TUI Message to display when a fields value cannot be used for a construct statement
-A4GL_FIELD_ERROR_MSG UI/TUI Message to display when a fields value is invalid (eg non numeric in numeric field)
-A4GL_FIELD_INCL_MSG UI/TUI Message to display when a value in a field is not in the include list
-A4GL_FIELD_PICTURE_MSG UI/TUI Message to display when a pressed which is invalid for picture fields
-A4GL_FIELD_REQD_MSG UI/TUI Message to display when a field requires a value to be entered
+A4GL_FIELD_CONSTR_EXPR UI/TUI/LANG Message to display when a fields value cannot be used for a construct statement
+A4GL_FIELD_ERROR_MSG UI/TUI/LANG Message to display when a fields value is invalid (eg non numeric in numeric field)
+A4GL_FIELD_INCL_MSG UI/TUI/LANG Message to display when a value in a field is not in the include list
+A4GL_FIELD_PICTURE_MSG UI/TUI/LANG Message to display when a pressed which is invalid for picture fields
+A4GL_FIELD_REQD_MSG UI/TUI/LANG Message to display when a field requires a value to be entered
 A4GL_FIXUPDATE
 =YES|NO
 A4GL_FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
@@ -353,7 +353,7 @@ A4GL_INIT_COL_REFRESH  UI/TUI Reinitialise curses colors on exit
 	Used when curses colours must be reinitialized when returning to Screen mode
 	(terminal specific)
 =YES|NO
-A4GL_INPARRAY_FULL_MSG UI/TUI Message to display when input array becomes full
+A4GL_INPARRAY_FULL_MSG UI/TUI/LANG Message to display when input array becomes full
 A4GL_KEEP_QUALIFIER
 =YES|NO
 A4GL_KEYFILE DEBUG/UI/RUNTIME Read keystokes from a file and replay them
@@ -388,11 +388,11 @@ MAKE
 A4GL_MAP4GL
 =YES|NO
 A4GL_MARK_SCOPE
-A4GL_MONEY_AS_DECIMAL Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
+A4GL_MONEY_AS_DECIMAL COMPILE/ESQL Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
 =YES|NO
 	Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
 	you will get (ERROR: Only numeric/decimal have precision/scale argument)
-A4GL_MONEY_AS_MONEY Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
+A4GL_MONEY_AS_MONEY COMPILE/ESQL Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
 =YES|NO
 	This will probably fail, since PG EC compiler curently does not know about 
 	MONEY datatype (ERROR: invalid datatype 'money').
@@ -405,7 +405,7 @@ A4GL_NOCLOBBER
 A4GL_NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
 =YES|NO
 A4GL_PAGER
-A4GL_PAUSE_MSG REPORT/RUNTIME Message to show when executing PAUSE statement in REPORT
+A4GL_PAUSE_MSG REPORT/RUNTIME/LANG Message to show when executing PAUSE statement in REPORT
 A4GL_PGKEYSMOVE UI Defines the use of the PgUp and PgDn keys as the same as NEXT KEY or for ON KEY (PGDN)
 =YES|NO
 POSTGRESDIR ESQL/COMPILE Base directory of PostgreSQL installation 
@@ -560,7 +560,7 @@ DUMP_LAST COMPILE output the results of the last remove comments
 	removed. This is used to check the operation of the RM_COMMENTS_FIRST code
 A4GL_DIALOG_OK LANG Text to display on OK button
 A4GL_DIALOG_CANCEL LANG Text to display on CANCEL button
-A4GL_DIALOG_ABORT  LANG Text to display on ABORT button
+A4GL_DIALOG_ABORT LANG Text to display on ABORT button
 A4GL_DIALOG_RETRY LANG Text to display on RETRY button
 A4GL_DIALOG_IGNORE LANG Text to display on IGNORE button
 A4GL_DIALOG_YES LANG Text to display on YES button

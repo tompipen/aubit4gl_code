@@ -5,26 +5,28 @@
 */
 
 
-start_cmd : START_REPORT rep_name TO_PRINTER {
+start_cmd : START_REPORT rep_name TO_PRINTER op_convert {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
 			}
-	    | START_REPORT rep_name TO rout {
+	    | START_REPORT rep_name TO rout op_convert {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("F",$<str>4,$<str>2);
 			}
-	    | START_REPORT rep_name TO_PIPE rout {
+	    | START_REPORT rep_name TO_PIPE rout op_convert {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P",$<str>4,$<str>2);
 			}
-	    | START_REPORT rep_name {
+	    | START_REPORT rep_name op_convert {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("","\"\"",$<str>2);
 			}
 ;
 
 
-
+op_convert : {strcpy($<str>$,"0");} 
+	| AS_CONVERTABLE {strcpy($<str>$,"1");}
+;
 
 rout : CHAR_VALUE | cvariable;
 

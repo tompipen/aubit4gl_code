@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.74 2004-03-07 16:30:17 mikeaubury Exp $
+# $Id: iarray.c,v 1.75 2004-03-17 13:33:57 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.74 2004-03-07 16:30:17 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.75 2004-03-17 13:33:57 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1798,6 +1798,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_ABORT)
     {
       //extern int int_flag;
+	      A4GL_comments(0);
 	      if (arr->fcntrl[a].state == 99 )  {
       			A4GL_debug ("FORM ABORT..");
 			A4GL_comments(0);

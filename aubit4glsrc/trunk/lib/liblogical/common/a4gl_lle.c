@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #define FILE_VERSION 2
 #include "a4gl_lle.h"
 
@@ -249,4 +250,197 @@ read_entry(struct r_report_block *block) {
 void free_report() {
 	// need to go through and unallocate all the other stuff too...
 	free(report);
+}
+
+
+
+
+void obtain_rbs_rbx(struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx) {
+int rbs;
+struct s_rbx *rbx;
+int a;
+  int block_cnt;
+  int rblock_cnt;
+  int entry_cnt;
+int found;
+int b;
+ rbs=0;
+ rbx=0;
+
+  for (a = 0; a < report->nblocks; a++)
+    {
+      found = 0;
+      if (rbs)
+        {
+          for (b = 0; b < rbs; b++)
+            {
+              if (report->blocks[a].rb == rbx[b].rb)
+                {
+                  found = 1;
+                  break;
+                }
+            }
+        }
+      if (found)
+        continue;
+      rbs++;
+
+      rbx = realloc (rbx, sizeof (struct s_rbx) * rbs);
+      rbx[rbs - 1].rb = report->blocks[a].rb;
+      rbx[rbs - 1].why = report->blocks[a].why;
+      rbx[rbs - 1].where = report->blocks[a].where;
+    }
+  for (block_cnt = 0; block_cnt < rbs; block_cnt++)
+    {
+      int *tmp_space_e;
+      int *tmp_space_s;
+      rbx[block_cnt].max_entry = 0;
+      rbx[block_cnt].entry_nos = 0;
+      rbx[block_cnt].nentry_nos = 0;
+      rbx[block_cnt].max_size_entry = 0;
+
+      for (rblock_cnt = 0; rblock_cnt < report->nblocks; rblock_cnt++)
+        {
+          if (rbx[block_cnt].rb != report->blocks[rblock_cnt].rb)
+            {
+              continue;
+            }
+
+          for (entry_cnt = 0; entry_cnt < report->blocks[rblock_cnt].nentries;
+               entry_cnt++)
+            {
+              if (report->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
+                  rbx[block_cnt].max_entry)
+                {
+                  int nmax;
+                  nmax =
+                    report->blocks[rblock_cnt].entries[entry_cnt].entry_id +
+                    1;
+
+                  rbx[block_cnt].entry_nos =
+                    realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nmax));
+                  rbx[block_cnt].max_size_entry =
+                    realloc (rbx[block_cnt].max_size_entry,
+                             sizeof (int) * (nmax));
+                  for (a = rbx[block_cnt].max_entry; a < nmax; a++)
+                    {
+                      rbx[block_cnt].entry_nos[a] = -1;
+                      rbx[block_cnt].max_size_entry[a] = 0;
+                    }
+                  rbx[block_cnt].max_entry = nmax;
+                }
+
+              if (strlen
+                  (report->blocks[rblock_cnt].entries[entry_cnt].string))
+                {
+                  rbx[block_cnt].entry_nos[entry_cnt] = entry_cnt;
+                  rbx[block_cnt].max_size_entry[entry_cnt] =
+                    strlen (report->blocks[rblock_cnt].entries[entry_cnt].
+                            string);
+                }
+            }
+        }
+      b = 0;
+      tmp_space_e = malloc (sizeof (int) * rbx[block_cnt].max_entry);
+      tmp_space_s = malloc (sizeof (int) * rbx[block_cnt].max_entry);
+      for (a = 0; a < rbx[block_cnt].max_entry; a++)
+        {
+          if (rbx[block_cnt].entry_nos[a] >= 0
+              && rbx[block_cnt].max_size_entry[a])
+            {
+              tmp_space_e[b] = rbx[block_cnt].entry_nos[a];
+              tmp_space_s[b] = rbx[block_cnt].max_size_entry[a];
+              b++;
+            }
+          else
+            {
+              printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a,
+                      rbx[block_cnt].entry_nos[a],
+                      rbx[block_cnt].max_size_entry[a]);
+            }
+        }
+      rbx[block_cnt].nentry_nos = b;
+      memcpy (rbx[block_cnt].entry_nos, tmp_space_e,
+              sizeof (int) * rbx[block_cnt].nentry_nos);
+      memcpy (rbx[block_cnt].max_size_entry, tmp_space_s,
+              sizeof (int) * rbx[block_cnt].nentry_nos);
+      free (tmp_space_e);
+      free (tmp_space_s);
+    }
+*ptr_rbs=rbs;
+*ptr_rbx=rbx;
+}
+
+
+
+
+
+int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
+  int ok;
+  FILE *fin_filter;
+  char buff[255];
+  char logrep[255];
+  char orig[255];
+  char rname[255];
+  char mname[255];
+  if (fname)
+    {
+      char *ptr;
+      printf ("fname==%s\n", fname);
+      ptr = strrchr (fname, '/');
+      if (ptr == 0)
+        ptr = fname;
+
+      fin_filter = fopen (fname, "r");
+	*fin=fin_filter;
+
+      if (!fin_filter) {
+        if (strchr (ptr, '.') == 0) {
+                        strcat (fname, ".lrf");
+                        fin_filter = fopen (fname, "w");
+                }
+        }
+
+        if (!fin_filter) {
+                strcpy(msgbuff,"I can't open that file..");
+                return 0;
+        }
+
+
+        fgets(buff,255,fin_filter);
+        if (sscanf(buff,"A4GL_LOGICAL_REPORT %s",&logrep)) {
+                if (strcmp(logrep,(char *)acl_getenv ("LOGREP"))!=0) {
+                        strcpy(msgbuff, "This doesn't look like a valid layout file for this engine");
+                        return 0;
+                }
+        } else {
+                        strcpy(msgbuff, "This doesn't look like a valid layout file");
+                        return 0;
+        }
+
+        fgets(buff,255,fin_filter);
+        sscanf(buff,"%s %s",&rname,&mname);
+
+        if (strcmp(rname,report->repName)!=0) {
+                sprintf(buff,"This doesn't look like its from the same report (%s != %s)",rname,report->repName);
+                strcpy(msgbuff, buff);
+        }
+
+        if (strcmp(mname,report->modName)!=0) {
+                sprintf(buff,"This doesn't look like its from the same module (%s != %s)",mname,report->modName);
+                strcpy(msgbuff, buff);
+        }
+
+        fgets(buff,255,fin_filter);
+        sprintf(orig,"Original output filename : %s",buff);
+	return 1;
+
+    }
+  else
+    {
+      strcpy(msgbuff,  "No load performed...");
+	return 0;
+    }
+    return 0;
+
 }

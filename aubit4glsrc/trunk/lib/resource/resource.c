@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.68 2004-03-15 16:27:18 mikeaubury Exp $
+# $Id: resource.c,v 1.69 2004-03-17 13:33:58 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,8 @@ char *debug=0;
 char *debug_level=0;
 
 static char * A4GL_strip_quotes_resource (char *s);
+
+#define USE_OPTIMISATION 1
 
 /*
 =====================================================================
@@ -527,6 +529,11 @@ char *
 acl_getenv (char *s)
 {
 char prefixed_string[1024];
+#ifdef DEBUG_VARIABLE_USAGE
+static FILE *fd1=0;
+#endif
+static char *value_not_set="VALUE_NOT_SET";
+
 //WHY was this static?
 //static char *ptr;
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
@@ -536,20 +543,34 @@ char cumulate_char=0;
 char cumulated_string[2048]="";
 char cumulated_string_tmp[2048]="";
 
-if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
-	if (debug!=0) return debug;
-} 
-
-if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
-	if (debug_level!=0) return debug_level;
-} 
+#ifdef DEBUG_VARIABLE_USAGE
+if (fd1==0) {
+	fd1=fopen("/tmp/acl_getenv","w");
+}
+#endif
 
 
+
+#ifdef USE_OPTIMISATION
 ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
 if (ptr)  {
-	/* A4GL_del_pointer(s,STR_RESOURCE_VAL); */
+	if (s==value_not_set)  { /* BEFORE you complain - this is RIGHT!
+				 I don't want a string comparison - I want to see If this is set
+				 to the pointer which is exactly value_not_set.
+				 This is done if I couldn't previously find a value for a variables setting
+				*/
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - CACHED (Not set)\n",s);
+#endif
+		return "";
+	}
+#ifdef DEBUG_VARIABLE_USAGE
+	if (fd1) fprintf(fd1,"%s - CACHED (%s)\n",s,ptr);
+#endif
 	return ptr;
 }
+
+#endif
 
 
 
@@ -617,6 +638,14 @@ if (ptr)  {
 	}
 
 	if (ptr == 0) {
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Not set anywhere\n",s);
+#endif
+
+
+#ifdef USE_OPTIMISATION
+		A4GL_add_pointer(s,STR_RESOURCE_VAL,value_not_set);
+#endif
 		return "";
 	} else {
 
@@ -628,16 +657,21 @@ if (ptr)  {
 		if (strcmp (s, "DBDATE") == 0) {
 			A4GL_chk_dbdate (ptr);
 		}
-		if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
-			debug=ptr;
-		} 
-		if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
-			debug_level=ptr;
-		} 
+		//if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
+			//debug=ptr;
+		//} 
+		//if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
+			//debug_level=ptr;
+		//} 
 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - %s\n",s,ptr);
+#endif
 		ptr=A4GL_strip_quotes_resource (ptr);
+#ifdef USE_OPTIMISATION
 		ptr=strdup(ptr);
 		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
+#endif
 
 		//remove quotes - for instance for the cases where quotes are used in 
 		//aubitrc file because values contain spaces

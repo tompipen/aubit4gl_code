@@ -71,6 +71,9 @@ for (a=0;a<strlen(str);a++) {
 		sec='t';
 		continue;
 	}
+	if (str[a]=='$') {
+		continue;
+	}
 
 	// Dodgey character ?
 	//printf("??? %c - %c\n",str[a],sec);

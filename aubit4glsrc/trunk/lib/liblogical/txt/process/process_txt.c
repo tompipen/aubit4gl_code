@@ -6,6 +6,19 @@
 char **lines;
 
 int page_touched = 0;
+FILE *rep_fout;
+
+
+int RP_default_file (void) {
+	// As there is no file description to mess with!
+	return 1;
+}
+
+
+int RP_load_file (FILE *fin) {
+	// As there is no file description to mess with!
+	return 1;
+}
 
 
 static void
@@ -64,8 +77,11 @@ set_text (int x, int y, char *s)
   page_touched = 1;
 }
 
-void
-LR_process_report (FILE * fout, FILE *filter,void *rv)
+extern struct r_report *report;
+
+
+struct r_report *r;
+int RP_process_report (char *buff) 
 {
   int a;
   int block;
@@ -74,13 +90,28 @@ LR_process_report (FILE * fout, FILE *filter,void *rv)
   int x, y;
   int page;
   int last_page = -1;
-  struct r_report *r;
-  r=rv;
-  
+  r=report;
   page_touched = 0;
 
+  if (rep_fout) fclose(rep_fout);
+
+  rep_fout=0;
+
+  if (buff==0) {
+		return 0;
+  }
+
+  A4GL_trim(buff);
+  if (!strlen(buff)) {
+	tmpnam(buff);
+  }
 
 
+  rep_fout=fopen(buff,"w");
+  if (rep_fout==0) {
+		return 0;
+  }
+	
   lines = malloc (sizeof (char *) * r->page_length);
 
   for (a = 0; a < r->page_length; a++)
@@ -88,7 +119,7 @@ LR_process_report (FILE * fout, FILE *filter,void *rv)
       lines[a] = malloc (r->max_col + 1+r->left_margin);	// for the \NULL
     }
 
-  clear_page (r->max_col, r->page_length);
+  clear_page (r->max_col+r->left_margin, r->page_length);
 
   for (block = 0; block < r->nblocks; block++)
     {
@@ -100,22 +131,22 @@ LR_process_report (FILE * fout, FILE *filter,void *rv)
 	    {
 	      if (page_touched && last_page != -1)
 		{
-		  output_page (fout, r->max_col, r->page_length);
-		  clear_page (r->max_col, r->page_length);
+		  output_page (rep_fout, r->max_col, r->page_length);
+		  clear_page (r->max_col+r->left_margin, r->page_length);
 		}
 	      last_page = page;
 	    }
 
 
 	  x = centry->col_no+r->left_margin;
-	  y = centry->line_no+r->top_margin;
+	  y = centry->line_no; //+r->top_margin;
 	  set_text (x, y, centry->string);
 	}
     }
 
   if (page_touched)
     {
-      output_page (fout, r->max_col, r->page_length);
+      output_page (rep_fout, r->max_col, r->page_length);
     }
 
 }

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.51 2004-03-03 13:18:07 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.52 2004-03-17 13:33:57 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.51 2004-03-03 13:18:07 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.52 2004-03-17 13:33:57 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -948,7 +948,7 @@ A4GL_debug("Got rval as : %d",rval);
 switch (rval) {
 	case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
 	case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
-	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) {return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) { return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
  	case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
  	case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
  	case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
@@ -1578,4 +1578,17 @@ int A4GL_get_metric_for (struct s_form_dets *form, void *f)
     }
   A4GL_debug ("NO current metric !");
   return -1;
+}
+
+
+
+void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
+	if (strcmp(siotype,"s_inp_arr")==0) {
+		A4GL_comments(0);
+	}
+
+	if (strcmp(siotype, "s_screenio")==0) {
+		A4GL_comments(0);
+	}
+
 }

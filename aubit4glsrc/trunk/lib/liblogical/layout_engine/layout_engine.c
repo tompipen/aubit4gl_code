@@ -59,6 +59,9 @@ main (int argc, char *argv[])
   sprintf (buff_env, "LOGREP=%s", argv[1]);
   A4GL_setenv ("LOGREP", argv[1], 1);
   A4GLLOGREP_initlib ();
+
+#ifdef MOVED_TO_COMMON
+
   for (a = 0; a < report->nblocks; a++)
     {
       found = 0;
@@ -91,6 +94,7 @@ main (int argc, char *argv[])
       rbx[block_cnt].max_entry = 0;
       rbx[block_cnt].entry_nos = 0;
       rbx[block_cnt].nentry_nos = 0;
+      rbx[block_cnt].max_size_entry = 0;
 
       for (rblock_cnt = 0; rblock_cnt < report->nblocks; rblock_cnt++)
 	{
@@ -166,7 +170,10 @@ main (int argc, char *argv[])
       free (tmp_space_s);
     }
 
+#endif
 
+
+  obtain_rbs_rbx(report,&rbs,&rbx);
 
   gtk_init (&argc, &argv);
 
@@ -218,6 +225,7 @@ save_file (void)
 {
   FILE *fout;
   char *fname;
+  int ok;
   fname = create_file_selection (0);
   if (fname)
     {
@@ -232,16 +240,52 @@ save_file (void)
 	}
       printf ("fname==%s\n", fname);
       fout = fopen (fname, "w");
+	if (!fout) {
+		msgbox ("Can't open file", "I can't seem to write that file...");
+		return;
+	}
       fprintf (fout, "A4GL_LOGICAL_REPORT %s\n", acl_getenv ("LOGREP"));
       fprintf (fout, "%s %s\n", report->repName, report->modName);
       fprintf (fout, "%s\n", input_fname);
-      LR_save_file (fout);
+      ok=LR_save_file (fout);
+      if (!ok) {
+		msgbox ("Some error during save", "Warning - No save performed...");
+	}
       fclose (fout);
     }
   else
     {
       msgbox ("Save Aborted", "No save performed...");
     }
+}
+
+void
+load_file (void)
+{
+  FILE *fin;
+  char *fname;
+  int ok;
+  char buff[255];
+  char logrep[255];
+  char orig[255];
+  char rname[255];
+  char mname[255];
+	
+  fname = create_file_selection (0);
+
+  if (fname) {
+	ok=0;
+  	if (load_filter_file_header(fname,&fin,buff)) {
+      		ok=LR_load_file (fin);
+  	}
+	fclose(fin);
+
+   	if (!ok) {
+		msgbox ("Some error during load",buff);
+        }
+  } else {
+      msgbox ("Load Aborted", "No load performed...");
+  }
 }
 
 
@@ -287,7 +331,8 @@ start_lle ()
 
   static GtkItemFactoryEntry entries[] = {
 
-    {"/File/_Save", "<CTRL>S", save_file, 1, "<StockItem>", GTK_STOCK_SAVE},
+    {"/File/_Save Layout", "<CTRL>S", save_file, 1, "<StockItem>", GTK_STOCK_SAVE},
+    {"/File/_Load Layout", "<CTRL>L", load_file, 1, "<StockItem>", GTK_STOCK_OPEN},
     {"/File/_Default", "<CTRL>D", default_file, 1, "<Item>"},
     {"/File/_Preview", "<CTRL>W", preview_file, 1, "<Item>"},
     {"/File/sep1", NULL, NULL, 0, "<Separator>"},

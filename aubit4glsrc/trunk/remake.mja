@@ -53,9 +53,9 @@ cp /home/aubit4gl/aubit4glsrc/bin/afinderr /home/aubit4gl/aubit4gl/bin
 mkdir -p /home/aubit4gl/aubit4gl/help
 cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 
-cd /home/aubit4gl/aubit4glsrc/tools/test/build_tests
-find /home/aubit4gl/aubit4glsrc/tools/test/build_tests -name "*.4ae" -exec rm {} \;
-find /home/aubit4gl/aubit4glsrc/tools/test/build_tests -name "*.afr*" -exec rm {} \;
+cd /home/aubit4gl/aubit4gltest
+find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
+find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
 
 sleep 3
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.25 2004-03-15 21:41:52 mikeaubury Exp $
+# $Id: helper.c,v 1.26 2004-03-17 13:33:55 mikeaubury Exp $
 #
 */
 
@@ -995,7 +995,7 @@ int
 A4GL_setenv(char *name, char *value, int overwrite)
 {
 //char* buff;
-//char buff[1024];
+char buff[1024]; /* YES THIS IS USED - DONT LET THE COMPILER TELL YOU OTHERWISE!!! */
 int ret;
 char prefixed_name[256];
 char *ptr;

@@ -1,3 +1,5 @@
 CFLAGS=-g
-test_txt: test.o process_txt.o ../../common/a4gl_lle.o
-	gcc test.o process_txt.o ../../common/a4gl_lle.o -o test_txt
+
+../../../libLOGREPPROC_TXT.so : process_txt.c
+	cc -rdynamic -shared -g $^ -o $@ -I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl  -laubit4gl 
+

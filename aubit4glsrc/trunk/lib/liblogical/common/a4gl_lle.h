@@ -64,5 +64,6 @@ struct s_rbx
 
 struct r_report *read_report_output(char *fname);
 
+void obtain_rbs_rbx(struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx);
 
-
+int load_filter_file_header(char *fname, FILE **fin, char*msgbuff);
