@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.81 2002-09-23 00:36:34 afalout Exp $
+# $Id: mod.c,v 1.82 2002-09-23 08:07:24 afalout Exp $
 #
 */
 
@@ -246,6 +246,8 @@ struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array *
 static int is_pk (char *s);
 int yywrap (void);
 struct sreports * get_sreports(int z);
+void a4gl_add_variable (char *name, char *type, char *n);
+
 
 /*
 =====================================================================
@@ -321,16 +323,18 @@ with_strip_bracket (const char *buff)
 
 /**
  * Adds a new variable found by the parser to the variable array
+ * Note: Function with same name in ace renamed
  *
  * @param name The variable name
  * @param type The data type of the variable
  * @paran n
  */
-static void 
-add_variable (char *name, char *type, char *n)
+//?static
+void
+a4gl_add_variable (char *name, char *type, char *n)
 {
 
-  debug ("In mod.c : add_variable (name = %s type = %s n = %d varcnt = %d)\n",
+  debug ("a4gl_add_variable (name = %s type = %s n = %d varcnt = %d)\n",
 	 name, type, n, varcnt);
 
   vars[varcnt].level = in_record;
@@ -812,8 +816,8 @@ print_variables (void)
 void 
 push_name (char *a, char *n)
 {
-  debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
-  add_variable (a, 0, n);
+  debug ("push_name  a = %s n = %d \n", a, n);
+  a4gl_add_variable (a, 0, n);
 }
 
 
@@ -912,7 +916,7 @@ push_associate (char *a, char *b)
 void 
 pop_associate (char *a)
 {
-  /*add_variable (0,"_ENDASSOC", 0); */
+  /*a4gl_add_variable (0,"_ENDASSOC", 0); */
 }
 
 /**
@@ -951,7 +955,7 @@ pop_record (void)
   /* in_record--; */
   debug ("In mod.c : pop_record\n");
 
-  add_variable (0, "_ENDREC", 0);
+  a4gl_add_variable (0, "_ENDREC", 0);
 
 }
 
@@ -3257,14 +3261,17 @@ convstrsql (char *s)
  *
  * @param s The 4gl file name (without extension).
  */
-static void 
+static void
 generate_globals_for (char *s)
 {
-  char buff[1024];
-  char dirname[1024];
-  char fname[1024];
-  char *ptr;
-  char nocfile[256];
+char buff[1024];
+char dirname[1024];
+char fname[1024];
+char *ptr;
+char nocfile[256];
+
+  debug ("In generate_globals_for\n");
+
   strcpy (buff, s);
 
   if (strchr (buff, '/'))
@@ -3282,23 +3289,13 @@ generate_globals_for (char *s)
     }
 
   strcpy (nocfile, acl_getenv ("NOCFILE"));
-//	#ifndef __sun__
-//		#ifndef __sparc__
-            //no setenv on Solaris
-			setenv ("NOCFILE", "Yes", 1);
-//        #endif
-//    #endif
+  setenv ("NOCFILE", "Yes", 1);
   ptr = strchr (fname, '.');
   *ptr = 0;
   debug ("Trying to compile globals file %s\n", fname);
   sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
   system (buff);
-//	#ifndef __sun__
-//		#ifndef __sparc__
-            //no setenv on Solaris
-			setenv ("NOCFILE", nocfile, 1);
-//        #endif
-//    #endif
+  setenv ("NOCFILE", nocfile, 1);
 
 }
 
