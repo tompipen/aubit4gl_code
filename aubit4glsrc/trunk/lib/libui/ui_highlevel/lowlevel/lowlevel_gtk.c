@@ -11,7 +11,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.51 2005-01-05 20:04:15 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.52 2005-01-07 08:15:42 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
@@ -199,27 +199,42 @@ GtkWidget *b;
 //printf("Setting up ok cancel\n");
 
 // Set up the OK Button
-    //l=gtk_label_new("OK");
-    b=gtk_button_new_from_stock(GTK_STOCK_OK);
-    //gtk_container_add(GTK_CONTAINER(b),l);
 
-    //gtk_widget_set_name(GTK_WIDGET(b), "OK"); //gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+
+#if GTK_CHECK_VERSION(2,0,0)
+    b=gtk_button_new_from_stock(GTK_STOCK_OK);
+#else
+    b=gtk_button_new();
+    l=gtk_label_new("OK");
+    gtk_container_add(GTK_CONTAINER(b),l);
+    gtk_widget_set_name(GTK_WIDGET(b), "OK"); 
+    gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+    gtk_widget_show(l);
+#endif
     gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (ok_callback), 0);
     gtk_widget_show(b);
 
-    //gtk_widget_show(l);
     gtk_container_add(GTK_CONTAINER(ok_cancel),b);
 
 // Set up the Cancel Button
+
+
+
+
     //l=gtk_label_new("Cancel");
     //gtk_widget_show(l);
+#if GTK_CHECK_VERSION(2,0,0)
 
     b=gtk_button_new_from_stock(GTK_STOCK_CANCEL);
 
-
-    //gtk_container_add(GTK_CONTAINER(b),l);
-    //gtk_widget_set_name(GTK_WIDGET(b), "Cancel"); gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
-
+#else
+    b=gtk_button_new();
+    l=gtk_label_new("Cancel");
+    gtk_container_add(GTK_CONTAINER(b),l);
+    gtk_widget_set_name(GTK_WIDGET(b), "Cancel"); 
+    gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+    gtk_widget_show(l);
+#endif
     gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (cancel_callback), 0);
     gtk_widget_show(b);
     gtk_container_add(GTK_CONTAINER(ok_cancel),b);
