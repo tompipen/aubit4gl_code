@@ -48,6 +48,7 @@ define
 
 	mv_link 		char(256),
 	mv_link_opts 		char(256),
+	mv_link_libs 		char(256),
 	mv_link_debug 		char(256),
 	mv_dll_opts 		char(256),
 	mv_include 		char(512),
@@ -104,7 +105,8 @@ define lv_pack char(256)
 			mv_preprocess_opts,
 			mv_show_errtail,
 			mv_link,
-			mv_dll_opts,
+			mv_dll_opts,	
+			mv_link_libs,
 			mv_link_opts 		to null
 
 	initialize mv_newest_obj to null
@@ -154,6 +156,7 @@ define lv_pack char(256)
 
 	LET mv_link		=fgl_getenv("A4GL_LINK")
 	LET mv_link_opts	=fgl_getenv("A4GL_LINK_OPTS")
+	LET mv_link_libs	=fgl_getenv("A4GL_LINK_LIBS")
 	LET mv_dll_opts		=fgl_getenv("A4GL_DLL_OPTS")
 
 	LET mv_stage="OBJ0?"
@@ -179,6 +182,9 @@ define lv_pack char(256)
 
 	if mv_link_opts is null or mv_link_opts matches " " then
 		let mv_link_opts	="-L",fgl_getenv("AUBITDIR") clipped,"/lib"
+	end if
+	if mv_link_libs is null or mv_link_opts matches " " then
+		let mv_link_libs=" "
 	end if
 		
 	if mv_dll_opts is null or mv_dll_opts matches " " then
@@ -221,7 +227,11 @@ define lv_pack char(256)
 		end if
 	end if
 
-	IF mv_lexdialect="INGRES" or mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST") THEN
+	IF mv_lexdialect="INGRES" or mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST")="Y" THEN
+		
+   if mv_verbose>=4 then
+		DISPLAY "SETTING C_FIRST MODE"
+	end if
 		LET mv_esql_to_c_first=1
 	END IF
 END FUNCTION
@@ -576,7 +586,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		continue for
 	end if
 
-	if lv_arg matches "-l*" then
+	if lv_arg matches "-l*"  then
 		if lv_arg="-l" then
 			LET a=a+1
 			let lv_arg="-l",arg_val(a)
@@ -784,11 +794,13 @@ END IF
 
 IF lv_from="EC" and lv_to="OBJ" THEN
 	IF mv_esql_to_c_first THEN
+if mv_verbose>=4 then display "C FIRST" end if
 		LET lv_new=lv_base clipped,get_ext("C")
 		CALL make_into(lv_fname,"EC","PEC")
 		LET lv_new=lv_base clipped,get_ext("C")
 		CALL make_into(lv_new,"C","OBJ")
 	ELSE
+if mv_verbose>=4 then display "STRAIGHT TO OBJ - NO C FIRST" end if
 		LET lv_new=lv_base clipped,get_ext("OBJ")
 		CALL run_compile_esql(lv_fname,lv_new,lv_base)
 	END IF
@@ -1218,7 +1230,7 @@ if mv_debug then
 	let lv_runstr=lv_runstr clipped," ",mv_link_debug
 end if
 
-let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," 2>",mv_errfile clipped
+let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped," 2>",mv_errfile clipped
 
 
 if mv_verbose>=2 then
