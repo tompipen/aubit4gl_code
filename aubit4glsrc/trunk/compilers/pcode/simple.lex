@@ -1,3 +1,4 @@
+%option yylineno
 %{
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
@@ -9,7 +10,7 @@
 #include "npcode_defs.h"
 void comment (void );
 int check_type (void);
-int use_4gl_kw=1;
+int use_4gl_kw=0;
 void hash (void );
 %}
 D			[0-9]

@@ -454,7 +454,21 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
 //
       parent = p->param_u.uv;
 //printf(" ID :  %s\n",id);
-      v = base->c_vars.c_vars_val[p->param_u.uv->variable_id].var;
+	{
+		int a;
+		int found=-1;
+     		for (a=0;a<base->c_vars.c_vars_len;a++) {
+      			if (base->c_vars.c_vars_val[a].variable_id==p->param_u.uv->variable_id) {
+				found=a; 
+	 		}
+		}
+     if (found==-1) {
+		printf("Messed up somewhere\n");
+		exit(32);
+	}
+      v = base->c_vars.c_vars_val[found].var; // <------
+	}
+
       for (sub_cnt = 0; sub_cnt < parent->sub.sub_len; sub_cnt++)
 	{
 	  if (parent->sub.sub_val[sub_cnt].element != -1)
@@ -471,7 +485,6 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
       A4GL_debug ("Found our parent : %p\n", v);
 
       next_element = -1;
-
       for (a = 0; a < v->next.next_len; a++)
 	{
 	  if (strcmp (id, GET_ID (v->next.next_val[a].name_id)) == 0)

@@ -141,7 +141,8 @@ main (int argc, char *argv[])
 int
 yyerror (char *s)
 {
-  printf ("%s\n", s);
+  extern int yylineno;
+  printf ("%s @ line %d\n", s,yylineno);
   exit (1);
 }
 

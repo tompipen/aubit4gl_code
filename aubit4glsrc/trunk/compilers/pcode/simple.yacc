@@ -750,12 +750,27 @@ assign_common: variable '=' expr {
 ;
 
 
-variable: IDENTIFIER 				{$<e>$=new_param('V',(void *)mk_use_variable(0    ,0    ,$<str>1,0));}
+variable: IDENTIFIER 				{$<e>$=new_param('V',(void *)mk_use_variable(0    ,0    ,$<str>1,0)); 
+}
 	| IDENTIFIER '[' expr ']'  		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
 	| IDENTIFIER '[' expr ']' '[' expr ']' 		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
 	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'		{$<e>$=new_param('V',(void *)mk_use_variable(0    ,$<e>3,$<str>1,0));}    
-	| variable '.' IDENTIFIER 		{$<e>$=new_param('V',(void *)mk_use_variable($<e>1,0    ,$<str>3,0));}    
-	| variable '.' IDENTIFIER '[' expr ']'	{$<e>$=new_param('V',(void *)mk_use_variable($<e>1,$<e>5,$<str>3,0));}    
+	| variable '.' IDENTIFIER 		{
+		$<e>$=new_param('V',
+	(void *)mk_use_variable(
+	$<e>1,
+	0    ,
+	$<str>3,0));
+	}    
+
+	| variable '.' IDENTIFIER '[' expr ']'	{
+$<e>$=new_param('V',(void *)mk_use_variable(
+$<e>1,
+$<e>5,
+$<str>3,
+0
+)
+);}    
 	| '*' variable  	{
 		struct param *p;
 		p=$<e>2;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.26 2003-10-16 11:21:59 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.27 2003-11-03 19:46:20 mikeaubury Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@ int frame_style = GTK_SHADOW_IN;/** The frame style used in the GUI */
 GtkWindow *currwindow = 0;	/** The 4gl current window */
 void *argcv;
 void *argvv;
-int wait = 0;
+int xwait = 0;
 int mfrm_width;			/* set to the width of the last opened form */
 int mfrm_height;		/* set to the height of the last opened form */
 extern int ui_mode;	/** User interface used (GUI or TUI) */
@@ -401,7 +401,7 @@ A4GLUI_ui_init (int argc, char *argv[])
   A4GL_debug ("******************Done\n");
   create_window_gtk ("screen", 0, 0, 80, 24, 1, 3, -1, -2, 1, 0, -2, 1,
 		     (0x0));
-  wait = 1;
+  xwait = 1;
   A4GL_gui_run_til_no_more ();
 
 
