@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2002-03-29 06:38:41 afalout Exp $
+# $Id: Makefile.in,v 1.24 2002-04-06 06:33:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -86,7 +86,8 @@ all: ${ALL}
 4glc: ${4GLCOBJ}
 #	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 #same as: why are we using 4glpc?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} ${AUBIT_LIB} -lPDF_NOPDF -lRPC_NORPC
+	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} ${AUBIT_LIB}
+#	 -lPDF_NOPDF -lRPC_NORPC
 #-lm and -ldl are needed on Linux, but not on CygWin
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 

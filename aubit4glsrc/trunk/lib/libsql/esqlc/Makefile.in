@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-03-27 11:57:03 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-04-06 06:33:41 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -79,23 +79,15 @@ ${SRC_C}: ${SRC} ../../../compilers/fcompile/form_x.h
 #	esql -dcmdl -o libSQL_esql.dll -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX
 	esql -c ${SRC} ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
 
-#libSQL_esql.dll: esql.o
-#libSQL_esql.dll: DLLOBJS="esql.o"
-#libSQL_esql.dll: DLL_LDLIBS="-laclshared"
-#libSQL_esql.dll: DLL_LDFLAGS="-L../.."
-
-#esql-w32.c: DEF=../../libaclshared.def
-#esql-w32.c: DEF=libaclshared-esql.def
-#esql-w32.c: SRC=esql-w32.ec
 dllSQL_esql: ${SRC} ${DEF}
 #  -e, -p          Preprocess only (no compilation or linking).
 #-dcmdl          Displays command lines of all programs invoked.
 #-c              Preprocess and compile only (no linking).
-	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ../../libaclshared.dll.a
+	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ../../libaubit4gl.dll.a
 	cp libSQL_esql.dll ../..
 
-../../libaclshared.def:
-	make -C ../.. dllaclshared
+../../libaubit4gl.def:
+	make -C ../.. dllaubit4gl
 
 ## ==================================================================
 ##                              Clean

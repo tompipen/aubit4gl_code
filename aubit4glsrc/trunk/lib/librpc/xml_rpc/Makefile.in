@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# | Aubit 4gl Language Compiler Version $.0   xml_rpc makefile	         |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-04-03 18:20:41 mikeaubury Exp $
+# $Id: Makefile.in,v 1.2 2002-04-06 06:33:41 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,20 +35,13 @@ override NOINCL=0
 ##                              Source files
 ## ==================================================================
 
-CMODS_RPC		=xmlrpc_client.c xmlrpc_server.c 
+CMODS_RPC		=xmlrpc_client.c xmlrpc_server.c
 				
-
-#CMODSNOSQL 			=${COMMONSRC}
-#CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
-#OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
 OBJS_RPC			=${CMODS_RPC:.c=.o}
 OBJS_NORPC			=${CMODS_NORPC:.c=.o}
-#CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
-#OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
-CLIENT_CFLAGS            :=$(shell xmlrpc-c-config libwww-client --cflags)
-CLIENT_LIBS              :=$(shell xmlrpc-c-config libwww-client --ldadd)
-
+CLIENT_CFLAGS       :=$(shell xmlrpc-c-config libwww-client --cflags)
+CLIENT_LIBS         :=$(shell xmlrpc-c-config libwww-client --ldadd)
 
 ## ==================================================================
 ##                              Options
@@ -86,7 +79,7 @@ libRPC_XMLRPC.so: ${OBJS_RPC}
 ## ==================================================================
 
 dlllibRPC_XMLRPC: ${CMODS_RPC}
-	${MAKE} libRPC_XMLRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile"
+	${MAKE} libRPC_XMLRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile"
 	${CP} libRPC_XMLRPC.dll libRPC_XMLRPC.dll.a ../..
 
 dlllibRPC_NORPC: ${CMODS_NORPC}
@@ -97,15 +90,15 @@ dlllibRPC_NORPC: ${CMODS_NORPC}
 ##                        Sub Targets
 ## ==================================================================
 
-form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
+#form_x.h:
+#	${MAKE} -C ../../../compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
-${OBJS_RPC} ${OBJS_NORPC}: form_x.h
-${CMODS_RPC} ${CMODS_NORPC}: form_x.h
+#${OBJS_RPC} ${OBJS_NORPC}: form_x.h
+#${CMODS_RPC} ${CMODS_NORPC}: form_x.h
 
 ## ==================================================================
 ##                        Clean Targets

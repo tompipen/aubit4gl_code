@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.68 2002-04-03 18:19:08 mikeaubury Exp $
+# $Id: 4glpc,v 1.69 2002-04-06 06:33:40 afalout Exp $
 #
 
 ########################################################################
@@ -48,6 +48,11 @@
 #	USE_CONFIGURE=1
 	USE_SHARED="Yes"
 
+
+if [ "$A4GLDEBUG" = "yes" ]
+then
+	A4GLVERBOSE="yes"
+fi
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -98,11 +103,9 @@ then
     echo '  -debug  ($INCLLINES=Yes) include extra debuging code'
     echo '  -map/nomap ($MAP4GL=Yes) generate additional map file code'
     echo '  -maponly'
-    echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
+#    echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
     echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
     echo '  -noerrcode () do not show eeror code on compile errors'
-#	echo '  -pdf  use PDF report libraries when compiling'
-#	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -noodbc'
@@ -134,10 +137,8 @@ then
     echo '  -debug  ($INCLLINES=Yes) include extra debuging code'
     echo '  -map/nomap ($MAP4GL=Yes) generate additional map file code'
     echo '  -maponly'
-    echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
+#    echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
     echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
-#    echo '  -pdf use PDF report libraries when compiling'
-#	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -as-ddl'
@@ -301,21 +302,24 @@ then
     fi
 fi
 
-if [ "$AUBITDIR" = "" ]
-then
-	#if still emty, assume this script is in $AUBITDIR/bin
+    #find path to this script:
 	PATHTO4GLPC1=`dirname $0`
 	PATHTO4GLPC=`dirname $PATHTO4GLPC1` #remove bin/
-    OLD_DIR=`pwd`
+    #OLD_DIR=`pwd`
 	cd $PATHTO4GLPC
     CURRDIR=`pwd`
 	cd -
+
+
+if [ "$AUBITDIR" = "" ]
+then
+	#if still emty, assume this script is in $AUBITDIR/bin
 	export AUBITDIR=$CURRDIR
 
 	if [ -f $AUBITDIR/bin/4glpc ]
     then
 		echo "AUBITDIR now set to $AUBITDIR"
-        cd $OLD_DIR
+        #cd $OLD_DIR
     else
         echo "Error: cannot set AUBITDIR: $AUBITDIR"
 		echo PATHTO4GLPC1=$PATHTO4GLPC1
@@ -365,20 +369,18 @@ fi
 
 PATH=$AUBITDIR/bin:$PATH
 
-if [ "$GTKGUI" = "" ]
-then
+#if [ "$GTKGUI" = "" ]
+#then
+#    if [ "$GTKBUILD" = "yes" -a 0 ] ; then
+#	export GTKGUI="Yes"
+#    	export ui=gui
+#    else
+#		export GTKGUI="no"
+#		export ui=""
+#    fi
+#fi
 
-    #if [ -f  $AUBITDIR/lib/libaclsharedgui.so/dll ]
-    if [ "$GTKBUILD" = "yes" -a 0 ] ; then
-	export GTKGUI="Yes"
-    	export ui=gui
-    else
-		export GTKGUI="no"
-		export ui=""
-    fi
-fi
-
-unset GTKGUI
+#unset GTKGUI
 
 
 COMPCC=""
@@ -387,6 +389,11 @@ JABBER_LIB_DIR=$AUBITDIR/tools/jabber
 JABBER_LIB_NAME=jabber
 
 FGLLIBSDIR="-L$AUBITDIR/lib"
+
+if [ "$CURRDIR" != "$AUBITDIR" ]; then
+	FGLLIBSDIR="$FGLLIBSDIR -L$CURRDIR/lib"
+fi
+
 
 if [ -d $AUBITDIR/extralibs ]
 then
@@ -440,7 +447,7 @@ fi
 #		        ODBC_SHARED="-L$ODBC_LIB_DIR"
 #		fi
 #
-#		if [ "$ODBC_STATIC" = "" ]
+	#		if [ "$ODBC_STATIC" = "" ]
 #		then
 #		        ODBC_STATIC="-L$ODBC_LIB_DIR"
 #		fi
@@ -946,7 +953,7 @@ do
    ;;
 
 
-   -verbose) 	export A4GLVERBOSE="yes"
+   -verbose) 	A4GLVERBOSE="yes"
 				SHOWERRCODE=1
    ;;
 
@@ -1107,12 +1114,6 @@ done
 #    fi
 #fi
 
-
-#if [ "$A4GLDEBUG" = "yes" ]
-#then
-#	echo "Finished processing switches. USE_PDF = $USE_PDF"
-#fi
-
 if [ "$EXECNAME" = "-1" ]
 then
     COMPCC=$DEFAULTCOMPCC
@@ -1123,27 +1124,35 @@ then
     fi
 fi
 
+FGLLIBS_COMMON="-laubit4gl"
+
 if [ "$COMSPEC" = "" ]
 then
-	FGLLIBS_COMMON="-ldl"
+	FGLLIBS_COMMON="$FGLLIBS_COMMON" # -ldl"
 else
-	FGLLIBS_COMMON="-L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
+	FGLLIBS_COMMON="$FGLLIBS_COMMON -L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
 fi
 
 
-## This is a quick hack
-# RPC type and XDR are not really related...
-#
-if [ "$A4GL_RPCTYPE" != "NORPC" ]
-then
-	A4GL_XDRTYPE=XDR
-else
-	A4GL_XDRTYPE=NORPC
-fi
+### This is a quick hack
+## RPC type and XDR are not the same thing. RPC type represents Remote
+#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
+#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
+#are needed by forms and menus functionality, and without it user would not
+#ba able to compile or open forms and menus, since they compiled output
+#file format is outpudte in XDR format for portability:
+#if [ "$A4GL_RPCTYPE" != "NORPC" ]
+#then
+#	#A4GL_XDRTYPE=XDR
+#	FGLLIBS_COMMON="$FGLLIBS_COMMON $RPCLIB_NAME"
+#else
+#	#A4GL_XDRTYPE=NORPC
+#	FGLLIBS_COMMON="$FGLLIBS_COMMON -lRPC_NORPC"
+#fi
 
-FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_XDRTYPE"
-FGLLIBS_STATIC="$FGLLIBS_COMMON -laclall"
-FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared"
+#FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_XDRTYPE"
+FGLLIBS_STATIC="$FGLLIBS_COMMON -static"
+FGLLIBS_SHARED="$FGLLIBS_COMMON"
 
 if [ "$A4GLDEBUG" = "yes" ]
 then
@@ -1202,7 +1211,7 @@ fi
 
 if [ "$A4GLDEBUG" = "yes" ]
 then
-	echo $GTKGUI
+#	echo $GTKGUI
 	echo $COMSPEC
 	echo $MAKE4GLPC
 fi

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2002-03-29 06:38:41 afalout Exp $
+# $Id: Makefile.in,v 1.24 2002-04-06 06:33:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -113,7 +113,8 @@ all:	 $(ALL)
 fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} 
+#	-lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
 #-lm and -ldl are needed on Linux, but not on CygWin
 	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.16 2002-03-25 00:59:43 afalout Exp $
+# $Id: Makefile-install.mki,v 1.17 2002-04-06 06:33:40 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -80,20 +80,7 @@ install.links:
 #endif
 
 install.libs.links: deinstall.libs.links
-ifeq "${GTKBUILD}" "yes"
-#	${LN_S_LIB} $(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} ${LIB_INSTALL_LINK}/libaclsharedgui${SO_EXT}
-#	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl${SO_EXT}
-#	${LN_S_LIB} $(INSTALL_DIR)/lib/libgtk4gl_x${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl_x${SO_EXT}
-endif
-ifeq "${PDFBUILD}" "yes"
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
-endif
-ifneq "${HAVE_RPCLIB}" "0"
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
-endif
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} ${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT}
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_NOPDF${SO_EXT}
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 
 ## ==================================================================
 ##                    deinstall.x
@@ -111,6 +98,7 @@ deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 
 #export libraries on Windows:
 #we keep this only in AUBITDIR, since linking is allways done by 4glpc
@@ -143,7 +131,8 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile
 	${RM} $(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h $(INSTALL_DIR)/incl/*.mk \
 		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common
-	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \
+	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
+		$(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \
 		$(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libSQL_nosql${SO_EXT} \
     	$(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} \
 		$(INSTALL_DIR)/lib/libgtk4gl_x${SO_EXT} $(INSTALL_DIR)/lib/libaclallgui.a  \
@@ -155,7 +144,9 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/lib/libUI_GTK${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x.a \
 		$(INSTALL_DIR)/lib/libUI_GTK_x${SO_EXT} $(INSTALL_DIR)/lib/libUI_TUI${SO_EXT} \
 		$(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} \
-		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT}
+		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT} \
+        $(INSTALL_DIR)/lib/libRPC_XDR${SO_EXT} $(INSTALL_DIR)/lib/libEXREPORT_PDF${SO_EXT} \
+        $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT}
 
 #windows dll export libraries:
 ifneq "${COMSPEC}" ""
@@ -165,7 +156,9 @@ ifneq "${COMSPEC}" ""
     $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libUI_TUI${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libRPC_NORPC${SOEXP_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SOEXP_EXT}
+	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SOEXP_EXT} \
+	$(INSTALL_DIR)/lib/libRPC_XDR${SOEXP_EXT} $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SOEXP_EXT} \
+    $(INSTALL_DIR)/lib/libaubit4gl${SOEXP_EXT}
 endif
 
 #examples:
