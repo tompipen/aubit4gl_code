@@ -1,4 +1,4 @@
-#	@(#)$Id: i4glrds.mk,v 1.1.1.1 2002-06-15 05:06:55 afalout Exp $
+#	@(#)$Id: i4glrds.mk,v 1.2 2002-06-16 07:36:07 afalout Exp $
 #
 #	Makefile for I4GL-RDS Interpreters
 #	Works with standard Xenix make and RMK
@@ -11,7 +11,7 @@
 #############################################################################
 
 # Rules for compiling Informix
-include informix.mk
+include include/informix.mk
 
 # Directive for RMK -- does not affect MAKE
 .AUGMENTED_MAKE:

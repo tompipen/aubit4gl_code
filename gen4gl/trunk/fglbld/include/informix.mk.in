@@ -1,0 +1,158 @@
+#	@(#)$Id: informix.mk.in,v 1.1 2002-06-16 07:36:15 afalout Exp $
+#
+#	Additional rules for Augmented Make
+#	Informix-4GL -- I4GL source, forms and messages
+#	Informix-SQL -- ISQL forms and reports
+#	Informix-RDS -- RDS object files
+#
+#	Suffix list reorganised, but none of the defaults omitted
+#	Rules .4gl.ec: and .4gl.c: not supplied
+#	I4GL Forms with .4pr extension recognised
+#
+#	We use a source extension of '.4pr' to distinguish between
+#	I4GL 1.1 forms , which are compiled using `form4gl',
+#	and any other types of form, which are compiled using `sformbld'.
+
+
+AR=ar
+AR_FLAGS=rv
+
+C4GL=c4gl
+CFLAGS=-O -s
+ESQL=esql
+GFLAGS=-s
+ACEPREP=saceprep
+FORMBUILD.4GL=form4gl
+#FORMBUILD.SQL=sformbld
+FORMBUILD.SQL=form4gl
+FORMBUILD=form4gl
+FORMFLAGS=-q
+MKMESSAGE=mkmessage
+MSGFLAGS=
+RANLIB=ranlib             # set to 'ranlib' on Xenix
+
+#	Reorganise suffix list
+.SUFFIXES:
+.SUFFIXES: .o .4go .4gl .4gl~ .ec .ec~ .c .c~ .y .y~ .l .l~ .s .s~ .h .h~ 
+.SUFFIXES: .sh .sh~ .f .f~ .arc .ace .ace~
+.SUFFIXES: .4ge .frm .4pr .4pr~ .per .per~ .iem .msg .msg~
+
+#	I4GL compiling
+.4gl:
+	$(C4GL) $(CFLAGS) $< -o $@ $(LDFLAGS)
+	-rm -f $*.ec $*.[co]
+.4gl~:
+	$(GET) $(GFLAGS) $<
+	$(C4GL) $(CFLAGS) $*.4gl -o $@ $(LDFLAGS)
+	-rm -f $*.ec $*.[fo]
+.4gl.4ge:
+	$(C4GL) $(CFLAGS) -o $*.4ge $< $(LDFLAGS)
+	rm -f $*.[co] $*.ec
+.4gl~.4ge:
+	$(GET) $(GFLAGS) $<
+	$(C4GL) $(CFLAGS) -o $*.4ge $*.4gl $(LDFLAGS)
+	rm -f $*.4gl $*.ec $*.[co]
+.4gl.o:
+	$(C4GL) $(CFLAGS) -c $<
+	-rm -f $*.ec $*.c
+.4gl~.o:
+	$(GET) $(GFLAGS) $<
+	$(C4GL) $(CFLAGS) -c $*.4gl
+	-rm -f $*.4gl $*.ec $*.c
+.4gl~.4gl:
+	$(GET) $(GFLAGS) $<
+.4gl.a:
+	$(C4GL) $(CFLAGS) -c $<
+	$(AR) $(AR_FLAGS) $@ $*.o
+	@$(RANLIB) $@
+	-rm -f $*.ec $*.[co]
+.4gl~.a:
+	$(GET) $(GFLAGS) $<
+	$(C4GL) $(CFLAGS) -c $*.4gl
+	$(AR) $(AR_FLAGS) $@ $*.o
+	@$(RANLIB) $@
+	-rm -f $*.4gl $*.ec $*.[co]
+
+#	I4GL Forms with .4pr extension
+.4pr.frm:
+	rm -f $*.per
+	ln $*.4pr $*.per
+	$(FORMBUILD.4GL) $(FORMFLAGS) $*
+	rm -f $*.per
+.4pr~.frm:
+	$(GET) $(GFLAGS) $<
+	rm -f $*.per
+	ln $*.4pr $*.per
+	$(FORMBUILD.4GL) $(FORMFLAGS) $*
+	-rm -f $*.per $*.4pr
+.4pr~.4pr:
+	$(GET) $(GFLAGS) $<
+
+#	I4GL Form files
+.per.frm:
+	$(FORMBUILD.SQL) $(FORMFLAGS) $*
+.per~.frm:
+	$(GET) $(GFLAGS) $<
+	$(FORMBUILD.SQL) $(FORMFLAGS) $*
+	-rm -f $*.per
+.per~.per:
+	$(GET) $(GFLAGS) $<
+
+#	Message files
+.msg.iem:
+	$(MKMESSAGE) $(MSGFLAGS) $< $@
+.msg~.iem:
+	$(GET) $(GFLAGS) $<
+	$(MKMESSAGE) $(MSGFLAGS) $*.msg $@
+	-rm -f $*.msg
+.msg~.msg:
+	$(GET) $(GFLAGS) $<
+
+#	ISQL ACE Reports
+.ace.arc:
+	$(ACEPREP) $*
+.ace~.arc:
+	$(GET) $(GFLAGS) $<
+	$(ACEPREP) $*
+	-rm -f $*.ace
+
+#	I4GL RDS compiling
+.4gl.4go:
+	fglpc $<
+.4gl~.4go:
+	$(GET) $(GFLAGS) $<
+	fglpc $*.4gl
+	rm -f $*.4gl
+
+#	ESQL/C
+.ec:
+	$(ESQL) $(CFLAGS) $< -o $@ $(LDFLAGS)
+	-rm -f $*.[co]
+.ec~:
+	$(GET) $(GFLAGS) $<
+	$(ESQL) $(CFLAGS) $*.ec -o $@ $(LDFLAGS)
+	-rm -f $*.ec $*.[co]
+.ec.o:
+	$(ESQL) $(CFLAGS) -c $<
+	-rm -f $*.c
+.ec~.o:
+	$(GET) $(GFLAGS) $<
+	$(ESQL) $(CFLAGS) -c $*.ec
+	-rm -f $*.ec $*.c
+.ec.c:
+	$(ESQL) $(CFLAGS) -e $*.ec
+.ec~.c:
+	$(GET) $(GFLAGS) $<
+	$(ESQL) $(CFLAGS) -e $*.ec
+	-rm -f $*.ec
+.ec~.ec:
+	$(GET) $(GFLAGS) $<
+.ec.a:
+	$(ESQL) $(CFLAGS) -c $<
+	$(AR) $(AR_FLAGS) $@ $*.o
+	-rm -f $*.[co]
+.ec~.a:
+	$(GET) $(GFLAGS) $<
+	$(ESQL) $(CFLAGS) -c $*.ec
+	$(AR) $(AR_FLAGS) $@ $*.o
+	-rm -f $*.ec $*.[co]

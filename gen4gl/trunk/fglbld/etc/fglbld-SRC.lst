@@ -1,0 +1,180 @@
+#   @(#)$Id: fglbld-SRC.lst,v 1.1 2002-06-16 07:36:14 afalout Exp $
+#   Definitive list of source files used in FGLBLD Version %Q%
+#
+#   -- The source file column contains the name of the file to be
+#      installed.  The name is quoted relative to $FGLBLDDIR.
+#   -- The master file column contains the name of the master file.
+#      It is assumed to be under SCCS control; the `s.' prefix and the
+#      SCCS sub-directory name need not be specified.
+#
+#   -- Comment lines start with a hash (#)
+#   -- Blank lines are ignored
+#   -- Tabs are non-preferred characters
+#
+# Source file           Master file
+#
+# FIXME: remove /work/jleffler/lib/I4GL/
+# also we probably don't nedd this functionality any more
+# This file is read by mksource.sh (or just mksource)
+
+
+# Code generator scripts
+cpopup.alt              ./cpopup.alt
+fglbld.alt              ./fglbld.alt
+mkselect.alt            ./mkselect.alt
+upopup.alt              ./upopup.alt
+
+# Controlling makefile
+makefile                ./makefile
+
+# Utilities used by FGLBLD or custom runners
+decformat.c             /work/jleffler/lib/I4GL/src/decformat.c
+decimal.h				./decimal.h
+editstr.c               /work/jleffler/lib/I4GL/src/editstr.c
+exec.c                  /work/jleffler/lib/I4GL/src/exec.c
+fgiusr.c                /work/jleffler/lib/I4GL/src/fgiusr.c
+getenv.c                /work/jleffler/lib/I4GL/src/getenv.c
+i4glrds.mk              ./i4glrds.mk
+mkfile.c                /work/jleffler/lib/I4GL/src/mkfile.c
+opendb.4gl              /work/jleffler/lib/I4GL/src/opendb.4gl
+rdscurses.h             /work/jleffler/lib/I4GL/src/rdscurses.h
+redraw.c                /work/jleffler/lib/I4GL/src/redraw.c
+report.c				/work/jleffler/lib/I4GL/src/report.c
+round.c                 /work/jleffler/lib/I4GL/src/round.c
+scrdump.c               /work/jleffler/lib/I4GL/src/scrdump.c
+shell.4gl               /work/jleffler/lib/I4GL/src/shell.4gl
+sqltype.ec               /work/jleffler/lib/I4GL/src/sqltype.ec
+sqltypes.h				./sqltypes.h
+uname.c                 /work/jleffler/lib/I4GL/src/uname.c
+
+# Manual pages for above utilities
+decfmt.man              /work/jleffler/lib/I4GL/man/decfmt.3j
+editstr.man             /work/jleffler/lib/I4GL/man/editstr.3j
+exec.man                /work/jleffler/lib/I4GL/man/exec.3j
+getenv.man              /work/jleffler/lib/I4GL/man/getenv.3j
+mkfile.man              /work/jleffler/lib/I4GL/man/mkfile.3j
+opendb.man              /work/jleffler/lib/I4GL/man/opendb.3j
+redraw.man              /work/jleffler/lib/I4GL/man/redraw.3j
+report.man              /work/jleffler/lib/I4GL/man/report.3j
+round.man               /work/jleffler/lib/I4GL/man/round.3j
+scrdump.man             /work/jleffler/lib/I4GL/man/scrdump.3j
+shell.man               /work/jleffler/lib/I4GL/man/shell.3j
+sqltype.man             /work/jleffler/lib/I4GL/man/sqltype.3j
+username.man            /work/jleffler/lib/I4GL/man/username.3j
+
+# D-List code
+dlist.c                 /work/jleffler/lib/I4GL/dlist/dlist.c
+dlist.h                 /work/jleffler/lib/I4GL/dlist/dlist.h
+dlistdbl.c              /work/jleffler/lib/I4GL/dlist/dlistdbl.c
+dlistdec.c              /work/jleffler/lib/I4GL/dlist/dlistdec.c
+dlistint.c              /work/jleffler/lib/I4GL/dlist/dlistint.c
+dliststr.c              /work/jleffler/lib/I4GL/dlist/dliststr.c
+dlist.man               /work/jleffler/lib/I4GL/dlist/dlist.man
+dlistdbl.man            /work/jleffler/lib/I4GL/dlist/dlistdbl.man
+dlistdec.man            /work/jleffler/lib/I4GL/dlist/dlistdec.man
+dlistint.man            /work/jleffler/lib/I4GL/dlist/dlistint.man
+dliststr.man            /work/jleffler/lib/I4GL/dlist/dliststr.man
+
+# Template files
+perform.mk              ./perform.mk
+perform.msg             ./perform.msg
+performc.4gl            ./performc.4gl
+performg.4gl            ./performg.4gl
+performm.4gl            ./performm.4gl
+
+# Standard distributed files
+checkint.4gl            /work/jleffler/lib/I4GL/src/checkint.4gl
+informix.mk             ./informix.mk
+interr.4gl              /work/jleffler/lib/I4GL/src/interr.4gl
+isdir.c					/work/jleffler/lib/I4GL/src/isdir.c
+nxtfield.4gl            ./nxtfield.4gl
+popstr.c                /work/jleffler/lib/I4GL/src/popstr.c
+popstr.man              /work/jleffler/lib/I4GL/man/popstr.3j
+repdest.4gl             /work/jleffler/lib/I4GL/src/repdest.4gl
+repdest.4pr             /work/jleffler/lib/I4GL/src/repdest.4gf
+repdest.man             /work/jleffler/lib/I4GL/man/repdest.3j
+reptype.4gl             ./reptype.4gl
+scrndump.4gl            /work/jleffler/lib/I4GL/src/scrndump.4gl
+scrndump.4pr            /work/jleffler/lib/I4GL/src/scrndump.4gf
+security.4gl            /work/jleffler/lib/I4GL/src/security.4gl
+shell.4gl               /work/jleffler/lib/I4GL/src/shell.4gl
+stdopt.4gl              /work/jleffler/lib/I4GL/src/stdopt.4gl
+translog.4gl            /work/jleffler/lib/I4GL/src/translog.4gl
+
+# Front-end scripts
+fglbld.dst              ./fglbld.dst
+defluff.dst             ./defluff.dst
+mkfglgo.dst             ./mkfglgo.dst
+
+# FGLBLD documentation
+fglbld.man              ./fglbld.man
+fglbld.notes            ./fglbld.notes
+
+# Forms used by FGLBLD
+fglbld.4pr              ./fglbld.4pr
+fglcpop.4pr             ./fglcpop.4pr
+fglsel.4pr              ./fglsel.4pr
+fglupop.4pr             ./fglupop.4pr
+getdbase.4pr            ./getdbase.4pr
+syscol.4pr              ./syscol.4pr
+systab.4pr              ./systab.4pr
+
+# Source files for FGLBLD
+chcolumn.4gl            ./chcolumn.4gl
+chfile.4gl              ./chfile.4gl
+chtable.4gl             ./chtable.4gl
+getdbase.4gl            ./getdbase.4gl
+fglbldg.4gl             ./fglbldg.4gl
+fglbldi.4gl             ./fglbldi.4gl
+fglbldm.4gl             ./fglbldm.4gl
+fglbldr.4gl             ./fglbldr.4gl
+fglcomp.4gl             ./fglcomp.4gl
+fgledit.4gl             ./fgledit.4gl
+fglpopup.4gl            ./fglpopup.4gl
+fglsel.4gl              ./fglsel.4gl
+
+# Message file for FGLBLD
+fglbld.msg              ./fglbld.msg
+
+# User Manual
+clients.sql				Manual/clients.sql
+fglbld.doc				Manual/fglbld.doc
+fglbld2.doc				Manual/fglbld2.doc
+fglbld3.doc				Manual/fglbld3.doc
+fglbld4.doc				Manual/fglbld4.doc
+fglbld5.doc				Manual/fglbld5.doc
+fglmenu.pic				Manual/fglmenu.pic
+jobs.sql				Manual/jobs.sql
+mainmenu.pic			Manual/mainmenu.pic
+modmenu.pic				Manual/modmenu.pic
+perform.pic				Manual/perform.pic
+popmenu.pic				Manual/popmenu.pic
+security.sql			Manual/security.sql
+srcmenu.pic				Manual/srcmenu.pic
+times.sql				Manual/times.sql
+tsg.4gx					Manual/tsg.4gx
+tsi1.4gx				Manual/tsi1.4gx
+tsi2.4gx				Manual/tsi2.4gx
+tsi3.4gx				Manual/tsi3.4gx
+tsm1.4gx				Manual/tsm1.4gx
+tsm2.4gx				Manual/tsm2.4gx
+tsm3.4gx				Manual/tsm3.4gx
+tsm4.4gx				Manual/tsm4.4gx
+tsm5.4gx				Manual/tsm5.4gx
+
+# Installation tools
+# Note: mksource and fglbld.src already exist (normally)
+install.sh              ./install.sh
+instfile.sh             ./instfile.sh
+mkdist.sh               ./mkdist.sh
+mkscript.sh             ./mkscript.sh
+fglbld.RDS              ./fglbld.RDS
+fglbld.4GL              ./fglbld.4GL
+fglbld.src              ./fglbld.src
+fglgo.files             ./fglgo.files
+mksource.sh             ./mksource.sh
+mkshar.sh               ./mkshar.sh
+mkfest.sh               ./mkfest.sh
+mkversion.sh            ./mkversion.sh
+mkpath.sh               /work/jleffler/bin/mkpath.sh
+READ.ME                 ./READ.ME

@@ -1,0 +1,53 @@
+
+#   Validation Functions
+#   ********************
+#   Unless a non-null value is assigned to retval,
+#   the INPUT statement will continue in the default manner.
+#   Do not assign a non-null value to retval without cause.
+#   In general, do not set retval for BF.
+#
+
+{ Validation code for Timesheet.ts_date }
+FUNCTION v01_timesheet(vcode)
+
+    DEFINE
+        # R_xref    RECORD LIKE Xreftable.*,
+        vcode   CHAR(2),    { AF, BF, ^P or F5 }
+        retval  INTEGER     { Next field number }
+
+    LET retval = NULL
+
+    CASE
+    WHEN vcode = "^P"
+        LET wr_timesheet.ts_date = cp_timesheet.ts_date
+        LET retval = next_field(fc_timesheet.*)
+    WHEN vcode = "F5"
+        ERROR "Sorry -- pop-up facility is not available"
+        LET retval = fc_timesheet.curr_field
+        # LET wr_timesheet.ts_date = pop_xreftable()
+        # LET retval = next_field(fc_timesheet.*)
+    WHEN vcode = "BF"
+        LET fc_timesheet.curr_field = 1
+        LET pr_timesheet.ts_date = wr_timesheet.ts_date
+        # Insert code to skip ts_date here
+    # WHEN vcode = "AF"
+        # Normally there is no code needed here
+    END CASE
+
+    # Do not validate in BEFORE FIELD (normally)
+    IF vcode != "BF" THEN
+        # CALL sel_xreftable(wr_timesheet.ts_date)
+            # RETURNING r_xref.*
+        # IF r_xref.ts_date IS NULL THEN
+            # DISPLAY "Unknown xref value ", wr_timesheet.ts_date
+            # LET wr_timesheet.ts_date = pr_timesheet.ts_date
+            # LET retval = fc_timesheet.curr_field
+        # END IF
+        CALL dis_timesheet()
+    END IF
+
+    CALL spf_timesheet(vcode, retval)
+
+    RETURN retval
+
+END FUNCTION {v01_timesheet}

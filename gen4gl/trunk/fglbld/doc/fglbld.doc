@@ -1,0 +1,400 @@
+'\" @(#)$Id: fglbld.doc,v 1.1 2002-06-16 07:36:14 afalout Exp $
+'\" @(#)FGLBLD: User Guide and Reference Manual
+'\" @(#)Part 1 of 5
+'\" -----------------------------------------------------
+'\" Definitions
+.ds fB \s-2\fBFGLBLD\fP\s0
+.ds iR Informix-RDS
+.ds sP \s-2SPI\s0
+\!!rasterize=300
+\!!thickness=2
+'\" -----------------------------------------------------
+'\"
+.PH "''\s12\fHSphinx Ltd\fP\s0''"
+.PF "'\s8Sphinx\s0'Page %'\s8Version $Revision: 1.1 $ $Date: 2002-06-16 07:36:14 $\s0'"
+.S 18
+.ft HB
+.ce 99
+\s24FGLBLD\s0
+.sp 0.5v
+An Informix-4GL Application Generator
+.sp 0.5v
+.ft H
+User Guide and Reference Manual
+.ce 0
+.ft R
+.S 12
+.sp 2
+.PH "'Manual'FGLBLD'Sphinx'"
+.nr Cl 3
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 1 "INTRODUCTION"
+.nr Ej 1
+\*(fB is an application generator for \*(i4 which generates
+\*(i4 code suitable for use with both the compiled version of \*(i4 and the
+\*(iX Rapid Development System or \*(iR.
+It generates code to handle a particular style of interaction which is termed
+a Simplified Perform Interface or \*(sP.
+This is analogous to a customised version of the \*(iQ program \*(pF.
+It generates and compiles
+something of the order of 1500 lines of code (for a moderately
+small table) in a matter of minutes.
+The generated program can usually be run immediately, though it will
+invariably benefit from some cosmetic changes, even if this is only to the
+layout of the form and the report which are produced.
+.P
+As well as this primary function, \*(fB can generate code to allow users
+to choose from a list of items (using a \fIpopup\fP window), and it can also
+generate efficient code to fetch data from the database.
+These two types of function are extensively used in the validation code which
+is frequently needed to ensure that the user is entering valid data.
+.P
+In the hands of an experienced user,
+\*(fB can be used to create a custom application in less than an hour with
+a complete set of default help messages,
+multiple pop-up facilities to allow the user to choose a value from a list,
+and a report which at least gives all the information stored in the table.
+Unlike some other products available, it is possible to have more than one
+\*(sP included in one program \(em the functions are named systematically but
+use the table name as part of the function name.
+.P
+This document is a user guide to the product.
+It covers the use of the product, the structure of the code,
+how to modify the code, how to install the product and what could be improved.
+It assumes a good working knowledge of \*(iQ and \*(i4; it also assumes
+a good working knowledge of \*(mK and \*(sS, and a reasonable understanding of
+shell scripts \(em not normally a problem if the other requirements are met.
+It does not hold your hand and take you through every keystroke.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "What is an SPI?"
+As mentioned above, an \*(sP is a Simplified Perform Interface.
+To understand what is meant by this, it is helpful to understand what the
+regular \*(pF interface looks like.
+'\"
+.H 3 "PERFORM"
+The \*(pF program is the \*(iQ screen-based transaction processor,
+which is a fancy way of saying it allows the user to edit the
+data in the database, using a screen form
+to allow the user to see what they are doing.
+(A screen form consists of a screen layout with
+titles which do not change and spaces where 
+the user can type in information,
+with additional control information.)
+It is basically very easy to use: there are six important 
+options (query, next, previous, add, remove, update),
+six minor options (screen, table, master, detail, current, output),
+and the exit option.
+The main menu for \*(pF is illustrated in Figure 1.
+.DS CB
+.FG "The PERFORM main menu."
+.PS <perform.pic
+.DE
+\*(pF works with one active table at a time (in the figure,
+the active table is \*ccustomers\*d),
+though there may be a number of tables listed in one form.
+The important options allow the user to work on the current table and to:
+.BL 5 1
+.LI
+Select a set of records from the table (query)
+.LI
+Look at any records in the current set (next, previous)
+.LI
+Add new records (add)
+.LI
+Remove existing records (remove)
+.LI
+Update existing records (update).
+.LE 1
+The behaviour of the add, delete and update options can be
+partially controlled by information in the \s-2ATTRIBUTES\s0
+and \s-2INSTRUCTIONS\s0 section of the form.
+This allows some simple validation to be done, and some
+types of cross-referencing (lookup, verify joins) can be
+done as the data is displayed.
+However, there are many complex types of validation, and
+cross-references to multiple tables, which cannot be handled in \*(pF.
+.P
+The minor options (except Output) are used to control complex 
+forms with several screen layouts and several tables in the form.
+These are the least satisfactory part of \*(pF because the user
+must be trained to understand what is happening to be able to 
+use these options reliably.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 3 "Simplified PERFORM Interface"
+Although the complete set of options in \*(pF is unwieldy,
+the set of important options plus output and exit are very 
+useful for editing one table at a time, and these options can be 
+understood by most users.
+It is possible to provide an \*(i4 program which supplies these 
+options and which allows the programmer to add a variety of 
+extra features, such as more complicated data validation,
+choosing from lists of possible data values,
+complicated lookups for data, properly cascaded deletes,
+and also extra constraints on the user \(em
+even different constraints on different users.
+.P
+The basic \*(sP menu offers the eight options shown in Figure 2.
+.DS CB
+.FG "A main menu generated by FGLBLD."
+.PS <fglmenu.pic
+.DE
+The Exit option is the way of terminating the menu and does not 
+need further discussion.
+The Query, Next and Previous options allow the user to specify
+which data they wish to look at and to step through the data.
+Both Next and Previous can be preceded by a number indicating the
+number of records to jump over.
+The Add option (which might be called Insert to be consistent 
+with the other database operations) allows the user to add a
+new row of data.
+The Delete option allows the user to reconsider their decision, 
+but deletes the current row of data when required.
+The Update option allows the user to edit the current row of data.
+The Report option allows the user to print the data they are 
+working with, or to file it or see it on the screen.
+.P
+This basic set of options can be augmented by editing the generated code.
+\*(fB also provides a set of hidden options.
+These include First and Last to move to either end of a set of records,
+Goto to move to a particular record in the list,
+Current to reselect the current row of data
+(it may have been changed by someone else),
+Same to re-execute the same query again,
+and there is normally a shell escape option too.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "What is FGLBLD?"
+\*(fB is a program written in \*(i4 which gives the user a
+menu-driven system for working with \*(sPs.
+It has options to create an \*(sP,
+a pop-up function (which allows the user to choose a value from a list),
+or a fetch function (which collects a record from the database).
+It also provides a usable environment in which to edit the code
+for an \*(sP, to recompile it or run it.
+.P
+The standard distribution comes in two flavours depending on
+whether compiled \*(i4 or \*(iR is in use.
+If the distribution is for compiled \*(i4, there are just two
+user-level commands, namely \*cfglbld\*d and \*cdefluff\*d.
+If the distribution is for \*(iR, you also get a command called \*cmkfglgo\*d.
+.P
+The main command that users see is \*cfglbld\*d.
+This is actually a shell script which amends the environment so
+that the rest of \*(fB will work correctly and then
+runs the \*(i4 program that gives the user the menu and so on.
+.P
+\*cDefluff\*d is a filter which removes certain comments from the
+code generated by \*cfglbld\*d.
+These comments indicate how the code could be modified if
+required, but the comments in, for example, the input validation
+functions are repeated for every function and are frequently unwanted.
+\*cDefluff\*d removes these comments.
+.P
+\*cMkfglgo\*d is used to create a custom version of
+\*Cfglgo\*D and \*Cfgldb\*D.
+It copies the necessary source code into the current directory
+(including a makefile) and then compiles
+both \*Cfglgo\*D and \*Cfgldb\*D.
+If required, the set of functions can be extended by the user.
+.P
+These three scripts are normally installed in one of the standard
+bin directories on the system: the default directory would be
+\*c$INFORMIXDIR/bin\*d.
+The rest of the software is normally stored in a separate
+directory system such as the default, \*c/usr/fglbld\*d,
+though it could be installed under \*c$INFORMIXDIR\*d.
+The software comprises the \*(i4 executable (or interpretable for
+an \*(iR installation), the code generator scripts, the form files,
+the help message files, the installation tools and the code templates.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "What is a PRIMARY KEY?"
+When generating code with \*(fB, one of the questions the user is asked is
+the name of the \fIprimary  key\fP column.
+It is important to be able to answer this question correctly;
+if an incorrect answer is given, the behaviour of the generated program
+will be unsatisfactory to the user.
+.P
+Put simply, the primary key of a table is the column or set of columns
+which contains a unique identifier for each row of data.
+A typical example of a primary key is a \s-2SERIAL\s0 column.
+When the table is created, the \s-2SERIAL\s0 column will have nulls disallowed
+(\s-2NOT NULL\s0), and there will be a unique index on the column too.
+By specifying the value in the \s-2SERIAL\s0 column in the \s-2WHERE\s0 clause
+of a \s-2SELECT\s0 statement, at most one row of data
+will be fetched from the database.
+If there is a row with the matching value stored in the \s-2SERIAL\s0 column,
+it will be retrieved; if there is no such row, no rows will be returned.
+Under no circumstances will more than one row be returned.
+.P
+Some tables do not have a single-column primary key.
+For example, a table expressing a relationship between two entities
+defined in different tables normally has a primary key consisting of a
+value from the first table and a value from the second table.
+\*(fB handles this by using the \s-2ROWID\s0 in place of a single column
+\(em see the section on `Creating an SPI'.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "What is a D-List?"
+.H 3 "Scroll cursors"
+Versions of \*(i4 prior to 1.10 only had one type of \s-2CURSOR\s0
+and the only operations available on these were \s-2OPEN\s0,
+\s-2FETCH\s0 and \s-2CLOSE\s0.
+The \s-2FETCH\s0 operation always fetched the next row.
+This sort of cursor is not very suitable for moving backwards and
+forwards through a set of rows of data \(em backwards is
+particularly difficult.
+.P
+Later versions of \*(i4 added \s-2SCROLL CURSORS\s0 which support
+the operations \s-2FETCH FIRST\s0, \s-2FETCH LAST\s0, \s-2FETCH
+PREVIOUS\s0, \s-2FETCH NEXT\s0, \s-2FETCH ABSOLUTE\s0,
+\s-2FETCH RELATIVE\s0 and \s-2FETCH CURRENT\s0
+as well as \s-2OPEN\s0 and \s-2CLOSE\s0.
+At first sight, these seem to be ideal for implementing an \*(sP;
+further acquaintance reveals some shortcomings.
+The main shortcoming is that the list of rows in the cursor
+cannot be modified after the cursor is opened.
+This means that if the user deletes a row from the list, there is
+no way of removing it from the set of rows in the scroll
+cursor, so if the user moves on to the next item and then
+comes back, it will look to them as though the row has not been deleted.
+There are two ways of circumventing this trouble:
+.AL i 5 1
+.LI
+After a delete or update or sequence of add operations, reopen
+the scroll cursor and reposition the user in the list.
+.LI
+Only select the \s-2ROWID\s0 (or possibly the primary key
+column(s) for the table) with the scroll cursor.
+Every time the user changes the current row, use the scroll
+cursor to fetch the next key value and then select the data from
+the database again.
+.LE 1
+The first alternative is clumsy, particularly if the query
+specified by the user fetches a large number of rows of data.
+Also, repositioning the user in the list at the same point is
+impossible to do accurately on a multi-user system because
+someone else could have been adding or deleting rows while the user
+was fiddling.
+The second alternative requires some complex coding to handle the
+rows which are no longer retrieved because the original record
+has been deleted; should the next record which is fetched be
+\s-2FETCH NEXT\s0 or \s-2FETCH PREVIOUS\s0, and what happens
+when the first or last record is deleted, or all records are deleted.
+.P
+A second issue with \s-2SCROLL CURSORS\s0 arises if the database
+has a transaction log on it;
+all \s-2SELECT FOR UPDATE\s0 statements (and table locks) have to
+be applied within a transaction.
+When a transaction is terminated, all currently open cursors are closed.
+It is not satisfactory to start a transaction when the user
+starts the program and terminate it when they finish since it
+definitely reduces the possibility of multiple users accessing
+the database and can also run into problems with the number of
+locks applied to the table.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 3 "D-Lists"
+D-Lists are a solution to the problems outlined above.
+The name is an abbreviation of `doubly-linked list'.
+They are a set of functions written in C which can maintain
+arbitrary lists of values.
+The operations supported on D-Lists include add, update and
+delete as well as create, destroy and a fetch function which
+includes all the operations supported by scroll cursors.
+There are a couple of other utility functions which return the
+index number of the current row and the total number of rows,
+and there is a function to empty the list but not destroy it.
+These operations are completely independent of the database
+engine and so they are not affected by transaction boundaries.
+.P
+There is a problem with using D-Lists from \*(i4, namely that
+for each type of value to be stored in the D-List, you need a
+separate set of interface routines.
+For practical reasons therefore, only four sets of \*(i4 routines
+have been provided, and they are for integers, strings, decimals
+and floats.
+The decimal and float routines have never been used in anger;
+it is implausible (but not impossible) to have a primary key
+based on these types.
+If a table has a composite primary key (a key consisting of more
+than one column), it is necessary to use the integer D-List
+routines to store the \s-2ROWID\s0 of each row and to use this to
+retrieve the relevant information.
+It would be possible to use the \s-2ROWID\s0 for all operations,
+but if the primary key is a simple integer (or a \s-2SERIAL\s0 or
+\s-2DATE\s0 column) or a character string, it is more natural to
+use these instead.
+.P
+The only disadvantage of using D-Lists is if \*(iR is in use;
+because they are written in C, the D-List routines have to be
+incorporated into customised versions of \*Cfglgo\*D and \*Cfgldb\*D.
+The script \*cmkfglgo\*d is provided with \*(fB to create these programs.
+'\"
+'\" -----------------------------------------------------
+'\"
+'\" .H 1 "USING FGLBLD"
+.PS <fglbld2.doc
+'\"
+'\" -----------------------------------------------------
+'\"
+'\" .H 1 "A GUIDED TOUR OF AN FGLBLD APPLICATION"
+.PS <fglbld3.doc
+'\"
+'\" -----------------------------------------------------
+'\"
+'\" .H 1 "MODIFYING FGLBLD SOURCE"
+.PS <fglbld4.doc
+'\"
+'\" -----------------------------------------------------
+'\"
+'\" .H 1 "FGLBLD SUPPORT CODE"
+'\" .H 1 "FGLBLD INSTALLATION"
+'\" .H 1 "REJECTED STRATEGIES"
+'\" .H 1 "WHAT IS MISSING?"
+'\" .H 1 "WHAT MAY CHANGE?"
+.PS <fglbld5.doc
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 1 "SUMMARY"
+\*(fB is an application generator for \*(i4 which can generate
+high-quality programs from just 5 pieces of information specified
+by the programmer (the database, the table, the primary key, the menu
+title and the basename for the files).
+All the code used by the generated program is supplied as source
+code so there are no hidden libraries.
+The generated code is easily modifiable; \*(fB supplies code
+generators which allow the programmer to create popup windows
+which allow the user (of the generated program) to select the
+required input value from a list, and also code which simplifies
+the validation and display of data from joining tables.
+.P
+Although it does not eliminate all \*(i4 programming (only the
+simplest of application would need no improvements beyond
+reorganising the layout of the screen form), \*(fB does speed up the
+development process greatly.
+'\"
+'\" -----------------------------------------------------
+'\"
+.sp 3
+.ne 3
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+9th October 1989
+.TC 1 1 3 0 "\x'2v'\s24\f(HBFGLBLD\fP\s0" \
+	"\x'2v'\s18\f(HBAn Informix-4GL Application Generator\s0\fP" \
+	"\x'2v'\s18\fHUser Guide and Reference Manual\s0\fP" \
+	"CONTENTS"

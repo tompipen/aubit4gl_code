@@ -1,0 +1,116 @@
+{
+    @(#)$Id: tsi1.4gx,v 1.1 2002-06-16 07:36:14 afalout Exp $
+    @(#)Built by: FGLBLD Version 6.10 (09/02/1990)
+    @(#)Input function for SPI on Timesheet
+}
+
+DATABASE CONSULT
+
+GLOBALS "tsg.4gl"
+
+{ Module variables -- not accessible outside this file }
+DEFINE
+    pr_timesheet    RECORD LIKE Timesheet.*, { Previous contents of fields }
+    dr_timesheet    RECORD LIKE Timesheet.*, { Default values for table }
+    fc_timesheet    RECORD  { Field control information }
+                curr_field  INTEGER,    { Current field number  }
+                prev_field  INTEGER,    { Previous field number }
+                n_iofields  INTEGER     { Number of I/O fields  }
+                END RECORD,
+    defset      INTEGER,    { 0 => default record not set }
+    iomode      CHAR(1),    { I for input, U for update }
+    sccs        CHAR(1) { Identifier string }
+
+\&...
+
+{ Input function }
+FUNCTION inp_timesheet(iucode)
+
+    DEFINE
+        instatus    INTEGER,
+        field_no    INTEGER,
+        iucode      CHAR(1) { 'I' Insert, 'U' Update }
+
+    LET instatus = TRUE { OK }
+    LET iomode   = iucode
+    LET fc_timesheet.n_iofields = 5
+    IF iomode = 'I' THEN
+        CALL sdf_timesheet()
+    END IF
+    LET fc_timesheet.prev_field = 0
+
+    CALL wi1_timesheet(2)
+
+    INPUT wr_timesheet.* WITHOUT DEFAULTS FROM s_timesheet.* HELP 20
+
+    ON KEY(F9, CONTROL-Y)
+        CALL do_screen_dump()
+
+    ON KEY (F8, CONTROL-E)
+        # Alternative exit input for FGLDB
+        LET instatus = FALSE
+        EXIT INPUT
+
+    ON KEY (F7, CONTROL-F)
+        CALL hlp_timesheet()
+
+    ON KEY (F6, CONTROL-P)
+        CASE
+        WHEN INFIELD(ts_date)
+            LET field_no = v01_timesheet("^P")
+        \&...
+        END CASE
+        GOTO nxf_timesheet
+
+    ON KEY (F5, CONTROL-B)
+        CASE
+        WHEN INFIELD(ts_date)
+            LET field_no = v01_timesheet("F5")
+        \&...
+        OTHERWISE
+            ERROR "No pop-up facility is defined for this field"
+        END CASE
+        GOTO nxf_timesheet
+
+        BEFORE FIELD ts_date
+            LET field_no = v01_timesheet("BF")
+            GOTO nxf_timesheet
+
+        AFTER FIELD ts_date
+            LET field_no = v01_timesheet("AF")
+            GOTO nxf_timesheet
+
+        \&...
+
+        LABEL nxf_timesheet:
+            IF field_no IS NOT NULL THEN
+                CASE
+                WHEN field_no = 1
+                    NEXT FIELD  ts_date
+                WHEN field_no = 2
+                    NEXT FIELD  ts_from
+                WHEN field_no = 3
+                    NEXT FIELD  ts_upto
+                WHEN field_no = 4
+                    NEXT FIELD  jobid
+                WHEN field_no = 5
+                    NEXT FIELD  notes
+                END CASE
+            END IF
+    END INPUT
+
+    IF INT_FLAG = FALSE AND instatus = TRUE THEN
+        # You should modify this.
+        # AFTER INPUT type validation is often easier here than in an
+        # AFTER INPUT clause within the INPUT statement.
+    ELSE
+        LET INT_FLAG = FALSE
+        LET instatus = FALSE
+    END IF
+    MESSAGE ""
+
+    RETURN instatus
+
+END FUNCTION {inp_timesheet}
+
+\&...

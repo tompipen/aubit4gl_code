@@ -1,0 +1,25 @@
+{
+    @(#)$Id: tsg.4gx,v 1.1 2002-06-16 07:36:14 afalout Exp $
+    @(#)Built by: FGLBLD Version 6.10 (09/02/1990)
+    @(#)Global definitions for SPI on Timesheet
+}
+
+DATABASE CONSULT
+
+GLOBALS
+
+    DEFINE
+        wr_timesheet    RECORD LIKE Timesheet.*, { Working record }
+        nr_timesheet    RECORD LIKE Timesheet.*, { Null record }
+        cp_timesheet    RECORD LIKE Timesheet.*, { Previous record }
+        ct_timesheet    RECORD
+                    list_number INTEGER,    { List number }
+                    active_set  INTEGER,    { Number of rows in active set }
+                    active_row  INTEGER,    { Current row in active set }
+                    direction   INTEGER,    { Moving forwards/backwards }
+                    rep_query   INTEGER,    { Report enquiry constructed? }
+                    rowid       INTEGER,    { Rowid is not part of wr_timesheet }
+                    query_done  SMALLINT    { General query constructed? }
+                    END RECORD
+
+END GLOBALS

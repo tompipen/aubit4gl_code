@@ -5,6 +5,10 @@
 
 : ${FGLBLDDIR:=.}
 
+#Soure the configuration file
+. etc/fglbldrc
+
+
 DISTRIBUTION=$FGLBLDDIR/Distribution
 
 case "$1" in
@@ -32,13 +36,15 @@ fi
 :	${FGLTYPE:=RDS}
 
 case $FGLTYPE in
+
+
 RDS)	ext=RDS;;
 C4GL)	ext=4GL;;
 *)		echo "$arg0: unknown type $FGLTYPE -- should be RDS or C4GL" >&2
 		exit 1
 esac
 
-objfile=fglbld.$ext
+objfile=./etc/fglbld-$ext.lst
 if [ ! -f $objfile ]
 then
 	if [ -f ./etc/$objfile ]
@@ -91,19 +97,66 @@ do
 	fi
 
 	source=$file
+
+	basefname=`basename $file`
+
+	#we no longer use .4pr as extension for per files
+	perfname=`basename $file .4pr`
+	if [ "$perfname" != "$basefname" ]
+    then
+        #striping .4pr was successfull - file had .4pr extension
+		source="./per/$perfname.per"
+	fi
+
+    #we renamed fglbld.RDS fglbld.4GL and fglbld.src
+	lstfname=`basename $file .RDS`
+	if [ "$lstfname" != "$basefname" ]
+    then
+		source="./etc/$lstfname-RDS.lst"
+	fi
+
+
+
+
 	if [ ! -r $source ]
 	then
+		#maybe the path in .lst file is wrong?
 		source=`basename $file`
 		if [ ! -r $source ]
 		then
-			echo "$0: $file not found" >&2
-			if [ $check = no ]
+			if [ "$source" == "fgldb" ] &&  [ "$I4GL_DEBUG" == "no" ]
 			then
-				exit 1
-			else
+                #ignore this one
 				continue
-			fi
+            else
+				#is it in per?
+				source="./per/`basename $file`"
+				if [ ! -r $source ]
+				then
+					#is it in man?
+					source="./man/`basename $file`"
+					if [ ! -r $source ]
+					then
+						source="./sql/`basename $file`"
+						if [ ! -r $source ]
+						then
+							source="./include/`basename $file`"
+							if [ ! -r $source ]
+							then
+								echo "$0: $file ($source) not found - check your build success" >&2
+								if [ $check = no ]
+								then
+									exit 1
+								else
+									continue
+								fi
+                            fi
+                        fi
+                    fi
+                fi
+            fi
 		fi
+
 	fi
 
 	echo $DISTRIBUTION/$file
@@ -114,3 +167,17 @@ do
 	fi
 
 done
+
+
+echo "Distribution directory successfuly created. To install:"
+echo ""
+echo "1.  Change into the distribution directory."
+echo "    Type: cd Distribution"
+echo "2.  Set and export the variables FGLBLDDIR, FGLBLDBIN, FGLUSR, FGLGRP"
+echo "    unless the default is acceptable."
+echo "3.  Run install script."
+echo "    Type: ./install"
+echo "4.  Exit from superuser."
+echo "    Type: exit"
+echo ""
+

@@ -1,0 +1,35 @@
+{
+    @(#)$Id: tsm1.4gx,v 1.1 2002-06-16 07:36:14 afalout Exp $
+    @(#)Built by: FGLBLD Version 6.10 (09/02/1990)
+    @(#)Main control program for SPI on Timesheet
+}
+
+DATABASE CONSULT
+
+GLOBALS "tsg.4gl"
+
+{ Module variables -- not accessible outside this file }
+DEFINE
+    sccs        CHAR(1) { Identifier string }
+
+{ Dummy main program -- does the minimum reasonable work }
+MAIN
+
+    LET sccs = "@(#)$Id: tsm1.4gx,v 1.1 2002-06-16 07:36:14 afalout Exp $"
+
+    CALL std_options("BASEDIRECTORY", "TS", "NONE")
+    DEFER INTERRUPT
+    DEFER QUIT
+
+    { Initialise the SPI for timesheet -- terminate on failure }
+    IF wop_timesheet() != 0 THEN
+        EXIT PROGRAM 1
+    END IF
+
+    { Can call mnu_timesheet many times }
+    CALL mnu_timesheet()
+
+    { Normally call wcl_timesheet just once }
+    CALL wcl_timesheet()
+
+END MAIN

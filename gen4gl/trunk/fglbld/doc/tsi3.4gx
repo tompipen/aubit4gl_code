@@ -1,0 +1,38 @@
+{ Validation code for Timesheet.jobid }
+FUNCTION v04_timesheet(vcode)
+
+    DEFINE
+        r_jobs  RECORD LIKE Jobs.*,
+        vcode   CHAR(2),    { AF, BF, ^P or F5 }
+        retval  INTEGER     { Next field number }
+
+    LET retval = NULL
+
+    CASE
+    WHEN vcode = "^P"
+        LET wr_timesheet.jobid = cp_timesheet.jobid
+        LET retval = next_field(fc_timesheet.*)
+    WHEN vcode = "F5"
+        LET wr_timesheet.jobid = pop_jobs()
+        LET retval = next_field(fc_timesheet.*)
+    WHEN vcode = "BF"
+        LET fc_timesheet.curr_field = 4
+        LET pr_timesheet.jobid = wr_timesheet.jobid
+    END CASE
+
+    IF vcode != "BF" THEN
+        CALL sel_jobs(wr_timesheet.jobid)
+            RETURNING r_jobs.*
+        IF r_jobs.jobid IS NULL THEN
+            DISPLAY "Unknown job value ", wr_timesheet.jobid
+            LET wr_timesheet.jobid = pr_timesheet.jobid
+            LET retval = fc_timesheet.curr_field
+        END IF
+        CALL dis_timesheet()
+    END IF
+
+    CALL spf_timesheet(vcode, retval)
+
+    RETURN retval
+
+END FUNCTION {v04_timesheet}

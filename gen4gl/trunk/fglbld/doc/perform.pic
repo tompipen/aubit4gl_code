@@ -1,0 +1,52 @@
+'\" @(#)$Id: perform.pic,v 1.1 2002-06-16 07:36:14 afalout Exp $
+'\" @(#)Picture: PERFORM Main Menu
+.if \n(H1=0 .sp 1.0i
+.ps 8
+.ft LP
+.vs 10
+.PS
+Screen:
+[
+Ledge: line up    2.95i ; move to Ledge.n + ( 0.10i,  0.10i)
+Tedge: line right 4.90i ; move to Tedge.e + ( 0.10i, -0.10i)
+Redge: line down  2.95i ; move to Redge.s + (-0.10i, -0.10i)
+Bedge: line left  4.90i
+Brc: arc cw radius 0.10i at Redge.s - (0.10i, 0) from Redge.s to Bedge.e
+Blc: arc radius 0.10i at Ledge.s + (0.10i, 0) from Ledge.s to Bedge.w
+Trc: arc radius 0.10i at Redge.n - (0.10i, 0) from Redge.n to Tedge.e
+Tlc: arc cw radius 0.10i at Ledge.n + (0.10i, 0) from Ledge.n to Tedge.w
+]
+move to Screen.nw + (0.15i, -1*0.12i-0.10i)
+Line1: "PERFORM: [Query] Next  Previous  Add  Update  Remove  Table  Screen  ..." ljust
+move to Screen.nw + (0.15i, -2*0.12i-0.10i)
+Line2: "Searches the active database table.             ** 1: customers table**" ljust
+move to Screen.nw + (0.15i, -3*0.12i-0.10i)
+Line3: "customer           [           ]" ljust
+move to Screen.nw + (0.15i, -4*0.12i-0.10i)
+Line4: "salut              [     ]" ljust
+move to Screen.nw + (0.15i, -5*0.12i-0.10i)
+Line5: "firstname          [          ]" ljust
+move to Screen.nw + (0.15i, -6*0.12i-0.10i)
+Line6: "surname            [               ]" ljust
+move to Screen.nw + (0.15i, -7*0.12i-0.10i)
+Line7: "address1           [                        ]" ljust
+move to Screen.nw + (0.15i, -8*0.12i-0.10i)
+Line8: "address2           [                        ]" ljust
+move to Screen.nw + (0.15i, -9*0.12i-0.10i)
+Line9: "address3           [                        ]" ljust
+move to Screen.nw + (0.15i, -10*0.12i-0.10i)
+Line10: "postcode           [          ]" ljust
+move to Screen.nw + (0.15i, -11*0.12i-0.10i)
+Line11: "phone              [                ]" ljust
+move to Screen.nw + (0.15i, -12*0.12i-0.10i)
+Line12: "maxmoney           [          ]" ljust
+move to Screen.nw + (0.15i, -13*0.12i-0.10i)
+Line13: "enquiry            [ ]" ljust
+move to Screen.nw + (0.15i, -14*0.12i-0.10i)
+Line14: "lastmodel          [           ]" ljust
+move to Screen.nw + (0.15i, -15*0.12i-0.10i)
+Line15: "contactdate        [          ]" ljust
+.PE
+.ft
+.ps
+.vs

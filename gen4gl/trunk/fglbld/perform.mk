@@ -4,7 +4,7 @@
 #
 #	Program: Xprog
 
-include informix.mk
+include include/informix.mk
 
 ######################
 # Definitions

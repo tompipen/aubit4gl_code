@@ -1,0 +1,231 @@
+'\" @(#)$Id: fglbld4.doc,v 1.1 2002-06-16 07:36:14 afalout Exp $
+'\" @(#)FGLBLD: User Guide and Reference Manual
+'\" @(#)Part 4 of 5
+'\" -----------------------------------------------------
+'\" Definitions
+.ds fB \s-2\fBFGLBLD\fP\s0
+.ds iR Informix-RDS
+.ds sP \s-2SPI\s0
+\!!rasterize=300
+\!!thickness=2
+'\" -----------------------------------------------------
+'\"
+.PH "''\s12\fHSphinx Ltd\fP\s0''"
+.PF "'\s8Sphinx\s0'Page %'\s8Version $Revision: 1.1 $ $Date: 2002-06-16 07:36:14 $\s0'"
+.H 1 "MODIFYING FGLBLD SOURCE"
+There are an infinite number of changes that can be made to the source
+code, and some of the changes have been outlined in the previous section.
+This section goes into more detail about what should be done to the source
+and covers various situations in more detail.
+.P
+Although this section is based on the experience of people who have used
+\*(fB for some fairly extensive project work, there is a distinct possibility
+that you will discover a better solution to some of the problems.
+If you do find such a solution, please let Sphinx know.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "The INPUT code"
+The input code is normally the code which needs most changing.
+Some of the code which needs changing is in the the display
+function, some of it is in the \s-2INPUT\s0 statement itself,
+and most of the rest is in the validation routines.
+Occasionally, the set default code needs minor modifications.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Modifying the display code"
+The standard changes made here are to collect extra data for display.
+This is normally done by defining a set of records with the
+structures of the tables to be looked up, and then calling fetch
+functions with the appropriate values to fetch the database records.
+This is one of the main reasons for using the memory inside the
+fetch functions; the display routine \*cdis_table\*d is called in
+every field.
+It would be relatively unusual to try validating the returned data by
+checking for nulls or anything.
+When all the required data has been fetched, it can be displayed
+to the form.
+Since this routine is the only one which displays the data, it is
+possible to centralise the fetching and to optimise it to
+whatever extent is desired.
+Also, there is no chance of overlooking one of the places where
+data should be displayed.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Changing the order of the fields"
+This is a tricky and time-consuming operation.
+The simplest technique is to modify the table until the fields
+are in the order in which the data should be entered and then
+generate the \*(sP against the modified table.
+.P
+If this is not possible, an effective technique is to generate a
+view with the fields in the correct order and generate the \*(sP
+against the view.
+The code should then be modified to refer to the base table when
+doing an insert or update, and the columns should be named in the
+insert and update clauses.
+.P
+If this is not possible, then the code must be modified manually.
+Take time and decide on the order of the fields for the input.
+.sp 0.5v
+\fIMore details to be supplied\fP.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Conditionally skipping fields"
+Sometimes, some of the fields in an input statement should be
+skipped depending on the values entered in other fields.
+As an example, consider a form with say ten input fields.
+If the value in column 3 (field 3) is null, then there is
+no information to go in fields 4, 5, or 6, so the fields should
+be skipped\*F.
+.FS
+Note the formulation is in terms of the fields to be skipped
+rather than in terms of `if field 3 is null skip to field 7'.
+If the user was moving backwards from field 7, this would put
+the cursor back in the field which they tried to leave.
+This is exasperating to the user and inexcusable on the part of
+the programmer.
+.FE
+.P
+The correct technique for meeting this criterion is to modify the
+before field code in the validation routines for fields 4, 5, and 6.
+This code should look like:
+.eS S
+IF wr_table.field3 IS NULL THEN
+    LET retval = next_field(fc_table.*)
+    CALL spf_table(vcode, retval)
+    RETURN retval
+END IF
+.eE
+Any concerns about the efficiency of going through each skipped field
+are misplaced \(em changes to the requirements are much more complicated
+to handle if the code tries to be cleverer.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Splitting a large table"
+A large table is one in which the data will not fit on one \*(i4
+form screen.
+There are several problems with splitting a large table,
+the main one being that only one form can be on display at a time.
+This leads to a sequencing problem; when the user reaches the end
+of one form, the code needs to jump on to the next screen (or
+previous screen if the user leaves the first field of the screen
+going backwards), and the input code needs to pick up again
+immediately.
+This is nigh on impossible \*(EM there is no way easy way of controlling
+which field the resumed input statement should resume in.
+It could probably be handled by recording the last field and
+setting a state variable which the before field code looked at to
+reposition the cursor where necessary, but there is a
+considerable amount of thinking involved.
+.P
+An alternative mechanism would require the user to enter each
+screen full of data as a separate input operation, with the user
+having to hit the \s-2ACCEPT\s0 key after each screen is correct.
+There should be some mechanism to allow the user to review and
+modify the data in any screen \*(EM some sort of menu seems
+likely to be useful.
+As one of the options on the menu, the user should be able to
+save all the data (provided all the required data has been
+supplied), and there should also be some way of abandoning the input.
+All this would require careful coding.
+Generating the individual screens could be handled by using views
+again, but the input code would need to use the main working
+record for the real table to store the data.
+None of this is trivial, and better solutions are urgently sought.
+.sp 0.5v
+\fIMore details to be supplied\fP.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Modifying the report"
+The report which is generated is barely better than:
+.eS S
+FORMAT
+
+    EVERY ROW
+
+END REPORT
+.eE
+Originally, when \*(fB just ran on compiled \*(i4, some special
+code was hooked into the report which allowed the dimensions of
+the output page to be configured at run time.
+Unfortunately, this same code does not work with \*(iR, so the
+code has been removed from the report.
+.P
+The data supplied to the report is the row of data from the table
+on which the \*(sP is generated.
+To pass more data to the report, the function \*crln_table\*d
+should be modified as well as the report itself.
+Inside the report, you can do as you wish.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Modifying a popup function"
+Both conditional and unconditional popups frequently need
+modifying in several different ways.
+The simplest change is made to the form.
+The generated form has exactly one row on display,
+and shows all the columns in the table.
+This is normally edited so that just a few fields are shown
+and so that several rows of data are visible at once.
+This requires a revision of the screen layout and also to the
+screen record defined in the instructions section.
+Also, in the I4GL code, find the line which documents the
+dimension of the screen array and change the value `1' to the
+actual number of records displayed on the form.
+.P
+As well as the simple change to the dimension of the displayed array,
+there are other, more major changes needed in the source code.
+The primary change is in the data structure of the array;
+this needs to be changed to list just those fields which are
+actually displayed on the form.
+The \s-2SELECT\s0 statement string needs to be changed accordingly.
+If by any chance, the table has a composite primary key, you will
+need to modify the \s-2RETURN\s0 statement to return all the values
+forming the primary key.
+.P
+If desired, the display can display values from several tables.
+Modify the \s-2SELECT\s0 statement to work on the extra table(s)
+\*(EM don't forget the joining condition(s) \*(EM
+and modify the array to contain
+the elements from the other table(s) as well.
+'\"
+'\" -----------------------------------------------------
+'\"
+.H 2 "Modifying a fetch function"
+A fetch function always works on the complete primary key of the
+table whose rows it is fetching \(em there is very little point in
+having it work any other way.
+This causes a problem when the table has a composite primary key.
+Sooner or later (probably later), you will be able to generate
+the function and specify the complete composite key when the
+function is generated.
+Until then, you are stuck with generating the code
+on one of the columns of the primary key and then
+modifying the generated source code.
+.P
+If the table has three columns (say) in the primary key,
+you need three arguments to the function.
+These need to be declared properly (preferably using the
+\s-2LIKE\s0 mechanism rather than the explicit type used by the
+generated code).
+The code which tests whether the key specified is null should
+be modified to test whether any component of the key is null\*F
+.FS
+See the books by Date for reasons why primary keys cannot contain
+null values in any column.
+.FE
+(using \s-2OR\s0 conditions, not \s-2AND\s0 conditions).
+The code which tests whether the saved record needs to be
+modified to check that all the values match (\s-2AND\s0 instead
+of \s-2OR\s0).
+.P
+Other than correcting the generated code for a multi-column
+primary key, there is seldom any reason to change a fetch function.
+.P
+One day, a multi-row cache will be introduced as an option.

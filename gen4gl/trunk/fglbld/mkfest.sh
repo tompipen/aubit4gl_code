@@ -1,4 +1,4 @@
-:	"@(#)$Id: mkfest.sh,v 1.1.1.1 2002-06-15 05:06:54 afalout Exp $"
+:	"@(#)$Id: mkfest.sh,v 1.2 2002-06-16 07:36:07 afalout Exp $"
 #
 #	@(#):FGLBLDVER:
 #	@(#)Create current Manifest
@@ -9,7 +9,7 @@
 :	${FGLBLDDIR:=.}
 
 # Check existence of source definition file
-srcfile=fglbld.src
+srcfile=./etc/fglbld-SRC.lst
 if [ ! -f $srcfile ]
 then
 	if [ -f $FGLBLDDIR/etc/$file ]
@@ -53,7 +53,8 @@ do
 		echo "$0: $file absent" >&2
 		exit 1
 	else
-		what $file
+		echo "FIXME: no 'what' command (mkfest.sh)"
+		#what $file
 		echo
 	fi
 done
