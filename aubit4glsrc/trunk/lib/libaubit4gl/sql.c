@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.19 2004-11-22 12:29:19 mikeaubury Exp $
+# $Id: sql.c,v 1.20 2004-11-23 13:40:21 mikeaubury Exp $
 #
 */
 
@@ -571,6 +571,8 @@ A4GL_apisql_must_convert (void)
 int A4GLSQL_swap_bind_stmt(char *stmt, char t, char **sb,int *sc,void *bind, int cnt) {
 struct s_sid *p;
 p=A4GLSQL_find_prepare(stmt);
+A4GL_debug("p=%p",p) ;
+if (p) {
 if (sb) {
 	if (t=='i') { *sb=(char *)p->ibind; }
 	if (t=='o') { *sb=(char *)p->obind; }
@@ -581,6 +583,7 @@ if (sc) {
 }
 if (t=='i') { p->ibind=bind; p->ni=cnt; }
 if (t=='o') { p->obind=bind; p->no=cnt; }
+}
 return 1;
 }
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.196 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.197 2004-11-23 13:40:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.196 2004-11-16 14:44:00 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.197 2004-11-23 13:40:22 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -305,13 +305,19 @@ open_outfile (void)
 
 	case 1:
 	  strcat (c, ".ec");	/* Informic ESQL/C */
-	  break;
+  		break;
+
 	case 2:
 	  strcat (c, ".cpc");	/* PostgreSQL ESQL/C compiler */
 	  break;
+
 	case 3:		/* SAPDB pre-compiler also uses .cpc extension */
 	  strcat (c, ".cpc");
 	  break;
+
+	case 4:
+	  strcat (c, ".ec");	/* Ingres */
+  		break;
 
 	}
     }
@@ -353,6 +359,10 @@ open_outfile (void)
 	  break;
 	case 3:
 	  fprintf (outfile, "#define DIALECT_SAPDB\n");
+	  break;
+	case 4:
+	  fprintf (outfile, "#define DIALECT_INGRES\n");
+	  fprintf (outfile, "EXEC SQL INCLUDE SQLCA;\n");
 	  break;
 
 	}
@@ -5201,6 +5211,11 @@ esql_type ()
       return 3;
     }
 
+  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0)
+    {
+      return 4;
+    }
+
   return 1;			/* Assume informix*/
 }
 
@@ -5480,7 +5495,7 @@ print_execute_immediate (char *stmt)
     {
       if (stmt[0] == '"')
 	{
-	  printc ("EXEC SQL EXECUTE IMMEDIATE %s;", stmt);
+	  printc ("EXEC SQL EXECUTE IMMEDIATE '%s';", A4GL_strip_quotes(stmt));
 	}
       else
 	{

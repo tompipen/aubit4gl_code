@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.100 2004-11-17 13:51:51 mikeaubury Exp $
+# $Id: newpanels.c,v 1.101 2004-11-23 13:40:24 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.100 2004-11-17 13:51:51 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.101 2004-11-23 13:40:24 mikeaubury Exp $";
 
 /**
  * @file
@@ -242,9 +242,14 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	 w, h, border, attrib,error_line);
 #endif
 
+
+if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
  if (attrib!=0xffff) { // Strangely - informix resets the 'options' when you open a new window
 		A4GL_set_option_value('d',0);
  }
+}
+
+
 
   if (attrib == 0xffff)
     {

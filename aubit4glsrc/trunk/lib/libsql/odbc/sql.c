@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.90 2004-11-22 12:29:20 mikeaubury Exp $
+# $Id: sql.c,v 1.91 2004-11-23 13:40:23 mikeaubury Exp $
 #
 */
 
@@ -1302,7 +1302,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
       A4GL_exitwith ("Fetch attempted on unopened cursor");
       return 0;
     }
-  if (ibind == 0)
+  if (nibind == 0)
     {
 #ifdef DEBUG
       A4GL_debug ("   Use cursors bindings..");
@@ -1412,6 +1412,8 @@ A4GLSQL_fetch_cursor (char *cursor_name,
    */
 
 /*  res = PQexec (conn, cmd); exec */
+
+  A4GL_debug("use_binding...");
   A4GL_post_fetch_proc_bind (use_binding, use_nbind, (SQLHSTMT)&cid->statement->hstmt);
   nfields = 1;			/* number of fields returned */
 #ifdef DEBUG
@@ -2412,7 +2414,7 @@ ODBC_exec_select (SQLHSTMT hstmt)
 
 a4gl_sqlca.sqlerrd[0]=0;
 #ifdef DEBUG
-  A4GL_debug ("Before Execute");
+  A4GL_debug ("Before Execute hstmt=%p", hstmt);
 #endif
   rc = SQLExecute (hstmt);
   rc = A4GL_chk_need_blob (rc, hstmt);

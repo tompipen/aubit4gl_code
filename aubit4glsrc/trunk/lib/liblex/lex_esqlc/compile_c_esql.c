@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.95 2004-11-18 21:17:59 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.96 2004-11-23 13:40:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.95 2004-11-18 21:17:59 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.96 2004-11-23 13:40:23 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -954,11 +954,20 @@ A4GL_save_sql("DATABASE $s",0);
       switch (esql_type ())
 	{
 	case 1:
-A4GL_save_sql("DATABASE %s",db);
+	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
+
 	case 2:
-A4GL_save_sql("DATABASE %s",db);
+	A4GL_save_sql("DATABASE %s",db);
+	  printc ("\nEXEC SQL DATABASE %s;\n", db);
+	  break;
+	case 3:
+	A4GL_save_sql("DATABASE %s",db);
+	  printc ("\nEXEC SQL DATABASE %s;\n", db);
+	  break;
+	case 4:
+	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
 	}
@@ -995,15 +1004,23 @@ A4GL_save_sql("CONNECT TO \"%s\" AS 'default'",db);
 A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
 	  break;
+	case 3:
+A4GL_save_sql("CONNECT TO %s AS 'default'",db);
+	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  break;
+	case 4:
+A4GL_save_sql("CONNECT TO %s AS 'default'",db);
+	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  break;
 	}
     }
   }
 
-
-  if (esql_type ()==2) {
-  	printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\");");
-  } else {
-  	printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\");");
+  switch (esql_type ())  {
+  	case 1: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\");");break;
+	case 2: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\");");break;
+	case 3: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\");");break;
+	case 4: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\");");break;
   }
 
 
@@ -1504,12 +1521,12 @@ print_copy_status ()
   printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
   printc ("A4GLSQL_SET_SQLCA_SQLWARN;");
 
-  if(esql_type()==2)
-    // Postgres/ecpg
-    printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
-  else
-    // Informix/esql
-    printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
+  switch (esql_type()) {
+    	case 1: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);"); break;
+	case 2: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+	case 3: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+	case 4: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+  }
 
 }
 
@@ -1590,6 +1607,8 @@ if (strchr(s,'[')==0) return s;
 	  break;
 
 	case 2:
+	case 3:
+	case 4:
 		/*printf("Postgres\n");*/
 		strcpy(buff,s);
 		ptr1=strchr(buff,'[');

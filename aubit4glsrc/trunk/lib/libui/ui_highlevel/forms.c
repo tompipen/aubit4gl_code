@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.15 2004-11-17 10:40:48 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.16 2004-11-23 13:40:24 mikeaubury Exp $";
 
 #include "hl_forms.h"
 #include "hl_proto.h"
@@ -1149,11 +1149,12 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   int a;
   A4GL_chkwin ();
 
-
+if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   if (attrib != 0xffff)
     {				// Strangely - informix resets the 'options' when you open a new window
       A4GL_set_option_value ('d', 0);
     }
+}
 
   if (attrib == 0xffff)
     {

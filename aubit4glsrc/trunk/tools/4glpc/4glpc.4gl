@@ -221,7 +221,7 @@ define lv_pack char(256)
 		end if
 	end if
 
-	IF mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST") THEN
+	IF mv_lexdialect="INGRES" or mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST") THEN
 		LET mv_esql_to_c_first=1
 	END IF
 END FUNCTION
@@ -1065,9 +1065,13 @@ if mv_makecompile then
 	end if
 end if
 
+if 0 then
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped,
-		" ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped," 2> ",mv_errfile
+else
+let mv_errfile=lv_base clipped,get_ext("ERR")
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped," 2> ",mv_errfile
+end if
 
 if mv_verbose>=2 then
 	display lv_runstr clipped

@@ -23,7 +23,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.21 2004-10-28 22:04:57 mikeaubury Exp $
+# $Id: Makefile,v 1.22 2004-11-23 13:40:22 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -52,7 +52,7 @@ endif
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
 ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
-    ${LIBROOT}/libESQL_SAP${SO_EXT} ${LIBROOT}/libESQL_QUERIX${SO_EXT}
+    ${LIBROOT}/libESQL_SAP${SO_EXT} ${LIBROOT}/libESQL_QUERIX${SO_EXT} ${LIBROOT}/libESQL_INGRES${SO_EXT}
 
 ifneq "${COMSPEC}" ""
 	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
@@ -62,6 +62,9 @@ ifneq "${COMSPEC}" ""
 	#"${QUERIXDIR}/lib/libsqlc.lib"
 	#"${QUERIXDIR}/bin/libfgl.dll"
 else
+	INGRES_IFLAGS=
+	INGRES_LFLAGS=
+	INGRES_LIBS=
 	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
 	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
     STATIC=-static
@@ -80,7 +83,7 @@ ifdef COMSPEC
     #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS		=-g  -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
+	CFLAGS		=-g   -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
 	ESQL		=esql
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
@@ -127,6 +130,11 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
 
 
+
+libESQL_INGRES${SO_EXT}: ${LIBROOT}/libESQL_INGRES${SO_EXT}
+${LIBROOT}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
+
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
@@ -171,12 +179,23 @@ helper_funcs_sap.o: helper_funcs.ec
 #Querix ESQL/C compiler
 helper_funcs_querix.o: helper_funcs.ec
 #must remove .c file or .ec will not get recompiled
-	-rm helper_funcs.c
+ 	#rm helper_funcs.c
 #need quotes because of the path on Windows
 	"${Q_ESQLC}" $^
 	${CC} ${CFLAGS} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl ${QUERIX_IFLAGS}
 #-DNEWERA
 	rm helper_funcs.c
+
+###################
+#INGRES ESQL/C compiler
+helper_funcs_ingres.o: helper_ingres.ec
+#must remove .c file or .ec will not get recompiled
+	#rm helper_funcs.c
+#need quotes because of the path on Windows
+	$(II_SYSTEM)/ingres/bin/esqlc $^
+	${CC} ${CFLAGS} -DDIALECT_INGRES -g -c -o $@ helper_ingres.c -I${ROOT}/incl ${INGRES_IFLAGS}
+#-DNEWERA
+	rm helper_ingres.c
 
 ## ==================================================================
 ##                              Clean

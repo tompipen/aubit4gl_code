@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.34 2004-11-05 15:12:14 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.35 2004-11-23 13:40:22 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -403,11 +403,20 @@ char *
 get_sql_type (int a, char ioro)
 {
   /* Need to do some check to determine which ESQL/C to use...*/
+
   if (esql_type()==1) {
   	return get_sql_type_infx (a, ioro);
   }
+
   if (esql_type()==2) {
   	return get_sql_type_postgres (a, ioro);
+  }
+
+  if (esql_type()==3) {
+  	return get_sql_type_sap (a, ioro);
+  }
+  if (esql_type()==4) {
+  	return get_sql_type_ingres (a, ioro);
   }
 return 0;
 }
@@ -460,7 +469,7 @@ char buff_ind[255];
 	  sprintf (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
 	  break;
 	case 11:
-	  sprintf (buff,"interval _vi_%d;", a);
+	  sprintf (buff,"byte _vi_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vi_%d;", a);
@@ -519,7 +528,7 @@ char buff_ind[255];
 	  sprintf (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
 	  break;
 	case 11:
-	  sprintf (buff,"interval _vo_%d;", a);
+	  sprintf (buff,"byte _vo_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vo_%d;", a);
@@ -592,7 +601,7 @@ static char buff_ind[255];
 	  sprintf (buff,"datetime _vi_%d;",  a); /* Datetimes can't be qualified in ecpg*/
 	  break;
 	case 11:
-	  sprintf (buff,"interval _vi_%d;", a);
+	  sprintf (buff,"byte _vi_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vi_%d;", a);
@@ -659,7 +668,7 @@ static char buff_ind[255];
 	  sprintf (buff,"datetime _vo_%d;",  a); /* Datetimes can't be qualified in ecpg*/
 	  break;
 	case 11:
-	  sprintf (buff,"interval _vo_%d;", a);
+	  sprintf (buff,"byte _vo_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vo_%d;", a);
@@ -684,6 +693,266 @@ void liblex_add_ibind(int dtype,char *var) {
 	ibind[ibindcnt].end_char_subscript=0;
 	ibind[ibindcnt].dtype=dtype;
 	ibindcnt++;
+}
+
+static char *get_sql_type_sap (int a, char ioro)
+{
+static char buff[255];
+static char buff_ind[255];
+  if (ioro == 'i')
+    {
+      switch (ibind[a].dtype & 0xffff)
+	{
+	case 0:
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 1:
+	  sprintf (buff,"short _vi_%d;", a);
+	  break;
+	case 2:
+	  sprintf (buff,"int _vi_%d;", a);
+	  break;
+	case 3:
+	  sprintf (buff,"double _vi_%d;", a);
+	  break;
+	case 4:
+	  sprintf (buff,"float _vi_%d;", a);
+	  break;
+
+	case 5:
+	  sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  break;
+
+	case 6:
+	  sprintf (buff,"int _vi_%d;", a);
+	  break;
+
+	case 7:
+	  sprintf (buff,"date _vi_%d;", a);
+	  break;
+	case 8:
+	  if (A4GLSQLCV_check_requirement("MONEY_AS_MONEY")) {
+	  	sprintf (buff,"money _vi_%d;", a);
+	  } else {
+	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
+	  		sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+		} else {
+	  		sprintf (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+		}
+	  }
+	  break;
+	case 9:
+	  sprintf (buff,"Blah _vi_%d;", a);
+	  break;
+	case 10:
+	  sprintf (buff,"datetime _vi_%d;",  a); /* Datetimes can't be qualified in ecpg*/
+	  break;
+	case 11:
+	  sprintf (buff,"byte _vi_%d;", a);
+	  break;
+	case 12:
+	  sprintf (buff,"text _vi_%d;", a);
+	  break;
+	case 13:
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 14:
+	  sprintf (buff,"interval _vi_%d;", a);
+	  break;
+	}
+    }
+
+
+  if (ioro == 'o')
+    {
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+		sprintf(buff_ind,"  short _voi_%d;",a);
+	} else {
+		strcpy(buff_ind,"");
+	}
+
+      switch (obind[a].dtype & 0xffff)
+	{
+	case 0:
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  break;
+	case 1:
+	  sprintf (buff,"short _vo_%d;", a);
+	  break;
+	case 2:
+	  sprintf (buff,"int _vo_%d;", a);
+	  break;
+	case 3:
+	  sprintf (buff,"double _vo_%d;", a);
+	  break;
+	case 4:
+	  sprintf (buff,"float _vo_%d;", a);
+	  break;
+	case 5:
+	  	sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  break;
+	case 6:
+	  sprintf (buff,"int _vo_%d;", a);
+	  break;
+	case 7:
+	  sprintf (buff,"date _vo_%d;", a);
+	  break;
+	case 8:
+	  if (A4GLSQLCV_check_requirement("MONEY_AS_MONEY")) {
+	  	sprintf (buff,"money _vo_%d;", a);
+	  } else {
+	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
+	  		sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+		} else {
+	  		sprintf (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+		}
+	   }
+	  	break;
+	case 9:
+	  sprintf (buff,"Blah _vo_%d;", a);
+	  break;
+	case 10:
+	  sprintf (buff,"datetime _vo_%d;",  a); /* Datetimes can't be qualified in ecpg*/
+	  break;
+	case 11:
+	  sprintf (buff,"byte _vo_%d;", a);
+	  break;
+	case 12:
+	  sprintf (buff,"text _vo_%d;", a);
+	  break;
+	case 13:
+	  sprintf (buff,"varchar _vo_%d;", a /*, obind[a].dtype >> 16 */);
+	  break;
+	case 14:
+	  sprintf (buff,"interval _vo_%d;", a);
+	  break;
+	}
+	strcat(buff,buff_ind);
+    }
+	return buff;
+
+}
+
+static char *get_sql_type_ingres (int a, char ioro)
+{
+static char buff[255];
+static char buff_ind[255];
+  if (ioro == 'i')
+    {
+      switch (ibind[a].dtype & 0xffff)
+	{
+	case 0:
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 1:
+	  sprintf (buff,"short _vi_%d;", a);
+	  break;
+	case 2:
+	  sprintf (buff,"int _vi_%d;", a);
+	  break;
+	case 3:
+	  sprintf (buff,"double _vi_%d;", a);
+	  break;
+	case 4:
+	  sprintf (buff,"float _vi_%d;", a);
+	  break;
+
+	case 5:
+	  sprintf (buff,"double _vi_%d;", a); // Ingres has no decimal
+	  break;
+
+	case 6:
+	  sprintf (buff,"int _vi_%d;", a);
+	  break;
+
+	case 7:
+	  sprintf (buff,"char _vi_%d[26];", a); // Date
+	  break;
+	case 8:
+	  sprintf (buff,"double _vi_%d;", a); // Ingres has no money
+	  break;
+	case 9:
+	  sprintf (buff,"Blah _vi_%d;", a);
+	  break;
+	case 10:
+	  sprintf (buff,"char _vi_%d[30];",  a); /* Datetimes can't be qualified in ecpg*/
+	  break;
+	case 11:
+	  sprintf (buff,"byte _vi_%d;", a);
+	  break;
+	case 12:
+	  sprintf (buff,"text _vi_%d;", a);
+	  break;
+	case 13:
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 14:
+	  sprintf (buff,"char _vi_%d[30];", a);
+	  break;
+	}
+    }
+
+
+  if (ioro == 'o')
+    {
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+		sprintf(buff_ind,"  short _voi_%d;",a);
+	} else {
+		strcpy(buff_ind,"");
+	}
+
+      switch (obind[a].dtype & 0xffff)
+	{
+	case 0:
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  break;
+	case 1:
+	  sprintf (buff,"short _vo_%d;", a);
+	  break;
+	case 2:
+	  sprintf (buff,"int _vo_%d;", a);
+	  break;
+	case 3:
+	  sprintf (buff,"double _vo_%d;", a);
+	  break;
+	case 4:
+	  sprintf (buff,"float _vo_%d;", a);
+	  break;
+	case 5:
+	  sprintf (buff,"double _vo_%d;", a);
+	  break;
+	case 6:
+	  sprintf (buff,"int _vo_%d;", a);
+	  break;
+	case 7:
+	  sprintf (buff,"char _vo_%d[26];", a);
+	  break;
+	case 8:
+	  sprintf (buff,"double _vo_%d;", a);
+	  	break;
+	case 9:
+	  sprintf (buff,"Blah _vo_%d;", a);
+	  break;
+	case 10:
+	  sprintf (buff,"char _vo_%d[30];",  a); 
+	  break;
+	case 11:
+	  sprintf (buff,"byte _vo_%d;", a);
+	  break;
+	case 12:
+	  sprintf (buff,"text _vo_%d;", a);
+	  break;
+	case 13:
+	  sprintf (buff,"varchar _vo_%d;", a /*, obind[a].dtype >> 16 */);
+	  break;
+	case 14:
+	  sprintf (buff,"char _vo_%d[30];", a);
+	  break;
+	}
+	strcat(buff,buff_ind);
+    }
+	return buff;
+
 }
 
 char *
