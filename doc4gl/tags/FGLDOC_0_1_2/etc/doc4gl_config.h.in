@@ -1,0 +1,92 @@
+/* incl/a4gl_incl_config.h.  Generated automatically by configure.  */
+/**
+ * @file
+ * Configuration file for compilation using configure
+ *
+ * Use @DEFS@ in Makefile.in to get -DHAVE_CONFIG_H
+ *
+ */
+
+
+#ifndef CONFIG_H_INCL
+#define CONFIG_H_INCL
+
+
+	#define YYTEXT_POINTER 1
+	#define HAVE_LIBC 1
+	#define HAVE_LIBCURSES 1
+	#define HAVE_LIBDL 1
+	#define HAVE_LIBFORM 1
+	#define HAVE_LIBGDK 1
+	#define HAVE_LIBGLIB 1
+	#define HAVE_LIBGTK 1
+	#define HAVE_LIBODBC 1
+	#define HAVE_LIBPANEL 1
+	#define STDC_HEADERS 1
+	#define HAVE_ALLOCA_H 1
+	#define HAVE_ERRNO_H 1
+	#define HAVE_LOCALE_H 1
+	#define HAVE_MALLOC_H 1
+	#define HAVE_MEMORY_H 1
+	#define HAVE_NETDB_H 1
+	#define HAVE_NETINET_IN_H 1
+	#define HAVE_STDDEF_H 1
+	#define HAVE_STDLIB_H 1
+	#define HAVE_STRING_H 1
+	#define HAVE_STRINGS_H 1
+	#define HAVE_SYS_SOCKET_H 1
+	#define HAVE_SYS_TIME_H 1
+	#define HAVE_UNISTD_H 1
+	#define HAVE_SYS_TYPES_H 1
+	#define HAVE_SYS_STAT_H 1
+	#define HAVE_STDLIB_H 1
+	#define HAVE_STRING_H 1
+	#define HAVE_MEMORY_H 1
+	#define HAVE_STRINGS_H 1
+	#define HAVE_INTTYPES_H 1
+	#define HAVE_STDINT_H 1
+	#define HAVE_UNISTD_H 1
+	#define TIME_WITH_SYS_TIME 1
+	#define HAVE_UNISTD_H 1
+	#define HAVE_FORK 1
+	#define HAVE_VFORK 1
+
+
+	#define HAVE_WORKING_VFORK 1
+	#define HAVE_WORKING_FORK 1
+	#define HAVE_STDLIB_H 1
+	#define HAVE_MALLOC 1
+	#define RETSIGTYPE void
+	#define HAVE_VPRINTF 1
+	#define HAVE_FLOOR 0
+	#define HAVE_GETHOSTBYNAME 1
+	#define HAVE_INET_NTOA 1
+	#define HAVE_MEMSET 1
+	#define HAVE_POW 0
+	#define HAVE_PUTENV 1
+	#define HAVE_RE_COMP 1
+	#define HAVE_REGCOMP 1
+	#define HAVE_SELECT 1
+	#define HAVE_SETENV 1
+	#define HAVE_SETLOCALE 1
+	#define HAVE_SOCKET 1
+	#define HAVE_STRCASECMP 1
+	#define HAVE_STRCHR 1
+	#define HAVE_STRDUP 1
+	#define HAVE_STRNCASECMP 1
+	#define HAVE_STRRCHR 1
+	#define HAVE_STRSTR 1
+	#define HAVE_STRTOL 1
+
+
+	#define HAVE_CURSES_H 1
+	#define HAVE_NCURSES_H 0
+
+    #define HAVE_SEARCH_H 1
+    #define HAVE_RPC_H 0
+    #define HAVE_SHARE_H 0
+
+    #define HAVE_PDCURSES 0
+
+
+#endif /* #ifndef CONFIG_H_INCL */

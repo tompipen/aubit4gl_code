@@ -1,0 +1,378 @@
+                 BUGS TO BE FIXED
+				 ----------------
+
+in GUI mode, if you try to turn off "show log" option, main window dissapears
+You then must kill the program.
+
+=============================================================================
+
+fgldoc command on the command line, with no parameters at all,
+sometimes starts GUI mode, but some times instead shows a Usage instructios.
+
+===========================================================================
+
+there is no way to process a single file using fgldoc, only a complete directory
+
+=========================================================================
+
+p4gl error line shows one line too high: for example, if 49 is shown, error
+is actially on line 50
+
+=========================================================================
+BUG 5:
+
+
+Invoking fgldoc after action like :
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+starts the same action again and again.
+
+even if you type just:
+
+	"/usr/local/bin/fgldoc"
+
+you get the last action executed, and I would expect to get fgldoc running in GUI mode...
+
+
+If you then try:
+
+	"/usr/local/bin/fgldoc --help"
+
+you get help OK.
+
+If you try again just:
+
+	"/usr/local/bin/fgldoc"
+
+it behaves like you typed:
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+ If you type:
+
+ 	"/usr/local/bin/fgldoc --ui=GUI"
+
+
+THEN you get GUI.
+
+And after that, if you try:
+
+	"/usr/local/bin/fgldoc"
+
+You _FINALLY_ get GUI as you would expect...
+
+===========================================================================
+BUG 6:
+
+GUI main screen has 5 pictures:
+
+CSV=>db
+4gl=>db
+CSV=>db (again) <<<<<<<<<<<<<<<<<<<<<<<<<<<<,
+db=>4gl
+db=>HTML
+
+The duplicated CSV=>db should be db=>CSV
+
+
+===========================================================================
+BUG 7:
+
+TEST:Unit perl module is not checked in configure
+
+===========================================================================
+BUG 8:
+
+There should exist an option that parses a 4gl source tree and generate on
+the fly the static html files of the project.
+
+Something like:
+   fgldoc --parse_and_document
+
+And using all the other parameters to know where and what to do.
+
+===========================================================================
+BUG 9:
+
+By default fgldoc should work on the current directory recursively.
+===========================================================================
+
+===========================================================================
+
+                                    FIXED BUGS
+									----------
+
+
+==========================================================
+
+Impossible to interrupt execution of fgldoc with CTRL-C
+-------------------------------------------------------
+
+CTRL+C does nothing - fgldoc continues execution
+
+
+
+=========================================================================
+
+
+Invoking fgldoc after action like :
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+starts the same action again and again.
+
+even if you type just:
+
+	"/usr/local/bin/fgldoc"
+
+you get the last action executed, and I would expect to get fgldoc running in GUI mode...
+
+
+If you then try:
+
+	"/usr/local/bin/fgldoc --help"
+
+you get help OK.
+
+If you try again just:
+
+	"/usr/local/bin/fgldoc"
+
+it behaves like you typed:
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+ If you type:
+
+ 	"/usr/local/bin/fgldoc --ui=GUI"
+
+
+THEN you get GUI.
+
+And after that, if you try:
+
+	"/usr/local/bin/fgldoc"
+
+You _FINALLY_ get GUI as you would expect...
+
+===========================================================================
+
+
+
+    p4gl: P21.4gl, Line 97: parse error                    
+				let pr_voucher.vouch_code = menu(cmpy, whom, pr_voucher.*,
+
+    p4gl: P34k.4gl, Line 509: parse error
+				print 54 spaces
+
+    p4gl: P6A.4gl, Line 479: parse error
+                 print column 10, pr_temp_text clipped,
+                       column 25, where1_text clipped wordwrap right margin x
+                 print column 25, where2_text clipped wordwrap right margin x
+
+
+    p4gl: P71.4gl, Line 697: parse error
+				let pr_temp_text = pr_recurhead.inv_text clipped, ".",
+                               (pr_recurhead.run_num + 1) using "&&&"
+
+
+    p4gl: P71f.4gl, Line 739: parse error
+                File has only 154 lines!
+
+    p4gl: P72.4gl, Line 265: parse error
+	            let pr_temp_text = (pr_recurhead.run_num + 1) using "&&&"
+
+    p4gl: P73.4gl, Line 336: parse error
+         print column 10, pr_temp_text clipped,
+               column 25, where_text clipped wordwrap
+                          right margin x <<<< cause
+
+
+
+    p4gl: PR2.4gl, Line 106: parse error
+		   construct by name pr_rmsreps.sel_text on vendor.vend_code,
+                                            vendor.type_code,
+                                            vendor.name_text,
+                                            vendor.currency_code,
+                                            vendor.term_code,
+                                            vendor.tax_code,
+                                            voucher.year_num,
+                                            voucher.period_num
+      attribute(cyan)
+
+
+    p4gl: PSL_J.4gl, Line 1007: parse error
+            prompt " Enter target file name: " for file
+
+    p4gl: PSU_J.4gl, Line 131: parse error
+            call unload()
+
+    p4gl: PSV.4gl, Line 68: parse error
+         call verify()
+
+    p4gl: PSW.4gl, Line 126: parse error
+            if unload(1) then end if
+
+    p4gl: PX3_J.4gl, Line 145: parse error
+
+   select count(unique pay_doc_num) into pr_count from tentpays
+      where cmpy_code = cmpy
+        and cycle_num = pr_cycle_num
+        and status_ind = "4"
+
+     print "03",pr_invoice.inv_num,
+            pr_voucher.vouch_date using "ddmmyy",
+            (pr_invoice.invoiced_amt * 100) using "&&&&&&&&&&&&&",
+            pr_invoice.inv_sign_text,
+            (pr_tentpays.vouch_amt * 100) using "&&&&&&&&&&&&&",
+            pr_invoice.paid_sign_text,
+            pr_invoice.desc_text,
+            (pr_invoice.discount_amt * 100) using "&&&&&&&&&&&&&",
+            "                                        ",
+            "                                        ",
+            "I",
+            "                                        ",
+            "                                        ",
+            "                                   "
+
+--------------------------------------------------------------------------
+    p4gl: A21f.4gl, Line 104: parse error
+    p4gl: A23_J.4gl, Line 1877: parse error
+    p4gl: A2S.4gl, Line 196: parse error
+    p4gl: A2Sa.4gl, Line 241: parse error
+    p4gl: A2Sb.4gl, Line 237: parse error
+    p4gl: A2Sc.4gl, Line 237: parse error
+    p4gl: A2Sd.4gl, Line 236: parse error
+    p4gl: A2Se.4gl, Line 234: parse error
+    p4gl: A2Sf.4gl, Line 237: parse error
+    p4gl: A2Sg.4gl, Line 236: parse error
+    p4gl: AA9.4gl, Line 128: parse error
+    p4gl: AAB.4gl, Line 98: parse error
+    p4gl: AAB_B.4gl, Line 124: parse error
+    p4gl: AAC.4gl, Line 109: parse error
+    p4gl: AAE.4gl, Line 94: parse error
+    p4gl: AAK.4gl, Line 326: parse error
+    p4gl: AC1.4gl, Line 89: parse error
+    p4gl: AC2.4gl, Line 92: parse error
+    p4gl: AC3.4gl, Line 90: parse error
+    p4gl: AC4.4gl, Line 91: parse error
+    p4gl: AC5.4gl, Line 97: parse error
+    p4gl: AC8.4gl, Line 91: parse error
+    p4gl: ACA.4gl, Line 90: parse error
+    p4gl: ADU.4gl, Line 104: parse error
+    p4gl: AE6.4gl, Line 497: parse error
+    p4gl: AE7.4gl, Line 499: parse error
+    p4gl: AE8.4gl, Line 515: parse error
+    p4gl: AE9.4gl, Line 444: parse error
+    p4gl: AED.4gl, Line 108: parse error
+    p4gl: AEE.4gl, Line 105: parse error
+    p4gl: AS5.4gl, Line 289: parse error
+    p4gl: ASI_J.4gl, Line 132: parse error
+    p4gl: ASLa.4gl, Line 91: parse error
+    p4gl: ASS_J.4gl, Line 174: parse error
+    p4gl: ASV.4gl, Line 69: parse error
+    p4gl: ASV_J.4gl, Line 170: parse error
+    p4gl: ASW.4gl, Line 117: parse error
+    p4gl: AZS.4gl, Line 70: parse error
+
+---------------------------------------------------------------------------
+
+    p4gl: contact.4gl, Line 95: parse error
+    p4gl: contact_address.4gl, Line 95: parse error
+    p4gl: contact_bank.4gl, Line 95: parse error
+    p4gl: contact_cc.4gl, Line 96: parse error
+    p4gl: contact_comment.4gl, Line 96: parse error
+    p4gl: contact_glob.4gl, Line 56: parse error
+    p4gl: contact_lib.4gl, Line 95: parse error
+    p4gl: contact_mailing.4gl, Line 95: parse error
+    p4gl: contact_phone.4gl, Line 96: parse error
+    p4gl: contact_relation.4gl, Line 97: parse error
+    p4gl: contact_role.4gl, Line 95: parse error
+    p4gl: maintain.4gl, Line 98: parse error
+
+---------------------------------------------------------------------------
+
+    p4gl: cacdwind.4gl, Line 141: parse error
+    p4gl: glob_DATABASE.4gl, Line 38: parse error
+    p4gl: glob_GLOBALS.4gl, Line 67: parse error
+    p4gl: invbox.4gl, Line 447: parse error
+[LOG] : Error executing p4gl :
+    p4gl: offerfunc.4gl, addTableUsage() : Table usage by function exceded
+
+
+[LOG] : Error executing p4gl :
+    p4gl: offerfunc2.4gl, addTableUsage() : Table usage by function exceded
+
+    p4gl: orddfunc.4gl, Line 254: parse error
+    p4gl: secufunc.4gl, Line 2379: parse error
+    p4gl: serrwind.4gl, Line 74: parse error
+    p4gl: vopawind.4gl, Line 137: parse error
+    p4gl: G21.4gl, Line 160: parse error
+    p4gl: G21a.4gl, Line 119: parse error
+    p4gl: G22.4gl, Line 160: parse error
+    p4gl: G27.4gl, Line 109: parse error
+    p4gl: G27a.4gl, Line 152: parse error
+    p4gl: G28.4gl, Line 83: parse error
+    p4gl: G29.4gl, Line 162: parse error
+    p4gl: G33.4gl, Line 243: parse error
+    p4gl: GA8.4gl, Line 250: parse error
+    p4gl: GB1.4gl, Line 256: parse error
+    p4gl: GB8.4gl, Line 604: parse error
+    p4gl: GC1.4gl, Line 165: parse error
+    p4gl: GC1a.4gl, Line 161: parse error
+    p4gl: GC2.4gl, Line 165: parse error
+    p4gl: GC3.4gl, Line 580: parse error
+    p4gl: GC5.4gl, Line 822: parse error
+    p4gl: GCEb.4gl, Line 395: parse error
+    p4gl: GCEd.4gl, Line 812: parse error
+    p4gl: GCEe.4gl, Line 735: parse error
+    p4gl: GCP.4gl, Line 319: parse error
+    p4gl: GRH.4gl, Line 343: parse error
+    p4gl: GRI.4gl, Line 227: parse error
+    p4gl: GRJ.4gl, Line 216: parse error
+    p4gl: GS1.4gl, Line 881: parse error
+    p4gl: GW1c.4gl, Line 108: parse error
+    p4gl: GW1d.4gl, Line 461: parse error
+    p4gl: GW3.4gl, Line 291: parse error
+    p4gl: GW3a.4gl, Line 333: parse error
+    p4gl: GW3b.4gl, Line 333: parse error
+    p4gl: GW3c.4gl, Line 332: parse error
+    p4gl: GW3d.4gl, Line 333: parse error
+    p4gl: GW3e.4gl, Line 333: parse error
+    p4gl: GW3f.4gl, Line 333: parse error
+    p4gl: GW3g.4gl, Line 329: parse error
+    p4gl: GW4a.4gl, Line 325: parse error
+    p4gl: GZD.4gl, Line 614: parse error
+    p4gl: URSb.4gl, Line 149: parse error
+
+
+/usr/local/bin/fgldoc --action=export2Html --ignore_exist_dir --process_file=etc/doc4gl_process.unl --export_html_directory=docs/doc4gl --ui=CUI --package_name=MaxERP --database=maxdevdoc --send_line_to_log
+Starting with no GUI
+ACTION export2Html
+[LOG] : Conexão à base de dados estabelecida
+[ACTION] New action started (Load process file)
+DBD::Informix::db do failed: SQL: -242: Could not open database table (root.p4gl_fun_process).
+ISAM: -106: ISAM error:  non-exclusive access. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 249.
+DBD::Informix::db do failed: SQL: -242: Could not open database table (root.p4gl_process).
+ISAM: -106: ISAM error:  non-exclusive access. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 254.
+DBD::Informix::db do failed: SQL: -692: Key value for constraint (root.u105_24) is still being referenced. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 342, <PROCESS_UNL_FILE> line 7.
+
+
+
+[LOG] : Processes deleted:
+[LOG] : Function Processes deleted: 0E0
+[LOG] : LINE ERP, ERP, The open source ERP, , A description of the ERP
+
+DBD::Informix::st execute failed: SQL: -268: Unique constraint (root.u105_24) violated.
+ISAM: -100: ISAM error:  duplicate value for a record with unique key. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 232, <PROCESS_UNL_FILE> line 7.
+
+
