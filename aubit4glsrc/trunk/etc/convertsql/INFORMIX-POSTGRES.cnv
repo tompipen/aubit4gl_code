@@ -107,6 +107,7 @@ DTYPE_ALIAS NVARCHAR=VARCHAR
 OMIT_NO_LOG
 USE_INDICATOR
 REPLACE_SQLCONST rowid = oid
+REPLACE_SQLCONST user = cast(user as char(8))
 
 # These are only needed for non-patched postgres :
 # REPLACE_SQLCONST today = date(now())
