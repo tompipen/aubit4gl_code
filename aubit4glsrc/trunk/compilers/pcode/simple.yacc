@@ -168,6 +168,7 @@ fgl_funcs :
 			')' {
 			struct cmd_errchk *ptr;
 			ptr=malloc(sizeof(struct cmd_errchk));
+			memset(ptr,0,sizeof(struct cmd_errchk));
 			ptr->line=get_expr_n($<e_id>3);
 			ptr->module_name=add_string($<str>5);
 			ptr->modes[0]=get_expr_n($<e_id>7);

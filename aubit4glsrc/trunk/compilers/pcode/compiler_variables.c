@@ -214,7 +214,7 @@ int as;
 	if (e->unit_size==0) {
 		e->unit_size=e->total_size;
 		e->total_size*=as;
-		e->as=as;
+		//e->as=as;
 	}
 	//printf("   -> %ld %d\n",e->total_size,e->unit_size);
     }
@@ -380,7 +380,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	{
       	struct cmd *command;
  
-	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
+// command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 	 
 	  sub = malloc (sizeof (struct use_variable_sub));
 	  sub->x1element = -1;
@@ -732,6 +732,9 @@ make_default_struct_element (char *dtype, int arrsize, char *name)	// @FIXME - A
 {
   struct variable_element *dv;
   dv = new_variable_element_string (dtype);
+      dv->i_arr_size[0] = 0;
+      dv->i_arr_size[1] = 0;
+      dv->i_arr_size[2] = 0;
   dv->name_id = add_id (name);
   if (arrsize)
     {

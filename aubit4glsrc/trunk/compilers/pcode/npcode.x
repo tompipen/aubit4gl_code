@@ -80,7 +80,7 @@ struct variable_element {
 	long dtype;
 	long i_arr_size[3]; /* Informix limits to 3 levels of array */
 	short unit_size;
-	long as;
+	/*long as; */
 	long total_size;
 	long offset; /* This is the offset for CAT_NORMAL/PARAMETER, or a pointer for STATIC or EXTERN */
 	struct variable_element next<>;
