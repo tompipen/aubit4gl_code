@@ -11,6 +11,12 @@ define a char(40)
 #  options form line 4 	#this gives the result one would expect for a default;
                         #form is opened after menu and message lines - on line 3
 
+{
+dfgdfg comment
+}
+
+-- comment asdfasd
+
 options help file "helpfile.hlp"
 options help key F1
 

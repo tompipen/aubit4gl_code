@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.98 2003-09-10 10:32:50 afalout Exp $
+# $Id: Makefile.in,v 1.99 2004-01-15 05:44:05 afalout Exp $
 #
 
 ROOT    =..
@@ -71,6 +71,7 @@ LIBESQLCHELPER_PATH	=libesql
 LIBHTML_PATH        =${ROOT}/tools/html
 LIBSQLESQL_PATH     =libsql/esqlc
 LIBUIGTK_PATH       =libui/ui_gtk
+LIBUIHL_PATH       =libui/ui_highlevel
 LIBUICURSES_PATH	=libui/ui_curses
 LIBUICONSOLE_PATH	=libui/ui_console
 LIBFORMNOFORM_PATH	=libform/noform
@@ -165,6 +166,8 @@ LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PA
 					$(wildcard ${LIBSQLESQL_PATH}/Makefile) ${ALL_H}
 LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h) \
 					$(wildcard ${LIBUIGTK_PATH}/Makefile) ${ALL_H}
+LIBUIHL_DEPS		=$(wildcard ${LIBUIHL_PATH}/*.c) $(wildcard ${LIBUIHL_PATH}/*.h) \
+					$(wildcard ${LIBUIHL_PATH}/Makefile) ${ALL_H}
 LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
 					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}
 LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \
@@ -222,6 +225,16 @@ libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
 
 libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 	$(MAKE) -C ${LIBUICONSOLE_PATH}
+
+libUI_HLGENERIC${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH}
+
+libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH}
+
+libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH}
+
 
 ##############
 #libFORM_
@@ -471,6 +484,7 @@ clean.generated:
 
 clean.libui:
 	${MAKE} -C ${LIBUIGTK_PATH} clean
+	${MAKE} -C ${LIBUIHL_PATH} clean
 	${MAKE} -C ${LIBUICONSOLE_PATH} clean
 	${MAKE} -C ${LIBUICURSES_PATH} clean
 

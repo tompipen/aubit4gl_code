@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.146 2003-11-15 07:39:57 afalout Exp $
+# $Id: Makefile-common.in,v 1.147 2004-01-15 05:44:05 afalout Exp $
 #
 
 
@@ -814,6 +814,17 @@ EXE_EXT=@EXEEXT@
 HAVE_PGSQL_LIB=@HAVE_PGSQL_LIB@
 POSTGRESDIR=@POSTGRESDIR@
 
+GLIB_CFLAGS		=@GLIB_CFLAGS@
+GTK_INC_PATH	=@GTK_INC_PATH@
+GTK_LIB_PATH	=@GTK_LIB_PATH@
+GTKLIBS			=@GTKLIBS@
+
+CURSES_INC_PATH =@CURSES_INC_PATH@
+HAVE_CURSES     =@HAVE_CURSES@
+HAVE_PDCURSES   =@HAVE_PDCURSES@
+
+CURSES_LIB_NAME =@CURSES_LIB_NAME@
+CURSES_LIB_PATH	=@CURSES_LIB_PATH@
 
 
 ## ==================================================================

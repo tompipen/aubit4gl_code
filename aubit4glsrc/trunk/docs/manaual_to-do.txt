@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.28 2003-12-14 05:29:57 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.29 2004-01-15 05:44:05 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4875,6 +4875,29 @@ I'd like to extend this to linking records to other records too later on.
 
 
 TODO: write about ASSOCIATE stuff introduced in I-4gl 7.31
+
+================================================================================
+
+Its a throwback to being able to compile plexus reports
+
+These can have lines like :
+
+	PRINT mv_doc_type AT 0.6 INCHES; " "; mv_doc_desc;
+
+I'm not exactly sure how it can be removed...
+(I'll have a look - but its not #1 in my list of priorities)
+
+=================================================================================
+
+> BTW - I think I asked this onece, but does Aubit not need unique cursor
+> names within a modile? It does not chech...
+>
+
+
+Nope - it doesn't care - do you think we should make it ?
+
+===================================================================================
+
 
 
 

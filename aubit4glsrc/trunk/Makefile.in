@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.134 2003-12-05 01:44:32 afalout Exp $
+# $Id: Makefile.in,v 1.135 2004-01-15 05:43:51 afalout Exp $
 #
 
 ## ==================================================================
@@ -397,7 +397,8 @@ clean.bin:
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile${EXE} xgen${EXE} dbbeauty${EXE} *.err \
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
-	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} \
+	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
+	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
 	)
 
 clean.etc:

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.210 2003-12-14 05:29:47 afalout Exp $
+dnl # $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1362,7 +1362,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.210 2003-12-14 05:29:47 afalout Exp $
+# $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1591,7 +1591,7 @@ if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
 fi
 
-ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
+ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE UI_HLGENERIC \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA $NEED_4GLC_ALL_libs"
 
@@ -5622,11 +5622,11 @@ PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
-        PLUGIN_YES="$PLUGIN_YES UI_TUI"
+        PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#Does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO UI_TUI"
+			PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI"
 			#Will be on all known Linux installations, but not by default on CygWin
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
         fi
@@ -5763,9 +5763,9 @@ fi
 	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES UI_GTK MENU_GENERIC"
+		PLUGIN_YES="$PLUGIN_YES UI_GTK MENU_GENERIC UI_HL_GTK"
 	else
-        PLUGIN_NO="$PLUGIN_NO UI_GTK MENU_GENERIC"
+        PLUGIN_NO="$PLUGIN_NO UI_GTK MENU_GENERIC UI_HL_GTK"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
@@ -6248,7 +6248,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.210 2003-12-14 05:29:47 afalout Exp $
+| $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
