@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.106 2005-01-31 12:37:01 mikeaubury Exp $
+# $Id: sql.c,v 1.107 2005-01-31 12:38:09 mikeaubury Exp $
 #
 */
 
@@ -408,10 +408,10 @@ dll_import sqlca_struct a4gl_sqlca;
 
 static void ensure_as_char() {
 	if (A4GL_isyes(acl_getenv("DATE_AS_CHAR"))) { date_as_char=1; }
-	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { date_as_char=1; }
+	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=1; }
 
 	if (A4GL_isno(acl_getenv("DATE_AS_CHAR"))) { date_as_char=0; }
-	if (A4GL_isno(acl_getenv("DTIME_AS_CHAR"))) { date_as_char=0; }
+	if (A4GL_isno(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=0; }
 }
 
 
