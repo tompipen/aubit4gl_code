@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.20 2002-10-20 12:02:37 afalout Exp $
+# $Id: calldll.c,v 1.21 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -85,7 +85,92 @@ void *          find_func_double (void *dllhandle, char *func);
 =====================================================================
 */
 
-#if (defined(WIN32) && ! defined(__CYGWIN__))
+#if defined(__MINGW32__)
+
+/* ------------ this functions simulate dlopen interface on Windows ---- */
+
+
+/* <Windows dlfcn.c> */
+#include <windows.h>
+#include <stdio.h>
+/* #include <dlfcn.h> */
+/* generic version of dlfcn.h */
+#define RTLD_LAZY 1
+#define RTLD_NOW  2
+
+void *dlopen(const char *, int);
+void *dlsym(void *, const char *);
+int dlclose(void *);
+char *dlerror(void);
+/* end dlfcn.h */
+
+static char errbuf[512];
+
+void *dlopen(const char *name, int mode)
+{
+  HINSTANCE hdll;
+
+  hdll = LoadLibrary(name);
+#ifdef _WIN32
+  if (! hdll) {
+    sprintf(errbuf, "error code %d loading library %s", GetLastError(), name);
+    return NULL;
+  }
+#else
+  if ((UINT) hdll < 32) {
+    sprintf(errbuf, "error code %d loading library %s", (UINT) hdll, name);
+    return NULL;
+  }
+#endif
+  return (void *) hdll;
+}
+
+void *dlsym(void *lib, const char *name)
+{
+  HMODULE hdll = (HMODULE) lib;
+  void *symAddr;
+  symAddr = (void *) GetProcAddress(hdll, name);
+  if (symAddr == NULL)
+    sprintf(errbuf, "can't find symbol %s", name);
+  return symAddr;
+}
+
+int dlclose(void *lib)
+{
+  HMODULE hdll = (HMODULE) lib;
+
+#ifdef _WIN32
+  if (FreeLibrary(hdll))
+    return 0;
+  else {
+    sprintf(errbuf, "error code %d closing library", GetLastError());
+    return -1;
+  }
+#else
+  FreeLibrary(hdll);
+  return 0;
+#endif
+}
+
+char *dlerror()
+{
+  return errbuf;
+}
+
+#endif /* __MINGW32__ */
+
+/* ====================== end of dl fincs for windows =================== */
+
+#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
+
+/*
+As per Microsoft's web site, an error value of zero specifies that the
+system was out of memory, the file was corrupt, or the relocation data was
+invalid.  Further digging through the web site lead me to believe that one
+could emulate dlopen,sym,and close with loadlibrary, getprocaddress, and
+freelibrary.
+*/
+
 
 /**
  * Loading of 4gl dll for native windows post. CygWin uses same
@@ -104,6 +189,32 @@ call_4gl_dll (char *filename, char *function, int args)
   exitwith ("DLL functions not available yet for WIN32 platforms");
   return 0;
 }
+
+/*
+
+void *
+find_func (void *dllhandle, char *func)
+{
+int (*func_ptr) (void);
+
+  return func_ptr;
+}
+
+void *
+find_func_allow_missing (void *dllhandle, char *func)
+{
+  int (*func_ptr) (void);
+  return func_ptr;
+}
+
+void *
+dl_openlibrary (char *type, char *name)
+{
+  void *dllhandle;
+  return dllhandle;
+}
+
+*/
 
 #else
 	/* implementation for UNIX and CygWin */
@@ -153,6 +264,8 @@ dl_openlibrary (char *type, char *name)
   void *dllhandle;
   char buff[1024];
 
+//  debug ("AUBITDIR=%s\n", acl_getenv ("AUBITDIR"));
+
 	#ifdef __CYGWIN__
 	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
 	#else
@@ -177,7 +290,12 @@ dl_openlibrary (char *type, char *name)
 
 
         #else
-		  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+			#if defined(__MINGW32__)
+				sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
+			#else
+				/* all other platforms: */
+				sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+            #endif
         #endif
 	#endif
 
@@ -291,7 +409,7 @@ find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
   debug("find_func_allow_missing: Finding pointer to DLL function %s\n",func);
-  
+
  	#if (defined(__MACH__) && defined(__APPLE__))
 		sprintf (tempbuff, "_%s",func);
 	#else
@@ -331,7 +449,7 @@ int a;
   
   A4GLSQL_set_status (0,0);
   strcpy (nfile, filename);
-  
+
 	#if (defined(__MACH__) && defined(__APPLE__))
 		strcpy (nfunc, "aclfgl__");
 	#else

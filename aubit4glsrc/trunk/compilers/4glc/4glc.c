@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.39 2002-10-18 01:56:33 afalout Exp $
+# $Id: 4glc.c,v 1.40 2002-10-22 06:43:35 afalout Exp $
 #
 */
 
@@ -111,29 +111,24 @@ extern void 	initArguments(int argc, char *argv[]);
 int
 main(int argc, char *argv[])
 {
-  #ifdef OLD_GETOPT
-  char a[128];
-  char b[128];
-  char c[128];
-  int fname_arg_no = 1;
-  #endif
+#ifdef OLD_GETOPT
+char a[128];
+char b[128];
+char c[128];
+int fname_arg_no = 1;
+#endif
+int x;
+struct str_resource *user_resource = 0;
 
-  int x;
+  debug("Initializing 4glc\n");
 
-
-  /** @todo : Remove things that are to use */
-//#if (defined(__MACH__) && defined(__APPLE__))
-//  int useGetopt = 0;
-//#else
-  //int useGetopt = 1;
-//#endif
   init_states ();
 
   yydebug = 0;
 
   /* load settings from config file(s): */
-  build_user_resources();
-
+  //build_user_resources();
+  user_resource = build_user_resources();
 
   //if ( useGetopt )
   #ifndef OLD_GETOPT

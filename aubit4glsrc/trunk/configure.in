@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.122 2002-10-20 12:02:11 afalout Exp $
+dnl # $Id: configure.in,v 1.123 2002-10-22 06:43:19 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -163,6 +163,8 @@ AC_DISABLE_STATIC
 #Note: The libltdl library included with all libtool versions will only work on
 #Darwin when dlcompat is installed.
 
+#AC_LIBLTDL_INSTALLABLE
+AC_LIBLTDL_CONVENIENCE
 AC_LIBTOOL_WIN32_DLL
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
@@ -316,7 +318,7 @@ AC_SUBST(ARCHEXT)
 AC_SUBST(CONFIGURE_COMMAND)
 AC_SUBST(GCC_VERSION_MAJOR)
 AC_SUBST(GCC_VERSION_MINOR)
-
+AC_SUBST(GCC_MINGW)
 
 
 #curses:
@@ -675,11 +677,9 @@ if test "$MAKE" = "no" ; then
 		AC_MSG_WARN(It will be much easier if you would install 'make')
     fi
 else
-#make --version'
 		AC_MSG_CHECKING(make version)
 		#this creates fill set dump on Solaris
 		set `make --version | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
-		#set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
 		if test "$1" != ""; then
 			if test "$1" = "3" -a "$2" -lt "50"; then
 		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
@@ -769,7 +769,11 @@ if test "$CC" = "gcc"; then
 	#$ gcc --version
 	#gcc (GCC) 3.2 20020818 (prerelease)
 
+	#gcc.exe (GCC) 3.2 (mingw special 20020817-1)
+
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
+	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+	#  3 2 mingw special 20020817-1)
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
 		if test "$1" != ""; then
@@ -779,6 +783,32 @@ if test "$CC" = "gcc"; then
 			    AC_MSG_RESULT($1.$2.$3)
 	            GCC_VERSION_MAJOR=$1
 				GCC_VERSION_MINOR=$2
+                if test "$3" = "mingw"; then
+					GCC_MINGW=yes
+					aubitdir="D:/cygwin/$aubitdir"
+					AC_MSG_WARN(Using MinGW GCC. $CFLAGS)
+					old_CFLAGS="$CFLAGS"
+					old_CPPFLAGS="$CPPFLAGS"
+					old_LDFLAGS="$LDFLAGS"
+
+					TMP_IFLAGS="-ID:/cygwin/usr/include"
+                    CFLAGS=" $CFLAGS $TMP_IFLAGS"
+					CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
+
+					#Clear cached value:
+					#unset ac_cv_header_dlfcn_h
+					#AC_CHECK_HEADERS([dlfcn.h])
+	                #exit
+					#In file included from d:/MinGW/include/inttypes.h:6,
+					#                 from configure:9489:
+					#d:/MinGW/include/stdint.h:27: conflicting types for `int8_t'
+					#D:/cygwin/usr/include/sys/types.h:128: previous declaration of `int8_t'
+
+					CFLAGS="$old_CFLAGS"
+					CPPFLAGS="$old_CPPFLAGS"
+					LDFLAGS="$old_LDFLAGS"
+                    TMP_IFLAGS=
+                fi
 	        #fi
 		else
 			AC_MSG_WARN(Cannot read GCC version.)
@@ -2433,15 +2463,30 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		#Clear cached value:
 		unset ac_cv_header_dlfcn_h
 
-        #/sw/include/dlfcn.h
         old_CPPFLAGS="$CPPFLAGS"
 		#old_CLFAGS="$CFLAGS"
-        TMP_IFLAGS="-I/sw/include"
-		CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
-		AC_CHECK_HEADERS([dlfcn.h])
+        
+		case $host in
+			*-apple-darwin*)
+				#only on Darwin:
+				TMP_IFLAGS="-I/sw/include"
+                RE_CHECK=1
+				;;
+			*)
+		        ;;
+		esac
+
+        if test "$RE_CHECK" = "1"; then
+			CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
+			AC_CHECK_HEADERS([dlfcn.h])
+        fi
 
 		if test `eval echo '${'$as_ac_Header'}'` != yes; then
-			AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
+			if test "$GCC_MINGW" = "yes"; then
+				AC_MSG_WARN(No dlfcn.h found)
+            else
+				AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
+            fi
         else
 			CFLAGS="$CFLAGS $TMP_IFLAGS"
         fi
@@ -2800,43 +2845,73 @@ fi
 
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_1=$LIB_PREFIX/libUI_GTK$SO_EXT
-    fi
+        PLUGIN_YES="$PLUGIN_YES GTK"
+	else
+        PLUGIN_NO="$PLUGIN_NO GTK"
+	fi
 
 	if test "$HAVE_CURSES" = "1"; then
         RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
-    fi
+        PLUGIN_YES="$PLUGIN_YES TUI"
+	else
+        PLUGIN_NO="$PLUGIN_NO TUI"
+	fi
 
 	if test "$PDFBUILD" != "no"; then
 		RPMFILE_3=$LIB_PREFIX/libEXREPORT_PDF$SO_EXT
-    fi
+        PLUGIN_YES="$PLUGIN_YES PDF"
+	else
+        PLUGIN_NO="$PLUGIN_NO PDF"
+	fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
 		RPMFILE_4=$LIB_PREFIX/libSQL_esql$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES IFX"
+	else
+        PLUGIN_NO="$PLUGIN_NO IFX"
 	fi
 
 	if test "$HAVE_PGODBC" = "yes" ; then
 		RPMFILE_5=$LIB_PREFIX/libSQL_pgodbc$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES PG"
+	else
+        PLUGIN_NO="$PLUGIN_NO PG"
 	fi
 
 	if test "$HAVE_IFXODBC" = "yes" ; then
 		RPMFILE_6=$LIB_PREFIX/libSQL_ifxodbc$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES IFXODBC"
+	else
+        PLUGIN_NO="$PLUGIN_NO IFXODBC"
 	fi
 
 	if test "$HAVE_IODBC" = "yes" ; then
 		RPMFILE_7=$LIB_PREFIX/libSQL_iodbc$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES iODBC"
+	else
+        PLUGIN_NO="$PLUGIN_NO iODBC"
 	fi
 
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES unixODBC"
+	else
+        PLUGIN_NO="$PLUGIN_NO unixODBC"
 	fi
 
 	if test "$cygwin" = "1"; then
 		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES ODBC32"
+	else
+        PLUGIN_NO="$PLUGIN_NO ODBC32"
 	fi
 
 	if test "$XML_RPC" != "no"; then
 		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC$SO_EXT
-    fi
+        PLUGIN_YES="$PLUGIN_YES XML-RPC"
+	else
+        PLUGIN_NO="$PLUGIN_NO XML-RPC"
+	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
 
@@ -2849,24 +2924,38 @@ fi
 		RPMFILE_16=$LIB_PREFIX/libXDRPACKER_struct_form$SO_EXT
         RPMFILE_17=$LIB_PREFIX/libPACKER_XDR$SO_EXT
 
+        PLUGIN_YES="$PLUGIN_YES MENU_XDR RPC_XDR FORM_XDR XDRPACKER"
+	else
+        PLUGIN_NO="$PLUGIN_NO MENU_XDR RPC_XDR FORM_XDR XDRPACKER"
 	fi
 
 	if test "$EXDATA_MPZ" != "no"; then
 		RPMFILE_18=$LIB_PREFIX/libEXDTYPE_mpz$SO_EXT
-    fi
+        PLUGIN_YES="$PLUGIN_YES MPZ"
+	else
+        PLUGIN_NO="$PLUGIN_NO MPZ"
+	fi
 
 	if test "$HAVE_SAPODBC" = "yes" ; then
 		RPMFILE_19=$LIB_PREFIX/libSQL_sapodbc$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES SAPODBC"
+	else
+        PLUGIN_NO="$PLUGIN_NO SAPODBC"
 	fi
 
 	#this is made by 'make extra'
 	if test "$JABBERBUILD" != "no"; then
 		RPMFILE_20=$LIB_PREFIX/libIM_JABBER$SO_EXT_LINKABLE
+        PLUGIN_YES="$PLUGIN_YES JABBER"
+	else
+        PLUGIN_NO="$PLUGIN_NO JABBER"
 	fi
 
 	RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
+	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
+
 	#RPMFILE_24=$LIB_PREFIX/
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/
@@ -3070,7 +3159,6 @@ cat<<X
 | exactly what you are doing.                                        |
 X
 fi
-
 if test "$INFORMIXODBC_WARNING" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -3119,7 +3207,14 @@ cat<<X
 | the installation process at this point.                            |
 +--------------------------------------------------------------------+
 X
-
+cat<<X
++--------------------------------------------------------------------+
+|                        ***  NOTE   ***                             |
+| Aubit plug-ins to build:
+| $PLUGIN_YES
+| Aubit plug-ins the will not be built:                              |
+| $PLUGIN_NO
+X
 if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
 |                          *** NOTE ***                              |

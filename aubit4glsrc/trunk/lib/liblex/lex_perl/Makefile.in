@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-10-18 01:56:38 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-22 06:43:37 afalout Exp $
 #
 
 ROOT    =../../..
@@ -53,11 +53,11 @@ else
 	Y_TAB_H		=${ROOT}/compilers/4glc/rules/generated/y.tab.h
 endif
 
-#ifneq "${COMSPEC}" ""
-#	ALL         =dllLEX_PERL
-#else
-	ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
-#endif
+ifeq "${GCC_MINGW}" "yes"
+	CFLAGS		+=-I${ROOT}/tools/getopt
+endif
+
+ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
 
 CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 

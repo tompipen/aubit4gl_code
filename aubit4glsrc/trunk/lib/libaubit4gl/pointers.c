@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.16 2002-10-20 12:02:38 afalout Exp $
+# $Id: pointers.c,v 1.17 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -93,7 +93,7 @@ struct s_node
 =====================================================================
 */
 
-#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__)
+#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 //actually, should use 	#if HAVE_SEARCH_H
 	
 	/* search internal node for windows and platforms without this library function */
@@ -236,7 +236,10 @@ add_pointer (char *orig_name, char type, void *ptr)
 	{
 	  debug ("Found ptr... \n");
 	  node = *(struct s_node **) a;
+#if ! defined(__MINGW32__)
 	  DELETE (&buff2);
+#endif
+
 	  debug ("Try to free %p\n", node);
 	  strcpy (node->name, "======");
 	  free (node);
@@ -340,11 +343,15 @@ del_pointer (char *pname, char t)
       if (a)
 	{
 	  node = *(struct s_node **) a;
+#if ! defined(__MINGW32__)
 	  DELETE (&buff2);
+#endif
 	  strcpy (node->name, "======");
 	  free (node);
 	}
-    DELETE(buff);
+#if ! defined(__MINGW32__)
+	DELETE(buff);
+#endif
     free(buff);
     }
 }

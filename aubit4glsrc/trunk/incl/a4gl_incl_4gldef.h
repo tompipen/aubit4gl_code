@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.14 2002-10-20 23:13:32 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.15 2002-10-22 06:43:36 afalout Exp $
 */
 
 /**
@@ -300,7 +300,7 @@ be used in applications which link to the library).
 */
 
 
-    #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
+    #ifndef _DEFINE_STATUSVARS_  /* set from fglwrap.c --ONLY-- */
     /* for everything except libaubit4gl: */
 
 		/** Sqlca variable */

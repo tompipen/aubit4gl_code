@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: dialog.c,v 1.3 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -243,7 +243,7 @@ gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   rval = 0;
   while (1)
     {
-      usleep (100);
+      a4gl_usleep (100);
       /* printf("win = %p\n",win); */
       rval = (int)gtk_object_get_data (GTK_OBJECT(win), "RETURNS");
       if (rval)

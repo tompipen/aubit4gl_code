@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.43 2002-10-13 01:40:34 afalout Exp $
+# $Id: Makefile.in,v 1.44 2002-10-22 06:43:36 afalout Exp $
 #
 
 ROOT        =../..
@@ -114,8 +114,10 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 
 ${ROOT}/bin/fshow : fshow.4gl
+	@echo PATH = ${PATH}
 #FIXME: remove -I${ROOT}/tools
-	${FAIL_OK}${SH} ${4GLPC} $^ -o $@ -I${ROOT}/tools
+	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
+# -I${ROOT}/tools
 
 ## ==================================================================
 ##                          Sub targets

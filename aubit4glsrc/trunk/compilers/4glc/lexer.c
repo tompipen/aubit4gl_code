@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.35 2002-10-16 07:05:30 mikeaubury Exp $
+# $Id: lexer.c,v 1.36 2002-10-22 06:43:35 afalout Exp $
 #*/
 
 /**
@@ -61,7 +61,8 @@
 	#define KWS_COMMENT COMMENT
 #endif
 
-#define stricmp strcasecmp
+//#define stricmp strcasecmp
+#define stricmp aubit_strcasecmp
 #define TYPE_EOF  -1
 #define TYPE_USTRING  -2	/* unterminated string */
 #define TYPE_NUM 3
@@ -274,7 +275,7 @@ read_word2 (FILE * f, int *t)
 		break;
 	      if (a == '\n' || a == '\r')
 		{
-		  if (strcasecmp (word, "endcode") == 0)
+		  if (aubit_strcasecmp (word, "endcode") == 0)
 		    break;
 		  a = mja_fgetc (f);
 		  continue;
@@ -659,8 +660,8 @@ cnt = 0;
       return KW_CSTART;
     }
 
-  if ( (strcasecmp (p, "--!code") == 0
-	|| strcasecmp (p, "code") == 0
+  if ( (aubit_strcasecmp (p, "--!code") == 0
+	|| aubit_strcasecmp (p, "code") == 0
 	)
 	 && xccode == 0)
     {
@@ -673,10 +674,10 @@ cnt = 0;
 	exit(0);
   }
 
-  if ( (strcasecmp (p, "endcode") == 0
-	|| strcasecmp (p, "--!endcode") == 0
-	|| strcasecmp (p, "--!end code") == 0
-	|| strcasecmp (p, "end code") == 0
+  if ( (aubit_strcasecmp (p, "endcode") == 0
+	|| aubit_strcasecmp (p, "--!endcode") == 0
+	|| aubit_strcasecmp (p, "--!end code") == 0
+	|| aubit_strcasecmp (p, "end code") == 0
 	)
 	&& xccode)
     {
@@ -902,7 +903,7 @@ relex (int lc)
     {
       if (kwords[a].vals[1] == 0)
 	{
-	  if (strcasecmp (kwords[a].vals[0], lastword) == 0)
+	  if (aubit_strcasecmp (kwords[a].vals[0], lastword) == 0)
 	    {
 	      if (kwords[a].mode >= 1)
 		{

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.40 2002-10-13 01:40:34 afalout Exp $
+# $Id: Makefile.in,v 1.41 2002-10-22 06:43:36 afalout Exp $
 #
 
 ROOT    	=../..
@@ -94,12 +94,22 @@ endif
 LCLINT_CFLAGS   	=${C_IFLAGS}
 
 ifneq "${TARGET_OS}" "cygwin"
+ifneq "${GCC_MINGW}" "yes"
 	LINK_LIBS           =-ldl -lm
+endif
 endif
 
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
+
+ifeq "${GCC_MINGW}" "yes"
+	#LINK_LIBS		+=-lc
+	#LINK_LIBS		+=-lgcc
+	#strcasecmp():
+	LINK_LIBS		+=-lmoldname
+endif
+
 
 
 ifeq "${TARGET_OS}" "darwin"

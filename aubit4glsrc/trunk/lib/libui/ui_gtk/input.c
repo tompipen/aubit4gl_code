@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.4 2002-10-13 11:44:40 afalout Exp $
+# $Id: input.c,v 1.5 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -192,7 +192,7 @@ form_loop (struct s_screenio * s)
 	break;
       }
 
-    usleep (100);
+    a4gl_usleep (100);
     if (gtk_events_pending ())
       gtk_main_iteration ();
   }

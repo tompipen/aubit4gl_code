@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.27 2002-10-20 12:02:38 afalout Exp $
+# $Id: stack.c,v 1.28 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -1171,8 +1171,10 @@ push_user (void)
 {
   int a;
   struct passwd *p;
+#ifndef __MINGW32__
   a = getuid ();
   p = getpwuid (a);
+#endif
   printf ("User=%s\n", p->pw_name);
   push_char (p->pw_name);
 }

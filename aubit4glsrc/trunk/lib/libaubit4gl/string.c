@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.11 2002-10-20 12:02:38 afalout Exp $
+# $Id: string.c,v 1.12 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -171,7 +171,7 @@ char *zzz;
 
 
 
-#if (defined(WIN32) && ! defined(__CYGWIN__))
+#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
 /**
  * Windows implementation of strncasecmp().
  *

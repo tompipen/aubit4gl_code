@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.3 2002-10-19 06:26:30 afalout Exp $
+# $Id: prompt.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -71,6 +71,18 @@ int prompt_loop (struct s_prompt * prompt);
                     Functions definitions
 =====================================================================
 */
+
+
+void
+a4gl_usleep(int a) {
+
+#ifdef __MINGW32__
+	sleep (a);
+#else
+	usleep (a);
+#endif
+
+}
 
 
 /**
@@ -241,7 +253,7 @@ int action;
           break;
         }
 
-      usleep (100);
+      a4gl_usleep (100);
       if (gtk_events_pending ())
         gtk_main_iteration ();
     }

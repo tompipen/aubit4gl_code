@@ -1,13 +1,11 @@
 %{
 
 #define _BISON_SIMPLE_INCL_
-/*
-#include <stdio.h>
-#include <string.h>
-*/
+
+#define _NO_FORM_X_H_
+#define _NO_WINDOWS_H_
 
 /* FIXME: this should be a4gl_xgen_int.h */
-#define _NO_FORM_X_H_
 #include "a4gl_libaubit4gl.h"
 
 #define YYDEBUG 1

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.11 2002-10-07 11:06:27 afalout Exp $
+# $Id: funcs_d.c,v 1.12 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -349,11 +349,23 @@ double ad;
 	    num=0.0-num;
 	}
 
+#if defined (__MINGW32__)
+	if (strchr(fmt,'.')) {
+#else
 	if (index(fmt,'.')) {
+#endif
 	    strcpy(fm1,fmt);
-	    p=(char *)index(fm1,'.');
+#if defined (__MINGW32__)
+		p=(char *)strchr(fm1,'.');
+#else
+		p=(char *)index(fm1,'.');
+#endif
 	    p[0]=0;
-	    strcpy(fm2,index(fmt,'.')+1);
+#if defined (__MINGW32__)
+		strcpy(fm2,strchr(fmt,'.')+1);
+#else
+		strcpy(fm2,index(fmt,'.')+1);
+#endif
 	}
 	else {
 	  strcpy(fm1,fmt);
@@ -439,8 +451,11 @@ double ad;
     		str[a+strlen(fm1)+1]=fm2[a];
 		}
 	}
-
+#if defined (__MINGW32__)
+	ptr=(char *)strrchr(str,'<');
+#else
 	ptr=(char *)rindex(str,'<');
+#endif
 	if (ptr) 
 	{
 	   b=0;

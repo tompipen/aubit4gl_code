@@ -10,8 +10,8 @@
 #define _AUBIT_LIB_INCL_INT_
 
 	#include "a4gl_libaubit4gl.h" /* external one */
-
-    /* =================== from data_if.h =================== */
+    
+	/* =================== from data_if.h =================== */
 
 	#define GETSETNEW 		-1
 	#define GETSETRM 		-2

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.37 2002-10-18 01:56:38 afalout Exp $
+# $Id: compile_c.c,v 1.38 2002-10-22 06:43:37 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -124,7 +124,7 @@ extern int 		fbindcnt;
 extern int 		constr_cnt;
 
 
-#ifdef __CYGWIN__
+//#ifdef __NEED_DLL_IMPORT__
 	dll_import int 		when_code[8];
 	dll_import struct 	s_report sreports[1024];
     dll_import struct 	s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -135,6 +135,7 @@ extern int 		constr_cnt;
 	dll_import struct 	binding_comp ordbind[NUMBINDINGS];
 	dll_import struct 	s_constr_buff constr_buff[256];
 	dll_import char 	when_to[64][8];
+/*
 #else
 	extern int 			when_code[8];
 	extern struct 		s_report sreports[1024];
@@ -147,6 +148,7 @@ extern int 		constr_cnt;
 	extern struct 		s_constr_buff constr_buff[256];
 	extern char 		when_to[64][8];
 #endif
+*/
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.9 2002-10-13 11:44:39 afalout Exp $
+# $Id: translate.c,v 1.10 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -64,7 +64,8 @@
 =====================================================================
 */
 
-#define stricmp strcasecmp
+//#define stricmp strcasecmp
+#define stricmp aubit_strcasecmp
 #define TRANSLINESIZE 2048
 
 /*

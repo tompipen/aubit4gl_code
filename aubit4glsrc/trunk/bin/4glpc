@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.86 2002-10-13 11:44:39 afalout Exp $
+# $Id: 4glpc,v 1.87 2002-10-22 06:43:35 afalout Exp $
 #
 
 ########################################################################
@@ -280,6 +280,8 @@ then
 	. ${AUBITETC}/aubitrc
 fi
 
+#echo 1 AUBITDIR=$AUBITDIR
+
 #we no longer export all variables, so this is obsolete?:
 if [ "$MAKINGAUBIT" = "1" ] #if we are invoked from Aubit compiler makefiles
 then
@@ -288,7 +290,7 @@ then
 		AUBITDIR=$AUBIT_SRC_ROOT
     fi
 fi
-
+#echo 2AUBITDIR=$AUBITDIR
     #find path to this script:
 	PATHTO4GLPC1=`dirname $0`
 	PATHTO4GLPC=`dirname $PATHTO4GLPC1` #remove bin/
@@ -330,7 +332,7 @@ then
 	A5=~/.aubit4gl/aubitrc
 	. ~/.aubit4gl/aubitrc
 fi
-
+#echo 3AUBITDIR=$AUBITDIR
 if [ -f ./.aubitrc ]
 then
 	A6=./.aubitrc
@@ -350,7 +352,11 @@ then
 	if [ "$AUBIT_BIN_INSTALL" != "1" ] && [ "$AUBIT_SRC_ROOT" != "" ]
     then
 		#and we are still in Aubit source code tree
-		AUBITDIR=$AUBIT_SRC_ROOT
+		#AUBITDIR=$AUBIT_SRC_ROOT
+		if test "$COMSPEC" != ""; then
+			#For MinGW, without drive letter:
+			PATH=$PATH:$AUBIT_SRC_ROOT/bin
+        fi
     fi
 fi
 
@@ -403,6 +409,8 @@ then
 else
         output="echo"
 fi
+
+#echo 4AUBITDIR=$AUBITDIR
 
 #restore things from before reading .a4glrc that where in environment:
 #see if we are called form Aubit compiler makefiles:

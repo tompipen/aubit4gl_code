@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.10 2002-10-03 14:50:16 mikeaubury Exp $
+# $Id: builtin.c,v 1.11 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -386,7 +386,7 @@ get_scr_line (int a)
 }
 */
 
-#ifdef _WINDOWS
+#if (defined (_WINDOWS) || defined (__MINGW32__))
 
 /**
  *
@@ -434,20 +434,52 @@ rindex (char *s, int a)
     return 0;
   
 }
-
-
+#ifndef __MINGW32__
 /**
+ *
+ * builtin.c:446: conflicting types for `strcasecmp'
+ * d:/MinGW/include/string.h:163: previous declaration of `strcasecmp'
  *
  *
  * @param
  */
 int
-strcasecmp (char *s1, char *s2)
+//strcasecmp (char *s1, char *s2)
+strcasecmp (const char* s1, const char* s2)
 {
+/*
+d:/MinGW/bin/../lib/gcc-lib/mingw32/3.2/../../../libmoldname.a(string_old.o)(.text+0x0):string_old.c: multiple definition of `strcasecmp'
+builtin.o:D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libaubit4gl/builtin.c:449: first defined here
+*/
+
+
 
     return stricmp (s1, s2);
 
 }
+
+/**
+ * builtin.c:493: conflicting types for `popen'
+ * d:/MinGW/include/stdio.h:314: previous declaration of `popen'
+ *
+ * A dummy windows popen.
+ * Just return 0
+ */
+int
+popen (void)
+{
+
+    return 0;
+
+}
+
+#else
+
+extern int	strcasecmp (const char*, const char*);
+
+#endif //ndef __MINGW32__
+
+
 
 /**
  * Windows implementation of unix sleep. On UNIX defined in <unistd.h>
@@ -483,18 +515,6 @@ getuid(void)
     return 50;
 }
 
-
-/**
- * A dummy windows popen.
- * Just return 0
- */
-int
-popen (void)
-{
-  
-    return 0;
-
-}
 
 #endif
 

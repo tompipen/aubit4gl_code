@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.48 2002-10-18 01:56:33 afalout Exp $
+# $Id: Makefile.in,v 1.49 2002-10-22 06:43:35 afalout Exp $
 #
 
 ROOT		=../..
@@ -44,6 +44,10 @@ ifeq "@YACC@" "no"
 else
 	GENRULES    =rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
+endif
+
+ifeq "${GCC_MINGW}" "yes"
+	CFLAGS		+=-I${ROOT}/tools/getopt
 endif
 
 CMODS_EXE       =4glc.c
@@ -89,6 +93,10 @@ LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+ifeq "${GCC_MINGW}" "yes"
+	LINKLIBS	+=-liberty
 endif
 
 ## ==================================================================
@@ -154,11 +162,14 @@ rules/generated/states.c rules/generated/kw.h rules/generated/y.tab.h:
 	${MAKE} -C rules $(MKNAME)
 
 4glc.o: rules/generated/kw.h rules/generated/y.tab.h
+dim.o: rules/generated/kw.h rules/generated/y.tab.h
 
 mod.o: 							mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 			../fcompile/form_x.h
 lexer.o: 						${GENRULES}/kw.h
 lexer.o: 						${GENRULES}/y.tab.h
+
+
 
 ## ==================================================================
 ##                            Other Targets

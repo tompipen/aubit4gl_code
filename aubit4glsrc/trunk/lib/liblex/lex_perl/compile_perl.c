@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.21 2002-10-07 11:06:29 afalout Exp $
+# $Id: compile_perl.c,v 1.22 2002-10-22 06:43:37 afalout Exp $
 #
 */
 
@@ -107,7 +107,7 @@ extern int 		rep_type;
 extern int 		sreports_cnt;
 extern char 	when_to_tmp[64];
 
-#ifdef __CYGWIN__
+//#ifdef __NEED_DLL_IMPORT__
 	dll_import int 		when_code[8];
 	dll_import struct 	s_report sreports[1024];
     dll_import struct 	s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -119,6 +119,7 @@ extern char 	when_to_tmp[64];
 	dll_import struct 	s_constr_buff constr_buff[256];
 	dll_import char 	when_to[64][8];
 	dll_import struct 	s_report_stack report_stack[REPORTSTACKSIZE];
+/*
 #else
 	extern int 			when_code[8];
 	extern struct 		s_report sreports[1024];
@@ -132,7 +133,7 @@ extern char 	when_to_tmp[64];
 	extern char 		when_to[64][8];
 	extern struct 		s_report_stack report_stack[REPORTSTACKSIZE];
 #endif
-
+*/
 
 
 extern int 	ordbindcnt;

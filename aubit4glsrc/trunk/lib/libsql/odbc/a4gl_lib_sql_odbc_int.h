@@ -1,6 +1,6 @@
 
 
-#ifdef __CYGWIN__
+#if (defined (__CYGWIN__) || defined (__MINGW32__))
 	#include <windows.h>
 	#include <sqlext.h>
 #else

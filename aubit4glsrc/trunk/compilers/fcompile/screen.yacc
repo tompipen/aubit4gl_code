@@ -13,6 +13,7 @@
 
 /* prevent warning for redundant declaration of yyparse / fgl_comp_parse: */
 #define _BISON_SIMPLE_INCL_
+#define _NO_WINDOWS_H_
 
 #include "a4gl_fcompile_int.h"
 

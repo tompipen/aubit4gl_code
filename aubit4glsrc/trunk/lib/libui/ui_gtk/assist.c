@@ -175,7 +175,7 @@ static char _functionName[] = "run_gui";
    pop_params(fbind,0);
    CHK_UI
      while (1) {
-   	usleep(100);
+   	a4gl_usleep(100);
    	gui_run_til_no_more ();
      }
    /* End of code */
@@ -323,7 +323,7 @@ static char _functionName[] = "get_filename";
    gtk_widget_show (file_selector);
    while (1) {
    	
-   	usleep(100);
+   	a4gl_usleep(100);
     	gui_run_til_no_more ();
    	if (strlen(selected_filename)!=0) {
    		break;

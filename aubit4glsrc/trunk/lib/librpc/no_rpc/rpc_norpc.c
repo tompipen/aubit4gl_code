@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.3 2002-09-26 00:30:41 afalout Exp $
+# $Id: rpc_norpc.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
 #
 */
 
@@ -61,6 +61,11 @@ we know it's ugly...
 */
 
 #define bool_t int
+
+#ifdef __MINGW32__
+	typedef	char *	caddr_t;
+#endif
+
 
 enum xdr_op {
 	XDR_ENCODE=0,

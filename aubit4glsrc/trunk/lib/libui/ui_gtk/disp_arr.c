@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: disp_arr.c,v 1.3 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -297,7 +297,7 @@ disp_loop (struct s_disp_arr *arr)
 	      break;
 	    }
 
-	  usleep (100);
+	  a4gl_usleep (100);
 	  if (gtk_events_pending ())
 	    gtk_main_iteration ();
 	}

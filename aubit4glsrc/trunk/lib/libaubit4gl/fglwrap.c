@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.23 2002-10-20 12:02:37 afalout Exp $
+# $Id: fglwrap.c,v 1.24 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -43,8 +43,8 @@
 =====================================================================
 */
 
-#define DEFINE_INTFLAG
-#define DEFINE_QUITFLAG
+//#define DEFINE_INTFLAG
+//#define DEFINE_QUITFLAG
 #define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
 	                            rest of source files, they get only DECLARED
 	                            as extern */
@@ -53,11 +53,6 @@
 #define _PRELOAD_SQL_ 		/* pre-load SQL module */
 #define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_ 		/* pre-load UI module */
-
-#ifndef TRUE
-	#define TRUE 1
-#endif
-
 
 /*
 =====================================================================
@@ -76,9 +71,6 @@
 int 	p_numargs	=0;
 int 	isdebug		=0;
 int 	ui_mode		=0;
-//int 	int_flag;
-//int 	quit_flag;
-//int 	abort_pressed;
 extern int errno;
 
 char *	p_args[256];
@@ -183,10 +175,10 @@ char *p;
 		p=acl_getenv("A4GL_UI");
 
 		//where is CONSOLE?
-		if (strcasecmp(p,"TEXT")==0  )	ui_mode=0;
-		if (strcasecmp(p,"CURSES")==0) 	ui_mode=0;
-		if (strcasecmp(p,"GTK")==0) 	ui_mode=1;
-		if (strcasecmp(p,"GUI")==0) 	ui_mode=1;
+		if (aubit_strcasecmp(p,"TEXT")==0  )	ui_mode=0;
+		if (aubit_strcasecmp(p,"CURSES")==0) 	ui_mode=0;
+		if (aubit_strcasecmp(p,"GTK")==0) 	ui_mode=1;
+		if (aubit_strcasecmp(p,"GUI")==0) 	ui_mode=1;
 	}
 
 	p_numargs = nargs;
@@ -277,7 +269,7 @@ char *p;
 	free(ptr);
 
 	/*endwin();*/ /* switch straight back to terminal mode */
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
+	#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined (__MINGW32__))
 	  rpc_nt_init();
 	#endif
 
@@ -654,7 +646,7 @@ BOOL __stdcall set_intr_win32(DWORD type)
         #endif
 		int_flag=TRUE;
 		errno=-1;
-		ungetch(KEY_CANCEL);
+		ungetch(A4GLKEY_CANCEL);
 		set_abort(1);
 		}
 	return TRUE;
@@ -663,7 +655,14 @@ BOOL __stdcall set_intr_win32(DWORD type)
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-typedef unsigned long sigset_t;
+
+// implicit declaration of function `rpc_nt_init'
+// implicit declaration of function `sleep' -- should be in <unistd.h>
+// implicit declaration of function `ungetch' -- <curses.h>
+
+	#if ! defined (__MINGW32__)
+		typedef unsigned long sigset_t;
+	#endif
 
 /**
  * Struct for signal handling in windows systems

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.42 2002-10-17 05:38:52 afalout Exp $
+# $Id: sql.c,v 1.43 2002-10-22 06:43:37 afalout Exp $
 #
 */
 
@@ -310,9 +310,9 @@ int convneg_sql_to_4gl[15] =
 	}
 #endif /* WIN32 && DLL_EXPORT */
 
-#ifdef __CYGWIN__
+//#ifdef __CYGWIN__
 	dll_import sqlca_struct sqlca;
-#endif
+//#endif
 
 /*
 =====================================================================
@@ -1780,12 +1780,21 @@ sqlerrwith (int rc, HSTMT h)
  * @param s A string to identify who and wy called this.
  * @param reset Not used.
  */
-void  
+void
 set_sqlca (HSTMT hstmt, char *s, int reset)
 {
   char s1[81];
   char s2[500];
+/*
+sql.c: In function `set_sqlca':
+sql.c:1788: conflicting types for `_errno'
+d:/MinGW/include/stdlib.h:153: previous declaration of `_errno'
+sql.c:1788: warning: extern declaration of `_errno' doesn't match global one
+make[2]: *** [sql.o] Error 1
+*/
+#ifndef __MINGW32__
   SDWORD errno;
+#endif
   SWORD errno2;
   SDWORD rowcount;
   RETCODE rc;

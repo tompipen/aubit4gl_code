@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.19 2002-10-20 12:02:39 afalout Exp $
+# $Id: resource.c,v 1.20 2002-10-22 06:43:37 afalout Exp $
 #
 */
 
@@ -67,6 +67,8 @@
                     Variables definitions
 =====================================================================
 */
+
+HKEY 	newkey = 0; //not sure if this is correct!!!
 
 struct str_resource *user_resource = 0;
 int loaded_resources=0;
@@ -111,17 +113,17 @@ struct str_resource builtin_resource[] =
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
   {"FIELD_ERROR_MSG","Error in field"},
- 
+
   {"MENUCSELECT", "0"},
   {"MENUCTITLE", "0"},
   {"MENUCNORMAL", "0"},
   {"MENUCHIGHLIGHT", "<>"},
- 
+
   {"MENUMSELECT", "0"},
   {"MENUMTITLE", "0"},
   {"MENUMNORMAL", "0"},
   {"MENUMHIGHLIGHT", "<>"},
- 
+
 /* abbr week days */
   {"_DAY0", "Sun"},
   {"_DAY1", "Mon"},
@@ -130,7 +132,7 @@ struct str_resource builtin_resource[] =
   {"_DAY4", "Thu"},
   {"_DAY5", "Fri"},
   {"_DAY6", "Sat"},
- 
+
 /* full week days */
   {"_FDAY0", "Sunday"},
   {"_FDAY1", "Monday"},
@@ -139,7 +141,7 @@ struct str_resource builtin_resource[] =
   {"_FDAY4", "Thursday"},
   {"_FDAY5", "Friday"},
   {"_FDAY6", "Saturday"},
- 
+
 /* abbr months */
   {"_MON1", "Jan"},
   {"_MON2", "Feb"},
@@ -153,7 +155,7 @@ struct str_resource builtin_resource[] =
   {"_MON10", "Oct"},
   {"_MON11", "Nov"},
   {"_MON12", "Dec"},
- 
+
 /* Full months */
   {"_FMON1", "January"},
   {"_FMON2", "February"},
@@ -167,7 +169,7 @@ struct str_resource builtin_resource[] =
   {"_FMON10", "October"},
   {"_FMON11", "November"},
   {"_FMON12", "December"},
- 
+
 /* addition for days */
   {"_DAYTH1", "st"},
   {"_DAYTH2", "nd"},
@@ -346,22 +348,28 @@ find_str_resource_int (char *search, int a)
 static char *
 find_str_resource (char *s)
 {
-  char *ptr;
+char *ptr;
+
+//  debug("Finding resource %s\n",s);
+
   /* look in user resources first */
   ptr = chk_str_resource (s, user_resource);
 
-  if (ptr)
-    return ptr;
-  /* Check built-in resources next */
+  if ( ptr == 0 ) {
+	  /* Check built-in resources next */
+	  ptr = chk_str_resource (s, builtin_resource);
+  }
 
-  ptr = chk_str_resource (s, builtin_resource);
-  if (ptr)
-    return ptr;
-  return 0;
+  if (ptr) {
+//	debug("Resurce %s has value of: %s\n",s,ptr);
+	return ptr;
+  } else {
+	return 0;
+  }
 }
 
 /**
- * Get the contents of an evironment variable.
+ * Get the contents of an resources or environment variable.
  *
  * @param s The environment variable name.
  */
@@ -372,24 +380,35 @@ char prefixed_string[256];
 char *ptr;
 
 
+
+  /* First try in environmet, with a prefix */
   sprintf(prefixed_string,"A4GL_%s",s);
+//  debug("Try %s in environment\n",prefixed_string);
   ptr = getenv (prefixed_string);
 
-  if (ptr==0) 
-  	ptr = (char *)getenv (s);
 
-  if (ptr == 0 ) {
-    	ptr = find_str_resource (s);
+  if ( ptr == 0 ) {
+  	/* Not there, try again in environment, but without the prefix */
+//	debug("Try %s in environment\n",s);
+	ptr = (char *)getenv (s);
   }
 
-  if (strcmp (s, "DBDATE") == 0)
-  {
+  if ( ptr == 0 ) {
+    /* Not there, try in resources */
+//	debug("%s NOT in environment - trying resources...\n",s);
+		ptr = find_str_resource (s);
+  }
+
+  if (strcmp (s, "DBDATE") == 0) {
     chk_dbdate (ptr);
   }
 
-  if (ptr==0) return "";
-
-  return ptr;
+  if (ptr==0)
+  {
+  	return "";
+  } else {
+	return ptr;
+  }
 }
 
 /**
@@ -575,9 +594,9 @@ get_login (void)
 struct str_resource *
 build_user_resources(void)
 {
-	char buff[512];
-	int a;
-	FILE *resourcefile=0;
+char buff[512];
+int a;
+FILE *resourcefile=0;
 
 	debug("Loading resources");
 

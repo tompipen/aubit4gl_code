@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.5 2002-10-13 11:44:40 afalout Exp $
+# $Id: gtk_4gl.c,v 1.6 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -56,6 +56,11 @@
                     Variables definitions
 =====================================================================
 */
+
+#ifdef __MINGW32__
+	typedef void *pthread_t;
+#endif
+
 
 GtkWidget *tooltips = 0;        /** Tooltip widget */
 int window_frame_type = 0;
@@ -987,7 +992,7 @@ sleep_i (void)
     {
       for (b = 0; b <= 9; b++)
 	{
-	  usleep (100000);
+	  a4gl_usleep (100000);
 	  gui_run_til_no_more ();
 	}
     }

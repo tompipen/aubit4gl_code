@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.16 2002-10-20 12:02:37 afalout Exp $
+# $Id: gui.c,v 1.17 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -183,7 +183,7 @@ proc_it (char *buff)
 }
 
 /**
- * Start the user interface.
+ * Start the user interface. LOOKS OBSOLETE
  *
  * If the environment variable GUIPORT is set, act as a server in the port
  * defined.
@@ -193,8 +193,10 @@ proc_it (char *buff)
 void
 start_gui (void)
 {
-  char *p;
-  int port = -1;
+#ifdef __OBSOLETE_CODE__
+char *p;
+int port = -1;
+
 
   debug ("Start gui...");
   p = acl_getenv ("GUIPORT");
@@ -210,6 +212,8 @@ start_gui (void)
       use_gui = -1;
       return;
     }
+
+
   port = atoport (p, "tcp");
 
   debug ("GUI PORT %d %s", port, p);
@@ -226,6 +230,8 @@ start_gui (void)
     use_gui = 1;
   else
     connected = 0;
+#endif
+
 }
 
 /**
@@ -277,13 +283,14 @@ gui_close (void)
 
 /**
  * Gets a port from where to act as a server using TCP.
- *
+ *  OBSOLETE
  * Tries to check by name in /etc/services and then return it as a number
  * (if valid).
  *
  * @param service The service name to found in /etc/services.
  * @param proto Protocol (normaly TCP).
  */
+/*
 int
 atoport (char *service,char *proto)
 {
@@ -292,19 +299,21 @@ atoport (char *service,char *proto)
   struct servent *serv;
   char *errpos;
 
-  /* First try to read it from /etc/services */
+  // First try to read it from /etc/services
   serv = getservbyname (service, proto);
   if (serv != NULL)
     port = serv->s_port;
   else
-    {				/* Not in services, maybe a number? */
+    {				// Not in services, maybe a number?
       lport = strtol (service, &errpos, 0);
       if ((errpos[0] != 0) || (lport < 1) || (lport > 65535))
-	return -1;		/* Invalid port address */
+	return -1;		// Invalid port address
       port = htons (lport);
     }
   return port;
 }
+*/
+
 
 /**
  * Converts ascii text to in_addr struct.
@@ -356,22 +365,24 @@ atoaddr (char *address)
  * is provided so that you can write a signal handler to close
  * it in the event of program termination.  If you aren't interested,
  * just pass NULL.  Note that all modern unixes will close file
- * descriptors for you on exit, so this is not required. 
+ * descriptors for you on exit, so this is not required.
  *
  * @return The socket ???
- *   - -1 : 
+ *   - -1 :
  *   - otherwise :
  */
 int
 get_connection (int socket_type,u_short port,int *listener)
 {
+#ifdef __OBSOLETE_CODE__
+
   struct sockaddr_in address;
   int listening_socket;
   int connected_socket = -1;
   int new_process;
   int reuse_addr = 1;
 
-  /* Setup internet address information.  
+  /* Setup internet address information.
      This is used with the bind() call */
   memset ((char *) &address, 0, sizeof (address));
   address.sin_family = AF_INET;
@@ -401,7 +412,7 @@ get_connection (int socket_type,u_short port,int *listener)
 
   if (socket_type == SOCK_STREAM)
     {
-      listen (listening_socket, 5);	
+      listen (listening_socket, 5);
 	  /* Queue up to five connections before
 		 having them automatically rejected. */
 
@@ -455,6 +466,10 @@ get_connection (int socket_type,u_short port,int *listener)
     }
   else
     return listening_socket;
+#endif
+
+return 0;
+
 }
 
 /**
@@ -599,13 +614,18 @@ sock_write (int sockfd, char *buf, size_t count)
 int
 sock_gets (int sockfd, char *str, size_t count)
 {
-  int bytes_read;
-  int total_count = 0;
-  char *current_position;
-  char last_read = 0;
-  fd_set rfds;
-  /* struct timeval tv; */
-  int retval;
+
+#ifdef __OBSOLETE_CODE__
+
+int bytes_read;
+int total_count = 0;
+char *current_position;
+char last_read = 0;
+fd_set rfds;
+/* struct timeval tv; */
+int retval;
+
+
   debug ("Waiting for a string...");
   current_position = str;
 
@@ -658,6 +678,11 @@ sock_gets (int sockfd, char *str, size_t count)
     current_position[0] = 0;
   debug ("Got %s\n", str);
   return total_count;
+
+#endif
+
+return 0;
+
 }
 
 /**
@@ -854,6 +879,7 @@ proc_format (char *s, int a)
 void
 init_wsock (void)
 {
+#ifdef __OBSOLETE_CODE__
 #ifdef USE_WINSOCK
   WSADATA wsaData;
   static int started = 0;
@@ -870,6 +896,7 @@ init_wsock (void)
 	}
     }
   started = 1;
+#endif
 #endif
 }
 

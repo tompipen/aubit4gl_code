@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.3 2002-10-13 11:44:40 afalout Exp $
+# $Id: menu.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -181,7 +181,7 @@ menu_loop (void *m)
 
   while (1)
   {
-    usleep (100);
+    a4gl_usleep (100);
     gui_run_til_no_more();
 
     a = (int)gtk_object_get_data (GTK_OBJECT (m), "selected");

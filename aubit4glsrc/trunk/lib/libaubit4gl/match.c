@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.6 2002-06-25 03:22:30 afalout Exp $
+# $Id: match.c,v 1.7 2002-10-22 06:43:36 afalout Exp $
 #*/
 
 /**
@@ -106,11 +106,6 @@ BOOLEAN 	is_pattern 				(char *pattern);
 BOOLEAN 	is_valid_pattern 		(char *pattern, int *error_type);
 int 		matche_after_star 		(register char *pattern, register char *text);
 int 		fast_match_after_star 	(register char *pattern, register char *text);
-
-#ifdef OLD_INCL
- int 		matche 					(register char *p, register char *t);
- int 		aubit_strcasecmp 		(char *a, char *b);
-#endif
 
 BOOLEAN 	match					(char *p, char *t);
 

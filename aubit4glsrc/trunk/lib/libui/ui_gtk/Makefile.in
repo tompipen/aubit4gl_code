@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-10-20 12:02:38 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-22 06:43:37 afalout Exp $
 #
 
 LIBROOT=../..
@@ -41,13 +41,33 @@ include ${ROOT}/incl/Makefile-common
 4GLPC=${SH} ${ROOT}/bin/4glpc
 
 GLIB_CFLAGS		=@GLIB_CFLAGS@
-GTKLIBS			=$(subst -rdynamic,,@GTKLIBS@)
+GTK_INC_PATH	=@GTK_INC_PATH@
+GTK_LIB_PATH	=@GTK_LIB_PATH@
+GTKLIBS			=@GTKLIBS@
+
+ifeq "${WIN_PATH}" "1"
+	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
+    #app (like MingGW) don't know anythign about links! So for now we will add path to
+    #there.   -ID:/cygwin/usr/lib/glib-2.0/include
+    ADD_ME=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
+
+	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
+	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
+	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+endif
+
+GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 
 #Need to find better sollution for this:
 GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
-CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@
+CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
+GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
+
+ifeq "${WIN_PATH}" "1"
+	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib
+endif
 
 ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
 
@@ -105,7 +125,7 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
-	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${LINKLIBS} ${GTKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${GTK_LIB_PATH} ${LINKLIBS} ${GTKLIBS}
 #Need dll.a to link with libMENU_XDR - DO NOT REMOVE!
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a
@@ -143,11 +163,8 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 
 set:
 	@echo CFLAGS: ${CFLAGS}
-#still contains /target
-	@echo GTK_LIB_PATH: @GTK_LIB_PATH@
+	@echo GTK_LIB_PATH: ${GTK_LIB_PATH}
 	@echo LINKLIBS: ${LINKLIBS}
-#Wrong: -lpango
-	@echo GTKLIBS: @GTKLIBS@
 	@echo GTKLIBS: ${GTKLIBS}
 
 #Output:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.24 2002-10-20 12:02:37 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.25 2002-10-22 06:43:36 afalout Exp $
 #
 */
 
@@ -76,23 +76,37 @@
 			#define FALSE 0
 		#endif
 
-		/*
-		DLL building support on win32 hosts;  mostly to workaround their
-		ridiculous implementation of data symbol exporting. See exaple in libltdl/
-		*/
+        #define __NEED_DLL_IMPORT__
 
-		#define dll_export __declspec(dllexport)
-		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
-	#else
-		#define dll_export
-		#define dll_import extern
 	#endif
 
     /* if WIN32 is still defined, that means that __CYGWIN__was not defined */
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
+	#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
 		#define __NATIVE_WINDOWS__
 
-		strncasecmp(char *a,char *b,int c);
+		int strncasecmp(char *a,char *b,int c);
+    #endif
+
+	#if defined(__MINGW32__)
+   		#undef WIN32
+
+   		//#define assert("inside __MINGW32__" == 0)
+
+		#if defined(WIN32)
+		//#if (defined(WIN32) && ! defined(__CYGWIN__))
+	   		#define assert("inside W32 defined" == 0)
+        #endif
+
+		/* missing from rpcgen generated form_x.h on CygWin: */
+		#define bool_t int
+
+        #define __NEED_DLL_IMPORT__
+
+		/*
+		#define __WIN32__ 1
+		#define __GNUC__ 3
+		#define __VERSION__ "3.2 (mingw special 20020817-1)"
+        */
     #endif
 
 	#if (defined(__MACH__) && defined(__APPLE__))
@@ -105,6 +119,21 @@
 		#define	enum_t	int
 
     #endif
+
+		/*
+		DLL building support on win32 hosts;  mostly to workaround their
+		ridiculous implementation of data symbol exporting. See exaple in libltdl/
+		*/
+
+    #ifdef __NEED_DLL_IMPORT__
+		#define dll_export __declspec(dllexport)
+		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
+	#else
+		#define dll_export
+		#define dll_import extern
+	#endif
+
+
 
     /* ======================= from a4gl_constats.h ================== */
 
@@ -403,10 +432,35 @@
 		#include "a4gl_incl_config.h"
 	#endif
 
+	#if defined(WIN32) || defined (__MINGW32__)
+		
+		/*
+		#undef SHORT
+		#undef LONG
+   		#undef BOOL
+		#undef DOUBLE
+		#undef CONST
+		#undef INT
+        */
+
+		#ifndef _NO_WINDOWS_H_
+			#include <windows.h>
+			#define __UCHAR_DEFINED__
+		#endif
+
+	#else
+		#include <pwd.h>    			/* getpwduid() */
+		#include <sys/socket.h>
+		#include <netinet/in.h>
+		#include <netdb.h>
+	#endif
+
 	#include <stdarg.h>  			/* va_start() */
    	#include <ctype.h> 				/* tolower() toupper() */
 	#include <stdio.h> 				/* needed for FILE symbol */
-	#include <string.h>
+	#ifndef WIN32
+		#include <string.h>
+    #endif
 	#include <stdlib.h> 			/* free() */
 
 	#if HAVE_SEARCH_H
@@ -438,10 +492,11 @@
 	#include <assert.h>             /* assert() */
 	#include <time.h>
 	#include <math.h> 				/* pow() */
-	#include <pwd.h>    			/* getpwduid() */
 	#include <locale.h>             /* setlocale() */
 	#include <unistd.h> 			/* sleep() close() write() */
 	#include <signal.h>             /* SIGINT */
+
+	
 	/*
     skipposixheaders flag:
 	to force LCLint to process <sys/types.h>, since form_x.h will include
@@ -458,15 +513,6 @@
 		#include "dmalloc.h"
 	#endif
     */
-
-	#ifdef WIN32
-		#include <windows.h>
-	#else
-		#include <sys/socket.h>
-		#include <netinet/in.h>
-		#include <netdb.h>
-	#endif
-
 
 	/*
 	   This will prevent ussage of getenv and wgetenv functions:
@@ -543,6 +589,12 @@
                     Variables definitions
 =====================================================================
 */
+
+	#ifndef TRUE
+		#define TRUE 1
+	#endif
+
+
 
 	/* ========================= from a4gl_ui.h ====================== */
 
@@ -1211,7 +1263,9 @@
 
 
 	int 	atoport 			(char *service,char *proto);
+#ifndef __MINGW32__
 	int 	get_connection 		(int socket_type,u_short port,int *listener);
+#endif
 	int 	sock_read 			(int sockfd, char *buf, size_t count);
 	int 	sock_write 			(int sockfd, char *buf, size_t count);
 	int 	sock_gets 			(int sockfd, char *str, size_t count);

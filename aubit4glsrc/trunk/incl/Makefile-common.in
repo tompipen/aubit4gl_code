@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.92 2002-10-19 06:26:30 afalout Exp $
+# $Id: Makefile-common.in,v 1.93 2002-10-22 06:43:36 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -170,8 +170,6 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
 endif
 
-PATH:=${AUBITDIR}/bin:${PATH}
-
 ## ==================================================================
 ##                   Global Makefile variables
 ## ==================================================================
@@ -179,6 +177,20 @@ PATH:=${AUBITDIR}/bin:${PATH}
 #ifeq "${TARGET_OS}" "cygwin"
 	GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
 #endif
+
+GCC_MINGW=@GCC_MINGW@
+
+ifeq "${GCC_MINGW}" "yes"
+    WIN_PATH	=1
+	WIN_CYGPATH	=D:/cygwin
+    AUBITDIR	:=${WIN_CYGPATH}${AUBITDIR}
+	#this would incalidate all LINK_LIBS+=-laubit4gl that we need:
+	#TARGET_OS	=mingw
+endif
+
+
+PATH:=${AUBITDIR}/bin:${PATH}
+
 
 CONFIGURE_COMMAND=@CONFIGURE_COMMAND@
 
@@ -330,7 +342,15 @@ else
 	CWARN			=
 endif
 
-C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
+ifeq "${WIN_PATH}" "1"
+	#"-ID:/cygwin/usr/include"
+	#C_IFLAGS            =-I${WIN_CYGPATH}/usr/local/include -I$(AUBITDIR)/incl -I${WIN_CYGPATH}/usr/include
+	C_IFLAGS            =-I$(AUBITDIR)/incl
+else
+	C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
+endif
+
+
 ifeq "${TARGET_OS}" "darwin"
 	C_IFLAGS 			+=-I$(AUBITDIR)/tools
 endif
@@ -431,7 +451,7 @@ SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 ##                    Platform dependent Settings
 ## ==================================================================
 
-ifdef COMSPEC #############Windows platform - CygWin related:################
+ifdef COMSPEC #############Windows platform - CygWin/MinGW related:################
 
 	#dll on Windows are loaded by standard Windows loader, that don't
 	#understand CygWin symbolic links:
@@ -444,7 +464,18 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     LDDCMD          =cygcheck
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
 
-	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
+#    ifeq "${WIN_PATH}" "1"
+		#WIN_CYGPATH	=D:/cygwin
+		#PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
+#	else
+		PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
+#    endif
+
+#PATH = D:/cygwin/usr/src/aubit/aubit4glsrc/lib:
+#/usr/src/aubit/aubit4glsrc/bin:
+
+
+
 	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
     #error with GCC 3.2 on CygWin
 	ifneq "${GCC_VER}" "3.2"
@@ -452,7 +483,8 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     else
 		CFLAGS		+=-mms-bitfields
 	endif
-	CFLAGS		+=-DWIN32
+	#GCC sets this allready
+	#CFLAGS		+=-DWIN32
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
 	#SO_LDFLAGS	=${RDYNAMIC} ${PIC}
@@ -694,6 +726,8 @@ export LD_LIBRARY_PATH
 #AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not
 #in Aubit compiler source code tree; it is added to this file by "make install"
 export AUBIT_BIN_INSTALL
+#Must be exported on MinGW, but don't seem to be working (put it in profile):
+export PATH
 
 ## ==================================================================
 ##                      Moved from aubitrc:

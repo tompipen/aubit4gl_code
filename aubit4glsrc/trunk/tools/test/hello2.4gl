@@ -35,7 +35,9 @@ no spaces, tabs or anything else
 		== ^code$
 same applies for endcode
 */
-	 	usleep(250000); 
+	 	//usleep not available on MinGW/Windows:
+		//usleep(250000);
+        sleep(250000);
 endcode
 
 	end while

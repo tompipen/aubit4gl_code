@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.13 2002-09-23 10:24:00 afalout Exp $
+# $Id: data.c,v 1.14 2002-10-22 06:43:36 afalout Exp $
 #*/
 
 /**
@@ -148,7 +148,7 @@ find_variable (char *name)
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       ptr = &this_report.variables.variables_val[a];
-      if (strcasecmp (ptr->name, name) == 0)
+      if (aubit_strcasecmp (ptr->name, name) == 0)
 	{
 	  return a;
 	}

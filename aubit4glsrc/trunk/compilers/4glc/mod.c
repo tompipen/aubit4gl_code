@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.86 2002-10-13 01:40:33 afalout Exp $
+# $Id: mod.c,v 1.87 2002-10-22 06:43:35 afalout Exp $
 #
 */
 
@@ -2142,7 +2142,7 @@ is_pk (char *s)
   for (cnt = 1; cnt <= a; cnt++)
   {
     linked_split (pklist, cnt, buff);
-    if (strcasecmp (s, buff) == 0)
+    if (aubit_strcasecmp (s, buff) == 0)
     {
       debug ("Yes");
       return 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.5 2002-10-13 11:44:39 afalout Exp $
+# $Id: formwrite2.c,v 1.6 2002-10-22 06:43:37 afalout Exp $
 #*/
 
 /**
@@ -61,11 +61,13 @@ char buff_xdr[30000];
 extern char *outputfilename;
 
 
-#ifdef __CYGWIN__
+//#ifdef __CYGWIN__
 	dll_import struct struct_form the_form;
+/*
 #else
 	extern struct struct_form the_form;
 #endif
+*/
 extern struct struct_scr_field *fld;
 
 
