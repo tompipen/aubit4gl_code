@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.112 2005-03-09 15:15:12 mikeaubury Exp $
+# $Id: sql.c,v 1.113 2005-03-10 11:48:16 mikeaubury Exp $
 #
 */
 
@@ -98,7 +98,7 @@ int A4GL_dttoc (void *a, void *b, int size);
 
 void *A4GLSQL_prepare_sql_internal (char *s);
 //void * A4GLSQL_find_prepare (char *pname);
-int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
+//int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
@@ -244,6 +244,9 @@ char buffer[256];
 HENV henv = 0;
 HDBC hdbc = 0;					/** The database connection handle */
 SDWORD outlen[512];
+
+SQLINTEGER nullval=SQL_NULL_DATA;
+
 
 struct cursors
 {
@@ -539,10 +542,7 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
       chk_rc (rc, hstmt, "SQLBindParameter");
       return rc;
     }
-
-  rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
-			 fCType, fSqlType, cbColDef, ibScale, rgbValue,
-			 256, pcbValue); // 3200
+  rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT, fCType, fSqlType, cbColDef, ibScale, rgbValue, 256, pcbValue); // 3200
 
   chk_rc (rc, hstmt, "SQLBindParameter");
 
@@ -2392,7 +2392,7 @@ make[2]: *** [sql.o] Error 1
 */
   SDWORD xerrno = 0;
   SWORD xerrno2 = 0;
-  SDWORD rowcount;
+  SDWORD rowcount=0;
   RETCODE rc;
   memset (s1, 0, 80);
   memset (s2, 0, 255);
@@ -2492,7 +2492,6 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   //}
   
   set_conv_4gl_to_c();
-  A4GL_debug ("SQLBindCol(hstmt=%p, pos=%d,\n     bind->dtype=%d conv_4gl_to_c[bind->dtype]=%d, bind->ptr=%p,\n     fgl_size(bind->dtype,bind->size)=%d, SQL_NULL_DATA);", hstmt, pos, bind->dtype, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), SQL_NULL_DATA);
 
   A4GL_debug ("SQLBindCol");
 #endif
@@ -2512,10 +2511,10 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     {
       return;
     }
+  outlen[pos]=0;
+  A4GL_debug("SQLBindCol (%p,%d,%d,%p,%d,%p)",(SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), &outlen[pos]);
+  rc = SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
-  rc =
-    SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr,
-		fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
   chk_rc (rc, hstmt, "SQLBindCol");
 #ifdef DEBUG
@@ -2537,16 +2536,17 @@ void
 A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 {
   int size;
+  int isnull;
   /* DATE_STRUCT *tmp; */
   /*review */
-
   int k = 0;
+
+  isnull=A4GL_isnull(bind->dtype,bind->ptr);
+
   A4GL_debug ("ibind_column %d", bind->dtype, DTYPE_DECIMAL);
   if (bind->dtype == DTYPE_DATE && A4GL_isyes (acl_getenv ("BINDDATEASINT")))
     {
-      rc =
-	A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, SQL_INTEGER, SQL_INTEGER,
-			     0, 0, bind->ptr, NULL);
+      	rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, SQL_INTEGER, SQL_INTEGER, 0, 0, bind->ptr, isnull?&nullval:NULL);
       return;
     }
 
@@ -2575,7 +2575,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 	      conv_4gl_to_c[bind->dtype], size, k, bind->ptr);
 #endif
 
-  if (bind->dtype == DTYPE_DATE)
+  if (bind->dtype == DTYPE_DATE )
     {
       ACLDATE *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - 
 				// NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
@@ -2586,8 +2586,8 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       p = (ACLDATE *) A4GL_bind_date ((long *) ptr);
       A4GL_get_date (*(int *) ptr, &d, &m, &y);
 
+      ensure_as_char();
 
-	ensure_as_char();
       if (date_as_char)
 	{
 	  sprintf (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
@@ -2667,10 +2667,7 @@ ensure_as_char();
   A4GL_debug ("DTYPE %d DTYPE %d SIZE %d", conv_4gl_to_c[bind->dtype],
 	      conv_4gl_to_c[bind->dtype], size);
 
-  rc =
-    A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype],
-			 conv_4gl_to_c[bind->dtype], size, k, bind->ptr,
-			 NULL);
+  rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, isnull?&nullval:NULL);
 
   A4GL_debug ("Called newSQLSetParam = %d", rc);
   /* chk_rc (rc, hstmt, "SQLSetParam"); */
@@ -3605,8 +3602,7 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
   size = strlen (s);
 
   set_conv_4gl_to_c();
-  A4GL_newSQLSetParam (hstmt, pos,
-		       conv_4gl_to_c[0], conv_4gl_to_c[0], size, 0, s, NULL);
+  A4GL_newSQLSetParam (hstmt, pos, conv_4gl_to_c[0], conv_4gl_to_c[0], size, 0, s, NULL);
 }
 
 /**
@@ -3927,6 +3923,7 @@ if (date_as_char) {
   ptr->uDate.date_ds.month = -1;
   ptr->uDate.date_ds.day = -1;
 }
+
   return (void *) ptr;
 }
 
@@ -3995,7 +3992,6 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	}
 
 
-      //printf("outlen=%ld\n",outlen[bind_counter + 1]);
 
       if (outlen[bind_counter + 1] == -1)
 	{
@@ -4029,65 +4025,76 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 
 	  date1 = use_binding[bind_counter].ptr;
 
-ensure_as_char();
-if (date_as_char) {
-	  {
-	    int y, d, m;
-	    int nscanned;
-	    y = -1;
-	    d = -1;
-	    m = -1;
-	    A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c,
-			strlen (date1->uDate.date_c));
-
-	    if (strlen (date1->uDate.date_c))
+	  ensure_as_char ();
+	  if (date_as_char)
+	    {
 	      {
-		nscanned =
-		  sscanf (date1->uDate.date_c, "%d-%d-%d", &y, &m, &d);
-		if (nscanned == 3)
+		int y, d, m;
+		int nscanned;
+		y = -1;
+		d = -1;
+		m = -1;
+		A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c,
+			    strlen (date1->uDate.date_c));
+
+		if (strlen (date1->uDate.date_c))
 		  {
-		    A4GL_debug ("Calling gen_dateno");
-		    zz = A4GL_gen_dateno (d, m, y);
-		    //*((long *) date1->ptr) = zz;
-	  		*(long *) use_binding[bind_counter].ptr = zz;
-		    continue;
+		    nscanned =
+		      sscanf (date1->uDate.date_c, "%d-%d-%d", &y, &m, &d);
+		    if (nscanned == 3)
+		      {
+			A4GL_debug ("Calling gen_dateno");
+			zz = A4GL_gen_dateno (d, m, y);
+			*(long *) date1->ptr = zz;
+			continue;
+		      }
+		    else
+		      {
+			A4GL_push_char (date1->uDate.date_c);
+			zz = A4GL_pop_date ();
+
+
+			*(long *) date1->ptr = zz;
+
+
+
+
+			continue;
+		      }
 		  }
 		else
 		  {
-		    A4GL_push_char (date1->uDate.date_c);
-		    zz = A4GL_pop_date ();
-		    //*((long *) date1->ptr) = zz;
-	  		*(long *) use_binding[bind_counter].ptr = zz;
+		    A4GL_debug ("Looks null");
+		    A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
+		    A4GL_debug ("Looks null");
 		    continue;
 		  }
 	      }
-	    else
-	      {
-		A4GL_debug ("Looks null");
-		A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
-		A4GL_debug ("Looks null");
-		continue;
-	      }
-	  }
-} else {
-	  A4GL_assertion (date1->uDate.date_ds.month < 1
-			  || date1->uDate.date_ds.month > 12,
-			  "Invalid month retrieved from db");
-	  A4GL_assertion (date1->uDate.date_ds.day < 1
-			  || date1->uDate.date_ds.day > 31,
-			  "Invalid day retrieved from db");
+	    }
+	  else
+	    {
+	      A4GL_assertion (date1->uDate.date_ds.month < 1
+			      || date1->uDate.date_ds.month > 12,
+			      "Invalid month retrieved from db");
+	      A4GL_assertion (date1->uDate.date_ds.day < 1
+			      || date1->uDate.date_ds.day > 31,
+			      "Invalid day retrieved from db");
 #ifdef DEBUG
-	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->uDate.date_ds.year,
-		      date1->uDate.date_ds.month, date1->uDate.date_ds.day);
+	      A4GL_debug ("Year=%d Month=%d Day=%d",
+			  date1->uDate.date_ds.year,
+			  date1->uDate.date_ds.month,
+			  date1->uDate.date_ds.day);
 #endif
 
-	  A4GL_debug ("Calling gen_dateno");
-	  zz =
-	    A4GL_gen_dateno (date1->uDate.date_ds.day,
-			     date1->uDate.date_ds.month,
-			     date1->uDate.date_ds.year);
-}
-	  *(long *) use_binding[bind_counter].ptr = zz;
+	      A4GL_debug ("Calling gen_dateno");
+	      zz =
+		A4GL_gen_dateno (date1->uDate.date_ds.day,
+				 date1->uDate.date_ds.month,
+				 date1->uDate.date_ds.year);
+			*(long *) date1->ptr = zz;
+	    }
+	
+	  //*(long *) use_binding[bind_counter].ptr = zz;
 	  continue;
 
 	}
@@ -4098,89 +4105,93 @@ if (date_as_char) {
 
 	  char buff[256];
 	  dt1 = use_binding[bind_counter].ptr;
-ensure_as_char();
-	if (dtime_as_char) {
-	  strcpy (buff, dt1->dtime_u.dtime_c);
-} else {
-	  char buff2[256];
-	  int s;int e;
-	  strcpy (buff, "");
-	  s = use_binding[bind_counter].size >> 4;
-	  e = use_binding[bind_counter].size & 0xf;
-
-	  if (s > 1)
-	    dt1->dtime_u.dtime_t.year = 0;
-	  if (s > 2)
-	    dt1->dtime_u.dtime_t.month = 0;
-	  if (s > 3)
-	    dt1->dtime_u.dtime_t.day = 0;
-	  if (s > 4)
-	    dt1->dtime_u.dtime_t.hour = 0;
-	  if (s > 5)
-	    dt1->dtime_u.dtime_t.minute = 0;
-	  if (s > 6)
-	    dt1->dtime_u.dtime_t.second = 0;
-
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.year)
+	  ensure_as_char ();
+	  if (dtime_as_char)
 	    {
-	      sprintf (buff2, "%04d", dt1->dtime_u.dtime_t.year);
-	      strcat (buff, buff2);
+	      strcpy (buff, dt1->dtime_u.dtime_c);
 	    }
-
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.month)
+	  else
 	    {
-	      if (e >= 2)
+	      char buff2[256];
+	      int s;
+	      int e;
+	      strcpy (buff, "");
+	      s = use_binding[bind_counter].size >> 4;
+	      e = use_binding[bind_counter].size & 0xf;
+
+	      if (s > 1)
+		dt1->dtime_u.dtime_t.year = 0;
+	      if (s > 2)
+		dt1->dtime_u.dtime_t.month = 0;
+	      if (s > 3)
+		dt1->dtime_u.dtime_t.day = 0;
+	      if (s > 4)
+		dt1->dtime_u.dtime_t.hour = 0;
+	      if (s > 5)
+		dt1->dtime_u.dtime_t.minute = 0;
+	      if (s > 6)
+		dt1->dtime_u.dtime_t.second = 0;
+
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.year)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.month);
-		  if (strlen (buff))
-		    strcat (buff, "-");
+		  sprintf (buff2, "%04d", dt1->dtime_u.dtime_t.year);
 		  strcat (buff, buff2);
 		}
-	    }
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.day)
-	    {
-	      if (e >= 3)
+
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.month)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.day);
-		  if (strlen (buff))
-		    strcat (buff, "-");
-		  strcat (buff, buff2);
+		  if (e >= 2)
+		    {
+		      sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.month);
+		      if (strlen (buff))
+			strcat (buff, "-");
+		      strcat (buff, buff2);
+		    }
 		}
-	    }
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.hour)
-	    {
-	      if (e >= 4)
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.day)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.hour);
-		  if (strlen (buff))
-		    strcat (buff, " ");
-		  strcat (buff, buff2);
+		  if (e >= 3)
+		    {
+		      sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.day);
+		      if (strlen (buff))
+			strcat (buff, "-");
+		      strcat (buff, buff2);
+		    }
 		}
-	    }
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.hour)
+		{
+		  if (e >= 4)
+		    {
+		      sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.hour);
+		      if (strlen (buff))
+			strcat (buff, " ");
+		      strcat (buff, buff2);
+		    }
+		}
 
 
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.minute)
-	    {
-	      if (e >= 5)
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.minute)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.minute);
-		  if (strlen (buff))
-		    strcat (buff, ":");
-		  strcat (buff, buff2);
+		  if (e >= 5)
+		    {
+		      sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.minute);
+		      if (strlen (buff))
+			strcat (buff, ":");
+		      strcat (buff, buff2);
+		    }
 		}
-	    }
-	  if (strlen (buff) || dt1->dtime_u.dtime_t.second)
-	    {
-	      if (e >= 6)
+	      if (strlen (buff) || dt1->dtime_u.dtime_t.second)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.second);
-		  if (strlen (buff))
-		    strcat (buff, ":");
-		  strcat (buff, buff2);
+		  if (e >= 6)
+		    {
+		      sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.second);
+		      if (strlen (buff))
+			strcat (buff, ":");
+		      strcat (buff, buff2);
+		    }
 		}
-	    }
 
-}
+	    }
 	  A4GL_push_char (buff);
 	  A4GL_setnull (DTYPE_DTIME, dt1->ptr,
 			use_binding[bind_counter].size);
@@ -4206,8 +4217,11 @@ ensure_as_char();
 
     }
 
+
+
+
 #ifdef DEBUG
-  {
+  if (0) {
     char buffstr[30000] = "Fetch returns :\n";
     char bf[2048];
     int a;
@@ -4240,27 +4254,33 @@ ensure_as_char();
 	  {
 	    if ((dtype & 15) == DTYPE_DTIME || (dtype & 15) == DTYPE_DATE)
 	      {
-	    		if ((dtype & 15) == DTYPE_DATE) {
-				 ACLDATE *date1;
-				ensure_as_char();
-      				date1 = use_binding[a].ptr;
-				if (date_as_char) {
-					A4GL_push_char (date1->uDate.date_c);
-				} else {
-					int xd;
-					int xm;
-					int xy;
-					char buff[40];
-	  				xy=date1->uDate.date_ds.year ;
-	  				xm=date1->uDate.date_ds.month ;
-	  				xd=date1->uDate.date_ds.day ;
-					sprintf(buff,"%d-%d-%d",xy,xm,xd);
-					A4GL_push_char (buff);
-				}
-			} else {
+		if ((dtype & 15) == DTYPE_DATE)
+		  {
+		    ACLDATE *date1;
+		    ensure_as_char ();
+		    date1 = use_binding[a].ptr;
+		    if (date_as_char)
+		      {
+			A4GL_push_char (date1->uDate.date_c);
+		      }
+		    else
+		      {
+			int xd;
+			int xm;
+			int xy;
+			char buff[40];
+			xy = date1->uDate.date_ds.year;
+			xm = date1->uDate.date_ds.month;
+			xd = date1->uDate.date_ds.day;
+			sprintf (buff, "%d-%d-%d", xy, xm, xd);
+			A4GL_push_char (buff);
+		      }
+		  }
+		else
+		  {
 
-				A4GL_push_char ("<datetime>");
-			}
+		    A4GL_push_char ("<datetime>");
+		  }
 	      }
 	    else
 	      {
@@ -4283,7 +4303,6 @@ ensure_as_char();
 
 
 }
-
 /**
  * Implementationin ODBC of the transaction statements (BEGIN WORK,
  * COMMIT WORK, ROLLBACK WORK).
@@ -4474,7 +4493,7 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,
 	  A4GL_debug ("Cycling through data %d (%d) ind=%d", colcnt, rc, ind);
 #endif
 
-	  if (ind == 0)
+	  if (ind == -1 )
 	    {
 #ifdef DEBUG
 	      A4GL_debug ("Null...");
