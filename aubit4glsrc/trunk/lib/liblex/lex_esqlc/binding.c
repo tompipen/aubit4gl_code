@@ -18,6 +18,13 @@ char buff_in[10000];
 char buff_out[10000];
 
 
+void print_conversions (char i);
+void make_sql_bind (char *sql, char *type);
+void print_sql_type(int a,char ioro) ;
+void print_sql_type_infx(int a,char ioro) ;
+void printc(char* fmt,... );
+
+
 
 void
 print_conversions (char i)
@@ -89,13 +96,13 @@ make_sql_bind (char *sql, char *type)
 
 
 
-print_sql_type(int a,char ioro) {
+void print_sql_type(int a,char ioro) {
 	// Need to do some check to determine which ESQL/C to use...
 	print_sql_type_infx(a,ioro);
 }
 
 
-print_sql_type_infx(int a,char ioro) {
+void print_sql_type_infx(int a,char ioro) {
 
 	if (ioro=='i') {
 		switch (ibind[a].dtype&0xffff) {

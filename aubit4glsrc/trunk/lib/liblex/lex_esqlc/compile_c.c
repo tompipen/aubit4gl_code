@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.6 2003-02-11 10:44:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.7 2003-02-16 11:29:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -134,6 +134,8 @@ dll_import struct   binding_comp fbind[NUMBINDINGS];
 dll_import struct   binding_comp ordbind[NUMBINDINGS];
 dll_import struct   s_constr_buff constr_buff[256];
 dll_import char     when_to[64][8];
+int doing_esql(void) ;
+void make_sql_bind (char *sql, char *type);
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.28 2003-02-13 08:57:06 afalout Exp $
+# $Id: API_sql.c,v 1.29 2003-02-16 11:34:41 mikeaubury Exp $
 #
 */
 
@@ -143,6 +143,7 @@ void		apisql_drop_sess	( char *sessname );
 char *		apisql_dflt_dialect	( void );
 void		apisql_must_convert	( void );
 extern int 	nullfunc		(void);
+int A4GLSQL_loadConnector(char *name);
 
 /*
 =====================================================================
