@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.70 2003-10-12 12:04:39 mikeaubury Exp $
+# $Id: sql.c,v 1.71 2003-12-05 22:12:35 mikeaubury Exp $
 #
 */
 
@@ -236,7 +236,11 @@ int conv_4gl_to_c[] = {
   SQL_C_DATE,
   SQL_C_DOUBLE,			/* as for decimal money != double */
   9999,
-  SQL_C_TIMESTAMP,
+#ifdef SQL_C_DATETIME
+  SQL_C_DATETIME,     // Was timestamp
+#else
+  SQL_C_TIMESTAMP,     // Was timestamp
+#endif
   SQL_C_BINARY,
   SQL_C_BINARY,
   SQL_C_CHAR,

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.79 2003-11-26 08:35:46 mikeaubury Exp $
+# $Id: ioform.c,v 1.80 2003-12-05 22:12:36 mikeaubury Exp $
 #*/
 
 /**
@@ -887,6 +887,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
   char buff2[8000] = "";
   char buff3[8000] = "";
   FORM *mform;
+  int pprval;
   int x, y;
   //int flg = 0;
   struct s_form_dets *form;
@@ -1048,17 +1049,53 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		      }
 
 
+		A4GL_debug("Pushing to validate : %s\n",buff2);
+
 		    A4GL_push_param (buff2, DTYPE_CHAR);
 
-		    if (!A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield)))
+		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
+		    if (pprval) {
+				A4GL_debug("Looks like pprval is ok ... ");
+
+
+				if (A4GL_isnull(fprop->datatype,buff)) {
+					A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
+					if (strlen(buff2)) {
+						pprval=0;
+					}
+				}
+
+
+		    		//if ((fprop->datatype==DTYPE_DATE|| (fprop->datatype&0x15)==DTYPE_DECIMAL||(fprop->datatype&0x15)==DTYPE_MONEY||(fprop->datatype&0x15)==DTYPE_DTIME ) && A4GL_isnull(fprop->datatype,buff)) {
+						//A4GL_debug("Looks like a null conversion..");
+						//pprval=0;
+		    		//}
+
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
+						A4GL_debug("Looks like a decimal in a numeric field");
+						pprval=0;
+		    		}
+			}
+
+		    A4GL_debug("pprval = %d\n",pprval);
+		    if (!pprval)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-			//A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
 
-			A4GL_clr_field (form->currentfield);
+			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
+					A4GL_clr_field (form->currentfield);
+			} else {
+				if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR"))) {
+					A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+				}
+				
+			}
+
 
 			set_current_field (mform, form->currentfield);
 			return -4;
+		      } else {
+				A4GL_debug("pop_param returns ok...");
 		      }
 		  }
 
@@ -2237,7 +2274,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
   field_width = A4GL_get_field_width (field);
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
-  A4GL_debug ("Has format");
+  A4GL_debug ("Has format : %d",has_format);
 
 // 'Format' is valid for a lot of datatypes -
 // but not all...
@@ -3208,7 +3245,16 @@ A4GL_copy_field_data (struct s_form_dets *form)
 		    else
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-			A4GL_clr_field (form->currentfield);
+
+			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
+					A4GL_clr_field (form->currentfield);
+			} else {
+				if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR"))) {
+					A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+				}
+				
+			}
+
 			set_current_field (mform, form->currentfield);
 			return 0;
 		      }
@@ -3810,6 +3856,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   char buff2[8000] = "";
   FORM *mform;
   int x, y;
+int pprval;
   //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
@@ -3940,13 +3987,42 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 		    A4GL_push_param (buff2, DTYPE_CHAR);
 
-		    if (!A4GL_pop_param
-			(buff, fprop->datatype,
-			 A4GL_get_field_width (form->currentfield)))
+
+		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
+
+		    if (pprval) {
+				if (A4GL_isnull(fprop->datatype,buff)) {
+					A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
+					if (strlen(buff2)) {
+						pprval=0;
+					}
+				}
+
+		    		//if (fprop->datatype==DTYPE_DATE && A4GL_isnull(DTYPE_DATE,buff)) {
+					//A4GL_debug("Looks like a null date..");
+					//pprval=0;
+		    		//}
+	
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
+					A4GL_debug("Looks like a decimal in a numeric field");
+					pprval=0;
+		    		}
+			}
+
+		    if (!pprval)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-			//A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
-			A4GL_clr_field (form->currentfield);
+
+			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
+					A4GL_clr_field (form->currentfield);
+			} else {
+				if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR"))) {
+					A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+				}
+				
+			}
+
+
 			set_current_field (mform, form->currentfield);
 			return -4;
 		      }

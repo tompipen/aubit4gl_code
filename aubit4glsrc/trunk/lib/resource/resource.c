@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.53 2003-11-28 06:02:01 afalout Exp $
+# $Id: resource.c,v 1.54 2003-12-05 22:12:36 mikeaubury Exp $
 #
 */
 
@@ -249,6 +249,7 @@ struct str_resource builtin_resource[] = {
   {"_ERRORLINE", "-1"},
   {"_MESSAGELINE", "-2"},
   {"_COMMENTLINE", "-2"},
+  {"FIRSTCOL_ONERR","Y"},
 
 #ifndef WIN32
   {"COLOR_TUI_BLACK","0"},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.42 2003-10-26 19:12:01 mikeaubury Exp $
+# $Id: ops.c,v 1.43 2003-12-05 22:12:11 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+static char *make_using(char *ptr) ;
 
 /*
 =====================================================================
@@ -72,6 +73,7 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
+static char *make_using_tostring(char *ptr,int d,int n);
 
 
 char *A4GL_display_int (void *ptr, int size, int size_c,
@@ -106,9 +108,12 @@ char *A4GL_display_byte (void *ptr, int size, int size_c,
 char *A4GL_display_text (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
 
-static char *make_using(char *ptr) ;
-static char *make_using_sz(char *ptr,int sz,int dig,int dec) ;
 
+static char *make_using_sz(char *ptr,int sz,int dig,int dec) ;
+char *A4GL_tostring_decimal(void *p,int size, char *s_in,int n_in) ;
+
+void A4GL_in_date_ops(int op) ;
+int A4GL_days_in_month(int m,int y);
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
 
@@ -124,10 +129,10 @@ static char *make_using_sz(char *ptr,int sz,int dig,int dec) ;
 
 char *A4GL_tostring_decimal(void *p,int size, char *s_in,int n_in) {
 static char buff[256];
-int n,l;
-fgldecimal *p_d;
+//int n,l;
+//fgldecimal *p_d;
 char *ptr2;
-int size_c;
+//int size_c;
 char *ptr;
 
 ptr2=p;
@@ -207,7 +212,7 @@ A4GL_dt_in_ops (int op)
 void A4GL_in_date_ops(int op) {
   struct ival *pi;
   int x_date;
-  struct A4GLSQL_dtime *pd;
+  //struct A4GLSQL_dtime *pd;
   int d1;
   int d2;
   int s1;
@@ -1330,7 +1335,92 @@ char *
 A4GL_display_date (void *ptr, int size, int size_c,
 	      struct struct_scr_field *field_details, int display_type)
 {
-  return 0;
+  long a;
+  static char buff[256];
+
+  if(A4GL_isyes(acl_getenv("IGNORE_DATEFMT"))) {
+	return 0;
+  }
+
+
+  A4GL_debug("A4GL_display_date..");
+
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT)
+    {
+      if (A4GL_isnull(DTYPE_DATE,ptr)) {
+                strcpy(buff,"          ");
+        } else {
+                a = *(long *) ptr;
+		A4GL_push_date(a);
+		if (size_c>0) {
+			A4GL_pop_char(buff,size_c);
+		} else {
+			char *ptr;
+			ptr=A4GL_char_pop();
+			strcpy(buff,ptr);
+			free(ptr);
+		}
+        }
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT)
+    {
+      if (A4GL_isnull(DTYPE_INT,ptr)) {
+                strcpy(buff,"");
+        } else {
+                a = *(long *) ptr;
+		A4GL_push_date(a);
+		if (size_c>0) {
+			A4GL_pop_char(buff,size_c);
+		} else {
+			char *ptr;
+			ptr=A4GL_char_pop();
+			strcpy(buff,ptr);
+			free(ptr);
+		}
+        }
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+        char using_buff[256];
+                if (ptr) {
+                        A4GL_debug("DISPLAY_TYPE_DISPLAY_TO : DATE(%d)",*(int *)ptr);
+                }
+
+                if (ptr==0||A4GL_isnull(DTYPE_INT,ptr)) {
+                        A4GL_debug("Date value is null");
+                        strcpy(buff,""); return buff;
+                }
+
+                a = *(long *) ptr;
+
+                if (A4GL_isnull(DTYPE_DATE,(void *)&a)) {
+                        A4GL_debug("Date value is null");
+                        strcpy(buff,""); return buff;
+                }
+
+                if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                        strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+                	A4GL_push_date(a);
+                	A4GL_push_char(using_buff);
+                	A4GL_pushop (OP_USING);
+                	A4GL_pop_char (buff, size_c);
+                } else {
+			char *ptr;
+                	A4GL_push_date(a);
+			ptr=A4GL_char_pop();
+			sprintf(buff,ptr);
+			free(ptr);
+                }
+
+                A4GL_debug("display_date Got '%s'",buff);
+                return buff;
+    }
+
+  A4GL_debug("Returning '%s'",buff);
+
+  return buff;
 }
 
 char *

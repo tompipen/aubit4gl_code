@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.31 2003-11-04 20:22:15 mikeaubury Exp $
+# $Id: report.c,v 1.32 2003-12-05 22:12:11 mikeaubury Exp $
 #
 */
 
@@ -700,7 +700,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
       if (ok == 0)
 	{
 	  A4GL_debug ("Can't A4GL_match column in orderby....");
-	  A4GL_exitwith ("Big Opps");
+	  A4GL_exitwith ("Big Oops");
 	  return 0;
 	}
     }
