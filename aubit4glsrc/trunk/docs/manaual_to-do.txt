@@ -1,0 +1,3141 @@
+#########################################################################
+#
+# This documents is a scratch pad - things talked about here
+# should be moved to manuals, and in some cases are just a bunch of
+# interesting ideas, or a reference to some information.
+#
+# The idea is that developers often won't have time to update 'propper'
+# documentation, so it is better to have a place like this where they can
+# just 'dump' at least something resembling a usefull thoughts.
+#
+# As things move from here to manual, they will be deleted here.
+#
+#
+#
+#
+#########################################################################
+
+
+Acceptable values of key (in lowercase or uppercase letters) for the ON KEY block are:
+
+ACCEPT HELP NEXT or RETURN or ENTER
+DELETE INSERT NEXTPAGE RIGHT
+DOWN INTERRUPT PREVIOUS or TAB
+ESC or ESCAPE LEFT PREVPAGE UP
+F1 through F64
+CONTROL-char (except A, D, H, I, J, L, M, R, or X)
+
+==================================================================
+
+copile Aubit programs into 4Js custom C runner to get instant PDF, XML,
+Jabber, and RPC support.
+
+
+====================================================================
+
+1) how do we compile 4glc with no ODBC? Obviouisly, all DEFINE LIKE will
+not compile... 4Js uses file to contain database schemma, so they can
+compile without database on local system - can be usefull.
+
+
+=================================================================
+
+find way to embede HTML, like you embede C
+
+=================================================================
+
+Variables for establishing path to find libraryes
+
+AIX 						LIBPATH
+HP-UX 						SHLIB_PATH
+Solaris and most other
+platforms					LD_LIBRARY_PATH
+Windows                     PATH
+
+==============================================================
+
+UESQLC - embeded SQL in C under GPL
+
+http://uesqlc.dedalo-ing.com
+
+
+========================================================================
+
+Use Apache mod_fastcgi to keep Aubit CGI programs running between requests
+
+================================================================
+
+Michael John Kuzminski [mkuzminski@ldcglobal.com] :
+
+
+Would it be possible to make a request for more character array functions
+that would allow you to maniuplate those character arrays? For example, an
+"instring" function which would locate the first occurence of a set of
+characters? I have developed my own, but I know that this would be
+beneficial as part of the language.
+
+btw, here is my code:
+
+FUNCTION instr(start_pos,searched,sought)
+    DEFINE start_pos        INTEGER
+    DEFINE pos_found        INTEGER
+    DEFINE searched         CHAR(512)
+    DEFINE sought           CHAR(128)
+    DEFINE sought_len       INTEGER
+    DEFINE len_start_pos    INTEGER
+    DEFINE total_length     INTEGER
+    #Description: Function to search for a character or string within
+another string
+    #Arguments  : start_pos - position in searched to being searching;
+typically 1
+    #           : searched - the string to be searched
+    #           : sought - the string or character you are looking for
+    #Returns    : the position where the sought string or character appears
+    #           : returns a 0 (zero) if not found,
+    #Author     : Michael Kuzminski
+    #Date       : 10-4-01
+    LET pos_found = 0
+    LET sought_len = LENGTH(sought)
+    LET len_start_pos = start_pos + LENGTH(sought)-1
+    LET total_length = (LENGTH(searched) - LENGTH(sought)+1)
+
+    #Error checking
+    IF start_pos > LENGTH(searched) THEN
+        ERROR "Function instr: Start position exceeds string length to be
+searched!"
+        SLEEP 5
+    ELSE
+        FOR start_pos = start_pos TO total_length
+            IF searched[start_pos,len_start_pos] = sought THEN
+                LET pos_found = start_pos
+                EXIT FOR
+            ELSE
+                LET len_start_pos = len_start_pos + 1
+            END IF
+        END FOR
+    END IF
+
+RETURN pos_found
+END FUNCTION
+
+=================================================================
+
+Move all temporary manual supplements from "docs" on SF to manual
+
+=================================================================
+
+
+BUGS ?
+------
+
+-----------------------------------------------------------
+
+test whenever error in adbload.4gl:
+
+WHENEVER ERROR CONTINIE don't work
+whenever error is ignored
+
+> I'm investigating the whenever error problem -
+> for now - if you use :
+> 	whenever any error continue
+> 	whenever sqlerror continue
+> 	whenever error continue
+
+
+> > > Can't remember - I'll put it on my 'todo' list.
+> > > I want to change that whole area anyway - its very messy at the
+
+-------------------------------------------------------------
+
+downshift not working
+
+compiler stops after first error, why?
+
+CONNECT can't take variables as parameters.
+Theres a bug - it doesn't trim the username and password, so it logs you in
+as 'mike         ' rather than 'mike'.
+
+
+intervals partially implemented and their 'UNITS'.
+There is still currently no maths allowed on datetime/intervals. (Ie no "00:03:00" + "00:02:00".)
+
+Its worth bearing in mind that the error numbers and codes in a4gl and i4gl
+will be different anyway...
+
+#this works fine
+                OPEN SESSION s_id1 TO DATABASE ptest as user "postgres" password "pg"
+#this does not:
+#				OPEN SESSION s_id1 TO DATABASE DSN_postgres as user "postgres" password "pg"
+#this does not compile at all
+#				OPEN SESSION s_id1 TO DATABASE _variable(DSN_postgres) as user "postgres" password "pg"
+
+
+help files: No - it doesn't look for files anywhere but the current directory - this
+will need fixing..
+
+aubit programs need to look for .afr not .frm for forms to avoid colision with i4gl
+when compiling in same directory
+
+fcompile should produce afr files.
+
+Is this fixed?: Another reason for a core dump on startup is if you haven't set SQLUID and
+SQLPWD as environment variables, and you're accessing a database..
+
+
+=============================================================
+
+add #include - see note about include in amake docs
+
+==============================================================
+
+asql_yacc      ANSI-compliant SQL parser (LEX,YACC,C)
+cfuncts        functions for use in 4GL, including a Soundex routine (C)
+m4gl           m4 macro to provide define/include for 4GL
+myexport       replacements for dbexport and dbimport (KSH,AWK)
+sql_yacc       SQL parser (LEX,YACC,C)
+sqlfmt         4GL cross-referencing program (C)
+
+=========================================================================
+
+
+adbload:
+
+"where are you going to get a list of tables from ?"
+> If your doing an informix only program - you can rely on using systables. If
+> you're doing something more generic - you won't be able to.
+
+PG have systable equivalent (thanks Mr Sonebraker!)
+
+Then again, see SQL_ACCESSIBLE_TABLES at
+
+http://msdn.microsoft.com/library/default.asp?url=/library/en-us/odbc/htm/odbcsqlgetinfo.asp
+
+> > Which I don't think you can't do. If ODBC 3.0 can - then fine.
+> > But what are the ODBC calls to do it so I can add them..
+>
+> http://www.dbmsmag.com/9604d53.html
+> http://msdn.microsoft.com/library/ (Data access->MDAC->ODBC)
+
+
+============================================================
+
+Put in builtin.c :
+
+
+There as far as I know there is no standard D4gl function to do this.
+We are using our own C code to set environment variable from 4gl and D4gl.
+
+/* -------------------------------------------------------------------------- */
+/* fgl_setenv()                                                               */
+/*                                                                            */
+/* This function allows to set or reset the value of environment variables.   */
+/* It expects one parameter : a string like VARIABLE=value with maximum 1024  */
+/* characters.  If the environment variable does not exists, it is created.   */
+/*                                                                            */
+/* Example : call fgl_setenv("DBPATH=/usr/app/appx")                          */
+/* -------------------------------------------------------------------------- */
+
+int fgl_setenv(noarg)
+int noarg ;
+  {
+    char *putvar ;
+
+  /*
+   On some machines (e.g. SCO Unix) putenv(C) makes the argument string
+   part of the environment, so if you change the string ,
+   the environment changes.
+   Therefore we must malloc a new string for each call of fgl_setenv.
+  */
+  putvar=(char *)malloc(1025);
+
+  popquote(i_s,sizeof(i_s));
+  clip(i_s);
+  if (putenv(i_s))
+    {
+    fprintf(stderr,"\nFGL_SETENV(%s) : Failed.\n",i_s);
+    _efemode();
+    exit(1);
+    }
+  return(0);
+  }
+
+If you want to use this function you have to follow instructions for use of c functions.
+
+I hope that this will help you.
+
+Dragan Kovac
+Centric Bussiness Solusions
+Dragan.Kovac@kramers.nl
+010-217-03-54
+010-217-04-00
+
+
+----------------------------------------------------------
+
+
+On Sat, 21 Jul 2001, Andrej Falout wrote:
+>I found several posts where you discussed insert cursors; Quick
+>question is: Is there a way to implement Informix insert cursors via
+>ODBC (Aubit 4gl) ?
+
+Not that I know of, but that is far from saying that it doesn't exist.
+
+About the only offer I can make is http://www.informix.com/answers
+
+Looking at index in the CLI 2.5 manual, under INSERT, it mentions
+SQLParamOptions().  The manual page for SQLParamOptions() mentions 'bulk
+inserts'.
+
+------------------------------------------------------
+
+
+Note that message files are specified in full - no implied extension -
+where as form files are not specified in full - the extension is
+implied.  Now, you could sensibly ensure that the extension for a
+message file is in fact implied for Aubit -- that would be an
+improvement.
+
+-------------------------------------------------------
+
+> You could also use this technique to define names such as fgiusr.c vs
+> fglExt.c for the p-code runners.  Of course, it would be best if the
+> p-code runners didn't have to be recompiled to add extensions; it should
+> be able to dynamically load a shared library specified on the command
+> line (or maybe in an initialization call made at the start of a program,
+> such as:
+>
+>     CALL a4gl_load_ccode_library("myname.so")
+>
+> and then collect a well-known symbol from that library which is a
+> pointer to the array of structs defining the function names and pointers
+> for the I4GL code in the library.  Like Perl, Tcl/Tk, PHP, etc do.  I'm
+> not sure whether the function call will work -- it depends on whether
+> all symbols have to be resolved before the code starts running (as in
+> Classic 4GL p-code) or not (as in Dynamic 4GL).
+
+
+==================================================================
+
+how to strip executables (and libraries) of any not called functions?
+
+====================================================
+
+Subject: Re: random value with 4GL
+From: Scott MacKenzie <scottm@crystal.ncc.cc.nm.us>
+Date: Thu, 02 Aug 2001 12:07:32 -0600
+Organization: =?iso-8859-1?Q?Din=E9?= College
+
+
+I dunno, rseed looks like a hash function, not a prng function.
+
+Ronald Cole wrote:
+>
+> "Andrew Hamm" <ahamm@sanderson.net.au> writes:
+> > Danny De Koster wrote in message <9k8snq$1i88$1@rivage.news.be.easynet.net>...
+> > >I think that I once read about a function 'random'. I searched overall but
+> > >no trace of this function. Did I dream about it of does it exist.
+> > >Any information will be nice.
+> >
+> > Yup - you're dreaming ;-)
+> > 4GL does not have a random function, but it would be trivial to link one
+> > into the runner. Here's an interface to the standard C rand and srand
+> > functions:
+>
+> I've used this code successfully.  I think I snagged the basic
+> algorithm from the C faq.  The trick is finding a good source for the
+> initial seed.  Maybe you can adapt one of the 4gl "datetime to
+> number-of-seconds-since-midnight-1/1/70" functions posted here recently
+> if you're in a pinch...
+> -------------------------------------------------------------------------------
+> DEFINE
+>   rseed INTEGER
+>
+> FUNCTION seed(s)
+>
+>   DEFINE
+>     s INTEGER
+>
+>   LET rseed = s
+>
+> END FUNCTION
+>
+> FUNCTION rand()
+>
+>   DEFINE
+>     hi INTEGER,
+>     lo INTEGER,
+>     test INTEGER
+>
+>   LET hi = rseed / (2147483647 / 48271)
+>   LET lo = rseed MOD (2147483647 / 48271)
+>   LET test = 48271 * lo - (2147483647 MOD 48271) * hi;
+>   IF test > 0 THEN
+>     LET rseed = test;
+>   ELSE
+>     LET rseed = test + 2147483647
+>   END IF
+>   RETURN rseed / 2147483647
+>
+> END FUNCTION
+>
+> --
+> Forte International, P.O. Box 1412, Ridgecrest, CA  93556-1412
+> Ronald Cole <ronald@forte-intl.com>      Phone: (760) 499-9142
+> President, CEO                             Fax: (760) 499-9152
+> My GPG fingerprint: C3AF 4BE9 BEA6 F1C2 B084  4A88 8851 E6C8 69E3 B00B
+
+--
+
+   (                                               ______
+   ))   .--- Scott MacKenzie;  Dine' College ---.   >===<--.
+ C|~~| (>--- Phone/Voice Mail:  520-724-6639 ---<) |   = |-'
+  `--'  `- Email:  scottm@crystal.ncc.cc.nm.us -'  `-----'
+=============================================================
+
+
+Things to implement in makefiles:
+
+#foo:= a b c
+#bar:= $(subst $(space),$(comma),$(foo))
+### bar is now `a,b,c'.
+
+#$(basename names...)
+
+#find_files = $(wildcard $(dir)/*)
+#dirs := a b c d
+#files := $(foreach dir,$(dirs),$(find_files))
+
+#$(if condition,then-part[,else-part])
+===============================================================
+
+see database engine specific funcions from 4Js fgldbutl.4gl
+ - how 4Js detects different engines
+
+==================================================================
+
+library collections:
+
+Make it:
+4glpc a.4gl b.4gl c.4gl -o intermediate.aox
+
+
+Use it:
+4glpc new.4gl intermediate.aox -o outputfile.4ae
+
+
+> > Won't this report missing MAIN when linking, since it will try to generate
+> > executable, and there will be no MAIN on any of this 4gl files?
+> >
+>
+> Normally the .o on the -o line will suppress the final linking stage...
+
+So I'll need to apply same code used for *.o in 4glpc to *.aox
+
+========================================
+
+
+> >
+> >"order of their appearance in the FORMAT section"
+> >
+>
+> I've put in a fudge for this - it will take the order they are supplied in
+> the parameter list if they are not explicitly defined.
+> This will allow a compile - but this may not produce the expected results on
+> execution.
+>
+>
+> As the object of this exercise was to get it to compile - fixing this can be
+> left until afterwards!
+
+==================================================================
+
+what happened to A4GL Wizard and program templates code?
+Nothing - they are 'on hold'
+Can you please send me that to include in CVS?
+
+=========================================================
+
+missing code and dummy functions:
+
+> > I stuffed dummy functions in builtin.c
+> >
+> > aclfgl_startlog (char *filename)
+> > aclfgl_errorlog (char *string)
+> > aclfgl_showhelp (int helpnumber)
+
+Also added Dummy function for DEFER QUIT def_quit()
+to lib/fglwrap.c
+
+/// in ERR_GET(status) implemented?????
+
+> >FIXME: <keyword> not coded
+> >
+>
+> There are a few 'exitwith("Not Implemented")'s knocking around for this kind
+> of thing - but they are in the library - not in the compiler.
+>
+> I'll do an audit sometime soon to make sure everything in there outputs
+> something (even if it is just a FIXME warning).
+
+==================================================================
+
+Jabber/IksEmEl libs:
+
+/usr/local/include/iksemel.h
+/usr/local/lib/libiksemel.la
+/usr/local/lib/libiksemel.so
+/usr/local/lib/libiksemel.a
+
+ranlib /usr/local/lib/libiksemel.a
+
+ldconfig -n /usr/local/lib
+
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use `-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the `LD_RUN_PATH' environment variable
+     during linking
+   - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to `/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+
+----------------------------------------------------------------------
+
+
+/usr/local/bin/JabberX
+/usr/local/share/JabberX/inprogram.help
+
+  JabberX --help
+
+for command line options.
+
+
+Configuration:
+--------------
+
+JabberX read its configuration from ".JabberXrc" file in your home
+directory (you can change this by --config command line argument).
+Format of the file is naturally XML. Here is an example:
+
+<JabberX>
+<jid>dean@unseen.edu</jid>
+<password>bornToRune</password>
+<logfile>/home/dean/logs/JabberX.xml</logfile>
+</JabberX>
+
+<jid> and <password> tags are evident. All the incoming/outgoing XML
+data is stored in <logfile> (useful for debugging). If you left it
+empty, logging is disabled.
+
+
+ldd /usr/local/bin/JabberX
+--------------------------
+        libnsl.so.1 => /lib/libnsl.so.1 (0x4001a000)
+        libdl.so.2 => /lib/libdl.so.2 (0x4002f000)
+        libm.so.6 => /lib/libm.so.6 (0x40033000)
+        libcrypt.so.1 => /lib/libcrypt.so.1 (0x4004f000)
+        libncurses.so.4 => /usr/lib/libncurses.so.4 (0x4007c000)
+        libiksemel.so.0 => /usr/local/lib/libiksemel.so.0 (0x400b9000)
+        libc.so.6 => /lib/libc.so.6 (0x400c0000)
+        /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+
+=========================================================================
+
+Take a look at ONC_RPC.tgz from Datafocus for nutCracker.
+
+ftp://ftp.datafocus.com/reskit3/libs+utils/RPC/ONC/
+
+They have a source code available for download which is patched to compile
+with gcc and MSVC under nutCracker environment.  May be it will help you to
+solve the rstat and rstat_svc  issues.
+
+The DCE RPC source code also available from them at:
+ftp://ftp.datafocus.com/reskit3/libs+utils/RPC/DCE/
+
+Reagrds
+Suhaib
+
+>the new version of Sun RPC 4.0 on
+>ftp://ftp.franken.de/pub/win32/develop/gnuwin32/cygwin32/porters/Vinschen_Corinna/B20
+>
+>named
+> sunrpc-4.0.cygwin1.README
+> sunrpc-4.0.cygwin1.bin.tar.gz
+> sunrpc-4.0.cygwin1.src.tar.gz
+>
+>contains the missing patch to xdr_float.c for working float
+>support in cygwin. Many thanks to
+> Rafael Rodriguez Pappalardo <rafapa@simulux.us.es>
+>for contributing the patch.
+>
+>Also in case of xdr_float, send further patches or complaints
+>to me, please.
+>
+>The problem in compiling rstat and rstat_svc isn't solved yet.
+>Does anyone have an interest in giving it a try?
+>
+>Regards,
+>Corinna
+
+
+
+====================================================================
+
+
+FIXME: why is this not ASCII grapgics like on Unix?
+
+    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³                    ³
+    ³    Hello  World    ³
+    ³                    ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+===================================================================
+
+I've now added IN and EXISTS as valid 4GL expressions.
+This means you can now :
+
+
+IF a in (1,2,3) THEN
+
+IF a not in (1,2,3) THEN
+
+IF a in (select tabid from systables) THEN
+
+IF exists (select * from systables where tabid=1)  THEN
+IF NOT exists (select * from systables where tabid=1)  THEN
+
+should all now work..
+
+[ For ones using SQL - at the minute - you can't use any variables in the
+SQL.. I'll fix this soon.. ]
+
+(Is MATCHES allowed in 4gl ?) MATCHES should already be in there...
+
+
+===================================================================
+
+> >1) "enable" keyword found in tools/test/gui
+> >
+> >	enable cal
+> >	enable  a1,a2,a3,b1,b2,b3,c1,c2,c3
+> >
+> >	please describe usage for manual
+>
+> These enable and disable fields in GUI mode (see Plexus manuals -
+> its in there)
+
+
+====================================================================
+
+> >2) .xpm picture format
+> >
+> >	How is this format generated.
+> >	Can we use png, jpg, gif, bmp...?
+> .xpm is the X format,
+> I think we can use the others - but I need to go back to my GTK-LIST stuff
+> to find out how!
+
+--------------------------------------------
+
+
+> >3) bug: forms using WIDGET="pixmap" core dump is pictures are not found.
+>
+> I'll investigate..
+>
+
+----------------------------------------------
+
+Mark D. Stock wrote:
+> Jonathan Leffler wrote:
+> > tyson_oswald wrote:
+> > > I am trying to connect to an Informix-Turbo 3.1 database from a
+> > > Informix Dynamic Server 7x.  Everything seems to work but when I goto
+> > > connect to it I get error 408: Invalid message type received from the
+> > > sqlexec process.  What does this mean I read in the Informix error
+> > > index that it has something to do with the database and the libraries
+> > > having trouble communicating.  I also get this error when trying to
+> > > connect to the local database.  By the way, I'm new to installing
+> > > informix.
+> >
+> > Where to start?  We're going to need some platform details, and more
+> > precise version numbers, probably.  Not being able to connect to the
+> > local database means there's a big setup problem of some sort.
+> >
+> > More seriously, the Turbo 3.1 version has me completely puzzled.
+> > Unless my memory is failing me (always a possibility), Turbo was
+> > only available in versions 1.10.03x for x in a range of upper-case
+> > letters (such as A..M).  It is also very, very obsolete.
+>
+> I seem to remember working with Turbo 4.00. I think it was this
+> version that Plexus added multi-media support to and which Informix
+> bought from them and released as OnLine 4.00. But I could be wrong.
+> I certainly don't remember version 3.1 either, but that's not to say
+> it didn't exist. There were version 3 products around, but most
+> seemed to skip from 1.10/2.10 to 4.00 for some reason.
+>
+> Memories hey? If only we could remember them! :-)
+
+Ancient history remembered through the haze...
+
+In the beginning was C-ISAM, and then the original Informix product,
+which reached version 3.30 on Unix, and apparently 3.60 on DOS.  This
+product did not use SQL.
+
+Then Informix-SQL 1.10 was released, with no support for NULLs; this
+was released in 1985 or early 1986, I believe.
+
+Then Informix-SQL 2.00 and Informix-4GL 1.00 were released in mid-1986;
+C-ISAM and ESQL/C had release numbers 3.00, I believe.  This was also
+the point at which I started working with Informix products.  My first
+task was to learn enough to be able to teach I4GL and ISQL 2.00, only
+to find that the machine I was to use for the course had ISQL 1.10
+on it (it was a Z8000 box, and the superuser was called zeus, not root).
+
+Then Informix-SQL 2.10 and Informix-4GL 1.10 were released, and I
+think this was when I4GL-RDS and I4GL-ID appeared.
+
+Since Informix 3.30 was still relatively recent, the next versions
+were called ISQL 2.10.03 and I4GL et al 1.10.03 on Unix to avoid the
+ineveitable confusion if it was called Informix SQL 3.00; I believe
+the versions were 2.10.06 and 1.10.06 on DOS.  Also, Informix-Turbo
+1.10.03 was released, and it was pointed out as a future direction
+that SE would be separated from the ISQL and I4GL tools -- until then,
+the engine had always been distributed with ISQL, I4GL and I4GL-RDS
+(but not ID since you needed RDS to make any use of ID).
+
+To avoid confusion with Informix 3.30, the subsequent release was
+version 4.00 of Informix-SE, Informix-OnLine, ISQL and I4GL (and C-ISAM
+and ESQL/C) - there was never a 3.x version of the main products
+other than (perhaps) C-ISAM and ESQL/C.  It was also at about this
+point that the Tools and Servers groups were split apart.
+
+Now, Plexus certainly had a hand in the Turbo to OnLine transition,
+but I don't know what versions they used -- they may even have had a
+3.1 Turbo product, as the original questioner mentioned it.  I don't
+know, and I don't think the original questioner has chimed in again
+to help clarify what they've got.  It is safe to assume that any Turbo
+product is seriously out of date -- OnLine 5.00 was released effectively
+in January 1991 (officially 30th December 1990 or thereabouts), and
+there was a version 4.10 between 4.00 and 5.00.
+
+As to the connection question -- the revised opinion is that you should
+be able to use a network connection to an I-Net that matches the version
+of Turbo.  I'm not wholly sure when I-Net arrived on the scene; I-Star
+definitely arrived with 4.00 and OnLine, but I-Net probably pre-dates
+that.  However, it is not going to be officially supported, and an
+upgrade would be recommended.
+
+--
+Jonathan Leffler (jleffler@informix.com, jleffler@earthlink.net)
+Guardian of DBD::Informix v0.62 -- see http://www.perl.com/CPAN
+#include <disclaimer.h>
+
+===================================================================
+
+I'm just going through this very topic in my text book (Discovering Computers, Shelly
+Cashman Series, 2001 edition), and here's how the book classifies the programming
+languages:
+
+"1GL - Machine Language
+
+2GL - Assembly Languages
+
+3GL - High-level languages, are machine-independent, use English-like words; require the
+program to tell the computer not only WHAT to accomplish, but also HOW, therefore often
+called procedural languages; use a compiler or interpreter to translate the source code
+into machine language
+
+4GL - use English-like statements; are NON-PROCEDURAL languages. The programmer only
+specifies WHAT the program accomplish without explaining HOW. Many 4GLs work in
+combination with a database. Example: SQL
+
+5GL, or Natural Languages - do not have to follow a specific set of rules and syntax, like
+4GLs. Are often associated with expert systems and AI. Popular in the medical field, but
+are not widely used in business applications."
+
+By the way, the book is being very nice to Cobol, and it states that ..."Cobol is one of
+the more widely used procedural programming languages for business applications. Although
+Cobol programs are often lengthy, their English-like statements make them easy to read,
+write, and maintain... The most popular personal computer Cobol program is Micro Focus
+Personal Cobol, which supports both procedural and object-oriented programming..."
+
+
+
+3GLs are third-generation languages, such as BASIC,
+Cobol, or Fortran. They were more advanced than "first
+generation" machine languages and second generation
+assemblers. 4GLs, originally defined as languages that
+could offer a ten-fold (or was it a hundred-fold?)
+increase in productivity relative to 3GLs, still exist in
+forms such as Progress 4GL, Informix 4GL, Forte 4GL,
+Cognos' PowerHouse 4GL, and Information Builders' FOCUS
+4GL. More than a decade ago, Japan's MITI launched a 5GL
+language project with the goal of embedding AI into
+programming, but the effort fizzled.
+
+INFORMIX-4GL: development environment composed by Menus (GUI generator), Forms (4GL code generator), ID (debugger), QuickStep (state machine) and a set of interfaces with C, Cobol, Adam Fortran.
+
+INFORMIX-OpenCase: software development environment based on ToolBus (a software bus), ToolKit (interface with INFORMIX-4GL) and Encapsulator.
+
+-------------------------------------------------------------------------
+
+At that time, the product had a table-oriented, non-SQL C interface that
+used the data dictionary, but otherwise it was like C-ISAM. This was also
+in the non-SQL product, though I can't remember if it was in the SQL
+product. Clearly, the SQL product needed a pre-compiler based product that
+provided all of the SQL syntax and cursors to C programmers. Chris Maloney
+and I felt that C was still too low level for most programmers of data
+processing applications. We designed Informix-4GL as an elegant
+combination of Betty Chang's Perform screen package, Roy's SQL engine,
+and Bill's report writer, sewn together with a language that would
+provide powerful leverage of the data dictionary. This idea worked very
+well, and I am still very proud of that product. It allowed us to
+succeed when larger companies like Oracle finally came to the UNIX
+market in a serious way in the late 1980s.
+
+http://www.informixhandbook.com/
+
+
+Chris Maloney and Roger Sippl - co-designed Informix-4GL based on:
+
+Betty Chang - Perform screen package
+Roy Harrington - SQL engine (wrote a smaller UNIX clone, Cromix)
+Bill Hedge - ACE report writer
+
+
+Chris Maloney Roger Sippl Betty Chang Roy Harrington Bill Hedge
+
+
+Maloney created the specification for the Informix flagship product Informix-4GL and led the development team for the Informix database data access system. Later he was responsible for development of Viewpoint, a Windows based tool set for "non-programmers" and directed a 100 person development group responsible for Informix's "shrink wrap" business products. At Pencel, Maloney is responsible for product development.
+http://www.pencel.com/company/team.htm
+
+
+======================================================================
+
+On Friday 23 November 2001 8:25 am, Brett Geer wrote:
+> Now, can we call gtk functions directly and imbed the values to call
+> the 4gl functions? that'd be real cool.
+
+Of course you can - you've just got to get the GtkObject associated with the
+field in question - which can be done using :
+
+	ID_TO_INT( field_name)
+
+eg (and untested).
+
+DEFINE obj integer
+LET obj=ID_TO_INT(myfield)
+code
+gtk_entry_set_text (obj, "Test");
+endcode
+
+
+=======================================================================
+
+menuhandlers - not currently for text mode - when?
+
+Formhandlers and menuhandlers are autonomous units - ie you can have multiple
+forms open - multiple menus. This is easy to do in GTK and windows etc -
+because they are based on message passing and callbacks. The TUI is not...
+
+It may be possible to have them - but how would you switch between windows ?
+Do we assume they have a mouse ?
+Do we dump the current TUI - because that works with loops rather than
+callbacks..
+
+I don't even think you can use the ncurses form library with callbacks - so
+do we rewrite that too ?
+
+
+It all starts to get very very messy..
+
+
+--
+Mike Aubury
+
+
+
+=====================================================================
++ XDP AD32, Developer's Guide
+  XDP AD32, Windows 4GL Statements
++ XDP AD32, Windows 4GL Functions
+  XDP AD32, Troubleshooting and Error Messages
+
+
+
+
+Formhandler
+This section manipulates and exchanges data with a form. Each formhandler
+section begins with the statement FORMHANDLER name and ends with the
+statement END FORMHANDLER. A formhandler is active as long as its
+form is open. Unlike functions, formhandlers cannot have input or return
+parameters. For more information on formhandlers, see “The Handler
+Routines” on page 141.
+
+Menuhandler
+This section contains Windows 4GL statements that accept input from menus
+and programmable keys. Each menuhandler module begins with the
+statement MENUHANDLER name and ends with the statement END
+MENUHANDLER. A menuhandler is active as long as its menu is
+displayed. Unlike functions, menuhandlers cannot have input or return
+parameters. For more information on menuhandlers, see “The Handler
+Routines” on page 141.
+
+DDEhandler
+This section processes all messages exchanged via a Dynamic Data
+Exchange (DDE) between a client application and a server application. There
+can only be one DDEhandler in an AD32 application. A DDEhandler routine
+begins with the statement DDEHANDLER and ends with the statement END
+DDEHANDLER. For more information on DDE, see the Dynamic Data
+Exchange chapter starting on page 247.
+
+
+curr_file_name CHAR(13) Current 4GL file name.
+curr_line_no CONST Current 4GL line number; curr_line_no
+is actually a CONST, but behaves like a
+variable in that the value is equal to the
+current line number.
+err_file_name CHAR(13) 4GL file name where an error occurred.
+err_line_no SMALLINT 4GL line number within the file where
+an error occurred.
+
+
+Use the user interface data types to access objects created or defined in the
+UIBuilder.
+
+FORM
+A variable with the type FORM identifies a form, as defined in UIBuilder.
+The predefined variable curr_form, used only within a formhandler, refers to
+the form attached to that formhandler by an OPEN FORM statement.
+
+STATUSBOX
+Variables of type STATUSBOX identify a status box, which can be defined
+in UIBuilder or Windows 4GL code.
+
+
+
+======================================================================
+
+					Perl code version
+                    -----------------
+
+1) 	Status
+    ------
+
+	The perl stuff is experimental and no where near fully functional - for
+	example - I'm still working on getting function calls to work !
+
+2)  Prerequisites
+    -------------
+
+	Install Perl (www.perl.org) , and then Swig (http://www.swig.org/)
+
+	you need to compile swig up from source:
+
+    ./configure
+    make
+    make install
+
+3)  Make aubit 4gl Perl-generating compiler and libraries
+    -----------------------------------------------------
+
+	cd $AUBITDIR
+	make perl
+
+    this will create $AUBITDIR/bin/4glc_perl compiler, Perl libraries and
+	compile up the swig interface and copy it to the right places.
+
+4) Ussage:
+
+	To compile 4gl program to Perl:
+
+	4glc_perl hello.4gl
+
+	This will generate hello.pl, to run
+
+	$ perl hello.pl
+
+    - or -
+
+	$ chmod 777 hello.pl
+	$ ./hello.pl
+
+
+
+
+
+
+
+> By what i understand the generation modules (compile_c and compile_perl)
+> have the same functions and when we link we define the target language.
+>
+> This implies that we can only link one generator each time to the parser.
+
+Yes - for now - but I'll be doing a compile_dl eventually which should be
+retargetable for those with shared library capabilities (most modern Unix's
+and Windows via DLLs)..
+
+
+---------------------------------------------------------------
+
+
+18:39:18 root@aptiva /usr/aubit/aubit4glsrc/tools/test# perl test_build.pl
+Can't locate aubit4gl.pm in @INC (@INC contains: /usr/lib/perl5/5.00503/i386-lin
+ux /usr/lib/perl5/5.00503 /usr/lib/perl5/site_perl/5.005/i386-linux /usr/lib/per
+l5/site_perl/5.005 .) at test_build.pl line 2.
+
+
+FIME:
+We need to install aubit4gl.pm in perl modiles directory !
+
+
+===========================================================
+
+
+Use code/endcode blocks or shared library calls...
+CODE
+	call_some_jabber_c_function
+ENDCODE
+
+or - wrap that up in 4gl :
+
+FUNCTION call_some_func(...)
+code
+	call_some_c_func
+endcode
+END FUNCTION
+
+- compile this '-as-dll'
+4glpc -as-dll some_module.4gl -o some_module.so
+
+then use
+
+CALL SHARED "call_some_func" IN "some_module.so" (...) RETURNING ...
+
+
+[Without really messing with the compiler - it would be hard to implement as
+a language construct (as andrejs original shows).]
+
+============================================================
+
+add jabber readme to manual
+
+===========================================================
+
+> To mark a tag you can use:
+>   cvs rtag 0_3 : Marks a tag in the repositpry whithout needing for  co.
+>   cvs rtag 0_3 -D <DATE> : Marks a tag in the repository in a specific date.
+>   cvs tag 0_3 : Mark a tag but you need a co before and then a commit
+>
+> For the branches, i think that since this is by default a sticky tag you just
+> need to create the branches, but im not shure.
+
+==========================================================
+
+Hi Jonathan,
+
+can we continue on the Aubit list, please?
+
+> >"either"? You have more then one?
+>
+> Of course.
+
+On my... :-)
+
+> I'm only referring to the ones that I've written.  I'm not
+> counting Dave Snyder's version (db4glgen, available at the IIUG -- I'm
+> sorry, I didn't mean to swear at you),
+
+:-O
+
+Can you please compare it with other 4gl code generators you know about?
+
+> or the never-published M4-based
+> system (igen) written by Informix staff in their spare time that I have
+> copies of.
+
+Hmm, M4 is good, is it not? Can we take a look at this too?
+
+> And then there's Fourgen, and ...
+
+Ahhh, and New Zealand's own, 5GL...
+
+> >Of course they would be of interest!  How come I never heard anything
+> >about them?  Where are you hiding them?
+>
+> I've not made them all that generally available previously.
+> They're hiding on my computers, very dormant for the most part.
+
+This is about to change. Oh, I love this...
+
+> >OK, can you please explain what's on offer, if you have documentation,
+> >and send it to me....
+>
+> Two possible products:
+>
+>     FGLBLD - Program to generate Perform-like programs with good
+>              extensibility.  I've used this for real on some fairly
+>              serious systems, and it helped me churn out a lot of code
+>              very quickly.  It uses I4GL to collect the information and
+>              some shell/sed scripts to generate the code.
+>
+>     FGLGEN - Meant to be the next generation of FGLBLD, with a little
+>              language to describe what you want built and a system of
+>              template files (and immense configurability) to outline the
+>              code.  I've used it a bit; it works OK.  But it was
+>              intended to do more complex things such as handle
+>              master/detail forms or multi-screen input, and I didn't get
+>              around to building enough intelligence into it before
+>              moving to the USA, and I've done essentially nothing to it
+>              since then.
+
+Ok; so if I'm reading this correctly, BLD thing is good to be used as is, to quickly get Perform like functionality, with very little coding.
+
+GEN thing is supposed to be much more, but needs more work, will require more coding to get results, but it will be much more powerful.
+
+If this is correct, I would like them both in Aubit, since they cover two related, but ultimately different tasks.
+
+BLD would probably make a nice extension to adbaccess code we already have in CVS, approaching "isql" functionality.
+
+GEN would probably be a standalone tool, when it's finished, possibly integrated into your IDE code.
+
+How does that sound?
+
+
+> I've attached the documentation I have.  The FGLBLD stuff is based on
+> troff and was last modified in 1990 - I told you these have been
+> dormant!  Some of the files have .doc extensions; although MS Word
+> probably did exist back then, it didn't as far as I was concerned.
+
+Ok, I converted fglbld.big to PS/PDF/text - html don't work for some reason
+
+16:23:19 root@aptiva /usr/aubit/fglcodegen/BLDManual# groff -Thtml fglbld.big
+groff: can't find `DESC' file
+groff:fatal error: invalid device `html'
+
+All is in fglbld.big, right? All formatting lost unfortunately. See attached.
+
+If you can confirm this is all, I can reformat it in HTML manually.
+
+> The FGLGEN documentation is plain text, despite having similar *.doc
+> file names.  Once upon a time, they would have been converted to troff.
+> Nowadays, I'm not sure what I'd use - HTML or XML/DocBook probably.  I
+
+If it's OK with you, I can translate them to HTML fairly quickly.
+
+> did some work on fglgen back in 1998, but didn't get around to
+> completing the conversion to use ANSI prototypes, for example.  The
+> previous changes were circa 1992 or 1993.  When I was first developing
+> it, the ANSI compilers were only just starting to be available, and
+> portable code certainly did not use prototypes unconditionally.  So,
+> again, you can see that this has been dormant for a long time, and
+> that's why you've not heard about them before.
+
+Must say, looks impressive to me. I expect we will have no problem generating sufficient interest to get the work needed started.
+
+> >Then again, you have Aubit CVS account, so feel free to pump it in - if
+> >you prefer.
+>
+> For the time being, let's see if you can make head or tail of it and
+> whether it is worth putting into Aubit4GL.
+
+I would say, this is exactly what I was looking for. Initially we should give it new CVS branch, like :
+
+aubit4glsrc
+aubit4gldoc
+aubit4glwww
+hy4gl
+fgldocgen		- Sergio's tools
+fgllib		- Starting with Power-4gl
+..
+fglgen/fglgen
+fglgen/fglbld
+
+But ultimately, I would like to see fglbld in adbaccess, or at least for this to be an option, and fglgen integrated in your IDE, or some other IDE, or at least for this to be an option.
+
+BTW: I'm looking at NetBeans IDE (written in Java, but supports different languages) and "Source Navigator" (RedHat-ex. Cygnus). CodeCrusader is no longer OpenSource. I'm looking for IDE that is OpenSource, GPL, multiplatform, and have ability to be extended into supporting 4gl. Ideas?
+
+I'm using GWD text processor, and I built in most of the functions of IDE in it using scripting inside it (ANSII C), but this is shareware, and not multiplatform (OK, I run it on Linux under Wine, but this is not what I want)
+
+
+> If you need me to fix up the
+> FGLBLD documents into postscript, then tell me -- I do have GNU troff
+> around and I think I can get it to work OK.
+
+If mine is not OK, please do. Especially if you can do -Thtml
+
+Will you be sending me code for import, or do you want to do it yourself?
+
+Thanks again,
+Andrej
+
+===========================================================
+
+project.c
+
+
+> >
+> >I just want to tell some more things about-it (questions and remarks):
+> >  - How it works the mechanism that fills this ? Its automatic ?
+
+>
+> Documentary only?  Or maybe there is an option somewhere that dumps the
+> array to stdout.
+
+4glc -vfull
+
+========================================================================
+
+HTML Application (HTA).
+
+http://msdn.microsoft.com/library/default.asp?url=/workshop/author/hta/overview/htaoverview.asp
+
+
+
+<HTML>
+<HEAD>
+   <HTA:APPLICATION ID="oHTA"
+    APPLICATIONNAME="myApp"
+   >
+   <SCRIPT>
+      alert("commandLine    = " + oHTA.commandLine);
+   </SCRIPT>
+</HEAD>
+<BODY SCROLL="no">
+
+</BODY>
+</HTML>
+
+
+
+
+<IFRAME SRC="filename.htm" APPLICATION="yes">
+
+
+
+<FRAME FRAMEBORDER=0 SCROLLING=NO SRC="sample.htm">
+
+
+==============================================
+
+add pragma: no-cache
+
+=============================================
+
+>
+> decompile : decompile.c form_x_xdr.c dump_java.c
+> 	cc decompile.c form_x_xdr.c dump_java.c -o decompile
+> 	cp decompile ../../bin
+>
+
+Its missing because its very incomplete...
+
+decompile should just use dump.c rather that dump_java.c...
+
+fcompile and mcompile both compile source files to an XDR format file (hence
+the .x).
+For each - I've included a 'decompiler' which decode the XDR format file into
+english (ish).
+
+the dump_java.c was an attempt to decode the XDE format file into a java
+class - I haven't  got past the first few lines yet..
+
+--
+
+======================================================================
+
+Aubit compiler now by default compiles with dynamic SQL support.
+
+This means that just by changing a value of A4GL_SQLTYPE environment variable, you can decide at run-time which SQL libraries compiler and/or your programs will use.
+
+At the moment, there are "noodbc" "iodbc" and "unixodbc" dynamic SQL libraries available; naturally, on Windows, you only have the choice of "noodbc" and "odbc32", but since Windows OS always have ODBC manager, this is down to "odbc32".
+
+I see Mike already added new directory called "esqlc" - for native Informix support.
+
+David, since you implemented PostgreSQL native support in your Hy4GL, is there any code there we can use, and would you possibly be interested in implementing this for Aubit compiler?
+
+Since UI support is already dynamically loaded (?), I suspect Mike's next target will be dynamic loading of language output modules in compiler (C, Perl, Java...)
+
+Consequence of this, will be that I will reduce number of binary builds from 8 to 4:
+
+unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
+unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
+
+to
+
+gtk-nopdf nogtk-nopdf gtk-pdf nogtk-pdf
+
+I can see no particular reason other then the size of the download, to separate GTK and noGTK builds, since if you don't have GTK libs installed, you can always use AUBITGUI=text. If this is correct, I can as well go down only to:
+
+aubit-nopdf aubit-pdf
+
+Then again, it is still not clear to me why do we have PDFlib linked in 4glc and all libraries. Mike, if this can also be loaded dynamically, we can go down to one binary distribution.
+
+There is libpdf-dummy.c in tools/html, can we do the same thing as we did with noodbc.c ?
+
+Configuration:
+--------------
+
+There is a new variable in "aubitenv":
+
+############
+#name of SQL library to use (defaults to nosql = libSQL_nosql.so)
+#when compiler was build with dynamic SQL support
+#Options: static nosql iodbc unixodbc
+export A4GL_SQLTYPE=unixodbc
+
+
+To compile compiler with dynamic SQL support, there are a few new variables in aubitbuild.mk
+
+#defines how will SQL support be built into compiler: dynamic is default.
+#if you enter "static", only SQL/ODBC library defined with "ODBC"
+#parameter will be linked. Parameters "ODBC"
+ODBC_LINK=dynamic
+
+#If linking SQL support dynamically, you can have more then one SQL
+#manager/driver installed on your system, and compiled Aubit to use them
+#selecting it at run time with environment variable :
+#A4GL_SQLTYPE=libSQL_<name>.so [name of library to use (defaults to nosql)]
+#if you define more then one HAVE_xxxx variable here as "yes" you MUST use
+#AUBITBUILDMKMULTI to define multiple libraries paths
+HAVE_UNIXODBC=yes
+HAVE_IODBC=yes
+
+To accommodate the fact that now we need to know multiple library names and paths at the same build time, aubitbuild-muli.mk was changed.
+
+For examples of all this configuration changes, please see *.example files in $AUBITDIR/etc
+
+How does this impact you?
+
+1) If you don't want to use dynamic SQL support loading, add ODBC_LINK=static to aubitbuild.mk, and all will (should!) be the same.
+
+2) If you want to use it, add appropriate settings, "make cleanall" and then "make", and all should work now with dynamic loading.
+
+Let us know if you have problems,
+
+Yours, Andrej Falout, http://www.falout.com/disclaimer.html
+Visit the OpenSource alternative, Aubit 4gl: http://aubit4gl.sourceforge.net
+PLEASE NOTE: All HTML email sent to me WILL BE DELETED AUTOMATICALLY WITHOUT READING.
+
+==================================================================
+
+
+Andrej Falout wrote:
+
+BTW, can anyone advise me on how a "proper" release should be created,CVS-wise ?release tags, branches, etc. I would like to be able to pull from CVSsource that was used to compile specific release version, if not buildtoo...
+To mark a tag you can use:  cvs rtag 0_3 : Marks a tag in the repositpry whithout needing for  co.  cvs rtag 0_3 -D <DATE> : Marks a tag in the repository in a specific date.  cvs tag 0_3 : Mark a tag but you need a co before and then a commitFor the branches, i think that since this is by default a sticky tag you justneed to create the branches, but im not shure.
+Thanks Sergio,I was hoping someone have some link to FAQ or something that explains proper version management on higher level. I doknow how to read manual, and execute commands, but I don't really have understanding of why, in which order, how to usetags once they are applied, what files they are applied to, etc.For instance, if I want to be able to pull a specific version of Aubit code from CVS, what do I do:a) to mark all files as belonging to specific version/buildb) to checkout this from CVS?
+
+http://cvsbook.red-bean.com/
+
+
+=====================================================================
+
+I've just changed some of the PDF handing.
+
+It now used A4GL_PDFTYPE to determine which library to link with when using
+4glpc - there was no need to actually use DL linking for the PDFs.
+You need to 'make' in the lib/libpdf directory..
+
+make libPDF_NOPDF.so
+
+or
+
+make libPDF_PDF.so
+
+a 'make' on its own will try to compile both...
+
+
+
+A4GL_PDFTYPE defaults to NOPDF, you need to set this to PDF if you want to
+use PDF reports...
+
+
+(If you want to make this the default - you could modify the line in
+lib/resources.c - possibly using #ifdef ... etc.)
+
+============================================================
+
+TODO : how can I automatically create list of changes from CVS logs?
+
+=============================================================
+I've made a couple of changes today (and fixed a couple of new bugs)
+
+1) Resources
+You can now have resources stored in files
+Each line must be
+VARIABLE=VALUE
+with NO SPACES around the '='
+(Use a # as a comment)
+
+EG.
+
+MYVAR=1 #Set Myvar=1
+DBDATE=dmy4/
+.
+.
+.
+
+
+These are added as user resources (can be overridden by environment variables
+though).
+
+Resource are looked for in
+1) /etc/aubitrc,
+2) $AUBITDIR/etc/aubitrc,
+3) ./.aubitrc (notice the '.' at the beginning of this one)
+4) $A4GL_INIFILE
+
+If more than one of these exist - entries are overwitten in the order given
+above..
+(eg /etc/aubitrc says DBDATE=dmy2, ./.aubitrc says DBDATE=dmy4 , DBDATE will
+be read as dmy4)
+
+
+
+2)
+I've also added a aubit-config.c to lib/ which gets compiled up with
+resource.c to form the "aubit-config" program
+
+$ aubit-config DBDATE
+dmy4/
+
+This should be the first thing made and can then be used for the makefiles
+where required..
+
+
+3) Made a couple of changes to SHARED handling - removed the old method
+(which looked bad) and introduced the "::" syntax as per perl (as someone
+here suggested a while ago)
+
+So I've added a new library in lib/extra_libs/file for file handling as an
+example.
+
+Try the 'file.4gl' example in tools/test...
+Snippet :
+
+        CALL A4GL_file::fopen("tmyextfile","r") returning afile
+
+        IF afile=0 THEN
+                ERROR "Unable to open a file called 'textfile'"
+                        WAIT FOR KEY
+                EXIT PROGRAM
+        END IF
+
+        DISPLAY "afile=",afile
+
+        LET status=0
+        CALL A4GL_file::fsize(afile) returning fsize
+
+        IF status!=0 THEN
+                DISPLAY "ERROR : ",A4GL_file::ferror(afile);
+        END IF
+
+        DISPLAY "Size=",fsize
+        WHILE TRUE
+                CALL A4GL_file::fgets(afile) returning buff
+                IF A4GL_file::feof(afile) THEN
+                        EXIT WHILE
+                END IF
+                DISPLAY "Read '",buff clipped,"' from file"
+        END WHILE
+
+-----------------------------------------------------------------------
+
+*		Added an 'fshow' and 'fshow-gtk' utility which previews how a form will look
+
+----------------------------------------------------------------
+
+Mike,
+
+1) can we prevent it from code dumping, and rise the error when DATABSE is found in prepare?
+
+2) Any other statemnts affected, other then DATABASE?
+
+
+>BTW - I don't get a core dump - I get
+>
+>Program stopped at 'prepdb.4gl', line number 5.
+>Error status number -759.
+>[unixODBC][OpenLink][ODBC][Informix Server]Cannot use database commands in an
+>explicit database connection. (-759).
+
+At least CREATE DATABASE, ROLLFORWARD DATABASE, START DATABASE, CLOSE
+DATABASE, DROP DATABASE are also affected by that error.
+
+If you do CONNECT TO '@server' then you can issue database commands.
+
+Don't forget that DATABASE x and DATABASE :var and so on can be prepared
+in I4GL, and - further - often are used.  Especially with retargetable
+programs that can connect to arbitrary databases.
+
+
+
+-----Original Message-----
+From: nobody [mailto:nobody@sourceforge.net]On Behalf Of
+noreply@sourceforge.net
+Sent: Monday, 14 January 2002 05:37
+To: noreply@sourceforge.net
+Subject: [ aubit4gl-Bugs-464256 ] Valid prepared DATABASE stmt core
+dumps
+
+
+Bugs item #464256, was opened at 2001-09-23 20:16
+You can respond by visiting:
+http://sourceforge.net/tracker/?func=detail&atid=405150&aid=464256&group_id=32409
+
+Category: CoreDump
+Group: Current CVS
+>Status: Closed
+>Resolution: Accepted
+Priority: 9
+Submitted By: Andrej Falout (afalout)
+Assigned to: Mike Aubury (mikeaubury)
+Summary: Valid prepared DATABASE stmt core dumps
+
+Initial Comment:
+main
+
+define m_text, m_database char (20)
+
+
+error "start"
+
+let m_database = "maindb"
+
+   WHENEVER ANY ERROR CONTINUE            -- GPA added
+
+following test to figure
+
+error "a2"
+
+   LET m_text = "DATABASE ",m_database    -- out with
+
+to use argval(1) as dbase
+
+error "a3"
+
+error m_text
+
+   PREPARE test_database FROM m_text      -- or as
+
+table for $E4GLDBNAME
+
+error "a4"
+
+   EXECUTE test_database
+
+error "a5"
+
+   WHENEVER ANY ERROR STOP
+
+error "end"
+end main
+
+
+
+>Comment By: Mike Aubury (mikeaubury)
+Date: 2002-01-13 08:37
+
+Message:
+Logged In: YES
+user_id=285622
+
+This is a known deficiency of using Aubit4GL - the SQL is
+
+passed to the backend, not processed by 4GL.
+
+4GL is the bit that understands how to connect to an ODBC
+
+database.
+
+
+
+As the database command accepts a variable, a suitable
+
+workaround would be
+
+
+
+DEFINE m_database CHAR(20)
+
+.
+
+.
+
+LET m_database="maindb"
+
+DATABASE m_database
+
+
+
+
+
+
+
+This is not a bug - its a feature of how a4gl works.
+
+
+
+For example - you wouldn't expect an Informix database to
+
+accept a
+
+'Database dbname' where dbname was a mysql database now
+
+would you ?
+
+----------------------------------------------------------------------
+
+Hi *,
+
+> All environment variables
+
+...or other configuration variables/definitions, not nececaly coming from environment, but from configuration files like like aubitrc..
+
+> will be check for A4GL_oldname - if thats found,
+> its used. If its not - then it will work as before, eg
+>
+> $ A4GL_DBPATH=/home/aubit4gl
+> $ export A4GL_DBPATH
+> $ DBPATH=/home/informix
+> $ export DBPATH
+>
+> would use /home/aubit4gl, but if you didn't set the A4GL_DBPATH - it would be
+> /home/informix...
+
+Sound good to me.
+
+1) We should later remove checking for non-prefixed variables, maybe at 0.40 ?
+
+2) I will modify aubitrc file to define everything with A4GL_ prefix.
+
+
+-----------------------------------------------------------------------
+
+
+> These are combined together into aclocal.m4 by aclocal.  I also have a
+> simple shell script that automatically generates the configure files
+> from a virgin source directory.  I call it acsetup.sh; I've also seen it
+> called bootstrap.
+>
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.1 2003-01-09 00:42:11 afalout Exp $"
+>     #
+>     # Steps required to AutoConfigure SQLCMD
+>     #
+>     # Assumes MAKE is cognizant of RCS files.
+>
+>     CONFIG_FILES1="acconfig.h configure.in Makefile.in"
+>     CONFIG_FILES2="actimer.m4 acdevstd.m4 acinformix.m4"
+>     CONFIG_FILES3="install-sh acsetup.sh"
+>
+>     CONFIG_FILES="$CONFIG_FILES1 $CONFIG_FILES2 $CONFIG_FILES3"
+>     ${MAKE:-make} -s -f /dev/null $CONFIG_FILES
+>
+>     rm -f aclocal.m4
+>     aclocal -I .
+>     autoheader
+>     autoconf
+
+
+
+I'll leave only "configure" in root; I'll move enverything in etc/config, and create a bootstrap script. Developers will use it. Users will not.
+
+After I release 0.30 - I'm a little sick of delaying it more for whatever reasons. I need to make RPM and fow windows port - that's it.
+
+
+> If you've not seen the "GNU Autoconf, Automake, and Libtool" book from
+> New Riders (http://www.newriders.com/), it would be worth trying to get
+> hold of a copy.  In chapter 7 (p70), they discuss a bootstrap script,
+> with more details in chapter 8.  My revised code is pretty similar to
+> what they do -- but not identical since they are using automake and I'm
+> not directly doing so.
+
+
+
+==============================================================
+
+It may be useful - but dont forget - we have 'constants' now which do the
+bulk of the #define's work...
+
+DEFINE gc_arr_max CONST 100
+DEFINE my_Arr ARRAY[gc_arr_max] OF ...
+.
+.
+FOR a=1 TO gc_arr_max
+  LET my_Arr[a]=..
+END FOR
+
+etc.
+
+The bulk of the '#INCLUDE' functionality is
+1) To set up constants (#defines)
+2) To set up names for structures
+
+As we don't have named structures this is a non-issue
+For the constants defined in the #included file- we can use GLOBALS files
+instead :
+
+fseek.4gl:
+
+GLOBALS
+DEFINE
+     gc_seek_set CONST 0,
+     gc_seek_cur CONST 1,
+     gc_seek_end CONST 2
+END GLOBALS
+
+
+myfile.4gl:
+
+GLOBALS "fseek.4gl"
+
+MAIN
+   CALL fseek(somefile,gc_seek_set)
+END MAIN
+
+> I've explained how you can used
+> DEFINE .. CONSTANT ..
+> which replaces #define
+>
+> If you want #include you can use 'globals' for the #defines, and one of the
+> database options for defining records thats been posted.
+>
+> If you want #ifdef - use #ifdef !
+> code
+> #ifdef SOMEDEF
+> endcode
+>
+> which will work for most things
+
+
+-----------------------------------------------------------------
+
+
+About RPM package:
+------------------
+
+RPM installation includes automatic running of configure script, so only thing you need to do is:
+
+	rpm -i aubit4gl-<version>-1.i586.rpm
+
+You can of course use GUI RPM clients instead, but at this stage I don't recommend this, because if anything goes wrong,
+you will not be able to see any messages, only that it failed. So please use command line rpm for now, so you can report
+any potential problems.
+
+There are still some problems with configure in binary tree, for example:
+
+	checking for gcc... gcc
+	checking whether we are using the GNU C compiler... no
+	checking whether gcc accepts -g... no
+	...
+
+You can ignore this; it's not really relevant to binary builds at the moment, so go ahead and install it. Extensions
+used by Aubit compiler (ODBC managers, GTK+ GUI libraries, PDF library, etc...), everything installed in standard paths,
+that is relevant for binary distro should be detected automatically.
+
+Since you cannot pass flags to RPM that would be passed to configure, things that require command line options (usually
+because they are installed in non-standard locations) to "configure", like "--with-xxx=<path>" will of course NOT be
+detected, and you will have to run "make CPARAM=--with-xxx=<path>" after RPM finishes to detect that things and create
+new aubitrc configuration file - if you want. You can of course also manually edit aubitrc if you prefer.
+
+Another way around this limitation of RPM is to create a file called "aubitconf" and place it somewhere in the path.
+Make sure it will be in the $PATH when you run "rpm -i". In it, put only one line, for example:
+
+./configure --with-something=/path/to/something --with-anotherthing=/another/path ...etc...
+
+
+what will happen, is that if configure finds "aubitconf" in path, it will run it, instead of "normal" configure you
+initially invoked:
+
+For instance, on my system this will look like this:
+
+====================================================================
+[root@aptiva aubit4gl]# configure
+checking for aubitconf... /bin/custom/aubitconf
+Note: 'aubitconf' script found; running 'configure' via 'aubitconf'...
+
+WARNING: if you provided command line options to 'configure', they will
+be ignored, and ones provided in 'aubitconf' used instead. Use
+--disable-aubitconf to disable this behavior.
+
+Running ./configure with options:
+--with-www-name=www.falout.com --with-dot=/mnt/disk2/data2/install_sources/doxygen/gv1.7c/bin --with-iksemel=/mnt/disk2/
+usr/local --with-pdf=/mnt/disk2/usr/local --with-iodbc=/mnt/disk2/opt/iODBC_3beta/iODBC --with-informix --with-pgsql
+checking for aubitconf... /bin/custom/aubitconf
+Configuring binary distribution
+checking build system type... i586-pc-linux-gnu
+...etc...
+====================================================================
+
+Same thing will happen no matter how "configure" is invoked, for both source code and binary distributions. This is also
+a very practical solution for not having to type all switches you need over and over again. Just create aubitconf for
+your system, put it in, say, /usr/bin, and you will always get configure using them.
+
+I was trying to be very conservative with "requires", so this RPM should work on all GLIBC 2.2/x systems. OTOH, I
+probably missed some dependencies, since I had to disable automatic detection built in RPM, since it would declare ALL
+Aubit compiler options as mandatory.
+
+This RPM will require fairly recent version of RPM to work. I'm not sure which version is needed exactly, but you will
+get a message to this effect if you need to upgrade RPM. Please let me know which version of RPM where you on, if this
+happens.
+
+
+---------------------------------------------------------------------
+
+
+> 2) new file: dumpvars.out ?
+>
+> what should I put in manual about it? This one is now apparently created
+> even when DEBUG is not set at all, how do I stop it from being generated on
+> every 4gl file compile?
+
+Line 839 in compilers/4glc/mod.c - commented out now...
+
+_________________________________________________________________
+
+
+> > 2)
+> > I've also added a aubit-config.c to lib/ which gets compiled up with
+> > resource.c to form the "aubit-config" program
+> >
+> > $ aubit-config DBDATE
+> > dmy4/
+> >
+> > This should be the first thing made and can then be used for the
+> > makefiles where required..
+>
+
+
+> 14) Is there a way to list all variables in user/default resources, as they
+> would be returned by acl_getenv (if they are not overwritten from
+> environment) ?
+
+There is now :
+
+$ aubit-config -a
+
+
+
+
+------------------------------------------------------------------
+
+
+> 9) When you say "old method", what exactly do you menan, since I need to
+> remove from manual?
+
+CALL SHARED function IN library (...)
+
+
+---------------------------------------------------------------
+
+
+
+>
+> 11) Can you please explain
+>
+> 	IMPORT FUNCTION ferror(1)
+>
+All right.
+Its a quick way of being able to call a simple C function.
+A simple C function is one that accepts a series of 'int' sized arguments
+(pointers are normally int sized - but doubles arn't), and returns a single
+'int' sized argument.
+
+For example :
+	strcmp(a,b) is fine
+	pow(x,y) is not (as x and y are both double)
+
+To import strcmp this into 4gl you could :
+
+FUNCTION strcmp(a,b)
+DEFINE a,b CHAR(256)
+DEFINE r INTEGER
+code
+r=strcmp(a,b);
+endcode
+RETURN r
+END FUNCTION
+
+But if you've got a few of these - its a little long winded - so the IMPORT
+FUNCTION command does it for you (it will generate this function
+automatically)
+
+You need to specify the number of arguments so :
+
+IMPORT FUNCTION strcmp(2)
+
+----------------------------------------
+
+I wrote this 4gltags program this morning so it's not fully tested yet,
+but it seems to work fine.  It's written using flex (fast lex).  If you
+don't have flex you can download the source from ftp.gnu.org/gnu/flex
+
+This is analagous to ctags, but for 4gl source.  Below is a shell archive
+containing the source and the makefile.  Move to a file and execute
+sh 4gltags.shar
+
+Let me know if there are issues.
+
+travish@etcscan.com
+
+--- cut here ---
+:	"@(#)unshark.sh	0.2"
+#
+#	Created by:	travish@etcscan.com
+#	On:		Thu May  6 13:57:47 PDT 1999
+#	Contents:	an unknown package
+#
+#	This shell script will install several files (and possibly
+#	directories) in your hard drive.
+#	It is suggested that it be run from an empty subdir, since
+#	failing to do so might result in partial file installation
+#	and / or disk cluttering.
+#	Be aware that its use and that of its contents may have
+#	limitations as set forth in the welcome screen and the archive
+#	contents itself.
+#	Possible switches:
+#
+#	-n	doesn't check for file presence
+#	-q	for (almost) quiet operation
+#
+#	Files in this archive:
+#
+#	4gltags.l
+#	4gltags.makefile
+#
+#	Here's all the shell utilities usage that might cause problems.
+#	Edit appropriately if you are stuck.
+#
+AWK=${AWK:-awk}
+
+filesize()
+{
+    ls -l $1 | $AWK '{print $5}'
+}
+
+PG=`find /bin /usr/bin /usr/lbin -name pg -print`
+if [ -z "$PG" ]
+then
+    PG=more
+fi
+#
+#	get parms
+#
+QUIET=false
+NOCHECK=false
+while [ $# -ne 0 ]
+do
+    case $1 in
+	-n)
+	    NOCHECK=true
+	    ;;
+	-q)
+	    QUIET=true
+	    ;;
+	*)
+	    echo Usage: $0 [-c] [-q]
+	    exit 1
+	    ;;
+    esac
+    shift
+done
+#
+#  display welcome text - it may not fit on the screen, so we need a
+paginator
+#
+tput clear
+$PG <<'EOF-entry'
+
+	This shell script will install an unknown package
+	If you are not running it from a suitable directory
+	hit <DEL> now to abort installation
+
+EOF-entry
+#
+# more does not wait for a key while displaying last screen
+#
+if [ $PG = more ]
+then
+    read a
+    unset a
+fi
+#
+# create directories as needed
+#
+#
+#  begin 4gltags.l
+#
+if [ -f 4gltags.l -a $NOCHECK != true ]
+then
+    echo $0: 4gltags.l already exists
+else
+    if [ $QUIET != true ]
+    then
+        echo 4gltags.l \(5400 characters\)
+    fi
+    cat >4gltags.l <<'EOF-4gltags.l'
+/*---
+ * An Informix 4gl source tags file generator.
+ *
+ * Uses flex (fast lex)
+ *
+ * To create useable compiler droppings:
+ *
+ *    1.  flex -i -Cfe 4gltags.l                             -- creates
+lex.yy.c
+ *    2.  cc -o 4gltags lex.yy.c                             -- creates
+4gltags binary
+ * or
+ *    1.  make -f /source/installed/4gltags.makefile         -- creates
+4gltags binary
+ *
+ *
+ * Travis Hume  (travish@etcscan.com)
+ * Thu May  6 13:54:40 PDT 1999
+ *
+ *---
+ *
+ * Modification History
+ *
+ * 05/06/99  tjh  Initial release.
+ *
+ *---
+ */
+
+%{
+   #include <limits.h>
+%}
+
+   struct tagLine
+   {
+      char*  tagName;
+      char*  fileName;
+      char*  line;
+   };
+   struct tagLine *tags;
+
+   char  *curFileName;
+   int   numTags = 0;
+   short tagSQL  = TRUE;
+
+
+WS            [ \t\v]
+ID            [a-z][a-z0-9_]*
+
+TAGGABLE      ^{WS}*function{WS}+{ID}.*$
+TAGGABLE_SQL  ^{WS}*(declare|prepare){WS}+{ID}.*$
+
+
+%x COMMENT
+%s DO_SQL
+
+
+%%
+
+
+   if(tagSQL)
+      BEGIN(DO_SQL);
+
+
+{TAGGABLE}   {
+
+   char* yycopy    = (char*) strdup( yytext);
+   char* delimiter = " \t(";
+
+   if((numTags % 100) == 0)
+      tags = (struct tagLine*) realloc( tags, sizeof( struct
+tagLine)*(numTags+100));
+
+   strtok( yycopy, delimiter);
+
+   tags[numTags].tagName  = (char*) strdup( strtok( NULL, delimiter));
+   tags[numTags].fileName = (char*) strdup( curFileName);
+   tags[numTags].line     = (char*) strdup( yytext);
+
+   ++numTags;
+
+   free( yycopy);
+}
+
+
+<DO_SQL>{TAGGABLE_SQL}   {
+
+   char* yycopy    = (char*) strdup( yytext);
+   char* delimiter = " \t(";
+
+   if((numTags % 100) == 0)
+      tags = (struct tagLine*) realloc( tags, sizeof( struct
+tagLine)*(numTags+100));
+
+   strtok( yycopy, delimiter);
+
+   tags[numTags].tagName  = (char*) strdup( strtok( NULL, delimiter));
+   tags[numTags].fileName = (char*) strdup( curFileName);
+   tags[numTags].line     = (char*) strdup( yytext);
+
+   ++numTags;
+
+   free( yycopy);
+}
+
+
+"(#.*$)|(--.*$)"   /* eat up one line comments */
+"{"                BEGIN(COMMENT);
+<COMMENT>[^}\n]*   /* eat anything that's not a '}' */
+<COMMENT>"}"       BEGIN(INITIAL);
+
+
+.|\n ;
+
+
+
+%%
+
+
+
+/*---
+ * Comparison function passed to qsort() to sort tags array.
+ *
+ */
+int compareTags(const struct tagLine *a, const struct tagLine *b)
+{
+   return( strcmp( a->tagName, b->tagName));
+}
+
+
+
+/*---
+ * Prints a usage statement.
+ *
+ */
+void printUsage()
+{
+   printf("\n");
+   printf("4gltags -- generate a tags file for 4gl source code.\n");
+   printf("Usage:  4gltags [-(a|h|o(filename)|s)] (*.4gl|-)\n");
+   printf("\n");
+   printf("Options:\n");
+   printf("   -a  --  append to exsisting tags file\n");
+   printf("   -h  --  display this message\n");
+   printf("   -o  --  output to supplied filename instead of tags\n");
+   printf("   -s  --  don't generate tags for DECLARE and PREPARE
+statements\n");
+   printf("\n");
+}
+
+
+
+/*---
+ *
+ */
+void writeTagsFile( char *outputFile, char *mode)
+{
+   int   i;
+   FILE *outFile;
+
+
+   outFile = fopen( outputFile, mode);
+
+   /*
+    * need to sort the tags now
+    */
+   qsort( tags, numTags, sizeof( struct tagLine), (void*) compareTags);
+
+   /*
+    * write the tags file.
+    */
+   for(i=0; i < numTags; ++i)
+   {
+      fprintf( outFile, "%s\t%s\t/^%s$/\n", tags[i].tagName,
+tags[i].fileName, tags[i].line);
+   }
+}
+
+
+/*
+ *
+ */
+void appendCurrentTags( char *file)
+{
+   FILE *f = fopen( file, "r");
+   char buf[LINE_MAX];
+   char *delimiter = "\t";
+
+   while( fgets( buf, LINE_MAX, f))
+   {
+      if((numTags % 100) == 0)
+         tags = (struct tagLine*) realloc( tags, sizeof( struct
+tagLine)*(numTags+100));
+
+      tags[numTags].tagName  = (char*) strdup( strtok( buf, delimiter));
+      tags[numTags].fileName = (char*) strdup( strdup( NULL, delimiter));
+      tags[numTags].line     = (char*) strdup( strdup( NULL, delimiter));
+   }
+
+   fclose(f);
+}
+
+
+
+/*--
+ *
+ */
+int yywrap()
+{
+   return 1;
+}
+
+
+
+/*--
+ *
+ *
+ */
+int main( int argc, char** argv)
+{
+   extern char *optarg;
+   extern int   optind;
+
+   int   i;
+   int   c;
+   char  *outputFile   = "tags";
+   char  *openFileMode = "w";
+
+
+   tags = (struct tagLine*) calloc( 100, sizeof( struct tagLine ));
+
+   if(argc == 1)
+   {
+      printUsage();
+      exit( 1);
+   }
+
+   while(( c = getopt( argc, argv, "ahso:")) != -1)
+      switch( c)
+      {
+         /*
+          * append to tags file, don't overwrite
+          */
+         case 'a':
+            strcpy( openFileMode, "a");
+            break;
+
+         /*
+          * print help
+          */
+         case 'h':
+            printUsage();
+            exit( 1);
+            break;
+
+         /*
+          * don't include SQL cursor declarations and prepare
+declarations
+          */
+         case 's':
+            tagSQL = FALSE;
+            break;
+
+         /*
+          * output to supplied argument instead of "tags"
+          */
+         case 'o':
+            outputFile = (char*) strdup( optarg);
+            break;
+
+         /*
+          * unknown option
+          */
+         case '?':
+            fprintf( stderr, "What is '%c'?", c);
+            exit( 1);
+      }
+
+
+   /*
+    * for each source file given call the scanner yylex()
+    *
+    */
+   for(i = optind; i < argc; ++i)
+   {
+      curFileName = argv[i];
+      yyin = fopen( curFileName, "r");
+      yylex();
+   }
+
+
+   if( strcmp( openFileMode, "a") == 0)
+      appendCurrentTags( outputFile);
+
+
+   if(numTags > 0)
+      writeTagsFile( outputFile, openFileMode);
+}
+
+EOF-4gltags.l
+    if [ `filesize 4gltags.l` -ne 5400 ]
+    then
+        echo $0: 4gltags.l extracted with wrong size
+    fi
+fi
+#
+#  end 4gltags.l
+#
+#  begin 4gltags.makefile
+#
+if [ -f 4gltags.makefile -a $NOCHECK != true ]
+then
+    echo $0: 4gltags.makefile already exists
+else
+    if [ $QUIET != true ]
+    then
+        echo 4gltags.makefile \(368 characters\)
+    fi
+    cat >4gltags.makefile <<'EOF-4gltags.makefile'
+#---
+# Makefile for 4gltags
+#
+#---
+
+CC          = cc
+BIN_DIR     = /source/testdb/programs
+SOURCE_DIR  = /source/installed
+
+#---
+
+4gltags: lex.yy.c
+	$(CC) -o 4gltags lex.yy.c
+
+lex.yy.c: 4gltags.l
+	flex -i -Cfe 4gltags.l
+
+install: 4gltags
+	strip 4gltags
+	cp 4gltags $(BIN_DIR)
+	cp 4gltags.l $(SOURCE_DIR)
+	cp 4gltags.makefile $(SOURCE_DIR)
+
+clean:
+	rm lex.yy.c 4gltags
+EOF-4gltags.makefile
+    if [ `filesize 4gltags.makefile` -ne 368 ]
+    then
+        echo $0: 4gltags.makefile extracted with wrong size
+    fi
+fi
+#
+#  end 4gltags.makefile
+#
+echo All done.
+
+===================================================================
+
+
+Well, 4gl is weak in so many areas (as a language) that there are
+occasions where you can't avoid using C-hooks.  gcj has a CNI, so
+theoretically one could add "java hooks" via the C-hook mechanism
+without adding the heft of a vm in your binary.  Embedding an
+interpreted language like Perl or Python would be the "serious
+mistake" IMO.
+
+--
+Forte International, P.O. Box 1412, Ridgecrest, CA  93556-1412
+Ronald Cole <ronald@forte-intl.com>      Phone: (760) 499-9142
+President, CEO                             Fax: (760) 499-9152
+My GPG fingerprint: C3AF 4BE9 BEA6 F1C2 B084  4A88 8851 E6C8 69E3 B00B
+
+
+----------------------------------------------------------------------
+
+
+I've just updated the CVS with some new functionality
+Aubit4gl will now help you with multilingual code !
+
+
+There is an environment variable 'DUMPSTRINGS' which can be set, this will
+generate a file called 'strings.lang' with all the strings from your 4gl
+module.
+
+$ export DUMPSTRINGS=
+$ 4glpc m1.4gl -o m1
+
+DUMPSTRINGS can also be set to 'ident' - more later.
+
+The strings.lang file looks like this :
+
+Hello:=
+World:=
+
+you can then rename this file (so it isn't overwritten) and then edit it eg.
+
+$ cp strings.lang french.lang
+(And then edit it to be:
+Hello:=Bonjour
+World:=Monde
+)
+
+When compiling the 4GL you can then use a second environment variable
+'TRANSLATEFILE' to specify the new language
+eg.
+
+$ export TRANSLATEFILE=french.lang
+$ 4glpc m1.4gl -o m1.french
+
+This will replace any strings found in TRANSLATEFILE with the translated ones
+associated with it.
+
+
+If you want to select the language at runtime, you can do that too.
+
+By setting DUMPSTRINGS=ident
+you will generate a file like :
+
+Hello:>0
+World:>1
+
+This allows you to assign a number to a string (notice :> rather than := ) .
+You can then create your language files using these numbers - just like for
+help files :
+
+eg "french.msg" may contain
+
+.0
+Bonjour
+.1
+Monde
+
+$ mkmess french
+(This will create french.hlp)
+
+
+All you need to do then is specify which language you want to use in your
+program with :
+
+OPTIONS LANGUAGE FILE "french.hlp"
+
+If you want to be able to control which one - just use a variable instead of
+'french.hlp'
+
+Eg.
+define lv_var char(20)
+# Pick up our language from the environment
+#
+let lv_var=fgl_getenv("LANGUAGE")
+
+if lv_var = " " or lv_var IS NULL then # default to english
+        LET lv_var="english"
+end if
+
+let lv_var=lv_var clipped,".hlp"
+
+options language file lv_var
+
+
+There is an example in tools/test called lang.4gl, with associated .msg files
+for english, french, german,spanish and italian as well as
+
+Theres also a makefile to compile it all up and the source.lang file.
+
+Just
+$ make -f Makefile.lang
+
+and you should be ok (make sure mkmess is in the bin directory - I had to
+copy it manually for some reason).
+
+========================================================================
+
+GTK themes apply colours or images to applications that use GTK library.
+The changes aare not made to windows borders or buttons (thosa are handeled
+by a windows manager)
+
+Themas source: gtk.themes.org
+
+Installation:
+
+When running GNOME:
+
+Start-> Settings-> Gnome Controll Centr -> Desktop Theme selector.
+Click on "Install new theme" and select your theme.
+
+Not running GNOME:
+
+Extract the downloaded theme tarball to some location, for eample
+~/.gnome/themes (or /usr/share/themes for system wide)
+
+make a file in your home directory called .gtkrc and add the following line
+to it:
+
+include~/.gnome/themes/our-theme-name-gtk/gtk/gtkrc
+
+
+========================================================================
+
+Instructions for seting up PostgreSQL ODBC:
+
+http://www.redhat.com/support/resources/howto/database/database_odbc/
+
+
+========================================================================
+
+
+AUBITGUI is now "TUI" or "GTK"
+
+====================================================================
+
+bad rpcgen: (execl: No such file or directory) on armada:
+
+-rwxr-xr-x    1 afalout  None        25600 Oct 29 20:59 /usr/local/bin/rpcgen
+
+also bad: on armada:
+-rwxr-xr-x    1 afalout  None       402727 Oct 29 20:54 /usr/local/bin/rpcgen
+
+
+good rpcgen on istation:
+-rwxr-xr-x    1 afalout  None        51280 Jun 11 2001 /usr/local/bin/rpcgen
+
+good disrto includes rpcinfo.exe
+
+========================================================================
+
+
+Just added libUI_CONSOLE.
+
+This is a stdin/stdout UI which features :
+DISPLAY ERROR MESSAGE
+MENU & PROMPT
+(Trying to use any other screen UI (eg input/construct) will core dump)
+
+Everything is read from the standard input and written to the standard output.
+There are no control characters sent, no screen formatting.
+Eg
+
+basic.4gl:
+
+main
+define a char(40)
+
+prompt "Enter your name :" for a
+display "Hello ",a clipped
+
+end main
+--
+$ 4glpc basic.4gl -o basic
+$ AUBITGUI=CONSOLE
+$ export AUBITGUI
+$ ./basic
+Enter your name :Mike
+Hello Mike
+$ echo "Mike" | ./basic
+Enter your name :Hello Mike
+$
+
+menus look like this:
+
+
+----cut----
+
+
+Menu name
+
+1. First Option
+2. Secong option
+3. Exit program
+
+
+
+----cut----
+
+
+
+This should effectively replace the old NOCURSES environment settings which
+will be removed (at some point)...
+
+No form related (fcompile, fshow, fdecompile) or menus (mcomile, mdecompile)
+programs are compiled / installed in this environment, since they are unable
+to do anything usefull without RPClib.
+
+
+=======================================================================
+
+add "How to report bugs" sestion to manual
+
+======================================================================
+
+
+USING SCROLL fieldname for linking display array with a scroolbar
+(Not in TUI obviously)
+
+added libstring
+
+added basic display array to GTK GUI
+
+added limites scroolbar support in GTK (for version 1.2)
+
+=================================================================
+
+
+BTW - why do you want hash tables ?
+You do know that aubit 4GL has associate arrays I assume (i've committed the
+following as tools/test/assoc2.4gl):
+
+define lv_rate ASSOCIATE CHAR(3) WITH ARRAY[2000] OF RECORD
+                lv_name CHAR(20),
+                lv_rates float
+end record
+define lv_name ASSOCIATE CHAR(3) WITH ARRAY[2000] OF CHAR(20)
+
+#
+# Data correct on 19/04/2002
+#
+main
+DEFINE i FLOAT
+define cur char(3)
+# Use USD as base
+        LET lv_rate<<"USD">>.lv_name="US Dollars"
+        LET lv_rate<<"USD">>.lv_rates=1.0
+
+        LET lv_rate<<"EUR">>.lv_name="Euro"
+        LET lv_rate<<"EUR">>.lv_rates=0.888477
+
+        LET lv_rate<<"GBP">>.lv_name="UK Pounds"
+        LET lv_rate<<"GBP">>.lv_rates=1.44621
+
+        LET lv_rate<<"JPY">>.lv_name="Japan Yen"
+        LET lv_rate<<"JPY">>.lv_rates=0.00766891
+
+        LET lv_rate<<"NZD">>.lv_name="New Zealand Dollars"
+        LET lv_rate<<"NZD">>.lv_rates=0.447180
+
+        LET lv_rate<<"PTE">>.lv_name="Portugal Escudos"
+        LET lv_rate<<"PTE">>.lv_rates=0.00443157
+
+LET i=5
+clear screen
+
+options prompt line last
+while true
+PROMPT "Enter short code : " for cur
+DISPLAY "" at 5,1
+DISPLAY" if I have ",i using "#####&&.&&", " ",cur," (",
+lv_rate<<cur>>.lv_name clipped,") thats about ",lv_rate<<cur>>.lv_rates*i,"
+US Dollars" AT 5,1 attribute(red)
+end while
+sleep 2
+
+end main
+
+====================================================================
+
+Nothing as elaborate - But we have a skeleton for something less
+sophisticated :
+
+
+define new type a1 as record
+        tabid integer,
+        tabname char(18),
+        nrows integer,
+        rowsize integer
+end record
+
+
+define a as a1
+
+
+When I just tried it - it didn't work - so I'll need to check why...
+As for the comparisons etc. - these are a lot more difficult and I can't
+really see the point for complex types.
+
+Anyway - if you head down that route then you'll have OO4GL by default...
+
+You could have something along the lines of :
+
+define new type a1 as record
+	        tabid integer,
+	        tabname char(18),
+	        nrows integer,
+	        rowsize integer
+	end record
+
+	function aaa ()
+	..
+	end function
+end type
+
+
+
+etc if you want to move to a more OO system..
+
+define a as a1
+
+
+Anything along these lines will probably have to wait quite a while though....
+
+(One thing I would like to introduce though is the ability to add datatypes
+at some point. I'd love to add the GMP datatypes/functions in (see
+http://www.gnu.org/directory/gnump.html ).
+
+
+=======================================================================
+
+I haven't done the server yet - so its a little difficult. - you'll need to
+create you're own server (or find a public one )
+
+A4GL will pass in the parameters as an array...
+At least one public server I've tried, uses PHP as the server - which in some
+versions has a bug - best probably to roll your own...
+
+
+Your client sourcecode would then look like this :
+
+main
+define x char(20)
+#                           URL                                         METHOD
+        call external "localhost/cgi-bin/sample-cgi.cgi":sample.addition[1]
+(1,2)  returning x
+        display "x=",x
+end main
+
+
+The [1] is ignored for XMLRPC..
+
+===================================================================
+
+
+Usage: nm [OPTION]... [FILE]...
+List symbols from FILEs (a.out by default).
+
+
+  Your VC install should include a tool called "depends.exe"
+(usually installed under Microsoft Visual Studio\Common\Tools).
+Loading your app app/dll within depends should show you what
+import dependencies your app has on cygwin1.dll.
+
+  The command line tool dumpbin will give you similar info;
+where depends attempts to resolve the imports an associate
+them with a particular DLL, though, dumpbin will just give
+you the raw IAT dump.
+
+
+
+Q) What preprocessor symbols does Cygwin define
+A)  Use the tool Luke :-)
+
+	gcc -E -dM - </dev/null
+
+
+afalout@usf-cf-sparc-solaris-1:~/aubit4glsrc$ gcc -E -dM - </dev/null
+#define __GCC_NEW_VARARGS__ 1
+#define __sparc 1
+#define __svr4__ 1
+#define __GNUC_MINOR__ 95
+#define __sun 1
+#define sparc 1
+#define __sun__ 1
+#define __unix 1
+#define __unix__ 1
+#define __SVR4 1
+#define sun 1
+#define __GNUC__ 2
+#define __sparc__ 1
+#define unix 1
+
+
+=====================================================================
+
+Hello *,
+
+I just posted diagram of proposed architecture for Aubit compiler header files includes consolidation, at:
+
+http://aubit4gl.sourceforge.net/aubit4gldoc/architecture/Aubit4gl_includes.htm
+
+also accessible from updated documentation menu page, that no includes 4GLworks manual:
+
+http://aubit4gl.sourceforge.net/aubit4gldoc/index.html
+
+BTW, I'm still hoping for some comments on Aubit compiler architecture diagram, now in version 0.20:
+
+http://aubit4gl.sourceforge.net/aubit4gldoc/architecture/Aubit4gl_arch.htm
+
+Header files includes diagram is simplified, and instead of showing all possible combinations, shows only target level,  with no separate items in target class (one level for all compilers, one for aubitlib, one level for all loadable modules)
+
+Currently, we have 80 header files.
+
+According to proposal, this would go down to 41 (40).
+
+Following assumptions where made:
+
+* One compile target - one header file (libubit4gl is a target, it gets one private (_int) header file , 4glc is a target, libUI_ is a target, and so on...
+
+* Loadable modules targets get there private header for specific implementation (for UI this is TUI, GTK, CONSOLE) and one for each class (in this case UI)
+
+* All declarations/definitions that stay in source code files (.c) are static and static only.
+
+* External headers (ANSI, POSIX, GTK, ODBC...) are included from highest level header file that still needs them, not from .c code directly.
+
+* All declarations/definitions that are internal to target class (library,executable) go in private header file (targetname_int.h)
+
+* There is (should not) be a need for libaubit and modules libraries (libUI_, libSQL_, ...) to access functions/variables in any executables.
+
+* Modules libraries access to aubitlib and vice versa would go via API only. There should be no access to variables directly, and function call interface should be used in all cases, and defined as part of API. This includes variables like status, sqlca... This way we will be sure we have "well defined API's", and that nothing is going in or out bypassing API.
+
+* Only aubitlib and API headers need to be globally visible.
+
+List of all header files to be created:
+
+Top level (3 or 2):
+----------------------------------------------------------
+
+/incl/a4gl_4gldef.h (used only by Aubit compiled 4gl code)              *
+/incl/a4gl_libaubit4gl.h (ex a4gl_aubit_lib.h)                          *
+/incl/a4gl_4glgui.h (can we remove this one?)                           *
+
+API declarations (9):
+----------------------------------------------------------
+
+/incl/a4gl_API_sql.h                                                    *
+/incl/a4gl_API_ui_int.h     (_int ??? rename)                           *
+/incl/a4gl_API_exreport.h
+/incl/a4gl_API_form.h                                                   *
+/incl/a4gl_API_menu.h                                                   *
+/incl/a4gl_API_rpc.h
+/incl/a4gl_API_msg.h                                                    *
+/incl/a4gl_API_datatype.h
+/incl/a4gl_API_lex.h                                                    *
+
+Target specific declarations (14):
+---------------------------------------------------------
+
+/lib/libincl/a4gl_4glc_int.h                                            *
+/lib/libincl/a4gl_mkmess_int.h                                          *
+/lib/libincl/a4gl_fcompile_int.h                                        *
+/lib/libincl/a4gl_mcompile_int.h                                        *
+a4gl_ace_int.h                                                          *
+
+/lib/libincl/a4gl_libaubit4gl_int.h                                     *
+
+/lib/libincl/a4gl_lib_sql_int.h                                         *
+/lib/libincl/a4gl_lib_ui_int.h                                          *
+/lib/libincl/a4gl_lib_exreport_int.h                                    *
+/lib/libincl/a4gl_lib_form_int.h                                        *
+/lib/libincl/a4gl_lib_menu_int.h                                        *
+/lib/libincl/a4gl_lib_rpc_int.h                                         *
+/lib/libincl/a4gl_lib_msg_int.h                                         *
+/lib/libincl/a4gl_lib_datatype_int.h
+/lib/libincl/a4gl_lib_lex_int.h                                         *
+
+Loadable module implementation specific declarations (15):
+----------------------------------------------------------
+
+/lib/libsql/a4gl_lib_sql_odbc_int.h                                     *
+/lib/libsql/a4gl_lib_sql_esqlc_int.h                                    *
+/lib/libsql/a4gl_lib_sql_pgsql_int.h
+
+/lib/libui/a4gl_lib_ui_tui_int.h                                        *
+/lib/libui/a4gl_lib_ui_gtk_int.h                                        *
+/lib/libui/a4gl_lib_ui_console_int.h                                    *
+
+/lib/libexreport/a4gl_lib_exreport_pdf_int.h                            *
+
+/lib/libform/a4gl_lib_form_xdr_int.h                                    *
+
+/lib/libmenu/a4gl_lib_menu_xdr_int.h                                    *
+
+/lib/librpc/a4gl_lib_rpc_xdr_int.h                                      *
+/lib/librpc/a4gl_lib_rpc_rpcxml_int.h                                   *
+
+/lib/libmsg/a4gl_lib_msg_native_int.h                                   *
+
+/lib/libexdata/a4gl_lib_datatype_mpz_int.h
+
+/lib/liblex/a4gl_lib_lex_c_int.h                                        *
+/lib/liblex/a4gl_lib_lex_perl_int.h                                     *
+
+I will surround existing #include statements with #ifdef _OLD_HEADERS_ so we can go back easy if we have problems. I will NOT change or delete any existing header files untill this process is completed and fully tested.
+
+
+Exceptions:
+-------------
+
+lib/libaubit4gl/error.c includes "../generated/tmperrs.h"
+				/gui.c includes <errno.h> /* EINTR */
+lib/libsql/sql.c includes headers from ODBC drivers
+a4gl_lib_lex_int.h includes :
+	#include "a4gl_lex_print_protos_c.h"
+	#include "a4gl_4glc_4glc.h"
+
+
+
+
+==========================================================================
+Sorry for delay,
+
+> FYI - I've just finished work on a modularised 'packer' for aubit4gl (which
+> I'll commit when I'm happy - BTW - the datatypes stuff should work now [But i
+> need to add automatic datatype loading at some point])
+
+Can you please put something together for the manual - and consider the people
+that have no idea what this is?
+
+I myself am not clear about what exactly "modularized packer" is, and if it's
+in any way associated with data types loading, of how exactly is this working...
+
+> This takes the form of yet another compiler (xgen),
+
+What does (this)?
+
+> this processes a .x file
+> and along with the .h file generated by rpcgen allows different formats for
+> data storage for the reports/forms/menus etc.
+
+But is still dependent on RPCLIB on client PC?
+
+
+> It generates 3 files, an input.c output.c and header file. These in turn call
+> a pack function, which actually writes or reads the data to/from a file.
+>
+> Each of the 'packers' is a separate .so and is called via a dlmagic'd script.
+> which is obviously configurable.
+
+Very cool.
+
+> This means we can now store data in xdr, packed (simple data), and XML formats
+> and also any others we want later on (for example - I've written a 'perl'
+> packer which outputs something which can be directly incorporated into a perl
+> script !).
+
+OK, so you DO need RPCGEN to compile this...
+Idea is fantastic, but Sun RPC is killing me...
+
+Mike:
+
+No - thats the point - you need the header file (.h) generated by rpcgen and
+thats it.
+If you remember we agreed that this would be used for the internal
+representation. So this .h file (which we could edit a little) would be added
+to CVS and you would no longer need RPC at all (just use the CVS version of
+the header file). I may extend the Xgen compiler to output the required .h
+file as well - but this gets pretty complicated so don't hold you're
+breath....
+
+
+
+> The XML bit it a little limited - it will only read data that it has written
+> out (ie. its not a full XML parser - it relies on some of the line breaks
+> being present and also relies on the data being exactly what its expecting
+> and in that order etc.)
+
+Can we use external XML parser library like Expat instead?
+
+Mike:
+
+You could try - but you need something to convert this into the internal
+format (which may be difficult to do).
+
+
+
+------------------------
+
+Hi,
+Just to let you know I've just committed the new packer library.
+
+Whats that then...
+
+Well, basically forms and the new style menus (as well as anything else we
+come up with) are stored in files in a format called XDR, which is a platform
+independant format used by SUN RPC.
+It was chosen because you can define the layout of the data (in a '.x' file)
+and it will generate all the structures in a header file and the routines
+required to read and write those structures automatically.
+
+Anyway - to cut a long story shorter, this isn't ideal because :
+
+1) The XDR format is not available on all platforms
+2) The rpcgen program which processes the files we use isn't available on all
+platforms
+3) As we move to new languages (eg Java , Perl) we can't use the rpcgen'erated
+code because thats pure 'C'.
+4) Its not very readable
+
+So we now have different 'packers', these are routines that take C structures
+and turn them into files and vice versa. You can select which packer to use
+by setting the environment variable "A4GL_PACKER"
+
+I've implemented 4 so far:
+
+1) PACKED
+ This is very similar to XDR in that data is written in a hopefully portable
+way (optionally non-portable if the required functions aren't available).
+This will probably give the smalled output files
+
+2) XDR
+ This is the same as doing it the old way
+
+3) XML (yes - that is XML)
+ This stores and reads the data in an XML file. The reading is very limited
+and can basically only read the XML files that it generates - IT IS NOT A
+FULL BLOWN XML PARSER. It uses some odd constructs and isn't ideal - but
+you'll get the idea when you see the output
+
+4) PERL
+This generates a data structure which can be used inside a perl program - its
+pretty complicated stuff though using hashes for the data representation.
+What you do with it after you've generated it is up to you, because this is
+an output only library (ie it can't read back what its written).
+
+
+
+It'll probably take a day or two to iron out any problems, so bear with me...
+
+============================================================================
+
+OK - I'm releasing this as beta code.
+What's been done is to add a mechanism whereby datatypes can be added to the
+4GL language.
+
+This is done using shared libraries..
+
+I've uploaded an example testmpz.4gl into the tools/test directory.
+
+In order to use it -
+
+$ cd lib/libexdata
+$ make
+(This will make the .so for the mpz datatype - assuming you have the gnu mp
+[gmp] package installed)
+
+The mpz datatype is a arbitrary precision integer datatype that can handle
+very very large numbers...
+
+
+This is the testmpz.4gl file :
+
+
+import datatype mpz # Tell everything we need the mpz datatype
+main
+define a mpz
+define b integer
+
+call load_datatype("mpz") #actually load the datatype
+
+let a=100 # simple assignment
+
+for b=1 to 10
+        call a:nextprime() returning a # This is a 'class' function which
+						# returns a value
+        display a
+end for
+
+
+display "Setting fib numbers"
+
+for b=1 to 10
+        call a:setfib(b)  # This has been defined as an 'inplace' function
+				# ie change the variable itself
+        display a
+end for
+
+
+end main
+
+
+Enjoy!
+
+===========================================================================
+
+
+I actually put support for this in Hydra a number of versions ago, so
+that the multiple page forms are correctly handled (although the
+form compiler doesn't necessarily think so).
+
+To select a given form page you can use:
+
+DISPLAY PAGE pageno (where pageno is  number of pages-1)
+[sorry it should be 1 to maxpageno for consistency, but its a minor
+feature anyway].
+
+Unfortunately, this isn't supported in any of our graphical clients.
+
+
+> They are the packers for the file types (menus, reports, forms).
+>
+> This is used by the libpacker stuff so its all automated (you say how to write
+> an integer in the packer, the libDATA_report.so will call this when required
+> to write a report), this means that you don't need to write interface code
+> for all file types for all data types...
+>
+>
+>
+> On Thursday 29 August 2002 12:59 pm, you wrote:
+> > Mike
+> >
+> > Where are this guys loaded/used in code?
+> >
+> > libDATA_menu_list.so
+> > libDATA_report.so
+> > libDATA_struct_form.so
+> >
+
+
+SAPDB on RedHat > 6.2
+---------------------
+
+cd [...redhat i386 distribution/RPMS...]
+rpm -ivh compat-libstdc++-6.2-2.9.0.16.i386.rpm
+
+cd [ your SAPDB RPM's.../sapdb/7.3.00.18/linux]
+rpm -ivh sap*
+
+cd [ to this directory with the init scripts ]
+./rh-inst
+
+configure the instances you want to startup at boot in /etc/sysconfig/sapdb
+
+=====================================================================
+
+Use in my makefiles:
+-fno-strict-aliasing
+-march=i386
+-mcpu=i686
+-Wno-implicit-int
+-Wno-comment
+-Wno-unused
+
+=======================================================================
+
+To doc4gl manual:
+> The idea of the @process tag is to let the people divide is system in
+> sub-systems and define what sub-system the function implements. Ex:
+>
+> If you have an ERP, maybe the system have the folowing sub-systems:
+>   ERP
+>     +-- Account +-- Payable
+>                           |
+>                          +- Receivable
+>
+> This way in the functions that implement "Account Payable" could be
+> marked with @process ACC_PAYABLE.
+>
+> You can then make some query(s) in the database (or use the JSP
+> interface) to know wioch functions implement some functionality.
+>
+> >And "Account receivable" ACC_RECEIVABLE, but you would never be able to relate them to "Account"?
+> >
+> >
+> Yes, because the processes are stored in a table (process i think) where
+> you can set the hierarchy, where you can set the ACC_RECEIVABLE as a
+> sub-process of ACCOUNT.
+>
+
+======================================================================
+
