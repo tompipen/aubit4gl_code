@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.2 2003-06-18 11:07:22 mikeaubury Exp $
+# $Id: readkeys.c,v 1.3 2003-06-20 00:02:10 afalout Exp $
 #*/
 
 /**
@@ -124,6 +124,7 @@ int A4GL_readkey(void) {
 		}
 			
 	}
-	usleep(key_delay);
+	// no usleep on Windows - usleep(key_delay);
+    a4gl_usleep (key_delay);
 	return a;
 }
