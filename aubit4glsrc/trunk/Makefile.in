@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2001-12-12 10:26:06 afalout Exp $
+# $Id: Makefile.in,v 1.3 2001-12-12 11:38:12 afalout Exp $
 #
 
 #If you are looking here because make could not find "/etc/aubitbuild.mk"
@@ -600,7 +600,7 @@ installx:
 		make install.core; \
 	fi
 
-install.core:
+install.core: install.gtk
 	${CP} $(TOBIN) $(DEST)/bin
 	$(CP) $(TOROOT) $(DEST)
 	$(CP) $(TOINCL) $(DEST)/incl
@@ -608,6 +608,10 @@ install.core:
 	$(CP) $(TOLIBCUI) $(DEST)/lib
 	@echo Aubit 4gl compiler is now installed
 
+install.gtk:
+	@if [ "${GTKBUILD}" = "yes" ]; then \
+		$(CP) $(TOLIBGTK) $(DEST)/lib; \
+    fi
 
 createcleantar: installdrop installall tarinstall
 	@echo "Aubit 4gl compiler binary disribution is now in $(SOURCE)/$(TARNAME)"
