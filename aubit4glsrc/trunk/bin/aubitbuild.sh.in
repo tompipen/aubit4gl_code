@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.58 2004-12-27 10:52:43 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.59 2004-12-28 23:37:41 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -188,7 +188,7 @@ ARCHEXT=@ARCHEXT@
 SHORTNAME=@SHORTNAME@
 SRCSHORTNAME=@SHORTNAME@src
 BINSHORTNAME=@SHORTNAME@bin
-WINSETUPEXE_BASENAME=setup.exe
+WINSETUPEXE_BASENAME_DEFAULT=setup.exe
 
 WINSETUP_OUTPUTDIR="etc/Output"
 FULLNAME='@FULLNAME@'
@@ -506,8 +506,8 @@ the_url="$1"
 	FILESIZE_SF=`$WGET_SIZE $the_url > $WGET_LOG 2>&1;`
 	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | awk '{print $3}'`
 	if test "$FILESIZE_SF" = ""; then 
-		echo "ERROR: failed to get file size for uploaded file file:"
-		echo "$HTTP_FILE"
+		echo "ERROR: failed to get file size for uploaded file:"
+		echo "$the_url"
 		echo "see $WGET_LOG"
 	else
 		rm -f $WGET_LOG	
@@ -519,11 +519,11 @@ function local_filesize () {
 #############################
 LOCAL_FILE="$1"
 
-	if test "$SH_DEBUG" = "1"; then 
+	#if test "$SH_DEBUG" = "1"; then 
 		echo "Trying to ls: .$LOCAL_FILE."
-	fi
-	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
-	FILESIZE_LOCAL_HUMAN=`ls -alh "$LOCAL_FILE" | awk '{print $5}';`
+	#fi
+	FILESIZE_LOCAL="`ls -al \"$LOCAL_FILE\" | awk '{print $5}';`"
+	FILESIZE_LOCAL_HUMAN="`ls -alh \"$LOCAL_FILE\" | awk '{print $5}';`"
 	if test "$SH_DEBUG" = "1"; then	
 		echo "xx"
 	fi
@@ -562,7 +562,7 @@ SIZE_COMPARES_OK=0
 		COMPARED_OK=0
 		if test "$SH_DEBUG" = "1"; then
 			#Little point, allways downloaded file of same size as reported by 
-			#website_filesize function
+			#website_filesize()
 			echo "Will try downloading that file to compare:"
 			compare_files "$UP_FILE" "$LOCAL_FILE" "$UP_URLENCODED"
 		fi
@@ -1044,8 +1044,8 @@ if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
 		#Move already created tarball out of the way, since we will need to 
 		#do a "make clean.all" and we don't want to delete it
 		NEWTARBALL=/var/tmp/$TARBALLBASENAME
-		mv $TARBALL $NEWTARBALL
-		TARBALL=$NEWTARBALL
+		mv "$TARBALL" "$NEWTARBALL"
+		TARBALL="$NEWTARBALL"
 	fi
 
 	func_path_mingw
@@ -1069,11 +1069,12 @@ function func_get_winsetup_name () {
 #######################################
 #Get name of created Windows setup installer executable
 
-	WINSETUPEXE="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$WINSETUPEXE_BASENAME"
-	if ! [ -f "$WINSETUPEXE" ]; then
+	#This is default file InoSetup creates:
+	WINSETUPEXE_DEFAULT="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$WINSETUPEXE_BASENAME_DEFAULT"
+	if ! [ -f "$WINSETUPEXE_DEFAULT" ]; then
 		#Maybe we allready renamed it?
 		prepare_winsetup_names
-		if [ -f "$TMP_WINSETUPEXE" ]; then
+		if [ -f "$WINSETUPEXE" ]; then
 			if test "$VERBOSE" = "1"; then
 				echo "Allready renamed winsetup"
 			fi
@@ -1084,8 +1085,8 @@ function func_get_winsetup_name () {
 			#Nope - not there
 			if test "$WINSETUP" = "1" -o "$VERBOSE" = "1"; then
 				echo "Windows installer not created"
-				echo "No '$WINSETUPEXE' or"
-				echo "'$TMP_WINSETUPEXE'"
+				echo "No '$WINSETUPEXE_DEFAULT' or"
+				echo "'$WINSETUPEXE'"
 				
 			fi
 			WINSETUPEXE=""
@@ -1094,7 +1095,9 @@ function func_get_winsetup_name () {
 		#created it, so rename it
 		prepare_winsetup_names
 		#rename it to current version:
-		mv "$WINSETUPEXE" "$TMP_WINSETUPEXE"
+		
+		echo "moving : '$WINSETUPEXE_DEFAULT' to '$WINSETUPEXE'"
+		mv "$WINSETUPEXE_DEFAULT" "$WINSETUPEXE"
 		show_winsetup_names
 	fi
 	
@@ -1105,12 +1108,15 @@ function prepare_winsetup_names () {
 ######################################
 
 		get_current_aubit_version
-		TMP_BASENAME="$FULLNAME $AUBIT_VERSION.$AUBIT_BUILD.exe"
-		TMP_WINSETUPEXE="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$TMP_BASENAME"
-        WINSETUPEXE_BASENAME="$TMP_BASENAME"
+		#basename and fullname of final setup executable name:
+		WINSETUPEXE_BASENAME="$FULLNAME $AUBIT_VERSION.$AUBIT_BUILD.exe"
+		WINSETUPEXE="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$WINSETUPEXE_BASENAME"
+		
+		#Same, spaces escaped with backslash: 
         WINSETUPEXE_BASENAME_ESC=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\\\\ /'g`
-		WINSETUPEXE="$TMP_WINSETUPEXE"
         WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
+		
+		#Same, spaces translated to HTTP URL encoding:
 		WINSETUPEXE_URLENCODE=`echo $WINSETUPEXE | sed -e 's/ /\%20/'g`
 		WINSETUPEXE_BASENAME_URLENCODE=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\%20/'g`
 }
@@ -1118,18 +1124,17 @@ function prepare_winsetup_names () {
 #######################################
 function show_winsetup_names () { 
 #######################################
-		if test "$VERBOSE" = "1"; then
+
+	#if test "$VERBOSE" = "1"; then
 			echo "Created Windows setup:"
-			echo "TMP_BASENAME=$TMP_BASENAME"
-echo "FULLNAME=$FULLNAME"
-echo "AUBIT_VERSION=$AUBIT_VERSION"
-echo "AUBIT_BUILD=$AUBIT_BUILD"
-			echo "TMP_WINSETUPEXE=$TMP_WINSETUPEXE"
+			echo "FULLNAME=$FULLNAME"
+			echo "AUBIT_VERSION=$AUBIT_VERSION"
+			echo "AUBIT_BUILD=$AUBIT_BUILD"
 			echo "WINSETUPEXE_BASENAME=$WINSETUPEXE_BASENAME"
 			echo "WINSETUPEXE_BASENAME_ESC=$WINSETUPEXE_BASENAME_ESC"
 			echo "WINSETUPEXE=$WINSETUPEXE"
 			echo "WINSETUPEXE_ESC=$WINSETUPEXE_ESC"
-		fi
+	#fi
 }
 
 ########################################
@@ -1330,12 +1335,22 @@ the_file="$1"
 UP_FILE="$2"
 UP_URLENCODED="$3"
 
+	if test "$CHECK_SIZE_BEFORE_UPLOAD" = "1"; then 
+		#First check if this file is allready uploaded:
+		compare_size "$UP_FILE" "$the_file" "$UP_URLENCODED"
+		if test "$SIZE_COMPARES_OK" = "1"; then
+			echo "Allready uploaded: $the_file"
+			return
+		fi
+	fi
+
+
 #Do NOT single-quote file names to auto_sf_scp!
 	do_retry=0
 	MAX_RETRY=3
 	RETRY_CNT=0
 	while [ "1" = "1" ] ; do
-		upload_file $the_file
+		upload_file "$the_file"
 		if test "$VERBOSE" = "1"; then
 			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."
 		fi
@@ -1346,7 +1361,7 @@ UP_URLENCODED="$3"
 		fi
 
 		if test "$CHECK_SIZE_AFTER_UPLOAD" = "1"; then 
-			compare_size $UP_FILE $the_file $UP_URLENCODED
+			compare_size "$UP_FILE" "$the_file" "$UP_URLENCODED"
 			if test "$SIZE_COMPARES_OK" != "1"; then
 				do_retry=1
 			fi
@@ -1354,8 +1369,10 @@ UP_URLENCODED="$3"
 		
 		if test "$do_retry" = "1"; then
 			if test "$MAX_RETRY" = "$RETRY_CNT"; then
+				echo " =============================================================="
 				echo "Reached maximum number of upload retries ($MAX_RETRY) - giving up."
 				echo "Upload of $the_file failed"
+				echo " =============================================================="
 				FAILED_UPLOAD_LIST="$FAILED_UPLOAD_LIST $the_file"
 				break
 			fi
@@ -1372,6 +1389,8 @@ function upload_file () {
 #############################
 the_file="$1"
 #Do NOT single-quote file names to auto_sf_scp!
+
+echo "in upload_file(): the_file = $the_file"
 
 	START_TIME=`date +%s`
 	EXEC="$AUTO_SF_SCP $the_file"; runexec
@@ -1410,6 +1429,7 @@ function func_upload () {
 			do_upload "$WINSETUPEXE" "$WINSETUPEXE_BASENAME" "$WINSETUPEXE_BASENAME_URLENCODE"
         fi
 
+		CHECK_SIZE_BEFORE_UPLOAD=0
 		CHECK_SIZE_AFTER_UPLOAD=0
 		if [ "$COMSPEC" = "" ]; then
 			do_upload "$UNIXSRCBUILDNAMES"
@@ -1523,6 +1543,9 @@ if test "$CLEAN_OLD" = "1" ; then
    	rm -rf $RPMSRC_PATH/aubit4glsrc-*
 	
 	rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
+	
+	rm -f $AUBITDIR/aubit4glsrc-*.*-*.txt
+	rm -f $AUBITDIR_SRC/aubit4glsrc-*.*-*.txt
 	
 fi
 }
