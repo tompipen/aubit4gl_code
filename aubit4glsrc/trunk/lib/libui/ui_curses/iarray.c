@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.78 2004-04-01 18:11:40 mikeaubury Exp $
+# $Id: iarray.c,v 1.79 2004-04-02 07:28:40 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.78 2004-04-01 18:11:40 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.79 2004-04-02 07:28:40 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1556,8 +1556,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
     {
       // Too far over to the right - wrap around to the start of the next line
       A4GL_debug ("Too far to the right");
-  	if (arr_line >= arr->arr_size) A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-	else {
+  	if (arr_line >= arr->arr_size) {
+			A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
+      			A4GL_newMovement (arr, arr->scr_line, arr->arr_size, arr->curr_attrib,why);
+	} else {
       		A4GL_newMovement (arr, scr_line + 1, arr_line + 1, 0,why);
 	}
       return;
