@@ -378,9 +378,9 @@ for a in $FLAGS; do
 			EXPANDED_CONFIDENCE=1
 			HTML=1
 			if test "$HTML" = "1"; then
-				FINAL_OUT=support_status.html
+				FINAL_OUT="./docs/support_status.html"
 			else
-				FINAL_OUT=support_status.txt
+				FINAL_OUT="./docs/support_status.txt"
 			fi
 			LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
 			if test "$LAST_RESULTS" = ""; then 
@@ -835,6 +835,9 @@ RESULTS_ESQL_VER=`$POSTGRES_BIN/ecpg --version`
 				echo "</body></html>"  >> $FINAL_OUT
 			fi
 			echo "Done: see $FINAL_OUT"
+			
+			rm -f "$FEATURES_STATUS_TMP" "$TEST_FEATURES_TMP"
+			
 			exit
 			;;
 

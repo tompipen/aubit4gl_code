@@ -320,6 +320,7 @@ endif
 #included this becomes the default target (when user types just "make" without
 #specifying the target)
 clean:
+##for files PRESERVE
 	rm  -f ${CLEAN_FILES}
 
 	

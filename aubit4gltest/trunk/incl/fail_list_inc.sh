@@ -113,6 +113,8 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 #							-ecp
 # --------------------------------------------------------------------------
 
+#Tests that fail on reference point (-cert) but work with -ecp
+WHITELIST_TESTS_ECP="63 104 244 272 376 1222 1230 1232"
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
 EXPECT_TO_FAIL_TESTS_ECP="1 76 98 376 530 535 670 900 903 913"
@@ -194,32 +196,25 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
-	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
-	953 954 955 956 957 958 959 964	966  918 \
-	938 939 940 941 942 943 944 945 946 947 1206 \
-	1234 1239 1233 1235 1236"
-#752 - fails to run under informix 4gl
-#707 - fails to run under informix 4gl
-#375,377 -"informix".systables (assumes user "informix" created test database)
-#684,255 259 - no test files
+INVALID_TESTS="916 917 919 921 922 923 924 925 927 928 929 930 931 932 933 935\
+	948 949 950 951 952 953 954 955 957 958 959 964 966 918 938 939 940 941 \ 
+	942 943 944 945 946 947"
+#ALL THE ABOVE (try 925) - fail even with -ifx-p (.c files with informix headers)
+
+
+INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1236"
 #105 - missing database schemma
+#375 - "informix".systables (assumes user "informix" created test database)
+#684 - no test files
 #705 - "It is not possible to convert between the specified types." with -ifx-p
+#707 - fails to run under informix 4gl
+#752 - fails to run under informix 4gl
+#797 - SET CONSTRAINTS ALL IMMEDIATE - fails even with -ifx-p
 #920 - no makefile
-#797  SET CONSTRAINTS ALL IMMEDIATE - fails even with -ifx-p
-#916,917,919,921,922,923,924,>>925<<,927,928,929,930,931,932,933,935,948...
-#...949 950 951 952 953 954 955 957 958 959 964 966 918 938 939 940 941 
-#...942 943 944 945 946 947 - fails even with -ifx-p (.c files with informix headers)
-#926 missing function
-#934 no test files
-#956 missing 4gl file
-#498,499 no keys.in ** FIXED ??
-#1202 - missing form file, and keys.in
-#1200 out.expected missing ** FIXED ?
-#287 never exits with -cert (seems to be fixed)
-#empty MAIN block
-#1234 1239 1233 1237 missing out.expected
-#1235 1236 missing form file
+#926 - missing function
+#934 - no test files
+#956 - missing 4gl file
+#1236 - missing keys.in
 
 ################################### EOF #################################
 

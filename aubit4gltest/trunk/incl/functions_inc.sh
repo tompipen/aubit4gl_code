@@ -3,6 +3,49 @@
 #							Functions
 ##############################################################################
 
+
+function filter_out_white_listed () { 
+#Add configuration specific expect-to-fail list tho the 
+#reference point (-cert) expect-to fail list, filter out 
+#white-listed tests:
+
+EXPECT_TO_FAIL_TESTS_SPECIFIC="$1"
+WHITELIST_TESTS_SPECIFIC="$2"
+
+#dbg_this=1
+
+	if test "$dbg_this" = "1"; then 
+		echo "EXPECT_TO_FAIL_TESTS=$EXPECT_TO_FAIL_TESTS"
+		echo "EXPECT_TO_FAIL_TESTS_SPECIFIC=$EXPECT_TO_FAIL_TESTS_SPECIFIC"
+		echo "WHITELIST_TESTS_SPECIFIC=$WHITELIST_TESTS_SPECIFIC"
+	fi
+	NOT_ON_WHITE_LIST=""; ON_WHITE_LIST=""
+	for t in $EXPECT_TO_FAIL_TESTS; do
+		IS_ON_WHITE_LIST=0
+		for w in $WHITELIST_TESTS_SPECIFIC; do
+			if test "$t" = "$w"; then
+				IS_ON_WHITE_LIST=1
+				break
+			fi
+		done
+		if test "$IS_ON_WHITE_LIST" = "0"; then
+			NOT_ON_WHITE_LIST="$NOT_ON_WHITE_LIST $t"
+		else
+			ON_WHITE_LIST="$ON_WHITE_LIST $t"
+		fi
+	done
+	EXPECT_TO_FAIL_TESTS="$NOT_ON_WHITE_LIST $EXPECT_TO_FAIL_TESTS_SPECIFIC"
+	
+	if test "$dbg_this" = "1"; then
+		echo "-------------------------------------"
+		echo "NOT_ON_WHITE_LIST=$NOT_ON_WHITE_LIST"
+		echo "ON_WHITE_LIST=$ON_WHITE_LIST"
+		echo "EXPECT_TO_FAIL_TESTS=$EXPECT_TO_FAIL_TESTS"
+		exit
+	fi
+
+}
+
 #################################################
 #Check for compile-only, skip and tests with no run-time error checking
 function make_test_attrib_label () {
@@ -3280,7 +3323,7 @@ fi
 #Complete results log file
 
 echo "" >> $LOGFILE
-echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
+echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: (All/NoErrChk/CompOnly) $PASS_CNT/$NO_RUNTIME_ERR_CHECK_CNT/$COMPILE_ONLY_PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
 if test "$KILL_CNT" != "0"; then 
 	echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
 fi
@@ -3331,8 +3374,9 @@ fi
 		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
 	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
-		echo "Skipped incompatible SQL ($SKIP_INCOMPAT_SQL_CNT): $SKIP_INCOMPAT_SQL_LIST" >> $LOGFILE
-		echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
+		#echo "Skipped incompatible feature ($SKIP_INCOMPAT_SQL_CNT): $SKIP_INCOMPAT_SQL_LIST" >> $LOGFILE
+		echo "Skipped incompatible feature ($SKIP_INCOMPAT_SQL_CNT)" >> $LOGFILE
+		echo "Skipped incompatible feature: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
 		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $VERBOSE_RESULTS_LOG
@@ -3424,7 +3468,7 @@ fi
 		echo "ERROR: Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
 	fi
 	if test "$NO_RUNTIME_ERR_CHECK_LIST" != ""; then
-		echo "WARNING: PASS tests taht perform no run-time error checking ($NO_RUNTIME_ERR_CHECK_CNT): $NO_RUNTIME_ERR_CHECK_LIST" >> $LOGFILE	
+		echo "WARNING: PASS tests that perform no run-time error checking ($NO_RUNTIME_ERR_CHECK_CNT): $NO_RUNTIME_ERR_CHECK_LIST"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$PASS_INCOMPAT_SQL" != ""; then
 		#This is certanly wrong; need to change feature status; test cannot\

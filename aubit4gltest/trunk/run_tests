@@ -1599,8 +1599,8 @@ if test "$USE_COMP" = "aubit"; then
 			#-eci is part of -cert
 			;;
 		PG-IFX-74)
-			if test "$USE_ECP" = "1"; then 
-				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ECP"
+			if test "$USE_ECP" = "1"; then
+				filter_out_white_listed "$EXPECT_TO_FAIL_TESTS_ECP" "$WHITELIST_TESTS_ECP"
 			#else
 				#must be ODBC? (did that in ODBC section?)
 			fi
@@ -1700,6 +1700,7 @@ rm -f $CURR_DIR/$ERROR_LOG
 	IS_DUMP_SCREEN_CNT=0
 	IS_LONG_CNT=0
 	NO_RUNTIME_ERR_CHECK_CNT=0
+	COMPILE_ONLY_PASS_CNT=0
 	IS_CERT_CNT=0
 	IS_NO_CRON_CNT=0
 	IS_OBSOLETE_CNT=0
@@ -2397,7 +2398,11 @@ do
 		fi
 
 		#Compile list of all working SQL features:
-		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		#We need to check features even for compile only tests, 
+		#because when ew use EC they may fail to even compile, because
+		#of incompatible SQL feature in the code
+		#if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		if test "$SQL_FEATURES_USED" != ""; then
 			for used_feature in $SQL_FEATURES_USED ; do
 				ALLREADY_LISTED=0
 				for working_feature in $SQL_FEATURES_PASS_LIST ; do
@@ -2439,6 +2444,16 @@ do
 			NO_RUNTIME_ERR_CHECK_LIST="$NO_RUNTIME_ERR_CHECK_LIST $TEST_NO"
 			let NO_RUNTIME_ERR_CHECK_CNT=NO_RUNTIME_ERR_CHECK_CNT+1
 		fi
+		
+		if test "$COMPILE_ONLY" = "1"; then 		
+			if test "$SHOW_ITEM_RESULT" = "1"; then 
+				echo "NOTE: $TEST_NO is compile-only!"  >> $LOGFILE
+				echo "NOTE: Therefore, PASS result is questionable."  >> $LOGFILE
+			fi
+			COMPILE_ONLY_PASS_LIST="$COMPILE_ONLY_PASS_LIST $TEST_NO"
+			let COMPILE_ONLY_PASS_CNT=COMPILE_ONLY_PASS_CNT+1
+		fi
+		
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then 
 				echo "NOTE: $TEST_NO was expected to fail, but passed!"  >> $LOGFILE
@@ -2465,7 +2480,11 @@ do
 		let FAIL_CNT=FAIL_CNT+1
 		
 		#Compile list of all failed SQL features:
-		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		#We need to check features even for compile only tests, 
+		#because when ew use EC they may fail to even compile, because
+		#of incompatible SQL feature in the code
+		#if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		if test "$SQL_FEATURES_USED" != ""; then
 			#If test is not compile only and has SQL features described...
 		
 			for used_feature in $SQL_FEATURES_USED ; do
