@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.88 2004-11-17 10:40:47 mikeaubury Exp $
+# $Id: iarray.c,v 1.89 2004-11-17 13:51:51 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.88 2004-11-17 10:40:47 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.89 2004-11-17 13:51:51 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -834,20 +834,29 @@ process_key_press (struct s_inp_arr *arr, int a)
       if (arr->arr_line + arr->scr_dim <= arr->arr_size)
 	{
 	A4GL_debug("Calling newmovement");
-	  A4GL_newMovement (arr,
-			    arr->scr_line,
-			    arr->arr_line + arr->scr_dim, arr->curr_attrib,
-			    'D');
+	  if (arr->arr_line+ arr->scr_dim> arr->no_arr ) {
+		if (arr->allow_insert) {
+	  		A4GL_newMovement (arr, arr->scr_line, arr->no_arr+1, arr->curr_attrib, 'D');
+		} else {
+	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+		}
+	  } else {
+	  	A4GL_newMovement (arr, arr->scr_line, arr->arr_line + arr->scr_dim, arr->curr_attrib, 'D');
+	  }
 	}
       else
 	{
 	  int d;
 	  d = arr->arr_size - arr->arr_line;
-	A4GL_debug("Calling newmovement");
-	  A4GL_newMovement (arr,
-			    arr->scr_dim,
-			    arr->arr_line + d, arr->curr_attrib, 'D');
-
+	  if (d>arr->no_arr) {
+	 	if (arr->allow_insert) {
+  	  		A4GL_newMovement (arr, arr->scr_dim, arr->no_arr+1, arr->curr_attrib, 'D');
+		} else {
+	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+		}
+	  } else {
+  	  		A4GL_newMovement (arr, arr->scr_dim, d, arr->curr_attrib, 'D');
+	  }
 	}
       break;
 
@@ -862,8 +871,12 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
       else
 	{
-	A4GL_debug("Calling newmovement");
+	if (A4GL_isyes(acl_getenv("SCROLLBACKTO1")) && arr->arr_line>1 && 0 ) {
 	  A4GL_newMovement (arr, 1, 1, arr->curr_attrib, 'U');
+	} else {
+			A4GL_debug("Calling newmovement");
+	 A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+	}
 
 	}
       break;
@@ -872,10 +885,12 @@ process_key_press (struct s_inp_arr *arr, int a)
 
     case A4GLKEY_DOWN:
 	A4GL_debug("Calling newmovement");
+
       A4GL_newMovement (arr,
 			arr->scr_line + 1, arr->arr_line + 1,
 			arr->curr_attrib, 'D');
-
+	
+	
       break;
 
 
@@ -924,13 +939,13 @@ process_key_press (struct s_inp_arr *arr, int a)
 
       // cc 2004.09.06 when INS key is pressed, content may not be in
       //               content buffer yet, need to copy to ensure this
-/*
-      memcpy (
-	  (char *) (arr->binding[0].ptr + arr->arr_elemsize * (arr->arr_line - 1)),
-	  field_buffer(current_field(mform), 0), arr->arr_elemsize);
-*/
-      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT,
-				 arr->currentfield, 0, 0);
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
+	{
+	  FIELD *f;
+	  f = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
+	}
       break;
 
     case A4GLKEY_DEL:
@@ -2162,8 +2177,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  if (f && arr->currentfield)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0,
-					 0);
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
 	    }
 */
 	  new_state = 80;

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.99 2004-11-17 10:40:47 mikeaubury Exp $
+# $Id: newpanels.c,v 1.100 2004-11-17 13:51:51 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.99 2004-11-17 10:40:47 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.100 2004-11-17 13:51:51 mikeaubury Exp $";
 
 /**
  * @file
@@ -2412,8 +2412,8 @@ A4GL_mja_wrefresh (WINDOW * w)
     {
       update_panels ();
       doupdate ();
-      wrefresh (w);
       A4GL_refresh_error_window();
+      wrefresh (w);
 
     }
   //A4GL_gui_wrefresh (w);

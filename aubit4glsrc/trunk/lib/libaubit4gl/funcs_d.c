@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.39 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.40 2004-11-17 13:50:53 mikeaubury Exp $
 #
 */
 
@@ -409,6 +409,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
   char fm1[64], fm2[64];
   char *ptr1, *ptr;
   char *ptr2;
+  int has_money;
   char *p;
   char canfloat_head[] = "*-+($";
   char rep_digit[] = "*&#<-+()$";
@@ -502,19 +503,26 @@ a4gl_using (char *str, int s, char *fmt, double num)
     for (a = variable_called_b; (a > 0 && ptr1[a] != ' '); a--)
       n_cnt++;
 
+
+	if (strchr(fmt,'$')) has_money=1;
+	else has_money=0;
+
 A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
-    if (f_cnt < n_cnt)
+    if (f_cnt < n_cnt +has_money)
       {
  A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
 	a = strlen (fmt);
 	if (a > s)
 	  a = s;
-	if (n_cnt > a)
+
+
+	if (n_cnt > a )
 	  {
 	    // no way this number can fit, fill with stars ...
 	    memset (str, '*', a);
 	    return;
 	  }
+
 	if (strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "REFORMAT") == 0
 	    || strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0)
 	  {
