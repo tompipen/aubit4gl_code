@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.19 2004-10-08 02:47:20 afalout Exp $
+# $Id: helper_funcs.ec,v 1.20 2004-10-26 12:34:03 mikeaubury Exp $
 #
 */
 
@@ -98,7 +98,7 @@ But them missing DtimeToChar and fammily - where are they?
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_decimal(void *infxv,void *a4glv,int indicat,int size,char dir) 
+ESQLAPI_A4GL_copy_decimal(void *infxv,void *a4glv,short *indicat,int size,char dir) 
 {
 #ifdef DIALECT_POSTGRES
 EXEC SQL BEGIN DECLARE SECTION;
@@ -134,7 +134,7 @@ char b[65];
 
 	if (dir=='o') {
 		char *ptr;
-		if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 		memset(b,0,65);
 		dectoasc(infx,b,64,16);
 		A4GL_debug("calling dectoasc returns %s",b);
@@ -157,7 +157,7 @@ char b[65];
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_money(void *infxv,void *a4glv,int indicat,int size,char dir) 
+ESQLAPI_A4GL_copy_money(void *infxv,void *a4glv,short *indicat,int size,char dir) 
 {
 
 #ifdef DIALECT_POSTGRES
@@ -200,7 +200,7 @@ char b[65];
 #else
                 xisnull=risnull(CMONEYTYPE,(void *)infx);
 #endif
-		if (indicat==-1||xisnull) { 
+		if (*indicat==-1||xisnull) { 
 				A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;
 		}
 
@@ -244,7 +244,7 @@ int arr_dtime[]={
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,short *indicat,int size,int mode) 
 {
 dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 	infx=infxv;
@@ -284,9 +284,9 @@ dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 #ifdef HAVE_INT64_TIMESTAMP
 #error INT64 timestamp not implemented
 #endif
-if (*infx==0) indicat=-1;
+if (*infx==0) *indicat=-1;
 #endif
-			if (indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
+			if (*indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 
 			dttoasc(infx,buff);
 			A4GL_push_char(buff);
@@ -312,7 +312,7 @@ if (*infx==0) indicat=-1;
  * @todo describe function
  */
 #ifdef DIALECT_INFORMIX
-void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode) 
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *indicat,int size,int mode) 
 {
 intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
 if (mode=='i'||mode=='o') ; 
@@ -364,9 +364,9 @@ else {
 #ifdef HAVE_INT64_TIMESTAMP
 #error INT64 timestamp not implemented
 #endif
-//if (*infx==0) indicat=-1;
+//if (*infx==0) *indicat=-1;
 #endif
-			if (indicat==-1||risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
+			if (*indicat==-1||risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
 
 			intoasc(infx,buff);
 			A4GL_push_char(buff);
@@ -388,7 +388,7 @@ else {
 
 #ifdef DIALECT_POSTGRES
 
-void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode)  {
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *indicat,int size,int mode)  {
 	printf("A4GL_copy_interval for postgres not implemented yet\n");
 
 }
@@ -399,7 +399,7 @@ void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,in
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
+ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *indicat,int size,int mode,int x,int y) 
 {
 
 	if (mode=='i') {
@@ -412,7 +412,8 @@ ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x
 		A4GL_trim(infx); // @todo -  what about varchars ... ?
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		if (*indicat==-1) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
 		infx[size]=0;
 		strcpy((char *)(a4gl),(char *)(infx));
 	}
@@ -427,7 +428,7 @@ ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,short *indicat,int size,int mode) 
 {
 short  mdy[3];
 int mdy_i[3];
@@ -445,9 +446,9 @@ long orig_date;
 	if (mode=='o') {
 
 #ifdef DIALECT_POSTGRES
-if (*infx==0) indicat=-1;
+if (*infx==0) *indicat=-1;
 #endif
-		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		orig_date=*infx;
 		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
@@ -464,14 +465,14 @@ if (*infx==0) indicat=-1;
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,short *indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(CSHORTTYPE,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CSHORTTYPE,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -483,14 +484,14 @@ ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,short *indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -502,14 +503,14 @@ ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(CFLOATTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(CFLOATTYPE,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CFLOATTYPE,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -521,14 +522,14 @@ ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode)
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *indicat,int size,int mode) 
 {
 	if (mode=='i') {
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(CDOUBLETYPE,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
+		if (*indicat==-1||risnull(CDOUBLETYPE,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }

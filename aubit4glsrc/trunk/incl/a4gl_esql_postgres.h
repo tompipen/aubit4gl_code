@@ -66,6 +66,7 @@ extern "C"
 #define COPY_DATA_IN_12(a4gl,pgres,size) A4GL_copy_blob_text(pgres,a4gl,0,size,'i')
 #define COPY_DATA_IN_13(a4gl,pgres,size) A4GL_copy_char(pgres,a4gl,0,size,'i')
 
+
 // wrong? 
 //#define COPY_DATA_IN_14(a4gl,pgres,size,x,y) A4GL_copy_interval(pgres,a4gl,0,size,'i',x,y)
 #define COPY_DATA_IN_14(a4gl,pgres,size,x,y) A4GL_copy_interval(pgres,a4gl,0,size,'i')

@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.32 2004-09-20 13:33:43 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.33 2004-10-26 12:34:03 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -149,7 +149,7 @@ make_sql_bind (char *sql, char *type)
 		char indicat[40];
 		  	printc("%s",get_sql_type (a, 'o'));
 
- 			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 			if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 				strcpy(indicat,"0");
 			} else {
 				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
@@ -208,7 +208,7 @@ make_sql_bind (char *sql, char *type)
 		}
  		printc("};\n");
 		
- 		if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		char comma=' ';
       		printc("struct BINDING native_binding_o_ind[]={\n");
 		if(obindcnt==0) { printc("{0,0,0}"); }
@@ -315,7 +315,7 @@ make_sql_bind_expr (char *sql, char *type)
 		  	sprintf(b2,"%s\n",get_sql_type (a, 'o'));
       			ptr=addstr(ptr,&sz, b2);
 
- 			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 			if (! A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 				strcpy(indicat,"0");
 			} else {
 				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
@@ -380,7 +380,7 @@ make_sql_bind_expr (char *sql, char *type)
 		}
  		ptr=addstr(ptr,&sz,"};\n");
 		
- 		if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		char comma=' ';
       		ptr=addstr(ptr,&sz,"struct BINDING native_binding_o_ind[]={\n");
 		if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
@@ -477,7 +477,7 @@ char buff_ind[255];
 
   if (ioro == 'o')
     {
- 	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		sprintf(buff_ind,"  short _voi_%d;",a);
 	} else {
 		strcpy(buff_ind,"");
@@ -609,7 +609,7 @@ static char buff_ind[255];
 
   if (ioro == 'o')
     {
- 	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		sprintf(buff_ind,"  short _voi_%d;",a);
 	} else {
 		strcpy(buff_ind,"");

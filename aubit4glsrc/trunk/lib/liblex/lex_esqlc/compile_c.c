@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.184 2004-10-15 15:00:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.185 2004-10-26 12:34:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.184 2004-10-15 15:00:23 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.185 2004-10-26 12:34:03 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -371,6 +371,9 @@ open_outfile (void)
 
   if (doing_esql ())
     {
+      if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
+      		fprintf (outfile, "#define ESQL_USING_INDICATORS\n");
+	}
       fprintf (outfile, "#include \"a4gl_esql.h\"\n");
     }
 
@@ -5072,7 +5075,7 @@ A4GL_get_into_part (int doing_declare, int no)
       sprintf (buffer, "INTO \n");
       for (a = 0; a < no; a++)
 	{
-	  if (!A4GL_isyes (acl_getenv ("USE_INDICATOR")))
+	  if (! A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 	    {
 	      sprintf (buff, "\t:_vo_%d\n", a);
 	    }

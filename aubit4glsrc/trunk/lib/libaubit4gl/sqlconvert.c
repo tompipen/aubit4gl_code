@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.20 2004-10-26 11:56:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.21 2004-10-26 12:34:02 mikeaubury Exp $
 #
 */
 
@@ -72,8 +72,10 @@ char *cvsql_names[]={
   "CVSQL_ADD_CASCADE",
   "CVSQL_OMIT_NO_LOG",
   "CVSQL_OWNER_QUOTE",
-  "CVSQL_NO_OWNER_QUOTE"
-
+  "CVSQL_NO_OWNER_QUOTE",
+  "CVSQL_CONSTRAINT_NAME_BEFORE",
+  "CVSQL_CONSTRAINT_NAME_AFTER",
+  "CVSQL_USE_INDICATOR"
 };
 
 struct ilist {
@@ -108,7 +110,8 @@ enum cvsql_type
   CVSQL_OWNER_QUOTE,
   CVSQL_NO_OWNER_QUOTE,
   CVSQL_CONSTRAINT_NAME_BEFORE,
-  CVSQL_CONSTRAINT_NAME_AFTER
+  CVSQL_CONSTRAINT_NAME_AFTER,
+  CVSQL_USE_INDICATOR
 };
 
 
@@ -566,6 +569,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "NO_OWNER_QUOTE", len) == 0) return CVSQL_NO_OWNER_QUOTE;
   if (strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0) return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0) return CVSQL_CONSTRAINT_NAME_AFTER;
+  if (strncasecmp (p, "USE_INDICATOR", len) == 0) return CVSQL_USE_INDICATOR;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 printf("Unknown : %s\n",p);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.89 2004-10-23 13:36:32 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.90 2004-10-26 12:34:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.89 2004-10-23 13:36:32 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.90 2004-10-26 12:34:03 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1158,7 +1158,7 @@ intprflg=0;
 if (last_ni) intprflg++;
 if (last_no) intprflg+=2;
 printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
-if (!A4GL_isyes(acl_getenv("USE_INDICATOR")))
+if (!A4GLSQLCV_check_requirement("USE_INDICATOR"))
 	sprintf(buff,"0");
 else
 	sprintf(buff,"native_binding_o_ind");
