@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.4 2004-01-18 12:57:40 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.4 2004-01-18 12:57:40 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -38,7 +38,6 @@ static char *module_id="$Id: formcntrl.c,v 1.3 2004-01-17 11:13:34 mikeaubury Ex
 		                    Includes
 =====================================================================
 */
-
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.66 2003-12-17 11:37:48 mikeaubury Exp $
+# $Id: conv.c,v 1.67 2004-01-18 12:57:39 mikeaubury Exp $
 #
 */
 
@@ -2568,7 +2568,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
 
-  A4GL_debug("ptr=%p",ptr);
+  //A4GL_debug("ptr=%p",ptr);
 
   if (ptr == NO)
     {
@@ -2589,14 +2589,14 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
     }
 
 {
-  A4GL_debug("dtype1=0x%x dtype2=0x%x",dtype1,dtype2);
-  A4GL_debug("Masked : dtype1=%d dtype2=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
+  //A4GL_debug("dtype1=0x%x dtype2=0x%x",dtype1,dtype2);
+  //A4GL_debug("Masked : dtype1=%d dtype2=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
 }
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
 
  {
-  A4GL_debug("rval=%x\n",rval);
+  //A4GL_debug("rval=%x\n",rval);
   }
 
 

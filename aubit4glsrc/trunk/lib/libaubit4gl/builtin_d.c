@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.37 2003-11-26 11:46:20 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.38 2004-01-18 12:57:39 mikeaubury Exp $
 #
 */
 
@@ -325,23 +325,23 @@ void
 A4GL_push_char (char *p)
 {
   char *ptr;
-  A4GL_debug ("Push_char '%s'\n", p);
+  //A4GL_debug ("Push_char '%s'\n", p);
 
   if (p[0] == 0 && p[1] != 0)
     {
-      A4GL_debug ("pc1");
+      //A4GL_debug ("pc1");
       ptr = (char *) A4GL_new_string_set (strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
-      A4GL_debug ("pc2");
+      //A4GL_debug ("pc2");
       ptr = (char *) A4GL_new_string_set (strlen (p), p);
     }
-  A4GL_debug ("pc3");
+  //A4GL_debug ("pc3");
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
-  A4GL_debug ("ADDED : %s to stack...", p);
+  //A4GL_debug ("ADDED : %s to stack...", p);
 }
 
 /**

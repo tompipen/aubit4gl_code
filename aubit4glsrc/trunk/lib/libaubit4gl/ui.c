@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.13 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: ui.c,v 1.14 2004-01-18 12:57:39 mikeaubury Exp $
 #
 */
 
@@ -287,54 +287,6 @@ void A4GL_display_at (int n, int a)
   s=A4GL_pull_off_data_for_display(n,display_type);
 
 
-#ifdef REMOVED
-  for (z = 0; z <= n - 1; z++)
-    {
-      A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
-      ptr = 0;
-      if (A4GL_has_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY"))
-	{
-	  char *(*function) (void *, int, int, struct struct_scr_field *,
-			     int);
-	  function =
-	    A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
-
-	  if (x == -1 && y == -1)
-	    {
-	      ptr =
-		function (tos_ptr, tos_size, -1,
-			  (struct struct_scr_field *) 0,
-			  DISPLAY_TYPE_DISPLAY);
-	    }
-	  else
-	    {
-	      ptr =
-		function (tos_ptr, tos_size, -1,
-			  (struct struct_scr_field *) 0,
-			  DISPLAY_TYPE_DISPLAY_AT);
-	    }
-
-	  if (ptr != 0)
-	    {
-	      A4GL_drop_param ();
-	    }
-	}
-
-      if (ptr == 0)
-	{
-	  ptr = A4GL_char_pop ();
-	}
-
-      A4GL_debug ("DISPLAY_AT : '%s'\n", ptr);
-      buff = realloc (buff, strlen (s) + strlen (ptr) + 1);
-      s = realloc (s, strlen (s) + strlen (ptr) + 1);
-      sprintf (buff, "%s%s", ptr, s);
-      strcpy (s, buff);
-      A4GL_debug ("s='%s' %p\n", s, s);
-    }
-
-#endif
-A4GL_debug("Here1\n");
 
   if (x == -1 && y == -1)
     {
@@ -356,7 +308,7 @@ A4GL_debug("Here1\n");
       line_length++;
       if (strlen (s) > line_length)
 	{
-	  A4GL_debug ("'%s' seems to long to display... - I'm gonna A4GL_trim it..", s);
+	  A4GL_debug ("'%s' seems to long to display... - I'm gonna trim it..", s);
 	  s[line_length] = 0;
 
 	}

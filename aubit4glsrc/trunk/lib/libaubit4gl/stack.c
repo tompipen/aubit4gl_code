@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.80 2004-01-15 08:43:09 mikeaubury Exp $
+# $Id: stack.c,v 1.81 2004-01-18 12:57:39 mikeaubury Exp $
 #
 */
 
@@ -548,24 +548,24 @@ A4GL_pop_param (void *p, int d, int size)
 		if (b==0) A4GL_conversion_ok(0);
   	}
   }
- A4GL_debug("99 After A4GL_conv");
+ //A4GL_debug("99 After A4GL_conv");
 
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
       if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
 	{
-	  A4GL_debug ("7 Not Char.. %p", params[params_cnt].ptr);
+	  //A4GL_debug ("7 Not Char.. %p", params[params_cnt].ptr);
 	  acl_free (params[params_cnt].ptr);
 	}
       else
 	{
 	  ptr = params[params_cnt].ptr;
-	  A4GL_debug ("7 Not Char..%p", ptr);
+	  //A4GL_debug ("7 Not Char..%p", ptr);
 	  acl_free (ptr);
 	}
     }
- A4GL_debug("99 return %d",b);
+ //A4GL_debug("99 return %d",b);
   return b;
 }
 

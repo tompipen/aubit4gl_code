@@ -5,13 +5,12 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.14 2004-01-18 11:11:15 afalout Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.15 2004-01-18 12:57:40 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
-
 int gui_yheight=20; // 25
 int gui_xwidth=9;
 

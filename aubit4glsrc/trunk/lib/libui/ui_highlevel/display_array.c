@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $
+# $Id: display_array.c,v 1.5 2004-01-18 12:57:40 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.4 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.5 2004-01-18 12:57:40 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -55,7 +55,6 @@ static char *module_id="$Id: display_array.c,v 1.4 2004-01-17 11:13:34 mikeaubur
 
 //extern struct         struct_screen_record *A4GL_get_srec (char *name);
 /* struct struct_screen_record *A4GL_get_srec (char *); */
-
 /*
 =====================================================================
                     Variables definitions

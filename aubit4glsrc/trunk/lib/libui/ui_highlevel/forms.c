@@ -1,4 +1,5 @@
-static char *module_id="$Id: forms.c,v 1.5 2004-01-18 09:54:56 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.6 2004-01-18 12:57:40 mikeaubury Exp $";
+
 #include "forms.h"
 
 void *A4GL_create_window (char *name, int x, int y, int w, int h,
