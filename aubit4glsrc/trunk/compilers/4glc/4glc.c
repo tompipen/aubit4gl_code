@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.52 2004-05-26 13:59:20 mikeaubury Exp $
+# $Id: 4glc.c,v 1.53 2004-05-26 14:02:08 mikeaubury Exp $
 #
 */
 
@@ -99,8 +99,8 @@ main (int argc, char *argv[])
   if (ptr) {
 		if (strlen(ptr)==0) ptr=0;
   }
-  if (ptr==0) {
-		set_namespace("");
+  if (ptr!=0) {
+		set_namespace(ptr);
   }
   x = initArguments (argc, argv);
   if (a4gl_yydebug)
