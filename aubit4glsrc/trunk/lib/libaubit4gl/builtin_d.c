@@ -24,22 +24,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.44 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.45 2004-05-11 14:02:35 saferreira Exp $
 #
 */
 
 /**
  * @file
- * Built in functions of x4gl.
+ * Builtin functions of x4gl.
  *
  * Contains functions for
  *   - Pushing and poping values from / for functions
  *   - Builtin implemented functions
  *
  *
- * @todo Add Doxygen A4GL_comments to file
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
  * @todo Doxygen A4GL_comments to add to functions
  * @todo -Wmissig-prototypes
  * @todo -Wstrict-prototypes
