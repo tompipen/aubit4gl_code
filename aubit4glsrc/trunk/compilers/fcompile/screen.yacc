@@ -97,13 +97,13 @@ database_section screen_section op_table_section attribute_section op_instructio
 database_section :
 DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
 | DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);
-if (A4GLSQL_init_connection   ($<str>2)) {
+if (open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
 }
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
 | DATABASE dbname {the_form.dbname=strdup($<str>2);
-if (A4GLSQL_init_connection($<str>2)) {
+if (open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
 }

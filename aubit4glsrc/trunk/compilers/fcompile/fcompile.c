@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.26 2003-03-10 16:13:32 mikeaubury Exp $
+# $Id: fcompile.c,v 1.27 2003-03-10 16:36:03 mikeaubury Exp $
 #*/
 
 /**
@@ -81,6 +81,9 @@ int fldno;
 int scr = 0;
 int newscreen = 0;
 int fstart;
+char *default_database = 0;
+int open_db (char *s);
+void usage (char *s);
 
 /*
 =====================================================================
@@ -132,77 +135,97 @@ main (int argc, char *argv[])
 {
   char a[128];
   char b[128];
-  char c[128];
-  char d[128];
+  char c[128] = "";
+  char d[128] = "";
+  int cnt;
+  int cnt_files = 0;
 
   setarg0 (argv[0]);
+
+  if (argc == 1)
+    {
+      usage (argv[0]);
+    }
+
   debug ("Initializing fcompile\n");
 
   /* load settings from config file(s): */
   build_user_resources ();
 
-
-
   strcpy (d, "");
 
-  if (argc > 1)
+  as_c = 0;
+
+  for (cnt = 1; cnt < argc; cnt++)
     {
-      check_and_show_id ("4GL Form Compiler", argv[1]);
 
-      outputfilename = outputfile;
+      if (strcmp (argv[cnt], "-v") == 0)
+	{
+	  check_and_show_id ("4GL Form Compiler", argv[cnt]);
+	  continue;
+	}
 
-      if (strcmp (argv[1], "-c") == 0)
+      if (strcmp (argv[cnt], "-vfull") == 0)
+	{
+	  check_and_show_id ("4GL Form Compiler", argv[cnt]);
+	  continue;
+	}
+
+      if (strcmp (argv[cnt], "-c") == 0)
 	{
 	  as_c = 1;
-	  strcpy (c, argv[2]);
-	  if (argc > 3)
-	    {
-	      strcpy (d, argv[3]);
-	    }
+	  continue;
 	}
-      else
+
+      if (strcmp (argv[cnt], "-d") == 0)
 	{
-	  as_c = 0;
-	  strcpy (c, argv[1]);
-	  if (argc > 2)
-	    {
-	      strcpy (d, argv[2]);
-	    }
+	  cnt++;
+	  default_database = strdup (argv[cnt]);
+	  continue;
 	}
 
-
-      bname (c, a, b);
-
-      if (b[0] == 0)
+      if (cnt_files == 0)
 	{
-	  strcat (c, ".per");
+	  strcpy (c, argv[cnt]);
+	  cnt_files++;
+	  continue;
 	}
 
-
-      if (strcmp (d, "") == 0)
+      if (cnt_files == 1)
 	{
-	  strcpy (outputfilename, a);
+	  strcpy (d, argv[cnt]);
+	  cnt_files++;
+	  continue;
 	}
-      else
-	{
-	  strcpy (outputfilename, d);
-	}
-
-/* 	printf ("Output to %s \n", outputfilename); */
-
-      yyin = mja_fopen (c, "r");
 
     }
 
+  if (strlen (c) == 0)
+    {
+      usage (argv[0]);
+    }
+
+
+  bname (c, a, b);
+
+  if (b[0] == 0)
+    {
+      strcat (c, ".per");
+    }
+
+
+  if (strcmp (d, "") == 0)
+    {
+      outputfilename = strdup (a);
+    }
   else
     {
-
-      printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n",
-	      argv[0]);
-
-      exit (0);
-
+      outputfilename = strdup (d);
     }
+
+
+  yyin = mja_fopen (c, "r");
+
 
   a4gl_form_yydebug = 0;
 
@@ -307,6 +330,26 @@ getdatatype_fcompile (char *col, char *tab)
     }
   debug ("%s.%s = %d\n", tab, col, a);
   return a;
+}
+
+void
+usage (char *s)
+{
+  printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n", s);
+  exit (0);
+}
+
+int
+open_db (char *s)
+{
+  if (default_database == 0)
+    {
+      return A4GLSQL_init_connection (s);
+    }
+  else
+    {
+      return A4GLSQL_init_connection (default_database);
+    }
 }
 
 /* ================================== EOF ============================= */
