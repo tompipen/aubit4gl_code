@@ -16746,7 +16746,7 @@ print_undo_use(yyvsp[-2].str);
   case 1611:
 #line 7659 "fgl.yacc"
     {
-		yyval.sql_string=make_sql_string("push_char(\"", yyvsp[-4].str, " ",yyvsp[-3].str," ", yyvsp[-2].sql_string, " ",yyvsp[-1].sql_string, " ",yyvsp[0].sql_string, "\");",0);
+		yyval.sql_string=make_sql_string("A4GL_push_char(\"", yyvsp[-4].str, " ",yyvsp[-3].str," ", yyvsp[-2].sql_string, " ",yyvsp[-1].sql_string, " ",yyvsp[0].sql_string, "\");",0);
 	free(yyvsp[-2].sql_string);
 	free(yyvsp[-1].sql_string);
 	free(yyvsp[0].sql_string);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.64 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: conv.c,v 1.65 2003-11-26 08:35:37 mikeaubury Exp $
 #
 */
 
@@ -903,7 +903,7 @@ A4GL_ftodec (void *a, void *z, int size)
   char *eptr;
   int ndig;
   int ndec;
-  char buff[64];
+  char buff[65];
   char fmt[16];
 
   ndig = size >> 8;
@@ -1077,7 +1077,7 @@ A4GL_mdectos (void *z, void *w, int size)
 int
 A4GL_mdectol (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   long *a;
   fgldecimal *z;
   A4GL_debug ("mdectol");
@@ -1100,7 +1100,7 @@ A4GL_mdectol (void *zz, void *aa, int sz_ignore)
 int
 A4GL_mdectoi (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   short *a;
   fgldecimal *z;
   A4GL_debug ("mdectoi");
@@ -1123,7 +1123,7 @@ A4GL_mdectoi (void *zz, void *aa, int sz_ignore)
 int
 A4GL_mdectod (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   long *a;
   fgldecimal *z;
   a = (long *) aa;
@@ -1145,7 +1145,7 @@ A4GL_mdectod (void *zz, void *aa, int sz_ignore)
 int
 A4GL_mdectof (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   fgldecimal *z;
   double *a;
   a = (double *) aa;
@@ -1168,7 +1168,7 @@ A4GL_mdectof (void *zz, void *aa, int sz_ignore)
 int
 A4GL_mdectosf (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   fgldecimal *z;
   float *a;
   z = (fgldecimal *) zz;
@@ -1287,7 +1287,7 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
 int
 A4GL_dectol (void *zz, void *aa, int sz_ignore)
 {
-  static char buff[64];
+  static char buff[65];
   long *a;
   char *z;
 int rval;
@@ -1314,7 +1314,7 @@ int rval;
 int
 A4GL_dectoi (void *zz, void *aa, int sz_ignore)
 {
-  static char buff[64];
+  static char buff[65];
   short *a;
   char *z;
 int rval;
@@ -1342,7 +1342,7 @@ int rval;
 int
 A4GL_dectod (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   long *a;
   char *z;
   a = (long *) aa;
@@ -1387,7 +1387,7 @@ A4GL_dectof (void *zz, void *aa, int sz_ignore)
 int
 A4GL_dectosf (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[65];
   char *z;
   float *a;
   z = (char *) zz;
@@ -1568,16 +1568,16 @@ A4GL_ftod (void *aa, void *zz, int sz_ignore)
 int
 A4GL_stod (void *str_v, void *date_v, int sz_ignore)
 {
-  static char dbdate[10] = "";	// holds current DBDATE value
+  static char dbdate[40] = "";	// holds current DBDATE value
   static int d_pos, m_pos, y_pos;	// relative positions of day/month/year
   char num[3][10];		// date numbers extracted from string
   char *p;
   int n;
   char *str;
   int *date;
-
   str = (char *) str_v;
   date = (int *) date_v;
+A4GL_debug("STOD : %s %d",str_v,*date);
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
   // we only need to do this once, the first time stod() is called.
   // note - for this conversion we need only the three letters DMY
@@ -1611,7 +1611,6 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
 
   // first scan the string and extract contiguous sequences
   // of digits, up to three of them ( for day/month/year )
-
   num[0][0] = '\0';
   num[1][0] = '\0';
   num[2][0] = '\0';
@@ -3214,7 +3213,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
   char buff[256];
   int i;
   int cnt = 0;
-  char buff2[64];
+  char buff2[65];
   int s1;
   int s2;
   int c;

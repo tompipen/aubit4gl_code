@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.78 2003-10-26 19:12:03 mikeaubury Exp $
+# $Id: ioform.c,v 1.79 2003-11-26 08:35:46 mikeaubury Exp $
 #*/
 
 /**
@@ -1459,6 +1459,7 @@ A4GL_set_fields (void *vsio)
 			       sio->vars[a].dtype +
 			       ENCODE_SIZE (sio->vars[a].size));
 
+
 	}
       else
 	{
@@ -1468,12 +1469,14 @@ A4GL_set_fields (void *vsio)
 	      A4GL_debug ("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",
 			  A4GL_get_str_attribute (prop, FA_S_DEFAULT));
+
 	      A4GL_set_init_value (field_list[a],
 				   A4GL_replace_sql_var (A4GL_strip_quotes
 							 (A4GL_get_str_attribute
 							  (prop,
 							   FA_S_DEFAULT))),
 				   0);
+
 	    }
 	  else
 	    {
@@ -1492,8 +1495,7 @@ A4GL_set_fields (void *vsio)
 	  else
 	    A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
 
-	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype,
-			 sio->vars[a].size);
+	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
 	}
 
       if (flg == 0)
