@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.35 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: prompt.c,v 1.36 2003-12-17 11:38:01 mikeaubury Exp $
 #*/
 
 /**
@@ -253,10 +253,16 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
       return 0;
 
     case '\t':
+    case A4GLKEY_DOWN:
+	if (prompt->charmode==0)
+      		return 10;
+	else
+		return 0;
+
+
     case A4GLKEY_ENTER:
     case 13:
     case 10:
-    case A4GLKEY_DOWN:
 #ifdef DEBUG
       A4GL_debug ("Next field in a prompt - they must mean enter");
 #endif

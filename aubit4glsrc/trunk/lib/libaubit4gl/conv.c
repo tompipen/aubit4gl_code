@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.65 2003-11-26 08:35:37 mikeaubury Exp $
+# $Id: conv.c,v 1.66 2003-12-17 11:37:48 mikeaubury Exp $
 #
 */
 
@@ -601,6 +601,7 @@ A4GL_ctodt (void *a, void *b, int size)
 {
   int data[256];
   struct A4GLSQL_dtime *d;
+int valid;
   A4GL_debug ("ctodt : %p %p %d\n", a, b, size);
   A4GL_debug ("a-->%s\n", a);
   d = (struct A4GLSQL_dtime *) b;
@@ -608,9 +609,21 @@ A4GL_ctodt (void *a, void *b, int size)
   d->ltime = size % 16;
   d->stime = size >> 4;
   A4GL_debug ("d->ltime=%d d->stime=%d\n", d->ltime, d->stime);
+data[0]=0;
+data[1]=0;
+data[2]=0;
+data[3]=0;
+data[4]=0;
+data[5]=0;
+data[6]=0;
 
-  if (A4GL_valid_dt (a, data))
-    {
+ 
+
+  valid=A4GL_valid_dt (a, data);
+
+  if (valid==2 && (d->ltime!=d->stime)) valid=0;
+
+  if (valid) {
       A4GL_debug ("Y %d\n", data[0]);
       A4GL_debug ("M %d\n", data[1]);
       A4GL_debug ("D %d\n", data[2]);
@@ -627,8 +640,6 @@ A4GL_ctodt (void *a, void *b, int size)
   else
     {
 	A4GL_setnull(DTYPE_DTIME,d,size);
-
-
       return 1;
     }
 
@@ -661,7 +672,7 @@ A4GL_dttoc (void *a, void *b, int size)
   d = a;
   x = 0;
 
-  //A4GL_debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime, d->data);
+  A4GL_debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime);
 
   if (d->stime >= 1 && d->stime <= 11);
   else
@@ -2805,7 +2816,7 @@ A4GL_valid_dt (char *s, int *data)
   if (dt_type == -1)
     return 0;
   if (dt_type == 0 && strlen (ptr[0]))
-    return 1;			/* single number.. */
+    return 2;			/* single number.. */
   if (dt_type == 0 && strlen (ptr[0]) == 0)
     return 0;			/* nothing... */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.83 2003-12-15 07:33:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.84 2003-12-17 11:38:01 mikeaubury Exp $
 #*/
 
 /**
@@ -3182,7 +3182,7 @@ int ppr;
 		if (strlen (buff2) > 0)
 		  {
 #ifdef DEBUG
-		    A4GL_debug ("Pushing param %p");
+		    A4GL_debug ("Pushing param %p",buff2);
 #endif
 
 
@@ -3191,35 +3191,12 @@ int ppr;
 		   ppr=A4GL_check_and_copy_field_to_data_area(form,fprop,buff2,buff);
 
 
-/*
-		    A4GL_push_param (buff2, DTYPE_CHAR);
-		    ppr=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
-
-			if (A4GL_isnull(fprop->datatype,buff)) {
-				A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
-					if (strlen(buff2)) {
-						ppr=0;
-					}
-				}
-
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
-					A4GL_debug("Looks like a decimal in a numeric field");
-					ppr=0;
-		    		}
-*/
-			
-
-
-
-
-
 		    if (ppr) 
 		      {
 #ifdef DEBUG
-			A4GL_debug ("Pushing param %p %d", buff,
-				    fprop->datatype);
+			A4GL_debug ("Pushing param %p %d", buff, fprop->datatype);
 #endif
-			A4GL_push_param (buff, fprop->datatype);
+			A4GL_push_param (buff, fprop->datatype + (fprop->dtype_size<<16));
 			if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			  {
 			    A4GL_push_char (A4GL_get_str_attribute
@@ -4217,7 +4194,7 @@ A4GL_debug("Got fld_data as : %s",fld_data);
 
 
 		    A4GL_push_param (fld_data, DTYPE_CHAR);
-		    pprval=A4GL_pop_param (data_area, fprop->datatype, A4GL_get_field_width (form->currentfield));
+		    pprval=A4GL_pop_param (data_area, fprop->datatype, fprop->dtype_size); // A4GL_get_field_width (form->currentfield));
 
 		    if (pprval) {
 				if (A4GL_isnull(fprop->datatype,data_area)) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.38 2003-12-12 16:15:04 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.39 2003-12-17 11:38:01 mikeaubury Exp $
 #*/
 
 /**
@@ -47,11 +47,14 @@ extern int m_lastkey;
 
 static int process_control_stack (struct s_screenio *arr);
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
-static void A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f, char *parameter, int extent);
-static void A4GL_newMovement (struct s_screenio *arr,  int attrib);
+static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
+				       FIELD * f, char *parameter,
+				       int extent);
+static void A4GL_newMovement (struct s_screenio *arr, int attrib);
 static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
 static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
-static void do_key_move(char lr,struct s_screenio *s,int a, int has_picture, char *picture) ;
+static void do_key_move (char lr, struct s_screenio *s, int a,
+			 int has_picture, char *picture);
 
 /*
 =====================================================================
@@ -69,36 +72,39 @@ int do_input_nowrap = 0;
 extern WINDOW *currwin;
 
 
-char *ops[]= {
-"",
-"FORMCONTROL_BEFORE_FIELD", //                1
-"FORMCONTROL_AFTER_FIELD", //                 2
-"FORMCONTROL_BEFORE_INPUT" , //               3
-"FORMCONTROL_AFTER_INPUT"   , //              4
-"FORMCONTROL_EXIT_INPUT_OK"   , //            5
-"FORMCONTROL_EXIT_INPUT_ABORT"  , //          6
-"FORMCONTROL_KEY_PRESS"         , //          7
-"FORMCONTROL_BEFORE_INSERT"   , //            8
-"FORMCONTROL_BEFORE_DELETE"   , //            9
-"FORMCONTROL_AFTER_INSERT"    , //            10
-"FORMCONTROL_AFTER_DELETE"    , //            11
-"FORMCONTROL_BEFORE_ROW"      , //            12
-"FORMCONTROL_AFTER_ROW"       , //            13
-0};
+char *ops[] = {
+  "",
+  "FORMCONTROL_BEFORE_FIELD",	//                1
+  "FORMCONTROL_AFTER_FIELD",	//                 2
+  "FORMCONTROL_BEFORE_INPUT",	//               3
+  "FORMCONTROL_AFTER_INPUT",	//              4
+  "FORMCONTROL_EXIT_INPUT_OK",	//            5
+  "FORMCONTROL_EXIT_INPUT_ABORT",	//          6
+  "FORMCONTROL_KEY_PRESS",	//          7
+  "FORMCONTROL_BEFORE_INSERT",	//            8
+  "FORMCONTROL_BEFORE_DELETE",	//            9
+  "FORMCONTROL_AFTER_INSERT",	//            10
+  "FORMCONTROL_AFTER_DELETE",	//            11
+  "FORMCONTROL_BEFORE_ROW",	//            12
+  "FORMCONTROL_AFTER_ROW",	//            13
+  0
+};
 
 /* 
 * This function adds a value to the control stack
 * this is read to determine when to call before/after fields etc
 *
 */
-static void A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f, char *parameter, int extent)
+static void
+A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f,
+			   char *parameter, int extent)
 {
   char *field_name;
   int a;
   struct struct_scr_field *attr;
 
-  A4GL_debug ("add to control stack called with op=%d(%s) field=%p extent=%d", op, ops[op],f,
-	 extent);
+  A4GL_debug ("add to control stack called with op=%d(%s) field=%p extent=%d",
+	      op, ops[op], f, extent);
 
   field_name = 0;
 
@@ -170,11 +176,11 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
       sio->fcntrl[a].op = 0;
       sio->fcntrl[a].parameter = 0;
       sio->fcntrl[a].field_number = 0;
-      sio->fcntrl[a].state =-1;
+      sio->fcntrl[a].state = -1;
       sio->fcntrl[a].extent = 0;
 
     }
-    sio->fcntrl_cnt = 0;
+  sio->fcntrl_cnt = 0;
 }
 
 
@@ -190,13 +196,13 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   struct struct_scr_field *f;
 
 
-  A4GL_debug ("newMovement %d ",  attrib);
+  A4GL_debug ("newMovement %d ", attrib);
 
   if (attrib < 0)
     {
       // attempt to move too far to the left
       A4GL_debug ("Too far to the left");
-      A4GL_newMovement (sio,  0);
+      A4GL_newMovement (sio, 0);
       return;
     }
 
@@ -205,70 +211,75 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
     {
       // Too far over to the right - wrap to the left or possible exit - INPUT WRAP...
       A4GL_debug ("Too far to the right");
-      A4GL_newMovement (sio,   -1);
+      A4GL_newMovement (sio, -1);
       return;
     }
 
 
 
   ptr = malloc (sizeof (struct s_movement));
-  ptr->scr_line = -1; // Not used for a normal input/construct
-  ptr->arr_line = -1; // Not used for a normal input/construct
+  ptr->scr_line = -1;		// Not used for a normal input/construct
+  ptr->arr_line = -1;		// Not used for a normal input/construct
   ptr->attrib_no = attrib;
 
   last_field = sio->currform->currentfield;
 
-  A4GL_debug("last field was : %p",sio->currform->currentfield);
+  A4GL_debug ("last field was : %p", sio->currform->currentfield);
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)|| (f->datatype==DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
+  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+      || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
     {
       int dir = 0;
       while (1)
-        {
+	{
 
-          if (dir == 0)
-            {
-              if (attrib >= sio->curr_attrib)
-                {               // We want to move to the right..
-                  dir = 1;
-                }
-              else
-                {
-                  dir = -1;
-                }
-            }
-          next_field = sio->field_list[attrib];
-          f = (struct struct_scr_field *) (field_userptr (next_field));
+	  if (dir == 0)
+	    {
+	      if (attrib >= sio->curr_attrib)
+		{		// We want to move to the right..
+		  dir = 1;
+		}
+	      else
+		{
+		  dir = -1;
+		}
+	    }
+	  next_field = sio->field_list[attrib];
+	  f = (struct struct_scr_field *) (field_userptr (next_field));
 
-          if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)|| (f->datatype==DTYPE_SERIAL))
-            {
-              attrib += dir;
-              if (attrib > sio->nfields) 
-                {
+	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
+	      || (f->datatype == DTYPE_SERIAL))
+	    {
+	      attrib += dir;
+	      if (attrib > sio->nfields)
+		{
 
 
-		  if (std_dbscr.input_wrapmode == 0) {
-      				A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0);
-              			return ;
-		  }
+		  if (std_dbscr.input_wrapmode == 0)
+		    {
+		      A4GL_add_to_control_stack (sio,
+						 FORMCONTROL_EXIT_INPUT_OK, 0,
+						 0, 0);
+		      return;
+		    }
 
-                  attrib = 0;
-                }
+		  attrib = 0;
+		}
 
-              if (attrib < 0)
-                {
-                  attrib = sio->nfields;
-                }
-            }
-          else
-            {
-              A4GL_debug ("Found somewhere free...");
-              A4GL_newMovement (sio, attrib);       // So keep going...
-              return;
-            }
-        }
+	      if (attrib < 0)
+		{
+		  attrib = sio->nfields;
+		}
+	    }
+	  else
+	    {
+	      A4GL_debug ("Found somewhere free...");
+	      A4GL_newMovement (sio, attrib);	// So keep going...
+	      return;
+	    }
+	}
     }
 
 
@@ -276,17 +287,25 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
 
 
-  if (last_field!=next_field || 1) {
-  	A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field, A4GL_memdup (ptr, sizeof (struct s_movement)), 0);
-  	if (last_field) {
-		//if (last_field!=next_field) {
-			A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
-		//}
+  if (last_field != next_field || 1)
+    {
+      A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field,
+				 A4GL_memdup (ptr,
+					      sizeof (struct s_movement)), 0);
+      if (last_field)
+	{
+	  //if (last_field!=next_field) {
+	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field,
+				     0, 0);
+	  //}
 	}
-  } else {
-  	free (ptr);
-  }
-  A4GL_debug("Done newMovement - last_field was %p new_field is %p",last_field,new_field);
+    }
+  else
+    {
+      free (ptr);
+    }
+  A4GL_debug ("Done newMovement - last_field was %p new_field is %p",
+	      last_field, new_field);
 }
 
 
@@ -334,18 +353,19 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
     {
       if (sio->fcntrl[a].state == 99)
-        {
-         A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, sio->currentfield, 0, 0);
-          new_state = 50;
-	  rval=-1;
-        }
+	{
+	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
+				     sio->currentfield, 0, 0);
+	  new_state = 50;
+	  rval = -1;
+	}
 
       if (sio->fcntrl[a].state == 50)
-        {
-      	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-          new_state = 0;
-      	rval = 0;
-        }
+	{
+	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+	  new_state = 0;
+	  rval = 0;
+	}
     }
 
 
@@ -370,117 +390,164 @@ process_control_stack (struct s_screenio *sio)
 
       if (sio->fcntrl[a].state == 75)
 	{
-	  	new_state = 50;
-  	  	if (sio->processed_onkey!=0) {
-			A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
-		}
-		rval=-1;
+	  new_state = 50;
+	  if (sio->processed_onkey != 0)
+	    {
+	      A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form,
+				   sio);
+	    }
+	  rval = -1;
 	}
 
 
       if (sio->fcntrl[a].state == 50)
 	{
-      	  struct struct_scr_field *fprop;
-	  int has_picture=0;
-	  char *picture=0;
-	  int ok=0;
-	  new_state=10;
+	  struct struct_scr_field *fprop;
+	  int has_picture = 0;
+	  char *picture = 0;
+	  int ok = 0;
+	  new_state = 10;
 
-      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  	A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
-          	if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);}
-			if (sio->mode == MODE_CONSTRUCT) has_picture=0;
-		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255 && ( (isprint(sio->fcntrl[a].extent) || sio->fcntrl[a].extent==1 || sio->fcntrl[a].extent==4)) ) {
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
+	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+	    {
+	      has_picture = 1;
+	      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+	    }
+	  if (sio->mode == MODE_CONSTRUCT)
+	    has_picture = 0;
+	  if (sio->fcntrl[a].extent >= 0 && sio->fcntrl[a].extent <= 255
+	      &&
+	      ((isprint (sio->fcntrl[a].extent) || sio->fcntrl[a].extent == 1
+		|| sio->fcntrl[a].extent == 4)))
+	    {
 
-                	if ((fprop->flags & 1)==0 &&!has_picture)  {
-					switch (sio->vars[sio->curr_attrib].dtype) {
-					case DTYPE_SMINT:
-					case DTYPE_INT:
-					case DTYPE_SERIAL:
-					case DTYPE_FLOAT:
-					case DTYPE_SMFLOAT:
-					case DTYPE_DECIMAL:
-					case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
-	A4GL_debug("Clear to end of field because of datatype");
-					}
-			}
-			A4GL_debug("SETTING FLAGS ");
-                	fprop->flags|=2; // Set the field status flag
-
-
-
-  			if (has_picture) {
-				int i;
-				int key;
-	  			FORM *mform;
-				mform=sio->currform->form;
-				i=mform->curcol;
-				ok=1;
-				key=sio->fcntrl[a].extent;
-				
-				if (picture[i]=='A') { if (isalpha(key)) ok=1; else ok=0;} 
-				if (picture[i]=='#') { if (isdigit(key)) ok=1; else ok=0;}
-				if (picture[i]=='X') { ok=1; }
-				if (picture[i]!='X'&& picture[i]!='#'&& picture[i]!='A') { ok=0; }
-			
-   			} else {
-				ok=1;
-			}
+	      if ((fprop->flags & 1) == 0 && !has_picture)
+		{
+		  switch (sio->vars[sio->curr_attrib].dtype)
+		    {
+		    case DTYPE_SMINT:
+		    case DTYPE_INT:
+		    case DTYPE_SERIAL:
+		    case DTYPE_FLOAT:
+		    case DTYPE_SMFLOAT:
+		    case DTYPE_DECIMAL:
+		    case DTYPE_MONEY:
+		      A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
+		      A4GL_debug
+			("Clear to end of field because of datatype");
+		    }
+		}
+	      A4GL_debug ("SETTING FLAGS ");
+	      fprop->flags |= 2;	// Set the field status flag
 
 
-			if (ok==1) {
-				A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
-	  			A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
-			}
+
+	      if (has_picture)
+		{
+		  int i;
+		  int key;
+		  FORM *mform;
+		  mform = sio->currform->form;
+		  i = mform->curcol;
+		  ok = 1;
+		  key = sio->fcntrl[a].extent;
+
+		  if (picture[i] == 'A')
+		    {
+		      if (isalpha (key))
+			ok = 1;
+		      else
+			ok = 0;
+		    }
+		  if (picture[i] == '#')
+		    {
+		      if (isdigit (key))
+			ok = 1;
+		      else
+			ok = 0;
+		    }
+		  if (picture[i] == 'X')
+		    {
+		      ok = 1;
+		    }
+		  if (picture[i] != 'X' && picture[i] != '#'
+		      && picture[i] != 'A')
+		    {
+		      ok = 0;
+		    }
+
+		}
+	      else
+		{
+		  ok = 1;
+		}
 
 
-  			if (has_picture&&ok) {
-				FORM *mform;
-				mform=sio->currform->form;
-				if (strchr("A#X",picture[mform->curcol])==0&&picture[mform->curcol])  do_key_move('R',sio,sio->fcntrl[a].extent, has_picture, picture) ;
-			}
+	      if (ok == 1)
+		{
+		  A4GL_int_form_driver (sio->currform->form,
+					sio->fcntrl[a].extent);
+		  A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+		}
 
-		} 
-              	fprop->flags|=1; // Clear the before field flag
-		rval=-1;
+
+	      if (has_picture && ok)
+		{
+		  FORM *mform;
+		  mform = sio->currform->form;
+		  if (strchr ("A#X", picture[mform->curcol]) == 0
+		      && picture[mform->curcol])
+		    do_key_move ('R', sio, sio->fcntrl[a].extent, has_picture,
+				 picture);
+		}
+
+	    }
+	  fprop->flags |= 1;	// Clear the before field flag
+	  rval = -1;
 	  //mja_wrefresh(currwin);
 	}
 
 
       if (sio->fcntrl[a].state == 10)
-        {
-          struct struct_scr_field *fprop;
-          new_state = 5;
+	{
+	  struct struct_scr_field *fprop;
+	  new_state = 5;
 
-        rval=-1;
+	  rval = -1;
 
 
-          if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
-            {
-              fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
+	    {
+	      fprop =
+		(struct struct_scr_field
+		 *) (field_userptr (sio->currentfield));
 
-              if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) 
-                {
-                  FORM *curses_form;
-                  //int width;
-                  //char buff[256];
-                  curses_form = sio->currform->form;
-                  //width = A4GL_get_field_width (sio->currentfield);
-                  if (current_field (curses_form) != sio->currentfield)
-                    {
-                      set_current_field (curses_form, sio->currentfield);
-		      A4GL_newMovement(sio,sio->curr_attrib+1);
-                    }
+	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))
+		{
+		  FORM *curses_form;
+		  //int width;
+		  //char buff[256];
+		  curses_form = sio->currform->form;
+		  //width = A4GL_get_field_width (sio->currentfield);
+		  if (current_field (curses_form) != sio->currentfield)
+		    {
+		      set_current_field (curses_form, sio->currentfield);
+		      A4GL_newMovement (sio, sio->curr_attrib + 1);
+		    }
 
-                }
-            }
+		}
+	    }
 
-        }
+	}
 
-        if (sio->fcntrl[a].state==5) {
-                new_state=0;
-                rval=-1;
-        }
+      if (sio->fcntrl[a].state == 5)
+	{
+	  new_state = 0;
+	  rval = -1;
+	}
 
 
 
@@ -493,89 +560,120 @@ process_control_stack (struct s_screenio *sio)
     {
       struct struct_scr_field *fprop;
       int attr;
-	A4GL_debug("FORM_BEFORE_FIELD - state=%d",sio->fcntrl[a].state);
+      A4GL_debug ("FORM_BEFORE_FIELD - state=%d", sio->fcntrl[a].state);
 
       if (sio->fcntrl[a].state == 99)
-        {
-          	new_state = 50;
-      		ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
-      		sio->curr_attrib = ptr_movement->attrib_no;
-
-      	  	A4GL_push_long ((long) sio->field_list[sio->curr_attrib]);
-          	A4GL_push_char (sio->fcntrl[a].field_name);
-		A4GL_debug("Setting rval to -197");
-		rval=-197;
-        }
-
-      if (sio->fcntrl[a].state == 50) 
 	{
-   	  	sio->currentfield = sio->field_list[sio->curr_attrib];
-      		set_current_field (sio->currform->form, sio->currentfield);
-      		sio->currform->currentfield=sio->currentfield;
-      		pos_form_cursor (sio->currform->form);
-		A4GL_debug("Processed after users 'BEFORE FIELD'");
-      		pos_form_cursor (sio->currform->form);
-      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop,field_buffer(sio->currentfield,0));
-      		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
-		if (sio->mode != MODE_CONSTRUCT) {
-			char *picture=0;
-			int has_picture=0;
-          		if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { 
-				char *ptr;
-				int a;
-				int w;
+	  new_state = 50;
+	  ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
+	  sio->curr_attrib = ptr_movement->attrib_no;
 
-      				A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+	  A4GL_push_long ((long) sio->field_list[sio->curr_attrib]);
+	  A4GL_push_char (sio->fcntrl[a].field_name);
+	  A4GL_debug ("Setting rval to -197");
+	  rval = -197;
+	}
 
-				A4GL_debug("Set value to '%s'",field_buffer(sio->currentfield,0));
-						w=A4GL_get_field_width(sio->currentfield);
-						has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-						ptr=malloc(w+1);
+      if (sio->fcntrl[a].state == 50)
+	{
+	  sio->currentfield = sio->field_list[sio->curr_attrib];
+	  set_current_field (sio->currform->form, sio->currentfield);
+	  sio->currform->currentfield = sio->currentfield;
+	  pos_form_cursor (sio->currform->form);
+	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
+	  pos_form_cursor (sio->currform->form);
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  attr =
+	    A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop,
+				      field_buffer (sio->currentfield, 0));
+	  if (attr != 0)
+	    A4GL_set_field_attr_with_attr (sio->currentfield, attr,
+					   FGL_CMD_INPUT);
+	  if (sio->mode != MODE_CONSTRUCT)
+	    {
+	      char *picture = 0;
+	      int has_picture = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+		{
+		  char *ptr;
+		  int a;
+		  int w;
 
-						strcpy(ptr,field_buffer(sio->currentfield,0));
-						ptr[w]=0;
-					
-						for (a=0;a<strlen(picture);a++) {
-							if (a>w) break;
+		  A4GL_set_init_value (sio->currentfield,
+				       sio->vars[sio->curr_attrib].ptr,
+				       sio->vars[sio->curr_attrib].dtype +
+				       ENCODE_SIZE (sio->
+						    vars[sio->curr_attrib].
+						    size));
 
-							if (picture[a]=='A') {
-									if (!isalpha(ptr[a])) ptr[a]=' '; 
-									continue;
-							}  
+		  A4GL_debug ("Set value to '%s'",
+			      field_buffer (sio->currentfield, 0));
+		  w = A4GL_get_field_width (sio->currentfield);
+		  has_picture = 1;
+		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+		  ptr = malloc (w + 1);
 
-							if (picture[a]=='#') {
-									if (!isdigit(ptr[a])) ptr[a]=' '; 
-									continue;
-							}  
-							if (picture[a]=='X') {
-									if (ptr[a]==0) ptr[a]=' '; 
-									continue;
-							}  
+		  strcpy (ptr, field_buffer (sio->currentfield, 0));
+		  ptr[w] = 0;
 
-							ptr[a]=picture[a];
-						}
-      					//A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
-      					A4GL_set_init_value (sio->currentfield, ptr, 0);
-					A4GL_debug("XYX Set field : %s",ptr);
-						free(ptr); // ? @todo....
-			} else {
-      				A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+		  for (a = 0; a < strlen (picture); a++)
+		    {
+		      if (a > w)
+			break;
+
+		      if (picture[a] == 'A')
+			{
+			  if (!isalpha (ptr[a]))
+			    ptr[a] = ' ';
+			  continue;
 			}
 
-			if (has_picture) {	
-				A4GL_int_form_driver (sio->currform->form, REQ_OVL_MODE); // Always in overwrite mode in a picture...
+		      if (picture[a] == '#')
+			{
+			  if (!isdigit (ptr[a]))
+			    ptr[a] = ' ';
+			  continue;
 			}
-			
+		      if (picture[a] == 'X')
+			{
+			  if (ptr[a] == 0)
+			    ptr[a] = ' ';
+			  continue;
+			}
 
+		      ptr[a] = picture[a];
+		    }
+		  //A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+		  A4GL_set_init_value (sio->currentfield, ptr, 0);
+		  A4GL_debug ("XYX Set field : %s", ptr);
+		  free (ptr);	// ? @todo....
+		}
+	      else
+		{
+		  A4GL_set_init_value (sio->currentfield,
+				       sio->vars[sio->curr_attrib].ptr,
+				       sio->vars[sio->curr_attrib].dtype +
+				       ENCODE_SIZE (sio->
+						    vars[sio->curr_attrib].
+						    size));
 		}
 
-      		A4GL_comments (fprop);
-		if ((fprop->flags & 1) ) fprop->flags-=1; // Clear a flag to indicate that we're just starting on this field
-      		new_state = 0;
-		A4GL_debug("Setting rval to -1");
-		//rval=-99;
-        }
+	      if (has_picture)
+		{
+		  A4GL_int_form_driver (sio->currform->form, REQ_OVL_MODE);	// Always in overwrite mode in a picture...
+		}
+
+
+	    }
+
+	  A4GL_comments (fprop);
+	  if ((fprop->flags & 1))
+	    fprop->flags -= 1;	// Clear a flag to indicate that we're just starting on this field
+	  new_state = 0;
+	  A4GL_debug ("Setting rval to -1");
+	  //rval=-99;
+	}
 
 
 
@@ -585,85 +683,156 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
     {
 
-	int ffc_rval;
+      int ffc_rval;
       struct struct_scr_field *fprop;
-	int attr;
-  	if (sio->mode != MODE_CONSTRUCT)
-    		ffc_rval=A4GL_form_field_chk (sio, -1);
-  	else
-    		ffc_rval=A4GL_form_field_constr (sio, -1);
+      int attr;
+      if (sio->mode != MODE_CONSTRUCT)
+	ffc_rval = A4GL_form_field_chk (sio, -1);
+      else
+	ffc_rval = A4GL_form_field_constr (sio, -1);
 
 
-	A4GL_debug("form_Field_chk returns %d\n",a);
+      A4GL_debug ("form_Field_chk returns %d\n", a);
 
-	if (ffc_rval!=-4) {
-      		new_state = 0;
-      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-		if (sio->mode != MODE_CONSTRUCT) {
-			//int has_picture=0;
-			char *picture;
-			int field_no;
-			char buff[10024];
-			field_no=sio->curr_attrib;
-			strcpy(buff,field_buffer (sio->currentfield, 0));
+      if (ffc_rval != -4)
+	{
+	int really_ok=0;
+	  new_state = 0;
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  if (sio->mode != MODE_CONSTRUCT)
+	    {
+	      //int has_picture=0;
+	      char *picture;
+	      int field_no;
+	      char buff[10024];
+	      field_no = sio->curr_attrib;
+	      strcpy (buff, field_buffer (sio->currentfield, 0));
 
 
-          		if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { 
-				int a;	
-				int blank=1;
-				picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-				A4GL_debug("HAS PICTURE MJA123");
-				for (a=0;a<strlen(buff);a++) {
-					if (picture[a]=='X'&&buff[a]!=' ') {blank=0;break;}
-					if (picture[a]=='A'&&buff[a]!=' ') {blank=0;break;}
-					if (picture[a]=='#'&&buff[a]!=' ') {blank=0;break;}
-				}
-				if (blank) strcpy(buff,"");
+	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+		{
+		  int a;
+		  int blank = 1;
+		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+		  A4GL_debug ("HAS PICTURE MJA123");
+		  for (a = 0; a < strlen (buff); a++)
+		    {
+		      if (picture[a] == 'X' && buff[a] != ' ')
+			{
+			  blank = 0;
+			  break;
 			}
-
-
-
-			A4GL_trim(buff);
-
-			A4GL_push_char(buff);
-			if (strlen(buff)) {
-				A4GL_debug("Field is not null");
-	        		A4GL_push_char (buff);
-			} else {
-				A4GL_debug("Field is null");
-		 		A4GL_push_null(DTYPE_CHAR,0);
+		      if (picture[a] == 'A' && buff[a] != ' ')
+			{
+			  blank = 0;
+			  break;
 			}
+		      if (picture[a] == '#' && buff[a] != ' ')
+			{
+			  blank = 0;
+			  break;
+			}
+		    }
+		  if (blank)
+		    strcpy (buff, "");
+		}
 
-		
-			A4GL_debug("Calling A4GL_pop_var2 : %p dtype=%d size=%d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-          		A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-			A4GL_debug("Calling display_field_contents");
-			A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
-      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop,field_buffer(sio->currentfield,0));
-      		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
 
+	      A4GL_trim (buff);
+
+	      if (strlen (buff))
+		{
+		  A4GL_debug ("Field is not null");
+		  A4GL_push_char (buff);
+		}
+	      else
+		{
+		  A4GL_debug ("Field is null");
+		  A4GL_push_null (DTYPE_CHAR, 0);
+		}
+
+
+	      A4GL_debug ("Calling A4GL_pop_var2 : %p dtype=%d size=%d",
+			  sio->vars[field_no].ptr, sio->vars[field_no].dtype,
+			  sio->vars[field_no].size);
+
+	        A4GL_pop_param (sio->vars[field_no].ptr,
+			     sio->vars[field_no].dtype,
+			     sio->vars[field_no].size);
+
+		really_ok=1;
+
+		if (strlen(buff)&&A4GL_isnull(sio->vars[field_no].dtype,sio->vars[field_no].ptr)) really_ok=0;
+
+		if (!A4GL_conversion_ok(-1)) really_ok=0;
+
+                if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL) && strchr(buff,'.') ) {
+				really_ok=0;
+		}
+
+
+		if (really_ok==0) {
+			// 
+                        A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+
+                        if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
+                                        A4GL_clr_field (sio->currform->currentfield);
+                        } else {
+                                if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR"))) {
+                                        A4GL_int_form_driver (sio->currform->form, REQ_BEG_FIELD);
+                                }
+
+                        }
+
+
+                        set_current_field (sio->currform->form, sio->currform->currentfield);
+          		A4GL_init_control_stack (sio, 0);
+          		return -1;
+		}
+
+		A4GL_debug("It would appear that %s could be put into my variable... type=%d size=%d",buff,sio->vars[field_no].dtype,sio->vars[field_no].size);
+
+	      A4GL_push_char (buff);
+
+	      A4GL_debug ("Calling display_field_contents");
+	      A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr);	// MJA 2306
+
+	      fprop =
+		(struct struct_scr_field
+		 *) (field_userptr (sio->currentfield));
+	      attr =
+		A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop,
+					  field_buffer (sio->currentfield,
+							0));
+	      if (attr != 0)
+		A4GL_set_field_attr_with_attr (sio->currentfield, attr,
+					       FGL_CMD_INPUT);
+
+	    }
+	  A4GL_push_long ((long) sio->currentfield);
+	  A4GL_push_char (sio->fcntrl[a].field_name);
+
+
+
+	  rval = -198;
 	}
-      		A4GL_push_long ((long) sio->currentfield);
-      		A4GL_push_char (sio->fcntrl[a].field_name);
-
-
-
-      	rval = -198;
-	} else {
-		A4GL_init_control_stack (sio,0);
-		return -1;
+      else
+	{
+	  A4GL_init_control_stack (sio, 0);
+	  return -1;
 	}
     }
 
 
 
-  if (new_state != 0 && sio->fcntrl[a].op!=0)
+  if (new_state != 0 && sio->fcntrl[a].op != 0)
     {
       if (sio->fcntrl[a].state == new_state)
 	{
-	A4GL_debug("internal error - state=%d op=%d (%s) @ %d",new_state,sio->fcntrl[a].op,ops[sio->fcntrl[a].op],a);
+	  A4GL_debug ("internal error - state=%d op=%d (%s) @ %d", new_state,
+		      sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
 	  A4GL_exitwith ("Internal error - no change in state ");
 	  return -1;
 	}
@@ -672,7 +841,8 @@ process_control_stack (struct s_screenio *sio)
     }
   else
     {
-      A4GL_debug ("Popping type %d (%s) off control stack @ %d", sio->fcntrl[a].op,ops[sio->fcntrl[a].op],a);
+      A4GL_debug ("Popping type %d (%s) off control stack @ %d",
+		  sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
       sio->fcntrl_cnt--;
       if (sio->fcntrl[a].parameter)
 	{
@@ -685,56 +855,61 @@ process_control_stack (struct s_screenio *sio)
 
 
 int
- UILIB_A4GL_req_field_input ( void *sv, char type, va_list *ap)
-{ 
-struct s_screenio *s;
+UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
+{
+  struct s_screenio *s;
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
   //char *field_name;
-s=sv;
+  s = sv;
 
 
-  if (type=='+') { // Next field next
-			A4GL_init_control_stack (s,0);
-			s->currform->currentfield=0;
-			A4GL_newMovement(s,s->curr_attrib+1);
-			return 1;
-  }
+  if (type == '+')
+    {				// Next field next
+      A4GL_init_control_stack (s, 0);
+      s->currform->currentfield = 0;
+      A4GL_newMovement (s, s->curr_attrib + 1);
+      return 1;
+    }
 
-  if (type=='-') { // Next field previous
-			A4GL_init_control_stack (s,0);
-			s->currform->currentfield=0;
-			A4GL_newMovement(s,s->curr_attrib-1);
-			return 1;
-  }
+  if (type == '-')
+    {				// Next field previous
+      A4GL_init_control_stack (s, 0);
+      s->currform->currentfield = 0;
+      A4GL_newMovement (s, s->curr_attrib - 1);
+      return 1;
+    }
 
-  if (type=='0') { // Next field 'current' - used internally
-			A4GL_init_control_stack (s,0);
-			//s->currform->currentfield=0;
-			//A4GL_newMovement(s,s->curr_attrib-1);
-			return 1;
-  }
+  if (type == '0')
+    {				// Next field 'current' - used internally
+      A4GL_init_control_stack (s, 0);
+      //s->currform->currentfield=0;
+      //A4GL_newMovement(s,s->curr_attrib-1);
+      return 1;
+    }
 
 
   A4GL_debug ("req_field");
 
-  a = A4GL_gen_field_list (&ptr, s->currform, 1,ap);
+  a = A4GL_gen_field_list (&ptr, s->currform, 1, ap);
 
   if (a >= 0)
     {
-	for (a=0;a<=s->nfields;a++) {
-		if (s->field_list[a]==ptr[0]) {
-			A4GL_init_control_stack (s,0);
+      for (a = 0; a <= s->nfields; a++)
+	{
+	  if (s->field_list[a] == ptr[0])
+	    {
+	      A4GL_init_control_stack (s, 0);
 
 
-			// How risky is this ?
-			s->currform->currentfield=0;
+	      // How risky is this ?
+	      s->currform->currentfield = 0;
 
 
-			A4GL_newMovement(s,a);
-			return 1;
-		}
+	      A4GL_newMovement (s, a);
+	      return 1;
+	    }
 	}
       A4GL_exitwith ("Field not found");
       return 0;
@@ -754,7 +929,7 @@ s=sv;
  * @todo Describe function
  */
 int
- UILIB_A4GL_form_loop (void *vs,int init)
+UILIB_A4GL_form_loop (void *vs, int init)
 {
   struct s_form_dets *form;
   int a;
@@ -764,14 +939,16 @@ int
   struct struct_metrics *metrics;
   FORM *mform;
   s = vs;
-  if (init==1) {
-	A4GL_debug("------------------------------------------------------");
-	s->currform->currentfield=0;
-	abort_pressed=0;
-  }
+  if (init == 1)
+    {
+      A4GL_debug ("------------------------------------------------------");
+      s->currform->currentfield = 0;
+      abort_pressed = 0;
+    }
   form = s->currform;
   A4GL_set_abort (0);
-  A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
+  A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,
+	      field_status (form->currentfield));
 
   if (form != UILIB_A4GL_get_curr_form (1))
     {
@@ -783,13 +960,14 @@ int
   mform = form->form;
   A4GL_mja_wrefresh (currwin);
 
-  if (init) {
-	A4GL_init_control_stack (s, 1);
-	s->curr_attrib=0;
-	s->currentfield=0;
-	A4GL_newMovement(s,0);
-	A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
-	}
+  if (init)
+    {
+      A4GL_init_control_stack (s, 1);
+      s->curr_attrib = 0;
+      s->currentfield = 0;
+      A4GL_newMovement (s, 0);
+      A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
+    }
 
   if (A4GL_has_something_on_control_stack (s))
     {
@@ -801,9 +979,9 @@ int
 
 
   //if (s->mode != MODE_CONSTRUCT)
-    //a = A4GL_form_field_chk (s, 0);
+  //a = A4GL_form_field_chk (s, 0);
   //else
-    //a = A4GL_form_field_constr (s, 0);
+  //a = A4GL_form_field_constr (s, 0);
 
 
   //pos_form_cursor (mform);
@@ -817,45 +995,47 @@ int
     }
 
 //if (current_field(mform)!=form->currentfield) {
-	//A4GL_debug("CHANGE OF FIELD\n");
-	A4GL_mja_set_current_field (mform, form->currentfield);
+  //A4GL_debug("CHANGE OF FIELD\n");
+  A4GL_mja_set_current_field (mform, form->currentfield);
 //}
-A4GL_mja_pos_form_cursor (mform);
+  A4GL_mja_pos_form_cursor (mform);
 
 // Wait for a key..
   a = A4GL_getch_win ();
-  s->processed_onkey=a;
+  s->processed_onkey = a;
   m_lastkey = a;
   A4GL_set_last_key (a);
-     A4GL_clr_error_nobox("A4GL_form_loop");
+  A4GL_clr_error_nobox ("A4GL_form_loop");
 
-  if (abort_pressed) a = -1;
+  if (abort_pressed)
+    a = -1;
 
-  A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
+  A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,
+	      field_status (form->currentfield));
 
 // Process the key..
 
 
-      if (fprop != 0)
-        {
-          A4GL_debug ("Downshift?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-              && isalpha (a))
-            {
-              a = tolower (a);
-            }
-          A4GL_debug ("Upshift ?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-              && isalpha (a))
-            {
-              a = toupper (a);
-            }
-        }
+  if (fprop != 0)
+    {
+      A4GL_debug ("Downshift?");
+      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
+	  && isalpha (a))
+	{
+	  a = tolower (a);
+	}
+      A4GL_debug ("Upshift ?");
+      if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
+	  && isalpha (a))
+	{
+	  a = toupper (a);
+	}
+    }
 
 
 
 
-    A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
   //A4GL_proc_key_input (a, mform, s);
 
   //return -90;
@@ -865,61 +1045,82 @@ A4GL_mja_pos_form_cursor (mform);
 
 
 
-static void do_key_move(char lr,struct s_screenio *s,int a, int has_picture, char *picture) {
-int at_last=0;
-int at_first=0;
-FIELD *f;
-FORM *mform;
-mform=s->currform->form;
-f=s->currentfield;
+static void
+do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
+	     char *picture)
+{
+  int at_last = 0;
+  int at_first = 0;
+  FIELD *f;
+  FORM *mform;
+  mform = s->currform->form;
+  f = s->currentfield;
 
-if (mform->curcol==0) {
-                at_first=1;
-}
+  if (mform->curcol == 0)
+    {
+      at_first = 1;
+    }
 
-if (mform->curcol==A4GL_get_field_width(current_field(mform))-1) {
-                at_last=1;
-	A4GL_debug("AT LAST..... XYXYXY");
-}
+  if (mform->curcol == A4GL_get_field_width (current_field (mform)) - 1)
+    {
+      at_last = 1;
+      A4GL_debug ("AT LAST..... XYXYXY");
+    }
 
-if (lr=='L') {
-	if (at_first) 	{
-		if (s->curr_attrib) {
-			A4GL_newMovement(s,s->curr_attrib-1); //  go to previous field
-			return;
-		}
-
-	} else {
-		A4GL_int_form_driver (mform, REQ_PREV_CHAR); // go to previous character
-	}
-}
-
-if (lr=='R') {
-	if (at_last) { // Acts like KEY_DOWN at last position in the field
-		A4GL_debug("AT LAST");
-	    if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
-                A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
-                return;
-            } else {
-			A4GL_newMovement(s,s->curr_attrib+1);
-			return;
+  if (lr == 'L')
+    {
+      if (at_first)
+	{
+	  if (s->curr_attrib)
+	    {
+	      A4GL_newMovement (s, s->curr_attrib - 1);	//  go to previous field
+	      return;
 	    }
-	} else {
-		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+
 	}
-}
-A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
+      else
+	{
+	  A4GL_int_form_driver (mform, REQ_PREV_CHAR);	// go to previous character
+	}
+    }
+
+  if (lr == 'R')
+    {
+      if (at_last)
+	{			// Acts like KEY_DOWN at last position in the field
+	  A4GL_debug ("AT LAST");
+	  if (std_dbscr.input_wrapmode == 0
+	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
+	    {
+	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
+					 a);
+	      return;
+	    }
+	  else
+	    {
+	      A4GL_newMovement (s, s->curr_attrib + 1);
+	      return;
+	    }
+	}
+      else
+	{
+	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	}
+    }
+  A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
 
 
-if (has_picture) {
-             int newpos;
-             FORM *mform;
-             mform=s->currform->form;
-             newpos=mform->curcol;
-             if (strchr("A#X",picture[newpos]))  return;
-	     do_key_move(lr,s,a, has_picture, picture) ;
-}
-return;
+  if (has_picture)
+    {
+      int newpos;
+      FORM *mform;
+      mform = s->currform->form;
+      newpos = mform->curcol;
+      if (strchr ("A#X", picture[newpos]))
+	return;
+      do_key_move (lr, s, a, has_picture, picture);
+    }
+  return;
 
 }
 
@@ -935,19 +1136,21 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   struct struct_scr_field *fprop;
   struct s_form_dets *fd;
   int acckey;
-  int has_picture=0;
-  char *picture=0;
+  int has_picture = 0;
+  char *picture = 0;
 
 
-  int at_first=0;
-  int at_last=0;
-  
-  if (mform->curcol==0) {
-		at_first=1;
-  }
-  if (mform->curcol==A4GL_get_field_width(current_field(mform))-1) {
-		at_last=1;
-  }
+  int at_first = 0;
+  int at_last = 0;
+
+  if (mform->curcol == 0)
+    {
+      at_first = 1;
+    }
+  if (mform->curcol == A4GL_get_field_width (current_field (mform)) - 1)
+    {
+      at_last = 1;
+    }
 
   //int npage;
   fd = A4GL_getfromform (mform);
@@ -964,26 +1167,31 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       A4GL_debug ("fprop=%p\n", fprop);
 
       if (fprop != 0)
-        {
+	{
 
 
-          if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);}
-	  if (s->mode == MODE_CONSTRUCT) has_picture=0; /* We don't use the picture in a construct... */
+	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+	    {
+	      has_picture = 1;
+	      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+	    }
+	  if (s->mode == MODE_CONSTRUCT)
+	    has_picture = 0;	/* We don't use the picture in a construct... */
 
 
-          A4GL_debug ("Downshift?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-              && isalpha (a))
-            {
-              a = tolower (a);
-            }
-          A4GL_debug ("Upshift ?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-              && isalpha (a))
-            {
-              a = toupper (a);
-            }
-        }
+	  A4GL_debug ("Downshift?");
+	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
+	      && isalpha (a))
+	    {
+	      a = tolower (a);
+	    }
+	  A4GL_debug ("Upshift ?");
+	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
+	      && isalpha (a))
+	    {
+	      a = toupper (a);
+	    }
+	}
 
     }
 
@@ -1006,8 +1214,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       //A4GL_mja_wrefresh (stdscr);
       //A4GL_mja_wrefresh (currwin);
 
-	clearok(curscr,1);
-        A4GL_mja_refresh ();
+      clearok (curscr, 1);
+      A4GL_mja_refresh ();
 
       break;
 /*
@@ -1023,11 +1231,11 @@ break;
 
 
     case -1:
- 	A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
-        break;
+      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+      break;
 
 
-    //case 26:
+      //case 26:
       //return 0; ^Z ?
 
     case 127:
@@ -1035,77 +1243,97 @@ break;
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
-	if (!has_picture) { A4GL_int_form_driver (mform, REQ_DEL_PREV);
-	} else { // Just like A4GLKEY_LEFT.....
-		do_key_move('L',s,a,has_picture, picture);
+      if (!has_picture)
+	{
+	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
 	}
-	break;
+      else
+	{			// Just like A4GLKEY_LEFT.....
+	  do_key_move ('L', s, a, has_picture, picture);
+	}
+      break;
 
     case 24:
-	if (!has_picture) {
-			A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-	} else  {
-		A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+      if (!has_picture)
+	{
+	  A4GL_int_form_driver (mform, REQ_DEL_CHAR);
 	}
-	break;
+      else
+	{
+	  A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+	}
+      break;
 
     case A4GLKEY_UP:
-	A4GL_debug("MJA Try to move to previous field : %d\n",s->curr_attrib-1);
-	A4GL_newMovement(s,s->curr_attrib-1);
-	break;
+      A4GL_debug ("MJA Try to move to previous field : %d\n",
+		  s->curr_attrib - 1);
+      A4GL_newMovement (s, s->curr_attrib - 1);
+      break;
     case 2:
-	A4GL_debug("FIELD OPTS : ");
-	A4GL_debug_print_field_opts(s->currentfield); break;
+      A4GL_debug ("FIELD OPTS : ");
+      A4GL_debug_print_field_opts (s->currentfield);
+      break;
     case '\t':
     case A4GLKEY_ENTER:
     case 13:
     case 10:
     case A4GLKEY_DOWN:
-          if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f))
-            {
-      		A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
-              	return 0;
-            }
-	A4GL_debug("MJA Try to move to next field : %d\n",s->curr_attrib+1);
-	A4GL_newMovement(s,s->curr_attrib+1);
-	break;
+      if (std_dbscr.input_wrapmode == 0
+	  && A4GL_curr_metric_is_used_last_s_screenio (s, f))
+	{
+	  A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
+	  return 0;
+	}
+      A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
+      A4GL_newMovement (s, s->curr_attrib + 1);
+      break;
 
 
     case A4GLKEY_LEFT:
-		do_key_move('L',s,a,has_picture, picture);
-		break;
+      do_key_move ('L', s, a, has_picture, picture);
+      break;
 
     case A4GLKEY_RIGHT:
-		do_key_move('R',s,a,has_picture, picture);
-		break;
+      do_key_move ('R', s, a, has_picture, picture);
+      break;
 
-    case 4:                     // Control - D
-	if (!has_picture) {
-		A4GL_int_form_driver (mform, REQ_CLR_EOF);
-	} else {
-		A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+    case 4:			// Control - D
+      if (!has_picture)
+	{
+	  A4GL_int_form_driver (mform, REQ_CLR_EOF);
 	}
-	break;
-
-
-    case 1:                     // Control - A
-	if (!has_picture) {
-      		form->insmode = form->insmode ? 0 : 1;
-      		if (form->insmode) {
-			A4GL_int_form_driver (mform, REQ_INS_MODE);break;
-		} else {
-			A4GL_int_form_driver (mform, REQ_OVL_MODE);break;
-		}
-	} else {
-		A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+      else
+	{
+	  A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
 	}
-	break;
+      break;
+
+
+    case 1:			// Control - A
+      if (!has_picture)
+	{
+	  form->insmode = form->insmode ? 0 : 1;
+	  if (form->insmode)
+	    {
+	      A4GL_int_form_driver (mform, REQ_INS_MODE);
+	      break;
+	    }
+	  else
+	    {
+	      A4GL_int_form_driver (mform, REQ_OVL_MODE);
+	      break;
+	    }
+	}
+      else
+	{
+	  A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+	}
+      break;
 
     }
 
 
   //A4GL_mja_refresh ();   // removed mja 22/08/2003
-	//usleep(100000);
+  //usleep(100000);
   return -1;
 }
-

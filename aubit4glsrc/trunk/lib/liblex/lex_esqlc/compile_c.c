@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.116 2003-12-10 20:45:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.117 2003-12-17 11:38:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3239,6 +3239,7 @@ void
 print_label (char *s)
 {
   printc ("%s:\n", s);
+  printc("aclfgli_clr_err_flg();");
 }
 
 /**
