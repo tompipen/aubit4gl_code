@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.14 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.15 2004-08-16 10:19:14 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -550,7 +550,7 @@ A4GL_size_menu (ACL_Menu * menu)
   int disp_cnt;
   int s_length;
   int page = 0;
-
+  memset(disp_str,0,sizeof(disp_str));
   A4GL_clr_menu_disp (menu);
 
 #ifdef DEBUG
@@ -693,6 +693,7 @@ void
   char op1[256];
   int nopts;
    menu=menuv;
+  memset(op1,0,256);
   opt1 = nalloc (ACL_Menu_Opts);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
 
@@ -726,6 +727,7 @@ void
   A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
   
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+  memset(opt1->opt_title,0,sizeof(opt1->opt_title));
   if (strlen (txt))
     {
       strcpy (opt1->opt_title, " ");

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.44 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: prompt.c,v 1.45 2004-08-16 10:19:14 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.44 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.45 2004-08-16 10:19:14 mikeaubury Exp $";
 
 /**
  * @file
@@ -345,6 +345,7 @@ int was_aborted=0;
       prompt->mode = 2;
       A4GL_gui_endprompt ((long) prompt);	/* void    A4GL_gui_endprompt            (long ld); */
       unpost_form (prompt->f);
+      A4GL_debug("Calling clear_prmpt");
       A4GL_clear_prompt (prompt);
       return 0;
     }
@@ -373,6 +374,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
       		prompt->mode = 2;
       		A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
       		unpost_form (prompt->f);
+      		A4GL_debug("Calling clear_prmpt");
       		A4GL_clear_prompt (prompt);
 		return A4GL_has_event_for_keypress(a,evt);
 	}
@@ -445,6 +447,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 	if (a_isprint(a)&&a<0xff) {
       		A4GL_push_char (field_buffer (prompt->field, 0));
       		unpost_form (prompt->f);
+      A4GL_debug("Calling clear_prmpt");
       		A4GL_clear_prompt (prompt);
       		prompt->mode=2;
 	}

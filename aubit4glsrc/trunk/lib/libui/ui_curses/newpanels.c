@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.91 2004-07-03 11:58:13 mikeaubury Exp $
+# $Id: newpanels.c,v 1.92 2004-08-16 10:19:14 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.91 2004-07-03 11:58:13 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.92 2004-08-16 10:19:14 mikeaubury Exp $";
 
 /**
  * @file
@@ -81,7 +81,6 @@ void A4GL_make_window_with_this_form_current(void *form);
 */
 extern int have_default_colors;
 WINDOW *currwin;
-extern PANEL *curr_error_panel;
 int scr_width = -1;
 int scr_height = -1;
 int currwinno = -1;
@@ -612,6 +611,7 @@ void
 	  }
 #endif
 	  delwin (win);
+	 A4GL_debug("delwin : %p",win);
 #ifdef DEBUG
 	  {
 	    A4GL_debug ("Here...");
@@ -842,6 +842,7 @@ erase_form (FORM * f)
 #endif
   delwin (s);
   delwin (w);
+A4GL_debug("delwin %p %p",s,w);
 }
 */
 
@@ -1175,6 +1176,7 @@ A4GL_get_curr_left (void)
 int
  UILIB_A4GL_get_curr_height (void)
 {
+	A4GL_debug("get_curr_height : %d = %d",currwinno,windows[currwinno].h);
   return windows[currwinno].h;
 }
 
@@ -1681,9 +1683,11 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	int h;
 	w=A4GL_get_curr_width();
 	h=A4GL_get_curr_height();
+		A4GL_debug("h=%d\n",h);
 	if (currwinno==0) {
 		w=A4GL_screen_width();
 		h=A4GL_screen_height();
+		A4GL_debug("h=%d\n",h);
 	}
 
       /* WINDOW *win; */
@@ -2136,18 +2140,36 @@ A4GL_refresh_menu_window (char *name, int top)
   A4GL_debug ("Setting menu (%s) panel to top", name);
   ptr = A4GL_find_pointer (name, PANCODE);
   A4GL_debug ("refresh menu with pointer to %p", ptr);
-  if (top)
+
+  if (top) {
+	A4GL_debug("top");
     rc = top_panel (ptr);
-  else
+  }
+  else {
+	A4GL_debug("bottom");
     rc = bottom_panel (ptr);
+  }
+
   A4GL_debug ("Rc=%d", rc);
   A4GL_debug ("Topped");
+
+  make_error_panel_top();
+
+/*
   if (curr_error_panel) {
+	A4GL_debug("top_panel curr_error_panel : %p",curr_error_panel);
 	top_panel(curr_error_panel);
   }
-  update_panels ();
+*/
+
+  print_panel_stack ();
+  A4GL_do_update_panels ();
+
+
+#ifdef NDEF
   doupdate ();
   UILIB_A4GL_zrefresh ();
+#endif
   print_panel_stack ();
   return 0;
 }
@@ -2319,7 +2341,7 @@ int
 A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 {
   char buff[10024];
-
+  memset(buff,0,sizeof(buff));
   vsprintf (buff, fmt, *args);
 	
   if (strlen(buff)>256) {
@@ -2509,8 +2531,17 @@ A4GL_find_win (PANEL * p)
   int a;
   if (p == 0) {
 	A4GL_debug("find_win for panel_below(0)");
+	get_below_panel(0);
+
+
+/*
 	p=panel_below(0);
 	if (p==curr_error_panel) p=panel_below(p);
+*/
+
+
+
+
         return A4GL_find_win (p);
   }
 #ifdef DEBUG

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp $
+# $Id: curslib.c,v 1.95 2004-08-16 10:19:13 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.95 2004-08-16 10:19:13 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -51,6 +51,7 @@ static char *module_id="$Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 
+char *a_strchr(char *s,char c);
 /*
 =====================================================================
                     Constants definitions
@@ -89,6 +90,7 @@ static char *module_id="$Id: curslib.c,v 1.94 2004-07-03 11:58:12 mikeaubury Exp
 
 WINDOW *curr_error_window = 0;
 PANEL *curr_error_panel = 0;
+int curr_error_panel_visible=0;
 
 int have_default_colors = 0;
 
@@ -197,54 +199,81 @@ message (textarea * area, char *str, int x, int a)
  * @todo Describe function
  */
 void
-A4GL_error_nobox (char *str, int attr)
+A4GL_error_nobox (char *str_orig, int attr)
 {
   int eline;
-  WINDOW *w;
-  PANEL *p;
-  PANEL *o;
-
+  //WINDOW *w=0;
+  //PANEL *p;
+  //PANEL *o;
   A4GL_chkwin ();
-  if (curr_error_window)
+  char str[512];
+A4GL_debug("start");
+  print_panel_stack();
+
+  if (curr_error_panel_visible)
     {
       A4GL_clr_error_nobox ("A4GL_error_nobox");
     }
   eline = A4GL_geterror_line () - 1;
   A4GL_debug ("Eline=%d\n", eline);
-  //w= subwin (stdscr, 1,  A4GL_screen_width()-1, eline, 0);
-  w = newwin (1, A4GL_screen_width () - 1, eline, 0);
 
-  if (w == 0)
-    {
-      A4GL_exitwith ("Internal error - couldn't create error window");
-      return;
-    }
-  A4GL_debug ("new_panel %p", w);
-  p = new_panel (w);
-  set_panel_userptr (p, 0);
-  o = panel_below (0);
-  top_panel (p);
 
-  //A4GL_push_char (str);
-  A4GL_subwin_gotoxy (w, 1, 1, 0);
+
+  if (curr_error_window==0) {
+	A4GL_debug("%d %d %d %d",1,A4GL_screen_width () - 1, eline, 0);
+  	 curr_error_window= newwin (1, A4GL_screen_width () - 1, eline, 0);
+	
+  	if (curr_error_window == 0)
+    	{
+      		A4GL_exitwith ("Internal error - couldn't create error window");
+      		return;
+    	}
+
+  	A4GL_debug ("new_panel using %p", curr_error_window);
+
+  	if (curr_error_panel==0) {  
+		A4GL_debug("AAA");
+  		print_panel_stack();
+  		curr_error_panel = new_panel (curr_error_window);
+		A4GL_debug("BBB");
+  		print_panel_stack();
+  		set_panel_userptr (curr_error_panel, "error window");
+		A4GL_debug("CCC");
+  		print_panel_stack();
+  	}
+  }
+
+A4GL_debug("Before");
+  print_panel_stack();
+  
+  show_panel(curr_error_panel);
+  wclear(curr_error_window);
+
+A4GL_debug("After");
+  print_panel_stack();
+  strcpy(str,str_orig);
+
+  A4GL_subwin_gotoxy (curr_error_window, 1, 1, 0);
   if (attr == 0)
     attr = A_REVERSE;		//+A4GL_colour_code (COLOR_RED);
   else
     attr = A4GL_decode_aubit_attr (attr, 'w');
-  wattrset (w, attr);
-  A4GL_debug ("Calling subwin_print...");
-  A4GL_subwin_print (w, "%s", str);
-  //wrefresh(w);
-#ifdef DEBUG
-  A4GL_debug ("YY REVERSE");
-#endif
 
-  //A4GL_display_at (1, AUBIT_ATTR_REVERSE);
-  curr_error_window = w;
-  curr_error_panel = p;
-	A4GL_debug("Beeping because of error : %s",str);
-	if (A4GL_isyes(acl_getenv("BEEPONERROR"))) { beep(); }
-	if (A4GL_isyes(acl_getenv("FLASHONERROR"))) { flash(); }
+  wattrset (curr_error_window, attr);
+
+  A4GL_debug ("Calling subwin_print...");
+
+  A4GL_subwin_print (curr_error_window, "%s", str);
+
+  A4GL_debug("Beeping because of error : %s",str);
+
+
+  if (A4GL_isyes(acl_getenv("BEEPONERROR"))) { beep(); }
+  if (A4GL_isyes(acl_getenv("FLASHONERROR"))) { flash(); }
+
+  curr_error_panel_visible=1;
+
+  print_panel_stack();
   UILIB_A4GL_zrefresh ();
 }
 
@@ -258,16 +287,17 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
   A4GL_debug ("MJA clr_error_nobox called from %s", dbg_fromwhere);
   if (curr_error_window)
     {
+      curr_error_panel_visible=0;
       A4GL_debug ("MJA Clear error");
-      del_panel (curr_error_panel);
-      delwin (curr_error_window);
-      curr_error_window = 0;
-      curr_error_panel = 0;
+      hide_panel (curr_error_panel);
       UILIB_A4GL_zrefresh ();
       return;
     }
 
   return;
+
+
+
   A4GL_push_char ("");
   a = A4GL_geterror_line ();
   A4GL_debug ("Error line = %d", a);
@@ -278,6 +308,7 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
   A4GL_debug ("YY REVERSE");
 #endif
   A4GL_display_at (1, AUBIT_ATTR_REVERSE);
+  print_panel_stack();
 }
 
 /**
@@ -488,11 +519,6 @@ A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ)
   werase (area->win_no);
   if (typ == BORDER_BOX)
     wborder (area->win_no, 0, 0, 0, 0, 0, 0, 0, 0);
-  /*
-     write ("if border");
-     delwin (area->win_no);
-     write ("Delwin");
-   */
   A4GL_mja_wrefresh (area->win_no);
   area->x1 = l;
   area->x2 = r;
@@ -740,6 +766,7 @@ A4GL_clearbox (textarea * area)
 {
   /*wclear(area->win_no); */
   delwin (area->win_no);
+  A4GL_debug("delwin : %p",area->win_no);
   A4GL_puttext (area->x1, area->y1, area->x2, area->y2, (area->buf));
 }
 
@@ -1474,7 +1501,7 @@ void
 
   ACL_Menu *menu;
   menu = menuv;
-
+  memset(disp_str,0,sizeof(disp_str));
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
@@ -1736,6 +1763,7 @@ A4GL_display_menu (ACL_Menu * menu)
   int disp_cnt;
   int have_displayed = 0;
 
+  memset(disp_str,0,80);
   A4GL_debug ("In display_menu");
 
   A4GL_clr_menu_disp (menu);
@@ -1851,6 +1879,7 @@ A4GL_clear_menu (ACL_Menu * menu)
   A4GL_del_pointer (menu->window_name, WINCODE);
 
   delwin (w);			// Maybe copy to parent window first....
+  A4GL_debug("delwin : %p",w);
   // Informix seems to retain the menu rather than clear it...
 
   /* UILIB_A4GL_remove_window (menu->window_name); */
@@ -1870,8 +1899,12 @@ A4GL_clear_prompt (struct s_prompt *prmt)
   A4GL_debug ("Clearing prompt...");
 #endif
   p = prmt->win;
-  delwin ((WINDOW *) p);
-  UILIB_A4GL_zrefresh ();
+  if (p) {
+  	delwin ((WINDOW *) p);
+  	A4GL_debug("delwin : %p",p);
+  	prmt->win=0;
+  	UILIB_A4GL_zrefresh ();
+  }
 }
 
 
@@ -2543,6 +2576,7 @@ void
       mw = A4GL_find_pointer (buff, MESSAGEWIN);
       A4GL_debug ("Removing old message window... %p", mw);
       delwin (mw);
+  A4GL_debug("delwin : %p",mw);
       A4GL_del_pointer (buff, MESSAGEWIN);
       wsyncup (cw);
       touchwin (cw);
@@ -3165,4 +3199,23 @@ void try_to_stop_alternate_view() {
 #endif
 }
 
+
+
+void make_error_panel_top(void) {
+A4GL_debug("make_Error_panel_top %p %p %d",curr_error_panel,curr_error_window,curr_error_panel_visible);
+	if (curr_error_panel_visible) {
+		top_panel(curr_error_panel);
+	}
+}
+
+
+
+PANEL *get_below_panel(PANEL *p) {
+PANEL *pl;
+	pl=panel_below(p);
+	if (pl==curr_error_panel) {
+		return get_below_panel(curr_error_panel);
+	}
+	return pl;
+}
 /* ============================== EOF ============================== */
