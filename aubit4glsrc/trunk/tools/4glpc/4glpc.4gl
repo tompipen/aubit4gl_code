@@ -1307,15 +1307,16 @@ if (f!=0) {
 	a=ftell(f);
 	rewind(f);
 	ptr=malloc(a+1);
+	memset(ptr,0,a+1);
 	fread(ptr,a,1,f);
 	fclose(f);
 	lptr=ptr;
 	c=0;
 	while (n && c<a) {
 		if (ptr[c]=='\n') {
-			*ptr=0;
+			ptr[c]=0;
 			printf("%s\n",lptr);
-			lptr=ptr+1;
+			lptr=&ptr[c+1];
 			n--;
 		}
 		c++;
