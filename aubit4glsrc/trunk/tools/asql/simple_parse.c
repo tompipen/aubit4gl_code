@@ -169,7 +169,14 @@ int need_tabname=0;
 		}
 
 
-		if (a==KW_SEMI) { e->stmt=ptr; add_stmt(e); free(e); e=0; ptr=0;continue;}
+		if (a==KW_SEMI) { 
+			if (ptr) {
+				e->stmt=ptr; 
+				add_stmt(e); 
+				free(e); 
+			}
+			e=0; ptr=0;continue;
+		}
 
 		if (e==0) {
 			e=malloc(sizeof(struct element));

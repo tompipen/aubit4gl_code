@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2004-06-13 13:51:51 mikeaubury Exp $
+# $Id: Makefile,v 1.25 2004-06-25 13:49:12 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -47,7 +47,7 @@ OBJS_4GL		= \
 				pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
 				query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
 				execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
-				filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT}
+				filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}
 
 ################
 #Objects that do not originate in 4GL code - version independent
@@ -106,7 +106,7 @@ endif
 ################
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
-4GLPCFLAGS		= -g -O0  
+4GLPCFLAGS		= -g   
 
 ifeq "${VERBOSE}" "1"
 	4GLPCFLAGS	+=-verbose

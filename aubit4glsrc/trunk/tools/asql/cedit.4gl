@@ -481,7 +481,7 @@ define lv_a integer
 define err integer
 define mb integer
 define ll integer
-let lv_fname=get_tmp_fname()
+let lv_fname=get_tmp_fname("SQL")
 let mb=max_buff
 let ll=line_length
 
@@ -540,7 +540,7 @@ define lv_a integer
 define err integer
 define mb integer
 define ll integer
-let lv_fname=get_tmp_fname()
+let lv_fname=get_tmp_fname("SQL")
 let mb=max_buff
 let ll=line_length
 let err=0

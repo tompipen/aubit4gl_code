@@ -598,9 +598,9 @@ if (indicator!=-1) {
           rc = 1;
           break;
         }
-      /** @todo : Print as date field */
-      char_var = (char *)malloc (sizeof (char) * 10);
-      A4GL_dtos (&date_var, char_var, 10);
+      char_var = (char *)malloc (sizeof (char) * 20);
+      A4GL_dtos (&date_var, char_var, 19);
+	A4GL_trim(char_var);
       sprintf (buffer, "%s", char_var);
       free (char_var);
       break;
@@ -1469,59 +1469,59 @@ define lv_cont integer
 		CALL set_exec_mode(0)
                 let lv_txt="INFO - ",lv_tabname
                 menu lv_txt
-			command "Columns"
+			command "Columns" "List columns for the table"
 				CALL open_display_file()
                 		if load_info_columns(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Indexes"
+			command "Indexes" "List indexes for the table"
 				CALL open_display_file()
                 		if  load_info_indexes(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Privileges"
+			command "Privileges" "List privileges for the table"
 				CALL open_display_file()
 				if  load_info_priv(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "References"
+			command "References" "List references for the table"
 				CALL open_display_file()
 				if  load_info_ref(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Status"
+			command "Status" "Display status for the table"
 				call open_display_file()
 				if load_info_status(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "cOnstraints"
+			command "cOnstraints" "List constraints for the table"
 				CALL open_display_file()
 				if  load_info_constraints(lv_tabname)  then
 					call do_paginate()
 				end if
 
-			command key "G" "triGgers"
+			command key "G" "triGgers" "List triggers for the table"
 				call open_display_file()
 				if load_info_triggers(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Table"
+			command "Table" "Change table"
 				let lv_cont=1
 				exit menu
 
-			command "Fragments"
+			command "Fragments" "List fragments for the table"
 				call open_display_file()
 				if load_info_fragments(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Exit"
+			command "Exit" "Exit menu"
 				let lv_cont=0
 				exit menu
 

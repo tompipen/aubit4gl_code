@@ -61,6 +61,7 @@ let lv_quiet=0
 let lv_echo=0
 
 defer interrupt
+defer quit
 code
 A4GL_setenv("A4GL_AUTOBANG","Y",1);
 endcode
@@ -133,7 +134,7 @@ end if
 
 call main_menu()
 
-call remove_tmpfile()
+call remove_tmpfile("ALL")
 end main
 
 

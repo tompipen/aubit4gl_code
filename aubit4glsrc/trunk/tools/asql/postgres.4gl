@@ -1230,7 +1230,7 @@ function qry_translate()
 define a integer
 define b integer
 define n integer
-call open_tmpfile("r");
+call open_tmpfile("SQL","r");
 code
 {
 extern FILE *yyin;
@@ -1243,9 +1243,9 @@ clr_stmt();
 a=yyparse();
 a=list_cnt;
 endcode
-call close_tmpfile()
+call close_tmpfile("SQL")
 
-call open_tmpfile("w")
+call open_tmpfile("SQL","w")
 code
 n=(FILE *)get_curr_mvfin();
 endcode
@@ -1264,7 +1264,7 @@ free(s);
 }
 }
 endcode
-call close_tmpfile()
+call close_tmpfile("SQL")
 end for
 	
 end function

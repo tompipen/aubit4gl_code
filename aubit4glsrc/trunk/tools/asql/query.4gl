@@ -118,7 +118,7 @@ while true
 	
 		when 2
 			Call set_exec_mode(0)
-			call open_tmpfile("r")
+			call open_tmpfile("SQL","r")
 			call qry_run()
 			let lv_runnext=1
 
@@ -173,8 +173,8 @@ end function
 ################################################################################
 function qry_new()
 	# Clear down our temporary file
-	call open_tmpfile("w")
-	call close_tmpfile()
+	call open_tmpfile("SQL","w")
+	call close_tmpfile("SQL")
 	return qry_modify("NEW")
 end function
 
@@ -192,7 +192,7 @@ extern struct element *list;
 extern int list_cnt;
 
 
-yyin=(FILE *)get_curr_mvfin();
+yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
 a=yyparse();
 a=list_cnt;
@@ -222,7 +222,7 @@ let lv_systemstr=fgl_getenv("DBEDIT")
 if lv_systemstr is null or lv_systemstr is null matches " " then
 	let lv_systemstr="vi"
 end if
-let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname()
+let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("SQL")
 run lv_systemstr returning lv_stat
 
 call display_tmp_file()
@@ -294,13 +294,13 @@ case lv_query_out
                 let lv_amode="w"
 end case
 
-call open_tmpfile("r")
+call open_tmpfile("SQL","r")
 code
 {
 extern FILE *yyin;
 extern struct element *list;
 extern int list_cnt;
-yyin=(FILE *)get_curr_mvfin();
+yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
 a=yyparse();
 a=list_cnt;
@@ -344,7 +344,7 @@ call prompt_pick("CHOOSE >> ","") returning lv_fname
 if lv_fname is not null then
 	let lv_fname=lv_fname clipped,".sql"
 	error "Filename : ",lv_fname
-	call copy_file(lv_fname,get_tmp_fname())
+	call copy_file(lv_fname,get_tmp_fname("SQL"))
 	call display_tmp_file()
 	return 1
 end if
@@ -360,10 +360,10 @@ define lv_fname char(255)
 	call set_exec_mode(1)
 
 	if lv_fname!="-" then
-		call copy_file(lv_fname,get_tmp_fname())
-		call open_tmpfile("r")
+		call copy_file(lv_fname,get_tmp_fname("SQL"))
+		call open_tmpfile("SQL","r")
 	else
-		call open_tmpfile_as_stdin()
+		call open_tmpfile_as_stdin("SQL")
 	end if
 	call qry_run()
 end function
@@ -378,7 +378,7 @@ if lv_fname not matches "*.sql" then
 end if
 
 if lv_fname != " " then
-	call copy_file(get_tmp_fname(),lv_fname)
+	call copy_file(get_tmp_fname("SQL"),lv_fname)
 end if
 end function
 

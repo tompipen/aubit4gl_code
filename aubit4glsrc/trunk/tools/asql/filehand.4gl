@@ -31,15 +31,15 @@ int init_filename=1;
 
 endcode
 
-define mv_tmpinfile char(255) # Filename
-define mv_fin integer         # fopen file handle
-define mv_filename char(255)
+define mv_tmpinfile array[10] of char(255) # Filename
+define mv_fin array[10] of integer         # fopen file handle
 
 
-function remove_tmpfile()
+function remove_tmpfile(lv_type)
+define lv_type CHAR(3)
 code
 if (init_filename==0) {
-	unlink(mv_tmpinfile);
+	unlink(mv_tmpinfile[get_type_id(lv_type)]);
 }
 endcode
 
@@ -48,39 +48,65 @@ end function
 
 
 ################################################################################
-function get_tmp_fname() 
-	return mv_tmpinfile
+function get_tmp_fname(lv_type) 
+define lv_type CHAR(3)
+define lv_a integer
+let lv_a=get_type_id(lv_type)
+return mv_tmpinfile[lv_a]
 end function
 
 
-function open_tmpfile_as_stdin() 
+function open_tmpfile_as_stdin(lv_type) 
+define lv_type char(3)
 code
-mv_fin=stdin;
+mv_fin[get_type_id(lv_type)]=stdin;
 endcode
 end function
 
 
 ################################################################################
-function open_tmpfile(p_mode)
+function open_tmpfile(lv_type,p_mode)
+define lv_type CHAR(3)
 define p_mode char(1)
 code
-mv_fin=(long)fopen(mv_tmpinfile,p_mode);
-A4GL_assertion(mv_fin==0,"Tried to open tmpfile failed");
+mv_fin[get_type_id(lv_type)]=(long)fopen(mv_tmpinfile[get_type_id(lv_type)],p_mode);
+A4GL_assertion(mv_fin[get_type_id(lv_type)]==0,"Tried to open tmpfile failed");
 endcode
 end function
 
 ################################################################################
-function close_tmpfile()
-if mv_fin then
+function close_tmpfile(lv_type)
+define lv_type CHAR(3)
+if mv_fin[get_type_id(lv_type)] then
 code
-	fclose((FILE *)mv_fin);
-	mv_fin=0;
+	fclose((FILE *)mv_fin[get_type_id(lv_type)]);
+	mv_fin[get_type_id(lv_type)]=0;
 endcode
 end if
 end function
 
 
 
+function get_type_id(lv_s)
+define lv_s char(3)
+define a integer
+code
+a=get_type_id(lv_s);
+endcode
+return a+1
+end function
+
+
+code
+int get_type_id(char *s) {
+	if (strcmp(s,"SQL")==0) return 0;
+	if (strcmp(s,"PER")==0) return 1;
+	if (strcmp(s,"4GL")==0) return 2;
+	if (strcmp(s,"ACE")==0) return 3;
+	if (strcmp(s,"MSG")==0) return 4;
+	return 9;
+}
+endcode
 
 ################################################################################
 function init_filename()
@@ -89,26 +115,26 @@ define fin integer
 
 code
 {
+int a;
 do_init=init_filename;
-mv_fin=0;
+for (a=0;a<10;a++) { mv_fin[a]=0;}
 init_filename=0;
-sprintf(mv_tmpinfile,"/tmp/a4gl_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("SQL")],"/tmp/a4gl_sql_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("PER")],"/tmp/a4gl_per_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("4GL")],"/tmp/a4gl_4gl_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("ACE")],"/tmp/a4gl_ace_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("MSG")],"/tmp/a4gl_msg_%d",getpid());
 endcode
 
-call open_tmpfile("w")
+call open_tmpfile("SQL","w")
 
-if mv_fin=0 then
-	error "Unable to write temporary file",mv_tmpinfile
+if mv_fin[get_type_id("SQL")]=0 then
+	error "Unable to write temporary file",mv_tmpinfile[get_type_id("SQL")]
 	exit program
 end if
 
-call close_tmpfile()
+call close_tmpfile("SQL")
 
-
-if do_init then
-	initialize mv_filename to null
-			#let mv_qry=""
-end if
 code
 }
 endcode
@@ -125,12 +151,12 @@ define l integer
 define buff char(255)
 call clear_screen_portion()
 let l=6
-call open_tmpfile("r")
+call open_tmpfile("SQL","r")
 code
 while (1) {
 	strcpy(buff,"");
-	fgets(buff,255,(FILE *)mv_fin);
-	if (feof((FILE *)mv_fin)) break;
+	fgets(buff,255,(FILE *)mv_fin[get_type_id("SQL")]);
+	if (feof((FILE *)mv_fin[get_type_id("SQL")])) break;
 	buff[80]=0;
 endcode
 	display buff,"" at l,1
@@ -140,7 +166,7 @@ code
 }
 endcode
 
-call close_tmpfile()
+call close_tmpfile("SQL")
 end function
 
 
@@ -195,7 +221,7 @@ end function
 
 
 code
-long get_curr_mvfin() {
-	return mv_fin;
+long get_curr_mvfin(char *lv_type) {
+	return mv_fin[get_type_id(lv_type)];
 }
 endcode

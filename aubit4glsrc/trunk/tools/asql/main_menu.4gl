@@ -30,10 +30,14 @@ FUNCTION main_menu()
 
 	BEFORE MENU 
 		call display_banner()
+		#hide option "Tools"
 
 	COMMAND "Query-language" "Use SQL query language."
 		call query_menu()
 
+	COMMAND "Tools"
+		call tools_menu()
+		
 	COMMAND "Connection" "Connect or disconnect from a database environment."
 		call connection_menu()
 
