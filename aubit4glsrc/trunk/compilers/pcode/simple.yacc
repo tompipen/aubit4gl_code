@@ -20,6 +20,8 @@ int if_stack_cnt=0;
 static char buff[20];
 extern module this_module;
 
+void make_named_struct (char *name, struct define_variables *v);
+
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
@@ -47,12 +49,21 @@ extern module this_module;
 %token KW_A_ERRCHK
 %token KW_A_ECALL
 %token KW_A_SET_STAT
+%token KW_A_SETLINE
+%token KW_A_POP_VAR2
+%token KW_A_POP_FUNCTION
+%token KW_A_PUSH_FUNCTION
+%token KW_A_POP_ARGS
+%token KW_A_POP_PARAMS
+%token KW_A_PUSH_VARIABLE
+%token KW_A_SUBSTR
+
 
 
 %start translation_unit
 
 %union {
-	char str[256];
+	char str[10000];
 	struct cmd *cmd;
 	void *ptr;
 	//struct param *e;
@@ -110,8 +121,8 @@ cmds : cmd
 ;
 
 cmd :
-	/* Nothing... */
-	';'
+	
+	';' /* Nothing... */
 	| block
 	| if
         | for
@@ -129,10 +140,38 @@ cmd :
 ;
 
 
+
+typedef_decl:
+	TYPEDEF dtype  IDENTIFIER {
+		printf("Adding : %s\n",$<str>3);
+		make_named_struct ($<str>3, $<define_variables>2);
+		printf("Added %s\n",$<str>3);
+	}
+;
+
+a4gl_sub: 
+KW_A_SUBSTR	 '(' op_expr_list ')'  { $<e_id>$=new_param_fcall_returns_long($<str>1,$<e_id>3); }
+;
+
 fgl_funcs :
-	KW_A_PUSH_LONG '(' int_constant_val ')' {
+	a4gl_sub {
+			add_push_substr($<e_id>1);
+	}
+	|KW_A_PUSH_LONG '(' int_constant_val ')' {
 			add_push_long(atoi($<str>3));
 	}
+	| KW_A_POP_ARGS '(' variable ')' {
+			add_pop_args($<e_id>3);
+	}
+	| KW_A_POP_FUNCTION '(' ')'  {
+		add_pop_function();
+	}
+	| KW_A_POP_VAR2 '('  variable ',' int_constant_val ',' int_constant_val ')'
+	| KW_A_PUSH_FUNCTION '(' IDENTIFIER ',' IDENTIFIER ',' IDENTIFIER ')' 
+	| KW_A_POP_PARAMS '(' variable ',' int_constant_val ')'
+	| KW_A_PUSH_VARIABLE '(' variable ',' int_constant_val ')'
+
+
 	| KW_A_PUSH_INT '(' int_constant_val ')' {
 			add_push_int(atoi($<str>3));
 	}
@@ -145,13 +184,22 @@ fgl_funcs :
 	| KW_A_SET_STAT '(' int_constant_val ',' int_val ')' {
 			add_set_stat(atoi($<str>3));
 	}
+	| KW_A_SETLINE '(' int_val ',' int_val ')' {
+			add_set_line("",atoi($<str>5));
+	}
+	| KW_A_SETLINE '(' IDENTIFIER ',' int_val ')' {
+			add_set_line($<str>3,atoi($<str>5));
+	}
 	| KW_A_ECALL '(' STRING_LITERAL ',' int_val ',' int_val ')' {
 			//printf("ECALL....\n"); 
 			add_ecall($<str>3, get_expr_n($<e_id>5),get_expr_n($<e_id>7));
 	}
 
-	| KW_A_PUSH_CHAR '(' op_expr_list ')' {
-		add_call("A4GL_push_char",$<e_id>3);
+	| KW_A_PUSH_CHAR '(' variable ')' {
+		add_push_charv($<e_id>3);
+	}
+	| KW_A_PUSH_CHAR '(' a4gl_sub ')' {
+		add_push_charv($<e_id>3);
 	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
 			add_chk_err(get_expr_n($<e_id>3));
@@ -167,22 +215,60 @@ fgl_funcs :
 		int_val ',' STRING_LITERAL 
 			')' {
 			struct cmd_errchk *ptr;
+			struct cmd_errchk_40110 *ptr_40110;
+			struct cmd_errchk_40010 *ptr_40010;
+			struct cmd_errchk_40000 *ptr_40000;
+			int added=0;
+
 			ptr=malloc(sizeof(struct cmd_errchk));
+			ptr_40110=malloc(sizeof(struct cmd_errchk_40110));
+			ptr_40010=malloc(sizeof(struct cmd_errchk_40010));
+			ptr_40000=malloc(sizeof(struct cmd_errchk_40000));
+
 			memset(ptr,0,sizeof(struct cmd_errchk));
+			memset(ptr_40110,0,sizeof(struct cmd_errchk_40110));
+			memset(ptr_40010,0,sizeof(struct cmd_errchk_40010));
+			memset(ptr_40000,0,sizeof(struct cmd_errchk_40000));
+
 			ptr->line=get_expr_n($<e_id>3);
 			ptr->module_name=add_string($<str>5);
+
+			ptr_40110->line=get_expr_n($<e_id>3);
+			ptr_40110->module_name=add_string($<str>5);
+
+			ptr_40010->line=get_expr_n($<e_id>3);
+			ptr_40010->module_name=add_string($<str>5);
+			ptr_40000->line=get_expr_n($<e_id>3);
+			ptr_40000->module_name=add_string($<str>5);
+
 			ptr->modes[0]=get_expr_n($<e_id>7);
 			ptr->modes[1]=get_expr_n($<e_id>11);
 			ptr->modes[2]=get_expr_n($<e_id>15);
 			ptr->modes[3]=get_expr_n($<e_id>19);
 			ptr->modes[4]=get_expr_n($<e_id>23);
+	
 			ptr->actions[0]=add_string($<str>9);
 			ptr->actions[1]=add_string($<str>13);
 			ptr->actions[2]=add_string($<str>17);
 			ptr->actions[3]=add_string($<str>21);
 			ptr->actions[4]=add_string($<str>25);
-			add_errchk(ptr);
+
+	if (ptr->modes[0]==4 && ptr->modes[1]==0 && ptr->modes[2]==1 && ptr->modes[3]==1 && ptr->modes[4]==0 ) {
+		add_errchk_40110(ptr_40110);
+		added=1;
+	} 
+	if (ptr->modes[0]==4 && ptr->modes[1]==0 && ptr->modes[2]==0 && ptr->modes[3]==1 && ptr->modes[4]==0 ) {
+		add_errchk_40010(ptr_40010);
+		added=1;
+	} 
+	if (ptr->modes[0]==4 && ptr->modes[1]==0 && ptr->modes[2]==0 && ptr->modes[3]==0 && ptr->modes[4]==0 ) {
+		add_errchk_40000(ptr_40000);
+		added=1;
+	} 
+	if (!added) {
+		add_errchk(ptr);
 	}
+}
 ;
 
 
@@ -317,6 +403,7 @@ has_define:
 
 define_entry_op_set:
 		define_entry  ';' {set_type(0);}
+	| typedef_decl ';' {set_type(0);}
 ;
 
 
@@ -431,29 +518,59 @@ dtype_int_val :
 
 dtype :
 	CHAR  				{$<define_var>$=new_variable_element_string("CHAR");}
+	| SIGNED CHAR  			{$<define_var>$=new_variable_element_string("CHAR");}
+	| UNSIGNED CHAR 		{$<define_var>$=new_variable_element_string("UCHAR");}
 	| SHORT 			{$<define_var>$=new_variable_element_string("SHORT");}
+	| SHORT INT			{$<define_var>$=new_variable_element_string("SHORT");}
 	| INT 				{$<define_var>$=new_variable_element_string("LONG");}
+	| UNSIGNED SHORT 		{$<define_var>$=new_variable_element_string("USHORT");}
+	| SIGNED SHORT 			{$<define_var>$=new_variable_element_string("SHORT");}
+	| UNSIGNED INT 			{$<define_var>$=new_variable_element_string("ULONG");}
+	| SIGNED INT 			{$<define_var>$=new_variable_element_string("LONG");}
+	| UNSIGNED SHORT INT 		{$<define_var>$=new_variable_element_string("USHORT");}
+	| SIGNED SHORT INT 		{$<define_var>$=new_variable_element_string("SHORT");}
 	| FGLDATE			{$<define_var>$=new_variable_element_string("FGLDATE");}
 	| FGLDECIMAL			{$<define_var>$=new_variable_element_string("FGLDECIMAL");}
 	| FGLMONEY			{$<define_var>$=new_variable_element_string("FGLMONEY");}
 	| LONG 				{$<define_var>$=new_variable_element_string("LONG");}
+	| LONG INT 				{$<define_var>$=new_variable_element_string("LONG");}
+
+	| UNSIGNED LONG 		{$<define_var>$=new_variable_element_string("ULONG");}
+	| UNSIGNED LONG INT		{$<define_var>$=new_variable_element_string("ULONG");}
+
+	| LONG LONG			{$<define_var>$=new_variable_element_string("LONGLONG");}
+	| SIGNED LONG LONG		{$<define_var>$=new_variable_element_string("LONGLONG");}
+	| UNSIGNED LONG LONG		{$<define_var>$=new_variable_element_string("ULONGLONG");}
+
+	| LONG LONG INT			{$<define_var>$=new_variable_element_string("LONGLONG");}
+	| SIGNED LONG LONG INT		{$<define_var>$=new_variable_element_string("LONGLONG");}
+	| UNSIGNED LONG LONG INT		{$<define_var>$=new_variable_element_string("ULONGLONG");}
 	| FLOAT 			{$<define_var>$=new_variable_element_string("FLOAT");}
 	| DOUBLE			{$<define_var>$=new_variable_element_string("DOUBLE");}
 	| VOID				{$<define_var>$=new_variable_element_string("Void");}
-
 	| CHAR '*' 			{$<define_var>$=new_variable_element_string("String");}
-
 	| INT '*' 			{$<define_var>$=new_variable_element_string("LongPtr");}
 	| LONG '*' 			{$<define_var>$=new_variable_element_string("LongPtr");}
 	| SHORT '*' 			{$<define_var>$=new_variable_element_string("ShortPtr");}
 	| VOID '*' 			{$<define_var>$=new_variable_element_string("VoidPointer");}
 	| VOID '*' '*' 			{$<define_var>$=new_variable_element_string("VoidPointer");}
 	| VOID '*' '*' '*' 		{$<define_var>$=new_variable_element_string("VoidPointer");}
-	| STRUCT struct_has_define  	{ $<define_var>$=new_variable_struct($<define_variables>2); }
+	| STRUCT struct_has_define  	{$<define_var>$=new_variable_struct($<define_variables>2); }
+	| TYPE_NAME 			{
+						struct define_variables *v;
+						struct variable_element *e;
+						v=add_named_struct($<str>1);
+						printf("v=%p\n",v);
+						e=new_variable_struct(v);
+						printf("e=%d\n",e);
+						$<define_var>$=e;
+						printf("Get : %p\n",$<define_var>$);
+					}
 ;
 
 struct_has_define: 
 		IDENTIFIER {$<define_variables>$=(struct define_variables *)add_named_struct($<str>1);}
+		| TYPE_NAME {$<define_variables>$=(struct define_variables *)add_named_struct($<str>1);}
 		|  '{' has_structparam '}' {
 			A4GL_debug("Structure : %p\n",$<define_variables>2);
 			$<define_variables>$=$<define_variables>2;
@@ -520,7 +637,7 @@ for :
 	}
 	assign_common ')' cmd 
 	{
-			add_set_var($<assignment>9.v,$<assignment>9.p,0);
+			add_set_var($<assignment>9.v,$<assignment>9.p,0,0);
 
 
                         sprintf(buff,"_while_c_%d",$<i>5);
@@ -656,6 +773,7 @@ double_operator:
  	| '+'
  	| '-'
  	| '*'
+ 	| '%'
  	| '/'
 	| '<'
 	| '>'
@@ -689,7 +807,7 @@ int_val: int_constant_val {
 
 
 assign: assign_common {
-	add_set_var($<assignment>1.v,$<assignment>1.p,0);
+	add_set_var($<assignment>1.v,$<assignment>1.p,0,0);
 	}
 ;
 
@@ -767,7 +885,6 @@ variable: IDENTIFIER 					{
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,0,0,$<str>1,0));
 	}    
 	| IDENTIFIER '[' expr ']' '[' expr ']' 		{
-	printf("XX3\n");
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,$<e_id>6,0,$<str>1,0));
 	}    
 	| IDENTIFIER '[' expr ']' '[' expr ']'  '[' expr ']'	{

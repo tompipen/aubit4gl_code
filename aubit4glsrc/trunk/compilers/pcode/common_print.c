@@ -67,7 +67,7 @@ print_use_variable (struct use_variable *v)
 
 	  if (v->sub.sub_val[a].x1subscript_param_id[0] != 0)
 	    {
-	        printf ("[ (%d) ",v->sub.sub_val[a].x1subscript_param_id[0]); print_params (v->sub.sub_val[a].x1subscript_param_id[0]); printf ("]");
+	        printf ("[ "); print_params (v->sub.sub_val[a].x1subscript_param_id[0]); printf ("]");
 	      	if (v->sub.sub_val[a].x1subscript_param_id[1]!=0) {
 			printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[1]); printf ("]");
 	      		if (v->sub.sub_val[a].x1subscript_param_id[2]!=0) {
@@ -206,7 +206,7 @@ print_call (struct npcmd_call *c)
 {
   char *x;
   x = GET_ID (c->func_id);
-  printf ("CALL FUNCTION %s\n", x);
+  printf ("CALL FUNCTION %s : ", x);
   print_params (c->func_params_param_id);
 }
 
@@ -222,103 +222,22 @@ print_if (struct npcmd_if *i)
   print_goto_pc (i->goto_false);
 }
 
-
-
-static void
-print_command (long func_id, long pc, struct cmd *cmd)
-{
-  printf ("%04ld-%04ld %02d %-10s\n   ", func_id, pc, cmd->cmd_type,
-	  cmd_type_str[(int) cmd->cmd_type]);
-
-  switch (cmd->cmd_type)
-    {
-    case CMD_BLOCK:
-      print_block (cmd->cmd_u.c_block);
-      break;
-    case CMD_NOP:
-      break;
-    case CMD_END_BLOCK:
-      print_end_block (cmd->cmd_u.c_endblock);
-      break;
-    case CMD_CALL:
-      print_call (cmd->cmd_u.c_call);
-      break;
-    case CMD_IF:
-      print_if (cmd->cmd_u.c_if);
-      break;
-    case CMD_SET_VAR:
-      print_set_var (cmd->cmd_u.c_setvar);
-      break;
-    case CMD_SET_VAR_ONCE:
-      print_set_var_once (cmd->cmd_u.c_setvar1);
-      break;
-    case CMD_GOTO_LABEL:
-      print_goto_label ((char *) cmd->cmd_u.c_goto_str);
-      break;
-    case CMD_GOTO_PC:
-      print_goto_pc (cmd->cmd_u.c_goto_pc);
-      break;
-    case CMD_RETURN:
-      print_call_return (cmd->cmd_u.c_return_param_id);
-      break;
-
-    case CMD_PUSH_LONG: 
-	print_push_long(cmd->cmd_u.c_push_long);
-	break;
-
-    case CMD_PUSH_CHAR: 
-	print_push_char(cmd->cmd_u.c_push_char);
-	break;
-
-    case CMD_PUSH_INT: 
-	print_push_int(cmd->cmd_u.c_push_int);
-	break;
-    case CMD_PUSH_OP: 
-	print_push_op(cmd->cmd_u.c_push_int);
-	break;
-
-    case CMD_CHK_ERR:
-	print_chk_err(cmd->cmd_u.c_chk_err_lineno);
-	break;
-
-    case CMD_CLR_ERR:
-	print_clr_err();
-	break;
-
-    case CMD_ECALL :
-	print_ecall(cmd->cmd_u.c_ecall);
-  	break;
-
-    case CMD_ERRCHK:
-	print_errchk(cmd->cmd_u.c_errchk);
-	break;
-
-    case CMD_NULL:
-      fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
-      exit (2);
-   case CMD_SET_STAT:
-	print_set_stat(cmd->cmd_u.c_setval);
-	break;
-
-    default: 
-		printf("Unknown command : %d\n",cmd->cmd_type);
-		exit(2);
-    }
-
-  printf ("\n");
-
-}
-
 void print_ecall(struct ecall *e) {
 	printf("ECALL %d %d %d",e->func_id,e->ln,e->nparam);
 }
 void print_set_stat(int n) {
 	printf("SET STATUS : %d\n",n);
 }
+void print_set_line(int n) {
+	printf("SET LINE : %d\n",n);
+}
 void print_push_char(int n)  {
 	printf("A4GL_push_char(\"%s\")",GET_ID(n));
 }
 
+void print_push_charv(int n)  {
+	printf("A4GL_push_chav(%d)",n);
+}
 void print_push_int(int n)  {
 	printf("A4GL_push_int(%d)",n);
 }
@@ -326,6 +245,29 @@ void print_push_int(int n)  {
 
 void print_errchk(struct cmd_errchk *e) {
 	printf("ERRCHK %ld %ld\n",e->line,e->module_name);
+}
+
+void print_errchk_40110(struct cmd_errchk_40110 *e) {
+	if (e) {
+		printf("ERRCHK40110 %ld %ld\n",e->line,e->module_name);
+	} else {
+		printf("ERRCHK40110 is null\n");
+	}
+}
+void print_errchk_40010(struct cmd_errchk_40010 *e) {
+	if (e) {
+		printf("ERRCHK40010 %ld %ld\n",e->line,e->module_name);
+	} else {
+		printf("ERRCHK40010 is null\n");
+	}
+}
+
+void print_errchk_40000(struct cmd_errchk_40000 *e) {
+	if (e) {
+		printf("ERRCHK40000 %ld %ld\n",e->line,e->module_name);
+	} else {
+		printf("ERRCHK40000 is null\n");
+	}
 }
 
 
@@ -394,6 +336,123 @@ print_variable (int lvl, struct npvariable *v)
 
 
 
+static void
+print_command (long func_id, long pc, struct cmd *cmd)
+{
+  printf ("%04ld-%04ld %02d %-10s\n   ", func_id, pc, cmd->cmd_type,
+	  cmd_type_str[(int) cmd->cmd_type]);
+
+  switch (cmd->cmd_type)
+    {
+    case CMD_BLOCK:
+      print_block (cmd->cmd_u.c_block);
+      break;
+    case CMD_NOP:
+	printf("CMD_NOP\n");
+      break;
+    case CMD_END_BLOCK:
+      print_end_block (cmd->cmd_u.c_endblock);
+      break;
+    case CMD_CALL:
+      print_call (cmd->cmd_u.c_call);
+      break;
+    case CMD_IF:
+      print_if (cmd->cmd_u.c_if);
+      break;
+    case CMD_SET_VAR:
+      print_set_var (cmd->cmd_u.c_setvar);
+      break;
+    case CMD_SET_VAR_ONCE:
+      print_set_var_once (cmd->cmd_u.c_setvar1);
+      break;
+    case CMD_GOTO_LABEL:
+      print_goto_label ((char *) cmd->cmd_u.c_goto_str);
+      break;
+    case CMD_GOTO_PC:
+      print_goto_pc (cmd->cmd_u.c_goto_pc);
+      break;
+    case CMD_RETURN:
+      print_call_return (cmd->cmd_u.c_return_param_id);
+      break;
+
+    case CMD_PUSH_LONG: 
+	print_push_long(cmd->cmd_u.c_push_long);
+	break;
+
+    case CMD_PUSH_CHAR: 
+	print_push_char(cmd->cmd_u.c_push_char);
+	break;
+
+    case CMD_PUSH_CHARV: 
+	print_push_charv(cmd->cmd_u.c_var_param_id);
+	break;
+
+    case CMD_PUSH_INT: 
+	print_push_int(cmd->cmd_u.c_push_int);
+	break;
+    case CMD_PUSH_OP: 
+	print_push_op(cmd->cmd_u.c_push_int);
+	break;
+
+    case CMD_CHK_ERR:
+	print_chk_err(cmd->cmd_u.c_chk_err_lineno);
+	break;
+
+    case CMD_CLR_ERR:
+	print_clr_err();
+	break;
+
+    case CMD_ECALL :
+	print_ecall(cmd->cmd_u.c_ecall);
+  	break;
+
+    case CMD_ERRCHK:
+	print_errchk(cmd->cmd_u.c_errchk);
+	break;
+
+    case CMD_ERRCHK_40110:
+	print_errchk_40110(cmd->cmd_u.c_errchk_40110);
+	break;
+    case CMD_ERRCHK_40000:
+	print_errchk_40000(cmd->cmd_u.c_errchk_40000);
+	break;
+    case CMD_ERRCHK_40010:
+	print_errchk_40010(cmd->cmd_u.c_errchk_40010);
+	break;
+    case CMD_NULL:
+      fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
+      exit (2);
+   case CMD_SET_STAT:
+	print_set_stat(cmd->cmd_u.c_setval);
+	break;
+   case CMD_SET_LINE:
+	print_set_line(cmd->cmd_u.c_cline);
+	break;
+   case CMD_PUSH_OP_ISNULL: printf("pushop(ISNULL)\n"); break;
+   case CMD_PUSH_OP_AND: printf("pushop(AND)\n"); break;
+   case CMD_PUSH_OP_OR: printf("pushop(OR)\n"); break;
+   case CMD_PUSH_OP_EQUAL: printf("pushop(EQUAL)\n"); break;
+   case CMD_PUSH_OP_CONCAT: printf("pushop(CONCAT)\n"); break;
+
+   case CMD_PUSH_FUNCTION : printf("pushFunction\n");break;
+
+      case CMD_POP_FUNCTION: printf("popfunction\n"); break;
+        case CMD_POP_ARGS: printf("popargs\n"); break;
+        case CMD_POP_PARAM: printf("popparam\n"); break;
+        case CMD_POP_VAR2: printf("popvar2\n"); break;
+
+
+    default: 
+		printf("Unknown command : %d\n",cmd->cmd_type);
+		exit(2);
+    }
+
+  printf ("\n");
+
+}
+
+
+
 void
 print_params (long e_l)
 {
@@ -401,7 +460,7 @@ static int lvl=0;
 int pa;
 struct param *e;
 
-if (e_l==-1) e=nget_param(0);
+if (e_l<0) e=nget_param(e_l);
 else e=&PARAM_ID(e_l);
 
 
@@ -418,7 +477,7 @@ for (pa=0;pa<lvl;pa++) printf("  ");
   switch (e->param_type)
     {
     case PARAM_TYPE_LITERAL_INT:
-      printf ("INT %ld\n", e->param_u.n);
+      printf ("INT %ld", e->param_u.n);
       break;
     case PARAM_TYPE_LITERAL_CHAR:
       printf ("char %c\n", e->param_u.c);
@@ -449,14 +508,14 @@ for (pa=0;pa<lvl;pa++) printf("  ");
 	struct param_list *p;
 	int a;
 	p = e->param_u.p_list;
-	printf ("LIST [\n");
+	printf ("LIST [ ");
 	lvl++;
 	for (a = 0; a < p->list_param_id.list_param_id_len; a++)
 	  {
 	    for (pa=0;pa<lvl;pa++) printf("  ");
 	    printf ("%d ) ", a);
 	    print_params (p->list_param_id.list_param_id_val[a]);
-	    printf("\n");
+	    if (pa<lvl-1) printf(",");
 
 	  }
 	lvl--;
@@ -478,6 +537,9 @@ for (pa=0;pa<lvl;pa++) printf("  ");
       break;
     case PARAM_TYPE_NULL:
       printf ("NULL\n");
+      break;
+    case PARAM_TYPE_NOP:
+      printf ("NOP - REMOVE\n");
       break;
     case PARAM_TYPE_CACHED:
       printf ("CACHED\n");

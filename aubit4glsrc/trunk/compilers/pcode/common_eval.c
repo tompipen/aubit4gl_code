@@ -55,7 +55,7 @@ int nset_param(struct param *p,int n) {
 
 	if (p!=0) {
 		if (last_set[n])  {
-			printf("Can't use that - its already in use\n");
+			printf("Can't use that - its already in use - %d\n",n);
 			exit(32);
 		}
 	}
@@ -70,7 +70,17 @@ int nset_param(struct param *p,int n) {
 
 
 struct param *nget_param(int n) {
-	//printf("read from %d\n",n);
+	if (n==-1) return nget_param(0);
+	if (n==-2) return nget_param(1);
+	if (n==-3) return nget_param(2);
+	if (n==-4) return nget_param(3);
+	if (n==-5) return nget_param(4);
+	if (n==-6) return nget_param(5);
+	if (n==-7) return nget_param(6);
+	if (n==-8) return nget_param(7);
+	if (n==-9) return nget_param(8);
+	if (n==-10) return nget_param(9);
+
 	if (n<0||n>=10) {
 		printf("Internal error - param out of range\n");
 		exit(33);
@@ -94,6 +104,7 @@ if (e_i<0) {
 	if (e_i==-8) e=nget_param(7);
 	if (e_i==-9) e=nget_param(8);
 	if (e_i==-10) e=nget_param(9);
+
 } else {
 	e=&PARAM_ID(e_i);
 }

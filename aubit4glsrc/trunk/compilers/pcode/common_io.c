@@ -65,8 +65,41 @@ process_xdr (char dir, void *s, char *filename)
 int process_xdr(char dir, void *s,char *filename) {
 int a;
 if (dir=='O') {
+	int b;
+	int types[255];
+	int sizes[255];
+	struct module *objp;
+	objp=s;
 	a = A4GL_write_data_to_file ("module", s, filename);
 	if (!a) return 0;
+
+ 	for (a=0;a<255;a++) { sizes[a]=-1; }
+ 	for (a=0;a<255;a++) { types[a]=0; }
+
+	sizes[1]=4;
+	sizes[3]=16;
+	sizes[4]=20;
+	sizes[5]=28;
+	sizes[6]=32;
+	sizes[8]=8;
+	sizes[9]=8;
+	sizes[10]=4;
+	sizes[11]=8;
+	sizes[12]=8;
+	sizes[20]=8;
+	sizes[21]=4;
+	sizes[22]=56;
+	sizes[23]=20;
+	sizes[24]=8;
+
+		
+	for (a=0;a<objp->functions.functions_len;a++) {
+		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
+			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
+		}
+	}
+ 	for (a=0;a<255;a++) { if (types[a]) printf("%d - %d %d\n",a,types[a],sizes[a]*types[a]); }
+
 	return 1;
 }
 
@@ -121,7 +154,6 @@ write_more(struct module *objp) {
   int a;
 
 printf("Write more...\n");
-return;
 
 
   fxx = fopen ("out.string_table", "wb");
@@ -164,17 +196,43 @@ return;
 	int a;
 	int b;
 	char fname[255];
+	int types[255];
+	int sizes[255];
+
+ 	for (a=0;a<255;a++) { sizes[a]=-1; }
+ 	for (a=0;a<255;a++) { types[a]=0; }
+
+	sizes[1]=4;
+	sizes[3]=16;
+	sizes[4]=20;
+	sizes[5]=28;
+	sizes[6]=32;
+	sizes[8]=8;
+	sizes[9]=8;
+	sizes[10]=4;
+	sizes[11]=8;
+	sizes[12]=8;
+	sizes[20]=8;
+	sizes[21]=4;
+	sizes[22]=56;
+	sizes[23]=20;
+	sizes[24]=8;
+
+		
 	for (a=0;a<objp->functions.functions_len;a++) {
 		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
 			sprintf(fname,"cmds/%04d_%04d_%d.cmd",a,b,objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type);
-			printf("Write : %s\n",fname); fflush(stdout);
+			//printf("Write : %s\n",fname); fflush(stdout);
   			fxx = fopen (fname, "wb");
+			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
   			xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
 			xdr_cmd (&xdrp, &objp->functions.functions_val[a].cmds.cmds_val[b]);
   			xdr_destroy (&xdrp);
   			fclose (fxx);
 		}
 	}
+ 	for (a=0;a<255;a++) { if (types[a]) printf("%d - %d %d\n",a,types[a],sizes[a]*types[a]); }
+
  }
 
 

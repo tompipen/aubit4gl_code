@@ -81,7 +81,7 @@ int evaluate_param_i_into_char (long e_i, char *x);     // NOT FOR STRINGS !
 void *get_var_ptr (struct use_variable *use_var,int *size);
 void optimize ();
 
-long add_set_var (struct use_variable *var, long value_i, int once);
+long add_set_var (struct use_variable *var, long value_i, int once,int lvl);
 
 int nset_param(struct param *p,int n);
 void execute_start_block (long pc, struct cmd_block *c);
@@ -191,6 +191,30 @@ static char *cmd_type_str[] = {
   "CMD_ERRCHK",
   "CMD_ECALL",
   "CMD_SET_STAT",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
+  "Not Set",
   ""
 };
 

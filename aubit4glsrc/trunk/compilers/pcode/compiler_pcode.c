@@ -13,6 +13,7 @@
 char **call_list;
 int ncalls = 0;
 int is_in_function = 0;
+long called[1000];
 
 long find_function (char *s);
 extern module this_module;
@@ -58,20 +59,20 @@ set_externs ()
 
 
   if (n == 0)
-    return;
-  this_module.external_function_table.external_function_table_val =
-    malloc (sizeof (char *) * n);
+    return; 
+
+
+   this_module.external_function_table.external_function_table_val = malloc (sizeof (char *) * n);
   this_module.external_function_table.external_function_table_len = n;
   n = 0;
 
 
   for (a = 0; a < ncalls; a++)
     {
-      if (find_function (call_list[a]) != -1)
-	continue;
-      this_module.external_function_table.external_function_table_val[n] =
-	add_id (call_list[a]);
+      if (find_function (call_list[a]) != -1) continue;
+      this_module.external_function_table.external_function_table_val[n] = add_id (call_list[a]);
       A4GL_debug ("CALLS : %s\n", call_list[a]);
+	printf("%s %d\n",call_list[a],called[a]);
       n++;
     }
 }
@@ -83,13 +84,16 @@ add_called (char *s)
   int a;
   for (a = 0; a < ncalls; a++)
     {
-      if (strcmp (call_list[a], s) == 0)
-	return;
+      if (strcmp (call_list[a], s) == 0) {
+			called[a]++;
+			return;
+	}
     }
   ncalls++;
 
   call_list = realloc (call_list, sizeof (char *) * ncalls);
   call_list[ncalls - 1] = strdup (s);
+  called[ncalls-1]=1;
 }
 
 
@@ -203,6 +207,10 @@ new_command (enum cmd_type cmd_type, void *ptr)
       CURRENT_CMD.cmd_u.c_setval = (int) ptr;
       break;
 
+    case CMD_SET_LINE:
+      CURRENT_CMD.cmd_u.c_cline = (int) ptr;
+      break;
+
     case CMD_ECALL:
       CURRENT_CMD.cmd_u.c_ecall = (struct ecall *) ptr;
       break;
@@ -227,9 +235,35 @@ new_command (enum cmd_type cmd_type, void *ptr)
       CURRENT_CMD.cmd_u.c_errchk = (struct cmd_errchk *) ptr;
       break;
 
-    case CMD_CLR_ERR:
+    case CMD_ERRCHK_40110:
+      CURRENT_CMD.cmd_u.c_errchk_40110 = (struct cmd_errchk_40110 *) ptr;
       break;
 
+    case CMD_ERRCHK_40010:
+      CURRENT_CMD.cmd_u.c_errchk_40010 = (struct cmd_errchk_40010 *) ptr;
+      break;
+
+    case CMD_ERRCHK_40000:
+      CURRENT_CMD.cmd_u.c_errchk_40000 = (struct cmd_errchk_40000 *) ptr;
+      break;
+
+    case CMD_POP_ARGS:
+      CURRENT_CMD.cmd_u.c_pop_args = (long) ptr;
+      break;
+
+    case CMD_CLR_ERR:
+	case CMD_PUSH_OP_AND:
+        case CMD_PUSH_OP_OR:
+        case CMD_PUSH_OP_EQUAL:
+        case CMD_PUSH_OP_CONCAT:
+        case CMD_PUSH_OP_ISNULL:
+      break;
+
+        case CMD_PUSH_FUNCTION:
+        case CMD_POP_FUNCTION:
+        case CMD_POP_PARAM:
+        case CMD_POP_VAR2:
+		break;
 
     default:
       printf ("Unknown Command : %d", cmd_type);
@@ -276,15 +310,18 @@ add_block (void *ptr_c_vars)
 
 
 long
-add_set_var (struct use_variable *var_orig, long value, int once)
+xadd_set_var (struct use_variable *var_orig, long value, int once)
 {
-  struct cmd_set_var *v;
-  struct cmd_set_var1 *v1;
-  struct use_variable *var;
-  int pc;
-  int vid;
-  int block;
+  struct cmd_set_var *v=0;
+  struct cmd_set_var1 *v1=0;
+  struct use_variable *var=0;
+  struct use_variable *var2 = 0;
+  struct  variable_element *var_element=0;
+  int pc=0;
+  int vid=0;
+  int block=0;
 
+printf("\n\nAdd set var\n");
   var = malloc (sizeof (struct use_variable));
   memcpy (var, var_orig, sizeof (struct use_variable));
 
@@ -342,26 +379,48 @@ add_set_var (struct use_variable *var_orig, long value, int once)
       printf ("Array Sizes= %d %d %d\n", variable->var->i_arr_size[0],
 	      variable->var->i_arr_size[1], variable->var->i_arr_size[2]);
 
+
+      var_element=variable->var;
+
+
+      if (var->sub.sub_len==0) {
+		printf("Sub_len=0\n");
+      } else {
+		int a;
+ 		for (a=0;a<var->sub.sub_len;a++) {
+
+  	printf ("%d   x1=%d sub1=%d sub2=%d sub3=%d\n", a,var->sub.sub_val[a].x1element, var->sub.sub_val[a].x1subscript_param_id[a], var->sub.sub_val[a].x1subscript_param_id[1], var->sub.sub_val[a].x1subscript_param_id[2]);
+
+		}
+	}
+
+
       if (var->sub.sub_len)
 	{
-	  printf
-	    ("Got a sub_len on the assignment - so not looking for all of variable..%d\n",
-	     var->sub.sub_len);
-	  printf ("%d %d %d %d\n", var->sub.sub_val[0].x1element,
-		  var->sub.sub_val[0].x1subscript_param_id[0],
-		  var->sub.sub_val[0].x1subscript_param_id[1],
-		  var->sub.sub_val[0].x1subscript_param_id[2]);
+	int a;
+	  	printf ("Got a sub_len on the assignment - so not looking for all of variable - len= %d\n", var->sub.sub_len);
+	  	printf ("x1=%d sub1=%d sub2=%d sub3=%d\n", var->sub.sub_val[0].x1element, var->sub.sub_val[0].x1subscript_param_id[0], var->sub.sub_val[0].x1subscript_param_id[1], var->sub.sub_val[0].x1subscript_param_id[2]);
 
+		if (var->sub.sub_val[0].x1element!=-1) {
+	  		a=0;
+			while (a<var->sub.sub_len) {
+				printf("Assign %d\n",a);
+	  			var_element=&var_element->next.next_val[var->sub.sub_val[a].x1element];
+				a++;
+			}
+		}
 
-
+		
 	}
-      else
-	{
-	  struct use_variable *var2=0;
+
+
+
+
+
+	
 	  // Lets play...
 
-	  if (variable->var->i_arr_size[0] && variable->var->i_arr_size[1]
-	      && variable->var->i_arr_size[2] == 0)
+	  if (var_element->i_arr_size[0] && var_element->i_arr_size[1] && var_element->i_arr_size[2] == 0)
 	    {
 	      int a;
 	      int b;
@@ -386,9 +445,9 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 		      this_module.params.params_val[value].param_u.p_list->
 		      list_param_id.list_param_id_len)
 		    break;
-		  if (a >= variable->var->i_arr_size[0])
+		  if (a >= var_element->i_arr_size[0])
 		    {
-		      printf ("Excess elements ignored\n");
+		      printf ("Excess elements ignored (1)\n");
 		      break;
 		    }
 
@@ -433,9 +492,9 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 			  subparam->param_u.p_list->list_param_id.
 			  list_param_id_len)
 			break;
-		      if (b >= variable->var->i_arr_size[1])
+		      if (b >= var_element->i_arr_size[1])
 			{
-			  printf ("Excess elements ignored\n");
+			  printf ("Excess elements ignored (2)\n");
 			  break;
 			}
 		      printf ("sub type2 : %d\n", subparam->param_type);
@@ -467,7 +526,8 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 			list_param_id_val[b];
 		      printf ("New param=%d\n", nb);
 		      printf ("sub type4 : %d\n", subparam->param_type);
-		      pc = add_set_var (var2, nb, once);
+		printf("Calling add_set_Var (1)...\n");
+		      pc = add_set_var (var2, nb, once,0);
 		      printf ("sub type5 : %d\n", subparam->param_type);
 		      printf ("PC=%d for %d,%d (%d %d)\n", pc, a, b, npid_a,
 			      npid_b);
@@ -478,8 +538,7 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 	    }
 
 
-	  if (variable->var->i_arr_size[0]
-	      && variable->var->i_arr_size[1] == 0)
+	  if (var_element->i_arr_size[0] && var_element->i_arr_size[1] == 0)
 	    {
 	      int a;
 	      // Add as array...
@@ -487,50 +546,72 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 	      while (1)
 		{
 		  int npid;
-		  if (a >=
-		      this_module.params.params_val[value].param_u.p_list->
-		      list_param_id.list_param_id_len)
-		    break;
-		  if (a >= variable->var->i_arr_size[0])
+		  if (a >= this_module.params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
+
+		  if (a >= var_element->i_arr_size[0])
 		    {
-		      printf ("Excess elements ignored\n");
+		      printf ("Excess elements ignored (3)\n");
 		      break;
 		    }
 		  var2 = malloc (sizeof (struct use_variable));
 		  memcpy (var2, var, sizeof (struct use_variable));
-		  var2->sub.sub_val =
-		    malloc (sizeof (struct use_variable_sub));
+		  var2->sub.sub_val = malloc (sizeof (struct use_variable_sub));
 		  var2->sub.sub_len = 1;
 		  var2->sub.sub_val[0].x1element = -1;
 		  var2->sub.sub_val[0].x1subscript_param_id[0] = 0;
 		  var2->sub.sub_val[0].x1subscript_param_id[1] = 0;
 		  var2->sub.sub_val[0].x1subscript_param_id[2] = 0;
-
 		  npid = new_param_returns_long ('I', (void *) a);
 		  printf ("npid = %d for %d\n", npid, a);
+
 		  var2->sub.sub_val[0].x1subscript_param_id[0] = npid;
 		  print_use_variable (var2);
-		  pc =
-		    add_set_var (var2,
-				 this_module.params.params_val[value].param_u.
-				 p_list->list_param_id.list_param_id_val[a],
-				 once);
+		printf("Calling add_set_Var (2)... (var_element->x1element=%d)\n",var_element->next.next_len);
+		  pc = add_set_var (var2, this_module.params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0);
 		  printf ("PC=%d\n", pc);
 		  a++;
 		}
 	    }
 
 
-	  if (variable->var->i_arr_size[0] == 0)
-	    {
-	      printf ("Unhandled...\n");
-	      exit (3);
+	  if (var_element->i_arr_size[0] == 0)
+	    { // This is a straight assignment to structure..
+
+		int a;
+		a=0;
+	      while (1)
+		{
+		  int npid;
+			char *ptr=0;
+			printf("Straight assign\n");
+		  if (a >= this_module.params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
+
+		if (a>=var_element->next.next_len) {
+			printf("Excess elements for structure (4)\n");
+			break;
+		}
+		  var2 = malloc (sizeof (struct use_variable));
+		  memcpy (var2, var, sizeof (struct use_variable));
+		  var2->sub.sub_val = malloc (sizeof (struct use_variable_sub));
+		  var2->sub.sub_len = 1;
+
+		  var2->sub.sub_val[0].x1element = a;
+		  var2->sub.sub_val[0].x1subscript_param_id[0] = 0;
+		  var2->sub.sub_val[0].x1subscript_param_id[1] = 0;
+		  var2->sub.sub_val[0].x1subscript_param_id[2] = 0;
+		  npid = new_param_returns_long ('I', (void *) a);
+
+		printf("Calling add_set_Var (3)...\n");
+		  pc = add_set_var (var2, this_module.params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0);
+		  printf ("npid = %d for %d for straight assign\n", npid, a);
+		a++;
+		}
 	    }
 
 	  return pc;
 	}
 
-    }
+    
 
   v->value_param_id = value;
   v1->value_param_id = value;
@@ -645,6 +726,37 @@ add_errchk (void *n)
 {
   return new_command (CMD_ERRCHK, (void *) n);
 }
+long
+add_errchk_40110 (void *n)
+{
+if (n==0) {
+	printf("BAD errchk_40110\n");
+	exit(4);
+}
+  return new_command (CMD_ERRCHK_40110, (void *) n);
+}
+
+long
+add_errchk_40010 (void *n)
+{
+if (n==0) {
+	printf("BAD errchk_40010\n");
+	exit(4);
+}
+  return new_command (CMD_ERRCHK_40010, (void *) n);
+}
+
+
+long
+add_errchk_40000 (void *n)
+{
+if (n==0) {
+	printf("BAD errchk_40000\n");
+	exit(4);
+}
+  return new_command (CMD_ERRCHK_40000, (void *) n);
+}
+
 
 long
 add_clr_err (void)
@@ -652,10 +764,17 @@ add_clr_err (void)
   return new_command (CMD_CLR_ERR, 0);
 }
 
-long
-add_push_long (int n)
-{
+long add_push_long (int n) {
   return new_command (CMD_PUSH_LONG, (void *) n);
+}
+
+long add_push_substr(long e) {
+	printf("Not implemented - substr\n");
+	exit(2);
+}
+
+long add_pop_function() {
+  return new_command (CMD_POP_FUNCTION,(void *)0);
 }
 
 long
@@ -684,11 +803,39 @@ add_set_stat (int a)
   return new_command (CMD_SET_STAT, (void *) a);
 }
 
+
+long
+add_set_line (char *module,int line)
+{
+  	return new_command (CMD_SET_LINE, (void *) line);
+}
+
+
+long
+add_pop_args (int n)
+{
+  	return new_command (CMD_POP_ARGS, (void *) n);
+}
+
+
+
+
 long
 add_push_op (char *n)
 {
   int ni;
   ni = atoi (n);
+#define OP_ISNULL 0x800a
+#define OP_AND 0x8007
+#define OP_OR 0x8008
+#define OP_EQUAL 0x8001
+#define OP_CONCAT 0x801
+
+  if (ni==OP_ISNULL) { return new_command (CMD_PUSH_OP_ISNULL,0); }
+  if (ni==OP_AND)    { return new_command (CMD_PUSH_OP_AND,0); }
+  if (ni==OP_OR)     { return new_command (CMD_PUSH_OP_OR,0); }
+  if (ni==OP_EQUAL)  { return new_command (CMD_PUSH_OP_EQUAL,0); }
+  if (ni==OP_CONCAT)  { return new_command (CMD_PUSH_OP_CONCAT,0); }
   return new_command (CMD_PUSH_OP, (void *) ni);
 }
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.21 2004-06-26 16:45:19 mikeaubury Exp $
+# $Id: Makefile,v 1.22 2004-09-21 20:26:21 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -49,15 +49,15 @@ endif
 
 
 
-OBJ_COMMON      =npcode_xdr.o  common_print.o common_eval.o
+OBJ_COMMON      =npcode_xdr.o  common_print.o common_eval.o 
 
 OBJ_RUNNER_COMMON=runner_main.o  runner_vars.o ${OBJ_COMMON}
 
-OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o \
+OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o set_var.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
 				${OBJ_COMMON} common_io_c.o
 
-OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o \
+OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o compiler_optimize.o set_var.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
 				${OBJ_COMMON} common_io_fgl.o
 

@@ -396,10 +396,10 @@ call_c_function (char *s, struct param *p, long *r)
 
 	      //printf("Param %d - %d\n",a,list->list.list_param_id_val[a]);
 		struct param *p;
-		if (list->list_param_id.list_param_id_val[a]!=-1) {
+		if (list->list_param_id.list_param_id_val[a]>0) {
 			p=&PARAM_ID(list->list_param_id.list_param_id_val[a]);
 		} else {
-			p=nget_param(0);
+			p=nget_param(list->list_param_id.list_param_id_val[a]);
 		}
 	      switch (p->param_type)
 		{
@@ -418,9 +418,12 @@ call_c_function (char *s, struct param *p, long *r)
 		case PARAM_TYPE_CALL:
 		  strcat (buff, "4");
 		  break;	// A guess...
+		case PARAM_TYPE_OP:
+		  strcat (buff, "4");
+		  break;	// A guess...
 		default:
 		  ok = 0;
-		  printf ("Can't figure it out...%d\n",p->param_type);
+		  printf ("Can't figure it out...%d %p\n",p->param_type,p);
 		  exit (2);
 		}
 

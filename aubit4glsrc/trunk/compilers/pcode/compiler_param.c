@@ -134,6 +134,8 @@ decode_op (char *op)
     return EOP_MULTIPLY;
   if (strcmp (op, "/") == 0)
     return EOP_DIVIDE;
+  if (strcmp (op, "%") == 0)
+    return EOP_MOD;
 
   if (strcmp (op, "&") == 0)
     return EOP_LOGAND;
@@ -341,7 +343,7 @@ void append_param_list (long plist_i, long newparam)
 {
   struct param_list *ptr;
   struct param *plist;
-  if (newparam>10000) {
+  if (newparam>30000) {
 	char *ptr=0;
 	printf("Sanity check failed (%ld)\n",newparam);
 	*ptr=0;

@@ -70,15 +70,29 @@ get_dtype (char *s)
 {
   if (strcasecmp (s, "char") == 0)
     return DCHAR;
+  if (strcasecmp (s, "uchar") == 0)
+    return DCHAR;
   if (strcasecmp (s, "String") == 0)
     return DSTRING;
   if (strcasecmp (s, "int") == 0)
     return DLONG;
   if (strcasecmp (s, "short") == 0)
     return DINT;
+  if (strcasecmp (s, "uint") == 0)
+    return DLONG;
+  if (strcasecmp (s, "ushort") == 0)
+    return DINT;
+
+
   if (strcasecmp (s, "fgldate") == 0)
     return DLONG;
   if (strcasecmp (s, "long") == 0)
+    return DLONG;
+  if (strcasecmp (s, "longlong") == 0)
+    return DLONG;
+  if (strcasecmp (s, "ulonglong") == 0)
+    return DLONG;
+  if (strcasecmp (s, "ulong") == 0)
     return DLONG;
   if (strcasecmp (s, "VoidPointer") == 0)
     return DPTR;
@@ -135,11 +149,11 @@ set_master_set (long e_i)
 
   if (m_type == 1)
     {
-      add_set_var (uv, e_i, 1);
+      add_set_var (uv, e_i, 1,0);
     }
   else
     {
-      add_set_var (uv, e_i, 0);
+      add_set_var (uv, e_i, 0,0);
     }
 }
 
@@ -332,7 +346,7 @@ find_variable (int sid, char *s, short *block_no)
 	}
 */
       // Not found at all...
-      printf ("Couldn't find variable : %s\n", s);
+      printf ("Couldn't find variable : %s \n", s);
       exit (1);
       return 0;
     }
@@ -594,6 +608,21 @@ add_named_struct (char *s)
   exit (1);
 }
 
+has_named_struct (char *s)
+{
+  int a;
+  for (a = 0; a < named_structs_cnt; a++)
+    {
+      //printf("Checking %d %s %s\n",a,named_structs[a].name,s);
+      if (strcmp (named_structs[a].name, s) == 0)
+	{
+	  // Found our structure...
+		return 1;
+	}
+    }
+	return 0;
+}
+
 
 struct variable_element *
 new_variable_element_string (char *s)
@@ -653,6 +682,7 @@ new_variable_struct (struct define_variables *v)
   n->unit_size = 0;
   n->total_size = 0;
   n->offset = 0;
+
   A4GL_debug ("new_variable_struct : %d %p\n", v->var_len, v);
   n->next.next_len = v->var_len;
   if (v->var_len)
@@ -690,7 +720,7 @@ new_variable_struct (struct define_variables *v)
 
 
 
-static void
+void
 make_named_struct (char *name, struct define_variables *v)
 {
   named_structs_cnt++;
@@ -721,6 +751,10 @@ add_default_named_structs ()
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "keycode"));
   add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "field"));
   make_named_struct ("aclfgl_event_list", v);
+
+  v = add_default_struct_list (0, make_default_struct_element ("String", 0, "tabname"));
+  add_default_struct_list (v, make_default_struct_element ("String", 0, "colname"));
+  make_named_struct ("s_constr_list", v);
 
 
 /* All Done... */
@@ -940,15 +974,12 @@ move_defines ()
 struct cmd_block *get_base(int block_pc) {
   struct cmd_block *base;
       struct cmd *command;
-	printf("Block=%p\n",block_pc);
       if (block_pc == -1)
 	{			// Its module level
-	 printf("Module level variable\n");
 	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
 	}
       else
 	{
-	  printf("Local variable in block @ PC=%d\n",block_pc);
 	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[block_pc];
 
 	}

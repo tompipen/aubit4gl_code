@@ -62,11 +62,21 @@ cd /home/aubit4gl/aubit4gltest
 find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
 find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
 
-sleep 3
 
+sh run_tests -clean
 sh run_tests -esqli
 
 if grep -y "Fail" build.log 
 then
 	echo "Test Failed"
 fi
+
+#sh run_tests -clean
+
+#sh run_tests -eci
+#
+#if grep -y "Fail" build.log 
+#then
+	#echo "Test Failed"
+#fi
+

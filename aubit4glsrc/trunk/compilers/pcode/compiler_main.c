@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.10 2004-06-26 16:45:19 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.11 2004-09-21 20:26:21 mikeaubury Exp $
 #*/
 
 /**
@@ -45,7 +45,7 @@
 #define bool_t int
 #define u_int unsigned int
 #endif
-
+int do_optimise=0;
 #include "npcode.h"
 #include "npcode_defs.h"
 #include "time.h"
@@ -152,6 +152,13 @@ main (int argc, char *argv[])
 	      // -I flag: ignore
 	      continue;
 	    }
+	  else if ( strcmp (c12, "-O") == 0|| strcmp (c12, "-O1") == 0|| strcmp (c12, "-O2") == 0)
+	    {
+		do_optimise=1;
+	      continue;
+	    }
+
+
 	  else if (strcmp (c12, "-L") == 0)
 	    {
 	      //printf("got -L\n");
@@ -281,10 +288,8 @@ main (int argc, char *argv[])
 
   set_externs ();
   move_defines ();
-  optimize();
 
-  A4GL_debug ("String table has %d entries\n",
-	      this_module.string_table.string_table_len);
+  A4GL_debug ("String table has %d entries\n", this_module.string_table.string_table_len);
 
 
   a = process_xdr ('O', &this_module, fout);
@@ -297,6 +302,24 @@ main (int argc, char *argv[])
       printf ("Failed to write %d\n", a);
       exit (1);
     }
+
+
+  if (do_optimise) {
+  	optimize();
+	
+  	strcpy(fout,"optimised");
+	
+  	a = process_xdr ('O', &this_module, fout);
+  	if (a)
+    	{
+      	A4GL_debug ("Written ok %d\n", a);
+    	}
+  	else
+    	{
+      	printf ("Failed to write %d\n", a);
+      	exit (1);
+    	}
+  }
 
   return 0;
 }

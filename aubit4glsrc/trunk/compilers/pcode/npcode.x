@@ -21,6 +21,8 @@ enum cmd_type {
 	CMD_GOTO_PC,
 	CMD_RETURN,
 	CMD_NOP,
+
+
 /* 4gl specific */
 	CMD_PUSH_LONG	,
 	CMD_PUSH_INT	,
@@ -35,7 +37,32 @@ enum cmd_type {
 	CMD_CLR_ERR,
 	CMD_ERRCHK,
 	CMD_ECALL,
-	CMD_SET_STAT
+	CMD_SET_STAT,
+	CMD_SET_LINE,
+	CMD_PUSH_OP_AND,
+	CMD_PUSH_OP_OR,
+	CMD_PUSH_OP_EQUAL,
+	CMD_PUSH_OP_CONCAT,
+	CMD_PUSH_OP_ISNULL,
+	CMD_ERRCHK_40110,
+	CMD_ERRCHK_40010,
+	CMD_ERRCHK_40000,
+
+	CMD_PUSH_FUNCTION,
+	CMD_POP_FUNCTION,
+	CMD_POP_ARGS,
+	CMD_POP_PARAM,
+	CMD_POP_VAR2
+
+
+
+/*
+A4GL_pop_var2 65
+A4GLSTK_popFunction 80
+A4GL_pop_args 84
+A4GL_pop_params 84
+A4GL_push_variable 211
+*/
 
 
 };
@@ -54,6 +81,7 @@ enum param_type {
 	PARAM_TYPE_USE_VAR,
 	PARAM_TYPE_EMPTY,
 	PARAM_TYPE_CACHED,
+	PARAM_TYPE_NOP,
 /* 4GL Specific */
 	PARAM_TYPE_SPECIAL,
 	PARAM_TYPE_ONKEY 
@@ -115,7 +143,8 @@ enum enumop {
 	EOP_LOGAND,
 	EOP_LOGOR,
 	EOP_NE,
-	EOP_NOT
+	EOP_NOT,
+	EOP_MOD
 };
 
 
@@ -153,6 +182,7 @@ union param switch (int param_type) {
 	case PARAM_TYPE_ONKEY: 			string 			keys<>;
 	case PARAM_TYPE_NULL: 			void; 
 	case PARAM_TYPE_EMPTY: 			void; 
+	case PARAM_TYPE_NOP: 			void; 
 };
 
 struct npcmd_if {
@@ -202,15 +232,45 @@ struct cmd_display_at {
 struct cmd_errchk {
 	long line;
 	long module_name;
-	long modes[5];
+	char modes[5];
 	long actions[5];
 };
 
+struct cmd_errchk_40110 {
+	long line;
+	long module_name;
+};
 
+struct cmd_errchk_40010 {
+	long line;
+	long module_name;
+};
+struct cmd_errchk_40000 {
+	long line;
+	long module_name;
+};
 struct ecall {
 	int func_id;
 	int ln;
 	int nparam;
+};
+
+
+struct cmd_push_function  {
+	long funcname;
+	long paramnames;
+	long nargs;
+};
+
+
+struct cmd_pop_param  {
+	long x;
+
+};
+
+struct cmd_pop_var2 {
+	long x;
+
 };
 
 /* An individual command */
@@ -228,10 +288,19 @@ union cmd switch(int  cmd_type) {
 	case CMD_END_4GL_0:     void;
 	case CMD_END_4GL_1:     void;
 	case CMD_NOP: 		void;
+	case CMD_PUSH_OP_AND: 		void;
+	case CMD_PUSH_OP_OR: 		void;
+	case CMD_PUSH_OP_EQUAL: 		void;
+	case CMD_PUSH_OP_ISNULL: 		void;
+	case CMD_PUSH_OP_CONCAT: 		void;
+
 	case CMD_PUSH_LONG:     long			c_push_long;
 	case CMD_PUSH_INT:	short 			c_push_int;
 	case CMD_CHK_ERR: 	long 			c_chk_err_lineno;
 	case CMD_ERRCHK:	struct cmd_errchk *	c_errchk;
+	case CMD_ERRCHK_40110:	struct cmd_errchk_40110 *	c_errchk_40110;
+	case CMD_ERRCHK_40010:	struct cmd_errchk_40010 *	c_errchk_40010;
+	case CMD_ERRCHK_40000:	struct cmd_errchk_40000 *	c_errchk_40000;
 	case CMD_PUSH_CHAR:	long 			c_push_char;
 	case CMD_PUSH_CHARV: 	long 			c_var_param_id;
 
@@ -239,6 +308,13 @@ union cmd switch(int  cmd_type) {
 	case CMD_PUSH_OP:	long   			c_push_op;
 	case CMD_ECALL:		struct ecall *		c_ecall;
 	case CMD_SET_STAT: 	long 			c_setval;
+	case CMD_SET_LINE: 	long 			c_cline;
+	case CMD_POP_FUNCTION: void ;
+	case CMD_POP_ARGS: 	 long c_pop_args;
+
+	case CMD_PUSH_FUNCTION:  struct cmd_push_function *c_push_function;
+	case CMD_POP_PARAM:	 struct cmd_pop_param *c_pop_param;
+	case CMD_POP_VAR2:	 struct cmd_pop_var2 *c_pop_var2;
 };
 
 
@@ -255,6 +331,8 @@ struct npfunction {
 };
 
 
+
+
 struct module {
 	long 			fglc_magic;
 	long 			fglc_version;
@@ -263,7 +341,7 @@ struct module {
 	long 			compiled_time;
 	struct vstring 		string_table<>;
 	struct vstring 		id_table<>;
-	long  			external_function_table<>;
+	long  			external_function_table<>; 
 	struct npfunction 	functions<>;
 	struct param		params<>;
 };

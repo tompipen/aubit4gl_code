@@ -573,15 +573,16 @@ where_clause_ss:
 
 
 from_clause:
-	FROM table_reference_list {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	FROM {table_cnt=0;} table_reference_list {
+		sprintf($<str>$,"FROM %s",$<str>3);
 	}
 ;
 
 table_reference_list:
-	  table_reference
+	  table_reference {table_cnt++;}
 	| table_reference_list COMMA table_reference {
 		sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+		table_cnt++;
 	}
 	;
 
@@ -614,6 +615,9 @@ table_expression_ss:
 	op_where_clause_ss
 	op_group_by_clause_ss
 	op_having_clause_ss {
+		if (table_cnt>1) {
+			printf("Warning : possible missing link between tables in select @ line %d\n",yylineno);
+		}
 		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2," ",$<sql_string>3," ",$<sql_string>4,0);
 	}
 	;
@@ -762,6 +766,10 @@ comparison_predicate_ss:
 	| value_expression_ss comp_op value_expression_ss {
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
 	}
+	| value_expression_ss EQUAL value_expression_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
+		table_cnt--;
+	}
 	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss {
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
 	}
@@ -785,8 +793,7 @@ comparison_predicate_ss:
 	;
 
 comp_op:
-	  EQUAL
-	| NOT_EQUAL {strcpy($<str>$,"!=");}
+	NOT_EQUAL {strcpy($<str>$,"!=");}
 	| LESS_THAN
 	| GREATER_THAN 
         /* | NOT_MATCHES */

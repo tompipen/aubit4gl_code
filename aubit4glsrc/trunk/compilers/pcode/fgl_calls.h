@@ -35,17 +35,22 @@ extern long aiplib_status;
 int A4GL_pcode_ecall(char *x,int a,int params) {
   long npc;
   long rval;
-  struct param p;
-  struct param p2;
-  struct param_list pl;
-	p.param_type=PARAM_TYPE_LIST;
-	p.param_u.p_list=&pl;
-	p.param_u.p_list->list_param_id.list_param_id_len=1;
-	p.param_u.p_list->list_param_id.list_param_id_val=malloc(sizeof(int));
-	p.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
-	p2.param_type=PARAM_TYPE_LITERAL_INT;
-	p2.param_u.n=params;
-	nset_param(&p2,0);
+  static struct param p;
+  static struct param p2;
+  static struct param_list pl;
+  int param_id;
+
+  p.param_type=PARAM_TYPE_LIST;
+  p.param_u.p_list=&pl;
+  p.param_u.p_list->list_param_id.list_param_id_len=1;
+  p.param_u.p_list->list_param_id.list_param_id_val=malloc(sizeof(int));
+
+
+  p2.param_type=PARAM_TYPE_LITERAL_INT;
+  p2.param_u.n=params;
+  param_id=nset_param(&p2,99);
+
+  p.param_u.p_list->list_param_id.list_param_id_val[0]=param_id;
 
 
   npc = find_pcode_function (x);
@@ -56,7 +61,8 @@ int A4GL_pcode_ecall(char *x,int a,int params) {
   	call_c_function (x, &p, &rval);
   }
 
-
+  nset_param(0,param_id);
+  //printf("cleared param_id %d\n",param_id);
   if (rval!=1) { A4GLSQL_set_status(-3001,0);A4GL_chk_err(a,this_module.module_name);}
 return 1;
 }
@@ -181,12 +187,25 @@ int special_cmd(struct cmd *c) {
 			return 1;
 	}
 
+	if (c->cmd_type==CMD_PUSH_OP_ISNULL) { A4GL_pushop(OP_ISNULL); return 1; }
+	if (c->cmd_type==CMD_PUSH_OP_AND) { A4GL_pushop(OP_AND); return 1; }
+	if (c->cmd_type==CMD_PUSH_OP_OR) { A4GL_pushop(OP_OR); return 1; }
+	if (c->cmd_type==CMD_PUSH_OP_EQUAL) { A4GL_pushop(OP_EQUAL); return 1; }
+	if (c->cmd_type==CMD_PUSH_OP_CONCAT) { A4GL_pushop(OP_CONCAT); return 1; }
+
+
 	if (c->cmd_type==CMD_PUSH_CHAR) {
 			A4GL_push_char(this_module.string_table.string_table_val[c->cmd_u.c_push_char].s);
 			return 1;
 	}
 
         if (c->cmd_type==CMD_ECALL) {
+/*
+		printf("ECALL : %s %d %d\n", this_module.string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
+				c->cmd_u.c_ecall->ln,
+				c->cmd_u.c_ecall->nparam);
+		fflush(stdout);
+*/
                 A4GL_pcode_ecall(this_module.string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
 				c->cmd_u.c_ecall->ln,
 				c->cmd_u.c_ecall->nparam);
@@ -210,12 +229,38 @@ int special_cmd(struct cmd *c) {
 			return 1;
 	}
 
+	if (c->cmd_type==CMD_SET_LINE) {
+			A4GLSTK_setCurrentLine("module",c->cmd_u.c_cline);
+			return 1;
+	}
+
 	if (c->cmd_type==CMD_ERRCHK) {
 			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
+	if (c->cmd_type==CMD_ERRCHK_40110) {
+			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
+			// error checking...
+			return 1;
+	}
+	if (c->cmd_type==CMD_ERRCHK_40010) {
+			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
+			// error checking...
+			return 1;
+	}
+
+	if (c->cmd_type==CMD_ERRCHK_40000) {
+			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
+			// error checking...
+			return 1;
+	}
+
+
 
 	printf("Unknown command : %d\n",c->cmd_type);
 	return 0;

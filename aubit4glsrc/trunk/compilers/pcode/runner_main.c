@@ -358,7 +358,13 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  logfile = fopen ("pcode.run", "w");
+
+  if (0) {
+  	logfile = fopen ("pcode.run", "w");
+  } else {
+  	logfile = fopen ("/dev/null", "a");
+  }
+
   if (logfile == 0)
     {
       printf ("Unable to open logfile\n");

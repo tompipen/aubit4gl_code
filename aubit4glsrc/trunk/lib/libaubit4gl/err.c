@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.10 2004-06-26 16:43:29 mikeaubury Exp $
+# $Id: err.c,v 1.11 2004-09-21 20:26:21 mikeaubury Exp $
 #
 */
 
@@ -97,6 +97,15 @@ A4GL_err_print (int a, char *s)
       strcpy (static_err, "Wrong number of variables returned from function");
       return k;
     }
+printf("%d \n",a);
+  if (a == -400)
+    {
+      A4GL_debug ("Ignore wrong number of variables..");
+      strcpy (static_err, "Database error (%s)");
+      return k;
+    }
+
+
   if (a == -3002)
     {
       A4GL_debug ("Ignore wrong number of variables..");

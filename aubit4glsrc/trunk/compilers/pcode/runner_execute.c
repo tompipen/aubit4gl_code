@@ -205,10 +205,7 @@ set_var (long pc, struct cmd_set_var *sv)
     }
   else
     {
-      if (sv->value_param_id == -1)
-	uset_var = nget_param (0);
-      if (sv->value_param_id == -2)
-	uset_var = nget_param (1);
+	uset_var = nget_param (sv->value_param_id);
     }
 
   if (sv->value_param_id == 61)
@@ -846,20 +843,21 @@ get_var_ptr (struct use_variable *uv, int *size)
 #endif
 
 	      x = x1;
-	      max = ve_main->i_arr_size[0];
 
+	      max = ve_main->i_arr_size[0];
+	      if (ve_main->i_arr_size[1] > 1) {max*=ve_main->i_arr_size[1]; }
+	      if (ve_main->i_arr_size[2] > 1) {max*=ve_main->i_arr_size[2]; }
 
 	      if (ve_main->i_arr_size[1] > 1)
 		{
-		  x *= ve_main->i_arr_size[0];
+		  x *= ve_main->i_arr_size[1];
 		  x += x2;
-		  max *= ve_main->i_arr_size[1];
 		}
+
 	      if (ve_main->i_arr_size[2] > 1)
 		{
-		  x *= ve_main->i_arr_size[1];
+		  x *= ve_main->i_arr_size[2];
 		  x += x3;
-		  max *= ve_main->i_arr_size[2];
 		}
 
 	      //printf("%d of %d - %d %d %d : ",x,max,x1,x2,x3);
@@ -869,10 +867,12 @@ get_var_ptr (struct use_variable *uv, int *size)
 		  A4GL_debug ("RANGE CHECK FAILED CHECK\n");
 		  if (max)
 		    {
-		      fprintf (logfile,
-			       "     Evaluate gives bounds check failure = %ld of %ld\n",
-			       x, max);
-		      //exit (2);
+			char *ptr=0;
+		        fprintf (logfile, "     Evaluate gives bounds check failure = %ld of %ld\n", x, max);
+			printf("Bounds check failed\n");
+			*ptr=0;
+			
+		      exit (2);
 		    }
 		}
 	      rptr += ve_main->unit_size * x;

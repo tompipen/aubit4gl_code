@@ -11,6 +11,7 @@
 void comment (void );
 int check_type (void);
 int use_4gl_kw=1;
+extern int do_optimise;
 void hash (void );
 %}
 D			[0-9]
@@ -31,8 +32,31 @@ void linecomment (void );
 %%
 "/*"			{ comment(); }
 "//"			{ linecomment(); }
+"__extension__"		;
 
+"MENU_ALL" {strcpy(yytext,"\"_AlL_\"");count(); return STRING_LITERAL;}
 "op_and" {strcpy(yytext,"32775");count(); return CONSTANT;}
+
+REPORT_START  		{strcpy(yytext,"-1"); count(); return CONSTANT;}
+REPORT_FINISH       	{strcpy(yytext,"-2"); count(); return CONSTANT;}
+REPORT_DATA         	{strcpy(yytext,"-3"); count(); return CONSTANT;}
+REPORT_OPS_COMPLETE 	{strcpy(yytext,"-4"); count(); return CONSTANT;}
+REPORT_AFTERDATA    	{strcpy(yytext,"-5"); count(); return CONSTANT;}
+REPORT_SENDDATA     	{strcpy(yytext,"-6"); count(); return CONSTANT;}
+REPORT_BEFOREDATA   	{strcpy(yytext,"-7"); count(); return CONSTANT;}
+REPORT_BEFOREGROUP  	{strcpy(yytext,"-8"); count(); return CONSTANT;}
+REPORT_AFTERGROUP   	{strcpy(yytext,"-9"); count(); return CONSTANT;}
+REPORT_LASTROW      	{strcpy(yytext,"-10"); count(); return CONSTANT;}
+REPORT_PAGEHEADER     	{strcpy(yytext,"-11"); count(); return CONSTANT;}
+REPORT_FIRSTPAGEHEADER 	{strcpy(yytext,"-12"); count(); return CONSTANT;}
+REPORT_LASTDATA        	{strcpy(yytext,"-13"); count(); return CONSTANT;}
+REPORT_PAGETRAILER     	{strcpy(yytext,"-14"); count(); return CONSTANT;}
+REPORT_RESTART 		{strcpy(yytext,"-15"); count(); return CONSTANT;}
+REPORT_CONVERT 		{strcpy(yytext,"-16"); count(); return CONSTANT;}
+REPORT_FREE    		{strcpy(yytext,"-17"); count(); return CONSTANT;}
+REPORT_TERMINATE	{strcpy(yytext,"-9999"); count(); return CONSTANT;}
+
+
 "OP_CLIP" {strcpy(yytext,"1025");count(); return CONSTANT;}
 "OP_CONCAT" {strcpy(yytext,"2049");count(); return CONSTANT;}
 "OP_COPY" {strcpy(yytext,"2050");count(); return CONSTANT;}
@@ -93,15 +117,26 @@ void linecomment (void );
 "REPORT_PAGETRAILER" 		{strcpy(yytext,"-14"); count(); return CONSTANT;}
 "REPORT_TERMINATE" 		{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 
-"ECALL"			{if (use_4gl_kw) return KW_A_ECALL; else REJECT;}
-"A4GL_pushop"		{if (use_4gl_kw) return KW_A_PUSH_OP; else REJECT;}
-"A4GLSQL_set_status"	{if (use_4gl_kw) return KW_A_SET_STAT; else REJECT;}
-"A4GL_push_long"	{if (use_4gl_kw) return KW_A_PUSH_LONG; else REJECT;}
-"A4GL_push_int"		{if (use_4gl_kw) return KW_A_PUSH_INT; else REJECT;}
-"xxxA4GL_push_char"	{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}
-"A4GL_chk_err"		{if (use_4gl_kw) return KW_A_CHK_ERR; else REJECT;}
-"aclfgli_clr_err_flg"	{if (use_4gl_kw) return KW_A_CLR_ERR; else REJECT;}
-"ERRCHK"	{if (use_4gl_kw) return KW_A_ERRCHK; else REJECT;}
+"ECALL"				{if (use_4gl_kw) return KW_A_ECALL; else REJECT;}
+"A4GL_pushop"			{if (use_4gl_kw) return KW_A_PUSH_OP; else REJECT;}
+"A4GLSQL_set_status"		{if (use_4gl_kw) return KW_A_SET_STAT; else REJECT;}
+"A4GLSTK_setCurrentLine" 	{if (use_4gl_kw) return KW_A_SETLINE; else REJECT;}
+"A4GL_push_long"		{if (use_4gl_kw) return KW_A_PUSH_LONG; else REJECT;}
+"A4GL_push_int"			{if (use_4gl_kw) return KW_A_PUSH_INT; else REJECT;}
+"xxA4GL_push_char"		{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}
+"xxa4gl_substr"		{if (use_4gl_kw) return KW_A_SUBSTR; else REJECT;}
+"A4GL_chk_err"			{if (use_4gl_kw) return KW_A_CHK_ERR; else REJECT;}
+"aclfgli_clr_err_flg"		{if (use_4gl_kw) return KW_A_CLR_ERR; else REJECT;}
+"ERRCHK"			{if (use_4gl_kw) return KW_A_ERRCHK; else REJECT;}
+
+
+"xxA4GL_pop_args"			{if (use_4gl_kw) return KW_A_POP_ARGS; else REJECT;}
+"xxA4GLSTK_popFunction"		{if (use_4gl_kw) return KW_A_POP_FUNCTION; else REJECT;}
+"zxxxA4GL_pop_var2"			{if (use_4gl_kw) return KW_A_POP_VAR2; else REJECT;}
+
+"zxxxA4GLSTK_pushFunction"		{if (use_4gl_kw) return KW_A_PUSH_FUNCTION; else REJECT;}
+"zxxxA4GL_pop_params"		{if (use_4gl_kw) return KW_A_POP_PARAMS; else REJECT;}
+"zxxxA4GL_push_variable"		{if (use_4gl_kw) return KW_A_PUSH_VARIABLE; else REJECT;}
 
 
 "auto"			{ count(); return(AUTO); }
@@ -139,7 +174,7 @@ void linecomment (void );
 "static"		{ count(); return(STATIC); }
 "struct"		{ count(); return(STRUCT); }
 "switch"		{ count(); return(SWITCH); }
-"typedef"		{ count(); return(TYPEDEF); }
+"typedef"		{ count(); printf("TD\n"); return(TYPEDEF); }
 "union"			{ count(); return(UNION); }
 "unsigned"		{ count(); return(UNSIGNED); }
 "void"			{ count(); return(VOID); }
@@ -284,7 +319,7 @@ strcpy(yylval.str,yytext);
 int check_type (void)
 {
 
-//if (is_typename(yytext)) return TYPE_NAME;
+if (has_named_struct(yytext)) return TYPE_NAME;
 return IDENTIFIER;
 
 //printf("Check type : %s\n",yytext);
