@@ -273,9 +273,7 @@ check_informix () {
     fi
 
     if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
-	
 		create_db $TEST_DB
-	
 		new_testdb informix
     else
 		#if test "$NO_ECHO" != "1"; then
@@ -740,10 +738,12 @@ if test "$RDBMS" = ""; then
 fi
 	test_db_exist $db
 	if test "$TEST" != ""; then 
+		echo "CR2"
 		create_db $db
 	else
 		echo "Database $db exists"
 		drop_db $db	
+		echo "CR3"
 		create_db $db
 	fi
 
