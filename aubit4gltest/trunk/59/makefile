@@ -12,3 +12,7 @@ clean:
 	rm -f  m.log.expected.nodate  m.log.nodate
 	
 	
+
+ansi_sql_compat:
+	@echo "1"
+

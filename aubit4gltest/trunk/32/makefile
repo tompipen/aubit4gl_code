@@ -6,3 +6,7 @@ compile: g2.4ae
 	
 run: g2.4ae
 	sh ./run_g2
+
+ansi_sql_compat:
+	@echo "1"
+

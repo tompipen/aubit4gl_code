@@ -7,3 +7,7 @@ compile: error.4ae
 	
 run: error.4ae
 	sh ./run_error
+
+ansi_sql_compat:
+	@echo "1"
+

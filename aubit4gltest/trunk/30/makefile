@@ -10,3 +10,7 @@ compile: arr12.4ae inp.4ae
 	
 run: arr12.4ae  inp.4ae
 	sh ./run_arr_and_inp
+
+ansi_sql_compat:
+	@echo "1"
+

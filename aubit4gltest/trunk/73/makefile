@@ -16,3 +16,7 @@ run: into.4ae
 	
 clean:
 	rm -f into.c
+
+ansi_sql_compat:
+	@echo "0"
+

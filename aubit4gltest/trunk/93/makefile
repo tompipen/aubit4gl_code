@@ -7,3 +7,7 @@ compile: rg1.4ae
 	
 run: rg1.4ae
 	sh ./run_rg1
+
+ansi_sql_compat:
+	@echo "1"
+

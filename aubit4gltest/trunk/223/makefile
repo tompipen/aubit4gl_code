@@ -10,3 +10,7 @@ compile: prog.4ae
 	
 run: prog.4ae
 	sh ./run_prog
+
+ansi_sql_compat:
+	@echo "1"
+

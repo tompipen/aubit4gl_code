@@ -5,3 +5,7 @@ compile: arith.4ae
 	
 run: arith.4ae
 	sh ./run_arith
+
+ansi_sql_compat:
+	@echo "1"
+

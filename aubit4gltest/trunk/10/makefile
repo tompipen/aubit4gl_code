@@ -10,3 +10,7 @@ compile: ui_contrl.4ae
 	
 run: ui_contrl.4ae
 	sh ./run_ui_contrl
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,7 @@ compile: arr3a.4ae
 	
 run: arr3a.4ae
 	sh ./run_arr3a
+
+ansi_sql_compat:
+	@echo "1"
+

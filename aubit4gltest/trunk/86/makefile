@@ -12,3 +12,7 @@ run: g1.4ae
 clean:
 	rm -f arr.out.nodate
 	
+
+ansi_sql_compat:
+	@echo "1"
+

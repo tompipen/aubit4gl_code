@@ -11,3 +11,7 @@ run: getfld.4ae
 clean:
 	rm -f gf.log.nodate
 
+
+ansi_sql_compat:
+	@echo "1"
+

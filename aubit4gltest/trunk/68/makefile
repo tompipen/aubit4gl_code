@@ -9,3 +9,7 @@ compile: all4ae
 	
 run: compile
 	sh ./run_dtblank
+
+ansi_sql_compat:
+	@echo "0"
+

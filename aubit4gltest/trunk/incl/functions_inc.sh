@@ -2,6 +2,401 @@
 #							Functions
 ##############################################################################
 
+#Loop trough all tests and check them for ANSI SQL 92 compatibility
+check_ansi_all () {
+ALL_DIRS=[0-9]*
+ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
+FAIL_NOERRFILE_CNT=0
+FAIL_ANSI_CNT=0
+FAIL_NOT_SIX=0
+DIFF_RESULTS=0
+TEST_CNT=0
+ALLREADY_SET_CNT=0
+TOTAL_FGL_CNT=0
+ANSI_OK_CNT=0
+FAIL_ANSI_COMMENT_ONLY_CNT=0
+
+		for TEST_NO in $ALL_TESTS
+		do
+			check_ansi_single $TEST_NO
+
+			#Show results for each test:
+			case $RESULT in
+				unknown-failed-but-no-ANSI-in-err | yes-only-comment-warnings |	no | unknown-failed-to-compile)
+					if test "$VERBOSE" = "1"; then
+						echo $MSG1
+						if test "$MSG2" != ""; then 
+							echo "MSG2"
+						fi
+						MSG1=""; MSG2=""
+						echo ""
+						echo "--------------------------------------------------------------------------"
+						echo ""
+					fi
+				;;
+			esac
+			if test "2" = "1"; then 
+				#if test "$TEST_CNT" = "100"; then
+				if test "$TEST_CNT" = "20"; then
+					echo "Exiting after reaching the set limit"
+					break
+				fi
+			fi
+		done
+		
+		
+		#Show summary results
+		echo ""
+		echo "Procesed $TEST_CNT tests, $TOTAL_FGL_CNT 4gl source files"
+		echo ""
+		echo "Failed on ANSI, but no ANSI in err file ($FAIL_NOERRFILE_CNT) $FAIL_NOERRFILE_LST"
+		echo "Failed on ANSI, but only comment warnings ($FAIL_ANSI_COMMENT_ONLY_CNT) $FAIL_ANSI_COMMENT_ONLY_LST"		
+		echo "Failed, not on ANSI ($FAIL_NOT_SIX) $FAIL_NOT_SIX_LST"
+		echo "Conflicting results from compilers ($DIFF_RESULTS) $DIFF_RESULTS_LST"
+		echo "Allready set in makefile ($ALLREADY_SET_CNT) $ALLREADY_SET_LST"
+		echo "--------------------------------------------------------------------------"
+		echo "ANSI compatible: ($ANSI_OK_CNT + $FAIL_ANSI_COMMENT_ONLY_CNT) $ANSI_OK_LST $FAIL_ANSI_COMMENT_ONLY_LST"
+		echo ""		
+		echo "Not ANSI compatible: ($FAIL_ANSI_CNT) $FAIL_ANSI_LST"
+		echo ""
+		echo "Unknown: ($FAIL_NOERRFILE_CNT + $FAIL_NOT_SIX + $DIFF_RESULTS) $FAIL_NOERRFILE_LST $FAIL_NOT_SIX_LST $DIFF_RESULTS_LST"
+		echo ""
+		
+}
+
+
+#Check one test for ANSI SQL compliance and interpret results
+check_ansi_single () {
+CHECK_TEST=$1
+COMPARE_REAL_WITH_STORED=1
+
+	IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $CHECK_TEST ansi_sql_compat 2>/dev/null`
+	if test "$IS_MAKE_ANSI_SQL_COMPAT" != ""; then
+		#we allready have this set in makefile. Since testing using compilers
+		#tests only static SQL, we must honor what is set in makefile, since
+		#it may be set because of dynamic SQL
+		IS_ANSI_COMPATIBLE=$IS_MAKE_ANSI_SQL_COMPAT
+		ALLREADY_SET_CNT=`(expr $ALLREADY_SET_CNT + 1) 2>/dev/null`
+		ALLREADY_SET_LST="$ALLREADY_SET_LST $CHECK_TEST"
+		if test "$IS_ANSI_COMPATIBLE" = "0"; then 
+			MSG1="$CHECK_TEST: Result 0 from makefile"
+			FAIL_ANSI_CNT=`(expr $FAIL_ANSI_CNT + 1) 2>/dev/null`
+			FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
+		else
+			MSG1="$CHECK_TEST: Result 1 from makefile"
+			ANSI_OK_CNT=`(expr $ANSI_OK_CNT + 1) 2>/dev/null`
+			ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
+		fi
+	fi
+	
+	if test "$IS_MAKE_ANSI_SQL_COMPAT" = "" -o "$COMPARE_REAL_WITH_STORED" = "1"; then 
+		#do the ANSI check
+		RESULT=""
+		IS_ANSI_COMPATIBLE=""
+		TEST_CNT=`(expr $TEST_CNT + 1) 2>/dev/null`
+		check_ansi $CHECK_TEST
+		TOTAL_FGL_CNT=`(expr $TOTAL_FGL_CNT + $FGL_CNT) 2>/dev/null`
+
+		#Interpret and count results
+		
+			case $RESULT in
+				unknown-failed-but-no-ANSI-in-err)
+					MSG1="$CHECK_TEST: $FGL failed with code $RET, but no ANSI in err file"
+					FAIL_NOERRFILE_CNT=`(expr $FAIL_NOERRFILE_CNT + 1) 2>/dev/null`
+					FAIL_NOERRFILE_LST="$FAIL_NOERRFILE_LST $CHECK_TEST"
+					IS_ANSI_COMPATIBLE="unknown"
+					;;
+				yes-only-comment-warnings)	
+					MSG1="$CHECK_TEST: $FGL generated ANSI warnings, but all about comments"
+					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
+						FAIL_ANSI_COMMENT_ONLY_CNT=`(expr $FAIL_ANSI_COMMENT_ONLY_CNT + 1) 2>/dev/null`
+						FAIL_ANSI_COMMENT_ONLY_LST="$FAIL_ANSI_COMMENT_ONLY_LST $CHECK_TEST"
+					fi
+					IS_ANSI_COMPATIBLE="1"
+					;;
+				no)
+					MSG1="$CHECK_TEST: $FGL generated ANSI warnings:"
+					MSG2="$WARN_TXT_NO_COMMENT"
+					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
+						FAIL_ANSI_CNT=`(expr $FAIL_ANSI_CNT + 1) 2>/dev/null`
+						FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
+					fi
+					IS_ANSI_COMPATIBLE="0"
+					;;
+				unknown-failed-to-compile)
+					MSG1="$CHECK_TEST: $FGL faied with exit code $RET (not 6)"
+					FAIL_NOT_SIX=`(expr $FAIL_NOT_SIX + 1) 2>/dev/null`
+					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
+					IS_ANSI_COMPATIBLE="unknown"
+					;;
+				unknown-different-results)
+					MSG1="$CHECK_TEST: $FGL conflicting results from compilers"
+					DIFF_RESULTS=`(expr $DIFF_RESULTS + 1) 2>/dev/null`
+					DIFF_RESULTS_LST="$DIFF_RESULTS_LST $CHECK_TEST"
+					IS_ANSI_COMPATIBLE="unknown"
+					;;
+				yes)
+					MSG1="$CHECK_TEST: $FGL is ANSI compatible"
+					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then					
+						ANSI_OK_CNT=`(expr $ANSI_OK_CNT + 1) 2>/dev/null`
+						ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
+					fi
+					IS_ANSI_COMPATIBLE="1"
+					;;
+				no-fgl)
+					MSG1="$CHECK_TEST: No 4gl files"
+					FAIL_NOT_SIX=`(expr $FAIL_NOT_SIX + 1) 2>/dev/null`
+					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
+					IS_ANSI_COMPATIBLE="unknown"
+					;;
+				*)
+					echo "WARNING: unhandled result: $RESULT"
+					IS_ANSI_COMPATIBLE="unknown"
+					;;
+			esac
+			if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
+				#makefile does NOT contain the value
+				if test "$IS_ANSI_COMPATIBLE" = "1" -o "$IS_ANSI_COMPATIBLE" = "0"; then
+					#We determined state, so record it to makefile
+					if test "1" = "1"; then
+						makefile=`ls $CURR_DIR/$CHECK_TEST/?akefile 2> /dev/null`
+						if test "$makefile" != ""; then
+							change_setting ansi_sql_compat $IS_ANSI_COMPATIBLE $CHECK_TEST
+							#echo "changed test $CHECK_TEST"
+							#exit
+						fi
+					fi
+				fi
+			fi
+	fi
+	
+	if test "$IS_MAKE_ANSI_SQL_COMPAT" != "" -a "$COMPARE_REAL_WITH_STORED" = "1"; then
+		#Compare value stored in makefile with result of the actual test 
+		if test "$IS_ANSI_COMPATIBLE" != "$IS_MAKE_ANSI_SQL_COMPAT"; then
+			if test "$VERBOSE" = "1"; then
+				echo "WARNING: test $CHECK_TEST - different results from the actuall test and makefile" 
+				echo "Test: $IS_ANSI_COMPATIBLE but in Makefile: $IS_MAKE_ANSI_SQL_COMPAT"
+			fi
+			#exit 5
+			#setting in makefile has priority, because of dynamic SQL
+			IS_ANSI_COMPATIBLE="$IS_MAKE_ANSI_SQL_COMPAT"
+		else
+			if test "$VERBOSE" = "1"; then
+				echo "Result of actual test and value stored in makefile are same"
+			fi
+		fi
+	fi
+			
+			
+	if test "$VERBOSE" = "1"; then
+		echo $MSG1
+		if test "$MSG2" != ""; then 
+			echo "$MSG2"
+		fi
+	fi
+	
+}
+
+#check all 4gl files in test directory for ANSI SQL compliance
+check_ansi() {
+this_test_no=$1
+FGL_CNT=0
+if test "$ANSI_USE_COMP" = ""; then 
+	#ANSI_USE_COMP=ifx
+	#ANSI_USE_COMP=querix
+	#ANSI_USE_COMP=aubit
+	ANSI_USE_COMP=all
+fi
+#4Js apparently does not have option for ANSI schecking
+#what is DBANSIWARN env. var doing?
+#ANSI SQL info: http://www.tdan.com/i016hy01.htm
+#http://www.knosof.co.uk/sqlport.html
+#http://thor.informatik.uni-halle.de/~brass/sqllint/
+
+
+	OLD_DIR=`pwd`
+	cd $CURR_DIR/$this_test_no
+	ALL_4GL=*.4gl
+	RESULT=""
+
+	for FGL in $ALL_4GL
+	do
+		if ! test -f $FGL; then
+			RESULT="no-fgl"
+			continue
+		fi
+		#If we allready got no or unknown on one 4gl file, we can't be
+		#sure if test is compatible even if another 4gl file is OK, so abort
+		case $a in
+		no*)
+	   		break
+			;;
+		unknown*)
+			break
+			;;
+		esac
+		FGL_CNT=`(expr $FGL_CNT + 1) 2>/dev/null`
+		case $ANSI_USE_COMP in
+			ifx)
+				check_ansi_ifx $FGL
+				;;
+			querix)
+				check_ansi_querix $FGL
+				;;
+			aubit)
+				check_ansi_aubit $FGL
+				;;
+			all)
+				check_ansi_querix $FGL
+				RESULT_QUERIX=$RESULT
+				check_ansi_aubit $FGL
+				RESULT_AUBIT=$RESULT
+				check_ansi_ifx $FGL
+				RESULT_IFX=$RESULT
+				
+				if test "$RESULT_QUERIX" != "$RESULT_IFX"; then
+					if test "$RESULT_QUERIX" = "yes" -a "$RESULT_IFX" = "yes-only-comment-warnings"; then
+						#Only Informix can return yes-only-comment-warnings so it is yes
+						RESULT="yes"
+					else
+						RESULT="unknown-different-results"
+					fi
+				else
+					#Make sure we ignore Aubit result - not reliable
+					#since Querix and Informix returned same result, it is
+					#irelevant which one we will assign
+					RESULT=$RESULT_QUERIX
+				fi
+			
+		esac
+	done
+	cd $OLD_DIR
+}
+
+
+#Check one 4gl file for ANSI SQL compliance using Informix 4GL compiler
+check_ansi_ifx() {
+FGL=$1
+FGLCOMP_CMD="fglpc -ansi"
+
+		TMP_TMP=`$FGLCOMP_CMD $FGL 2>&1` 
+		RET=$?
+		if test "$RET" != "0"; then
+			FGL_BASENAME=`basename $FGL .4gl`
+		 	if test "$RET" = "6"; then
+				WARN_TXT=`cat $FGL_BASENAME.err | grep "^|" | grep ANSI`
+				if test "$WARN_TXT" = ""; then
+					RESULT="unknown-failed-but-no-ANSI-in-err"
+				else
+					WARN_TXT_NO_COMMENT=`echo "$WARN_TXT" | grep -v "non-ANSI comment indicator"`
+					if test "$WARN_TXT_NO_COMMENT" = ""; then 
+						RESULT="yes-only-comment-warnings"
+					else
+						RESULT="no"
+					fi
+				fi
+			else
+				RESULT="unknown-failed-to-compile"
+			fi
+		else
+			RESULT="yes"
+		fi
+		
+		
+	if test "$VERBOSE" = "1"; then
+		echo "----------- Testing ANSI SQL compatibility using Informix 4GL compiler --------"
+		echo "$FGL : $RESULT"
+		if test "$WARN_TXT_NO_COMMENT" != ""; then
+			#echo $WARN_TXT_NO_COMMENT
+			grep -B 5 "$WARN_TXT_NO_COMMENT" $FGL_BASENAME.err
+		fi
+		if test "$RESULT" = "unknown-failed-to-compile"; then 
+			grep -B 1 "^|" $FGL_BASENAME.err
+		
+		fi
+		echo ""
+	fi
+}
+
+#Check one 4gl file for ANSI SQL compliance using Querix 4GL compiler
+check_ansi_querix() {
+FGL=$1
+
+#Querix will exit with 0, but print "Warnings found" to stderr
+#.err file will contain "Warning: Non ANSI standard SQL statement"
+#It does not warn about comments
+FGLCOMP_CMD="fglc -ansi"
+
+		TMP_TMP=`$FGLCOMP_CMD $FGL 2>&1`
+		RET=$?
+		TMP_TMP=`echo $TMP_TMP | grep "Warnings found"`
+		FGL_BASENAME=`basename $FGL .4gl`
+		if test "$RET" = "0"; then
+		 	if test "$TMP_TMP" != ""; then
+				#Warnings found
+				WARN_TXT=`cat $FGL_BASENAME.err | grep "^|" | grep "Warning: Non ANSI standard SQL statement"`
+				if test "$WARN_TXT" = ""; then
+					RESULT="unknown-failed-but-no-ANSI-in-err"
+				else
+					RESULT="no"
+				fi
+			else
+				RESULT="yes"
+			fi
+		else
+			RESULT="unknown-failed-to-compile"
+		fi
+		
+	if test "$VERBOSE" = "1"; then
+		echo "------------Testing ANSI SQL compatibility using Querix 4GL compiler ----------"
+		echo "$FGL : $RESULT"
+		if test "$RESULT" = "unknown-failed-to-compile"; then 
+			grep -B 1 "^|" $FGL_BASENAME.err
+		
+		fi
+		echo ""
+	fi
+		
+}
+
+#Check one 4gl file for ANSI SQL compliance using Aubit 4GL compiler
+check_ansi_aubit() {
+FGL=$1
+
+# Try test 538 
+#TODO: use '-ansi' flag on the ESQL/C compiler.
+
+if test "$A4GL_LEXTYPE" = "" -o "$A4GL_SQLTYPE" = ""; then 
+	#We are called before run_test script set this 
+	AUBIT_DB="export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql;"
+fi
+FGLCOMP_CMD="export A4GL_ANSI_WARN=Yes; $AUBIT_DB aubit 4glc --verbose"
+
+		TMP_TMP=`eval $FGLCOMP_CMD $FGL 2>&1`
+		RET=$?
+		#echo $TMP_TMP
+		TMP_TMP=`echo $TMP_TMP | grep "ANSI violation"`
+		if test "$RET" = "0"; then
+			#compiled OK
+		 	if test "$TMP_TMP" != ""; then
+				#Warnings found - Aubit does not create .err file in that case
+				RESULT="no"
+			else
+				RESULT="yes"
+			fi
+		else
+			RESULT="unknown-failed-to-compile"
+		fi
+		
+	if test "$VERBOSE" = "1"; then
+		echo "------------Testing ANSI SQL compatibility using Aubit 4GL compiler ----------"
+		echo "$FGL : $RESULT"
+		echo ""
+	fi
+		
+}
+
+
 ##
 # Log test descriptiont into Informix-style .unl file
 #
@@ -39,7 +434,8 @@ need_trans=$NEED_TRANSACTION
 no_prefix=$NOPREFIX
 need_compat=$NEED_COMPAT
 old_makefile=$OLD_DESC
-
+sql_features_used="$SQL_FEATURES_USED"
+ansi_sql=$IS_MAKE_ANSI_SQL_COMPAT
 
 #################################
 #Variables still to populate:
@@ -71,6 +467,7 @@ dl="|"
 logfile="$CURR_DIR/docs/catalogue.unl"
 
 if ! test -f $logfile; then
+if test "$UNL_LEGEND" = "1"; then 
 	#on first row print legend
 
 echo "'time'$dl'test_no'$dl'invalid'$dl'is_db'$dl'is_ec'$dl'is_nosilent'$dl'is_tui'\
@@ -81,8 +478,8 @@ $dl'compile_only'$dl'need_ifx_ver'$dl'need_trans'$dl'no_prefix'$dl'need_compat'\
 $dl'old_makefile'$dl'is_pcode_enabled'$dl'is_no_cron'$dl'scripted'\
 $dl'is_window'$dl'test_ver'$dl'run_tests_ver'$dl'last_update'$dl'expect_fail_cert'\
 $dl'expect_fail_esqli'$dl'expect_fail_ecp'$dl'expect_fail_ifx_p'$dl'expect_fail_4js'\
-$dl'expect_fail_querix'$dl" > $logfile
-	
+$dl'expect_fail_querix'$dl'sql_features_used'$dl'ansi_sql'$dl" > $logfile
+fi
 fi
 
 echo "$time$dl$test_no$dl$invalid$dl$is_db$dl$is_ec$dl$is_nosilent$dl$is_tui\
@@ -93,7 +490,7 @@ $dl$compile_only$dl$need_ifx_ver$dl$need_trans$dl$no_prefix$dl$need_compat\
 $dl$old_makefile$dl$is_pcode_enabled$dl$is_no_cron$dl$scripted\
 $dl$is_window$dl$test_ver$dl$run_tests_ver$dl$last_update$dl$expect_fail_cert\
 $dl$expect_fail_esqli$dl$expect_fail_ecp$dl$expect_fail_ifx_p$dl$expect_fail_4js\
-$dl$expect_fail_querix$dl" >> $logfile
+$dl$expect_fail_querix$dl$sql_features_used$dl$ansi_sql$dl" >> $logfile
 
 }
 
@@ -130,16 +527,19 @@ sh_ver=`$SH --version | grep version | awk '{print $4}'`
 dl="|"
 
 if ! test -f $test_run_unl_file; then
+if test "$UNL_LEGEND" = "1"; then
 	#on first row print legend
 echo "'time'$dl'host'$dl'user'$dl'platform'$dl'os_name'$dl'os_version'\
 $dl'flags'$dl'aubit_version'$dl'aubit_build'$dl'comp_version'$dl'total_time'\
-$dl'c_ver'$dl'esql_ver'$dl'db_ver'$dl'make_ver'$dl'sh_ver'$dl" > $test_run_unl_file
-
+$dl'c_ver'$dl'esql_ver'$dl'db_ver'$dl'make_ver'$dl'sh_ver'$dl'LOG_TEXT'$dl" \
+	> $test_run_unl_file
+fi
 fi
 
 echo "$time$dl$host$dl$user$dl$platform$dl$os_name$dl$os_version\
 $dl$flags$dl$aubit_version$dl$aubit_build$dl$comp_version$dl$total_time\
-$dl$c_ver$dl$esql_ver$dl$db_ver$dl$make_ver$dl$sh_ver$dl" >> $test_run_unl_file
+$dl$c_ver$dl$esql_ver$dl$db_ver$dl$make_ver$dl$sh_ver$dl$LOG_TEXT$dl" \
+	>> $test_run_unl_file
 
 }
 
@@ -181,13 +581,13 @@ fi
 dl="|"
 
 if ! test -f $unl_file; then 
-
+if test "$UNL_LEGEND" = "1"; then
 #On first row, print legend
 echo "'date_stamp'$dl'test_no'$dl'result'$dl'skip_reason'$dl'expect_fail'\
 $dl'test_version'$dl'db_has_trans'$dl't_user'$dl't_system'$dl't_elapsed'\
 $dl't_CPU'$dl't_text'$dl't_data'$dl't_inputs'$dl't_outputs'$dl't_major'\
 $dl't_swaps'$dl" > $unl_file
-
+fi
 fi
 
 echo "$time$dl$test_no$dl$result$dl$skip_reason$dl$expect_fail\
@@ -304,47 +704,58 @@ if test "$makefile" = ""; then
 fi
 tmp_out="$makefile.tmp"
 
-	if test "$VERBOSE" = "1" ; then
-		echo "Changing value of $look_for to $change_to in $makefile..."
-	fi
+	TMP_TMP=`cat $makefile | grep $look_for`
+	if test "$TMP_TMP" = ""; then 
+		if test "$VERBOSE" = "1" ; then
+			echo "Adding new setting $look_for as $change_to in $makefile..."
+		fi
+		echo "" >> $makefile
+		echo "$look_for" >> $makefile
+		echo "	@echo \"$change_to\""  >> $makefile
+		echo "" >> $makefile		
+	else
 
-	awk -v look_for="$look_for" -v change_to="$change_to" '
-	BEGIN {
-	}
-	{
-		if (skip_next==1) {
-			skip_next=0
-			next
-		} else {
-			if (look_for==$1) {
-				print
-				print "	@echo \"" change_to "\""
-				skip_next=1
+		if test "$VERBOSE" = "1" ; then
+			echo "Changing value of $look_for to $change_to in $makefile..."
+		fi
+	
+		awk -v look_for="$look_for" -v change_to="$change_to" '
+		BEGIN {
+		}
+		{
+			if (skip_next==1) {
+				skip_next=0
+				next
 			} else {
-				print
+				if (look_for==$1) {
+					print
+					print "	@echo \"" change_to "\""
+					skip_next=1
+				} else {
+					print
+				}
 			}
 		}
-	}
-	' < $makefile > $tmp_out
-	
-	if test "$VERBOSE" = "1" ; then
-		diff $makefile $tmp_out
-		RET=$?
-	else
-		diff $makefile $tmp_out > /dev/null
-		RET=$?
-	fi
-	if test "$RET" = "0"; then 
+		' < $makefile > $tmp_out
+		
 		if test "$VERBOSE" = "1" ; then
-			echo "Nothing changed"
+			diff $makefile $tmp_out
+			RET=$?
+		else
+			diff $makefile $tmp_out > /dev/null
+			RET=$?
 		fi
-	else
-		if test "$VERBOSE" = "1" ; then
-			echo "Changed."
+		if test "$RET" = "0"; then 
+			if test "$VERBOSE" = "1" ; then
+				echo "Nothing changed"
+			fi
+		else
+			if test "$VERBOSE" = "1" ; then
+				echo "Changed."
+			fi
+			mv $tmp_out $makefile
 		fi
-		mv $tmp_out $makefile
 	fi
-
 }
 
 ##

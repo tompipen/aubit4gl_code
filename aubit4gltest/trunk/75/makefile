@@ -6,3 +6,7 @@ compile: r1.4ae
 	
 run: r1.4ae
 	sh ./run_r1
+
+ansi_sql_compat:
+	@echo "1"
+

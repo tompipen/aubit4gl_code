@@ -7,3 +7,7 @@ compile: select.4ae
 	
 run: select.4ae
 	sh ./run_select
+
+ansi_sql_compat:
+	@echo "0"
+

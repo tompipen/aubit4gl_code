@@ -11,3 +11,7 @@ run: prog.4ae
 	
 clean:
 
+
+ansi_sql_compat:
+	@echo "1"
+

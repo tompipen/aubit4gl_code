@@ -6,3 +6,7 @@ compile: g1.4ae
 	
 run: g1.4ae
 	sh ./run_g1
+
+ansi_sql_compat:
+	@echo "1"
+

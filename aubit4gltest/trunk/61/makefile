@@ -7,3 +7,7 @@ compile: match.4ae
 	
 run: match.4ae
 	sh ./run_match
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -251,7 +251,9 @@ for a in $FLAGS; do
 	 exit 0
    fi
    if test "$FIND_WORD" = "1"; then
-	 $FIND . -name "*.4gl" -exec grep -H "$a" {} \;
+   	#-w = whole word -i = ignore case
+	 $FIND . -name "*.4gl" -exec grep -w -i -H "$a" {} \;
+	 $FIND . -name "?akefile" -exec grep -w -i -H "$a" {} \;
 	 exit 0
    fi
    if test "$LIST_CODE" = "1"; then
@@ -263,6 +265,18 @@ for a in $FLAGS; do
 		change_setting "cert_test" "1" "$a"
 		echo "Test $a marked as certified."
 		exit
+	fi
+	
+	if test "$CHECK_ANSI" = "1"; then
+		check_ansi_single $a
+		echo "Test $a ANSI compatibility: $IS_ANSI_COMPATIBLE"
+		exit 0
+	fi
+	
+	if test "$SET_ANSI_TO" != ""; then  
+		change_setting ansi_sql_compat $SET_ANSI_TO $a
+		echo "Test $a - set ansi_sql_compat to $SET_ANSI_TO"
+		exit 0
 	fi
 	
    case $a in
@@ -287,8 +301,29 @@ for a in $FLAGS; do
 			
 			) | fglrun progam.42r
 			exit
-
 			;;
+
+		-verbose)
+			VERBOSE=1
+			;;
+		-check-ansi)
+			if [ $# -gt 1 ]; then
+				#Check SINGLE test for ANSI SQL compatibility
+				CHECK_ANSI=1
+			else
+				#Check ALL tests for ANSI SQL compatibility
+				check_ansi_all
+				exit
+			fi
+			;;
+			
+		-set-ansi-yes)
+			SET_ANSI_TO="1"
+			;;
+		-set-ansi-no)
+			SET_ANSI_TO="0"
+			;;
+			
 		-defaults)
             #If there is a conflict, USER flags will win
 			FLAGS="$DEFAULT_FLAGS $FLAGS"

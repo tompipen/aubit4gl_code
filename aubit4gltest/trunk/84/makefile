@@ -7,3 +7,7 @@ compile: chartst.4ae
 	
 run: chartst.4ae
 	sh ./run_chartst
+
+ansi_sql_compat:
+	@echo "1"
+

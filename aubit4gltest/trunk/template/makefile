@@ -213,5 +213,26 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
+
+#################
+#List here any SQL dialect-specific features that may be incompatible
+#with some database back-ends, like:
+#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE 
+#CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM GRANT RECOVER_TABLE 
+#RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE SELECT_INTO_TEMP 
+#SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS
+#SERIAL ROWID PUT_CURSOR SQL_END_SQL SELECT_RELATIVE
+#...etc...
+#See run_tests script for full list of features the are checked against
+sql_features_used:
+	@echo ""
+
+	
+#################
+#If test is ANSI SQL 92 compatible, set to "1", if not to "0"
+#If unknown, leave empty
+ansi_sql_compat:
+	@echo ""
+
 	
 # ============================= EOF ================================

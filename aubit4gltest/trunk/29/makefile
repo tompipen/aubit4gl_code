@@ -7,3 +7,7 @@ compile: disp.4ae
 	
 run: disp.4ae
 	sh ./run_disp
+
+ansi_sql_compat:
+	@echo "1"
+

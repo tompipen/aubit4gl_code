@@ -6,3 +6,7 @@ compile: rg.4ae
 	
 run: rg.4ae
 	sh ./run_rg
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -12,3 +12,7 @@ run: w.4ae
 clean:
 	rm -f w.log.nodate
 	
+
+ansi_sql_compat:
+	@echo "1"
+

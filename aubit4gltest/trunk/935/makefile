@@ -217,3 +217,7 @@ transaction:
 need_compat:
 	@echo "1"
 # ============================= EOF ================================
+
+ansi_sql_compat:
+	@echo "1"
+

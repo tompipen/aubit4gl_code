@@ -20,7 +20,7 @@ START_TIME=`date +%s`
 . incl/multiple_test_inc.sh
 
 #Make sure we don't have a left-over watcher
-WATCHIT_SH="./watchit.sh"
+WATCHIT_SH="./bin/watchit.sh"
 WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
 
 if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
@@ -258,6 +258,10 @@ for a in $FLAGS; do
         #we already got this one set
         ;;
 
+	-log-text*) #custom text to log to unl file
+		LOG_TEXT=`echo $a | sed -e 's/-log-text=//' | tr "_" " "`
+		;;
+		
 	-loop-10)
 		LOOP_TIMES=10
 		;;
@@ -384,7 +388,7 @@ for a in $FLAGS; do
 		;;
 		
 	-retest-fail) 		#Run only tests that are expected to fail
-		ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
+		RETEST_FAIL=1
 		;;
 		
 	-retest-invalid) #Run only tests that are flaged as invalid
@@ -490,7 +494,7 @@ for a in $FLAGS; do
         fi
 		USE_SQLITE=0; USE_ESQLI=1; export SKIP_EC_RUN=1
 		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql
-		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
+
         ;;
 
     -eci)   		#Use Informix ESQL/C EC output in for db tests
@@ -557,9 +561,6 @@ for a in $FLAGS; do
 		export A4GL_SQLTYPE=pg
 		# This "cascade" drops views when the tables they are based on are dropped
 		export A4GL_USE_CASCADE=Y
-
-		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ECP"
-
 		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
 			if ! test "$NO_ECHO"; then
 				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
@@ -657,7 +658,6 @@ for a in $FLAGS; do
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
         USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=1; ODBC_USE_DB=IFX
 		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=ifxodbc
-		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
 		BLACKLIST_TESTS="$BLACKLIST_TESTS $BLACKLIST_TESTS_IFXODBC"
         ;;
 
@@ -728,8 +728,10 @@ for a in $FLAGS; do
 		#unload rest result to .unl file
 		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
 		U="_"
-		echo "Logging results to file 'results_$HOSTNAME$U$date_stamp.unl'"
-		echo "and 'test_run_$HOSTNAME$U$date_stamp.unl'"
+		if test "$VERBOSE" = "1"; then 
+			echo "Logging results to file 'results_$HOSTNAME$U$date_stamp.unl'"
+			echo "and 'test_run_$HOSTNAME$U$date_stamp.unl'"
+		fi
 		unl_file="$CURR_DIR/results_$HOSTNAME$U$date_stamp.unl"
 		test_run_unl_file="$CURR_DIR/test_run_$HOSTNAME$U$date_stamp.unl"
 		if test "1" = "2"; then 
@@ -823,13 +825,23 @@ for a in $FLAGS; do
     -nolong)           #Skip tests that take a long time to run
         SKIP_LONG=1
         ;;
+		
+	-skip-non-ansi) 	#Skip tests with ANSI SQL incompatible statements
+		SKIP_NON_ANSI=1
+		;;
 	-ifx-p)				#Use Informix P-code compiler instead of Aubit compiler
 		USE_COMP=ifx-p
 		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_IFX"
-		#force Informix compiler to check all SQL for ANSI compliance
-		#I4GL_PC_FLAGS variable used in i4gl.mk
-		I4GL_PC_FLAGS="$I4GL_PC_FLAGS -ansi"
-		export I4GL_PC_FLAGS
+		if test "$FAIL_NON_ANSI" = "1"; then
+			#this is obsolete, use -skip-non-ansi
+			#force Informix compiler to check all SQL for ANSI compliance
+			#(tests 234 256 ...)
+			#NOTE: fglpc will exit with exit code eqial to number of ANSI
+			#warning, so all non-ANSI tests will fail
+			#I4GL_PC_FLAGS variable used in i4gl.mk
+			I4GL_PC_FLAGS="$I4GL_PC_FLAGS -ansi"
+			export I4GL_PC_FLAGS
+		fi
 		if test -f "$IFX_RUNNER" ; then
 			if test "$VERBOSE" = "1"; then
 				echo "Note: using custom runner"
@@ -917,7 +929,7 @@ for a in $FLAGS; do
 	-querix)				#Use Querix compiler instead of Aubit compiler
 		USE_COMP=querix
 		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_QUERIX"
-		#Force Querix compiler to check SQL fro ANSI compliance
+		#Force Querix compiler to check SQL for ANSI compliance
 		#Q4GL_CC_FLAGS variable used in q4gl.mk
 		Q4GL_CC_FLAGS="$Q4GL_CC_FLAGS -ansi"
 		export Q4GL_CC_FLAGS
@@ -1409,6 +1421,40 @@ fi
 #                           Finalise settings
 ##############################################################################
 
+######################
+#define which tests are expected to fail based on database/Aubit options used
+if test "$USE_COMP" = "aubit"; then 
+	#Must be after flags processing to prevent cummulation when overriding switches
+	case $DB_TYPE in
+		#IFX-SE)
+		IFX-OL)
+			if test "$USE_ESQLI" = "1"; then
+				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
+			fi
+			if test "$USE_IFXODBC" = "1"; then		
+				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
+			fi
+			#EXPECT_TO_FAIL_TESTS are actually EXPECT_TO_FAIL_TESTS_ECI, since 
+			#-eci is -cert
+			;;
+		PG-IFX-74)
+			if test "$USE_ECP" = "1"; then 
+				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ECP"
+			#else
+				#must be ODBC? (did that in ODBC section?)
+			fi
+			;;
+		#PG-74)
+		#PG-80)
+		#*)	#Any other database back-end
+	esac
+fi
+
+if test "$RETEST_FAIL" = "1"; then
+	ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
+fi
+
+
 #######################
 #initialise counters
 COUNTER=0
@@ -1416,6 +1462,7 @@ FAIL_CNT=0
 PASS_CNT=0
 SKIP_CNT=0
 SKIP_INVALID_CNT=0
+SKIP_NON_ANSI_CNT=0
 RUN_CNT=0
 EXPECTED_TO_FAIL_CNT=0
 NOT_EXPECTED_TO_FAIL_CNT=0
@@ -1544,6 +1591,7 @@ do
 	IS_FORM_TEST=0
 	IS_BLACKLIST_TEST=0
     IS_LONG_TEST=0
+	IS_MAKE_ANSI_SQL_COMPAT=""
     IS_CERT_TEST=0
     IS_OBSOLETE_TEST=0
     IS_INVALID_TEST=0
@@ -1615,14 +1663,17 @@ do
 		compat_test=`$MAKE -s -C $TEST_NO compat_test 2>/dev/null`
 		IS_UNKNOWN_TEST=`$MAKE -s -C $TEST_NO unknown_test 2>/dev/null`
 		EXPECT_CODE=`$MAKE -s -C $TEST_NO expect_code 2>/dev/null`
-		SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
+		if test "$IS_DB_TEST" = "1"; then 
+			SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
+			SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
+			NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
+			NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
+		fi
+			
 		if test "$EXPECT_CODE" = "" ; then
 			EXPECT_CODE=0
 		fi
 		COMPILE_ONLY=`$MAKE -s -C $TEST_NO compile_only 2>/dev/null`
-		NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
-		
-		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
 		NOPREFIX=`$MAKE -s -C $TEST_NO noprefix 2>/dev/null`
 		if test "$NOPREFIX" = "1" ; then
 			export A4GL_NAMESPACE=" "
@@ -1733,6 +1784,11 @@ do
 			done
 	fi #IS_DESCRIBED
 
+	if test "$IS_DB_TEST" = "1"; then 
+		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
+	fi
+
+	
 		#Test information that is allways held only in this script, and NOT
 		#in makefiles	
 		for b in $EXPECT_TO_FAIL_TESTS; do
@@ -1822,6 +1878,30 @@ do
 			if test "$IS_DB_TEST" = "1"; then
 				echo "Test needs database"
 				IS_DB_TEST_CNT=`(expr $IS_DB_TEST_CNT + 1) 2>/dev/null`
+				if test "$SE_REQUIRED" = "1"; then
+					echo "Test requires Informix SE RDBMS"
+					IS_SE_REQUIRED_CNT=`(expr $IS_SE_REQUIRED_CNT + 1) 2>/dev/null`
+				fi
+				if test "$NEED_TRANSACTION" = "2" ; then
+					echo "Database MUST NOT have transactions enabled for this test."
+				fi
+				if test "$NEED_TRANSACTION" = "1" ; then
+					echo "Database MUST have transactions enabled for this test."
+				fi
+				if test "$IS_MAKE_ANSI_SQL_COMPAT" != ""; then
+					if test "$IS_MAKE_ANSI_SQL_COMPAT" = "1"; then
+						echo "Is ANSI SQL 92 compatible"
+					else
+						echo "Is __NOT__ ANSI SQL 92 compatible"
+					fi
+				fi
+				if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
+					echo "Needs at least version $NEED_IFX_VERSION of Informix 4gl."
+				fi
+				if test "$SQL_FEATURES_USED" != ""; then 
+					echo "Uses SQL statemets features: $SQL_FEATURES_USED"
+				fi
+				
 			fi
 			if test "$ec_test" = "1"; then
 				echo "Uses/require ESQL compiler output, instead of C output"
@@ -1830,10 +1910,6 @@ do
 			if test "$IS_NOSILENT_TEST" = "1"; then
 				echo "Test will fail if not running on screen (curses)"
 				IS_NOSILENT_CNT=`(expr $IS_NOSILENT_CNT + 1) 2>/dev/null`
-			fi
-			if test "$SE_REQUIRED" = "1"; then
-				echo "Test requires Informix SE RDBMS"
-				IS_SE_REQUIRED_CNT=`(expr $IS_SE_REQUIRED_CNT + 1) 2>/dev/null`
 			fi
 			if test "$IS_TUI_TEST" = "1"; then
 				echo "Test uses curses and/or screeen dump and may fail when TERM!=xterm"
@@ -1886,27 +1962,15 @@ do
 				echo "Test is clasified as UNKNOWN - please corect this."
 				UNKNOWN_TEST_CNT=`(expr $UNKNOWN_TEST_CNT + 1) 2>/dev/null`			
 				echo ""
-			fi		
-
-			if test "$NEED_TRANSACTION" = "2" ; then
-			echo "Database MUST NOT have transactions enabled for this test."
-		fi
-		if test "$NEED_TRANSACTION" = "1" ; then
-			echo "Database MUST have transactions enabled for this test."
-		fi
-
-		if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
-			echo "Needs at least version $NEED_IFX_VERSION of Informix 4gl."
-		fi
-
-		echo ""
-		if test "$INFO_TEST" = "1"; then
-			if test "$CATALOGUE_UNL" = "1"; then 
-				catalogue_unl
 			fi
-			continue
+			echo ""
+			if test "$INFO_TEST" = "1"; then
+				if test "$CATALOGUE_UNL" = "1"; then 
+					catalogue_unl
+				fi
+				continue
+			fi
 		fi
-	fi
 
 	if test "$SH_DBG" = "1"; then 
 		echo "Determining if we can/should run test $TEST_NO"
@@ -1922,12 +1986,25 @@ do
 		fi
         continue
     fi
+	if [ ! -f $CURR_DIR/$TEST_NO/?akefile ]; then
+		SKIP_REASON="no Makefile - mark it invalid"
+		SKIP_REASON_CODES="$SKIP_REASON_CODES 18"
+		SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $TEST_NO"
+		IS_INVALID_TEST=1
+	fi
 	if test "$IS_INVALID_TEST" = "1"; then
 		SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
 		SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
 		SKIP_REASON="invalid test"
 		SKIP_REASON_CODES="$SKIP_REASON_CODES 1"
 	else
+	
+		if test "$SKIP_NON_ANSI" = "1" -a "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
+			SKIP_NON_ANSI_CNT=`(expr $SKIP_NON_ANSI_CNT + 1) 2>/dev/null`
+			SKIP_NON_ANSI_LIST="$SKIP_NON_ANSI_LIST $TEST_NO"
+			SKIP_REASON="not ANSI SQL compatible"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 66"
+		fi
 		if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
 			if test "$USE_COMP" = "ifx-p"; then
 				set `echo $NEED_IFX_VERSION | sed -e 's/\./ /g'` #@echo "7.31"
@@ -2027,11 +2104,6 @@ do
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 17"
 			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
 	    fi
-		if [ ! -f $CURR_DIR/$TEST_NO/?akefile ]; then
-			SKIP_REASON="no Makefile - mark it invalid"
-			SKIP_REASON_CODES="$SKIP_REASON_CODES 18"
-			SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $TEST_NO"
-		fi
 		if test "$USE_COMP" != "aubit"; then
 			if test "$USE_COMP" = "4js-p"; then
 				TMP1=""
@@ -2145,6 +2217,96 @@ do
 				fi
 			fi
 		fi
+		if test "$SQL_FEATURES_USED" != ""; then 
+			#Check for incompatible SQL dialect features (tests 234 256 ...)
+			
+			#Statments/features that are inherently Informix-only
+			SQL_INCOMPAT_NON_IFX="ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM \
+				CREATE_TEMP_TABLE CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM \
+				GRANT RECOVER_TABLE RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE \
+				SELECT_INTO_TEMP SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS"
+
+#Free cursor: 587 589
+#Set explain : 590 591
+#Database exclusive: 550 
+#Tests that use Alter table, Drop table, check, close database, primary key, distinct, references, create synonim, foreign key, rename column, drop trigger, set constraint, start database, set log, rollforward database, default, create/drop database, cluster index, lock table: 536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 597 599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797
+				
+				
+			#What about:
+			#WITH_NO_LOG (select ... into temp WITH NO LOG - anything else?)
+			#PUT_CURSOR (PUT cursor [FROM ...])
+			#SQL_END_SQL (SQL ... END SQL block)
+			#SELECT_RELATIVE (SELECT FIRST ... etc.)
+
+			#Statments not supported by 4Js ODI on non-Informix databases (all?)
+			SQL_INCOMPAT_4JS="$SQL_INCOMPAT_NON_IFX"
+				
+			#Statements incompatible uisng Aubit in PG EC mode against 
+			#Informix compatibility patched PG engine
+			SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_INCOMPAT_NON_IFX SERIAL ROWID PUT_CURSOR"
+	
+			#Statements incompatible uisng Aubit in PG EC mode against 
+			#vanilla (not patched) PG engine V 7.4
+			SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+			
+			#Statements incompatible uisng Aubit in C mode (ODBC) against 
+			#vanilla (not patched) PG engine V 7.4
+			SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+	
+			case $DB_TYPE in
+			
+				IFX-SE)
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: IFX-SE - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				IFX-OL)
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: IFX-OL - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				PG-IFX-74)
+					for a in $SQL_FEATURES_USED; do
+						for b in $SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED; do
+							if test "$a" = "$b"; then
+								INCOMPAT_SQL_LIST="$INCOMPAT_SQL_LIST $a"
+							fi
+						done
+					done
+					;;
+					
+				PG-74)
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: PG-74 - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				PG-80)
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: PG-80 - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+				*)	#Any other database back-end
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: other back-end ($DB_TYPE) - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+			esac
+			
+			if test "$INCOMPAT_SQL_LIST" != ""; then 
+				SKIP_INCOPAT_SQL_LIST="$SKIP_INCOMPAT_SQL_LIST $TEST_NO"
+				SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
+			fi
+		fi
+		
 	fi #IS_INVALID_TEST
 	
 	if test "$NO_SKIP" != "1"; then
@@ -2631,15 +2793,19 @@ fi
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
 	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
 	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
-	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST"
+	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 if test "$VERBOSE_RESULTS" = "1"; then
-
 	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
 		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $LOGFILE
 	fi
-
+	if test "$SKIP_NON_ANSI_LIST" != ""; then	
+		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $LOGFILE	
+	fi
+	if test "$SKIP_INCOPAT_SQL_LIST" != "" ; then 
+		echo "Skipped incompatible SQL: $SKIP_INCOPAT_SQL_LIST" >> $LOGFILE
+	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
 		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $LOGFILE
 	fi

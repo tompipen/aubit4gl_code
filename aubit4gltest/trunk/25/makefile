@@ -10,3 +10,7 @@ run: xrpt.4ae
 clean:
 	rm -f xjunk xok
 	
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,9 @@ compile: fgldrawbox.4ae
 	
 run: fgldrawbox.4ae
 	sh ./run_fgldrawbox
+
+
+
+ansi_sql_compat:
+	@echo "1"
+

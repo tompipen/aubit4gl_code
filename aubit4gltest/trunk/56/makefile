@@ -7,3 +7,7 @@ compile: testk.4ae
 	
 run: testk.4ae
 	sh ./run_testk
+
+ansi_sql_compat:
+	@echo "1"
+

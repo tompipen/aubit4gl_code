@@ -7,3 +7,7 @@ compile: test_267.4ae
 run: compile
 	sh run_test_267
 	
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -8,3 +8,7 @@ compile: decdiv.4ae
 	
 run: decdiv.4ae
 	sh ./run_decdiv
+
+ansi_sql_compat:
+	@echo "1"
+

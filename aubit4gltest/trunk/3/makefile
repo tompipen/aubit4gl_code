@@ -8,3 +8,9 @@ compile: menu1.4ae
 	
 run: menu1.4ae
 	sh ./run_menu1
+
+
+
+ansi_sql_compat:
+	@echo "1"
+

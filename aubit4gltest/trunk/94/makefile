@@ -7,3 +7,7 @@ compile: desc.4ae
 	
 run: desc.4ae
 	sh ./run_desc
+
+ansi_sql_compat:
+	@echo "0"
+

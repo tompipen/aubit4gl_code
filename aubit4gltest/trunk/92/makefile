@@ -12,3 +12,7 @@ run: test_271.4ae
 clean:
 	rm -f 271.errlog
 	
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -6,3 +6,7 @@ compile: zero.4ae
 run: compile
 	sh run_zero
 	
+
+ansi_sql_compat:
+	@echo "1"
+

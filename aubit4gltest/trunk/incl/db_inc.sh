@@ -123,7 +123,7 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 			fi
 		fi
     fi
-	if test "$USEERNAME" != "informix"; then 
+	if test "$USEERNAME" != "informix" -a "$VERBOSE" = "1"; then
 		echo "WARNING: you are not logged in as Informix super user (informix) but"
 		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"
 		echo "WARNING: to execute 'ontape' utility program (for switching logging mode)"
@@ -153,6 +153,11 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 		echo "WARNING: INFORMIXDIR and/or ONCONFIG are empty"
 		echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"
 	fi
+	
+	#TODO: determine actual DB_TYPE
+	#DB_TYPE="IFX-SE"
+	DB_TYPE="IFX-OL"
+	
 	
     if test "$NEW_IFMX" = "1"; then
         exit
@@ -384,6 +389,11 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 	if test "$VERBOSE" = "1"; then 
 		echo "INFO: PG server reported version $PG_VERSION"
 	fi
+	
+	#TODO: determine DB_TYPE from actual version number
+	DB_TYPE="PG-IFX-74"
+	#DB_TYPE="PG-74"
+	#DB_TYPE="PG-80"
 
 	#> You should also initdb with --locale='C' if you want index's to be used
 	#> when comparing an indexed column with a string.

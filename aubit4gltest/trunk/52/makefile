@@ -7,3 +7,7 @@ compile: like.4ae
 	
 run: like.4ae
 	sh ./run_like
+
+ansi_sql_compat:
+	@echo "1"
+

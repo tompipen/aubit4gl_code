@@ -11,3 +11,7 @@ run: all
 	
 clean:
 	rm -f rpc_client rpc_server
+
+ansi_sql_compat:
+	@echo "1"
+

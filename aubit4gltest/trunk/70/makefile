@@ -12,3 +12,7 @@ run: arr3a.4ae
 clean:
 	rm -f out1
 	
+
+ansi_sql_compat:
+	@echo "1"
+

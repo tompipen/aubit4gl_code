@@ -11,3 +11,7 @@ run: r1.4ae
 clean:
 	rm -f p.rpt
 	
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,7 @@ compile: p1.4ae
 	
 run: p1.4ae
 	sh ./run_p1
+
+ansi_sql_compat:
+	@echo "1"
+

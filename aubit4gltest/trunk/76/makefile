@@ -7,3 +7,7 @@ compile: datetime.4ae
 	
 run: datetime.4ae
 	sh ./run_datetime
+
+ansi_sql_compat:
+	@echo "0"
+

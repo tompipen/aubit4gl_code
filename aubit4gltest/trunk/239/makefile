@@ -17,3 +17,7 @@ clean:
 run: prog.4ae
 	export A4GL_KEYFILE=keys.in ; ./prog.4ae
 	
+
+ansi_sql_compat:
+	@echo "1"
+

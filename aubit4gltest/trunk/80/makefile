@@ -12,3 +12,7 @@ run: t.4ae
 clean:
 	rm -f t.out.nodate
 	
+
+ansi_sql_compat:
+	@echo "0"
+

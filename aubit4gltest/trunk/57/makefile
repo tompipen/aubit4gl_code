@@ -7,3 +7,7 @@ compile: ia.4ae
 	
 run: ia.4ae
 	sh ./run_ia
+
+ansi_sql_compat:
+	@echo "1"
+

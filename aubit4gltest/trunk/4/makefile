@@ -7,3 +7,7 @@ compile: prompt_err.4ae
 	
 run: prompt_err.4ae
 	sh ./run_prompt_err
+
+ansi_sql_compat:
+	@echo "1"
+

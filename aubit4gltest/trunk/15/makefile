@@ -9,3 +9,7 @@ compile: prompt.4ae
 	
 run: prompt.4ae
 	sh ./run_prompt
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,7 @@ compile: fgldb.4ae
 	
 run: fgldb.4ae
 	sh ./run_fgldb
+
+ansi_sql_compat:
+	@echo "1"
+

@@ -7,3 +7,7 @@ compile: m.4ae
 	
 run: m.4ae
 	sh ./run_m
+
+ansi_sql_compat:
+	@echo "1"
+

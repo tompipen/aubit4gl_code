@@ -12,3 +12,7 @@ clean:
 
 
 
+
+ansi_sql_compat:
+	@echo "1"
+

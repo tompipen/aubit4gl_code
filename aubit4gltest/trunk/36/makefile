@@ -12,3 +12,7 @@ compile: temp.4ae
 #run: temp_ec.4ae temp_c.4ae
 run: temp.4ae
 	sh ./run_temp
+
+ansi_sql_compat:
+	@echo "0"
+

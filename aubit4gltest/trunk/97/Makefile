@@ -6,3 +6,7 @@ compile: testna.4ae
 	
 run: testna.4ae
 	sh ./run_testna
+
+ansi_sql_compat:
+	@echo "1"
+

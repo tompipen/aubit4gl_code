@@ -8,3 +8,7 @@ compile: v.4ae
 	
 run: v.4ae
 	sh ./run_v
+
+ansi_sql_compat:
+	@echo "1"
+

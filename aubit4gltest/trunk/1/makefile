@@ -6,3 +6,9 @@ compile: simple_null.4ae
 	
 run: simple_null.4ae
 	sh ./run_simple_null
+
+
+
+ansi_sql_compat:
+	@echo "0"
+
