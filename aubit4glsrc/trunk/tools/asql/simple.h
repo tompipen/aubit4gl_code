@@ -19,7 +19,10 @@
 #define KW_LOAD 275
 #define KW_UNLOAD 276
 #define KW_DELIMITER 277
-
+#define KW_INFO_COL 278
+#define KW_INFO_STAT 279
+#define KW_INFO_IDX 280
+#define KW_INFO_TABLES 281
 
 
 struct element {

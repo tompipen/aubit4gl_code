@@ -40,6 +40,10 @@ sh make_simple
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cp lib/*.so /home/aubit4gl/aubit4gl/lib
 cp incl/*.h /home/aubit4gl/aubit4gl/incl
+cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/asql
+make asql_i.4ae
+make asql_p.4ae
+cp asql_i.4ae asql_p.4ae  /home/aubit4gl/aubit4gl/bin
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr
 
