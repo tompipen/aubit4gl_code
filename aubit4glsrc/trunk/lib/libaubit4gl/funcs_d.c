@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.33 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.34 2004-07-11 09:46:51 mikeaubury Exp $
 #
 */
 
@@ -414,7 +414,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
   char rep_digit[] = "*&#<-+()$";
   char buff[800];
   int isneg = 0;
-  int a, b;
+  int a, variable_called_b;
   int isprnt = 0;
   double ad;
 
@@ -473,7 +473,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
   sprintf (number, "%64.32f", num);
   number[31] = 0;
   strcpy (str, fmt);
-  b = 30;
+  variable_called_b = 30;
   isprnt = 1;
 
   // first, ensure the format string is wide enough to hold the number
@@ -497,9 +497,9 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	  d_cnt++;
 	a++;
       }
-	A4GL_debug("ptr1=%s b=%d",ptr1,b);
+	A4GL_debug("ptr1=%s b=%d",ptr1,variable_called_b);
     // count the digits in the integer part of the number
-    for (a = b; (a > 0 && ptr1[a] != ' '); a--)
+    for (a = variable_called_b; (a > 0 && ptr1[a] != ' '); a--)
       n_cnt++;
 
 A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
@@ -549,10 +549,10 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
     {
       if (a_strchr (rep_digit, fm1[a]))
 	{
-	  if (((ptr1[b] == '0' && ptr1[b - 1] == ' ') || ptr1[b] == ' ')
-	      && isprnt == 1)
-	    isprnt = 0;
-	  str[a] = ptr1[b--];
+	if (variable_called_b>=0) {
+	  if (((ptr1[variable_called_b] == '0' && ptr1[variable_called_b - 1] == ' ') || ptr1[variable_called_b] == ' ') && isprnt == 1) isprnt = 0;
+	}
+	  str[a] = ptr1[variable_called_b--];
 	  if (!isprnt)
 	    {
 	      if (fm1[a] == '#')
@@ -630,7 +630,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	}
       else
 	{
-	  if (ptr1[b] == ' ' && str[a] == ',')
+	  if (ptr1[variable_called_b] == ' ' && str[a] == ',')
 	    {
 	      if (fm1[a + 1] == '<')
 		{
@@ -643,7 +643,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    }
 	}
     }
-  b = 0;
+  variable_called_b = 0;
 
   for (a = 0; a < strlen (fm2); a++)
     {
@@ -663,7 +663,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 		}
 	    }
 
-	  str[a + strlen (fm1) + 1] = ptr2[b++];
+	  str[a + strlen (fm1) + 1] = ptr2[variable_called_b++];
 	}
       else
 	{
@@ -680,7 +680,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
   // shift the output to the left
   if (ptr)
     {
-      b = 0;
+      variable_called_b = 0;
       for (a = 0; a < strlen (str); a++)
 	{
 	  if (str[a] == '<')
@@ -691,9 +691,9 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    }
 	  if (!isneg && str[a] == '-' && str[a + 1] == '<')
 	    continue;
-	  buff[b++] = str[a];
+	  buff[variable_called_b++] = str[a];
 	}
-      buff[b] = 0;
+      buff[variable_called_b] = 0;
       strcpy (str, buff);
     }
 

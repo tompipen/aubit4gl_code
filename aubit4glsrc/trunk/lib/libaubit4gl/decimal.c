@@ -135,8 +135,12 @@ A4GL_trim(str);
   /* We should now have two strings - head and tail */
   
   head_i=atoi(head);
-  
+  A4GL_debug("digits=%d decimals=%d\n",digits,decimals);
+	
   head_len=digits-decimals;
+	if (head_len<0) {
+		A4GL_assertion(1, "Head_len <0 - do we have a decimal(1) [== decimal(1,2)] ?");
+	}
   tail_len=decimals;
 
   if (strlen(head)>digits-decimals) {
@@ -168,7 +172,10 @@ A4GL_trim(str);
 		if (tail[round_cnt]>'9') tail[round_cnt]='0';
   }
 
-  if (carry) head_i++;
+  if (carry) {
+		
+		head_i++;
+	}
 
   tail[decimals]=0;
   A4GL_debug("head_len=%d",head_len);

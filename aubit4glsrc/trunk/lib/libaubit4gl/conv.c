@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.80 2004-06-25 21:56:56 mikeaubury Exp $
+# $Id: conv.c,v 1.81 2004-07-11 09:46:51 mikeaubury Exp $
 #
 */
 
@@ -2416,14 +2416,20 @@ int A4GL_vctoc (void *a, void *b, int size) {
 }
 
 int A4GL_vctovc (void *a, void *b, int size) {
-	memset(b,0,size);
+	char *x;
+	x=b;
+	memset(b,0,size+1);
 	strncpy(b,a,size);
+	x[size]=0;
 	return 1;
 }
 
 int A4GL_ctovc (void *a, void *b, int size) {
-	memset(b,0,size);
+	char *x;
+	x=b;
+	memset(b,0,size+1);
 	strncpy(b,a,size);
+	x[size]=0;
 	return 1;
 }
 

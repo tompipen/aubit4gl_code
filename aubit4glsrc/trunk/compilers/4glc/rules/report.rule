@@ -25,6 +25,10 @@ start_cmd : START_REPORT rep_name TO_PRINTER  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("C","\"\"",$<str>2);
 			}
+	    | START_REPORT rep_name {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("","\"\"",$<str>2);
+			}
 ;
 
 
