@@ -58,9 +58,10 @@ end function
 function do_disconnect()
 	whenever error continue
 	close database
-	call check_and_report_error()
+	if check_and_report_error() then
 	call set_curr_db("")
 	call display_banner()
+	end if
 end function	
 
 

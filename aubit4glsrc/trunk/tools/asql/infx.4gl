@@ -1023,18 +1023,22 @@ let lv_curr_db=get_db();
 code
 {
 #define MAXDBS 100
-#define FASIZ (MAXDBS * 128)
+#define FASIZ (MAXDBS * 256)
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
-
- sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
-
+ndbs=0;
+sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
 endcode
 
 if sqlca.sqlcode!=0 then
-        call check_and_report_error()
-        return
+	error "Some error getting databases"
+	sleep 1
+        if check_and_report_error() then
+        	return
+	end if
 end if
+error "OK - got : ",ndbs," databases"
+sleep 1
 for a=1 to ndbs
 code
         strcpy(lv_name,dbsname[a-1]);
@@ -1063,7 +1067,9 @@ if lv_newname is not null and lv_newname not matches " " then
                 call display_banner()
                 message "Database Opened" 
         else
-                call check_and_report_error()
+                if check_and_report_error() then
+			return
+		end if
         end if
 end if
 
@@ -1093,8 +1099,9 @@ char            dbsarea[FASIZ];
 endcode
 
 if sqlca.sqlcode!=0 then
-        call check_and_report_error()
+        if check_and_report_error() then
         return
+	end if
 end if
 for a=1 to ndbs
 code
@@ -1131,7 +1138,9 @@ if lv_newname is not null and lv_newname not matches " " then
                                 call display_banner()
                                 message "Database dropped..."
                         else
-                                call check_and_report_error()
+                                if check_and_report_error() then
+					exit menu
+				end if
                         end if
                         exit menu
                 command "NO" "Don't drop it"

@@ -942,7 +942,9 @@ endcode
         else
 		message "Database not opened..." attribute(reverse)
 		sleep 1
-                call check_and_report_error()
+                if check_and_report_error() then
+			return
+		end if
         end if
 end if
 
@@ -972,8 +974,9 @@ endcode
 
 let ndbs=0
 if sqlca.sqlcode!=0 then
-        call check_and_report_error()
+        if check_and_report_error() then
         return
+	end if
 end if
 for a=1 to ndbs
 code
@@ -1012,7 +1015,9 @@ if lv_newname is not null and lv_newname not matches " " then
                                 call display_banner()
                                 message "Database dropped..."
                         else
-                                call check_and_report_error()
+                                if check_and_report_error() then
+					exit menu
+				end if
                         end if
                         exit menu
                 command "NO" "Don't drop it"
