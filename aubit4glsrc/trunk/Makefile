@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.5 2004-12-25 00:31:31 afalout Exp $
+# $Id: Makefile,v 1.6 2004-12-25 07:41:22 afalout Exp $
 #
 
 ## ==================================================================
@@ -616,8 +616,27 @@ endif
 #Check that 'make install' installed everything we expect, and not things
 #we dont expect/want:
 install.check:
-	${SH} bin/4glpc.obsolete -chk-install
+ifeq "${COMSPEC}" ""
+	export MAKINGAUBIT=0; ${SH} bin/4glpc.obsolete -chk-install
+else
+	export MAKINGAUBIT=0; ${SH} bin/4glpc.obsolete -chk-install
+endif
+
+########################
+#Check that Winsows setup  installed everything we expect, and not things
+install.check.winsetup: winsetup install.winsetup.silent install.check.winsetup.compare
+	@echo "WinSetup checks OK"
 	
+install.check.winsetup.compare:
+	export MAKINGAUBIT=0; export INSTALLDIR="d:/tmp/aubit4gl-silent" ;${SH} bin/4glpc.obsolete -chk-install
+
+########################
+#Check that RPM installed everything we expect, and not things
+install.check.rpm:
+	export MAKINGAUBIT=0; export INSTALLDIR="xxyyzz" ;${SH} bin/4glpc.obsolete -chk-install
+	
+	
+########################
 #install compiler core files
 install.core: install.tree
 	${CP} $(TOBIN) $(BIN_DEST)

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.56 2004-12-22 11:22:18 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.57 2004-12-25 07:42:31 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -229,6 +229,23 @@ ANYDAY=1
 
 #Name for download page when uploading to download web server:
 DOWNLOADPAGEBASE=aubitdownload.htm
+
+
+#######################
+#Get the full path/filename to auto_sf_scp script so we
+#can fo a grep on it:
+the_script="`type auto_sf_scp | sed -e 's/[()]//g' | awk '{print $3}'`"
+if ! test -f $the_script ; then
+	the_script="`type auto_sf_scp | sed -e 's/[()]//g' | awk '{print $4}'`"
+	if ! test -f $the_script ; then
+		echo "cant get filename for auto_sf_scp ($the_script)" 
+		type auto_sf_scp
+	fi
+fi
+#Extract the TIMEOUT value out of the script
+timeout="`grep timeout $the_script | awk '{print $3}'`"
+
+CHECK_SIZE_AFTER_UPLOAD=1
 
 ## ==================================================================
 ##                      Platform dependent Configuration
@@ -497,6 +514,7 @@ function compare_size () {
 UP_FILE="$1"
 LOCAL_FILE="$2"
 UP_URLENCODED="$3"
+SIZE_COMPARES_OK=0
 
 	if test "$UP_URLENCODED" = ""; then 
 		HTTP_FILE="$HTTP_FILES_URL/$UP_FILE"
@@ -552,6 +570,7 @@ UP_URLENCODED="$3"
 			compare_files "$UP_FILE" "$LOCAL_FILE" "$UP_URLENCODED"
 		fi
 	else
+		SIZE_COMPARES_OK=1
 		if [ "$VERBOSE" = "1" ]; then
 			echo "Size compares OK:"
 		echo "$LOCAL_FILE"
@@ -1262,36 +1281,57 @@ function func_get_files () {
 function do_upload () {
 #############################
 the_file="$1"
+UP_FILE="$2"
+UP_URLENCODED="$3"
+
+#Do NOT single-quote file names to auto_sf_scp!
+	do_retry=0
+	MAX_RETRY=3
+	RETRY_CNT=0
+	while [ "1" = "1" ] ; do
+		upload_file $the_file
+		if test "$VERBOSE" = "1"; then
+			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."
+		fi
+		if test "$TOOK_TIME" -gt "$timeout"; then
+			echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."	
+			echo "WARNING: did 'expect' timeout kill scp?"
+			do_retry=1
+		fi
+
+		if test "$CHECK_SIZE_AFTER_UPLOAD" = "1"; then 
+			compare_size $UP_FILE $the_file $UP_URLENCODED
+			if test "$SIZE_COMPARES_OK" != "1"; then
+				do_retry=1
+			fi
+		fi
+		
+		if test "$do_retry" = "1"; then
+			if test "$MAX_RETRY" = "$RETRY_CNT"; then
+				echo "Reached maximum number of upload retries ($MAX_RETRY) - giving up."
+				echo "Upload of $the_file failed"
+				break
+			fi
+			let RETRY_CNT=RETRY_CNT+1
+		else
+			break
+		fi
+
+	done
+}
+
+#############################
+function upload_file () {
+#############################
+the_file="$1"
 #Do NOT single-quote file names to auto_sf_scp!
 
 	START_TIME=`date +%s`
 	EXEC="$AUTO_SF_SCP $the_file"; runexec
 	EXIT_TIME=`date +%s`
-	#let TOOK_TIME=EXIT_TIME - START_TIME
 	let TOOK_TIME=EXIT_TIME-START_TIME
 
-#	if test "$VERBOSE" = "1"; then
-
-#winsetup took 6769.1 seconds to upload	
-		the_script="`type auto_sf_scp | sed -e 's/[()]//g' | awk '{print $3}'`"
-		if ! test -f $the_script ; then
-			the_script="`type auto_sf_scp | sed -e 's/[()]//g' | awk '{print $4}'`"
-			if ! test -f $the_script ; then
-				echo "cant get filename for auto_sf_scp ($the_script)" 
-				type auto_sf_scp
-				return
-			fi
-		fi
-		timeout="`grep timeout $the_script | awk '{print $3}'`"
-		echo "Upload of $the_file took $TOOK_TIME seconds (timeout=$timeout)."
-		#if test "$timeout" -lt "$TOOK_TIME" -o 
-		if test "$timeout" = "$TOOK_TIME"; then
-			echo "WARNING: did 'expect' timeout kill scp?"
-		fi
-#	fi
-	
 }
-
 
 
 ##########################
@@ -1304,23 +1344,26 @@ function func_upload () {
 			echo "In func_upload()"
 		fi
 		
-		do_upload "$SOURCETARNAME"
+		#function do_upload () { the_file="$1" UP_FILE="$2" UP_URLENCODED="$3"
+
+		do_upload "$SOURCETARNAME" "$SOURCETARBASENAME"
 		
 		if test "$TARBALL" != "NONE" -a "$TARBALL" != ""; then
-			do_upload "$TARBALL"
+			do_upload "$TARBALL" "$TARBALLBASENAME"
 		fi
 
         if test "$SOURCERPM" != ""; then
-			do_upload "$SOURCERPM"
+			do_upload "$SOURCERPM" "$SOURCERPMBASENAME"
         fi
         if test "$BINRPM" != "" ; then
-			do_upload "$BINRPM"
+			do_upload "$BINRPM" "$BINRPMBASENAME"
         fi
 
 		if test "$WINSETUPEXE" != ""; then
-			do_upload "$WINSETUPEXE"
+			do_upload "$WINSETUPEXE" "$WINSETUPEXE_BASENAME" "$WINSETUPEXE_BASENAME_URLENCODE"
         fi
 
+		CHECK_SIZE_AFTER_UPLOAD=0
 		if [ "$COMSPEC" = "" ]; then
 			do_upload "$UNIXSRCBUILDNAMES"
 			do_upload "$UNIXBUILDNAMES"
@@ -1332,10 +1375,25 @@ function func_upload () {
 	    #upload html page last, so if we fail before, nothing is changed
 		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
 		do_upload "$DOWNLOADPAGEBASE"
-		
+		CHECK_SIZE_AFTER_UPLOAD=1
 	fi
 }
 
+######################################
+function do_compare () {
+######################################
+BASENAME="$1" 
+FULLFILENAME="$2"
+BASENAME_URLENCODE="$3"
+
+		if test "$COMPARE_SIZE" = "1"; then
+			compare_size "$BASENAME" "$FULLFILENAME" "$BASENAME_URLENCODE"
+		else
+			rm -f /tmp/$BASENAME
+			compare_files "$BASENAME" "$FULLFILENAME" "$BASENAME_URLENCODE"
+		fi
+
+}
 
 ######################################
 function func_compare_uploaded () {
@@ -1352,59 +1410,29 @@ if test "$COMPARE" = "1"; then
 
 	#source tarball
 	if test "$SOURCETARBASENAME" != ""; then
-		rm -f /tmp/$SOURCETARBASENAME
-		if test "$COMPARE_SIZE" = "1"; then
-			compare_size "$SOURCETARBASENAME" "$SOURCETARNAME"
-		else
-			compare_files "$SOURCETARBASENAME" "$SOURCETARNAME"
-		fi
+		do_compare "$SOURCETARBASENAME" "$SOURCETARNAME"
     fi
 
 	#binary tarball
 	if test "$TARBALLBASENAME" != "" -a "$TARBALL" != "NONE"; then
-		rm -f /tmp/$TARBALLBASENAME
-		if test "$COMPARE_SIZE" = "1"; then
-			compare_size "$TARBALLBASENAME" "$TARBALL"
-		else
-			compare_files "$TARBALLBASENAME" "$TARBALL"
-		fi
+		do_compare "$TARBALLBASENAME" "$TARBALL"
     fi
 
 	#Windows setup executable
 	if test "$WINSETUPEXE" != ""; then
-		rm -f "/tmp/$WINSETUPEXE_BASENAME"
-		if test "$COMPARE_SIZE" = "1"; then
-			#compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE"
-			#compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE_ESC"
-			#compare_size "$WINSETUPEXE_URLENCODE" "$WINSETUPEXE_BASENAME"
-			#compare_size "$WINSETUPEXE_URLENCODE" "$WINSETUPEXE"
-			#compare_size "$WINSETUPEXE_BASENAME_URLENCODE" "$WINSETUPEXE"
-			compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE" "$WINSETUPEXE_BASENAME_URLENCODE"
-		else
-			compare_files "$WINSETUPEXE_BASENAME" "$WINSETUPEXE" "$WINSETUPEXE_BASENAME_URLENCODE"
-		fi
+		do_compare "$WINSETUPEXE_BASENAME" "$WINSETUPEXE" "$WINSETUPEXE_BASENAME_URLENCODE"
     fi
 
 	#RPMs - source & binary
 	if test "$RPM" = "1"; then
 		if test "$SOURCERPM" != ""; then
 			#Source RPM
-			rm -f /tmp/$SOURCERPMBASENAME
-			if test "$COMPARE_SIZE" = "1"; then
-				compare_size "$SOURCERPMBASENAME" "$SOURCERPM"
-			else
-				compare_files "$SOURCERPMBASENAME" "$SOURCERPM"
-			fi
+			do_compare "$SOURCERPMBASENAME" "$SOURCERPM"
 		fi
 
 		if test "$BINRPM" != "" ; then
 			#Binary RPM
-			rm -f /tmp/$BINRPMBASENAME
-			if test "$COMPARE_SIZE" = "1"; then
-				compare_size "$BINRPMBASENAME" "$BINRPM"
-			else
-				compare_files "$BINRPMBASENAME" "$BINRPM"
-			fi
+			do_compare "$BINRPMBASENAME" "$BINRPM"
 		fi
     fi
 	

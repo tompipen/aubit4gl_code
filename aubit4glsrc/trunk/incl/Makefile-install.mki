@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.92 2004-12-19 10:09:16 afalout Exp $
+# $Id: Makefile-install.mki,v 1.93 2004-12-25 07:42:32 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -448,6 +448,23 @@ endif
 
 #</block for binary install Makefile ===================================>
 
+################################
+#Do a silent install of Windows setup, so we can check if all files 
+#we need get installed
+install.winsetup.silent:
+#/LOADINF="filename" 
+#	Instructs Setup to load the settings from the specified file after having checked the command line. This file can be prepared using the '/SAVEINF=' command as explained below. 
+#	Don't forget to use quotes if the filename contains spaces. 
+#/SAVEINF="filename" 
+#	Instructs Setup to save installation settings to the specified file. 
+#	Don't forget to use quotes if the filename contains spaces.
+#/SILENT shows only progress indicator, /VERYSILENT not even that
+	rm -rf d:\tmp\aubit4gl-silent
+	${AUBITDIR}/etc/Output/setup.exe /SP- /DIR="d:\tmp\aubit4gl-silent" /NOICONS \
+		/COMPONENTS="runtime,compiler,help,4GLexamples,Shell,Make" /VERYSILENT
+#Components NOT to install:
+#JABBER,GWD,SQLITE,SQLITEODBC,PDFLIB,PCRE,util,TUI
+		
 
 ## ==================================================================
 ##                    Third-party products installation settings

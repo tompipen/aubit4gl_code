@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.273 2004-12-25 00:32:06 afalout Exp $
+dnl # $Id: configure.in,v 1.274 2004-12-25 07:41:34 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -630,7 +630,7 @@ AC_SUBST(EXTRAFILE_7)
 AC_SUBST(EXTRAFILE_8)
 AC_SUBST(EXTRAFILE_9)
 AC_SUBST(EXTRAFILE_10)
-
+EXTRAFILE_SIZE=10
 
 #files to be packaged into RPM, that are built optionaly because of external
 #dependencied. Also used for install/deinstall, and to tell make which files to
@@ -685,6 +685,7 @@ AC_SUBST(RPMFILE_47)
 AC_SUBST(RPMFILE_48)
 AC_SUBST(RPMFILE_49)
 AC_SUBST(RPMFILE_50)
+RPMFILE_SIZE=50
 
 #files to be packaged into Windows installer (InnoSetup), that are built optionaly because of external
 #dependencies. Cannot use RPMFILE_xx for this since they are needed for lib makefile and install/deinstall
@@ -738,7 +739,7 @@ AC_SUBST(ISFILE_47)
 AC_SUBST(ISFILE_48)
 AC_SUBST(ISFILE_49)
 AC_SUBST(ISFILE_50)
-
+ISFILE_SIZE=50
 
 
 AC_SUBST(IS_THIRDPARTY_1)
@@ -791,6 +792,7 @@ AC_SUBST(IS_THIRDPARTY_47)
 AC_SUBST(IS_THIRDPARTY_48)
 AC_SUBST(IS_THIRDPARTY_49)
 AC_SUBST(IS_THIRDPARTY_50)
+IS_THIRDPARTY_SIZE=50
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -834,7 +836,17 @@ AC_SUBST(LIBFILE_37)
 AC_SUBST(LIBFILE_38)
 AC_SUBST(LIBFILE_39)
 AC_SUBST(LIBFILE_40)
-
+AC_SUBST(LIBFILE_41)
+AC_SUBST(LIBFILE_42)
+AC_SUBST(LIBFILE_43)
+AC_SUBST(LIBFILE_44)
+AC_SUBST(LIBFILE_45)
+AC_SUBST(LIBFILE_46)
+AC_SUBST(LIBFILE_47)
+AC_SUBST(LIBFILE_48)
+AC_SUBST(LIBFILE_49)
+AC_SUBST(LIBFILE_50)
+LIBFILE_SIZE=50
 
 #List of libraries that we allways make. For Windows installer.
 AC_SUBST(ISLIBFILE_1)
@@ -867,7 +879,27 @@ AC_SUBST(ISLIBFILE_27)
 AC_SUBST(ISLIBFILE_28)
 AC_SUBST(ISLIBFILE_29)
 AC_SUBST(ISLIBFILE_30)
-
+AC_SUBST(ISLIBFILE_31)
+AC_SUBST(ISLIBFILE_32)
+AC_SUBST(ISLIBFILE_33)
+AC_SUBST(ISLIBFILE_34)
+AC_SUBST(ISLIBFILE_35)
+AC_SUBST(ISLIBFILE_36)
+AC_SUBST(ISLIBFILE_37)
+AC_SUBST(ISLIBFILE_38)
+AC_SUBST(ISLIBFILE_39)
+AC_SUBST(ISLIBFILE_40)
+AC_SUBST(ISLIBFILE_41)
+AC_SUBST(ISLIBFILE_42)
+AC_SUBST(ISLIBFILE_43)
+AC_SUBST(ISLIBFILE_44)
+AC_SUBST(ISLIBFILE_45)
+AC_SUBST(ISLIBFILE_46)
+AC_SUBST(ISLIBFILE_47)
+AC_SUBST(ISLIBFILE_48)
+AC_SUBST(ISLIBFILE_49)
+AC_SUBST(ISLIBFILE_50)
+ISLIBFILE_SIZE=50
 
 #Executables (RPM)
 AC_SUBST(EXEFILE_1)
@@ -920,7 +952,7 @@ AC_SUBST(EXEFILE_47)
 AC_SUBST(EXEFILE_48)
 AC_SUBST(EXEFILE_49)
 AC_SUBST(EXEFILE_50)
-
+EXEFILE_SIZE=50
 
 #executables (Windows)
 AC_SUBST(ISEXEFILE_1)
@@ -953,7 +985,27 @@ AC_SUBST(ISEXEFILE_27)
 AC_SUBST(ISEXEFILE_28)
 AC_SUBST(ISEXEFILE_29)
 AC_SUBST(ISEXEFILE_30)
-
+AC_SUBST(ISEXEFILE_31)
+AC_SUBST(ISEXEFILE_32)
+AC_SUBST(ISEXEFILE_33)
+AC_SUBST(ISEXEFILE_34)
+AC_SUBST(ISEXEFILE_35)
+AC_SUBST(ISEXEFILE_36)
+AC_SUBST(ISEXEFILE_37)
+AC_SUBST(ISEXEFILE_38)
+AC_SUBST(ISEXEFILE_39)
+AC_SUBST(ISEXEFILE_40)
+AC_SUBST(ISEXEFILE_41)
+AC_SUBST(ISEXEFILE_42)
+AC_SUBST(ISEXEFILE_43)
+AC_SUBST(ISEXEFILE_44)
+AC_SUBST(ISEXEFILE_45)
+AC_SUBST(ISEXEFILE_46)
+AC_SUBST(ISEXEFILE_47)
+AC_SUBST(ISEXEFILE_48)
+AC_SUBST(ISEXEFILE_49)
+AC_SUBST(ISEXEFILE_50)
+ISEXEFILE_SIZE=50
 
 #Shell scripts:
 AC_SUBST(SHFILE_1)
@@ -976,6 +1028,7 @@ AC_SUBST(SHFILE_17)
 AC_SUBST(SHFILE_18)
 AC_SUBST(SHFILE_19)
 AC_SUBST(SHFILE_20)
+SHFILE_SIZE=20
 
 AC_SUBST(ISSHFILE_1)
 AC_SUBST(ISSHFILE_2)
@@ -997,6 +1050,7 @@ AC_SUBST(ISSHFILE_17)
 AC_SUBST(ISSHFILE_18)
 AC_SUBST(ISSHFILE_19)
 AC_SUBST(ISSHFILE_20)
+ISSHFILE_SIZE=20
 
 #Include files:
 AC_SUBST(INCFILE_1)
@@ -1029,6 +1083,7 @@ AC_SUBST(INCFILE_27)
 AC_SUBST(INCFILE_28)
 AC_SUBST(INCFILE_29)
 AC_SUBST(INCFILE_30)
+INCFILE_SIZE=30
 
 
 AC_SUBST(ISINCFILE_1)
@@ -1051,7 +1106,7 @@ AC_SUBST(ISINCFILE_17)
 AC_SUBST(ISINCFILE_18)
 AC_SUBST(ISINCFILE_19)
 AC_SUBST(ISINCFILE_20)
-
+ISINCFILE_SIZE=20
 
 #Examples:
 AC_SUBST(EXAMPFILE_1)
@@ -1114,6 +1169,7 @@ AC_SUBST(EXAMPFILE_57)
 AC_SUBST(EXAMPFILE_58)
 AC_SUBST(EXAMPFILE_59)
 AC_SUBST(EXAMPFILE_60)
+EXAMPFILE_SIZE=60
 
 AC_SUBST(ISEXAMPFILE_1)
 AC_SUBST(ISEXAMPFILE_2)
@@ -1175,7 +1231,7 @@ AC_SUBST(ISEXAMPFILE_57)
 AC_SUBST(ISEXAMPFILE_58)
 AC_SUBST(ISEXAMPFILE_59)
 AC_SUBST(ISEXAMPFILE_60)
-
+ISEXAMPFILE_SIZE=60
 
 #Makefiles:
 AC_SUBST(MAKEFILE_1)
@@ -1198,6 +1254,7 @@ AC_SUBST(MAKEFILE_17)
 AC_SUBST(MAKEFILE_18)
 AC_SUBST(MAKEFILE_19)
 AC_SUBST(MAKEFILE_20)
+MAKEFILE_SIZE=20
 
 AC_SUBST(ISMAKEFILE_1)
 AC_SUBST(ISMAKEFILE_2)
@@ -1219,7 +1276,7 @@ AC_SUBST(ISMAKEFILE_17)
 AC_SUBST(ISMAKEFILE_18)
 AC_SUBST(ISMAKEFILE_19)
 AC_SUBST(ISMAKEFILE_20)
-
+ISMAKEFILE_SIZE=20
 
 #Documentation files:
 AC_SUBST(DOCFILE_1)
@@ -1242,6 +1299,7 @@ AC_SUBST(DOCFILE_17)
 AC_SUBST(DOCFILE_18)
 AC_SUBST(DOCFILE_19)
 AC_SUBST(DOCFILE_20)
+DOCFILE_SIZE=20
 
 AC_SUBST(ISDOCFILE_1)
 AC_SUBST(ISDOCFILE_2)
@@ -1263,6 +1321,7 @@ AC_SUBST(ISDOCFILE_17)
 AC_SUBST(ISDOCFILE_18)
 AC_SUBST(ISDOCFILE_19)
 AC_SUBST(ISDOCFILE_20)
+ISDOCFILE_SIZE=20
 
 #Configuration files:
 AC_SUBST(CONFFILE_1)
@@ -1285,6 +1344,7 @@ AC_SUBST(CONFFILE_17)
 AC_SUBST(CONFFILE_18)
 AC_SUBST(CONFFILE_19)
 AC_SUBST(CONFFILE_20)
+CONFFILE_SIZE=20
 
 AC_SUBST(ISCONFFILE_1)
 AC_SUBST(ISCONFFILE_2)
@@ -1306,6 +1366,7 @@ AC_SUBST(ISCONFFILE_17)
 AC_SUBST(ISCONFFILE_18)
 AC_SUBST(ISCONFFILE_19)
 AC_SUBST(ISCONFFILE_20)
+ISCONFFILE_SIZE=20
 
 #SQL conversion files
 AC_SUBST(CONVFILE_1)
@@ -1328,6 +1389,7 @@ AC_SUBST(CONVFILE_17)
 AC_SUBST(CONVFILE_18)
 AC_SUBST(CONVFILE_19)
 AC_SUBST(CONVFILE_20)
+CONVFILE_SIZE=20
 
 AC_SUBST(ISCONVFILE_1)
 AC_SUBST(ISCONVFILE_2)
@@ -1349,6 +1411,7 @@ AC_SUBST(ISCONVFILE_17)
 AC_SUBST(ISCONVFILE_18)
 AC_SUBST(ISCONVFILE_19)
 AC_SUBST(ISCONVFILE_20)
+ISCONVFILE_SIZE=20
 
 #Import files
 AC_SUBST(IMPORTFILE_1)
@@ -1371,6 +1434,7 @@ AC_SUBST(IMPORTFILE_17)
 AC_SUBST(IMPORTFILE_18)
 AC_SUBST(IMPORTFILE_19)
 AC_SUBST(IMPORTFILE_20)
+IMPORTFILE_SIZE=20
 
 AC_SUBST(ISIMPORTFILE_1)
 AC_SUBST(ISIMPORTFILE_2)
@@ -1392,6 +1456,7 @@ AC_SUBST(ISIMPORTFILE_17)
 AC_SUBST(ISIMPORTFILE_18)
 AC_SUBST(ISIMPORTFILE_19)
 AC_SUBST(ISIMPORTFILE_20)
+ISIMPORTFILE_SIZE=20
 
 #Amake files:
 AC_SUBST(ISAMAKEFILE_1)
@@ -1414,6 +1479,7 @@ AC_SUBST(ISAMAKEFILE_17)
 AC_SUBST(ISAMAKEFILE_18)
 AC_SUBST(ISAMAKEFILE_19)
 AC_SUBST(ISAMAKEFILE_20)
+ISAMAKEFILE_SIZE=20
 
 #Help files
 AC_SUBST(HELPFILE_1)
@@ -1426,6 +1492,7 @@ AC_SUBST(HELPFILE_7)
 AC_SUBST(HELPFILE_8)
 AC_SUBST(HELPFILE_9)
 AC_SUBST(HELPFILE_10)
+HELPFILE_SIZE=10
 
 AC_SUBST(ISHELPFILE_1)
 AC_SUBST(ISHELPFILE_2)
@@ -1437,6 +1504,7 @@ AC_SUBST(ISHELPFILE_7)
 AC_SUBST(ISHELPFILE_8)
 AC_SUBST(ISHELPFILE_9)
 AC_SUBST(ISHELPFILE_10)
+ISHELPFILE_SIZE=10
 
 #Form files
 AC_SUBST(FORMFILE_1)
@@ -1449,6 +1517,7 @@ AC_SUBST(FORMFILE_7)
 AC_SUBST(FORMFILE_8)
 AC_SUBST(FORMFILE_9)
 AC_SUBST(FORMFILE_10)
+FORMFILE_SIZE=10
 
 AC_SUBST(ISFORMFILE_1)
 AC_SUBST(ISFORMFILE_2)
@@ -1460,7 +1529,7 @@ AC_SUBST(ISFORMFILE_7)
 AC_SUBST(ISFORMFILE_8)
 AC_SUBST(ISFORMFILE_9)
 AC_SUBST(ISFORMFILE_10)
-
+ISFORMFILE_SIZE=10
 
 ## ==================================================================
 ##                             Defaults
@@ -1661,12 +1730,6 @@ case $host in
 		ARCHEXT=zip
 
         #check if we are using MinGW GCC with CygWin:
-
-#gcc.exe (GCC) 3.2 (mingw special 20030504-1)
-
-#gcc (GCC) 3.2.3 (mingw special 20030504-1)
-#  3 2 3 mingw special 20030504-1)
-
 		TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 		if test "$TMP_TMP" != ""; then
 			set `echo $TMP_TMP`
@@ -2009,7 +2072,7 @@ LIB_EXPORTLIB=aubit4gl
 #List of executables that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
 
-AMAKE_BIN_EXE=aubit-config
+AMAKE_BIN_EXE="aubit-config"
 
 #Resource files needed by some of the executables
 RUNTIME_RESOURCE=""
@@ -2075,8 +2138,12 @@ INCL_HEADERS_EC="a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h"
 
 AMAKE_INCL_FILES="header.mki footer.mki footer-c.mki a4gl.mk q4gl.mk d4gl.mk i4gl.mk"
 
-#Here we come aggain  - a4gl_4gl_callable.h requires all of this:
-INCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
+#Here we go again  - a4gl_4gl_callable.h requires all of this:
+#---DOES IT REALLY?----
+#WARNING: We use INCL_HEADERS_EC_REMOVETHIS somewhere in 'make install'
+#==== BUT NOT IN RMP/Windows installes file lists !!!!!
+#Temp. disabled - lets see what happens:
+xxxINCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
 	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
 	a4gl_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
 	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h"
@@ -2838,8 +2905,6 @@ AC_PROG_CC
 
 if test "$CC" = "gcc"; then
 	AC_MSG_CHECKING(GCC version)
-
-	#TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
@@ -8156,23 +8221,47 @@ PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
 	if test "$HAVE_RPCLIB" != "0"; then
 		COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
 	else
-		#FIXME: this should be EXE_NO, not PLUGIN_NO
-		PLUGIN_NO="$PLUGIN_NO $PCODE_EXE_RPC"
+		if test "$GCC_MINGW" != "yes"; then
+			#FIXME: this should be EXE_NO, not PLUGIN_NO
+			PLUGIN_NO="$PLUGIN_NO $PCODE_EXE_RPC"
+		else
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS $PCODE_EXE_RPC"
+		fi
 	fi
 #fi
+	if test "$GTK_VERSION" = "2.0"; then
+		RUNTIME_EXE="$RUNTIME_EXE $LIBLOGICAL_EXE_GTK2_DEPEND"
+	else
+		#FIXME: this should be EXE_NO, not PLUGIN_NO
+		PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_EXE_GTK2_DEPEND"
+	fi
 
     COUNTER=0
 	for FILE in $COMP_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
+		FILE_EXE="$FILE"
+		if test "$COMSPEC" != ""; then 
+			if test "`basename $FILE $A4GL_EXE_EXT`" = "`basename $FILE`"; then
+				#file does not have Aubit executable extension
+				FILE_EXE="$FILE$EXEEXT"
+			fi
+		fi
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE_EXE'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
 	done
 
 	for FILE in $RUNTIME_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		FILE_EXE="$FILE"
+		if test "$COMSPEC" != ""; then 
+			if test "`basename $FILE $A4GL_EXE_EXT`" = "`basename $FILE`"; then
+				#file does not have Aubit executable extension
+				FILE_EXE="$FILE$EXEEXT"
+			fi
+		fi
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE_EXE'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
 	done
 
 	for FILE in $RUNTIME_RESOURCE ; do
@@ -8673,7 +8762,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.273 2004-12-25 00:32:06 afalout Exp $
+| $Id: configure.in,v 1.274 2004-12-25 07:41:34 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

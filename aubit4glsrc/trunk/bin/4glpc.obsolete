@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.4 2004-12-25 00:33:34 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.5 2004-12-25 07:42:31 afalout Exp $
 #
 
 ########################################################################
@@ -992,24 +992,37 @@ do
 	fi
 	exit 0
 		;;
-		
+	######################################################################
 	-chk-install)
 		#Check is we installed everything we should
+		if test "$COMSPEC" != ""; then
+			EXE_EXT=".exe"
+		fi
 		
+		if test "$INSTALLDIR" = ""; then 
+			INSTALLDIR="$AUBITDIR"
+		fi
+		if test "$SOURCEDIR" = ""; then
+			SOURCEDIR="$AUBITDIR_SRC"
+		fi
+		
+		echo "Comparing binary install at $INSTALLDIR"
+		echo "with compiled source tree at $SOURCEDIR" 
+		
+
 		ALLDIRS="bin docs etc etc/import etc/config etc/convertsql \
 			incl tools/test tools/test/gui lib ."
 		
 		#Files to ignore - not needed in binary installation
-		IGNORE_LIST="xgen .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
-			-strip .err .warn asql .#* adbload.4ae \
+		IGNORE_LIST="xgen$EXE_EXT .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
+			-strip$EXE_EXT .err .warn asql .#* adbload.4ae \
 			manaual_to-do.txt ~ .bak .BAK Makefile-install \
 			aubit-InnoSetup.is* aubit-rpm.spe* aubitrc.in aubitrc \
 			aubitbuild.cro* Makefile-commo* lib/reflection.c lib/Makefile \
-			.out .glb .ao .4pe.dat .xpm .tar.gz .tgz .log noddy.txt .html .htm\
+			.out .glb .ao .c .o .4pe.dat .xpm .zip .tar.gz .tgz .log noddy.txt .html .htm\
 			aubit4glsrc-*.txt configure.in .tmp .status \
-			BUGS.txt .m4 .mja todo todo.done "
+			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h"
 
-		
 		#Directories to ignore:
 		IGNORE_LIST="$IGNORE_LIST \
 			lib/libaubit4gl lib/libesql lib/libexdata lib/libform lib/libgui \
@@ -1020,7 +1033,7 @@ do
 			lib/bin lib/data lib/extra_libs lib/generated \
 			tools/test/ace tools/test/db tools/test/altris \
 			tools/test/keys tools/test/lang tools/test/parser_bugs \
-			tools/test/regression tools/test/xml \
+			tools/test/regression tools/test/xml etc/Output \
 			glade help libltdl libtool trace cint common compilers"
 			
 		#tools/test files to ignore
@@ -1044,25 +1057,49 @@ do
 			incl/a4gl_API_sql_lib.h incl/a4gl_API_rpc_lib.h \
 			incl/a4gl_API_exreport_lib.h incl/stamp-h"
 			
+			#FIXME: I'm not at all sure that this headers ignore list is 
+			#correct - see INCL_HEADERS_EC_REMOVETHIS in configure.in
+			
+		if test "$COMSPEC" != ""; then
+			IGNORE_LIST="$IGNORE_LIST \		
+				incl/a4gl_API_esql.h incl/a4gl_API_packer.h \
+				incl/a4gl_esql.h incl/a4gl_esql_infx.h \
+				incl/a4gl_esql_postgres.h incl/a4gl_incl_infx.h \
+				incl/a4gl_libaubit4gl.h"
+		fi
+			
 			
 		#FIXME: etc/Makefile-install SHOULD be installed since it contains
 		#third-party installation scripts!
 		if test "$COMSPEC" = ""; then 
 			IGNORE_LIST="$IGNORE_LIST README-Windows.txt"
+			FIND="find"
+		else
+			FIND="/bin/find"
+			IGNORE_LIST="$IGNORE_LIST etc/config* \
+			tools/test/Makefile tools/test/*.exe tools/test/gui/Makefile \
+			configure install.sh \
+			lib/lib4glc.dll.a lib/libaubit4gl.dll lib/lib4glc.dll"
+			#NOTE: lib/libaubit4gl.dll and lib/lib4glc.dll go to bin/ not lib/
+			
+			#FIXME: remove creation of this .a from makefies:
+			IGNORE_LIST="$IGNORE_LIST lib/libA4GL_glade.dll.a lib/libA4GL_pcre.dll.a \
+			lib/libFORM_NOFORM.dll.a lib/libLEX_PERL.dll.a lib/libPACKER_XML.dll.a \
+			lib/libRPC_NORPC.dll.a lib/libSQL_nosql.dll.a lib/libUI_CONSOLE.dll.a"			
 		fi
 		#NOTE: asql is a link
 		#adbload is experimental
 		#aubitrc is aubitrc-bin.in
 				
-		cd $AUBITDIR_SRC
+		cd $SOURCEDIR
 		for an_dir in $ALLDIRS; do
-			THIS_FILELIST=`find $an_dir -maxdepth 1`
+			THIS_FILELIST=`$FIND $an_dir -maxdepth 1`
 			ALL_FILELIST="$ALL_FILELIST $THIS_FILELIST"
 		done
 		
 		#echo $ALL_FILELIST 
 		
-		cd $AUBITDIR
+		cd $INSTALLDIR
 		for an_file in $ALL_FILELIST; do
 			an_file=`echo "$an_file" | sed -e "s/^\.\///"`
 			#case $an_file in *README*) 
@@ -1093,16 +1130,38 @@ do
 			#we checked ended up in binary installation, minus the ones we 
 			#know should not be installed
 			echo "all files installed as expected"
+			
+			#echo "Comparing binary install at $INSTALLDIR"
+			#echo "with compiled source tree at $SOURCEDIR" 
+			
 			#echo "$IS_INSTALLED_LIST"
 			#exit
 			#List of files we know that will appear in installed bindir,
 			#that are not in places we check for, or are renamed, or
 			#can appear in binary tree for other reasons
 			IGNORE_INSTALLED="4GL_metrics.cgi aubitrc-bin.in .tgz /CVS/*" 
+
+			if test "$COMSPEC" != ""; then 
+				#Files created by Windows installer itself:
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					Aubit#4GL#compiler#on#the#Web.url unins000.dat unins000.exe"
+
+				#Files that change location
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					bin/lib4glc.dll bin/libaubit4gl.dll"
+				
+				#Files present only for Windows installer, and change place
+				IGNORE_INSTALLED="$IGNORE_INSTALLED \
+					readme-runtime.html"
+			fi
 			
-			cd $AUBITDIR
-			INSTALLED_FILELIST=`find`
+			cd $INSTALLDIR
+			#INSTALLED_FILELIST=`$FIND`
+			#Replace spaces in file names with # do we can handle them as 
+			#single item in the resulting list
+			INSTALLED_FILELIST=`$FIND  | sed -e "s/ /#/g"`
 			for installed_file in $INSTALLED_FILELIST; do
+				#Remove leading ./ in filename:
 				installed_file=`echo "$installed_file" | sed -e "s/^\.\///"`
 				if test "$installed_file" = "." \
 					-o "$installed_file" = "tools"; then 
@@ -1121,8 +1180,8 @@ do
 					if test "$HAVE_IT" = "0"; then
 						echo "File $installed_file is installed, but is not in 'to install' list"
 						HAVE_UNEXPECTED=1
-						#ls $AUBITDIR$installed_file
-						#ls $AUBITDIR_SRC$installed_file
+						#ls $INSTALLDIR$installed_file
+						#ls $SOURCEDIR$installed_file
 						#exit 4
 					fi
 				fi

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.20 2004-12-22 11:22:18 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.21 2004-12-25 07:42:32 afalout Exp $
 ;
 
 
@@ -125,6 +125,8 @@ Name: SQLITE; Description: SQLite RDBMS engine, demo db, GUI tool; Types: full s
 Name: SQLITEODBC; Description: SQLite ODBC driver; Types: full
 Name: PDFLIB; Description: PDFlib library (evaluation); Types: full
 Name: PCRE; Description: PCRE - Perl compatible regular expression support library; Types: full
+Name: JABBER; Description: Jabber IM support library; Types: full
+
 
 [Types]
 Name: standard; Description: Standard installation
@@ -312,6 +314,27 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISEXEFILE_28@
 @ISEXEFILE_29@
 @ISEXEFILE_30@
+@ISEXEFILE_31@
+@ISEXEFILE_32@
+@ISEXEFILE_33@
+@ISEXEFILE_34@
+@ISEXEFILE_35@
+@ISEXEFILE_36@
+@ISEXEFILE_37@
+@ISEXEFILE_38@
+@ISEXEFILE_39@
+@ISEXEFILE_40@
+@ISEXEFILE_41@
+@ISEXEFILE_42@
+@ISEXEFILE_43@
+@ISEXEFILE_44@
+@ISEXEFILE_45@
+@ISEXEFILE_46@
+@ISEXEFILE_47@
+@ISEXEFILE_48@
+@ISEXEFILE_49@
+@ISEXEFILE_50@
+; ---- end of list ISEXEFILE_ ----
 
 ;headers:
 @ISINCFILE_1@
@@ -334,7 +357,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISINCFILE_18@
 @ISINCFILE_19@
 @ISINCFILE_20@
-
+; ---- end of list ISINCFILE_ ----
 
 ;=========================
 ; doc (runtime) files
@@ -358,6 +381,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISDOCFILE_18@
 @ISDOCFILE_19@
 @ISDOCFILE_20@
+; ---- end of list ----
 
 ;==========================
 ; List of libraries and plug-ins we allways make. Set by configure script:
@@ -392,6 +416,28 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISLIBFILE_28@
 @ISLIBFILE_29@
 @ISLIBFILE_30@
+@ISLIBFILE_31@
+@ISLIBFILE_32@
+@ISLIBFILE_33@
+@ISLIBFILE_34@
+@ISLIBFILE_35@
+@ISLIBFILE_36@
+@ISLIBFILE_37@
+@ISLIBFILE_38@
+@ISLIBFILE_39@
+@ISLIBFILE_40@
+@ISLIBFILE_41@
+@ISLIBFILE_42@
+@ISLIBFILE_43@
+@ISLIBFILE_44@
+@ISLIBFILE_45@
+@ISLIBFILE_46@
+@ISLIBFILE_47@
+@ISLIBFILE_48@
+@ISLIBFILE_49@
+@ISLIBFILE_50@
+
+; ---- end of listISLIBFILE_ ----
 
 ;=========================
 ; Optional plug-ins, depending on configuration of build machine. Set by configure script:
@@ -446,7 +492,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISFILE_48@
 @ISFILE_49@
 @ISFILE_50@
-
+; ---- end of list ----
 
 
 ;=========================
@@ -511,6 +557,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISEXAMPFILE_58@
 @ISEXAMPFILE_59@
 @ISEXAMPFILE_60@
+; ---- end of list ----
 
 ;=========================
 ; Shell files (useless without bash!):
@@ -536,7 +583,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISSHFILE_18@
 @ISSHFILE_19@
 @ISSHFILE_20@
-
+; ---- end of list ----
 
 
 ;=========================
@@ -561,7 +608,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISMAKEFILE_18@
 @ISMAKEFILE_19@
 @ISMAKEFILE_20@
-
+; ---- end of list ----
 
 ; SQL conversion files:
 @ISCONVFILE_1@
@@ -584,7 +631,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISCONVFILE_18@
 @ISCONVFILE_19@
 @ISCONVFILE_20@
-
+; ---- end of list ----
 ; Import files:
 @ISIMPORTFILE_1@
 @ISIMPORTFILE_2@
@@ -606,7 +653,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISIMPORTFILE_18@
 @ISIMPORTFILE_19@
 @ISIMPORTFILE_20@
-
+; ---- end of list ----
 ;Amake files:
 @ISAMAKEFILE_1@
 @ISAMAKEFILE_2@
@@ -628,7 +675,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISAMAKEFILE_18@
 @ISAMAKEFILE_19@
 @ISAMAKEFILE_20@
-
+; ---- end of list ----
 ;=========================
 ;Config files (to etc/ )
 @ISCONFFILE_1@
@@ -651,7 +698,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISCONFFILE_18@
 @ISCONFFILE_19@
 @ISCONFFILE_20@
-
+; ---- end of list ----
 
 ;Help files
 @ISHELPFILE_1@
@@ -664,7 +711,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISHELPFILE_8@
 @ISHELPFILE_9@
 @ISHELPFILE_10@
-
+; ---- end of list ----
 ;Form files
 @ISFORMFILE_1@
 @ISFORMFILE_2@
@@ -676,7 +723,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISFORMFILE_8@
 @ISFORMFILE_9@
 @ISFORMFILE_10@
-
+; ---- end of list ----
 
 
 ;=========================
@@ -742,7 +789,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @IS_THIRDPARTY_48@
 @IS_THIRDPARTY_49@
 @IS_THIRDPARTY_50@
-
+; ---- end of list ----
 ;=========================
 ;SQLite database
 Source: @IS_SOURCE@\tools\aubit.db; DestDir: {app}\tools; Components: SQLITE
@@ -1093,24 +1140,24 @@ Returns the number of command line parameters passed to Setup.
 
 	Abort := False; //Initialise Abort flag
 
-	Result := GetGWDInstalled ();
-	if not Result then begin
-		Result := MsgBox('It is reccomended that you install the GWD editor before installing Aubit 4GL. You can obtain GWD from http://www.gwdsoft.com. ' #13#13 ' Do you want to continue setup?', mbConfirmation, MB_YESNO) = idYes;
-		if Result = False then begin
-			Abort := True;
-	    end else begin
-			//GWD not installed, so install GWD files under Aubit tree
-			GWD4GLpath := AddBackslash(ExpandConstant('{app}')) + 'tools\GWD';
-		end;
-	end else begin
-        //GWD is installed, so install GWD files under GWD tree
-        // 'gwd4gl-installer' is here while we testing, remove it later
-		GWD4GLpath := AddBackslash(GWDPath) + 'gwd4gl-installer';
-	end;
-
-	if DebugPaths = True then begin
-		MsgBox ('GWD4GLpath set to :' #13#13 '''' + GWD4GLpath + '''.', mbInformation, MB_OK);
-	end;
+//	Result := GetGWDInstalled ();
+//	if not Result then begin
+//		Result := MsgBox('It is reccomended that you install the GWD editor before installing Aubit 4GL. You can obtain GWD from http://www.gwdsoft.com. ' #13#13 ' Do you want to continue setup?', mbConfirmation, MB_YESNO) = idYes;
+//		if Result = False then begin
+//			Abort := True;
+//	    end else begin
+//			//GWD not installed, so install GWD files under Aubit tree
+//			GWD4GLpath := AddBackslash(ExpandConstant('{app}')) + 'tools\GWD';
+//		end;
+//	end else begin
+//       //GWD is installed, so install GWD files under GWD tree
+//        // 'gwd4gl-installer' is here while we testing, remove it later
+//		GWD4GLpath := AddBackslash(GWDPath) + 'gwd4gl-installer';
+//	end;
+//
+//	if DebugPaths = True then begin
+//		MsgBox ('GWD4GLpath set to :' #13#13 '''' + GWD4GLpath + '''.', mbInformation, MB_OK);
+//	end;
 
 
   Result := GetMinGWInstalled ();
