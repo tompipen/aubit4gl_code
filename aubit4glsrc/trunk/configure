@@ -8357,7 +8357,7 @@ fi
 done
 
 #FIXME: stop if no gawk (if configuring source code tree) - awk will fail
-if test "$AWK" == "awk"; then
+if test "$AWK" = "awk"; then
 		{ echo "$as_me:8361: WARNING: Aubit compiler need gawk" >&5
 echo "$as_me: WARNING: Aubit compiler need gawk" >&2;}
 fi

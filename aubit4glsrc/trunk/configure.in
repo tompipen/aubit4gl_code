@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.88 2002-09-22 01:11:47 afalout Exp $
+# $Id: configure.in,v 1.89 2002-09-22 01:18:15 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -698,7 +698,7 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_AWK
 #FIXME: stop if no gawk (if configuring source code tree) - awk will fail
-if test "$AWK" == "awk"; then
+if test "$AWK" = "awk"; then
 		AC_MSG_WARN(Aubit compiler need gawk, awk will probably fail.)
 fi
 
