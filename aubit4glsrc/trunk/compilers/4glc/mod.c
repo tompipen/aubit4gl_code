@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.83 2002-09-24 04:39:43 afalout Exp $
+# $Id: mod.c,v 1.84 2002-10-07 11:06:22 afalout Exp $
 #
 */
 
@@ -57,11 +57,11 @@
 */
 
 #define USE_PRINTCOMMENT
-#define GEN_STACKS 10
-#define MAXVARS 2000
-#define EMPTY "----"
-#define MAXMENU 10
-#define MAXMENUOPTS 10
+#define GEN_STACKS 		10
+#define MAXVARS 		2000
+#define EMPTY 			"----"
+#define MAXMENU 		10
+#define MAXMENUOPTS 	10
 
 #define a0_width         (float) 2380.0
 #define a0_height        (float) 3368.0
@@ -95,14 +95,6 @@
 =====================================================================
 */
 
-
-extern int in_define;
-static int inc = 0;
-static char pklist[2048] = "";
-static char upd_using_notpk[5000] = "";
-static int upd_using_notpk_cnt = 0;
-int rep_type = 0; /** The report type */
-
 /*
 #ifdef LEXER
 char xwords[256][256];
@@ -112,12 +104,21 @@ long fpos;
 #endif
 */
 
-extern int menu_cnt; 		/** The count of menus found */
-extern int yylineno; 		/** The source file line number */
+extern int 	menu_cnt; 		/** The count of menus found */
+extern int 	yylineno; 		/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
-static int db_used = 0;     /** Flag that indicate that a database is being used */
-int last_var_found = -1;
-int var_hdr_finished;
+extern int 	in_define;
+
+static int 	db_used = 0;     /** Flag that indicate that a database is being used */
+static int 	inc = 0;
+static char pklist[2048] = "";
+static char upd_using_notpk[5000] = "";
+static int 	upd_using_notpk_cnt = 0;
+static int 	const_cnt = 0;
+
+int 		rep_type = 0; /** The report type */
+int 		last_var_found = -1;
+int 		var_hdr_finished;
 
 struct s_constants 			/** Array of constants defined in some scope */
 {
@@ -127,7 +128,7 @@ struct s_constants 			/** Array of constants defined in some scope */
   char scope;    /**< The scope  g : Global; m : Modular; f : Function*/
 }
 const_arr[MAXCONSTANTS];
-static int const_cnt = 0;
+
 
 /**
  * Array where all the WHENEVER conditions are stored.
@@ -141,29 +142,30 @@ int when_code[8] = { WHEN_STOP,
   WHEN_NOTSET,
   WHEN_NOTSET
 };
-char when_to_tmp[64];
-char when_to[64][8];
-int menu_nos[100];
-int cmenu = 0;
-int use_group = 0;
-char curr_rep_name[256];
-int curr_rep_block;
-int max_menu_no = 0;
-struct s_report sreports[1024];
-int sreports_cnt = 0;
-char mmtitle[132][132];         /** Menu titles */
+
+char 		when_to_tmp[64];
+char 		when_to[64][8];
+int 		menu_nos[100];
+int 		cmenu = 0;
+int 		use_group = 0;
+char 		curr_rep_name[256];
+int 		curr_rep_block;
+int 		max_menu_no = 0;
+struct 		s_report sreports[1024];
+int 		sreports_cnt = 0;
+char 		mmtitle[132][132];         /** Menu titles */
 extern char *outputfilename;    /** Variables dump output file name */
-int read_glob_var = 0;
-int counters[256];
-int count_counters = 0;
-struct s_report_stack report_stack[REPORTSTACKSIZE];
-int report_stack_cnt = 0;
-int report_cnt = 1;
-int nblock_no = 1;
-char gen_stack[GEN_STACKS][100][80];
-int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-struct s_constr_buff constr_buff[256];
-int constr_cnt = 0;
+int 		read_glob_var = 0;
+int 		counters[256];
+int 		count_counters = 0;
+struct 		s_report_stack report_stack[REPORTSTACKSIZE];
+int 		report_stack_cnt = 0;
+int 		report_cnt = 1;
+int 		nblock_no = 1;
+char 		gen_stack[GEN_STACKS][100][80];
+int 		gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+struct 		s_constr_buff constr_buff[256];
+int 		constr_cnt = 0;
 
 /**
  * Input bind array.
@@ -181,11 +183,11 @@ struct binding_comp obind[NUMBINDINGS];
 struct binding_comp fbind[NUMBINDINGS];
 struct binding_comp ordbind[NUMBINDINGS];
 
-int ordbindcnt = 0;
-int ibindcnt = 0;           /** Number of elements in ibind array */
-int nullbindcnt = 0;
-int obindcnt = 0;
-int fbindcnt = 0;
+int 		ordbindcnt = 0;
+int 		ibindcnt = 0;           /** Number of elements in ibind array */
+int 		nullbindcnt = 0;
+int 		obindcnt = 0;
+int 		fbindcnt = 0;
 
 /** Array of variables found. The level gives us the scope variable */
 struct variables
@@ -211,7 +213,7 @@ struct variables
  *   - 0   : Modular variables
  *   - > 0 : Function local variables
  */
-int modlevel = -1;
+int 		modlevel = -1;
 
 /** Command stack array */
 struct cmds
@@ -227,14 +229,14 @@ struct cmds
 int ccnt = 0;
 #else
 */
-extern int ccnt;  /* in lexer.c */
+extern int 	ccnt;  /* in lexer.c */
 /* #endif */
 
 
 /** Array index to the last variable filled in the variables array  */
-int varcnt = 0;
-int in_record = 0;
-struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
+int 		varcnt = 0;
+int 		in_record = 0;
+struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
 
 
 /*
@@ -243,10 +245,10 @@ struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array *
 =====================================================================
 */
 
-static int is_pk (char *s);
-int yywrap (void);
-struct sreports * get_sreports(int z);
-void a4gl_add_variable (char *name, char *type, char *n);
+static int 			is_pk 				(char *s);
+int 				yywrap 				(void);
+struct sreports * 	get_sreports		(int z);
+void 				a4gl_add_variable 	(char *name, char *type, char *n);
 
 
 /*
@@ -1297,12 +1299,13 @@ scan_variable (char *s)
 static long 
 isvartype (char *s, int mode)
 {
-  int a;
-  char buff[256];
-  char *ptr;
-  int flg;
-  int dir;
-  int lvl = 0;
+int a;
+char buff[256];
+char *ptr;
+int flg;
+int dir;
+int lvl = 0;
+  
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -1462,13 +1465,9 @@ set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
 
   vars[varcnt].level = lvl;
-
   strcpy (vars[varcnt].var_name, name);
-
   strcpy (vars[varcnt].var_type, type);
-
   strcpy (vars[varcnt].var_size, n);
-
   strcpy (vars[varcnt].var_arrsize, as);
 
   if (varcnt >= MAXVARS)
@@ -1540,43 +1539,40 @@ void
 set_4gl_vars(void)
 {
 
-  set_variable ("int_flag", "long", "0", "----", 0);
-  set_variable ("quit_flag", "long", "0", "----", 0);
-  set_variable ("status", "long", "----", "----", 0);
-  set_variable ("sqlca", "_RECORD", "----", "----", 0);
-  set_variable ("sqlcode", "long", "----", "----", 1);
-  set_variable ("sqlerrm", "char", "71", "----", 1);
-  set_variable ("sqlerrp", "char", "8", "----", 1);
-  set_variable ("sqlerrd", "long", "----", "6", 1);
-  set_variable ("sqlawarn", "char", "8", "----", 1);
-  set_variable ("sqlstate", "char", "9", "----", 1);
-  set_variable ("----", "_ENDREC", "----", "----", 0);
+  set_variable ("int_flag", 	"long", 	"0", 		"----", 0);
+  set_variable ("quit_flag", 	"long", 	"0", 		"----", 0);
+  set_variable ("status", 		"long", 	"----", 	"----", 0);
+  set_variable ("sqlca", 		"_RECORD", 	"----", 	"----", 0);
+  set_variable ("sqlcode", 		"long", 	"----", 	"----", 1);
+  set_variable ("sqlerrm", 		"char", 	"71", 		"----", 1);
+  set_variable ("sqlerrp", 		"char", 	"8", 		"----", 1);
+  set_variable ("sqlerrd", 		"long", 	"----", 	"6", 1);
+  set_variable ("sqlawarn", 	"char", 	"8", 		"----", 1);
+  set_variable ("sqlstate", 	"char", 	"9", 		"----", 1);
+  set_variable ("----", 		"_ENDREC", 	"----", 	"----", 0);
 
-  set_variable ("today", "fgldate", "----", "----", 0);
-  set_variable ("user", "char", "8", "----", 0);
-  set_variable ("notfound", "long", "----", "----", 0);
-  set_variable ("pageno", "long", "----", "----", 0);
-  set_variable ("lineno", "long", "----", "----", 0);
-  set_variable ("usrtime", "long", "----", "----", 0);
-
-
-
+  set_variable ("today", 		"fgldate", 	"----", 	"----", 0);
+  set_variable ("user", 		"char", 	"8", 		"----", 0);
+  set_variable ("notfound", 	"long", 	"----", 	"----", 0);
+  set_variable ("pageno", 		"long", 	"----", 	"----", 0);
+  set_variable ("lineno", 		"long", 	"----", 	"----", 0);
+  set_variable ("usrtime", 		"long", 	"----", 	"----", 0);
 
 /* These are for my personal use! MJA */
-  set_variable ("curr_hwnd", "long", "----", "----", 0);
-  set_variable ("curr_form", "long", "----", "----", 0);
+  set_variable ("curr_hwnd", 	"long", 	"----", 	"----", 0);
+  set_variable ("curr_form", 	"long", 	"----", 	"----", 0);
 
-  set_variable ("err_file_name", "char", "32", "----", 0);
-  set_variable ("err_line_no", "long", "----", "----", 0);
+  set_variable ("err_file_name","char", 	"32", 		"----", 0);
+  set_variable ("err_line_no", 	"long", 	"----", 	"----", 0);
 
-  set_variable ("curr_file_name", "char", "32", "----", 0);
-  set_variable ("curr_line_no", "long", "----", "----", 0);
+  set_variable ("curr_file_name", "char", 	"32", 		"----", 0);
+  set_variable ("curr_line_no", "long", 	"----", 	"----", 0);
 
-  set_variable ("err_status", "long", "----", "----", 0);
-  set_variable ("aiplib_status", "long", "----", "----", 0);
+  set_variable ("err_status", 	"long", 	"----", 	"----", 0);
+  set_variable ("aiplib_status", "long", 	"----", 	"----", 0);
 
-
-  set_variable ("time", "char", "8", "----", 0);
+  set_variable ("time", 		"char", 	"8", 		"----", 0);
+  
   add_constant ('i', "100", strdup ("notfound"));
   var_hdr_finished = varcnt;
 }
@@ -1622,8 +1618,9 @@ rettype (char *s)
 
   a=atoi(s);
 
-debug("In rettype");
-  if (has_datatype_function_i(a,"OUTPUT")) {
+  debug("In rettype");
+  if (has_datatype_function_i(a,"OUTPUT")) 
+  {
 	/* char *(*function) (); */
     char *(*function) (void);
 	debug("In datatype");
@@ -1703,12 +1700,12 @@ trim_spaces (char *s)
 static int 
 pushLikeTableColumn(char *tableName,char *columnName)
 {
-  int rval;
-  int idtype;
-  int isize;
-  char csize[20];
-  char cdtype[20];
-  char buff[300];
+int rval;
+int idtype;
+int isize;
+char csize[20];
+char cdtype[20];
+char buff[300];
 
   debug ("pushLikeTableColumn()");
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
@@ -2020,7 +2017,6 @@ in_command (char *cmd_type)
 
   if (ccnt == 0)
     {
-
       debug ("Stack is empty\n");
       return 0;
     }
@@ -2029,17 +2025,13 @@ in_command (char *cmd_type)
     {
 
       if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-	continue;
+		continue;
 
       if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
-	{
-
-	  debug ("OK\n");
-
-	  return 1;
-
-	}
-
+      {
+	  	debug ("OK\n");
+	  	return 1;
+	  }
     }
 
   printf ("Not in a %s command\n", cmd_type);
@@ -2134,7 +2126,7 @@ static yyerrorf (char *fmt, ...)
  * Checks if a column is part of primary key
  *
  * @param s The string containing the primary key column name
- * @return 
+ * @return
  *   - 1 : The column is part of PK 
  *   - 0 : The column is not part of PK 
  */
@@ -3591,7 +3583,7 @@ get_curr_rep_name (void)
 /**
  * Assigns the flag that tells that we are inside a group.
  */
-void 
+void
 set_ingroup (void)
 {
   use_group = 1;
@@ -4495,6 +4487,11 @@ get_sreports(int z)
 }
 
 
+/**
+ *
+ *
+ * @param
+ */
 void
 add_ex_dtype(char *sx)
 {

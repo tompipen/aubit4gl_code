@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.113 2002-10-04 11:26:35 afalout Exp $
+dnl # $Id: configure.in,v 1.114 2002-10-07 11:05:54 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -58,17 +58,8 @@ aubitdir=`pwd`
 a4gl_shtool=$aubitdir/tools/project/shtool
 T_MD=`$a4gl_shtool echo -n -e %B`
 T_ME=`$a4gl_shtool echo -n -e %b`
-#PHP_CONFIGURE_PART(Initializing:)
 
 #AC_CANONICAL_TARGET
-
-
-#for arg in $0 "$@"; do
-#for arg in "$ac_configure_args"; do
-#  CONFIGURE_COMMAND="$CONFIGURE_COMMAND '$arg'"
-#done
-#echo "CONFIGURE_COMMAND = $CONFIGURE_COMMAND"
-#echo "ac_configure_args = $ac_configure_args"
 
 CONFIGURE_COMMAND="$ac_configure_args"
 
@@ -87,16 +78,8 @@ PHP_CONFIGURE_PART(Looking for configure parameters file:)
 
 AC_PATH_PROG(AUBITCONF, aubitconf, no)
 if test "$AUBITCONF" != "no"; then
-#    if test "$AUBITCONF_FLAG" != "running"; then
 		if test "$with_aubitconf" != "yes" ; then
-			#--with-aubitconf=no
-#cat<<X
-#+--------------------------------------------------------------------+
-#|                        ***   NOTE  ***                             |
-#| 'aubitconf' script found; running 'configure' via 'aubitconf'...   |
-#+--------------------------------------------------------------------+
-#X
-PHP_CONFIGURE_PART(Redirecting to 'aubitconf':)
+			PHP_CONFIGURE_PART(Redirecting to 'aubitconf':)
 if test "$CONFIGURE_COMMAND" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -107,18 +90,6 @@ cat<<X
 +--------------------------------------------------------------------+
 X
 fi
-            #CMDLINE="$@"
-			#echo xxx $CMDLINE xxx
-            #echo $ac_cs_invocation
-			#if [ "$CMDLINE" != "" ]
-			#if test "$CMDLINE" != "" ;
-			#then
-	        #    echo "WARNNG: command line options you provided:"
-	        #    echo "$CMDLINE"
-	        #    echo "will be ignored, and aubitconf specified options used instead!"
-			#fi
-
-
 			#so we don't enter the loop:
 			export AUBITCONF_FLAG=running
 			aubitconf
@@ -133,26 +104,10 @@ fi
         else
             echo "'aubitconf' found, but disabled"
         fi
-#	else
-#cat<<X
-#+--------------------------------------------------------------------+
-#|                        ***   NOTE  ***                             |
-#| invoked form first stage 'configure', via 'aubitconf'. Flags are:  |
-#$CONFIGURE_COMMAND
-#+--------------------------------------------------------------------+
-#X
-#	fi
 fi
 
 	else
 PHP_CONFIGURE_PART(Invoked from 'aubitconf'-use 'make settings' to see flags:)
-#cat<<X
-#+--------------------------------------------------------------------+
-#|                        ***   NOTE  ***                             |
-#| invoked form first stage 'configure', via 'aubitconf'. Flags are:  |
-#$CONFIGURE_COMMAND
-#+--------------------------------------------------------------------+
-#X
 fi
 
 
@@ -496,6 +451,7 @@ case $host in
     	ODBCMANAGER=$ODBC;
 		cygwin=1
         SO_EXT=.dll
+        SO_EXT_LINKABLE=$SO_EXT
 		ARCHEXT=zip
 		;;
 
@@ -720,8 +676,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	if test "$YACC" != "bison -y"; then
 		#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
 		YACC=no
-		AC_MSG_WARN(Will use pre-compiled parser files from tools/no_yacc)
-		AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
+		WARN_YACC=1
 	else
 		AC_MSG_CHECKING(bison version)
 		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
@@ -772,15 +727,14 @@ fi
 #we test for C, all sort of wireds things will happen, so we have to test
 #it even in binary distro, where we don't need it:
 #AC_PROG_LEX
+echo 1
 AM_PROG_LEX
-
+echo 2
 if test "$LEX" = ":"; then
     #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
 	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
-		AC_MSG_WARN(Will use pre-compiled parser files from tools/no_yacc)
-		AC_MSG_WARN(You will need lex if you'd want to regenerate the Aubit parsers.)
-
+        WARN_LEX=1
     fi
 fi
 
@@ -1004,7 +958,8 @@ AC_ARG_WITH(sapdb,
                 #on non-Windows platforms, native C compiler will do:
 				SAPDBESQLCC_OK="OK"
 			#fi
-
+			
+			AC_MSG_CHECKING(if we can use cpc)
 			if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK";
 			then
 				SAPDB_INCLUDE=$SAPDB_INCDIR
@@ -1017,12 +972,13 @@ AC_ARG_WITH(sapdb,
 				LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
 
 				AC_DEFINE(HAVE_SAPDB)
+				AC_MSG_RESULT(Yes)
 
 				CFLAGS="$old_CFLAGS"
                 LDFLAGS="$old_LDFLAGS"
 
             else
-				AC_MSG_RESULT(cpc not in path, or no compatible C compiler)
+				AC_MSG_RESULT(cpc not in path or no compatible C compiler)
             fi
 
             PATH="$old_PATH"
@@ -1094,8 +1050,10 @@ AC_ARG_WITH(informix,
 				ESQLCC_OK="OK"
 			fi
 
+			AC_MSG_CHECKING(if we can use esql)
 			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
 			then
+				AC_MSG_RESULT(Yes)
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
 				if test -z "$IFX_LIBS"; then
@@ -1141,7 +1099,7 @@ AC_ARG_WITH(informix,
                 LDFLAGS="$old_LDFLAGS"
 
             else
-				AC_MSG_RESULT(esql not in path, or no compatible C compiler)
+				AC_MSG_RESULT(esql not in path or no compatible C compiler)
             fi
 		fi
 	else
@@ -1613,7 +1571,8 @@ AC_ARG_WITH(unixodbc,
 
 #Do this check only if we did not find any ODBC manager support already:
 if test -z "$ODBC_TYPE"; then
-AC_MSG_CHECKING(for Easysoft ODBC-ODBC Bridge support)
+PHP_CONFIGURE_PART(Checking for Easysoft ODBC-ODBC Bridge support:)
+#AC_MSG_CHECKING(for Easysoft ODBC-ODBC Bridge support)
 AC_ARG_WITH(esoob,
 [  --with-esoob[=DIR]      Include Easysoft OOB support. DIR is the OOB base
                           install directory,
@@ -1653,7 +1612,8 @@ fi
 
 #Do this check only if we did not find any ODBC manager support already:
 if test -z "$ODBC_TYPE"; then
-AC_MSG_CHECKING(for a custom ODBC support)
+PHP_CONFIGURE_PART(Checking for custom ODBC support:)
+#AC_MSG_CHECKING(for a custom ODBC support)
 AC_ARG_WITH(custom-odbc,
 [  --with-custom-odbc[=DIR]
                           Include a user defined ODBC support.
@@ -2087,11 +2047,11 @@ AC_ARG_WITH(rpc,
                         #FIXME: if needed, set this path to appropriate subdir of "no_rpc" depending
                         #on platform. It is not clear is this files are platform dependent.
 						RPCLIB_INCLUDE="-I$aubitdir/tools/no_rpc/cygwin"
-				        AC_MSG_WARN("rpcgen" not found. Will use pre-compiled RPC files from tools/cygwin/)
+                        WARN_RPCGEN=1
 						;;
 
 		            *)
-				        AC_MSG_WARN("rpcgen" not found. Will use pre-compiled RPC files from CygWin port. ---NOT SURE THIS WILL WORK---)
+                        WARN_RPCGEN=2
 						#AC_MSG_ERROR( "rpcgen" not found. Please install Sun RPC or ask for precompiled RPC files for your platform to be added to Aubit disrtibution. Stop.)
 						USE_RPCGEN=0
 						RPCLIB_INCLUDE="-I$aubitdir/tools/no_rpc/cygwin"
@@ -2118,9 +2078,7 @@ AC_ARG_WITH(rpc,
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
 				AC_DEFINE(HAVE_RPCLIB,0,[ ])
 				HAVE_RPCLIB=0
-		        AC_MSG_WARN('rpclib' not found. You will not be able to compile or open form and menu files or)
-				AC_MSG_WARN(use Sun RPC functionality of Aubit 4gl compiler. Consider installing Sun RPC.)
-				AC_MSG_WARN(Will use header files from tools/no_rpc/.)
+                WARN_RPCLIB=1
                 #FIXME: if we link fcompile and mcompile statically with rpclib for binary distro, will
                 #it be able to compile forms and menus on systems without rpclib installed?
 				
@@ -2287,10 +2245,16 @@ AC_CHECK_LIB([curses], [main])
         fi
 	fi
 
+case "$host" in
+*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
+		AC_MSG_CHECKING(libdl)
+		AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
+    ;;
+*)
 
-# FIXME: Replace `main' with a function in `-ldl' - but don't forget to
-#clear AC cache for next test!
-AC_CHECK_LIB([dl], [main])
+	# FIXME: Replace `main' with a function in `-ldl' - but don't forget to
+	#clear AC cache for next test!
+	AC_CHECK_LIB([dl], [main])
 
 	if test "$ac_cv_lib_dl_main" != "yes"; then
 		old_LDFLAGS="$LDFLAGS"
@@ -2305,6 +2269,10 @@ AC_CHECK_LIB([dl], [main])
 			AC_DEFINE(HAVE_LIB_DL)
 		fi
     fi
+    ;;
+esac
+
+
 
 #FIXME form and panel are part of curses?
 #AIX: Both form and panel h files are part of ncurses. Install it.
@@ -2572,9 +2540,6 @@ else
 	if test "$cygwin" = "1"; then
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_SQLTYPE=odbc32
-
-        #echo "WARNING: SQL on Windows temporaraly disabled"
-		#A4GL_SQLTYPE=nosql
 	fi
 fi
 
@@ -2653,11 +2618,7 @@ else
 
 
 	if test "$A4GL_UI" = "CONSOLE" ; then
-		AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
-		#AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
-		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
-		AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
-		AC_MSG_WARN(Considder installing 'curses' libraries)
+		WARN_UI=1
     fi
 fi
 
@@ -2874,6 +2835,61 @@ AC_OUTPUT
 ##                Warnings and exit messages
 ## ==================================================================
 
+if test "$WARN_LEX" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| Will use pre-compiled parser files from tools/no_yacc              |
+| Use 'make refresh.noyacc' on source tree with yacc installed.      |
+| You will need lex if you'd want to regenerate the Aubit parsers.   |
+X
+fi
+if test "$WARN_YACC" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| Will use pre-compiled parser files from tools/no_yacc              |
+| Use 'make refresh.noyacc' on source tree with yacc installed.      |
+| You will need bison if you'd want to regenerate the Aubit parsers. |
+X
+fi
+if test "$WARN_RPCGEN" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| "rpcgen" not found. Will use pre-compiled RPC files from           |
+| tools/cygwin/                                                      |
+| Use 'make refresh.norpcgen' on source tree with rpcgen installed.  |
+X
+fi
+if test "$WARN_RPCGEN" = "2"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| "rpcgen" not found. Will use pre-compiled RPC files from CygWin    |
+| port. ---NOT SURE THIS WILL WORK---                                |
+X
+fi
+if test "$WARN_RPCLIB" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| 'rpclib' not found. You will not be able to compile or open form   |
+| and menu files or use Sun RPC functionality of Aubit 4gl compiler. |
+| Consider installing Sun RPC. Will use header files from            |
+| tools/no_rpc/. Use 'make refresh.norpclib' on system with rpclib   |                                                    |
+X
+fi
+if test "$WARN_UI" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| No curses or GTK detected - your only screen UI will be CONSOLE    |
+| IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS - ONLY DISPLAY   |
+| ERROR MESSAGE MENU & PROMPT WILL WORK! Considder installing        |
+| 'curses' libraries                                                 |
+X
+fi
 if test "$INFORMIX_WARNING" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.41 2002-10-05 10:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.42 2002-10-07 11:06:23 afalout Exp $
 #
 
 ROOT        =../..
@@ -103,23 +103,19 @@ all: $(ALL)
 ${ROOT}/bin/fcompile: $(OBJECTS)
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-#	${LN} ./$@${EXE} ${ROOT}/bin/$@${EXE}
 
 ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
-#	${LN} ./$@ ${ROOT}/bin
 
 ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 #	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
-#	${LN} ./$@ ${ROOT}/bin
 
 ${ROOT}/bin/fshow : fshow.4gl
 #FIXME: remove -I${ROOT}/tools
 	${FAIL_OK}${SH} ${4GLPC} $^ -o $@ -I${ROOT}/tools
-#	${FAIL_OK}${LN} ./$@ ${ROOT}/bin
 
 ## ==================================================================
 ##                          Sub targets
@@ -154,6 +150,7 @@ y.tab.o: 		lex.yy.c
 formwrite2.o :  form_x.h
 fcompile.o :  	form_x.h
 where.o : 		form_x.h
+y.tab.o :       screen.yacc
 
 
 ## ==================================================================

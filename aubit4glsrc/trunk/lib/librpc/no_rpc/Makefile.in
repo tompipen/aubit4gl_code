@@ -24,9 +24,8 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-26 00:30:41 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-07 11:06:32 afalout Exp $
 #
-
 
 ROOT    =../../..
 LIBROOT =../..
@@ -45,17 +44,17 @@ OBJS_NORPC		=${CMODS_NORPC:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ifdef COMSPEC
-	ALL				=dlllibRPC_NORPC
-else
-    ALL				=${LIBROOT}/libRPC_NORPC${SO_EXT}
-endif
+ALL		=${LIBROOT}/libRPC_NORPC${SO_EXT}
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I../sun_rpc -I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+CFLAGS	:=-I../sun_rpc -I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -65,15 +64,18 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libRPC_NORPC${SO_EXT}: ${OBJS_NORPC}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
-	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ${LIBROOT}
+#dlllibRPC_NORPC: ${CMODS_NORPC}
+#	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
+#	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ${LIBROOT}
 
 ## ==================================================================
 ##                        Clean Targets

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.20 2002-09-26 01:22:51 afalout Exp $
+# $Id: compile_perl.c,v 1.21 2002-10-07 11:06:29 afalout Exp $
 #
 */
 
@@ -54,6 +54,7 @@
                     compile_c.c
                     compile_c_gtk.c
                     compile_perl.c
+                    API_lex.c
                     ...etc...
 
 
@@ -78,30 +79,7 @@
 =====================================================================
 */
 
-
-
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include "a4gl_dbform.h"
-	#include "a4gl_report.h"
-	#include "a4gl_oform.h"
-	#include "a4gl_attributes.h"
-	#include "a4gl_errors.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_prompt.h"
-	#include "a4gl_aubit_lib.h"
-	#include "../lex_c/a4gl_lex_print_protos_c.h"
-	#include "a4gl_4glc_4glc.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_lex_perl_int.h"
-
-#endif
+#include "a4gl_lib_lex_perl_int.h"
 
 /*
 =====================================================================
@@ -109,56 +87,64 @@
 =====================================================================
 */
 
-FILE *outfile = 0;
-FILE *hfile = 0;
-extern char *outputfilename;
-extern char *curr_func;
-extern char *infilename;
-extern int yylineno;
-extern int lastlineno;
-extern int inp_flags;
-extern struct rep_structure rep_struct;
-extern struct pdf_rep_structure pdf_rep_struct;
-extern struct form_attr form_attrib;
-extern int menu_cnt;
-extern int ccnt;				/* Block counter */
-extern char mmtitle[132][132];
+FILE *			outfile = 0;
+FILE *			hfile = 0;
+extern char *	outputfilename;
+extern char *	curr_func;
+extern char *	infilename;
+extern int 		yylineno;
+extern int 		lastlineno;
+extern int 		inp_flags;
+extern struct 	rep_structure rep_struct;
+extern struct 	pdf_rep_structure pdf_rep_struct;
+extern struct 	form_attr form_attrib;
+extern int 		menu_cnt;
+extern int 		ccnt;				/* Block counter */
+extern char 	mmtitle[132][132];
+extern int 		report_stack_cnt;
+extern int 		report_cnt;
+extern int 		rep_type;
+extern int 		sreports_cnt;
+extern char 	when_to_tmp[64];
 
-extern struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-extern struct s_report_stack report_stack[REPORTSTACKSIZE];
-extern int report_stack_cnt;
-extern int report_cnt;
-extern int rep_type;
-extern int when_code[8];
+#ifdef __CYGWIN__
+	dll_import int 		when_code[8];
+	dll_import struct 	s_report sreports[1024];
+    dll_import struct 	s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+	dll_import struct 	binding_comp ibind[NUMBINDINGS];
+	dll_import struct 	binding_comp nullbind[NUMBINDINGS];
+	dll_import struct 	binding_comp obind[NUMBINDINGS];
+	dll_import struct 	binding_comp fbind[NUMBINDINGS];
+	dll_import struct 	binding_comp ordbind[NUMBINDINGS];
+	dll_import struct 	s_constr_buff constr_buff[256];
+	dll_import char 	when_to[64][8];
+	dll_import struct 	s_report_stack report_stack[REPORTSTACKSIZE];
+#else
+	extern int 			when_code[8];
+	extern struct 		s_report sreports[1024];
+	extern struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+	extern struct 		binding_comp ibind[NUMBINDINGS];
+	extern struct 		binding_comp nullbind[NUMBINDINGS];
+	extern struct 		binding_comp obind[NUMBINDINGS];
+	extern struct 		binding_comp fbind[NUMBINDINGS];
+	extern struct 		binding_comp ordbind[NUMBINDINGS];
+	extern struct 		s_constr_buff constr_buff[256];
+	extern char 		when_to[64][8];
+	extern struct 		s_report_stack report_stack[REPORTSTACKSIZE];
+#endif
 
-extern struct s_report sreports[1024];
-extern int sreports_cnt;
-extern char when_to_tmp[64];
 
-extern char when_to[64][8];
 
-extern struct binding_comp ibind[NUMBINDINGS];
-extern struct binding_comp nullbind[NUMBINDINGS];
-extern struct binding_comp obind[NUMBINDINGS];
-extern struct binding_comp fbind[NUMBINDINGS];
-extern struct binding_comp ordbind[NUMBINDINGS];
+extern int 	ordbindcnt;
+extern int 	ibindcnt;
+extern int 	nullbindcnt;
+extern int 	obindcnt;
+extern int 	fbindcnt;
+extern int 	constr_cnt;
 
-extern int ordbindcnt;
-
-extern int ibindcnt;
-extern int nullbindcnt;
-extern int obindcnt;
-
-extern int fbindcnt;
-
-extern struct s_constr_buff constr_buff[256];
-extern int constr_cnt;
-char unwind[256][256];
-int unwindcnt = 0;
-int printing_record = 0;
-
-//char lname[256];
-
+char 		unwind[256][256];
+int 		unwindcnt = 0;
+int 		printing_record = 0;
 
 /*
 =====================================================================
@@ -166,38 +152,38 @@ int printing_record = 0;
 =====================================================================
 */
 
-static void print_space (void);
-void open_outfile (void);
+static void 	print_space 				(void);
+void 			open_outfile 				(void);
 
 
-static void print_output_rep (struct rep_structure *rep);
-static void print_form_attrib (struct form_attr *form_attrib);
-static int print_field_bind (int ccc);
-static int print_arr_bind (char i);
-static int print_constr (void);
-static int print_field_bind_constr (void);
-static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
-static void pr_report_agg (void);
-static void pr_report_agg_clr (void);
-static void print_menu (int mn);
+static void 	print_output_rep 			(struct rep_structure *rep);
+static void 	print_form_attrib 			(struct form_attr *form_attrib);
+static int 		print_field_bind 			(int ccc);
+static int 		print_arr_bind 				(char i);
+static int 		print_constr 				(void);
+static int 		print_field_bind_constr 	(void);
+static int 		pr_when_do 					(char *when_str, int when_code, int l, char *f, char *when_to);
+static void 	pr_report_agg 				(void);
+static void 	pr_report_agg_clr 			(void);
+static void 	print_menu 					(int mn);
 
 
 /* static void real_lex_printc(char *fmt, va_list *ap); */
 
-void printh (char *fmt, ...);
-static void printcomment (char *fmt,...);
-void dump_unwind(void);
+void 			printh 						(char *fmt, ...);
+static void 	printcomment 				(char *fmt,...);
+void 			dump_unwind					(void);
 
 
-void internal_lex_printc(char *fmt, va_list *ap);
-void internal_lex_printcomment(char *fmt, va_list *ap);
-void internal_lex_printh(char *fmt, va_list *ap);
+void 			internal_lex_printc			(char *fmt, va_list *ap);
+void 			internal_lex_printcomment	(char *fmt, va_list *ap);
+void 			internal_lex_printh			(char *fmt, va_list *ap);
 
-static void real_print_expr (struct expr_str *ptr);
-static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
-static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
+static void 	real_print_expr 			(struct expr_str *ptr);
+static void 	real_print_func_call 		(char *identifier, struct expr_str *args, int args_cnt);
+static void 	real_print_pdf_call 		(char *a1, struct expr_str *args, char *a3);
 
-
+void 			printc						(char* fmt,... );
 
 /*
 =====================================================================
@@ -205,8 +191,9 @@ static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 =====================================================================
 */
 
-/* this one is used only form this file */
-static void
+/* this one is used only form this file and compile_c_gtk.c */
+//static
+void
 printc(char* fmt,... )
 {
 va_list ap;

@@ -1,5 +1,6 @@
 #This script is invoked from lib/libaubit4gl/Makefile
 #It creates lib/generated/tmperrs.h file used by lib/libaubit4gl/error.c
+#WARNIG: errno renamed to a4gl_errno because of the conflict in errno.h
 
 #Get settings
 . ../../etc/aubitrc
@@ -17,10 +18,10 @@ FS="|"
 
 while (getline < "data/errs") {
 if($0=="") break;
-errno=$1
-if (errno>errcnt) errcnt=errno+1
+a4gl_errno=$1
+if (a4gl_errno>errcnt) errcnt=a4gl_errno+1
 errmsg=$2
-errors[errmsg]=errno
+errors[errmsg]=a4gl_errno
 }
 
 FS="|"
@@ -28,7 +29,7 @@ close("data/errs")
 
 print "static struct s_err {"
 	print "char *errmsg;"
-	print "int errno;"
+	print "int a4gl_errno;"
         print "} errors[]={"
 }
 
@@ -44,12 +45,12 @@ b=substr($0,index($0,":")-1)
 a=substr($0,index($0,"exitwith")+9)
 a=substr(a,index(a,"\"")+1)
 a=substr(a,1,index(a,"\"")-1)
-errno=errors[a]
-if (errno==0&&done[a]==0) errno=errcnt++
+a4gl_errno=errors[a]
+if (a4gl_errno==0&&done[a]==0) a4gl_errno=errcnt++
 if (done[a]==0) {
-print "{\"" a "\"," errno " },"
+print "{\"" a "\"," a4gl_errno " },"
 done[a]=1
-print errno "|" a > "../generated/errdefs"
+print a4gl_errno "|" a > "../generated/errdefs"
 }
 }
 END {

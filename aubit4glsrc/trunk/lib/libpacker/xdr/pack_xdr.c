@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
+# $Id: pack_xdr.c,v 1.4 2002-10-07 11:06:31 afalout Exp $
 #*/
 
 /**
@@ -53,13 +53,7 @@
 =====================================================================
 */
 
-//int unpack_all(char *name,void *s,char *filename);
-//int pack_all(char *name,void *s,char *filename);
 int A4GLPACKER_initlib (void);
-//int can_pack_all(char* name);
-//int open_packer(char *fname,int dir) ;
-//int close_packer(int dir);
-
 
 static int (*func)(); /*  warning: function declaration isn't a prototype */
 static int process_xdr(char dir,char *name,void *s,char *filename) ;

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.45 2002-10-01 09:50:30 afalout Exp $
+# $Id: Makefile.in,v 1.46 2002-10-07 11:06:21 afalout Exp $
 #
 
 ROOT		=../..
@@ -36,12 +36,12 @@ include ${ROOT}/incl/Makefile-common
 ##                   Source files
 ## ==================================================================
 
-GENRULES        =rules/generated
-
 ifeq "@YACC@" "no"
+	GENRULES    =${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	Y_TAB_C		=${GENRULES}/y.tab.c
 	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
-	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/${GENRULES}/y.tab.c
 else
+	GENRULES    =rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
 endif
 
@@ -50,8 +50,8 @@ CMODS           = \
 				dim.c \
 				list.c lexer.c \
 				mod.c map.c \
-				${GENRULES}/states.c \
-				${GENRULES}/kw.c \
+				rules/generated/states.c \
+				rules/generated/kw.c \
                 ${Y_TAB_C}
 
 GETOPT_LONG		=@GETOPT_LONG@
@@ -91,11 +91,11 @@ ${ROOT}/bin/4glc: ${4GLCAOBJ}
 ##                            Windows Targets
 ## ==================================================================
 
-exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
+libexportlib4glcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
 #	${MAKE} libexportlib4glcomp.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${ROOT}/lib"
 #	dlltool --export-all --output-def $@ $^
 #	dlltool --export-all --output-exp libexportlib4glcomp.dll.a $^
-	${CC} -shared -Wl,--output-def=exportlib4glcomp.def -Wl,--out-implib=exportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
+	${CC} -shared -Wl,--output-def=libexportlib4glcomp.def -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
 #	${CC} -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
 
 ## ==================================================================
@@ -105,7 +105,7 @@ exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
 #rules.t :
 #	${MAKE} -C rules $(MKNAME)
 
-${GENRULES}/y.tab.o: ${Y_TAB_C}
+rules/generated/y.tab.o: ${Y_TAB_C}
 	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C}:
@@ -113,6 +113,8 @@ ${Y_TAB_C}:
 
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
+
+#${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
 ## ==================================================================
 ##                            Dependencies
@@ -123,13 +125,26 @@ ${Y_TAB_C}:
 #${GENRULES}/y.tab.c: 			rules.t
 #${GENRULES}/states.c: 			rules.t
 
-${GENRULES}/kw.c ${GENRULES}/single_words.rule ${GENRULES}/y.tab.c \
+#${GENRULES}/kw.c ${GENRULES}/single_words.rule ${GENRULES}/y.tab.c \
+#${GENRULES}/states.c: ${Y_TAB_C}
+
+${GENRULES}/kw.c ${GENRULES}/single_words.rule \
 ${GENRULES}/states.c: ${Y_TAB_C}
+
+#rules/generated/states.o: rules/generated/states.c
+rules/generated/states.c rules/generated/kw.h rules/generated/y.tab.h:
+	${MAKE} -C rules $(MKNAME)
+
+4glc.o: rules/generated/kw.h rules/generated/y.tab.h
 
 mod.o: 							mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 			../fcompile/form_x.h
 lexer.o: 						${GENRULES}/kw.h
 lexer.o: 						${GENRULES}/y.tab.h
+
+## ==================================================================
+##                            Other Targets
+## ==================================================================
 
 splint: lclint
 lclint: $(CMODS)
@@ -145,7 +160,7 @@ clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a
 
 clean.rules.generated:
-	(cd ${GENRULES}; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)
+	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)
 
 clean.rules:
 	(cd rules; ${RM} .\#* *.bak .*.bak)

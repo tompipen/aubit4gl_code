@@ -22,14 +22,11 @@
 */
 #include "a4gl_libaubit4gl.h"
 
-	#include "rules/generated/kw.h"
-	
-	#ifndef _NO_Y_TAB_H_
-		#include "rules/generated/y.tab.h"
-    #endif
+#include "rules/generated/kw.h"
 
-//	#include "kw.h"
-//	#include "y.tab.h"
+#ifndef _NO_Y_TAB_H_
+	#include "rules/generated/y.tab.h"
+#endif
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 
@@ -45,7 +42,7 @@
 
 
 	/* ========================== Implemented in lexer.c ================= */
-	#include <stdio.h>
+
 	int 	mja_fgetc 			(FILE * f);
 	void 	turn_state 			(int kw, int v);
 	int 	yylex 				(void);
@@ -117,11 +114,6 @@
 			   int *size, int *level, char *arr);
 	int 	scan_orderby 		(char *varname, int cnt);
 	void 	pdf_init_report_structure (struct pdf_rep_structure *rep);
-	/* #include "a4gl_oform.h" */ /* struct form_attr */
-
-    #ifdef OLD_INCL
-		#include "a4gl_aclform.h"  /* struct form_attr */
-    #endif
 
 	void 	reset_attrib 		(struct form_attr * form_attrib);
 	void 	new_counter 		(void);
@@ -165,16 +157,12 @@
 	int 	print_push_rec 		(char *s, char *b);
 	void 	expand_obind 		(void);
 	
-	
-	
-	/* #include "a4gl_4glc_compiledefs.h" */	/* struct expr_str */
-
     /* --------------------- from a4gl_4glc_compiledefs.h --------------------- */
 
-	#define MAXMENU 10
-	#define MAXMENUOPTS 10
-	#define NUMBINDINGS 2048
-
+	#define MAXMENU 		10
+	#define MAXMENUOPTS 	10
+	#define NUMBINDINGS 	2048
+	#define REPORTSTACKSIZE 256
 	struct s_menu_stack
 	{
 
@@ -191,8 +179,6 @@
 	  char why[20];
 	  char whytype;
 	};
-	#define REPORTSTACKSIZE 256
-
 	struct s_report
 	{
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.20 2002-09-25 23:59:55 afalout Exp $
+# $Id: fglwrap.c,v 1.21 2002-10-07 11:06:27 afalout Exp $
 #
 */
 
@@ -43,16 +43,16 @@
 =====================================================================
 */
 
-	#define DEFINE_INTFLAG
-	#define DEFINE_QUITFLAG
-	#define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
+#define DEFINE_INTFLAG
+#define DEFINE_QUITFLAG
+#define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
 	                            rest of source files, they get only DECLARED
 	                            as extern */
 
-	/* FIXME: we should not need to pre-load anything */
-	#define _PRELOAD_SQL_ 		/* pre-load SQL module */
-	#define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
-	#define _PRELOAD_UI_ 		/* pre-load UI module */
+/* FIXME: we should not need to pre-load anything */
+#define _PRELOAD_SQL_ 		/* pre-load SQL module */
+#define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
+#define _PRELOAD_UI_ 		/* pre-load UI module */
 
 /*
 =====================================================================
@@ -70,14 +70,13 @@
 
 int 	p_numargs	=0;
 int 	isdebug		=0;
-char *	p_args[256];
 int 	ui_mode		=0;
 int 	int_flag;
-
 int 	quit_flag;
 //int 	abort_pressed;
-
 extern int errno;
+
+char *	p_args[256];
 
 
 /*

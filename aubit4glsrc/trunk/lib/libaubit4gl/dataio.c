@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.2 2002-07-21 06:41:48 afalout Exp $
+# $Id: dataio.c,v 1.3 2002-10-07 11:06:26 afalout Exp $
 #
 */
 
@@ -57,31 +57,12 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <signal.h>                 /* SIGINT */
-	#include <locale.h>                 /* setlocale() */
-	#include <string.h>
-	#include <unistd.h> 				/* sleep() */
-
-	#ifdef __CYGWIN__
-		#include <windows.h>
-		#include <errno.h>
-	#endif
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_keys.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_dlsql.h"				/* A4GLSQL_initlib() */
-	#include "a4gl_runtime_tui.h"		/*  push_int() */
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
+#ifdef __CYGWIN__
+	#include <windows.h>
+	#include <errno.h>
 #endif
+
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================

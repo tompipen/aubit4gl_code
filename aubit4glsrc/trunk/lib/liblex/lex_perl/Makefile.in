@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-10-07 11:06:29 afalout Exp $
 #
 
 ROOT    =../../..
@@ -44,35 +44,50 @@ include ${ROOT}/incl/Makefile-common
 ##                    Options
 ## ==================================================================
 
-
-ifneq "${COMSPEC}" ""
-	ALL         =dllLEX_PERL
+ifeq "@YACC@" "no"
+	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+	KW_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h
 else
-	ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
+	KW_H		=${ROOT}/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/compilers/4glc/rules/generated/y.tab.h
 endif
 
+#ifneq "${COMSPEC}" ""
+#	ALL         =dllLEX_PERL
+#else
+	ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
+#endif
+
 CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
+endif
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ${LIBROOT}/libLEX_PERL${SO_EXT}: ${4GLPERL_OBJ}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                            Windows Targets
 ## ==================================================================
 
-.PHONY : dllLEX_PERL
-dllLEX_PERL: exportlib4glcomp ${4GLCOBJ_C}
-	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${LIBROOT} -L."
+#.PHONY : dllLEX_PERL
+#dllLEX_PERL: exportlib4glcomp ${4GLCOBJ_C}
+#	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${LIBROOT} -L."
 #see mod.c for list of variables that can't be automaticelly exported.
 
 #${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
 # -lPDF_NOPDF
-	${CP} libLEX_C.dll ${LIBROOT}
-	${CP} libLEX_C.dll.a ${LIBROOT}
+#	${CP} libLEX_C.dll ${LIBROOT}
+#	${CP} libLEX_C.dll.a ${LIBROOT}
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-10-07 11:06:30 afalout Exp $
 #
 
 ROOT    =../../..
@@ -49,6 +49,11 @@ OBJS				=${CMODS:.c=.o}
 CFLAGS				+=-I.. -I${ROOT}/compilers/fcompile
 ALL 				=${LIBROOT}/libMSG_NATIVE${SO_EXT}
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -57,17 +62,21 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libMSG_NATIVE${SO_EXT} : ${OBJS}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllFORM_XDR
-dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
-	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
-	${CP} libFORM_XDR.dll ${LIBROOT}
+#.PHONY : dllFORM_XDR
+#dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
+#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${CP} libFORM_XDR.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets

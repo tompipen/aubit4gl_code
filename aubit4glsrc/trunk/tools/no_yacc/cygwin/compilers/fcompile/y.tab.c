@@ -162,7 +162,11 @@ extern int colno;
 extern int scr;
 int in_comment;
 long fileseek=0;
-extern struct_form the_form;
+#ifdef __CYGWIN__
+	dll_import struct_form the_form;
+#else
+	extern struct_form the_form;
+#endif
 extern int newscreen;
 extern int fldno;
 extern int fstart;

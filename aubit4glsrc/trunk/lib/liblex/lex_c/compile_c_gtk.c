@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.7 2002-09-26 01:22:51 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.8 2002-10-07 11:06:29 afalout Exp $
 #
 */
 
@@ -57,6 +57,7 @@
                     compile_c.c
                     compile_c_gtk.c
                     compile_perl.c
+                    API_lex.c
                     ...etc...
 
 
@@ -98,7 +99,7 @@ char lname[256];
 
 
 extern void printc(char* fmt,... ); 	/* in API_lex.c */
-extern void printh (char *fmt, ...); 	/* in API_lex.c */
+extern void lex_printh (char *fmt, ...); 	/* in API_lex.c */
 
 /*
 =====================================================================
@@ -115,13 +116,13 @@ void
 print_formhandler (char *name)
 {
 strcpy(lname,name);
-  printh
+  lex_printh
     ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data);\n",
      name);
-  printh
+  lex_printh
     ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n",
      name);
-  printh ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n", name);
+  lex_printh ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n", name);
   printc
     ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",
      name);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.14 2002-08-29 11:25:45 mikeaubury Exp $
+# $Id: gui.c,v 1.15 2002-10-07 11:06:27 afalout Exp $
 #
 */
 
@@ -102,6 +102,9 @@ gui.c:414: `EINTR' undeclared (first use in this function)
 gui.c:414: (Each undeclared identifier is reported only once
 
 So it will be included only in gui.c:
+
+oh, and in a4gl_libaubit4gl_int.h!!!!!!! Can we remove this one?
+
 */
 #include <errno.h> /* EINTR */
 

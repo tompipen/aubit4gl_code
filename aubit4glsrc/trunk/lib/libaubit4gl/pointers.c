@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.14 2002-09-26 08:00:13 afalout Exp $
+# $Id: pointers.c,v 1.15 2002-10-07 11:06:27 afalout Exp $
 #
 */
 
@@ -87,7 +87,8 @@ struct s_node
 
 /* search internal node for windows only*/
 //#ifdef WIN32
-#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32
+#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32 || defined __CYGWIN__
+//actually, should use 	#if HAVE_SEARCH_H
 	typedef struct entry { char *key, *data; } ENTRY;
 	typedef enum { FIND, ENTER } ACTION;
 
@@ -427,7 +428,7 @@ has_pointer (char *pname, char t)
 
 //#ifdef WIN32
 
-#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32
+#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32 || defined __CYGWIN__
 //# if (defined __STDC__ && __STDC__) || defined WIN32
 
 
@@ -453,7 +454,7 @@ int
 	int r;
 
 
-#ifdef WIN32
+#ifdef WIN32  || defined __CYGWIN__
     //Andrej: temp. commented out for debug on Darwin
 	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
 	    return (*rootp);		/* we found it! */
@@ -495,7 +496,7 @@ int
 	if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
 	return ((struct node_t *)0);
 
-#ifdef WIN32
+#ifdef WIN32  || defined __CYGWIN__
  //Andrej: temp commented out for debug on Darwin
 	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
 	{
@@ -605,7 +606,7 @@ tfind(char *key, register node **rootp, int (*compar)())
     }
     return (node *)0;
 }
-#endif /* #ifdef WIN32 */
+#endif /* #ifdef WIN32  || defined __CYGWIN__ */
 
 /* ============================== EOF ============================ */
 

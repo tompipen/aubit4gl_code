@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.17 2002-06-26 06:11:44 afalout Exp $
+# $Id: sqlex.c,v 1.18 2002-10-07 11:06:33 afalout Exp $
 #
 */
 
@@ -44,88 +44,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <stdarg.h>
-
-	#ifdef __CYGWIN__
-		#define __ODBC_DEFINED__
-		#define WIN32
-		#include <windows.h>
-		#include <sql.h>
-		#include <sqlext.h>
-	#else
-		#ifdef UNIXODBC
-			#define __UCHAR_DEFINED__
-			#define __ODBC_DEFINED__
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-		#endif
-
-		#ifdef IODBC
-		    #define __ODBC_DEFINED__
-			#define __UCHAR_DEFINED__
-			#ifdef OLDIODBC
-				#include <iodbc.h>
-				#include <isql.h>
-				#include <isqlext.h>
-	        #else
-				#include <sql.h>
-				#include <sqlext.h>
-				#include <sqltypes.h>
-	         #endif
-		#endif
-
-		#ifdef IFXODBC
-			/* infomix headers require wchar_t to be already defined
-			so we have to include stdio.h here */
-			#include <stdio.h>
-
-			#define __ODBC_DEFINED__
-			#include <incl/cli/infxcli.h>
-			#include <incl/cli/infxsql.h>
-			/* #include <incl/cli/sqlucode.h> */
-		#endif
-
-		#ifdef PGODBC
-		    #define __ODBC_DEFINED__
-			#include <pgsql/iodbc/iodbc.h>
-			#include <pgsql/iodbc/isql.h>
-			#include <pgsql/iodbc/isqlext.h>
-		#endif
-
-	    #ifndef __ODBC_DEFINED__
-	        /* default for tesing, when we don't use makefile we will not have -Dxxx
-			 unixODBC headers:
-	         */
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
-
-	#endif
-
-	#include "a4gl_dtypes.h"
-
-	#include "a4gl_dbform.h" 		/* struct s_form_dets */
-	#include "a4gl_aubit_lib.h"
-	/* stack.h will eventually include stdlib.h, which uses getenv(), so
-	 we need to set GETENV_OK and only then include debug.h */
-	#include "a4gl_stack.h"
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-
-
-#else
-
-    #include "a4gl_lib_sql_odbc_int.h"
-
-#endif
-
+#include "a4gl_lib_sql_odbc_int.h"
 
 /*
 =====================================================================
@@ -134,8 +53,8 @@
 */
 
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)
-#define WIDTH 19
-#define MEMSIZE 1024
+#define WIDTH 		19
+#define MEMSIZE 	1024
 #define USES_RESOURCE int acl_rescnt;acl_rescnt=new_rescnt()
 #define ALLOC(a) allocate_mem(a,(void*)acl_rescnt)
 #define RELEASE() dealloc_mem((void *)acl_rescnt)
@@ -175,28 +94,28 @@ char invalid[] = "<Invalid>";
 =====================================================================
 */
 
-int scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *r2);
-int scan_stmt (char *s, char *p, HSTMT hstmt);
-int add_txt (char *s, int x, int hwnd);
-int clrline (int line[]);
-int rm_txt (int a, int line[], int ign);
-int remove_it (int a);
-char *getres (char *s);
-int add_userptr (void *ptr);
-long set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
-int set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob);
-long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
-int alloc_find_ptr (void *ptr);
+int 	scan_options 	(struct xxsql_options options[], char *s, char *p, long *r1, long *r2);
+//int scan_stmt (char *s, char *p, HSTMT hstmt);
+int 	add_txt 		(char *s, int x, int hwnd);
+int 	clrline 		(int line[]);
+int 	rm_txt 			(int a, int line[], int ign);
+int 	remove_it 		(int a);
+char *	getres 			(char *s);
+int 	add_userptr 	(void *ptr);
+long 	set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
+int 	set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob);
+long 	get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+int 	alloc_find_ptr (void *ptr);
 
-int ctol (char s);
-char * generate_using_for_dmy (char *s, int size);
-void * allocate_mem (int size, void *parent);
-void init_mem (void);
-int alloc_find_parent (void *ptr, int start);
-void dealloc_mem (void *ptr);
-int new_rescnt (void);
-int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
-int set_blob_data(HSTMT hstmt);
+int 	ctol 			(char s);
+char * 	generate_using_for_dmy (char *s, int size);
+void * 	allocate_mem 	(int size, void *parent);
+void 	init_mem 		(void);
+int 	alloc_find_parent (void *ptr, int start);
+void 	dealloc_mem 	(void *ptr);
+int 	new_rescnt 		(void);
+int 	get_blob_data 	(struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+int 	set_blob_data	(HSTMT hstmt);
 
 /*
 =====================================================================
@@ -205,14 +124,14 @@ int set_blob_data(HSTMT hstmt);
 */
 
 #ifdef __CYGWIN__
-	int need_logon ();
-	int set_regkey (char *key, char *data);
-	int get_regkey (char *key, char *data, int n);
-	void createkey ();
-	HKEY newkey = 0;
-	void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
-	void MBox (char *s, char *fmt,...);
-	void set_default_logon ();
+	int 	need_logon 	(void);
+	int 	set_regkey 	(char *key, char *data);
+	int 	get_regkey 	(char *key, char *data, int n);
+	void 	createkey 	(void);
+	HKEY 	newkey = 0;
+	void 	get_anykey 	(HKEY whence, char *key, char *key2, char *data, int n);
+	void 	MBox 		(char *s, char *fmt,...);
+	void 	set_default_logon (void);
 	/*
 	#endif
 

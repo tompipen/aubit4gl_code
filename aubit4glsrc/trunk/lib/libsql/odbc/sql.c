@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.40 2002-08-31 06:20:00 afalout Exp $
+# $Id: sql.c,v 1.41 2002-10-07 11:06:33 afalout Exp $
 #
 */
 
@@ -57,14 +57,14 @@
 	#define FALSE 0
 #endif
 
-#define FETCH_ABSOLUTE 1
-#define FETCH_RELATIVE 2
-#define DTYPE_DATE 7
+#define FETCH_ABSOLUTE 	1
+#define FETCH_RELATIVE 	2
+#define DTYPE_DATE 		7
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
-#define exitwith exitwith_sql
-#define MAXCURSORS 100
-#define MAXPREPARE 100
-#define MAXCOLS 100
+#define exitwith 		exitwith_sql
+#define MAXCURSORS 		100
+#define MAXPREPARE 		100
+#define MAXCOLS 		100
 #define max(a,b) (a>b?a:b)
 #define MAX_NUM_PRECISION 15
 
@@ -86,50 +86,50 @@
 =====================================================================
 */
 
-char *decode_rc(int a);
-char *conv_date(char *s);
-int find_prepare2 (char *pname);
-struct s_sid *find_prepare (char *pname);
-int find_cursor_for_decl (char *cname);
-struct s_cid *A4GLSQL_find_cursor (char *cname);
-int need_quotes (int d);
-int obind_column_arr (int pos, char *s, HSTMT hstmt);
-void ibind_column_arr (int pos, char *s, HSTMT hstmt);
-char *proc_bind_arr (char **b, int n, char t, HSTMT hstmt);
-void *bind_date (long *ptr_to_date_var);
-void ibind_column (int pos, struct BINDING *bind, HSTMT hstmt);
-void obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
-int ODBC_exec_prepared_sql (HSTMT hstmt);
-void add_cursor (struct s_cid *cid, char *cname);
-int ODBC_exec_stmt (HSTMT hstmt);
-int ODBC_exec_select (HSTMT hstmt);
-int sqlerrwith (int rc, HSTMT h);
-int chk_need_blob(int rc,HSTMT hstmt)  ;
-int chk_getenv(char *s,int a) ;
-void post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,HSTMT hstmt);
-void  set_sqlca (HSTMT hstmt, char *s, int reset);
-UDWORD display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
-int example2 (UCHAR * server, UCHAR * uid, UCHAR * pwd, UCHAR * sqlstr);
-void chrcat (char *s, char a);
-char *conv_binding (struct BINDING *b);
-HSTMT *new_hstmt (HSTMT * hstmt);
-static int conv_sqldtype (int sqldtype, int sdim);
+char *			decode_rc		(int a);
+char *			conv_date		(char *s);
+int 			find_prepare2 	(char *pname);
+struct s_sid *	find_prepare 	(char *pname);
+int 			find_cursor_for_decl (char *cname);
+struct s_cid *	A4GLSQL_find_cursor (char *cname);
+int 			need_quotes 	(int d);
+int 			obind_column_arr (int pos, char *s, HSTMT hstmt);
+void 			ibind_column_arr (int pos, char *s, HSTMT hstmt);
+char *			proc_bind_arr 	(char **b, int n, char t, HSTMT hstmt);
+void *			bind_date 		(long *ptr_to_date_var);
+void 			ibind_column 	(int pos, struct BINDING *bind, HSTMT hstmt);
+void 			obind_column 	(int pos, struct BINDING *bind, HSTMT hstmt);
+int 			ODBC_exec_prepared_sql (HSTMT hstmt);
+void 			add_cursor 		(struct s_cid *cid, char *cname);
+int 			ODBC_exec_stmt 	(HSTMT hstmt);
+int 			ODBC_exec_select (HSTMT hstmt);
+int 			sqlerrwith 		(int rc, HSTMT h);
+int 			chk_need_blob	(int rc,HSTMT hstmt)  ;
+int 			chk_getenv		(char *s,int a) ;
+void 			post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,HSTMT hstmt);
+void  			set_sqlca 		(HSTMT hstmt, char *s, int reset);
+UDWORD 			display_size 	(SWORD coltype, UDWORD collen, UCHAR * colname);
+int 			example2 		(UCHAR * server, UCHAR * uid, UCHAR * pwd, UCHAR * sqlstr);
+void 			chrcat 			(char *s, char a);
+char *			conv_binding 	(struct BINDING *b);
+HSTMT *			new_hstmt 		(HSTMT * hstmt);
+static int 		conv_sqldtype 	(int sqldtype, int sdim);
 
-void exit_nicely (void);
-void chk_rc_full (int rc, void *hstmt, char *c, int line, char *file);
-RETCODE SQL_API newSQLSetParam (HSTMT hstmt, UWORD ipar, SWORD fCType,
-      SWORD fSqlType, UDWORD cbColDef, SWORD ibScale, PTR rgbValue,
-      SDWORD FAR * pcbValue);
-int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt);
-char * proc_binding (char *s, int n, struct BINDING *b);
-struct s_cid * A4GLSQL_free_cursor (char *cname);
-char* ret_sql_err (void);
-int print_err (HDBC hdbc, HSTMT hstmt);
-int ODBC_disconnect (void);
-int ODBC_exec_sql (UCHAR * sqlstr);
-long describecolumn (HSTMT hstmt, int colno, int type);
-int set_stmt_options (char *cursname, char *opt, char *val);
-int set_conn_options (char *sessname, char *opt, char *val);
+void 			exit_nicely 	(void);
+void 			chk_rc_full 	(int rc, void *hstmt, char *c, int line, char *file);
+RETCODE SQL_API newSQLSetParam 	(HSTMT hstmt, UWORD ipar, SWORD fCType,
+     							SWORD fSqlType, UDWORD cbColDef, SWORD ibScale, PTR rgbValue,
+      				 			SDWORD FAR * pcbValue);
+int 			proc_bind 		(struct BINDING *b, int n, char t, HSTMT hstmt);
+char * 			proc_binding 	(char *s, int n, struct BINDING *b);
+struct s_cid * 	A4GLSQL_free_cursor (char *cname);
+char* 			ret_sql_err 	(void);
+int 			print_err 		(HDBC hdbc, HSTMT hstmt);
+int 			ODBC_disconnect (void);
+int 			ODBC_exec_sql (UCHAR * sqlstr);
+long 			describecolumn (HSTMT hstmt, int colno, int type);
+int 			set_stmt_options (char *cursname, char *opt, char *val);
+int 			set_conn_options (char *sessname, char *opt, char *val);
 
 #ifndef DONTINCLUDEDATASOURCES
 	#ifdef PGODBC
@@ -142,10 +142,10 @@ int set_conn_options (char *sessname, char *opt, char *val);
 
 
 /* in sqlx.c */
-extern int set_blob_data(HSTMT hstmt);
-extern int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
-extern int scan_conn (char *s, char *p, HDBC conn);
-extern int scan_stmt (char *s, char *p, HSTMT hstmt);
+extern int 		set_blob_data	(HSTMT hstmt);
+extern int 		get_blob_data 	(struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+//extern int scan_conn (char *s, char *p, HDBC conn);
+// extern int scan_stmt (char *s, char *p, HSTMT hstmt);
 
 
 
@@ -157,26 +157,26 @@ extern int scan_stmt (char *s, char *p, HSTMT hstmt);
 */
 
 /* extern: */
-extern char lasterrorstr[1024];
+extern char 	lasterrorstr[1024];
 
 /* static: */
-static char sess_name[32] = "default";
-static char OldDBname[64] = "";
-static HSTMT hstmtGetColumns = 0; 	/** Statement used to iterate getting column information */
-static char cn[256]; 				/** Column name */
-static int dt;
-static long prec; 					/** Precision */
-static int colsize;					/** Coulmn size */
-static char szcolsize[20];
+static char 	sess_name[32] = "default";
+static char 	OldDBname[64] = "";
+static HSTMT 	hstmtGetColumns = 0; 	/** Statement used to iterate getting column information */
+static char 	cn[256]; 				/** Column name */
+static int 		dt;
+static long 	prec; 					/** Precision */
+static int 		colsize;					/** Coulmn size */
+static char 	szcolsize[20];
 
 /* unknown: */
-int rc;
-int do_init_cursors = 1;
-int do_init_prepare = 1;
-char buffer[256];
-HENV henv = 0;
-HDBC hdbc = 0;						/** The database connection handle */
-SDWORD outlen[512];
+int 			rc;
+int 			do_init_cursors = 1;
+int 			do_init_prepare = 1;
+char 			buffer[256];
+HENV 			henv = 0;
+HDBC 			hdbc = 0;						/** The database connection handle */
+SDWORD 			outlen[512];
 
 
 struct cursors
@@ -192,24 +192,6 @@ struct stmts
     char *pname;
   }
  ;
-
-/*
-   #define DTYPE_CHAR           0
-   #define DTYPE_SMINT          1
-   #define DTYPE_INT            2
-   #define DTYPE_FLOAT          3
-   #define DTYPE_SMFLOAT                4
-   #define DTYPE_DECIMAL                5
-   #define DTYPE_SERIAL         6
-   #define DTYPE_DATE           7
-   #define DTYPE_MONEY          8
-   #define DTYPE_DTIME          10
-   #define DTYPE_BYTE           11
-   #define DTYPE_TEXT           12
-   #define DTYPE_VCHAR          13
-   #define DTYPE_INTERVAL               14
-
- */
 
  /**
  * Definition of a date
@@ -328,6 +310,9 @@ int convneg_sql_to_4gl[15] =
 	}
 #endif /* WIN32 && DLL_EXPORT */
 
+#ifdef __CYGWIN__
+	dll_import sqlca_struct sqlca;
+#endif
 
 /*
 =====================================================================
@@ -3218,6 +3203,7 @@ A4GLSQL_get_curr_conn (void)
  * @param opt
  * @param val
  */
+/*
 int
 set_stmt_options (char *cursname, char *opt, char *val)
 {
@@ -3255,6 +3241,8 @@ set_stmt_options (char *cursname, char *opt, char *val)
   scan_stmt (opt, val, stmt);
 return 1;
 }
+*/
+
 
 /**
  * @todo : Confirm that this function is not used and remove it.
@@ -3313,6 +3301,7 @@ aclfgl_hstmt_get (int np)
  * @todo Check if not used and remove it.
  * @deprecated
  */
+/*
 int
 set_conn_options (char *sessname, char *opt, char *val)
 {
@@ -3329,6 +3318,7 @@ set_conn_options (char *sessname, char *opt, char *val)
   scan_conn (opt, val, *hdbc);
 return 1;
 }
+*/
 
 /**
  * Sets the connection to use in the execution of the next SQL statement.

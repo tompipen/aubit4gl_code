@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.13 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: conv.c,v 1.14 2002-10-07 11:06:26 afalout Exp $
 #
 */
 
@@ -47,35 +47,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <sys/types.h>
-	#include <ctype.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <locale.h>
-	#include <time.h>
-	#include <math.h>
-
-	#ifdef __CYGWIN__
-		#include <errno.h>
-	#endif
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_dates.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
-
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -86,51 +58,53 @@
 /**
  * definitions for dates (seems a pretty odd conversion though...
  */
-#define itomdec itodec
-#define dtodec ltodec
-#define dtomdec ltodec
-#define ltomdec ltodec
+#define itomdec 	itodec
+#define dtodec 		ltodec
+#define dtomdec 	ltodec
+#define ltomdec 	ltodec
 
-#define ftomdec ftodec
-#define sftomdec sftodec
-#define mdectomdec dectodec
-#define mdectodec dectodec
-#define dectomdec dectodec
+#define ftomdec 	ftodec
+#define sftomdec 	sftodec
+#define mdectomdec 	dectodec
+#define mdectodec 	dectodec
+#define dectomdec 	dectodec
 
 #define OK (void *)1
 
 
-#define DEC_VAL(x) ( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
-#define HEX_VAL(x) (((x)%10) + ((((x)-((x)%10)) / 10)*16))
-#define SIGNED(x) (x[0]&128)
-#define SET_SIGNED(x) (x[0]|=128)
+#define DEC_VAL(x) 		( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
+#define HEX_VAL(x) 		(((x)%10) + ((((x)-((x)%10)) / 10)*16))
+#define SIGNED(x) 		(x[0]&128)
+#define SET_SIGNED(x) 	(x[0]|=128)
 #define SET_UNSIGNED(x) (x[0]=(x[0]>=128)?x[0]:x[0]-128)
-#define NUM_DIG(x) ((x[0])&127 )
-#define NUM_DEC(x) ((x[1]))
-#define SET_DIG(x,y) (x[0]=y)
-#define SET_DEC(x,y) (x[1]=y)
-#define OFFSET_DEC(x) (2)
-#define NUM_BYTES(x) (NUM_DIG(x)+OFFSET_DEC(x))
-#define DBL_DIG1 512
-#define print_res(x) print_res_l(__LINE__,x)
+#define NUM_DIG(x) 		((x[0])&127 )
+#define NUM_DEC(x) 		((x[1]))
+#define SET_DIG(x,y) 	(x[0]=y)
+#define SET_DEC(x,y) 	(x[1]=y)
+#define OFFSET_DEC(x) 	(2)
+#define NUM_BYTES(x) 	(NUM_DIG(x)+OFFSET_DEC(x))
+#define print_res(x) 	print_res_l(__LINE__,x)
+#define dt_encode(s,e) 	((s*16)+e)
+//#define dt_encode(s,e) 	((s*16)+e)
 
-#define DT_YEAR 1
-#define DT_MONTH 2
-#define DT_DAY 3
-#define DT_HOUR 4
-#define DT_MINUTE 5
-#define DT_SECOND 6
-#define DT_FRACTION 7
-#define dt_encode(s,e) ((s*16)+e)
+#define DBL_DIG1 		512
+#define DT_YEAR 		1
+#define DT_MONTH 		2
+#define DT_DAY 			3
+#define DT_HOUR 		4
+#define DT_MINUTE 		5
+#define DT_SECOND 		6
+#define DT_FRACTION 	7
+/*
+#define DT_YEAR 		1
+#define DT_MONTH 		2
+#define DT_DAY 			3
+#define DT_HOUR 		4
+#define DT_MINUTE 		5
+#define DT_SECOND 		6
+#define DT_FRACTION 	7
+*/
 
-#define DT_YEAR 1
-#define DT_MONTH 2
-#define DT_DAY 3
-#define DT_HOUR 4
-#define DT_MINUTE 5
-#define DT_SECOND 6
-#define DT_FRACTION 7
-#define dt_encode(s,e) ((s*16)+e)
 
 /*
 =====================================================================
@@ -263,6 +237,9 @@ int             dectod 			(void *zz, void *aa, int sz_ignore);
 	static void 	print_res_l 	(int ln, char *s);
 #endif
 
+extern int 		errno;
+int 			lastsize;
+
 
 /*
 =====================================================================
@@ -280,10 +257,6 @@ typedef struct
   int length, digits;
 } TEST_T;
 */
-
-
-extern int errno;
-int lastsize;
 
 void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 {
@@ -431,8 +404,6 @@ int data[10];
 int val1,val2,val3;
 struct ival *d;
 struct ival *e;
-
-
 
   debug ("inttoint\n");
   d=b;

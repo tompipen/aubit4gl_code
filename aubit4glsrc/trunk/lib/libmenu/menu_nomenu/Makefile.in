@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-07 11:06:29 afalout Exp $
 #
 
 LIBROOT=../..
@@ -46,11 +46,11 @@ OBJS_MENU_NOMENU  	=${CMODS_MENU_NOMENU:.c=.o}
 
 CFLAGS+=-I${ROOT}/compilers/fcompile
 
-ifdef COMSPEC
-	ALL=dllMENU_NOMENU
-else
-	ALL=${LIBROOT}/libMENU_NOMENU${SO_EXT}
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
+
+ALL=${LIBROOT}/libMENU_NOMENU${SO_EXT}
 
 CFLAGS	:=-I.. -I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
 
@@ -62,16 +62,20 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libMENU_NOMENU${SO_EXT} : ${OBJS_MENU_NOMENU}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllMENU_NOMENU
-dllMENU_NOMENU : ${CMODS_MENU_NOMENU}
-	${MAKE} libMENU_NOMENU.dll DLLOBJS="$^"
-	${CP} libMENU_NOMENU.dll ${LIBROOT}
+#.PHONY : dllMENU_NOMENU
+#dllMENU_NOMENU : ${CMODS_MENU_NOMENU}
+#	${MAKE} libMENU_NOMENU.dll DLLOBJS="$^"
+#	${CP} libMENU_NOMENU.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets

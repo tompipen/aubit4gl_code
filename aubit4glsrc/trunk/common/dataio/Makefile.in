@@ -23,12 +23,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2002-09-25 05:42:13 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-07 11:06:21 afalout Exp $
 #
 
 ROOT        =../..
 LIBROOT     =${ROOT}/lib
-
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -43,7 +42,6 @@ CFLAGS      +=${LOCAL_IFLAGS} -D_NO_FORM_X_H_
 #we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
 #give us bunch of warnings about unused varibles, that we cannot fix:
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
-SHARED			=-shared
 
 RPC		=${LIBROOT}/libXDRPACKER_struct_form${SO_EXT} \
 		${LIBROOT}/libXDRPACKER_menu_list${SO_EXT} \
@@ -51,9 +49,15 @@ RPC		=${LIBROOT}/libXDRPACKER_struct_form${SO_EXT} \
 XGEN	=${LIBROOT}/libDATA_struct_form${SO_EXT} \
 		${LIBROOT}/libDATA_menu_list${SO_EXT} \
 		${LIBROOT}/libDATA_report${SO_EXT}
-ANY		=pack_any${SO_EXT}
+ANY		=${LIBROOT}/libDATA_any${SO_EXT}
 
-ALL 	=${XGEN} ${ANY}
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
+endif
+
+#ALL 	+=${XGEN} ${ANY}
+ALL 	+=${XGEN}
 
 #we don't need rpclib to do any of this, do we?
 #ifdef COMSPEC
@@ -69,11 +73,26 @@ ALL 	=${XGEN} ${ANY}
 #...but we do need rpcgen:
 ifeq "${USE_RPCGEN}" "0"
 	#FIXME: update this:
-	RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
-	#ALL			+=${RPC}
+	RPCGEN_FORM		=${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
+	RPCGEN_REPORT	=${CP} ${ROOT}/tools/cygwin/report_xdr.c .
+	RPCGEN_MENU		=${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c .
+	#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
+    #allowed at link time, and we have no RPCLIB to link with anyway:
+	ifneq "${TARGET_OS}" "cygwin"
+		ALL			+=${RPC}
+    endif
 else
-	RPCGEN 		=@RPCGEN@
+	RPCGEN_FORM		=@RPCGEN@ form_x.x
+	RPCGEN_REPORT   =@RPCGEN@ report.x
+	RPCGEN_MENU     =@RPCGEN@ menu_x.x
 	ALL			+=${RPC}
+endif
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+ifeq "@HAVE_RPCLIB@" "0"
+	CFLAGS      +=-I${ROOT}/tools/no_rpc/cygwin
 endif
 
 XGENEXE    		=${ROOT}/compilers/xgen/xgen
@@ -85,61 +104,63 @@ XGENEXE    		=${ROOT}/compilers/xgen/xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-#ld  -o ../../lib/libDATA_struct_form${SO_EXT} form_x.xi.o form_x.xio.o form_x.xo.o -r
-
 ${LIBROOT}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
-#	${LD} $(CFLAGS) ${SHARED} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${LIBROOT}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
-#	${LD} $(CFLAGS) ${SHARED} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${LIBROOT}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
-#	${LD} $(CFLAGS) ${SHARED} -o $@ $^  -D_NO_FORM_X_H_
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${LIBROOT}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
-#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${LIBROOT}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
-#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${LIBROOT}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
-#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
-#FIXME: needs renaming, or is it obsolete?
-pack_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o
-#	${LD} $(CFLAGS) ${SHARED} -o $@ $^ -D_NO_FORM_X_H_
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#no copy to lib here?
+#FIXME: why not use this, or is it obsolete?
+${LIBROOT}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                          Sub-targets
 ## ==================================================================
 
 form_x_xdr.c: form_x.x
-	${RPCGEN} $^
+	${RPCGEN_FORM}
 
 menu_x_xdr.c: menu_x.x
-	${RPCGEN} $^
+	${RPCGEN_MENU}
 
 report_xdr.c: report.x
-	${RPCGEN} $^
+	${RPCGEN_REPORT}
 
-#"xgen form_x.x" will create:
-#form_x.x.h   form_x.xio.c  form_x.xs.h form_x.xi.c  form_x.xo.c
-
-form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x
+form_x.xs.h form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x
 	${XGENEXE} $^ struct_form
 
 menu_x.xo.c menu_x.xi.c menu_x.xio.c: menu_x.x
@@ -151,8 +172,15 @@ report.xo.c report.xi.c report.xio.c: report.x
 ${XGENEXE}:
 	${MAKE} -C ${ROOT}/compilers/xgen
 
+
+## ==================================================================
+##                          Dependencies
+## ==================================================================
+
 report.xi.o: form_x.x.h
 
+${LIBROOT}/libaubit4gl.${SO_EXT}: form_x.x.h
+	${MAKE} -C${LIBROOT}/libaubit4gl
 
 ## ==================================================================
 ##                          Clean

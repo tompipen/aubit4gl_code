@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-10-01 09:50:31 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-07 11:06:28 afalout Exp $
 #
 
 ROOT        =../../..
@@ -44,13 +44,24 @@ include ${ROOT}/incl/Makefile-common
 ##                    Options
 ## ==================================================================
 
-ifneq "${COMSPEC}" ""
-	ALL         = dllLEX_C
+ifeq "@YACC@" "no"
+	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+	KW_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h
 else
-	ALL         = ${LIBROOT}/libLEX_C${SO_EXT}
+	KW_H		=${ROOT}/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/compilers/4glc/rules/generated/y.tab.h
 endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
+	#not needed any more : --enable-auto-import
+#gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libLEX_C.dll compile_c.o compile_c_gtk.o -L../.. -laubit4gl -L../../../compilers/4glc -lexportlib4glcomp.dll.a
+    ALL         =${ROOT}/compilers/4glc/libexportlib4glcomp${SO_EXT}.a
+endif
+
+ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -59,21 +70,10 @@ CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/
 ALL: ${ALL}
 
 ${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C}
-	${LD} ${SO_LDFLAGS} -o $@ $^
-
-## ==================================================================
-##                            Windows Targets
-## ==================================================================
-
-.PHONY : dllLEX_C
-dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
-	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${ROOT}/lib -L."
-#see mod.c for list of variables that can't be automaticelly exported.
-
-#${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
-# -lPDF_NOPDF
-	${CP} libLEX_C.dll ${LIBROOT}
-	${CP} libLEX_C.dll.a ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                            Sub Targets
@@ -81,6 +81,9 @@ dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
 
 #../fcompile/form_x.h:
 #	make -C ../fcompile rpc
+
+${ROOT}/compilers/4glc/libexportlib4glcomp${SO_EXT}.a:
+	${MAKE} -C ${ROOT}/compilers/4glc libexportlib4glcomp.dll.a
 
 ## ==================================================================
 ##                            Dependencies
@@ -94,9 +97,9 @@ dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
 #rules/generated/y.tab.o: ../fcompile/form_x.h
 
 
-compile_c.c: ${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h
+compile_c.o: ${KW_H} ${Y_TAB_H}
 
-${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h:
+${KW_H} ${Y_TAB_H}:
 	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c
 
 ## ==================================================================

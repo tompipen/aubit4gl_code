@@ -24,26 +24,29 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-09-25 05:42:13 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-10-07 11:06:22 afalout Exp $
 #
 
-#All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+ROOT		=../../..
 
-override NOINCL=0
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
 ifeq "@YACC@" "no"
-	Y_TAB_C_DEP	=../../../tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
-    CFLAGS		+=-I../../../tools/no_yacc/cygwin/compilers/4glc
+#	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/fgl.yacc
+    CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
 else
 	Y_TAB_C_DEP	=generated/fgl.yacc
 endif
 
-CFLAGS  +=-I.. -I../../../lib/libincl
+CFLAGS  +=-I..
+#-I${ROOT}/lib/libincl
 
 ## ==================================================================
 ##                              Targets

@@ -14,26 +14,7 @@
 /* prevent warning for redundant declaration of yyparse / fgl_comp_parse: */
 #define _BISON_SIMPLE_INCL_
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-	#include "a4gl_formxw.h"
-	#include "a4gl_compiler.h"
-	#include "a4gl_fcomp_fcompile.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_fcomp_where.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_fcompile_int.h"
-
-#endif
-
+#include "a4gl_fcompile_int.h"
 
 /*
 =====================================================================
@@ -49,7 +30,12 @@ extern int colno;
 extern int scr;
 int in_comment;
 long fileseek=0;
-extern struct_form the_form;
+
+#ifdef __CYGWIN__
+	dll_import struct_form the_form;
+#else
+	extern struct_form the_form;
+#endif
 extern int newscreen;
 extern int fldno;
 extern int fstart;

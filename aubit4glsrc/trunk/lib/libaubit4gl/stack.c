@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.24 2002-09-20 10:06:04 mikeaubury Exp $
+# $Id: stack.c,v 1.25 2002-10-07 11:06:27 afalout Exp $
 #
 */
 
@@ -99,7 +99,7 @@
 =====================================================================
 */
 
-extern int errno;
+//extern int errno;
 
 int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.8 2002-07-21 06:41:48 afalout Exp $
+# $Id: string.c,v 1.9 2002-10-07 11:06:27 afalout Exp $
 #
 */
 
@@ -78,7 +78,7 @@
 */
 
 /* #define DIGIT_ALIGN_LEFT */
-extern int errno;
+//extern int errno;
 
 /*
 =====================================================================

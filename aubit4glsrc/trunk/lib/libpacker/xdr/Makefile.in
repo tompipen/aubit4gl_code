@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.4 2002-09-26 11:58:26 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-07 11:06:30 afalout Exp $
 #
 
 ROOT        =../../..
@@ -36,17 +36,40 @@ include ${ROOT}/incl/Makefile-common
 ##                    		Settings
 ## ==================================================================
 
-DATAIODIR	=${ROOT}/common/dataio
+ifeq "${USE_RPCGEN}" "0"
+	DATAIODIR	=${ROOT}/tools/cygwin
+else
+	DATAIODIR	=${ROOT}/common/dataio
+endif
 XDR_CMODS   =${DATAIODIR}/form_x_xdr.c ${DATAIODIR}/menu_x_xdr.c ${DATAIODIR}/report_xdr.c
 CMODS   	=pack_xdr.c ${XDR_CMODS}
-ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
-LOCAL_IFLAGS=-I..
 
+ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
+ifeq "@HAVE_RPCLIB@" "0"
+#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
+#allowed at link time, and we have no RPCLIB to link with anyway:
+	ifeq "${TARGET_OS}" "cygwin"
+		ALL			=norpclib
+	endif
+else
+
+endif
+
+LOCAL_IFLAGS=-I..
+OBJS		= pack_xdr.o ${XDR_CMODS:.c=.o}
 CFLAGS      +=${LOCAL_IFLAGS}
 
 #we don't want -Wall in CFLAGS when compiling rpcgen generated c code because
 #it would #give us bunch of warnings about unused varibles, that we cannot fix
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+ifeq "@HAVE_RPCLIB@" "0"
+	CFLAGS      +=-I${ROOT}/tools/no_rpc/cygwin
+endif
 
 ## ==================================================================
 ##                          Targets
@@ -54,15 +77,27 @@ CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
 ALL: ${ALL}
 
-${LIBROOT}/libPACKER_XDR${SO_EXT}: ${XDR_CMODS} pack_xdr.o
-	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@
+${LIBROOT}/libPACKER_XDR${SO_EXT}: ${OBJS}
+	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ${XDR_CMODS}:
-	${MAKE} -C ${ROOT}/common/dataio
+#	${MAKE} -C ${ROOT}/common/dataio
+	${MAKE} -C ${ROOT}/common/dataio form_x_xdr.c
+	${MAKE} -C ${ROOT}/common/dataio menu_x_xdr.c
+	${MAKE} -C ${ROOT}/common/dataio report_xdr.c
+
 
 #only source we can use full CFLAGS on:
-pack_xdr.o: pack_xdr.c
-	${CC} ${CFLAGS} -c $^ -o $@
+#pack_xdr.o: pack_xdr.c
+#	${CC} ${CFLAGS} -c $^ -o $@
+
+${OBJS}: ${XDR_CMODS}
+
+norpclib:
+	@echo "No rpclib detected - cannot do linking. Skipping libPACKER_XDR"
 
 ## ==================================================================
 ##                          Clean

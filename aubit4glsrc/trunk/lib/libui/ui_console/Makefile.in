@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-07 11:06:34 afalout Exp $
 #
 
 LIBROOT=../..
@@ -38,19 +38,21 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS		+=-I..
-#-I../libincl -I../../incl
-#-I../../compilers/menus -I../../compilers/fcompile @RPCLIB_INCLUDE@
 
-ifdef COMSPEC
-	ALL				+=dlllibUI_CONSOLE
-else
+#ifdef COMSPEC
+#	ALL				+=dlllibUI_CONSOLE
+#else
 	ALL				+=${LIBROOT}/libUI_CONSOLE${SO_EXT}
-endif
+#endif
 
 ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
 else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
+endif
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
 ## ==================================================================
@@ -67,18 +69,21 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${LIBROOT}/libUI_CONSOLE${SO_EXT}: ${ALLOBJ_CONSOLE}
-	${LD} ${SO_LDFLAGS} -o $@ ${ALLOBJ_CONSOLE}
+	${LD} ${SO_LDFLAGS} -o $@ ${ALLOBJ_CONSOLE} ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                              Windows Targets
 ## ==================================================================
 
-.PHONY : dlllibUI_CONSOLE
-dlllibUI_CONSOLE: ${ALLOBJ_CONSOLE}
-	${MAKE} libUI_CONSOLE.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT} "
+#.PHONY : dlllibUI_CONSOLE
+#dlllibUI_CONSOLE: ${ALLOBJ_CONSOLE}
+#	${MAKE} libUI_CONSOLE.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT} "
 # -lPDF_NOPDF
-	${CP} libUI_CONSOLE.dll ${LIBROOT}
-	${CP} libUI_CONSOLE${DLL_EXPORTLIB_EXT} ${LIBROOT}
+#	${CP} libUI_CONSOLE.dll ${LIBROOT}
+#	${CP} libUI_CONSOLE${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 
 ## ==================================================================

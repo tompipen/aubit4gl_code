@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-10-07 11:06:32 afalout Exp $
 #
 
 ROOT    =../../..
@@ -32,7 +32,7 @@ LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
+
 
 ## ==================================================================
 ##                              Options
@@ -40,11 +40,11 @@ include ${ROOT}/incl/Makefile-common
 
 CFLAGS+=-I.. -I${ROOT}/compilers/fcompile @RPCLIB_INCLUDE@
 
-ifeq "${COMSPEC}" ""
-    ALL=${LIBROOT}/libSQL_nosql${SO_EXT}
-else
-    ALL=nosql.dll
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
+
+ALL=${LIBROOT}/libSQL_nosql${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -55,12 +55,15 @@ ALL: ${ALL}
 nosql${SO_EXT}: libSQL_nosql${SO_EXT}
 
 ${LIBROOT}/libSQL_nosql${SO_EXT}: nosql.o
-	${LD} ${SO_LDFLAGS} $^ -o $@
+	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 
-nosql.dll: nosql.o
-	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT}"
-	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ${LIBROOT}
+#nosql.dll: nosql.o
+#	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT}"
+#	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 
 ## ==================================================================

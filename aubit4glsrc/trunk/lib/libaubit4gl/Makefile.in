@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.38 2002-09-27 06:56:41 afalout Exp $
+# $Id: Makefile.in,v 1.39 2002-10-07 11:06:25 afalout Exp $
 #
 
 ROOT    	=../..
@@ -38,7 +38,6 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CMODS_PROJECT	=project.c
-
 
 CMODS_API   = \
 	API_ui.c API_exreport.c API_sql.c API_rpc.c \
@@ -73,15 +72,8 @@ OBJS				=${CMODS:.c=.o}
 
 LIBINCL_PATH		=${LIBROOT}/libincl
 INCL_PATH			=${ROOT}/incl
-
 DLMAGIC				=${LIBROOT}/bin/dlmagic
-
-ifdef COMSPEC
-	ALL				=dllaubit4gl
-else                
-    ALL				=${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
-endif
-
+ALL					=${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
 CFLAGS              +=-I.
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
@@ -99,10 +91,11 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
-#LCLINT_CFLAGS :=$($(CFLAGS:%${LCLINT_STRIP1}=%):%${LCLINT_STRIP2}=%)
 LCLINT_CFLAGS   	=${C_IFLAGS}
 
-LINK_LIBS           =-ldl -lm
+ifneq "${TARGET_OS}" "cygwin"
+	LINK_LIBS           =-ldl -lm
+endif
 
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
@@ -159,26 +152,9 @@ ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
 	${CP} $@ ${INST_PATH}
 endif
-
-## ==================================================================
-##                       Windows 32 DLL Targets
-## ==================================================================
-
-.PHONY : dllaubit4gl
-dllaubit4gl : $(OBJS)
-	${MAKE} libaubit4gl.dll DLLOBJS="$^"
-	${CP} libaubit4gl.dll ..
-#	DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L."
-#$RPCLIB_NAME
-
-#libaubit4gl.def: $(OBJS) ${GUI_TUI}
-#	dlltool --export-all --output-def $@ $^
-
-#we need to make export library before we can make actuall dll, becaus eof cyclical dependencies
-#between libSQL_xxx.dll and libaubit4gl.dll, since there can be no unresilved symols at link
-#time on Windows when mailing dll:
-#libaubit4gl.dll.a: $(OBJS) ${GUI_TUI}
-#	dlltool --output-exp $@ $^
+ifeq "${SO_EXT_LINKABLE}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 ## ==================================================================
 ##                             Sub Targets
@@ -187,19 +163,19 @@ dllaubit4gl : $(OBJS)
 ci: $(CMODS)
 	ci -l  $^
 
-project.o: ../generated/${CMODS_PROJECT}
+project.o: ${LIBROOT}/generated/${CMODS_PROJECT}
 	${CC} ${CFLAGS} -c -o $@ $^
 
-../generated/project.c:
-	(cd ../../tools/project; ${SH} mkproject)
+${LIBROOT}/generated/project.c:
+	(cd ${ROOT}/tools/project; ${SH} mkproject)
 
-../generated/tmperrs.h :
-	${SH} ../bin/mkerrors
+${LIBROOT}/generated/tmperrs.h :
+	${SH} ${LIBROOT}/bin/mkerrors
 
-../../compilers/fcompile/form_x_xdr.c  ../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../compilers/fcompile rpc
+${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
-../../compilers/fcompile/form_x_xdr.o: ../../compilers/fcompile/form_x_xdr.c
+${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
 
 #initializer element is not computable at load time:
@@ -207,31 +183,16 @@ builtin.o: builtin.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 stack.o: stack.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
-
+debug.o: debug.c
+	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
-error.c : ../generated/tmperrs.h
-array.o: array.c ../../compilers/fcompile/form_x_xdr.c
-API_ui.c: ../../compilers/fcompile/form_x.h
-builtin.o: ../../compilers/fcompile/form_x.h
-
-
-## ==================================================================
-##                        Clean Targets
-## ==================================================================
-
-clean : clean.generated
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
-		form_x_xdr.c form_x.h project.c core \
-		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
-		*.base *.exp libaubit4gl.def
-
-clean.generated:
-	${RM} ../generated/errdefs ../generated/tmperrs.h \
-		../generated/project.c ../generated/project.o
+error.c : ${LIBROOT}/generated/tmperrs.h
+array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+builtin.o API_ui.c: ${ROOT}/compilers/fcompile/form_x.h
 
 
 ## ==================================================================
@@ -241,14 +202,17 @@ clean.generated:
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
+
+## ==================================================================
+##                         API Targets
+## ==================================================================
 
 api: ${OBJS_API}
 
 #API_ui.c API_exreport.c API_sql.c API_rpc.c where created manually and
 #have no coresponding .spec file
-
 #created headers are included via a4gl_libaubit4gl_int.h
 
 API_msg.c: API_msg.spec
@@ -275,8 +239,19 @@ API_lex.c: API_lex.spec
 API_%.o: API_%.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
-debug.o: debug.c
-	${CC} ${CFLAGS_API_C} -c -o $@ $^
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean : clean.generated
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
+		form_x_xdr.c form_x.h project.c core \
+		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
+		*.base *.exp libaubit4gl.def
+
+clean.generated:
+	${RM} ${LIBROOT}/generated/errdefs ${LIBROOT}/generated/tmperrs.h \
+		${LIBROOT}/generated/project.c ${LIBROOT}/generated/project.o
 
 #----------------------------------- EOF -------------------------------
 

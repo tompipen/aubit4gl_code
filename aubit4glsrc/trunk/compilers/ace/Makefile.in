@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.14 2002-09-25 05:42:13 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-10-07 11:06:23 afalout Exp $
 #
 
 ROOT        =../..
@@ -36,15 +36,32 @@ include ${ROOT}/incl/Makefile-common
 ##                    Source code
 ## ==================================================================
 
-CMODS_XDR   =report_xdr.c
-CMODS       =${CMODS_XDR} y.tab.c main.c data.c output.c tables.c fileio.c
+ifeq "${USE_RPCGEN}" "0"
+	#RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
+    CMODS_XDR   =${ROOT}/tools/cygwin/report_xdr.c
+	REPORT_H    =${ROOT}/tools/cygwin/report.h
+else
+	#RPCGEN 		=@RPCGEN@ form_x.x
+    CMODS_XDR   =report_xdr.c
+	REPORT_H    =report.h
+endif
+
+ifeq "@YACC@" "no"
+	#LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/ace/y.tab.c
+	CFLAGS      +=-I${ROOT}/tools/cygwin -I${ROOT}/tools/no_rpc/cygwin
+else
+	#LEX_YY_C	=lex.yy.c
+	Y_TAB_C		=y.tab.c
+endif
+
+
+
+CMODS       =${CMODS_XDR} ${Y_TAB_C} main.c data.c output.c tables.c fileio.c
 CMODS_DECOMP=${CMODS_XDR} dump.c
 #Mike's holding dump_4gl.c back for now - not in CVS
 CMODS_4GL    =${CMODS_XDR} dump_4gl.c
-CMODS_PERL   =${CMODS_XDR} y.tab.c dump_perl.c data.c output.c tables.c fileio.c
-
-REPORT_H    =report.h
-
+CMODS_PERL   =${CMODS_XDR} ${Y_TAB_C} dump_perl.c data.c output.c tables.c fileio.c
 OBJS_XDR    =${CMODS_XDR:.c=.o}
 OBJS		=${CMODS:.c=.o}
 OBJS_DECOMP =${CMODS_DECOMP:.c=.o}
@@ -64,6 +81,15 @@ CFLAGS      +=-I.
 CFLAGS_REPORT_XDR_C		=$(CFLAGS:%-Wall=%)
 
 ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile
+
+ifeq "@HAVE_RPCLIB@" "0"
+	ifeq "${TARGET_OS}" "cygwin"
+        #On Windows unresolved symbols are not alloved at link time, and we have no RPCLIB:
+		ALL=norpclib
+    endif
+endif
+
+
 #aace_4gl
 #generate_aace
 
@@ -96,6 +122,9 @@ ${ROOT}/bin/aace_4gl : ${REPORT_H} ${OBJS_4GL}
 ${ROOT}/bin/aace_perl : ${REPORT_H} ${OBJS_PERL}
 	${4GLPC} $(CFLAGS) ${OBJS_PERL} -o $@
 
+norpclib:
+	@echo "RPCLIB not detected, cannot link. Skipping all in ace..."
+
 ## ==================================================================
 ##                    Sub-Targets
 ## ==================================================================
@@ -106,8 +135,8 @@ y.tab.c: ace.yacc
 lex.yy.c: ace.lex
 	${LEX} -i $^
 
-y.tab.o: y.tab.c lex.yy.c ${REPORT_H}
-	${CC} $(CFLAGS) -c y.tab.c -o $@
+y.tab.o: ${Y_TAB_C} lex.yy.c ${REPORT_H}
+	${CC} $(CFLAGS) -c ${Y_TAB_C} -o $@
 
 data.o: ${REPORT_H} data.c
 	${CC} $(CFLAGS) -c data.c -o $@

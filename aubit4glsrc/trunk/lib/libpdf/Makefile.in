@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-09-25 23:59:55 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-10-07 11:06:31 afalout Exp $
 #
 
 ROOT        =../..
@@ -37,18 +37,16 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+CFLAGS	+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
-ifneq "${COMSPEC}" ""
-    ALL 		=NOPDF.dll
-	ifneq "${PDFBUILD}" "no"
-	    ALL 	+=PDF.dll
-	endif
-else
-	ALL 		=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
-	ifneq "${PDFBUILD}" "no"
-	    ALL 	+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
-	endif
+ALL 			=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
+
+ifneq "${PDFBUILD}" "no"
+	ALL 		+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
+endif
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
 OBJECTS_NOPDF	=nopdf.o
@@ -61,18 +59,25 @@ OBJECTS_PDF		=has_pdf.o
 all: ${ALL}
 
 ${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
-	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
+	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 ${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
-	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
+	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
-NOPDF.dll: ${OBJECTS_NOPDF}
-	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
-	${CP} libEXREPORT_NOPDF.dll ${LIBROOT}
-	${CP} libEXREPORT_NOPDF.dll.a ${LIBROOT}
+#NOPDF.dll: ${OBJECTS_NOPDF}
+#	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
+#	${CP} libEXREPORT_NOPDF.dll ${LIBROOT}
+#	${CP} libEXREPORT_NOPDF.dll.a ${LIBROOT}
 
-PDF.dll:
-	@echo "Ooops: PDFlib on Windows?"
+#PDF.dll:
+#	@echo "Ooops: PDFlib on Windows?"
 
 
 ## ==================================================================

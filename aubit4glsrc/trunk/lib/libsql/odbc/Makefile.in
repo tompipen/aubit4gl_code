@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.24 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.25 2002-10-07 11:06:33 afalout Exp $
 #
 
 ROOT    =../../..
@@ -32,7 +32,6 @@ LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -63,6 +62,10 @@ OBJECTS					=sql.o sqlex.o
 LD_RUN_PATH =${INFORMIXDIR}/lib/esql
 #IFX_RPATH	=-rpath ${INFORMIXDIR}/lib/esql
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -91,10 +94,15 @@ pgodbc: 	clean ${LIBROOT}/libSQL_pgodbc${SO_EXT}
 sapodbc: 	clean ${LIBROOT}/libSQL_sapodbc${SO_EXT}
 	@echo "SAP DB ODBC target compiled successfully"
 
-odbc32: 	clean ${OBJECTS}
-	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L${LIBROOT}"
-	${CP} libSQL_odbc32.dll ${LIBROOT}
-	${CP} libSQL_odbc32.dll.a ${LIBROOT}
+odbc32: 	clean ${OBJECTS} ${LIBROOT}/libSQL_odbc32${SO_EXT}
+#	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L${LIBROOT}"
+#	${CP} libSQL_odbc32.dll ${LIBROOT}
+#	${CP} libSQL_odbc32.dll.a ${LIBROOT}
+${LIBROOT}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -lodbc32
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 	@echo "Windows ODBC target compiled successfully"
 
 ${LIBROOT}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}

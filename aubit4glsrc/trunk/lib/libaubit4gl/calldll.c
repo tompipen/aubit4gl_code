@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.18 2002-09-27 04:45:37 afalout Exp $
+# $Id: calldll.c,v 1.19 2002-10-07 11:06:25 afalout Exp $
 #
 */
 
@@ -56,7 +56,15 @@
  ***********************************************************************
  */
 #if defined(__CYGWIN__)
-	#include <cygwin/cygwin_dll.h>
+/*
+//    #define BYTE int
+	typedef unsigned char BYTE;
+    #define BOOLEAN int
+//    typedef BYTE BOOLEAN,*PBOOLEAN;
+//    typedef BYTE BOOLEAN,*PBOOLEAN;
+
+//	#include <cygwin/cygwin_dll.h>
+*/
 #endif
 
 #ifndef WIN32

@@ -24,13 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.13 2002-10-03 14:50:16 mikeaubury Exp $
+# $Id: error.c,v 1.14 2002-10-07 11:06:26 afalout Exp $
 #
 */
 
 /**
  * @file
  * Error handling (there are several files)
+ * WARNING: errno renamed to a4gl_errno here and in mkerrors because of the
+ * conflict with function mane in errno.h
  *
  * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
@@ -44,23 +46,8 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <string.h> 				/* strcmp() */
-	#include <stdarg.h>
-
-	#include "../generated/tmperrs.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-	#include "../generated/tmperrs.h"
-
-#endif
-
+#include "../generated/tmperrs.h"
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -118,23 +105,23 @@ int a;
 
 	#ifndef IGNOREEXITWITH
 
-	for (a=0;errors[a].errno;a++)
+	for (a=0;errors[a].a4gl_errno;a++)
 	{
 		if (strcmp(s,errors[a].errmsg)==0)
 		{
 			#ifdef DEBUG
-				{debug("Found error = %d",errors[a].errno);}
+				{debug("Found error = %d",errors[a].a4gl_errno);}
 			#endif
 			debug("Setting status");
-		   	A4GLSQL_set_status(-1*(errors[a].errno+30000),0);
+		   	A4GLSQL_set_status(-1*(errors[a].a4gl_errno+30000),0);
 			debug("Setting cache_status");
-		    cache_status=(errors[a].errno+30000);
+		    cache_status=(errors[a].a4gl_errno+30000);
 			debug("Setting statusno");
 		    cache_statusno=a;
 			return;
 			printf ("Error:\n %s \nSTOP\n ", s);
 			debug("Exiting program.");
-			exit (errors[a].errno);
+			exit (errors[a].a4gl_errno);
 		}
 	}
 
@@ -159,20 +146,20 @@ int a;
 
 	#ifndef IGNOREEXITWITH
 
-	for (a=0;errors[a].errno;a++)
+	for (a=0;errors[a].a4gl_errno;a++)
 	{
 		if (strcmp(s,errors[a].errmsg)==0)
 		{
 			#ifdef DEBUG
-				{debug("Found error = %d",errors[a].errno);}
+				{debug("Found error = %d",errors[a].a4gl_errno);}
 			#endif
-             A4GLSQL_set_status(-1*(errors[a].errno+30000),1);
-		     cache_status=(errors[a].errno+30000);
+             A4GLSQL_set_status(-1*(errors[a].a4gl_errno+30000),1);
+		     cache_status=(errors[a].a4gl_errno+30000);
 		     cache_statusno=a;
 		}
 	}
 
-	exit (errors[a].errno);
+	exit (errors[a].a4gl_errno);
 
     #endif
 }
@@ -207,8 +194,8 @@ int a=0;
 	}
 
 	       debug("Looking up error... %d",a);
-	for (a=0;errors[a].errno;a++) {
-	       if (errors[a].errno+30000==z) {
+	for (a=0;errors[a].a4gl_errno;a++) {
+	       if (errors[a].a4gl_errno+30000==z) {
 		return errors[a].errmsg;
 	       }
 	}
@@ -219,17 +206,33 @@ int a=0;
 }
 
 
-
-
-aclfgli_clr_err_flg() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+aclfgli_clr_err_flg(void)
+{
 	int_err_flg=0;
 }
 
-aclfgli_set_err_flg() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+aclfgli_set_err_flg(void)
+{
 	int_err_flg=1;
 }
 
-aclfgli_get_err_flg() {
+/**
+ *
+ * @todo Describe function
+ */
+int
+aclfgli_get_err_flg(void)
+{
 	return int_err_flg;
 }
 

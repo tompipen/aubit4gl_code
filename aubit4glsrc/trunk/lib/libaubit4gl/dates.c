@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.9 2002-09-17 09:38:01 afalout Exp $
+# $Id: dates.c,v 1.10 2002-10-07 11:06:26 afalout Exp $
 #
 */
 
@@ -43,31 +43,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <math.h>
-	#include <sys/types.h>
-	#include <ctype.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <locale.h>
-	#include <time.h>
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_dates.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
-
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -78,7 +54,7 @@
 /* #define DIGIT_ALIGN_LEFT */
 
 int y2ktype=-1;
-extern int errno;
+//extern int errno;
 
 static int days_in_month[2][13] = {
 	{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},

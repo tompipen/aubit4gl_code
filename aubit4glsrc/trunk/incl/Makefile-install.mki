@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.31 2002-10-04 11:27:06 afalout Exp $
+# $Id: Makefile-install.mki,v 1.32 2002-10-07 11:06:24 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -224,19 +224,28 @@ ifneq "${LDCONFIG}" "no"
 #	@echo "+--------------------------------------------------------------------+
 else
 #FIXME: and what if user is not using Bash, but some other shell?
+ifeq "$(shell  if test -f ${HOME}/.bashrc ; then echo 1; fi)" "1"
 ifeq "$(shell  grep ${ADD_LD_LIBRARY_PATH} ${HOME}/.bashrc)" ""
-	@echo "Adding to ${HOME}/.bashrc :"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Adding to ${HOME}/.bashrc :                                        |"
 	@echo ' ' >> ${HOME}/.bashrc
 	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
 	@echo 'export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:${ADD_LD_LIBRARY_PATH}' >> ${HOME}/.bashrc
-	@echo "Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:"
+	@echo "| Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:   |"
 	@echo "${ADD_LD_LIBRARY_PATH}"
-	@echo "Please source this file, by typing:"
-	@echo "    . ${HOME}/.bashrc"
-	@echo "BEFORE you attempt to compile Aubit source code, or run Aubit programs."
-	@echo ""
+	@echo "| Please source this file, by typing:                                |"
+	@echo "|    . ${HOME}/.bashrc                                               |"
+	@echo "| BEFORE you attempt to compile Aubit source code, or run Aubit      |"
+	@echo "| programs.                                                          |"
+#	@echo ""
 else
-	@echo "${ADD_LD_LIBRARY_PATH} already present in ${HOME}/.bashrc"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| ADD_LD_LIBRARY_PATH already present in ${HOME}/.bashrc |"
+endif
+else
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| File ${HOME}/.bashrc does not exist. Please add library paths      |"
+	@echo "| manually.                                                          |"
 endif
 endif
 endif

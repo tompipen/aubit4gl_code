@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.86 2002-10-04 11:27:06 afalout Exp $
+# $Id: Makefile-common.in,v 1.87 2002-10-07 11:06:24 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -176,6 +176,10 @@ PATH:=${AUBITDIR}/bin:${PATH}
 ##                   Global Makefile variables
 ## ==================================================================
 
+ifeq "${TARGET_OS}" "cygwin"
+	GCC_VER=3.2
+endif
+
 CONFIGURE_COMMAND=@CONFIGURE_COMMAND@
 
 #######################################
@@ -204,6 +208,7 @@ MAKE				=@MAKE@
 MKDIR 				=mkdir
 CD 					=cd
 CP 					=cp
+MV                  =mv
 CAT                 =cat
 RM 					=rm -f
 RMDIR				=rm -rf
@@ -253,11 +258,13 @@ AWK                 =@AWK@
 #          options for ld, which again forces the allocation of the symbol
 #          table in the code produced (see ld(1) on a Sun).
 
-RDYNAMIC            =-rdynamic
+ifneq "${GCC_VER}" "3.2"
+	#gcc: unrecognized option `-rdynamic'
+	RDYNAMIC            =-rdynamic
+endif
 
 ifeq "${TARGET_OS}" "solaris"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
-	#RDYNAMIC            =-rdynamic
 	RDYNAMIC		=
 endif
 ifeq "${TARGET_OS}" "darwin"
@@ -350,7 +357,12 @@ FAIL_OK             =-
 #         independent code,  suitable  for  dynamic  linking,
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
-PIC					=@PIC@
+
+ifneq "${GCC_VER}" "3.2"
+	#cc1: warning: -fPIC ignored for target (all code is position independent)
+	PIC					=@PIC@
+endif
+
 ifeq "${TARGET_OS}" "darwin"
 	#On Darwin Autoconf will set PIC = -fno-common
 	#The generation of position-independent code (PIC) is the default is the
@@ -421,7 +433,11 @@ SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
 ifdef COMSPEC #############Windows platform - CygWin related:################
 
-    DIRSEP			=\\
+	#dll on Windows are loaded by standard Windows loader, that don't
+	#understand CygWin symbolic links:
+	SOEXP_EXT   	=${SO_EXT}.a
+    DLL_EXPORTLIB_EXT=${SOEXP_EXT}
+	DIRSEP			=\\
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
 	GTKCONFIGCMD	=echo ${LIBVER}
@@ -429,16 +445,23 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
 
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
-	#native-struct rewuired by GTK on Windows
-	CFLAGS		+=-DWIN32 -fnative-struct
+	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
+    #error with GCC 3.2 on CygWin
+	ifneq "${GCC_VER}" "3.2"
+		CFLAGS		+=-fnative-struct
+    endif
+	CFLAGS		+=-DWIN32
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
-	SO_LDFLAGS	=${RDYNAMIC} ${PIC}
+	#SO_LDFLAGS	=${RDYNAMIC} ${PIC}
+	#DLL_CFLAGS=-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
+
+    #from dllhelpers example
+	#gcc -shared -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
+	DLL_CFLAGS=-shared -Wl,--out-implib=TMP${SOEXP_EXT} -Wl,--export-all-symbols
+
+	SO_LDFLAGS	=${DLL_CFLAGS}
 	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
-	DLL_EXPORTLIB_EXT=.dll.a
-	#dll on Windows are loaded by standard Windows loader, that don't
-	#understand CygWin symbolic links:
-	SOEXP_EXT   =${SO_EXT}.a
 	#if USE_RPCGEN is disabled, static files from /tools/cygwin will be used
     #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
 	#USE_RPCGEN  =0
@@ -755,9 +778,6 @@ GLIB_NAME="@GLIB_NAME@"
 
 MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
-DLL_CFLAGS="-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--export-all-symbols"
-
-
 #gcc -shared -o cyg${module}.dll -Wl,--out-implib=lib${module}.dll.a \
 #                  -Wl,--export-all-symbols \
 #                  -Wl,--enable-auto-import \
@@ -778,7 +798,7 @@ DLL_CFLAGS="-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--expo
 ## ==================================================================
 
 #Rule to make Windows-CyGwin .dll and export library:
-%.dll %.def %.dll.a: $(DLLOBJS)
+zzzzz%.dll zzzzzz%.def zzzzzz%.dll.a: $(DLLOBJS)
 #	${CC} -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
 	${CC} ${DLL_CFLAGS} -o $*.dll $(DLLOBJS) $(DLL_LDFLAGS) $(DLL_LDLIBS)
 
