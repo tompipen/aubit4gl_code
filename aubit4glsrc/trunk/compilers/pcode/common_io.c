@@ -6,7 +6,9 @@
 
 #ifdef NO_AUBITLIB
 /* if we can't use aubit4gl libraries - we have to use XDR from rpcgen */
+#ifndef RPCGEN_HEADERS
 #define RPCGEN_HEADERS
+#endif
 #endif
 
 #ifdef RPCGEN_HEADERS
