@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.39 2005-02-04 15:02:08 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.40 2005-03-07 17:10:51 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2875,5 +2875,6 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
        }
 
  }
+
 
 

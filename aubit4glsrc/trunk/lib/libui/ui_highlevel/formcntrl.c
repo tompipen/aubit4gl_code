@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.19 2005-01-05 20:04:14 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.20 2005-03-07 17:10:50 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.19 2005-01-05 20:04:14 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.20 2005-03-07 17:10:50 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -214,13 +214,32 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
   A4GL_debug ("newMovement %d ", attrib);
 
+
+  A4GL_debug ("newMovement %d ", attrib);
+
   if (attrib < 0)
     {
-      // attempt to move too far to the left
-      A4GL_debug ("Too far to the left");
-      A4GL_newMovement (sio, 0);
-      return;
+        // attempt to move too far to the left
+        A4GL_debug ("Too far to the left");
+        // cc 2004.11.15
+        if (sio->currform->currentfield == sio->field_list[0] && std_dbscr.input_wrapmode != 0) {
+                A4GL_debug ("Wrap around from top to bottom");
+                A4GL_newMovement (sio, sio->nfields);
+                return;
+        }
+        // attempt to move too far to the left
+        A4GL_debug ("Too far to the left");
+        A4GL_newMovement (sio, 0);
+        return;
     }
+
+  //if (attrib < 0)
+    //{
+      //// attempt to move too far to the left
+      //A4GL_debug ("Too far to the left");
+      //A4GL_newMovement (sio, 0);
+      //return;
+    //}
 
 
   if (attrib > sio->nfields)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.19 2005-01-24 10:35:14 mikeaubury Exp $
+# $Id: console.c,v 1.20 2005-03-07 17:06:28 mikeaubury Exp $
 #*/
 
 /**
@@ -575,5 +575,22 @@ int
 void UILIB_A4GL_zrefresh(void) {
 	/* REQUIRED - BUT DOES NOTHING */
 }
+
+
+
+void
+UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
+{
+return;
+}
+
+int
+UILIB_A4GL_get_option_value_for_current_window (char type)
+{
+return 0;
+}
+
+
+
 
 /* ========================== EOF =============================== */

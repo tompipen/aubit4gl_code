@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.107 2005-03-07 14:53:11 mikeaubury Exp $
+# $Id: newpanels.c,v 1.108 2005-03-07 17:10:47 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.107 2005-03-07 14:53:11 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.108 2005-03-07 17:10:47 mikeaubury Exp $";
 
 /**
  * @file
@@ -3216,4 +3216,80 @@ if (a!=-1) {
 	A4GL_monitor_puts_int(buff);
 }
 }
+
+
+
+void
+UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
+{
+  struct s_form_attr *scr;
+  scr=&windows[currwinno].winattr;
+  switch (type)
+    {
+    case 'C': scr->comment_line = keyval; break;
+    case 'E': scr->error_line = keyval; break;
+    case 'F': scr->form_line = keyval; break;
+    case 'M': scr->menu_line = keyval; break;
+    case 'm': scr->message_line = keyval; break;
+    case 'P': scr->prompt_line = keyval; break;
+    case 'A': scr->acckey = keyval; break;
+    case 'D': scr->delkey = keyval; break;
+    case 'I': scr->inskey = keyval; break;
+    case 'N': scr->nextkey = keyval; break;
+    case 'p': scr->prevkey = keyval; break;
+    case 'H': scr->helpkey = keyval; break;
+    case 'd': scr->dispattr = keyval; break;
+    case 'i': scr->inpattr = keyval; break;
+    case 'W': scr->input_wrapmode = keyval; break;
+    case 'f': scr->fieldconstr = keyval; break;
+    case 'S': scr->sqlintr = keyval; break;
+    case 'r': scr->run_ui_mode=keyval;break;
+    case '|': scr->pipe_ui_mode=keyval;break;
+    }
+}
+
+int
+UILIB_A4GL_get_option_value_for_current_window (char type)
+{
+  struct s_form_attr *scr;
+  scr=&windows[currwinno].winattr;
+
+  switch (type)
+    {
+    case 'C': return scr->comment_line; break;
+    case 'E': return scr->error_line ; break;
+    case 'F': return scr->form_line; break;
+    case 'M': return scr->menu_line ; break;
+    case 'm': return scr->message_line ; break;
+    case 'P': return scr->prompt_line ; break;
+    case 'A': return scr->acckey ; break;
+    case 'D': return scr->delkey ; break;
+    case 'I': return scr->inskey ; break;
+    case 'N': return scr->nextkey ; break;
+    case 'p': return scr->prevkey ; break;
+    case 'H': return scr->helpkey ; break;
+    case 'd': return scr->dispattr ; break;
+    case 'i': return scr->inpattr ; break;
+    case 'W': return scr->input_wrapmode ; break;
+    case 'f': return scr->fieldconstr ; break;
+    case 'S': return scr->sqlintr ; break;
+    case 'r': return scr->run_ui_mode; break;
+    case '|': return scr->pipe_ui_mode; break;
+    }
+A4GL_assertion(1,"Unknown option value");
+return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =============================== EOF =============================== */
