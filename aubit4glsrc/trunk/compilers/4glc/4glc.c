@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.48 2004-01-29 08:33:30 mikeaubury Exp $
+# $Id: 4glc.c,v 1.49 2004-01-29 09:38:53 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 =====================================================================
 */
 
-extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
+extern int a4gl_yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
 extern FILE *ferr;
 extern int yyleng;
 extern int chk4var;
@@ -88,14 +88,14 @@ main (int argc, char *argv[])
   A4GL_setarg0 (argv[0]);
   A4GL_debug ("Initializing 4glc\n");
   init_states ();
-  yydebug = 1;
+  a4gl_yydebug = 1;
 
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
 
   x = initArguments (argc, argv);
 
-  if (yydebug)
+  if (a4gl_yydebug)
     {
       printf ("Exit\n");
     }

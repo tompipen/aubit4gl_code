@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.49 2004-01-29 08:33:33 mikeaubury Exp $
+# $Id: compile.c,v 1.50 2004-01-29 09:38:56 mikeaubury Exp $
 #*/
 
 /**
@@ -56,7 +56,7 @@
 #define ANSI_MODE_IGNORE 0
 #define ANSI_MODE_WARN   1
 #define ANSI_MODE_ERROR  2
-
+#define yydebug a4gl_yydebug
 
 #if ( defined(__CYGWIN__) )
 char *informix_esql="esql_cygwin";
@@ -95,6 +95,7 @@ char *default_database = 0;
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
+#error "NO YYDEBUG"
 int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 #endif
 
