@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.20 2004-01-23 10:03:04 mikeaubury Exp $
+# $Id: rexp2.c,v 1.21 2004-05-18 13:38:35 mikeaubury Exp $
 #
 */
 
@@ -198,7 +198,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   if (tabname==0) {
 		tabname="";
   }
-  A4GL_debug("A4GL_construct : %s %s %s",tabname,colname_s,val);
+  A4GL_debug("A4GL_construct : '%s' '%s' '%s'",tabname,colname_s,val);
   if (strlen(tabname)) {
 		sprintf(colname,"%s.%s",tabname,colname_s);
   } else {
@@ -227,12 +227,14 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   lastchar = -1;
   z = -1;
   ismatch = 0;
+  A4GL_debug("ptr2=%s",ptr2);
   for (a = 0; a < strlen (ptr2); a++)
     {
       if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?')
 	ismatch = 1;
       lastchar = z;
       z = isop (ptr2, a);
+	A4GL_debug("z=%d",z);
       if (z > 0 && lastchar == 0)
 	{			/* last character was not a control */
 	  appendchr (buffer, '\n');
@@ -314,23 +316,37 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	}
       sprintf (buff3, "%s%s%s", colname, buff2, quote);
     }
+
+A4GL_debug("z=%d",z);
   if (z > 0 && z < OR)
     {
       strcat (buff2, constr_bits[0]);
+
       strcat (buff2, quote);
       for (z = 1; z < constr_size; z++)
 	{
 	  strcat (buff2, constr_bits[z]);
 	}
       strcat (buff2, quote);
+
       if (strcmp (buff2, "=") == 0)
 	{
-	  strcpy (buff2, "is null");
+	  strcpy (buff2, " is null");
 	}
       if (strcmp (buff2, "!=") == 0)
 	{
-	  strcpy (buff2, "is not null");
+	  strcpy (buff2, " is not null");
 	}
+      if (strcmp (buff2, "=''") == 0)
+	{
+	  strcpy (buff2, " is null");
+	}
+      if (strcmp (buff2, "!=''") == 0)
+	{
+	  strcpy (buff2, " is not null");
+	}
+
+
       sprintf (buff3, "%s%s", colname, buff2);
     }
   if (z == OR || (z2 == OR && z == 0))
