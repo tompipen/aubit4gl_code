@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.97 2005-03-23 08:24:12 afalout Exp $
+# $Id: iarray.c,v 1.98 2005-03-29 17:21:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.97 2005-03-23 08:24:12 afalout Exp $";
+		"$Id: iarray.c,v 1.98 2005-03-29 17:21:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -860,20 +860,25 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_PGDN:
       if (arr->arr_line + arr->scr_dim <= arr->arr_size)
 	{
-	A4GL_debug("Calling newmovement");
+	A4GL_debug("Calling newmovement PGDN %d %d %d",arr->arr_line, arr->scr_dim, arr->no_arr);
+
 	  if (arr->arr_line+ arr->scr_dim> arr->no_arr ) {
+		A4GL_debug("A");
 		if (arr->allow_insert) {
+			A4GL_debug("allow_insert");
 	  		A4GL_newMovement (arr, arr->scr_line, arr->no_arr+1, arr->curr_attrib, 'D');
 		} else {
 	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 		}
 	  } else {
+			A4GL_debug("nm1");
 	  	A4GL_newMovement (arr, arr->scr_line, arr->arr_line + arr->scr_dim, arr->curr_attrib, 'D');
 	  }
 	}
       else
 	{
 	  int d;
+	A4GL_debug("XX");
 	  d = arr->arr_size - arr->arr_line;
 	  if (d>arr->no_arr) {
 	 	if (arr->allow_insert) {
@@ -882,7 +887,8 @@ process_key_press (struct s_inp_arr *arr, int a)
 	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 		}
 	  } else {
-  	  		A4GL_newMovement (arr, arr->scr_dim, d, arr->curr_attrib, 'D');
+  	  		//A4GL_newMovement (arr, arr->scr_dim, d, arr->curr_attrib, 'D');
+	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 	  }
 	}
       break;
