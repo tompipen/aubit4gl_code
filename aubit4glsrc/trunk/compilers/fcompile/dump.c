@@ -27,6 +27,13 @@ char *desc_bool[]={
 };
 
 
+/**
+ * Dumps a complete form description
+ * It calls all the specific dumps(attributes, metrics, field description
+ * and tables)
+ *
+ * @param f A pointer to the form description structure
+ */
 dump_form_desc(struct_form *f) {
 int a;
 	printf("DB         : '%s'\n",f->dbname);
@@ -46,6 +53,11 @@ printf("Screens :%d\n",f->snames.snames_len);
 	dump_tables(f);
 }
 
+/**
+ * Make a text dump of the form attributes
+ *
+ * @param f A pointer to a form description record
+ */
 dump_attributes(struct_form *f) {
 	int a;
 	int b;
@@ -76,6 +88,11 @@ desc_bool[f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]]
 }
 }
 
+/**
+ * Make a text dump of all text elements from the screen image
+ *
+ * @param f A pointer to a form description record
+ */
 dump_metrics(struct_form *f) {
 int a;
 	printf("\nMetrics %d\n",f->metrics.metrics_len);
@@ -90,6 +107,11 @@ int a;
 }
 }
 
+/**
+ * Text dumps screen record field information
+ *
+ * @param f A pointer to a form description record
+ */
 dump_fields_desc(struct_form *f) {
 int a,b;
 printf("\nFields %d\n",f->fields.fields_len);
@@ -101,6 +123,11 @@ printf("\nFields %d\n",f->fields.fields_len);
 	}
 }
 
+/**
+ * Make a text dump of the screen record information
+ *
+ * @param f A pointer to a form description record
+ */
 dump_records(struct_form *f) {
 int a,b;
 printf("\nRecords %d\n",f->records.records_len);
@@ -114,6 +141,11 @@ printf("\nRecords %d\n",f->records.records_len);
 	}
 }
 
+/**
+ * Dumps a text representation of tables loaded from the parser
+ *
+ * @param f A pointer to a form description record
+ */
 dump_tables(struct_form *f) {
 int a;
 	printf("\nTables %d\n",f->tables.tables_len);
