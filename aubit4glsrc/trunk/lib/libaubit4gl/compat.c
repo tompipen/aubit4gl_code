@@ -218,6 +218,11 @@ void popdec_aubit (fgldecimal *x) {
 }
 
 
+void popdtime(void* vx) { popdtime_native(vx); }
+void retdtime(void* vx) { retdtime_native(vx); }
+void retdec(void* vx)   { retdec_native(vx); }
+
+
 void
 popshort (short *x)
 {
