@@ -55,8 +55,9 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 684 105 705 229 752"
+INVALID_TESTS="375 377 684 105 705 229 707 752"
 #752 - fails to run under informix 4gl
+#707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
 #684,253,255 256 257 258 259 - no test files
 #105 - missing database schemma
