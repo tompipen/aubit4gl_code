@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.62 2003-07-29 10:47:04 mikeaubury Exp $
+# $Id: newpanels.c,v 1.63 2003-08-01 01:03:26 mikeaubury Exp $
 #*/
 
 /**
@@ -2965,10 +2965,37 @@ A4GL_window_on_top (void)
   	ptr = panel_below (ptr);
   	s = panel_userptr (ptr);	/* get name of panel */
 	if (s) break;
+	
+  }
+  A4GL_debug("window_on_top - %s",s);
+  winptr = A4GL_find_pointer (s, WINCODE);
+  return winptr;
+}
+
+
+WINDOW *
+A4GL_window_on_top_ign_menu (void)
+{
+  PANEL *ptr;
+  char *s;
+  void *winptr;
+  ptr=0;
+  while (1) {
+  	ptr = panel_below (ptr);
+  	s = panel_userptr (ptr);	/* get name of panel */
+	if (s) break;
+	
+  }
+  A4GL_debug("window_on_top - %s",s);
+  if (A4GL_has_pointer (s, MNPARCODE)) {
+		// Damn - its a menu - whats our parent ?
+		return A4GL_find_pointer (s, MNPARCODE);
   }
   winptr = A4GL_find_pointer (s, WINCODE);
   return winptr;
 }
+
+
 
 /**
  *

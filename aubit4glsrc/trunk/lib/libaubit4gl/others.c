@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.31 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: others.c,v 1.32 2003-08-01 01:03:26 mikeaubury Exp $
 #
 */
 
@@ -162,7 +162,7 @@ A4GL_fgl_keyval (int _np)
 
   _r = A4GL_key_val (v0);
   A4GL_debug ("TST1 - r=%d\n", _r);
-  A4GL_push_int (_r);
+  A4GL_push_long (_r);
   acl_free (v0);
   return 1;
 }

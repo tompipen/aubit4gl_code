@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.5 2003-07-29 20:34:34 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.6 2003-08-01 01:03:26 mikeaubury Exp $
 */
 
 /**
@@ -137,6 +137,7 @@ int A4GL_set_line (char *s, long l);
 void A4GL_debug_full (char *fmt, ...);
 void A4GL_chk_err (int lineno, char *fname);
 char *a4gl_substr (char *s, int dtype, int a, int b, ...);
+char *acl_getenv (char *);
 
 #define A4GL_FUNCTION
 #define A4GL_INTERNAL_FUNCTION

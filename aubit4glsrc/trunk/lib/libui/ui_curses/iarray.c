@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.31 2003-07-28 17:45:06 mikeaubury Exp $
+# $Id: iarray.c,v 1.32 2003-08-01 01:03:26 mikeaubury Exp $
 #*/
 
 /**
@@ -1035,6 +1035,9 @@ A4GL_set_fields_inp_arr (void *vsio)
 	{
 	  A4GL_debug ("MJAMJA Turn on field : %p", sio->field_list[a][b]);
 	  A4GL_turn_field_on2 (sio->field_list[a][b], 1);
+	  field = (struct struct_scr_field *) (field_userptr (sio->field_list[a][b]));
+	A4GL_debug("Settings flags to 0 for %d %d",a,b);
+	  field->flags=0;
 	}
     }
   return 1;
@@ -1440,6 +1443,7 @@ process_control_stack (struct s_inp_arr *arr)
   int rval;
   int new_state;
   struct s_movement *ptr_movement;
+int cnt;
 
   rval = -1;
   new_state = 99;
@@ -1551,7 +1555,13 @@ process_control_stack (struct s_inp_arr *arr)
       if (arr->scr_line != ptr_movement->scr_line);	// ireinpalay_arr (arr, 1);
       else
 	ireinpalay_arr (arr, 2);
+ 
 
+      for (cnt=0;cnt<arr->nbind;cnt++) {
+          		struct struct_scr_field *fprop;
+                fprop = (struct struct_scr_field *) (field_userptr (arr->field_list[0][cnt])); // props are shared - so we don't need the current line...
+		fprop->flags=0;
+}
       new_state = 0;
       rval = -10;
     }
@@ -1591,6 +1601,7 @@ process_control_stack (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
     {
 
+			debug_print_flags(arr,"kp");
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
@@ -1626,6 +1637,7 @@ process_control_stack (struct s_inp_arr *arr)
                 fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
                 if (arr->fcntrl[a].extent>=0 && arr->fcntrl[a].extent<=255 && ( (isprint(arr->fcntrl[a].extent) || arr->fcntrl[a].extent==1 || arr->fcntrl[a].extent==4)) ) {
 
+			debug_print_flags(arr,"testing flags for currentfield");
                         if ((fprop->flags & 1)==0)  {
                                         switch (arr->binding[arr->curr_attrib].dtype) {
                                         case DTYPE_SMINT:
@@ -1636,11 +1648,14 @@ process_control_stack (struct s_inp_arr *arr)
                                         case DTYPE_MONEY:  A4GL_int_form_driver (arr->currform->form, REQ_CLR_EOF);
                                         }
                         }
-                        A4GL_debug("SETTING FLAGS ");
+			debug_print_flags(arr,"bs");
+                        A4GL_debug("SETTING FLAGS IA for currentfield");
                         fprop->flags|=2; // Set the field status flag
                 }
 		A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
 		A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
+			debug_print_flags(arr,"bf");
+		A4GL_debug("Setting BF flag for current field");
                 fprop->flags|=1; // Clear the before field flag
 
 
@@ -1725,7 +1740,10 @@ process_control_stack (struct s_inp_arr *arr)
 
 	  A4GL_comments (fprop);
 	  pos_form_cursor (arr->currform->form);
-	if ((fprop->flags & 1) ) fprop->flags-=1;
+          A4GL_debug("Clearing fprop flag -1 BEFORE FIELD for %d %d",arr->scr_line - 1,arr->curr_attrib);
+
+	  if ((fprop->flags & 1) ) fprop->flags-=1;
+
 	  new_state = 0;
 	}
 
@@ -2014,8 +2032,21 @@ a=1;
 
 
 
-
-
-
+void debug_print_flags(void *sv,char *txt) {
+struct s_inp_arr *s;
+struct struct_scr_field *fprop;
+int a;
+int b;
+s=sv;
+A4GL_debug("fgl_fieldtouched - input array");
+for (a=0;a<s->scr_dim;a++) {
+for (b=0;b<s->nbind;b++) {
+        FIELD *f;
+        f=s->field_list[a][b];
+        fprop= (struct struct_scr_field *) (field_userptr (s->field_list[a][b]));
+        A4GL_debug("FLAGS (%s)%d %d - %d %p %p",txt,a,b,fprop->flags,f,fprop);
+}
+}
+}
 
 

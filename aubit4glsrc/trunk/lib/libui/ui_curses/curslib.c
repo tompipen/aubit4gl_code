@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.49 2003-07-28 17:27:51 mikeaubury Exp $
+# $Id: curslib.c,v 1.50 2003-08-01 01:03:26 mikeaubury Exp $
 #*/
 
 /**
@@ -638,24 +638,27 @@ infx_to_curses[7]=AUBIT_COLOR_BLACK;
 	chars=chars_normal;
  }
 
-  if (n == 5) c = A4GL_pop_int ();
-  else {
+  if (n == 5) {
+		c = A4GL_pop_int ();
+  		c=infx_to_curses[c%8];
+		A4GL_debug("drawbox Been passes a colour");
+	} else {
+		A4GL_debug("drawbox No colour");
 		c=0;
   }
 
-  c=infx_to_curses[c%8];
 
 
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
-  A4GL_debug ("In fgl_drawbox c=%d",c);
+  A4GL_debug ("In fgl_drawbox c=%d x=%d y=%d w=%d h=%d",c,x,y,w,h);
   A4GL_debug ("h=%d y+h=%d", h, y + h);
   //win=curscr;
-  win = A4GL_find_pointer ("screen", WINCODE);
-  win = A4GL_window_on_top ();
-
+  //win = A4GL_find_pointer ("screen", WINCODE);
+  win = A4GL_window_on_top_ign_menu ();
+  A4GL_debug("Got win as %p from window_on_top",win);
 #define PMOVE(x,y,ch) 	mvwaddch(win,(y-1),(x-1),ch+A4GL_decode_colour_attr_aubit(c))
 
 
@@ -1848,7 +1851,13 @@ A4GL_menu_loop (void* menuv)
     }
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
   /*set_window(owin); */
+
+
   A4GL_refresh_menu_window (menu->window_name, 0);
+  A4GL_refresh_menu_window (menu->window_name, 1);
+
+
+
 
   /*
      ptr = A4GL_find_pointer (name, PANCODE);
@@ -4002,7 +4011,9 @@ void A4GL_comments (struct struct_scr_field *fprop)
 		cline=A4GL_get_curr_height();
   }
 
-  A4GL_display_internal (1, cline, buff, AUBIT_COLOR_WHITE, 1);
+  A4GL_display_internal (1, cline, buff,
+	// AUBIT_COLOR_WHITE
+      A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0) , 1); // COMMENTS seem to take on the Window border style...
   A4GL_zrefresh();
 
 

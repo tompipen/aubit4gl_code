@@ -83,8 +83,6 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "is not null" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
 [0-9]+|[0-9]*\.[0-9]+  	{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
 
-"\"" { if (in_screen_section==0) REJECT ; strcpy(yylval.str,yytext);  return CH; }
-"\'" { if (in_screen_section==0) REJECT; strcpy(yylval.str,yytext);   return CH; }
 
 \"[^\"]+\" { if (in_screen_section==1) REJECT; strcpy(yylval.str,yytext); return CHAR_VALUE;}
 \"\" {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}
@@ -94,7 +92,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 
 [	 \n]	;
 
-"{" 		{ if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
+"{" 		{if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
 "}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.57 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: ioform.c,v 1.58 2003-08-01 01:03:26 mikeaubury Exp $
 #*/
 
 /**
@@ -208,7 +208,7 @@ A4GL_make_label (int frow, int fcol, char *label)
 	A4GL_debug("Making graphic character %c @ frow=%d fcol=%d\n",label[1],frow,fcol);
   	f = new_field (1, 1, frow, fcol, 0, 0);
   } else {
-	A4GL_debug("Making normal label %s @ frow=%d fcol=%d\n",label,frow,fcol);
+	A4GL_debug("Making normal label '%s' @ frow=%d fcol=%d\n",label,frow,fcol);
   	f = new_field (1, l, frow, fcol, 0, 0);
   }
 
@@ -277,8 +277,10 @@ A4GL_make_label (int frow, int fcol, char *label)
 
   if (f)
     {
-      A4GL_mja_set_field_buffer (f, 0, label);
-      set_field_opts (f, field_opts (f) & ~O_ACTIVE);
+	A4GL_debug("99 set field buffer to label = **%s**",label);
+	set_field_buffer(f,0,label);
+      //A4GL_mja_set_field_buffer (f, 0, label);
+        set_field_opts (f, field_opts (f) & ~O_ACTIVE);
     }
   else
     {
@@ -319,7 +321,7 @@ struct s_form_dets *formdets;
   for (a = 0; a < n; a++)
     {
       formdets->fileform->metrics.metrics_val[a].pos_code = 0;
-      A4GL_debug ("checking label\n");
+      A4GL_debug ("checking label %s\n",formdets->fileform->metrics.metrics_val[a].label);
 
 
       if (strlen (formdets->fileform->metrics.metrics_val[a].label) != 0)
@@ -3043,14 +3045,22 @@ A4GL_fgl_getfldbuf_ia_ap (void *inp,va_list *ap)
   int c;
   int a;
   int nr;
+  int b;
 
   s=inp;
 
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   nr=0;
   for (a=0;a<=c;a++) {
-  	A4GL_push_char (field_buffer (field_list[a], 0));
-	nr++;
+	FIELD *f;
+	f=field_list[a]; // f will always be in the first rows of screen fields..
+	for (b=0;b<s->nbind;b++) {
+		if (f==s->field_list[0][b]) {
+			// Found @ position b...
+  			A4GL_push_char (field_buffer (s->field_list[s->scr_line-1][b], 0));
+			nr++;
+		}
+	}
   }
   return nr;
 }
@@ -3829,10 +3839,16 @@ A4GL_fgl_fieldtouched_input_array_ap (void *sv , va_list * ap)
 struct s_inp_arr *s;
 struct struct_scr_field *fprop;
 s=sv;
-A4GL_debug("fgl_fieldtouched");
+A4GL_debug("fgl_fieldtouched - input array");
+
+
+debug_print_flags(sv,"ft");
+
+
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
+	/*
       for (a = 0; a <= c; a++)
 	{
 	  found = 0;
@@ -3852,22 +3868,27 @@ A4GL_debug("fgl_fieldtouched");
 	      return 0;
 	    }
 	}
+	*/
+
+
       A4GL_debug ("fieldtouched_input - checking field_status");
 
       for (a = 0; a <= c; a++)
 	{
-	
-          	A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
-		fprop= (struct struct_scr_field *) (field_userptr (field_list[a]));
-
-	if (fprop->flags&2)
-	    {
-	      A4GL_debug ("fieldtouched Field status is set for %p",
-			  field_list[a]);
-	      free (field_list);
-	      return 1;
-	    }
+	FIELD *f;
+	f=field_list[a];
+	for (b=0;b<s->nbind;b++) {
+		if (f==s->field_list[0][b]) {
+			// Found @ position b....
+			fprop= (struct struct_scr_field *) (field_userptr (s->field_list[s->scr_line-1][b]));
+			if (fprop->flags&2) {
+	      			A4GL_debug ("fieldtouched Field status is set for %p - %d line %d - b=%d", field_list[a],fprop->flags,s->scr_line-1,b);
+	      			free (field_list);
+	      			return 1;
+	    		}
+		}
 	}
+      }
       A4GL_debug ("fieldtouched Field status not set for any..");
       free (field_list);
       return 0;
@@ -3892,7 +3913,7 @@ A4GL_fgl_fieldtouched_input_ap (void *sv , va_list * ap)
 struct s_screenio *s;
 struct struct_scr_field *fprop;
 s=sv;
-A4GL_debug("fgl_fieldtouched");
+A4GL_debug("fgl_fieldtouched - input ");
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
