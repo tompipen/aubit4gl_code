@@ -131,8 +131,21 @@ END FUNCTION
 ################################################################################
 FUNCTION dbi_execute_sql_using_obind_u(lv_sql)
 define lv_sql char(10000)
-	display "U:",lv_sql clipped
-sleep 4
+code
+        A4GL_trim(lv_sql);
+        A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(obind_u,obind_u_cnt,0,0,lv_sql),1);
+        if (a4gl_sqlca.sqlcode<0)  {
+                        A4GL_chk_err(0,_module_name);
+        }
+endcode
+
+if sqlca.sqlcode<0 then
+        Error "FAILED:",sqlca.sqlcode
+        return 0
+end if
+
+return 1
+
 END FUNCTION
 
 
@@ -148,7 +161,6 @@ define lv_sql char(10000)
 define lv_tabno integer
 define lv_nextcnt integer
 define lv_rowid integer
-display lv_sql clipped
 initialize mv_serial to null
 code
 	A4GL_trim(lv_sql);
