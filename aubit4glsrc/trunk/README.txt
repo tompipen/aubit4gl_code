@@ -8,17 +8,15 @@ Instalation:
 
 Doccumentation:
 
-	Manual at the time of this release is included in this distribution, 
-	but please also see online manual at www.falout.com for updates and 
-	corrections.
+	Please see online manual at aubit4gl.sourceforge.net
 
 Change log:
 
-    See CVS on www.falout.com. changelog.txt is now obsolete.
+    See CVS logs. changelog.txt is now obsolete.
 
 Development:
 
-    Please visit www.falout.com and www.aubit.com
+    Please visit aubit4gl.sourceforge.net
 
 License:
 
@@ -32,93 +30,69 @@ Discuss:
 
     Please direct all questions to discussion list at:
 
-	http://www.egroups.com/group/aubit4gl
-	http://www.falout.com/projects/Aubit4gl is now obsolete.
+	    aubit4gl.sourceforge.net
+
+	This old lists are now obsolete:
+		http://www.egroups.com/group/aubit4gl
+		http://www.falout.com/projects/Aubit4gl
 
 =========================================================================
 
 Feel lucky?
 
-Following are short version instruction on how to obtain source files
+Following are short instruction on how to obtain source files
 and make the compiler. THIS IS NOT A REPLACEMENT FOR READING THE MANUAL!
 
--------- Using jCVS servlet web page to get sources -----------------
+Using binary builds is recomended, if you do not intend to change
+compiler's source code. However, since Aubit 4gl is in intensive
+developemnt, it is much easier to follow new developments if you get
+source code form CVS, and then just do updates to that base ("cvs update")
 
-This option will work for everyone. All you need is web browser.
 
-Go to www.falout.com,
-select Projects->Version controll from tree menu in left frame
+1) Using command line CVS to get sources
 
-Click on cake picture marked:
-	"Open repositories in web browser via jCVS servlet"
+	See instructions at:
 
-(Direct link: http://www.falout.com/servlets/JCVSlet/list/Aubit4gl)
+	http://sourceforge.net/cvs/?group_id=32409
 
-When your path on top of the page looks like this:
-	"HOME / Projects / Aubit-4gl / Aubit4gl"
+- OR -
 
-...click on "Checkout Latest" link to refresh jCVS servlet repository from
-central CVS files. Then, click BACK in your browser.
+2) Obtain source code using source file distribution package
 
-Now click on "Download" link. This should start download of file
-"Aubit4gl.zip" in your browser.
+    Reelased versions source code download (can be out of date)
 
-create working directory, like MyWorkDir.
-unzip Aubit4gl.zip to MyWorkDir
-cd Aubit4gl
+        http://sourceforge.net/project/showfiles.php?group_id=32409
 
----------------------------------------------------------------------
+    Nightly builds source code (current)
 
-<OR>
+		http://aubit4gl.sourceforge.net/files/aubitdownload.htm
 
--------- Using command line CVS to get sources --------------------
+- OR -
 
-Fro this option you need CVS login to falout.com, and CVS command line
-utillities installed on your system:
+3) Obtain binary distribution
 
-execute "export CVSROOT=':pserver:username@falout.com:/data/cvs'"
-execute "cvs login"
-	(enter your password)
+    See same locations as in b)
 
-execute "mkdir MyWorkDir"
-execute "cd MyWorkDir"
-execute "cvs -z3 checkout Aubit4gl"
-execute "cd Aubit4gl"
 
---------------------------------------------------------------------
+If you will be using source code, you will need to make the compiler:
 
-<OR>
+	cd <where_you_unpack>
+	bin/4glpc -config
+	. /etc/opt/aubit4gl/aubitenv
+	make
 
---------------- Using jCVS Java client to get sources --------------
+If you will be using bunary distribution, you will need to install it:
 
-Fot this option you need CVS login to falout.com, and jCVS Java client
-application installed.
 
-I cannot emphasise enough that this is the tool you want to check out
-if you will also need to do some work on your local system and want to
-return this changes back to central CVS repository, unless you are
-already familiar and happy with your current CVS client.
+a) RPM bynary distribution:
 
-jCVS II is wonderfully simple GUI client to CVS server, and ig GUI is good
-for something, it is good for managing files. This is Java app, meaning
-it will run on any system with Java run-time engine, and several installers
-are provided at:
 
-http://www.trustice.com/java/jcvs/
+b) Debian bynary disrtibution:
 
---------------------------------------------------------------------
 
--------------------- make the compiler -----------------------------
+c) tarball (.tar.gz) bynary distribution:
 
-edit aubitenv:
-    - change export AUBITDIR=<path to MyWorkDir>/Aubit4gl
-    - enable call to appropriate script you use to set ODBC manager
-		environment
-    - edit ODBC libraries setings, as per your system
 
-execute ".aubitenv"
-execute "cd $AUBITDIR"
-execute "make"
 --------------------------------------------------------------------
 
 Did not work? Please read the manual.

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2002-01-03 20:16:09 saferreira Exp $
+# $Id: Makefile.in,v 1.9 2002-01-04 07:20:53 afalout Exp $
 #
 
 
@@ -561,12 +561,11 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) ${MKNAME} -C tools/jabber clean
 	@echo Aubit 4gl compiler source tree is now clean
 
+clean.configure: clean.makefiles clean.settings
+	${RM} config.log config.status incl/config.h
 
-clean.configure: clean.makefiles
-	${RM} config.log
-	${RM} config.status
-	${RM} incl/config.h
-
+clean.settings:
+	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv
 
 clean.makefiles:
 	${RM} compilers/4glc/Makefile
@@ -587,6 +586,7 @@ clean.makefiles:
 	${RM} tools/odbctest/Makefile
 	${RM} tools/test/Makefile
 	${RM} tools/test/gui/Makefile
+	${RM} Makefile
 
 
 #will clean intermediate files resulting from compile, but will skip

@@ -7,7 +7,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.33 2002-01-02 00:39:15 afalout Exp $
+# $Id: 4glpc,v 1.34 2002-01-04 07:20:54 afalout Exp $
 #
 ########################################################################
 
@@ -262,26 +262,21 @@ fi
 
 if [ "$AUBITDIR" = "" ]
 then
-	echo "Warning: $0 : AUBITDIR was not set"
+	PATHTO4GLPC=`dirname $0`
+	PATHTO4GLPC=`dirname $PATHTO4GLPC` #remove bin/
+    cd $PATHTO4GLPC
+    CURRDIR=`pwd`
+	cd -
+	export AUBITDIR=$CURRDIR
 
-    AUBITDIR=`dirname $0`
-    if [ "$AUBITDIR" = "." ]
+	if [ -f $AUBITDIR/bin/4glpc ]
     then
-		AUBITDIR=`pwd`
+		echo "AUBITDIR now set to $AUBITDIR"
+        cd -
+    else
+        echo "Error: cannot set AUBITDIR: $AUBITDIR"
+        exit 13
     fi
-
-	#INDIR=`basename $AUBITDIR`
-    #echo $INDIR
-	#AUBITDIR=`echo $AUBITDIR | sed -e "/$INDIR/s/$INDIR//"`
-    AUBITDIR=`dirname $AUBITDIR`
-    export AUBITDIR
-
-    if [ "$AUBITDIR" = "." ]
-    then
-		AUBITDIR=`pwd`
-    fi
-
-	echo "AUBITDIR now set to $AUBITDIR"
 fi
 
 #save some things from environment, so they don't get overwtitten by .a4glrc -
@@ -312,7 +307,7 @@ then
 	    FOUNDRC=$HOME/.a4glrc
 	fi
 
-	if [ "$FOUNDRC" = "0" ] && [ "$1" != "-configexample" ] && [ "$1" != "-overwrite_config" ]
+	if [ "$FOUNDRC" = "0" ] && [ "$1" != "-config" ] && [ "$1" != "-overwrite_config" ]
 	then
 	    echo "Cannot find $AUBITETC/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
 	    echo "Stop."
@@ -494,7 +489,7 @@ do
 		OVERWRITE_CONFIG=1
    ;;
 
-   -configexample)
+   -config)
 
         if [ ! -d $ETC_TARGET ]
         then
@@ -515,13 +510,12 @@ do
 	            ./configure
 				AUBITENVSRC=aubitenv
 				AUBITBUILDSRC=aubitbuild.mk
+				A4GLRCSRC=a4glrc
             else
 				AUBITENVSRC=aubitenv.example
 				AUBITBUILDSRC=aubitbuild.mk.example
+				A4GLRCSRC=a4glrc.example
             fi
-
-			#a4glrc is still not generated with "configure"
-			A4GLRCSRC=a4glrc.example
 
 			if [ -f $ETC_TARGET/aubitenv ] && [ "$OVERWRITE_CONFIG" = "0" ]
             then

@@ -1,3 +1,9 @@
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/aubit4gl
+AUBITETC=/etc/opt/aubit4gl
+
+
 ifndef NOINCL
     NOINCL=0
 endif
@@ -6,7 +12,7 @@ ifeq "$(NOINCL)" "0"
 	ifdef AUBITBUILDMK
 		include $(AUBITBUILDMK)
 	else
-		include /etc/aubitbuild.mk
+		include ${AUBITETC}/aubitbuild.mk
 	endif
 
 	ifdef AUBITBUILDMKMULTI
