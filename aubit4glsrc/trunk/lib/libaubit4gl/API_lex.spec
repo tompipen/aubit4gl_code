@@ -403,8 +403,8 @@ print_undo_use char* s -> void
 /* void print_execute (char *stmt, int exec_using) */
 print_execute char* stmt,int exec_using -> void
 
-/* void print_prompt_1 (char *a1, char *a2, char *a3, char *a4) */
-print_prompt_1 char* a1,char* a2,char* a3,char* a4 -> void
+/* void print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout) */
+print_prompt_1 char* a1,char* a2,char* a3,char* a4,int timeout -> void
 
 /* void print_prompt_forchar () */
 print_prompt_forchar -> void

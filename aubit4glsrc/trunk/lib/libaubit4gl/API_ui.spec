@@ -94,8 +94,8 @@ A4GL_remove_window char* win_name -> void
 A4GL_disp_arr_ap void* disp void* ptr char* srecname int attrib va_list* ap -> int
 /* int A4GL_inp_arr (void* disp, int defs, char* srecname, int attrib, int init)*/
 A4GL_inp_arr void* disp int defs char* srecname int attrib int init -> int
-/* int A4GL_prompt_loop (void* prompt)*/
-A4GL_prompt_loop void* prompt -> int
+/* int A4GL_prompt_loop (void* prompt,int timeout)*/
+A4GL_prompt_loop void* prompt,int timeout -> int
 /* int A4GL_start_prompt (void* prompt, int ap, int c, int h, int af)*/
 A4GL_start_prompt void* prompt int ap int c int h int af -> int
 /* int A4GL_endis_fields_ap (int en_dis, va_list* ap)*/

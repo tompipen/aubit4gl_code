@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.37 2003-09-06 08:22:08 mikeaubury Exp $
+# $Id: ops.c,v 1.38 2003-09-08 18:54:23 mikeaubury Exp $
 #
 */
 
@@ -239,10 +239,15 @@ A4GL_debug("in_dt_ops");
 
 		
 
+if (pi) {
   in.stime = pi->stime;
   in.ltime = pi->ltime;
-  dt.stime = pd->stime;
-  dt.ltime = pd->ltime;
+}
+
+  if (pd) {
+  	dt.stime = pd->stime;
+  	dt.ltime = pd->ltime;
+  }
   A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
 
   if (A4GL_isnull(DTYPE_INTERVAL,(void *)&in)) {
@@ -396,18 +401,19 @@ A4GL_debug("in_dt_ops");
 	  while (dtime_data[2] <= 1)
 	    {
 	      dtime_data[1]--;
-	      dtime_data[2] += 30;	/** @todo Fix this **//*printf("Carry D\n"); */
+	      if (dtime_data[1]<1) {dtime_data[1]=12;dtime_data[0]--;}
+	      dtime_data[2] += A4GL_days_in_month(dtime_data[1],dtime_data[0]);
 	    }
 	}
-
       if (dt.stime <= 2)
 	{
+A4GL_debug("CHECKING MONTHS.. %d %d",dtime_data[1],ival_data[1]);
 	  // Months
 	  dtime_data[1] -= ival_data[1];
-	  while (dtime_data[1] <= 1)
+	  while (dtime_data[1] < 1)
 	    {
 	      dtime_data[0]--;
-	      dtime_data[1] += 12;	/*printf("Carry M\n"); */
+	      dtime_data[1] = 12;	/*printf("Carry M\n"); */
 	    }
 	}
 
@@ -503,9 +509,11 @@ A4GL_debug("in_dt_ops");
 		}
 */
 
-      A4GL_ctodt (ptr, &dt, dt.stime * 16 + dt.ltime);
-
-      A4GL_push_dtime (&dt);
+      if (A4GL_ctodt (ptr, &dt, dt.stime * 16 + dt.ltime)) {
+      		A4GL_push_dtime (&dt);
+	} else {
+		A4GL_push_null(DTYPE_DTIME,dt.stime * 16 + dt.ltime);
+	}
       return;
     }
 
@@ -860,7 +868,7 @@ A4GL_dt_dt_ops (int op)
     }
 
 
-  if (A4GL_isnull(DTYPE_DTIME,pd)) {
+  if (A4GL_isnull(DTYPE_DTIME,(void *)pd)) {
 		// First is null...
         A4GL_drop_param();
         A4GL_drop_param();
@@ -869,7 +877,7 @@ A4GL_dt_dt_ops (int op)
   }
 
 
-  if (A4GL_isnull(DTYPE_DTIME,pi)) {
+  if (A4GL_isnull(DTYPE_DTIME,(void *)pi)) {
 		// Second is null...
         A4GL_drop_param();
         A4GL_drop_param();
@@ -970,12 +978,17 @@ if (op==(OP_EQUAL)||op==(OP_NOT_EQUAL)) {
       dtime_data2[1]--;
     }
 
+
+A4GL_debug("Y %d M %d D %d H %d M %d S %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+
 // Borrow some years for some months.
   while (dtime_data2[1] < 0)
     {
       dtime_data2[1] += 12;
       dtime_data2[0]--;
     }
+
+A4GL_debug("Y %d M %d D %d H %d M %d S %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
   if (dtime_data2[0] || dtime_data2[1])
     {

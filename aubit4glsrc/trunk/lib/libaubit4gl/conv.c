@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.60 2003-09-06 08:22:08 mikeaubury Exp $
+# $Id: conv.c,v 1.61 2003-09-08 18:54:23 mikeaubury Exp $
 #
 */
 
@@ -685,7 +685,10 @@ A4GL_ctodt (void *a, void *b, int size)
     }
   else
     {
-      return 0;
+	A4GL_setnull(DTYPE_DTIME,d,size);
+
+
+      return 1;
     }
 
   return 1;
@@ -1752,8 +1755,9 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
       n = atoi (num[y_pos]);
     }
 
-  return ((*date = A4GL_gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n))
-	  != DATE_INVALID);
+  *date = A4GL_gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n);
+  return 1;
+  //return ((*date = A4GL_gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n)) != DATE_INVALID);
 }
 
 
