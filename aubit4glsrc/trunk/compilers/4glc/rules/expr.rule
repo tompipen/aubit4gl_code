@@ -520,8 +520,8 @@ function_call_expr2:
         A4GLSQL_set_status(0,0);
 } opt_cw_func_call_args CLOSE_BRACKET {
 	int cv;
-        cv=get_counter_val();
 	void *p;
+        cv=get_counter_val();
         drop_counter();
         sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(\"channel\",\"write\",%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", cv, lastlineno,infilename);
         p=A4GL_append_expr_expr($<ptr>4,$<ptr>7);
