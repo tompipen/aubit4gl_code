@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.33 2002-02-19 09:18:31 afalout Exp $
+# $Id: configure.in,v 1.34 2002-02-19 10:25:15 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -608,9 +608,15 @@ WARNING: You specified Informix base install directory that is different
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
 				AC_PATH_PROG(MSVC_COMP, cl, no)
 				AC_PATH_PROG(MSVC_LINK, link, no)
+				if test "$IFMX_ESQLC" != "no" && test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+				then
+	                ESQLCC_OK="OK"
+                fi
+			else
+                ESQLCC_OK="OK"
 			fi
 
-			if test "$IFMX_ESQLC" != "no" && test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
 			then
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
@@ -644,7 +650,7 @@ WARNING: You specified Informix base install directory that is different
 				AC_MSG_RESULT($IFX_VERSION)
 				IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
             else
-				AC_MSG_RESULT(esql not in path)
+				AC_MSG_RESULT(esql not in path, or no compatible C compiler)
             fi
 		fi
 	else
