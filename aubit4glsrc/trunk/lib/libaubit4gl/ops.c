@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.66 2004-12-28 13:37:53 mikeaubury Exp $
+# $Id: ops.c,v 1.67 2005-01-11 15:05:56 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,7 @@ A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops))
 
 void A4GL_int_int_ops (int op);
 int A4GL_dectos (void *z, void *w, int size);
+char * make_using_tostring (char *ptr, int d, int n);
 
 #ifdef OLD_INCL
 void A4GL_push_long (long a);
@@ -3057,8 +3058,7 @@ make_using (char *ptr)
 
 
 
-char *
-make_using_tostring (char *ptr, int d, int n)
+char * make_using_tostring (char *ptr, int d, int n)
 {
   static char buff_ts[256];
   char buff2[256];
