@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.7 2002-12-08 06:34:37 afalout Exp $
+# $Id: aubit-config.c,v 1.8 2003-01-14 09:02:54 mikeaubury Exp $
 #
 */
 
@@ -59,7 +59,7 @@
 
 extern void build_user_resources(void);
 extern void exitwith(void);
-extern void dump_all_resource_vars(void);
+extern void dump_all_resource_vars(int export);
 extern char *acl_getenv (char *s);
 
 void trim_nl(char *p);
@@ -84,6 +84,7 @@ main(int argc,char *argv[])
 		printf("Usage:\n");
 		printf("     aubit-config [VARIABLE_NAME | -a]\n");
 		printf("        -a: show all set variables\n");
+		printf("        -ae: show all set variables as 'export VARIABLE=\n");
 		printf("\n");
 		exit(1);
 	}
@@ -93,10 +94,16 @@ main(int argc,char *argv[])
 	/* load settings from config file(s): */
 	build_user_resources();
 
-	if (strcmp(argv[1],"-a")==0)
-		dump_all_resource_vars();
-	else
-		printf("%s\n",acl_getenv(argv[1]));
+	if (strcmp(argv[1],"-a")==0) {
+		dump_all_resource_vars(0);
+		exit(0);
+	}
+	if (strcmp(argv[1],"-ae")==0) {
+		dump_all_resource_vars(1);
+		exit(0);
+	}
+
+	printf("%s\n",acl_getenv(argv[1]));
 
 	exit(0);
 }

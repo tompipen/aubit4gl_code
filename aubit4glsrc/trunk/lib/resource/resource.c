@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.25 2003-01-09 14:28:41 psterry Exp $
+# $Id: resource.c,v 1.26 2003-01-14 09:02:55 mikeaubury Exp $
 #
 */
 
@@ -264,7 +264,7 @@ static char * chk_str_resource (char *s, struct str_resource *res);
 static int add_userptr (void *ptr);
 static char * find_str_resource (char *s);
 int replace_str_resource (char *s, char *neww);
-void dump_all_resource_vars(void);
+void dump_all_resource_vars(int export);
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 
@@ -910,25 +910,33 @@ int a;
  * @param
  */
 void
-dump_all_resource_vars(void)
+dump_all_resource_vars(int export)
 {
 struct str_resource *res;
 int a;
 
 	res=builtin_resource;
-	printf("Built-in resources:\n");
+	if (!export) printf("Built-in resources:\n");
 	  for (a = 0; strlen (res[a].name) != 0; a++) 
 		{
-		printf("  %s=%s\n",res[a].name,res[a].value);
+		if (!export) printf("  %s=%s\n",res[a].name,res[a].value);
+			else {if(getenv(res[a].name))
+			 printf("export %s='%s'\n",res[a].name,acl_getenv(res[a].name));
+			}
 		}
 
 	res=user_resource;
+
 	if (res) 
 	{
-		printf("User resources :\n");
+		if (!export) printf("User resources :\n");
 		  for (a = 0; strlen (res[a].name) != 0; a++) 
 		  {
-			printf("  %s=%s\n",res[a].name,res[a].value);
+			if (!export) printf("  %s=%s\n",res[a].name,res[a].value);
+			else  { if (getenv(res[a].name)) {
+			 printf("export %s='%s'\n",res[a].name,acl_getenv(res[a].name));
+			}
+			}
 		  }
 	}
 

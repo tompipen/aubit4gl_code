@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.88 2002-12-08 06:34:36 afalout Exp $
+# $Id: 4glpc,v 1.89 2003-01-14 09:02:22 mikeaubury Exp $
 #
 
 ########################################################################
@@ -53,6 +53,8 @@ if [ "$A4GLDEBUG" = "yes" ]
 then
 	A4GLVERBOSE="yes"
 fi
+
+aubit-config -ae > /tmp/$$.env
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -345,6 +347,12 @@ then
 	. $A4GL_INIFILE
 fi
 
+
+vi /tmp/$$.env
+. /tmp/$$.env
+rm /tmp/$$.env
+echo "4GLPC - $A4GL_SQLTYPE"
+
 #we no longer export all variables, so this is obsolete?:
 if [ "$MAKINGAUBIT" = "1" ]
 then
@@ -554,6 +562,7 @@ do
 		echo "A5 [~/.aubit4gl/aubitrc]       =$A5"
 		echo "A6 [./.aubitrc]                =$A6"
 		echo "A7 ['A4GL_INIFILE']           =$A7"
+		echo "A8 environment"
 		echo
 
         echo AUBITDIR = $AUBITDIR

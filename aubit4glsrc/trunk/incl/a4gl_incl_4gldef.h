@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.18 2002-11-23 08:44:55 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.19 2003-01-14 09:02:54 mikeaubury Exp $
 */
 
 /**
@@ -63,6 +63,8 @@
 		void *ptr; /**< A pointer to the variable bounded */
 		int dtype; /**< The data type of the variable bounded */
 		long size; /**< The size in bytes of the variable bounded */
+		long start_char_subscript;
+		long end_char_subscript;
 	};
 
 
