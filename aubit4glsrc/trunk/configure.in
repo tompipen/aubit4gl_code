@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
+dnl # $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -501,6 +501,7 @@ AC_SUBST(WINDIR)
 AC_SUBST(CYGWIN_PATH)
 AC_SUBST(EFENCE)
 AC_SUBST(CINT)
+AC_SUBST(CINTSYSDIR)
 AC_SUBST(SQLITE_LDPATH)
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
@@ -520,7 +521,7 @@ AC_SUBST(HAVE_PDCURSES)
 AC_SUBST(DEBUG_BISON)
 AC_SUBST(YYDEBUG)
 AC_SUBST(INCLINES)
-
+AC_SUBST(VALGRIND)
 
 #Install/deinstall files lists
 AC_SUBST(AMAKE_SH)
@@ -1439,7 +1440,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
+# $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1510,7 +1511,10 @@ if test "$withval" != "no"; then
 	if test "$with_i4gl" = ""; then         	with_i4gl=yes 		;fi
 	if test "$with_httpd" = ""; then            with_httpd=yes 		;fi
 	if test "$with_java" = ""; then     		with_java=yes   	;fi
-	if test "$with_efence" = ""; then     		with_efence=yes   	;fi
+	#Do not link in efence by default - At least on SuSE it generated 
+	#anoying copyright message every time an executable liked with it
+	#is envoked
+	if test "$with_efence" = ""; then     		with_efence=no   	;fi
 	if test "$with_bison" = ""; then     		with_bison=yes   	;fi
 
 else
@@ -2332,6 +2336,12 @@ fi
 	])
 
 
+#Valgrind has same purpose as efence (detecting memory alocation errors)
+#But instead of being a library that needs to be linked with every program 
+#you wish to debug, it is an executable, and may be easier to use then efence
+	AC_PATH_PROG(VALGRIND, valgrind, no)
+
+
 ## ==================================================================
 ##  				   Checks for DoxyGen
 ## ==================================================================
@@ -2496,17 +2506,52 @@ AC_ARG_WITH(cint,
 	
 		#FIXME: despite listing all this paths, cint executable will only be found
 	    #if it's in the PATH - no idea why
+echo "x1 $LDFLAGS"
+echo "xa $save_LDFLAGS"
 
 		save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
-		LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:$LD_LIBRARY_PATH"
+		save_LDFLAGS="$LDFLAGS"
+		save_PATH="$PATH"		
+		save_LIBS="$LIBS"
+echo "w1 $LDFLAGS"
+echo "wa $save_LDFLAGS"
+		
+		LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:/usr/local/lib:/usr/lib/termcap:$LD_LIBRARY_PATH"
+		LDFLAGS="-L/usr/lib/termcap $LDFLAGS"
+		PATH=/opt/cint:/usr/local/bin:$PATH
 
-		save_PATH=$PATH
-		PATH=/opt/cint:$PATH
+		AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint )
+		AC_PATH_PROG(MAKECINT, makecint, no, $PATH /usr/local/cint /opt/cint )
+		
+		if test "$CINT" != "no"; then
+			CINTSYSDIR=`dirname $CINT`
+			AC_CHECK_LIB([termcap], [main])
+			AC_CHECK_LIB([bsd], [main])
+			AC_CHECK_LIB([bsd-compat], [main])			
+			if test "$ac_cv_lib_bsd_main" != "yes" \
+				-a "$ac_cv_lib_bsd_compat_main" = "yes"; \
+			then			
+				ln -s /usr/lib/libbsd-compat.a /usr/lib/libbsd.a
+				#reset and re-test
+				ac_cv_lib_bsd_main=""
+				AC_CHECK_LIB([bsd], [main])
+			fi
 
-		AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint)
-
+			if test "$ac_cv_lib_bsd_main" != "yes" \
+				-o "$ac_cv_lib_termcap_main" != "yes"; \
+			then
+				CINT=no
+				AC_MSG_RESULT(no-missing bsd or termcap libraries)
+			else
+				AC_MSG_RESULT(yes)			
+			fi
+		fi
+		
+		
 		LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
 		PATH="$save_PATH"
+		LDFLAGS="$save_LDFLAGS"
+		LIBS="$save_LIBS"
 
     else
 	  AC_MSG_RESULT(--with-cint disabled)
@@ -2515,6 +2560,12 @@ AC_ARG_WITH(cint,
 ],[
   AC_MSG_RESULT(--with-cint not specified)
 ])
+
+echo "1 $LDFLAGS"
+echo "a $save_LDFLAGS"
+echo "2 $LD_LIBRARY_PATH"
+#exit
+
 
 
 ## ==================================================================
@@ -3231,9 +3282,20 @@ fi
 		        esac
 
 				AC_MSG_CHECKING(PG engine IFX compatibility-informix_serial function)
-			 	TMP=`nm -A --defined-only $POSTMASTER | grep informix_serial`
+			 	TMP=`nm -A --defined-only $POSTMASTER | grep informix_serial 2>&1`
 				if test "$TMP" != ""; then 
-					AC_MSG_RESULT(yes)
+					case "$TMP" in
+					*no*symbols)
+						AC_MSG_RESULT(unknown)					
+						AC_MSG_WARN(** No symbols in PG executable)
+						;;
+					*informix_serial*)
+						AC_MSG_RESULT(yes)
+						;;
+					*)
+						AC_MSG_RESULT(unknown-no result from nm)					
+						;;
+					esac
 				else
 					AC_MSG_RESULT(no)				
 					AC_MSG_WARN(** Locally installed PostgreSQL db engine is)
@@ -3777,124 +3839,6 @@ AC_ARG_WITH(sapodbc,
 
 
 ## ==================================================================
-##                 Checks for PostgreSQL ODBC driver
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for PostgreSQL ODBC driver support:)
-
-AC_ARG_WITH(pgodbc,
-[  --with-pgodbc[=DIR]       Include PostgreSQL ODBC driver support.  DIR is the
-                          base install directory, defaults to /usr.],
-[
-  #PHP_WITH_SHARED
-	if test "$withval" != "no"; then
-		if test "$withval" = "yes"; then
-	    	withval=/usr
-		else
-			#user specified custom withval
-			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGODBC"
-			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
-		fi
-
-		old_LIBS="$LIBS"
-		old_LDFLAGS="$LDFLAGS"
-        old_CPPFLAGS="$CPPFLAGS"
-		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
-		TMP_PGODBC_LFLAGS="-L$withval/lib -L/usr/lib/unixODBC"
-
-		#QT libs also have something that looks like PG ODBC driver:
-		#/usr/lib/qt3/plugins/sqldrivers/libqsqlpsql.so
-		#/usr/lib/qt3/plugins/sqldrivers/libtudopsql.so
-		
-		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
-		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
-		# FIXME: Replace `main' with a function in `-lpsqlodbc':
-
-		#unixODBC distributed ODBC driver for PG
-		AC_CHECK_LIB([odbcpsql], [main])
-		if test $ac_cv_lib_odbcpsql_main = yes; then
-            PGODBC_LIBNAME=odbcpsql
-        fi
-
-		#PostgreSQL distributed ODBC driver for PG
-		AC_CHECK_LIB([psqlodbc], [main])
-		if test $ac_cv_lib_psqlodbc_main = yes; then
-            PGODBC_LIBNAME=psqlodbc
-        fi
-
-
-		if test $ac_cv_lib_psqlodbc_main = yes || test $ac_cv_lib_odbcpsql_main = yes; then
-			#also check for headers, since they are not in PG ODBC RPM, they are
-			#in postgresql-devel, <<< THIS IS NOT TRUE ANY MORE, at least for RH 8 RPM's!
-			#7.1.3 seems to be last version to include this files!!
-            #http://developer.postgresql.org/cvsweb.cgi/pgsql-server/src/interfaces/odbc/Attic/iodbc.h?hideattic=0 say:
-            #Remove all traces of the ODBC driver, which is now on GBorg as the psqlodbc project ...
-            #
-            #
-			#including /usr/lib/libpsqlodbc.a (so we don't need
-			#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
-			#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
-
-			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
-
-			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
-			
-			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
-			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
-                HAVE_PG_HEADERS=yes
-            else
-				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
-				#add this headers to Aubit CVS (they are supposed to be standard
-				#anyway, so we might be even able to use odbc.h sql.h and sqlext.h
-				#if we find them on the system ?)
-
-				#This checks are for debugging only:
-				AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])				
-				AC_CHECK_HEADERS([ odbc.h sql.h sqlext.h ])				
-				
-				HAVE_PG_HEADERS=no
-            fi
-
-        fi
-		LIBS="$old_LIBS"
-		LDFLAGS="$old_LDFLAGS"
-        CPPFLAGS="$old_CPPFLAGS"
-
-		AC_MSG_CHECKING(PG ODBC connector support)
-		if test $ac_cv_lib_psqlodbc_main = yes || test $ac_cv_lib_odbcpsql_main = yes; then
-
-			if test "$HAVE_PG_HEADERS" != "yes" && test "$AUBIT_SOURCE" = "1" ; then
-            #we need headers only to compile source code
-			    AC_DEFINE(HAVE_PGODBC,0,[ ])
-				AC_MSG_RESULT(NO (missing header files))
-			else
-				HAVE_PGODBC=yes
-			    PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE"
-			    PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
-
-			    AC_DEFINE(HAVE_PGODBC,1,[ ])
-			    AC_MSG_RESULT(yes)
-            fi
-		else
-		    AC_DEFINE(HAVE_PGODBC,0,[ ])
-		    AC_MSG_RESULT(No (missing library))
-		fi
-	else
-		AC_MSG_RESULT(disabled)
-	fi
-],[
-	AC_MSG_RESULT(--with-pgodbc not specified)
-])
-
-#FIXME:
-#warn user to run /usr/share/pgsql/odbc.sql script to add aditional
-# PostgreSQL catalog extensions and functions for ODBC compliance
-#do the same for ODBC managers, if you detect PG database installed
-
-
-
-## ==================================================================
 ##                 Checks for iODBC ODBC manager support
 ## ==================================================================
 
@@ -3905,7 +3849,6 @@ AC_ARG_WITH(iodbc,
 [  --with-iodbc[=DIR]        Include iODBC/Openlink support.  DIR is the iODBC base
                           install directory, defaults to /usr/local.],
 [
-  #PHP_WITH_SHARED
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
@@ -3941,6 +3884,9 @@ AC_ARG_WITH(iodbc,
 			#This two tests are for debugging only:
 			AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])			
 			AC_CHECK_HEADERS([ odbc.h sql.h sqlext.h ])
+			
+			AC_DEFINE(HAVE_IODBC_HEADERS,1,[ ])
+			HAVE_IODBC_HEADERS=1
 			
 			ODBC_LIB_NAME=iodbc
 			HAVE_IODBC=yes
@@ -4177,6 +4123,136 @@ fi
 
 
 ## ==================================================================
+##                 Checks for PostgreSQL ODBC driver
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for PostgreSQL ODBC driver support:)
+
+AC_ARG_WITH(pgodbc,
+[  --with-pgodbc[=DIR]       Include PostgreSQL ODBC driver support.  DIR is the
+                          base install directory, defaults to /usr.],
+[
+  #PHP_WITH_SHARED
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr
+		else
+			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGODBC"
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+		fi
+
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+        old_CPPFLAGS="$CPPFLAGS"
+		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
+		TMP_PGODBC_LFLAGS="-L$withval/lib -L/usr/lib/unixODBC"
+
+		#QT libs also have something that looks like PG ODBC driver:
+		#/usr/lib/qt3/plugins/sqldrivers/libqsqlpsql.so
+		#/usr/lib/qt3/plugins/sqldrivers/libtudopsql.so
+		
+		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
+		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
+		# FIXME: Replace `main' with a function in `-lpsqlodbc':
+
+		#unixODBC distributed ODBC driver for PG
+		AC_CHECK_LIB([odbcpsql], [main])
+		if test $ac_cv_lib_odbcpsql_main = yes; then
+            PGODBC_LIBNAME=odbcpsql
+        fi
+
+		#PostgreSQL distributed ODBC driver for PG
+		AC_CHECK_LIB([psqlodbc], [main])
+		if test $ac_cv_lib_psqlodbc_main = yes; then
+            PGODBC_LIBNAME=psqlodbc
+        fi
+
+
+		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+			#also check for headers, since they are not in PG ODBC RPM, they are
+			#in postgresql-devel, <<< THIS IS NOT TRUE ANY MORE, at least for RH 8 RPM's!
+			#7.1.3 seems to be last version to include this files!!
+            #http://developer.postgresql.org/cvsweb.cgi/pgsql-server/src/interfaces/odbc/Attic/iodbc.h?hideattic=0 say:
+            #Remove all traces of the ODBC driver, which is now on GBorg as the psqlodbc project ...
+            #
+            #
+			#including /usr/lib/libpsqlodbc.a (so we don't need
+			#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
+			#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
+
+			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+
+			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
+			
+			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
+			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
+                HAVE_PG_HEADERS=yes
+            else
+				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
+				#add this headers to Aubit CVS (they are supposed to be standard
+				#anyway, so we might be even able to use odbc.h sql.h and sqlext.h
+				#if we find them on the system ?)
+
+				#This checks are for debugging only:
+				AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])				
+				AC_CHECK_HEADERS([ odbc.h sql.h sqlext.h ])				
+				
+				HAVE_PG_HEADERS=no
+            fi
+
+        fi
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+        CPPFLAGS="$old_CPPFLAGS"
+
+		AC_MSG_CHECKING(PG ODBC connector support)
+		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+			if test "$AUBIT_SOURCE" = "1" ; then
+            	#we need headers only to compile source code
+				if test "$HAVE_PG_HEADERS" = "yes"; then			
+					HAVE_PGODBC=yes
+					PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE"
+					PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
+					AC_DEFINE(HAVE_PGODBC_HEADERS,1,[ ])
+					AC_DEFINE(HAVE_PGODBC,1,[ ])
+					AC_MSG_RESULT(yes)
+				fi
+				
+				if test "$HAVE_PGODBC" != "yes" -a "$HAVE_IODBC_HEADERS" = "1"; then 
+					HAVE_PGODBC=yes
+					PGODBC_INCLUDE="$IODBC_INCLUDE"
+					PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
+					AC_DEFINE(HAVE_PGODBC,1,[ ])
+					AC_MSG_RESULT(yes - using iODBC headers)
+				fi
+				
+				if test "$HAVE_PGODBC" != "yes" ; then
+				    AC_DEFINE(HAVE_PGODBC,0,[ ])
+					AC_MSG_RESULT(NO (missing header files))
+				fi
+            fi
+		else
+		    AC_DEFINE(HAVE_PGODBC,0,[ ])
+		    AC_MSG_RESULT(No (missing library))
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-pgodbc not specified)
+])
+
+
+#FIXME:
+#warn user to run /usr/share/pgsql/odbc.sql script to add aditional
+# PostgreSQL catalog extensions and functions for ODBC compliance
+#do the same for ODBC managers, if you detect PG database installed
+
+
+
+## ==================================================================
 ##                  Check for GTK+ GUI support
 ## ==================================================================
 
@@ -4232,38 +4308,13 @@ AC_ARG_WITH(gtk,
 		AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
 		AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
         PATH="$old_PATH"
-
+#---cut---
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
 		LDFLAGS="$LDFLAGS -L$withval/lib -L/usr/lib"
 
-        ###########################################
-        #
-        #All this tests fro a single library will in most cases fail anyway,
-        #because of inter-depenencies between GTK libraries - we need to find out
-        #which are needed using pkg-config or gtk-config first anyway, so should
-        #I remove this, or move it AFTER I read config fron gtk-config?
-        #
-        ###########################################
-
-
-		# FIXME: Replace `main' with a function in `-lgdk':
 		AC_CHECK_LIB([gdk], [main])
-		# FIXME: Replace `main' with a function in `-lglib':
 		AC_CHECK_LIB([glib], [main])
-
-		#Old workaround - remove:
-		#if test "$ac_cv_lib_glib_main" = "no"; then
-		#	#libglib-1.3.dll.a
-		#	AC_CHECK_LIB([glib-1.3.dll], [main])
-		#	if test "$ac_cv_lib_glib_1_3_dll_main" != "no"; then
-		#		ac_cv_lib_glib_main="yes"
-        #    fi
-        #else
-		#	ac_cv_lib_glib_1_3_dll_main="no"
-		#fi
-
-		# FIXME: Replace `main' with a function in `-lgtk':
 		AC_CHECK_LIB([gtk], [main])
 
 		if
@@ -4288,64 +4339,29 @@ AC_ARG_WITH(gtk,
 				(test "$ac_cv_lib_gtk_1_2_main" = yes &&
 				test "$ac_cv_lib_glib_1_2_main" = yes &&
 				test "$ac_cv_lib_gdk_1_2_main" = yes); then
-
-		            HAVE_GTKLIBS=1.2
-
+		            GTK_VERSION=1.2
                 fi
 			else
-	            HAVE_GTKLIBS=2.0
+	            GTK_VERSION=2.0
 			fi
 		else
-            HAVE_GTKLIBS=nover
+            GTK_VERSION=nover
 		fi
 
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
-
-#Removed from makefile(s):
-#ifneq "$(GLIBVER)" "old"
-#	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
-#		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
-#			GTKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GLIBVER))
-#			GDKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GDKVER))
-#        endif
-#		GLIB_CFLAGS		=$(GTKLIB_CFLAGS) $(GDKLIB_CFLAGS) -I${GTKPATH}/include
-#    else #GLIBVER is empty
-#		ifneq "@GTK_CONFIG@" "no" #GTK_CONFIG
-#			GLIB_CFLAGS		:=$(shell @GTK_CONFIG@ --cflags)
-#			xxGTKLIBS		:=$(shell @GTK_CONFIG@ --libs)
-#			#we cannot have -rdynamic and -shared at the same time:
-#			GTKLIBS			=$(subst -rdynamic,,${xxGTKLIBS})
-#        else
-#			ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
-#                #for this we already set CFLAGS in configure
-#				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags glib)
-#				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags @GTK_NAME@)
-#				#-lgtk -lgdk -lgmodule-1.3 -lglib-1.3 -liconv -lintl
-#				#GLIB_LIBS		:=$(shell @PKG_CONFIG@ --libs-only-l gtk+-1.3-win32-production)
-#            endif
-#        endif
-#    endif
-#else #GLIBVER="old"
-#	GLIB_CFLAGS=-I/usr/lib/glib/include
-#	ifdef COMSPEC
-#		GLIB_CFLAGS+=-I/usr/src/gtk+ -I/usr/src/gtk+/gdk -I/usr/src/glib
-#    else
-#		GLIB_CFLAGS+=-I/usr/include/gtk-1.2 -I/usr/include/glib-1.2
-#    endif
-#endif
-
+#---cut---end---
 		#check if we have all we need to make GTK GUI
 		if
-			((test "$ac_cv_lib_gtk_main" = yes &&
-			test "$ac_cv_lib_glib_main" = yes &&
-			test "$ac_cv_lib_gdk_main" = yes) ||
-            (test "$GTK_CONFIG" != "no" ||
-			test "$PKG_CONFIG" != "no")); then
-
+#			((test "$ac_cv_lib_gtk_main" = yes &&
+#			test "$ac_cv_lib_glib_main" = yes &&
+#			test "$ac_cv_lib_gdk_main" = yes) ||
+            test "$GTK_CONFIG" != "no" \
+			-o "$PKG_CONFIG" != "no"; then
 			
 			#If both gtk-config and phg-config are found, use pkg-config
 			#Because gtk-config is GTK 1.2 only, and has no GTK 2.0 information
+			#pkg_config can contain both 1.2 and 2.0 info
 			if (test "$GTK_CONFIG" != "no" && test "$PKG_CONFIG" = "no") ; then
 				GTK_NAME="gtk-config"
 				GDK_NAME="gtk-config"
@@ -4361,95 +4377,94 @@ AC_ARG_WITH(gtk,
 			else
 				if test "$PKG_CONFIG" != "no"; then
 
-                            #pkg-config needs package name as parameter, and on Cygwin,
-                            #this iclude version names, so we need to extract this names first:
-						
-							#Frist try to see if pgk-config has info on GTK+ version 2
-                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -1 | awk '{print $1}'`
-							GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -1 | awk '{print $1}'`
-							GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -1 | awk '{print $1}'`
+					#pkg-config needs package name as parameter, and on Cygwin,
+					#this iclude version names, so we need to extract this names first:
+				
+					#Frist try to see if pgk-config has info on GTK+ version 2
+					GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -1 | awk '{print $1}'`
+					GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -1 | awk '{print $1}'`
+					GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -1 | awk '{print $1}'`
 
-                            if test "$GTK_NAME" = "" \
-								-o "$GDK_NAME" = "" \
-								-o "$GLIB_NAME" = ""; 
-							then
-								#No GTK+ version 2 info, try old 1.2
-	                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk " | head -1 | awk '{print $1}'`
-								GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk " | head -1 | awk '{print $1}'`
-								GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib " |  head -1 | awk '{print $1}'`
-							else
-								GTK_VERSION="2.0"
-								AC_DEFINE(HAVE_GTK_VERSION,2,[ ])
-								AC_MSG_RESULT(GTK+ 2.0 found with pkg-config)								
-							fi
+					if test "$GTK_NAME" = "" \
+						-o "$GDK_NAME" = "" \
+						-o "$GLIB_NAME" = ""; 
+					then
+						#No GTK+ version 2 info, try old 1.2
+						GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk " | head -1 | awk '{print $1}'`
+						GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk " | head -1 | awk '{print $1}'`
+						GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib " |  head -1 | awk '{print $1}'`
+					else
+						GTK_VERSION="2.0"
+						AC_DEFINE(HAVE_GTK_VERSION,2,[ ])
+						AC_MSG_RESULT(GTK+ 2.0 found with pkg-config)								
+					fi
 
-                            if test "$GTK_NAME" != "" \
-								&& test "$GDK_NAME" != "" \
-								&& test "$GLIB_NAME" != ""; 
-							then
-								if test "$GTK_VERSION" = ""; then 
-									GTK_VERSION="1.2"; 
-									AC_DEFINE(HAVE_GTK_VERSION,1.2,[ ])		
-									AC_MSG_RESULT(GTK+ 1.2 found with pkg-config)
+					if test "$GTK_NAME" != "" \
+						&& test "$GDK_NAME" != "" \
+						&& test "$GLIB_NAME" != ""; 
+					then
+						if test "$GTK_VERSION" = ""; then 
+							GTK_VERSION="1.2"; 
+							AC_DEFINE(HAVE_GTK_VERSION,1.2,[ ])		
+							AC_MSG_RESULT(GTK+ 1.2 found with pkg-config)
+						fi
+						GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
+						GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
+						GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
+
+						AC_DEFINE(HAVE_GTK,1,[ ])
+						GTKBUILD=yes
+					else
+						#on some missconfigured systems, like default RedHat 7.2
+						#pkg-config will not contain all entries we need
+						#WARNING: pkg-config will fail on many sistems 
+						#where not all dependent libraries (dev packages)
+						#are installed. pkg-config will in this cases just
+						#exit with error message about missing package at 
+						#the point where it encounters missing information.
+						#So if package we are looking for is AFTER the package
+						#that cannot be resolved, --list-all will not show 
+						#that package we are looking for is there, even if it is.
+						AC_MSG_WARN(cannot extract names from pkg-config.)
+						AC_MSG_WARN(GTK_NAME="$GTK_NAME")
+						AC_MSG_WARN(GDK_NAME="$GDK_NAME")
+						AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
+
+						#If we have gtk-config, we can in this case try to use it.
+						#This is a copy of commands above
+						if test "$GTK_CONFIG" != "no"; then
+							AC_MSG_WARN(Using gtk-config instead of missconfigured pkg-config)
+							GTK_NAME="gtk-config"
+							GDK_NAME="gtk-config"
+							GLIB_NAME="gtk-config"
+
+							GTK_INC_PATH=`$GTK_CONFIG --cflags`
+							GLIB_CFLAGS=$GTK_INC_PATH
+							GTKLIBS=`$GTK_CONFIG --libs`
+
+							AC_DEFINE(HAVE_GTK,1,[ ])
+							GTKBUILD=yes
+						else
+							if test "$GTK_VERSION" = ""; then
+								AC_MSG_WARN(Trying to find some trace of GTK+ libraries-please wait...)
+								#can This be /usr/local/lib too?
+								LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
+								LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
+								LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
+
+								if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
+									AC_MSG_WARN(you apparently have GTK+ run-time libraries installed.)
+									AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
+								else
+									AC_MSG_WARN(Nothing found)
 								fi
-	                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
-								GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
-								GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
-
-								AC_DEFINE(HAVE_GTK,1,[ ])
-								GTKBUILD=yes
-                            else
-								#on some missconfigured systems, like default RedHat 7.2
-                                #pkg-config will not contain all entries we need
-								#WARNING: pkg-config will fail on many sistems 
-								#where not all dependent libraries (dev packages)
-								#are installed. pkg-config will in this cases just
-								#exit with error message about missing package at 
-								#the point where it encounters missing information.
-								#So if package we are looking for is AFTER the package
-								#that cannot be resolved, --list-all will not show 
-								#that package we are looking for is there, even if it is.
-								AC_MSG_WARN(cannot extract names from pkg-config.)
-								AC_MSG_WARN(GTK_NAME="$GTK_NAME")
-								AC_MSG_WARN(GDK_NAME="$GDK_NAME")
-								AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
-
-								#If we have gtk-config, we can in this case try to use it.
-                                #This is a copy of commands above
-								if test "$GTK_CONFIG" != "no"; then
-									AC_MSG_WARN(Using gtk-config instead of missconfigured pkg-config)
-									GTK_NAME="gtk-config"
-									GDK_NAME="gtk-config"
-									GLIB_NAME="gtk-config"
-
-									GTK_INC_PATH=`$GTK_CONFIG --cflags`
-									GLIB_CFLAGS=$GTK_INC_PATH
-									GTKLIBS=`$GTK_CONFIG --libs`
-
-									AC_DEFINE(HAVE_GTK,1,[ ])
-									GTKBUILD=yes
-                                else
-									if test "$HAVE_GTKLIBS" = ""; then
-										AC_MSG_WARN(Trying to find some trace of GTK+ libraries-please wait...)
-										#can This be /usr/local/lib too?
-										LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
-	    	                            LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
-	        	                        LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
-
-										if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
-								        	AC_MSG_WARN(you apparently have GTK+ run-time libraries installed.)
-									        AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
-	    	                            else
-									        AC_MSG_WARN(Nothing found)
-										fi
-	        	                    else
-							        	AC_MSG_WARN(you apparently have GTK+ run-time libraries)
-							        	AC_MSG_WARN(version "$HAVE_GTKLIBS" installed.)
-										AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
-									fi
-                                fi
-                            fi
-
+							else
+								AC_MSG_WARN(you apparently have GTK+ run-time libraries)
+								AC_MSG_WARN(version "$GTK_VERSION" installed.)
+								AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
+							fi
+						fi
+					fi
 	            else
                             #try to assign paths manually:
 					        AC_MSG_WARN(cannot find pkg-config or gtk-config)
@@ -6574,7 +6589,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
+| $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -1,21 +1,72 @@
-export CINTSYSDIR=/opt/cint
+#!/bin/sh
+
+
+# Clean:
+
+rm -f makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h *.bak *~
+
+
+if test "$1" = "-clean"; then 
+	exit 0
+fi	
+
+
+
+################
+# Settings:
+
+source ../etc/aubitrc
+
+export CINTSYSDIR
 export PATH=$PATH:$CINTSYSDIR
+MAKECINT=$CINTSYSDIR/makecint
 
 USEAUBIT_PATH=`aubit-config AUBITDIR`
 #USEAUBIT_PATH=$AUBITDIR
-#clint will hard-code thsi path, can't use relative paths:
+#clint will hard-code this path, can't use relative paths:
 #USEAUBIT_PATH=..
 
-LD_LIBRARY_PATH=.:$CINTSYSDIR:$LD_LIBRARY_PATH
-LD_ELF_LIBRARY_PATH=$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH
+export LD_LIBRARY_PATH=.:$CINTSYSDIR:$LD_LIBRARY_PATH
+export LD_ELF_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+################
+# Check stuff;
+
+if test ! -f "$MAKECINT"; then 
+	echo "ERROR: file $MAKECINT does not exist"
+	exit 1
+fi
 
 
-rm -f makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h
+################
+# Create Makefile:
+
+$MAKECINT -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l $USEAUBIT_PATH/lib/libaubit4gl.so
+
+################
+# Build library:
+
+echo $CINTSYSDIR
+
+if test -f "makefile" ; then 
+	#make CINTIPATH=-I$(CINTLIBDIR) CINTSYSDIR=$CINTBINDIR -f makefile
+	make -f makefile
+else
+	echo "ERROR: failed to create makefile"
+	exit 2
+fi
 
 
-/opt/cint/makecint -mk makefile -dl libA4GL_cint.so -p -H a4gl_cint_4gldef.h -l $USEAUBIT_PATH/lib/libaubit4gl.so
+################
+# Copy lib to Aubit lib dir:
 
-make -f makefile
+if test -f libA4GL_cint.so; then 
+	cp libA4GL_cint.so ../lib
+else
+	echo "ERROR: failed to create libA4GL_cint.so"
+	exit 3
+fi
 
-cp libA4GL_cint.so ../lib
+exit 0
+
+

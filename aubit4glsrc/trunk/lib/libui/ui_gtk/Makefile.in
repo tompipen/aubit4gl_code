@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2003-10-10 09:27:37 afalout Exp $
+# $Id: Makefile.in,v 1.16 2004-02-12 11:04:12 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -169,12 +169,13 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 
 ##################
 #debuging target - to show curent settings:
-set:
-	@echo CFLAGS: ${CFLAGS}
-	@echo GTK_LIB_PATH: ${GTK_LIB_PATH}
-	@echo LINKLIBS: ${LINKLIBS}
-	@echo GTKLIBS: ${GTKLIBS}
-
+show:
+	@echo "LINKLIBS=${LINKLIBS}"
+	@echo "GTK_LIB_PATH=${GTK_LIB_PATH}" 
+	@echo "GTKLIBS=${GTKLIBS}"
+	@echo "CFLAGS_GTK_C=${CFLAGS_GTK_C}"
+	@echo "CFLAGS=${CFLAGS}"
+	
 ## ==================================================================
 ##                              Dependencies
 ## ==================================================================

@@ -433,4 +433,8 @@ A4GL_SAPDB_ESQLC="@SAPDB_ESQLC@"
 #Default=<no default value>
 ADD_LD_LIBRARY_PATH="@ADD_LD_LIBRARY_PATH@"
 
+
+#Path to CINT installation. Used by cint/make_cintlib 
+CINTSYSDIR=@CINTSYSDIR@
+
 #-------------------------------- EOF -----------------------------

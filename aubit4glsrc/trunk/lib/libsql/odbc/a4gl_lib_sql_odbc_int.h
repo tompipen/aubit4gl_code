@@ -38,32 +38,55 @@
 		#define __ODBC_DEFINED__
 		/* #include <incl/cli/sqlucode.h> */
 	#endif
-
+	
 	#ifdef PGODBC
-		#include <pgsql/iodbc/iodbc.h>
+		#if HAVE_PGODBC_HEADERS
+			//use headers supplied with PGODBC 
+			
+			//prevent inclusion of any more headers
+			#define __INCLUDED_HEADERS__ 
+			#include <pgsql/iodbc/iodbc.h>
 			/* #include <pgsql/iodbc/isql.h> */
-		#include <pgsql/iodbc/isqlext.h>
-
-	    /* NOTHING WE CAN DO:
-	       /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
-	       /usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
-	     */
-
-		#define __UCHAR_DEFINED__
-		#define __ODBC_DEFINED__
-
-
-        /*
-          PostgreSQL headers don't define SQLHSTMT
-        */
-
-		#ifndef FAR
-			#define FAR
+			#include <pgsql/iodbc/isqlext.h>
+	
+			/* NOTHING WE CAN DO:
+			   /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
+			   /usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
+			 */
+	
+			#define __UCHAR_DEFINED__
+			#define __ODBC_DEFINED__
+			/*
+			  PostgreSQL headers don't define SQLHSTMT
+			*/
+			#ifndef FAR
+				#define FAR
+			#endif
+			typedef void FAR *SQLHANDLE;
+			typedef SQLHANDLE SQLHSTMT;
 		#endif
-
-		typedef void FAR *SQLHANDLE;
-		typedef SQLHANDLE SQLHSTMT;
-
+		
+		#if ((HAVE_UNIXODBC_HEADERS) && ! defined (__INCLUDED_HEADERS__))
+			//use headers from unixODBC driver
+			
+			#define __INCLUDED_HEADERS__
+		#endif
+		
+		#if ((HAVE_IODBC_HEADERS) && ! defined (__INCLUDED_HEADERS__))
+			//use headers from iodbc driver
+			#define __INCLUDED_HEADERS__
+			#include <sql.h>
+			#include <sqlext.h>
+			#include <sqltypes.h>
+	
+			#define __UCHAR_DEFINED__
+			#define __ODBC_DEFINED__
+		#endif
+		
+		#if ((HAVE_SAPODBC_HEADERS) && ! defined (__INCLUDED_HEADERS__))
+			#define __INCLUDED_HEADERS__
+			//use headers from SAP ODBC driver
+		#endif
 	#endif
 
 
@@ -85,8 +108,11 @@
 
     #ifdef SQLITEODBC
         /* SQLite ODBC driver does not provide ODBC header files */
-
-
+		#include "../../../tools/odbctest/incl/sql.h"
+		#include "../../../tools/odbctest/incl/sqlext.h"
+		//#include <odbcinst.h>
+		#define __UCHAR_DEFINED__
+		#define __ODBC_DEFINED__
     #endif
 
 	#ifndef __ODBC_DEFINED__

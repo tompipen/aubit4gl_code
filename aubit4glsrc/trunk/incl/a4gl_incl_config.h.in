@@ -122,6 +122,12 @@
 	//interfaces/odbc/incl/WINDOWS.H
 	#define HAVE_INTERFACES_ODBC_INCL_WINDOWS_H 0
 
+	
+	#define HAVE_PGODBC_HEADERS 0
+	#define HAVE_UNIXODBC_HEADERS 0
+	#define HAVE_IODBC_HEADERS 0
+	#define HAVE_SAPODBC_HEADERS 0
+	
 /*
 
 TODO: Implement HAVE_  for all this:

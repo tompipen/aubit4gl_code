@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.12 2004-02-09 08:07:52 mikeaubury Exp $
+# $Id: makefile,v 1.13 2004-02-12 11:04:13 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -118,6 +118,8 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
+CURSES_LIB_NAME_NO_FORM=$(CURSES_LIB_NAME:%-lform=%)
+
 ## ==================================================================
 ##                              Common Options
 ## ==================================================================
@@ -127,32 +129,11 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
-#ALL				+=${LIBROOT}/libUI_HLGENERIC${SO_EXT} 
-
-
-#old stuff - replace/remove
-#GTK_INC_PATH    =-I/usr/local/include/gtk-2.0 -I/usr/local/lib/gtk-2.0/include \
-#				-I/usr/local/include/atk-1.0 -I/usr/local/include/pango-1.0 -I/usr/X11R6/include \
-#				-I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include
-#GTK_LIB_PATH    =-L/usr/local/lib
-#GTKLIBS         =-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
-
-#Now in Makefile-common.in :
-#GLIB_CFLAGS		=@GLIB_CFLAGS@
-#GTK_INC_PATH	=@GTK_INC_PATH@
-#GTK_LIB_PATH	=@GTK_LIB_PATH@
-#GTKLIBS			=@GTKLIBS@
-
-
-
-
 CFLAGS			+=-g -I${ROOT}/incl -I.. -I${LIBROOT}/libaubit4gl
-
 
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
-
 
 OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o
 
@@ -169,17 +150,12 @@ all: ${ALL}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
-#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) lowlevel_tui.o -o libUI_HL_TUI${SO_EXT} -laubit4gl -lform -lpanel -lcurses
-#	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
 
-
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -lpanel -lcurses  ${CURSES_LIB_PATH}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  ${CURSES_LIB_PATH}
 
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o
-#	gcc -rdynamic -shared $(OBJS) lowlevel_gtk.o widget_gtk.o  -o libUI_HL_GTK${SO_EXT} -laubit4gl $(GTK_INC_PATH) $(GTK_LIB_PATH) $(GTKLIBS)
-#	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
 
 ## ==================================================================
@@ -230,6 +206,13 @@ ${ROOT}/incl/a4gl_API_%.h :
 testit:  $(OBJS) testit.o API_lowlevel.o
 	${CC} -L${ROOT}/lib $^  -o testit -laubit4gl ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
 
+show:
+	@echo "LINKLIBS=${LINKLIBS}"
+	@echo "GTK_LIB_PATH=${GTK_LIB_PATH}" 
+	@echo "GTKLIBS=${GTKLIBS}"
+	@echo "CFLAGS_GTK_C=${CFLAGS_GTK_C}"
+	@echo "CFLAGS=${CFLAGS}"
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

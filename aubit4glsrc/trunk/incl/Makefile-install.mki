@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.72 2004-01-22 00:05:03 afalout Exp $
+# $Id: Makefile-install.mki,v 1.73 2004-02-12 11:04:12 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -410,12 +410,19 @@ IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
 ##################
 # 2: PDF pdflib
 PDFLIB_INFO			=http://www.pdflib.com
-PDFLIB_PATH         =http://www.pdflib.com/pdflib/download
-PDFLIB_SRC          =pdflib-4.0.3
+
+#Unix source code:
+PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/503src
+PDFLIB_SRC          =PDFlib-Lite-5.0.3-Unix-src
 PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
-#NOTE: Binary packages of PDFlib will require licansing, otherwise they will print
-#stuff on your pages!
-PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
+
+#Linux binary:
+#NOTE: Binary packages of PDFlib will require commertial licensing, otherwise they will print
+#stuff on your pages! We are installing SRC package by default - not binary
+PDFLIB_BIN_PATH		=http://www.pdflib.com/products/pdflib/download/503
+PDFLIB_BIN_TGZ		=PDFlib-5.0.3-Linux.tar.gz
+
+#Windows (source?):
 PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
 PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
 PDFLIB_WIN_ZIP		=${PDFLIB_WIN_NAME}.zip
@@ -434,7 +441,9 @@ XMLRPC_DEV_RPM      =xmlrpc-c-devel-0.9.9-1.i386.rpm
 #        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
 
 
+#Looks like RH no longer has ftp of this - try Fedora maybe?
 LIBWWW_PATH         =${RH_RPM_PATH}
+
 ifeq "${RH_RPM_VER}" "7.3"
 	LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
 endif
@@ -443,7 +452,8 @@ ifeq "${RH_RPM_VER}" "8.0"
 endif
 ifeq "${LIBWWW_RPM}" ""
 	#default
-	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
+	LIBWWW_PATH         =ftp://rpmfind.net/linux/redhat/beta/taroon/en/as/i386/RedHat/RPMS
+	LIBWWW_RPM			=w3c-libwww-5.4.0-5.i386.rpm
 endif
 
 
@@ -689,6 +699,13 @@ SPOPC_INFO=http://brouits.free.fr/libspopc/
 SPOPC_PATH=http://brouits.free.fr/libspopc
 SPOPC_SRC=libspopc-0.5.7
 SPOPC_TGZ_SRC=${SPOPC_SRC}.tgz
+
+##################
+# 28: cint
+CINT_INFO=http://root.cern.ch/root/Cint.html
+CINT_PATH=ftp://root.cern.ch/root/
+CINT_SRC=cint5.15
+CINT_TAR_GZ_SRC=${CINT_SRC}.tar.gz
 
 
 ## ==================================================================
@@ -1111,6 +1128,30 @@ install.libspopc: ${SPOPC_TGZ_SRC}
 	@echo "POP library installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+###################
+# 28: Cint
+#######################
+#WARNING - Cint needs -ltermcap and -lbsd
+#######################
+
+install.cint: ${CINT_TAR_GZ_SRC}
+	${MKPATH} /tmp/${CINT_SRC}
+	cd /tmp/${CINT_SRC}; tar -xvzf ${AUBIT_SRC_ROOT}/$^
+#NOTE: platforms gcc_max, linux2.0_ansi, gcc_min, linux2.0, linux_RH7.3_so 
+#and linux_RH7.3_gcc3 fail on SuSE 9. Cannot use linux2.0_so_only_C becuse 
+#generated makefile for Aubit NEEDS C++ too.
+#linux_RH7.3_gcc3 works on SuSE (after installing -ltermcap and linking 
+#libbsd-compat.a to libbsd.a)
+	cd /tmp/${CINT_SRC}; ${SH} ./setup platform/linux_RH7.3_gcc3
+#NOTE" bin and lib MUST be installed in same directory, since many scripts refer
+#to $CINTSYSDIR and expect both executables AND libraries there 
+	cd /tmp/${CINT_SRC}; ${SH} ./INSTALLBIN --bindir=/usr/local/cint --libdir=/usr/local/cint
+	@echo " "
+	@echo "Package info & manuals: ${CINT_INFO}"
+	@echo " "
+	@echo "CINT installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
 
 
 ########################
@@ -1212,7 +1253,8 @@ ${SQLITE_WIN_EXE}:
 	${WGET} ${SQLITE_WIN_PATH}/$@
 ${SPOPC_TGZ_SRC}:
 	${WGET} ${SPOPC_PATH}/$@
-
+${CINT_TAR_GZ_SRC}:
+	${WGET} ${CINT_PATH}/$@
 
 #############################################
 #       SQLite tests

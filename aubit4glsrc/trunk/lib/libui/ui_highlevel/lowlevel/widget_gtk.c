@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.5 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.6 2004-02-12 11:04:13 afalout Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -666,7 +666,9 @@ A4GL_cr_pixbuf (void)
   filename = A4GL_find_param ("FILENAME");
 
   A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
+#if GTK_CHECK_VERSION(2,0,0)
   pixmap = A4GL_make_pixbuf_gw (filename);
+#endif
   //A4GL_add_signal_grab_focus (pixmap, 0);
   //A4GL_add_signal_clicked (pixmap, 0);
 
