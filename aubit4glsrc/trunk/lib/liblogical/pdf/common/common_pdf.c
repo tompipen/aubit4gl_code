@@ -28,3 +28,10 @@ int pdf_save_file(FILE *fin) {
 	fwrite(&layout,sizeof(layout),1,fin);
 	return 1;
 }
+
+void msgbox (char *title, char *txt) {
+	return;
+}
+
+
+

@@ -1,22 +1,24 @@
 #!/bin/sh
-
 #This is Aubit 4gl compiler warper script
 
-AUBITDIR=`aubit-config AUBITDIR`
 
 if [ "$AUBITDIR" = "" ]; then
-    echo "ERROR: AUBITDIR is empty. Stop."
-	aubit-config AUBITDIR
-    exit 3
+	AUBITDIR=`aubit-config AUBITDIR`
+	if [ "$AUBITDIR" = "" ]; then
+		echo "ERROR: AUBITDIR is empty. Stop."
+		aubit-config AUBITDIR
+		exit 3
+	fi
 fi
 
-#echo "hello from aubit"
+INIT_AUBITDIR="$AUBITDIR"
 
 #Strip drive letter, because it will contain ":"
 TMPAUBITDIR=`echo $AUBITDIR | sed -e 's/C://'g`
 TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/D://'g`
 
-#Strip Cygwin path, because PATH set here will be used by bash to find executables in AUBITDIR
+#Strip Cygwin path, because PATH set here will be used by bash to 
+#find executables in AUBITDIR
 TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/\/cygwin//'g`
 
 PATH=$TMPAUBITDIR/bin:$PATH
@@ -49,8 +51,7 @@ fi
 
 export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
 
-if [ $# -lt 1 -o "$1" = "--help" ]
-then
+if [ $# -lt 1 -o "$1" = "--help" ]; then
     echo
 	echo Aubit 4gl compiler warper script: $0
     echo
@@ -71,6 +72,14 @@ then
 	exit 1
 fi
 
+if [ "$1" = "--show" ]; then
+    echo
+    echo "AUBITDIR=$AUBITDIR"
+    echo "INIT_AUBITDIR=$INIT_AUBITDIR"
+    echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+    echo "PATH=$PATH"
+    exit 0
+fi
 
 #FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
 #used and give us bunch of errors in 4glpc. We need to recognize and fix this here

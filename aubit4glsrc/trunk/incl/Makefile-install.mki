@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.75 2004-07-01 11:51:39 afalout Exp $
+# $Id: Makefile-install.mki,v 1.76 2004-08-02 05:57:31 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -968,7 +968,8 @@ install.mpz: ${MPZ_SRC_TGZ}
 #install.pg.esql: get.pg.esql.cvs
 install.pg.esql: get.pg.esql.cvs
 #PostgreSQL needs Bison version 1.875 or later.
-	export YACC=/opt/bison-1.875-inst/bin/bison; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
+#	export YACC=/opt/bison-1.875-inst/bin/bison; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
+	export YACC=${YACC}; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
 	-cd /usr/src/pgsql-server/src/interfaces/ecpg; make
 #First make will fail with:
 #mv -f y.tab.c ./preproc.c

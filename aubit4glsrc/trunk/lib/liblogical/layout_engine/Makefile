@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-03-19 11:05:09 afalout Exp $
+# $Id: Makefile,v 1.6 2004-08-02 05:57:32 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -51,7 +51,7 @@ OBJS=layout_engine.o ../common/a4gl_lle.o ../report_viewer/report_viewer.o \
 ## ==================================================================
 
 ${ROOT}/bin/layout_engine: API_layout.h ${OBJS}
-	cc -rdynamic -g ${OBJS} -o $@ ${LFLAGS}  
+	${CC} -rdynamic -g ${OBJS} -o $@ ${LFLAGS}  
 
 
 API_layout.c: API_layout.spec

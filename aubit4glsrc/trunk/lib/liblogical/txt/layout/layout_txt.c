@@ -45,4 +45,7 @@ void LR_setup_callback(void *p) {
 //
 }
 
+void msgbox (char *title, char *txt) {
+	return;
+}
 

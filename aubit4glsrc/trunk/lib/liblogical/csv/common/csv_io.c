@@ -172,3 +172,9 @@ rbx=vrbx;
 //printf("All done\n");
 return &csv_report_layout;
 }
+
+
+void msgbox (char *title, char *txt) {
+	return;
+}
+

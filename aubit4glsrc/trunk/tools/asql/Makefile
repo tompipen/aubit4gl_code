@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2004-07-21 06:36:46 mikeaubury Exp $
+# $Id: Makefile,v 1.27 2004-08-02 05:57:33 afalout Exp $
 #
 
 ROOT    		=../..
@@ -43,11 +43,12 @@ include 		${ROOT}/incl/a4gl.mk
 ################
 #Objects that originate in 4GL code
 OBJS_4GL		= \
-				asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT} \
-				pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
-				query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
-				execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
-				filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}
+	asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT} \
+	pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
+	query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
+	execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
+	filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} \
+	tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}
 
 ################
 #Objects that do not originate in 4GL code - version independent
@@ -168,7 +169,7 @@ asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
-asql_g${A4GL_EXE_EXT}: 
+asql_g${A4GL_EXE_EXT}: A4GL_LEXTYPE=C
 asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}
 	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
