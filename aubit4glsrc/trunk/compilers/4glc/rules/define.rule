@@ -16,7 +16,7 @@ define_multiple	:
 
 define_set :
 	DEFINE {dtypelist[0]=0;A4GL_lex_printcomment("/* define */\n");} def_part  {A4GL_lex_printcomment("/*end def */\n");} opt_semi
-	| dim_section
+	| dim_section 
 ;
 
 
@@ -132,13 +132,22 @@ number_value_arr: INT_VALUE
 ;
 /*{push_type(0,0,$<str>1); }*/
 
+
+define_table_name : define_ident
+	| define_ident COLON define_ident  {
+		sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}
+	| define_ident ATSIGN define_ident COLON define_ident  {
+		sprintf($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);}
+;
+
+
 record_variable	: RECORD {push_record();in_record++;} def_part END_RECORD {pop_record();in_record--;}
-| 	RECORD_LIKE {in_record++;push_record();A4GL_debug("Like\n");} define_ident DOT MULTIPLY
+| 	RECORD_LIKE {in_record++;push_record();A4GL_debug("Like\n");} define_table_name DOT MULTIPLY
                   {A4GL_debug("Link Table : %s\n",$<str>3);
                   push_rectab($<str>3);
                   pop_record();in_record--;} 
 | 	LINKED_TO {
-		push_record();A4GL_debug("Like\n");} define_ident PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
+		push_record();A4GL_debug("Like\n");} define_table_name PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
                {
 		  A4GL_debug("Table:%s\n",$<str>3);
 		  add_link_to($<str>3,$<str>6);
@@ -258,11 +267,10 @@ op_prec: | OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 
 
 like_var 	: 
-LIKE  tab_name  DOT col_name  {
-A4GL_lex_printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");}
+LIKE  define_table_name  DOT col_name  {
+sprintf($<str>$,"%s.%s",$<str>2,$<str>4); A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
-tab_name : define_ident {A4GL_debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 
 col_name : define_ident {A4GL_debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 

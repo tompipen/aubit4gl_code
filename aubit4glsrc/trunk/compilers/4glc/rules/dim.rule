@@ -64,7 +64,7 @@ dim_push_type("struct_dtime",$<str>2,0);
 
 
 dim_like_var      : 
-LIKE  tab_name  DOT col_name  {
+LIKE  define_table_name DOT col_name  {
 A4GL_lex_printcomment("/*column like(ZZZ)\n*/");
 sprintf($<str>$,"%s.%s",$<str>2,$<str>4)
 ; A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");}
