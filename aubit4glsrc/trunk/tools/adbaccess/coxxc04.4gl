@@ -1,4 +1,4 @@
-# $Id: coxxc04.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $
+# $Id: coxxc04.4gl,v 1.2 2002-02-25 18:27:26 mikeaubury Exp $
 {******************************************************************************
 *    Filename: coxxc04.4gl                                                    *
 *    System  : Eunice 4GL - Library Module                                    *
@@ -101,14 +101,14 @@ DEFINE amount		MONEY(32,16),
 END FUNCTION
 
 
-FUNCTION abs(l_amount)
-DEFINE   l_amount  DECIMAL(20,5) 
-
-   IF l_amount < 0 THEN 
-      LET l_amount = - l_amount
-   END IF
-   RETURN l_amount
-END FUNCTION
+#FUNCTION abs(l_amount)
+#DEFINE   l_amount  DECIMAL(20,5) 
+#
+   #IF l_amount < 0 THEN 
+      #LET l_amount = - l_amount
+   #END IF
+   #RETURN l_amount
+#END FUNCTION
  
 
 FUNCTION is_blank(l_str)
@@ -305,5 +305,5 @@ END FUNCTION
 
 FUNCTION coxxc04_id()
 DEFINE    l_id    CHAR(80)
-LET l_id = '$Id: coxxc04.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $'
+LET l_id = '$Id: coxxc04.4gl,v 1.2 2002-02-25 18:27:26 mikeaubury Exp $'
 END FUNCTION

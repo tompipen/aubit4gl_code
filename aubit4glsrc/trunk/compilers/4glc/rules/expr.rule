@@ -547,9 +547,9 @@ function_call_expr2:
 		int cnt;
 		cnt=1;
 		debug("Print expr (1)");
-		print_expr($<ptr>4);
+		//print_expr($<ptr>4);
 		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
-		$<ptr>$=new_expr($<str>$);
+		$<ptr>$=append_expr($<ptr>4,$<str>$);
 		inc_counter();
 		}
 | NEWFORMATSHARED OPEN_BRACKET {
