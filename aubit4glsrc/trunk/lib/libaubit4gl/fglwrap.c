@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.22 2002-10-07 16:11:22 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.23 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -54,6 +54,11 @@
 #define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_ 		/* pre-load UI module */
 
+#ifndef TRUE
+	#define TRUE 1
+#endif
+
+
 /*
 =====================================================================
 		                    Includes
@@ -71,8 +76,8 @@
 int 	p_numargs	=0;
 int 	isdebug		=0;
 int 	ui_mode		=0;
-int 	int_flag;
-int 	quit_flag;
+//int 	int_flag;
+//int 	quit_flag;
 //int 	abort_pressed;
 extern int errno;
 
@@ -271,12 +276,9 @@ char *p;
 	ptr=malloc(1024*1024*10);
 	free(ptr);
 
-
 	/*endwin();*/ /* switch straight back to terminal mode */
-	#ifdef WIN32
-		#ifndef __CYGWIN__
-		  rpc_nt_init();
-		#endif
+	#if (defined(WIN32) && ! defined(__CYGWIN__))
+	  rpc_nt_init();
 	#endif
 
 	#ifdef DEBUG
@@ -619,9 +621,6 @@ int start;
  *
  * @todo Describe function
  */
-#ifndef TRUE
-#define TRUE 1
-#endif
 void
 set_intr(void)
 {

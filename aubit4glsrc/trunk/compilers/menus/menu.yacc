@@ -7,28 +7,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-
-	#include <stdio.h>
-	#include <string.h>
-
-	#include "a4gl_menuxw.h"
-	#include "a4gl_compiler.h"
-	#include "a4gl_aubit_lib.h"
-	#ifdef __CYGWIN__
-		#define GETENV_OK
-		/* On Cygwin, something here will eventually include stdlib.h, that will have getenv
-		call. Everywhere else, we should use acl_getenv. */
-	#endif
-
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_mcompile_int.h"
-
-#endif
+#include "a4gl_mcompile_int.h"
 
 /*
 =====================================================================

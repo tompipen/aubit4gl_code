@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.12 2002-10-07 16:11:20 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.13 2002-10-20 12:02:37 afalout Exp $
 */
 
 /**
@@ -45,6 +45,13 @@
 
 #ifndef FGLDEF_INCL
 #define FGLDEF_INCL
+
+#define fglbyte struct fgl_int_loc
+#define fgltext struct fgl_int_loc
+	/** Date time defined without typedef. To be deprecated */
+	#define struct_dtime struct A4GLSQL_dtime
+	#define struct_ival struct ival
+
 
 	/**
 	 * Binding information structure definition.
@@ -95,12 +102,9 @@
           void *ptr;
         };
 
-#define fglbyte struct fgl_int_loc
 
 	/** 4gl Byte data type */
 	typedef struct fgl_int_loc FglByte;
-
-#define fgltext struct fgl_int_loc
 
 	/** 4gl Text data type */
 	typedef struct fgl_int_loc FglText;
@@ -128,8 +132,6 @@
 	    char data[32]; /**< The information in the var */
 	};
 
-	/** Date time defined without typedef. To be deprecated */
-	#define struct_dtime struct A4GLSQL_dtime
 
 	/** 4gl Interval data type definition */
 	typedef struct A4GLSQL_dtime FglDatetime;
@@ -144,7 +146,6 @@
 	    char data[32]; /**< The value of the interval variable */
 	};
 
-	#define struct_ival struct ival
 
 	/** 4gl Datetime data type definition */
 	typedef struct ival FglInterval;
@@ -282,6 +283,79 @@
            int font;
         };
 #endif
+
+/*
+to fix the _nm_status error (if status is an int) change
+
+extern int status;
+
+to
+__attribute__((dllimport))extern int status;
+
+That's the ugly, short-hand way.  For some reason, auto-import
+doesn't always work.  Search the mailing lists for more correct
+ways of handling this (if you use the same include file to build
+your library and in your applications - above should only
+be used in applications which link to the library).
+*/
+
+
+    #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
+    /* for everything except libaubit4gl: */
+
+		/** Sqlca variable */
+		//#ifndef _SQLCA_DEFINED_
+		//    #define _SQLCA_DEFINED_
+			extern sqlca_struct sqlca;
+	    //#endif
+
+		/** 4gl global status variable */
+		//#ifndef DEFINE_STATUS
+			//#define DEFINE_STATUS
+			extern long status;
+		//#endif
+
+		/** 4gl interrupt ocurred global flag */
+		//#ifndef DEFINE_INTFLAG
+		//	#define DEFINE_INTFLAG
+			extern long int_flag;
+		//#endif
+
+
+		/** 4gl quit ocurred global flag */
+		//#ifndef DEFINE_QUITFLAG
+		//	#define DEFINE_QUITFLAG
+			extern int quit_flag;
+		//#endif
+    #else
+	/* only in libaubit4gl */
+
+		/** Sqlca variable */
+		//#ifndef _SQLCA_DEFINED_
+		 //   #define _SQLCA_DEFINED_
+			sqlca_struct sqlca;
+	    //#endif
+
+		/** 4gl global status variable */
+		//#ifndef DEFINE_STATUS
+		//	#define DEFINE_STATUS
+			long status;
+		//#endif
+
+		/** 4gl interrupt ocurred global flag */
+		//#ifndef DEFINE_INTFLAG
+		//	#define DEFINE_INTFLAG
+			long int_flag;
+		//#endif
+
+
+		/** 4gl quit ocurred global flag */
+		//#ifndef DEFINE_QUITFLAG
+		//	#define DEFINE_QUITFLAG
+			int quit_flag;
+		//#endif
+	#endif
+
 
 
 #endif /* #ifndef FGLDEF_INCL */

@@ -26,7 +26,6 @@
 	#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
 
 
-	//#ifdef __CYGWIN__
 	#if HAVE_ERRNO_H
 		#include <errno.h>
 	#endif

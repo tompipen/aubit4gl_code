@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: handler.c,v 1.3 2002-10-20 12:02:39 afalout Exp $
 #*/
 
 /**
@@ -41,13 +41,6 @@
 =====================================================================
 */
 
-/*
-	#ifdef __CYGWIN__
-		#include <gdk/gdk.h>
-		#include <glib.h>
-		#include <stdio.h>
-	#endif
-*/
 #include "a4gl_lib_ui_gtk_int.h"
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.8 2002-07-21 06:41:48 afalout Exp $
+# $Id: errfile.c,v 1.9 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -44,23 +44,14 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include "a4gl_debug.h"
-
-	#ifdef WIN32
-		#ifndef __CYGWIN__
-			#include <share.h>
-		#endif
-	#endif
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
+//change this tp HAVE_SHARE_H
+//#ifdef __NATIVE_WINDOWS__
+#if HAVE_SHARE_H
+	#include <share.h>
 #endif
+
+#include "a4gl_libaubit4gl_int.h"
+
 
 /*
 =====================================================================
@@ -78,12 +69,6 @@ int errline;
                     Functions prototypes
 =====================================================================
 */
-
-#ifdef OLD_INCL
-	FILE *		mja_fopen		(char *name, char *mode);
-	FILE * 		write_errfile	(FILE *f,char *fname,long as,int lineno);
-	void 		write_cont		(FILE *f);
-#endif
 
 void 		find_nl			(FILE *f,long fp,long *s,long *e);
 void 		prerrmark		(FILE *f,int a);

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.121 2002-10-19 06:26:22 afalout Exp $
+dnl # $Id: configure.in,v 1.122 2002-10-20 12:02:11 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -59,7 +59,7 @@ a4gl_shtool=$aubitdir/tools/project/shtool
 T_MD=`$a4gl_shtool echo -n -e %B`
 T_ME=`$a4gl_shtool echo -n -e %b`
 
-#AC_CANONICAL_TARGET
+
 
 CONFIGURE_COMMAND="$ac_configure_args"
 
@@ -154,20 +154,17 @@ if test "$AUBIT_SOURCE" = "1" ; then
 fi
 
 #configure.in:151: warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
+#AC_  CANONICAL_  TARGET
 AC_CANONICAL_SYSTEM
 
 #prevent libtool from trying to build static libraries
 AC_DISABLE_STATIC
 
-#make: *** No rule to make target `etc/config/ltmain.sh'.  Stop.
-#Using `AC_PROG_RANLIB' is rendered obsolete by `AC_PROG_LIBTOOL'
 #Note: The libltdl library included with all libtool versions will only work on
 #Darwin when dlcompat is installed.
 
-#AC_LIBTOOL_DLOPEN and AC_LIBTOOL_WIN32_DLL before the AC_PROG_LIBTOOL
-
-AC_LIBTOOL_DLOPEN
 AC_LIBTOOL_WIN32_DLL
+AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
@@ -749,12 +746,10 @@ fi
 #This is probably a bug in autoconf, but if we don't test for Lex BEFORE
 #we test for C, all sort of wireds things will happen, so we have to test
 #it even in binary distro, where we don't need it:
-#AC_PROG_LEX
-echo 1
+dnl #AC_PROG_LEX
 AM_PROG_LEX
-echo 2
-if test "$LEX" = ":"; then
-    #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+if test "$LEX" = ":" || test "$LEX" = "" ; then
+    dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
 	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
         WARN_LEX=1
@@ -1782,7 +1777,7 @@ AC_ARG_WITH(gtk,
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
-#From makefile:
+#Removed from makefile(s):
 #ifneq "$(GLIBVER)" "old"
 #	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
 #		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
@@ -1815,66 +1810,44 @@ AC_ARG_WITH(gtk,
 #    endif
 #endif
 
-		
 		#check if we have all we need to make GTK GUI
-		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes || test "$PKG_CONFIG" != "no"; then
-					AC_DEFINE(HAVE_GTK,1,[ ])
-					GTKBUILD=yes
+		if
+			((test "$ac_cv_lib_gtk_main" = yes &&
+			test "$ac_cv_lib_glib_main" = yes &&
+			test "$ac_cv_lib_gdk_main" = yes) ||
+            (test "$GTK_CONFIG" != "no" ||
+			test "$PKG_CONFIG" != "no")); then
 
-					if test "$CUSTOM_WITHVAL" = "1"; then
-						#user specified custom withval
-						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
-						WARN_LD_LIBRARY_PATH=1
-					fi
-
-
-					if test "$GTK_CONFIG" != "no"; then
-	                    #this will get assigned in makefile iteself
-						#AC_MSG_CHECKING(using gtk-config in Makefile)
-						#AC_MSG_RESULT(Yes)
+			if test "$GTK_CONFIG" != "no"; then
 						GTK_INC_PATH=`$GTK_CONFIG --cflags`
 						GLIB_CFLAGS=$GTK_INC_PATH
 						GTKLIBS=`$GTK_CONFIG --libs`
 
+						AC_DEFINE(HAVE_GTK,1,[ ])
+						GTKBUILD=yes
 
-					else
-						if test "$PKG_CONFIG" != "no"; then
-		                    #this will get assigned in makefile iteself, but
+			else
+				if test "$PKG_CONFIG" != "no"; then
+
                             #pkg-config needs package name as parameter, and on Cygwin,
-                            #this iclude version names, like this:
-							#gtk+-1.3-win32-production
-							#gdk-1.3-win32-production
-							#gmodule-2.0
-							#glib-2.0
-							#gobject-2.0
-							#gthread-2.0
-                            # - so we need to extract this names first:
+                            #this iclude version names, so we need to extract this names first:
 
                             GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | head -1 | awk '{print $1}'`
 							GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | head -1 | awk '{print $1}'`
 							GLIB_NAME=`$PKG_CONFIG --list-all | grep glib |  head -1 | awk '{print $1}'`
 
-							#pkg-config options:
-							# --libs
-							# --libs-only-l
-							# --libs-only-L
-							# --cflags
-							# --cflags-only-I
+                            if test "$GTK_NAME" != "" && test "$GDK_NAME" != "" && test "$GLIB_NAME" != ""; then
+	                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
+								GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
+								GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
 
-                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
-							GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
-							GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
+								AC_DEFINE(HAVE_GTK,1,[ ])
+								GTKBUILD=yes
+                            else
+						        AC_MSG_WARN(cannot extract names from pkg-config.)
+                            fi
 
-                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GDK_NAME` $GTK_LIB_PATH"
-							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GDK_NAME` $GTK_INC_PATH"
-							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GDK_NAME` $GTKLIBS"
-
-                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GLIB_NAME` $GTK_LIB_PATH"
-							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GLIB_NAME` $GTK_INC_PATH"
-							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GLIB_NAME` $GTKLIBS"
-
-
-	                    else
+	            else
                             #try to assign paths manually:
 					        AC_MSG_WARN(cannot find pkg-config or gtk-config)
 					        AC_MSG_WARN(Trying to guess GTK configuration manually)
@@ -1896,12 +1869,18 @@ AC_ARG_WITH(gtk,
 								GTK_INC_PATH="$GTK_INC_PATH -I$with_glib"
 							fi
 
-	                    fi
-		    fi
-		    #AC_MSG_RESULT(yes)
+							AC_DEFINE(HAVE_GTK,1,[ ])
+							GTKBUILD=yes
+	            fi
+			fi
+
+			if test "$GTKBUILD" = "yes" && test "$CUSTOM_WITHVAL" = "1"; then
+						#user specified custom withval
+						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
+						WARN_LD_LIBRARY_PATH=1
+			fi
 		else
 		    AC_DEFINE(HAVE_GTK,0,[ ])
-		    #AC_MSG_RESULT(no)
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -2045,7 +2024,7 @@ PHP_CONFIGURE_PART(Checking for Sun RPC support:)
 #and BTW, what's wrong with svctcp_create ?
 #AC_CHECK_FUNCS([svc_run])
 AC_CHECK_FUNCS([svctcp_create])
-
+AC_CHECK_HEADERS([ rpc/rpc.h rpc.h ])
 		#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
 		#are defined when testing functions.
 
@@ -2420,7 +2399,7 @@ PHP_CONFIGURE_PART(Checking for header files:)
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
-	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h])
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h share.h])
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
    	AC_CHECK_HEADERS([search.h])
@@ -2564,9 +2543,7 @@ case "$host" in
 	#cygcheck can be used instead of ldd that is missing on CygWin:
 	AC_PATH_PROG(CYGCHECK, cygcheck, no)
 
-	#configure.in:2467: warning: AC_LIBTOOL_SETUP was called before AC_LIBTOOL_WIN32_DLL
-	#this macros are in aclocal.m4 - run aclocal to create it :
-	AC_LIBTOOL_WIN32_DLL
+   	#this macros are in aclocal.m4 - run aclocal to create it :
 
 	AC_CYGWIN
 	AC_MINGW32
@@ -2578,7 +2555,7 @@ case "$host" in
 	AC_LIBTOOL_PROG_LD_SHLIBS           #checking command to parse /usr/bin/nm -B output... ok
 	AC_LIBTOOL_SYS_DYNAMIC_LINKER       #checking whether the linker () supports shared libraries... yes
 	AC_CHECK_LIBM                       #checking dynamic linker characteristics... Win32 ld.exe
-    
+
 
 	# recent cygwin and mingw systems supply a stub DllMain which the user
 	# can override, but on older systems we have to supply one
@@ -3003,7 +2980,9 @@ if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" ; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
-| Add /lib to your PATH
+| Add /lib to your PATH - GTK+ libraries where found there, and you  |
+| are on Windows - Windows native library loader searches PATH to    |
+| to find libraries, but /lib is not in PATH on CygWin by default!   |
 X
 fi
 if test "$WARN_YACC" = "1"; then

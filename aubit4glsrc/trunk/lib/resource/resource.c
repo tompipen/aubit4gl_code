@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.18 2002-09-23 11:06:07 afalout Exp $
+# $Id: resource.c,v 1.19 2002-10-20 12:02:39 afalout Exp $
 #
 */
 
@@ -463,8 +463,7 @@ replace_str_resource (char *s, char *neww)
 
 
 /* the following are all win32 specific.... */
-#ifdef WIN32
-#ifndef __CYGWIN__
+#if (defined(WIN32) && ! defined(__CYGWIN__))
 
 /**
  *  set a value in the registry
@@ -565,7 +564,7 @@ get_login (void)
   get_anykey (HKEY_LOCAL_MACHINE, "Network\\Logon", "username", buff, 255);
   return buff;
 }
-#endif /* __CYGWIN__ */
+
 #endif /* WIN32 */
 
 

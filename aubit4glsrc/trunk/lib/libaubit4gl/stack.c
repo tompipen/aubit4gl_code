@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.26 2002-10-18 01:56:38 afalout Exp $
+# $Id: stack.c,v 1.27 2002-10-20 12:02:38 afalout Exp $
 #
 */
 
@@ -57,29 +57,13 @@
 */
 
 
-#ifdef WIN32
+#if (defined(WIN32) && ! defined(__CYGWIN__))
 	struct passwd
 	{
 	  char pw_name[20];
 	};
 #endif
 
-/* FIXME: is this OK? see lib/libincl/dbform.h */
-#ifdef __CYGWIN__
-	/*
-	extern int int_flag;
-	extern int status;
-    */
-
-    /* this is all wrong: where is TRUE/FALS usualy defined? */
-	#ifndef BOOLEAN
-		#define BOOLEAN int
-		#define TRUE 1
-		#define FALSE 0
-	#endif
-#else
-	/* extern long status; */
-#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.10 2002-08-29 09:10:32 afalout Exp $
+# $Id: rpc_client.c,v 1.11 2002-10-20 12:02:38 afalout Exp $
 #*/
 
 /**
@@ -144,11 +144,11 @@ long s;
 	debug("Before RPC Call");
 
 	#ifdef WIN32
-	#ifndef __CYGWIN__
-		result_1 = call_remote_func_1(&call_remote_func_1_arg1, clnt);
-	#else
-		result_1 = call_remote_func_1(call_remote_func_1_arg1, clnt);
-	#endif
+		#ifndef __CYGWIN__
+			result_1 = call_remote_func_1(&call_remote_func_1_arg1, clnt);
+		#else
+			result_1 = call_remote_func_1(call_remote_func_1_arg1, clnt);
+		#endif
 	#else
 		result_1 = call_remote_func_1(call_remote_func_1_arg1, clnt);
 	#endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.6 2002-09-26 02:54:37 afalout Exp $
+# $Id: curslib.c,v 1.7 2002-10-20 12:02:38 afalout Exp $
 #*/
 
 /**
@@ -1308,28 +1308,28 @@ A4GLUI_ui_init (int argc, char *argv[])
       tui_print ("                                 ");
       zrefresh ();
 #ifdef NCURSES_MOUSE_VERSION
-#ifdef DEBUG
-      debug ("Turning Mouse on");
-#endif
-#ifdef WIN32
-#ifndef __CYGWIN__
-#ifdef DEBUG
-      debug ("Turning WIN32 mouse on\n");
-#endif
-      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-#endif
-#else
-      if (env_option_set ("ACL_MOUSE"))
-	{
-#ifdef DEBUG
-	  debug ("Turning UNIX mouse on\n");
-#endif
-	  mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-#ifdef DEBUG
-	  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-#endif
-	}
-#endif
+	#ifdef DEBUG
+	      debug ("Turning Mouse on");
+	#endif
+	#ifdef WIN32
+		#ifndef __CYGWIN__
+			#ifdef DEBUG
+			      debug ("Turning WIN32 mouse on\n");
+			#endif
+		      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+		#endif
+	#else
+	      if (env_option_set ("ACL_MOUSE"))
+		{
+		#ifdef DEBUG
+			  debug ("Turning UNIX mouse on\n");
+		#endif
+		  mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+		#ifdef DEBUG
+			  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+		#endif
+		}
+	#endif
 #endif
     }
 

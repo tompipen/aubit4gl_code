@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.3 2002-10-05 10:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-10-20 12:02:37 afalout Exp $
 #
 
 ROOT        =../..
@@ -48,7 +48,7 @@ endif
 CMODS		=y.tab.c main.c
 OBJS		=${CMODS:.c=.o}
 
-ALL			=xgen
+ALL			=${ROOT}/bin/xgen
 #use_xgen
 
 ## ==================================================================
@@ -58,9 +58,9 @@ ALL			=xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-xgen: ${OBJS}
+${ROOT}/bin/xgen: ${OBJS}
 	${CC} ${EXE_CFLAGS} $^ -o $@
-	${CP} $@ ${ROOT}/bin
+#	${CP} $@ ${ROOT}/bin
 
 y.tab.c: x.yacc lex.yy.c 
 #${ROOT}/common/dataio/form_x.x.h

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-10-19 06:26:30 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-10-20 12:02:38 afalout Exp $
 #
 
 LIBROOT=../..
@@ -67,13 +67,9 @@ CFLAGS_4GLC 		=$(CFLAGS_4GLC1:%-Wstrict-prototypes=%)
 #GTK+ supplied libraries have many functions declared without parameters
 CFLAGS_GTK_C =$(CFLAGS:%-Wstrict-prototypes=%)
 
-#initializer element is not computable at load time:
+#Fails with error: initializer element is not computable at load time:
 ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_4GLC 		:=$(CFLAGS_4GLC:%-pedantic=%)
-	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
-else
-	CFLAGS_4GLC 		=$(CFLAGS_4GLC)
-	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
 ifeq "${TARGET_OS}" "cygwin"

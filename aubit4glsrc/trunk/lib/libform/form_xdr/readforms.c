@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.22 2002-10-13 01:40:34 afalout Exp $
+# $Id: readforms.c,v 1.23 2002-10-20 12:02:38 afalout Exp $
 #*/
 
 /**
@@ -81,10 +81,6 @@
                     Variables definitions
 =====================================================================
 */
-
-#ifdef __CYGWIN__
-	extern int status;
-#endif
 
 /*xdr_struct_form is not part of RPC_[NO]RPC
 extern bool_t

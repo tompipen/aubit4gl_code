@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.10 2002-10-18 07:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-10-20 12:02:37 afalout Exp $
 #
 
 ROOT        =../..
@@ -95,7 +95,8 @@ ifeq "@HAVE_RPCLIB@" "0"
 	CFLAGS      +=-I${ROOT}/tools/no_rpc/cygwin
 endif
 
-XGENEXE    		=${ROOT}/compilers/xgen/xgen
+#XGENEXE    		=${ROOT}/compilers/xgen/xgen
+XGENEXE    		=${ROOT}/bin/xgen
 
 ## ==================================================================
 ##                          Targets

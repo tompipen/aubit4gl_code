@@ -31,11 +31,8 @@ extern int scr;
 int in_comment;
 long fileseek=0;
 
-#ifdef __CYGWIN__
-	dll_import struct_form the_form;
-#else
-	extern struct_form the_form;
-#endif
+dll_import struct_form the_form;
+
 extern int newscreen;
 extern int fldno;
 extern int fstart;

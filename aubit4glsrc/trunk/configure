@@ -1731,7 +1731,7 @@ a4gl_shtool=$aubitdir/tools/project/shtool
 T_MD=`$a4gl_shtool echo -n -e %B`
 T_ME=`$a4gl_shtool echo -n -e %b`
 
-#AC_CANONICAL_TARGET
+
 
 CONFIGURE_COMMAND="$ac_configure_args"
 
@@ -1918,6 +1918,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 fi
 
 #configure.in:151: warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
+#AC_  CANONICAL_  TARGET
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||
   { { echo "$as_me:$LINENO: error: cannot run $ac_config_sub" >&5
@@ -2026,12 +2027,8 @@ else
 fi;
 
 
-#make: *** No rule to make target `etc/config/ltmain.sh'.  Stop.
-#Using `AC_PROG_RANLIB' is rendered obsolete by `AC_PROG_LIBTOOL'
 #Note: The libltdl library included with all libtool versions will only work on
 #Darwin when dlcompat is installed.
-
-#AC_LIBTOOL_DLOPEN and AC_LIBTOOL_WIN32_DLL before the AC_PROG_LIBTOOL
 
 
 
@@ -3489,7 +3486,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3492 "configure"' > conftest.$ac_ext
+  echo '#line 3489 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -6657,7 +6654,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 6660 "configure"
+#line 6657 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -6755,7 +6752,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 6758 "configure"
+#line 6755 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8449,8 +8446,6 @@ fi
 #This is probably a bug in autoconf, but if we don't test for Lex BEFORE
 #we test for C, all sort of wireds things will happen, so we have to test
 #it even in binary distro, where we don't need it:
-#AC_PROG_LEX
-echo 1
 missing_dir=`cd $ac_aux_dir && pwd`
 for ac_prog in flex lex
 do
@@ -8738,10 +8733,8 @@ fi
 
 fi
 
-echo 2
-if test "$LEX" = ":"; then
-    #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
-	LEX="no"
+if test "$LEX" = ":" || test "$LEX" = "" ; then
+    	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
         WARN_LEX=1
     fi
@@ -12908,7 +12901,7 @@ fi
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
-#From makefile:
+#Removed from makefile(s):
 #ifneq "$(GLIBVER)" "old"
 #	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
 #		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
@@ -12941,70 +12934,53 @@ fi
 #    endif
 #endif
 
-
 		#check if we have all we need to make GTK GUI
-		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes || test "$PKG_CONFIG" != "no"; then
+		if
+			((test "$ac_cv_lib_gtk_main" = yes &&
+			test "$ac_cv_lib_glib_main" = yes &&
+			test "$ac_cv_lib_gdk_main" = yes) ||
+            (test "$GTK_CONFIG" != "no" ||
+			test "$PKG_CONFIG" != "no")); then
 
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_GTK 1
-_ACEOF
-
-					GTKBUILD=yes
-
-					if test "$CUSTOM_WITHVAL" = "1"; then
-						#user specified custom withval
-						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
-						WARN_LD_LIBRARY_PATH=1
-					fi
-
-
-					if test "$GTK_CONFIG" != "no"; then
-	                    #this will get assigned in makefile iteself
-						#AC_MSG_CHECKING(using gtk-config in Makefile)
-						#AC_MSG_RESULT(Yes)
+			if test "$GTK_CONFIG" != "no"; then
 						GTK_INC_PATH=`$GTK_CONFIG --cflags`
 						GLIB_CFLAGS=$GTK_INC_PATH
 						GTKLIBS=`$GTK_CONFIG --libs`
 
 
-					else
-						if test "$PKG_CONFIG" != "no"; then
-		                    #this will get assigned in makefile iteself, but
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GTK 1
+_ACEOF
+
+						GTKBUILD=yes
+
+			else
+				if test "$PKG_CONFIG" != "no"; then
+
                             #pkg-config needs package name as parameter, and on Cygwin,
-                            #this iclude version names, like this:
-							#gtk+-1.3-win32-production
-							#gdk-1.3-win32-production
-							#gmodule-2.0
-							#glib-2.0
-							#gobject-2.0
-							#gthread-2.0
-                            # - so we need to extract this names first:
+                            #this iclude version names, so we need to extract this names first:
 
                             GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | head -1 | awk '{print $1}'`
 							GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | head -1 | awk '{print $1}'`
 							GLIB_NAME=`$PKG_CONFIG --list-all | grep glib |  head -1 | awk '{print $1}'`
 
-							#pkg-config options:
-							# --libs
-							# --libs-only-l
-							# --libs-only-L
-							# --cflags
-							# --cflags-only-I
-
-                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
-							GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
-							GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
-
-                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GDK_NAME` $GTK_LIB_PATH"
-							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GDK_NAME` $GTK_INC_PATH"
-							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GDK_NAME` $GTKLIBS"
-
-                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GLIB_NAME` $GTK_LIB_PATH"
-							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GLIB_NAME` $GTK_INC_PATH"
-							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GLIB_NAME` $GTKLIBS"
+                            if test "$GTK_NAME" != "" && test "$GDK_NAME" != "" && test "$GLIB_NAME" != ""; then
+	                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
+								GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
+								GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
 
 
-	                    else
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GTK 1
+_ACEOF
+
+								GTKBUILD=yes
+                            else
+						        { echo "$as_me:$LINENO: WARNING: cannot extract names from pkg-config." >&5
+echo "$as_me: WARNING: cannot extract names from pkg-config." >&2;}
+                            fi
+
+	            else
                             #try to assign paths manually:
 					        { echo "$as_me:$LINENO: WARNING: cannot find pkg-config or gtk-config" >&5
 echo "$as_me: WARNING: cannot find pkg-config or gtk-config" >&2;}
@@ -13028,16 +13004,26 @@ echo "$as_me: WARNING: Trying to guess GTK configuration manually" >&2;}
 								GTK_INC_PATH="$GTK_INC_PATH -I$with_glib"
 							fi
 
-	                    fi
-		    fi
-		    #AC_MSG_RESULT(yes)
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GTK 1
+_ACEOF
+
+							GTKBUILD=yes
+	            fi
+			fi
+
+			if test "$GTKBUILD" = "yes" && test "$CUSTOM_WITHVAL" = "1"; then
+						#user specified custom withval
+						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
+						WARN_LD_LIBRARY_PATH=1
+			fi
 		else
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_GTK 0
 _ACEOF
 
-		    #AC_MSG_RESULT(no)
 		fi
 	else
 		echo "$as_me:$LINENO: result: disabled" >&5
@@ -13422,6 +13408,120 @@ _ACEOF
 fi
 done
 
+
+
+for ac_header in  rpc/rpc.h rpc.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  egrep -v '^ *\+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;};;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;};;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
 
 		#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
 		#are defined when testing functions.
@@ -15414,7 +15514,8 @@ fi
 
 
 
-for ac_header in alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h
+
+for ac_header in alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h share.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -18478,10 +18579,7 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-	#configure.in:2467: warning: AC_LIBTOOL_SETUP was called before AC_LIBTOOL_WIN32_DLL
-	#this macros are in aclocal.m4 - run aclocal to create it :
-
-
+   	#this macros are in aclocal.m4 - run aclocal to create it :
 
 	case $host_os in
   *cygwin* ) CYGWIN=yes;;
@@ -18508,7 +18606,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 18511 "configure"' > conftest.$ac_ext
+  echo '#line 18609 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -18976,7 +19074,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18979 "configure"
+#line 19077 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -19074,7 +19172,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 19077 "configure"
+#line 19175 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -22217,6 +22315,15 @@ cat<<X
 | Will use pre-compiled parser files from tools/no_yacc              |
 | Use 'make refresh.noyacc' on source tree with yacc installed.      |
 | You will need lex if you'd want to regenerate the Aubit parsers.   |
+X
+fi
+if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" ; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| Add /lib to your PATH - GTK+ libraries where found there, and you  |
+| are on Windows - Windows native library loader searches PATH to    |
+| to find libraries, but /lib is not in PATH on CygWin by default!   |
 X
 fi
 if test "$WARN_YACC" = "1"; then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.15 2002-10-07 11:06:27 afalout Exp $
+# $Id: pointers.c,v 1.16 2002-10-20 12:02:38 afalout Exp $
 #
 */
 
@@ -61,6 +61,14 @@
 #include "a4gl_libaubit4gl_int.h"
 
 /*
+#ifndef WIN32
+#include <search.h>
+//#else
+//#define VISIT int
+#endif
+*/
+
+/*
 =====================================================================
                     Variables definitions
 =====================================================================
@@ -85,16 +93,19 @@ struct s_node
 =====================================================================
 */
 
-/* search internal node for windows only*/
-//#ifdef WIN32
-#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32 || defined __CYGWIN__
+#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__)
 //actually, should use 	#if HAVE_SEARCH_H
+	
+	/* search internal node for windows and platforms without this library function */
+
 	typedef struct entry { char *key, *data; } ENTRY;
 	typedef enum { FIND, ENTER } ACTION;
 
 	/* TSEARCH(3C) */
 	/** The type of the visit made to an element of the tree */
+	//why are this two lines commented out:
 	//typedef enum { preorder, postorder, endorder, leaf } VISIT;
+	//void action (const void *nodep, const VISIT which, const int depth);
 
 	/** A node tree information */
 	typedef struct node_t
@@ -103,9 +114,11 @@ struct s_node
 	    struct node_t *left, *right;
 	}
 	node;
+
 	node *tsearch(char *key, node **rootp, int		(*compar)());
 	node *tdelete(char *key, node **rootp, int		(*compar)());
 	void twalk(node* root, void *act);
+	// void twalk(node *root, VISIT action);
 	node *tfind(char *key, node **rootp, int		(*compar)());
 #endif
 
@@ -187,7 +200,7 @@ char buff[800];
  * @param type The type of the information stored.
  * @param ptr A pointer to the information to store.
  */
-void 
+void
 add_pointer (char *orig_name, char type, void *ptr)
 {
   void *a;
@@ -300,11 +313,11 @@ print_ptr_stack(void)
 
 /**
  * Delete a pointer from the tree.
- * 
+ *
  * @param pname The key to access to the tree.
  * @param t The type of the information stired in the tree.
  */
-void 
+void
 del_pointer (char *pname, char t)
 {
   void *a;
@@ -357,7 +370,7 @@ find_pointer_val (char *pname, char t)
  * @param name
  * @param type
  * @param ptr
- * @return 
+ * @return
  *   - 0 :
  *   - 1 :
  */
@@ -426,66 +439,62 @@ has_pointer (char *pname, char t)
  */
 /*LINTLIBRARY*/
 
-//#ifdef WIN32
-
-#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32 || defined __CYGWIN__
-//# if (defined __STDC__ && __STDC__) || defined WIN32
-
-
-node *tsearch(key, rootp, compar)
-/* find or insert datum into search tree */
-char 	*key;			/* key to be located */
-register node	**rootp;	/* address of tree root */
-
+#if defined(__DARWIN__) || defined (WIN32) || defined (__CYGWIN__)
+//actually, should use 	#if HAVE_SEARCH_H
 
 /**
+ * find or insert datum into search tree
  *
+ * @param key key to be located
+ * @param rootp address of tree root
+ * @param compar ordering function
  * @todo Describe function
  */
-int
-(*compar)(void);		/* ordering function */
+node *
+tsearch(key, rootp, compar)
+	char *key;
+	register node	**rootp;
+	int (*compar)();
 {
     register node *q;
 
     if (rootp == (struct node_t **)0)
 	return ((struct node_t *)0);
-    while (*rootp != (struct node_t *)0)	/* Knuth's T1: */
+    while (*rootp != (struct node_t *)0)			/* Knuth's T1: */
     {
 	int r;
 
-
-#ifdef WIN32  || defined __CYGWIN__
-    //Andrej: temp. commented out for debug on Darwin
 	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	    return (*rootp);		/* we found it! */
-#endif
+	    return (*rootp);							/* we found it! */
 
 	rootp = (r < 0) ?
-	    &(*rootp)->left :		/* T3: follow left branch */
-	    &(*rootp)->right;		/* T4: follow right branch */
+	    &(*rootp)->left :							/* T3: follow left branch */
+	    &(*rootp)->right;							/* T4: follow right branch */
     }
-    q = (node *) malloc(sizeof(node));	/* T5: key not found */
-    if (q != (struct node_t *)0)	/* make new node */
+    q = (node *) malloc(sizeof(node));				/* T5: key not found */
+    if (q != (struct node_t *)0)					/* make new node */
     {
-	*rootp = q;			/* link new node to old */
-	q->key = key;			/* initialize new node */
+	*rootp = q;										/* link new node to old */
+	q->key = key;									/* initialize new node */
 	q->left = q->right = (struct node_t *)0;
     }
     return (q);
 }
 
-node *tdelete(key, rootp, compar)
-/* delete node with given key */
-char	*key;			/* key to be deleted */
-register node	**rootp;	/* address of the root of tree */
-
-
 /**
+ * delete node with given key
+ *
+ * @param
+ * @param
+ * @param
  *
  * @todo Describe function
  */
-int	
-(*compar)(void);		/* comparison function */
+node *
+tdelete(key, rootp, compar)
+	char	*key;				/* key to be deleted */
+	register node	**rootp;	/* address of the root of tree */
+	int (*compar)();			/* comparison function */
 {
     node *p;
     register node *q;
@@ -496,24 +505,20 @@ int
 	if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
 	return ((struct node_t *)0);
 
-#ifdef WIN32  || defined __CYGWIN__
- //Andrej: temp commented out for debug on Darwin
 	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
 	{
 		p = *rootp;
 		rootp = (cmp < 0) ?
-	    &(*rootp)->left :		/* follow left branch */
-	    &(*rootp)->right;		/* follow right branch */
+	    &(*rootp)->left :					/* follow left branch */
+	    &(*rootp)->right;					/* follow right branch */
 		if (*rootp == (struct node_t *)0)
 	    	return ((struct node_t *)0);	/* key not found */
 	}
-#endif
 
-
-    r = (*rootp)->right;			/* D1: */
+    r = (*rootp)->right;				/* D1: */
     if ((q = (*rootp)->left) == (struct node_t *)0)	/* Left (struct node_t *)0? */
 	q = r;
-    else if (r != (struct node_t *)0)		/* Right link is null? */
+    else if (r != (struct node_t *)0)	/* Right link is null? */
     {
 	if (r->left == (struct node_t *)0)	/* D2: Find successor */
 	{
@@ -521,7 +526,7 @@ int
 	    q = r;
 	}
 	else
-	{			/* D3: Find (struct node_t *)0 link */
+	{									/* D3: Find (struct node_t *)0 link */
 	    for (q = r->left; q->left != (struct node_t *)0; q = r->left)
 		r = q;
 	    r->left = q->right;
@@ -529,16 +534,25 @@ int
 	    q->right = (*rootp)->right;
 	}
     }
-    free((struct node_t *) *rootp);	/* D4: Free node */
-    *rootp = q;				/* link parent to new node */
+    free((struct node_t *) *rootp);		/* D4: Free node */
+    *rootp = q;							/* link parent to new node */
     return(p);
 }
 
-static void trecurse(root, action, level)
-/* Walk the nodes of a tree */
-register node	*root;		/* Root of the tree to be walked */
-register void	(*action)();	/* Function to be called at each node */
-register int	level;
+/**
+ * Walk the nodes of a tree
+ *
+ * @param
+ * @param
+ * @param
+ *
+ * @todo Describe function
+ */
+static void
+trecurse(root, action, level)
+	register node	*root;			/* Root of the tree to be walked */
+	register void	(*action)();	/* Function to be called at each node */
+	register int	level;
 {
     if (root->left == (struct node_t *)0 && root->right == (struct node_t *)0)
 	(*action)(root, leaf, level);
@@ -560,7 +574,7 @@ register int	level;
  * @param root Root of the tree to be walked
  * @paramaction Function to be called at each node
  */
-void 
+void
 twalk(node* root, void *act)
 {
     if (root != (node *)0 && act != (void(*)())0)
@@ -583,10 +597,10 @@ twalk(node* root, void *act)
 /**
  * Find a node
  *
- * @param key Key to be found 
- * @param rootp Address of the tree root 
- * @param compar Ordering function 
- * @return 
+ * @param key Key to be found
+ * @param rootp Address of the tree root
+ * @param compar Ordering function
+ * @return
  *   - 0 : Key not found in the tree.
  *   - 1 : Key found in the tree.
  */
@@ -595,18 +609,20 @@ tfind(char *key, register node **rootp, int (*compar)())
 {
     if (rootp == (struct node_t **)0)
 	return ((struct node_t *)0);
-    while (*rootp != (struct node_t *)0)	/* T1: */
+    while (*rootp != (struct node_t *)0)			/* T1: */
     {
 	int r;
 	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	    return (*rootp);		/* key found */
+	    return (*rootp);							/* key found */
 	rootp = (r < 0) ?
-	    &(*rootp)->left :		/* T3: follow left branch */
-	    &(*rootp)->right;		/* T4: follow right branch */
+	    &(*rootp)->left :							/* T3: follow left branch */
+	    &(*rootp)->right;							/* T4: follow right branch */
     }
     return (node *)0;
 }
-#endif /* #ifdef WIN32  || defined __CYGWIN__ */
+
+
+#endif /* # defined (WIN32)  || defined (__CYGWIN__) || defined (__DARWIN__) */
 
 /* ============================== EOF ============================ */
 

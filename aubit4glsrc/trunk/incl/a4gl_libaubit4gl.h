@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.23 2002-10-18 01:56:38 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.24 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -56,50 +56,49 @@
 =====================================================================
 */
 
-	#ifdef __CYGWIN__
+	#if (defined(__CYGWIN__))
 		/* we do not want code to behave as native Windows code if we are
         compiling under CygWin environment, since CygWin is essentially
         UNIX-like environment. When you see ifdef WIN32 in Aubit code, this
         applies ONLY to Windows native compilers, like MingWin, MSVC or
 		Borland */
 		#undef WIN32
-	    
+
 		/* missing from rpcgen generated form_x.h on CygWin: */
 		#define bool_t int
 		#define u_int unsigned int
-	#endif
 
-/* DLL building support on win32 hosts;  mostly to workaround their
-   ridiculous implementation of data symbol exporting. */
 
-	#ifdef EXAMPLE_FROM_LIBLTDL
-		#ifndef LT_SCOPE
-		#  ifdef __WINDOWS__
-		#    ifdef DLL_EXPORT		/* defined by libtool (if required) */
-		#      define LT_SCOPE	__declspec(dllexport)
-		#    endif
-		#    ifdef LIBLTDL_DLL_IMPORT	/* define if linking with this dll */
-		#      define LT_SCOPE	extern __declspec(dllimport)
-		#    endif
-		#  endif
-		#  ifndef LT_SCOPE		/* static linking or !__WINDOWS__ */
-		#    define LT_SCOPE	extern
-		#  endif
+	    /* this is all wrong: where is TRUE/FALS usualy defined? */
+		#ifndef BOOLEAN
+			#define BOOLEAN int
+			#define TRUE 1
+			#define FALSE 0
 		#endif
-    #endif
 
+		/*
+		DLL building support on win32 hosts;  mostly to workaround their
+		ridiculous implementation of data symbol exporting. See exaple in libltdl/
+		*/
 
-	//#if (defined(WIN32) && ! defined(__CYGWIN__))
-    #if (defined(__CYGWIN__))
 		#define dll_export __declspec(dllexport)
-		//#define dll_import __declspec(dllimport)
-		#define dll_import extern __declspec(dllimport)
+		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
 	#else
 		#define dll_export
-		#define dll_import
+		#define dll_import extern
 	#endif
 
+    /* if WIN32 is still defined, that means that __CYGWIN__was not defined */
+	#if (defined(WIN32) && ! defined(__CYGWIN__))
+		#define __NATIVE_WINDOWS__
+
+		strncasecmp(char *a,char *b,int c);
+    #endif
+
 	#if (defined(__MACH__) && defined(__APPLE__))
+
+        #define __DARWIN__
+
 		#define bool_t int
 		///usr/include/rpc/auth.h:105: undefined type, found `XDR'
         //#include "rpc/xdr.h"
@@ -516,7 +515,7 @@
 
 	/* definitions used both in Aubit compiler code and at run-time */
 	#include "a4gl_incl_4gldef.h"
-    
+
 	/* API prototypes */
 	#include "a4gl_API_lex.h"          	/* generated from .spec */
 	#include "a4gl_API_form.h"          /* generated from .spec */
@@ -708,15 +707,11 @@
 		long 	time_offset = 0;
 		int 	week_no = -1;
 
-		/*
-		#if (defined(WIN32) && ! defined(__CYGWIN__))
-		#ifdef WIN32
-		*/
-		#ifdef __CYGWIN__
-			dll_export struct s_form_attr std_dbscr;
-		#else
+		//#ifdef __CYGWIN__
+		//	dll_export struct s_form_attr std_dbscr;
+		//#else
 			struct s_form_attr std_dbscr;
-		#endif
+		//#endif
 	#else
 		extern char 	opts[10][80];	/*menu options */
 		extern int 		abort_pressed;
@@ -725,15 +720,7 @@
 		extern long 	time_offset;
 		extern int 		week_no;
 
-		/*
-		#if (defined(WIN32) && ! defined(__CYGWIN__))
-		#ifdef WIN32
-		*/
-		#ifdef __CYGWIN__
-			dll_import struct s_form_attr std_dbscr;
-		#else
-			extern struct s_form_attr std_dbscr;
-		#endif
+		dll_import struct s_form_attr std_dbscr;
 	#endif
 
 
@@ -805,105 +792,6 @@
 
     /* ------------- end of moved from 4gldef.h ------------------ */
 
-/*
-to fix the _nm_status error (if status is an int) change
-
-extern int status;
-
-to
-
-__attribute__((dllimport))extern int status;
-
-That's the ugly, short-hand way.  For some reason, auto-import
-doesn't always work.  Search the mailing lists for more correct
-ways of handling this (if you use the same include file to build
-your library and in your applications - above should only
-be used in applications which link to the library).
-*/
-
-
-    #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
-    /* for everything except libaubit4gl: */
-
-
-		/** Sqlca variable */
-		#ifndef _SQLCA_DEFINED_
-		    #define _SQLCA_DEFINED_
-			extern sqlca_struct sqlca;
-	    #endif
-
-		/** 4gl global status variable */
-		#ifndef DEFINE_STATUS
-			#define DEFINE_STATUS
-			/* FIXME: is this OK? see lib/fglwrap.c */
-			#ifdef __CYGWIN__
-				extern int status;
-			#else
-				extern long status;
-			#endif
-		#endif
-
-		/** 4gl interrupt ocurred global flag */
-		#ifndef DEFINE_INTFLAG
-		#define DEFINE_INTFLAG
-			#ifdef __CYGWIN__
-		    	extern int int_flag;
-		    #else
-				extern long int_flag;
-		    #endif
-		#endif
-
-
-		/** 4gl quit ocurred global flag */
-		#ifndef DEFINE_QUITFLAG
-		#define DEFINE_QUITFLAG
-		    #ifdef __CYGWIN__
-				extern long quit_flag;
-		    #else
-				extern int quit_flag;
-		    #endif
-		#endif
-    #else
-	/* only in libaubit4gl */
-
-		/** Sqlca variable */
-		#ifndef _SQLCA_DEFINED_
-		    #define _SQLCA_DEFINED_
-			sqlca_struct sqlca;
-	    #endif
-
-		/** 4gl global status variable */
-		#ifndef DEFINE_STATUS
-			#define DEFINE_STATUS
-			/* FIXME: is this OK? see lib/fglwrap.c */
-			#ifdef __CYGWIN__
-				int status;
-			#else
-				long status;
-			#endif
-		#endif
-
-		/** 4gl interrupt ocurred global flag */
-		#ifndef DEFINE_INTFLAG
-			#define DEFINE_INTFLAG
-			#ifdef __CYGWIN__
-		    	int int_flag;
-		    #else
-				long int_flag;
-		    #endif
-		#endif
-
-
-		/** 4gl quit ocurred global flag */
-		#ifndef DEFINE_QUITFLAG
-			#define DEFINE_QUITFLAG
-		    #ifdef __CYGWIN__
-				long quit_flag;
-		    #else
-				int quit_flag;
-		    #endif
-		#endif
-	#endif
 
 	#define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
@@ -1483,12 +1371,6 @@ be used in applications which link to the library).
 
 
 	void modify_size(char *z,int a);
-	#ifdef WIN32
-		#ifndef __CYGWIN__
-			strncasecmp(char *a,char *b,int c);
-		#endif
-	#endif
-
 
     /* ==================== from a4gl_aclform.h =================== */
 

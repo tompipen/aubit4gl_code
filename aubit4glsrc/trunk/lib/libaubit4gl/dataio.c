@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.3 2002-10-07 11:06:26 afalout Exp $
+# $Id: dataio.c,v 1.4 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -56,11 +56,6 @@
 		                    Includes
 =====================================================================
 */
-
-#ifdef __CYGWIN__
-	#include <windows.h>
-	#include <errno.h>
-#endif
 
 #include "a4gl_libaubit4gl_int.h"
 

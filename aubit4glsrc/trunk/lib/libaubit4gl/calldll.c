@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.19 2002-10-07 11:06:25 afalout Exp $
+# $Id: calldll.c,v 1.20 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -55,17 +55,6 @@
  * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
  ***********************************************************************
  */
-#if defined(__CYGWIN__)
-/*
-//    #define BYTE int
-	typedef unsigned char BYTE;
-    #define BOOLEAN int
-//    typedef BYTE BOOLEAN,*PBOOLEAN;
-//    typedef BYTE BOOLEAN,*PBOOLEAN;
-
-//	#include <cygwin/cygwin_dll.h>
-*/
-#endif
 
 #ifndef WIN32
 	#include <dlfcn.h>
@@ -167,7 +156,7 @@ dl_openlibrary (char *type, char *name)
 	#ifdef __CYGWIN__
 	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
 	#else
-		#if (defined(__MACH__) && defined(__APPLE__))
+		#if defined(__DARWIN__)
 		  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type, name);
 
           /*

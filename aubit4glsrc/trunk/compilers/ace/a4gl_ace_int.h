@@ -3,6 +3,10 @@
 
 #include "a4gl_libaubit4gl.h"
 
+#if HAVE_RPC_H
+	#include <rpc/rpc.h>
+#endif
+
 
 #include "report.h"
 

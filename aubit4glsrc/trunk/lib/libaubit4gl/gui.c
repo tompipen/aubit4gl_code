@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.15 2002-10-07 11:06:27 afalout Exp $
+# $Id: gui.c,v 1.16 2002-10-20 12:02:37 afalout Exp $
 #
 */
 
@@ -51,10 +51,8 @@
 =====================================================================
 */
 
-#ifdef WIN32
-	#ifndef __CYGWIN__
-		#define USE_WINSOCK
-	#endif
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+	#define USE_WINSOCK
 #endif
 
 #ifndef USE_WINSOCK
@@ -67,12 +65,13 @@
 	#endif
 #endif
 
+/*
 #ifdef USE_GTK
 	#define HAS_GTK 1
 	#define START_HAS_GTK if (ui_mode==UI_MODE_GTK) {
 	#define END_HAS_GTK }
 #endif
-
+*/
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.4 2002-10-18 01:56:38 afalout Exp $
+# $Id: newpanels.c,v 1.5 2002-10-20 12:02:38 afalout Exp $
 #*/
 
 /**
@@ -54,10 +54,8 @@
 
 
 #ifdef __CYGWIN__
-	//dll_import int 		when_code[8];
 	dll_import struct s_form_attr std_dbscr;
 	dll_import sqlca_struct sqlca;
-	dll_import int status;
 #endif
 
 /*
@@ -66,11 +64,8 @@
 =====================================================================
 */
 
-
 #define MAXWIN 200
 #define MAXPOINTERS 2000
-
-
 
 /*
 =====================================================================
@@ -79,10 +74,10 @@
 */
 
 WINDOW *currwin;
-int scr_width = -1;
-int scr_height = -1;
-int currwinno = -1;
-int currattr = 0;
+int scr_width 	= -1;
+int scr_height 	= -1;
+int currwinno 	= -1;
+int currattr 	= 0;
 
 /*
    struct ptrs
@@ -114,69 +109,61 @@ struct s_windows windows[MAXWIN];
 */
 /** @todo Take this prototypes of from here */
 
-/* extern int get_lastkey (void); */
-/* extern int key_val (char *s); */
-/* void *has_pointer (char *pname, char t); */
-/* int del_pointer (char *pname, char t); */
-int mja_vwprintw (WINDOW * win, char *fmt,va_list *args);
-int current_window (char *win_name);
+int 	mja_vwprintw 		(WINDOW * win, char *fmt,va_list *args);
+int 	current_window 		(char *win_name);
+void 	print_panel_stack 	(void);
+void 	init_stddbscr 		(void);
+void 	do_update_panels 	(void);
+void 	change_currwinno 	(int a, char *s);
+void 	change_currwin 		(WINDOW * a, char *s);
+void 	inc_winname 		(char *b);
+int 	getch_swin 			(WINDOW * window_ptr);
+int 	getform_line 		(void);
+int 	find_win 			(PANEL * p);
+int 	chkwin 				(void);
+int 	screen_height 		(void);
+int 	top_win 			(PANEL * p);
+char * 	pointer_code 		(int c);
+void 	clr_window 			(char *win_name);
+int 	int_current_window 	(char *win_name);
+void 	mja_gotoxy 			(int x, int y);
+int 	get_curr_win 		(void);
+int 	get_curr_height 	(void);
+int 	get_curr_top 		(void);
+char * 	get_currwin_name 	(void);
+int 	get_curr_border 	(void);
+void 	display_at2 		(char *z, int x, int y, int a);
+int 	decode_line 		(int l);
+void 	display_error 		(int a,int wait);
+void 	add_compiled_form	(char *s,char *frm);
+int  	open_form 			(char *name);
+void 	close_form 			(char *formname);
+int  	disp_form 			(char *name, int attr);
+int  	set_window 			(int a);
+int 	subwin_printxy 		(WINDOW * win, int x, int y, char *fmt,...);
+int 	subwin_setcolor 	(WINDOW * win, int typ);
+int 	getcomment_line 	(void);
+void 	set_attr_win 		(char s, int wattr);
+char * 	windowname_on_top 	(void);
+int 	invert_color 		(int a);
+void 	sleep_i				(void);
 
-WINDOW *window_on_top (void);
+WINDOW *window_on_top 		(void);
 WINDOW *display_form_new_win (char *name, struct s_form_dets *f, int x, int y);
-WINDOW * display_form (struct s_form_dets *f);
+WINDOW * display_form 		(struct s_form_dets *f);
+WINDOW *create_window 		(char *name, int x, int y, int w, int h, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
+WINDOW * display_form_win 	(WINDOW * w, char *name, struct s_form_dets * f);
 
-WINDOW *create_window (char *name, int x, int y, int w, int h, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
-
-void print_panel_stack (void);
-void init_stddbscr (void);
-void do_update_panels (void);
-void change_currwinno (int a, char *s);
-void change_currwin (WINDOW * a, char *s);
+void * 	cr_window 			(char *s,int iswindow,int form_line,int error_line,int prompt_line,
+	  				int menu_line,int border,int comment_line,int message_line,int attrib);
+int 	cr_window_form 		(char *name,int iswindow,int form_line,int error_line,
+					int prompt_line,int menu_line,int border,int comment_line,int message_line,
+					int attrib);
 
 
-void inc_winname (char *b);
-int getch_swin (WINDOW * window_ptr);
-int getform_line (void);
-int find_win (PANEL * p);
-
-int chkwin (void);
-int screen_height (void);
-int top_win (PANEL * p);
-
-char * pointer_code (int c);
-void clr_window (char *win_name);
-int int_current_window (char *win_name);
-void mja_gotoxy (int x, int y);
-
-WINDOW * display_form_win (WINDOW * w, char *name, struct s_form_dets * f);
-int get_curr_win (void);
-int get_curr_height (void);
-int get_curr_top (void);
-char * get_currwin_name (void);
-int get_curr_border (void);
-void display_at2 (char *z, int x, int y, int a);
-int decode_line (int l);
-void display_error (int a,int wait);
-void * cr_window (char *s,int iswindow,int form_line,int error_line,int prompt_line,
-	   int menu_line,int border,int comment_line,int message_line,int attrib);
-int cr_window_form (char *name,int iswindow,int form_line,int error_line,
-		int prompt_line,int menu_line,int border,int comment_line,int message_line,
-		int attrib);
-void add_compiled_form(char *s,char *frm);
-int  open_form (char *name);
-void close_form (char *formname);
-int  disp_form (char *name, int attr);
-int  set_window (int a);
-int subwin_printxy (WINDOW * win, int x, int y, char *fmt,...);
-int subwin_setcolor (WINDOW * win, int typ);
-LIBEXPORT void hide_window (char *winname);
-LIBEXPORT void show_window (char *winname);
-int getcomment_line (void);
-LIBEXPORT int movewin (char *winname, int absol);
-void set_attr_win (char s, int wattr);
-char * windowname_on_top (void);
-int invert_color (int a);
-void sleep_i(void);
+LIBEXPORT void hide_window 	(char *winname);
+LIBEXPORT void show_window 	(char *winname);
+LIBEXPORT int movewin 		(char *winname, int absol);
 
 
 /*
@@ -281,16 +268,16 @@ create_window (char *name, int x, int y, int w, int h,
   PANEL *pan;
   int a;
   chkwin ();
-#ifdef DEBUG
-  debug ("Creating window %s (%d %d %d %d) %d attrib=0x%x", name, x, y, w, h, border, attrib);
-#endif
+  #ifdef DEBUG
+  	debug ("Creating window %s (%d %d %d %d) %d attrib=0x%x", name, x, y, w, h, border, attrib);
+  #endif
 
-if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
-if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-if (error_line==0xff) { error_line=std_dbscr.error_line; }
-if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
-  if (strcmp (name, "screen") == 0)
+	if (form_line==0xff) { form_line=std_dbscr.form_line; }
+	if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+	if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+	if (error_line==0xff) { error_line=std_dbscr.error_line; }
+	if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+	if (strcmp (name, "screen") == 0)
     {
       h = screen_height () - 1;
       w = screen_width () - 1;
@@ -305,60 +292,61 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
       gui_win (name, screen_height (), screen_width (), 1, 1, 0, (long)win);
       add_pointer (name, WINCODE, win);
     }
-  else
+	else
     {
 
-      if (border==1)
-	{
-	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  if (toupper (name[0]) != name[0])
-	    gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long)win);
-	  add_pointer (name, WINCODE, win);
-	}
+    	if (border==1)
+		{
+		  win = newwin (h + 2, w + 2, y - 2, x - 2);
+		  if (toupper (name[0]) != name[0])
+	    	gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long)win);
+		  add_pointer (name, WINCODE, win);
+		}
 
-      if (border==2)
-	{
-	  dswin = newwin (h + 4, w + 4, y - 2, x - 2);
-	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  add_pointer (name, WINCODE, win);
-	  add_pointer (name, DROPSHADOW, dswin);
-  		set_bkg (dswin, '+');
-	debug("XX3 REVERSE");
-      	  wbkgdset (dswin, COLOR_RED|A_REVERSE);
-  		mja_wrefresh (dswin);
-		sleep(2);
-	}
+      	if (border==2)
+		{
+			dswin = newwin (h + 4, w + 4, y - 2, x - 2);
+			win = newwin (h + 2, w + 2, y - 2, x - 2);
+			add_pointer (name, WINCODE, win);
+			add_pointer (name, DROPSHADOW, dswin);
+	  		set_bkg (dswin, '+');
+			debug("XX3 REVERSE");
+	      	  wbkgdset (dswin, COLOR_RED|A_REVERSE);
+	  		mja_wrefresh (dswin);
+			sleep(2);
+		}
 
-     if (border==3) {
-	  dswin = newwin (h + 4, w + 4, y - 1, x - 1);
-	  win = newwin (h, w, y - 2, x - 2);
-	  add_pointer (name, WINCODE, win);
-	  add_pointer (name, DROPSHADOW, dswin);
-	debug("XX4 REVERSE");
-      	  wbkgdset (dswin, COLOR_RED|A_REVERSE);
-  		mja_wrefresh (dswin);
-		sleep(2);
-	}
+		if (border==3)
+		{
+		  	dswin = newwin (h + 4, w + 4, y - 1, x - 1);
+		  	win = newwin (h, w, y - 2, x - 2);
+		  	add_pointer (name, WINCODE, win);
+		  	add_pointer (name, DROPSHADOW, dswin);
+		  	debug("XX4 REVERSE");
+	      	wbkgdset (dswin, COLOR_RED|A_REVERSE);
+	  		mja_wrefresh (dswin);
+			sleep(2);
+	    }
 
-      if (border==0) 
-	{
-	  win = newwin (h, w, y - 1, x - 1);
-	  if (toupper (name[0]) != name[0]) gui_win (name, h, w, y - 1, x - 1, 0, (long)win);
-	  add_pointer (name, WINCODE, win);
-	  debug ("Window = %p", win);
-	}
+		if (border==0)
+		{
+		  win = newwin (h, w, y - 1, x - 1);
+		  if (toupper (name[0]) != name[0]) gui_win (name, h, w, y - 1, x - 1, 0, (long)win);
+		  add_pointer (name, WINCODE, win);
+		  debug ("Window = %p", win);
+		}
 
     }
 
-#ifdef DEBUG
-  {    debug ("Window created");  }
-#endif
+	#ifdef DEBUG
+		debug ("Window created");
+	#endif
 
-  if (win == 0)
+	if (win == 0)
     {
-#ifdef DEBUG
-      { 	debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);      }
-#endif
+	  #ifdef DEBUG
+    	debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
+	  #endif
       exitwith ("Couldnt create window");
       return 0;
     }

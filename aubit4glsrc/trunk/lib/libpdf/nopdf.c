@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.4 2002-06-06 12:31:28 afalout Exp $
+# $Id: nopdf.c,v 1.5 2002-10-20 12:02:38 afalout Exp $
 #*/
 
 /**
@@ -45,8 +45,6 @@
 
 #include <stdio.h>
 
-
-/* #if (defined(WIN32) || defined(__CYWIN__)) && defined DLL_EXPORT */
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 	#include <windows.h>
 	int WINAPI

@@ -1,13 +1,11 @@
 
-	#ifdef __CYGWIN__
-	    /* missing from rpcgen generated form_x.h on CygWin: */
-		#define bool_t int
-		#define u_int unsigned int
+#ifdef __CYGWIN__
+	#include <rpc/rpc.h>
+	dll_import struct struct_form the_form;
+#else
+	extern struct struct_form the_form;
+#endif
 
-
-		#include <rpc/rpc.h>
-
-	#endif
 
 
 
@@ -29,9 +27,4 @@
 	#include "../../../common/dataio/form_x.h"
 #endif
 
-#ifdef __CYGWIN__
-	dll_import struct struct_form the_form;
-#else
-	extern struct struct_form the_form;
-#endif
 

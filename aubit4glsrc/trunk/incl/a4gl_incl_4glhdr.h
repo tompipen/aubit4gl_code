@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.13 2002-10-18 01:56:38 afalout Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.14 2002-10-20 12:02:37 afalout Exp $
 */
 
 /**
@@ -61,91 +61,6 @@
 	#define AFTER_INP  (_fld_dr==-95)
 	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
 	#define set_status(a) set_status(a,0)
-
-
-    #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
-    /* for everything except libaubit4gl */
-
-
-		/** Sqlca variable */
-		#ifndef _SQLCA_DEFINED_
-		    #define _SQLCA_DEFINED_
-			extern sqlca_struct sqlca;
-	    #endif
-
-		/** 4gl global status variable */
-		#ifndef DEFINE_STATUS
-		#define DEFINE_STATUS
-			/* FIXME: is this OK? see lib/fglwrap.c */
-			#ifdef __CYGWIN__
-				extern int status;
-			#else
-				extern long status;
-			#endif
-		#endif
-
-		/** 4gl interrupt ocurred global flag */
-		#ifndef DEFINE_INTFLAG
-		#define DEFINE_INTFLAG
-			#ifdef __CYGWIN__
-		    	extern int int_flag;
-		    #else
-				extern long int_flag;
-		    #endif
-		#endif
-
-
-		/** 4gl quit ocurred global flag */
-		#ifndef DEFINE_QUITFLAG
-		#define DEFINE_QUITFLAG
-		    #ifdef __CYGWIN__
-				extern long quit_flag;
-		    #else
-				extern int quit_flag;
-		    #endif
-		#endif
-    #else
-	/* only in libaubit4gl */
-
-		/** Sqlca variable */
-		#ifndef _SQLCA_DEFINED_
-		    #define _SQLCA_DEFINED_
-			sqlca_struct sqlca;
-	    #endif
-
-		/** 4gl global status variable */
-		#ifndef DEFINE_STATUS
-		#define DEFINE_STATUS
-			/* FIXME: is this OK? see lib/fglwrap.c */
-			#ifdef __CYGWIN__
-				int status;
-			#else
-				long status;
-			#endif
-		#endif
-
-		/** 4gl interrupt ocurred global flag */
-		#ifndef DEFINE_INTFLAG
-		#define DEFINE_INTFLAG
-			#ifdef __CYGWIN__
-		    	int int_flag;
-		    #else
-				long int_flag;
-		    #endif
-		#endif
-
-
-		/** 4gl quit ocurred global flag */
-		#ifndef DEFINE_QUITFLAG
-		#define DEFINE_QUITFLAG
-		    #ifdef __CYGWIN__
-				long quit_flag;
-		    #else
-				int quit_flag;
-		    #endif
-		#endif
-	#endif
-
 	#define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
 	#define OP_MASK 512|1024
