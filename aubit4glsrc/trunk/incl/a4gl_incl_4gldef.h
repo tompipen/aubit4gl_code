@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.26 2003-02-16 11:24:41 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.27 2003-02-22 15:46:12 mikeaubury Exp $
 */
 
 /**
@@ -147,6 +147,12 @@
 	    int stime;     /**< The start qualifier */
 	    int ltime;     /**< The end qualifier */
 	    char data[32]; /**< The value of the interval variable */
+		int i_years;
+		int i_months;
+		int i_days;
+		int i_hours;
+		int i_minutes;
+		double i_seconds;
 	};
 
 

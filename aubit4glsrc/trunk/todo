@@ -6,13 +6,15 @@
 
 
 4GL
-	implement extend() 4GL function
-	implement datetime() & interval() 4GL functions
+	implement extend() 4GL function ** DONE
+	implement datetime() & interval() 4GL functions ** DONE
 	'thru' on display etc ************** DONE
-	initialize array/record containing array
+	initialize array/record containing array ** DONE
 	Allow auto initialize of function variables (As per pcode) ** DONE (And module level too - globals still outstanding)
-	Add globals header file into variable declaration
-	Create function names export
+	Add globals header file into variable declaration ** DONE
+	Create function names export ** DONE - they are included in the .glb
+
+
 	Clean up error handling
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different).
@@ -205,7 +207,7 @@ Other unimplemented functions
 
 
 SQL Parser
-	IN (variable,variable)
+	IN (variable,variable) ** DONE
 	add extend() SQL function into parser *********** DONE
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)

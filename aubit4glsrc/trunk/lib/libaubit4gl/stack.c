@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.38 2003-02-10 12:33:11 mikeaubury Exp $
+# $Id: stack.c,v 1.39 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -754,10 +754,12 @@ push_param (void *p, int d)
 			function=find_op_function(dtype_2,dtype_1,OP_MATH);
 	}
 
+	debug("Looked for GENERIC MATH handing - %d %d %d - got %p\n",dtype_2,dtype_1,OP_MATH,function);
 
 	if (function==0) {
 	/* Nope - try a specific */
 		function=find_op_function(dtype_2,dtype_1,d);
+		debug("Looked for SPECIFIC handing - %d %d %d - got %p\n",dtype_2,dtype_1,d,function);
 	}
 
 

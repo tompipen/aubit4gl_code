@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.104 2003-02-22 01:55:37 afalout Exp $
+# $Id: mod.c,v 1.105 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -89,7 +89,6 @@
 #define ledger_height    (float) 792.0
 #define p11x17_width     (float) 792.0
 #define p11x17_height    (float) 1224.0
-
 
 /*
 =====================================================================
@@ -159,7 +158,9 @@ struct 		s_report_stack report_stack[REPORTSTACKSIZE];
 int 		report_stack_cnt = 0;
 int 		report_cnt = 1;
 int 		nblock_no = 1;
-char 		gen_stack[GEN_STACKS][100][80];
+
+#define GEN_STACK_SIZE 200
+char 		gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
 int 		gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 struct 		s_constr_buff constr_buff[256];
 int 		constr_cnt = 0;
@@ -1672,8 +1673,8 @@ trim(char *s)
 void 
 push_gen (int a, char *s)
 {
-  debug ("Push %d %s\n", a, s);
-  if (gen_stack_cnt[a] >= 90)
+  printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
+  if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
       printf ("Out of stack!\n");
       exit (77);
@@ -3597,7 +3598,7 @@ int c;
 /**
  * @param mode If mode is set to 1 - expect a '*' as column names...
 */
-int fix_update_expr(int mode) {
+char *fix_update_expr(int mode) {
   char big_buff[20000];
 int a;
   int rval;

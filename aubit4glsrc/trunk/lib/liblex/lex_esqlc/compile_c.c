@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.13 2003-02-22 01:52:22 afalout Exp $
+# $Id: compile_c.c,v 1.14 2003-02-22 15:46:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1568,7 +1568,9 @@ print_returning (void)
   cnt = print_bind ('i');
   printc
     /* warning! : 	void    A4GLSQL_set_status 	(int a, int sql); */
-	("if (_retvars!= %d) {if (_retvars!=-1) {if (status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
+// I've added the check back in - even if its -1....
+// I'm not sure why it went in...
+	("if (_retvars!= %d) {if (_retvars!=-1||1) {if (status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
   printc ("pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");

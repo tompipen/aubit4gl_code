@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.60 2003-02-22 01:02:11 afalout Exp $
+# $Id: lexer.c,v 1.61 2003-02-22 15:46:12 mikeaubury Exp $
 #*/
 
 /**
@@ -957,15 +957,15 @@ fix_bad_strings (char *s)
   return;
 }
 
-static int sql_kword(int a) {
-switch (a) {
-	case WHERE:
-	case FROM:
-	case SELECT:
-		return 1;
-}
-return 0;
-}
+//static int sql_kword(int a) {
+//switch (a) {
+	//case WHERE:
+	//case FROM:
+	//case SELECT:
+		//return 1;
+//}
+//return 0;
+//}
 
 
 /**
@@ -986,8 +986,8 @@ char buff[1024];
 char buffval[20480];
 int allow;
 static int last_pc = 0;
-int r;
-short *stack_cnt;
+//int r;
+//short *stack_cnt;
 
 
   //printf("In yylex ... yystate=%d\n", yystate);
@@ -1091,6 +1091,7 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
     {
       debug ("  Constant check returns %d",
 	     check_for_constant (buff, buffval));
+
       switch (check_for_constant (buff, buffval))
 	{
 	case 0:
@@ -1100,6 +1101,7 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 	  strcpy (buff, buffval);
 	  a = CHAR_VALUE;
 	  break;		/* 'c' */
+
 	case 2:
 	  debug (" Constant switch %s Float", buffval);
 	  strcpy (buff, buffval);
@@ -1110,6 +1112,13 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 	  strcpy (buff, buffval);
 	  a = INT_VALUE;
 	  break;		/* 'i' */
+	case 4:
+	  debug (" Constant switch %s ident", buffval);
+	  strcpy (buff, buffval);
+	  a = NAMED_GEN;
+	  break;		/* 'C' */
+	default: yyerror("Unexpected Error");
+
 	}
     }
 

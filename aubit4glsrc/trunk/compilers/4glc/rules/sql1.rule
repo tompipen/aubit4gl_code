@@ -919,7 +919,7 @@ cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-cur_v_part: {strcpy($<str>$,"0,17");}
+cur_v_part: {strcpy($<str>$,"0,19");}
 | s_curr_v TO e_curr_v
 {sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
 ;
@@ -1128,7 +1128,9 @@ column_specification : value_expression;
 
 
 value_expression:
-	value_expression_complex {push_gen(UPDVAL,$<str>1);}
+	value_expression_complex {
+			if (strlen(current_upd_table)) push_gen(UPDVAL,$<str>1);
+	}
 	| var_ident_ibind 	/* push_gen handled by ibind */
 ;
 

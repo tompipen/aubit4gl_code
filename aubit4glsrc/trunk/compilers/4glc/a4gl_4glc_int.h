@@ -295,7 +295,7 @@
 	void    set_str			(void *y, char *s);
 	void    set_hdrdbname		(char *s);
 	char *  get_hdrdbname		(void);
-
+	char *fix_update_expr(int mode);
 
 /* ============================= EOF ================================= */
 

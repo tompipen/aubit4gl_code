@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.5 2003-02-22 01:52:19 afalout Exp $
+# $Id: compile.c,v 1.6 2003-02-22 15:46:12 mikeaubury Exp $
 #*/
 
 /**
@@ -447,7 +447,7 @@ static struct option long_options[] =
             }
 
             todo++;
-			//x = compile_4gl(c,compile_object,a,incl_path,silent,verbose);
+		printf("Compiling: %s\n",c);
             x = compile_4gl(compile_object,a,incl_path,silent,verbose,output_object);
 			if ( x )
 	        {
@@ -668,6 +668,7 @@ char *ptr;
       printf ("Closing map : %d\n", x);
     }
 
+  dump_gvars();
   closemap ();
   #ifdef DEBUG
 	  debug("after closemap");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.26 2003-02-17 15:40:50 mikeaubury Exp $
+# $Id: conv.c,v 1.27 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -448,20 +448,19 @@ inttoc (void *a1, void *b, int size)
   int c2;
   char buff[256];
   char buff2[256];
-  int spc[] = {
-    0,
-    4,
-    2,
-    2,
-    2,
-    2,
-    2,
-    5
-  };
+  int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
 
   a = a1;
+
+
   s1 = a->stime % 16;
   s2 = a->stime / 16;
+
+  debug("a->stime =%x a->ltime=%x size=%x\n",a->stime,a->ltime,size);
+  //if (size) { a->stime=s1; a->ltime=s2; }
+	//debug("s1=%d s2=%d\n",s1,s2);
+
+
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   a->data[0], a->data[1], a->data[2], a->data[3],
 	   a->data[4], a->data[5],
@@ -476,6 +475,7 @@ inttoc (void *a1, void *b, int size)
       debug ("c=%d cnt=%d\n", c, cnt);
       cnt += spc[c];
     }
+
   debug ("Cnt=%d\n", cnt);
   debug ("buff=%s\n", buff);
 
@@ -486,6 +486,8 @@ inttoc (void *a1, void *b, int size)
     }
 
   c2 = c;
+
+  debug("s1=%d a->ltime=%d\n",s1,a->ltime);
 
   for (cpc = s1; cpc < a->ltime; cpc++)
     {
@@ -509,7 +511,10 @@ inttoc (void *a1, void *b, int size)
       c++;
       c2++;
     }
+
   buff2[c] = 0;
+
+
   debug("buff2=%s",buff2);
   strcpy (b, buff2);
 
@@ -2337,7 +2342,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   debug ("conv (%ld %lx)", *(long *) p1, *(long *) p2); 
   debug ("conv (%x %x)", *(short *) p1, *(short *) p2); 
 
-  debug("Convmatrix %d %d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
+  debug("Convmatrix %d %d --- size=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK,size);
 }
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
@@ -3770,7 +3775,7 @@ valid_dt (char *s, int *data)
 
       if (i != 1 && strlen (ptr[i - a]) != 2 && i != 7)
 	{
-	  debug ("expecting 2 digits\n");
+	  debug ("expecting 2 digits -> '%s'\n",ptr[i-a]);
 	  return 0;
 	}
 

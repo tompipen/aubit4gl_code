@@ -96,6 +96,11 @@ func_def	: ldeffunction
 }
 identifier  OPEN_BRACKET  
 { 
+
+if (strcmp($<str>1,"static ")!=0) {
+	// We don't export static functions
+	variable_action(-1,$<str>3,"","","add_function");
+}
   sprintf(curr_func,"%s",$<str>3);
   addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
   print_func_start($<str>1,$<str>3,0);
@@ -139,6 +144,7 @@ main_def:
   MAIN 
   { 
     lastlineno=yylineno;
+    variable_action(-1,$<str>1,"","","add_function");
     sprintf(curr_func,"MAIN");
     clr_variable(); 
     push_blockcommand("MAIN"); 

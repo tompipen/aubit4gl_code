@@ -7,6 +7,7 @@
 #define VARIABLE_TYPE_RECORD    1
 #define VARIABLE_TYPE_ASSOC     2
 #define VARIABLE_TYPE_CONSTANT  3
+#define VARIABLE_TYPE_FUNCTION_DECLARE  4
 
 
 // This is used to store a list of
@@ -50,6 +51,7 @@ struct record_variable {
 #define CONST_TYPE_CHAR    1
 #define CONST_TYPE_FLOAT   2
 #define CONST_TYPE_INTEGER 3
+#define CONST_TYPE_IDENT   4
 
 struct constant_data {
 	int consttype;		// The contant type
@@ -86,6 +88,7 @@ struct variable {
 		struct constant_data v_const;
 		struct linked_variable v_linked;
 	} data;
+	char *src_module;
 		
 };
 
@@ -107,3 +110,4 @@ int 	split_record (char *s, struct variable **v_record, struct variable **v1, st
 struct 	variable * get_next_variable (struct variable *record, struct variable *v1, struct variable *v2);
 void 	set_current_variable_scope (char n);
 struct record_list *split_record_list(char *s, char *prefix, struct record_list *list);
+void print_nullify(char type);

@@ -26,3 +26,25 @@ interval_expr:
 ;
 
 
+extend_parameters: OPEN_BRACKET
+			fgl_expr_c
+			op_datetime_qual
+		CLOSE_BRACKET {
+			$<ptr>$=append_expr_expr($<ptr>2,$<ptr>3);
+		}
+;
+
+
+
+
+op_datetime_qual:  { 
+	char buff[50];
+	sprintf(buff,"push_int(%d);",(19*16)+10); 
+	$<ptr>$=new_expr(buff);
+}
+| COMMA dtime_start TO dtime_end { 
+	char buff[50];
+	sprintf(buff,"push_int(%d);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
+	$<ptr>$=new_expr(buff);
+}
+;

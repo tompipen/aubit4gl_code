@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.20 2003-02-16 11:21:38 mikeaubury Exp $
+# $Id: builtin.c,v 1.21 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -779,7 +779,25 @@ void aclfgli_current(int a,int b) {
 }
 
 void aclfgli_extend(void) {
-	// FIXME
+	struct a4gl_dtime c;
+	int n;
+	n=pop_int();
+	pop_var2(&c,DTYPE_DTIME,n);
+	push_dtime(&c);
+}
+
+void acli_interval(char *s,int n) {
+struct_ival c;
+char *ptr;
+	debug("acli_interval s=%s n=%d\n",s,n);
+  	c.ltime = n&16;
+  	c.stime = n/16;
+	ctoint(s,&c,n);
+	//push_char(s);
+	//pop_var2(&c,DTYPE_INTERVAL,n);
+	debug("acli_interval - pop'd c - n=%x",n);
+	push_interval(&c);
+
 }
 
 char *aclfgli_str_to_id(char *name) 

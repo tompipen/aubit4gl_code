@@ -35,6 +35,7 @@ define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);
 
 def_part2:	 
 CONSTANT define_ident op_equal CHAR_VALUE   { add_constant('c',$<str>4,$<str>2); addmap("Constant",$<str>2,curr_func,yylineno,infilename); }
+| CONSTANT define_ident op_equal identifier   { add_constant('C',$<str>4,$<str>2); addmap("Constant",$<str>2,curr_func,yylineno,infilename); }
 | CONSTANT define_ident op_equal real_number { add_constant('f',$<str>4,$<str>2);
 addmap("Constant",$<str>2,curr_func,yylineno,infilename);
  }
@@ -257,7 +258,9 @@ sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); }
 ;
 
 interval_qual :  int_start TO int_end  {
+
 sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); 
+printf("-->%s\n",$<str>$);
 };
 
 dtime_start : {start_state("dtime_val",1);} dtime_val {start_state("dtime_val",0); strcpy($<str>$,$<str>2);}

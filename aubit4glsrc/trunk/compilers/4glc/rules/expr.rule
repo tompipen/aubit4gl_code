@@ -536,35 +536,29 @@ inc_counter();}
 | YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_year(1);");
 inc_counter();} 
-| INTERVAL OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_i {
+| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_i {
 	char buff[256];
-	sprintf(buff,"acli_interval(%s,%s)",$<str>3,$<str>5);
+	sprintf(buff,"acli_interval(%s,%s);",$<str>3,$<str>5);
 	$<ptr>$=new_expr(buff);
-}
-| INTERVAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_i {
-	char buff[256];
-	sprintf(buff,"acli_interval(\"%s\",%s)",$<str>3,$<str>5);
-	$<ptr>$=new_expr(buff);
-}
-| INTERVAL OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_i {
-	char buff[256];
-	sprintf(buff,"acli_interval(\"%s:%s\",%s)",$<str>3,$<str>5,$<str>7);
-	$<ptr>$=new_expr(buff);
+	inc_counter();
 }
 | DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
 	sprintf(buff,"acli_datetime(%s,%s)",$<str>3,$<str>5);
 	$<ptr>$=new_expr(buff);
+	inc_counter();
 }
 | DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
 	sprintf(buff,"acli_datetime(\"%s\",%s)",$<str>3,$<str>5);
 	$<ptr>$=new_expr(buff);
+	inc_counter();
 }
 | DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
 	sprintf(buff,"acli_datetime(\"%s:%s\",%s)",$<str>3,$<str>5,$<str>7);
 	$<ptr>$=new_expr(buff);
+	inc_counter();
 }
 ;
 
@@ -574,10 +568,8 @@ op_extend_d: {strcpy($<str>$,"-1,-1");} | s_curr_v TO e_curr_v
 	{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
-op_extend_i: {strcpy($<str>$,"-1,-1");} | s_curr_v TO e_curr_v
-	{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+op_extend_i: interval_qual
 ;
-
 
 function_call_expr:
 function_callb
@@ -630,8 +622,12 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 | ASCII fgl_expr_c  { 
 	$<ptr>$=append_expr($<ptr>2,"push_ascii();");
 }
-| EXTEND OPEN_BRACKET variable_or_current CLOSE_BRACKET { 
-	sprintf($<str>$,"%s",$<str>3); $<ptr>$=new_expr($<str>$); } ;
+| EXTEND extend_parameters { 
+	$<ptr>$=append_expr($<ptr>2,"aclfgli_extend();"); } 
+;
+
+
+
 pdf_expr : fgl_expr_c POINTS  {
 	$<ptr>$=append_expr($<ptr>1,"push_double(-1);pushop(OP_MULT);");
 }
@@ -648,4 +644,45 @@ variable_or_current:
 	| variable COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
 	| CURRENT s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4); }
 ;
+
+
+
+
+interval_func_params :
+CHAR_VALUE {
+	strcpy($<str>$,$<str>1);
+}
+|  numeric_time_interval {
+	strcpy($<str>$,$<str>1);
+}
+;
+
+numeric_time_interval:
+	MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
+	| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
+	| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
+;
+
+numeric_time_unit_small : 
+	INT_VALUE 										/* DD or HH or MM or SS */
+	| INT_VALUE INT_VALUE 			{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
+	| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
+	| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
+	| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
+
+	| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
+	| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
+	| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
+
+	| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
+	| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
+;
+
+numeric_time_unit_big:
+	INT_VALUE
+	| INT_VALUE MINUS INT_VALUE 
+		{sprintf($<str>$,"%s-%s",$<str>1,$<str>3);}
+;
+
+
 /* ============================ expr.rule =========================== */

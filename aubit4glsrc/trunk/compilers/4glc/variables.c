@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.14 2003-02-19 22:28:37 afalout Exp $
+# $Id: variables.c,v 1.15 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -51,7 +51,7 @@
 #define RECORD_LEVELS 128
 // 
 
-
+extern char *outputfilename;
 
 
 /******************************************************************************/
@@ -77,6 +77,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       char *prefix_buff,
 					       struct variable *v);
 
+void make_function (char *name,int record_cnt);
 /******************************************************************************/
 
 
@@ -275,6 +276,7 @@ variable_action (int category, char *name, char *type, char *n,
 #define MODE_ADD_ENDRECORD	8
 #define MODE_ADD_TO_SCOPE	9
 #define MODE_ADD_END_ASSOC	10
+#define MODE_ADD_FUNCTION	11
 
 /* DEBUGGING Stuff for mode settings... */
 #ifdef DEBUGGING
@@ -289,7 +291,8 @@ variable_action (int category, char *name, char *type, char *n,
     "ADD_NAME",
     "ADD_ENDRECORD",
     "ADD_TO_SCOPE",
-    "ADD_END_ASSOC"
+    "ADD_END_ASSOC",
+    "ADD_FUNCTION"
   };
 #endif
 
@@ -329,6 +332,11 @@ variable_action (int category, char *name, char *type, char *n,
   if (strcmp (function, "add_constant") == 0 && mode == 0)
     {
       mode = MODE_ADD_CONSTANT;
+    }
+
+  if (strcmp (function, "add_function") == 0 && mode == 0)
+    {
+      mode = MODE_ADD_FUNCTION;
     }
 
   if (strcmp (function, "add_link_to") == 0 && mode == 0)
@@ -407,6 +415,10 @@ debug("Mode=%d\n",mode);
       mode = MODE_ADD_TO_SCOPE;
       break;
 
+    case MODE_ADD_FUNCTION:
+        make_function (name,record_cnt);
+      break;
+
 
     case MODE_ADD_RECORD:
       v[record_cnt]->variable_type = VARIABLE_TYPE_RECORD;
@@ -445,6 +457,7 @@ debug("Mode=%d\n",mode);
       v[record_cnt]->names.next = 0;
       v[record_cnt]->is_static = 0;
       v[record_cnt]->is_extern = 0;
+      v[record_cnt]->src_module = outputfilename;
       v[record_cnt]->user_system = get_variable_user_system ();
       set_arr_subscripts (n, record_cnt);
 
@@ -503,6 +516,8 @@ debug("Mode=%d\n",mode);
 	  v[record_cnt]->is_static = 0;
 	  v[record_cnt]->is_extern = 0;
 
+	  v[record_cnt]->src_module = outputfilename;
+
 	  // Reports, menuhandlers & formhandlers
 	  // should all maintain their values between calls - hence
 	  // they will always be static....
@@ -558,6 +573,43 @@ debug("Mode=%d\n",mode);
 
 
 /******************************************************************************/
+void make_function (char *name,int record_cnt)
+{
+  struct variable *local_v;
+  int c;
+  char scope;
+
+  scope = get_current_variable_scope ();
+
+  set_current_variable_scope('g');
+
+  debug("MAKE FUNCTION : %s\n",name);
+  local_v = (struct variable *) malloc (sizeof (struct variable));
+  local_v->names.name = strdup (name);
+  convlower(local_v->names.name);
+  local_v->names.next = 0;
+  local_v->variable_type = VARIABLE_TYPE_FUNCTION_DECLARE;
+  local_v->user_system = get_variable_user_system ();
+  local_v->is_static = 0;
+  local_v->is_extern = 0;
+  local_v->is_array = 0;
+  local_v->src_module = outputfilename;
+
+  for (c = 0; c < MAX_ARR_SUB; c++)
+    {
+      local_v->arr_subscripts[c] = 0;
+    }
+  local_v->is_array = 0;
+
+  v[record_cnt]=local_v;
+  add_to_scope(0,1);
+  v[record_cnt] = 0;
+  set_current_variable_scope(scope);
+}
+
+
+
+/******************************************************************************/
 static struct variable *
 make_constant (char *name, char *value, char *int_or_char)
 {
@@ -571,6 +623,7 @@ make_constant (char *name, char *value, char *int_or_char)
   local_v->is_static = 0;
   local_v->is_extern = 0;
   local_v->is_array = 0;
+  local_v->src_module = outputfilename;
   for (c = 0; c < MAX_ARR_SUB; c++)
     {
       local_v->arr_subscripts[c] = 0;
@@ -580,6 +633,12 @@ make_constant (char *name, char *value, char *int_or_char)
   if (int_or_char[0] == 'c')
     {
       local_v->data.v_const.consttype = CONST_TYPE_CHAR;
+      local_v->data.v_const.data.data_c = strdup (value);
+    }
+
+  if (int_or_char[0] == 'C')
+    {
+      local_v->data.v_const.consttype = CONST_TYPE_IDENT;
       local_v->data.v_const.data.data_c = strdup (value);
     }
 
@@ -654,7 +713,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (names)
 	{
-      	  names = v[record_cnt];
+      	  names = &v[record_cnt]->names;
 	  while (names)
 	    {
 	      v_new = malloc (sizeof (struct variable));
@@ -861,6 +920,12 @@ find_variable_in (char *s, struct variable **list, int cnt)
       // If we get to here we've found our name!
       // Now we need to know what to do next....
 
+	debug("v->variable_type=%d\n",v->variable_type);
+	if (v->variable_type==VARIABLE_TYPE_FUNCTION_DECLARE) {
+		//debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name);
+		//yyerror("This is the name of a function!");
+		continue;
+	}
 
       if (v->variable_type == VARIABLE_TYPE_SIMPLE
 	  || v->variable_type == VARIABLE_TYPE_CONSTANT)
@@ -1151,7 +1216,7 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 
 	case VARIABLE_TYPE_CONSTANT:
 	  printf ("CONSTANT - ");
-	  if (v[a]->data.v_const.consttype == CONST_TYPE_CHAR)
+	  if (v[a]->data.v_const.consttype == CONST_TYPE_CHAR || v[a]->data.v_const.consttype == CONST_TYPE_IDENT)
 	    {
 	      printf ("%s ", v[a]->data.v_const.data.data_c);
 	    }
@@ -1244,10 +1309,11 @@ print_variables (void)
       debug ("***** DUMP GVARS ****");
 #endif
 
-      dump_gvars ();
-
-      if (only_doing_globals ())
+	//printf("Dump Globals\n");
+      if (only_doing_globals ()) {
+        dump_gvars ();
 	exit (0);
+      }
     }
 
 
@@ -1563,10 +1629,16 @@ check_for_constant (char *name, char *buff)
   if (v->variable_type != VARIABLE_TYPE_CONSTANT)
     return 0;
 
-  if (v->data.v_const.consttype == CONST_TYPE_CHAR)
+  if (v->data.v_const.consttype == CONST_TYPE_CHAR || v->data.v_const.consttype == CONST_TYPE_IDENT)
     {
       strcpy (buff, v->data.v_const.data.data_c);
-      return 1;
+      	if (v->data.v_const.consttype == CONST_TYPE_CHAR) {
+      		return 1;
+	}
+
+	if ( v->data.v_const.consttype == CONST_TYPE_IDENT) {
+      		return 4;
+	}
     }
 
   if (v->data.v_const.consttype == CONST_TYPE_FLOAT)
@@ -1918,7 +1990,7 @@ debug("subrecord1=%s subrecord2=%s\n",subrecord1,subrecord2);
     {
 
       if (strstr(s,".*")!=0 && strlen(prefix)==0) {
-		extern int yyline;
+		//extern int yyline;
 		char buff[255];
 		char buff2[255];
 		char *ptr;

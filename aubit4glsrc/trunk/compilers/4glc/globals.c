@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.10 2003-02-18 10:25:18 mikeaubury Exp $
+# $Id: globals.c,v 1.11 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -178,12 +178,16 @@ struct variable *v;
 
   write_global_string (f, "DATABASE", get_hdrdbname ());
   write_global_int (f, "NUMVARS", list_global_cnt);
+
   for (a = 0; a < list_global_cnt; a++)
     {
       v = list_global[a];
       /* Output the standard header stuff */
+	debug("Output Global Entry %d - %p\n",a,v);
       write_variable_header (f, v);
     }
+
+
   fclose (f);
 }
 
@@ -209,6 +213,7 @@ int cnt;
   write_global_int (f, "TYPE", v->variable_type);
   write_global_char (f, "USER_SYSTEM", v->user_system);
   write_global_int (f, "IS_ARRAY", v->is_array);
+  write_global_string (f, "SRC_MODULE", v->src_module);
 
 
   if (v->is_array)
@@ -242,6 +247,7 @@ int cnt;
     {
       write_variable_assoc (f, v);
     }
+
   if (v->variable_type == VARIABLE_TYPE_CONSTANT)
     {
       write_variable_constant (f, v);
@@ -371,10 +377,11 @@ write_variable_constant (FILE * f, struct variable *v)
     }
 
 
-  if (v->data.v_const.consttype == CONST_TYPE_CHAR)
+  if (v->data.v_const.consttype == CONST_TYPE_CHAR || v->data.v_const.consttype == CONST_TYPE_IDENT)
     {
       write_global_string (f, "CONSTANT_VALUE", v->data.v_const.data.data_c);
     }
+
   if (v->data.v_const.consttype == CONST_TYPE_FLOAT)
     {
       write_global_float (f, "CONSTANT_VALUE", v->data.v_const.data.data_f);
@@ -443,8 +450,8 @@ char nocfile[256];
     }
   #endif
   //why cd? just pass the path in file name... */
-  //sprintf (buff, "cd %s; 4glc -G %s.4gl", dirname, fname);
-  sprintf (buff, "4glc -G %s/%s.4gl", dirname, fname);
+  //sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);
+  sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname);
   #ifdef DEBUG
 	debug ("Executing system call: %s\n", buff );
   #endif
@@ -564,7 +571,10 @@ char buff2[256];
   sprintf (buff, "%s=%%d\n", name);
   *val=0;
   fgets(buff2,255,f);
-  sscanf (buff2, buff, val);
+
+  if (sscanf (buff2, buff, val)!=1) {
+		yyerror ("Error in .glb file (int) - is it an old version ?");
+  }
 }
 
 /**
@@ -584,6 +594,9 @@ char buff3[2000];
   strcpy(buff2,"");
   sprintf (buff, "%s=%%s\n", name);
   a=sscanf (buff3, buff, buff2);
+  if (a==0&&strcmp(buff,buff3)!=0) {
+		yyerror ("Error in .glb file (string)- is it an old version ?");
+  }
 
   if (alloc)
     {
@@ -609,7 +622,9 @@ char buff3[256];
   
   fgets(buff3,255,f);
   sprintf (buff, "%s=%%c\n", name);
-  sscanf (buff3, buff, val);
+  if (sscanf (buff3, buff, val)!=1) {
+		yyerror ("Error in .glb file (char)- is it an old version ?");
+  }
 }
 
 /**
@@ -625,7 +640,10 @@ char buff3[256];
 
   fgets(buff3,255,f);
   sprintf (buff, "%s=%%lf\n", name);
-  sscanf (buff3, buff, val); // warning: passing arg 1 of `sscanf' from incompatible pointer type
+  if (sscanf (buff3, buff, val)!=1) {
+		yyerror ("Error in .glb file (float)- is it an old version ?");
+	
+  }
 
 }
 
@@ -652,6 +670,7 @@ int cnt;
 	read_global_int (f, "TYPE", &v->variable_type);
 	read_global_char (f, "USER_SYSTEM", &v->user_system);
 	read_global_int (f, "IS_ARRAY", &v->is_array);
+	read_global_string (f, "SRC_MODULE", &v->src_module, 1);
 
 
 	for (a = 0; a < MAX_ARR_SUB; a++)
@@ -794,6 +813,12 @@ read_variable_constant (FILE * f, struct variable *v)
     }
 
   if (v->data.v_const.consttype == CONST_TYPE_CHAR)
+    {
+      read_global_string (f, "CONSTANT_VALUE",
+			  &v->data.v_const.data.data_c, 1);
+    }
+
+  if (v->data.v_const.consttype == CONST_TYPE_IDENT)
     {
       read_global_string (f, "CONSTANT_VALUE",
 			  &v->data.v_const.data.data_c, 1);

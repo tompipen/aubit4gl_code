@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.9 2002-10-07 11:06:27 afalout Exp $
+# $Id: interval.c,v 1.10 2003-02-22 15:46:12 mikeaubury Exp $
 #
 */
 
@@ -100,6 +100,7 @@ get_rval_ival(void)
 {
 	return &rval_ival;
 }
+
 
 
 /**
