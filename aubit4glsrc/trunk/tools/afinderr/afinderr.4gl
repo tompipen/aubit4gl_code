@@ -70,7 +70,6 @@ d=(DIR *)opendir(buff);
 			strcat(buff2,"/");
 			strcat(buff2,de->d_name);
 			if (strlen(de->d_name)) {
-				printf("buff2=%s\n",buff2);
 				A4GL_push_char(buff2);
 				A4GL_push_long(n);
 				aclfgl_newshowhelp(2);
