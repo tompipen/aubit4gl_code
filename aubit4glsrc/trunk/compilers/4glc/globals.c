@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.27 2004-08-12 19:11:09 whaslbeck Exp $
+# $Id: globals.c,v 1.28 2004-11-26 10:39:01 mikeaubury Exp $
 #
 */
 
@@ -515,7 +515,25 @@ generate_globals_for (char *s)
 #endif
   /*why cd? just pass the path in file name... */
   /*sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);*/
-  sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname);
+  
+
+// cc 2004.11.24 need to check for -d flag from parent process 
+ if (has_default_database ()) 
+ { 
+ 	char db[64]; 
+ 	strcpy (db, get_default_database ()); 
+ 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
+ 	A4GL_trim (db); 
+ 	sprintf (buff, "4glc -d %s --globals %s/%s.4gl", db, dirname, fname); 
+ } 
+ else 
+ { 
+ 	sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname); 
+ } 
+ // cc end change 
+
+
+
 #ifdef DEBUG
   A4GL_debug ("Executing system call: %s\n", buff);
 #endif
