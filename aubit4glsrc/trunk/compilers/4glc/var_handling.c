@@ -11,9 +11,9 @@ struct variable_usage *
 new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 {
   struct variable_usage *newv;
+int a;
   newv = malloc (sizeof (struct variable_usage));
 
-  int a;
   newv->variable_name = strdup (partname);
   newv->nsubscripts = 0;
   for (a = 0; a < 10; a++)
