@@ -4,6 +4,5 @@ libHELP_std.so: helplib.4gl a4gl_xxhelp.afr.c
 	cp libHELP_std.so ..
 
 
-a4gl_xxhelp.afr.c:a4gl_xxhelp.per
+a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; fcompile -c a4gl_xxhelp.per)
-	a4gl_xxhelp.afr.c a4gl_xxhelp.per
