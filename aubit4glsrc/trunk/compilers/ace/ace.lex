@@ -138,7 +138,8 @@
 "ROW" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ROW;}
 "LAST" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LAST;}
 "OR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OR;}
-"ORDER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER;}
+"ORDER BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_BY;}
+"ORDER EXTERNAL BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_EXTERNAL_BY;}
 "OUTER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OUTER;}
 "OUTPUT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OUTPUT;}
 "PAGE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PAGE;}

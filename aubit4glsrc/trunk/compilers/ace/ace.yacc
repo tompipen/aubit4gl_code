@@ -190,7 +190,8 @@ set_expr_int(struct expr *e,int a)
 %token OPEN_BRACKET
 %token OPEN_SQUARE
 %token OR
-%token ORDER
+%token ORDER_BY
+%token ORDER_EXTERNAL_BY
 %token OUTER
 %token OUTPUT
 %token PAGE
@@ -457,12 +458,12 @@ NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE
 op_order_by_clause_read: {strcpy($<str>$,"");} | order_by_clause_read;
 
 order_by_clause_read:
-	ORDER BY {
+	ORDER_BY {
 		ordbycnt=0;
 	} sort_specification_list
 	{
 	sprintf($<str>$,"ORDER BY %s",$<str>4);}
-	| ORDER EXTERNAL BY sort_specification_list
+	| ORDER_EXTERNAL_BY sort_specification_list
 	{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
 
@@ -492,7 +493,7 @@ literal: CHAR_VALUE {
 op_order_by_clause: {strcpy($<str>$,"");} | order_by_clause;
 
 order_by_clause:
-	ORDER BY {
+	ORDER_BY {
 		ordbycnt=0;
 	}
 		sort_specification_list {
