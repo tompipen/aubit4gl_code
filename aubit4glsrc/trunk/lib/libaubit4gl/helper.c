@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.24 2004-03-15 16:27:18 mikeaubury Exp $
+# $Id: helper.c,v 1.25 2004-03-15 21:41:52 mikeaubury Exp $
 #
 */
 
@@ -998,8 +998,8 @@ A4GL_setenv(char *name, char *value, int overwrite)
 //char buff[1024];
 int ret;
 char prefixed_name[256];
-sprintf (prefixed_name, "A4GL_%s", name);
 char *ptr;
+sprintf (prefixed_name, "A4GL_%s", name);
 /* Clear the current cache if there is one.. */
 ptr=(char *)A4GL_has_pointer (name,STR_RESOURCE_VAL);
 if (ptr) {
