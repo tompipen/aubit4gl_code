@@ -3,6 +3,7 @@
 //#include "a4gl_incl_4glhdr.h"
 long find_pcode_function (char *s);
 extern module this_module;
+extern FILE *logfile;
 
 extern long int_flag;
 extern long quit_flag;
@@ -57,7 +58,7 @@ static void add_block_to_stack (int pc,struct cmd_block *b) {
   	callstack = realloc (callstack, callstack_alloc * sizeof (struct cmd_block));
   }
 
-fprintf(stderr,"ADDING to stack %p stack length : %d\n",b,callstack_cnt);
+fprintf(logfile,"ADDING to stack %p stack length : %d\n",b,callstack_cnt);
 
   for (a = 0; a < b->c_vars.c_vars_len; a++)
     {
@@ -118,7 +119,7 @@ fprintf(stderr,"ADDING to stack %p stack length : %d\n",b,callstack_cnt);
 
 static void remove_block_from_stack () {
   callstack_cnt--;
-fprintf(stderr,"Removing from stack - stack length : %d\n",callstack_cnt);
+fprintf(logfile,"Removing from stack - stack length : %d\n",callstack_cnt);
 
 }
 
@@ -169,7 +170,7 @@ set_var (long pc, struct cmd_set_var *sv)
       memcpy(nsv.variable.sub.sub_val,use_var->sub.sub_val,sizeof (struct use_variable_sub) * use_var->sub.sub_len);
 
       if ( uset_var->param_u.p_list->list.list_len==0) {
-		fprintf(stderr,"NO LENGTH\n");
+		fprintf(logfile,"NO LENGTH\n");
       }
 
       for (a = 0; a < uset_var->param_u.p_list->list.list_len; a++)
@@ -314,11 +315,11 @@ char *ptr;
 }
 
 if (!rptr)  {
-	fprintf(stderr,"Variable pointer not found\n");
+	fprintf(logfile,"****** Variable pointer not found\n");
 	
 	print_use_variable(uv);fflush(stdout);
 
-	fprintf(stderr,"\n");
+	fprintf(logfile,"\n");
 	return 0;
 } 
 

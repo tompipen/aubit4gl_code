@@ -12,6 +12,7 @@ extern module this_module;
 
 
 
+FILE *logfile;
 struct cmd_block *module_vars=0;
 
 
@@ -97,9 +98,9 @@ run_module ()
 
   pc_for_main = -1;
 
-fprintf(stderr,"INITIALIZING MODULE\n");
+fprintf(logfile,"INITIALIZING MODULE\n");
 run_module_init();
-fprintf(stderr,"DONE...\n");
+fprintf(logfile,"DONE...\n");
 
 
 // 0  will always be __MODULE - so no point checking that...
@@ -121,7 +122,7 @@ fprintf(stderr,"DONE...\n");
       exit (11);
     }
 
-  fprintf(stderr,"Running 'main' - function no %d\n",a);
+  fprintf(logfile,"Running 'main' - function no %d\n",a);
   
   main_params.param_type=PARAM_TYPE_LIST;
   main_params.param_u.p_list=malloc(sizeof(struct param_list));
@@ -168,7 +169,7 @@ execute_start_block(0,c->cmd_u.c_block);
 pc++;
 
 
-fprintf(stderr,"Entering function %s\n",GET_ID(this_module.functions.functions_val[func_no].func_name_id));
+fprintf(logfile,"Entering function %s\n",GET_ID(this_module.functions.functions_val[func_no].func_name_id));
 
 /* 
 Now - did we get any parameters passed in at all 
@@ -176,7 +177,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 */
 
 if (p) {
-	fprintf(stderr,"Have some parameters...\n");
+	fprintf(logfile,"Have some parameters...\n");
 	if (p->param_type!=PARAM_TYPE_LIST) {
 		fprintf(stderr,"Internal error\n");
 		exit(82);
@@ -191,7 +192,7 @@ if (p) {
 			fprintf(stderr,"Expecting %d parameters - got %d\n",expecting,got);
 			exit(83);
 		} else {
-			fprintf(stderr,"Got %d parameters - as expected\n",got);
+			fprintf(logfile,"Got %d parameters - as expected\n",got);
 		}
 
 		for (a=0;a<got;a++) {
@@ -209,7 +210,7 @@ if (p) {
 		}
 	}
 } else {
-	fprintf(stderr,"No parameters\n");
+	fprintf(logfile,"No parameters\n");
 }
 
 
@@ -219,7 +220,7 @@ Now we've done our function startup - we can get on with actually running it...
 
 while (1) {
 
-	fprintf(stderr,"%04d-%04ld ",func_no,pc);
+	fprintf(logfile,"%04d-%04ld ",func_no,pc);
 
 	if (pc>=this_module.functions.functions_val[func_no].cmds.cmds_len) {
 		if (module_special) return 0;
@@ -228,7 +229,7 @@ while (1) {
 	}
 
 	c=&this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
-	fprintf(stderr,"%-10.10s %03d\n",cmd_type_str[c->cmd_type],c->cmd_type);
+	fprintf(logfile,"%-10.10s %03d\n",cmd_type_str[c->cmd_type],c->cmd_type);
 
 
 	switch (c->cmd_type) {
@@ -260,13 +261,13 @@ while (1) {
 						// Deallocate any variables
 					}
 
-					fprintf(stderr,"Leaving function\n");
+					fprintf(logfile,"Leaving function\n");
 					execute_end_block();
 					return i;
 		default			: fprintf(stderr,"Unimplemented command in runner_main.c\n"); exit(1);
 	}
 }
-fprintf(stderr,"Leaving function badly\n");
+fprintf(logfile,"Leaving function badly\n");
 return 0;
 }
 
@@ -280,6 +281,11 @@ int main(int argc,char *argv[]) {
 		exit(1);
 	}
 
+	logfile=fopen("pcode.run","w");	
+	if (logfile==0) {
+		printf("Unable to open logfile\n");
+		exit(2);
+	}
 	init_calls(argc,argv);
 
 	exit(open_and_run(argv[1]));

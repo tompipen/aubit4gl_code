@@ -3,6 +3,7 @@
 /* void print_module(void) ; */
 module this_module;
 static int chk_func_sigs(void) ;
+extern FILE *logfile;
 
 char *get_string(int a) {
         return this_module.string_table.string_table_val[a].s;
@@ -317,7 +318,7 @@ if (sig==0) {
 	return 0;
 }
 A4GL_debug("sig=%s\n",sig);
-fprintf(stderr,"Calling C function : %s\n",s);
+fprintf(logfile,"Calling C function : %s\n",s);
 if (list) {
 if (strlen(sig)-1!=list->list.list_len) {
 	printf("Mismatch in parameters to function - expecting %d got %d\n",strlen(sig)-1,list->list.list_len);
