@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.74 2004-03-04 16:27:48 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.75 2004-03-07 21:58:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.74 2004-03-04 16:27:48 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.75 2004-03-07 21:58:20 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1023,7 +1023,7 @@ printc("/* a1=%s a2=%s a3=%s */",a1,a2,a3);
       return;
     }
 
-  sprintf (buff, "EXEC SQL DECLARE %s", cname);
+  sprintf (buff, "sqlca.sqlcode=0;\nEXEC SQL DECLARE %s", cname);
   if (h2)
     {
       strcat (buff, " SCROLL");
@@ -1711,7 +1711,7 @@ extern char buff_in[];
 
         n=print_bind_expr(ptr,'i');
         A4GL_append_expr(ptr,buff_in);
-	sprintf(buffer,"EXEC SQL DECLARE %s CURSOR for %s;",cname,sql);
+	sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR for %s;",cname,sql);
         A4GL_append_expr(ptr,buffer);
 
 

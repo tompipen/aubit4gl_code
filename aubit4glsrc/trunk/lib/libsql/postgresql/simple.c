@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.6 2004-03-04 16:27:49 mikeaubury Exp $
+# $Id: simple.c,v 1.7 2004-03-07 21:58:57 mikeaubury Exp $
 #*/
 
 
@@ -214,7 +214,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
     case PGRES_TUPLES_OK:
       nfields = PQntuples (res);
       A4GL_debug ("Returns %d fields", nfields);
-      return 1;
+	if (nfields) return 1;
 
 		case PGRES_EMPTY_QUERY:
 		case PGRES_COPY_OUT:
