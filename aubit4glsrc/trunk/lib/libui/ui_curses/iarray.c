@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.60 2003-12-17 11:38:01 mikeaubury Exp $
+# $Id: iarray.c,v 1.61 2004-01-02 15:17:45 mikeaubury Exp $
 #*/
 
 /**
@@ -1690,6 +1690,7 @@ process_control_stack (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
     {
+	  A4GL_comments(0);
       if (arr->fcntrl[a].op == 99)
 	{
 	  new_state = 50;
@@ -1698,6 +1699,7 @@ process_control_stack (struct s_inp_arr *arr)
 
       if (arr->fcntrl[a].op == 50)
 	{
+	  A4GL_comments(0);
 	  new_state = 0;
 	  rval = -94;		// CLEANUP
 	}
@@ -1707,6 +1709,7 @@ process_control_stack (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
     {
 
+	  A4GL_comments(0);
 
       if (arr->fcntrl[a].state == 99)
 	{
@@ -1734,6 +1737,7 @@ process_control_stack (struct s_inp_arr *arr)
     {
       //extern int int_flag;
       A4GL_debug ("FORM ABORT..");
+	A4GL_comments(0);
       int_flag = 1;
       A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
       rval = 0;

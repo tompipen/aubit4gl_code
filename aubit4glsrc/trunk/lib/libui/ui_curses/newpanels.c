@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.80 2003-12-18 16:30:08 mikeaubury Exp $
+# $Id: newpanels.c,v 1.81 2004-01-02 15:17:45 mikeaubury Exp $
 #*/
 
 /**
@@ -2649,12 +2649,60 @@ A4GL_geterror_line (void)
 int
 A4GL_getmessage_line (void)
 {
+int a;
+int b;
   A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
+
+
+
   if (windows[currwinno].winattr.message_line!=0xff) {
-        return A4GL_decode_line (windows[currwinno].winattr.message_line);
+        a=windows[currwinno].winattr.message_line;
+        b=1;
+  } else {
+        a=std_dbscr.message_line; // MJAMJA
+        b=2;
   }
 
-  return A4GL_decode_line (std_dbscr.message_line);
+
+  if (a<0) {
+        A4GL_debug("a<0 - %d",a);
+        a=0-a-1;
+        A4GL_debug("a now %d",a);
+        if (currwinno==0) {
+                a=A4GL_screen_height()-a;
+                A4GL_debug("a=%d from screen_height",a);
+        } else {
+                a=A4GL_get_curr_height()-a;
+                A4GL_debug("a=%d from curr_height",a);
+        }
+        A4GL_debug("a=%d",a);
+  }
+
+  A4GL_debug("Thinking message_line should be %d - window height=%d",a,A4GL_get_curr_height());
+
+  if (currwinno==0) {
+        A4GL_debug("MSG SCR %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+  } else {
+        A4GL_debug("MSG WIN %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+  }
+
+  if (currwinno==0) {
+         while (a>A4GL_screen_height()) {
+                A4GL_debug("message_line line - Too far down screen - moving up %d>%d+%d", a,A4GL_get_curr_height(),A4GL_iscurrborder());
+                a--;
+        }
+  } else {
+        if (a>(A4GL_get_curr_height()-A4GL_iscurrborder())) {
+                a=2;
+		if (a>A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
+        }
+  }
+
+
+  if (a<=0) a=1;
+
+  A4GL_debug("Msg line %d",a);
+return a;
 
 }
 
@@ -2667,24 +2715,54 @@ int
 A4GL_getprompt_line (void)
 {
 int a;
+int b;
   A4GL_debug ("getprompt_line - %d", windows[currwinno].winattr.prompt_line);
+
+
+
   if (windows[currwinno].winattr.prompt_line!=0xff) {
-	a=A4GL_decode_line (windows[currwinno].winattr.prompt_line);
+	a=windows[currwinno].winattr.prompt_line;
+	b=1;
   } else {
-  	a=A4GL_decode_line (std_dbscr.prompt_line); // MJAMJA 
+  	a=std_dbscr.prompt_line; // MJAMJA 
+	b=2;
+  }
+
+
+  if (a<0) {
+	A4GL_debug("a<0 - %d",a);
+	a=0-a-1;
+	A4GL_debug("a now %d",a);
+	if (currwinno==0) {
+		a=A4GL_screen_height()-a;
+		A4GL_debug("a=%d from screen_height",a);
+	} else {
+		a=A4GL_get_curr_height()-a;
+		A4GL_debug("a=%d from curr_height",a);
+	}
+	A4GL_debug("a=%d",a);
   }
 
   A4GL_debug("Thinking prompt should be %d - window height=%d",a,A4GL_get_curr_height());
 
-  if (A4GL_iscurrborder()) {
-		A4GL_debug("Prompt - has border...");
-		a++;
-	}
-
-  while (a>=A4GL_get_curr_height()+A4GL_iscurrborder()) {
-		A4GL_debug("prompt line - Too far down screen - moving up");
-		a--;
+  if (currwinno==0) {
+	A4GL_debug("PROMPT SCR %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+  } else {
+	A4GL_debug("PROMPT WIN %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
   }
+
+  if (currwinno==0) {
+	 while (a>A4GL_screen_height()) {
+		A4GL_debug("prompt line - Too far down screen - moving up %d>%d+%d", a,A4GL_get_curr_height(),A4GL_iscurrborder());
+		a--;
+  	} 
+  } else {
+  	if (a>(A4GL_get_curr_height()-A4GL_iscurrborder())) {
+		a=1;
+  	}
+  }
+
+
   if (a<=0) a=1;
  
   A4GL_debug("Prompt line %d",a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.40 2003-12-20 14:24:47 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.41 2004-01-02 15:17:45 mikeaubury Exp $
 #*/
 
 /**
@@ -352,6 +352,7 @@ process_control_stack (struct s_screenio *sio)
 
   if (sio->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
     {
+      A4GL_comments (0);
       if (sio->fcntrl[a].state == 99)
 	{
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
@@ -372,6 +373,7 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_ABORT)
     {
       //extern int int_flag;
+      A4GL_comments (0);
       A4GL_debug ("FORM ABORT..");
       int_flag = 1;
       A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);

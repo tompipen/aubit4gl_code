@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.21 2003-12-24 18:07:03 mikeaubury Exp $
+# $Id: array.c,v 1.22 2004-01-02 15:17:45 mikeaubury Exp $
 #*/
 
 /**
@@ -450,6 +450,15 @@ draw_arr (arr, -1, arr->arr_line);
 
 
     case A4GLKEY_PGDN :
+
+if (
+	(arr->arr_line+arr->srec->dim <= arr->no_arr) || 
+
+	( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND")))
+)
+
+
+
       if (arr->arr_line+1 < arr->no_arr) {
 		arr->cntrl=0-A4GLKEY_PGDN;
 		return -11;

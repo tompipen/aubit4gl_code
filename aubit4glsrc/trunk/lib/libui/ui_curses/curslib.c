@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.74 2003-12-26 11:37:45 mikeaubury Exp $
+# $Id: curslib.c,v 1.75 2004-01-02 15:17:45 mikeaubury Exp $
 #*/
 
 /**
@@ -2943,9 +2943,9 @@ A4GL_comments (struct struct_scr_field *fprop)
   int cline;
   char buff[256];
   int attr;
-  if (!fprop)
-    return;
-  A4GL_debug ("Has property");
+
+  if (!fprop) strcpy(buff,"");
+  else {
 
   if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS))
     {
@@ -2956,7 +2956,7 @@ A4GL_comments (struct struct_scr_field *fprop)
       strcpy (buff, A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
       A4GL_strip_quotes (buff);
     }
-
+  }
   cline = A4GL_getcomment_line ();
   buff[A4GL_get_curr_width ()] = 0;
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
