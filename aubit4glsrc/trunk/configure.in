@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.104 2002-09-25 07:52:20 afalout Exp $
+# $Id: configure.in,v 1.105 2002-09-25 23:06:55 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2467,15 +2467,18 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		unset ac_cv_header_dlfcn_h
 
         #/sw/include/dlfcn.h
-        old_CLFAGS="$CFLAGS"
+        old_CPPFLAGS="$CPPFLAGS"
+		#old_CLFAGS="$CFLAGS"
         TMP_IFLAGS="-I/sw/include"
-		CFLAGS="$CFLAGS $TMP_IFLAGS"
+		CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 		AC_CHECK_HEADERS([dlfcn.h])
 
 		if test `eval echo '${'$as_ac_Header'}'` != yes; then
-			CFLAGS="$old_CFLAGS"
-			AC_MSG_ERROR(No dlfnc.h found - please install dl library. Stop.)
+			AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
+        else
+			CFLAGS="$CFLAGS $TMP_IFLAGS"
         fi
+		CPPFLAGS="$old_CPPFLAGS"
     fi
 fi
 
@@ -2516,19 +2519,14 @@ if test "$AUBIT_SOURCE" = "1" ; then
     #AC_CHECK_FUNC(setenv,,AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
 	AC_CHECK_FUNCS([setenv])
 
-	#4glc (4glc.c)
+	#Check if we have it in libc:
 	AC_CHECK_FUNC(getopt_long,GETOPT_LONG=yes,AC_CHECK_LIB(iberty, getopt_long))
-    if test "$GETOPT_LONG" = "yes"; then
-		AC_MSG_RESULT(using libc's getopt_long)
-    else
+    if test "$GETOPT_LONG" != "yes"; then
 		if test "$ac_cv_lib_iberty_getopt_long" = "yes"; then
-			#This will (maybe) exist only on Solaris:
-            #/opt/sfw/lib/libiberty.a
             #On Solaris systems, you will probably have to install the GNU "libiberty"
 			#library (-liberty) which provides getopt_long for Solaris; get it at
-			#	http://sunfreeware.com
-			#(look for the package "libiberty.so" in the list of freeware)
-			#and install it into /usr/local/lib.
+			#	http://sunfreeware.com (look for the package "libiberty.so" in 
+			#the list of freeware) and install it into /usr/local/lib.
 			GETOPT_LONG=iberty
 			AC_MSG_RESULT(using iberty getopt_long)
             #echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH xx $LIBPATH"
