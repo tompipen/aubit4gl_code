@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.71 2004-01-24 19:33:59 mikeaubury Exp $
+# $Id: Makefile.in,v 1.72 2004-01-25 11:00:54 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -136,8 +136,10 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+all: a4gl_4glc_int.h ${ALL} 
 	@echo "Default targets (${ALL}) successfully compiled."
+
+a4gl_4glc_int.h: API_lex.c
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
 	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
