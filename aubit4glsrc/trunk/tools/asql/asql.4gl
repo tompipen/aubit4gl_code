@@ -33,6 +33,9 @@ end if
 
 if lv_args_cnt then
 	let lv_input=get_next_arg()
+	if lv_input not matches "*.sql" then
+		let lv_input=lv_input clipped,".sql"
+	end if
 	call execute_file(lv_input)
 
 	exit program
