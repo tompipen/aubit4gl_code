@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
+# $Id: read_dty.c,v 1.5 2002-05-31 06:52:03 mikeaubury Exp $
 #
 */
 
@@ -106,7 +106,7 @@ split_tab_col_type(char *str,char *str1,char *str2,char *str3)
  *   - Otherwise : The datatype found
  */
 int
-get_dtype(char *tabname, char *colname,char *dbname,char *tablist[])
+get_dtype(char *tabname, char *colname,char *dbname,char **tablist)
 {
 //	FILE *ifile;
 //	char buff[132];
