@@ -1,6 +1,6 @@
 init_cmd : INITIALIZE init_bind_var_list {debug("init to\n");} TO KW_NULL
  {
-	print_init()
+	print_init();
  }
 | INITIALIZE init_bind_var_list LIKE init_tab_list  {
 	print_init_table($<str>4);

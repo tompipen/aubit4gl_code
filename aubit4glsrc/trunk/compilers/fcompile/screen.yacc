@@ -613,7 +613,7 @@ opt_dec_ext : {strcpy($<str>$,"");}
 op_where: {$<expr>$=0;} | where_clause ;
 
 where_clause : KWWHERE clauses {
-		$<expr>$=$<expr>2
+		$<expr>$=$<expr>2;
 	}
 		;
 
