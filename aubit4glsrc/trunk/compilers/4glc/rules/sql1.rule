@@ -540,14 +540,16 @@ table_reference_list:
 table_reference:
 	  tname {sprintf($<str>$," %s ", $<str>1);}
 	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
-	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s %s ",$<str>1,$<str>3);}
+	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
 	;
 
 tname: table_name
 	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;
 
-tname_list : tname | tname_list COMMA tname { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
+
+/* Was tname instead of table_reference */
+tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 ;
 
 table_expression:
