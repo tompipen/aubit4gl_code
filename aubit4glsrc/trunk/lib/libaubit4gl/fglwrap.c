@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.59 2004-03-19 08:33:49 whaslbeck Exp $
+# $Id: fglwrap.c,v 1.60 2004-04-20 17:47:25 mikeaubury Exp $
 #
 */
 
@@ -261,7 +261,7 @@ char *p;
   A4GL_start_gui ();
 
 #ifdef _PRELOAD_REPORT_
-  A4GLREPORT_initlib ();
+  //A4GLREPORT_initlib ();
 #endif
   
 #if (! defined(WIN32) && ! defined(__MINGW32__))

@@ -586,7 +586,16 @@ table_reference:
 	;
 
 tname: table_name
-	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| table_name correlation_name {
+		if (A4GL_isyes(acl_getenv("A4GL_TABLE_ALIAS_AS"))) {
+			sprintf($<str>$,"%s AS %s",$<str>1,$<str>2);
+		} else {
+			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		}
+	}
+	| table_name AS correlation_name {
+			sprintf($<str>$,"%s AS %s",$<str>1,$<str>3);
+	}
 ;
 
 

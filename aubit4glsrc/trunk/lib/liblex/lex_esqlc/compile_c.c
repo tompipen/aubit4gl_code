@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.156 2004-04-15 21:16:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.157 2004-04-20 17:47:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.156 2004-04-15 21:16:37 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.157 2004-04-20 17:47:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -685,7 +685,7 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (_rep.page_no<=1) {A4GL_%srep_print(&_rep,0,1,0,-1);A4GL_%srep_print(&_rep,0,0,0,-1);}",ispdf(),ispdf());	/* MJA 13092003*/
+      printc ("   if (_rep.page_no<=1&&_rep.page_length>1) {A4GL_%srep_print(&_rep,0,1,0,-1);A4GL_%srep_print(&_rep,0,0,0,-1);}",ispdf(),ispdf());	/* MJA 13092003*/
       printc ("   _rep.finishing=1;");
       printc ("   A4GL_skip_top_of_page(&_rep,999);");
       printc ("}");
@@ -1983,8 +1983,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   add_function_to_header (identifier, 1,"");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("_retvars=%s%s(%d);\n", get_namespace (identifier), identifier,
-	  args_cnt);
+  printc ("_retvars=%s%s(%d);\n", get_namespace (identifier), identifier, args_cnt);
 }
 
 /**
@@ -5180,6 +5179,8 @@ char *
 A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
+  char lib[255];
+
   if (A4GL_doing_pcode ())
     {
       sprintf (buff, "ECALL(\"%s%s\",%d,%s);", get_namespace (ident), ident,
@@ -5187,9 +5188,15 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
     }
   else
     {
-      sprintf (buff,
-	       "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
+
+	if (has_function(ident,&lib,0)) {
+		// Call shared...
+  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%s); if (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}",  lib, ident, params,line,file);
+
+	} else {
+      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
 	       get_namespace (ident), ident, params, line, file);
+	}
     }
   add_function_to_header (ident, 1,"");
   return buff;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.39 2004-03-29 09:11:24 mikeaubury Exp $
+# $Id: report.c,v 1.40 2004-04-20 17:47:49 mikeaubury Exp $
 #
 */
 
@@ -119,8 +119,8 @@ va_list ap;
 char buff[20000];
 va_start(ap,fmt);
 if (entry<=0) entry=0;
-
 vsprintf(buff,fmt,ap);
+A4GL_debug("'%s' - %d\n",buff,entry);
 if (rep->print_section==SECTION_NORMAL) {
 
 	if (rep->header) {
@@ -202,17 +202,13 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
   int b;
   int cnt;
   char *str;
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-//if (rep->output) {
-  //fprintf (rep->output,"(In A4GL_rep_print rep=%p rep->report=%p a=%d s=%d)", rep, rep->report,a,s);
-//}
+  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report,rep->page_no,rep->line_no,rep->col_no,entry);
   
   if (right_margin != 0)
     {
       A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
     }
   
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
   if (rep->line_no == 0 && rep->page_no == 0 && a < 0)
     {
       if (rep->output_mode == 'F')
@@ -225,12 +221,8 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 	      //A4GL_push_int (-1);
 	      //A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
 	      //A4GL_display_at (1, 0);
-	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-			  rep->report);
 	      rep->output = stdout;
 	      A4GL_gotolinemode ();
-	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-			  rep->report);
 	    }
 	  else
 	    {
@@ -264,40 +256,34 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
       return;
     }
 
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-  if (rep->line_no == 0&&!rep->finishing)
+
+
+  if (rep->line_no == 0 && !rep->finishing)
     {
       rep->line_no = 1;
       rep->page_no++;
       rep->print_section=SECTION_HEADER;
-      A4GL_debug ("Need page header");
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-		  rep->report);
-      A4GL_debug ("Skip lines...");
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-		  rep->report);
+      A4GL_debug ("Need page header ?");
 
-      A4GL_push_int (rep->top_margin);
-      A4GL_aclfgli_skip_lines (rep);
+	if (rep->top_margin) {
+      		A4GL_debug ("Skip lines...");
+      		A4GL_push_int (rep->top_margin);
+      		A4GL_aclfgli_skip_lines (rep);
+      		A4GL_debug ("Done skip lines");
+	}
 
-      A4GL_debug ("Done skip lines");
       if (rep->report == 0)
 	{
 	  A4GL_debug ("OOPS - no report function!!!");
 	  A4GL_exitwith ("Internal error");
 	  exit (10);
 	}
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-		  rep->report);
 	//fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
       rep->print_section=0;
-      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep,
-		  rep->report);
       A4GL_debug ("Done page header");
     }
 
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
   A4GL_debug ("Popping %d parameters", a);
   if (a > 0)
     {
@@ -317,6 +303,9 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 	}
     }
   A4GL_debug ("Newline : %d", s);
+
+
+
 
   if (s == 0)
     {
@@ -346,7 +335,10 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 		if (a==0&&s==5)  {
 			return;
 		} else {
-			if (rep->lines_in_trailer) A4GL_rep_print(rep,0,1,0,-10);
+			if (rep->lines_in_trailer) {
+				A4GL_debug("Calling rep_print");
+				A4GL_rep_print(rep,0,1,0,-10);
+			}
 		}
 	    }
 	}
@@ -382,6 +374,7 @@ A4GL_set_column (struct rep_structure *rep)
   long needn;
   a = A4GL_pop_long ();
   A4GL_push_char ("");
+A4GL_debug("Calling rep_print");
   A4GL_rep_print (rep, 1, 1, 0,-2);
 #ifdef DEBUG
   /* {DEBUG} */

@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "a4gl_4glc_int.h"
+
 
 enum flist_type {
 	FLIST_NORMAL,
@@ -50,6 +53,21 @@ return a;
 
 
 
+int has_function(char *s,char *file,struct flist *ptr) {
+int a;
+int b;
+for (a=0;a<nfiles;a++) {
+	for (b=0;b<files[a].nlist;b++) {
+		if (strcmp(s,files[a].list[b].name)==0) {
+			if (file) strcpy(file,files[a].name);
+			if (ptr) ptr=&files[a].list[b];
+			return 1;
+
+		}
+	}
+}
+return 0;
+}
 
 static int add_function(int n, char *func,int type,char *special) {
 	int nlist;
