@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.41 2003-02-26 22:28:14 mikeaubury Exp $
+# $Id: esql.ec,v 1.42 2003-02-27 18:24:20 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.41 2003-02-26 22:28:14 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.42 2003-02-27 18:24:20 mikeaubury Exp $";
 #endif
 
 /*
@@ -1128,7 +1128,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
         :smint_var = DATA;
       if ( isSqlError() )
         return 1;
-      *(int *)bind[idx].ptr = smint_var;
+      *(short *)bind[idx].ptr = smint_var;
       break;
     case DTYPE_INT:
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
