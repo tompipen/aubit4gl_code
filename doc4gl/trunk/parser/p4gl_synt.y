@@ -236,6 +236,7 @@ extern int lineno;             /* 4GL Source current line */
 %type       <y_sym>              target_specification
 %type       <y_text>             op_call_parameters
 %type       <y_text>             function_call
+%type       <y_text>             function_name
 %type       <y_text>             select_statement
 %type       <y_text>             insert_statement
 %type       <y_text>             update_statement_search
@@ -557,14 +558,19 @@ function
 	;
 
 function_def
-	: IDENTIFIER '(' op_argument_list ')' 
+	: function_name '(' op_argument_list ')' 
 	    op_local_variables 
 		  fgl_statement_list
 	  END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
-	| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
+	| function_name '(' op_argument_list ')'   /* Funcoes vazias */
 	     op_local_variables 
 	  END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
 	;
+
+function_name
+  : IDENTIFIER  { $$ = $1; }
+	| MENU { $$ = "menu"; }
+  ;
 
 op_argument_list
 	:                          {$$ = (NAME_LIST *)0;}
@@ -1127,6 +1133,7 @@ literal_integer
 fgl_expression
 	: fgl_expression op_spaces fgl_operator_list fgl_operand  { char *x; x=$4; }
 	| fgl_expression op_spaces fgl_operator_list fgl_expression 
+	| fgl_expression SPACES
 	| fgl_operand  { char *x; x=$1; }
 	| NOT fgl_expression
 	| op_signal '(' fgl_expression ')' 
@@ -1233,6 +1240,7 @@ fgl_basic_operand
 
 wordwrap
 	: WORDWRAP RIGHT MARGIN NUMBER
+	| WORDWRAP RIGHT MARGIN IDENTIFIER
 	| WORDWRAP 
 	;
 
@@ -1384,6 +1392,7 @@ op_using
 /* Isto tem de mudar de nome */
 using 
 	: USING STRING
+	| USING STRING CLIPPED
   ;
 
 units 
@@ -1497,6 +1506,9 @@ function_call
 	: IDENTIFIER '(' op_call_parameters ')'
 	                             { StInsertFunctionCall($1,lineno+1); 
 	                               $$=CpStr("%s(%s)",$1,$3);           }
+	| MENU '(' op_call_parameters ')'
+	                             { StInsertFunctionCall("menu",lineno+1); 
+	                               $$=CpStr("%s(%s)","menu",$3);           }
 	| LENGTH '(' fgl_operand ')' { $$=CpStr("LENGTH(%s)",$3); }
 	| DATE '(' fgl_operand ')'   { $$=CpStr("DATE(%s)",$3); }
 	/*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    */

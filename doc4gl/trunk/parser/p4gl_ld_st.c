@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: saferreira $
- * $Revision: 1.3 $
- * $Date: 2003-01-06 20:16:42 $
+ * $Revision: 1.4 $
+ * $Date: 2003-02-05 12:45:13 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -561,6 +561,7 @@ void StInsertFunction(char *FunctionName,int ultima_linha,NAME_LIST *arguments)
 {
   char *GetListConcat();
 
+	//fprintf(stderr,"Found %s\n",FunctionName);
 	// ??? Provavelmente não deveria ser assim
 	Downshift(FunctionName);
 
@@ -585,8 +586,14 @@ void StInsertFunction(char *FunctionName,int ultima_linha,NAME_LIST *arguments)
 	FUNCAO_CURR.Include       = InInclude;
 	FUNCAO_CURR.NInstrucoes   = FunctionStatementCount;
 	fillTableUsage(&(FUNCAO_CURR));
+	/* @todo : Fix this crossed validation
 	if ( P4glCb.idx_funcoes >= P4glCb.NumFunc )
-		P4glError(ERROR_EXIT,"Function stack overflow %d\n",P4glCb.idx_funcoes);
+		P4glError(ERROR_EXIT,
+				"Function number diferent then in first pass %d (found %d)\n",
+				P4glCb.idx_funcoes,
+				P4glCb.NumFunc
+		);
+		*/
 	P4glCb.idx_funcoes++;
 }
 

@@ -12,8 +12,8 @@
 
 /*
  * @author : Sergio Ferreira
- * $Date: 2003-01-06 20:16:32 $
- * $Id: ReadComments.c,v 1.1 2003-01-06 20:16:32 saferreira Exp $
+ * $Date: 2003-02-05 12:45:12 $
+ * $Id: ReadComments.c,v 1.2 2003-02-05 12:45:12 saferreira Exp $
  */
 
 #include "stdio.h"
@@ -84,15 +84,17 @@ char *readBlockComment(void)
   {
     /* ignorar ate proximo IGNORE */
 		/* printf("IGNORE : \n"); */
+			fprintf(stderr,"IGNORE FOUND %d\n",getLineno());
     while (lexgets (str, 80) != NULL) 
     {
 			incrementLineno();
       j = strlen(str);
 			/*printf(str); */
-      if (j > 8 && strstr(&str[j -8], "IGNORE}"))
+      if (j > 8 && strstr(&str[j -8], "/IGNORE}"))
         break;
       /* Leu IGNORE */
     }
+			fprintf(stderr,"IGNORE END %d\n",getLineno());
   }
   else
   {

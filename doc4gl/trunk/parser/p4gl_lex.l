@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-01-06 20:16:43 $
- *   $Id: p4gl_lex.l,v 1.2 2003-01-06 20:16:43 saferreira Exp $
+ *   $Date: 2003-02-05 12:45:13 $
+ *   $Id: p4gl_lex.l,v 1.3 2003-02-05 12:45:13 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.2 2003-01-06 20:16:43 saferreira Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.3 2003-02-05 12:45:13 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -111,7 +111,7 @@ char *appendStr(char *strAppended,char *strToAppend)
  * @todo : This function should go to a specific module.
  * @todo - resolver o retorno errado
  *
- * @para str
+ * @param str The place where to put the string.
  * @param NumberOfChar 
  */
 char *lexgets(char *str,int NumberOfChr)
@@ -121,10 +121,12 @@ char *lexgets(char *str,int NumberOfChr)
 	for ( i = 0 ; i < NumberOfChr-1 ; i++ )
 	{
 		ch = p4glLexInput();
-      if ( ch == EOF )
-			  return NULL;
-		if (ch == '\0' || ch == '\n')
-			  return NULL;
+    if ( ch == EOF )
+			return NULL;
+		if (ch == '\0' )
+			return NULL;
+		if (ch == '\n')
+		  break;
 		str[i] = ch;
 	}
 	str[i] = '\0';
