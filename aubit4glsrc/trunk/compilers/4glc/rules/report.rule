@@ -92,7 +92,7 @@ commands {print_rep_ret(0);}
 	| BEFGROUP variable  {
 int a;
 char buff[80];
-
+debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
@@ -109,6 +109,7 @@ commands {print_rep_ret(0);}
 int a;
 char buff[80];
 
+debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
@@ -380,52 +381,61 @@ int a;
 a=print_bind('O');
 print_order_by_type(1);
 sprintf($<str>$,"%d",a);
+debug("Order by Gives :%d\n",a);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 int a;
 a=print_bind('O');
 print_order_by_type(2);
 sprintf($<str>$,"%d",a);
+debug("Order by Gives :%d\n",a);
 }
 ;
 
 
 report_def : REPORT 
-{
-rep_type=REP_TYPE_NORMAL;
-  clr_function_constants ();
-clr_variable(); lastlineno=yylineno; init_report_structure(&rep_struct);
-}
-identifier OPEN_BRACKET
-{
-inc_report_cnt();
-sprintf(curr_func,"%s",$<str>3);
-addmap("Define Report",curr_func,"MODULE",yylineno,infilename);
-set_curr_rep_name($<str>3);
-print_report_1($<str>3);
-push_blockcommand("REPORT");
-}
-op_param_var_list CLOSE_BRACKET 
-{
-lastlineno=yylineno;
-}
-define_section {
-print_variables();
-}
-report_section 
-{
-print_report_2(0,$<str>11);
-rordcnt=atoi($<str>10);
-}
-format_section 
-{
-print_report_ctrl();
-}
+	{ 
+		rep_type=REP_TYPE_NORMAL; 
+		clr_function_constants (); 
+		clr_variable(); 
+		lastlineno=yylineno; 
+		init_report_structure(&rep_struct); 
+		}
+	identifier 
+	OPEN_BRACKET
+	{
+		inc_report_cnt();
+		sprintf(curr_func,"%s",$<str>3);
+		addmap("Define Report",curr_func,"MODULE",yylineno,infilename);
+		set_curr_rep_name($<str>3);
+		print_report_1($<str>3);
+		push_blockcommand("REPORT");
+		}
+	op_param_var_list 
+	CLOSE_BRACKET 
+	{
+		lastlineno=yylineno;
+		}
+	define_section 
+	{
+		print_variables();
+		}
+	report_section 
+	{
+		print_report_2(0,$<str>11);
+		rordcnt=atoi($<str>11);
+		debug("SET rordcnt=%d %s",rordcnt,$<str>11);
+		}
+	format_section 
+	{
+		print_report_ctrl();
+		}
 
-END_REPORT {
-pop_blockcommand("REPORT");
-print_report_end() ;
-}
+	END_REPORT 
+	{
+		pop_blockcommand("REPORT");
+		print_report_end() ;
+		}
 ;
 
 
@@ -477,13 +487,16 @@ op_param_var_list CLOSE_BRACKET
 {
 lastlineno=yylineno;
 }
-define_section
+define_section  {
+	print_variables();
+}
 pdf_report_section 
 {
 print_variables();
 resize_paper(&pdf_rep_struct);
-	print_report_2(1,$<str>10);
-	rordcnt=atoi($<str>10);
+	print_report_2(1,$<str>11);
+debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
+	rordcnt=atoi($<str>11);
 }
 format_section 
 {
