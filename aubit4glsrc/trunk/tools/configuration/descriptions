@@ -595,5 +595,9 @@ A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels
 =YES|NO
 	When set to Yes, any form label can use the pango-markup-language:
 	(e.g.: DISPLAY "<span background='blue'>Blue BG</span>" to my_label)
+SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
+=Y|N
+	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
+
 
 

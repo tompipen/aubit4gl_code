@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.238 2004-09-12 02:58:54 afalout Exp $
+dnl # $Id: configure.in,v 1.239 2004-09-12 07:02:02 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2363,7 +2363,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			#same) "by hand" before ./configure. A better fix is to change
 			#the Makefile (replace "bison" with "LANG=C bison" or something)
 
-			BISON="LANG=C $BISON"
+			BISON="LANG=C; nice -20 $BISON"
 			
 		else
 			BISON=no
@@ -3432,12 +3432,20 @@ if test "$withval" != "no"; then
 				case "$POSTMASTER_VER" in
 					6.*.* | 7.1.* | 7.2.* | 7.3.*)
 				    	AC_MSG_RESULT($POSTMASTER_VER)
+						PG_ENGINE_IFXCOMPAT=no
+						AC_MSG_WARN(** Locally installed PostgreSQL db engine is)
+						AC_MSG_WARN(** NOT Informix compatible.)
+						#don't reset PG_ESQLC_IFXCOMPAT because user might use
+						#remote one
+						
 					    ;;
 					*.*.*) #7.4.0 and up
 				    	AC_MSG_RESULT($POSTMASTER_VER)
+						PG_ENGINE_IFXCOMPAT=maybe
 			            ;;
 					*)
 				    	AC_MSG_WARN(Invalid version number format-$POSTMASTER_VER)
+						PG_ENGINE_IFXCOMPAT=unknown
 					    ;;
 		        esac
 
@@ -3451,19 +3459,17 @@ if test "$withval" != "no"; then
 						;;
 					*informix_serial*)
 						AC_MSG_RESULT(yes)
+						#Note: how compatible is it, thats the question
+						PG_ENGINE_IFXCOMPAT=yes
 						;;
 					*)
 						AC_MSG_RESULT(unknown-no result from nm)					
 						;;
 					esac
-				else
-					AC_MSG_RESULT(no)				
-					AC_MSG_WARN(** Locally installed PostgreSQL db engine is)
-					AC_MSG_WARN(** NOT Informix compatible.)
-					#don't reset PG_ESQLC_IFXCOMPAT because user might use
-                    #remote one
 				fi
 				
+				AC_MSG_CHECKING(PG engine IFX compatibility)
+				AC_MSG_RESULT($PG_ENGINE_IFXCOMPAT)
             else
 				AC_MSG_WARN(No locally installed postmaster detected)
 			fi
@@ -3490,11 +3496,21 @@ if test "$withval" != "no"; then
 					AC_MSG_WARN(cannot determine include path under $PGSQL_WITHVAL)
 				fi
 			fi
-			
+
 			#Finally, the one in CVS code installed by our install.xxx target:
 			#/opt/aubit/aubit4glsrc/pgsql-server/src/interfaces/libpq/libpq-fe.h
 			#NOTE: can't use this one, all other PG headers we need are not there...
 			#test -d $withval/../libpq && PGSQL_INCDIR=$withval/../libpq
+
+			if test "$enable_ac_debug" = "yes" ; then
+				AC_MSG_RESULT(----BEFORE----)
+				AC_MSG_RESULT(CFLAGS=$CFLAGS)
+				AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+				AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
+				AC_MSG_RESULT(LIBS=$LIBS)
+				AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
+				AC_MSG_RESULT(PGSQL_INCDIR=$PGSQL_INCDIR)
+			fi
 
 		    old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
 		    
@@ -3505,19 +3521,21 @@ if test "$withval" != "no"; then
 		    LIBS="$LIBS $PGSQL_LIBS";
 
 			export CFLAGS LDFLAGS LIBS CPPFLAGS
-
-			#AC_MSG_RESULT(CFLAGS=$CFLAGS)
-			#AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
-			#AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
-			#AC_MSG_RESULT(LIBS=$LIBS)
-			#AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
-
+			if test "$enable_ac_debug" = "yes" ; then
+				AC_MSG_RESULT(----AFTER----)			
+				AC_MSG_RESULT(CFLAGS=$CFLAGS)
+				AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+				AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
+				AC_MSG_RESULT(LIBS=$LIBS)
+				AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
+				AC_MSG_RESULT(PGSQL_INCDIR=$PGSQL_INCDIR)
+			fi
             #reset:
 			unset ac_cv_header_libpq_fe_h
 			unset ac_cv_header_pgsql_libpq_fe_h
 			unset ac_cv_header_postgresql_libpq_fe_h
-
-			#This hader is NOT part of ecpg, its part of libpq
+			
+			#libpq-fe.h hader is NOT part of ecpg, its part of libpq
 			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
 			#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
 			HAVE_PG_ESQL_HEADERS_LIB=no
@@ -3545,6 +3563,16 @@ if test "$withval" != "no"; then
 			#libpq-fe.h because ecpglib.h includes it - WITHOUT A PATH!
 			AC_CHECK_HEADERS([ ecpgtype.h ecpglib.h ecpgerrno.h sqlca.h sql3types.h ])
 
+			unset ac_cv_header_pgsql_informix_esql_decimal_h
+			unset ac_cv_header_postgresql_informix_esql_decimal_h
+			AC_CHECK_HEADERS([ pgsql/informix/esql/decimal.h postgresql/informix/esql/decimal.h])
+			if test "$ac_cv_header_pgsql_informix_esql_decimal_h" = "yes" ; then
+				HAVE_PG_ESQL_DECIMAL_H=yes
+			fi
+			if test "$ac_cv_header_postgresql_informix_esql_decimal_h" = "yes" ; then
+				HAVE_PG_ESQL_DECIMAL_H=yes
+			fi
+			
 			if test "$ac_cv_header_ecpgtype_h" = "yes" \
 				-a "$ac_cv_header_ecpglib_h" = "yes" \
 				-a "$ac_cv_header_ecpgerrno_h" = "yes" \
@@ -3553,6 +3581,38 @@ if test "$withval" != "no"; then
 				-a "$HAVE_PG_ESQL_HEADERS_LIB" = "yes";
 			then
 				HAVE_PG_ESQL_HEADERS=yes
+				
+				if test "$HAVE_PG_ESQL_DECIMAL_H" != "yes"; then
+					AC_MSG_WARN(** Cannot find ECPG Informix compatibility)
+					AC_MSG_WARN(** headers - this ECPG is NOT Informix compatible.)
+					AC_MSG_WARN(** A4GL_LEX=EC with A4GL_LEXDIALECT=POSTGRES)
+					AC_MSG_WARN(** will not work correctly and should NOT be used.)
+					PG_ESQLC_IFXCOMPAT=no
+					#TODO: disable PG ESQLC Aubit mode, since it wont work
+					#Do not disable ecpg, sice it can still be used to compile
+					#libSQL_pg
+				else
+					PG_ESQLC_IFXCOMPAT=yes
+					#Note: this is relative - all we did is test ecpg version and
+					#presence of headers. Since PG Informix compatibility depends 
+					#on patches independent of official PG CVS, it is possible we 
+					#have ecpg that does have high enough version, and does have
+					#Informix compatibility headers, and accepts -C INFORMIX flag,
+					#but is not patched. Even if ecpg is 100% OK and Informix compatible,
+					#we still need Informix patched and compatible PG engine, on the same
+					#patch level with that ecpg, or things won't work again.
+					#Presently, we have no way to verify any of this, other then to
+					#run all suite of Aubit regression tests against it. Version numbers
+					#for both ecpg and postmaster at the moment mean very little, as
+					#most of the Informix compatibility functionality depends on
+					#independent pathces. Please see this links for more information:
+					# http://gborg.postgresql.org/project/pginformix/projdisplay.php
+					# Downloads: http://informix.postgresintl.com/
+					# http://informix.fastcrypt.com/
+					#Contact: Dave Cramer [dave@fastcrypt.com]
+					#Michael Meskes [Michael.Meskes@credativ.de]
+					#Mike Aubury [mike.aubury@aubit.com]
+				fi
             else
 		        HAVE_PG_ESQL_HEADERS=no
             fi
@@ -6625,7 +6685,8 @@ AC_OUTPUT
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	if test "$INFORMIXDIR" != "" ; then
-		echo "Running configure for FglDoc..."
+		echo "Running configure for FglDoc... ($INFORMIXDIR)"
+		export INFORMIXDIR
 		cd tools/fgldoc; configure; cd -
     fi
 fi
@@ -6864,7 +6925,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.238 2004-09-12 02:58:54 afalout Exp $
+| $Id: configure.in,v 1.239 2004-09-12 07:02:02 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

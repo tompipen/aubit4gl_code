@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.59 2004-05-21 16:07:34 mikeaubury Exp $
+# $Id: Makefile.in,v 1.60 2004-09-12 07:03:47 afalout Exp $
 #
 
 ROOT        =${AUBITDIR}
@@ -141,7 +141,8 @@ y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
 else
-	${NICE} ${YACC} -v  $(SOURCES.yacc)
+#	${NICE} ${YACC} -v  $(SOURCES.yacc)
+	${YACC} -v  $(SOURCES.yacc)
 endif
 
 lex.yy.c: $(SOURCES.lex)

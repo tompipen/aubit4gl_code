@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.34 2004-09-12 03:00:05 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.35 2004-09-12 07:03:46 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -633,6 +633,7 @@ if test "$MAKE" = "1"; then
 		EXEC="make install prefix=$AUBITBINDIR"; runexec
 		EXEC="cd $AUBITBINDIR"; runexec
 		LOGFILE=$CLEANLOG
+		#This clean runs on binary installation - NOT in source code tree
 		EXEC="make clean"; runexec
 		LOGFILE=$TARLOG
 		EXEC="make tar.bin"; runexec
@@ -640,7 +641,6 @@ if test "$MAKE" = "1"; then
 
 else
     echo "MAKE disabled ($MAKE)"
-
 fi
 
 if [ "$HOSTNAME" = "aptiva" ]; then
