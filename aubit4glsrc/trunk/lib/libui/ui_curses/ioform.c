@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.30 2003-06-10 22:20:56 mikeaubury Exp $
+# $Id: ioform.c,v 1.31 2003-06-12 17:40:22 mikeaubury Exp $
 #*/
 
 /**
@@ -188,7 +188,7 @@ A4GL_make_label (int frow, int fcol, char *label)
   A4GL_debug ("A4GL_make_label : '%s'", label);
   
   if (l==2 && label[0]=='\n') {
-	A4GL_debug("Making graphic character %c\n",label[1]);
+	A4GL_debug("Making graphic character %c @ frow=%d fcol=%d\n",label[1],frow,fcol);
   	f = new_field (1, 1, frow, fcol, 0, 0);
 
 	if (f==0) {
@@ -1098,7 +1098,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		  A4GL_debug ("stack manip buff2='%s'", buff2);
 		  A4GL_trim (buff2);
 
-		  if (strlen (buff2) == 0)
+		  if (strlen (buff2) != 0)
 		    {
 		      A4GL_push_param (buff2, DTYPE_CHAR);
 
@@ -1665,17 +1665,21 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 #endif
   A4GL_debug ("disp_fields");
   nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
-  A4GL_debug ("Number of fields=%d", nofields);
+  A4GL_debug ("Number of fields=%d ", nofields,n);
 
+  if (nofields<0) {
+	return ;
+  }
+  
   for (a = nofields; a >= 0; a--)
     {
       A4GL_debug ("field_list[%d]=%p", a, field_list[a]);
       A4GL_debug_print_field_opts (field_list[a]);
       /* fldattr=field_opts(field_list[a]); */
-
       A4GL_debug ("MJA Calling A4GL_set_field_pop_attr - 1 - attr=%d", attr);
 
       A4GL_set_field_pop_attr (field_list[a], attr);
+
       /* rc=set_field_opts(field_list[a],fldattr); */
       A4GL_debug_print_field_opts (field_list[a]);
       A4GL_debug ("set_init_pop complete");
@@ -1809,7 +1813,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		  if (fno >= formdets->fileform->fields.fields_len)
 		    {
 		      A4GL_exitwith ("Dubious form\n");
-		      return 0;
+		      return -1; // Was 0
 		    }
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
@@ -1857,7 +1861,11 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		  fno =
 		    formdets->fileform->attributes.attributes_val[attr_no].
 		    field_no;
-		  A4GL_debug ("Matched to field no %d", fno);
+		  A4GL_debug ("Matched to field no %d - len=%d f=%d", fno,formdets->fileform->fields.fields_val[fno].metric.metric_len,f);
+		if (formdets->fileform->fields.fields_val[fno].metric.metric_len<=f || f<0) {
+			A4GL_exitwith("Field subscript out of bounds");
+			return -1;
+		}
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
 		    metric_val[f];
@@ -2112,7 +2120,17 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
   struct struct_scr_field *f;
   struct s_form_dets *fff;
   int a;
+  int field_width;
   long oopt;
+  char using_buff[256];
+  int d1;
+  int s1;
+  int isneg;
+  void* ptr1;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+
+  A4GL_debug("set_field_pop_attr d1=%d",d1);
+
   ff = A4GL_new_string (A4GL_get_field_width (field));
   A4GL_pop_char (ff, A4GL_get_field_width (field));
   A4GL_debug ("set_field_pop_attr : display %s to field %d", ff, attr);
@@ -2152,6 +2170,57 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
       A4GL_pop_param (ff, DTYPE_CHAR, A4GL_get_field_width (field));
       A4GL_debug ("Has format - processed it to (%s) ", ff);
 
+    } else {
+	/* There appears a discrepency between a number->char conversion
+		for strings and an number->field display...
+		The ->character ends up left aligned by default
+		The ->field is right aligned...
+		We'll use the datatype of the data passed in to see
+		if its a number (decimal & money don't seem affected)
+		and generate an appropriate USING for it...
+	*/
+	strcpy(using_buff,"");
+	field_width=A4GL_get_field_width (field);
+	switch (d1&DTYPE_MASK) {
+		case DTYPE_INT:
+		case DTYPE_SMINT:
+		case DTYPE_SERIAL:
+			memset(using_buff,'-',255);
+			using_buff[field_width]=0;
+			using_buff[field_width-1]='&';
+			break;
+
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+			A4GL_debug("DTYPE_FLOAT set_field_pop_attr");
+			if (strchr(ff,'-')) {
+				memset(using_buff,'-',255);
+				isneg=1;
+			} else {
+				memset(using_buff,'#',255);
+				isneg=0;
+			}
+
+			if (field_width>=3+isneg) {
+				using_buff[field_width  ]=0;
+				using_buff[field_width-1]='&';
+				using_buff[field_width-2]='.';
+				using_buff[field_width-3]='&';
+			} else {
+				using_buff[field_width  ]=0;
+				using_buff[field_width-1]='&';
+			}
+			break;
+		}
+	A4GL_debug("set_field_pop_attr - using_buff='%s' field_width=%d",using_buff,field_width);
+	if (strlen(using_buff)) {
+      		A4GL_push_char (ff);
+      		A4GL_push_char (using_buff);
+      		A4GL_pushop (OP_USING);
+      		A4GL_pop_param (ff, DTYPE_CHAR, A4GL_get_field_width (field));
+      		A4GL_debug ("faked a format - processed it to (%s) ", ff);
+
+	}
     }
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);

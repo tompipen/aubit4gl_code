@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.18 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: iarray.c,v 1.19 2003-06-12 17:40:22 mikeaubury Exp $
 #*/
 
 /**
@@ -1162,10 +1162,9 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 	}
     }
 
-  ptr = malloc (sizeof (struct s_movement));
-  ptr->scr_line = scr_line;
-  ptr->arr_line = arr_line;
-  ptr->attrib_no = attrib;
+
+
+
 
   if (arr->scr_line > 0)
     last_field = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
@@ -1173,7 +1172,23 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
     last_field = 0;
 
   next_field = arr->field_list[scr_line - 1][attrib];
+  if (A4GL_has_bool_attribute (next_field, FA_B_NOENTRY)) {
+	// We can't go this this field - its a no entry
+	if (attrib>arr->curr_attrib) { // We want to move to the right..
+      		A4GL_newMovement (arr, scr_line, arr_line, attrib+1); // So keep going...
+	} else {
+      		A4GL_newMovement (arr, scr_line, arr_line, attrib-1); // So keep going...
+	}
+	return;
+  }
+	
 
+	
+
+  ptr = malloc (sizeof (struct s_movement));
+  ptr->scr_line = scr_line;
+  ptr->arr_line = arr_line;
+  ptr->attrib_no = attrib;
   if (arr_line != arr->arr_line)
     {
       A4GL_debug ("Bef1");

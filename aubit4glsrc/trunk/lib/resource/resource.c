@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.40 2003-05-22 08:04:52 mikeaubury Exp $
+# $Id: resource.c,v 1.41 2003-06-12 17:40:25 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ struct str_resource builtin_resource[] = {
   {"HELPTEXT", "Help"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
-  {"FIELD_ERROR_MSG", "Error in field"},
+  {"FIELD_ERROR_MSG", " Error in field "},
 
   {"MENUCSELECT", "0"},
   {"MENUCTITLE", "0"},

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.41 2003-06-10 22:20:57 mikeaubury Exp $
+# $Id: newpanels.c,v 1.42 2003-06-12 17:40:23 mikeaubury Exp $
 #*/
 
 /**
  * @file
  * Pannels implementation, like windows, prompts lines, etc
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 
@@ -136,6 +136,7 @@ char *A4GL_get_currwin_name (void);
 int A4GL_get_curr_border (void);
 void display_at2 (char *z, int x, int y, int a);
 int A4GL_decode_line (int l);
+int A4GL_decode_line_ib (int l);
 //void  A4GL_display_error           (int a,int wait);
 //void A4GL_add_compiled_form (char *s, char *frm);
 //int   A4GL_open_form                       (char *name);
@@ -276,8 +277,8 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   A4GL_chkwin ();
 
 #ifdef DEBUG
-  A4GL_debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y,
-	 w, h, border, attrib);
+  A4GL_debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x - error line=%d", name, x, y,
+	 w, h, border, attrib,error_line);
 #endif
 
 /*
@@ -472,6 +473,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	  windows[a].winattr.prompt_line = prompt_line;
 	  windows[a].winattr.form_line = form_line;
 	  windows[a].winattr.message_line = message_line;
+	  windows[a].winattr.error_line = error_line;
 	  windows[a].winattr.border = border;
 	  windows[a].winattr.colour = attrib;
 	  windows[a].x = x;
@@ -1033,7 +1035,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
   int rows, cols;
   char buff[80];
   A4GL_chkwin ();
-  A4GL_debug ("display_form_new_win - name=%s\n", name);
+  A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,f->form_details.error_line);
   A4GL_chkwin();
   scale_form (f->form, &rows, &cols);
   if (f->form_details.border)
@@ -1054,7 +1056,11 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */
   }
 #endif
-  nlines = rows + f->form_details.form_line - 1;
+  if (f->form_details.form_line!=0xff) {
+  	nlines = rows + f->form_details.form_line - 1;
+  } else {
+  	nlines = rows + std_dbscr.form_line - 1;
+  }
   if (f->form_details.border)
     {
       nlines++;
@@ -1375,7 +1381,7 @@ A4GL_decode_line_scr (int l)
 	if (l<0)
 	{
 	A4GL_debug("l=%d",l);
-	  l=A4GL_screen_height () + l ;
+	  l=A4GL_screen_height () + l +1;
 	A4GL_debug("l=%d",l);	
 	return l;
 	}
@@ -1394,39 +1400,82 @@ A4GL_decode_line (int l)
     {
       if (A4GL_get_curr_border ())
 	{
-	  A4GL_debug ("Decoded line %d to %d (because of border)", l, l - 1);
-	  return l - 1;
+	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
+	  return l ;
 	}
       else
 	{
-	  A4GL_debug ("Decoded line %d to %d", l, l);
+	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
 	  return l;
 	}
     }
+
+
 /* -1 = last */
 /* -2 = last -1 */
+
+
   if (A4GL_get_curr_border ())
     {
-      if (l < 0)
-	{
-	  A4GL_debug ("Decoded line %d to %d  %d ", l, A4GL_get_curr_height ());
-	  return A4GL_get_curr_height () + l;
-	}
-
+	  A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, A4GL_get_curr_height ());
+	  l=0-l;
+	  l--;
+	  return A4GL_get_curr_height () - l;
     }
   else
     {
-      if (l < 0)
-	{
-	  A4GL_debug ("Decoded line %d to %d  %d ", l, A4GL_get_curr_height ());
-	  return A4GL_get_curr_height () + l + 1;
-	}
-
+	  l=0-l;
+	  l--;
+	  A4GL_debug ("Decoded (4) line %d to %d ", l, A4GL_get_curr_height ());
+	  return A4GL_get_curr_height () - l +1;
     }
+
+
   return 0;
 }
 
 
+
+int
+A4GL_decode_line_ib (int l)
+{
+  if (l > 0)
+    {
+      if (A4GL_get_curr_border ())
+	{
+	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
+	  return l ;
+	}
+      else
+	{
+	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
+	  return l;
+	}
+    }
+
+
+/* -1 = last */
+/* -2 = last -1 */
+
+
+  if (A4GL_get_curr_border ())
+    {
+	  A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, A4GL_get_curr_height ());
+	  l=0-l;
+	  l--;
+	  return A4GL_get_curr_height () - l+1;
+    }
+  else
+    {
+	  l=0-l;
+	  l--;
+	  A4GL_debug ("Decoded (4) line %d to %d ", l, A4GL_get_curr_height ());
+	  return A4GL_get_curr_height () - l +1;
+    }
+
+
+  return 0;
+}
 
 
 /**
@@ -1530,6 +1579,9 @@ A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
       A4GL_tui_print ("%s", s);
       if (clr_line)
 	{
+	// Known bug - if you clear to the end of the line
+	// in a window which has a border - this will also remove
+	// the border!
 	  A4GL_debug ("Clearing line...");
 	  wclrtoeol (A4GL_window_on_top ());
 	}
@@ -1676,6 +1728,7 @@ A4GL_cr_window_form (char *name,
 	 border, comment_line, message_line, attrib);
 
   A4GL_chkwin();
+/*
   if (form_line == 0xff)
     {
 	A4GL_debug("Defaulting form_line from std_dbscr... %d",std_dbscr.form_line);
@@ -1697,7 +1750,7 @@ A4GL_cr_window_form (char *name,
     {
       prompt_line = std_dbscr.prompt_line;
     }
-
+*/
   s = A4GL_char_pop ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
@@ -2336,12 +2389,22 @@ A4GL_do_update_panels (void)
 int
 A4GL_getform_line (void)
 {
-
+int a;
+A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
   if (windows[currwinno].winattr.form_line!=0xff) {
-	return A4GL_decode_line (windows[currwinno].winattr.form_line);
+	a=windows[currwinno].winattr.form_line;
+  } else {
+        a=std_dbscr.form_line;
   }
-  return A4GL_decode_line (std_dbscr.form_line);
 
+/* There seems to be some sort of bug in informix -
+   if you have a window with a border - the form is shifted up 1 line...
+   so a form line 3 would be displayed on line 2...
+*/
+  if ( A4GL_get_curr_border ()) {
+	a--;
+  }
+  return a;
 
 }
 
@@ -2353,9 +2416,9 @@ int
 A4GL_getcomment_line (void)
 {
   if (windows[currwinno].winattr.comment_line!=0xff) {
-	return A4GL_decode_line (windows[currwinno].winattr.comment_line);
+	return A4GL_decode_line_ib (windows[currwinno].winattr.comment_line);
   }
-  return A4GL_decode_line (std_dbscr.comment_line);
+  return A4GL_decode_line_ib (std_dbscr.comment_line);
 }
 
 /**
@@ -2366,11 +2429,13 @@ int
 A4GL_geterror_line (void)
 {
 
-  A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
+  A4GL_debug ("geterror_line - %d (%d)", windows[currwinno].winattr.error_line,currwinno);
   if (windows[currwinno].winattr.error_line!=0xff) {
+	A4GL_debug("Window specific...");
         return A4GL_decode_line_scr (windows[currwinno].winattr.error_line);
   }
-
+  A4GL_debug ("geterror_line - from options : %d", std_dbscr);
+   
   return A4GL_decode_line_scr (std_dbscr.error_line);
 }
 

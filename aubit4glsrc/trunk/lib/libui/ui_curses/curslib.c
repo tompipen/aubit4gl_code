@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.34 2003-06-10 22:20:54 mikeaubury Exp $
+# $Id: curslib.c,v 1.35 2003-06-12 17:40:20 mikeaubury Exp $
 #*/
 
 /**
@@ -34,10 +34,10 @@
  * I think it works as interface between i level like input, display,
  * input array and curses
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -265,17 +265,16 @@ void
 A4GL_error_nobox (char *str,int attr)
 {
   int eline;
-  //int w;
   WINDOW *w;
   PANEL *p;
   PANEL *o;
-  WINDOW *ow;
-extern WINDOW *currwin;
- 
+
   A4GL_chkwin();
-  eline = A4GL_geterror_line ();
+  if (curr_error_window) {
+		A4GL_clr_error_nobox ();
+  }
+  eline = A4GL_geterror_line ()-1;
   A4GL_debug("Eline=%d\n",eline);
-  A4GL_debug("subwin(%p, %d,  %d, %d, %d);",stdscr, 1,  A4GL_screen_width()-1, eline, 1);
   //w= subwin (stdscr, 1,  A4GL_screen_width()-1, eline, 0);
   w= newwin ( 1,  A4GL_screen_width()-1, eline, 0);
 
@@ -283,14 +282,13 @@ extern WINDOW *currwin;
 		A4GL_exitwith("Internal error - couldn't create error window");
 		return;
 	}
-  ow=currwin;
   p=new_panel(w);
   o=panel_below(0);
   top_panel(p);
   
   //A4GL_push_char (str);
   A4GL_subwin_gotoxy (w, 1, 1);
-  if (attr==0) attr=A_REVERSE+A4GL_colour_code (COLOR_RED);
+  if (attr==0) attr=A_REVERSE; //+A4GL_colour_code (COLOR_RED);
   wattrset (w, attr);
   A4GL_subwin_print (w, str);
   //wrefresh(w);
@@ -302,11 +300,10 @@ extern WINDOW *currwin;
   curr_error_window=w;
   curr_error_panel=p;
   A4GL_zrefresh();
-
 }
 
 
-
+#ifdef DELETE_ME
 
 /**
  *
@@ -328,6 +325,7 @@ A4GL_error_nobox_old (char *str)
 #endif
   A4GL_display_at (1, AUBIT_ATTR_REVERSE);
 }
+#endif
 
 
 void
@@ -3817,6 +3815,34 @@ A4GL_refresh_after_system (void)
 {
   A4GL_mja_refresh ();
 }
+
+
+
+
+
+// This is called internally...
+void A4GL_comments (struct struct_scr_field *fprop)
+{
+  char *str;
+  int cline;
+  char buff[256];
+  if (!fprop) return;
+  A4GL_debug ("Has property");
+
+  if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS)) return;
+
+  strcpy(buff,A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
+  A4GL_strip_quotes (buff);
+  
+  cline=A4GL_getcomment_line();
+  buff[A4GL_get_curr_width()]=0;
+  A4GL_display_internal (1, cline, buff, 0, 1);
+  A4GL_zrefresh();
+
+
+}
+
+
 
 
 

@@ -41,7 +41,7 @@ attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
 		|INVISIBLE {sprintf($<str>$,"%d",attr_code("INVISIBLE"));}
 		|DIM       {sprintf($<str>$,"%d",attr_code("DIM"));}
               	|NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
-		| input_array_attributes
+		| input_array_attributes {strcpy($<str>$,"0");}
 	;
 
 win_attributes:	/*empty*/
@@ -52,7 +52,14 @@ win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
 A4GL_debug("win_attributes_def");
 start_state("attribute",1);
 A4GL_debug("Started states");
-form_attrib.attrib=0;} wattribs_sec CLOSE_BRACKET {start_state("attribute",0);strcpy($<str>$,"");
+form_attrib.attrib=0;
+form_attrib.comment_line=0xff;
+form_attrib.form_line=0xff;
+form_attrib.error_line=0xff;
+form_attrib.menu_line=0xff;
+form_attrib.message_line=0xff;
+form_attrib.prompt_line=0xff;
+} wattribs_sec CLOSE_BRACKET {start_state("attribute",0);strcpy($<str>$,"");
 }
 ;
 

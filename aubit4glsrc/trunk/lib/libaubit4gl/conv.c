@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.40 2003-05-22 21:59:07 mikeaubury Exp $
+# $Id: conv.c,v 1.41 2003-06-12 17:39:45 mikeaubury Exp $
 #
 */
 
@@ -1081,9 +1081,9 @@ A4GL_mdectos (void *z, void *w, int size)
 {
   char *buff;
   buff = A4GL_dec_to_str (z, size);
-  A4GL_debug ("In A4GL_dectos gets '%s'", buff);
-  A4GL_dump (z);
-  A4GL_ctoc (buff, w, size);
+  A4GL_debug ("dec_to_str -> '%s'\n", buff);
+  strcpy (w, buff);
+  A4GL_debug ("w = %s\n", buff);
   return 1;
 }
 
@@ -1225,6 +1225,7 @@ A4GL_dectos (void *z, void *w, int size)
   strcpy (w, buff);
   A4GL_debug ("w = %s\n", buff);
   return 1;
+
 }
 
 /**

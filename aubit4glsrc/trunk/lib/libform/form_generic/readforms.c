@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.12 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: readforms.c,v 1.13 2003-06-12 17:40:20 mikeaubury Exp $
 #*/
 
 /**
@@ -254,6 +254,7 @@ read_attributes (struct s_form_dets *f)
 }
 
 
+#ifdef MOVED_TO_CURSLIB
 /**
  * Called from lib/libtui/ioform.c
  */
@@ -280,6 +281,7 @@ real_comments (struct struct_scr_field *fprop)
 	}
     }
 }
+#endif
 
 
 /**

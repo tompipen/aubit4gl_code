@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.4 2003-06-10 22:20:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.5 2003-06-12 17:40:21 mikeaubury Exp $
 #*/
 
 /**
@@ -355,7 +355,7 @@ process_control_stack (struct s_screenio *sio)
       pos_form_cursor (sio->currform->form);
       sio->currform->currentfield=sio->currentfield;
 	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-
+	A4GL_debug("Adding comments...");
       A4GL_comments (fprop);
 
 	A4GL_debug("New current field set to %p",sio->currentfield);

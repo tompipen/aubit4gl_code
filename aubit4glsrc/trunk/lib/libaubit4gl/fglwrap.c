@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.40 2003-06-09 11:12:20 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.41 2003-06-12 17:39:45 mikeaubury Exp $
 #
 */
 
@@ -71,6 +71,7 @@
 int p_numargs = 0;
 int isdebug = 0;
 int ui_mode = 0;
+static int initsig_child(void );
 
 /* extern int errno; */
 #include <errno.h>
@@ -255,6 +256,7 @@ A4GL_fgl_start (int nargs, char *argv[])
   //Mike, are you sure this is not going to work on MinGW, or where you just guessing,
   //since it's on Windows?
   A4GL_set_core_dump ();
+  initsig_child();
 #endif
   /* signal (SIGINT, fgl_end); */
   A4GL_nodef_init ();
@@ -1131,6 +1133,24 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
   return 0;
 }
 
+
+
+
+static int initsig_child()
+{
+struct sigaction ServerSig; 
+A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
+ServerSig.sa_handler = SIG_IGN;
+ServerSig.sa_flags = SA_NOCLDWAIT; 
+
+if (sigaction(SIGCLD, &ServerSig, NULL))
+{
+	A4GL_exitwith("Unable to attach SIGCLD handler");
+	return 0;
+} 
+
+return 1;
+}
 
 
 /* ================================= EOF ============================= */

@@ -186,7 +186,9 @@ up_or_down : UP {strcpy($<str>$,"1");}
 op_help : {strcpy($<str>$,"");} | HELP INT_VALUE
 ;
 
-input_array_attributes: input_array_attributes_int
+input_array_attributes: input_array_attributes_int {
+	strcpy($<str>$,"");
+}
 ;
 
 
