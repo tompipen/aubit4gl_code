@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-03-28 07:19:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -42,10 +42,9 @@ ifdef UNIXODBC_ODBC_LIB_DIR
 	UNIXODBC_LFLAGS=-L$(UNIXODBC_ODBC_LIB_DIR)
 endif
 
-#override CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
-LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile -I..
-CFLAGS	+=${LOCAL_CFLAGS} @RPCLIB_INCLUDE@
-
+#LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile -I..
+#CFLAGS	+=${LOCAL_CFLAGS} @RPCLIB_INCLUDE@
+CFLAGS	+=-I../.. -I../../../compilers/fcompile -I.. @RPCLIB_INCLUDE@
 
 ifdef ODBCLIBDIR
 	#override CFLAGS	+= -I$(ODBCLIBDIR)
@@ -54,39 +53,29 @@ endif
 
 OBJECTS=sql.o sqlex.o
 
-ifeq "${HAVE_UNIXODBC}" "yes"
-    ALL=unixodbc
-endif
-
-ifeq "${HAVE_IODBC}" "yes"
-    ALL+=iodbc
-endif
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-#all : ${ALL}
 all :
-#	@echo "Default ODBC targets compiled successfully"
-	@echo "Must specify 'unixodbc' or 'iodbc' (because clean is not working...)"
+	@echo "Must specify target (because clean is not working...)"
 
 
 #we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
-iodbc: 		clean show libSQL_iodbc.so
+iodbc: 		clean libSQL_iodbc.so
 	@echo "iODBC target compiled successfully"
 
-unixodbc: 	clean show libSQL_unixodbc.so
+unixodbc: 	clean libSQL_unixodbc.so
 	@echo "unixODBC target compiled successfully"
 
-ifxodbc: 	clean show libSQL_ifxodbc.so
+ifxodbc: 	clean libSQL_ifxodbc.so
 	@echo "Informix ODBC target compiled successfully"
 
-pgodbc: 	clean show libSQL_pgodbc.so
+pgodbc: 	clean libSQL_pgodbc.so
 	@echo "PostgreSQL ODBC target compiled successfully"
 
-odbc32: 	clean show ${OBJECTS}
+odbc32: 	clean ${OBJECTS}
 	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="-laclshared -lodbc32" DLL_LDFLAGS="-L../.."
 	cp libSQL_odbc32.dll ../..
 	cp libSQL_odbc32.dll.a ../..
@@ -120,13 +109,5 @@ libSQL_pgodbc.so: ${OBJECTS}
 .PHONY : clean
 clean:
 	rm -f *.o *.bak *.so *.base *.dll *.def *.exp *.a
-
-
-.PHONY : show
-show:
-	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
-	@echo CFLAGS = ${CFLAGS}
-	@echo TMP_CFGLAGS = ${TMP_CFGLAGS}
-
 
 ## ----------------------------- EOF -------------------------------

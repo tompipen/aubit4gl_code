@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.47 2002-03-28 01:30:53 afalout Exp $
+# $Id: Makefile.in,v 1.48 2002-03-28 07:18:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,52 +44,52 @@ include incl/Makefile-common
 ##                    ODBC Settings
 ## ==================================================================
 
-ifeq "$(ODBC)" "unix"
-	#Human readable name, for archinve file name, etc.
-	ODBCMANAGER		=unixODBC
-   	#additional flags for ifdef in C code, needed for this ODBC driver/manager
-#	LIBCFLAGS 		+= -DUNIXODBC
-endif
-ifeq "$(ODBC)" "iodbc"
-	ODBCMANAGER		=iODBC
-#	LIBCFLAGS 		+= -DIODBC
-endif
-ifeq "$(ODBC)" "no"
-	ODBCMANAGER		=noODBC
-#	LIBCFLAGS 		+= -DNOODBC
-	ODBCLIBDIR      =
-	ODBC_LIB_DIR    =
-	ODBC_LIB_NAME   = noodbc
-endif
+#obsolete - ifeq "$(ODBC)" "unix"
+#obsolete - 	#Human readable name, for archinve file name, etc.
+#obsolete - 	ODBCMANAGER		=unixODBC
+#obsolete -    	#additional flags for ifdef in C code, needed for this ODBC driver/manager
+#obsolete - #	LIBCFLAGS 		+= -DUNIXODBC
+#obsolete - endif
+#obsolete - ifeq "$(ODBC)" "iodbc"
+#obsolete - 	ODBCMANAGER		=iODBC
+#obsolete - #	LIBCFLAGS 		+= -DIODBC
+#obsolete - endif
+#obsolete - ifeq "$(ODBC)" "no"
+#obsolete - 	ODBCMANAGER		=noODBC
+#obsolete - #	LIBCFLAGS 		+= -DNOODBC
+#obsolete - 	ODBCLIBDIR      =
+#obsolete - 	ODBC_LIB_DIR    =
+#obsolete - 	ODBC_LIB_NAME   = noodbc
+#obsolete - endif
 
-ifneq "$(ODBC)" "no"
-	#make sure we will pick up correct ODBC libraries:
-	LD_LIBRARY_PATH := ${ODBC_LIB_DIR}:${LD_LIBRARY_PATH}
-	export LD_LIBRARY_PATH
-endif
+#obsolete - ifneq "$(ODBC)" "no"
+#obsolete - 	#make sure we will pick up correct ODBC libraries:
+#obsolete - 	LD_LIBRARY_PATH := ${ODBC_LIB_DIR}:${LD_LIBRARY_PATH}
+#obsolete - 	export LD_LIBRARY_PATH
+#obsolete - endif
 
 ## ==================================================================
 ##                    GTK Settings
 ## ==================================================================
 
-#Human readable names for archive file names:
-ifeq "$(GTKBUILD)" "yes"
-	GUITYPE			=GTK
-else
-	GUITYPE			=noGTK
-endif
+#obsolete - #Human readable names for archive file names:
+#obsolete - ifeq "$(GTKBUILD)" "yes"
+#obsolete - 	GUITYPE			=GTK
+#obsolete - else
+#obsolete - 	GUITYPE			=noGTK
+#obsolete - endif
 
 ## ==================================================================
 ##                    PDF Settings
 ## ==================================================================
 
-ifeq "$(PDFBUILD)" "yes"
-#	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
-	PDFTYPE			=PDF
-else
-	PDFTYPE			=noPDF
-endif
-
+#obsolete - ifeq "$(PDFBUILD)" "yes"
+#obsolete - #	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
+#obsolete - 	PDFTYPE			=PDF
+#obsolete - else
+#obsolete - 	PDFTYPE			=noPDF
+#obsolete - endif
+#obsolete -
 #MAKERPC				=unixrpc
 
 ## ==================================================================
@@ -110,7 +110,7 @@ endif
 #RPMBUILDROOT=/root/redhat
 #redhat 7.2
 RPMBUILDROOT=/usr/src/redhat
-                                                       
+
 #SOURCE 		= $(AUBITDIR)
 SOURCE 		=.
 #installation files
@@ -133,12 +133,12 @@ ifeq "$(OUTPUTLANG)" "java"
 endif
 
 
-ifneq "$(ODBC)" "no"
-	ifeq "$(ODBC_LINK)" "static"
-		TOBIN	+=$(SOURCE)/bin/4glc-noodbc${EXEEXT} $(SOURCE)/bin/fcompile-noodbc${EXEEXT} \
-					$(SOURCE)/bin/mcompile-noodbc${EXEEXT}
-    endif
-endif
+#obsolete - ifneq "$(ODBC)" "no"
+#obsolete - 	ifeq "$(ODBC_LINK)" "static"
+#obsolete - 		TOBIN	+=$(SOURCE)/bin/4glc-noodbc${EXEEXT} $(SOURCE)/bin/fcompile-noodbc${EXEEXT} \
+#obsolete - 					$(SOURCE)/bin/mcompile-noodbc${EXEEXT}
+#obsolete -     endif
+#obsolete - endif
 
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 #$(SOURCE)/lib/libaclsharedgui${SO_EXT}
@@ -214,8 +214,6 @@ ifneq "@HAVE_PGODBC@" "no"
 	TOLIBCUI	+=$(SOURCE)/lib/libSQL_pgodbc${SO_EXT}
 endif
 
-
-
 MKFILNAME	=Makefile
 
 TODOCS		=$(SOURCE)/docs/changelog.txt $(SOURCE)/docs/COPYING $(SOURCE)/docs/CREDITS $(SOURCE)/docs/LICENSE
@@ -232,6 +230,7 @@ TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDED
 
 ##################################################
 #definitions of names for bynary distro file name:
+#FIXME: thi is set in makefile-common by configure:
 AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
 AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
@@ -240,20 +239,20 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 ##                    CVS Settings
 ## ==================================================================
 
-AUBITCVSNAME=Aubit4gl
-AUBITCVSSFNAME=aubit4glsrc
-AUBITCVSSFMANNAME=aubit4gldoc
-CVSROOTSF=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+#obsolete - AUBITCVSNAME=Aubit4gl
+#obsolete - AUBITCVSSFNAME=aubit4glsrc
+#obsolete - AUBITCVSSFMANNAME=aubit4gldoc
+#obsolete - CVSROOTSF=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
 
-NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
+#obsolete - NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 #Download page processing temp file names:
 #Warning: if you change this names, you will need to manually change existing
 #names already embedded in CYBUILDNAMES	and UNIXBUILDNAMES files.
-DLTMP1=tmpdlpage1.html
-DLTMP2=tmpdlpage2.html
+#obsolete - DLTMP1=tmpdlpage1.html
+#obsolete - DLTMP2=tmpdlpage2.html
 
-SCPPATH=/home/groups/a/au/aubit4gl/htdocs/files
+#obsolete - SCPPATH=/home/groups/a/au/aubit4gl/htdocs/files
 
 
 ## ==================================================================
@@ -264,35 +263,35 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 
 	#Under CygWin/Windows, cron cannot use network shares, and also
    	#we want to stop using local upload location, as defined in $WWW:
-	USELOCALUPLOAD	=0
-	SH          	=bash
-	OS				=win32-cygwin
+#obsolete - 	USELOCALUPLOAD	=0
+#obsolete - 	SH          	=bash
+	#OS				=win32-cygwin
 	ARCHEXT			=zip
     DIRSEP			=\\
 	EXE				=.exe
 	#for packcygwin
 	#CYSOURCE 		= $(AUBITDIR)
-    CYSOURCE 		=.
-	CYDLLTARGET		=${INSTALL_DIR}/dll
-	CYLIBTARGET1	=${INSTALL_DIR}/extralibs
-	LIBTARGET2		=/lib
-	LIBTARGET1		=${INSTALL_DIR}/extralibs
-	DLLTARGET		=${INSTALL_DIR}/dll
-	RUNEXE			=$(CYSOURCE)/tools/cygwin/run.exe
-	CYTOBIN			=$(CYSOURCE)/bin/4glc${EXE} $(CYSOURCE)/bin/4glpc \
-					$(CYSOURCE)/bin/fcompile${EXE} $(CYSOURCE)/bin/mcompile${EXE} \
-					$(CYSOURCE)/bin/mkmess${EXE} ${RUNEXE} $(CYSOURCE)/bin/amake \
-	    	        $(CYSOURCE)/bin/amakeallf $(CYSOURCE)/bin/amakeallo \
-	        	    $(CYSOURCE)/bin/aubitbuild.sh $(CYSOURCE)/bin/genmake \
-	            	$(CYSOURCE)/bin/prepmake
+#obsolete -     CYSOURCE 		=.
+#obsolete - 	CYDLLTARGET		=${INSTALL_DIR}/dll
+#obsolete - 	CYLIBTARGET1	=${INSTALL_DIR}/extralibs
+#obsolete - 	LIBTARGET2		=/lib
+#obsolete - 	LIBTARGET1		=${INSTALL_DIR}/extralibs
+#obsolete - 	DLLTARGET		=${INSTALL_DIR}/dll
+#obsolete - 	RUNEXE			=$(CYSOURCE)/tools/cygwin/run.exe
+#obsolete - 	CYTOBIN			=$(CYSOURCE)/bin/4glc${EXE} $(CYSOURCE)/bin/4glpc \
+#obsolete - 					$(CYSOURCE)/bin/fcompile${EXE} $(CYSOURCE)/bin/mcompile${EXE} \
+#obsolete - 					$(CYSOURCE)/bin/mkmess${EXE} ${RUNEXE} $(CYSOURCE)/bin/amake \
+#obsolete - 	    	        $(CYSOURCE)/bin/amakeallf $(CYSOURCE)/bin/amakeallo \
+#obsolete - 	        	    $(CYSOURCE)/bin/aubitbuild.sh $(CYSOURCE)/bin/genmake \
+#obsolete - 	            	$(CYSOURCE)/bin/prepmake
 
-	ifneq "$(ODBC)" "no"
-		ifeq "$(ODBC_LINK)" "static"
-			CYTOBIN	+=$(CYSOURCE)/bin/4glc-noodbc${EXE} \
-					$(CYSOURCE)/bin/fcompile-noodbc${EXE} \
-					$(CYSOURCE)/bin/mcompile-noodbc${EXE}
-        endif
-    endif
+#obsolete - 	ifneq "$(ODBC)" "no"
+#obsolete - 		ifeq "$(ODBC_LINK)" "static"
+#obsolete - 			CYTOBIN	+=$(CYSOURCE)/bin/4glc-noodbc${EXE} \
+#obsolete - 					$(CYSOURCE)/bin/fcompile-noodbc${EXE} \
+#obsolete - 					$(CYSOURCE)/bin/mcompile-noodbc${EXE}
+#obsolete -         endif
+#obsolete -     endif
 
 #	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
 	#we still cannot compile this one: $(CYSOURCE)/lib/libUI_GTK_x.so
@@ -330,112 +329,98 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 		CYRPC_FLAG:=$(shell ls cyrpc.flg ${NOERR})
 	endif
 
-    PREPARE 		=cyprepare
+#obsolete -     PREPARE 		=cyprepare
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
 	GTKCONFIGCMD	=echo ${LIBVER}
     LDDCMD          =cygcheck 	#echo "no ldd available on CygWin"
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
-	TOROOT          += $(SOURCE)/Makefile
+#obsolete - 	TOROOT          += $(SOURCE)/Makefile
 
 else ####################### Platform is UNIX ##############################
 
 	#We want to stop using local upload location, as defined in $WWW:
-	USELOCALUPLOAD=0
+#obsolete - 	USELOCALUPLOAD=0
 
-	SH          	=sh
+#obsolete - 	SH          	=sh
 	#FIXME: this should be automatic, or contain kernel version:
-	OS				=RH6
+	#OS				=RH6
 	ARCHEXT			=tar.gz
     DIRSEP			=/
 	#on unix, we expect to have WWW set in environment
 	#WWW			=/data2/htdocs
-    PREPARE 		=unixprepare
+#obsolete -     PREPARE 		=unixprepare
 	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
 	GTKCONFIGCMD	=gtk-config --version
     LDDCMD          =ldd
 endif
 
 
-
-
 ## ==================================================================
 ##                    Nightly builds Settings
 ## ==================================================================
 
-FTPLOCATION		=$(WWW)${DIRSEP}projects${DIRSEP}Aubit4GL${DIRSEP}download
+#obsolete - FTPLOCATION		=$(WWW)${DIRSEP}projects${DIRSEP}Aubit4GL${DIRSEP}download
 
 #FIXME: add CPU to file name (i385,i586, etc.) instead of "bin"
-TEMPLATENAME	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---template--.${ARCHEXT}
-TEMPLATENAMETXT	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---txttemplate--.${ARCHEXT}
-TEMPLATESRC		=aubit4gl-src--template--.${ARCHEXT}
+#obsolete - TEMPLATENAME	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---template--.${ARCHEXT}
+#obsolete - TEMPLATENAMETXT	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---txttemplate--.${ARCHEXT}
+#obsolete - TEMPLATESRC		=aubit4gl-src--template--.${ARCHEXT}
 
 #script (SCP) to use to get html template
-AUTOSFSCPGET	=autosfscpget
+#obsolete - AUTOSFSCPGET	=autosfscpget
 
-TARNAMENOEXT	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE)
-TARNAME			=${TARNAMENOEXT}.${ARCHEXT}
+#obsolete - TARNAMENOEXT	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE)
+#obsolete - TARNAME			=${TARNAMENOEXT}.${ARCHEXT}
 #FIXME: remove ZIPNAME
-ZIPNAME			=${TARNAME}
-ZIPRUNTIMENAME  =aubit4gl-runtime-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
+#obsolete - ZIPNAME			=${TARNAME}
+#obsolete - ZIPRUNTIMENAME  =aubit4gl-runtime-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
 
 PLATFORMSTRING	=compile-platform-info
 
 #SF web site thinks all files that have tar.gz ANYWHERE in the name are
 #tar.gz files, and show them as empty, so we cannot use full TARNAME:
 #PLATFORMINFOFULL=${PLATFORMSTRING}-$(TARNAME).txt
-PLATFORMINFOFULL=${PLATFORMSTRING}-$(TARNAMENOEXT).txt
-TEMPLATENAMEINFO=${PLATFORMSTRING}-$(TEMPLATENAMETXT).txt
+#obsolete - PLATFORMINFOFULL=${PLATFORMSTRING}-$(TARNAMENOEXT).txt
+#obsolete - TEMPLATENAMEINFO=${PLATFORMSTRING}-$(TEMPLATENAMETXT).txt
 PLATFORMINFO	=${PLATFORMSTRING}.txt
 
 
-DOWNLOADPAGEBASE=aubitdownload.htm
-DOWNLOADPAGE	=$(FTPLOCATION)${DIRSEP}${DOWNLOADPAGEBASE}
-TEMPLATEFILEBASE=aubitdownload-template.htm
-TEMPLATEFILE	=$(FTPLOCATION)${DIRSEP}${TEMPLATEFILEBASE}
+#obsolete - DOWNLOADPAGEBASE=aubitdownload.htm
+#obsolete - DOWNLOADPAGE	=$(FTPLOCATION)${DIRSEP}${DOWNLOADPAGEBASE}
+#obsolete - TEMPLATEFILEBASE=aubitdownload-template.htm
+#obsolete - TEMPLATEFILE	=$(FTPLOCATION)${DIRSEP}${TEMPLATEFILEBASE}
 
-ifeq "$(USELOCALUPLOAD)" "1"
-	CYBUILDNAMES	=${FTPLOCATION}${DIRSEP}cybuildnames.tmp
-	UNIXBUILDNAMES	=${FTPLOCATION}${DIRSEP}unixbuildnames.tmp
-	CYSRCBUILDNAMES	=${FTPLOCATION}${DIRSEP}cysrcbuildnames.tmp
-	UNIXSRCBUILDNAMES=${FTPLOCATION}${DIRSEP}unixsrcbuildnames.tmp
-else
-	CYBUILDNAMES	=cybuildnames.tmp
-	UNIXBUILDNAMES	=unixbuildnames.tmp
-	CYSRCBUILDNAMES	=cysrcbuildnames.tmp
-	UNIXSRCBUILDNAMES=unixsrcbuildnames.tmp
-endif
+#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
+#obsolete - 	CYBUILDNAMES	=${FTPLOCATION}${DIRSEP}cybuildnames.tmp
+#obsolete - 	UNIXBUILDNAMES	=${FTPLOCATION}${DIRSEP}unixbuildnames.tmp
+#obsolete - 	CYSRCBUILDNAMES	=${FTPLOCATION}${DIRSEP}cysrcbuildnames.tmp
+#obsolete - 	UNIXSRCBUILDNAMES=${FTPLOCATION}${DIRSEP}unixsrcbuildnames.tmp
+#obsolete - else
+#obsolete - 	CYBUILDNAMES	=cybuildnames.tmp
+#obsolete - 	UNIXBUILDNAMES	=unixbuildnames.tmp
+#obsolete - 	CYSRCBUILDNAMES	=cysrcbuildnames.tmp
+#obsolete - 	UNIXSRCBUILDNAMES=unixsrcbuildnames.tmp
+#obsolete - endif
 
-SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
-MANFILEBASENAME=aubit4gl-doc-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
-#FIXME: remove SOURCEZIPBASENAME
-SOURCEZIPBASENAME=${SOURCETARBASENAME}
+#obsolete - SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
+#obsolete - MANFILEBASENAME=aubit4gl-doc-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
+#obsolete - #FIXME: remove SOURCEZIPBASENAME
+#obsolete - SOURCEZIPBASENAME=${SOURCETARBASENAME}
 
-SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
-#FIXME: remove SOURCEZIPNAME (and all duplicate functions)
-SOURCEZIPNAME	=$(SOURCE)/$(SOURCEZIPBASENAME)
-MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
-
+#obsolete - SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
+#obsolete - #FIXME: remove SOURCEZIPNAME (and all duplicate functions)
+#obsolete - SOURCEZIPNAME	=$(SOURCE)/$(SOURCEZIPBASENAME)
+#obsolete - MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
+#obsolete -
 
 ## ==================================================================
 ##                    Define default target
 ## ==================================================================
 
-
-
-#ifneq "$(COMSPEC)" ""
-#	ALL     =dll.exp.libs
-#endif
-
-#ALL			+=Makefile settings ${MAKERPC} corecompile
 ALL			+=Makefile settings rpc corecompile
 
 ifeq "$(GTKBUILD)" "yes"
-	ifdef COMSPEC
-		#ALL = settings ${MAKERPC} gtkgui corecompile test
-        ALL += gtkgui
-	else
-		ALL += gtkgui
-    endif
+	ALL += gtkgui
 endif
 
 ALL +=test
@@ -457,33 +442,30 @@ log:
 	@echo "make finished successfuly, see make.log for details."
 
 corecompile: libs
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc/rules
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/helpcompile
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib
+	$(MAKE) -C compilers/4glc/rules
+	$(MAKE) -C compilers/4glc
+	$(MAKE) -C compilers/fcompile
+	$(MAKE) -C compilers/menus
+	$(MAKE) -C compilers/helpcompile
+	$(MAKE) -C lib loadmap
 	@echo Aubit 4gl compiler core is now compiled
 
 libs:
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libtui
+	$(MAKE) -C lib
+	$(MAKE) -C lib/libtui
 	@echo Aubit 4gl core libraries are now compiled
 
 gtkgui:
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
-#no longer needed?
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libUI_GTK_x.so
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui UI_GTK_x
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile fshow-gtk
+	$(MAKE) -C lib/libgui
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
 ide:
-	$(MAKE) ${MKNAME} -C tools/ide
-	$(MAKE) ${MKNAME} -C tools/ide install.aubit
+	$(MAKE) -C tools/ide
+	$(MAKE) -C tools/ide install.aubit
 
+## ==================================================================
+##                              Perl compiler
+## ==================================================================
 
 perl: perl.compiler perl.lib test.perl
 
@@ -500,59 +482,18 @@ test.perl:
 	cd tools/test; perl test_build.pl
 
 ## ==================================================================
-##                              Prepare Targets
-## ==================================================================
-
-#FIXME: remove all "prepare" targets - not needed any more
-
-#prepare: ${PREPARE}
-prepare:
-	@echo FIXME: remove PREPARE target
-
-#unixprepare:
-#FIXME: chmod, touch, rm, MKPATH - shouold not be needed!
-#	(chmod a+x tools/project/mkproject)
-#	(chmod a+x compilers/4glc/rules/bin/*)
-#	(chmod a+x lib/bin/*)
-#	(chmod a+x bin/*)
-#	(chmod ug+rw compilers compilers/fcompile compilers/menus lib)
-
-#cyprepare:
-#	(chmod a+x tools/project/mkproject)
-#	(chmod a+x compilers/4glc/rules/bin/*)
-#	(chmod a+x lib/bin/*)
-#	(chmod a+x bin/*)
-
-## ==================================================================
 ##                              Make RPC
 ## ==================================================================
 
-#rpc: ${MAKERPC}
 rpc:
-#cyrpc:
-#ifeq "${CYRPC_FLAG}" ""
-#	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
-#	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
-#
-#	(cp tools/cygwin/form_x.h compilers/fcompile )
-#	(cp tools/cygwin/menu_x.h compilers/menus )
-#	touch cyrpc.flg
-#endif
-
-#unixrpc:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile rpc
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus rpc
-#FIXME: this cp, if realy needed should go in local makefine, not here!
-#	(cp compilers/fcompile/form_x_xdr.c compilers/fcompile/form_x.h lib)
-#	(cp compilers/menus/menu_x_xdr.c compilers/menus/menu_x.h lib)
 
 clean.rpc:
 	${RM} compilers/fcompile/form_x_xdr.c
 	${RM} compilers/menus/menu_x_xdr.c
 	${RM} compilers/fcompile/form_x.h
 	${RM} compilers/menus/menu_x.h
-#	${RM} cyrpc.flg
-
 
 ## ------------------------------------------------------------------
 ##                       Cleanup Targets
@@ -689,7 +630,6 @@ clean.build:
 #FIXME: this should use ${INSTALL}
 #FIXME: install .a4glrc in $HOME too
 #FIXME: do NOT overwrite .a4glrc and aubitenv!
-#FIXME: which files go to TOLIBCUI, when not compiled with GTK?
 #make icons for KDE and GNOME: to IDE, to manual
 
 install: install.core install.example install.manual install.config \
@@ -820,11 +760,11 @@ createcleantar: installdrop installall tarinstall
 #send "mysecretpassword\r"
 #expect eof
 #--------------------------------
-source.tar:
-	${RMDIR} $(INSTALL_DIR)
-	${MKPATH} $(INSTALL_DIR)
-	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
-	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
+#obsolete - source.tar:
+#obsolete - 	${RMDIR} $(INSTALL_DIR)
+#obsolete - 	${MKPATH} $(INSTALL_DIR)
+#obsolete - 	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
+#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
 
 tar: clean.all
 #COMPILE_DATE=20-01-2002
@@ -833,26 +773,26 @@ tar: clean.all
 	tar -cvzf aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
 	@echo "Aubit source tarball created"
 
-source.tar.sf:
-	${RMDIR} $(INSTALL_DIR)
-	${MKPATH} $(INSTALL_DIR)
-	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
-	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
+#obsolete - source.tar.sf:
+#obsolete - 	${RMDIR} $(INSTALL_DIR)
+#obsolete - 	${MKPATH} $(INSTALL_DIR)
+#obsolete - 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
+#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
 
-source.tar.location:
-	(cd $(SRCLOCATION); tar -cvzf $(SOURCETARNAME) * )
-	@echo $(SOURCETARNAME) created
+#obsolete - source.tar.location:
+#obsolete - 	(cd $(SRCLOCATION); tar -cvzf $(SOURCETARNAME) * )
+#obsolete - 	@echo $(SOURCETARNAME) created
 
-source.tar.curr: SRCLOCATION=${AUBITDIR}
-source.tar.curr: clean.all source.tar.location
+#obsolete - source.tar.curr: SRCLOCATION=${AUBITDIR}
+#obsolete - source.tar.curr: clean.all source.tar.location
 
-man.tar.sf:
+#obsolete - man.tar.sf:
 #use "cvs export" instead "cvs checkout" to get code without CVS directories
 #	export CVS_RSH=
-	${RMDIR} $(INSTALL_DIR)
-	${MKPATH} $(INSTALL_DIR)
-	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
-	(cd $(INSTALL_DIR)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
+#obsolete - 	${RMDIR} $(INSTALL_DIR)
+#obsolete - 	${MKPATH} $(INSTALL_DIR)
+#obsolete - 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
+#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
 
 source.zip:
 	${RMDIR} $(INSTALL_DIR)
@@ -860,104 +800,103 @@ source.zip:
 	(cd $(INSTALL_DIR); autocvspasswd; cvs -w checkout $(AUBITCVSNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); zip -r $(SOURCEZIPNAME) * )
 
-source.zip.sf:
-	${RMDIR} $(INSTALL_DIR)
-	${MKPATH} $(INSTALL_DIR)
-	(cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -w -z8 checkout $(AUBITCVSSFNAME))
-	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); zip -r $(SOURCEZIPNAME) * )
+#obsolete - source.zip.sf:
+#obsolete - 	${RMDIR} $(INSTALL_DIR)
+#obsolete - 	${MKPATH} $(INSTALL_DIR)
+#obsolete - 	(cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -w -z8 checkout $(AUBITCVSSFNAME))
+#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); zip -r $(SOURCEZIPNAME) * )
 
-source.zip.location:
-	(cd $(SRCLOCATION); zip -r $(SOURCEZIPNAME) * )
+#obsolete - source.zip.location:
+#obsolete - 	(cd $(SRCLOCATION); zip -r $(SOURCEZIPNAME) * )
 
-source.tar.2download:
-ifeq "$(USELOCALUPLOAD)" "1"
-	$(CP) $(SOURCETARNAME) $(FTPLOCATION)
-endif
-	autosfscp $(SOURCETARNAME)
-	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} ${MKNAME} getdlpage; \
-	fi
-	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
-	@mv ${DLTMP2} ${DLTMP1} ;
-	${MAKE} ${MKNAME} store.tar.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCETARBASENAME=$(SOURCETARBASENAME)
-#	${MAKE} putdlpage
-
-source.zip.2download:
-ifeq "$(USELOCALUPLOAD)" "1"
-	$(CP) $(SOURCEZIPNAME) $(FTPLOCATION)
-endif
-	autosfscp $(SOURCEZIPNAME)
-	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} ${MKNAME} getdlpage; \
-	fi
-	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
-	@mv ${DLTMP2} ${DLTMP1} ;
-	${MAKE} ${MKNAME} store.zip.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCEZIPBASENAME=$(SOURCEZIPBASENAME)
-#	${MAKE} putdlpage
-
-store.tar.dl.names:
-	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2}'  > ${UNIXSRCBUILDNAMES}
-	@echo 'cp ${DLTMP2} ${DLTMP1}'  >> ${UNIXSRCBUILDNAMES}
-ifeq "$(USELOCALUPLOAD)" "0"
-	autosfscp ${UNIXSRCBUILDNAMES}
-endif
-
-store.zip.dl.names:
-	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2}' > ${CYSRCBUILDNAMES}
-	@echo 'cp ${DLTMP2} ${DLTMP1}' >> ${CYSRCBUILDNAMES}
-ifeq "$(USELOCALUPLOAD)" "0"
-	autosfscp ${CYSRCBUILDNAMES}
-endif
-
+#obsolete - source.tar.2download:
+#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
+#obsolete - 	$(CP) $(SOURCETARNAME) $(FTPLOCATION)
+#obsolete - endif
+#obsolete - 	autosfscp $(SOURCETARNAME)
+#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
+#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
+#obsolete - 	fi
+#obsolete - 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
+#obsolete - 	@mv ${DLTMP2} ${DLTMP1} ;
+#obsolete - 	${MAKE} ${MKNAME} store.tar.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCETARBASENAME=$(SOURCETARBASENAME)
+#obsolete - #	${MAKE} putdlpage
+#obsolete -
+#obsolete - source.zip.2download:
+#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
+#obsolete - 	$(CP) $(SOURCEZIPNAME) $(FTPLOCATION)
+#obsolete - endif
+#obsolete - 	autosfscp $(SOURCEZIPNAME)
+#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
+#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
+#obsolete - 	fi
+#obsolete - 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
+#obsolete - 	@mv ${DLTMP2} ${DLTMP1} ;
+#obsolete - 	${MAKE} ${MKNAME} store.zip.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCEZIPBASENAME=$(SOURCEZIPBASENAME)
+#obsolete - #	${MAKE} putdlpage
+#obsolete -
+#obsolete - store.tar.dl.names:
+#obsolete - 	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2}'  > ${UNIXSRCBUILDNAMES}
+#obsolete - 	@echo 'cp ${DLTMP2} ${DLTMP1}'  >> ${UNIXSRCBUILDNAMES}
+#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
+#obsolete - 	autosfscp ${UNIXSRCBUILDNAMES}
+#obsolete - endif
+#obsolete -
+#obsolete - store.zip.dl.names:
+#obsolete - 	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2}' > ${CYSRCBUILDNAMES}
+#obsolete - 	@echo 'cp ${DLTMP2} ${DLTMP1}' >> ${CYSRCBUILDNAMES}
+#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
+#obsolete - 	autosfscp ${CYSRCBUILDNAMES}
+#obsolete - endif
+#obsolete -
 
 ## ------------------------------------------------------------------
 ##                Additional Installation Targets: Windows/CygWin
 ## ------------------------------------------------------------------
 
-install.tree.cy:
-	@cd $(INSTALL_DIR); \
-	${MKPATH} $(INSTALL_DIR)/dll; \
-	${MKPATH} $(INSTALL_DIR)/extralibs;
+#obsolete - install.tree.cy:
+#obsolete - 	@cd $(INSTALL_DIR); \
+#obsolete - 	${MKPATH} $(INSTALL_DIR)/dll; \
+#obsolete - 	${MKPATH} $(INSTALL_DIR)/extralibs;
+#obsolete -
+#obsolete - pack.cygwin:
+#obsolete - 	${MAKE} ${MKNAME} installdrop INSTALL_DIR=${INSTALL_DIR}
+#obsolete - 	${MAKE} ${MKNAME} install.tree INSTALL_DIR=${INSTALL_DIR}
+#obsolete - 	${MAKE} ${MKNAME} install.tree.cy INSTALL_DIR=${INSTALL_DIR}
+#obsolete - 	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
+#obsolete - 	${MAKE} ${MKNAME} install.example SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
+#obsolete - #FIXME: we should pack compiled IDE with binary distro, not sources
+#obsolete - 	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
+#obsolete - 	${MAKE} ${MKNAME} install.libs LIBTARGET1=${CYLIBTARGET1}
+#obsolete - 	${MAKE} ${MKNAME} install.dll DLLTARGET=${CYDLLTARGET}
+#obsolete - 	${MAKE} ${MKNAME} cygwin.runtime INSTALL_DIR=${INSTALL_DIR}
+#obsolete - 	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(INSTALL_DIR) $(SOURCE)
 
-pack.cygwin:
-	${MAKE} ${MKNAME} installdrop INSTALL_DIR=${INSTALL_DIR}
-	${MAKE} ${MKNAME} install.tree INSTALL_DIR=${INSTALL_DIR}
-	${MAKE} ${MKNAME} install.tree.cy INSTALL_DIR=${INSTALL_DIR}
-	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
-	${MAKE} ${MKNAME} install.example SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
-#FIXME: we should pack compiled IDE with binary distro, not sources
-	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
-	${MAKE} ${MKNAME} install.libs LIBTARGET1=${CYLIBTARGET1}
-	${MAKE} ${MKNAME} install.dll DLLTARGET=${CYDLLTARGET}
-	${MAKE} ${MKNAME} cygwin.runtime INSTALL_DIR=${INSTALL_DIR}
-	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(INSTALL_DIR) $(SOURCE)
-
-
-cygwin.runtime.with.demo: cygwin.runtime cygwin.runtime.demo cygwin.zip.runtime
+#obsolete - cygwin.runtime.with.demo: cygwin.runtime cygwin.runtime.demo cygwin.zip.runtime
 
 #FIXME: if this programs are not compiled, make will stop: cygwin.runtime.demo
-cygwin.runtime: cygwin.runtime.tree
-	${CP} /bin/cygncurses?.dll $(INSTALL_DIR)/runtime/runtimelib
-	${CP} /bin/cygwin?.dll $(INSTALL_DIR)/runtime/runtimelib
-	${CP} /bin/cygform?.dll $(INSTALL_DIR)/runtime/runtimelib
-	${CP} /bin/cygpanel?.dll $(INSTALL_DIR)/runtime/runtimelib
-	${CP} ${DLLTARGET}/* $(INSTALL_DIR)/runtime/runtimelib
-	${CP} tools/cygwin/readme-runtime.html $(INSTALL_DIR)/runtime
+#obsolete - cygwin.runtime: cygwin.runtime.tree
+#obsolete - 	${CP} /bin/cygncurses?.dll $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${CP} /bin/cygwin?.dll $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${CP} /bin/cygform?.dll $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${CP} /bin/cygpanel?.dll $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${CP} ${DLLTARGET}/* $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${CP} tools/cygwin/readme-runtime.html $(INSTALL_DIR)/runtime
 #FIXME: At the moment, we are not making any .so or .dll on Windows
 #	${CP} lib/*.so $(INSTALL_DIR)/runtime/runtimelib
 
-cygwin.runtime.tree:
-	${MKPATH} $(INSTALL_DIR)/runtime
-	${MKPATH} $(INSTALL_DIR)/runtime/runtimelib
-	${MKPATH} $(INSTALL_DIR)/runtime/apps
+#obsolete - cygwin.runtime.tree:
+#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime
+#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime/runtimelib
+#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime/apps
 
-cygwin.runtime.demo:
-	${MAKE} ${MKNAME} -C tools/test GTKBUILD=yes
-	${MAKE} ${MKNAME} -C tools/test/gui GTKBUILD=yes
-	cp ${CYSOURCE}/tools/test/*.exe $(INSTALL_DIR)/runtime/apps
-	cp ${CYSOURCE}/tools/test/gui/*.exe $(INSTALL_DIR)/runtime/apps
-	${CP} tools/cygwin/*.lnk.hide $(INSTALL_DIR)/runtime
-	${CP} tools/cygwin/unhide.bat $(INSTALL_DIR)/runtime
+#obsolete - cygwin.runtime.demo:
+#obsolete - 	${MAKE} ${MKNAME} -C tools/test GTKBUILD=yes
+#obsolete - #obsolete - 	${MAKE} ${MKNAME} -C tools/test/gui GTKBUILD=yes
+#obsolete - 	cp ${CYSOURCE}/tools/test/*.exe $(INSTALL_DIR)/runtime/apps
+#obsolete - 	cp ${CYSOURCE}/tools/test/gui/*.exe $(INSTALL_DIR)/runtime/apps
+#obsolete - 	${CP} tools/cygwin/*.lnk.hide $(INSTALL_DIR)/runtime
+#obsolete - 	${CP} tools/cygwin/unhide.bat $(INSTALL_DIR)/runtime
 
 #if we unhide them before zip, zip will not find them:
 unhide.lnk:
@@ -970,80 +909,80 @@ cygwin.zip.runtime:
 	(cd $(INSTALL_DIR)/runtime/; zip -r $(SOURCE)/$(ZIPRUNTIMENAME) * )
 
 
-zip.install: platform
-#FIXME: check if it exists first
-	${RM} $(SOURCE)/$(ZIPNAME)
-	${CP} $(PLATFORMINFO) $(INSTALL_DIR)
-#	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * $(A4GLRC))
-	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * )
-install.libs:
-	cp ${L4}/glib${LIBVER}.lib ${LIBTARGET1}
-	cp ${L1}/gdk${LIBVER}.lib ${LIBTARGET1}
-	cp ${L2}/gtk${LIBVER}.lib ${LIBTARGET1}
-	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}/libglib.a
-	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}/libgdk.a
-	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}/libgtk.a
-#preserve version numbers too:
-	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}
-	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}
-	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}
+#obsolete - zip.install: platform
+#obsolete - #FIXME: check if it exists first
+#obsolete - 	${RM} $(SOURCE)/$(ZIPNAME)
+#obsolete - 	${CP} $(PLATFORMINFO) $(INSTALL_DIR)
+#obsolete - #	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * $(A4GLRC))
+#obsolete - 	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * )
+#obsolete - install.libs:
+#obsolete - 	cp ${L4}/glib${LIBVER}.lib ${LIBTARGET1}
+#obsolete - 	cp ${L1}/gdk${LIBVER}.lib ${LIBTARGET1}
+#obsolete - 	cp ${L2}/gtk${LIBVER}.lib ${LIBTARGET1}
+#obsolete - 	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}/libglib.a
+#obsolete - 	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}/libgdk.a
+#obsolete - 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}/libgtk.a
+#obsolete - #preserve version numbers too:
+#obsolete - 	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}
+#obsolete - 	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}
+#obsolete - 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}
 
 #FIXME: want about -noodbc libs?
 #	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
 #	cp ${L5}/libaclallgui.a ${LIBTARGET1}
-	cp ${L5}/libaclall.a ${LIBTARGET1}
-	cp ${L3}/librpclib.a ${LIBTARGET1}
+#obsolete - 	cp ${L5}/libaclall.a ${LIBTARGET1}
+#obsolete - 	cp ${L3}/librpclib.a ${LIBTARGET1}
 
-install.dll:
-	cp ${L1}/gdk${LIBVER}.dll ${DLLTARGET}
-	cp ${L4}/glib${LIBVER}.dll ${DLLTARGET}
-	cp ${L6}/iconv${LIBVER}.dll ${DLLTARGET}
-	cp ${L2}/gtk${LIBVER}.dll ${DLLTARGET}
-	cp ${L4}/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
-	cp ${L7}/gnu-intl.dll ${DLLTARGET}
+#obsolete - install.dll:
+#obsolete - 	cp ${L1}/gdk${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	cp ${L4}/glib${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	cp ${L6}/iconv${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	cp ${L2}/gtk${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	cp ${L4}/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	cp ${L7}/gnu-intl.dll ${DLLTARGET}
 
-deinstall.libs:
-	${RM} /usr/lib/glib${LIBVER}.lib
-	${RM} /usr/lib/gdk${LIBVER}.lib
-	${RM} /usr/lib/gtk${LIBVER}.lib
-	${RM} /usr/lib/libglib${LIBVER}.a
-	${RM} /usr/lib/libgdk${LIBVER}.a
-	${RM} /usr/lib/libgtk${LIBVER}.a
+#obsolete - deinstall.libs:
+#obsolete - 	${RM} /usr/lib/glib${LIBVER}.lib
+#obsolete - 	${RM} /usr/lib/gdk${LIBVER}.lib
+#obsolete - 	${RM} /usr/lib/gtk${LIBVER}.lib
+#obsolete - 	${RM} /usr/lib/libglib${LIBVER}.a
+#obsolete - 	${RM} /usr/lib/libgdk${LIBVER}.a
+#obsolete - 	${RM} /usr/lib/libgtk${LIBVER}.a
 #FIXME: what about -noodbc libs?
 #	${RM} /usr/lib/libUI_GTK.a
 #	${RM} /usr/lib/libaclallgui.a
-	${RM} /usr/lib/libaclall.a
-	${RM} /usr/lib/librpclib.a
+#obsolete - 	${RM} /usr/lib/libaclall.a
+#obsolete - 	${RM} /usr/lib/librpclib.a
 
-deinstall.dll:
-	${RM} /bin/gdk${LIBVER}.dll ${DLLTARGET}
-	${RM} /bin/glib${LIBVER}.dll ${DLLTARGET}
-	${RM} /bin/iconv${LIBVER}.dll ${DLLTARGET}
-	${RM} /bin/gtk${LIBVER}.dll ${DLLTARGET}
-	${RM} /bin/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
-	${RM} /bin/gnu-intl.dll ${DLLTARGET}
+#obsolete - deinstall.dll:
+#obsolete - 	${RM} /bin/gdk${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	${RM} /bin/glib${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	${RM} /bin/iconv${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	${RM} /bin/gtk${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	${RM} /bin/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
+#obsolete - 	${RM} /bin/gnu-intl.dll ${DLLTARGET}
 
 
-install.bin.lib: install.run.exe
-#we should not do this: this should be done in aubitenv:
-#$PATH to $AUBITDIR/dll
-#$LD_LIBRARY_PATH to $AUBITDIR/extralibs
-	cp dll/* /bin
-	cp extralibs/* /usr/lib
-	${MAKE} ${MKNAME} cygwin.install.message
+#obsolete - install.bin.lib: install.run.exe
+#obsolete - #we should not do this: this should be done in aubitenv:
+#obsolete - #$PATH to $AUBITDIR/dll
+#obsolete - #$LD_LIBRARY_PATH to $AUBITDIR/extralibs
+#obsolete - 	cp dll/* /bin
+#obsolete - 	cp extralibs/* /usr/lib
+#obsolete - 	${MAKE} ${MKNAME} cygwin.install.message
 
-install.run.exe:
-	${CP} bin/run.exe ${SYSTEMROOT}
-	${MAKE} ${MKNAME} cygwin.install.message
+#obsolete - install.run.exe:
+#obsolete - 	${CP} bin/run.exe ${SYSTEMROOT}
+#obsolete - 	${MAKE} ${MKNAME} cygwin.install.message
 
-deinstall.bin.lib: deinstall.libs deinstall.dll
-	${RM} ${SYSTEMROOT}/run.exe
+#obsolete - deinstall.bin.lib: deinstall.libs deinstall.dll
+#obsolete - 	${RM} ${SYSTEMROOT}/run.exe
 
-cygwin.install.message:
-	@echo "Don't forget to add"
-	@echo "C:\cygwin\bin;C:\cygwin${AUBITDIR}\bin;C:\cygwin${AUBITDIR}\dll"
-	@echo "to WINDOWS path."
-	@echo "Add AUBITGUI=gui to system environment to run in GUI mode"
+#obsolete - cygwin.install.message:
+#obsolete - 	@echo "Don't forget to add"
+#obsolete - 	@echo "C:\cygwin\bin;C:\cygwin${AUBITDIR}\bin;C:\cygwin${AUBITDIR}\dll"
+#obsolete - 	@echo "to WINDOWS path."
+#obsolete - 	@echo "Add AUBITGUI=gui to system environment to run in GUI mode"
 
 pack.amake:
 	${MKPATH} /tmp/pack_amake/bin
@@ -1647,7 +1586,7 @@ settings.common:
 	@echo "LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}" >> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) >> ${OUT}
-	@echo AUBITDIR=${AUBITDIR} OS=$(OS) >> ${OUT}
+	@echo AUBITDIR=${AUBITDIR} OS=$(TARGET) >> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 
 show.platform: OUT="/tmp/showplatform"

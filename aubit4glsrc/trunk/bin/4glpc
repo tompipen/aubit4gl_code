@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.64 2002-03-27 11:57:02 afalout Exp $
+# $Id: 4glpc,v 1.65 2002-03-28 07:19:02 afalout Exp $
 #
 
 ########################################################################
@@ -1231,24 +1231,26 @@ then
    fi
 
 else
-   $output "Generating Exec"
-
    if [ "$A4GLVERBOSE" = "yes" ]
    then
+	   $output "Generating Exec"
 	   echo "executing (2) : $DOIT $CC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
-#	   echo $DOIT
-#	   echo $CC
-#	   echo $COMPCC
-#	   echo $INCLDIR
-#	   echo $FGLLIBSDIR
-#	   echo $FGLLIBS
-#	   echo $LIBSDIR
-#	   echo $LIBS
-#	   echo $GTKLIBS
-#	   echo $LAST
 
-	   echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-       echo "PWD is `pwd`"
+		if [ "$A4GLDEBUG" = "yes" ]; then
+		   echo $DOIT
+		   echo $CC
+		   echo $COMPCC
+		   echo $INCLDIR
+		   echo $FGLLIBSDIR
+		   echo $FGLLIBS
+		   echo $LIBSDIR
+		   echo $LIBS
+		   echo $GTKLIBS
+		   echo $LAST
+
+		   echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+	       echo "PWD is `pwd`"
+	    fi
    fi
 
 #    if [ "$COMSPEC" = "" ]
