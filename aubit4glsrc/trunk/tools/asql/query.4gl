@@ -180,7 +180,11 @@ function query_menu()
 			end if
 
 		command "Output" "Output the results of the SQL"
-			call qry_output()
+			Call set_exec_mode(2)
+			if not qry_output() then
+				error "Some SQL error"
+			end if
+			Call set_exec_mode(0)
 
 		command "Choose" "Choose an SQL file"
 			if qry_choose() then
@@ -219,7 +223,7 @@ define lv_fname char(256)
 code
 A4GL_trim(lv_fname);
 if (strcmp(lv_fname,"-")==0) 
-	mv_fin=stdin;
+	mv_fin=(long)stdin;
 else
 	mv_fin=(long)fopen(lv_fname,"r");
 endcode
@@ -295,6 +299,7 @@ end function
 
 ################################################################################
 function qry_modify()
+	set pause mode off
 	call clear_screen_portion()
 	call read_tmpfile()
 
@@ -387,9 +392,10 @@ endcode
 
 if get_exec_mode()=0 then
 message a using "<<<<"," statements to execute"
-
 end if
-if not execute_queries() then
+
+
+if not execute_queries(0) then
 	if get_exec_mode()=0 then
 		error "Error Executing.."
 	end if
@@ -418,6 +424,87 @@ end function
 
 ################################################################################
 function qry_output()
+define lv_query_out integer
+define lv_name char(256)
+define lv_fmode char(1)
+define lv_amode char(1)
+define a integer
+
+
+menu "OUTPUT" 
+		command "Printer" "Send query output to printer"
+			LET lv_query_out=1 exit menu
+		command "New-File" "Send query output to new file"
+			LET lv_query_out=2 exit menu
+		command "Append-File" "Append query output to an existing file"
+			LET lv_query_out=3 exit menu
+		command "To-pipe" "Send output to the input of a program"
+			LET lv_query_out=4 exit menu
+		command "Exit" "Return to the SQL menu"
+			LET lv_query_out=0 exit menu
+end menu
+if lv_query_out=0 then 
+	return
+end if
+
+call set_pick_cnt(0)
+let lv_name="NONE"
+
+case lv_query_out
+	when 2 call prompt_pick("OUTPUT NEW-FILE >>","") returning lv_name
+	when 3 call prompt_pick("OUTPUT APPEND-FILE >>","") returning lv_name
+	when 4 call prompt_pick("OUTPUT PIPE >>","") returning lv_name
+end case
+
+if lv_name is null or lv_name matches " " THEN
+	error "Output aborted"
+	return
+end if
+IF lv_query_out=1 THEN
+        let lv_query_out=4
+        let lv_name=fgl_getenv("DBPRINT")
+
+        if lv_name is null or lv_name = " " then
+                let lv_name="lp "
+        end if
+end if
+
+case lv_query_out
+        when 1 # Printer
+                error "Shouldn't happen"  return
+
+        when 2 # New file
+                let lv_fmode="f"
+                let lv_amode="w"
+
+        when 3 # Append File
+                let lv_fmode="f"
+                let lv_amode="a"
+        when 4  # To-Pipe
+                let lv_fmode="p"
+                let lv_amode="w"
+end case
+
+call open_read_tmpfile()
+code
+{
+extern FILE *yyin;
+extern struct element *list;
+extern int list_cnt;
+
+A4GL_assertion(mv_fin==0,"No input tmp file");
+
+yyin=(FILE *)mv_fin;
+clr_stmt();
+a=yyparse();
+a=list_cnt;
+}
+endcode
+
+
+
+return execute_output(lv_name,lv_fmode,lv_amode)
+	
 end function
 
 

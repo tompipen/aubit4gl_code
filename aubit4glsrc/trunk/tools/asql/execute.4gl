@@ -10,10 +10,9 @@ int fetchFirst=0;
 #define DISPLAY_DOWN   2
 
 
-
-//#define DISPLAY_LINES 10
 int display_lines=-1;
 
+void open_display_file_c() ;
 
 
 FILE *out=0;
@@ -30,6 +29,7 @@ int *columnWidths=0;
 
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
+#define EXEC_MODE_OUTPUT        2
 
 
 struct element {
@@ -87,7 +87,7 @@ end function
 function confirm(qry_type) 
 define qry_type integer
 
-	if exec_mode=1 then
+	if exec_mode=1 or exec_mode=2 then
 		return 0
 	end if
 
@@ -117,7 +117,8 @@ int ec_check_and_report_error() {
 endcode
 
 
-function execute_queries()
+function execute_queries(ofile)
+define ofile INTEGER
 define a integer
 define msg char(512)
 define qry_type integer
@@ -133,10 +134,10 @@ if (display_lines==-1) {
 }
 
 A4GL_debug("%d SQL statements",list_cnt);
-//if (exec_mode==EXEC_MODE_FILE) { printf(" %d statements\n",list_cnt); }
 
 if (exec_mode!=EXEC_MODE_INTERACTIVE) {
-	exec_out=stdout;
+	if (ofile==0) ofile=(long)stdout;
+	exec_out=(FILE *)ofile;
 }
 
 
@@ -244,18 +245,6 @@ code
 A4GL_assertion(out==0,"No output file (2)");
 					if (out) {fprintf(out,"\n");fclose(out);out=0;}
 
-					//system("cp out.txt out.1");
-					//sleep(60);
-					//if (outlines && exec_mode==EXEC_MODE_INTERACTIVE) {
-							//while (1) {
-								//if (outlines<=0) break;
-								//A4GL_debug("Stmt %d Outlines : %d",a,outlines);
-								//aclfgl_paginate(0);
-								//rpaginate=A4GL_pop_int();
-								//if (rpaginate!=0) break;
-								//fetchFirst=1;
-							//}
-					//}
 					EXEC SQL CLOSE crExec;
 					EXEC SQL free stExec;
 					EXEC SQL free crExec;
@@ -269,9 +258,7 @@ A4GL_assertion(out==0,"No output file (2)");
 				}
 			}
 A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
-	if (exec_mode==EXEC_MODE_FILE ) {
 		A4GL_debug("Qry type : %d",qry_type);
-	}
 end_query: ;
 	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected,get_qry_msg(qry_type,raffected));
 
@@ -297,7 +284,7 @@ if sqlca.sqlcode>=0 then
 
 else
 
-	if exec_mode=0 then
+	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
 
 		# We'll stop after the first error...
@@ -545,8 +532,7 @@ if (indicator!=-1) {
 	if (display_mode==DISPLAY_DOWN) {
 		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
 			fprintf(outputFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
-		}
-		else {
+		} else {
 			fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
 		}
 		outlines++;
@@ -616,7 +602,7 @@ $open crExec ;
 	if (sqlca.sqlcode<0) return 0;
 
 
-if (exec_mode==0) {
+if (exec_mode==0||exec_mode==2) {
 	if (field_widths()>A4GL_get_curr_width()) {
 		display_mode=DISPLAY_DOWN;
 	} else {
@@ -891,3 +877,51 @@ if (sqlca.sqlcode>=0) {
 endcode
 
 
+
+function execute_output(lv_name,lv_fmode,lv_amode)
+define lv_name char(255)
+define lv_fmode char(1)
+define lv_amode char(1)
+define lv_out integer
+define lv_rval integer
+Call set_exec_mode(2)
+
+if lv_fmode="p" then
+	display "" # go into line mode...
+end if
+
+code
+A4GL_trim(lv_name);
+
+if (lv_fmode[0]=='f')  {
+	A4GL_debug("OUTPUT fopen(%s,%s)",lv_name,lv_amode);
+	lv_out=(long)fopen(lv_name,lv_amode);
+} else {
+	A4GL_debug("OUTPUT popen(%s,%s)",lv_name,lv_amode);
+	lv_out=(long)popen(lv_name,lv_amode);
+}
+endcode
+
+if lv_out=0 then
+	error "Unable to open output"
+	return
+end if
+
+let lv_rval=execute_queries(lv_out) 
+
+code
+	fclose((FILE *)lv_out);
+endcode
+
+if lv_rval=0 then
+	error "ERROR!!!"
+	sleep 2
+end if
+
+return lv_rval
+	
+
+
+end function
+
+		
