@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.89 2004-11-17 13:51:51 mikeaubury Exp $
+# $Id: iarray.c,v 1.90 2004-11-17 18:16:43 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.89 2004-11-17 13:51:51 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.90 2004-11-17 18:16:43 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -474,7 +474,10 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 	      struct BINDING *b)
 {
   char buff[8000];
+  char fbuff[8000];
   int really_ok = 0;
+  char *ptr;
+  struct struct_scr_field *fprop;
 
   A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,
 	      form->currentfield);
@@ -483,91 +486,132 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
   y--;
 
 
-  if (A4GL_copy_field_data (form))
-    {
-      char *ptr;
-      ptr = strdup (field_buffer (form->currentfield, 0));
-      A4GL_trim (ptr);
-      if (strlen (ptr))
-	{
-	  struct struct_scr_field *fprop;
-	  char *ptr2;
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (form->currentfield));
+  if (!A4GL_copy_field_data (form))
+    return 0;
 
-	  ptr2 = A4GL_fld_data_ignore_format (fprop, ptr);
-	  if (ptr2 != ptr)
+  strcpy (fbuff, field_buffer (form->currentfield, 0));
+	A4GL_debug("fbuff=%s\n",fbuff);
+  fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+    {
+      int a;
+      int blank = 1;
+      char *picture;
+      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+      A4GL_debug ("HAS PICTURE MJA123");
+      for (a = 0; a < strlen (fbuff); a++)
+	{
+	  if (picture[a] == 'X' && fbuff[a] != ' ')
 	    {
-	      A4GL_debug ("Free ptr");
-	      acl_free (ptr);
-	      ptr = strdup (ptr2);
+	      blank = 0;
+	      break;
 	    }
-	  A4GL_push_char (ptr);
+	  if (picture[a] == 'A' && fbuff[a] != ' ')
+	    {
+	      blank = 0;
+	      break;
+	    }
+	  if (picture[a] == '#' && fbuff[a] != ' ')
+	    {
+	      blank = 0;
+	      break;
+	    }
+	}
+      if (blank) strcpy (fbuff, "");
+
+      ptr = strdup (fbuff);
+      A4GL_trim (ptr);
+    }
+  else
+    {
+      ptr = strdup (fbuff);
+      A4GL_trim (ptr);
+    }
+
+  A4GL_debug ("COPY gets buff = %s ptr=%s\n", fbuff,ptr);
+
+
+
+  if (strlen (ptr))
+    {
+      struct struct_scr_field *fprop;
+      char *ptr2;
+      fprop =
+	(struct struct_scr_field *) (field_userptr (form->currentfield));
+
+      ptr2 = A4GL_fld_data_ignore_format (fprop, ptr);
+      if (ptr2 != ptr)
+	{
+	  A4GL_debug ("Free ptr");
+	  acl_free (ptr);
+	  ptr = strdup (ptr2);
+	}
+      A4GL_push_char (ptr);
+    }
+  else
+    {
+      A4GL_push_null (b[x].dtype, b[x].size);
+    }
+  A4GL_debug ("Pushed field buffer :'%s'", ptr);
+
+  strcpy (buff, fbuff);
+  A4GL_trim (buff);
+
+
+  really_ok = 1;
+  A4GL_debug ("Calling pop_var2..");
+  A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
+
+  if (strlen (buff) && A4GL_isnull (b[x].dtype, b[x].ptr + (y * elem)))
+    {
+      A4GL_debug ("Looks null");
+      really_ok = 0;
+    }
+
+  if (!A4GL_conversion_ok (-1))
+    {
+      A4GL_debug ("Looks like a bad conversion");
+      really_ok = 0;
+    }
+
+  if ((b[x].dtype == DTYPE_INT || b[x].dtype == DTYPE_SMINT
+       || b[x].dtype == DTYPE_SERIAL) && strchr (buff, '.'))
+    {
+      A4GL_debug ("Looks like its got a '.' in it");
+      really_ok = 0;
+    }
+
+
+  A4GL_debug ("Free ptr 2");
+  acl_free (ptr);
+  A4GL_debug ("Popped field buffer into variable");
+  if (really_ok == 0)
+    {
+      struct struct_scr_field *fprop;
+      fprop =
+	(struct struct_scr_field *) (field_userptr (form->currentfield));
+      A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+      if (fprop)
+	A4GL_comments (fprop);
+
+      if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
+	{
+	  A4GL_clr_field (form->currentfield);
 	}
       else
 	{
-	  A4GL_push_null (b[x].dtype, b[x].size);
-	}
-      A4GL_debug ("Pushed field buffer :'%s'", ptr);
-
-      strcpy (buff, field_buffer (form->currentfield, 0));
-      A4GL_trim (buff);
-
-
-      really_ok = 1;
-      A4GL_debug ("Calling pop_var2..");
-      A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
-
-      if (strlen (buff) && A4GL_isnull (b[x].dtype, b[x].ptr + (y * elem)))
-	{
-	  A4GL_debug ("Looks null");
-	  really_ok = 0;
-	}
-
-      if (!A4GL_conversion_ok (-1))
-	{
-	  A4GL_debug ("Looks like a bad conversion");
-	  really_ok = 0;
-	}
-
-      if ((b[x].dtype == DTYPE_INT || b[x].dtype == DTYPE_SMINT
-	   || b[x].dtype == DTYPE_SERIAL) && strchr (buff, '.'))
-	{
-	  A4GL_debug ("Looks like its got a '.' in it");
-	  really_ok = 0;
-	}
-
-
-      A4GL_debug ("Free ptr 2");
-      acl_free (ptr);
-      A4GL_debug ("Popped field buffer into variable");
-      if (really_ok == 0)
-	{
-	  struct struct_scr_field *fprop;
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (form->currentfield));
-	  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-	  if (fprop)
-	    A4GL_comments (fprop);
-
-	  if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
+	  if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 	    {
-	      A4GL_clr_field (form->currentfield);
+	      A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
 	    }
-	  else
-	    {
-	      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
-		{
-		  A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
-		}
-	    }
-	  set_current_field (form->form, form->currentfield);
-	  return 0;
 	}
-      return 1;
+      set_current_field (form->form, form->currentfield);
+      return 0;
     }
-  return 0;
+  return 1;
 }
+
+
 
 /**
  *
@@ -2656,9 +2700,14 @@ process_control_stack_internal (struct s_inp_arr *arr)
 			  break;
 			}
 		    }
-		  if (blank)
-		    strcpy (buff, "");
+		  if (blank) {
+			strcpy (buff, "");
+			
+		  }
+	
+
 		}
+
 
 
 	    }
