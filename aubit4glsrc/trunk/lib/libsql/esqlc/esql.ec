@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.127 2005-03-28 11:35:06 saferreira Exp $
+# $Id: esql.ec,v 1.128 2005-03-30 10:50:50 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.127 2005-03-28 11:35:06 saferreira Exp $";
+  "@(#)$Id: esql.ec,v 1.128 2005-03-30 10:50:50 mikeaubury Exp $";
 #endif
 
 
@@ -886,7 +886,6 @@ newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
   sid->statementName = strdup (getGlobalStatementName ());
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
-
   return sid;
 }
 
@@ -913,6 +912,7 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
 
 
   sid = newStatement (ibind, ni, obind, no, s);
+
   s_internal = strdup (s);
   A4GL_trim (s_internal);
   A4GL_debug ("PrepareSQL : %s", s_internal);
@@ -920,22 +920,26 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
 
   statementName = sid->statementName;
   statementText = sid->select;
+
+  if (A4GL_has_pointer(sid->statementName, PRECODE)) { 
+	EXEC SQL FREE :statementName;
+  }
+
+  A4GLSQL_add_prepare(sid->statementName,sid);
+
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
   copy_sqlca_Stuff(1);
+
   if (isSqlError ())
     {
       free (sid);
+      //A4GLSQL_del_prepare(sid->statementName);
       A4GLSQL_set_status (sqlca.sqlcode, 1);
       return (struct s_sid *) 0;
     }
 
-  //if ( processPreStatementBinds(sid) == 1 ) {
-  //debug("processPreStatementBinds failed ?");
-  //error_just_in_case();
-  //return 0;
-  //}
   A4GL_debug ("Prepared OK\n");
   return sid;
 }
@@ -2051,7 +2055,8 @@ sid=vsid;
 
   sprintf(buff,"%p",sid);
   if (singleton) {
-  	EXEC SQL FREE :statementName;
+	A4GLSQL_free_cursor(statementName);
+  	//EXEC SQL FREE :statementName;
   }
   return 0;
 }
@@ -2179,9 +2184,9 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
 
   if (singleton) {
 	A4GL_debug("Free : %s",statementName);
-  	EXEC SQL FREE :statementName;
-	sid->statementName="FREED";
-	sid->select="FREED";
+	A4GLSQL_free_cursor(statementName);
+	//sid->statementName="FREED";
+	//sid->select="FREED";
   }
 
   return 0;
@@ -2283,6 +2288,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
   if (A4GL_has_pointer (cursname, CURCODE)) {
   		cursorIdentification = A4GL_find_pointer(cursname,CURCODE);
+		EXEC SQL WHENEVER ERROR CONTINUE;
   } else {
   		cursorIdentification = malloc (sizeof (struct s_cid));
   		cursorIdentification->statement = sid;
@@ -2302,16 +2308,6 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	  break;
 
 
-/* THE FORUPDATE goes on the SQL statement not the cursor...
-	case FOR_UPDATE:
-	     EXEC SQL DECLARE :cursorName CURSOR FOR :statementName FOR UPDATE;
-	  break;
-
-	case FOR_UPDATE_WITH_HOLD:
-	     EXEC SQL DECLARE :cursorName CURSOR WITH HOLD FOR :statementName  FOR UPDATE;
-	  break;
-*/
-
 	case WITH_HOLD:
 
 	EXEC SQL DECLARE: cursorName CURSOR WITH HOLD FOR:statementName;
@@ -2320,7 +2316,6 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       /** @todo : Assign an error code  */
 	  return (struct s_cid *) 0;
 	}
-  //printf("declared\n");
 
   if (isSqlError ())
     {
@@ -2329,10 +2324,9 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
     }
   A4GL_debug ("Declared '%s' OK",cursname);
   A4GL_add_pointer (cursname, CURCODE, cursorIdentification);
-
   if (processPreStatementBinds (sid) == 1)
 	 return (struct s_cid *) 0;
-
+  //printf("'%s' '%s'\n",cursname,cursorName);
   return cursorIdentification;
 }
 
@@ -2343,22 +2337,28 @@ void A4GLSQL_free_cursor (char *s)
   struct s_cid *cursorIdentification;
   EXEC SQL END DECLARE SECTION;
 
-  cursorIdentification = A4GL_find_pointer (s, CURCODE);
  
 
-  if (cursorIdentification==0) { 
-  		cursorIdentification = A4GL_find_pointer (s, PRECODE); /* Prepared instead ? */
-  		if (cursorIdentification==0) { 
+  if (A4GL_has_pointer (s, CURCODE))  {
+  	cursorIdentification = A4GL_find_pointer (s, CURCODE);
+  	EXEC SQL FREE :cursorName;
+  	free(cursorIdentification);
+  	A4GL_del_pointer (s, CURCODE);
+  }
+
+
+  if (A4GL_has_pointer(s, PRECODE)) { /* Prepared instead ? */
+ 	cursorIdentification = A4GL_find_pointer (s, PRECODE); /* Prepared instead ? */
+  	if (cursorIdentification==0) { 
        			//A4GL_exitwith("Statement/Cursor not found"); 
 			return ; 
-		}
-  		EXEC SQL FREE :cursorName;
-  		free(cursorIdentification);
-  		A4GL_del_pointer (s, PRECODE);
+	}
+  	EXEC SQL FREE :cursorName;
+  	A4GL_del_pointer (s, PRECODE);
+  	A4GL_del_pointer (s, PRECODE_R);
+  	free(cursorIdentification);
+	return;
   }
-  EXEC SQL FREE :cursorName;
-  free(cursorIdentification);
-  A4GL_del_pointer (s, CURCODE);
 
 }
 
@@ -3421,6 +3421,7 @@ void
 A4GLSQL_commit_rollback (int mode)
 {
   A4GL_debug ("In commit_rollback");
+
 #ifndef NO_TRANSACTIONS
   switch (mode)
     {
@@ -3435,6 +3436,7 @@ A4GLSQL_commit_rollback (int mode)
       break;
     }
 #endif
+
 /*
   if ( isSqlError() )
     return 1;

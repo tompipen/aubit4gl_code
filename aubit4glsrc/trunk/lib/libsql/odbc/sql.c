@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.118 2005-03-29 11:24:14 mikeaubury Exp $
+# $Id: sql.c,v 1.119 2005-03-30 10:52:45 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,8 @@
 */
 
 #include "a4gl_lib_sql_odbc_int.h"
+
+
 #if (ODBCVER >= 0x0300)
 #define USE_TIMESTAMP
 #else
@@ -1067,7 +1069,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
       A4GL_debug ("Setting dynamic cursor");
 #endif
 
-#if (ODBCVER >= 0x0300)
+#if (ODBCVER >= 0x0300) && !PGODBC
       A4GL_debug("Setting cursor type to scrollable");
       rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
       A4GL_debug("set stmt attr rc=%d",rc);
@@ -1579,7 +1581,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
       nr = 1;
 
 
-#if (ODBCVER >= 0x0300)
+#if (ODBCVER >= 0x0300) && !PGODBC
 
       A4GL_debug("FetchScroll %d %d",mode,fetch_when);
 
