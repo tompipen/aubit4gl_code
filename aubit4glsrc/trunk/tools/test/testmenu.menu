@@ -17,7 +17,7 @@ MENU mymenu
                 OPTION mn_paste "Paste"
                 SUBMENU mn_zoom "Zoom"
                         OPTION mn_in "In"
-                        OPTION mn_out "In"
+                        OPTION mn_out "Out"
                         OPTION mn_fit "To Fit"
                 END SUBMENU
         END SUBMENU
