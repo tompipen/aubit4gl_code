@@ -32,10 +32,10 @@ static FunctionCall *functionCallStack;
 static int functionCallPointer;
 
 /** The current module where the program is flowing */
-static const char *currentModuleName;
+static const char *currentModuleName="";
 
 /** The current 4gl line number in the source where the program is working */
-static int currentFglLineNumber;
+static int currentFglLineNumber=0;
 
 /** Flag that indicate that the stack info is used */
 static int stackInfoInitialized = 0;
@@ -74,10 +74,17 @@ void A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
  *
  * @param functionName The name of the function called.
  */
-void A4GLSTK_pushFunction(const char *functionName)
+void A4GLSTK_pushFunction(const char *functionName,char *params[],int n)
 {
- debug("=====&&&&&&============PUSH %s\n",functionName);
+int a;
+ debug("Call from Module : %s line %d",currentModuleName,currentFglLineNumber);
+ debug("=====&&&&&&============PUSH %s %d,\n",functionName,n);
+ for(a=0;a<n;a++) {
+	debug(" Param %d (%s)=",a+1,params[a]);
+ }
   functionCallStack[functionCallPointer].functionName = functionName;
+  functionCallStack[functionCallPointer].moduleName   = currentModuleName;
+  functionCallStack[functionCallPointer].lineNumber   = currentFglLineNumber;
   functionCallPointer++;
 }
 
@@ -99,6 +106,7 @@ void A4GLSTK_popFunction()
 char *A4GLSTK_getStackTrace(void)
 {
   static char stackTrace[640];
+  static char tmpStackTrace[640];
   int i;
 
   strcpy(stackTrace,"4gl function call stack :\n");
@@ -107,14 +115,15 @@ char *A4GLSTK_getStackTrace(void)
     strcat(stackTrace,"    ");
     if ( functionCallStack[i].moduleName == '\0' )
       strcat(stackTrace,functionCallStack[i].functionName);
-    else
-      sprintf(stackTrace,
-       "  %s\n%s (%s) Line %d\n",
-        stackTrace,
+    else {
+      sprintf(tmpStackTrace,
+       "%s (Line %d) calls %s",
         functionCallStack[i].moduleName,
-        functionCallStack[i].functionName,
-        functionCallStack[i].lineNumber
+        functionCallStack[i].lineNumber,
+        functionCallStack[i].functionName
       );
+	strcat(stackTrace,tmpStackTrace);
+   }
 
     // Don't put the brackets on for a MAIN
     if (strcmp(functionCallStack[i].functionName,"MAIN")!=0) {

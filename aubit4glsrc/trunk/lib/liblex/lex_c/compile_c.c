@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.10 2002-05-11 05:51:19 afalout Exp $
+# $Id: compile_c.c,v 1.11 2002-05-11 09:30:46 mikeaubury Exp $
 #
 */
 
@@ -1157,6 +1157,9 @@ print_param (char i)
 	printc (",\n");
       printc ("{&%s,%d,%d}", fbind[a].varname,
 	      (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
+      
+      
+
     }
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
@@ -1178,6 +1181,16 @@ print_param (char i)
 	}
       printc ("};\n");
     }
+
+  printc("char *_paramnames[]={");
+
+  for (a = 0; a < fbindcnt; a++)
+    {
+	if (a) printc(",");
+        printc ("\"%s\"", fbind[a].varname);
+    }
+  printc("};");
+
   return a;
 }
 
@@ -1469,6 +1482,7 @@ print_form_is_compiled (char *s)
 void
 print_field_func (char type, char *name, char *var)
 {
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   if (type == 'I')
     printc ("push_int(fgl_infield(%s));", name);
   if (type == 'T')
@@ -1491,6 +1505,7 @@ print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   print_expr (args);
   printc ("/* done print expr */");
   printc ("{int _retvars;A4GLSQL_set_status(0);\n");
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
 
@@ -1506,6 +1521,7 @@ print_pdf_call (char *a1, struct expr_str *args, char *a3)
 {
   print_expr (args);
   printc ("{int _retvars;A4GLSQL_set_status(0);\n");
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
 }
 
@@ -1522,6 +1538,7 @@ void
 print_call_shared (char *libfile, char *funcname, int nargs)
 {
   printc ("{int _retvars;\n");
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("A4GLSQL_set_status(0);_retvars=call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
 }
@@ -1548,6 +1565,7 @@ void
 print_call_external (char *host, char *func, char *port, int nargs)
 {
   printc ("{int _retvars;\n");
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=remote_func_call(%s,%s,%s,%d);\n", host, func,
 	  port, nargs);}
 
@@ -3588,7 +3606,7 @@ void printPushFunction(void)
 {
   if (!isGenStackInfo())
     return;
-  printc("A4GLSTK_pushFunction(_functionName);\n");
+  printc("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
 }
 
 /**
@@ -3676,6 +3694,8 @@ void
 print_main_1 (void)
 {
   printc ("\n\nmain(int argc,char *argv[]) {\n");
+  printc("char *_paramnames[]={\"\"};");
+  printc("int nargs=0;");
 }
 
 /**
@@ -3687,6 +3707,7 @@ print_main_1 (void)
 void
 print_fgllib_start (char *db)
 {
+  printc ("A4GLSTK_setCurrentLine(0,0);",yylineno);
   printc ("\nfgl_start(argc,argv);\n");
   if (db[0] != 0)
     {
