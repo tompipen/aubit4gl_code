@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.69 2003-08-24 17:54:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.70 2003-08-25 19:06:37 mikeaubury Exp $
 #*/
 
 /**
@@ -591,7 +591,7 @@ A4GL_set_field_attr (FIELD * field)
       field_opts_on (field, O_WRAP);
     }
 
-  A4GL_set_field_colour_attr (field, f->do_reverse, f->colour);
+  //A4GL_set_field_colour_attr (field, f->do_reverse, f->colour); // MJA REMOVE COLOUR FROM X
 
 }
 

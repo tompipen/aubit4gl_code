@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.29 2003-08-24 17:54:15 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.30 2003-08-25 19:06:37 mikeaubury Exp $
 #*/
 
 /**
@@ -374,8 +374,18 @@ process_control_stack (struct s_screenio *sio)
     {
       if (sio->fcntrl[a].state == 99)
 	{
-	  new_state = 50;
+	  new_state = 75;
 	  rval = -90;
+	}
+
+
+      if (sio->fcntrl[a].state == 75)
+	{
+	  	new_state = 50;
+  	  	if (!A4GL_has_processed_onkey()) {
+			A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
+		}
+		rval=-1;
 	}
 
 
@@ -716,8 +726,11 @@ A4GL_form_loop (void *vs,int init)
 A4GL_mja_set_current_field (mform, form->currentfield);
 A4GL_mja_pos_form_cursor (mform);
 
+  A4GL_reset_processed_onkey ();
 // Wait for a key..
   a = A4GL_getch_win ();
+  m_lastkey = a;
+  A4GL_set_last_key (a);
      A4GL_clr_error_nobox();
 
   if (abort_pressed) a = -1;
@@ -725,7 +738,9 @@ A4GL_mja_pos_form_cursor (mform);
   A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
 // Process the key..
-  A4GL_proc_key_input (a, mform, s);
+
+    A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  //A4GL_proc_key_input (a, mform, s);
 
   //return -90;
   return -1;
@@ -793,8 +808,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
   A4GL_debug ("Got key %d", a);
 
-  m_lastkey = a;
-  A4GL_set_last_key (a);
 
   if (a == acckey)
     {
@@ -898,7 +911,6 @@ break;
 	}
     }
 
-    A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
 
   //A4GL_mja_refresh ();   // removed mja 22/08/2003
 	//usleep(100000);
