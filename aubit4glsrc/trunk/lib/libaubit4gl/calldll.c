@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
+# $Id: calldll.c,v 1.4 2002-05-07 09:02:47 afalout Exp $
 #
 */
 
@@ -154,15 +154,12 @@ void *dl_openlibrary (char *type, char *name)
 
   dllhandle = dlopen (buff, RTLD_LAZY);
   if (dllhandle==0) {
-//	 	printf("Opps 1 - can't open DLL - %s\n",dlerror());
 
-  //FIXME: %s is not replaced with value of dllerror(), and in debug.out
-  //all we will see is "Opps - can't open DLL - %s", which is less
-  //then helpfull. Hmmm, it seems to be working now, or maybe sometimes
-  //dlerror() returns empty string?
+		//Sometimes dlerror() returns empty string?
+		debug("Error: can't open DLL %S - %s - STOP",buff,dlerror());
+		//exitwith("Error: can't open DLL %s - %s - STOP",buff,dlerror());
+        exit (78);
 
-
-		debug("Opps - can't open DLL - %s",dlerror());
 
   }
   return dllhandle;
@@ -186,8 +183,8 @@ void *find_func (void *dllhandle, char *func)
   if (dllhandle == 0)
   {
 	debug("Not found - bad handle");
-	exitwith("Could not open share library");
-    	return badfunc;
+	exitwith("Could not open shared library");
+    	//return badfunc;
   }
   func_ptr = dlsym (dllhandle, func);
 	debug("Got %p",func_ptr);
@@ -195,10 +192,10 @@ void *find_func (void *dllhandle, char *func)
   {
 	debug("Function Not found");
 	exitwith("Could not find function in shared library");
-    	return badfunc;
+    	//return badfunc;
   }
 
-  debug("calldll.c: before return func=%s\n",func);
+//  debug("calldll.c: before return func=%s\n",func);
 
   return func_ptr;
 }

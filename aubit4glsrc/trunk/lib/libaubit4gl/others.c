@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.6 2002-04-25 09:47:59 afalout Exp $
+# $Id: others.c,v 1.7 2002-05-07 09:02:47 afalout Exp $
 #
 */
 
@@ -44,6 +44,11 @@
 //here only to satisfy libMENU_( from compilers/4glc/4glc.c)
 char *outputfilename;
 
+//here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c)
+#include "a4gl_formxw.h"
+struct struct_form the_form;
+struct struct_scr_field *fld;
+int as_c=1;
 
 int m_lastkey = 0;
 char *strip_quotes (char *s);

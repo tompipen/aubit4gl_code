@@ -184,9 +184,10 @@ ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter()
 }
 |
 CHAR_VALUE  {
-//*
-	//Remove this crap :
-    char* dummybuff;
+/*
+Remove this crap :
+    
+	char* dummybuff;
 	debug("expr.rule: Type is S - string");
 
 	debug("expr.rule: calling xxtest_char:");
@@ -197,7 +198,7 @@ CHAR_VALUE  {
 	//print_protos_c.h: char *get_push_literal(char type,char *value);
 	dummybuff = get_push_literal('S',$<str>1);
 	debug("OK Testing single call, now for real:");
-//*/
+*/
 
 
 

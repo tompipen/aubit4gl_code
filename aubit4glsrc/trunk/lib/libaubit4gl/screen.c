@@ -8,6 +8,8 @@
  * @todo Doxygen comments to add to functions
  */
 
+#include "a4gl_dbform.h" //needed for struct s_form_dets in function find_attribute
+
 
 extern int ui_mode; 
 
@@ -33,14 +35,25 @@ int screen_mode(int a)
 	return smode;
 }
 
-/**
- * Write a debug message
- *
- * @param s The debug message
- */
-void debug(char *s) 
+// moved here from lib/libform/form_xdr/readforms.c
+
+char *
+find_attribute (struct s_form_dets *f, int field_no)
 {
-  debug_full("ERROR  - debug called in full with %s",s);
+  int a;
+
+  for (a = 0; a < f->fileform->attributes.attributes_len; a++)
+    {
+
+      if (f->fileform->attributes.attributes_val[a].field_no == field_no)
+	{
+	  debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
+	  return (char *) &f->fileform->attributes.attributes_val[a];
+	}
+    }
+  debug ("Couldnt find entry for field no %d\n", field_no);
+  return 0;
+
 }
 
-
+// ============================ EOF ============================

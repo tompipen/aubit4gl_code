@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.63 2002-04-29 03:29:55 afalout Exp $
+# $Id: Makefile.in,v 1.64 2002-05-07 09:02:33 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -67,16 +67,17 @@ TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO
 			$(SOURCE)/lib/libRPC_NORPC${SO_EXT} $(SOURCE)/lib/libFORM_NOFORM${SO_EXT} \
             $(SOURCE)/lib/libMENU_NOMENU${SO_EXT} $(SOURCE)/lib/libMSG_NATIVE${SO_EXT}
 
-ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_C${SO_EXT} 2> /dev/null)" ""
-	TOLIBCUI		+=$(SOURCE)/lib/libA4GLLEX_C${SO_EXT}
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libA4GLLEX_C${SOEXP_EXT}
+
+ifneq "$(shell ls $(SOURCE)/lib/libLEX_C${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI		+=$(SOURCE)/lib/libLEX_C${SO_EXT}
+	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libLEX_C${SOEXP_EXT}
 endif
 
 ifneq "@PERLBUILD@" "no"
 	#Perl compiler is compiled in "extra" and is optional
-	ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT} 2> /dev/null)" ""
-		TOLIBCUI	+=$(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT}
-		TOBIN		+=$(SOURCE)/bin/4glp${EXEEXT}
+	ifneq "$(shell ls $(SOURCE)/lib/libLEX_PERL${SO_EXT} 2> /dev/null)" ""
+		TOLIBCUI	+=$(SOURCE)/lib/libLEX_PERL${SO_EXT}
+		#TOBIN		+=$(SOURCE)/bin/4glp${EXEEXT}
     endif
 endif
 
@@ -354,8 +355,9 @@ jabber:
 perl: perl.compiler perl.lib test.perl
 
 perl.compiler:
-	${MAKE} -C compilers/4glc 4glp
-	@echo Aubit 4gl Perl-code generating version compiler created
+	${MAKE} -C lib/liblex/lex_perl
+#	${MAKE} -C compilers/4glc 4glp
+	@echo Aubit 4gl Perl-code generating version LEX library created
 
 perl.lib:
 	cd lib/swig; sh domake

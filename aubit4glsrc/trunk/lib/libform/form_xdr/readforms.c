@@ -87,6 +87,7 @@ char dbname[64];
 
 #define OPTIONS long
 
+/* not used in libFORM_ so moved into libaubit4gl in screen.c
 char *
 find_attribute (struct s_form_dets *f, int field_no)
 {
@@ -104,7 +105,7 @@ find_attribute (struct s_form_dets *f, int field_no)
   debug ("Couldnt find entry for field no %d\n", field_no);
   return 0;
 }
-
+*/
 
 static char *
 ret_string (char *str)

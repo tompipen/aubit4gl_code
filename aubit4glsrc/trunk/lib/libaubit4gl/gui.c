@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+# $Id: gui.c,v 1.5 2002-05-07 09:02:47 afalout Exp $
 #
 */
 
@@ -568,8 +568,7 @@ sock_gets (int sockfd, char *str, size_t count)
 	      exitwith ("Connection Dropped");
 	      gotolinemode();
 	      exit (0);
-	      return -1;	/* Is this effective on other platforms than
-linux? */
+	      return -1;	/* Is this effective on other platforms than linux? */
 	    }
 	  if (bytes_read)
 	    break;
