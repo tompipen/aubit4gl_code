@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
+# $Id: pointers.c,v 1.5 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -154,9 +154,9 @@ void
 action (const void *nodep, const VISIT which, const int depth)
 {
   struct s_node *datap;
-  char buff[80];
+  char buff[800];
 //  void *val;
-  memset (buff, ' ', 80);
+  memset (buff, ' ', 800);
   buff[depth * 4] = 0;
   switch (which)
     {
@@ -191,7 +191,7 @@ add_pointer (char *orig_name, char type, void *ptr)
   struct s_node *buff_add;
   struct s_node buff2;
   struct s_node *node;
-  char ptrchar[80];
+  char ptrchar[800];
   trim(orig_name);
   debug("Adding pointer to %s %c (%p)",orig_name,type,ptr);
   buff = (struct s_node *)malloc (sizeof (struct s_node));
@@ -307,7 +307,7 @@ del_pointer (char *pname, char t)
   struct s_node *buff;
   struct s_node buff2;
   struct s_node *node;
-  char ptrchar[80];
+  char ptrchar[800];
   buff = (struct s_node *)malloc (sizeof (struct s_node));
   buff->name[0] = t;
   buff->name[1]=0;

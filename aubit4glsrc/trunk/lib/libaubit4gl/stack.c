@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.12 2002-05-21 14:18:06 mikeaubury Exp $
+# $Id: stack.c,v 1.13 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -417,14 +417,8 @@ char_pop (void)
   int f;
 
 
-#ifdef DEBUG
-/* {DEBUG} *//*debug("char_pop %d %d\n",params_cnt-1,params[params_cnt-1].dtype&DTYPE_MASK); */
-#endif
   if ((params[params_cnt - 1].dtype & DTYPE_MASK) != 0)
     {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Need to convert to string");
-#endif
       f = params[params_cnt - 1].dtype & DTYPE_MASK;
 
 
@@ -434,6 +428,7 @@ char_pop (void)
 	debug("Calling >STRING for datatype");
 	  function = get_datatype_function_i (f, ">STRING");
 	  s = function (params[params_cnt - 1].ptr, 0, 0);
+	  drop_param();
 	}
       else
 	{
@@ -442,25 +437,15 @@ char_pop (void)
 	}
 
       trim (s);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Converted to string '%s'", s);
-#endif
       push_char (s);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Pushed back onto stack");
-#endif
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
-    }				/* if last entry is not a character string make it one */
+    }		/* if last entry is not a character string make it one */
   else
     {
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
 
   a = params[params_cnt - 1].size;
-  /*get_size(params[params_cnt-1].ptr); */
-#ifdef DEBUG
-/* {DEBUG} */ debug ("size on stack=%d\n", a);
-#endif
   s = new_string (a);
   a = pop_param (s, DTYPE_CHAR, a);
   return s;
@@ -580,7 +565,7 @@ push_param (void *p, int d)
   int size;
   int n1, n2;
   int i1, i2;
-  char buff[80];
+  char buff[400];
 //  int a;
   int zzz;
 
@@ -729,10 +714,11 @@ push_param (void *p, int d)
   if (dtype_1!=-1) {
 	void (*function) (void);
 	debug("Calling OP function");
+
 	function=find_op_function(dtype_1,dtype_2,d);
 
 	if (function) {
-		debug("Calling specified function for %d %d, %d",dtype_1,dtype_2,d);
+		debug("Calling specified function for %d %d, %d",dtype_1&DTYPE_MASK,dtype_2&DTYPE_MASK,d);
 		function();
 		return;
 	}
@@ -1114,6 +1100,12 @@ push_param (void *p, int d)
       push_double (doublea * doubleb);
       break;
 
+    case OP_POWER:
+      if (chknull (2, n1, n2))
+	return;
+      push_double (pow(doublea , doubleb));
+      break;
+
     case OP_MOD:
       if (chknull (2, n1, n2))
 	return;
@@ -1431,8 +1423,7 @@ debug_print_stack (void)
   int a;
   char *buff;
 return;
-  buff = new_string (20);
-
+  buff = new_string (2000);
 #ifdef DEBUG
   debug ("\n");
 #endif

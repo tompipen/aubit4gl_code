@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
+# $Id: rexp2.c,v 1.7 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -151,7 +151,7 @@ appendchr(char *s, char c)
 int
 mja_match(char *str1, char*str2, int likeormatch)
 {
-//char    tmp_str[80];
+//char    tmp_str[800];
 //regex_t *a;
 //int 	newcursor;
 //int     b;
@@ -433,7 +433,7 @@ doconstruct(char *s,char *whereclause)
 {
         int a;
         int t;
-        char buffer[2][80];
+        char buffer[2][800];
         printf("Here 1\n");
         strcpy(whereclause,"");
         strcpy(buffer[0],"");

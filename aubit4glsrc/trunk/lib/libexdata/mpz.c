@@ -75,8 +75,9 @@ int mpz_to_double (mpz_t *mpz,double *n,int szignore) {
 }
 
 int mpz_to_int (mpz_t *mpz,long *n,int szignore) {
+	debug("%p %p (%d %d)\n",mpz,n,*(long *)mpz,*(long *)n);
 	debug("mpz_to_int");
-	mpz_set_si(*mpz,*n);
+	*n=mpz_get_si(*mpz);
 	return 1;
 }
 
@@ -92,9 +93,17 @@ char *mpz_str (mpz_t *mpz,char *n,int sz) {
 	return mpz_get_str(n,10,*mpz);
 }
 
-char *mpz_to_str (mpz_t *mpz,char *n,int sz) {
+int mpz_to_str (mpz_t *mpz,char *n,int sz) {
+	char *ptr;
 	debug("mpz_to_str");
-	mpz_get_str(n,10,*mpz);
+
+	ptr=mpz_get_str(0,10,*mpz);
+	if (strlen(ptr)>sz) {
+		free(ptr);
+		return 0;
+	} else {
+		strcpy(n,ptr);
+	}
 	return 1;
 }
 
@@ -109,7 +118,12 @@ void add_mpz() {
 
 	mpz_init(*ptr);
 	mpz_add(*ptr,a1,a2);
+
+	mpz_clear(a1);
+	mpz_clear(a2);
+
 	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
+
 }
 
 void sub_mpz() {
@@ -124,6 +138,8 @@ void sub_mpz() {
 
 	mpz_init(*ptr);
 	mpz_sub(*ptr,a1,a2);
+	mpz_clear(a1);
+	mpz_clear(a2);
 	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
 }
 
@@ -132,15 +148,36 @@ void mul_mpz() {
 	mpz_t a2;
 	mpz_t *ptr;
 	ptr=malloc(sizeof(mpz_t));
-	debug("sub_mpz");
+	debug("mul_mpz");
 
 	pop_param(&a2,dtype_mpz,0);
 	pop_param(&a1,dtype_mpz,0);
 
 	mpz_init(*ptr);
 	mpz_mul(*ptr,a1,a2);
+	mpz_clear(a1);
+	mpz_clear(a2);
 	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
 }
+
+void pow_mpz() {
+	mpz_t a1;
+	unsigned int a2;
+	mpz_t *ptr;
+
+	ptr=malloc(sizeof(mpz_t));
+	debug("pow_mpz");
+	debug_print_stack();
+	pop_param(&a2,DTYPE_INT,0);
+	pop_param(&a1,dtype_mpz,0);
+
+	mpz_init(*ptr);
+        debug("Raising value to power of %d",a2);
+	mpz_pow_ui(*ptr,a1,a2);
+	mpz_clear(a1);
+	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
+}
+
 
 
 void div_mpz() {
@@ -148,13 +185,15 @@ void div_mpz() {
 	mpz_t a2;
 	mpz_t *ptr;
 	ptr=malloc(sizeof(mpz_t));
-	debug("sub_mpz");
+	debug("div_mpz");
 
 	pop_param(&a2,dtype_mpz,0);
 	pop_param(&a1,dtype_mpz,0);
 
 	mpz_init(*ptr);
 	mpz_fdiv_q(*ptr,a1,a2);
+	mpz_clear(a1);
+	mpz_clear(a2);
 	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
 }
 
@@ -164,13 +203,15 @@ void mod_mpz() {
 	mpz_t a2;
 	mpz_t *ptr;
 	ptr=malloc(sizeof(mpz_t));
-	debug("sub_mpz");
+	debug("mod_mpz");
 
 	pop_param(&a2,dtype_mpz,0);
 	pop_param(&a1,dtype_mpz,0);
 
 	mpz_init(*ptr);
 	mpz_mod(*ptr,a1,a2);
+	mpz_clear(a1);
+	mpz_clear(a2);
 	push_param(ptr,dtype_mpz|DTYPE_MALLOCED);
 
 }
@@ -275,6 +316,13 @@ int EXDTYPE_initlib() {
 	add_op_function(dtype_mpz,dtype_mpz,OP_ADD,add_mpz);
 	add_op_function(dtype_mpz,dtype_mpz,OP_SUB,sub_mpz);
 	add_op_function(dtype_mpz,dtype_mpz,OP_MULT,mul_mpz);
+
+	add_op_function(dtype_mpz,dtype_mpz,OP_POWER,pow_mpz);
+
+	//add_op_function(DTYPE_INT,dtype_mpz,OP_POWER,pow_mpz);
+	//add_op_function(dtype_mpz,DTYPE_INT,OP_POWER,pow_mpz);
+	//add_op_function(DTYPE_INT,DTYPE_INT,OP_POWER,pow_mpz);
+
 	add_op_function(dtype_mpz,dtype_mpz,OP_DIV,div_mpz);
 	add_op_function(dtype_mpz,dtype_mpz,OP_MOD,mod_mpz);
 

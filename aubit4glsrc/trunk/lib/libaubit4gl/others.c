@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.9 2002-05-23 09:29:35 afalout Exp $
+# $Id: others.c,v 1.10 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -238,7 +238,7 @@ int a;
 int 
 net_keyval(char *v)
 {
-char v0[80];
+char v0[800];
 long _r;
 	
 	debug("In net_keyval");
@@ -364,7 +364,7 @@ attr_name_match (struct struct_scr_field * field, char *s)
 {
   char colname[40];
   char tabname[40];
-//  char buff[80];
+//  char buff[800];
   int aa;
   int ab;
   //debug ("Field : %p\n", field);
@@ -464,7 +464,7 @@ has_str_attribute (struct struct_scr_field * f, int str)
 char *
 char_val (char *s)
 {
-  static char str[80];
+  static char str[800];
   int a;
   strcpy (str, &s[1]);
   str[strlen (str) - 1] = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.5 2002-05-23 09:29:35 afalout Exp $
+# $Id: gui_io.c,v 1.6 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -185,6 +185,7 @@ gui_print (int a,char *fmt,...)
   va_list args;
   char buff[25600];
   char buff2[25600];
+return;
 	#ifdef DEBUG
 	/* {DEBUG} */ {  debug("Format =%s",fmt);}
 	#endif

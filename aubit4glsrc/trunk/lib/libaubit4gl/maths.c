@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.1 2002-05-21 14:18:26 mikeaubury Exp $
+# $Id: maths.c,v 1.2 2002-05-23 16:01:15 mikeaubury Exp $
 #
 */
 
@@ -80,6 +80,7 @@ static int nparam_op(int op) {
 	case OP_MULT:
 	case OP_MOD:
 	case OP_DIV: 
+	case OP_POWER: 
 			return 2;
 }
 
@@ -149,7 +150,11 @@ void *find_op_function(int dtype1,int dtype2,int op) {
 	if (nparam_op(op)==1) dtype2=dtype1;
 
 	ptr_orig=arr_math[dtype1][dtype2];
-	if (ptr_orig==0) return 0;
+
+	if (ptr_orig==0) {
+		debug("No ptr_orig - so no...");
+		return 0;
+	}
 
 	while (ptr_orig!=0) {
 		if (ptr_orig->op==op) {

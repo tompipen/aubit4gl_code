@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: extfile.c,v 1.5 2002-05-23 16:01:13 mikeaubury Exp $
 #
 */
 
@@ -153,7 +153,7 @@ read_help_f (int no,int *maxwidth)
   short pos;
   int cnt;
   short num;
-  char tmpbuf[80];
+  char tmpbuf[800];
   max_width = 0;
   cnt = 0;
   rewind (helpfile);
@@ -190,7 +190,7 @@ debug("Got it...");
             {
               if (feof (helpfile))
                 break;
-              fgets (tmpbuf, 80, helpfile);
+              fgets (tmpbuf, 800, helpfile);
 debug("Buff=%s",tmpbuf);
               strcat(helpbuff,tmpbuf);
               stripnl (tmpbuf);

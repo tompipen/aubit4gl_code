@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
+# $Id: funcs_d.c,v 1.6 2002-05-23 16:01:13 mikeaubury Exp $
 #
 */
 
@@ -342,7 +342,7 @@ char canfloat_head[]="*-+($";
 //char canfloat_tail[]=")";
 char rep_digit[]="*&#<-+()$";
 //char neg[]="()-";
-char buff[80];
+char buff[800];
 int isneg=0;
 int a,b;
 int isprnt=0;

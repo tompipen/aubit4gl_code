@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+# $Id: gui.c,v 1.7 2002-05-23 16:01:14 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ int use_gui = 0;
 SOCKET sock = 0;
 int m_retval = 0;
 char m_cretval[64] = "";
-static char params[20][80];
+static char params[20][800];
 int listensock = -1;		/* So that we can close sockets on ctrl-c */
 SOCKET connectsock = -1;
 int connected = 1;

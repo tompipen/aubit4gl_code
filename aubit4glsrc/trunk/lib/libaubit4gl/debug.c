@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
+# $Id: debug.c,v 1.7 2002-05-23 16:01:13 mikeaubury Exp $
 #
 */
 
@@ -114,7 +114,7 @@ void
 debug_full (char *fmt,...)
 {
   va_list args;
-  static char buff[4096];
+  static char buff[40960];
   if (nodebug == DEBUG_NOTREQUIRED)
     return;
 
