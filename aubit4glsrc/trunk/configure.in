@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.83 2002-09-16 10:40:38 afalout Exp $
+# $Id: configure.in,v 1.84 2002-09-16 10:53:03 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -606,7 +606,7 @@ if test "$MAKE" = "no" ; then
 else
 #make --version'
 		AC_MSG_CHECKING(make version)
-		set `make --version | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+		set `make --version 2>/dev/null | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
 		if test "$1" != ""; then
 			if test "$1" = "3" -a "$2" -lt "50"; then
 		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
