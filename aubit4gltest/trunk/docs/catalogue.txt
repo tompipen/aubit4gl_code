@@ -1,5 +1,5 @@
 This output was created using command 'run_tests -info'
-Thu Sep 16 01:58:37 NZST 2004
+on Wed Oct 13 21:16:46 NZDT 2004
  
  ------------------- Info for test 1 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -57,6 +57,8 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -71,6 +73,8 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -91,8 +95,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test contains REPORT block
 Test needs database
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -105,6 +107,8 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -192,6 +196,8 @@ in current code.
 Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -260,8 +266,6 @@ in current code.
 Please migrate folowing test info from 'run_tests' script to makefile:
 
 Test needs database
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -305,8 +309,6 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -319,8 +321,6 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -489,6 +489,8 @@ in current code.
  ------------------- Info for test 67 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
 
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -555,6 +557,8 @@ This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
 Test that use graphic characters in forms that may be platform dependent
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -659,7 +663,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test uses .per form files
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 93 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -667,7 +670,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test contains REPORT block
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 94 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -675,7 +677,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 95 -----------------------
 
@@ -688,14 +689,12 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 97 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
 
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 98 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -703,7 +702,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 99 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -711,7 +709,6 @@ Please migrate folowing test info from 'run_tests' script to makefile:
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
-Database MUST NOT have transactions enabled for this test.
 
  ------------------- Info for test 100 -----------------------
 
@@ -759,8 +756,11 @@ in current code.
 
  ------------------- Info for test 105 -----------------------
 WARNING: test still contains template comment in makefile
-*** Test not described ***
+Please migrate folowing test info from 'run_tests' script to makefile:
+
 **** TEST MARKED INVALID IN run_tests ******
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
 
  ------------------- Info for test 106 -----------------------
 
@@ -775,8 +775,9 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UNLOAD TO with SELECT statement and WHERE part
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 108 -----------------------
@@ -788,6 +789,16 @@ Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 109 -----------------------
+
+Test for core dump when opening a cursor
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
 
  ------------------- Info for test 202 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
@@ -1066,7 +1077,6 @@ in current code.
  ------------------- Info for test 239 -----------------------
 Please migrate folowing test info from 'run_tests' script to makefile:
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test uses .per form files
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -1238,8 +1248,6 @@ fail if TERM!=xterm
 This core dumps on MinGW and messes up the terminal completely.
 On Cygwin they don't core dump, but this tests fail
 Test uses .per form files
-test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
-it won't work in CONSOLE mode
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 
@@ -1370,13 +1378,18 @@ in current code.
 
 Basic test of some error handling (for obtaining window sizes) - also end of line clearing
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 278 -----------------------
 
 This is a test of handling of multi occurences of the same name for a fieldname in a form
 
 **** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 279 -----------------------
 
@@ -1404,7 +1417,9 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 This is a test to see if a page header is run at the correct point in time. At the time of submitting this test - the declare isn't performed until something is printed in another block and hence isn't available in the on every row. Workaround is to print ""; as the first thing in the 'on every row' to force the page header...
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 283 -----------------------
 
@@ -1420,6 +1435,10 @@ Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
+ ------------------- Info for test 284 -----------------------
+*** Test not described ***
+**** TEST MARKED INVALID IN run_tests ******
+
  ------------------- Info for test 285 -----------------------
 
 NULL in the function call
@@ -1427,6 +1446,70 @@ NULL in the function call
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 286 -----------------------
+
+This is a test for the UNLOAD bug reported
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 287 -----------------------
+
+Another UNLOAD test
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 288 -----------------------
+
+tests show option all - mid 612
+
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 289 -----------------------
+
+Quick test on using foreach on a declare which used variables
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 290 -----------------------
+
+This tests a problem with the use of datetime variables (reported by Fernando Ortiz)
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 291 -----------------------
+WARNING: test still contains template comment in makefile
+*** Test not described ***
+**** TEST MARKED INVALID IN run_tests ******
+
+ ------------------- Info for test 296 -----------------------
+
+This tests private bug 587 - upshift on a single character field with include not working consistantly
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+
+ ------------------- Info for test 297 -----------------------
+
+Tests the implementation of the time function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 
  ------------------- Info for test 300 -----------------------
 
@@ -1818,6 +1901,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Report with FORMAT EVERY ROW No run-time checking.
 
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1826,6 +1910,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 All combinations of START REPORT No run-time checking.
 
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1834,6 +1919,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 REPORT with one parameter No run-time checking.
 
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -1842,6 +1928,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 REPORT with 2 parameters No run-time checking.
 
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
@@ -3006,21 +3093,23 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 497 -----------------------
 
-FIXME - no test files Please provide brief description of functionality tested here.
+Simple data types assignment and display no error checking
 
-test is superceeded or obsoleted and should be silently skipped
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 498 -----------------------
 
-FIXME - no test files. Please provide brief description of functionality tested here.
+Simple INPUT BY MANE in form No error checking - no keys.in
 
-test is superceeded or obsoleted and should be silently skipped
+**** TEST MARKED INVALID IN run_tests ******
+Test uses .per form files
+Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 499 -----------------------
-
-FIXME - no test files. Please provide brief description of functionality tested here.
-
-test is superceeded or obsoleted and should be silently skipped
+*** Test not described ***
+**** TEST MARKED INVALID IN run_tests ******
 
  ------------------- Info for test 500 -----------------------
 
@@ -3359,6 +3448,7 @@ CREATE TABLE with 2 columns and PRIMARY KEY. No run-time checking. NOTE: fails w
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
 Needs at least version 7.31 of Informix 4gl.
 
  ------------------- Info for test 538 -----------------------
@@ -4608,7 +4698,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE with constants in SET clause (Informix syntax) No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4618,7 +4707,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE with expresion in SET and column list (Informix syntax) No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4652,7 +4740,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE with SET sub-expression (Informix syntax) No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4662,7 +4749,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE ... SET with UNITS. No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4781,7 +4867,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE SET with sub-expression (std syntax). No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4809,7 +4894,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 UPDATE SET with sub-expression (std syntax). No run-time checking.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -4965,7 +5049,7 @@ in current code.
 
  ------------------- Info for test 724 -----------------------
 
-Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 11 12 13 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 285 29 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 aubitrc-testing aubitrc-testing~ aubitrc-testing.bak build.log catalogue.txt CVS debug.out errlog genMakefileTest.pl Makefile-common odbc.ini odbcinst.ini output.log README.txt resources.log run_tests run_tests~ script_ranges set.tmp template testdb-data-postgresql.sql testdb-data.sql testdb-ddl-postgresql.sql testdb-ddl.sql tests.xml time.tmp try try.log try.sql fetch all correct values.
+Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 12 13 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 296 297 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 bin build.log CVS debug.out docs etc incl loader out resources.log results_aptiva_13-10-2004_20-51-00.unl run_tests run_tests~ template watchit.sh fetch all correct values.
 
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
@@ -4974,7 +5058,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 725 -----------------------
 
-Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 11 12 13 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 285 29 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 aubitrc-testing aubitrc-testing~ aubitrc-testing.bak build.log catalogue.txt CVS debug.out errlog genMakefileTest.pl Makefile-common odbc.ini odbcinst.ini output.log README.txt resources.log run_tests run_tests~ script_ranges set.tmp template testdb-data-postgresql.sql testdb-data.sql testdb-ddl-postgresql.sql testdb-ddl.sql tests.xml time.tmp try try.log try.sql fetch all correct values.
+Check if a select with 1 10 100 1000 1001 1002 1003 1004 1005 1006 1007 101 102 103 104 105 106 1060 107 108 109 11 12 13 14 15 202 203 204 205 206 207 208 209 21 210 211 212 213 214 215 216 217 218 219 22 220 221 222 223 224 225 226 227 228 229 23 230 231 232 233 234 235 236 237 238 239 24 240 241 242 244 245 246 247 248 249 25 250 251 252 253 254 255 256 257 258 259 26 260 261 262 263 264 265 266 267 268 269 27 270 271 272 273 274 275 276 277 278 279 28 280 281 282 283 284 285 286 287 288 289 29 290 291 296 297 3 30 300 301 302 303 304 305 306 307 308 309 31 310 311 312 313 314 315 316 317 318 319 32 320 321 322 323 324 325 326 327 328 329 33 330 331 332 333 334 335 336 337 338 339 34 340 341 342 343 344 345 346 347 348 349 35 350 351 352 353 354 355 356 357 358 359 36 360 361 362 363 364 365 366 367 368 369 37 370 371 372 373 374 375 376 377 378 379 38 380 381 382 383 384 385 386 387 388 389 39 390 391 392 393 394 395 396 397 398 399 4 40 400 401 402 403 404 405 406 407 408 409 41 410 411 412 413 414 415 416 417 418 419 42 420 421 422 423 424 425 426 427 428 429 430 431 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467 468 469 47 470 471 472 473 474 475 476 477 478 479 48 480 481 482 483 484 485 486 487 488 489 49 490 491 492 493 494 495 496 497 498 499 50 500 501 502 503 504 505 506 507 508 509 51 510 511 512 513 514 515 516 517 518 519 52 520 521 522 523 524 525 526 527 528 529 53 530 531 532 533 534 535 536 537 538 539 54 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557 558 559 56 560 561 562 563 564 565 566 567 568 569 57 570 571 572 573 574 575 576 577 578 579 58 580 581 582 583 584 585 586 587 588 589 59 590 591 592 593 594 595 596 597 598 599 6 60 600 602 603 605 606 607 609 61 610 611 612 613 614 615 616 618 619 62 620 621 622 623 624 625 626 627 628 629 63 630 631 632 633 634 635 636 637 638 639 64 640 642 643 644 645 646 647 648 649 65 650 651 652 653 654 655 656 657 658 659 66 660 661 662 663 664 665 666 667 668 669 67 670 671 672 673 674 675 676 677 678 679 68 680 681 682 683 684 685 686 687 689 69 690 691 692 693 694 695 696 697 698 699 70 700 701 702 703 704 705 706 707 71 710 711 712 713 714 715 716 717 718 719 72 720 721 722 723 724 725 726 727 728 729 73 730 731 732 733 734 735 736 737 738 739 74 740 741 742 743 744 745 746 747 748 749 75 750 751 752 753 754 755 756 757 758 759 76 760 761 762 763 764 765 766 767 768 769 77 770 771 772 773 774 775 776 778 779 78 780 781 782 783 784 785 786 787 788 789 79 790 791 792 793 794 795 796 797 798 8 80 800 801 802 82 84 86 9 90 900 901 902 903 904 905 906 907 908 909 91 910 911 912 913 914 915 916 917 918 919 92 920 921 922 923 924 925 926 927 928 929 93 930 931 932 933 934 935 936 937 938 939 94 940 941 942 943 944 945 946 947 948 949 95 950 951 952 953 954 955 956 957 958 959 96 960 961 962 963 964 965 966 967 968 97 970 971 973 974 975 976 977 978 979 98 980 981 982 983 984 985 986 987 988 989 99 990 991 992 993 994 995 996 997 998 999 bin build.log CVS debug.out docs etc incl loader out resources.log results_aptiva_13-10-2004_20-51-00.unl run_tests run_tests~ template watchit.sh fetch all correct values.
 
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
@@ -5066,7 +5150,6 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Check if a named group by fetches the correct values. .
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
@@ -5340,6 +5423,8 @@ in current code.
 Tests to exemplify the behaviour of cursor location with aubit and standard 4gl.
 
 **** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 767 -----------------------
@@ -5571,9 +5656,10 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 Check if the create audit statement works. Note that this statement only works on Informix SE
 
 Test is compile only, no execution will be attempted
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Test requires Informix SE RDBMS
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 794 -----------------------
@@ -5581,9 +5667,10 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 Check if the drop audit statement works. Note that this statement only works on Informix SE
 
 Test is compile only, no execution will be attempted
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
 Test requires Informix SE RDBMS
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 795 -----------------------
@@ -5753,40 +5840,45 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Test if the sqlca.sqlarn[1] is assigned with a W
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 912 -----------------------
 
 Test if the sqlca.sqlarn[2] is assigned with a W after a truncation in a select.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 913 -----------------------
 
 Test if the sqlca.sqlarn[2] is assigned with a W after using a database without transactions.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 914 -----------------------
 
 Test if the sqlca.sqlawarn[3] is assigned with a W after a null in an agregate function of a select.
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 915 -----------------------
 
 Test if the sqlca.sqlawarn[4] is assigned with a W after a select with more on a select list then on into
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
 Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 916 -----------------------
@@ -5809,7 +5901,7 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Test 918 for deccvasc
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
 
  ------------------- Info for test 919 -----------------------
 
@@ -5817,10 +5909,12 @@ Test if a char conversion to decimal with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 920 -----------------------
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 921 -----------------------
 
@@ -5828,6 +5922,7 @@ Test if a decimal conversion to int with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 922 -----------------------
 
@@ -5835,6 +5930,7 @@ Test if a long conversion to decimal with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 923 -----------------------
 
@@ -5842,6 +5938,7 @@ Test if a decimal conversion to long with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 924 -----------------------
 
@@ -5849,6 +5946,7 @@ Test if a float conversion to decimal with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 925 -----------------------
 
@@ -5856,6 +5954,7 @@ Test if a decimal conversion to float with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 926 -----------------------
 
@@ -5863,51 +5962,61 @@ Test if a double conversion to decimal with c function works ok
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 927 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 928 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 929 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 930 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 931 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 932 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 933 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 934 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 935 -----------------------
 WARNING: test still contains template comment in makefile
 *** Test not described ***
 **** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 936 -----------------------
 
@@ -5917,6 +6026,7 @@ Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 Database MUST have transactions enabled for this test.
 
  ------------------- Info for test 937 -----------------------
@@ -5928,66 +6038,77 @@ Test needs database
 Tests is certified to run (with -eci) If it fails, something was probably broken
 in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 938 -----------------------
 
 pop_short
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 939 -----------------------
 
 pop_int
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 940 -----------------------
 
 pop_long
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 941 -----------------------
 
 pop_flo
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 942 -----------------------
 
 pop_dub
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 943 -----------------------
 
 pop_dec
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 944 -----------------------
 
 pop_quote
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 945 -----------------------
 
 pop_vchar
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 946 -----------------------
 
 pop_date
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 947 -----------------------
 
 pop_dtime
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+**** TEST MARKED INVALID IN run_tests ******
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 948 -----------------------
 
@@ -5995,6 +6116,7 @@ Test if the stack function(s) for interval(s) works.
 
 **** TEST MARKED INVALID IN run_tests ******
 Test can be run using any 4GL compatible compiler, not just Aubit
+Test requires Aubit to be in Informix compatibility mode
 
  ------------------- Info for test 949 -----------------------
 WARNING: test still contains template comment in makefile
@@ -6063,7 +6185,8 @@ in current code.
 
 Test the date variable limits
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 962 -----------------------
@@ -6077,7 +6200,8 @@ Test can be run using any 4GL compatible compiler, not just Aubit
 
 Test the smallfloat variable limits
 
-**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
  ------------------- Info for test 964 -----------------------
@@ -6422,29 +6546,29 @@ in current code.
 Test can be run using any 4GL compatible compiler, not just Aubit
 
 --------------------------------------------------------------
-Total tests: 763
-Still has template comment: 22 ( 105 707 752 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
-Old makefile: 88 ( 1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 92 93 94 96 97 98 99 202 203 204 205 206 212 217 218 239 250)
-Not described: 23 ( 105 707 752 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
-Invalid: 41 ( 105 375 377 684 705 707 752 797 916 917 919 920 921 922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 953 954 955 956 957 958 959 964 966)
-Expected to fail (because of Aubit bug): 40 ( 107 239 240 277 278 282 670 681 682 686 687 701 704 706 735 766 767 793 794 911 912 913 914 915 918 938 939 940 941 942 943 944 945 946 947 961 962 963 976 987)
-Obsolete: 22 ( 58 65 250 443 444 446 484 491 497 498 499 511 527 529 545 546 547 548 671 672 673 674)
+Total tests: 773
+Still has template comment: 23 ( 105 291 707 752 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
+Old makefile: 89 ( 1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 92 93 94 96 97 98 99 105 202 203 204 205 206 212 217 218 239 250)
+Not described: 25 ( 284 291 499 707 752 920 927 928 929 930 931 932 933 934 935 949 950 951 952 953 954 955 957 958 959)
+Invalid: 57 ( 105 282 284 291 375 377 498 499 684 705 707 752 797 916 917 918 919 920 921 922 923 924 925 926 927 928 929 930 931 932 933 934 935 938 939 940 941 942 943 944 945 946 947 948 949 950 951 952 953 954 955 956 957 958 959 964 966)
+Expected to fail (because of Aubit bug): 14 ( 240 278 296 348 349 350 351 670 706 766 767 962 976 987)
+Obsolete: 19 ( 58 65 250 443 444 446 484 491 511 527 529 545 546 547 548 671 672 673 674)
  
-Has description text: 652
+Has description text: 659
 Expect non-zero exit status: 2
 Test is compile only: 79
 P-code enabled: 1
-Needs database: 323
+Needs database: 328
 EC only test: 0
 Cannot run silent: 1
 Uses TUI UI: 37
-Uses forms: 94
+Uses forms: 96
 Uses graphic characterts: 2
 Expects manual input: 1
-Uses dump screen function: 12
+Uses dump screen function: 17
 Long running: 1
-Certified: 663
-x4GL compatible: 528
+Certified: 684
+x4GL compatible: 536
 Uses REPORT block: 15
 All other unsorted tests: 0
  

@@ -225,8 +225,7 @@ for a in $FLAGS; do
 		;;
 		
 	-info) 	#Show information about the test; allready procesed before - skip it
-        ;;
-
+		;;
 	-show-config)
 		#don't run any tests - just show configuration under which they would be executed
 		SHOW_CONFIG=1
@@ -280,8 +279,13 @@ for a in $FLAGS; do
         ;;
 
     -show-time)     #Show timing results for each test
+		MEASURE_TIME=1
 		SHOW_TIME=1
         ;;
+    -measure-time)     #time results for each test
+		MEASURE_TIME=1
+        ;;
+
 	-clean)         #clean and exit
 		CLEAN=1
 		;;
@@ -720,6 +724,22 @@ for a in $FLAGS; do
 		NEW_SAP=1; USE_SAP=1
 		;;
 
+	-log-unl)
+		#unload rest result to .unl file
+		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+		U="_"
+		echo "Logging results to file 'results_$HOSTNAME$U$date_stamp.unl'"
+		echo "and 'test_run_$HOSTNAME$U$date_stamp.unl'"
+		unl_file="$CURR_DIR/results_$HOSTNAME$U$date_stamp.unl"
+		test_run_unl_file="$CURR_DIR/test_run_$HOSTNAME$U$date_stamp.unl"
+		if test "1" = "2"; then 
+			rm -f $unl_file $test_run_unl_file
+			#rm -f results_*.unl test_run_*.unl
+		fi
+		UNL_LOG=1
+		MEASURE_TIME=1
+		;;
+		
     -odbcdb-ifx)        #Use Informix RDBMS for ODBC manager connections
 		ODBC_USE_DB=IFX
         ;;
@@ -1337,15 +1357,16 @@ TIME_LEGEND="user system elapsed CPU text data inputs outputs major swaps"
 if test -f "/usr/bin/time$EXE_EXT"; then
 	TIME_EXE="/usr/bin/time$EXE_EXT"
 fi
-if test "$TIME_EXE" != ""; then
+if test "$TIME_EXE" != "" -a "$MEASURE_TIME" = "1"; then
 	TIME_CMD='/usr/bin/time --format="$TIME_FORMAT" --output=$TIME_TMPFILE'
 else
     #disable timing:
+	MEASURE_TIME=0
 	SHOW_TIME=0
 fi
 if test "$ALL_DB" = "1"; then
-    #disable timing:
-	SHOW_TIME="0"
+    #disable timing display:
+	SHOW_TIME=0
 fi
 
 ############
@@ -1403,7 +1424,7 @@ NOT_CERT_CNT=0
 #######################
 #Initialise results log file
 echo "" > $LOGFILE
-echo "===================== Test results ========================" >> $LOGFILE
+echo "============================== Test results ===============================" >> $LOGFILE
 echo "" >> $LOGFILE
 echo "Flags: $FLAGS" >> $LOGFILE
 echo "Platform: $PLATFORM" >> $LOGFILE
@@ -1414,13 +1435,16 @@ if test "$ALL_DB" = "1"; then
 	DISP_FLAGS=`echo $FLAGS | sed -e 's/-short//' -e 's/-silent//' -e 's/-alldbrun//' -e 's/-sqlite//' -e 's/-defaults//' -e 's/-cert//' -e 's/-described//' -e 's/-nospace//' -e 's/-noecho//'`
 	echo "Flags: $DISP_FLAGS" >> $CURR_DIR/alldb.log
 fi
-echo "" >> $LOGFILE
-#we want exact time here - do not use $DATE
-date >> $LOGFILE
-$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
-$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
-
-#TODO: show versions of 4Js/Informix/Querix compiler - if used
+if test "$VERBOSE" = "1"; then 
+	echo "" >> $LOGFILE
+	echo "Started at" >> $LOGFILE
+	#we want exact time here - do not use $DATE
+	date >> $LOGFILE
+	echo "Aubit version/build:" >> $LOGFILE	
+	$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
+	$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
+	#TODO: show versions of 4Js/Informix/Querix compiler - if used
+fi
 
 echo "" >> $LOGFILE
 if test "$RUN_ONE" != ""; then
@@ -1501,11 +1525,6 @@ do
 		fi
 	fi
 
-	#if test "$INFO_ALL" = "1" ; then
-	#	echo " ------------------- Info for test $TEST_NO -----------------------"
-	#	continue
-	#fi
-	
 	if test "$SHOW_CONFIG" = "1"; then
 		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
 		exit 0
@@ -1515,6 +1534,7 @@ do
 	#Initialise counters and variables:
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	IS_DB_TEST=0
+	ec_test=0
 	IS_NOSILENT_TEST=0
     IS_TUI_TEST=0
     IS_GRAPHIC_TEST=0
@@ -1539,6 +1559,8 @@ do
 	compat_test=0
 	NEED_IFX_VERSION=""
 	SE_REQUIRED=0
+	SKIP_REASON=""
+	SKIP_REASON_CODES=""
 
     #################################
     #See if we should skip this test:
@@ -1602,8 +1624,7 @@ do
 		
 		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
 		NOPREFIX=`$MAKE -s -C $TEST_NO noprefix 2>/dev/null`
-		if [ "$NOPREFIX" = "1" ]
-		then	
+		if test "$NOPREFIX" = "1" ; then
 			export A4GL_NAMESPACE=" "
 		else
 			unset A4GL_NAMESPACE
@@ -1611,7 +1632,7 @@ do
 
 		NEED_COMPAT=`$MAKE -s -C $TEST_NO need_compat 2>/dev/null`
 
-		if [ "$NEED_COMPAT" = "1" ]; then
+		if test "$NEED_COMPAT" = "1" ; then
 			#test needs Aubit Informix compatibility support and headers
 			export A4GL_COMPAT_MODE="Y"
 			export CFLAGS="-I$AUBITDIR/incl -I$AUBITDIR/incl/compat "
@@ -1880,12 +1901,15 @@ do
 
 		echo ""
 		if test "$INFO_TEST" = "1"; then
+			if test "$CATALOGUE_UNL" = "1"; then 
+				catalogue_unl
+			fi
 			continue
 		fi
 	fi
 
 	if test "$SH_DBG" = "1"; then 
-		echo "Determening if we can/should run test $TEST_NO"
+		echo "Determining if we can/should run test $TEST_NO"
 	fi
 	
 	
@@ -1894,13 +1918,16 @@ do
 
 	if test "$IS_OBSOLETE_TEST" = "1"; then
 		if test "$VERBOSE" = "1"; then
-			echo "Skipping obsolete test $TEST_NO (not counting)"
+			echo "Skipping obsolete test $TEST_NO (not counting or logging)"
 		fi
-		#SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
         continue
     fi
-
-    if test "$NO_SKIP" != "1"; then
+	if test "$IS_INVALID_TEST" = "1"; then
+		SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
+		SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
+		SKIP_REASON="invalid test"
+		SKIP_REASON_CODES="$SKIP_REASON_CODES 1"
+	else
 		if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
 			if test "$USE_COMP" = "ifx-p"; then
 				set `echo $NEED_IFX_VERSION | sed -e 's/\./ /g'` #@echo "7.31"
@@ -1913,12 +1940,9 @@ do
 					fi
 				fi
 				if test "$NO_GO" = "1"; then
-					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-					if test "$VERBOSE" = "1"; then
-						echo "Skipping test $TEST_NO needs version $NEED_IFX_VERSION but have $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR" >> $LOGFILE
-					fi
+					SKIP_REASON="needs version $NEED_IFX_VERSION but have $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR"
+					SKIP_REASON_CODES="$SKIP_REASON_CODES 2"					
 					SKIP_NOVERSION_LIST="$SKIP_NOVERSION_LIST $TEST_NO"
-					continue
 				else
 					if test "$VERBOSE" = "1"; then
 						echo "Version check OK: $NEED_IFX_VERSION >= $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR" >> $LOGFILE
@@ -1927,180 +1951,107 @@ do
 			fi
 		fi
 		if test "$A4GL_FAKELEXTYPE" = "PCODE" && test "$IS_PCODE_ENABLED" = "0"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping p-code disabled test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="not p-code enabled"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 3"
 			SKIP_PCODE_LIST="$SKIP_PCODE_LIST $TEST_NO"
-	        continue
         fi
-		if test "$IS_INVALID_TEST" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
-			SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
-			if test "$RUN_ONE" != ""; then
-				echo "Skipping invalid test #$TEST_NO." >> $LOGFILE
-			fi
-			#echo "WARNING - test is invalid - please FIX IT or list it as OBSOLETE." >> $LOGFILE
-	        continue
-	    fi
 		if test "$IS_BLACKLIST_TEST" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			SKIP_BLACKLIST_LIST="$SKIP_BLACKLIST_LIST $TEST_NO"
-			if test "$RUN_ONE" != "" -o "$VERBOSE" = "1"; then
-				echo "Skipping blacklisted test #$TEST_NO." >> $LOGFILE
-			fi
-	        continue
+			SKIP_REASON="blacklisted"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 4"
 	    fi
 		if test "$IS_TUI_TEST" != "1" -a "$ONLY_TUI" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping non-TUI test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="non-TUI"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 5"			
 			SKIP_TUI_LIST="$SKIP_TUI_LIST $TEST_NO"
-	        continue
 	    fi
-		
 		if test "$SKIP_EXPECT_FAIL" = "1" -a "$IS_EXPECT_TO_FAIL_TEST" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test expected to fail #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="expected to fail"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 6"
 			SKIP_EXPECT_FAIL_LIST="$SKIP_EXPECT_FAIL_LIST $TEST_NO"
-	        continue
 		fi
-		
-		
 		if test "$IS_LONG_TEST" = "1" && test "$SKIP_LONG" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping long running test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="long running"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 7"
 			SKIP_LONG_LIST="$SKIP_LONG_LIST $TEST_NO"
-	        continue
 	    fi
 		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" -o "$IS_DUMP_SCREEN_TEST" = "1" -o test "$IS_FORM_TEST" = "1") ; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO in CONSOLE mode - uses forms or dump_screen()." >> $LOGFILE
-			fi
+			SKIP_REASON="in CONSOLE mode - uses forms or dump_screen()."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 8"
 			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
-	        continue
 	    fi
 		if test "$IS_DUMP_SCREEN_TEST" = "1" && (test "$UI" = "HL_TUIN" -o "$UI" = "HL_TUINs") ; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO - screen_dump() not implemented in PDcurses." >> $LOGFILE
-			fi
+			SKIP_REASON="screen_dump() not implemented in PDcurses."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 9"
 			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
-	        continue
 	    fi
 	    if test "$IS_DESCRIBED" != "1" && test "$DESCRIBED_ONLY" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping not described test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="not described"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 10"
 			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
-			continue
 	    fi
 		if test "$IS_DB_TEST" != "1" && test "$ONLY_DB" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping non-DB test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="non-DB"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 11"
 			SKIP_NONDB_LIST="$SKIP_NONDB_LIST $TEST_NO"
-	        continue
 	    fi
 		if test "$IS_DB_TEST" = "1" && test "$NO_DB" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping DB dependent test #$TEST_NO." >> $LOGFILE
-			fi
+			SKIP_REASON="DB dependent"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 12"
 			SKIP_DB_LIST="$SKIP_DB_LIST $TEST_NO"
-	        continue
 	    fi
 	    if test "$IS_NOSILENT_TEST" = "1" && test "$SILENT" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO - cannot run in silent mode." >> $LOGFILE
-			fi
+			SKIP_REASON="cannot run in silent mode."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 13"
 			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $TEST_NO"
-	        continue
 	    fi
 		#Obsolete-using PDcurses now, not CygWin Ncurses:
 	    #if test "$IS_TUI_TEST" = "1" -a "$TERM" != "xterm" -a "$PLATFORM" = "MINGW"; then
-		#	SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 		#	SKIP_TUI_NOT_XTERM_LIST="$SKIP_TUI_NOT_XTERM_LIST $TEST_NO"
-		#	if test "$VERBOSE" = "1"; then
-		#		echo "Skipping test #$TEST_NO - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
-		#	fi
-	    #    continue
+		#   SKIP_REASON_CODES="$SKIP_REASON_CODES 14"
+		#	SKIP_REASON="cannot run with TERM=$TERM on MinGW using Cygwin Curses."
 	    #fi
-		
 		if test "$IS_DUMP_SCREEN_TEST" = "1" -a "$TERM" != "xterm"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			SKIP_DUMP_SCREEN_NOT_XTERM_LIST="$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $TEST_NO"
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO - cannot use dump_screen() with TERM=$TERM (need xterm)." >> $LOGFILE
-			fi
-			continue
+			SKIP_REASON="cannot use dump_screen() with TERM=$TERM (need xterm)."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 15"
 		fi
-		
-		
 	    if test "$IS_GRAPHIC_TEST" = "1" && test "$NO_GRAPHIC" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO that uses platform specific characters." >> $LOGFILE
-			fi
+			SKIP_REASON="uses platform specific characters."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 16"
 			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $TEST_NO"
-	        continue
 	    fi
 	    if test "$IS_NO_CRON_TEST" = "1" && test "$CRON_JOB" = "1"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			IS_NO_CRON_CNT=`(expr $IS_NO_CRON_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO that fails when run as cron job" >> $LOGFILE
-			fi
+			SKIP_REASON="fails when run as cron job"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 17"
 			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
-	        continue
 	    fi
-		if [ ! -f $CURR_DIR/$TEST_NO/makefile -a ! -f $CURR_DIR/$TEST_NO/Makefile ]; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "$TEST_NO Not run - no Makefile" >> $LOGFILE
-			fi
+		if [ ! -f $CURR_DIR/$TEST_NO/?akefile ]; then
+			SKIP_REASON="no Makefile - mark it invalid"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 18"
 			SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $TEST_NO"
-			continue
 		fi
 		if test "$USE_COMP" != "aubit"; then
 			if test "$USE_COMP" = "4js-p"; then
 				TMP1=""
 				TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
 				if test "$TMP1" != ""; then 
-					if test "$VERBOSE" = "1"; then
-						echo "Skip $TEST_NO - can't dump_screen with 4js"
-					fi
+					SKIP_REASON="can't dump_screen with 4js"
+					SKIP_REASON_CODES="$SKIP_REASON_CODES 19"
 					SKIP_DUMP_SCREEN="$SKIP_DUMP_SCREEN $TEST_NO"
-					continue
 				fi
 			fi
 			if test -f "$TEST_NO/keys.in"; then 
-				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-				if test "$VERBOSE" = "1"; then
-					echo "$TEST_NO Not run - $USE_COMP specified but test uses keys.in" >> $LOGFILE
-				fi
+				SKIP_REASON="$USE_COMP specified but test uses keys.in"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 20"
 				SKIP_KEYS_IN_LIST="$SKIP_KEYS_IN_LIST $TEST_NO"
-				continue
 			fi
 			if test "$compat_test" != "1" -a "$IGNORE_COMPAT" != "1"; then
-				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-				if test "$VERBOSE" = "1"; then
-					echo "$TEST_NO Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
-				fi
+				SKIP_REASON="$USE_COMP specified on non-compat test"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 21"
 				SKIP_NOCOMPAT_LIST="$SKIP_NOCOMPAT_LIST $TEST_NO"
-				continue
 			fi
-			
 			if test "$OLD_DESC" = "1" \
 				-a "$IS_DESCRIBED" = "1" \
 				-a "$IS_UNKNOWN_TEST" != "1" || \
@@ -2108,10 +2059,8 @@ do
 			then 
 				#Old makefiles don't know how to use non-Aubit compilers
 				SKIP_OLD_MAKEFILE_LIST="$SKIP_OLD_MAKEFILE_LIST $TEST_NO"
-				if test "$VERBOSE" = "1"; then
-					echo "$TEST_NO Not run - $USE_COMP specified on test having old makefile" >> $LOGFILE
-				fi
-				continue
+				SKIP_REASON="$USE_COMP specified on test having old makefile"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 22"
 			fi
 		fi
 
@@ -2138,20 +2087,17 @@ do
 						DB_HAS_TRANSACTION="1"
 					else
 						#Don't know how to turn on transactions for this RDBMS			
-						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`			
-						echo "Skip $TEST_NO - test needs transaction support, but current database don't have it" >> $LOGFILE
-						echo "and I don't know how to turn them on" >> $LOGFILE
-						continue
+						SKIP_REASON="needs transaction support, but current database don't have it and I don't know how to turn them on"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 23"
 					fi
 				else
 					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
 						echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
 						echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE						
 					else
-						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
-						echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
-						continue
+						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 24"
 					fi
 				fi
 			fi
@@ -2174,20 +2120,17 @@ do
 						DB_HAS_TRANSACTION="0"				
 					else
 						#Don't know how to turn off transactions for this RDBMS
-						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-						echo "Skip $TEST_NO - test MUST NOT have transaction support, but current database have it" >> $LOGFILE
-						echo "and I don't know how to turn them off" >> $LOGFILE					
-						continue
+						SKIP_REASON="MUST NOT have transaction support, but current database have it and I don't know how to turn them off"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 25"
 					fi
 				else
 					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
 						echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
 						echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE						
 					else
-						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
-						echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
-						continue
+						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 26"
 					fi
 				fi
 			fi
@@ -2196,12 +2139,29 @@ do
 				if test "$SKIP_UNKNOWN_TRANS" != "1" ; then
 					echo "WARNING: $TEST_NO explicit preference for transactions, but unable to determine state" >> $LOGFILE				
 				else
-					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
-					echo "Skip $TEST_NO - explicit preference for transactions, but unable to determine state" >> $LOGFILE
-					continue
+					SKIP_REASON="explicit preference for transactions, but unable to determine state"
+					SKIP_REASON_CODES="$SKIP_REASON_CODES 27"
 				fi
 			fi
+		fi
+	fi #IS_INVALID_TEST
+	
+	if test "$NO_SKIP" != "1"; then
+		#skip is allowed
+		if test "$SKIP_REASON" != ""; then
+			#have reason to skip - skip the test
+			if test "$VERBOSE" = "1"; then
+				#Message shows only LAST reason encountered
+				#SKIP_REASON_CODES show ALL reasons codes
+				echo "Skip #$TEST_NO: $SKIP_REASON ($SKIP_REASON_CODES)"  >> $LOGFILE
+			fi
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			if test "$UNL_LOG" = "1"; then
+				#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
+				result_unl $TEST_NO "" "$SKIP_REASON_CODES" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION
+			fi
+			continue
 		fi
     fi
 
@@ -2472,6 +2432,7 @@ do
 	
 	if test "$RET" = "$MAKE_EXPECT_CODE"; then
 		#Test passed
+		RESULT=1
 		if test "$IS_DB_TEST" = "1"; then
 			PASS_DB_TESTS="$PASS_DB_TESTS $TEST_NO"
 			PASS_DB_CNT=`(expr $PASS_DB_CNT + 1) 2>/dev/null`
@@ -2512,6 +2473,7 @@ do
 		fi
 	else
 		#test failed
+		RESULT=0
 		FAIL_CNT=`(expr $FAIL_CNT + 1) 2>/dev/null`
 		if test "$IS_DB_TEST" = "1"; then
 			FAIL_DB_TESTS="$FAIL_DB_TESTS $TEST_NO"
@@ -2562,7 +2524,11 @@ do
             break
         fi
 	fi
-
+	if test "$UNL_LOG" = "1"; then
+		#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
+		result_unl $TEST_NO $RESULT "" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION
+	fi
+	
 	if test "$TIME_LOOP2" = "1"; then
 		LOOP_EXIT_TIME2=`date +%s`
 		LOOP_TOOK_TIME2=`(expr $LOOP_EXIT_TIME2 - $LOOP_START_TIME2) 2>/dev/null`
@@ -2760,16 +2726,19 @@ else
 	echo "*********** RESULT: UNEXPECTED ******************" >> $LOGFILE
 	RESULT=1
 fi
-
-echo "" >> $LOGFILE
-echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
+if test "$VERBOSE" = "1"; then 
+	echo "" >> $LOGFILE
+	echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
+fi	
 echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE
 $AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
-echo "" >> $LOGFILE
-echo "Finished at:" >> $LOGFILE
-#we want exact time here - do not use $DATE
-date >> $LOGFILE
-echo "" >> $LOGFILE
+if test "$VERBOSE" = "1"; then
+	echo "" >> $LOGFILE
+	echo "Finished at:" >> $LOGFILE
+	#we want exact time here - do not use $DATE
+	date >> $LOGFILE
+	echo "" >> $LOGFILE
+fi
 
 #####################
 #Show results to the user
@@ -2788,8 +2757,6 @@ else
 
 		echo "$FAIL_CNT_NEW" > $CURR_DIR/fail.cnt
         echo "$PASS_CNT_NEW" > $CURR_DIR/pass.cnt
-
-
 	fi
 	if test "$NO_ECHO" != "1"; then
 		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT"
@@ -2797,9 +2764,16 @@ else
     fi
 
 fi
-
+if test "$UNL_LOG" = "1"; then 
+	FINISH_ALL_TIME=`date +%s`
+	test_run_unl
+	echo ""
+	echo "Logging files closed:"
+	echo "  results_$HOSTNAME$U$date_stamp.unl"
+	echo "  test_run_$HOSTNAME$U$date_stamp.unl"
+fi
+echo ""
 cd $CURR_DIR
-
 #Exit 
 exit $RESULT
 

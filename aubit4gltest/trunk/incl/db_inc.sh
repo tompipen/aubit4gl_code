@@ -123,7 +123,6 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 			fi
 		fi
     fi
-	USERNAME=`whoami`
 	if test "$USEERNAME" != "informix"; then 
 		echo "WARNING: you are not logged in as Informix super user (informix) but"
 		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"

@@ -4,6 +4,20 @@
 
 #######################
 #Set defaults
+
+if test "$SH" = ""; then 
+	if test "$SHELL" = ""; then
+		SH="bash"
+		SHELL="$SH"
+	else
+		SH="$SHELL"
+	fi
+else
+	if test "$SHELL" = ""; then
+		SHELL="$SH"
+	fi
+fi
+
 CURR_DIR=`pwd`
 export A4GL_PRG=".4ae"
 export FGLC=4glc
@@ -85,6 +99,7 @@ else
 fi
 
 HOSTNAME=`hostname`
+USERNAME=`whoami`
 
 #Determine POSTGRESDIR and PSQL for PostgreSQL database engine
 #Must be here because PSQL is used before we reach dedicated PG section,
@@ -389,35 +404,18 @@ for a in $FLAGS; do
 			else
 				#Only 2 flags on command line, one of which is -info, so
 				#just show the info
-				INFO_TEST="1"
+				INFO_TEST=1
 				continue
 			fi
             ;;
 		-catalogue) 
 			#create catalogue.txt file using -info flag
+			rm -f $CURR_DIR/docs/catalogue.unl
+			export CATALOGUE_UNL=1
 			echo "Creating tests catalogue file ... this will take a while, please wait..."			
-			bash run_tests -info > ./catalogue.txt
-			echo "Tests catalogue created (./catalogue.txt)"
+			$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt
+			echo "Tests catalogue created (./docs/catalogue.txt and .unl)"
 			exit 0
-			;;
-			
-		-catatogue-unl-test) 
-			#unload all test info to .unl file
-			exit
-			;;
-		-log-unl-test)
-			#unload rest result to .unl file
-			result_unl "123" "ifx" "7.3" "eci" "pass"
-			exit
-			;;
-		-catatogue-unl) 
-			#unload all test info to .unl file
-			exit
-			;;
-		-log-unl)
-			#unload rest result to .unl file
-			UNL_LOG=1
-			exit
 			;;
 		-xyz)
 			#replace a string in all makefiles
@@ -543,8 +541,9 @@ if test "$INFO_TEST" = "1"; then
 	if test "$RUN_ONE" = ""; then 
 		INFO_ALL=1
 		echo "This output was created using command 'run_tests -info'"
-		$DATE 
+		echo "on $DATE"
 		echo " "
 	fi
 fi
+
 

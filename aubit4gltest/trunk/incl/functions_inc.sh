@@ -3,33 +3,200 @@
 ##############################################################################
 
 ##
-# Log resilts into Informix-style .unl file
+# Log test descriptiont into Informix-style .unl file
+#
+##
+catalogue_unl() {
+#time=$date_stamp
+time=`date +%d-%m-%Y_%H-%M-%S`
+test_no=$TEST_NO
+invalid=$IS_INVALID_TEST
+is_db=$IS_DB_TEST
+is_ec=$ec_test
+is_nosilent=$IS_NOSILENT_TEST
+is_tui=$IS_TUI_TEST
+is_form=$IS_FORM_TEST
+is_report=$IS_REPORT_TEST
+is_graphics=$IS_GRAPHIC_TEST
+is_prompt=$IS_CONSOLE_PROMPT_TEST
+is_dump_screen=$IS_DUMP_SCREEN_TEST
+is_long=$IS_LONG_TEST
+is_unknown=$IS_UNKNOWN_TEST
+is_cert=$IS_CERT_TEST
+is_obsolete=$IS_OBSOLETE_TEST
+is_described=$IS_DESCRIBED
+test_desc_txt=$desc_txt
+test_compat_test=$compat_test
+expect_code=$EXPECT_CODE
+se_required=$SE_REQUIRED
+compile_only=$COMPILE_ONLY
+need_ifx_ver=$NEED_IFX_VERSION
+need_trans=$NEED_TRANSACTION
+#???? t:noprefix
+no_prefix=$NOPREFIX
+need_compat=$NEED_COMPAT
+old_makefile=$OLD_DESC
+
+
+#################################
+#Variables still to populate:
+
+#Test makefile is aubit P-code Old makefiles:PCODE_ENABLED
+is_pcode_enabled=""
+#Test will fail when running under cron. Old makefiles:NO_CRON_TESTS
+is_no_cron=""
+#Uses scripted execution (keys.in)
+scripted=""
+#Opens windows Old makefiles: WINDOW_TESTS
+is_window=""
+#CVS version of that test
+test_ver=""
+#Version of run_tests script used to collect values
+run_tests_ver=""
+#Time of last update of this test (test files changed)
+last_update=""
+#Need to scan this again, since IS_EXPECT_FAIL is composed at run-time
+#depending on run_tests flags:
+expect_fail_cert=""
+expect_fail_esqli=""
+expect_fail_ecp=""
+expect_fail_ifx_p=""
+expect_fail_4js=""
+expect_fail_querix=""
+
+dl="|"
+logfile="$CURR_DIR/docs/catalogue.unl"
+
+if ! test -f $logfile; then
+	#on first row print legend
+
+echo "'time'$dl'test_no'$dl'invalid'$dl'is_db'$dl'is_ec'$dl'is_nosilent'$dl'is_tui'\
+$dl'is_form'$dl'is_report'$dl'is_graphics'$dl'is_prompt'$dl'is_dump_screen'\
+$dl'is_long'$dl'is_unknown'$dl'is_cert'$dl'is_obsolete'$dl'is_described'\
+$dl'test_desc_txt'$dl'test_compat_test'$dl'expect_code'$dl'se_required'\
+$dl'compile_only'$dl'need_ifx_ver'$dl'need_trans'$dl'no_prefix'$dl'need_compat'\
+$dl'old_makefile'$dl'is_pcode_enabled'$dl'is_no_cron'$dl'scripted'\
+$dl'is_window'$dl'test_ver'$dl'run_tests_ver'$dl'last_update'$dl'expect_fail_cert'\
+$dl'expect_fail_esqli'$dl'expect_fail_ecp'$dl'expect_fail_ifx_p'$dl'expect_fail_4js'\
+$dl'expect_fail_querix'$dl" > $logfile
+	
+fi
+
+echo "$time$dl$test_no$dl$invalid$dl$is_db$dl$is_ec$dl$is_nosilent$dl$is_tui\
+$dl$is_form$dl$is_report$dl$is_graphics$dl$is_prompt$dl$is_dump_screen\
+$dl$is_long$dl$is_unknown$dl$is_cert$dl$is_obsolete$dl$is_described\
+$dl$test_desc_txt$dl$test_compat_test$dl$expect_code$dl$se_required\
+$dl$compile_only$dl$need_ifx_ver$dl$need_trans$dl$no_prefix$dl$need_compat\
+$dl$old_makefile$dl$is_pcode_enabled$dl$is_no_cron$dl$scripted\
+$dl$is_window$dl$test_ver$dl$run_tests_ver$dl$last_update$dl$expect_fail_cert\
+$dl$expect_fail_esqli$dl$expect_fail_ecp$dl$expect_fail_ifx_p$dl$expect_fail_4js\
+$dl$expect_fail_querix$dl" >> $logfile
+
+}
+
+
+##
+# Log test run settings and summary results into Informix-style .unl file
+#
+##
+test_run_unl() {
+
+time=$date_stamp
+host=$HOSTNAME
+user=$USERNAME
+platform="$PLATFORM"
+os_name="$MACHTYPE"
+#os_version="`uname -r`"
+os_version="`uname -a`"
+flags="$FLAGS"
+aubit_version=`aubit 4glc -v | grep Version | awk '{print $2}'`
+aubit_build=`aubit 4glc -v | grep Build | awk '{print $3}'`
+#Only when non-Aubit 4gl compiler is used
+comp_version=""
+total_time=`(expr $FINISH_ALL_TIME - $START_TIME) 2>/dev/null`
+c_ver=`gcc --version`
+#FIXME: adapt for PG/SAP/Querix :
+esql_ver=`esql -V | grep Version | awk '{print $3}'`
+#Fixme - addapt for non-Informix engines
+db_ver=`dbaccess -V | grep Version | awk '{print $3}'`
+set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+make_ver="$1.$2.$3"
+sh_ver=`$SH --version | grep version | awk '{print $4}'`
+
+
+dl="|"
+
+if ! test -f $test_run_unl_file; then
+	#on first row print legend
+echo "'time'$dl'host'$dl'user'$dl'platform'$dl'os_name'$dl'os_version'\
+$dl'flags'$dl'aubit_version'$dl'aubit_build'$dl'comp_version'$dl'total_time'\
+$dl'c_ver'$dl'esql_ver'$dl'db_ver'$dl'make_ver'$dl'sh_ver'$dl" > $test_run_unl_file
+
+fi
+
+echo "$time$dl$host$dl$user$dl$platform$dl$os_name$dl$os_version\
+$dl$flags$dl$aubit_version$dl$aubit_build$dl$comp_version$dl$total_time\
+$dl$c_ver$dl$esql_ver$dl$db_ver$dl$make_ver$dl$sh_ver$dl" >> $test_run_unl_file
+
+}
+
+
+##
+# Log results of each test into Informix-style .unl file
 #
 ##
 result_unl() {
-host="host"
-flags="all_flags"
-aubit_ver="version"
+time=$date_stamp
 test_no=$1
-db_type=$2
-db_ver=$3
-db_method=$4
-result=$5
+result=$2
+skip_reason=$3
+expect_fail=$4
+test_version=$5
+db_has_trans=$6
+
+if test "$skip_reason" = ""; then 
+	if test -f $CURR_DIR/$test_no/$TIME_TMPFILE; then 
+		TMP_TMP=`cat $CURR_DIR/$test_no/$TIME_TMPFILE | grep -v non-zero`
+		set `echo $TMP_TMP` 
+		t_user=$1
+		t_system=$2 
+		t_elapsed=$3 
+		t_CPU=$4 
+		t_text=$5 
+		t_data=$6 
+		t_inputs=$7 
+		t_outputs=$8
+		t_major=$9
+		#t_swaps=$10
+		#can't get more then 9 from set - how to use 'shift'?
+		#t_swaps="fixme"
+		shift
+		t_swaps=$9
+	fi
+fi
 
 dl="|"
-unl_file=results.unl
 
-	#if test -f "$unl_file"; then 
-	#	
-	#else
-	#
-	#fi
-	
-	echo "$host$dl$DATE$dl$flags$dl$aubit_ver$dl$test_no$dl$db_type$dl\
-		$db_ver$dl$db_method$dl$result" >> $unl_file
+if ! test -f $unl_file; then 
+
+#On first row, print legend
+echo "'date_stamp'$dl'test_no'$dl'result'$dl'skip_reason'$dl'expect_fail'\
+$dl'test_version'$dl'db_has_trans'$dl't_user'$dl't_system'$dl't_elapsed'\
+$dl't_CPU'$dl't_text'$dl't_data'$dl't_inputs'$dl't_outputs'$dl't_major'\
+$dl't_swaps'$dl" > $unl_file
+
+fi
+
+echo "$time$dl$test_no$dl$result$dl$skip_reason$dl$expect_fail\
+$dl$test_version$dl$db_has_trans\
+$dl$t_user$dl$t_system$dl$t_elapsed$dl$t_CPU$dl$t_text$dl$t_data$dl$t_inputs\
+$dl$t_outputs$dl$t_major$dl$t_swaps$dl\
+" >> $unl_file
 
 
 }
+
+
 ##
 # Compare Aubit settings comming from aubit-config and environment
 #

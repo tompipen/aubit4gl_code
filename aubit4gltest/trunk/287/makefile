@@ -44,7 +44,8 @@ include ${MAKEFILE_COMMON}
 FORMS=${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
 HELP=${MSG:.msg=${HLP_EXT}}
-
+DBDATE=DMY2/
+export DBDATE 
 ################
 #export to environment:
 ifneq "${A4GL_KEYFILE}" ""
@@ -88,7 +89,8 @@ run: compile
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
-	DBDATE=DMY2/ ${DEFAULT_DUMP_DIFF}
+#	DBDATE=DMY2/ ${DEFAULT_DUMP_DIFF} ---cant do that!
+	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}

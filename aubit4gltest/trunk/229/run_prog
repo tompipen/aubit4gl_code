@@ -1,6 +1,6 @@
 export A4GL_KEYFILE=keys.in
 export A4GL_TRIMDUMP=24x80
-export DBDATE=MDY4/
+#allready system default - export DBDATE=MDY4/
 ./prog.4ae
 if diff $DIFF_FLAGS screen1.out screen1.out.infx 
 then

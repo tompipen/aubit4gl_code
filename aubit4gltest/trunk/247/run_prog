@@ -1,3 +1,5 @@
+
+#This is different from testing default (MDY/)
 export DBDATE=dmy4/
 ./progname.4ae
 for a in p1.out p2.out

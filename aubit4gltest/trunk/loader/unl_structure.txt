@@ -68,33 +68,51 @@ scripted															Uses scripted execution (keys.in)
 
 
 
-========================= data about the test execution ======================
-
-Name 		run_test		valid options	Type		Description
-			variable		
+====================== data about individual test execution ===================
+	Name 		run_test		valid options	Type		Description
+				variable		
 -----------------------------------------------------------------------------
-test_no		TEST_NO			FK				smallint	Number of the test executed
-host		HOSTNAME		-				varchar		Name of the host tests are executed on
-user		?				-				varchar		Username of the user running tests
-platform	PLATFORM		MINGW/CYGWIN/UNIX char(6)	Name of the operating system type tests where executed on
-os_name		?				-				varchar		Name of the operating system tests where executed on
-os_version	?				-				float		Version of the operating system test where executed on
-flags		FLAGS			-				varchar		Full list of flags processed by run_test (expanded if needed)
-aubit_version NONE			-				smallint	Version number of Aubit compiler used
-aubit_build	NONE			-				smallint	Build number of Aubit compiler installed 
-comp_version	NONE		-				char(20)	Version as returned by compiler executable, when non-Aubit 4GL compiler was used to run test (4Js,Ifx,Querix)
-test_version	NONE		-				decimal		CVS version of run_tests script
-db_has_transDB_HAS_TRANSACTION 0/1/2		smallint	Did database test was executed against have support for transation (Unknown/yes/no)
-test_time	NONE			-				datetime	Length of time test took to execute
-result		?				0/1				smalling	Did the test fail (0) of succedde (1)	
-expect_fail ?				0/1				smallint	Was the test expected to fail under current settings
-skip_reason ?				-				varchar		If test was skipped, why. If not, NULL
-c_ver		?				-				?			C compiler version, if used 
-esql_ver	?				-				?			Version of ESQL compiler (ifx/pg/sap/querix) if used
-db_ver		?				-				?			Database engine version as/if used
-make_ver	?				-				?			Version of 'make' used
-sh_ver		?				-				?			Version of shell interpreter used
+1	date_stamp
+2	test_no		TEST_NO			FK				smallint	Number of the test executed
+3	result		?				0/1				smalling	Did the test fail (0) of succedde (1)
+4	skip_reason ?				-				varchar		If test was skipped, why. If not, NULL
+5	expect_fail ?				0/1				smallint	Was the test expected to fail under current settings
+6	test_version	NONE		-				decimal		CVS version of run_tests script
+7	db_has_transDB_HAS_TRANSACTION 0/1/2		smallint	Did database test was executed against have support for transation (Unknown/yes/no)
+8	t_user													timing data obtained by using 'time command
+9	t_system 
+10	t_elapsed 
+11	t_CPU 
+12	t_text 
+13	t_data 
+14	t_inputs 
+15	t_outputs 
+16	t_major 
+17	t_swaps
 
+
+========================= summary data about test run ======================
+
+	Name 		run_test		valid options	Type		Description
+				variable		
+-----------------------------------------------------------------------------
+0	date_stamp
+1	host		HOSTNAME		-				varchar		Name of the host tests are executed on
+2	user		?				-				varchar		Username of the user running tests
+3	platform	PLATFORM		MINGW/CYGWIN/UNIX char(6)	Name of the operating system type tests where executed on
+4	os_name		?				-				varchar		Name of the operating system tests where executed on
+5	os_version	?				-				float		Version of the operating system test where executed on
+6	flags		FLAGS			-				varchar		Full list of flags processed by run_test (expanded if needed)
+7	aubit_version NONE			-				smallint	Version number of Aubit compiler used
+8	aubit_build	NONE			-				smallint	Build number of Aubit compiler installed 
+9	comp_version	NONE		-				char(20)	Version as returned by compiler executable, when non-Aubit 4GL compiler was used to run test (4Js,Ifx,Querix)
+10  total_time
+11	c_ver		?				-				?			C compiler version, if used 
+12	esql_ver	?				-				?			Version of ESQL compiler (ifx/pg/sap/querix) if used
+13	db_ver		?				-				?			Database engine version as/if used
+14	make_ver	?				-				?			Version of 'make' used
+15	sh_ver		?				-				?			Version of shell interpreter used
+...summary results... we can get that by counting individual results?
 
 Note: we could expand 'flags' into separate variables, but that would limit our 
 abbility to add new options to run_tests script without at the same time 
