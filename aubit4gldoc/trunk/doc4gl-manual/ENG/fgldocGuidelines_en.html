@@ -17,7 +17,7 @@
 <meta name="CREATED" content="20010326;17552300">
 <meta name="CHANGED" content="20010404;12125000">
 	<TITLE>How to write commentaries of documentation for fgldoc</TITLE>
-	<STYLE>
+<STYLE>
 	<!--
 		H1 { font-family:  }
 		H2 { font-family:  }
@@ -25,142 +25,150 @@
 	-->
 	</STYLE>
 </HEAD>
-<BODY>
-<H1 ALIGN=CENTER>How to write commentaries of documentation for fgldoc 
-</H1>
-<H2> Content
+<BODY bgcolor="#FFFFFF">
+
+<h2 align="center">DOC4GL - 4gl   
+ programs documenter</h2> 
+<h3 align="center">Writing documentation comments for DOC4GL</h3> 
+<hr>
+<H2> <a name="Table of Content"><i>Table of content</i></a><i>s</i>
 </H2>
 <UL>
-	<LI><DD> Principios
-</DD><LI><DD>
-	 Terminology
-</DD><LI><DD>
-	 Filing-cabinets Source
-</DD><LI><DD>
-	 General form of a documentation commentary
-</DD><LI><DD>
-	 Description
-</DD><LI><DD>
-	 Guide of style
-</DD><LI><DD>
-	 Conventions for tag(s)
-</DD><LI><DD>
-	 Commentaries of functionality
-</DD><LI><DD STYLE="margin-bottom: 0.51cm">
-	 Examples
-</DD></UL>
-<H2> Principios
+	<LI><a href="#Basic principles">Basic principles</a><LI><a href="#Terminology">
+	 Terminology</a><LI><a href="#Filing-cabinets Source">
+     Source files</a><LI><a href="#General form of a documentation comment">
+	 General form of a documentation comment</a><LI><a href="#Descriptions">
+	 Description</a><LI><a href="#Style guide">Style guide</a><LI><a href="#Conventions for tagging">
+	 Conventions for tagging</a><LI>
+     Comments describing functionality (missing)<LI><a href="#Examples">
+	 Examples</a></UL>
+<p><a href="../index.html">Doc4GL documentation index page</a></p> 
+<hr>
+<H2> <a name="Basic principles">Basic principles</a>
 </H2>
-<P> The applications normally have three types of documents:
-structural and manual specifications, documents for the users.
+<blockquote>
+<P> The applications normally have three types of documents:&nbsp;
 </P>
-<P> The scope of this document is arrested only with the
-documents that describe the applications structurally.
+<ul>
+  <li>
+structural specifications</li>           
+  <li>manual specifications</li>
+  <li>documents for the users</li>
+</ul>
+  <P> The scope of this document is limited to documents that describe the applications 
+  <i>structurally</i>. 
 </P>
-<P> Documentation created in autonomous documents normally is 
-desactualizados and modified only when the management defines it as 
-with priority task (what its f&#244;r state only happens when such that 
-already does not have any utility). 
+<P> Documentation created in autonomous documents normally is obsolete and modified only when the management defines it as priority task (what  
+usually only happens when we already don't have any resources available).   
 </P>
-<P> Of this form we think that the best form will be the
-documentation to be the position of the programmers and preference
-next to the code that if is to register (or either in source of 4gl).
+<P> We think that the best form will be the 
+documentation to be the position of the programmers and preference 
+next to the code that if is to register (or either in source of 4gl). 
 
 </P>
-<P> Therefore, the example of javadoc we decide to perfectly
-create a definite tool that on the basis of standards very defined
-well extracts the information absorbed in the code and generates
-documents with format specifies and.
+<P> Following the example of Javadoc, we decide to create a definite tool that on the basis of 
+well defined standards extracts the information absorbed in the code and generates 
+documents with format specified.
 </P>
-<P> We must therefore try to follow the following principios:
+<P> We must therefore try to follow this principles: 
 </P>
-<UL>
-	<LI><P><B> The structural documentation is defined under the form of
-commentaries of documentation written in the code marked source and
-some documents as acessiveis specifications of these documents.
-</B></P>
-	<LI><P><B> References the alterations efectuadas in determined version
-must be kept in the system of control of versions.
-</B></P>
-</UL>
-<H3> Who is &quot; ' the owner ' of the commentaries of documentation -
-Especificadores, documentors or programmers
-</H3>
-<P> The commentaries do not have to be of the exclusive
-responsibility of none of these entities.  This is partilhada between
-them consonant the phase where projecto if finds,
+<ul>
+  <li>
+    <p> The structural documentation is defined in the form of documentation comments, written in the source code and  
+some documents as acessiveis specifications of these documents.</p>  
+  </li>
+  <li>
+    <p> References of the changes efectuadas in determined version  
+must be kept in the versioning control system .</p> 
+  </li>
+</ul>
+<p> Who is <i>the owner</i> of the documentation comments - Designers, Documentation  
+writers or Programmers ? The comments do not have to be of the exclusive  
+responsibility of none of these entities.  This is divided between  
+them consonant the phase where project if finds. 
+</p>
+<P> It is important to notice that to a large extent of the projects, the programs source are inherited  
+and already exist, and  
+many times are not registered. In any case, they are probably not  
+registered in the format that we use.  
 </P>
-<P> It is important to notice that to a large extent of the
-projectos, the programs source are inherited already construidos and
-many times not registered.  Of any form, of certainty they are not
-registered with the nomenclature that we use.
+<P> Ideally, the documentation must be written by the programmers who implement 
+or modify the functions.  If there is a methodology of initial writing of a skeleton, 
+and later each 
+function implemented for the programmers, then the responsible person 
+for the construction of the skeleton should write it. 
 </P>
-<P> Ideally the documentation must be written by the programmers
-to the measure who implement (or they modify) the functions.  If to
-exist a methodology of initial writing of a skeleton being later each
-function implemented for the programmers, must be the responsible one
-for the construction of the skeleton to write it.
+<P> When documentation effort is initiated after the  
+application is in use (in a process of redesign or to document it), must be efectuada under the form of taken  
+over on a contract basis tentanto to the absolute maximum. 
 </P>
-<P> When this documentation is initiated already after the
-application being in functioning (in a process of refactoring or
-simply of documentation), must be efectuada under the form of taken
-over on a contract basis tentanto to the maximum that is most
-exhausting possivel.
+<P> After the documentation is inserted, during the phase of  
+maintenance of the project, the programmers have to modify all the  
+documentation that relates to performed modifications.  In  
+the case of resolution of a bug, these must be registered in the version control. 
 </P>
-<P> After the inserted documentation, during the phase of
-maintenance of projecto, the programmers have to modify all the
-documentation in that he relates to the efectuadas modifications.  In
-the case of resolution of bug(s) these must be registadas in the
-control of versions.
+<P> With this in mind, these principles try to describe the comments for documentation.  They must be understood as    
+suggestions instead of rigid requirements to follow without question. There always exist alternative 
+ways, that if prove to be more efficient, should be used. Please suggest them to person responsible  
+for this document.    
 </P>
-<P> With this in mind, these principios try to describe the 
-commentaries for documentation.  They must be understood as 
-suggestions instead of rigidos requirements to follow until the a 
-exhaustion.  That they always exist alternative creative that if it 
-proves to be more efficient must aplic&#225;as and exactly sugeriz them it 
-the responsible one of this document. 
+</blockquote>
+<P> <a href="#Table of Content">Back to Table of Content</a>  
 </P>
-<H2> Terminology
+<hr>
+<H2> <a name="Terminology"> Terminology</a>
 </H2>
-<P STYLE="margin-left: 2.01cm"><B> Commentaries for documentation </B><SPAN STYLE="font-weight: medium"> (doc comments)
+<blockquote>
+<P><B> Comments for documentation </B><SPAN STYLE="font-weight: medium"> (doc comments) 
 </SPAN></P>
-<P STYLE="margin-left: 4.01cm; font-weight: medium"> Commentaries special written in the code source of 4gl
-delimited by { * *... }. These commentaries are processed by the tool
-p4gl to paracarregar the documentation in a relationary database.
-Developed in flex (lex), bison (yacc), C and Perl.
+  <blockquote>
+<P> Comments special written in the 
+4gl source code and delimited by { * *... } symbols. These comments are processed by the 
+<i>p4gl</i> tool<i> </i>to create the documentation in a relational database.  
+Developed using flex (Lex), bison (Yacc), C and Perl.  
 </P>
-<P STYLE="margin-left: 2.01cm"><B> fgldoc
+  </blockquote>
+<P><B> fgldoc
 </B></P>
-<P STYLE="margin-left: 4.01cm; font-weight: medium"> The tool that dynamically generates the documentation from
-the loaded data in the repository in relationary format.  It was
-developed in jsp and it java.
+  <blockquote>
+<P> The tool that dynamically generates the documentation from   
+the loaded data in the relational formated repository.  It was   
+developed in JSP and Java. 
 </P>
-<H2> Filing-cabinets Source
+  </blockquote>
+</blockquote>
+<p> <a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<H2> <a name="Filing-cabinets Source"> Source files</a>&nbsp; 
 </H2>
-<P> The tool generates documentation with origin in some sources:
+<blockquote>
+<P> The tool generates documentation with origin in source files:          
 
 </P>
-<UL>
-	<LI><P> Programs source in language 4gl.
-</P>
-	<LI><P> Documents of description of processes.
-</P>
-	<LI><P> Documents of description of packages.
-</P>
-</UL>
-<H2> General form of a documentation commentary
+<ul>
+  <li>
+ Program source files in 4GL language.</li> 
+  <li>Documents description of processes.</li> 
+  <li>Documents description of packages.</li> 
+</ul>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a></p> 
+<hr>
+<H2> <a name="General form of a documentation comment"> General form of a documentation 
+comment</a>
 </H2>
-<P> A documentation commentary is made in two parts:  a followed 
-description of zero or more tags, with a blank string between these 
-sec&#231;&#245;es:
+<blockquote>
+<P> A documentation commentary is made from two parts: following     
+description of zero or more tags, with a blank string between these sections: 
 </P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3>
+<TABLE width=80% BORDER=1 CELLPADDING=4 CELLSPACING=3>
 	<COL WIDTH=256*>
 	<THEAD>
 		<TR>
-			<TD WIDTH=100% VALIGN=TOP>
+			<TD WIDTH=100% VALIGN=TOP bgcolor="#C0C0C0">
 				<PRE> { * * That is the part of the description of the
-documentation commentary
+documentation comment
 
 @process SUBSCRIBERS }
 </PRE>
@@ -168,246 +176,311 @@ documentation commentary
 		</TR>
 	</THEAD>
 </TABLE>
-<UL>
-	<LI><P> The first string is indentada by form to be lined up with the
-code that follows the commentary and starts with simbolo of
-beginning-of-commentary ({**) followed of one return.
+<ul>
+  <li>
+    The first string is indented to be lined up with the code that follows 
+    the comment and starts with symbol of beginning-of-commentary ({**) followed 
+    by one return (ENTER).
+  </li>
+  <li>
+    The following strings start with an &quot;*&quot; or only with a space. 
+    When it exist, the &quot;*&quot; is removed and substituted with a space 
+    (&quot; &quot;) character.
+  </li>
+  <li>
+    A string of blank comment between the description and the list of tags 
+    must be inserted such as shown above.
+  </li>
+  <li>
+   To insert strings blank between related tablets of tags
+  </li>
+  <li>
+    The ending string starts with symbol of end-of-commentary (}) followed by 
+    one return character (ENTER).
+  </li>
+</ul>
+<P> Strings with more than 80 characters must be to be left.  If there will be more than   
+one paragraph in    
+the documentation comment, separates the paragraphs with tag    
+&lt;P&gt;.   
 </P>
-	<LI><P> The following strings start with a asteristico * or only with
-a space.  When to exist, the asteristico is removed and substituido by
-a space.
-</P>
-	<LI><P> A string of blank commentary between the description and the
-stack of tags must be inserted such as above it is presented.
-</P>
-	<LI><P> To insert strings blank between related tablets of tags
-</P>
-	<LI><P> It finishes it string starts with simbolo of
-end-of-commentary (}) followed of one return.
-</P>
-</UL>
-<P> Strings with more than 80 characters of size must, if
-possivel duly to be left.  If it will more than have a paragraph in
-the documentation commentary, separates the paragraph with tag
-&lt; P &gt;.
-</P>
-<H2> Descriptions
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a></p> 
+<hr>
+<H2> <a name="Descriptions"> Descriptions</a>
 </H2>
-<P STYLE="margin-left: 2.01cm"><B> First phrase
+<blockquote>
+<P><B> First phrase
 </B></P>
-<P STYLE="margin-left: 2.01cm"> The first phrase of each commentary of documentation must be
-a summary, contends a concise but full description of the item that is
-to be registered.  The tool javadoc copies this first phrase for the
-relative summary of the item.  This becomes important the writing of
-informaticas initial phrases that if obtains to describe immediately.
+<P> The first phrase of each documentation comment must be 
+a summary, containing a concise but full description of the item that is 
+to be described.  The Javadoc tool uses this first phrase for the summary of the item.  This becomes important 
+for writing of initial information that if obtains to describe immediately. 
 
 </P>
-<P STYLE="margin-left: 2.01cm"> This phrase finishes in the first point (.) followed of a
-space, tab or end of string or in first tag found.  In the example
-that if follows the first phrase finishes in Prof.:
+<P> This phrase finishes with the first full stop (&quot;.&quot;) followed by a  
+space, tab, end of string or in first tag found.  In the example  
+that if follows the first phrase finishes in Prof.:  
 </P>
-<PRE STYLE="margin-left: 4.01cm"> / * * * That is a simulation of experience of the Prof.
-Sparrow.  * /
-</PRE><P STYLE="margin-left: 2.01cm">
-<BR><BR>
+  <blockquote>
+<PRE> / * * * This is a simulation of experience of the Prof.
+Sparrow.  * /</PRE>
+  </blockquote>
+  <P> We can insert a full stop using  
+meta-characters  
+of the HTML to obtain this objective, as in following example: 
 </P>
-<P STYLE="margin-left: 2.01cm"> If preender, however can insert a point using metacaracteres
-of the HTML to obtain this objectivo, as of followed if it defines:
-</P>
-<PRE STYLE="margin-left: 4.01cm"> / * * * That is a simulation of experience of the Prof.
-&amp; nbsp;  Sparrow.  * /
-</PRE><P STYLE="margin-left: 2.01cm">
-<BR><BR>
-</P>
-<H2> Guide of style
+  <blockquote>
+<PRE> / * * * This is a simulation of experience of the Prof.
+&amp;nbsp;  Sparrow.  * /</PRE>
+  </blockquote>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a></p> 
+<hr>
+<H2> <a name="Style guide">Style guide</a>
 </H2>
-<P STYLE="margin-left: 2cm"> Of followed some suggestions and conventions for escritade of
-the descriptions in the documentation commentaries are presented.
+<P>Following are some suggestions and conventions for writing of 
+the descriptions in the documentation comments.
 </P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> To use &lt; CODE &gt; for words key and names
+<ul>
+  <li>
+    <p><B>Use &lt;CODE&gt; for words key and names  
+</B></p>
+  </li>
+</ul>
+<blockquote>
+<P> The private words must be surrounded by tags &lt;CODE&gt;... &lt;/ CODE&gt; when 
+included in a 
+description. This includes:
+</P>
+<ul>
+  <li>
+ 4gl language reserved word
+  </li>
+  <li>
+   Names of functions
+  </li>
+  <li>
+   Names of 0 variable (global, local and parameters)
+  </li>
+  <li>
+  Examples of code 
+  </li>
+</ul>
+</blockquote>
+<ul>
+  <li><b>Omit parentheses for the general form of the functions</b></li>  
+</ul>
+<blockquote>
+<P> When mentioning function itself in the comment of the   
+function, one must always omit the parentheses and the respective   
+parameters. It is preferred to use the word method if you   
+intend to use the function name.  
+</P>
+<P> Example:
+</P>
+  <ul>
+    <li> The function add allows to insert items. - <i>Recommended</i></li>
+    <li> Function add(item) allows to insert items - <i>Avoid</i></li> 
+  </ul>
+</blockquote>
+<UL>
+	<LI><P><B>Use expressions instead of full conjuncts, in the interest 
+of the brevity 
 </B></P>
 </UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> The private words must be enter tags &lt; CODE
-&gt;... &lt; / CODE &gt; when mensionadas in a
-description.  To include:
+<blockquote>
+<P> This rule must primarily be applied when you define tags, as  
+for example the @param 
 </P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 4cm; font-weight: medium"> Private words of 4gl
-</P>
-	<LI><P STYLE="margin-left: 4cm; font-weight: medium"> Names of functions
-</P>
-	<LI><P STYLE="margin-left: 4cm; font-weight: medium"> Names of 0 variable (global, local and parametros)
-</P>
-	<LI><P STYLE="margin-left: 4cm; font-weight: medium"> Examples of code
-</P>
-	<LI><P STYLE="margin-left: 2cm"><B> To omit parenteses for the general form of the functions
+</blockquote>
+<UL>
+	<LI><P><B>Use third person (descriptive), not a second person              
+(prescriptive) form
 </B></P>
 </UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> When to mention itself in the way of a commentary to a
-function it must always omit the parenteses and the respective
-parameters.  He is preferivel to include the word method when if to
-intend to use.
+<blockquote>
+<P> The description should be in 3&#170; declarative person instead of              
+2&#170; imperative person.             
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> Former:
+<P> Example:
 </P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> The function add allows to insert items. - <B>
-Preferivel
-</B></P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> add(item) allows to insert items  <B> Evitar
-</B></P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> To use expressions instead of full conjuncts, in the interest
-of the brevity
+  <ul>
+    <li> It returns the number: <i>Recommended</i></li>
+    <li> You return the number: <i> Avoid</i></li>
+  </ul>
+</blockquote>
+<UL>
+	<LI><P><B> Descriptions of functions must start with verbal expression
 </B></P>
 </UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> This rule must over all be applied when they define tags as
-for example they @param
-</P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> To use 3&#170; person (descriptive).  Not it 2&#170; person 
-(prescriptive)
-</B></P>
-</UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> The description must be in 3&#170; declarative person in time of 
-2&#170; impreativa person. 
-</P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> Former:
-</P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> It returns the number:  Preferivel
-</P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> You return the number:  To prevent
-</P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> Descriptions of functions must start with verbal expression
-</B></P>
-</UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> A method implements an operation, thus normally starts with a
+<blockquote>
+<P> A method implements an operation, thus normally starts with a 
 phrase.
 </P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> It gets the name of the customer:  Preferivel
-</P>
-<P STYLE="margin-left: 4cm; font-weight: medium"> This function gets the name of the customer:  To prevent
-</P>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> To add descriptions for beyond the name the function
+  <ul>
+    <li>Gets the name of the customer: <i>Recommended</i></li>
+    <li>This function gets the name of the customer: <i>Avoid</i></li>
+  </ul>
+</blockquote>
+<ul>
+	<LI><P><B> Add descriptions for beyond the name the function 
 </B></P>
-</UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> The best names of functions auto are registered.  However, if
-the commentary to only repeat the name of the function in a phrase, is
-not to add any information.  The ideal commentary goes for beyond the
-ones these words and must always reward it with plus a piece and
-information that is not immediately (or at least for all the people)
-obvious from the name of the function.
+</ul>
+<blockquote>
+<P> The best names of functions are automatically registered.  However, if 
+the commentary repeats the name of the function in a phrase, it does not add any information.  The ideal 
+comment goes beyond the these words and must always complement it with information that is not immediately (or at 
+all) 
+obvious from the name of the function. 
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> Former:
+<P> Example:
 </P>
-<P STYLE="margin-left: 4cm"><B> To prevent -
+  <blockquote>
+<P><B> <i>Avoid</i> -
 </B>
 </P>
-<PRE STYLE="margin-left: 4cm"> { * * * Afecta the name of the customer * } function
+<PRE> { * * * Affects the name of the customer * } function
 setClientName(name)
-</PRE><P STYLE="margin-left: 4cm">
-<B> Preverivel -
-</B>
+</PRE><P >
+<b><i>Recommended</i> -</b>
 </P>
-<PRE STYLE="margin-left: 4cm"> { * * * Regista the name of the customer in the modular 0
-variable later to save it in the table customers * } function
+<PRE> { * * * Stores the name of the customer in the modular 0
+variable and later saves it in the table customers * } function
 setCliemntName(name)
 </PRE>
-<UL STYLE="margin-left: 0.5cm">
-	<LI><P STYLE="margin-left: 2cm"><B> It prevents the Latin
-</B></P>
-</UL>
-<P STYLE="margin-left: 2cm; font-weight: medium"> It uses &quot; tambem known as &quot; instead of &quot;
-aka &quot;, &quot; or either &quot; or &quot; being more I
-specify &quot; instead of i.e.
+  </blockquote>
+</blockquote>
+<ul>
+  <li><b>Avoid abbreviations</b></li>
+</ul>
+<blockquote>
+<P > Use &quot;also known as&quot; instead of &quot;aka&quot;, or &quot;to be more 
+specific&quot; instead of &quot;i.e&quot;.
 </P>
-<H2> Conventions for tag(s)
+</blockquote>
+<p> <a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<H2> <a name="Conventions for tagging"> Conventions for tagging</a>
 </H2>
 <H3> Order of tags
 </H3>
-<P> <I> Tags </I><SPAN STYLE="font-style: normal"> must prefer&#234;ncialmente be incluidas 
-in the order that if follows: 
+<blockquote>
+<P> <I> Tags </I><SPAN STYLE="font-style: normal"> must be included  
+in the following order: 
 </SPAN></P>
 <PRE STYLE="margin-left: 2cm"> * @author * @version * * @see @param * @return * * @since *
-@deprecated * @todo
-</PRE><P>
- Of preference to divide tags for related tablets.
+@deprecated * @todo</PRE><P>
+ It is preferable to divide tags for related tablets. 
 </P>
-<P> When if to insert same tag multiplas times must be separated
-with the others to magnify the legibility.
+<P> When same tag is inserted multiple times, it&nbsp; must be separated from others to 
+enhance readability.            
 </P>
-<P> Tags @param must have the same order that the corresponding
-ordinance do(s) parametro(s).
+<P> @param tag must have the same order as corresponding function parameters. 
 </P>
-<H3> Commentaries you add
+</blockquote>
+<H3> Description of comment tags
 </H3>
-<P STYLE="margin-left: 2cm"><B> @author
+<blockquote>
+<P STYLE="margin-left: 0cm"><B> @author
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> To omit if author stranger.  It can be used expans&#245;es 
-efectuadas for the control of versoes.  If several to exist must be 
-commanded for log order. 
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0cm"> Omit if author is unknown.  It can be used expans&#245;es              
+efectuadas for the control of versoes.  If several exist, it must be              
+commanded for log order.              
 </P>
-<P STYLE="margin-left: 2cm"><B> @version
+  </blockquote>
+<P STYLE="margin-left: 0cm"><B> @version
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> It can, if possivel to use the expansion of the control of 
-versions.  It corresponds to the walk through of source and not to the 
-version of the executable result ca compilla&#231;&#227;o of several sources. 
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0cm"> It can be used to expand the  
+version control.  It corresponds to the described item in source code, and not to the   
+version of the executable that results from compilation of several source 
+modules.  
 
 </P>
-<P STYLE="margin-left: 2cm"><B> they @param
+  </blockquote>
+<P STYLE="margin-left: 0cm"><B>@param
 </B></P>
-<P STYLE="margin-left: 2cm"><SPAN STYLE="font-weight: medium"> This tag must be followed by the name of the parameter (not 
-it its type).  Although it is redundant with the declaration do(s) 
-par&#227;metros, it is the only form to effect the association of a 
-commentary I specify with the parameter.  For convention the first 
-substantive of the description must reflectir the type of information 
-that this stores (it can be preceded by articles as &quot; 
+  <blockquote>
+<P STYLE="margin-left: 0cm"><SPAN STYLE="font-weight: medium"> This tag must be followed by the name of the parameter (not 
+it's type).  Although it is redundant with the declaration of parameters, it is the only 
+way to associate a comments with the parameter.  For convention the first   
+substantive of the description must reflect the type of information   
+that it stores (it can be preceded by articles as &quot;   
 &quot;).
 </SPAN></P>
-<P STYLE="margin-left: 2cm"> Former:
+<P STYLE="margin-left: 0cm"> Example:
 </P>
-<PRE STYLE="margin-left: 4cm"> * string of formatting of the number @param in one the number
-to format * @param strUsing
-</PRE><P STYLE="margin-left: 2cm; font-weight: medium">
- Not to insert between tags &lt; CODE &gt; &lt; /
-CODE &gt; therefore the scanning tool already makes it.
+<PRE STYLE="margin-left: 0cm"> * string of formatting of the number @param in one the number
+to format * @param strUsing</PRE><P STYLE="font-weight: medium; margin-left: 0">
+ Do not insert it between &lt;CODE&gt; &lt;/CODE&gt; tags, because the scanning tool already 
+ creates them.
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> Prefer&#234;ncialmente to use an expression to a conjunct.
+<P STYLE="font-weight: medium; margin-left: 0"> Preferably, use an expression  
+in conjunction. 
 </P>
-<P STYLE="margin-left: 2cm"><B> @return
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @return
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> In methods that do not return any value must be omitted.
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> In methods that do not return any value, 
+it must be omitted. 
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> When the method to return different values tags for each type
-of rollback must exitir several.
+<P STYLE="font-weight: medium; margin-left: 0"> When the method returns different values, 
+several tags for each occurrence of RETURN must be created.
 </P>
-<P STYLE="margin-left: 2cm"><B> @deprecated
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @deprecated
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> It allows to mark a method as of utiliza&#231;ao to prevent
-therefore anger probably to disappear in proxima versao.
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> Indicates a method as not to be 
+used, to      
+indicate it will probably be removed in next version.     
 </P>
-<P STYLE="margin-left: 2cm"><B> @since
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @since
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> It marks the version (when this known f&#244;r) from which the
-method was inserted.
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> It marks the version (when this  
+is known ) from which the  
+method was added. 
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> To insert if only known and excellent
+<P STYLE="font-weight: medium; margin-left: 0"> Insert it only if this is known 
+to be  
+correct.
 </P>
-<P STYLE="margin-left: 2cm"><B> @todo
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @todo
 </B></P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> It defines a functionality to implement in this method.  It
-allows the programmer to mark definitive task that must be implemented
-in the function, but that it is not opportune to implement (or because
-it is only to decide a problem or because it does not intend to break
-definitive string of raciocinio).
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> Defines a functionality to  
+be implement in this method, in the future.  It  
+allows the programmer to mark task that must be implemented  
+in the function, but that it is not opportune to implement at the moment, or only to 
+note a problem or because it does not wants to break compatibility.
 </P>
-<P STYLE="margin-left: 2cm; font-weight: medium"> Of this form it can, in any height to relembrar what it
-lacked to implement.
+<P STYLE="font-weight: medium; margin-left: 0"> This way we can document what is 
+lacking in implementation. 
 </P>
-<H2> Examples
+  </blockquote>
+</blockquote>
+<p> <a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<H2> <a name="Examples"> Examples</a>
 </H2>
+<blockquote>
+  <p>TO-DO - provide examples
+</p>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<p align="center"><a href="../index.html">Doc4GL documentation index page</a>&nbsp; 
+<a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit 4gl project</a>&nbsp;      
+<a href="../../index.html">Aubit 4gl compiler documentation menu</a></p>      
 </BODY>
 </HTML>
 
