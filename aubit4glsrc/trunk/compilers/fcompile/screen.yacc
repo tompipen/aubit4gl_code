@@ -63,6 +63,9 @@ char *chk_alias(char *s);
 
 %}
 %start form_def
+
+%name-prefix="a4gl_form_yy"
+
 %union	  {
 	char	str[1024];
 	u_expression *expr;

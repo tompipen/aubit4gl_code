@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: tables.c,v 1.3 2002-07-30 17:52:10 mikeaubury Exp $
+# $Id: tables.c,v 1.4 2003-03-07 04:37:35 afalout Exp $
 #*/
 
 /**
@@ -170,7 +170,7 @@ add_columns (char *tabname, struct table *table)
   if (rval == 0 && tabname)
     {
       sprintf (buff, "%s does not exist in the database", tabname);
-      yyerror (buff);
+      a4gl_ace_yyerror (buff);
       return 1;
     }
 

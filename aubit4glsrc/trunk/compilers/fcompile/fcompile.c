@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.24 2003-01-29 14:35:05 mikeaubury Exp $
+# $Id: fcompile.c,v 1.25 2003-03-07 04:37:35 afalout Exp $
 #*/
 
 /**
@@ -54,7 +54,7 @@ extern int as_c; /* defined in libaubit4gl */
 //int as_c=1;
 
 //#ifdef YYDEBUG
-	extern int yydebug; /* defined in y.tab.c */
+	extern int a4gl_form_yydebug; /* defined in y.tab.c */
 //#else /*  */
 //	int yydebug;
 //#endif /*  */
@@ -201,7 +201,7 @@ char d[128];
 
     }
 
-  yydebug = 0;
+  a4gl_form_yydebug = 0;
 
   if (yyin == 0)
     {
@@ -213,7 +213,7 @@ char d[128];
     }
   init_form();
 
-  return (yyparse ());
+  return (a4gl_form_yyparse ());
 
 }
 
@@ -234,7 +234,7 @@ YYSTYPE yylval;
  * @param s String with error message sended by the parser
  */
 void 
-yyerror(char *s)
+a4gl_form_yyerror(char *s)
 {
   char errfile[256];
   FILE *f;
@@ -295,7 +295,7 @@ int getdatatype_fcompile(char *col,char *tab) {
 int a;
 	a=getdatatype(col,tab);
 	if (a==-1) {
-		yyerror("Column/Table not found");
+		a4gl_form_yyerror("Column/Table not found");
 		return -1;
 	}
 	debug("%s.%s = %d\n",tab,col,a);

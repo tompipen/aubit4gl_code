@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.17 2003-01-21 08:25:50 afalout Exp $
+# $Id: mcompile.c,v 1.18 2003-03-07 04:37:35 afalout Exp $
 #*/
 
 /**
@@ -52,8 +52,8 @@
 
 /* in lex.yy.c */
 extern int 	buffpos				(void);
-extern int 	yyparse				(void);
-int			yyerror 			(char *s);	/* fgl_comp_error() */
+extern int 	a4gl_menu_yyparse				(void);
+int			a4gl_menu_yyerror 			(char *s);	/* fgl_comp_error() */
 int 		yywrap				(void); 	/* fgl_comp_wrap() */
 menu * 		nmenu				(void);
 void 		push_menu			(void *a);
@@ -181,7 +181,7 @@ main (int argc, char* argv[])
     }
 
 	init_menu();
-	return (yyparse ());
+	return (a4gl_menu_yyparse ());
 }
 
 
@@ -190,7 +190,7 @@ main (int argc, char* argv[])
  * @todo Describe function
  */
 int
-yyerror (char *s)
+a4gl_menu_yyerror (char *s)
 {
 char errfile[256];
 FILE *f;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.53 2003-03-06 22:40:01 mikeaubury Exp $
+# $Id: sql.c,v 1.54 2003-03-07 04:37:35 afalout Exp $
 #
 */
 
@@ -2695,6 +2695,9 @@ short nColumns;
 		#endif
 		set_sqlca (hstmt, "getting column info", 0);
 		exitwith ("Error getting column info\n");
+        //FIXME: why is exitwith not exiting?
+        exit (13);
+
 		return 0;
 	}
 

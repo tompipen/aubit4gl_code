@@ -69,6 +69,8 @@ int buffpos(void);
 %}
 %start menu_def
 
+%name-prefix="a4gl_menu_yy"
+
 %union	  {
 	char	str[1024];
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.3 2002-09-26 08:05:18 afalout Exp $
+# $Id: fileio.c,v 1.4 2003-03-07 04:37:35 afalout Exp $
 #*/
 
 /**
@@ -53,7 +53,7 @@
 extern FILE *	yyin;
 extern char *	outputfilename; /* defined in libaubit4gl */
 //#ifdef YYDEBUG
-extern int 		yydebug; /* defined in y.tab.c */
+extern int 		a4gl_ace_yydebug; /* defined in y.tab.c */
 //#else /*  */
 //int yydebug;
 //#endif /*  */
@@ -86,7 +86,7 @@ yywrap (void)
  * @todo Describe function
  */
 void
-yyerror (char *s)
+a4gl_ace_yyerror (char *s)
 {
   char errfile[256];
   FILE *f;
@@ -148,7 +148,7 @@ compile_ace_report (char *filename)
   /* load settings from config file(s): */
   build_user_resources ();
 
-  yydebug = 0;
+  a4gl_ace_yydebug = 0;
   strcpy (d, "");
 
   check_and_show_id ("4GL ACE Compiler", filename);
@@ -171,7 +171,7 @@ compile_ace_report (char *filename)
 
   yyin = (FILE *) mja_fopen (c, "r");
 
-  yydebug = 0;
+  a4gl_ace_yydebug = 0;
 
   if (yyin == 0)
     {
@@ -181,7 +181,7 @@ compile_ace_report (char *filename)
     }
 
   init_report ();
-  rval = yyparse ();
+  rval = a4gl_ace_yyparse ();
 
   if (rval == 0)
     {

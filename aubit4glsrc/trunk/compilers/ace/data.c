@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.15 2003-02-18 09:02:24 mikeaubury Exp $
+# $Id: data.c,v 1.16 2003-03-07 04:37:35 afalout Exp $
 #*/
 
 /**
@@ -400,7 +400,7 @@ add_select (char *sql, char *temptabname)
 	      a++;
 	      if (sql[a] != '(')
 		{
-		  yyerror ("Corrupt...");
+		  a4gl_ace_yyerror ("Corrupt...");
 		}
 	      a++;
 	      strcpy (buffer, "");
@@ -430,7 +430,7 @@ add_select (char *sql, char *temptabname)
 	      buff[c++] = '?';
 	      continue;
 	    }
-	  yyerror ("Corrupt...");
+	  a4gl_ace_yyerror ("Corrupt...");
 	}
 
       if (c && buff[c - 1] == ' ' && sql[a] == ' ');	/* we'll ignore these */
@@ -651,7 +651,7 @@ char *colname;
 	  if (strstr (ptr->statement, " INTO TEMP ") == 0)
 	    {
 	      /* printf ("%s\n", ptr->statement); */
-	      yyerror
+	      a4gl_ace_yyerror
 		("An SQL statement which is not the last statement must be into a temporary table");
 	    }
 	}
@@ -689,7 +689,7 @@ char *colname;
 	      printf
 		("This can happen if you have not put a $ in front of a variable in a\nselect statement, or if a column does not exist in the listed tables\n");
 	    }
-	  yyerror ("SQL error");
+	  a4gl_ace_yyerror ("SQL error");
 	}
 
 
@@ -717,7 +717,7 @@ char *colname;
 	   */
 	  if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
 	    {
-	      yyerror ("Unable to get column types for a temporary table");
+	      a4gl_ace_yyerror ("Unable to get column types for a temporary table");
 	    }
 
 	  /*
@@ -752,7 +752,7 @@ char *colname;
 		      vid = find_sql_var (atoi (&cptr[1]));
 		      if (vid < 0)
 			{
-			  yyerror
+			  a4gl_ace_yyerror
 			    ("Order by column number too high for select statement");
 			}
 		    }
@@ -803,7 +803,7 @@ yyerror_sql (char *s)
   char buff[256];
   sprintf (buff, "%s - %d", s, (int) status);	/*  warning: int format, long int arg (arg 4)
 						 */
-  yyerror (buff);
+  a4gl_ace_yyerror (buff);
 }
 
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.164 2003-03-02 03:29:36 afalout Exp $
+dnl # $Id: configure.in,v 1.165 2003-03-07 04:37:10 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3433,12 +3433,8 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmlrpc"
 	fi
 
-	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
-		RPMFILE_11=$LIB_PREFIX/libMENU_XDR$SO_EXT
-		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
-    else
-        PLUGIN_NO="$PLUGIN_NO MENU_XDR"
-    fi
+#RPMFILE_11 is unused - use it.
+
 
 	if test "$HAVE_RPCLIB" != "0"; then
 		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
@@ -3535,7 +3531,15 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
-	#RPMFILE_27=$LIB_PREFIX/
+	#All libMENU_xxx need libUI_GTK on Windows to be linked with, to
+    #resolve symbols - so all libMENU_ must be built after libUI_GTK
+	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
+		RPMFILE_27=$LIB_PREFIX/libMENU_XDR$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
+    else
+        PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+    fi
+
 	#RPMFILE_28=$LIB_PREFIX/
 	#RPMFILE_29=$LIB_PREFIX/
 	#RPMFILE_30=$LIB_PREFIX/

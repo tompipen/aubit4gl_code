@@ -67,6 +67,8 @@ set_expr_int(struct expr *e,int a)
 
 %start ace_report
 
+%name-prefix="a4gl_ace_yy"
+
 %union	  {
 	char	str[30000];
 	struct command cmd;
@@ -255,7 +257,7 @@ db_section:
 		this_report.dbname=strdup($<str>2);
 		A4GLSQL_init_connection ($<str>2);
 		if (status!=0) {
-			yyerror("Unable to connect to database");
+			a4gl_ace_yyerror("Unable to connect to database");
 		}
 	}
 ;
@@ -931,7 +933,7 @@ value_expression:
 	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  {sprintf($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
 	| DOLLAR identifier
 {
-if (find_variable($<str>2)==-1) { yyerror("Error - undefined variable\n"); }
+if (find_variable($<str>2)==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
 sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
 }
 	| identifier DOT identifier
