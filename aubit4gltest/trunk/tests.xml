@@ -2566,17 +2566,17 @@
   <DESCRIPTION>sqlca.sqlerrd[6] with rowid of last column processed
 	</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>911</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[1] with W after a warning issued</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>912</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[2] With W after a trucanted select</DESCRIPTION>
   <TEST_GOAL>SQLCA</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>913</NUMBER>
   <DESCRIPTION>sqlca.sqlwarn[2] with W after a DATABASE in a DB without transactions</DESCRIPTION>
