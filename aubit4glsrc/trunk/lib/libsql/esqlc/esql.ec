@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.69 2003-12-10 20:45:19 mikeaubury Exp $
+# $Id: esql.ec,v 1.70 2004-01-04 15:52:40 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.69 2003-12-10 20:45:19 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.70 2004-01-04 15:52:40 mikeaubury Exp $";
 #endif
 
 
@@ -1792,6 +1792,7 @@ struct s_sid *
 A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
 			int no, char *s)
 {
+//printf("prepare_select : %d %d (%s)\n",ni,no,s);
   return (prepareSqlStatement (ibind, ni, obind, no, s));
 }
 
@@ -1948,6 +1949,17 @@ A4GLSQL_open_cursor (int ni, char *s)
 
   A4GL_debug ("Got cursorIdentification as : %p", cursorIdentification);
   sid = cursorIdentification->statement;
+  A4GL_debug("%s",sid->select);
+
+
+  if (strncasecmp(sid->select,"INSERT",6)==0) {
+    EXEC SQL OPEN:cursorName;
+  if (isSqlError ())
+    return 1;
+  return 0;
+  }
+
+
   inputDescriptorName = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
   A4GL_debug ("Descritors : %s %s", inputDescriptorName,
@@ -2145,9 +2157,33 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
   exec sql begin declare section;
   char *cursorName;
   char *descriptorName;
+  struct s_sid *sid;
+  struct s_cid *cid;
   exec sql end declare section;
 
   cursorName = A4GL_char_pop ();
+
+  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
+  sid = (struct s_sid *) cid->statement;
+
+	//printf("CID : %d %d\n",cid->ni,cid->no);
+	//printf("SID : %d %d\n",sid->ni,sid->no);
+if (sid) {
+	//printf("Maybe %d %d\n",sid->ni,sid->no);
+
+  if (sid->ni!=0) {
+        if (n==0) {
+	//printf("FORCE IT..\n");
+                n=sid->ni;
+                ibind=sid->ibind;
+        }
+  }
+} else {
+	//printf("No sid\n");
+}
+
+
+
 
 
   if (ibind != (struct BINDING *) 0 && n > 0)

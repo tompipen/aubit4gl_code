@@ -853,7 +853,13 @@ scale:
 	;
 
 table_name:
-	 CHAR_VALUE DOT identifier { sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	 CHAR_VALUE DOT identifier { 
+			if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+				sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			}
+	}
 	| CHAR_VALUE {
 		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
 		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
@@ -1052,7 +1058,13 @@ cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list COMMA co
 
 colident: identifier
 	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
+	| CHAR_VALUE DOT identifier DOT identifier {
+			if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+			} else {
+				sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+			}
+	}
 ;
 	
 

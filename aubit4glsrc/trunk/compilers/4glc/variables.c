@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.33 2003-12-30 12:48:27 mikeaubury Exp $
+# $Id: variables.c,v 1.34 2004-01-04 15:52:35 mikeaubury Exp $
 #
 */
 
@@ -2590,7 +2590,7 @@ print_variable (struct variable *v, char scope, int level)
 #ifdef DEBUG
       A4GL_debug ("SQLCA!!!\n");
 #endif
-      if (strcmp (acl_getenv ("LEXTYPE"), "EC") == 0)
+      if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
 	{
 	  return;
 	}

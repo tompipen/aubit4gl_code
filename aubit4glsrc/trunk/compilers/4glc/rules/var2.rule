@@ -33,7 +33,13 @@ var3:
         array_r_variable_or_ident // MJA 010503
 	| identifier
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
+	| CHAR_VALUE DOT var3 DOT aft_dot {
+		if (A4GL_escape_quote_owner()) {
+			sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+		} else {
+			sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+		}
+	}
 ;
 
 aft_dot :

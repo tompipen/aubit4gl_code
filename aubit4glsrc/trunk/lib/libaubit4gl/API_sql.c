@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.38 2003-12-10 20:45:19 mikeaubury Exp $
+# $Id: API_sql.c,v 1.39 2004-01-04 15:52:40 mikeaubury Exp $
 #
 */
 
@@ -684,6 +684,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
       s = A4GL_apisql_strdup (s);
       A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, s);
     }
+//printf("prepare_Select : %p %d %p %d %s\n",ibind,ni,obind,no,s);
   A4GL_func = A4GL_find_func (libptr, "A4GLSQL_prepare_select");
   return (struct s_sid *) A4GL_func (ibind, ni, obind, no, s);
 }

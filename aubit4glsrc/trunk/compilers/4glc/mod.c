@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.146 2004-01-02 21:02:39 mikeaubury Exp $
+# $Id: mod.c,v 1.147 2004-01-04 15:52:35 mikeaubury Exp $
 #
 */
 
@@ -4287,6 +4287,13 @@ static void push_validate_column(char *tabname,char *colname) {
 struct expr_str *A4GL_get_validate_expr(int n) {
 	//printf("-->%p for %d\n",validate_list[n].expr,n);
 	return validate_list[n].expr;
+}
+
+int A4GL_escape_quote_owner() {
+	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"Y")==0) return 1;
+	if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"N")==0) return 1;
+	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
+	return 1;
 }
 /* ================================= EOF ============================= */
 

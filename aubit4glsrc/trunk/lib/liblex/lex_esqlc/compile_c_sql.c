@@ -434,9 +434,27 @@ char *
 print_curr_spec (int type, char *s)
 {
   static char buff[3000];
+  int ni;
+  int no;
+  int bt;
+
+	extern int obindcnt,ibindcnt;
   printc ("{\n");
-  if (type == 1)
-    sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);
+	//printf("obindcnt=%d ibindcnt=%d s=%s\n",obindcnt,ibindcnt,s);
+  if (type == 1) {
+		bt=0;
+		ni=ibindcnt;
+		no=obindcnt;
+		if (obindcnt) {bt++;print_bind('o');}
+		if (ibindcnt) {bt+=2;print_bind('i');}
+		
+		switch(bt) {
+    		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);break;
+   		case 1: sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\")", no,s); break;
+    		case 2: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\")", ni,s); break;
+    		case 3: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")", no,ni,s); break;
+		}
+  }
   if (type == 2)
     sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
   return buff;

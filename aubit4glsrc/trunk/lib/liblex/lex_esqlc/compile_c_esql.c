@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.61 2004-01-02 21:02:47 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.62 2004-01-04 15:52:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -381,6 +381,7 @@ print_put (char *cname,char *putvals)
   printc ("{\n");
   n = print_bind ('i');
   print_conversions ('i');
+  printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
   printc ("EXEC SQL PUT %s /* '%s' */\n", A4GL_strip_quotes (cname),putvals);
 
   if (A4GL_isyes(acl_getenv("USE_BINDING_FOR_PUT"))==0) {
@@ -1015,11 +1016,31 @@ char *
 print_curr_spec (int type, char *s)
 {
   static char buff[3000];
+int bt;
+int ni;
+int no;
+extern int ibindcnt;
+extern int obindcnt;
   strcpy (buff, "");
-  if (type == 1)
+  if (type == 1) {
+                bt=0;
+                ni=ibindcnt;
+                no=obindcnt;
+		last_ni=ni;
+		last_no=no;
+                if (obindcnt) {bt++;}
+                if (ibindcnt) {bt+=2;}
+  		if (bt) printc("{");
+		if (bt&1) print_bind('o');
+		if (bt&2) print_bind('i');
+  		if (bt) print_conversions ('i');
+    		sprintf (buff, "%s", s);
+	}
+
+
+  if (type == 2) {
     sprintf (buff, "%s", s);
-  if (type == 2)
-    sprintf (buff, "%s", s);
+  }
   return buff;
 }
 
@@ -1052,6 +1073,21 @@ print_select_all (char *buff)
   print_conversions ('i');
   b2 = strdup (buff);
   return b2;
+}
+
+static char *conv_owner (char *s) {
+int a;
+int b=0;
+static char *ptr=0;
+if (ptr) free(ptr);
+
+ptr=malloc(strlen(s)+1000);
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='"'&&s[a-1]!='\\') ptr[b++]='\\';
+	ptr[b++]=s[a];
+}
+ptr[b]=0;
+return ptr;
 }
 
 
@@ -1124,7 +1160,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 		if (ptr[a]=='\n') ptr[a]=' ';
 	}
   print_conversions('i');
-  	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,ptr,ni);
+  	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
 	printc("}");
   }
 }
