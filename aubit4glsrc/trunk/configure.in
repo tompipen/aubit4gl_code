@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.50 2002-03-28 18:41:37 mikeaubury Exp $
+# $Id: configure.in,v 1.51 2002-03-31 07:05:17 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -247,6 +247,7 @@ AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(CURSES_INC_PATH)
 AC_SUBST(HAVE_CURSES)
 AC_SUBST(CURSES_LIB_NAME)
+#HAVE_CURSES_H HAVE_NCURSES_H
 
 #debug
 AC_SUBST(DEBUG_BISON)
@@ -496,16 +497,6 @@ AC_PATH_PROG(LDD, ldd, no)
 
 #cygcheck can be used instead of ldd that is missing on CygWin:
 AC_PATH_PROG(CYGCHECK, cygcheck, no)
-
-#$ cygcheck ../bin/4glc.exe
-#../bin/4glc.exe
-#  C:\cygwin\bin\cygncurses6.dll
-#    C:\cygwin\bin\cygwin1.dll
-#      C:\WINNT\System32\KERNEL32.dll
-#        C:\WINNT\System32\NTDLL.DLL
-#  C:\cygwin\bin\cygform6.dll
-#  C:\cygwin\bin\cygpanel6.dll
-#  .\libPDF_NOPDF.dll
 
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(AUTOCONF, autoconf, no)
@@ -1832,17 +1823,35 @@ AC_CHECK_LIB([curses], [main])
 		if test "$AUBITGUI" = "CONSOLE" ; then
 			AUBITGUI=TUI
         fi
+		AC_DEFINE(HAVE_CURSES_H)
 	else
-		HAVE_CURSES=0
-		CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
-		if test "$AUBITGUI" = "CONSOLE" ; then
-			AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
+		# FIXME: Replace `main' with a function in `-lcurses':
+		AC_CHECK_LIB([ncurses], [main])
+
+		if test "$ac_cv_lib_ncurses_main" = "yes"; then
+			#fixme: check version of ncurses - how?
+			CURSES_LIB_NAME="-lncurses -lform -lpanel"
+			AC_DEFINE(HAVE_CURSES)
+	        HAVE_CURSES=1
+		    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+			CURSES_LIB_PATH="-L/lib"
+			if test "$AUBITGUI" = "CONSOLE" ; then
+				AUBITGUI=TUI
+	        fi
+			AC_DEFINE(HAVE_NCURSES_H)
+
         else
-			AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
+			HAVE_CURSES=0
+			CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
+			if test "$AUBITGUI" = "CONSOLE" ; then
+				AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
+	        else
+				AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
+	        fi
+			AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
+			AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
+			AC_MSG_WARN(Considder installing 'curses' libraries)
         fi
-		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
-		AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
-		AC_MSG_WARN(Considder installing 'curses' libraries)
 	fi
 
 

@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.65 2002-03-28 07:19:02 afalout Exp $
+# $Id: 4glpc,v 1.66 2002-03-31 07:05:31 afalout Exp $
 #
 
 ########################################################################
@@ -1159,7 +1159,7 @@ if test "$USE_JABBER" = "1"
 then
 	LIBS="$LIBS -L$JABBER_LIB_DIR -l$JABBER_LIB_NAME -liksemel"
 	#JabberX link line:
-	#MANLINK2= -rdynamic -lnsl -ldl -lm -lposix -lcrypt -lcurses -liksemel
+	#MANLINK2= -rdynamic -lnsl -lposix -lcrypt -liksemel
 fi
 
 if [ "$NOCFILE" = "Y" ]

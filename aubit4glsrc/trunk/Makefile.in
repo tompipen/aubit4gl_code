@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.50 2002-03-29 10:02:06 afalout Exp $
+# $Id: Makefile.in,v 1.51 2002-03-31 07:05:12 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -424,23 +424,36 @@ ifeq "$(GTKBUILD)" "yes"
 	ALL += gtkgui
 endif
 
-ALL +=test
+ALL +=test 
+#extra
 
 #FIXME: results of this compilations should be in install/deinstall 
-#and RPM target too:
+#and RPM target too: (also add to clean.all)
 #	libA4GL_file.so libA4GL_string.so libA4GL_html.so
-ALL_EXTRA  		=libfile libstring libhtml ide adbaccess adbload odbctest
+
+#IDE installs:
+#/usr/local/bin/ide
+#/usr/local/4glide/ide.4ae
+#/usr/local/4glide/d4glinpt.afr d4glopts.afr
+#/usr/local/4glide/d4glhelp.iem
+
+
+
+ALL_EXTRA  			=libfile libstring ide odbctest
+#FIXME:
+#All stuff that should be in ALL_EXTRA, but does not compile:
+ALL_EXTRA_BROKEN	=libhtml adbaccess adbload
 
 ifneq "${PERLBUILD}" "no"
-	ALL_EXTRA  +=perl
+	ALL_EXTRA_BROKEN+=perl
 endif
 
 ifneq "${JABBERBUILD}" "no"
-	ALL_EXTRA  +=jabber
+	ALL_EXTRA  		+=jabber
 endif
 
 ifneq "@DOXYGEN@" "no"
-	ALL_EXTRA  +=doxy
+	ALL_EXTRA  		+=doxy
 endif
 
 ## ==================================================================
@@ -452,6 +465,7 @@ all: ${ALL}
 	@echo "Successfully compiled Aubit compiler default targets :"
 	@echo "${ALL}."
 	@echo "You MUST install it before you can use it - execute 'make install'."
+	@echo "Execute 'make extra' to compile additional components."
 	@echo "Thank you for using Aubit 4gl compiler"
 
 log:
@@ -463,6 +477,7 @@ extra: ${ALL_EXTRA}
 	@echo " "
 	@echo "Successfully compiled aditional Aubit components :"
 	@echo "${ALL_EXTRA}."
+	@echo "FIXME: ${ALL_EXTRA_BROKEN}."
 
 corecompile: libs
 	$(MAKE) -C compilers/4glc/rules
@@ -498,6 +513,10 @@ libstring:
 
 libhtml:
 	$(MAKE) -C tools/html libA4GL_html.so
+
+adbaccess:
+	$(MAKE) -C tools/adbaccess amake
+#	$(MAKE) -C tools/adbaccess misql.4ae
 
 ## ==================================================================
 ##                              Perl compiler

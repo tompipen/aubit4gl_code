@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $
+# $Id: misql.4gl,v 1.2 2002-03-31 07:05:32 afalout Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -103,7 +103,7 @@ error "start"
    OR arg_val(1) = "-V"
    THEN
 #error "3"
-      CALL message_prompt("$Id: misql.4gl,v 1.1 2001-09-24 04:18:53 afalout Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.2 2002-03-31 07:05:32 afalout Exp $","")
       EXIT PROGRAM
    END IF
 
@@ -169,14 +169,18 @@ else
 	#database m_database
     #database maindb
     #database ptest
+
+--!  #This is Aubit only comment
+
 #	connect to "ptest" user "postgres" using "pg"
 #   LET m_database = "ptest"
 
 #	connect to m_database user "postgres" using "pg"
 
 #    OPEN SESSION s_id1 TO DATABASE ptest as user "postgres" password "pg"
-    OPEN SESSION s_id1 TO DATABASE maindb as user "informix" password "ifmx"
-	SET SESSION TO s_id1
+--!    OPEN SESSION s_id1 TO DATABASE maindb as user "informix" password "ifmx"
+--!	SET SESSION TO s_id1
+
 
 end if
 

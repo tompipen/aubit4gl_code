@@ -1,4 +1,4 @@
-#   @(#)$Id: q4gl.mk,v 1.2 2001-08-28 06:56:32 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.3 2002-03-31 07:05:31 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -26,6 +26,7 @@ Q4GL_CLEAN_FLAGS = *.o *.qo *.bak *.h *.err *.pic *.4qe
 
 #EXTENDERLIBS="`cat $QUERIXDIR/etc/$i.ext`"
 #QXS_LIBS=
+#FIXME: replace -lcurses with value assigned by autoconf (can be ncurses)
 QXI_LIBS=-L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) -lsqli$(USE_DEBUG_LIBRARIES) -lpanel -lcurses $(QXS_LIBS)
 QX_LIBS=$(EXTENDERLIBS) $(QXI_LIBS)
 QXCC=gcc

@@ -1,4 +1,4 @@
-# @(#)$Id: footer-c.mki,v 1.1.1.1 2001-08-20 02:36:00 afalout Exp $
+# @(#)$Id: footer-c.mki,v 1.2 2002-03-31 07:05:31 afalout Exp $
 # Product: Aubit 4gl IDE $
 # Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
 # FIXME: add Querix compiler GUI and Oracle targets
@@ -177,9 +177,7 @@ install.aubit:  aubit
 	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
 	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
 	${INSTALL} -m 755 -s ${FILES.4ae} ${D4GL_D4GL}
-#FIXME: it should be like this:
-#	${INSTALL} -m 644    ${FILES.afr} ${D4GL_D4GL}
-	${INSTALL} -m 644    ${FILES.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.afr} ${D4GL_D4GL}
 	${INSTALL} -m 644    ${FILES.iem} ${D4GL_D4GL}
 
 install.querix:  querix

@@ -54,10 +54,10 @@ A4GL_PDFTYPE=@A4GL_PDFTYPE@
 A4GL_RPCTYPE=@A4GL_RPCTYPE@
 
 #############
-#Defines in which UI mode will programs run. If you compiled them with -gtk
-#option, which is default, you can choose GUI (GTK is identical to GUI
-#at the moment) All options are: text, curses, gtk, gui.
-#Default: AUBITGUI=text
+#Defines in which UI (user intertface) mode will programs run.
+#Options are dependent on libraries installed on your system [in ()]:
+#All options are: CONSOLE (no deps), TUI (curses), GTK (GTK+).
+#Default: AUBITGUI=TUI
 AUBITGUI=@AUBITGUI@
 
 ############

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.4 2002-03-29 06:38:41 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.5 2002-03-31 07:05:31 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -44,7 +44,7 @@ BuildArchitectures: @target_cpu@
 Provides: x4gl_compiler
 
 #Finding  Requires: (using /usr/lib/rpm/find-requires)...
-Requires: glibc >= 2.2, glibc-devel >= 2.2, ncurses-devel >= 5, /bin/bash, /bin/sh, make
+Requires: glibc >= 2.2, glibc-devel >= 2.2, /bin/bash, /bin/sh, make
 
 #Obsoletes:
 #BuildRoot: /tmp/aubit4glsrc-%{version}-root

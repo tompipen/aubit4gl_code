@@ -1,3 +1,5 @@
+#FIXME: replace -curses with value asigned by autoconf (can be ncurses)
+
 use ExtUtils::MakeMaker;
 WriteMakefile(
         'NAME'    => 'aubit4gl_pl',

@@ -1,7 +1,43 @@
-#	@(#)$Id: Makefile.in,v 1.4 2002-01-18 03:09:11 afalout Exp $
-#	$Product: Aubit 4gl IDE $
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 #   Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
-## ------------------------------------------------------------------
+#
+# $Id: Makefile.in,v 1.5 2002-03-31 07:05:32 afalout Exp $
+#
+
+#This make file uses "Amake" - NO TARGETS are defined here !
+
+#All stuff common to more then one Aubit compiler make file is there:
+#This is needed when making IDE as part of Aubit compiler build from
+#source code, before Aubit is installed :
+include ../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Header Includes
+## ==================================================================
 
 ifneq "$(AUBITDIR)" ""
 	include $(wildcard $(AUBITDIR)/incl/*.mk)
@@ -16,14 +52,16 @@ endif
 #include $(AUBITDIR)/incl/a4gl.mk
 #include $(AUBITDIR)/incl/q4gl.mk
 
-##                       Program(s) to build
-## ------------------------------------------------------------------
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+
+#Program(s) to build
 FILES		= ide
 
-##                       Program file names
-## ------------------------------------------------------------------
-
-#We can change the list of C source files into a list of object files by 
+#We can change the list of C source files into a list of object files by
 #replacing the `.c' suffix with `.o' in the result, like this:
 #$(patsubst %.c,%.o,$(wildcard *.c))
 
@@ -50,8 +88,10 @@ CFILE3.c  	= d4gl-access.c
 FGIUSR.c  	= fgiusr.c
 FGLEXT.c  	= fglext.c
 
-##                       Install Information
-## ------------------------------------------------------------------
+## ==================================================================
+##                              Install Information
+## ==================================================================
+
 #user and group to use to perform installation:
 D4GL_USR      = informix
 D4GL_GRP      = informix
@@ -65,6 +105,11 @@ D4GL_BIN      = ${D4GL_DIR}/bin
 D4GL_D4GL     = ${D4GL_DIR}/4glide
 
 ADDITIONAL_CLEAN	= *.log d4gl.4ge d4glopts.frm d4glinpt.frm d4glhelp.iem
+
+
+## ==================================================================
+##                              Footer include
+## ==================================================================
 
 ifneq "$(AUBITDIR)" ""
 	include $(AUBITDIR)/incl/footer-c.mki

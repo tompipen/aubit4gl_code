@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.27 2002-03-27 11:57:03 afalout Exp $
+# $Id: Makefile-common.in,v 1.28 2002-03-31 07:05:31 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -200,7 +200,12 @@ ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
-CFLAGS				+=${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include
+
+
+#FIXME: -DAUTOBANG added to CFLAGS applies ONLY to lib/libtui/curslib.c
+#FIXME: this should not use -D, but acl_getenv(A4GL_AUTOBANG) instead
+CFLAGS				+=${AUTOCONF_CFLAGS} -DDEBUG -I/usr/local/include
+
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 

@@ -1,9 +1,46 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.2 2002-03-31 07:05:32 afalout Exp $
+#
 
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
 
-all:
-	rm -f *.err core *.c *.h *.glb
-	4glpc adbload.4gl -o adbload.4ge
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+adbload.4ae:
+	4glpc adbload.4gl -o $@
+	cp $@ ../../bin
+
+## ==================================================================
+##                    Clean
+## ==================================================================
 
 clean:
-	rm -f *.err *.bak *.c *.h *.4ge core *.out
+	rm -f *.err *.bak *.c *.h *.4ge *.4ae core *.out *.glb
 

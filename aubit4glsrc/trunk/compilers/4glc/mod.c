@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.48 2002-03-22 15:47:05 mikeaubury Exp $
+# $Id: mod.c,v 1.49 2002-03-31 07:05:31 afalout Exp $
 #
 */
 
@@ -74,7 +74,6 @@ char xwords[256][256];
 int word_cnt = 0;
 #endif
 
-//#include <curses.h>
 #define USE_PRINTCOMMENT
 extern int menu_cnt;
 extern int yylineno;

@@ -1,18 +1,125 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.2 2002-03-31 07:05:32 afalout Exp $
+#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+
+
+## ==================================================================
+##                      Settings
+## ==================================================================
+
 .SUFFIXES :
 .SUFFIXES : .4ge .a .o .4gl .ec .c .frm .per .arc .ace .exe .msg
 .SUFFIXES:  .4go .src .hlp
 
 #if not .IGNORE then test can't be used
-.IGNORE :
+#.IGNORE :
 
-#INFORMIXDIR = /usr/informix
-INFORMIXBIN = $(INFORMIXDIR)/bin
-C4GL = $(INFORMIXBIN)/c4gl
-CFORM= form4gl
+INFORMIXBIN 	=$(INFORMIXDIR)/bin
+C4GL 			= $(INFORMIXBIN)/c4gl
+CFORM			= form4gl
+CFLAGS 			= -O
+LIBS 			=
+MAKEFLAGS 		=""
 
-CFLAGS = -O
-LIBS = 
+## ==================================================================
+##                        Source and object files
+## ==================================================================
 
+FILES.4gl 	=coxxc04.4gl coxxq01.4gl coxxx03.4gl misql.4gl
+
+FILES.per 	=misql.per coxxq01a.per coxxq01b.per coxxq01c.per \
+			coxxq01d.per coxxq01e.per coxxq01f.per coxxq01g.per \
+			coxxq01h.per coxxq01i.per coxxq01j.per
+
+FILES.ao    =${FILES.4gl:.4gl=.ao}
+FILES.afr   =${FILES.per:.per=.afr}
+BINS4GE 	=${FILES.4gl:.4gl=.o}
+BINS4GI 	=${FILES.4gl:.4gl=.4go}
+FORMS.frm	=${FILES.per:.per=.frm}
+
+## ==================================================================
+##                        Targets
+## ==================================================================
+
+all:
+	@echo "specify target: misql.4ge misql.4gi or misql.4ae"
+
+#Informix-4gl C-code
+misql.4ge: $(BINS4GE) ${FORMS.frm}
+	$(C4GL) $(CFLAGS) -o $@  $(BINS4GE)
+
+#Informix-4gl P-code
+misql.4gi: $(BINS4GI) ${FORMS.frm}
+	cat $(BINS4GI) > $@
+
+#Informix-4gl forms:
+forms: ${FORMS.frm}
+
+
+
+misql.4ae: ${FILES.ao} ${FILES.afr}
+#	4glpc coxxc04.4gl -c -o coxxc04.ao
+#	4glpc coxxq01.4gl -c -o coxxq01.ao
+#	4glpc coxxx03.4gl -c -o coxxx03.ao
+#	4glpc misql.4gl -c -o misql.ao
+#	4glpc *.per ${FILES.ao} -o misql.4ae
+	4glpc ${FILES.ao} -o $@
+
+amake:
+	amake misql.mk
+
+## ==================================================================
+##                        Clean
+## ==================================================================
+
+clean:
+	rm -f *.ao *.h *.c *.glb *.4ae *.frm *.4go *.4ge *.4gi *.o *.bak *.err
+
+
+## ==================================================================
+##                        Aubit
+## ==================================================================
+
+.4gl.ao:
+	4glpc $< -c -o $@
+
+.per.afr:
+	fcompile $<
+
+%.afr:
+	fcompile $*.per
+
+
+## ==================================================================
+##                        Informix targets Rules
+## ==================================================================
 
 .4gl.o:
 	cd $(<D); $(C4GL) $(CFLAGS) -c $(<F); rm -f $(*F).ec $(*F).c
@@ -45,37 +152,8 @@ LIBS =
 .msg.exe:
 	$(INFORMIXBIN)/mkmessage $(*F).msg  $(*F).exe
 
-MAKEFLAGS = ""
-
-
-
 .4gl.4go:
 	$(INFORMIXDIR)/bin/fglpc $<
 
 .per.frm:
-	$(INFORMIXDIR)/bin/form4gl $<
-
-BINS4GE = coxxc04.o coxxq01.o coxxx03.o misql.o
-
-BINS4GI = coxxc04.4go coxxq01.4go coxxx03.4go misql.4go
-
-all: misql.4gi misql.4ge forms
-
-misql.4ge: $(BINS4GE)
-	$(C4GL) $(CFLAGS) -o $@  $(BINS4GE)
-
-misql.4gi: $(BINS4GI)
-	cat $(BINS4GI) > $@
-
-forms: misql.frm coxxq01a.frm coxxq01b.frm coxxq01c.frm coxxq01d.frm coxxq01e.frm coxxq01f.frm coxxq01g.frm coxxq01h.frm coxxq01i.frm coxxq01j.frm
-
-
-aubit:
-	4glpc coxxc04.4gl -c -o coxxc04.ao
-	4glpc coxxq01.4gl -c -o coxxq01.ao
-	4glpc coxxx03.4gl -c -o coxxx03.ao
-	4glpc misql.4gl -c -o misql.ao
-	4glpc *.per coxxc04.ao coxxq01.ao coxxx03.ao misql.ao -o misql.4ae
-
-clean:
-	rm -f *.ao *.h *.c *.glb *.4ae
+	$(INFORMIXDIR)/bin/form4gl -q $<
