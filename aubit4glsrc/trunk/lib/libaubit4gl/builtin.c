@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.74 2005-01-17 13:35:40 mikeaubury Exp $
+# $Id: builtin.c,v 1.75 2005-01-28 08:01:50 mikeaubury Exp $
 #
 */
 
@@ -742,7 +742,13 @@ A4GL_startlog (char *fname, int l, int n)
   A4GL_trim (fname);
   A4GL_trim (s);
   A4GL_debug ("START LOG (%s Line:%d) to file '%s'\n", A4GL_null_as_null(fname), l, A4GL_null_as_null(s));
-  error_log_file = fopen (s, "w");
+
+
+  if (A4GL_isyes(acl_getenv("RESTARTLOG"))) {
+  	error_log_file = fopen (s, "w");
+  } else {
+  	error_log_file = fopen (s, "a");
+  }
 
   if (error_log_file == 0)
     {
