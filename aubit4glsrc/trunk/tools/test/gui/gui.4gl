@@ -33,14 +33,19 @@ else
 end if
 
 input a from dummy
-before input
-	enable  a1,a2,a3,b1,b2,b3,c1,c2,c3
+	before input
+		if get_ui_mode()!=0 THEN
+			enable  a1,a2,a3,b1,b2,b3,c1,c2,c3
+		end if
+
 	on key('1') call set1(1,1)
 	on key('2') call set1(1,2)
 	on key('3') call set1(1,3)
+
 	on key('4') call set1(2,1)
 	on key('5') call set1(2,2)
 	on key('6') call set1(2,3)
+
 	on key('7') call set1(3,1)
 	on key('8') call set1(3,2)
 	on key('9') call set1(3,3)
@@ -56,7 +61,7 @@ define x,y integer
 		call mygo()
 	end if
 	display " " to dummy
-
+	message "Here" 
 end function
 
 
@@ -66,7 +71,7 @@ define k char(1)
 define r char(1)
 
 if arr[x,y]!=" " then
-	error "Already Selected"
+	error "Already Selected" wait for key
 	return 0
 end if
 

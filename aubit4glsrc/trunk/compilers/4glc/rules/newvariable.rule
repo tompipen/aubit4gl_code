@@ -322,9 +322,9 @@ identifier arr_subscripts
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
         sprintf ($<str>$, " let_substr(%s,%d,%s,0)", tmpbuff, scan_variable (tmpbuff), rbuff);
   } else {
-  	//if (strchr($<str>2,':')) 
-  b = isarrvariable ($<str>1);
-  a = scan_variable ($<str>1);
+  	b = isarrvariable ($<str>1);
+  	a = scan_variable ($<str>1);
+
          if (a==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (6)",$<str>1);
            yyerror(buff2); 
@@ -336,7 +336,7 @@ identifier arr_subscripts
 
   if (b != 0)
     {
-      sprintf ($<str>$, "%s[%s-1]", $<str>1, $<str>2);
+      sprintf ($<str>$, "%s[%s]", $<str>1, decode_array_string($<str>2));
       debug ("/* array variable %s*/\n", $<str>$);
     }
   else
