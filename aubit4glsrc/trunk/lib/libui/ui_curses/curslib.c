@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.41 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: curslib.c,v 1.42 2003-06-26 18:38:48 mikeaubury Exp $
 #*/
 
 /**
@@ -3024,8 +3024,9 @@ aclfgli_pr_message_internal (int attr, int wait,char *s)
   int ml;
   int width;
   //char *s;
+  char *ptr_pop;
   WINDOW *cw;
-  char buff[256];
+  char buff[512];
   static WINDOW *mw;
   A4GL_chkwin();
   A4GL_debug ("In message...");
@@ -3038,9 +3039,10 @@ aclfgli_pr_message_internal (int attr, int wait,char *s)
   }
   A4GL_debug ("MJA - Got message line as %d - %s\n", ml,s);
   width = A4GL_get_curr_width ();
+  //A4GL_push_char(s);
 
-  A4GL_push_char(s);
-  A4GL_pop_char (p, width);
+  strcpy(p,s);
+  //A4GL_pop_char (p, width);
 
   if (strlen (p) == 0)
     {
@@ -3052,8 +3054,17 @@ aclfgli_pr_message_internal (int attr, int wait,char *s)
   A4GL_push_char (p);
 
   A4GL_debug (" Wait =%d\n", wait);
+
   if (wait == 0)
     {
+	// Blank out the line...
+      memset(buff,' ',sizeof(buff));
+      buff[A4GL_get_curr_width ()]=0;
+      A4GL_push_char(buff);
+      A4GL_push_int (ml);
+      A4GL_push_int (1);
+      A4GL_display_at (1, 0);
+
       A4GL_push_int (ml);
       A4GL_push_int (1);
       A4GL_display_at (1, attr);
