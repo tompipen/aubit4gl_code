@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.43 2003-04-07 16:26:28 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.44 2003-04-22 08:58:07 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,9 @@
 #ifndef _AUBIT_LIB_INCL_EXT_
 #define _AUBIT_LIB_INCL_EXT_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
  /*
 =====================================================================
                     Constants definitions
@@ -1433,6 +1436,9 @@
 	void A4GL_pause(char *s);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

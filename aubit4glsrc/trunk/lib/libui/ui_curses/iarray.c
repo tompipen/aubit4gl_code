@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.11 2003-04-07 16:26:50 mikeaubury Exp $
+# $Id: iarray.c,v 1.12 2003-04-22 08:58:33 mikeaubury Exp $
 #*/
 
 /**
@@ -1199,6 +1199,7 @@ new_state=99;
 		arr->arr_line=ptr_movement->arr_line;
       		set_arr_curr (ptr_movement->arr_line);
       		set_scr_line (ptr_movement->scr_line);
+		debug("MJAMJA a=%d s=%d",ptr_movement->arr_line,ptr_movement->scr_line);
 
 		if (arr->scr_line!=ptr_movement->scr_line) ; //ireinpalay_arr (arr, 1);
 		else 	ireinpalay_arr (arr, 2);

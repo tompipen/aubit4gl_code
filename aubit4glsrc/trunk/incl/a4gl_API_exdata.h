@@ -1,4 +1,6 @@
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 	/* ============================ from datatypes.c ============================ */
 	void    init_datatypes			(void);
@@ -15,3 +17,6 @@
 	/* ============================ end from datatypes.c ============================ */
 
 
+#ifdef __cplusplus
+}
+#endif

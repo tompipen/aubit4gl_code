@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.14 2003-04-05 07:55:52 mikeaubury Exp $
+# $Id: ioform.c,v 1.15 2003-04-22 08:58:33 mikeaubury Exp $
 #*/
 
 /**
@@ -102,6 +102,7 @@ char *			read_string_dup 	(FILE * ofile);
 struct s_form_dets *getfromform 	(FORM * f);
 char *			string_width 		(char *a);
 WINDOW *		create_window 		(char *name, int x, int y, int w, int h, int border);
+void set_field_colour_attr(FIELD *field,int do_reverse,int colour) ;
 
 
 #ifdef OBSOLETE
@@ -129,7 +130,8 @@ void 			field_dynamic 		(FIELD * f);
 void 			field_invisible 	(FIELD * f);
 void 			field_noentry 		(FIELD * f);
 void 			set_field_attr 		(FIELD * field);
-int 			req_field 			(struct s_screenio *s, ...);
+int req_field_input (struct s_screenio *s, ...);
+int req_field_input_array (struct s_inp_arr *s, ...);
 int 			form_loop 			(struct s_screenio * s);
 void 			set_init_value 		(FIELD * f, void *ptr, int dtype);
 int 			get_metric_no 		(struct s_form_dets * form, FIELD * f);
@@ -448,40 +450,53 @@ set_field_attr (FIELD * field)
       field_opts_off (field, O_NULLOK);
     }
 
-  if (f->do_reverse && f->colour == AUBIT_COLOR_WHITE)
+  if (has_bool_attribute (f, FA_B_WORDWRAP))
+    {
+      field_opts_on (field, O_WRAP);
+    }
+
+    set_field_colour_attr(field,f->do_reverse,f->colour);
+
+}
+
+void set_field_attr_with_attr(FIELD *field,int attr) {
+int r;
+	if (attr&AUBIT_ATTR_REVERSE) r=1;
+	else r=0;
+	debug("MJA Calling set_field_colour_attr - do_reverse=%d attr=%d",r,attr);
+	set_field_colour_attr(field,r,attr);
+}
+
+void set_field_colour_attr(FIELD *field,int do_reverse,int colour) {
+  struct struct_scr_field *f;
+  f = (struct struct_scr_field *) (field_userptr (field));
+
+  if (do_reverse && colour == AUBIT_COLOR_WHITE)
     {
 	debug("XX1 REVERSE");
       set_field_fore (field, A_REVERSE);
       set_field_back (field, A_REVERSE);
     }
 
-  if (has_bool_attribute (f, FA_B_WORDWRAP))
-    {
-      field_opts_on (field, O_WRAP);
-    }
 
-  if (f->do_reverse && f->colour != AUBIT_COLOR_WHITE)
+  if (do_reverse && colour != AUBIT_COLOR_WHITE)
     {
      debug("XX2 REVERSE");
-      set_field_back (field, decode_colour_attr_aubit(f->colour) | A_REVERSE);
-      set_field_fore (field, decode_colour_attr_aubit(f->colour) | A_REVERSE);
+      set_field_back (field, decode_colour_attr_aubit(colour) | A_REVERSE);
+      set_field_fore (field, decode_colour_attr_aubit(colour) | A_REVERSE);
     }
 
-  if (f->do_reverse == 0 && f->colour != AUBIT_COLOR_WHITE)
+  if (do_reverse == 0 && colour != AUBIT_COLOR_WHITE)
     {
-      set_field_fore (field, decode_colour_attr_aubit (f->colour));
-      set_field_back (field, decode_colour_attr_aubit (f->colour));
+      set_field_fore (field, decode_colour_attr_aubit (colour));
+      set_field_back (field, decode_colour_attr_aubit (colour));
     }
-  if (f->do_reverse == 0 && f->colour == AUBIT_COLOR_WHITE)
+  if (do_reverse == 0 && colour == AUBIT_COLOR_WHITE)
     {
-      set_field_fore (field, decode_colour_attr_aubit (f->colour));
-      set_field_back (field, decode_colour_attr_aubit (f->colour));
+      set_field_fore (field, decode_colour_attr_aubit (colour));
+      set_field_back (field, decode_colour_attr_aubit (colour));
     }
 
-  if (bc != field_back (field) || fc != field_fore (field))
-    {
-      gui_setattr ((long)field, field_fore (field), field_back (field));
-    }
   debug ("Returning");
 }
 
@@ -490,7 +505,7 @@ set_field_attr (FIELD * field)
  * @todo Describe function
  */
 int
-req_field (struct s_screenio *s, ...)
+req_field_input (struct s_screenio *s, ...)
 {                               /* does nothing yet... */
 /* fieldname + = next - = previous */
   int a;
@@ -500,6 +515,45 @@ req_field (struct s_screenio *s, ...)
   va_start (ap, s);
 
   debug ("req_field");
+  a = gen_field_list (&ptr, s->currform, 1, &ap);
+
+
+  if (a >= 0)
+    {
+      debug ("Found our field...\n");
+    }
+  else
+    {
+      exitwith ("Field not found");
+      return 0;
+    }
+  debug ("Setting current field to %p", ptr[0]);
+  sdets = s->currform;
+  set_current_field (sdets->form, ptr[0]);
+
+  pos_form_cursor (sdets->form);
+  free (ptr);
+return 1;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+req_field_input_array (struct s_inp_arr *s, ...)
+{                               /* does nothing yet... */
+/* fieldname + = next - = previous */
+  int a;
+  FIELD **ptr;
+  struct s_form_dets *sdets;
+  va_list ap;
+  va_start (ap, s);
+
+
+
+  debug ("MJAMJA req_field_input_array...");
+
   a = gen_field_list (&ptr, s->currform, 1, &ap);
 
 
@@ -1490,6 +1544,9 @@ disp_fields (int n, int attr, va_list * ap)
       debug ("field_list[%d]=%p", a, field_list[a]);
       debug_print_field_opts (field_list[a]);
       /* fldattr=field_opts(field_list[a]); */
+
+	debug("MJA Calling set_field_pop_attr - 1 - attr=%d",attr);
+
       set_field_pop_attr (field_list[a], attr);
       /* rc=set_field_opts(field_list[a],fldattr); */
       debug_print_field_opts (field_list[a]);
@@ -1896,7 +1953,7 @@ set_field_pop_attr (FIELD * field, int attr)
   long oopt;
   ff = new_string (get_field_width (field));
   pop_char (ff, get_field_width (field));
-  debug ("set_init_pop_attr : display %s to field %d", ff, attr);
+  debug ("set_field_pop_attr : display %s to field %d", ff, attr);
   f = (struct struct_scr_field *) (field_userptr (field));
 
   if (has_bool_attribute (f, FA_B_REVERSE))
@@ -1926,6 +1983,7 @@ set_field_pop_attr (FIELD * field, int attr)
   debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   set_field_attr (field);
+  if (attr!=0) set_field_attr_with_attr(field,attr);
   debug ("set field attr");
   fff = get_curr_form ();
   debug ("set field");
@@ -1950,10 +2008,11 @@ set_init_pop_attr (FIELD * field, int attr)
   struct struct_scr_field *f;
   struct s_form_dets *fff;
   int a;
+  debug("Field = %p",field);
   ff = new_string (get_field_width (field));
   pop_char (ff, get_field_width (field));
 
-  debug ("set_init_pop_attr : display %s to field %d", ff, attr);
+  debug ("set_init_pop_attr : display '%s' to field %d", ff, attr);
 
   f = (struct struct_scr_field *) (field_userptr (field));
   assertion (f == 0,"set_init_pop_attr - Pointer is zero...");
@@ -2007,10 +2066,10 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
   struct s_form_dets *formdets;
   FIELD **field_list;
   int nofields;
-  
-
   debug ("In disp_fields");
+
   formdets = get_curr_form ();
+
   flg = 0;
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
@@ -2020,7 +2079,7 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
   nofields = gen_field_list (&field_list, formdets, n, &ap);
   if (fonly && nofields >= 0)
     nofields = 0;
-  debug ("Number of fields=%d", nofields);
+  //debug ("MJA Number of fields=%d", nofields);
   if (nofields >= 0)
     {
       for (a = 0; a <= nofields; a++)
@@ -2805,11 +2864,11 @@ int_form_driver (FORM * form, int a)
   FIELD *f;
   char buff[1024];
   char buff2[1024];
-int fd_ok;
-
+  int fd_ok;
 
   debug("int_form_driver called with %p - %d",form,a);
-if (a<=27) { debug("Control Character or ESC"); return; }
+
+  if (a<=27) { debug("Control Character or ESC"); return; }
 
   field_pos = get_curr_field_col (form);
   f = current_field (form);
@@ -2823,7 +2882,7 @@ if (a<=27) { debug("Control Character or ESC"); return; }
       strcpy (buff, "");
     }
 
-  debug ("Calling form_driver with %d for form %p", a, form);
+  debug ("MJA Calling form_driver with %d for form %p", a, form);
 
   fd_ok=form_driver (form, a);
   if (fd_ok!=E_OK) {

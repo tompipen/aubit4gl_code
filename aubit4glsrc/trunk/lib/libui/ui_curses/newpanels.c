@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.24 2003-04-07 16:26:50 mikeaubury Exp $
+# $Id: newpanels.c,v 1.25 2003-04-22 08:58:33 mikeaubury Exp $
 #*/
 
 /**
@@ -903,7 +903,6 @@ display_form (struct s_form_dets *f)
       wborder (currwin, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   debug ("start the form");
-
   start_form (f);
 
   mja_wrefresh (w);

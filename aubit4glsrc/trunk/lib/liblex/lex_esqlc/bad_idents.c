@@ -1,15 +1,67 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 
+char *reserved_words_in_c[]={
+	"asm",
+	"auto",
+	"break",
+	"case",
+	"char",
+	"const",
+	"continue",
+	"default",
+	"do",
+	"double",
+	"else",
+	"enum",
+	"extern",
+	"float",
+	"for",
+	"goto",
+	"if",
+	"int",
+	"long",
+	"register",
+	"return",
+	"short",
+	"signed",
+	"sizeof",
+	"static",
+	"struct",
+	"switch",
+	"typedef",
+	"union",
+	"unsigned",
+	"void",
+	"volatile",
+	"while",
+#ifdef _cplusplus
+	"catch",
+	"inline",
+	"template",
+	"class",
+	"new",
+	"this",
+	"delete",
+	"operator",
+	"throw",
+	"except",
+	"private",
+	"try",
+	"finally",
+	"protected",
+	"virtual",
+	"friend",
+	"public",
+#endif
+	0
+};
 
 int bad_identifiers(char *s) {
-        if (strcasecmp(s,"case")==0) return 1;
-        if (strcasecmp(s,"switch")==0) return 1;
-        if (strcasecmp(s,"continue")==0) return 1;
-        if (strcasecmp(s,"if")==0) return 1;
-        if (strcasecmp(s,"while")==0) return 1;
-        if (strcasecmp(s,"do")==0) return 1;
-        if (strcasecmp(s,"short")==0) return 1;
-        if (strcasecmp(s,"long")==0) return 1;
-
+int a;
+for (a=0;reserved_words_in_c[a];a++) {
+        if (strcasecmp(s,reserved_words_in_c[a])==0) return 1;
+}
 	return 0;
 }
+
+

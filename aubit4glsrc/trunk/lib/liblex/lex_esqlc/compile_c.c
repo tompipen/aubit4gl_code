@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.29 2003-04-11 13:09:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.30 2003-04-22 08:58:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2575,7 +2575,9 @@ int isin_command (char *cmd_type);
 void
 print_next_field (char *s)
 {
-  printc ("req_field(&_inp_io,%s);\n", s);
+
+printc ("req_field(&_inp_io,sizeof(_inp_io),%s);\n", s);
+
 if (isin_command("INPUT")>isin_command("CONSTRUCT")) {
   continue_loop("INPUT");
 } else {
@@ -4204,7 +4206,7 @@ char *set_var_sql(int n)
 			if (a!=z-n) {
 				strcat(buff,",");
 			}
-			sprintf(buff_small,"\t$_vi_%d\n",a);
+			sprintf(buff_small," :_vi_%d\n",a);
 			strcat(buff,buff_small);
 	        }
 		return buff;

@@ -272,7 +272,7 @@ print_prepare (char *stmt, char *sqlvar)
   printc("char *_s;\n");
   printc("EXEC SQL END DECLARE SECTION;\n");
   printc("_s=strdup(%s);\n",sqlvar);
-  printc ("EXEC SQL PREPARE %s FROM $_s;\n", strip_quotes(stmt), sqlvar);
+  printc ("EXEC SQL PREPARE %s FROM :_s;\n", strip_quotes(stmt), sqlvar);
 
   printc("free(_s);\n}\n");
   print_copy_status();
@@ -367,7 +367,7 @@ int a;
   	printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",  strip_quotes(cname),n);
         for  (a=0;a<n;a++) {
 		if (a) printc(",");
-		printc("$_using_%d\n",a);
+		printc(":_using_%d\n",a);
 	}
 
 	printc(";");
@@ -478,9 +478,9 @@ print_fetch_3 (char *ftp, char *into)
 	}
   } else {
 	if (fp1==1) { // FETCH ABSOLUTE
-		sprintf(buff,"EXEC SQL FETCH ABSOLUTE $_fp %s", strip_quotes(cname));
+		sprintf(buff,"EXEC SQL FETCH ABSOLUTE :_fp %s", strip_quotes(cname));
 	} else {
-		sprintf(buff,"EXEC SQL FETCH RELATIVE $_fp %s", strip_quotes(cname));
+		sprintf(buff,"EXEC SQL FETCH RELATIVE :_fp %s", strip_quotes(cname));
 	}
   }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.16 2003-03-14 07:55:53 afalout Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.17 2003-04-22 08:58:06 mikeaubury Exp $
 */
 
 /**
@@ -44,6 +44,10 @@
 
 #ifndef FGLHDR_INCL
 #define FGLHDR_INCL
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 	#include <stdio.h>
 	#include <string.h>
 
@@ -170,5 +174,8 @@
 
 	#define MENU_ALL "_AlL_"
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* #ifndef FGLHDR_INCL */
 

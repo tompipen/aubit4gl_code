@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.48 2003-03-28 08:07:20 mikeaubury Exp $
+# $Id: stack.c,v 1.49 2003-04-22 08:58:29 mikeaubury Exp $
 #
 */
 
@@ -556,7 +556,6 @@ pop_binding (int *n)
 {
   local_binding_cnt--;
   *n = num_local_binding[local_binding_cnt];
-  debug ("MJA - returning binding %p", local_binding[local_binding_cnt]);
   return local_binding[local_binding_cnt];
 }
 
@@ -672,7 +671,6 @@ push_param (void *p, int d)
       if (isnull (params[params_cnt - 1].dtype, params[params_cnt - 1].ptr))
 	{
 
-	  debug ("MJA1 %d", strlen (params[params_cnt - 1].ptr));
 
 	  /* I don't remember what this is for - so I'm getting shot for now */
 	  zzz = (params[params_cnt - 1].dtype & DTYPE_MASK) +
@@ -703,7 +701,6 @@ push_param (void *p, int d)
       dtype_2=params[params_cnt - 2].dtype;
       if (isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
-	  debug ("MJA2");
 	  zzz =
 	    ((params[params_cnt - 2].dtype & DTYPE_MASK) +
 	     (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
@@ -808,24 +805,17 @@ push_param (void *p, int d)
       int a;
       int ok = 0;
       int eql;
-      debug ("MJA OP_IN Set");
       a = pop_int ();
       while (a >= 1)
 	{
-	  debug ("MJA Getting base value from stack.. a=%d", a);
 	  get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
-	  debug ("MJA Got %p 0x%x %d\n", ptr1, d1, s1);
-	  debug (" MJA *ptr1=%d", *(int *) ptr1);
 	  push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  pushop (OP_EQUAL);
-	  debug ("MJA Pushed OP_EQUAL");
 	  eql = pop_int ();
-	  debug ("MJA Got OP_EQUAL  = %d\n", eql);
 	  if (eql)
 	    ok = 1;
 	  a--;
 	}
-      debug ("MJA Setting ok=%d\n", ok);
       drop_param ();		/* Get rid of the base... */
       if (d == OP_IN)
 	push_int (ok);
@@ -878,7 +868,6 @@ push_param (void *p, int d)
 	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
 	  if (a4gl_status != 0)
 	    break;
-	  debug ("MJA tmpvar=%s\n", tmpvar);
 	  push_param (tmpvar, 0);
 	  push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  pushop (OP_EQUAL);
@@ -991,7 +980,6 @@ push_param (void *p, int d)
       c1 = char_pop ();
 
 #ifdef DEBUG
-	debug ("MJAMJAMJA Check for %s matches %s", c1, c2);
 #endif
 r=mja_match (c1, c2, 'M');
 	debug("mja_match returns %d\n",r);
@@ -2339,7 +2327,6 @@ conv_to_interval (int a)
       sprintf (buff, "%f", d);
 	debug("Calling acli_interval for second to fraction");
       acli_interval(buff,0x46b); // SECOND(4) TO FRACTION(5)
-	debug("Done acli_interval second to fraction MJA...");
     }
 
   return 1;
@@ -2365,7 +2352,6 @@ push_binding (void *ptr, int num)
       exitwith ("Too many bindings");
       return 0;
     }
-  debug ("MJA - Adding binding to %p", ptr);
 
   local_binding[local_binding_cnt] = ptr;
   num_local_binding[local_binding_cnt] = num;

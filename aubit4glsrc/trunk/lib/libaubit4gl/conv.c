@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.34 2003-03-10 09:09:39 mikeaubury Exp $
+# $Id: conv.c,v 1.35 2003-04-22 08:58:29 mikeaubury Exp $
 #
 */
 
@@ -419,7 +419,7 @@ char buff[256];
 /*
 #ifdef DEBUG
   inttoc(a,buff,40);
-	debug("MJAMJA Buff=%s\n",buff);
+	debug(" Buff=%s\n",buff);
 #endif
 
 
@@ -544,24 +544,24 @@ strcpy(localchar,a_char);
   debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
   debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
 	
-  debug("CHECKMJA0.01 :  d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
+  debug("CHECK0.01 :  d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
 
 
   v1 = size_b & 15;
-  debug("CHECKMJA0.1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug("CHECK0.1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
   v2 = (size_b >> 4) & 15;
-  debug("CHECKMJA0.2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug("CHECK0.2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
   v3 = (size_b >> 8) & 15;
 
-  debug("CHECKMJA0 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug("CHECK0 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
 
   debug ("v1=%d v2=%d v3=%d\n", v1, v2, v3);
 
   if (valid_int (localchar, data, size_b))
     {
-  	debug("CHECKMJA1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  	debug("CHECK1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
 	conv_invdatatoc(data,v1,v2,v3,d);
-  	debug("CHECKMJA2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  	debug("CHECK2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
 
       	return 1;
     }

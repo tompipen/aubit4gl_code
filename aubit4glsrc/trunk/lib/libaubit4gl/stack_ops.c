@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.3 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.4 2003-04-22 08:58:30 mikeaubury Exp $
 #
 */
 
@@ -45,24 +45,24 @@ void process_stack_op_other(int d) {
       int a;
       int ok = 0;
       int eql;
-      debug ("MJA OP_IN Set");
+      debug ("OP_IN Set");
       a = pop_int ();
       while (a >= 1)
 	{
-	  debug ("MJA Getting base value from stack.. a=%d", a);
+	  debug ("Getting base value from stack.. a=%d", a);
 	  get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
-	  debug ("MJA Got %p 0x%x %d\n", ptr1, d1, s1);
-	  debug (" MJA *ptr1=%d", *(int *) ptr1);
+	  debug ("Got %p 0x%x %d\n", ptr1, d1, s1);
+	  debug (" *ptr1=%d", *(int *) ptr1);
 	  push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  pushop (OP_EQUAL);
-	  debug ("MJA Pushed OP_EQUAL");
+	  debug ("Pushed OP_EQUAL");
 	  eql = pop_int ();
-	  debug ("MJA Got OP_EQUAL  = %d\n", eql);
+	  debug ("Got OP_EQUAL  = %d\n", eql);
 	  if (eql)
 	    ok = 1;
 	  a--;
 	}
-      debug ("MJA Setting ok=%d\n", ok);
+      debug ("Setting ok=%d\n", ok);
       drop_param ();		/* Get rid of the base... */
       if (d == OP_IN)
 	push_int (ok);
@@ -115,7 +115,7 @@ void process_stack_op_other(int d) {
 	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
 	  if (a4gl_status != 0)
 	    break;
-	  debug ("MJA tmpvar=%s\n", tmpvar);
+	  debug ("tmpvar=%s\n", tmpvar);
 	  push_param (tmpvar, 0);
 	  push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  pushop (OP_EQUAL);

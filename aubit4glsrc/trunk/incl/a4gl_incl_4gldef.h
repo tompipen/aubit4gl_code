@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.32 2003-03-14 07:55:53 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.33 2003-04-22 08:58:06 mikeaubury Exp $
 */
 
 /**
@@ -46,6 +46,10 @@
 #ifndef FGLDEF_INCL
 
 #define FGLDEF_INCL
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <stdio.h>
 	#define fglbyte struct fgl_int_loc
 	#define fgltext struct fgl_int_loc
@@ -188,7 +192,7 @@ assist.c:489: warning: no previous declaration for `aclfgl_entry_selected_copy'
 assist.c:512: warning: no previous declaration for `aclfgl_entry_selected_paste'
 assist.c:535: warning: no previous declaration for `aclfgl_entry_selection_set'
 assist.c:568: warning: no previous declaration for `aclfgl_entry_text_get'
-assist.c:596: warning: no previous declaration for `aclfgl_field_hide'
+Assist.c:596: warning: no previous declaration for `aclfgl_field_hide'
 assist.c:619: warning: no previous declaration for `aclfgl_field_show'
 assist.c:640: warning: no previous declaration for `aclfgl_form_caption_get'
 assist.c:658: warning: no previous declaration for `aclfgl_form_hide'
@@ -414,4 +418,7 @@ be used in applications which link to the library).
         long quit_flag;						/** 4gl quit ocurred global flag */
 	#endif
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* #ifndef FGLDEF_INCL */
