@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.101 2004-07-03 11:58:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.102 2004-11-09 19:07:30 pjfalbe Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.101 2004-07-03 11:58:13 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.102 2004-11-09 19:07:30 pjfalbe Exp $";
 /**
  * @file
  *
@@ -763,7 +763,7 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
     }
 
   A4GL_mja_set_field_buffer (f, 0, ff);
-  free (ff);
+  acl_free (ff);
   A4GL_debug ("Init complete");
 }
 
@@ -2375,7 +2375,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
   A4GL_pop_char (ff, field_width);
   A4GL_debug ("set_field_contents : '%s'", ff);
   A4GL_mja_set_field_buffer (field, 0, ff);
-  free (ff);
+  acl_free (ff);
 
 
 
@@ -2434,7 +2434,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
 
   f->do_reverse = a;
   A4GL_debug ("done ");
-  free (ff);
+  acl_free (ff);
 
 }
 #endif
@@ -3000,7 +3000,7 @@ int
 	buff=strdup(field_buffer (field_list[a], 0));
 	chk_for_picture(field_list[a],buff);
       	A4GL_push_char (buff);
-	free(buff);
+	acl_free(buff);
       nr++;
     }
   return nr;
@@ -3040,7 +3040,7 @@ int
 		buff=strdup(field_buffer (s->field_list[s->scr_line-1][b], 0));
 		chk_for_picture(field_list[a],buff);
       		A4GL_push_char (buff);
-		free(buff);
+		acl_free(buff);
 	      nr++;
 	    }
 	}
@@ -3790,14 +3790,14 @@ int
 		      A4GL_debug
 			("fieldtouched Field status is set for %p - %d line %d - b=%d",
 			 field_list[a], fprop->flags, s->scr_line - 1, b);
-		      free (field_list);
+		      acl_free (field_list);
 		      return 1;
 		    }
 		}
 	    }
 	}
       A4GL_debug ("fieldtouched Field status not set for any..");
-      free (field_list);
+      acl_free (field_list);
       return 0;
 
     }
@@ -3873,12 +3873,12 @@ int
 	    {
 	      A4GL_debug ("fieldtouched Field status is set for %p",
 			  field_list[a]);
-	      free (field_list);
+	      acl_free (field_list);
 	      return 1;
 	    }
 	}
       A4GL_debug ("fieldtouched Field status not set for any..");
-      free (field_list);
+      acl_free (field_list);
       return 0;
 
     }

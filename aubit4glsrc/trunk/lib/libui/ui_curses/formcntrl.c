@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.66 2004-09-29 15:09:04 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.67 2004-11-09 19:07:29 pjfalbe Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.66 2004-09-29 15:09:04 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.67 2004-11-09 19:07:29 pjfalbe Exp $";
 /**
  * @file
  * Form movement control
@@ -140,6 +140,9 @@ A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f,
 
 
   a = sio->fcntrl_cnt;
+  if (a>=10) {
+		A4GL_assertion(1,"Loop in formcntrl.c ?");
+  }
   sio->fcntrl[a].op = op;
   sio->fcntrl[a].parameter = parameter;
   sio->fcntrl[a].field_name = field_name;
@@ -191,7 +194,7 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
 	  // parameter is the only one that will be malloc'd
 	  if (sio->fcntrl[a].parameter)
 	    {
-	      free (sio->fcntrl[a].parameter);
+	      acl_free (sio->fcntrl[a].parameter);
 	    }
 	}
     }
@@ -332,7 +335,7 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
     }
   else
     {
-      free (ptr);
+      acl_free (ptr);
     }
   A4GL_debug ("Done newMovement - last_field was %p new_field is %p",
 	      last_field, new_field);
@@ -744,7 +747,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  //A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
 		  A4GL_set_init_value (sio->currentfield, ptr, 0);
 		  A4GL_debug ("XYX Set field : %s", ptr);
-		  free (ptr);	// ? @todo....
+		  acl_free (ptr);	// ? @todo....
 		}
 	      else
 		{
@@ -981,7 +984,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       sio->fcntrl_cnt--;
       if (sio->fcntrl[a].parameter)
 	{
-	  free (sio->fcntrl[a].parameter);
+	  acl_free (sio->fcntrl[a].parameter);
 	}
     }
   A4GL_debug ("Returning %d\n", rval);
