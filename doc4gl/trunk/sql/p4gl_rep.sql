@@ -4,6 +4,7 @@
 -- Formato p4gl (desenvolvido na Despodata)
 -- ============================================================================
 
+{
 drop table p4gl_package;
 drop table p4gl_program;
 drop table p4gl_module;
@@ -16,6 +17,7 @@ drop table p4gl_fun_return;
 drop table p4gl_fun_todo;
 drop table p4gl_table_usage;
 drop table p4gl_excel;
+}
 
 -- ============================================================================
 -- Identifica um package que tipicamente corresponde a uma directoria

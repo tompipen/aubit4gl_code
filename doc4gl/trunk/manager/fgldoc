@@ -12,8 +12,8 @@
 #  @todo Options tem de passar a ser usado como objecto
 #  @todo Forms para interacção com repositorio
 #
-#  $Id: fgldoc,v 1.3 2003-01-06 20:06:17 saferreira Exp $
-#  $Author: saferreira $
+#  $Id: fgldoc,v 1.4 2003-01-09 05:40:42 afalout Exp $
+#  $Author: afalout $
 #
 #  =========================================================================
 
@@ -106,7 +106,7 @@ sub createMenu
   my $f = $mw->Frame(-relief => 'ridge', -borderwidth => 2);
 	$f->pack(
 	  -side => 'top', 
-		-anchor => 'n', 
+		-anchor => 'n',
 		-fill => 'x'
 	);
 
@@ -601,7 +601,7 @@ sub export2FglGui
 }
 
 #  =========================================================================
-#  Exportação dos comentários para 4gl no ambiente CUI 
+#  Exportação dos comentários para 4gl no ambiente CUI
 #  (Command Line User Interface)
 #  =========================================================================
 sub export2FglCui
@@ -1098,7 +1098,7 @@ sub printUsage()
 #  Inicialização/validação dos parâmetros de execução
 #
 #  Falta trabalhar com opcoes so com um - (resumidas)
-#  @todo Trabalhar com execução de métodos 
+#  @todo Trabalhar com execução de métodos
 #
 #  Possible parameters to the program:
 #    - no_gui : Com gui por default

@@ -4,12 +4,12 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Date: 2003-01-06 20:16:26 $
-# $Author: saferreira $
-# $Id: Makefile.in,v 1.2 2003-01-06 20:16:26 saferreira Exp $
+# $Date: 2003-01-09 05:40:42 $
+# $Author: afalout $
+# $Id: Makefile.in,v 1.3 2003-01-09 05:40:42 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
-# 
+#
 #  ============================================================================
 
 
@@ -17,18 +17,20 @@ include ../FgldocDefs.mk
 
 
 #  ============================================================================
-#  Compilation of all programs 
+#  Compilation of all programs
 #  ============================================================================
 all: p4gl p4glpp
+
+.PHONY:install clean deinstall tags
 
 #  ============================================================================
 #  4GL Parser (for each source file)
 #  ============================================================================
 P4GLOBJ= p4gl_synt.o p4gl_ld_st.o p4gl_lex.o p4gl_parse.o  \
-p4gl_util.o p4gl_dump_st.o  p4gl_ins_rep.o actions.o GenFglDoc.o \
-InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o GenParameters.o \
-ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
-TableUsage.o P4glAbstractTree.o
+	p4gl_util.o p4gl_dump_st.o  p4gl_ins_rep.o actions.o GenFglDoc.o \
+	InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o GenParameters.o \
+	ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
+	TableUsage.o P4glAbstractTree.o
 
 p4gl : $(P4GLOBJ) m_p4gl.o
 	$(ESQL) $(CFLAGS) -o $@ $(P4GLOBJ) m_p4gl.o
@@ -92,9 +94,11 @@ tags:
 #  ==========================================================================
 #  Install the software 
 #  ==========================================================================
-.PHONY:install
 install:
 	cp p4gl p4glpp $(BINDIR)
+
+deinstall:
+	${RM} -f ${BINDIR}/p4gl ${BINDIR}/p4glpp
 
 #  ==========================================================================
 #  Cleaning of all the garbage

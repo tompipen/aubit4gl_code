@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.4 2003-01-03 02:11:20 afalout Exp $
+#  $Id: Makefile.in,v 1.5 2003-01-09 05:40:18 afalout Exp $
 #
 #  ==========================================================================
 
@@ -14,19 +14,20 @@ include FgldocDefs.mk
 #                           Settings
 # =========================================================================
 
-ALL				=parser
+ALL				=parser manager
 ALL.INSTALL		=install.parser install.manager
 
-ifneq "@JAVAC@" "no"
-	ALL			+=browser
-endif
-
 ifneq "@TOMCAT_DIR@" "no"
+ifneq "${ANT}" "no"
+ifneq "${JAVAC}" "no"
+	ALL			+=browser
 	ALL.INSTALL	+=install.browser
+endif
+endif
 endif
 
 ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
-				install.dbd-informix
+				install.dbd-informix install.dumper
 
 .PHONY:all parser manager browser install clean install.parser \
 		install.manager install.browser deinstall install.cpan install.dbi \
@@ -71,7 +72,20 @@ install.parser:
 	$(MAKE) -C parser install
 
 install.manager:
+#makefile vreated using Makfeil.PL does not have install target
+#	$(MAKE) -C manager install
+#Not sure what this is doing:
+	$(MAKE) -C manager
+	mkdir -p $(PERL_MODULE_DIR)/img
+	mkdir -p $(PERL_MODULE_DIR)/L10N
+	${INSTALL} manager/fgldoc ${BINDIR}
+	chmod a+x ${BINDIR}/fgldoc
 	$(MAKE) -C manager install
+#	${INSTALL} manager/FglDocumenter/*.pm $(PERL_MODULE_DIR)
+#	${INSTALL} manager/FglDocumenter/img/*.gif $(PERL_MODULE_DIR)/img
+#	${INSTALL} manager/FglDocumenter/L10N/*.pm $(PERL_MODULE_DIR)/L10N
+	@echo "fgldoc installed in ${BINDIR}"
+	@echo "Perl modules installed in $(PERL_MODULE_DIR)"
 
 install.browser:
 	$(MAKE) -C browser install
@@ -87,10 +101,35 @@ deinstall:
 # =========================================================================
 #                                Clean
 # =========================================================================
-clean:
+clean: clean.etc clean.sql clean.manager
 	$(MAKE) -C parser clean
-	$(MAKE) -C manager clean
 	$(MAKE) -C browser clean
+	${RM} *.bak
+
+clean.etc:
+	cd etc; ${RM} *.bak stamp-h
+
+clean.sql:
+	cd sql; ${RM} *.bak
+
+clean.manager:
+	$(MAKE) -C manager clean
+	cd manager; ${RM} *.bak
+	cd manager/FglDocumenter; ${RM} *.bak
+	cd manager/FglDocumenter/test; ${RM} *.bak
+
+#delete everything not in the distribution (CVS)
+distclean: clean
+	${RM} libtool config.log config.status Makefile
+
+#Files created by configure script
+clean.config: clean.makefile
+	${RM} etc/fgldocrc FgldocDefs.mk doc4gl_config.h pm_to_blib
+	rm -rf manager/blib
+
+#Make files created by configure script:
+clean.makefile:
+	${RM} parser/Makefile browser/Makefile manager/Makefile
 
 # =========================================================================
 #                           Install Perl modules
@@ -143,6 +182,12 @@ install.cpan:
 
 install.dbi:
 	perl -MCPAN -e 'install Bundle::DBI'
+
+install.dumper:
+	perl -MCPAN -e 'install XML::Dumper'
+
+install.maketxt:
+	perl -MCPAN -e 'install Locale::Maketext'
 
 
 # =============================== EOF ======================================

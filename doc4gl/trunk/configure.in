@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.4 2003-01-02 21:44:52 afalout Exp $
+dnl # $Id: configure.in,v 1.5 2003-01-09 05:40:18 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -224,16 +224,20 @@ AC_SUBST(HTTPD)
 AC_SUBST(APACHE_CONF)
 AC_SUBST(WWW_HOST_NAME)
 AC_SUBST(WWW_DOCUMENT_ROOT)
+AC_SUBST(TOMCAT_DIR)
 
 #RPM
 AC_SUBST(RPM)
 AC_SUBST(AUTOSPEC)
 
-#other
+#Perl
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(PERL_VERSION)
 AC_SUBST(PERL_MODULE_DIR)
+AC_SUBST(MISSING_PERLMODS)
+
+#other
 AC_SUBST(LDCONFIG)
 AC_SUBST(target)
 AC_SUBST(target_cpu)
@@ -254,6 +258,7 @@ AC_SUBST(GCC_VERSION_MINOR)
 AC_SUBST(GCC_MINGW)
 AC_SUBST(HAS_CHECK)
 AC_SUBST(JAVAC)
+AC_SUBST(ANT)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -374,6 +379,7 @@ cygwin=0
 SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
 ARCHEXT=tgz
+TOMCAT_DIR=no
 
 #defaults for doc4glrc:
 A4GL_SQLTYPE=nosql
@@ -534,15 +540,16 @@ PHP_CONFIGURE_PART(Creating/verifying Doc4GL Database:)
 		#erro scan utilfuncao tags
 		#ALSO: adds constraints, creates procedures
 
-		AC_MSG_CHECKING('$DOC4GL_DB' db tables - inslib_rep)
-		dbaccess $DOC4GL_DB -qcr sql/inslib_rep > /tmp/inslib_rep.log 2>&1
-		RET=$?
-		if test "$RET" != "0"; then
-	        AC_MSG_WARN(Statement returned code $RET. See /tmp/inslib_rep.log)
-        else
-			#Routine created.OOPSDatabase closOOPS
-			AC_MSG_RESULT(Created)
-		fi
+#No longer in the CVS
+#		AC_MSG_CHECKING('$DOC4GL_DB' db tables - inslib_rep)
+#		dbaccess $DOC4GL_DB -qcr sql/inslib_rep > /tmp/inslib_rep.log 2>&1
+#		RET=$?
+#		if test "$RET" != "0"; then
+#	        AC_MSG_WARN(Statement returned code $RET. See /tmp/inslib_rep.log)
+#        else
+#			#Routine created.OOPSDatabase closOOPS
+#			AC_MSG_RESULT(Created)
+#		fi
 
 		#p4gl_rep.sql:
 		#Repositório de sobre informação de programas de 4gl
@@ -727,6 +734,8 @@ if test "$doc4gl_SOURCE" = "1" ; then
         fi
 	fi
 
+	AC_PATH_PROG(ANT, ant, no)
+
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 
 
@@ -906,14 +915,54 @@ else
 	AC_MSG_ERROR(doc4gl needs Perl, version 5.6 or later. Please install it.)
 fi
 
+#doc4gl perl code uses /usr/bin/perl as interpreter line  in
+#!/usr/bin/perl - so we need to check if this is the perl executable we
+#found:
+
+AC_MSG_CHECKING(Perl interpreter notation)
+if test "$PERL" != "/usr/bin/perl"; then
+	if test -a "/usr/bin/perl"; then
+		#something exists there, try to read it's version
+		set `/usr/bin/perl -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
+		if test "$4" != ""; then
+			THIS_PERL_VERSION=$4.$5.$6
+	        if test "$THIS_PERL_VERSION" != "$PERL_VERSION"; then
+				AC_MSG_ERROR(Please fix version conflict between /usr/bin/perl and $PERL.)
+	    	fi
+		else
+			AC_MSG_ERROR(Cannot read Perl version.)
+		fi
+		#is is a link?
+		if test -L "/usr/bin/perl"; then
+			#it's a link, maybe to the same perl executable?
+			#lrwxrwxrwx    1 root     root           12 Dec 23  2001 X11 -> ../X11R6/bin
+			AC_MSG_RESULT(/usr/bin/perl is link to $PERL (OK))
+        else
+            #not a link, this is another perl executable there.
+            #maybe it's the same version?
+			AC_MSG_RESULT(/usr/bin/perl is same version executable)
+		fi
+    else
+        #we should create a link
+        ln $PERL /usr/bin/perl
+    fi
+else
+	AC_MSG_RESULT(OK)
+fi
+
+#Perl swithcehs:
+# -Idirectory"     specify @INC/#include directory (several -I's allowed)
+#  -[mM][-]module  execute `use/no module...' before executing program
+#  -V[:variable]   print configuration summary (or a single Config.pm variable)
+
     #FIXME: we should use site_perl dir to install our stuff
 	AC_MSG_CHECKING(Perl modules directory)
 
 	PERL_MODULE_DIR="/usr/lib/perl5/$PERL_VERSION"
 	PERL_SITE_DIR="/usr/lib/perl5/site_perl/$PERL_VERSION"
     if test ! -d "$PERL_MODULE_DIR"; then
-		PERL_MODULE_DIR="/usr/local/lib/perl/$PERL_VERSION
-		PERL_SITE_DIR="/usr/local/lib/perl/site_perl/$PERL_VERSION"		"
+		PERL_MODULE_DIR="/usr/local/lib/perl/$PERL_VERSION"
+		PERL_SITE_DIR="/usr/local/lib/perl/site_perl/$PERL_VERSION"
 	    if test ! -d $PERL_MODULE_DIR; then
 			PERL_MODULE_DIR="/usr/lib/perl6/$PERL_VERSION"
 			PERL_SITE_DIR="/usr/lib/perl6/site_perl/$PERL_VERSION"
@@ -926,7 +975,17 @@ fi
             fi
         fi
 	fi
-	AC_MSG_RESULT($PERL_MODULE_DIR)
+
+	AC_MSG_CHECKING(if library dir is in Perl @INC)
+    TMP=`perl -V | grep $PERL_MODULE_DIR`
+    if test "$TMP" = ""; then
+		AC_MSG_ERROR(Detected path ($PERL_MODULE_DIR) not found in Perl INC config. Stop.)
+    fi
+    TMP=`perl -V | grep $PERL_SITE_DIR`
+    if test "$TMP" = ""; then
+		AC_MSG_ERROR(Detected path ($PERL_SITE_DIR) not found in Perl INC config. Stop.)
+    fi
+	AC_MSG_RESULT(Yes)
 
 	#installation info, with versions can be found:
 	#/usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
@@ -938,6 +997,7 @@ fi
 	if test "$RESULT" = ""; then
 		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
 		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.tk"
 			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
         fi
 	fi
@@ -949,6 +1009,7 @@ fi
 	if test "$RESULT" = ""; then
 		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
 		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.unit"
 			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
         fi
 	fi
@@ -961,6 +1022,19 @@ fi
 	if test "$RESULT" = ""; then
 		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
 		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.dbd-informix"
+			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+    TEST_FOR="Dumper"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.dumper"
 			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
         fi
 	fi
@@ -1555,6 +1629,10 @@ if test "$doc4gl_SOURCE" = "1" ; then
 				etc/fgldocrc
 				FgldocDefs.mk])
 
+    #apparently not needed - Autoconf finds .PL automatically
+	#FIXME check if we have Perl
+	#perl manager/Makefile.PL
+
 else
 
 	AC_CONFIG_FILES([
@@ -1570,6 +1648,17 @@ AC_OUTPUT
 ##                Warnings and exit messages
 ## ==================================================================
 
+if test "$MISSING_PERLMODS" != ""; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| One or more required Perl modules where not detected. If this      |
+| is connected to the Internet, and you have CPAN Perl module        |
+| installed, you should be able to install them automaticall by using
+| command 'make missing.perlmods'. Otherwise, please install this    |
+| Perl modules manually: $MISSING_PERLMODS
+X
+fi
 if test "$WARN_LEX" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+

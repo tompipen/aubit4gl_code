@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.5 2003-01-03 02:11:20 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.6 2003-01-09 05:40:18 afalout Exp $
 #
 #  ==========================================================================
 
@@ -42,6 +42,9 @@ NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
 #  class files
 #  ==========================================================================
 CLASS_DIR		=$(NAV_DIR)/WEB-INF/classes
+
+ANT             =@ANT@
+JAVAC           =@JAVAC@
 
 INSTALL			=cp
 RM				=rm

@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.1 2003-01-02 21:45:46 afalout Exp $
+#  $Id: Makefile.in,v 1.2 2003-01-09 05:40:42 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -17,12 +17,21 @@ CLASS_FILES	= FunctionDescription.class FunctionParameter.class \
 			FunctionReturn.class MainPanel.class ModuleDocument.class \
 			ModuleDocumentOptions.class GenJsTree.class
 
-JSP_FILES	= function_error.jsp function_list.jsp index.jsp login.jsp \
-			module.jsp module_list.jsp process_list.jsp
+#JSP_FILES	= function_error.jsp function_list.jsp index.jsp login.jsp \
+#			module.jsp module_list.jsp process_list.jsp
+JSP_FILES	=function_error.jsp module.jsp function_list.jsp module_list.jsp \
+			index.jsp process_list.jsp login.jsp
 
-IMG_FILES	=ftv2blank.gif ftv2doc.gif ftv2folderclosed.gif ftv2folderopen.gif \
-			ftv2lastnode.gif ftv2link.gif ftv2mlastnode.gif ftv2mnode.gif  \
-			ftv2plastnode.gif ftv2pnode.gif ftv2vertline.gif ftv2node.gif
+
+OTHER_FILES	=build.xml stylesheet.css
+
+#IMG_FILES	=ftv2blank.gif ftv2doc.gif ftv2folderclosed.gif ftv2folderopen.gif \
+#			ftv2lastnode.gif ftv2link.gif ftv2mlastnode.gif ftv2mnode.gif  \
+#			ftv2plastnode.gif ftv2pnode.gif ftv2vertline.gif ftv2node.gif
+
+IMG_FILES	=ftv2link.gif ftv2mlastnode.gif ftv2blank.gif ftv2mnode.gif \
+			ftv2doc.gif ftv2node.gif ftv2folderclosed.gif  ftv2plastnode.gif \
+			ftv2folderopen.gif ftv2pnode.gif ftv2lastnode.gif ftv2vertline.gif
 
 JS_FILES	= treeview.js
 
@@ -32,36 +41,54 @@ JS_FILES	= treeview.js
 #                        	   Targets
 # =========================================================================
 
-all: $(CLASS_FILES)
+#all: $(CLASS_FILES)
+all:
+ifneq "${ANT}" "no"
+ifneq "${JAVAC}" "no"
+	${ANT}
+else
+	@echo "Java compiler not found - cannot compile"
+endif
+else
+	@echo "Ant tool not found - cannot compile"
+endif
+
+$(CLASS_FILES): all
 
 # =========================================================================
 #                              Rules
 # =========================================================================
 
-%.class : %.java
-	@JAVAC@ $?
+#we use ant now:
+#%.class : %.java
+#	@JAVAC@ $?
 
 # =========================================================================
 #                              Install
 # =========================================================================
 
-install: all
+install: $(CLASS_FILES)
 	mkdir -p ${NAV_DIR}
 	mkdir -p ${CLASS_DIR}
 	$(INSTALL) $(CLASS_FILES) $(CLASS_DIR)
 	$(INSTALL) $(JSP_FILES) $(NAV_DIR)
 	$(INSTALL) $(IMG_FILES) $(NAV_DIR)
 	$(INSTALL) $(JS_FILES) $(NAV_DIR)
+#and ccs?
 
 # =========================================================================
 #                              Deinstall
 # =========================================================================
 
 deinstall:
+ifneq "${TOMCAT_DIR}" "no"
 	(cd $(CLASS_DIR); ${RM} -f $(CLASS_FILES))
 	(cd $(NAV_DIR); ${RM} -f $(JSP_FILES))
 	(cd $(NAV_DIR); ${RM} -f $(IMG_FILES))
 	(cd $(NAV_DIR); ${RM} -f $(JS_FILES))
+else
+	@echo "Tomcat directory unknown. Cannot deinstall"
+endif
 # =========================================================================
 #                              Clean
 # =========================================================================
