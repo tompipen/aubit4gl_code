@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.42 2003-05-19 18:06:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.43 2003-05-20 17:18:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2891,7 +2891,7 @@ A4GL_get_formloop_str (int type)
 void
 print_scroll (char *flds, char *updown)
 {
-  printc ("A4GL_acli_scroll(A4GL_gen_field_chars(%s),%s));\n", flds, updown);
+  printc ("A4GL_acli_scroll(%s,%s);\n", flds, updown);
 }
 
 
