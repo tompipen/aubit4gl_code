@@ -163,7 +163,6 @@ identifier arr_subscripts
 
 
 
-
 var_list:var
 {
   debug ("Variable:%s\n", $<str>$);
@@ -397,7 +396,9 @@ ibind_var : variable  {printcomment("/* Variable */\n");}
 			debug("Got an ibind thru...");
 			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 		}
-
+	| CHAR_VALUE 
+	| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
+	| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
 ;
 
 obind_var_list:	obind_var  {
@@ -459,13 +460,10 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   char buff[256];
   char buff2[256];
   char arrbuff[256];
-
   printcomment("/*..array_r_varid..*/");
 
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
   sprintf($<str>$,"%s[%s-1]",$<str>1,$<str>3);
 }
 ;
-
-
 

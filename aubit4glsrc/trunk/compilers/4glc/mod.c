@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.8 2001-09-07 23:15:46 afalout Exp $
+* $Id: mod.c,v 1.9 2001-09-08 09:57:41 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.8  2001/09/07 23:15:46  afalout
+*	Exit codes
+*	
 *	Revision 1.7  2001/09/07 21:35:38  mikeaubury
 *	yet more fixes
 *	
@@ -1756,7 +1759,12 @@ get_bind_cnt (char i)
 add_bind (char i, char *var)
 {
   long dtype;
-  dtype = scan_variable (var);
+
+  if (var[0]=='"') {
+		dtype=(strlen(var)-2)<<16;
+  } else {
+      dtype = scan_variable (var);
+  }
 
 /*printc(" add_bind %c %s %d %ld\n",i,var,dtype); */
   debug ("add_bind - dtype=%d (%s)\n", dtype,var);

@@ -22,7 +22,7 @@ var3:
 
 aft_dot :
 	MULTIPLY
-	| array_r_variable
+	| array_r_varid
 	| identifier
 ;
 

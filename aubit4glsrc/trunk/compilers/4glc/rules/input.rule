@@ -191,3 +191,18 @@ printc("if (_fld_dr==-100) {\n");
 
 
 
+
+
+
+scroll_cmd : 
+	SCROLL fld_list up_or_down {
+		printc("scroll(gen_field_chars(%s),%s,%s));\n",$<str>2,$<str>3,$<str>4);
+	}
+;
+
+up_or_down : UP {strcpy($<str>$,"1");} 
+	| DOWN {strcpy($<str>$,"-1");}
+	| UP_BY INT_VALUE {sprintf($<str>$,"%s",$<str>2);}
+	| DOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
+;
+

@@ -56,4 +56,11 @@ table_element:
 	
 
 
+upd_stats_cmd : 
+	UPDATESTATS_T	identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| UPDATESTATS	
+;
+
+
+
 

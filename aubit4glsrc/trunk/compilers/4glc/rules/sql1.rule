@@ -533,14 +533,15 @@ table_reference_list:
 	;
 
 table_reference:
-	  table_name {sprintf($<str>$,$<str>1);}
-	| table_name correlation_name {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| OUTER OPEN_BRACKET table_name  CLOSE_BRACKET {sprintf($<str>$," %s %s",$<str>1,$<str>3);}
-	| OUTER table_name {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| OUTER table_name correlation_name {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| OUTER OPEN_BRACKET table_name correlation_name CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>3,$<str>4);}
+	  tname {sprintf($<str>$," %s ", $<str>1);}
+	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
+	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s %s ",$<str>1,$<str>3);}
 	;
 
+tname: table_name
+	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+;
+tname_list : tname | tname_list COMMA tname { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 
 table_expression:
 	from_clause
@@ -601,10 +602,13 @@ exists_predicate:
 quantified_predicate:
 	value_expression comp_op quantifier subquery
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| subquery comp_op value_expression 
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 quantifier:
-	  all
+	{strcpy($<str>$," ALL ");}
+	| all
 	| some
 	;
 all:
@@ -748,6 +752,11 @@ exact_numeric_type:
 {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	| TEXT
 	| BYTE
+	| VARCHAR
+	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	;
 
 op_scale: {strcpy($<str>$,"");}
@@ -874,6 +883,13 @@ dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
 		|	CHAR_VALUE {strcpy($<str>$,$<str>1);}
 		;
 
+flush_cmd : opt_use
+	FLUSH fetch_cursor_name  {printc("flush_cursor(%s);\n\n",$<str>2);
+		addmap('D',$<str>3,curr_func,yylineno,infilename);
+		printc($<str>1);
+		}
+
+;
 
 declare_cmd : opt_use
 	DECLARE fetch_cursor_name CURSOR FOR cursor_specification_all {insql=0;chk4var=0;} curs_forupdate {printc("declare_cursor(%s,%s,0,%s);\n}\n",$<str>8,$<str>6,$<str>3);
@@ -901,10 +917,10 @@ printc($<str>1);
 
 curs_forupdate : {strcpy($<str>$,"0");} 
 		| FOR_UPDATE {strcpy($<str>$,"1");} 
-		| FOR_UPDATE_OF cur_update_list{strcpy($<str>$,"1");} 
+		| FOR_UPDATE_OF cur_update_list {strcpy($<str>$,"1");} 
 		;
 
-cur_update_list : colident | cur_update_list colident
+cur_update_list : colident | cur_update_list COMMA colident
 ;
 
 colident: identifier
