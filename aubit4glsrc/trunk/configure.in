@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.189 2003-08-18 06:18:21 afalout Exp $
+dnl # $Id: configure.in,v 1.190 2003-08-18 23:31:03 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -283,6 +283,11 @@ AC_SUBST(PGSQL_LFLAGS)
 AC_SUBST(PGSQL_LIBS)
 AC_SUBST(PGSQL_INCDIR)
 AC_SUBST(PGSQL_LIBDIR)
+AC_SUBST(PG_ESQLC)
+AC_SUBST(ECPG_INCDIR)
+AC_SUBST(ECPG_LIBDIR)
+AC_SUBST(ECPG_LFLAGS)
+AC_SUBST(ECPG_IFLAGS)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1719,18 +1724,19 @@ if test "$cygwin" = "1"; then
 fi
 
 ## ==================================================================
-##                 Checks for PostgreSQL lib and ESQL/C compiler support
+##                 Checks for PostgreSQL lib support
 ## ==================================================================
+
 
 #force this check even if not specified on command line:
 if test "$with_pgsql" = ""; then
 	with_pgsql=yes
 fi
 
-PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL and library support:)
+PHP_CONFIGURE_PART(Checking for PostgresSQL library support:)
 AC_ARG_WITH(pgsql,
 [  --with-pgsql[=DIR]        Include PostgresSQL support.  DIR is the PostgresSQL
-                          base install directory, defaults to /usr/local/pgsql.],
+                          base install directory, defaults to /usr/local.],
 [
 
   if test "$withval" != "no"; then
@@ -1742,6 +1748,9 @@ AC_ARG_WITH(pgsql,
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
+
+	#Store witval for use in ecpg section
+	PGSQL_WITHVAL=$withval
 
 	#Find PG include dir
 	PGSQL_INCDIR=$withval/include
@@ -1782,48 +1791,6 @@ AC_ARG_WITH(pgsql,
         HAVE_PG_ESQL_HEADERS=no
     fi
 
-	#PostgreSQL ESQL/C pre-compiler:
-	AC_PATH_PROG(PG_ESQLC, ecpg, no)
-
-    if test "$PG_ESQLC" != "no"; then
-		AC_MSG_CHECKING(PG ESQL Informix compatibility)
-		PG_ESQLC_VERSION=`ecpg -v 2>&1  | head -1 | sed -e 's/ecpg - the postgresql preprocessor, version: //'`
-		#Thu Feb 13 14:06:28 CET 2003
-		#        - Started working on an Informix compatibility mode. With option "-C
-		#          INFORMIX" set, ecpg now accepts "$" as alias for "exec sql" and to
-		#          denote variables inside SQL statements.
-		#
-		#Fri Jul 18 16:31:10 CEST 2003
-		#
-		#        - Added some more compatibility features to the parser.
-		#        - Set ecpg version to 3.0.0
-		#        - Set ecpg library to 4.0.0
-		#        - Set pgtypes library to 1.0.0
-		#        - Set compat library to 1.0.0
-
-		if test "$PG_ESQLC_VERSION" != ""; then
-			case "$PG_ESQLC_VERSION" in
-
-				2.* | 1.*)
-			    	AC_MSG_RESULT(No-$PG_ESQLC_VERSION)
-					PG_ESQLC_IFXCOMPAT=no
-				    ;;
-				*.*.*) #3.0.0 and up
-			    	AC_MSG_RESULT(Yes-$PG_ESQLC_VERSION)
-					PG_ESQLC_IFXCOMPAT=yes
-		            ;;
-				*)
-			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
-					PG_ESQLC_IFXCOMPAT=no
-				    ;;
-
-	        esac
-        else
-	    	AC_MSG_RESULT(No-Cannot read version number)
-			PG_ESQLC_IFXCOMPAT=no
-        fi
-    fi
-
 	AC_MSG_CHECKING(PG ESQL connector support)
 	if test "$ac_cv_lib_pq_main" = "yes" ; then
 		if test "$HAVE_PG_ESQL_HEADERS" = "yes"; then
@@ -1846,6 +1813,134 @@ AC_ARG_WITH(pgsql,
 ],[
   AC_MSG_RESULT(--with-pgsql not specified)
 ])
+
+
+## ==================================================================
+##                 Checks for PostgreSQL ESQL/C pre-compiler
+## ==================================================================
+
+#force this check even if not specified on command line:
+if test "$with_ecpg" = ""; then
+	with_ecpg=yes
+fi
+
+PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL pre-compiler:)
+AC_ARG_WITH(ecpg,
+[  --with-ecpg[=DIR]        Include PostgresSQL ESQL/C pre-compiler support.
+                          DIR is the PostgresSQL ecpg base install directory,
+						  defaults to /usr.],
+[
+echo "withval=$withval"
+
+  if test "$withval" != "no"; then
+	if test "$withval" = "yes"; then
+		withval=/usr
+    fi
+
+	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$withval/preproc:$PATH)
+
+	ECPG_INCDIR=$withval/include
+	ECPG_IFLAGS=-I$ECPG_INCDIR
+	ECPG_LIBDIR=$withval/lib
+	#In case we are working from not installed CVS code:
+	ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
+
+	if test "$PG_ESQLC" != "no"; then
+		AC_MSG_CHECKING(PG ESQL Informix compatibility)
+		PG_ESQLC_VERSION=`$PG_ESQLC -v 2>&1  | head -1 | sed -e 's/ecpg - the postgresql preprocessor, version: //' | sed -e 's/ecpg, the PostgreSQL embedded C preprocessor, version //'`
+		#Fri Jul 18 16:31:10 CEST 2003
+		#        - Set ecpg version to 3.0.0
+		#        - Set ecpg library to 4.0.0
+		#        - Set pgtypes library to 1.0.0
+		#        - Set compat library to 1.0.0
+
+		if test "$PG_ESQLC_VERSION" != ""; then
+			case "$PG_ESQLC_VERSION" in
+
+				2.* | 1.*)
+			    	AC_MSG_RESULT(No-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=no
+				    ;;
+				*.*.*) #3.0.0 and up
+			    	AC_MSG_RESULT(Yes-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=yes
+		            ;;
+				*)
+			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=no
+				    ;;
+	        esac
+        else
+	    	AC_MSG_RESULT(No-Cannot read version number)
+			PG_ESQLC_IFXCOMPAT=no
+        fi
+
+        if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+            #check PostgreSQL db engine version - we need 7.4, and NOT beta
+			AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
+
+            if test "$POSTMASTER" != "no"; then
+                POSTMASTER_VER=`$POSTMASTER --version`
+				#postmaster (PostgreSQL) 7.1.3
+            else
+				AC_MSG_WARN(Whoa! No postmaster?)
+			fi
+			AC_MSG_RESULT(FIXME-check PG db engine version)
+
+            #we can't depend on the same checks in Pglib section, becaue it may be disabled
+
+            if test "$PGSQL_WITHVAL" = ""; then
+				PGSQL_WITHVAL=/usr/local
+            fi
+
+			#Find PG include dir
+			PGSQL_INCDIR=$PGSQL_WITHVAL/include
+		    test -d $PGSQL_WITHVAL/include/pgsql && PGSQL_INCDIR=$PGSQL_WITHVAL/include/pgsql
+		    test -d $PGSQL_WITHVAL/pgsql/include && PGSQL_INCDIR=$PGSQL_WITHVAL/pgsql/include
+		    test -d $PGSQL_WITHVAL/include/postgresql && PGSQL_INCDIR=$PGSQL_WITHVAL/include/postgresql
+            #RH 7.2: /usr/include/pgsql/libpq-fe.h
+			test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+
+			#Finally, the one in CVS code installed by our install.xxx target:
+			#/opt/aubit/aubit4glsrc/pgsql-server/src/interfaces/libpq/libpq-fe.h
+			#NOTE: can't use this one, all other PG headers we need are not there...
+			#test -d $withval/../libpq && PGSQL_INCDIR=$withval/../libpq
+
+		    old_CFLAGS=$CFLAGS; old_LDFLAGS=$LDFLAGS; old_LIBS=$LIBS; old_CPPFLAGS="$CPPFLAGS"
+		    CFLAGS="$CFLAGS -I$PGSQL_INCDIR"
+		    LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
+		    LIBS="$LIBS $PGSQL_LIBS"
+			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR"
+
+            #reset:
+			unset ac_cv_header_libpq_fe_h
+			AC_CHECK_HEADERS([ libpq-fe.h ])
+
+			if test "$ac_cv_header_libpq_fe_h" = "yes" ; then
+				HAVE_PG_ESQL_HEADERS=yes
+				ECPG_IFLAGS="$ECPG_IFLAGS -I$PGSQL_INCDIR"
+		    else
+		        HAVE_PG_ESQL_HEADERS=no
+                PG_ESQLC_IFXCOMPAT=no
+                PG_ESQLC=no
+		    	AC_MSG_WARN(Disabled ecpg - no headers)
+		    fi
+
+			#also check versions of:
+			#-lecpg -lecpg_compat -lpgtypes
+
+			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
+
+		fi
+    fi
+  else
+    AC_MSG_RESULT(disabled)
+  fi
+],[
+  AC_MSG_RESULT(--with-ecpg not specified)
+])
+
+
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -3825,6 +3920,8 @@ esac
 ##            check what the byte ordering is:
 ## ==================================================================
 
+	AC_MSG_CHECKING(byte ordering)
+
     gcc order.c -o order
 
     ORDER=`./order`
@@ -3832,17 +3929,17 @@ esac
 	case "$ORDER" in
 		10) #least byte first
 			AC_DEFINE(HAVE_LEAST_BYTE_FIRST,1,[ ])
-            echo "Byte order is 10"
+			AC_MSG_RESULT(10)
         ;;
 
         01) #If it gives 01 then ntohs would be
 			#define ntohs(x) (x)
 			AC_DEFINE(HAVE_LEAST_BYTE_FIRST,0,[ ])
-            echo "Byte order is 01"
+			AC_MSG_RESULT(01)
 	        ;;
 
         *)
-            echo "Invalid byte order result: >>$ORDER<<"
+			AC_MSG_RESULT(Invalid byte order result: >>$ORDER<<)
             exit 5
 	        ;;
     esac
@@ -3852,6 +3949,9 @@ esac
 ## ==================================================================
 ##            Decide on default SQL driver
 ## ==================================================================
+
+PHP_CONFIGURE_PART(Seting defaults:)
+AC_MSG_CHECKING(Default SQL driver)
 
 #if more then one ODBC support was detected, this one will
 #override A4GL_SQLTYPE set earlier in this script:
@@ -3979,9 +4079,13 @@ else
 
 fi
 
+AC_MSG_RESULT($A4GL_SQLTYPE)
+
 ## ==================================================================
 ##            Decide on default COMPILER OUTPUT driver
 ## ==================================================================
+
+AC_MSG_CHECKING(Default compiler output language)
 
 if test "$default_comp" != ""; then
 	#User can force COMPILER driver default with --default-comp=xxxx switch
@@ -4010,9 +4114,17 @@ if test "$default_comp" != ""; then
 
 fi
 
+if test "$A4GL_LEXTYPE" = "EC"; then
+	AC_MSG_RESULT($A4GL_LEXTYPE $A4GL_LEXDIALECT)
+else
+	AC_MSG_RESULT($A4GL_LEXTYPE)
+fi
+
 ## ==================================================================
 ##            Decide on default RPC driver
 ## ==================================================================
+
+AC_MSG_CHECKING(Default RPC driver)
 
 if test "$default_rpc" != ""; then
 	#User can force RPC driver default with --default-rpc=xxxx switch
@@ -4028,9 +4140,13 @@ else
     fi
 fi
 
+AC_MSG_RESULT($A4GL_RPCTYPE)
+
 ## ==================================================================
 ##            Decide on default FORM driver
 ## ==================================================================
+
+AC_MSG_CHECKING(Default forms driver)
 
 if test "$default_form" != ""; then
 	#User can force FORM driver default with --default-form=xxxx switch
@@ -4044,9 +4160,13 @@ else
 	A4GL_FORMTYPE="GENERIC"
 fi
 
+AC_MSG_RESULT($A4GL_FORMTYPE)
+
 ## ==================================================================
 ##            Decide on default MENU driver
 ## ==================================================================
+
+AC_MSG_CHECKING(Default menu driver)
 
 if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
@@ -4061,13 +4181,15 @@ else
 	if test "$GTKBUILD" != "no"; then
 		A4GL_MENUTYPE="GENERIC"
     fi
-
 fi
+
+AC_MSG_RESULT($A4GL_MENUTYPE)
 
 ## ==================================================================
 ##            Decide on default EXTended REPorts driver
 ## ==================================================================
 
+AC_MSG_CHECKING(Default EXTended REPorts driver)
 if test "$default_report" != ""; then
 	#User can force EXREPORT driver default with --default-report=xxxx switch
 	A4GL_PDFTYPE="$default_report"
@@ -4076,11 +4198,13 @@ else
 		A4GL_PDFTYPE="PDF"
     fi
 fi
+AC_MSG_RESULT($A4GL_PDFTYPE)
 
 ## ==================================================================
 ##            Decide on default UI driver
 ## ==================================================================
 
+AC_MSG_CHECKING(Default UI driver)
 if test "$default_ui" != ""; then
 	#User can force UI driver default with --default-ui=xxxx switch
 	A4GL_UI="$default_ui"
@@ -4098,11 +4222,12 @@ else
 		WARN_UI=1
     fi
 fi
+AC_MSG_RESULT($A4GL_UI)
 
 ## ==================================================================
 ##            Decide on default HELP MESSAGE driver
 ## ==================================================================
-
+AC_MSG_CHECKING(Default Message driver)
 if test "$default_msg" != ""; then
 	#User can force HELP MESSAGE driver default with --default-msg=xxxx switch
 	A4GL_MSGTYPE="$default_msg"
@@ -4111,18 +4236,17 @@ if test "$default_msg" != ""; then
 	#	A4GL_LEXTYPE="PERL"
     #fi
 fi
+AC_MSG_RESULT($A4GL_MSGTYPE)
 
 ## ==================================================================
 ##  Decide on default packer driver for forms,menus and reports (ace)
 ## ==================================================================
 
+AC_MSG_CHECKING(Default packer driver)
 if test "$default_packer" != ""; then
 	#User can force PACKER driver default with --default-packer=xxxx switch
 	A4GL_PACKER="$default_packer"
 else
-
-	#Simple data
-	#A4GL_PACKER=PACKED
 
 	A4GL_PACKER=XML
 
@@ -4132,13 +4256,21 @@ else
 
 	#A4GL_PACKER=PERL
 
+	#Why would we use anything else anyway?
+	#Simple data
+	A4GL_PACKER=PACKED
+
+
 fi
+AC_MSG_RESULT($A4GL_PACKER)
 
 ## ==================================================================
 ##				Decide on targets that are built/istalled/packaged
 ##              optionaly based on external dependencies. This affects
 ##              RPM packaging, install/seinstall and build process
 ## ==================================================================
+
+AC_MSG_CHECKING(Plug-ins to build)
 
 PLUGIN_YES=
 PLUGIN_YES_LINKABLE=
@@ -4290,13 +4422,15 @@ PLUGIN_NO_LINKABLE=
 	#PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE A4GL_HTML"
 	PLUGIN_YES="$PLUGIN_YES A4GL_HTML"
 
-	if test "disabled" = ""; then
-	#if test "$HAVE_PGSQL_LIB" = "yes"; then
+if test "disabled" = ""; then
+#Sergio never finised it... :-(
+	if test "$HAVE_PGSQL_LIB" = "yes"; then
         PLUGIN_YES="$PLUGIN_YES SQL_pg"
 	else
 		PLUGIN_NO="$PLUGIN_NO SQL_pg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
+fi
 
 	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
@@ -4318,16 +4452,15 @@ PLUGIN_NO_LINKABLE=
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
 		PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
-		if test "$GCC_MINGW" != "yes" && "$cygwin" != "1"; then
+		if test "$GCC_MINGW" != "yes" && test "$cygwin" != "1"; then
 			#no static SQLite library supplied for Windows
 			PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
         fi
-
     else
         PLUGIN_NO="$PLUGIN_NO SQL_sqlite SQL_sqliteS"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sqlite"
     fi
-
+	
 	#SQLite ODBC driver
 	if test "$SQLITE_ODBC" = "1"; then
 		PLUGIN_YES="$PLUGIN_YES SQL_sqliteodbc"
@@ -4348,32 +4481,37 @@ PLUGIN_NO_LINKABLE=
 
 	if test "$PG_ESQLC" != "no" && test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_POSTGRES"
-		if test "disabled" = ""; then
+if test "disabled" = ""; then
 			#Compile Aubit ESQL/C SQL connectivity plug-in using PG ESQL/C compiler
+#Mike say: Main problem is ecpg doesn't support get diagnostics
+#(think I wrote another one for postgres anyway - I'll
+#check to see whats around when I get back)
 			PLUGIN_YES="$PLUGIN_YES SQL_esqlPG"
-        fi
+fi
     else
         PLUGIN_NO="$PLUGIN_NO ESQL_POSTGRES SQL_esqlPG"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
-	if test "disabled" = ""; then
-	#if test "$Q_ESQLC" != "no" ; then
+if test "disabled" = ""; then
+	if test "$Q_ESQLC" != "no" ; then
         #Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
 		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX SQL_esqlQ"
 	else
         PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
     fi
+fi
 
-	if test "disabled" = ""; then
-	#if test "$SAPDB_ESQLC" != "no"; then
+if test "disabled" = ""; then
+	if test "$SAPDB_ESQLC" != "no"; then
         #Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
 		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP ESQL_SAP"
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"
     fi
+fi
 
     #Can't use 'let' - standard sh don't know that...
 	#let COUNTER=0
@@ -4415,6 +4553,8 @@ PLUGIN_NO_LINKABLE=
 
 #install.dot
 #install.libcheck
+
+AC_MSG_RESULT(done.)
 
 ## ==================================================================
 ##           Additional auto-install targets:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.50 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.51 2003-08-18 23:31:26 afalout Exp $
 #
 */
 
@@ -856,6 +856,9 @@ A4GL_nodef_init ()
 }
 
 
+/**
+ *
+ */
 void A4GL_core_dump(void) {
   if (A4GL_isscrmode ())
     {

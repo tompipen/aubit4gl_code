@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2003-08-04 00:49:45 afalout Exp $
+# $Id: Makefile,v 1.5 2003-08-18 23:31:26 afalout Exp $
 #
 
 ROOT    =../..
@@ -46,21 +46,27 @@ include ${ROOT}/incl/Makefile-common
 	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
 #endif
 
-PGLIBS=-L${PGSQL_LIBDIR} -lecpg -lecpg_compat -lpgtypes
+#PGSQL_INCDIR
+#PGSQL_LIBDIR
+
+PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: ${LIBROOT}/libESQL_INFORMIX.so ${LIBROOT}/libESQL_POSTGRES.so
+all: ${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
+	@echo "Done: libESQL_INFORMIX${SO_EXT} libESQL_POSTGRES${SO_EXT}"
 
-libESQL_INFORMIX.so: ${LIBROOT}/libESQL_INFORMIX.so
-${LIBROOT}/libESQL_INFORMIX.so: helper_funcs_i.o
-	esql -static -Bstatic -g --shared $^ -o $@ ${LIBAUBIT4GL}
+libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
+${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_i.o
+	${IFMX_ESQLC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
-libESQL_POSTGRES.so: ${LIBROOT}/libESQL_POSTGRES.so
-${LIBROOT}/libESQL_POSTGRES.so: helper_funcs_p.o
-	${CC} -static -Bstatic -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
+libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
+${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_p.o
+	${CC} -static -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
+# -Bstatic
+#gcc: file path prefix "static" never used
 
 ## ==================================================================
 ##                              Sub-targets
@@ -68,18 +74,18 @@ ${LIBROOT}/libESQL_POSTGRES.so: helper_funcs_p.o
 
 
 helper_funcs_i.o: helper_funcs.ec
-	esql -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
+	${IFMX_ESQLC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
 
 helper_funcs_p.o: helper_funcs.ec
-	ecpg -C INFORMIX -t helper_funcs.ec
-	gcc -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(PGSQL_INCDIR) -I${ROOT}/incl
+	${PG_ESQLC} -C INFORMIX -t helper_funcs.ec
+	${CC} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} -I${ROOT}/incl
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	${RM} -f *.o *.c *.so
+	${RM} -f *.o *.c *${SO_EXT}
 
 
 # =============================== EOF ===============================

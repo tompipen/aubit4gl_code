@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.136 2003-08-18 06:18:33 afalout Exp $
+# $Id: Makefile-common.in,v 1.137 2003-08-18 23:31:26 afalout Exp $
 #
 
 
@@ -763,6 +763,12 @@ export PATH
 #process every make file with Autoconf:
 PGSQL_INCDIR=@PGSQL_INCDIR@
 PGSQL_LIBDIR=@PGSQL_LIBDIR@
+PG_ESQLC=@PG_ESQLC@
+ECPG_INCDIR=@ECPG_INCDIR@
+ECPG_LIBDIR=@ECPG_LIBDIR@
+ECPG_LFLAGS=@ECPG_LFLAGS@
+ECPG_IFLAGS=@ECPG_IFLAGS@
+IFMX_ESQLC=@IFMX_ESQLC@
 
 
 ## ==================================================================

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.67 2003-08-18 06:18:33 afalout Exp $
+# $Id: Makefile-install.mki,v 1.68 2003-08-18 23:31:26 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -925,8 +925,35 @@ install.mpz: ${MPZ_SRC_TGZ}
 
 ######################
 # 14: Install PostgreSQL ESQL/C pre-compiler:
-install.pg.esql: ${PGESQLC_RPM}
-	${RPM} -i $^
+#install.pg.esql: ${PGESQLC_RPM}
+#	${RPM} -i $^
+install.pg.esql:
+	@echo "NOTE: enter 'xxx' when prompted for password:"
+	unset CVSROOT; unset CVS_RSH; cvs -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot login;
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/ecpg
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.global.in
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure.in
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/access/common/heaptuple.c
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/config
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/template/linux
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/GNUmakefile.in
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/pg_config.h.in
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/tas/dummy.s
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.c
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_sema.c
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_shmem.c
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.h
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/port/linux.h
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/makefiles/Makefile.linux
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.shlib
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/libpq
+	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/port
+#PostgreSQL needs Bison version 1.875 or later.
+	export YACC=/opt/bison-1.875-inst/bin/bison; cd pgsql-server; ./configure
+	cd pgsql-server/src/interfaces/ecpg; make
+	pgsql-server/src/interfaces/ecpg/preproc/ecpg/preproc/ecpg --version
 	@echo "Package info & manuals: ${PGESQLC_INFO}"
 	@echo " "
 	@echo "PostreSQL ESQL/C compiler installed.  Please re-run 'configure' to detect changes."
