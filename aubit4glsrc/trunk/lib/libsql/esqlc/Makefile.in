@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-04-12 18:57:02 saferreira Exp $
+# $Id: Makefile.in,v 1.10 2002-04-24 07:46:00 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,7 +40,7 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl
+CFLAGS				+=-I../../libincl -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl
 
 ESQL_INCLPATH		=-I../.. -I../../../compilers/fcompile -I../../libincl -I$(AUBITDIR)/incl
 

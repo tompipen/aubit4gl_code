@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.1 2002-04-23 06:38:14 afalout Exp $
+# $Id: compile_perl.c,v 1.2 2002-04-24 07:46:00 afalout Exp $
 #
 */
 
@@ -38,14 +38,14 @@
  */
 
 #include <stdio.h>
-#include "../../libincl/dbform.h"
-#include "../../libincl/report.h"
-#include "../../libincl/oform.h"
-#include "../../libincl/attributes.h"
-#include "../../libincl/debug.h"
-#include "../../libincl/errors.h"
-#include "../../libincl/constats.h"
-#include "../../libincl/prompt.h"
+#include "a4gl_dbform.h"
+#include "a4gl_report.h"
+#include "a4gl_oform.h"
+#include "a4gl_attributes.h"
+#include "a4gl_debug.h"
+#include "a4gl_errors.h"
+#include "a4gl_constats.h"
+#include "a4gl_prompt.h"
 
 
 /*

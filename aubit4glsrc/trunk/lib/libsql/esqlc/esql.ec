@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.10 2002-04-19 18:03:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.11 2002-04-24 07:46:00 afalout Exp $
 #
 */
 
@@ -58,29 +58,29 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.10 2002-04-19 18:03:48 mikeaubury Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.11 2002-04-24 07:46:00 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
 
 #include <stdio.h>
 #include "4gldef.h"
-#include "libincl/database.h"
+#include "a4gl_database.h"
 
 #ifndef WIN32
 	#include <string.h>
-	#include "libincl/pointers.h"
-	#include "libincl/dtypes.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_dtypes.h"
 	#include <stdlib.h>
 #else
 	#include <windows.h>
   int status;
-	#include "libincl/pointers.h"
-	#include "libincl/dtypes.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_dtypes.h"
 #endif
 
 /** @todo : We should not put the path in the include */
-#include "../../libincl/constats.h" 
+#include "a4gl_constats.h"
 
 EXEC SQL include sqlca;
 
@@ -98,9 +98,9 @@ EXEC SQL include sqlca;
 /* stack.h will eventually include stdlib.h, which uses getenv(), so
  * we need to set GETENV_OK and only then include debug.h
  */
-#include "libincl/stack.h"
+#include "a4gl_stack.h"
 #define GETENV_OK
-#include "libincl/debug.h"
+#include "a4gl_debug.h"
 
 typedef unsigned char UCHAR;
 char lasterrorstr[1024] = "";

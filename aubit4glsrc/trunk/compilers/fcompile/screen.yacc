@@ -1,15 +1,15 @@
 %{
 //#include "form_x.h"
 
-#include "../../lib/libincl/formxw.h"
+#include "a4gl_formxw.h"
 
 #include "fcompile.h"
-#include "../../lib/libincl/compiler.h"
+#include "a4gl_compiler.h"
 #include <stdio.h>
 #include <string.h>
 //#include <curses.h>
-#include "../../lib/libincl/dbform.h"
-#include "../../lib/libincl/debug.h"
+#include "a4gl_dbform.h"
+#include "a4gl_debug.h"
 #include "where.h"
 extern struct struct_scr_field *fld;
 int graphics_mode=0;

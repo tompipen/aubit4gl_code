@@ -21,14 +21,14 @@ GtkWidget *tooltips = 0;
 
 
 //#include "menu_x.h"
-#include "../libincl/menuxw.h"
+#include "a4gl_menuxw.h"
 #include "a4gl_io.h"
 // 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
 #ifdef __CYGWIN__
 	#define GETENV_OK
 #endif
-#include "debug.h"
+#include "a4gl_debug.h"
 #include "dims.h"
 #include "4glhdr.h"
 

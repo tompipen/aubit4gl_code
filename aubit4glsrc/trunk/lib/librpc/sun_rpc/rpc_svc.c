@@ -8,14 +8,14 @@
  */
 
 #include "rpc_stack.h"
-#include "../libincl/pointers.h"
+#include "a4gl_pointers.h"
 
 #ifdef __CYGWIN__
 	#define GETENV_OK
 	//On Cygwin, stdlib.h, will have getenv
 	//call. Everywhere else, we should use acl_getenv.
 #endif
-#include "../libincl/debug.h"
+#include "a4gl_debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>				/* getenv, exit */

@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 //#include "form_x.h"
-#include "../../lib/libincl/formxw.h"
+#include "a4gl_formxw.h"
 
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>

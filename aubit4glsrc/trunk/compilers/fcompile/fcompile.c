@@ -9,10 +9,10 @@
  */
 
  /* 
-  * $Id: fcompile.c,v 1.11 2002-04-19 03:45:17 afalout Exp $
+  * $Id: fcompile.c,v 1.12 2002-04-24 07:45:59 afalout Exp $
   */
 
-#include "../../lib/libincl/compiler.h"
+#include "a4gl_compiler.h"
 #include <stdio.h>
 #include "a4gl_aubit_lib.h"
 extern int as_c;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.2 2002-04-19 13:07:32 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.3 2002-04-24 07:45:59 afalout Exp $
 #
 */
 
@@ -50,13 +50,10 @@
 /*#include "../../incl/sqlca.h"*/
 
 //authunix_parms redefined: start here:
-#include "../libincl/dbform.h"
-
-
-
-#include "../libincl/stack.h"
-#include "../libincl/debug.h"
-#include "../libincl/keys.h"
+#include "a4gl_dbform.h"
+#include "a4gl_stack.h"
+#include "a4gl_debug.h"
+#include "a4gl_keys.h"
 
 //FIXME: is this OK? see lib/libincl/dbform.h
 #ifdef __CYGWIN__

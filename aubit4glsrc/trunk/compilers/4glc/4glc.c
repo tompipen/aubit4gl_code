@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.20 2002-04-19 03:45:17 afalout Exp $
+# $Id: 4glc.c,v 1.21 2002-04-24 07:45:51 afalout Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.20 2002-04-19 03:45:17 afalout Exp $
+ * $Id: 4glc.c,v 1.21 2002-04-24 07:45:51 afalout Exp $
  */
 
 #include <stdio.h>
@@ -62,7 +62,7 @@ extern char infilename[132];
 char errbuff[1024] = "";
 
 #include "a4gl_aubit_lib.h"
-#include "../../lib/libincl/pointers.h"
+#include "a4gl_pointers.h"
 
 int globals_only = 0;
 
@@ -71,7 +71,7 @@ int globals_only = 0;
  *
  * Its used to separate column names from tablename too.
  *
- * @param str The file name 
+ * @param str The file name
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */

@@ -1,12 +1,10 @@
 //#include "menu_x.h"
-#include "../../lib/libincl/menuxw.h"
-
-
-#include "../../lib/libincl/compiler.h"
+#include "a4gl_menuxw.h"
+#include "a4gl_compiler.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include "../../lib/libincl/debug.h"
+#include "a4gl_debug.h"
 #ifdef __CYGWIN__
 #include <rpc/rpc.h>
 #endif

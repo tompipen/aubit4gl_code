@@ -1,6 +1,6 @@
 #include <stdio.h>
 //#include "menu_x.h"
-#include "../../lib/libincl/menuxw.h"
+#include "a4gl_menuxw.h"
 
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>

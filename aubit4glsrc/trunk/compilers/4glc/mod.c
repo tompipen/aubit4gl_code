@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.53 2002-04-19 03:45:17 afalout Exp $
+# $Id: mod.c,v 1.54 2002-04-24 07:45:51 afalout Exp $
 #
 */
 
@@ -55,12 +55,12 @@ extern int in_define;
 
 
 #include "rules/generated/y.tab.h"
-#include "../../lib/libincl/report.h"
+#include "a4gl_report.h"
 #include "rules/generated/kw.h"
-#include "../../lib/libincl/oform.h"
-#include "../../lib/libincl/tunable.h"
-#include "../../lib/libincl/debug.h"
-#include "../../lib/libincl/errors.h"
+#include "a4gl_oform.h"
+#include "a4gl_tunable.h"
+#include "a4gl_debug.h"
+#include "a4gl_errors.h"
 #include "compiledefs.h"
 #include "a4gl_aubit_lib.h"
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.1 2002-04-19 03:45:18 afalout Exp $
+# $Id: resource.c,v 1.2 2002-04-24 07:46:01 afalout Exp $
 #
 */
 
@@ -42,11 +42,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+This is only source code file in which we should allowe getenv() function
+call. Everywhere else, we should use acl_getenv. To allow use of getenv,
+we will define this two variables:
+*/
 #define GETENV_OK
 #define WGETENV_OK
-//this is only source code file in which we should allowe getenv function
-//call. Everywhere else, we should use acl_getenv.
-#include "debug.h"
+#include "a4gl_debug.h"
 
 
 struct str_resource

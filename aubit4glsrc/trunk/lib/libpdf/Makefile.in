@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-04-03 13:14:23 mikeaubury Exp $
+# $Id: Makefile.in,v 1.10 2002-04-24 07:46:00 afalout Exp $
 #
 
 
@@ -37,7 +37,7 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+CFLAGS+=-I../libincl -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
 ifneq "${COMSPEC}" ""
 	ifeq "${PDFBUILD}" "no"

@@ -1,7 +1,7 @@
 %{
 //#include "menu_x.h"
-#include "../../lib/libincl/menuxw.h"
-#include "../../lib/libincl/compiler.h"
+#include "a4gl_menuxw.h"
+#include "a4gl_compiler.h"
 
 #ifdef __CYGWIN__
 	#define GETENV_OK
@@ -9,7 +9,7 @@
 	//call. Everywhere else, we should use acl_getenv.
 #endif
 
-#include "../../lib/libincl/debug.h"
+#include "a4gl_debug.h"
 #include <stdio.h>
 #include <string.h>
 

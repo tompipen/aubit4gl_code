@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.1 2002-04-19 03:45:17 afalout Exp $
+# $Id: API_sql.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
 #
 */
 
@@ -44,10 +44,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
-#include "../libincl/sqlca.h"
-
-#include "../libincl/database.h"
-#include "../libincl/debug.h"
+#include "a4gl_sqlca.h"
+#include "a4gl_database.h"
+#include "a4gl_debug.h"
 
 sqlca_struct sqlca;  
 long status;

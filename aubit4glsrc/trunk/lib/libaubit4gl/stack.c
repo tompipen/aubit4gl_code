@@ -1,3 +1,33 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: stack.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+#
+*/
+
 /**
  * @file
  * Stack comunication mechanism.
@@ -13,12 +43,12 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "../libincl/dbform.h"
-#include "../libincl/dates.h"
-#include "../libincl/constats.h"
-#include "../libincl/stack.h"
-#include "../libincl/dtypes.h"
-#include "../libincl/debug.h"
+#include "a4gl_dbform.h"
+#include "a4gl_dates.h"
+#include "a4gl_constats.h"
+#include "a4gl_stack.h"
+#include "a4gl_dtypes.h"
+#include "a4gl_debug.h"
 extern int errno;
 #include <sys/types.h>
 #include <ctype.h>

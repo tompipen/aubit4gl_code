@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.11 2002-03-28 01:31:08 afalout Exp $
+# $Id: nosql.c,v 1.12 2002-04-24 07:46:00 afalout Exp $
 #*/
 
 /**
  * @file
  *
- * Dummy module with empty implementations for sql functions without 
+ * Dummy module with empty implementations for sql functions without
  * specific SQL dinamic library built.
  */
 
@@ -78,11 +78,11 @@ extern long _nm__sqlca;
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "libincl/debug.h"
-#include "libincl/database.h"
-#include "libincl/stack.h"
-#include "libincl/pointers.h"
-#include "libincl/dtypes.h"
+#include "a4gl_debug.h"
+#include "a4gl_database.h"
+#include "a4gl_stack.h"
+#include "a4gl_pointers.h"
+#include "a4gl_dtypes.h"
 
 //extern void exitwith(char *s);
 

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.10 2002-02-18 22:27:36 saferreira Exp $
+# $Id: sqlex.c,v 1.11 2002-04-24 07:46:00 afalout Exp $
 #
 */
 
 /**
  * @file
- * SQL 
+ * SQL
  *
  * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
@@ -40,7 +40,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include "libincl/dtypes.h"
+#include "a4gl_dtypes.h"
 
 //#ifdef WIN32
 #ifdef __CYGWIN__
@@ -83,9 +83,9 @@
 
 // stack.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
-#include "libincl/stack.h"
+#include "a4gl_stack.h"
 #define GETENV_OK
-#include "libincl/debug.h"
+#include "a4gl_debug.h"
 
 
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)

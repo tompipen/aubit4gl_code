@@ -1,11 +1,11 @@
-   /* $Id: mcompile.c,v 1.4 2002-02-26 07:54:04 afalout Exp $
+   /* $Id: mcompile.c,v 1.5 2002-04-24 07:45:59 afalout Exp $
    /* */
 
-#include "../../lib/libincl/compiler.h"
+#include "a4gl_compiler.h"
 #include <stdio.h>
 extern int as_c;
 //#include "menu_x.h"
-#include "../../lib/libincl/menuxw.h"
+#include "a4gl_menuxw.h"
 
 
 FILE *mja_fopen(char *name, char *mode);

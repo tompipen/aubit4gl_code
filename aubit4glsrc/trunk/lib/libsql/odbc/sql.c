@@ -1,4 +1,3 @@
-
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -25,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.25 2002-04-12 18:57:03 saferreira Exp $
+# $Id: sql.c,v 1.26 2002-04-24 07:46:00 afalout Exp $
 #
 */
 
@@ -92,18 +91,18 @@ extern SQLRETURN SQL_API SQLBindParameter (
 #define FETCH_RELATIVE 2
 #include <stdio.h>
 #include <string.h>
-#include "libincl/database.h"
+#include "a4gl_database.h"
 
 
 // stack.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
-#include "libincl/stack.h"
+#include "a4gl_stack.h"
 #define GETENV_OK
-#include "libincl/debug.h"
+#include "a4gl_debug.h"
 
 
-#include "libincl/pointers.h"
-#include "libincl/dtypes.h"
+#include "a4gl_pointers.h"
+#include "a4gl_dtypes.h"
 #include <stdlib.h>
 
 //#ifdef WIN32

@@ -10,9 +10,9 @@
  * @todo Doxygen comments to add to functions
  */
 
-#include "../libincl/pointers.h"
+#include "a4gl_pointers.h"
 #include "./rpc_stack.h"
-#include "../libincl/debug.h"
+#include "a4gl_debug.h"
 
 double pop_double();
 int push_double(double a);

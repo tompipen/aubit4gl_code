@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2002-04-22 00:32:23 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-04-24 07:45:59 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -53,7 +53,7 @@ else
 	RPCGEN      =@RPCGEN@ menu_x.x
 endif
 
-CFLAGS		   +=-I. @RPCLIB_INCLUDE@
+CFLAGS		   +=-I. -I../../lib/libincl @RPCLIB_INCLUDE@
 
 ## ==================================================================
 ##                              Source files

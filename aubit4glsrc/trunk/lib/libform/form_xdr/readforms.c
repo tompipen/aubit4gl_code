@@ -14,12 +14,12 @@
 #include <rpc/rpc.h>
 #endif
 
-#include "../../libincl/dbform.h"
-#include "../../libincl/constats.h"
-#include "../../libincl/dtypes.h"
-#include "../../libincl/stack.h"
-#include "../../libincl/pointers.h"
-#include "../../libincl/debug.h"
+#include "a4gl_dbform.h"
+#include "a4gl_constats.h"
+#include "a4gl_dtypes.h"
+#include "a4gl_stack.h"
+#include "a4gl_pointers.h"
+#include "a4gl_debug.h"
 
 
 #define POS_FIRST 1
@@ -722,3 +722,5 @@ has_str_attribute (struct struct_scr_field * f, int str)
 
 
 */
+
+

@@ -2,20 +2,20 @@
  * @file
  * Lexical analisys.
  *
- * It reads the input file (the source.4gl) and returns a token to the 
+ * It reads the input file (the source.4gl) and returns a token to the
  * parser.
  *
  * A token is a keyword or operator found in the midle of separators.
  * Examples of token(s) are : END, FUNCTION, define, +, > or as an
  * not reserved identifier xpto.
  *
- * Normaly is done with lex. 
+ * Normaly is done with lex.
  * This one is implemented only in C.
  */
 
 #include <stdio.h>
 #include <string.h>
-#include "../../lib/libincl/debug.h"
+#include "a4gl_debug.h"
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
 #ifndef KWS_COMMENT

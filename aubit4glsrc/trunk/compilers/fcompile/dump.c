@@ -1,5 +1,5 @@
 //#include "form_x.h"
-#include "../../lib/libincl/formxw.h"
+#include "a4gl_formxw.h"
 
 static void dump_attributes(struct_form *f) ;
 static void dump_metrics(struct_form *f) ;

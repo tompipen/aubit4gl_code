@@ -14,10 +14,10 @@
 *******************************************************************************/
 #include <stdio.h>
 
-#include "../libincl/dbform.h"
-#include "../libincl/report.h"
-#include "../libincl/debug.h"
-#include "../libincl/stack.h"
+#include "a4gl_dbform.h"
+#include "a4gl_report.h"
+#include "a4gl_debug.h"
+#include "a4gl_stack.h"
 #include "pdflib.h"
 
 double pdf_size(double f, char c,struct pdf_rep_structure *p) ;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.1 2002-04-23 07:01:19 afalout Exp $
+# $Id: compile_c.c,v 1.2 2002-04-24 07:46:00 afalout Exp $
 #
 */
 
@@ -41,14 +41,14 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "../../libincl/dbform.h"
-#include "../../libincl/report.h"
-#include "../../libincl/oform.h"
-#include "../../libincl/attributes.h"
-#include "../../libincl/debug.h"
-#include "../../libincl/errors.h"
-#include "../../libincl/constats.h"
-#include "../../libincl/prompt.h"
+#include "a4gl_dbform.h"
+#include "a4gl_report.h"
+#include "a4gl_oform.h"
+#include "a4gl_attributes.h"
+#include "a4gl_debug.h"
+#include "a4gl_errors.h"
+#include "a4gl_constats.h"
+#include "a4gl_prompt.h"
 #include "print_protos_c.h"
 
 //included here because of dll separation. Make sure this is OK

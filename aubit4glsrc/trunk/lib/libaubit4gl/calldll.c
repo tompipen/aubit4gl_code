@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.1 2002-04-17 00:01:36 afalout Exp $
+# $Id: calldll.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
 #
 */
 
@@ -35,7 +35,7 @@
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  */
-#include "../libincl/debug.h"
+#include "a4gl_debug.h"
 
 
   char tempbuff[1024];

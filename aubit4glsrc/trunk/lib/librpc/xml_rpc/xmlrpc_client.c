@@ -15,8 +15,8 @@
 #define NAME "XML-RPC Aubit 4GL Client"
 #define VERSION "0.1"
 
-#include "../libincl/debug.h"
-#include "../libincl/stack.h"
+#include "a4gl_debug.h"
+#include "a4gl_stack.h"
 
 xmlrpc_env env;
 

@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "a4gl_aubit_lib.h"
-#include "../../lib/libincl/debug.h"
+#include "a4gl_debug.h"
 
 /// The map file pointer opened file
 static FILE *mapfile = 0;

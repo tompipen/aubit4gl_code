@@ -13,8 +13,8 @@
 	//On Cygwin, stack.h will eventually include stdlib.h, that will have getenv
 	//call. Everywhere else, we should use acl_getenv.
 #endif
-#include "../libincl/debug.h"
-#include "../libincl/stack.h"
+#include "a4gl_debug.h"
+#include "a4gl_stack.h"
 
 double pop_double();
 int push_double(double a);

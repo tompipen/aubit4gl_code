@@ -1,3 +1,33 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: string.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+#
+*/
+
 /**
  * @file
  * String utility functions.
@@ -7,61 +37,14 @@
  * @todo Doxygen comments to add to functions
  */
 
-/*  ***************************************************************************
-* (c) 1997-1998 Aubit Computing Ltd.
-*
-* $Id: string.c,v 1.1 2002-04-17 00:01:36 afalout Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.4  2002/03/01 07:41:45  mikeaubury
-*	DL UI
-*	
-*	Revision 1.3  2002/02/22 22:50:58  saferreira
-*	Comments and prototypes.
-*	
-*	Revision 1.2  2001/11/29 22:27:00  saferreira
-*	Some more warnings fixed and Doxygen comments added
-*	
-*	Revision 1.1.1.1  2001/08/20 02:36:41  afalout
-*	Initial import to SF
-*	
-*	Revision 1.6  2001/08/17 08:59:26  maubury
-*	gtk updates
-*	
-*	Revision 1.5  2001/08/13 01:07:06  afalout
-*	CygWin merge
-*	
-*	Revision 1.4  2001/06/12 03:37:33  afalout
-*	make install, make clean
-*	
-*	Revision 1.3  2001/06/04 11:48:46  maubury
-*	Try 3
-*	
-*	Revision 1.2  2000/09/28 02:42:23  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:52  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.3  1998/12/17 20:59:02  fglcomp
-*	171298
-*
-*	Revision 1.2  1998/08/09 11:51:48  fglcomp
-*	Added ID classifications
-*
-*
-*******************************************************************************/
 
-#include <math.h> 
-#include "../libincl/dbform.h"
-#include "../libincl/dates.h"
-#include "../libincl/constats.h"
-#include "../libincl/stack.h"
-#include "../libincl/dtypes.h"
-#include "../libincl/debug.h"
+#include <math.h>
+#include "a4gl_dbform.h"
+#include "a4gl_dates.h"
+#include "a4gl_constats.h"
+#include "a4gl_stack.h"
+#include "a4gl_dtypes.h"
+#include "a4gl_debug.h"
 extern int errno;
 #include <sys/types.h>
 #include <ctype.h>
