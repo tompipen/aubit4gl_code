@@ -78,8 +78,9 @@ enum var_category {
 struct variable_element {
 	short name_id;
 	long dtype;
-	short i_arr_size[3]; /* Informix limits to 3 levels of array */
+	long i_arr_size[3]; /* Informix limits to 3 levels of array */
 	short unit_size;
+	long as;
 	long total_size;
 	long offset; /* This is the offset for CAT_NORMAL/PARAMETER, or a pointer for STATIC or EXTERN */
 	struct variable_element next<>;
@@ -169,8 +170,8 @@ struct npcmd_call {
 
 
 struct use_variable_sub {
-	long subscript_param_id;
-	long element;
+	long x1subscript_param_id[3];
+	long x1element;
 };
 
 struct use_variable {

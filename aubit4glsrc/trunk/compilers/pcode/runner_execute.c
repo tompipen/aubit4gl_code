@@ -9,6 +9,9 @@
 
 #include "npcode.h"
 #include "npcode_defs.h"
+
+
+//#define DO_DEBUG
 //#include "a4gl_incl_4glhdr.h"
 long find_pcode_function (char *s);
 extern module this_module;
@@ -244,15 +247,15 @@ set_var (long pc, struct cmd_set_var *sv)
       memset (&nsv, 0, sizeof (nsv));
 
 
-      // Copy across the basics...
+      //// Copy across the basics...
       memcpy (&nsv.variable, use_var, sizeof (struct use_variable));
 
 
-      printf ("Copy across to new nsv : %p - %d\n", use_var, use_var->sub.sub_len + 1);
+      //printf ("Copy across to new nsv : %p - %d\n", use_var, use_var->sub.sub_len + 1);
       nsv.variable.sub.sub_len = use_var->sub.sub_len + 1;
       nsv.variable.sub.sub_val = malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
 	
-	printf("Malloced : %d\n",sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
+	//printf("Malloced : %d\n",sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
 
       if (use_var->defined_in_block_pc == -1)
 	{
@@ -366,22 +369,24 @@ set_var (long pc, struct cmd_set_var *sv)
 	       a++)
 	    {
 	      struct param i;
+	      	int b;
 	      i.param_type = PARAM_TYPE_LITERAL_INT;
 	      i.param_u.n = a;
 	      nset_param (&i, 0);
-	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-				       1].x1subscript_param_id[0] = -1;
-	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-				       1].x1subscript_param_id[1] = 0;
-	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-				       1].x1subscript_param_id[2] = 0;
-	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-				       1].x1element = -1;
-	      nsv.value_param_id =
-		uset_var->param_u.p_list->list_param_id.list_param_id_val[a];
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[0] = -1;
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[1] = 0;
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[2] = 0;
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1element = -1;
+	      nsv.value_param_id = uset_var->param_u.p_list->list_param_id.list_param_id_val[a];
+
+#ifdef DO_DEBUG
+	      evaluate_param_i_into_integer( nsv.value_param_id,&b);
+	      printf("Single element.. %d = %d\n",a,b);
+#endif
+
 	      set_var (pc, &nsv);
 	      //free (nsv.variable.sub.sub_val);
-		printf("Freed\n");
+		//printf("Freed\n");
 
 	    }
 	}
@@ -394,6 +399,7 @@ set_var (long pc, struct cmd_set_var *sv)
 	       a++)
 	    {
 	      int i;
+	      	int c;
 	      struct param *p2;
 	      i =
 		uset_var->param_u.p_list->list_param_id.list_param_id_val[a];
@@ -420,19 +426,18 @@ set_var (long pc, struct cmd_set_var *sv)
 		  nset_param (&i, 0);
 		  nset_param (&j, 1);
 		  //printf("i=%d j=%d\n",a,b);
-		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-					   1].x1subscript_param_id[0] = -1;
-		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-					   1].x1subscript_param_id[1] = -2;
-		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-					   1].x1subscript_param_id[2] = 0;
-		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len -
-					   1].x1element = -1;
-		  nsv.value_param_id =
-		    p2->param_u.p_list->list_param_id.list_param_id_val[b];
+		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[0] = -1;
+		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[1] = -2;
+		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[2] = 0;
+		  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1element = -1;
+		  nsv.value_param_id = p2->param_u.p_list->list_param_id.list_param_id_val[b];
 		  set_var (pc, &nsv);
+#ifdef DO_DEBUG
+	      evaluate_param_i_into_integer( nsv.value_param_id,&c);
+	      printf("Two elements.. %d,%d = %d\n",a,b,c);
+#endif
 		  //free (nsv.variable.sub.sub_val);
-		printf("Freed\n");
+		//printf("Freed\n");
 		}
 	    }
 	}
@@ -739,13 +744,17 @@ get_var_ptr (struct use_variable *uv, int *size)
 	    }
 	  else
 	    {
-	      long x1 = 0;
-	      long x2 = 0;
-	      long x3 = 0;
+	      long x1 = -1;
+	      long x2 = -1;
+	      long x3 = -1;
 	      long x = 0;
 	      long max = 0;
 	      //printf("subscripts : %d %d %d\n", uv->sub.sub_val[a].x1subscript_param_id[0], uv->sub.sub_val[a].x1subscript_param_id[1], uv->sub.sub_val[a].x1subscript_param_id[2]);
+#ifdef DO_DEBUG
+	      printf("Start : rptr=%p\n",rptr);
+#endif
 	      if (uv->sub.sub_val[a].x1subscript_param_id[0] != 0)
+
 		{
 		  evaluate_param_i_into_integer (uv->sub.sub_val[a].
 						 x1subscript_param_id[0],
@@ -764,10 +773,14 @@ get_var_ptr (struct use_variable *uv, int *size)
 						 &x3);
 		}
 
-
+#ifdef DO_DEBUG
+		printf("x1=%d x2=%d x3=%d\n",x1,x2,x3);
+#endif
 
 	      x = x1;
 	      max = ve_main->i_arr_size[0];
+
+
 	      if (ve_main->i_arr_size[1] > 1)
 		{
 		  x *= ve_main->i_arr_size[0];
@@ -793,6 +806,9 @@ get_var_ptr (struct use_variable *uv, int *size)
 		    }
 		}
 	      rptr += ve_main->unit_size * x;
+#ifdef DO_DEBUG
+	      printf("End : rptr=%p - %d %d\n",rptr,ve_main->unit_size, x);
+#endif
 	    }
 	}
     }
@@ -813,8 +829,9 @@ get_var_ptr (struct use_variable *uv, int *size)
 
       if (uv->sub.sub_len == 0)
 	{
-	  printf ("Variable indirection.. %d indirect=%d\n", uv->sub.sub_len,
-		  indirect);
+#ifdef DO_DEBUG
+	  printf ("Variable indirection.. %d indirect=%d\n", uv->sub.sub_len, indirect);
+#endif
 	  indirect = -1;
 	}
     }

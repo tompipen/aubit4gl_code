@@ -78,8 +78,9 @@ enum var_category {
 struct variable_element {
 	short name_id;
 	long dtype;
-	short i_arr_size[3]; /* Informix limits to 3 levels of array */
+	long i_arr_size[3]; /* Informix limits to 3 levels of array */
 	short unit_size;
+	long as;
 	long total_size;
 	long offset; /* This is the offset for CAT_NORMAL/PARAMETER, or a pointer for STATIC or EXTERN */
 	struct variable_element next<>;
@@ -174,9 +175,9 @@ struct use_variable_sub {
 };
 
 struct use_variable {
-	short variable_id;
-	short defined_in_block_pc; 	/* -1 for MODULE LEVEL */
-	char indirection;
+	short  variable_id;
+	short  defined_in_block_pc; 	/* -1 for MODULE LEVEL */
+	char   indirection;
 	struct use_variable_sub sub<>;
 };
 

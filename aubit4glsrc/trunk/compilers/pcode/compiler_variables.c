@@ -203,9 +203,9 @@ add_variable_array (int type, struct variable_element *e, char *id, long *arrsiz
 int as;
   if (arrsize)
     {
-      e->i_arr_size[0] = arrsize[0];
-      e->i_arr_size[1] = arrsize[1];
-      e->i_arr_size[2] = arrsize[2];
+        e->i_arr_size[0] = arrsize[0];
+        e->i_arr_size[1] = arrsize[1];
+        e->i_arr_size[2] = arrsize[2];
 	if (arrsize[0]) as=arrsize[0]; else as=1;
 	if (arrsize[1]) as*=arrsize[1]; 
 	if (arrsize[2]) as*=arrsize[2]; 
@@ -214,6 +214,7 @@ int as;
 	if (e->unit_size==0) {
 		e->unit_size=e->total_size;
 		e->total_size*=as;
+		e->as=as;
 	}
 	//printf("   -> %ld %d\n",e->total_size,e->unit_size);
     }
