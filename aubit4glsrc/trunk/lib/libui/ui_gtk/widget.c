@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.20 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: widget.c,v 1.21 2004-01-09 18:50:55 mikeaubury Exp $
 #*/
 
 /**
@@ -100,6 +100,7 @@ struct s_widgets widgets[] = {
   {"COMBO", A4GL_cr_combo, {0}},
   {"RADIO", A4GL_cr_radio, {"NUM", 0}},
   {"LIST", A4GL_cr_list, {0}},
+  {"PIXBUF", A4GL_cr_pixbuf, {0}},
 
   /* NOTE : Calendar needs about 22 characters wide by 7 lines */
   {"CALENDAR", A4GL_cr_calendar, {0}},

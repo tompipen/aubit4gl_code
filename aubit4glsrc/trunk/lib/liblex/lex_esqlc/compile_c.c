@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.120 2004-01-02 21:02:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.121 2004-01-09 18:50:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -640,7 +640,7 @@ print_report_ctrl (void)
 
   order_by_report_stack ();
 
-  printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
+  printc ("A4GL_debug(\"ctrl=%%d _nargs=%%d\",acl_ctrl,_nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
   printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   /* check for after group of */\n");
@@ -712,13 +712,13 @@ print_report_ctrl (void)
       /* before group of */
       if (get_report_stack_whytype (a) == 'B')
 	printc
-	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&_nargs==%d) {_nargs=-1*_nargs;goto rep_ctrl%d_%d;}\n",
 	   gen_ord (get_report_stack_why (a)), report_cnt, a);
 
       /* after group of */
       if (get_report_stack_whytype (a) == 'A')
 	printc
-	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	  ("if (acl_ctrl==REPORT_AFTERGROUP&&_nargs==%d) {_nargs=-1*_nargs;goto rep_ctrl%d_%d;}\n",
 	   gen_ord (get_report_stack_why (a)), report_cnt, a);
 
       if (get_report_stack_whytype (a) == 'T')
@@ -1061,7 +1061,7 @@ char b[255];
       
       if (in_b > 0)
 	{
-	  printc ("if (nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
+	  printc ("if (_nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
 	  printc ("/* t=%c */\n", t);
 	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
 	    {
@@ -1975,7 +1975,7 @@ real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
  *
  * @param libfile The library file name (without .so)
  * @param funcname The function name
- * @param nargs Number of arguments.
+ * @param _nargs Number of arguments.
  */
 void
 print_call_shared (char *libfile, char *funcname, int nargs)
@@ -2649,12 +2649,12 @@ print_import (char *func, int nargs)
   int a;
   char buff[1024];
   char buff2[1024];
-  printc ("\n\nA4GL_FUNCTION %s%s (int nargs) {\n", get_namespace (func),
+  printc ("\n\nA4GL_FUNCTION %s%s (int _nargs) {\n", get_namespace (func),
 	  func);
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
+    ("   if (_nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(_nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -3536,7 +3536,7 @@ print_report_1 (char *name)
 {
   strcpy (mv_repname, name);
   add_function_to_header (name, 2);
-  printc ("A4GL_REPORT void %s%s (int nargs,int acl_ctrl) {\n",
+  printc ("A4GL_REPORT void %s%s (int _nargs,int acl_ctrl) {\n",
 	  get_namespace (name), name, name);
 }
 
@@ -3577,9 +3577,9 @@ print_report_2 (int pdf, char *repordby)
   printc ("    A4GLSQL_set_status(-5555,0);\n");
   printc ("    return;\n");
   printc ("    }\n");
-  printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
+  printc ("if (_nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
   printc
-    ("A4GL_fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return ;}\n");
+    ("A4GL_fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(_nargs);return ;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
   printc
     ("   if (_useddata) {for (_p=acl_rep_ordcnt;_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
@@ -4266,7 +4266,7 @@ printPushFunction (void)
 {
   if (!isGenStackInfo ())
     return;
-  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
+  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs);\n");
 }
 
 /**
@@ -4305,10 +4305,10 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   if (type == 0)
-    printc ("\n A4GL_FUNCTION %sint %s%s (int nargs){ /* Funtion Start */\n",
+    printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ /* Funtion Start */\n",
 	    isstatic, get_namespace (fname), fname);
   if (type == 1)
-    printc ("\n A4GL_REPORT %sint %s%s (int nargs){ /* Funtion Start */\n",
+    printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ /* Funtion Start */\n",
 	    isstatic, get_namespace (fname), fname);
 }
 
@@ -4322,7 +4322,7 @@ void
 print_func_args (int c)
 {
   printc
-    ("if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
+    ("if (_nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(_nargs);return 0;}\n",
      c, yylineno);
   print_function_variable_init ();
   printc ("A4GL_pop_params(fbind,%d);\n", c);
@@ -4360,12 +4360,12 @@ print_main_1 (void)
     {
       printc ("\n\npublic static void Main(string argv[]) {\n");
       printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
-      printc ("int nargs=0;");
+      printc ("int _nargs=0;");
       return;
     }
   if (A4GL_doing_pcode ())
     {
-      printc ("\n\nA4GL_MAIN int main(int nargs) {\n");
+      printc ("\n\nA4GL_MAIN int main(int _nargs) {\n");
       printc ("char *_paramnames[1]={\"\"};");
       return;
     }
@@ -4373,7 +4373,7 @@ print_main_1 (void)
 
   printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
   printc ("char *_paramnames[1]={\"\"};");
-  printc ("int nargs=0;");
+  printc ("int _nargs=0;");
 }
 
 /**
