@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.65 2003-09-19 16:16:59 mikeaubury Exp $
+# $Id: esql.ec,v 1.66 2003-10-13 08:48:06 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.65 2003-09-19 16:16:59 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.66 2003-10-13 08:48:06 mikeaubury Exp $";
 #endif
 
 
@@ -2732,6 +2732,18 @@ fixlength (int dtype, int length)
   if (dtype > 255)
     dtype -= 256;
   A4GL_debug ("Got datatype : %d length %d\n", dtype, length);
+  if (dtype==5||dtype==8) {
+	int a1,a2;
+	a1=length&0xff;
+	a2=length>>8;
+	if (a1==0xff) {
+		a1=2; a2+=5; length=(a2<<8)+a1; 
+		return length;
+	}
+
+  }
+
+
   if (dtype == 10)
     {
       n1 = Infx_dt_to_A4gl_dt (TU_START (length));
