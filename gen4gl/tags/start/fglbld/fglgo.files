@@ -1,0 +1,37 @@
+#	@(#)fglgo.files	6.4 90/02/08
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	Definitive list of source files for custom I4GL-RDS runners
+#
+#	These files are needed to use compile fglgo and fgldb.
+#
+#	-- The file column contains the name of the source file as it is installed.
+#      The name is quoted relative to $FGLBLDDIR.
+#
+#	-- Comment lines start with a hash (#)
+#	-- Blank lines are ignored
+#
+
+# Source file
+src/decformat.c
+src/dlist.c
+src/dlist.h
+src/dlistdbl.c
+src/dlistdec.c
+src/dlistint.c
+src/dliststr.c
+src/editstr.c
+src/exec.c
+src/fgiusr.c
+src/getenv.c
+src/i4glrds.mk
+src/informix.mk
+src/isdir.c
+src/mkfile.c
+src/popstr.c
+src/rdscurses.h
+src/redraw.c
+src/report.c
+src/round.c
+src/scrdump.c
+src/sqltype.c
+src/uname.c

@@ -1,0 +1,29 @@
+:	"@(#)$Id: fglbld.dst,v 1.1.1.1 2002-06-15 05:07:00 afalout Exp $"
+#
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	Environment setting front-end
+
+arg0=`basename $0 .sh`
+arg0=`basename $0 .dst`
+
+FGLBLDDIR=XXFGLBLDDIR
+export FGLBLDDIR
+
+PATH=$FGLBLDDIR/bin:$PATH
+export PATH
+
+# Make sure fglbld forms are available
+DBPATH=$FGLBLDDIR/forms:$DBPATH
+export DBPATH
+
+if [ -f ${FGLBLDDIR}/bin/$arg0.4gi -o -f ${FGLBLDDIR}/bin/$arg0.4go ]
+then
+	exec fglgo ${FGLBLDDIR}/bin/$arg0 ${@+"$@"}
+elif [ -f ${FGLBLDDIR}/bin/$arg0.4ge ]
+then
+	exec ${FGLBLDDIR}/bin/$arg0.4ge ${@+"$@"}
+else
+	echo "$arg0: I4GL executable not found" 2>&1
+	exit 1
+fi
+exit 0

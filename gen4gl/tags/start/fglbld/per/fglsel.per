@@ -1,0 +1,44 @@
+{
+    @(#)fglsel.4pr	6.2 89/08/09
+    @(#)FGLBLD: Screen for SELECT/FETCH function
+    @(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+[f000                                                     ]
+[f00a                                                     ]
+
+Database:     [f001      ]
+Table:        [f002             ]
+Primary Key:  [f003             ] Type: [f004             ]
+
+File Name:    [f006    ]
+
+}
+
+ATTRIBUTES
+f000  = FORMONLY.heading TYPE CHAR, NOENTRY;
+f00a  = FORMONLY.subheading TYPE CHAR, NOENTRY;
+
+f001  = FORMONLY.dbase TYPE CHAR, REVERSE,
+        COMMENTS = "Name of database containing table";
+
+f002  = FORMONLY.tabname TYPE CHAR, DOWNSHIFT, REVERSE, REQUIRED,
+        COMMENTS = "Name of table to be operated on (F5 to choose from list)";
+f003  = FORMONLY.pkcol TYPE CHAR, REVERSE, REQUIRED,
+        COMMENTS = "Name of primary key column (F5 to choose from list)";
+f004  = FORMONLY.pktype TYPE CHAR, NOENTRY, REVERSE;
+
+f006  = FORMONLY.basename TYPE CHAR, DOWNSHIFT, REVERSE, REQUIRED,
+        COMMENTS = "Base name of files (no extension)";
+
+END
+
+INSTRUCTIONS
+DELIMITERS "  "
+SCREEN RECORD s_input
+	(FORMONLY.tabname, FORMONLY.pkcol, FORMONLY.basename)
+END

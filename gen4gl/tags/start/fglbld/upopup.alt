@@ -1,0 +1,233 @@
+:	"@(#)$Id: upopup.alt,v 1.1.1.1 2002-06-15 05:06:55 afalout Exp $"
+#
+#	@(#)Sphinx Informix Tools
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	@(#)Generate unconditional pop-up selection code for Informix 4GL
+#	@(#)Author: Jonathan Leffler, Sphinx Ltd.
+#	@(#)(C) Copyright Sphinx Ltd. 1988
+
+arg0=`basename $0`
+
+# Configuration Section
+#FGLVERSION=I4GL1.00
+FGLVERSION=I4GL1.10
+#CASEFLAG=-i	# System V
+CASEFLAG=-y		# Xenix
+# Default compiler is fglpc
+FORMBUILD=${FORMBUILD:-form4gl}
+case "$FGLBLD_I4GL" in
+c4gl)	C4GL=c4gl;;
+*)		C4GL=fglpc;;
+esac
+# End of configuration section
+
+# Prevent SCCS expanding string
+WHATSTR="%""W""%"" ""%""E""%"
+FGLBLDSTR="FGLBLD Version 6.12 (04/04/1990)"
+
+# Database, table, column, etc
+: ${Xdbase:?"Xdbase is undefined"}
+: ${Xtable:?"Xtable is undefined"}
+: ${xtable:?"xtable is undefined"}
+: ${xtabname:?"xtabname is undefined"}
+: ${Xpkey:?"Xpkey is undefined"}
+: ${xpkey:?"xpkey is undefined"}
+: ${Xpktype:?"Xpktype is undefined"}
+: ${program:?"program is undefined"}
+: ${Xselected:?"Xselected is undefined"}
+
+# Determine whether PK is rowid
+if [ ${ROWID:-no} = no ]
+then
+	l1="s/^#NOROWID//"
+	l2="/^#ROWID/d"
+else
+	l1="s/^#ROWID//"
+	l2="/^#NOROWID/d"
+fi
+
+# Validate data type
+case $Xpktype in
+SERIAL*)
+	Xpktype=INTEGER
+	;;
+esac
+
+# Set up various output file names
+FGL=${program}.4gl
+PER=${program}.4pr
+FRM=${program}.frm
+
+# Function to check for pre-existing files
+trace(){
+	echo "+ $*"
+	"$@"
+}
+checkfile(){
+	for cfile in $*
+	do
+		if [ -f $cfile ]
+		then
+			if [ -f o.$cfile ]
+			then
+				trace rm -f o.$cfile
+			fi
+			trace mv $cfile o.$cfile
+		fi
+	done
+}
+
+echo "Phase 1: Building default form"
+checkfile $program.per $PER
+$FORMBUILD -q -d $program $Xdbase $xtabname
+mv $program.per $PER
+
+ed - $PER >/dev/null 2>&1 <<!
+1a
+
+.
+1i
+{
+	WHATSTR
+	@(#)Built by: FGLBLDSTR
+	@(#)Pop-up form for $Xtable
+}
+
+.
+/screen/+1a
+		$Xtable
+.
+/tables/i
+
+.
+/attributes/i
+
+.
+\$a
+
+INSTRUCTIONS
+SCREEN RECORD s_$xtable[1] ($xtable.*)
+END
+.
+g/^tables$/s//TABLES/
+g/^attributes$/s//ATTRIBUTES/
+g/^screen$/s//SCREEN/
+g/^database /s//DATABASE /
+g/^end$/s//END/
+g~WHATSTR~s~~$WHATSTR~g
+g~FGLBLDSTR~s~~$FGLBLDSTR~g
+w
+q
+!
+if grep $CASEFLAG '^[_a-z].* = .*[a-z_0-9]\[[0-9]*,[0-9]*\];' $PER >/dev/null
+then
+	echo "$arg0: warning -- the screen form $PER needs editing" >&2
+fi
+
+echo "Phase 2: Building source file"
+checkfile $FGL
+cat <<! |
+{
+	WHATSTR
+	@(#)Built by: FGLBLDSTR
+	@(#)Unconditional Pop-up for Xtable
+}
+
+DATABASE Xdbase 
+
+DEFINE
+	dr_xtable	ARRAY[30] OF RECORD LIKE Xtable.*,
+#ROWID	rr_xtable	ARRAY[30] OF INTEGER,
+	nu_xtable	INTEGER
+
+{ Use DISPLAY ARRAY to select a choice from Xtable }
+FUNCTION pop_xtable()
+
+	DEFINE
+		i		INTEGER,
+		n		INTEGER,
+		retval	Xpktype
+
+	OPEN WINDOW w_xtable AT 2, 2
+		WITH FORM "Xform"
+		ATTRIBUTE(BORDER)
+
+	IF nu_xtable <= 0 THEN
+		DECLARE c_xtable CURSOR FOR
+#NOROWID			SELECT Xtable.* FROM Xtable ORDER BY Xpkey
+#ROWID			SELECT Xtable.ROWID, Xtable.* FROM Xtable ORDER BY Xpkey
+
+		LET INT_FLAG = FALSE
+		LET i = 0
+#NOROWID		FOREACH c_xtable INTO dr_xtable[i+1].*
+#ROWID		FOREACH c_xtable INTO rr_xtable[i+1], dr_xtable[i+1].*
+			IF INT_FLAG THEN
+				ERROR "Interrupt detected -- SELECT abandoned"
+				LET INT_FLAG = FALSE
+				EXIT FOREACH
+			END IF
+			LET i = i + 1
+			IF i <= 1 THEN	{ 1: dimension of screen array }
+				DISPLAY dr_xtable[i].* TO s_xtable[i].*
+			END IF
+			IF i >= 30 THEN	{ 30: dimension of program array }
+				MESSAGE "Some Xselecteds not displayed"
+				SLEEP 2
+				EXIT FOREACH
+			END IF
+		END FOREACH
+		LET nu_xtable = i
+	END IF
+
+	LET retval = NULL
+	IF nu_xtable > 0 THEN
+		LET n = NULL
+		IF INT_FLAG = FALSE THEN
+			MESSAGE "Use cursor keys to choose Xselected: ESC to select"
+			CALL SET_COUNT(nu_xtable)
+			DISPLAY ARRAY dr_xtable TO s_xtable.*
+			IF INT_FLAG = FALSE THEN
+				LET n = ARR_CURR()
+			END IF
+			MESSAGE ""
+		END IF
+
+		LET INT_FLAG = FALSE
+
+		IF n IS NOT NULL THEN
+#NOROWID			LET retval = dr_xtable[n].xpkey
+#ROWID			LET retval = rr_xtable[n]
+		END IF
+	ELSE
+		{ nu_xtable <= 0 or nu_xtable is null }
+		ERROR "No data to choose from"
+		SLEEP 3
+	END IF
+
+	CLOSE WINDOW w_xtable
+	RETURN retval
+
+END FUNCTION {pop_xtable}
+!
+sed -e "s/^#$FGLVERSION//"\
+	-e "$l1" -e "$l2"\
+	-e "/^#/d"\
+	-e "s/Xdbase/$Xdbase/g" \
+	-e "s/Xtable/$Xtable/g" \
+	-e "s/xtable/$xtable/g" \
+	-e "s/Xpkey/$Xpkey/g" \
+	-e "s/xpkey/$xpkey/g" \
+	-e "s/Xpktype/$Xpktype/g" \
+	-e "s/Xform/$program/g" \
+	-e "s/Xselected/$Xselected/g" \
+	-e "s~WHATSTR~$WHATSTR~g" \
+	-e "s~FGLBLDSTR~$FGLBLDSTR~g" \
+	>$FGL
+
+echo "Phase 3: Compiling Source"
+echo "	$C4GL -c $FGL"
+$C4GL -c $FGL
+if [ -f ${program}.o ]
+then
+	rm -f ${program}.c ${program}.ec
+fi

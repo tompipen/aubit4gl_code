@@ -1,0 +1,73 @@
+{
+	@(#)fglbld.4pr	6.3 89/08/16
+	@(#)FGLBLD: Form for SPI
+	@(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+[f000                                                     ]
+[f00a                                                     ]
+
+Database:     [f001      ]
+Table:        [f002             ]
+Primary Key:  [f003             ] Type: [f004             ]
+
+Menu Title:   [f005                  ]
+File Name:    [f006   ]
+
+Options:
+Add:          [b]   CONTROL-B:    [e]  Update:       [h]
+AFTER FIELD:  [c]   CONTROL-P:    [f]  Report:       [i]
+BEFORE FIELD: [d]   Delete:       [g]  Shell escape: [j]
+}
+
+ATTRIBUTES
+f000  = FORMONLY.heading TYPE CHAR, NOENTRY;
+f00a  = FORMONLY.subheading TYPE CHAR, NOENTRY;
+
+f001  = FORMONLY.dbase TYPE CHAR, REVERSE,
+        COMMENTS = "Name of database containing table";
+f002  = FORMONLY.tabname TYPE CHAR, DOWNSHIFT, REVERSE, REQUIRED,
+        COMMENTS = "Name of table to be operated on (F5 to choose from list)";
+f003  = FORMONLY.pkcol TYPE CHAR, REVERSE, REQUIRED,
+        COMMENTS = "Name of primary key column (F5 to choose from list)";
+f004  = FORMONLY.pktype TYPE CHAR, NOENTRY, REVERSE;
+
+f005  = FORMONLY.menuname TYPE CHAR, UPSHIFT, REVERSE, REQUIRED,
+        COMMENTS = "Title of menu";
+f006  = FORMONLY.basename TYPE CHAR, DOWNSHIFT, REVERSE, REQUIRED,
+        COMMENTS = "Base name of files (no extension)";
+
+b     = FORMONLY.opt_ins TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+c     = FORMONLY.afterfield TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+d     = FORMONLY.beforefield TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+e     = FORMONLY.controlb TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+f     = FORMONLY.controlp TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+g     = FORMONLY.opt_del TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+h     = FORMONLY.opt_upd TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+i     = FORMONLY.opt_rep TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+j     = FORMONLY.opt_sh TYPE CHAR, UPSHIFT, DEFAULT = 'Y', REVERSE,
+        INCLUDE = ( 'Y', 'N' ), COMMENTS = "Yes or No", AUTONEXT;
+
+END
+
+INSTRUCTIONS
+DELIMITERS "  "
+SCREEN RECORD s_details (FORMONLY.tabname, FORMONLY.pkcol,
+                         FORMONLY.menuname, FORMONLY.basename)
+SCREEN RECORD s_option (FORMONLY.opt_ins THROUGH FORMONLY.opt_sh)
+SCREEN RECORD s_input (FORMONLY.tabname, FORMONLY.pkcol,
+                     	FORMONLY.menuname, FORMONLY.basename,
+						FORMONLY.opt_ins THROUGH FORMONLY.opt_sh)
+END

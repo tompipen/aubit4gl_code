@@ -1,0 +1,144 @@
+#	@(#)$Id: oldmakefile,v 1.1.1.1 2002-06-15 05:07:13 afalout Exp $
+#
+#	Makefile for FGLBLD program
+#	This makefile just collects source code, and can make source distributions
+#	Compiling is done by fglbld.mk
+#	Installation of binaries is done by Makefile
+
+LIBSRCDIR=${JOHN_HOME}/i4gl/lib/dlist
+LIBFGLSRCDIR=${JOHN_HOME}/i4gl/lib/src
+
+ALTFILES=\
+	cpopup.alt\
+	fglbld.alt\
+	mkselect.alt\
+	upopup.alt
+
+MKFILES=\
+	Makefile\
+	fglbld.mk
+
+LIBFGLFILES=\
+	sqltype.c\
+	mkfile.c\
+	getenv.c\
+	shell.4gl\
+	opendb.4gl
+
+LIBFILES=\
+	dlist.c\
+	dlist.h\
+	dlist.man\
+	dlistdbl.c\
+	dlistdbl.man\
+	dlistdec.c\
+	dlistdec.man\
+	dlistint.c\
+	dlistint.man\
+	dliststr.c\
+	dliststr.man
+
+ETCFILES=\
+	informix.mk\
+	nxtfield.4gl\
+	perfaux.4gl\
+	perform.mk\
+	perform.msg\
+	performc.4gl\
+	performg.4gl\
+	performm.4gl\
+	performr.4gl\
+	popstr.c\
+	repdest.4gl\
+	report.c
+
+LIBMANFILES=\
+	popstr.man\
+	repdest.man\
+	report.man
+
+BINFILES=\
+	fglbld.dst\
+	fglbld.sh
+
+DOCFILES=\
+	fglbld.man\
+	fglbld.notes
+
+PERFILES=\
+	fglbld.4pr\
+	fglcpop.4pr\
+	fglsel.4pr\
+	fglupop.4pr\
+	getdbase.4pr\
+	syscol.4pr\
+	systab.4pr
+
+SRCFILES=\
+	chcolumn.4gl\
+	chfile.4gl\
+	chtable.4gl\
+	fglbldg.4gl\
+	fglbldi.4gl\
+	fglbldm.4gl\
+	fglbldr.4gl\
+	fglcomp.4gl\
+	fgledit.4gl\
+	fglpopup.4gl\
+	fglsel.4gl\
+	getdbase.4gl
+
+MSGFILES=\
+	fglbld.msg
+
+#
+#----------------------------------------------------------------------------
+#
+
+.DEFAULT:	SCCS/s.$$@
+	${GET} ${GFLAGS} SCCS/s.$@
+
+all:	${BINFILES}\
+		${SRCFILES}\
+		${ALTFILES}\
+		${PERFILES}\
+		${MSGFILES}\
+		${LIBFILES}\
+		${LIBFGLFILES}\
+		${ETCFILES}\
+		${DOCFILES}\
+		${MKFILES}
+	$(MAKE) -f fglbld.mk
+
+cpio install library:
+	$(MAKE) -f fglbld.mk $@
+
+shar:	fglbld.sa
+
+fglbld.sa:	${DOCFILES} ${BINFILES} ${ETCFILES} ${SRCFILES} \
+			${MSGFILES} ${PERFILES} ${ALTFILES} ${LIBFILES} \
+			${LIBFGLFILES} ${MKFILES}
+	shar	${DOCFILES} ${BINFILES} ${ETCFILES} ${SRCFILES} \
+			${MSGFILES} ${PERFILES} ${ALTFILES} ${LIBFILES} \
+			${LIBFGLFILES} ${MKFILES} >$@
+
+cleanup:	fglbld.mk informix.mk	# Necessary to stop recursion (I know not why)
+	$(MAKE) -f fglbld.mk $@
+	rm -f fglbld.sa fglbld.cpio fglbld.4ge
+	rm -f ${DOCFILES} ${BINFILES} ${ETCFILES}
+	rm -f ${ALTFILES} ${SRCFILES} ${PERFILES}
+	rm -f ${LIBFILES} ${MSGFILES}
+	rm -f ${LIBFGLFILES} ${MKFILES} ${LIBMANFILES}
+
+${ETCFILES}:	SCCS/s.$$@
+	${GET} ${GFLAGS} SCCS/s.$@
+
+${ALTFILES}:	SCCS/s.$$@
+	${GET} ${GFLAGS} SCCS/s.$@
+	chmod 555 $@
+
+${LIBFGLFILES}:	${LIBFGLSRCDIR}/SCCS/s.$$@
+	${GET} ${GFLAGS} ${LIBFGLSRCDIR}/SCCS/s.$@
+
+${LIBFILES}:	${LIBSRCDIR}/SCCS/s.$$@
+	${GET} ${GFLAGS} ${LIBSRCDIR}/SCCS/s.$@
