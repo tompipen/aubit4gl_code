@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.199 2005-02-22 12:25:39 mikeaubury Exp $
+# $Id: mod.c,v 1.200 2005-02-22 18:51:19 mikeaubury Exp $
 #
 */
 
@@ -97,6 +97,7 @@
 
 
 
+static void A4GL_set_sql_features(void) ;
 
 int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
@@ -117,6 +118,7 @@ char *A4GL_get_clobber_from_orig(char *s);
 //char *A4GLSQLCV_check_sql(char *s) ;
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
+char *sql_features=0;
 //char *A4GL_decode_packtype(char *s) ;
 
 /*
@@ -4852,8 +4854,12 @@ char *ptr;
 char buff[300];
 dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
 if (dump_features==0) return;
-f=fopen("sql_features","r");
-if (f==0) return;
+A4GL_set_sql_features();
+f=fopen(sql_features,"r");
+if (f==0) {
+		printf("Unable to open features file (%s)\n",sql_features);
+		return;
+}
 while (1) {
 	strcpy(buff,"");
 	fgets(buff,256,f);
@@ -4878,6 +4884,7 @@ fclose(f);
 
 void A4GL_add_feature(char *feature) {
 	static int dump_features=-1;
+	static int failed=0;
 	FILE *f;
 	if (dump_features==-1) {
 		dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
@@ -4885,7 +4892,13 @@ void A4GL_add_feature(char *feature) {
 	
 	if (dump_features==0) return;
 	if (!A4GL_has_pointer(feature,'.')) {
-		f=fopen("sql_features","a");
+		A4GL_set_sql_features();
+		f=fopen(sql_features,"a");
+		if (f==0) {
+			if (failed==0) printf("Unable to open features file (%s)\n",sql_features);
+			failed++;
+			return;
+		}
 		A4GL_add_pointer(feature,'.',1);
 		fprintf(f,"%s\n",feature);
 		fclose(f);
@@ -4989,6 +5002,14 @@ return s;
 #endif
 
 
-
+static void A4GL_set_sql_features(void) {
+	if (sql_features==0) {
+			sql_features=acl_getenv("A4GL_SQL_FEATURE_FILE");
+			if (sql_features==0) sql_features="sql_features";
+			if (strlen(sql_features)==0) {
+				sql_features="sql_features";
+			}
+	}
+}
 
 /* ================================= EOF ============================= */
