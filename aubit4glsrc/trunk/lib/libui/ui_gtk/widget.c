@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.16 2003-10-10 09:27:37 afalout Exp $
+# $Id: widget.c,v 1.17 2003-10-10 09:50:44 mikeaubury Exp $
 #*/
 
 /**
@@ -492,7 +492,14 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
     }
 
   fflush (stdout);
-  //A4GL_keypress (grab_widget, event, func_data);
+  if (strcmp(gtk_accelerator_name (event->keyval, event->state),"<Control>c")==0) {
+  	A4GL_keypress (grab_widget, event, func_data);
+  }
+
+  if (strcmp(gtk_accelerator_name (event->keyval, event->state),"Escape")==0) {
+	//event->keyval=27;
+  	A4GL_keypress (grab_widget, event, func_data);
+  }
   A4GL_clr_error_gtk ();
   return 0;
 }

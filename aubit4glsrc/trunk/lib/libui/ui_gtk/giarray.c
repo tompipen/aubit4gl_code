@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.3 2003-10-10 09:43:45 mikeaubury Exp $
+# $Id: giarray.c,v 1.4 2003-10-10 09:50:44 mikeaubury Exp $
 #*/
 
 /**
@@ -3271,6 +3271,7 @@ int k=0;
 		k = A4GL_which_key_aubit ();
 		A4GL_clear_something ();
 		A4GL_debug("KEYPRESS RECORDED : %x",k);
+		if (k==3) abort_pressed=1;
 	}
 
         if (action==2) {
@@ -3292,6 +3293,7 @@ A4GL_debug("Do : %d",dosomething);
 
 int A4GL_which_key_aubit(int a) {
 	a=A4GL_which_key();
+	if (a==GDK_Escape) return 27;
 	if (a==GDK_Down) return A4GLKEY_DOWN;
 	if (a==GDK_Up) return A4GLKEY_UP;
 	if (a==GDK_Left) return A4GLKEY_LEFT;
