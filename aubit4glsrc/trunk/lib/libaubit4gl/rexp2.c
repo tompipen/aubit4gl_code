@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.24 2005-02-03 12:06:01 mikeaubury Exp $
+# $Id: rexp2.c,v 1.25 2005-02-14 13:44:30 mikeaubury Exp $
 #
 */
 
@@ -172,6 +172,26 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
     return 0;
 }
 
+static char *A4GL_escape_single(char *s) {
+int a;
+int b;
+char *ptr;
+if (!strchr(s,'\''))  return strdup(s);
+ptr=malloc(strlen(s)*2+1);
+memset(ptr,0,strlen(s)*2+1);
+b=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='\'') {
+		ptr[b++]='\'';
+		ptr[b++]='\'';
+	} else {
+		ptr[b++]=s[a];
+	}
+}
+
+return ptr;
+
+}
 
 /**
  *
@@ -194,6 +214,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   char lastchar;
   int ismatch;
   char colname[256];
+	char *ptr;
 
   if (tabname==0) {
 		tabname="";
@@ -306,7 +327,6 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 		{
 		  /* error in numeric */
 			A4GL_debug("error in numeric");
-		
 		  return 0;
 		}
 	    }
@@ -350,6 +370,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	A4GL_debug("error in expression");
       return 0;
     }
+
   if (z == 0 && z2 == 0)
     {
       if (ismatch) {
@@ -365,9 +386,14 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	strcat (buff2, "=");
       }
       strcat (buff2, quote);
+
       for (cnt = 0; cnt < constr_size; cnt++)
 	{
-	  strcat (buff2, constr_bits[cnt]);
+		char *ptr;
+	  	A4GL_debug("cat : %s %s",buff2,constr_bits[cnt]);
+		ptr=A4GL_escape_single(constr_bits[cnt]);
+	  	strcat (buff2, ptr);
+		free(ptr);
 	}
       sprintf (buff3, "%s%s%s", colname, buff2, quote);
     }
@@ -375,12 +401,15 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 A4GL_debug("z=%d",z);
   if (z > 0 && z < OR)
     {
-      strcat (buff2, constr_bits[0]);
+		ptr=A4GL_escape_single(constr_bits[0]);
+      strcat (buff2, ptr);	free(ptr);
+
 
       strcat (buff2, quote);
       for (z = 1; z < constr_size; z++)
 	{
-	  strcat (buff2, constr_bits[z]);
+		ptr=A4GL_escape_single(constr_bits[z]);
+	  strcat (buff2, ptr); free(ptr);
 	}
       strcat (buff2, quote);
 
@@ -414,7 +443,8 @@ A4GL_debug("z=%d",z);
 	      if (isop (constr_bits[z], 0) == OR)
 		continue;
 	      strcat (buff3, quote);
-	      strcat (buff3, constr_bits[z]);
+		ptr=A4GL_escape_single(constr_bits[z]);
+	      strcat (buff3, ptr); free(ptr);
 	      strcat (buff3, quote);
 	      if (z < constr_size - 1)
 		strcat (buff3, ",");
@@ -432,7 +462,8 @@ A4GL_debug("z=%d",z);
 	      if (isop (constr_bits[z], 0) == OR)
 		continue;
 	      strcat (buff3, quote);
-	      strcat (buff3, constr_bits[z]);
+		ptr=A4GL_escape_single(constr_bits[z]);
+	      strcat (buff3, ptr); free(ptr);
 	      strcat (buff3, quote);
 	      if (z < constr_size - 1)
 		strcat (buff3, ",");
@@ -449,7 +480,8 @@ A4GL_debug("z=%d",z);
 	  sprintf (buff3, "(%s  between '' and %s", colname, quote);
 	  for (z = 1; z < constr_size; z++)
 	    {
-	      strcat (buff3, constr_bits[z]);
+		ptr=A4GL_escape_single(constr_bits[z]);
+	      strcat (buff3, ptr); free(ptr);
 	    }
 	  strcat (buff3, quote);
 	}
@@ -462,7 +494,8 @@ A4GL_debug("z=%d",z);
 	      strcat (buff3, quote);
 	      for (z = 2; z < constr_size; z++)
 		{
-		  strcat (buff3, constr_bits[z]);
+		ptr=A4GL_escape_single(constr_bits[z]);
+		  strcat (buff3, ptr); free(ptr);
 		}
 	      strcat (buff3, quote);
 	    }
@@ -471,17 +504,14 @@ A4GL_debug("z=%d",z);
 	}
       strcat (buff3, "");
     }
-  /*
-     for (z=0;z<constr_size;z++)
-     {
-     printf("(%s)\n",constr_bits[z]);
-     }
-   */
+
+
 #ifdef DEBUG
   {
     A4GL_debug ("buff3= [ %s ]\n", buff3);
   }
 #endif
+  for (z=0;z<constr_size;z++) free(constr_bits[z]);
   return buff3;
 }
 
