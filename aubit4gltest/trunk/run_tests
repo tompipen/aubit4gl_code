@@ -1376,6 +1376,8 @@ for a in $FLAGS; do
 		#export A4GL_SQLTYPE=c_ecpg
 		#export A4GL_SQLTYPE=pgodbc
 		export A4GL_SQLTYPE=pg
+		# This "cascade" drops views when the tables they are based on are dropped
+		export A4GL_USE_CASCADE=Y
 
 		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ECP"
 

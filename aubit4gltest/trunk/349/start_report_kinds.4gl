@@ -25,7 +25,7 @@ DEFINE more_command CHAR(10)
 	OUTPUT TO REPORT simpleReport()
 	FINISH REPORT simpleReport
 
-  START REPORT simpleReport TO PIPE "cat" #"more"
+  START REPORT simpleReport TO PIPE "cat"
 	OUTPUT TO REPORT simpleReport()
 	FINISH REPORT simpleReport
 
