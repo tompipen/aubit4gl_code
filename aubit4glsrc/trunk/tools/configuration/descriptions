@@ -606,3 +606,4 @@ RESTARTLOG RUNTIME Restart the error log
 	This causes the CALL startlog("...") to restart with an empty log file
 	each time the program is run. The default is to append to the end of the
 	current log
+
