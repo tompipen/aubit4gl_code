@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-01-11 03:16:20 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-01-13 16:53:48 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,10 +36,6 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-#Mike's privete copy:
-#FIXME: Mike, as per bug database request, please remove this and
-#move it to your aubitbuild.mk. Thanks - Andrej:
-ODBCLIBDIR			= /home/aubit4gl/mycopy/Aubit4gl/lib/odbc
 
 #ODBC				=iodbc
 #PDFBUILD			=no

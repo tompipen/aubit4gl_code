@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.4 2002-01-13 09:40:46 afalout Exp $
+# $Id: sql.c,v 1.5 2002-01-13 16:53:49 mikeaubury Exp $
 #
 */
 
@@ -3413,4 +3413,7 @@ A4GLSQL_flush_cursor(char *cursor) {
 
 }
 
-
+A4GLSQL_initsqllib() {
+        A4GLSQL_make_connection(0,0,0);  
+	return 1;
+}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.4 2002-01-13 09:40:46 afalout Exp $
+# $Id: nosql.c,v 1.5 2002-01-13 16:53:48 mikeaubury Exp $
 #
 */
 
@@ -273,4 +273,10 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
   exitwith ("Could not execute_sql - noODBC build");
 }
 
+
+int A4GLSQL_initsqllib()
+{
+// Does nothing - it doesn't need to..
+return 1;
+}
 //---------------------------- EOF ------------------------------
