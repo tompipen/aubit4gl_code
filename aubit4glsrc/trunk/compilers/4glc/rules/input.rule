@@ -55,32 +55,22 @@ field_command :
 } commands {
 	print_befaft_field_2();
 }
-	| BEFORE b_ins_or_delete_row {A4GL_lex_printcomment("/* before insert/delete */ \n");
-		print_befaft_field_1($<str>2);
-} commands {
-	print_befaft_field_2();
-}
-	| AFTER  a_ins_or_delete_row {
-		print_befaft_field_1($<str>2);
-} commands {
-	print_befaft_field_2();
-}
 	| BEFORE_DELETE  {
-		print_befaft_field_1("BEFORE_DELETE");
+		print_befaft_field_1("DO_BEFORE_DELETE");
 	} commands { print_befaft_field_2(); }
 	| BEFORE_INSERT  {
-		print_befaft_field_1("BEFORE_INSERT");
+		print_befaft_field_1("DO_BEFORE_INSERT");
 	} commands { print_befaft_field_2(); }
 	| AFTER_DELETE  {
-		print_befaft_field_1("AFTER_DELETE");
+		print_befaft_field_1("DO_AFTER_DELETE");
 	} commands { print_befaft_field_2(); }
 	| AFTER_INSERT  {
-		print_befaft_field_1("AFTER_INSERT");
+		print_befaft_field_1("DO_AFTER_INSERT");
 	} commands { print_befaft_field_2(); }
 
 
 ;
-
+/*
 a_ins_or_delete_row :
 	a_ins_or_delete {sprintf($<str>$,"(%s)",$<str>1);} 
 	| a_ins_or_delete_row COMMA a_ins_or_delete {
@@ -110,6 +100,7 @@ b_ins_or_delete:
 	INSERT {strcpy($<str>$,"BEF_INSERT");}
 	| DELETE {strcpy($<str>$,"BEF_DELETE");}
 ;
+*/
 
 
 
