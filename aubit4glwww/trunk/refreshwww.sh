@@ -51,7 +51,7 @@ cd $HOME
 
 if [ "$1" = "-anon" ]
 then
-	cvs -z8 checkout aubit4glsrc
+	cvs -z8 checkout aubit4glwww
 else
 	#this needs password:
 	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
