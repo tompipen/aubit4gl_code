@@ -30,11 +30,11 @@ static void select_block (int rb);
 static void unselect_block (int rb);
 
 char *style_selected =
-  "style \"selected\" {font_name=\"monospace 10\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
+  "style \"selected\" {font_name=\"monospace 8\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
 char *style_unselected =
-  "style \"unselected\" {font_name=\"monospace 10\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
+  "style \"unselected\" {font_name=\"monospace 8\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
 char *style_unselectable =
-  "style \"unselectable\" {font_name=\"monospace 10\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
+  "style \"unselectable\" {font_name=\"monospace 8\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
 
 
 extern struct r_report *report;
@@ -141,6 +141,23 @@ label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 
   return TRUE;
 }
+
+
+int fake_clicked(int rb,int entry) {
+  unselect_all ();
+  if (entry>=0) {
+  	last_rb = rb;
+  	last_entry = entry;
+  	select_widgets (last_rb, last_entry);
+  	set_clicked(rb,entry);
+  } else {
+  	select_block (rb);
+  	last_block = rb;
+  	set_block_clicked(rb);
+  }
+
+}
+
 
 
 /* ******************************************************************************** */

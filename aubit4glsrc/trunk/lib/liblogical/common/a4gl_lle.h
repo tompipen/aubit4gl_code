@@ -50,9 +50,19 @@ struct r_report
   struct r_report_block *blocks;
 };
 
+struct s_rbx
+{
+  int rb;
+  char where;
+  char *why;
+  char *desc;
+  int max_entry;
+  int nentry_nos;
+  int *entry_nos;
+  int *max_size_entry;
+};
 
 struct r_report *read_report_output(char *fname);
 
-void process_report (FILE * fout, struct r_report *r);
 
 
