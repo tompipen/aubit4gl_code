@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.14 2003-09-29 15:01:16 mikeaubury Exp $
+# $Id: colours.c,v 1.15 2003-09-29 15:10:37 mikeaubury Exp $
 #*/
 
 /**
@@ -93,13 +93,13 @@ A4GL_colour_code (int a)
 	//{
 	  //z *= 2;
 	//}
-	A4GL_debug("colour code for mono for %d = %d",a,z);
 	if (a==1)  z=A_BOLD;     // RED
 	if (a==2)  z=A_DIM;     // GREEN
 	if (a==3)  z=A_BOLD;     // YELLOW
 	if (a==4)  z=A_DIM;     // BLUE
 	if (a==5)  z=A_BOLD;     // MAGENTA
 	if (a==6)  z=A_DIM;     // CYAN
+	A4GL_debug("colour code for mono for %d = %d",a,z);
 
 
       return z;

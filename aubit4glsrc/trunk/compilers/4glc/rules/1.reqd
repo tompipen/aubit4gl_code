@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.42 2003-09-15 13:07:24 mikeaubury Exp $
+# $Id: 1.reqd,v 1.43 2003-09-29 15:10:37 mikeaubury Exp $
 #
 */
 
@@ -131,9 +131,6 @@ extern int 	in_record;
 extern int 	rep_type;
 extern int 	yylineno;
 extern int compiling_system_4gl;
-extern int lines_printed;
-extern int lines_printed_true;
-extern int lines_printed_false;
 
 int sql_mode=0;
 
@@ -191,6 +188,9 @@ int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
 struct input_array_attribs curr_input_array_attribs;
 
+int if_print_stack[100][2];
+int if_print_stack_cnt=0;
+int if_print_section=0;
 
 #include "../generic.h"
 

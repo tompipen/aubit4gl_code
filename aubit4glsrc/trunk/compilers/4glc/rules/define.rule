@@ -78,10 +78,25 @@ var_def_list	: var_def_name
 
 op_char : | CHAR;
 
+
+ranking :
+	{strcpy($<str>$,"-1");}
+	| WITH_1_DIMENSION {strcpy($<str>$,"-1");}
+	| WITH_2_DIMENSION {strcpy($<str>$,"-2");}
+	| WITH_3_DIMENSION {strcpy($<str>$,"-3");}
+;
+
+
 array_variable	: 
 ARRAY OPEN_SQUARE  number_arr_list CLOSE_SQUARE {
  A4GL_debug("defines array %s",$<str>3);
 	push_type(0,0,$<str>3);
+}
+OF dtype_ident
+
+| DYNAMIC_ARRAY ranking  {
+ A4GL_debug("defines array %s",$<str>2);
+	push_type(0,0,$<str>2);
 }
 OF dtype_ident
 |

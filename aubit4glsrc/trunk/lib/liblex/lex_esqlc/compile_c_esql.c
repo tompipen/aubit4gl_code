@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.54 2003-09-22 07:03:51 afalout Exp $
+# $Id: compile_c_esql.c,v 1.55 2003-09-29 15:10:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1217,7 +1217,18 @@ print_copy_status ()
 void
 print_sql_block_cmd (char *s)
 {
+int ni;
+int no;
+printc("{");
+  ni = print_bind ('i');
+  last_ni=ni;
+  no = print_bind ('o');
+  last_no=no;
+  print_conversions('i');
   printc ("EXEC SQL %s;", s);
+  print_copy_status ();
+  print_conversions ('o');
+printc("}");
 }
 
 /**

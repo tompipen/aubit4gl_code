@@ -80,20 +80,22 @@ format_action :
 	 FIRST_PAGE_HEADER 
 { push_report_block("FIRST",'P');}
 commands {
-rep_struct.lines_in_first_header=lines_printed;
-pdf_rep_struct.lines_in_first_header=lines_printed;
-print_rep_ret(0);}
+rep_struct.lines_in_first_header=if_print_stack[0][0];
+pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
+print_rep_ret(0);
+}
 	| PAGE_TRAILER
 { push_report_block("TRAILER",'T');}
 commands {
-rep_struct.lines_in_trailer=lines_printed;
-pdf_rep_struct.lines_in_trailer=lines_printed;
-print_rep_ret(0);}
+rep_struct.lines_in_trailer=if_print_stack[0][0];
+pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
+print_rep_ret(0);
+}
 	| PAGE_HEADER 
 { push_report_block("HEADER",'p');}
 commands {
-rep_struct.lines_in_header=lines_printed;
-pdf_rep_struct.lines_in_header=lines_printed;
+rep_struct.lines_in_header=if_print_stack[0][0];
+pdf_rep_struct.lines_in_header=if_print_stack[0][0];
 print_rep_ret(0);}
 	| ON_EVERY_ROW 
 { push_report_block("EVERY",'E');}
@@ -162,7 +164,8 @@ strcpy(buff,$<str>4);
 n=atof($<str>2);
 if (buff[0]=='1') {
 	print_skip_lines(n);
-	lines_printed+=(int)n;
+	if (if_print_stack_cnt==0) if_print_section=0;
+	if_print_stack[if_print_stack_cnt][if_print_section]+=(int)n;
 } else {
 	if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n);
 }
@@ -219,7 +222,10 @@ print_command : PRINT opt_rep_expr_list opt_semi {
 			}
 		}
 	}
-	if (strcmp($<str>3,"0")==0) lines_printed++;
+	if (strcmp($<str>3,"0")==0) {
+			if (if_print_stack_cnt==0) if_print_section=0;
+			if_print_stack[if_print_stack_cnt][if_print_section]+=1;
+	}
 } ;
 
 print_file_command : PRINT_FILE char_or_var opt_semi { 

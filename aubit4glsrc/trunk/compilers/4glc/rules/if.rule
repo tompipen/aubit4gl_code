@@ -2,28 +2,36 @@ if_cmd	:
 	IF 
 	fgl_expr 
 	THEN  {
-		lines_printed_true=lines_printed;
+		if_print_stack_cnt++;
+		if_print_stack[if_print_stack_cnt][0]=0;
+		if_print_stack[if_print_stack_cnt][1]=0;
+		if_print_section=0;
 		print_if_start();
 	}
 		commands {
 		int a;
-		a=lines_printed;
-		lines_printed_true=lines_printed-lines_printed_true;
-
-		lines_printed=lines_printed-lines_printed_true; /* reset it back.. */
-		lines_printed_false=lines_printed;
+		if_print_section=1;
 	} op_else END_IF {
 		char wt;
 		print_if_end();
-		lines_printed_false=lines_printed-lines_printed_false;
 	        wt=get_curr_report_stack_whytype();
 		//if (wt=='P'||wt=='p'||wt=='T') {
 		if (wt=='T') {
-			if (lines_printed_true!=lines_printed_false) {
+			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {
 				a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
 				YYERROR;
 			}
+			
+			if (if_print_stack_cnt>1) {
+				if_print_stack[if_print_stack_cnt-1][0]+=if_print_stack[if_print_stack_cnt][0];
+				if_print_stack[if_print_stack_cnt-1][1]+=if_print_stack[if_print_stack_cnt][1];
+			}
 		}
+		if_print_stack_cnt--;
+		//if (if_print_stack_cnt==0) {
+		//printf("Lines printed: %d in this if bit\n",if_print_stack[0][0]);
+		//}
+		if_print_section=0;
 	}
 ;
 

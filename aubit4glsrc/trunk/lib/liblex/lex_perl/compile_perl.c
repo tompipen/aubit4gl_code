@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.45 2003-09-18 06:13:44 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.46 2003-09-29 15:10:37 mikeaubury Exp $
 #
 */
 
@@ -3141,6 +3141,16 @@ print_execute (char *stmt, int using)
 
 }
 
+
+void
+print_execute_immediate (char *stmt)
+{
+  static int cnt=0;
+  char buff[256];
+  sprintf(buff,"p_%d_%x",cnt++,time(0));
+  print_prepare(buff,stmt);
+  print_execute(buff,0);
+}
 
 /**
  *

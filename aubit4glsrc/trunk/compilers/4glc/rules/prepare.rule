@@ -22,11 +22,13 @@ print_execute($<str>2,0);
 
 addmap("Execute",$<str>2,curr_func,yylineno,infilename);
 }
-            | EXECUTE stmt_id KW_USING ibind_var_list
-{
+            | EXECUTE stmt_id KW_USING ibind_var_list {
 	addmap("Execute",$<str>2,curr_func,yylineno,infilename);
 	print_execute($<str>2,1);
-}
+	}
+	| EXECUTE_IMMEDIATE var_or_char {
+		print_execute_immediate($<str>2);
+	}
 ;
 
 stmt_id : ident_or_var ;

@@ -403,6 +403,8 @@ print_undo_use char* s -> void
 /* void print_execute (char *stmt, int exec_using) */
 print_execute char* stmt,int exec_using -> void
 
+print_execute_immediate char* stmt -> void
+
 /* void print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout) */
 print_prompt_1 char* a1,char* a2,char* a3,char* a4,int timeout -> void
 
@@ -651,8 +653,11 @@ print_sql_block_cmd char* sql -> void
 A4GL_expr_for_call char* ident char* params int line char* file -> char*
 print_empty_bind char* name -> void
 
-/*  ============================== EOF ================================= */
+print_dealloc_arr char* s -> void
+print_alloc_arr char* s char* dim -> void
+print_realloc_arr char* s char* dim -> void
 
+/*  ============================== EOF ================================= */
 
 
 

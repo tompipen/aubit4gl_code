@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.103 2003-09-22 07:03:50 afalout Exp $
+# $Id: compile_c.c,v 1.104 2003-09-29 15:10:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -82,7 +82,7 @@ static void order_by_report_stack(void);
 static void add_to_ordbyfields(int n);
 static void order_by_report_stack();
 */
-int doing_cs(void );
+int doing_cs (void);
 /*
 =====================================================================
 		                    Includes
@@ -94,11 +94,11 @@ int doing_cs(void );
 #define ONE_NOT_ZERO(x) (x?x:1)
 
 
-int last_orderby_type=-1;
-void print_report_table(char *repname,char type, int c);
-extern int get_rep_no_orderby(void);
-int doing_pcode(void);
-static int gen_ord(char *s);
+int last_orderby_type = -1;
+void print_report_table (char *repname, char type, int c);
+extern int get_rep_no_orderby (void);
+int doing_pcode (void);
+static int gen_ord (char *s);
 /*
 =====================================================================
                     Variables definitions
@@ -107,8 +107,8 @@ static int gen_ord(char *s);
 
 
 char mv_repname[256];
-int cs_ticker=0;
-int current_ordbindcnt=0;
+int cs_ticker = 0;
+int current_ordbindcnt = 0;
 /** Pointer to the output C file */
 static FILE *outfile = 0;
 
@@ -163,7 +163,7 @@ void make_sql_bind (char *sql, char *type);
 int split_arrsizes (char *s, int *arrsizes);
 int esql_type (void);
 void print_function_variable_init (void);
-static void order_by_report_stack(void);
+static void order_by_report_stack (void);
 
 /*
 =====================================================================
@@ -171,21 +171,22 @@ static void order_by_report_stack(void);
 =====================================================================
 */
 
-void 		printc (char *fmt, ...);
+void printc (char *fmt, ...);
 static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
-static int 	print_field_bind (int ccc);
-static int 	print_arr_bind (char i);
-static int 	print_constr (void);
-static int 	print_field_bind_constr (void);
-static int 	pr_when_do (char *when_str, int when_code, int l, char *f,char *when_to);
+static int print_field_bind (int ccc);
+static int print_arr_bind (char i);
+static int print_constr (void);
+static int print_field_bind_constr (void);
+static int pr_when_do (char *when_str, int when_code, int l, char *f,
+		       char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn, int n);
 
-//void 		A4GL_internal_lex_printc (char *fmt, va_list * ap);
-//void 		A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
-//void 		A4GL_internal_lex_printh (char *fmt, va_list * ap);
+//void          A4GL_internal_lex_printc (char *fmt, va_list * ap);
+//void          A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
+//void          A4GL_internal_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,
@@ -196,11 +197,11 @@ static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 void printh (char *fmt, ...);
 
-void 		add_function_to_header 	(char *identifier, int parms);
-char *		get_namespace 			(char *s);
-void 		print_init_var 			(char *name, char *prefix, int alvl);
-void 		printcomment 			(char *fmt, ...);
-int 		is_builtin_func 		(char *s);
+void add_function_to_header (char *identifier, int parms);
+char *get_namespace (char *s);
+void print_init_var (char *name, char *prefix, int alvl);
+void printcomment (char *fmt, ...);
+int is_builtin_func (char *s);
 
 
 /*
@@ -265,28 +266,31 @@ open_outfile (void)
   if (doing_esql ())
     {
       switch (esql_type ())
-		{
+	{
 
-		case 1:
-		  strcat (c, ".ec"); /* Informic ESQL/C */
-		  break;
-		case 2:
-		  strcat (c, ".cpc"); /* PostgreSQL ESQL/C compiler */
-		  break;
-		case 3: /* SAPDB pre-compiler also uses .cpc extension */
-		  strcat (c, ".cpc");
-		  break;
+	case 1:
+	  strcat (c, ".ec");	/* Informic ESQL/C */
+	  break;
+	case 2:
+	  strcat (c, ".cpc");	/* PostgreSQL ESQL/C compiler */
+	  break;
+	case 3:		/* SAPDB pre-compiler also uses .cpc extension */
+	  strcat (c, ".cpc");
+	  break;
 
-		}
+	}
     }
   else
     {
-		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"CS")==0) {
-            // C#
-	      		strcat (c, ".csp");
-		} else {
-	      		strcat (c, ".c");
-		}
+      if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "CS") == 0)
+	{
+	  // C#
+	  strcat (c, ".csp");
+	}
+      else
+	{
+	  strcat (c, ".c");
+	}
     }
 
   strcat (h, ".h");
@@ -320,12 +324,15 @@ open_outfile (void)
     }
 
 
-  if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
-      	fprintf(outfile,"#define THIS_MODULE %s\n",outputfilename);
-      	fprintf(outfile,"#include \"cs_header.h\"\n");
-  } else {
-  	fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
-  }
+  if (strcmp (acl_getenv ("LEXTYPE"), "CS") == 0)
+    {
+      fprintf (outfile, "#define THIS_MODULE %s\n", outputfilename);
+      fprintf (outfile, "#include \"cs_header.h\"\n");
+    }
+  else
+    {
+      fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+    }
 
   if (doing_esql ())
     {
@@ -345,11 +352,16 @@ open_outfile (void)
      fprintf (outfile, "static char *_compiler_ser=\"%s\";\n", get_serno ());
    */
 
-  if (doing_cs()) {
-  fprintf (outfile, "static string module_name=\"%s.4gl\";\n", outputfilename);
-  } else {
-  fprintf (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
-  }
+  if (doing_cs ())
+    {
+      fprintf (outfile, "static string module_name=\"%s.4gl\";\n",
+	       outputfilename);
+    }
+  else
+    {
+      fprintf (outfile, "static char *_module_name=\"%s.4gl\";\n",
+	       outputfilename);
+    }
 
 
   hfile = A4GL_mja_fopen (h, "w");
@@ -618,11 +630,14 @@ print_report_ctrl (void)
   A4GL_debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
-  printc ("if (rep.lines_in_header      ==-1) rep.lines_in_header=%d;",rep_struct.lines_in_header);
-  printc ("if (rep.lines_in_first_header==-1) rep.lines_in_first_header=%d;",rep_struct.lines_in_first_header);
-  printc ("if (rep.lines_in_trailer     ==-1) rep.lines_in_trailer=%d;",rep_struct.lines_in_trailer);
+  printc ("if (rep.lines_in_header      ==-1) rep.lines_in_header=%d;",
+	  rep_struct.lines_in_header);
+  printc ("if (rep.lines_in_first_header==-1) rep.lines_in_first_header=%d;",
+	  rep_struct.lines_in_first_header);
+  printc ("if (rep.lines_in_trailer     ==-1) rep.lines_in_trailer=%d;",
+	  rep_struct.lines_in_trailer);
 
-  order_by_report_stack();
+  order_by_report_stack ();
 
   printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
@@ -642,7 +657,7 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (rep.page_no<=1) {A4GL_rep_print(&rep,0,1,0);A4GL_rep_print(&rep,0,0,0);}"); // MJA 13092003
+      printc ("   if (rep.page_no<=1) {A4GL_rep_print(&rep,0,1,0);A4GL_rep_print(&rep,0,0,0);}");	// MJA 13092003
       printc ("   rep.finishing=1;");
       printc ("   A4GL_skip_top_of_page(&rep,999);");
       printc ("}");
@@ -697,13 +712,13 @@ print_report_ctrl (void)
       if (get_report_stack_whytype (a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   gen_ord(get_report_stack_why (a)), report_cnt, a);
+	   gen_ord (get_report_stack_why (a)), report_cnt, a);
 
       /* after group of */
       if (get_report_stack_whytype (a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   gen_ord(get_report_stack_why (a)), report_cnt, a);
+	   gen_ord (get_report_stack_why (a)), report_cnt, a);
 
       if (get_report_stack_whytype (a) == 'T')
 	printc
@@ -790,11 +805,13 @@ print_continue_loop (int n, char *cmd_type)
 {
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
-      printc ("if (_fld_dr==-95) {A4GL_req_field(&_inp_io,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
+      printc
+	("if (_fld_dr==-95) {A4GL_req_field(&_inp_io,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
       printc ("_fld_dr= -1;\n");
     }
 
-  if (strcmp (cmd_type, "INPUTREQ") == 0 || strcmp (cmd_type, "CONSTRUCTREQ") == 0)
+  if (strcmp (cmd_type, "INPUTREQ") == 0
+      || strcmp (cmd_type, "CONSTRUCTREQ") == 0)
     {
       printc ("_fld_dr= -1;\n");
     }
@@ -1091,26 +1108,32 @@ A4GL_prchkerr (int l, char *f)
  * 3 = goto 
  */
 
-if (doing_pcode()&&0) {
-	char buff[2000];
-	char tbuff[2000];
-	sprintf(tbuff,"ERRCHK(%d,\"%s\"",l,f);
-	strcpy(buff,tbuff);
-	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_SUCCESS],when_to[A_WHEN_SUCCESS]);
-	strcat(buff,tbuff);
-	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_NOTFOUND],when_to[A_WHEN_NOTFOUND]);
-	strcat(buff,tbuff);
-	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_SQLERROR],when_to[A_WHEN_SQLERROR]);
-	strcat(buff,tbuff);
-	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_ERROR],when_to[A_WHEN_ERROR]);
-	strcat(buff,tbuff);
-	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_WARNING],when_to[A_WHEN_WARNING]);
-	strcat(buff,tbuff);
-	sprintf(tbuff,");");
-	strcat(buff,tbuff);
-	printc("%s",buff);
-	return;
-}
+  if (doing_pcode () && 0)
+    {
+      char buff[2000];
+      char tbuff[2000];
+      sprintf (tbuff, "ERRCHK(%d,\"%s\"", l, f);
+      strcpy (buff, tbuff);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SUCCESS],
+	       when_to[A_WHEN_SUCCESS]);
+      strcat (buff, tbuff);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_NOTFOUND],
+	       when_to[A_WHEN_NOTFOUND]);
+      strcat (buff, tbuff);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_SQLERROR],
+	       when_to[A_WHEN_SQLERROR]);
+      strcat (buff, tbuff);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_ERROR],
+	       when_to[A_WHEN_ERROR]);
+      strcat (buff, tbuff);
+      sprintf (tbuff, ",%d,\"%s\"", when_code[A_WHEN_WARNING],
+	       when_to[A_WHEN_WARNING]);
+      strcat (buff, tbuff);
+      sprintf (tbuff, ");");
+      strcat (buff, tbuff);
+      printc ("%s", buff);
+      return;
+    }
 
 #ifdef DEBUG
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
@@ -1354,7 +1377,7 @@ print_arr_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n",ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n", ibindcnt);
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
@@ -1369,7 +1392,7 @@ print_arr_bind (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[%d]={\n",obindcnt);
+      printc ("struct BINDING obind[%d]={\n", obindcnt);
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
@@ -1393,7 +1416,8 @@ print_constr (void)
 {
   int a;
   printc
-    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[%d]={\n",constr_cnt);
+    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[%d]={\n",
+     constr_cnt);
   for (a = 0; a < constr_cnt; a++)
     {
       if (a > 0)
@@ -1450,7 +1474,7 @@ print_param (char i)
       printc ("static ");
     }
 
-  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i,fbindcnt);
+  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, fbindcnt);
   for (a = 0; a < fbindcnt; a++)
     {
 
@@ -1466,7 +1490,7 @@ print_param (char i)
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
     {
-      printc ("static char *rbindvarname[%d]={\n",fbindcnt);
+      printc ("static char *rbindvarname[%d]={\n", fbindcnt);
       for (b = 0; b < fbindcnt; b++)
 	{
 
@@ -1484,7 +1508,7 @@ print_param (char i)
       printc ("};\n");
     }
 
-  printc ("char *_paramnames[%d]={",fbindcnt);
+  printc ("char *_paramnames[%d]={", fbindcnt);
 
   for (a = 0; a < fbindcnt; a++)
     {
@@ -1517,7 +1541,8 @@ print_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ONE_NOT_ZERO(ibindcnt),ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/",
+	      ONE_NOT_ZERO (ibindcnt), ibindcnt);
       if (ibindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1543,7 +1568,8 @@ print_bind (char i)
     {
       expand_bind (&nullbind[0], 'N', nullbindcnt);
       printc ("\n");
-      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/", ONE_NOT_ZERO(nullbindcnt),nullbindcnt);
+      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/",
+	      ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
       if (nullbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1565,7 +1591,7 @@ print_bind (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[%d]={\n",ONE_NOT_ZERO(obindcnt));
+      printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (obindcnt));
       if (obindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1599,27 +1625,28 @@ print_bind (char i)
        */
 
       //if (get_rep_no_orderby()) {
-		//printc("static struct BINDING *_ordbind=");
+      //printc("static struct BINDING *_ordbind=");
       //} else {
-	//}
+      //}
 
-      	printc ("static struct BINDING _ordbind[%d]={\n",ONE_NOT_ZERO(ordbindcnt));
-      	if (ordbindcnt == 0)
-			{
-	  		printc ("{0,0,0}");
-			}
-		
-      	for (a = 0; a < ordbindcnt; a++)
-			{
-	  		if (a > 0)
-	    		printc (",\n");
-	  		printc ("{&%s,%d,%d}", ordbind[a].varname,
-		  		(int) ordbind[a].dtype & 0xffff,
-		  		(int) ordbind[a].dtype >> 16);
-			}
-      		printc ("\n}; /* end of binding */\n");
-	current_ordbindcnt=ordbindcnt;
-      		start_bind (i, 0);
+      printc ("static struct BINDING _ordbind[%d]={\n",
+	      ONE_NOT_ZERO (ordbindcnt));
+      if (ordbindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
+
+      for (a = 0; a < ordbindcnt; a++)
+	{
+	  if (a > 0)
+	    printc (",\n");
+	  printc ("{&%s,%d,%d}", ordbind[a].varname,
+		  (int) ordbind[a].dtype & 0xffff,
+		  (int) ordbind[a].dtype >> 16);
+	}
+      printc ("\n}; /* end of binding */\n");
+      current_ordbindcnt = ordbindcnt;
+      start_bind (i, 0);
 
       return a;
     }
@@ -1638,7 +1665,7 @@ print_bind_expr (void *ptr, char i)
   char buff[256];
   if (i == 'i')
     {
-	sprintf(buff,"struct BINDING ibind[%d]",ONE_NOT_ZERO(ibindcnt));
+      sprintf (buff, "struct BINDING ibind[%d]", ONE_NOT_ZERO (ibindcnt));
       A4GL_append_expr (ptr, buff);
       if (ibindcnt == 0)
 	{
@@ -1751,7 +1778,8 @@ void
 print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_type,%s,0,0);\n", fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_type,%s,0,0);\n",
+	  fields);
   start_bind ('i', 0);
 }
 
@@ -1800,23 +1828,28 @@ print_form_is_compiled (char *s, char *packer, char *formtype)
  *   - T : fieldtouched() function used.
  */
 void
-print_field_func (char type, char *name,char *var)
+print_field_func (char type, char *name, char *var)
 {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
+  if (!isin_command ("INPUT") && !isin_command ("CONSTRUCT"))
+    {
+
+      if (type == 'I')
+	printc ("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));", name);
+
+      if (type == 'T')
+	return;
+
+    }
 
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));", name);
-
-  if (type == 'T') return;
-
-  } 
-
-  if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));", name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));",
+	    name);
 
   if (type == 'T')
-    printc ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io,_inp_io_type,%s,0,0));", name);
+    printc
+      ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io,_inp_io_type,%s,0,0));",
+       name);
 
 
   print_pop_variable (var);
@@ -2044,17 +2077,18 @@ print_construct_2 (char *driver)
   printc ("_fld_dr= %s;_forminit=0;\n", driver);
 
 
-  printc ("if (_fld_dr== -198) { /* After field */\n" );
+  printc ("if (_fld_dr== -198) { /* After field */\n");
   printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
   printc ("   _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  if (!doing_pcode()) {
-  	printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
-  }
+  if (!doing_pcode ())
+    {
+      printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
+    }
   printc ("\n}\n");
-  pop_blockcommand ("CONSTRUCT");	
+  pop_blockcommand ("CONSTRUCT");
   printc (" A4GL_push_constr(&_inp_io);\n ");
   printc (" A4GL_pop_params(ibind,1);");
   printc ("}\n");
@@ -2075,7 +2109,8 @@ print_construct_2 (char *driver)
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,int cattr)
+print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
+		   int cattr)
 {
   int ccc;
   int k;
@@ -2083,22 +2118,24 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,int 
   start_bind ('i', constr_str);
   k = print_bind ('i');
   ccc = print_constr ();
-  printc ("int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='C';\n",
-	  sizeof (struct s_screenio) + 10);
+  printc
+    ("int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='C';\n",
+     sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", cattr);
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
+  printc
+    ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
   if (byname == 1)
-    { 
-	printc(" /* byname */");
+    {
+      printc (" /* byname */");
 
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
@@ -2107,7 +2144,7 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,int 
     }
   else
     {
-	printc(" /* not byname */");
+      printc (" /* not byname */");
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 fld_list);
@@ -2161,15 +2198,15 @@ print_onkey_1 (char *key_list_str)
 void
 print_onkey_2 (void)
 {
-      continue_loop ("INPUTREQ");
+  continue_loop ("INPUTREQ");
   printc ("}\n");
 }
 
 void
 print_onkey_2_prompt (void)
 {
-	print_exit_loop('P',0);
-	printc("}");
+  print_exit_loop ('P', 0);
+  printc ("}");
   //printc (" break;} /* MJA123 */\n");
 }
 
@@ -2362,7 +2399,12 @@ print_exit_program (int has_expr)
 {
 
 
-  if (doing_esql()) { printc("if (A4GL_esql_db_open(-1)) {"); print_close('D',""); printc("}"); }
+  if (doing_esql ())
+    {
+      printc ("if (A4GL_esql_db_open(-1)) {");
+      print_close ('D', "");
+      printc ("}");
+    }
 
   if (has_expr)
     printc ("A4GL_fgl_end();exit(A4GL_pop_int());");
@@ -2578,7 +2620,8 @@ print_import (char *func, int nargs)
   int a;
   char buff[1024];
   char buff2[1024];
-  printc ("\n\nA4GL_FUNCTION %s%s (int nargs) {\n", get_namespace (func), func);
+  printc ("\n\nA4GL_FUNCTION %s%s (int nargs) {\n", get_namespace (func),
+	  func);
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
@@ -2651,6 +2694,7 @@ print_init_var (char *name, char *prefix, int alvl)
   int cnt = 0;
   int acnt;
   int printing_arr;
+  int dont_print = 0;
 
 
 
@@ -2697,21 +2741,30 @@ print_init_var (char *name, char *prefix, int alvl)
 	  char buff_id[256];
 	  printing_arr = 1;
 	  cnt = split_arrsizes (arr, (int *) &arrsizes);
-	  for (acnt = 0; acnt < cnt; acnt++)
+	  if (arrsizes[0] > 0)
 	    {
-	      sprintf (buff_id, "_fglcnt_%d", alvl);
-	      printc ("{int %s;\n", buff_id);
-	      printc ("for (%s=0;%s<%d;%s++) { /* 1 */", buff_id, buff_id, arrsizes[acnt],
-		      buff_id);
-	      strcat (prefix2, "[");
-	      strcat (prefix2, buff_id);
-	      strcat (prefix2, "]");
-	      alvl++;
+	      for (acnt = 0; acnt < cnt; acnt++)
+		{
+		  sprintf (buff_id, "_fglcnt_%d", alvl);
+		  printc ("{int %s;\n", buff_id);
+		  printc ("for (%s=0;%s<%d;%s++) { /* 1 */", buff_id, buff_id,
+			  arrsizes[acnt], buff_id);
+		  strcat (prefix2, "[");
+		  strcat (prefix2, buff_id);
+		  strcat (prefix2, "]");
+		  alvl++;
+		}
+	    }
+	  else
+	    {
+	      dont_print = 1;
 	    }
 	}
-      print_init_var (ptr, prefix2, alvl);
 
-      if (printing_arr)
+      if (dont_print==0)
+	print_init_var (ptr, prefix2, alvl);
+
+      if (printing_arr && dont_print==0)
 	{
 	  for (acnt = 0; acnt < cnt; acnt++)
 	    {
@@ -2742,25 +2795,34 @@ print_init_var (char *name, char *prefix, int alvl)
       return;
     }
 
+  dont_print=0;
 
   if (a && prefix2[strlen (prefix2) - 1] != ']')
     {
       char buff_id[256];
       printing_arr = 1;
       cnt = split_arrsizes (arr, (int *) &arrsizes);
-      for (acnt = 0; acnt < cnt; acnt++)
+      if (arrsizes[0] >= 0)
 	{
-	  sprintf (buff_id, "_fglcnt_%d", alvl);
-	  printc ("{int %s;\n", buff_id);
-	  printc ("for (%s=0;%s<%d;%s++) { /* 2 */", buff_id, buff_id, arrsizes[acnt], buff_id);
-	  strcat (prefix2, "[");
-	  strcat (prefix2, buff_id);
-	  strcat (prefix2, "]");
-	  alvl++;
+	  for (acnt = 0; acnt < cnt; acnt++)
+	    {
+	      sprintf (buff_id, "_fglcnt_%d", alvl);
+	      printc ("{int %s;\n", buff_id);
+	      printc ("for (%s=0;%s<%d;%s++) { /* 2 */", buff_id, buff_id,
+		      arrsizes[acnt], buff_id);
+	      strcat (prefix2, "[");
+	      strcat (prefix2, buff_id);
+	      strcat (prefix2, "]");
+	      alvl++;
+	    }
+	} else {
+		dont_print=1;
 	}
     }
-  printc ("A4GL_setnull(%d,&%s,%d);", d & 0xffff, prefix2, size);
-  if (printing_arr)
+
+  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d); /*y*/", d & 0xffff, prefix2, size);
+
+  if (printing_arr && !dont_print)
     {
       for (acnt = 0; acnt < cnt; acnt++)
 	{
@@ -2836,15 +2898,21 @@ void
 print_next_field (char *s)
 {
 
-  if (strcmp(s,"\"+\"")==0) {
-  	printc ("A4GL_req_field(&_inp_io,_inp_io_type,'+',%s,0,0);\n", s);
-  } else {
-  	if (strcmp(s,"\"-\"")==0) {
-  		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'-',%s,0,0);\n", s);
-  	} else {
-  		printc ("A4GL_req_field(&_inp_io,_inp_io_type,'!',%s,0,0);\n", s);
+  if (strcmp (s, "\"+\"") == 0)
+    {
+      printc ("A4GL_req_field(&_inp_io,_inp_io_type,'+',%s,0,0);\n", s);
+    }
+  else
+    {
+      if (strcmp (s, "\"-\"") == 0)
+	{
+	  printc ("A4GL_req_field(&_inp_io,_inp_io_type,'-',%s,0,0);\n", s);
 	}
-   }
+      else
+	{
+	  printc ("A4GL_req_field(&_inp_io,_inp_io_type,'!',%s,0,0);\n", s);
+	}
+    }
 
   if (isin_command ("INPUT") > isin_command ("CONSTRUCT"))
     {
@@ -2942,10 +3010,12 @@ print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
+print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 {
   int ccc;
-  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='I';", sizeof (struct s_screenio)+10);
+  printc
+    ("{int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='I';",
+     sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -2954,10 +3024,11 @@ print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
   printc ("*/");
   printc ("/* input by name */");
   ccc = print_bind ('i');
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
+  printc
+    ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n",attr);
+  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", attr);
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
@@ -2996,18 +3067,19 @@ print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
  */
 char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr,void *v_input_attr)
+		   char *attr, void *v_input_attr)
 {
   static char buff2[256];
   int cnt;
   struct input_array_attribs *ptr_input_attr;
-  ptr_input_attr=(struct input_array_attribs *)v_input_attr;
+  ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
-  printc ("char _inp_io[%d];char _inp_io_type='A';\n", sizeof (struct s_inp_arr)+10);
+  printc ("char _inp_io[%d];char _inp_io_type='A';\n",
+	  sizeof (struct s_inp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -3030,21 +3102,33 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
 
-  if (ptr_input_attr->curr_row_display) printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",%s);\n", ptr_input_attr->curr_row_display);
-  else  printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",0);\n");
+  if (ptr_input_attr->curr_row_display)
+    printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",%s);\n",
+	    ptr_input_attr->curr_row_display);
+  else
+    printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",0);\n");
 
 
-  if (ptr_input_attr->count) {
-		printc ("SET(\"s_inp_arr\",_inp_io,\"count\",%s);\n", ptr_input_attr->count);
-		printc ("A4GL_push_long(%s); aclfgl_set_count(1);\n", ptr_input_attr->count);
-	}
-  else printc ("SET(\"s_inp_arr\",_inp_io,\"count\",-1);\n");
+  if (ptr_input_attr->count)
+    {
+      printc ("SET(\"s_inp_arr\",_inp_io,\"count\",%s);\n",
+	      ptr_input_attr->count);
+      printc ("A4GL_push_long(%s); aclfgl_set_count(1);\n",
+	      ptr_input_attr->count);
+    }
+  else
+    printc ("SET(\"s_inp_arr\",_inp_io,\"count\",-1);\n");
 
-  if (ptr_input_attr->maxcount) printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",%s);\n", ptr_input_attr->maxcount);
-  else 				printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",-1);\n");
+  if (ptr_input_attr->maxcount)
+    printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",%s);\n",
+	    ptr_input_attr->maxcount);
+  else
+    printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",-1);\n");
 
-  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_insert\",%d);\n", ptr_input_attr->allow_insert);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_delete\",%d);\n", ptr_input_attr->allow_delete);
+  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_insert\",%d);\n",
+	  ptr_input_attr->allow_insert);
+  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_delete\",%d);\n",
+	  ptr_input_attr->allow_delete);
 
 
   printc
@@ -3114,7 +3198,7 @@ print_let_manyvars (char *nexprs)
   int from_exprs;
   int to_vars;
   A4GL_debug ("1");
-  A4GL_debug ("In print_let_manyvars : %s\n",nexprs);
+  A4GL_debug ("In print_let_manyvars : %s\n", nexprs);
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
@@ -3254,7 +3338,7 @@ print_need_lines (void)
 void
 print_skip_lines (double d)
 {
-  printc("A4GL_push_int(%d);",(int)d);
+  printc ("A4GL_push_int(%d);", (int) d);
   printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
@@ -3368,10 +3452,10 @@ A4GL_get_default_scaling (void)
  *   - 2 : The order is external to the report (made in the select statement).
  */
 void
-print_order_by_type (int type,int size)
+print_order_by_type (int type, int size)
 {
-  last_orderby_type=type;
-  printc ("static int acl_rep_ordcnt=%d;\n",size);
+  last_orderby_type = type;
+  printc ("static int acl_rep_ordcnt=%d;\n", size);
   printc ("static int fgl_rep_orderby=%d;\n", type);
 }
 
@@ -3389,10 +3473,10 @@ print_order_by_type (int type,int size)
 void
 print_report_1 (char *name)
 {
-  strcpy(mv_repname,name);
+  strcpy (mv_repname, name);
   add_function_to_header (name, 2);
-  printc ("A4GL_REPORT void %s%s (int nargs,int acl_ctrl) {\n", get_namespace (name), name,
-	  name);
+  printc ("A4GL_REPORT void %s%s (int nargs,int acl_ctrl) {\n",
+	  get_namespace (name), name, name);
 }
 
 /**
@@ -3416,7 +3500,7 @@ void
 print_report_2 (int pdf, char *repordby)
 {
   int cnt;
-	int a;
+  int a;
   if (pdf)
     printc ("static struct pdf_rep_structure rep;\n");
   else
@@ -3441,13 +3525,19 @@ print_report_2 (int pdf, char *repordby)
      get_curr_rep_name ());
   printc ("}\n");
 
-  if (last_orderby_type==1) {
-  	printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-	for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
-  	printc ("A4GL_pop_params(rbind,%d);",cnt);
-  	print_report_table(mv_repname,'R',cnt);
-  	printc ("return;}");
-  }
+  if (last_orderby_type == 1)
+    {
+      printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
+      for (a = 0; a < cnt; a++)
+	{
+	  printc
+	    ("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);", a,
+	     a, a);
+	}
+      printc ("A4GL_pop_params(rbind,%d);", cnt);
+      print_report_table (mv_repname, 'R', cnt);
+      printc ("return;}");
+    }
 
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
@@ -3475,30 +3565,32 @@ print_report_2 (int pdf, char *repordby)
   print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
-  if (last_orderby_type==1) {
-  	printc ("    if (fgl_rep_orderby==1) {\n");
-  	printc ("        struct BINDING *reread;\n");
-  	printc ("        fgl_rep_orderby=-1;\n");
-  	printc ("        A4GL_push_char(_rout1);\n");
-  	printc ("        A4GL_push_char(_rout2);\n");
-  	printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
-	
-  	//printc ("        A4GL_init_report_table(rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);
-  	print_report_table(mv_repname,'I',cnt);
-	
-  	//printc ("        while (A4GL_report_table_fetch(reread,%d,rbind))",cnt);
-  	print_report_table(mv_repname,'F',cnt);
-	
-  	printc ("                    %s(%d,REPORT_SENDDATA);\n", get_curr_rep_name (), cnt);
-  	printc (" }");
-  	printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
-	
-  	//printc ("        A4GL_end_report_table(rbind,%d,reread);",cnt);
-  	print_report_table(mv_repname,'E',cnt);
-	
-  	printc ("        return;");
-  	printc ("    }\n");
-  }
+  if (last_orderby_type == 1)
+    {
+      printc ("    if (fgl_rep_orderby==1) {\n");
+      printc ("        struct BINDING *reread;\n");
+      printc ("        fgl_rep_orderby=-1;\n");
+      printc ("        A4GL_push_char(_rout1);\n");
+      printc ("        A4GL_push_char(_rout2);\n");
+      printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
+
+      //printc ("        A4GL_init_report_table(rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);
+      print_report_table (mv_repname, 'I', cnt);
+
+      //printc ("        while (A4GL_report_table_fetch(reread,%d,rbind))",cnt);
+      print_report_table (mv_repname, 'F', cnt);
+
+      printc ("                    %s(%d,REPORT_SENDDATA);\n",
+	      get_curr_rep_name (), cnt);
+      printc (" }");
+      printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
+
+      //printc ("        A4GL_end_report_table(rbind,%d,reread);",cnt);
+      print_report_table (mv_repname, 'E', cnt);
+
+      printc ("        return;");
+      printc ("    }\n");
+    }
 
   printc ("}\n");
 
@@ -3508,13 +3600,14 @@ print_report_2 (int pdf, char *repordby)
   printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
   printc ("   A4GL_pop_char(_rout2,254);\n");
   printc ("   A4GL_pop_char(_rout1,254);\n");
-  if (last_orderby_type==1) {
-  	printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
-  	printc ("   if (fgl_rep_orderby==1) {");
-  	print_report_table(mv_repname,'M',cnt);
-  	printc ("       return;");
-  	printc ("   }\n");
-  }
+  if (last_orderby_type == 1)
+    {
+      printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
+      printc ("   if (fgl_rep_orderby==1) {");
+      print_report_table (mv_repname, 'M', cnt);
+      printc ("       return;");
+      printc ("   }\n");
+    }
 
 
   printc ("   _useddata=0;\n");
@@ -3599,12 +3692,12 @@ print_push_variable (char *s)
  * @param wait The time that it waits.
  */
 void
-print_message (int type, char *attr, int wait,int exprs)
+print_message (int type, char *attr, int wait, int exprs)
 {
   if (type == 0)
-    printc ("aclfgli_pr_message(%s,%d,%d);\n", attr, wait,exprs);
+    printc ("aclfgli_pr_message(%s,%d,%d);\n", attr, wait, exprs);
   else
-    printc ("aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,exprs);
+    printc ("aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait, exprs);
 }
 
 /**
@@ -3699,11 +3792,13 @@ print_undo_use (char *s)
  * @param a4 The prompt attributes
  */
 void
-print_prompt_1 (char *a1, char *a2, char *a3, char *a4,int timeout)
+print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("A4GL_start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p,%d);\n",timeout);
+  printc
+    ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p,%d);\n",
+     timeout);
 }
 
 /**
@@ -4002,9 +4097,9 @@ print_end_menu_2 (int n)
  *
  */
 void
-print_menu_block (int menu,int n)
+print_menu_block (int menu, int n)
 {
-  printc (" if (cmd_no_%d==%d) { \n", menu,n);
+  printc (" if (cmd_no_%d==%d) { \n", menu, n);
 }
 
 /**
@@ -4070,7 +4165,8 @@ printInitFunctionStack (void)
 {
   if (!isGenStackInfo ())
     return;
-  if (!doing_pcode()) printc ("A4GLSTK_initFunctionCallStack();");
+  if (!doing_pcode ())
+    printc ("A4GLSTK_initFunctionCallStack();");
 }
 
 /**
@@ -4084,13 +4180,17 @@ printDeclareFunctionStack (char *_functionName)
 #ifdef DEBUG
   A4GL_debug ("Function %s\n", _functionName);
 #endif
-  if (isGenStackInfo ()) {
-	if (doing_cs()) {
-    		printc ("\nstring _functionName = \"%s\";\n", _functionName);
-	} else {
-    		printc ("\nstatic char *_functionName = \"%s\";\n", _functionName);
+  if (isGenStackInfo ())
+    {
+      if (doing_cs ())
+	{
+	  printc ("\nstring _functionName = \"%s\";\n", _functionName);
 	}
-  }
+      else
+	{
+	  printc ("\nstatic char *_functionName = \"%s\";\n", _functionName);
+	}
+    }
 }
 
 /**
@@ -4141,11 +4241,11 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   if (type == 0)
-    printc ("\n A4GL_FUNCTION %sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
-	    get_namespace (fname), fname);
+    printc ("\n A4GL_FUNCTION %sint %s%s (int nargs){ /* Funtion Start */\n",
+	    isstatic, get_namespace (fname), fname);
   if (type == 1)
-    printc ("\n A4GL_REPORT %sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
-	    get_namespace (fname), fname);
+    printc ("\n A4GL_REPORT %sint %s%s (int nargs){ /* Funtion Start */\n",
+	    isstatic, get_namespace (fname), fname);
 }
 
 /**
@@ -4192,17 +4292,19 @@ print_func_end (void)
 void
 print_main_1 (void)
 {
-  if (doing_cs())  {
-  	printc ("\n\npublic static void Main(string argv[]) {\n");
-  	printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
-  	printc ("int nargs=0;");
-	return;
-  } 
-  if (doing_pcode())  {
-  	printc ("\n\nA4GL_MAIN int main(int nargs) {\n");
-  	printc ("char *_paramnames[1]={\"\"};");
-	return;
-  } 
+  if (doing_cs ())
+    {
+      printc ("\n\npublic static void Main(string argv[]) {\n");
+      printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
+      printc ("int nargs=0;");
+      return;
+    }
+  if (doing_pcode ())
+    {
+      printc ("\n\nA4GL_MAIN int main(int nargs) {\n");
+      printc ("char *_paramnames[1]={\"\"};");
+      return;
+    }
 
 
   printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
@@ -4219,23 +4321,34 @@ print_main_1 (void)
 void
 print_fgllib_start (char *db)
 {
-extern int is_schema;
+  extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
-  if (!doing_pcode()) {
-  if (doing_cs()) 	{ printc ("\nA4GL_fgl_start(argv.Count(),argv);\n"); }
-  else 			{ printc ("\nA4GL_fgl_start(argc,argv);\n"); }
-  }
-
-  if (db[0] != 0) {
-if (!is_schema)
+  if (!doing_pcode ())
     {
-      print_init_conn (db);
-      printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
-	      lastlineno);
-    } else {
-	printc("/* NO DATABASE - SCHEMA ONLY */");
+      if (doing_cs ())
+	{
+	  printc ("\nA4GL_fgl_start(argv.Count(),argv);\n");
 	}
-}
+      else
+	{
+	  printc ("\nA4GL_fgl_start(argc,argv);\n");
+	}
+    }
+
+  if (db[0] != 0)
+    {
+      if (!is_schema)
+	{
+	  print_init_conn (db);
+	  printc
+	    ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
+	     lastlineno);
+	}
+      else
+	{
+	  printc ("/* NO DATABASE - SCHEMA ONLY */");
+	}
+    }
   print_function_variable_init ();
 }
 
@@ -4248,9 +4361,14 @@ if (!is_schema)
 void
 print_main_end (void)
 {
-  if (doing_esql()) { printc("if (A4GL_esql_db_open(-1)) {"); print_close('D',""); printc("}"); }
+  if (doing_esql ())
+    {
+      printc ("if (A4GL_esql_db_open(-1)) {");
+      print_close ('D', "");
+      printc ("}");
+    }
   printc ("A4GL_fgl_end_4gl_0();");
-  printc("return 0;}\n");
+  printc ("return 0;}\n");
 }
 
 /**
@@ -4267,10 +4385,10 @@ print_main_end (void)
 void
 print_return (int n)
 {
-if (!isin_command("REPORT"))
-  printc ("return %d;", n);
-else
-  printc ("return ;");
+  if (!isin_command ("REPORT"))
+    printc ("return %d;", n);
+  else
+    printc ("return ;");
 }
 
 /**
@@ -4418,21 +4536,26 @@ print_declare_associate_2 (char *variable, char *size, char *n)
 void
 print_define_char (char *var, int size, int isstatic_extern)
 {
-char buff[20];
-strcpy(buff,"");
-  if (isstatic_extern == 1) {
-	strcat(buff,"static ");
-  }
+  char buff[20];
+  strcpy (buff, "");
+  if (isstatic_extern == 1)
+    {
+      strcat (buff, "static ");
+    }
 
-  if (isstatic_extern == 2) {
-	strcat(buff,"extern ");
-  }
+  if (isstatic_extern == 2)
+    {
+      strcat (buff, "extern ");
+    }
 
-  if (doing_cs()) {
-  	printc ("%sA4GL_cs_%s;\n", buff,var, size);
-  } else {
-  	printc ("%s%s [%d+1];\n", buff,var, size);
-  }
+  if (doing_cs ())
+    {
+      printc ("%sA4GL_cs_%s;\n", buff, var, size);
+    }
+  else
+    {
+      printc ("%s%s [%d+1];\n", buff, var, size);
+    }
 }
 
 /**
@@ -4448,17 +4571,19 @@ strcpy(buff,"");
 void
 print_define (char *varstring, int isstatic_extern)
 {
-char buff[20];
-strcpy(buff,"");
+  char buff[20];
+  strcpy (buff, "");
 
-  if (isstatic_extern == 1) {
-    strcat (buff,"static ");
-  }
+  if (isstatic_extern == 1)
+    {
+      strcat (buff, "static ");
+    }
 
-  if (isstatic_extern == 2) {
-	strcat(buff,"extern ");
-  }
-  printc ("%s%s;\n", buff,varstring);
+  if (isstatic_extern == 2)
+    {
+      strcat (buff, "extern ");
+    }
+  printc ("%s%s /*x*/;\n", buff, varstring);
 }
 
 /**
@@ -4472,12 +4597,14 @@ strcpy(buff,"");
  * @param varname The record variable name. Not used
  */
 void
-print_start_record (int isstatic_extern, char *varname,char *arrsize,int level)
+print_start_record (int isstatic_extern, char *varname, char *arrsize,
+		    int level)
 {
-char buff[20]="";
+  char buff[20] = "";
 //int n;
 
-  if (isstatic_extern == 1) strcat(buff,"static ");
+  if (isstatic_extern == 1)
+    strcat (buff, "static ");
   if (isstatic_extern == 2)
     {
 
@@ -4490,33 +4617,45 @@ char buff[20]="";
 #ifdef __NEED_DLL_IMPORT__
       if (strcmp (varname, "a4gl_sqlca") == 0)
 	{
-	strcat(buff,"dll_import ");
+	  strcat (buff, "dll_import ");
 	}
       else
 	{
-	strcat(buff,"extern ");
+	  strcat (buff, "extern ");
 	}
 #else
-	strcat(buff,"extern ");
+      strcat (buff, "extern ");
 #endif
 
     }
-  if (doing_cs()) {
-		cs_ticker++;
-		if (level) {
-			if (arrsize && strcmp(arrsize,"-1")==0) {
-				printc("priv_c_%d %s;",cs_ticker,varname);
-			} else {
-				printc("priv_c_%d %s[]=new priv_c_%d[%s];",cs_ticker,varname,cs_ticker,arrsize);
-			}
-			printc ("%sprivate class priv_c_%s { /* %d */\n",buff,varname,level);
-		} else {
-			printc("pub_c_%d %s;",cs_ticker,varname);
-			printc ("%spublic class pub_c_%s { /* %d */\n",buff,varname,level);
-		}
-  } else {
-  	printc ("%sstruct {\n",buff);
-  }
+  if (doing_cs ())
+    {
+      cs_ticker++;
+      if (level)
+	{
+	  if (arrsize && strcmp (arrsize, "-1") == 0)
+	    {
+	      printc ("priv_c_%d %s;", cs_ticker, varname);
+	    }
+	  else
+	    {
+	      printc ("priv_c_%d %s[]=new priv_c_%d[%s];", cs_ticker, varname,
+		      cs_ticker, arrsize);
+	    }
+	  printc ("%sprivate class priv_c_%s { /* %d */\n", buff, varname,
+		  level);
+	}
+      else
+	{
+	  printc ("pub_c_%d %s;", cs_ticker, varname);
+	  printc ("%spublic class pub_c_%s { /* %d */\n", buff, varname,
+		  level);
+	}
+    }
+  else
+    {
+      printc ("%sstruct {\n", buff);
+    }
 }
 
 /**
@@ -4526,22 +4665,38 @@ char buff[20]="";
  * @param arrsize The array size if is a record array
  */
 void
-print_end_record (char *vname, char *arrsize,int level)
+print_end_record (char *vname, char *arrsize, int level)
 {
+  int cnt;
+  int arrsizes[10];
   if (strcmp (arrsize, "-1") == 0)
     {
-	if (doing_cs()) {
-      		printc ("} ;\n");
-	}  else {
-      		printc ("} %s;\n", vname);
+      if (doing_cs ())
+	{
+	  printc ("} ;\n");
+	}
+      else
+	{
+	  printc ("} %s;\n", vname);
 	}
     }
   else
     {
-	if (doing_cs()) {
-      		printc ("} ;\n");
-	} else {
-      		printc ("} %s[%s];\n", vname, arrsize);
+      if (doing_cs ())
+	{
+	  printc ("} ;\n");
+	}
+      else
+	{
+	  cnt = split_arrsizes (arrsize, (int *) &arrsizes);
+	  if (arrsizes[0] >= 0)
+	    {
+	      printc ("} %s[%s]; /*1 */\n", vname, arrsize);
+	    }
+	  else
+	    {
+	      printc ("} *%s;\n", vname);
+	    }
 	}
     }
 }
@@ -4637,28 +4792,33 @@ print_cmd_end ()
  * @todo Describe function
  */
 char *
-A4GL_get_into_part (int doing_declare,int no)
+A4GL_get_into_part (int doing_declare, int no)
 {
   static char buffer[10000];
   int a;
   if (doing_esql ())
     {
-	  char buff[30];
+      char buff[30];
 
-		
-	  if (no == 0) return "";
 
-	  sprintf (buffer, "INTO \n");
-	  for (a = 0; a < no; a++)
+      if (no == 0)
+	return "";
+
+      sprintf (buffer, "INTO \n");
+      for (a = 0; a < no; a++)
+	{
+	  if (!A4GL_isyes (acl_getenv ("USE_INDICATOR")))
 	    {
-		if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
-	      		sprintf (buff, "\t:_vo_%d\n", a);
-		} else {
-	      		sprintf (buff, "\t:_vo_%d INDICATOR :_voi_%d\n", a,a);
-		}
-	      if (a) strcat (buffer, ",");
-	      strcat (buffer, buff);
+	      sprintf (buff, "\t:_vo_%d\n", a);
 	    }
+	  else
+	    {
+	      sprintf (buff, "\t:_vo_%d INDICATOR :_voi_%d\n", a, a);
+	    }
+	  if (a)
+	    strcat (buffer, ",");
+	  strcat (buffer, buff);
+	}
     }
   else
     {
@@ -4775,9 +4935,10 @@ esql_type ()
 void
 A4GL_lex_parsed_fgl ()
 {
-  if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
-      printc("#include \"cs_trailer.h\"");
-  }
+  if (strcmp (acl_getenv ("LEXTYPE"), "CS") == 0)
+    {
+      printc ("#include \"cs_trailer.h\"");
+    }
 
   if (outfile)
     fclose (outfile);
@@ -4805,12 +4966,12 @@ add_function_to_header (char *identifier, int params)
   if (!A4GL_has_pointer (identifier, 'X'))
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
-      if (params == 1) // Normal Function
-	printh ("A4GL_FUNCTION int %s%s (int n);\n", get_namespace (identifier),
-		identifier);
-      if (params == 2) // Report...
-	printh ("A4GL_REPORT void %s%s (int n,int a);\n", get_namespace (identifier),
-		identifier);
+      if (params == 1)		// Normal Function
+	printh ("A4GL_FUNCTION int %s%s (int n);\n",
+		get_namespace (identifier), identifier);
+      if (params == 2)		// Report...
+	printh ("A4GL_REPORT void %s%s (int n,int a);\n",
+		get_namespace (identifier), identifier);
     }
 }
 
@@ -4819,11 +4980,17 @@ char *
 A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
-  if (doing_pcode()) {
-	sprintf(buff,"ECALL(\"%s%s\",%d,%s);",get_namespace (ident), ident,line,params);
-  } else {
-        sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n", get_namespace (ident), ident, params, line, file);
-  }
+  if (doing_pcode ())
+    {
+      sprintf (buff, "ECALL(\"%s%s\",%d,%s);", get_namespace (ident), ident,
+	       line, params);
+    }
+  else
+    {
+      sprintf (buff,
+	       "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
+	       get_namespace (ident), ident, params, line, file);
+    }
   add_function_to_header (ident, 1);
   return buff;
 }
@@ -4832,40 +4999,53 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 void
 print_foreach_close (char *cname)
 {
-  print_close('C',cname);
+  print_close ('C', cname);
 }
 
 
-int doing_pcode(void) {
-	if (strcmp(acl_getenv("LEXTYPE"),"PCODE")==0) return 1;
-	if (strcmp(acl_getenv("FAKELEXTYPE"),"PCODE")==0) return 1;
-	return 0;
+int
+doing_pcode (void)
+{
+  if (strcmp (acl_getenv ("LEXTYPE"), "PCODE") == 0)
+    return 1;
+  if (strcmp (acl_getenv ("FAKELEXTYPE"), "PCODE") == 0)
+    return 1;
+  return 0;
 }
 
 
-int doing_cs(void) {
-	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) return 1;
-	return 0;
+int
+doing_cs (void)
+{
+  if (strcmp (acl_getenv ("LEXTYPE"), "CS") == 0)
+    return 1;
+  return 0;
 }
 
 
 
-void print_empty_bind(char *name) {
-	printc("static struct BINDING *%s=0;\n",name);
+void
+print_empty_bind (char *name)
+{
+  printc ("static struct BINDING *%s=0;\n", name);
 }
 
 
-int *ordbyfields=0;
-int ordbyfieldscnt=0;
+int *ordbyfields = 0;
+int ordbyfieldscnt = 0;
 
-static void add_to_ordbyfields(int n) {
-int a;
-for (a=0;a<ordbyfieldscnt;a++) {
-   if (ordbyfields[a]==n) return;
-}
-ordbyfieldscnt++;
-ordbyfields=realloc(ordbyfields,sizeof(int)*ordbyfieldscnt);
-ordbyfields[ordbyfieldscnt-1]=n;
+static void
+add_to_ordbyfields (int n)
+{
+  int a;
+  for (a = 0; a < ordbyfieldscnt; a++)
+    {
+      if (ordbyfields[a] == n)
+	return;
+    }
+  ordbyfieldscnt++;
+  ordbyfields = realloc (ordbyfields, sizeof (int) * ordbyfieldscnt);
+  ordbyfields[ordbyfieldscnt - 1] = n;
 
 }
 
@@ -4881,73 +5061,250 @@ and we have the variable numbers from the before and after groups.
 If we copy the ordbind, then reassemble the ordbind using these - we should be ok again
 */
 
-static void order_by_report_stack() {
-int a;
-static int fiddle=0;
-if (ordbyfields) free(ordbyfields); // From a previous report..
-ordbyfields=0; // clear it all down...
-ordbyfieldscnt=0;
+static void
+order_by_report_stack ()
+{
+  int a;
+  static int fiddle = 0;
+  if (ordbyfields)
+    free (ordbyfields);		// From a previous report..
+  ordbyfields = 0;		// clear it all down...
+  ordbyfieldscnt = 0;
 
 
 
 /* This only applies if we're doing an order external (implicit for no order by at all */
-if (last_orderby_type!=2) return;
-if (!get_rep_no_orderby()) return;
+  if (last_orderby_type != 2)
+    return;
+  if (!get_rep_no_orderby ())
+    return;
 
 
 /* Find our group order */
-for (a=0;a<report_stack_cnt;a++) {
-      if (get_report_stack_whytype (a) == 'B' ||get_report_stack_whytype (a) == 'A')  {
-		add_to_ordbyfields(atoi(get_report_stack_why (a)));
-      }
-}
+  for (a = 0; a < report_stack_cnt; a++)
+    {
+      if (get_report_stack_whytype (a) == 'B'
+	  || get_report_stack_whytype (a) == 'A')
+	{
+	  add_to_ordbyfields (atoi (get_report_stack_why (a)));
+	}
+    }
 
 
 /* At this point we'll know if they used before/after groups */
 
 /* We only want to do this if we haven't done it before... */
-printc("if (acl_rep_ordcnt==-1) {");
+  printc ("if (acl_rep_ordcnt==-1) {");
 
-if (ordbyfieldscnt==0)  {
-	printc("acl_rep_ordcnt=0;"); // Nothing to do - there isn't any...
-} else {
-	/* Because of where this needs to go - we're going to shove a function
-		into the header file we can call 
-	*/
+  if (ordbyfieldscnt == 0)
+    {
+      printc ("acl_rep_ordcnt=0;");	// Nothing to do - there isn't any...
+    }
+  else
+    {
+      /* Because of where this needs to go - we're going to shove a function
+         into the header file we can call 
+       */
 
-	/* C File */
-	printc("acl_rep_ordcnt=%d;",ordbyfieldscnt);
-	// And assign the values
-	fiddle++;
-	printc("acl_exchange_rep_ordby%d(_ordbind,%d);",fiddle,current_ordbindcnt);
+      /* C File */
+      printc ("acl_rep_ordcnt=%d;", ordbyfieldscnt);
+      // And assign the values
+      fiddle++;
+      printc ("acl_exchange_rep_ordby%d(_ordbind,%d);", fiddle,
+	      current_ordbindcnt);
 /* H file... */
-	printh("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",fiddle);
- 	printh("struct BINDING *copy;\n");
-	printh("copy=malloc(sizeof(struct BINDING)*cnt);\n");
-	printh("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
-	/* We've got our copy - now we can splat the original! */
-	for (a=0;a<ordbyfieldscnt;a++) {
-		printh("memcpy(&ord[%d],&copy[%d],sizeof(struct BINDING));\n",a,ordbyfields[a]-1); /* fields are numbered from 1 for before/after group variables */
+      printh
+	("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",
+	 fiddle);
+      printh ("struct BINDING *copy;\n");
+      printh ("copy=malloc(sizeof(struct BINDING)*cnt);\n");
+      printh ("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
+      /* We've got our copy - now we can splat the original! */
+      for (a = 0; a < ordbyfieldscnt; a++)
+	{
+	  printh ("memcpy(&ord[%d],&copy[%d],sizeof(struct BINDING));\n", a, ordbyfields[a] - 1);	/* fields are numbered from 1 for before/after group variables */
 	}
-	printh("free(copy);\n");
-	printh("}\n");
-}
-printc("}");
+      printh ("free(copy);\n");
+      printh ("}\n");
+    }
+  printc ("}");
 
 }
 
 
-static int gen_ord(char *s) {
-int a;
-int n;
-n=atoi(s);
-if (last_orderby_type!=2) return n;
-if (!get_rep_no_orderby()) return n;
-for (a=0;a<ordbyfieldscnt;a++) {
-	if (n==ordbyfields[a]) return a+1;
+static int
+gen_ord (char *s)
+{
+  int a;
+  int n;
+  n = atoi (s);
+  if (last_orderby_type != 2)
+    return n;
+  if (!get_rep_no_orderby ())
+    return n;
+  for (a = 0; a < ordbyfieldscnt; a++)
+    {
+      if (n == ordbyfields[a])
+	return a + 1;
+    }
+
+  return n;			// Fall back - shouldn't happen!!
 }
 
-return n; // Fall back - shouldn't happen!!
+void
+print_execute_immediate (char *stmt)
+{
+  static int cnt = 0;
+  char buff[256];
+  if (A4GL_isyes (acl_getenv ("FAKE_IMMEDIATE")) || !doing_esql ())
+    {
+      sprintf (buff, "\"p_%d_%x\"", cnt++, time (0));
+      print_prepare (buff, stmt);
+      print_execute (buff, 0);
+    }
+  else
+    {
+      if (stmt[0] == '"')
+	{
+	  printc ("$execute immediate %s;", stmt);
+	}
+      else
+	{
+	  printc ("{");
+	  printc ("EXEC SQL BEGIN DECLARE SECTION;");
+	  printc ("char *acl_ei_s;");
+	  printc ("EXEC SQL END DECLARE SECTION;");
+	  printc ("acl_ei_s=%s;", stmt);
+	  printc ("$execute immediate :acl_ei_s;");
+	  printc ("}");
+	}
+    }
+}
+
+
+
+void
+print_alloc_arr (char *s, char *d)
+{
+  char *ptr;
+  int a;
+  int l;
+  int dim[5] = { 0, 0, 0, 0, 0 };
+  int dimcnt = 0;
+  l = strlen (d);
+  ptr = d;
+  for (a = 0; a < l; a++)
+    {
+      if (d[a] == '(' && a == 0)
+	{
+	  ptr = &d[a + 1];
+	  continue;
+	}
+
+      if (d[a] == '[' && d[a + 1] == '(')
+	{
+	  ptr = &d[a + 2];
+	  continue;
+	}
+
+      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
+	  && d[a + 3] == ']')
+	{
+	  d[a] = 0;
+	  a += 3;
+	  dim[dimcnt++] = atoi (ptr);
+
+	}
+    }
+  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  if (dim[4] == 0)
+    {
+      dim[4] = 1;
+    }
+  if (dim[3] == 0)
+    {
+      dim[3] = 1;
+    }
+  if (dim[2] == 0)
+    {
+      dim[2] = 1;
+    }
+  if (dim[1] == 0)
+    {
+      dim[1] = 1;
+    }
+  if (dim[0] == 0)
+    {
+      dim[0] = 1;
+    }
+  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
+  printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);
+}
+
+
+
+void
+print_realloc_arr (char *s, char *d)
+{
+  char *ptr;
+  int a;
+  int l;
+  int dim[5] = { 0, 0, 0, 0, 0 };
+  int dimcnt = 0;
+  l = strlen (d);
+  ptr = d;
+  for (a = 0; a < l; a++)
+    {
+      if (d[a] == '(' && a == 0)
+	{
+	  ptr = &d[a + 1];
+	  continue;
+	}
+
+      if (d[a] == '[' && d[a + 1] == '(')
+	{
+	  ptr = &d[a + 2];
+	  continue;
+	}
+
+      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
+	  && d[a + 3] == ']')
+	{
+	  d[a] = 0;
+	  a += 3;
+	  dim[dimcnt++] = atoi (ptr);
+
+	}
+    }
+  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  if (dim[4] == 0)
+    {
+      dim[4] = 1;
+    }
+  if (dim[3] == 0)
+    {
+      dim[3] = 1;
+    }
+  if (dim[2] == 0)
+    {
+      dim[2] = 1;
+    }
+  if (dim[1] == 0)
+    {
+      dim[1] = 1;
+    }
+  if (dim[0] == 0)
+    {
+      dim[0] = 1;
+    }
+  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
+  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s,l, s);
+}
+
+void
+print_dealloc_arr (char *s)
+{
+  printc ("free(%s);", s);
 }
 
 /* =========================== EOF ================================ */

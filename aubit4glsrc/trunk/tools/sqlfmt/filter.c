@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: filter.c,v $
-@(#)Version:         $Revision: 1.2 $
-@(#)Last changed:    $Date: 2003-05-12 14:24:42 $
+@(#)Version:         $Revision: 1.3 $
+@(#)Last changed:    $Date: 2003-09-29 15:10:38 $
 @(#)Purpose:         Standard File Filter
 @(#)Author:          J Leffler
 @(#)Copyright:       (C) JLSS 1987-89,1991,1993,1996-98
@@ -19,7 +19,7 @@
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: filter.c,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $";
+  "@(#)$Id: filter.c,v 1.3 2003-09-29 15:10:38 mikeaubury Exp $";
 
 #endif	/*  */
   
@@ -152,7 +152,7 @@ main (int argc, char **argv)
 {
   int opt;
   Filter f = cat;
-  setarg0 (argv[0]);
+  A4GL_setarg0 (argv[0]);
   opterr = 0;
   while ((opt = GETOPT (argc, argv, "cv")) != EOF)
     

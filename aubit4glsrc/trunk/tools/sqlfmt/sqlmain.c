@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: sqlmain.c,v $
-@(#)Version:         $Revision: 1.3 $
-@(#)Last changed:    $Date: 2003-05-15 07:10:51 $
+@(#)Version:         $Revision: 1.4 $
+@(#)Last changed:    $Date: 2003-09-29 15:10:38 $
 @(#)Purpose:         Convert ISQL/I4GL Keywords to upper case
 @(#)Author:          J Leffler
 @(#)Copyright:       (C) JLSS 1987,1990-1993,1996,1998
@@ -28,7 +28,7 @@
 
 #ifndef lint
 static const char sccs[] =
-  "@(#)$Id: sqlmain.c,v 1.3 2003-05-15 07:10:51 mikeaubury Exp $";
+  "@(#)$Id: sqlmain.c,v 1.4 2003-09-29 15:10:38 mikeaubury Exp $";
 
 #endif	/*  */
   int
@@ -38,7 +38,7 @@ main (int argc, char **argv)
   int arg;
   char *file = (char *) 0;
   int pflag = 0;
-  setarg0 (argv[0]);
+  A4GL_setarg0 (argv[0]);
   while ((arg = getopt (argc, argv, "LUVlpuf:")) != EOF)
     
     {
@@ -65,7 +65,7 @@ main (int argc, char **argv)
 	  break;
 	case 'V':
 	  puts (&"@(#)SQLFMT Version 14 (1998-11-04)"[4]);
-	  version ("", "$Revision: 1.3 $ ($Date: 2003-05-15 07:10:51 $)");
+	  version ("", "$Revision: 1.4 $ ($Date: 2003-09-29 15:10:38 $)");
 	  exit (0);
 	  
 	    /* NOTREACHED */ 
@@ -108,3 +108,8 @@ main (int argc, char **argv)
 }
 
 
+
+
+int yywrap() {
+return 1;
+}

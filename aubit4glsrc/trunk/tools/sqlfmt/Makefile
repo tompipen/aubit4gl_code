@@ -1,4 +1,4 @@
-#	@(#)$Id: Makefile,v 1.1 2002-11-28 06:40:47 afalout Exp $
+#	@(#)$Id: Makefile,v 1.2 2003-09-29 15:10:38 mikeaubury Exp $
 #
 #	Makefile for SQLFMT Version 14 (1998-11-04)
 
@@ -11,7 +11,7 @@
 ###################################################################
 RANLIB    = : ranlib
 LIBC      = #-lc_s
-LIBL      = -ll
+#LIBL      = -ll
 STRIP     = -s
 CFLAGS    = -O #-DNO_PROTOTYPES
 MISSING.o = getopt.o memmove.o # bsearch.o

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.28 2003-08-12 08:51:17 mikeaubury Exp $
+# $Id: variables.c,v 1.29 2003-09-29 15:10:37 mikeaubury Exp $
 #
 */
 
@@ -2433,12 +2433,15 @@ print_variable (struct variable *v, char scope, int level)
     {
       char tmpbuff[256];
       sprintf (tmpbuff, "%s %s", rettype_integer (v->data.v_simple.datatype), name);
-
       if (v->is_array)
 	{
+	if (strchr(arrbuff,'-')==0) {
 	  strcat (tmpbuff, "[");
 	  strcat (tmpbuff, arrbuff);
 	  strcat (tmpbuff, "]");
+	} else {
+             sprintf (tmpbuff, "%s *%s", rettype_integer (v->data.v_simple.datatype), name);
+	}
 	}
 
       if (v->data.v_simple.datatype == 0)

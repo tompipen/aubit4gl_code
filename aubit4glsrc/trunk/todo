@@ -11,16 +11,9 @@ Please occasionally remove items that are completed from this list.
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different). ** PARTIAL
 
+
 Enhancements
-
-	SQL / END SQL blocks
-
-	EXECUTE IMMEDIATE
-	The concatenation operator <string-expr> || <string-expr>  ** DONE
 	
-	as an fix for hard-coded DATABASE directive in .4gl and .per files,
-	make an option on the compiler (every compiler that might need to access
-	the database - 4glc, fcompile...). --database=dbname@theserver ** DONE - use SCHEMA databasename instead
 
 
 ESQL/C
@@ -39,16 +32,10 @@ GTK
 
 
 UI
-	Implement proper message stack (current way doesn't work properly) **DONE
-	Add fldbuf & infield for multiple fields **DONE
 	
 
 Other unimplemented functions
 	put_insert *partial
-	INPUT ARRAY  ** DONE
-	ERROR - needs a window... **DONE
-	get_fldbuf  ** DONE
-	check infield etc ** DONE
 
 
 SQL Parser
@@ -71,11 +58,7 @@ XML-RPC
     create server part
 
 TUI
-	implement Field attribute hierarchy ** DONE
-	implement Field expression parsing ** DONE (for most expressions..)
-	implement attribute 'lines' hierarchy ** DONE
 	General cleanups.. 
-	clean up construct... ** DONE
     	Windows TUI uses strange characters
 
     	DISPLAY without AT erises the screen completely - sends to stdout 
