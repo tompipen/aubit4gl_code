@@ -332,7 +332,7 @@ prompt_section: prompt_element | prompt_section prompt_element
 ;
 
 prompt_element: PROMPT FOR variable USING string {
-	add_inputs($<str>5,$<str>3);
+	add_inputs((char *)strip_quotes($<str>5),$<str>3);
 }
 ;
 
@@ -428,7 +428,7 @@ format_action :
 	}
         | AFTER GROUP OF variable_sub commands 
 	{
-		add_fmt(FORMAT_AFTER_GROUP,$<str>5,$<commands>5);
+		add_fmt(FORMAT_AFTER_GROUP,$<str>4,$<commands>5);
 	}
 ;
 
@@ -820,16 +820,17 @@ sel_p2 : {strcpy($<str>$,"");}
        }
 | order_by_clause 
 | INTO TEMP tmp_tabname op_no_log {
-       sprintf($<str>$,"INTO TEMP %s %s ",$<str>3,$<str>4);
+       sprintf($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
 	strcpy(temp_tab_name,$<str>3);
 };
 
 
-op_no_log: | WITH_NO_LOG
+op_no_log: {strcpy($<str>$,"");} | WITH_NO_LOG {strcpy($<str>$," WITH NO LOG");}
 ;
 
 
-tmp_tabname: identifier;
+tmp_tabname: identifier
+;
 
 op_into_temp :
 {
@@ -1390,7 +1391,7 @@ val_expression:
 
 	| aggregate {
 		$<expr>$.type=EXPRTYPE_AGG; 
-		$<expr>$.expr_u.aggval=(struct agg_val  *)DUP($<agg_val>1);
+		$<expr>$.expr_u.aggid=add_agg($<agg_val>1);
 	}
 ;
 

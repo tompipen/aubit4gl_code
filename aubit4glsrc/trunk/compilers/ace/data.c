@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+# $Id: data.c,v 1.3 2002-06-30 22:30:23 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,6 @@ extern int ordbycnt;
 
 
 
-
 /*
 =====================================================================
                     Functions prototypes
@@ -85,8 +84,13 @@ void print_variables(char *s);
 char * add_zero_rows_where (struct select_stmts *ptr);
 int find_sql_var (int colno);
 void add_fmt (int cat, char *col, struct commands commands);
+void add_variable (char *name, char *dstring, int category, int pno, int dtype, int dim);
+void init_report (void);
 
-
+int find_variable (char *name);
+void
+add_function (char *name);
+int add_agg(struct agg_val agg) ;
 
 /*
 =====================================================================
@@ -125,6 +129,8 @@ init_report (void)
   this_report.ascii.variables.variables_val = 0;
   this_report.output.report_to_where = 0;
   this_report.getdata.get_data_u.selects.selects_len = 0;
+  this_report.aggs.aggs_len = 0;
+  this_report.aggs.aggs_val = 0;
 
   add_variable("pageno","integer",CAT_BUILTIN,0,2,0);
   add_variable("lineno","integer",CAT_BUILTIN,0,2,0);
@@ -207,6 +213,22 @@ add_function (char *name)
 
 
 
+
+int add_agg(struct agg_val agg) {
+
+  agg.format_id=this_report.fmt.fmt_len;
+
+
+  this_report.aggs.aggs_len++;
+  this_report.aggs.aggs_val = realloc (this_report.aggs.aggs_val,
+             this_report.aggs.aggs_len * sizeof (struct agg_val));
+
+  memcpy(&this_report.aggs.aggs_val[this_report.aggs.aggs_len - 1],&agg,sizeof(struct agg_val));
+
+  return this_report.aggs.aggs_len-1;
+
+}
+
 /**
  *
  * @todo Describe function
@@ -262,7 +284,6 @@ add_select (char *sql, char *temptabname)
   buff = strdup (sql);
 
   c = 0;
-  printf("Examining : %s\n",sql);
   for (a = 0; a < strlen (sql); a++)
     {
       if (sql[a] == '\n')
@@ -313,7 +334,6 @@ add_select (char *sql, char *temptabname)
 
 	      ptr->varids.varids_val[ptr->varids.varids_len - 1] =
 		atoi (buffer);
-		printf("Got variable ID %d\n",atoi(buffer));
 	      ptr->varpos.varpos_val[ptr->varpos.varpos_len - 1] = c;
 	      buff[c++] = '?';
 	      continue;
@@ -386,6 +406,7 @@ add_fmt (int cat, char *col, struct commands commands)
 
   memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands,
 	  &commands, sizeof (struct commands));
+  
 
 
 }
@@ -487,7 +508,7 @@ execute_selects (void)
   void *xo=0;
   void *psql;
   int b;
-  char *nstatement;
+  char nstatement[30000];
   char *cptr;
   int oby_cnt;
 
@@ -513,17 +534,14 @@ execute_selects (void)
 	dif_start_bind (void)
 	{...
 
-
+  */
   xi = (void *) dif_start_bind ();
   xo = (void *) dif_start_bind ();
-  */
 
-  dif_start_bind ();		/* Start an input binding  */
-  /* dif_start_bind ();*/	/* Start an output binding */
 
   /* We need 1 null value */
   /* setnull (2, &nval, 4); */
-  setnull (2, (char *)nval, 4);
+  setnull (2, (char *)&nval, 4);
   /*  warning: passing arg 2 of `setnull' from incompatible pointer type
   	void 	setnull 			(int type, char *buff, int size);
   */
@@ -554,7 +572,7 @@ execute_selects (void)
 	  xic++;
 
 	}
-      nstatement = add_zero_rows_where (ptr);
+      strcpy(nstatement , add_zero_rows_where (ptr));
 
       if (a == mx)
 	{

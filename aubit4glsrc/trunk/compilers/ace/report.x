@@ -80,12 +80,14 @@ enum exprtype {
 
 };
 
+/*
 struct agg_val {
 	enum aggtypes type;
 	bool isgroup;
 	struct expr *expr;
-	struct expr *wexpr; /* Where clause */
+	struct expr *wexpr; 
 };
+*/
 
 union expr switch (exprtype type) {
 	case EXPRTYPE_NULL: 	int null;
@@ -99,7 +101,10 @@ union expr switch (exprtype type) {
 	case EXPRTYPE_SIMPLE:    struct simple_expr  *sexpr;
 	case EXPRTYPE_LIST:   	 struct expr_list  *lexpr;
 	case EXPRTYPE_FCALL:   	 struct expr_call  *fcall;
-	case EXPRTYPE_AGG:    	 struct agg_val  *aggval;
+
+	/* case EXPRTYPE_AGG:    	 struct agg_val  *aggval; */
+
+	case EXPRTYPE_AGG:    	 int aggid;
 };
 
 
@@ -285,7 +290,15 @@ struct  format  {
 	struct commands commands; 
 };
 	
-	
+
+struct agg_val {
+	int format_id;       /* Format ID where aggregate is being used */
+	enum aggtypes type;  /* Type - SUM/AVG etc */
+	bool isgroup;        /* Is it a GROUP SUM/AVG etc */
+	struct expr *expr;   /* Expression to aggregate */
+	struct expr *wexpr;  /* Where clause to use (if applicable else 0)  */
+};
+
 
 struct report {
 	string magic<>;
@@ -298,5 +311,6 @@ struct report {
 	struct output output;
 	struct get_data getdata;
 	struct format fmt<>;
+	struct agg_val aggs<>;
 };
 

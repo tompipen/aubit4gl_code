@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+# $Id: main.c,v 1.3 2002-06-30 22:30:23 mikeaubury Exp $
 #*/
 
 /**
@@ -215,7 +215,7 @@ int rval;
   rval=yyparse ();
   if (rval==0) {
 	write_report();
-  	close_database();
+  	//close_database();
   	exit(0);
 } else {
 	exit(2);

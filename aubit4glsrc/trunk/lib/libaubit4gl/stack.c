@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.20 2002-06-29 13:12:02 afalout Exp $
+# $Id: stack.c,v 1.21 2002-06-30 22:30:31 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,7 @@ int num_local_binding[LOCAL_BINDINGS];
 
 
 	void *      dif_get_bind 			(struct bound_list *list);
-	void        dif_start_bind 			(void);
+	void *      dif_start_bind 			(void);
 
 #endif
 
@@ -2217,7 +2217,7 @@ push_binding (void *ptr, int num)
  *
  * @return
  */
-void
+void *
 dif_start_bind (void)
 {
   struct bound_list *list;
@@ -2226,6 +2226,7 @@ dif_start_bind (void)
   list->ptr = 0;
   list->cnt = 0;
   list->popped = -1;
+  return (void *)list;
 }
 
 /**
