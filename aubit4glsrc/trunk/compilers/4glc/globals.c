@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.8 2003-02-17 15:40:49 mikeaubury Exp $
+# $Id: globals.c,v 1.9 2003-02-18 10:21:45 mikeaubury Exp $
 #
 */
 
@@ -661,6 +661,7 @@ int cnt;
 
 	if (v->is_array)
     {
+	for (a=0;a<MAX_ARR_SUB;a++) {v->arr_subscripts[a]=0;}
       read_global_int (f, "ARR_SUBSCRIPTS_CNT", &cnt);
 
 		for (a = 0; a < cnt; a++)
