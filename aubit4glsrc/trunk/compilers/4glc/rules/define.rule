@@ -79,7 +79,7 @@ var_def_list	: var_def_name
 op_char : | CHAR;
 
 array_variable	: 
-ARRAY  OPEN_SQUARE  number_arr_list CLOSE_SQUARE {
+ARRAY OPEN_SQUARE  number_arr_list CLOSE_SQUARE {
 	debug("defines array %s",$<str>3);
 	push_type(0,0,$<str>3);
 }
@@ -258,9 +258,7 @@ sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); }
 ;
 
 interval_qual :  int_start TO int_end  {
-
-sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); 
-printf("-->%s\n",$<str>$);
+	sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3)); 
 };
 
 dtime_start : {start_state("dtime_val",1);} dtime_val {start_state("dtime_val",0); strcpy($<str>$,$<str>2);}

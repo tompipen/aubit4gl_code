@@ -129,20 +129,20 @@ NOT fgl_expr_c {
 }
 | OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
 /*| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; } */
-| EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 	char buff[256];
 	int n;
-	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=new_expr($<sql_string>3);
 	append_expr($<ptr>$,"{");
 	n=print_bind_expr($<ptr>$,'i');
 	sprintf(buff,"push_binding(ibind,%d);}",n);
 	append_expr($<ptr>$,buff);
 	append_expr($<ptr>$,"pushop(OP_EXISTS);");
 }
-| NOT_EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 	char buff[256];
 	int n;
-	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=new_expr($<sql_string>3);
 	append_expr($<ptr>$,"{");
 	n=print_bind_expr($<ptr>$,'i');
 	sprintf(buff,"push_binding(ibind,%d);}",n);
@@ -329,10 +329,10 @@ inexpr_list : fgl_expr_c  {
 
 
 in_expr:
- IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+ IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 	char buff[256];
 	int n;
-	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=new_expr($<sql_string>3);
 	append_expr($<ptr>$,"{");
 	n=print_bind_expr($<ptr>$,'i');
 	sprintf(buff,"push_binding(ibind,%d);}",n);
@@ -340,10 +340,10 @@ in_expr:
 	append_expr($<ptr>$,"pushop(OP_IN_SELECT);");
 }
 	
- | NOT_IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+ | NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 	char buff[256];
 	int n;
-	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=new_expr($<sql_string>3);
 	append_expr($<ptr>$,"{");
 	n=print_bind_expr($<ptr>$,'i');
 	sprintf(buff,"push_binding(ibind,%d);}",n);
@@ -544,19 +544,19 @@ inc_counter();}
 }
 | DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
-	sprintf(buff,"acli_datetime(%s,%s)",$<str>3,$<str>5);
+	sprintf(buff,"acli_datetime(%s,%s);",$<str>3,$<str>5);
 	$<ptr>$=new_expr(buff);
 	inc_counter();
 }
 | DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
-	sprintf(buff,"acli_datetime(\"%s\",%s)",$<str>3,$<str>5);
+	sprintf(buff,"acli_datetime(\"%s\",%s);",$<str>3,$<str>5);
 	$<ptr>$=new_expr(buff);
 	inc_counter();
 }
 | DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
-	sprintf(buff,"acli_datetime(\"%s:%s\",%s)",$<str>3,$<str>5,$<str>7);
+	sprintf(buff,"acli_datetime(\"%s:%s\",%s);",$<str>3,$<str>5,$<str>7);
 	$<ptr>$=new_expr(buff);
 	inc_counter();
 }

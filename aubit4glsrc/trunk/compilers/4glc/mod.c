@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.106 2003-02-23 08:04:37 afalout Exp $
+# $Id: mod.c,v 1.107 2003-02-24 19:11:07 mikeaubury Exp $
 #
 */
 
@@ -3656,6 +3656,32 @@ for (a=0;a<gen_stack_cnt[UPDCOL];a++) {
 
 //printf("---> %s\n",big_buff);
 return big_buff;
+}
+
+
+
+char *make_sql_string(char *first,...) {
+  va_list ap;
+  char *ptr=0;
+  int l;
+  char *next;
+int n;
+
+n=0;
+  va_start (ap, first);
+  ptr=strdup(first);
+  l=strlen(ptr);
+
+  while (1) {
+	n++;
+     next=va_arg(ap,char *);
+     if (next==0) break;
+     l+=strlen(next);
+     l++; // Extra space...
+     ptr=realloc(ptr,l);
+     strcat(ptr,next);
+  }
+  return ptr;
 }
 
 /* ================================= EOF ============================= */

@@ -11,6 +11,7 @@ Please occasionally remove items that are completed from this list.
 	Add globals header file into variable declaration ** DONE
 	Create function names export ** DONE - they are included in the .glb
 
+	Interval and datetime arithmetic...
 
 	Clean up error handling
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
@@ -29,7 +30,7 @@ Enhancements
 ESQL/C
 	Fix OPEN USING in esql/c (in sql) 
 	Fix OPEN USING in esql/c (in lex) *** DONE IN LEX
-	Fix FETCH (relative/absolute etc)
+	Fix FETCH (relative/absolute etc) *** DONE
 	Fix Declare INTO in esql/c LEX
 	Other fixes in ESQL/C output driver
 	

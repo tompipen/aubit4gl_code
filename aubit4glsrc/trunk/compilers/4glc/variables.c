@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.15 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: variables.c,v 1.16 2003-02-24 19:11:13 mikeaubury Exp $
 #
 */
 
@@ -164,6 +164,7 @@ set_arr_subscripts (char *s_orig, int record_cnt)
   char *ptr;
   char s[512];
 
+  //printf("s_orig=%s\n",s_orig);
 
   if (s_orig == 0)
     {
@@ -186,7 +187,9 @@ set_arr_subscripts (char *s_orig, int record_cnt)
 	  if (s[a] == ']')
 	    {
 	      s[a] = 0;
+	      //printf("--> %d %s\n",subcnt, ptr);
 	      v[record_cnt]->arr_subscripts[subcnt++] = atoi (ptr);
+		s[a]=']';
 	      ptr = &s[a + 2];
 	      a++;		// Skip over '['
 	    }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.29 2003-02-24 09:29:18 mikeaubury Exp $
+# $Id: 1.reqd,v 1.30 2003-02-24 19:11:37 mikeaubury Exp $
 #
 */
 
@@ -172,6 +172,7 @@ int 		fcall_cnt=0;
 struct 		rep_structure rep_struct;
 struct 		pdf_rep_structure pdf_rep_struct;
 struct 		form_attr form_attrib;
+char *		make_sql_string(char *first,...);
 
 /*
 =====================================================================

@@ -11,47 +11,20 @@ drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
 
 create_cmd : 
 	create_c_1 { print_exec_sql($<str>1); }
-	| create_c_2 { print_exec_sql($<sql_string>1); 
+	| create_c_2_ss { print_exec_sql($<sql_string>1); 
 	free($<sql_string>1);
 }
 ;
 
-create_c_2  : 
-	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET
-{
-int sz;
-sz=0;
-	sz+=strlen($<str>1);
-	sz+=strlen($<str>3);
-	sz+=strlen($<str>4);
-	sz+=strlen($<sql_string>6);
-	sz+=strlen($<str>7);
-	sz+=10;
+create_c_2_ss  : 
+	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7,0);
+		free($<sql_string>6);
+	} 
 
-	$<sql_string>$=malloc(sz);
-
-	sprintf($<sql_string>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<sql_string>6,$<str>7);
-
-	free($<sql_string>6);
-} 
-
-	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log {
-
-int sz;
-sz=0;
-	sz+=strlen($<str>1);
-	sz+=strlen($<str>3);
-	sz+=strlen($<str>4);
-	sz+=strlen($<sql_string>6);
-	sz+=strlen($<str>7);
-	sz+=strlen($<str>8);
-	sz+=10;
-
-	$<sql_string>$=malloc(sz);
-
-
-sprintf($<sql_string>$,"%s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<sql_string>6,$<str>7,$<str>8);
-	free($<sql_string>6);
+	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET op_no_log {
+		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7, " ",$<str>8,0);
+		free($<sql_string>6);
 
 }
 
@@ -85,21 +58,22 @@ idx_column :
 | identifier;
 
 
-table_element_list:
-	  table_element {
-		$<sql_string>$=strdup($<str>1);
-	  }
-	| table_element_list COMMA table_element {
-	int sz;
-	sz=strlen($<sql_string>1)+strlen($<str>3)+2;
-	$<sql_string>$=realloc($<sql_string>1,sz);
-	sprintf($<sql_string>$,"%s,%s",$<sql_string>1,$<str>3);
+table_element_list_ss:
+  	table_element_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| table_element_list_ss COMMA table_element_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
 	}
 ;
 	
-table_element:
-	  ct_column_definiton
-	| table_constraint_definition
+table_element_ss:
+	  ct_column_definiton_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| table_constraint_definition_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
 	;
 	
 
@@ -111,53 +85,75 @@ upd_stats_cmd :
 
 
 
-alter_cmd : alter_1_c {
-	print_exec_sql($<str>1);
-};
 
-alter_1_c : ALTER_TABLE identifier alter_clauses {
-	sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+alter_cmd : ALTER_TABLE identifier alter_clauses_ss {
+	$<sql_string>$=make_sql_string($<str>1,$<str>2,$<sql_string>3,0);
+	print_exec_sql($<sql_string>1); 
 }
 ;
 
-alter_clauses:
-	alter_clause
-	| alter_clauses COMMA alter_clause {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-;
-
-
-alter_clause:
-	alter_add_clause
-	| alter_drop_clause
-	| alter_modify_clause
-	| alter_add_constraint_clause
-	| alter_drop_contraint_clause
-	| alter_modify_next
-	| alter_lock_mode
-;
-
-
-alter_add_clause:
-	ADD add_column_clause  {
-		sprintf($<str>$,"ADD %s",$<str>2);
+alter_clauses_ss:
+	alter_clause_ss {
+		$<sql_string>$=$<sql_string>1;
 	}
-	| ADD OPEN_BRACKET add_column_clauses CLOSE_BRACKET {
-		sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);
+	| alter_clauses_ss COMMA alter_clause_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
+	}
+
+
+;
+
+
+alter_clause_ss:
+	alter_add_clause_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| alter_drop_clause {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| alter_modify_clause {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| alter_add_constraint_clause {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| alter_drop_contraint_clause {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| alter_modify_next {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| alter_lock_mode {
+		$<sql_string>$=strdup($<str>1);
 	}
 ;
 
 
-add_column_clause:
-	table_element
-	| table_element BEFORE identifier {
-		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+alter_add_clause_ss:
+	ADD add_column_clause_ss  {
+		$<sql_string>$=make_sql_string("ADD ",$<sql_string>2,0);
+	}
+	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string("ADD (",$<sql_string>2,")",0);
 	}
 ;
 
-add_column_clauses:
-	add_column_clause
-	| add_column_clauses COMMA add_column_clause {
-		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+
+add_column_clause_ss:
+	table_element_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| table_element_ss BEFORE identifier {
+		$<sql_string>$=make_sql_string($<str>1," BEFORE ",$<str>3,0);
+	}
+;
+
+add_column_clauses_ss:
+	add_column_clause_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| add_column_clauses_ss COMMA add_column_clause_ss {
+		$<sql_string>$=make_sql_string($<str>1,",",$<str>3,0);
 	}
 ;
 
@@ -183,23 +179,27 @@ drop_column : identifier
 ;
 
 alter_modify_clause :
-	MODIFY modify_column_clause {
-		sprintf($<str>$,"MODIFY %s",$<str>2);
+	MODIFY modify_column_clause_ss {
+		sprintf($<str>$,"MODIFY %s",$<sql_string>2);
 	}
-	| MODIFY OPEN_BRACKET modify_column_clauses CLOSE_BRACKET {
-		sprintf($<str>$,"MODIFY (%s)",$<str>3);
-	}
-;
-
-modify_column_clauses :
-	modify_column_clause
-	| modify_column_clauses COMMA modify_column_clause {
-		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET {
+		sprintf($<str>$,"MODIFY (%s)",$<sql_string>3);
 	}
 ;
 
-modify_column_clause :
-	table_element
+modify_column_clauses_ss :
+	modify_column_clause_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| modify_column_clauses_ss COMMA modify_column_clause_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
+	}
+;
+
+modify_column_clause_ss :
+	table_element_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
 ;
 
 
@@ -215,23 +215,29 @@ alter_modify_next :
 ;
 
 alter_add_constraint_clause:
-	ADD_CONSTRAINT column_constraint
-	| ADD_CONSTRAINT OPEN_BRACKET column_constraints CLOSE_BRACKET {
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<str>3);
+	ADD_CONSTRAINT column_constraint_ss {
+		sprintf($<str>$,"ADD CONSTRAINT %s",$<sql_string>2);
+	}
+	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
+		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
 	}
 ;
 
 
 alter_drop_contraint_clause:
 	DROP_CONSTRAINT constraint_name
-	| DROP_CONSTRAINT OPEN_BRACKET column_constraints CLOSE_BRACKET {
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<str>3);
+	| DROP_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
+		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
 	}
 ;
-column_constraints:
-	column_constraint
-	| column_constraints COMMA column_constraint {
-		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+
+
+column_constraints_ss:
+	column_constraint_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| column_constraints_ss COMMA column_constraint_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
 	}
 ;
 
