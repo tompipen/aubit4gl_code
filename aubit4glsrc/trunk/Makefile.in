@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.72 2002-07-11 09:29:18 mikeaubury Exp $
+# $Id: Makefile.in,v 1.73 2002-07-11 09:31:55 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -306,11 +306,11 @@ log:
 
 
 corecompile:
+	$(MAKE) -C compilers/xgen
 	$(MAKE) -C lib
 #	$(MAKE) -C lib/libtui
 #	$(MAKE) -C compilers/4glc/rules
 	$(MAKE) -C compilers/4glc
-	$(MAKE) -C compilers/xgen
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
