@@ -17,7 +17,7 @@ public class P4glConnection {
     
     /** Tipo de conexão */
     private String connectionType = "jdbc";
-    
+
     /** Url para driver de JDBC */
     private String sgbdUrl = "informix-sqli";
     
@@ -240,8 +240,9 @@ public class P4glConnection {
             connection = DriverManager.getConnection(url);
         }
         catch (SQLException ex) {
-            System.err.println("Não foi possivel estabelecer ligação à " +
-            "Base de dados\n" + url + "\n" +
+            // output will be found in <TOMCAT_HOME>/logs/catalina.out
+			System.err.println("Cannot establish a database connection " +
+            "using connect string:\n" + url + "\n" +
             ex.getMessage()
             );
             return null;

@@ -1,42 +1,92 @@
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
-
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
-    <display-name>Doc4GL Fgldocumenter web browser</display-name>
+    <display-name>Doc4GL documentation web browser</display-name>
     <description>
         This application allow user to browse 4GL applications source code
         documentation, created with "fgldoc" tool, directly from an
         Informix database repository.
 	</description>
 
-<!--
+   <servlet>
+      <servlet-name>DocumentAudit</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.DocumentAudit</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>FglProcess</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.FglProcess</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>FglTableUsage</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.FglTableUsage</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>FunctionDescription</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.FunctionDescription</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>FunctionParameter</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.FunctionParameter</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>FunctionReturn</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.FunctionReturn</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>GenJsTree</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.GenJsTree</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>Process</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.Process</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>Login</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.Login</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>MainPanel</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.MainPanel</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>ModuleDocument</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.ModuleDocument</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>ModuleDocumentOptions</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.ModuleDocumentOptions</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>P4glConnection</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.P4glConnection</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>TableUsage</servlet-name>
+      <servlet-class>pt.moredata.fgldocumenter.browser.TableUsage</servlet-class>
+   </servlet>
 
-is this section needed at all? we don't have a servlet - only jsp and few class
-files, plus images ...
-    <servlet>
-        <servlet-name>fgldocumenter</servlet-name>
-        <servlet-class>pt.moredata.fgldocumenter.browser</servlet-class>
-    </servlet>
 
-    <servlet-mapping>
-        <servlet-name>FgldocumenterServlet</servlet-name>
-        <url-pattern>/fgldocumenter</url-pattern>
-    </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>Login</servlet-name>
+    <url-pattern>/Login</url-pattern>
+   </servlet-mapping>
 
 
-    <servlet>
-        <servlet-name>HelloServlet</servlet-name>
-        <servlet-class>mypackage.Hello</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>HelloServlet</servlet-name>
-        <url-pattern>/hello</url-pattern>
-    </servlet-mapping>
--->
-
+   <session-config>
+      <session-timeout>30</session-timeout>
+   </session-config>
+   <mime-mapping>
+      <extension>html</extension>
+      <mime-type>text/html</mime-type>
+   </mime-mapping>
+   <mime-mapping>
+      <extension>txt</extension>
+      <mime-type>text/plain</mime-type>
+   </mime-mapping>
+   <welcome-file-list>
+      <welcome-file>/index.jsp</welcome-file>
+   </welcome-file-list>
 
 </web-app>
 

@@ -4,15 +4,35 @@
 
 <%@ page import="pt.moredata.fgldocumenter.browser.P4glConnection" %>
 
-  <!-- Values starting with DOC4GL_ will get replaced automatically by make file install target -->
 <!--
-org.apache.jasper.JasperException: Cannot find any information on 
+org.apache.jasper.JasperException: Cannot find any information on
 property 'connectionType' in a bean of type 'pt.moredata.fgldocumenter.browser.P4glConnection'
+
+Once again i had problem like that when i switched from Jrun to Tomcat, the reason
+for my problem is that i used some jsp:setProperty  and Tomcat is more case-sensitive
+than Jrun for the Parameter names and i had to verify all my parameterNames so that the
+follow the convention : theParameterNameMustStartWithLowerCase and the according method
+name in my bean would be: setTheParameterNameMustStartWithLowerCase(String aParamValue);
+
+
+  Não foi possivel estabelecer ligação à Base de dados
+jdbc:informix-sqli://localhost:1543/p4gl_repository:INFORMIXSERVER=aptiva_ids;USER=root;PASSWORD=babaroga
+com.informix.asf.IfxASFException: Attempt to connect to database server (aptiva_ids) failed.
+
+OK : jdbc:informix-sqli://192.168.1.12:1543/maxdev:INFORMIXSERVER=aptiva_ids;user=root;password=babaroga
+BAD: jdbc:informix-sqli://localhost:1543/p4gl_repository:INFORMIXSERVER=aptiva_ids;USER=root;PASSWORD=babaroga
+BAD: jdbc:informix-sqli://192.168.1.12:1543/p4gl_repository:INFORMIXSERVER=aptiva_ids;USER=root;PASSWORD=babaroga
+
+-->
+<!--
+	Values starting with DOC4GL_ will get replaced automatically by make file install target
+	this should be in .properties file:
 -->
 
-
 <jsp:useBean id="implicitDS" scope="session" class="pt.moredata.fgldocumenter.browser.P4glConnection">
+<!--
   <jsp:setProperty name="implicitDS" property="connectionType" 	value="DOC4GL_CONNECTIONTYPE"/>
+-->
   <jsp:setProperty name="implicitDS" property="sgbdUrl"        	value="DOC4GL_SGDBURL"/>
   <jsp:setProperty name="implicitDS" property="hostName"		value="DOC4GL_HOSTNAME"/>
   <jsp:setProperty name="implicitDS" property="service"  		value="DOC4GL_SERVICE"/>
@@ -31,7 +51,7 @@ property 'connectionType' in a bean of type 'pt.moredata.fgldocumenter.browser.P
 </HEAD>
 	<% if ( implicitDS.getConnection() == null ) { %>
 		<BODY>
-	  <B>Conexão impossivel</B>
+	  <B>Database connection failed</B>
 		</BODY>
   <% } %>
 
