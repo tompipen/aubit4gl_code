@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.10 2005-03-04 08:06:54 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.11 2005-03-23 08:24:07 afalout Exp $
 #
 
 ########################################################################
@@ -135,6 +135,9 @@ NO_COMPILE=0
 #############
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/aubit4gl
+#Note: location of system global cinfiguration file is determined by LSB standard.
+#But wheather it will be created or not will depend on user lever privilages 
+#of the user installing Aubit to write under /etc
 AUBITETC=/etc/opt/aubit4gl
 
 #FIXME:
@@ -1363,7 +1366,7 @@ do
    -settings)
         echo "Processed configuration files, in this order:"
 		echo
-		echo "A1 [/etc/opt/aubit4gl/aubitrc] =$A1"
+		echo "A1 [$AUBITETC/aubitrc] =$A1"
 		echo "A2 [/opt/aubit4gl/etc/aubitrc] =$A2"
 		echo "A3 [../etc/aubitrc]            =$A3"
 		echo "A4 [etc/aubitrc]               =$A4"

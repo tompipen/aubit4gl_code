@@ -24,11 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.218 2005-03-09 15:14:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.219 2005-03-23 08:24:10 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.218 2005-03-09 15:14:44 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: compile_c.c,v 1.219 2005-03-23 08:24:10 afalout Exp $";
+#endif
 /**
  * @file
  * Generate .C & .H modules.

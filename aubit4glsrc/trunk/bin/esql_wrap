@@ -60,6 +60,7 @@ else
 	if test -f "$HOME/.aubitrc"; then
 		. "$HOME/.aubitrc"
 	else
+#WARNING - do not hard-code - use @AUBITETC@ instead!!	
 		if test -f /etc/opt/aubit4gl/aubitrc; then
 			. /etc/opt/aubit4gl/aubitrc
 		else

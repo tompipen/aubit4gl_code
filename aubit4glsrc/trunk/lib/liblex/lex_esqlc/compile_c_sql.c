@@ -24,14 +24,18 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.47 2005-03-21 00:43:16 afalout Exp $
+# $Id: compile_c_sql.c,v 1.48 2005-03-23 08:24:11 afalout Exp $
 #
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.47 2005-03-21 00:43:16 afalout Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: compile_c_sql.c,v 1.48 2005-03-23 08:24:11 afalout Exp $";
+#endif
+
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);

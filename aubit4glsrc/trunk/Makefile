@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.18 2005-03-21 00:42:01 afalout Exp $
+# $Id: Makefile,v 1.19 2005-03-23 08:18:43 afalout Exp $
 #
 
 ## ==================================================================
@@ -1511,8 +1511,8 @@ platform.common:
 
 settings.rc:
 	@echo
-	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"
-	@echo "A2 [/opt/aubit4gl/etc/aubitrc] =${A2}"
+	@echo "A1 [${AUBITETC}/aubitrc]       =${A1}"
+	@echo "A2 [${AUBITDIR}/etc/aubitrc]   =${A2}"
 	@echo "A3 [../etc/aubitrc]            =${A3}"
 	@echo "A4 [etc/aubitrc]               =${A4}"
 	@echo "A5 [~/.aubit4gl/aubitrc]       =${A5}"

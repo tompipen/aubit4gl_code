@@ -24,9 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.18 2005-03-09 15:15:25 mikeaubury Exp $
+# $Id: display_array.c,v 1.19 2005-03-23 08:24:15 afalout Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.18 2005-03-09 15:15:25 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: display_array.c,v 1.19 2005-03-23 08:24:15 afalout Exp $";
+#endif
 /**
  * @file
  * Implementation of Display Array

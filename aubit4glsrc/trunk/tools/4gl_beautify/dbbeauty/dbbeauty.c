@@ -19,7 +19,8 @@
 /* this program Upshifts all Informix 4gl keywords, and nothing else */
 
 #ifndef lint
-static char sccsid[] = "@(#) dbbeauty.c 1.1  94/04/15 21:37:37";
+	static char const module_id[] =
+		"@(#) dbbeauty.c 1.1  94/04/15 21:37:37";
 #endif /* not lint */
 
 

@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
-static char *module_id="$Id: dump_scr.c,v 1.11 2004-12-23 16:42:45 mikeaubury Exp $";
+
+#ifndef lint
+	static char const module_id[] =
+		"$Id: dump_scr.c,v 1.12 2005-03-23 08:24:12 afalout Exp $";
+#endif
 
 FILE *f;
 

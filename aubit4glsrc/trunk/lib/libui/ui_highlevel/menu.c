@@ -4,7 +4,12 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.14 2005-01-05 20:04:15 mikeaubury Exp $";
+
+
+#ifndef lint
+	static char const module_id[] =
+		"$Id: menu.c,v 1.15 2005-03-23 08:24:15 afalout Exp $";
+#endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);

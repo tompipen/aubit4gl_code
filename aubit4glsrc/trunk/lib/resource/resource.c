@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.97 2005-03-09 15:15:27 mikeaubury Exp $
+# $Id: resource.c,v 1.98 2005-03-23 08:24:16 afalout Exp $
 #
 */
 
@@ -131,12 +131,11 @@ struct str_resource builtin_resource[] = {
   {"INCLINES", "no"},		///"yes" or "no"
   
 #if (defined (__MINGW32__))
-//FIXME: do not hard-code D:/cygwin
-// {"AUBITETC", "D:/cygwin/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
-//  {"AUBITETC", "_WINDOWS_DRIVE_ _CYGWIN_PATH_/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
-  {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files */
+  {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files as determined by Autoconf in variable @AUBITRC@ */
   {"A4GL_MV_CMD", "move"},
 #else
+//TODO: should we use _AUBITETC_ here too? Not all users installing Aubit will have sufficient 
+//privileges to install aubitrc under /etc
   {"AUBITETC", "/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
   {"A4GL_MV_CMD", "mv"},
 #endif
@@ -1005,7 +1004,9 @@ FILE *resourcefile = 0;
 		free (build_resource);
 
   /* 
-  	----------------- from /etc/opt/aubit4gl/aubitrc (SYSTEM GLOBAL)
+  	----------------- from under AUBITETC (tipically /etc/opt/aubit4gl/aubitrc
+	unless Autoconf determined that user does not have sufficient privileges
+	to install it there) (SYSTEM GLOBAL)
 	On Windows, this will work only if there is CygWin installed
   */
 

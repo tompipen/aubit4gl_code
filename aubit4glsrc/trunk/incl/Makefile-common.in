@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.186 2005-03-21 00:43:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.187 2005-03-23 08:24:08 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -54,6 +54,8 @@ MAKEFILE_COMMON_INCLUDED	=1
 #############
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/${AUBITNAME}
+#...unless user does not have sufficinet rights to install it there, as 
+#determined by Autoconf when running ./configure
 AUBITETC			=@AUBITETC@
 
 #WARNING! configure is not creating this file when in binary tree,
@@ -499,11 +501,12 @@ else
 	CWARN			=
 endif
 
+############################
+#If we need to disable unused variables warning, use this.
 #This is unfortunate, and we will no doubth accumulate significant 
-#ammount of unused variables in the future, but since we started using 
-#static char *module_id=""; for CVS IDs I cant find a sollution to ignore 
-#resulting warnings, other then to disable it completely:
-#add VOLATILE - static volatile char rcsid[] = "xxx"; - DOES NOT HELP
+#ammount of unused variables in the future
+#For ID string, use:
+#	ifndef lint static char const module_id[] = "..."
 #CWARN	+=-Wno-unused-variable
 
 

@@ -10,8 +10,10 @@
 #include "low_gtk.h"
 #include "hl_proto.h"
 #include <ctype.h>
-
-static char *module_id="$Id: lowlevel_gtk.c,v 1.54 2005-01-12 11:15:23 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: lowlevel_gtk.c,v 1.55 2005-03-23 08:24:15 afalout Exp $";
+#endif
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"

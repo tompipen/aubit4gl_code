@@ -43,6 +43,10 @@ if test -f "/etc/bash.bashrc"; then
 fi
 ############################
 #Read global aubitrc
+#Note: location of system global cinfiguration file is determined by LSB standard.
+#But wheather it will be created or not will depend on user lever privilages 
+#of the user installing Aubit to write under /etc
+#TODO - do not hard-code - use @AUBITETC@ instead
 if test -f "/etc/opt/aubit4gl/aubitrc" ; then
 	. /etc/opt/aubit4gl/aubitrc > /dev/null
 fi

@@ -1,4 +1,7 @@
-static char *module_id="$Id: widget_gtk.c,v 1.13 2004-07-27 16:50:34 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: widget_gtk.c,v 1.14 2005-03-23 08:24:16 afalout Exp $";
+#endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"

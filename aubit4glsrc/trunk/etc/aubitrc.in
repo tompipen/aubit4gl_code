@@ -67,7 +67,9 @@
 #############
 #this internal variable points to default location of Aubit config files
 #Default: /etc/opt/aubit4gl You should not need to change this.
-AUBITETC=/etc/opt/aubit4gl
+#AUBITETC=/etc/opt/aubit4gl
+#WARNING - do not hard-code - use @AUBITETC@ instead!!
+AUBITETC=@AUBITETC@
 
 ############
 #Defines location where you installed Aubit4gl:

@@ -24,11 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.117 2005-03-20 18:24:27 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.118 2005-03-23 08:24:10 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.117 2005-03-20 18:24:27 mikeaubury Exp $";
+
+
+#ifndef lint
+	static char const module_id[] =
+		"$Id: compile_c_esql.c,v 1.118 2005-03-23 08:24:10 afalout Exp $";
+#endif
+
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -471,7 +477,14 @@ print_put (char *xcname,char *putvals)
 
 
   if (A4GLSQLCV_check_requirement("NO_PUT")) {
-	a4gl_yyerror ("You cannot use a PUT with the target database");
+	  if (A4GL_isyes(acl_getenv("A4GL_INCOMPAT_AT_RUNTIME"))) {
+		  	printc("/* FAKE PUT - WILL STOP AT RUN-TIME */");
+			printc("printf (\"You cannot use a PUT with the target database\\n\"); ");
+			printc("A4GL_push_long(3);");
+			print_exit_program(1);
+	  } else {
+		  a4gl_yyerror ("You cannot use a PUT with the target database");
+	  }
 	return;
   }
 
@@ -483,7 +496,7 @@ print_put (char *xcname,char *putvals)
 	c=A4GL_cursor_type(xcname);
 
 	if (c!='I') {
-		a4gl_yyerror("Got confused - I didn't think that was an insert cursor");
+		a4gl_yyerror("Got confused - I didn't think that was an insert cursor\\n Use 'PRAGMA EMULATE INSERT CURSOR FOR CursorName' to hint the compiler");
 		return;
 	}
 	ptr=A4GL_get_insert_prep(xcname);
@@ -491,9 +504,20 @@ print_put (char *xcname,char *putvals)
 	printc("/* FAKE PUT - USING EXECUTE */");
 
 	if (ibindcnt==0) {
-		a4gl_yyerror("Doing this isn't implemented yet..");
-		// We need to copy these from the declare...
-		print_execute(ptr,1);
+		// PUT statment without FROM clause
+	  if (A4GL_isyes(acl_getenv("A4GL_INCOMPAT_AT_RUNTIME"))) {
+		  	printc("/* FAKE PUT without FROM - WILL STOP AT RUN-TIME */");
+			printc("printf (\"You cannot use a PUT without FROM with the target database\\n\"); ");
+			printc("A4GL_push_long(3);");
+			print_exit_program(1);
+			//print_execute(ptr,0);
+			//return;
+	  } else {
+		  	a4gl_yyerror("Doing this isn't implemented yet (PUT without FROM)");
+			return;
+			// We need to copy these from the declare...
+			// print_execute(ptr,1);
+	  }
 	} else {
 		// We should be ok...
 		print_execute(ptr,1);
@@ -1166,9 +1190,16 @@ clr_suppress_lines();
 void
 print_flush_cursor (char *s)
 {
-A4GL_save_sql("FLUSH %s",A4GL_strip_quotes(s));
-  printc ("\nEXEC SQL FLUSH %s;\n", A4GL_strip_quotes(s));
-  print_copy_status ();
+	if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
+		/* When emulating insert cursor, acutual INSERT is performed so
+		there is nothing to FLUSH */
+		printc ("\n /* ignored FLUSH for %s */ \n", A4GL_strip_quotes(s));
+		//A4GL_save_sql("FLUSH %s",A4GL_strip_quotes(s));
+	} else {
+		A4GL_save_sql("FLUSH %s",A4GL_strip_quotes(s));
+		printc ("\nEXEC SQL FLUSH %s;\n", A4GL_strip_quotes(s));
+		print_copy_status ();
+	}
 }
 
 /**

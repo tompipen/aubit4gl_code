@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.28 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: readforms.c,v 1.29 2005-03-23 08:24:09 afalout Exp $
 #*/
 
 /**
@@ -574,11 +574,20 @@ do_translate_form (struct_form * the_form)
 }
 
 
+/* API_form.c (generated from API_form.spec by dlmagic) makes calls to 
+this function. Prototype is also there, but it should not be -  it should be in 
+a4gl_lib_form_int.h - and that header included both in this file and in 
+API_form.c - but that proto is printed by dlmagic and changing it will impact
+all .spec APIs - so since we are lazy we will for now repeat the proto here*/
+int A4GLFORM_initlib (void);
 
-void
+// NOTE - was void here, but int in API
+//void
+int
 A4GLFORM_initlib (void)
 {
   // Does nothing...
+  return 0;
 }
 
 /* ============================ EOF ============================== */

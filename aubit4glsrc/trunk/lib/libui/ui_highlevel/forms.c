@@ -1,4 +1,7 @@
-static char *module_id="$Id: forms.c,v 1.18 2005-03-08 20:47:37 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: forms.c,v 1.19 2005-03-23 08:24:15 afalout Exp $";
+#endif
 
 #include "hl_forms.h"
 #include "hl_proto.h"

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.101 2005-03-09 15:14:33 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.102 2005-03-23 08:24:08 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -145,9 +145,11 @@ ifdef COMSPEC
 	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${AUBITDIR}"
 #A4GL_INIFILE
 	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
-	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abutrc"
+#WARNING - do not hard-code - use @AUBITETC@ instead!!
+	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abitrc"
 	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
-	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abutrc"
+#WARNING - do not hard-code - use @AUBITETC@ instead!!	
+	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abitrc"
 #Show current settings
 	@echo "-------------------------HKCU-----------------------------------"
 	@echo "AUBITDIR=`regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"

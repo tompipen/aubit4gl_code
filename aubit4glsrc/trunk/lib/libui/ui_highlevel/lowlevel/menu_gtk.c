@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.5 2005-03-09 15:15:26 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.6 2005-03-23 08:24:16 afalout Exp $
 #*/
 
 /**
@@ -66,8 +66,10 @@
 #include <ctype.h>
 #include "menu_x.x.h"
 
-
-static char *module_id="$Id: menu_gtk.c,v 1.5 2005-03-09 15:15:26 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: menu_gtk.c,v 1.6 2005-03-23 08:24:16 afalout Exp $";
+#endif
 
 
 #include <gtk/gtk.h>

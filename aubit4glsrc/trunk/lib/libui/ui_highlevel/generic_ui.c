@@ -5,8 +5,10 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.40 2005-03-07 17:10:51 mikeaubury Exp $";
-//#include "generic_ui.h"
+#ifndef lint
+	static char const module_id[] =
+		"$Id: generic_ui.c,v 1.41 2005-03-23 08:24:15 afalout Exp $";
+#endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);

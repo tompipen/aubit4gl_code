@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.286 2005-03-21 00:42:13 afalout Exp $
+dnl # $Id: configure.in,v 1.287 2005-03-23 08:21:14 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1975,19 +1975,20 @@ A4GL_DBPATH=$aubitdir/tools:$INST_BASE/tools
 ## ==================================================================
 
 
-#resource.c
-# 1:cannot read /etc/opt/aubit4gl/aubitrc
-# 2:cannot read /opt/aubit4gl/etc/aubitrc   - $AUIBTDIR/etc/aubitrc actually
-# cannot read /home/mbm/.aubit4gl/aubitrc
-# cannot read /home/mbm/aubitrc
-# cannot read ./.aubitrc
+#resource.c reads config file(s) in this order:
+# 1:/etc/opt/aubit4gl/aubitrc   - @AUBITETC@/aubitrc as determined here - global config
+# 2:/opt/aubit4gl/etc/aubitrc   - $AUBITDIR/etc/aubitrc actually, if AUBITDIR is set at this point
+# /home/mbm/.aubit4gl/aubitrc   - mbm??? (in .aubit4gl uunder sers home dir)
+# /home/mbm/aubitrc				- mbm??? (OBSOLETE?)
+# ./.aubitrc			        - (current dirctory)
+# ... and then $XXXX? variable if set
 
 
     #do NOT use installation directory - Aubit programs will find it there
     #only if they know AUBITDIR, and unless there is a aubitrc in fixed global
     #location available to provide it (or user created environment variable
     #$AUBITDIR) this will not be known. USE USER'S HOME DIRECTORY INSTEAD,
-	#because this will allways be known
+	#because thisc will allways be known
 	dirs="/etc/opt/$SHORTNAME $HOME/.aubit4gl"
     AUBITETC=
 
@@ -8189,7 +8190,6 @@ PLUGIN_NO_LINKABLE=
 	
 	if test "$IFMX_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
-		COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT"
 		if test "$enable_minimal" != "yes"; then
 			COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT"
 			#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
@@ -9030,7 +9030,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.286 2005-03-21 00:42:13 afalout Exp $
+| $Id: configure.in,v 1.287 2005-03-23 08:21:14 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

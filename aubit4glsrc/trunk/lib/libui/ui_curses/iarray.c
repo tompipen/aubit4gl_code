@@ -24,11 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.96 2005-03-09 15:15:22 mikeaubury Exp $
+# $Id: iarray.c,v 1.97 2005-03-23 08:24:12 afalout Exp $
 #*/
+#ifndef lint
+	static char const module_id[] =
+		"$Id: iarray.c,v 1.97 2005-03-23 08:24:12 afalout Exp $";
+#endif
 
-static char *module_id =
-  "$Id: iarray.c,v 1.96 2005-03-09 15:15:22 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation

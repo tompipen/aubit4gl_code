@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.72 2005-03-09 15:14:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.73 2005-03-23 08:24:09 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -235,46 +235,16 @@ open_outfile (void)
       exit (3);
     }
 
-  fprintf (outfile, "#define fgldate long\n");
-  fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
-  if (strchr (h, '/') != 0)
-    fprintf (outfile, "#include \"%s\"\n", strrchr (h, '/') + 1);
-  else
-    fprintf (outfile, "#include \"%s\"\n", h);
-  /* if (acl_getenv ("GTKGUI"))
-     fprintf (outfile, "#include <acl4glgui.h>\n");
-
-     we no longer need this:
-     fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
-   */
-
-  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
-	   outputfilename);
-
-  hfile = A4GL_mja_fopen (h, "w");
-
-#ifdef OBSOLETE_CODE
-  if (strncmp (acl_getenv ("GTKGUI"), "Y", 1) == 0)
-    {
-      /*
-         strange: was this supposed to be A4GL_UI and not GTKGUI?
-         Since GTK programs are working anyway, should I assume this is
-         obsolete code?
-       */
-
-      /* fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n"); */
-      /* only this was in a4gl_incl_acl4glgui.h, which was removed from CVS: */
-
-      fprintf (hfile, "#include <gtk/gtk.h>\n");
-      fprintf (hfile,
-	       "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,'on')==0||strnullcmp(data,'clicked')==0))\n");
-      fprintf (hfile,
-	       "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
-      fprintf (hfile,
-	       "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
-
-    }
-#endif
+	fprintf (outfile, "#define fgldate long\n");
+  	fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+  	if (strchr (h, '/') != 0) {
+	  fprintf (outfile, "#include \"%s\"\n", strrchr (h, '/') + 1);
+  	} else {
+	  fprintf (outfile, "#include \"%s\"\n", h);
+  	}
+  
+	fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",outputfilename);
+	hfile = A4GL_mja_fopen (h, "w");
 }
 
 

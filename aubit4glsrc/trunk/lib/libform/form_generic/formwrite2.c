@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.28 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.29 2005-03-23 08:24:09 afalout Exp $
 #*/
 
 /**
@@ -876,29 +876,21 @@ chk_for_wordwrap(void)
 void
 A4GL_write_form (void)
 {
-  char fname[132];
-  char fname2[132];
-  char base[132];
-  char ext[132];
-  int a;
-  struct_form *ptr;
+char fname[132];
+char fname2[132];
+int a;
 
-  ptr = &the_form;
-
-  strcpy (fname, outputfilename);
-
+	struct_form *ptr;
+	ptr = &the_form;
+	strcpy (fname, outputfilename);
 
 #ifdef NDEF
 
-/* WHY IS THIS HERE - WHAT DOES IT DO ? */
-
-  A4GL_bname (outputfilename, ext, base);
-
-  if (ext[0] == 0 || strchr (&fname[3], '.')==0) {
-      		strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
+	/* WHY IS THIS HERE - WHAT DOES IT DO ? */
+	A4GL_bname (outputfilename, ext, base);
+	if (ext[0] == 0 || strchr (&fname[3], '.')==0) {
+		strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
 	}
-
-    }
 #endif
 
   strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));

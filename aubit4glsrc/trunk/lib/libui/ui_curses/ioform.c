@@ -24,10 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.121 2005-03-09 15:15:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.122 2005-03-23 08:24:13 afalout Exp $
 #*/
-static char *module_id =
-  "$Id: ioform.c,v 1.121 2005-03-09 15:15:24 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: ioform.c,v 1.122 2005-03-23 08:24:13 afalout Exp $";
+#endif
+
 /**
  * @file
  *

@@ -24,9 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.110 2005-03-09 15:15:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.111 2005-03-23 08:24:13 afalout Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.110 2005-03-09 15:15:24 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: newpanels.c,v 1.111 2005-03-23 08:24:13 afalout Exp $";
+#endif
 
 /**
  * @file

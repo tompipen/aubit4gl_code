@@ -24,12 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.39 2005-03-09 15:15:15 mikeaubury Exp $
+# $Id: array.c,v 1.40 2005-03-23 08:24:11 afalout Exp $
 #*/
 
 
-
-static char *module_id="$Id: array.c,v 1.39 2005-03-09 15:15:15 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: array.c,v 1.40 2005-03-23 08:24:11 afalout Exp $";
+#endif
 
 
 

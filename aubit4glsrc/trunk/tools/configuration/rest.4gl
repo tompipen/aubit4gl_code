@@ -286,6 +286,10 @@ end function
 	display " or installed from RPM package, a script called 'configure' " 	at 7,1
 	display " was automatically executed to detect your current system"	at 8,1
 	display " configuration, and based on this Aubit global configuration"	at 9,1
+#Note: location of system global cinfiguration file is determined by LSB standard.
+#But wheather it will be created or not will depend on user lever privilages 
+#of the user installing Aubit to write under /etc 
+#DO NOT HARD-CODE - use @AUBITETC@ instead
 	display "  file (/etc/opt/aubit4gl/aubitrc) was created. "		at 10,1
 	display " " 								at 11,1
 	display " This utility allows you to inspect and change settings that"	at 12,1

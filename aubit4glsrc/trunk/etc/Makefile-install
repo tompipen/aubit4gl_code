@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.12 2005-03-04 08:06:57 afalout Exp $
+# $Id: Makefile-install,v 1.13 2005-03-23 08:24:08 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -89,7 +89,7 @@ deinstall: deinstall.libs.links deinstall.bin.links
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| All Aubit related links/files outside this tree removed.           |"
 	@echo "| If you wish to deinstall completely, just remove this directory    |"
-	@echo "| Note that /etc/opt/aubit4g;/aubitrc configuration file WAS NOT     |"
+	@echo "| Note that ${AUBITETC}/aubitrc configuration file WAS NOT"
 	@echo "| removed. You can also use 'deinstall.all' to remove all files from |"
 	@echo "| Aubit installation tree selectively, as they where installed, but  |"
 	@echo "| preserve all files created after installation.                     |"

@@ -114,7 +114,11 @@ Installation
 
     By default, compiler will be installed in /opt/aubit4gl (with "aubit"
     and "aubit-config" links to /usr/bin and libraries linked to /usr/lib,
-    and configuration file placed in /etc/opt/aubit4gl/aubitrc)
+    and GLOBAL configuration file placed in /etc/opt/aubit4gl/aubitrc)
+	
+	Note: location of system global cinfiguration file is determined by LSB standard.
+	But wheather it will be created or not will depend on user lever privilages 
+	of the user installing Aubit to write under /etc
 
     To test the compiler, execute:
 

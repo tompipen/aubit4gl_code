@@ -5,7 +5,10 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.22 2005-01-17 13:41:29 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: misc.c,v 1.23 2005-03-23 08:24:15 afalout Exp $";
+#endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
 

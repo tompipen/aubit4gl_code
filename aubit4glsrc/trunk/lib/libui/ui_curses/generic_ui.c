@@ -1,6 +1,8 @@
 #include "a4gl_lib_ui_tui_int.h"
-
-static char *module_id="$Id: generic_ui.c,v 1.21 2005-03-09 15:15:16 mikeaubury Exp $";
+#ifndef lint
+	static char const module_id[] =
+		"$Id: generic_ui.c,v 1.22 2005-03-23 08:24:12 afalout Exp $";
+#endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);

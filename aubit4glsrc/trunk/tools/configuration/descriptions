@@ -197,6 +197,10 @@ AUBITDIR COMPILE/RUNTIME Specify the location of the aubit source tree or instal
 AUBITETC COMPILE/RUNTIME Location of global Aubit configuration directory
 	This internal variable points to default location of Aubit config files
 	Default: /etc/opt/aubit4gl You should not need to change this.
+	Note: location of system global cinfiguration file is determined by LSB standard.
+	But wheather it will be created or not will depend on user lever privilages 
+	of the user installing Aubit to write under /etc.
+	Actual location will be deternined by Autoconf in @AUBITETC@ variable.
 AUBIT_Y2K RUNTIME Specify Y2K handling of dates
 	+n (n<100) - set to nearest year using +n years from today as limit for future
 	-n (n>-100) - set to nearest year using -n from today as limit for past
