@@ -1,4 +1,4 @@
-###########################################################################
+##########################################################################
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.42 2003-10-11 09:53:39 afalout Exp $
+#	 $Id: a4gl.mk,v 1.43 2003-12-10 09:33:14 afalout Exp $
 
 ##########################################################################
 #
@@ -268,6 +268,12 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 %${A4GL_FRM_EXT}: %.per
 #	${FAIL_CMPL_FRM}${A4GL_FC} $^ ${FORMSTORE}$@
 	${FAIL_CMPL_FRM}${A4GL_FC} $<
+
+#Rules for compiling forms when packer is given by specific extension
+%${A4GL_FRM_BASE_EXT}${A4GL_PACKED_EXT}: %.per
+	${FAIL_CMPL_FRM}export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC;${A4GL_FC} $<
+%${A4GL_FRM_BASE_EXT}${A4GL_XML_EXT}: %.per
+	${FAIL_CMPL_FRM}export A4GL_PACKER=XML; export A4GL_FORMTYPE=GENERIC;${A4GL_FC} $<
 
 
 ####################################

@@ -25,13 +25,13 @@ BEGIN {
 	next
 	}
 /^\$/ {
-	options[no]="listing" $0 
+	options[no]="listing" $0
 	next
       }
 
 
 /^\t/ {
-	print substr($0,2) > "helpfile.hlp"
+	print substr($0,2) > "helpfile.msg"
 	print "   let lv_txt[" cnt "]=\"" substr($0,2) "\"" 
 	if (length(substr($0,2))>80) {
 		print "#*** TOO LONG"
@@ -60,14 +60,14 @@ if (substr(a,1,1)!=" ") {
 	if (name=="") next
 	units=$2
 	brief=substr($0,length(name)+length(units)+3)
-	print "." no > "helpfile.hlp"
-	print "( " $0 " )" > "helpfile.hlp"
-	print brief > "helpfile.hlp"
-	printf "Categories :"  > "helpfile.hlp"
+	print "." no > "helpfile.msg"
+	print "( " $0 " )" > "helpfile.msg"
+	print brief > "helpfile.msg"
+	printf "Categories :"  > "helpfile.msg"
 	for (key in arr_units) {
-		printf (" %s",arr_units[key]) > "helpfile.hlp"
+		printf (" %s",arr_units[key]) > "helpfile.msg"
 	}
-	print "" > "helpfile.hlp"
+	print "" > "helpfile.msg"
 	print "when "  no 
 	cnt=1
 }
@@ -89,17 +89,20 @@ END {
 	print "END FUNCTION"
 	print " "
 	print "MAIN"
+	print "   OPTIONS HELP FILE \"helpfile.hlp\""
+	print "   OPTIONS HELP KEY \"F2\""
 	print "   DEFER INTERRUPT"
 	print "   CALL initialize()"
 	print "   MENU \"Main\""
-	
+
 	for (var in arr_vars) {
 		xx=arr_vars[var];
 		print "      COMMAND \"" var "\" \"" desc[var] "\""
+		print "              HELP 1"
 		print "         call details_" var "()"
 		print " "
 	}
-	print "   COMMAND \"Exit\" exit menu"
+	print "   COMMAND \"Exit\" \"Exit the configurator program\" HELP 2 exit menu"
 	print "   END MENU"
 	print "END MAIN"
 
@@ -113,7 +116,7 @@ END {
 			brief=arr_briefs[name]
 			print "   let mv_option[" a "].name=\"" name "\""
 			print "   let mv_option[" a "].brief=\"" brief "\""
-			print "   let mv_option_offscr[" a "].id=" help_no[name] 
+			print "   let mv_option_offscr[" a "].id=" help_no[name]
 
 			if (substr(options[help_no[name]],1,7)!="listing") {
 				num_op=split(options[help_no[name]],arr_options,"|")

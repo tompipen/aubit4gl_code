@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2003-12-04 09:09:35 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2003-12-10 09:33:14 afalout Exp $
 #
 
 ROOT    		=../..
@@ -188,10 +188,10 @@ pg_%.ao: %.4gl
 ## ==================================================================
 
 install:
-	@echo "asql installed."
+	@echo "TODO-asql installed."
 
 deinstall:
-	@echo "asql de-installed."
+	@echo "TODO-asql de-installed."
 
 ## ==================================================================
 ##                     Run from current location

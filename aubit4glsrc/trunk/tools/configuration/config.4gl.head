@@ -1,3 +1,11 @@
+{*
+ * File config.4gl.head is used by mk_config script to create config.4gl source file.
+ * If the name of this file is "config.4gl", it was automatically generated,
+ * so DO NOT EDIT IT - all changes made will be lost next time mk_config
+ * script is executed!
+ *}
+
+
 define lv_txt array[24] of char(80)
 define lv_newvals associate char(30) with array[300] of char(255)
 
@@ -14,80 +22,120 @@ end record
 
 define mv_window_open integer
 
-	
+
+{*
+ *
+ *
+ *
+ *
+ *}
 function display_txt()
 define a integer
 define b integer
-set pause mode on
-for a=8 to 24
-	display "" at a,1
-end for
-for a=1 to 24
-	let b=a+9
-	if b<=24 then
-		display lv_txt[a]  at b,1 
-	end if
-end for
-set pause mode off
+	set pause mode on
+	for a=8 to 24
+		display "" at a,1
+	end for
+	for a=1 to 24
+		let b=a+9
+		if b<=24 then
+			display lv_txt[a]  at b,1
+		end if
+	end for
+	set pause mode off
 end function
 
 
+{*
+ *
+ *
+ *
+ *
+ *}
 function initialize ()
 	let mv_window_open=0
 end function
 
 
-function show_options(n) 
+{*
+ *
+ *
+ *
+ *
+ *}
+function show_options(n)
 define n integer
 define a integer
 define str char(80)
-for a=1 to 24
-	let lv_txt[a]= " "
-end for
+	for a=1 to 24
+		let lv_txt[a]= " "
+	end for
 
-open window w1 at 4,1 with 20 rows, 80 columns attributes(form line 1)
-if not mv_window_open then
-	open form f1 from "options"
-	let mv_window_open=1
-end if
-
-display form f1
-
-
-call set_count(n)
-
-display array mv_option to srec1.* attribute (current row display="reverse,blue")
-
-on key(f1) 
-	exit display
-before row
-	let a=arr_curr()
-	let str=fgl_getenv(mv_option[a].name)
-
-	if str is null then
-		let str="(Not Set)"
+	open window w1 at 4,1 with 20 rows, 80 columns attributes(form line 1)
+	if not mv_window_open then
+		open form f1 from "options"
+		let mv_window_open=1
 	end if
-	call do_display_txt(mv_option_offscr[a].id)
-	display "CURRENT VALUE =",str clipped at 8,1
-	let str=lv_newvals<<mv_option[a].name>>
-	display "NEW     VALUE =",str clipped at 9,1
 
-on key(return)
-	let a=arr_curr()
-	call change(mv_option[a].name) returning str
-	let lv_newvals<<mv_option[a].name>>=str
-	let str=lv_newvals<<mv_option[a].name>>
-	display "NEW     VALUE =",str clipped at 9,1
+	display form f1
 
-	let int_flag=false
+
+	call set_count(n)
+
+	display array mv_option to srec1.*
+		attribute (current row display="reverse,blue")
+
+		on key(f1) #f1 should be help?
+			exit display
 		
-	
-end display
-close window w1
+		before row
+			let a=arr_curr()
+			let str=fgl_getenv(mv_option[a].name)
+
+			if str is null then
+				let str="(Not Set)"
+			end if
+			call do_display_txt(mv_option_offscr[a].id)
+			display "CURRENT VALUE =",str clipped at 8,1
+			let str=lv_newvals<<mv_option[a].name>>
+			display "NEW     VALUE =",str clipped at 9,1
+
+		on key(left)
+	        #error "left"
+            #here we should exit the DISPLAY ARRAY, re-enter the ring menu and
+            #enter the next ring menu option
+
+		on key(right)
+	        #error "right"
+            #here we should exit the DISPLAY ARRAY, re-enter the ring menu and
+            #enter the previous ring menu option
+
+
+		on key(return)
+			let a=arr_curr()
+			call change(mv_option[a].name) returning str
+			let lv_newvals<<mv_option[a].name>>=str
+			let str=lv_newvals<<mv_option[a].name>>
+			display "NEW     VALUE =",str clipped at 9,1
+
+			let int_flag=false
+
+
+	end display
+	close window w1
 end function
 
 
-function load_options_from_listing(s) 
+{*
+ *
+ *
+ *
+ *
+ *}
+function load_options_from_listing(s)
 define s char(80)
 
 end function
+
+#------------------------ end of "config.4gl.head" -------------------------
+

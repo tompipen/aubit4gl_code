@@ -1,7 +1,7 @@
 # FORMAT :
 #
 # VAR CATEGORIES Brief Description
-# Followed by nothing or 
+# Followed by nothing or
 # =OPTIONAL|LINE|FOR|POSSIBLE|VALUES|IF|REQUIRED
 # or
 # $DIRECTORY/filespec_?.so
@@ -20,48 +20,48 @@
 #  "   999  - Do not add anything - dealing with AD 0-99
 #  "   -999 - use current century
 #
-A4GL_AUTOBANG UI/TUI  Enable automatic ! for command entry 
+A4GL_AUTOBANG UI/TUI  Enable automatic ! for command entry
 =YES|NO
 	(like dbaccess menus) for all applicable statements
-A4GL_CINT
-A4GL_C_COMP
-A4GL_EXE_EXT
+A4GL_CINT COMPILE/RUNTIME Full path to CINT C-code interpreter, if installed, othewise 'no'. Used by 4glc compiler to run C compiled code after compilation.
+A4GL_C_COMP COMPILE Name of the executable of C compiler to use
+A4GL_EXE_EXT COMPILE Extension to use for executable files compiled by Aubit compiler
 A4GL_FORMTYPE FORMS/RUNTIME Determine which runtime library to use for reading forms
 A4GL_FRM_BASE_EXT RUNTIME/COMPILE/FORMS Default form extension (for all packing types)
 A4GL_HELPTYPE RUNTIME Determin which runtime library to use for displaying help messages
 A4GL_HLP_EXT RUNTIME/COMPILE Specify the default extension for a help file
-A4GL_INIFILE
+A4GL_INIFILE COMPILE/RUNTIME Environment variable optionaly specifiying aubitrc file to use
 A4GL_LEXDIALECT COMPILE/RUNTIME Determine which ESQL/C dialect to use
-A4GL_LEXTYPE COMPILE Determine what language to convert the 4GL code into 
-A4GL_LIB_EXT
-A4GL_LINK_LIBS
-A4GL_MENUTYPE COMPILE Determine library to use for menuhandlers (not normal 4GL menus)
-A4GL_MNU_BASE_EXT
+A4GL_LEXTYPE COMPILE Determine what language to convert the 4GL code into
+A4GL_LIB_EXT COMPILE Extension to use for libraries created by Aubit compiler
+A4GL_LINK_LIBS COMPILE Libraries to link against when producing executables
+A4GL_MENUTYPE COMPILE/RUNTIME Determine library to use for menuhandlers (not normal 4GL menus)
+A4GL_MNU_BASE_EXT COMPILE/RUNTIME Base extension (without packer extension) to use when compiling/opening menu files
 A4GL_MSGTYPE RUNTIME Determine library for help message handling
-A4GL_MV_CMD
-A4GL_OBJ_EXT
+A4GL_MV_CMD COMPILE Command to ise to move files on the file system
+A4GL_OBJ_EXT COMPILE extension to use when compiling 4GL modules to objects
 A4GL_OMIT_NO_LOG
 A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
 A4GL_PACKER COMPILE/RUNTIME Determine library for packing forms/menus etc
 $AUBITDIR/libPACKER_?.so
 A4GL_PDFTYPE RUNTIME Determine which library to use for extended reports
-A4GL_RESERVEWORDS
-A4GL_RM_CMD
-A4GL_SAPDB_ESQLC
+A4GL_RESERVEWORDS COMPILE --obsolete?-- used to determine if traditionaly reserved words in 4GL language should be treated as reserverd
+A4GL_RM_CMD COMPILE Command to use for deleting files on the file system
+A4GL_SAPDB_ESQLC COMPILE Full path to SAP DB ESQL/C compiler executable used when compiling EC output for SAP DB
 A4GL_SQLTYPE RUNTIME/COMPILE Determine which library to use to connect to the database
 A4GL_UI RUNTIME Determine which library to use for the user interface
 A4GL_USE_ALIAS_AS
 =YES|NO
-A4GL_XML_EXT
+A4GL_XML_EXT COMPILE/RUNTIME extension to use when creating output (forms,menus) using XML packer
 
 ALWAYSCLOBBER
 =YES|NO
-ANSI_ERROR
-ANSI_WARN
+ANSI_ERROR When ANSI_ERROR is set to Yes, compiler will abort id non ANSI SQL 92 statemt is found in source code. If neither of these is set no checking is performed.
+ANSI_WARN COMPILE ANSI SQL 92 checking mode: When ANSI_WARN is set to Yes compiler will display a warning if it encounters static SQL statement not confitming to ANSI SQL 92 specification
 ARR_DIR_MSG UI/TUI Display/Input array message 'There are no more rows in that direction'
 
 AUBITDIR COMPILE/RUNTIME Specify the location of the aubit source tree
-AUBITETC
+AUBITETC COMPILE/RUNTIME This internal variable points to default location of Aubit config files Default: /etc/opt/aubit4gl You should not need to change this.
 AUBIT_Y2K RUNTIME Specify Y2K handling of dates
 	+n (n<100) - set to nearest year using +n years from today as limit for future
 	-n (n>-100) - set to nearest year using -n from today as limit for past
@@ -72,10 +72,9 @@ AUBIT_Y2K RUNTIME Specify Y2K handling of dates
 	XX00 - always use century XX
 	999  - Do not add anything - dealing with AD 0-99
 	-999 - use current century
-AUTONULL
+AUTONULL COMPILE Auto initializing module and function local variables. Numeric variables are initializet to 0, everything else to NULL To turn on, set to 'Y' (??? or is that YES ???)
 =YES|NO
-
-BACKGROUND UI/TUI Default background character (in hex) when creating a window 
+BACKGROUND UI/TUI Default background character (in hex) when creating a window
 	(eg 2E for a '.')
 
 
@@ -103,7 +102,7 @@ COMMENT_LIKE_DISPLAY UI Specify comments to be in current display color
 =YES|NO
 COMMENT_LIKE_INPUT UI Specify comments to be in current input color
 =YES|NO
-CONSTANT2DEFINES COMPILE Print on standard output a #define for all constants 
+CONSTANT2DEFINES COMPILE Print on standard output a #define for all constants
 =YES|NO
 	(can be used to generate a .h file)
 DBDATE RUNTIME Specified how dates will be formated
@@ -139,9 +138,9 @@ FIXUPDATE
 FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
 =ROUND|REFORMAT
 GTKGUI
-GTKRC
-GTK_INC_PATH
-GUIPORT
+GTKRC RUNTIME GTK+ resources file to use when running in GTK+ GUI mode --probaly obsolete, GTK libs use this themselves?--
+GTK_INC_PATH COMPILE Path to includes needed ghen compiling GTK gui enabled code ---should be obsolete---
+GUIPORT RUNTIME ---obsolete?---
 HELPTEXT
 HIDE_MENU UI/TUI Remove menu when finished with it, default is to leave it displayed
 =YES|NO
@@ -186,7 +185,7 @@ PAGER
 PAUSE_MSG 
 PGKEYSMOVE UI Defines the use of the PgUp and PgDn keys as the same as NEXT KEY or for ON KEY (PGDN)
 =YES|NO
-POSTGRESDIR
+POSTGRESDIR COMPILE Base directory of PostgreSQL installation to use when looking for includes or libraries to link with
 PRINTPROGRESS
 PRINTSCRFILE UI/TUI Specify a file to dump screen to (start with a | to pipe to a command)
 PRINTSCRKEY UI/TUI Specify a key to automatically dump the screen with (goes to PRINTSCRFILE)
