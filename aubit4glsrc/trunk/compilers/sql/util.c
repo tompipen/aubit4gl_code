@@ -618,5 +618,10 @@ static int A4GLSQLCV_process() {
         return was_ok;
 }
 
+
+
+void A4GL_add_feature(char *feature) {
+        /* Reserved for future use */
+}
 void A4GLSQLPARSE_initlib() {
 }

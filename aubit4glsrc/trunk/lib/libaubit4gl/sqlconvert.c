@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.30 2004-11-27 15:37:59 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.31 2004-11-28 14:33:16 mikeaubury Exp $
 #
 */
 
@@ -105,6 +105,7 @@ char *cvsql_names[]={
   "CVSQL_FAKE_IMMEDIATE",
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SWAP_SQLCA62",
+  "CVSQL_NO_ORDBY_INTO_TEMP",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -169,6 +170,7 @@ enum cvsql_type
   CVSQL_FAKE_IMMEDIATE,
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SWAP_SQLCA62,
+  CVSQL_NO_ORDBY_INTO_TEMP,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -822,6 +824,7 @@ int A4GL_cv_str_to_func (char *p, int len)
 
 
   if (strncasecmp (p, "SWAP_SQLCA62", len) == 0) return CVSQL_SWAP_SQLCA62;
+  if (strncasecmp (p, "NO_ORDBY_INTO_TEMP", len) == 0) return CVSQL_NO_ORDBY_INTO_TEMP;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);

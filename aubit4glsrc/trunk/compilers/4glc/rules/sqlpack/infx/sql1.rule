@@ -5,7 +5,7 @@
 */
 
 rollback_statement:
-	ROLLBACK_W 
+	ROLLBACK_W  {  A4GL_add_feature("ROLLBACK_WORK"); }
 ;
 
 
@@ -86,11 +86,11 @@ op_asc_desc: {strcpy($<str>$,"");}
 	| DESC
 ;
 
-begin_statement: BEGIN_WORK 
+begin_statement: BEGIN_WORK  { A4GL_add_feature("BEGIN_WORK"); }
 ;
 
 commit_statement:
-	COMMIT_W 
+	COMMIT_W  { A4GL_add_feature("COMMIT_WORK"); }
 ;
 
 
@@ -127,10 +127,8 @@ misc_infx_stmt:
 
 
 
-sql_commands :  schema_ss {
-			A4GL_CV_print_exec_sql($<sql_string>1);
-			strcpy($<str>$,"Schema");
-	} 
+sql_commands :  
+	schema_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema"); } 
 	| misc_infx_stmt {
 			char buff[256];
 			A4GL_CV_print_exec_sql(convstrsql($<str>1));
@@ -138,42 +136,27 @@ sql_commands :  schema_ss {
 			ansi_violation(buff,1);
 			strcpy($<str>$,"InfxSpecificSql");
 	}
-	| schema_element_ss {
-		A4GL_CV_print_exec_sql($<sql_string>1);
-		strcpy($<str>$,"Schema Element");
-	} 
+	| schema_element_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema Element"); } 
 	| commit_statement  { print_sql_commit(1); }
 	| misc_sql { A4GL_CV_print_exec_sql($<str>1); }
 	| begin_statement   { print_sql_commit(-1); }
 	| fgl_sql_statement
-
-	| delete_statement_search_ss {
-	 A4GL_lex_printcomment("/*  delete 2 */\n");
-		A4GL_CV_print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"Delete where ...");
-	} 
-	| insert_statement_ss {
-	 A4GL_lex_printcomment("/*  insert */\n");
-		A4GL_CV_print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"insert");
-	} 
-	| rollback_statement  {
-		print_sql_commit(0);
-	}
-	| update_statement_ss {
-		A4GL_CV_print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"update");
-	} 
+	| delete_statement_search_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"Delete where ..."); } 
+	| insert_statement_ss { A4GL_lex_printcomment("/*  insert */\n"); A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"insert"); } 
+	| rollback_statement  { print_sql_commit(0); }
+	| update_statement_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"update"); } 
 	| drops_statement { A4GL_CV_print_exec_sql($<str>1); }
 	| create_statement_ss { A4GL_CV_print_exec_sql($<sql_string>1); }
 	| alter_statement_ss {A4GL_CV_print_exec_sql($<sql_string>1); }
 ;
 
+
+
 privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
-	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
-	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
+	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  A4GL_add_feature("GRANT"); }
+	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  A4GL_add_feature("REVOKE"); }
+	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); A4GL_add_feature("GRANT"); }
+	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  A4GL_add_feature("REVOKE"); }
 ;
 
 
@@ -445,6 +428,7 @@ schema_element_ss:
 
 having_clause_ss:
 	HAVING search_condition_ss {
+		 A4GL_add_feature("HAVING"); 
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);
 	}
 ;
@@ -452,6 +436,7 @@ having_clause_ss:
 
 group_by_clause_ss:
 	GROUP_BY column_specification_list_ss {
+		 A4GL_add_feature("GROUP_BY"); 
 		$<sql_string>$=make_sql_string_and_free(strdup("GROUP BY "),$<sql_string>2,0);
 	}
 ;
@@ -538,10 +523,19 @@ op_group_by_clause_2_ss:
 
 
 
-
+/*
 op_having_clause_2_ss : op_order_by_clause_ss  {$<sql_string>$=$<sql_string>1;}
 	| having_clause_ss op_order_by_clause_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
 ;
+*/
+
+
+op_having_clause_2_ss :  {$<sql_string>$=strdup("");}
+	| having_clause_ss {$<sql_string>$=$<sql_string>1;}
+;
+
+
+
 
 op_order_by_clause_ss:
 	{$<sql_string>$=strdup("");}
@@ -1047,16 +1041,20 @@ sel_p2_ss : { $<sql_string>$=strdup(""); }
 
 
 sel_finish: {$<sql_string>$=strdup("");}
-	| order_by_clause  { $<sql_string>$=strdup($<str>1); }
+	| order_by_clause  { printf("1\n"); $<sql_string>$=strdup($<str>1); }
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
+	printf("2\n");
 	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
 		$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
 		strcpy(last_tmp_name,$<str>3);
 	} else {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
+		strcpy(last_tmp_name,$<str>3);
 	}
 }
-	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
+	| INTO_TEMP tmp_tabname op_no_log { 
+	printf("3\n");
+$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
 ;
 
 
