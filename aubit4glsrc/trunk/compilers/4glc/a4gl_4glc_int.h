@@ -5,6 +5,21 @@
 		// No getopt.h on Solaris
 		#include <getopt.h> 			/* struct option */
     #endif
+#else
+	struct option
+	{
+	# if (defined __STDC__ && __STDC__) || defined __cplusplus
+	  const char *name;
+	# else
+	  char *name;
+	# endif
+	  /* has_arg can't be an enum because some compilers complain about
+	     type mismatches in all the code that assumes it is an int.  */
+	  int has_arg;
+	  int *flag;
+	  int val;
+	};
+
 #endif
 
 #include "a4gl_libaubit4gl.h"
