@@ -54,10 +54,34 @@ opt_func_call_args {
    sprintf($<str>$,"%d",get_counter_val());drop_counter();
 }
 CLOSE_BRACKET opt_return {
+        print_expr ((struct expr_str *)$<ptr>7);  
 	print_call_shared($<str>4,$<str>2,atoi($<str>8));
 	print_returning();
 	print_end_call_shared();
 }
+   | NEWFORMATSHARED  OPEN_BRACKET {
+	sprintf($<str>$,"\"%s\",\"%s\"",get_idents(0),get_idents(1));
+	A4GLSQL_set_status(0);
+	new_counter();
+	}
+	opt_func_call_args {
+   	sprintf($<str>$,"%d",get_counter_val());drop_counter();
+}
+CLOSE_BRACKET opt_return {
+	char buff[256];
+	char *ptr;
+	debug("STR3 = %s",$<str>3);
+	strcpy(buff,$<str>3);
+	ptr=strchr(buff,',');
+	*ptr=0;
+	ptr++;
+        print_expr ((struct expr_str *)$<ptr>4);  
+	print_call_shared(buff,ptr,atoi($<str>5));
+	print_returning();
+	print_end_call_shared();
+}
+
+
    | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET
    {
    char buff[256];

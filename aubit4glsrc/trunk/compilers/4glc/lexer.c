@@ -64,6 +64,7 @@ int mja_fgetc (FILE * f)
 {
   int a;
   a = fgetc (f);
+ 
   if (a == '\n')
     {
       yylineno++;
@@ -188,7 +189,7 @@ static char *read_word2 (FILE * f, int *t)
   *t = NAMED_GEN;
   while (1)
     {
-      a = fgetc (f);
+      a = mja_fgetc (f);
       if (feof (f))
 	{
 	  *t = TYPE_EOF;
@@ -205,7 +206,7 @@ static char *read_word2 (FILE * f, int *t)
 		{
 		  if (strcasecmp (word, "endcode") == 0)
 		    break;
-		  a = fgetc (f);
+		  a = mja_fgetc (f);
 		  continue;
 		}
 
@@ -214,7 +215,7 @@ static char *read_word2 (FILE * f, int *t)
 		  break;
 		}
 	      ccat (word, a, instrs || instrd);
-	      a = fgetc (f);
+	      a = mja_fgetc (f);
 	    }
 	  *t = CLINE;
 	  return word;
@@ -231,7 +232,7 @@ static char *read_word2 (FILE * f, int *t)
 		  break;
 		}
 	      ccat (word, a, instrs || instrd);
-	      a = fgetc (f);
+	      a = mja_fgetc (f);
 	    }
 	  *t = CLINE;
 	  return word;
@@ -245,13 +246,13 @@ static char *read_word2 (FILE * f, int *t)
 	{
 	  if (strlen (word) > 0)
 	    {
-	      ungetc (a, f);
+	      mja_ungetc (a, f);
 	      return word;
 	    }
 
 	  while (1)
 	    {
-	      a = fgetc (f);
+	      a = mja_fgetc (f);
 	      if (feof (f))
 		break;
 	      if (a == '\n' || a == '\r')
@@ -268,13 +269,13 @@ static char *read_word2 (FILE * f, int *t)
       if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
 	  int z;
-	  z = fgetc (f);
-	  ungetc (z, f);
+	  z = mja_fgetc (f);
+	  mja_ungetc (z, f);
 	  if (z == '-')
 	    {
 	      while (1)
 		{
-		  a = fgetc (f);
+		  a = mja_fgetc (f);
 		  if (feof (f))
 		    break;
 		  if (a == '\n' || a == '\r')
@@ -290,7 +291,7 @@ static char *read_word2 (FILE * f, int *t)
       if (a == '!' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
 	  char c;
-	  c = fgetc (f);
+	  c = mja_fgetc (f);
 	  if (c == '}')
 	    {
 	      strcpy (word, "!}");
@@ -299,18 +300,18 @@ static char *read_word2 (FILE * f, int *t)
 	    }
 	  else
 	    {
-	      ungetc (c, f);
+	      mja_ungetc (c, f);
 	    }
 	}
 
       if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
-	  a = fgetc (f);
+	  a = mja_fgetc (f);
 	  if (a != '!')
 	    {
 	      while (1)
 		{
-		  a = fgetc (f);
+		  a = mja_fgetc (f);
 		  if (feof (f))
 		    break;
 		  if (a == '}')
@@ -353,7 +354,7 @@ static char *read_word2 (FILE * f, int *t)
 	{
 	  if (strlen (word) > 0)
 	    {
-	      ungetc (a, f);
+	      mja_ungetc (a, f);
 	      return word;
 	    }
 	}
@@ -366,7 +367,7 @@ static char *read_word2 (FILE * f, int *t)
 	      if (isnum (word) && a == '.');
 	      else
 		{
-		  ungetc (a, f);
+		  mja_ungetc (a, f);
 		  return word;
 		}
 	    }
@@ -470,10 +471,12 @@ static int words (int cnt, int pos, FILE * f, char *p)
 
   if (stricmp (buff, "<ident>") == 0)
     {
-      strcpy (idents[idents_cnt++], p);
+
       //printf("check %s\n",p);
-      if (isident (p) == 0)
+      if (isident (p) == 0) 
 	return 0;
+      strcpy (idents[idents_cnt++], p);
+	
     }
   else
     {
@@ -552,6 +555,7 @@ static int chk_word (FILE * f, char *str)
 
   p = read_word (f, &t);
 
+debug("p=%s\n",p);
   if (strcmp (p, "sql_code") == 0 && xccode == 0)
     {
       xccode = 2;
@@ -698,8 +702,8 @@ static void fix_bad_strings (char *s)
   return;
 }
 
-#define fgetc(x) mja_fgetc(x)
-#define ungetc(x,y) mja_ungetc(x,y)
+//#define fgetc(x) mja_fgetc(x)
+//#define ungetc(x,y) mja_ungetc(x,y)
 
 /**
  *  Lexical analisys entry point.
@@ -828,3 +832,7 @@ void turn_state (int kw, int v)
     }
 }
 
+
+char *get_idents(int a) {
+	return idents[a];
+}

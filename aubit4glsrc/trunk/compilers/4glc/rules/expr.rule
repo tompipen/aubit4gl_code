@@ -530,23 +530,47 @@ reset_counter();
 
 
 function_call_expr2:
-identifier 
-OPEN_BRACKET 
-{ 
-addmap("Call",$<str>1,curr_func,yylineno,infilename);
-new_counter(); } 
-opt_func_call_args 
-{ sprintf($<str>$,"%d",get_counter_val()); printcomment("/*function_call_expr2 %s*/\n",$<str>$); drop_counter(); }
-CLOSE_BRACKET 
-{
-int cnt;
-cnt=1;
-debug("Print expr (1)");
-print_expr($<ptr>4);
-sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
-$<ptr>$=new_expr($<str>$);
-inc_counter();
+	identifier 
+	OPEN_BRACKET 
+		{ 
+		addmap("Call",$<str>1,curr_func,yylineno,infilename);
+		new_counter(); 
+		} 
+	opt_func_call_args 
+		{ 
+		sprintf($<str>$,"%d",get_counter_val()); 
+		printcomment("/*function_call_expr2 %s*/\n",$<str>$); 
+		drop_counter(); 
+		}
+	CLOSE_BRACKET 
+		{
+		int cnt;
+		cnt=1;
+		debug("Print expr (1)");
+		print_expr($<ptr>4);
+		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
+		$<ptr>$=new_expr($<str>$);
+		inc_counter();
+		}
+| NEWFORMATSHARED OPEN_BRACKET {
+        sprintf($<str>$,"\"%s\",\"%s\"",get_idents(0),get_idents(1));
+	debug("NEWFORMAT : %s\n",$<str>$);
+        A4GLSQL_set_status(0);
+        new_counter();
+} opt_func_call_args {
+	sprintf($<str>$,"%d",get_counter_val());  
+	drop_counter();
+} CLOSE_BRACKET {
+	char buff[256];
+        char *ptr;
+        strcpy(buff,$<str>3);
+        ptr=strchr(buff,',');
+        *ptr=0;
+        ptr++;
+	sprintf($<str>$,"{int _retvars;\n_retvars=call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");pop_args(_retvars);push_null();}\n}\n}\n", buff,ptr,atoi($<str>5), lastlineno,infilename);
+	$<ptr>$=append_expr($<ptr>4,$<str>$);
 }
+
 ;
 
 function_callb:
