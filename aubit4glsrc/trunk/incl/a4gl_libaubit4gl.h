@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.41 2003-03-28 08:07:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.42 2003-04-02 11:34:58 mikeaubury Exp $
 #
 */
 
@@ -381,6 +381,7 @@
 	#define BEFORE_INP  			(_fld_dr==-99)
 	#define AFTER_INP  				(_fld_dr==-95)
 	#define ON_KEY(zzz) 			if (_fld_dr==-90&&chk_iskey(zzz))
+
 	#define set_status(a) 			set_status(a,0)
 
 	/* ========================== from a4gl_dtypes.h ==================== */
@@ -1253,15 +1254,23 @@
 
 
 	/* 4gl program controls */
+
 	#define FORMCONTROL_BEFORE_FIELD 		1
 	#define FORMCONTROL_AFTER_FIELD 		2
 	#define FORMCONTROL_BEFORE_INPUT 		3
 	#define FORMCONTROL_AFTER_INPUT 		4
 	#define FORMCONTROL_EXIT_INPUT_OK 		5
-	#define FORMCONTROL_EXIT_INPUT_ABORT 	6
+	#define FORMCONTROL_EXIT_INPUT_ABORT 		6
 	#define FORMCONTROL_KEY_PRESS 			7
+	#define FORMCONTROL_BEFORE_INSERT 		8
+	#define FORMCONTROL_BEFORE_DELETE 		9
+	#define FORMCONTROL_AFTER_INSERT 		10
+	#define FORMCONTROL_AFTER_DELETE 		11
+	#define FORMCONTROL_BEFORE_ROW 			12
+	#define FORMCONTROL_AFTER_ROW 			13
 
-	/* formloop controls */
+
+	/* formloop controls ? Don't know if we need these yet... */
 	#define FORMCONTROL_REQUEST_FIELD
 	#define FORMCONTROL_ENABLE_FIELD
 	#define FORMCONTROL_DISABLE_FIELD
@@ -1270,7 +1279,10 @@
 	struct s_formcontrol {
 		int 	op;
 		char *	parameter;
+		char *	field_name;
 		int 	field_number;
+		int 	state;
+		int 	extent;
 	};
 
 	struct s_screenio {
@@ -1321,6 +1333,7 @@
 		int 	no_arr;
 		int 	inp_flags;
 		int 	arr_size;
+		int last_arr;
 
 		int 	last_arr_line;
 		int 	last_scr_line;
@@ -1335,6 +1348,8 @@
 		int 	help_no;
 		int 	curr_attrib;
 		struct s_screenio *screen_io;
+		struct s_formcontrol *fcntrl;
+		int fcntrl_cnt;
 	};
 
 

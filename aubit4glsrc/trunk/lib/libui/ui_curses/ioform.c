@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.12 2003-03-29 16:48:31 mikeaubury Exp $
+# $Id: ioform.c,v 1.13 2003-04-02 11:36:10 mikeaubury Exp $
 #*/
 
 /**
@@ -96,6 +96,7 @@ int 				do_input_nowrap=0;
 
 /** @todo Take this prototype definition for a header file */
 
+void bomb_out(void) ;
 extern char *	replace_sql_var 	(char *s);
 char *			read_string_dup 	(FILE * ofile);
 struct s_form_dets *getfromform 	(FORM * f);
@@ -560,6 +561,7 @@ form_loop (struct s_screenio * s)
   if (a < 0)
     { 
 	// Yep...
+
       return a;
     }
 
@@ -710,23 +712,15 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
       return REQ_DEL_CHAR;
 
     case KEY_UP:
-      npage = page_for_pfield (s) - 1;
-      set_form_page (s->currform->form, npage);
-/*
-   if (curr_metric_is_first ())
-   {
-   //error_box ("iS First");
-   int_form_driver (mform, REQ_PREV_PAGE);
-   return REQ_PREV_FIELD;
-   }
-
-   if (curr_metric_is_veryfirst ())
-   {
-   int_form_driver (mform, REQ_LAST_PAGE);
-   }
- */
-      s->field_changed = 1;
-      return REQ_PREV_FIELD;
+	if (s->mode!=MODE_INPUT_ARRAY) {
+      		npage = page_for_pfield (s) - 1;
+      		set_form_page (s->currform->form, npage);
+      		s->field_changed = 1;
+      		return REQ_PREV_FIELD;
+	} else {
+		// We want to go up on an input array...
+		return 0-A4GLKEY_UP;
+	}
 
       /*
          case KEY_PGUP : return REQ_PREV_PAGE;
@@ -738,36 +732,23 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case 13:
     case 10:
     case KEY_DOWN:
-	if (std_dbscr.input_wrapmode==0 && curr_metric_is_verylast())  {
+	if (s->mode!=MODE_INPUT_ARRAY||(a=='\t' && s->mode==MODE_INPUT_ARRAY)) {
+		if (std_dbscr.input_wrapmode==0 && curr_metric_is_verylast())  {
+      			s->field_changed = 1;
+      			do_input_nowrap=1;
+			return 0;
+		}
+
+      		npage = page_for_nfield (s) - 1;
+      		set_form_page (s->currform->form, npage);
       		s->field_changed = 1;
-      		do_input_nowrap=1;
-		return 0;
+      		return REQ_NEXT_FIELD;
+	} else {
+		// We want to go down a line in the input array...
+		return 0-A4GLKEY_DOWN;
 	}
 
-      npage = page_for_nfield (s) - 1;
-      set_form_page (s->currform->form, npage);
-/*
-   if (page_for_cfield()<page_for_nfield()) {
-   return REQ_NEXT_PAGE;
-   }
 
-   if (page_for_cfield()>page_for_nfield()) {
-   return REQ_FIRST_PAGE;
-   }
-
-   if (curr_metric_is_last ())
-   {
-   return REQ_NEXT_PAGE;
-   }
-
-   if (curr_metric_is_verylast ())
-   {
-   return REQ_FIRST_PAGE;
-   }
- */
-
-      s->field_changed = 1;
-      return REQ_NEXT_FIELD;
 
     case KEY_LEFT:
       return REQ_PREV_CHAR;
@@ -912,7 +893,7 @@ form_field_chk (struct s_screenio *sio, int m)
   mform = sio->currform->form;
   debug ("CHeck fields 1 m=%d", m);
   form = sio->currform;
-  debug ("CHeck fields 2");
+  debug ("CHeck fields 2 currentfield=",form->currentfield);
 
   fprop = 0;
   if (m > 0)
@@ -1057,6 +1038,7 @@ form_field_chk (struct s_screenio *sio, int m)
   {    debug ("Setting current field");  }
 #endif
   form->currentfield = current_field (mform);
+  debug("Set to %p",form->currentfield);
   fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
 #ifdef DEBUG
   {    debug ("Adding comments %p");  }
@@ -1203,6 +1185,8 @@ turn_field_on2 (FIELD * f, int a)
   fprop = (struct struct_scr_field *) (field_userptr (f));
   assertion(fprop==0,"Field has no properties");
   debug ("turn_field_on2 a=%d fprop=%p", a, fprop);
+
+  debug ("Turn Field On %p %p", fprop->tabname, fprop->colname);
   debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
   field_opts_on (f, O_ACTIVE);
   field_opts_on (f, O_EDIT);
@@ -1737,6 +1721,7 @@ do_after_field (FIELD * f, struct s_screenio * sio)
 
   if (a == -1)
     {
+	bomb_out();
       exitwith ("after field : field number not found!");
     }
 
@@ -2009,7 +1994,6 @@ set_init_pop_attr (FIELD * field, int attr)
 
 
 
-#ifdef NOLONGERUSED
 /**
  *
  * @todo Describe function
@@ -2047,7 +2031,6 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
         }
     }
 }
-#endif
 
 
 
@@ -2822,6 +2805,12 @@ int_form_driver (FORM * form, int a)
   FIELD *f;
   char buff[1024];
   char buff2[1024];
+int fd_ok;
+
+
+  debug("int_form_driver called with %p - %d",form,a);
+if (a<=27) { debug("Control Character or ESC"); return; }
+
   field_pos = get_curr_field_col (form);
   f = current_field (form);
 
@@ -2836,7 +2825,12 @@ int_form_driver (FORM * form, int a)
 
   debug ("Calling form_driver with %d for form %p", a, form);
 
-  form_driver (form, a);
+  fd_ok=form_driver (form, a);
+  if (fd_ok!=E_OK) {
+		debug("Problem in calling form_driver %p %d - returns %d",form,a,fd_ok);
+		exitwith("Form driver complaint");
+		return;
+  }
 
   if (f != current_field (form))
     {
@@ -3062,5 +3056,16 @@ struct s_form_dets *f;
 	push_int(form_page(f->form));
 	return 1;
 }
+
+
+/*
+ * This function causes a SEGFAULT - useful for stopping the debugger!
+*/
+void bomb_out() {
+char *ptr=0;
+*ptr=0;
+}
+
+
 
 /* ================================ EOF ============================== */

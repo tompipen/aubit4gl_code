@@ -629,6 +629,8 @@ print_module_variable_init -> void
 
 print_cmd_start -> void
 
+print_import_legacy char* s -> void
+
 print_cmd_end -> void
 
 get_into_part int n -> char*

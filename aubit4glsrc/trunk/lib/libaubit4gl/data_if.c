@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.12 2003-03-28 08:07:19 mikeaubury Exp $
+# $Id: data_if.c,v 1.13 2003-04-02 11:36:08 mikeaubury Exp $
 #
 */
 
@@ -201,6 +201,7 @@ int  no_lines;
 int  no_arr;
 int  inp_flags;
 int  arr_size;
+int last_arr;
 int  last_arr_line;
 int  last_scr_line;
 void * srec;
@@ -213,6 +214,8 @@ int cntrl;
 int  help_no;
 int  curr_attrib;
 void *screen_io;
+void *fcntrl;
+int fcntrl_cnt;
 };
 
 struct s_s_inp_arr_1 *val;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.22 2003-03-29 16:48:31 mikeaubury Exp $
+# $Id: newpanels.c,v 1.23 2003-04-02 11:36:10 mikeaubury Exp $
 #*/
 
 /**
@@ -1196,6 +1196,7 @@ display_at2 (char *z, int x, int y, int a)
 int
 getch_win (void)
 {
+  debug("getch_win called...");
   return getch_swin (window_on_top ());
 }
 

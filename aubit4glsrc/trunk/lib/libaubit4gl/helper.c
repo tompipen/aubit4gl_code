@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.11 2002-08-31 06:19:59 afalout Exp $
+# $Id: helper.c,v 1.12 2003-04-02 11:36:09 mikeaubury Exp $
 #
 */
 
@@ -747,6 +747,15 @@ int
 aclfgl_fgl_prtscr(int n) 
 {
 	return 0;
+}
+
+
+char last_field[256];
+void set_last_field_name(char *s) {
+        strcpy(last_field,s);
+}
+char *get_last_field_name(char *s) {
+        return last_field;
 }
 
 /* =================================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.25 2003-04-01 20:28:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.26 2003-04-02 11:36:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2607,19 +2607,37 @@ print_input_1 (void)
 void
 print_input_2 (char *s)
 {
-  printc ("if (_fld_dr== -95) {/* after input */\n");
-  printc ("   break;\n}\n");
-  printc ("if (_fld_dr== -98) {/* before field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
-  printc ("_fld_dr=%s;_forminit=0;\n", s);
-  printc ("if (_fld_dr== -1) {/* after field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
-  printc ("if (_fld_dr==0) { /* after input 2 */\n");
-  printc ("   _fld_dr= -95;continue;\n}\n");
-  add_continue_blockcommand ("INPUT");
-  printc ("\n}\n");
-  pop_blockcommand ("INPUT");
-  printc ("}\n");
+
+  if (strncmp(s,"inp_arr",7)!=0) { // Not an input array...
+  	printc ("if (_fld_dr== -95) {/* after input */\n");
+  	printc ("   break;\n}\n");
+  	printc ("if (_fld_dr== -98) {/* before field */\n");
+  	printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+  	printc ("_fld_dr=%s;_forminit=0;\n", s);
+  	printc ("if (_fld_dr== -1) {/* after field */\n");
+  	printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+  	printc ("if (_fld_dr==0) { /* after input 2 */\n");
+  	printc ("   _fld_dr= -95;continue;\n}\n");
+  	add_continue_blockcommand ("INPUT");
+  	printc ("\n}\n");
+  	pop_blockcommand ("INPUT");
+  	printc ("}\n");
+
+   } else {
+  	printc ("if (_fld_dr== -95) {/* after input */\n");
+  	printc ("   break;\n}\n");
+  	printc ("if (_fld_dr== -197) {/* before field */\n");
+  	printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+  	printc ("_fld_dr=%s;_forminit=0;\n", s);
+  	printc ("if (_fld_dr== -198) {/* after field */\n");
+  	printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+  	printc ("if (_fld_dr==0) { /* after input 2 */\n");
+  	printc ("   _fld_dr= -95;continue;\n}\n");
+  	add_continue_blockcommand ("INPUT");
+  	printc ("\n}\n");
+  	pop_blockcommand ("INPUT");
+  	printc ("}\n");
+   }
 }
 
 
@@ -2696,7 +2714,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 {
   static char buff2[256];
   int cnt;
-  int ccc;
+  //int ccc;
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");

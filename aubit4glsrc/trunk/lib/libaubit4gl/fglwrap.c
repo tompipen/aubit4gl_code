@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.31 2003-03-29 16:33:26 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.32 2003-04-02 11:36:08 mikeaubury Exp $
 #
 */
 
@@ -409,8 +409,11 @@ chk_err(int lineno,char *fname)
     #ifdef DEBUG
 		debug("Write error to screen...");
     #endif 
-    push_char(s);
-    A4GL_errorlog(fname,lineno,1);
+  	if (strcmp(fname,"Unknown")!=0) {
+    		  push_char(s);
+		  A4GL_errorlog(fname,lineno,1);
+	}
+    debug(s);
     printf("Err:%s",s);
   }
   exit(1);
