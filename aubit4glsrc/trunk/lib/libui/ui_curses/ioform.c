@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.114 2005-02-01 11:21:45 mikeaubury Exp $
+# $Id: ioform.c,v 1.115 2005-02-02 15:48:37 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.114 2005-02-01 11:21:45 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.115 2005-02-02 15:48:37 mikeaubury Exp $";
 /**
  * @file
  *
@@ -1798,7 +1798,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
 
 
-      A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
+	A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
       fprop->flags |= 2;
 
@@ -2347,12 +2347,10 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   A4GL_set_field_attr (field);
-  A4GL_debug ("Determining attribute - field_buffer=%s",
-	      field_buffer (field, 0));
-  attr =
-    A4GL_determine_attribute (cmd_type, attr, f, field_buffer (field, 0));
+  A4GL_debug ("Determining attribute - field_buffer=%s", field_buffer (field, 0));
+  attr = A4GL_determine_attribute (cmd_type, attr, f, field_buffer (field, 0));
 
-  if (attr != 0)
+  if (attr != 0 || 1)
     {
       A4GL_debug ("calling set_field_attr_with_attr : %x", attr);
       A4GL_set_field_attr_with_attr (field, attr, cmd_type);
