@@ -19,10 +19,14 @@ create_c_1  :
 		CREATE_IDX idx_column_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
 	| CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7);} | 
-	CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7);} 
+	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7,$<str>8);}
+	| CREATE_DATABASE ident_or_var {
+		yyerror("You cannot create a database from within Aubit4gl....");
+	}
 	;
+
 op_no_log : 
 {strcpy($<str>$,"");} 
 | WITH_NO_LOG
@@ -188,3 +192,4 @@ column_constraints:
 
 constraint_name: identifier
 ;
+
