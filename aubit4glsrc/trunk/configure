@@ -7701,7 +7701,7 @@ ALL_LINGUAS="en"
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure,v 1.233 2004-03-01 00:59:30 afalout Exp $
+# $Id: configure,v 1.234 2004-03-02 23:50:08 afalout Exp $
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
 
@@ -12830,7 +12830,7 @@ echo "${ECHO_T}no" >&6
 fi
 
 	ECPG_INCDIR="$withval/include"
-	ECPG_IFLAGS="-I$ECPG_INCDIR"
+	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"
 	ECPG_LIBDIR="$withval/lib"
 	#In case we are working from not installed CVS code:
 	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
@@ -26428,7 +26428,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.233 2004-03-01 00:59:30 afalout Exp $
+| $Id: configure,v 1.234 2004-03-02 23:50:08 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

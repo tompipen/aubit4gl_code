@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
+dnl # $Id: configure.in,v 1.220 2004-03-02 23:50:10 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1440,7 +1440,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
+# $Id: configure.in,v 1.220 2004-03-02 23:50:10 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -2506,15 +2506,15 @@ AC_ARG_WITH(cint,
 	
 		#FIXME: despite listing all this paths, cint executable will only be found
 	    #if it's in the PATH - no idea why
-echo "x1 $LDFLAGS"
-echo "xa $save_LDFLAGS"
+#echo "x1 $LDFLAGS"
+#echo "xa $save_LDFLAGS"
 
 		save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 		save_LDFLAGS="$LDFLAGS"
 		save_PATH="$PATH"		
 		save_LIBS="$LIBS"
-echo "w1 $LDFLAGS"
-echo "wa $save_LDFLAGS"
+#echo "w1 $LDFLAGS"
+#echo "wa $save_LDFLAGS"
 		
 		LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:/usr/local/lib:/usr/lib/termcap:$LD_LIBRARY_PATH"
 		LDFLAGS="-L/usr/lib/termcap $LDFLAGS"
@@ -2543,7 +2543,7 @@ echo "wa $save_LDFLAGS"
 				CINT=no
 				AC_MSG_RESULT(no-missing bsd or termcap libraries)
 			else
-				AC_MSG_RESULT(yes)			
+				AC_MSG_RESULT(Use Cint - yes)			
 			fi
 		fi
 		
@@ -2561,9 +2561,9 @@ echo "wa $save_LDFLAGS"
   AC_MSG_RESULT(--with-cint not specified)
 ])
 
-echo "1 $LDFLAGS"
-echo "a $save_LDFLAGS"
-echo "2 $LD_LIBRARY_PATH"
+#echo "1 $LDFLAGS"
+#echo "a $save_LDFLAGS"
+#echo "2 $LD_LIBRARY_PATH"
 #exit
 
 
@@ -3224,7 +3224,7 @@ fi
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
 
 	ECPG_INCDIR="$withval/include"
-	ECPG_IFLAGS="-I$ECPG_INCDIR"
+	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"
 	ECPG_LIBDIR="$withval/lib"
 	#In case we are working from not installed CVS code:
 	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
@@ -3282,7 +3282,7 @@ fi
 		        esac
 
 				AC_MSG_CHECKING(PG engine IFX compatibility-informix_serial function)
-			 	TMP=`nm -A --defined-only $POSTMASTER | grep informix_serial 2>&1`
+			 	TMP=`nm -A --defined-only $POSTMASTER 2>&1`
 				if test "$TMP" != ""; then 
 					case "$TMP" in
 					*no*symbols)
@@ -6589,7 +6589,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.219 2004-02-12 11:02:24 afalout Exp $
+| $Id: configure.in,v 1.220 2004-03-02 23:50:10 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

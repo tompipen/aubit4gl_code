@@ -1,10 +1,17 @@
 
+
+#Show verbose messages of what this script is doing
 SH_DEBUG=1
 
 
 if test "$SH_DEBUG" = "1"; then
 	echo "In ecpg_wrap : $@"
 fi
+
+#######################################################################
+#				Set environment 
+#######################################################################
+
 
 if [ "$POSTGRESDIR" = "" ]
 then
@@ -21,10 +28,17 @@ then
     fi
 fi
 
+if test "$PG_IFLAGS" = ""; then 
+    PG_IFLAGS=`aubit-config ECPG_IFLAGS 2>/dev/null`
+	
+	if test "$PG_IFLAGS" = ""; then
+		#try default
+		PG_IFLAGS="-I$POSTGRESDIR/include -I/usr/include/pgsql -I/usr/include/postgresql/informix/esql"
+	fi
+fi
 
-PG_IFLAGS="-I$POSTGRESDIR/include -I/usr/include/pgsql"
 if [ "$PGSQL_INCDIR" != "" ]; then
-	PG_IFLAGS="$PG_IFLAGS -I$PGSQL_INCDIR/include"
+	PG_IFLAGS="$PG_IFLAGS -I$PGSQL_INCDIR/include -I$PGSQL_INCDIR/include/postgresql/informix/esql"
 fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
@@ -34,16 +48,18 @@ ECPG_EXT=cpc
 COMPILE_OBJ=0
 output=""
 
-
-
 ECPG_ONLY=0
+
+
 # If we have a .ec on the command line -
 # assume they have .ec as the extension instead
-
-
-
 echo $* | grep "\.ec" >/dev/null 2>&1
 [ $? -eq 0 ] &&	ECPG_EXT=ec
+
+
+###########################################################################
+#		Parse the command line options received
+###########################################################################
 
 while [ "$1" != "" ]
 do
@@ -71,8 +87,6 @@ do
 		shift
 		continue
 	fi
-
-
 
 	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I"  ]
 	then
@@ -146,7 +160,6 @@ do
 	fi
 
 	other_args="$other_args $a"
-
 
 	shift
 done

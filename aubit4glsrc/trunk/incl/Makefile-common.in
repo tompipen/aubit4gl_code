@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.148 2004-02-03 04:55:07 afalout Exp $
+# $Id: Makefile-common.in,v 1.149 2004-03-02 23:50:29 afalout Exp $
 #
 
 
@@ -47,9 +47,12 @@ MAKEFILE_COMMON_INCLUDED	=1
 #############
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/${AUBITNAME}
-#AUBITETC					=/etc/opt/${AUBITNAME}
 AUBITETC					=@AUBITETC@
 
+#############
+#While compiling source code, force priority of 'aubitrc' present in this 
+#source code tree. Also applies to aubit-config calls made from makefles 
+A4GL_INIFILE				=@aubitdir@/etc/aubitrc
 
 #WARNING! configure is not creating this file when in binary tree,
 #it is copied in state as configured for source code distribution,

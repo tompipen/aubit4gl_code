@@ -439,4 +439,7 @@ ADD_LD_LIBRARY_PATH="@ADD_LD_LIBRARY_PATH@"
 #Path to CINT installation. Used by cint/make_cintlib 
 CINTSYSDIR=@CINTSYSDIR@
 
+#Include flags for PostgreSQL ECPG compieler - used by ecpg_wrap script
+ECPG_IFLAGS="@ECPG_IFLAGS@"
+
 #-------------------------------- EOF -----------------------------
