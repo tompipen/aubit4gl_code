@@ -469,7 +469,10 @@ pdf_report_def :
 PDF_REPORT 
 {
 rep_type=REP_TYPE_PDF;
-clr_variable(); lastlineno=yylineno; pdf_init_report_structure(&pdf_rep_struct);
+clr_function_constants();
+clr_variable(); 
+lastlineno=yylineno; 
+pdf_init_report_structure(&pdf_rep_struct);
 }
 identifier OPEN_BRACKET
 {
