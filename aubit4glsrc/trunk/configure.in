@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.96 2002-09-23 04:48:19 afalout Exp $
+# $Id: configure.in,v 1.97 2002-09-24 06:55:48 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -446,7 +446,14 @@ case $host in
         SO_EXT=.dll
 		;;
 
-	#*-sun-solaris2.7)
+	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
+	*-sun-solaris*)
+        ;;
+
+	#powerpc-apple-darwin5.5 (Andrej on SF CF)
+	*-apple-darwin*)
+        ;;
+
 
 	*-ibm-aix*)
 		PIC=
@@ -2409,8 +2416,17 @@ AC_CHECK_LIB([check], [suite_create])
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
-	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h ])
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h search.h])
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
+
+    #FIXME: stop if no search.h
+	#a simple fix is to get a copy of search.h from the Darwin CVS tree's
+	#libedit pkg, as follows:
+	#cvs -d :pserver:(username)@anoncvs.opensource.apple.com:/cvs/Darwin login
+	#CVS password: (password)
+	#cvs -d :pserver:blakers@anoncvs.opensource.apple.com:/cvs/Darwin checkout libedit
+	#cp /usr/ports/libedit/libedit/search.h /usr/include/search.h
+
 
 fi
 

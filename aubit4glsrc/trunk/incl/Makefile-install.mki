@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.29 2002-09-23 07:15:54 afalout Exp $
+# $Id: Makefile-install.mki,v 1.30 2002-09-24 06:55:50 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -53,9 +53,13 @@ else
 endif
 ifeq "${AUBITRCFILEEXISTS}" ""
 	${MKPATH} ${AUBITETC}
+ifeq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
 	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
 	chmod a+r ${AUBITETC}/aubitrc
 	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
+else
+	@echo "WARNING: ${AUBITETC} is not writable."
+endif
 else
 	@echo " "
 	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
@@ -76,10 +80,11 @@ install.links: deinstall.bin.links
 ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
+	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
 else
 	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
 endif
-	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
+
 
 #This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
 #install.libs.conf:

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.72 2002-09-24 04:40:02 afalout Exp $
+# $Id: Makefile-common.in,v 1.73 2002-09-24 06:55:50 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -65,6 +65,10 @@ endif
 ifeq "${TARGET_OS}" ""
 	TARGET_OS=$(findstring cygwin,${TARGET})
 endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring darwin,${TARGET})
+endif
+
 ifeq "${TARGET_OS}" ""
 	TARGET_OS=unknown
 endif
@@ -304,9 +308,11 @@ else
 	CWARN			=
 endif
 
-C_IFLAGS            =-I/usr/local/include
+C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
+ifeq "${TARGET_OS}" "darwin"
+	C_IFLAGS 			+=-I$(AUBITDIR)/tools
+endif
 C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H
-C_IFLAGS 			+=-I$(AUBITDIR)/incl
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
