@@ -159,6 +159,9 @@
 "SKIP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SKIP;}
 "SMALLFLOAT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 "SMALLINT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}
+"MONEY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
+"DECIMAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DECIMAL;}
+
 "SOME" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SOME;}
 "STEP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STEP;}
 "SUM" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SUM;}

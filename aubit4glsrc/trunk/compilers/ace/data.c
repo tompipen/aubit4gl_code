@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.8 2002-07-26 20:34:23 mikeaubury Exp $
+# $Id: data.c,v 1.9 2002-07-30 10:24:57 mikeaubury Exp $
 #*/
 
 /**
@@ -44,11 +44,11 @@
 
 #ifdef OLD_INCL
 
-	#include "report.h"
+#include "report.h"
 
 #else
 
-    #include "a4gl_ace_int.h"
+#include "a4gl_ace_int.h"
 
 #endif
 
@@ -60,7 +60,7 @@
 
 struct report this_report;
 #ifdef OLD_INCL
-	extern int status;
+extern int status;
 #endif
 extern char *outputfilename;
 extern char *ordby[256];
@@ -76,18 +76,20 @@ extern int ordbycnt;
 
 void dif_add_bind_int (void *list, long a);
 #ifdef OLD_INCL
-	int A4GLSQL_next_column (char *colname, int *dtype, int *size);
-	void add_variable (char *name, char *dstring, int category, int pno, int dtype, int dim);
-	void init_report (void);
-	int find_variable (char *name);
-    void add_function (char *name);
+int A4GLSQL_next_column (char *colname, int *dtype, int *size);
+void add_variable (char *name, char *dstring, int category, int pno,
+		   int dtype, int dim);
+void init_report (void);
+int find_variable (char *name);
+void add_function (char *name);
 #endif
 char *decode_datatype (int dtype, int dim);
-void yyerror_sql(char *s);
-void print_variables(char *s);
-char * add_zero_rows_where (struct select_stmts *ptr);
+void yyerror_sql (char *s);
+void print_variables (char *s);
+char *add_zero_rows_where (struct select_stmts *ptr);
 int find_sql_var (int colno);
 void add_fmt (int cat, char *col, struct commands commands);
+int decode_dtype (char *s);
 
 /*
 =====================================================================
@@ -128,9 +130,9 @@ init_report (void)
   this_report.aggs.aggs_len = 0;
   this_report.aggs.aggs_val = 0;
 
-  add_variable("pageno","integer",CAT_BUILTIN,0,2,0);
-  add_variable("lineno","smallint",CAT_BUILTIN,0,1,0);
-  add_variable("today","date",CAT_BUILTIN,0,7,0);
+  add_variable ("pageno", "INTEGER", CAT_BUILTIN, 0, 2, 0);
+  add_variable ("lineno", "SMALLINT", CAT_BUILTIN, 0, 1, 0);
+  add_variable ("today", "DATE", CAT_BUILTIN, 0, 7, 0);
 }
 
 
@@ -146,14 +148,58 @@ find_variable (char *name)
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       ptr = &this_report.variables.variables_val[a];
-      if (strcasecmp (ptr->name, name) == 0) {
-	return a;
+      if (strcasecmp (ptr->name, name) == 0)
+	{
+	  return a;
 	}
     }
 
   return -1;
 }
 
+
+#define STRLENEQ(x,y) (strncmp(x,y,strlen(y))==0)
+
+int
+decode_dtype (char *s)
+{
+  if (STRLENEQ (s, "CHAR"))
+    return 0;
+  if (STRLENEQ (s, "SMALLINT"))
+    return 1;
+  if (STRLENEQ (s, "INTEGER"))
+    return 2;
+  if (STRLENEQ (s, "FLOAT"))
+    return 3;
+  if (STRLENEQ (s, "SMALLFLOAT"))
+    return 4;
+  if (STRLENEQ (s, "DECIMAL"))
+    return 5;
+  if (STRLENEQ (s, "SERIAL"))
+    return 6;
+  if (STRLENEQ (s, "DATE"))
+    return 7;
+  if (STRLENEQ (s, "MONEY"))
+    return 8;
+
+  if (STRLENEQ (s, "DATETIME"))
+    return 10;
+  if (STRLENEQ (s, "BYTE"))
+    return 11;
+  if (STRLENEQ (s, "TEXT"))
+    return 12;
+  if (STRLENEQ (s, "VARCHAR"))
+    return 13;
+  if (STRLENEQ (s, "INTERVAL"))
+    return 14;
+
+  if (STRLENEQ (s, "NCHAR"))
+    return 15;
+
+  printf ("Unknown datatype for %s - assuming char...\n",s);
+
+  return 0;
+}
 
 /**
  *
@@ -165,10 +211,55 @@ add_variable (char *name, char *dstring, int category, int pno, int dtype,
 {
   struct variable *ptr;
   char buff[256];
+  char *ob;
+  char buff2[256];
+  char buff3[256];
+
+
+  if (dtype == -1)
+    {
+      dtype = decode_dtype (dstring);
+    }
+
+  if (dtype == 6)
+    {				/* serial */
+      dtype = 2;		/* integer */
+    }
+
   if (dstring == 0)
     {
       strcpy (buff, decode_datatype (dtype, dim));
       dstring = buff;
+    }
+
+  if (dim == 0)
+    {
+      printf ("Decoding datatype %s\n", dstring);
+      ob = strchr (dstring, '(');
+      if (ob)
+	{
+	  strcpy (buff2, "");
+	  strcpy (buff3, "");
+	  ob++;
+	  strcpy (buff2, ob);
+	  ob = strchr (buff2, ')');
+	  if (ob)
+	    *ob = 0;
+	  ob = strchr (buff2, ',');
+	  if (ob)
+	    {
+	      *ob = 0;
+	      strcpy (buff3, ob + 1);
+	    }
+
+	  if (dtype == 0 || dtype == 13)
+	    {			/* char or varchar */
+	      dim = atoi (buff2);
+	    }
+
+	  if (dtype == 8 || dtype == 5)
+	    dim = atoi (buff3) + atoi (buff2) * 256;
+	}
     }
 
   this_report.variables.variables_len++;
@@ -177,7 +268,8 @@ add_variable (char *name, char *dstring, int category, int pno, int dtype,
 	     this_report.variables.variables_len * sizeof (struct variable));
 
   ptr =
-    &this_report.variables.variables_val[this_report.variables.variables_len - 1]; 
+    &this_report.variables.variables_val[this_report.variables.variables_len -
+					 1];
   ptr->name = strdup (name);
   ptr->datatype_string = strdup (dstring);
   ptr->category = category;
@@ -211,18 +303,22 @@ add_function (char *name)
 
 
 
-int add_agg(struct agg_val agg) {
+int
+add_agg (struct agg_val agg)
+{
 
-  agg.format_id=this_report.fmt.fmt_len;
+  agg.format_id = this_report.fmt.fmt_len;
 
 
   this_report.aggs.aggs_len++;
   this_report.aggs.aggs_val = realloc (this_report.aggs.aggs_val,
-             this_report.aggs.aggs_len * sizeof (struct agg_val));
+				       this_report.aggs.aggs_len *
+				       sizeof (struct agg_val));
 
-  memcpy(&this_report.aggs.aggs_val[this_report.aggs.aggs_len - 1],&agg,sizeof(struct agg_val));
+  memcpy (&this_report.aggs.aggs_val[this_report.aggs.aggs_len - 1], &agg,
+	  sizeof (struct agg_val));
 
-  return this_report.aggs.aggs_len-1;
+  return this_report.aggs.aggs_len - 1;
 
 }
 
@@ -241,13 +337,13 @@ add_select (char *sql, char *temptabname)
   char buffer[80];
 
 
-	/*
-	sql may contain newlines, these signify special data in the select 
-	statement...
+  /*
+     sql may contain newlines, these signify special data in the select 
+     statement...
 
-	\n0 = start of additional "don't get any real data" code
-	\n2(n) = start of variable use (variable ID)
-	*/
+     \n0 = start of additional "don't get any real data" code
+     \n2(n) = start of variable use (variable ID)
+   */
 
   this_report.getdata.select_or_read = 0;
   this_report.getdata.get_data_u.selects.selects_len++;
@@ -258,10 +354,9 @@ add_select (char *sql, char *temptabname)
 
 
   ptr =
-    &this_report.getdata.get_data_u.selects.selects_val[this_report.
-							getdata.get_data_u.
-							selects.selects_len -
-							1];
+    &this_report.getdata.get_data_u.selects.selects_val[this_report.getdata.
+							get_data_u.selects.
+							selects_len - 1];
   ptr->orderby_list.orderby_list_len = 0;
   ptr->orderby_list.orderby_list_val = 0;
   ptr->temp_tab_name = strdup (temptabname);
@@ -312,13 +407,13 @@ add_select (char *sql, char *temptabname)
 
 	      while (sql[a] != ')')
 		{
-		int l;
-		  l=strlen(buffer);
+		  int l;
+		  l = strlen (buffer);
 
-		  buffer[l+1] = 0;
+		  buffer[l + 1] = 0;
 		  buffer[l] = sql[a++];
 		}
-		
+
 	      ptr->varids.varids_len++;
 	      ptr->varids.varids_val =
 		realloc (ptr->varids.varids_val,
@@ -403,7 +498,7 @@ add_fmt (int cat, char *col, struct commands commands)
 
   memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands,
 	  &commands, sizeof (struct commands));
-  
+
 
 
 }
@@ -447,7 +542,7 @@ add_zero_rows_where (struct select_stmts *ptr)
       //printf("statement=\n%s\nwherepos1=%d\n",ptr->statement,ptr->wherepos1);
 
       strncpy (buff, ptr->statement, ptr->wherepos1);
-      buff[ptr->wherepos1]=0;
+      buff[ptr->wherepos1] = 0;
       strcat (buff, " WHERE (1=0) ");
       strcat (buff, &ptr->statement[ptr->wherepos1]);
     }
@@ -501,8 +596,8 @@ execute_selects (void)
   int a;
   int mx;
   struct select_stmts *ptr;
-  void *xi=0;
-  void *xo=0;
+  void *xi = 0;
+  void *xo = 0;
   void *psql;
   int b;
   char nstatement[30000];
@@ -515,7 +610,7 @@ execute_selects (void)
   int colsize;
   int coltype;
   char colname[256];
-  int vid=0;
+  int vid = 0;
 
   /* char * nval; */
   int nval = 0;
@@ -525,23 +620,23 @@ execute_selects (void)
   mx = this_report.getdata.get_data_u.selects.selects_len - 1;
 
   /*
-  see stack.c :
+     see stack.c :
 
-	  void
-	dif_start_bind (void)
-	{...
+     void
+     dif_start_bind (void)
+     {...
 
-  */
+   */
   xi = (void *) dif_start_bind ();
   xo = (void *) dif_start_bind ();
 
 
   /* We need 1 null value */
   /* setnull (2, &nval, 4); */
-  setnull (2, (char *)&nval, 4);
+  setnull (2, (char *) &nval, 4);
   /*  warning: passing arg 2 of `setnull' from incompatible pointer type
-  	void 	setnull 			(int type, char *buff, int size);
-  */
+     void       setnull                         (int type, char *buff, int size);
+   */
 
 
   for (a = 0; a <= mx; a++)
@@ -563,13 +658,13 @@ execute_selects (void)
 
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
-		//printf("Add null value");
+	  //printf("Add null value");
 	  /* void dif_add_bind_int (void *list, long a); */
 	  dif_add_bind_int (xi, (long) nval);
 	  xic++;
 
 	}
-      strcpy(nstatement , add_zero_rows_where (ptr));
+      strcpy (nstatement, add_zero_rows_where (ptr));
 
       if (a == mx)
 	{
@@ -610,21 +705,21 @@ execute_selects (void)
 	     at its columns
 	   */
 
-       /* too few arguments to function `A4GLSQL_get_columns'
-       	int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
+	  /* too few arguments to function `A4GLSQL_get_columns'
+	     int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
 
-	  if (A4GLSQL_get_columns ("a4gl_drep1234") == 0)
-      */
+	     if (A4GLSQL_get_columns ("a4gl_drep1234") == 0)
+	   */
 	  if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
 	    {
 	      yyerror ("Unable to get column types for a temporary table");
 	    }
 
 	  /*
-      passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
-	  int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
-	  */
-	  while (A4GLSQL_next_column ((char **)colname, &coltype, &colsize))
+	     passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+	     int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
+	   */
+	  while (A4GLSQL_next_column ((char **) colname, &coltype, &colsize))
 	    {
 	      trim (colname);
 	      add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
@@ -639,14 +734,14 @@ execute_selects (void)
 		malloc (sizeof (int) * ordbycnt);
 	      for (oby_cnt = 0; oby_cnt < ordbycnt; oby_cnt++)
 		{
-		/* printf("---> %d %d\n",oby_cnt,ordbycnt); */
+		  /* printf("---> %d %d\n",oby_cnt,ordbycnt); */
 
-		 cptr = ordby[oby_cnt];
+		  cptr = ordby[oby_cnt];
 
 		  /*
-		  printf ("cptr=%p\n", cptr);
-		  printf ("cptr=%s\n", cptr);
-          */
+		     printf ("cptr=%p\n", cptr);
+		     printf ("cptr=%s\n", cptr);
+		   */
 		  if (cptr[0] == 'I')
 		    {
 		      vid = find_sql_var (atoi (&cptr[1]));
@@ -662,7 +757,7 @@ execute_selects (void)
 		    }
 
 		  ptr->orderby_list.orderby_list_val[oby_cnt] = vid;
-		/* printf("Adding %d to orderby list @ %d\n",vid,oby_cnt); */
+		  /* printf("Adding %d to orderby list @ %d\n",vid,oby_cnt); */
 		}
 	    }
 	}
@@ -677,7 +772,7 @@ execute_selects (void)
  * @todo Describe function
  */
 void
-print_variables(char *s)
+print_variables (char *s)
 {
   struct variable *ptr;
   int a;
@@ -698,12 +793,12 @@ print_variables(char *s)
  * @todo Describe function
  */
 void
-yyerror_sql(char *s)
+yyerror_sql (char *s)
 {
-char buff[256];
-	sprintf(buff,"%s - %d",s,(int)status); /*  warning: int format, long int arg (arg 4)
- */
-	yyerror(buff);
+  char buff[256];
+  sprintf (buff, "%s - %d", s, (int) status);	/*  warning: int format, long int arg (arg 4)
+						 */
+  yyerror (buff);
 }
 
 
@@ -712,10 +807,10 @@ char buff[256];
  * @todo Describe function
  */
 void
-print_lexpr(struct expr_list *l)
+print_lexpr (struct expr_list *l)
 {
-	printf("elem_len=%d\n",l->elem.elem_len);
-	printf("elem_val=%p\n",l->elem.elem_val);
+  printf ("elem_len=%d\n", l->elem.elem_len);
+  printf ("elem_val=%p\n", l->elem.elem_val);
 }
 
 

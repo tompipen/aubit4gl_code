@@ -117,6 +117,7 @@ set_expr_int(struct expr *e,int a)
 %token DATE
 %token DATETIME
 %token DAY
+%token DECIMAL
 %token DEFINE
 %token DELIMITER
 %token DESC
@@ -170,6 +171,7 @@ set_expr_int(struct expr *e,int a)
 %token MATCHES
 %token MINUS
 %token MINUTE
+%token MONEY
 %token MONTH
 %token MULTIPLY
 %token NAMED
@@ -286,10 +288,10 @@ define_element:
 		exit(0);
 	}
 	| VARIABLE variable datatype {
-		add_variable($<str>2,$<str>3,CAT_VARIABLE,0,0,0);
+		add_variable($<str>2,$<str>3,CAT_VARIABLE,0,-1,0);
 	}
 	| PARAM OPEN_SQUARE int_val CLOSE_SQUARE variable datatype {
-		add_variable($<str>5,$<str>6,CAT_PARAM,atoi($<str>3),0,0);
+		add_variable($<str>5,$<str>6,CAT_PARAM,atoi($<str>3),-1,0);
 	}
 	| FUNCTION ufunc_name {
 		add_function($<str>2);
@@ -307,17 +309,23 @@ variable: NAMED
 
 datatype :
 	FUNCTION 
-	| INTEGER 
-	| CHAR 
-	| CHAR OPEN_BRACKET int_val CLOSE_BRACKET  {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| VARCHAR 
-	| VARCHAR OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| DATE
-	| FLOAT
-	| SMALLFLOAT
-	| SMALLINT
-	| DATETIME
-	| INTERVAL
+	| INTEGER  {strcpy($<str>$,"INTEGER");}
+	| CHAR  {strcpy($<str>$,"CHAR");}
+	| CHAR OPEN_BRACKET int_val CLOSE_BRACKET  {sprintf($<str>$,"CHAR (%s)",$<str>3);}
+	| VARCHAR {strcpy($<str>$,"VARCHAR");}
+	| VARCHAR OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"VARCHAR (%s)",$<str>3);}
+	| DATE {strcpy($<str>$,"DATE");}
+	| FLOAT {strcpy($<str>$,"FLOAT");}
+	| SMALLFLOAT {strcpy($<str>$,"SMALLFLOAT");}
+	| SMALLINT {strcpy($<str>$,"SMALLINT");}
+	| DATETIME {strcpy($<str>$,"DATETIME");}
+	| INTERVAL {strcpy($<str>$,"INTERVAL");}
+	| MONEY {strcpy($<str>$,"MONEY");}
+	| MONEY OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"MONEY (%s,0)",$<str>3);}
+	| MONEY OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {sprintf($<str>$,"MONEY (%s,%s)",$<str>3,$<str>5);}
+	| DECIMAL  {strcpy($<str>$,"DECIMAL");}
+	| DECIMAL OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"DECIMAL (%s,0)",$<str>3);}
+	| DECIMAL OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {sprintf($<str>$,"DECIMAL (%s,%s)",$<str>3,$<str>5);}
 ;
 
 op_input_section:
