@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.103 2005-01-19 09:55:34 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.104 2005-01-25 13:40:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.103 2005-01-19 09:55:34 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.104 2005-01-25 13:40:35 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -520,9 +520,11 @@ print_prepare (char *xstmt, char *sqlvar)
   if (stmt) free(stmt);
   stmt=strdup(A4GL_strip_quotes (xstmt));
   printc ("{\n");
+	set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*7*/\n");
   printc ("char *_s;\n");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
+	clr_suppress_lines();
   printc ("_s=strdup(CONVERTSQL(%s));\n", sqlvar);
   printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
 A4GL_save_sql("PREPARE %s",sqlvar);
@@ -671,10 +673,12 @@ print_open_session (char *s, char *v, char *user)
 
 
   	printc("{");
+	set_suppress_lines();
 	printc("\nEXEC SQL BEGIN DECLARE SECTION;/*8*/");
 	printc("char _u[256];");
 	printc("char _p[256];");
 	printc("\nEXEC SQL END DECLARE SECTION;");
+	clr_suppress_lines();
 	if (strlen(user)) {
   	if (strcmp (user, "?") == 0)
     	{
@@ -814,9 +818,11 @@ print_fetch_3 (char *ftp, char *into)
   char sqcname[256];
   sscanf (into, "%d,", &no);
   printc("{");
+	set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION /*1*/;");
   printc ("int _fp;");
   printc ("\nEXEC SQL END DECLARE SECTION;");
+	clr_suppress_lines();
 
   if (strstr (ftp, "pop_long") == 0)
     {
@@ -967,10 +973,12 @@ print_init_conn (char *db)
 if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
   if (db == 0) {
       printc ("{");
+	set_suppress_lines();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION /*2*/;\n");
       printc ("char *s;");
       printc ("char setdb[256];");
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
+	clr_suppress_lines();
       printc ("s=A4GL_char_pop();A4GL_trim(s);");
 	/*printc("sprintf(setbuf,\"DATABASE %%s\");\n");*/
 	
@@ -1007,15 +1015,26 @@ A4GL_save_sql("DATABASE $s",0);
   if (db == 0)
     {
       printc ("{");
+	set_suppress_lines();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*3*/\n");
       printc ("char *s;");
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
+	clr_suppress_lines();
 	printc("if (A4GL_esql_db_open(-1,0,0)) {");
 	print_close('D',"");
 	printc("}");
       printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
-A4GL_save_sql("CONNECT TO $s AS 'default'",0);
-      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
+
+
+	A4GL_save_sql("CONNECT TO $s AS 'default'",0);
+
+      switch (esql_type ())
+	{
+	case 1: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case 2: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case 3: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case 4: printc ("\nEXEC SQL CONNECT :s ;\n"); break;
+	}
       printc ("}");
     }
   else
@@ -1039,9 +1058,10 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
 	  break;
+
+
 	case 4:
-A4GL_save_sql("CONNECT TO %s AS 'default'",db);
-	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  printc ("\nEXEC SQL CONNECT %s;\n", db);
 	  break;
 	}
     }
@@ -1400,9 +1420,11 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
   		print_conversions ('i');
 			sprintf(filename,":_unlfname"); 
 			printc("{");
+	set_suppress_lines();
 			printc("\nEXEC SQL BEGIN DECLARE SECTION;/*4*/");
 			printc("char _unlfname[512];");
 			printc("\nEXEC SQL END DECLARE SECTION;");
+	clr_suppress_lines();
 			printc("strcpy(_unlfname,%s);",file);
 			printc("A4GL_trim(_unlfname);");
 
@@ -1483,10 +1505,12 @@ print_load (char *file, char *delim, char *tab, char *list)
   if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD"))
     {
       printc ("{");
+	set_suppress_lines();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*5*/");
       printc ("char _loadfname[512];");
       printc ("char _delim[64];");
       printc ("\nEXEC SQL END DECLARE SECTION;");
+	clr_suppress_lines();
 
 
       if (file[0] == '"')
