@@ -1,6 +1,6 @@
 
 #
-# $Id: makefile,v 1.2 2004-11-26 03:57:52 afalout Exp $
+# $Id: makefile,v 1.3 2004-11-26 08:11:24 afalout Exp $
 #
 
 ROOT		=../..
@@ -13,7 +13,7 @@ include ${ROOT}/incl/Makefile-common
 ##                   Settings
 ## ==================================================================
 
-ALL					=sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX.so
+ALL					=${ROOT}/bin/sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}
 CFLAGS				=-g -fPIC -I$(ROOT)/incl
 LDFLAGS				=-g
 SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
@@ -23,50 +23,41 @@ SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
 ## ==================================================================
 
 all: ${ALL}
-	@echo "Run-time SQL parser compiled"
+	@echo "Run-time SQL parser/converter targets:"
+	@echo "${ALL}"
+	@echo "successfuly compiled."
 
-sql_parse: y.tab.o main.o   
+#Executable that performs SQL parsing/conversion on a SQL in file
+#NB: why not link with/dlopen libSQLPARSE_xxx.so instead of statically linking
+#with y.tab.o ?
+${ROOT}/bin/sql_parse: y.tab.o main.o
 	${CC} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -laubit4gl
 
-$(LIBROOT)/libSQLPARSE_INFORMIX.so : y.tab.o    
+#Shared library that performs SQL parsing and conversion at run-time
+#NB: why is it linked with libaubt4gl, when that lib is what loads it
+#at run-time (except on Windows where it needs to be linked to resolve symbols)?
+$(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
 	${CC} -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -laubit4gl 
 
 ## ==================================================================
 ##                   Sub-targets
 ## ==================================================================
 	
-lex.yy.c: m2.lex
-ifeq "${LEX}" "no"
-	@echo "No lex (${LEX})"
-	exit 4
-else
-	${NICE} ${LEX} -i $<
-endif
-
 main.o: main.c
 	${CC} -c -DTEST $<
-
-sql1.rule: ${SQLPACK_IFX_PATH}/sql1.rule
-	cp $< .
-
-schema.rule: ${SQLPACK_IFX_PATH}/schema.rule
-	cp $< .
-
-update.rule: ${SQLPACK_IFX_PATH}/update.rule
-	cp $< .
 
 m2.lex: gen_lex 2.reqd
 	${SH} gen_lex > $@
 
-2.reqd:	../4glc/rules/generated/kw.yh not_used
-	cp $< ./$@.in
-	fgrep -f not_used -v $@.in > $@
+2.reqd:	../4glc/rules/generated/kw.yh
+	fgrep -f not_used -v $< > $@
 
-sql.yacc: 1.reqd 2.reqd 10.reqd 80.reqd 99.reqd
-#no .rule files in curr dir???
-	${CAT} $^ *.rule > $@
-
-
+#WARNING: order is IMPORTANT!
+sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
+	${SQLPACK_IFX_PATH}/schema.rule ${SQLPACK_IFX_PATH}/sql1.rule \
+	80.reqd 99.reqd
+	${CAT} $^ > $@
+	
 y.tab.c: sql.yacc
 ifneq "${YACC}" "no"
 	${YACC} -v -t -d $<
@@ -75,6 +66,14 @@ else
 	exit 4
 endif	
 
+lex.yy.c: m2.lex
+ifneq "${LEX}" "no"
+	${NICE} ${LEX} -i $<
+else
+	@echo "No lex (${LEX})"
+	exit 4
+endif
+
 y.tab.o: y.tab.c lex.yy.c util.c
 
 ## ==================================================================
@@ -82,7 +81,7 @@ y.tab.o: y.tab.c lex.yy.c util.c
 ## ==================================================================
 
 clean:
-	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ 2.reqd.in sql.yacc
+	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc
 
 
 	
