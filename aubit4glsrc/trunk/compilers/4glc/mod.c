@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.73 2002-06-29 13:12:01 afalout Exp $
+# $Id: mod.c,v 1.74 2002-07-16 17:41:50 mikeaubury Exp $
 #
 */
 
@@ -3463,7 +3463,7 @@ get_curr_block (void)
  * @return
  */
 int 
-add_report_agg (char t, char *s1, char *s2, int a)
+add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 {
   if (use_group)
     {
@@ -3473,15 +3473,20 @@ add_report_agg (char t, char *s1, char *s2, int a)
     {
       sreports[sreports_cnt].in_b = 0;
     }
-  if (strlen (s2) == 0)
+
+  if (s2 == 0)
     {
-      strcpy (sreports[sreports_cnt].rep_cond, "push_int(1);");
+	
+      sreports[sreports_cnt].rep_where_expr=new_expr("push_int(0);");
     }
   else
     {
-      strcpy (sreports[sreports_cnt].rep_cond, s2);
+      sreports[sreports_cnt].rep_where_expr=s2;
     }
-  strcpy (sreports[sreports_cnt].rep_expr, s1);
+
+	
+  sreports[sreports_cnt].rep_cond_expr=s1;
+
   sreports[sreports_cnt].a = a;
   sreports[sreports_cnt].t = t;
   sreports_cnt++;

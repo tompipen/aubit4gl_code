@@ -699,7 +699,7 @@ comparison_predicate:
 
 comp_op:
 	
-	  EQUAL
+	  EQUAL 
 	| COMPARISON
 	| NOT_EQUAL
 	| LESS_THAN

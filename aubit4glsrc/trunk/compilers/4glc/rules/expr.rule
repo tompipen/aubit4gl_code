@@ -343,15 +343,18 @@ $<ptr>$=append_expr($<ptr>2,$<str>$);
    YYERROR;
 } 
 insql=0;
+	$<ptr>$=new_expr($<str>1);
 }  
 | GROUP {insql=1;set_ingroup();} rep_agg  {
+	char buff[256];
       if (!in_command("REPORT")) {
         yyerror("This can only be done in a report!");YYERROR;
       } 
       insql=0; 
 	lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
-        sprintf($<str>$,$<str>3);
-	$<ptr>$=new_expr($<str>$);
+        sprintf(buff,$<str>3);
+	debug("report aggregate :  %s",buff);
+	$<ptr>$=new_expr(buff);
       }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+# $Id: output.c,v 1.3 2002-07-16 17:41:56 mikeaubury Exp $
 #*/
 
 /**
@@ -104,23 +104,29 @@ write_report (void)
   strcpy(fname2, outputfilename);
   strcat(fname2, ".c");
 
-  fxx = fopen(fname,"wb");
 
-  if (fxx == 0)
-  {
-    printf("Couldnt open file for write (%s)\n", fname);
-  }
-  xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
+  a = write_data_to_file ("report", ptr, fname);
 
-  a=xdr_report(&xdrp,ptr);
+
+
+  //fxx = fopen(fname,"wb");
+
+  //if (fxx == 0)
+  //{
+    //printf("Couldnt open file for write (%s)\n", fname);
+  //}
+  //xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
+  //a=xdr_report(&xdrp,ptr);
+
+
   if (!a)
         {
            debug("*** Write FAILED ***\n");
                 printf("Unable to write data\n");
   }
 
-  xdr_destroy(&xdrp);
-  fclose(fxx);
+  //xdr_destroy(&xdrp);
+  //fclose(fxx);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.1 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: menuwrite.c,v 1.2 2002-07-16 17:41:57 mikeaubury Exp $
 #*/
 
 /**
@@ -155,17 +155,12 @@ write_menu (void)
   strcat (fname2, ".c");
 
 
-  fxx=fopen(fname,"wb");
 
   printf("has %d menus\n",the_menus.menus.menus_len);
  
-  if (fxx == 0)
-    {
-      error_with ("Couldnt open file for write (%s)\n", fname, 0);
-    }
 
-        xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-        a=xdr_menu_list(&xdrp,ptr);
+  a=write_data_to_file("report",&the_menus,fname);
+
 
 	if (!a) {
 		debug("*** Write FAILED ***\n");

@@ -113,21 +113,24 @@
 "LEFT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
 "LENGTH" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LENGTH;}
 "LET" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LET;}
-"LIKE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LIKE;}
 "LINE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LINES;}
 "LINES" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LINES;}
 "MARGIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MARGIN;}
-"MATCHES" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MATCHES;}
 "MINUTE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUTE;}
 "MONTH" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONTH;}
 "NAMED" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NAMED;}
 "NEED" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NEED;}
-"NOT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT;}
-"NOT EQUAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT_EQUAL;}
-"NOT EXISTS" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT_EXISTS;}
-"NOT IN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT_IN;}
-"NOT LIKE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT_LIKE;}
-"NOT MATCHES" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT_MATCHES;}
+
+"MATCHES" {if (ignorekw) REJECT;strcpy(yylval.str,"MATCHES"); return MATCHES;}
+"LIKE" {if (ignorekw) REJECT;strcpy(yylval.str,"LIKE"); return LIKE;}
+
+"NOT" {if (ignorekw) REJECT;strcpy(yylval.str,"NOT"); return NOT;}
+"NOT EQUAL" {if (ignorekw) REJECT;strcpy(yylval.str,"<>"); return NOT_EQUAL;}
+"NOT EXISTS" {if (ignorekw) REJECT;strcpy(yylval.str,"NOT EXISTS"); return NOT_EXISTS;}
+"NOT IN" {if (ignorekw) REJECT;strcpy(yylval.str,"NOT IN"); return NOT_IN;}
+"NOT LIKE" {if (ignorekw) REJECT;strcpy(yylval.str,"NOT LIKE"); return NOT_LIKE;}
+"NOT MATCHES" {if (ignorekw) REJECT;strcpy(yylval.str,"NOT MATCHES"); return NOT_MATCHES;}
+
 "NUMERIC" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NUMERIC;}
 "ON"  {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ON;}
 "EVERY"  {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EVERY;}

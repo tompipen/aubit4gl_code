@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2002-06-29 10:49:35 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-07-16 17:41:56 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -77,7 +77,7 @@ adecompile: ${REPORT_H} ${OBJS_DECOMP}
 
 #Cannot compile because dump_4gl.c is missing from CVS
 aace_4gl : ${REPORT_H} ${OBJS_4GL}
-	${CC} $(CFLAGS) ${OBJS_4GL} -o $@
+	${4GLPC} $(CFLAGS) ${OBJS_4GL} -o $@
 
 #test that depend on database name
 generate_aace : generate.4gl

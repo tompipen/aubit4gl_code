@@ -24,8 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.26 2002-07-13 05:31:52 afalout Exp $
-#
+# $Id: compile_c.c,v 1.27 2002-07-16 17:41:57 mikeaubury Exp $
+# @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
+# with struct expr_str equivalent
 */
 
 /**
@@ -795,51 +796,64 @@ pr_report_agg (void)
   int z;
   int a;
   int t;
+/*
   char s1[5024];
   char s2[5024];
+*/
 
   for (z = 0; z < sreports_cnt; z++)
     {
-	  strcpy (s2, sreports[z].rep_cond);
-      strcpy (s1, sreports[z].rep_expr);
+
+      //strcpy (s2, sreports[z].rep_cond);
+      //strcpy (s1, sreports[z].rep_expr);
+
       a = sreports[z].a;
       t = sreports[z].t;
 
       if (t == 'C')
 	{
-	  printc ("%s if (pop_bool()) _g%d++;\n", s2, a);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc ("if (pop_bool()) _g%d++;\n",  a);
 	}
 
       if (t == 'P')
 	{
-	  printc ("_g%d++; %s if (pop_bool()) _g%d++; \n", a + 1, s2, a);
+	  printc ("_g%d++;",a+1);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc(" if (pop_bool()) _g%d++; \n",  a);
 	}
 
       if (t == 'S')
 	{
-	  printc
-	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;}\n ",
-	     s2, s1, a);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc("if (pop_bool()) {double _res;");
+	  print_expr(sreports[z].rep_cond_expr);
+	  printc("_res=pop_double(); _g%d+=_res;}\n ", a);
 	}
 
       if (t == 'A')
 	{
-	  printc
-	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;_g%d++;}\n",
-	     s2, s1, a, a + 1);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc ("if (pop_bool()) {double _res;");
+	  print_expr(sreports[z].rep_cond_expr);
+
+	  printc ("_res=pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
 	}
 
       if (t == 'N')
 	{
-	  printc
-	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     s2, s1, a, a, a, a);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc ("if (pop_bool()) {double _res;");
+	  print_expr(sreports[z].rep_cond_expr);
+	  printc("_res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
 	}
+
       if (t == 'X')
 	{
-	  printc
-	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     s2, s1, a, a, a, a);
+	  print_expr(sreports[z].rep_where_expr);
+	  printc ("if (pop_bool()) {double _res;");
+	  print_expr(sreports[z].rep_cond_expr);
+	  printc ("_res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
 	}
 
     }
@@ -856,13 +870,18 @@ pr_report_agg_clr (void)
   int a;
   int t;
   int in_b;
+
+/*
   char s1[1024];
   char s2[1024];
+*/
 
   for (z = 0; z < sreports_cnt; z++)
     {
+/*
       strcpy (s2, sreports[z].rep_cond);
       strcpy (s1, sreports[z].rep_expr);
+*/
       a = sreports[z].a;
       t = sreports[z].t;
       in_b = sreports[z].in_b;

@@ -58,6 +58,11 @@
     #endif
 
 
+	struct expr_str
+	{
+	  char *expr;
+	  struct expr_str *next;
+	};
 	void 	resize_paper		(struct pdf_rep_structure *pdf_rep_struct);
 	void 	clr_variable		(void);
 	void 	inmod				(void);
@@ -124,7 +129,7 @@
 	void 	read_glob 			(char *s);
 	char *	upshift 			(char *a);
 	char *	downshift 			(char *a);
-	int 	add_report_agg 		(char t, char *s1, char *s2, int a);
+	int 	add_report_agg 		(char t, struct expr_str *s1, struct expr_str *s2, int a);
 	void 	set_curr_rep_name 	(char *s);
 	char *	get_curr_rep_name 	(void);
 	void 	set_curr_block 		(int a);
@@ -179,18 +184,17 @@
 
 	struct s_report
 	{
-	  char rep_cond[2000];
-	  char rep_expr[2000];
+
+	  /* char rep_cond[2000]; */
+	  /* char rep_expr[2000]; */
+
+	  struct expr_str *rep_cond_expr;
+	  struct expr_str *rep_where_expr;
 	  int a;
 	  int t;
 	  int in_b;
 	};
 
-	struct expr_str
-	{
-	  char *expr;
-	  struct expr_str *next;
-	};
 
 	/* warning: struct BINDING defined in a4gl_incl_4gldef.h is DIFFERENT */
 	struct binding

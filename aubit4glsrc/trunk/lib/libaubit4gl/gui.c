@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.11 2002-06-25 03:22:30 afalout Exp $
+# $Id: gui.c,v 1.12 2002-07-16 17:41:56 mikeaubury Exp $
 #
 */
 
@@ -107,6 +107,7 @@
 	#include <errno.h> /* EINTR */
 #endif
 
+#include <sys/time.h>
 /*
 =====================================================================
                     Functions prototypes
