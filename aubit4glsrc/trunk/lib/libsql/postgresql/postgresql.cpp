@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.9 2003-01-29 22:22:09 saferreira Exp $
+# $Id: postgresql.cpp,v 1.10 2003-01-31 10:10:47 mikeaubury Exp $
 #
 */
 
@@ -73,6 +73,7 @@
 	#endif
 #endif
 
+extern sqlca_struct sqlca;
 
 extern "C" void exitwith(char *str);
 extern "C" void set_errm (char *str);
@@ -89,7 +90,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.9 2003-01-29 22:22:09 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.10 2003-01-31 10:10:47 mikeaubury Exp $";
 #endif
 
 
