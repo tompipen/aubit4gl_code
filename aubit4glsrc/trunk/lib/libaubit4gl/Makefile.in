@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.48 2003-04-07 16:26:32 mikeaubury Exp $
+# $Id: Makefile.in,v 1.49 2003-04-08 17:15:38 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -244,6 +244,10 @@ API_form.c: API_form.spec
 	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 API_lex.c: API_lex.spec
+	${SH} ${DLMAGIC} $^ > $@
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
+
+API_help.c: API_help.spec
 	${SH} ${DLMAGIC} $^ > $@
 	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
