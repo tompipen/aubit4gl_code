@@ -181,23 +181,23 @@ style "MenuButtons" {
 }
 
 
-
-style "81" {
- 	bg_pixmap[NORMAL]="wall3.png"
-	bg[NORMAL]="#000000"
-}
-style "84" {
- 	bg_pixmap[NORMAL]="gem.png"
-}
-style "86" {
- 	bg_pixmap[NORMAL]="keeper.png"
-}
-style "83" {
- 	bg_pixmap[NORMAL]="gem_on_goal.png"
-}
-style "82" {
- 	bg_pixmap[NORMAL]="goal.png"
-}
+#Andrej commented out because .png files are missing:
+#style "81" {
+# 	bg_pixmap[NORMAL]="wall3.png"
+#	bg[NORMAL]="#000000"
+#}
+#style "84" {
+# 	bg_pixmap[NORMAL]="gem.png"
+#}
+#style "86" {
+# 	bg_pixmap[NORMAL]="keeper.png"
+#}
+#style "83" {
+# 	bg_pixmap[NORMAL]="gem_on_goal.png"
+#}
+#style "82" {
+# 	bg_pixmap[NORMAL]="goal.png"
+#}
 
 style "280" {
 	base[NORMAL]="#c0c0c0"

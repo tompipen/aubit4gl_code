@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.31 2004-08-08 01:42:17 afalout Exp $
+# $Id: pointers.c,v 1.32 2004-09-22 10:06:50 afalout Exp $
 #
 */
 
@@ -131,9 +131,13 @@ struct s_node
 		*/
 		
 		#if defined (__GNUC__) && defined (__GNUC_MINOR__)
+			// Do a 'make gcc_symbols' in aubit source root to see what 
+			//current compiler defines
 			//&& defined (__VERSION__) && (__VERSION__ "3.2 (mingw special 20020817-1)")
+			//#define __VERSION__ "3.2.3 (mingw special 20030504-1)"
 			#if (__GNUC__ == 3)
-				#if (__GNUC_MINOR__ >= 3) 
+				//#if (__GNUC_MINOR__ >= 3)
+				#if (__GNUC_MINOR__ >= 2)
  					typedef enum { preorder, postorder, endorder, leaf } VISIT;
 				#endif
 			#endif
@@ -165,6 +169,8 @@ struct s_node
 */
 
 int A4GL_strcmpare (const void *a, const void *b);
+//If you are loking here because you got parse error before "which", look
+//a bit higher in this file ...
 void A4GL_action (const void *nodep, const VISIT which, const int depth);
 void print_ptr_stack (void);
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.44 2004-02-08 09:51:02 mikeaubury Exp $
+# $Id: Makefile.in,v 1.45 2004-09-22 10:06:52 afalout Exp $
 #
 
 ROOT    =../..
@@ -57,24 +57,24 @@ export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
 #SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
-DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu${A4GL_MNU_EXT} \
-		form${A4GL_FRM_EXT} helpfile.hlp  file.4ae
+DEFAULT	=hello${A4GL_EXE_EXT} hello2${A4GL_EXE_EXT} hello_db${A4GL_EXE_EXT} testmenu${A4GL_EXE_EXT} testmenu${A4GL_MNU_EXT} \
+		form${A4GL_FRM_EXT} helpfile.hlp  file${A4GL_EXE_EXT}
 
 
 SUB		=guidemos
 
-ALL		=${DEFAULT} assoc2.4ae
+ALL		=${DEFAULT} assoc2${A4GL_EXE_EXT}
 
 ifeq "@EXDATA_MPZ@" "yes"
-	ALL	+=testmpz.4ae
+	ALL	+=testmpz${A4GL_EXE_EXT}
 endif
 
 
 #Targets still expected to fail, that need fixing:
-ALL_FAIL=pdf_report.4ae
+ALL_FAIL=pdf_report${A4GL_EXE_EXT}
 
 #Targets that need database to compile
-ALL_DB  =test_select.4ae
+ALL_DB  =test_select${A4GL_EXE_EXT}
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	#We have this dirs only in source code tree - not in bunary distros:
@@ -83,7 +83,7 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	#Both regressiontests and dbtests need a database
 	REGRES=regressiontests dbtests
     #examples we have only in source code tree, but not in binary installations:
-	ALL +=solitaire.4ae
+	ALL +=solitaire${A4GL_EXE_EXT}
 endif
 
 ALL     +=${SUB}
@@ -102,7 +102,7 @@ default: ${DEFAULT}
 	@echo "| Default simple demo targets successfully compiled                  |"
 	@echo "| Try 'make all' for more example code.                              |"
 	@echo "| You can run compiled demo program 'hello' by executing:            |"
-	@echo "| ./hello                                                            |"
+	@echo "| ./hello${A4GL_EXE_EXT}                                                 |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
@@ -113,7 +113,7 @@ all: ${ALL}
 	@echo "Targets that are expected to fail: ${ALL_FAIL}"
 
 
-solitaire.4ae: sol.4gl random.4gl
+solitaire${A4GL_EXE_EXT}: sol.4gl random.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
 ## ==================================================================
