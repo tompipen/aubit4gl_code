@@ -213,7 +213,7 @@ some_text: named_or_kw {
 	int a;
 	static char buff[256];
 	strcpy(buff,$<str>1);
-	if (!A4GL_isyes(acl_getenv("NORMSCORE"))) {
+	if (A4GL_isyes(acl_getenv("SPACESCORE"))) {
 		for (a=0;a<strlen(buff);a++) {
 			if (buff[a]=='_') buff[a]=' ';
 		}
