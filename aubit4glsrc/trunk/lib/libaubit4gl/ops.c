@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.52 2004-05-12 16:52:41 whaslbeck Exp $
+# $Id: ops.c,v 1.53 2004-05-26 13:21:33 mikeaubury Exp $
 #
 */
 
@@ -254,7 +254,7 @@ A4GL_in_date_ops (int op)
     }
 
   A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
-  if (A4GL_isnull (DTYPE_DTIME, (void *) &x_date))
+  if (A4GL_isnull (DTYPE_DTIME, (void *) &dt))
     {
       A4GL_debug ("DATE IS NULL\n");
       A4GL_push_null (DTYPE_CHAR, 0);
