@@ -1,4 +1,5 @@
 #!/bin/bash
+# --norc --noprofile
 
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
@@ -7,7 +8,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.34 2002-01-04 07:20:54 afalout Exp $
+# $Id: 4glpc,v 1.35 2002-01-06 11:24:45 afalout Exp $
 #
 ########################################################################
 
@@ -254,12 +255,6 @@ function showerror {
 
 ALLPARAMS=$@
 
-if [ "$GTKGUI" = "" ]
-then
-	GTKGUI="Yes"
-    ui=gui
-fi
-
 if [ "$AUBITDIR" = "" ]
 then
 	PATHTO4GLPC=`dirname $0`
@@ -276,6 +271,18 @@ then
     else
         echo "Error: cannot set AUBITDIR: $AUBITDIR"
         exit 13
+    fi
+fi
+
+if [ "$GTKGUI" = "" ]
+then
+    if [ -f  $AUBITDIR/lib/libaclsharedgui.so ]
+    then
+		export GTKGUI="Yes"
+    	export ui=gui
+    else
+		export GTKGUI="no"
+		export ui=""
     fi
 fi
 
@@ -869,12 +876,12 @@ do
 
    -nogtk) 	export GTKGUI="no"
 			export ui=""
-            
+
 			#FIXME: remove this:
 			#temp fix for bug
 			#>   if (getenv ("GTKGUI"))
 			#>     fprintf (hfile, "#include <acl4glgui.h>\n");
-			unset GTKGUI
+			#unset GTKGUI
 
    ;;
 

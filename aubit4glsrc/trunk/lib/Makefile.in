@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-01-04 15:44:58 mikeaubury Exp $
+# $Id: Makefile.in,v 1.10 2002-01-06 11:24:46 afalout Exp $
 #
 
 #############
@@ -197,7 +197,7 @@ all_gui: ${ALL_GUI}
 
 aubit-config: aubit-config.c resource.c
 	gcc resource.c aubit-config.c -o aubit-config -I./libincl
-	cp aubit-config $(AUBITDIR)/bin
+	cp aubit-config ../bin
 
 #dynamic loading SQL libs:
 libsqlso: ${LIBSQL}

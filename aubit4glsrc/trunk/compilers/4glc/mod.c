@@ -15,12 +15,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.36 2002-01-06 10:20:29 mikeaubury Exp $
+* $Id: mod.c,v 1.37 2002-01-06 11:24:46 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.36  2002/01/06 10:20:29  mikeaubury
+*	Fixes for resources
+*	
 *	Revision 1.35  2001/12/07 18:20:07  mikeaubury
 *	dl stuff
 *	
@@ -798,7 +801,7 @@ void dump_vars (void)
   FILE *f;
 
   int a;
-  if (getenv ("DUMPVARS") == 0)
+  if (acl_getenv ("DUMPVARS") == 0)
     return;
 
   f = (FILE *) mja_fopen ("dumpvars.out", "w");

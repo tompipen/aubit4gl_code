@@ -1,4 +1,37 @@
 #!/bin/sh
+
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mkyacc,v 1.4 2002-01-06 11:24:46 afalout Exp $
+#
+
+# This script builds "generated/fgl.yacc" files from several files
+# A Bison parser, will use fgl.yacc to create y.tab.c from it
+
+
 if [ ! -w generated/fgl.yacc ] &&  [ -f generated/fgl.yacc ]
 then
 	chmod 666 generated/fgl.yacc
@@ -10,14 +43,14 @@ echo "all_commands : commands_all | commands_all SEMICOLON ;" >> generated/fgl.y
 
 echo 'command1	: all_commands  {
 chk4var=0;printcomment("/* [Comm:%s] */\n",$<str>$); 
-if (getenv("INCLINES"))
+if (acl_getenv("INCLINES"))
 printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 prchkerr(lastlineno,infilename);
 lastlineno=yylineno;
 }
 | command1  all_commands {
 printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;   
-if (getenv("INCLINES"))
+if (acl_getenv("INCLINES"))
 printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 if (aubit_strcasecmp($<str>$,"whenever")!=0) prchkerr(lastlineno,infilename);
 lastlineno=yylineno;
@@ -33,4 +66,4 @@ cat last.reqd >> generated/fgl.yacc
 chmod 444 generated/fgl.yacc
 
 
-
+#------------------------------ EOF --------------------------------
