@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Readme for Aubit 4gl run time libraries package fro MS Windows</title>
+</head>
+
+<body>
+
+<h3 align="center">	Readme for Aubit 4gl run-time libraries package for MS Windows</h3>
+<hr>
+<h4>What is it for</h4>
+<p>This package is needed to provide run-time support libraries to programs compiled using Aubit 4GL compiler on Windows/CygWin
+platform, without the need to install full CygWin and GTK+ on every Windows computer that need
+to execute, but not compile, Aubit 4GL programs.</p>
+<p>This package will not let you compile programs, only run already complied ones.</p>
+<h4>What is in this package</h4>
+<p>On top level:</p>
+<ul>
+  <li>    Shortcuts to run test programs</li>
+  <li>    This readme file</li>
+</ul>
+<p>in "apps":</p>
+<ul>
+  <li>    Demo programs compiled with Aubit 4gl compiler and supporting files</li>
+  <li>&quot;run.exe&quot; supporting program for running GUI programs without console</li>
+</ul>
+<p>in "runtimelib":</p>
+<ul>
+  <li>    Aubit libraries needed for running Aubit 4gl compiler compiled programs</li>
+  <li>    CygWin libraries needed for running Aubit 4gl programs compiled on Cygwin platform</li>
+  <li>    GTK+ libraries needed for running Aubit 4gl GTK GUI mode compile programs</li>
+</ul>
+<h4>How to use this run-time package</h4>
+<ol>
+  <li>un-zip the archive in suitable place.</li>
+  <li>set PATH to point to "runtimelib" directory under place you choose in step 1). For example, if you un-ziped the archive in
+    &quot;<a href="file:///c:/aubittest">c:\aubittest</a>&quot;,    then PATH need to be set to include
+    &quot;<a href="file:///c:/aubittest/runtimelib">c:\aubittest\runtimelib</a>&quot;&nbsp;<br>
+    <br>
+    --OR--<br>
+    <br>
+    copy all files in "runtimelib" folder to some location on your    Windows computer that is already in the PATH - like c:\Windows, or
+    <a href="file:///C:/WINNT">C:\WINNT</a>.</li>
+  <li>Add variable "AUBITGUI" to your global environment, and set it to "gui".	Depending on your versions of Windows operating
+    system, you can set    global environment in different ways. Consult your Windows
+    documentation. In general, from DOS prompt, you would execute the following line:&nbsp;<br>
+    "set AUBITGUI=gui".&nbsp;<br>
+ You can add the same line to your autoexec.bat,    if you have one. On Windows NT based systems, you will need to set this via systems options.</li>
+  <li>Step into "apps" folder and double-click on "hello.exe". You should    first see console window, and then GUI window of "Hello" program.</li>
+  <li>To demonstrate how to run GUI programs without console window    appearing, there are several shortcuts on top level of this archive,    one for each demo program in "apps" directory. They all use utility    program "run.exe", also provided. Since Microsoft program shortcuts    do not support relative paths, before you can use them, you will    need to edit them to reflect your files location
+    chosen in step 1)</li>
+</ol>
+<h4>Q &amp; A</h4>
+<p>Q: Why do I need to use &quot;run.exe&quot; to get rid of console window?</p>
+<p>A: We can do this by adding "-mwindows" or "-Wl,--subsystem,windows" to    Aubit compiler compile line when compiling programs, but we do not    want this at this point in development, since output from console    is very
+useful for debugging, and since we want to keep the ability    to run programs in both
+GUI and console modes (AUBITGUI=gui, AUBITGUI=cui)</p>
+<p>Q: How do I compile 4GL programs using this package?</p>
+<p>A: You don't. This is run-time package. To compile 4GL programs using    Aubit 4GL compiler fro Windows, download Aubit 4gl compiler binary    package for Windows/CygWin, or compile it yourself from source code.    You will of course need full installation of Cygwin, plus additional&nbsp;
+libraries.</p>
+<p>Q: Do I need to provide this package with every program I distribute    for Windows platform?</p>
+<p>A: Yes, every computer that will run programs compiled using Aubit 4gl&nbsp; compiler, that are compiled on Windows/CygWin platform need it. To be
+more precise, they need files in "runtimelib" folder only. Since Aubit 4GL, CygWin and GTK+ are all distributed under GPL/LGPL    licenses, you can freely distribute them with your applications.</p>
+<p>For Aubit 4gl development team,<br>
+Andrej Falout</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
