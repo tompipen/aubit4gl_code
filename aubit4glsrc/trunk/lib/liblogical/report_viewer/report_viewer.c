@@ -9,7 +9,7 @@ GtkWidget *notebook;
 
 FILE *fin;
 
-#define XWIDTH 10
+#define XWIDTH 8
 #define YHEIGHT 15
 
 #define MIN_PAGE 10
