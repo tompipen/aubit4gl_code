@@ -1,0 +1,2 @@
+CsvImportTest.4gl	PROC_ICSV	 ICSV_FunctionA	-	-	-	Description to function A to be used in tests of CSV load
+CsvImportTest.4gl	PROC_ICSV	 ICSV_FunctionB	-	-	-	Description to function B to be used in tests of CSV load

@@ -1,0 +1,127 @@
+#  ==========================================================================
+#  Contains definitions needed to fgldoc to be compiled and instaled
+#
+#  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
+#
+#  $Id: FgldocDefs.mk.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
+#
+#  ==========================================================================
+
+############################
+#programs / commands to use:
+YACC			=@YACC@
+LEX				=@LEX@
+ESQL			=@IFMX_ESQLC@ -static
+PERL            =@PERL@
+ANT             =@ANT@
+JAVAC           =@JAVAC@
+WGET            =@WGET@
+RPM             =@RPM@
+INSTALL			=cp
+RM				=rm -f
+
+############################
+#additional flag to commands:
+YFLAGS			=-d
+
+#CFLAGS			=-g
+CFLAGS			=@CFLAGS@
+
+#user name/password used to invoke TomCat administration commnds from and/build.xml
+TOMCAT_USER     =@TOMCAT_USER@
+TOMCAT_PASSWORD =@TOMCAT_PASSWORD@
+
+ANT_FLAGS       =-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
+
+DOC4GLSRCDIR    =@doc4gldir@
+
+#  ==========================================================================
+#  The place where the executables will to be installed
+#  ==========================================================================
+BINDIR			=@prefix@/bin
+
+#  ==========================================================================
+#  The directory where to install the perl modules (it must exist before
+#  'make install' is executed)
+#  ==========================================================================
+
+ifneq "@PERL_SITE_DIR@" ""
+	PERL_MODULE_DIR	=@PERL_SITE_DIR@/FglDocumenter
+else
+	PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
+endif
+#  ==========================================================================
+#  Place where Tomcat or other jsp container is installed
+#  ==========================================================================
+TOMCAT_DIR		=@TOMCAT_DIR@
+
+#  ==========================================================================
+#  Application dir inside tomcat, or other jsp container.
+#  The place where the jsp(s) should be installed
+#  ==========================================================================
+NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
+
+#  ==========================================================================
+#  Place inside applictation dir where tomcat is configured to find the
+#  class files
+#  ==========================================================================
+CLASS_DIR		=$(NAV_DIR)/WEB-INF/classes
+
+
+###############################################
+#connection settings for JSP, used in index.jsp:
+DOC4GL_USERNAME=@DBD_INFORMIX_USERNAME@
+DOC4GL_PASSWORD=@DBD_INFORMIX_PASSWORD@
+DOC4GL_SERVER=@DOC4GL_SERVER@
+DOC4GL_DBNAME=@DOC4GL_DB@
+DOC4GL_SERVICE=@DOC4GL_SERVICE@
+DOC4GL_HOSTNAME=@DOC4GL_HOSTNAME@
+DOC4GL_SGDBURL=@DOC4GL_SGDBURL@
+DOC4GL_CONNECTIONTYPE=@DOC4GL_CONNECTIONTYPE@
+
+
+#location where shared jar files can be found / storred
+JAVA_SHARED		=/usr/share/java
+
+
+#location for installing third party Java components and Tomcat:
+BASE=/usr/local/src
+
+
+#Perl manager files list, for deinstall:
+
+MGR_SRC             =${DOC4GLSRCDIR}/manager/FglDocumenter
+MGR_IMG_SRC         =${MGR_SRC}/img
+MGR_PM_SRC          =${MGR_SRC}
+MGR_PM_L10N_SRC     =${MGR_SRC}/L10N
+MGR_PM_TEST_SRC     =${MGR_SRC}/test
+
+MGR_IMG_FILES		=$(notdir $(wildcard ${MGR_IMG_SRC}/*.gif))
+MGR_PM_FILES		=$(notdir $(wildcard ${MGR_PM_SRC}/*.pm))
+MGR_PM_L10N_FILES	=$(notdir $(wildcard ${MGR_PM_L10N_SRC}/*.pm))
+MGR_PM_TEST_FILES   =$(notdir $(wildcard ${MGR_PM_TEST_SRC}/*.txt) $(wildcard ${MGR_PM_TEST_SRC}/*.4gl))
+MGR_PRG				=fgldoc
+
+#  ==========================================================================
+#                   Jakarta TomCat installation files and paths
+#  ==========================================================================
+
+JAKARTA_RPM_PATH=http://jakarta.apache.org/builds/jakarta-tomcat-4.0/release/v4.1.18/rpms
+TOMCAT4_RPM     =tomcat4-4.1.18-full.1jpp.noarch.rpm
+ADMINWEBAPPS_RPM=tomcat4-admin-webapps-4.1.18-full.1jpp.noarch.rpm
+WEBAPPS			=tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm
+
+TOMCAT_RPMS     =${TOMCAT4_RPM} ${ADMINWEBAPPS_RPM} ${WEBAPPS}
+
+#  ==========================================================================
+#                   Java JDK installation files and paths
+#  ==========================================================================
+
+BLACKDOWN_JSDK_PATH=ftp://metalab.unc.edu/pub/linux/devel/lang/java/blackdown.org/JDK-1.3.1/i386/FCS-02b
+BLACKDOWN_JSDK	=j2sdk-1.3.1-02b-FCS-linux-i386.bin
+
+#Informix JDBC driver:
+IFX_JDBC_PKG	=jdbc_sql221jc3.zip
+IFX_JDBC_PKG_PATH=ftp://ftp.software.ibm.com/software/data/informix/downloads
+
+# ============================= EOF ========================================

@@ -1,0 +1,1730 @@
+dnl # +----------------------------------------------------------------------+
+dnl # | Doc4GL Version $.0                                                   |
+dnl # +----------------------------------------------------------------------+
+dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+dnl # +----------------------------------------------------------------------+
+dnl # | This program is free software; you can redistribute it and/or modify |
+dnl # | it under the terms of one of the following licenses:                 |
+dnl # |                                                                      |
+dnl # |  A) the GNU General Public License as published by the Free Software |
+dnl # |     Foundation; either version 2 of the License, or (at your option) |
+dnl # |     any later version.                                               |
+dnl # |                                                                      |
+dnl # |  B) the Aubit License as published by the AubitDevelopment Team and  |
+dnl # |     included in the distribution in the file: LICENSE                |
+dnl # |                                                                      |
+dnl # | This program is distributed in the hope that it will be useful,      |
+dnl # | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+dnl # | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+dnl # | GNU General Public License for more details.                         |
+dnl # |                                                                      |
+dnl # | You should have received a copy of both licenses referred to here.   |
+dnl # | If you did not, or have any questions about Aubit licensing, please  |
+dnl # | contact afalout@ihug.co.nz                                           |
+dnl # +----------------------------------------------------------------------+
+dnl #
+dnl # $Id: configure.in,v 1.12 2003-04-14 17:55:38 saferreira Exp $
+dnl #
+dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
+dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
+dnl #then issue a warning.
+dnl #
+dnl #
+dnl #Process this file with autoconf to produce a configure script.
+dnl #This script is used to configure BOTH source code and binary distributions
+
+## ==================================================================
+##                             Initialise
+## ==================================================================
+
+
+#Workaround fro Informix libphtread madness:
+export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
+
+
+#We need autoconf at least version 2.50
+AC_PREREQ(2.50)
+
+#Need to be here too, to be used in AC_INIT call:
+#if test -f "tools/project/version" ; then
+#	doc4gl_VERSION=`cat tools/project/version`
+#	doc4gl_BUILD=`cat tools/project/build`
+#fi
+
+AC_INIT([Doc4GL],[0.1],[aubit4gl-discuss@lists.sourceforge.net])
+
+#needed to initialize AutoMake functionallity, that will create Makefile.in
+#files from Makefile.am:
+AM_INIT_AUTOMAKE(Doc4GL, 0.1)
+
+doc4gldir=`pwd`
+a4gl_shtool=$doc4gldir/etc/shtool
+T_MD=`$a4gl_shtool echo -n -e %B`
+T_ME=`$a4gl_shtool echo -n -e %b`
+
+CONFIGURE_COMMAND="$ac_configure_args"
+
+#location of additional Autoconf files
+AC_CONFIG_AUX_DIR(etc/config)
+
+
+#Purpose of 'doc4glconf' script is to hold all the command line switches
+#to 'configure' on your system, and is local to your system. If found in
+#path, it will be invoked instead of just plain 'configure'
+#doc4glconf script will typically have only one line, for example:
+#./configure --with-doc4glconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
+if test "$doc4glCONF_FLAG" != "running"; then
+
+	PHP_CONFIGURE_PART(Looking for configure parameters file:)
+
+	AC_PATH_PROG(doc4glCONF, doc4glconf, no)
+	if test "$doc4glCONF" != "no"; then
+		if test "$with_doc4glconf" != "yes" ; then
+			PHP_CONFIGURE_PART(Redirecting to 'doc4glconf':)
+			if test "$CONFIGURE_COMMAND" != ""; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You provided command line options to 'configure'. They will        |
+| be ingored, and ones provided in 'doc4glconf' used instead. Use    |
+| --with-doc4glconf=no to disable this behaviour.                    |
++--------------------------------------------------------------------+
+X
+			fi
+			#so we don't enter the loop:
+			export doc4glCONF_FLAG=running
+			doc4glconf
+			err_code=$?
+			#prevent errors when exiting first instance, that did not egt chance
+		    #to create this files, but expects them:
+			touch conftest.log
+			touch confdefs.h
+			#echo "About to exit first invocation of configure ($err_code)..."
+			exit $err_code
+		    echo "Oooops! You should not see this!"
+		else
+	    	echo "'doc4glconf' found, but disabled"
+	    fi
+	fi
+else
+	PHP_CONFIGURE_PART(Invoked from 'doc4glconf'-use 'make settings' to see flags:)
+fi
+
+#This script will be used for configuring binary distributions
+#when --with-bin switch is on command line
+if test "$with_bin" = "yes" ; then
+	doc4gl_SOURCE=0
+else
+	#when --with-src was on command line
+	if test "$with_src" = "yes" ; then
+		doc4gl_SOURCE=1
+	else
+		#no switch, detect if we are in source code tree
+		if test -f "parser/actions.c"; then
+			doc4gl_SOURCE=1
+	    else
+			doc4gl_SOURCE=0
+	    fi
+    fi
+fi
+
+if test "$doc4gl_SOURCE" = "1" ; then
+	PHP_CONFIGURE_PART(Configuring doc4gl source code:)
+else
+	PHP_CONFIGURE_PART(Configuring doc4gl binary distribution:)
+fi
+
+#FIXME: what is this?
+#This directive is expanded in initialisation part, and putting it in
+#"if" have no effect:
+#so we need to specify file which is in both source code and
+#binary distributions:
+AC_CONFIG_SRCDIR([parser/actions.c])
+
+if test "$doc4gl_SOURCE" = "1" ; then
+	#Location of global header to receive "#define xxxxx y" replacements:
+	#AC_CONFIG_HEADER([incl/a4gl_incl_config.h])
+	#When file name contains path and therefore / , we get strange errors
+    #from automake if path is specified as ([path/file.ext]). Autoconf
+    #seems to work fine with this.
+	AM_CONFIG_HEADER(etc/doc4gl_config.h)
+fi
+
+#configure.in:151: warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
+#AC_  CANONICAL_  TARGET
+AC_CANONICAL_SYSTEM
+
+#prevent libtool from trying to build static libraries
+AC_DISABLE_STATIC
+
+#Note: The libltdl library included with all libtool versions will only work on
+#Darwin when dlcompat is installed.
+
+#AC_LIBLTDL_INSTALLABLE
+#AC_LIBLTDL_CONVENIENCE
+#AC_LIBTOOL_WIN32_DLL
+#AC_LIBTOOL_DLOPEN
+#AC_PROG_LIBTOOL
+#AM_PROG_LIBTOOL
+#AC_SUBST(LIBTOOL_DEPS)
+
+## ==================================================================
+##                Define what will get substituted
+## ==================================================================
+
+#Identification
+AC_SUBST(doc4gldir)
+AC_SUBST(COMPILE_DATE)
+AC_SUBST(doc4gl_VERSION)
+AC_SUBST(doc4gl_BUILD)
+AC_SUBST(doc4gl_WEBSITE)
+AC_SUBST(doc4gl_PUBLISHER)
+AC_SUBST(FULLNAME)
+AC_SUBST(SHORTNAME)
+
+
+#defaults for doc4glrc:
+#AC_SUBST(A4GL_SQLTYPE)
+
+#Informix ESQL/C
+AC_SUBST(IFMX_ESQLC)
+AC_SUBST(IFX_ESQL_FLAGS)
+AC_SUBST(IFX_LIBS)
+AC_SUBST(IFX_LFLAGS)
+AC_SUBST(IFX_INCLUDE)
+AC_SUBST(IFX_C_MAKE)
+AC_SUBST(INFORMIXDIR)
+
+#DoxyGen
+AC_SUBST(DOXYGEN)
+AC_SUBST(HAVE_DOT)
+AC_SUBST(DOT_PATH)
+AC_SUBST(DOXY_BIN_ABSPATH)
+
+#http server
+AC_SUBST(CGI_DIR)
+AC_SUBST(APACHECTL)
+AC_SUBST(HTTPD)
+AC_SUBST(APACHE_CONF)
+AC_SUBST(WWW_HOST_NAME)
+AC_SUBST(WWW_DOCUMENT_ROOT)
+AC_SUBST(TOMCAT)
+AC_SUBST(TOMCAT_DIR)
+
+#RPM
+AC_SUBST(RPM)
+AC_SUBST(AUTOSPEC)
+
+#Perl
+AC_SUBST(PERL)
+AC_SUBST(PERLBUILD)
+AC_SUBST(PERL_VERSION)
+AC_SUBST(PERL_MODULE_DIR)
+AC_SUBST(PERL_SITE_DIR)
+AC_SUBST(MISSING_PERLMODS)
+
+#other
+AC_SUBST(LDCONFIG)
+AC_SUBST(target)
+AC_SUBST(target_cpu)
+AC_SUBST(ADD_LD_LIBRARY_PATH)
+AC_SUBST(PIC)
+AC_SUBST(LDFLAGS)
+AC_SUBST(LDFLAGS_SHARED)
+AC_SUBST(YACC)
+AC_SUBST(LEX)
+AC_SUBST(LCLINTEXE)
+AC_SUBST(SO_EXT)
+AC_SUBST(SO_EXT_LINKABLE)
+AC_SUBST(GETOPT_LONG)
+AC_SUBST(ARCHEXT)
+AC_SUBST(CONFIGURE_COMMAND)
+AC_SUBST(GCC_VERSION_MAJOR)
+AC_SUBST(GCC_VERSION_MINOR)
+AC_SUBST(GCC_MINGW)
+AC_SUBST(HAS_CHECK)
+AC_SUBST(JAVA)
+AC_SUBST(JAVAC)
+AC_SUBST(ANT)
+AC_SUBST(WGET)
+
+#Inno Setup:
+AC_SUBST(IS_SOURCE)
+AC_SUBST(IS_SOURCE_GTK)
+
+#debug
+AC_SUBST(DEBUG_BISON)
+AC_SUBST(YYDEBUG)
+AC_SUBST(INCLINES)
+
+
+
+#files to be packaged into RPM, that are built optionaly because of external
+#dependencied. Also used for install/deinstall, and to tell make which files to
+#build:
+AC_SUBST(RPMFILE_1)
+AC_SUBST(RPMFILE_2)
+AC_SUBST(RPMFILE_3)
+AC_SUBST(RPMFILE_4)
+AC_SUBST(RPMFILE_5)
+AC_SUBST(RPMFILE_6)
+AC_SUBST(RPMFILE_7)
+AC_SUBST(RPMFILE_8)
+AC_SUBST(RPMFILE_9)
+AC_SUBST(RPMFILE_10)
+AC_SUBST(RPMFILE_11)
+AC_SUBST(RPMFILE_12)
+AC_SUBST(RPMFILE_13)
+AC_SUBST(RPMFILE_14)
+AC_SUBST(RPMFILE_15)
+AC_SUBST(RPMFILE_16)
+AC_SUBST(RPMFILE_17)
+AC_SUBST(RPMFILE_18)
+AC_SUBST(RPMFILE_19)
+AC_SUBST(RPMFILE_20)
+AC_SUBST(RPMFILE_21)
+AC_SUBST(RPMFILE_22)
+AC_SUBST(RPMFILE_23)
+AC_SUBST(RPMFILE_24)
+AC_SUBST(RPMFILE_25)
+AC_SUBST(RPMFILE_26)
+AC_SUBST(RPMFILE_27)
+AC_SUBST(RPMFILE_28)
+AC_SUBST(RPMFILE_29)
+AC_SUBST(RPMFILE_30)
+
+
+#List of libraries that we allways make. Here so we don't have to maintain it
+#separately for RPM config file, install/deinstall and lib Makefile:
+AC_SUBST(LIBFILE_1)
+AC_SUBST(LIBFILE_2)
+AC_SUBST(LIBFILE_3)
+AC_SUBST(LIBFILE_4)
+AC_SUBST(LIBFILE_5)
+AC_SUBST(LIBFILE_6)
+AC_SUBST(LIBFILE_7)
+AC_SUBST(LIBFILE_8)
+AC_SUBST(LIBFILE_9)
+AC_SUBST(LIBFILE_10)
+AC_SUBST(LIBFILE_11)
+AC_SUBST(LIBFILE_12)
+AC_SUBST(LIBFILE_13)
+AC_SUBST(LIBFILE_14)
+AC_SUBST(LIBFILE_15)
+AC_SUBST(LIBFILE_16)
+AC_SUBST(LIBFILE_17)
+AC_SUBST(LIBFILE_18)
+AC_SUBST(LIBFILE_19)
+AC_SUBST(LIBFILE_20)
+AC_SUBST(LIBFILE_21)
+AC_SUBST(LIBFILE_22)
+AC_SUBST(LIBFILE_23)
+AC_SUBST(LIBFILE_24)
+AC_SUBST(LIBFILE_25)
+AC_SUBST(LIBFILE_26)
+AC_SUBST(LIBFILE_27)
+AC_SUBST(LIBFILE_28)
+AC_SUBST(LIBFILE_29)
+AC_SUBST(LIBFILE_30)
+
+AC_SUBST(DOC4GL_DB)
+AC_SUBST(DBD_INFORMIX_USERNAME)
+AC_SUBST(DBD_INFORMIX_PASSWORD)
+AC_SUBST(DOC4GL_SERVER)
+AC_SUBST(DOC4GL_SERVICE)
+AC_SUBST(DOC4GL_HOSTNAME)
+AC_SUBST(DOC4GL_SGDBURL)
+AC_SUBST(DOC4GL_CONNECTIONTYPE)
+AC_SUBST(TOMCAT_USER)
+AC_SUBST(TOMCAT_PASSWORD)
+
+## ==================================================================
+##                             Defaults
+## ==================================================================
+
+if test "$doc4gl_SOURCE" = "1" ; then
+	#need to do this again, since the earlyer one was before initialisation,
+	#and will not get in substitution otherwise:
+	#doc4gl_VERSION=`cat tools/project/version`
+	#doc4gl_BUILD=`cat tools/project/build`
+	doc4gl_VERSION=0.1
+	doc4gl_BUILD=1
+
+fi
+
+FULLNAME="Doc4GL documenter"
+SHORTNAME="doc4gl"
+doc4gl_WEBSITE=aubit4gl.sf.net
+doc4gl_PUBLISHER="Aubit project development team"
+COMPILE_DATE=`date +%d-%m-%Y`
+#test_rpclib="1"
+#GTKBUILD=no
+#HAVE_IODBC=no
+#HAVE_UNIXODBC=no
+#HAVE_IFXODBC=no
+#HAVE_PGODBC=no
+PIC="-fPIC"
+#ODBC_LIB_NAME=noodbc
+#USE_PDF=no
+#PDFBUILD=no
+PERLBUILD=no
+#JABBERBUILD=no
+doc4gl_DEBUG=1
+IFMX_ESQLC=no
+LCLINTEXE=no
+cygwin=0
+SO_EXT=.so
+SO_EXT_LINKABLE=$SO_EXT
+ARCHEXT=tgz
+TOMCAT_DIR=no
+
+DOC4GL_DB="p4gl_repository"
+DBD_INFORMIX_USERNAME="informix"
+DBD_INFORMIX_PASSWORD="U-N-K-N-O-W-N"
+DOC4GL_SERVER="INFORMIXSERVER=unstable"
+DOC4GL_SERVICE=1530
+DOC4GL_HOSTNAME="localhost"
+DOC4GL_SGDBURL="informix-sqli"
+DOC4GL_CONNECTIONTYPE="jdbc"
+TOMCAT_USER=admin
+TOMCAT_PASSWORD=tomcat
+
+
+#defaults for doc4glrc:
+A4GL_SQLTYPE=nosql
+
+#case "$target_os" in
+case $host in
+	*linux*)
+		;;
+
+    #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
+	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
+		cygwin=1
+        SO_EXT=.dll
+        SO_EXT_LINKABLE=$SO_EXT
+		ARCHEXT=zip
+		;;
+
+	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
+	*-sun-solaris*)
+		PIC="-fPIC"
+		;;
+
+	#powerpc-apple-darwin5.5 (Andrej on SF CF)
+	*-apple-darwin*)
+		#for dlopen() libs:
+		SO_EXT=.bundle
+        #for libdoc4gl4gl:
+		SO_EXT_LINKABLE=.dylib
+		;;
+
+
+	*-ibm-aix*)
+		PIC=
+		LDFLAGS_SHARED="-s"
+        ;;
+
+	*)
+        AC_MSG_WARN(You are using untested platform)
+		echo "    Please report success or failure to compile doc4gl on this"
+		echo "    platform to the mailing list. Thank you."
+        ;;
+esac
+
+LDFLAGS_SHARED="$PIC -shared"
+
+dnl Set of available languages.
+#ALL_LINGUAS="de fr es ko nl no pl pt sl sv"
+ALL_LINGUAS="en"
+dnl internationalization macros
+#AM_GNU_GETTEXT
+
+## ==================================================================
+##  Set variables passed on command line to configure, overrding defaults
+## ==================================================================
+
+if test "$with_ifx_uname" != "" ; then
+	DBD_INFORMIX_USERNAME=$with_ifx_uname
+fi
+if test "$with_ifx_pwd" != "" ; then
+	DBD_INFORMIX_PASSWORD=$with_ifx_pwd
+fi
+if test "$with_doc4gl_db" != "" ; then
+	DOC4GL_DB=$with_doc4gl_db
+fi
+if test "$with_ifx_server" != "" ; then
+	DOC4GL_SERVER="INFORMIXSERVER=$with_ifx_server"
+fi
+if test "$with_ifx_service" != "" ; then
+	DOC4GL_SERVICE=$with_ifx_service
+fi
+if test "$with_ifx_hostname" != "" ; then
+	DOC4GL_HOSTNAME=$with_ifx_hostname
+fi
+if test "$with_ifx_sgdburl" != "" ; then
+	DOC4GL_SGDBURL=$with_ifx_sgdburl
+fi
+if test "$with_browser_conntype" != "" ; then
+	DOC4GL_CONNECTIONTYPE=$with_browser_conntype
+fi
+if test "$with_tomcat_user" != "" ; then
+	TOMCAT_USER=$with_tomcat_user
+fi
+if test "$with_tomcat_password" != "" ; then
+	TOMCAT_PASSWORD=$with_tomcat_password
+fi
+
+## ==================================================================
+##            Decide on install location
+## ==================================================================
+
+
+	if test "$prefix" = "NONE"; then
+		prefix=/usr/local
+	fi
+	AC_MSG_CHECKING(install root 'prefix=$prefix')
+	if test -w "$prefix"; then
+		AC_MSG_RESULT(Yes ($prefix))
+    else
+		if test -w "$HOME"; then
+			prefix=$HOME
+			AC_MSG_RESULT(No (will use $prefix instead))
+        else
+			AC_MSG_ERROR(Cannot determine install path. HOME=$HOME Stop.)
+        fi
+    fi
+
+    TMP=`echo $PATH | grep $prefix/bin`
+    if test "$TMP" = ""; then
+		AC_MSG_WARN(Default bin install directory ($prefix/bin) is not in the PATH!)
+    fi
+
+#Note: all command line switches like "--xxxx-wwwww" are automativaly
+#converted to shell variables in "xxxxx_wwwww" format.
+#--disable-xxx are not assigned "yes" by default
+#--with-xxx are assigned "yes" if no value was assigned on command line
+
+## ==================================================================
+##                Informix database engine
+## ==================================================================
+
+PHP_CONFIGURE_PART(Informix RDBMS)
+
+if test "$INFORMIXDIR" != ""; then
+	#Every Informix database engine installs dbaccess, but dbaccess is not
+    #available in any other Informix products:
+	AC_PATH_PROG(DBACCESS, dbaccess, no)
+	if test "$DBACCESS" != "no"; then
+		AC_PATH_PROG(ONSTAT, onstat, no)
+    else
+		AC_MSG_ERROR(Informix RDBMS not found (no dbaccess).)
+    fi
+else
+	AC_MSG_ERROR(INFORMIXDIR not set)
+fi
+
+## ==================================================================
+##                See if we need to create a Doc4GL database
+## ==================================================================
+
+#FIXME: first verify we do have Infoemix db engine and dbaccess
+
+PHP_CONFIGURE_PART(Creating/verifying Doc4GL Database:)
+
+	AC_MSG_CHECKING(Informix database '$DOC4GL_DB')
+	dbaccess $DOC4GL_DB -e > /tmp/tmp.dbaccess 2>&1
+    TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
+
+	if test "$TEST" != ""; then
+		dbaccess - - > /tmp/credbtmp.log 2>&1 <<!
+        create database '$DOC4GL_DB'
+!
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Failed (code $RET). See /tmp/credbtmp.log)
+        else
+			TMP=`cat /tmp/credbtmp.log | grep "Database created"`
+            if test "$TMP" != ""; then
+				AC_MSG_RESULT(Database Created)
+            else
+	        AC_MSG_WARN(Database creation failed. See /tmp/credbtmp.log)
+			fi
+		fi
+
+		#p4gl_rep.sql:
+		#Repositório de sobre informação de programas de 4gl
+		#Formato p4gl (desenvolvido na Despodata)
+        #Creates folowing tables:
+		#p4gl_package p4gl_program p4gl_module p4gl_module_prog p4gl_function
+		#p4gl_process p4gl_fun_process p4gl_fun_parameter p4gl_fun_return
+		#p4gl_fun_todo p4gl_table_usage p4gl_excel
+
+		AC_MSG_CHECKING('$DOC4GL_DB' db tables - p4gl_rep)
+		dbaccess $DOC4GL_DB -qcr sql/p4gl_rep > /tmp/p4gl_rep.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Statement returned code $RET. See /tmp/p4gl_rep.log)
+        else
+			#TableOOPScreated.OOPSDOOPStabase closed
+			AC_MSG_RESULT(Created)
+		fi
+    else
+		AC_MSG_RESULT(OK)
+	fi
+
+## ==================================================================
+##                              Debugging
+## ==================================================================
+
+PHP_CONFIGURE_PART(Configuring Debugging options)
+PHP_HELP_SEPARATOR([Debugging options:])
+
+AC_MSG_CHECKING(Autoconf debugging)
+if test "$enable_ac_debug" = "yes" ; then
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+AC_MSG_CHECKING(doc4gl programs debugging)
+if test "$enable_debug" = "no" ; then
+    # FIXME: strip executables
+    CFLAGS="$CFLAGS -DNODEBUG"
+    AC_MSG_RESULT(no)
+	AC_MSG_WARN(Debugging disabled, use --enable-debug to enable it.)
+	doc4gl_DEBUG=0
+else
+    #FIXME: DEBUG=ALL in environment? doc4glrc?
+    CFLAGS="$CFLAGS -g -Wall -DDEBUG"
+    AC_MSG_RESULT(yes. Set DEBUG=ALL to get debug.out trace.)
+fi
+
+AC_MSG_CHECKING(YY Debugging)
+if test "$enable_yy_debug" = "yes" ; then
+	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
+	YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE -DYYPRINT=doc4gl_yyprint"
+    AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
+else
+    AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)
+fi
+
+AC_MSG_CHECKING(Yacc Debugging)
+if test "$enable_yacc_debug" = "yes" ; then
+	DEBUG_BISON="--debug"
+    AC_MSG_RESULT(enabled.)
+else
+    AC_MSG_RESULT(disabled, specify --enable-yacc-debug to turn it on.)
+fi
+
+#in libLEX_xxx printc():
+# * If the INCLINES variable is set then the source target C
+# * file is generated with #line (for debugging purposes).
+AC_MSG_CHECKING(printc() Debugging)
+if test "$enable_printc_debug" = "yes" ; then
+	INCLINES=yes
+    AC_MSG_RESULT(enabled.)
+else
+    AC_MSG_RESULT(disabled.)
+fi
+
+
+## ==================================================================
+##                              Platform
+## ==================================================================
+
+#this things are automatically set by configure:
+#build
+#build_cpu
+#build_vendor
+#build_os
+#host
+#host_cpu
+#host_vendor
+#host_os
+#target
+#target_cpu
+#target_vendor
+#target_os
+
+
+#Usage: uname [OPTION]...
+#  -a, --all        print all information
+#  -m, --machine    print the machine (hardware) type
+#  -n, --nodename   print the machine's network node hostname
+#  -r, --release    print the operating system release
+#  -s, --sysname    print the operating system name
+#  -p, --processor  print the host processor type
+#  -v               print the operating system version
+
+#This will return just 2.4
+#KERNEL=`kernelversion`
+#this will return 2.4.7-10
+KERNEL_VER=`uname -r`
+
+#FIXME: how do I get glibc version?
+GLIBC_VER=2.2.4
+
+#grep /usr/bin/glibcbug for:
+
+#VERSION="2.2.4"
+#RELEASE="stable"
+#ADDONS="c_stubs glibc-compat linuxthreads"
+#HOST="i386-redhat-linux-gnu"
+#CC='gcc'
+#CCVERSION='2.96 20000731 (Red Hat Linux 7.1 2.96-98)'
+#CFLAGS="-march=i386 -D__USE_STRING_INLINES -fstrict-aliasing -freorder-blocks -DNDEBUG=1 -g -O3"
+#SYSINCLUDES=""
+#VERSIONING="yes"
+#BUILD_STATIC="yes"
+#BUILD_SHARED="yes"
+#BUILD_PIC_DEFAULT="no"
+#BUILD_PROFILE="yes"
+#BUILD_OMITFP="no"
+#BUILD_BOUNDED="no"
+#BUILD_STATIC_NSS="no"
+#STDIO="libio"
+
+
+## ==================================================================
+##                  Checks for standard programs
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking standard programs:)
+
+AC_PATH_PROG(WGET, wget, no)
+
+AC_PATH_PROG(JAVA, java, no)
+AC_PATH_PROG(JAVAC, javac, no)
+
+#check JAVA_HOME, needed by ant
+
+if test "$JAVA" != "no"; then
+	AC_MSG_CHECKING(JAVA_HOME)
+	if test "$JAVA_HOME" = ""; then
+		AC_MSG_WARN(JAVA_HOME is empty)
+    else
+		AC_MSG_RESULT(OK)
+	fi
+	AC_MSG_CHECKING(CLASSPATH)
+	if test "$CLASSPATH" = ""; then
+		AC_MSG_WARN(CLASSPATH is empty)
+    else
+		AC_MSG_RESULT(OK)
+	fi
+
+	TMP=`javac -version 2>/dev/stdout | grep KOPI`
+	if test "$TMP" != ""; then
+		#This is KOPI javac: (installed with RH kaffe RPM)
+		#THIS PROGRAM IS PART OF GNU KOPI, A SET OF GNU PACKAGES FOR JVM CODE GENERATION
+		#MORE INFO:                 see: http://www.dms.at/kopi, http://www.gnu.org/kopi
+		#[afalout@aptiva erp]$ javac -version
+		#version number: 1.4F released 05/23/2000
+		AC_MSG_WARN(Java compiler is KOPI - this will proabably fail)
+	fi
+
+	#This is Kaffe JVM:
+	#[afalout@aptiva erp]$ java -version
+	#Kaffe Virtual Machine
+	#Copyright (c) 1996-2000
+	#Transvirtual Technologies, Inc.  All rights reserved
+	#Engine: Just-in-time v3   Version: 1.0.6   Java Version: 1.1
+
+fi
+
+AC_PATH_PROG(MAKE, make, no)
+if test "$MAKE" = "no" ; then
+	if test "$doc4gl_SOURCE" = "1" ; then
+		AC_MSG_ERROR(Cannot compile doc4gl from source code without 'make' - please install it. Stop.)
+    else
+		AC_MSG_WARN(It will be much easier if you would install 'make')
+    fi
+else
+		AC_MSG_CHECKING(make version)
+		#this creates fill set dump on Solaris
+		set `make --version | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+		if test "$1" != ""; then
+			if test "$1" = "3" -a "$2" -lt "50"; then
+		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
+	        else
+			    AC_MSG_RESULT($1.$2.$3 (ok))
+	        fi
+        else
+			AC_MSG_ERROR(doc4gl needs GNU 'make' - please install it. Stop.)
+        fi
+fi
+
+if test "$doc4gl_SOURCE" = "1" ; then
+	AC_PROG_YACC
+	if test "$YACC" != "bison -y"; then
+		#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
+		YACC=no
+		WARN_YACC=1
+	else
+		AC_MSG_CHECKING(bison version)
+		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
+	    if test "$1" = "1" -a "$2" -lt "25"; then
+	        AC_MSG_WARN(You will need bison 1.25 if you'd want to regenerate the doc4gl parsers (found $1.$2).)
+        else
+		    AC_MSG_RESULT($1.$2 (ok))
+        fi
+	fi
+
+	AC_PATH_PROG(ANT, ant, no)
+
+	AC_PATH_PROG(DOXYGEN, doxygen, no)
+
+
+	AC_PATH_PROG(CVS_CLIENT, cvs, no)
+	AC_PATH_PROG(DOXYSEARCH, doxysearch, no)
+	if test "$DOXYSEARCH" != "no" ; then
+		DOXY_BIN_ABSPATH=`dirname $DOXYSEARCH`
+    fi
+
+	# dot tool is part of Graphviz, a graph visualization toolkit from AT&T
+	# and Lucent Bell Labs. One of DoxyGen options
+
+	if test "$with_dot" != "no"; then
+		if test "$with_dot" != "yes"; then
+			old_PATH="$PATH"
+	        PATH="$with_dot:$PATH"
+	    fi
+
+		AC_PATH_PROG(DOTTOOL, dot, no)
+
+		if test "$DOTTOOL" != "no"; then
+			HAVE_DOT=YES
+			DOT_PATH=`dirname "$DOTTOOL"`
+		else
+			HAVE_DOT=NO
+		fi
+
+		if test "$with_dot" != "yes"; then
+			PATH="$old_PATH"
+	    fi
+	else
+		HAVE_DOT=NO
+	fi
+
+fi
+
+#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
+#we test for C, all sort of wireds things will happen, so we have to test
+#it even in binary distro, where we don't need it:
+dnl #AC _PROG _LEX
+#something was testin twice for flex? are macros expanded even when commented out?
+AM_PROG_LEX
+if test "$LEX" = ":" || test "$LEX" = "" ; then
+    dnl #AC _PROG _LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+	LEX="no"
+	if test "$doc4gl_SOURCE" = "1" ; then
+        WARN_LEX=1
+    fi
+fi
+
+dnl Checks for programs:
+#AC_ISC_POSIX
+AC_PROG_CC
+
+if test "$CC" = "gcc"; then
+	AC_MSG_CHECKING(GCC version)
+
+	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
+	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+	if test "$TMP_TMP" != ""; then
+		set `echo $TMP_TMP`
+		if test "$1" != ""; then
+			#if test "$1" = "3" -a "$2" -lt "50"; then
+		    #    AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
+	        #else
+			    AC_MSG_RESULT($1.$2.$3)
+	            GCC_VERSION_MAJOR=$1
+				GCC_VERSION_MINOR=$2
+                if test "$3" = "mingw"; then
+					GCC_MINGW=yes
+					#should not really need drive letter?
+                    #also, if adding drive letter with : , it then we add doc4gldir to PATH, : will be
+                    #interperted as separator (when using CygWin tools), and make PATH invalid
+					doc4gldir="$HOMEDRIVE/cygwin$doc4gldir"
+                    #BUT-then CygWin things there is a directory called /cygwin in HIS root!
+                    #but how to get a directory name CygWin was installed in, if different then default?
+					#doc4gldir="/cygwin$doc4gldir"
+					AC_MSG_WARN(Using MinGW GCC.)
+					old_CFLAGS="$CFLAGS"
+					old_CPPFLAGS="$CPPFLAGS"
+					old_LDFLAGS="$LDFLAGS"
+
+					TMP_IFLAGS="-ID:/cygwin/usr/include"
+                    CFLAGS=" $CFLAGS $TMP_IFLAGS"
+					CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
+
+					#Clear cached value:
+					#unset ac_cv_header_dlfcn_h
+					#AC_CHECK_HEADERS([dlfcn.h])
+	                #exit
+					#In file included from d:/MinGW/include/inttypes.h:6,
+					#                 from configure:9489:
+					#d:/MinGW/include/stdint.h:27: conflicting types for `int8_t'
+					#D:/cygwin/usr/include/sys/types.h:128: previous declaration of `int8_t'
+
+					CFLAGS="$old_CFLAGS"
+					CPPFLAGS="$old_CPPFLAGS"
+					LDFLAGS="$old_LDFLAGS"
+                    TMP_IFLAGS=
+                fi
+	        #fi
+		else
+			AC_MSG_WARN(Cannot read GCC version.)
+	    fi
+    else
+		AC_MSG_WARN(Cannot read GCC version.)
+    fi
+else
+	AC_MSG_ERROR(doc4gl needs GNU 'C' compiler - please install it. Stop.)
+fi
+
+
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_AWK
+#FIXME: stop if no gawk (if configuring source code tree) - awk will fail
+if test "$AWK" = "awk"; then
+		AC_MSG_WARN(doc4gl compiler need gawk, awk will probably fail.)
+fi
+
+
+#AC_PATH_PROG(SWIG, swig, no)
+
+
+AC_PATH_PROG(SH, bash, no)
+if test "$SH" = "no"; then
+	AC_PATH_PROG(SH, sh, /bin/sh)
+	AC_MSG_WARN(doc4gl compiler need bash, sh will probably fail.)
+fi
+
+AC_PATH_PROG(LDD, ldd, no)
+
+AC_PATH_PROG(LCLINTEXE,lclint,no)
+
+	if test "$LCLINTEXE" = "no"; then
+		AC_PATH_PROG(LCLINTEXE,splint,no)
+    fi
+
+AC_PATH_PROG(LDCONFIG, ldconfig, no)
+AC_PATH_PROG(AUTOCONF, autoconf, no)
+AC_PATH_PROG(ACLOCAL, aclocal, no)
+
+AC_PATH_PROG(RPM, rpm, no)
+AC_PATH_PROG(AUTOSPEC, autospec, no)
+
+AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
+if test -n "$PROG_SENDMAIL"; then
+  AC_DEFINE(HAVE_SENDMAIL)
+fi
+
+## ==================================================================
+##                  Checks for Tomcat
+## ==================================================================
+
+#FIXME: check also for other JSP enabled web servers (??)
+
+if test "$JAVA" != "no"; then
+
+	PHP_CONFIGURE_PART(Checking for JSP web server:)
+
+	AC_PATH_PROG(TOMCAT, tomcat, no)
+	if test "$TOMCAT" = "no"; then
+		AC_PATH_PROG(TOMCAT4, tomcat4, no)
+		if test "$TOMCAT4" != "no"; then
+	        TOMCAT=$TOMCAT4
+	    fi
+	fi
+
+	if test "$TOMCAT" != "no"; then
+		AC_MSG_CHECKING(Tomcat home)
+		TOMCAT_DIR=`$TOMCAT --help | grep CATALINA_BASE | awk '{print $3}'`
+		AC_MSG_RESULT($TOMCAT_DIR)
+		#TOMCAT_JAVA_HOME=`$TOMCAT --help | grep JAVA_HOME | awk '{print $3}'`
+
+		AC_MSG_CHECKING(Informix JDBC driver)
+		IFX_JDBC=`find $INFORMIXDIR -name ifxjdbc.jar`
+	    if test "$IFX_JDBC" = ""; then
+			IFX_JDBC=`find /usr/share/java -name ifxjdbc.jar`
+	    fi
+
+	    if test "$IFX_JDBC" = ""; then
+			AC_MSG_RESULT(No)
+			AC_MSG_CHECKING(Informix JDBC in CLASSPATH)
+	        TMP=`echo $CLASSPATH | grep ifxjdbc.jar`
+			if test "$TMP" = ""; then
+				AC_MSG_RESULT(No)
+				AC_MSG_WARN(Informix JDBC driver found, but not in CLASSPATH)
+	        else
+				AC_MSG_RESULT(OK)
+			fi
+	    else
+			AC_MSG_RESULT($IFX_JDBC)
+	    fi
+	fi
+fi
+
+## ==================================================================
+##                  Checks for Perl and Perl components
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for Perl and Perl components:)
+
+AC_PATH_PROG(PERL, perl, no)
+
+if test "$PERL" != "no"; then
+	AC_MSG_CHECKING(Perl version)
+	set `$PERL -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
+	if test "$4" != ""; then
+		if test "$4" -lt "5"; then
+	        AC_MSG_ERROR(You will need Perl version 5.6 or later (found $4.$5.$6).)
+        else
+			if test "$4" = "5" -a "$5" -lt "6"; then
+		        AC_MSG_ERROR(You will need Perl version 5.6 or later (found $4.$5.$6).)
+            else
+				AC_MSG_RESULT($4.$5.$6 (ok))
+			fi
+		fi
+		PERL_VERSION=$4.$5.$6
+	else
+		AC_MSG_ERROR(Cannot read Perl version.)
+	fi
+else
+	AC_MSG_ERROR(doc4gl needs Perl, version 5.6 or later. Please install it.)
+fi
+
+#doc4gl perl code uses /usr/bin/perl as interpreter line  in
+#!/usr/bin/perl - so we need to check if this is the perl executable we
+#found:
+
+AC_MSG_CHECKING(Perl interpreter notation)
+if test "$PERL" != "/usr/bin/perl"; then
+	if test -a "/usr/bin/perl"; then
+		#something exists there, try to read it's version
+		set `/usr/bin/perl -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
+		if test "$4" != ""; then
+			THIS_PERL_VERSION=$4.$5.$6
+	        if test "$THIS_PERL_VERSION" != "$PERL_VERSION"; then
+				AC_MSG_ERROR(Please fix version conflict between /usr/bin/perl and $PERL.)
+	    	fi
+		else
+			AC_MSG_ERROR(Cannot read Perl version.)
+		fi
+		#is is a link?
+		if test -L "/usr/bin/perl"; then
+			#it's a link, maybe to the same perl executable?
+			#lrwxrwxrwx    1 root     root           12 Dec 23  2001 X11 -> ../X11R6/bin
+			AC_MSG_RESULT(/usr/bin/perl is link to $PERL (OK))
+        else
+            #not a link, this is another perl executable there.
+            #maybe it's the same version?
+			AC_MSG_RESULT(/usr/bin/perl is same version executable)
+		fi
+    else
+        #we should create a link
+        ln $PERL /usr/bin/perl
+    fi
+else
+	AC_MSG_RESULT(OK)
+fi
+
+#Perl swithcehs:
+# -Idirectory"     specify @INC/#include directory (several -I's allowed)
+#  -[mM][-]module  execute `use/no module...' before executing program
+#  -V[:variable]   print configuration summary (or a single Config.pm variable)
+
+    #FIXME: we should use site_perl dir to install our stuff
+	AC_MSG_CHECKING(Perl modules directory)
+
+        PERL5DIR=`($PERL -e 'use Config; print $Config{archlib};') 2>/dev/null`
+        if test "$PERL5DIR" != ""; then
+            if test "$PERLINCLUDE" = "nope"; then
+                if test -r "$PERL5DIR/perl.h"; then
+                    AC_MSG_RESULT(PERL5DIR/perl.h)
+                    WITH_PERL=yes
+                    PERLINCLUDE="$PERL5DIR"
+                elif test -r "$PERL5DIR/CORE/perl.h"; then
+                    AC_MSG_RESULT($PERL5DIR/CORE/perl.h)
+                    WITH_PERL=yes
+                    PERLINCLUDE="$PERL5DIR/CORE"
+                fi
+            else
+                WITH_PERL=yes
+                AC_MSG_RESULT($PERLINCLUDE)
+            fi
+            if test "$PERLINCLUDE" = "nope"; then
+                AC_MSG_RESULT(could not locate perl.h...)
+                WITH_PERL=no
+            fi
+        else
+            AC_MSG_RESULT(unable to determine Perl configuration)
+            WITH_PERL=no
+        fi
+
+				# FIXME : Comented because in debian perl build this not assigned. 
+				# Lets hope that we dont need it
+        #PERLLIBDIR=`($PERL -e 'use Config; print $Config{sitearchexp};') 2>/dev/null`
+        #if test -z "$PERLLIBDIR" -o ! -d "$PERLLIBDIR"; then
+            #AC_MSG_RESULT(         unable to determine perl shared library directory)
+        #fi
+
+        PERLMODDIR=`($PERL -e 'use Config; print $Config{sitelib};') 2>/dev/null`
+        if test -z "$PERLMODDIR" -o ! -d "$PERLMODDIR"; then
+            AC_MSG_RESULT(         unable to determine perl module directory)
+            PERLMODDIR="/usr/local/lib/perl5/site_perl/5.6.0"
+        fi
+
+
+
+
+
+	PERL_MODULE_DIR="/usr/lib/perl5/$PERL_VERSION"
+	PERL_SITE_DIR="/usr/lib/perl5/site_perl/$PERL_VERSION"
+    if test ! -d "$PERL_MODULE_DIR"; then
+		PERL_MODULE_DIR="/usr/local/lib/perl/$PERL_VERSION"
+		PERL_SITE_DIR="/usr/local/lib/perl/site_perl/$PERL_VERSION"
+	    if test ! -d $PERL_MODULE_DIR; then
+			PERL_MODULE_DIR="/usr/lib/perl6/$PERL_VERSION"
+			PERL_SITE_DIR="/usr/lib/perl6/site_perl/$PERL_VERSION"
+		    if test ! -d "$PERL_MODULE_DIR"; then
+				PERL_MODULE_DIR="/usr/local/lib/perl5/$PERL_VERSION"
+				PERL_SITE_DIR="/usr/local/lib/perl5/site_perl/$PERL_VERSION"
+			    if test ! -d "$PERL_MODULE_DIR"; then
+						# In debian modules are instaled in perl5 dir
+				    PERL_MODULE_DIR="/usr/lib/perl5"
+				    PERL_SITE_DIR="/usr/local/lib/perl5/site_perl/$PERL_VERSION"
+			      if test ! -d "$PERL_MODULE_DIR"; then
+					    AC_MSG_ERROR(Cannot determine where to install Perl modules. Stop.)
+            fi
+          fi
+				fi
+     fi
+	fi
+	AC_MSG_RESULT($PERL_MODULE_DIR)
+
+	AC_MSG_CHECKING(if library dir $PERL_MODULE_DIR is in Perl @INC)
+    TMP=`$PERL -V | grep $PERL_MODULE_DIR`
+    if test "$TMP" = ""; then
+		AC_MSG_RESULT(No)
+		AC_MSG_WARN(Detected path ($PERL_MODULE_DIR) not found in Perl INC config.)
+		AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+    else
+		AC_MSG_RESULT(Yes)
+	fi
+
+	if test -d "$PERL_SITE_DIR"; then
+		#Apparently, some Perl version like 5.6.1 do not have site_perl at all:
+		AC_MSG_CHECKING(if library dir $PERL_SITE_DIR is in Perl @INC)
+		TMP=`$PERL -V | grep $PERL_SITE_DIR`
+	    if test "$TMP" = ""; then
+			AC_MSG_RESULT(No)
+			AC_MSG_WARN(Detected path ($PERL_SITE_DIR) not found in Perl INC config.)
+			AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+	    else
+			AC_MSG_RESULT(Yes)
+	    fi
+    else
+		PERL_SITE_DIR=
+	fi
+
+	#installation info, with versions can be found:
+	#/usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
+	#/usr/lib/perl5/site_perl/5.6.0/i386-linux/perllocal.pod
+
+    TEST_FOR="Tk"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.tk"
+			AC_MSG_WARN(Cannot find Perl $TEST_FOR module.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+    TEST_FOR="Unit"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.unit"
+			AC_MSG_WARN(Cannot find Perl $TEST_FOR module.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+
+    TEST_FOR="Informix"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.dbd-informix"
+			AC_MSG_WARN(Cannot find Perl $TEST_FOR module.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+    TEST_FOR="Dumper"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			MISSING_PERLMODS="$MISSING_PERLMODS install.dumper"
+			AC_MSG_WARN(Cannot find Perl $TEST_FOR module.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+#I thing this is part of standard Perl installation:
+#Perl DBI module     ---  DBD:Informix needs DBI 1.30 or later
+#Perl::Data module
+#Perl::Getopt module
+
+## ==================================================================
+##                 Checks for other 4gl compiles
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for 4Js BDL / Informix D4GL:)
+AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
+AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
+
+PHP_CONFIGURE_PART(Checking for Querix compiler:)
+#4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
+AC_PATH_PROG(QUERIX_COMP, fmpc, no)
+
+
+if test "$cygwin" = "1" ; then
+	PHP_CONFIGURE_PART(Checking for Plexus XDP AD32 - FGLC Compiler:)
+	#same name as Querix:
+	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
+	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
+else
+	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl P-code:)
+	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
+	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
+
+    if test "$I4GL_PCOMPILER" != "no"; then
+		#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
+		#have to free cursors & statements differently
+		AC_MSG_CHECKING(fglpc version)
+		set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		if test "$1" != ""; then
+			#if test "$1" = "4" -a "$2" -lt "50"; then
+            if test "$1" -lt "5"; then
+				I4GL_PCOMPILER_VER=4
+				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+	        else
+				I4GL_PCOMPILER_VER=6
+				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+	        fi
+        else
+			AC_MSG_WARN(Cannot get fglpc version.)
+        fi
+    fi
+
+	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl C-code:)
+	AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
+
+    if test "$I4GL_CCOMPILER" != "no"; then
+	#For 4glWorks: try to understand if the product is esql/c 5+
+	#aware, or is a special case, ie c4gl 4.x or is not esql/c
+	#aware in any way, shape or form (ie an rds only shop)
+		AC_MSG_CHECKING(c4gl version)
+		set `c4gl -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		if test "$1" != ""; then
+			#if test "$1" = "4" -a "$2" -lt "50"; then
+            if test "$1" -lt "5"; then
+				I4GL_CCOMPILER_VER=4
+				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+	        else
+				I4GL_CCOMPILER_VER=6
+				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+	        fi
+        else
+			AC_MSG_WARN(Cannot get c4gl version.)
+        fi
+	fi
+fi
+
+
+## ==================================================================
+##                 Checks for web server support
+## ==================================================================
+
+#see if we can enable doc4gl CGI/HTMLlib compile, DoxyGen web
+#install, FGLDOC web server support
+PHP_CONFIGURE_PART(Checking for Web server:)
+
+AC_PATH_PROG(APACHECTL, apachectl, no)
+AC_PATH_PROG(HTTPD, httpd, no)
+
+AC_MSG_CHECKING(Web server support)
+if test "$APACHECTL" != "no"; then
+	AC_MSG_RESULT(Apache)
+else
+	if test "$HTTPD" != "no"; then
+		AC_MSG_RESULT(httpd)
+    else
+		AC_MSG_RESULT(no)
+    fi
+fi
+
+#If we have web server:
+
+	if test "$APACHECTL" != "no"; then
+		AC_MSG_CHECKING(Apache configuration file)
+		if test -f /etc/httpd/conf/httpd.conf; then
+			APACHE_CONF=/etc/httpd/conf/httpd.conf
+			AC_MSG_RESULT($APACHE_CONF)
+		else
+			AC_MSG_RESULT(no)
+		fi
+	fi
+
+	#FIXME: DO we have JSP needed for FGLDOC?
+
+    if test "$APACHE_CONF" != ""; then
+		AC_MSG_CHECKING(Web server paths)
+		grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
+		CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
+		WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -1 | awk '{print $2}' | sed -e 's/"//g'`
+		AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
+    fi
+
+
+	if test "$with_www_name" != "" ; then
+		WWW_HOST_NAME=$with_www_name
+    else
+		WWW_HOST_NAME=localhost
+    fi
+
+## ==================================================================
+##                 Checks for Informix ESQL/C support
+## ==================================================================
+
+#force this check even if not specified on command line:
+if test "$with_informix" = ""; then
+	with_informix=yes
+	force_informix=yes
+fi
+
+PHP_CONFIGURE_PART(Checking for Informix ESQL/C support:)
+
+AC_ARG_WITH(informix,
+[  --with-informix[=DIR]   Include Informix ESQL/C support.  DIR is the Informix base
+                          install directory, defaults to ${INFORMIXDIR:-nothing}.],
+[
+	if test "$withval" != "no"; then
+		if test "$INFORMIXDIR" = "" && test "$force_informix" != "yes" ; then
+			INFORMIX_WARNING=1
+			#IFX_C_MAKE='touch functions/ifx.c'
+			AC_MSG_RESULT(no)
+		else
+			if test "$withval" = "yes"; then
+				IFX_INCDIR=$INFORMIXDIR/incl/esql
+				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
+			else
+				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IESQLC"
+				WARN_LD_LIBRARY_PATH=1
+				IFX_INCDIR=$withval/incl/esql
+				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
+				if test "$withval" != "$INFORMIXDIR"; then
+					INFORMIX_WARNING=2
+				fi
+    		fi
+
+			if test "$withval" != "yes"; then
+	            ADD_LD_LIBRARY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRARY_PATH"
+            else
+	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
+			fi
+
+			#First check if we have esql installed at all:
+			AC_PATH_PROG(IFMX_ESQLC, esql, no)
+
+			if test "$cygwin" = "1"; then
+				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
+				AC_PATH_PROG(MSVC_COMP, cl, no)
+				AC_PATH_PROG(MSVC_LINK, link, no)
+				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+				then
+	                ESQLCC_OK="OK"
+                fi
+			else
+                #on non-Windows platforms, native C compiler will do:
+				ESQLCC_OK="OK"
+			fi
+
+			AC_MSG_CHECKING(if we can use esql)
+			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
+			then
+				AC_MSG_RESULT(Yes)
+				IFX_INCLUDE=-I$IFX_INCDIR
+				IFX_LFLAGS=$IFX_LIBDIR
+				if test -z "$IFX_LIBS"; then
+					IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
+					dnl  -lm twice otherwise?
+					IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
+					dnl Seems to get rid of newlines.
+					dnl According to Perl's DBD-Informix, might contain these strings.
+				else
+					dnl Allow override to use static and/or threaded libs
+					IFX_LIBS="$IFX_LIBS"
+				fi
+
+                old_CFLAGS="$CFLAGS"
+                old_LDFLAGS="$LDFLAGS"
+
+				if test "`uname -s 2>/dev/null`" = "AIX"; then
+					IFX_CFLAGS="-D__H_LOCALEDEF"
+				fi
+
+				CFLAGS="$CFLAGS $IFX_INCLUDE $IFX_CFLAGS"
+				LDFLAGS="$LDFLAGS $IFX_LDFLAGS"
+
+				AC_DEFINE(HAVE_IFX)
+				AC_MSG_CHECKING([Informix version])
+				IFX_VERSION=[`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
+				if test $IFX_VERSION -ge "900"; then
+					AC_DEFINE(HAVE_IFX_IUS)
+					IFX_ESQL_FLAGS="-EDHAVE_IFX_IUS"
+				else
+					IFX_ESQL_FLAGS="-EUHAVE_IFX_IUS"
+				fi
+
+                #For 4glWorks: try to understand if the product is esql/c 5+
+				#aware, or is a special case, ie c4gl 4.x or is not esql/c
+				#aware in any way, shape or form (ie an rds only shop)
+
+				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
+				AC_MSG_RESULT($IFX_VERSION)
+				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+
+				CFLAGS="$old_CFLAGS"
+                LDFLAGS="$old_LDFLAGS"
+
+            else
+				AC_MSG_RESULT(esql not in path or no compatible C compiler)
+            fi
+		fi
+	else
+		INFORMIXDIR=
+		IFX_C_MAKE='touch functions/ifx.c'
+		AC_MSG_RESULT(no)
+	fi
+],[
+  AC_MSG_RESULT(--with-informix not specified)
+])
+
+
+if test "$IFMX_ESQLC" = "no"; then
+	AC_MSG_ERROR(Please install Informix ESQL/C compiler.)
+fi
+
+
+## ==================================================================
+##         Checks for libraries expected in standard locations
+## ==================================================================
+
+
+PHP_CONFIGURE_PART(Checking for standard libraries:)
+
+# FIXME: Replace `main' with a function in `-lc':
+AC_CHECK_LIB([c], [main])
+
+#unit test sw for C code
+AC_CHECK_LIB([check], [suite_create])
+if test "$ac_cv_lib_check_suite_create" == "yes"; then
+	HAS_CHECK=1
+fi
+
+## ==================================================================
+##                       Checks for header files
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for header files:)
+
+if test "$doc4gl_SOURCE" = "1" ; then
+	#AC_STDC_HEADERS
+	AC_HEADER_STDC
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h share.h])
+	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
+
+   	AC_CHECK_HEADERS([search.h])
+   	AC_CHECK_HEADERS([getopt.h])
+fi
+
+## ==================================================================
+##      Checks for typedefs, structures, and compiler characteristics
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for compiler characteristics:)
+
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+AC_CHECK_SIZEOF(long, 8)
+AC_CHECK_SIZEOF(int, 4)
+
+
+## ==================================================================
+##                   Checks for library functions
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for library functions:)
+if test "$doc4gl_SOURCE" = "1" ; then
+	AC_FUNC_FORK
+	AC_FUNC_MALLOC
+	AC_FUNC_MEMCMP
+	AC_TYPE_SIGNAL
+	AC_FUNC_VPRINTF
+	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+
+    #all used in lib/libdoc4gl4gl.so:
+    #On Solaris, all this are in -lsocket
+	AC_CHECK_FUNCS([socket recv accept bind setsockopt getservbyname listen])
+    #So if any of abowe is not found, we should check something like this:
+ 	#AC_CHECK_LIB([socket], [socket recv accept bind setsockopt getservbyname listen])
+
+
+	#4glc (mod.c)
+	#AC_CHECK_FUNC(setenv,AC_MSG_RESULT(Yes),AC_MSG_ERROR(Cannot compile doc4gl without 'setenv'. Stop.))
+    #AC_CHECK_FUNC(setenv,,AC_MSG_ERROR(Cannot compile doc4gl without 'setenv'. Stop.))
+	AC_CHECK_FUNCS([setenv])
+
+	#Check if we have it in libc:
+	AC_CHECK_FUNC(getopt_long,GETOPT_LONG=yes,AC_CHECK_LIB(iberty, getopt_long))
+    if test "$GETOPT_LONG" != "yes"; then
+		if test "$ac_cv_lib_iberty_getopt_long" = "yes"; then
+            #On Solaris systems, you will probably have to install the GNU "libiberty"
+			#library (-liberty) which provides getopt_long for Solaris; get it at
+			#	http://sunfreeware.com (look for the package "libiberty.so" in
+			#the list of freeware) and install it into /usr/local/lib.
+			GETOPT_LONG=iberty
+			AC_MSG_RESULT(using iberty getopt_long)
+            #echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH xx $LIBPATH"
+        else
+			GETOPT_LONG=no
+			AC_MSG_RESULT(using doc4gl included getopt sources)
+        fi
+    fi
+fi
+
+## ==================================================================
+##                   Checks for Cygwin specifics
+## ==================================================================
+
+case "$host" in
+*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
+
+	PHP_CONFIGURE_PART(Checking for Cygwin specific options:)
+
+	#cygcheck can be used instead of ldd that is missing on CygWin:
+	AC_PATH_PROG(CYGCHECK, cygcheck, no)
+
+   	#this macros are in aclocal.m4 - run aclocal to create it :
+
+	AC_CYGWIN
+	AC_MINGW32
+	AC_OBJEXT
+	AC_EXEEXT
+
+	_LT_AC_LOCK                         #checking for dlfcn.h... yes
+	AC_LIBTOOL_DLOPEN_SELF              #checking for BSD-compatible nm... /usr/bin/nm -B
+	AC_LIBTOOL_PROG_LD_SHLIBS           #checking command to parse /usr/bin/nm -B output... ok
+	AC_LIBTOOL_SYS_DYNAMIC_LINKER       #checking whether the linker () supports shared libraries... yes
+	AC_CHECK_LIBM                       #checking dynamic linker characteristics... Win32 ld.exe
+
+
+	;;
+esac
+
+## ==================================================================
+##           Translate Autoconf internals into our replace tags:
+## ==================================================================
+
+
+
+if test "$lt_cv_prog_cc_pic_works" = "yes"; then
+	#WARNING: this will overwrite PIC settings from the beginning of this file
+    #if this works OK, remove manually set ones there!
+	#lt_cv_prog_cc_pic=' -fno-common'
+	PIC="$lt_cv_prog_cc_pic"
+	LDFLAGS_SHARED="$PIC -shared"
+    #echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
+fi
+
+
+## ==================================================================
+##           Define which files we will substitute @xxx@ in
+## ==================================================================
+
+
+if test "$doc4gl_SOURCE" = "1" ; then
+
+	AC_CONFIG_FILES([Makefile
+				parser/Makefile
+                browser/Makefile
+				etc/fgldocrc
+				FgldocDefs.mk])
+
+else
+
+	AC_CONFIG_FILES([
+                etc/doc4glrc-bin
+                ])
+fi
+
+PHP_CONFIGURE_PART(Creating files:)
+AC_OUTPUT
+if test "$PERL" != "no"; then
+	cd manager
+	$PERL Makefile.PL
+    cd -
+fi
+
+
+## ==================================================================
+##                Warnings and exit messages
+## ==================================================================
+
+if test "$MISSING_PERLMODS" != ""; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| One or more required Perl modules where not detected. If this      |
+| is connected to the Internet, and you have CPAN Perl module        |
+| installed, you should be able to install them automaticall by using|
+| command 'make missing.perlmods'. Otherwise, please install this    |
+| Perl modules manually: $MISSING_PERLMODS
+X
+fi
+if test "$WARN_LEX" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| Will use pre-compiled parser files from tools/no_yacc              |
+| Use 'make refresh.noyacc' on source tree with yacc installed.      |
+| You will need lex if you'd want to regenerate the doc4gl parsers.  |
+X
+fi
+if test "$WARN_YACC" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| Will use pre-compiled parser files from tools/no_yacc              |
+| Use 'make refresh.noyacc' on source tree with yacc installed.      |
+| You will need bison if you'd want to regenerate the doc4gl parsers.|
+X
+fi
+if test "$INFORMIX_WARNING" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You asked for Informix ESQL/C support, but don't have              |
+| \\\$INFORMIXDIR environment value set up.                          |
+| Please try again after setting up your environment.                |
+X
+fi
+if test "$INFORMIX_WARNING" = "2"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You specified Informix base install directory that is different    |
+| than your \\\$INFORMIXDIR environment variable. You'd better know  |
+| exactly what you are doing.                                        |
+X
+fi
+if test "$WARN_LD_LIBRARY_PATH" != ""; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You have specified one or more --with-xxxx=<path> switches to      |
+| 'configure' script, specifiying package installed in non-standard  |
+| <path> In most cases, you will have to add this path to your PATH  |
+| and/or LD_LIBRARY_PATH and/or ld.so.conf in your run-time          |
+| environment, for doc4gl compilers and compiler programs to be able |
+| to find nedded programs and/or libraries that belong to this way   |
+| specified package in non-standard place. We will try to do this    |
+| automatically for you:                                             |
+X
+if test "$enable_ac_debug" = "yes" ; then
+cat<<X
+WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON"
+CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
+X
+fi
+
+	if test "$ADD_LD_LIBRARY_PATH" != ""; then
+		#FIXME: make this call only if make is detected (this can happen with binary distro)
+		if test "$MAKE" != "no" ; then
+			make ldconfig
+        else
+            echo "Ooops! No 'make' installed, you will have to do it manually!"
+        fi
+    else
+		echo "ERROR: ADD_LD_LIBRATY_PATH is empty."
+    fi
+
+fi
+cat<<X
++--------------------------------------------------------------------+
+| License:                                                           |
+| This software is subject to the doc4gl License, available in this  |
+| distribution in the file LICENSE.  By continuing this installation |
+| process, you are bound by the terms of this license agreement.     |
+| If you do not agree with the terms of this license, you must abort |
+| the installation process at this point.                            |
++--------------------------------------------------------------------+
+X
+if test "$enable_ac_debug" = "yes" ; then
+cat<<X
++--------------------------------------------------------------------+
+|                        ***  NOTE   ***                             |
+|
+| doc4gl plug-ins to build:
+| $PLUGIN_YES
+| doc4gl plug-ins the will not be built:                              |
+| $PLUGIN_NO
+|
+X
+fi
+if test "$doc4gl_SOURCE" = "1" ; then
+cat<<X
+|                          *** NOTE ***                              |
+|            doc4gl 4gl source code is now configured.               |
+|                    Execute 'make' to compile it.                   |
++--------------------------------------------------------------------+
+X
+else
+cat<<X
+|                          *** NOTE ***                              |
+|        doc4gl 4gl binary disrtibution now configured.              |
+|                Execute 'make install' to install it.               |
++--------------------------------------------------------------------+
+X
+
+fi
+
+cat<<X
+
+Thank you for using doc4gl.
+                   $doc4gl_PUBLISHER
+
+X
+
+
+#------------------------------ EOF --------------------------------
+

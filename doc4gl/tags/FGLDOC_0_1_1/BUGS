@@ -1,0 +1,330 @@
+
+                                     BUGS TO BE FIXED
+																		 ----------------
+
+
+==========================================================
+BUG 1:
+
+Impossible to interrupt execution of fgldoc with CTRL-C
+-------------------------------------------------------
+
+CTRL+C does nothing - fgldoc continues execution
+
+
+==========================================================
+BUG 2:
+
+fgldoc needs an option to stop (or not) on error
+------------------------------------------------
+
+Something like -i (ignore) and to stop on error should be defaut.
+
+Now, when for instance, ther is an error in incovation of p4gl from fgldoc,
+fgldoc reports the error and continues.
+
+==========================================================
+BUG 3:
+
+ --import_directory=/opt/aubit/apps/erp/src --load_recursive
+fails
+-------------------------------
+
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U56.4gl
+[LOG] : p4gl --file=U56.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U57.4gl
+[LOG] : p4gl --file=U57.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U58.4gl
+[LOG] : p4gl --file=U58.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+Erro : processo inexistente <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U61.4gl
+[LOG] : p4gl --file=U61.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+
+
+[root@aptiva erp]#  p4gl --file=U61.4gl --database=p4gl_repository  --insert
+p4glpp: Erro a abrir ficheiro U61.4gl
+No such file or directory
+p4gl: U61.4gl, Unable to Pre-process source (U61.4gl)
+
+If I cd to /opt/aubit/apps/erp/src/utility first, command works fine.
+
+=========================================================================
+BUG 4:
+
+Segmentation fault parsing erpmenu.4gl
+---------------------------------------
+
+[root@aptiva erp]# cd src/utility/
+[root@aptiva utility]# p4gl --file=erpmenu.4gl --database=p4gl_repository  --insert
+Segmentation fault
+
+=========================================================================
+BUG 5:
+
+
+Invoking fgldoc after action like :
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+starts the same action again and again.
+
+even if you type just:
+
+	"/usr/local/bin/fgldoc"
+
+you get the last action executed, and I would expect to get fgldoc running in GUI mode...
+
+
+If you then try:
+
+	"/usr/local/bin/fgldoc --help"
+
+you get help OK.
+
+If you try again just:
+
+	"/usr/local/bin/fgldoc"
+
+it behaves like you typed:
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+ If you type:
+
+ 	"/usr/local/bin/fgldoc --ui=GUI"
+
+
+THEN you get GUI.
+
+And after that, if you try:
+
+	"/usr/local/bin/fgldoc"
+
+You _FINALLY_ get GUI as you would expect...
+
+===========================================================================
+BUG 6:
+
+GUI main screen has 5 pictures:
+
+CSV=>db
+4gl=>db
+CSV=>db (again) <<<<<<<<<<<<<<<<<<<<<<<<<<<<,
+db=>4gl
+db=>HTML
+
+The duplicated CSV=>db should be db=>CSV
+
+
+===========================================================================
+BUG 7:
+
+TEST:Unit perl module is not checked in configure
+
+===========================================================================
+BUG 8:
+
+There should exist an option that parses a 4gl source tree and generate on
+the fly the static html files of the project.
+
+Something like:
+   fgldoc --parse_and_document
+
+And using all the other parameters to know where and what to do.
+
+===========================================================================
+BUG 9:
+
+By default fgldoc should work on the current directory recursively.
+===========================================================================
+
+
+
+                                      FIXED BUGS
+																			----------
+
+==========================================================
+
+Window Size
+  Fixed : 24/1/2003
+
+==========================================================
+
+CUI mode
+--------
+[afalout@aptiva erp]$ make doc4gl
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl --import_directory=/opt/aubit/apps/erp/src/ap --load_recursive --packa
+ge_name=MaxERP --send_line_to_log
+Starting with no GUI
+Can't call method "isFglFile" without a package or object reference at
+/usr/local/lib/perl5/5.8.0/FglDocumenter/FormP4gl.pm line 469.
+make: *** [doc4gl.import] Error 255
+[afalout@aptiva erp]$
+
+  Fixed : 24/1/2003
+
+==========================================================
+
+To many forks
+-------------
+  Fixed : 24/1/2003
+
+==========================================================
+
+Impossible to interrupt execution of fgldoc with CTRL-C
+-------------------------------------------------------
+
+CTRL+C does nothing - fgldoc continues execution
+
+
+==========================================================
+
+fgldoc needs an option to stop (or not) on error
+------------------------------------------------
+
+Something like -i (ignore) and to stop on error should be defaut.
+
+Now, when for instance, ther is an error in incovation of p4gl from fgldoc,
+fgldoc reports the error and continues.
+
+==========================================================
+
+ --import_directory=/opt/aubit/apps/erp/src --load_recursive
+fails
+-------------------------------
+
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U56.4gl
+[LOG] : p4gl --file=U56.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U57.4gl
+[LOG] : p4gl --file=U57.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U58.4gl
+[LOG] : p4gl --file=U58.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+Erro : processo inexistente <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[LOG] : Error executing p4gl :
+		 0
+[PROGRESS] Parsing source 4gl
+[PROGRESS] /opt/aubit/apps/erp/src/utility : U61.4gl
+[LOG] : p4gl --file=U61.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
+
+[LOG] : Error executing p4gl :
+		 0
+
+
+[root@aptiva erp]#  p4gl --file=U61.4gl --database=p4gl_repository  --insert
+p4glpp: Erro a abrir ficheiro U61.4gl
+No such file or directory
+p4gl: U61.4gl, Unable to Pre-process source (U61.4gl)
+
+If I cd to /opt/aubit/apps/erp/src/utility first, command works fine.
+
+=========================================================================
+
+Segmentation fault parsing erpmenu.4gl
+---------------------------------------
+
+[root@aptiva erp]# cd src/utility/
+[root@aptiva utility]# p4gl --file=erpmenu.4gl --database=p4gl_repository  --insert
+Segmentation fault
+
+=========================================================================
+
+
+Invoking fgldoc after action like :
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+starts the same action again and again.
+
+even if you type just:
+
+	"/usr/local/bin/fgldoc"
+
+you get the last action executed, and I would expect to get fgldoc running in GUI mode...
+
+
+If you then try:
+
+	"/usr/local/bin/fgldoc --help"
+
+you get help OK.
+
+If you try again just:
+
+	"/usr/local/bin/fgldoc"
+
+it behaves like you typed:
+
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl
+ --import_directory=/opt/aubit/apps/erp/src/utility --load_recursive
+ --package_name=MaxERP --send_line_to_log
+
+ If you type:
+
+ 	"/usr/local/bin/fgldoc --ui=GUI"
+
+
+THEN you get GUI.
+
+And after that, if you try:
+
+	"/usr/local/bin/fgldoc"
+
+You _FINALLY_ get GUI as you would expect...
+
+===========================================================================
+
+GUI main screen has 5 pictures:
+
+CSV=>db
+4gl=>db
+CSV=>db (again) <<<<<<<<<<<<<<<<<<<<<<<<<<<<,
+db=>4gl
+db=>HTML
+
+The duplicated CSV=>db should be db=>CSV
+
+
+===========================================================================
+
+TEST:Unit perl module is not checked in configure
+
+===========================================================================
+

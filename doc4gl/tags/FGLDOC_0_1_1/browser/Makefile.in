@@ -1,0 +1,196 @@
+#  =========================================================================
+#  Makefile for fgldoc navigator compilation and instalation
+#
+#  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
+#
+#  $Id: Makefile.in,v 1.5 2003-02-04 05:21:58 afalout Exp $
+#  =========================================================================
+
+include ../FgldocDefs.mk
+
+# =========================================================================
+#                              Settings
+# =========================================================================
+
+JSP_SRC_PATH        =web
+BUILD_PATH          =build
+CLASS_BUILD_PATH    =${BUILD_PATH}/WEB-INF/classes/pt/moredata/fgldocumenter/browser
+IMG_PATH            =${BUILD_PATH}/images
+
+CCS_FILE	= stylesheet.css
+JS_FILE		= treeview.js
+INDEX.JSP   = index.jsp
+JSP_FILE	= function_error.jsp module.jsp function_list.jsp module_list.jsp \
+			process_list.jsp login.jsp ${INDEX.JSP}
+IMG_FILE	= ftv2link.gif ftv2mlastnode.gif ftv2blank.gif ftv2mnode.gif \
+			ftv2doc.gif ftv2node.gif ftv2folderclosed.gif  ftv2plastnode.gif \
+			ftv2folderopen.gif ftv2pnode.gif ftv2lastnode.gif ftv2vertline.gif
+CLASS_FILE	= FunctionDescription.class FunctionParameter.class \
+			FunctionReturn.class MainPanel.class ModuleDocument.class \
+			ModuleDocumentOptions.class GenJsTree.class
+#DocumentAudit.class Login.class
+
+CLASS_FILES	=$(addprefix $(CLASS_BUILD_PATH)/,	$(CLASS_FILE))
+JSP_FILES	=$(addprefix $(BUILD_PATH)/,		$(JSP_FILE))
+CCS_FILES	=$(addprefix $(BUILD_PATH)/,		$(CCS_FILE))
+IMG_FILES	=$(addprefix $(IMG_PATH)/,			$(IMG_FILE))
+JS_FILES	=$(addprefix $(BUILD_PATH)/,		$(JS_FILE))
+
+TOMCAT_ANT  = ${JAVA_SHARED}/catalina-ant.jar
+#$${JAVA_SHARED}/jaxp_transform_impl.jar:${JAVA_SHARED}/jaxp_parser_impl.jar:
+DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
+
+.PHONY : all install clean deinstall
+
+# =========================================================================
+#                        	   Targets
+# =========================================================================
+
+#all: $(CLASS_FILES)
+all: ant
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully compiled.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+ant: ${TOMCAT_ANT}
+ifneq "${ANT}" "no"
+ifneq "${JAVAC}" "no"
+#directory missing on some Tomcat installations, but needed by build.xml:
+	mkdir -p ${TOMCAT_DIR}/shared/lib
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS}
+else
+	@echo "Java compiler not found - cannot compile"
+endif
+else
+	@echo "Ant tool not found - cannot compile"
+endif
+
+${TOMCAT_ANT}:
+#Tomcat specific targets for Ant:
+	cp ${TOMCAT_DIR}/server/lib/catalina-ant.jar ${JAVA_SHARED}
+
+# =========================================================================
+#                              Install
+# =========================================================================
+
+#This is a main install target
+# 1) check if we have jar file containing Tomcat specific ant target definitions
+# 2) use ant to invoke build.xml, and compile and activate browser app under Tomcat
+# 3) overwrite index.jsp with the one containing correct connection settings
+# 4) phisically install files under Tomcat installation directory.
+#FIXME: ant will _ALLWAYS_ perform compile, overwriting our build directory,
+#and undoing our replaced index.jsp. We need to find a way to do replacing
+#INSIDE build.xml "compile" target...
+install: ${TOMCAT_ANT} install.index install.ant install.index install.files
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully installed.                 |"
+	@echo "|      You can access the Doc4GL browser at the following URL:       |"
+	@echo "|                http://localhost:8080/fgldocumenter                 |"
+	@echo "|      You can monitor installed Tomcat applications at:             |"
+	@echo "|                http://localhost:8080/manager/html                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#This target uses Tomcat specific ant install target to activate fgldoc browser
+#application from curretn location. It will compile code first if needed.
+install.ant:
+#First find out if fgldocumenter was already installed under Tomcat:
+#FIXME: make evaluates this no mater which target we are invoking, causig a delay
+ifeq "$(findstring fgldocumenter,$(shell export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list))" "fgldocumenter"
+#already installed
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} reload
+else
+#new install
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} install
+endif
+
+#This target phisically copyes files under Tomcat installation. I'm not sure if
+#this is nececery when using Tocat ant "install", since this is not the same as
+#"deploy" target. I'll copy anyway...
+install.files:
+ifneq "${TOMCAT_DIR}" "no"
+	mkdir -p ${NAV_DIR}
+	mkdir -p ${CLASS_DIR}
+	$(INSTALL) $(CLASS_FILES) 	$(CLASS_DIR)
+	$(INSTALL) $(JSP_FILES) 	$(NAV_DIR)
+	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+	$(INSTALL) $(JS_FILES) 		$(NAV_DIR)
+	$(INSTALL) $(CCS_FILES) 	$(NAV_DIR)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser files successfully installed.           |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
+#This will take a index.jsp source code, replace connection settings, and
+#overwrite file placed in build directory by ant compile target:
+install.index:
+	sed -e "s/DOC4GL_USERNAME/${DOC4GL_USERNAME}/" \
+	-e "s/DOC4GL_PASSWORD/${DOC4GL_PASSWORD}/" \
+	-e "s/DOC4GL_SERVER/${DOC4GL_SERVER}/" \
+	-e "s/DOC4GL_DBNAME/${DOC4GL_DBNAME}/" \
+	-e "s/DOC4GL_SERVICE/${DOC4GL_SERVICE}/" \
+	-e "s/DOC4GL_HOSTNAME/${DOC4GL_HOSTNAME}/" \
+	-e "s/DOC4GL_SGDBURL/${DOC4GL_SGDBURL}/" \
+	-e "s/DOC4GL_CONNECTIONTYPE/${DOC4GL_CONNECTIONTYPE}/" \
+	${JSP_SRC_PATH}/${INDEX.JSP} > $(NAV_DIR)/${INDEX.JSP}
+#	${BUILD_PATH}/${INDEX.JSP} > $(NAV_DIR)/${INDEX.JSP}
+
+# =========================================================================
+#                              Deinstall
+# =========================================================================
+
+#First deactivate browser application in Tomcat instance, then phisically remove 
+#files installed under Tomcat installation directory:
+deinstall: ${TOMCAT_ANT} deinstall.files
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} remove
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully de-installed.              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#Phisically remove files installed under Tomcat installation directory:
+deinstall.files:
+ifneq "${TOMCAT_DIR}" "no"
+	(cd $(CLASS_DIR); ${RM} $(CLASS_FILE))
+	(cd $(NAV_DIR); ${RM} $(JSP_FILE))
+	(cd $(NAV_DIR); ${RM} $(IMG_FILE))
+	(cd $(NAV_DIR); ${RM} $(JS_FILE))
+	(cd $(NAV_DIR); ${RM} $(CCS_FILE))
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser files successfully de-installed.        |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+else
+	@echo "Tomcat directory unknown. Cannot deinstall"
+endif
+
+#Use Tocat specific ant target "list", to show currently installed Tomcat apps,
+#and there status:
+status:
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list
+
+# =========================================================================
+#                              Clean
+# =========================================================================
+
+clean:
+	$(RM) *.class *.jar *.bak
+	rm -rf classes
+	rm -rf build
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} clean
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser source code now clean.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+# =================================== EOF =================================
