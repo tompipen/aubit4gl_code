@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.20 2002-06-29 13:12:01 afalout Exp $
+# $Id: fcompile.c,v 1.21 2002-09-26 07:53:37 afalout Exp $
 #*/
 
 /**
@@ -42,22 +42,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-
-	/* here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN */
-	#include "a4gl_formxw.h"
-	#include "a4gl_compiler.h"
-	#include "a4gl_fcomp_fcompile.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_fcompile_int.h"
-
-#endif
+#include "a4gl_fcompile_int.h"
 
 /*
 =====================================================================
@@ -65,46 +50,37 @@
 =====================================================================
 */
 
-extern int as_c;
+extern int as_c; /* defined in libaubit4gl */
+//int as_c=1;
 
-#ifdef YYDEBUG
-	extern int yydebug;
-#else /*  */
-	int yydebug;
-#endif /*  */
+//#ifdef YYDEBUG
+	extern int yydebug; /* defined in y.tab.c */
+//#else /*  */
+//	int yydebug;
+//#endif /*  */
 
-extern int yylineno;
-extern long fileseek;
+extern int 		yylineno;
+extern long 	fileseek;
+extern int 		yyleng;
+extern char 	yytext[];
+extern int 		chk4var;
+extern int 		lcnt;
+extern int 		lineno;
+extern FILE *	yyin;
+extern char *	outputfilename; /* defined in libaubit4gl */
+extern struct 	struct_scr_field *fld; /* defined in libaubit4gl */
+extern struct 	struct_form the_form;  /* defined in libaubit4gl */
 
-extern int yyleng;
-
-extern char yytext[];
-
-extern int chk4var;
-
-extern int lcnt;
-extern int lineno;
-extern FILE *yyin;
-
-
-char *outputfilename;
-
-char outputfile[132];
-
-
-int ignorekw = 0;
-int colno = 0;
-int lineno = 0;
-int openwith = 0;
-char currftag[256];
-int fldno;
-int as_c=1;
-int scr = 0;
-int newscreen = 0;
-int fstart;
-struct struct_scr_field *fld;
-struct struct_form the_form;
-
+char 			outputfile[132];
+int 			ignorekw = 0;
+int 			colno = 0;
+int 			lineno = 0;
+int 			openwith = 0;
+char 			currftag[256];
+int 			fldno;
+int 			scr = 0;
+int 			newscreen = 0;
+int 			fstart;
 
 /*
 =====================================================================
