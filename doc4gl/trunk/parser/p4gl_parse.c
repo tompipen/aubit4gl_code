@@ -333,6 +333,7 @@ static struct ReservedWords {
 		"SMALLFLOAT",  SMALLFLOAT,
 		"SMALLINT",    SMALLINT,
 		"SOME",        SOME,
+		"SPACE",       SPACES,
 		"SPACES",      SPACES,
 		"SQL",         SQL_TOK,
 		"SQLERROR",    SQLERROR,

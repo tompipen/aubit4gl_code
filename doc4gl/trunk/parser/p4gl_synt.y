@@ -605,6 +605,7 @@ fgl_statement
 	| construct_action  /* Como estamos a fazer um xref nao e preciso validar*/
 	| display_action    /* Como estamos a fazer um xref nao e preciso validar*/
 	| report_statement
+	| PUT cursor_name 
 	| PUT cursor_name FROM fgl_expression
 		                       { StInsertCursorUsage($2,lineno+1,CURSOR_PUT);}
 	| FLUSH cursor_name 
@@ -1288,9 +1289,9 @@ named_value_list
 
                          /* Variavel completa (ex:array de record de array) */
 named_value
-	: named_value '.' var_name
+	: named_value '.' var_name op_asc_desc
 	  { sprintf($$,"%s.%s",$1,$3); }
-	| IDENTIFIER ':' named_value '.' var_name
+	| IDENTIFIER ':' named_value '.' var_name op_asc_desc
 	  { sprintf($$,"%s.%s",$3,$5); }
 	| var_name  /* Aqui tem de ser inserida a utilizacao de variavel */
 	  { strcpy($$,$1); }
@@ -1355,6 +1356,7 @@ var_name
 	| TEXT          { strcpy($$,"TEXT");}
 	| TOTAL         { strcpy($$,"TOTAL");}
 	| UNITS         { strcpy($$,"UNITS");}
+	| UNLOAD        { strcpy($$,"UNLOAD");}
 	| USER          { strcpy($$,"USER");}
 	| WAIT          { strcpy($$,"WAIT");}
 	| WHENEVER      { strcpy($$,"WHENEVER");}
@@ -1526,7 +1528,7 @@ report_def:
 	IDENTIFIER '(' op_argument_list ')' 
 		  op_local_variables
 		  output_section
-		  order_by_section
+		  //order_by_section
 		  FORMAT format_section
 	  END_TOK REPORT  {StInsertFunction($1,lineno+1,(NAME_LIST *)0);}
 	  ;
@@ -1552,12 +1554,12 @@ output_command
 	| RIGHT MARGIN NUMBER
 	| PAGE LENGTH NUMBER
 	| TOP OF PAGE STRING
+	| order_by_section
 	;
 
 order_by_section
 	: ORDER EXTERNAL BY named_value_list    { CleanNameList($4); }
 	| ORDER BY named_value_list             { CleanNameList($3); }
-	|
 	;
 
 format_section
@@ -1595,7 +1597,7 @@ report_statement
 
 /* ??? Faltam alguns casos : agregados, FILE, etc*/
 print_statement
-	: PRINT fgl_expression
+	: PRINT fgl_expression 
 	| PRINT fgl_expression ';'
 	| PRINT 
 	| PRINT ';'
@@ -1650,10 +1652,11 @@ construct
 
 construct_variable_clause
 	/* : IDENTIFIER ON column_list FROM  field_clause_list  */
-	: IDENTIFIER ON named_value_list FROM  field_clause_list 
+	/* : IDENTIFIER ON named_value_list FROM  field_clause_list  */
+	: named_value ON named_value_list FROM  field_clause_list 
 		  { CleanNameList($3);
 	       StInsertVariableUsage($1,lineno+1,ASSIGNMENT);}
-	| BY NAME IDENTIFIER ON column_list 
+	| BY NAME named_value ON column_list 
 	     {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
 
 
@@ -1847,10 +1850,12 @@ input_management_block
 	          /* Just for trying to use state machine */
 	| AFTER FIELD  field_clause_list fgl_statement_list 
 	| AFTER INPUT  fgl_statement_list 
-	| on_key_input fgl_statement_list 
+	| on_key_input op_fgl_statement_list 
 	/* So do input array */
 	| BEFORE DELETE fgl_statement_list 
+	| AFTER DELETE fgl_statement_list 
 	| BEFORE INSERT fgl_statement_list 
+	| AFTER INSERT fgl_statement_list 
 	| AFTER ROW fgl_statement_list 
 	| BEFORE ROW fgl_statement_list 
 
@@ -2017,10 +2022,10 @@ option
 	;
 
 prompt
-	: PROMPT fgl_expression attribute_clause FOR IDENTIFIER help_clause
+	: PROMPT fgl_expression attribute_clause FOR named_value help_clause
 	  attribute_clause prompt_on_key_list
 	   /* VARIABLE ASSIGNMENT */
-	| PROMPT fgl_expression attribute_clause FOR CHAR IDENTIFIER help_clause
+	| PROMPT fgl_expression attribute_clause FOR CHAR named_value help_clause
 	  attribute_clause prompt_on_key_list
 	   /* VARIABLE ASSIGNMENT */
 	;
@@ -2305,6 +2310,14 @@ declare_cursor:
 	   FOR cursor_specification  FOR UPDATE op_for_update_list
 	      /* Declare seguido de for */
 			{ StInsertCursorDeclaration($2,$3,$5); }
+	/* @todo : Fix this. When i uncomment it have errors
+	| DECLARE cursor_name CURSOR FOR 
+	    INSERT INTO table_name op_insert_column_list
+	    VALUES '(' insert_value_list ')'
+	      */
+	      /* Declare seguido de for */
+			// @todo : Fix this
+			//{ StInsertCursorDeclaration($2,$3,$5); }
 	| DECLARE cursor_name cursor_type 
 	   FOR cursor_specification  
 	   FOR IDENTIFIER '=' fgl_expression TO fgl_expression op_step 
@@ -3083,6 +3096,8 @@ distinct_set_function
 	| IDENTIFIER '(' DISTINCT column_specification ')'
 		                                 { $$=CpStr("%s(DISTINCT %s)",$1,$4); }
 	| COUNT '(' DISTINCT column_specification ')'
+		                                 { $$=CpStr("COUNT(DISTINCT %s)",$4); }
+	| COUNT '(' UNIQUE column_specification ')'
 		                                 { $$=CpStr("COUNT(DISTINCT %s)",$4); }
 	;
 

@@ -6,7 +6,7 @@
 # existente nos sources de 4gl
 #
 # $Author: saferreira $
-# $Id: ImportFgl.pm,v 1.4 2003-02-04 13:13:13 saferreira Exp $
+# $Id: ImportFgl.pm,v 1.5 2003-02-12 12:48:59 saferreira Exp $
 # 
 # ============================================================================
 
@@ -310,7 +310,7 @@ sub executeP4glFile
 		return 0;
   }
 	$result = <P4GL>;
-	print "RESULT : <$result>\n";
+	# @todo : Fix this. This is not the good way to test.
   if ( $result =~ "^\$" )
   {
     $obj->{log}->log("$module Parsed");
