@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.45 2004-12-19 08:12:39 afalout Exp $
+# $Id: funcs_d.c,v 1.46 2004-12-21 00:23:04 afalout Exp $
 #
 */
 
@@ -827,6 +827,8 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 
 
 #ifdef DEBUG
+{
+int a;
 // This just adds some debugging stuff - but this 
 // isn't applicable when called from the routines in dmy.c 
 // as they put some funny characters in the string as placeholders
@@ -848,6 +850,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 			A4GL_debug("bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
 		}
 	}
+}
 #endif
 	
 	return dest;

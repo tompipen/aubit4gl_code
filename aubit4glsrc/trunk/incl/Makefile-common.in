@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.174 2004-12-20 08:26:41 afalout Exp $
+# $Id: Makefile-common.in,v 1.175 2004-12-21 00:23:04 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -457,6 +457,7 @@ endif
 
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
+DDEBUG				=-DDEBUG
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
 
@@ -486,7 +487,7 @@ ifeq "@GETOPT_LONG@" "no"
 endif
 
 YYDEBUG             =@YYDEBUG@
-C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H ${YYDEBUG}
+C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}

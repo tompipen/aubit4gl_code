@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.54 2004-12-20 08:26:39 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.55 2004-12-21 00:23:02 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -678,13 +678,18 @@ function func_do_make_log () {
 		STOPONERROR=0
 		#LOGFILE is not needed here, make 'log' target logs itself
 		EXEC="make log"; runexec
-		STOPONERROR=1		
-		if test $RET != "0"; then
-			exit 66
-		fi
+		STOPONERROR=1
 		if [ "$VERBOSE" = "1" ]; then
 			echo "See `pwd`/make.log for details."
         fi
+		if test $RET != "0"; then
+			if [ "$VERBOSE" = "1" ]; then
+				echo "------------------------------------------------------------------"
+				tail -30 ./make.log
+				echo "------------------------------------------------------------------"
+			fi
+			exit 66
+		fi
 		
 }
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.270 2004-12-19 08:11:24 afalout Exp $
+dnl # $Id: configure.in,v 1.271 2004-12-21 00:20:45 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2100,7 +2100,8 @@ INCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
 
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
-		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h"
+		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
+		a4gl_API_sqlparse.h"
 
 #INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
 #		a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
@@ -2237,7 +2238,7 @@ ROOT_FILES_DOC="README.txt"
 
 CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv \
-		INFORMIX-POSTGRES.cnv"
+		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv"
 
 #It looks like INFORMIX-POSTGRESQL.cnv is obsolete - confirm and remove
 		
@@ -8618,7 +8619,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.270 2004-12-19 08:11:24 afalout Exp $
+| $Id: configure.in,v 1.271 2004-12-21 00:20:45 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
