@@ -1,7 +1,10 @@
 /**
  * @file
  * Inserting information into repository (inslib version).
+ 
+ * **************************************************
  * Note : This repository format is no longer used
+ * **************************************************
  * But folowong functions are still used:
  *
  * RegisterErrorInDb
@@ -17,10 +20,10 @@
 /*===========================================================================
  *
  *   Module       : %M%
- *   Object       : 
+ *   Object       :
  *   SCCS Id      : %W%
  *   Full Path    : %P%
- *   Author       : 
+ *   Author       :
  *   Release date : %D%
  *
  * p4gl - 4gl Parser and repository (inslib format) loading
@@ -29,7 +32,7 @@
  *
  * Author : Sergio Ferreira
  *
- * Modifications wanted: 
+ * Modifications wanted:
  *     - Do not use absolute pathname of the but Relative to SRC_BASE_DIR
  *     - SRC_BASE_DIR must come as parameter or environment variable
  *
@@ -60,6 +63,88 @@ exec sql begin declare section;
 	datetime TempoAnterior;
 exec sql end declare section;
 
+
+/*
+ * It register(s) a error at the database and
+ * mark module not scanned.
+ */
+void
+RegisterErrorInDb(msg)
+char *msg;
+{
+   exec sql begin declare section;
+		char *Txt;
+   exec sql end declare section;
+
+	exec sql whenever sqlerror   goto ERRO;
+	/*exec sql whenever sqlwarning goto ERRO;*/
+	Txt = msg;
+	if (!InsertInDatabase)
+		return;
+	ConnectDb();
+	if (!DBConnected) return;
+	if (ID_Modulo == 0)
+	   ID_Modulo = InsUnixGetModule(P4glCb.NmFicheiroInput);
+   StatDesc = "Alteracao de modulo";
+	exec sql update modulo set erros = "S", carregamento=current
+		where id_modulo=:ID_Modulo;
+   StatDesc = "Insercao de erro";
+	exec sql insert into erro (id_erro,id_modulo,descricao)
+		      values (0,:ID_Modulo,:Txt);
+	exec sql whenever sqlerror   call SqlErrors;
+	/*exec sql whenever sqlwarning call SqlErrors;*/
+	return;
+
+ERRO:
+   printf("\n SQL Warning or ERROR encountered at %s: %d \n",
+                   StatDesc,
+                   sqlca.sqlcode);
+	exec sql whenever sqlerror   call SqlErrors;
+	/*exec sql whenever sqlwarning call SqlErrors;*/
+}
+
+/*
+ * It register(s) a warning at the database and
+ * mark module not scanned.
+ */
+void
+RegisterWarningInDb(msg)
+char *msg;
+{
+   exec sql begin declare section;
+		char *Txt;
+   exec sql end declare section;
+
+	Txt = msg;
+	if (!InsertInDatabase)
+		return;
+	exec sql whenever sqlerror   goto ERRO;
+	/*exec sql whenever sqlwarning goto ERRO;*/
+	ConnectDb();
+	if (ID_Modulo == 0)
+	   ID_Modulo = InsUnixGetModule(P4glCb.NmFicheiroInput);
+	exec sql whenever sqlerror   goto ERRO;
+	/*exec sql whenever sqlwarning goto ERRO;*/
+   StatDesc = "Insercao de avisos";
+	exec sql insert into erro (id_erro,id_modulo,descricao)
+		      values (0,:ID_Modulo,:Txt);
+	/*
+	exec sql whenever sqlerror   call SqlErrors;
+	exec sql whenever sqlwarning call SqlErrors;
+	*/
+	return;
+
+ERRO:
+   printf("\n SQL Warning or ERROR encountered at %s: %d \n",
+                   StatDesc,
+                   sqlca.sqlcode);
+	/*
+	exec sql whenever sqlerror   call SqlErrors;
+	exec sql whenever sqlwarning call SqlErrors;
+	*/
+}
+
+
 /*
  * Entry Point of Insunix repository fill in
  */
@@ -81,14 +166,199 @@ InsertInslib(void)
 	ID_Modulo_Include      = InsUnixGetIncludeModule();
 	InsUnixDelErro();
    InsUnixInsertFunctions();
-	exec sql update modulo set erros = "N", carregamento=current 
+	exec sql update modulo set erros = "N", carregamento=current
 		where id_modulo=:ID_Modulo;
    exec sql close database;
 }
- 
+
+
+ /*
+  * Funcao que faz a gestao dos erros
+  */
+
+void
+SqlErrors(void)
+ {
+    int err = 0;
+    if(!strncmp(SQLSTATE, "00", 2) ||
+       !strncmp(SQLSTATE,"02",2))
+       return(SQLSTATE[1]);
+    if(!strncmp(SQLSTATE, "01", 2))
+       printf("\n SQL Warning encountered at %s: %d \n",
+                   StatDesc,
+                   sqlca.sqlcode);
+		 /*
+       P4glWarning(IMPORTANT, "\n SQL Warning encountered at %s: %d \n",
+                   StatDesc,
+                   sqlca.sqlcode);
+						 */
+    else /* SQLSTATE class > "02" */
+    {
+       printf("\n SQL Error encountered at %s: %d \n",
+		           StatDesc,
+                 sqlca.sqlcode);
+		 /*
+       P4glError(ERROR_EXIT, "\n SQL Error encountered at %s: %d \n",
+		           StatDesc,
+                 sqlca.sqlcode);
+					  */
+       err = 1;
+    }
+	 exec sql close database;
+	 exit(1);
+ }
+
 
 /*
- * Remover erros de scans anteriores a este modulo 
+ * Start the connection to the database
+ * TODO - Tornar este método global
+ */
+ConnectDb()
+{
+exec sql begin declare section;
+   char StrStat[512];
+exec sql end declare section;
+
+	if ( DBConnected )
+		return;
+  sprintf(StrStat,"database %s",P4glCb.database);
+  StatDesc = "Preparacao de instrucao de abertura da BD";
+	exec sql prepare opndb from :StrStat;
+   StatDesc = "Abertura da BD";
+	exec sql execute opndb ;
+	if ( sqlca.sqlcode != 0 )
+		P4glError(ERROR_EXIT," %d open the database %s\n",
+		  sqlca.sqlcode,P4glCb.database
+    );
+	DBConnected = 1;
+}
+
+/*
+ * Obtem o ID do modulo corrente (para chaves primarias)
+ */
+InsUnixGetModule(NomeFicheiro)
+   exec sql begin declare section;
+		PARAMETER char *NomeFicheiro;
+	exec sql end declare section;
+{
+   exec sql begin declare section;
+		int IDModulo;
+	   char Fich[640];
+	   char *NmDir;
+   exec sql end declare section;
+
+	/* Isto ate que poderia ter sido feito logo nas inicializacoes */
+   NmDir = getcwd((char *)0,256);
+	strcpy(Fich,NmDir);
+	strcpy(Fich,strcat(Fich,"/"));
+	strcpy(Fich,strcat(Fich,NomeFicheiro));
+	StatDesc = "Seleccao em modulo";
+   exec sql select id_modulo into :IDModulo
+		from  modulo
+		where ficheiro = :Fich;
+	if (sqlca.sqlcode == 100)
+	{
+		P4glWarning(DISPENSAVEL,
+						"Modulo <%s> nao foi inserido pelo carregamento de %s\n",
+						Fich,"tags. Inserido pelo p4gl");
+		/*
+		ID_Modulo = -1;
+		*/
+		StatDesc = "Insercao em modulo";
+		exec sql insert into modulo (id_modulo, modulo,ficheiro)
+			values (0, :NomeFicheiro, :Fich);
+		IDModulo = sqlca.sqlerrd[1];
+	}
+	free(NmDir);
+
+	StatDesc = "Seleccao de contentor EXE";
+	exec sql select ID_Contentor into :ID_Contentor
+		from contentor where localizacao=:NmDir and tipo='EXE';
+	StatDesc = "Seleccao de contentor DIR";
+	exec sql select ID_Contentor into :ID_ContentorDir
+		from contentor where localizacao=:NmDir and tipo='DIR';
+	return (IDModulo);
+}
+
+/*
+ * Meter cronometro a zero
+ */
+SetTempo()
+{
+   TempoAnterior.dt_qual = TU_DTENCODE(TU_YEAR,TU_F3);
+	dtcurrent(&TempoAnterior);
+}
+
+/*
+ * Obtem o ID do modulo indefinido (onde sao ligadas as funcoes das
+ * quais nao se sabe a quem pertencem)
+ */
+InsUnixGetUnknownModule()
+{
+   exec sql begin declare section;
+		int ID_Modulo;
+   exec sql end declare section;
+
+	StatDesc = "Seleccao em modulo";
+   exec sql select id_modulo into :ID_Modulo
+		from  modulo
+		where modulo = "DESCONHECIDO";
+	if (sqlca.sqlcode == 100)
+	{
+		StatDesc = "Insercao em modulo";
+		exec sql insert into modulo
+			(id_modulo, modulo,ficheiro)
+			values
+			(0, "DESCONHECIDO", "DESCONHECIDO");
+		return (sqlca.sqlerrd[1]);
+	}
+	return (ID_Modulo);
+}
+
+/*
+ * Obtem o ID do modulo de include (onde sao declaradas as globais
+ * usadas.
+ *
+ * Se o nome do modulo for *GLB.4gl usa o ficheiro globais.4gl que tem de estar
+ * scannado
+ */
+InsUnixGetIncludeModule()
+{
+   exec sql begin declare section;
+		int ID_Modulo;
+		char *NomeInclude;
+   exec sql end declare section;
+
+	if ( P4glCb.idx_globais <= 0 )
+		return;
+
+	NomeInclude = P4glCb.globais[0].nome_ficheiro;
+
+	/* Na versao 0.3 os ficheiros de globals sao gerados dinamicamente */
+	if ( strcmp(NomeInclude+strlen(NomeInclude)-7,"GLB.4gl") == 0 )
+		NomeInclude = "globais.4gl";
+
+	StatDesc = "Seleccao do modulo de include (GLOBALS)";
+   exec sql declare CrInclude cursor for
+		select id_modulo into :ID_Modulo
+		   from  modulo
+		   where modulo = :NomeInclude;
+	exec sql open CrInclude;
+	exec sql fetch CrInclude into :ID_Modulo;
+	if (sqlca.sqlcode == 100)
+	{
+		StatDesc = "Insercao em modulo de include";
+		exec sql insert into modulo
+			(id_modulo, modulo,ficheiro)
+			values
+			(0, :NomeInclude, "DESCONHECIDO");
+		return (sqlca.sqlerrd[1]);
+	}
+	return (ID_Modulo);
+}
+
+/*
+ * Remover erros de scans anteriores a este modulo
  */
 InsUnixDelErro()
 {
@@ -96,7 +366,184 @@ InsUnixDelErro()
 }
 
 /*
- * Preparacao das instrucoes SQL para tratamento do repositorio 
+ * Insere a informacao que esta directamente associada a funcoes, nomeadamente
+ * declaracao de funcoes, utilizacao de funcoes, utilizacao de tabelas
+ */
+InsUnixInsertFunctions()
+{
+   register int i;
+	exec sql begin declare section;
+	   int  ID_Funcao;
+		char NomeModulo[256];
+		char *NomeFuncao;
+		char StrSql[256];
+		int NInstrucoes;
+		int NLinha;
+	exec sql end declare section;
+	int comparacao;
+
+
+	InsUnixPrepareStatements();
+
+	/* Remover todos os SQL(s) do modulo corrente */
+   StatDesc = "Remocao de Query de funcoes";
+	exec sql delete from sql where id_funcao in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+
+	/* Remover todos os parametros de funcoes */
+   StatDesc = "Remocao de parametros de funcoes";
+	exec sql delete from parametrofuncao where id_funcao in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+
+	/* Remover todas as utilizacoes de funcao do modulo corrente */
+   StatDesc = "Remocao de utilizacao de funcoes";
+	exec sql delete from utilfuncao where chamador in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+
+	P4glVerbose("Global usage variable deletion\n");
+   StatDesc = "Remocao de globais utilizadas no modulo corrente";
+	exec sql delete from utilglobal where id_funcao in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+
+	P4glVerbose("Global declared variable deletion\n");
+   StatDesc = "Remocao de globais declaradas ";
+	exec sql delete from global where id_modulo = :ID_Modulo;
+
+	P4glVerbose("Getting Function(s) ID\n");
+	for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
+	{
+		if ( FUNCAO(i).Include )
+		{
+			FUNCAO(i).ID_Function = -1;
+			continue;
+		}
+
+		NomeFuncao  = FUNCAO(i).name;
+      strcpy(NomeModulo,FilePath);
+      StatDesc   = "Seleccao de funcoes declaradas";
+	   exec sql execute StSelFuncDec
+		   into  :ID_Funcao
+		   using :NomeFuncao, :NomeModulo;
+		if (sqlca.sqlcode == 100)
+		{
+			/* In debug is possible to use the source in wd */
+		  if ( dbug )
+			{
+        StatDesc = "Preparacao de seleccao de funcao declarada (DEBUG)";
+				sprintf(NomeModulo,"%%%s",P4glCb.NmFicheiroInput);
+				exec sql select id_funcao into :ID_Funcao from tags
+					where nm_funcao=:NomeFuncao and nm_modulo like :NomeModulo;
+			}
+			else
+			{
+			   P4glError(ERROR_NO_EXIT,
+			     "Funcao %s nao definida nos tags como declarada no modulo %s\n",
+			     NomeFuncao, NomeModulo);
+				 /** TODO Isto devia ser opcional */
+				 ID_Funcao = insertFunctionDeclaration(NomeFuncao,NomeModulo);
+			}
+		}
+		FUNCAO(i).ID_Function = ID_Funcao;
+		NLinha      = FUNCAO(i).linha;
+		NInstrucoes = FUNCAO(i).NInstrucoes;
+      StatDesc   = "Actualizacao da informacao da funcao";
+	   exec sql execute StUpdFunction using :NInstrucoes,
+														 :NLinha,
+														 :ID_Funcao;
+	}
+
+	P4glVerbose("Global variable declaration insertion\n");
+	InsUnixInsertGlobalDeclaration(ID_Modulo);
+
+	P4glVerbose("Cursor declaration and usage deletion\n");
+   StatDesc = "Remocao de cursores";
+	exec sql delete from cursor where id_funcao in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+   StatDesc = "Remocao de utilizacao de cursores";
+	exec sql delete from utilcursor where id_funcao in
+		(select id_funcao from funcao where id_modulo = :ID_Modulo);
+	InsUnixInsertCursorDeclaration();
+
+	/* Se necessario tem de se meter tudo num array */
+	P4glVerbose("Tables and function Usage Insertion\n");
+   StatDesc = "Abertura de cursor de utilizacao de funcao";
+	exec sql OPEN c_StInsUtilFuncao ;
+   StatDesc = "Abertura de cursor de utilizacao de tabela";
+	exec sql OPEN c_StInsUtilTab ;
+   StatDesc = "Abertura de cursor de insercao de global";
+	exec sql OPEN c_StInsGlobUsage ;
+   StatDesc = "Abertura de cursor de insercao de cursor";
+	exec sql OPEN c_StInsCurUsage ;
+   StatDesc = "Abertura de cursor de parametros de funcoes";
+	exec sql OPEN c_StInsFuncParam ;
+	for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
+	{
+		if ( FUNCAO(i).ID_Function != -1 )
+		{
+		   InsUnixInsertFunctionsUsage(ID_Modulo, FUNCAO(i).ID_Function, i);
+		   InsUnixInsertTablesUsage(i);
+		   InsUnixInsertGlobalUsage(i, ID_Modulo);
+         InsUnixInsertCursorUsage(i);
+         InsUnixInsertFuncParam(i);
+		}
+	}
+	exec sql FLUSH c_StInsUtilFuncao ;
+	exec sql CLOSE c_StInsUtilFuncao ;
+   exec sql FLUSH c_StInsUtilTab ;
+   exec sql CLOSE c_StInsUtilTab ;
+	exec sql FLUSH c_StInsGlobUsage ;
+	exec sql CLOSE c_StInsGlobUsage ;
+	exec sql FLUSH c_StInsCurUsage ;
+	exec sql CLOSE c_StInsCurUsage ;
+	exec sql FLUSH c_StInsFuncParam ;
+	exec sql CLOSE c_StInsFuncParam ;
+}
+
+/*
+ * Inserr as declaracoes de cursores do modulo
+ */
+InsUnixInsertCursorDeclaration()
+{
+   register int i;
+	exec sql begin declare section;
+		char  *NomeCursor;
+		int   ID_Function;
+		char  *TipoCursor;
+		char  *Prepared;
+	exec sql end declare section;
+
+	for ( i = 0 ; i < P4glCb.idx_cursores ; i++ )
+	{
+		NomeCursor  = P4glCb.cursores[i].nome;
+		switch (P4glCb.cursores[i].tipo)
+		{
+			case CURS_SCROLL:
+				TipoCursor = "SCROLL";
+				break;
+			case WITH_HOLD:
+				TipoCursor = "WITH HOLD";
+				break;
+			case SCROLL_WITH_HOLD:
+				TipoCursor = "SCROLL WITH HOLD";
+				break;
+			default:
+				TipoCursor = "UNDEFINED";
+				break;
+		}
+		if ( P4glCb.cursores[i].prepared == PREPARED )
+			Prepared = "PREPARED";
+		else
+			Prepared = "EXPLICIT";
+		ID_Function = FUNCAO(P4glCb.cursores[i].FuncNum).ID_Function;
+      StatDesc = "Insercao de declaracao de cursor ";
+		exec sql execute StInsCursor
+			using :ID_Function, :NomeCursor, :TipoCursor, :Prepared;
+		P4glCb.cursores[i].ID_Cursor = sqlca.sqlerrd[1];
+	}
+}
+
+/*
+ * Preparacao das instrucoes SQL para tratamento do repositorio
  */
 InsUnixPrepareStatements()
 {
@@ -146,7 +593,7 @@ InsUnixPrepareStatements()
 	strcpy(StrSql,strcat(StrSql," (0,?,?,?)"));
 	exec sql prepare StInsUtilTab from :StrSql;
 	exec sql declare c_StInsUtilTab cursor for StInsUtilTab;
-  
+
    StatDesc = "Preparacao de seleccao de tabela";
    strcpy(StrSql,        "select id_tabela ");
 	strcpy(StrSql,strcat(StrSql,    "from tabela "));
@@ -180,14 +627,14 @@ InsUnixPrepareStatements()
 
    StatDesc = "Preparacao de insercao de utilizacao de global ";
 	strcpy(StrSql,
-		"insert into utilglobal (n_sequencia,id_global,id_funcao,linha,accao)"); 
+		"insert into utilglobal (n_sequencia,id_global,id_funcao,linha,accao)");
 	strcpy(StrSql,strcat(StrSql," values (0,?,?,?,?)"));
 	exec sql prepare StInsGlobUsage from :StrSql;
 	exec sql declare c_StInsGlobUsage cursor for StInsGlobUsage;
 
    StatDesc = "Preparacao de insercao de utilizacao de cursor ";
 	strcpy(StrSql,
-		"insert into utilcursor (id_cursor,id_funcao,linha,n_sequencia,accao)"); 
+		"insert into utilcursor (id_cursor,id_funcao,linha,n_sequencia,accao)");
 	strcpy(StrSql,strcat(StrSql," values (?,?,?,?,?)"));
 	exec sql prepare StInsCurUsage from :StrSql;
 	exec sql declare c_StInsCurUsage cursor for StInsCurUsage;
@@ -214,139 +661,8 @@ InsUnixPrepareStatements()
 	exec sql prepare StInsertSql from :StrSql;
 }
 
-/*
- * Insere a informacao que esta directamente associada a funcoes, nomeadamente
- * declaracao de funcoes, utilizacao de funcoes, utilizacao de tabelas
- */
-InsUnixInsertFunctions()
-{
-   register int i;
-	exec sql begin declare section;
-	   int  ID_Funcao;
-		char NomeModulo[256];
-		char *NomeFuncao;
-		char StrSql[256];
-		int NInstrucoes;
-		int NLinha;
-	exec sql end declare section;
-	int comparacao;
 
 
-	InsUnixPrepareStatements();
-
-	/* Remover todos os SQL(s) do modulo corrente */
-   StatDesc = "Remocao de Query de funcoes";
-	exec sql delete from sql where id_funcao in 
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-
-	/* Remover todos os parametros de funcoes */
-   StatDesc = "Remocao de parametros de funcoes";
-	exec sql delete from parametrofuncao where id_funcao in 
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-
-	/* Remover todas as utilizacoes de funcao do modulo corrente */
-   StatDesc = "Remocao de utilizacao de funcoes";
-	exec sql delete from utilfuncao where chamador in 
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-
-	P4glVerbose("Global usage variable deletion\n");
-   StatDesc = "Remocao de globais utilizadas no modulo corrente";
-	exec sql delete from utilglobal where id_funcao in 
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-	  
-	P4glVerbose("Global declared variable deletion\n");
-   StatDesc = "Remocao de globais declaradas ";
-	exec sql delete from global where id_modulo = :ID_Modulo;
-
-	P4glVerbose("Getting Function(s) ID\n");
-	for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
-	{
-		if ( FUNCAO(i).Include )
-		{
-			FUNCAO(i).ID_Function = -1;
-			continue;
-		}
-
-		NomeFuncao  = FUNCAO(i).name;
-      strcpy(NomeModulo,FilePath);
-      StatDesc   = "Seleccao de funcoes declaradas";
-	   exec sql execute StSelFuncDec
-		   into  :ID_Funcao
-		   using :NomeFuncao, :NomeModulo;
-		if (sqlca.sqlcode == 100)
-		{
-			/* In debug is possible to use the source in wd */
-		  if ( dbug )
-			{
-        StatDesc = "Preparacao de seleccao de funcao declarada (DEBUG)";
-				sprintf(NomeModulo,"%%%s",P4glCb.NmFicheiroInput);
-				exec sql select id_funcao into :ID_Funcao from tags
-					where nm_funcao=:NomeFuncao and nm_modulo like :NomeModulo;
-			}
-			else
-			{
-			   P4glError(ERROR_NO_EXIT,
-			     "Funcao %s nao definida nos tags como declarada no modulo %s\n",
-			     NomeFuncao, NomeModulo);
-				 /** TODO Isto devia ser opcional */
-				 ID_Funcao = insertFunctionDeclaration(NomeFuncao,NomeModulo);
-			}
-		}
-		FUNCAO(i).ID_Function = ID_Funcao;
-		NLinha      = FUNCAO(i).linha;
-		NInstrucoes = FUNCAO(i).NInstrucoes;
-      StatDesc   = "Actualizacao da informacao da funcao";
-	   exec sql execute StUpdFunction using :NInstrucoes, 
-														 :NLinha,
-														 :ID_Funcao;
-	}
-
-	P4glVerbose("Global variable declaration insertion\n");
-	InsUnixInsertGlobalDeclaration(ID_Modulo);
-
-	P4glVerbose("Cursor declaration and usage deletion\n");
-   StatDesc = "Remocao de cursores";
-	exec sql delete from cursor where id_funcao in
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-   StatDesc = "Remocao de utilizacao de cursores";
-	exec sql delete from utilcursor where id_funcao in
-		(select id_funcao from funcao where id_modulo = :ID_Modulo);
-	InsUnixInsertCursorDeclaration();
-
-	/* Se necessario tem de se meter tudo num array */
-	P4glVerbose("Tables and function Usage Insertion\n");
-   StatDesc = "Abertura de cursor de utilizacao de funcao";
-	exec sql OPEN c_StInsUtilFuncao ;
-   StatDesc = "Abertura de cursor de utilizacao de tabela";
-	exec sql OPEN c_StInsUtilTab ;
-   StatDesc = "Abertura de cursor de insercao de global";
-	exec sql OPEN c_StInsGlobUsage ;
-   StatDesc = "Abertura de cursor de insercao de cursor";
-	exec sql OPEN c_StInsCurUsage ;
-   StatDesc = "Abertura de cursor de parametros de funcoes";
-	exec sql OPEN c_StInsFuncParam ;
-	for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
-	{
-		if ( FUNCAO(i).ID_Function != -1 )
-		{
-		   InsUnixInsertFunctionsUsage(ID_Modulo, FUNCAO(i).ID_Function, i);
-		   InsUnixInsertTablesUsage(i);
-		   InsUnixInsertGlobalUsage(i, ID_Modulo); 
-         InsUnixInsertCursorUsage(i);
-         InsUnixInsertFuncParam(i);
-		}
-	}
-	exec sql FLUSH c_StInsUtilFuncao ;
-	exec sql CLOSE c_StInsUtilFuncao ;
-   exec sql FLUSH c_StInsUtilTab ;
-   exec sql CLOSE c_StInsUtilTab ;
-	exec sql FLUSH c_StInsGlobUsage ;
-	exec sql CLOSE c_StInsGlobUsage ;
-	exec sql FLUSH c_StInsCurUsage ;
-	exec sql CLOSE c_StInsCurUsage ;
-	exec sql FLUSH c_StInsFuncParam ;
-	exec sql CLOSE c_StInsFuncParam ;
-}
 
 /**
  * Insere uma nova função na tabela de funções declaradas
@@ -367,147 +683,62 @@ int insertFunctionDeclaration(functionName,moduleName)
 
 	ID_Funcao = sqlca.sqlerrd[1];
   StatDesc = "Tag declaration insert execution";
-	exec sql execute StInsTags 
+	exec sql execute StInsTags
 		using :functionName, :ID_Funcao;
   return ID_Funcao;
 }
 
-/* 
- * Obtem o ID do modulo corrente (para chaves primarias)
+/*
+ * Insere todas as variaveis que estao declaradas no modulo ou no modulo
+ * incluido.
+ * A insercao do modulo incluido eh pouco eficaz pois esta a inserir tantas
+ * vezes quantas as inclusoes. Devia existir um esquema de tempos de
+ * alteracao e switch que permitisse forcar a insercao
+ *
+ *  ALTERACAO : Se o nome do ficheiro incluido for *GLB.4gl utiliza o
+ *              ficheiro de globais chamado "globais.4gl"
  */
-InsUnixGetModule(NomeFicheiro)
-   exec sql begin declare section;
-		PARAMETER char *NomeFicheiro;
+InsUnixInsertGlobalDeclaration(ID_Modulo)
+	exec sql begin declare section;
+		PARAMETER int  ID_Modulo;
 	exec sql end declare section;
 {
-   exec sql begin declare section;
-		int IDModulo;
-	   char Fich[640];
-	   char *NmDir;
-   exec sql end declare section;
+   register int i,j;
+	exec sql begin declare section;
+		int  ID_Global;
+		char *NomeGlob;
+		char *Datatype;
+	exec sql end declare section;
+	int       TamanhoGlobais;
+	VAR_USAGE *VarUsage;
 
-	/* Isto ate que poderia ter sido feito logo nas inicializacoes */
-   NmDir = getcwd((char *)0,256);
-	strcpy(Fich,NmDir);
-	strcpy(Fich,strcat(Fich,"/"));
-	strcpy(Fich,strcat(Fich,NomeFicheiro));
-	StatDesc = "Seleccao em modulo";
-   exec sql select id_modulo into :IDModulo
-		from  modulo
-		where ficheiro = :Fich;
-	if (sqlca.sqlcode == 100) 
+
+	for ( i = 0 ; i < P4glCb.idx_var_glob ; i++ )
 	{
-		P4glWarning(DISPENSAVEL,
-						"Modulo <%s> nao foi inserido pelo carregamento de %s\n",
-						Fich,"tags. Inserido pelo p4gl");
-		/*
-		ID_Modulo = -1;
-		*/
-		StatDesc = "Insercao em modulo";
-		exec sql insert into modulo (id_modulo, modulo,ficheiro)
-			values (0, :NomeFicheiro, :Fich);
-		IDModulo = sqlca.sqlerrd[1];
+		Datatype = P4glCb.var_globais[i].tipo;
+		NomeGlob = P4glCb.var_globais[i].nome;
+		if ( P4glCb.var_globais[i].tipo_dec == IN_MODULE )
+		{
+         StatDesc = "Insercao de declaracao de global (declarada no modulo)";
+		   exec sql execute StInsGlobal using :ID_Modulo, :NomeGlob, :Datatype;
+	      ID_Global = sqlca.sqlerrd[1];
+		}
+		else          /* IN_INCLUDE - Declaracao em GLOBALS "GlobalFile.4gl" */
+		{
+         StatDesc = "Seleccao de global";
+			exec sql execute StGetGlobal into :ID_Global
+				using :NomeGlob, :ID_Modulo_Include;
+			if (sqlca.sqlcode == 100)
+			{
+            StatDesc = "Insercao de declaracao de global";
+				exec sql execute StInsGlobal using :ID_Modulo_Include, :NomeGlob,
+								:Datatype;
+	         ID_Global = sqlca.sqlerrd[1];
+		   }
+	   }
+		P4glCb.var_globais[i].id_global = ID_Global;
 	}
-	free(NmDir);
-
-	StatDesc = "Seleccao de contentor EXE";
-	exec sql select ID_Contentor into :ID_Contentor
-		from contentor where localizacao=:NmDir and tipo='EXE';
-	StatDesc = "Seleccao de contentor DIR";
-	exec sql select ID_Contentor into :ID_ContentorDir
-		from contentor where localizacao=:NmDir and tipo='DIR';
-	return (IDModulo);
 }
-
-/* 
- * Obtem o ID do modulo indefinido (onde sao ligadas as funcoes das
- * quais nao se sabe a quem pertencem)
- */
-InsUnixGetUnknownModule()
-{
-   exec sql begin declare section;
-		int ID_Modulo;
-   exec sql end declare section;
-
-	StatDesc = "Seleccao em modulo";
-   exec sql select id_modulo into :ID_Modulo
-		from  modulo
-		where modulo = "DESCONHECIDO";
-	if (sqlca.sqlcode == 100) 
-	{
-		StatDesc = "Insercao em modulo";
-		exec sql insert into modulo
-			(id_modulo, modulo,ficheiro)
-			values
-			(0, "DESCONHECIDO", "DESCONHECIDO");
-		return (sqlca.sqlerrd[1]);
-	}
-	return (ID_Modulo);
-}
-
-/* 
- * Obtem o ID do modulo de include (onde sao declaradas as globais 
- * usadas.
- *
- * Se o nome do modulo for *GLB.4gl usa o ficheiro globais.4gl que tem de estar
- * scannado
- */
-InsUnixGetIncludeModule()
-{
-   exec sql begin declare section;
-		int ID_Modulo;
-		char *NomeInclude;
-   exec sql end declare section;
-
-	if ( P4glCb.idx_globais <= 0 )
-		return;
-
-	NomeInclude = P4glCb.globais[0].nome_ficheiro;
-
-	/* Na versao 0.3 os ficheiros de globals sao gerados dinamicamente */
-	if ( strcmp(NomeInclude+strlen(NomeInclude)-7,"GLB.4gl") == 0 )
-		NomeInclude = "globais.4gl";
-
-	StatDesc = "Seleccao do modulo de include (GLOBALS)";
-   exec sql declare CrInclude cursor for 
-		select id_modulo into :ID_Modulo
-		   from  modulo
-		   where modulo = :NomeInclude;
-	exec sql open CrInclude;
-	exec sql fetch CrInclude into :ID_Modulo;
-	if (sqlca.sqlcode == 100) 
-	{
-		StatDesc = "Insercao em modulo de include";
-		exec sql insert into modulo
-			(id_modulo, modulo,ficheiro)
-			values
-			(0, :NomeInclude, "DESCONHECIDO");
-		return (sqlca.sqlerrd[1]);
-	}
-	return (ID_Modulo);
-}
-
-
-/* 
- * Insere uma nova funcao declarada 
- */
-InsUnixInsereFuncao(ID_Modulo, NumFuncao)
-   exec sql begin declare section;
-      PARAMETER int ID_Modulo;
-   exec sql end declare section;
-	int NumFuncao;
-{
-   exec sql begin declare section;
-		char FunctionName[64];
-   exec sql end declare section;
-
-   
-	 strcpy(FunctionName,FUNCAO(NumFuncao).name);
-    StatDesc = "Insercao em funcao";
-	 exec sql execute StInsFuncao using :ID_Modulo, :FunctionName;
-	 return (sqlca.sqlerrd[1]);
-}
-
 
 /*
  * Insere utilizacao de funcoes dentro de uma delas
@@ -547,13 +778,208 @@ InsUnixInsertFunctionsUsage(ID_Modulo,ID_Function,FN)
 										 /* A seguir vem da versao anterior */
 		/*
 		printf("Funcao %s\n", FUNC_CALL(FN,i).name);
-		if ( FuncaoAnterior[0]=='\0' ||   
+		if ( FuncaoAnterior[0]=='\0' ||
 			  strcmp(FuncaoAnterior,FUNC_CALL(FN,i).name)!=0 )
-			  Optimizacao para implementar 
+			  Optimizacao para implementar
 		strcpy(FuncaoAnterior,FUNC_CALL(FN,i).name);
 		*/
 	}
 }
+
+
+
+/*
+ * Parameters of a function
+ */
+InsUnixInsertFuncParam(FuncNum)
+int FuncNum;
+{
+	exec sql begin declare section;
+		int   ID_Function;
+      int  i;
+		char *Nome;
+		char *DataType;
+	exec sql end declare section;
+	register int j;
+
+	ID_Function = FUNCAO(FuncNum).ID_Function;
+	if ( FUNCAO(FuncNum).parametros == (NAME_LIST *)0)
+		return;
+	for (i = 0 ; i < FUNCAO(FuncNum).parametros->idx ; i++ )
+	{
+		Nome = FUNCAO(FuncNum).parametros->nome[i];
+
+		/* ??? Obter tipo da variavel local */
+		/* ??? Preencher tipo */
+		/* ??? coluna datatype */
+		/*
+		for ( j = 0 ; j < FUNCAO(FuncNum).
+		 */
+		EXEC sql put c_StInsFuncParam from :i, :Nome, :ID_Function;
+   }
+}
+
+
+/*
+ * Insere as utilizacoes de variaveis globais na funcao
+ * O modulo de declaracao eh:
+ *   - O proprio se estiver no array de globais declaradas
+ *   - O modulo de globais caso contrario
+ */
+InsUnixInsertGlobalUsage(FuncNum,ID_Modulo)
+int FuncNum;
+exec sql begin declare section;
+   PARAMETER int ID_Modulo;
+exec sql end declare section;
+{
+	VAR_USAGE *VarUs;
+	exec sql begin declare section;
+		char *NomeGlob;
+		int   Linha;
+		char  Utilizacao[6];
+		int   ID_Global;
+		int   ID_Function;
+	exec sql end declare section;
+
+   VarUs       = FUNCAO(FuncNum).var_usage;
+	ID_Function = FUNCAO(FuncNum).ID_Function;
+
+   while ( VarUs != (VAR_USAGE *)0)
+	{
+		NomeGlob = VarUs->nome;
+		Linha    = VarUs->linha;
+		if (VarUs->utilizacao == READ_VAR)  strcpy(Utilizacao,"READ");
+		else                                strcpy(Utilizacao,"WRITE");
+		ID_Global = GetIdGlobal(NomeGlob);
+      StatDesc = "Insercao de utilizacao de global (no cursor)";
+		exec sql put c_StInsGlobUsage
+			from :ID_Global, :ID_Function, :Linha, :Utilizacao;
+		VarUs = VarUs->next;
+	}
+}
+
+
+/*
+ * Obtem o ID_Global da variavel com o nome que recebe como parametro
+ * Se fosse arvore binaria era muito mais rapido
+ */
+GetIdGlobal(NomeGlobal)
+char *NomeGlobal;
+{
+   register int i;
+
+	for( i = 0 ; i <= P4glCb.idx_var_glob ; i++)
+      if (strcasecmp(NomeGlobal,P4glCb.var_globais[i].nome)==0)
+			return(P4glCb.var_globais[i].id_global);
+   return(-1);
+}
+
+
+/*
+ * Insere utilizacao de tabela
+ * Tabela UtilFuncao
+ */
+InsUnixInsertTablesUsage(FunctionNum)
+	exec sql begin declare section;
+	exec sql end declare section;
+	int FunctionNum;
+{
+   register int i,j;
+	exec sql begin declare section;
+		int ID_Function;
+		int ID_Table;
+		char Operacao;
+		int NSeq;
+		short IndNSeq;
+	exec sql end declare section;
+
+	for ( i = 0 ; i < FUNCAO(FunctionNum).idx_sql; i++)
+	{
+	   ID_Function = FUNCAO(FunctionNum).ID_Function;
+		/* ??? Isto podia ser global ao modulo */
+	   StatDesc = "Remocao em Utilizacao de tabela";
+	   exec sql execute StDelUtilTabela  using :ID_Function;
+		InsUnixInsertSql(SQL_STMT(FunctionNum,i).texto,
+							  ID_Function,i,
+							  SQL_STMT(FunctionNum,i).cursor);
+		for ( j = 0 ; j < SQL_STMT(FunctionNum,i).idx_tabelas ; j++ )
+		{
+		   ID_Table = InsUnixInsertTable(SQL_STMT(FunctionNum,i).tabelas[j]);
+			if ( ID_Table == -1 )   return;
+			switch (SQL_STMT(FunctionNum,i).operacao )
+			{
+				 case SQL_SELECT:
+					  Operacao = 'S';
+					  break;
+				 case SQL_INSERT:
+					  Operacao = 'I';
+					  break;
+				 case SQL_UPDATE:
+					  Operacao = 'U';
+					  break;
+				 case SQL_DELETE:
+					  Operacao = 'D';
+					  break;
+				 default:
+					  Operacao = 'S';
+			}
+         StatDesc = "Insercao em Utilizacao de Tabela";
+			exec sql put c_StInsUtilTab
+				from :ID_Table, :ID_Function, :Operacao;
+		}
+		                    /* Inserir LIKE(s) */
+		/*
+		for ( j = 0 ; j < idx_tabelas ; j++ )
+		{
+		   ID_Table = InsUnixInsertTable(SQL_STMT(FunctionNum,i).tabelas[j]);
+			switch (SQL_STMT(FunctionNum,i).operacao )
+			{
+				 case SQL_SELECT:
+					  Operacao = 'S';
+					  break;
+				 case SQL_INSERT:
+					  Operacao = 'I';
+					  break;
+				 case SQL_UPDATE:
+					  Operacao = 'U';
+					  break;
+				 case SQL_DELETE:
+					  Operacao = 'D';
+					  break;
+				 default:
+					  Operacao = "S";
+			}
+         StatDesc = "Insercao em Utilizacao de Tabela";
+			exec sql put c_StInsUtilTab
+				from :ID_Table, :ID_Function, :Operacao;
+		}
+		*/
+	}
+}
+
+//#ifdef _NO_LONGER_USED_
+
+/*
+ * Insere uma nova funcao declarada
+ */
+InsUnixInsereFuncao(ID_Modulo, NumFuncao)
+   exec sql begin declare section;
+      PARAMETER int ID_Modulo;
+   exec sql end declare section;
+	int NumFuncao;
+{
+   exec sql begin declare section;
+		char FunctionName[64];
+   exec sql end declare section;
+
+
+	 strcpy(FunctionName,FUNCAO(NumFuncao).name);
+    StatDesc = "Insercao em funcao";
+	 exec sql execute StInsFuncao using :ID_Modulo, :FunctionName;
+	 return (sqlca.sqlerrd[1]);
+}
+
+
 
 struct called_functions
 {
@@ -566,7 +992,7 @@ struct called_functions
 
 /*
  * Insere a execucao de funcao.
- * Se existirem varias funcoes com o mesmo nome tenta descobrir qual a mais 
+ * Se existirem varias funcoes com o mesmo nome tenta descobrir qual a mais
  * provavel, no entanto insere-as todas .
  */
 InsertFunctionCall(Name, Line, UsageType, IDFunction, NSeq)
@@ -594,13 +1020,13 @@ InsertFunctionCall(Name, Line, UsageType, IDFunction, NSeq)
       P4glWarning(IMPORTANT,"Funcao %s nao declarada\n", Name);
 		return NSeq;
 	}
-	
+
 	for ( i = 0 ; i < idx_caminho ; i++ )
 	{
       StatDesc = "Insert of Function Call";
 		ID_Function_Chamada = IDCalledFunctions[i].ID;
 		Caminho             = IDCalledFunctions[i].caminho;
-      exec sql put c_StInsUtilFuncao 
+      exec sql put c_StInsUtilFuncao
          from :ID_Function_Chamada, :IDFunction, :Line,
 				  :NSeq, :Caminho, :UsageType;
 		/* Porque este flush ??? */
@@ -702,87 +1128,6 @@ int idx;
 	return maior+1;
 }
 
-/*
- * Insere utilizacao de tabela
- * Tabela UtilFuncao
- */
-InsUnixInsertTablesUsage(FunctionNum)
-	exec sql begin declare section;
-	exec sql end declare section;
-	int FunctionNum;
-{
-   register int i,j;
-	exec sql begin declare section;
-		int ID_Function;
-		int ID_Table; 
-		char Operacao; 
-		int NSeq; 
-		short IndNSeq;
-	exec sql end declare section;
-
-	for ( i = 0 ; i < FUNCAO(FunctionNum).idx_sql; i++)
-	{
-	   ID_Function = FUNCAO(FunctionNum).ID_Function;
-		/* ??? Isto podia ser global ao modulo */
-	   StatDesc = "Remocao em Utilizacao de tabela";
-	   exec sql execute StDelUtilTabela  using :ID_Function;
-		InsUnixInsertSql(SQL_STMT(FunctionNum,i).texto,
-							  ID_Function,i,
-							  SQL_STMT(FunctionNum,i).cursor);
-		for ( j = 0 ; j < SQL_STMT(FunctionNum,i).idx_tabelas ; j++ )
-		{
-		   ID_Table = InsUnixInsertTable(SQL_STMT(FunctionNum,i).tabelas[j]);
-			if ( ID_Table == -1 )   return;
-			switch (SQL_STMT(FunctionNum,i).operacao )
-			{
-				 case SQL_SELECT:
-					  Operacao = 'S';
-					  break;
-				 case SQL_INSERT:
-					  Operacao = 'I';
-					  break;
-				 case SQL_UPDATE:
-					  Operacao = 'U';
-					  break;
-				 case SQL_DELETE:
-					  Operacao = 'D';
-					  break;
-				 default:
-					  Operacao = 'S';
-			}
-         StatDesc = "Insercao em Utilizacao de Tabela";
-			exec sql put c_StInsUtilTab
-				from :ID_Table, :ID_Function, :Operacao;
-		} 
-		                    /* Inserir LIKE(s) */
-		/*
-		for ( j = 0 ; j < idx_tabelas ; j++ )
-		{
-		   ID_Table = InsUnixInsertTable(SQL_STMT(FunctionNum,i).tabelas[j]);
-			switch (SQL_STMT(FunctionNum,i).operacao )
-			{
-				 case SQL_SELECT:
-					  Operacao = 'S';
-					  break;
-				 case SQL_INSERT:
-					  Operacao = 'I';
-					  break;
-				 case SQL_UPDATE:
-					  Operacao = 'U';
-					  break;
-				 case SQL_DELETE:
-					  Operacao = 'D';
-					  break;
-				 default:
-					  Operacao = "S";
-			}
-         StatDesc = "Insercao em Utilizacao de Tabela";
-			exec sql put c_StInsUtilTab 
-				from :ID_Table, :ID_Function, :Operacao;
-		}
-		*/
-	}
-}
 
 /*
  * Insert of text from Sql stament
@@ -869,57 +1214,6 @@ InsUnixInsertTable(NomeTabela)
 	 return ID_Tabela;
 }
 
-/*
- * Insere todas as variaveis que estao declaradas no modulo ou no modulo 
- * incluido.
- * A insercao do modulo incluido eh pouco eficaz pois esta a inserir tantas
- * vezes quantas as inclusoes. Devia existir um esquema de tempos de 
- * alteracao e switch que permitisse forcar a insercao 
- *  
- *  ALTERACAO : Se o nome do ficheiro incluido for *GLB.4gl utiliza o 
- *              ficheiro de globais chamado "globais.4gl"
- */
-InsUnixInsertGlobalDeclaration(ID_Modulo)
-	exec sql begin declare section;
-		PARAMETER int  ID_Modulo;
-	exec sql end declare section;
-{
-   register int i,j;
-	exec sql begin declare section;
-		int  ID_Global;
-		char *NomeGlob;
-		char *Datatype;
-	exec sql end declare section;
-	int       TamanhoGlobais;
-	VAR_USAGE *VarUsage;
-
-
-	for ( i = 0 ; i < P4glCb.idx_var_glob ; i++ )
-	{
-		Datatype = P4glCb.var_globais[i].tipo;
-		NomeGlob = P4glCb.var_globais[i].nome;
-		if ( P4glCb.var_globais[i].tipo_dec == IN_MODULE )
-		{
-         StatDesc = "Insercao de declaracao de global (declarada no modulo)";
-		   exec sql execute StInsGlobal using :ID_Modulo, :NomeGlob, :Datatype;
-	      ID_Global = sqlca.sqlerrd[1];
-		}
-		else          /* IN_INCLUDE - Declaracao em GLOBALS "GlobalFile.4gl" */
-		{
-         StatDesc = "Seleccao de global";
-			exec sql execute StGetGlobal into :ID_Global
-				using :NomeGlob, :ID_Modulo_Include;
-			if (sqlca.sqlcode == 100)
-			{
-            StatDesc = "Insercao de declaracao de global";
-				exec sql execute StInsGlobal using :ID_Modulo_Include, :NomeGlob, 
-								:Datatype;
-	         ID_Global = sqlca.sqlerrd[1];
-		   }
-	   }
-		P4glCb.var_globais[i].id_global = ID_Global;
-	}
-}
 
 /*
  * Verifica se o nome eh nome de uma tabela utilizada
@@ -946,86 +1240,7 @@ char *Nome;
    return 0;
 }
 
-/*
- * Insere as utilizacoes de variaveis globais na funcao
- * O modulo de declaracao eh:
- *   - O proprio se estiver no array de globais declaradas
- *   - O modulo de globais caso contrario
- */
-InsUnixInsertGlobalUsage(FuncNum,ID_Modulo)
-int FuncNum;
-exec sql begin declare section;
-   PARAMETER int ID_Modulo;
-exec sql end declare section;
-{
-	VAR_USAGE *VarUs;
-	exec sql begin declare section;
-		char *NomeGlob;
-		int   Linha;
-		char  Utilizacao[6];
-		int   ID_Global;
-		int   ID_Function;
-	exec sql end declare section;
 
-   VarUs       = FUNCAO(FuncNum).var_usage;
-	ID_Function = FUNCAO(FuncNum).ID_Function;
-
-   while ( VarUs != (VAR_USAGE *)0)
-	{
-		NomeGlob = VarUs->nome;
-		Linha    = VarUs->linha;
-		if (VarUs->utilizacao == READ_VAR)  strcpy(Utilizacao,"READ");
-		else                                strcpy(Utilizacao,"WRITE");
-		ID_Global = GetIdGlobal(NomeGlob);
-      StatDesc = "Insercao de utilizacao de global (no cursor)";
-		exec sql put c_StInsGlobUsage 
-			from :ID_Global, :ID_Function, :Linha, :Utilizacao;
-		VarUs = VarUs->next;
-	}
-}
-
-/*
- * Inserr as declaracoes de cursores do modulo
- */
-InsUnixInsertCursorDeclaration()
-{
-   register int i;
-	exec sql begin declare section;
-		char  *NomeCursor;
-		int   ID_Function;
-		char  *TipoCursor;
-		char  *Prepared;
-	exec sql end declare section;
-
-	for ( i = 0 ; i < P4glCb.idx_cursores ; i++ ) 
-	{
-		NomeCursor  = P4glCb.cursores[i].nome;
-		switch (P4glCb.cursores[i].tipo)
-		{
-			case CURS_SCROLL:
-				TipoCursor = "SCROLL";
-				break;
-			case WITH_HOLD:
-				TipoCursor = "WITH HOLD";
-				break;
-			case SCROLL_WITH_HOLD:
-				TipoCursor = "SCROLL WITH HOLD";
-				break;
-			default:
-				TipoCursor = "UNDEFINED";
-				break;
-		}
-		if ( P4glCb.cursores[i].prepared == PREPARED )
-			Prepared = "PREPARED";
-		else
-			Prepared = "EXPLICIT";
-		ID_Function = FUNCAO(P4glCb.cursores[i].FuncNum).ID_Function;
-      StatDesc = "Insercao de declaracao de cursor ";
-		exec sql execute StInsCursor 
-			using :ID_Function, :NomeCursor, :TipoCursor, :Prepared;
-		P4glCb.cursores[i].ID_Cursor = sqlca.sqlerrd[1];
-	}
-}
 
 /*
  * Cursor usage in a function
@@ -1085,54 +1300,6 @@ int FuncNum;
 	}
 }
 
-/*
- * Parameters of a function
- */
-InsUnixInsertFuncParam(FuncNum)
-int FuncNum;
-{
-	exec sql begin declare section;
-		int   ID_Function;
-      int  i;
-		char *Nome;
-		char *DataType;
-	exec sql end declare section;
-	register int j;
-
-	ID_Function = FUNCAO(FuncNum).ID_Function;
-	if ( FUNCAO(FuncNum).parametros == (NAME_LIST *)0)
-		return;
-	for (i = 0 ; i < FUNCAO(FuncNum).parametros->idx ; i++ )
-	{
-		Nome = FUNCAO(FuncNum).parametros->nome[i];
-
-		/* ??? Obter tipo da variavel local */
-		/* ??? Preencher tipo */
-		/* ??? coluna datatype */
-		/*
-		for ( j = 0 ; j < FUNCAO(FuncNum).
-		 */
-		EXEC sql put c_StInsFuncParam from :i, :Nome, :ID_Function;
-   }
-}
-
-
-
-/*
- * Obtem o ID_Global da variavel com o nome que recebe como parametro
- * Se fosse arvore binaria era muito mais rapido
- */
-GetIdGlobal(NomeGlobal)
-char *NomeGlobal;
-{
-   register int i;
-
-	for( i = 0 ; i <= P4glCb.idx_var_glob ; i++)
-      if (strcasecmp(NomeGlobal,P4glCb.var_globais[i].nome)==0)
-			return(P4glCb.var_globais[i].id_global);
-   return(-1);
-}
-
 
 /*
  * Obtem o ID_Cursor do cursor com o nome que recebe como parametro
@@ -1151,54 +1318,9 @@ char *NomeCursor;
    return(-1);
 }
 
- /*
-  * Funcao que faz a gestao dos erros
-  */
-
-void
-SqlErrors(void)
- {
-    int err = 0;
-    if(!strncmp(SQLSTATE, "00", 2) ||
-       !strncmp(SQLSTATE,"02",2))
-       return(SQLSTATE[1]);
-    if(!strncmp(SQLSTATE, "01", 2))
-       printf("\n SQL Warning encountered at %s: %d \n",
-                   StatDesc,
-                   sqlca.sqlcode);
-		 /*
-       P4glWarning(IMPORTANT, "\n SQL Warning encountered at %s: %d \n",
-                   StatDesc,
-                   sqlca.sqlcode);
-						 */
-    else /* SQLSTATE class > "02" */
-    {
-       printf("\n SQL Error encountered at %s: %d \n",
-		           StatDesc,
-                 sqlca.sqlcode);
-		 /*
-       P4glError(ERROR_EXIT, "\n SQL Error encountered at %s: %d \n",
-		           StatDesc,
-                 sqlca.sqlcode);
-					  */
-       err = 1;
-    }
-	 exec sql close database;
-	 exit(1);
- }
-
 
 /*
- * Meter cronometro a zero
- */
-SetTempo()
-{
-   TempoAnterior.dt_qual = TU_DTENCODE(TU_YEAR,TU_F3);
-	dtcurrent(&TempoAnterior);
-}
-
-/*
- * Mostra o tempo que passou e mete o cronometro a zero 
+ * Mostra o tempo que passou e mete o cronometro a zero
  */
 MostraTempo()
 {
@@ -1244,107 +1366,7 @@ va_dcl
 }
 
 
-/*
- * Start the connection to the database
- * TODO - Tornar este método global
- */
-ConnectDb()
-{
-exec sql begin declare section;
-   char StrStat[512];
-exec sql end declare section;
 
-	if ( DBConnected )
-		return;
-  sprintf(StrStat,"database %s",P4glCb.database);
-  StatDesc = "Preparacao de instrucao de abertura da BD";
-	exec sql prepare opndb from :StrStat;
-   StatDesc = "Abertura da BD";
-	exec sql execute opndb ;
-	if ( sqlca.sqlcode != 0 )
-		P4glError(ERROR_EXIT," %d open the database %s\n",
-		  sqlca.sqlcode,P4glCb.database
-    );
-	DBConnected = 1;
-}
 
-/*
- * It register(s) a error at the database and 
- * mark module not scanned.
- */
-void
-RegisterErrorInDb(msg)
-char *msg;
-{
-   exec sql begin declare section;
-		char *Txt;
-   exec sql end declare section;
-
-	exec sql whenever sqlerror   goto ERRO;
-	/*exec sql whenever sqlwarning goto ERRO;*/
-	Txt = msg;
-	if (!InsertInDatabase)
-		return;
-	ConnectDb();
-	if (!DBConnected) return;
-	if (ID_Modulo == 0)
-	   ID_Modulo = InsUnixGetModule(P4glCb.NmFicheiroInput);
-   StatDesc = "Alteracao de modulo";
-	exec sql update modulo set erros = "S", carregamento=current 
-		where id_modulo=:ID_Modulo;
-   StatDesc = "Insercao de erro";
-	exec sql insert into erro (id_erro,id_modulo,descricao)
-		      values (0,:ID_Modulo,:Txt);
-	exec sql whenever sqlerror   call SqlErrors;
-	/*exec sql whenever sqlwarning call SqlErrors;*/
-	return;
-
-ERRO:
-   printf("\n SQL Warning or ERROR encountered at %s: %d \n",
-                   StatDesc,
-                   sqlca.sqlcode);
-	exec sql whenever sqlerror   call SqlErrors;
-	/*exec sql whenever sqlwarning call SqlErrors;*/
-}
-
-/*
- * It register(s) a warning at the database and 
- * mark module not scanned.
- */
-void
-RegisterWarningInDb(msg)
-char *msg;
-{
-   exec sql begin declare section;
-		char *Txt;
-   exec sql end declare section;
-
-	Txt = msg;
-	if (!InsertInDatabase)
-		return;
-	exec sql whenever sqlerror   goto ERRO;
-	/*exec sql whenever sqlwarning goto ERRO;*/
-	ConnectDb();
-	if (ID_Modulo == 0)
-	   ID_Modulo = InsUnixGetModule(P4glCb.NmFicheiroInput);
-	exec sql whenever sqlerror   goto ERRO;
-	/*exec sql whenever sqlwarning goto ERRO;*/
-   StatDesc = "Insercao de avisos";
-	exec sql insert into erro (id_erro,id_modulo,descricao)
-		      values (0,:ID_Modulo,:Txt);
-	/*
-	exec sql whenever sqlerror   call SqlErrors;
-	exec sql whenever sqlwarning call SqlErrors;
-	*/
-	return;
-
-ERRO:
-   printf("\n SQL Warning or ERROR encountered at %s: %d \n",
-                   StatDesc,
-                   sqlca.sqlcode);
-	/*
-	exec sql whenever sqlerror   call SqlErrors;
-	exec sql whenever sqlwarning call SqlErrors;
-	*/
-}
+//#endif  // _NO_LONGER_USED_
 

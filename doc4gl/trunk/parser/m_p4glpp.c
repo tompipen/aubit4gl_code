@@ -28,30 +28,30 @@ char *argv[];
 
 	if ( argc != 4 )
 	{
-		printf("Usage : P4glpp source_file_name src_temp_file_name param_file\n");
+		printf("Usage : p4glpp source_file_name src_temp_file_name param_file\n");
 		exit(1);
 	}
 
-  yyin = fopen(argv[1],"r");
+  yyin = fopen(argv[1],"r");  //source_file_name
 	if ( yyin == (FILE *)0 )
 	{
-		printf("p4glpp: Erro a abrir ficheiro %s\n",argv[1]);
+		printf("p4glpp: Error opening file (%s)\n",argv[1]);
 		perror("");
 		exit(1);
 	}
 
-   yyout = fopen(argv[2],"w");
+   yyout = fopen(argv[2],"w");  //src_temp_file_name
 	if ( yyout == (FILE *)0 )
 	{
-		printf("p4glpp: %s, Impossivel abrir ficheiro (%s)\n", argv[1],argv[2]);
+		printf("p4glpp: %s, Error opening file (%s)\n", argv[1],argv[2]);
 		perror("");
 		exit(1);
 	}
 
-   param_out = fopen(argv[3],"w");
+   param_out = fopen(argv[3],"w");  //param_file
 	if ( param_out == (FILE *)0 )
 	{
-		printf("p4glpp: %s, Impossivel abrir ficheiro (%s)\n", argv[1],argv[3]);
+		printf("p4glpp: %s, Error opening file (%s)\n", argv[1],argv[3]);
 		perror("");
 		exit(1);
 	}

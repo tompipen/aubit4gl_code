@@ -29,6 +29,52 @@
  *	p4gl_table_process
  *	p4gl_form_attribute
  *	p4gl_column_process
+ 
+upscol utility tables:
+
+create table syscolatt (
+	tabname              char(18),
+	colname              char(18) ,
+	seqno                serial,
+	color                smallint,
+	inverse              char(1),
+	underline            char(1),
+	blink                char(1),
+	left                 char(1),
+	def_format           char(64),
+	condition            char(64)
+ );
+
+Index_name         Owner    Type/Clstr Access_Method      Columns
+
+sysacomp           root     dupls/No   btree              tabname
+ colname
+ seqno
+
+sysatabname        root     dupls/No   btree              tabname
+
+
+
+
+
+create table syscolval(
+tabname              char(18),
+colname              char(18),
+attrname             char(10),
+attrval              char(64)
+);
+
+
+Index_name         Owner    Type/Clstr Access_Method      Columns
+
+sysvcomp           root     dupls/No   btree              tabname
+ colname
+
+sysvtabname        root     dupls/No   btree              tabname
+
+
+
+
  *
  *
  *}
@@ -3858,6 +3904,10 @@ Options to fix this:
     I think this is prefered option.
 
 
+TODO - p4gl should track files used as GLOBALS. p4gl_globals_usage table is
+        curently not populated
+
+
 ========= process_order (0/0) in E11.4gl ==> write_order
 
 calling function in module E11.4gl is part of target E11
@@ -4332,3 +4382,4 @@ define
 end function #expand_libs()
 
 # =============================== EOF ==================================
+

@@ -9,7 +9,7 @@
 
 extern int exit_stat;
 
-//static char *rcsid = "$Id: m_p4gl.c,v 1.3 2003-01-06 20:16:37 saferreira Exp $";
+//static char *rcsid = "$Id: m_p4gl.c,v 1.4 2003-12-10 11:48:07 afalout Exp $";
 
 /**
  * The main entry function.
@@ -28,9 +28,12 @@ main(int argc,char *argv[])
 	  OrderSymtab();       /* Orderna os arrays da tabela or nome */
 	  DumpSymtab();
 		executeActions();
-	}
-	else
+	} else {
 		printf("P4gl Parsing failed\n");
+        if ( ! exit_stat) {
+            exit_stat = 1;
+        }
+    }
 	CleanP4gl();
 	exit(exit_stat);
 }

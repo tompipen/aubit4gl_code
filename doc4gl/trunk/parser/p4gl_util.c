@@ -16,8 +16,8 @@
  * Moredata - Lisboa, PORTUGAL
  *
  * $Author: afalout $
- * $Revision: 1.6 $
- * $Date: 2003-11-21 10:48:49 $
+ * $Revision: 1.7 $
+ * $Date: 2003-12-10 11:48:07 $
  *
  */
 
@@ -108,7 +108,7 @@ P4glError(int errorType,char *fmt,...)
  *     - otherwise : Do not exit
  *  @param fmt The format of the message to sprintf
  */
-void 
+void
 P4glWarning(int errorLevel,char *fmt,...)
 {
 	va_list args;
@@ -229,7 +229,7 @@ LClipp(char *str)
         //nothing to do - characters already start at the first possition
     } else {
 		str2 = substr(str, firstChar, len);
-		P4glDebug("got -%s-\n",str2);
+		//P4glDebug("got -%s-\n",str2);
 	    //str=strdup(str2);
     	strcpy(str,str2);
     }
@@ -307,8 +307,17 @@ copystr(char *StrDest,char *StrOrig)
 void 
 tiraAspas(char *str)
 {
-  str[0] = ' ';
-  str[strlen(str)-1] = '\0';
+	if ( str[0] == '"' || str[0] == '\'' ) {
+	  str[0] = ' ';
+    }
+
+	if ( str[strlen(str)-1] == '"' || str[strlen(str)-1] == '\'' ) {
+	  str[strlen(str)-1] = '\0';
+    }
+
+    //now remove leading space
+    LClipp(str);
+
 }
 
 

@@ -10,7 +10,7 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.5 2003-11-17 06:10:26 afalout Exp $
+ * $Id: p4gl_symtab.h,v 1.6 2003-12-10 11:48:07 afalout Exp $
  */
 
 
@@ -119,8 +119,10 @@ typedef struct {
 	int  linha;                /* Linha em que e executada */
 }FUNC_CALL;
 
-#define ASSIGNMENT 1
-#define READ_VAR   2 
+//Types for GLOBALS references
+#define ASSIGNMENT 1 //assigning a value to an global variable
+#define READ_VAR   2 // read a global variable
+#define GLOB_FILE  3 //GLOBALS "filename.4gl"
 
                               /* Lista de Utilizacao de variaveis em funcao */
 struct var_usage{

@@ -46,7 +46,7 @@ extern int lineno;             /* 4GL Source current line */
 %token  BUFFERED BY BYTE
 
 /* To remove */
-%token  BLUE 
+%token  BLUE
 %token  BLACK
 
 %token  CALL CASCADE CASE CHAR CHECK CLEAR CLIPPED CLOSE CLUSTER COLUMN
@@ -74,7 +74,7 @@ extern int lineno;             /* 4GL Source current line */
 %token  GLOBAL GLOBALS_TOK GO GOTO GRANT GREATER_OR_EQUAL GROUP
 
 /* To remove */
-%token  GREEN 
+%token  GREEN
 
 %token  HAVING HEADER HELP HEX HIDE HIGH HOLD HOUR
 
@@ -120,7 +120,7 @@ extern int lineno;             /* 4GL Source current line */
 %token  SET SHARE SHOW SKIP SLEEP SMALLFLOAT
 %token  SMALLINT SOME SPACES SQL_TOK SQLERROR SQLWARNING
 %token  STABILITY START STATISTICS STEP STOP 
-%token  SYNONYM 
+%token  SYNONYM
 
 %token  TAB TABLE TABLES TEMP TEXT THEN THROUGH THRU TIME TO TOP TOTAL
 %token  TRAILER TRANSACTION TRUE_TOK
@@ -175,7 +175,7 @@ extern int lineno;             /* 4GL Source current line */
 
 %type       <y_text>             fgl_simple_data_type
 %type       <y_text>             fgl_data_type
-%type       <y_text>             array_data_type         
+%type       <y_text>             array_data_type
 %type       <y_num>              cursor_specification
 %type       <y_text>             record_data_type        decimal    money  
 %type       <y_text>             datetime current        interval   varchar 
@@ -328,7 +328,7 @@ globals
 
 op_define_globals
 	 : GLOBALS_TOK                         { InGlobals = 1; InLimbo=0;   }
-		op_define_list END_TOK GLOBALS_TOK   
+		op_define_list END_TOK GLOBALS_TOK
 			{ InGlobals = 0; InLimbo=1; }
 	;
 
@@ -337,18 +337,30 @@ op_define_globals
  * @todo : Define another way to do this.
  */
 op_inc_globals
-	: INC_GLOBALS STRING                { InInclude = 1;GlobalsInclude($2);
-														 back_lineno = lineno-2;           }
+	: INC_GLOBALS STRING                
+	{
+		char *x=$2;
+		InInclude = 1;
+
+		//P4glDebug("xxGLOBALS file =%s=\n",$2);
+		//P4glDebug("xxGLOBALS file =%s=\n",x);
+		GlobalsInclude($2);
+		back_lineno = lineno-2;           
+	}
 		op_database
 		op_define_globals
 		op_define_list
+
+		// Do --NOT-- process functions that might be present in included file
 		op_function_list
-		END_TOK INC_GLOBALS               
-			{ InInclude = 0; lineno=back_lineno; }
+		END_TOK INC_GLOBALS
+		{
+			InInclude = 0; lineno=back_lineno;
+		}
 	;
 
 /*
- * Tem de se afectar um estado e nao fazer nada se estas estiverem 
+ * Tem de se afectar um estado e nao fazer nada se estas estiverem
  * num include
  */
 op_function_list
@@ -398,7 +410,7 @@ variable_list_declaration
 
 fgl_data_type
 	: fgl_simple_data_type                   { $$ = CpStr($1); }
-	| LIKE table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
+	| LIKE table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); }
 	| LIKE IDENTIFIER ':' table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
 	| array_data_type                        { $$ = CpStr($1); }
 	| record_data_type                       { $$ = CpStr($1); }
@@ -549,14 +561,29 @@ function_definition
 	;
 
 main
-		: MAIN                    { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
-		op_local_variables fgl_statement_list   {StInsertFunction(strdup("MAIN"),lineno+1,(NAME_LIST *)0);}
-		END_TOK MAIN                         { InLimbo = 1; }
+		: MAIN                    
+		{
+			//if (InInclude) {InLimbo = 0;return;}
+			StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;
+		}
+		op_local_variables fgl_statement_list
+		{
+			//if (InInclude) {return;}
+			StInsertFunction(strdup("MAIN"),lineno+1,(NAME_LIST *)0);
+		}
+		END_TOK MAIN
+		{
+			InLimbo = 1;
+		}
 		;
 
 /* Ver como sao os posicionais com execucao parcial de funcoes */
 function
-	: FUNCTION_TOK { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
+	: FUNCTION_TOK
+	{
+		//if (InInclude) {InLimbo = 0;return;}
+		StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;
+	}
 		function_def
 	;
 
@@ -633,7 +660,7 @@ op_delimiter
 	;
 
 load
-	: LOAD FROM STRING op_delimiter 
+	: LOAD FROM STRING op_delimiter
 			INSERT INTO table_name op_insert_column_list
 														 { StInsertTable($7);
 																StIncrementTable(); }
@@ -916,7 +943,7 @@ fgl_expression
 	;
 
 character_expression
-	: STRING        op_subscript op_character_format_list 
+	: STRING        op_subscript op_character_format_list
 		{ $$=""; }
 	| function_call op_subscript op_character_format_list 
 		{ $$=""; }
@@ -1193,7 +1220,7 @@ op_fgl_operand_format_list
 
 fgl_operand_format
 	: CLIPPED 
-	| USING STRING 
+	| USING STRING
 		//{printf("Using string \n");}
 	| wordwrap
 	| units
@@ -1463,7 +1490,7 @@ op_datetime_qualifier
   ;
 
 interval_value
-  : op_interval_sign STRING 
+  : op_interval_sign STRING
     {$$ = "";}
   | interval_literal 
     {$$ = "";}
@@ -1518,9 +1545,13 @@ function_call
 
 /*  ============================ Reports                */
 report
-  : REPORT               { StInsertLineFunction(lineno+1,REPORT_TYPE); InLimbo = 0; }
-  report_def    
-  
+  : REPORT               
+  { 
+	//if (InInclude) {InLimbo = 0;return;}
+	StInsertLineFunction(lineno+1,REPORT_TYPE); InLimbo = 0;
+  }
+  report_def
+
 report_def:
   IDENTIFIER '(' op_argument_list ')' 
       op_local_variables

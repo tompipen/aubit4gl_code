@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-05-12 11:29:58 $
- *   $Id: p4gl_lex.l,v 1.5 2003-05-12 11:29:58 saferreira Exp $
+ *   $Date: 2003-12-10 11:48:07 $
+ *   $Id: p4gl_lex.l,v 1.6 2003-12-10 11:48:07 afalout Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.5 2003-05-12 11:29:58 saferreira Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.6 2003-12-10 11:48:07 afalout Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -37,9 +37,12 @@ quoted_string                   \'([^'\n]|\\['\n])*\'
 
 "\""                        { readString();
                               /* Falta copiar a string */
-                              CopyToken(yytext,STRING); 
+                              CopyToken(yytext,STRING);
                               return(STRING); }
-{quoted_string}             { CopyToken(yytext,STRING); return(STRING); }
+
+{quoted_string}             { /* ECHO; */  CopyToken(yytext,STRING); return(STRING);  }
+{double_quoted_string}      { /* ECHO; */  CopyToken(yytext,STRING); return(STRING);  }
+
 
 [0-9]+                      { CopyToken(yytext,NUMBER); return(NUMBER); }
 
@@ -192,7 +195,7 @@ readString()
         }
         else
         {
-          str[j] = lookAheadCh; 
+          str[j] = lookAheadCh;
           j++;
         }
         break;

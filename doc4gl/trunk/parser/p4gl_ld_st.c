@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: afalout $
- * $Revision: 1.8 $
- * $Date: 2003-11-20 10:51:49 $
+ * $Revision: 1.9 $
+ * $Date: 2003-12-10 11:48:07 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -54,7 +54,7 @@ extern int lineno;
  * @todo : Send a name of a file where the values should be writed so the 
  *         memory allocation be obtained in the first pass.
  */
-void P4glPreProcessing(void) 
+void P4glPreProcessing(void)
 {
    char comand[512];
 
@@ -69,7 +69,7 @@ void P4glPreProcessing(void)
   /* Tem de se testar o exit status e um novo argumento para verificar se nao
     conseguiu resolver o include */
    if ( system(comand) )
-    P4glError(ERROR_EXIT,"Unable to Pre-process source (%s)\n",FicheiroInput);
+    P4glError(ERROR_EXIT,"p4gl: p4glpp was unable to Pre-process source (%s)\n",FicheiroInput);
 }
 
 /**
@@ -174,13 +174,13 @@ static void StInsertGlobalVariableDeclaration(
 static void StInsVarDeclaration(char *NomeVariavel,char *DataType,int linha)
 {
 
-  if ( InGlobals )                        /* Variavel global */
+  if ( InGlobals )                        /* global variable*/
   {
     StInsertGlobalVariableDeclaration(NomeVariavel,DataType,linha);
     return;
   }
 
-  if ( InLimbo )                          /* Variavel modular */
+  if ( InLimbo )                          /* modular variable */
   {
     StInsertModGlobVariableDeclaration(NomeVariavel,linha);
     return;
@@ -606,13 +606,17 @@ void StInsertFunction(char *functionName,int ultima_linha,NAME_LIST *arguments)
  */
 void StInsertLineFunction(int linha,int functionType)
 {
-  P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
-  P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
-  Variaveis = (VARS *)0;
-  IdxVariaveis=0;
-  FunctionStatementCount = 0;
-  /* Store the last documentation comment */
-  defineFunctionOcurred();
+  
+//  if ( ! InInclude ) /* Ignore function/report defined in included GLOBALS module */
+//  {
+	  P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
+	  P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
+	  Variaveis = (VARS *)0;
+	  IdxVariaveis=0;
+	  FunctionStatementCount = 0;
+	  /* Store the last documentation comment */
+	  defineFunctionOcurred();
+//  }
 }
 
 /**
@@ -887,7 +891,7 @@ void CleanP4gl(void)
 
 
 /*
- * Load in the abstract tree the existene of a GLOBALS instruction with
+ * Load in the abstract tree information abouta GLOBALS instruction with
  * file (not for globals explicit declaration).
  *
  * @param NmFicheiro The name of the file defined as GLOBALS file
@@ -896,9 +900,17 @@ void GlobalsInclude(char *NmFicheiro)
 {
   if ( P4glCb.idx_globais >= MAXGLOB )
     P4glError(ERROR_EXIT,"Include stack overflow\n");
+
+  //P4glDebug("1GLOBALS file >%s<\n",NmFicheiro);
   tiraAspas(NmFicheiro);
+  //P4glDebug("2GLOBALS file >%s<\n",NmFicheiro);
    strcpy(P4glCb.globais[P4glCb.idx_globais].nome_ficheiro,NmFicheiro);
+
+
+   //P4glDebug("GLOBALS file %d=>%s<\n",P4glCb.idx_globais,P4glCb.globais[P4glCb.idx_globais].nome_ficheiro);
+
   P4glCb.idx_globais++;
+
 }
 
 /**

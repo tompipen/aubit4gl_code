@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.11 2003-11-26 05:07:32 afalout Exp $
+# $Id: Makefile.in,v 1.12 2003-12-10 11:48:07 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -222,7 +222,7 @@ clean:
 	*.4go *.4gi *.4ge *.a  InsertP4glRep.c \
 	*.bak *.42m *.42r *.4gi *.4ae *.4qe loadform.h *.warn *.glb\
     loadform.c *.qo  *.sch *.err *.ao mkf.c mkf.h p4gl_lex.c p4pp_lex.c \
-    CommentLexer.c *.html p4gl_synt.c
+    CommentLexer.c *.html p4gl_synt.c tags *.txt *.unl
 
 
 
