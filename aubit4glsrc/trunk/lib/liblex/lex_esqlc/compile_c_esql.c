@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.67 2004-02-09 19:44:02 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.68 2004-02-15 09:45:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.67 2004-02-09 19:44:02 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.68 2004-02-15 09:45:02 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -522,6 +522,9 @@ print_open_session (char *s, char *v, char *user)
 	}	
 	}
 
+	//printc("if (A4GL_esql_db_open(-1)) {");
+	//print_close('D',"");
+	//printc("}");
   	printc ("EXEC SQL CONNECT TO  '%s' AS %s", v,s);
 	if (strlen(user)) {
 		printc("USER :_u USING :_p");
@@ -808,6 +811,9 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
       printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
       printc ("char *s;");
       printc ("EXEC SQL END DECLARE SECTION;\n");
+	printc("if (A4GL_esql_db_open(-1)) {");
+	print_close('D',"");
+	printc("}");
       printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
       printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
       printc ("}");

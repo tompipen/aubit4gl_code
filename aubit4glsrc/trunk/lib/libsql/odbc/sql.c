@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.74 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: sql.c,v 1.75 2004-02-15 09:45:03 mikeaubury Exp $
 #
 */
 
@@ -1336,9 +1336,10 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  * @return	0 if success (program terminates otherwise)
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GLSQL_init_connection (char *dbName_f)
 {
 char empty[10] = "None";
+char dbName[2048];
 char *u, *p;
 HDBC *hh = 0;
 int rc;
@@ -1346,7 +1347,8 @@ int rc;
 #ifdef SQLITE_DIRECT
 char a[128], b[128], tmp[2048];
 char *FullPathDBname;
-
+strcpy(dbName,dbName_f);
+A4GL_trim(dbName);
 
 	A4GL_debug("SQLITE special...");
 
@@ -1364,8 +1366,8 @@ char *FullPathDBname;
 
 	//See if user specified extension in his DATABASE statement:
 	A4GL_bname (dbName, a, b);
-    if (a[0] == 0) {
-        sprintf(tmp,"%s.db",dbName);
+    	if (a[0] == 0) {
+        	sprintf(tmp,"%s.db",dbName);
 		A4GL_debug("Added .db file name extension, dbName=%s",tmp);
 	}
 
@@ -1374,13 +1376,7 @@ char *FullPathDBname;
 
 	if (FullPathDBname) {
 		strcpy (tmp,FullPathDBname);
-        #ifdef __MINGW32__
-			//and this sprintf causes core dump on Linux:
-			sprintf(dbName,"%s",tmp);
-        #else
-			//this strdup is causing a core dump on MinGW:
-			dbName=strdup(tmp);
-		#endif
+		strcpy(dbName,tmp);
 		A4GL_debug("Found SQLite db in '%s'",dbName);
 	} else {
 		/*
