@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.41 2004-05-25 17:53:00 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.42 2004-06-01 20:31:36 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -72,6 +72,7 @@ int menu_callback (gpointer data);
 int A4GL_LL_hide_h_menu(ACL_Menu *menu);
 int A4GL_LL_disp_h_menu( ACL_Menu *menu);
 int A4GL_LL_menu_loop(ACL_Menu *menu);
+void A4GL_LL_screen_refresh(void);
 
 #define KEY_BUFFER_SIZE 256 
 int keybuffer[KEY_BUFFER_SIZE];
@@ -278,10 +279,19 @@ return FALSE;
  */
 void A4GL_create_console (void)
 {
+
+
   GtkWidget *scroll;
 
+  A4GL_debug("A4GL_create_console");
+
   console = (GtkWindow *) gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  if(!console)
+    A4GL_debug("gtk_window_new: NULL");
+
   scroll = gtk_scrolled_window_new (NULL, NULL);
+  if(!scroll)
+    A4GL_debug("gtk_scrolled_window_new: NULL");
 
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -307,6 +317,8 @@ void A4GL_create_console (void)
                             GDK_FUNC_RESIZE + GDK_FUNC_MOVE +
                             GDK_FUNC_MINIMIZE + GDK_FUNC_MAXIMIZE);
 */
+
+  A4GL_debug("console created");
 
 }
 
@@ -854,6 +866,7 @@ a=gdk_key;
 
 
 void A4GL_LL_gui_run_til_no_more(void ) {
+  A4GL_debug("A4GL_LL_gui_run_til_no_more");
   if (A4GL_screen_mode (-1))
     {
       while (gtk_events_pending ())
@@ -888,6 +901,8 @@ void A4GL_run_gtkrc(void) {
   char buff[255];
   char buff2[255];
 
+  A4GL_debug("A4GL_run_gtkrc");
+
   gtkrc=acl_getenv("GTKRC");
   if (gtkrc==0) {
 	gtkrc="";
@@ -903,9 +918,10 @@ void A4GL_run_gtkrc(void) {
 #else
       sprintf (buff, "%s", gtkrc);
 #endif
-//printf("Reading RC file :%s\n",buff);
 
+      A4GL_debug("Reading RC File (gtk_rc_parse('%s')", buff);
       gtk_rc_parse (buff);
+      A4GL_debug("done");
 }
 
 
@@ -916,6 +932,8 @@ void A4GL_LL_initialize_display(void ) {
   //char *gtkrc;
   //char buff[255];
   //char buff2[255];
+
+  A4GL_debug("A4GL_LL_initialize_display");
 
 #if GTK_CHECK_VERSION(2,0,0)
   gtk_disable_setlocale(); /* tell GTK to NOT call setlocale(LC_ALL,"")! */
@@ -929,7 +947,9 @@ void A4GL_LL_initialize_display(void ) {
   gtk_init (0, 0);
   if (acl_getenv("CELL_HEIGHT")) { if (strlen(acl_getenv("CELL_HEIGHT"))) gui_yheight=atoi(acl_getenv("CELL_HEIGHT")); }
   if (acl_getenv("CELL_WIDTH"))  { if (strlen(acl_getenv("CELL_WIDTH"))) gui_xwidth=atoi(acl_getenv("CELL_WIDTH")); }
-  	printf("--->%d %d\n",gui_xwidth,gui_yheight);
+
+  A4GL_debug("gui_xwidth:%d  gui_yheight:%d", gui_xwidth, gui_yheight);
+
   A4GL_run_gtkrc();
 
   A4GL_alloc_colors ();
@@ -2998,7 +3018,7 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
       f=menu->first;
       res=0;
       while(f) {
-        char a;
+        char a=0;
         int i;
         /* set a to the first non-space char in opt_title */
         for(i=0; i<sizeof(f->opt_title); i++)

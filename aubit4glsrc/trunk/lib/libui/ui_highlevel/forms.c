@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.10 2004-03-18 09:42:24 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.11 2004-06-01 20:29:13 whaslbeck Exp $";
 
 #include "forms.h"
 #include "hl_proto.h"
@@ -106,7 +106,7 @@ UILIB_A4GL_cr_window_form (char *namet,
   struct s_form_dets *form;
   void *win;
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
-	      name, iswindow, form_line, error_line, prompt_line, menu_line,
+	      namet, iswindow, form_line, error_line, prompt_line, menu_line,
 	      border, comment_line, message_line, attrib);
   strcpy (name, namet);
   A4GL_trim (name);
