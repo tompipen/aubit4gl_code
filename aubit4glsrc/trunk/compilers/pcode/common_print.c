@@ -42,6 +42,8 @@ void print_push_int(int n)  ;
 void print_push_long(int n)  ;
 void print_chk_err(int lineno) ;
 void print_push_char(int n)  ;
+void print_push_op(int n)  ;
+void print_set_stat(int n) ;
 static void print_command (long func_id, long pc, struct cmd *cmd);
 void  print_clr_err(void) ;
 

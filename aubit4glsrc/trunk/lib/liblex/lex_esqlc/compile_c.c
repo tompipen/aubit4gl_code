@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.161 2004-05-12 08:15:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.162 2004-05-13 18:24:26 whaslbeck Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.161 2004-05-12 08:15:57 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.162 2004-05-13 18:24:26 whaslbeck Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -100,6 +100,9 @@ int doing_cs (void);
 int get_validate_list_cnt(void) ;
 //void set_yytext (char *s);
 char *A4GL_get_important_from_clobber(char *s);
+void add_class_function_to_header (char *identifier, int params,char* is_static);
+char* get_reset_state_after_call(void);
+void print_reset_state_after_call(void);
 /*
 =====================================================================
 		                    Includes
