@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.41 2003-05-16 03:08:13 afalout Exp $
+# $Id: compile_c.c,v 1.42 2003-05-19 18:06:53 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1948,14 +1948,14 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   if (byname == 1)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind_constr ();
       printc (" /* */,0));\n");
     }
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 attr);
     }
 
@@ -2790,7 +2790,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind (ccc);
       printc
 	(",0)); if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
@@ -2798,7 +2798,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 fldlist);
       printc
 	("if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
@@ -2852,7 +2852,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
+    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),(void *)GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec);
   printc ("_fld_dr= -1;continue;\n");
   sprintf (buff2, "A4GL_inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec,
@@ -2891,7 +2891,7 @@ A4GL_get_formloop_str (int type)
 void
 print_scroll (char *flds, char *updown)
 {
-  printc ("A4GL_acli_scroll(A4GL_gen_field_chars(%s),%s);\n", flds, updown);
+  printc ("A4GL_acli_scroll(A4GL_gen_field_chars(%s),%s));\n", flds, updown);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.35 2003-05-18 11:06:21 mikeaubury Exp $
+# $Id: newpanels.c,v 1.36 2003-05-19 18:06:54 mikeaubury Exp $
 #*/
 
 /**
@@ -1675,6 +1675,7 @@ A4GL_cr_window_form (char *name,
   A4GL_chkwin();
   if (form_line == 0xff)
     {
+	A4GL_debug("Defaulting form_line from std_dbscr... %d",std_dbscr.form_line);
       form_line = std_dbscr.form_line;
     }
   if (menu_line == 0xff)
@@ -2514,6 +2515,8 @@ A4GL_find_ptr_debug (void *ptr)
 }
 
 
+#ifdef MOVED_TO_KEYS_C
+
 /**
  *
  * @todo Describe function
@@ -2521,6 +2524,7 @@ A4GL_find_ptr_debug (void *ptr)
 void
 A4GL_init_stddbscr (void)
 {
+A4GL_debug("init_stddbscr - form_line");
   std_dbscr.mode = 0;
   std_dbscr.colour = 0;
   std_dbscr.border = 0;
@@ -2543,6 +2547,7 @@ A4GL_init_stddbscr (void)
   std_dbscr.delkey = KEY_F (2);
 }
 
+#endif
 /**
  *
  * @todo Describe function

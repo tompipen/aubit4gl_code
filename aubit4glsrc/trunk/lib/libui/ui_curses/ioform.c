@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.23 2003-05-18 11:06:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.24 2003-05-19 18:06:54 mikeaubury Exp $
 #*/
 
 /**
@@ -96,7 +96,7 @@ int do_input_nowrap = 0;
 
 
 /** @todo Take this prototype definition for a header file */
-
+int A4GL_chkwin (void);
 void A4GL_bomb_out (void);
 extern char *A4GL_replace_sql_var (char *s);
 char *read_string_dup (FILE * ofile);
@@ -592,7 +592,7 @@ A4GL_form_loop (void *vs)
   s = vs;
   form = s->currform;
   A4GL_set_abort (0);
-
+  A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
   if (form != A4GL_get_curr_form ())
     {
       A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form ());
@@ -636,11 +636,13 @@ A4GL_form_loop (void *vs)
   if (abort_pressed)
     a = -1;
 
+  A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
 // Process the key..
   a = A4GL_proc_key (a, mform, s);
 
 
+  A4GL_debug ("form_loop2..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 // Looks like we're done
   if (a == 0)
     {
@@ -653,6 +655,7 @@ A4GL_form_loop (void *vs)
     }
 
 
+  A4GL_debug ("form_loop3..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
 // Looks like we've got something to do...
 
@@ -664,7 +667,11 @@ A4GL_form_loop (void *vs)
       return a;
     }
 
+  A4GL_debug ("form_loop4..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
+
   A4GL_int_form_driver (mform, a);
+
+  A4GL_debug ("form_loop5..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
   A4GL_mja_wrefresh (currwin);
 
@@ -960,7 +967,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
   mform = sio->currform->form;
   A4GL_debug ("CHeck fields 1 m=%d", m);
   form = sio->currform;
-  A4GL_debug ("CHeck fields 2 currentfield=", form->currentfield);
+  A4GL_debug ("CHeck fields 2 currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
   fprop = 0;
   if (m > 0)
@@ -973,8 +980,9 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
     }
 
 
-  A4GL_debug (" current field %p  currfield=%p m=%d", form->currentfield,
+  A4GL_debug (" current field %p  form says currfield=%p m=%d", form->currentfield,
 	 current_field (mform), m);
+  A4GL_debug("field_status(form->currentfield)=%d field_status(currfield)=%d",field_status(form->currentfield),field_status(current_field(mform)));
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
       /*
@@ -1410,6 +1418,7 @@ A4GL_set_fields (void *vsio)
 	  flg = 1;
 	}
 
+      set_field_status(field_list[a],0);
     }
 
   if (firstfield)
@@ -1780,6 +1789,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
 		    }
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
 		  flist[cnt++] = (FIELD *) k->field;
+		  //set_field_status((FIELD *)k->field, 0);
 		  A4GL_debug ("aa");
 		  ff = 1;
 		}
@@ -1792,6 +1802,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
       if (ff == 0)
 	{
 	  A4GL_exitwith ("Field name not found");
+	  return -1;
 	}
 
     }
@@ -1802,9 +1813,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
 
 
   *field_list = calloc (cnt + 1, sizeof (FIELD *));
-  A4GL_debug ("aa");
   memcpy (*field_list, flist, sizeof (FIELD *) * (cnt + 1));
-  A4GL_debug ("aa");
   return cnt - 1;
 }
 
@@ -1822,15 +1831,16 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
   struct struct_scr_field *fprop;
   FORM *mform;
 
-  A4GL_debug ("Do after field");
+  A4GL_debug ("Do after field status=%d",field_status(f));
   A4GL_debug ("do after field buffer set to '%s'", field_buffer (f, 0));
 
   a = A4GL_find_field_no (f, sio);
 
   if (a == -1)
     {
-      A4GL_bomb_out ();
       A4GL_exitwith ("after field : field number not found!");
+	return;
+      //A4GL_bomb_out ();
     }
 
   if (sio->mode != MODE_CONSTRUCT)
@@ -1884,6 +1894,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	    }
 	}
     }
+A4GL_debug("Done after field - field_status=%d",field_status(f));
 
 }
 
@@ -1948,6 +1959,8 @@ A4GL_find_field_no (FIELD * f, struct s_screenio *sio)
 #endif
   return -1;
 }
+
+
 
 
 /**
@@ -2961,6 +2974,7 @@ A4GL_int_form_driver (FORM * form, int a)
 
   field_pos = A4GL_get_curr_field_col (form);
   f = current_field (form);
+  A4GL_debug ("int_form_driver0..  currentfield=%p status = %d", f,field_status(f));
 
   if (f)
     {
@@ -2970,18 +2984,29 @@ A4GL_int_form_driver (FORM * form, int a)
     {
       strcpy (buff, "");
     }
+  A4GL_debug ("int_form_driver1..  currentfield=%p status = %d", f,field_status(f));
 
   A4GL_debug ("MJA Calling form_driver with %d for form %p", a, form);
 
   fd_ok = form_driver (form, a);
+  A4GL_debug ("int_form_driver2..  currentfield=%p status = %d", f,field_status(f));
   if (fd_ok != E_OK)
     {
       A4GL_debug ("Problem in calling form_driver %p %d - returns %d", form, a,
 	     fd_ok);
-      A4GL_exitwith ("Form driver complaint");
-      return;
+	switch (fd_ok) {
+		case E_SYSTEM_ERROR :
+		case E_BAD_STATE:
+		case E_BAD_ARGUMENT :
+		case E_NOT_POSTED :
+		case E_UNKNOWN_COMMAND :
+		case E_INVALID_FIELD :
+      			A4GL_exitwith ("Form driver complaint");
+      			return;
+	}
     }
 
+  A4GL_debug ("int_form_driver3..  currentfield=%p status = %d", f,field_status(f));
   if (f != current_field (form))
     {
       A4GL_debug ("Resetting focus");
@@ -2989,6 +3014,7 @@ A4GL_int_form_driver (FORM * form, int a)
       A4GL_gui_setfocus ((long) f);
     }
 
+  A4GL_debug ("int_form_driver4..  currentfield=%p status = %d", f,field_status(f));
   if (field_pos != A4GL_get_curr_field_col (form))
     {
       A4GL_debug ("Resetting position");
@@ -2996,6 +3022,7 @@ A4GL_int_form_driver (FORM * form, int a)
       A4GL_gui_setposition (field_pos);
     }
 
+  A4GL_debug ("int_form_driver5..  currentfield=%p status = %d", f,field_status(f));
   if (f)
     {
       strcpy (buff2, field_buffer (f, 0));
@@ -3005,6 +3032,7 @@ A4GL_int_form_driver (FORM * form, int a)
       strcpy (buff2, "");
     }
 
+  A4GL_debug ("int_form_driver6..  currentfield=%p status = %d", f,field_status(f));
   if (strcmp (buff, buff2) != 0)
     {
       A4GL_gui_setbuff (f, buff2);
@@ -3243,5 +3271,46 @@ A4GL_bomb_out ()
 }
 
 
+
+int A4GL_fgl_fieldtouched_input_ap(struct s_screenio *s, va_list *ap) {
+int a;
+int c;
+int b;
+FIELD **field_list;
+int found;
+c=A4GL_gen_field_chars_ap (&field_list,s->currform,ap);
+if (c>=0) {
+	for (a=0;a<=c;a++) {
+		found=0;
+		A4GL_debug("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",field_list[a],a,c,field_status(field_list[a]));
+
+		// Have a look to see if we are currently inputing this one...
+		for (b=0;b<=s->nfields;b++) {
+			if (field_list[a]==field_list[b]) found=1;
+		}
+		if (!found) {
+			// We don't appear to be...
+			A4GL_exitwith("Field is not currently being input");
+			return 0;
+		}
+	}
+	A4GL_debug("fieldtouched_input - checking field_status");
+
+	for (a=0;a<=c;a++) {
+		if (field_status(field_list[a])) {
+			A4GL_debug("fieldtouched Field status is set for %p",field_list[a]);
+			free(field_list);
+			return 1;
+		}
+	}
+	A4GL_debug("fieldtouched Field status not set for any..");
+	free(field_list);
+	return 0;
+	
+} else {
+	A4GL_exitwith("field_touched called with no fields...");
+	return 0;
+}
+}
 
 /* ================================ EOF ============================== */

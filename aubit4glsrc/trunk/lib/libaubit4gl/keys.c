@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.12 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: keys.c,v 1.13 2003-05-19 18:06:53 mikeaubury Exp $
 #
 */
 
@@ -223,6 +223,7 @@ A4GL_key_val2 (char *str)
 void
 A4GL_set_option_value (char type, int keyval)
 {
+A4GL_init_stddbscr ();
   A4GL_debug ("Set option value : %c %d", type, keyval);
   switch (type)
     {
@@ -233,6 +234,7 @@ A4GL_set_option_value (char type, int keyval)
       std_dbscr.error_line = keyval;
       break;
     case 'F':
+	A4GL_debug("Setting form_line (in keys.c) to %d",keyval);
       std_dbscr.form_line = keyval;
       break;
     case 'M':
@@ -278,6 +280,36 @@ A4GL_set_option_value (char type, int keyval)
       std_dbscr.sqlintr = keyval;
       break;
     }
+}
+
+
+void
+A4GL_init_stddbscr (void)
+{
+static int inited=0;
+if (inited) return;
+inited=1;
+A4GL_debug("init_stddbscr - form_line");
+  std_dbscr.mode = 0;
+  std_dbscr.colour = 0;
+  std_dbscr.border = 0;
+  std_dbscr.inpattr = 0;
+  std_dbscr.dispattr = 0;
+  std_dbscr.nextkey = A4GLKEY_F (4);
+  std_dbscr.prevkey = A4GLKEY_F (3);
+  std_dbscr.acckey = 27;
+  std_dbscr.helpkey = 22;
+  std_dbscr.input_wrapmode = 0;
+  std_dbscr.comment_line = -2;
+  std_dbscr.form_line = 3;
+  std_dbscr.menu_line = 1;
+  std_dbscr.message_line = 2;
+  std_dbscr.prompt_line = 1;
+  std_dbscr.fcnt = 0;
+  std_dbscr.insmode = 0;
+  std_dbscr.error_line = -1;
+  std_dbscr.inskey = A4GLKEY_F (1);
+  std_dbscr.delkey = A4GLKEY_F (2);
 }
 
 /* ============================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.17 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: load.c,v 1.18 2003-05-19 18:06:53 mikeaubury Exp $
 #
 */
 
@@ -274,6 +274,108 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
     }
 
   A4GL_debug ("Insert string=%s & prepared\n", insertstr);
+
+  while (1)
+    {
+      lineno++;
+      fgets (loadbuff, LOADBUFFSIZE - 1, p);
+      if (feof (p))
+	{
+	  A4GL_debug ("Got to end of the file");
+	  break;
+	}
+      stripnlload (loadbuff, delim);
+      A4GL_debug ("Read line '%s'", loadbuff);
+      nfields = find_delims (delim);
+      A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+
+      if (nfields != cnt)
+	{
+	  sprintf (buff, "%d", cnt);
+	  A4GL_set_errm (buff);
+	  A4GL_exitwith
+	    ("Number of fields in load file does not equal the number of columns %s");
+	  return 0;
+	}
+
+      A4GLSQL_set_status (0, 1);
+      if (ibind)
+	{
+	  free (ibind);
+	}
+      ibind = malloc (sizeof (struct BINDING) * cnt);
+      for (a = 0; a < cnt; a++)
+	{
+	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+	  ibind[a].ptr = colptr[a];
+	  ibind[a].dtype = 0;
+	  ibind[a].size = strlen (colptr[a]);
+	}
+      A4GL_debug ("EXECUTE SQL cnt=%d", cnt);
+      A4GLSQL_execute_sql ("load", cnt, ibind);
+
+      if (a4gl_status != 0)
+	{
+	  sprintf (buff, "%d", cnt);
+	  A4GL_set_errm (buff);
+	  A4GL_exitwith ("Error reading load file at line %s");
+	}
+    }
+  fclose (p);
+  return 1;
+}
+
+/**
+ * Implementation of the 4gl load instruction.
+ *
+ * Open the file, split the fields and insert them in the table
+ * (of the database of course).
+ *
+ * @param fname The file name
+ * @param delims The column delimiters. If the string is bigger then 1 only
+ *               the first character is used as delimiter.
+ * @param tabname The table name where we want to insert the values
+ * @param ... Column list names as varargs
+ * @return The sucess or not of the operation:
+ *    - 0 : Error executing the load
+ *    - 1 : OK
+ */
+int
+A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
+{
+  va_list ap;
+  char *colname;
+  int cnt = 0;
+  char delim;
+  int nfields;
+  int lineno = 0;
+  char *insertstr;
+  char filename[256];
+  FILE *p;
+  struct BINDING *ibind = 0;
+  char buff[255];
+  int a;
+  delim = delims[0];
+
+  A4GL_debug ("In load_data");
+  strcpy (filename, fname);
+  A4GL_trim (filename);
+  p = A4GL_mja_fopen (filename, "r");
+
+  if (p == 0)
+    {
+      A4GL_exitwith ("Could not open file for load");
+      return 0;
+    }
+  cnt=0;
+
+  for (a=0;a<strlen(sqlstmt);a++) { if (sqlstmt[a]=='?') cnt++; }
+
+  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1)
+    {
+      A4GL_exitwith ("Internal Error : Error generating insert string for load");
+      return 0;
+    }
 
   while (1)
     {

@@ -40,6 +40,7 @@ GTK
 
 UI
 	Implement proper message stack (current way doesn't work properly)
+	Add fldbuf & infield for multiple fields
 	
 
 Other unimplemented functions

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.123 2003-05-17 08:30:23 mikeaubury Exp $
+# $Id: mod.c,v 1.124 2003-05-19 18:06:50 mikeaubury Exp $
 #
 */
 
@@ -1516,7 +1516,7 @@ push_menu_title (char *s)
 void
 push_blockcommand (char *cmd_type)
 {
-
+  //printf("push_blockcommand %s\n",cmd_type);
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.51 2003-05-15 07:10:38 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.52 2003-05-19 18:06:52 mikeaubury Exp $
 #
 */
 
@@ -976,7 +976,7 @@ extern "C"
 
   /* ===================== from builtin.c =================== */
 
-  int A4GL_fgl_fieldtouched (char *fieldname, int fno, ...);
+  int A4GL_fgl_fieldtouched (void *i,int n, ...);
   void A4GL_close_database (void);
 
 /* These two need a4gl in lower case... */

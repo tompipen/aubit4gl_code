@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.29 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: curslib.c,v 1.30 2003-05-19 18:06:54 mikeaubury Exp $
 #*/
 
 /**
@@ -3333,6 +3333,7 @@ A4GL_set_option_value (char type, int keyval)
       std_dbscr.error_line = keyval;
       break;
     case 'F':
+	debug("Setting form_line to %d",keyval);
       std_dbscr.form_line = keyval;
       break;
     case 'M':

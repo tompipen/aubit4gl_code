@@ -453,6 +453,10 @@ column_constraint_ss:
 		sprintf($<str>$," %s ",$<str>1);
 		$<sql_string>$=strdup($<str>$);
 	}
+	| UNIQUE {
+		sprintf($<str>$," %s ",$<str>1);
+		$<sql_string>$=strdup($<str>$);
+	}
 	| references_specification {
 		$<sql_string>$=strdup($<str>1);
 	}

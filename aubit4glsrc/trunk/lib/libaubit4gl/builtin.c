@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.37 2003-05-16 03:08:11 afalout Exp $
+# $Id: builtin.c,v 1.38 2003-05-19 18:06:53 mikeaubury Exp $
 #
 */
 
@@ -832,48 +832,6 @@ aclfgl_showhelp (int helpnumber)
 P12.ao: In function `main':
 P12.ao(.text+0x3c): undefined reference to `def_quit'
 */
-
-
-
-/**
- * The FIELD_TOUCHED( ) operator tests whether the user has entered or
- * edited a value in a specified field or list of fields of the current 4GL 
- * form. (This operator can only appear within CONSTRUCT, INPUT, and INPUT
- * ARRAY statements.)
- * 
- * Usage:
- * input by name pr_globals.vouch_date, ...
- * ...
- * if not field_touched(year_num) then
- * 
- * 
- * 
- * Built-in functions that access field buffers and keystroke buffers:
- * 
- * Built-In Funtion 		Description
- * FIELD_TOUCHED(field)	Returns TRUE when the user has made a change to 
- *   screen field.
- * GET_FLDBUF(field-list) Returns the character values of the contents of 
- *   one or more fields.
- * FGL_LASTKEY( ) Returns an INTEGER value corresponding to the most recent 
- *   keystroke.
- * INFIELD(field) Returns TRUE if field is the name of the current screen field.
- * FGL_GETKEY
- * FGL_KEYVAL( )
- * 
- *
- * See Informix 7.3 manual
- *
- * @param fieldname
- * @param fieldno
- */
-int
-A4GL_fgl_fieldtouched (char *fieldname, int fieldno, ...)
-{
-  /* fieldname should be array */
-  A4GL_exitwith ("NIY");
-  return 0;
-}
 
 
 

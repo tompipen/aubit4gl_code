@@ -284,7 +284,7 @@ sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
 $<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
 }
 | rep_agg  {
-   if (!in_command("REPORT")) {
+   if (!isin_command("REPORT")) {
    a4gl_yyerror("This can only be done in a report!");
    YYERROR;
 } 
@@ -293,7 +293,7 @@ insql=0;
 }  
 | GROUP {insql=1;set_ingroup();} rep_agg  {
 	char buff[256];
-      if (!in_command("REPORT")) {
+      if (!isin_command("REPORT")) {
         a4gl_yyerror("This can only be done in a report!");YYERROR;
       } insql=0; 
 	A4GL_lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
@@ -613,11 +613,21 @@ addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
 	$<ptr>$=A4GL_new_expr($<str>$);
 }
 | FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET 
-	{ sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldtouched(%s,0,0));",$<str>3); 
+	{ 
+	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   		a4gl_yyerror("field_touched can only be used in an input or construct");
+   		YYERROR;
+	}
+	sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io,sizeof(_inp_io),%s,0,0));",$<str>3); 
 	$<ptr>$=A4GL_new_expr($<str>$);
 }
 | NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET 
-	{ sprintf($<str>$,"A4GL_push_int(!A4GL_fgl_fieldtouched(%s,0,0));",$<str>3); 
+	{ 
+	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   		a4gl_yyerror("field_touched can only be used in an input or construct");
+   		YYERROR;
+	}
+	sprintf($<str>$,"A4GL_push_int(!A4GL_fgl_fieldtouched(_inp_io,sizeof(_inp_io),%s,0,0));",$<str>3); 
 	$<ptr>$=A4GL_new_expr($<str>$);
 }
 | builtin_funcs
