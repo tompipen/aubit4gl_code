@@ -164,7 +164,7 @@ do
 		continue
 	fi
 
-	if [ "$bao" = $a -o "$bao2" = $a ]
+	if [ "$bao.ao" = $a -o "$bao2.ao" = $a ]
 	then
 		ofiles="$ofiles $a"
 		shift

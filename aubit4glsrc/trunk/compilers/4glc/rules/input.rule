@@ -68,10 +68,9 @@ field_command :
 		A4GL_add_event(-12,"");
 		print_befaft_field_1("DO_BEFORE_DELETE");
 	} commands { print_befaft_field_2(); }
-	| BEFORE_INSERT  {
-		A4GL_add_event(-14,"");
-		print_befaft_field_1("DO_BEFORE_INSERT");
-	} commands { print_befaft_field_2(); }
+	| BEFORE_INSERT  { A4GL_add_event(-14,""); print_befaft_field_1("DO_BEFORE_INSERT"); } commands { print_befaft_field_2(); }
+	| BEFORE_INSERT_DELETE  { A4GL_add_event(-17,""); print_befaft_field_1("DO_BEFORE_INSERT_DELETE"); } commands { print_befaft_field_2(); }
+	| AFTER_INSERT_DELETE  { A4GL_add_event(-18,""); print_befaft_field_1("DO_AFTER_INSERT_DELETE"); } commands { print_befaft_field_2(); }
 	| AFTER_DELETE  {
 		A4GL_add_event(-13,"");
 		print_befaft_field_1("DO_AFTER_DELETE");

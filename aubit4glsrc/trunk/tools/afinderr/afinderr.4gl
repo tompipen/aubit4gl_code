@@ -211,8 +211,9 @@ code
 			if(fread(indexrec,1,8,infile)< 8) ok = 0;
 			if(ok ) {
 				memcpy(&msgno,indexrec,2);
-				msgno=ntohs(msgno);
-				//msgno = indexrec[0]*256 + indexrec[1];
+				//msgno=ntohs(msgno);
+				//@todo - FIX THIS...
+				msgno = indexrec[0]*256 + indexrec[1];
 			}
 			else
 			{
