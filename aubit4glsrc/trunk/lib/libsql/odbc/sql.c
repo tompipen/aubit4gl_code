@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.46 2003-01-14 06:31:10 psterry Exp $
+# $Id: sql.c,v 1.47 2003-01-17 23:25:25 psterry Exp $
 #
 */
 
@@ -105,7 +105,7 @@ int 			ODBC_exec_stmt		(HSTMT hstmt);
 int 			ODBC_exec_select	(HSTMT hstmt);
 int 			ODBC_exec_sql		(UCHAR * sqlstr);
 int 			ODBC_disconnect		(void);
-void			ODBC_set_dbms_type	(void);
+void			ODBC_set_dbms_info	(void);
 int 			sqlerrwith 		(int rc, HSTMT h);
 int 			chk_need_blob	(int rc,HSTMT hstmt)  ;
 int 			chk_getenv		(char *s,int a) ;
@@ -123,8 +123,6 @@ char* 			ret_sql_err 	(void);
 int 			print_err 		(HDBC hdbc, HSTMT hstmt);
 long 			describecolumn (HSTMT hstmt, int colno, int type);
 int 			set_stmt_options (char *cursname, char *opt, char *val);
-
-char *			sqlstrdup		(char *sql);
 
 #ifndef DONTINCLUDEDATASOURCES
 	#ifdef PGODBC
@@ -152,7 +150,7 @@ extern char 	lasterrorstr[1024];
 static char 	sess_name[32] = "default";
 static char 	OldDBname[64] = "";
 static char	dbms_name[64] = "";
-static int	dbms_type = -1;
+static char	dbms_dialect[64] = "";
 static HSTMT 	hstmtGetColumns = 0; 	/** Statement used to iterate getting column information */
 static char 	cn[256]; 				/** Column name */
 static int 		dt;
@@ -575,11 +573,8 @@ A4GLSQL_prepare_sql (char *s)
   debug ("prepare_sql : %s", s);
   sid = malloc (sizeof (struct s_sid));
   debug ("Malloced sid=%p", sid);
-  sid->select = sqlstrdup (s);
+  sid->select = strdup (s);
   debug ("Set select");
-
-  convert_sql( dbms_type, sid->select );
-
   sid->ibind = 0;
   sid->ni =  count_queries(s);
   sid->obind = 0;
@@ -683,7 +678,7 @@ A4GLSQL_prepare_select (
   struct s_sid *sid;
   int rc;
   sid = malloc (sizeof (struct s_sid));
-  sid->select = sqlstrdup (s);
+  sid->select = strdup (s);
   sid->ibind = ibind;
   debug ("sid->ni=%d", ni);
   sid->ni = ni;
@@ -693,8 +688,6 @@ A4GLSQL_prepare_select (
 #ifdef DEBUG
 	/* {DEBUG} */ {debug ("Before alloc sid->hstmt=%p", sid->hstmt);}
 #endif
-
-  convert_sql( dbms_type, sid->select );
 
   A4GLSQL_set_status (0, 1);
 
@@ -741,10 +734,8 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
   struct s_sid *sid;
   debug ("prepare_glob_sql '%s' %p %d", s, ibind, ni);
   sid = malloc (sizeof (struct s_sid));
-  sid->select = sqlstrdup (s);
+  sid->select = strdup (s);
   sid->ibind = ibind;
-
-  convert_sql( dbms_type, sid->select );
 
 #ifdef DEBUG
 	/* {DEBUG} */ { debug ("ni=%d ibind=%p", ni, ibind); }
@@ -1551,7 +1542,7 @@ chk_rc (rc, 0, "SQLConnect");
     }
 
   A4GLSQL_set_status(0,1);
-  ODBC_set_dbms_type();
+  ODBC_set_dbms_info();
 
   rc = SQLSetConnectOption (hdbc, SQL_ASYNC_ENABLE, 0);
   A4GLSQL_set_status(0,1);
@@ -1560,16 +1551,17 @@ chk_rc (rc, 0, "SQLConnect");
 }
 
 /**
- * Gets the name of the currently connected DBMS.
- * eg. "Informix", "SAP DB", "PostgreSQL"
+ * Returns the name of the SQL dialect used
+ * by the current connected database
+ * eg. "INFORMIX", "SAPDB", "POSTGRESQL"
  *
- * @return  pointer to name
+ * @return  dialect as char string
  */
-int
-A4GLSQL_dbms_type( void )
+char *
+A4GLSQL_dbms_dialect( void )
 {
   /* this is set in make_connection */
-  return dbms_type;
+  return dbms_dialect;
 }
 
 /**
@@ -1586,25 +1578,26 @@ A4GLSQL_dbms_name( void )
 }
 
 /**
- * Sets the dbms_name / dbms_type variables, for the current session.
+ * Sets the dbms_name / dbms_dialect variables, for current session.
  * Should always be called by make_connection() and set_conn().
  *
  * @return Always 0.
  */
 void
-ODBC_set_dbms_type(void)
+ODBC_set_dbms_info(void)
 {
   int rc;
   short len;
 
   rc = SQLGetInfo(hdbc, SQL_DBMS_NAME, dbms_name, (short) 64, &len);
 
-  dbms_type = DBMS_OTHER;
-  if ( strncasecmp(dbms_name,"informix",8)==0) { dbms_type = DBMS_INFORMIX; }
-  if ( strncasecmp(dbms_name,"sapdb",5)==0)    { dbms_type = DBMS_SAPDB; }
-  if ( strncasecmp(dbms_name,"postgr",6)==0)   { dbms_type = DBMS_POSTGRESQL; }
-  if ( strncasecmp(dbms_name,"oracl",5)==0)    { dbms_type = DBMS_ORACLE; }
-  if ( strncasecmp(dbms_name,"mysql",5)==0)    { dbms_type = DBMS_MYSQL; }
+  strcpy(dbms_dialect,"");
+  if ( strncasecmp(dbms_name,"informix",8)==0) {strcpy(dbms_dialect,"INFORMIX"); }
+  if ( strncasecmp(dbms_name,"sapdb",5)==0)  {strcpy(dbms_dialect,"SAPDB"); }
+  if ( strncasecmp(dbms_name,"postgr",6)==0) {strcpy(dbms_dialect,"POSTGRESQL"); }
+  if ( strncasecmp(dbms_name,"oracl",5)==0)  {strcpy(dbms_dialect,"ORACLE"); }
+  if ( strncasecmp(dbms_name,"mysql",5)==0)  {strcpy(dbms_dialect, "MYSQL"); }
+  /* ( later, this will be set from user-editable config files ) */
 }
 
 /**
@@ -2840,7 +2833,7 @@ A4GLSQL_set_conn (char *sessname)
 	  strcpy (sess_name, "default");
 	}
     }
-ODBC_set_dbms_type();
+ODBC_set_dbms_info();
 return 1;
 }
 
@@ -2874,7 +2867,8 @@ A4GLSQL_close_session (char *sessname)
     {
       A4GLSQL_set_status (0, 1);
       free (ptr);
-      A4GLSQL_set_conn ("default");
+      if ( strcmp(sessname,"default") != 0 )
+           A4GLSQL_set_conn ("default");
     }
   else
     {
@@ -3073,9 +3067,7 @@ FILE *fout;
     }
   new_hstmt (&hstmt);
 
-  sql2 = sqlstrdup(sql1);
-
-  convert_sql( dbms_type, sql2 );
+  sql2 = strdup(sql1);
 
   rc=SQLExecDirect (hstmt, sql2, SQL_NTS);
   chk_rc (rc, hstmt, "unload_data");
@@ -3317,33 +3309,6 @@ A4GLSQL_initsqllib(void)
 {
     A4GLSQL_make_connection(0,0,0);
     return 1;
-}
-
-/**
- * Make a copy of a SQL statement string, but with extra space
- * in case of any syntax conversions.  Somewhat like strdup().
- * The copy is malloc'ed and padded with spaces to its new length.
- * 
- * @param	pointer to original sql
- * @return	pointer to copy
- */
-char *
-sqlstrdup( char *sql )
-{
- char *p = NULL;
- int n1, n2;
-
-  /* the copy is about 1.5 times the length of the original */
-  n1 = strlen(sql);
-  n2 = 20 + (n1 * 3 / 2);
-
-  /* malloc space for the new string, copy it and pad with spaces */
-  if ( ( p = malloc(n2+1) ) )
-  {
-      p = memcpy(memset(p,' ',n2), sql, n1);
-      p[n2] = '\0';
-  }
-  return p;
 }
 
 /* ================================ EOF ================================ */
