@@ -1,4 +1,6 @@
-opt_attributes:	/*empty*/ {strcpy($<str>$,"0");}
+opt_attributes:	/*empty*/ {
+		debug("Using default attribute of WHITE");
+		sprintf($<str>$,"%d",attr_code("WHITE"));}
 		| attributes_def {strcpy($<str>$,$<str>1);}
 ;
 

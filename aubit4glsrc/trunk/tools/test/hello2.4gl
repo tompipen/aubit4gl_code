@@ -7,9 +7,9 @@ define zz integer
 	let str="Hello  World"
 	let x=1
 	open window w1 at 10,30 with 4 rows,20 columns attribute(border)
-	open window w2 at 14,32 with 4 rows,20 columns attribute(border,reverse,magenta)
+	open window w2 at 14,32 with 4 rows,20 columns attribute(border,reverse)
 
-
+	sleep 1
 	let y=0
 	while true
 		set pause mode on

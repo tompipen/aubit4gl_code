@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.47 2002-03-17 09:36:12 afalout Exp $
+# $Id: mod.c,v 1.48 2002-03-22 15:47:05 mikeaubury Exp $
 #
 */
 
@@ -64,7 +64,6 @@ extern int in_define;
 #include "compiledefs.h"
 #include "aubit_lib.h"
 
-
 char pklist[2048] = "";
 char upd_using_notpk[5000] = "";
 int upd_using_notpk_cnt = 0;
@@ -75,8 +74,7 @@ char xwords[256][256];
 int word_cnt = 0;
 #endif
 
-//should not be here, makes building whithout curses impossible:
-#include <curses.h>
+//#include <curses.h>
 #define USE_PRINTCOMMENT
 extern int menu_cnt;
 extern int yylineno;
@@ -2490,21 +2488,31 @@ void reset_attrib (struct form_attr * form_attrib)
   form_attrib->attrib = 0;
 }
 
+#ifdef NOLONGERUSED
 static int colour_code (int a)
 {
   int z, b;
   z = 1;
+
+  return a;
+
 #ifdef WIN32
   return COLOR_PAIR (a + 1);
 #else
   return COLOR_PAIR (a + 1);
 #endif
 }
+#endif
 
 int attr_code (char *s)
 {
-  debug ("Decoding colour %s\n", s);
-  if (strcmp (s, "BLACK") == 0)
+ 
+ debug ("Decoding colour %s\n", s);
+
+  return get_attr_from_string(s);
+
+#ifdef REMOVED_BECAUSE_OF_CURSES
+  if (strcmp (s, "BLACK") == 0) 
     return colour_code (COLOR_BLACK);
   if (strcmp (s, "YELLOW") == 0)
     return colour_code (COLOR_YELLOW);
@@ -2534,6 +2542,7 @@ int attr_code (char *s)
     return colour_code (COLOR_BLACK);
   if (strcmp (s, "DIM") == 0)
     return A_DIM;
+#endif
   return 0;
 }
 

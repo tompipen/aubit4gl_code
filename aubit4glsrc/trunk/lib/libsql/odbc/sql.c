@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.23 2002-03-16 12:00:04 afalout Exp $
+# $Id: sql.c,v 1.24 2002-03-22 15:47:20 mikeaubury Exp $
 #
 */
 
@@ -1824,7 +1824,7 @@ void  set_sqlca (HSTMT hstmt, char *s, int reset)
       debug("Calling SQLError %p %p %p rc=%d",henv,hdbc,hstmt,rc);
       rc = SQLError (henv, hdbc, hstmt, s1, &errno, s2, 500, &errno2);
       debug("rc=%d\n",rc);
-
+	if (errno>0 && errno!=100) errno=0-errno;
 #ifdef DEBUG
 /* {DEBUG} */
       {
@@ -1844,8 +1844,10 @@ void  set_sqlca (HSTMT hstmt, char *s, int reset)
       if ((strcmp (s1, "00000") != 0 && errno == 0)||(s1[0]=='0'&&s1[1]=='1'))
 	{
 	  debug("Got %s as state",s1);
+	if (errno==0) {
 	  errno = -101;
 	  errno2 = 0;
+	}
 	}
 
 #ifdef DEBUG
@@ -2093,9 +2095,10 @@ int ODBC_exec_select (HSTMT hstmt)
   rc = SQLExecute (hstmt);
   rc=chk_need_blob(rc,hstmt);
   chk_rc (rc, hstmt, "SQLExecute3");
+  if (rc!=0)  return 0;
 
   //set_sqlca (hstmt, "ODBC_exec_select : After SQLExecute", 0);
-
+  if (rc!=0)  return 0;
   rc = SQLNumResultCols (hstmt, &nresultcols);
   chk_rc (rc, hstmt, "SQLNumResultCols");
 #ifdef DEBUG
