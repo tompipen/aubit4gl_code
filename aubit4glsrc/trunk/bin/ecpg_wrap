@@ -121,7 +121,7 @@ do
 		continue
 	fi
 
-	if [ $bo.o = $a -o "$bo2.o" = $a -o $b4go = $a -o "$b4go2" = $a ]
+	if [ "$bo.o" = $a -o "$bo2.o" = $a -o "$b4go.4go" = $a -o "$b4go2.4go" = $a ]
 	then
 		ofiles="$ofiles $a"
 		shift
