@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2004-01-23 10:13:41 mikeaubury Exp $
+# $Id: Makefile,v 1.20 2004-02-01 01:09:00 afalout Exp $
 #
 
 ROOT    		=../..
@@ -33,6 +33,9 @@ ROOT    		=../..
 #All stuff common to more then one Aubit compiler make file is there:
 include 		${ROOT}/incl/Makefile-common
 
+#Include rules for compiling 4GL source code using Aubit compiler
+include 	${ROOT}/incl/a4gl.mk
+
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
@@ -40,9 +43,11 @@ include 		${ROOT}/incl/Makefile-common
 ################
 #Objects that originate in 4GL code
 OBJS_4GL		= \
-				asql.ao connection_menu.ao pick.ao database.ao main_menu.ao \
-				query.ao session.ao table.ao execute.ao paginate.ao cedit.ao \
-				filehand.ao load.ao
+				asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT} \
+				pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
+				query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
+				execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
+				filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT}
 
 ################
 #Objects that do not originate in 4GL code - version independent
@@ -50,8 +55,8 @@ OBJS_C			=lex.yy.o simple_parse.o dir.o
 
 ################
 #Version specific objects
-OBJS_PG_ONLY	=postgres.ao
-OBJS_IFX_ONLY	=infx.ao
+OBJS_PG_ONLY	=postgres${A4GL_OBJ_EXT}
+OBJS_IFX_ONLY	=infx${A4GL_OBJ_EXT}
 
 ################
 #All objects that will need celaning, without prefix
@@ -80,17 +85,17 @@ A4GL_USE_DATABASE_STMT=Y
 #Export to environment
 export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS
 
-ALL				=qryfrm.afr.dat
+ALL				=qryfrm${A4GL_FRM_EXT}
 
 ################
 #Decide what to compile by default
 ifneq "${PG_ESQLC}" "no"
 	ifeq "${HAVE_PGSQL_LIB}" "yes"
-		ALL		+=asql_p.4ae
+		ALL		+=asql_p${A4GL_EXE_EXT}
     endif
 endif
 ifneq "${IFMX_ESQLC}" "no"
-	ALL			+=asql_i.4ae
+	ALL			+=asql_i${A4GL_EXE_EXT}
 endif
 
 ################
@@ -125,7 +130,7 @@ COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 LINKLIBS		=
 #-lUI_TUI
 
-.phony: install
+.phony: install all clean
 
 ## ==================================================================
 ##                              Targets
@@ -142,8 +147,8 @@ all : ${ALL} install
 
 ################
 #Target to make asql Informix version
-asql_i.4ae: A4GL_LEXDIALECT=INFORMIX
-asql_i.4ae: ${OBJS_IFX}
+asql_i${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFORMIX
+asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
 	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -153,8 +158,8 @@ asql_i.4ae: ${OBJS_IFX}
 
 ################
 #Target to make asql PostgreSQL version
-asql_p.4ae: A4GL_LEXDIALECT=POSTGRES
-asql_p.4ae: ${OBJS_PG}
+asql_p${A4GL_EXE_EXT}: A4GL_LEXDIALECT=POSTGRES
+asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -164,8 +169,8 @@ asql_p.4ae: ${OBJS_PG}
 
 ################
 #Target to make form file used in both versions
-qryfrm.afr.dat: qryfrm.per
-	A4GL_FORMTYPE=GENERIC; A4GL_PACKER=PACKED; ${ROOT}/bin/fcompile $^
+#qryfrm.afr.dat: qryfrm.per
+#	A4GL_FORMTYPE=GENERIC; A4GL_PACKER=PACKED; ${ROOT}/bin/fcompile $^
 
 ## ==================================================================
 ##                              Sub-targets
@@ -178,7 +183,7 @@ lex.yy.c: parse.l
 
 ################
 #Rule to make objects from 4GL file - Informix version
-ifx_%.ao: %.4gl
+ifx_%${A4GL_OBJ_EXT}: %.4gl
 	${COMP4GL}
 
 ################
@@ -194,7 +199,7 @@ install:
 	${CP} ${ALL} ${ROOT}/bin
 #	ln -s ${ROOT}/bin/asql_p.4ae ${ROOT}/bin/asql
 	${RM} ${AUBITDIR}/bin/asql	
-	ln -s ${AUBITDIR}/bin/asql_p.4ae ${AUBITDIR}/bin/asql
+	ln -s ${AUBITDIR}/bin/asql_p${A4GL_EXE_EXT} ${AUBITDIR}/bin/asql
 	@echo "asql installed."
 
 deinstall:
@@ -206,10 +211,12 @@ deinstall:
 ## ==================================================================
 
 run.i:
-	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; A4GL_PACKER=PACKED;./asql_i.4ae
+	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
+	A4GL_PACKER=PACKED;./asql_i${A4GL_EXE_EXT}
 
 run.p:
-	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; A4GL_PACKER=PACKED;./asql_p.4ae
+	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
+	A4GL_PACKER=PACKED;./asql_p${A4GL_EXE_EXT}
 
 ## ==================================================================
 ##                              clean

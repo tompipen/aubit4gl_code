@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.43 2003-12-10 09:33:14 afalout Exp $
+#	 $Id: a4gl.mk,v 1.44 2004-02-01 01:09:00 afalout Exp $
 
 ##########################################################################
 #
@@ -46,9 +46,20 @@ endif
 
 #------- end of common stuff ------------
 
+ifeq "${MAKEFILE_COMMON_INCLUDED}" "1"
+	#We are in the Aubit compier source code tree - so aubit-config was probably
+	#not installed yet - and therefore not in the path. So we will have to provide
+	#full path to it. If we don't, we will a) not get any value returned, and 
+	#b) we will get garbage [ (@(@ to be specific ] when running a makefile 
+	AUBIT_CONFIG=${AUBITDIR}/bin/aubit-config
+else
+	AUBIT_CONFIG=aubit-config
+endif
+
+
 #Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
 #aubit-config is not installed yet. How can I prevent this?
-A4GL_CURR_PACKER			:=$(shell aubit-config A4GL_PACKER 2> /dev/null)
+A4GL_CURR_PACKER			:=$(shell ${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null)
 ifeq "${A4GL_CURR_PACKER}" ""
 	A4GL_CURR_PACKER=PACKED
 endif
