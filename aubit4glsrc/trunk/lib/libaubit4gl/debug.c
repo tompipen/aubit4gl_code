@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
+# $Id: debug.c,v 1.4 2002-05-08 13:42:05 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,10 @@ int debug_full (char *fmt,...);
 #endif
 
 FILE *debugfile = 0;
-int nodebug = 0;
+#define DEBUG_NOTREQUIRED 2
+#define DEBUG_REQUIRED 1
+#define DEBUG_DONTKNOW 0
+int nodebug = DEBUG_DONTKNOW;
 char g_fname[256];
 int g_lineno;
 
@@ -65,16 +68,16 @@ debug_full (char *fmt,...)
 {
   va_list args;
   static char buff[4096];
-  if (nodebug == 2)
+  if (nodebug == DEBUG_NOTREQUIRED)
     return;
 
-  if (nodebug == 0)
+  if (nodebug == DEBUG_DONTKNOW)
     {
       if (strlen(acl_getenv ("DEBUG")))
-        nodebug = 1;
+        nodebug = DEBUG_REQUIRED;
       else
         {
-          nodebug = 2;
+          nodebug = DEBUG_NOTREQUIRED;
           return;
         }
     }
