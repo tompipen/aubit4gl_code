@@ -1,0 +1,51 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	88.09.19.07.29.05;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: timeval.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH TIMEVAL 3S "Sphinx Internal System"
+.SH NAME
+timeval \(em given `hh:mm:ss', calculate number of seconds past midnight
+.SH SYNOPSIS
+function \fBtimevalue\fP(t)
+ define
+  t char(8),
+  n integer
+ ...
+ return n
+.br
+end function
+.SH DESCRIPTION
+\fBTimevalue\fP converts a string in `hh:mm:ss' format into a
+number of seconds past midnight.
+This helps if it is necessary to quantify the difference between
+two times; simple comparisons can be done on the strings.
+.SH FILES
+timeval.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+19th September 1988
+@

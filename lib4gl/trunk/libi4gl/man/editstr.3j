@@ -1,0 +1,48 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	89.09.12.21.35.12;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: editstr.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: EDIT_STRING -- s/str/rep/g
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH EDIT_STRING 3S "Sphinx Informix Tools"
+.SH NAME
+edit_string \(em replace pattern by another pattern in string 
+.SH SYNOPSIS
+LET new = \fBedit_string\fP(old, sub, rep)
+.SH DESCRIPTION
+\fBEdit_string\fP does a global search-and-replace operation on its argument
+\fBold\fP, replacing instances of \fBsub\fP by \fBrep\fP.
+It returns a new string with the substituions made.
+.SH FILES
+editstr.c
+.SH BUGS
+It does not handle patterns; just literal strings.
+.br
+I4GL does not allow strings of more than 512
+characters to be passed by functions.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+12th September 1989
+@

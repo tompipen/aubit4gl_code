@@ -1,0 +1,161 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	88.09.09.12.41.20;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.09.09.12.31.51;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Change title
+@
+text
+@'\" @@(#)$Id: pushhelp.man,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: I4GL Customisation Library
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH PUSHHELP 3S "Sphinx Informix Tools"
+.SH NAME
+push_helpfile \(em save current helpfile on stack
+.br
+pop_helpfile \(em make top helpfile on stack the current helpfile
+.SH SYNOPSIS
+call \fBpush_helpfile\fP()
+.sp
+call \fBpop_helpfile\fP()
+.SH DESCRIPTION
+Normally, there is no way of determining the current help file so
+that a different help file can be used temporarily and the
+original one then restored.
+These routines can be used to save the current help file and
+subsequently to restore saved help files as the current help file.
+They implement a stack which is 10 files deep.
+.SH "EXAMPLE"
+.sp
+.ps 10
+.ft CW
+.nf
+FUNCTION lib_job()
+
+	CALL push_helpfile()
+	OPTIONS HELP FILE "libhelp.iem"
+	CALL do_something()
+	CALL pop_helpfile()
+
+END FUNCTION
+.fi
+.ps
+.ft
+.sp
+.SH INSTALLATION
+Using this requires some non-trivial fiddling with the installed
+version of Informix 4GL.
+.P
+There are two components to this system:
+.sp
+.in +2
+pushhelp.c \(em the source code which implements the helpfile stack.
+.sp
+sqlfm.tail \(em the patch to sqlfm.h
+.sp
+.in
+There are two changes to make:
+.sp
+1.	$INFORMIXDIR/incl/sqlfm.h must be modified to call
+the routines in pushhelp.c instead of the ISI routines.
+The routines in pushhelp.c call the orthodox routines after some
+minimal (but important) jiggery-pokery.
+.sp
+2.	$INFORMIXDIR/lib/libforms.a must be modified to contain
+the pushhelp.o supplied.
+.sp
+The makefile supplied has several targets.
+The more important one is \fIinstall\fP, which compiles the code,
+preserves a copy of the library as libforms.old and a copy of the
+header as sqlfm.old, and then compiles the code supplied in
+pushhelp.c. and adds it to libforms.a and edits sqlfm.h and adds
+its code.
+.P
+The other important target is \fIuninstall\fP which undoes the
+install process (but only if the original (.old) files still exist).
+.P
+To test the code, run:
+.sp
+make install
+.br
+make test
+.br
+phlpchk.4ge
+.sp
+The program does not use any database.
+The program should show a help message which is clearly
+identified as coming from message file `phlpchk1.msg',
+followed by a message coming from message file `phlpchk2.msg',
+and then the original message again.
+If this test does not work, run:
+.sp
+make uninstall
+.sp
+This will undo the changes made when the system was installed.
+.SH FILES
+pushhelp.c
+.br
+pushhelp.mk
+.br
+phlpchk.4gl
+.br
+phlpchk1.msg
+.br
+phlpchk2.msg
+.SH BUGS
+There is no error checking beyond validating the limits of the stack.
+If more than 10 windows are pushed, subsequent calls to
+\fBpush_window\fP are ignored until there is some space.
+If there are no windows on the stack, \fBpop_window\fP does not
+do anything.
+Neither routine checks that it is called with the correct number
+of arguments.
+Neither routine returns any indication of whether they worked or not.
+.P
+These routines were developed on Xenix/386 System V version 2.2.2
+with I4GL 1.10.00C.
+It may work in other environments; there is no guarantee that it
+will work, even in the test environment.
+.P
+The installation assumes that the two files
+$INFORMIXDIR/lib/libforms.old and $INFORMIXDIR/incl/sqlfm.old are
+the original files installed with I4GL.
+If this system is uninstalled, it also uninstalls any other
+library enhancements provided by Sphinx.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+9th September 1988
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d4 1
+a4 1
+.TH ADJINARR 3S "Sphinx Informix Tools"
+@

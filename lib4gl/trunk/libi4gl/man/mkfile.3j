@@ -1,0 +1,106 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	89.08.02.17.04.10;	author john;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	88.07.27.18.57.20;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	88.03.03.13.59.54;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.03.03.12.05.38;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Remove KPI-isms
+@
+text
+@'\" @@(#)$Id: mkfile.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- Create temporary file name
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH MKFILENAME 3S "Sphinx Informix Tools"
+.SH NAME
+mkfilename \(em create unique tempoarary file name
+.SH SYNOPSIS
+\fBfunction mkfilename(template)\fP
+.br
+define
+    template    char(64)
+    return template
+.SH DESCRIPTION
+\fBMkfilename\fP creates a unique file name using the template
+passed as an argument.
+This template must include six `X's in a row, e.g.
+\&``\*c/usr/tmp/trqXXXXXX.tmp\*d'' \(em these will be converted
+into a unique name with the process number and a letter.
+.P
+Beware: if you call this function twice in a row with the same
+template and without creating the file in between, it will
+return the same name twice.
+.P
+This function also checks whether the template
+does contain six `X's and supplies a default name if it does not.
+It also uses the default if it is called with the wrong number of
+arguments.
+.SH "SEE ALSO"
+mktemp(3)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+3rd March 1988
+@
+
+
+1.3
+log
+@Add .ds fC line
+@
+text
+@d3 2
+a4 2
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH MKFILENAME 3K "KPI Database Project"
+@
+
+
+1.2
+log
+@Detabbed
+@
+text
+@d3 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 2
+a11 2
+	template	char(64)
+	return template
+@

@@ -1,0 +1,50 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	88.09.25.22.45.32;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: doname.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- Remove dots from name
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH DONAME 3S "Sphinx Internal System"
+.SH NAME
+doname \(em ensure that name contains no dots
+.SH SYNOPSIS
+function \fBdoname\fP(s)
+ define
+  s char(512)
+ ...
+ return(s)
+.br
+end function
+.SH DESCRIPTION
+This function obliterates any dots `.' in the string supplied, 
+ensuring that there is at least one space between the characters 
+which were separated by the dots.
+It was probably intended for use while validating peoples names.
+.SH BUGS
+It may not have any uses in real life.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988
+@

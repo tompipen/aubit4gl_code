@@ -1,0 +1,52 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	88.11.24.17.48.12;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: centre.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH CENTRE 3S "Sphinx Informix Tools"
+.SH NAME
+centre \(em centre a string
+.SH SYNOPSIS
+function \fBcentre\fP(s, i)
+ define
+  s char(80),
+  i integer
+ ...
+ return s
+.br
+end function
+.SH DESCRIPTION
+\fBCentre\fP takes the string passed as an argument and
+centres it in a field whose width is specified by the
+second argument.
+This is useful in reports for getting headings and other
+strings centred.
+.SH FILES
+centre.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+24th November 1988
+@

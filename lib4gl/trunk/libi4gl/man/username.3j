@@ -1,0 +1,107 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	89.08.02.17.04.17;	author john;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	88.07.27.18.57.38;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	88.03.02.13.21.43;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.02.26.17.51.29;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Remove KPI-isms
+@
+text
+@'\" @@(#)$Id: username.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual Page: General Library -- Username/Usertype
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH USERNAME 3S "Sphinx Informix Tools"
+.SH NAME
+username \(em login name of user
+.sp
+usertype \(em type of user
+.SH SYNOPSIS
+\fBfunction username()\fP
+.sp
+\fBfunction usertype()\fP
+.SH DESCRIPTION
+The C version is used because it does not access the database to
+find the user name, whereas the I4GL version has to do a
+\s-2SELECT\s0 statement to find out.
+The function returns an 8-character string.
+.P
+\fBUsertype\fP function returns a single character which is `D'
+if the user is a DBA, `R' if the user has resource permission on
+the database and `C' if they have connect permission.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988
+@
+
+
+1.3
+log
+@Add .ds fC line
+@
+text
+@d3 2
+a4 2
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH USERNAME 3K KPI Database Project"
+a13 2
+\fBUsername\fP has been written twice, once in I4GL and once in
+C.
+a16 3
+One program (the KPI Main Menu) does not access the KPI database,
+but does need the user name (for the log file), so the C version
+will be used.
+@
+
+
+1.2
+log
+@If applicable, tabs removed
+@
+text
+@d3 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+a5 1
+username	\(em login name of user
+d7 1
+a7 1
+usertype	\(em type of user
+@

@@ -1,0 +1,275 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	92.07.24.10.42.22;	author johnl;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	89.08.02.15.49.09;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	88.07.27.18.57.25;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.04.21.15.28.45;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Document set_rmargin.  Document get_xxxxxx.
+Add compilation section.  Add notes about extra versions.
+Add notes that RDS is supported!!!!
+@
+text
+@'\" @@(#)$Id: report.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- Report Configuration
+.ds fC "@@(#)$Id: report.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+.TH REPORT 3S "JLSS Informix Tools"
+.SH NAME
+set_output \(em Dynamically reconfigure dimensions of I4GL report
+.SH SYNOPSIS
+.ft B
+function set_plength(i)
+.br
+define i integer
+.sp
+function set_tmargin(i)
+.br
+define i integer
+.sp
+function set_bmargin(i)
+.br
+define i integer
+.sp
+function set_lmargin(i)
+.br
+define i integer
+.sp
+function set_rmargin(i)
+.br
+define i integer
+.sp
+function set_output()
+.ft R
+.ft B
+function get_plength()
+.sp
+function get_tmargin()
+.sp
+function get_bmargin()
+.sp
+function get_lmargin()
+.sp
+function get_rmargin()
+.ft R
+.SH DESCRIPTION
+These functions can be used to dynamically reconfigure the layout
+of the page of an Informix 4GL report.
+The example program shown below illustrates how they should be used.
+.br
+.ft CW
+.ps 10
+.vs 12
+.nf
+.so rejig.4gl
+.br
+.fi
+.ft
+.ps
+.vs
+The functions \fIset_plength\fP, \fIset_tmargin\fP,
+\fIset_bmargin\fP, \fIset_lmargin\fP and \fIset_rmargin\fP may be called
+anywhere inside an I4GL program.
+The function \fIset_output\fP will have no effect except within a report.
+It is recommended that \fIset_output\fP be used in the \s-2FIRST
+PAGE HEADER\s0 control block, but it may be used in any control block.
+.P
+After the function \fIset_output\fP is called, it invalidates all the settings;
+to change the settings in a second report, you must call the
+set-routines again.
+There is no requirement that all the routines are called (or even any of them).
+.P
+The functions \fIget_plength\fP, \fIget_tmargin\fP,
+\fIget_bmargin\fP, \fIget_lmargin\fP and \fIget_rmargin\fP may be called
+anywhere inside an I4GL program.
+If page dimensions have been set using the set-routines, then the corresponding
+value is returned; otherwise, the corresponding default value is returned.
+After \fIset_output\fP has been called, the values returned will be
+the default values again; if your report needs to know what its dimensions will
+be, it should use the get-routines before calling \fIset_output\fP.
+.SH COMPILATION
+If compiling for use with compiled Informix-4GL, no special flags are needed.
+If compiling for use with I4GL-RDS, include -DI4GL_RDS on the command line.
+The details of building the functions into the \*Cfglgo\*D
+and \*Cfgldb\*D are given in the corresponding Informix manuals.
+The necessary definitions for \*cfgiusr.c\*d are:
+.br
+.ft CW
+.ps 10
+.vs 12
+.nf
+#ifdef SET_REPORT
+extern  int set_output();   /* 0 */
+extern  int get_rmargin();  /* 0 */
+extern  int get_tmargin();  /* 0 */
+extern  int get_bmargin();  /* 0 */
+extern  int get_lmargin();  /* 0 */
+extern  int get_plength();  /* 0 */
+extern  int set_rmargin();  /* 1 */
+extern  int set_tmargin();  /* 1 */
+extern  int set_bmargin();  /* 1 */
+extern  int set_lmargin();  /* 1 */
+extern  int set_plength();  /* 1 */
+#endif /* SET_REPORT */
+
+#ifdef SET_REPORT
+    { "set_output",     set_output,     0   },
+    { "get_rmargin",    get_rmargin,    0   },
+    { "get_tmargin",    get_tmargin,    0   },
+    { "get_bmargin",    get_bmargin,    0   },
+    { "get_lmargin",    get_lmargin,    0   },
+    { "get_plength",    get_plength,    0   },
+    { "set_rmargin",    set_rmargin,    1   },
+    { "set_tmargin",    set_tmargin,    1   },
+    { "set_bmargin",    set_bmargin,    1   },
+    { "set_lmargin",    set_lmargin,    1   },
+    { "set_plength",    set_plength,    1   },
+#endif /* SET_REPORT */
+.br
+.fi
+.ft
+.ps
+.vs
+.SH WARNINGS
+This code was designed and tested on an ATT&T 3B2/400 running 
+UNIX System V Release 3.0 using Informix-4GL version 1.10.00C.
+It has since been tested on a number of other environments (including Versions
+1.10.03, 4.00 and 4.10) on a number of platforms, and has been found to work.
+However, the code cannot be guaranteed on any platform or version of I4GL.
+It is completely unsupported code.
+.SH BUGS
+The top margin set by \fBset_tmargin\fP does not take effect
+until the second page of output.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Marlin Prowell
+.br
+JLSS
+.br
+24th July 1992
+@
+
+
+1.3
+log
+@Tidy up; add warning about RDS
+@
+text
+@d3 2
+a4 2
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH REPORT 3S "Sphinx Informix Tools"
+d6 1
+a6 1
+set_output \(em Dynamically reconfigure shape of I4GL report
+d17 4
+d25 1
+a25 1
+function set_bmargin(i)
+d31 11
+d49 1
+a49 1
+.vs 14
+d57 5
+a61 5
+The functions \fBset_plength\fP, \fBset_tmargin\fP,
+\fBset_bmargin\fP and \fBset_lmargin\fP may be called anywhere
+inside an I4GL program.
+The function \fBset_output\fP will have no effect except within a report.
+It is recommended that \fBset_output\fP be used in the \s-2FIRST
+d64 1
+a64 1
+After the function \fBset_output\fP is called, it invalidates all the settings;
+d66 1
+a66 1
+other routines again.
+d68 52
+d122 5
+a126 6
+UNIX System V Release 3.0 using Informix 4GL version 1.10.00C.
+It is not guaranteed to work even in this environment, though
+preliminary testing indicates that it does work.
+.P
+There is no way of including this into
+Informix-4GL Rapid Development System custom runners.
+d133 1
+a133 1
+Software Solutions
+d135 1
+a135 1
+Sphinx Ltd.
+d137 1
+a137 1
+21st April 1988
+@
+
+
+1.2
+log
+@Add .ds fC line
+@
+text
+@d4 1
+a4 1
+.TH REPORT 3K "KPI Database Project"
+d30 1
+a30 2
+The example program shown below illustrates how they should be
+used.
+d36 1
+a36 1
+.so ../../src/lib/rejig.4gl
+d45 1
+a45 2
+The function \fBset_output\fP will have no effect except within a
+report.
+d47 1
+a47 2
+PAGE HEADER\s0 control block, but it may be used in any control
+block.
+d49 1
+a49 2
+After the function \fBset_output\fP is called, it invalidates
+all the settings;
+d52 1
+a52 2
+There is no requirement that all the routines are called (or even
+any of them).
+d58 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+@

@@ -1,0 +1,95 @@
+'\" @@(#)$Id: adjinarr.man,v 1.1 2002-06-14 05:03:45 afalout Exp $
+'\" @@(#)Manual page: I4GL Customisation Library
+.ds fC "Last changed: $Date: 2002-06-14 05:03:45 $
+.TH ADJINARR 3S "Sphinx Informix Tools"
+.SH NAME
+set_max_dimension \(em set maximum usable input array dimension
+.SH SYNOPSIS
+\fBcall set_max_dimension(n)\fP
+.SH DESCRIPTION
+Normally, there is no way of limiting an \s-2INPUT ARRAY\s0
+statement so that the user sees an array of only 15 (say) rows,
+even though the array is declared with dimension 20 (say).
+By calling \fBset_max_dimension\fP, it is possible to limit the
+number of rows available during an \s-2INPUT ARRAY\s0 statement.
+.SH INSTALLATION
+Using this requires some non-trivial fiddling with the installed
+version of Informix 4GL.
+.P
+There are two components to this system:
+.sp
+.in +2
+adjinarr.ec \(em the source code which implements
+`variable dimension' arrays.
+.sp
+sqlfm.tail \(em the patch to sqlfm.h
+.sp
+.in
+There are two changes to make:
+.sp
+1.	$INFORMIXDIR/incl/sqlfm.h must be modified to call
+the routines in adjinarr.ec instead of the ISI routines.
+The routines in adjinarr.ec call the orthodox routines after some
+minimal (but important) jiggery-pokery.
+.sp
+2.	$INFORMIXDIR/lib/libforms.a must be modified to contain
+the adjinarr.o supplied.
+.sp
+The makefile supplied has several targets.
+The more important one is \fIinstall\fP, which compiles the code,
+preserves a copy of the library as libforms.old and a copy of the
+header as sqlfm.old, and then compiles the code supplied in
+adjinarr.ec. and adds it to libforms.a and edits sqlfm.h and adds
+its code.
+.P
+The other important target is \fIuninstall\fP which undoes the
+install process (but only if the original (.old) files still exist).
+.P
+To test the code, run:
+.sp
+make install
+.br
+make test
+.br
+adjchk.4ge
+.sp
+The program does not use any database.
+This program should first show seven initialised rows of data and the
+user should be constrained to just those seven rows.
+Type \s-2ESCAPE\s0 to exit from the \s-2INPUT ARRAY\s0.
+The second \s-2INPUT ARRAY\s0 should show 12 initialised rows of
+data and the user should be constrained to only enter data in the
+first seventeen rows.
+If this test does not work, run:
+.sp
+make uninstall
+.sp
+This will undo the changes made when the system was installed.
+.SH FILES
+adjinarr.ec
+.br
+adjinarr.mk
+.br
+adjchk.4gl
+.br
+adjchk.per
+.SH BUGS
+This was developed on I4GL version 2.10.00B.
+It is not guaranteed to work on any version of I4GL.
+.sp
+\s-2DO NOT NEST INPUT ARRAY STATEMENTS WHEN USING SET_MAX_DIMENSION\s0.
+If two \s-2INPUT ARRAY\s0 statements are invoked so that one is
+nested inside the other and if either or both use \fBset_max_dimension\fP,
+the results are unpredictable but unlikely to be what is required.
+There is no easy way to fix this.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+24th August 1988
+
+.TH ADJINARR 3K "KPI Database Project"
+It is not guaranteed to work on any other version of I4GL.
+23rd June 1988
+

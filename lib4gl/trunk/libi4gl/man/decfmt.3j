@@ -1,0 +1,108 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	89.08.02.17.04.05;	author john;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	88.07.27.18.57.13;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	88.03.02.13.21.46;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.03.02.13.15.42;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Remove KPI-isms
+@
+text
+@'\" @@(#)$Id: decfmt.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: General Library -- Decimal format
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH DECFORMAT 3S "Sphinx Informix Tools"
+.SH NAME
+decformat \(em format I4GL \s-2DECIMAL\s0 numbers
+.SH SYNOPSIS
+\fBfunction decformat(s, v)\fP
+.br
+define
+    s   char(10),
+    v   decimal,
+    t   char(32)
+.br
+return t
+.SH DESCRIPTION
+\fPDecformat\fP takes the value \fBv\fP off the I4GL stack and
+formats it using the standard C function \fBsprintf\fP and the
+format string \fBs\fP.
+The result is returned as a string.
+The value passed may be an I4GL \s-2DECIMAL\s0, \s-2MONEY\s0,
+\s-2FLOAT\s0 or \s-2SMALLFLOAT\s0 value (an integer type would
+probably work too).
+.P
+A typical format string would be:
+.eS
+    "%13.6e"  -1.234567e-06
+.eE
+.SH "SEE ALSO"
+sprintf(3)
+.SH BUGS
+\fBDecformat\fP pops the value into a C double:
+this means that the full
+precision of I4GL \s-2DECIMAL\s0 types is not available.
+The best that can be expected is about 16 digits accuracy.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+2nd March 1988
+@
+
+
+1.3
+log
+@Add .ds fC line
+@
+text
+@d3 2
+a4 2
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH DECFORMAT 3K "KPI Database Project"
+@
+
+
+1.2
+log
+@If applicable, tabs removed
+@
+text
+@d3 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@@

@@ -1,0 +1,51 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	90.05.21.14.50.50;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: scrndump.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: Screen Dump Facility
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH DO_SCREEN_DUMP 3S "Sphinx UNIX Tools"
+.SH NAME
+do_screen_dump \(em produse screen dump
+.SH SYNOPSIS
+CALL do_screen_dump()
+.SH DESCRIPTION
+\fBDo_screen_dump\fP is a front-end to the basic screen dump utility
+documented in screendump(3S).
+It pops up a screen-wide window at the top of the screen (it exactly overlies
+the menu box in an FGLBLD program) and asks the user to type the name of the
+file which should receive the screen image.
+If the user leaves the field blank, it generates a name (using
+\fBmkfilename\fP(3S)) and lets the user see what it is, waiting for
+a character to be hit before doing the screen dump.
+If the user interrupts the initial input, no screen dump is done.
+.SH FILES
+scrndump.4gl, scrndump.4pr
+.SH "SEE ALSO"
+screendump(3S)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st May 1990
+@

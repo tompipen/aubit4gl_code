@@ -1,0 +1,57 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	89.12.15.10.30.27;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@{
+	@@(#)$Id: interr.old,v 1.1 2002-06-14 05:03:46 afalout Exp $
+	@@(#)Sphinx informix Tools: Error handling
+	@@(#)Record internal and fatal errors
+	@@(#)Assumes use of std_options
+	@@(#)Author: JL
+}
+
+{ Record irrecoverable error }
+FUNCTION fatal_error(s)
+
+	DEFINE
+		s		CHAR(512),
+		sccs	CHAR(1)
+
+	LET sccs = "@@(#)$Id: interr.old,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+	CALL logerror(s)
+	ERROR "A serious internal error has occurred -- please report to DBA"
+	SLEEP 5
+	EXIT PROGRAM 1
+
+END FUNCTION {fatal_error}
+
+{ Record error which can be survived }
+FUNCTION internal_error(s)
+
+	DEFINE
+		s	CHAR(512)
+
+	CALL logerror(s)
+	ERROR "An internal error has been detected -- please report to DBA"
+	SLEEP 3
+
+END FUNCTION {internal_error}
+@

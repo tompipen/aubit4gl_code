@@ -1,0 +1,138 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	89.08.02.17.04.15;	author john;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	88.07.27.18.57.33;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	88.03.02.13.21.40;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	88.02.26.17.51.20;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Remove KPI-isms
+@
+text
+@'\" @@(#)$Id: translog.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual Page: General Library -- Transaction handling
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH TRANSACTIONS 3S "Sphinx Informix Tools"
+.SH NAME
+begin_work \(em start a transaction
+.br
+commit_work \(em commit a transaction
+.br
+rollback_work \(em rollback a transaction
+.br
+end_work \(em end a transaction
+.br
+translog \(em is there a transaction log on the database
+.SH SYNOPSIS
+\fBfunction begin_work()\fP
+.sp
+\fBfunction commit_work()\fP
+.sp
+\fBfunction rollback_work()\fP
+.sp
+\fBfunction end_work(opstatus)
+.br
+define
+    opstatus integer
+.sp
+\fBfunction translog()\fP
+.SH DESCRIPTION
+\fBBegin_work\fP tests whether there is a transaction log on the
+database and executes a \s-2BEGIN WORK\s0 statement if there is
+a transaction log.
+\fBCommit_work\fP tests whether there is a transaction log on the
+database and executes a \s-2COMMIT WORK\s0 statement if there is
+a transaction log.
+\fBRollback_work\fP tests whether there is a transaction log on the
+database and executes a \s-2ROLLBACK WORK\s0 statement if there is
+a transaction log.
+\fBEnd_work\fP tests whether the opstatus variable is \s-2TRUE\s0
+(non-zero) or \s-2FALSE\s0 (zero) and executes
+\fBrollback_work\fP if it is non-zero and \fBcommit_work\fP
+otherwise.
+.P
+These routines call on the low-level (but usable) routine
+\fBtranslog\fP which tests whether there is a transaction log on
+the database.
+The test is only done once and the result is stored so that after
+the first test, the routine does not access the database again.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988
+@
+
+
+1.3
+log
+@Add .ds fC line
+@
+text
+@d3 2
+a4 2
+.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+.TH TRANSACTIONS 3K "KPI Database Project"
+@
+
+
+1.2
+log
+@If applicable, tabs removed
+@
+text
+@d3 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+a5 1
+begin_work	\(em start a transaction
+d7 1
+a7 1
+commit_work	\(em commit a transaction
+d9 1
+a9 1
+rollback_work	\(em rollback a transaction
+d11 1
+a11 1
+end_work	\(em end a transaction
+d13 1
+a13 1
+translog	\(em is there a transaction log on the database
+d24 1
+a24 1
+	opstatus integer
+@

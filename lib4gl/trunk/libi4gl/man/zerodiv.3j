@@ -1,0 +1,45 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	90.05.21.14.50.52;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@'\" @@(#)$Id: zerodiv.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
+'\" @@(#)Manual page: Zero Division
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+.TH ZERO_DIVIDE 3S "Sphinx Informix Tools"
+.SH NAME
+zero_divide \(em do division safely
+.SH SYNOPSIS
+LET quotient = zero_divide(dividend, divisor)
+.SH DESCRIPTION
+If both the dividend and the divisor are zero, \fBzero_divide\fP returns zero;
+if the divisor is zero, it returns \s-2NULL\s0; otherwise it returns the
+quotient (the dividend divided by the divisor).
+.P
+This is typically used in reports to prevent trouble.
+.SH FILES
+zerodiv.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st May 1990
+@

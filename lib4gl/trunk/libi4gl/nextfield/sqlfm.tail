@@ -1,0 +1,33 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	88.09.23.16.39.43;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*
+	@@(#)$Id: sqlfm.tail,v 1.1 2002-06-14 05:03:46 afalout Exp $
+	@@(#)Copyright Sphinx Ltd. 1988
+	@@(#)Allow for variable NEXT FIELD
+	This set of definitions should be included in $INFORMIXDIR/incl/sqlfm.h
+*/
+#ifndef EF_V_NEXT_FIELD
+#define EF_V_NEXT_FIELD
+#define next_field(n)	next_v_field(n, &_sqicb)
+#endif /* EF_V_NEXT_FIELD */
+@
