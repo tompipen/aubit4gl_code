@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.25 2002-08-24 07:02:49 afalout Exp $
+# $Id: Makefile-install.mki,v 1.26 2002-08-25 09:25:15 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -42,6 +42,7 @@
 ##                    install targets
 ## ==================================================================
 
+#######################################
 #Prepare and install global aubitrc
 install.aubitrc:
 ifneq "${INFILE}" ""
@@ -67,6 +68,7 @@ else
 	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
 endif
 
+#######################################
 #Create links for bin programs to location of Aubit bynary installation:
 install.links: deinstall.bin.links
 	${MKPATH} ${BIN_INSTALL_LINK}
@@ -85,6 +87,7 @@ install.links: deinstall.bin.links
 #	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
 #endif
 
+#######################################
 install.libs.links: deinstall.libs.links
 	${LN_S} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 
@@ -92,6 +95,7 @@ install.libs.links: deinstall.libs.links
 ##                    deinstall targets
 ## ==================================================================
 
+#######################################
 #we could just drop the whole $(INSTALL_DIR) tree, but this is not very safe;
 #in the case user placed some files there (stupido!) he will hate us
 #nevertheless, so we will remove file-by-file:
@@ -101,18 +105,8 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build \
 	@echo "Aubit compiler de-installed."
 	@echo "Config file in ${AUBITETC} was NOT deleted."
 
-xxx:
-#	@echo ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
-#	${FROMROOT} ${FROMINCL} ${FROMIDE}
-	@echo ${FROMDOCS}
-	@echo $(DOC_DEST)
-	@echo $(DOC_FILES)
 
-xx:
-	@echo $(ETC_FILES_LEGACY)
-	@echo ${FROMETC}
-
-
+#######################################
 #Deinstall all installed files:
 deinstall.files:
 #Run clean from makefiles first:
@@ -127,6 +121,7 @@ deinstall.files:
 	${RM} $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
 	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
 
+#######################################
 #delete installation tree (only if directories are now empty):
 deinstall.tree:
 	-rmdir $(INSTALL_DIR)/bin
@@ -139,7 +134,7 @@ deinstall.tree:
 	-rmdir $(INSTALL_DIR)/docs
 	-rmdir $(INSTALL_DIR)
 
-
+#######################################
 #Whay do we need LD_LIBRARY_PATH any more? For external libs out of path, like
 #Informix ESQL/C, ODBC, GTK...
 #Remove entries added to system configuration for libraries paths
@@ -159,14 +154,17 @@ else
 	@echo FIXME: remove stuff from .bashrc
 endif
 
+#######################################
 #remove links to libraries:
 deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 
+#######################################
 #remove links to binaries:
 deinstall.bin.links:
 	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
 
+#######################################
 #stuff left over from automatic nightly builds (aubitbuild.sh):
 deinstall.build:
 	${RM} $(INSTALL_DIR)/*.htm $(INSTALL_DIR)/*.tmp $(INSTALL_DIR)/*.html
@@ -176,6 +174,7 @@ deinstall.build:
 ##                    other targets
 ## ==================================================================
 
+#######################################
 test:
 	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
 	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
@@ -183,6 +182,7 @@ test:
 #	export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
 	export AUBITGUI=CONSOLE; tools/test/test_build
 
+#######################################
 ldconfig:
 ifneq "${ADD_LD_LIBRARY_PATH}" ""
 ifneq "${LDCONFIG}" "no"
@@ -213,3 +213,8 @@ endif
 
 
 #</block for binary install Makefile ===================================>
+
+
+aa:
+	@echo ${NAMEVERBLD}
+	@echo $(SOURCETARNAME)

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.7 2002-08-13 11:56:47 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.8 2002-08-25 09:25:15 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -15,7 +15,7 @@
 #dependency processing, the following line may be used:
 #This is needed in case of Aubit, because otherwise all dependencies for
 #all modules like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
-#as prerequisites for installing Aubit, which is not true, since Aubit can 
+#as prerequisites for installing Aubit, which is not true, since Aubit can
 #be configured to use this extensions only if they are installed on target 
 #system
 AutoReqProv: no
@@ -34,9 +34,7 @@ Packager: Andrej Falout <afalout@ihug.co.nz>
 Group: Development/Languages
 URL: http://aubit4gl.sourceforge.net
 Distribution: Red Hat Contrib-Net
-#BuildArchitectures: noarch
 BuildArchitectures: @target_cpu@
-
 
 #Provides is supposed to specify a capability needed by other packages,
 #that can be provided by more then one package. For instance, both 4Js BDL,
@@ -63,8 +61,8 @@ Aubit 4gl (Fourth Generation programing Language) compiler compiles source
 files to several low-level programming languages (C, Perl, Java...). It has
 ODBC and native database conectivity, GUI interface and many features.
 
-Install Aubit compiler if you want to write business oriented databse
-applications.
+Install Aubit compiler if you want to write business related database
+oriented (BRDO) applications.
 
 ##############
 %prep
@@ -79,13 +77,10 @@ applications.
 ##############
 %build
 ##############
-#cd aubit4glsrc-0.20.160
 cd %{name}src-%{version}
 ./configure
-#./configure
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 #CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
-
 
 ##############
 %install
@@ -139,6 +134,17 @@ make install
 @RPMFILE_18@
 @RPMFILE_19@
 @RPMFILE_20@
+@RPMFILE_21@
+@RPMFILE_22@
+@RPMFILE_23@
+@RPMFILE_24@
+@RPMFILE_25@
+@RPMFILE_26@
+@RPMFILE_27@
+@RPMFILE_28@
+@RPMFILE_29@
+@RPMFILE_30@
+
 
 #Below are only files that should be created by make in any case:
 
@@ -157,18 +163,26 @@ make install
 /opt/aubit4gl/lib/libMSG_NATIVE.so
 /opt/aubit4gl/lib/libLEX_C.so
 /opt/aubit4gl/lib/libLEX_PERL.so
-
+/opt/aubit4gl/lib/libDATA_menu_list.so
+/opt/aubit4gl/lib/libDATA_report.so
+/opt/aubit4gl/lib/libDATA_struct_form.so
+/opt/aubit4gl/lib/libPACKER_PERL.so
+/opt/aubit4gl/lib/libPACKER_PACKED.so
+/opt/aubit4gl/lib/libPACKER_XML.so
 
 #Executables:
 /opt/aubit4gl/bin/4glc
 /opt/aubit4gl/bin/fcompile
+/opt/aubit4gl/bin/fdecompile
 /opt/aubit4gl/bin/mcompile
+/opt/aubit4gl/bin/mdecompile
 /opt/aubit4gl/bin/mkmess
 /opt/aubit4gl/bin/loadmap
-/opt/aubit4gl/bin/fdecompile
 /opt/aubit4gl/bin/fshow
 /opt/aubit4gl/bin/aubit-config
-/opt/aubit4gl/bin/mdecompile
+/opt/aubit4gl/bin/xgen
+/opt/aubit4gl/bin/aace
+/opt/aubit4gl/bin/adecompile
 
 #Shell scripts:
 /opt/aubit4gl/bin/4glpc
@@ -178,13 +192,21 @@ make install
 /opt/aubit4gl/bin/aubit
 /opt/aubit4gl/bin/genmake
 /opt/aubit4gl/bin/prepmake
-#"/opt/aubit4gl/bin/*"
 
 #Include files:
 /opt/aubit4gl/incl/a4gl_incl_4glhdr.h
-#/opt/aubit4gl/incl/a4gl_incl_acl4glgui.h
-"/opt/aubit4gl/incl/*.mk"
-"/opt/aubit4gl/incl/*.mki"
+/opt/aubit4gl/incl/a4gl_incl_4gldef.h
+
+/opt/aubit4gl/incl/header.mki
+/opt/aubit4gl/incl/maximise.mki
+/opt/aubit4gl/incl/a4gl-rules.mki
+/opt/aubit4gl/incl/footer-c.mki
+/opt/aubit4gl/incl/footer.mki
+
+/opt/aubit4gl/incl/a4gl.mk
+/opt/aubit4gl/incl/i4gl.mk
+/opt/aubit4gl/incl/q4gl.mk
+/opt/aubit4gl/incl/d4gl.mk
 
 #Examples:
 "/opt/aubit4gl/tools/test/*.4gl"
@@ -198,8 +220,7 @@ make install
 /opt/aubit4gl/tools/test/Makefile
 /opt/aubit4gl/tools/test/gui/Makefile
 /opt/aubit4gl/Makefile
-#included via *.mki with include files:
-#/opt/aubit4gl/incl/Makefile-install.mki
+/opt/aubit4gl/incl/Makefile-install.mki
 
 #Documentation files:
 %doc /opt/aubit4gl/README.txt
@@ -212,6 +233,7 @@ make install
 %config /opt/aubit4gl/etc/odbc.ini.example
 %config /opt/aubit4gl/etc/aubitrc-bin.in
 /opt/aubit4gl/configure
+/opt/aubit4gl/install.sh
 /opt/aubit4gl/etc/config/config.guess
 /opt/aubit4gl/etc/config/config.sub
 /opt/aubit4gl/etc/config/install-sh
@@ -222,10 +244,12 @@ make install
 ##############
 %changelog
 ##############
-* Thu Dec 06 2001 root <root@aptiva.falout.com>
-- Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
+* Sun Aug 25 2002 root <root@aptiva.falout.com>
+- Synchronised files between tarball and RPM
 * Thu Dec 06 2001 root <root@aptiva.falout.com>
 - Manually modified autospec version
+* Thu Dec 06 2001 root <root@aptiva.falout.com>
+- Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
 
 
 ##############

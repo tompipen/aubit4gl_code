@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.76 2002-08-24 07:01:54 afalout Exp $
+# $Id: configure.in,v 1.77 2002-08-25 09:25:07 afalout Exp $
 #
 
 dnl Process this file with autoconf to produce a configure script.
@@ -282,6 +282,7 @@ AC_SUBST(YACC)
 AC_SUBST(LEX)
 #AC_SUBST(PREFIX)
 AC_SUBST(LCLINTEXE)
+AC_SUBST(SO_EXT)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -296,7 +297,9 @@ AC_SUBST(INCLINES)
 
 
 
-#files to be packaged into RPM:
+#files to be packaged into RPM, that are built optionaly because of external
+#dependencied. Also used for install/deinstall, and to tell make which files to
+#build:
 AC_SUBST(RPMFILE_1)
 AC_SUBST(RPMFILE_2)
 AC_SUBST(RPMFILE_3)
@@ -317,6 +320,16 @@ AC_SUBST(RPMFILE_17)
 AC_SUBST(RPMFILE_18)
 AC_SUBST(RPMFILE_19)
 AC_SUBST(RPMFILE_20)
+AC_SUBST(RPMFILE_21)
+AC_SUBST(RPMFILE_22)
+AC_SUBST(RPMFILE_23)
+AC_SUBST(RPMFILE_24)
+AC_SUBST(RPMFILE_25)
+AC_SUBST(RPMFILE_26)
+AC_SUBST(RPMFILE_27)
+AC_SUBST(RPMFILE_28)
+AC_SUBST(RPMFILE_29)
+AC_SUBST(RPMFILE_30)
 
 
 ## ==================================================================
@@ -351,6 +364,7 @@ AUBIT_DEBUG=1
 IFMX_ESQLC=no
 LCLINTEXE=no
 cygwin=0
+SO_EXT=.so
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
@@ -374,6 +388,7 @@ case $host in
 		ODBC=odbc32;
     	ODBCMANAGER=$ODBC;
 		cygwin=1
+        SO_EXT=.dll
 		;;
 
 	#*-sun-solaris2.7)
@@ -2286,56 +2301,69 @@ fi
 
 
 ## ==================================================================
-##            Decide on files to be included in RPM
+##				Decide on targets that are built/istalled/packaged
+##              optionaly based on external dependencies. This affects
+##              RPM packaging, install/seinstall and build process
 ## ==================================================================
 
 LIB_PREFIX=$prefix/aubit4gl/lib
 
 	if test "$GTKBUILD" != "no"; then
-		RPMFILE_1=$LIB_PREFIX/libUI_GTK.so
+		RPMFILE_1=$LIB_PREFIX/libUI_GTK$SO_EXT
     fi
 
 	if test "$HAVE_CURSES" = "1"; then
-        RPMFILE_2=$LIB_PREFIX/libUI_TUI.so
+        RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
     fi
 
 	if test "$PDFBUILD" != "no"; then
-		RPMFILE_3=$LIB_PREFIX/libEXREPORT_PDF.so
+		RPMFILE_3=$LIB_PREFIX/libEXREPORT_PDF$SO_EXT
     fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
-		RPMFILE_4=$LIB_PREFIX/libSQL_esql.so
+		RPMFILE_4=$LIB_PREFIX/libSQL_esql$SO_EXT
 	fi
 
 	if test "$HAVE_PGODBC" = "yes" ; then
-		RPMFILE_5=$LIB_PREFIX/libSQL_pgodbc.so
+		RPMFILE_5=$LIB_PREFIX/libSQL_pgodbc$SO_EXT
 	fi
 
 	if test "$HAVE_IFXODBC" = "yes" ; then
-		RPMFILE_6=$LIB_PREFIX/libSQL_ifxodbc.so
+		RPMFILE_6=$LIB_PREFIX/libSQL_ifxodbc$SO_EXT
 	fi
 
 	if test "$HAVE_IODBC" = "yes" ; then
-		RPMFILE_7=$LIB_PREFIX/libSQL_iodbc.so
+		RPMFILE_7=$LIB_PREFIX/libSQL_iodbc$SO_EXT
 	fi
 
 	if test "$HAVE_UNIXODBC" = "yes" ; then
-		RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc.so
+		RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc$SO_EXT
 	fi
 
 	if test "$cygwin" = "1"; then
-		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32.dll
+		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32$SO_EXT
 	fi
 
 	if test "$XML_RPC" != "no"; then
-		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC.so
+		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC$SO_EXT
     fi
 
 	if test "$HAVE_RPCLIB" != "no"; then
-		RPMFILE_11=$LIB_PREFIX/libMENU_XDR.so
-		RPMFILE_12=$LIB_PREFIX/libRPC_XDR.so
-		RPMFILE_13=$LIB_PREFIX/libFORM_XDR.so
+		RPMFILE_11=$LIB_PREFIX/libMENU_XDR$SO_EXT
+		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
+		RPMFILE_13=$LIB_PREFIX/libFORM_XDR$SO_EXT
+
+		RPMFILE_14=$LIB_PREFIX/libXDRPACKER_menu_list$SO_EXT
+		RPMFILE_15=$LIB_PREFIX/libXDRPACKER_report$SO_EXT
+		RPMFILE_16=$LIB_PREFIX/libXDRPACKER_struct_form$SO_EXT
+        RPMFILE_17=$LIB_PREFIX/libPACKER_XDR$SO_EXT
+
 	fi
+
+	if test "$EXDATA_MPZ" != "no"; then
+		RPMFILE_18=$LIB_PREFIX/libEXDTYPE_mpz$SO_EXT
+    fi
+
 
     #this are made by 'make extra'
 

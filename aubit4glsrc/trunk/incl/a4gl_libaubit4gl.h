@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.11 2002-08-24 07:02:50 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.12 2002-08-25 09:25:15 afalout Exp $
 #
 */
 
@@ -757,6 +757,22 @@
 	};
 
     /* ------------- end of moved from 4gldef.h ------------------ */
+
+/*
+FYI, to fix the _nm_status error (if status is an int) change
+
+extern int status;
+
+to
+
+__attribute__((dllimport))extern int status;
+
+That's the ugly, short-hand way.  For some reason, auto-import
+doesn't always work.  Search the mailing lists for more correct
+ways of handling this (if you use the same include file to build
+your library and in your applications - above should only
+be used in applications which link to the library).
+*/
 
 
     #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.80 2002-08-24 07:01:51 afalout Exp $
+# $Id: Makefile.in,v 1.81 2002-08-25 09:25:06 afalout Exp $
 #
 
 ## ==================================================================
@@ -373,10 +373,13 @@ clean.build:
 #FIXME: this should use ${INSTALL}
 #make icons for KDE and GNOME: to IDE, to manual
 
-#all targets common to installing compiled source code, AND installing
+#all targets common to installing compiled source code AND installing
 #binary distributions are in here:
 #THIS INCLUDE MUST BE HERE SINCE IT STARTS WITH A TARGET!!!!
 include incl/Makefile-install.mki
+
+#remaining install related targets defined here are used only when installing
+#from compiled source code tree.
 
 install: install.core install.Makefile-common install.setmod install.example \
 		install.manual install.config \
@@ -524,57 +527,33 @@ cleantar:
 #	SRPMS is where all source RPMs will be put.
 
 
-#will fail, bacause automaticaly generates spec file fill not have
-#"configure" step, and AUBITDIR will be wrong
-rpm.auto:
-ifneq "@RPM@" "no"
-ifneq "@AUTOSPEC@" "no"
-	${MAKE} rpm.build.auto
-else
-	@echo "RPM autospec tool where not detected on your system. Try 'make rpm.preset'"
-endif
-else
-	@echo "RPM tools where not detected on your system."
-endif
-
 #this will make rpm form autoconf-ed etc/aubit-rpm.conf
 rpm:
 ifneq "@RPM@" ""
-	${MAKE} rpm.build.preset
+	${MAKE} rpm.build
 else
 	@echo "RPM tools where not detected on your system."
 endif
 
-rpm.build.auto: etc/aubit-auto.spec
-rpm.build.auto: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
-rpm.build.auto: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.tar.gz
-rpm.build.auto: rpm.build
-
-rpm.build.preset: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
-#rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
-rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.tar.gz
-rpm.build.preset: rpm.build
-
-#rpm.build: AUBITDIR=${RPMBUILDROOT}/BUILD/aubit4gl-0.20
-#rpm.build: PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}
+rpm.build: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
+rpm.build: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.tar.gz
 rpm.build:
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
-#build it, and only then make rpm from both of them (src and bin RPM)
-#	echo xxx ${SOURCETARBASENAME} ZZZZ ${SRCTMP} xxx
+#build it, and only then make src and bin RPM
 ifeq "${RPM}" "new"
 	${RM} ${SRCTMP}
 	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
 endif
 	@if [ ! -f ${SRCTMP} ]; then \
-		echo "No ${SRCTMP}, making it..."; \
+		echo "(1) No ${SRCTMP}, making it..."; \
 		if [ ! -f /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ]; then \
-			echo "No /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}, making it..."; \
-			${MAKE} ${MKNAME} clean.all > /dev/null; \
+			echo "(2) No /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}, making it..."; \
+			${MAKE} clean.all > /dev/null; \
 			${RMDIR} /tmp/${NAMEVERBLD}; \
 			${MKPATH} /tmp/${NAMEVERBLD}; \
 			${LN_S} ${AUBITDIR} /tmp/${NAMEVERBLD}/${NAMEVERBLD}; \
-			echo "Creating /tmp/${NAMEVERBLD}/$(SOURCETARNAME) from ${NAMEVERBLD}/ ..."; \
-			(cd /tmp/${NAMEVERBLD}; tar -cvzf $(SOURCETARNAME) ${NAMEVERBLD}/* > /dev/null); \
+			echo "Creating /tmp/${NAMEVERBLD}/$(SOURCETARBASENAME) from ${NAMEVERBLD}/ ..."; \
+			(cd /tmp/${NAMEVERBLD}; tar -cvzf $(SOURCETARBASENAME) ${NAMEVERBLD}/* > /dev/null); \
 		else \
             echo "Have /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}"; \
 		fi; \
@@ -587,18 +566,12 @@ endif
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
 	@echo "'make rpm' successfull, see rpmbuild.log for details"
 
-rpm.1: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
-#rpm.1: LOGFILE=> rpmbuild.log 2>&1
-rpm.1:
-	rpm -ba ${RPMCONFFILE} ${LOGFILE}
-
 #automatically create .spec file for RPM build:
 etc/aubit-auto.spec: aubit4gl.lsm
 	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
 
 build.diff.patch:
-	diff -uNr dirname.orig dirname > ../SOURCES/dirname-linux.patch
-
+	diff -uNr ${dirname}.orig ${dirname} > ${dirname}.patch
 
 #Create Linux Software Map (.lsm) used by autospec, see http://www.execpc.com/lsm/
 aubit4gl.lsm: OUTFILE=aubit4gl.lsm

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.60 2002-08-19 07:58:18 afalout Exp $
+# $Id: Makefile.in,v 1.61 2002-08-25 09:25:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,60 +45,9 @@ override NOINCL=0
 ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
 		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
 		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
-		libUI_CONSOLE${SO_EXT} \
-		libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} libPACKER_XML${SO_EXT}
-
-
-
-ifeq "$(GTKBUILD)" "yes"
-	ALL += libUI_GTK${SO_EXT}
-endif
-
-ifneq "@HAVE_RPCLIB@" "0"
-	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT} libUI_TUI${SO_EXT} libPACKER_XDR.so
-endif
-
-ifneq "@XML_RPC@" "no"
-	ALL	+=libRPC_XMLRPC${SO_EXT}
-endif
-
-ifneq "@IFMX_ESQLC@" "no"
-	ALL +=libSQL_esql${SO_EXT}
-endif
-
-ifdef COMSPEC
-	ALL	+=libSQL_odbc32${SO_EXT}
-endif
-
-ifeq "$(HAVE_IODBC)" "yes"
-    ALL	+=libSQL_iodbc${SO_EXT}
-endif
-
-ifeq "$(HAVE_UNIXODBC)" "yes"
-	ALL	+=libSQL_unixodbc${SO_EXT}
-endif
-
-ifneq "@HAVE_IFXODBC@" "no"
-	ALL	+=libSQL_ifxodbc${SO_EXT}
-endif
-
-ifneq "@HAVE_PGODBC@" "no"
-	ALL	+=libSQL_pgodbc${SO_EXT}
-endif
-
-ifeq "$(PDFBUILD)" "yes"
-	ALL +=libEXREPORT_PDF${SO_EXT}
-endif
-
-ifneq "@PERLBUILD@" "no"
-	ALL +=libLEX_PERL${SO_EXT}
-endif
-
-ifneq "@EXDATA_MPZ@" "no"
-	ALL +=libEXDTYPE_mpz${SO_EXT}
-endif
-
-
+		libUI_CONSOLE${SO_EXT} libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} \
+		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} \
+		${LIB_OPTIONAL}
 
 ## ==================================================================
 ##                              Targets
@@ -114,6 +63,8 @@ note:
 ##              Windows 32 DLL Targets in sub-makefiles
 ## ==================================================================
 
+#FIXME: remove the need to have different target names, and remove this:
+
 libSQL_noodbc.dll:
 	${MAKE} -C libsql/nosql nosql.dll
 
@@ -122,21 +73,6 @@ libSQL_odbc32.dll:
 
 libEXREPORT_NOPDF.dll:
 	${MAKE} -C libpdf NOPDF.dll
-
-libUI_GTK.dll:
-	${MAKE} -C libui/ui_gtk
-
-libUI_CONSOLE.dll:
-	$(MAKE) -C libui/ui_console
-
-libUI_TUI.dll:
-	$(MAKE) -C libui/ui_curses
-
-libaubit4gl.dll :
-	${MAKE} -C libaubit4gl $@
-
-libFORM_XDR.dll :
-	${MAKE} -C libform/form_xdr $@
 
 libFORM_NOFORM.dll :
 	${MAKE} -C libform/form_xdr dllFORM_NOFORM
@@ -171,13 +107,13 @@ libLEX_PERL.so:
 libMSG_NATIVE.so:
 	${MAKE} -C libmsg/msg_native
 
-libUI_GTK.so:
+libUI_GTK${SO_EXT}:
 	$(MAKE) -C libui/ui_gtk
 
-libUI_TUI.so:
+libUI_TUI${SO_EXT}:
 	$(MAKE) -C libui/ui_curses
 
-libUI_CONSOLE.so:
+libUI_CONSOLE${SO_EXT}:
 	$(MAKE) -C libui/ui_console
 
 aubit-config:
@@ -186,13 +122,13 @@ aubit-config:
 loadmap:
 	${FAIL_OK}${MAKE} -C ../tools/loadmap
 
-libaubit4gl.so :
+libaubit4gl${SO_EXT} :
 	${MAKE} -C libaubit4gl $@
 
 libFORM_NOFORM.so :
 	${MAKE} -C libform/noform $@
 
-libFORM_XDR.so :
+libFORM_XDR${SO_EXT} :
 	${MAKE} -C libform/form_xdr $@
 
 libMENU_NOMENU.so :
@@ -304,9 +240,6 @@ clean.other:
 ##                         Other Targets
 ## ==================================================================
 
-lclint: $(CMODS)
-	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
-	@echo "see lclint.log for results"
 
 #----------------------------------- EOF -------------------------------
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.56 2002-08-24 07:02:49 afalout Exp $
+# $Id: Makefile-common.in,v 1.57 2002-08-25 09:25:15 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -41,9 +41,9 @@ AUBITETC=/etc/opt/aubit4gl
 #it is copied in state as configured for source code distribution,
 #so in binary tree AUBIT_SRC_ROOT cannot be used since it's wrong,
 #together with most other @xxx@ stuff - but we are using makefiles installed
-#with binary distro inly to install/seinstall and compile stuff in tools/test
+#with binary distro only to install/deinstall and compile stuff in tools/test
 #so I guess it's OK - if not, we will have to pack Makefile-common.in with
-#binary distro and modify configure to create it fo binary biold too.
+#binary distro and modify configure to create it for binary build too.
 AUBIT_SRC_ROOT=@aubitdir@
 AUBIT_VERSION=@AUBIT_VERSION@
 AUBIT_BUILD=@AUBIT_BUILD@
@@ -100,23 +100,6 @@ ifeq "$(NOINCL)" "0"
 		endif
     endif
 
-		#No longer needed, since we are sure AUBITDIR is OK now:
-
-		#this is an attempt to locate aubitrc in absence of AUBITDIR,
-        #or to override settings for aubitrc in case we are working
-        #from different Aubit instrallation/source directory:
-		#AUBITRCFILE:=$(shell ls ../etc/aubitrc ${NOERR})
-		#ifneq "${AUBITRCFILE}" ""
-		#	include ${AUBITRCFILE}
-		#	A3:=${AUBITRCFILE}
-		#endif
-        #
-		#AUBITRCFILE:=$(shell ls etc/aubitrc ${NOERR})
-		#ifneq "${AUBITRCFILE}" ""
-		#	include ${AUBITRCFILE}
-		#	A4:=${AUBITRCFILE}
-	    #endif
-
     #check if now AUBITDIR points to Aubit source tree or not. We will have
     #${AUBITDIR}/compilers directory only if it points to source code tree:
 	TMP:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
@@ -128,9 +111,6 @@ ifeq "$(NOINCL)" "0"
 	endif
 
     export AUBITDIR_SRC
-
-	#C_DFLAGS        +=xx${AUBITDIR}xx
-	#C_DFLAGS        +=xx${AUBITDIR_SRC}xx
 
 	AUBITRCFILE:=$(shell ls ~/.aubit4gl/aubitrc ${NOERR})
 	ifneq "${AUBITRCFILE}" ""
@@ -158,7 +138,6 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 endif
 
 PATH:=${AUBITDIR}/bin:${PATH}
-#PATH:=../bin:${PATH}
 
 ## ==================================================================
 ##                   Global Makefile variables
@@ -186,24 +165,23 @@ LCLINTERR           =-
 
 ####################
 #commands to use:
-MAKE				=make
+MAKE				=@MAKE@
 MKDIR 				=mkdir
 CD 					=cd
 CP 					=cp
 CAT                 =cat
 RM 					=rm -f
 RMDIR				=rm -rf
-SH 					=/bin/sh
-#CC 					=c++
+SH					=@SH@
+#CC	 				=c++
 CC 					=@CC@
 #LINK.c				=${CC}
 LN_S 				=ln --symbolic --force
 LN_H                =ln --force
 AR 					=ar rc
-#YACC 				=bison -y
 YACC                =@YACC@ @DEBUG_BISON@
-#FIXME: this should be set by configure:
-LEX					=flex -i
+LEX					=@LEX@
+#LEX				=flex -i
 NICE                =nice -20
 INSTALL_USR			=nobody
 INSTALL_GRP 		=nobody
@@ -214,40 +192,24 @@ CPPFLAGS 			=
 #LDFLAGS 			=-s
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 
-#FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared', 
+#FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
 #use 'gcc -shared'.  If you MUST pass linker specific options to ld, use 
 #'-Wl,--my-ld-option' in your gcc. On Cygwin, using 'ld' directly will not 
 #automatically pick up the w32api libraries, even if they are installed.
 #command line.
+#even better, use libtool (once it is working on CygWin)
 LD                  =ld
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
 
-#Total header files (.h) in Aubit: 102 (76 in lib/ incl/ and compilers/)
-
-
 NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 C_IFLAGS            =-I/usr/local/include
 C_DFLAGS			+=-DDEBUG -DHAVE_CONFIG_H
-
-#This can be overriden from command line: "make OLD_INCL=0" to compile
-#with new include files:
-OLD_INCL=0
-export OLD_INCL
-
-ifeq "${OLD_INCL}" "1"
-	C_IFLAGS        +=-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl -I$(AUBITDIR)/compilers/fcompile
-	C_DFLAGS        +=-DOLD_INCL
-	C_DFLAGS        +=-DSRC_TREE
-else
-	C_IFLAGS        +=-I$(AUBITDIR)/incl
-endif
-
-
+C_IFLAGS 			+=-I$(AUBITDIR)/incl
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
@@ -297,17 +259,19 @@ HAVE_RPCLIB			=@HAVE_RPCLIB@
 #flag is forwarded to 4glpc:
 #LINK_COMPILERS      =-static
 LINK_COMPILERS      =-dynamic
+#got core dumps when trying this:
+#LINK_COMPILERS      =-shared
 #which Aubit library we want to link Aubit executables/compiler with. This
 #flag is forwarded to C linker:
 #AUBIT_LIB			=-laclall
 #AUBIT_LIB			=-laclshared
 AUBIT_LIB			=-laubit4gl
 
-#got core dumps when trying this:
-#LINK_COMPILERS      =-shared
-
 #do not install static libraries on CygWin:
-STATICLIB_INST=no
+#we no longer compile static libs on any platform - remove this
+#STATICLIB_INST=no
+
+SO_EXT=@SO_EXT@
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
@@ -315,7 +279,6 @@ ifdef COMSPEC
 	CFLAGS		+=-DWIN32 -fnative-struct
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
-	SO_EXT      =.dll
     SH			=bash
 	SO_LDFLAGS	=${RDYNAMIC} ${PIC}
 	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
@@ -340,7 +303,6 @@ else
     #flags to CC when making and linking executables:
 	EXE_CFLAGS  =${RDYNAMIC}
 	EXEEXT		=
-	SO_EXT      =.so
     SH			=sh
 
 
@@ -353,27 +315,6 @@ else
 endif
 
 ####################### from aubitbuild-multi.mk ####################
-
-
-## ==================================================================
-##                              Options - UnixODBC
-## ==================================================================
-
-#name of library to link compiler with
-#typically, "odbc" for unixODBC, "iodbc" for iODBC manager
-#Affects: main makefile and 4glpc
-#UNIXODBC_LIB_NAME=odbc
-
-#where can we find ODBC header files for this ODBC manager/driver
-#(odbc.h, sql.h ...etc.)
-#fixme: rename this to ODBC_LIB_HEADERS
-#Affects: main makefile, 4glpc and run-time encironment
-#UNIXODBC_ODBCLIBDIR=/opt/unixODBC/include
-
-
-#where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
-#Affects: main makefile
-#UNIXODBC_ODBC_LIB_DIR=/opt/unixODBC/lib
 
 ## ==================================================================
 ##                              Options - iODBC
@@ -388,62 +329,43 @@ endif
 
 	#IODBC_LIB_NAME=iodbc
 
-	ifeq "$(IODBCVER)" "Openlink"
-		USEPGHEADRERS=1
-        #USELOCALHEADRERS=1
-		IODBC_ODBC_LIB_DIR	=/usr/openlink/lib
-    endif
+#	ifeq "$(IODBCVER)" "Openlink"
+#		USEPGHEADRERS=1
+#        #USELOCALHEADRERS=1
+#		IODBC_ODBC_LIB_DIR	=/usr/openlink/lib
+#    endif
 
-	ifeq "$(IODBCVER)" "3"
-	    #standalone iODBC manager V3
-		IODBC_ODBCLIBDIR	=/opt/iODBC_3beta/iODBC/include
-		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3beta/iODBC/lib
-    endif
+#	ifeq "$(IODBCVER)" "3"
+#	    #standalone iODBC manager V3
+#		IODBC_ODBCLIBDIR	=/opt/iODBC_3beta/iODBC/include
+#		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3beta/iODBC/lib
+#    endif
 
-	ifeq "$(IODBCVER)" "2.5"
-		#standalone iODBC manager V2.5
-	   	IODBC_ODBCLIBDIR	=/opt/iODBC_source_v2.5
-		IODBC_ODBC_LIB_DIR	=/opt/iODBC_source_v2.5/.libs
-    endif
+#	ifeq "$(IODBCVER)" "2.5"
+#		#standalone iODBC manager V2.5
+#	   	IODBC_ODBCLIBDIR	=/opt/iODBC_source_v2.5
+#		IODBC_ODBC_LIB_DIR	=/opt/iODBC_source_v2.5/.libs
+#    endif
 
-	ifeq "$(IODBCVER)" "3.0.5"
-	   	IODBC_ODBCLIBDIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/include
-		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs
-    endif
+#	ifeq "$(IODBCVER)" "3.0.5"
+#	   	IODBC_ODBCLIBDIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/include
+#		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs
+#    endif
 
 	######### For testing only ##################
-	ifeq "$(USEPGHEADRERS)" "1"
-		#PosgtgreSQL headers, also used by iODBC manager (standalone and OpenLink)
-		IODBC_ODBCLIBDIR 	=/usr/include/pgsql/iodbc
-    endif
+#	ifeq "$(USEPGHEADRERS)" "1"
+#		#PosgtgreSQL headers, also used by iODBC manager (standalone and OpenLink)
+#		IODBC_ODBCLIBDIR 	=/usr/include/pgsql/iodbc
+#    endif
 
-	ifeq "$(USELOCALHEADRERS)" "1"
-		IODBC_ODBCLIBDIR	=local_odbc_incl
-    endif
+#	ifeq "$(USELOCALHEADRERS)" "1"
+#		IODBC_ODBCLIBDIR	=local_odbc_incl
+#    endif
 
-## ==================================================================
-##                      Assign defaults
-## ==================================================================
-
-#ifeq "$(ODBC)" "unix"
-#	ODBC_LIB_NAME	=${UNIXODBC_LIB_NAME}
-#	ODBCLIBDIR		=${UNIXODBC_ODBCLIBDIR}
-#	ODBC_LIB_DIR	=${UNIXODBC_ODBC_LIB_DIR}
-#endif
-
-#ifeq "$(ODBC)" "iodbc"
-#	ODBC_LIB_NAME	=${IODBC_LIB_NAME}
-#	ODBC_LIB_DIR	=${IODBC_ODBC_LIB_DIR}
-#	ODBCLIBDIR		=${IODBC_ODBCLIBDIR}
-#endif
-
-
-
-#<options needed also for binary disrto makefile========================>
+#<options needed also for binary distro makefile========================>
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
-#	../../../bin/fcompile
 	MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
 	FGLPCEXEC	=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
 else
@@ -575,7 +497,7 @@ PERLBUILD=@PERLBUILD@
 #if you enter "static", only SQL/ODBC library defined with "ODBC"
 #parameter will be staticaly linked.
 #Default: ODBC_LINK=dynamic
-ODBC_LINK=dynamic
+#ODBC_LINK=dynamic
 
 ##################
 #GTK GUI interface: yes or no (needs GTK libraries on system)
@@ -599,14 +521,14 @@ HAVE_IODBC=@HAVE_IODBC@
 #Affects: main makefile Options: unix, iodbc, so, no
 #Default: ODBC=no
 #we can use @A4GL_SQLTYPE@ here, but no is not no, it's "nosql"
-ODBC=no
+#ODBC=no
 
 #################
 #If linking SQL support statically: name of library to link compiler with
 #typically, "odbc" for unixODBC, "iodbc" for iODBC manager
 #Affects: main makefile and 4glpc
 #Default: ODBC_LIB_NAME=noodbc
-ODBC_LIB_NAME=@ODBC_LIB_NAME@
+#ODBC_LIB_NAME=@ODBC_LIB_NAME@
 
 #where can we find ODBC header files for this ODBC manager/driver
 #(odbc.h, sql.h ...etc.)
@@ -616,7 +538,7 @@ ODBC_LIB_NAME=@ODBC_LIB_NAME@
 #Default: ODBCLIBDIR=/usr/include
 #Configure note: we cannot use includedir variable because it
 #returns "${prefix}/include" and we cannot process variables here
-ODBCLIBDIR=@oldincludedir@
+#ODBCLIBDIR=@oldincludedir@
 
 #where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
 #Affects: main makefile
@@ -624,7 +546,7 @@ ODBCLIBDIR=@oldincludedir@
 #Default: ODBC_LIB_DIR=/usr/lib
 #Configure note: we cannot use libdir variable here because it returns
 #returns "${exec_prefix}/lib" and we cannot process variables here
-ODBC_LIB_DIR=/usr/lib
+#ODBC_LIB_DIR=/usr/lib
 
 #this is used in makefiles (typically -lrpcsvc or -lrpclib):
 RPCLIB_NAME=@RPCLIB_NAME@
@@ -660,7 +582,7 @@ GLIB_NAME="@GLIB_NAME@"
 
 MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
-DLL_CFLAGS="-shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--export-all-symbols"
+DLL_CFLAGS="-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--export-all-symbols"
 
 
 #gcc -shared -o cyg${module}.dll -Wl,--out-implib=lib${module}.dll.a \
@@ -771,21 +693,20 @@ BIN_SCRIPTS =amake amakeallo amakeallf 4glpc aubit prepmake genmake
 BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
 			mcompile${EXEEXT} mkmess${EXEEXT} loadmap${EXEEXT} \
 			aubit-config${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} \
-			fshow${EXEEXT}
+			fshow${EXEEXT} aace${EXEEXT} adecompile${EXEEXT}
 
-#ifeq "$(OUTPUTLANG)" "java"
+
+#Building this is optional
+#FIXME: move this to configure
 ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
 	BIN_EXE		+=fdecompile-j${EXEEXT}
 endif
-
 ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-unixODBC${EXE}
 endif
-
 ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc3${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-iodbc3${EXE}
 endif
-
 ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-iodbc2${EXE}
 endif
@@ -802,65 +723,22 @@ LIB_SO		=libLEX_PERL${SO_EXT} \
 			libSQL_nosql${SO_EXT} libUI_CONSOLE${SO_EXT} \
 			libRPC_NORPC${SO_EXT} libFORM_NOFORM${SO_EXT} \
             libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} \
-            libLEX_C${SO_EXT}
-
-#LIB_EXPORTLIB =libaubit4gl${SOEXP_EXT} \
-#            libEXREPORT_NOPDF${SOEXP_EXT} libSQL_nosql${SOEXP_EXT} \
-#            libUI_CONSOLE${SOEXP_EXT} libRPC_NORPC${SOEXP_EXT} \
-#            libFORM_NOFORM${SOEXP_EXT} libMENU_NOMENU${SOEXP_EXT}
+            libLEX_C${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT} \
+			libDATA_struct_form${SO_EXT} libPACKER_PACKED${SO_EXT} \
+			libPACKER_PERL${SO_EXT} libPACKER_XDR${SO_EXT} libPACKER_XML${SO_EXT}
 
 #Only DLL wr will actually link against - everything else is loaded at run-time:
 LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
 
+TMP_RPMFILES = \
+	@RPMFILE_1@ @RPMFILE_2@ @RPMFILE_3@ @RPMFILE_4@ @RPMFILE_5@ @RPMFILE_6@ \
+	@RPMFILE_7@ @RPMFILE_8@ @RPMFILE_9@ @RPMFILE_10@ @RPMFILE_11@ @RPMFILE_12@ \
+	@RPMFILE_13@ @RPMFILE_14@ @RPMFILE_15@ @RPMFILE_16@ @RPMFILE_17@ \
+	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
+	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
+	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@
 
-ifneq "${GTKBUILD}" "no"
-	LIB_SO			+=libUI_GTK${SO_EXT}
-endif
-
-
-ifneq "@HAVE_RPCLIB@" "0"
-	LIB_SO			+=libRPC_XDR${SO_EXT} libMENU_XDR${SO_EXT} libFORM_XDR${SO_EXT}
-#	LIB_EXPORTLIB 	+=libRPC_XDR${SOEXP_EXT} libMENU_XDR${SOEXP_EXT} libFORM_XDR${SOEXP_EXT}
-endif
-
-ifeq "@XML_RPC@" "yes"
-	LIB_SO			+=libRPC_XMLRPC${SO_EXT}
-#	LIB_EXPORTLIB 	+=libRPC_XMLRPC${SOEXP_EXT}
-endif
-
-ifneq "@HAVE_CURSES@" "0"
-	LIB_SO			+=libUI_TUI${SO_EXT}
-#	LIB_EXPORTLIB 	+=libUI_TUI${SOEXP_EXT}
-endif
-
-ifneq "${COMSPEC}" ""
-	LIB_SO			+=libSQL_odbc32${SO_EXT}
-#	LIB_EXPORTLIB	+=libSQL_odbc32${SOEXP_EXT}
-endif
-
-ifeq "${PDFBUILD}" "yes"
-    LIB_SO 			+=libEXREPORT_PDF${SO_EXT}
-endif
-
-ifeq "${HAVE_UNIXODBC}" "yes"
-	LIB_SO			+=libSQL_unixodbc${SO_EXT}
-endif
-
-ifeq "${HAVE_IODBC}" "yes"
-	LIB_SO			+=libSQL_iodbc${SO_EXT}
-endif
-
-ifneq "@IFMX_ESQLC@" "no"
-	LIB_SO			+=libSQL_esql${SO_EXT}
-endif
-
-ifneq "@HAVE_IFXODBC@" "no"
-	LIB_SO			+=libSQL_ifxodbc${SO_EXT}
-endif
-
-ifneq "@HAVE_PGODBC@" "no"
-	LIB_SO			+=libSQL_pgodbc${SO_EXT}
-endif
+LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
 
 ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
 	LIB_SO			+=libA4GL_file${SO_EXT}
@@ -874,7 +752,7 @@ ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
 	LIB_SO			+=libIM_JABBER${SO_EXT}
 endif
 
-LIB_FILES   		=${LIB_SO}
+LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
 ifneq "${COMSPEC}" ""
 	LIB_FILES +=${LIB_EXPORTLIB}
@@ -921,7 +799,7 @@ HOME_FILES		=etc/aubitrc
 ##                    To Aubit binary installation root directory
 ## ==================================================================
 
-ROOT_FILES		=README.txt
+ROOT_FILES		=README.txt install.sh
 
 ## ==================================================================
 ##                    To incl directory

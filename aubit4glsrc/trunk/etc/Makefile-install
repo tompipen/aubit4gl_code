@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.6 2002-08-24 07:02:48 afalout Exp $
+# $Id: Makefile-install,v 1.7 2002-08-25 09:25:15 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -62,7 +62,6 @@ etc/aubitrc-bin:
 #config: etc/aubitrc-bin
 
 tar: clean
-#COMPILE_DATE=20-01-2002
 	${RM} aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
 	tar -cvzf aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
 	@echo "Aubit binary installation tarball created"
