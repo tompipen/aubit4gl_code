@@ -21,7 +21,7 @@
 #defaults:
 LOG="0"
 LOGFILE=amake.log
-OVERRIDEINCLUDE="0"
+OVERRIDEINCLUDE=0
 #HEADER="./header.mki"
 #FOOTER="./footer.mki"
 HEADER="$AUBITDIR/incl/header.mki"
@@ -79,7 +79,15 @@ CLEANTARGET=0
 
 if [ $# -lt 1 ]
 then
-    PROGS=`ls *$MK`
+	ls *.mk > /dev/null 2>&1
+	RET=$?
+	if test $RET = "0"
+	then
+		PROGS=`ls *$MK`
+    else
+        echo "ERROR: No .mk files in $PWD"
+        exit 34
+    fi
 else
 	cnt=0
 	###########
@@ -116,14 +124,30 @@ else
 
 		*)  if [ -f $a$MK ]
 			then
-			    PROGS="$a$MK $PROGS"
+			    
+                if [ "$PROGS" = "" ]
+                then
+					PROGS="$a$MK"
+                else
+					PROGS="$a$MK $PROGS"
+                fi
 			else
 	           ##########
 			   case $a in
 	           ##########
 
 			   #################this are parameters to this script:##########
-			   -all) 		PROGS=`ls *$MK`
+			   -all)
+					ls *.mk > /dev/null 2>&1
+					RET=$?
+					if test $RET = "0"
+					then
+						PROGS=`ls *$MK`
+				    else
+				        echo "ERROR: No .mk files in $PWD"
+				        exit 34
+				    fi
+
 			   ;;
 
 			   -log) 		LOG="1"
@@ -133,7 +157,7 @@ else
                     		MAKE="$MAKE -k"
 			   ;;
 
-			   -defaultinclude) OVERRIDEINCLUDE="0"
+			   -defaultinclude) OVERRIDEINCLUDE=0
 			   ;;
 
 			   -verbose) 	VERBOSE="1"
@@ -141,14 +165,14 @@ else
 							#MKFLAGS="$MKFLAGS -verbose"
 			   ;;
 
-			   -header) 	OVERRIDEINCLUDE="1"
+			   -header) 	OVERRIDEINCLUDE=1
 	                		#HEADER=<next parameter>
 							#let next=cnt+1
 	                		NEXT=HEADER
 
 			   ;;
 
-			   -footer) 	OVERRIDEINCLUDE="1"
+			   -footer) 	OVERRIDEINCLUDE=1
 	                		#FOOTER=<next parameter>
                     		NEXT=FOOTER
                ;;
@@ -179,6 +203,19 @@ else
 			   ;;
 
 
+               d4gl-pcode) DEFAULT=d4gl-pcode
+               ;;
+               d4gl-ccode) DEFAULT=d4gl-ccode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-pcode
+               ;;
+               i4gl-pcode) DEFAULT=i4gl-ccode
+               ;;
+               aubit) DEFAULT=aubit
+               ;;
+               querix) DEFAULT=querix
+               ;;
+
 			   ################anything else is make parameter:##############
 			   *)   		PARAMS="$a $PARAMS"
 
@@ -199,9 +236,19 @@ else
     ####
 fi
 
+	if [ "$DEFAULT" = "" ]
+    then
+        #we need to explicitly sent this as variable to makefiele, because
+        #make don't store targets in MAKEFLAGS, so we would have no way
+        #to recognise which compielr we are using:
+		DEFAULT=aubit
+    fi
+
+
 	if [ "$PROGS" = "" ]
 	then
 	    echo "Please specify one or more .mk file names (without .mk extension)"
+        echo "In command line '$@', there was no .mk file that is in this directory"
 	    exit 1
 	fi
 
@@ -214,52 +261,62 @@ fi
 	for ONEPROG in $PROGS
     #####################
     do
+        echo "aMaking $ONEPROG"
 
 		if test "$CLEANOBJECTS" = "1"
 	    then
-            make -f $ONEPROG clean > /dev/null
+            make -f $ONEPROG clean DEFAULT=$DEFAULT
         fi
 
 		if test "$CLEANTARGET" = "1"
 	    then
-            #fixme: this should be doen like that:
-            #make -f $ONEPROG cleantarget
-            rm $ONEPROG.4ae
+            make -f $ONEPROG clean.target DEFAULT=$DEFAULT
         fi
 
-		#see if we have include command in this .mk :
-		grep include $ONEPROG > /dev/null
-		RET=$?
-		if test $RET != "0"
-		then
-			OVERRIDEINCLUDE="1"
+		if [ "$ONEPROG" = "allsinglelibs.mk" ]
+        then
+			if [ "$ONEPROG" != "$PROGS" ]
+            then
+				#echo x"$ONEPROG"x != x"$PROGS"x
+				echo "Ignoring $ONEPROG"
+				continue
+            fi
 		fi
 
-		if [ "$OVERRIDEINCLUDE" = "1" ]
+		if test "$OVERRIDEINCLUDE" = "1"
         then
+			#see if we have include command in this .mk :
+			#grep include $ONEPROG > /dev/null
+			#RET=$?
+			#if test $RET != "0"
+			#then
+			#	OVERRIDEINCLUDE=1
+			#fi
+
 			if [ "$VERBOSE" = "1" ]
             then
-				echo "Overriding include..."
+					echo "Overriding include..."
             fi
+			
 			INCLCMT="#include"
 			COMPOSITE=/tmp/$USER-$ONEPROG
 			sed -e "s%include%$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
 	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
-        else
+
+		else
 			COMPOSITE=$ONEPROG
 		fi
 
 		if [ "$VERBOSE" = "1" ]
         then
-            echo Command is: $MAKE $MKFLAGS -f $COMPOSITE $PARAMS
+            echo Command is: $MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
         fi
-
 
 		if [ "$LOG" = "1" ]
 		then
-			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS > $LOGFILE 2>&1
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT > $LOGFILE 2>&1
         else
-			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS DEFAULT=$DEFAULT
         fi
 
 		RET=$?

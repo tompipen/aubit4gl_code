@@ -1,9 +1,10 @@
-#########################################
-#   Aubit 4gl compiler - make system
+############################################
+#   Aubit 4gl compiler - amake system
 #
-# Standard header for Maximise .mk files
-#########################################
+# Standard header for amake-style .mk files
+############################################
 
+####################
 #You can specify which rules will be included, in environment
 #variable MAKERULES. "amake" script is a good place to do this.
 #if you don't, all rules available will be included:
@@ -11,35 +12,57 @@ ifdef MAKERULES
 	include $(MAKERULES)
 else
 	include $(wildcard $(AUBITDIR)/incl/*.mk)
-	
-    #Or, you can comment out abowe stmet, and pick one or more here:
+
+    ####################
+	#Or, you can comment out abowe stmt, and pick one or more here:
 	#include $(AUBITDIR)/incl/i4gl.mk
 	#include $(AUBITDIR)/incl/d4gl.mk
 	#include $(AUBITDIR)/incl/a4gl.mk
 	#include $(AUBITDIR)/incl/q4gl.mk
 endif
 
+####################
 #You can specify default target here, but of course, as everything else,
 #you can override it from command line:
 #DEFAULT=d4gl-pcode
 DEFAULT=aubit
+
+####################
+#Since there should be nothing hard-coded in .mk or footer.mk,
+#defining command names to be used later shouls also be done here:
 RM = rm -f
 
+####################
 #You can define defaults for some dependencies here, that are common
 #programs you plan to compile. It can allways be overwritten later,
 #if you have exceptions:
 #FILES.msg 	= ap.txt
 
-#This is a convinient way to get all forms in current dir compiled:
-#ALLFORMS.per= $(wildcard *.per)
+####################
+#This is a convinient way to get all forms in current dir compiled. If you
+#do know specific form files used by each program, you will specify this in
+#individual .mk files, in which case this will be unused; if you don't,
+#than you will just write FORMS.per=ALLFORMS.per in .mk (you could also
+#rename ALLFORMS.per here to be called FORMS.per, and then you don't even
+#need to do that:
+ALLFORMS.per= $(wildcard *.per)
 
-#This database name will be used if 4Js/D4GL schemma file (.sch)
-#needs to be prepared
+####################
+#This database name will be used if 4Js/D4GL schemma file (.sch) If you 
+#dont use one of this compilers, you can ignore it.
+#needs to be prepared. You can override this in you local .mk file if
+#you have different database for different progams.
 #DBASE     	= mydatabasename
 
+####################
+#define path for make to find .sch files i fnot in current dir:
+ifdef FGLDBPATH
+	vpath %.sch ${FGLDBPATH}
+endif
 
 ifdef MAXDIR
-    #Maximise applications specific configuration.
+    ####################
+	#Maximise applications specific configuration.
     #You should keep this file generic enough to cover all
     #compilations on your system, and isolate applications specific
     #configuration, iff needed, like this.

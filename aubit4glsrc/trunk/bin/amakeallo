@@ -11,6 +11,14 @@
 #
 #n/amakeallo: [: too many arguments    - only with 4js ????
 #try qyerix
+#
+#standard 4js fgllink script don't return error code on linking, add:
+#
+#$ldprg $optflag -o $outfile $flist
+#RET=$?
+#exit $RET
+#
+#
 ######################################################################
 
 ############################
@@ -22,43 +30,69 @@ then
 
     let TOTALIGNORE=FAILANYWAY+FAILCOMPATIBLE+FAILDEFLIKE+DUPLICATE
 
-    echo " "
-	echo "Attempted to compile total of $ATTEMPTED"
-	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE "
-	echo "IGNORED: total= $TOTALIGNORE : $FAILANYWAY that fail to compiled as 4gl files, $DUPLICATE duplicated errors,"
-	echo "$FAILCOMPATIBLE since they fails in alt compiler, $FAILDEFLIKE on DEFINE LIKE not in database"
-	echo "See $AMAKEERRORLOG and $LINKFAILLIST"
+    L1=" "
+	L2="Attempted to compile total of $ATTEMPTED"
+	L3="OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE "
+	L4="IGNORED: total= $TOTALIGNORE : $FAILANYWAY that fail to compiled as 4gl files, $DUPLICATE duplicated errors,"
+	L5="$FAILCOMPATIBLE fails in alt compiler, $LINKFAILCOMPATIBLE fails to link in alt compiler, $FAILDEFLIKE on DEFINE LIKE not in database"
+	L6="$FAILEDONSINGLE failed on single file compile, $FAILEDONLINK on linking, $ERRLINKORIGMAKE cannot link using original makefile"
+	L7="IGNORED: single fail fail = $ALLFAILEDONSINGLE link failed = $ALLFAILEDONLINK"
+	L8="See $AMAKEERRORLOG $ALTLINKFAILLIST and $LINKFAILLIST"
+	L9=`date`
 
-    echo " " >> $AMAKEERRORLOG
-	echo "Attempted to compile total of $ATTEMPTED" >> $AMAKEERRORLOG
-	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE ." >> $AMAKEERRORLOG
-	echo "IGNORED: total= $TOTALIGNORE : $FAILANYWAY that fail to compiled as 4gl files, $DUPLICATE duplicated errors," >> $AMAKEERRORLOG
-	echo "$FAILCOMPATIBLE since they fails in alt compiler, $FAILDEFLIKE on DEFINE LIKE not in database" >> $AMAKEERRORLOG
-	echo "See $AMAKEERRORLOG and $LINKFAILLIST" >> $AMAKEERRORLOG
-	date >> $AMAKEERRORLOG
+    echo $L1
+    echo $L2
+    echo $L3
+    echo $L4
+    echo $L5
+    echo $L6
+    echo $L7
+    echo $L8
+    echo $L9
 
-
+    echo $L1 >> $AMAKEERRORLOG
+    echo $L2 >> $AMAKEERRORLOG
+    echo $L3 >> $AMAKEERRORLOG
+    echo $L4 >> $AMAKEERRORLOG
+    echo $L5 >> $AMAKEERRORLOG
+    echo $L6 >> $AMAKEERRORLOG
+    echo $L7 >> $AMAKEERRORLOG
+    echo $L8 >> $AMAKEERRORLOG
+    echo $L9 >> $AMAKEERRORLOG
 else
 
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
-    echo " "
-	echo "Attempted to compile total of $ATTEMPTED , and $ATTEMPTEDGLOBALS GLOBALS files"
-	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
-    echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
-    echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
-    echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
-	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found."
-    echo "$TESTCONTINUESKIP skipped since they failed in previous run, $FAILDEFLIKE failed on missing DEFINELIKE and ignored."
-	date
 
-    echo " " >> $ERRORLOG
-	echo "Attempted to compile total of $ATTEMPTED, and $ATTEMPTEDGLOBALS GLOBALS files" >> $ERRORLOG
-	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
-    echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
-    echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
-    echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
-	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $ERRORLOG
-    echo "$TESTCONTINUESKIP skipped since they failed in previous run, $FAILDEFLIKE failed on missing DEFINELIKE and ignored." >> $ERRORLOG
+	L1=" "
+	L2="Attempted to compile total of $ATTEMPTED , and $ATTEMPTEDGLOBALS GLOBALS files"
+	L3="$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
+	L4="$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
+	L5="$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
+	L6="$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
+	L7="$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found."
+	L8="$TESTCONTINUESKIP skipped since they failed in previous run, $FAILDEFLIKE failed on missing DEFINELIKE and ignored."
+	L9=`date`
+
+    echo $L1
+    echo $L2
+    echo $L3
+    echo $L4
+    echo $L5
+    echo $L6
+    echo $L7
+    echo $L8
+    echo $L9
+
+    echo $L1 >> $ERRORLOG
+    echo $L2 >> $ERRORLOG
+    echo $L3 >> $ERRORLOG
+    echo $L4 >> $ERRORLOG
+    echo $L5 >> $ERRORLOG
+    echo $L6 >> $ERRORLOG
+    echo $L7 >> $ERRORLOG
+    echo $L8 >> $ERRORLOG
+    echo $L9 >> $ERRORLOG
+
 	echo "See also:" >> $ERRORLOG
 	echo "All zero length files		:$ZEROLOG" >> $ERRORLOG
 	echo "All 4gl compiler errors	:$FGLLOG" >> $ERRORLOG
@@ -97,7 +131,7 @@ function shortstats {
 ############################
 	if test $AMAKE = "1"
 	then
-		echo "Tried=$ATTEMPTED OK=$AMAKEOK Fail=$AMAKEFAIL Previous=$COMPBEFORE IGN: aubit=$FAILANYWAY alt=$FAILCOMPATIBLE LIKE=$FAILDEFLIKE"
+		echo "Tried=$ATTEMPTED OK=$AMAKEOK Fail=$AMAKEFAIL Previous=$COMPBEFORE IGN: 4gl=$FAILANYWAY alt=$FAILCOMPATIBLE LIKE=$FAILDEFLIKE"
     else
 		echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP L=$FAILDEFLIKE"
     fi
@@ -663,9 +697,9 @@ function compileit {
 				        let FAILDEFLIKE=FAILDEFLIKE+1
 					    if [ "$VERBOSE" = "1" ]
 					    then
-							echo "Ignoring error - fails DEFINE LIKE not in database."
+							echo "Ignoring error - fails DEFINE LIKE not in database. ($i)"
 			            fi
-						echo "Ignoring error - fails DEFINE LIKE not in database." >> $ERRORLOG
+						echo "Ignoring error - fails DEFINE LIKE not in database. ($i)" >> $ERRORLOG
 					    #FIXME: log filename to $DEFINELIKELIST
 			            #FIXME: extract error lines to $DEFINELIKEERROR
 				        echo "##########################################################" >> $ERRORLOG
@@ -742,8 +776,9 @@ function compileit {
 		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
 					    if [ "$VERBOSE" = "1" ]
 					    then
-							echo "Ignoring error - fails with $ALTCOMPILER too ($ALTFAILLIST)."
+							echo "Ignoring error - fails with $ALTCOMPILER too ($ALTFAILLIST). ($i)"
 	                    fi
+						echo "Ignoring error - fails with $ALTCOMPILER too ($ALTFAILLIST). ($i)"  >> $ERRORLOG
 						return
 					fi
 
@@ -766,9 +801,10 @@ function compileit {
 		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
 					    if [ "$VERBOSE" = "1" ]
 					    then
-							echo "Ignoring error - fails with $ALTCOMPILER too (previous)."
+							echo "Ignoring error - fails with $ALTCOMPILER too (previous). ($i)"
 	                    fi
-			            return
+						echo "Ignoring error - fails with $ALTCOMPILER too (previous). ($i)" >> $ERRORLOG
+						return
 			        else
 					    if [ "$VERBOSE" = "1" ]
 					    then
@@ -799,9 +835,10 @@ function compileit {
 		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
 					    if [ "$VERBOSE" = "1" ]
 					    then
-							echo "Ignoring error - fails with $ALTCOMPILER too (now)."
+							echo "Ignoring error - fails with $ALTCOMPILER too (now). ($i)"
 	                    fi
-				        return
+						echo "Ignoring error - fails with $ALTCOMPILER too (now). ($i)" >> $ERRORLOG
+						return
 				    fi
 				fi
 			fi
@@ -835,8 +872,10 @@ function compileit {
 		        let FAILDEFLIKE=FAILDEFLIKE+1
 			    if [ "$VERBOSE" = "1" ]
 			    then
-					echo "Ignoring error - fails DEFINE LIKE not in database."
+					echo "Ignoring error - fails DEFINE LIKE not in database. ($i)"
 	            fi
+				echo "Ignoring error - fails DEFINE LIKE not in database. ($i)" >> $ERRORLOG
+
 			    #FIXME: log filename to $DEFINELIKELIST
 	            #FIXME: extract error lines to $DEFINELIKEERROR
 				return
@@ -1031,12 +1070,16 @@ function compglobals {
     DOINGGLOBALS=0
 } #compglobals
 
-###################
+#########################################################
 function runamake {
-###################
+#########################################################
 
-                #allsinglelibs.mk is just a collector for all single
-                #file compilations, when using prepmake:
+
+                #There are some files that have GLOBALS definitons pointing
+                #to file in same directory; but, when when you try to compile 
+				#this file from outside that directory, both 4Js and Aubit will 
+				#be unable to find file referenced in GLOBALS; so we better
+                #vompile this:
                 if [ "$i" = "allsinglelibs.mk" ]
                 then
                     return
@@ -1046,78 +1089,123 @@ function runamake {
 				#set filename of resulting target:
                 #########################################################
 				#FIXME: it can also be dummy.ao (allsinglelibs.mk) !!!
-				EXECFILE=`basename $i .mk`.4ae;
-				EXECFILEAOX=`basename $i .mk`.aox;
+
+				if [ "$COMPILER" = "aubit" ]
+                then
+                    OBJEXT=ao
+                    PROGEXT=4ae
+                    LIBEXT=aox
+                    FORMEXT=afr
+					MAKEDEFAULT=aubit
+                    PROGDIR=aprog
+                    NOTINDBTEXT="does not exist in the database ()"
+                fi
+
+				if [ "$COMPILER" = "4js" ]
+                then
+                    OBJEXT=42m
+                    PROGEXT=42r
+                    LIBEXT=42x
+                    FORMEXT=42f
+                    MAKEDEFAULT=d4gl-pcode
+                    PROGDIR=gprog
+                    #FIXME:
+					NOTINDBTEXT="does not exist in the database ()"
+                    NOTDEFINEDTEXT="has not been defined in any module in the program"
+                fi
+
+				EXECFILE=`basename $i .mk`.$PROGEXT;
+				EXECFILEAOX=`basename $i .mk`.$LIBEXT;
+
 
                 #########################################################
                 #Clean targed and objects as configured:
                 #########################################################
 				if test "$FULLCLEAN" = "1"
                 then
-					amake $i clean
+					echo "Cleaning all objects and targets for $i"
+					amake $i clean $MAKEDEFAULT
+				else
+
+					if test "$TARGETCLEAN" = "1"
+	                then
+						echo "Cleaning only target for $i"
+						#Other clen options: clean clean.most clean.all
+						amake $i clean.target $MAKEDEFAULT
+					fi
+
 				fi
 
-				if test "$TARGETCLEAN" = "1"
-                then
-					#pass -cleantarget to amake instead
-					#if [ -f $EXECFILE ]
-	                #then
-					#	rm $EXECFILE
-	                #fi
-					#FIXME: need to code it!
-					amake $i cleantarget
-                fi
 
-
-                #########################################################
-				#if we allrealy have this one linked in storrage dir, skip it:
-                #########################################################
-				if test "$MAXMODE" = "1"
+				if test "$SKIP" = "1"
                 then
-					if [ -f "$MAXDIR/aprog/$EXECFILE" -o -f "$EXECFILEAOX" ]
+					if test "$MAXMODE" = "1"
+	                then
+		                #########################################################
+						#if we allrealy have this one linked in storrage dir, skip it:
+                		#########################################################
+						if [ -f "$MAXDIR/$PROGDIR/$EXECFILE" -o -f "$MAXDIR/$PROGDIR/$EXECFILEAOX" ]
+						then
+							let COMPBEFORE=COMPBEFORE+1
+							if test $VERBOSE = "1"
+		                    then
+								echo "$MAXDIR/$PROGDIR/$EXECFILE or $MAXDIR/$PROGDIR/$EXECFILEAOX exist, skip is ON"
+		                    fi
+		                    return
+		                fi
+	                fi
+
+	                #########################################################
+	                #if we allrealy have this one linked in this dir, skip it:
+	                #########################################################
+					if [ -f "$EXECFILE"  -o -f "$EXECFILEAOX" ]
 	                then
 						let COMPBEFORE=COMPBEFORE+1
 						if test $VERBOSE = "1"
 	                    then
-							echo "$MAXDIR/aprog/$EXECFILE or $EXECFILEAOX exist, skip is ON"
+							echo "$EXECFILE or $EXECFILEAOX exist, skip is ON"
 	                    fi
-	                    return
+			            if test "$MOVETOSTORE" = "1"
+	        		    then
+			                if test "$MAXMODE" = "1"
+	        		        then
+								if [ -f $EXECFILEAOX ]
+                                then
+									mv $EXECFILEAOX $MAXDIR/$PROGDIR
+                                else
+									mv $EXECFILE $MAXDIR/$PROGDIR
+                                fi
+	                        fi
+	                    fi
+						return
 	                fi
-                fi
-
-                #########################################################
-                #if we allrealy have this one linked in this dir, skip it:
-                #########################################################
-				if [ -f $EXECFILE ]
-                then
-					let COMPBEFORE=COMPBEFORE+1
-					if test $VERBOSE = "1"
-                    then
-						echo "$EXECFILE exist, skip is ON"
-                    fi
-		            if test "$MOVETOSTORE" = "1"
-        		    then
-		                if test "$MAXMODE" = "1"
-        		        then
-							mv $EXECFILE $MAXDIR/aprog
-                        fi
-                    fi
-					return
-                fi
-
-				let ATTEMPTED=ATTEMPTED+1
+				fi
 
                 #########################################################
 				#run it
                 #########################################################
 				if test "$SCRIPTDEBUG" = "1"
 			    then
-                    echo "------------------- Running amake -verbose $i ----------------------"
+                    echo "----------- Running amake -verbose $i $MAKEDEFAULT ---------------"
+                fi
+
+                if [ "$i" = "allsinglelibs.mk" ]
+                then
+                    ADDFLAG=-k
                 fi
 
 				#amake -verbose $i >> $AMAKEERRORLOG 2>&1
-                amake -verbose $i > $i.log 2> $i.make.log
+                amake -verbose $i $ADDFLAG $MAKEDEFAULT > $i.log 2> $i.make.log
 				RET=$?
+
+                #allsinglelibs.mk is just a collector for all single
+                #file compilations, when using prepmake:
+                if [ "$i" = "allsinglelibs.mk" ]
+                then
+                    return
+                fi
+
+				let ATTEMPTED=ATTEMPTED+1
 
 				if test $RET = "0"
 				then
@@ -1134,7 +1222,7 @@ function runamake {
             			then
 			                if test "$MAXMODE" = "1"
             			    then
-								mv $EXECFILE $MAXDIR/aprog
+								mv $EXECFILE $MAXDIR/$PROGDIR
                             fi
                         fi
 						if test $VERBOSE = "1"
@@ -1192,6 +1280,12 @@ function runamake {
 						echo Problem file name was $PROBLEMFILE
                     fi
 
+#Problem file name was pinqwind.aox `default'
+#basename: too many arguments
+#Try `basename --help' for more information.
+#Problem file was 4gl
+#PROBLEMFILE = .4gl
+
 					#/usr/aubit/aubit4glsrc/bin/amakeallo: /usr/aubit/aubit4glsrc/bin/amake: Text file busy
                     if [ "$PROBLEMFILE" = "Text" ]
                     then
@@ -1199,8 +1293,17 @@ function runamake {
                         exit 55
                     fi
 
+                    PATHTO=`dirname $PROBLEMFILE`
 
-					Y=`basename $PROBLEMFILE .ao`;
+                    if [ "$PATHTO" != "" ] && [ "$PATHTO" != "." ]
+	                then
+                        echo Should not have nay path here:
+						echo PATHTO = $PATHTO in $PROBLEMFILE
+                        echo $PWD
+                        exit 45
+                    fi
+
+					Y=`basename $PROBLEMFILE .$OBJEXT`;
                     if [ "$PROBLEMFILE" != "$Y" ]
                     then
                         #we did have .ao, so we failed on 4gl compile
@@ -1209,6 +1312,7 @@ function runamake {
 							echo "Problem file was 4gl"
                         fi
 						PROBLEMFILE=$Y.4gl;
+                        FAILEDON="singlefile"
 
                         #FIXME:
                         #we might as well ignore here, if we failed to compile
@@ -1218,7 +1322,7 @@ function runamake {
                     else
 						#did we have .4ae extension?
 
-						Y=`basename $PROBLEMFILE .4ae`;
+						Y=`basename $PROBLEMFILE .$PROGEXT`;
 	                    if [ "$PROBLEMFILE" != "$Y" ]
     	                then
                         	#we did have .4ae, so we failed on maikng executable.
@@ -1227,10 +1331,11 @@ function runamake {
 								echo "Problem file was exec"
                             fi
 							PROBLEMFILE=$Y.exec;
+	                        FAILEDON="link"
                         else
 							#did we have .aox extension?
-							Y=`basename $PROBLEMFILE .aox`;
-		                    if [ "$PROBLEMFILE" != "$Y" ]
+							Y=`basename $PROBLEMFILE .$LIBEXT`;
+							if [ "$PROBLEMFILE" != "$Y" ]
                             then
 	                        	#we did have .aox, so we failed on linking library.
 								if [ "$SCRIPTDEBUG" = "1" ]
@@ -1238,21 +1343,39 @@ function runamake {
 									echo "Problem file was lib"
                                 fi
 								PROBLEMFILE=$Y.lib;
+		                        FAILEDON="link"
                             else
+								#did we have .afr extension?
+								Y=`basename $PROBLEMFILE .$FORMEXT`;
+			                    if [ "$PROBLEMFILE" != "$Y" ]
+	                            then
+		                        	#we did have .afr, so we failed on form file
 
-#------------------- Running amake -verbose A1F.mk ----------------------
-#1 No
-#Failed on No, not .ao, .aox or .4ae ? STOP.
-								
-# amake -verbose A1F.mk
-#Command is: make -f A1F.mk
-#make: *** No rule to make target `pinqwind.aox', needed by `A1F.4ae'.  Stop.
-#ERROR: amake failed.
+                                    #we should check if we created target
 
-#FIXME : add -quiet to prepmake
+									let AMAKEOK=AMAKEOK+1
+									if test $VERBOSE = "1"
+		            		        then
+										echo "OK: $PWD/$i"
+		    		                fi
+				   	                echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+                                    return
 
-								echo "Failed on $PROBLEMFILE, not .ao, .aox or .4ae ? STOP."
-    	                        exit 33
+                                else
+									if [ "$PROBLEMFILE" = "No" ]
+									then
+										echo "#make: *** No rule to make target"
+	                                fi
+
+#----------- Running amake -verbose G27b.mk d4gl-pcode ---------------
+#Problem file name was No
+##make: *** No rule to make target
+#Failed on No, not 42m, 42x 42f or 42r ? STOP.
+
+
+									echo "Failed on $PROBLEMFILE, not $OBJEXT, $LIBEXT $FORMEXT or $PROGEXT ? STOP."
+	    	                        exit 33
+                                fi
                             fi
                         fi
 					fi
@@ -1261,6 +1384,19 @@ function runamake {
 				    then
 						echo "PROBLEMFILE = $PROBLEMFILE"
 						#PROBLEMFILE=serrwind.4gl
+                    fi
+
+					if [ "$FAILEDON" = "singlefile" ]
+                    then
+                        let ALLFAILEDONSINGLE=ALLFAILEDONSINGLE+1
+                    else
+						if [ "$FAILEDON" = "link" ]
+                        then
+                            let ALLFAILEDONLINK=ALLFAILEDONLINK+1
+                        else
+                            echo "FAILEDON not link or singlefile. STOP"
+                            exit 34
+                        fi
                     fi
 
                     #########################################################
@@ -1277,8 +1413,9 @@ function runamake {
 						then
 							if [ "$VERBOSE" = "1" ]
 						    then
-								echo "Ignoring error - duplicate."
+								echo "Ignoring error - duplicate. ($i)"
 		                    fi
+							echo "Ignoring error - duplicate. ($i)"  >> $AMAKEERRORLOG
 							let DUPLICATE=DUPLICATE+1
                             return
                         fi
@@ -1297,10 +1434,13 @@ function runamake {
 							if test $ERRLINES != "0"
 							then
 				                let FAILANYWAY=FAILANYWAY+1
-								#echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST)." >> $AMAKEERRORLOG
+								if [ "$SCRIPTDEBUG" = "1" ]
+							    then
+									echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST). ($i)" >> $AMAKEERRORLOG
+                                fi
 								if [ "$VERBOSE" = "1" ]
 							    then
-									echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST)."
+									echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST). ($i)"
 			                    fi
 								return
 							fi
@@ -1325,10 +1465,13 @@ function runamake {
 							if test $ERRLINES != "0"
 							then
 				                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
-								#echo "Ignoring error - $PROBLEMFILE fails (ALT$FAILLIST)." >> $AMAKEERRORLOG
+								if [ "$SCRIPTDEBUG" = "1" ]
+							    then
+        								echo "Ignoring error - $PROBLEMFILE fails ($ALTFAILLIST). ($i)" >> $AMAKEERRORLOG
+                                fi
 								if [ "$VERBOSE" = "1" ]
 							    then
-									echo "Ignoring error - $PROBLEMFILE fails ($ALTFAILLIST)."
+									echo "Ignoring error - $PROBLEMFILE fails ($ALTFAILLIST). ($i)"
 			                    fi
 								return
 							fi
@@ -1340,22 +1483,68 @@ function runamake {
 		            fi
 
 
+                    ########################################
+                    #can we compile using original makefile?
+                    ########################################
+	                if [ test "$MAXMODE" = "1" ] && [ test "$TRYORIGMAKEFILE" = "1" ]
+       			    then
+						NAME=`basename $i .mk`.4gi;
+
+                        #if we don't remove /prog/xxx.4go, most Max makefiles
+                        #are too stupid to recreate anything, and will retutn Nothing to be done - uptpdate
+
+                        rm $MAXDIR/prog/$NAME
+
+
+                        #FIXME: In GL:  make ../gprog/G21.42r
+
+						make $MAXDIR/prog/$NAME > origmake.log 2>&1
+						RET=$?
+						if [ "$SCRIPTDEBUG" = "1" ]
+					    then
+							echo "command: make $MAXDIR/prog/$NAME" >> $AMAKEERRORLOG
+                        fi
+						if test $RET != "0"
+						then
+		        	        ORIGMAKEMSG="Error using original makefile"
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Error using original makefile"
+                            fi
+                            let ERRLINKORIGMAKE=ERRLINKORIGMAKE+1
+							if [ "$SCRIPTDEBUG" = "1" ]
+						    then
+                                echo '#--------------- ORIGINAL MAKEFILE OUTPUT -----------------------' >> $AMAKEERRORLOG
+								tail origmake.log >> $AMAKEERRORLOG
+                                echo '#------------------------ END -----------------------------------' >> $AMAKEERRORLOG
+                            fi
+                            #return
+			            else
+		        	        ORIGMAKEMSG="Compiles OK using original makefile"
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Compiles OK using original makefile"
+                            fi
+						fi
+                    fi
+
+
                     #########################################################
                     #Is this "DEFINE ... LIKE not in database" error?
                     #########################################################
-					ERRLINES=`cat $i.log | grep -c "does not exist in the database ()"`
+					ERRLINES=`cat $i.log | grep -c "$NOTINDBTEXT"`
 					if [ "$SCRIPTDEBUG" = "1" ]
 				    then
-			    			echo "'does not exist in the database ()' found in $i.log = $ERRLINES"
+			    			echo "'$NOTINDBTEXT' found in $i.log = $ERRLINES"
 			        fi
-					if test $ERRLINES != "0"
+					if test "$ERRLINES" != "0"
 					then
 				        let FAILDEFLIKE=FAILDEFLIKE+1
 					    if [ "$VERBOSE" = "1" ]
 					    then
-							echo "Ignoring error - fails DEFINE LIKE not in database."
+							echo "Ignoring error - fails DEFINE LIKE not in database. ($i)"
 			            fi
-						#echo "Ignoring error - fails DEFINE LIKE not in database." >> $AMAKEERRORLOG
+						#echo "Ignoring error - fails DEFINE LIKE not in database. ($i)" >> $AMAKEERRORLOG
 						return
 			        fi
 
@@ -1372,10 +1561,10 @@ function runamake {
 
 						if test $RET != "0"
 						then
-			                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+			                let LINKFAILCOMPATIBLE=LINKFAILCOMPATIBLE+1
 							if [ "$VERBOSE" = "1" ]
 						    then
-								echo "Ignoring error - $i fails to link with alt compiler too."
+								echo "Ignoring error - $i fails to link with alt compiler too. ($i)"
 		                    fi
 							if [ "$SCRIPTDEBUG" = "1" ]
 						    then
@@ -1395,6 +1584,8 @@ function runamake {
 						fi
 					fi
 
+					echo $ORIGMAKEMSG  >> $AMAKEERRORLOG
+
                     #########################################################
                     #Remaining should be linking errors only:
                     #########################################################
@@ -1404,6 +1595,19 @@ function runamake {
 					echo "----Make say it failed on:----" >> $AMAKEERRORLOG
 					cat $i.make.log >> $AMAKEERRORLOG
 					echo "------------------------------" >> $AMAKEERRORLOG
+
+					if [ "$FAILEDON" = "singlefile" ]
+                    then
+                        let FAILEDONSINGLE=FAILEDONSINGLE+1
+                    else
+						if [ "$FAILEDON" = "link" ]
+                        then
+                            let FAILEDONLINK=FAILEDONLINK+1
+                        else
+                            echo "FAILEDON not link or singlefile. STOP"
+                            exit 34
+                        fi
+                    fi
 
 					let AMAKEFAIL=AMAKEFAIL+1
 					if test $VERBOSE = "1"
@@ -1443,7 +1647,8 @@ function makecurrentdir {
 		then
 		    echo "No .mk files in current directory, trying to make them..."
             echo "###################### running prepmake in $PWD ##################" >> $AMAKEERRORLOG
-			prepmake -clean -verbose >> $AMAKEERRORLOG 2>&1
+			#prepmake -clean -verbose >> $AMAKEERRORLOG 2>&1
+			prepmake -clean -quiet >> $AMAKEERRORLOG 2>&1
 			RET=$?
 			echo "########################################################################" >> $AMAKEERRORLOG
 			if test $RET != "0"
@@ -1625,7 +1830,7 @@ function doit {
 	TESTCONTINUE=0
 	AMAKE=0
 	MOVETOSTORE=1
-
+	TRYORIGMAKEFILE=1
 
     #------------- strings: ------------------
 
@@ -1657,6 +1862,12 @@ function doit {
 	ATTEMPTEDGLOBALS=0
 	FAILANYWAY=0
 	DUPLICATE=0
+	FAILEDONSINGLE=0
+	FAILEDONLINK=0
+	LINKFAILCOMPATIBLE=0
+	ERRLINKORIGMAKE=0
+	ALLFAILEDONSINGLE=0
+	ALLFAILEDONLINK=0
 
     #################################
 	#read options from command line:
@@ -1686,18 +1897,35 @@ function doit {
 
        -link)
 					#amakeallo -r -compatfile -maxmodeminimal -amake
-		            RECURSIVE=1
-					COMPATIBLE=1
-					USECOMPATFILE=1
-	                MAXMODE=1
-					MAXMODE2=1
-					AMAKE=1
+		            RECURSIVE=1     #-r
+					COMPATIBLE=1    #-Compat
+					USECOMPATFILE=1 #-Compatfile
+	                MAXMODE=1   	#-Maxmode
+					MAXMODE2=1  	#-Maxmodemimimal
+					AMAKE=1         #-amake
 
-					#TARGETCLEAN=1
-					FULLCLEAN=1
-					CLEANMK=1
-					VERBOSE=1
-                    SCRIPTDEBUG=1
+					#TARGETCLEAN=1  #call amake with clean.target
+					#FULLCLEAN=1 	#call amake with "clean"
+					#CLEANMK=1      #-cleanmk delete existing and remake .mk files
+					#SKIP=0         #don't skip already linked
+
+					#RESETALTLINKFAILLIST=1 #clean list of progs that fail to link with alt compiler
+					VERBOSE=1       #verbose output
+                    SCRIPTDEBUG=1   #debug script
+
+                    #using this list files:
+					#LINKFAILLIST ALTLINKFAILLIST : have name of COMPILER, LINKFAILLIST is always cleaned
+					#FAILLIST ALTFAILLIST : read only, contain name of COMPILER, created on non-AMAKE run
+
+					#testing with 4js:
+					#COMPILER=4js
+					#COMPATIBLE=0
+					#USECOMPATFILE=0
+                    #ALTCOMPILER=querix
+                    
+                    #Some makefile use fgl2p command; they I get "bad magic"
+					TRYORIGMAKEFILE=0
+
 
 	   ;;
 
@@ -1715,6 +1943,10 @@ function doit {
         ;;
 
 		-4js)		COMPILER=4js
+					#COMPATIBLE=0
+					#USECOMPATFILE=0
+                    ALTCOMPILER=querix
+
         ;;
 
 		-q)			COMPILER=querix
@@ -1924,7 +2156,7 @@ function doit {
 		echo "NOTE: using $DESTDIR for objects store"
     fi
 
-    
+
     ######################################
 	#drop and recreate storrage directory:
     ######################################
@@ -1962,8 +2194,11 @@ function doit {
 	    echo "Invoked in $PWD" >> $AMAKEERRORLOG
 		echo "-----------------------------------------------------" >> $AMAKEERRORLOG
         date > $LINKFAILLIST
-        #NOT!:
-		#date > $ALTLINKFAILLIST
+
+        if test "$RESETALTLINKFAILLIST" = "1"
+        then
+			date > $ALTLINKFAILLIST
+        fi
 		date > /tmp/allmakeerr.log
 	else
 	    date > $ERRORLOG
@@ -2006,7 +2241,7 @@ function doit {
 
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
-			ALLSUBDIRS=`ls -l | "^d" | awk '{print $NF}'`
+			ALLSUBDIRS=`ls -l | grep "^d" | awk '{print $NF}'`
         fi
 
 		################################

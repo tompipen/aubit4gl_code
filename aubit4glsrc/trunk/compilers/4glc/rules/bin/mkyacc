@@ -1,8 +1,8 @@
 #!/bin/sh
 if [ ! -w fgl.yacc ]
 then
-chmod 666 generated/fgl.yacc
-touch generated/fgl.yacc
+	chmod 666 generated/fgl.yacc
+	touch generated/fgl.yacc
 fi
 cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule generated/single_words.rule > generated/fgl.yacc
 echo "commands : | command1 ;" >> generated/fgl.yacc
@@ -14,7 +14,7 @@ if (getenv("INCLINES"))
 printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 prchkerr(lastlineno,infilename);
 lastlineno=yylineno;
-} 
+}
 | command1  all_commands {
 printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;   
 if (getenv("INCLINES"))

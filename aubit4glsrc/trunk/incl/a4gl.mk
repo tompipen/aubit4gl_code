@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.9 2001-09-27 10:27:46 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.10 2001-10-04 05:49:24 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -56,14 +56,6 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 
 # Rules for compiling A4GL
 
-#is this rule needed?
-#> In a4gl.mk, you ask about the null-suffix rule ".4gl:"; it is probably
-#> not needed.  In any case, in a multi-compiler system, it is ambiguous;
-#> is that supposed to be a Querix, Aubit, Informix, 4J's 4GL executable?
-#.4gl:
-#	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
-
-
 #.4gl.4ae:
 #.4ae:
 #	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
@@ -77,37 +69,22 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #	${A4GL_CC} $< -c -o $@
 
 
-#%.o : %.c
-#        $(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
-
-
 %.ao : %.4gl
-#.4gl.ao:
-	${A4GL_CC} $< -c -o ${OBJSTORE}$@
-#	${A4GL_CC} $^ -c -o ${OBJSTORE}$@
-#	${A4GL_CC} $? -c -o ${OBJSTORE}$@
-
-#	${A4GL_CC} $< -c -o $@
-#using VPATH:
-#	echo $^
-#	echo $@
-#	${A4GL_CC} $^ -c -o $@
-
-#.ao:
-#	${A4GL_CC} $*.4gl -c -o $*.ao
-
-
-#	mv $*.o $@
+#	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+	${A4GL_CC} $< -c -o $@
 
 %.aox:  %.mk
-	@echo "Trying to make library $*.aox $^"
-#	@echo "Trying to make library $*.aox using ${MAXDIR}/winds/$*.mk"
-#	${MAKE} -f ${MAXDIR}/winds/$*.mk
+	@echo "Making library $*.aox using $^"
 	${MAKE} -f $^
-#	amake ${MAXDIR}/winds/$*.mk
 
-# Rules for compiling A4GL form files
-#.per.frm:
+%.mk:
+#LAST RESORT: Trying to translate makefile to cinqwind.mk
+#FIXME: what if missing .mk is not from this directory? How to find
+#out where it should be, and how to make it?
+	@echo "LAST RESORT: Trying to translate makefile to $*.mk $^"
+#   cd somewhere???
+#	prepmake -verbose
+	@echo Sorry: disabled in a4gl.mk
 
 .per.afr:
 #	${A4GL_FC} $*
@@ -116,18 +93,12 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 	${A4GL_FC} $^ ${FORMSTORE}$@
 	rm -f ${FORMSTORE}$*.frm
 	ln ${FORMSTORE}$@ ${FORMSTORE}$*.frm
-#if I do this, programs will not be able to find forms; this need to be
-#changed in form compiler and aubit compiler. Untill we do, make will always
-#recompile forms, since it will not be able to find .afr files
-#	-mv $*.frm $@
+#FIXME: change form compiler and aubit compiler to recognise .afr, and
+#remove this "ln" line
 
 #I always want to go from 4gl to c, so I will disable this:
 .xx-c.xx-ao:
-#	${AUCC} ${CFLAGS} -DAUBIT4GL -c $?
-#	echo DEBUG: $? $*
-#	${AUCC} ${A4GL_CC_FLAGS} -c $? > $*.err 2>&1
 	${AUCC} ${AUCC_FLAGS} -c $*.c -o $*.ao
-#	mv $*.o $@
 
 # Rules for compiling message files
 #FIXME: this assumes program will look for .iem extension

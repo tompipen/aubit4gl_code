@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.2 2001-09-27 10:27:46 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.3 2001-10-04 05:49:24 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -7,6 +7,7 @@
 # Note that this file does not define any targets; it only defines
 # compilation rules and macros.
 #--------------------------------------------------------------------------
+
 
 # D4GL P-code Compiler
 D4GL_PC_CMD     = fgl2p
@@ -66,7 +67,7 @@ D4GL_MC         = ${D4GL_MC_CMD} ${D4GL_MC_FLAGS}
 D4GL_PA         = ${D4GL_PA_CMD} ${D4GL_PA_FLAGS}
 D4GL_SC         = ${D4GL_SC_CMD} ${D4GL_SC_FLAGS}
 
-D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h
+D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h .sch
 
 # Add the D4GL suffixes to the standard suffix list
 .SUFFIXES: ${D4GL_SUFFIXES}
@@ -87,23 +88,26 @@ D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h
 #.SUFFIXES:
 #.SUFFIXES: ${D4GL_SUFFIXES} ${SUFFIXES}
 
+#%.42m: %.4gl
 .4gl.42m:
 #	${D4GL_PC} -c $*.4gl
 #using VPATH:
 #	${D4GL_PC} -c $^
 	${D4GL_PC} -c $<
 #	${A4GL_CC} $< -c -o ${OBJSTORE}$@
-
+#	${LIBMVCMD} $@ ${OBJSTORE}
 
 .4gl.42r:
 #	${D4GL_PC} -c $*.4gl
 #	${D4GL_PL} -o $*.42m $*.42r ${D4GL_PL_LDFLAGS}
 #using VPATH:
-#	@echo eeeee
+	@echo eeeee
 	${D4GL_PC} -c $^
 	${D4GL_PL} -o $^.42m $^.42r ${D4GL_PL_LDFLAGS}
 
-
+eerr%.42x:
+	@echo $@ $^
+#	fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
 
 .4gl.42o:
 	${D4GL_CC} -c $*.4gl
@@ -115,14 +119,25 @@ D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h
 	${D4GL_CC} -c $*.4gl
 	${D4GL_CL} -o $*.42e $*.42o ${D4GL_CL_LDFLAGS}
 
-.per.42f:
-	${D4GL_FC} $*.per
+%.42f: %.per
+	${D4GL_FC} $^
+#	@echo MKTARGET = ${MKTARGET} FSTORE= ${FSTORE}
+#	@echo FORMSTORE = ${FORMSTORE}
+	${FORMMVCMD} $(dir $^)$@ ${FORMSTORE}
 
 .msg.42h:
 	${D4GL_MC} $*.msg $*.42h
 
 #rule to make database schemma file
-${DBASE.sch}:
+#${DBASE.sch}:
+%.sch:
 	${D4GL_SC} ${D4GL_SC_FLAGS} ${DBASE}
+	${SCHMVCMD} ${DBASE}.sch ${FGLDBPATH}
 
 
+%.42x:  %.mk
+	@echo "Making library $*.42x using $^"
+#FIXME: it can be pcode and ccode:
+#	${MAKE} -f $^ ${MAKEFLAGS}
+#	${MAKE} -f $^ ${MKTARGET}
+	${MAKE} -f $^ d4gl-pcode

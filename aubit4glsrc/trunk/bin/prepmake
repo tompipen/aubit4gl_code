@@ -30,12 +30,6 @@
 #Compile modules in this order:
 #	winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo
 #
-#Confirmed to work in $MAXDIR:
-#
-#	winds
-#   ar
-#	gl
-#	ap
 #
 ##########################################################################
 
@@ -43,7 +37,10 @@
 function replace {
 ########################
 
-    echo "Replacing    [$TOREPLACE]	with	[$INCLCMT]"
+	if test "$QUIET" = "0"
+    then
+	    echo "Replacing    [$TOREPLACE]	with	[$INCLCMT]"
+    fi
 	sed -e "s%$TOREPLACE%$INCLCMT%g" $RESULTMAKEFILE > $TMPCOMPOSITE
 	mv $TMPCOMPOSITE $RESULTMAKEFILE
 
@@ -67,7 +64,9 @@ function r_rm {
 ########################
 
 	#---------------------------------------------------------
-	TOREPLACE="rm "
+	#fonflicts with "fglfo-rm"
+	#TOREPLACE="rm "
+    TOREPLACE='	rm '
 	INCLCMT='#'$TOREPLACE
 	replace
 	#---------------------------------------------------------
@@ -128,6 +127,29 @@ function r_fglcomp {
 
 }
 
+
+#######################
+function r_fgl2p {
+#######################
+
+	#---------------------------------------------------------
+	#this is usefull only in CM, and I want form file names, so I'll
+    #get this from dependencies anyway:
+	#if test "$FROMDEPS" = "1"
+	if test "1" = "1"
+    then
+		TOREPLACE='	fgl2p'
+		INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+    else
+		TOREPLACE='	fgl2p -o'
+		INCLCMT='	genmake '
+    fi
+	replace
+	#---------------------------------------------------------
+
+}
+
+
 #######################
 function r_fglform {
 #######################
@@ -174,73 +196,37 @@ function r_fglpc {
 }
 
 
-########################
-#MAIN
-########################
+#################
+function doit {
+#################
 
-#############################
-#Configuration:
-	FILENAME=allsinglelibs.mk
-	rm -f $FILENAME
-	TMPCOMPOSITE=/tmp/makefile.1
-	RESULTMAKEFILE=makefile.prep
-	GENMAKE=genmake
-    DOALL=1
+	if test "$SKIP" = "1"
+    then
+        if [ -f $RESULTMAKEFILE ]
+        then
+            echo "SKIP is on, $RESULTMAKEFILE exists - skipping..."
+            return
+        fi
+    fi
 
-
-    #If you want to extract components from list of dependencies, instead
-	#directly form link line, change this to 1:
-    FROMDEPS=0
-
-	###########
-	for a in $@
-    ###########
-	do
-		##########
-		case $a in
-	    ##########
-
-                -help)
-                    echo " "
-                    echo " -verbose"
-                    echo " -clean"
-					echo " -all"
-                    echo " Maximise module/subdir name"
-                    echo " "
-                    exit 1
-                ;;
-
-
-			   -verbose) 	VERBOSE=1
-			   ;;
-
-			   -clean) 		CLEAN=1
-			   ;;
-
-
-			   -all) 		DOALL=1
-			   ;;
-
-
-			   *)         	SUBDIR=$a
-               ;;
-
-			   #*)           echo "ERROR: parameter $a not recognised"
-               #             exit 1
-        	   #;;
-		  ####
-		  esac
-          ####
-	####
-	done
-    ####
-
-    if [ ! -f makefile ]
+	if [ ! -f makefile ]
     then
 	    if [ ! -f Makefile ]
     	then
-			echo "ERROR: there is no file called 'M/makefile' in $PWD"
-	        exit 1
+			echo "WARNING: no file called 'M/makefile' in $PWD"
+	        EXITCODE=1
+
+            if test "$RECURSIVE" = "0"
+            then
+				exit $EXITCODE
+            else
+				if test "$STOPONERROR" = "1"
+    	        then
+					#exit $EXITCODE
+                    return
+                fi
+			fi
+            return
         else
 			cp Makefile $RESULTMAKEFILE
 		fi
@@ -250,7 +236,8 @@ function r_fglpc {
 
 	if test "$CLEAN" = "1"
 	then
-        rm -f *.mk
+        echo "Deleting all .mk files ..."
+		rm -f *.mk
     fi
 
     #add default rules, so make don't complain about missing rules
@@ -305,38 +292,65 @@ function r_fglpc {
 		#objects (.42x)
 	fi
 
+	#in CM:
+	r_fgl2p
+
+
 	if [ "$SUBDIR" = "main" -o "$DOALL" = "1" ]
 	then
-        touch $MAXDIR/prog/lic_calc.4go
-        touch $MAXDIR/prog/lic_check.4go
-        touch $MAXDIR/prog/lic_start.4go
-        touch $MAXDIR/prog/menuwind.4go
+		if [ "$MAXDIR" != "" ]
+        then
+			touch $MAXDIR/prog/lic_calc.4go
+	        touch $MAXDIR/prog/lic_check.4go
+	        touch $MAXDIR/prog/lic_start.4go
+	        touch $MAXDIR/prog/menuwind.4go
+        fi
 	fi
 
 
 #############################################
 #Run prepared makefile, to create .mk files:
 
-	echo " "
-   	echo "------------------------- Running make ... ------------------------------"
-	echo " "
+	if test "$VERBOSE" = "1"
+	then
+		echo " "
+	   	echo "-------------- Running make -f $RESULTMAKEFILE --------------------"
+		echo " "
+	else
+		if test "$QUIET" = "0"
+    	then
+			echo "Running make -f $RESULTMAKEFILE ..."
+        fi
+	fi
 
 	touch *.4gl
+	touch *.per
+	touch *.msg
 	make -f $RESULTMAKEFILE > prepmake.log 2>&1
 	RET=$?
-	
-	echo " "
+
 	if test "$RET" != "0"
 	then
 	    if test "$VERBOSE" = "1"
         then
-            tail prepmake.log
+			tail prepmake.log
 		   	echo "----------------------- Finished running make ---------------------------"
+            echo "PWD = $PWD"
 		fi
 		echo "Error preparing make file, see $RESULTMAKEFILE and prepmake.log"
-	    exit 1
+	    EXITCODE=1
+
+		if test "$STOPONERROR" = "1"
+        then
+	        exit $EXITCODE
+        else
+			return
+        fi
 	else
-	   	echo "----------------------- Finished running make ---------------------------"
+		if test "$QUIET" = "0"
+    	then
+			echo "----------------------- Finished running make ---------------------------"
+        fi
 		#if we created single libs file, we need to add footer at the end:
 		FOOTERNAME='${AUBITDIR}/incl/footer.mki'
 
@@ -349,9 +363,151 @@ function r_fglpc {
 			echo >> $FILENAME
 	    fi
 
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET != "0"
+		then
+	        echo "ERROR(?): No .mk files created in in $PWD"
+	    fi
+
+		if test "$QUIET" = "0"
+    	then
+            echo "Done in $PWD"
+            EXITCODE=0
+			return
+        fi
+	fi
+
+}
+
+
+########################
+#MAIN
+########################
+
+#############################
+#Configuration:
+	FILENAME=allsinglelibs.mk
+	rm -f $FILENAME
+	TMPCOMPOSITE=/tmp/makefile.1
+	RESULTMAKEFILE=makefile.prep
+	GENMAKE=genmake
+    DOALL=1
+	QUIET=0
+	RECURSIVE=0
+    STOPONERROR=1
+
+    #If you want to extract components from list of dependencies, instead
+	#directly form link line, change this to 1:
+    #This is a tradeoff, at least with Maximise: if you take names from
+    #command line, you will loose form files names, that can be listed
+    #only as dependencies; but if you take names from dependencies, you
+    #will not get distiction between library extensions (.42x/.42o)
+	FROMDEPS=0
+
+	###########
+	for a in $@
+    ###########
+	do
+		##########
+		case $a in
+	    ##########
+
+                -help)
+                    echo " prepmake [options] [name]"
+                    echo " -verbose"
+                    echo ' -quiet'
+                    echo " -clean"
+                    echo ' -skip'
+					echo " -all"
+                    echo ' -r'
+                    echo " name = Maximise module/subdir name"
+                    echo " "
+                    exit 1
+                ;;
+
+
+			   	-verbose) 	VERBOSE=1
+			   	;;
+
+				-quiet)  	VERBOSE=0
+                            QUIET=1
+               	;;
+
+			   	-clean) 	CLEAN=1
+			   	;;
+
+			   	-skip) 		SKIP=1
+			   	;;
+
+
+			   	-all) 		DOALL=1
+			   	;;
+
+			   	-r) 		RECURSIVE=1
+			   	;;
+
+			   	*)
+			   				if [ -d $a ]
+							then
+								SUBDIR=$a
+                            else
+								echo "ERROR: parameter $a not recognised - not subdir"
+								exit 1
+                            fi
+               	;;
+
+
+		  ####
+		  esac
+          ####
+	####
+	done
+    ####
+
+    echo "Processing \"$PWD\""
+
+    ####
+	doit
+    ####
+
+
+    if test "$RECURSIVE" = "1"
+    then
+
+	    ROOTDIR=$PWD
+		ALLSUBDIRS=`ls -l | grep "^d" | awk '{print $NF}'`
+
+		################################
+        for subsystem in $ALLSUBDIRS; do
+		################################
+
+            echo "Processing \"$subsystem\""
+			cd $ROOTDIR/$subsystem ;
+
+            if [ "$subsystem" = "cm" ]
+            then
+				cd $ROOTDIR/$subsystem/source
+            fi
+
+		    ####
+			doit
+		    ####
+
+        ####
+        done
+        ####
+
+    fi
+
+	if test "$QUIET" = "0"
+   	then
 		echo "'prepmake' completed. You can now run generated make files using "
 		echo "'amake' script. see 'amake -help' for instructions"
-		exit 0
-	fi
+    else
+        echo "prepmake: OK"
+    fi
+
+	exit 0
 
 #------------------------------ EOF -------------------------------------

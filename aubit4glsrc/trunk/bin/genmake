@@ -40,17 +40,44 @@ fi
             then
 	            if [ "$DIRNAME" != "$PWD" ]
     	        then
-					#PROBLEMFILE=`echo $X | sed -e "/./s/\]//"`
-					#LASTDIR=`echo $DIRNAME | sed -e "/$MAXDIR/s/$MAXDIR//"`
-					A1=$(echo $MAXDIR | sed -e "s/\//\\\\\//g")
-					A2=$(echo $DIRNAME | sed -e "s/$A1//")
+					if [ "$MAXDIR" != "" ]
+                    then
+						A1=$(echo $MAXDIR | sed -e "s/\//\\\\\//g")
+                    else
+                        echo "FIXME: cannot do this without MAXDIR"
+                        exit 99
+                    fi
+					A3=$(echo $DIRNAME | sed -e "s/$A1//")
+					A2=$(echo $A3 | sed -e "/../s/..//")
 					#echo "DIRNAME = $DIRNAME"
                     #echo "LASTDIR = $LASTDIR"
-					if [ "$A2" != "/gprog" ] && [ "$A2" != "/gform" ]
+
+					#current dir:
+					B1=$(echo $PWD | sed -e "s/$A1//")
+
+                    #if [ "B1" = "/cm/source" ]
+                    #then
+						#../../gprog/contact.42r points outside current dir (/cm/source), to /../gprog
+						TMP=$A2
+						A2=$(echo $A2 | sed -e "/../s/\/\.\.//")
+					#fi
+
+
+                    #../winds/invwind.42x points outside current dir, to ../winds. STOP.
+					if [ "$A2" != "/gprog" ] && [ "$A2" != "prog" ] && [ "$A2" != "/gform" ]  && [ "$A2" != "$B1" ]
                     then
 						#if this happens, add it to vpath
-						echo "$FULLNAME points outside current dir, to $A2. STOP."
+						echo "$FULLNAME points outside current dir ($B1), to $A2. STOP."
+                        echo $TMP
     	                exit 67
+
+
+                        #FIXME:
+                        #Maximise makefiles sometimes expect object to allreadu be
+                        #in ../prog or ../gprog:
+						#we should actually check if this file is in current dir,
+                        #and if not, look for it, and add vpath to that place
+
                     fi
                 fi
             fi
@@ -58,30 +85,45 @@ fi
 			CMDLINE="$CMDLINE $a"
 			CMDLINEBASENAME="$CMDLINEBASENAME $STRIPPATH"
 
-   			#first and  second can't be .42x
+   			#second can't be .42x
             ##########
 			case $a in
             ##########
 
             *.42x)
-				if test "$CNT" = "1" -o "$CNT" = "2"
+				if test "$CNT" = "1"
                 then
-                    echo "Got $a in first or second position. STOP"
-                    exit 56
+                    #We are supposed to make library:
+	                FIRST=$a
+				fi
+
+				#second is treated a GLOBALS, and lib cannot be GLOBAL file(?)
+				if test "$CNT" = "2"
+                then
+                    echo "Got $a in second position."
+                    #exit 56
+                    GLOBNAME=1
                 fi
             ;;
 
             *)
-				if test "$CNT" = "1"
+				if test "$GLOBNAME" = "1"
 	            then
-					#FIRST=`basename $a`
-	                FIRST=$a
-	            fi
-	            if test "$CNT" = "2"
-	            then
-					#SECOND=`basename $a`
-	                SECOND=$a
-	            fi
+                    #This will happen if we cannot use second param for GLOBALS
+                    #because it's not 4gl file:
+					GLOBNAME=$a
+                else
+					if test "$CNT" = "1"
+		            then
+						#FIRST=`basename $a`
+		                FIRST=$a
+		            fi
+		            if test "$CNT" = "2"
+		            then
+						#SECOND=`basename $a`
+		                SECOND=$a
+		            fi
+                fi
 	        ;;
 
 			####
@@ -106,6 +148,7 @@ then
     OBJEXT=4go
     PROGEXT=4gi
 	LIBEXT=4go
+	FRMEXT=frm
 
 else
 	PROG=`basename $FIRST .42m`
@@ -117,11 +160,23 @@ else
         OBJEXT=42m
         PROGEXT=42r
 	    LIBEXT=42x
-
+		FRMEXT=42f
     else
-	    IS4GO="0"
-	    IS42M="0"
-		ISLIB="0"
+		PROG=`basename $FIRST .42x`
+		if [ "$PROG" != "$FIRST" ]
+		then
+		    IS4GO="0"
+		    IS42M="0"
+	    	ISLIB="1"
+	        OBJEXT=42m
+	        PROGEXT=42r
+		    LIBEXT=42x
+           	FRMEXT=42f
+	    else
+		    IS4GO="0"
+	    	IS42M="0"
+			ISLIB="0"
+        fi
     fi
 fi
 
@@ -135,6 +190,7 @@ then
         OBJEXT=4go
         PROGEXT=4gi
 		LIBEXT=4go
+       	FRMEXT=frm
 	else
 		PROG=`basename $FIRST .42r`
 		if [ "$PROG" != "$FIRST" ]
@@ -146,6 +202,7 @@ then
             OBJEXT=42m
             PROGEXT=42r
 	        LIBEXT=42x
+			FRMEXT=42f
         else
 			echo "Cannot recognise extension of $FIRST STOP."
     	    exit 4
@@ -180,6 +237,7 @@ then
 		echo "PROG		= dummy.lib"  >> $FILENAME
 		echo >> $FILENAME
 		echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
+        GLOBFILE=$fname.4gl
 		echo >> $FILENAME
 		echo 'FILES.4gl	= \' >> $FILENAME
 		echo '		${GLOBALS.4gl} \' >> $FILENAME
@@ -203,87 +261,94 @@ else
     fi
 	echo >> $FILENAME
 
-	fname=`basename $SECOND .$OBJEXT`
+	if [ "$GLOBNAME" != "" ]
+    then
+		#if we received non-4gl dile as second param:
+		fname=`basename $GLOBNAME .$OBJEXT`
+    else
+		fname=`basename $SECOND .$OBJEXT`
+    fi
+
 	fname=`basename $fname .4gl`
 	echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
+    GLOBFILE=$fname.4gl
 	echo >> $FILENAME
 
 	##################
 	for a in $CMDLINE
     ##################
 	do
-		if ! [ "$FIRST" = $a ] 		#it's program name
+		if [ "$FIRST" != "$a" ] 		#it's program name
         then
-	        if ! [ "$SECOND" = $a ]  #it's GLOBALS file
+	        if [ "$GLOBNAME" != "$a" ] #it's GLOBALS file
             then
-
-			##########
-			case $a in
-	        ##########
-
-			#*.42m) || *.4go) HOW THE HELL DO YOU DO _OR_here ?
-			#*.4go)
-            *.$OBJEXT)
-				fname=`basename $a .$OBJEXT`
-                #EXT=ao
-                EXT=4gl
-
-				#cinqwind is BOTH a 4gl and library (.42x, .aox) name
-                #which is VERY stupid thing to do, and should be fixed in Maximise;
-                #since I will have dependencies listeds with .4go in Maximise makefile,
-                #(there will be .42x in 4Js link line, but I'm not looking at that...
-				#Maybe I shoud use "fgllink..." line to get files, and not dependencies?)
-				if [ "$fname" = "cinqwind" -o "$fname" = "invwind" -o "$fname" = "lic_keys" -o "$fname" = "pinqwind" -o "$fname" = "wcustwind" -o "$fname" = "wordrwin" -o "$fname" = "wpinqwind" ]
+				if [ "$SECOND" != "$a" -o "$GLOBNAME" != "" ]
                 then
-					if [ "$OBJEXT" = "4go" ]
-                    then
-						#EXT=aox
-						#if [ "$LIBLIST" = "" ]
-					    #then
-						#	#echo '		${FILES.lib} \' >> $FILENAME
-                	    #fi
-						LIBLIST="$LIBLIST $fname.lib"
-                    else
-    	                FGLLIST="$FGLLIST $fname.$EXT"
-                    fi
-                else
-                    FGLLIST="$FGLLIST $fname.$EXT"
+
+				##########
+				case $a in
+		        ##########
+
+				#*.42m) || *.4go) HOW THE HELL DO YOU DO _OR_here ?
+				#*.4go)
+	            *.$OBJEXT)
+					fname=`basename $a .$OBJEXT`
+	                #EXT=ao
+	                EXT=4gl
+
+					#cinqwind is BOTH a 4gl and library (.42x, .aox) name
+	                #which is VERY stupid thing to do, and should be fixed in Maximise;
+	                #since I will have dependencies listeds with .4go in Maximise makefile,
+	                #(there will be .42x in 4Js link line, but I'm not looking at that...
+					#Maybe I shoud use "fgllink..." line to get files, and not dependencies?)
+					if [ "$fname" = "cinqwind" -o "$fname" = "invwind" -o "$fname" = "lic_keys" -o "$fname" = "pinqwind" -o "$fname" = "wcustwind" -o "$fname" = "wordrwin" -o "$fname" = "wpinqwind" ]
+	                then
+						if [ "$OBJEXT" = "4go" ]
+	                    then
+							#EXT=aox
+							#if [ "$LIBLIST" = "" ]
+						    #then
+							#	#echo '		${FILES.lib} \' >> $FILENAME
+	                	    #fi
+							LIBLIST="$LIBLIST $fname.lib"
+	                    else
+	    	                FGLLIST="$FGLLIST $fname.$EXT"
+	                    fi
+	                else
+	                    FGLLIST="$FGLLIST $fname.$EXT"
+	                fi
+
+				;;
+
+	            *.$LIBEXT)
+					fname=`basename $a .$LIBEXT`
+	                LIBLIST="$LIBLIST $fname.lib"
+	            ;;
+
+				#*.42f) || *.frm)
+		        #*.frm)
+                *.$FRMEXT)
+					fname=`basename $a .$FRMEXT`
+		            FORMFILES="$FORMFILES $fname.per"
+		        ;;
+
+		        *)
+					echo "ERROR: what the hell is $a"
+					echo "IS4GO = $IS4GO IS42M = $IS42M ISLIB = $ISLIB"
+			        echo "$OBJEXT $PROGEXT $LIBEXT"
+	                echo "---------------------------x"
+					echo $CMDLINEBASENAME
+	                echo "---------------------------x"
+	                echo FIRST = $FIRST SECOND = $SECOND
+					#echo $@
+					exit 1
+		        ;;
+
+				####
+				esac
+				####
                 fi
-
-			;;
-
-            *.$LIBEXT)
-				fname=`basename $a .$LIBEXT`
-                LIBLIST="$LIBLIST $fname.lib"
-            ;;
-
-			#*.42f) || *.frm)
-	        *.frm)
-				fname=`basename $a .frm`
-	            FORMFILES="$FORMFILES $fname.per"
-	        ;;
-
-	        *) echo "ERROR: what the hell is $a"
-
-				echo "IS4GO = $IS4GO"
-			    echo "IS42M = $IS42M"
-		    	echo "ISLIB = $ISLIB"
-		        echo "$OBJEXT"
-		        echo "$PROGEXT"
-			    echo "$LIBEXT"
-                echo "---------------------------x"
-				echo $CMDLINEBASENAME
-                echo "---------------------------x"
-                echo $FIRST $SECOND
-				#echo $@
-				exit 1
-
-	        ;;
-
-			####
-			esac
-			####
-            fi
+			fi
         fi
 	####
 	done
@@ -333,10 +398,33 @@ else
         ####
 
 		echo >> $FILENAME
-    #else
+    else
         #This can happen with porgrams that have only one 4gl file
 		#echo FGLLIST is empty
-        #exit 44
+
+	    grep -i "end main" $GLOBFILE > /dev/null
+
+		RET=$?
+		if test $RET != "0"
+		then
+            echo "no END MAIN in $GLOBFILE"
+
+            #is this one of 0 size 4gl files?
+			FGLFILESIZE=$(ls -al $GLOBFILE | awk '{print $5}')
+    		if [ "$VERBOSE" = "1" ]
+	    	then
+				echo FGLFILESIZE of $GLOBFILE is $FGLFILESIZE
+            fi
+            if [ "$FGLFILESIZE" = "0" ]
+            then
+        	    echo "This is zero size file, ignoring."
+            fi
+			
+			rm $FILENAME
+            exit 0
+	    else
+			echo 'FILES.4gl	= ${GLOBALS.4gl} ' >> $FILENAME
+        fi
 
 	fi
 
