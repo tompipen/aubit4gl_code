@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.5 2003-03-12 07:23:31 mikeaubury Exp $
+# $Id: iarray.c,v 1.6 2003-03-24 12:02:18 mikeaubury Exp $
 #*/
 
 /**
@@ -76,19 +76,20 @@ struct s_inp_arr *curr_arr_inp;
  * @param
  */
 static void
-iclear_srec_line (struct struct_screen_record *srec,int line)
+iclear_srec_line (struct struct_screen_record *srec, int line)
 {
-int a;
-char srec1[256];
+  int a;
+  char srec1[256];
 
   strcpy (srec1, srec->name);
   strcat (srec1, ".*");
 
   for (a = 0; a < srec->attribs.attribs_len + 1; a++)
-	{
-	  push_char (" ");
-	}
-      idisp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, line + 1, 0, 0);
+    {
+      push_char (" ");
+    }
+  idisp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, line + 1, 0,
+		    0);
 }
 
 /**
@@ -104,7 +105,9 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   int scr_line;
   int fonly = 0;
 #ifdef DEBUG
-  {    debug ("in draw_arr %p %d %d", disp, type, no);  }
+  {
+    debug ("in draw_arr %p %d %d", disp, type, no);
+  }
 #endif
   if (type < 0)
     {
@@ -112,22 +115,24 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
       fonly = 1;
     }
 
-  debug("*** no=%d disp->no_arr=%d\n", no,disp->no_arr);
+  debug ("*** no=%d disp->no_arr=%d\n", no, disp->no_arr);
 
   topline = disp->arr_line - disp->scr_line + 1;
   scr_line = no - topline + 1;
 
-  if (scr_line>disp->srec->dim) {
-	debug("scr line out of range %d %d\n",scr_line,disp->srec->dim);
-	 return;
-  }
+  if (scr_line > disp->srec->dim)
+    {
+      debug ("scr line out of range %d %d\n", scr_line, disp->srec->dim);
+      return;
+    }
 
-  if (no>disp->no_arr) {
-	  debug("arr no out of range %d %d\n",scr_line,disp->srec->dim);
-          iclear_srec_line (disp->srec,scr_line-1);
-	  return;
-  }
- 
+  if (no > disp->no_arr)
+    {
+      debug ("arr no out of range %d %d\n", scr_line, disp->srec->dim);
+      iclear_srec_line (disp->srec, scr_line - 1);
+      return;
+    }
+
   strcpy (srec2, disp->srec->name);
   strcat (srec2, ".*");
 
@@ -136,7 +141,9 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
       debug ("calling set_arr_Fields");
       set_arr_fields (disp->nbind, 1, srec2, scr_line, 0, 0);
 #ifdef DEBUG
-      {	debug ("Done");      }
+      {
+	debug ("Done");
+      }
 #endif
       return;
     }
@@ -152,8 +159,9 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   if (disp->highlight)
     {
       debug ("With highlight");
-	      idisp_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line, 0, 0);
-	    }
+      idisp_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line,
+			0, 0);
+    }
   else
     {
       debug ("Without highlight");
@@ -169,11 +177,11 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
 static void
 iclear_srec (struct struct_screen_record *srec)
 {
-int b;
+  int b;
 
   for (b = 0; b < srec->dim; b++)
     {
-	iclear_srec_line(srec,b);
+      iclear_srec_line (srec, b);
     }
 }
 
@@ -189,22 +197,28 @@ idraw_arr_all (struct s_inp_arr *disp)
   int topline;
   topline = disp->arr_line - disp->scr_line + 1;
 #ifdef DEBUG
-  {    debug ("Draw_arr_all");  }
+  {
+    debug ("Draw_arr_all");
+  }
 #endif
   for (a = 0; a < disp->srec->dim; a++)
     {
       /* if (a + topline < disp->no_arr)
-	{
-    */
-	  idraw_arr (disp, a + topline == disp->arr_line, a + topline);
+         {
+       */
+      idraw_arr (disp, a + topline == disp->arr_line, a + topline);
 #ifdef DEBUG
-	  {	    debug ("after draw_arr (6)");	  }
+      {
+	debug ("after draw_arr (6)");
+      }
 #endif
-	/* } */
+      /* } */
     }
   idraw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
-  {    debug ("after draw_arr (7)");  }
+  {
+    debug ("after draw_arr (7)");
+  }
 #endif
   mja_refresh ();
 }
@@ -218,18 +232,22 @@ static void
 iredisplay_arr (struct s_inp_arr *arr, int redisp)
 {
 
-  debug("scr_line=%d arr_line=%d\n",arr->scr_line,arr->arr_line);
+  debug ("scr_line=%d arr_line=%d\n", arr->scr_line, arr->arr_line);
   if (redisp == 1)
     {
       debug ("Redisplay one");
       idraw_arr (arr, 0, arr->last_arr);
 #ifdef DEBUG
-      {	debug ("after draw_arr (4)");      }
+      {
+	debug ("after draw_arr (4)");
+      }
 #endif
       debug ("Display one");
       idraw_arr (arr, 1, arr->arr_line);
 #ifdef DEBUG
-      {	debug ("after draw_arr (5)");      }
+      {
+	debug ("after draw_arr (5)");
+      }
 #endif
     }
   if (redisp == 2)
@@ -261,41 +279,43 @@ proc_zero(char *s)
  * It have a direct return
  * @todo Confirm if its like this and if remove the rest of the code
  */
-static void debug_print_field(FIELD *f)
+static void
+debug_print_field (FIELD * f)
 {
   return;
 #ifdef OLDFORMDEFINITION
-	attr=(struct s_field_attr *) field_userptr(f);
-	debug_print_field_opts(f);
-	/* debug("attr=%p",f,attr); */
-		debug("Value='%s':",field_buffer(f,0));
-	if (attr) {
-		debug("      Datatype   : %d:",attr->dtype);
-		debug("      Field No   : %d:",attr->field_no);
-		debug("      Tabname    : %s:",proc_zero(attr->tabname));
-		debug("      Colname    : %s:",proc_zero(attr->colname));
-		debug("      Metrics    : %d:",attr->metrics_cnt);
-		/*
-		debug("      sub1       : %s:",proc_zero(attr->sub1));
-		debug("      sub2       : %s:",proc_zero(attr->sub2));
-        */
-		debug("      autonext   : %d:",attr->autonext);
-		debug("      invisible  : %d:",attr->invisible);
-		debug("      noentry    : %d:",attr->noentry);
-		debug("      required   : %d:",attr->required);
-		debug("      reverse    : %d:",attr->reverse);
-		debug("      shift      : %d:",attr->shift);
-		debug("      verify     : %d:",attr->verify);
-		debug("      wordwrap   : %d:",attr->wordwrap);
-		debug("      colour     : %d:",attr->colour);
-		debug("      include    : %s:",proc_zero(attr->include));
-		debug("      comments   : %s:",proc_zero(attr->comments));
-		debug("      default_val: %s:",proc_zero(attr->default_val));
-		debug("      format     : %s:",proc_zero(attr->format));
-		debug("      picture    : %s:",proc_zero(attr->picture));
-		debug("      program    : %s:",proc_zero(attr->program));
-		debug("      dynamic    : %d\n\n:",attr->dynamic);
-	}
+  attr = (struct s_field_attr *) field_userptr (f);
+  debug_print_field_opts (f);
+  /* debug("attr=%p",f,attr); */
+  debug ("Value='%s':", field_buffer (f, 0));
+  if (attr)
+    {
+      debug ("      Datatype   : %d:", attr->dtype);
+      debug ("      Field No   : %d:", attr->field_no);
+      debug ("      Tabname    : %s:", proc_zero (attr->tabname));
+      debug ("      Colname    : %s:", proc_zero (attr->colname));
+      debug ("      Metrics    : %d:", attr->metrics_cnt);
+      /*
+         debug("      sub1       : %s:",proc_zero(attr->sub1));
+         debug("      sub2       : %s:",proc_zero(attr->sub2));
+       */
+      debug ("      autonext   : %d:", attr->autonext);
+      debug ("      invisible  : %d:", attr->invisible);
+      debug ("      noentry    : %d:", attr->noentry);
+      debug ("      required   : %d:", attr->required);
+      debug ("      reverse    : %d:", attr->reverse);
+      debug ("      shift      : %d:", attr->shift);
+      debug ("      verify     : %d:", attr->verify);
+      debug ("      wordwrap   : %d:", attr->wordwrap);
+      debug ("      colour     : %d:", attr->colour);
+      debug ("      include    : %s:", proc_zero (attr->include));
+      debug ("      comments   : %s:", proc_zero (attr->comments));
+      debug ("      default_val: %s:", proc_zero (attr->default_val));
+      debug ("      format     : %s:", proc_zero (attr->format));
+      debug ("      picture    : %s:", proc_zero (attr->picture));
+      debug ("      program    : %s:", proc_zero (attr->program));
+      debug ("      dynamic    : %d\n\n:", attr->dynamic);
+    }
 #endif
 }
 
@@ -305,13 +325,14 @@ static void debug_print_field(FIELD *f)
  * @param
  */
 static void
-debug_print_field_list(FIELD **fld_list)
+debug_print_field_list (FIELD ** fld_list)
 {
   int a;
-  debug("Field List (%p)",fld_list);
-  for (a=0;fld_list[a];a++) {
-    debug_print_field(fld_list[a]);
-  }
+  debug ("Field List (%p)", fld_list);
+  for (a = 0; fld_list[a]; a++)
+    {
+      debug_print_field (fld_list[a]);
+    }
 }
 
 /**
@@ -319,21 +340,21 @@ debug_print_field_list(FIELD **fld_list)
  *
  * @param
  */
-static int 
-pop_iarr_var(struct s_form_dets *form,int x,int y,int elem,
-		    struct BINDING *b) 
+static int
+pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
+	      struct BINDING *b)
 {
-  debug("In pop_iarr_var %d %d",x,y);
+  debug ("In pop_iarr_var %d %d", x, y);
   y--;
 
-  if (copy_field_data(form)) 
-  {
-    push_char(field_buffer(form->currentfield,0));
-    debug("Pushed field buffer");
-    pop_var2((char *)b[x].ptr+(y*elem), b[x].dtype, b[x].size);
-    debug("Popped field buffer into variable");
-    return 1;
-  }
+  if (copy_field_data (form))
+    {
+      push_char (field_buffer (form->currentfield, 0));
+      debug ("Pushed field buffer");
+      pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
+      debug ("Popped field buffer into variable");
+      return 1;
+    }
   return 0;
 }
 
@@ -342,7 +363,7 @@ pop_iarr_var(struct s_form_dets *form,int x,int y,int elem,
  *
  * @param
  */
-static int 
+static int
 idisp_loop (struct s_inp_arr *arr)
 {
   struct s_form_dets *form;
@@ -352,10 +373,12 @@ idisp_loop (struct s_inp_arr *arr)
   curr_arr_inp = arr;
   form = arr->currform;
   set_array_mode ('I');
-  
+
   m_lastkey = 0;
 #ifdef DEBUG
-  {    debug ("Currform=%p (s_form_dets)", form);  }
+  {
+    debug ("Currform=%p (s_form_dets)", form);
+  }
 #endif
   if (form != get_curr_form ())
     {
@@ -364,7 +387,9 @@ idisp_loop (struct s_inp_arr *arr)
     }
   mform = form->form;
 #ifdef DEBUG
-  {    debug ("FORM=%p", mform);  }
+  {
+    debug ("FORM=%p", mform);
+  }
 #endif
   if (arr->cntrl != 0)
     {
@@ -375,99 +400,136 @@ idisp_loop (struct s_inp_arr *arr)
     {
       idraw_arr (arr, 2, arr->arr_line);
 #ifdef DEBUG
-      {	debug ("after draw_arr (3) mform=%p", mform);      }
-      {	debug ("Searching for form");      }
-      {	find_ptr_debug (form);      }
-      {	debug ("Searching for mform");      }
-      {	find_ptr_debug (mform);     }
-      {	debug ("form_win(mform)=%p", form_win (mform));      }
+      {
+	debug ("after draw_arr (3) mform=%p", mform);
+      }
+      {
+	debug ("Searching for form");
+      }
+      {
+	find_ptr_debug (form);
+      }
+      {
+	debug ("Searching for mform");
+      }
+      {
+	find_ptr_debug (mform);
+      }
+      {
+	debug ("form_win(mform)=%p", form_win (mform));
+      }
 #endif
-debug("Printing field list");
-      debug_print_field_list(form_fields(mform));
-debug("Setting current field");
-	form->currentfield=arr->field_list[arr->scr_line-1][arr->curr_attrib];
-debug("Setting current field..");
-      set_current_field(mform,arr->field_list[arr->scr_line-1][arr->curr_attrib]);
-debug("Positioning character");
+      debug ("Printing field list");
+      debug_print_field_list (form_fields (mform));
+      debug ("Setting current field");
+      form->currentfield =
+	arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+      debug ("Setting current field..");
+      set_current_field (mform,
+			 arr->field_list[arr->scr_line -
+					 1][arr->curr_attrib]);
+      debug ("Positioning character");
 
-      pos_form_cursor(mform);
-debug("Before do update");
-      doupdate();
-debug("Getting char");
+      pos_form_cursor (mform);
+      debug ("Before do update");
+      doupdate ();
+      debug ("Getting char");
       a = getch_win ();
       m_lastkey = a;
     }
   redisp = 0;
-  
-  if (a>0&&a<255) {
-	int_form_driver(mform,a);
-	int_form_driver(mform,REQ_VALIDATION);
-  }
-	
-  if (a==KEY_LEFT&&mform->curcol==0&&mform->currow==0) {
-	a=KEY_BACKSPACE;
-  }
-  
-  if (a==key_val ("ACCEPT")) {a=27;}
 
-  if (a==key_val ("NEXT")) { a=KEY_NPAGE; }
-  if (a==key_val ("PREV")) { a=KEY_PPAGE; }
+  if (a > 0 && a < 255)
+    {
+      int_form_driver (mform, a);
+      int_form_driver (mform, REQ_VALIDATION);
+    }
+
+  if (a == KEY_LEFT && mform->curcol == 0 && mform->currow == 0)
+    {
+      a = KEY_BACKSPACE;
+    }
+
+  if (a == key_val ("ACCEPT"))
+    {
+      a = 27;
+    }
+
+  if (a == key_val ("NEXT"))
+    {
+      a = KEY_NPAGE;
+    }
+  if (a == key_val ("PREV"))
+    {
+      a = KEY_PPAGE;
+    }
 
   switch (a)
     {
     case KEY_NPAGE:
       debug ("Page down");
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-      if (arr->arr_line < arr->no_arr)
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
 	{
-	  arr->cntrl = 0 - KEY_NPAGE;
-	  return -11;
-	}
+	  if (arr->arr_line < arr->no_arr)
+	    {
+	      arr->cntrl = 0 - KEY_NPAGE;
+	      return -11;
+	    }
 	}
       break;
 
     case KEY_PPAGE:
       debug ("Page up");
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-      if (arr->arr_line> 0)
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
 	{
-	  arr->cntrl = 0 - KEY_PPAGE;
-	  return -11;
-	}
+	  if (arr->arr_line > 0)
+	    {
+	      arr->cntrl = 0 - KEY_PPAGE;
+	      return -11;
+	    }
 	}
       break;
 
 
     case KEY_DOWN:
       debug ("Key down");
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-
-      if (arr->arr_line < arr->no_arr)
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
 	{
-	  arr->cntrl = 0 - KEY_DOWN;
-	  return -11;
-	}
 
-      if ((arr->arr_line == arr->no_arr) && (arr->arr_line<arr->arr_size))
-	{
- 		if (arr->inp_flags & (0x01!=0x01))
+	  if (arr->arr_line < arr->no_arr)
+	    {
+	      arr->cntrl = 0 - KEY_DOWN;
+	      return -11;
+	    }
+
+	  if ((arr->arr_line == arr->no_arr)
+	      && (arr->arr_line < arr->arr_size))
+	    {
+	      if (arr->inp_flags & (0x01 != 0x01))
 		{
-	  		set_arr_count(arr->no_arr+1);
-	  		arr->no_arr++;
-	  		arr->cntrl = 0 - KEY_DOWN;
-	  		return -11;
+		  set_arr_count (arr->no_arr + 1);
+		  arr->no_arr++;
+		  arr->cntrl = 0 - KEY_DOWN;
+		  return -11;
 		}
-	}
+	    }
 
 	}
       break;
 
     case 0 - KEY_NPAGE:
       debug ("pagedown +");
-      arr->last_arr=arr->arr_line;
-      arr->arr_line+=arr->srec->dim;
+      arr->last_arr = arr->arr_line;
+      arr->arr_line += arr->srec->dim;
 
-      if (arr->arr_line>=arr->no_arr) arr->arr_line=arr->no_arr;
+      if (arr->arr_line >= arr->no_arr)
+	arr->arr_line = arr->no_arr;
 
       debug ("Is really down %d", arr->arr_line);
       redisp = 1;
@@ -480,14 +542,16 @@ debug("Getting char");
     case 0 - KEY_PPAGE:
       debug ("pageup +");
       arr->last_arr = arr->arr_line;
-      arr->arr_line-=arr->srec->dim;
-      if (arr->arr_line<=0) {
-		arr->arr_line=1;
-      }
+      arr->arr_line -= arr->srec->dim;
+      if (arr->arr_line <= 0)
+	{
+	  arr->arr_line = 1;
+	}
 
-      if (arr->arr_line-arr->scr_line<=0) {
-		arr->scr_line=1;
-      }
+      if (arr->arr_line - arr->scr_line <= 0)
+	{
+	  arr->scr_line = 1;
+	}
 
       debug ("Is really down %d", arr->arr_line);
       redisp = 1;
@@ -521,51 +585,62 @@ debug("Getting char");
       break;
 
     case KEY_RIGHT:
-	debug("Key_right");
-	int_form_driver(mform,REQ_NEXT_CHAR);
-	break;
+      debug ("Key_right");
+      int_form_driver (mform, REQ_NEXT_CHAR);
+      break;
 
     case KEY_LEFT:
-	debug("Key_left");
-	int_form_driver(mform,REQ_PREV_CHAR);
-	break;
+      debug ("Key_left");
+      int_form_driver (mform, REQ_PREV_CHAR);
+      break;
 
 
     case 10:
     case 13:
     case '\t':
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-	if (arr->curr_attrib<arr->srec->attribs.attribs_len) {
-		arr->curr_attrib++;
-	  arr->cntrl = 1001;
-	  return -1000;
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
+	{
+	  if (arr->curr_attrib < arr->srec->attribs.attribs_len)
+	    {
+	      arr->curr_attrib++;
+	      arr->cntrl = 1001;
+	      return -1000;
+	    }
 	}
-	}
-	break;
+      break;
 
     case KEY_BACKSPACE:
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-	if (arr->curr_attrib>0) {
-		arr->curr_attrib--;
-	  arr->cntrl = 1002;
-	return -1001;
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
+	{
+	  if (arr->curr_attrib > 0)
+	    {
+	      arr->curr_attrib--;
+	      arr->cntrl = 1002;
+	      return -1001;
+	    }
 	}
-	}
-	break;
+      break;
 
 
 
     case KEY_UP:
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-      if (arr->arr_line > 1)
-
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
 	{
+	  if (arr->arr_line > 1)
 
-	  arr->cntrl = 0 - KEY_UP;
+	    {
 
-	  return -11;
+	      arr->cntrl = 0 - KEY_UP;
 
-	}
+	      return -11;
+
+	    }
 	}
       break;
 
@@ -594,14 +669,20 @@ debug("Getting char");
       return -10;
       break;
 
-    case  27:
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-      return 0;			/* escape */
+    case 27:
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
+	{
+	  return 0;		/* escape */
 	}
 
     case 26:			/* control-z */
-      if (pop_iarr_var(arr->currform,arr->curr_attrib,arr->arr_line,arr->arr_elemsize,arr->binding)) {
-      return 0;
+      if (pop_iarr_var
+	  (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize,
+	   arr->binding))
+	{
+	  return 0;
 	}
     }
   return -90;
@@ -612,12 +693,12 @@ debug("Getting char");
  *
  * @param
  */
-static int 
-gen_field_list_vals(void *a,void *b,int nv,...)
+static int
+gen_field_list_vals (void *a, void *b, int nv, ...)
 {
   va_list va;
-  va_start(va,nv);
-  return gen_field_list(a,b,nv,&va);
+  va_start (va, nv);
+  return gen_field_list (a, b, nv, &va);
 }
 
 /**
@@ -626,39 +707,38 @@ gen_field_list_vals(void *a,void *b,int nv,...)
  * @param
  */
 static FIELD ***
-gen_srec_field_list(char *s,struct s_form_dets *form,int a,int d)
+gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
 {
   FIELD ***fld_list;
   int fc;
   int lc;
   char buff[64];
-  debug("Generating field list for screen array");
+  debug ("Generating field list for screen array");
 
-  fld_list=(FIELD ***) calloc(d,sizeof(FIELD **));
+  fld_list = (FIELD ***) calloc (d, sizeof (FIELD **));
 
-  for (lc=0;lc<d;lc++) 
-  {
-    debug("Generating field list for line %d",lc);
-    strcpy(buff,s);
-    strcat(buff,".*");
-    debug("calling gen_field_list_vals with %p %p %d %s %d %d",
-      &fld_list[lc],form,a,buff,lc,0
-    );
-    fc=gen_field_list_vals(&fld_list[lc],form,a,buff,lc+1,0,0);
-    debug(">>>> fc=%d fld_list[lc]=%p",fc,fld_list[lc]);
-  }
-
-  debug("Field lists (gen_srec_field_list)");
-  
-  for (lc=0;lc<d;lc++) 
-  {
-    debug("Srec line : %d %p",lc,fld_list[lc]);
-    for (fc=0;fc<a;fc++) 
+  for (lc = 0; lc < d; lc++)
     {
-      debug("Line %d Col %d Field %p:",lc,fc,fld_list[lc][fc]);
+      debug ("Generating field list for line %d", lc);
+      strcpy (buff, s);
+      strcat (buff, ".*");
+      debug ("calling gen_field_list_vals with %p %p %d %s %d %d",
+	     &fld_list[lc], form, a, buff, lc, 0);
+      fc = gen_field_list_vals (&fld_list[lc], form, a, buff, lc + 1, 0, 0);
+      debug (">>>> fc=%d fld_list[lc]=%p", fc, fld_list[lc]);
     }
-  }
-  debug("End of list");
+
+  debug ("Field lists (gen_srec_field_list)");
+
+  for (lc = 0; lc < d; lc++)
+    {
+      debug ("Srec line : %d %p", lc, fld_list[lc]);
+      for (fc = 0; fc < a; fc++)
+	{
+	  debug ("Line %d Col %d Field %p:", lc, fc, fld_list[lc][fc]);
+	}
+    }
+  debug ("End of list");
   return fld_list;
 }
 
@@ -677,8 +757,8 @@ gen_srec_field_list(char *s,struct s_form_dets *form,int a,int d)
 int
 inp_arr (struct s_inp_arr *disp, void *ptr, char *srecname, int attrib)
 {
-FIELD ***fld_list;
-int a;
+  FIELD ***fld_list;
+  int a;
 
   curr_arr_inp = disp;
   debug ("In disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
@@ -686,25 +766,28 @@ int a;
     {
       debug ("disparr1");
       disp->srec = get_srec (srecname);
-       debug(">>>>disp->srec=%p",disp->srec);
+      debug (">>>>disp->srec=%p", disp->srec);
 
-      if (disp->srec == 0) {
-        exitwith ("Screen record not found");
-	return 0;
-      }
+      if (disp->srec == 0)
+	{
+	  exitwith ("Screen record not found");
+	  return 0;
+	}
       disp->currform = get_curr_form ();
-	#ifdef DEBUG
-      {	debug ("disp->currform=%p", disp->currform);      }
-	#endif
+#ifdef DEBUG
+      {
+	debug ("disp->currform=%p", disp->currform);
+      }
+#endif
       disp->last_arr = -1;
       disp->scr_line = 1;
       disp->arr_line = 1;
       disp->cntrl = 1;
       disp->highlight = 0;
-	  debug("********** no_arr=%d\n",disp->no_arr);
+      debug ("********** no_arr=%d\n", disp->no_arr);
       set_arr_curr (disp->arr_line);
       set_scr_line (disp->scr_line);
-      set_arr_count(disp->no_arr);
+      set_arr_count (disp->no_arr);
       /* debug ("Srec dimension name=%s dim=%d no_Attr=%d", disp->srec->name, disp->srec->dim, disp->srec->attribs.attribs_len); */
       debug ("disparr2");
       if (disp->srec == 0)
@@ -718,13 +801,12 @@ int a;
 	}
       debug ("disparr3");
 
-      if (disp->srec->attribs.attribs_len  != disp->nbind)
+      if (disp->srec->attribs.attribs_len != disp->nbind)
 
 	{
 
 	  debug ("Too many or too few variables for fields %d %d",
-		 disp->srec->dim, disp->nbind
-	    );
+		 disp->srec->dim, disp->nbind);
 
 	  return 0;
 
@@ -734,66 +816,72 @@ int a;
       iclear_srec (disp->srec);
       debug ("Cleared record");
 
-      fld_list=gen_srec_field_list(disp->srec->name,disp->currform,disp->srec->attribs.attribs_len+1,disp->srec->dim);
-      debug("All done...");
-      disp->field_list=(void ***)fld_list;
+      fld_list =
+	gen_srec_field_list (disp->srec->name, disp->currform,
+			     disp->srec->attribs.attribs_len + 1,
+			     disp->srec->dim);
+      debug ("All done...");
+      disp->field_list = (void ***) fld_list;
 
       /*
-        FIELD ***fld_list;
-		struct s_inp_arr *disp
+         FIELD ***fld_list;
+         struct s_inp_arr *disp
 
-		struct s_inp_arr {
-		  int mode;
-		  struct s_form_dets *currform;
-		  void *currentfield;
-		  struct s_metrics *currentmetrics;
-		  int novars;
-		  struct s_constr_list *constr;
-		  int nfields;
-		  void ***field_list;
-		  int no_fields;
-		  int no_lines;
-		  int no_arr;
-		  int inp_flags;
-		  int arr_size;
-		  int last_arr;
-		  struct struct_screen_record *srec;
-		  int arr_elemsize;
-		  int scr_line;
-		  int arr_line;
-		  int highlight;
-		  struct BINDING *binding;
-		  int nbind;
-		  int cntrl;
-		  int help_no;
-		  int curr_attrib;
-		};
-
-
+         struct s_inp_arr {
+         int mode;
+         struct s_form_dets *currform;
+         void *currentfield;
+         struct s_metrics *currentmetrics;
+         int novars;
+         struct s_constr_list *constr;
+         int nfields;
+         void ***field_list;
+         int no_fields;
+         int no_lines;
+         int no_arr;
+         int inp_flags;
+         int arr_size;
+         int last_arr;
+         struct struct_screen_record *srec;
+         int arr_elemsize;
+         int scr_line;
+         int arr_line;
+         int highlight;
+         struct BINDING *binding;
+         int nbind;
+         int cntrl;
+         int help_no;
+         int curr_attrib;
+         };
 
 
-      */
 
-	#ifdef DEBUG
-		/*
-      for (x=0;x<disp->srec->attribs.attribs_len;x++) {
 
-      for (y=0;y<disp->srec->dim;y++) {
-           debug("Setting pos %d %d",x,y);
-	   sprintf(buff,"%d,%d",x,y);
-           debug("Setting to %s",buff);
-           mja_set_field_buffer(fld_list[y][x],0,buff);
-           }
-      }
-	   update_panels();
-           doupdate();
-		*/
-      debug("Array dimensions : %d %d",disp->srec->dim,disp->srec->attribs.attribs_len);
-      for (a=0;a<disp->srec->attribs.attribs_len;a++) {
-            debug("          Attrib %d = %d:",a,disp->srec->attribs.attribs_val[a]);
-      }
+       */
 
-	#endif
+#ifdef DEBUG
+      /*
+         for (x=0;x<disp->srec->attribs.attribs_len;x++) {
+
+         for (y=0;y<disp->srec->dim;y++) {
+         debug("Setting pos %d %d",x,y);
+         sprintf(buff,"%d,%d",x,y);
+         debug("Setting to %s",buff);
+         mja_set_field_buffer(fld_list[y][x],0,buff);
+         }
+         }
+         update_panels();
+         doupdate();
+       */
+      debug ("Array dimensions : %d %d", disp->srec->dim,
+	     disp->srec->attribs.attribs_len);
+      for (a = 0; a < disp->srec->attribs.attribs_len; a++)
+	{
+	  debug ("          Attrib %d = %d:", a,
+		 disp->srec->attribs.attribs_val[a]);
+	}
+
+#endif
 
       for (a = 0; a < disp->srec->dim; a++)
 
@@ -803,33 +891,41 @@ int a;
 
 	    {
 
-		#ifdef DEBUG
-	      {	debug ("call draw_arr (1)");	      }
-		#endif
+#ifdef DEBUG
+	      {
+		debug ("call draw_arr (1)");
+	      }
+#endif
 	      idraw_arr (disp, a + 1 == disp->arr_line, a + 1);
 
-		#ifdef DEBUG
-	      {	debug ("after draw_arr (1)");	      }
-		#endif
+#ifdef DEBUG
+	      {
+		debug ("after draw_arr (1)");
+	      }
+#endif
 	    }
 
 	}
-		#ifdef DEBUG
-    	  {	debug ("call draw_arr (2) %p %d",disp,disp->arr_line);      }
-		#endif
+#ifdef DEBUG
+      {
+	debug ("call draw_arr (2) %p %d", disp, disp->arr_line);
+      }
+#endif
 
       idraw_arr (disp, 1, disp->arr_line);
 
-		#ifdef DEBUG
-	      {	debug ("after draw_arr (2)");      }
-		#endif
+#ifdef DEBUG
+      {
+	debug ("after draw_arr (2)");
+      }
+#endif
 
       gui_scroll (disp->no_arr);
       set_arr_curr (disp->arr_line);
       set_scr_line (disp->scr_line);
-      set_arr_count(disp->no_arr);
+      set_arr_count (disp->no_arr);
       mja_wrefresh (currwin);
-      disp->curr_attrib=0;
+      disp->curr_attrib = 0;
 
       return -10;
     }
@@ -902,4 +998,3 @@ debug_print_all_fields(FORM *f)
 */
 
 /* ================================= EOF ============================== */
-
