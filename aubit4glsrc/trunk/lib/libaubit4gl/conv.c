@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.17 2003-01-02 10:53:00 psterry Exp $
+# $Id: conv.c,v 1.18 2003-01-07 10:16:42 psterry Exp $
 #
 */
 
@@ -1501,7 +1501,6 @@ int stod( char *str, int *date, int sz_ignore )
      d_pos = strcspn(dmy,"D");
      m_pos = strcspn(dmy,"M");
      y_pos = strcspn(dmy,"Y");
-     printf("d = %d, m = %d, y = %d \n", d_pos,m_pos,y_pos);
      // each of these must be different and in the range 0-2
      if ( (d_pos+m_pos+y_pos) != 3 || d_pos == m_pos ||
            d_pos == y_pos || m_pos == y_pos )
@@ -2330,6 +2329,17 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 	}
     }
 
+   /* Sanity check - conv() is sometimes erroneously called with
+    * just a length for decimals, instead of length + decimal places.
+    * This is a temporary measure - such bugs will be located & fixed.
+    */
+   if (dtype2 == DTYPE_DECIMAL && (size < 256) )
+   {
+     // we don't know how many decimals are required, 4 should be ok
+     size += 4; if (size > 32) size = 32;
+     size = size * 256 + 4;
+     debug( "conv: changing invalid decimal size to %d", size);
+   }
 
 #ifdef DEBUG
   {    /* debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */  }
