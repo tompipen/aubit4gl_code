@@ -54,7 +54,10 @@ function clean {
 	RET=$?
 	if test $RET = "0"
 	then
-	#	echo Removing .err
+		if [ "$VERBOSE" = "1" ]
+    	then
+			echo Removing .err
+        fi
 		rm *.err
 	fi
 
@@ -62,7 +65,10 @@ function clean {
 	RET=$?
 	if test $RET = "0"
 	then
-	#	echo Removing .$COMPEXT
+		if [ "$VERBOSE" = "1" ]
+	    then
+			echo Removing .$COMPEXT
+        fi
 		rm *.$COMPEXT
 	fi
 
@@ -70,7 +76,10 @@ function clean {
 	RET=$?
 	if test $RET = "0"
 	then
-	#	echo Removing core
+		if [ "$VERBOSE" = "1" ]
+    	then
+			echo Removing core
+        fi
 		FIXME: on CygWin remove *.stackdump
 		rm core
 	fi
@@ -79,46 +88,75 @@ function clean {
 	if [ "$COMPILER" = "aubit" ]
 	then
 
-		ls *.glb > /dev/null 2>&1
-		RET=$?
-		if test $RET = "0"
-		then
-		#	echo Removing .glb
-			rm *.glb
-		fi
-
 		ls *.$COMPEXT2 > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
 		then
-		#	echo Removing .$COMPEXT2
+			if [ "$VERBOSE" = "1" ]
+		    then
+    			echo Removing .$COMPEXT2
+            fi
 			rm *.$COMPEXT2
 		fi
     fi
 
     if test $FULLCLEAN = "1"
     then
-        #his can be dangerous, tere might be some C code in there?
+		if [ "$VERBOSE" = "1" ]
+	    then
+            echo "Full clean is ON"
+        fi
+
+        #if we remove glb files, and skip is on, in second run all 4gl's
+        #that look for them wil fail, so we normally don't want to clean them.
+		if [ "$COMPILER" = "aubit" ]
+		then
+			ls *.glb > /dev/null 2>&1
+			RET=$?
+			if test $RET = "0"
+			then
+				if [ "$VERBOSE" = "1" ]
+			    then
+					echo Removing .glb
+                fi
+				rm *.glb
+			fi
+        fi
+
+		#his can be dangerous, tere might be some C code in there?
 		ls *.c > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
 		then
-		#	echo Removing .c
+			if [ "$VERBOSE" = "1" ]
+		    then
+				echo Removing .c
+            fi
 			rm *.c
 		fi
 
+		#this can also be dangerous, we might have some header files for custom C code there:
 		ls *.h > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
 		then
-		#	echo Removing .h
+			if [ "$VERBOSE" = "1" ]
+		    then
+				echo Removing .h
+            fi
 			rm *.h
 		fi
+
+
+		#this can be dangerous too, we might have some .ec code there?
 		ls *.ec > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
 		then
-		#	echo Removing .ec
+			if [ "$VERBOSE" = "1" ]
+		    then
+				echo Removing .ec
+            fi
 			rm *.ec
 		fi
 
@@ -348,7 +386,7 @@ function compileit {
 			echo "failed in C, no object, no ret code from $FGLCOMPILER : $PWD/$FGL "
         fi
 		echo "failed in C, no object, no ret code from $FGLCOMPILER : $PWD/$FGL "  >> $ERRORLOG
-		echo "###################### $ERR : ########################" >> $ERRORLOG
+		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
 
 		if [ -f $ERR ]
 		then
@@ -393,7 +431,17 @@ function compileit {
 			echo "Object was generated, but $ERR was generated too, and $FGLCOMPILER did not return error code."
         fi
 		echo "Object was generated, but $ERR was generated too, and $FGLCOMPILER did not return error code."  >> $ERRORLOG
-		let COMPFAIL=COMPFAIL+1
+		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
+		cat $ERR | grep -B $GOBACKLINES $GOAFTERLINES $ERRCHAR >> $ERRORLOG
+	    #this usualy indicates error in C compiler, so there will probably not be any
+		#4gl error lines markers, so we better include complete error file here:
+		echo "#____________________ COMPLETE ERR FILE: _______________________" >> $ERRORLOG
+		cat $ERR >> $ERRORLOG
+        echo "##########################################################" >> $ERRORLOG
+		#let COMPFAILCCOMP=COMPFAILCCOMP+1
+		#let COMPFAIL=COMPFAIL+1
+		let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
+
 
 		if test $STOPONERROR = "1"
 	    then
@@ -523,6 +571,7 @@ function doit {
 	#configuration:
 	STOPONERROR=0
 	STOPGLOBALSERROR=0
+    NONGLOBAFTERGLOBERR=0
 	SKIP=skip
 	ERRFILESDIR=/tmp/amakeallo
 	ERRORLOG=$ERRFILESDIR/amakeallo.log
@@ -582,7 +631,10 @@ function doit {
         -stopglob) 	STOPGLOBALSERROR=1
         ;;
 
-        -noskip) 	SKIP=noskip
+        -nonglob)   NONGLOBAFTERGLOBERR=1
+        ;;
+
+		-noskip) 	SKIP=noskip
         ;;
 
         -tmp)  		DESTDIR=/tmp/amakeallo-objects
@@ -607,6 +659,7 @@ function doit {
 			echo " -4js = use 4Js/D4GL compiler (Aubit)"
 			echo " -stoperr = stop on any error (continue)"
 			echo " -stopglob = stop if any GLOBALS 4gl file fails (continue)"
+            echo " -nonglob = continue compiling non-global files even if globals fail (skip)"
 			echo " -noskip = do not skip files that are already compiled (skip)"
 			echo " -x  = rename Aubit old extensions [.o->.ao]"
 			echo " -tmp = move objects to /tmp/amakeallo-objects ('MAXDIR/?prog')"
@@ -750,7 +803,15 @@ function doit {
 					        doit
 					        ####
                         else
-                            echo "Skipping non-GLOBALS files in $subsystem"
+							if test $NONGLOBAFTERGLOBERR = "1"
+							then
+						        echo "-nonglob is ON, will try to compile non-globals anyway."
+								####
+						        doit
+						        ####
+                            else
+	                            echo "Skipping non-GLOBALS files in $subsystem"
+                            fi
 						fi
                     else
 				        ####
