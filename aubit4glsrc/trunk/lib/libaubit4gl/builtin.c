@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.19 2003-02-13 08:57:07 afalout Exp $
+# $Id: builtin.c,v 1.20 2003-02-16 11:21:38 mikeaubury Exp $
 #
 */
 
@@ -205,8 +205,8 @@ char *p;
  * @return allways 1
  */
 int
-aclfgl_dbms_dialect() {
-char *g;
+aclfgl_dbms_dialect(void) {
+//char *g;
 char *p;
 
   p = A4GLSQL_dbms_dialect();
@@ -214,7 +214,7 @@ char *p;
     push_char ("");
   else
     push_char (A4GLSQL_dbms_dialect());
-  acl_free (g);
+  //acl_free (g); // Is this here for a reason ?
   return 1;
 }
 
@@ -778,7 +778,7 @@ void aclfgli_current(int a,int b) {
 	push_current(a,b);
 }
 
-void aclfgli_extend() {
+void aclfgli_extend(void) {
 	// FIXME
 }
 
@@ -792,7 +792,6 @@ static char buff[1024];
 }
 
 int aclfgl_ascii(int n) {
-		int a;
 		push_ascii();
 		return 1;
 }
