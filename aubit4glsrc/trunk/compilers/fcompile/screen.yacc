@@ -7,7 +7,7 @@
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 #include <string.h>
-#include <curses.h>
+//#include <curses.h>
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/debug.h"
 #include "where.h"
@@ -449,16 +449,16 @@ BLACK {
 	strcpy($<str>$,"3");
 }
 | REVERSE {
-	sprintf($<str>$,"%d",A_REVERSE);
+	sprintf($<str>$,"%d",get_attr_from_string("REVERSE"));
 }
 | LEFT {
-	sprintf($<str>$,"%d",A_LEFT);
+	sprintf($<str>$,"%d",get_attr_from_string("LEFT"));
 }
 | BLINK {
-	sprintf($<str>$,"%d",A_BLINK);
+	sprintf($<str>$,"%d",get_attr_from_string("BLINK"));
 }
 | UNDERLINE {
-	sprintf($<str>$,"%d",A_UNDERLINE);
+	sprintf($<str>$,"%d",get_attr_from_string("UNDERLINE"));
 };
 
 op_instruction_section : 
