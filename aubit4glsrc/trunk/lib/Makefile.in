@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-01-13 16:53:48 mikeaubury Exp $
+# $Id: Makefile.in,v 1.15 2002-01-18 03:09:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,6 +47,7 @@ ALL 				=libPDF_NOPDF.so aubit-config
 LOCALCFLAGS			=-O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
 # -lrpclib
 LDFLAGS				=-Map mapfile
+4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
@@ -262,7 +263,7 @@ gui_gtk.o: gui.c
 	${CC} -c $(CFLAGS) -DUSE_GTK gui.c -o gui_gtk.o
 
 loadmap:
-	${SH} 4glpc ${4GLPCFLAGS} loadmap.4gl -o loadmap
+	${SH} ${4GLPC} ${4GLPCFLAGS} loadmap.4gl -o loadmap
 	cp loadmap${EXE} ../bin
 
 

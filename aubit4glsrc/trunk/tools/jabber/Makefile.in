@@ -1,9 +1,40 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   Jabber makefile	   		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.2 2002-01-18 03:09:11 afalout Exp $
+#
+
 ### -----------------------------------------------------------------
 ###                     Settings
 ### -----------------------------------------------------------------
 
+AMAKE=../../bin/amake
 AMAKE_FLAGS=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
+
 
 ### -----------------------------------------------------------------
 ###                     Targets
@@ -12,7 +43,7 @@ AMAKE_FLAGS=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
 all: test_im
 
 test_im:
-	sh amake test_im ${AMAKE_FLAGS}
+	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
 
 lib4glim.o:
 	gcc lib4glim.c -c -o lib4glim.o
@@ -44,4 +75,7 @@ clean: clean.test
 	-rm -f *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log
 
 clean.test:
-	amake test_im clean
+	${SH} ${AMAKE} test_im clean
+
+
+#------------------------------ EOF ---------------------------------

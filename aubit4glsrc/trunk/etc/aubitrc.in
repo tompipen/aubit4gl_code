@@ -96,6 +96,11 @@ USE_PDF=@USE_PDF@
 GCC="@CC@"
 CC="@CC@"
 
+#################
+#Depending on installed 4gl compilers, amake can compile same definition
+#oth the 4gl programs with differnt 4gl compilers. Here you can specify
+#which make rules will be included by default:
+#Default: MAKERULES=@aubitdir@/incl/a4gl.mk
 
 ##################
 #GTK GUI interface: yes or no (needs GTK libraries on system)

@@ -25,11 +25,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.6 2002-01-13 09:40:46 afalout Exp $
+# $Id: Makefile-common.in,v 1.7 2002-01-18 03:09:10 afalout Exp $
 #
 
 
-ifneq "${NO_EXPORT_VAR}" "1"
+#It looks like this "if" is not working - .EXPORT_ALL_VARIABLES: is probably
+#a make directive, not a statement?
+#ifneq "${NO_EXPORT_VAR}" "1"
 	#.EXPORT_ALL_VARIABLES: will cause this wires error when vatiable is
 	#appended to depending on lable like:
 	#libSQL_iodbc.so: CFLAGS+=-DIODBC
@@ -42,9 +44,16 @@ ifneq "${NO_EXPORT_VAR}" "1"
 #and all commands/shell scripts that are called in make process, You
 #can use "unexport VARIABLE", if you need to prevent something from exporting:
 #.EXPORT_ALL_VARIABLES: statement MUST be on the beginning of the line
-.EXPORT_ALL_VARIABLES:
 
-endif
+
+#we no longer need to export varibles, since all make files already include
+#this file, and we should be using autoconf anyway
+#.EXPORT_ALL_VARIABLES:
+
+#endif
+
+#If we later need to know if this makefile was included or not:
+MAKEFILE_COMMON_INCLUDED=1
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -53,8 +62,14 @@ AUBITETC=/etc/opt/aubit4gl
 
 AUBIT_SRC_ROOT=@aubitdir@
 
-#If you are looking here because make could not find "/etc/aubitrc"
-#then exucute "bin/4glpc -config" from Aubit source code root directory
+AUBIT_VERSION=@AUBIT_VERSION@
+AUBIT_BUILD=@AUBIT_BUILD@
+COMPILE_DATE=@COMPILE_DATE@
+
+
+## ==================================================================
+##                    Read configuration file(s)
+## ==================================================================
 
 #All includes should become obsolete once autoconf is fully implemented
 ifndef NOINCL
@@ -148,6 +163,10 @@ endif
 PATH:=${AUBITDIR}/bin:${PATH}
 #PATH:=../bin:${PATH}
 
+## ==================================================================
+##                   Global Makefile variables
+## ==================================================================
+
 
 #if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
 #if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
@@ -162,42 +181,33 @@ LCLINTLOGCMD		= ${LCLINTLOG} 2>&1
 
 ####################
 #commands to use:
-MAKE		= make
-MKDIR 		= mkdir
-CD 			= cd
-CP 			= cp
-RM 			= rm -f
-RMDIR		= rm -rf
-SH 			= /bin/sh
-CC 			= @CC@
-LN_S 		= ln -s
-AR 			= ar rc
-YACC 		= bison -y
-INSTALL_USR	= nobody
-INSTALL_GRP = nobody
-INSTALL_CMD = install
-INSTALL     = ${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
-MKPATH      = mkdir -p
-CPPFLAGS 	=
-LDFLAGS 	= -s
-
-
-
-ALL_LIBS=@LIBS@
-
-
-#C compiler flags for Aubit libraries compilation: you should not
-#need to change this
-CFLAGS				=@CFLAGS@ -I. -DAUTOBANG -DDEBUG -I/usr/local/include
-
+MAKE				=make
+MKDIR 				=mkdir
+CD 					=cd
+CP 					=cp
+RM 					=rm -f
+RMDIR				=rm -rf
+SH 					=/bin/sh
+CC 					=@CC@
+LINK.c				=${CC}
+LN_S 				=ln -s
+AR 					=ar rc
+YACC 				=bison -y
+INSTALL_USR			=nobody
+INSTALL_GRP 		=nobody
+INSTALL_CMD 		=install
+INSTALL     		=${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
+MKPATH      		=mkdir -p
+CPPFLAGS 			=
+LDFLAGS 			=-s
+ALL_LIBS			=@LIBS@
+CFLAGS				+=@CFLAGS@ -I. -DAUTOBANG -DDEBUG -I/usr/local/include
 LIBCFLAGS			=${CLFAGS} -Ilibincl
-
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
 #To let know 4glpc we are in process of making compiler, and not
 #compiling 4gl programs
 MAKINGAUBIT			=1
-export MAKINGAUBIT
 
 ifdef COMSPEC
 	CFLAGS		+=-DWIN32
@@ -213,7 +223,104 @@ else
     LN			=ln -f
 endif
 
-LINK.c		=${CC}
 
 
+
+####################### from aubitbuild-multi.mk ####################
+
+
+## ==================================================================
+##                              Options - UnixODBC
+## ==================================================================
+
+#name of library to link compiler with
+#typically, "odbc" for unixODBC, "iodbc" for iODBC manager
+#Affects: main makefile and 4glpc
+#UNIXODBC_LIB_NAME=odbc
+
+#where can we find ODBC header files for this ODBC manager/driver
+#(odbc.h, sql.h ...etc.)
+#fixme: rename this to ODBC_LIB_HEADERS
+#Affects: main makefile, 4glpc and run-time encironment
+#UNIXODBC_ODBCLIBDIR=/opt/unixODBC/include
+
+
+#where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
+#Affects: main makefile
+#UNIXODBC_ODBC_LIB_DIR=/opt/unixODBC/lib
+
+## ==================================================================
+##                              Options - iODBC
+## ==================================================================
+
+
+    #Which predefined version to use: Uncomment only one:
+	#IODBCVER=Openlink
+	#IODBCVER=2.5
+	#IODBCVER=3
+	#IODBCVER=3.0.5
+
+	#IODBC_LIB_NAME=iodbc
+
+	ifeq "$(IODBCVER)" "Openlink"
+		USEPGHEADRERS=1
+        #USELOCALHEADRERS=1
+		IODBC_ODBC_LIB_DIR	=/usr/openlink/lib
+    endif
+
+	ifeq "$(IODBCVER)" "3"
+	    #standalone iODBC manager V3
+		IODBC_ODBCLIBDIR	=/opt/iODBC_3beta/iODBC/include
+		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3beta/iODBC/lib
+    endif
+
+	ifeq "$(IODBCVER)" "2.5"
+		#standalone iODBC manager V2.5
+	   	IODBC_ODBCLIBDIR	=/opt/iODBC_source_v2.5
+		IODBC_ODBC_LIB_DIR	=/opt/iODBC_source_v2.5/.libs
+    endif
+
+	ifeq "$(IODBCVER)" "3.0.5"
+	   	IODBC_ODBCLIBDIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/include
+		IODBC_ODBC_LIB_DIR	=/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs
+    endif
+
+	######### For testing only ##################
+	ifeq "$(USEPGHEADRERS)" "1"
+		#PosgtgreSQL headers, also used by iODBC manager (standalone and OpenLink)
+		IODBC_ODBCLIBDIR 	=/usr/include/pgsql/iodbc
+    endif
+
+	ifeq "$(USELOCALHEADRERS)" "1"
+		IODBC_ODBCLIBDIR	=local_odbc_incl
+    endif
+
+## ==================================================================
+##                      Assign defaults
+## ==================================================================
+
+#ifeq "$(ODBC)" "unix"
+#	ODBC_LIB_NAME	=${UNIXODBC_LIB_NAME}
+#	ODBCLIBDIR		=${UNIXODBC_ODBCLIBDIR}
+#	ODBC_LIB_DIR	=${UNIXODBC_ODBC_LIB_DIR}
+#endif
+
+#ifeq "$(ODBC)" "iodbc"
+#	ODBC_LIB_NAME	=${IODBC_LIB_NAME}
+#	ODBC_LIB_DIR	=${IODBC_ODBC_LIB_DIR}
+#	ODBCLIBDIR		=${IODBC_ODBCLIBDIR}
+#endif
+
+
+
+#All varibales needed in environment, primarily because 4glpc cannot
+#read this file - all make files should include this file anyway:
+export MAKINGAUBIT
+export AUBIT_SRC_ROOT
+export AUBITDIR
+#This one is needed to run Aubit compiled programs from build process:
+export LD_LIBRARY_PATH
+#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not 
+#in Aubit compiler source code tree; it is added to this file by "make install"
+export AUBIT_BIN_INSTALL
 #----------------------------- EOF -----------------------------

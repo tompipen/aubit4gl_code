@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.9 2001-10-16 03:09:13 afalout Exp $
+# $Id: amake,v 1.10 2002-01-18 03:09:10 afalout Exp $
 
 #####################################################################
 
@@ -27,15 +27,16 @@ LOGFILE=amake.log
 OVERRIDEINCLUDE=0
 #HEADER="./header.mki"
 #FOOTER="./footer.mki"
-HEADER="$AUBITDIR/incl/header.mki"
-FOOTER="$AUBITDIR/incl/footer.mki"
+#HEADER="$AUBITDIR/incl/header.mki"
+#FOOTER="$AUBITDIR/incl/footer.mki"
 
-#if you export MAKERULES, ti will override 4gl make rules included in
+#if you export MAKERULES, it will override 4gl make rules included in
 #standard header.mki:
+#FIXME: we should read aubitrc here, just like 4glpc does
 RULESDIR=$AUBITDIR/incl
 #export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
 #export MAKERULES="$RULESDIR/a4gl.mk"
-export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
+#export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
 
 rm -f *.err
 

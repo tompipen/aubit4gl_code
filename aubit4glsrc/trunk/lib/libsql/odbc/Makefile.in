@@ -24,25 +24,22 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-01-13 09:40:46 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-01-18 03:09:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-
+#TMP_CFGLAGS:=${CFLAGS}
+#unexport CFLAGS
 #NO_EXPORT_VAR is needed because of bug in make. See Makefile-common
-NO_EXPORT_VAR=1
+#NO_EXPORT_VAR=1
 include ../../../incl/Makefile-common
 override NOINCL=0
 
 #needed because of bug in make. See Makefile-common (NO_EXPORT_VAR)
-TMP_CFGLAGS:=${CFLAGS}
-unexport CFLAGS
-CFLAGS=${TMP_CFGLAGS}
-CFLAGS+=-DXXXXX
-
-#LOCAL_CFLAGS=-I../../.. -L../../.. -I../.. -L../.. -I../../../.. -L../../../.. -I../../libincl
-
-LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile
+#TMP_CFGLAGS:=${CFLAGS}
+#unexport CFLAGS
+#CFLAGS=${TMP_CFGLAGS}
+#CFLAGS+=-DXXXXX
 
 ifdef IODBC_ODBC_LIB_DIR
 	IODBC_LFLAGS=-L$(IODBC_ODBC_LIB_DIR)
@@ -52,11 +49,13 @@ ifdef UNIXODBC_ODBC_LIB_DIR
 endif
 
 #override CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
-CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
+LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile -I..
+CFLAGS	+=${LOCAL_CFLAGS}
 # -I/usr/include/pgsql/iodbc
 
 ifdef ODBCLIBDIR
-	override CFLAGS	+= -I$(ODBCLIBDIR)
+	#override CFLAGS	+= -I$(ODBCLIBDIR)
+	CFLAGS	+= -I$(ODBCLIBDIR)
 endif
 
 OBJECTS=sql.o sqlex.o
@@ -73,30 +72,51 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all : ${ALL}
+#all : ${ALL}
+all :
+#	@echo "Default ODBC targets compiled successfully"
+	@echo "Must specify 'unixodbc' or 'iodbc' (because clean is not working...)"
 #we MUST always clena first, because we don't know for which libs where
 #current object compiled, if they exists.
-iodbc: 		clean libSQL_iodbc.so
-unixodbc: 	clean libSQL_unixodbc.so
+iodbc: 		clean show libSQL_iodbc.so
+	@echo "iODBC target compiled successfully"
+
+unixodbc: 	clean show libSQL_unixodbc.so
+	@echo "unixODBC target compiled successfully"
+
+#	    IODBC_INCLUDE=-I$withval/include
+#	    IODBC_LFLAGS=-L$withval/lib
+#	    IODBC_LIBS=-liodbc
 
 
-
-libSQL_iodbc.so: CFLAGS+=-DIODBC
+libSQL_iodbc.so: CFLAGS+=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_iodbc.so: ${OBJECTS}
-	ld  -fPIC -shared $^ -o $@ -liodbc ${IODBC_LFLAGS}
+#	ld  -fPIC -shared $^ -o $@ -liodbc ${IODBC_LFLAGS} @IODBC_INCLUDE@ @IODBC_LFLAGS@ @IODBC_LIBS@
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+	ld  -fPIC -shared $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 	cp $@ ../..
 
-
-libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC ${TMP_CFGLAGS} -DWWWWWW ${LOCAL_CFLAGS}
+#libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC ${TMP_CFGLAGS} ${LOCAL_CFLAGS}
+libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_unixodbc.so: ${OBJECTS}
-	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+#	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	ld  -fPIC -shared $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
 	cp $@ ../..
 
+.PHONY : show
+show:
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+	@echo TMP_CFGLAGS = ${TMP_CFGLAGS}
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
+.PHONY : clean
 clean:
 	rm -f *.o *.bak *.so
 

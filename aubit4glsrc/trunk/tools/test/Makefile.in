@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.13 2002-01-13 09:40:47 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-01-18 03:09:11 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -46,10 +46,7 @@ else
 	FGLPCEXEC	=aubit 4glpc
 endif
 
-
-
 #4GLPCFLAGS		=-verbose -settings
-
 
 ifdef COMSPEC
 	ifdef MONOLIT

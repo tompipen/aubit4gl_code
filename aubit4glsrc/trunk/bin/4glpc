@@ -8,7 +8,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.38 2002-01-13 09:40:46 afalout Exp $
+# $Id: 4glpc,v 1.39 2002-01-18 03:09:10 afalout Exp $
 #
 ########################################################################
 
@@ -265,11 +265,36 @@ then
 	. ${AUBITETC}/aubitrc
 fi
 
+#we no longer export all variables, so this is obsolete?:
 if [ "$MAKINGAUBIT" = "1" ] #if we are invoked from Aubit compiler makefiles
 then
-	if [ "$AUBIT_BIN_INSTALL" != "1" ] #and we are still in Aubit source code tree
+	if [ "$AUBIT_BIN_INSTALL" != "1" ] && [ "$AUBIT_SRC_ROOT" != "" ] #and we are still in Aubit source code tree
     then
 		AUBITDIR=$AUBIT_SRC_ROOT
+    fi
+fi
+
+if [ "$AUBITDIR" = "" ]
+then
+	#if still emty, assume this script is in $AUBITDIR/bin
+	PATHTO4GLPC1=`dirname $0`
+	PATHTO4GLPC=`dirname $PATHTO4GLPC1` #remove bin/
+    OLD_DIR=`pwd`
+	cd $PATHTO4GLPC
+    CURRDIR=`pwd`
+	cd -
+	export AUBITDIR=$CURRDIR
+
+	if [ -f $AUBITDIR/bin/4glpc ]
+    then
+		echo "AUBITDIR now set to $AUBITDIR"
+        cd $OLD_DIR
+    else
+        echo "Error: cannot set AUBITDIR: $AUBITDIR"
+		echo PATHTO4GLPC1=$PATHTO4GLPC1
+		echo PATHTO4GLPC=$PATHTO4GLPC
+    	echo OLD_DIR=$OLD_DIR
+		exit 13
     fi
 fi
 
@@ -300,34 +325,14 @@ then
 	. $A4GL_INIFILE
 fi
 
+#we no longer export all variables, so this is obsolete?:
 if [ "$MAKINGAUBIT" = "1" ]
 then
 	#if we are invoked from Aubit compiler makefiles
-	if [ "$AUBIT_BIN_INSTALL" != "1" ]
+	if [ "$AUBIT_BIN_INSTALL" != "1" ] && [ "$AUBIT_SRC_ROOT" != "" ]
     then
 		#and we are still in Aubit source code tree
 		AUBITDIR=$AUBIT_SRC_ROOT
-    fi
-fi
-
-
-if [ "$AUBITDIR" = "" ]
-then
-	#if still emty, assume this script is in $AUBITDIR/bin
-	PATHTO4GLPC=`dirname $0`
-	PATHTO4GLPC=`dirname $PATHTO4GLPC` #remove bin/
-    cd $PATHTO4GLPC
-    CURRDIR=`pwd`
-	cd -
-	export AUBITDIR=$CURRDIR
-
-	if [ -f $AUBITDIR/bin/4glpc ]
-    then
-		echo "AUBITDIR now set to $AUBITDIR"
-        cd -
-    else
-        echo "Error: cannot set AUBITDIR: $AUBITDIR"
-        exit 13
     fi
 fi
 
@@ -486,6 +491,70 @@ do
    ##########
    case $a in
    ##########
+
+   -dups)
+		#list all duplicated files in tree below current location
+		ALL=`find . -name "*" -exec basename {} \; | sort | uniq -c | grep -v " 1" `
+		CNT=1
+		############
+		for a in $ALL
+		############
+		do
+			if [ $CNT = 2 ]
+			then
+				case $a in
+				#things to be ignored:
+				"CVS")
+				;;
+				"Root")
+				;;
+				"Repository")
+				;;
+				"Makefile")
+				;;
+				"Makefile.in")
+				;;
+				"Makefile.old")
+				;;
+				"bin")
+				;;
+				"config")
+				;;
+				"data")
+				;;
+				"debian")
+				;;
+				"Entries")
+				;;
+				"generated")
+				;;
+				"*.bak")
+				;;
+				READM*)
+				;;
+				"rules")
+				;;
+				* )
+					echo -------------------------- $DUP_NUM = $a
+					FILE=`find . -name $a`
+					for b in $FILE
+					do
+						if [ ! -d "$b" ]
+						then
+							ls -al $b
+						else
+							echo "$b Is directory - skipped"
+						fi
+					done
+				esac
+				CNT=1
+			else
+			    CNT=2
+				DUP_NUM=$a
+			fi
+		done
+
+    ;;
 
    -manifest)
         DO_AND_EXIT="ldd"

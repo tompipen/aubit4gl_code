@@ -1,3 +1,7 @@
+ifeq "${AUBITDIR}" ""
+    AUBITDIR=../..
+endif
+
 include ${AUBITDIR}/incl/header.mki
 
 PROG            = test_im

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.6 2002-01-17 20:17:38 saferreira Exp $
+# $Id: sql.c,v 1.7 2002-01-18 03:09:10 afalout Exp $
 #
 */
 
@@ -67,9 +67,15 @@
 		#include <sqlext.h>
 		#include <odbcinst.h>
 	#else
-		#include <iodbc.h>
-		#include <isql.h>
-		#include <isqlext.h>
+		#ifdef OLD_IODBC
+			#include <iodbc.h>
+			#include <isql.h>
+			#include <isqlext.h>
+        #else
+			#include <sql.h>
+            #include <sqlext.h>
+            #include <sqltypes.h>
+        #endif
     #endif
 #endif
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.5 2002-01-13 16:53:48 mikeaubury Exp $
+# $Id: nosql.c,v 1.6 2002-01-18 03:09:10 afalout Exp $
 #
 */
 
@@ -76,8 +76,8 @@ A4GLSQL_set_status (int a, int sql)
 int
 A4GLSQL_init_connection (char *dbName)
 {
-  debug("Oops - no connections with no databases!");
-  exitwith ("Could not init_connection - noODBC build");
+  debug("Connection with database not available: A4GL_SQLTYPE=nosql");
+  exitwith ("Could not init_connection - Connection with database not available: A4GL_SQLTYPE=nosql");
 }
 
 

@@ -3,6 +3,15 @@
 
 CURRDIR=$PWD
 
+if [ "$AUBITDIR" = "" ]
+then
+	#FIXME: this should be set with autoconf
+	OLD_DIR=`pwd`
+	cd ../..
+    AUBITDIR=`pwd`
+    cd $OLD_DIR
+fi
+
 #cd $HOME
 
 #Bug on CygWin - root makefile PWD allways returned :

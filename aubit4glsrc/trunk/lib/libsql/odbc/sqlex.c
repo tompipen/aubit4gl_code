@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.5 2002-01-13 09:40:47 afalout Exp $
+# $Id: sqlex.c,v 1.6 2002-01-18 03:09:10 afalout Exp $
 #
 */
 
@@ -40,9 +40,15 @@
 		#include <sqlext.h>
 		#include <odbcinst.h>
 	#else
-		#include "iodbc.h"
-		#include "isql.h"
-		#include "isqlext.h"
+		#ifdef OLDIODBC
+			#include <iodbc.h>
+			#include <isql.h>
+			#include <isqlext.h>
+        #else
+			#include <sql.h>
+            #include <sqlext.h>
+            #include <sqltypes.h>
+        #endif
 	#endif
 #endif
 
