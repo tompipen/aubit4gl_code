@@ -41,10 +41,10 @@ main
 	define d integer
 
 	let msgerrcnt = 0
-        if num_args()=0 then
-                display "Usage : afinderr number"
-                exit program 0
-        end if
+	if num_args()=0 then
+		display "Usage : afinderr number"
+		exit program 0
+	end if
 	let n=arg_val(1)
 code
 {
@@ -65,9 +65,14 @@ if (d!=0) {
 		strcpy(buff2,buff);
 		strcat(buff2,"/");
 		strcat(buff2,de->d_name);
+		if (strlen(de->d_name)) {
 		A4GL_push_char(buff2);
 		A4GL_push_long(n);
 		aclfgl_newshowhelp(2);
+		} else {
+			printf("Can't readdir\n");
+			exit(2);
+		}
 	}
 }
 }
@@ -159,9 +164,9 @@ myseterr( char *s)
 	char *t;
 
 	fprintf(stderr, "%s\n", s );
-	s[HELPMAXLEN]=0;
-	t=msgerror[msgerrcnt].errline;
-	strncpy( t,s,HELPMAXLEN);
-	++msgerrcnt;
+	//s[HELPMAXLEN]=0;
+	//t=msgerror[msgerrcnt].errline;
+	//strncpy( t,s,HELPMAXLEN);
+	//++msgerrcnt;
 }
 
