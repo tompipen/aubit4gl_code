@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.25 2003-11-12 22:22:46 afalout Exp $
+# $Id: formwrite2.c,v 1.26 2004-02-10 19:06:58 mikeaubury Exp $
 #*/
 
 /**
@@ -125,6 +125,10 @@ new_attribute (void)
 				     1].bool_attribs.bool_attribs_len = 0;
   the_form.attributes.attributes_val[the_form.attributes.attributes_len -
 				     1].bool_attribs.bool_attribs_val = 0;
+
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].general_ptr=0;
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].do_reverse=0;
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].flags=0;
 }
 
 
@@ -729,8 +733,8 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 
   for (z = 0; z < a; z++)
     {
-      A4GL_debug ("Adding attribute %p",
-	     curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len]);
+      //A4GL_debug ("Adding attribute %p",
+	     //curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len]);
 
       A4GL_debug ("ptr[z]=%d\n", ptr[z]);
 

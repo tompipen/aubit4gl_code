@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.34 2003-10-26 19:12:02 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.35 2004-02-10 19:06:59 mikeaubury Exp $
 #*/
 
 /**
@@ -127,6 +127,10 @@ new_attribute (void)
 				     1].bool_attribs.bool_attribs_len = 0;
   the_form.attributes.attributes_val[the_form.attributes.attributes_len -
 				     1].bool_attribs.bool_attribs_val = 0;
+
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].general_ptr=0;
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].do_reverse=0;
+  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].flags=0;
 }
 
 
