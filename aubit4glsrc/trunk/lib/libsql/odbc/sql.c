@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.113 2005-03-10 11:48:16 mikeaubury Exp $
+# $Id: sql.c,v 1.114 2005-03-16 10:46:42 mikeaubury Exp $
 #
 */
 
@@ -1744,10 +1744,8 @@ A4GLSQL_init_connection_internal (char *dbName_f)
 
 
       // Do we actually need this ?
-      if (A4GL_isyes (acl_getenv ("AUTOCOMMIT")))
-	{
-	  rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
-	}
+      if (A4GL_isyes (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 1); }
+      if (A4GL_isno (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0); }
 
 
       chk_rc (rc, 0, "SQLSetConnectOption");
@@ -4352,6 +4350,12 @@ A4GLSQL_commit_rollback (int mode)
 	{
 	  in_transaction = 0;
 	  SQLTransact (henv, hdbc, SQL_ROLLBACK);
+	}
+
+      if (mode == -1)
+	{
+	  rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
+	  in_transaction = 1; 
 	}
 
       A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
