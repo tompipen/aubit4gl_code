@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Pick lists</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Pick lists</CENTER></B><HR></H1>
+
+<P>Pick lists all have in common behaviour a capabilities, and have been
+differentiated only on the number of columns they display (description, or
+code and description), and the number of entries returned (single or multiple).<BR>
+Common characteristics are:</P>
+<UL>
+<LI>Ability to gather data to display from
+    <UL>
+    <LI>queries (set <VAR>tbl</VAR> to null)</LI>
+    <LI>multiple files (set <VAR>tbl</VAR> to "file", and place a semicolon
+        separated list of files in <VAR>cond</VAR>)</LI>
+    <LI>pipes (set <VAR>tbl</VAR> to "pipe")</LI>
+    </UL>
+</LI>
+<LI>Handle comments (marked by hashes)</LI>
+<LI>Return data immediately, if only one row is available</LI>
+<LI>Position the cursor on the closest entry to user specifications on 
+    invocation (set <VAR>buf</VAR> to the string to be matched)</LI>
+<LI>Search entries by starting character</LI>
+<LI>Being implemented on text variables, have no limitation in the number of
+    entries they can handle</LI>
+</UL>
+
+<P>The available flavours follow:</P>
+<UL>
+<LI><A HREF="#multi_desc">multi_desc</A></LI>
+<LI><A HREF="#multi_help">multi_help</A></LI>
+<LI><A HREF="#uni_desc">uni_desc</A></LI>
+<LI><A HREF="#uni_help">uni_help</A></LI>
+</UL>
+
+<P><A NAME="multi_desc"><H3>multi_desc</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iml2h.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function multi_desc(tbl, cond, ln, sep, quotes, buf)
+    define
+	tbl	char(4),	#source
+	cond	char(300),	#statement, file list or pipe
+	ln	smallint,	#output buffer length
+	sep	char(1),	#multiple entry separator char
+	quotes	char(2),	#start and end quote
+	buf	char(8)		#initial match	
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>d</VAR>, char(80), selected entries
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+single field, multiple choice pick list
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>the size ot the rsturn buffer will be kept within <VAR>ln</VAR> chars</LI>
+<LI>it is possible to specify how multiple entries should be separated.
+    the default separator is a whitespace.</LI>
+<LI>entries returned can optionally be surrounded by quotes. if <VAR>quotes</VAR>
+    contains multiple characters, the first is used as 
+    the opening quote, and the second as the closing.</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="multi_help"><H3>multi_help</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlth.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function multi_help(tbl, cond, ln, sep, quotes, buf)
+    define
+	tbl	char(4),	#source
+	cond	char(300),	#statement, file list or pipe
+	ln	smallint,	#output buffer length
+	sep	char(1),	#multiple entry separator char
+	quotes	char(2),	#start and end quote
+	buf	char(8)		#initial match	
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>d</VAR>, char(80), selected entries
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+dual field, multiple choice pick list
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>the size ot the rsturn buffer will be kept within <VAR>ln</VAR> chars</LI>
+<LI>it is possible to specify how multiple entries should be separated.
+    the default separator is a whitespace.</LI>
+<LI>entries returned can optionally be surrounded by quotes. if <VAR>quotes</VAR>
+    contains multiple characters, the first is used as 
+    the opening quote, and the second as the closing.</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_desc"><H3>uni_desc</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iun2h.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_desc(tbl, cond, buf)
+    define
+	tbl	char(4),	#source
+	cond	char(300),	#statement, file list or pipe
+	buf	char(8)		#initial match	
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>d</VAR>, char(80), selected entry
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+single field, single choice pick list
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_help"><H3>uni_help</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunih.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_help(tbl, cond, insnew, buf)
+    define
+	tbl	char(4),	#source
+	cond	char(300),	#statement, file list or pipe
+	insnew	integer,	#true if insertion of new rows allowed
+	buf	char(8)		#initial match	
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>c</VAR>, char(8), selected entry value<BR>
+<VAR>d</VAR>, char(80), selected entry description
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+dual field, single choice pick list
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Error Handlers</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Error Handlers</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#invalid_message">invalid_message</A></LI>
+<LI><A HREF="#invalid_viewer">invalid_viewer</A></LI>
+<LI><A HREF="#new_log">new_log</A></LI>
+<LI><A HREF="#trap_err">trap_err</A></LI>
+</UL>
+
+<P><A NAME="invalid_message"><H3>invalid_message</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ierrl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function invalid_message(m)
+    define m	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used from within viewers or scrollers to warn the user that an invalid message
+has been detected
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="4wriafil.htm#exafi01">see afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A NAME="nterr01">
+<UL>
+<LI>Outputs additional diagnostic information on the application log,
+    like user, and menu event chain</LI>
+<LI>Prompts user for 2 possible action: continue and quit</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="invalid_viewer"><H3>invalid_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ierrl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function invalid_viewer(v)
+    define v	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used from within the main program to warn the user that an attempt was made to
+invoke an invalid viewer.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#nterr01">see invalid_message</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="new_log"><H3>new_log</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ierrl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function new_log()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Empties and enters a timestamp in the application error log
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="trap_err"><H3>trap_err</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ierrl.4gl, oerrl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function trap_err()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A simple error trapper that outputs added diagnostic information to the
+error log (eg user, chain of menu entries that lead to the error).
+Depending on the type of application (command line or interactive), the
+action taken is to either to terminate the application, or to prompt the user.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>to be used within <CODE>WHENEVER ERROR</CODE> statements</LI></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

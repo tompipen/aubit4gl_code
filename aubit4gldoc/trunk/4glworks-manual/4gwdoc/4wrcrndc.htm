@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Random number generator</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Random number generator</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#get_rand">get_rand</A></LI>
+<LI><A HREF="#get_seed">get_seed</A></LI>
+<LI><A HREF="#say_seed">say_seed</A></LI>
+<LI><A HREF="#start_rand">start_rand</A></LI>
+</UL>
+
+<P><A NAME="get_rand"><H3>get_rand</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>crndc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function get_rand(m)
+    define m	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>r</VAR>, integer, random number
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Returns a random number in the range [0..<CODE>m</CODE>].
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="get_seed"><H3>get_seed</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>crndc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function get_seed()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>s</VAR>, integer, generated seed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Obtains a seed suitable for the random generator from the sistem clock.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="say_seed"><H3>say_seed</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>crndc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function say_seed()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>s</VAR>, integer, current random number generator seed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Returns the current random number generator seed.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="start_rand"><H3>start_rand</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>crndc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function start_rand(s)
+    define s	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the random number generator seed.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

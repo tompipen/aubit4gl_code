@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Global variables</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Global variables</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#code_1">code_1</A></LI>
+<LI><A HREF="#code_2">code_2</A></LI>
+<LI><A HREF="#link_rec">link_rec</A></LI>
+<LI><A HREF="#p_ted">p_ted</A></LI>
+<LI><A HREF="#search">search</A></LI>
+<LI><A HREF="#ted_count">ted_count</A></LI>
+<LI><A HREF="#ted_file">ted_file</A></LI>
+<LI><A HREF="#type_rec">type_rec</A></LI>
+</UL>
+
+<P><A NAME="code_1"><H3>code_1</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define code_1		char(8),
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI><A HREF="4wridtbs.htm#stb_scroller">stb_scroller</A>: holds the primary
+    key of the currently highlighted record</LI>
+<LI><A HREF="4wridtbs.htm#dtb_scroller">dtb_scroller</A>: holds the primary
+    key of the first table of the currently highlighted record</LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="code_2"><H3>code_2</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define code_2		char(8),
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4wridtbs.htm#dtb_scroller">dtb_scroller</A>: holds the primary
+key of the second table of the currently highlighted record
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="link_rec"><H3>link_rec</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imltg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define link_rec		integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4wridtbs.htm#mlt_scroller">mlt_scroller</A>: holds the type of
+the currently highlighted record
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="p_ted"><H3>p_ted</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+#define K_maxtedrows	60
+#define K_maxtedwidth	80
+
+define	p_ted	array[K_maxtedrows] of record
+		    txt		char(K_maxtedwidth),
+		    d		char(1)
+		end record
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4writedl.htm">text editor</A>: the editor buffer (<VAR>d</VAR> is a
+dummy variable used to implement editor scrolling)
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="search"><H3>search</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define search		char(2048),
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4wridtbs.htm#stb_scroller">stb_scroller</A> and
+<A HREF="4wridtbs.htm#dtb_scroller">dtb_scroller</A>: holds the query
+currently used by the scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_count"><H3>ted_count</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define ted_count	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4writedl.htm">text editor</A>: holds the current number of lines
+in the editor buffer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_file"><H3>ted_file</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>tedgl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define ted_file	char(64)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4writedl.htm">text editor</A>: holds the name of the last file
+against which an IO operation was performed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="type_rec"><H3>type_rec</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imltg.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+define type_rec		char(1)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<A HREF="4wridtbs.htm#mlt_scroller">mlt_scroller</A>: holds the primary key of
+the currently highlighted record
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

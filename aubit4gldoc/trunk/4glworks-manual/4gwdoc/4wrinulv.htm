@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Viewers</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Viewers</CENTER></B><HR></H1>
+
+<P>All the viewers return either <CODE>NULL</CODE> or the id of the next
+viewer to be invoked.</P>
+
+<UL>
+<LI><A HREF="#frm2ptr_viewer">frm2ptr_viewer</A></LI>
+<LI><A HREF="#frm_viewer">frm_viewer</A></LI>
+<LI><A HREF="#log_viewer">log_viewer</A></LI>
+<LI><A HREF="#mdl_viewer">mdl_viewer</A></LI>
+<LI><A HREF="#null_viewer">null_viewer</A></LI>
+<LI><A HREF="#ptr_viewer">ptr_viewer</A></LI>
+<LI><A HREF="#sql_viewer">sql_viewer</A></LI>
+</UL>
+
+<P><A NAME="frm2ptr_viewer"><H3>frm2ptr_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>if2pi.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function frm2ptr_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_detailed</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+<LI><CODE>MB_changerec</CODE></LI>
+<LI><CODE>MB_deleterec</CODE></LI>
+<LI><CODE>MB_chooseset</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+form viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="frm_viewer"><H3>frm_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ifrmi.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function frm_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_detailed</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+<LI><CODE>MB_changerec</CODE></LI>
+<LI><CODE>MB_deleterec</CODE></LI>
+<LI><CODE>MB_chooseset</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+form viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="log_viewer"><H3>log_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ilogv.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function log_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_print</CODE></LI>
+<LI><CODE>MB_reloadset</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+error log viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mdl_viewer"><H3>mdl_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imdli.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mdl_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_detailed</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_prevrow</CODE></LI>
+<LI><CODE>MB_nextrow</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+<LI><CODE>MB_changerec</CODE></LI>
+<LI><CODE>MB_deleterec</CODE></LI>
+<LI><CODE>MB_chooseset</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+printer model viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="null_viewer"><H3>null_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>inulv.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function null_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A simple blank viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ptr_viewer"><H3>ptr_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iptri.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ptr_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_detailed</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+<LI><CODE>MB_changerec</CODE></LI>
+<LI><CODE>MB_deleterec</CODE></LI>
+<LI><CODE>MB_chooseset</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+printer viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="sql_viewer"><H3>sql_viewer</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>isqlv.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function sql_viewer()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>responds to</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI><CODE>MB_print</CODE></LI>
+<LI><CODE>MB_sqledit</CODE></LI>
+<LI><CODE>MB_sqlexec</CODE></LI>
+<LI><CODE>MB_fileread</CODE></LI>
+<LI><CODE>MB_filewrite</CODE></LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+query language viewer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="4wriafil.htm#exafi01">afw_init</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

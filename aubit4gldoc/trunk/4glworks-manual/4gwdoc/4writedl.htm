@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Text Editor</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Text Editor</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#ted_checkop">ted_checkop</A></LI>
+<LI><A HREF="#ted_clear">ted_clear</A></LI>
+<LI><A HREF="#ted_features">ted_features</A></LI>
+<LI><A HREF="#ted_fileread">ted_fileread</A></LI>
+<LI><A HREF="#ted_filewrite">ted_filewrite</A></LI>
+<LI><A HREF="#ted_fromtext">ted_fromtext</A></LI>
+<LI><A HREF="#ted_fromuni">ted_fromuni</A></LI>
+<LI><A HREF="#ted_input">ted_input</A></LI>
+<LI><A HREF="#ted_show">ted_show</A></LI>
+<LI><A HREF="#ted_start">ted_start</A></LI>
+<LI><A HREF="#ted_totext">ted_totext</A></LI>
+<LI><A HREF="#ted_touni">ted_touni</A></LI>
+</UL>
+
+<P><A NAME="ted_checkop"><H3>ted_checkop</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_checkop(r)
+    define r smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Handy little function that takes the result of <A HREF="#ted_fileread">ted_fileread</A> 
+or <A HREF="#ted_filewrite">ted_filewrite</A> and outputs an appropiate message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_clear"><H3>ted_clear</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_clear()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Clears the text editor screen array
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_features"><H3>ted_features</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_features(a, i)
+    define a,			#use autowrap?
+	   i	smallint	#use file IO?
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used to turn on/off certain text editor features
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>Notes</B></TD>
+<TD WIDTH=100%>Can be used at any time</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_fileread"><H3>ted_fileread</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_fileread(f, m, s, z)
+    define f	char(70),		#path to file
+	   m,				#maximum amount of lines in the buffer
+	   s,				#start line
+	   z	smallint		#initial buffer count
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>result</VAR>, integer, operation result
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Reads a file into the ted buffer
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>if <VAR>f</VAR> is null, the routine will open a window on which a file
+    name can be provided</LI>
+<LI><CODE>ted_fileread</CODE> will insert the contents of file <VAR>f</VAR>
+    at line <VAR>s</VAR>, preserving subsequent lines, until the overall
+    contents  of the buffer reach <VAR>m</VAR>
+<LI>to initialize the buffer with the contents of a file, set <VAR>s</VAR> to 1
+    and <VAR>z</VAR> to 0</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_filewrite"><H3>ted_filewrite</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_filewrite(f, m)
+    define f	char(70),		#path to the file
+	   m	smallint		#amount of lines to write
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Writes the contents of the ted buffer into a file
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+if <VAR>f</VAR> is null, the routine will open a window on which a file
+name can be provided</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_fromtext"><H3>ted_fromtext</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_fromtext(t)
+    define t	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+Nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Copies the contents of text variable <CODE>t</CODE> into the text editor array
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_fromuni"><H3>ted_fromuni</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_fromuni()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+Nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Copies the contents of the currently active
+<A HREF="4wridtbs.htm#uni_scroller">uni_scroller</A> pane into the text
+editor array
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_input"><H3>ted_input</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_input(dir, enb)
+    define dir,			#-1 if cursor to be positioned on last line
+	   enb	smallint	#true if part of an INPUT statemet
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>1, if the input should continue with the next field</LI>
+<LI>-1, if the input should continue with the previous field</LI>
+<LI>0, if the user has pressed the <CODE>ACCEPT</CODE> or <CODE>INTERRUPT</CODE> field</LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The text editor itself
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_show"><H3>ted_show</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_show()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Displays the initial portion of the text editor buffer on the
+associated screen array
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_start"><H3>ted_start</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_start(s, t, e, n)
+    define s,			# screen lines
+	   t,			# max text lines
+	   e,			# no blank lines?
+	   n	smallint	# text needed?
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the properties of the text editor
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Needs to be called once, the editor buffer gets used. Calling this function
+in between ted_input calls on the same text is likely to disrupt ted_input functionality.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_totext"><H3>ted_totext</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_totext(t)
+    define t	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+Nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Copies the contents of the text editor array into text variable <CODE>t</CODE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="ted_touni"><H3>ted_touni</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itedl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function ted_touni()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+Nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Copies the contents of the text editor array into the currently active
+<A HREF="4wridtbs.htm#uni_scroller">uni_scroller</A> pane
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Shell utilities</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Shell utilities</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#exec_appl">exec_appl</A></LI>
+<LI><A HREF="#exec_sh">exec_sh</A></LI>
+<LI><A HREF="#file_input">file_input</A></LI>
+<LI><A HREF="#filepath">filepath</A></LI>
+<LI><A HREF="#filesplit">filesplit</A></LI>
+<LI><A HREF="#multi_file">multi_file</A></LI>
+<LI><A HREF="#tmp_filename">tmp_filename</A></LI>
+<LI><A HREF="#uni_file">uni_file</A></LI>
+</UL>
+
+<P><A NAME="exec_appl"><H3>exec_appl</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ishll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function exec_appl(cmdline, ask_char)
+    define cmdline	char(80),
+	   ask_char	char(1)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Executes an external application, optionally prompting the user
+to hit a key before continuing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="exec_sh"><H3>exec_sh</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ishll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function exec_sh(pr)
+    define pr	char(10)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Prompts for a shell command and invokes a shell to execute it
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_input"><H3>file_input</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ishll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_input(fnam, path)
+    define fnam,
+	   path	char(70)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>filename</VAR>, char(64), file name entered by the user.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Opens a modal window requesting the user to enter a file name.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>useful in conjunction with services that open files for
+reading or writing</LI>
+<LI><VAR>fname</VAR> allows to set a suggested file name</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="filepath"><H3>filepath</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cshll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function filepath(path, file)
+    define path	char(64),
+	   file	char(64)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>file</VAR>, char(128), constructed absolute path.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+builds an absolute path out of the supplied file name and path
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="filesplit"><H3>filesplit</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cshll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function filesplit(path, d, n, e)
+    define path		char(128),
+    	   d, n ,e	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>basename</VAR>, char(64), file name extracted form full path
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The 4glWorks equivalent of <CODE>basename (1)</CODE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="multi_file"><H3>multi_file</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ishll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function multi_file(path, ln, buf)
+    define
+	path	char(70),
+	ln	smallint,
+	buf	char(40)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>selection</VAR>, char(80), user selected file list
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A multiple selection file name picklist
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="tmp_filename"><H3>tmp_filename</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cshll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function tmp_filename(p)
+    define p	char(3)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>file</VAR>, char(64), temporary file name
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns a temporary file name
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_file"><H3>uni_file</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ishll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_file(path, buf)
+    define
+	path	char(70),
+	buf	char(40)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>file</VAR>, char(40), user selected file
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A single selection file name picklist
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks: an indepth description</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand crafted in Catania by expert Webmakers">
+</HEAD>
+<BODY BGCOLOR="White">
+<H1><HR><CENTER><B>4glWorks: an indepth description</CENTER></B><HR></H1>
+
+<P>I started thinking about an application framework back in 1992, when the
+users of <A href="oops.htm">OOPS</A> begun complaining that it was too mastodontic
+(you had to go six or seven levels down a menu before getting to do something,
+and had to go all the way up plus some more levels down to do something
+else); in the meantime I was starting to develop, requested by the local
+university radiology department, <A href="sfinge.htm">Sfinge</A>, a system
+which could generate a set of multiple choice questions that could be
+used to prepare exam papers and as a self assessment tool.</P>
+
+<P>Developing OOPS had made a few things clear:</P>
+
+<OL>
+<LI> Most of the time I was writing the same code over and over again, only
+the data handled by the code changed. Code replication was enormous.<BR>
+4gl is, so to speak, pretty static: there's nothing (dynamic data, functional
+types, etc) that allows, for example, to build a prototype "table browser"
+that can be used to browse different tables by just adding (or passing...)
+the correct data display function.
+
+<LI>Rearranging menus more than likely implies shuffling command associated
+code as well.
+
+<LI>Adding "menu unspecific" functionalities (i.e. Stores DB bang() function)
+to the application simply means that these have to be manually put in
+each and every menu.
+
+<LI> 4gl menus don't ease the writing of reusable code: there's no hardwired
+way to build extensible menus. In other words, the previous prototype
+table scroller cannot have a "basic menu" that can be extended to handle
+table specific needs by adding (or passing or whatever) to it new commands
+&amp;associated code.<BR>
+Adding such a functionality to a menu implies using char variables for
+command definition, most certainly option hides/shows, and a messaging
+scheme to pass the user selected command between modules.
+</OL>
+
+<P>A few things were in order:</P>
+
+<UL>
+<LI>code reusal both within OOPS and a developing tool
+<LI>greater module independence
+<LI>CUA functionality
+</UL>
+
+<P>By popular demand, the new OOPS was to be</P>
+
+<UL>
+<LI> full of on the fly, menu unspecific functions (<I>services</I>, from now on), many of which
+would access/modify the DB in complex ways.
+<LI>able to switch quickly from one browsing module (which we'll call <I>viewer</I>) to another.
+</UL>
+
+<P>"Never more than two keystrokes away from what you want to do" was the
+motto.</P>
+
+<P>For starters, OOPS (and the application framework, for that matter) needed
+to have one monolithic menu structure accessed by every viewer, and not
+a 4gl menu for each of them, like in "traditional" 4gl apps.<BR>
+This alone allowed for easier to maintain, shorter code.<BR>
+The menu structure behaviour would be to directly invoke services common
+to all viewers, leaving them to deal with their specific user request
+("Insert new record", etc).</P>
+
+<P>The next move was to have the services tell the viewers what to do upon
+regaining control, rather that putting in the viewers themselves the knowledge
+of the possible behaviours (new record inserted, tbl locked, row deleted,
+screen defaced, etc.) of all the services.</P>
+
+<P>Third, a way was needed to let the viewers know from menus and services
+what to do next: 4glWorks was born.</P>
+
+<P>What follows is a block diagram of a typical 4glWorks application:</P>
+
+<CENTER><IMG SRC="img/4gwblock.gif" ALT="4glWorks Block Diagram"
+ALIGN="bottom" WIDTH=585 HEIGHT=420><BR>
+<FONT SIZE=-1>(The arrows indicate the direction of messages)</FONT></CENTER>
+
+<P>The idea is quite simple: the application is made up of a number of modules
+that call each other and exchange <I>messages</I> in order to communicate what
+each wants the other to do.<BR>
+Messages are a couple of smallints that travel upwards (as parameters
+passed to the next module) and downwards, as values returned.<BR>
+4gl doesn't offer constant definition, so probably strings would have
+offered more readability. However messages use the stack, and 4gl suffers
+from TSS aches. Smallints seemed a much safer choice.<BR>
+More important, smallints allow for efficient message masking, whereas
+strings don't.<BR>
+I quickly got accustomed to using integer values for messages. Recently, when things
+got out of control, I switched to my own cpp like <A HREF="misc.htm#4gl">precompiler</A>.</P>
+
+<H2><HR><B><CENTER>4glWorks module types</B></CENTER><HR></H2>
+
+<P>This section briefly describe the three main components of a 4glWorks
+application, <I>viewers</I>, <I>services</I> and the <I>menu structure</I>.<BR>
+<B>Viewers</B> ultimate scope is handle completely a particular subset of your
+DB, however complex. Viewers duties therefore comprise the retrieval of
+data and its display on the screen and, optionally, the invocation of
+viewers related services.<BR>
+Viewers input comes obviously from the menu structure and services (and, as of
+2.0b5, from the system clock too), and it essentially falls in two main categories:
+state restoration &amp; user requests.<BR>
+State restoration requests are the only mechanism a viewer has to keep
+track of what is going on. Application correct functionality is based
+on the fact that services correctly notify the viewers about the action
+they need to take to restore a correct state in the following areas:</P>
+
+<UL>
+<LI>data display/form management (e.g. screen cluttered, redisplay the form,
+or form cluttered, redisplay the data)
+
+<LI>data retrieval/cursor management (e.g. row inserted/deleted, reopen the
+cursor, or changed the active set, redeclare &amp; open the cursor)
+</UL>
+
+<P>User requests come from the menu structure. Depending on viewer capabilities,
+such messages might deal with:</P>
+
+<UL>
+<LI>active set selection
+
+<LI>data manipulation (insert/delete/modify records)
+
+<LI>data printout
+
+<LI>viewer configuration
+</UL>
+
+<P>The only user request a viewer <B>must</B> be able to service is "pack up &amp; quit".<BR>
+The <B>menu structure</B> interfaces directly with the user, allowing him to
+choose the operations he wishes to perform.<BR>
+Menus wait for the user to select an action and then either call a service
+to perform whatever the user wants to be done, or pass the request back
+to the current viewer.<BR>
+Any given message can be associated with any of the following:</P>
+
+<UL>
+<LI>a horizontal menu entry
+
+<LI>a vertical menu entry
+
+<LI>a cursor or control key
+
+<LI>a given moment in time
+</UL>
+
+<P>Note that a message can be associated to more than a menu entry at the
+same time (this is typically used for accelerator keys) and that menus
+can be freely cascaded. This scenario allows for user interface facelifts
+without modifications to viewers or services.</P>
+
+<P>The role of vertical menu is clear enough, but why have an horizontal
+menu library?<BR>
+In fact, up to beta 0.7 there was no such thing. The horizontal menu was
+built using a standard 4gl menu, made dynamic using variable command definitions.<BR>
+Things were changed for both aesthetic and practical reasons.<BR>
+Aesthetically speaking, 4glWorks menu can be made to consume less space that
+4gl menus; also options remain highlighted (like they did in 4gl menus back in
+v1.01.03) for the user to have clear what he's doing.<BR>
+But the nicest thing they do is not to switch to the first on screen option
+in the menu whenever the user chooses an option only associated with a
+key (this is a behaviour I've always disliked in 4gl menus).<BR>
+Turning to more important things, the horizontal menu library was written
+mainly because 4gl menus don't allow for dynamic key assignments, and
+a tighter integration with vertical menus was needed. 4glWorks menu libraries
+allow to mask &amp; filter messages irrespective of where the associated command
+has been put, and how it has been defined.<BR>
+(It should alse be noted that the horizontal menu library simplified a great deal
+the implementation of timer generated messages support)</P>
+
+
+<P><B>Services</B> are the modules that actually change the state of the DB (locking
+a table or the DB, writing a row) and/or the application (viewer configuration,
+active set selection). They can be called, at the programmer's wish, either
+by viewers or by menus.<BR>
+Unlike other modules, services only produce messages</P>
+
+<P>The current implementation of 4glWorks uses a SDI: only one viewer (your
+typical application will most certainly have more than one) active at
+a given time, using the screen. The <B>main program</B> is therefore only a viewer
+spawner: just a while statement with a big case inside.</P>
+
+<P>The system described here is in fact a small port of an event driven system
+to a character based programming language. The beauty of the system is
+that each module needs only to be able to perform a small number of actions
+and need not have a clue about what other modules do or where user requests
+come from. Whenever active, the message received will tell the module
+what it needs to do to return to a safe state and/or which actions it
+is requested to perform.<BR>
+4glWorks application are obviously <I>modal</I>, the current mode of operation
+being set by the viewer or service active at a given time.</P>
+
+<H2><HR><B><CENTER>Code reusability</CENTER></B><HR></H2>
+
+<P>One of the nice things of messages is that they can be <I>filtered</I>; that
+is to say a message can be fed to a black box that does something with
+it and on exit returns an entirely different one.<BR>
+4glWorks has two breeds of <I>filters</I>: plain common ones, and <I>scrollers</I>.<BR>
+A scroller is a filter explicitly placed between the menu structure and
+the viewer that uses it. It typically contains all the data retrieval
+&amp; display functionality the viewer needs.<BR>
+The scroller receives messages from both the menu structure and the viewer
+and trap all the ones for which it has built in functionality. All the
+other are passed to their intended destination, possibly filtered.<BR>
+Scrollers give viewers a common behaviour leaving them to deal only with
+messages related to what the viewer is all about.<BR>
+And, if a scroller (or a filter, for that matter) doesn't exactly do what
+you want (say you want a nice header over the data), you can enhance its
+behaviour by putting another one in front of it.<BR>
+Encapsulation and inheritance!</P>
+
+<H2><HR><B><CENTER>Multiple panes and focus</CENTER></B><HR></H2>
+
+<P>If it isn't clear by now, I don't consider 4gl as being fit for applications with multiple
+screen elements, the most obvious reason being the lack of pointing device support.</P>
+
+<P>Nonetheless there are times in which it is useful to present the user with more
+than one pane (the sql interpreter included in 4glWorks has an edit and a result pane,
+for instance), and 4glWorks gives limited support for this.<BR>
+For just a moment lets go back to the typical scroller structure:</P>
+<P><PRE>function typical_scroller(im, ip)
+    define im, ip,
+           om, op	smallint		#input &amp; output messages
+
+    call upstream(im, ip) returning om, op
+    while true
+        call menu_get(om, op) returning im, ip
+        call downstream(im, ip) returning om, op
+        if (om not in [system_messages])
+        then
+            return om, op
+        end if
+    end while
+end function</PRE></P>
+
+<P>(forgive the pseudo-code) where <CODE>upstream</CODE> and
+<CODE>downstream</CODE> are filters that handle messages going from the
+viewer to the menu structure and viceversa.<BR>
+Apply this kind of code to viewers, i.e. let them call the upstream and downstream
+filters directly, like thus:</P>
+
+<P><PRE>function multi_pane_viewer()
+    define im, ip,
+           om, op	smallint		#input &amp; output messages
+
+    let om=do_whatever_initialization_is_needed
+    let op=same_as_above
+    while true
+        call upstream_1(om, op) returning om, op
+        ....
+        call upstream_n(om, op) returning om, op
+        call menu_get(om, op) returning im, ip
+        call downstream_1(im, ip) returning im, ip
+        ....
+        call downstream_n(im, ip) returning om, op
+#
+#  optionally, deal with messages, here
+#
+        if (om=pack_up)
+        then
+            return op
+        end if
+    end while
+end function </PRE></P>
+
+<P>and presto, a multiple pane viewer has been built.</P>
+
+<P>Obviously, there are certain rules the up/downstream filter must respect when dealing
+with messages. If they don't, the next filter will most certainly fail to present the
+user with the correct data, or invoke a service it shouldn't.<BR>
+For now, it goes by itself that panes not currently focussed should only handle redisplay
+&amp; exit messages, and leave all others untouched. More on this topic in the
+<A HREF="4gwref.htm">programmer's manual</A>.</P>
+
+<P>Limitations. 4gl has only static screen elements (i.e. you can't reference a screen array
+or field via a char variable) and does not support screen matrices (as opposed to screen
+arrays). The only way left for this scheme to work is to create a separate screen array for
+each pane and to handle it with brute force.</P>
+<P>In short:</P>
+<UL>
+<LI>there's little chance of reusing code
+<LI>forget about dynamic (i.e. appearing & disappearing at the user' will) panes
+</UL>
+<P>Also this kind of approach is not entirely compatible with the scroller approach, but
+don't despair. <BR>
+To  ease the use of existing scroller code, many 4glworks scrollers come using the
+upstream / downstream paradigm. <BR>
+The only limitation, due to the previously exposed reasons, is that  with the exception of
+the <A HREF="4wridtbs.htm#uni_scroller">uni_scroller</A> (which resorts to dirty hacks) any one scroller can
+be used by only one pane within the same viewer. Also, note that no particular effort has
+been made to write stateless scrollers.</P>
+
+<P>Looking to the bright side, if you take the time to control your windows, with this same
+approach, you can write a MDI viewer.</P>
+
+<P>The support 4glWorks gives for multiple panes viewer development consists in </P>
+<UL>
+<LI>replicating the menu message mask for each pane created. Menus can therefore
+change depending on the pane being focussed
+<LI>a set of cursor motion (screenwise!) filters able to trap &amp; handle focus switch
+messages
+</UL>
+<P>For everything else, you are on your own.</P>
+
+<H2><HR><B><CENTER>Timer generated messages</CENTER></B><HR></H2>
+
+<P>As of 2.0b5, 4glWorks permits to specify that a message should be generated after a specified
+amount of time has elapsed, or if the user hasn't pressed a key in some time.<BR>
+This, of course can be used to refresh a viewer display every so often, or to check for new mail, or
+to quit the application and regain a valuable user licence if the user hasn't pressed a key in some
+time (and this might help to avoid zombie engine processes too).<BR>
+A less obvious use could be to refresh the detail pane in a dual pane master-detail viewer whenever
+the user hasn't asked to move the screen cursor in the master pane for a certain amount of time.
+The ratio of this would clearly be to speed up the cursor motion in the master pane, since this
+doesn't have to wait for the detail pane to redisplay data every time the current row moves.</P>
+
+<H2><HR><B><CENTER>What Next?</CENTER></B><HR></H2>
+
+<P>I think it's about time you have a look at the <A HREF="4gwfeatures.htm">feature list</A> of 4glWorks, or the <A HREF="4gwref.htm">programmer's manual</A>.</P>
+
+</BODY>
+</HTML>

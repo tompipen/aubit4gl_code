@@ -1,0 +1,722 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Input/Output subsystem</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Input/Output subsystem</CENTER></B><HR></H1>
+
+<P>The routines described here return errors via the <VAR>status</VAR>
+global variable. Most status codes come from the <VAR>errno</VAR> variable.
+Refer to <B>errno (3)</B> for their meaning.</P>
+
+<UL>
+<LI><A HREF="#fd_1stlineheader">fd_1stlineheader</A></LI>
+<LI><A HREF="#fd_2ndlineheader">fd_2ndlineheader</A></LI>
+<LI><A HREF="#fd_blobread">fd_blobread</A></LI>
+<LI><A HREF="#fd_blobwrite">fd_blobwrite</A></LI>
+<LI><A HREF="#fd_close">fd_close</A></LI>
+<LI><A HREF="#fd_crnl">fd_crnl</A></LI>
+<LI><A HREF="#fd_droptoeol">fd_droptoeol</A></LI>
+<LI><A HREF="#fd_eof">fd_eof</A></LI>
+<LI><A HREF="#fd_eol">fd_eol</A></LI>
+<LI><A HREF="#fd_linelen">fd_linelen</A></LI>
+<LI><A HREF="#fd_postwordsep">fd_postwordsep</A></LI>
+<LI><A HREF="#fd_prewordsep">fd_prewordsep</A></LI>
+<LI><A HREF="#fd_read">fd_read</A></LI>
+<LI><A HREF="#fd_write">fd_write</A></LI>
+<LI><A HREF="#fd_writeln">fd_writeln</A></LI>
+<LI><A HREF="#file_lock">file_lock</A></LI>
+<LI><A HREF="#file_open">file_open</A></LI>
+<LI><A HREF="#file_seek">file_seek</A></LI>
+<LI><A HREF="#file_tell">file_tell</A></LI>
+<LI><A HREF="#file_unlock">file_unlock</A></LI>
+<LI><A HREF="#pipe_open">pipe_open</A></LI>
+<LI><A HREF="#stdfd_open">stdfd_open</A></LI>
+<LI><A HREF="#4wrudio">User defined streams</A></LI>
+</UL>
+
+<P><A NAME="fd_1stlineheader"><H3>fd_1stlineheader</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_1stlineheader(fd, s)
+    define fd	integer,	#IO stream id
+	   s	char(4)		#line header
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets the line header for paragraph lines (i.e. those following a <EM>NL</EM>)
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>when opening a new stream, the line header defaults to
+the null string</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_2ndlineheader"><H3>fd_2ndlineheader</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_2ndlineheader(fd, s)
+    define fd	integer,	#IO stream id
+	   s	char(4)		#line header
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets the line header for continuation lines (i.e. those <EM>NOT</EM> following a
+<EM>NL</EM>)</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>when opening a new stream, the line header defaults to
+the null string</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_blobread"><H3>fd_blobread</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_blobread(fd, t)
+    define fd	integer,	#IO stream id
+	   t	text		#destination blob (could be a byte as well)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+loads a text or byte variable located in memory from a file or pipe
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_blobwrite"><H3>fd_blobwrite</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_blobwrite(fd, t)
+    define fd	integer,	#IO stream id
+	   t	text		#destination blob (could be a byte as well)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+writes a text or byte variable located in memory to a file or pipe
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_close"><H3>fd_close</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_close(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>r</VAR> (smallint), exit code (pipes), or 0 (anything else)
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+closes the IO stream indicated by fd, possibly waiting for child
+termination.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>removes locks applied to the file</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_crnl"><H3>fd_crnl</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_crnl(fd, cr)
+    define fd	integer,	#IO stream id
+	   cr	integer		#output line terminator flag
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets the line terminator flag for <A HREF="#fd_writeln">fd_writeln</A>. A non
+zero second argument will force <A HREF="#fd_writeln">fd_writeln</A> to append
+a <EM>CR NL</EM> to the text to be output rather than a <EM>NL</EM>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>when a new stream is opened, the terminator flag defaults to false</LI>
+<LI>this function does not affect <A HREF="#fd_read">fd_read</A>
+functionality. <A HREF="#fd_read">fd_read</A> treats both <EM>NL</EM> and
+<EM>CR NL</EM> as being valid end of line markers.</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_droptoeol"><H3>fd_droptoeol</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_droptoeol(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+discards all chars till next <EM>EOL</EM>, if not already at <EM>EOL</EM>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_eof"><H3>fd_eof</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_eof(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>eof</VAR> (integer), true if currently positioned at the <EM>EOF</EM>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns true if at end of file
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_eol"><H3>fd_eol</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_eol(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>eol</VAR> (integer), true if currently positioned on an <EM>EOL</EM>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns true if at an end of line
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_linelen"><H3>fd_linelen</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_linelen(fd, l)
+    define fd	integer,	#IO stream id
+	   l	integer		#input buffer size
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets max line length returned by <A HREF="#fd_read">fd_read</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>when a new stream is opened, the maximum string lenght defaults to 78
+(the size of the largest non wordwrap field displayable on a 80 chars wide
+screen)</LI>
+<LI>the maximum string lenght set with this function comprises
+the lenght of the line headers set with <A HREF="#fd_1stlineheader">fd_1stlineheader</A>
+and <A HREF="#fd_2ndlineheader">fd_2ndlineheader</A></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_postwordsep"><H3>fd_postwordsep</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_postwordsep(fd)
+    define fd	integer,	#IO stream id
+	   s	char(4)		#word separator characters
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets the list of characters separating words.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>when opening a new stream, the separator list defaults to the null string,
+i.e. line splitting takes place at the maximum permissible line length, as
+set by <A HREF="#fd_linelen">fd_linelen</A></LI>
+<LI>the separators set via this function are returned at the
+end of the current line, following the last word</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_prewordsep"><H3>fd_prewordsep</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_prewordsep(fd, s)
+    define fd	integer,	#IO stream id
+	   s	char(4)		#word separator characters
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+sets the list of characters separating words.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>when opening a new stream, the separator list defaults to the null string,
+i.e. line splitting takes place at the maximum permissible line length, as
+set by <A HREF="#fd_linelen">fd_linelen</A></LI>
+<LI>the separators set via this function are returned at the
+beginning of the next (folded) line, after the line header (if set)</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_read"><H3>fd_read</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_read(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>str</VAR> (char), line of text (possibly folded)
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+reads a string from a stream opened for input
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio01">see file_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_write"><H3>fd_write</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_write(fd, s)
+    define fd	integer,	#IO stream id
+	   s	char(512)	#output string
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+writes a string to a stream
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#ntfio01">see file_open</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="fd_writeln"><H3>fd_writeln</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function fd_writeln(fd, s)
+    define fd	integer,	#IO stream id
+	   s	char(512)	#output string
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+writes a string to a stream, appending [<EM>CR</EM>]<EM>LF</EM> at the end
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A HREF="#exfio02">see pipe_open</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#ntfio01">see file_open</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_lock"><H3>file_lock</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_lock(fd, mandatory)
+    define fd		integer,	#IO stream id
+	   mandatory	integer		#true for exclusive locking
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+locks the file identified by <VAR>fd</VAR> in advisory or mandatory mode
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_open"><H3>file_open</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_open(p, m)
+    define p	char(90),	#file path
+	   m	char(1)		#mode: "r","w","a","r+","w+","a+", as for fopen (3)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>fd</VAR> (integer), the id of the stream just opened
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+opens a file for reading or writing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A NAME="exfio01"><PRE>
+fd=file_open("a_file", "r")		#open for reading only
+call fd_postwordsep(fd, ",;. ")		#split at blanks & punctuation marks
+call fd_1stlineheader(fd, "  ")		#lines after NL marked by a double blank
+call fd_2ndlineheader(fd, "+ ")		#all the other start with a plus
+call fd_filelen(fd, 60)			#no more than 60 chars at a time
+while not fd_eof(fd)
+    let s=fd_read(fd)
+    let i=pos(s, "#")
+    if (i>0)				#drop comments
+    then
+	call fd_droptoeol(fd)		#don't process continuation lines
+	if (i>i)
+	then
+	    let i=i-1
+	    let s=s[1, i]
+	else
+	    let s=""
+	end if
+    end if
+    call do_something(s)
+end while
+let r=fd_close(fd)</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A NAME="ntfio01">
+Opening a file mode "a+" causes writes to be performed at the
+end of the file, even <B>after invoking <CODE><A HREF="#file_seek">file_seek</A>
+(some_number)</CODE></B>, exactly like for fopen (some c mans are not clear
+over this point). This is due to the fact that the <CODE>O_RDWR</CODE> &amp;
+<CODE>O_APPEND</CODE> flags are used when opening files in "a+" mode.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_seek"><H3>file_seek</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_seek(fd, pos)
+   define fd	integer,	#IO stream id
+	  pos	integer		#absolute position within file
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+moves the file pointer relative to file <VAR>fd</VAR> to absolute
+position <VAR>pos</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#ntfio01">see file_open</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_tell"><H3>file_tell</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_tell(fd)
+    define fd	integer		#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>pos</VAR> (integer), current file pointer absolute position
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns file pointer position
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="file_unlock"><H3>file_unlock</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function file_unlock(fd)
+    define fd	integer			#IO stream id
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+unlocks a previously locked file
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="pipe_open"><H3>pipe_open</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function pipe_open(p, m)
+    define p	char(32000),	#command line
+	   m	char(2)		#mode: "r","w" as for popen (3)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>fd</VAR> (integer), the id of the stream just opened
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+opens a pipe for reading or writing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A NAME="exfio02"><PRE>
+let fd=pipe_open("sendmail -t", "w")
+call fd_writeln(fd, "To: someone@somewhere.org")
+call fd_writeln(fd, "Subject: no subject")
+call fd_writeln(fd, "")
+call fd_writeln(fd, "some text")
+let r=fd_close(fd)</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="stdfd_open"><H3>stdfd_open</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function stdfd_open(f)
+    define f    smallint        #only 0, 1, 2 are valid
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>fd</VAR>, integer, id of the stream just opened
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Associates a stream handle to one of the standard IO streams
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Useful to quickly write something to the standard error, or to
+read strings while in <CODE>SCREEN MODE</CODE></TD></TR>
+</TABLE></P>
+
+<A NAME="4wrudio">
+<H2><HR><CENTER><B>User defined Input/Output streams</CENTER></B><HR></H2>
+
+<P>The following section briefly explains how to build user defined input
+streams.<BR>
+In essence, the 4glworks IO subsystem needs to be informed on how to open,
+read from, write to and close the stream.<BR>
+This is done by writing a function that actually opens a stream of the
+type to be defined, and have this pass to the 4glWorks IO subsystem pointers to
+the appropriate read, write and close functions (whose prototype matches that
+of <B>read (2)</B>, <B>write (2)</B> and <B>close (2)</B> respectively), via
+the internal function <A HREF="#fgw_addfd">fgw_addfd</A>, described later.<BR>
+Outlined below is a stripped down (add header files inclusion, data definition
+and clip a few strings, to make it work) example of a simple sockets client,
+which should clearly illustrate the actual procedure needed to create user
+defined streams.</P>
+
+<P><A NAME="fgw_addfd"><H3>fgw_addfd</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cfioc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+int fgw_addfd(id, r, w, c)
+int id;				/* user defined IO stream identifier */
+int (*r)(), (*w)(), (*c)();	/* read, write, close function pointers */
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>fd</VAR> (integer), the id of the stream just opened, or -1 if a
+new fd structure cannot be allocated.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+reserves a fd data structure on the heap for the newly opened user defined
+stream, and associates to it the supplied read, write and close functions.
+Typically used within functions that open user defined IO streams.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><PRE>
+fgw_sokread(s, b, l)
+int s;
+void *b;
+int l;
+{
+    return recv(s, b, l, 0);
+}
+
+fgw_sokwrite(s, b, l)
+int s;
+void *b;
+int l;
+{
+    return send(s, b, l, 0);
+}
+
+socket_open(nargs)
+int nargs;
+{
+    popquote(proto,10);
+    popquote(serv,20);
+    popquote(host,120);
+    if ((hostrec=gethostbyname(host))!=NULL)
+    {
+	if ((servrec=getservbyname(serv, proto))!=NULL)
+	{
+	    name.sin_port=servrec->s_port;
+	    name.sin_family=hostrec->h_addrtype;
+	    fgw_move((char *) &name.sin_addr, (char *) hostrec->h_addr,
+		hostrec->h_length);
+	    if ((sock=socket(AF_INET,SOCK_STREAM,0))!=-1)
+    		if (connect(sock,(struct sockaddr *) &name,sizeof(name))!=-1)
+		    if ((fd_id=fgw_addfd(sock, fgw_sokread,
+					 fgw_sokwrite, close))!=-1)
+		    {
+			retint(fd_id);
+			return(1);
+		    }
+		    else
+		    {
+			close(sock);
+			errno=-1;
+		    }
+	}
+    }
+    status=errno;
+    retquote("");
+    return(1);
+}
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

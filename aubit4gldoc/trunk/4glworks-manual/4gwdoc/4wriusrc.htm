@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: user interaction extensions</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: user interaction extensions</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#readchar">readchar</A></LI>
+<LI><A HREF="#readkey">readkey</A></LI>
+</UL>
+
+<P><A NAME="readchar"><H3>readchar</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ousrc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function readchar()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>c</VAR>, char, key pressed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Waits for the user to hit a key on the keyboard, and returns its value
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>does not set <CODE>_eflastkey</CODE></LI>
+<LI>can be safely used in <CODE>SCREEN MODE</CODE>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="readkey"><H3>readkey</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iusrc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function readkey()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>key</VAR>, char, key pressed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Waits for the user to hit a key on the keyboard, and returns its value
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>Use <CODE>fgl_lastkey</CODE> to retrieve the integer scan
+code of the key pressed by the user</LI>
+<LI>Clears the error line</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

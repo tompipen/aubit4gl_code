@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Framework intitialization routines</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Framework intitialization routines</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#afw_init">afw_init</A></LI>
+</UL>
+
+<P><A NAME="afw_init"><H3>afw_init</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iafil.4gl, oafil.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function afw_init()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Performs 4glworks module initialization
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A NAME="exafi01"><PRE>
+define cv, nv	smallint
+
+main
+    whenever error call trap_err
+    defer interrupt
+    defer quit
+    call afw_init()
+    call main_init()
+    let cv=V_nul
+    while true
+        case
+          when (cv is null)
+            clear screen
+            exit program
+          when (cv=V_nul)
+            call main_reset()
+            let nv=null_viewer()
+          when (cv=V_sql)
+            let nv=sql_viewer()
+          when (cv=V_log)
+            let nv=log_viewer()
+          when (cv=V_ptr)
+            let nv=ptr_viewer()
+          when (cv=V_frm)
+            let nv=frm_viewer()
+          when (cv=V_mdl)
+            let nv=mdl_viewer()
+          when (cv=V_f2p)
+            let nv=frm2ptr_viewer()
+          otherwise
+            call invalid_viewer(cv)
+            let cv=V_nul
+            let nv=null_viewer()
+        end case
+        let cv=nv
+    end while
+end main
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>To be called at application startup</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

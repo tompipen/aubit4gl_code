@@ -1,0 +1,737 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Menu tools and timer events</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Menu tools and timer events</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#mnh_compare">mnh_compare</A></LI>
+<LI><A HREF="#mnh_drop">mnh_drop</A></LI>
+<LI><A HREF="#mnh_error">mnh_error</A></LI>
+<LI><A HREF="#mnh_get">mnh_get</A></LI>
+<LI><A HREF="#mnh_getoptpos">mnh_getoptpos</A></LI>
+<LI><A HREF="#mnh_help">mnh_help</A></LI>
+<LI><A HREF="#mnh_hide">mnh_hide</A></LI>
+<LI><A HREF="#mnh_key">mnh_key</A></LI>
+<LI><A HREF="#mnh_nextoption">mnh_nextoption</A></LI>
+<LI><A HREF="#mnh_opt">mnh_opt</A></LI>
+<LI><A HREF="#mnh_start">mnh_start</A></LI>
+<LI><A HREF="#mnu_clear">mnu_clear</A></LI>
+<LI><A HREF="#mnu_enable">mnu_enable</A></LI>
+<LI><A HREF="#mnu_mask">mnu_mask</A></LI>
+<LI><A HREF="#mnu_record">mnu_record</A></LI>
+<LI><A HREF="#mnv_error">mnv_error</A></LI>
+<LI><A HREF="#mnv_get">mnv_get</A></LI>
+<LI><A HREF="#mnv_help">mnv_help</A></LI>
+<LI><A HREF="#mnv_ismenu">mnv_ismenu</A></LI>
+<LI><A HREF="#mnv_opt">mnv_opt</A></LI>
+<LI><A HREF="#mnv_pos">mnv_pos</A></LI>
+<LI><A HREF="#mnv_standalone">mnv_standalone</A></LI>
+<LI><A HREF="#mnv_start">mnv_start</A></LI>
+<LI><A HREF="#tim_clear">tim_clear</A></LI>
+<LI><A HREF="#tim_drop">tim_drop</A></LI>
+<LI><A HREF="#tim_set">tim_set</A></LI>
+</UL>
+
+<P><A NAME="mnh_compare"><H3>mnh_compare</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_compare(m1, p1, m2, p2)
+    define m1, p1,
+	   m2, p2	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>result</VAR>, boolean, result of the comparison
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+compares two messages
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_drop"><H3>mnh_drop</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_drop(m, p)
+    define m, p	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>n</VAR>, integer, the number of dropped entries
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Drops any menu entries (options or quick keys) returning message <VAR>m</VAR>,
+<VAR>p</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_error"><H3>mnh_error</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_error()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>desc_mnv</VAR>, char(25), menu entry description<BR>
+<VAR>msg</VAR>, smallint, associated message body<BR>
+<VAR>parm</VAR>, smallint, associated message parameter
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used after an invocation to <A HREF="#mnh_opt">mnh_opt</A> or 
+<A HREF="#mnh_key">mnh_key</A> to gather
+information of the existing menu entry that caused the call to fail
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_get"><H3>mnh_get</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_get()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Displays an horizontal menu, and returns the message associated to the
+option chosen by the user.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>Note that due to timer messages, <CODE>mnh_get</CODE> does
+not necessarely returns only the messages as set up via
+<A HREF="#mnh_key">mnh_key</A> or <A HREF="#mnh_opt">mnh_opt</A></LI>
+<LI><CODE>mnh_get</CODE> interprets negative message bodies associated with
+options to mean that an option is associated with a vertical menu.
+Associating vertical menu entries with non negative (or null) message
+bodies has no ill effect other than a less tight integration with
+<A HREF="#mnv_get">mnv_get</A></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_getoptpos"><H3>mnh_getoptpos</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_getoptpos(m, p)
+    define m, p
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>id</VAR>, integer, option id
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Returns the option id of the first option found to return message <VAR>m</VAR>,
+<VAR>p</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_help"><H3>mnh_help</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_help(hn, def)
+    define hn, def	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the help number to be displayed when the user presses the help key.
+Setting <VAR>def</VAR> to true will tag the help message as the message to use
+for all horizontal menus until reset with another call to this function with
+<VAR>def</VAR> being set to true. Null or false flags that help message needs
+be used for the current menu only.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_hide"><H3>mnh_hide</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_hide(m, p, v)
+    define m, p, v	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>n</VAR>, integer, the number of (un)hidden entries
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Hides (disables, <VAR>v</VAR> true) or reenables (<VAR>v</VAR> false or null) any
+opton or key associated to message <VAR>m</VAR>, <VAR>p</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_key"><H3>mnh_key</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_key(k, m, p)
+    define k, m, p	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>result</VAR>, integer, operation result.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds a new quick key to the current horizontal menu
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Returns
+<UL>
+<LI>false if there's no room for further entries</LI>
+<LI>null if the new entry conflicts with another, or the message is disabled</LI>
+<LI>a positive integer (the menu id), if the operation was successfull</LI>
+</UL>
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_nextoption"><H3>mnh_nextoption</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_nextoption(m, p)
+    define m, p		smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the current option to be the one associated with message
+<VAR>m</VAR>, <VAR>p</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_opt"><H3>mnh_opt</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_opt(c, d, qk, o, m, p)
+    define c		char(8),	#menu option
+	   d		char(78),	#menu description
+	   qk		char(1),	#hot key
+	   o,				#option position within menu
+	   m, p		smallint	#associated message
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>result</VAR>, integer, operation result.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds a new option to the current horizontal menu
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Returns
+<UL>
+<LI>false if there's no room for further entries</LI>
+<LI>null if the new entry conflicts with another, or the message is disabled</LI>
+<LI>a positive integer (the menu id), if the operation was successfull</LI>
+</UL>
+The position need not be unused. The option will be placed right after the one
+currently last if <CODE>o</CODE> is less than 1, null, or greater than the 
+number of options currently defined.
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnh_start"><H3>mnh_start</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnhl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnh_start(name)
+    define name		char(5)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Reinitializes the current horizontal menu.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Once a menu has been formed, <A HREF="#mnh_get">mnh_get</A> can
+be called multiple times to display it, until such time as this function
+is invoked. After this invocation a blank horizontal menu is produced.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnu_clear"><H3>mnu_clear</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnuc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnu_clear()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Clears the menus message mask
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>This function is only called from within the horizontal menu</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnu_enable"><H3>mnu_enable</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnuc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnu_enable(s, e, p, o)
+    define s, e, p, o	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>Enables (<CODE>o</CODE> true) or disables (<CODE>o</CODE> false)
+messages <CODE>s</CODE> to <CODE>e</CODE> on pane <CODE>p</CODE></TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnu_mask"><H3>mnu_mask</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnuc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnu_mask(s, e, m)
+    define s, e, m	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>Sets the panes on which messages <CODE>s</CODE> to
+<CODE>e</CODE> are enabled</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>The panes are specified by individual bits of <CODE>m</CODE>.
+A set bit indicates that the messages is enabled on the corresponding pane. 
+Only the first 5 bits of the mask will be used</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnu_record"><H3>mnu_record</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnuc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnu_record(s, e, r)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the <I>record</I> flags for messages <CODE>s</CODE> to <CODE>e</CODE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><CODE>r</CODE> denotes on of the following:
+<UL>
+<LI><CODE>K_focussedpane</CODE>: messages <CODE>s</CODE> to <CODE>e</CODE>
+    are dependent on the presence of a record in the pane that has currently the focus
+    to be enabled</LI>
+<LI>a valid pane: messages <CODE>s</CODE> to <CODE>e</CODE> are dependent
+    on the presence of a record in the specified pane to be enabled</LI>
+<LI>0:  messages <CODE>s</CODE> to <CODE>e</CODE> are not dependent on the
+    presence of any record in any pane</LI>
+</UL> 
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_error"><H3>mnv_error</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_error()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>desc_mnv</VAR>, char(25), menu entry description<BR>
+<VAR>msg</VAR>, smallint, associated message body<BR>
+<VAR>parm</VAR>, smallint, associated message parameter
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used after an invocation to <A HREF="#mnv_opt">mnv_opt</A> to gather
+information of the existing menu entry that caused the call to fail
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_get"><H3>mnv_get</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_get()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Displays a vertical menu, and returns the message associated to the 
+option chosen by the user, or a null message if the interrupt key was pressed.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Note that due to timer messages, <CODE>mnv_get</CODE> does
+not necessarely returns only the messages as set up via
+<A HREF="#mnv_opt">mnv_opt</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_help"><H3>mnv_help</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_help(hn, def)
+    define hn, def	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the help number to be displayed when the user presses the help key.
+Setting <VAR>def</VAR> to true will tag the help message as the message to use
+for all vertical menus until reset with another call to this function with
+<VAR>def</VAR> being set to true. Null or false flags that help message needs
+be used for the current menu only.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_ismenu"><H3>mnv_ismenu</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_ismenu()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Normally used by <A HREF="#mnh_get">mnh_get</A> disables the automatic return
+of <A HREF="#mnv_get">mnv_get</A> in case of a single option vertical menu.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_opt"><H3>mnv_opt</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_opt(dm, qk, m, p)
+    define dm	char(25),	#description
+	   qk	char(1),	#hot key
+	   m, p	smallint	#associated message
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>result</VAR>, integer, operation result.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds a new item to the current vertical menu
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Returns
+<UL>
+<LI>false if there's no room for further entries</LI>
+<LI>null if the new entry conflicts with another, or the message is disabled</LI>
+<LI>a positive integer (the menu id), if the operation was successfull</LI>
+</UL>
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_pos"><H3>mnv_pos</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_pos(col)
+    define col	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the position on which the menu is going to be displayed (leftmost column)
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#mnh_get">mnh_get</A> sets the vertical menu position to
+the position of the horizontal menu option chosen by the user, thus in normal
+operation there should be no need to call this function</TD</TR>
+</TABLE></P>
+
+<P><A NAME="mnv_standalone"><H3>mnv_standalone</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_standalone()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Flags that a menu is not part of a menu structure. This disables horizontal
+arrow movement.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Once a menu has been formed, <A HREF="#mnv_get">mnv_get</A> can
+be called multiple times to display it, however it resets the standalone
+flag. Therefore <CODE>mnv_standalone</CODE> should be called prior to each
+<A HREF="#mnv_get">mnv_get</A> invocation.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mnv_start"><H3>mnv_start</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnvl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mnv_start()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Reinitializes the current vertical menu.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Once a menu has been formed, <A HREF="#mnv_get">mnv_get</A> can
+be called multiple times to display it, until such time as this function
+is invoked. After this invocation a blank vertical menu is produced.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="tim_clear"><H3>tim_clear</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itiml.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function tim_clear()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+removes viewer dependent events
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>This function is only called from the horizontal menu</TD></TR>
+</TABLE></P>
+
+<P><A NAME="tim_drop"><H3>tim_drop</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itiml.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function tim_drop(e)
+    define e	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+removes an event
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="tim_set"><H3>tim_set</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>itiml.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function tim_set(d, l, a, k, m, p)
+    define d		integer,	#delay in secs
+	   l,				#event count, NULL = indefinite
+	   a,				#true if alarm should *not* be cleared
+					#when the current viewer terminates
+	   k		smallint,	#alarm type:	A_mandatory
+					#		A_timepriority
+					#		A_contpriority
+					#		A_keyboard
+	   m, p		smallint	#message to send
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>tim_id</VAR>, integer, event unique identifier
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets an event
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>returns null if the event cannot be set up</LI>
+<LI>events are not cleared when the current viewer terminates, unless thay have been
+    created with the <CODE>a</CODE> variable being false
+<LI>alarm types are defined in <CODE>itimh.4gh</CODE></LI>
+<LI>alarm types are as follows:<UL>
+  <LI><CODE>A_keyboard</CODE>: a message is sent after <CODE>d</CODE> seconds of keyboard inactivity</LI>
+  <LI><CODE>A_mandatory</CODE>: a message is sent every <CODE>d</CODE> seconds, even if the
+      delay has, for some reason, expired earliea, and the alarm has been missed</LI>
+  <LI><CODE>A_timepriority</CODE>: a message is sent every <CODE>d</CODE> seconds, missed alarms
+      do not generate messages, the event expires after <CODE>d*l</CODE> seconds,
+      independently of how many times a message has been sent</LI>
+  <LI><CODE>A_countpriority</CODE>: a message is sent every <CODE>d</CODE> seconds, missed alarms
+      do not generate messages, the event expires after the associated message
+      has been sent <CODE>l</CODE> times</LI> 
+  </UL></LI>
+</UL>
+<TD WIDTH=100%></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>
