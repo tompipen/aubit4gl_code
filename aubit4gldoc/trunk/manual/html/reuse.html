@@ -119,7 +119,7 @@
       <H4>The Report Roadblock: No PRINT inside FUNCTIONs!</H4>
       <P>Without question the single largest limitation to 4GL reporting is the 
       inability to place a PRINT statement inside a FUNCTION: </P>
-      <HR>
+      <blockquote>
 <PRE>FUNCTION proof_that_print_doesnt_work_in_a_function()
    PRINT &quot;Hello World&quot;
 
@@ -130,9 +130,9 @@ END FUNCTION
 | any field or screen destination.
 | See error number -4426. 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.1</B> Informix-4GL won't let you put a PRINT statement 
       anywhere other than inside a REPORT block. </P>
-      <HR>
 
       <P><B><I>TIP:</I></B> If you ever want to see the full text for an error 
       number, use the little-advertised Informix command 'finderr' from your 
@@ -149,7 +149,7 @@ END FUNCTION
       <P><B><I>WARNING: </B></I>Prior to 4GL version 4.12/6.02 this technique of 
       RETURNing large strings may well cause you to encounter a '-4518 Out of 
       Temporary String Storage Space' error. </P>
-      <HR>
+      <blockquote>
 <PRE>REPORT some_report(l_code, l_value) 
    ...
 ON EVERY PAGE
@@ -167,9 +167,9 @@ DEFINE l_header_line CHAR(80)
  RETURN l_header_line
 END FUNCTION
 </PRE>
+      </blockquote>
       <P><B>Figure 33.2</B> An example of how you can build reusable PRINT 
       routines with standard FUNCTIONs. </P>
-      <HR>
 
       <P>This is not an ideal solution, because it means you can only place 
       individual lines of a report inside functions -- but even one line is 
@@ -180,7 +180,7 @@ END FUNCTION
       language, while everybody else just learns how to use the routines which 
       wrap the under-lying Postscript. See Figure 33.3 for some sample 4GL code 
       to produce a Laser-quality report. </P>
-      <HR>
+      <blockquote>
 <PRE>REPORT some_pretty_report(l_code, l_value) 
 ...
 ON EVERY ROW
@@ -192,9 +192,9 @@ ON EVERY ROW
 ...
 END REPORT 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.3</B> How a 4GL report code might look after routines 
       capable of generating laser-quality output have been written. </P>
-      <HR>
 
       <H4>Eliminating duplicate header blocks</H4>
       <P>Page headings can be defined inside two different report blocks, FIRST 
@@ -225,7 +225,7 @@ END REPORT
       a cleaner idea is to put the initialization of variables inside the normal 
       PAGE HEADER and to execute it only on the first page. Have a look at 
       figure 33.4 for a code sample. </P>
-      <HR>
+      <blockquote>
 <PRE>REPORT sample_report(I)
 DEFINE I        INTEGER,
         l_running_total   INTEGER 
@@ -237,23 +237,23 @@ FORMAT
 # PRINT &quot;Here is a nice heading for the report&quot; 
 
 -- Instead, do the initialization on the first page of the report...</pre>
-      <P></P>
+        <p>
  
-PAGE HEADER 
-    IF PAGENO = 1 THEN
-    LET l_running_total = 0
-   END IF
-    PRINT "Here is a nice heading for the report"
-ON EVERY ROW
-  PRINT "The number is ", I
-  LET l_running_total = l_running_total + 1 
+PAGE HEADER&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; IF PAGENO = 1 THEN&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET l_running_total = 0&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; END IF&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; PRINT "Here is a nice heading for the report"&nbsp;<br>
+ON EVERY ROW&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; PRINT "The number is ", I&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; LET l_running_total = l_running_total + 1&nbsp;<br>
 
-ON LAST ROW
-  PRINT "There were ", I, " numbers in total"
-END REPORT
+ON LAST ROW&nbsp;<br>
+        &nbsp;&nbsp;&nbsp; PRINT "There were ", I, " numbers in total"&nbsp;<br>
+END REPORT</p>
+      </blockquote>
       <P><B>Figure 33.4</B> A report showing a good place to perform variable 
       initialization in a 4GL report. </P>
-      <HR>
 
       <H4>Showing report options on Page 1</H4>
       <P>The best use of FIRST PAGE HEADER is to indicate on the report just 
@@ -265,10 +265,10 @@ END REPORT
       what you're looking at on a printout -- especially if you created a few 
       different reports at the same time! </P>
       <HR>
-<PRE>Report : Sales Analysis Report Requested by : Iain Burmester</pre>
-      <P></P>
-Sales Regions : LON - London DUB - Dublin TOK - Tokoroa<P></P>
-Product Groups: BL - Leeches (Bulk) BA - Bandages <P></P>
+<PRE>Report : Sales Analysis Report Requested by : Iain Burmester
+      
+Sales Regions : LON - London DUB - Dublin TOK - Tokoroa
+Product Groups: BL - Leeches (Bulk) BA - Bandages 
        . . . . . . . . . . . . . . . . . . .. . . . .  
 
 sa0102 Sales Analysis Report 02 February 1996 Page: 1 
@@ -280,18 +280,17 @@ LON - London BA - Bandages 00102 20 675.09 25.30% 02003 30 666.52 22.55%
 sa0102 Sales Analysis Report 02 February 1996 Page: 2
 Sales Region Product Group Product Quantity Value Profit
 TOK - Tokoroa BA - Bandages 05664 5 180.53 12.32% 02003 7 204.18 9.39%  
-       . . . . . . . . . . . . . . . . . . .. . . . .
+       . . . . . . . . . . . . . . . . . . .. . . . .</pre>
       <P><B>Figure 33.5 </B>A sample report, showing what an ON FIRST PAGE block 
       is typically used for -- to indicate exactly what the report is reporting! 
       </P>
-      <HR>
 
       <P>If your clients are happy with the reporting options appearing on a 
       page of their own (and if you don't offer them any alternative, most of 
       them will be) then you can make ON FIRST PAGE behave as you might expect 
       it to. </P>
       <P>Some code to illustrate this simple method appears in Figure 33.6. </P>
-      <HR>
+      <blockquote>
 <PRE>report sample_report(i)
 define i smallint
 define l_first smallint
@@ -323,10 +322,10 @@ ON EVERY ROW
    PRINT &quot;Print the normal report line here&quot;
 END REPORT 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.6 </B>How to use FIRST PAGE HEADER without having to 
       duplicate the code from the PAGE HEADER block -- look at the 'l_first' 
       variable. </P>
-      <HR>
 
       <P><B><I>NOTE: </I></B>The apparently superfluous PRINT in the BEFORE 
       GROUP clause is to let the report engine know that something has been 
@@ -377,7 +376,9 @@ END REPORT
       some advice on alternatives. </P>
       <H4>How RECORD LIKE and SELECT * do their damage</H4>
       <P>The following code snippet shows how these two nastys work together in 
-      their natural environment: </P><PRE>-- The product table is defined like so:
+      their natural environment: </P>
+      <blockquote>
+        <PRE>-- The product table is defined like so:
 
 -- product_no CHAR(15),
 -- price DECIMAL(9,3),
@@ -394,6 +395,7 @@ SELECT * INTO l_product.*
    DISPLAY l_product.description
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P>The theory is that this is 'easy'. A programmer doesn't have to think 
       very hard, or type very much -- both true, but there are a number of 
       short-comings with this scheme: </P>
@@ -429,7 +431,9 @@ END FUNCTION
       <H4>What do I do instead?</H4>
       <P>Simple - Construct a RECORD containing only elements for the columns 
       you need to SELECT from the table. Never SELECT anymore than you need, and 
-      all will be just grand.</P><PRE>FUNCTION display_description(l_product_no)
+      all will be just grand.</P>
+      <blockquote>
+        <PRE>FUNCTION display_description(l_product_no)
 DEFINE l_product_no LIKE product.product_no
 DEFINE l_product RECORD
        description LIKE product.description
@@ -442,6 +446,7 @@ WHERE product_no = l_product_no
 DISPLAY l_product.description
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P>In Summary: Don't use RECORD LIKE, and don't use SELECT * at all. </P>
       <H4>UPDATE * and INSERT can blow-up code too</H4>
       <P>When we change or add data to our tables we do it via the UPDATE and 
@@ -453,7 +458,7 @@ END FUNCTION
       disadvantages as use of SELECT * (see 'How RECORD LIKE and SELECT * do 
       their damage'), plus a few unique to itself -- highlighted in figure 33.7. 
       </P>
-      <HR>
+      <blockquote>
 
       <TABLE cellPadding=5 width="90%">
         <TBODY>
@@ -482,10 +487,9 @@ END FUNCTION
         <TR>
           <TD>No other advantages!</TD>
           <TD>Will not crash if table schema is altered. </TD></TR></TBODY></TABLE>
-      <P>&nbsp;</P>
+      </blockquote>
       <P><B>Figure 33.7</B> Compare the options for INSERT and UPDATE syntax. 
       </P>
-      <HR>
 
       <P>When inserting a new row into a table it is important for a program to 
       only specify values for the columns which that program has particular 
@@ -494,12 +498,15 @@ END FUNCTION
       buying habits including the date of last purchase and the date of their 
       last complaint. This table will be updated by two separate programs which, 
       if the a row does not already exist, will need to insert a new one.</P>
-      <P>The Purchase Recording Program will include a line of code like: </P><PRE>INSERT INTO customer_habit(customer_no, last_purchase_date)
+      <P>The Purchase Recording Program will include a line of code like: </P>
+      <blockquote>
+        <PRE>INSERT INTO customer_habit(customer_no, last_purchase_date)
 VALUES (l_customer_no, TODAY)  
 and the Complaint Recording Program will include:  
 INSERT INTO customer_habit(customer_no, last_complaint_date) 
 VALUES (l_customer_no, TODAY) 
 </PRE>
+      </blockquote>
       <P>Note that each program only refers to the columns which it has special 
       knowledge about -- they include no mention of any other columns. </P>
       <P>This gives huge advantages when table structures change (eg: programs 
@@ -524,23 +531,29 @@ VALUES (l_customer_no, TODAY)
       <P>Informix's CREATE TABLE command includes the ability to specify default 
       values for columns. These defaults are used when a value is not explicitly 
       given during an INSERT statement.</P>
-      <HR>
 
-      <P>So given this table structure: </P><PRE>CREATE TABLE price ( product CHAR(15) NOT NULL,  
+      <P>So given this table structure: </P>
+      <blockquote>
+        <PRE>CREATE TABLE price ( product CHAR(15) NOT NULL,  
         current_price DECIMAL(9,2),
         previous_price DECIMAL(9,2) DEFAULT 0.00,
         price_expires DATE DEFAULT &quot;01/01/2010&quot; 
  ) 
 </PRE>
+      </blockquote>
       <P>... consider the results of each of the following INSERT statements: 
-      </P><PRE>Option #1 
+      </P>
+      <blockquote>
+        <PRE>Option #1 
 INSERT INTO price (product) 
 VALUES (&quot;CHOCFISH&quot;)
 Option #2 
 INSERT INTO price (product, current_price, price_expires)
 VALUES (&quot;CHOCFISH&quot;, 19.95, &quot;11/02/1998&quot;) 
 </PRE>
+      </blockquote>
       <P>Results: </P>
+      <blockquote>
       <TABLE>
         <TBODY>
         <TR>
@@ -561,10 +574,10 @@ VALUES (&quot;CHOCFISH&quot;, 19.95, &quot;11/02/1998&quot;)
           <TD>19.95</TD>
           <TD>0.00</TD>
           <TD>11/02/1998</TD></TR></TBODY></TABLE>
+      </blockquote>
       <P><B>Figure 33.8 </B>The use of DEFAULTs in your column definition means 
       application programs don't have to setup defaults -- it can leave that job 
       up to the database engine. </P>
-      <HR>
 
       <P>It is the use of these default values which lets our programs concern 
       themselves with INSERTing only the columns which they have information 
@@ -625,7 +638,7 @@ VALUES (&quot;CHOCFISH&quot;, 19.95, &quot;11/02/1998&quot;)
       back on and laughed at. The use of Software Components greatly reduces the 
       impact of significant changes to a program's function. </P>
       <H4>Information Hiding</H4>
-      <P>One of the key features of software componentry is the concept of 
+      <P>One of the key features of software component is the concept of 
       information hiding, or encapsulation. The idea is that programs which need 
       to use a component, should only need to know what the component's 
       interfaces are -- not how it has actually been implemented. If I change 
@@ -689,6 +702,7 @@ VALUES (&quot;CHOCFISH&quot;, 19.95, &quot;11/02/1998&quot;)
       invariably be subtly different).</P>
       <P>This is an example of how not to cut code. </P>
       <HR>
+      <blockquote>
 <PRE>MAIN.4GL: 
 
 MAIN
@@ -726,9 +740,9 @@ DEFINE l_customer_no &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  LIKE customer.custome
     END IF
    END WHILE
 END MAIN </PRE>
+      </blockquote>
       <P><B>Figure 33.9 </B>An example of a traditional, straight-line, program 
       built without regard to any form of structured programming technique. </P>
-      <HR>
 
       <H4>Structured Programming, and its limitations</H4>
       <P>Any use of Structured Programming techniques will drastically improve 
@@ -757,7 +771,7 @@ routines.</P>
       changed, all programs that use 'calculate_price' would need to be altered 
       -- even though none of them want, or need, to know about the discount 
       percentage. </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL: 
 
 MAIN
@@ -785,10 +799,12 @@ DEFINE  l_customer_no&nbsp;&nbsp;&nbsp;     LIKE customer.customer_no,
    END WHILE
 END MAIN 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.10 </B>A classic structured programming equivalent of the 
       example shown in figure 33.9. Good at hiding the implementation of 
       routines, but still exposing the data interface. </P>
       <HR>
+      <blockquote>
 <PRE>ORDER.4GL: 
 
 FUNCTION enter_customer_no()
@@ -854,9 +870,9 @@ DEFINE   l_customer_no    LIKE customer.customer_no,
          l_quantity, l_price)
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.11 </B>The library module used to support the structured 
       programming code illustrated in figure 33.10. </P>
-      <HR>
 
       <H4>The Component-Model, and the joy it can bring</H4>
       <P>The Component-Model takes all the advantages that regular Structured 
@@ -873,7 +889,7 @@ END FUNCTION
       code, shown in figure 33.12. Note that the only variables declared here 
       are those which the program needs for it's own use -- like the display of 
       the price field. </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL: 
 
 MAIN
@@ -896,10 +912,10 @@ DEFINE l_ok &nbsp;&nbsp;&nbsp;    SMALLINT,
    END WHILE
 END MAIN
 </PRE>
+      </blockquote>
       <P><B>Figure 33.12 </B>The entire source code for the Component-based 
       version of our Order Processing program -- note the lack of variables! 
 </P>
-      <HR>
 
       <P>This program is exceptionally easy to read, and has absolutely no idea 
       how the individual component routines have been implemented (so when the 
@@ -910,12 +926,11 @@ END MAIN
       like "get_price()" (see Figure 33.13). The associated module, "order.4gl", 
       contains all the routines and associated data required to generate an 
       order. </P>
-      <HR>
-<PRE>
-ORDER.4GL: 
+      <blockquote>
+<PRE>ORDER.4GL: 
 # Variables which are used throughout the pricing routines are defined 
-# here as modular variables...</pre>
-      <P></P>
+# here as modular variables...
+
  
 DEFINE&nbsp;&nbsp;   m_customer_no  &nbsp;&nbsp;&nbsp;      LIKE customer.customer_no
 DEFINE&nbsp;&nbsp;   m_discount_category&nbsp;&nbsp;  LIKE customer.discount_category
@@ -967,10 +982,10 @@ END FUNCTION              #
 FUNCTION insert_order_details()
   INSERT INTO orders VALUES (m_customer_no, m_product_no,
             m_quantity, m_price)
-END FUNCTION
+END FUNCTION</pre>
+      </blockquote>
       <P><B>Figure 33.13 </B>"order.4gl", contains all the routines and 
       associated data required to generate an order. </P>
-      <HR>
 
       <P>What has happened in Figure 33.12, as opposed to the structured version 
       in Figure 33.10, is that those variables which are shared amongst the 
@@ -986,7 +1001,6 @@ END FUNCTION
       each of the techniques discussed in this section, and clearly high-lights 
       the way that the modular approach has moved the complexity out of the 
       program and into more manageable component modules. </P>
-      <HR>
 
       <blockquote>
 
@@ -1008,7 +1022,6 @@ END FUNCTION
       <P><B>Figure 33.14 </B>The coding techniques described in this section 
       each have quite different effects on program-flow and variable-flow within 
       a program. </P>
-      <HR>
 
       <H4>Changing a module's behavior</H4>
       <P>As has been pointed out repeatedly in this chapter, programs will need 
@@ -1017,7 +1030,7 @@ END FUNCTION
       a cash sale? We could change MAIN.4GL so that instead of calling 
       enter_customer_no() it calls a new function, set_customer_no() and passes 
       the cash-sale customer code into order.4gl (see Figure 33.15). </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL: 
 
 MAIN
@@ -1039,10 +1052,10 @@ DEFINE   l_customer_no   LIKE customer.customer_no
 END FUNCTION
 [ remainder of ORDER.4GL remains the same ]
 </PRE>
+      </blockquote>
       <P><B>Figure 33.15 </B>A possible way to provide support for cash sales in 
       our program -- let down by the fact that it exposes implementation details 
       to the main program. </P>
-      <HR>
 
       <P>This is an excellent example of how a program should access the 
       inner-workings of a modular routine, but in this case is inappropriate 
@@ -1062,7 +1075,7 @@ END FUNCTION
       incorrectly. Either reset it in the 'last' function of a module (see the 
       assignment on m_cashsale inside insert_order_details in figure 33.16) or 
       build a routine to specifically reset all your modular flags. </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL: 
 
 MAIN
@@ -1101,10 +1114,10 @@ FUNCTION insert_order_details()
    LET m_cashsale = FALSE
 END FUNCTION
 </PRE>
+      </blockquote>
       <P><B>Figure 33.16 </B>Using a modular state flag, like m_cashsale, gives 
       us a flexible way to deal with a change to functionality, without 
       affecting existing programs. </P>
-      <HR>
 
       <P><B><I>NOTE: </I></B>Modular variables are automatically initialized at 
       runtime - Character fields are NULL and numerics are 0, so you don't have 
@@ -1131,7 +1144,7 @@ END FUNCTION
       an access routine to return a single element of the array, shown in figure 
       33.17. The concept is exactly the same as that used in the 'get_price' 
       routine in figure 33.13. </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL:
 MAIN
 DEFINE l_line    SMALLINT,
@@ -1175,9 +1188,9 @@ DEFINE l_line SMALLINT
    RETURN ma_orderline(l_line).*, FALSE
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.17 </B>Informix's inability to RETURN Arrays from 
       functions isn't actually too hard to work around... </P>
-      <HR>
 
       <H4>Global Variables</H4>
       <P><B><I>TIP:</I></B> Talking about Global Variables with fellow 
@@ -1186,7 +1199,7 @@ END FUNCTION
       up in a heated argument. Global Variables are variables which can be 
       accessed by all modules which include the same definition in their 
       'GLOBAL' clause. </P>
-      <HR>
+      <blockquote>
 <PRE>MAIN.4GL:
 # Program to display the free product code that customer 12345 will get
 # if they've got more that 15 lines on order at the moment...
@@ -1216,9 +1229,9 @@ MYGLOBALS.4GL:
 GLOBALS   g_product_no  LIKE product.product_no,
           g_count       SMALLINT 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.18 </B>Global variables give no clues as to where they 
       were set, and make code reuse difficult. </P>
-      <HR>
 
       <P>As illustrated in figure 33.18, Global Variables make it very difficult 
       to look at a program and readily identify how a variable got it's current 
@@ -1257,6 +1270,7 @@ GLOBALS   g_product_no  LIKE product.product_no,
       report, provide an 80-column summary report suitable for Faxing, and an 
       on-screen enquiry. </P>
       <HR>
+      <blockquote>
 <PRE>FANCY_REPORT.4GL:
 
 MAIN
@@ -1275,9 +1289,9 @@ MAIN
    FINISH REPORT fancy_report
 END MAIN 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.19 </B>Some pseudo-4GL showing complicated processing 
       required to produce a report. </P>
-      <HR>
 
       <P>You might be able to get away with adding a CASE statement inside the 
       FOREACH loop, and conditionally executing the appropriate sub-routine, but 
@@ -1287,7 +1301,7 @@ END MAIN
       (figure 33.20), create a new program for each of the three types of 
       processing, and use a Callback routine to glue them together (illustrated 
       in Figures 33.21 and 33.22). </P>
-      <HR>
+      <blockquote>
 <PRE>TRICKY_LOOP.4GL:
 FUNCTION tricky_loop()
    DECLARE tricky_cursor CURSOR FOR
@@ -1299,12 +1313,13 @@ FUNCTION tricky_loop()
    END FOREACH
 END FUNCTION
 </PRE>
+      </blockquote>
       <P><B>Figure 33.20 </B>The routine which performs the 'tricky processing' 
       is placed in its own 4GL module, with a call an the undefined callback 
       routine -- in this case 'process_tricky_loop'. Programs wanting to use 
       this processing must supply the callback routine to be called (see Figures 
       33.21 and 33.22) </P>
-      <HR>
+      <blockquote>
 <PRE>FANCY_REPORT.4GL:
 MAIN
    START REPORT fancy_report OUTPUT TO &quot;fancy.txt&quot;
@@ -1317,8 +1332,11 @@ FUNCTION process_tricky_loop(l_key, l_value, l_quantity, l_magic_number)
    OUTPUT TO REPORT fancy_report(l_key, l_value, l_quantity, l_magic_number)
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.21 </B>The reporting program includes the callback routine 
-      'process_tricky_loop' which, in this case, produces a report. </P><PRE> 
+      'process_tricky_loop' which, in this case, produces a report. </P>
+      <blockquote>
+        <PRE> 
 FANCY_ENQUIRY.4GL:
    
 DEFINE ma_fancy_data    ARRAY[100] OF RECORD
@@ -1350,10 +1368,10 @@ FUNCTION process_tricky_loop(l_key, l_value, l_quantity, l_magic_number)
    LET ma_fancy_data[m_count].magic_number = l_magic_number
 END FUNCTION 
 </PRE>
+      </blockquote>
       <P><B>Figure 33.22 </B>This enquiry program also includes a 
       'process_tricky_loop' routine -- this time to populate an array for 
       display. </P>
-      <HR>
 
       <P>Although Callback routines can come in very handy at times, they don't 
       come without problems. The major problem is one of readability -- when 
@@ -1389,10 +1407,10 @@ END FUNCTION
       Kerry S</P>
       <P><a href="#top">Back to the top of the page</a></P>
       <hr>
-      <P>              WRITING REUSEABLE INFORMIX-4GL CODE<br>
+      <P>              WRITING REUSABLE INFORMIX-4GL CODE<br>
               (or: Why I love Modular Variables)</P>
       <P>                                             Kerry Sainsbury, July 1995</P>
-      <P>I want to explain how to create easily reuseable and extendable software
+      <P>I want to explain how to create easily reusable and extendable software
       components. Object Oriented Programmers use some of these buzzwords, we can
       too if you like:</P>
       <P>Encapsulation: All code related to a task lives in a single place, with the               actual implementation hidden from the user code.</P>
@@ -1411,8 +1429,9 @@ END FUNCTION
       <P>Here are some solutions we could adopt:</P>
       <P>A. The MAIN way.</P>
       <P>     We could code the entire routine in one MAIN section, without any     functions, and use local variables to keep track of data.</P>
+      <P>     main_eat.4gl:</P>
       <blockquote>
-      <P>     main_eat.4gl:<br>
+      <P>     
           MAIN<br>
           DEFINE l_money, l_product, l_cost, l_change...<br>
                DISPLAY "EAT FOOD" -- Special code for this vendor<br>
@@ -1426,7 +1445,7 @@ END FUNCTION
                DISPLAY "THANKS FOR EATING FOOD" -- More vendor-specific code<br>
           END MAIN</P>
       </blockquote>
-      <P>     This is a poor solution because the only way we can reuse this code (for     example in a later model machine with the ability to disallow selection<br>
+      <P>     This is a poor solution because the only way we can reuse this code (for     example in a later model machine with the ability to disallow selection
      of out-of-stock product, or the ability to vend coffee) is to cut and     paste the code into a new program.</P>
       <P>     Similarly if we later wish to change the recording of sales to include     TIME of purchase we will need to remember to alter both the original     vending program, that of the later model, and that of the coffee     machine.</P>
       <P>B. The GLOBAL way.</P>
@@ -1520,8 +1539,8 @@ END FUNCTION
                INSERT INTO sales(product, day) VALUES (l_product, TODAY)<br>
           END FUNCTION</P>
       </blockquote>
-      <P>     This version greatly increases programmer understanding of the data flow     between the routines, but introduces many variables to the calling<br>
-     program which aren't actually required by it. The only variable required     by main_chocolate.4gl is "l_money", with the other four variables being     passed back and forth only for vend.4gl's benefit. Hardly     encapsualisation!</P>
+      <P>     This version greatly increases programmer understanding of the data flow     between the routines, but introduces many variables to the calling
+      program which aren't actually required by it. The only variable required     by main_chocolate.4gl is "l_money", with the other four variables being     passed back and forth only for vend.4gl's benefit. Hardly     encapsualisation!</P>
       <P>     MAIN_CHOCOLATE SHOULD NOT NEED TO KNOW HOW VEND.4GL WORKS.</P>
       <P>     If a decision is later made to record the amount of change in the     "sales" table then each main_.4gl would need to be altered to pass     l_change into record_sale, so that it could be INSERTed into "sales".</P>
       <P>D. The MODULAR way.</P>
@@ -1671,7 +1690,8 @@ END FUNCTION
       <hr>
       <P>From: mar.greco@agora.stm.it<br>
       Date: Wed, 28 Jun 95 07:16:45 PDT</P>
-      <P>I think we should have more of this stuff here. I'm so interested in reusable code that I wrote my own message orientented
+      <P>I think we should have more of this stuff here. I'm so interested in reusable code that I wrote my own message
+      oriented
       application framework, much in the style of OWL (...only smaller). Currently this afw is used in the development of a 62 table radiotherapy DB.
       If anybody is interested, maybe I could write something on it.</P>
       <P>Marco.</P>
@@ -1763,7 +1783,7 @@ END FUNCTION
       
       <P>The idea is quite simple: the application is made up of a
       number of modules that call each other and exchange messages
-      in order to comunicate what each wants the other to do.
+      in order to communicate what each wants the other to do.
       Messages are a couple of smallints that travel upwards (as
       parameters passed to the next module) and downwards, as values
       returned.
@@ -1826,7 +1846,7 @@ END FUNCTION
       
       
       <P>
-      Horizontal &amp; vertical"Menus" interface directly with the user,
+      Horizontal &amp; vertical &quot;Menus&quot; interface directly with the user,
       allowing him to choose the operations he wishes to perform.
       Menus wait for the user to select an action and then either
       call a service to perform whatever the user wants to be done,
@@ -1850,7 +1870,7 @@ END FUNCTION
       
       
       <P>
-      also, menus can be freely cascated, and these to facts allow
+      also, menus can be freely cascaded, and these to facts allow
       the programmer to (re)design the user interface without
       modifications to viewers or service modules.&nbsp;
       </P>
@@ -1890,8 +1910,7 @@ END FUNCTION
       
       
       <P>
-      Viewers will not need to know what has been done, or who has
-      doen it: all they need to restore their previous state is to
+      Viewers will not need to know what has been done, or who has done it: all they need to restore their previous state is to
       know what to do next!
       </P>
 
@@ -2030,7 +2049,7 @@ END FUNCTION
       
       <P>
       the programmer only needs to set up the menu structure (entrys
-      &amp; associated messages), which can be dinamically changed
+      &amp; associated messages), which can be dynamically changed
       </P>
 
       
@@ -2081,7 +2100,7 @@ END FUNCTION
       
       
       <P>
-      - a complete error loging facility that includes tracking of
+      - a complete error logging facility that includes tracking of
       unexpected messages and unfound message files
       </P>
 
@@ -2094,8 +2113,7 @@ END FUNCTION
       
       
       <P>
-      - needles to say, function naming is consistent througout
-      4glWorks, so as to fake method inheritance, plus most of the
+      - needles to say, function naming is consistent throughout 4glWorks, so as to fake method inheritance, plus most of the
       variables are modular, though some global data is used (e.g.
       "viewing" informs the modules of the current viewer)
       </P>
