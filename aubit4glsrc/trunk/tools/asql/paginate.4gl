@@ -34,9 +34,12 @@ in=fopen(outfname,"r");
 
 rewind(in);
 while (1) {
+
 	if (lv_cnt>=DISPLAY_LINES) break;
-	if (feof(in)) break;
+	strcpy(buff,"");
 	fgets(buff,sizeof(buff),in);
+	if (feof(in)) break;
+	A4GL_debug("PAGINATE : %s",buff);
 	strcpy(lines[lv_cnt],buff);
 	lv_cnt++;
 	outlines--;
@@ -45,6 +48,7 @@ endcode
 code
 }
 
+if (lv_cnt==0) outlines=0;
 endcode
 code
 	if (lv_cnt>=DISPLAY_LINES) {

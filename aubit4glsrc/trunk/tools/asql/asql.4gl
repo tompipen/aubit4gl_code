@@ -24,8 +24,6 @@ end if
 
 
 if lv_args_cnt then
-	display "FILE ?"
-	sleep 1
 	let lv_input=get_next_arg()
 	call execute_file(lv_input)
 

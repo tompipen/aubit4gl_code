@@ -22,7 +22,7 @@ main_menu.o: main_menu.4gl
 	4glpc -g -c $^
 
 query.o: query.4gl
-	4glpc -g -c $^
+	4glpc -g -G -c $^
 
 session.o: session.4gl
 	4glpc -g -c $^
@@ -31,7 +31,7 @@ table.o: table.4gl
 	4glpc -g -c $^
 
 execute.o: execute.4gl
-	4glpc -g -c $^
+	4glpc -g -G -c $^
 
 paginate.o: paginate.4gl
 	4glpc -g -c $^

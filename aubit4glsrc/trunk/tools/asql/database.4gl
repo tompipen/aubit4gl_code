@@ -141,13 +141,6 @@ code
 }
 endcode
 
-#database sysmaster
-#declare c_selectdb cursor for 
-	#select name from sysdatabases
-#let lv_cnt=1
-#foreach c_selectdb into lv_name
-	#let lv_cnt=lv_cnt+1
-#end foreach
 
 call set_pick_cnt(ndbs)
 let lv_newname=prompt_pick("SELECT DATABASE >>","")
@@ -174,8 +167,72 @@ end function
 
 
 function drop_db() 
-error "Drop DB not implemented yet"
-sleep 1
+define lv_cnt integer
+define lv_curr_db char(255)
+define lv_name char(255)
+define lv_newname char(255)
+define ndbs integer
+define lv_sql char(255)
+define a integer
+let lv_curr_db=get_db();
+
+code
+{
+#define MAXDBS 100
+#define FASIZ (MAXDBS * 19)
+char *dbsname[MAXDBS+1];
+char            dbsarea[FASIZ];
+
+ sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+
+endcode
+
+if sqlca.sqlcode!=0 then
+        call check_and_report_error()
+        return
+end if
+for a=1 to ndbs
+code
+        strcpy(lv_name,dbsname[a-1]);
+endcode
+        call set_pick(a,lv_name)
+end for
+code
+}
+endcode
+
+
+call set_pick_cnt(ndbs)
+let lv_newname=prompt_pick("DROP DATABASE >>","")
+if lv_newname is null then
+        let lv_newname=lv_curr_db
+end if
+
+
+
+if lv_newname is not null and lv_newname not matches " " then
+        whenever error continue
+
+	menu "CONFIRM >>"
+		command "YES" "Really Drop the database"
+
+			let lv_sql="drop database ",lv_newname
+			prepare p_drop from lv_sql
+			execute p_drop
+	
+        		if sqlca.sqlcode=0 then
+                		call set_curr_db("")
+                		call display_banner()
+				message "Database dropped..."
+        		else
+                		call check_and_report_error()
+        		end if
+			exit menu
+		command "NO" "Don't drop it"
+			exit menu
+	end menu
+end if
+
 end function
 
 

@@ -26,6 +26,7 @@ if (e->type!='W') {
 	memcpy(&list[list_cnt],e,sizeof(struct element));
 	//list[list_cnt].lineno=line;
 	list_cnt++;
+	printf("--> %s\n",e->stmt);
 }
 }
 
@@ -73,6 +74,7 @@ int a;
 		/* Eat up comments */
 		if (a==KW_OBRACE) {
 			while (a&&a!=KW_CBRACE) a=yylex();
+			continue;
 		}
 
 		if (a==KW_MINUS_MINUS) {
@@ -122,8 +124,6 @@ if (e) {
 	free(e);
 	e=0;
 }
+return 1;
 
 }
-
-
-

@@ -1,6 +1,4 @@
 code
-
-
 #include <stdio.h>
 #include <stdlib.h>
 $include sqltypes;
@@ -13,9 +11,11 @@ int fetchFirst=0;
 #define DISPLAY_LINES 18
 
 FILE *out=0;
+FILE *exec_out;
 int outlines=0;
 
 char outfname[255]="";
+int first_open=0;
 
 static int get_size(int dtype,int size) ;
 static int field_widths(void) ;
@@ -37,25 +37,12 @@ char *get_qry_msg(int qry_type,int n);
 extern struct element *list;
 extern int list_cnt;
 
-
-
-
-int ec_check_and_report_error() {
-	if (sqlca.sqlcode<0) {
-		aclfgl_check_and_report_error(0);
-		return 1;
-	} else {
-		return 0;
-	}
-
-
-		//return 1;
-	//} else {
-		//return 0;
-	//}
-}
 endcode
+
+
+
 define exec_mode integer
+define raffected integer
 
 
 # Set execute mode
@@ -86,29 +73,63 @@ define qry_type integer
 end function
 
 
+code
+int ec_check_and_report_error() {
+	
+	if (sqlca.sqlcode<0) {
+		aclfgl_check_and_report_error(0);
+		return 1;
+	} else {
+		return 0;
+	}
+
+
+		//return 1;
+	//} else {
+		//return 0;
+	//}
+}
+endcode
+
+
 function execute_queries()
 define a integer
-define msg char(80)
+define msg char(512)
 define qry_type integer
 define lv_cont integer
 define rpaginate integer
 let msg=""
 options message line last
 code
+first_open=1;
+A4GL_debug("%d SQL statements",list_cnt);
+//if (exec_mode==EXEC_MODE_FILE) { printf(" %d statements\n",list_cnt); }
+
+if (exec_mode!=EXEC_MODE_INTERACTIVE) {
+	exec_out=stdout;
+}
+
+
 	for (a=0;a<list_cnt;a++) {
 		$char *p;
+		qry_type=0;
 
-		//printf("%d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
+		raffected=0;
+
+		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
+//if (exec_mode==EXEC_MODE_FILE) { printf(" Executing statement %d of %d \n",a,list_cnt); }
 		p=list[a].stmt;
 
-			$prepare stExec from $p;
-			if (ec_check_and_report_error()) { break; }
+			EXEC SQL PREPARE stExec from $p;
+			if (ec_check_and_report_error()) {
+						goto end_query; }
 
 			EXEC SQL ALLOCATE DESCRIPTOR "d1";
+			if (ec_check_and_report_error()) { goto end_query; }
         		EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
 			qry_type=sqlca.sqlcode;
 			EXEC SQL DEALLOCATE DESCRIPTOR "d1";
-			if (ec_check_and_report_error()) { break; }
+			if (ec_check_and_report_error()) { goto end_query; }
 
 
 endcode
@@ -131,13 +152,15 @@ code
 			// Is it a select statement ?
 			// @todo - this needs refining as a select .. into temp would get caught..
 			if (list[a].type!='S') {
-				$execute stExec;
-				a=sqlca.sqlerrd[0];
-				if (ec_check_and_report_error()) { break; }
-				$free stExec;
-				if (ec_check_and_report_error()) { break; }
+
+				EXEC SQL EXECUTE stExec;
+				if (ec_check_and_report_error()) { goto end_query; }
+
+				raffected=sqlca.sqlerrd[0];
+				EXEC SQL FREE stExec;
+
+				if (ec_check_and_report_error()) { goto end_query; }
 			} else {
-				a=0;
 				rpaginate=0;
 repeat_query: ;
 	A4GL_debug("Repeat query out=%p\n",out);
@@ -147,7 +170,6 @@ repeat_query: ;
 					char buff[244];
 						b=execute_sql_fetch();
 
-					//printf("Got %d from fetch\n",b);
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
 							while (outlines>DISPLAY_LINES) {
@@ -156,46 +178,52 @@ repeat_query: ;
 								if (rpaginate!=0) break;
 								fetchFirst=1;
 							}
+
 							if (rpaginate!=0) break;
 
-							if (b!=0) break;
+							if (b!=0) goto end_query;
 
 						} else {
-							//printf("Non-interactive...");
 							rpaginate=0;
-							if (b!=0) break;
+							if (b!=0) goto end_query;
 						}
-						a++;
 					}
-					//printf("Here1\n");
 
 					if (rpaginate==1) {
-						//printf("Repeat\n");
+				A4GL_debug("EXEC REPEAT");
 						goto repeat_query;
 					}
 
 
 					if (rpaginate==2) {
-			//printf("Return");
+				A4GL_debug("EXEC EXIT");
 endcode
-	
 						return 0;
 code
 					}
 
-	//printf("Close\n");
 
-					if (out) {fclose(out);out=0;}
-					if (outlines&& exec_mode==EXEC_MODE_INTERACTIVE) {
-						aclfgl_paginate(0);
+				A4GL_debug("EXEC CLOSEDOWN");
+	
+					if (out) {fprintf(out,"\n");fclose(out);out=0;}
+
+					//system("cp out.txt out.1");
+					//sleep(60);
+					if (outlines && exec_mode==EXEC_MODE_INTERACTIVE) {
+							while (1) {
+								if (outlines<=0) break;
+								A4GL_debug("Stmt %d Outlines : %d",a,outlines);
+								aclfgl_paginate(0);
+								rpaginate=A4GL_pop_int();
+								if (rpaginate!=0) break;
+								fetchFirst=1;
+							}
 					}
-					$close c1;
-					if (ec_check_and_report_error()) { break; }
-					$free c1;
-					if (ec_check_and_report_error()) { break; }
-					$free stExec;
-					if (ec_check_and_report_error()) { break; }
-					sqlca.sqlerrd[0]=a;
+					EXEC SQL CLOSE crExec;
+					EXEC SQL free stExec;
+					EXEC SQL free crExec;
+					if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); goto end_query; }
+					sqlca.sqlerrd[0]=raffected;
 					
 				} else {
 					A4GL_push_char("Error executing select");
@@ -203,10 +231,13 @@ code
 					sleep(1);
 				}
 			}
-
-			if (ec_check_and_report_error()) { break; }
+A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
+	if (exec_mode==EXEC_MODE_FILE ) {
+		A4GL_debug("Qry type : %d",qry_type);
 	}
-	sprintf(msg,"Q:%d %d - ( %s )",qry_type, a,get_qry_msg(qry_type,a));
+end_query: ;
+	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected,get_qry_msg(qry_type,raffected));
+
 endcode
 
 if sqlca.sqlcode>=0 then
@@ -214,11 +245,31 @@ if sqlca.sqlcode>=0 then
 		message msg clipped
 	else
 		display msg clipped
+		display " "
 	end if
-	return 1
 else
-	return 0
+
+	if exec_mode=0 then
+		message msg clipped
+
+		# We'll stop after the first error...
+		return 0 
+	else
+		display msg clipped
+		display " "
+	end if
 end if
+
+code
+	}
+endcode
+
+
+# Everything is fine...
+return 1
+
+
+
 end function
 
 
@@ -275,10 +326,8 @@ A4GL_assertion(out==0,"No output file");
     INDICATOR,:dataType = TYPE;
 
 
-//printf("printField %d - dt=%d i=%d",idx,dataType,indicator);
 
   //if (indicator == -1) { return 0; }
-
 
 if (indicator!=-1) {
   switch (dataType&0xf)
@@ -348,13 +397,15 @@ if (indicator!=-1) {
           rc = 1;
           break;
         }
+
       //fgl_decimal = malloc (sizeof (fgldecimal));
-      if (dectoasc (&decimal_var, buff, 64, -1))
+      if (dectoasc (&decimal_var, buff, 32, -1))
         {
 		A4GL_debug("BAD DECIMAL");
         /** @todo : Store the error somewhere */
           return 1;
         }
+	buff[32]=0;
       sprintf (buffer, "%s", buff);
       //free (fgl_decimal);
       break;
@@ -381,12 +432,13 @@ if (indicator!=-1) {
           break;
         }
       //fgl_money = malloc (sizeof (fglmoney));
-      if (dectoasc (&money_var, buff, 64, -1))
+      if (dectoasc (&money_var, buff,32, -1))
         {
         /** @todo : Store the error somewhere */
 	A4GL_debug("Bad money");
           return 1;
         }
+	buff[32]=0;
       sprintf (buffer, "%s", buff);
       //free (fgl_money);
       break;
@@ -438,16 +490,21 @@ if (indicator!=-1) {
 	strcpy(buffer,"");
 }
 
-//printf("PRINTING\n");
 
 
 
 
 	if (display_mode==DISPLAY_DOWN) {
-		fprintf(unloadFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
+		if (exec_mode==EXEC_MODE_INTERACTIVE) 
+			fprintf(unloadFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
+		else
+			fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
 		outlines++;
 	} else {
-		fprintf(unloadFile,"%*s",columnWidths[idx-1],buffer);
+		if (exec_mode==EXEC_MODE_INTERACTIVE) 
+			fprintf(unloadFile,"%*s",columnWidths[idx-1],buffer);
+		else
+			fprintf(exec_out,"%*s",columnWidths[idx-1],buffer);
   	}
 
 
@@ -468,7 +525,12 @@ if (out) {
 
 
 if (out==0) {
-	out=fopen(outfname,"w");
+	if (!first_open) {
+		out=fopen(outfname,"a");
+	} else {
+		out=fopen(outfname,"w");
+		first_open=0;
+	}
 	A4GL_assertion(out==0,"Unable to open output file");
 }
 
@@ -484,6 +546,7 @@ $describe stExec USING SQL DESCRIPTOR 'descExec';
 
 $get descriptor 'descExec' :numberOfColumns=COUNT;
 	if (sqlca.sqlcode<0) return 0;
+A4GL_debug("numberOfColumns : %d\n",numberOfColumns);
 
 $declare crExec CURSOR FOR stExec;
 	if (sqlca.sqlcode<0) return 0;
@@ -528,23 +591,28 @@ int a;
 	}
 
 	if (sqlca.sqlcode==100) {
-		//printf("100\n");
 		return 100;
 	}
-
+	raffected++;
 
 	if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
 		for (a=0;a<numberOfColumns;a++) {
-			fprintf(out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
+			if (exec_mode==EXEC_MODE_INTERACTIVE) 
+				fprintf(out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
+			else
+				fprintf(exec_out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
 		}
-		fprintf(out,"\n\n");
+		if (exec_mode==EXEC_MODE_INTERACTIVE) 
+			fprintf(out,"\n\n");
+		else
+			fprintf(exec_out,"\n\n");
+
 		outlines+=2;
 		fetchFirst=0;
 	}
 	
 
 	for (a=1;a<=numberOfColumns;a++) {
-		//printf("Print %d of %d - %s\n",a,numberOfColumns,columnNames[a-1]);
 		if (printField(out,a,"descExec")==1) {
 			A4GL_debug("Break Early %d of %d",a,numberOfColumns);
 			break;
@@ -552,12 +620,19 @@ int a;
 	}
 
 	if (display_mode==DISPLAY_ACROSS) {
-		fprintf(out,"\n");
+		if (exec_mode==EXEC_MODE_INTERACTIVE)
+			fprintf(out,"\n");
+		else
+			fprintf(exec_out,"\n");
 		outlines++;
 	}
 
 	if (display_mode==DISPLAY_DOWN) {
-		fprintf(out,"\n");
+		if (exec_mode==EXEC_MODE_INTERACTIVE)
+			fprintf(out,"\n");
+		else
+			fprintf(exec_out,"\n");
+
 		outlines++;
 	}
 
@@ -721,12 +796,21 @@ char *qry_strings[255]={
 
 
 char *get_qry_msg(int qry_type,int n) {
-static buff[256];
+static char buff[256];
+if (sqlca.sqlcode>=0) {
 	if (qry_type<=MAX_QRY) {
 		sprintf(buff,qry_strings[qry_type],n);
 	} else {
 		sprintf(buff,"Operation successed (%d) rows affected",n);
 	}
+} else {
+	char lv_err1[256];
+	char lv_err2[256];
+	rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
+	sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+	A4GL_trim(lv_err2);
+	sprintf(buff,"Error %d : %s",sqlca.sqlcode,lv_err2);
+}
 	return buff;
 }
 endcode

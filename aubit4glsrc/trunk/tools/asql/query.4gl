@@ -461,13 +461,9 @@ end function
 function execute_file(lv_fname)
 define lv_fname char(255)
 call init_filename()
-	display "EXECUTING FILE..."
 	call set_exec_mode(1)
 	call read_file(lv_fname)
-	display mv_qry clipped
 	call write_tmpfile()
-	display "---"
-	display mv_qry clipped
 	call open_read_tmpfile()
 	call qry_run()
 end function
