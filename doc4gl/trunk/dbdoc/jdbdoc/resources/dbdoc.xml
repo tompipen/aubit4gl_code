@@ -1,0 +1,4 @@
+<PARAMETERS>
+  <REPOSITORY_CONNECTION name="Repository"/>
+  <OPERATIONAL_DB_CONNECTION name="Operational"/>
+</PARAMETERS>

@@ -1,0 +1,22 @@
+database despodata
+
+screen
+{
+                                                         [a  ] de [b   ]
+\g--------------------------------------------------------------------------
+ Modulo           [d0   ] [d0d                                          ]
+ Tabela           [d1                ] [d1d       ]
+}
+
+tables
+   d_mod_tab
+   systables
+   d_modulos
+
+attributes
+   a=formonly.RegCorrente;
+   b=formonly.totalRegs;
+   d0=codmod;
+   d0d=d_modulos.nome;
+   d1=d_mod_tab.tabname;
+   d1d=systables.owner;

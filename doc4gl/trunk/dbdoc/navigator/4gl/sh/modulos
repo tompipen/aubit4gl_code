@@ -1,0 +1,17 @@
+
+
+# Utilitario para geracao de modulos e associacao de tabelas a modulos
+
+# MAIN
+
+if [ $# -lt 1 ]
+then
+   echo "Utilizacao: modulos base_de_dados!... \c"
+	echo
+	exit 1
+else
+	DATABASE=$1
+	DBPATH=$DBPATH:/usr/desenvolv/bin/perform
+	export DBPATH
+fi
+fglgo /usr/desenvolv/bin/4gl/modulos $DATABASE

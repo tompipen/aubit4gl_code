@@ -1,0 +1,13 @@
+
+
+
+# Compilacao e instalacao do Bdesquema na sua versao perl
+
+MODULES=DbDocModules.cgi DbDocument.cgi DbDocGetDb.cgi DbDocUpdDescription.cgi \
+DbAudit.cgi
+CGI_BIN=/usr/lib/cgi-bin
+
+.PHONY:install
+
+install:
+	cp $(MODULES) $(CGI_BIN)

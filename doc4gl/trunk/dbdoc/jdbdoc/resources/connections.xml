@@ -1,0 +1,10 @@
+<CONNECTION
+ name="Repository"
+ driver="Informix"
+ url="jdbc:informix-sqli://database:1530/p4gl_repository:INFORMIXSERVER=informix"
+/>
+<CONNECTION
+ name="Operational"
+ driver="Informix"
+ url="jdbc:informix-sqli://database:1530/stores:INFORMIXSERVER=informix"
+/>
