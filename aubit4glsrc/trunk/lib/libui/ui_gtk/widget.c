@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.11 2003-09-30 10:31:15 mikeaubury Exp $
+# $Id: widget.c,v 1.12 2003-09-30 14:41:07 mikeaubury Exp $
 #*/
 
 /**
@@ -455,7 +455,7 @@ A4GL_fgl_fieldnametoid (char *f, char *s, int n)
   /* debug("Getting field list formdets=%p parent=%p",formdets,gtk_object_get_data(formdets,"TOP")); */
 
 
-  A4GL_exitwith ("serious bug in widget.c");
+  //A4GL_exitwith ("serious bug in widget.c");
 
   nofields =
     A4GL_gen_field_chars ((void ***) &field_list, (GtkWindow *) formdets, s, n, 0);

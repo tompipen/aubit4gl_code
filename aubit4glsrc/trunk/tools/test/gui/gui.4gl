@@ -30,9 +30,10 @@ else
 	call UI_GTK::field_hide(f)
 end if
 
-
+options input wrap
 input a from dummy
 	before input
+	message "Before Input.."
 		#if a4gl_get_ui_mode()!=0 THEN
 			enable  a1,a2,a3,b1,b2,b3,c1,c2,c3
 		#end if

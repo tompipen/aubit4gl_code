@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.16 2003-09-30 10:31:15 mikeaubury Exp $
+# $Id: input.c,v 1.17 2003-09-30 14:41:07 mikeaubury Exp $
 #*/
 
 /**
@@ -179,12 +179,17 @@ A4GL_form_loop (void *vs,int init)
     a = gui_form_field_constr ();
   printf ("a=%d\n", a);
 
+
+  if (init==1) {
+		return -99;
+	}
   if (a < 0)
     {
       return a;
     }
 
 
+  
   while (1)
     {
 
