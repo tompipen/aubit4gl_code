@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2003-03-05 07:27:48 afalout Exp $
+# $Id: Makefile.in,v 1.14 2003-04-25 15:23:22 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -148,7 +148,7 @@ ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
 #I decided to let user deal with missing 4glc when needed - just run 
 #"make -C compilers/4glc" - better then to have 1000 versions of assist.c in CVS
 assist.c: assist.4gl
-	${ROOT}/bin/4glc $^
+	${ROOT}/bin/4glc -4 $^
 
 assist.o: assist.c
 	${CC} ${CFLAGS_4GLC} -c -o $@ $^
