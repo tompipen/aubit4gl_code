@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.72 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: fglwrap.c,v 1.73 2004-11-10 16:00:39 pjfalbe Exp $
 #
 */
 
@@ -1317,5 +1317,9 @@ void A4GL_logsql(int lineno,char *module, char *s) {
 if (s==0) return;
 A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
 
+}
+
+char *A4GL_get_running_program() {
+	return running_program; // Argv[0]
 }
 /* ================================= EOF ============================= */

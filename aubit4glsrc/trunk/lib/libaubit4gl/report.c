@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.49 2004-11-10 13:40:17 mikeaubury Exp $
+# $Id: report.c,v 1.50 2004-11-10 16:00:39 pjfalbe Exp $
 #
 */
 
@@ -1394,40 +1394,40 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 		     char *otype, char *layout, int to_pipe)
 {
   char buff[1024];
+  char *running_program;
   A4GL_trim (ofile);
   A4GL_trim (otype);
   A4GL_trim (layout);
+
+  running_program=A4GL_get_running_program();
 
   if (to_pipe)
     {
 
       if (strlen (layout))
 	{
-	  sprintf (buff, "%s/bin/process_report -p '%s' '%s' '%s' '%s'",
-		   acl_getenv ("AUBITDIR"), ofile, otype, rep->output_loc,
+	  sprintf (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' '%s'",
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype, rep->output_loc,
 		   layout);
 	}
       else
 	{
-	  sprintf (buff, "%s/bin/process_report -p '%s' '%s' '%s' ",
-		   acl_getenv ("AUBITDIR"), ofile, otype, rep->output_loc);
+	  sprintf (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' ",
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype, rep->output_loc);
 	}
-
-
-
     }
   else
     {
       if (strlen (layout))
 	{
-	  sprintf (buff, "%s/bin/process_report -o '%s' '%s' '%s' '%s'",
-		   acl_getenv ("AUBITDIR"), ofile, otype, rep->output_loc,
+	  sprintf (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' '%s'",
+		   acl_getenv ("AUBITDIR"), running_program,ofile, otype, rep->output_loc,
 		   layout);
 	}
       else
 	{
-	  sprintf (buff, "%s/bin/process_report -o '%s' '%s' '%s' ",
-		   acl_getenv ("AUBITDIR"), ofile, otype, rep->output_loc);
+	  sprintf (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' ",
+		   acl_getenv ("AUBITDIR"), running_program,ofile, otype, rep->output_loc);
 	}
     }
 

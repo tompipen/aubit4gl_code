@@ -7,6 +7,8 @@ int ispipe;
 
 int A4GLLOGREPPROC_initlib (void);
 int A4GL_setenv (char *v, char *val, int overwrite);
+static int do_we_have(char *s) ;
+static char * find_default_filter(char *rtype) ;
 
 // The report itself
 struct r_report *report;
@@ -16,6 +18,7 @@ struct r_report *report;
 int rbs;
 struct s_rbx *rbx = 0;
 char *pipecmd = 0;
+char *running_program=0;
 
 
 int
@@ -31,18 +34,34 @@ main (int argc, char *argv[])
 
   if (argc > 2)
     {
+      int a=1;
 
-      if (strcmp (argv[1], "-o") == 0)
+
+      if (strcmp (argv[a], "-M") == 0)
 	{
-	  ofile = argv[2];
-	  off = 2;
+	  a++;
+	  running_program = argv[a];
+	  off = a;
+	  a++;
+	}
+
+
+      if (strcmp (argv[a], "-o") == 0)
+	{
+	  a++;
+	  ofile = argv[a];
+	  off = a;
+	  a++;
 	  random_name = 0;
 	  ispipe = 0;
 	}
-      if (strcmp (argv[1], "-p") == 0)
+
+      if (strcmp (argv[a], "-p") == 0)
 	{
+	  a++;
 	  pipecmd = argv[2];
-	  off = 2;
+	  off = a;
+	  a++;
 	  random_name = 1;
 	  ispipe = 1;
 	}
@@ -54,7 +73,7 @@ main (int argc, char *argv[])
   if (argc - off != 4 && argc - off != 3)
     {
       printf
-	("Usage %s [ -o output ] type report-file-name [filter-file-name]\n",
+	("Usage %s [ -M program ] [ [-p|-o] output ] type report-file-name [filter-file-name]\n",
 	 argv[0]);
       exit (1);
     }
@@ -126,48 +145,10 @@ main (int argc, char *argv[])
     }
   else
     {
-      FILE *f = 0;
-      char default_filter[256];
-      strcpy (default_filter, "");
-
-      /* First off - lets see if we can find a specific filter... */
-      if (report->max_col <= 80 && strlen (default_filter) == 0)
+	char *default_filter;
+	default_filter=find_default_filter(argv[1 + off]);
+      if (default_filter != 0)
 	{
-	  sprintf (default_filter, "%s/lib/default_%s_narrow.lrf",
-		   acl_getenv ("AUBITDIR"), argv[1 + off]);
-	  A4GL_debug ("Looking for %s\n", default_filter);
-	  f = fopen (default_filter, "r");
-	}
-
-      if (report->max_col <= 132 && f == 0)
-	{
-	  sprintf (default_filter, "%s/lib/default_%s_normal.lrf",
-		   acl_getenv ("AUBITDIR"), argv[1 + off]);
-	  A4GL_debug ("Looking for %s\n", default_filter);
-	  f = fopen (default_filter, "r");
-	}
-
-      if (report->max_col > 132 && f == 0)
-	{
-	  sprintf (default_filter, "%s/lib/default_%s_wide.lrf",
-		   acl_getenv ("AUBITDIR"), argv[1 + off]);
-	  A4GL_debug ("Looking for %s\n", default_filter);
-	  f = fopen (default_filter, "r");
-	}
-
-      /* Finally - try just a standard default */
-      if (f == 0)
-	{
-	  sprintf (default_filter, "%s/lib/default_%s.lrf",
-		   acl_getenv ("AUBITDIR"), argv[1 + off]);
-	  A4GL_debug ("Looking for %s\n", default_filter);
-	  f = fopen (default_filter, "r");
-	}
-
-
-      if (f != 0)
-	{
-	  fclose (f);
 	  A4GL_debug ("Found %s\n", default_filter);
 	  if (!load_filter_file_header (default_filter, &fin_filter, buff))
 	    {
@@ -244,3 +225,136 @@ main (int argc, char *argv[])
     }
   exit (0);
 }
+
+
+
+
+char *find_default_filter(char *rtype) {
+      int found=0;
+	char lf_modname[512];
+	char lf_program[512];
+      static char default_filter[256];
+
+
+
+	if (running_program) {
+		if (strchr(running_program,'/')) {
+			strcpy(lf_program,strrchr(running_program,'/')+1);
+		} else {
+			strcpy(lf_program,running_program);
+		}
+		if (strchr(lf_program,'.')) {
+			char *ptr;
+			ptr=strrchr(lf_program,'.');
+			*ptr=0;
+		}
+	}
+
+	strcpy(lf_modname,report->modName);
+	if (strchr(lf_modname,'.')) {
+			char *ptr;
+			ptr=strrchr(lf_modname,'.');
+			*ptr=0;
+	}
+
+      strcpy (default_filter, "");
+// Search order
+// program_module_report
+// program_report
+// program_module
+// module_report
+// report
+// module
+// program
+
+ 
+	if (!found && running_program) {
+	  sprintf (default_filter, "%s/etc/%s_%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+lf_program,lf_modname,report->repName,rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+     if (!found && running_program ) {
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+		lf_program,report->repName,rtype);
+	  if (do_we_have(default_filter)) found=1;
+     }
+
+     if (!found && running_program) {
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+lf_program,lf_modname,rtype);
+	  if (do_we_have(default_filter)) found=1;
+     }
+
+     if (!found) {
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+lf_modname,report->repName,rtype);
+	  if (do_we_have(default_filter)) found=1;
+     }
+     if (!found) {
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+report->repName,rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+     if (!found) {
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+lf_modname,rtype);
+	  if (do_we_have(default_filter)) found=1;
+     }
+
+     if (!found && running_program) {
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
+lf_program,rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+
+      /* First off - lets see if we can find a specific filter... */
+      if (report->max_col <= 80 &&!found)
+	{
+	  sprintf (default_filter, "%s/etc/default_%s_narrow.lrf", acl_getenv ("AUBITDIR"), rtype);
+
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+      if (report->max_col <= 132 && !found)
+	{
+	  sprintf (default_filter, "%s/etc/default_%s_normal.lrf", acl_getenv ("AUBITDIR"), rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+      if (report->max_col > 132 && !found)
+	{
+	  sprintf (default_filter, "%s/etc/default_%s_wide.lrf", acl_getenv ("AUBITDIR"), rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+      /* Finally - try just a standard default */
+      if (!found)
+	{
+	  sprintf (default_filter, "%s/etc/default_%s.lrf", acl_getenv ("AUBITDIR"), rtype);
+	  if (do_we_have(default_filter)) found=1;
+	}
+
+      if (found) {
+		return default_filter;
+      }
+
+
+return 0;
+
+}
+
+static int do_we_have(char *s) {
+	FILE *f;
+	A4GL_debug("Looking for %s",s);
+   	f = fopen (s, "r");
+	if (f) {
+		fclose(f);
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
