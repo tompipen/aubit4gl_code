@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.26 2003-02-10 19:27:57 mikeaubury Exp $
+# $Id: map.c,v 1.27 2003-02-16 04:25:42 afalout Exp $
 #*/
 
 /**
@@ -62,6 +62,8 @@ extern int 	yylineno;
 extern char *outputfilename; 	/* Defined in libaubit4gl */
 extern char infilename[132];
 
+
+char 		currinfile_dirname[1024]="";   //path to 4gl file we are currently compiling
 char 		errbuff[1024] = "";
 char 		yytext[1024] = "";
 int 		globals_only = 0;
@@ -86,6 +88,7 @@ char 		rm_cmd[10];
 void 		setGenStackInfo		(int _genStackInfo);
 static int  compile_4gl			(char c[128],int compile_object, char a[128],char incl_path[128],int silent, int verbose);
 int         initArguments		(int argc, char *argv[]);
+void        set_yytext			(char *s);
 
 
 /*
@@ -788,6 +791,33 @@ compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128],int s
 int x, ret;
 char buff[456];
 //static char *file_buffer;
+char *ptr;
+char b[64];
+
+  /* store the directory part of file name, if any, so we can use it for GLOBALS
+  file compilation, if nececery */
+
+  //bname (c, currinfile_dirname, b);
+
+
+  strcpy (buff, c);
+
+  if (strchr (buff, '/'))
+    {
+      ptr = strrchr (buff, '/');
+  	  strcpy(ptr, ""); // this does NOT leave a slash at the end
+      strcpy (currinfile_dirname, buff);
+	}
+  else
+    {
+      strcpy (currinfile_dirname, ".");
+    }
+
+
+  #ifdef DEBUG
+  	debug ("Set currinfile_dirname to: %s\n", currinfile_dirname);
+	debug ("Opening in memory: %s\n", c);
+  #endif
 
   /*
   File MUST be opened in binary mode on Windows, to be able to process
@@ -801,7 +831,10 @@ char buff[456];
 
   if (yyin == 0)
   {
-    printf ("Error opening file : %s\n", c);
+    #ifdef DEBUG
+		debug ("Error opening file : %s\n", c);
+    #endif
+	printf ("Error opening file : %s\n", c);
     exit (1);
   }
 
@@ -892,7 +925,9 @@ char buff[456];
 }
 
 
-void set_yytext(char *s) {
+void
+set_yytext(char *s)
+{
 	strcpy(yytext,s);
 }
 

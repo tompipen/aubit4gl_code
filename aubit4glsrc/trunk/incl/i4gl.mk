@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.8 2003-02-11 03:43:14 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.9 2003-02-16 04:25:42 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -30,11 +30,11 @@
 #prepared objects local to the module in which they were declared.
 
 ifndef AMAKE
-	AMAKE=amake
+	AMAKE		=amake
 endif
 
 # -- if ${IXCC} is gcc, set IXCC to "gcc -fwritable-strings"
-IXCC=gcc -fwritable-strings
+IXCC			=gcc -fwritable-strings
 
 # ESQL/C Compiler
 ESQL_EC_CMD     = esql
@@ -59,7 +59,7 @@ I4GL_PC_ENV     =
 I4GL_PC_FLAGS   =
 
 # I4GL P-code Linker
-#I4GL_PL_CMD     = rdslink -o
+#I4GL_PL_CMD    = rdslink -o
 I4GL_PL_CMD     = cat
 I4GL_PL_ENV     = ${I4GL_PC_ENV}
 I4GL_PL_FLAGS   = ${I4GL_PC_FLAGS}
@@ -78,14 +78,14 @@ I4GL_PA_CMD     = rdslib
 I4GL_PA_FLAGS   = -rv
 
 # I4GL P-code Runner Compiler
-I4GL_RC_CMD   = cfglgo
-I4GL_RC_FLAGS =
-I4GL_RC_ENV   = ${I4GL_CC_ENV}
+I4GL_RC_CMD   	= cfglgo
+I4GL_RC_FLAGS 	=
+I4GL_RC_ENV   	= ${I4GL_CC_ENV}
 
 # I4GL P-code Runner Compiler
-I4GL_DC_CMD   = cfgldb
-I4GL_DC_FLAGS =
-I4GL_DC_ENV   = ${I4GL_CC_ENV}
+I4GL_DC_CMD   	= cfgldb
+I4GL_DC_FLAGS 	=
+I4GL_DC_ENV   	= ${I4GL_CC_ENV}
 
 # Complete commands for compiling and linking -- seldom changed
 ESQL            = ${ESQL_EC_ENV} ${ESQL_EC_CMD} ${ESQL_EC_FLAGS}
@@ -100,21 +100,22 @@ I4GL_MC         = ${I4GL_MC_CMD} ${I4GL_MC_FLAGS}
 I4GL_PA         = ${I4GL_PA_CMD} ${I4GL_PA_FLAGS}
 
 # Basic Unix file commands
-RM            = rm -f       # Delete files
+RM            	= rm -f       # Delete files
 
 ###############################################################################
 # Define suffixes which are recognised.
 
-I4GL_PRG_EXT		=.4gi
-I4GL_CPRG_EXT		=.4ge
-I4GL_OBJ_EXT		=.4go
-I4GL_FRM_EXT		=.frm
-I4GL_HLP_EXT		=.iem
-I4GL_LIB_EXT		=.4gx
-I4GL_CLIB_EXT		=.4cx
+I4GL_PRG_EXT	=.4gi
+I4GL_CPRG_EXT	=.4ge
+I4GL_OBJ_EXT	=.4go
+I4GL_COBJ_EXT	=.o
+I4GL_FRM_EXT	=.frm
+I4GL_HLP_EXT	=.iem
+I4GL_LIB_EXT	=.4gx
+I4GL_CLIB_EXT	=.4cx
 
 #WARNING:
-I4GL_C_SUFFIXES 	=.ec .c ${I4GL_CPRG_EXT}
+I4GL_C_SUFFIXES =.ec .c ${I4GL_CPRG_EXT}
 
 #Files compiler uses as source files:
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
@@ -193,6 +194,9 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #%.4go:
 #	@echo here2
 #	${I4GL_PC} $*.4gl
+#when dropping object in originating directory, had a lot of problems...
+#not sure why
+#	${I4GL_PC} -p $(<D) $<
 	${I4GL_PC} $<
 #	${A4GL_CC} $< -c -o ${OBJSTORE}$@
 #	${A4GL_CC} $< -c -o $@
@@ -215,8 +219,8 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #Make executable from single 4gl file:
 .4gl.4gi:
 	${I4GL_PC} -p $(<D) $<
-	${I4GL_PL} $*.4go > $@
-
+	@echo "${I4GL_PL} $*.4go > $@"
+	@${I4GL_PL} $*.4go > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
 
 
 # ================================= EOF =================================

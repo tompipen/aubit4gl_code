@@ -81,6 +81,11 @@
 
 #endif
 
+    /*  -------------- in sql.c ------------------*/
+	HSTMT *			new_hstmt 		(HSTMT * hstmt);
+	void 			chk_rc_full 	(int rc, void *hstmt, char *c, int line, char *file);
+	void  			set_sqlca 		(HSTMT hstmt, char *s, int reset);
+	UDWORD 			display_size 	(SWORD coltype, UDWORD collen, UCHAR * colname);
 
     #include "a4gl_lib_sql_int.h"
 

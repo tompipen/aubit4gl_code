@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2003-02-07 04:01:46 afalout Exp $
+# $Id: Makefile.in,v 1.12 2003-02-16 04:25:42 afalout Exp $
 #
 
-LIBROOT=../..
-ROOT=../../..
+LIBROOT		=../..
+ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -46,7 +46,7 @@ ifeq "${WIN_PATH}" "1"
 	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
     #app (like MingGW) don't know anythign about links! So for now we will add path to
     #there.   -ID:/cygwin/usr/lib/glib-2.0/include
-    ADD_ME=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
+    ADD_ME		=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
 	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
@@ -82,15 +82,15 @@ CFLAGS_4GLC 		=$(CFLAGS_4GLC1:%-Wstrict-prototypes=%)
 
 #we cannot compile GTK code with  -Wstrict-prototypes because
 #GTK+ supplied libraries have many functions declared without parameters
-CFLAGS_GTK_C =$(CFLAGS:%-Wstrict-prototypes=%)
+CFLAGS_GTK_C 		=$(CFLAGS:%-Wstrict-prototypes=%)
 
 #Fails with error: initializer element is not computable at load time:
 ifeq "${NON_PEDANTIC_OK}" "1"
-	CFLAGS_4GLC 		:=$(CFLAGS_4GLC:%-pedantic=%)
+	CFLAGS_4GLC 	:=$(CFLAGS_4GLC:%-pedantic=%)
 endif
 
 ifeq "${TARGET_OS}" "cygwin"
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS		=-L${LIBROOT} -laubit4gl
 endif
 
 
@@ -128,29 +128,27 @@ ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
 #	${MV} TMP${SOEXP_EXT} $@.a
 #endif
 
-
-## ==================================================================
-##                              Windows dll targets
-## ==================================================================
-
-
 ## ==================================================================
 ##                              Sub Targets
 ## ==================================================================
 
 #both assist.c and assist.4gl are in CVS, to preven cyclical dependency
 #between 4glc and some libraries.
-assist.c: assist.4gl ${ROOT}/bin/4glc
-#	${ASSISTCMD}
-#	${SH} ${FGLPCEXEC} ${FGLPCFLAGS} ${CFLAGS} assist.4gl -c -o assist.ao
-#	${FGLPCEXEC} $^
+#NOTE: do not add ${ROOT}/bin/4glc as dependency - it will cause assist.c to be
+#re-created every time 4glc is recompiled, and since assis.c is in CVS, to be
+#commited to CVS every time.
+#BUT!!! if there is no ${ROOT}/bin/4glc dependency, if assist.4gl changed,
+#make will fail, since this make file is invoked BEFORE 4glc is created!
+#I decided to let user deal with missing 4glc when needed - just run 
+#"make -C compilers/4glc" - better then to have 1000 versions of assist.c in CVS
+assist.c: assist.4gl
 	${ROOT}/bin/4glc $^
-
-${ROOT}/bin/4glc:
-	${MAKE} -C ${ROOT}/compilers/4glc
 
 assist.o: assist.c
 	${CC} ${CFLAGS_4GLC} -c -o $@ $^
+
+${ROOT}/bin/4glc:
+	${MAKE} -C ${ROOT}/compilers/4glc
 
 ${ROOT}/compilers/fcompile/form_x.h:
 	${MAKE} -C ${ROOT}/compilers/fcompile rpc
@@ -161,25 +159,20 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 %.o: %.c
 	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
 
+
+##################
+#debuging target - to show curent settings:
 set:
 	@echo CFLAGS: ${CFLAGS}
 	@echo GTK_LIB_PATH: ${GTK_LIB_PATH}
 	@echo LINKLIBS: ${LINKLIBS}
 	@echo GTKLIBS: ${GTKLIBS}
 
-#Output:
-#CFLAGS: -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H -I/usr/local/include -I/usr/src/aubit/aubit4glsrc/incl -DWIN32 -I.. -I. -I../../../incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -L/usr/lib
-#GTK_LIB_PATH: -L/target/lib
-#LINKLIBS: -L../.. -laubit4gl
-#GTKLIBS: -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0-0 -lgdk_pixbuf-2.0 -lpango -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl -liconv
-#GTKLIBS:
-
 ## ==================================================================
 ##                              Dependencies
 ## ==================================================================
 
 #widget.c: widget.h
-#assist.4gl: ${ROOT}/bin/4glc
 #d2.c: ${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================

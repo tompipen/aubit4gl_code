@@ -168,6 +168,8 @@ A4GL_SQLCONVERT=YES
 #procedural DATABASE statement ar run-time. You can use OPEN SESSION and
 #supply login information at run-time, but NOT at compile time:
 #Default=<no default value>
+#WARNING!! BE CAREFULL NOT TO HAVE A TAB OR OTHER SPECIAL CHARACTRS
+#IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
 #SQLUID=mydbusername
 #SQLPWD=mydbpassword
 

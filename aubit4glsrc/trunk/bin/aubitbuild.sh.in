@@ -25,12 +25,12 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.16 2003-02-08 06:47:58 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.17 2003-02-16 04:25:21 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
 
-#FIXME: use "cvs export" instead "cvs checkout" to get code without CVS 
+#FIXME: use "cvs export" instead "cvs checkout" to get code without CVS
 #directories for source archives
 
 
@@ -67,6 +67,8 @@
 ## ==================================================================
 ##                      Configuration
 ## ==================================================================
+
+#VERBOSE=1
 
 #####################
 #Source system environment: important when running from cron
@@ -184,8 +186,6 @@ RPM_PATH=/usr/src/redhat/RPMS/i586
 RPMBUILD_PATH=/usr/src/redhat/BUILD
 RPMSRC_PATH=/usr/src/redhat/SOURCES
 
-
-VERBOSE=1
 
 ## ==================================================================
 ##                      Platform dependent Configuration

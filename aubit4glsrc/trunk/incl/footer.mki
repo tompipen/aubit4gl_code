@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.21 2003-02-11 03:43:13 afalout Exp $
+#	 $Id: footer.mki,v 1.22 2003-02-16 04:25:42 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -69,7 +69,7 @@ ifeq "${D4GL_PRG_EXT}" ""
 endif
 
 # =======================================================================
-#       Set options/extensions for compiling a program or library
+#   Set options/extensions for compiling a target (program or library)
 # =======================================================================
 
 ifeq "$(PROGTYPE)" ".lib"
@@ -158,34 +158,6 @@ endif
 	FILES.qms = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${Q4GL_HLP_EXT}})
 
 # =======================================================================
-#                   Define Clean target settings
-# =======================================================================
-
-#Program targets:
-DEBRIS.prog 		= ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
-
-#objects and help files:
-DEBRIS.d4gl 		= 	${FILES.42m} 	${FILES.42h}
-DEBRIS.i4gl 		= 	${FILES.4go} 	${FILES.iem}
-DEBRIS.aubit 		= 	${FILES.ao} 	${FILES.hlp}
-
-#C compilers intermediate files
-DEBRIS.aubit 		+= ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
-
-#Forms
-DEBRIS.aubit.forms 	= ${FILES.afr} ${FILES.per:.per=.c}
-DEBRIS.i4gl.forms 	= ${FILES.frm}
-
-
-ifneq "$(FILES.lib)" ""
-	DEBRIS.aubit.libs =	${LIBSTORE}${FILES.aox}
-	DEBRIS.d4gl.libs =	${LIBSTORE}${FILES.42x}
-endif
-
-#Common rubbish:
-DEBRIS.common 		= *.bak *.err
-
-# =======================================================================
 #                         Targets dependencies
 # =======================================================================
 
@@ -198,12 +170,65 @@ DEBRIS.common 		= *.bak *.err
 #DELETE IT AND RE-MAKE IT, and THEN it finds is - no idea why, but if something
 #like that happnes, do a full clean, and thern remake everything (or whatever
 #fails to link...)
-AUBIT_DEPS		=${FILES.ao} ${FILES.aox}
-D4GL_PCODE_DEPS	=${FILES.42m} ${FILES.42x}
-D4GL_CCODE_DEPS	=${FILES.42o} ${FILES.42o}
-I4GL_PCODE_DEPS	=${FILES.4go} ${FILES.4gx}
-I4GL_CCODE_DEPS	=${FILES.o} ${FILES.4cx}
-QUERIX_DEPS		=${FILES.qo} ${FILES.qox}
+AUBIT_DEPS		=${FILES.ao} 	${FILES.aox}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+D4GL_PCODE_DEPS	=${FILES.42m} 	${FILES.42x}	${GLOB_GLOBALS:.obj=${D4GL_OBJ_EXT}}
+D4GL_CCODE_DEPS	=${FILES.42o} 	${FILES.42FIXME}	${GLOB_GLOBALS:.obj=${D4GL_COBJ_EXT}}
+I4GL_PCODE_DEPS	=${FILES.4go} 	${FILES.4gx}	${GLOB_GLOBALS:.obj=${I4GL_OBJ_EXT}}
+I4GL_CCODE_DEPS	=${FILES.oFIXME} 	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}}
+QUERIX_DEPS		=${FILES.qo} 	${FILES.qox}	${GLOB_GLOBALS:.obj=${Q4GL_OBJ_EXT}}
+
+# =======================================================================
+#                 Define files to be cleaned
+# =======================================================================
+
+ifeq "$(DEFAULT)" "aubit"
+	DEBRIS.target   =${PROG.4ae}
+	DEBRIS.help     =${FILES.hlp}
+	DEBRIS.obj		=${FILES.ao} ${FILES.aox}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+	DEBRIS.forms    =${FILES.afr}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "d4gl-pcode"
+	DEBRIS.target   =${PROG.42r}
+	DEBRIS.help     =${FILES.42h}
+	DEBRIS.obj		=${FILES.42m} ${FILES.42x}
+	DEBRIS.forms    =${FILES.42f}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "d4gl-ccode"
+	DEBRIS.target   =${PROG.42e}
+	DEBRIS.help     =${FILES.42h}
+	DEBRIS.obj		=${FILES.42o} ${FILES.42FIXME}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.42f}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "i4gl-pcode"
+	DEBRIS.target   =${PROG.4gi}
+	DEBRIS.help     =${FILES.iem}
+	DEBRIS.obj		=${FILES.4go} ${FILES.4gx}
+	DEBRIS.forms    =${FILES.frm}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "i4gl-ccode"
+	DEBRIS.target   =${PROG.4ge}
+	DEBRIS.help     =${FILES.iem}
+	DEBRIS.obj		=${FILES.oFIXME} ${FILES.4cx}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.frm}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "querix"
+	DEBRIS.target   =${PROG.4qe}
+	DEBRIS.help     =${FILES.qms}
+	DEBRIS.obj		=${FILES.qo} ${FILES.qox}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.pic}
+	DEBRIS.libs     =
+endif
+
+
 
 # =======================================================================
 #                              Targets
@@ -214,9 +239,11 @@ default:	${DEFAULT}
 
 all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
 
-touch.all: ${FILES.4gl} ${FILES.per} ${FILES.msg}
-	@touch -c $^
-	@echo "Touched all source files of this program/library"
+#Touch all source file, to force recompile
+#use make option to do this, otherwise it will force CVS commit
+#touch.all: ${FILES.4gl} ${FILES.per} ${FILES.msg}
+#	@touch -c $^
+#	@echo "Touched all source files of this program/library"
 
 # =======================================================================
 #                      Compiler dependent Targets
@@ -276,7 +303,8 @@ ${PROG.42e}: ${D4GL_CCODE_DEPS}
 #already examined. On the second run, ti will work OK.
 ${PROG.4gi}: ${I4GL_PCODE_DEPS}
 #	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
-	${I4GL_PL} $^ > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
+	@echo "${I4GL_PL} $^ > $@"
+	@${I4GL_PL} $^ > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
 #cat can fail because of missing files in link line, but it will still
 #create a file
 
@@ -338,30 +366,113 @@ ${FILES.ao}:	${GLOBALS.4gl}
 # =======================================================================
 
 
-install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
-	mv ${FILES.42m} ${PROG.42r} ${MAXDIR}/gprog
-	-mv ${FILES.42h} ${MAXDIR}/gprog
-	-mv ${FILES.42f} ${MAXDIR}/gform
+#install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
+#	mv ${FILES.42m} ${PROG.42r} ${MAXDIR}/gprog
+#	-mv ${FILES.42h} ${MAXDIR}/gprog
+#	-mv ${FILES.42f} ${MAXDIR}/gform
 
 # =======================================================================
-#                          Clean Targets
+#                     Clean Targets - current compiler
+#                  only files specified by this make file
 # =======================================================================
+
+clean: clean.target clean.help clean.obj clean.cfiles \
+			clean.forms clean.libs clean.common
 
 clean.target:
-	${RM} ${DEBRIS.prog}
-	@echo "All targets deleted"
+	${RM} ${DEBRIS.target}
+	@echo "Target deleted"
 
-clean: clean.target
-	${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit} ${DEBRIS.common}
-	@echo "All intermediate files and target deleted"
+clean.help:
+ifneq "${DEBRIS.help}" ""
+	${RM} ${DEBRIS.help}
+	@echo "Help files deleted"
+endif
 
-clean.most: clean
-	${RM} ${DEBRIS.aubit.forms} ${DEBRIS.i4gl.forms}
-	@echo "All forms deleted"
+clean.obj:
+ifneq "${DEBRIS.obj}" ""
+	${RM} ${DEBRIS.obj}
+	@echo "Objects deleted"
+endif
 
-clean.all: clean.most
-	${RM} ${DEBRIS.aubit.libs}
-	@echo "All libraries deleted"
+clean.cfiles:
+ifneq "${DEBRIS.c}" ""
+	${RM} ${DEBRIS.c}
+	@echo "C compiler debris deleted"
+endif
+
+clean.forms:
+ifneq "${DEBRIS.forms}" ""
+	${RM} ${DEBRIS.forms}
+	@echo "Forms deleted"
+endif
+
+clean.libs:
+ifneq "${DEBRIS.libs}" ""
+	${RM} ${DEBRIS.libs}
+	@echo "Libraries deleted"
+endif
+
+clean.common:
+	${RM} *.bak *.err debug.out debug-globals.out *.warn core
+	@echo "Common debris deleted"
+
+
+# =======================================================================
+#                     Clean Targets - all compilers
+#                  only files specified by this make file
+# =======================================================================
+
+#FIXME: some targets are missing
+
+#Clean everything created by all compilers, defined in this makefile
+clean.all: clean.all.target clean.all.help clean.all.obj clean.all.cfiles \
+			clean.all.forms clean.all.libs clean.all.common
+
+#Program targets (program or library):
+clean.all.target:
+	${RM} ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae} ${PROG.4qe}
+
+#Help files:
+clean.all.help:
+	${RM} ${FILES.42h} ${FILES.iem} ${FILES.hlp} ${FILES.qms}
+
+#objects:
+clean.all.obj:
+	${RM} ${FILES.42m} ${FILES.4go} ${FILES.ao} ${FILES.qo}
+
+#C compilers intermediate files
+#WARNING: this is dangerous - what it user has manually created .c/.h files
+#in this directory?
+clean.all.cfiles:
+	${RM} ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+
+#Forms
+clean.all.forms:
+	${RM} ${FILES.afr} ${FILES.per:.per=.c} ${FILES.frm}  ${FILES.pic} ${FILES.42f}
+
+clean.all.libs:
+ifneq "$(FILES.lib)" ""
+#Do not clean another library just becaue it is reference as part of this one
+	${RM} ${LIBSTORE}${FILES.aox} ${LIBSTORE}${FILES.42x}
+endif
+
+#Common rubbish:
+clean.all.common:
+	${RM} *.bak *.err debug.out debug-globals.out *.warn core
+
+
+# =======================================================================
+#                     Clean Targets - current compilers
+#          anything created by current compiler, in current directory
+# =======================================================================
+
+
+# =======================================================================
+#                     Clean Targets - all compilers
+#          anything created by any 4gl compiler, in current directory
+# =======================================================================
+
 
 # =======================================================================
 #                          Help
@@ -384,6 +495,7 @@ debug:
 enddebug:
 	@echo ***DEBUG END***
 
+#Show current variables settings
 show:
 	@echo DEFAULT=${DEFAULT}
 	@echo MKTARGET=${MKTARGET}
@@ -402,6 +514,8 @@ show:
 	@echo SET_VPATH_LIB   =${SET_VPATH_LIB}
 	@echo SET_VPATH_HLP   =${SET_VPATH_HLP}
 	@echo EXTENSIONS: ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}
+	@echo CORE_PROGDIR = ${CORE_PROGDIR}
+	@echo CORE_LANGDIR = ${CORE_LANGDIR}
 
 
 # =============================== EOF ==================================

@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.100 2003-02-12 05:53:46 afalout Exp $
+# $Id: 4glpc,v 1.101 2003-02-16 04:25:21 afalout Exp $
 #
 
 ########################################################################
@@ -581,6 +581,31 @@ do
             if [ "$FOUND" = "" ]; then
 				echo "Cannot find make file referencing $a"
 	            let CNT2=CNT2+1
+
+				if [ "$CMPL" = "yes" ]; then
+                    #try to compile it
+					THIS4GL=`find . -name $a`
+    	            THISOBJ=`basename $THIS4GL .4gl`.ao
+        	        THISPATH=`dirname $THIS4GL`
+                    if [ ! -f "$THISPATH/$THISOBJ" ]; then
+						echo "aubit 4glpc $THIS4GL -c -o $THISPATH/$THISOBJ"
+						aubit 4glpc $THIS4GL -c -o $THISPATH/$THISOBJ
+	                    if [ "$?" != "0" ]; then
+    	                    echo "Failed. Stop."
+        	                exit 44
+            	        fi
+                    else
+                        echo "exists: $THISPATH/$THISOBJ"
+                    fi
+                fi
+				if [ "$CMPL" = "clean" ]; then
+					THIS4GL=`find . -name $a`
+    	            THISOBJ=`basename $THIS4GL .4gl`.ao
+        	        THISPATH=`dirname $THIS4GL`
+                    if [ -f "$THISPATH/$THISOBJ" ]; then
+                        rm $THISPATH/$THISOBJ
+                    fi
+                fi
             else
 				if [ "$VERBOSE" = "1" ]; then
 					echo "Found $a in $FOUND"

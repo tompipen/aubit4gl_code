@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.16 2003-02-12 05:53:46 afalout Exp $
+# $Id: amake,v 1.17 2003-02-16 04:25:21 afalout Exp $
 
 #####################################################################
 
@@ -81,6 +81,8 @@ then
     echo "'amake P11 aubit -defaultinclude' - build P11 target for Aubit compiler, use"
 	echo "                 includes defined in P11"
     echo "'amake P11 -header myhead.mk' - default P11 target, use myhead.mk for header"
+	echp "'amake max_db.mk querix clean' - invoke clean target of max_db.mk using Querix compiler"
+
 	echo
 	exit 1
 fi

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.50 2003-02-14 13:14:22 mikeaubury Exp $
+# $Id: sql.c,v 1.51 2003-02-16 04:25:42 afalout Exp $
 #
 */
 
@@ -117,12 +117,7 @@ void			ODBC_set_dbms_info	(void);
 int 			sqlerrwith 		(int rc, HSTMT h);
 int 			chk_need_blob	(int rc,HSTMT hstmt)  ;
 int 			chk_getenv		(char *s,int a) ;
-void  			set_sqlca 		(HSTMT hstmt, char *s, int reset);
-UDWORD 			display_size 	(SWORD coltype, UDWORD collen, UCHAR * colname);
-HSTMT *			new_hstmt 		(HSTMT * hstmt);
 static int 		conv_sqldtype 	(int sqldtype, int sdim);
-
-void 			chk_rc_full 	(int rc, void *hstmt, char *c, int line, char *file);
 char *			decode_rc		(int a);
 RETCODE SQL_API newSQLSetParam 	(HSTMT hstmt, UWORD ipar, SWORD fCType,
      							SWORD fSqlType, UDWORD cbColDef, SWORD ibScale, PTR rgbValue,
@@ -306,9 +301,9 @@ int convneg_sql_to_4gl[15] =
 	}
 #endif /* WIN32 && DLL_EXPORT */
 
-//#ifdef __CYGWIN__
-	dll_import sqlca_struct sqlca;
-//#endif
+
+dll_import sqlca_struct sqlca;
+
 
 /*
 =====================================================================
@@ -1188,7 +1183,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  *
  * If a connection was already opened free the resources used.
  *
- * Gets the username and password from the environment 
+ * Gets the username and password from the environment
  * and call A4GLSQL_make_connection().
  *
  * @todo : Substitute the deprecated function SQLFreeConnect.
@@ -1203,10 +1198,14 @@ A4GLSQL_init_connection (char *dbName)
   HDBC *hh=0;
   int rc;
 
-  debug("A4GLSQL_init_connection(dbName='%s')", dbName);
+  #ifdef DEBUG
+	  debug("A4GLSQL_init_connection(dbName='%s')", dbName);
+  #endif
 
   if (strcmp (dbName, OldDBname) == 0) {
-    debug ("Already connected - ignored.");
+	#ifdef DEBUG
+		debug ("Already connected - ignored.");
+    #endif
     return 0;
   }
 
@@ -1224,21 +1223,37 @@ A4GLSQL_init_connection (char *dbName)
   */
   u = acl_getenv ("SQLUID");
 #if ( ! defined(__MINGW32__))
+  /*
+    FIXME:
+    can we find out if there is user name/password specified in odbc.ini
+    before we just override it ?
+  */
+
   if (u==0 || *u=='\0')  u = getlogin();
-//we have something simmilar somewhere in libaubit4gl for WIN32 - find it and use it instead getlogin()
+	/*
+    FIXME
+	we have something simmilar somewhere in libaubit4gl for WIN32 - find it 
+	and use it instead getlogin()
+    */
+#else
+  #ifdef DEBUG
+    debug("avoided getlogin() call");
+  #endif
 
 #endif
+  
+  /* FIXME: what is LOGNAME ? */
   if (u==0 || *u=='\0')  u = acl_getenv("LOGNAME");
   if (u==0)  u = empty;
 
   p = acl_getenv ("SQLPWD");
   if ( (p==0 || *p =='\0') && *u >'\0' ) {
-     /*  prompt user for password - not yet implemented  */
+     /*  prompt user for password - if not specified in odbc.ini -not yet implemented  */
   }
   if (p==0)  p = empty;
 
 #ifdef DEBUG 
-  /* {DEBUG} */ { debug ("u=%s p=%s", u, p); }
+  { debug ("u=%s p=%s", u, p); }
 #endif
 
   if (A4GLSQL_make_connection (dbName, u, p))
@@ -1253,14 +1268,18 @@ A4GLSQL_init_connection (char *dbName)
       add_pointer ("default", SESSCODE, hh);
       rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
       chk_rc (rc, 0, "SQLSetConnectOption");
-      debug ("AUTOCOM rc=%d", rc);
+	  #ifdef DEBUG
+		  debug ("AUTOCOM rc=%d", rc);
+      #endif
     }
   else
     {
       set_errm (dbName);
       exitwith ("Could not connect to database");
     }
-  debug ("hh=%p for %s", hh, dbName);
+  #ifdef DEBUG
+	  debug ("hh=%p for %s", hh, dbName);
+  #endif
   strcpy (OldDBname, dbName);
   return 0;
 }
@@ -1515,28 +1534,37 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 
   /* copy user name and password, and remove trailing spaces
    */
+
+  trim(uid_p);
+  trim(pwd_p);
   if (uid_p) strcpy(uid,uid_p);
   if (pwd_p) strcpy(pwd,pwd_p);
   trim(uid);
   trim(pwd);
+  trim(server);
+
+  /*
+    FIXME: we really need more then trim() here - I once had a TAB after
+    uid by mistake...
+  */
 
   if (henv == 0)
     {
       rc = SQLAllocEnv (&henv);
       chk_rc (rc, 0, "SQLAllocEnv");
 #ifdef DEBUG
-	/* {DEBUG} */ {debug ("SQLAllocEnv returns %d %p", rc, henv);}
+	{debug ("SQLAllocEnv returns %d %p", rc, henv);}
 #endif
     }
 
   rc = SQLAllocConnect (henv, &hdbc);
   chk_rc (rc, 0, "SQLAllocConnect");
 #ifdef DEBUG
-	/* {DEBUG} */{debug ("SQLAllocConnect returns %d %p", rc, hdbc);}
+	{debug ("SQLAllocConnect returns %d %p", rc, hdbc);}
 #endif
 
 #ifdef DEBUG
-	/* {DEBUG} */ debug("Connecting to %s as %s/%s",server,uid,pwd);
+	debug("Connecting to >%s< as >%s</>%s<",server,uid,pwd);
 #endif
 
 rc = SQLConnect (hdbc, server, SQL_NTS, uid, SQL_NTS, pwd, SQL_NTS);
@@ -1544,7 +1572,7 @@ rc = SQLConnect (hdbc, server, SQL_NTS, uid, SQL_NTS, pwd, SQL_NTS);
 chk_rc (rc, 0, "SQLConnect");
 
 #ifdef DEBUG
-	/* {DEBUG} */ {debug ("SQLConnect status = %d", rc);}
+	{debug ("SQLConnect status = %d", rc);}
 #endif
 
   if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
@@ -3208,7 +3236,7 @@ buff[0]=0;
  * @return The value converted to string
  */
 char*
-decode_rc(int a) 
+decode_rc(int a)
 {
 	switch(a) {
 		case SQL_SUCCESS: return "SQL_SUCCESS";

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.100 2003-02-14 10:18:22 mikeaubury Exp $
+# $Id: mod.c,v 1.101 2003-02-16 04:25:42 afalout Exp $
 #
 */
 
@@ -465,176 +465,6 @@ setinc (int a)
 
 
 
-#ifdef OLDSTUFF
-/**
- * Print the variable in variables array by is index.
- *
- * The result is composed in a temporary buffer and the called the function
- * that generates the variable declaration in the target language to the
- * target generated file.
- *
- * @param z The variable index in the array.
- * @param ff The scope of the variable.
- *   - L : The variable is local to function
- *   - G : The variable have global scope
- *   - n
- *   - M : The variable is with modular scope
- */
-static void 
-print_variable (int z, char ff)
-{
-  char tmpbuff[80];
-
-  debug ("Printing variable %c %s", ff, vars[z].var_name);
-	// MJA - NEWVARIABLE
-
-  if (strcmp (vars[z].var_name, "time") == 0)
-    return;
-
-  if (strcmp (vars[z].var_type, "_ENDREC") == 0)
-  {
-      return;
-  }
-
-  if (strcmp (vars[z].var_type, "_ASSOCIATE") == 0)
-  {
-    print_declare_associate_2 (
-		  vars[z].var_name, 
-			vars[z].var_size,
-		  vars[z].var_arrsize
-		);
-    return;
-  }
-
-  if (strcmp (vars[z].var_type, "_RECORD") == 0)
-  {
-    setinc (1);
-    print_record (z, ff,vars[z].var_name);
-    setinc (-1);
-    return;
-  }
-
-  if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
-    {
-      sprintf (tmpbuff, "%s %s", vars[z].var_type, vars[z].var_name);
-    }
-  else
-    {
-      sprintf (tmpbuff, "%s %s[%s]", vars[z].var_type,
-	       vars[z].var_name,  (vars[z].var_arrsize));
-    }
-
-  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
-    {
-      if (strcmp (vars[z].var_type, "char") == 0)
-	{
-	  if (ff != '-')
-	    {
-	      print_define_char (tmpbuff, atoi (vars[z].var_size), 1);
-	    }
-	  else
-	    {
-	      print_define_char (tmpbuff, atoi (vars[z].var_size), 0);
-	    }
-	}
-      else
-	{
-	  if (ff != '-')
-	    {
-	      print_define (tmpbuff, 1);
-	    }
-	  else
-	    {
-	      print_define (tmpbuff, 0);
-	    }
-	}
-    }
-  else
-    {
-      if (strcmp (vars[z].var_type, "char") == 0)
-	{
-	  if (ff != 'G')
-	    {
-	      print_define_char (tmpbuff, atoi (vars[z].var_size), 0);
-	    }
-	  if (ff == 'G')
-	    {
-	      print_define_char (tmpbuff, atoi (vars[z].var_size), 2);
-	    }
-	}
-      else
-	{
-	  if (ff != 'G')
-	    {
-	      print_define (tmpbuff, 0);
-	    }
-	  if (ff == 'G')
-	    {
-	      print_define (tmpbuff, 2);
-	    }
-	}
-    }
-
-}
-#endif
-
-
-#ifdef OLDSTUFF
-/**
- * Dumps the global variables to a file named <target_file>.glb
- */
-static void 
-dump_gvars(void)
-{
-FILE *f;
-int a;
-char ii[64];
-  
-	// MJA - NEWVARIABLE
-	strcpy (ii, outputfilename);
-	strcat (ii, ".glb");
-	f = mja_fopen (ii, "w");
-
-	if (f == 0)
-    {
-		fprintf (stderr, "Couldnt open output file %s\n", ii);
-		exit (0);
-    }
-
-	fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
-
-	for (a = 0; a < varcnt; a++)
-    {
-
-		trim (vars[a].var_name);
-		if (strcmp (vars[a].var_name, "***CONSTANTS***") == 0)
-        {
-			debug ("Found ***CONSTANTS*** (2) \n");
-        }
-        else
-        {
-			fprintf (f, "%s %s %s %s %s %s %d\n",
-		       vars[a].var_name,
-		       vars[a].var_type,
-		       vars[a].var_size,
-		       vars[a].var_arrsize,
-		       vars[a].tabname, vars[a].pklist, vars[a].level);
-        }
-
-    }
-  
-	fprintf (f, "***CONSTANTS***\n");
-
-	for (a = 0; a < const_cnt; a++)
-    {
-		if (const_arr[a].scope == 'g')
-			fprintf (f, "%c %s %p\n", const_arr[a].type, const_arr[a].name,
-				const_arr[a].ptr);
-    }
-
-	fclose (f);
-}
-#endif
 
 /**
  * Tests if a char pointer is null (char *)0
@@ -653,94 +483,6 @@ ignull (char *ptr)
   else
     return empty;
 }
-
-
-#ifdef OLD_STUFF
-/**
- * Dumps the contents of all of the array variable to a file named dumpvars.out.
- *
- * It only does this action if environment variable DUMPVARS is assigned.
- *
- * It is mainly used to debug the code generation
- *
- */
-void 
-dump_vars (void)
-{
-
-  FILE *f;
-
-  int a;
-	// MJA - NEWVARIABLE
-  if (acl_getenv ("DUMPVARS") == 0)
-    return;
-
-  f = (FILE *) mja_fopen ("dumpvars.out", "w");
-
-  for (a = 0; a < varcnt; a++)
-    {
-
-      fprintf (f, " %d - %s;%s;%s;%s;%d;%s;%s\n", a,
-	       ignull (vars[a].var_name),
-	       ignull (vars[a].var_type),
-	       ignull (vars[a].var_size),
-	       ignull (vars[a].var_arrsize),
-	       vars[a].level,
-	       ignull (vars[a].tabname), ignull (vars[a].pklist));
-
-    }
-
-  fclose (f);
-
-}
-#endif
-
-
-#ifdef OLDSTUFF
-/**
- * Print variable declaration for the scope wanted.
- *
- * The scope level is defined by the global modlevel
- *
- */
-void 
-print_variables (void)
-{
-
-  int a;
-char scope;
-
-	// MJA - NEWVARIABLE
-
-  debug ("/**********************************************************/\n");
-  debug ("/******************* Variable definitions *****************/\n");
-  debug ("/**********************************************************/\n");
-
-
-  scope=get_current_variable_scope();
-  
-
-
-  if (scope=='l')
-    {
-	    print_local_variables();
-    }
-
-  if (scope=='g')
-    {
-
-	print_global_variables();
-	dump_gvars (); if (only_doing_globals ()) exit (0);
-    }
-
-
-  if (scope=='m')
-    {
-	print_module_variables();
-    }
-
-}
-#endif
 
 /**
  * The parser found a new variable name and inserts it in the variable array.
@@ -793,60 +535,13 @@ push_type (char *a, char *n, char *as)
 	}
 */
 
-#ifdef OLDSTUFF
-  for (z = varcnt - 1; z >= 0; z--)
-    {
-      if (strcmp (vars[z].var_type, EMPTY) != 0)
-	break;
-
-      if (a != 0)
-	{
-	  if (strcmp (a, "_ASSOCIATE") == 0)
-	    {
-	      print_declare_associate_1 (vars[z].var_name, as, n);
-	      continue;
-	    }
-	}
-
-      if (strcmp (vars[z].var_type, EMPTY) != 0)
-	break;
-
-      if (a != 0)
-	strcpy (vars[z].var_type, a);
-      else
-	strcpy (vars[z].var_type, EMPTY);
-
-      if (n != 0)
-	{
-	  strcpy (vars[z].var_size, n);
-
-	}
-      else
-	strcpy (vars[z].var_size, EMPTY);
-
-      if (as != 0)
-	{
-	  debug ("Setting array size in vars...%s on %s", as,
-		 vars[z].var_name);
-	  strcpy (vars[z].var_arrsize, as);
-	}
-
-      else
-	{
-	  debug ("unSetting array size in vars...%s on %s", as,
-		 vars[z].var_name);
-	  /* strcpy (vars[z].var_arrsize, EMPTY); */
-	}
-
-    }
-#endif
 
 }
 
 /**
  * The parser found the starting of a new record.
  */
-void 
+void
 push_record (void)
 {
   /* in_record++; */
@@ -892,21 +587,6 @@ add_link_to (char *tab, char *pkey)
 
 	// MJA - NEWVARIABLE
 
-#ifdef OLD_STUFF
-
-  pt = strdup (tab);
-  pk = strdup (pkey);
-  for (z = varcnt; z >= 0; z--)
-    {
-      if (strcmp (vars[z].var_type, "_RECORD") == 0)
-	{
-	  debug ("vars[%d] is _RECORD\n", z);
-	  vars[z].tabname = pt;
-	  vars[z].pklist = pk;
-	  break;
-	}
-    }
-#endif
 }
 
 /**
@@ -2079,179 +1759,6 @@ is_pk (char *s)
 }
 
 
-#ifdef OLDSTUFF
-/**
- * @param s
- * @param bindtype
- *   - u :
- * @return 
- *   - -1 :
- *   - 0 :
- */
-int 
-push_bind_rec (char *s, char bindtype)
-{
-  int a;
-  long z;
-  char buff[256];
-  char bb[256];
-  char bbb[256];
-  char endoflist[256];
-  char save[256];
-  char *ptr;
-  int lvl = 0;
-
-  /* The function should be declared here because they are thigly coupled
-  int add_bind (char i, char *var); */
-  /* BUT add_bind is already declared in a4gl+4glc_4glc.h !!! */
-
-
-	// MJA - NEWVARIABLE
-  debug ("In push_bind_rec : %s\n", s);
-
-  strcpy (endoflist, "");
-  if (strchr (s, '\n'))
-    {
-      int v1;
-      int v2 = 0;
-      char *ptr1;
-      char *ptr2;
-
-      char r1[256];
-      char r2[256];
-      char buff[256];
-
-
-      strcpy (save, s);
-      s = save;
-
-      ptr = strchr (save, '\n');
-
-      *ptr = 0;
-      ptr++;
-      strcpy (endoflist, ptr);
-      debug ("Thru splits to %s and %s", s, ptr);
-
-      strcpy (r1, s);
-      ptr1 = strrchr (r1, '.');
-      *ptr1 = 0;
-      ptr1++;
-
-      strcpy (r2, s);
-      ptr2 = strrchr (r2, '.');
-      *ptr2 = 0;
-
-      if (strcmp (r1, r2) != 0)
-	{
-	  yyerror ("Records for thru look different...");
-	}
-
-      v1 = scan_variable (s);
-      if (v2 == -1)
-	{
-	  yyerror ("Variable not found (first entry in thru)");
-	}
-      v1 = last_var_found;
-      debug ("v1=%d", v1);
-
-      v2 = scan_variable (ptr);
-      if (v2 == -1)
-	{
-	  yyerror ("Variable not found (second entry in thru)");
-	}
-      v2 = last_var_found;
-      debug ("v2=%d", v2);
-
-      for (a = v1; a <= v2; a++)
-	{
-	  sprintf (buff, "%s.%s", r1, vars[a].var_name);
-	  add_bind (bindtype, buff);
-	}
-      return 0;
-    }
-
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-
-  strcpy (buff, s);
-
-  if (strchr (s, '.') == 0)
-    {
-      strcat (buff, ".*");
-    }
-
-  strcat (buff, ".");
-  /*strip_bracket(buff); */
-  strcpy (bb, "");
-  scan_variable (s);
-  if (last_var_found == -1)
-    {
-      yyerror ("Record or structure not defined");
-    }
-
-
-  ptr = strtok (buff, ".");
-
-  for (a = last_var_found; a < varcnt; a++)
-    {
-      debug ("Check2 ptr=%p", ptr);
-      if (ptr == 0)
-	{
-	  debug
-	    ("Error processing record - missing item variable ?\nAssuming *");
-	  ptr = "*";
-	}
-      if ((strcmp (ptr, "*") == 0 || 1)
-	  /* || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0) */
-	  && vars[a].level == lvl)
-	{
-	  debug ("CHeck2.2");
-	  if (ptr[0] != '*')
-	    {
-	      strcat (bb, ptr);
-	      strcat (bb, ".");
-	      ptr = strtok (0, ".");
-	    }
-	  else
-	    {
-	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
-		{
-		  z =
-		    find_type (vars[a].var_type) +
-		    (atoi (vars[a].var_size) << 16);
-		  strcpy (bbb, bb);
-		  strcat (bbb, vars[a].var_name);
-		  if (bindtype != 'u')
-		    {
-		      add_bind (bindtype, bbb);
-		    }
-		  else
-		    {
-		      debug ("UPDATE USING .... check %s", vars[a].var_name);
-		      if (!(is_pk (vars[a].var_name)))
-			add_bind ('i', bbb);
-		    }
-		  a++;
-		}
-	      return 1;
-	    }
-
-	  debug ("CHeck3");
-	  lvl++;
-
-	}
-      debug ("CHeck4");
-
-    }
-  return -1;
-}
-#endif
-
-
-
-
 /**
  * Add a new bind to the specific aray (acording to the type).
  *
@@ -2846,66 +2353,6 @@ matoi (char *s)
   return a;
 }
 
-
-#ifdef OLDSTUFF
-/**
- *
- *
- * @param
- */
-long
-get_variable_dets (char *s, int *type, int *arrsize,
-		   int *size, int *level, char *arr)
-{
-  int a;
-  long z;
-  char buff[256];
-  char *ptr;
-  int lvl = 0;
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-  strcpy (buff, s);
-  strip_bracket (buff);
-  strcat (buff, ".");
-  ptr = strtok (buff, ".");
-
-	// MJA - NEWVARIABLE
-  for (a = 0; a < varcnt; a++)
-    {
-      if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
-	{
-	  ptr = strtok (0, ".");
-
-	  if (ptr == 0)
-	    {
-	      z =
-		find_type (vars[a].var_type) +
-		(atoi (vars[a].var_size) << 16);
-	      *level = vars[a].level;
-	      *type = z;
-	      *arrsize = matoi (vars[a].var_arrsize);
-	      if (arr)
-		strcpy (arr, vars[a].var_arrsize);
-	      *size = matoi (vars[a].var_size);
-	      debug ("\n/* %s %s %s %s %d */\n",
-		     vars[a].var_name,
-		     vars[a].var_type,
-		     vars[a].var_size, vars[a].var_arrsize, vars[a].level);
-	      return z;
-	    }
-
-	  lvl++;
-
-	}
-
-    }
-  return -1;
-}
-#endif
-
-
 /**
  *
  *
@@ -3183,192 +2630,6 @@ convstrsql (char *s)
   return buff;
 }
 
-
-#ifdef OLDSTUFF
-/**
- * Compile the 4gl source with -G option to generate the .glb file
- *
- * This file is then readed to generate the externs in C.
- *
- * @param s The 4gl file name (without extension).
- */
-void
-generate_globals_for (char *s)
-{
-char buff[1024];
-char dirname[1024];
-char fname[1024];
-char *ptr;
-char nocfile[256];
-
-  debug ("In generate_globals_for\n");
-
-  strcpy (buff, s);
-
-  if (strchr (buff, '/'))
-    {
-      strcpy (dirname, buff);
-      ptr = strrchr (dirname, '/');
-      *ptr = 0;
-      ptr++;
-      strcpy (fname, ptr);
-    }
-  else
-    {
-      strcpy (dirname, ".");
-      strcpy (fname, buff);
-    }
-
-  strcpy (nocfile, acl_getenv ("NOCFILE"));
-  setenv ("NOCFILE", "Yes", 1);
-  ptr = strchr (fname, '.');
-  *ptr = 0;
-  debug ("Trying to compile globals file %s\n", fname);
-  sprintf (buff, "cd %s; 4glc -G %s.4gl", dirname, fname);
-  system (buff);
-  setenv ("NOCFILE", nocfile, 1);
-
-}
-#endif
-
-
-#ifdef OLDSTUFF
-/**
- * Read the gobals file (.glb).
- * FIXME: there is a function called read_globals() in mod.c - ONE OF THEM IS OBSOLETE
- * @param s The file name (without .glb extension).
- */
-void
-read_glob (char *s)
-{
-FILE *f;
-char line[256];
-char ii[64];
-char dbname[64];
-char tname[128];
-char pklist[1024];
-
-	// MJA - NEWVARIABLE
-  	strcpy (ii, s);
-	strcat (ii, ".glb");
-   	#ifdef DEBUG
-		debug ("Trying to open globals file %s\n", ii);
-    #endif
-
-
-	f = mja_fopen (ii, "r");
-
-	if (f == 0)
-    {
-    	#ifdef DEBUG
-			debug ("Trying to compile globals file");
-        #endif
-		generate_globals_for (ii);
-		f = mja_fopen (ii, "r");
-    }
-
-	if (f == 0)
-    {
-    	fprintf (stderr, "Couldnt open globals file %s\n", ii);
-		exit (7);
-    }
-
-	#ifdef DEBUG
-		debug ("Opening %s\n", ii);
-    #endif
-
-	fgets (line, 255, f);
-	strcpy (dbname, "");
-	sscanf (line, "DATABASE=%s", dbname);
-
-	if (strlen (dbname) > 0)
-    {
-    	set_hdrdbname (dbname);
-		open_db (dbname);
-    }
-
-	#ifdef DEBUG
-		debug ("DBNAME=%s from globals", dbname);
-    #endif
-
-	while (!feof (f))
-    {
-    	fgets (line, 255, f);
-		if (feof (f))
-			break;
-		/* did not catch it:
-		trim (line);
-		if (strcmp (line, "***CONSTANTS***") == 0)
-        {
-			debug ("Found ***CONSTANTS***\n");
-			break;
-        }
-        */
-
-	  	sscanf (line, "%s %s %s %s %s %s %d\n",
-	      vars[varcnt].var_name,
-	      vars[varcnt].var_type,
-	      vars[varcnt].var_size,
-	      vars[varcnt].var_arrsize, tname, pklist, &vars[varcnt].level);
-
-        trim (vars[varcnt].var_name);
-		if (strcmp (vars[varcnt].var_name, "***CONSTANTS***") == 0)
-        {
-			debug ("Found ***CONSTANTS*** (3)\n");
-			break;
-        }
-
-		vars[varcnt].tabname = strdup (tname);
-		vars[varcnt].pklist = strdup (pklist);
-
-		#ifdef DEBUG
-			debug ("Read %s %s from globals file (%s %s)\n",
-		     vars[varcnt].var_name,
-		     vars[varcnt].var_type,
-		     vars[varcnt].tabname, vars[varcnt].pklist);
-			debug ("In full : %s %s %s %s %s %s %d\n",
-		     vars[varcnt].var_name,
-		     vars[varcnt].var_type,
-		     vars[varcnt].var_size,
-		     vars[varcnt].var_arrsize,
-		     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
-        #endif
-
-		vars[varcnt].globflg = 'G';
-
-		if (varcnt >= MAXVARS)
-        {
-			exitwith ("Too many variables");
-			yyerror ("Too many variables");
-		}
-
-		varcnt++;
-	}
-
-	while (!feof (f))
-    {
-	char ct;
-    char cn[256];
-    char cv[256];
-
-		fgets (line, 255, f);
-		if (feof (f))
-			break;
-		trim (line);
-		/* bug fix - possibly not neded? */
-		if (strcmp (line, "***CONSTANTS***") == 0)
-        {
-			debug ("Found ***CONSTANTS***\n");
-			break;
-        }
-		sscanf (line, "%c %s %s", &ct, cn, cv);
-		add_constant (ct, cv, cn);
-	}
-
-	fclose (f);
-}
-#endif
-
 /**
  * Upshift a string.
  *
@@ -3626,71 +2887,6 @@ set_whenever (int c, char *p)
   print_clr_status ();
 }
 
-
-#ifdef OLD_STUFF
-/**
- * Clear all constants.
- */
-void 
-clr_function_constants (void)
-{
-  int a;
-  int lcnt = 0;
-  debug ("Clr constants\n");
-  for (a = 0; a <= const_cnt; a++)
-    {
-      if (const_arr[a].scope == 'f')
-	{
-	  const_arr[a].name[0] = 0;
-	}
-      else
-	lcnt = a;
-
-    }
-  const_cnt = lcnt + 1;
-
-}
-#endif
-
-
-#ifdef OLD_STUFF
-/**
- *
- *
- * @param
- */
-int
-check_for_constant (char *name, char *buff)
-{
-  int x;
-
-  if (in_define)
-    return 0;
-
-  for (x = 0; x < const_cnt; x++)
-    {
-      if (aubit_strcasecmp (name, const_arr[x].name) == 0)
-	{
-	  debug ("Found constant @ %d type=%c scope=%c", x, const_arr[x].type,
-		 const_arr[x].scope);
-	  strcpy (buff, const_arr[x].ptr);
-	  switch (const_arr[x].type)
-	    {
-	    case 'c':
-	      return 1;
-	    case 'f':
-	      return 2;
-	    case 'i':
-	      return 3;
-	    }
-
-	}
-    }
-  return 0;
-}
-#endif
-
-
 /**
  *
  *
@@ -3901,35 +3097,6 @@ trans_quote (char *s)
 */
 
 
-#ifdef OLD_STUFF
-/**
- *
- * @param tabname
- * @param pklist
- * @return
- */
-int
-last_var_is_linked (char *tabname, char *pklist)
-{
-	// MJA - NEWVARIABLE
-  strcpy (pklist, "");
-  strcpy (tabname, "");
-  if (last_var_found >= 0)
-    {
-      debug ("last var=%d\n", last_var_found);
-      debug ("....%s %s %s\n", vars[last_var_found].var_name,
-	     vars[last_var_found].tabname, vars[last_var_found].pklist);
-
-      strcpy (tabname, vars[last_var_found].tabname);
-      strcpy (pklist, vars[last_var_found].pklist);
-    }
-  if (strcmp (tabname, "") == 0)
-    return 0;
-  else
-    return 1;
-}
-#endif
-
 /**
  * Split a string into pieces, 
  *
@@ -4057,120 +3224,12 @@ ispdf (void)
 }
 
 
-
-
-
-#ifdef OLDSTUFF
-/**
- *
- *
- * @param
- */
-int
-print_push_rec (char *s, char *b)
-{
-  int a;
-  long z;
-  int cnt = 0;
-  char bb[256];
-  char buffer[40000] = "";
-  char buffer2[40000];
-  char nbuff[40000];
-  char *ptr;
-  int lvf;
-  char endoflist[256];
-  char save[256];
-
-	// MJA - NEWVARIABLE
-  debug ("print_push_rec");
-  strcpy (endoflist, "");
-
-  if (strchr (s, '\n'))
-    {
-      debug ("Have a thru");
-      strcpy (save, s);
-      s = save;
-      ptr = strchr (save, '\n');
-      *ptr = 0;
-      ptr++;
-      strcpy (endoflist, ptr);
-      debug ("Splits to %s and %s", s, endoflist);
-
-    }
-  strcpy (bb, s);
-
-  bb[strlen (bb) - 1] = 0;
-
-  debug ("pushing record  '%s' '%s'\n", s, b);
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-
-  scan_variable (s);
-
-  if (last_var_found == -1)
-    {
-      yyerror ("Record or structure not defined");
-    }
-
-  lvf = last_var_found + 1;
-
-  debug ("last_var_found=%d -> %s", lvf, vars[lvf].var_name);
-
-
-  for (a = lvf; a < varcnt; a++)
-    {
-      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
-	{
-	  debug ("Spotted ENDREC @ %d\n", a);
-	  strcpy (b, buffer);
-	  return cnt;
-	}
-
-      debug ("Testing variable @%d\n", a);
-      z = find_type (vars[a].var_type) + (atoi (vars[a].var_size) << 16);
-
-
-      if (z != -2)
-	{
-	  strcpy (buffer2, buffer);
-	  sprintf (buffer, "%s   push_variable(&%s%s,0x%x);\n",
-		   buffer2, bb, vars[a].var_name, (unsigned int)z);
-	  cnt++;
-	}
-      else
-	{
-	  int c;
-	  char nvar[256];
-	  strcpy (buffer2, buffer);
-	  sprintf (nvar, "%s%s.*", bb, vars[a].var_name);
-
-	  debug ("recursing with %s\n", nvar);
-	  c = print_push_rec (nvar, nbuff);
-	  sprintf (buffer, "%s%s\n", buffer2, nbuff);
-	  cnt += c;
-	  a += c;
-	  a++;
-	}
-
-      if (strcmp (vars[a].var_name, endoflist) == 0)
-	{
-	  debug ("Done the last one...");
-	  break;
-	}
-    }
-  return -1;
-}
-#endif
-
-
 /**
  *
  * When you've got a function definition which includes a record
  * You don't know when adding to the binding the structures involved
  * This copies the original binding and reapplies them.
- * This should be called after the structure is known - ie. just before you 
+ * This should be called after the structure is known - ie. just before you
  * want to print it !
  *
  * @param bind A pointer to the bind structure.
@@ -4178,11 +3237,11 @@ print_push_rec (char *s, char *b)
  *   - i : Input bind.
  *   - N : Null bind.
  *   - o : Output bind.
- *   - O 
+ *   - O
  *   - f or F :
  * @param cnt The number of elements in the bind array.
  */
-void 
+void
 expand_bind (struct binding_comp * bind, int btype, int cnt)
 {
   struct binding_comp save_bind[NUMBINDINGS];
@@ -4220,21 +3279,6 @@ expand_obind (void)
   expand_bind (obind, 'o', obindcnt);
 }
 
-
-#ifdef OLD_STUFF
-/**
- * Get a variable name at a specified position of  the variable array.
- *
- * @param z The position where to find the variable.
- * @return A pointer to the variable found.
- */
-char *
-get_var_name (int z)
-{
-	// MJA - NEWVARIABLE
-  return vars[z].var_name;
-}
-#endif
 
 /**
  *
@@ -4492,9 +3536,15 @@ add_ex_dtype(char *sx)
 		print_include(ss);
 	}
 }
-/* ================================= EOF ============================= */
 
-char *subtract_one(char *s) {
+/**
+ *
+ *
+ * @param
+ */
+char *
+subtract_one(char *s)
+{
 static char buff[256];
 int a;
 int c;
@@ -4512,3 +3562,5 @@ int c;
 	buff[c]=0;
 	return buff;
 }
+
+/* ================================= EOF ============================= */
