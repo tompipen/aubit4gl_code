@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.32 2003-05-25 04:32:41 afalout Exp $
+# $Id: curslib.c,v 1.33 2003-06-09 11:12:21 mikeaubury Exp $
 #*/
 
 /**
@@ -84,6 +84,9 @@
                     Variables definitions
 =====================================================================
 */
+
+WINDOW *curr_error_window=0;
+
 
 int aborted;
 char arr[MAXFORM][MAXFIELDS][A4GL_MAXWIDTH];
@@ -252,12 +255,52 @@ message (textarea * area, char *str, int x, int a)
   A4GL_mja_setcolor (NORMAL_TEXT);
 }
 
+
 /**
  *
  * @todo Describe function
  */
 void
-A4GL_error_nobox (char *str)
+A4GL_error_nobox (char *str,int attr)
+{
+  int eline;
+  //int w;
+  WINDOW *w;
+ 
+  A4GL_chkwin();
+  eline = A4GL_geterror_line ();
+  A4GL_debug("Eline=%d\n",eline);
+  A4GL_debug("subwin(%p, %d,  %d, %d, %d);",stdscr, 1,  A4GL_screen_width()-1, eline, 1);
+  w= subwin (stdscr, 1,  A4GL_screen_width()-1, eline, 0);
+
+	if (w==0) {
+		A4GL_exitwith("Internal error - couldn't create error window");
+		return;
+	}
+
+  //A4GL_push_char (str);
+  A4GL_subwin_gotoxy (w, 1, 1);
+  if (attr==0) attr=A_REVERSE+A4GL_colour_code (COLOR_RED);
+  wattrset (w, attr);
+  A4GL_subwin_print (w, str);
+
+#ifdef DEBUG
+  A4GL_debug ("YY REVERSE");
+#endif
+
+  //A4GL_display_at (1, AUBIT_ATTR_REVERSE);
+	curr_error_window=w;
+}
+
+
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+A4GL_error_nobox_old (char *str)
 {
   int a;
   A4GL_chkwin();
@@ -279,6 +322,12 @@ A4GL_clr_error_nobox (void)
 {
   int a;
   A4GL_chkwin();
+  if (curr_error_window) {
+	delwin(curr_error_window);
+	return;
+  }
+
+return ;
   A4GL_push_char ("");
   a = A4GL_geterror_line ();
   A4GL_debug ("Error line = %d", a);
@@ -296,7 +345,7 @@ A4GL_clr_error_nobox (void)
  * @todo Describe function
  */
 void
-A4GL_error_box (char *str)
+A4GL_error_box (char *str,int attr)
 {
   int a, pos;
   WINDOW *x;
@@ -525,14 +574,16 @@ aclfgl_fgl_drawbox (int n)
 //void *ptr=0;
   void *win;
 A4GL_chkwin();
+
   c = 0;
-  if (n == 5)
-    c = A4GL_pop_int ();
+
+  if (n == 5) c = A4GL_pop_int ();
+
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
-  A4GL_debug ("In fgl_drawbox");
+  A4GL_debug ("In fgl_drawbox c=%d",c);
   A4GL_debug ("h=%d y+h=%d", h, y + h);
   //win=curscr;
   win = A4GL_find_pointer ("screen", WINCODE);
@@ -826,7 +877,7 @@ A4GL_edit (string, type, length, x, y)
 	  abort_pressed = 1;
 	  A4GL_clearbox (&area);
 	  A4GL_mja_setcolor (NORMAL_TEXT);
-	  A4GL_error_box ("Operation Aborted");
+	  A4GL_error_box ("Operation Aborted",0);
 	  string[0] = 0;
 	  return 0;
 	}
@@ -2644,7 +2695,7 @@ A4GL_chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h)
   if (mult)
     {
       sprintf (pbuff, "%d rows selected", sel);
-      A4GL_error_box (pbuff);
+      A4GL_error_box (pbuff,0);
     }
 }
 

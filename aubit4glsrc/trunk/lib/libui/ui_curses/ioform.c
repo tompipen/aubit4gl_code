@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.28 2003-05-29 14:07:53 mikeaubury Exp $
+# $Id: ioform.c,v 1.29 2003-06-09 11:12:21 mikeaubury Exp $
 #*/
 
 /**
@@ -612,10 +612,10 @@ A4GL_form_loop (void *vs)
   mform = form->form;
   A4GL_mja_wrefresh (currwin);
 
-  if (s->mode != MODE_CONSTRUCT)
-    a = A4GL_form_field_chk (s, 0);
-  else
-    a = A4GL_form_field_constr (s, 0);
+  //if (s->mode != MODE_CONSTRUCT)
+    //a = A4GL_form_field_chk (s, 0);
+  //else
+    //a = A4GL_form_field_constr (s, 0);
 
 
   pos_form_cursor (mform);
@@ -1035,6 +1035,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 		    A4GL_debug ("CHange y=%d, x=%d", y, x);
 		    A4GL_debug ("stack manip buff2='%s'", buff2);
+		    A4GL_trim(buff2);
 		    if (strlen (buff2) > 0)
 		      {
 #ifdef DEBUG
@@ -1042,7 +1043,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			  A4GL_debug ("Pushing param %p");
 			}
 #endif
-		 A4GL_push_param (buff2, DTYPE_CHAR);
+		 	A4GL_push_param (buff2, DTYPE_CHAR);
+
 			if (A4GL_pop_param
 			    (buff, fprop->datatype,
 			     A4GL_get_field_width (form->currentfield)))
@@ -1067,12 +1069,14 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			  }
 			else
 			  {
-			    //push_char(acl_getenv("FIELD_ERROR_MSG"));
+			    //push_char(acl_getenv("FIELD_ERROR_MSG"),0);
 			    //display_error(1,0);
-			    A4GL_error_box (acl_getenv ("FIELD_ERROR_MSG"));
+			    A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),0);
 			    A4GL_debug ("Couldnt read datatype...");
 			    A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
 			    set_current_field (mform, form->currentfield);
+				A4GL_debug("RETURNING -1 MJAMJAMJA");
+				return -4;
 			  }
 		      }
 		  }
@@ -1439,7 +1443,7 @@ A4GL_set_fields (void *vsio)
 
   if (flg == 0)
     {
-      A4GL_error_box ("NO active field\n");
+      A4GL_error_box ("NO active field\n",0);
     }
   return 1;
 }
@@ -1882,7 +1886,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	      (field_buffer (sio->currform->currentfield, 0),
 	       A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
 	    {
-	      A4GL_error_box ("This value is not available");
+	      A4GL_error_nobox ("This value is not available",0);
 	      set_current_field (mform, sio->currform->currentfield);
 	    }
 	}
@@ -1903,7 +1907,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 				    || (fprop->datatype == 8));
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
-	 A4GL_error_box ("Error in expression");
+	 A4GL_error_nobox ("Error in expression",0);
 	    }
 	}
     }
@@ -2944,7 +2948,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 		      {
 			//push_char(acl_getenv("FIELD_ERROR_MSG"));
 			//display_error(1,0);
-		 A4GL_error_box (acl_getenv ("FIELD_ERROR_MSG"));
+		 A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),0);
 		 A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
 			set_current_field (mform, form->currentfield);
 			return 0;
@@ -3092,8 +3096,10 @@ A4GL_clr_form (int to_default)
 	    formdets->fileform->fields.fields_val[fno].metric.metric_val[rn];
 	  k = &formdets->fileform->metrics.metrics_val[metric_no];
 	  f = (FIELD *) k->field;
-	  if (!to_default)
+	  if (!to_default) {
+		A4GL_debug("Blanking field %p MJAMJAMJA",f);
 	    A4GL_mja_set_field_buffer (f, 0, "");
+	}
 	  else
 	    {
 	      struct struct_scr_field *prop;
@@ -3107,6 +3113,8 @@ A4GL_clr_form (int to_default)
 
     }
 
+//A4GL_mja_wrefresh (A4GL_get_curr_win());
+A4GL_zrefresh ();
 }
 
 
@@ -3189,7 +3197,7 @@ A4GL_curr_metric_is_veryfirst (void)
   if (a == -1)
     {
       return 0;
-      A4GL_error_box ("No valid metric....");
+      A4GL_error_box ("No valid metric....",0);
       exit (0);
     }
   if (form->fileform->metrics.metrics_val[a].pos_code & POS_VERY_FIRST)
@@ -3213,7 +3221,7 @@ A4GL_curr_metric_is_verylast (void)
   if (a == -1)
     {
       return 0;
-      A4GL_error_box ("No valid metric....");
+      A4GL_error_box ("No valid metric....",0);
       exit (0);
     }
 

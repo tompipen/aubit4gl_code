@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.39 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.40 2003-06-09 11:12:20 mikeaubury Exp $
 #
 */
 
@@ -840,7 +840,17 @@ void A4GL_core_dump(void) {
    printf("with your bug log.\n");
    printf("\n");
    printf("%s\n",A4GLSTK_getStackTrace ());
-   A4GL_fgl_end();
+   if (A4GL_isscrmode ())
+    {
+#ifdef DEBUG
+      A4GL_debug ("In screen mode - ending curses...");
+#endif
+      A4GL_gotolinemode ();
+    }
+  A4GL_close_database ();
+  A4GL_close_errorlog_file ();
+  exit(99);
+
 }
 
 void
@@ -848,6 +858,13 @@ A4GL_set_core_dump (void)
 {
   struct sigaction sa;
   int ret;
+
+// A4GL_DUMP_CORE = YES 
+//          Dumps core rather than attach a signal handler to the segmentation
+//          fault...
+if (A4GL_isyes(acl_getenv("DUMP_CORE"))) {
+	return;
+}
 
 #ifdef OTHER_UNIX
   sa.sa_sigaction = (void *) A4GL_core_dump;

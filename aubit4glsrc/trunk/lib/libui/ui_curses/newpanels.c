@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.39 2003-06-06 09:52:37 mikeaubury Exp $
+# $Id: newpanels.c,v 1.40 2003-06-09 11:12:21 mikeaubury Exp $
 #*/
 
 /**
@@ -79,6 +79,8 @@ int scr_width = -1;
 int scr_height = -1;
 int currwinno = -1;
 int currattr = 0;
+int
+A4GL_decode_line_scr (int l);
 
 /*
    struct ptrs
@@ -330,7 +332,10 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       w = A4GL_screen_width () - 1;
       A4GL_debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
       A4GL_debug ("win = newwin (%d,%d,0,0)", A4GL_screen_height (), A4GL_screen_width ());
-      win = newwin (A4GL_screen_height (), A4GL_screen_width (), 0, 0);
+
+      //win = newwin (A4GL_screen_height (), A4GL_screen_width (), 0, 0);
+      win = newwin (0, 0, 0, 0);
+
       A4GL_debug ("Calling screen height");
       A4GL_debug ("h=%d", h);
       A4GL_debug ("Calling screen width");
@@ -441,7 +446,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
   if (pan == 0)
     {
-      A4GL_error_box ("Couldnt create panel");
+      A4GL_error_box ("Couldnt create panel",0);
     }
 
 
@@ -875,7 +880,7 @@ A4GL_display_form (struct s_form_dets *f)
 
   if (w == 0)
     {
-      A4GL_error_box ("NO WINDOW");
+      A4GL_error_box ("NO WINDOW",0);
     }
   A4GL_debug ("scale form %p", f->form);
 
@@ -1000,10 +1005,14 @@ A4GL_display_form (struct s_form_dets *f)
       A4GL_debug ("Form has border");
       wborder (currwin, 0, 0, 0, 0, 0, 0, 0, 0);
     }
+
+  
   A4GL_debug ("start the form");
   A4GL_start_form (f);
 
   A4GL_mja_wrefresh (w);
+  A4GL_clr_form(0);
+  A4GL_zrefresh();
   A4GL_debug ("And return");
   return w;
 }
@@ -1348,6 +1357,28 @@ A4GL_getch_swin (WINDOW * window_ptr)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GL_decode_line_scr (int l)
+{
+	A4GL_debug("decode_line_scr - l=%d",l);
+  if (l > 0)
+    {
+	  return l;
+    }  
+	if (l<0)
+	{
+	A4GL_debug("l=%d",l);
+	  l=A4GL_screen_height () + l ;
+	A4GL_debug("l=%d",l);	
+	return l;
+	}
+  return 0;
+}
+
 
 /**
  *
@@ -1391,6 +1422,9 @@ A4GL_decode_line (int l)
     }
   return 0;
 }
+
+
+
 
 /**
  *
@@ -1493,7 +1527,6 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
   else
     {
       int b;
-      int line_length;
       /* WINDOW *win; */
 
       A4GL_chkwin ();
@@ -1536,9 +1569,9 @@ A4GL_display_error (int a, int wait)
   else
     {
       if (wait)
- A4GL_error_box (s);
+ 		A4GL_error_box (s,a);
       else
- A4GL_error_nobox (s);
+ 		A4GL_error_nobox (s,a);
     }
   A4GL_debug ("error_box done");
   acl_free (s);
@@ -1708,6 +1741,7 @@ A4GL_cr_window_form (char *name,
   A4GL_debug ("Setting prompt line to ", prompt_line);
   form->form_details.prompt_line = prompt_line;
   form->form_details.form_line = form_line;
+  form->form_details.error_line = error_line;
   form->form_details.message_line = message_line;
   A4GL_debug ("border=%d\n", border);
   form->form_details.border = border;
@@ -2345,15 +2379,15 @@ A4GL_geterror_line (void)
   if (windows[currwinno].form == 0)
     {				/* use screen default */
       A4GL_debug ("Get error line - no form\n");
-      return A4GL_decode_line (std_dbscr.error_line);
+      return A4GL_decode_line_scr (std_dbscr.error_line);
     }
   A4GL_debug ("Get error line - form : %d",
 	 windows[currwinno].form->form_details.error_line);
   if (currwinno == 0)
     {
-      return A4GL_decode_line (std_dbscr.error_line);
+      return A4GL_decode_line_scr (std_dbscr.error_line);
     }
-  return A4GL_decode_line (windows[currwinno].form->form_details.error_line);
+  return A4GL_decode_line_scr (windows[currwinno].form->form_details.error_line);
 }
 
 

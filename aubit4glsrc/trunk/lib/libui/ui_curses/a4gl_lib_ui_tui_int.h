@@ -90,6 +90,8 @@ int A4GL_find_ptr_debug (void *ptr);
 int A4GL_getprompt_line (void);
 void A4GL_tui_print (char *fmt, ...);
 void A4GL_mja_gotoxy (int x, int y);
+void
+A4GL_init_curses_stuff (void);
 	//int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.57 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.58 2003-06-09 11:11:42 mikeaubury Exp $
 #
 */
 
@@ -656,7 +656,7 @@ extern "C"
   int disp_menu (char *str, int x, int y);	/* display a menu with title 'str' at position y */
   void banner (char str[], int a, int b, int c);
   void title_box (char str[], int a, int x, int l);
-  void A4GL_error_box (char *str);	/*print error message */
+  void A4GL_error_box (char *str,int attr);	/*print error message */
 
   /* from curslib.c: */
   void A4GL_disp_opt (int row, int x, int y, int l, int type);
@@ -1516,7 +1516,7 @@ a4gl_basename (char **ppsz);
 void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
 void
-A4GL_error_nobox (char *str);
+A4GL_error_nobox (char *str,int attr);
 void
 A4GL_clr_error_nobox (void);
 int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.2 2003-05-22 13:22:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.3 2003-06-09 11:12:21 mikeaubury Exp $
 #*/
 
 /**
@@ -362,15 +362,24 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
     {
 
+	int ffc_rval;
   	if (sio->mode != MODE_CONSTRUCT)
-    		A4GL_form_field_chk (sio, -1);
+    		ffc_rval=A4GL_form_field_chk (sio, -1);
   	else
-    		A4GL_form_field_constr (sio, -1);
+    		ffc_rval=A4GL_form_field_constr (sio, -1);
 
+
+	A4GL_debug("form_Field_chk returns %d\n",a);
+
+	if (ffc_rval!=-4) {
       		new_state = 0;
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);
       		rval = -198;
+	} else {
+ 			A4GL_init_control_stack (sio,0);
+			return -1;
+	}
     }
 
   if (new_state != 0 && sio->fcntrl[a].op!=0)
