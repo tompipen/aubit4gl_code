@@ -13,7 +13,7 @@
 # |  B) the Aubit License as published by the Aubit Development Team and |
 # |     included in the distribution in the file: LICENSE                |
 # |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
+# | This program is distuributed in the hope that it will be useful,      |
 # | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
 # | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
 # | GNU General Public License for more details.                         |
@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.141 2004-02-12 11:01:02 afalout Exp $
+# $Id: Makefile.in,v 1.142 2004-03-19 02:43:44 afalout Exp $
 #
 
 ## ==================================================================
@@ -42,7 +42,7 @@ include incl/Makefile-common
 .PHONY: all clean default log corecompile extra ide api.headers
 
 ALL					=settings api.headers corecompile test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
+ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload liblogical
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN	=
@@ -126,6 +126,42 @@ endif
 #sh make_simple
 
 
+#Creates executables: 
+#	process_report layout_engine report_viewer
+#Creates libs: 
+#	libLOGREP_TXT.so libLOGREPPROC_TXT.so 
+#	libLOGREP_CSV.so libLOGREP_PROC_CSV.so
+liblogical:
+#process_report:
+	$(MAKE) -C lib/liblogical/processor
+#libLOGREPPROC_TXT.so
+	$(MAKE) -C lib/liblogical/txt/process
+#libLOGREP_CSV.so: (missing csv_io.c)
+#	$(MAKE) -C lib/liblogical/csv/layout
+#libLOGREP_PROC_CSV.so:
+	$(MAKE) -C lib/liblogical/csv/process	
+ifeq "${GTK_VERSION}" "2.0"
+#layout_engine:
+	$(MAKE) -C lib/liblogical/layout_engine
+#report_viewer
+	$(MAKE) -C lib/liblogical/report_viewer
+#libLOGREP_TXT.so:
+	$(MAKE) -C lib/liblogical/txt/layout	
+else
+	@echo " "
+	@echo " ** WARNING:"	
+	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped 3 targets"
+	@echo " "	
+endif	
+
+clean.liblogical:
+	$(MAKE) -C lib/liblogical/processor clean
+	$(MAKE) -C lib/liblogical/txt/layout clean
+	$(MAKE) -C lib/liblogical/txt/process clean
+	$(MAKE) -C lib/liblogical/csv/layout clean
+	$(MAKE) -C lib/liblogical/csv/process clean
+	$(MAKE) -C lib/liblogical/layout_engine clean
+	$(MAKE) -C lib/liblogical/report_viewer clean
 
 
 api.headers:
@@ -273,7 +309,7 @@ clean.distclean:
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
-		clean.swig clean.project
+		clean.swig clean.project clean.liblogical
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
@@ -308,7 +344,12 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C help clean
 
 	cd tools/test/build_tests; ${SH} run_tests -clean
-	@echo "Aubit 4gl compiler source tree is now clean NOTE: tools tree not cleaned"
+	@echo " "	
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Aubit 4gl compiler source tree is now clean                        |"
+	@echo "| NOTE: tools tree not cleaned (use 'make clean.tools')              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "	
 
 
 #user is expected to manually invoke this, so we save some time since usually
@@ -332,7 +373,11 @@ clean.tools:
 	-$(MAKE) -C tools/fgldoc clean
 	(cd tools/4gltree; ${RM} *.bak)
 	(cd tools/metrics_4gl; ${RM} *.bak)
-	@echo Aubit 4gl compiler tools source tree is now clean
+	@echo " "	
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Aubit 4gl compiler TOOLS source tree is now clean                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "	
 
 #This will clean everything created with Autoconf configure script:
 clean.config: clean.configure
@@ -824,8 +869,36 @@ commit: refresh.all build
 ####################
 #
 update:
-#FIXME: remove configure to prevent menaingless merginig
-	cvs update -d
+#FIXME: this will force user to type password TWICE!!
+	@cvs status ./configure | grep "Status: Locally Modified"; \
+		RET=$$?; \
+		if test "$$RET" = "0" ; then \
+			rm ./configure ; \
+			echo "./configure modified - removing it to avoid invalid merging"; \
+		fi
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| CVS update started at `date`"
+	@echo "+--------------------------------------------------------------------+"	
+	@echo " "	
+	@cvs update -d -P > /tmp/cvsupdate-aubit4gl.log 2>&1
+	grep -v "cvs update: Updating" /tmp/cvsupdate-aubit4gl.log
+	@grep "\.in" /tmp/cvsupdate-aubit4gl.log  > /dev/null ; \
+		RET=$$?; \
+		if test "$$RET" = "0" ; then \
+			echo "WARNING: one or more .in files changed - run ./configure or ./config.status"; \
+		fi	
+	@grep "configure" /tmp/cvsupdate-aubit4gl.log  > /dev/null ; \
+		RET=$$?; \
+		if test "$$RET" = "0" ; then \
+			echo "WARNING: configure changed - re-run ./configure"; \
+		fi
+#TODO: check for merge conflicts		
+	@echo " "	
+	@echo "+--------------------------------------------------------------------+"	
+	@echo "| CVS update finished at `date`"
+	@echo "| See /tmp/cvsupdate-aubit4gl.log for details                        |"
+	@echo "+--------------------------------------------------------------------+"	
+	@echo " "	
 
 
 ## ------------------------------------------------------------------
