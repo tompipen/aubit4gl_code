@@ -83,9 +83,9 @@ define lv_pack char(256)
 
 	let lv_pack=fgl_getenv("A4GL_TARGET"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
 
-
-
 	call read_pack(lv_pack)
+
+
 
 	initialize 	mv_db, 
 			mv_lextype,
@@ -226,10 +226,10 @@ define lv_pack char(256)
 		end if
 	end if
 
-	IF mv_lexdialect="POSTGRES" THEN
+	IF mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST") THEN
 		LET mv_esql_to_c_first=1
 	END IF
-end function
+END FUNCTION
 
 
 

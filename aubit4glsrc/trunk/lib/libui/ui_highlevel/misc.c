@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.19 2004-08-31 20:46:56 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1034,13 +1034,12 @@ A4GL_default_attributes (void *f, int dtype)
 
 void A4GL_clear_menu (ACL_Menu * menu)
 {
+/*
   void *w;
-
   w = A4GL_find_pointer (menu->window_name, WINCODE);
-
   A4GL_del_pointer (menu->window_name, WINCODE);
-
   A4GL_LL_remove_window (w);
+*/
 
 }
 
@@ -1051,12 +1050,8 @@ A4GL_turn_field_off (void *f)
   struct struct_scr_field *fprop;
   int a;
   fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
-  //A4GL_debug ("Turn Field Off %s %s", fprop->tabname, fprop->colname);
-  //A4GL_debug ("ZZZZ - SET OPTS");
   a = A4GL_field_opts_off (f, AUBIT_O_ACTIVE);
-  //A4GL_debug ("a=%d", a);
   a += A4GL_field_opts_off (f, AUBIT_O_EDIT);
-  //A4GL_debug ("a=%d", a);
   if (a == 0)
     return 0;
   return 1;

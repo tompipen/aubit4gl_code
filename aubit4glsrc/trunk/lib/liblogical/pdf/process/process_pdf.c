@@ -17,7 +17,8 @@ void output_page (PDF *p, int w, int h,char **lines);
 
 
 int RP_default_file (void *report,char *errbuff,void *rbx, int rbs) {
-	return pdf_default_file();
+	pdf_default_file();
+	return 1;
 }
 
 

@@ -79,7 +79,19 @@ create_c_1  :
 	| CREATE_SYNONYM table_name FOR table_name {
 		sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4);
 	}
+	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE {
+		sprintf($<str>$,"CREATE AUDIT FOR %s IN \\\"%s\\\"",$<str>2,A4GL_strip_quotes($<str>4));
+	}
+	| DROP_AUDIT_FOR table_name  {
+		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2);
+	}
 	| DROP_SYNONYM table_name {
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	}
+	| RECOVER_TABLE table_name {
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	}
+	| ROLLFORWARD_DATABASE var_ident_qchar {
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 	}
 	;

@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.32 2004-08-05 17:19:41 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.33 2004-08-31 20:46:56 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.32 2004-08-05 17:19:41 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.33 2004-08-31 20:46:56 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -402,6 +402,7 @@ A4GL_LL_remove_window (void *x)
   del_panel (x);
 	A4GL_debug("Deleted panel %p\n",x);
   delwin (w);
+ 	A4GL_debug("delwin %p",w);
 }
 
 void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
@@ -426,6 +427,34 @@ void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
     		mvwaddch (p, y, x, attr + ch2);
 	}
 }
+
+void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch)
+{
+  int ch2;
+  int attr;
+  void *p;
+A4GL_debug("A4GL_LL_wadd_char_xy_col_w called");
+  attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
+  ch2 = ch & 0xff;
+  A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
+  p =win;
+  if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
+    {
+      x--;
+      y--;
+    }
+  if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width ()
+      || y > UILIB_A4GL_get_curr_height ()) {
+		A4GL_debug("Out of range:%d,%d ",x,y);
+	}
+  else {
+		if (ch2==0) ch2='*';
+		A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
+    		mvwaddch (p, y, x, attr + ch2);
+	}
+	wrefresh(p);
+}
+
 
 
 void A4GL_LL_screen_update (void)
@@ -619,6 +648,7 @@ A4GL_LL_display_form (void *vf, int attrib)
   //}
   //}
 
+
   f->form_details.border = UILIB_A4GL_iscurrborder ();
 
   if (f->form_details.border)
@@ -674,7 +704,10 @@ A4GL_LL_display_form (void *vf, int attrib)
         WINDOW *olddrwin;
 	A4GL_debug("Deleteing old subwin");
         olddrwin=A4GL_form_form_sub(f->form);
-	delwin(olddrwin);
+	if (olddrwin) {
+		A4GL_debug("delwin %p",olddrwin);
+		delwin(olddrwin);
+	}
         A4GL_form_unpost_form (f->form);
   	a = A4GL_form_set_form_sub (f->form, drwin);
     }
@@ -690,8 +723,6 @@ A4GL_LL_display_form (void *vf, int attrib)
   A4GL_debug ("setup windows");
   keypad (panel_window ((PANEL *) w), TRUE);
   sprintf (buff, "Currwinno=%d", A4GL_get_currwinno ());
-  /*error_box(buff); */
-  //windows[A4GL_get_currwinno()].form = f;
 
   if (f->form == 0)
     {
@@ -2135,6 +2166,7 @@ static void A4GL_clear_prompt (struct s_prompt *prmt)
   A4GL_debug ("Clearing prompt...");
 #endif
   p = prmt->win;
+		A4GL_debug("delwin %p",p);
   delwin ((WINDOW *) p);
 	A4GL_debug("su");
   A4GL_LL_screen_update ();
@@ -2386,6 +2418,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 
 	A4GL_debug("Unpost and delete...");
         A4GL_form_unpost_form(f);
+ 	A4GL_debug("delwin %p",drwin);
 	delwin(drwin);
 	A4GL_debug("su");
 	A4GL_LL_screen_update();
@@ -2536,6 +2569,31 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
 
 
   p = panel_window (win);
+  if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
+    {
+      x--;
+      y--;
+    }
+  if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
+  else {
+		wattrset((WINDOW *)p,attr&0xffffff00);
+		mvwaddwstr(p,  y, x, buff);
+	}
+}
+
+void
+A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch)
+{
+  int ch2;
+  int attr;
+  void *p;
+  wchar_t buff[2];
+  attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
+  buff[0]=ch;
+  buff[1]=0;
+
+
+  p = win;
   if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
     {
       x--;

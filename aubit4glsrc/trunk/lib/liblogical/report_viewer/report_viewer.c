@@ -20,7 +20,6 @@ int last_entry = -1;
 int last_block = -1;
 
 static void add_widget (int rb, int evt, GtkWidget * w);
-void edit_lle ();
 static void select_widgets (int rb, int evt);
 static void unselect_widgets (int rb, int evt);
 static int find_block_where (char w1, char *w2);
@@ -28,6 +27,7 @@ static int add_block_where (char w1, char *w2);
 static void add_widget_block_where (char w1, char *w2, GtkWidget * widget);
 static void select_block (int rb);
 static void unselect_block (int rb);
+void edit_lle ( struct r_report *report);
 
 char *style_selected = "style \"selected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
 char *style_unselected = "style \"unselected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
@@ -90,8 +90,8 @@ main (int argc, char *argv[])
 /* ******************************************************************************** */
 
 
-static
-unselect_all ()
+static void
+unselect_all (void)
 {
   if (last_rb != -1 && last_entry != -1)
     {
@@ -244,8 +244,7 @@ destroy (GtkWidget * widget, gpointer data)
 
 /* ******************************************************************************** */
 
-void
-edit_lle ( struct r_report *report)
+void edit_lle ( struct r_report *report)
 {
   int a;
   GtkWidget *label;

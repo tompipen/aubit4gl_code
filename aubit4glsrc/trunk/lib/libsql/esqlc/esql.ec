@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.90 2004-07-21 06:36:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.91 2004-08-31 20:46:53 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.90 2004-07-21 06:36:45 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.91 2004-08-31 20:46:53 mikeaubury Exp $";
 #endif
 
 
@@ -219,19 +219,8 @@ isSqlError ()
   A4GL_set_a4gl_sqlca_sqlcode (sqlca.sqlcode);
   strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
   strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
-#ifdef _FGL_ 
-	strncpy(a4gl_sqlca.sqlawarn, sqlca.sqlawarn,8);
-#else
-	a4gl_sqlca.sqlawarn[0]=sqlca.sqlwarn.sqlwarn0;
-	a4gl_sqlca.sqlawarn[1]=sqlca.sqlwarn.sqlwarn1;
-	a4gl_sqlca.sqlawarn[2]=sqlca.sqlwarn.sqlwarn2;
-	a4gl_sqlca.sqlawarn[3]=sqlca.sqlwarn.sqlwarn3;
-	a4gl_sqlca.sqlawarn[4]=sqlca.sqlwarn.sqlwarn4;
-	a4gl_sqlca.sqlawarn[5]=sqlca.sqlwarn.sqlwarn5;
-	a4gl_sqlca.sqlawarn[6]=sqlca.sqlwarn.sqlwarn6;
-	a4gl_sqlca.sqlawarn[7]=sqlca.sqlwarn.sqlwarn7;
-#endif
 
+A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
   
   if (SQLSTATE[0] != '0' || (SQLSTATE[1] != '0' &&
 			     SQLSTATE[1] != '1' && SQLSTATE[1] != '2'))
@@ -462,8 +451,9 @@ A4GLSQL_init_connection_internal (char *dbName)
 
   A4GL_debug ("Sqlca=%d", sqlca.sqlcode);
 
-  if (isSqlError ())
+  if (isSqlError ()) {
     return 1;
+  }
 
   addESQLConnection ("default", dbName, NULL, NULL);
   have_connected = 1;
@@ -828,7 +818,7 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
   statementText = sid->select;
   EXEC SQL PREPARE:statementName FROM:statementText;
 
-  copy_sqlca_Stuff();
+  copy_sqlca_Stuff(1);
   if (isSqlError ())
     {
       free (sid);
@@ -1750,10 +1740,13 @@ exec sql begin declare section;
 char *n;
 int numberOfColumns;
 exec sql end declare section;
-  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
+ A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
 n=sid->outputDescriptorName;
 if (n) {
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+
   EXEC SQL GET DESCRIPTOR :n:numberOfColumns = COUNT;
   if (numberOfColumns!=sid->no) {
 		sqlca.sqlwarn.sqlwarn0='W';
@@ -1766,6 +1759,7 @@ if (n) {
         }
 }
 
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
@@ -1778,7 +1772,6 @@ if (n) {
 	}
     }
 
-  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
   if (deallocateDescriptors (sid) == 1)
     {
@@ -1786,7 +1779,6 @@ if (n) {
       return 1;
     }
 
-  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   A4GL_debug ("All Ok in posStatementBinds");
   return 0;
 }
@@ -1835,23 +1827,29 @@ sid=vsid;
       error_just_in_case ();
       return 1;
     }
+  copy_sqlca_Stuff(1);
+
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   if (sqlca.sqlcode == 0)
     {
       A4GL_debug ("ESQL : post");
 
+  copy_sqlca_Stuff(1);
+      
       if (processPosStatementBinds (sid) == 1)
 	{
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 	  A4GL_debug ("processPosStatementBinds failed ?");
 	  error_just_in_case ();
 	  return 1;
 	}
+  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
     }
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
+  copy_sqlca_Stuff(0);
 
 
   A4GLSQL_set_status (sqlca.sqlcode, 1);
-  copy_sqlca_Stuff();
   return 0;
 }
 
@@ -1916,11 +1914,13 @@ struct s_sid *sid;
     }
   if (executeStatement (sid) == 1)
     {
+
    A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
       A4GL_debug ("Execute failed");
       error_just_in_case ();
       return 1;
     }
+   //printf("WARNING flags : %c %c %c %c %c %c -(%s)\n", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
    A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
 
     a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
@@ -1929,6 +1929,8 @@ struct s_sid *sid;
     a4gl_sqlca.sqlerrd[3]=sqlca.sqlerrd[3];
     a4gl_sqlca.sqlerrd[4]=sqlca.sqlerrd[4];
 
+
+
 if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
     a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[1];
 } else {
@@ -1936,8 +1938,23 @@ if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
 }
 	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
 	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+A4GL_debug("ALl ok - copy 1");
+#ifdef _FGL_ 
+	strcpy(a4gl_sqlca.sqlawarn,sqlca.sqlawarn,8);
+	a4gl_sqlca.sqlawarn[8]=0;
+#else
+	a4gl_sqlca.sqlawarn[0]=sqlca.sqlwarn.sqlwarn0;
+	a4gl_sqlca.sqlawarn[1]=sqlca.sqlwarn.sqlwarn1;
+	a4gl_sqlca.sqlawarn[2]=sqlca.sqlwarn.sqlwarn2;
+	a4gl_sqlca.sqlawarn[3]=sqlca.sqlwarn.sqlwarn3;
+	a4gl_sqlca.sqlawarn[4]=sqlca.sqlwarn.sqlwarn4;
+	a4gl_sqlca.sqlawarn[5]=sqlca.sqlwarn.sqlwarn5;
+	a4gl_sqlca.sqlawarn[6]=sqlca.sqlwarn.sqlwarn6;
+	a4gl_sqlca.sqlawarn[7]=sqlca.sqlwarn.sqlwarn7;
+	a4gl_sqlca.sqlawarn[8]=0;
+#endif
 
-    //strncpy(a4gl_sqlca.sqlawarn,sqlca.sqlawarn,9);
+A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
 	//strcpy(a4gl_sqlca.sqlstate,sqlca.sqlstate);
 
 
@@ -3509,7 +3526,7 @@ return ptr;
 }
 
 
-static copy_sqlca_Stuff( ) {
+static void copy_sqlca_Stuff(int warnings) {
 
 
     a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
@@ -3526,6 +3543,29 @@ if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
 
 	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
 	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+
+if (warnings) {
+A4GL_debug("ALl ok - copy 2");
+#ifdef _FGL_ 
+	strcpy(a4gl_sqlca.sqlawarn,sqlca.sqlawarn,8);
+	a4gl_sqlca.sqlawarn[8]=0;
+#else
+	a4gl_sqlca.sqlawarn[0]=sqlca.sqlwarn.sqlwarn0;
+	a4gl_sqlca.sqlawarn[1]=sqlca.sqlwarn.sqlwarn1;
+	a4gl_sqlca.sqlawarn[2]=sqlca.sqlwarn.sqlwarn2;
+	a4gl_sqlca.sqlawarn[3]=sqlca.sqlwarn.sqlwarn3;
+	a4gl_sqlca.sqlawarn[4]=sqlca.sqlwarn.sqlwarn4;
+	a4gl_sqlca.sqlawarn[5]=sqlca.sqlwarn.sqlwarn5;
+	a4gl_sqlca.sqlawarn[6]=sqlca.sqlwarn.sqlwarn6;
+	a4gl_sqlca.sqlawarn[7]=sqlca.sqlwarn.sqlwarn7;
+	a4gl_sqlca.sqlawarn[8]=0;
+}
+
+A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
+
+
+
+#endif
 
 }
 

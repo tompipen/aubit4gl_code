@@ -87,8 +87,8 @@ void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 		"Letter",
 		//"A3",
 		//"A5",
-		//"Legal",
-		//"Ledger",
+		"Legal",
+		"Ledger",
 		0};
 	int npaper;
 	int cnt;

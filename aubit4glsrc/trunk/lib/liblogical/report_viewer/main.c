@@ -5,16 +5,19 @@
 #include "a4gl_libaubit4gl.h"
 #include "../common/a4gl_lle.h"
 
+void edit_lle ( struct r_report *report);
+
 struct r_report *report;
 
 /* ******************************************************************************** */
 
+int
 main (int argc, char *argv[])
 {
-  int npages;
-  char buff[256];
-  int buff_i;
-  char buff_c;
+  //int npages;
+  //char buff[256];
+  //int buff_i;
+  //char buff_c;
 
 
   if (argc != 2)
@@ -40,6 +43,7 @@ main (int argc, char *argv[])
 
   edit_lle (report);
   gtk_main();
+  return 0;
 }
 
 
@@ -47,15 +51,15 @@ void setup_entry(int b,int e,GtkWidget *evt,GtkWidget *lab) {
 // Does nothing...
 }
 
-setup_block(int b,GtkWidget *evt,GtkWidget *lab) {
+void setup_block(int b,GtkWidget *evt,GtkWidget *lab) {
 // Does nothing
 }
 
-set_clicked(int rb,int entry) {
+void set_clicked(int rb,int entry) {
 
 }
 
-set_block_clicked(int rb) {
+void set_block_clicked(int rb) {
 	
 }
 

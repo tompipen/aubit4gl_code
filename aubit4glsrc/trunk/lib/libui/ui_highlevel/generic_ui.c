@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.27 2004-08-06 15:37:01 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.28 2004-08-31 20:46:56 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -731,7 +731,8 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
-  menu->window_name[0] = 0;
+  strcpy(menu->parent_window_name,UILIB_A4GL_get_currwin_name());
+  //menu->window_name[0] = 0;
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;
@@ -868,7 +869,7 @@ A4GL_new_menu (char *title,
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
-  menu->window_name[0] = 0;
+  //menu->window_name[0] = 0;
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;
@@ -2736,15 +2737,10 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
     }
   else
     {
-      int b;
         int w;
         int h;
         w=A4GL_get_curr_width();
         h=A4GL_get_curr_height();
-        //if (A4GL_get_currwinno()==0) {
-                //w=A4GL_screen_width();
-                //h=A4GL_screen_height();
-        //}
 
         if (y<1|| y>h) {
                 A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");

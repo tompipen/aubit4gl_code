@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.15 2004-01-26 10:39:57 mikeaubury Exp $
+# $Id: console.c,v 1.16 2004-08-31 20:46:54 mikeaubury Exp $
 #*/
 
 /**
@@ -169,7 +169,7 @@ void *
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
-  menu->window_name[0] = 0;
+  //menu->window_name[0] = 0;
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;

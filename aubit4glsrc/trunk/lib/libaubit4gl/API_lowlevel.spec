@@ -164,6 +164,8 @@ A4GL_LL_switch_to_line_mode  -> void
 
 /* void A4GL_LL_wadd_char_xy_col void* win int x int y int ch */
 A4GL_LL_wadd_char_xy_col void* win int x int y int ch -> void
+A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch -> void
+
 
 /* int UILIB_A4GL_prompt_loop void* vprompt int timeout void* evt_list*/
 A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.70 2004-07-10 09:48:34 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.71 2004-08-31 20:46:51 mikeaubury Exp $
 */
 
 /**
@@ -215,7 +215,7 @@ struct s_constr_list {char *tabname;char *colname;};
   {
     char menu_title[80];
     int menu_type;
-    char window_name[20];
+    char parent_window_name[20];
     ACL_Menu_Opts *curr_option;
     int menu_offset;
     int mn_offset;
@@ -226,7 +226,7 @@ struct s_constr_list {char *tabname;char *colname;};
     int abort_pressed;
     ACL_Menu_Opts *first;
     ACL_Menu_Opts *last;	/* used for wrapping round */
-    void *menu_win;
+    //void *menu_win;
     int curr_page;
     int max_page;
     int w;

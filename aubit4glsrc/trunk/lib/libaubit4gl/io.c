@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.20 2004-08-10 13:04:07 mikeaubury Exp $
+# $Id: io.c,v 1.21 2004-08-31 20:46:52 mikeaubury Exp $
 #
 */
 
@@ -251,7 +251,7 @@ if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
 if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
 	sprintf(buff,"%s:%s/import:%s/import:%s/etc/import",acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"),acl_getenv("AUBITDIR"));
 } else {
-	sprintf(buff,"%s/import:%s/import",acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
+	sprintf(buff,"%s/import:%s/import:%s/etc/import",acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"),acl_getenv("AUBITDIR"));
 }
 #endif
 	//printf("A4GL_Fullpath_xpath:%s %s",fname,buff);

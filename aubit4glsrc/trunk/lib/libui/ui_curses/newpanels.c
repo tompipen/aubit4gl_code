@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.93 2004-08-16 21:47:03 mikeaubury Exp $
+# $Id: newpanels.c,v 1.94 2004-08-31 20:46:55 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.93 2004-08-16 21:47:03 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.94 2004-08-31 20:46:55 mikeaubury Exp $";
 
 /**
  * @file
@@ -87,6 +87,8 @@ int currwinno = -1;
 int currattr = 0;
 int
 A4GL_decode_line_scr (int l);
+PANEL *get_below_panel(PANEL *p) ;
+
 
 /*
    struct ptrs
@@ -164,10 +166,10 @@ A4GL_pointer_code (int c)
       return "'cursor'";
     case PRECODE:
       return "'prepare statement'";
-    case MNWINCODE:
-      return "'Menu Window'";
-    case MNPARCODE:
-      return "'Menu Parent'";
+    //case MNWINCODE:
+      //return "'Menu Window'";
+    //case MNPARCODE:
+      //return "'Menu Parent'";
     case FORMCODE:
       return "'form'";
     case S_WINDOWSCODE:
@@ -243,33 +245,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 		A4GL_set_option_value('d',0);
  }
 
-/*
-  if (form_line == 0xff)
-    {
-      form_line = std_dbscr.form_line;
-    }
-  if (menu_line == 0xff)
-    {
-      menu_line = std_dbscr.menu_line;
-    }
-  if (comment_line == 0xff)
-    {
-      comment_line = std_dbscr.comment_line;
-    }
-  if (message_line == 0xff)
-    {
-      message_line = std_dbscr.comment_line;
-    }
-  if (error_line == 0xff)
-    {
-      error_line = std_dbscr.error_line;
-    }
-  if (prompt_line == 0xff)
-    {
-      prompt_line = std_dbscr.prompt_line;
-    }
-*/
-
   if (attrib == 0xffff)
     {
       char *s;
@@ -306,7 +281,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       A4GL_debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
       A4GL_debug ("win = newwin (%d,%d,0,0)", A4GL_screen_height (), A4GL_screen_width ());
 
-      //win = newwin (A4GL_screen_height (), A4GL_screen_width (), 0, 0);
       win = newwin (0, 0, 0, 0);
       A4GL_debug ("Calling screen height");
       A4GL_debug ("h=%d", h);
@@ -367,7 +341,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   if (win == 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
+      A4GL_debug ("Couldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
 #endif
       A4GL_exitwith ("Couldnt create window");
       return 0;
@@ -490,21 +464,8 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
     }
   else
     {
-#ifdef DEBUG
-      {
- A4GL_debug ("Adding window pointers for menu %p > %p", currwin, win);
-      }
-#endif
-      A4GL_add_pointer (name, MNPARCODE, currwin);
-      A4GL_add_pointer (name, MNWINCODE, win);
 
-      top_panel (pan);
-      if (A4GL_screen_mode (-1))
-	{
-	  update_panels ();
-	  doupdate ();
-	}
-
+	A4GL_assertion(1, "Fake window - thought I'd got rid of these");
     }
   return win;
 }
@@ -2110,6 +2071,8 @@ A4GL_set_window (int a)
   return 0;
 }
 
+
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -2177,6 +2140,7 @@ A4GL_refresh_menu_window (char *name, int top)
   print_panel_stack ();
   return 0;
 }
+#endif
 
 /**
  *
@@ -2535,7 +2499,7 @@ A4GL_find_win (PANEL * p)
   int a;
   if (p == 0) {
 	A4GL_debug("find_win for panel_below(0)");
-	get_below_panel(0);
+	p=get_below_panel(0);
 
 
 /*
@@ -2567,6 +2531,8 @@ A4GL_find_win (PANEL * p)
       if ((PANEL *) panel_window (windows[a].pan) == p
 	  || (PANEL *) windows[a].pan == p)
 	{
+
+
 	  if (a4gl_toupper (windows[a].name[0]) == windows[a].name[0])
 	    {
 #ifdef DEBUG
@@ -2575,7 +2541,9 @@ A4GL_find_win (PANEL * p)
 		       windows[a].name);
 	      }
 #endif
-	      return A4GL_find_win (A4GL_find_pointer (windows[a].name, MNPARCODE));
+
+		A4GL_assertion(1,"Fake window - thought i'd got rid of these");
+	      //return A4GL_find_win (A4GL_find_pointer (windows[a].name, MNPARCODE));
 	    }
 	  return a;
 	}
@@ -3056,11 +3024,13 @@ A4GL_window_on_top_ign_menu (void)
   } else {
   	A4GL_debug("window_on_top - %s",s);
   }
+/*
   if (A4GL_has_pointer (s, MNPARCODE)) {
 		// Damn - its a menu - whats our parent ?
 		A4GL_debug("Was menu window...");
 		return A4GL_find_pointer (s, MNPARCODE);
   }
+*/
   winptr = A4GL_find_pointer (s, WINCODE);
 	A4GL_debug("Winptr=%p",winptr);
   return winptr;

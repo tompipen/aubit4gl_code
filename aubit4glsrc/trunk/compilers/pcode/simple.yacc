@@ -741,6 +741,19 @@ assign_common: variable '=' expr {
 }
 
 
+| variable MUL_ASSIGN expr {
+	long e2;
+	e2=new_param_op_returns_long($<e_id>1,"*",$<e_id>3);
+	$<assignment>$.p=e2;
+	$<assignment>$.v=get_use_variable($<e_id>1);
+}
+| variable DIV_ASSIGN expr {
+	long e2;
+	e2=new_param_op_returns_long($<e_id>1,"/",$<e_id>3);
+	$<assignment>$.p=e2;
+	$<assignment>$.v=get_use_variable($<e_id>1);
+}
+
 
 
 ;

@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.13 2004-06-14 18:12:59 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.14 2004-08-31 20:46:55 mikeaubury Exp $";
 
 #include "hl_forms.h"
 #include "hl_proto.h"
@@ -18,10 +18,6 @@ void *A4GL_create_window (char *name, int x, int y, int w, int h,
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_ui.h"
-//int A4GL_decode_line_ib (int l);
-//void A4GL_dump_winstack (void);
-//void * A4GL_window_on_top (void);
-//void * A4GL_window_on_top_ign_menu (void);
 
 #define MAXWIN 200
 #define MAXPOINTERS 2000
@@ -117,7 +113,6 @@ UILIB_A4GL_cr_window_form (char *namet,
   y = A4GL_pop_int ();
   strcpy (buff, s);
   A4GL_trim (buff);
-  //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
   A4GL_debug ("reading file %s - name=%s", buff, name);
   a4gl_status = 0;
@@ -170,7 +165,6 @@ UILIB_A4GL_cr_window_form (char *namet,
 int
 UILIB_A4GL_open_form (char *name)
 {
-  //int w, h;
   char *s;
   char buff[256];
   struct s_form_dets *form;
@@ -181,7 +175,6 @@ UILIB_A4GL_open_form (char *name)
   strncpy (buff, s, 256);
   buff[255] = 0;
   A4GL_trim (buff);
-  //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
   A4GL_debug ("reading file %s ?", buff);
   A4GLSQL_set_status (0, 0);
 
@@ -213,7 +206,6 @@ UILIB_A4GL_close_form (char *formname)
   void *ptr;
   int a;
   A4GL_chkwin ();
-  //A4GL_debug ("FIXME : UILIB_A4GL_close_form not implemented");
 
   ptr = A4GL_find_pointer (formname, S_FORMDETSCODE);
 
@@ -244,10 +236,8 @@ UILIB_A4GL_disp_form (char *name, int attr)
 {
   struct s_form_dets *f;
   void *w;
-  //char buff[80];
   A4GL_chkwin ();
   A4GL_debug (" IN UILIB_A4GL_disp_form  %d\n", attr);
-  //attr = A4GL_decode_aubit_attr (attr, 'w');
 
   A4GL_debug ("attr=%x\n", attr);
 
@@ -293,9 +283,6 @@ UILIB_A4GL_iscurrborder (void)
 
   A4GL_chkwin ();
 
-  //A4GL_debug ("A4GL_get_currwinno()=%d", A4GL_get_currwinno ());
-  //A4GL_debug ("Winattr=%p", windows[A4GL_get_currwinno ()].winattr);
-  //A4GL_debug ("border=%p", windows[A4GL_get_currwinno ()].winattr.border);
   return windows[A4GL_get_currwinno ()].winattr.border;
 }
 
@@ -497,19 +484,13 @@ int
 A4GL_chkwin (void)
 {
 
-  //A4GL_debug ("chkwin");
 
   if (A4GL_islinemode ())
     {
 
-      //A4GL_debug (" API_ui Was linemode..");
       A4GL_switch_to_scr_mode ();
       A4GL_set_scrmode ('S');
       A4GL_LL_screen_update ();
-    }
-  else
-    {
-      //A4GL_debug ("API_ui Was screen mode..");
     }
   return 1;
 }
@@ -553,29 +534,6 @@ int
 A4GL_getmenu_line (void)
 {
   int a;
-/*
-  if (windows[A4GL_get_currwinno ()].winattr.menu_line != 0xff)
-    {
-      //a = A4GL_decode_line_ib (windows[A4GL_get_currwinno ()].winattr.  menu_line);
-      a =
-	A4GL_decode_line (windows[A4GL_get_currwinno ()].winattr.menu_line -
-			  1);
-
-      if (a <= 0)
-	return 1;
-      while (a >= UILIB_A4GL_get_curr_height ())
-	a--;
-      return a;
-    }
-  a = A4GL_decode_line_ib (std_dbscr.menu_line);
-  if (a <= 0)
-    return 1;
-  while (a >= UILIB_A4GL_get_curr_height ())
-    a--;
-  return a;
-*/
-
-
 
   if (windows[A4GL_get_currwinno()].winattr.menu_line!=0xff) {
         a=A4GL_decode_line_ib (windows[A4GL_get_currwinno()].winattr.menu_line);
@@ -645,7 +603,6 @@ A4GL_glob_window (int x, int y, int w, int h, int border)
   {				/*debug("Adding window @ %d %s",a,winname); */
   }
 #endif
-  /*A4GL_add_pointer (winname, WINCODE, win); */
   return winname;
 }
 #endif
@@ -790,7 +747,6 @@ char *
 UILIB_A4GL_get_currwin_name (void)
 {
 
-  //printf("get currwin= %s\n",windows[A4GL_get_currwinno ()].name);
   return windows[A4GL_get_currwinno ()].name;
 }
 
@@ -802,7 +758,6 @@ int
 UILIB_A4GL_get_curr_width (void)
 {
   A4GL_chkwin ();
-  //A4GL_debug ("get curr width, A4GL_get_currwinno()=%d windows name =%s %d", A4GL_get_currwinno (), windows[A4GL_get_currwinno ()].name, windows[A4GL_get_currwinno ()].w);
   return windows[A4GL_get_currwinno ()].w;
 }
 
@@ -964,7 +919,6 @@ UILIB_aclfgl_fgl_drawbox (int n)
 {
   int x, y, w, h, c;
   int xx, yy;
-//void *ptr=0;
   void *win;
   int chars_simple[] = { '-', '|', '+', '+', '+', '+' };
   int chars_normal[6];
@@ -975,15 +929,6 @@ UILIB_aclfgl_fgl_drawbox (int n)
   A4GL_chkwin ();
 
   A4GL_LL_set_chars_normal(chars_normal);
-
-
-//chars_normal[0]=ACS_HLINE;
-//chars_normal[1]=ACS_VLINE;
-//chars_normal[2]=ACS_ULCORNER;
-//chars_normal[3]=ACS_URCORNER;
-//chars_normal[4]=ACS_LLCORNER;
-//chars_normal[5]=ACS_LRCORNER;
-
 
 
   infx_to_curses[0] = AUBIT_COLOR_WHITE;
@@ -1144,12 +1089,10 @@ A4GL_find_form_for_win (void *w)
 int
 UILIB_A4GL_current_window (char *win_name)
 {
-  //int a = 0;
   void *w;
 A4GL_debug("Current window : %s",win_name);
   A4GL_chkwin ();
 
-//printf("CURRENT WINDOW : %s\n",win_name);
   
   w = A4GL_find_pointer (win_name, WINCODE);
   if (A4GL_get_currwin()==w)  return 0;
@@ -1165,10 +1108,6 @@ A4GL_debug("Current window : %s",win_name);
   A4GL_win_stack (&windows[A4GL_find_win (w)], '^');
   A4GL_LL_make_window_top (w);
 
-  //if (A4GL_screen_mode (-1))
-    //{
-      //A4GL_LL_screen_update ();
-    //}
 
   return 0;
 
@@ -1180,14 +1119,12 @@ LIBEXPORT void
 UILIB_A4GL_hide_window (char *winname)
 {
   void *w;
-  //int a=0;
   A4GL_chkwin();
   w = A4GL_find_pointer (winname, WINCODE);
 
 
 #ifdef DEBUG
   {
-    //A4GL_debug ("hiding window %s %p", winname, p);
     A4GL_debug ("hiding window %s", winname);
   }
 #endif
@@ -1261,7 +1198,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       w = A4GL_LL_screen_width () - 1;
 
       A4GL_debug ("Creating win..");
-      //win=newwin(0,0,0,0);
       win = (void *) A4GL_LL_create_window (0, 0, 0, 0, 0);
       A4GL_debug ("Creating win.. %p", win);
       if (win) A4GL_add_pointer (name, WINCODE, win);
@@ -1332,11 +1268,6 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
   A4GL_debug ("Deciding what to do... %s\n", name);
 
-  //if (toupper (name[0]) == name[0])
-  //{
-  //A4GL_add_pointer (name, MNPARCODE, (void *) A4GL_get_currwin ());
-  //A4GL_add_pointer (name, MNWINCODE, win);
-  //}
 
   A4GL_win_stack (&windows[a], '+');
 
@@ -1493,7 +1424,6 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
   char buff2[8024];
   int a;
   int b;
-  //int errno;
   int width;
   b = A4GL_get_field_width (field);
   strcpy (buff2, buff);
@@ -1518,7 +1448,6 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
       A4GL_debug ("No padding required '%s'", buff);
     }
 
-//printf("call LL_set_field_buffer : '%s'\n",buff2);
 
   A4GL_LL_set_field_buffer (field, nbuff, buff2);
 }
@@ -1545,7 +1474,6 @@ A4GL_set_field_attr_with_attr (void *field, int attr, int cmd_type)
   A4GL_debug
     ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
      attr);
-//printf("set_field_colour_attr 1\n");
   A4GL_set_field_colour_attr (field, r, attr);
 }
 
@@ -1738,11 +1666,7 @@ UILIB_A4GL_clr_window (char *win_name)
   buff[win->w] = 0;
   for (a = 0; a <= win->h; a++)
     {
-      //if (win->winattr.border) {
-      //A4GL_wprintw(w,0,1,a+1,"%s",buff);
-      //} else {
       A4GL_wprintw (w, 0, 1, a+1, "%s", buff);
-      //}
     }
 
   UILIB_A4GL_zrefresh ();

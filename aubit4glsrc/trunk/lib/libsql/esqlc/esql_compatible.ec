@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.10 2004-07-21 06:36:46 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.11 2004-08-31 20:46:54 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.10 2004-07-21 06:36:46 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.11 2004-08-31 20:46:54 mikeaubury Exp $";
 #endif
 
 
@@ -2165,6 +2165,7 @@ int A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 	error_just_in_case();
     return 1;
   }
+  //a4gl_sqlca.sqlerrd[3]=sqlca.sqlerrd[3];
 A4GL_debug("OK");
   return 0;
 }

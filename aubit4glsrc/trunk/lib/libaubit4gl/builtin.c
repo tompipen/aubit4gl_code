@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.62 2004-07-07 20:10:50 mikeaubury Exp $
+# $Id: builtin.c,v 1.63 2004-08-31 20:46:52 mikeaubury Exp $
 #
 */
 
@@ -1089,6 +1089,19 @@ aclfgl_ddefinishall (void)
 
 
 /**
+ * Strings containing characters such as \ need to be passed through
+ * fgl_strtosend() as this re-formats them so that MS Word will see the
+ * correct sring.
+**/
+char *
+aclfgl_fgl_strtosend (char *str)
+{
+  A4GL_exitwith ("4Js DDE functions not implemented");
+  return 0;
+}
+
+
+/**
  * 4Js specific
  * let response = DDEPeek("IEXPLORE","system","www_GetWindowInfo")
  * @todo - implement it
@@ -1116,19 +1129,6 @@ aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType)
 {
   A4GL_exitwith ("4Js winmessage function not implemented");
   //return 0;
-}
-
-
-/**
- * Strings containing characters such as \ need to be passed through
- * fgl_strtosend() as this re-formats them so that MS Word will see the
- * correct sring.
-**/
-char *
-aclfgl_fgl_strtosend (char *str)
-{
-  A4GL_exitwith ("4Js DDE functions not implemented");
-  return 0;
 }
 
 
@@ -1171,4 +1171,67 @@ A4GL_generateError (s, fname, lineno);
 
 }
 
+
+
+
+
 /* ================================== EOF ============================= */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 4Js functions */
+
+int aclfgl_fgl_scr_size(int n)  {
+// fgl_scr_size(char *srecname)
+	char *s;
+	s=A4GL_char_pop();
+	return 0;
+}
+
+int aclfgl_fgl_dialog_setcurrline(int n) {
+// fgl_dialog_setcurrline ( screen_line, array_row )
+	return 0;
+}
+
+int aclfgl_fgl_dialog_getfieldname(int n)  {
+//function returns the name of the current field.
+	return 0;
+}
+
+
+int aclfgl_fgl_dialog_getbuffer(int n)  {
+// returns the value of the current field:
+	return 0;
+}
+
+int aclfgl_fgl_dialog_setbuffer(int n) {
+// function sets the value of the current field:
+	return 0;
+}
+
+int aclfgl_fgl_buffertouched(int n)  {
+// Returns  INTEGER  TRUE if the last field has been modified.
+	return 0;
+}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.12 2004-07-24 18:49:09 whaslbeck Exp $
+# $Id: sql.c,v 1.13 2004-08-31 20:46:52 mikeaubury Exp $
 #
 */
 
@@ -614,13 +614,15 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
   struct BINDING *ibind;
   ibind = vibind;
   A4GL_debug ("ESQL : A4GLSQL_execute_sql");
-	      /** @todo : Fix the mode that is not used now  - done remove comment */
   sid = A4GLSQL_find_prepare (pname);	// ,0
-  sid->ibind = ibind;
-  sid->ni = ni;
-
-
-  return A4GLSQL_execute_implicit_sql (sid);
+  if (sid!=0) {
+  	sid->ibind = ibind;
+  	sid->ni = ni;
+  	return A4GLSQL_execute_implicit_sql (sid);
+  } else {
+	A4GL_exitwith("Invalid prepared statement");
+	return 0;
+  }
 
 }
 

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.62 2004-08-16 10:19:13 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.63 2004-08-31 20:46:55 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.62 2004-08-16 10:19:13 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.63 2004-08-31 20:46:55 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -572,9 +572,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	  if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
 	    {
-	      fprop =
-		(struct struct_scr_field
-		 *) (field_userptr (sio->currentfield));
+	      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))
 		{
@@ -583,10 +581,18 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  //char buff[256];
 		  curses_form = sio->currform->form;
 		  //width = A4GL_get_field_width (sio->currentfield);
+
 		  if (current_field (curses_form) != sio->currentfield)
 		    {
-		      set_current_field (curses_form, sio->currentfield);
-		      A4GL_newMovement (sio, sio->curr_attrib + 1);
+
+
+
+	  		if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (sio, sio->currentfield)) {
+	      			A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0);
+			} else {
+		      		set_current_field (curses_form, sio->currentfield);
+		      		A4GL_newMovement (sio, sio->curr_attrib + 1);
+			}
 		    }
 
 		}
@@ -1247,9 +1253,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
       if (at_last)
 	{			// Acts like KEY_DOWN at last position in the field
 	  A4GL_debug ("AT LAST");
-	  if (std_dbscr.input_wrapmode == 0
-	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
-	    {
+	  if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
 		A4GL_debug("AT LAST <-----------------------------------------");
 	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
 					 a);

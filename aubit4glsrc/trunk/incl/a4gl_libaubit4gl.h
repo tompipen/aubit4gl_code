@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.131 2004-08-22 10:13:52 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.132 2004-08-31 20:46:51 mikeaubury Exp $
 #
 */
 
@@ -288,8 +288,8 @@
 #define WINCODE 		'2'
 #define CURCODE 		'3'
 #define PRECODE 		'4'
-#define MNWINCODE 		'5'
-#define MNPARCODE 		'6'
+//#define MNWINCODE 		'5'
+//#define MNPARCODE 		'6'
 #define FORMCODE 		'7'
 #define S_WINDOWSCODE 	'8'
 #define S_FORMDETSCODE 	'9'
@@ -627,7 +627,7 @@
   {
     char menu_title[80];
     int menu_type;
-    char window_name[20];
+    char parent_window_name[20];
     ACL_Menu_Opts *curr_option;
     int menu_offset;
     int mn_offset;
@@ -638,7 +638,7 @@
     int abort_pressed;
     ACL_Menu_Opts *first;
     ACL_Menu_Opts *last;	// used for wrapping round
-    void *menu_win;
+    //void *menu_win;
     int curr_page;
     int max_page;
     int w;

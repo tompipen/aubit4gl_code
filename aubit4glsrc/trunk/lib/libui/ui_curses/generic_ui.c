@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.15 2004-08-16 10:19:14 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.16 2004-08-31 20:46:55 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -451,10 +451,6 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
   A4GL_find_shown (menu, 0, 1);
   A4GL_debug ("f2");
   A4GL_size_menu (menu);                /* MJA 10/5/2000 */
-  /*
-     A4GL_clr_menu_disp (menu);
-     A4GL_debug ("f3");
-   */
   A4GL_display_menu (menu);
   A4GL_debug ("f4");
 
@@ -546,7 +542,7 @@ A4GL_size_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1;
   int disp_cnt2 = 0;
-  char disp_str[80];
+  char disp_str[800];
   int disp_cnt;
   int s_length;
   int page = 0;
@@ -672,7 +668,7 @@ void *
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
-  menu->window_name[0] = 0;
+  strcpy(menu->parent_window_name, UILIB_A4GL_get_currwin_name());
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;
@@ -810,7 +806,7 @@ A4GL_new_menu (char *title,
   menu->menu_type = mn_type;
   menu->help_no = help_no;
   menu->curr_option = 0;
-  menu->window_name[0] = 0;
+  //menu->window_name[0] = 0;
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;

@@ -17,8 +17,8 @@ dfgdfg comment
 
 -- comment asdfasd
 
-options help file "helpfile.hlp"
-options help key F1
+#options help file "helpfile.hlp"
+#options help key F1
 
 let axxx=1
 
@@ -33,11 +33,14 @@ menu "Hello test"
     	command "prompt" "Prompt for user name"
 		prompt "Enter your name :" for a
 		on key(f10) 
-			error "F10 pressed"
+			error  "F10 pressed"
 			sleep 1
 		end prompt
 		display "Hello ",a clipped
 		sleep 1
+
+		
+		
 
 	command "form" "Open a form "
 		#display "Form"

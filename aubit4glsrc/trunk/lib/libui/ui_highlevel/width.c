@@ -20,19 +20,9 @@ void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch);
 
 
 void
-A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
+A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc) 
 {
-  va_list args;
   int a;
-  unsigned char buff[2048];
-  A4GL_chkwin ();
-  va_start (args, fmt);
-  vsprintf (buff, fmt, args);
-  A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
-
-
-
- A4GLSQL_set_status (0, 0);
 
 #ifdef WIDEC
 {
@@ -46,6 +36,13 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
   if (len==0) return;
   if (len==-1) {
 		A4GL_debug("Invalid long string!");
+		// We'll try anyway...
+		for (a=0;a<strlen(buff);a++) {
+			A4GL_debug("Printing wide character %d - w=%d (%s)\n",a,w,buff);
+			if (pfunc==0) A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, buff[a]);
+			else A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a]);
+		}
+
 		return;
  
 	}
@@ -57,7 +54,9 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 	memset(buff,0,255);
 	wc_single_to_str(buff,wp[a]);
 	A4GL_debug("Printing wide character %d - w=%d (%s)\n",a,w,buff);
-        A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, wp[a]);
+	if (pfunc==0) A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, wp[a]);
+	else A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, wp[a]);
+		
         x+=w;
     }
     free(wp);
@@ -67,7 +66,12 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 #else
   for (a = 0; a < strlen (buff); a++)
     {
-      A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + (attr&0xffffff00));
+
+      if (pfunc==0) {
+		A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + (attr&0xffffff00));
+	} else {
+		A4GL_LL_wadd_char_xy_col_w (win, x, y, buff[a] + (attr&0xffffff00));
+	}
       x++;
     }
 #endif
@@ -75,6 +79,43 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
   A4GL_LL_screen_update ();
 }
 
+
+
+
+void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) { 
+  va_list args;
+  unsigned char buff[2048];
+  A4GL_chkwin ();
+  va_start (args, fmt);
+  vsprintf (buff, fmt, args);
+  A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
+  A4GLSQL_set_status (0, 0);
+#ifdef WIDEC
+  A4GL_wprintw_internal(win,attr,x,y,buff,0);
+#else
+  A4GL_wprintw_internal(win,attr,x,y,buff,0);
+#endif
+}
+
+
+
+
+/* This is a bodge - fix it later... */
+void A4GL_wprintw_window (void *win, int attr, int x, int y, char *fmt, ...) { 
+  va_list args;
+  unsigned char buff[2048];
+  A4GL_chkwin ();
+A4GL_debug("A4GL_wprintw_window");
+  va_start (args, fmt);
+  vsprintf (buff, fmt, args);
+  A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
+  A4GLSQL_set_status (0, 0);
+#ifdef WIDEC
+  A4GL_wprintw_internal(win,attr,x,y,buff,1);
+#else
+  A4GL_wprintw_internal(win,attr,x,y,buff,1);
+#endif
+}
 
 
 

@@ -1,4 +1,4 @@
-/*
+/* 
 =====================================================================
 Source:define.rule
 =====================================================================
@@ -401,10 +401,8 @@ dtype :
 		   push_type("double",0,0);
 		   
 		}  op_prec
-	|	DOUBLE_PRECISION {
-		   push_type("double",0,0);
-		   
-		}  op_prec
+	|	DOUBLE_PRECISION { push_type("double",0,0); }  op_prec
+	|	REAL { push_type("double",0,0); }  
 	|	SMALLFLOAT {
 		   push_type("float",0,0);
 		   

@@ -106,7 +106,7 @@ static void
 redraw_field (FIELD * f)
 {
   int x, y;
-  WINDOW *w;
+  //WINDOW *w;
   int attr;
   char **ptr;
       char clr_buff[2000];
@@ -115,7 +115,7 @@ redraw_field (FIELD * f)
 //int ls;
   int row;
   char *xbuff;
-  WINDOW *wot;
+  PANEL *wot;
   A4GL_debug("Redraw field : %p",f);
 
 
@@ -143,9 +143,10 @@ redraw_field (FIELD * f)
 
   y = f->frow;
   x = f->fcol;
-  w = Get_Form_Window (f->form);
 
 
+
+  wot= Get_Form_Window(f->form);
 
   memset(buff,0,buff_len);
 
@@ -159,12 +160,8 @@ redraw_field (FIELD * f)
   }
 
   buff[(f->cols * f->rows)] = 0;
-A4GL_debug("buff=%s\n",buff);
 
   attr=(f->back | f->fore)&0xffffff00;
-
- wot = (void *) A4GL_window_on_top_ign_menu ();
-
   if (f->rows > 1)
     {
       xbuff = malloc (f->cols + 1);
@@ -174,17 +171,19 @@ A4GL_debug("buff=%s\n",buff);
 	  xbuff[f->cols] = 0;
 	  A4GL_debug ("Printing : '%s' @ %d,%d (multi line)\n", xbuff, x, y);
       		//A4GL_wprintw(wot,a,x,y,"%s",s);
-      		A4GL_wprintw(wot,attr,x,y+row,"%s",xbuff);
+      		A4GL_wprintw_window(wot,attr,x,y+row,"%s",xbuff);
+	A4GL_debug("Print0\n");
 	}
       free (xbuff);
     }
   else
     {
-      A4GL_debug ("Printing : %s @ %d,%d %x %x w=%p wot=%p\n", buff, x, y,f->opts,f->fore,w,wot);
-      A4GL_wprintw(wot,attr,x+1,y+1,"%s",buff);
+      //A4GL_debug ("Printing : %s @ %d,%d %x %x w=%p wot=%p\n", buff, x, y,f->opts,f->fore,w,w);
+	A4GL_debug("Print1 %p '%s'\n",wot,buff);
+      A4GL_wprintw_window(wot,attr,x+1,y+1,"%s",buff);
     }
-   //A4GL_LL_screen_update();
    //wrefresh(w);
+   //A4GL_LL_screen_update();
 
 }
 
@@ -375,7 +374,7 @@ A4GL_form_set_field_userptr (FIELD * field, void *userptr)
 int
 A4GL_form_set_form_sub (FORM * form, WINDOW * sub)
 {
-  wattron(sub,A_REVERSE);
+  A4GL_debug("form_set_Form_sub=%p",sub);
   form->sub = sub;
   return E_OK;
 }
@@ -397,6 +396,7 @@ A4GL_form_set_form_userptr (FORM * form, void *userptr)
 int
 A4GL_form_set_form_win (FORM * form, WINDOW * win)
 {
+  A4GL_debug("form_set_Form_win=%p",win);
   form->win = win;
   return E_OK;
 }
@@ -509,22 +509,8 @@ A4GL_form_scale_form (const FORM * form, int *rows, int *columns)
 int
 A4GL_form_unpost_form (FORM * form)
 {
-
   A4GL_debug("unpost form");
-
   werase(form->sub);  
-
-
-  //delwin(form->sub);
-  //delwin(Get_Form_Window(form));
-  //wrefresh(form->w);
-
-  //werase (Get_Form_Window (form));
-
-
-  //delwin (form->w);
-  //form->w = (WINDOW *) 0;
-
   form->status &= ~1;
   return E_OK;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.56 2004-08-05 17:19:40 mikeaubury Exp $
+# $Id: ops.c,v 1.57 2004-08-31 20:46:52 mikeaubury Exp $
 #
 */
 
@@ -1614,7 +1614,7 @@ A4GL_dt_dt_ops (int op)
 // Borrow some months for some days. @ FIXME @todo fix days in months
       while (dtime_data2[2] < 0)
 	{
-	  dtime_data2[2] += 30;
+	  dtime_data2[2] += A4GL_days_in_month(dtime_data2[1],dtime_data2[0]);
 	  dtime_data2[1]--;
 	}
 

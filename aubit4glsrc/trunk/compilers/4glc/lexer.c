@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.92 2004-08-10 13:40:20 mikeaubury Exp $
+# $Id: lexer.c,v 1.93 2004-08-31 20:45:52 mikeaubury Exp $
 #*/
 
 /**
@@ -88,6 +88,7 @@ extern int sql_mode;
 static int chk_word_more (FILE * f, char *buff, char *p, char *str, int t);
 int idents_cnt = 0;
 FILE *yyin = 0;			/* Pointer to the source file openen being parsed */
+FILE *file_out=0;
 int yylineno = 1;		/* Current line number */
 int lastlex = -2;
 int xccode = 0;
@@ -440,7 +441,7 @@ read_word2 (FILE * f, int *t)
       a = mja_fgetc (f);
 
       if (A4GL_memfile_feof (f))
-	{
+	{	
 	  *t = TYPE_EOF;
 	  return word;
 	}
@@ -1335,6 +1336,12 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     }
 
   a = A4GL_memfile_ftell (yyin);
+
+  if (A4GL_isyes(acl_getenv("DUMP4GL"))) {
+		if (file_out==0) {
+			file_out=fopen("/tmp/file.out","w");
+		}
+  }
   if (yyin_len)
     {
       a = a * 100 / yyin_len;
@@ -1501,18 +1508,28 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   lastword = buff;
   lastlex = a;
-  if (acl_getenv ("DEBUG"))
-    {
-      A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d",
-	     yylineno, ccnt, a, buff, xccode, fpos, chk4var);
-      //printf (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d\n", yylineno, ccnt, a, buff, xccode, fpos, chk4var);
-    }
+  A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, ccnt, a, buff, xccode, fpos, chk4var);
   word_cnt = 0;
-
+  if (file_out) { 
+		char buff2[1024];
+		strcpy(buff2,buff);
+		if (a==NAMED_GEN) {
+			downshift(buff2);
+		} else {
+			upshift(buff2);
+		}
+		fprintf(file_out,"%s ",buff2);fflush(file_out); 
+	}
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
   return a;
 }
 
+
+void file_out_nl() {
+if (file_out) {
+	fprintf(file_out,"\n");
+}
+}
 /**
  *
  * @param kw

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.98 2004-08-16 21:46:32 mikeaubury Exp $
+# $Id: stack.c,v 1.99 2004-08-31 20:46:52 mikeaubury Exp $
 #
 */
 
@@ -224,21 +224,20 @@ void A4GL_set_escape (char *s);
 int
 A4GL_pop_bool (void)
 {
-  short ptr;
+  long ptr;
   ptr = 0;
 
   A4GL_debug ("8 Popping boolean..");
   //debug_print_stack();
 
 
-  ptr = A4GL_pop_int ();
+  ptr = A4GL_pop_long ();
 
   A4GL_debug("pop bool : ptr=%x\n",ptr);
-  if (A4GL_isnull(DTYPE_SMINT,(void *)&ptr)) {
+  if (A4GL_isnull(DTYPE_INT,(void *)&ptr)) {
 		A4GL_debug("8 Null can't be true..");
 		return 0;
   }
-  //pop_param (&ptr, DTYPE_SMINT, 0);
   A4GL_debug ("8 Popping boolean gets %d %x", ptr, ptr);
 
   if (ptr != 0 && ptr != 1)
