@@ -350,7 +350,7 @@ define lv_fname char(255)
 	else
 		call open_tmpfile_as_stdin()
 	end if
-
+	sleep 1
 	call qry_run()
 end function
 

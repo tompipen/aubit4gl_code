@@ -498,10 +498,12 @@ A4GL_debug("Getting details for index %d",index);
            case SQL3_CHARACTER_VARYING:
                 exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
                 sprintf(buffer,"%s",STRINGVAR);
+		A4GL_trim(buffer);
                 break;
            default:
                 exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
                 sprintf(buffer,"%s",STRINGVAR);
+		if (display_mode==DISPLAY_UNLOAD) A4GL_trim(buffer);
                 break;
         }
 
@@ -548,6 +550,11 @@ char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
 p=s;
+
+if (strncasecmp(s,"database",8)==0) {
+	return 1;
+}
+
 if (type>='1'&&type<='4') return 255;
 
 qry_type=0;
@@ -711,10 +718,14 @@ int a;
 
         if (fetchFirst==1) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                                fprintf(out,"\n");
+				if (display_mode!=DISPLAY_UNLOAD) {
+                                	fprintf(out,"\n");
+				}
                         }
                         else {
-                                fprintf(exec_out,"\n");
+				if (display_mode!=DISPLAY_UNLOAD) {
+                                	fprintf(exec_out,"\n");
+				}
                         }
         }
 
@@ -742,10 +753,14 @@ int a;
                 }
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
                         A4GL_assertion(out==0,"No output file (7)");
-                        fprintf(out,"\n\n");
+				if (display_mode!=DISPLAY_UNLOAD) {
+                        		fprintf(out,"\n\n");
+				}
                 } else {
                         A4GL_assertion(exec_out==0,"No output file (8)");
-                        fprintf(exec_out,"\n\n");
+				if (display_mode!=DISPLAY_UNLOAD) {
+                        		fprintf(exec_out,"\n\n");
+				}
                 }
 
                 outlines+=2;
@@ -1132,4 +1147,11 @@ END FUNCTION
 FUNCTION load_info_tables()
 	display "Not implemented" at 24,1
 	sleep 1
+end function
+
+
+
+function sql_select_db(lv_dbname)
+define lv_dbname char(64)
+database lv_dbname
 end function

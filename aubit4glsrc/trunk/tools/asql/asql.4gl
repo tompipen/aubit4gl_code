@@ -102,9 +102,11 @@ if lv_args_cnt then
 	call execute_file(lv_input)
 	exit program
 end if
+
 code
 if (!isatty(fileno(stdin))) {
 endcode
+	#display "ASSUME STDIN"
 	call  execute_file("-")
 	exit program
 code

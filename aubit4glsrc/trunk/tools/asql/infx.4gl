@@ -492,7 +492,7 @@ if (indicator!=-1) {
           rc = 1;
           break;
         }
-	if (display_mode==DISPLAY_DOWN) {
+	if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
       		sprintf (buffer, "%d", smint_var);
 	} else {
       		sprintf (buffer, "%*d", columnWidths[idx-1],smint_var);
@@ -509,7 +509,7 @@ if (indicator!=-1) {
           break;
         }
 
-	if (display_mode==DISPLAY_DOWN) {
+	if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
       		sprintf (buffer, "%ld", int_var);
 	} else {
       		sprintf (buffer, "%*ld", columnWidths[idx-1],int_var);
@@ -523,7 +523,7 @@ if (indicator!=-1) {
           rc = 1;
           break;
         }
-        if (display_mode==DISPLAY_DOWN) {
+        if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
                 sprintf (buffer, "%lf", float_var);
         } else {
                 sprintf (buffer, "%*lf", columnWidths[idx-1],float_var);
@@ -539,7 +539,7 @@ if (indicator!=-1) {
           break;
         }
       //sprintf (buffer, "%f", smfloat_var);
-        if (display_mode==DISPLAY_DOWN) {
+        if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
                 sprintf (buffer, "%f", smfloat_var);
         } else {
                 sprintf (buffer, "%*f", columnWidths[idx-1],smfloat_var);
@@ -563,7 +563,7 @@ if (indicator!=-1) {
         }
         buff[32]=0;
 	A4GL_trim(buff);
-        if (display_mode==DISPLAY_DOWN) {
+        if (display_mode==DISPLAY_DOWN||display_mode==DISPLAY_UNLOAD) {
                 sprintf (buffer, "%s", buff);
         } else {
                 sprintf (buffer, "%*s", columnWidths[idx-1],buff);
@@ -877,17 +877,21 @@ int a;
 
         if (sqlca.sqlcode==100) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                                fprintf(out,"\n");
+				if (display_mode!=DISPLAY_UNLOAD) {
+                                	fprintf(out,"\n");
+				}
 			}
                 return 100;
         }
         (*raffected)++;
 
 	if ( fetchFirst==1) {
+			if (display_mode!=DISPLAY_UNLOAD) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
                                 fprintf(out,"\n");
                         } else {
                                 fprintf(exec_out,"\n");
+			}
 			}
 	}
 
@@ -1590,4 +1594,7 @@ end for
 end foreach
 end function
 
-
+function sql_select_db(lv_dbname)
+define lv_dbname char(64)
+database lv_dbname
+end function

@@ -106,6 +106,16 @@ function get_exec_mode()
 return exec_mode
 end function
 
+
+function get_display_mode()
+define lv_a integer
+code
+lv_a=display_mode;
+endcode
+
+return lv_a
+end function
+
 function open_display_file() 
 code
 first_open=1;
@@ -257,7 +267,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		ofile=(long)stdout;
 	}
 	exec_out=(FILE *)ofile;
-	fprintf(exec_out,"\n\n");
+
 }
 
 
@@ -285,6 +295,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 			if (qry_type==1) {
 				strcpy(l_db,&p[9]);
+				
 			}
 
 
@@ -317,12 +328,21 @@ code
 						if (list[a].type>='1'&&list[a].type<='4') {
 							if (!asql_info(&list[a])) goto end_query;
 						} else {
-							if (!execute_query_1(&raffected)) goto end_query;
+							if (qry_type==1) {
+		A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
+								A4GL_push_char(l_db);
+								aclfgl_sql_select_db(1);
+							} else {
+								if (!execute_query_1(&raffected)) goto end_query;
+							}
 						}
 					}
 				}
 			} else {
 				rpaginate=0;
+				if (a==0) {
+					if (out) fprintf(out,"\n\n");
+				}
 repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",out);
 				if (execute_select_prepare()) {
@@ -373,7 +393,7 @@ code
 				A4GL_debug("EXEC CLOSEDOWN - %d",outlines);
 	
 A4GL_assertion(out==0,"No output file (2)");
-					if (out) {fprintf(out,"\n");fclose(out);out=0;}
+					if (out) {fprintf(out,")\n");fclose(out);out=0;}
 
 					if (!execute_select_free()) goto end_query;
 					
@@ -395,12 +415,13 @@ if sqlca.sqlcode>=0 then
 		message msg clipped
 	else
 code
-	fprintf(stderr,"%s\n",msg);
+		fprintf(stderr,"%s\n",msg);
 endcode
+
 		display " "
 	end if
 
-	if qry_type=1 then
+	if qry_type=1 and get_exec_mode()!=1 then
 		call set_curr_db(l_db)
 		call display_banner()
 	end if
