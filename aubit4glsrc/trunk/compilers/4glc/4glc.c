@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.51 2004-05-13 12:43:52 mikeaubury Exp $
+# $Id: 4glc.c,v 1.52 2004-05-26 13:59:20 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,7 @@ extern FILE *yyin;
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
 extern int yyin_len;		/*now in map.c*/
-
+void import_package(char *s);
 /*
 =====================================================================
                     Functions prototypes
@@ -82,6 +82,7 @@ int
 main (int argc, char *argv[])
 {
   int x = 0;
+  char *ptr;
   struct str_resource *user_resource = 0;
 
 
@@ -94,7 +95,13 @@ main (int argc, char *argv[])
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
   import_package("default");
-
+  ptr=acl_getenv("NAMESPACE");
+  if (ptr) {
+		if (strlen(ptr)==0) ptr=0;
+  }
+  if (ptr==0) {
+		set_namespace("");
+  }
   x = initArguments (argc, argv);
   if (a4gl_yydebug)
     {
