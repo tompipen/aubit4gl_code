@@ -29,13 +29,14 @@ open(IN, $YOUTPUT ) or die "Cannot read file $YOUTPUT\n";
 
 # all the potentially single-word identifier-type symbols ('seed' it initially)
 %ident = ("identifier" => 1, "ident_or_var" => 1, "NAMED" => "",
-          "var" => 1, "variable" => 1, "let_var" => 1 );
+          "var" => 1, "variable" => 1, "let_var" => 1, "fgl_expr" => 1, );
 
 # symbols that may be window/label/form ... names but not necessarily variables
 %idn = ("identifier" => 1, "ident_or_var" => 1, "NAMED" => 1);
 
 # symbols that may be replaced with (defined) variables
-%var = ("var" => 1, "variable" => 1, "let_var" => 1, "ident_or_var" => 1);
+%var = ("var" => 1, "variable" => 1, "let_var" => 1,
+	"ident_or_var" => 1, "fgl_expr" => 1, );
 
 # all the symbols that can be empty (blank)
 %empty = ();
