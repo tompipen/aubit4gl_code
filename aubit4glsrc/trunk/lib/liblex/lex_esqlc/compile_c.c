@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.67 2003-07-20 06:53:25 afalout Exp $
+# $Id: compile_c.c,v 1.68 2003-07-21 21:40:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1658,7 +1658,7 @@ void
 print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(%s);\n", fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(%s,0,0);\n", fields);
   start_bind ('i', 0);
 }
 

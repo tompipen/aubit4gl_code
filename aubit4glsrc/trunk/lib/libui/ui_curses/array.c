@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.10 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: array.c,v 1.11 2003-07-21 21:40:13 mikeaubury Exp $
 #*/
 
 /**
@@ -323,6 +323,15 @@ disp_loop (struct s_disp_arr *arr)
       exit (0);
     }
   mform = form->form;
+
+
+draw_arr (arr, 2, arr->arr_line);
+draw_arr (arr, -1, arr->arr_line);
+//pos_form_cursor(mform);
+
+
+//A4GL_mja_wrefresh (currwin);
+
 #ifdef DEBUG
   {
     A4GL_debug ("FORM=%p", mform);
@@ -335,41 +344,25 @@ disp_loop (struct s_disp_arr *arr)
     }
   else
     {
-      draw_arr (arr, 2, arr->arr_line);
-#ifdef DEBUG
-      {
- A4GL_debug ("after draw_arr (3) mform=%p", mform);
-      }
-      {
- A4GL_debug ("Searching for form");
-      }
-      {
- A4GL_find_ptr_debug (form);
-      }
-      {
- A4GL_debug ("Searching for mform");
-      }
-      {
- A4GL_find_ptr_debug (mform);
-      }
-      {
- A4GL_debug ("form_win(mform)=%p", form_win (mform));
-      }
-#endif
-
-      draw_arr (arr, -1, arr->arr_line);
-      A4GL_mja_wrefresh (currwin);
-
-
 	//A4GL_zrefresh();
 
       a = A4GL_getch_win ();
-	A4GL_debug("Got a as %x\n",a);
+      A4GL_debug("Got a as %x\n",a);
       m_lastkey = a;
     }
+
+
+
   redisp = 0;
+
+  if (a==A4GL_key_val ("ACCEPT")) {
+	a=27;
+  }
+
   switch (a)
     {
+    case '\t':
+    case A4GLKEY_RIGHT:
     case A4GLKEY_DOWN:
       A4GL_debug ("Key down");
       if (arr->arr_line < arr->no_arr)
@@ -406,6 +399,7 @@ disp_loop (struct s_disp_arr *arr)
       return -10;
       break;
 
+    case A4GLKEY_LEFT:
     case A4GLKEY_UP:
       if (arr->arr_line > 1)
 
@@ -440,7 +434,6 @@ disp_loop (struct s_disp_arr *arr)
       A4GL_set_scr_line (arr->scr_line);
       return -10;
       break;
-
     case 27:
       return 0;			/* escape */
 
@@ -671,6 +664,8 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_l
   int a;
   va_list ap;
   int flg;
+int was_disabled=0;
+int orig_set=0;
   struct s_form_dets *formdets;
   FIELD **field_list;
   int nofields;
@@ -687,11 +682,25 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_l
 
   A4GL_debug("disp_arr_fields_v2 - %d fields",nofields);
 
-  if (first_only) nofields=0;
+  if (first_only) {
+	int n;
+	int n2;
+		n=field_opts(field_list[0]);
+		orig_set=n;
+		n2=n;
+		A4GL_debug("First only set : %x %x %x",n,O_ACTIVE,O_EDIT);
+		nofields=0;
+		if ((n&O_EDIT)==0) { was_disabled=1; n2+=O_EDIT;}
+		if ((n&O_ACTIVE)==0) { was_disabled=1; n2+=O_ACTIVE;}
+		A4GL_debug("First only set now  %x %x %x",n2,O_ACTIVE,O_EDIT);
+		set_field_opts(field_list[0],n2);
+	}
 
   for (a=nofields;a>=0;a--) {
   	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
+	A4GL_debug("f=%p",f);
   	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, f);
+	A4GL_debug("Attr=%d",attr);
   	if (attr != 0) A4GL_set_field_attr_with_attr (field_list[a], attr,FGL_CMD_DISPLAY_CMD);
 
   	if (!blank) {
@@ -705,8 +714,18 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_l
 			A4GL_setnull(disp->binding[a].dtype, cptr,disp->binding[a].size);
                         A4GL_push_null (disp->binding[a].dtype, disp->binding[a].size);
         }
+
+
   	A4GL_display_field_contents(field_list[a],disp->binding[a].dtype,disp->binding[a].size,cptr);
-	if (first_only) set_current_field (formdets->form, field_list[a]);
+
+	if (first_only) {
+		int was_disabled=0;
+
+		set_current_field (formdets->form, field_list[a]);
+		pos_form_cursor(formdets->form);
+		A4GL_mja_wrefresh (currwin);
+		if (orig_set) set_field_opts(field_list[0],orig_set);
+	}
 
   }
   free(field_list);

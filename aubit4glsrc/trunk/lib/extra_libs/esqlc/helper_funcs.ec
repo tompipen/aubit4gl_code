@@ -17,7 +17,6 @@ if (dir=='i') {
 	A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 	A4GL_push_variable(a4gl,(size<<16)+5);
    	A4GL_pop_var2(&b,0,0x28);
-	//printf("Ptr=%s\n",b);
 	deccvasc(b,strlen(b),infx);
 
 }
@@ -153,7 +152,6 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 	
 	if (mode=='i') {
 		if (A4GL_isnull(0,(void *)a4gl)) {
-			//printf("Making infx null\n");
 				rsetnull(CCHARTYPE,infx);
 			return;
 	
@@ -174,7 +172,6 @@ short  mdy[3];
 int mdy_i[3];
 	if (mode=='i') {
 		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);return;}
-		printf("Getdate\n");
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
 		mdy[0]=mdy_i[0]; // In aubit - these are integers
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
@@ -183,10 +180,9 @@ int mdy_i[3];
 	}
 
 	if (mode=='o') {
-	printf("gen_Dateno\n");
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		rjulmdy(*infx,mdy); 				// Get the MDY from informix
-		printf("%d %d %d\n",mdy[1],mdy[0],mdy[2]);
+		//printf("%d %d %d\n",mdy[1],mdy[0],mdy[2]);
 		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
 	}
 }

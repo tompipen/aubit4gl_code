@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.21 2003-07-04 19:13:09 mikeaubury Exp $
+# $Id: pointers.c,v 1.22 2003-07-21 21:40:12 mikeaubury Exp $
 #
 */
 
@@ -290,14 +290,14 @@ A4GL_find_pointer (const char *pname, char t)
   buff.name[1] = 0;
   strcat (buff.name, pname);
   buff.ptr = 0;
-  A4GL_debug ("10 Finding %s", buff.name);
+  A4GL_debug ("30 Finding %s", buff.name);
   a = FIND (&buff);
-  A4GL_debug ("A=%p", a);
+  //A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
       node = *(struct s_node **) a;
 
-      A4GL_debug ("20 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
+      A4GL_debug ("30 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
       return node->ptr;
     }
   else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.12 2003-07-16 08:18:26 afalout Exp $
+# $Id: pack_packed.c,v 1.13 2003-07-21 21:40:13 mikeaubury Exp $
 #*/
 
 /**
@@ -498,12 +498,9 @@ input_long (char *name, long *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
-  A4GL_debug ("Input_long val=%p", val);
   a = fread (val, 1, sizeof (long), infile);
 
-  A4GL_debug ("Got long as %d\n", *val);
   *val = ntohl (*val);
-  A4GL_debug ("->Got long as %d\n", *val);
   return a;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.18 2003-06-30 17:36:14 mikeaubury Exp $
+# $Id: report.c,v 1.19 2003-07-21 21:40:12 mikeaubury Exp $
 #
 */
 
@@ -436,7 +436,7 @@ sz (int d, int s)
 
     case 8:
     case 5:			/* decimal */
-      return "(16,32)";
+      return "(32,16)";
 
     case 0:
     case 13:

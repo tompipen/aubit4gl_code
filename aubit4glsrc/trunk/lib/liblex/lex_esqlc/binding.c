@@ -39,7 +39,7 @@ print_conversions (char i)
     }
   if (i == 'o')
     {
-      printc ("if (a4gl_status==0) { %s } /* buff_out */\n", buff_out);
+      printc ("{extern long a4gl_status; if (a4gl_status==0) { %s } }/* buff_out */\n", buff_out);
     }
   if (i == 'I')
     {
@@ -47,7 +47,7 @@ print_conversions (char i)
     }
   if (i == 'O')
     {
-      printh ("if (a4gl_status==0) { %s } /* buff_out */\n", buff_out);
+      printh ("{ extern long a4gl_status; if (a4gl_status==0) { %s } }/* buff_out */\n", buff_out);
     }
   if (i=='0') {
 	strcpy(buff_in,"");
@@ -158,7 +158,7 @@ make_sql_bind (char *sql, char *type)
 	if (strchr (type, 'i')) {
 
 		char comma=' ';
-      		printc("static struct BINDING native_binding_i[]={\n");
+      		printc("struct BINDING native_binding_i[]={\n");
 		if(ibindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<ibindcnt;a++) {
 			printc("   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
@@ -172,7 +172,7 @@ make_sql_bind (char *sql, char *type)
 
 	if (strchr (type, 'o')) {
 		char comma=' ';
-      		printc("static struct BINDING native_binding_o[]={\n");
+      		printc("struct BINDING native_binding_o[]={\n");
 		if(obindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			printc(" %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
@@ -182,7 +182,7 @@ make_sql_bind (char *sql, char *type)
 		
  		if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
 		char comma=' ';
-      		printc("static struct BINDING native_binding_o_ind[]={\n");
+      		printc("struct BINDING native_binding_o_ind[]={\n");
 		if(obindcnt==0) { printc("{0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			printc(" %c{&_voi_%d,%d,%d}",comma,a,2,4);

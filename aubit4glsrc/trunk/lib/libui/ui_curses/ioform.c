@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.51 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.52 2003-07-21 21:40:13 mikeaubury Exp $
 #*/
 
 /**
@@ -105,6 +105,7 @@ static void A4GL_set_init_pop_attr (FIELD * field, int attr);
 static void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type);
 
 static FIELD *A4GL_scan_for_field (char *s);
+static FIELD *A4GL_scan_for_field_n (char *s,int n);
 static int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
 static void A4GL_bomb_out (void);
 static int A4GL_get_curr_infield (void);
@@ -1216,32 +1217,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 
 
-	/*
-			{
-			  A4GL_push_param (buff, fprop->datatype);
-			  if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
-			    {
-			      A4GL_push_char (A4GL_get_str_attribute
-					      (fprop, FA_S_FORMAT));
-			      A4GL_pushop (OP_USING);
-			    }
-			  A4GL_pop_param (buff, DTYPE_CHAR,
-					  A4GL_get_field_width (form->
-								currentfield));
-			  A4GL_mja_set_field_buffer (form->currentfield, 0,
-						     buff);
-			}
-		      else
-			{
-			  //push_char(acl_getenv("FIELD_ERROR_MSG"),0);
-			  //display_error(1,0);
-			  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-			  A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
-			  set_current_field (mform, form->currentfield);
-			  return -4;
-			}
-		    }
-	*/
 	      }
 	  }
     }
@@ -2844,6 +2819,32 @@ A4GL_scan_for_field (char *s)
   return 0;
 }
 
+FIELD *
+A4GL_scan_for_field_n (char *s,int n)
+{
+  struct s_form_dets *f;
+  char buff[256];
+  FIELD *fld;
+  int a;
+  sprintf(buff,"%s[%d]",s,n);
+
+  f = A4GL_get_curr_form (1);
+  if (f == 0)
+    return 0;
+
+  for (a = 0; (fld = (f->form_fields[a])); a++)
+    {
+      A4GL_debug ("Calling A4GL_field_name_match with %p", fld);
+      if (A4GL_field_name_match (fld, buff))
+	{
+	  A4GL_debug ("Got a A4GL_match - returning %p", fld);
+	  return fld;
+	}
+    }
+  return 0;
+}
+
+
 
 /**
  *
@@ -2905,6 +2906,7 @@ A4GL_fgl_getfldbuf_ap (char *s, int n,va_list *ap)
 {
   struct s_form_dets *f;
   FIELD *fld;
+  int nr;
 
 
   A4GL_debug ("In fgl_getfldbuf - @todo ALLOW MORE THAN ONE FIELD");
@@ -2917,14 +2919,24 @@ A4GL_fgl_getfldbuf_ap (char *s, int n,va_list *ap)
       A4GL_exitwith ("No current form");
       return -1;
     }
-  fld = (FIELD *) A4GL_scan_for_field (s);
-  if (fld == 0)
-    {
-      A4GL_exitwith ("Field name not found on form");
-      return -1;
-    }
-  A4GL_push_char (field_buffer (fld, 0));
-  return 1;
+
+  nr=0;
+
+  while (s!=0) {
+  	fld = (FIELD *) A4GL_scan_for_field_n (s,n);
+  	if (fld == 0) {
+      		A4GL_exitwith ("Field name not found on form");
+      		return -1;
+    	}
+  	A4GL_push_char (field_buffer (fld, 0));
+  	nr++;
+
+  	s=va_arg(ap,char *);
+	if (s==0) break;
+	n=va_arg(ap,int);
+  }
+	
+  return nr;
 }
 
 

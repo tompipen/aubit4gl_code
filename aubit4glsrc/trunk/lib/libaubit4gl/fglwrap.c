@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.47 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.48 2003-07-21 21:40:12 mikeaubury Exp $
 #
 */
 
@@ -115,10 +115,17 @@ char *A4GL_clob (char *s, char *p);
 void
 A4GL_fgl_end_4gl_0 (void)
 {
-
 A4GL_fgl_end();
 exit (0);
 }
+
+void
+A4GL_fgl_end_4gl_1 (void)
+{
+A4GL_fgl_end();
+exit (1);
+}
+
 
 void
 A4GL_fgl_end ()
@@ -835,9 +842,9 @@ A4GL_nodef_init ()
   int ret;
 
 #ifdef OTHER_UNIX
-  sa.sa_sigaction = (void *) A4GL_fgl_end_4gl_0;
+  sa.sa_sigaction = (void *) A4GL_fgl_end_4gl_1;
 #else
-  sa.sa_handler = (void *) A4GL_fgl_end_4gl_0;
+  sa.sa_handler = (void *) A4GL_fgl_end_4gl_1;
 #endif
   sigemptyset (&sa.sa_mask);
   sa.sa_flags = 0;

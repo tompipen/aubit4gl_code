@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.25 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: ops.c,v 1.26 2003-07-21 21:40:12 mikeaubury Exp $
 #
 */
 
@@ -105,6 +105,7 @@ char *A4GL_display_text (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
 
 static char *make_using(char *ptr) ;
+static char *make_using_sz(char *ptr,int sz,int dig,int dec) ;
 
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
@@ -1178,12 +1179,15 @@ A4GL_debug("Display_decimal size=%d",size);
         if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
                     strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
         } else {
-                memset(using_buff,'-',255);
-                using_buff[size_c]=0;
-                using_buff[size_c-4]='&';
-                using_buff[size_c-3]='.';
-                using_buff[size_c-2]='&';
-                using_buff[size_c-1]='&';
+		char *ptr2;
+		ptr2=ptr;
+                //memset(using_buff,'-',255);
+                //using_buff[size_c]=0;
+                //using_buff[size_c-4]='&';
+                //using_buff[size_c-3]='.';
+                //using_buff[size_c-2]='&';
+                //using_buff[size_c-1]='&';
+        	strcpy(using_buff,make_using_sz(ptr2,size_c,NUM_DIG(ptr2)*2,NUM_DEC(ptr2)));
         }
         A4GL_push_dec (ptr,0,size);
         A4GL_push_char(using_buff);
@@ -1403,4 +1407,38 @@ buff2[dec]=0;
 strcat(buff,buff2);
 return buff;
 }
+
+
+static char *make_using_sz(char *ptr,int sz,int dig,int dec) {
+static char buff[256];
+int a;
+int c;
+int l;
+A4GL_debug("make_using_sz - size=%d num dec = %d dig=%d",sz,dec,dig);
+
+l=1; // '-'
+l+=dec;
+if (dec) l++; // '.'
+l+=dig-dec;
+if (l>sz && dec) return make_using_sz(ptr,sz,dig,dec-1);
+if (l>sz) {
+	// Can't do it...
+	memset(buff,'*',sz);
+	buff[sz]=0;
+	return buff;
+}
+memset(buff,'-',255);
+buff[sz]=0; // Maximum length
+c=sz-1;
+a=0;
+if (dec) {
+	while (a++<dec) {
+		buff[c--]='&';
+	}
+	buff[c--]='.';
+}
+buff[c--]='&';
+return buff;
+}
+
 /* ========================== EOF ========================== */
