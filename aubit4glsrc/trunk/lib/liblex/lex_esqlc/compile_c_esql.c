@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.108 2005-02-25 13:25:38 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.109 2005-02-26 09:40:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.108 2005-02-25 13:25:38 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.109 2005-02-26 09:40:43 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1454,8 +1454,15 @@ char delim_s[256];
 
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
-  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",7)==0) {
+  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",6)!=0) {
+		a4gl_yyerror("Cannot do an ESQL_UNLOAD for a prepared statement");
+		return;
+  }
+
+
+  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",6)==0) {
 	int ni;
+		printf("UNLOAD1\n");
 		printc("{");
   		ni = print_bind_definition ('i');
 		print_bind_set_value('i');
