@@ -6,46 +6,66 @@
 
 
 update_statement:
-	UPDATE table_name XSET set_clause_list where_upd
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	UPDATE table_name {
+		strcpy(current_upd_table,$<str>2);
+	} XSET set_clause_list  {
+		strcpy(current_upd_table,"");
+	}
+where_upd
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>4,$<str>5,$<str>7);}
 	;
 
-where_upd : {strcpy($<str>$,"");}
+where_upd : {strcpy($<str>$,"");
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
+	}
 	| WHERE_CURRENT_OF fetch_cursor_name { 
 		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
 		rm_quotes($<str>2);
 		sprintf($<str>$," %s %s",$<str>1,$<str>2);
-}
-	| WHERE search_condition 
-{
-pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
-sprintf($<str>$," %s %s",$<str>1,$<str>2);
-}
+	}
+	| WHERE search_condition {
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
+		sprintf($<str>$," %s %s",$<str>1,$<str>2);
+	}
 	;
 
 
 set_clause_list: 
-    special_upd_clause
-    | OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);
-	ansi_violation("Update (..)=(..)",1);
-	}
+    OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {
+		sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);
+		if (isyes(acl_getenv("FIXUPDATE"))) { 
+			strcpy($<str>$,fix_update_expr(0)); 
+			ansi_violation("Update (..)=(..)",0);
+		}  else {
+		ansi_violation("Update (..)=(..)",1);
+		}
+    }
     | upd_columns 
-;
-
-special_upd_clause : 
-	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
-	ansi_violation("Update (..)=(..)",1);
+    | MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+		push_gen(UPDCOL,"*");
+		if (isyes(acl_getenv("FIXUPDATE"))) { 
+			strcpy($<str>$,fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
 }
 	| MULTIPLY EQUAL upd_val_list  {
 		char *ptr;
 		ptr=$<str>3;
-		printf("upd_val_list = '%s'\n",$<str>3) ;
+		push_gen(UPDCOL,"*");
+
 		if (ptr[0]==' ' && ptr[1]=='(') {
 			sprintf($<str>$," %s %s %s  ",$<str>1,$<str>2,$<str>3);
 		} else {
 			sprintf($<str>$," %s %s(%s) ",$<str>1,$<str>2,$<str>3);
 		}
-		ansi_violation("Update (..)=(..)",1);
+		if (isyes(acl_getenv("FIXUPDATE"))) { 
+			strcpy($<str>$,fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
 		}
 ;
 
@@ -68,11 +88,15 @@ upd_col_list  : upd_column_name {push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>
                 upd_col_list COMMA upd_column_name {push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 
 ;
-upd_val_list  : upd_val {push_gen(UPDVAL,$<str>1);} | 
-                upd_val_list COMMA upd_val {push_gen(UPDVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
+upd_val_list  : upd_val | 
+                upd_val_list COMMA upd_val { sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
 ;
 
-upd_val : value_expression | KW_NULL | subquery  ;
+upd_val : 
+	subquery  {push_gen(UPDVAL,"<SUBQUERY>");}
+	| KW_NULL {push_gen(UPDVAL,"NULL");}
+	|value_expression 
+;
 
 rollback_statement:
 	ROLLBACK_W 
@@ -135,6 +159,8 @@ fetch_statement:
     }
 ;
 
+
+
 fetch_part: 
 	fetch_place  fetch_cursor_name
 {sprintf($<str>$,"%s,%s",$<str>2,$<str>1);
@@ -184,21 +210,21 @@ sprintf($<str>$,"%d,ibind",ni);
 
 fetch_place : 
 	FIRST {
-sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
+		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
 	| LAST
-{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE);}
 	| NEXT
-{sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
 	| PREVIOUS
-{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
 	| PRIOR
-{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
 	| CURRENT
-{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
 	| RELATIVE fgl_expr
-{sprintf($<str>$,"%d,pop_int()",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,pop_int()",FETCH_RELATIVE);}
 	| ABSOLUTE fgl_expr
-{sprintf($<str>$,"%d,pop_int()",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,pop_int()",FETCH_ABSOLUTE);}
 ;
 
 
@@ -1102,6 +1128,11 @@ column_specification : value_expression;
 
 
 value_expression:
+	value_expression_complex {push_gen(UPDVAL,$<str>1);}
+	| var_ident_ibind 	/* push_gen handled by ibind */
+;
+
+value_expression_complex :
 	value_expression DIVIDE value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression units_qual
@@ -1112,7 +1143,6 @@ value_expression:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression MINUS value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| var_ident_ibind
 	| literal
 	| KW_TRUE
 	| KW_FALSE

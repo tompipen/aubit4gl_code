@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.102 2003-02-17 12:03:16 mikeaubury Exp $
+# $Id: mod.c,v 1.103 2003-02-20 21:33:37 mikeaubury Exp $
 #
 */
 
@@ -63,6 +63,8 @@
 #define MAXMENU 		10
 #define MAXMENUOPTS 	10
 
+#define UPDCOL 0
+#define UPDVAL 1
 #define a0_width         (float) 2380.0
 #define a0_height        (float) 3368.0
 #define a1_width         (float) 1684.0
@@ -114,6 +116,7 @@ static int 	inc = 0;
 static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int 	upd_using_notpk_cnt = 0;
+extern char current_upd_table[64];
 //static int 	const_cnt = 0;
 
 int 		rep_type = 0; /** The report type */
@@ -1703,10 +1706,11 @@ pop_all_gen (int a, char *s)
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
-      if (z > 0)
-	debug ("%s ", s);
+      if (z > 0) debug ("%s ", s);
+
       debug ("%s", gen_stack[a][z]);
     }
+    gen_stack_cnt[a]=0;
 }
 
 
@@ -1796,6 +1800,11 @@ add_bind (char i, char *var)
 	{
 	  ibind[ibindcnt].start_char_subscript=0;
 	  ibind[ibindcnt].end_char_subscript=0;
+
+	  if (strlen(current_upd_table)) {
+		push_gen(UPDVAL,"?");
+	  }
+
 	  if (strncmp(var," substr(",8)!=0) {
 	  	strcpy (ibind[ibindcnt].varname, var);
 	  	ibind[ibindcnt].dtype = dtype;
@@ -1817,7 +1826,7 @@ add_bind (char i, char *var)
 	  	ibind[ibindcnt].dtype = s_dtype;
 		ibind[ibindcnt].start_char_subscript=s_sstart;
 		ibind[ibindcnt].end_char_subscript=s_send;
-		printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
+		//printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
 	  }
 	  ibindcnt++;
 	}
@@ -3584,6 +3593,69 @@ int c;
 	buff[c++]='1';
 	buff[c]=0;
 	return buff;
+}
+
+/**
+ * @param mode If mode is set to 1 - expect a '*' as column names...
+*/
+int fix_update_expr(int mode) {
+  char big_buff[20000];
+int a;
+  int rval;
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
+  char csize[20];
+  //char cdtype[20];
+  char buff[1000];
+  char *ccol;
+
+printf("current_upd_table=%s\n",current_upd_table);
+
+if (mode==1) {
+	// It will only be a '*' anyway....
+  	if (db_used == 0)
+  	{
+    		sprintf (buff, "You cannot use update * =  without specifying a database");
+    		yyerror (buff);
+    		return 0;
+  	}
+	
+    	gen_stack_cnt[UPDCOL]=0;
+
+	strcpy(colname,"");
+  	rval = A4GLSQL_get_columns(current_upd_table,colname,&idtype, &isize);
+	if (rval==0) {
+		yyerror("Table is not in the database");
+		return 0;
+	}
+
+
+  	while (1)
+  	{
+    		colname[0] = 0;
+    		rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
+    		strcpy(colname,ccol);
+    		if (rval == 0 ) break;
+    		trim_spaces (colname);
+		push_gen(UPDCOL,colname);
+  	}
+	A4GLSQL_end_get_columns();
+}
+
+printf("Columns =%d values=%d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]) ;
+if (gen_stack_cnt[UPDCOL]!=gen_stack_cnt[UPDVAL]) {
+	yyerror("Number of columns in update not the same as number of values");
+}
+
+for (a=0;a<gen_stack_cnt[UPDCOL];a++) {
+  if (a) strcat(big_buff,",");
+  sprintf(buff,"%s=%s",gen_stack[UPDCOL][a],gen_stack[UPDVAL][a]);
+  strcat(big_buff,buff);
+}
+
+//printf("---> %s\n",big_buff);
+return big_buff;
 }
 
 /* ================================= EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.57 2003-02-19 22:28:36 afalout Exp $
+# $Id: lexer.c,v 1.58 2003-02-20 21:33:31 mikeaubury Exp $
 #*/
 
 /**
@@ -989,7 +989,7 @@ int r;
 short *stack_cnt;
 
 
-  debug("In yylex ... yystate=%d\n", yystate);
+  //printf("In yylex ... yystate=%d\n", yystate);
   //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
   //for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
 		//printf(" -->%d\n",*stack_cnt);
@@ -1017,7 +1017,7 @@ short *stack_cnt;
 
   a = chk_word (yyin, buff);
 
-  debug ("chk_word returns token=%d, buff=%s\n", a, buff);
+ printf ("chk_word returns token=%d, buff=%s state=%d\n", a, buff,yystate);
 
   //if (chk4var)
   //a = NAMED_GEN;
@@ -1025,9 +1025,17 @@ short *stack_cnt;
 
 allow=allow_token_state(yystate,a);
 debug("Allow_token_State = %d\n",allow);
+
+
 if (allow==0&&isident(buff)) a=NAMED_GEN;
 
+if (allow_token_state(yystate,USER_DTYPE)&&a==NAMED_GEN) {
+	if (find_datatype(upshift(buff))) {
+		a=USER_DTYPE;
+	}
+}
 
+printf("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 #ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
    * can easily be confused - any keyword tokens (they start from 1000) 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.39 2003-02-19 08:46:40 mikeaubury Exp $
+# $Id: esql.ec,v 1.40 2003-02-20 21:34:22 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.39 2003-02-19 08:46:40 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.40 2003-02-20 21:34:22 mikeaubury Exp $";
 #endif
 
 /*
@@ -2347,7 +2347,7 @@ void
 A4GLSQL_commit_rollback (int mode)
 {
   debug ("In commit_rollback");
-
+#ifndef NO_TRANSACTIONS
   switch (mode)
   {
     case -1:
@@ -2360,6 +2360,7 @@ A4GLSQL_commit_rollback (int mode)
       EXEC SQL COMMIT WORK;
       break;
   }
+#endif
 /*
   if ( isSqlError() )
     return 1;
