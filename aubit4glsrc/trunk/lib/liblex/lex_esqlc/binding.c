@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.31 2004-07-05 16:16:09 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.32 2004-09-20 13:33:43 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -66,7 +66,7 @@ print_conversions (char i)
     }
   if (i == 'o')
     {
-      printc ("{extern long a4gl_status; if (a4gl_status==0) { %s } }/* buff_out */\n", buff_out);
+      printc ("{if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", buff_out);
     }
   if (i == 'I')
     {
@@ -74,7 +74,7 @@ print_conversions (char i)
     }
   if (i == 'O')
     {
-      printh ("{ extern long a4gl_status; if (a4gl_status==0) { %s } }/* buff_out */\n", buff_out);
+      printh ("{ if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", buff_out);
     }
   if (i=='0') {
 	strcpy(buff_in,"");

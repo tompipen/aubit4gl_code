@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.61 2004-09-19 16:12:09 mikeaubury Exp $
+# $Id: ops.c,v 1.62 2004-09-20 13:31:52 mikeaubury Exp $
 #
 */
 
@@ -1263,7 +1263,10 @@ A4GL_date_date_ops (int op)
   switch (op)
     {
     case OP_ADD:
-      A4GL_push_long (a + b);
+	a+=b;
+	if (a<=2958464) A4GL_push_date (a);
+	else A4GL_push_date(0);
+	
       return;
     case OP_SUB:
       A4GL_push_long (a - b);
@@ -1366,7 +1369,10 @@ A4GL_date_int_ops (int op)
   switch (op)
     {
     case OP_ADD:
-      A4GL_push_date (a + b);
+	a+=b;
+	if (a<=2958464) A4GL_push_date (a);
+	else A4GL_push_date(0);
+
       return;
     case OP_SUB:
       A4GL_push_date (a - b);

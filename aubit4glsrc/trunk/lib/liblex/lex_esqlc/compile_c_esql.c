@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.85 2004-09-18 18:33:03 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.86 2004-09-20 13:33:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.85 2004-09-18 18:33:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.86 2004-09-20 13:33:44 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1492,6 +1492,8 @@ print_copy_status ()
 {
   printc ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
   printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
+  printc ("A4GLSQL_SET_SQLCA_SQLWARN;");
+
   if(esql_type()==2)
     // Postgres/ecpg
     printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
