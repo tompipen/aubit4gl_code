@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.5 2002-10-03 12:34:08 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.6 2003-01-21 08:25:55 afalout Exp $
 #*/
 
 /**
@@ -84,34 +84,6 @@ char *find_attr (char *s, char *n);	/* Extract a specified attribute from a stri
 char *find_contents (char *s);		/* Extract the tag contents from a string */
 
 /*
-int input_int (char *name, int *val, int ptr, int isarr);
-int input_long (char *name, long *val, int ptr, int isarr);
-int input_bool (char *name, int *val, int ptr, int isarr);
-int input_string (char *name, char **val, int ptr, int isarr);
-int input_double (char *name, double *val, int ptr, int isarr);
-int input_start_struct (char *s, char *n, int ptr, int isarr);
-int input_end_struct (char *s, char *n);
-int input_start_union (char *s, char *n, int ptr, int isarr);
-int input_ptr_ok (void);
-int input_end_union (char *s, char *n);
-int input_enum (char *name, int *d);
-
-int output_int (char *name, int val, int ptr, int isarr);
-int output_long (char *name, long val, int ptr, int isarr);
-//int output_bool (char *name, int val, int ptr, int isarr);
-int output_string (char *name, char *val, int ptr, int isarr);
-int output_double (char *name, double val, int ptr, int isarr);
-int output_start_struct (char *s, char *n, int ptr, int isarr);
-int output_end_struct (char *s, char *n);
-int output_start_union (char *s, char *n, int ptr, int isarr);
-int output_nullptr (char *s);
-int output_okptr (char *s);
-int output_end_union (char *s, char *n);
-int output_enum (char *name, char *s, int d);
-*/
-
-
-/*
 --------------------------------
  Internal helper functions
 --------------------------------
@@ -120,13 +92,6 @@ static void chk (void *x);
 
 void print_level (void);
 char * pr_elem (int a, int p);
-//int open_packer (char *basename, char dir);
-//void close_packer (char dir);
-//int output_start_array (char *s, int type, int len);
-//int output_end_array (char *s, int type);
-//int input_start_array (char *s, int type, int *len);
-//int input_end_array (char *s, int type);
-//int can_pack_all(char *name);
 
 
 /*
@@ -143,7 +108,7 @@ char * pr_elem (int a, int p);
 void
 print_level (void)
 {
-  int a;
+int a;
   #ifdef INDENT
 	  for (a = 0; a < level; a++)
 	    {
@@ -283,39 +248,47 @@ return;
 int
 open_packer (char *basename, char dir)
 {
-  char buff[256];
+char buff[256];
+
   sprintf(buff,"Basename=%s dir=%c\n",basename,dir);
   debug(buff);
-  sprintf (buff, "%s.xml", basename);
-
+  sprintf (buff, "%s%s", basename,acl_getenv ("A4GL_XML_EXT"));
+  debug(buff);
 
   if (toupper (dir) == 'O')
     {
-      outfile = fopen (buff, "w");
-      if (outfile) {
-         fprintf(outfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-	 return 1;
-      }
-      return 0;
+		/* write XML file */
+				outfile = fopen (buff, "w");
+		if (outfile) {
+			fprintf(outfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+			return 1;
+		} else {
+			exitwith("Unable to open form");
+            exit (46);
+		}
     }
 
   if (toupper (dir) == 'I')
     {
-      infile = fopen (buff, "r");
-      if (infile==0) {
-		exitwith("Unable to open form");
-		return 0;
-	}
-      /* Get rid of the ?xml line at the beginning */
-      fgets(buff,sizeof(buff),infile);
+		/* read XML file */
+		infile = fopen (buff, "r");
+		if (infile==0) {
+			exitwith("Unable to open form");
+            exit (45);
+		}
 
-      if (infile)
-	return 1;
+		/* Get rid of the ?xml line at the beginning */
+		fgets(buff,sizeof(buff),infile);
 
-      return 0;
+		if (infile)
+			return 1;
+
     }
 
+  debug("Error in open_packer()\n");
+
   return 0;
+
 
 }
 
@@ -326,11 +299,15 @@ open_packer (char *basename, char dir)
 void
 close_packer (char dir)
 {
+  debug("In close_packer()");
+
   if (toupper (dir) == 'O')
     fclose (outfile);
 
   if (toupper (dir) == 'I')
     fclose (infile);
+
+  debug("exiting close_packer()");
 }
 
 /*
@@ -413,9 +390,16 @@ output_bool (char *name, int val, int ptr, int isarr)
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
+
   print_level ();
+  debug ("in output_string() outfile=%p\n",outfile);
+
   fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR>\n", name,
 	   pr_elem (isarr, ptr), val);
+
+
+  debug ("exit output_string()\n");
+
   return 1;
 }
 

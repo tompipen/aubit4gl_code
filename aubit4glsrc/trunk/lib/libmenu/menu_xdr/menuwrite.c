@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.9 2002-10-18 07:54:51 afalout Exp $
+# $Id: menuwrite.c,v 1.10 2003-01-21 08:25:55 afalout Exp $
 #*/
 
 /**
@@ -111,7 +111,7 @@ error_with (char *s, char *a, char *b)
    printf (s, a, b);
 
   debug ("\n");
-  exit (0);
+  exit (7);
 }
 
 
@@ -130,7 +130,7 @@ write_menu (void)
   menu_list *ptr;
   ptr=&the_menus;
   strcpy (fname, outputfilename);
-  strcat (fname, ".mnu");
+  strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
 
   strcpy (fname2, outputfilename);
   strcat (fname2, ".c");
@@ -138,8 +138,10 @@ write_menu (void)
 
   fxx=fopen(fname,"wb");
 
-  printf("has %d menus\n",the_menus.menus.menus_len);
- 
+  debug("has %d menus\n",the_menus.menus.menus_len);
+
+  debug("writing in XDR format file %s\n",fname);
+
   if (fxx == 0)
     {
       error_with ("Couldnt open file for write (%s)\n", fname, 0);
@@ -159,7 +161,7 @@ write_menu (void)
 	if (as_c) {
 		int cnt=0;
 		int a;
-		debug("Asc...\n");
+		debug("Asc\n");
 		fxx=fopen(fname,"r");
 		fyy=fopen(fname2,"w");
 		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.76 2003-01-04 01:58:30 afalout Exp $
+# $Id: Makefile.in,v 1.77 2003-01-21 08:25:52 afalout Exp $
 #
 
 ROOT    =..
@@ -46,6 +46,39 @@ include ${ROOT}/incl/Makefile-common
 #target names are maintained in configure.in
 ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
 
+LIBAUBIT4GL_PATH    =libaubit4gl
+LIBSQLODBC_PATH     =libsql/odbc
+LIBMENUXDR_PATH		=libmenu/menu_xdr
+LIBMENUNOMENU_PATH	=libmenu/menu_nomenu
+LIBMENUGENERIC_PATH	=libmenu/menu_generic
+LIBPACKERPACKED_PATH=libpacker/packed
+LIBPACKERPERL_PATH  =libpacker/perl
+LIBPACKERXDR_PATH   =libpacker/xdr
+LIBPACKERXML_PATH   =libpacker/xml
+
+
+#Specify dependencies for libraries, so they get rebuilt if dependencies change:
+#FIXME: do this for all libraries in this make file
+LIBAUBIT4GL_DEPS	=$(wildcard ${LIBAUBIT4GL_PATH}/*.c) $(wildcard ${LIBAUBIT4GL_PATH}/*.h) \
+					$(wildcard ${LIBAUBIT4GL_PATH}/*.spec) $(wildcard ${LIBAUBIT4GL_PATH}/Makefile) \
+                    resource/resource.c
+LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
+					$(wildcard ${LIBSQLODBC_PATH}/Makefile)
+LIBMENUXDR_DEPS		=$(wildcard ${LIBMENUXDR_PATH}/*.c) $(wildcard ${LIBMENUXDR_PATH}/*.h) \
+					$(wildcard ${LIBMENUXDR_PATH}/Makefile)
+LIBMENUNOMENU_DEPS	=$(wildcard ${LIBMENUNOMENU_PATH}/*.c) $(wildcard ${LIBMENUNOMENU_PATH}/*.h) \
+					$(wildcard ${LIBMENUNOMENU_PATH}/Makefile)
+LIBMENUGENERIC_DEPS	=$(wildcard ${LIBMENUGENERIC_PATH}/*.c) $(wildcard ${LIBMENUGENERIC_PATH}/*.h) \
+					$(wildcard ${LIBMENUGENERIC_PATH}/Makefile)
+LIBPACKERPACKED_DEPS=$(wildcard ${LIBPACKERPACKED_PATH}/*.c) $(wildcard ${LIBPACKERPACKED_PATH}/*.h) \
+					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile)
+LIBPACKERPERL_DEPS	=$(wildcard ${LIBPACKERPERL_PATH}/*.c) $(wildcard ${LIBPACKERPERL_PATH}/*.h) \
+					$(wildcard ${LIBPACKERPERL_PATH}/Makefile)
+LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXDR_PATH}/*.h) \
+					$(wildcard ${LIBPACKERXDR_PATH}/Makefile)
+LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXML_PATH}/*.h) \
+					$(wildcard ${LIBPACKERXML_PATH}/Makefile)
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -57,40 +90,14 @@ note:
 	@echo "Building: ${ALL}"
 
 ## ==================================================================
-##              Windows 32 DLL Targets in sub-makefiles
-## ==================================================================
-
-#FIXME: remove the need to have different target names, and remove this:
-
-#libSQL_nosql.dll:
-#	${MAKE} -C libsql/nosql nosql.dll
-
-libSQL_odbc32.dll:
-	${MAKE} -C libsql/odbc odbc32
-
-#libEXREPORT_NOPDF.dll:
-#	${MAKE} -C libpdf NOPDF.dll
-
-#libFORM_NOFORM.dll :
-#	${MAKE} -C libform/form_xdr dllFORM_NOFORM
-
-#libMENU_XDR.dll :
-#	${MAKE} -C libmenu/menu_xdr dllMENU_XDR
-
-#libMENU_NOMENU.dll :
-#	${MAKE} -C libmenu/menu_nomenu dllMENU_NOMENU
-
-#libRPC_XDR.dll:
-#	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
-
-#libRPC_XMLRPC.dll:
-#	${MAKE} -C librpc/xml_rpc dlllibRPC_XMLRPC
-
-
-## ==================================================================
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
+libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
+	${MAKE} -C ${LIBAUBIT4GL_PATH}
+
+##############
+#libLEX_
 
 libLEX_C${SO_EXT}:
 	${MAKE} -C liblex/lex_c
@@ -98,8 +105,8 @@ libLEX_C${SO_EXT}:
 libLEX_PERL${SO_EXT}:
 	${MAKE} -C liblex/lex_perl
 
-libMSG_NATIVE${SO_EXT}:
-	${MAKE} -C libmsg/msg_native
+##############
+#libUI_
 
 libUI_GTK${SO_EXT}:
 	$(MAKE) -C libui/ui_gtk
@@ -110,14 +117,8 @@ libUI_TUI${SO_EXT}:
 libUI_CONSOLE${SO_EXT}:
 	$(MAKE) -C libui/ui_console
 
-aubit-config:
-	${MAKE} -C resource
-
-loadmap:
-	${FAIL_OK}${MAKE} -C ${ROOT}/tools/loadmap
-
-libaubit4gl${SO_EXT_LINKABLE} :
-	${MAKE} -C libaubit4gl
+##############
+#libFORM_
 
 libFORM_NOFORM${SO_EXT} :
 	${MAKE} -C libform/noform
@@ -125,14 +126,23 @@ libFORM_NOFORM${SO_EXT} :
 libFORM_XDR${SO_EXT} :
 	${MAKE} -C libform/form_xdr
 
-libMENU_NOMENU${SO_EXT} :
-	${MAKE} -C libmenu/menu_nomenu
+libFORM_GENERIC${SO_EXT}:
+	${MAKE} -C libform/form_generic
 
-libMENU_GENERIC${SO_EXT} :
-	${MAKE} -C libmenu/menu_generic
+##############
+#libMENU_
 
-libMENU_XDR${SO_EXT} :
-	${MAKE} -C libmenu/menu_xdr
+libMENU_NOMENU${SO_EXT} : ${LIBMENUNOMENU_DEPS}
+	${MAKE} -C ${LIBMENUNOMENU_PATH}
+
+libMENU_GENERIC${SO_EXT} : ${LIBMENUGENERIC_DEPS}
+	${MAKE} -C ${LIBMENUGENERIC_PATH}
+
+libMENU_XDR${SO_EXT} : ${LIBMENUXDR_DEPS}
+	${MAKE} -C ${LIBMENUXDR_PATH}
+
+##############
+#libREPORT_
 
 libEXREPORT_PDF${SO_EXT}:
 	${MAKE} -C libpdf $@
@@ -140,38 +150,53 @@ libEXREPORT_PDF${SO_EXT}:
 libEXREPORT_NOPDF${SO_EXT}:
 	${MAKE} -C libpdf
 
-libPACKER_PACKED${SO_EXT}:
-	${MAKE} -C libpacker/packed
+##############
+#libPACKER_
 
-libPACKER_PERL${SO_EXT}:
-	${MAKE} -C libpacker/perl
+libPACKER_PACKED${SO_EXT}: ${LIBPACKERPACKED_DEPS}
+	${MAKE} -C ${LIBPACKERPACKED_PATH}
 
-libPACKER_XDR${SO_EXT}:
-	${MAKE} -C libpacker/xdr
+libPACKER_PERL${SO_EXT}: ${LIBPACKERPERL_DEPS}
+	${MAKE} -C ${LIBPACKERPERL_PATH}
 
-libPACKER_XML${SO_EXT}:
-	${MAKE} -C libpacker/xml
+libPACKER_XDR${SO_EXT}: ${LIBPACKERXDR_DEPS}
+	${MAKE} -C ${LIBPACKERXDR_PATH}
+
+libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
+	${MAKE} -C ${LIBPACKERXML_PATH}
+
+##############
+#libSQL_
 
 libSQL_nosql${SO_EXT}:
 	${MAKE} -C libsql/nosql
 
-libSQL_iodbc${SO_EXT}:
-	${MAKE} -C libsql/odbc iodbc
-
-libSQL_unixodbc${SO_EXT}:
-	${MAKE} -C libsql/odbc unixodbc
-
 libSQL_esql${SO_EXT}:
 	${MAKE} -C libsql/esqlc
 
-libSQL_ifxodbc${SO_EXT}:
-	${MAKE} -C libsql/odbc ifxodbc
+##############
+#libSQL_ (ODBC)
 
-libSQL_pgodbc${SO_EXT}:
-	${MAKE} -C libsql/odbc pgodbc
+libSQL_ifxodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} ifxodbc
 
-libSQL_sapodbc${SO_EXT}:
-	${MAKE} -C libsql/odbc sapodbc
+libSQL_pgodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} pgodbc
+
+libSQL_sapodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sapodbc
+
+libSQL_iodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} iodbc
+
+libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} unixodbc
+
+libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} odbc32
+
+##############
+#libRPC_
 
 libRPC_XDR${SO_EXT}:
 	${MAKE} -C librpc/sun_rpc
@@ -182,16 +207,22 @@ libRPC_NORPC${SO_EXT}:
 libRPC_XMLRPC${SO_EXT}:
 	${MAKE} -C librpc/xml_rpc
 
+##############
+#libEXDTYPE_
+
 libEXDTYPE_mpz${SO_EXT}:
 	${MAKE} -C libexdata $@
 
-libFORM_GENERIC${SO_EXT}:
-	${MAKE} -C libform/form_generic
+##############
+#libDATA_ & libXDRPACKER_
 
 libDATA_menu_list${SO_EXT} libDATA_struct_form${SO_EXT} libDATA_report${SO_EXT}\
 libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} \
 libXDRPACKER_report${SO_EXT}:
 	${MAKE} -C ../common/dataio
+
+libMSG_NATIVE${SO_EXT}:
+	${MAKE} -C libmsg/msg_native
 
 libIM_JABBER${SO_EXT_LINKABLE}:
 	$(MAKE) -C ../tools/jabber $@
@@ -211,13 +242,20 @@ libA4GL_HTML${SO_EXT_LINKABLE}:
 	@echo "Disabled because it needs 4glc - $@"
 	@touch $@
 
+aubit-config:
+	${MAKE} -C resource
+
+loadmap:
+	${FAIL_OK}${MAKE} -C ${ROOT}/tools/loadmap
+
+
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
-	clean.other clean.libui clean.libmenu clean.libform
+	clean.other clean.libui clean.libmenu clean.libform clean.libpacker
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
     bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak
 
@@ -237,7 +275,7 @@ clean.libincl:
 
 clean.libsql:
 	${MAKE} -C libsql/nosql clean
-	${MAKE} -C libsql/odbc clean
+	${MAKE} -C ${LIBSQLODBC_PATH} clean
 	${MAKE} -C libsql/esqlc clean
 	${MAKE} -C libsql/postgresql clean
 
@@ -250,17 +288,23 @@ clean.librpc:
 	${MAKE} -C librpc/xml_rpc clean
 
 clean.libmenu:
-	${MAKE} -C libmenu/menu_generic clean
-	${MAKE} -C libmenu/menu_xdr clean
-	${MAKE} -C libmenu/menu_nomenu clean
+	${MAKE} -C ${LIBMENUNOMENU_PATH} clean
+	${MAKE} -C ${LIBMENUGENERIC_PATH} clean
+	${MAKE} -C ${LIBMENUXDR_PATH} clean
 
 clean.libform:
 	${MAKE} -C libform/form_xdr clean
 	${MAKE} -C libform/noform clean
 	${MAKE} -C libform/form_generic clean
 
+clean.libpacker:
+	${MAKE} -C ${LIBPACKERPACKED_PATH} clean
+	${MAKE} -C ${LIBPACKERPERL_PATH} clean
+	${MAKE} -C ${LIBPACKERXDR_PATH} clean
+	${MAKE} -C ${LIBPACKERXML_PATH} clean
+
 clean.other:
-	${MAKE} -C libaubit4gl clean
+	${MAKE} -C ${LIBAUBIT4GL_PATH} clean
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
 	${MAKE} -C ${ROOT}/tools/loadmap clean

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.6 2003-01-08 20:01:13 mikeaubury Exp $
+# $Id: newpanels.c,v 1.7 2003-01-21 08:25:56 afalout Exp $
 #*/
 
 /**
@@ -1611,7 +1611,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   y = pop_int ();
   strcpy (buff, s);
   trim(buff);
-  strcat (buff, ".frm");
+  strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
   debug ("reading file %s - name=%s", buff,name);
   status = 0;
@@ -1686,7 +1686,7 @@ open_form (char *name)
   strncpy (buff, s,256);
   buff[255]=0;
   trim (buff);
-  strcat (buff, ".frm");
+  strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
   debug ("reading file %s ?", buff);
   A4GLSQL_set_status (0,0);
 

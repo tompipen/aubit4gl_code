@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.12 2003-01-15 11:43:32 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.13 2003-01-21 08:25:48 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -544,6 +544,14 @@ if test "$MAKE" = "1"; then
 	    EXEC="make clean"; runexec
 		EXEC="make tar.bin"; runexec
 
+fi
+
+if [ "$HOSTNAME" = "aptiva" ]; then
+	EXEC="cd $AUBITSRCDIR"; runexec
+	STOPONERROR=0
+	EXEC="make extra"; runexec
+	STOPONERROR=1
+	#EXEC="cd $AUBITBINDIR"; runexec
 fi
 
 #get file names of created archives:

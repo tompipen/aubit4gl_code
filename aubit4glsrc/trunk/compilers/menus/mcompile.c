@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.16 2002-09-26 07:59:58 afalout Exp $
+# $Id: mcompile.c,v 1.17 2003-01-21 08:25:50 afalout Exp $
 #*/
 
 /**
@@ -121,7 +121,10 @@ main (int argc, char* argv[])
 {
   char a[128];
   char b[128];
-  char c[128];
+  char c[128]; // menu source file name
+
+	setarg0(argv[0]);
+	debug("Initializing mcompile\n");
 
 	/* load settings from config file(s): */
 	build_user_resources();
@@ -147,11 +150,17 @@ main (int argc, char* argv[])
 
 		if (b[0] == 0)
 		{
+			/* add extension to the menu source file specified, if it don't 
+			have it already */
 			strcat (c, ".menu");
         }
 
 		bname (c, a, b);
-		strcpy (outputfilename, a); /* FIXME: output file has no extension ! */
+		strcpy (outputfilename, a);
+
+		//extendion will be added later:
+		//strcat (outputfilename, acl_getenv ("A4GL_MNU_EXT"));
+
 		yyin = mja_fopen (c, "r");
 
     }
@@ -161,14 +170,14 @@ main (int argc, char* argv[])
       exit (0);
     }
 
-	printf ("Outfile = %s\n", a);
+	debug ("Outfile = %s\n", outputfilename);
 
 	yydebug = 1;
 
 	if (yyin == 0)
     {
       printf ("Error opening file : %s\n", c);
-      exit (0);
+      exit (2);
     }
 
 	init_menu();
@@ -195,7 +204,7 @@ long ld = 0;
   fprintf (f, "| %s", s);
   write_cont(yyin);
   printf("Error compiling %s.menu - check %s.err (%d %d)\n",outputfile,outputfile,lineno,yylineno);
-  exit (2);
+  exit (3);
 }
 
 
@@ -233,8 +242,9 @@ menu *m;
 int l;
 	l=++the_menus.menus.menus_len;
 	if (l>=MAXMENUS) {
+		debug("Too many menus/submenus\n");
 		printf("Too many menus/submenus\n");
-		exit(0);
+		exit(7);
 	}
 	/* the_menus.menus.menus_val=realloc(the_menus.menus.menus_val,sizeof(menu)*l); */
 	m=&the_menus.menus.menus_val[l-1];
@@ -243,7 +253,7 @@ int l;
 
 	m->options.options_len=0;
 	m->options.options_val=0;
-	printf("New menu %p\n",m);
+	debug("New menu %p\n",m);
 	return m;
 }
 
@@ -255,10 +265,12 @@ menu_option_item *
 new_option(menu *m)
 {
 menu_option_item *i;
+
 	m->options.options_len++;
 	if ( m->options.options_len>1000) {
+		debug("Corrupt\n");
 		printf("Corrupt\n");
-	exit(2);
+		exit(4);
 	}
 	m->options.options_val=realloc(m->options.options_val, m->options.options_len*sizeof(menu_option_item));
 	i=&m->options.options_val[m->options.options_len-1];

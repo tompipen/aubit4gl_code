@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.106 2003-01-17 23:03:16 afalout Exp $
+# $Id: Makefile.in,v 1.107 2003-01-21 08:25:02 afalout Exp $
 #
 
 ## ==================================================================
@@ -429,7 +429,9 @@ install.config: install.home
 
 #Install files in user's home directory
 install.home:
+ifneq "${TOHOME}" ""
 	$(CP) ${TOHOME} $(HOME_DEST)
+endif
 
 #Example files
 install.example:
@@ -520,11 +522,12 @@ cygwin.zip.runtime:
 
 pack.amake:
 	${MKPATH} /tmp/pack_amake/bin
-	${CP} bin/amake bin/amakeallo bin/amakeallf bin/genmake bin/prepmake /tmp/pack_amake/bin
 	${MKPATH} /tmp/pack_amake/incl
-	${CP} incl/*.mk incl/*.mki /tmp/pack_amake/incl
-	echo "See HOWTO at https://sourceforge.net/docman/?group_id=32409" > /tmp/pack_amake/README.txt
-	(cd /tmp/pack_amake; tar -cvzf $(SOURCE)/amake.${ARCHEXT} * )
+	${CP} ${AMAKE_TOBIN} /tmp/pack_amake/bin
+	${CP} ${AMAKE_TOINCL} /tmp/pack_amake/incl
+	@echo "See HOWTO at http://sf.net/docman/?group_id=32409" > /tmp/pack_amake/README.txt
+	(cd /tmp/pack_amake; tar -cvzf $(SOURCE)/amake-noarch.${ARCHEXT} * )
+	@echo "Created: $(SOURCE)/amake-noarch.${ARCHEXT}"
 
 
 cleantar:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-10-30 01:46:45 afalout Exp $
+# $Id: Makefile.in,v 1.15 2003-01-21 08:25:54 afalout Exp $
 #
 
 LIBROOT	=../..
@@ -125,7 +125,8 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libMENU_XDR${SO_EXT} : ${OBJS_MENU_XDR}
-	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} ${LINKLIBS}
+#@GTKLIBS@ would include -rdynamic
+	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${GTKLIBS} ${RPCLIB_NAME} ${LINKLIBS}
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a
 #endif

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.100 2003-01-15 11:43:33 afalout Exp $
+# $Id: Makefile-common.in,v 1.101 2003-01-21 08:25:51 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -550,7 +550,7 @@ else
 	FCOMPILE	=aubit fcompile
 	MKMESS      =aubit mkmess
 	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script
-	FGLPCEXEC	=aubit ${SH} 4glpc
+	FGLPCEXEC	=${SH} aubit ${SH} 4glpc
 	MCOMPILE	=aubit mcompile
 endif
 
@@ -750,10 +750,13 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 ##                    To bin directory
 ## ==================================================================
 
-BIN_SCRIPTS =amake amakeallo amakeallf 4glpc aubit prepmake genmake
+AMAKE_BIN_SCRIPTS=amake amakeallo amakeallf prepmake genmake
+AMAKE_BIN_EXE=aubit-config${EXEEXT}
+
+BIN_SCRIPTS =4glpc aubit ${AMAKE_BIN_SCRIPTS}
 BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
 			mcompile${EXEEXT} mkmess${EXEEXT} \
-			aubit-config${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT}
+			mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE}
 
 
 #This two can fail to compile, when 4glc is not working:
@@ -790,6 +793,7 @@ ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
 endif
 
 BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
+AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} ${AMAKE_BIN_EXE}
 
 
 ## ==================================================================
@@ -893,7 +897,9 @@ ETC_DEINST      =aubitrc-bin.in
 ##                    To user's HOME directory
 ## ==================================================================
 
-HOME_FILES		=etc/aubitrc
+#Do not install this by default, it can confuse user not expecting anything
+#to override the global aubitrc
+#HOME_FILES		=etc/aubitrc
 
 ## ==================================================================
 ##                    To Aubit binary installation root directory
@@ -905,20 +911,22 @@ ROOT_FILES		=README.txt install.sh
 ##                    To incl directory
 ## ==================================================================
 
+AMAKE_INCL_FILES= \
+        header.mki footer.mki footer-c.mki maximise.mki \
+        a4gl.mk q4gl.mk d4gl.mk i4gl.mk
 
 INCL_FILES	= \
 		a4gl_incl_4glhdr.h a4gl_incl_4gldef.h Makefile-common \
-		a4gl.mk header.mki maximise.mki a4gl-rules.mki footer-c.mki i4gl.mk \
-		q4gl.mk d4gl.mk footer.mki Makefile-install.mki
+        Makefile-install.mki ${AMAKE_INCL_FILES}
+
+#OBSOLETE: a4gl-rules.mki
 
 #FIXME: what about this:
 #		$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
 
 #do we want this or not in binary installation?
-
 INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
 		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
-
 
 
 ## ==================================================================
@@ -951,6 +959,9 @@ TOHOME		=$(addprefix $(HOME_DIR)/,	$(HOME_FILES))
 TOROOT		=$(addprefix $(ROOT_DIR)/,	$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,	$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,	$(IDE_FILES))
+
+AMAKE_TOBIN		=$(addprefix $(BIN_DIR)/,	$(AMAKE_BIN_FILES))
+AMAKE_TOINCL	=$(addprefix $(INCL_DIR)/,	$(AMAKE_INCL_FILES))
 
 ifneq "${COMSPEC}" ""
     TOBIN+=$(SOURCE)/tools/cygwin/run.exe

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.14 2003-01-19 21:26:09 saferreira Exp $
+# $Id: debug.c,v 1.15 2003-01-21 08:25:53 afalout Exp $
 #
 */
 
@@ -50,9 +50,9 @@
 =====================================================================
 */
 
-#define DEBUG_NOTREQUIRED 2
-#define DEBUG_REQUIRED 1
-#define DEBUG_DONTKNOW 0
+#define DEBUG_NOTREQUIRED 	2
+#define DEBUG_REQUIRED 		1
+#define DEBUG_DONTKNOW 		0
 
 /*
 =====================================================================
@@ -60,10 +60,13 @@
 =====================================================================
 */
 
-FILE *debugfile = 0;
-int nodebug = DEBUG_DONTKNOW;
-char g_fname[256];
-int g_lineno;
+FILE *	debugfile 	= 0;
+int 	nodebug 	= DEBUG_DONTKNOW;
+char 	g_fname[256];
+int 	g_lineno;
+
+static char arg0[15] = "**undefined**";
+
 
 /*
 =====================================================================
@@ -71,7 +74,7 @@ int g_lineno;
 =====================================================================
 */
 
-static void open_debugfile (void);
+static void 	open_debugfile (void);
 
 /*
 =====================================================================
@@ -90,8 +93,8 @@ open_debugfile (void)
 {
   debugfile = mja_fopen ("debug.out", "w");
   if (debugfile==0) {
-                printf("Unable to open debug.out - check directory permissions...\n");
-        exit(2);
+	printf("Unable to open debug.out - check directory permissions...\n");
+	exit(2);
   }
 }
 
@@ -142,9 +145,13 @@ debug_full (char *fmt,...)
 
 		/* This code is so we can debug the GTK messages we get */
 		if (strcmp(acl_getenv("A4GL_UI"),"GTK")==0) {
-                	fprintf(stderr,"%s\n",buff);
-			fflush(stderr);
-        	}
+            /* but not if we are running one of the compilers - this should
+            happen only when running Aubit compiled programs: */
+            if ( (! strcmp(getarg0(),"4glc")==0) && (! strcmp(getarg0(),"fcompile")==0) && (! strcmp(getarg0(),"mcompile")==0) && (! strcmp(getarg0(),"mkmess")==0)) {
+				fprintf(stderr,"%s\n",buff);
+				fflush(stderr);
+            }
+       	}
         
       if (buff[strlen (buff) - 1] != ':')
         fprintf (debugfile, "\n");
@@ -168,5 +175,58 @@ set_line (char *fname, long lineno)
     }
   return 0;
 }
+
+
+/**
+ * Store basename of command, excluding trailing slashes
+ * Doesn't handle two pathological cases -- "/" and ""
+ *
+ */
+void
+setarg0(const char *argv0)
+{
+const char *cp;
+        size_t nbytes = sizeof(arg0) - 1;
+
+        if ((cp = strrchr(argv0, '/')) != (char *)0 && *(cp + 1) == '\0')
+	    {
+        /* Skip backwards over trailing slashes */
+                const char *ep = cp;
+        while (ep > argv0 && *ep == '/')
+            ep--;
+        /* Skip backwards over non-slashes */
+                cp = ep;
+        while (cp > argv0 && *cp != '/')
+            cp--;
+                cp++;
+                nbytes = ep - cp + 1;
+                if (nbytes > sizeof(arg0) - 1)
+                        nbytes = sizeof(arg0) - 1;
+    	}
+        else if (cp != (char *)0)
+        {
+                /* Regular pathname containing slashes */
+                cp++;
+        }
+        else
+        {
+                /* Basename of file only */
+                cp = argv0;
+        }
+        strncpy(arg0, cp, nbytes);
+        arg0[nbytes] = '\0';
+}
+
+/**
+ * Returns the basename of the command used to start this application
+ *
+ */
+
+const char *
+getarg0(void)
+{
+	return(arg0);
+}
+
 
 /* =============================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
+# $Id: extfile.c,v 1.10 2003-01-21 08:25:53 afalout Exp $
 #
 */
 
@@ -145,80 +145,6 @@ aclfgl_fgl_show_help(int a)
     show_help(a);
 	return 0;
 }
-
-
-/* moved to libmsg/msg_native/readmsg.c
-
-read_help_f (int no,int *maxwidth)
-{
-  short pos;
-  int cnt;
-  short num;
-  char tmpbuf[800];
-  max_width = 0;
-  cnt = 0;
-  rewind (helpfile);
-  helpbuff[0]=0;
-  *maxwidth=0;
-  debug("Reading : %d (%p)",no,helpfile);
-  while (1)
-    {
-      fread (&pos, 2, 1, helpfile);
-      debug("pos=%d",pos);
-
-      if (pos == -1 || pos > no) {
-         debug("Out of range 1");
-         exitwith("Help message not found");
-        break;
-      }
-
-      if (feof (helpfile)) {
-         debug("End of file");
-         exitwith("Help message not found");
-        return 0;
-        break;
-      }
-
-      fread (&num, 2, 1, helpfile);
-
-      debug("num=%d",num);
-
-      if (pos == no)
-        {
-debug("Got it...");
-          fseek (helpfile, (long) num + 3, SEEK_SET);
-          while (1 == 1)
-            {
-              if (feof (helpfile))
-                break;
-              fgets (tmpbuf, 800, helpfile);
-debug("Buff=%s",tmpbuf);
-              strcat(helpbuff,tmpbuf);
-              stripnl (tmpbuf);
-              strcpy (disp[cnt++], tmpbuf);
-              if (strlen (tmpbuf) > max_width)
-                max_width = strlen (tmpbuf);
-              if (cnt > 20)
-                break;
-              num = fgetc (helpfile);
-              if (num == 127)
-                break;
-              else
-                ungetc (num, helpfile);
-            }
-        }
-
-      *maxwidth=max_width;
-      if (pos == no) {
-           debug("Got it...");
-           return cnt;
-      }
-    }
-  exitwith("Could not read help message");
-  return 0;
-
-}
-*/
 
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.7 2002-09-17 09:38:02 afalout Exp $
+# $Id: readmsg.c,v 1.8 2003-01-21 08:25:55 afalout Exp $
 #*/
 
 /**
@@ -44,22 +44,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_msg_native_int.h"
-
-#endif
-
-
+#include "a4gl_lib_msg_native_int.h"
 
 /*
 =====================================================================
@@ -68,10 +53,10 @@
 */
 
 /* from extfile.c : */
-char helpbuff[10000];
-char disp[24][81];
-int max_width;
-FILE *helpfile = 0;
+char 	helpbuff[10000];
+char 	disp[24][81];
+int 	max_width;
+FILE *	helpfile = 0;
 
 /*
 =====================================================================
@@ -86,15 +71,37 @@ FILE *helpfile = 0;
 int
 read_help_f (int no,int *maxwidth)
 {
-  short pos;
-  int cnt;
-  short num;
-  char tmpbuf[80];
+short pos;
+int cnt;
+short num;
+char tmpbuf[80];
+
+
   max_width = 0;
   cnt = 0;
   rewind (helpfile);
   helpbuff[0]=0;
   *maxwidth=0;
+
+  /*
+    FIXME:
+
+	4gl programs are expected to specify full help file name, including the
+    extendion. This allmost allways means that programs will specify .iem
+    exstension, but Aubit help compiler will create help files with extension
+    acl_getenv ("A4GL_HLP_EXT") - which has to be different then Informix one -
+    to faciliate creation of multi-compiler make files, and also to distinguish
+    between files that are obviously not compatible.
+
+    Therefore, we should not just blindly take "helpfile" variable, but instead
+    first strip it's extension, and add Aubit one.
+
+    We also need to try using $DBPATH, as Informix does, to search for this
+    file, if it's not in current directory.
+
+  */
+
+
   debug("Reading : %d (%p)",no,helpfile);
   while (1)
     {
@@ -153,7 +160,6 @@ read_help_f (int no,int *maxwidth)
   return 0;
 
 }
-
 
 /* ============================== EOF =============================== */
 

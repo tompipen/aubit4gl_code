@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.30 2003-01-15 11:43:34 afalout Exp $
+# $Id: Makefile.in,v 1.31 2003-01-21 08:25:58 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -34,6 +34,9 @@ ROOT    =../..
 include ${ROOT}/incl/Makefile-common
 #override NOINCL=0
 #override MAKINGAUBIT=0
+
+#rules for making Aubit targets:
+include ${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Options
@@ -47,7 +50,9 @@ ifdef COMSPEC
 	endif
 endif
 
-DEFAULT=other 4gldemo
+.PHONY: other 4gldemo testmenu
+
+DEFAULT=other 4gldemo testmenu
 
 SUB=guidemos
 
@@ -84,16 +89,16 @@ all: ${ALL}
 sub: ${SUB}
 	@echo targets in sub directories successfully compiled
 
-4gldemo:
+4gldemo: hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml
 #KEEP IN MIND THAT THIS MAKE FILE IS ALSO IN BINARY DISTRIBUTION - DO NOT ADD
 #ANY MORE TARGETS HERE UNLESS YOU WILL ALSO MODIFY THE INSTALLER TO PACK NEEDED
 #SOURCE FILES IN BYNARY DISTROS - OTHERWISE MAKE WILL FAIL BECAUSE OF MISSING
 #SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
-	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
-	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
-	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
+#	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
+#	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
+#	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
 	@echo 4gl demo targets successfully compiled
 
 
@@ -129,15 +134,15 @@ test_select: test_select.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
 #Move this to gui/
-testmenu: testmenu-menu
-	${FGLPCEXEC} ${4GLPCFLAGS} $@.4gl -o $@
+#testmenu: testmenu.mnu
+#	${FGLPCEXEC} ${4GLPCFLAGS} $@.4gl -o $@
 
-testmenu-menu:
-	${MCOMPILE} $@.menu
+#testmenu.mnu: testmenu.menu
+#	${MCOMPILE} $^
 
-other:
-	${FCOMPILE} form.per
-	${MKMESS} helpfile
+other: form.afr.xml helpfile.hlp
+#	${FCOMPILE} form.per
+#	${MKMESS} helpfile
 	@echo "Successfuly compiled demo resource files"
 
 ## ==================================================================
@@ -177,7 +182,8 @@ clean:
 	hello hello2 hello_db test_build filetest *.hlp *.exe *.stackdump *.exe \
 	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
 	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.ao *.log *.4ge *.pl *.pm \
-	test_build.c .\#* .*.bak assoc *.frm.xml testmpz file testmenu
+	test_build.c .\#* .*.bak assoc *.frm.xml testmpz file testmenu *.afr.xml \
+	*.mnu.xml
 
 
 

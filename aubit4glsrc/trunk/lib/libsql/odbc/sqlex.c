@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.19 2002-10-27 22:34:11 afalout Exp $
+# $Id: sqlex.c,v 1.20 2003-01-21 08:25:56 afalout Exp $
 #
 */
 
@@ -664,46 +664,6 @@ new_rescnt (void)
   static int rescnt = 1;
   return rescnt++;
 }
-
-/**
- * @deprecated This a candidate for cleaning.
- */
-/*
-void
-readfile_for_preload (char *f)
-{
-  FILE *fi;
-  int a, b, c;
-  char bu[256];
-  sprintf (bu, "%s.frm", f);
-  fi = mja_fopen (bu, "rb");
-  if (fi == 0)
-    {
-      debug ("Couldnt open %s\n", bu);
-      exit (0);
-    }
-  a = fread (buff, 1, 30000, fi);
-  close (fi);
-  debug ("struct s_preloaded_form pre_load_%s ={\"%s\",%d,{", f, f, a);
-  for (b = 0; b < a; b += WIDTH)
-    {
-      debug ("\n");
-//if (b>0) debug(",");
-      //debug("{");
-
-      for (c = 0; c < WIDTH; c++)
-	{
-	  if (c + b >= a)
-	    break;
-	  debug ("%3d", buff[c + b]);
-	  if (c + b + 1 < a)
-	    debug (",");
-	}
-
-    }
-  debug ("}\n};\n");
-}
-*/
 
 
 /* *****************************************************************

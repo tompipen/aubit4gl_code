@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.10 2002-11-23 08:45:10 mikeaubury Exp $
+# $Id: curslib.c,v 1.11 2003-01-21 08:25:56 afalout Exp $
 #*/
 
 /**
@@ -192,7 +192,7 @@ void menu_hide (ACL_Menu * menu, va_list * ap);
 void menu_show (ACL_Menu * menu, ...);
 void aclfgli_pr_message (int attr, int wait);
 void set_option_value (char type, int keyval);
-int show_menu (void);
+//int show_menu (void);
 int endis_fields (int en_dis, ...);
 ACL_Menu *new_menu_tui_oldway (char *title, int x, int y, int mn_type,
 			       int help_no, int nopts, va_list * ap);
@@ -1143,7 +1143,7 @@ show_help (int no)
 
   if (has_helpfile () != 0)
     {
-      cnt = read_help_f (no, &max_width);	/* in libmsg */
+      cnt = read_help_f (no, &max_width);	/* in libmsg/readmsg.c */
       if (cnt == 0)
 	return 0;
 
@@ -2208,7 +2208,7 @@ int currno;
 char fname3[64];
   
   strcpy (fname3, fname2);
-  strcat (fname3, ".frm");
+  strcat (fname3, acl_getenv ("A4GL_FRM_BASE_EXT"));
   formfile = mja_fopen (fname3, "rt");
   currno = 0;
   if (formfile == 0)
@@ -3335,12 +3335,16 @@ set_option_value (char type, int keyval)
  * 4GL CALL
  * @todo Describe function
  */
+/* now in API_menu
+
 int
 show_menu (void)
 {
   exitwith ("Not available in TUI mode (show_menu)");
   return 0;
 }
+
+*/
 
 /**
  * 4GL CALL

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.6 2002-09-24 04:40:02 afalout Exp $
+# $Id: mkmess.c,v 1.7 2003-01-21 08:25:50 afalout Exp $
 #*/
 
 /**
@@ -32,7 +32,7 @@
  * mkmess - message help file compiler, Informix 4gl style formated.
  *
  * Compile a message file (.msg) in ??? format, and generates a help 
- * compiled file (.hlp)
+ * compiled file
  *
  */
 
@@ -79,10 +79,11 @@ char tmpnum[6];
 main(int argc,char *argv[])
 {
 
+	setarg0(argv[0]);
+
    	#ifdef DEBUG
 		debug ("Starting mkmess");
 	#endif
-
 
 	/* load settings from config file(s): */
 	build_user_resources();
@@ -94,7 +95,7 @@ main(int argc,char *argv[])
     exit(0);
   }
   sprintf(fname_msg,"%s.msg",argv[1]);
-  sprintf(fname_hlp,"%s.hlp",argv[1]);
+  sprintf(fname_hlp,"%s%s",argv[1],acl_getenv ("A4GL_HLP_EXT"));
   sprintf(fname_tmp,"%s.tmp",argv[1]);
   msg=fopen(fname_msg,"r");
   if (msg==0)
@@ -177,42 +178,6 @@ main(int argc,char *argv[])
   exit (0);
 
 }
-
-/**
- * This functions is not used
- *
- * @todo If not used remove it
- */
-/*
-static void read_help_f(int no)
-{
-  int pos;
-  hlp=fopen(fname_hlp,"rb");
-  while (1)
-  {
-    fread(&pos,2,1,hlp);
-    if (pos==-1 || pos>no) break;
-    if (feof(hlp)) break;
-    fread(&num,2,1,hlp);
-    if (pos==no)
-    {
-      fseek(hlp,(long)num+3,SEEK_SET);
-      while(1==1)
-      {
-        if (feof(hlp)) break;
-        fgets(tmpbuf,80,hlp);
-        printf("%s",tmpbuf);
-        num=fgetc(hlp);
-        if (num==127) break;
-        else
-        ungetc(num,hlp);
-      }
-    }
-  if (pos==no) break;
-  }
-}
-
-*/
 
 /* ================================ EOF ========================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.9 2003-01-14 08:26:29 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.10 2003-01-21 08:25:57 afalout Exp $
 #*/
 
 /**
@@ -724,7 +724,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   debug ("x,y=%d,%d", x, y);
 
   debug ("Create window & form");
-  sprintf (buff, "%s.frm", fname);
+  sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
   form = (GtkFixed *) read_form_gtk (buff);
   debug_last_field_created ("read form");
 
@@ -762,7 +762,7 @@ open_form (char *form_id)
   char buff[256];
   filename = char_pop ();
   trim(filename);
-  sprintf (buff, "%s.frm", filename);
+  sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
   form = read_form_gtk (buff);
   debug_last_field_created ("after reading form");
   debug ("Adding form code for %s", form_id);
@@ -1136,7 +1136,7 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
     }
 
 
-  strcat (formname, ".frm");
+  strcat (formname, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
   win = (GtkWindow *) gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (win), "");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.5 2003-01-11 16:05:46 mikeaubury Exp $
+# $Id: dataio.c,v 1.6 2003-01-21 08:25:52 afalout Exp $
 #
 */
 
@@ -118,6 +118,7 @@ int
 write_data_to_file(char *datatype, void *ptr, char *filename)
 {
 char buff[256];
+int result;
 	#ifdef DEBUG
 		debug("Write data to file : datatype=%s ptr=%p file=%s\n",
 			datatype,ptr,filename);
@@ -138,7 +139,14 @@ char buff[256];
 	#ifdef DEBUG
 		debug("Calling %s(ptr=%p,filename=%s)",buff,ptr,filename);
     #endif
-	return func(ptr,filename);
+
+	result=func(ptr,filename);
+
+	#ifdef DEBUG
+		debug("Returned from %s\n",buff);
+    #endif
+
+    return result;
 }
 
 /* ================================ EOF =================================== */

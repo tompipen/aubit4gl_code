@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.19 2003-01-14 09:02:54 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.20 2003-01-21 08:25:51 afalout Exp $
 */
 
 /**
@@ -52,7 +52,6 @@
 	/** Date time defined without typedef. To be deprecated */
 	#define struct_dtime struct A4GLSQL_dtime
 	#define struct_ival struct ival
-
 
 	/**
 	 * Binding information structure definition.
@@ -152,6 +151,7 @@
 
 	/** 4gl Datetime data type definition */
 	typedef struct ival FglInterval;
+
 
     /* ===================== from builtin.c =================== */
 

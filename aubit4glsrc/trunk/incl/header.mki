@@ -17,9 +17,13 @@ export FGLDBPATH
 #show additional debugging messages
 VERBOSE=1
 
-#If you want to ignore link errors, for instance, to see if everything else 
-#will compileset this to -
-FAIL_LINK=-
+#If you want to ignore some compiler's errors, for instance, to see if
+#everything else will work, set this to -
+#FAIL_LINK=-
+#FAIL_CMPL_4GL=-
+#FAIL_CMPL_C=-
+#FAIL_CMPL_FRM=-
+#FAIL_CMPL_HLP=-
 
 ####################
 #You can specify which rules will be included, in environment
@@ -82,7 +86,7 @@ endif
 #FIXME: move this is rules files - can't do that, if more then one is included,
 #they would overwrite each other! (?)
 ifeq "$(MKTARGET)" "aubit"
-	FRM=.xml.frm
+	FRM=.frm.xml
 	OBJ=.4ao
 	PRG=.4ae
 #FIXME:

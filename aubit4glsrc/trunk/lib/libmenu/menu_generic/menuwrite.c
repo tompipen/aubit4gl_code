@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.4 2002-10-13 01:40:35 afalout Exp $
+# $Id: menuwrite.c,v 1.5 2003-01-21 08:25:54 afalout Exp $
 #*/
 
 /**
@@ -73,8 +73,8 @@ struct menu_list the_menus;
 struct struct_scr_field *fld;
 
 char *chk_alias (char *s);
-FILE *fxx;
-FILE *fyy;
+FILE *fxx=0;
+FILE *fyy=0;
 
 /*
 =====================================================================
@@ -107,7 +107,7 @@ error_with (char *s, char *a, char *b)
    printf (s, a, b);
 
   debug ("\n");
-  exit (0);
+  exit (8);
 }
 
 
@@ -119,38 +119,47 @@ error_with (char *s, char *a, char *b)
 void
 write_menu (void)
 {
-  char fname[132];
-  char fname2[132];
-  int a;
-//  XDR xdrp;
-  menu_list *ptr;
+char 		fname[132];
+char 		fname2[132];
+int 		a;
+menu_list *	ptr;
+
   ptr=&the_menus;
   strcpy (fname, outputfilename);
-  strcat (fname, ".mnu");
+  strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
 
   strcpy (fname2, outputfilename);
   strcat (fname2, ".c");
 
 
 
-  printf("has %d menus\n",the_menus.menus.menus_len);
- 
+  debug("has %d menus\n",the_menus.menus.menus_len);
 
-  a=write_data_to_file("report",&the_menus,fname);
+  debug("calling write_data_to_file\n",the_menus.menus.menus_len);
 
+//  a=write_data_to_file("report",&the_menus,fname);
+  a=write_data_to_file("menu_list",&the_menus,fname);
+
+	debug ("returned from write_data_to_file()");
 
 	if (!a) {
 		debug("*** Write FAILED ***\n");
 		error_with("Unable to write data\n",0,0);
 	}
 
+
+	debug ("before fclose");
 //	xdr_destroy(&xdrp);
-	fclose(fxx);
+	if (fxx) {
+		//what is this closing anyway?
+		fclose(fxx);
+    }
+	debug ("after fclose");
 
 	if (as_c) {
 		int cnt=0;
 		int a;
-		debug("Asc...\n");
+		debug("Asc\n");
 		fxx=fopen(fname,"r");
 		fyy=fopen(fname2,"w");
 		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
@@ -169,7 +178,9 @@ write_menu (void)
 		fclose(fyy);
 		/* unlink(fname); */
 	}
-	
+
+	debug ("Exiting write_menu()");
+
 }
 
 

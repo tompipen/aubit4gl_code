@@ -24,8 +24,11 @@ VARIABLE A4GL_MENUTYPE
 
 
 
-/* ------- functions from lib/libmenu/menu_xdr/loadmenu.c */
+/* ------- functions from lib/libmenu/menu_XXX/loadmenu.c */
 
+
+/* int mn_itemexists (char *menuitem) */
+mn_itemexists char* menuitem -> int
 
 /* char *mn_caption(char *s) */
 
@@ -38,7 +41,8 @@ VARIABLE A4GL_MENUTYPE
 /* GtkWidget * load_menu (char *fname, char *menu_id, int mode, void *handler) */
 load_menu char* fname,char* menu_id,int mode,void* handler -> void*
 
-/* show_menu (char *menuid, void *handler) */
+/* void show_menu (char *menuid, void *handler) */
+show_menu char* menuid,void* handler -> void
 
 /* void endis_menuitems (int en_dis, ...) */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.26 2003-01-19 21:26:09 saferreira Exp $
+# $Id: calldll.c,v 1.27 2003-01-21 08:25:52 afalout Exp $
 #
 */
 
@@ -287,9 +287,10 @@ nullfunc(void)
 void *
 dl_openlibrary (char *type, char *p)
 {
-  void *dllhandle;
-  static char buff[1024];
-  static char tmpbuff[1024];
+void *		dllhandle;
+static char buff[1024];
+char 		buff2[1024];
+static char tmpbuff[1024];
 
   char *plugin_name;
 
@@ -299,7 +300,9 @@ dl_openlibrary (char *type, char *p)
 
 
   if ( (! acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0) ) {
-		exitwith("Error: Cannot determine AUBITDIR - STOP.");
+	exitwith("Error: Cannot determine AUBITDIR - STOP.");
+    //FIXME: why is exitwith not exiting???
+    exit (43);
   }
 
 	#ifdef __CYGWIN__
@@ -330,7 +333,6 @@ dl_openlibrary (char *type, char *p)
 				//printf("dl_openlibrary received %s %s\n",type, plugin_name);
 			//printf("1 plugin_name = %s\n",plugin_name);
 				char *aubitdirptr;
-                char buff2[1024];
 			//printf("2 plugin_name = %s\n",plugin_name);
 				aubitdirptr=acl_getenv("AUBITDIR");
 				//sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
@@ -353,9 +355,19 @@ dl_openlibrary (char *type, char *p)
   if (dllhandle==0) {
 
 		/* Sometimes dlerror() returns empty string? */
-		printf("Error: can't open DLL %s - %s - STOP",buff,dlerror());
-		debug("Error: can't open DLL %s - %s - STOP",buff,dlerror());
+		/* dllerror is nulled after first call - can't call it twice, so we
+        have to store it to be able to use it twice */
+		sprintf (buff2, "%s", dlerror());
+
+		printf("Error: can't open DLL %s - STOP\n",buff);
+		printf("Error msg: %s\n",buff2);
+
+		debug("Error: can't open DLL %s - STOP\n",buff);
+		debug("Error msg: %s\n",buff2);
+
 		exitwith("Error: can't open DLL - STOP. See debug.out");
+	    //FIXME: why is exitwith not exiting???
+    	exit (44);
 
   }
   return dllhandle;
@@ -498,6 +510,9 @@ int a;
 
   if ( (! acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0) ) {
 		exitwith("Error: Cannot determine AUBITDIR - STOP.");
+	    //FIXME: why is exitwith not exiting???
+    	exit (43);
+
   }
 
   A4GLSQL_set_status (0,0);

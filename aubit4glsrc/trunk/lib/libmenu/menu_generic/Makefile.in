@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2003-01-04 01:58:30 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-01-21 08:25:54 afalout Exp $
 #
 
 LIBROOT=../..
@@ -39,11 +39,10 @@ include ${ROOT}/incl/Makefile-common
 
 #require XDR frunctions, part of Sun RPClib:
 #CMODS_MENU_XDR		=${ROOT}/compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
-CMODS_MENU_XDR		=menuwrite.c
+CMODS_MENU_XDR		=menuwrite.c loadmenu.c
 OBJS_MENU_XDR     	=${CMODS_MENU_XDR:.c=.o}
 
-CFLAGS              +=-I.. -I../../libui
-
+CFLAGS              +=-I.. -I../../libui -I${LIBROOT}/libui/ui_gtk
 
 #we cannot compile GTK code with  -Wstrict-prototypes because
 #GTK+ supplied libraries have many functions declared without parameters
@@ -127,10 +126,12 @@ all: ${ALL}
 
 ${LIBROOT}/libMENU_GENERIC${SO_EXT} : ${OBJS_MENU_XDR}
 #	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+#@GTKLIBS@ - this will contain -rdynamic
+	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${GTKLIBS} ${LINKLIBS}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 
 ## ==================================================================

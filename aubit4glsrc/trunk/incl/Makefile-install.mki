@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.45 2003-01-07 03:59:57 afalout Exp $
+# $Id: Makefile-install.mki,v 1.46 2003-01-21 08:25:51 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -74,20 +74,34 @@ else
 	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
 endif
 
+#######################################
+#allow user to install amake without compiling aubit. All files installed
+#here are also included in default "install" target.
+install.amake: install.amake.files install.aubit-config.link
+	@echo "Amake installed"
 
-#fixme: create this target to allow user to install amake without compiling aubit
-install.amake:
+install.amake.files:
+	${CP} ${AMAKE_TOBIN} $(BIN_DEST)
+	${CP} ${AMAKE_TOINCL} $(INCL_DEST)
 
+install.aubit-config.link: install.bin.install.link.dir
+#   -w file True if file exists and is writable.
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
+	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
+	${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake
+else
+	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
+endif
+
+install.bin.install.link.dir:
+	${MKPATH} ${BIN_INSTALL_LINK}
 
 #######################################
 #Create links for bin programs to location of Aubit bynary installation:
-install.links: deinstall.bin.links
-	${MKPATH} ${BIN_INSTALL_LINK}
-    #   -w file True if file exists and is writable.
+install.links: deinstall.bin.links install.aubit-config.link install.bin.install.link.dir
+#   -w file True if file exists and is writable.
 ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
-	${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake
 	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
 else
 	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
@@ -199,11 +213,12 @@ deinstall.build:
 ## ==================================================================
 
 tt:
-	(export DEBUG=ALL; cd tools/test; 4glc test_build.4gl)
-	(export DEBUG=ALL; cd tools/test; 4glc -o test_build.4gl)
+	(export DEBUG=ALL; cd tools/test; sh aubit 4glc test_build.4gl)
+	(export DEBUG=ALL; cd tools/test; sh aubit 4glc -o test_build.4gl)
 
 #######################################
-test: tt
+#test: tt
+test:
 	${MAKE} -C tools/test test.build
 	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
 	@echo "+------------------ Runing Aubit compiled program: ------------------+"

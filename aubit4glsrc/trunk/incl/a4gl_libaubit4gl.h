@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.30 2003-01-09 09:17:43 psterry Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.31 2003-01-21 08:25:51 afalout Exp $
 #
 */
 
@@ -768,6 +768,10 @@
 	void 	debug_full 		(char *fmt,...);
 	void 	exitwith_sql	(char *s) ;
 	void 	set_errm		(char *s);
+
+    /* in debug.c */
+	void 			setarg0	(const char *argv0);
+	const char * 	getarg0	(void);
 
 	struct a4gl_dtime {
 	    int stime;

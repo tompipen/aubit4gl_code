@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.92 2003-01-20 09:50:24 mikeaubury Exp $
+# $Id: mod.c,v 1.93 2003-01-21 08:25:49 afalout Exp $
 #
 */
 
@@ -782,20 +782,20 @@ print_variables (void)
     {
       debug ("/* global variables %d */\n", varcnt);
 
-      for (a = 0; a < varcnt; a++)
-	{
-	  if (vars[a].level == 0)
-	    {
-	      if (vars[a].globflg == 'G')
-		print_variable (a, 'G');
-	      else
-		print_variable (a, 'n');
-	    }
-	}
-      dump_gvars ();
-      if (only_doing_globals ())
-	exit (0);
-      /*varcnt=0; */
+		for (a = 0; a < varcnt; a++)
+		{
+		  if (vars[a].level == 0)
+		    {
+		      if (vars[a].globflg == 'G')
+			print_variable (a, 'G');
+		      else
+			print_variable (a, 'n');
+		    }
+        }
+		dump_gvars ();
+		if (only_doing_globals ())
+			exit (0);
+		/*varcnt=0; */
     }
 
   if (modlevel == 0)
@@ -3295,7 +3295,7 @@ char nocfile[256];
   ptr = strchr (fname, '.');
   *ptr = 0;
   debug ("Trying to compile globals file %s\n", fname);
-  sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
+  sprintf (buff, "cd %s; 4glc -G %s.4gl", dirname, fname);
   system (buff);
   setenv ("NOCFILE", nocfile, 1);
 

@@ -24,17 +24,45 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.18 2003-01-21 08:25:55 afalout Exp $
+# $Id: loadmenu.c,v 1.1 2003-01-21 08:25:54 afalout Exp $
 #*/
 
 /**
  * @file
- * aubit 4gl compiled menus load in GTK mode, from Sun RPC XDR fromated file.
+ * aubit 4gl compiled menus load in GTK mode, from PACKER fromated file.
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//this is just a copy of XDR version - see lined marked with :
+ //FIXME>>>>>>>>>
+// to make it work, XDR definitions need to be replaced with libPACKER calls !!!
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 =====================================================================
@@ -52,7 +80,7 @@
 */
 
 
-#include "a4gl_lib_menu_xdr_int.h"
+#include "a4gl_lib_menu_generic_int.h"
 
 /*
 =====================================================================
@@ -73,7 +101,7 @@ static GtkWidget * real_load_menu (char *fname, char *menu_id, int mode, void *h
 
 char * 	mn_caption		(char *s);
 char * 	mn_help			(char *s);
-void 	show_menu 		(char *menuid, void *handler);
+//void 	show_menu 		(char *menuid, void *handler);
 void 	endis_menuitems (int en_dis, ...);
 
 /*
@@ -337,12 +365,15 @@ load_menu (char *fname, char *menu_id, int mode, void *handler)
 static GtkWidget *
 real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
-  struct menu_list the_menus;
-  FILE *f;
-  XDR xdrp;
-  int a;
-  GtkWidget *w = 0;
-  char buff[256];
+struct menu_list the_menus;
+FILE *f;
+//FIXME>>>>>>>>>  XDR xdrp;
+int a=0;
+GtkWidget *w = 0;
+char buff[256];
+
+debug ("FIXIXIXIXIX MEEEEEEE!!!!!");
+return w; //<<<<<<<<<<<<<<<<<<<<<<<<<
 
   sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_MNU_EXT"));
   f = open_file_dbpath  (buff);
@@ -353,8 +384,8 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
       exit (2);
     }
   memset (&the_menus, 0, sizeof (menu_list));
-  xdrstdio_create (&xdrp, f, XDR_DECODE);
-  a = xdr_menu_list (&xdrp, &the_menus);
+//FIXME>>>>>>>>>  xdrstdio_create (&xdrp, f, XDR_DECODE);
+//FIXME>>>>>>>>>  a = xdr_menu_list (&xdrp, &the_menus);
 
   if (!a)
     {
@@ -371,16 +402,13 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 }
 
 /**
- * 4gl call
- * This is used from compile_c_gtk.c to check if Menu item does exist.
  *
- * returns: 1 if menu item exists, otherwise O
+ * This is used from compile_c_gtk.c to check if Menu item does exist.
  * FIXME: not implemented
  */
 int
 mn_itemexists (char *menuitem)
 {
-
   return 1;
 }
 
@@ -395,11 +423,6 @@ show_menu (char *menuid, void *handler)
 {
   char *fname;
   void (*p)(char *);
-
-//FIXME: id UI = TUI or CONSOLE, then:
-  //exitwith ("Not available in TUI mode (show_menu)");
-
-
 
   fname = char_pop ();
   p=handler;

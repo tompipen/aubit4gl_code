@@ -138,17 +138,17 @@ identifier: NAMED
 menu_item :
 	KW_OPTION identifier op_image op_string op_key op_attr {
 		menu_option_item *o;
-		printf("New option %s for menu %p\n",$<str>2,get_menu());
+		debug("New option %s for menu %p\n",$<str>2,get_menu());
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->caption=strdup($<str>4);
 		o->image=img_val;
 		o->key_list=strdup($<str>5);
 		o->align=atoi($<str>6);
-	 	printf("Ok option\n"); }
+	 	debug("Ok option\n"); }
 	| KW_SUBMENU identifier op_image op_string op_key op_attr KW_USE identifier {
 		menu_option_item *o;
-		printf("Submenu with use\n");
+		debug("Submenu with use\n");
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->image=img_val;
@@ -159,7 +159,7 @@ menu_item :
 	}
 	| KW_SUBMENU identifier op_image op_string op_key op_attr {
 		menu_option_item *o;
-		printf("Submenu without use\n");
+		debug("Submenu without use\n");
 		o=new_option(get_menu());
 		o->id=strdup($<str>2);
 		o->image=img_val;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.26 2003-01-14 09:02:55 mikeaubury Exp $
+# $Id: resource.c,v 1.27 2003-01-21 08:25:57 afalout Exp $
 #
 */
 
@@ -232,7 +232,38 @@ struct str_resource builtin_resource[] =
   {"_MESSAGELINE", 		"-2"},
   {"_COMMENTLINE", 		"-2"},
 
+
+	/* all platforms Compilation options */
+  {"A4GL_LINK_LIBS", 	"-laubit4gl"},
+  {"A4GL_C_COMP", 		"gcc"},
+  
+   /* 
+      extensions used when invoking C compiler from 4glc
+      This is what Amake rules expect - so don't go changing this from here
+      or you will break amake - use a4glrc file, or environment instad.
+      If you use environment, you can at the same time override extension
+      specified in a4gl.mk, or you can even use aubit-config program to read
+      then from aubitrc directly inside a4gl.mk
+   */
+                                        // source file extensions:
+  {"A4GL_MNU_EXT", 		".mnu"}, 		// .menu
+  {"A4GL_HLP_EXT", 		".hlp"},        // .msg
+  {"A4GL_FRM_BASE_EXT",	".afr"},        // .per
+  {"A4GL_FRM_XML_EXT", 	".xml.afr"},    // .per
+  {"A4GL_XML_EXT", 		".xml"},
+  {"A4GL_OBJ_EXT", 		".ao"},         // .c/.4gl
+  {"A4GL_LIB_EXT", 		".aox"},        // .c
+  {"A4GL_EXE_EXT", 		".4ae"},        // .ao
+#if (defined (__CYGWIN__) || defined (__MINGW32__))
+  {"A4GL_EXE_EXT", 		".exe"},
+  {"A4GL_DLL_EXT", 		".dll"},
+#else
+  {"A4GL_EXE_EXT", 		".4ae"},
+  {"A4GL_DLL_EXT", 		".so"},
+#endif
+
 	/* WINDOWS Compilation options */
+/* obsolete
   {"W32LIBSDIR", 		"-L/acl/lib"},
   {"W32LIBS", 			"-lpdcurs -lgdi32 -luser32 -lwsock32"},
   {"W32FGLLIBSDIR", 	"-L/acl/lib"},
@@ -241,6 +272,7 @@ struct str_resource builtin_resource[] =
   {"W32FGLLIBS", 		"-laclall -lm"},
   {"W32INCLDIR", 		"-I/acl/incl"},
   {"W32GCC", 			"gcc -s -O"},
+*/
 
 	/* End of definitions */
   {"", "0"}

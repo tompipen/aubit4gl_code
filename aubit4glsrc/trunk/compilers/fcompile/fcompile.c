@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.21 2002-09-26 07:53:37 afalout Exp $
+# $Id: fcompile.c,v 1.22 2003-01-21 08:25:50 afalout Exp $
 #*/
 
 /**
  * @file
  * Main module from the form compiler.
  *
- * The form compiler parses a .per file and generates a .frm (compiled form)
+ * The form compiler parses a .per file and generates a compiled form
  *
  * The frm is the file used at run-time by x4gl
  */
@@ -134,6 +134,9 @@ char a[128];
 char b[128];
 char c[128];
 char d[128];
+
+	setarg0(argv[0]);
+	debug("Initializing fcompile\n");
 
 	/* load settings from config file(s): */
 	build_user_resources();

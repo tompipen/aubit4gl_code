@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.6 2002-10-22 06:43:37 afalout Exp $
+# $Id: formwrite2.c,v 1.7 2003-01-21 08:25:53 afalout Exp $
 #*/
 
 /**
@@ -83,7 +83,7 @@ extern struct translate_string *translate_list;
 extern int translate_list_cnt;
 
 
-/** File pointer to .frm object file */
+/** File pointer to compiled form object file */
 FILE *fxx;
 FILE *fyy;
 
@@ -872,7 +872,7 @@ write_form (void)
 
   if (ext[0] == 0)
     {
-      strcat (fname, ".frm");
+      strcat (fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
 
 

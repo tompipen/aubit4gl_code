@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.19 2003-01-04 01:58:29 afalout Exp $
+# $Id: map.c,v 1.20 2003-01-21 08:25:49 afalout Exp $
 #*/
 
 /**
@@ -87,6 +87,7 @@ void 		setGenStackInfo		(int _genStackInfo);
 static int  compile_4gl			(char c[128],int compile_object, char a[128],char incl_path[128],int silent, int verbose);
 int         initArguments		(int argc, char *argv[]);
 
+
 /*
 =====================================================================
                     Functions definitions
@@ -106,13 +107,12 @@ openmap (char *s)
 {
   char buff[256];
   #ifdef DEBUG
-	  debug ("openmap...");
+	  debug ("openmap");
   #endif
   if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile==0)
     {
 	  #ifdef DEBUG
 		  debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
-    	  debug ("Yep...\n");
       #endif
       sprintf (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
@@ -151,7 +151,7 @@ void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
   #ifdef DEBUG
-	  debug ("Adding to map... %p", mapfile);
+	  debug ("Adding to map: %p", mapfile);
   #endif
   if (mapfile)
     fprintf (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);
@@ -167,11 +167,6 @@ closemap (void)
     fclose (mapfile);
 }
 
-/*
-=====================================================================
-                    Functions moved from 4glc.c
-=====================================================================
-*/
 
 /**
  * Read and parse the globals file (if found).
@@ -466,6 +461,9 @@ static struct option long_options[] =
         for inspiration.
 	*/
 
+  debug("Arg 0 set to >%s<",getarg0());
+
+
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
   {
     strcpy(opt_list,"Gs:co::d::l::?hSVvft");
@@ -535,6 +533,7 @@ static struct option long_options[] =
 		break;
 
       case 'G':              /* generate Globals file only */
+		/* call from mod.c:   sprintf (buff, "cd %s; 4glc -G %s", dirname, fname); */
 		globals_only = 1;
         break;
 
@@ -620,15 +619,16 @@ static struct option long_options[] =
 	}
 
     /* prepare CC flags */
-    /* FIXME: migrate this to user resources */
 	strcpy (incl_path,"-I");
 	strcat (incl_path,acl_getenv ("AUBITDIR"));
 	strcat (incl_path,"/incl");
-    strcpy (l_path,"-L");
+    
+	strcpy (l_path,"-L");
 	strcat (l_path,acl_getenv ("AUBITDIR"));
 	strcat (l_path,"/lib");
-    strcpy (l_libs,"-laubit4gl");
-    strcpy (gcc_exec,"gcc");
+
+	strcpy (l_libs,acl_getenv ("A4GL_LINK_LIBS"));
+    strcpy (gcc_exec,acl_getenv ("A4GL_C_COMP"));
 
 	#ifdef WIN32
 		sprintf (rm_cmd,"%s","del");
@@ -661,7 +661,8 @@ static struct option long_options[] =
 		if (strcmp (b, "4gl") == 0) {
 			strcpy (outputfilename, a);
 			strcat (all_objects,a);
-			strcat (all_objects,".o ");
+			strcat (all_objects,acl_getenv ("A4GL_OBJ_EXT"));
+			strcat (all_objects," ");
 			strcpy (infilename, c);
 			#ifdef DEBUG
 				debug ("Compiling %s\n", infilename);
@@ -671,19 +672,14 @@ static struct option long_options[] =
 				strcpy (output_object,a);
 
                 if (compile_exec) {
-                    #if (defined (__CYGWIN__) || defined (__MINGW32__))
-						strcat (output_object,".exe");
-                    #endif
+					strcat (output_object,acl_getenv ("A4GL_EXE_EXT"));
                 }
                 if (compile_so) {
-                    #if (defined (__CYGWIN__) || defined (__MINGW32__))
-						strcat (output_object,".dll");
-                    #else
-						strcat (output_object,".so");
-                    #endif
+					strcat (output_object,acl_getenv ("A4GL_DLL_EXT"));
                 }
                 if (compile_lib) {
-					strcat (output_object,".a ");
+					strcat (output_object,acl_getenv ("A4GL_LIB_EXT"));
+					strcat (output_object," ");
                 }
 
             }
@@ -691,15 +687,10 @@ static struct option long_options[] =
             todo++;
 			x = compile_4gl(c,compile_object,a,incl_path,silent,verbose);
         } else {
-			/* FIXME:
-                just pass stuff you don't understand to CC */
-			/*
-			printf ("Don't know how to process %s\n", c);
-			exit (5);
-            */
-			if (! silent) {
-				printf ("Pass trough option: %s\n",c);
-		    }
+			/* just pass stuff you don't understand to CC */
+			#ifdef DEBUG
+				debug("Pass trough option: %s\n",c);
+            #endif
 
 			strcat (pass_options,c);
 			strcat (pass_options," ");
@@ -717,7 +708,7 @@ static struct option long_options[] =
 		if (! silent) {
 			printf ("Warning: no 4gl input files - nothing to do.\n");
 	    }
-        exit (1);
+	    exit (1);
 	}
 
 
@@ -808,10 +799,14 @@ char buff[456];
 
   openmap(outputfilename);
 
-  
+
   if (! silent) {
-	printf ("Tranlsating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
-		    }
+    if (globals_only) {
+		printf ("Preparing globals file for: %s\n",c);
+    } else {
+		printf ("Translating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
+    }
+  }
 
   x = yyparse (); /* we core dump here on Darwin */
   #ifdef DEBUG
@@ -832,7 +827,7 @@ char buff[456];
   {
 	if (compile_object)
 	{
-		sprintf (buff, "%s %s.c -c -o %s.o %s %s",gcc_exec,a,a,incl_path,pass_options);
+		sprintf (buff, "%s %s.c -c -o %s%s %s %s",gcc_exec,a,a,acl_getenv ("A4GL_OBJ_EXT"),incl_path,pass_options);
 		if (! silent) {
 			printf ("%s\n",buff);
         }

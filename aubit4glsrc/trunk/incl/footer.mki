@@ -5,7 +5,7 @@
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.15 2003-01-17 23:04:06 afalout Exp $
+# $Id: footer.mki,v 1.16 2003-01-21 08:25:51 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
@@ -28,7 +28,7 @@ ifeq "$(PROGTYPE)" ".lib"
 		TARGETCMD=@echo Name dummy.lib was used, final linking skipped.
     else
 		#-fPIC will apparently not work on AIX - we should autoconf this file
-		TARGETCMD=ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+		TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
     endif
 
     ifeq "$(POINTTOSTORE)" "1"
@@ -45,7 +45,7 @@ ifeq "$(PROGTYPE)" ".lib"
 else
     #we are making a program
 	LIBFLAG=
-    TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
+    TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $< ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
 
 	#ifeq "$(EXECSTORE)" ""
     ifeq "$(POINTTOSTORE)" "1"
@@ -89,7 +89,8 @@ endif
 	endif
 	FILES.42f = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.42f})
 	FILES.frm = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.frm})
-	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.afr})
+#	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.afr})
+	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.frm.xml})
 	FILES.pic = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.pic})
 
 #HELP
@@ -155,6 +156,8 @@ plexus:
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
 	${FAIL_LINK}${TARGETCMD}
 #	@echo CHANGED: $?
+
+tmp_commented_out:
 ifeq "$(MOVETARGETTOSTORE)" "1"
 ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""
 		${TARGETMVCMD} $(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null) ${EXECSTORE}
@@ -173,7 +176,7 @@ ${PROG.42r}:	${FILES.42m} ${FILES.42x}
 ifeq "${SKIPLINKING}" "1"
 	${TARGETCMD}
 else
-	fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
+	fgllink -O -o $@ $< ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
 endif
 ifeq "$(MOVETOSTORE)" "1"
 ifeq "$(dir $@)" "./"
@@ -205,7 +208,7 @@ ${PROG.42e}:	${FILES.42o} ${FILES.42x}
 ${PROG.4gi}: ${FILES.4go}
 #	@echo xwzhere
 #	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
-	${I4GL_PL} $^ > $@
+	${I4GL_PL} $< > $@
 
 ########################
 #Build C-code program

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.41 2002-10-27 22:34:10 afalout Exp $
+# $Id: 4glc.c,v 1.42 2003-01-21 08:25:49 afalout Exp $
 #
 */
 
@@ -84,6 +84,8 @@ main(int argc, char *argv[])
 int x;
 struct str_resource *user_resource = 0;
 
+
+	setarg0(argv[0]);
 	debug("Initializing 4glc\n");
 	init_states ();
 	yydebug = 0;
