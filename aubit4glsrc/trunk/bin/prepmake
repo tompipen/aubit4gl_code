@@ -170,10 +170,69 @@ function r_fglpc {
 	TMPCOMPOSITE=/tmp/makefile.1
 	RESULTMAKEFILE=makefile.prep
 	GENMAKE=genmake
-    SUBDIR=$1
     DOALL=1
 
-	cp makefile $RESULTMAKEFILE
+
+	###########
+	for a in $@
+    ###########
+	do
+		##########
+		case $a in
+	    ##########
+
+                -help)
+                    echo " "
+                    echo " -verbose"
+                    echo " -clean"
+					echo " -all"
+                    echo " Maximise module/subdir name"
+                    echo " "
+                    exit 1
+                ;;
+
+
+			   -verbose) 	VERBOSE=1
+			   ;;
+
+			   -clean) 		CLEAN=1
+			   ;;
+
+
+			   -all) 		DOALL=1
+			   ;;
+
+
+			   *)         	SUBDIR=$a
+               ;;
+
+			   #*)           echo "ERROR: parameter $a not recognised"
+               #             exit 1
+        	   #;;
+		  ####
+		  esac
+          ####
+	####
+	done
+    ####
+
+    if [ ! -f makefile ]
+    then
+	    if [ ! -f Makefile ]
+    	then
+			echo "ERROR: there is no file called 'M/makefile' in $PWD"
+	        exit 1
+        else
+			cp Makefile $RESULTMAKEFILE
+		fi
+    else
+		cp makefile $RESULTMAKEFILE
+    fi
+
+	if test "$CLEAN" = "1"
+	then
+        rm -f *.mk
+    fi
 
     #add default rules, so make don't complain about missing rules
     #or missing dependencies:
@@ -181,7 +240,7 @@ function r_fglpc {
     echo " " >> $RESULTMAKEFILE
 	echo ".SUFFIXES:   .ao .4gl .c .4ae .afr .per .iem .msg .hlp .4go .4gi .42m .42r" >> $RESULTMAKEFILE
 	echo " " >> $RESULTMAKEFILE
-	
+
 	#echo ".4gl:" >> $RESULTMAKEFILE
     #echo "	touch $<" >> $RESULTMAKEFILE
 	#echo ".4go:" >> $RESULTMAKEFILE
@@ -244,7 +303,7 @@ function r_fglpc {
 	echo " "
 
 	touch *.4gl
-	make -f $RESULTMAKEFILE
+	make -f $RESULTMAKEFILE > prepmake.log 2>&1
 	RET=$?
 
    	echo "----------------------- Finished running make ---------------------------"
@@ -252,7 +311,12 @@ function r_fglpc {
 	echo " "
 	if test $RET != "0"
 	then
-	    echo "Error preparing make file, see $RESULTMAKEFILE "
+	    if test $VERBOSE = 1
+        then
+            tail prepmake.log
+		   	echo "----------------------- Finished running make ---------------------------"
+		fi
+		echo "Error preparing make file, see $RESULTMAKEFILE and prepmake.log"
 	    exit 1
 	else
 

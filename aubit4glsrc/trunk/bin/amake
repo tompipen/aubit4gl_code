@@ -73,6 +73,8 @@ PROGS=
 PARAMS=
 MKFLAGS=
 NEXT=
+CLEANOBJECTS=0
+CLEANTARGET=0
 
 if [ $# -lt 1 ]
 then
@@ -134,7 +136,8 @@ else
 			   ;;
 
 			   -verbose) 	VERBOSE="1"
-							MKFLAGS="$MKFLAGS -verbose"
+							#FIXME: does make support -verbose flag?
+							#MKFLAGS="$MKFLAGS -verbose"
 			   ;;
 
 			   -header) 	OVERRIDEINCLUDE="1"
@@ -147,8 +150,19 @@ else
 			   -footer) 	OVERRIDEINCLUDE="1"
 	                		#FOOTER=<next parameter>
                     		NEXT=FOOTER
+               ;;
 
+			   -cleantarget) 	CLEANTARGET="1"
 			   ;;
+
+			   -cleanobjects) 	CLEANOBJECTS="1"
+			   ;;
+
+			   -cleanall) 		CLEANOBJECTS="1"
+								CLEANTARGET="1"
+			   ;;
+
+
 
 			   #########anything else that starts with "-" is make flag:#####
 			   -*) 			MKFLAGS="$MKFLAGS $a"
@@ -175,23 +189,35 @@ else
     ####
 fi
 
+	if [ "$PROGS" = "" ]
+	then
+	    echo "Please specify one or more .mk file names (without .mk extension)"
+	    exit 1
+	fi
 
-if [ "$PROGS" = "" ]
-then
-    echo "Please specify one or more .mk file names (without .mk extension)"
-    exit 1
-fi
-
-if [ "$LOG" = "1" ]
-then
-	echo "Logging make to make.log"
-fi
+	if [ "$LOG" = "1" ]
+	then
+		echo "Logging make to make.log"
+	fi
 
 	#####################
 	for ONEPROG in $PROGS
     #####################
     do
-        #see if we have include command in this .mk :
+
+		if test "$CLEANOBJECTS" = "1"
+	    then
+            make -f $ONEPROG clean
+        fi
+
+		if test "$CLEANTARGET" = "1"
+	    then
+            #fixme: this should be doen like that:
+            #make -f $ONEPROG cleantarget
+            rm $ONEPROG.4ae
+        fi
+
+		#see if we have include command in this .mk :
 		grep include $ONEPROG > /dev/null
 		RET=$?
 		if test $RET != "0"

@@ -17,10 +17,26 @@
 function stats {
 ############################
 
+if test $AMAKE = "1"
+then
+
+    echo " "
+	echo "Attempted to compile total of $ATTEMPTED"
+	echo "OK= $AMAKEOK failed= $AMAKEFAIL . $COMPBEFORE already compiled."
+    echo "See $AMAKEERRORLOG"
+
+    echo " " >> $AMAKEERRORLOG
+	echo "Attempted to compile total of $ATTEMPTED" >> $AMAKEERRORLOG
+	echo "OK= $AMAKEOK failed= $AMAKEFAIL . $COMPBEFORE already compiled." >> $AMAKEERRORLOG
+    echo "See $AMAKEERRORLOG" >> $AMAKEERRORLOG
+	date >> $AMAKEERRORLOG
+
+
+else
+
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
     echo " "
-attempted to compile total of
-
+	echo "Attempted to compile total of $ATTEMPTED"
 	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
@@ -30,6 +46,7 @@ attempted to compile total of
 	date
 
     echo " " >> $ERRORLOG
+	echo "Attempted to compile total of $ATTEMPTED" >> $ERRORLOG
 	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
@@ -65,7 +82,7 @@ attempted to compile total of
     echo " " >> $GLOBLOG
 	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $GLOBLOG
     date >> $GLOBLOG
-
+fi
 
 }
 
@@ -367,6 +384,8 @@ function clean {
 function compileit {
 ############################
 
+	let ATTEMPTED=ATTEMPTED+1
+
 	##########
 	shortstats
     ##########
@@ -597,7 +616,7 @@ function compileit {
 	            fi
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $GLOBLOG
-				
+
 
 		        ######################################################
 		        #is this "does not exist in the database ()" error ?
@@ -631,6 +650,13 @@ function compileit {
 						echo "$DEPEND4GLERR not created."
                     fi
 				fi
+
+                #Fixme: code for this:
+                ####################################################
+				#is this "is not a variable ()" error?
+                ####################################################
+
+
 
 				WASERROR=1
 				#we will step on this file again, so we don't want to count this twice:
@@ -938,47 +964,175 @@ function compglobals {
 
 } #compglobals
 
+###################
+function runamake {
+###################
+
+
+				#it can also be .aox and dummy.ao (allsinglelibs.mk) !!!
+				EXECFILE=`basename $i .mk`.4ae;
+				EXECFILEAOX=`basename $i .mk`.aox;
+
+                if [ -f $MAXDIR/aprog/$EXECFILE ]
+                then
+					let COMPBEFORE=COMPBEFORE+1
+					echo "$MAXDIR/aprog/$EXECFILE exist, skip is ON"
+                    return
+                fi
+
+                if [ -f $EXECFILE ]
+                then
+					let COMPBEFORE=COMPBEFORE+1
+					echo "$EXECFILE exist, skip is ON"
+                    mv $EXECFILE $MAXDIR/aprog
+					return
+                fi
+
+                #pass -cleantarget to amake instead
+				#if [ -f $EXECFILE ]
+                #then
+				#	rm $EXECFILE
+                #fi
+
+				let ATTEMPTED=ATTEMPTED+1
+				echo "################################################# $PWD/$i" >> $AMAKEERRORLOG 2>&1
+
+                amake -verbose $i > $ >> $AMAKEERRORLOG 2>&1
+				RET=$?
+				if test $RET = "0"
+				then
+					echo "OK: $PWD/$i"
+                    echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+
+	                if [ -f $EXECFILE ]
+                    then
+						mv $EXECFILE $MAXDIR/aprog
+						let AMAKEOK=AMAKEOK+1
+                    else
+						if [ -f $EXECFILEAOX ]
+                        then
+							let AMAKEOK=AMAKEOK+1
+                        else
+							echo "ERROR (?): $EXECFILE or $EXECFILEAOX not created"
+							#let AMAKEFAIL=AMAKEFAIL+1
+                        fi
+                    fi
+
+                else
+					let AMAKEFAIL=AMAKEFAIL+1
+					echo "FAILED: $PWD/$i"
+                    echo "FAILED: $PWD/$i" >> $AMAKEERRORLOG
+                fi
+				echo "#########################################################" >> $AMAKEERRORLOG 2>&1
+
+}
+
+
 ###########################
 function makecurrentdir {
 ###########################
 
-					#####
-					clean
-					#####
 
-					if [ "$COMPILER" = "aubit" ]
-					then
-                        #Aubit needs GLOBALS files compiled first:
-						GLOBERRORS=0
-						###########
-						compglobals
-						###########
+	if test "$AMAKE" = "1"
+    then
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"
+		then
+			if test "$CLEANMK" = "1"
+            then
+				echo "deleting all .mk files in $PWD ..."
+				rm *.mk
+            fi
+        fi
 
-            	      	#Aubit NEEDS glb files, and we cannot assume we have
-                	    #them if we had errors when compiling GLOBALS files:
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET != "0"
+		then
+		    echo "No .mk files in current directory, trying to make them..."
+            echo "###################### running prepmake in $PWD ##################" >> $AMAKEERRORLOG
+			prepmake -clean -verbose >> $AMAKEERRORLOG 2>&1
+			RET=$?
+			echo "########################################################################" >> $AMAKEERRORLOG
+			if test $RET != "0"
+			then
+				if test $RET = "126"
+				then
+                    echo "Text file busy =  Error 126"
+					echo "Text file busy =  Error 126" >> $AMAKEERRORLOG
+                    return
+                else
+					echo "prepmake failed"
+					echo "prepmake failed"  >> $AMAKEERRORLOG
+        	        return
+                fi
+            fi
+        fi
 
-                        #FIXME: is this returned correctly?
-						if [ "$GLOBERRORS" = "0" ]
-	                    then
-					        ####
-					        doit
-					        ####
-                        else
-							if test $NONGLOBAFTERGLOBERR = "1"
-							then
-						        echo "-nonglob is ON, will try to compile non-globals anyway."
-								####
-						        doit
-						        ####
-                            else
-	                            echo "Skipping non-GLOBALS files in $subsystem"
-                            fi
-						fi
-                    else
-				        ####
-				        doit
-				        ####
-                    fi
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET != "0"
+		then
+		    echo "No .mk files in current directory."
+		else
+	        echo "Running all .mk makefiles in $PWD"
+
+			####################
+			for i in *.mk; do
+			####################
+
+                ########
+                runamake
+                ########
+
+			#####
+			done
+			#####
+
+	    fi
+
+    ####
+	else
+    ####
+
+		#####
+		clean
+		#####
+
+		if [ "$COMPILER" = "aubit" ]
+		then
+			#Aubit needs GLOBALS files compiled first:
+			GLOBERRORS=0
+			###########
+			compglobals
+			###########
+          	#Aubit NEEDS glb files, and we cannot assume we have
+            #them if we had errors when compiling GLOBALS files:
+
+            #FIXME: is this returned correctly?
+			if [ "$GLOBERRORS" = "0" ]
+	        then
+			       ####
+			       doit
+			       ####
+            else
+				if test $NONGLOBAFTERGLOBERR = "1"
+				then
+			        echo "-nonglob is ON, will try to compile non-globals anyway."
+					####
+			        doit
+			        ####
+                else
+	                echo "Skipping non-GLOBALS files in $subsystem"
+                fi
+			fi
+        else
+			####
+			doit
+			####
+        fi
+    fi
 
 
 }
@@ -1053,6 +1207,8 @@ function doit {
     #HEAD=head -n 20
 	TESTCONTINUE=0
 
+	AMAKE=0
+
 
 	###############
 	#initialise:
@@ -1072,6 +1228,9 @@ function doit {
 	ZEROFILESIZE=0
 	TESTCONTINUESKIP=0
     FAILDEFLIKE=0
+    AMAKEOK=0
+    AMAKEFAIL=0
+	ATTEMPTED=0
 
 	############
 	for a in $@
@@ -1112,6 +1271,9 @@ function doit {
         -fullclean) FULLCLEAN=1
         ;;
 
+        -cleanmk) 	CLEANMK=1
+        ;;
+
         -compat) 	COMPATIBLE=1
         ;;
 
@@ -1121,14 +1283,21 @@ function doit {
         -maxmode)   MAXMODE=1
 		;;
 
+        -amake) 	AMAKE=1
+        ;;
+
         -maxmodeminimal)
 
-                MAXMODE=1
-				MAXMODE2=1
+	                MAXMODE=1
+					MAXMODE2=1
         ;;
 
         -v)			VERBOSE=1
         ;;
+
+        -verbose)	VERBOSE=1
+        ;;
+
 
         -debug)		VERBOSE=1
                     SCRIPTDEBUG=1
@@ -1154,6 +1323,8 @@ function doit {
 			echo " -v = verbose - show what you are doing"
 			echo " -continue - contine previous run, don't retry already failed"
 			echo " -debug = verbose + much more"
+			echo " -amake = run amake on all .mk files, instead compiling objects"
+            echo " -cleanmk = clean .mk files when running with -amake"
 			echo " -help = this help"
             echo
             exit 0
@@ -1215,6 +1386,7 @@ function doit {
 	fi
 
    	ERRORLOG=$ERRFILESDIR/amakeallo.log
+	AMAKEERRORLOG=$ERRFILESDIR/amakeall.log
     ZEROLOG=$ERRFILESDIR/zero_size.log
     CLOG=$ERRFILESDIR/c_err.log
     FGLLOG=$ERRFILESDIR/4gl_err.log
@@ -1230,7 +1402,10 @@ function doit {
 	then
 	    if [ "$TESTCONTINUE" = "0" ]
         then
-			rm -rf $ERRFILESDIR
+			if test $AMAKE = "0"
+		    then
+				rm -rf $ERRFILESDIR
+            fi
         fi
 	fi
 
@@ -1255,6 +1430,10 @@ function doit {
 	date > $CLOG
     date > $CORELOG
     date > $GLOBLOG
+    date > $AMAKEERRORLOG
+	echo "Invoked with: $@" >> $AMAKEERRORLOG
+    echo "Invoked in $PWD" >> $AMAKEERRORLOG
+	echo "-----------------------------------------------------" >> $AMAKEERRORLOG
 
     #################
     #start compiling:

@@ -355,6 +355,12 @@ do
 		EXECNAME="1"
    ;;
 
+   #this is supposed to be linked collection of compiled library files (.ao)
+   *.aox) COMPCC="$COMPCC $a"
+		EXECNAME="1"
+   ;;
+
+
 
    *.c) COMPCC="$COMPCC $a"
    ;;

@@ -108,7 +108,20 @@ else
 			#*.42m) || *.4go) HOW THE HELL DO YOU DO _OR_here ?
 			*.4go)
 				fname=`basename $a .4go`
-	            echo "			$fname.4gl \\" >> $FILENAME
+                EXT=ao
+
+				#cinqwind is BOTH a 4gl and library (.42x, .aox) name
+                #which is VERY stupid thing to do, and should be fixed in Maximise;
+                #since I will have dependencies listeds with .4go in Maximise makefile,
+                #(there will be .42x in 4Js link line, but I'm not looking at that...
+				#Maybe I shoud use "fgllink..." line to get files, and not dependencies?)
+				if [ "$fname" = "cinqwind" -o "$fname" = "invwind" -o "$fname" = "lic_keys" -o "$fname" = "pinqwind" -o "$fname" = "wcustwind" -o "$fname" = "wordrwin" -o "$fname" = "wpinqwind" ]
+                then
+					EXT=aox
+                fi
+
+	            echo "			$fname.$EXT \\" >> $FILENAME
+
 			;;
 
 			#*.42f) || *.frm)

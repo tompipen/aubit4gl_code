@@ -11,21 +11,42 @@ DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
 
 PROGTYPE  = $(suffix ${PROG})
 
-ifeq "$(PROGTYPE)" "lib"
+ifeq "$(PROGTYPE)" ".lib"
+
+	#LIBFLAG=-c
+    #TARGETCMD=${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
+	#  -c                       Compile and assemble, but do not link
+	#TARGETCMD=${AUCC} ${AUCC_FLAGS} $^ -o ${EXECSTORE}$@
+    #TARGETCMD=${AUCC} -c -o ${EXECSTORE}$@ $^
+
+    #Mike say:
+	#4glpc a.4gl b.4gl c.4gl -o intermediate.aox
+    #TARGETCMD=4glpc $^ -o $@
+
+    #ci ?
+    #ar ?
+	TARGETCMD=ld -fPIC -shared $^ -o ${EXECSTORE}$@
+
+
 	ifeq "$(xxLIBSTORE)" ""
 		PROG.42r  = ${PROG}.42x #D4GL/4Js p-code
 		PROG.42e  = ${PROG}.42o #D4GL/4Js c-code
 		PROG.4ge  = ${PROG}.4gx #I4GL c-code
 		PROG.4gi  = ${PROG}.4go #I4GL p-code
-		PROG.4ae  = ${PROG}.aox #aubit
-    else
+#		PROG.4ae  = ${PROG}.aox #aubit
+		PROG.4ae  = ${PROG:.lib=.aox} #aubit
+	else
 		PROG.42r  = ${LIBSTORE}${PROG}.42x #D4GL/4Js p-code
 		PROG.42e  = ${LIBSTORE}${PROG}.42o #D4GL/4Js c-code
 		PROG.4ge  = ${LIBSTORE}${PROG}.4gx #I4GL c-code
 		PROG.4gi  = ${LIBSTORE}${PROG}.4go #I4GL p-code
 		PROG.4ae  = ${LIBSTORE}${PROG}.aox #aubit
     endif
+
 else
+	LIBFLAG=
+    TARGETCMD=${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
+
 	ifneq "$(xxEXECSTORE)" ""
 		PROG.42r  = ${PROG}.42r #D4GL/4Js p-code
 		PROG.42e  = ${PROG}.42e #D4GL/4Js c-code
@@ -117,13 +138,13 @@ aubitforms: ${FILES.afr}
 ${PROG.42r}:	${DBASE.sch} ${FILES.42m}
 #	${D4GL_PL} -o $@ ${FILES.42m} ${D4GL_PL_LDFLAGS}
 #using VPATH:
+#FIXME: but if we don't use explict ${FILES.42m}, .sch listes in prerequests
+#will be passed to compiler?
 	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
 
-#${PROG.4ae}:	debug ${FILES.ao} enddebug
 ${PROG.4ae}:	${FILES.ao}
-#	echo ***DEBUG 1:*** ${FILES.ao}
-#	@echo $?
-	${A4GL_CC} -o $@ $^ ${A4GL_CC_LDFLAGS}
+#	${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
+	${TARGETCMD}
 
 ${PROG.42e}:	${DBASE.sch} ${FILES.42o}
 	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
