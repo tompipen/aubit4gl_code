@@ -21,12 +21,12 @@
 #endif
 #endif
 
-#include "sockhelp.h"
+#include "../sockhelp.h"
 //#include <stdio.h>
 #include "../libincl/dbform.h"
 //#include <stdarg.h>
 #include "../libincl/debug.h"
-#include "runtime_tui.h"
+#include "../runtime_tui.h"
 
 #ifndef USE_WINSOCK
 #define SOCKET int

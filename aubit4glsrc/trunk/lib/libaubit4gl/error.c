@@ -8,9 +8,9 @@
  * @todo Doxygen comments to add to functions
  */
 
-#include "generated/tmperrs.h"
+#include "../generated/tmperrs.h"
 //#include "../libincl/debug.h"
-#include "libincl/debug.h"
+#include "../libincl/debug.h"
 #include <stdarg.h>
 #define IGNOREEXITWITH
 char errorbuff[256]="";

@@ -7,57 +7,10 @@
  *
  */
 
-/*  ***************************************************************************
-* (c) 1997-1998 Aubit Computing Ltd.
-*
-* $Id: load.c,v 1.1 2002-04-17 00:01:36 afalout Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.6  2001/12/10 07:46:04  afalout
-*	commit.build
-*	
-*	Revision 1.5  2001/12/08 12:08:10  mikeaubury
-*	A4GLSQL_ added
-*	
-*	Revision 1.4  2001/12/03 15:52:10  mikeaubury
-*	dl stuff
-*	
-*	Revision 1.3  2001/11/30 21:34:02  saferreira
-*	Warnigs and prototypes fixed and Doxygen comments added
-*	
-*	Revision 1.2  2001/11/29 22:26:59  saferreira
-*	Some more warnings fixed and Doxygen comments added
-*	
-*	Revision 1.1.1.1  2001/08/20 02:36:19  afalout
-*	Initial import to SF
-*	
-*	Revision 1.3  2001/06/12 03:37:29  afalout
-*	make install, make clean
-*	
-*	Revision 1.2  2000/09/28 02:42:20  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:50  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.4  1998/12/17 20:59:02  fglcomp
-*	171298
-*
-*	Revision 1.3  1998/10/15 21:54:22  fglcomp
-*	Up till 15/10/98
-*
-*	Revision 1.2  1998/08/09 11:51:48  fglcomp
-*	Added ID classifications
-*
-*
-*******************************************************************************/
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "aubit_lib.h"
+#include "../aubit_lib.h"
 #include "../libincl/debug.h"
 extern int status;
 

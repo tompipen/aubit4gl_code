@@ -1,3 +1,7 @@
+#This script is invoked from lib/libaubit4gl/Makefile
+#It creates lib/generated/tmperrs.h file used by lib/libaubit4gl/error.c
+
+
 awk '
 BEGIN {
 errcnt=1;
@@ -31,14 +35,14 @@ if (errno==0&&done[a]==0) errno=errcnt++
 if (done[a]==0) {
 print "{\"" a "\"," errno " },"
 done[a]=1
-print errno "|" a > "generated/errdefs"
+print errno "|" a > "../generated/errdefs"
 }
 }
 END {
 print "{0,0}"
 print "};"
 }
-' *.c libsql/odbc/*.c libsql/esqlc/*.ec libsql/nosql/nosql.c > generated/tmperrs.h
+' *.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c > ../generated/tmperrs.h
 
 
 

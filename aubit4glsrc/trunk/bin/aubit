@@ -3,6 +3,12 @@
 #This is Aubit 4gl compiler warper script
 
 AUBITDIR=`aubit-config AUBITDIR`
+
+if [ "$AUBITDIR" = "" ]; then
+    echo "ERROR: AUBITDIR is empty. Stop."
+    exit 3
+fi
+
 PATH=$AUBITDIR/bin:$PATH
 LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
 
@@ -21,7 +27,7 @@ then
     echo '    where <command> is one of the following:'
 	echo ' 4glpc - main compiler script'
     echo ' 4glc - 4gl to C-code compiler'
-    echo ' 4glc - 4gl to Perl-code compiler'
+    echo ' 4glp - 4gl to Perl-code compiler'
 	echo ' fcompile - form file (.per) compiler'
     echo ' mcompile - menu file (.menu) compiler'
     echo ' mkemess  - help file (.hlp) compiler'
@@ -38,7 +44,6 @@ COMMAND=$1
    ################
 
    *)
-		#$2 $3 $4 $5 $6 $7 $8 $9
         $@
 
    ;;

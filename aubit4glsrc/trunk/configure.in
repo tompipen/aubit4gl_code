@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.56 2002-04-15 10:59:06 afalout Exp $
+# $Id: configure.in,v 1.57 2002-04-17 01:38:45 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1856,6 +1856,17 @@ else
 	fi
 fi
 
+
+## ==================================================================
+##            Decide on default RPC driver
+## ==================================================================
+
+
+XML_RPC
+
+
+
+
 ## ==================================================================
 ##         Checks for libraries expected in standard locations
 ## ==================================================================
@@ -2054,6 +2065,72 @@ esac
 
 
 
+
+
+
+## ==================================================================
+##            Decide on default SQL driver
+## ==================================================================
+
+
+#if more then one ODBC support was detected, this one will
+#ovverride A4GL_SQLTYPE set earlier in this script:
+#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
+
+if test "$default_odbc" != ""; then
+	#User can force SQL driver default with --default-odbc=xxxx switch
+	A4GL_SQLTYPE="$default_odbc"
+else
+    ############# native ####################
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
+	fi
+	############# ODBC drivers ##############
+	if test "$HAVE_PGODBC" = "yes" ; then
+		A4GL_SQLTYPE=pgodbc
+	fi
+	if test "$HAVE_IFXODBC" = "yes" ; then
+		A4GL_SQLTYPE=ifxodbc
+	fi
+	############# ODBC managers #############
+	if test "$HAVE_IODBC" = "yes" ; then
+		A4GL_SQLTYPE=iodbc
+	fi
+	if test "$HAVE_UNIXODBC" = "yes" ; then
+		A4GL_SQLTYPE=unixodbc
+	fi
+	if test "$cygwin" = "1"; then
+		A4GL_SQLTYPE=odbc32
+
+        #echo "WARNING: SQL on Windows temporaraly disabled"
+		#A4GL_SQLTYPE=nosql
+	fi
+fi
+
+
+## ==================================================================
+##            Decide on default RPC driver
+## ==================================================================
+
+if test "$default_rpc" != ""; then
+	#User can force SQL driver default with --default-odbc=xxxx switch
+	A4GL_RPCTYPE="$default_rpcc"
+else
+
+	if test "$XML_RPC" != "no"; then
+		A4GL_RPCTYPE="XMLRPC"
+    fi
+
+	if test "$HAVE_RPCLIB" != "no"; then
+		A4GL_RPCTYPE="SUNRPC"
+    fi
+fi
+
+
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in
 ## ==================================================================
@@ -2075,7 +2152,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 compilers/fcompile/Makefile
                 compilers/helpcompile/Makefile
                 compilers/menus/Makefile
-                lib/libpdf/Makefile
+                lib/libaubit4gl/Makefile
+                lib/libform/form_xdr/Makefile
+				lib/libpdf/Makefile
                 lib/libgui/Makefile
                 lib/libtui/Makefile
                 lib/libsql/nosql/Makefile

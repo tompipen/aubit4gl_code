@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.49 2002-04-17 01:38:51 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-04-17 01:38:52 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../incl/Makefile-common
+include ../../incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -36,84 +36,53 @@ override NOINCL=0
 ## ==================================================================
 
 CMODS_PROJECT	=project.c
-CMODS_CONFIG	=aubit-config.c
-CMODS_RESOURCE	=resource.c
+GUI_TUI			=gui_tui.o
+GUI_GTK			=gui_gtk.o
+GUI_SRC         =ui.c
+CMODS_DLSQL		=dlsql.c
+CMODS_RESOURCE	=../resource.c
 
+#In alphabetical order:
+COMMONSRC= \
+	 \
+	builtin.c builtin_d.c \
+	calldll.c conv.c \
+	data_if.c dates.c dmy.c debug.c \
+	err.c error.c errfile.c extfile.c extend_rep.c \
+	fglwrap.c funcs_d.c fields.c \
+	gtime.c gui_io.c gui.c \
+	helper.c \
+	io.c interval.c \
+	keys.c \
+	load.c \
+	match.c \
+	others.c \
+	pointers.c \
+	rpc.c read_dty.c report.c rexp2.c ${CMODS_RESOURCE} \
+	screen.c sleep.c stack.c string.c \
+	translate.c
 
+CMODSNOSQL 			=${COMMONSRC}
 CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
-#libaubit4gl.a
-#LDFLAGS				=-Map mapfile
-4GLPC               =../bin/4glpc
-4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
-#   LDFLAGS			+=-lc
-	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM
-
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dlllibRPC_XDR dllFORM_XDR
-    endif
-
-	ifneq "@XML_RPC@" "no"
-		ALL			+=dlllibRPC_XMLRPC
-    endif
-
+	ALL				+=dllaubit4gl
 else
-    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT}
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT}
-    endif
-
-	ifneq "@XML_RPC@" "no"
-		ALL			+=libRPC_XMLRPC${SO_EXT}
-    endif
+    ALL				+=libaubit4gl${SO_EXT}
 endif
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
-
-ifneq "@IFMX_ESQLC@" "no"
-	ALL 		+=libSQL_esql${SO_EXT}
-endif
-
-
-ifdef COMSPEC
-	ALL			+=libSQL_odbc32${SO_EXT}
-else
-	ifeq "$(HAVE_IODBC)" "yes"
-	    ALL		+=libSQL_iodbc${SO_EXT}
-    endif
-
-	ifeq "$(HAVE_UNIXODBC)" "yes"
-		ALL		+=libSQL_unixodbc${SO_EXT}
-    endif
-
-	ifneq "@HAVE_IFXODBC@" "no"
-	    ALL		+=libSQL_ifxodbc${SO_EXT}
-	endif
-
-	ifneq "@HAVE_PGODBC@" "no"
-		ALL		+=libSQL_pgodbc${SO_EXT}
-	endif
-endif
-
-ifeq "$(PDFBUILD)" "yes"
-	ALL 			+=libEXREPORT_PDF${SO_EXT}
-endif
-    #PDF_LIBNAME     =-lPDF_PDF
-    #AUBIT_PDFLIBNAME=-Llibpdf
-#else
-    #PDF_LIBNAME     =-lPDF_NOPDF
-#endif
+#CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
+CFLAGS				:=-I../../compilers/fcompile -I../libincl ${CFLAGS}
 
 #cyclical dependency: I need XDR to make libaubit4gl, but I need libaubit4gl to make RPCLIB!
 #ifneq "@HAVE_RPCLIB@" "0"
@@ -139,155 +108,87 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-all_gui: ${ALL_GUI}
-	@echo "Default GUI targets (${ALL_GUI}) built successfully."
+libaubit4gl.a : $(OBJS) ${GUI_TUI}
+#	-ldl -lm should be linked here, not in 4glpc with executable?
+	ar rc $@ $^
+	ranlib $@
+	${CP} $@ ..
+#	${LD} -static -rdynamic -o $@ $^ -ldl -lm
 
-aubit-config: ${CMODS_CONFIG} ${CMODS_RESOURCE}
-	${CC} ${CFLAGS} -Ilibincl -o $@ $^
-	cp $@ ../bin
+libaubit4gl.so : $(OBJS) ${GUI_TUI}
+#	-ldl -lm should be linked here, not in 4glpc with executable?
+#IMPORTANT- xdr_ functions are NOT in -lrpcsvc. On Linux, they are in -lc
+	${LD} ${SO_LDFLAGS} -o $@ $^ -ldl -lm
+	${CP} $@ ..
+#	@RPCLIB_NAME@
+#-Map  mapfile
 
-loadmap:
-	${SH} ${4GLPC} ${4GLPCFLAGS} -nopdf loadmap.4gl -o $@
-	cp $@${EXE} ../bin
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
 
+.PHONY : dllaubit4gl
+dllaubit4gl : $(OBJS) ${GUI_TUI}
+	${MAKE} libaubit4gl.dll DLLOBJS="$^"
+	${CP} libaubit4gl.dll ..
+#	DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L."
+#$RPCLIB_NAME
+
+#libaubit4gl.def: $(OBJS) ${GUI_TUI}
+#	dlltool --export-all --output-def $@ $^
+
+#we need to make export library before we can make actuall dll, becaus eof cyclical dependencies
+#between libSQL_xxx.dll and libaubit4gl.dll, since there can be no unresilved symols at link
+#time on Windows when mailing dll:
+#libaubit4gl.dll.a: $(OBJS) ${GUI_TUI}
+#	dlltool --output-exp $@ $^
 
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
 
+gui_tui.o: ${GUI_SRC}
+	${CC} ${CFLAGS} -c $(CFLAGS) $^ -o $@
+
+gui_gtk.o: ${GUI_SRC}
+	${CC} ${CFLAGS}-c $(CFLAGS) -DUSE_GTK $^ -o $@
+
 ci: $(CMODS)
 	ci -l  $^
+
+project.o: ../generated/${CMODS_PROJECT}
+	${CC} ${CFLAGS} -c -o $@ $^
+
+../generated/project.c:
+	(cd ../../tools/project; ${SH} mkproject)
+
+../generated/tmperrs.h :
+	${SH} ../bin/mkerrors
+
+../../compilers/fcompile/form_x_xdr.c  ./../compilers/fcompile/form_x.h:
+	${MAKE} -C ../../compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
-error.c : generated/tmperrs.h
-array.o: array.c ../compilers/fcompile/form_x_xdr.c
-builtin.c: ../compilers/fcompile/form_x.h
-
-
-## ==================================================================
-##                       Windows 32 DLL Targets in sub-makefiles
-## ==================================================================
-
-libSQL_noodbc.dll:
-	${MAKE} -C libsql/nosql nosql.dll
-
-libSQL_odbc32.dll:
-	${MAKE} -C libsql/odbc odbc32
-
-libEXREPORT_NOPDF.dll:
-	${MAKE} -C libpdf $(MKNAME) NOPDF.dll
-
-libgtk4gl.dll:
-	${MAKE} -C libgui
-
-
-.PHONY : dllaubit4gl
-dllaubit4gl :
-	${MAKE} -C libaubit4gl $(MKNAME) $@
-
-.PHONY : dllFORM_XDR
-dllFORM_XDR :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
-
-.PHONY : dllFORM_NOFORM
-dllFORM_NOFORM :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
-
-dlllibRPC_XDR:
-	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
-
-dlllibRPC_NORPC:
-	${MAKE} -C librpc/sun_rpc dlllibRPC_NORPC
-
-dlllibRPC_XMLRPC:
-	${MAKE} -C librpc/xml_rpc dlllibRPC_XMLRPC
-
-
-## ==================================================================
-##                       Targets in sub-makefiles
-## ==================================================================
-
-libaubit4gl.so :
-	${MAKE} -C libaubit4gl $(MKNAME) $@
-
-libFORM_NOFORM.so :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
-
-libFORM_XDR.so :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
-
-libEXREPORT_PDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
-
-libEXREPORT_NOPDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
-
-libSQL_noodbc.so:
-	${MAKE} -C libsql/nosql nosql.so
-
-libSQL_iodbc.so:
-	${MAKE} -C libsql/odbc iodbc
-
-libSQL_unixodbc.so:
-	${MAKE} -C libsql/odbc unixodbc
-
-libSQL_esql${SO_EXT}:
-	${MAKE} -C libsql/esqlc
-
-libSQL_ifxodbc.so:
-	${MAKE} -C libsql/odbc ifxodbc
-
-libSQL_pgodbc.so:
-	${MAKE} -C libsql/odbc pgodbc
-
-libRPC_XDR.so:
-	${MAKE} -C librpc/sun_rpc libRPC_XDR.so
-
-libRPC_NORPC.so:
-	${MAKE} -C librpc/sun_rpc libRPC_NORPC.so
-
-libRPC_XMLRPC.so:
-	${MAKE} -C librpc/xml_rpc libRPC_XMLRPC.so
+error.c : ../generated/tmperrs.h
+array.o: array.c ../../compilers/fcompile/form_x_xdr.c
+builtin.c: ../../compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
-clean : clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc clean.other
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c project.c \
-    loadmap loadmap.c loadmap.h core aubit-config *.out *.glb *.so *.a  \
-	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp libaubit4gl.def
-
+clean : clean.generated
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
+	${RM} form_x_xdr.c form_x.h project.c aubit-config core
+	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
+	${RM} *.base *.exp libaubit4gl.def
 
 clean.generated:
-	${RM} generated/errdefs generated/tmperrs.h \
-	generated/project.c generated/project.o
-
-clean.all: clean
-	${MAKE} -C libgui clean
-	${MAKE} -C libtui clean
-
-clean.libincl:
-	${RM} libincl/*.bak
-
-clean.libsql:
-	${MAKE} -C libsql/nosql clean
-	${MAKE} -C libsql/odbc clean
-	${MAKE} -C libsql/esqlc clean
-
-clean.libpdf:
-	${MAKE} -C libpdf clean
-
-clean.librpc:
-	${MAKE} -C librpc/sun_rpc clean
-	${MAKE} -C librpc/xml_rpc clean
-
-clean.other:
-	${MAKE} -C libaubit4gl clean
-	${MAKE} -C libform/form_xdr clean
+	${RM} ../generated/errdefs ../generated/tmperrs.h
+	${RM} ../generated/project.c ../generated/project.o
 
 
 ## ==================================================================
