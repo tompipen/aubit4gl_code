@@ -44,6 +44,15 @@ popdub (double *s)
 }
 
 void
+popflo (float *s)
+{
+  float a;
+  a = A4GL_pop_float ();
+  *s = a;
+}
+
+
+void
 popquote (char *s, int size)
 {
   A4GL_pop_char (s, size-1); // Informix takes includes the terminator in this size, aubit doesn't
@@ -144,10 +153,26 @@ poplong (long *x)
 }
 
 void
+popdate (long *x)
+{
+  long a;
+  a = A4GL_pop_date ();
+  *x = a;
+	A4GL_debug("popdate  %d\n",*x);
+}
+
+void
 retlong (long x)
 {
 	A4GL_debug("retlong  %d\n",x);
   A4GL_push_long (x);
+}
+
+void
+retdate (long x)
+{
+	A4GL_debug("retdate  %d\n",x);
+  A4GL_push_date (x);
 }
 
 void
