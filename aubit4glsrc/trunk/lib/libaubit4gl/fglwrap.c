@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.57 2004-03-15 16:27:17 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.58 2004-03-16 07:27:03 whaslbeck Exp $
 #
 */
 
@@ -229,7 +229,8 @@ char *p;
 //    }
 
   p_numargs = nargs;
-  setlocale (LC_ALL, "");
+  /* setlocale(LC_ALL, "") could break DECIMAL handling, if LC_NUMERIC != C */
+  /* setlocale (LC_ALL, ""); */
   setlocale (LC_CTYPE, "");
 	#ifdef DEBUG
 	  {
