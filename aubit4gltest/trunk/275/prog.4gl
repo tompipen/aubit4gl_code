@@ -12,7 +12,7 @@ let a[8]=8
 let a[9]=9
 let a[10]=10
 
-let mv_a= a[bibble(1)]
+let mv_a= a[bibble()]
 end main
 
 
