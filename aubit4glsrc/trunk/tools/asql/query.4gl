@@ -148,58 +148,113 @@ end function
 
 ################################################################################
 function query_menu()
+define lv_action integer
+define lv_runnext integer
 	call init_filename()
 
+
+let lv_runnext=0
 	
 	if not has_db() then
 		call select_db()
 	end if
 
+while true
 	call display_qry()
+	set pause mode off
 
 	menu "SQL"
-		command "New" "Type in new SQL commands"
-			if qry_new() then
+		before menu 
+			if lv_runnext then
 				next option "Run"
 			end if
+
+		command "New" "Type in new SQL commands"
+			let lv_action=1 exit menu
 
 		command "Run" "Run the SQL commands"
-			Call set_exec_mode(0)
-			call qry_run()
+			let lv_action=2 exit menu
+
 
 		command "Modify" "Modify the SQL commands"
-			if qry_modify() then
-				next option "Run"
-			end if
+			let lv_action=3 exit menu
+
 
 		command "Use-editor" "Use the editor to modify SQL"
-			if qry_edit() then
-				next option "Run"
-			end if
+			let lv_action=4 exit menu
+
 
 		command "Output" "Output the results of the SQL"
+			let lv_action=5 exit menu
+
+
+
+		command "Choose" "Choose an SQL file"
+			let lv_action=6 exit menu
+
+
+
+		command "Save" "Save an SQL file"
+			let lv_action=7 exit menu
+
+
+		command "Info" "Info for tables"
+			let lv_action=8 exit menu
+
+
+
+		command "Drop" "Drop an SQL file"
+			let lv_action=9  exit menu
+
+
+		command "Exit" "Return to ADBACCESS menu" 
+			let lv_action=10
+			exit menu
+	end menu
+
+
+	let lv_runnext=0
+	case lv_action
+		when 1
+			if qry_new() then
+				let lv_runnext=1
+			end if
+	
+		when 2
+			Call set_exec_mode(0)
+			call qry_run()
+		when 3
+			if qry_modify() then
+				let lv_runnext=1
+			end if
+		when 4
+			if qry_edit() then
+				let lv_runnext=1
+			end if
+
+		when 5
 			Call set_exec_mode(2)
 			if not qry_output() then
 				error "Some SQL error"
 			end if
 			Call set_exec_mode(0)
 
-		command "Choose" "Choose an SQL file"
+		when 6
 			if qry_choose() then
-				next option "Run"
+				let lv_runnext=1
 			end if
 
-		command "Save" "Save an SQL file"
+		when 7
 			call qry_save()
 
-		command "Info" "Info for tables"
+		when 8
 			call qry_info()
-
-		command "Drop" "Drop an SQL file"
+	
+		when 9
 			call qry_drop()
-
-		command "Exit" "Return to ADBACCESS menu" exit menu
-	end menu
+		when 10 exit while
+	end case
+end while
 
 	call clear_screen_portion()
 end function
@@ -224,6 +279,11 @@ if (strcmp(lv_fname,"-")==0)
 	mv_fin=(long)stdin;
 else
 	mv_fin=(long)fopen(lv_fname,"r");
+	if (mv_fin==0) {
+		strcat(lv_fname,".sql");
+		mv_fin=(long)fopen(lv_fname,"r");
+	}
+
 endcode
 
 if mv_fin=0 then

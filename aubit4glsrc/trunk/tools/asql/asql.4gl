@@ -33,9 +33,6 @@ end if
 
 if lv_args_cnt then
 	let lv_input=get_next_arg()
-	if lv_input not matches "*.sql" then
-		let lv_input=lv_input clipped,".sql"
-	end if
 	call execute_file(lv_input)
 
 	exit program
@@ -143,8 +140,9 @@ define lv_maxy integer
 code
 lv_maxy=A4GL_get_curr_height();
 endcode
-
+set pause mode on
 for lv_y=6 to lv_maxy
 	display "" at lv_y,1
 end for
+set pause mode off
 end function

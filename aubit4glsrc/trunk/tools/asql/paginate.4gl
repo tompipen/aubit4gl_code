@@ -19,7 +19,7 @@ define lv_action integer
 
 let lv_cnt=0
 
-set pause mode on
+#set pause mode on
 call clear_screen_portion()
 code
 {
@@ -87,7 +87,7 @@ code
 	
 			open_display_file_c();
 endcode
-set pause mode off
+#set pause mode off
 	return 0
 code
 		}
@@ -95,14 +95,14 @@ code
 }
 			open_display_file_c();
 endcode
-set pause mode off
+#set pause mode off
 return 0
 END FUNCTION
 
 
 FUNCTION display_menu()
 define lv_action integer
-set pause mode off
+#set pause mode off
 		MENU "DISPLAY"
 			COMMAND "Next" "Display next page of information"
 				let lv_action=0 exit menu
