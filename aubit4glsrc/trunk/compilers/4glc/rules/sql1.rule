@@ -431,7 +431,8 @@ grantee:
 
 view_definition_ss:
 	CREATE_VIEW table_name op_view_column_list AS query_specification_ss op_with_check_option {
-$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<str>4," ",$<str>5," ",$<str>6,0);}
+$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<str>4," ",$<sql_string>5," ",$<str>6,0);
+}
 ;
 
 op_view_column_list: {strcpy($<str>$,"");}
