@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.13 2003-05-19 18:06:53 mikeaubury Exp $
+# $Id: keys.c,v 1.14 2003-05-19 19:07:21 mikeaubury Exp $
 #
 */
 
@@ -60,7 +60,8 @@
 
 int A4GL_key_val2 (char *str);
 //void A4GL_set_option_value (char type, int keyval);
-
+void
+A4GL_init_stddbscr (void);
 /*
 =====================================================================
                     Functions definitions
@@ -223,7 +224,7 @@ A4GL_key_val2 (char *str)
 void
 A4GL_set_option_value (char type, int keyval)
 {
-A4GL_init_stddbscr ();
+  A4GL_init_stddbscr ();
   A4GL_debug ("Set option value : %c %d", type, keyval);
   switch (type)
     {
