@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.71 2002-06-26 06:11:28 afalout Exp $
+# $Id: Makefile.in,v 1.72 2002-07-11 09:29:18 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,7 +45,7 @@ SOURCE 		=.
 TESTDIR     =$(SOURCE)/tools/test
 DOCDIR     	=$(SOURCE)/docs
 IDEDIR     	=$(SOURCE)/tools/ide
-TOBIN		=$(SOURCE)/bin/4glc${EXEEXT} $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile${EXEEXT} \
+TOBIN		=$(SOURCE)/bin/4glc${EXEEXT} $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile${EXEEXT} $(SOURCE)/bin/xgen${EXEEXT} \
 			$(SOURCE)/bin/mcompile${EXEEXT} $(SOURCE)/bin/mkmess${EXEEXT} $(SOURCE)/bin/amake \
 			$(SOURCE)/bin/amakeallo $(SOURCE)/bin/amakeallf \
 			$(SOURCE)/bin/loadmap${EXEEXT} $(SOURCE)/bin/aubit $(SOURCE)/bin/aubit-config${EXEEXT} \
@@ -310,6 +310,7 @@ corecompile:
 #	$(MAKE) -C lib/libtui
 #	$(MAKE) -C compilers/4glc/rules
 	$(MAKE) -C compilers/4glc
+	$(MAKE) -C compilers/xgen
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
