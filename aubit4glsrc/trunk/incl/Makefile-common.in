@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.113 2003-01-30 11:54:38 afalout Exp $
+# $Id: Makefile-common.in,v 1.114 2003-02-02 01:13:48 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -932,7 +932,7 @@ ROOT_FILES		=README.txt install.sh
 ## ==================================================================
 
 AMAKE_INCL_FILES= \
-        header.mki footer.mki footer-c.mki maximise.mki \
+        header.mki footer.mki footer-c.mki \
         a4gl.mk q4gl.mk d4gl.mk i4gl.mk
 
 INCL_FILES	= \

@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.7 2003-01-30 11:54:38 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.8 2003-02-02 01:13:48 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -71,7 +71,12 @@ endif
 ###########################
 #Set the following to 'yes", to activate linking with Querix extender libraries
 #for particular extension
-EXTENDER_GUI        =yes
+#WARNING: if you set EXTENDER_GUI=yes, you wil lnot be able to run the compiled
+#program in TUI mode, you will get this error message:
+#This is a Querix Hydra GUI compiled binary and cannot be run directly.
+#To run this program please use on of our Client programs, such as Phoenix
+# or Chimera.
+EXTENDER_GUI        =no
 EXTENDER_HTML       =no
 
 ###########################
@@ -172,7 +177,7 @@ Q4GL_LIB_EXT=.qox
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
 4GL_SRC_SUFFIXES	= .4gl .per .msg
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
-Q4GL_TMP_SUFFIXES_DELETE=${Q4GL_OBJ_EXT} .err
+Q4GL_TMP_SUFFIXES_DELETE=${Q4GL_OBJ_EXT} ${Q4GL_LIB_EXT} .err
 #Files that compiler created, but are not neded at run-time:
 Q4GL_TMP_SUFFIXES   = ${Q4GL_TMP_SUFFIXES_DELETE} .c .h
 #Files that compiler created, needed at run-time
@@ -190,6 +195,13 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 #FIXME: is this usable at all in real life? REMOVE IT
 #.4gl.4qe:
 #	${Q4GL_CL} -o $@ $< ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+
+
+####################################
+# Rule for making a library using .mk make file
+%${Q4GL_LIB_EXT}:  %.mk
+	@echo "Making library $*${Q4GL_LIB_EXT} using $^"
+	${AMAKE} $<
 
 #######################
 # Rule for compiling program files to object

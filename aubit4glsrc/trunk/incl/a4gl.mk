@@ -1,6 +1,25 @@
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
+
+#	 $Id: a4gl.mk,v 1.21 2003-02-02 01:13:48 afalout Exp $
+
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.20 2003-01-30 11:54:38 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.21 2003-02-02 01:13:48 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -16,7 +35,9 @@
 
 #FIXME: move this stuff in a common place, since it applies to all compilers:
 
-AMAKE=amake
+ifndef AMAKE
+	AMAKE=amake
+endif
 
 #Files compiler uses as source files:
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
@@ -93,11 +114,12 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 # Define suffixes which are recognised.
 
 A4GL_PRG_EXT=.4ae
-A4GL_OBJ_EXT=.ao
-A4GL_SOB_EXT=.aso
+A4GL_OBJ_EXT=.ao        #static object
+A4GL_SOB_EXT=.aso       #shared object
+A4GL_LIB_EXT=.aox       #static library
+A4GL_SOL_EXT=.asx       #shared library
 A4GL_FRM_EXT=.afr.xml
 A4GL_HLP_EXT=.hlp
-A4GL_LIB_EXT=.aox
 A4GL_MNU_EXT=.mnu.xml
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:

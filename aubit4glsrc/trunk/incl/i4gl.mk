@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.5 2003-01-30 11:54:38 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.6 2003-02-02 01:13:48 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -12,6 +12,10 @@
 ###############################################################################
 # Compilers and flags
 ###############################################################################
+
+ifndef AMAKE
+	AMAKE=amake
+endif
 
 # -- if ${IXCC} is gcc, set IXCC to "gcc -fwritable-strings"
 IXCC=gcc -fwritable-strings
@@ -98,7 +102,7 @@ I4GL_C_SUFFIXES 	=.ec .c .4ge
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
 4GL_SRC_SUFFIXES	=.4gl .per .msg
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
-I4GL_TMP_SUFFIXES_DELETE=${I4GL_OBJ_EXT} .err
+I4GL_TMP_SUFFIXES_DELETE=${I4GL_OBJ_EXT} ${I4GL_LIB_EXT} .err
 #Files that compiler created, but are not neded at run-time:
 I4GL_TMP_SUFFIXES   =${I4GL_TMP_SUFFIXES_DELETE}
 #Files that compiler created, needed at run-time
@@ -139,6 +143,22 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 	${RM} $*.c
 .ec.c:
 	${ESQL_EC} -e $<
+
+####################################
+# Rule for making a library using .mk make file
+#We have a problem here:
+#we do make a library successfully, but if it's out of the current directory,
+#when we come back to the linking stage, VPATH was already scanned, and the
+#library name will NOT include the PATH - since file did not exist when
+#dependencies where searched for. With 4JS, I think that linker finds them based
+#on 4Js specific environment variable, FGLLDPATH. Wit C based compilers, ld finds
+#libraries in LD_RUN_PATH. But here, we do not have a linker, just a humble 'cat'
+#so what to we do?
+#If user just re-issues make command, VPATH will find the created library,
+#and all will lin (cat) just fine...
+%${I4GL_LIB_EXT}:  %.mk
+	@echo "Making library $*${I4GL_LIB_EXT} using $^"
+	${AMAKE} $<
 
 # Rules for compiling I4GL form files
 .per.frm:

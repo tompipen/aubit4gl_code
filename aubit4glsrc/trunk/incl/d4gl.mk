@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.6 2003-01-30 11:54:38 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.7 2003-02-02 01:13:48 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -72,13 +72,13 @@ D4GL_SC         = ${D4GL_SC_CMD} ${D4GL_SC_FLAGS}
 # Define suffixes which are recognised.
 
 D4GL_PRG_EXT	=.42r
-D4GL_OBJ_EXT	=.42o
+D4GL_OBJ_EXT	=.42m
 D4GL_FRM_EXT	=.42f
 D4GL_HLP_EXT	=.42h
 D4GL_LIB_EXT	=.42x
 
 #WARNING:
-D4GL_C_SUFFIXES =.42e .42m .42h
+D4GL_C_SUFFIXES =.42e .42o .42h
 
 #Files compiler uses as source files:
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
@@ -88,7 +88,7 @@ D4GL_TMP_SUFFIXES_DELETE=${D4GL_OBJ_EXT} .err
 #Files that compiler created, but are not neded at run-time:
 D4GL_TMP_SUFFIXES   = ${D4GL_TMP_SUFFIXES_DELETE}
 #Files that compiler created, needed at run-time
-D4GL_SUFFIXES 		= ${D4GL_PRG_EXT} ${D4GL_FRM_EXT} ${D4GL_HLP_EXT}
+D4GL_SUFFIXES 		= ${D4GL_PRG_EXT} ${D4GL_FRM_EXT} ${D4GL_HLP_EXT} ${D4GL_LIB_EXT}
 #Make directive to recognize sufixes:
 .SUFFIXES:	${D4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${D4GL_TMP_SUFFIXES} .sch
 #Files we need to delete, to clean everything compiler creates

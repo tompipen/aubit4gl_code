@@ -1,3 +1,22 @@
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
+
+#	 $Id: footer.mki,v 1.19 2003-02-02 01:13:48 afalout Exp $
+
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
 #
@@ -5,7 +24,7 @@
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.18 2003-01-30 11:54:38 afalout Exp $
+# $Id: footer.mki,v 1.19 2003-02-02 01:13:48 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
@@ -14,9 +33,10 @@ endif
 
 PROGTYPE  = $(suffix ${PROG})
 
-#for ld to find .aox libs
-export LD_RUN_PATH=${LIBSTORE}
-
+#for ld to find .aox and other C based libraries (and objects)
+#NOTE: this applies only to LD, and NOT to GCC
+LD_RUN_PATH	:=${LIBSTORE}:${LD_RUN_PATH}
+export LD_RUN_PATH
 
 #If we did not include rules files for all compilers, we must at least specify
 #extensions for the targets defined in this file, to avoid warning from make:
@@ -24,19 +44,20 @@ export LD_RUN_PATH=${LIBSTORE}
 
 ifeq "${I4GL_PRG_EXT}" ""
 	I4GL_PRG_EXT=.I4GL_RULES_NOT_INCLUDED
+	I4GL_LIB_EXT=${I4GL_PRG_EXT}
 endif
 ifeq "${A4GL_PRG_EXT}" ""
 	A4GL_PRG_EXT=.A4GL_RULES_NOT_INCLUDED
+	A4GL_LIB_EXT=${A4GL_PRG_EXT}
 endif
 ifeq "${Q4GL_PRG_EXT}" ""
 	Q4GL_PRG_EXT=.Q4GL_RULES_NOT_INCLUDED
+	Q4GL_LIB_EXT=${Q4GL_PRG_EXT}
 endif
 ifeq "${D4GL_PRG_EXT}" ""
 	D4GL_PRG_EXT=.D4GL_RULES_NOT_INCLUDED
+	D4GL_LIB_EXT=${D4GL_PRG_EXT}
 endif
-
-
-
 
 # =======================================================================
 #       Set options/extensions for compiling a program or library
@@ -44,44 +65,33 @@ endif
 
 ifeq "$(PROGTYPE)" ".lib"
 	#we are making a library
-	ifeq "${PROG}" "dummy.lib"
-        SKIPLINKING=1
-		TARGETCMD=@echo Name dummy.lib was used, final linking skipped.
-    else
-		#-fPIC will apparently not work on AIX - we should autoconf this file
-		#TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-		TARGETCMD=ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-        #$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
-    endif
-
     ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
     endif
+	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}} 		#D4GL/4Js p-code
+	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=.42o} 				#D4GL/4Js c-code
+	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4cx} 				#I4GL c-code
+	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}} 		#I4GL p-code
+	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}} 		#Querix
+    ifeq "${LIBS_LINK}" "SHARED"
+		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_SOL_EXT}} 	#aubit shared library
+	else
+		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}} 	#aubit static library
+    endif
 
-	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${DQ4GL_LIB_EXT}} #D4GL/4Js p-code
-	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=.42o} #D4GL/4Js c-code
-	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4cx} #I4GL c-code
-	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}} #I4GL p-code
-	PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}} #aubit
-	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}} #Querix
 
 else
     #we are making a program
-	LIBFLAG=
-	#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
-	TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
-
-	#ifeq "$(EXECSTORE)" ""
     ifeq "$(POINTTOSTORE)" "1"
 		ADDEXECSTORE=${EXECSTORE}
     endif
 
-	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT} #D4GL/4Js p-code
-	PROG.42e  = ${ADDEXECSTORE}${PROG}.42e #D4GL/4Js c-code
-	PROG.4ge  = ${ADDEXECSTORE}${PROG}.4ge #I4GL c-code
-	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT} #I4GL p-code
-	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT} #aubit
-	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT} #Querix
+	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT} 			#D4GL/4Js p-code
+	PROG.42e  = ${ADDEXECSTORE}${PROG}.42e 						#D4GL/4Js c-code
+	PROG.4ge  = ${ADDEXECSTORE}${PROG}.4ge 						#I4GL c-code
+	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT} 			#I4GL p-code
+	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT} 			#Querix
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT} 			#aubit
 
 endif
 
@@ -95,18 +105,31 @@ endif
 	endif
 	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_LIB_EXT}})
 	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_LIB_EXT}})
-	FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
 	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${Q4GL_LIB_EXT}})
-
+    ifeq "${LIBS_LINK}" "SHARED"
+		FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
+    else
+		FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+    endif
 #OBJECTS
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDOBJSTORE=${OBJSTORE}
 	endif
 	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${D4GL_OBJ_EXT}})
 	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${I4GL_OBJ_EXT}})
-	FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_OBJ_EXT}})
 	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
+	ifeq "${OBJS_LINK}" "SHARED"
 
+        #FIXME: we neet to take out the 4gl file from FILES.4gl list, that
+        #contatins MAIN block, as it will still need to be compiles to static 
+		#object that will be made in executable, since shared libraries
+        #created here will need bot be passes as -l[lib]name on linking line -
+        #they will also need [lib] prefix added!
+
+		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_SOB_EXT}})
+    else
+		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_OBJ_EXT}})
+    endif
 #FORMS
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDFORMSTORE=${FORMSTORE}
@@ -186,7 +209,20 @@ plexus:
 #Build C-code program
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
 #	@echo FILES.ao = ${FILES.ao}
-	${FAIL_LINK}${TARGETCMD}
+#remove this	${FAIL_LINK}${TARGETCMD}
+ifeq "$(PROGTYPE)" ".lib"
+ifeq "${PROG}" "dummy.lib"
+	@echo Name dummy.lib was used, final linking skipped.
+else
+#-fPIC will apparently not work on AIX - we should autoconf this file
+#TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+	ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
+endif
+else
+#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
+	${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}  #--rpath${LIBSTORE} #-L${LIBSTORE}
+endif
 #	@echo CHANGED: $?
 
 tmp_commented_out:
@@ -205,10 +241,19 @@ endif
 #Build P-code program
 ${PROG.42r}:	${FILES.42m} ${FILES.42x}
 #	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
-ifeq "${SKIPLINKING}" "1"
-	${TARGETCMD}
+ifeq "${PROG}" "dummy.lib"
+#remove this	${TARGETCMD}
+ifeq "$(PROGTYPE)" ".lib"
+ifeq "${PROG}" "dummy.lib"
+	@echo Name dummy.lib was used, final linking skipped.
 else
-	fgllink -O -o $@ $< ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
+	@echo "Ooops - FIXME"
+endif
+else
+	${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}  #--rpath${LIBSTORE} #-L${LIBSTORE}
+endif
+else
+	${FAIL_LINK}fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
 endif
 ifeq "$(MOVETOSTORE)" "1"
 ifeq "$(dir $@)" "./"
@@ -237,10 +282,10 @@ ${PROG.42e}:	${FILES.42o} ${FILES.42x}
 
 #########################
 #Build P-code program
-${PROG.4gi}: ${FILES.4go}
+${PROG.4gi}: ${FILES.4go} ${FILES.4gx}
 #	@echo xwzhere
 #	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
-	${I4GL_PL} $< > $@
+	${I4GL_PL} $^ > $@
 
 ########################
 #Build C-code program
@@ -254,11 +299,30 @@ ${PROG.4ge}:	${FILES.o}
 
 ########################
 #Build C-code program
-${PROG.4qe}:	${FILES.qo} ${FILES.pic} ${FILES.qms}
+${PROG.4qe}:	${FILES.qo} ${FILES.qox}
 ifeq "${VERBOSE}" "1"
 	@echo "Linking Querix: $@"
 endif
-	${FAIL_LINK}${Q4GL_CL} -o $@ ${FILES.qo} ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+ifeq "$(PROGTYPE)" ".lib"
+ifeq "${PROG}" "dummy.lib"
+	@echo Name dummy.lib was used, final linking skipped.
+else
+#It looks like we should not use -shared for Querix?
+#but id we do, we need to sully it as -lname on link line!
+	ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+#...but this causes a lot of undefined crap
+#	ld -fPIC -static $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+#and so does this:
+#	qxcc ${CFLAGS} -o $@ $^ $(LDLIBS)
+endif
+else
+#	${FAIL_LINK}${Q4GL_CL} -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+#regardless of this -rpath, GCC determined that he can't find libraries,
+#probably without passing line to ld at all. We will need to use LD directly...
+	${FAIL_LINK}${Q4GL_CL} -Wl,-rpath ${SCWORK}/common -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+#cannt do this:
+#	${FAIL_LINK}ld -rpath ${SCWORK}/common $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+endif
 ifeq "${VERBOSE}" "1"
 	@echo "$@: OK"
 endif
