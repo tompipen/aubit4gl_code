@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.4 2001-09-04 21:51:02 mikeaubury Exp $
+* $Id: mod.c,v 1.5 2001-09-05 21:49:22 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.4  2001/09/04 21:51:02  mikeaubury
+*	bug fixes.
+*	Added thru syntax for some commands (eg. Input)
+*	
 *	Revision 1.3  2001/09/01 19:57:31  mikeaubury
 *	major bug fixes...
 *	Be care with records - new print_push_record ...
@@ -4337,7 +4341,7 @@ debug("print_push_rec");
 		  if (z != -2)
 		    {
 		      strcpy (buffer2, buffer);
-		      sprintf (buffer, "%s  xx push_variable(&%s%s,0x%x);\n",
+		      sprintf (buffer, "%s   push_variable(&%s%s,0x%x);\n",
 		       buffer2, bb, vars[a].var_name, z);
 		      cnt++;
 		    }

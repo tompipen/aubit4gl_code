@@ -340,18 +340,21 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 
 op_param_var_list: {
 start_bind('f',0);
+start_bind('O',0);
 strcpy($<str>$,"0");}
 | fparam_var_list;
 
 
 fparam_var_list:	func_def_var {
 start_bind('f',$<str>1);
+start_bind('O',$<str>1);
 sprintf($<str>$,"1");
 }
 	|	
 fparam_var_list COMMA func_def_var {
 int c;
 c=add_bind('f',$<str>3);
+c=add_bind('O',$<str>3);
 sprintf($<str>$,"%d",c); 
 }
 ;

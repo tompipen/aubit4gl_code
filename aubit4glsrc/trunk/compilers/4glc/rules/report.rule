@@ -306,8 +306,17 @@ pdf_output_command :
 ;
 
 
-op_rep_order_by : {printc("/* no order by */");printc("struct BINDING *obind=0;\nstruct BINDING *_ordbind=0;");strcpy($<str>$,"0");
-printc("static int fgl_rep_orderby=0;\n");
+op_rep_order_by : {
+int a;
+//printc("struct BINDING *obind=0;\nstruct BINDING *_ordbind=0;");
+//strcpy($<str>$,"0");
+//printc("static int fgl_rep_orderby=0;\n");
+
+printc("/* no order by  - assume all parameters in order*/");
+a=print_bind('O');
+printc("static int fgl_rep_orderby=2;\n");
+sprintf($<str>$,"%d",a);
+printc("/* end of var_list %s */\n",$<str>2);
 }
 | ORDER BY obind_var_list_ord
 {
