@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.13 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: memfile.c,v 1.14 2004-01-17 09:37:27 mikeaubury Exp $
 #
 */
 
@@ -384,7 +384,7 @@ FILE *last;
 	//printf("%x%c",type,buff[a]);
 
         if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
-                for (b=a;buff[b]!='\n';b++) {
+                for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
 			buff[b]=' ';
 		}
                 a=b-1;
@@ -392,14 +392,16 @@ FILE *last;
         }
 
         if (buff[a]=='#'&&type==0) {
-                for (b=a;buff[b]!='\n';b++) {
+		//printf("Found #\n");
+                for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
+			//printf("Skipping... '%c'\n",buff[b]);
 			buff[b]=' ';
 		}
                 a=b-1;
                 continue;
         }
         if (buff[a]=='{'&&type==0) {
-                for (b=a;buff[b]!='}';b++) {
+                for (b=a;buff[b]!='}'&&b<buff_len;b++) {
 			if (buff[b]=='\n') continue;
 			buff[b]=' ';
 		}
