@@ -97,7 +97,7 @@ printf("---> Name=%s\n",name);
                 if (GTK_WIDGET_TOPLEVEL(widget)) {
                 } else {
                         printf("%s ***\n",name);
-			if (GTK_IS_TREE_VIEW(widget)) { do_setup_list(widget); }
+			if (GTK_IS_TREE_VIEW(widget)) { do_setup_list(widget,1); }
 			gtk_object_set_data(GTK_OBJECT(widget),"HANDLER",handler_c);
 			gtk_object_set_data(GTK_OBJECT(tlw),name,(void *)widget);
 			attach_signals(GTK_OBJECT_TYPE_NAME(widget),GTK_OBJECT_TYPE(widget),widget);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.17 2004-04-02 09:14:11 mikeaubury Exp $
+# $Id: makefile,v 1.18 2004-04-09 09:33:07 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -181,10 +181,6 @@ width_wide.o: width.c
 API_lowlevel.c: ${LIBROOT}/libaubit4gl/API_lowlevel.spec API_lowlevel.h a4gl_API_lowlevel.h
 	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec > ../libui/ui_highlevel/API_lowlevel.c)
 
-#is this now obsolete?
-API_lowlevel.h: ../../libaubit4gl/API_lowlevel.spec
-	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec -h > ../libui/ui_highlevel/API_lowlevel.h)
-
 
 #so is it now only this one, or...
 a4gl_API_lowlevel.h: ../../libaubit4gl/API_lowlevel.spec
@@ -240,3 +236,4 @@ clean:
 	lowlevel/*.bak a4gl_API_lowlevel.h
 
 
+${OBJS} :  a4gl_API_lowlevel.h

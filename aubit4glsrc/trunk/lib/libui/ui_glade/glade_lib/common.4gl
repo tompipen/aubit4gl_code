@@ -28,23 +28,33 @@ code
 	GtkWidget *w; // This should be a top level window...
 	char *wname;
 	GtkWidget *widget;
-	w=(GtkWidget *)lv_form;
-	if (w==0) {
-		A4GL_exitwith("Invalid Form");
-		lv_ok=0;
-	} else {
-		wname=A4GL_find_gui_id_name_from_id(lv_field);
-		if (wname==0) {
-			A4GL_exitwith("Unknown widget ID");
+	static void *lform=0;
+	static int lfield=0;
+	static llv_ok=0;
+
+	if (lv_form==lform && lv_field==lfield ) lv_ok=llv_ok;
+	else {
+		w=(GtkWidget *)lv_form;
+		if (w==0) {
+			A4GL_exitwith("Invalid Form");
 			lv_ok=0;
 		} else {
-			printf("Getting widget by name : %s from %p\n",wname,w);
-			widget=gtk_object_get_data(GTK_OBJECT(w),wname);
-			lv_ok=(long)widget;
+			wname=A4GL_find_gui_id_name_from_id(lv_field);
+			if (wname==0) {
+				A4GL_exitwith("Unknown widget ID");
+				lv_ok=0;
+			} else {
+				//printf("Getting widget by name : %s from %p\n",wname,w);
+				widget=gtk_object_get_data(GTK_OBJECT(w),wname);
+				lv_ok=(long)widget;
+				lform=lv_form;
+				lfield=lv_field;
+				llv_ok=lv_ok;
+			}
 		}
 	}
 }
-printf("Returning : %d\n",lv_ok);
+//printf("Returning : %d\n",lv_ok);
 endcode
 return lv_ok
 end function

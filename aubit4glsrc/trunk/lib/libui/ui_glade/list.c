@@ -21,12 +21,13 @@ static GtkTreeModel * create_model (int n)
 
 
 
-void do_setup_list(GtkWidget *treeview) {
+void do_setup_list(GtkWidget *treeview,int n) {
       GtkCellRenderer *renderer;
       GtkTreeViewColumn *column;
       GtkTreeModel *model;
+      int a;
       //GtkWidget *treeview;
-      model = create_model (1);
+      model = create_model (n);
       gtk_tree_view_set_model (treeview,model);
 
 
@@ -37,7 +38,9 @@ void do_setup_list(GtkWidget *treeview) {
       renderer = gtk_cell_renderer_text_new ();
       column = gtk_tree_view_column_new_with_attributes ("Column", renderer, "text", 0, NULL);
       gtk_tree_view_column_set_sort_column_id (column, 0);
-      gtk_tree_view_append_column (GTK_TREE_VIEW(treeview), column);
+	for (a=0;a<n;a++) {
+      		gtk_tree_view_append_column (GTK_TREE_VIEW(treeview), column);
+	}
 }
 
 

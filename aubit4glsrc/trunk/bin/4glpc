@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.127 2004-03-27 11:48:55 afalout Exp $
+# $Id: 4glpc,v 1.128 2004-04-09 09:31:54 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1245,6 +1245,7 @@ do
         export DEBUG=ALL
 		#DDEBUG="_g"
         COMPCC="$COMPCC -g"
+	CFLAGS="$CFLAGS -g"
 		;;
    -as-dll)		#creates shared library- .so on UNIX, .dll on Windows
 		if test "$A4GL_LEXTYPE" = "EC"; then
