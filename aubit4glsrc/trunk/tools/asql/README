@@ -1,0 +1,10 @@
+This should really be adbaccess - but that was already taken...
+
+
+YOU MUST SET 
+
+A4GL_LEXTYPE=EC
+
+before compiling!
+
+
