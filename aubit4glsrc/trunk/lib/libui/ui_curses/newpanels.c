@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.88 2004-05-24 14:28:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.89 2004-06-18 16:52:49 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.88 2004-05-24 14:28:41 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.89 2004-06-18 16:52:49 mikeaubury Exp $";
 
 /**
  * @file
@@ -1361,7 +1361,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     {
       halfdelay (1);
       //a = wgetch (window_ptr);
-      a = getch ();
+      a = getch (); // GETCH - getch_swin
 
       if (a == KEY_MOUSE)
 	{
@@ -1424,7 +1424,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
       else {
 		A4GL_debug("GETCH");
-		a = getch ();
+		a = getch (); // GETCH1 - A4GL_real_getch_swin
 	}
 
 	A4GL_debug("getch returns %d",a);

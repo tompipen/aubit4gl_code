@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.42 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: prompt.c,v 1.43 2004-06-18 16:52:50 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.42 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.43 2004-06-18 16:52:50 mikeaubury Exp $";
 
 /**
  * @file
@@ -458,7 +458,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 
 
 
-
 /**
  *
  * @todo Describe function
@@ -467,6 +466,21 @@ static int
 A4GL_curses_to_aubit_int (int a)
 {
   int b;
+  static int env_cancel=-2;
+  if (env_cancel==-2) {
+		char *ptr;
+		ptr=acl_getenv("TUICANCELKEY");
+		env_cancel=-1;
+		if (ptr) {
+			if (strlen(ptr)) {
+				env_cancel=atoi(ptr);
+			}
+		} 
+	A4GL_debug("cancel = %d\n",env_cancel);
+   }
+	
+
+A4GL_debug("curses -> aubit a=%d %x\n",a,a);
   for (b = 0; b < 64; b++)
     {
       if (a == KEY_F (b))
@@ -497,7 +511,11 @@ A4GL_curses_to_aubit_int (int a)
 
   if (a == KEY_HOME) return A4GLKEY_HOME;
   if (a == KEY_END) return A4GLKEY_END;
-  if (a == KEY_CANCEL) return A4GLKEY_CANCEL;
+  if (a == KEY_CANCEL || (a==env_cancel && env_cancel!=-1) ) {
+		A4GL_set_intr();
+		A4GL_debug("Got Cancel...");
+		return A4GLKEY_CANCEL;
+  }
 
   if (a == KEY_DC) return A4GLKEY_DC;
   if (a == KEY_DL) return A4GLKEY_DL;
