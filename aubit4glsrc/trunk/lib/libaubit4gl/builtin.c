@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.39 2003-05-20 17:17:33 mikeaubury Exp $
+# $Id: builtin.c,v 1.40 2003-05-22 08:04:50 mikeaubury Exp $
 #
 */
 
@@ -298,6 +298,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   //printf ("a=%d b=%d\n", a, b);
   va_start (ap, b);
   va_end (ap);
+A4GL_debug("Entering a4gl_substr");
 
 #ifdef DEBUG
   {
@@ -336,10 +337,10 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
 
 #ifdef DEBUG
   {
-    A4GL_debug (">>>>Start with %s", np);
+    A4GL_debug ("Start with %s", np);
   }
   {
-    A4GL_debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
+    A4GL_debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
   }
 #endif
 
@@ -351,7 +352,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   }
 #endif
 
-  A4GL_debug ("a=%d b-a+1=%d");
+  A4GL_debug ("a=%d b-a+1=%d",a,b-a+1);
 
   strncpy (np2, &np[a], b - a + 1);
   np2[b - a + 1] = 0;
@@ -361,6 +362,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   }
 #endif
   //printf ("np2= '%s'\n", np2);
+A4GL_debug("Exiting a4gl_substr");
   return np2;
 }
 

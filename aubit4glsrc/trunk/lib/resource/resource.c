@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.39 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: resource.c,v 1.40 2003-05-22 08:04:52 mikeaubury Exp $
 #
 */
 
@@ -925,7 +925,7 @@ A4GL_build_user_resources (void)
   if (build_resource_cnt)
     {
 #ifdef DEBUG
-      A4GL_debug ("User resources\n --------------");
+      A4GL_debug ("User resources");
 #endif
       for (a = 0; a < build_resource_cnt; a++)
 	{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.124 2003-05-19 18:06:50 mikeaubury Exp $
+# $Id: mod.c,v 1.125 2003-05-22 08:03:23 mikeaubury Exp $
 #
 */
 
@@ -1857,7 +1857,7 @@ add_bind (char i, char *var)
     {
       dtype = scan_variable (var);
     }
-  A4GL_debug ("add_bind - dtype=%d (%s) i=%c\n", dtype, var, i);
+  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, var, i);
 
   if (i == 'i')
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.54 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: stack.c,v 1.55 2003-05-22 08:04:51 mikeaubury Exp $
 #
 */
 
@@ -424,6 +424,14 @@ A4GL_char_pop (void)
   char *s;
   int f;
 
+A4GL_debug_print_stack();
+
+  if (params_cnt <= 0)
+    {
+      A4GL_debug ("Stack got corrupted");
+      A4GL_assertion (1, "Stack got corrupted");
+      exit (0);
+    }
 
   if ((params[params_cnt - 1].dtype & DTYPE_MASK) != 0)
     {
@@ -1634,7 +1642,7 @@ A4GL_debug_print_stack (void)
   A4GL_debug ("\n");
 #endif
 #ifdef DEBUG
-  A4GL_debug ("**************************************************************\n");
+  A4GL_debug ("**************************************************************:");
 #endif
 #ifdef DEBUG
   /* {DEBUG} */ A4GL_debug ("Call stack has %d entries:\n", params_cnt);
@@ -1643,13 +1651,13 @@ A4GL_debug_print_stack (void)
     {
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 20);
 #ifdef DEBUG
-      /* {DEBUG} */ A4GL_debug (" %d Dtype (%d)='%s' size=%d\n", a,
+      /* {DEBUG} */ A4GL_debug (" %d Dtype (%d)='%s' size=%d:", a,
 			   params[a].dtype & DTYPE_MASK, buff,
 			   params[a].size);
 #endif
     }
 #ifdef DEBUG
-  A4GL_debug ("**************************************************************\n");
+  A4GL_debug ("**************************************************************");
 #endif
 }
 

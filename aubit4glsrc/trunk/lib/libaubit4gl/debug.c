@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.24 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: debug.c,v 1.25 2003-05-22 08:04:51 mikeaubury Exp $
 #
 */
 
@@ -135,10 +135,15 @@ A4GL_debug_full (char *fmt, ...)
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
       if (buff[strlen (buff) - 1] != ':')
-	fprintf (debugfile, "%-20s %-6d status=%6ld sqlca.sqlcode=%6ld\n ",
+	fprintf (debugfile, "%-20s %-6d (%6ld,%6ld)",
 		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode);
+      else
+	fprintf (debugfile, "%-20s                       "," ");
 
-      fprintf (debugfile, "%s\n", buff);
+	if (strchr(buff,'\n')) 
+      		fprintf (debugfile, " %s", buff);
+	else
+      		fprintf (debugfile, " %s\n", buff);
 
       /* fixme: A4GL_UI can also be gui, not only gtk
          Why are we printing this to stderr in any case, it is allready
@@ -162,8 +167,7 @@ A4GL_debug_full (char *fmt, ...)
 	    }
 	}
 
-      if (buff[strlen (buff) - 1] != ':')
-	fprintf (debugfile, "\n");
+      //if (buff[strlen (buff) - 1] != ':') fprintf (debugfile, "LF\n");
       fflush (debugfile);
     }
 }

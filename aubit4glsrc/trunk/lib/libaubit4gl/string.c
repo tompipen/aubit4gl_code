@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.18 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: string.c,v 1.19 2003-05-22 08:04:52 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,11 @@ char *
 A4GL_new_string (int a)
 {
   char *ptr;
-  A4GL_debug ("In A4GL_new_string %d\n", a);
+  A4GL_debug ("In A4GL_new_string %d (%x)\n", a,a);
+	if (a>65000) {
+		A4GL_exitwith("Dubious string size");
+		return "";
+	}
   ptr = (char *) acl_malloc (a + 2, "New string");	/* 1 for NULL 1 for extra */
   memset (ptr, 0, a + 2);
   A4GL_debug ("Aclmalloc returns %p", ptr);
