@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.8 2003-09-06 08:22:08 mikeaubury Exp $
+# $Id: ui.c,v 1.9 2003-09-08 08:11:25 afalout Exp $
 #
 */
 
@@ -648,8 +648,10 @@ aclfgl_aclfgl_dump_screen(0);
 
 }
 
-
+/*
 void *A4GL_make_pixmap(char *filename) {
 	return A4GL_make_pixmap_gw(filename);
 }
+*/
+
 /* ============================= EOF ================================ */

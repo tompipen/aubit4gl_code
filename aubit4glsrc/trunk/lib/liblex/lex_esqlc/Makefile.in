@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2003-07-23 07:07:33 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-09-08 08:11:25 afalout Exp $
 #
 
 ROOT        =../../..
@@ -66,9 +66,6 @@ endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 ifeq "${TARGET_OS}" "cygwin"
-	#LINKLIBS	+=-L${ROOT}/compilers/4glc -lexportlib4glcomp
-	#LINKDEPS    =${ROOT}/compilers/4glc/libexportlib4glcomp.dll.a
-	#LINKLIBS	+=${ROOT}/compilers/4glc/libexportlib4glcomp.def
 	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
 	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc
 endif
@@ -92,23 +89,15 @@ ${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
 ${LIBROOT}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_CS} ${LINKLIBS}
 
-#Embededd SQL/C output, for Informix ESQL/C or PostgreSQL EC compilers:
+#Embededd SQL/C output, for Informix ESQL/C, PostgreSQL, Querix or
+#SAP DB EC compilers:
 ${LIBROOT}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_EC} ${LINKLIBS}
-
-#ifeq "${SO_EXT}" ".dll"
-#	${MV} TMP${SOEXP_EXT} $@.a
-#endif
 
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
-#../fcompile/form_x.h:
-#	make -C ../fcompile rpc
-
-#${LINKDEPS}:
-#	${MAKE} -C ${ROOT}/compilers/4glc libexportlib4glcomp.dll.a
 
 ${LIBROOT}/lib4glc${SO_EXT}:
 	${MAKE} -C ${ROOT}/compilers/4glc lib4glc${SO_EXT}
@@ -116,14 +105,6 @@ ${LIBROOT}/lib4glc${SO_EXT}:
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
-
-#rules/generated/kw.c: rules.t
-#rules/generated/single_words.rule: rules.t
-#rules/generated/y.tab.c: rules.t
-#rules/generated/states.c: rules.t
-#mod.o: mod.c ${Y_TAB_C}
-#rules/generated/y.tab.o: ../fcompile/form_x.h
-
 
 compile_c.o compile_c_sql.o: ${KW_H} ${Y_TAB_H}
 
@@ -135,7 +116,8 @@ ${KW_H} ${Y_TAB_H}:
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak \
+	.\#* 4glp *.log *.dll *.dll.a
 
 
 #--------------------------------- EOF -----------------------------

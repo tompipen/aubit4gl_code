@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-08-26 07:10:35 afalout Exp $
+# $Id: Makefile.in,v 1.2 2003-09-08 08:11:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,25 +47,14 @@ LIBS=${SAPDB_LIBDIR} -lpcrl -lsqlca -ldl
 #SQLOPT=-X
 #export SQLOPT
 
-USERID=build
-PASSWD=compiler
-DATABASE_NAME=MODELL
+USERID=dba
+PASSWD=dba
+DATABASE_NAME=TST
 
 #[-u <userid>,<password> -d <database_name> -n <server_node>]
-CPCFLAGS=-Hnocheck -d${DATABASE_NAME} -u${USERID},${PASSWD} -s -c
+CPCFLAGS=-Hnocheck -s -c
+#-d${DATABASE_NAME} -u${USERID},${PASSWD}
 CFLAGS+=$(INCLUDE)
-
-
-## ==================================================================
-##                              Generic rules
-## ==================================================================
-
-%.c: %.cpc
-	$(CPC) $(CPCFLAGS) $(basename $<) $(CFLAGS) $(CPPFLAGS)
-
-#%o: %.c
-#	$(CC) -c $(CFLAGS) $<
-
 
 ## ==================================================================
 ##                              Targets
@@ -80,9 +69,19 @@ adload: adload.o
 	${CPCLNK} $@
 
 ## ==================================================================
-##                              Clean
+##                              Generic rules
 ## ==================================================================
 
+%.c: %.cpc
+	$(CPC) $(CPCFLAGS) $(basename $<) $(CFLAGS) $(CPPFLAGS)
+
+#%o: %.c
+#	$(CC) -c $(CFLAGS) $<
+
+
+## ==================================================================
+##                              Clean
+## ==================================================================
 
 clean:
 	${RM} *.o test-prg.c test-prg adload adload.c *.bak

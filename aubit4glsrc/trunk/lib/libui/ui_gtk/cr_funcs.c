@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.8 2003-09-08 08:11:26 afalout Exp $
 #*/
 
 /**
@@ -110,7 +110,8 @@ A4GL_size_widget (GtkWidget * w, int width)
  * @param filename The name of the file where the pixmap is stored.
  * @return The pixmap widget.
  */
-GtkWidget *
+//GtkWidget *
+void *
 A4GL_make_pixmap_gw (char *filename)
 {
   GdkPixmap *p;

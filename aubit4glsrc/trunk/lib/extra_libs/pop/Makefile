@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2003-09-03 19:10:32 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2003-09-08 08:11:25 afalout Exp $
 #
 
 ROOT    =../../..
@@ -45,13 +45,15 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: use amake
 
-all : ${LIBROOT}/libA4GL_pop${SO_EXT} test.4ae
 
+######### !!!!!!!!! PLEASE keep A4GL_ in UPPERCASE !!!!!!!!! ###############
+all : ${LIBROOT}/libA4GL_pop${SO_EXT} test.4ae
 
 ${LIBROOT}/libA4GL_pop${SO_EXT}: pop.4gl
 	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
 
 
+#Move this test in tools/test/build_test
 test.4ae: test.4gl test.per
 	${4GLPC_EXEC} test.4gl -o test.4ae
 	${ROOT}/bin/fcompile test.per
@@ -62,6 +64,7 @@ test.4ae: test.4gl test.per
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h \
-	*.4ae ${LIBROOT}/libA4GL_pop${SO_EXT}
+	*.4ae ${LIBROOT}/libA4GL_pop${SO_EXT} *.afr.dat *.afr.xml *.afr
+
 
 

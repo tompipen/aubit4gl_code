@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.90 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.91 2003-09-08 08:11:25 afalout Exp $
 #
 */
 
@@ -427,7 +427,11 @@
 #include <netdb.h>
 #endif
 
-#include <stdarg.h>		/* va_start() */
+
+//#ifndef __NO_STDARG__
+	#include <stdarg.h>		/* va_start(), va-list ... */
+//#endif
+
   //#include <ctype.h>                            /* tolower() toupper() */
 #include <stdio.h>		/* needed for FILE symbol */
 #ifndef WIN32
@@ -1716,8 +1720,10 @@ char *A4GL_init_dec (char *s, int len, int d);
 		#define _SQLCA_DEFINED_
 	#endif
 
-	extern long a4gl_status;   /** 4gl global status variable */
-	
+	#ifndef _NO_A4GL_STATUS_
+		extern long a4gl_status;   /** 4gl global status variable */
+    #endif
+
 	#ifndef _NO_INT_QUIT_FLAG_
 		extern long int_flag;      /** 4gl interrupt ocurred global flag */
 		extern long quit_flag;     /** 4gl quit ocurred global flag */
@@ -1747,7 +1753,7 @@ struct s_field_name_list {
 	int nfields;
 	struct s_field_name *field_name_list;
 };
-	
+
 
 
 int A4GL_menu_hide (ACL_Menu * menu, ...);

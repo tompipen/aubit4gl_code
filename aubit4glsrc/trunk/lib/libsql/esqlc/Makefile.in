@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2003-09-05 02:14:22 afalout Exp $
+# $Id: Makefile.in,v 1.24 2003-09-08 08:11:26 afalout Exp $
 #
 
 ROOT		=../../..
@@ -160,9 +160,21 @@ CPC_FLAGS=-H nocheck -c
 
 ALL: ${ALL}
 
+#remove this once esql_compatible.ec is finished:
+
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
 libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
+#	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
+	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+
+
+#------------------------ esql_compatible.ec ----------------------------
+
+#ESQL/C database plug-in compiled with Informix ESQL/C compiler:
+libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
+${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c ifx_$^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
@@ -170,25 +182,34 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #Querix ESQL/C compiler:
 libSQL_esqlQ${SO_EXT}: ${LIBROOT}/libSQL_esqlQ${SO_EXT}
 ${LIBROOT}/libSQL_esqlQ${SO_EXT}:
-	esqlc -D__QUERIX__ -I"E:/Program files/W2000/QueriX/include" ${SRC} -o $@
+##must remove .c file or .ec will not get recompiled
+#	-rm xxx.c
+#need quotes because of the path on Windows
+	"${Q_ESQLC}" -D__QUERIX__ -I"E:/Program files/W2000/QueriX/include" ${SRC} -o $@
+#	${CC} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl ${QUERIX_IFLAGS}
+##-DNEWERA
+#	rm xxx_funcs.c
+
+
+
 
 #SAP DB ESQL/C compiler:
 libSQL_esqlSAP${SO_EXT}: ${LIBROOT}/libSQL_esqlSAP${SO_EXT}
-${LIBROOT}/libSQL_esqlSAP${SO_EXT}: ${SRC}
+${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #cpc will allways add .cpc extension to any source files
 #	cp $^ $^.cpc
 	cpp ${CPP_FLAGS} $^ -D__SAP__  -I/opt/sapdb/interfaces/precompiler/incl > sap_$^.cpc
 #	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl -o sap_$^.o 2>&1 | grep -v "warning:"
 	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1 | grep -v "warning:"
-	${CC} -c -I/opt/sapdb/interfaces/precompiler/incl -I../../../incl -o sap_esql.o sap_esql.ec.c
+	${CC} -c -I/opt/sapdb/interfaces/precompiler/incl -I../../../incl -o sap_$^.o sap_$^.c
 #	rm sap_$^.cpc
 #	/opt/sapdb/interfaces/precompiler/bin/cpclnk sap_esql.o -o $@
-	${CC} -shared sap_esql.o -o $@
+	${CC} -shared sap_$^.o -o $@
 
 
 #PostgreSQL ESQL/C compiler:
 libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
-${LIBROOT}/libSQL_esqlPG${SO_EXT}: ${SRC}
+${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__PG__ -I/opt/ecpg-cvs/include > pg_$^
 	${PG_ESQLC} -I/opt/ecpg-cvs/include -C INFORMIX -t pg_$^
 #	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}

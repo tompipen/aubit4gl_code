@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.6 2003-08-23 00:42:58 afalout Exp $
+# $Id: loadmenu.c,v 1.7 2003-09-08 08:11:25 afalout Exp $
 #*/
 
 /**
@@ -245,7 +245,7 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 		    }
 
 		  A4GL_debug ("making image");
-		  pixmap = A4GL_make_pixmap (o->image);
+		  pixmap = A4GL_make_pixmap_gw (o->image);
 
 		  A4GL_debug ("Make image from pixmap");
 		  gtk_box_pack_end (GTK_BOX (h), GTK_WIDGET (pixmap), 0, 0,

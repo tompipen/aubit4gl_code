@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_cint_4gldef.h,v 1.2 2003-06-06 07:30:46 mikeaubury Exp $
+# $Id: a4gl_cint_4gldef.h,v 1.3 2003-09-08 08:11:25 afalout Exp $
 */
 
 /**
@@ -284,7 +284,7 @@ be used in applications which link to the library).
   char *A4GL_disp_h_menu (void *menu);
   void *A4GL_get_curr_win_gtk (void);
   void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
-  void *A4GL_make_pixmap (char *filename);
+  void *A4GL_make_pixmap_gw(char *filename);
   void *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			      int help_no);
   char *aclfgli_str_to_id (char *name);

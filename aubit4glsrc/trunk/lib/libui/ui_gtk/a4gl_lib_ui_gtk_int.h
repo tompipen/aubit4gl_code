@@ -71,10 +71,13 @@ GtkWidget *A4GL_cr_radio (void);
 GtkWidget *A4GL_cr_list (void);
 GtkWidget *A4GL_cr_calendar (void);
 GtkWidget *A4GL_cr_scrollbar (void);
-GtkWidget *A4GL_make_pixmap_gw (char *filename);
+//Moved to ag4l_API_ui.h
+//GtkWidget *A4GL_make_pixmap_gw (char *filename);
+//void* A4GL_make_pixmap_gw(char* filename);
 
+GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
 
-gint A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
+int A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
 void A4GL_destroy_event (GtkWidget * widget, gpointer data);
 
 

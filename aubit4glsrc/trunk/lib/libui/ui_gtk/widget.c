@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.9 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: widget.c,v 1.10 2003-09-08 08:11:26 afalout Exp $
 #*/
 
 /**
@@ -132,7 +132,7 @@ place - see a4gl_aubit_lib.h
 */
 //int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
-GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
+
 char *A4GL_decode_config (struct_form * f, int a);
 char *A4GL_decode_comments (struct_form * f, int a);
 char *A4GL_decode_widget (struct_form * f, int a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.14 2003-08-26 05:27:04 afalout Exp $
+# $Id: io.c,v 1.15 2003-09-08 08:11:25 afalout Exp $
 #
 */
 
@@ -318,6 +318,18 @@ int str_len;
 		#else
 	    if (str_path[cnt] == ':') {
 		#endif
+			
+            //if next char is a separator, skip that one too...
+			#ifdef __MINGW32__
+			if (str_path[cnt+1] == ';') {
+            #else
+            if (str_path[cnt+1] == ':') {
+            #endif
+				cnt++;
+				ptr = &str_path[cnt];
+            }
+
+
 			//A4GL_debug ("Found : at %d",cnt);
 			if ( cnt !=0 ) {
 				str_path[cnt] = 0;
@@ -329,7 +341,7 @@ int str_len;
 						//	strcat(ptr2,"\\");
 				        //#else
 							strcat(ptr2,"/");
-			        	//#endif
+						//#endif
 						strcat(ptr2,fname);
 						return ptr2;
 					} else {

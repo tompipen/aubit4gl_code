@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.54 2003-08-20 20:36:50 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.55 2003-09-08 08:11:25 afalout Exp $
 */
 
 /**
@@ -44,16 +44,24 @@
  */
 
 #ifndef FGLDEF_INCL
-
 #define FGLDEF_INCL
-#include <stdarg.h>
+
+#ifndef __NO_STDARG__
+//int stdargSTART______________________;
+	#include <stdarg.h>
+//int stdargEND______________________;
+#endif
 
 #ifdef __cplusplus
 
 extern "C"
 {
 #endif
+
+
+//int stdioSTART________________;
 #include <stdio.h>
+//int stdioEND________________;
 #define fglbyte struct fgl_int_loc
 #define fgltext struct fgl_int_loc
 

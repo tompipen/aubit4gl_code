@@ -1,7 +1,7 @@
 #define fgldate long
 #include "a4gl_incl_4glhdr.h"
 #include "assist.h"
-static char _module_name[]="assist.4gl";
+static char *_module_name="assist.4gl";
 /*
 ====================================================================
 File assist.c was created from assist.4gl using 4glc compiler.
@@ -15,6 +15,8 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 */
 #define INCLUDING_LIB_INCL_TOO
 #define ALLOW_BOTH_LIB_AND_CALL
+#define _NO_A4GL_STATUS_
+#define _NO_INT_QUIT_FLAG_
 #include "a4gl_lib_ui_gtk_int.h"
 /*
 =====================================================================
@@ -93,17 +95,20 @@ _done_init_module_variables=0;
  
  
  A4GL_FUNCTION int aclfgl_set_window_title (int nargs){ /* Funtion Start */
-static char _functionName[] = "set_window_title";
+static char *_functionName = "set_window_title";
    char s [256+1];
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,0,256}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(0,&s,256);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    	A4GL_trim(s);
@@ -116,17 +121,20 @@ static char _functionName[] = "set_window_title";
  
  
  A4GL_FUNCTION int aclfgl_get_window_title (int nargs){ /* Funtion Start */
-static char _functionName[] = "get_window_title";
+static char *_functionName = "get_window_title";
    char s [256+1];
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,0,256}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(0,&s,256);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    	A4GL_trim(s);
@@ -139,22 +147,26 @@ static char _functionName[] = "get_window_title";
  
  
  A4GL_FUNCTION int aclfgl_set_window_icon (int nargs){ /* Funtion Start */
-static char _functionName[] = "set_window_icon";
+static char *_functionName = "set_window_icon";
    char s [256+1];
    long w;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,0,256}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(0,&s,256);
+   A4GL_setnull(2,&w,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    	A4GL_trim(s);
-   	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
+   	w=(int)A4GL_make_pixmap_gw(s);   //warning: assignment makes integer from pointer without a cast
    	A4GL_trim(s);
    	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?
    /* End of code */
@@ -165,10 +177,10 @@ static char _functionName[] = "set_window_icon";
  
  
  A4GL_FUNCTION int aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
-static char _functionName[] = "a4gl_run_gui";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "a4gl_run_gui";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -187,17 +199,20 @@ static char _functionName[] = "a4gl_run_gui";
  
  
  A4GL_FUNCTION int aclfgl_set_frame_style (int nargs){ /* Funtion Start */
-static char _functionName[] = "set_frame_style";
+static char *_functionName = "set_frame_style";
    long s;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    frame_style=s;
@@ -209,10 +224,10 @@ static char _functionName[] = "set_frame_style";
  
  
  A4GL_FUNCTION int aclfgl_yeild (int nargs){ /* Funtion Start */
-static char _functionName[] = "yeild";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "yeild";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -228,17 +243,20 @@ static char _functionName[] = "yeild";
  
  
  A4GL_FUNCTION int aclfgl_set_window_type (int nargs){ /* Funtion Start */
-static char _functionName[] = "set_window_type";
+static char *_functionName = "set_window_type";
    long a;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&a,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "a"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&a,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    window_frame_type=a;
@@ -250,17 +268,20 @@ static char _functionName[] = "set_window_type";
  
  
  A4GL_FUNCTION int aclfgl_set_prompt_style (int nargs){ /* Funtion Start */
-static char _functionName[] = "set_prompt_style";
+static char *_functionName = "set_prompt_style";
    long a;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&a,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "a"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&a,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    A4GL_gui_prompt_style(a);
@@ -280,19 +301,19 @@ store_filename(GtkFileSelection *selector, gpointer user_data)
  
  
  A4GL_FUNCTION int aclfgl_get_filename (int nargs){ /* Funtion Start */
-static char _functionName[] = "get_filename";
+static char *_functionName = "get_filename";
    char title [256+1];
    char fname [256+1];
    char deffile [256+1];
    char pattern [256+1];
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[3]={ /* print_param */
    {&title,0,256}
    ,
    {&deffile,0,256}
    ,
    {&pattern,0,256}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[3]={
    "title"
    ,
    "deffile"
@@ -302,6 +323,12 @@ static char _functionName[] = "get_filename";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=3) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(0,&title,256);
+   A4GL_setnull(0,&fname,256);
+   A4GL_setnull(0,&deffile,256);
+   A4GL_setnull(0,&pattern,256);
+   }
    A4GL_pop_params(fbind,3);
    {
    	GtkWidget *b;
@@ -348,12 +375,11 @@ static char _functionName[] = "get_filename";
    A4GLSTK_popFunction();
    return 1;
    /* End command */
-   {A4GL_debug("Line 259 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(259,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(263,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(259,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(263,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -362,15 +388,18 @@ static char _functionName[] = "get_filename";
  
  
  A4GL_FUNCTION int aclfgl_app_top_get (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_top_get";
+static char *_functionName = "app_top_get";
    long a;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&a,0);
+   }
    A4GL_pop_params(fbind,0);
    CHK_UI
    a= (long)win_screen;
@@ -380,12 +409,11 @@ static char _functionName[] = "app_top_get";
    A4GLSTK_popFunction();
    return 1;
    /* End command */
-   {A4GL_debug("Line 315 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(315,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(319,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(315,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(319,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -394,10 +422,10 @@ static char _functionName[] = "app_top_get";
  
  
  A4GL_FUNCTION int aclfgl_app_hide (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_hide";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "app_hide";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -413,10 +441,10 @@ static char _functionName[] = "app_hide";
  
  
  A4GL_FUNCTION int aclfgl_app_show (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_show";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "app_show";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -432,10 +460,10 @@ static char _functionName[] = "app_show";
  
  
  A4GL_FUNCTION int aclfgl_app_maximize (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_maximize";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "app_maximize";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -451,10 +479,10 @@ static char _functionName[] = "app_maximize";
  
  
  A4GL_FUNCTION int aclfgl_app_minimize (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_minimize";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "app_minimize";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -470,10 +498,10 @@ static char _functionName[] = "app_minimize";
  
  
  A4GL_FUNCTION int aclfgl_app_restore (int nargs){ /* Funtion Start */
-static char _functionName[] = "app_restore";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "app_restore";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -489,15 +517,15 @@ static char _functionName[] = "app_restore";
  
  
  A4GL_FUNCTION int aclfgl_entry_max_chars_set (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_max_chars_set";
+static char *_functionName = "entry_max_chars_set";
    long l;
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[2]={ /* print_param */
    {&g,2,0}
    ,
    {&l,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[2]={
    "g"
    ,
    "l"
@@ -505,6 +533,10 @@ static char _functionName[] = "entry_max_chars_set";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=2) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&l,0);
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,2);
    CHK_UI
    gtk_entry_set_max_length(GTK_ENTRY(g),l);
@@ -516,17 +548,20 @@ static char _functionName[] = "entry_max_chars_set";
  
  
  A4GL_FUNCTION int aclfgl_entry_selected_cut (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_selected_cut";
+static char *_functionName = "entry_selected_cut";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    {
    CHK_UI
@@ -540,17 +575,20 @@ static char _functionName[] = "entry_selected_cut";
  
  
  A4GL_FUNCTION int aclfgl_entry_selected_copy (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_selected_copy";
+static char *_functionName = "entry_selected_copy";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    {
    CHK_UI
@@ -564,17 +602,20 @@ static char _functionName[] = "entry_selected_copy";
  
  
  A4GL_FUNCTION int aclfgl_entry_selected_paste (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_selected_paste";
+static char *_functionName = "entry_selected_paste";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    {
    CHK_UI
@@ -588,18 +629,18 @@ static char _functionName[] = "entry_selected_paste";
  
  
  A4GL_FUNCTION int aclfgl_entry_selection_set (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_selection_set";
+static char *_functionName = "entry_selection_set";
    long s;
    long e;
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[3]={ /* print_param */
    {&g,2,0}
    ,
    {&s,2,0}
    ,
    {&e,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[3]={
    "g"
    ,
    "s"
@@ -609,6 +650,11 @@ static char _functionName[] = "entry_selection_set";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=3) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   A4GL_setnull(2,&e,0);
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,3);
    {
    CHK_UI
@@ -622,17 +668,20 @@ static char _functionName[] = "entry_selection_set";
  
  
  A4GL_FUNCTION int aclfgl_entry_text_get (int nargs){ /* Funtion Start */
-static char _functionName[] = "entry_text_get";
+static char *_functionName = "entry_text_get";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    {
    	char *s;
@@ -651,17 +700,20 @@ static char _functionName[] = "entry_text_get";
  
  
  A4GL_FUNCTION int aclfgl_field_hide (int nargs){ /* Funtion Start */
-static char _functionName[] = "field_hide";
+static char *_functionName = "field_hide";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    A4GL_debug("Hiding field %p\n",g);fflush(stdout);
    //CHK_UI
@@ -675,17 +727,20 @@ static char _functionName[] = "field_hide";
  
  
  A4GL_FUNCTION int aclfgl_field_show (int nargs){ /* Funtion Start */
-static char _functionName[] = "field_show";
+static char *_functionName = "field_show";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    gtk_widget_show((GtkWidget *)g);
@@ -697,10 +752,10 @@ static char _functionName[] = "field_show";
  
  
  A4GL_FUNCTION int aclfgl_form_caption_get (int nargs){ /* Funtion Start */
-static char _functionName[] = "form_caption_get";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "form_caption_get";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -716,10 +771,10 @@ static char _functionName[] = "form_caption_get";
  
  
  A4GL_FUNCTION int aclfgl_form_hide (int nargs){ /* Funtion Start */
-static char _functionName[] = "form_hide";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "form_hide";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -735,10 +790,10 @@ static char _functionName[] = "form_hide";
  
  
  A4GL_FUNCTION int aclfgl_form_show (int nargs){ /* Funtion Start */
-static char _functionName[] = "form_show";
-   struct BINDING fbind[]={ /* print_param */
+static char *_functionName = "form_show";
+   struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[0]={
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=0) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
@@ -754,17 +809,20 @@ static char _functionName[] = "form_show";
  
  
  A4GL_FUNCTION int aclfgl_form_is_open (int nargs){ /* Funtion Start */
-static char _functionName[] = "form_is_open";
+static char *_functionName = "form_is_open";
    long s;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    	//void *A4GL_find_param (char *name);
@@ -785,17 +843,20 @@ static int tolist(GtkWidget *a) {
  
  
  A4GL_FUNCTION int aclfgl_list_count_get (int nargs){ /* Funtion Start */
-static char _functionName[] = "list_count_get";
+static char *_functionName = "list_count_get";
    long g;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&g,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "g"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&g,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    	g=tolist(GTK_WIDGET(g));
@@ -809,17 +870,20 @@ static char _functionName[] = "list_count_get";
  
  
  A4GL_FUNCTION int aclfgl_list_current_get (int nargs){ /* Funtion Start */
-static char _functionName[] = "list_current_get";
+static char *_functionName = "list_current_get";
    long s;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[1]={ /* print_param */
    {&s,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[1]={
    "s"
    };
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=1) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   }
    A4GL_pop_params(fbind,1);
    CHK_UI
    {
@@ -837,15 +901,15 @@ static char _functionName[] = "list_current_get";
  
  
  A4GL_FUNCTION int aclfgl_list_delete (int nargs){ /* Funtion Start */
-static char _functionName[] = "list_delete";
+static char *_functionName = "list_delete";
    long s;
    long n;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[2]={ /* print_param */
    {&s,2,0}
    ,
    {&n,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[2]={
    "s"
    ,
    "n"
@@ -853,6 +917,10 @@ static char _functionName[] = "list_delete";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=2) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   A4GL_setnull(2,&n,0);
+   }
    A4GL_pop_params(fbind,2);
    CHK_UI
    	s=tolist(GTK_WIDGET(s));
@@ -865,18 +933,18 @@ static char _functionName[] = "list_delete";
  
  
  A4GL_FUNCTION int aclfgl_list_insert (int nargs){ /* Funtion Start */
-static char _functionName[] = "list_insert";
+static char *_functionName = "list_insert";
    long s;
    long n;
    char str [512+1];
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[3]={ /* print_param */
    {&s,2,0}
    ,
    {&n,2,0}
    ,
    {&str,0,512}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[3]={
    "s"
    ,
    "n"
@@ -886,6 +954,11 @@ static char _functionName[] = "list_insert";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=3) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   A4GL_setnull(2,&n,0);
+   A4GL_setnull(0,&str,512);
+   }
    A4GL_pop_params(fbind,3);
    CHK_UI
    	s=tolist(GTK_WIDGET(s));
@@ -899,15 +972,15 @@ static char _functionName[] = "list_insert";
  
  
  A4GL_FUNCTION int aclfgl_list_selected (int nargs){ /* Funtion Start */
-static char _functionName[] = "list_selected";
+static char *_functionName = "list_selected";
    long s;
    long n;
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[2]={ /* print_param */
    {&s,2,0}
    ,
    {&n,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[2]={
    "s"
    ,
    "n"
@@ -915,6 +988,10 @@ static char _functionName[] = "list_selected";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=2) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&s,0);
+   A4GL_setnull(2,&n,0);
+   }
    A4GL_pop_params(fbind,2);
    CHK_UI
    {
@@ -931,16 +1008,16 @@ static char _functionName[] = "list_selected";
  
  
  A4GL_FUNCTION int aclfgl_splat_with_image (int nargs){ /* Funtion Start */
-static char _functionName[] = "splat_with_image";
+static char *_functionName = "splat_with_image";
    long w;
    char img_file [256+1];
    char lv_config [512+1];
-   struct BINDING fbind[]={ /* print_param */
+   struct BINDING fbind[2]={ /* print_param */
    {&img_file,0,256}
    ,
    {&w,2,0}
    }; /* end of binding */
-   char *_paramnames[]={
+   char *_paramnames[2]={
    "img_file"
    ,
    "w"
@@ -948,17 +1025,21 @@ static char _functionName[] = "splat_with_image";
    A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
    if (nargs!=2) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}
    init_module_variables();
+   {
+   A4GL_setnull(2,&w,0);
+   A4GL_setnull(0,&img_file,256);
+   A4GL_setnull(0,&lv_config,512);
+   }
    A4GL_pop_params(fbind,2);
    aclfgli_clr_err_flg();
    A4GL_push_long(100);
    A4GL_pop_var2(&w,2,0x0);
    /* End command */
-   {A4GL_debug("Line 618 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(618,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(622,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(618,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(622,_module_name);
    }
    aclfgli_clr_err_flg();
    A4GL_push_char("filename='");
@@ -975,12 +1056,11 @@ static char _functionName[] = "splat_with_image";
    A4GL_pushop(OP_CONCAT);
    A4GL_pop_var2(&lv_config,0,0x200);
    /* End command */
-   {A4GL_debug("Line 619 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(619,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(623,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(619,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(623,_module_name);
    }
    aclfgli_clr_err_flg();
    CHK_UI
@@ -996,12 +1076,11 @@ static char _functionName[] = "splat_with_image";
    }
    /* End of code */
    /* End command */
-   {A4GL_debug("Line 621 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(621,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(625,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(621,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(625,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;

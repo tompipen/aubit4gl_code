@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.11 2003-08-01 08:32:16 mikeaubury Exp $
+# $Id: assist.4gl,v 1.12 2003-09-08 08:11:26 afalout Exp $
 
 # ASSIST.4gl
 #
@@ -49,6 +49,10 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 
 #define INCLUDING_LIB_INCL_TOO
 #define ALLOW_BOTH_LIB_AND_CALL
+
+#define _NO_A4GL_STATUS_
+#define _NO_INT_QUIT_FLAG_
+
 #include "a4gl_lib_ui_gtk_int.h"
 
 /*
@@ -141,7 +145,7 @@ define w integer
 code
 CHK_UI
 	A4GL_trim(s);
-	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
+	w=(int)A4GL_make_pixmap_gw(s);   //warning: assignment makes integer from pointer without a cast
 
 	A4GL_trim(s);
 	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?

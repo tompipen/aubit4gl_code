@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.67 2003-09-01 00:01:12 afalout Exp $
+# $Id: sql.c,v 1.68 2003-09-08 08:11:26 afalout Exp $
 #
 */
 
@@ -1351,11 +1351,16 @@ char *FullPathDBname;
 
 	//Find full path to the SQLite database file, use DBPATH
 	FullPathDBname=A4GL_fullpath_dbpath((char *)tmp);
-    if (FullPathDBname) {
+
+	if (FullPathDBname) {
 		strcpy (tmp,FullPathDBname);
-		//this strdup is causing a core dump on MinGW:
-		//dbName=strdup(tmp);
-		sprintf(dbName,"%s",tmp);
+        #ifdef __MINGW32__
+			//and this sprintf causes core dump on Linux:
+			sprintf(dbName,"%s",tmp);
+        #else
+			//this strdup is causing a core dump on MinGW:
+			dbName=strdup(tmp);
+		#endif
 		A4GL_debug("Found SQLite db in '%s'",dbName);
 	} else {
 		/*
@@ -3266,7 +3271,7 @@ A4GLSQL_close_session (char *sessname)
 	//SQLite needs all transactions closed before connection can be ended
     //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
     //do if program wants to exit after an error or by reaching EXIT PROGARAM?
-	A4GL_debug("commitiing all transactions on SQLite...");
+	A4GL_debug("commiting all transactions on SQLite...");
 	A4GLSQL_commit_rollback (1);
 #endif
 

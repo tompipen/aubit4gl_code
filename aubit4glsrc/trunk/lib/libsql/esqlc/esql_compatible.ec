@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.1 2003-09-05 02:14:22 afalout Exp $
+# $Id: esql_compatible.ec,v 1.2 2003-09-08 08:11:26 afalout Exp $
 #
 */
 
@@ -64,6 +64,8 @@
 =====================================================================
 */
 
+int first_line_dummy;
+
 //Not referenced anywhere:
 //#define DEFINE_SQLCA
 
@@ -87,10 +89,20 @@ $include sqlca;
 #ifdef __SAP__
 	//avoid conflict of  `__mbstate_t' between wchar.h and stdio.h
 	#define _WCHAR_H
+
+    //avoid redefinition of __gnuc_va_list
+	#define __GNUC_VA_LIST
+
+	#define _SIZE_T_DEFINED_
+    #define _WCHAR_T_DEFINED_
+    //#define __FILE_defined - must not
+    //#define __WINT_TYPE__ - boguos - conflict is with useless declaration
+
 #endif
 
+int a4gl_incl_4gldefSTART;
 #include "a4gl_incl_4gldef.h"
-
+int a4gl_incl_4gldefEND;
 
 extern sqlca_struct a4gl_sqlca;
 
@@ -137,7 +149,9 @@ static error_just_in_case() ;
 static int processPreStatementBinds(struct s_sid *sid);
 
 
-EXEC SQL include sqlca;
+#ifndef __SAP__
+	EXEC SQL include sqlca;
+#endif
 
 #ifdef __PG__
 //#include "a4gl_esql.h"
@@ -231,7 +245,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.1 2003-09-05 02:14:22 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.2 2003-09-08 08:11:26 afalout Exp $";
 #endif
 
 
@@ -1504,14 +1518,22 @@ static int getStatementBindType(struct s_sid *sid)
  *  - 0 : Connection closed.
  *  - 1 : Connection does not exist or error ocurred.
  */
- /* andrej
+
 static int executeStatement(struct s_sid *sid)
 {
   EXEC SQL begin declare section;
     char *statementName;
-    char *inputDescriptorName;
+#ifndef __SAP__
+	char *inputDescriptorName;
     char *outputDescriptorName;
+#endif
   EXEC SQL end declare section;
+#ifdef __SAP__
+	//this is how SAP needs to have descriptor defined:
+	sqldatype inputDescriptorName;
+	sqldatype outputDescriptorName;
+#endif
+
   int rc = 0;
 
   statementName        = sid->statementName;
@@ -1524,18 +1546,24 @@ static int executeStatement(struct s_sid *sid)
       EXEC SQL EXECUTE :statementName;
       break;
     case INPUT_BIND:
-      EXEC SQL EXECUTE :statementName 
-	  	USING_SQL_DESCRIPTOR :inputDescriptorName;
+      EXEC SQL EXECUTE :statementName
+#ifndef __SAP__
+		USING_SQL_DESCRIPTOR :inputDescriptorName;
+#else
+		USING_SQL_DESCRIPTOR &inputDescriptorName;
+#endif
 
       break;
     case OUTPUT_BIND:
 #ifndef __SAP__
 	  EXEC SQL EXECUTE :statementName
+        INTO_SQL_DESCRIPTOR :outputDescriptorName;
 #else
 	//SAP cpc has INTO only in FETCH, not EXECUTE
 	  EXEC SQL FETCH :statementName
+        INTO_SQL_DESCRIPTOR &outputDescriptorName;
 #endif
-        INTO_SQL_DESCRIPTOR :outputDescriptorName;
+
       break;
     case INPUT_OUTPUT_BIND:
 #ifndef __SAP__
@@ -1543,16 +1571,18 @@ static int executeStatement(struct s_sid *sid)
 #else
 	  EXEC SQL FETCH :statementName
 #endif
-		INTO_SQL_DESCRIPTOR :outputDescriptorName
 
 #ifndef __SAP__
+		INTO_SQL_DESCRIPTOR :outputDescriptorName
 			USING_SQL_DESCRIPTOR :inputDescriptorName;
 #else
     // goes fine frough cpc, and generate invalid code like this:
 	//sqccdaa(sqlcap,outputDescriptorName USING DESCRIPTOR
 	//:inputDescriptorName );
     //
-    ;
+    //;
+		INTO_SQL_DESCRIPTOR &outputDescriptorName
+			USING_SQL_DESCRIPTOR &inputDescriptorName;
 #endif
 
       break;
@@ -1565,7 +1595,7 @@ static int executeStatement(struct s_sid *sid)
 
   return rc;
 }
-*/
+
 /**
  * Prepare an sql statement.
  *
@@ -2509,68 +2539,59 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
     short numberOfColumns;
     int colcnt;
     int coltype;
+/*
+//#define BAD
+#ifndef BAD
+    char *descUnload;
+	char *descInpUnload;
+#endif
+*/
   EXEC SQL END DECLARE SECTION;
+#ifdef __SAP__
+	//this is how SAP needs to have descriptor defined:
+	sqldatype descUnload;
+	sqldatype descInpUnload;
+#endif
 
   A4GL_debug("Unload data..");
   unloadFile = (FILE *)A4GL_mja_fopen(fname,"wt");
-  if ( unloadFile == (FILE *)0 )
-  {
+  if ( unloadFile == (FILE *)0 ) {
     /** @todo : Generate some error code compatible with informix 4gl */
     return; /* return 1; */
   }
-
-
 
   EXEC SQL PREPARE stUnload FROM :strSql;
   if ( isSqlError() )
     return; /* return 1; */
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descUnload'   WITH MAX 256;
-/*
-
-    should that really be:
-
-
-  EXEC SQL begin declare section;
-    char *descUnload;
-  EXEC SQL end declare section;
-
-  EXEC SQL ALLOCATE DESCRIPTOR :descUnload WITH MAX 256;
-*/
-
-
 
   EXEC SQL DESCRIBE stUnload
-//-808   Not yet implemented
 #ifndef __SAP__
 	USING_SQL_DESCRIBE_DESCRIPTOR 'descUnload';
 #else
-    ;
+	; //-808   Not yet implemented
+	//USING_SQL_DESCRIBE_DESCRIPTOR &descUnload;
 #endif
 
 
-  if ( isSqlError() )
-  {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+  if ( isSqlError() ) {
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
     return; // return 1;
   }
 
-
-
   EXEC SQL GET DESCRIPTOR 'descUnload' :numberOfColumns = COUNT;
 
-  if ( isSqlError() )
-  {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+  if ( isSqlError() ) {
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
     return; //return 1;
   }
 
 
   EXEC SQL DECLARE crUnload CURSOR FOR stUnload;
 
-  if ( isSqlError() )
-  {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+  if ( isSqlError() ) {
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
     return; // return 1;
   }
 
@@ -2583,8 +2604,8 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 #ifndef __SAP__
 		USING_SQL_DESCRIPTOR 'descInpUnload';
 #else
-    //goes fine trough cpc and then causes "character constant too long" in GCC
-	;
+	//; //goes fine trough cpc and then causes "character constant too long" in GCC
+	USING_SQL_DESCRIPTOR &descInpUnload;
 #endif
   }
 
@@ -2604,10 +2625,14 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 
 	//A4GL_debug("Here6");
     EXEC SQL FETCH crUnload
+#ifndef __SAP__
 		USING_SQL_DESCRIPTOR 'descUnload';
-/* andrej
-	if ( isSqlError() )
-    {
+#else
+		//USING_SQL_DESCRIPTOR 'descUnload'; // character constant too long
+		USING_SQL_DESCRIPTOR &descUnload;
+#endif
+
+	if ( isSqlError() ) {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
       return; // return 1;
     }
@@ -2616,7 +2641,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 
     //A4GL_debug("Here7");
     cnt++;
-*/
+
 	for ( colcnt = 1; colcnt <= numberOfColumns; colcnt++)
     {
       if ( printField(unloadFile,colcnt,"descUnload") == 1 )

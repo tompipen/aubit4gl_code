@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2003-09-01 00:01:11 afalout Exp $
+# $Id: Makefile,v 1.9 2003-09-08 08:11:25 afalout Exp $
 #
 
 ROOT    =../..
@@ -95,20 +95,23 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 ##                              Sub-targets
 ## ==================================================================
 
-
+#Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
 	${IFMX_ESQLC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
 
+#PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
 	${CC} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} -I${ROOT}/incl
 
+#SAP ESQL/C compiler
 helper_funcs_sap.o: helper_funcs.ec
 #cpc will allways add .cpc extension to any source files
 	cp $^ $^.cpc
 	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP
 	rm $^.cpc
 
+#Querix ESQL/C compiler
 helper_funcs_querix.o: helper_funcs.ec
 #must remove .c file or .ec will not get recompiled
 	-rm helper_funcs.c
