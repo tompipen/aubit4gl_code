@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.11 2003-04-07 16:26:51 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.12 2003-04-07 18:20:46 mikeaubury Exp $
 #*/
 
 /**
@@ -487,8 +487,9 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
  * @return The panel where the form is showed.
  */
 void *
-read_form_internal (char *fname,char *formname)
+read_form_gtk (char *fname,char *formname)
 {
+struct s_form_dets *f;
   struct struct_form *the_form;
   //FILE *f;
   //XDR xdrp;
@@ -509,19 +510,19 @@ read_form_internal (char *fname,char *formname)
   debug ("Clearing memory...");
   */
 
+  f=read_form(fname,formname);
 
-  the_form = malloc (sizeof (struct_form));
+  the_form = f->fileform;
+  //malloc (sizeof (struct_form));
 
-  memset (the_form, 0, sizeof (struct_form));
+  //memset (the_form, 0, sizeof (struct_form));
 
-  a=read_data_from_file("struct_form",the_form,fname);
+  //a=read_data_from_file("struct_form",the_form,fname);
+  
 
 
    //xdrstdio_create (&xdrp, f, XDR_DECODE);
    //a = xdr_struct_form (&xdrp, the_form);
-
-
-
    /*
 	this is just a workaround - it still keep libUI_GTK dependent on
     libFORM_XDR, and therefore Sun RPC XDR functions:
@@ -726,7 +727,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   debug ("Create window & form");
   //sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
   //
-  form = (GtkFixed *) read_form (fname,s);
+  form = (GtkFixed *) read_form_gtk (fname,s);
   debug_last_field_created ("read form");
 
   gui_run_til_no_more ();
@@ -764,7 +765,7 @@ open_form (char *form_id)
   filename = char_pop ();
   trim(filename);
   //sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
-  form = read_form (filename,form_id);
+  form = read_form_gtk (filename,form_id);
   debug_last_field_created ("after reading form");
   debug ("Adding form code for %s", form_id);
   gtk_object_ref (GTK_OBJECT (form));
@@ -1179,7 +1180,7 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
 		      GTK_SIGNAL_FUNC (handler_e), win);
   */
 
-  form = (GtkFixed *) read_form (formname,"uhmmm");
+  form = (GtkFixed *) read_form_gtk (formname,"uhmmm");
   printf(">>>>      Setting currform...\n");
   debug(">>>>      Setting currform... for %p  to %p\n",fixed,form);
   if (form==0) {
