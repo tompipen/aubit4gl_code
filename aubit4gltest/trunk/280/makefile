@@ -28,7 +28,7 @@ include ../Makefile-common
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+ADD_CLEAN=prog.c
 
 ################
 #This is set in comon make file; overide it if you need to here
@@ -177,7 +177,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped

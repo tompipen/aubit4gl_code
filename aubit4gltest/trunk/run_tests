@@ -1,4 +1,3 @@
-#!/bin/bash
 #using ordinary sh on CygWin will cause "command not found" regardless of 2>/dev/null
 ###########################################################################
 #
@@ -8,29 +7,14 @@
 
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="240 670 706 28 47 49 60 207 230 253 257 265 273 274 277 \
-	278 279 374 376 681 682 686 687 701 704 918 938 939 940 941 \
-	942 943 944 945 946 947"
+EXPECT_TO_FAIL_TESTS="240 670 706 277 278 681 682 686 687 701 704 918 938 939 \
+	940 941 942 943 944 945 946 947"
 
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
-#28 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000579
-#47 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000580
-#49 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000581
-#60 (date) http://aubit.com/mantis/bug_view_page.php?bug_id=0000582
-#207 (datetime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000481
-#230 (terminal) http://aubit.com/mantis/bug_view_page.php?bug_id=0000583
-#253 missing .expected file
-#257 missing db table
-#265 (comparing datetimes) http://aubit.com/mantis/bug_view_page.php?bug_id=0000584
-#273 (field defaults in construct) http://aubit.com/mantis/bug_view_page.php?bug_id=0000585
-#274 (interuppt in construct) http://aubit.com/mantis/bug_view_page.php?bug_id=0000586
 #277
 #278 
-#279 
-#374 
-#376 
 #681 
 #682 
 #686 
@@ -50,8 +34,8 @@ EXPECT_TO_FAIL_TESTS="240 670 706 28 47 49 60 207 230 253 257 265 273 274 277 \
 #947 
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 106 107 108 239 282 351 735 766 \
-	767 793 794 911 912 913 914 915 961 962 963 976 987"
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 107 239 282 735 766 \
+	767 793 794 911 912 913 914 915 961 962 963 976 987 "
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
@@ -96,17 +80,16 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 684 105 705 707 752 280 797 916 917 919 920 921 \
+INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
 	953 954 955 956 957 958 959 964	966 284"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
-#684,253,255 256 257 259 - no test files
+#684,255 256 259 - no test files
 #105 - missing database schemma
 #705 - "It is not possible to convert between the specified types." with -ifx-p
-#230 - diff: screen10_M.infx: No such file or directory - ...etc...
-#280,920 - no makefile
+#920 - no makefile
 #797  SET CONSTRAINTS ALL IMMEDIATE - fails even with -ifx-p
 #916,917,919,921,922,923,924,>>925<<,927,928,929,930,931,932,933,935,948...
 #...949 950 951 952 953 954 955 957 958 959 964 966- fails even with -ifx-p
@@ -119,6 +102,93 @@ INVALID_TESTS="375 377 684 105 705 707 752 280 797 916 917 919 920 921 \
 ##############################################################################
 #							Functions
 ##############################################################################
+
+##
+# Compare Aubit settings comming from aubit-config and environment
+#
+##
+compare_settings() {
+
+			if test "$A4GL_INIFILE" != ""; then 
+				echo "Note: using Aubit rc file $A4GL_INIFILE"
+			fi
+			aubit-config -a > aubit-config.log
+			cat -n aubit-config.log > aubit-config-num.log
+			LINES=`grep -c "" aubit-config.log`
+			SETTINGS=`grep -c = aubit-config.log`
+			echo "aubit-config output has $LINES lines, $SETTINGS settings"
+
+			a=0
+			cnt=0
+			SKIP_BLOCK=1
+			echo " "
+			echo "name			env		aubitrc		aubit-config"
+			echo "------------------------------------------------------------------"
+			while test "1" = "1" ; do
+				let a=a+1
+				LINE=`grep -e "^ \+$a	" aubit-config-num.log`
+				VALUES=`echo "$LINE" | awk '{print $2}'`
+				
+				if test "$VALUES" = "User"; then
+					#User resources block begins
+					SKIP_BLOCK=0
+				fi
+				if test "$SKIP_BLOCK" = "1"; then
+					#Skip everything before User Resources block
+					continue
+				fi
+				if test "$VALUES" != "Built-in"; then
+					let cnt=cnt+1
+					#echo $VALUES
+					TMP=`echo $VALUES | sed -e 's/=/ /'`
+					NAME=`echo $TMP |  awk '{print $1}'`
+					VALUE=`echo $TMP |  awk '{print $2}'`
+					#echo "$cnt: Name=$NAME Value=$VALUE"
+					dollar="$"
+					EXEC="if test \"$dollar$NAME\" != \"\"; then echo \"$dollar$NAME\"; fi"
+					#we are running this as external script to see only what
+					#is exported to environment, since only that will affect
+					#makefiles we will run from run_test script
+					echo $EXEC > run.sh					
+					ENV_VALUE=`bash ./run.sh`
+					if test "$ENV_VALUE" != ""; then
+						if test "$ENV_VALUE" != "$VALUE"; then
+							x=`aubit-config $NAME`
+							#echo "$NAME : env: '$ENV_VALUE' aubitrc: '$VALUE'"
+							#echo "aubit-config returns $NAME=`aubit-config $NAME` x=$x"
+							echo "$NAME		'$ENV_VALUE'		'$VALUE'		'$x'"
+						#else
+						#	echo "$NAME IS in environment as '$ENV_VALUE' and in Aubit as "$VALUE""
+						fi
+					#else
+					#	echo "$NAME not in environment"					
+					fi
+					
+					#if test "$cnt" = "10"; then
+					#	break
+					#fi
+				fi
+				
+				if test "$a" = "$LINES"; then
+					break
+				fi
+			done
+	echo "------------------------------------------------------------------"
+	echo " "
+
+	set | grep "^A4GL_" > set.log
+	LINES=`grep -c "" set.log`
+	echo "$LINES Aubit settings in environment"
+	if test "$LINES" != "0"; then 
+		cat set.log
+	fi
+
+	#rm -f aubit-config-num.log aubit-config.log run.sh set.log
+	
+	
+	
+	
+}
 
 ##
 # Change setting in makefile
@@ -544,7 +614,7 @@ DB_TESTS="1 14 36 51 63 68 72 73 76 80 100 101 91 94 95 98 99 206 207 212"
 EC_TESTS="36 68"
 
 #Tests that will fail if not running on screen (curses):
-NOSILENT_TESTS="11 15"
+NOSILENT_TESTS="11"
 
 #Tests that open windows
 #TODO- this is currently just added to TUI_TESTS - separate it
@@ -633,10 +703,9 @@ else
 	FIND=find
 fi
 
-
 IFX_RUNNER="$CURR_DIR/testfglgo"
 FJSRUNNER="$CURR_DIR/testfglrun"
-if test "$AUBITDIR_SRC" = ""; then 
+if test "$AUBITDIR_SRC" = ""; then
 	AUBITDIR_SRC=/opt/aubit/aubit4glsrc
 fi
 if test -d "$AUBITDIR_SRC"; then  
@@ -651,6 +720,13 @@ else
 	echo "** is invalid: $AUBITDIR_SRC"
 	echo "**"
 	AUBITDIR_SRC=""	
+fi
+
+#define emphasis characters for terminal display
+a4gl_shtool=$AUBITDIR_SRC/tools/project/shtool
+if test -f $a4gl_shtool; then
+	T_MD=`$a4gl_shtool echo -n -e %B`
+	T_ME=`$a4gl_shtool echo -n -e %b`
 fi
 
 #######################
@@ -738,7 +814,7 @@ fi
 
 DEFAULT_FLAGS="$DEFAULT_FLAGS -described -nolong -err-with-log"
 #DEFAULT_FLAGS="$DEFAULT_FLAGS -stop"
-CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS -described -nolong -err-with-log"
+CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS -described -nolong -err-with-log -aubitrc-test"
 
 #######################
 #Apply platform defaults, see if we are to run multiple tests
@@ -821,7 +897,25 @@ sleep 1;
 			continue
 			;;
 
-		-cvs-update)
+		-se)
+			DB=test1
+			SCRIPT=try.sql
+			LOGFILE=try.log
+			LOGFILE_CMD="> $LOGFILE 2>&1"
+			echo "select rowid from syscolumns where colname = 'dirpath' and tabid = 1" > $SCRIPT
+
+			EXEC="dbaccess $DB -qcr $SCRIPT $LOGFILE_CMD"
+			eval $EXEC
+			RET=$?
+			echo "RET=$RET"
+			TEST=`cat $LOGFILE | sed -e 's/OOPS//g' | grep  Norowsfound`
+			if test "$TEST" != ""; then
+				echo "This is NOT SE engine"
+			fi
+			exit $RET
+			;;
+			
+		-update)
 			LOGFILE=/tmp/cvsupdate-aubit4gltest.log
 			echo "+--------------------------------------------------------------------+"
 			echo "| CVS update started at `date`"
@@ -853,7 +947,7 @@ sleep 1;
 			exit 0
 			;;
 
-		-cvs-commit)
+		-commit)
 			#Note: cvs commit command cannot be redirected to file because of the need
 			#to edit commit message
 			cvs -q commit
@@ -1276,6 +1370,10 @@ for a in $FLAGS; do
         #we already got this one set
         ;;
 
+	-aubitrc-test)	#Use aubitrc in aubit4gltest directory to override local installation settings
+		export A4GL_INIFILE="$CURR_DIR/aubitrc-testing"
+		;;
+		
 	-alldbrun)       #this script was invoked from alltests loop
         NO_ECHO=1; ALL_DB=1
         ;;
@@ -1287,14 +1385,6 @@ for a in $FLAGS; do
     -show-time)     #Show timing results for each test
 		SHOW_TIME=1
         ;;
-	-update)		#Update tests souce code from CVS
-		cvs -q update -d -P 
-		exit
-		;;
-	-commit)		#commit changes to tests source code to CVS
-		cvs -q commit
-		exit
-		;;
 	-clean)         #clean and exit
 		CLEAN=1
 		;;
@@ -1388,6 +1478,16 @@ for a in $FLAGS; do
             exit 9
         fi
         UI=HL_TUIN;	export A4GL_UI=$UI
+        ;;
+
+	-hl_tui)        #use HL_TUI UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUI$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUI plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUI;	export A4GL_UI=$UI
         ;;
 
 	-console)        #use CONSOLE UI for tests
@@ -1807,8 +1907,11 @@ for a in $FLAGS; do
 		NO_GRAPHIC=1
         ;;
 
-    -noprogress)         #do not show testing progress counter 
+    -noprogress)         #do not show testing progress counter and other 
+						#special characters (for outout to log file)
 		NO_PROGRESS=1
+		T_MD=
+		T_ME=
         ;;
 
 	-nodefaults)        #Do not use platform default settings
@@ -1821,6 +1924,15 @@ for a in $FLAGS; do
 
 	-cert)	#Use settings for expected for certified tests
 		#Nothing to do; this was intercepted earlier
+		;;
+
+	-compare)
+		compare_settings
+		exit
+		;;
+
+	-compare2)
+		COMPARE_SETTINGS=1
 		;;
 		
 	-described)         #run only described tests
@@ -1867,7 +1979,8 @@ for a in $FLAGS; do
 		echo " -compile-only Do not run any tests, just compile them"
 		echo " -ifx-p      Use Informix P-code compiler instead of Aubit compiler"
 		echo " -4js-p      Use FourJs P-code compiler instead of Aubit compiler"
-		echo " -querix     Use Querix compiler instead of Aubit compiler"		
+		echo " -querix     Use Querix compiler instead of Aubit compiler"
+		echo " -aubitrc-test Use aubitrc in aubit4gltest directory to override local installation settings"		
 		echo ""
 		exit 0
         ;;
@@ -1898,6 +2011,7 @@ for a in $FLAGS; do
 		echo " -console    Use CONSOLE UI for tests"
 		echo " -gtk        Use GTK+ UI for running tests"		
 		echo " -tuin       use HL_TUIN UI for tests"
+		echo " -hl_tui     use HL_TUI UI for tests (default is TUI)"
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"		
 		echo ""
 		exit 0
@@ -2164,8 +2278,9 @@ if test "$HOSTNAME" = "aptiva.falout.org"; then
 fi
 
 if test "$A4GL_UI" = ""; then
-	export A4GL_UI=HL_TUI
-	#export A4GL_UI=HL_TUIN
+	#Mike say that HL_TUI is still experimental
+	#export A4GL_UI=HL_TUI
+	export A4GL_UI=TUI
 fi
 
 export PATH="$AUBITDIR_UNIX/bin:$PATH"
@@ -3753,8 +3868,19 @@ do
 			echo "Description: $desc_txt"
 		fi
 	else
-		if test "$NO_PROGRESS" != "1"; then 
-			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."
+		if test "$NO_PROGRESS" != "1"; then
+		
+			########################
+			#calculate success percentage
+			if test "$RUN_CNT" != "0"; then 
+				VAR1=$PASS_CNT
+				VAR2=$RUN_CNT
+				RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
+			else
+				RESULT=0
+			fi
+			#echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a...($RESULT %)  "
 		fi
     fi
 
@@ -3828,6 +3954,10 @@ do
 		echo "Running: $RUN_CMD"
 	fi
 
+	if test "$COMPARE_SETTINGS" = "1"; then
+			compare_settings
+			exit 0
+	fi
 	#############
 	eval $RUN_CMD
 	#############
@@ -3995,11 +4125,25 @@ done
 #                           Finalise results & clean-up
 ##############################################################################
 
+########################
+#calculate success percentage
+VAR1=$PASS_CNT
+VAR2=$RUN_CNT
+#VAR2=200
+#VAR1=50
+if test "$RUN_CNT" != "0"; then
+	#RESULT1=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int(100-($X/($Y/100)));print "$Z";' $VAR2 $VAR1`
+	RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
+	#echo "r1=$RESULT1 r2=$RESULT" >> $LOGFILE
+else
+	RESULT=0
+fi
+
 #####################
 #Complete results log file
 
 echo "" >> $LOGFILE
-echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT" >> $LOGFILE
+echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
 
 if test "$EXPECTED_TO_FAIL_CNT" != "0"; then 
 	echo "Expected to fail: $EXPECTED_TO_FAIL_LIST ($EXPECTED_TO_FAIL_CNT)"  >> $LOGFILE
@@ -4088,7 +4232,6 @@ else
 	RESULT=1
 fi
 
-#FIXME: calculate success percentage here ($RUN_CNT / $PASS_CNT)
 echo "" >> $LOGFILE
 echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
 echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE

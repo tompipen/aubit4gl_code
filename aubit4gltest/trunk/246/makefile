@@ -129,8 +129,9 @@ ec_test:
 
 ################
 #Test will fail if not running on screen (curses):
+#this test is OK with -silent
 nosilent_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test uses curses and/or screeen dump and may fail when TERM!=xterm
