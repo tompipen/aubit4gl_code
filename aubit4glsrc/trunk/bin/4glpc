@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.117 2003-12-05 01:44:36 afalout Exp $
+# $Id: 4glpc,v 1.118 2003-12-12 16:14:49 mikeaubury Exp $
 #
 
 ########################################################################
@@ -72,6 +72,8 @@ then
 fi
 
 aubit-config -ae > /tmp/$$.env
+
+NO_COMPILE=0
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -1171,8 +1173,13 @@ do
 
    -echo) DOIT="echo"
    ;;
+   -e) NO_COMPILE=1
+	ISMAKE=-1
+	LINKIT=0
+   ;;
 
    -i) IGNORE_ERRORS="1"
+	
    ;;
 
    -jabber) USE_JABBER=1
@@ -1366,6 +1373,16 @@ then
 	echo $COMSPEC
 	echo $MAKE4GLPC
 fi
+
+if [ "$NO_COMPILE" = 1 ]
+then
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+		echo "Exiting after 4glc stage with code 0"
+	fi
+	exit 0
+fi
+
 
 if [ "$ISMAKE" != "1" ]
 then

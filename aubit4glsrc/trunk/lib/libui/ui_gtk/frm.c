@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.7 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: frm.c,v 1.8 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -236,19 +236,19 @@ A4GL_make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window)
  * Not implemented yet.
  */
 void
-A4GL_clr_form (int to_default)
+ UILIB_A4GL_clr_form (int to_default)
 {
   /* Not implemented yet */
 }
 
 
 
-int A4GL_read_metrics (void *formdets) {
+int UILIB_A4GL_read_metrics (void *formdets) {
 	// Does nothing in GTK - but we need a function to be here anyway...
 	return 1;
 }
 int
-A4GL_read_fields (void *formdetsv) {
+ UILIB_A4GL_read_fields (void *formdetsv) {
 	// Does nothing in GTK - but we need a function to be here anyway...
 	return 1;
 }

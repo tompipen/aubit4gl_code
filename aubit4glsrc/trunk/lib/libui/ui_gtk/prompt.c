@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.17 2003-10-16 11:21:59 mikeaubury Exp $
+# $Id: prompt.c,v 1.18 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -63,8 +63,8 @@ int prompt_style = 0;
 */
 
 
-//int A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
-//int A4GL_prompt_loop (struct s_prompt * prompt);
+//int UILIB_A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//int UILIB_A4GL_prompt_loop (struct s_prompt * prompt);
 
 /*
 =====================================================================
@@ -85,7 +85,7 @@ int prompt_style = 0;
  * @param af The attributes.
  */
 int
-A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int promptline;
@@ -106,7 +106,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   if (prompt_style == 0)
     {
       promptline = A4GL_getprompt_line_gtk ();
-      width = A4GL_get_curr_width ();
+      width = UILIB_A4GL_get_curr_width ();
       cw = GTK_WIDGET (A4GL_get_curr_win_gtk ());
     }
   else
@@ -216,7 +216,7 @@ A4GL_debug("Prompt mode=%d",c);
  * it is stored.
  */
 int
-A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
 {
   GtkWidget *p;
   int action;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.57 2003-12-12 13:05:26 mikeaubury Exp $
+# $Id: iarray.c,v 1.58 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -66,7 +66,7 @@ extern WINDOW *currwin;
 struct s_inp_arr *curr_arr_inp = 0;
 //void A4GL_mja_set_current_field (FORM * form, FIELD * field);
 //int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
-//int A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
+//int UILIB_A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
 
 struct s_movement
 {
@@ -431,66 +431,6 @@ proc_zero(char *s)
 }
 */
 
-#ifdef NOT_USED
-/**
- * It have a direct return
- * @todo Confirm if its like this and if remove the rest of the code
- */
-static void
-debug_print_field (FIELD * f)
-{
-  struct struct_scr_field *attr;
-  attr = (struct struct_scr_field *) field_userptr (f);
-  A4GL_debug ("Field : %p:\n", f);
-  A4GL_debug_print_field_opts (f);
-  /* debug("attr=%p",f,attr); */
-  A4GL_debug ("Value='%s':", field_buffer (f, 0));
-  if (attr)
-    {
-      //debug ("      Datatype   : %d:", attr->dtype);
-      A4GL_debug ("      Field No   : %d:", attr->field_no);
-      A4GL_debug ("      Tabname    : %s:", attr->tabname);
-      A4GL_debug ("      Colname    : %s:", attr->colname);
-/*
-      A4GL_debug ("      Metrics    : %d:", attr->metrics_cnt);
-      A4GL_debug ("      autonext   : %d:", attr->autonext);
-      A4GL_debug ("      invisible  : %d:", attr->invisible);
-      A4GL_debug ("      noentry    : %d:", attr->noentry);
-      A4GL_debug ("      required   : %d:", attr->required);
-      A4GL_debug ("      reverse    : %d:", attr->reverse);
-      A4GL_debug ("      shift      : %d:", attr->shift);
-      A4GL_debug ("      verify     : %d:", attr->verify);
-      A4GL_debug ("      wordwrap   : %d:", attr->wordwrap);
-      A4GL_debug ("      colour     : %d:", attr->colour);
-      A4GL_debug ("      include    : %s:", proc_zero (attr->include));
-      A4GL_debug ("      A4GL_comments   : %s:", proc_zero (attr->comments));
-      A4GL_debug ("      default_val: %s:", proc_zero (attr->default_val));
-      A4GL_debug ("      format     : %s:", proc_zero (attr->format));
-      A4GL_debug ("      picture    : %s:", proc_zero (attr->picture));
-      A4GL_debug ("      program    : %s:", proc_zero (attr->program));
-      A4GL_debug ("      dynamic    : %d\n\n:", attr->dynamic);
-*/
-    }
-}
-#endif
-
-#ifdef NOT_USED
-/**
- *
- *
- * @param
- */
-static void
-debug_print_field_list (FIELD ** fld_list)
-{
-  int a;
-  A4GL_debug ("Field List (%p):", fld_list);
-  for (a = 0; fld_list[a]; a++)
-    {
-      debug_print_field (fld_list[a]);
-    }
-}
-#endif
 
 /**
  *
@@ -572,7 +512,7 @@ iarr_loop (struct s_inp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (1))
     {
       A4GL_exitwith ("Input form is not the current form!");
       exit (0);
@@ -952,7 +892,7 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
  * @return
  */
 int
-A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
+ UILIB_A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 {
   FIELD ***fld_list;
   int rval;
@@ -967,7 +907,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
       A4GL_set_fields_inp_arr (inpa, 0);
     }
   curr_arr_inp = inpa;
-  A4GL_debug ("In A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
+  A4GL_debug ("In UILIB_A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
 
   inpa->display_attrib = attrib;
 
@@ -983,7 +923,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 	  A4GL_exitwith ("Screen record not found");
 	  return 0;
 	}
-      inpa->currform = A4GL_get_curr_form (1);
+      inpa->currform = UILIB_A4GL_get_curr_form (1);
 
       A4GL_debug ("Init control stack");
       A4GL_init_control_stack (inpa, 1);
@@ -2483,7 +2423,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 
   struct struct_scr_field *fprop;
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
 
   flg = 0;
 
@@ -2553,7 +2493,7 @@ A4GL_debug("Attrib %x - %d fprop=%p %d %d",a,attr,fprop);
 
 
 int
-A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
+ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 {
   struct s_inp_arr *arr;
   /* fieldname + = next - = previous */

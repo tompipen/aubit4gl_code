@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.34 2003-12-09 11:23:45 mikeaubury Exp $
+# $Id: prompt.c,v 1.35 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -55,10 +55,6 @@ static int prompt_last_key=0;
 */
 
 static int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
-#ifdef OLD
-int A4GL_curses_to_aubit (int a);
-int A4GL_chkwin (void);
-#endif
 
 /*
 =====================================================================
@@ -72,7 +68,7 @@ int A4GL_chkwin (void);
  * @todo Describe function
  */
 int
-A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int promptline;
@@ -93,12 +89,12 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   memset (buff, ' ', 255);
   promptline = A4GL_getprompt_line ();
   A4GL_debug ("promptline=%d", promptline);
-  width = A4GL_get_curr_width ();
+  width = UILIB_A4GL_get_curr_width ();
   A4GL_debug ("create window %d %d", 1, promptline);
   A4GL_debug ("%d %d", width - 1, 2);
   cw = (WINDOW *) A4GL_get_currwin ();
   if (A4GL_iscurrborder()) promptline++;
-  p = derwin (cw, 1, width, promptline-1  , A4GL_iscurrborder ());
+  p = derwin (cw, 1, width, promptline-1  , UILIB_A4GL_iscurrborder ());
 
   
   if (p==0) {
@@ -305,7 +301,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
  * @todo Describe function
  */
 int
-A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
 {
   int a;
   WINDOW *p;

@@ -94,7 +94,7 @@ _done_init_module_variables=0;
  
  
  
- A4GL_FUNCTION int aclfgl_set_window_title (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int UILIB_aclfgl_set_window_title (int nargs){ /* Funtion Start */
 static char *_functionName = "set_window_title";
    char s [256+1];
    struct BINDING fbind[1]={ /* print_param */
@@ -176,7 +176,7 @@ static char *_functionName = "set_window_icon";
  
  
  
- A4GL_FUNCTION int aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int UILIB_aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
 static char *_functionName = "a4gl_run_gui";
    struct BINDING fbind[0]={ /* print_param */
    }; /* end of binding */
@@ -234,7 +234,7 @@ static char *_functionName = "yeild";
    init_module_variables();
    A4GL_pop_params(fbind,0);
    CHK_UI
-     A4GL_gui_run_til_no_more ();
+     UILIB_A4GL_gui_run_til_no_more ();
    /* End of code */
    A4GLSTK_popFunction();
    return 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.19 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: array.c,v 1.20 2003-12-12 16:14:57 mikeaubury Exp $
 #*/
 
 /**
@@ -68,12 +68,6 @@ int cmode = 0;
 =====================================================================
 */
 
-#ifdef OLD
-int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
-		 int attrib, va_list * ap);
-void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
-void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
-#endif
 
 static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line,int first_only,...);
 /*
@@ -333,7 +327,7 @@ disp_loop (struct s_disp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (1))
     {
       A4GL_exitwith ("Input form is not the current form!");
       exit (0);
@@ -569,7 +563,7 @@ draw_arr (arr, -1, arr->arr_line);
  * @param attrib The attributes
  */
 int
-A4GL_disp_arr_ap (
+ UILIB_A4GL_disp_arr_ap (
 void *dispv, void *ptr, char *srecname, int attrib,
 	     va_list * ap)
 {
@@ -591,7 +585,7 @@ disp=dispv;
 	  return 0;
 	}
 
-      disp->currform = A4GL_get_curr_form (1);
+      disp->currform = UILIB_A4GL_get_curr_form (1);
 #ifdef DEBUG
       {
  A4GL_debug ("disp->currform=%p", disp->currform);
@@ -790,7 +784,7 @@ int orig_set=0;
   static char buff[256];
   struct struct_scr_field *f;
   A4GL_debug ("In disp_arr_fields_v2 - %p blank=%d attr=%d arr_line=%d",disp,blank,attr,arr_line);
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, first_only);

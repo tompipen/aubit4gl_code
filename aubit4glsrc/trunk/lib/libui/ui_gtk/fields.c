@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fields.c,v 1.7 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: fields.c,v 1.8 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -48,7 +48,7 @@
 =====================================================================
 */
 
-//void A4GL_endis_fields_ap (int en_dis, va_list * ap);
+//void UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap);
 
 /*
 =====================================================================
@@ -65,7 +65,7 @@
  * @param ... The list of the fields to be enabled or disabled.
  */
 int
-A4GL_endis_fields_ap (int en_dis, va_list * ap)
+ UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
 {
   GtkWidget *formdets;
   int a;

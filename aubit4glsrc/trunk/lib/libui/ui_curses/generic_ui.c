@@ -4,33 +4,6 @@
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
 
-#ifdef OLD
-void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
-void A4GL_gsub (char *str);
-void A4GL_move_bar (ACL_Menu * menu, int a);
-int A4GL_find_char (ACL_Menu * menu, int key);
-char *A4GL_string_width (char *s);
-int A4GL_mjalen (char *str);
-void A4GL_set_option (ACL_Menu * menu, int opt);
-int A4GL_seldir (char *filespec, char *filename);
-void A4GL_stripbracket (char *str);
-void A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap);
-void A4GL_display_menu (ACL_Menu * menu);
-void A4GL_clr_menu_disp (ACL_Menu * menu);
-void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y, int type);
-int A4GL_gui_startmenu (char *s, long a);
-ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
-                           int help_no);
-void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
-                      int helpno, int attr);
-
-//void A4GL_set_option_value (char type, int keyval);
-
-
-
-void A4GL_finish_create_menu (ACL_Menu * menu);
-void A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
-#endif
 
 char *
 A4GL_string_width (char *s)
@@ -39,7 +12,7 @@ A4GL_string_width (char *s)
   int a;
   static char buff2[10024];
 
-  a = A4GL_get_curr_width () - 2;
+  a = UILIB_A4GL_get_curr_width () - 2;
   A4GL_debug("String width=%d",a);
   sprintf (buff, "%%-%d.%ds", a, a);
   A4GL_debug("Buff=%s - s=%s",buff,s);
@@ -321,7 +294,7 @@ A4GL_gsub (char *str)
 
 
 void
-A4GL_next_option (void *vmenu, char *nextopt)
+ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
 {
   int a;
   int f = 0;
@@ -364,7 +337,7 @@ A4GL_next_option (void *vmenu, char *nextopt)
 
 
 int
-A4GL_menu_hide_ap (void * menuv, va_list * ap)
+ UILIB_A4GL_menu_hide_ap (void * menuv, va_list * ap)
 {
  ACL_Menu *menu;
   menu=menuv;
@@ -378,7 +351,7 @@ return 1;
  * @todo Describe function
  */
 int 
-A4GL_menu_show_ap (void * menuv, va_list * ap)
+ UILIB_A4GL_menu_show_ap (void * menuv, va_list * ap)
 {
  ACL_Menu *menu;
   menu=menuv;
@@ -668,7 +641,7 @@ A4GL_size_menu (ACL_Menu * menu)
 
 
 void *
-A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   char buff[256];
   ACL_Menu *menu;
@@ -693,7 +666,7 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 }
 
 void
-A4GL_add_menu_option (void* menuv, char *txt, char *keys, char *desc,
+ UILIB_A4GL_add_menu_option (void* menuv, char *txt, char *keys, char *desc,
                  int helpno, int attr)
 {
   ACL_Menu_Opts *opt1;
@@ -765,7 +738,7 @@ A4GL_add_menu_option (void* menuv, char *txt, char *keys, char *desc,
 }
 
 void
-A4GL_finish_create_menu (void* menuv)
+ UILIB_A4GL_finish_create_menu (void* menuv)
 {
  ACL_Menu *menu;
  menu=menuv;

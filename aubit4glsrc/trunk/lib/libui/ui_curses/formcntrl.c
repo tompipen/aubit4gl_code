@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.37 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.38 2003-12-12 16:15:04 mikeaubury Exp $
 #*/
 
 /**
@@ -53,25 +53,6 @@ static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
 static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 static void do_key_move(char lr,struct s_screenio *s,int a, int has_picture, char *picture) ;
 
-#ifdef OLD
-int A4GL_curses_to_aubit (int a);
-int A4GL_page_for_pfield (struct s_screenio *s);
-int A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
-
-
-void A4GL_mja_pos_form_cursor (FORM * form);
-
-int A4GL_form_field_chk (struct s_screenio *sio, int m);
-int A4GL_form_field_constr (struct s_screenio *sio, int m);
-//int A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap);
-int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
-int A4GL_get_curr_metric (struct s_form_dets *form);
-int A4GL_page_for_nfield (struct s_screenio *s);
-struct s_form_dets *A4GL_getfromform (FORM * f);
-void *A4GL_memdup (void *ptr, int size);
-void A4GL_mja_set_current_field (FORM * form, FIELD * field);
-
-#endif
 /*
 =====================================================================
                     Variables definitions
@@ -704,7 +685,7 @@ process_control_stack (struct s_screenio *sio)
 
 
 int
-A4GL_req_field_input ( void *sv, char type, va_list *ap)
+ UILIB_A4GL_req_field_input ( void *sv, char type, va_list *ap)
 { 
 struct s_screenio *s;
 /* fieldname + = next - = previous */
@@ -773,7 +754,7 @@ s=sv;
  * @todo Describe function
  */
 int
-A4GL_form_loop (void *vs,int init)
+ UILIB_A4GL_form_loop (void *vs,int init)
 {
   struct s_form_dets *form;
   int a;
@@ -792,9 +773,9 @@ A4GL_form_loop (void *vs,int init)
   A4GL_set_abort (0);
   A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
 
-  if (form != A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (1))
     {
-      A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form (1));
+      A4GL_debug ("form=%p curr_form=%p", form, UILIB_A4GL_get_curr_form (1));
       A4GL_exitwith ("Input form is not current");
       return 0;
     }

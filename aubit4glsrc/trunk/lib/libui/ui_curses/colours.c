@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.16 2003-09-29 20:12:48 mikeaubury Exp $
+# $Id: colours.c,v 1.17 2003-12-12 16:14:57 mikeaubury Exp $
 #*/
 
 /**
@@ -43,18 +43,9 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include "a4gl_dbform.h"
-#include "a4gl_tui_tui.h"
-#include "a4gl_aubitcolours.h"
-#include "a4gl_debug.h"
-
-#else
 
 #include "a4gl_lib_ui_tui_int.h"
 
-#endif
 
 /*
 =====================================================================
@@ -62,9 +53,6 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-int A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
-#endif
 
 /*
 =====================================================================

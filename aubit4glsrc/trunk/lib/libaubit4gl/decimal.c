@@ -61,7 +61,18 @@ for (a=0;a<strlen(str);a++) {
 
 	// Dodgey character ?
 	//printf("??? %c - %c\n",str[a],sec);
-	A4GL_setnull(DTYPE_DECIMAL,dec,dec->dec_data[0]*256+dec->dec_data[1]);
+	// Informix seems to set the value to 0 not null...
+	// which seems inconsistant with the handling of bad dates..
+	//
+	// Ho hum  - make it switchable, but use the Informix action as
+	// the default..
+	//
+	A4GL_conversion_ok(0);
+	if (A4GL_isyes(acl_getenv("A4GL_NULL_DECIMAL_IF_BAD"))) {
+		A4GL_setnull(DTYPE_DECIMAL,dec,dec->dec_data[0]*256+dec->dec_data[1]);
+	} else {
+		return A4GL_str_to_dec("0",dec);
+	}
 	return dec;
 }
 

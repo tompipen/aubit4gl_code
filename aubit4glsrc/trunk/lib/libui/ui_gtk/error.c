@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.7 2003-10-16 11:21:59 mikeaubury Exp $
+# $Id: error.c,v 1.8 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@ A4GL_error_window_gtk (char *s)
   rc_style->color_flags[GTK_STATE_NORMAL] |= GTK_RC_BG;
 
 
-  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
 
   if (win)
@@ -90,7 +90,7 @@ A4GL_error_window_gtk (char *s)
   A4GL_debug ("Error line :%d", errline);
 
   win = gtk_fixed_new ();
-  gtk_widget_set_usize (win, A4GL_get_curr_width () * XWIDTH, YHEIGHT);
+  gtk_widget_set_usize (win, UILIB_A4GL_get_curr_width () * XWIDTH, YHEIGHT);
   label = gtk_label_new (s);
   gtk_fixed_put (GTK_FIXED (win), label, A4GL_getx_coords(0),A4GL_gety_coords(0) );
   gtk_widget_show (win);
@@ -111,7 +111,7 @@ A4GL_clr_error_gtk (void)
   GtkWidget *cw;
   GtkWidget *win;
 
-  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
   win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
   if (win)
     {
@@ -155,7 +155,7 @@ A4GL_msg_window_gtk (char *s)
   GtkWidget *win;
   int msgline;
   A4GL_debug ("A0");
-  cw = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  cw = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
   A4GL_debug ("A0.1");
   win = gtk_object_get_data (GTK_OBJECT (cw), "MESSAGELABELWIN");
 
@@ -168,7 +168,7 @@ A4GL_msg_window_gtk (char *s)
   A4GL_debug ("A1 - msgline = %d", msgline);
   win = gtk_fixed_new ();
   A4GL_debug ("A2");
-  gtk_widget_set_usize (GTK_WIDGET (win), A4GL_get_curr_width () * XWIDTH,
+  gtk_widget_set_usize (GTK_WIDGET (win), UILIB_A4GL_get_curr_width () * XWIDTH,
 			YHEIGHT);
   A4GL_debug ("A2.1");
   label = gtk_label_new (s);

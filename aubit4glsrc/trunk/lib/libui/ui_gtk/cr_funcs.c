@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.12 2003-10-11 08:41:38 afalout Exp $
+# $Id: cr_funcs.c,v 1.13 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -121,7 +121,7 @@ A4GL_size_widget (GtkWidget * w, int width)
 //GtkWidget *
 
 void *
-A4GL_make_pixmap_gw (char *filename)
+ UILIB_A4GL_make_pixmap_gw (char *filename)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
@@ -230,7 +230,7 @@ A4GL_cr_picture (void)
   filename = A4GL_find_param ("FILENAME");
 
   A4GL_debug ("Making picture filename=%s\n", filename);
-  pixmap = A4GL_make_pixmap_gw (filename);
+  pixmap = UILIB_A4GL_make_pixmap_gw (filename);
 
   A4GL_add_signal_grab_focus (pixmap, 0);
   A4GL_add_signal_clicked (pixmap, 0);
@@ -304,7 +304,7 @@ A4GL_cr_button (void)
     {
       if (strlen (image))
 	{
-	  pixmap = A4GL_make_pixmap_gw (image);
+	  pixmap = UILIB_A4GL_make_pixmap_gw (image);
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
 	  gtk_widget_show (pixmap);
 	  gtk_object_set_data (GTK_OBJECT (b), "IMAGE", image);

@@ -3,9 +3,9 @@ LIBRARY UI
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_UI
 * Add prefix for created API functions:
-*API_PREFIX UIAPI_
+* API_PREFIX A4GLUI_
 * Add prefix for existing library functions:
-*LIB_PREFIX UILIB_
+LIB_PREFIX UILIB_
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_ui.h
 

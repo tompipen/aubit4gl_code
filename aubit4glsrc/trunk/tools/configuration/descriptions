@@ -110,11 +110,11 @@ A4GL_OMIT_NO_LOG
 A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
 A4GL_PACKER MENU/FORMS/HELP/COMPILE/RUNTIME Determine library for packing forms/menus/help etc
 $AUBITDIR/libPACKER_?.so
-	You can select which packer to use by setting the variable '4GL_PACKER'
+	You can select which packer to use by setting the variable 'A4GL_PACKER'
 	 1) (PACKED)  - default
 	  This is very similar to XDR in that data is written in a hopefully portable
 	 way (optionally non-portable if the required functions aren't available).
-	 This will probably give the smalled output files
+	 This will probably give the smallest output files
 	 2) XDR
 	  This is the same as doing it the old way
 	 3) XML
@@ -274,7 +274,7 @@ DBPRINT PRINT/RUNTIME/REPORT Printing command
 	Name of command to use to pass report output when executing reports defines as
 	START REPORT ... TO PRINTER
 A4GL_DEBUG DEBUG/COMPILE/RUNTIME Log extensive information for tracing bugs in Aubit4gl code
-	When you encouter programs that chrash, use this for debugging - it will
+	When you encouter programs that crash, use this for debugging - it will
 	create file 'debug.out' that can be very usefull when you don't get core
 	dump, so you don't have file 'core' to run 'gdb' on. WARNING: do not set
 	this under normal circumstanced - all programs will create debug.out file
@@ -306,7 +306,7 @@ A4GL_EXTENDED_ERRORLOG  DEBUG/RUNTIME Error log handling
 A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from form files (+<>^v for cross and tee's)
 	If set to Y allows forms to contain the additional graphics characters
 	<,>,^,v, and + to be used for tee's and an intersection.
-	So the following (view with fixed font!):
+	So the following :
 	\gp--v--q\g
 	\g|  |  |\g
 	\g>--+--<\g
@@ -489,4 +489,8 @@ $AUBITDIR/libEXDTYPE_?.so
 	Currently only MPZ (large integers) are supported
 	FIME: not sure if this is needed - looks like this is loaded on request:
 	see example testmpz.4gl into the tools/test directory.
-
+A4GL_NULL_DECIMAL_IF_BAD RUNTIME Null a decimal value rather than set it to 0 if its invalid
+=YES|NO
+	The standard informix behaviour seems to be to set the value to 0 for decimals
+	but sets dates to NULL. This is inconsistent and so this default behaviour is switchable
+	via this configuration setting

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.20 2003-10-11 08:41:38 afalout Exp $
+# $Id: input.c,v 1.21 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -83,18 +83,18 @@ static int gui_proc_key_input (int a);
 static int gui_form_field_constr (void);
 static int gui_form_field_chk (void);
 
-//void A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap);
+//void UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap);
 
 //extern char *A4GL_replace_sql_var (char *s);	/* others.c */
 
-//int A4GL_form_loop (struct s_screenio * s);
-//int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list * ap);
+//int UILIB_A4GL_form_loop (struct s_screenio * s);
+//int UILIB_A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list * ap);
 //void A4GL_disp_fields (int n, int attr, va_list * ap);
-//int A4GL_push_constr (struct s_screenio *s);
+//int UILIB_A4GL_push_constr (struct s_screenio *s);
 //void A4GL_fgl_infield (char *s, int a);
 int A4GL_field_name_match_gtk (GtkWidget * f, char *s);
 //void A4GL_disp_form_fields (int n, int attr, char *s,va_list * ap);
-//void A4GL_set_infield_from_stack (void);
+//void UILIB_A4GL_set_infield_from_stack (void);
 
 /*
 =====================================================================
@@ -108,12 +108,12 @@ int A4GL_field_name_match_gtk (GtkWidget * f, char *s);
  * @return The current form
  */
 void *
-A4GL_get_curr_form (int warn_if_no_form)
+ UILIB_A4GL_get_curr_form (int warn_if_no_form)
 {
   GtkWidget *w;
 
   A4GL_debug ("**** GET_CURR_FORM_GTK\n");
-  w = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  w = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
 	if (w==0) {
 		if (warn_if_no_form) {
 			A4GL_exitwith("No form");
@@ -162,7 +162,7 @@ colname_for_field (GtkWidget * w)
  *   -
  */
 int
-A4GL_form_loop (void *vs,int init)
+ UILIB_A4GL_form_loop (void *vs,int init)
 {
   int a;
   int action;
@@ -507,7 +507,7 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
  * @return The number of elements returned.
  */
 int
-A4GL_gen_field_chars_ap (void* field_listv, void * cwinv, va_list * ap)
+ UILIB_A4GL_gen_field_chars_ap (void* field_listv, void * cwinv, va_list * ap)
 {
   int a;
   GtkWidget ***field_list;
@@ -526,7 +526,7 @@ A4GL_gen_field_chars_ap (void* field_listv, void * cwinv, va_list * ap)
  * @return Not used.
  */
 int
-A4GL_set_fields (void *vsio)
+ UILIB_A4GL_set_fields (void *vsio)
 {
 /* Disable all fields */
   int a;
@@ -642,7 +642,7 @@ A4GL_gui_set_field_pop_attr (GtkWidget * w, int attr)
  * @return
  */
 int
-A4GL_disp_fields_ap (int n, int attr, va_list * ap)
+ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 {
   int a;
   int flg;
@@ -653,7 +653,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   a4gl_status = 0;
   A4GL_debug_last_field_created ("disp_fields1 ");
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
 
   if (a4gl_status != 0)
     return 0;
@@ -836,7 +836,7 @@ A4GL_gui_set_init_value (GtkWidget * f, void *ptr, int dtype)
  * @return Allways 1
  */
 int
-A4GL_push_constr (void *vs)
+ UILIB_A4GL_push_constr (void *vs)
 {
   struct struct_scr_field *fprop;
   GtkWidget *f;
@@ -894,7 +894,7 @@ A4GL_push_constr (void *vs)
  * @return The current feld number.
  */
 int
-A4GL_fgl_infield_ap (void *inp,va_list *ap)
+ UILIB_A4GL_fgl_infield_ap (void *inp,va_list *ap)
 {
   //long fld;
 
@@ -952,14 +952,14 @@ A4GL_field_name_match_gtk (GtkWidget * f, char *s)
  *
  */
 int
-A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
+ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
 {
   void *cwin;
   void *w;
 
   A4GL_debug ("In disp_Form_fields_gtk");
   A4GL_debug ("s='%s'\n", s);
-  cwin = (GtkWidget *) A4GL_get_curr_win_gtk ();
+  cwin = (GtkWidget *) UILIB_A4GL_get_curr_win_gtk ();
   w = A4GL_find_pointer (s, WINCODE);
   if (w == 0)
     {
@@ -968,7 +968,7 @@ A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
     }
   A4GL_debug ("Swapping %p for %p", w, cwin);
   A4GL_set_current_window (w);
-  A4GL_disp_fields_ap (n, attr, ap);
+  UILIB_A4GL_disp_fields_ap (n, attr, ap);
   A4GL_debug ("Swapping %p for %p", cwin, w);
   A4GL_set_current_window (cwin);
 return 1;
@@ -979,7 +979,7 @@ return 1;
  *
  */
 void
-A4GL_set_infield_from_stack (void)
+ UILIB_A4GL_set_infield_from_stack (void)
 {
   A4GL_debug ("**** CHANGED FIELD ****");
   inp_current_field = A4GL_pop_long ();

@@ -6,7 +6,7 @@ FILE *f;
 
 
 int
-aclfgl_aclfgl_dump_screen (int n)
+ UILIB_aclfgl_aclfgl_dump_screen (int n)
 {
   int sh;
   int sw;

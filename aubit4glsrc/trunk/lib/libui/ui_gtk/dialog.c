@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.9 2003-11-27 21:56:30 mikeaubury Exp $
+# $Id: dialog.c,v 1.10 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 	       char *msg);
 //void aclfgli_pr_message (int a, int xwait);
-//void A4GL_display_error (int a, int xwait);
+//void UILIB_A4GL_display_error (int a, int xwait);
 
 /*
 =====================================================================
@@ -273,7 +273,7 @@ main (int argc, char *argv[])
  * @param xwait The time to wait during the message presentation.
  */
 void
-aclfgli_pr_message_internal (int a, int xwait,char *s)
+ UILIB_aclfgli_pr_message_internal (int a, int xwait,char *s)
 {
 //  char *p;
 	/** 
@@ -295,7 +295,7 @@ aclfgli_pr_message_internal (int a, int xwait,char *s)
  *             - 1 : Show a window witj OK button.
  */
 void
-A4GL_display_error (int a, int xwait)
+ UILIB_A4GL_display_error (int a, int xwait)
 {
   char *p;
   p = (char *) A4GL_char_pop ();

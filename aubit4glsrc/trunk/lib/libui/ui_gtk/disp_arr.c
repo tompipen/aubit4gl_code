@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.11 2003-10-11 08:41:38 afalout Exp $
+# $Id: disp_arr.c,v 1.12 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -70,7 +70,7 @@ void A4GL_iclear_srec_line (struct struct_screen_record *srec, int line);
 
 //int A4GL_disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 
-//int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
+//int UILIB_A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 /*
 =====================================================================
                     Functions definitions
@@ -292,7 +292,7 @@ disp_loop (struct s_disp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (1))
     {
       A4GL_exitwith ("Input form is not the current form!");
       exit (0);
@@ -505,7 +505,7 @@ disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-A4GL_disp_arr_ap (void *dispv, void *ptr, char *srecname, int attrib, va_list * ap)
+ UILIB_A4GL_disp_arr_ap (void *dispv, void *ptr, char *srecname, int attrib, va_list * ap)
 {
   int a;
   int nofields;
@@ -526,7 +526,7 @@ struct s_disp_arr  *disp;
 	  return 0;
 	}
 
-      disp->currform = A4GL_get_curr_form (1);
+      disp->currform = UILIB_A4GL_get_curr_form (1);
 
 
       A4GL_debug ("Trying to find scroll widget currform = %p", disp->currform);
@@ -562,10 +562,10 @@ struct s_disp_arr  *disp;
 	  A4GL_gui_set_active (field_list[0], 1);
 	  gtk_range_set_adjustment (GTK_RANGE (field_list[0]),
 				    GTK_ADJUSTMENT (p));
-	  A4GL_gui_run_til_no_more ();
+	  UILIB_A4GL_gui_run_til_no_more ();
 	  gtk_adjustment_value_changed (p);
 	  gtk_adjustment_changed (p);
-	  A4GL_gui_run_til_no_more ();
+	  UILIB_A4GL_gui_run_til_no_more ();
 	  gtk_object_set_data ((GtkObject *) field_list[0], "ARRAY", disp);
 
 /*
@@ -778,7 +778,7 @@ A4GL_disp_arr_fields (int n, int fonly, int attr, ...)
   int nofields;
 
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);
@@ -831,7 +831,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   return;
 
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);
@@ -851,7 +851,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   for (a = nofields; a >= 0; a--)
     {
       A4GL_debug ("field_list[%d]=%p", field_list[a]);
-      fff = A4GL_get_curr_form (1);
+      fff = UILIB_A4GL_get_curr_form (1);
 
       /* set_current_field (fff->form, field_list[a]); */
       A4GL_debug ("set_init_pop complete");
@@ -1122,7 +1122,7 @@ A4GL_idisp_arr_fields (int n, int fonly, int attr, ...)
   int nofields;
 
   A4GL_debug ("In A4GL_disp_fields - attr=%d");
-  formdets = A4GL_get_curr_form (1);
+  formdets = UILIB_A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);

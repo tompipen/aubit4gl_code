@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.19 2003-10-16 11:21:59 mikeaubury Exp $
+# $Id: widget.c,v 1.20 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -130,7 +130,7 @@ struct s_widgets widgets[] = {
 this should be in a4gl_aubit_lib.h but it's different all over the
 place - see a4gl_aubit_lib.h
 */
-//int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
+//int UILIB_A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
 
 char *	A4GL_decode_config 	(struct_form * f, int a);
@@ -425,7 +425,7 @@ A4GL_add_widget (int metric_no, struct_form * f,
  * @return w A pointer too the widget with the name passed.
  */
 int
-A4GL_fgl_fieldnametoid (char *f, char *s, int n)
+ UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
 {
   GtkWidget *formdets;
   GtkWidget *w;
@@ -441,7 +441,7 @@ A4GL_fgl_fieldnametoid (char *f, char *s, int n)
   A4GL_debug ("fgl_fieldnametoid (%p,%d)", s, n);
 
 
-  formdets = (GtkWidget *) A4GL_get_curr_form (1);
+  formdets = (GtkWidget *) UILIB_A4GL_get_curr_form (1);
   A4GL_debug ("Getting field list formdets=%p parent=%p", formdets,
 	 gtk_object_get_data ((GtkObject *) formdets, "PARENT"));
 
@@ -510,7 +510,7 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
  * @return
  */
 int
-A4GL_widget_name_match (void *wv,  char *name)
+ UILIB_A4GL_widget_name_match (void *wv,  char *name)
 {
 GtkWidget * w;
   void *s;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.12 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: console.c,v 1.13 2003-12-12 16:14:57 mikeaubury Exp $
 #*/
 
 /**
@@ -70,18 +70,18 @@ static void A4GL_menu_attrib (void* menu, int attr, va_list ap);
 
 void A4GL_ui_init (int argc, char *argv[]);
 //void aclfgli_pr_message (int attr,int wait);
-//void A4GL_display_error (int a,int wait);
+//void UILIB_A4GL_display_error (int a,int wait);
 //void *A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
-//void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc, int help_no, int attr);
-//void A4GL_finish_create_menu (ACL_Menu * menu);
+//void UILIB_A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc, int help_no, int attr);
+//void UILIB_A4GL_finish_create_menu (ACL_Menu * menu);
 //char *A4GL_disp_h_menu (ACL_Menu * menu);
 static void A4GL_redisplay_menu (ACL_Menu * menu);
-//int A4GL_menu_loop (ACL_Menu * menu);
-//void A4GL_free_menu (ACL_Menu * menu);
+//int UILIB_A4GL_menu_loop (ACL_Menu * menu);
+//void UILIB_A4GL_free_menu (ACL_Menu * menu);
 //void sleep_i(void);
-//void A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap);
-//void A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
-//void A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//void UILIB_A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap);
+//void UILIB_A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
+//void UILIB_A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 //void prompt_loop(struct s_prompt * prompt);
 
 /*
@@ -95,7 +95,7 @@ static void A4GL_redisplay_menu (ACL_Menu * menu);
  * @todo Describe function
  */
 void
-A4GLUI_ui_init (int argc, char *argv[])
+ UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
 
   return;
@@ -117,7 +117,7 @@ A4GL_ui_init (int argc, char *argv[])
  * @todo Describe function
  */
 void
-aclfgli_pr_message_internal (int attr, int wait,char *s)
+ UILIB_aclfgli_pr_message_internal (int attr, int wait,char *s)
 {
   A4GL_trim (s);
   printf ("%s\n", s);
@@ -129,7 +129,7 @@ aclfgli_pr_message_internal (int attr, int wait,char *s)
  * @todo Describe function
  */
 void
-A4GL_display_error (int a, int wait)
+ UILIB_A4GL_display_error (int a, int wait)
 {
   char *s;
   s = A4GL_char_pop ();
@@ -144,7 +144,7 @@ A4GL_display_error (int a, int wait)
  * @todo Describe function
  */
 void
-A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
+ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
   printf ("%s\n", s);
 }
@@ -155,7 +155,7 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
  * @todo Describe function
  */
 void *
-A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   char buff[256];
   ACL_Menu *menu;
@@ -183,7 +183,7 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
  * @todo Describe function
  */
 void
-A4GL_add_menu_option (void * menuv, char *txt, char *keys, char *desc,
+ UILIB_A4GL_add_menu_option (void * menuv, char *txt, char *keys, char *desc,
 		 int help_no, int attr)
 {
   ACL_Menu_Opts *opt1;
@@ -250,7 +250,7 @@ A4GL_add_menu_option (void * menuv, char *txt, char *keys, char *desc,
  * @todo Describe function
  */
 void
-A4GL_finish_create_menu (void * menuv)
+ UILIB_A4GL_finish_create_menu (void * menuv)
 {
 ACL_Menu *menu;
 menu=menuv;
@@ -274,7 +274,7 @@ menu=menuv;
  * @todo Describe function
  */
 void
-A4GL_disp_h_menu (void *menuv) 
+ UILIB_A4GL_disp_h_menu (void *menuv) 
 {
 ACL_Menu * menu;
 menu=menuv;
@@ -286,7 +286,7 @@ menu=menuv;
  *
  * @todo Describe function
  */
-void
+static void
 A4GL_redisplay_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1;
@@ -329,7 +329,7 @@ A4GL_redisplay_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 int
-A4GL_menu_loop (void * menuv)
+ UILIB_A4GL_menu_loop (void * menuv)
 {
   char buff[21];
   int a;
@@ -367,7 +367,7 @@ menu=menuv;
  * @todo Describe function
  */
 int
-A4GL_free_menu (void * menuv)
+ UILIB_A4GL_free_menu (void * menuv)
 {
   ACL_Menu_Opts *opt1, *opt2;
   ACL_Menu *menu;
@@ -387,7 +387,7 @@ return 1;
  * @todo Describe function
  */
 void
-A4GL_sleep_i (void)
+ UILIB_A4GL_sleep_i (void)
 {
   int a;
   a = A4GL_pop_int ();
@@ -401,7 +401,7 @@ A4GL_sleep_i (void)
  * @todo Describe function
  */
 void
-A4GL_gotolinemode (void)
+ UILIB_A4GL_gotolinemode (void)
 {
 /* Does nothing - we are already in line mode when using UI=CONSOLE
 but we need dummy finction to satisfy API_ui
@@ -416,7 +416,7 @@ but we need dummy finction to satisfy API_ui
  * @todo Describe function
  */
 int
-A4GL_menu_hide_ap (void * menu, va_list * ap)
+ UILIB_A4GL_menu_hide_ap (void * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 0, *ap);
 return 1;
@@ -427,7 +427,7 @@ return 1;
  * @todo Describe function
  */
 int
-A4GL_menu_show_ap (void * menu, va_list * ap)
+ UILIB_A4GL_menu_show_ap (void * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 1, *ap);
 return 1;
@@ -437,7 +437,7 @@ return 1;
  *
  * @todo Describe function
  */
-void
+static void
 A4GL_menu_attrib (void* menuv, int attr, va_list ap)
 {
   int a;
@@ -519,7 +519,7 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
  * @todo Describe function
  */
 int
-A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int width;
@@ -546,7 +546,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
  * @todo Describe function
  */
 int
-A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
 {
   char buff[256];
   struct s_prompt *prompt;
@@ -559,13 +559,13 @@ A4GL_prompt_loop (void *vprompt,int timeout)
 }
 
 int
-A4GL_iscurrborder (void)
+ UILIB_A4GL_iscurrborder (void)
 {
   return 0;
 }
 
 int
-A4GL_get_curr_width (void)
+ UILIB_A4GL_get_curr_width (void)
 {
   return 132;
 }

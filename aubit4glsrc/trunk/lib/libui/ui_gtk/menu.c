@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.15 2003-10-16 11:21:59 mikeaubury Exp $
+# $Id: menu.c,v 1.16 2003-12-12 16:15:05 mikeaubury Exp $
 #*/
 
 /**
@@ -67,15 +67,15 @@ extern GtkWidget *tooltips;
 =====================================================================
 */
 
-//void A4GL_disp_h_menu (void *m);
-//int A4GL_menu_loop (void *m);
-//void A4GL_free_menu (void *m);
-//void A4GL_next_option (void *menu, char *nextopt);
+//void UILIB_A4GL_disp_h_menu (void *m);
+//int UILIB_A4GL_menu_loop (void *m);
+//void UILIB_A4GL_free_menu (void *m);
+//void UILIB_A4GL_next_option (void *menu, char *nextopt);
 //void A4GL_menu_hide (void *m, va_list * ap);
 //void A4GL_menu_show (void *m, va_list * ap);
 //void *A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
-//void A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno, int attr);
-//void A4GL_finish_create_menu (void *menubar);
+//void UILIB_A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno, int attr);
+//void UILIB_A4GL_finish_create_menu (void *menubar);
 
 /*
 =====================================================================
@@ -117,7 +117,7 @@ handler (GtkMenuItem * w, int p)
  * ACL_Menu pointer here.
  */
 void
-A4GL_disp_h_menu (void *m)
+ UILIB_A4GL_disp_h_menu (void *m)
 {
   GtkWidget *a;
   GtkWindow *cwin;
@@ -149,7 +149,7 @@ A4GL_disp_h_menu (void *m)
  * @return 
  */
 int
-A4GL_menu_loop (void *m)
+ UILIB_A4GL_menu_loop (void *m)
 {
   int a;
   GtkWidget *menubar;
@@ -192,7 +192,7 @@ A4GL_menu_loop (void *m)
   while (1)
     {
       a4gl_usleep (100);
-      A4GL_gui_run_til_no_more ();
+      UILIB_A4GL_gui_run_til_no_more ();
 
       a = (int) gtk_object_get_data (GTK_OBJECT (m), "selected");
 
@@ -220,7 +220,7 @@ A4GL_menu_loop (void *m)
  *
  * 4GL call
  */
-int A4GL_free_menu (void *m)
+int UILIB_A4GL_free_menu (void *m)
 {
   GtkWindow *cwin;
   A4GL_debug ("Free menu...");
@@ -276,7 +276,7 @@ find_menu_item (void *m, char *s)
  * @param nextop.
  */
 void
-A4GL_next_option (void *menu, char *nextopt)
+ UILIB_A4GL_next_option (void *menu, char *nextopt)
 {
   A4GL_debug ("next option - Has no effect in GUI mode");
 }
@@ -285,7 +285,7 @@ A4GL_next_option (void *menu, char *nextopt)
  * Not used but maybe should be.
  */
 int
-A4GL_menu_hide_ap (void *m, va_list * ap)
+ UILIB_A4GL_menu_hide_ap (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
@@ -314,7 +314,7 @@ return 1;
  * @param ap The optionlist to be showed.
  */
 int
-A4GL_menu_show_ap (void *m, va_list * ap)
+ UILIB_A4GL_menu_show_ap (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
@@ -441,14 +441,14 @@ va_list *ap)
  * @return A pointer to the widget that implements the menu.
  */
 void *
-A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
   GtkWidget *menubar;
   GtkWindow *cwin;
   GtkWidget *w;
 
   A4GL_debug ("Create window - title=%s", title);
-  cwin = (GtkWindow *) A4GL_get_curr_win_gtk ();
+  cwin = (GtkWindow *) UILIB_A4GL_get_curr_win_gtk ();
   A4GL_debug ("Got cwin as %p\n", cwin);
 
   menubar = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
@@ -463,7 +463,7 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
   gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", menubar);
   gtk_object_set_data (GTK_OBJECT (menubar), "MASTERWIN", cwin);
   gtk_widget_show (menubar);
-  gtk_widget_set_usize (GTK_WIDGET (menubar), A4GL_get_curr_width () * XWIDTH,
+  gtk_widget_set_usize (GTK_WIDGET (menubar), UILIB_A4GL_get_curr_width () * XWIDTH,
 			YHEIGHT);
   gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) 0);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
@@ -496,7 +496,7 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
  * @param attr The attributes
  */
 void
-A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
+ UILIB_A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
 		 int attr)
 {
   GtkWidget *w;
@@ -542,7 +542,7 @@ A4GL_add_menu_option (void *menubar, char *txt, char *keys, char *desc, int help
  * @param menu The menu structure (GtkWidget).
  */
 void
-A4GL_finish_create_menu (void *menubar)
+ UILIB_A4GL_finish_create_menu (void *menubar)
 {
   gtk_object_set_data (GTK_OBJECT (menubar), "selected", (gpointer) - 1);
 }
