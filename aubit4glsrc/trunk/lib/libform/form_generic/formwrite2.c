@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.14 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.15 2003-05-16 03:08:11 afalout Exp $
 #*/
 
 /**
@@ -818,7 +818,7 @@ chk_for_wordwrap(void)
     the_form.attributes.attributes_val[fno].tabname,
     the_form.attributes.attributes_val[fno].colname);
 
-    if (has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
+    if (A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
       continue;
 
@@ -1154,7 +1154,7 @@ real_add_bool_attr (struct struct_scr_field *f, int type)
 
   A4GL_debug ("add_bool_attr\n");
 
-  if (!has_bool_attribute (f, type))	/* see a4gl_aubit_lib.h for declaration */
+  if (!A4GL_has_bool_attribute (f, type))	/* see a4gl_aubit_lib.h for declaration */
     {
       if (f->bool_attribs.bool_attribs_len == 0)
 	f->bool_attribs.bool_attribs_val = 0;

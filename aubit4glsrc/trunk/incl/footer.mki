@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.34 2003-03-23 07:19:42 afalout Exp $
+#	 $Id: footer.mki,v 1.35 2003-05-16 03:07:11 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -33,6 +33,7 @@ ifneq "${DBASE}" "${FORMS_DBASE}"
 	FILES.per=
 endif
 
+ALL_SRC=${PROG} ${FILES.lib} ${FILES.4gl} ${FILES.per} ${FILES.msg}
 
 ########################
 #Set name for 4Js database definition file to be created/used
@@ -637,6 +638,20 @@ show:
 	@echo "EXTENSIONS (FRM, OBJ, PRG, LIB, HLP): ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}"
 	@echo CORE_PROGDIR = ${CORE_PROGDIR}
 	@echo CORE_LANGDIR = ${CORE_LANGDIR}
+
+
+src:
+	@echo ${PROG}
+	@echo ${FILES.lib}
+	@echo ${FILES.4gl}
+	@echo ${FILES.per}
+	@echo ${FILES.msg}
+
+src.all:
+	@echo ${ALL_SRC} ${PWD}
+
+src.load:
+	${SRC_LOAD_UTIL} ${ALL_SRC} ${PWD}
 
 
 # =============================== EOF ==================================

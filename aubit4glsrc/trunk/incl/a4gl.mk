@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.38 2003-04-30 22:13:38 afalout Exp $
+#	 $Id: a4gl.mk,v 1.39 2003-05-16 03:07:11 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.38 2003-04-30 22:13:38 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.39 2003-05-16 03:07:11 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -44,7 +44,12 @@ endif
 4GL_SRC_SUFFIXES	= .4gl .per .msg
 
 
-A4GL_PACKER			:=$(shell aubit-config A4GL_PACKER)
+#Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
+#aubit-config is not installed yet. How can I prevent this?
+A4GL_CURR_PACKER			:=$(shell aubit-config A4GL_PACKER 2> /dev/null)
+ifeq "${A4GL_CURR_PACKER}" ""
+	A4GL_CURR_PACKER=PACKED
+endif
 
 ##########################################################################
 # Compilers and flags
@@ -92,7 +97,8 @@ AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ifeq "${USE_4GLPC}" "1"
 	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
 else
-	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc --clean  ${EXTRA_4GLC}
+	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc ${EXTRA_4GLC}
+#--clean
 endif
 A4GL_CC_ENV     =
 A4GL_CC_FLAGS   = #-verbose
@@ -140,7 +146,7 @@ A4GL_LIB_EXT=.aox
 A4GL_SOL_EXT=.asx
 
 
-ifeq "${A4GL_PACKER}" "XML"
+ifeq "${A4GL_CURR_PACKER}" "XML"
 	#Compiled form
 	#FIXME: reverse => xml.afr
 	A4GL_FRM_EXT=.afr.xml
@@ -149,23 +155,13 @@ ifeq "${A4GL_PACKER}" "XML"
 	#FIXME: reverse => xml.mnu
 	A4GL_MNU_EXT=.mnu.xml
 endif
-ifeq "${A4GL_PACKER}" "PACKED"
+ifeq "${A4GL_CURR_PACKER}" "PACKED"
 	#Compiled form
 	A4GL_FRM_EXT=.afr.dat
 
 	#Compiled menu:
 	A4GL_MNU_EXT=.mnu.dat
 endif
-
-#Default in the case we can't get A4GL_PACKER
-ifeq "${A4GL_FRM_EXT}" ""
-	#Compiled form
-	A4GL_FRM_EXT=.afr.dat
-
-	#Compiled menu:
-	A4GL_MNU_EXT=.mnu.dat
-endif
-
 
 #Compiler help
 A4GL_HLP_EXT=.hlp

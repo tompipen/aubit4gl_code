@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.39 2003-03-09 07:06:17 afalout Exp $
+# $Id: Makefile.in,v 1.40 2003-05-16 03:08:14 afalout Exp $
 #
 
 ROOT    =../..
@@ -47,8 +47,8 @@ include ${ROOT}/incl/?4gl.mk
 #SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
-DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml \
-		form.afr.xml helpfile.hlp  file.4ae
+DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu${A4GL_MNU_EXT} \
+		form${A4GL_FRM_EXT} helpfile.hlp  file.4ae
 
 
 SUB		=guidemos
@@ -161,7 +161,7 @@ clean:
 	test_build *.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
 	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm pdf_report solitaire test_select test_mpz \
 	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
-	.*.frm.xml *.afr.xml *.mnu.xml *.aox *.warn
+	*${A4GL_FRM_EXT} *${A4GL_MNU_EXT} *.aox *.warn
 
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"

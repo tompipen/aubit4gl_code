@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.36 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: builtin.c,v 1.37 2003-05-16 03:08:11 afalout Exp $
 #
 */
 
@@ -127,7 +127,7 @@ aclfgl_set_count (int nargs)
   };				/* end of binding */
   if (nargs != 1)
     {
-      /* pop_args(nargs);set_status(-3001); */
+      /* A4GL_pop_args(nargs);set_status(-3001); */
       A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
 

@@ -28,7 +28,10 @@ options message line 6
 
 menu "Hello_db test"
 
-    command "Access" "Access database and list some data"
+    command "session"
+		call try_session()
+
+	command "Access" "Access database and list some data"
 
         call db_select ()
 
@@ -42,11 +45,43 @@ menu "Hello_db test"
         exit menu
 end menu
 
-message "Exiting.."
-sleep 1
-message ""
 
 end main
+
+
+function try_session()
+     define
+         p_co_name char(30)
+
+#     OPEN SESSION s_ifmx TO DATABASE maindb as user "informix" password "ifmx"
+
+    display "opening session..."
+    sleep 2
+
+     open session session1 to database maxdev
+       as user "root" password "babaroga"
+
+
+	display "setting session..."
+    sleep 2
+
+	 set session to session1
+
+    display "selecting data..."
+    sleep 2
+
+	 select tabname into p_co_name from systables
+        where tabid = 1
+
+	 display p_co_name
+    sleep 2
+
+    display "done."
+
+	 sleep 5
+end function
+
+
 
 ################################
 function db_select()

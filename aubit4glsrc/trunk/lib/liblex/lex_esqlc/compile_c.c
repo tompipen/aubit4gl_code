@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.40 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.41 2003-05-16 03:08:13 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -344,7 +344,7 @@ void
 printc (char *fmt, ...)
 {
   va_list ap;
-  //debug("via printc (a) in lib\n");
+  //A4GL_debug("via printc (a) in lib\n");
   va_start (ap, fmt);
   internal_A4GL_lex_printc (fmt, &ap);
 }
@@ -358,7 +358,7 @@ internal_A4GL_lex_printc (char *fmt, va_list * ap)
   char *ptr;
   int a;
 
-  //debug("in real_lex_printc");
+  //A4GL_debug("in real_lex_printc");
 
   if (outfile == 0)
     {
@@ -366,16 +366,16 @@ internal_A4GL_lex_printc (char *fmt, va_list * ap)
       if (outfile == 0)
 	return;
     }
-  //debug("before vsprintf");
-  //debug("ap = %p\n",ap);
-  //debug("fmt = %p\n",fmt);
+  //A4GL_debug("before vsprintf");
+  //A4GL_debug("ap = %p\n",ap);
+  //A4GL_debug("fmt = %p\n",fmt);
 
   /* va_start (args, fmt); */
   vsprintf (buff, fmt, *ap);
 
-  //debug("buff in lib=%s\n",buff);
+  //A4GL_debug("buff in lib=%s\n",buff);
   strcpy (buff2, fmt);
-  //debug("fmt in lib=%s\n",buff2);
+  //A4GL_debug("fmt in lib=%s\n",buff2);
 
 
   if (A4GL_isyes (acl_getenv ("INCLINES")))
@@ -1184,14 +1184,14 @@ print_bind_pop1 (char i)
   a = 0;
 
 #ifdef DEBUG
-  //debug ("print_bind_pop1 i='%d' \n",i); // 111, %s core dumps
+  //A4GL_debug ("print_bind_pop1 i='%d' \n",i); // 111, %s core dumps
 #endif
 
 
   if (i == 'i')
     {
 #ifdef DEBUG
-      //debug ("print_bind_pop1 i='i'\n");
+      //A4GL_debug ("print_bind_pop1 i='i'\n");
 #endif
       if (scan_variable (obind[a].varname) != -1)
 	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
@@ -1203,7 +1203,7 @@ print_bind_pop1 (char i)
   if (i == 'o')
     {
 #ifdef DEBUG
-      //debug ("print_bind_pop1 i='o'\n");
+      //A4GL_debug ("print_bind_pop1 i='o'\n");
 #endif
       if (scan_variable (obind[a].varname) != -1)
 	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
@@ -1960,7 +1960,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
     }
 
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -99;\n");
 }
 
@@ -2804,7 +2804,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
 	("if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -99;\n");
 }
 
@@ -3104,10 +3104,10 @@ print_report_print (int type, char *semi, char *wordwrap)
 {
 
   if (type == 0)
-    printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("%sA4GL_rep_print(&rep,0,%s,0);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("A4GL_%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+    printc ("%sA4GL_rep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
 /**
@@ -3123,7 +3123,7 @@ print_report_print (int type, char *semi, char *wordwrap)
 void
 print_report_print_file (char *fname, char *semi)
 {
-  printc ("%srep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
+  printc ("%sA4GL_rep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.29 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.30 2003-05-16 03:08:13 afalout Exp $
 #
 */
 
@@ -1543,7 +1543,7 @@ print_returning (void)
   printc ("{\n");
   cnt = print_bind ('i');
   printc
-    ("if ($a4gl_retvars!= %d ) {if ($a4gl_retvars!=-1) {aubit4gl_pl::xset_status(-3001);aubit4gl_pl::pop_args($a4gl_retvars);}\n} else {aubit4gl_pl::xset_status(0);\n",
+    ("if ($a4gl_retvars!= %d ) {if ($a4gl_retvars!=-1) {aubit4gl_pl::xset_status(-3001);aubit4gl_pl::A4GL_pop_args($a4gl_retvars);}\n} else {aubit4gl_pl::xset_status(0);\n",
      cnt);
   printc ("aubit4gl_pl::pop_params(aubit4gl::dif_get_bind($ibind),%d);}\n",
 	  cnt);
@@ -1687,7 +1687,7 @@ void
 print_case (int has_expr)
 {
   if (has_expr)
-    printc ("while (1==1) {char *s=0;if (s==0) {s=char_pop();}\n");
+    printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
   else
     printc ("while (1==1) {\n");
 }
@@ -1783,10 +1783,10 @@ print_construct_2 (char *driver)
   printc ("if (_fld_dr==-95) {\n");
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {\n");
-  printc ("   fldname=char_pop(); _fld_dr=-97;continue;\n}\n");
+  printc ("   fldname=A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;\n", driver);
   printc ("if (_fld_dr==-1) {\n");
-  printc ("   fldname=char_pop(); _fld_dr=-98;continue;\n}\n");
+  printc ("   fldname=A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
@@ -2287,7 +2287,7 @@ print_import (char *func, int nargs)
   printc ("my _argc[%s];\n", nargs);
   printc ("my _retval;");
   printc
-    ("   if (nargs!=%d) {$aubit4gl_pl::status=-30174;pop_args(nargs);return 0;}\n",
+    ("   if (nargs!=%d) {$aubit4gl_pl::status=-30174;A4GL_pop_args(nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -2387,10 +2387,10 @@ print_input_2 (char *s)
   printc ("if (_fld_dr==-95) {/* after input */\n");
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {/* before field */\n");
-  printc ("   fldname=aubit4gl_pl::char_pop(); _fld_dr=-97;continue;\n}\n");
+  printc ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
   printc ("if (_fld_dr==-1) {/* after field */\n");
-  printc ("   fldname=aubit4gl_pl::char_pop(); _fld_dr=-98;continue;\n}\n");
+  printc ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
@@ -2779,10 +2779,10 @@ print_report_print (int type, char *semi, char *wordwrap)
 {
 
   if (type == 0)
-    printc ("%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("%sA4GL_rep_print(&rep,0,%s,0);\n", ispdf (), semi);
   if (type == 1)
 
-    printc ("%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+    printc ("%sA4GL_rep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
 /**
@@ -2793,7 +2793,7 @@ print_report_print (int type, char *semi, char *wordwrap)
 void
 print_report_print_file (char *fname, char *semi)
 {
-  printc ("%srep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
+  printc ("%sA4GL_rep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
 }
 
 /**
@@ -2870,7 +2870,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
-  printc ("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
+  printc ("fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return 0;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
   printc
     ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
@@ -3211,7 +3211,7 @@ print_open_session (char *s, char *v, char *user)
   printc ("aubit4gl_pl::init_session(%s", s);
   if (strcmp (user, "?") == 0)
     {
-      printc (",aubit4gl_pl::char_pop(),%s);\n", user);
+      printc (",aubit4gl_pl::A4GL_char_pop(),%s);\n", user);
     }
   else
     {
@@ -3451,7 +3451,7 @@ void
 print_func_args (int c)
 {
   printc
-    ("if ($nargs!=%d) {$aubit4gl_pl::status=-30174;aubit4gl_pl::pop_args($nargs);return 0;}\n",
+    ("if ($nargs!=%d) {$aubit4gl_pl::status=-30174;aubit4gl_pl::A4GL_pop_args($nargs);return 0;}\n",
      c, yylineno);
   printc ("aubit4gl_pl::pop_params(fbind,%d);\n", c);
 }
@@ -3606,7 +3606,7 @@ void
 print_init_conn (char *db)
 {
   if (db == 0)
-    printc ("init_connection(char_pop());\n");
+    printc ("init_connection(A4GL_char_pop());\n");
   else
     printc ("init_connection(\"%s\");\n", db);
 }

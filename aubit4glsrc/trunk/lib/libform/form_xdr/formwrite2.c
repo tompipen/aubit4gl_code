@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.24 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.25 2003-05-16 03:08:12 afalout Exp $
 #*/
 
 /**
@@ -815,7 +815,7 @@ chk_for_wordwrap(void)
     the_form.attributes.attributes_val[fno].tabname,
     the_form.attributes.attributes_val[fno].colname);
 
-    if (has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
+    if (A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
       continue;
 

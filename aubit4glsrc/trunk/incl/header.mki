@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.17 2003-03-05 07:27:47 afalout Exp $
+#	 $Id: header.mki,v 1.18 2003-05-16 03:07:11 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -36,6 +36,8 @@ SCH_DIR		=${SCWORK}
 #can find it
 FGLDBPATH	:=${SCH_DIR}:${FGLDBPATH}
 export FGLDBPATH
+
+PWD	:=$(shell pwd)
 
 #show additional debugging messages
 #VERBOSE		=1

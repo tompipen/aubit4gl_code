@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.70 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.71 2003-05-16 03:08:12 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1600,7 +1600,7 @@ print_returning (void)
   cnt = print_bind ('i');
   printc
     /* warning! :       void    A4GLSQL_set_status      (int a, int sql); */
-    ("if (_retvars!= %d) {if (_retvars!=-1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
+    ("if (_retvars!= %d) {if (_retvars!=-1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
   printc ("pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
@@ -1789,7 +1789,7 @@ void
 print_case (int has_expr)
 {
   if (has_expr)
-    printc ("while (1==1) {char *s=0;if (s==0) {s=char_pop();}\n");
+    printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
   else
     printc ("while (1==1) {\n");
 }
@@ -1889,11 +1889,11 @@ print_construct_2 (char *driver)
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;\n", driver);
   printc ("if (_fld_dr==-1) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
@@ -2444,7 +2444,7 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
+    ("   if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -2755,11 +2755,11 @@ print_input_2 (char *s)
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {/* before field */\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
   printc ("if (_fld_dr==-1) {/* after field */\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
+    ("   fldname=A4GL_char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
@@ -3207,10 +3207,10 @@ print_report_print (int type, char *semi, char *wordwrap)
 {
 
   if (type == 0)
-    printc ("%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("%sA4GL_rep_print(&rep,0,%s,0);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+    printc ("%sA4GL_rep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
 /**
@@ -3226,7 +3226,7 @@ print_report_print (int type, char *semi, char *wordwrap)
 void
 print_report_print_file (char *fname, char *semi)
 {
-  printc ("%srep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
+  printc ("%sA4GL_rep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
 }
 
 /**
@@ -3330,7 +3330,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
-  printc ("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
+  printc ("fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return 0;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
   printc
     ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
@@ -3705,7 +3705,7 @@ print_open_session (char *s, char *v, char *user)
   printc ("A4GLSQL_init_session(%s", s);
   if (strcmp (user, "?") == 0)
     {
-      printc (",char_pop(),%s);\n", user);
+      printc (",A4GL_char_pop(),%s);\n", user);
     }
   else
     {
@@ -4099,7 +4099,7 @@ print_func_start (char *isstatic, char *fname, int type)
 void
 print_func_args (int c)
 {
-  printc ("if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
+  printc ("if (nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
 	  c, yylineno);
   print_function_variable_init ();
   printc ("pop_params(fbind,%d);\n", c);
@@ -4312,7 +4312,7 @@ void
 print_init_conn (char *db)
 {
   if (db == 0)
-    printc ("A4GLSQL_init_connection(char_pop());\n");
+    printc ("A4GLSQL_init_connection(A4GL_char_pop());\n");
   else
     printc ("A4GLSQL_init_connection(\"%s\");\n", db);
 }

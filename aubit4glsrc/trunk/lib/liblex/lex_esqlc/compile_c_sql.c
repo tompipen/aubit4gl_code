@@ -283,7 +283,7 @@ print_open_session (char *s, char *v, char *user)
   printc ("A4GLSQL_init_session(%s", s);
   if (strcmp (user, "?") == 0)
     {
-      printc (",char_pop(),%s);\n", user);
+      printc (",A4GL_char_pop(),%s);\n", user);
     }
   else
     {
@@ -349,7 +349,7 @@ void
 print_init_conn (char *db)
 {
   if (db == 0)
-    printc ("A4GLSQL_init_connection(char_pop());\n");
+    printc ("A4GLSQL_init_connection(A4GL_char_pop());\n");
   else
     printc ("A4GLSQL_init_connection(\"%s\");\n", db);
 }
