@@ -1,5 +1,6 @@
 %{
 #include "form_x.h"
+#include "fcompile.h"
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 #include <string.h>
@@ -28,7 +29,6 @@ extern char *tablist[];
 extern FILE *yyin;
 int in_screen_section=0;
 
-int add_field (char *s, int x, int y, int wid, int scr, int delim,char *label);
 %}
 %start form_def
 %union	  {

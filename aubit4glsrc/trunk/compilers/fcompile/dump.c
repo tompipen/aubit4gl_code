@@ -34,7 +34,7 @@ char *desc_bool[]={
  *
  * @param f A pointer to the form description structure
  */
-dump_form_desc(struct_form *f) {
+static dump_form_desc(struct_form *f) {
 int a;
 	printf("DB         : '%s'\n",f->dbname);
 	printf("Delimiters : '%s'\n",f->delim);
@@ -58,7 +58,7 @@ printf("Screens :%d\n",f->snames.snames_len);
  *
  * @param f A pointer to a form description record
  */
-dump_attributes(struct_form *f) {
+static dump_attributes(struct_form *f) {
 	int a;
 	int b;
 	printf("\nAttributes %d\n",f->attributes.attributes_len);
@@ -93,7 +93,7 @@ desc_bool[f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]]
  *
  * @param f A pointer to a form description record
  */
-dump_metrics(struct_form *f) {
+static dump_metrics(struct_form *f) {
 int a;
 	printf("\nMetrics %d\n",f->metrics.metrics_len);
 	for (a=0;a<f->metrics.metrics_len;a++) {
@@ -112,7 +112,7 @@ int a;
  *
  * @param f A pointer to a form description record
  */
-dump_fields_desc(struct_form *f) {
+static dump_fields_desc(struct_form *f) {
 int a,b;
 printf("\nFields %d\n",f->fields.fields_len);
 	for (a=0;a<f->fields.fields_len;a++) {
@@ -128,7 +128,7 @@ printf("\nFields %d\n",f->fields.fields_len);
  *
  * @param f A pointer to a form description record
  */
-dump_records(struct_form *f) {
+static dump_records(struct_form *f) {
 int a,b;
 printf("\nRecords %d\n",f->records.records_len);
 	for (a=0;a<f->records.records_len;a++) {
@@ -146,7 +146,7 @@ printf("\nRecords %d\n",f->records.records_len);
  *
  * @param f A pointer to a form description record
  */
-dump_tables(struct_form *f) {
+static dump_tables(struct_form *f) {
 int a;
 	printf("\nTables %d\n",f->tables.tables_len);
 	for (a=0;a<f->tables.tables_len;a++) {

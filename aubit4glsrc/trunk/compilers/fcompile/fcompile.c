@@ -1,4 +1,4 @@
-   /* $Id: fcompile.c,v 1.5 2001-11-22 00:14:10 saferreira Exp $
+   /* $Id: fcompile.c,v 1.6 2001-11-23 20:06:41 saferreira Exp $
    /* */
 
 /**
@@ -11,8 +11,7 @@
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
-FILE *mja_fopen(char *name, char *mode);
-FILE *write_errfile(FILE *f,char *s,long p,int l);
+#include "aubit_lib.h"
 extern int as_c;
 #ifdef YYDEBUG
 extern int yydebug;
@@ -89,21 +88,12 @@ static bname (char *str, char *str1, char *str2)
 
 
 
-main (argc, argv)
-     int argc;
-
-     char *argv[];
-
-	 {
-
+int main (int argc, char *argv[])
+{
   char a[128];
-
   char b[128];
-
   char c[128];
-
   char d[128];
-
   FILE *fopn;
 
   strcpy (d, "");
@@ -186,19 +176,20 @@ init_form();
  *
  * @param s String with error message sended by the parser
  */
-yyerror (s)
-     char *s;
+void yyerror(char *s)
 {
-char errfile[256];
-FILE *f;
-long ld;
+  char errfile[256];
+  FILE *f;
+  long ld;
 
   ld=buffpos();
   sprintf(errfile,"%s.err",outputfile);
   f=write_errfile(yyin,errfile,ld-1,yylineno);
   fprintf (f, "| %s", s);
   write_cont(yyin);
-  printf("Error compiling %s.per - check %s.err (%d %d)\n",outputfile,outputfile,lineno,yylineno);
+  printf("Error compiling %s.per - check %s.err (%d %d)\n",
+	  outputfile,outputfile,lineno,yylineno
+  );
   exit (2);
 }
 
@@ -208,8 +199,9 @@ long ld;
  *
  *  @return 
  */
-yywrap(){
-return 1;
+int yywrap(void)
+{
+  return 1;
 }
 
 

@@ -7,6 +7,7 @@
 %x comment
 %option yylineno
 /*%option interactive*/
+
 %%
 [\n] 	{lineno++;colno=0;graphics_mode=0;REJECT}
 [ ]	{ colno++;}
@@ -164,10 +165,15 @@ return(NAMED);}
 return CH;}
 %%
 
-buffpos() {
-struct yy_buffer_state *y;
-y=YY_CURRENT_BUFFER;
-        return (int)(yy_c_buf_p-y->yy_ch_buf);
+/**
+ * Get the yacc buffer position
+ *
+ * @return The position
+ */
+int buffpos(void) 
+{
+  struct yy_buffer_state *y;
+  y=YY_CURRENT_BUFFER;
+  return (int)(yy_c_buf_p-y->yy_ch_buf);
 }
-
 
