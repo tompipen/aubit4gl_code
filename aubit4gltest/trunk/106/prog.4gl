@@ -8,7 +8,7 @@ DEFINE l_f2 CHAR(10)
     INSERT INTO testfirst VALUES (1, "b")
 
     SQL
-    SELECT FIRST 1 campo2 INTO $l_f2 FROM testfirst WHERE campo1 = 1
+    	SELECT FIRST 1 campo2 INTO $l_f2 FROM testfirst WHERE campo1 = 1
     END SQL
     DISPLAY "f2=", l_f2
 	
