@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.46 2003-06-18 09:38:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.47 2003-06-18 11:07:22 mikeaubury Exp $
 #*/
 
 /**
@@ -1347,6 +1347,11 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
+  a=A4GL_readkey();
+  if (a!=0) {
+		A4GL_debug("Read %d from keyfile",a);
+		return a;
+	}
 
   while (1)
     {

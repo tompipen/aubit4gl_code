@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.37 2003-06-15 12:20:23 mikeaubury Exp $
+# $Id: curslib.c,v 1.38 2003-06-18 11:07:22 mikeaubury Exp $
 #*/
 
 /**
@@ -2040,6 +2040,12 @@ int
 A4GL_new_do_keys (ACL_Menu * menu, int a)
 {
   ACL_Menu_Opts *opt1;
+  if (a==A4GL_key_val("LEFT")) { a=LEFTKEY; }
+  if (a==A4GL_key_val("RIGHT")) { a=RIGHTKEY; }
+  if (a==A4GL_key_val("UP")) { a=UPKEY; }
+  if (a==A4GL_key_val("DOWN")) { a=DOWNKEY; }
+  if (a==A4GL_key_val("SPACE")) { a=' '; }
+  if (a==A4GL_key_val("ENTER")) { a=CR; }
 
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
   A4GL_debug ("new_do_keys A=%d", a);
@@ -3276,7 +3282,8 @@ A4GL_menu_getkey (ACL_Menu * menu)
       wprintw (menu->menu_win, "%s", menu->menu_title);
       wrefresh (menu->menu_win);
       doupdate ();
-      a = wgetch (menu->menu_win);
+
+      a = wrapper_wgetch (menu->menu_win);
 
       if (a == -1)
 	{
@@ -3284,7 +3291,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	    {
 	      A4GL_debug ("Got interrupt key pressed....");
 	      a = A4GL_key_val ("INTERRUPT");	/* MJA 31/7/00 */
-	      wgetch (menu->menu_win);
+	      wrapper_wgetch (menu->menu_win);
 	      A4GL_set_abort (0);
 	      return a;
 	    }
@@ -3857,7 +3864,14 @@ void A4GL_comments (struct struct_scr_field *fprop)
 }
 
 
-
-
+wrapper_wgetch(WINDOW *w) {
+int a;
+  a=A4GL_readkey();
+  if (a!=0) {
+                A4GL_debug("Read %d from keyfile",a);
+                return a;
+  }
+  return wgetch(w);
+}
 
 /* ============================== EOF ============================== */

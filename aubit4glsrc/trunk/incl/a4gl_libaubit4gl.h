@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.64 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.65 2003-06-18 11:07:12 mikeaubury Exp $
 #
 */
 
@@ -678,6 +678,7 @@ struct input_array_attribs {
   int A4GL_ask_verify (char *prompt);	/*  prompt for verification  */
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
   void A4GL_strip_nl (char *str);
+int A4GL_readkey(void);
 
   ACL_Menu *A4GL_new_menu (char *title, int x, int y, int mn_type, int help_no,
 		      int nopts, va_list * ap);

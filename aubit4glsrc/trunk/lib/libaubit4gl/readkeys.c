@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.1 2003-06-18 10:30:23 mikeaubury Exp $
+# $Id: readkeys.c,v 1.2 2003-06-18 11:07:22 mikeaubury Exp $
 #*/
 
 /**
@@ -107,7 +107,7 @@ int A4GL_readkey(void) {
 		A4GL_debug("Getting keyval");
 		while (1) {
 			buff[cnt]=fgetc(keyfile);
-			if (buff[cnt]==';'||buff[cnt]=='\n'||buff[cnt]=='\r'||buff[cnt]==' '|| buff[cnt]==','||feof(keyfile)) {
+			if (buff[cnt]==';'||buff[cnt]=='\n'||buff[cnt]=='\r'||buff[cnt]==' '|| buff[cnt]==','||buff[cnt]=='\\'||feof(keyfile)) {
 				buff[cnt]=0;
 				break;
 			}
