@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.11 2002-06-12 06:58:22 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.12 2002-06-21 09:05:48 mikeaubury Exp $
 #*/
 
 /**
@@ -208,10 +208,11 @@ int
 find_field (char *s)
 {
   int a;
-  debug("Looking for tag '%s'\n",s);
+  debug("Looking for tag '%s' in %d fields\n",s,the_form.fields.fields_len);
 
   for (a = 0; a < the_form.fields.fields_len; a++)
   {
+    debug ("%s %s",the_form.fields.fields_val[a].tag, s);
     if (strcasecmp (the_form.fields.fields_val[a].tag, s) == 0)
 		{
       debug("Found it @ %d\n",a);
@@ -538,7 +539,7 @@ add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
   a=the_form.metrics.metrics_len-1;
   if (a>=0)
   {
-  	if (the_form.metrics.metrics_val[a].y==y-1)
+  	if (the_form.metrics.metrics_val[a].y==y-1&&strcmp(s,the_form.metrics.metrics_val[a].label)==0&&strcmp(s,"_label")==0)
 	{
 		if (the_form.metrics.metrics_val[a].x+the_form.metrics.metrics_val[a].w==x-1)
 		{

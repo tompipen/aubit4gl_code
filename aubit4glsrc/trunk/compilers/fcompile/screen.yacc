@@ -1,5 +1,5 @@
 %{
-
+#define YYDEBUG 1
 /*
 	y.tab.c was generated from screen.yacc using yacc
 */

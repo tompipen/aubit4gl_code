@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.18 2002-06-06 12:31:26 afalout Exp $
+# $Id: fcompile.c,v 1.19 2002-06-21 09:05:57 mikeaubury Exp $
 #*/
 
 /**
@@ -213,7 +213,7 @@ char d[128];
 
     }
 
-  yydebug = 1;
+  yydebug = 0;
 
   if (yyin == 0)
     {
