@@ -31,8 +31,17 @@ set_clause_list:
 ;
 
 special_upd_clause : 
-	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| MULTIPLY EQUAL upd_val_list  {sprintf($<str>$," %s %s(%s)",$<str>1,$<str>2,$<str>3);}
+	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	| MULTIPLY EQUAL upd_val_list  {
+		char *ptr;
+		ptr=$<str>3;
+		printf("upd_val_list = '%s'\n",$<str>3) ;
+		if (ptr[0]==' ' && ptr[1]=='(') {
+			sprintf($<str>$," %s %s %s  ",$<str>1,$<str>2,$<str>3);
+		} else {
+			sprintf($<str>$," %s %s(%s) ",$<str>1,$<str>2,$<str>3);
+		}
+		}
 ;
 
 upd_columns : col_1 | upd_columns COMMA col_1

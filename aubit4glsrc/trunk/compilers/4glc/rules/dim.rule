@@ -57,7 +57,7 @@ dim_push_type("struct_dtime",$<str>2,0);
 }
                               |            INTERVAL interval_qual {dim_push_type("struct_ival",0,0);}
                               |            dim_like_var
-{dim_push_like($<str>1);fflush(stdout);lex_printcomment("/*added(XXXXX)\n */");}
+{dim_push_like($<str>1);lex_printcomment("/*added(XXXXX)\n */");}
               ;
 
 

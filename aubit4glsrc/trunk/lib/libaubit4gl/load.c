@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
+# $Id: load.c,v 1.10 2003-02-14 10:18:47 mikeaubury Exp $
 #
 */
 
@@ -247,6 +247,7 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   while (1) {
      colname=va_arg(ap,char *);
      if (colname==0) break;
+	debug("Adding %s to col_list",colname);
      strcpy(col_list[cnt],colname);
      cnt++;
   }
@@ -264,7 +265,7 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
          exitwith("Error in getting number of columns for load");
 	 return 0;
   }
-
+  debug("Calling gen_insert_for_load %s %d\n",tabname,cnt);
   insertstr=gen_insert_for_load(tabname,cnt);
 
   if  (A4GLSQL_add_prepare("_load",A4GLSQL_prepare_sql(insertstr))!=1) {

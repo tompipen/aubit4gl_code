@@ -45,7 +45,6 @@ op_fgl_expr_list
 CLOSE_BRACKET
 {
 addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
-printf("--> %s\n",$<str>6);
 print_output_to_report($<str>2,$<str>6); 
 }
 ;

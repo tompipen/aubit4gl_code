@@ -9,20 +9,34 @@ variable: var_int
 {
 char buff[256];
 char buff2[256];
+int n;
 strcpy(buff,$<str>1);
 lex_printcomment("/* .. var %s*/",buff);
 if (buff[0]!=' ') addmap("Use Variable",buff,curr_func,yylineno,infilename);
+
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
-convlower(buff);
+	convlower(buff);
 }
+
 strcpy($<str>$,buff);
 debug("Checking variable '%s'",buff);
-if (scan_variable (buff) == -1&&buff[0]!=' ') {
+n=scan_variable(buff);
+
+  debug("scan variable returns -> %d\n",n);
+
+  if (n == -1&&buff[0]!=' ') {
            sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
            yyerror(buff2);
            exit (0);
   }
-  fflush (stdout);
+  if (strstr(buff,".*") && n!=-2) {
+		char *ptr;
+		printf("WARNING : Using a .* on a non-record - %s\n",$<str>1);
+		ptr=strstr(buff,".*");
+		*ptr=0;
+		strcpy($<str>$,buff);
+  }
+ 
   mcnt = 0;
 }
 ;
@@ -226,7 +240,6 @@ lex_printcomment("/* %s */\n",$<str>1);
       yyerror(buff);
     }
 
-  fflush (stdout);
   mcnt = 0;
 };
 

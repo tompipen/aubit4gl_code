@@ -203,7 +203,7 @@ push_type("fglmoney",buff,0);}
 push_type("struct_dtime",$<str>2,0);
 }
 		| 	INTERVAL interval_qual {push_type("struct_ival",$<str>2,0);}
-		|  like_var {push_like($<str>1);fflush(stdout);lex_printcomment("/*added(XXXXX)\n */");}
+		|  like_var {push_like($<str>1);lex_printcomment("/*added(XXXXX)\n */");}
 		|  identifier {
 			char buff[256];
 			strcpy(buff,$<str>1);

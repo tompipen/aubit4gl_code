@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.23 2003-02-04 03:07:42 mikeaubury Exp $
+# $Id: 1.reqd,v 1.24 2003-02-14 10:18:47 mikeaubury Exp $
 #
 */
 
@@ -76,7 +76,7 @@
 #undef YYPURE
 #endif
 #define YYPURE 1
-#define YYLEX_PARAM yystate
+#define YYLEX_PARAM yystate,yyssa,yyssp
 
 #define INCASE 		0
 #define INCONSTRUCT 1
@@ -96,7 +96,6 @@
 
 /* prevent warning for redundant declaration of yyparse: */
 #define _BISON_SIMPLE_INCL_
-
 
 #define _NO_Y_TAB_H_
 #define _NO_WINDOWS_H_
@@ -175,6 +174,7 @@ struct 		form_attr form_attrib;
 
 
 %}
+%pure_parser
 %start module
 %union	  {
 

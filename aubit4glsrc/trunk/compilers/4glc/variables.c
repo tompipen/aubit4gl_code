@@ -27,8 +27,10 @@ static char get_current_variable_scope (void);
 static void make_arr_str (char *s, struct variable *v);
 static void strip_bracket (char *s);
 static void print_variable (struct variable *v, char scope, int level);
-static char * rettype_integer (int n);
-static struct record_list *add_to_record_list(struct record_list **list_ptr,char *prefix_buff,struct variable *v) ;
+static char *rettype_integer (int n);
+static struct record_list *add_to_record_list (struct record_list **list_ptr,
+					       char *prefix_buff,
+					       struct variable *v);
 
 /******************************************************************************/
 
@@ -75,7 +77,7 @@ int v_initialized = 0;
 struct variable *last_variable_ptr_found = 0;
 
 
-char variable_scope='m';
+char variable_scope = 'm';
 
 /******************************************************************************/
 void
@@ -216,7 +218,7 @@ variable_action (int category, char *name, char *type, char *n,
 {
   static int record_cnt = 0;
   char scope;
-  static int adding_assoc=0;
+  static int adding_assoc = 0;
 #define MODE_ADD_CONSTANT  	1
 #define MODE_ADD_RECORD    	2
 #define MODE_ADD_TYPE      	3
@@ -271,7 +273,8 @@ variable_action (int category, char *name, char *type, char *n,
 
 
 
-debug("variable_action (%d %s %s %s %s)\n",category, name, type, n,function);
+  debug ("variable_action (%d %s %s %s %s)\n", category, name, type, n,
+	 function);
 
 // Try to determine what we are doing.
 // This comes about from the old way of handling variables and
@@ -322,14 +325,17 @@ debug("variable_action (%d %s %s %s %s)\n",category, name, type, n,function);
 
 
 // We don't need to do the adding of the array for an assoc_array - this will already have been done...
-  if (mode==MODE_ADD_ARRAY) {
-	if (adding_assoc==1) {
-  		adding_assoc=0;
-		return ;
+  if (mode == MODE_ADD_ARRAY)
+    {
+      if (adding_assoc == 1)
+	{
+	  adding_assoc = 0;
+	  return;
 	}
-  }
+    }
 
-  if (adding_assoc) adding_assoc=0;
+  if (adding_assoc)
+    adding_assoc = 0;
 
 
 
@@ -388,21 +394,21 @@ debug("variable_action (%d %s %s %s %s)\n",category, name, type, n,function);
       record_cnt++;
       v[record_cnt] = malloc (sizeof (struct variable));
       set_arr_subscripts (0, record_cnt);
-      v[record_cnt]->names.name=ASSOC_INTERNAL;
-      v[record_cnt]->names.next=0;
-      v[record_cnt]->is_static=0;
-      v[record_cnt]->is_extern=0;
-      v[record_cnt]->user_system=get_variable_user_system();
+      v[record_cnt]->names.name = ASSOC_INTERNAL;
+      v[record_cnt]->names.next = 0;
+      v[record_cnt]->is_static = 0;
+      v[record_cnt]->is_extern = 0;
+      v[record_cnt]->user_system = get_variable_user_system ();
       set_arr_subscripts (n, record_cnt);
 
-      adding_assoc=1;
+      adding_assoc = 1;
       break;
 
 
     case MODE_ADD_END_ASSOC:
       v[record_cnt] = 0;
       record_cnt--;
-      add_to_scope(record_cnt,0);
+      add_to_scope (record_cnt, 0);
       v[record_cnt] = 0;
       break;
 
@@ -454,9 +460,10 @@ debug("variable_action (%d %s %s %s %s)\n",category, name, type, n,function);
 	  // should all maintain their values between calls - hence
 	  // they will always be static....
 	  if (isin_command ("REPORT") || isin_command ("FORMHANDLER")
-	      || isin_command ("MENUHANDLER")) {
-	    		v[record_cnt]->is_static = 1;
-		}
+	      || isin_command ("MENUHANDLER"))
+	    {
+	      v[record_cnt]->is_static = 1;
+	    }
 
 
 	  set_arr_subscripts (0, record_cnt);
@@ -608,8 +615,8 @@ add_to_scope (int record_cnt, int unroll)
 	  tmp_1 = 0;
 	  tmp_2 = 0;
 	  variable_holder = &v[record_cnt - 1]->data.v_assoc.variables;
-		tmp_1=0;
-		tmp_2=0;
+	  tmp_1 = 0;
+	  tmp_2 = 0;
 	  counter = &tmp_1;
 	  alloc = &tmp_2;
 	}
@@ -714,7 +721,7 @@ has_name (struct name_list *namelist, char *name)
     {
       if (strcasecmp (namelist->name, name) == 0)
 	return 1;
-      	debug("Check %s against %s nope",namelist->name,name);
+      debug ("Check %s against %s nope", namelist->name, name);
       ptr_name = ptr_name->next;
     }
   return 0;
@@ -734,13 +741,14 @@ find_variable_in (char *s, struct variable **list, int cnt)
 
 
   // If we have no variables at this level - we can't do anything
-  if (list == 0) {
-    return 0;
-  }
+  if (list == 0)
+    {
+      return 0;
+    }
 
   // Copy across our variable so we can play with it...
   strcpy (var_section, s);
-  strip_bracket(var_section);
+  strip_bracket (var_section);
   // Reset our next section (anything after a '.')
   strcpy (var_nextsection, "");
 
@@ -761,7 +769,8 @@ find_variable_in (char *s, struct variable **list, int cnt)
     {
       v = list[a];
       // Can we find the name at this point ?
-      if (!has_name (&v->names, var_section) && !strcmp (var_section, "*") == 0)
+      if (!has_name (&v->names, var_section)
+	  && !strcmp (var_section, "*") == 0)
 	continue;		// No
 
       // If we get to here we've found our name!
@@ -781,16 +790,17 @@ find_variable_in (char *s, struct variable **list, int cnt)
 
 
 	  // look for the next portion...
-	  trim(var_nextsection);
-	  if (strcmp (var_nextsection, "*") == 0) 
+	  trim (var_nextsection);
+	  if (strcmp (var_nextsection, "*") == 0)
 	    {
-	        return v;
+	      return v;
 	    }
 
 
-	if (strlen(var_nextsection)==0) {
-		return v;
-	}
+	  if (strlen (var_nextsection) == 0)
+	    {
+	      return v;
+	    }
 
 
 
@@ -808,11 +818,14 @@ find_variable_in (char *s, struct variable **list, int cnt)
 
 	  // If we're just looking for that - then we're fine...
 	  // But if that is a record - we need to carry on doing our nextsection bits
-	  if (strlen(var_nextsection)) {	
-		sprintf(buff,"%s.%s",ASSOC_INTERNAL,var_nextsection);
-	  } else {
-		sprintf(buff,"%s",ASSOC_INTERNAL);
-	  }
+	  if (strlen (var_nextsection))
+	    {
+	      sprintf (buff, "%s.%s", ASSOC_INTERNAL, var_nextsection);
+	    }
+	  else
+	    {
+	      sprintf (buff, "%s", ASSOC_INTERNAL);
+	    }
 	  return find_variable_in (buff, v->data.v_assoc.variables, 1);
 	}
 
@@ -830,7 +843,7 @@ find_variable_ptr (char *s)
 {
   struct variable *ptr;
 
-  
+
 // First we look locally - then at module level - then globally
 
   ptr = find_variable_in (s, list_local, list_local_cnt);
@@ -868,7 +881,8 @@ find_variable_ptr (char *s)
 
 /******************************************************************************/
 int
-find_variable (char *s_in, int *dtype, int *size, int *is_array, void **var_ptr)
+find_variable (char *s_in, int *dtype, int *size, int *is_array,
+	       void **var_ptr)
 {
   struct variable *ptr;
   char s[1024];
@@ -1015,7 +1029,8 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
       switch (v[a]->variable_type)
 	{
 	case VARIABLE_TYPE_ASSOC:
-	  printf ("ASSOCIATE CHAR(%d) ARRAY[%d] OF\n", v[a]->data.v_assoc.char_size,v[a]->data.v_assoc.size);
+	  printf ("ASSOCIATE CHAR(%d) ARRAY[%d] OF\n",
+		  v[a]->data.v_assoc.char_size, v[a]->data.v_assoc.size);
 	  dump_variable_records (v[a]->data.v_assoc.variables, 1, lvl + 1);
 	  break;
 
@@ -1073,26 +1088,39 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 
 #endif
 
-void set_current_variable_scope (char n) {
-	variable_scope=n;
+void
+set_current_variable_scope (char n)
+{
+  variable_scope = n;
 }
 
 /******************************************************************************/
 static char
 get_current_variable_scope (void)
 {
-  char scope='m';
+  char scope = 'm';
 
   if (isin_command ("FUNC") || isin_command ("REPORT")
       || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER")
       || isin_command ("MAIN"))
     {
       scope = 'l';
-    } else {
-  		if (variable_scope=='G') { scope='G'; }
-  		if (variable_scope=='g') { scope='g'; }
-  		if (variable_scope=='m') { scope='m'; }
+    }
+  else
+    {
+      if (variable_scope == 'G')
+	{
+	  scope = 'G';
 	}
+      if (variable_scope == 'g')
+	{
+	  scope = 'g';
+	}
+      if (variable_scope == 'm')
+	{
+	  scope = 'm';
+	}
+    }
 
   return scope;
 
@@ -1126,15 +1154,15 @@ print_variables (void)
 
   if (scope == 'g')
     {
-		print_global_variables ();
-		#ifdef DEBUG
-			debug("***** DUMP GVARS ****");
-        #endif
+      print_global_variables ();
+#ifdef DEBUG
+      debug ("***** DUMP GVARS ****");
+#endif
 
-		dump_gvars ();
+      dump_gvars ();
 
-		if (only_doing_globals ())
-			exit (0);
+      if (only_doing_globals ())
+	exit (0);
     }
 
 
@@ -1185,7 +1213,7 @@ print_global_variables (void)
   for (a = 0; a < list_imported_global_cnt; a++)
     {
       print_variable (list_imported_global[a], 'G', 0);
-	
+
     }
 
   for (a = 0; a < list_global_cnt; a++)
@@ -1342,7 +1370,7 @@ make_arr_str (char *s, struct variable *v)
 {
   int a;
   char buff[256];
-  strcpy(s,"");
+  strcpy (s, "");
   for (a = 0; a < MAX_ARR_SUB; a++)
     {
       if (v->arr_subscripts[a])
@@ -1379,7 +1407,8 @@ get_variable_dets (char *s, int *type, int *arrsize,
   v = find_variable_ptr (buff);
 
 
-  if (v == 0) return -1;
+  if (v == 0)
+    return -1;
 
 
   *type =
@@ -1402,7 +1431,11 @@ get_variable_dets (char *s, int *type, int *arrsize,
       make_arr_str (arr, v);
     }
 
-  if (v->variable_type != VARIABLE_TYPE_SIMPLE) { debug ("Expecting a simple variable ?"); return -2; }
+  if (v->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      debug ("Expecting a simple variable ?");
+      return -2;
+    }
 
   return *type;
 
@@ -1416,14 +1449,16 @@ int
 check_for_constant (char *name, char *buff)
 {
   struct variable *v;
-int dbg=0;
+  int dbg = 0;
 
 
-if (dbg) {
-	if (in_define) {
-		printf("In define..");
+  if (dbg)
+    {
+      if (in_define)
+	{
+	  printf ("In define..");
 	}
-}
+    }
 
 
   if (in_define)
@@ -1432,11 +1467,13 @@ if (dbg) {
 
   v = find_variable_ptr (name);
 
-if (dbg) {
-	printf("v=%p\n",v);
-}
+  if (dbg)
+    {
+      printf ("v=%p\n", v);
+    }
 
-  if (v == 0) return 0;
+  if (v == 0)
+    return 0;
 
   if (v->variable_type != VARIABLE_TYPE_CONSTANT)
     return 0;
@@ -1492,7 +1529,9 @@ strip_bracket (char *s)
 
 
 /******************************************************************************/
-int split_record (char *s, struct variable **v_record, struct variable **v1, struct variable **v2)
+int
+split_record (char *s, struct variable **v_record, struct variable **v1,
+	      struct variable **v2)
 {
   char buff[256];
   char endoflist[256];
@@ -1536,19 +1575,19 @@ int split_record (char *s, struct variable **v_record, struct variable **v1, str
 	}
 
       strcpy (s, r1);
-  	strcpy (endoflist, r1);
-	strcat(endoflist,".");
-	strcat(endoflist,ptr2);
+      strcpy (endoflist, r1);
+      strcat (endoflist, ".");
+      strcat (endoflist, ptr2);
 
 
 
 
-strcat(r1,".*");
+      strcat (r1, ".*");
 
       *v_record = find_variable_ptr (r1);
 
-      
-        *v1 = find_variable_ptr (endoflist);
+
+      *v1 = find_variable_ptr (endoflist);
 
       *v2 = find_variable_ptr (ptr);
     }
@@ -1559,7 +1598,7 @@ strcat(r1,".*");
 
       if (*v_record == 0)
 	{
-	printf("Whoops - %s record not found\n",buff);
+	  printf ("Whoops - %s record not found\n", buff);
 	  yyerror ("Record not found...");
 	  return 0;
 	}
@@ -1574,83 +1613,95 @@ strcat(r1,".*");
 					     record_cnt - 1];
     }
 
-if ((*v_record)->variable_type!=VARIABLE_TYPE_RECORD) {
-	printf("Couldn't identify start as a record\n");
-	return 0;
-}
+  if ((*v_record)->variable_type != VARIABLE_TYPE_RECORD)
+    {
+      printf ("Couldn't identify start as a record\n");
+      return 0;
+    }
 
-if ((*v1)->variable_type!=VARIABLE_TYPE_SIMPLE) {
-	printf("Variable is not simple\n");
-	return 0;
-}
+  if ((*v1)->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      printf ("Variable is not simple\n");
+      return 0;
+    }
 
-if ((*v2)->variable_type!=VARIABLE_TYPE_SIMPLE) {
-	printf("Variable is not simple\n");
-	return 0;
-}
+  if ((*v2)->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      printf ("Variable is not simple\n");
+      return 0;
+    }
 
-printf("All done here - v_record=%p v1=%p v2=%p\n",*v_record,*v1,*v2);
-printf("v_record->names.name=%s\n",(*v_record)->names.name);
-printf("v1->names.name=%s\n",(*v1)->names.name);
-printf("v2->names.name=%s\n",(*v2)->names.name);
-return 1;
-}
-
-
-
-
-
-
-
-static struct record_list *add_to_record_list(struct record_list **list_ptr,char *prefix_buff,struct variable *v) {
-char buff[257];
-struct record_list_entry *e;
-struct record_list *list;
-
-
-
-     if (v->is_array) {
-		yyerror("Can't use a variable containing an array in this context\n");
-     }
-
-     list=*list_ptr;
-
-     if (list==0) { 	
-	printf("List is empty\n");
-	exit(0);
-     }
-
-     if (v->variable_type==VARIABLE_TYPE_SIMPLE) {
-     	list->list=realloc(list->list,
-				(list->records_cnt+1)*sizeof(struct record_list_entry *)
-				);
-	e=malloc(sizeof(struct record_list_entry));
-     	sprintf(buff,"%s.%s",prefix_buff,v->names.name);
-	e->variable=v;
-	e->name=strdup(buff);
-
-     	list->list[list->records_cnt]=e;
-	list->records_cnt++;
-
-	*list_ptr=list;
-	return list;
-     }
-
-     if(v->variable_type==VARIABLE_TYPE_RECORD) {
-	// We've got another bl**dy record - expand this one too...
-		printf("IS ARRAY  : %d\n",v->is_array);
-		printf("Add next level...\n");
-		sprintf(buff,"%s.%s.*",prefix_buff,v->names.name);
-		return split_record_list(buff,buff,list);
-		*list_ptr=list;
-     }
-
-printf("Reached end of add_to_Record_list... bugger...\n");
-return 0;
+  printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);
+  printf ("v_record->names.name=%s\n", (*v_record)->names.name);
+  printf ("v1->names.name=%s\n", (*v1)->names.name);
+  printf ("v2->names.name=%s\n", (*v2)->names.name);
+  return 1;
 }
 
 
-struct record_list *split_record_list(char *s, char *prefix, struct record_list *list)
+
+
+
+
+
+static struct record_list *
+add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
+		    struct variable *v)
+{
+  char buff[257];
+  struct record_list_entry *e;
+  struct record_list *list;
+
+
+
+  if (v->is_array)
+    {
+      yyerror ("Can't use a variable containing an array in this context\n");
+      return 0;
+    }
+
+  list = *list_ptr;
+
+  if (list == 0)
+    {
+      printf ("List is empty\n");
+      exit (0);
+    }
+
+  if (v->variable_type == VARIABLE_TYPE_SIMPLE)
+    {
+      list->list = realloc (list->list,
+			    (list->records_cnt +
+			     1) * sizeof (struct record_list_entry *));
+      e = malloc (sizeof (struct record_list_entry));
+      sprintf (buff, "%s.%s", prefix_buff, v->names.name);
+      e->variable = v;
+      e->name = strdup (buff);
+
+      list->list[list->records_cnt] = e;
+      list->records_cnt++;
+
+      *list_ptr = list;
+      return list;
+    }
+
+  if (v->variable_type == VARIABLE_TYPE_RECORD)
+    {
+      // We've got another bl**dy record - expand this one too...
+      printf ("IS ARRAY  : %d\n", v->is_array);
+      printf ("Add next level...\n");
+      sprintf (buff, "%s.%s.*", prefix_buff, v->names.name);
+      return split_record_list (buff, buff, list);
+      *list_ptr = list;
+    }
+
+  printf ("Reached end of add_to_Record_list... bugger...\n");
+  return 0;
+}
+
+
+struct record_list *
+split_record_list (char *s, char *prefix, struct record_list *list)
 {
   char *ptr;
   char record1[256];
@@ -1660,121 +1711,185 @@ struct record_list *split_record_list(char *s, char *prefix, struct record_list 
   char *dot[2];
   char prefix_buff[256];
   int a;
-  int record_start=-1;
-  int record_end=-1;
+  int record_start = -1;
+  int record_end = -1;
   struct variable *v_record;
 
   if (strchr (s, '\n'))
     {
-	strcpy(record1,s);
-	ptr=strchr(record1,'\n');
-	*ptr=0;
-	ptr++;
-	strcpy(record2,ptr);
-	dot[0]=strrchr(record1,'.');
-	dot[1]=strrchr(record2,'.');
-	if (dot[0]==0||dot[1]==0) {
-		// Can't find a dot in a thru ?
-		yyerror("At least one of the entries in the 'thru' is not part of a record");
-		return 0;
+      strcpy (record1, s);
+      ptr = strchr (record1, '\n');
+      *ptr = 0;
+      ptr++;
+      strcpy (record2, ptr);
+      dot[0] = strrchr (record1, '.');
+      dot[1] = strrchr (record2, '.');
+      if (dot[0] == 0 || dot[1] == 0)
+	{
+	  // Can't find a dot in a thru ?
+	  yyerror
+	    ("At least one of the entries in the 'thru' is not part of a record");
+	  return 0;
 	}
-	*dot[0]=0;
-	*dot[1]=0;
-	if (strcasecmp(record1,record2)!=0) {
-		yyerror("The 'thru' contains different records..");
-		return 0;
-	}
-
-	
-
-
-	if (prefix!=0) {
-		sprintf(prefix_buff,"%s.",prefix);
-	} else {
-		strcpy(prefix_buff,"");
+      *dot[0] = 0;
+      *dot[1] = 0;
+      if (strcasecmp (record1, record2) != 0)
+	{
+	  yyerror ("The 'thru' contains different records..");
+	  return 0;
 	}
 
-	strcat(prefix_buff,record1);
-
-	dot[0]++;
-	dot[1]++;
-
-	strcpy(subrecord1,dot[0]);
-	strcpy(subrecord2,dot[1]);
 
 
-	// At this point record1 and record2 should be the same...
-	// We'll get rid of any crud from record2 (any brackets etc) to find it 
-	// in our variables list
-	// We'll keep record1 intact..
 
-	strip_bracket(record2);
-
-        v_record = find_variable_ptr (record2);
-
-	// Can we find it - is it declared ?
-	if (v_record==0) {
-		printf("Whoops - record not found for %s\n",record2);
-		yyerror("Record not found");
-		return 0;
+      if (prefix != 0)
+	{
+	  sprintf (prefix_buff, "%s.", prefix);
+	}
+      else
+	{
+	  strcpy (prefix_buff, "");
 	}
 
-	record_start=-1;
-	record_end=-1;
+      strcat (prefix_buff, record1);
 
-	for (a=0;a<v_record->data.v_record.record_cnt;a++) {
-		if (strcasecmp(v_record->data.v_record.variables[a]->names.name,subrecord1)==0) { record_start=a; }
-		if (strcasecmp(v_record->data.v_record.variables[a]->names.name,subrecord2)==0) { record_end=a;   }
+      dot[0]++;
+      dot[1]++;
+
+      strcpy (subrecord1, dot[0]);
+      strcpy (subrecord2, dot[1]);
+
+
+      // At this point record1 and record2 should be the same...
+      // We'll get rid of any crud from record2 (any brackets etc) to find it 
+      // in our variables list
+      // We'll keep record1 intact..
+
+      strip_bracket (record2);
+      v_record = find_variable_ptr (record2);
+
+      // Can we find it - is it declared ?
+      if (v_record == 0)
+	{
+	  printf ("Whoops - record not found for %s\n", record2);
+	  yyerror ("Record not found");
+	  return 0;
 	}
-	
-     } else {
-	strcpy(record1,s);
-	dot[0]=strrchr(record1,'.');
-	if (dot[0]) *dot[0]=0;
-	strcpy(prefix_buff,record1);
 
-        v_record = find_variable_ptr (record1);
+      record_start = -1;
+      record_end = -1;
 
-	if (v_record==0) {
-		printf("Whoops - record not found for %s\n",record1);
-		yyerror("Record not found");
-		return 0;
+      for (a = 0; a < v_record->data.v_record.record_cnt; a++)
+	{
+	  if (strcasecmp
+	      (v_record->data.v_record.variables[a]->names.name,
+	       subrecord1) == 0)
+	    {
+	      record_start = a;
+	    }
+	  if (strcasecmp
+	      (v_record->data.v_record.variables[a]->names.name,
+	       subrecord2) == 0)
+	    {
+	      record_end = a;
+	    }
 	}
 
-	record_start=0;
-	record_end=v_record->data.v_record.record_cnt-1;
-     }
+    }
+  else
+    {
+      strcpy (record1, s);
+      dot[0] = strrchr (record1, '.');
+      if (dot[0])
+	*dot[0] = 0;
+      strcpy (prefix_buff, record1);
 
-     if (record_start==-1) {
-		yyerror("Couldn't find start variable");
-		return 0;
-     }
-     if (record_end==-1) {
-		yyerror("Couldn't find end variable");
-		return 0;
-     }
+      v_record = find_variable_ptr (record1);
 
-     if (v_record->variable_type!=VARIABLE_TYPE_RECORD) {
-		yyerror("Variable is not a record");
-		return 0;
-     }
+      if (v_record == 0)
+	{
+	  printf ("Whoops - record not found for %s\n", record1);
+	  yyerror ("Record not found");
+	  return 0;
+	}
 
-     if (list==0) { 
-		list=malloc(sizeof(struct record_list)); list->list=0; list->records_cnt=0; 
-     }
-
-
-	// Now - we'll start scanning through our record entries - looking for the first one...
+      record_start = 0;
+      record_end = v_record->data.v_record.record_cnt - 1;
+    }
 
 
-     for (a=record_start;a<=record_end;a++) {
-		if (add_to_record_list(&list,prefix_buff,v_record->data.v_record.variables[a])==0) {
-			printf("Bugger -  something went wrong...\n");
-			// Should free list here...
-			return 0;
-		}
-     }
-return list;
+
+  if (v_record->variable_type != VARIABLE_TYPE_RECORD)
+    {
+
+      if (strstr(s,".*")!=0 && strlen(prefix)==0) {
+		extern int yyline;
+		char buff[255];
+		char buff2[255];
+		char *ptr;
+		struct record_list_entry *e;
+		printf("WARNING : Using a .* on a non-record - %s\n",s);
+		strcpy(buff,s);
+		strip_bracket(buff);
+		ptr=strstr(buff,".*");
+		*ptr=0;
+      		v_record = find_variable_ptr (buff);
+		strcpy(buff,s);
+		ptr=strstr(buff,".*");
+		*ptr=0;
+      		list = malloc (sizeof (struct record_list));
+      		list->list = 0;
+      		list->records_cnt = 0;
+      		list->list = malloc (sizeof (struct record_list_entry *)); 
+		e = malloc (sizeof (struct record_list_entry));
+      		sprintf (buff2, "%s", buff);
+      		e->variable = v;
+      		e->name = strdup (buff2);
+      		list->list[list->records_cnt] = e;
+      		list->records_cnt++;
+
+	return list;
+      }
+	printf("S=%s\n",s);
+      yyerror ("ERROR: Variable is not a record!\n");
+      return 0;
+    }
+
+  if (record_start == -1)
+    {
+      yyerror ("Couldn't find start variable");
+      return 0;
+    }
+
+  if (record_end == -1)
+    {
+      yyerror ("Couldn't find end variable");
+      return 0;
+    }
+
+
+  if (list == 0)
+    {
+      list = malloc (sizeof (struct record_list));
+      list->list = 0;
+      list->records_cnt = 0;
+    }
+
+
+  // Now - we'll start scanning through our record entries - looking for the first one...
+
+
+  for (a = record_start; a <= record_end; a++)
+    {
+      if (add_to_record_list
+	  (&list, prefix_buff, v_record->data.v_record.variables[a]) == 0)
+	{
+	  printf ("Bugger -  something went wrong...\n");
+	  // Should free list here...
+	  return 0;
+	}
+    }
+  return list;
 }
 
 
@@ -1784,26 +1899,28 @@ return list;
 int
 push_bind_rec (char *s, char bindtype)
 {
-int a;
+  int a;
 //int dtype;
 //int size;
 //char buff[256];
-struct record_list *list;
+  struct record_list *list;
 
-list=split_record_list(s, "", 0);
-
-
-if (list==0) {
-	yyerror("OOps\n");
-	return -1;
-}
+  list = split_record_list (s, "", 0);
 
 
-for (a=0;a<list->records_cnt;a++) {
-	  add_bind (bindtype, list->list[a]->name);
-}
+  if (list == 0)
+    {
+      yyerror ("OOps\n");
+      return -1;
+    }
 
-return 1;
+
+  for (a = 0; a < list->records_cnt; a++)
+    {
+      add_bind (bindtype, list->list[a]->name);
+    }
+
+  return 1;
 }
 
 
@@ -1815,12 +1932,15 @@ return 1;
 */
 /******************************************************************************/
 
-struct variable * get_next_variable (struct variable *record, struct variable *v1, struct variable *v2)
+struct variable *
+get_next_variable (struct variable *record, struct variable *v1,
+		   struct variable *v2)
 {
   struct variable *v_return;
   int a;
 
-  if (v1 == v2) return 0;
+  if (v1 == v2)
+    return 0;
 
   for (a = 0; a < record->data.v_record.record_cnt; a++)
     {
@@ -1837,36 +1957,39 @@ struct variable * get_next_variable (struct variable *record, struct variable *v
 
 
 int
-print_push_rec (char *s, void **b) {
-int a;
-int dtype;
-int size;
-char buff[256];
-struct record_list *list;
+print_push_rec (char *s, void **b)
+{
+  int a;
+  int dtype;
+  int size;
+  char buff[256];
+  struct record_list *list;
 
 
-list=split_record_list(s, "", 0);
+  list = split_record_list (s, "", 0);
 
 
-if (list==0) {
-	yyerror("OOps\n");
-	return 0;
-}
+  if (list == 0)
+    {
+      yyerror ("OOps\n");
+      return 0;
+    }
 
 //printf("list->records_cnt=%d\n",list->records_cnt);
 
-for (a=0;a<list->records_cnt;a++) {
-	//printf("a=%d\n",a);
-	dtype=list->list[a]->variable->data.v_simple.datatype;
-	size=list->list[a]->variable->data.v_simple.dimensions[0];
-	dtype+=size<<16;
+  for (a = 0; a < list->records_cnt; a++)
+    {
+      //printf("a=%d\n",a);
+      dtype = list->list[a]->variable->data.v_simple.datatype;
+      size = list->list[a]->variable->data.v_simple.dimensions[0];
+      dtype += size << 16;
 
-	sprintf(buff,"push_variable(&%s,0x%x);",  list->list[a]->name, dtype);
-	//printf("**** %s\n",buff);
-	append_expr(*b,buff);
-	//printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);
-}
-return list->records_cnt;
+      sprintf (buff, "push_variable(&%s,0x%x);", list->list[a]->name, dtype);
+      //printf("**** %s\n",buff);
+      append_expr (*b, buff);
+      //printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);
+    }
+  return list->records_cnt;
 
 }
 
@@ -1874,90 +1997,104 @@ return list->records_cnt;
 #ifdef USE_CRAP
 /******************************************************************************/
 int
-recursive_print_push_rec (char *s, void **b,char *stem_orig)
+recursive_print_push_rec (char *s, void **b, char *stem_orig)
 {
-struct variable *v_record;
-struct variable *v_start;
-struct variable *v_end;
-struct variable *v_loop;
-char buff[20000];
-char stem[256];
-int dtype;
-int size;
-int is_array;
-int vtype;
-int c=0;
+  struct variable *v_record;
+  struct variable *v_start;
+  struct variable *v_end;
+  struct variable *v_loop;
+  char buff[20000];
+  char stem[256];
+  int dtype;
+  int size;
+  int is_array;
+  int vtype;
+  int c = 0;
 
 
-	if (strchr(s,'\n')==0) { // Ie - its not a range....
-  		vtype=find_variable(s,&dtype,&size,&is_array,0);
-	} else {
-  		vtype=-2;
-	}
+  if (strchr (s, '\n') == 0)
+    {				// Ie - its not a range....
+      vtype = find_variable (s, &dtype, &size, &is_array, 0);
+    }
+  else
+    {
+      vtype = -2;
+    }
 
 
   // Variable not found...
-  if (vtype==0) {
-		printf("Variable not found - should have been picked up already - %s",s);
-	 	exit(0);
-  }
+  if (vtype == 0)
+    {
+      printf ("Variable not found - should have been picked up already - %s",
+	      s);
+      exit (0);
+    }
 
   // Normal variable
-  if (vtype==1) {
-	dtype+=size<<16;
-	sprintf(buff,"push_variable(&%s,0x%x);\n",  s, dtype);
-	append_expr(*b,buff);
-	return 1;
-  }
+  if (vtype == 1)
+    {
+      dtype += size << 16;
+      sprintf (buff, "push_variable(&%s,0x%x);\n", s, dtype);
+      append_expr (*b, buff);
+      return 1;
+    }
 
-  if (vtype==-2) {
-	printf("Splitting...'%s'\n",s);
+  if (vtype == -2)
+    {
+      printf ("Splitting...'%s'\n", s);
 
-  	if (split_record (s, &v_record, &v_start, &v_end)) {
-			char *ptr;
+      if (split_record (s, &v_record, &v_start, &v_end))
+	{
+	  char *ptr;
 
-			if (v_record==0) {
-				printf("Couldn't find record! (%s)\n",s);
-				exit(0);
-			}
+	  if (v_record == 0)
+	    {
+	      printf ("Couldn't find record! (%s)\n", s);
+	      exit (0);
+	    }
 
-			printf("START LOOPING\n");
-                        v_loop=v_start;
+	  printf ("START LOOPING\n");
+	  v_loop = v_start;
 
-			ptr=strchr(s,'\n');
-			if (ptr) {
-				*ptr=0;
-				ptr=strchr(ptr,'.');
-				if (ptr) {
-					*ptr=0;
-				}
-			}
+	  ptr = strchr (s, '\n');
+	  if (ptr)
+	    {
+	      *ptr = 0;
+	      ptr = strchr (ptr, '.');
+	      if (ptr)
+		{
+		  *ptr = 0;
+		}
+	    }
 
-			printf("s=%s\n",s);
+	  printf ("s=%s\n", s);
 
-		        while (v_loop) {
-				char bbz[256];
-				//if (strchr(s,'*')) { // Get rid of the .*
-					 //strcpy(bbz,s); bbz[strlen(bbz)-2]=0; 
-				//}  else {
-					strcpy(bbz,s);
-					//strcat(bbz,".");
-				//}
+	  while (v_loop)
+	    {
+	      char bbz[256];
+	      //if (strchr(s,'*')) { // Get rid of the .*
+	      //strcpy(bbz,s); bbz[strlen(bbz)-2]=0; 
+	      //}  else {
+	      strcpy (bbz, s);
+	      //strcat(bbz,".");
+	      //}
 
-				//strcat(bbz,v_loop->names.name); // Get the propper name
+	      //strcat(bbz,v_loop->names.name); // Get the propper name
 
-				printf("Looking again for '%s'\n",bbz);
-				c+=recursive_print_push_rec(bbz,b,stem);
-                        	v_loop=get_next_variable(v_record,v_loop,v_end);
-                	}
-			printf("END LOOPING\n");
-			return c;
-	
-  	} else {
-		// Couldn't split the record - shouldn't happen...
-		printf("Couldn't split record : %s\n",s);
-  	}
-  }
+	      printf ("Looking again for '%s'\n", bbz);
+	      c += recursive_print_push_rec (bbz, b, stem);
+	      v_loop = get_next_variable (v_record, v_loop, v_end);
+	    }
+	  printf ("END LOOPING\n");
+	  return c;
+
+	}
+      else
+	{
+	  // Couldn't split the record - shouldn't happen...
+	  printf ("Couldn't split record : %s\n", s);
+	}
+    }
 
   exit (0);
 }
@@ -1971,9 +2108,9 @@ clr_function_constants ()
   // Here - we need to clear down the current 'locals' lists...
   // as a quick fix - we'll just zero everything
   // but these *really* should be 'freed' properly.....
-  list_local_cnt=0;
-  list_local_alloc=0;
-  list_local=0;
+  list_local_cnt = 0;
+  list_local_alloc = 0;
+  list_local = 0;
 }
 
 
@@ -1984,23 +2121,26 @@ print_variable (struct variable *v, char scope, int level)
   int static_extern_flg;
   char arrbuff[256];
   static_extern_flg = 0;
-  strcpy(arrbuff,"-1");
+  strcpy (arrbuff, "-1");
   // are we dealing with the sqlca variable ?
-  if (level==0&&strcmp(v->names.name,"sqlca")==0) {
-		#ifdef DEBUG
-			debug("SQLCA!!!\n");
-        #endif
-	if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
-			return;
+  if (level == 0 && strcmp (v->names.name, "sqlca") == 0)
+    {
+#ifdef DEBUG
+      debug ("SQLCA!!!\n");
+#endif
+      if (strcmp (acl_getenv ("LEXTYPE"), "EC") == 0)
+	{
+	  return;
 	}
-  }
+    }
 
-  if (scope=='G'&&strcasecmp(v->names.name,"time")==0&&level==0) {
-		#ifdef DEBUG
-			debug("Ignore time....\n");
-        #endif
-		return;
-  }
+  if (scope == 'G' && strcasecmp (v->names.name, "time") == 0 && level == 0)
+    {
+#ifdef DEBUG
+      debug ("Ignore time....\n");
+#endif
+      return;
+    }
 
 
   if (v->is_array)
@@ -2015,7 +2155,7 @@ print_variable (struct variable *v, char scope, int level)
 
 
 
-  if (level == 0) // We only print 'static' or 'extern' at the start of a record/variable - not a nested record
+  if (level == 0)		// We only print 'static' or 'extern' at the start of a record/variable - not a nested record
     {
       if (scope == 'G')
 	{
@@ -2058,35 +2198,35 @@ print_variable (struct variable *v, char scope, int level)
 
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
-	  int a;
-	  print_start_record (static_extern_flg, v->names.name);
-	  for (a = 0; a < v->data.v_record.record_cnt; a++)
-	    {
-	      struct variable *next_v;
-	      next_v = v->data.v_record.variables[a];
-	      print_variable (next_v, scope, level + 1);
-	    }
-	  print_end_record (v->names.name, arrbuff);
+      int a;
+      print_start_record (static_extern_flg, v->names.name);
+      for (a = 0; a < v->data.v_record.record_cnt; a++)
+	{
+	  struct variable *next_v;
+	  next_v = v->data.v_record.variables[a];
+	  print_variable (next_v, scope, level + 1);
+	}
+      print_end_record (v->names.name, arrbuff);
       return;
     }
 
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
-	struct variable v2;
-	char buff1[20];
-	char buff2[20];
+      struct variable v2;
+      char buff1[20];
+      char buff2[20];
 
-	sprintf(buff1,"%d",v->data.v_assoc.char_size);
-	sprintf(buff2,"%d",v->data.v_assoc.size);
+      sprintf (buff1, "%d", v->data.v_assoc.char_size);
+      sprintf (buff2, "%d", v->data.v_assoc.size);
 
-      				//print_declare_associate_2 (v->names.name,buff1,buff2);
+      //print_declare_associate_2 (v->names.name,buff1,buff2);
 
-	memcpy(&v2,v->data.v_assoc.variables[0],sizeof(struct variable));
+      memcpy (&v2, v->data.v_assoc.variables[0], sizeof (struct variable));
 
-	v2.names.next=0;
-	v2.names.name=v->names.name;
+      v2.names.next = 0;
+      v2.names.name = v->names.name;
 
-	print_variable(&v2,scope,level+1);
+      print_variable (&v2, scope, level + 1);
       return;
     }
 
@@ -2108,31 +2248,35 @@ print_variable (struct variable *v, char scope, int level)
  * @param s A string with the numeric 4gl data type (@see find_type())
  * @return The string (static) with the C declaration
  */
-static char * rettype_integer (int n)
+static char *
+rettype_integer (int n)
 {
   char s[200];
 
   //static char rs[20] = "long";
   //int a;
 
-debug("rettype_integer : %d\n",n);
+  debug ("rettype_integer : %d\n", n);
 
-  sprintf(s,"%d",n);
-  return rettype(s);
+  sprintf (s, "%d", n);
+  return rettype (s);
 }
 
 
 
-static char *make_pk_list(struct name_list *nlist) {
-static char buff[1024];
-strcpy(buff,nlist->name);
-nlist=nlist->next;
-while (nlist) {
-	strcat(buff,",");
-	strcat(buff,nlist->name);
-nlist=nlist->next;
-}
-return buff;
+static char *
+make_pk_list (struct name_list *nlist)
+{
+  static char buff[1024];
+  strcpy (buff, nlist->name);
+  nlist = nlist->next;
+  while (nlist)
+    {
+      strcat (buff, ",");
+      strcat (buff, nlist->name);
+      nlist = nlist->next;
+    }
+  return buff;
 }
 
 
@@ -2145,16 +2289,21 @@ return buff;
 int
 last_var_is_linked (char *tabname, char *pklist)
 {
-        // MJA - NEWVARIABLE
+  // MJA - NEWVARIABLE
   strcpy (pklist, "");
   strcpy (tabname, "");
 
-  if (last_variable_ptr_found && last_variable_ptr_found->variable_type==VARIABLE_TYPE_RECORD && last_variable_ptr_found->data.v_record.linked)
+  if (last_variable_ptr_found
+      && last_variable_ptr_found->variable_type == VARIABLE_TYPE_RECORD
+      && last_variable_ptr_found->data.v_record.linked)
     {
 
-     
-      strcpy (tabname, last_variable_ptr_found->data.v_record.linked->tabname);
-      strcpy (pklist, make_pk_list(&last_variable_ptr_found->data.v_record.linked->col_list));
+
+      strcpy (tabname,
+	      last_variable_ptr_found->data.v_record.linked->tabname);
+      strcpy (pklist,
+	      make_pk_list (&last_variable_ptr_found->data.v_record.linked->
+			    col_list));
     }
 
 
@@ -2163,8 +2312,3 @@ last_var_is_linked (char *tabname, char *pklist)
   else
     return 1;
 }
-	
-
-
-
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.99 2003-02-11 13:24:00 mikeaubury Exp $
+# $Id: mod.c,v 1.100 2003-02-14 10:18:22 mikeaubury Exp $
 #
 */
 
@@ -2276,12 +2276,11 @@ add_bind (char i, char *var)
     {
       dtype = scan_variable (var);
     }
-
-  debug ("add_bind - dtype=%d (%s)\n", dtype, var);
+  debug ("add_bind - dtype=%d (%s) i=%c\n", dtype, var,i);
 
   if (i == 'i')
     {
-      if (dtype == -2)
+      if (dtype == -2||strstr(var,".*"))
 	{
 	  debug ("push_bind_rec...");
 	  push_bind_rec (var, i);
@@ -2297,7 +2296,7 @@ add_bind (char i, char *var)
 
   if (i == 'N')
     {
-      if (dtype == -2)
+      if (dtype == -2||strstr(var,".*"))
 	{
 	  debug ("push_bind_rec...");
 	  push_bind_rec (var, i);
@@ -2315,7 +2314,7 @@ add_bind (char i, char *var)
 
   if (i == 'o')
     {
-      if (dtype == -2)
+      if (dtype == -2||strstr(var,".*"))
 	{
 	  push_bind_rec (var, i);
 	}
@@ -2330,7 +2329,7 @@ add_bind (char i, char *var)
 
   if (i == 'O')
     {
-      if (dtype == -2)
+      if (dtype == -2||strstr(var,".*"))
 	push_bind_rec (var, i);
       else
 	{
@@ -2349,7 +2348,7 @@ add_bind (char i, char *var)
       if (i == 'f')
 	dtype = -1;
 
-      if (dtype == -2)
+      if (dtype == -2||strstr(var,".*"))
 	push_bind_rec (var, i);
       else
 	{

@@ -6,6 +6,7 @@
 
 
 goto_cmd : GOTO label_goto {
+	char buff[256];
 	print_goto($<str>2);
 }
 ;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.51 2003-02-12 23:04:49 afalout Exp $
+# $Id: lexer.c,v 1.52 2003-02-14 10:18:22 mikeaubury Exp $
 #*/
 
 /**
@@ -959,15 +959,22 @@ return 0;
  */
 int
 //yylex (void)
-yylex (void *pyylval, int yystate)
+yylex (void *pyylval, int yystate,void *yys1,void *yys2)
 {
   int a;
   char buff[1024];
   char buffval[20480];
   static int last_pc = 0;
   int r;
+  short *stack_cnt;
+
 
   debug ("In yylex ... yystate=%d", yystate);
+  //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
+  for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
+		//printf(" -->%d\n",*stack_cnt);
+  }
+
 
   if (yyin == 0)
     {
@@ -1004,6 +1011,8 @@ yylex (void *pyylval, int yystate)
       (strcmp (acl_getenv ("A4GL_RESERVEWORDS"), "YES") != 0))
     {
       r = wants_kw_token (yystate, a);
+
+
       debug ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);
       switch (r)
 	{
@@ -1025,6 +1034,7 @@ yylex (void *pyylval, int yystate)
 	  if (is_commandkw (a) == 0)
 	    a = NAMED_GEN;
 	}
+
     }
 
   if (a == 2 || a == NAMED_GEN)
@@ -1149,5 +1159,41 @@ get_idents (int a)
   return idents[a];
 }
 
+/*
+chk_for_kw_in(short *yys1,short *yys2,int a,char *buff) {
+short *stack_cnt;
+int r;
+int could_be;
+printf("\n\n");
+could_be=0;
+  for (stack_cnt=yys2;stack_cnt>=yys1;stack_cnt--) {
+		printf(" Current State -->%d (%s)\n",*stack_cnt,buff);
+      		r = wants_kw_token (*stack_cnt, a);
+		printf("r=%d\n",r);
 
+		if (r==0) {
+  			printf("COuld be = %d\n",could_be);
+			if (!could_be) return a;
+		}
+
+		if (r==2) {
+			could_be++;
+			//return NAMED_GEN;
+		}
+
+		if (r==3) {
+			could_be++;
+			//return NAMED_GEN;
+		}
+
+ 		if (r==1) {
+			if (scan_variable (buff) != -1) return NAMED_GEN;
+			else return a;
+		}
+  }
+
+  if (could_be) return NAMED_GEN;
+  return a;
+}
+*/
 /* ================================== EOF ========================= */

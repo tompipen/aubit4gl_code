@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.33 2003-02-10 12:33:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.34 2003-02-14 10:18:47 mikeaubury Exp $
 #
 */
 
@@ -1314,6 +1314,28 @@
 
     /* ========================== from a4gl_screen.h ==================== */
 
+
+/* 4gl program controls */
+#define FORMCONTROL_BEFORE_FIELD 	1
+#define FORMCONTROL_AFTER_FIELD 	2
+#define FORMCONTROL_BEFORE_INPUT 	3
+#define FORMCONTROL_AFTER_INPUT 	4
+#define FORMCONTROL_EXIT_INPUT_OK 	5
+#define FORMCONTROL_EXIT_INPUT_ABORT 	6
+#define FORMCONTROL_KEY_PRESS 		7
+
+/* formloop controls */
+#define FORMCONTROL_REQUEST_FIELD       
+#define FORMCONTROL_ENABLE_FIELD
+#define FORMCONTROL_DISABLE_FIELD
+#define FORMCONTROL_HIDE_FIELD
+
+	struct s_formcontrol {
+		int op;
+		char *parameter;
+		int field_number;
+	};
+
 	struct s_screenio {
 		int 	mode;
 		struct 	s_form_dets *currform;
@@ -1326,6 +1348,8 @@
 		void **	field_list;
 		int 	field_changed;
 		int 	help_no;
+		struct s_formcontrol msgs[10];
+		int msg_cnt;
 
 	};
 

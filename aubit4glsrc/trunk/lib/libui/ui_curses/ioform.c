@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.7 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: ioform.c,v 1.8 2003-02-14 10:18:48 mikeaubury Exp $
 #*/
 
 /**
@@ -84,6 +84,8 @@ int 				fline;
 int 				ncol;
 char 				dbname[64];
 long 				inp_current_field = 0;
+int 				do_input_nowrap=0;
+
 
 /*
 =====================================================================
@@ -287,7 +289,9 @@ delims[2][1] = 0;
       if (lfieldscr != formdets->fileform->metrics.metrics_val[a].scr
           && strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
         {
+
           formdets->fileform->metrics.metrics_val[a].pos_code += POS_FIRST;
+
           if (last_field != -1)
             {
               formdets->fileform->metrics.metrics_val[last_field].pos_code +=
@@ -308,8 +312,7 @@ delims[2][1] = 0;
       return 0;
     }
 
-  formdets->fileform->metrics.metrics_val[last_field].pos_code +=
-    POS_VERY_LAST;
+  formdets->fileform->metrics.metrics_val[last_field].pos_code += POS_VERY_LAST;
 
 return 1;
 }
@@ -530,64 +533,51 @@ form_loop (struct s_screenio * s)
   if (form != get_curr_form ())
     {
       exitwith ("Input form is not current");
+	return 0;
     }
 
   mform = form->form;
   mja_wrefresh (currwin);
-#ifdef DEBUG
-  {    debug ("before form_field_chk");  }
-#endif
+
+
+
   if (s->mode != MODE_CONSTRUCT)
     a = form_field_chk (s, 0);
   else
     a = form_field_constr (s, 0);
-#ifdef DEBUG
-  {    debug ("after form_field_chk");  }
-#endif
-  pos_form_cursor (mform);
-#ifdef DEBUG
-  {    debug ("after pos_form");  }
-#endif
 
+
+  pos_form_cursor (mform);
+
+  // Have we changed fields ?
   if (a < 0)
-    {
+    { 
+	// Yep...
       return a;
     }
 
-#ifdef DEBUG
-  {    debug ("before getch %p", mform);  }
-  {    debug ("formwin=%p", form_win (mform));  }
-#endif
 
   fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
-  debug ("fprop=%p", fprop);
   metrics = &form->fileform->metrics.metrics_val[get_curr_metric (form)];
-  debug ("Metrics=%p", metrics);
 
   if (metrics && (int) metrics != -1)
     {
-      debug ("Field is on page %d", metrics->scr);
       set_form_page (mform, metrics->scr - 1);
     }
 
+
+// Wait for a key..
   a = getch_win ();
-  debug ("Form_loop got key %d", a);
-  if (abort_pressed)
-    a = -1;
+  if (abort_pressed) a = -1;
+
+
+// Process the key..
   a = proc_key (a, mform, s);
 
 
-
-  debug ("proc_key returns %d for key", a);
-
-#ifdef DEBUG
-  {    debug ("Curr buff=%s key pressed=%d", field_buffer (form->currentfield, 0), a);  }
-#endif
-
+// Looks like we're done
   if (a == 0)
     {
-      debug ("Calling chks");
-
       if (s->mode != MODE_CONSTRUCT)
         a = form_field_chk (s, -1);
       else
@@ -596,20 +586,27 @@ form_loop (struct s_screenio * s)
       return 0;
     }
 
-  if (a < 0)
-    return a;
 
-  debug ("BEFORE Current field=%p %d (%d)", current_field (mform), a,
-         REQ_NEXT_PAGE);
+
+// Looks like we've got something to do...
+
+
+// Have we changed fields ?
+  if (a < 0) {
+		// Yep...
+		return a;
+  }
+
   int_form_driver (mform, a);
-  debug ("AFTER Current field=%p", current_field (mform));
-  debug ("int_form_driver_ret=%d", int_form_driver_ret);
+
   mja_wrefresh (currwin);
 
   if (a >= 0 && a <= 255)
     {
       int_form_driver (mform, REQ_VALIDATION);
     }
+
+
 
   return -90;
 
@@ -632,6 +629,8 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
   int acckey;
   fd = getfromform (mform);
   form = &fd->form_details;
+  do_input_nowrap=0;
+
   debug ("proc_key .... %d", a);
   f = current_field (mform);
   debug ("Current field=%p\n", f);
@@ -672,6 +671,8 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
       s->field_changed = 1;
       return 0;
     }
+
+
   switch (a)
     {
     case 18:
@@ -684,7 +685,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case -1:
       debug ("proc_key - got an interrupt");
       int_form_driver (mform, REQ_VALIDATION);
-      m_lastkey = -100;
+      m_lastkey = key_val("INTERRUPT");
       s->field_changed = 1;
       return 0;
 
@@ -730,6 +731,12 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case 13:
     case 10:
     case KEY_DOWN:
+	if (std_dbscr.input_wrapmode==0 && curr_metric_is_verylast())  {
+      		s->field_changed = 1;
+      		do_input_nowrap=1;
+		return 0;
+	}
+
       npage = page_for_nfield (s) - 1;
       set_form_page (s->currform->form, npage);
 /*
@@ -761,10 +768,10 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case KEY_RIGHT:
       return REQ_NEXT_CHAR;
 
-    case 4:
+    case 4: // Control - D
       return REQ_CLR_EOF;
 
-    case 1:
+    case 1: // Control - A
       form->insmode = form->insmode ? 0 : 1;
       if (form->insmode)
         return REQ_INS_MODE;
@@ -2924,10 +2931,17 @@ curr_metric_is_last (void)
       return 0;
       exitwith ("No valid metric....");
     }
+
+  //debug("pos_code : %d %d",form->fileform->metrics.metrics_val[a].pos_code , POS_LAST);
+
+
   if (form->fileform->metrics.metrics_val[a].pos_code & POS_LAST)
     {
       return 1;
     }
+
+
+
   return 0;
 }
 

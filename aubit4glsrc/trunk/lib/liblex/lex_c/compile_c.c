@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.53 2003-02-11 10:44:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.54 2003-02-14 10:18:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2312,6 +2312,7 @@ print_pushchar (char *s)
 void
 print_goto (char *label)
 {
+  convlower(label);
   printc ("goto %s;\n", label);
 }
 
@@ -2701,6 +2702,7 @@ print_scroll (char *flds, char *updown)
 void
 print_label (char *s)
 {
+convlower(s);
   printc ("%s:\n", s);
 }
 
@@ -3333,7 +3335,7 @@ print_put (void)
   int n;
   printc ("{\n");
   n = print_bind ('i');
-  printc ("put_insert(&ibind,%d);\n", n);
+  printc ("A4GLSQL_put_insert(&ibind,%d);\n", n);
   printc ("}\n");
 }
 

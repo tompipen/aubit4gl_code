@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.24 2003-01-11 17:05:52 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.25 2003-02-14 10:18:48 mikeaubury Exp $
 #
 */
 
@@ -3041,7 +3041,7 @@ print_put (void)
   int n;
   printc ("{\n");
   n = print_bind ('i');
-  printc ("aubit4gl_pl::put_insert(&ibind,%d);\n", n);
+  printc ("aubit4gl_pl::A4GLSQL_put_insert(&ibind,%d);\n", n);
   printc ("}\n");
 }
 

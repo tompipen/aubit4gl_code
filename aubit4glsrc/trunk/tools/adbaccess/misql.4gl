@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.4 2002-10-03 14:50:17 mikeaubury Exp $
+# $Id: misql.4gl,v 1.5 2003-02-14 10:18:48 mikeaubury Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -97,33 +97,25 @@ define
    DEFER QUIT
    OPTIONS MESSAGE LINE LAST
    LET have_args = false
-error "start"
 
    IF arg_val(1) = "-v"
    OR arg_val(1) = "-V"
    THEN
-#error "3"
-      CALL message_prompt("$Id: misql.4gl,v 1.4 2002-10-03 14:50:17 mikeaubury Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.5 2003-02-14 10:18:48 mikeaubury Exp $","")
       EXIT PROGRAM
    END IF
 
-#error "4"
 
    initialize
 		m_database, m_tabname
             to null
 
-#error "5"
 
     if num_args() > 0 then
-#error "more then 0"
-#error num_args()
 	   LET have_args = true
 	   LET m_database = arg_val(1)
 	   LET m_tabname = arg_val(2)
     end if
-
-#error "6"
 
 #bug!
 #this will NOT detect NULL!!!!!!!!:
@@ -178,10 +170,10 @@ else
 #	connect to m_database user "postgres" using "pg"
 
 #    OPEN SESSION s_id1 TO DATABASE ptest as user "postgres" password "pg"
---!    OPEN SESSION s_id1 TO DATABASE maindb as user "informix" password "ifmx"
---!	SET SESSION TO s_id1
+--!    
+--! DATABASE maindb
 
-
+DATABASE maindb
 end if
 
 
