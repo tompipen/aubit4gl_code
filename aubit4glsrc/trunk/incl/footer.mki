@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.40 2005-03-04 08:07:14 afalout Exp $
+#	 $Id: footer.mki,v 1.41 2005-03-09 02:22:57 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -46,6 +46,13 @@ endif
 ifeq "${PROG}" ""
 	PROG=no-name-specified.lib
 endif
+
+########################
+#Filter-out 4gl modules to be ignored:
+ifneq "${IGNORE.4gl}" ""
+	FILES.4gl:=$(filter-out ${IGNORE.4gl},${FILES.4gl})
+endif
+
 
 ########################
 #Prevent targets on GLOB_GLOBALS_EXCEPTION list from linking GLOB_GLOBALS objects
@@ -167,8 +174,14 @@ endif
 	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${D4GL_OBJ_EXT}})
 	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${I4GL_OBJ_EXT}})
 	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
+	
+	ifeq "$(PROGTYPE)" ".lib"
+		#Librarises (composed of multiple 4gl modules) are to to result 
+		#in shared object (when using --shared) but object that will be 
+		#linked to crete that library are to be created a static objects
+		OBJS_LINK=STATIC
+	endif 
 	ifeq "${OBJS_LINK}" "SHARED"
-
 		#shared libraries will need to be passes as -l[lib]name on linking line
         #will linker accept .aso as -l ??
 
@@ -680,13 +693,18 @@ show.sources.GLOBALS.4gl:
 	@echo "${GLOBALS.4gl}"
 show.sources.FILES.4gl:
 	@echo "${FILES.4gl}"
+show.sources.FILES.lib:
+	@echo ${FILES.lib}
 show_SET_VPATH_4GL:
 	@echo "${SET_VPATH_4GL}"
 show.MAIN.4gl:
 	@echo "${MAIN.4gl}"
 show.PROG:
 	@echo "${PROG}"
-	
+show.IGNORE.4gl:
+	@echo "${IGNORE.4gl}"
+#	@echo "Filtered:"
+#	@echo "$(filter-out ${IGNORE.4gl},${FILES.4gl})"
 
 #Load module/program relatinships into Doc4GL database from make files
 #SRC_LOAD_UTIL must be set from calling program/makefile, like in MaxERPdefs.mki

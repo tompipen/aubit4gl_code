@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.31 2005-03-04 08:06:54 afalout Exp $
+# $Id: amake,v 1.32 2005-03-09 02:21:01 afalout Exp $
 #
 #####################################################################
 
@@ -36,6 +36,7 @@ function check_shared () {
 	#PROG            = cinqwind.lib
 	TARGET_IS_LIBRARY=0; FGL_MAIN=""
 	PROG_NAME=`$MAKE -s -f $COMPOSITE show.PROG 2>/dev/null`
+	
 	if test "$PROG_NAME" != ""; then
 		BASENAME=`basename "$PROG_NAME" .lib`
 		if test "$BASENAME" != "$PROG_NAME"; then
@@ -44,7 +45,9 @@ function check_shared () {
 			get_main_fgl
 		fi
 	else
-		echo "ERROR: cannot get PROG name from $ONEPROG . STOP"
+		echo "Amake: ERROR: cannot get PROG name from $ONEPROG . STOP"
+		echo "$MAKE -s -f $COMPOSITE show.PROG"
+		$MAKE -s -f $COMPOSITE show.PROG
 		exit 4
 	fi
 }
@@ -161,8 +164,14 @@ function prepare_makefile () {
 		COMPOSITE_IS_TMP=1
 		COMPOSITE=/tmp/$USER-$ONEPROG
         #If mk file has no includes, add them
-		HAS_INCLUDE=`grep 'include ' $ONEPROG`
-        if [ "$HAS_INCLUDE" = "" ]; then
+		
+		#If word 'include' is used to really include a file (and not 
+		#perhaps as a comment) there will be exactly 2 words on that line
+		#which will give us 4 words total (for headed + footer)
+		WORD_CNT=`grep "include" $ONEPROG | wc -w`
+		#HAS_INCLUDE=`grep 'include ' $ONEPROG`
+        #if [ "$HAS_INCLUDE" = "" ]; then
+		if test "$WORD_CNT" != "4" ; then 
 			if [ "$VERBOSE" = "1" ]; then
 					echo "Adding include..."
             fi
@@ -236,13 +245,6 @@ fi
 if test "$MAKE" != "gmake" -a "$COMSPEC" = ""; then 
 	echo "WARNING: Amake requires GNU make (gmake) - current MAKE is set to $MAKE"
 fi
-
-#  -j [N], --jobs[=N]          Allow N jobs at once; infinite jobs with no arg.
-#  -l [N], --load-average[=N], --max-load[=N]
-#                              Don't start multiple jobs unless load is below N.
-
-MAKE="$MAKE -j"
-
 
 MK=".mk"
 
@@ -389,6 +391,16 @@ else
 			   -shared)		SHARED=1
 			   ;;
 
+			   -parallel)	#Enable parallel build in make
+				   #  -j [N], --jobs[=N]          
+				   #		Allow N jobs at once; infinite jobs with no arg.
+				   #  -l [N], --load-average[=N], --max-load[=N]
+				   #		Don't start multiple jobs unless load is below N.
+			   				MAKE="$MAKE -j"
+					echo "NOTE: parallel build enabled"
+					;;
+			   
+			   
 			   -i) 			IGNOREERROR="1"
                     		MAKE="$MAKE -k"
 			   ;;
@@ -415,6 +427,11 @@ else
 							
 			   ;;
 
+			   -silent)
+			   			SILENT=1
+			   			MKFLAGS="$MKFLAGS --silent"
+					;;
+			   
 			   -header) 	OVERRIDEINCLUDE=1
 	                		#HEADER=<next parameter>
 							#let next=cnt+1
@@ -437,6 +454,11 @@ else
 								CLEANTARGET="1"
 			   ;;
 
+			   
+			   
+			   TARGET=*) DEFAULT=`echo $a | sed -e 's/TARGET=//'`
+			   ;;
+			   
 			   #########anything else that starts with "-" is make flag:#####
 			   -*) 	
 			   		if test "$VERBOSE" = "1"; then 
@@ -510,7 +532,9 @@ fi
 	#########################
 	for ONEPROG in $PROGS; do
     #########################
-        echo "aMaking $ONEPROG"
+		if test "$SILENT" != "1"; then
+        	echo "aMaking $ONEPROG"
+		fi
 
 		if [ "$PARAM_PATH" != "" ]; then
             cd $PARAM_PATH
@@ -552,7 +576,9 @@ fi
 					prepare_makefile
 				fi
 			else
-				echo "NOTE: -shared possible only using Aubit compiler. Disabled -shared"
+				if test "$SILENT" != "1"; then 
+					echo "NOTE: -shared possible only using Aubit compiler. Disabled -shared"
+				fi
 				SHARED=""
 			fi
 			if test "$SHARED" = "1"; then

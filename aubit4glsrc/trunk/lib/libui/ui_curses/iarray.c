@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.94 2005-03-08 20:47:34 mikeaubury Exp $
+# $Id: iarray.c,v 1.95 2005-03-09 02:22:57 afalout Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.94 2005-03-08 20:47:34 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.95 2005-03-09 02:22:57 afalout Exp $";
 /**
  * @file
  * Input array implementation
@@ -135,10 +135,12 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	     char *picture)
 {
   struct s_form_dets *form;
-  FORM *mform;
-  A4GL_debug("do_key_move");
   int at_first = 0;
   int at_last = 0;
+  FORM *mform;
+  
+  
+  A4GL_debug("do_key_move");
 
   form = arr->currform;
   mform = form->form;
