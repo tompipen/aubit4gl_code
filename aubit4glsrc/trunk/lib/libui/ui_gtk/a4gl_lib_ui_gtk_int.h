@@ -3,6 +3,7 @@
 #define _A4GL_LIB_UI_INT_H_
 
 #include "a4gl_lib_ui_int.h"
+#include "a4gl_API_ui_lib.h"
 
 
 #include <gtk/gtk.h>

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.69 2003-12-12 16:14:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.70 2003-12-15 16:02:51 mikeaubury Exp $
 #*/
 
 /**
@@ -3019,7 +3019,7 @@ int
 
 
 int
-A4GLUI_initlib ()
+UILIB_A4GLUI_initlib ()
 {
   return 1;
 }
