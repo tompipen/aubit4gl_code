@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.93 2002-09-23 00:36:27 afalout Exp $
+# $Id: configure.in,v 1.94 2002-09-23 00:54:49 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2443,7 +2443,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_CHECK_FUNCS([socket recv accept bind setsockopt getservbyname listen])
 
 	#4glc (mod.c)
-	AC_CHECK_FUNC(setenv,AC_MSG_RESULT(Yes),AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
+	#AC_CHECK_FUNC(setenv,AC_MSG_RESULT(Yes),AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
+    AC_CHECK_FUNC(setenv,,AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
 
 	#4glc (4glc.c)
 	AC_CHECK_FUNC(getopt_long,GETOPT_LONG=yes,AC_CHECK_LIB(iberty, getopt_long))

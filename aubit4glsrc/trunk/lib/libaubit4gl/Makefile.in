@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2002-09-23 00:36:34 afalout Exp $
+# $Id: Makefile.in,v 1.28 2002-09-23 00:54:54 afalout Exp $
 #
 
+ROOT    	=../..
+LIBROOT		=..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                              Source files
@@ -56,11 +59,11 @@ COMMONSRC= \
 	match.c maths.c ops.c \
 	others.c \
 	pointers.c \
-	read_dty.c report.c rexp2.c ../resource/resource.c \
+	read_dty.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-CMODS               =${COMMONSRC} ../generated/${CMODS_PROJECT} ${CMODS_API} debug.o
+CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${CMODS:.c=.o}
 
@@ -68,15 +71,15 @@ OBJS				=${CMODS:.c=.o}
 ##                              Options
 ## ==================================================================
 
-LIBINCL_PATH		=../libincl
-INCL_PATH			=../../incl
+LIBINCL_PATH		=${LIBROOT}/libincl
+INCL_PATH			=${ROOT}/incl
 
-DLMAGIC				=../bin/dlmagic
+DLMAGIC				=${LIBROOT}/bin/dlmagic
 
 ifdef COMSPEC
 	ALL				+=dllaubit4gl
 else
-    ALL				+=libaubit4gl${SO_EXT}
+    ALL				+=${LIBROOT}/libaubit4gl${SO_EXT}
 endif
 
 CFLAGS              +=-I.
@@ -113,9 +116,9 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libaubit4gl.so : $(OBJS)
+${LIBROOT}/libaubit4gl.so : $(OBJS)
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINK_LIBS}
-	${CP} $@ ..
+#	${CP} $@ ..
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
