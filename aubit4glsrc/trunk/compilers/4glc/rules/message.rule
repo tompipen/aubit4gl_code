@@ -2,7 +2,7 @@ message_cmd : msg_start msg_next {start_state("message",0);}
 ;
 
 msg_next : {
-		print_message(0,0,0);
+		print_message(0,"0",0);
 		start_state("message",0);
 	   }
  	| attributes_def op_msg_wait { 
@@ -10,7 +10,7 @@ msg_next : {
 		start_state("message",0);
 	  } 
  	| msg_wait { 
-		print_message(0,0,atoi($<str>1));
+		print_message(0,"0",atoi($<str>1));
 		start_state("message",0);
 	  } 
 
