@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.146 2004-12-03 08:08:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.147 2004-12-04 09:21:45 mikeaubury Exp $
 #
 */
 
@@ -307,11 +307,13 @@
 #define COMPILED_FORM_FORMTYPE 	'I'
 #define DYNMEMALLOC 		'J'
 #define STR_RESOURCE_VAL 		'K'
+#define LOG_TEMP_TABLE		'O'
 /* this seems to be used only in lib/extra_libs/channel
 #define CHANNEL_IN		'L'
 #define CHANNEL_OUT		'M'
 #define CHANNEL_DELIM		'N'
 #define CHANNEL_PIPE		'P'
+
 */
   /* ========================= from a4gl_ui.h ====================== */
 #define DESCLENGTH 		10

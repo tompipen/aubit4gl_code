@@ -42,7 +42,6 @@
 	#endif
 	
 	#ifdef PGODBC
-
 		#if HAVE_PGODBC_HEADERS
 			//use headers supplied with PGODBC 
 			
@@ -111,8 +110,17 @@
 
     #ifdef SQLITEODBC
         /* SQLite ODBC driver does not provide ODBC header files */
+			#ifndef FAR
+				#define FAR
+			#endif
+	#ifdef MJA
+		#include "sql.h"
+		#include "sqlext.h"
+	#else
 		#include "../../../tools/odbctest/incl/sql.h"
 		#include "../../../tools/odbctest/incl/sqlext.h"
+	
+	#endif
 		//#include <odbcinst.h>
 		#define __UCHAR_DEFINED__
 		#define __ODBC_DEFINED__

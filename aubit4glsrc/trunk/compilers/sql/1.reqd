@@ -1,8 +1,10 @@
 %{
 
+#define yyin asql_yyin
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "a4gl_libaubit4gl.h"
 
 #define SQL_SET_EXPLAIN_OFF 1
 #define SQL_SET_LOCK_MODE_WAIT_N 2
@@ -48,6 +50,9 @@ char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
 char *A4GLSQLCV_matches_string(char *str,char *esc);
 char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) ;
 char *A4GLSQLCV_rentab(char *tabname,char *ntabname) ;
+char *A4GLSQLCV_get_sqlconst(char *s);
+char *A4GLSQLCV_sqlfunc(char *s,char *p);
+
 
 int A4GLSQLCV_check_requirement(char *s) ;
 static void push_gen (int a, char *s);

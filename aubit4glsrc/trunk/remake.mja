@@ -11,7 +11,7 @@ then
 		cvs  update -dP
 	fi
 	make cleanall
-	./configure  --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome
+	./configure  --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome --with-pgodbc=/usr/local
 
 
 #--with-curses=/usr/local/widec
@@ -59,6 +59,14 @@ cd /home/aubit4gl/aubit4glsrc/tools/afinderr
 cp /home/aubit4gl/aubit4glsrc/bin/afinderr /home/aubit4gl/aubit4gl/bin
 mkdir -p /home/aubit4gl/aubit4gl/help
 cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
+
+
+
+echo "No testing..."
+exit
+
+
+
 
 cd /home/aubit4gl/aubit4gltest
 find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;

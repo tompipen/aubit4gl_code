@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.22 2004-11-27 15:37:59 mikeaubury Exp $
+# $Id: sql.c,v 1.23 2004-12-04 09:21:45 mikeaubury Exp $
 #
 */
 
@@ -344,6 +344,7 @@ struct s_sid *
 A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
 			int no, char *s)
 {
+	A4GL_debug("must_convert=%d\n",must_convert);
   if (must_convert)
     {
       //s = A4GL_apisql_strdup (s);
@@ -413,6 +414,7 @@ A4GL_global_A4GLSQL_set_sqlcode (int n)
 void
 A4GLSQL_set_dialect (char *dialect)
 {
+  A4GL_debug("set_dialect");
   if (dialect && (*dialect > 0))
     {
       strcpy (source_dialect, dialect);
@@ -463,6 +465,7 @@ A4GL_apisql_add_sess (char *sessname)
 {
   struct sess *next;
   next = curr_sess;
+  A4GL_debug("Add session : %s\n",sessname);
   curr_sess = (struct sess *) malloc (sizeof (struct sess));
   strcpy (curr_sess->sessname, sessname);
   strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
@@ -558,6 +561,8 @@ A4GL_apisql_dflt_dialect (void)
 void
 A4GL_apisql_must_convert (void)
 {
+
+ A4GL_debug("Here");
   /* if no source dialect is set, use the default */
   if (*source_dialect == '\0')
     {
@@ -566,12 +571,14 @@ A4GL_apisql_must_convert (void)
   /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
    */
   must_convert = 0;
-  if ((strcmp (acl_getenv ("SQLCONVERT"), "YES") == 0)
-      && (source_dialect[0] > '\0') &&
-      (curr_sess->dbms_dialect[0] > '\0') &&
+	A4GL_debug("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",acl_getenv ("SQLCONVERT"),source_dialect,curr_sess->dbms_dialect);
+  if (A4GL_isyes(acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0') && (curr_sess->dbms_dialect[0] > '\0') &&
       (strcmp (curr_sess->dbms_dialect, source_dialect) != 0))
     {
+	A4GL_debug("Setting Must convert");
       must_convert = 1;
+    } else {
+	A4GL_debug("Not setting must convert");
     }
 }
 

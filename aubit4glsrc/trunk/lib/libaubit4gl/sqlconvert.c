@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.34 2004-12-03 08:08:44 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.35 2004-12-04 09:21:45 mikeaubury Exp $
 #
 */
 
@@ -108,6 +108,7 @@ char *cvsql_names[]={
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
   "CVSQL_SWAP_SQLCA62",
   "CVSQL_NO_ORDBY_INTO_TEMP",
+  "CVSQL_ADD_SESSION_TO_TEMP_TABLE",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -176,6 +177,7 @@ enum cvsql_type
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
   CVSQL_SWAP_SQLCA62,
   CVSQL_NO_ORDBY_INTO_TEMP,
+  CVSQL_ADD_SESSION_TO_TEMP_TABLE,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -841,6 +843,7 @@ int A4GL_cv_str_to_func (char *p, int len)
 
   if (strncasecmp (p, "SWAP_SQLCA62", len) == 0) return CVSQL_SWAP_SQLCA62;
   if (strncasecmp (p, "NO_ORDBY_INTO_TEMP", len) == 0) return CVSQL_NO_ORDBY_INTO_TEMP;
+  if (strncasecmp (p, "ADD_SESSION_TO_TEMP_TABLE", len) == 0) return CVSQL_ADD_SESSION_TO_TEMP_TABLE;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -1978,6 +1981,8 @@ char *ptr;
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
 	ptr=malloc(strlen(sel)+2000);
+	A4GL_debug("Creating temp table called %s",tabname);
+	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
 	return ptr;
 }
@@ -2002,6 +2007,8 @@ char *ptr;
 ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	A4GL_debug("Creating temp table called TABLE : %s",tabname);
+	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,elements);
 } else {
 	sprintf(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
@@ -2093,6 +2100,54 @@ for (b=0;b<conversion_rules_cnt;b++) {
 return buff;
 }
 
+
+char *A4GLSQLCV_check_tablename(char *t) {
+static char b2[200];
+A4GL_debug("TABLE : %s\n",t);
+if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
+	if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
+		sprintf(b2,"session.%s",t);
+		return b2;
+	}
+}
+		
+
+return t;
+}
+
+char *A4GLSQLCV_make_tablename(char *t,char *c) {
+static char buff[400];
+char b2[200];
+int doneSession=0;
+A4GL_debug("Make_tablename : %s ",t);
+if (c) {
+	A4GL_debug("Alias= %s",c);
+}
+
+if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
+	if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
+		sprintf(b2,"session.%s",t);
+		doneSession=1;
+		if (c==0 || strlen(c)==0) {
+			c=t;
+		}
+		t=b2;
+	}
+}
+
+
+
+	if (c&&strlen(c)) {
+                	if (A4GLSQLCV_check_requirement("TABLE_ALIAS_AS")) {
+                        	sprintf(buff,"%s AS %s",t,c);
+                	} else {
+                        	sprintf(buff,"%s %s",t,c);
+                	}
+        } else {
+                	sprintf(buff,"%s",t);
+	}
+return buff;
+}
 
 /*
 char *A4GL_strcasestr(char *s,char *t) {

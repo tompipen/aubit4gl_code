@@ -2,7 +2,7 @@
 	this file is #include'd into y.tab.c so we can make a lot of these functions static...
 */
 
-#include "a4gl_libaubit4gl.h"
+//#include "a4gl_libaubit4gl.h"
 
 struct sql_stmt {
         int type;
@@ -62,7 +62,7 @@ make_sql_string_and_free (char *first, ...)
 
 
         if (first!=kw_comma && first!=kw_space && first!=kw_ob && first!=kw_cb) {
-                A4GL_debug("FREE %p (%s)\n",first,first);
+                //A4GL_debug("FREE %p (%s)\n",first,first);
                 if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
                         free(first);
                 }
@@ -88,7 +88,7 @@ make_sql_string_and_free (char *first, ...)
       strcat (ptr, next);
 
         if (next!=kw_comma && next!=kw_space && next!=kw_ob && next!=kw_cb) {
-                A4GL_debug("FREE %p (%s)\n",next,next);
+                //A4GL_debug("FREE %p (%s)\n",next,next);
                 if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
                         free(next);
                 }
@@ -319,6 +319,7 @@ static void A4GLSQLCV_loadbuffer(char *fname) {
 static void A4GLSQLCV_setbuffer(char *s) {
 	if (Sql) free(Sql);
 	Sql=strdup(s);
+	//printf("Length = %d (%s)\n",strlen(Sql),s);
 	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
 	input_from_file=0;
 	Sql_file=0;
@@ -341,7 +342,21 @@ static int meminput(char *buf,int maxsize) {
 
 
 static int asql_yyerror(char *s) {
-	A4GL_debug("%s\n",s);
+	A4GL_debug("%s Sql=%p\n",s,Sql);
+	if (Sql) {
+		char buff[200];
+		int c;
+		A4GL_debug("Here\n");
+		printf("Here\n");
+		c=sql_string_cnt;
+		c-=20;
+		if (c<0) {c=0; }
+		strncpy(buff,&Sql[sql_string_cnt],199);
+		buff[199]=0;
+		A4GL_debug("MEMREAD syntax error %s\n",buff);
+		printf("MEMREAD syntax error %s\n",buff);
+		fflush(stdout);
+	}
 	was_ok=0;
 	return 0;
 }

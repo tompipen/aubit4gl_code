@@ -57,10 +57,47 @@ individual_sql_statement :
 	| unload_cmd  
 	| load_cmd  
 	| sql_commands 
-	| select_statement_ss_str  	{print_exec_select($<sql_string>1);}
+	| select_statement_ss_str_cfu 	{print_exec_select($<sql_string>1);}
 	| set_cmd  			
 	| error				{print_unable_to_parse();}
 ;
+
+select_statement_ss_str_cfu:
+	select_statement_ss_str op_curs_for_update { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+;
+
+
+op_curs_for_update:  | curs_forupdate
+;
+
+curs_forupdate : {strcpy($<str>$,"");}
+                | FOR_UPDATE {strcpy($<str>$," FOR UPDATE");}
+                | FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);}
+                ;
+
+cur_update_list : colident {
+			strcpy($<str>$,$<str>1);
+		} 
+		| cur_update_list KW_COMMA colident {
+			sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		}
+;
+
+colident: identifier
+| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+| CHAR_VALUE DOT identifier DOT identifier {
+	if (A4GL_escape_quote_owner()) {
+		sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+	} else {
+		sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+		}
+}
+                                                                                                                   
+;
+
+
+
+
 
 set_cmd : SQLSEOFF 		 { print_exec_sql($<str>1); }
 	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql($<str>$); }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.94 2004-12-03 08:08:45 mikeaubury Exp $
+# $Id: sql.c,v 1.95 2004-12-04 09:21:46 mikeaubury Exp $
 #
 */
 
@@ -2011,7 +2011,13 @@ ODBC_set_dbms_info (void)
     {
       strcpy (dbms_dialect, "SQLITE");
     }
+  if (strncasecmp (dbms_name, "INGRES", 6) == 0)
+    {
+      strcpy (dbms_dialect, "INGRES");
+    }
 
+
+  strcpy (dbms_dialect, dbms_dialect);
   /* ( later, this will be set from user-editable config files ) */
 }
 
@@ -2110,13 +2116,12 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 #ifdef DEBUG
   A4GL_debug ("In ODBC_exec_stmt %p",hstmt);
 #endif
-  if (hstmt==0) {
-	return 0;
-  }
+
+
+  if (hstmt==0) { return 0; }
 
 // if we're not already in a transaction - start one
 if(!in_transaction) { fake_tr=1;A4GLSQL_commit_rollback (-1); }
-
   rc = SQLExecute ((SQLHSTMT )hstmt);
 
 // And finish it
@@ -2374,16 +2379,18 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
     {
 	ACLDTIME *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
 	int arr[10];
-	//char buff[50];
 	void *ptr;
 	//int d,m,y;
 	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
 	ptr=bind->ptr;
 	p= (ACLDTIME *)A4GL_bind_datetime (ptr);
-#ifdef DTIME_AS_CHAR
+#ifdef DTIME_AS_CHAR 
+	{
+	char buff[50];
 	A4GL_dttoc(ptr,buff,bind->size);
 	A4GL_trim(buff);
 	strcpy(p->dtime,buff);
+	}
 #else
 	A4GL_decode_datetime((struct A4GLSQL_dtime*)ptr,&arr[0]);
 	p->dtime.year=arr[0];

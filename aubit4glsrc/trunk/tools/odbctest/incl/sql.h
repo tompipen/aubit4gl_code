@@ -1,7 +1,7 @@
 /*
  *  sql.h
  *
- *  $Id: sql.h,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $
+ *  $Id: sql.h,v 1.3 2004-12-04 09:22:49 mikeaubury Exp $
  *
  *  ODBC defines
  *
@@ -1132,7 +1132,7 @@ extern "C"
 
 /*
  *  Depreciated ODBC 1.0 function - Use SQLBindParameter
- */
+ 
   SQLRETURN SQL_API SQLSetParam (SQLHSTMT hstmt,
 				 SQLUSMALLINT ipar,
 				 SQLSMALLINT fCType,
@@ -1141,6 +1141,7 @@ extern "C"
 				 SQLSMALLINT ibScale,
 				 SQLPOINTER rgbValue,
 				 SQLINTEGER FAR * pcbValue);
+*/
 
 #ifdef __cplusplus
 }

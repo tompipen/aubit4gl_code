@@ -5,12 +5,12 @@ drops_statement : drops_c ;
 
 drops_c : DROP_TABLE table_name {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
-				sprintf($<str>$, "%s %s CASCADE",$<str>1,$<str>2);
+				sprintf($<str>$, "DROP TABLE %s CASCADE",$<str>2);
 			} else {
-				sprintf($<str>$, "%s %s ",$<str>1,$<str>2);
+				sprintf($<str>$, "DROP TABLE %s",$<str>2);
 			}
 		}
-	| DROP_VIEW table_name 		{sprintf($<str>$,  "%s %s ",$<str>1,$<str>2);}
+	| DROP_VIEW table_name 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);}
 	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;

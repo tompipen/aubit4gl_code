@@ -478,16 +478,9 @@ table_reference:
 	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
 ;
 
-tname: table_name | table_name correlation_name {
-		if (A4GLSQLCV_check_requirement("TABLE_ALIAS_AS")) {
-			sprintf($<str>$,"%s AS %s",$<str>1,$<str>2);
-		} else {
-			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-		}
-	}
-	| table_name AS correlation_name {
-			sprintf($<str>$,"%s AS %s",$<str>1,$<str>3);
-	}
+tname: table_name  { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,0));}
+	| table_name correlation_name { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,$<str>2)); }
+	| table_name AS correlation_name { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,$<str>3)); }
 ;
 
 
@@ -822,7 +815,14 @@ scale:
 	INT_VALUE
 ;
 
-table_name:
+
+table_name: table_name_i  {
+		strcpy($<str>$,A4GLSQLCV_check_tablename($<str>1));
+		}
+;
+
+
+table_name_i:
 	 CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
 					sprintf($<str>$,"%s", $<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
@@ -1105,6 +1105,8 @@ value_expression_pls_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| value_expression_ss  identifier {
+
+
 		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AS "),strdup($<str>2),0);
 		} else {
