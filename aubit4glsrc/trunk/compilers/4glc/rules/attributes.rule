@@ -41,6 +41,7 @@ attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
 		|INVISIBLE {sprintf($<str>$,"%d",attr_code("INVISIBLE"));}
 		|DIM       {sprintf($<str>$,"%d",attr_code("DIM"));}
               	|NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
+		| input_array_attributes
 	;
 
 win_attributes:	/*empty*/

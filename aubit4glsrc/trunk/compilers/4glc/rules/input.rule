@@ -65,6 +65,20 @@ field_command :
 } commands {
 	print_befaft_field_2();
 }
+	| BEFORE_DELETE  {
+		print_befaft_field_1("BEFORE_DELETE");
+	} commands { print_befaft_field_2(); }
+	| BEFORE_INSERT  {
+		print_befaft_field_1("BEFORE_INSERT");
+	} commands { print_befaft_field_2(); }
+	| AFTER_DELETE  {
+		print_befaft_field_1("AFTER_DELETE");
+	} commands { print_befaft_field_2(); }
+	| AFTER_INSERT  {
+		print_befaft_field_1("AFTER_INSERT");
+	} commands { print_befaft_field_2(); }
+
+
 ;
 
 a_ins_or_delete_row :
@@ -181,5 +195,20 @@ up_or_down : UP {strcpy($<str>$,"1");}
 op_help : {strcpy($<str>$,"");} | HELP INT_VALUE
 ;
 
+input_array_attributes: input_array_attributes_int
+;
+
+
+input_array_attributes_int : 
+	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE
+	| COUNT EQUAL INT_VALUE
+	| COUNT EQUAL variable
+	| MAXCOUNT EQUAL INT_VALUE
+	| MAXCOUNT EQUAL variable
+	| INSERT_ROW_EQUAL_TRUE
+	| INSERT_ROW_EQUAL_FALSE
+	| DELETE_ROW_EQUAL_TRUE
+	| DELETE_ROW_EQUAL_FALSE
+;
 
 /* ========================= input.rule ============================= */
