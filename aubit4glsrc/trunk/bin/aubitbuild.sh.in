@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.36 2004-09-13 16:29:48 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.37 2004-09-18 06:32:36 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -130,8 +130,18 @@ export PATH=/bin/custom:$PATH
 #Do we want to stop on errors, or continue:
 STOPONERROR=1
 
+#####################
 #Do we stop after first upload/download error
 STOP_AFTER_DL_ERROR=0
+
+#####################
+#Do we just compare size of uploaded and local filess, or do we actually 
+#download uploaded files and compare them 
+COMPARE_SIZE=1
+
+#####################
+#Do we use wget to download, or wget
+USE_WGET=1
 
 #####################
 #Do we want to increase build number:
@@ -966,30 +976,56 @@ fi
 
 if test "$COMPARE" = "1"; then
 	####################### download and compare #################
-
+	COMPARED_OK=1
     cd /tmp
 
 	if test "$SOURCETARBASENAME" != ""; then
 		if test " -f /tmp/$SOURCETARBASENAME"; then
 			rm -f /tmp/$SOURCETARBASENAME
 	    fi
-		EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCETARBASENAME"; runexec
-
-        if [ -f /tmp/$SOURCETARBASENAME ]; then
-			diff /tmp/$SOURCETARBASENAME $SOURCETARNAME
-			RET=$?
-			if test $RET != "0"
-			then
-		        echo "Error: /tmp/$SOURCETARBASENAME and $SOURCETARNAME are different"
-				ls -al /tmp/$SOURCETARBASENAME
-				ls -al $SOURCETARNAME
-				if test "$STOP_AFTER_DL_ERROR" = "1"; then 
-					exit 54
+		
+		if test "$COMPARE_SIZE" = "1"; then 
+			WGET_SIZE="wget --server-response --spider"
+			HTTP_FILE="http://aubit4gl.sf.net/files/$SOURCETARBASENAME"
+			WGET_LOG=xx.log
+			FILESIZE_SF=`$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;`
+			FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | sed -e 's/7 Content-Length://'`
+			rm -f $WGET_LOG
+			FILESIZE_LOCAL=`ls -al /tmp/$SOURCETARBASENAME | awk '{print $5}';`
+			if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then 
+				echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
+				echo "ERROR: $SOURCETARBASENAME filesize of local and uploaded file are different"
+				COMPARED_OK=0
+			fi
+		else
+			if test "$USE_WGET" = "1"; then
+				EXEC="wget http://aubit4gl.sf.net/files/$SOURCETARBASENAME"; runexec
+			else
+				EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCETARBASENAME"; runexec
+			fi
+	
+			if [ -f /tmp/$SOURCETARBASENAME ]; then
+				diff /tmp/$SOURCETARBASENAME $SOURCETARNAME
+				RET=$?
+				if test $RET != "0"
+				then
+					echo "Error: /tmp/$SOURCETARBASENAME and $SOURCETARNAME are different"
+					ls -al /tmp/$SOURCETARBASENAME
+					ls -al $SOURCETARNAME
+					echo "Failed cmd was: $EXEC"
+					echo "----------------------------------------------------"
+					COMPARED_OK=0
+					if test "$STOP_AFTER_DL_ERROR" = "1"; then 
+						exit 54
+					fi
 				fi
-		    fi
-        else
-            echo "Download of $SOURCETARBASENAME failed"
-        fi
+			else
+				echo "Download of $SOURCETARBASENAME failed"
+				echo "Failed cmd was: $EXEC"
+				echo "----------------------------------------------------"
+				COMPARED_OK=0
+			fi
+		fi
     fi
 
 	if test "$TARBALLBASENAME" != "" -a "$TARBALL" != "NONE"; then
@@ -1006,12 +1042,18 @@ if test "$COMPARE" = "1"; then
 		        echo "Error: /tmp/$TARBALLBASENAME and $TARBALL are different"
 				ls -al /tmp/$TARBALLBASENAME
 				ls -al $TARBALL
+				echo "Failed cmd was: $EXEC"
+				echo "----------------------------------------------------"
+				COMPARED_OK=0
 				if test "$STOP_AFTER_DL_ERROR" = "1"; then 
 					exit 54
 				fi
 		    fi
         else
             echo "Downlaod of $TARBALLBASENAME failed"
+			echo "Failed cmd was: $EXEC"
+			echo "----------------------------------------------------"
+			COMPARED_OK=0
         fi
     fi
 
@@ -1037,6 +1079,9 @@ if test "$COMPARE" = "1"; then
 		        echo "Error: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are different"
 				ls -al "/tmp/$WINSETUPEXE_BASENAME"
 				ls -al "$WINSETUPEXE"
+				echo "Failed cmd was: $EXEC"
+				echo "----------------------------------------------------"
+				COMPARED_OK=0
 				if test "$STOP_AFTER_DL_ERROR" = "1"; then 
 					exit 54
 				fi
@@ -1047,6 +1092,9 @@ if test "$COMPARE" = "1"; then
 			fi
         else
 			echo "Download of $WINSETUPEXE_BASENAME failed"
+			echo "Failed cmd was: $EXEC"
+			echo "----------------------------------------------------"
+			COMPARED_OK=0
         fi
     fi
 
@@ -1064,12 +1112,18 @@ if test "$COMPARE" = "1"; then
 			        echo "Error: /tmp/$SOURCERPMBASENAME and $SOURCERPM are different"
 					ls -al /tmp/$SOURCERPMBASENAME
 					ls -al $SOURCERPM
+					echo "Failed cmd was: $EXEC"
+					echo "----------------------------------------------------"
+					COMPARED_OK=0
 					if test "$STOP_AFTER_DL_ERROR" = "1"; then 
 						exit 54
 					fi
 			    fi
             else
                 echo "Download of $SOURCERPMBASENAME failed"
+				echo "Failed cmd was: $EXEC"
+				echo "----------------------------------------------------"
+				COMPARED_OK=0
             fi
         fi
 
@@ -1087,17 +1141,24 @@ if test "$COMPARE" = "1"; then
 			        echo "Error: /tmp/$BINRPMBASENAME and $BINRPM are different"
 					ls -al /tmp/$BINRPMBASENAME
 					ls -al $BINRPM
+					echo "Failed cmd was: $EXEC"
+					echo "----------------------------------------------------"
+					COMPARED_OK=0
 					if test "$STOP_AFTER_DL_ERROR" = "1"; then 
 						exit 54
 					fi
 			    fi
             else
                 echo "Download of $BINRPMBASENAME failed"
+				echo "Failed cmd was: $EXEC"
+				echo "----------------------------------------------------"
+				COMPARED_OK=0
             fi
 		fi
     fi
-
-	COMPARED_OK=1
+	if test "$COMPARED_OK" != "1"; then
+		echo "ERROR: one or more errors comparing created and downloaded files"
+	fi
     cd -
 fi
 

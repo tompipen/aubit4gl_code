@@ -6,15 +6,18 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.22 2004-09-16 13:35:43 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.23 2004-09-18 06:32:37 afalout Exp $
 #
 
 ###########
 #Variables
 %define RPM_A4GL_INSTALL_DIR		/opt/aubit4gl
+%define RPM_A4GL_RPMINSTALL_LOG		/tmp/aubit4gl-rpminstall.log
+%define RPM_A4GL_RPMDEINSTALL_LOG	/tmp/aubit4gl-rpmdeinstall.log
+%define RPM_MAKE					gmake
 
 
-
+###########
 #There may be times when RPM's automatic dependency processing is not
 #desired. In these cases, the autoreqprov tag may be used to disable it.
 #This tag takes a yes/no or 0/1 value. For example, to disable automatic
@@ -86,7 +89,6 @@ oriented (BRDO) applications.
 ##############
 %build
 ##############
-#cd %{name}src-%{version}
 cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
 ./configure
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
@@ -97,10 +99,8 @@ make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 ##############
 #install -s -m 755 -o 0 -g 0 loadmap /usr/bin/loadmap
 #install -m 644 -o 0 -g 0 eject.1 /usr/man/man1
-#cd %{name}src-%{version}
 cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
 make install
-
 
 ##############
 #%clean
@@ -113,16 +113,16 @@ make install
 %defattr(-,root,root)
 
 #Directories to be created:
-%dir /opt/aubit4gl/bin
-%dir /opt/aubit4gl/lib
-%dir /opt/aubit4gl/etc
-%dir /opt/aubit4gl/etc/convertsql
-%dir /opt/aubit4gl/etc/config
-%dir /opt/aubit4gl/incl
-%dir /opt/aubit4gl/tools/test/gui
-%dir /opt/aubit4gl/tools/test
-%dir /opt/aubit4gl/tools
-%dir /opt/aubit4gl/docs
+%dir %{RPM_A4GL_INSTALL_DIR}/bin
+%dir %{RPM_A4GL_INSTALL_DIR}/lib
+%dir %{RPM_A4GL_INSTALL_DIR}/etc
+%dir %{RPM_A4GL_INSTALL_DIR}/etc/convertsql
+%dir %{RPM_A4GL_INSTALL_DIR}/etc/config
+%dir %{RPM_A4GL_INSTALL_DIR}/incl
+%dir %{RPM_A4GL_INSTALL_DIR}/tools/test/gui
+%dir %{RPM_A4GL_INSTALL_DIR}/tools/test
+%dir %{RPM_A4GL_INSTALL_DIR}/tools
+%dir %{RPM_A4GL_INSTALL_DIR}/docs
 
 #Files that will be created depending on system confuguration, defined
 #from configure:
@@ -518,36 +518,34 @@ make install
 ##############
 
 #reset log file
-date > /tmp/aubit4gl-rpminstall.log
-
+date > %{RPM_A4GL_RPMINSTALL_LOG}
 
 #[ ! -d $RPM_INSTALL_PREFIX/bin ] && mkdir $RPM_INSTALL_PREFIX/bin > /dev/null 2>&1
 #ln -fs $RPM_INSTALL_PREFIX/aubit4gl/bin/4glpc $RPM_INSTALL_PREFIX/bin/4glpc
 #
-#[ ! -d /etc/opt/aubit4gl ] && mkdir /etc/opt/aubit4gl > /dev/null 2>&1
-#[ ! -f /etc/opt/aubit4gl/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc/opt/aubit4gl/aubitenv
+#[ ! -d /etc%{RPM_A4GL_INSTALL_DIR} ] && mkdir /etc%{RPM_A4GL_INSTALL_DIR} > /dev/null 2>&1
+#[ ! -f /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv
 
-cd /opt/aubit4gl
+cd %{RPM_A4GL_INSTALL_DIR}
 
-echo "PATH=$PATH"  >> /tmp/aubit4gl-rpminstall.log
+echo "PATH=$PATH"  >> %{RPM_A4GL_RPMINSTALL_LOG}
 #It appears that RPM runs under some strange environent where PATH is not what you would
 #expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
 #/sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
 #Since we are trying to autodetect a lot of stuff, we will try to source syste and user's
 #profile files, to set "normal" user's environment
-source /etc/profile >> /tmp/aubit4gl-rpminstall.log
-source ~/.bash_profile >> /tmp/aubit4gl-rpminstall.log
+source /etc/profile >> %{RPM_A4GL_RPMINSTALL_LOG}
+source ~/.bash_profile >> %{RPM_A4GL_RPMINSTALL_LOG}
 
-echo "PATH=$PATH" >> /tmp/aubit4gl-rpminstall.log
+echo "PATH=$PATH" >> %{RPM_A4GL_RPMINSTALL_LOG}
 
-echo "Running 'make' in /opt/aubit4gl..." >> /tmp/aubit4gl-rpminstall.log
-#run 'configure', create and install /etc/opt/aubit4gl/aubitrc, install
+echo "Running 'make' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMINSTALL_LOG}
+#run 'configure', create and install /etc%{RPM_A4GL_INSTALL_DIR}/aubitrc, install
 #links to /usr/bin and /usr/lib, run test_build:
-make install >> /tmp/aubit4gl-rpminstall.log 2>&1
+make install >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
 
-
-echo "Running 'aubit configurator -firstrun' in /opt/aubit4gl..."  >> /tmp/aubit4gl-rpminstall.log
-aubit configurator -firstrun >> /tmp/aubit4gl-rpminstall.log 2>&1
+echo "Running 'aubit configurator -firstrun' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMINSTALL_LOG}
+aubit configurator -firstrun >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
 
 #TODO: install icons in GNOME and K desktop menu for:
 #configurator
@@ -557,9 +555,8 @@ aubit configurator -firstrun >> /tmp/aubit4gl-rpminstall.log 2>&1
 #readme file
 #install Kate editor's sintax highliting xml files for .4gl and .per
 
-echo "post tasks finshed" >> /tmp/aubit4gl-rpminstall.log
-
-echo "Install finished,see /tmp/aubit4gl-rpminstall.log for more info."
+echo "post tasks finshed" >> %{RPM_A4GL_RPMINSTALL_LOG}
+echo "Install finished,see %{RPM_A4GL_RPMINSTALL_LOG} for more info."
 echo "Run 'aubit configurator' if you wish to customise default configuration."
 
 ##############
@@ -567,21 +564,17 @@ echo "Run 'aubit configurator' if you wish to customise default configuration."
 # is the macro to do pre-uninstall scripts.
 ##############
 
-echo "NOTE: Logging pre-Uninstall tasks to /tmp/aubit4gl-rpmdeinstall.log"
+echo "NOTE: Logging pre-Uninstall tasks to %{RPM_A4GL_RPMDEINSTALL_LOG}"
 #reset log file
-date > /tmp/aubit4gl-rpmdeinstall.log
-
-cd /opt/aubit4gl
+date > %{RPM_A4GL_RPMDEINSTALL_LOG}
+cd %{RPM_A4GL_INSTALL_DIR}
 #remove links created by 'make', and debris in tools/test
-echo "Running 'make clean' in /opt/aubit4gl..."  >> /tmp/aubit4gl-rpmdeinstall.log
-make clean >> /tmp/aubit4gl-rpmdeinstall.log
-echo "Running 'make deinstall' in /opt/aubit4gl..." >> /tmp/aubit4gl-rpmdeinstall.log
-make deinstall >> /tmp/aubit4gl-rpmdeinstall.log
-
-echo "preun tasks finshed" >> /tmp/aubit4gl-rpmdeinstall.log
-
-echo "pre-Uninstall tasks finished,see /tmp/aubit4gl-rpmdeinstall.log for more info."
-echo "RPM_A4GL_INSTALL_DIR=%{RPM_A4GL_INSTALL_DIR}"
+echo "Running 'make clean' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+make clean >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "Running 'make deinstall' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+make deinstall >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "preun tasks finshed" >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "pre-Uninstall tasks finished,see %{RPM_A4GL_RPMDEINSTALL_LOG} for more info."
 
 ##############
 #%postun

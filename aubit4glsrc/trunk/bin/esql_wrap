@@ -81,8 +81,7 @@ do
 
 	d=`dirname $a`
 
-	if [ "$d" != "" -a "$d" != "." ]
-	then
+	if [ "$d" != "" -a "$d" != "." ]; then
 		c=$d/`basename "$a" `
 		b=$d/`basename "$c" ".$ESQL_EXT"`
 	else
@@ -91,15 +90,20 @@ do
 		b2=./`basename "$c" ".$ESQL_EXT"`
 	fi
 
-	if [ $b.$ESQL_EXT = $a -o $b2.$ESQL_EXT = $a ]
-	then
+	if [ $b.$ESQL_EXT = $a -o $b2.$ESQL_EXT = $a ]; then
 		srcs="$srcs $a"
 		shift
 		continue
 	fi
+	case $a in
+		*.c)
+			srcs="$srcs $a"
+			shift
+			continue
+		;;
+	esac
 
-	if [ $a = "-o" ]
-	then
+	if [ $a = "-o" ]; then
 		shift
 		output="-o $1"
 		case $1 in
@@ -115,33 +119,47 @@ do
 	fi
 
 	other_args="$other_args $a"
-
-
 	shift
 done
 
 if test "$SH_DEBUG" = "1"; then
 	echo "SOURCES : " $srcs
 fi
+if test "$COMPILE_OBJ" = "1" -a "$srcs" = ""; then
+	echo "ERROR: no source files and no linking?"
+	exit 1
+fi
 
 for a in $srcs
 do
-	if test "$COMSPEC" = ""; then 
-		ESQL_RUN="esql -e $a"
-	else
-		ESQL_RUN="esql -thread -e $a"     #-C INFORMIX_SE	
-	fi
-
-    echo $ESQL_RUN
-    eval $ESQL_RUN
-
-    RET=$?
-    if test "$RET" != "0"; then
-        exit $RET
-    fi
+	case $a in
+		*.ec)
+			if test "$COMSPEC" = ""; then 
+				ESQL_RUN="esql -e $a"
+			else
+				ESQL_RUN="esql -thread -e $a"     #-C INFORMIX_SE	
+			fi
+			echo $ESQL_RUN
+			eval $ESQL_RUN
+			RET=$?
+			if test "$RET" != "0"; then
+				exit $RET
+			fi
+		;;
+	esac
+	
     out=`basename $a ".$ESQL_EXT"`
-    cfiles="$cfiles $out.c"
-    GCC_COMPILE="gcc -c $out.c $other_args -I\"$INFORMIXDIR/incl/esql\" \
+	case $a in
+		*.ec)
+			cfiles="$cfiles $out.c"
+			outfile="$out.c"
+		;;
+		*)
+			outfile="$out"		
+		;;
+	esac
+	
+    GCC_COMPILE="gcc -c $outfile $other_args -I\"$INFORMIXDIR/incl/esql\" \
 		-I\"$INFORMIXDIR/CSDK/incl/esql\" -I$AUBITDIR/incl"
 
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
@@ -195,7 +213,7 @@ if test "$COMSPEC" != "" ; then
 		\"$INFORMIXDIR/$LIB/isqlt09a.dll\" \"$INFORMIXDIR/$LIB/igl4n304.dll\" \
 		\"$INFORMIXDIR/$LIB/iglxn304.dll\" \"$INFORMIXDIR/$LIB/igo4n304.dll\" "
 else
-	GCC_INFX="-mms-bitfields $IFX_LIBS -L$INFORMIXDIR/lib/esql -L$INFORMIXDIR/lib"
+	GCC_INFX="$IFX_LIBS -L$INFORMIXDIR/lib/esql -L$INFORMIXDIR/lib"
 fi
 
 #DO NOT link in -lESQL_INFORMIX - it is dlopen()ed
@@ -205,6 +223,11 @@ GCC_RUN="gcc $ofiles $other_args $GCC_INFX $LFLAGS $output"
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?
+if test "$RET" != "0"; then 
+	if test -f $LOGFILE; then 
+		cat $LOGFILE
+	fi
+fi
 exit $RET
 
 

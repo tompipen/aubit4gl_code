@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.156 2004-09-16 13:33:54 afalout Exp $
+# $Id: Makefile.in,v 1.157 2004-09-18 06:31:11 afalout Exp $
 #
 
 ## ==================================================================
@@ -743,9 +743,7 @@ rpm.build:
 ifeq "${RPM}" "new"
 	${RM} ${SRCTMP}
 	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
-#	rm -rf /usr/src/redhat/BUILD/aubit4gl-0.42.19
 	rm -rf /usr/src/redhat/BUILD/aubit4gl*
-#OK rm -rf /usr/src/redhat/SOURCES/aubit4glsrc-0.42-20.tgz
 #	rm -rf /usr/src/redhat/SOURCES/${SOURCETARBASENAME}
 	rm -rf /usr/src/redhat/SOURCES/aubit4gl*
 	@echo "NOTE: if version numbers changed, run ./configure first!"
@@ -753,6 +751,11 @@ ifeq "${RPM}" "new"
 	./config.status --file Makefile
 	./config.status --file incl/Makefile-common
 endif
+#Since aubitbuild.sh ups the build number before building nightly builds,
+#make rpm will need to make a new ${SRCTMP} tarball, and to do this, it 
+#willneed to clean.all - leaving a machine without compiled Aubit :-(
+#and RPM will deinstall installed Aubit as part of build process leaving 
+#machine without installed Aubit :-((((
 	@if [ ! -f ${SRCTMP} ]; then \
 		echo "(1) No ${SRCTMP}, making it..."; \
 		if [ ! -f /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ]; then \
@@ -771,7 +774,6 @@ endif
         echo "Have ${SRCTMP}"; \
 		echo "use RPM=new on make line to force refresh"; \
 	fi
-#	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
 	@echo "Created files:"
 	@echo "${RPMBUILDROOT}/SRPMS/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm"
