@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.68 2004-06-25 18:25:25 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.69 2004-07-13 10:51:28 mikeaubury Exp $
 #
 */
 
@@ -578,6 +578,10 @@ aclfgl_arg_val (int n)
   int k;
 
   k = A4GL_pop_int ();
+  if (k<0) {
+    A4GL_push_char (" "); // Was N/A
+    return 1;
+  }
   if (k < p_numargs)
     A4GL_push_char (p_args[k]);
   else
