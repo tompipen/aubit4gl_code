@@ -125,12 +125,14 @@ set_curr_block(a+1);
 commands {print_rep_ret(0);}
 ;
 
-report_cmd : print_command 
-		| print_img_command
-		| print_file_command
-		| need_command
-		| pause_command
-		| skip_command;
+report_cmd : 
+	print_command 
+	| print_img_command
+	| print_file_command
+	| need_command
+	| pause_command
+	| skip_command
+;
 
 need_command : NEED fgl_expr {start_state("skip",1);} KWLINE {
 	print_need_lines();

@@ -786,15 +786,13 @@ scale:
 	;
 
 table_name:
-	CHAR_VALUE {
+	 CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| CHAR_VALUE {
 		sprintf($<str>$," %s",strip_quotes($<str>1));
 		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
 	}
-	| table_identifier {sprintf($<str>$,$<str>1);
-addmap("Use Table",$<str>1,curr_func,yylineno,infilename);
-}
+	| table_identifier {sprintf($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
 	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
-	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 
 	;
 
