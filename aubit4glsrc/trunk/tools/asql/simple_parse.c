@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "simple.h"
+#include "a4gl_libaubit4gl.h"
 
 
 
@@ -65,6 +66,7 @@ char *ptr=0;
 char *ptr_new=0;
 struct element *e=0;
 int a;
+int into_temp=0;
 
 	while (1) {
 		a=yylex();
@@ -76,6 +78,25 @@ int a;
 			continue;
 		}
 
+		if (a==KW_WHERE) {
+			e->type=tolower(e->type);
+		}
+
+		if (into_temp==1) {
+			A4GL_debug("Got into_temp - a=%d",a);
+			if (a==KW_TEMP||a==KW_SPACE||a==NL) ;
+			else into_temp=0;
+		}
+
+		if (a==KW_INTO&&into_temp==0) into_temp++;
+
+		if (a==KW_TEMP&&into_temp==1) {
+				A4GL_debug("TEMP TABLE ? e->type was %c",e->type);
+				if (e->type=='S'||e->type=='s') e->type='T';
+				A4GL_debug("TEMP TABLE ? e->type now %c",e->type);
+
+		}
+
 		if (a==KW_MINUS_MINUS) {
 			while (a!=NL) a=yylex();
 		}
@@ -84,9 +105,10 @@ int a;
 			line++;
 		}
 
-		if ((a==NL||a==SPACE)&&e==0) {
+		if ((a==NL||a==KW_SPACE)&&e==0) {
 			continue;
 		}
+
 
 		if (a==KW_SEMI) { e->stmt=ptr; add_stmt(e); free(e); e=0; ptr=0;continue;}
 
@@ -96,6 +118,8 @@ int a;
 		}
 
 
+		A4GL_assertion(e==0,"No element");
+
 		if (e->type=='?') {
 			if (a==KW_UPDATE) e->type='U';
 			if (a==KW_SELECT) e->type='S';
@@ -103,6 +127,7 @@ int a;
 			if (a==KW_DELETE) e->type='D';
 			if (e->type=='?') e->type='O';
 			e->lineno=line;
+			into_temp=0;
 		}
 
 		if (ptr==0) ptr_new=strdup(yylval.str);

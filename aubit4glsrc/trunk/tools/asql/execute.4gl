@@ -189,10 +189,7 @@ code
 			// Is it a select statement ?
 			// @todo - this needs refining as a select .. into temp would get caught..
 			if (list[a].type!='S') {
-
 				if (!execute_query_1(&raffected)) goto end_query;
-
-
 			} else {
 				rpaginate=0;
 repeat_query: ;
@@ -253,11 +250,11 @@ A4GL_assertion(out==0,"No output file (2)");
 				} else {
 					A4GL_debug("Error with %s",p);
 					//printf("ERR.... execute_select_prepare(..)\n");
-					if (exec_mode==EXEC_MODE_INTERACTIVE) {
-						A4GL_push_char("Error executing select");
-   						A4GL_display_error(0,0);
-						sleep(1);
-					}
+					//if (exec_mode==EXEC_MODE_INTERACTIVE) {
+						//A4GL_push_char("Error executing select");
+   						//A4GL_display_error(0,0);
+						//sleep(1);
+					//}
 					goto end_query;
 					
 				}

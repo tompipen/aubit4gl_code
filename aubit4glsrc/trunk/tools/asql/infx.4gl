@@ -917,7 +917,7 @@ if lv_newname is not null and lv_newname not matches " " then
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
                 call display_banner()
-                message "Database Opened" attribute(reverse)
+                message "Database Opened" 
         else
                 call check_and_report_error()
         end if

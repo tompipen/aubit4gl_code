@@ -32,6 +32,9 @@ void count();
 "update"		{ count(); return(KW_UPDATE); }
 "delete"		{ count(); return(KW_DELETE); }
 "insert"		{ count(); return(KW_INSERT); }
+"into"			{ count(); return(KW_INTO); }
+"temp"			{ count(); return(KW_TEMP); }
+"where"			{ count(); return(KW_WHERE); }
 {L}({L}|{D})*		{ count(); return(IDENTIFIER); }
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
 0{D}+{IS}?		{ count(); return(CONSTANT); }
@@ -41,7 +44,7 @@ L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); }
 {D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
 {D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
 L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
-[ \t\v\f]		{ count(); return (SPACE); }
+[ \t\v\f]		{ count(); return (KW_SPACE); }
 [\n]			{ count(); return (NL);}
 .			{ count(); return (CHAR);}
 

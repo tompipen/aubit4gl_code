@@ -223,6 +223,7 @@ while true
 		when 2
 			Call set_exec_mode(0)
 			call qry_run()
+			let lv_runnext=1
 
 		when 3
 			if qry_modify() then
@@ -410,7 +411,8 @@ end if
 
 if not execute_queries(0) then
 	if get_exec_mode()=0 then
-		error "Error Executing.."
+		#error "Error Executing.."
+		#
 	end if
 end if
 
@@ -577,7 +579,8 @@ function qry_save()
 define lv_fname char(255)
 call set_pick_cnt(0)
 call prompt_pick("SAVE >> ",mv_filename) returning lv_fname
-
+error "Not implemented yet"
+sleep 1
 end function
 
 ################################################################################
@@ -670,6 +673,9 @@ function qry_modify()
 	let int_flag=false
 
 	let mv_qry=mv_qry clipped
+
+
+
 code
 A4GL_trim(mv_qry);
 A4GL_debug("Query=%s",mv_qry);

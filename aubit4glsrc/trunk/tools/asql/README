@@ -1,24 +1,3 @@
 This should really be adbaccess - but that was already taken...
 
 
-YOU MUST SET 
-
-	A4GL_LEXTYPE=EC
-and
-	A4GL_USE_DATABASE_STMT=Y
-
-before compiling!
-
-
-
-To compile the postgres version you must also set
-
-	A4GL_LEXDIALECT=POSTGRES
-
-and make with
-	make asql_p.4ae
-
-
-
-You can then copy asql_p.4ae to be anything you want...
-

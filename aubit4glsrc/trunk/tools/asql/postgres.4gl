@@ -404,7 +404,7 @@ A4GL_debug("Getting details for index %d",index);
            case SQL3_DECIMAL:
                 if (SCALE==0)
                 {  exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
-                   sprintf(buffer,"%d",INTVAR);
+                   sprintf(buffer,"%10d",INTVAR);
                 }
                 else
                 {  exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
@@ -414,7 +414,7 @@ A4GL_debug("Getting details for index %d",index);
            case SQL3_INTEGER:
            case SQL3_SMALLINT:
                 exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
-                sprintf(buffer,"%d",INTVAR);
+                sprintf(buffer,"%9d",INTVAR);
                 break;
            case SQL3_FLOAT:
            case SQL3_REAL:
@@ -486,7 +486,6 @@ qry_type=0;
 
    EXEC SQL PREPARE stExec from :p;
    //printf("PREPARE sqlca.sqlcode=%d\n",sqlca.sqlcode);
-   //printf("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
    //printf(" -- %s %d\n",sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrm.sqlerrml);
 
 
@@ -498,9 +497,17 @@ cp_sqlca();
 
 
 	if (type=='S') qry_type=0;
-	if (type=='U') qry_type=4;
-	if (type=='D') qry_type=5;
+	if (type=='s') qry_type=0;
+
+	if (type=='u') qry_type=4;
+	if (type=='d') qry_type=5;
 	if (type=='I') qry_type=6;
+
+	if (type=='U') qry_type=33;
+	if (type=='D') qry_type=32;
+
+	if (type=='T') qry_type=3;
+	if (type=='t') qry_type=3;
 
 	if (prepared) return qry_type;
 	//printf("2PREPARE - bad\n");
@@ -514,7 +521,7 @@ int execute_query_1(int *raffected) {
                          EXEC SQL EXECUTE stExec;cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
                          *raffected=sqlca.sqlerrd[2];
-	//printf("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
+	A4GL_debug("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
                          EXEC SQL FREE stExec;cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
 	return 1;
@@ -723,7 +730,7 @@ EXEC SQL END DECLARE SECTION;
 
 EXEC SQL CONNECT TO template1 AS 'default';
 if (sqlca.sqlcode!=0) goto here;
-EXEC SQL DECLARE c_getdbs CURSOR FOR select datname from pg_catalog.pg_database;
+EXEC SQL DECLARE c_getdbs CURSOR FOR select datname from pg_catalog.pg_database order by datname;
 if (sqlca.sqlcode!=0) goto here;
 EXEC SQL  open c_getdbs;
 if (sqlca.sqlcode!=0) goto here;
@@ -759,7 +766,7 @@ if lv_newname is not null and lv_newname not matches " " then
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
                 call display_banner()
-                message "Database Opened (",lv_newname clipped,")" attribute(reverse)
+                message "Database Opened (",lv_newname clipped,")"
         else
 		message "Database not opened..." attribute(reverse)
 		sleep 1
