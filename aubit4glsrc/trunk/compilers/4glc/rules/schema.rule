@@ -1,0 +1,59 @@
+drops_cmd : drops_c {
+           printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+}
+;
+
+drops_c : DROP_TABLE {sprintf($<str>$, "%s",$<str>1,$<str>2);}
+	| DROP_VIEW {sprintf($<str>$,  "%s",$<str>1,$<str>2);}
+	| DROP_INDEX  {sprintf($<str>$,"%s",$<str>1,$<str>2);}
+;
+
+view_name : identifier;
+
+create_cmd : create_c_1 {
+           printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+
+}
+;
+
+create_c_1  : 
+		CREATE_IDX idx_column_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
+	| CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7);} | 
+	CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log
+{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7,$<str>8);}
+	;
+op_no_log : 
+{strcpy($<str>$,"");} 
+| WITH_NO_LOG
+{sprintf($<str>$," %s ",$<str>1);}
+;
+
+
+idx_column_list : 
+idx_column | 
+idx_column_list COMMA idx_column
+;
+
+idx_column : 
+ identifier ASC
+| identifier DESC
+| identifier;
+
+idx_name : identifier;
+
+table_element_list:
+	  table_element
+	| table_element_list COMMA table_element
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	;
+	
+table_element:
+	  column_definiton
+	| table_constraint_definition
+	;
+	
+
+
+

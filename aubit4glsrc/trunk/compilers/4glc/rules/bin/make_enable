@@ -1,0 +1,22 @@
+#!/bin/sh
+awk '
+{
+kw=$1
+if (def[kw]) next
+def[kw]=1
+kwl=tolower(kw)
+print  kw " : KWS_" kw ";"
+}
+
+END {
+printf("NAMED : NAMED_GEN\n");
+for (a in def) {
+	printf(" | KWS_%s\n",a);
+}
+printf(";\n")
+}
+' < generated/single_words > generated/single_words.rule
+
+
+
+

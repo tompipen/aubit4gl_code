@@ -1,0 +1,29 @@
+foreach_cmd	:	FOREACH 
+{
+push_blockcommand("FOREACH");
+}
+fetch_cursor_name
+{
+printc("{");
+printcomment(" /* foreach */\n");
+}
+opt_into_fetch_part
+{
+printc("set_sqlca_sqlcode(0);\n");
+printc("open_cursor(0,%s);\n",$<str>3);
+printc("while (1) {\n");
+printc("fetch_cursor(%s,%d,1,%s);\n",$<str>3,FETCH_RELATIVE,$<str>5); 
+printc("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
+}
+
+commands  
+END_FOREACH {
+add_continue_blockcommand ("FOREACH");  
+printc("}");
+printcomment("/* end of foreach while loop */\n");
+printc("}\n");
+pop_blockcommand("FOREACH");
+} ;
+
+
+

@@ -1,0 +1,558 @@
+start_cmd : START_REPORT rep_name TO PRINTER 
+{
+addmap('S',$<str>2,curr_func,yylineno,infilename);
+printc("push_char(\"P\");\n");
+printc("push_char(\"lp\");\n");
+printc("acl_fglr_%s(2,REPORT_START);",$<str>2); 
+}
+	    | START_REPORT rep_name TO rout
+{
+addmap('S',$<str>2,curr_func,yylineno,infilename);
+printc("push_char(\"F\");");
+printc("push_char(%s);\n",$<str>4);
+printc("acl_fglr_%s(2,REPORT_START);\n",$<str>2); }
+	    | START_REPORT rep_name TO PIPE rout
+{
+addmap('S',$<str>2,curr_func,yylineno,infilename);
+printc("push_char(\"P\");\n");
+printc("push_char(%s);\n",$<str>5);
+printc("acl_fglr_%s(2,REPORT_START);\n",$<str>2); 
+}
+	    | START_REPORT rep_name
+{
+addmap('S',$<str>2,curr_func,yylineno,infilename);
+printc("push_char(\"\");\n");
+printc("push_char(\"\");\n");
+printc("acl_fglr_%s(2,REPORT_START);\n",$<str>2); 
+}
+;
+
+
+
+database_name : var_ident;
+
+
+
+rout : CHAR_VALUE | cvariable;
+
+
+
+rep_name : identifier;
+
+
+op_values : | VALUES ;
+
+output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET 
+{ printc("/*....MJA1........*/\n");}
+reset_cnt 
+{ printc("/*....MJA2........*/\n");}
+fgl_expr_list 
+{ printc("/*....MJA3........*/\n");}
+CLOSE_BRACKET
+{
+addmap('O',$<str>2,curr_func,yylineno,infilename);
+printc("acl_fglr_%s(%s,REPORT_SENDDATA);\n",$<str>2,$<str>8); 
+}
+;
+
+finish_cmd : FINISH_REPORT rep_name
+{
+addmap('s',$<str>2,curr_func,yylineno,infilename);
+printc("acl_fglr_%s(0,REPORT_FINISH);\n",$<str>2); 
+}
+;
+
+report_section: op_output_section op_rep_order_by  { sprintf($<str>$,$<str>2); } ;
+
+format_section: FORMAT EVERY ROW {
+printcomment("/*default report */\n");
+}
+| 
+FORMAT format_actions
+;
+
+format_actions : format_action | format_actions format_action;
+
+format_action :
+	 FIRST_PAGE_HEADER 
+{ push_report_block("FIRST",'P');}
+commands {print_rep_ret();}
+	| PAGE_TRAILER 
+{ push_report_block("TRAILER",'T');}
+commands {print_rep_ret();}
+	| PAGE_HEADER 
+{ push_report_block("HEADER",'p');}
+commands {print_rep_ret();}
+	| ON_EVERY_ROW 
+{ push_report_block("EVERY",'E');}
+commands {print_rep_ret();}
+	| ON_LAST_ROW 
+{ push_report_block("LAST",'L');}
+commands {print_rep_ret();}
+	| BEFGROUP variable  {
+int a;
+char buff[80];
+
+a=scan_orderby($<str>2,rordcnt);
+if (a<0) {
+   sprintf(buff,"%s is not in the order by list",$<str>2);
+   yyerror(buff);
+	YYERROR;
+}
+sprintf(buff,"%d",a+1);
+push_report_block(buff,'B');
+set_curr_block(a+1);
+}
+commands {print_rep_ret();}
+	| AFTGROUP variable 
+{ 
+int a;
+char buff[80];
+
+a=scan_orderby($<str>2,rordcnt);
+if (a<0) {
+   sprintf(buff,"%s is not in the order by list",$<str>2);
+   yyerror(buff);
+	YYERROR;
+}
+
+sprintf(buff,"%d",a+1);
+push_report_block(buff,'A');
+set_curr_block(a+1);
+
+}
+commands {print_rep_ret();}
+;
+
+report_cmd : print_command 
+		| print_img_command
+		| need_command
+		| pause_command
+		| skip_command;
+
+need_command : NEED fgl_expr {start_state("skip",1);} KWLINE {printc("%sneed_lines(&rep);\n",ispdf());start_state("skip",0);}
+;
+
+skip_command : SKIP fgl_expr {start_state("KWLINE",1);} KWLINE {printc("%sskip_lines(&rep);\n",ispdf());start_state("KWLINE",0); }
+	| SKIP_TO_TOP {printc("%sskip_top_of_page(&rep);\n",ispdf());}
+	| SKIP_BY nval {
+			if (rep_type!=REP_TYPE_PDF) {
+				yyerror("SKIP BY is only in PDF reports");
+				YYERROR;
+			}
+			printc("pdf_skip_by(&rep,%s);\n",$<str>2);
+		}
+	| SKIP_TO nval {
+			if (rep_type!=REP_TYPE_PDF) {
+				yyerror("SKIP TO is only in PDF reports");
+				YYERROR;
+			}
+			printc("pdf_skip_to(&rep,%s);\n",$<str>2);
+		}
+
+
+;
+
+
+opt_rep_expr_list : {strcpy($<str>$,"");}
+	| rep_expr_list
+;
+print_command : PRINT opt_rep_expr_list opt_semi { printc("%srep_print(&rep,0,%s);\n",ispdf(),$<str>3); } ;
+
+print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { printc("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n",$<str>4,$<str>2,$<str>3,$<str>5);} 
+;
+
+opt_scaling :
+	{ strcpy($<str>$,"push_double(1.0);push_double(1.0);"); }
+	| SCALED_BY fgl_expr_c { strcpy($<str>$,$<str>2); strcat($<str>$,$<str>2); }
+	| SCALED_BY fgl_expr_c COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
+;
+
+img_types : 	
+	AS_TIFF {strcpy($<str>$,"tiff");}
+	| AS_GIF {strcpy($<str>$,"gif");}
+	| AS_PNG {strcpy($<str>$,"png");}
+	| AS_JPEG {strcpy($<str>$,"jpeg");}
+;
+
+
+blob_var :  variable {
+	int vtype;
+	vtype=scan_variable($<str>2);
+	if (vtype!=11&&vtype!=12) {
+	yyerror("Only Blobs may be printed...");
+	YYERROR;
+	}
+}
+;
+
+opt_semi : {
+strcpy($<str>$,"0");
+} | SEMICOLON {
+strcpy($<str>$,"1");
+};
+
+rep_expr_list : 
+	rep_expr {
+	printc("%srep_print(&rep,1,1);\n",ispdf());} 
+| rep_expr_list COMMA rep_expr {
+         printc("%srep_print(&rep,1,1);\n",ispdf());
+	
+}
+;
+
+rep_expr : fgl_expr;
+
+opt_group: | GROUP;
+
+rep_agg : 
+SUM       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('S',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double(_g%d);\n",racnt);
+racnt+=a;
+}
+| COUNT     OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('C',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_int(_g%d);\n",racnt);
+racnt+=a;
+}
+| PERCENT   OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('P',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
+racnt+=a;
+}
+| AVERAGE   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('A',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
+racnt+=a;
+}
+| AVG       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('A',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double(_g%d/_g%d);\n",racnt,racnt+1);
+racnt+=a;
+}
+| XMIN       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('N',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double(_g%d);\n",racnt);
+racnt+=a;
+}
+| XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+{
+int a;
+a=add_report_agg('X',$<str>3,$<str>5,racnt);
+sprintf($<str>$,"push_double(_g%d);\n",racnt);
+racnt+=a;
+}
+;
+
+op_output_section : | OUTPUT output_commands ;
+
+output_commands : output_command | output_commands output_command;
+
+output_command : 
+  LEFT_MARGIN INT_VALUE {rep_struct.left_margin=atoi($<str>2);}
+| RIGHT_MARGIN INT_VALUE {rep_struct.right_margin=atoi($<str>2);}
+| TOP_MARGIN INT_VALUE {rep_struct.top_margin=atoi($<str>2);}
+| BOTTOM_MARGIN INT_VALUE {rep_struct.bottom_margin=atoi($<str>2);}
+| PAGE_LENGTH INT_VALUE {rep_struct.page_length=atoi($<str>2);}
+| REPORT_TO CHAR_VALUE {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
+| REPORT_TO_PIPE CHAR_VALUE {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
+
+;
+
+pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
+
+
+nval: nval_number POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
+	| nval_number INCHES {sprintf($<str>$,"-%f",atof($<str>1)*72.0); }
+	| nval_number MM     {sprintf($<str>$,"-%f",atof($<str>1)*2.83465);}
+	| nval_number        {sprintf($<str>$,"%f",atof($<str>1));} 
+;
+
+nval_number: NUMBER_VALUE | INT_VALUE
+;
+
+pdf_op_output_section : | OUTPUT pdf_output_commands ;
+
+pdf_output_command : 
+  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);debug("Left margin=%s\n",$<str>2);}
+| RIGHT_MARGIN nval {pdf_rep_struct.right_margin=atof($<str>2);}
+| TOP_MARGIN nval {pdf_rep_struct.top_margin=atof($<str>2);}
+| BOTTOM_MARGIN nval {pdf_rep_struct.bottom_margin=atof($<str>2);}
+| PAGE_LENGTH nval {pdf_rep_struct.page_length=atof($<str>2);}
+| PAGE_WIDTH nval {pdf_rep_struct.page_width=atof($<str>2);}
+| FONT_NAME CHAR_VALUE {strcpy(pdf_rep_struct.font_name,$<str>2);}
+| FONT_SIZE INT_VALUE {pdf_rep_struct.font_size=atof($<str>2);}
+| PAPER_SIZE_IS_A4  {pdf_rep_struct.paper_size=1;}
+| PAPER_SIZE_IS_LETTER  {pdf_rep_struct.paper_size=2;}
+| PAPER_SIZE_IS_LEGAL  {pdf_rep_struct.paper_size=3;}
+| REPORT_TO CHAR_VALUE {pdf_rep_struct.output_mode='F';strcpy(pdf_rep_struct.output_loc,$<str>2);}
+| REPORT_TO_PIPE CHAR_VALUE {pdf_rep_struct.output_mode='P';strcpy(pdf_rep_struct.output_loc,$<str>2);}
+;
+
+
+op_rep_order_by : {printc("/* no order by */");printc("struct BINDING *obind=0;\nstruct BINDING *_ordbind=0;");strcpy($<str>$,"0");
+printc("static int fgl_rep_orderby=0;\n");
+}
+| ORDER BY obind_var_list_ord
+{
+int a;
+printc("/* orderby var_list %s */\n",$<str>3);
+a=print_bind('O');
+printc("static int fgl_rep_orderby=1;\n");
+sprintf($<str>$,"%d",a);
+printc("/* end of var_list %s */\n",$<str>3);
+
+}
+| ORDER_EXTERNAL_BY obind_var_list_ord {
+int a;
+printc("/* orderby var_list %s */\n",$<str>2);
+a=print_bind('O');
+printc("static int fgl_rep_orderby=2;\n");
+sprintf($<str>$,"%d",a);
+printc("/* end of var_list %s */\n",$<str>2);
+}
+;
+
+
+
+report_def : REPORT 
+{
+rep_type=REP_TYPE_NORMAL;
+clr_variable(); lastlineno=yylineno; init_report_structure(&rep_struct);
+}
+identifier OPEN_BRACKET
+{
+inc_report_cnt();
+sprintf(curr_func,"%s",$<str>3);
+addmap('R',curr_func,"MODULE",yylineno,infilename);
+set_curr_rep_name($<str>3);
+printc("/* New report : %s */\n\n\n",$<str>3);
+printc("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", $<str>3,$<str>3); 
+push_blockcommand("REPORT");
+}
+fparam_var_list CLOSE_BRACKET 
+{
+lastlineno=yylineno;
+}
+define_section
+report_section 
+{
+int cnt;
+printc("static struct rep_structure rep;\n");
+printc("static char _rout1[256];\n");
+printc("static char _rout2[256];\n");
+printc("static int _useddata=0;\n");
+printc("static int _started=0;\n");
+cnt=print_param('r');
+printc("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
+printc("    set_status(-5555);\n");
+printc("    return;\n");
+printc("    }\n");
+printc("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {",cnt);
+printc("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
+printc("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
+printc("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",get_curr_rep_name());
+printc("}\n");
+printc("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
+printc("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}",cnt,cnt);
+printc("if (acl_ctrl==REPORT_SENDDATA) {\n");
+printc("   int _g,_p;\n");
+printc("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n",cnt,$<str>10);
+printc("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",get_curr_rep_name());
+printc("   pop_params(rbind,%d);\n",cnt);
+printc("   if (_useddata==0) {_g=1;}\n");
+printc("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",get_curr_rep_name());
+printc("   _useddata=1;\n");
+print_rep_ret();
+printc("}\n\n");
+
+printc("if (acl_ctrl==REPORT_FINISH) {\n");
+printc("    if (fgl_rep_orderby==1) {\n");
+printc("        struct BINDING *reread;\n");
+printc("        fgl_rep_orderby=-1;\n");
+printc("   push_char(_rout1,254);\n");
+printc("   push_char(_rout2,254);\n");
+printc("        %s(2,REPORT_START);\n",get_curr_rep_name ());
+printc("        init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",cnt);
+
+printc("        while (report_table_fetch(reread,%d,&rbind)) %s(%d,REPORT_SENDDATA);\n",cnt,get_curr_rep_name (),cnt);
+printc("        %s(0,REPORT_FINISH);\n",get_curr_rep_name ());
+printc("        end_report_table(&rbind,%d,reread);\nreturn;",cnt);
+printc("    }\n");
+printc("}\n");
+
+printc("if (acl_ctrl==REPORT_START) {\n");
+printc("   pop_char(_rout2,254);\n");
+printc("   pop_char(_rout1,254);\n");
+printc("    if (fgl_rep_orderby==1) {make_report_table(&rbind,%d);return;}\n",cnt);
+printc("   _useddata=0;\n");
+printc("   _started=1;\n");
+print_call_out();
+printc("}\n\n");
+print_rep_ret();
+print_output_rep(&rep_struct);
+rordcnt=atoi($<str>10);
+}
+format_section 
+{print_report_ctrl();}
+
+END_REPORT {
+pop_blockcommand("REPORT");printc("\n} /* end of report */\n");
+}
+;
+
+
+
+rep_where :  { sprintf($<str>$,"");}
+| WHERE fgl_expr_c {
+sprintf($<str>$,"%s", $<str>2);
+}
+;
+
+commands_else : commands | commands ELSE {printc("} else {\n");} commands ;
+
+
+pause_command: PAUSE pause_msg
+{
+if (!in_command("REPORT")) {
+	yyerror("PAUSE can only be used in reportes");
+	YYERROR;
+        }
+
+printc("acllib_pause(%s);\n",$<str>2);
+}
+
+;
+
+pause_msg : {sprintf($<str>$,"\"\"");}
+	|
+	var_or_char 
+;
+
+pdf_report_def : 
+PDF_REPORT 
+{
+rep_type=REP_TYPE_PDF;
+clr_variable(); lastlineno=yylineno; pdf_init_report_structure(&pdf_rep_struct);
+}
+identifier OPEN_BRACKET
+{
+inc_report_cnt();
+sprintf(curr_func,"%s",$<str>3);
+addmap('R',curr_func,"MODULE",yylineno,infilename);
+set_curr_rep_name($<str>3);
+printc("/* New report : %s */\n\n\n",$<str>3);
+printc("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", $<str>3,$<str>3); 
+push_blockcommand("REPORT");
+}
+fparam_var_list CLOSE_BRACKET 
+{
+lastlineno=yylineno;
+}
+define_section
+pdf_report_section 
+{
+int cnt;
+printc("static struct pdf_rep_structure rep;\n");
+printc("static char _rout1[256];\n");
+printc("static char _rout2[256];\n");
+printc("static int _useddata=0;\n");
+printc("static int _started=0;\n");
+cnt=print_param('r');
+printc("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
+printc("    set_status(-5555);\n");
+printc("    return;\n");
+printc("    }\n");
+printc("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {",cnt);
+printc("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
+printc("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
+printc("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",get_curr_rep_name());
+printc("}\n");
+
+printc("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
+printc("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}",cnt,cnt);
+
+printc("if (acl_ctrl==REPORT_SENDDATA) {\n");
+printc("   int _g,_p;\n");
+printc("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n",cnt,$<str>10);
+printc("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",get_curr_rep_name());
+printc("   pop_params(rbind,%d);\n",cnt);
+printc("   if (_useddata==0) {_g=1;}\n");
+printc("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",get_curr_rep_name());
+printc("   _useddata=1;\n");
+print_rep_ret();
+printc("}\n\n");
+printc("if (acl_ctrl==REPORT_FINISH) {\n");
+printc("    if (fgl_rep_orderby==1) {\n");
+printc("        struct BINDING *reread;\n");
+printc("        fgl_rep_orderby=-1;\n");
+printc("   push_char(_rout1,254);\n");
+printc("   push_char(_rout2,254);\n");
+printc("        %s(2,REPORT_START);\n",get_curr_rep_name ());
+printc("        init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",cnt);
+
+printc("        while (report_table_fetch(reread,%d,&rbind)) %s(%d,REPORT_SENDDATA);\n",cnt,get_curr_rep_name (),cnt);
+printc("        %s(0,REPORT_FINISH);\n",get_curr_rep_name ());
+printc("        end_report_table(&rbind,%d,reread);\nreturn;",cnt);
+printc("    }\n");
+printc("}\n");
+
+printc("if (acl_ctrl==REPORT_START) {\n");
+printc("   pop_char(_rout2,254);\n");
+printc("   pop_char(_rout1,254);\n");
+printc("    if (fgl_rep_orderby==1) {make_report_table(&rbind,%d);return;}\n",cnt);
+printc("   _useddata=0;\n");
+printc("   _started=1;\n");
+print_call_out();
+printc("}\n\n");
+print_rep_ret();
+pdf_print_output_rep(&pdf_rep_struct);
+rordcnt=atoi($<str>10);
+}
+format_section 
+{print_report_ctrl();}
+END_REPORT {
+pop_blockcommand("REPORT");printc("\n} /* end of report */\n");
+}
+;
+
+pdf_report_section: pdf_op_output_section op_rep_order_by  { sprintf($<str>$,$<str>2); } ;
+
+
+pdf_functions :
+	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA {new_counter();
+   		addmap('C',$<str>3,curr_func,yylineno,infilename);
+   		}
+   		opt_func_call_args
+   		{sprintf($<str>$,"%d",get_counter_val());drop_counter();
+		printc("// count=%s\n",$<str>$);
+}
+   		CLOSE_BRACKET
+   		{
+   		printc("%s {int _retvars;set_status(0);\n",$<str>6);
+   		printc("_retvars=aclpdf(&rep,%s,%s);\n",$<str>3,$<str>7);
+   		}
+   		opt_return
+   		{ int cnt;
+   		printc("{\n");
+   		cnt=print_bind('i');
+   		printc("if (_retvars!= %d ) {pop_args(_retvars);set_status(-3001);}\n",cnt,lastlineno,infilename);
+   printc("else {set_status(0);pop_params(ibind,%d);}\n",cnt);
+   printc("}\n");
+   printc("}\n"); }
+;
+
+

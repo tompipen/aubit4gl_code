@@ -1,0 +1,50 @@
+Aubit 4gl Version 0.01 Development Team
+
+------------------------------------------------------------------------------
+
+Core Developers
+===============
+
+Mike Aubury [mike@aubit.com]
+
+	* Original language definition and implementation
+	* GTK+ GUI interface
+    * Practically everything else...
+
+Andrej Falout [afalout@ihug.co.nz]
+
+    * Manual and doccumentation
+    * CVS and development environment setup and hosting
+    * Binary distributions
+
+
+------------------------------------------------------------------------------
+
+Major Contributors
+==================
+
+Brett Geer [brett@brabys.co.za]
+
+	* AIX port modifications
+
+Carlos Alberto Correa Fayad [ccorreafy@linuxmail.org]
+
+	* Spanish manual translation
+
+Jonathan Leffler [jleffler@informix.com]
+
+	* Solaris 7 port modifications
+    * IDE 4gl code
+    * Universal D4GL(4Js) and i-4gl makefiles templates
+
+------------------------------------------------------------------------------
+
+Beta Testers
+------------
+
+
+
+------------------------------------------------------------------------------
+
+
+

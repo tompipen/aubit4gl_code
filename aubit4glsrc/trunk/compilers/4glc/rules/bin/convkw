@@ -1,0 +1,54 @@
+#!/bin/sh
+awk  '
+BEGIN {
+
+while (getline < "generated/single_words") {
+	single_words[$1]=1
+	print "Defined " $1 " as single word"
+}
+
+a=1000
+	print "#include \"generated/kw.h\"" > "generated/kw.c"
+	print "struct s_kw {" > "generated/kw.h"
+	print "    int id;" > "generated/kw.h"
+	print "	   int mode;" > "generated/kw.h"
+	print "    char *vals[20];" > "generated/kw.h"
+	print "};" > "generated/kw.h"
+	print "struct s_kw kwords[]={" > "generated/kw.c"
+}
+/^#/ {next}
+(NF>=1) {
+kw= $1
+if (NF==1) {s=1} else {s=2}
+issingle=0
+if (single_words[kw]==1)  {kw="KWS_" kw
+issingle=1
+}
+print "Check : " kw " - "  def[kw]
+if (def[kw]!=1) {
+		print "#define " kw " " a > "generated/kw.h"
+		print "%token " kw " " a > "generated/kw.yh"
+		def[kw]=1
+		a++
+}
+
+if (issingle==0)
+	printf "{" kw ",1,{" > "generated/kw.c"
+else
+	#printf "{" kw ",0,{" > "generated/kw.c"
+	printf "{" kw ",1,{" > "generated/kw.c"
+
+for (z=s;z<=NF;z++) {
+	printf "\"" $z "\"," > "generated/kw.c"
+}
+printf "0}" > "generated/kw.c"
+print "}," > "generated/kw.c"
+}
+END {
+print "{0}" > "generated/kw.c"
+print "};" > "generated/kw.c"
+}
+' < data/kwords
+
+
+

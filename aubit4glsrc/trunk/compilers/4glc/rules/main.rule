@@ -1,0 +1,167 @@
+
+module	:	op_code op_template db_section op_code globals_section op_code 
+{set_4gl_vars();set_mod_level(0);} define_section op_code {inmod();} func_main_def
+	;
+
+func_main_def	: /* could be empty file */
+                 {strcpy($<str>$,"");}
+                | func_or_main2
+;
+func_or_main2 : func_or_main
+	| func_or_main2 func_or_main
+	;
+
+at_term_cmd :
+        AT_TERMINATION_CALL  identifier
+;
+
+func_or_main	:	func_def
+		|	main_def
+		|	 mem_func_def
+		|	report_def
+		|	pdf_report_def
+                |       menu_def
+                |       formhandler_def
+		|	code_cmd
+		| 	import_m
+		|	comment_cmd
+		;
+
+op_code : |code_cmd;
+
+
+ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL FUNCTION
+{strcpy($<str>$,"static ");} ;
+
+func_def	: ldeffunction
+{clr_variable(); lastlineno=yylineno; }
+identifier  OPEN_BRACKET  
+{ 
+sprintf(curr_func,"%s",$<str>3);
+addmap('F',curr_func,"MODULE",yylineno,infilename);
+printc(" \n");
+printc(" \n");
+printc(" \n");
+printc("\n%sint aclfgl_%s (int nargs){ \n",$<str>1,$<str>3); cnt=0; }
+op_param_var_list CLOSE_BRACKET 
+{
+printcomment("/* new function %s parameters*/\n",$<str>6); 
+push_blockcommand("FUNC");printcomment("/* define section */\n");}
+define_section 
+{
+printcomment("/*end of define section */\n");
+print_param('f');
+printc("if (nargs!=%s) {status=-30174;pop_args(nargs);return 0;}\n",$<str>6,yylineno); printc("pop_params(fbind,%s);\n",$<str>6);
+} op_code
+commands  
+end_func_command;
+
+end_func_command : END_FUNCTION {
+		printc("return 0;\n");
+		pop_blockcommand("FUNC");printc("}\n");
+printcomment("/*end function*/\n");}
+	;
+
+arg_list	: {strcpy($<str>$,"0");cnt=0;} 
+| identifier {strcpy($<str>$,"1");cnt=1;} 
+	|arg_list COMMA identifier {sprintf($<str>$,"%d",++cnt);}
+	;
+
+main_def	:	MAIN { 
+lastlineno=yylineno;
+sprintf(curr_func,"MAIN");
+clr_variable(); 
+push_blockcommand("MAIN"); 
+addmap('M',curr_func,"MODULE",yylineno,infilename);
+printc("\n\nmain(int argc,char *argv[]) {\n");
+} 
+define_section
+{
+printc("\nfgl_start(argc,argv);\n");
+if (hdr_dbname[0]!=0) {
+     printc("init_connection(\"%s\");\n",hdr_dbname);
+     printc("if (sqlca.sqlcode<0) chk_err(%d,_module_name);\n",lastlineno);
+}
+}
+commands END_MAIN {pop_blockcommand("MAIN");printc("fgl_end();\n}");
+printcomment("/*end main */\n");} ;
+
+return_cmd : RETURN reset_cnt op_fgl_expr_ret_list {
+printc("return %s;",$<str>3);
+} ;
+
+op_fgl_expr_list : {strcpy($<str>$,"0");} | fgl_expr_list {
+printcomment("/* Got expr list */");
+sprintf($<str>$,"%s",$<str>1);}
+;
+
+db_section	:	 /*empty*/ {strcpy($<str>$,"");lastlineno=yylineno;}
+		|	set_database {strcpy(hdr_dbname,$<str>1);lastlineno=yylineno;}
+	;
+
+set_database 	: DATABASE dbase_name {open_db($<str>2);strcpy($<str>$,$<str>2);lastlineno=yylineno;};
+
+globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
+| GLOBALS {
+strcpy(curr_func,"[Globals]");
+push_blockcommand("GLOBALS");
+printcomment("/* start of globals */\n");
+} 
+glob_section 
+{
+pop_blockcommand("GLOBALS");
+}
+;
+
+glob_section : define_section END_GLOBALS {
+printcomment("/* end of globals */");
+debug("end of globals\n");
+lastlineno=yylineno;
+if (glob_only==1) {
+       debug("Read globals section so Im done\n");
+       YYACCEPT;
+}}
+| file_name {
+int a;
+char b[256];
+lastlineno=yylineno;
+strcpy(b,$<str>1);
+rm_quote(b);
+read_glob(b);
+/*
+if (glob_only==0) {
+         debug("Opening globals file\n");
+         a=read_globals($<str>1);
+         debug("Done globals file\n");
+         }
+*/
+}
+;
+
+mem_func_def : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET
+{
+addmap('F',curr_func,"MODULE",yylineno,infilename);
+}
+op_param_var_list CLOSE_BRACKET
+{
+char buff[80];
+sprintf(buff,"%s_%s_%d",$<str>4,$<str>2,atoi($<str>7));
+sprintf(curr_func,"%s",buff);
+printc("\n\n\nint aclm_%s (int nargs){ \n",buff);
+cnt=0;
+printcomment("/* new function %s parameters*/\n",$<str>7);
+push_blockcommand("FUNC");
+printcomment("/* define section */\n");}
+define_section
+{
+printcomment("/*end of define section */\n");
+print_param('f');
+printc("if (nargs!=%s) {status=-30174;pop_args(nargs);return 0;}\n",$<str>7,yylineno);
+printc("pop_params(fbind,%s);\n",$<str>7);
+} op_code
+commands
+end_func_command;
+
+
+
+

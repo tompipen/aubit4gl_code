@@ -1,0 +1,348 @@
+#!/bin/sh
+
+######################################################################
+#Aubit 4gl
+#amakeallo - Compiles all 4gl filles in current directory to objects
+#
+#Very usefull for finding compiler syntax errors on large number of 4gl
+#files. Run it in your 4gl program's directory, and it will generate
+#log of all compiles, and copy all problematic files in separate
+#directory, including err and c files.
+#
+#
+#
+######################################################################
+
+############################
+function stats {
+############################
+	echo "$COMPSUCCESS sucessfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
+    echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
+	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN
+    echo "$TOTALFAILED total failed."
+
+}
+
+############################
+function shortstats {
+############################
+	echo "OK= $COMPSUCCESS 4gl= $COMPFAIL4GL skip= $COMPBEFORE c= $COMPFAILCCOMP core= $COMPFAILCORE ?= $COMPFAILUNKNOWN "
+
+}
+
+
+############################
+function compileit {
+############################
+
+#4glpc file.4gl -c -o file.o
+A4GLPC="4glpc $i -c -o $X"
+#A4GLPC="4glpc $i -o $X"
+export COMPILE_QUIET=yes
+
+pwd=`pwd`
+echo "#Running $A4GLPC (in $pwd):"  >> $ERRORLOG 2>&1;
+
+if [ "x$SKIP" = "xskip" ]
+then
+	if [ -f $MAXDIR/aprog/$X ]
+	then
+		#echo "$MAXDIR/aprog/$X exists - skip is on"
+		let COMPBEFORE=COMPBEFORE+1
+		return
+	else
+		#echo $A4GLPC;
+        $A4GLPC >> $ERRORLOG 2>&1;
+	fi
+else
+	#echo $A4GLPC;
+    $A4GLPC >> $ERRORLOG 2>&1;
+fi
+
+RET=$?
+
+if test $RET != "0"
+then
+	WASERROR=1
+	cp $i $ERRFILESDIR   #4gl file
+
+	#echo "4glpc failed, return code is $RET"
+	if [ -f $ERR ]
+	then
+		cp $ERR $ERRFILESDIR   #err file
+		#echo "4glpc failed, return code is $RET, $ERR was generated."
+		echo "failed in 4glpc compiler: $FGL"
+		#ls *.err
+        echo "#################### $ERR : ######################" >> $ERRORLOG
+        cat $ERR | grep -B 10 \| >> $ERRORLOG
+        echo "##########################################################" >> $ERRORLOG
+	else
+        echo "4glpc failed on $FGL, return code is $RET ERR file was ***NOT*** generated."
+        echo "#################### $ERR : ######################" >> $ERRORLOG
+        echo "$FGL failed, ERR file was NOT generated." >> $ERRORLOG
+        echo "##########################################################" >> $ERRORLOG
+	fi;
+
+	let COMPFAIL4GL=COMPFAIL4GL+1
+
+    if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        #continue
+		return
+	fi
+#else
+#	echo "4glpc succeded, return code is $RET"
+fi;
+
+if [ -f $X ]  #but did we generate .o file?
+then
+    mv $X $MAXDIR/aprog
+else
+	WASERROR=1
+	if [ -f $ERR ]
+	then
+		#FIXME: in this case we also need to copy .h and .glb files
+
+		cp $i $ERRFILESDIR   #4gl file
+		cp $CFILE $ERRFILESDIR   #c file
+		cp $ERR $ERRFILESDIR   #err file
+
+		echo "failed in C compiler: $FGL "
+    	echo "$X not generated, but fglpc did not return error code. $ERR was generated." >> $ERRORLOG
+
+		echo "###################### $ERR : ########################" >> $ERRORLOG
+        cat $ERR | grep -B 10 \| >> $ERRORLOG
+        #this usualy indicates error in C compiler, so there will probably not be any 4gl error lines markers,
+		#so we better include complete error file here:
+		cat $ERR >> $ERRORLOG
+        echo "##########################################################" >> $ERRORLOG
+		let COMPFAILCCOMP=COMPFAILCCOMP+1
+	else
+	    echo "$X not generated, but fglpc did not return error code. $ERR was NOT generated."
+    	echo "$X not generated, but fglpc did not return error code. $ERR was NOT generated." >> $ERRORLOG
+		ls core > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"
+		then
+			echo Core was dumped...
+			rm core
+			let COMPFAILCORE=COMPFAILCORE+1
+		else
+			let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
+		fi;
+	fi;
+
+	if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        #continue
+		let COMPFAIL=COMPFAIL+1
+		return
+	fi
+
+fi;
+
+if [ -f $ERR ]
+then
+	WASERROR=1
+	echo "$ERR was generated, but fglpc did not return error code."
+	ls *.err
+	let COMPFAIL=COMPFAIL+1
+
+	if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        #continue
+		return
+	fi
+
+fi;
+
+echo "Compiled: $i"
+let COMPSUCCESS=COMPSUCCESS+1
+
+
+#############################
+}   #compileit
+#############################
+
+#SKIP=$1
+SKIP=skip
+
+. $AUBITDIR/aubitenv > /dev/null
+
+STOPONERROR=0
+WASERROR=0
+
+COMPSUCCESS=0
+COMPFAIL4GL=0
+COMPBEFORE=0
+COMPFAILCCOMP=0
+COMPFAILCORE=0
+COMPFAILUNKNOWN=0
+
+ERRFILESDIR=/tmp/amakeallo
+
+if [ ! -d $ERRFILESDIR ]
+then
+    mkdir $ERRFILESDIR
+else
+    rm -f $ERRFILESDIR/*
+fi
+
+ERRORLOG=$ERRFILESDIR/amakeallo.log
+
+
+
+#export FGL=*.4gl
+#echo '$FGL' #$FGL
+#echo "$FGL" #*.4gl
+#
+#if [ -f "$FGL" ]
+#then
+#	echo beegin
+#else
+#    echo nothing to compile
+#    exit 1
+#fi
+
+echo "Cleaning..."
+
+ls *.err > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .err
+	rm *.err
+fi
+
+ls *.c > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .c
+	rm *.c
+fi
+
+ls *.h > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .h
+	rm *.h
+fi
+
+
+ls *.glb > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .glb
+	rm *.glb
+fi
+
+
+ls *.ec > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .ec
+	rm *.ec
+fi
+
+ls *.o > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing .o
+	rm *.o
+fi
+
+ls core > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+#	echo Removing core
+	rm core
+fi
+
+echo Looking for GLOBALS definitions...;
+####################
+for i in *.4gl; do
+####################
+X=`basename $i .4gl`.o;
+ERR=`basename $i .4gl`.err;
+CFILE=`basename $i .4gl`.c;
+FGL=`basename $i`
+
+    #echo $i
+    grep -i "end globals" $i > /dev/null
+
+	RET=$?
+
+	if test $RET != "0"
+	then
+        #echo $i is NOT GLOBALS file...
+        #echo
+        continue
+    else
+		#echo $i is GLOBALS file...
+        compileit
+		#shortstats
+		#stats
+	fi
+
+
+#####
+done
+#####
+
+if test $WASERROR != "0"
+then
+	echo " "
+	echo "Stop after compiling GLOBALS files, because one or more failed to compile"
+	echo "See $ERRORLOG for summary of all errors generated"
+	echo "All source files causing problems where copied to $ERRFILESDIR"
+    echo "Totals:"
+	stats
+    echo " "
+	exit 1
+else
+    echo "Globals compiled OK, continuing..."
+fi
+
+
+####################
+for i in *.4gl; do
+####################
+X=`basename $i .4gl`.o;
+ERR=`basename $i .4gl`.err;
+CFILE=`basename $i .4gl`.c;
+
+    compileit
+
+#####
+done
+#####
+
+ls *.err > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo All error files:
+	ls *.err
+fi
+
+echo "Finished."
+echo "See $ERRORLOG for summary of all errors generated"
+echo "All source files causing problems where copied to $ERRFILESDIR"
+exit 0
+
+

@@ -1,0 +1,122 @@
+line_no		:	
+	LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
+	| LAST {sprintf($<str>$,"-1");}
+	| FIRST PLUS INT_VALUE {sprintf($<str>$,"%s",atoi($<str>3))+1;}
+	| FIRST {sprintf($<str>$,"1");}
+	| INT_VALUE {sprintf($<str>$,$<str>1);}
+;
+
+file_name	:	CHAR_VALUE | cvariable 
+;
+
+a_number	:	fgl_expr;
+
+coords		:	a_number COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+;
+
+display_coords	:	coords;
+
+field_name	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
+{sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}
+			| identifier DOT MULTIPLY
+{sprintf($<str>$,"\"%s.*\",1",$<str>1);}
+			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY
+{sprintf($<str>$,"\"%s.*\",%s",$<str>1,$<str>3);}
+			| identifier DOT identifier 
+{sprintf($<str>$,"\"%s.%s\",1",$<str>1,$<str>3);}
+			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
+{sprintf($<str>$,"\"%s.%s\",%s",$<str>1,$<str>6,$<str>3);}
+;
+
+cursor_name	:	ident_or_var {printc("push_char(%s);\n",$<str>1);
+	addmap('Q',last_var,curr_func,yylineno,infilename);
+}
+;
+
+foreach_cursor_name	:	ident_or_var {sprintf($<str>$,"push_char(%s);\n",$<str>1);
+	addmap('Q',last_var,curr_func,yylineno,infilename);
+};
+
+fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
+
+win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap('w',last_var,curr_func,yylineno,infilename);
+}
+
+;
+
+open_win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap('W',last_var,curr_func,yylineno,infilename);
+}
+;
+
+form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap('f',last_var,curr_func,yylineno,infilename);
+}
+;
+
+open_form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap('F',last_var,curr_func,yylineno,infilename);
+}
+;
+
+opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);};
+
+
+identifier	: setident NAMED { debug("ident(%s)\n",$<str>2); }
+ unsetident  { 
+			strcpy($<str>$,downshift($<str>2)) ;
+}  
+;
+
+
+ident_or_var	: setident ident_p2 unsetident {
+			sprintf($<str>$,"%s",$<str>2) ;
+			}  
+;
+
+ident_p2 : NAMED {
+sprintf($<str>$,"\"%s:%s\"",clobber,downshift($<str>1)) ;
+strcpy(last_var,downshift($<str>1));
+} | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
+{
+sprintf($<str>$,"clob(\"%s\",%s)",clobber,$<str>3);
+sprintf(last_var,"->%s",$<str>3);
+}
+;
+
+var_or_string : var | CHAR_VALUE;
+
+setident : {
+		debug("Setident\n");
+		chk4var=1;
+	strcpy($<str>$,"");
+	   } ;
+
+unsetident : 	{
+		debug("Unsetident\n");
+		chk4var=0;
+		} ;
+field_name2	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
+{sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}
+			| identifier DOT MULTIPLY
+{sprintf($<str>$,"\"%s.*\",1",$<str>1);}
+			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY
+{sprintf($<str>$,"\"%s.*\",%s",$<str>1,$<str>3);}
+			| identifier DOT identifier 
+{sprintf($<str>$,"\"%s.%s\",1",$<str>1,$<str>3);}
+			| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
+{sprintf($<str>$,"\"%s.%s\",%s",$<str>1,$<str>6,$<str>3);}
+;
+
+cvariable : variable {
+debug("Scanvar=%d",scan_variable($<str>1)&15);
+if ((scan_variable($<str>1)&15)!=0) {
+yyerror("Only a character variable can be used for this");
+YYERROR;
+}
+};
+
+

@@ -1,0 +1,45 @@
+var_ident :  var2  {
+if (scan_variable($<str>1)!=-1)
+{
+printc("push_param(&%s,0x%x);\n",$<str>1,scan_variable($<str>1)); 
+strcpy($<str>$,"?");
+}
+fflush(stdout);
+}
+;
+
+
+var2 :
+	'@'  var3 {strcpy($<str>$,$<str>2);} | var3
+;
+
+var3: 	
+        array_r_varid
+	| identifier  
+	| var3 setident DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>4);}
+;
+
+aft_dot :
+	MULTIPLY
+	| array_r_variable
+	| identifier
+;
+
+var_ident_ibind :  var2  {
+if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
+{
+int z,a;
+a=get_bind_cnt('i');
+z=add_bind('i',$<str>1,scan_variable($<str>1));
+z-=a;
+strcpy($<str>$,"");
+for (a=0;a<z;a++)  {
+if (a>0) {strcat($<str>$,",");}
+         strcat($<str>$,"?");
+}
+
+}
+fflush(stdout);
+};
+
+

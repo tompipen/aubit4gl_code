@@ -1,0 +1,60 @@
+whenever_cmd 	:  WHENEVER_NOT_FOUND when_do 
+{set_whenever(WHEN_NOTFOUND|atoi($<str>2),0);}
+		|  WHENEVER_SQLERROR when_do
+{set_whenever(WHEN_SQLERROR|atoi($<str>2),0);}
+		|  WHENEVER_ANY_ERROR when_do
+{set_whenever(WHEN_ANYERROR|atoi($<str>2),0);}
+		|  WHENEVER_ERROR_CONTINUE {
+ 		set_whento("");
+		set_whenever(WHEN_ERROR+WHEN_CONTINUE,0);
+}
+		|  WHENEVER_ERROR when_do
+{
+debug("Whenever error...%s %d %d",$<str>3,WHEN_ERROR,atoi($<str>2));
+set_whenever(WHEN_ERROR+atoi($<str>2),0);
+}
+		|  WHENEVER_SQLWARNING when_do
+{set_whenever(WHEN_SQLWARNING|atoi($<str>2),0);}
+		|  WHENEVER WARNING when_do
+{set_whenever(WHEN_WARNING|atoi($<str>2),0);}
+		|  WHENEVER_SUCCESS when_do
+{set_whenever(WHEN_SUCCESS|atoi($<str>2),0);}
+		|  WHENEVER_SQLSUCCESS when_do
+{set_whenever(WHEN_SQLSUCCESS|atoi($<str>2),0);}
+		;
+
+when_do		:	CONTINUE {
+ set_whento("");
+			sprintf($<str>$,"%d",WHEN_CONTINUE); }
+		|	GO TO label_goto
+{
+set_whento($<str>3);
+sprintf($<str>$,"%d",WHEN_GOTO);
+ }
+		|	GOTO label_goto
+{
+set_whento($<str>2); 
+sprintf($<str>$,"%d",WHEN_GOTO);
+}
+		|	STOP
+{ set_whento(""); 
+sprintf($<str>$,"%d",WHEN_STOP);
+}
+		|	FCALL function_name_when
+{
+set_whento($<str>2);
+sprintf($<str>$,"%d",WHEN_CALL);
+}
+		;
+
+
+
+label_goto	:	identifier
+		|	COLON identifier
+{sprintf($<str>$,"%s",$<str>2);}
+		;
+
+function_name_when:	identifier
+		;
+
+

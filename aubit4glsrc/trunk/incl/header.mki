@@ -1,0 +1,88 @@
+#########################################
+#header for all .mk files in $MAXDIR/ap
+#########################################
+
+include ${AUBITDIR}/IDE/d4gl.mk
+include ${AUBITDIR}/IDE/a4gl.mk
+
+RM = rm -f
+
+VPATH = ${MAXDIR}/winds:${MAXDIR}/4Js
+
+#should use ${SCWORK} not MAXDIR
+
+vpath %.4gl ${MAXDIR}/winds
+
+vpath %.42r ${MAXDIR}/gprog
+vpath %.42m ${MAXDIR}/gprog:${MAXDIR}/winds:${MAXDIR}/main
+vpath %.42f ${MAXDIR}/gform:${MAXDIR}/gform/ENG
+vpath %.42x ${MAXDIR}/gprog
+
+
+vpath %.4ae ${MAXDIR}/aprog
+vpath %.ao ${MAXDIR}/aprog
+vpath %.afr ${MAXDIR}/aform
+
+COMMON1.4gl = \
+	abnfunc.4gl	acctwind.4gl bankwind.4gl bsbwind.4gl clntwind.4gl \
+	ctrywind.4gl currwind.4gl langwind.4gl lockfunc.4gl ptypwind.4gl \
+	secufunc.4gl stopwind.4gl taxwind.4gl termwind.4gl vgrpwind.4gl \
+	vtypewind.4gl
+
+COMMONx3.4gl= \
+    ${COMMON1.4gl} vendwind.4gl
+
+
+COMMONx1.4gl= \
+	ckapwind.4gl ckhdwind.4gl dmdiwind.4gl dmhdwind.4gl note_disp.4gl \
+	secufunc.4gl vodiwind.4gl vohdwind.4gl wtaxfunc.4gl wtaxwind.4gl \
+	pohiwind.4gl postwind.4gl poauwind.4gl
+
+COMMONx4.4gl= ${COMMONx1.4gl} \
+	acctwind.4gl descwind.4gl vopawind.4gl notefunc.4gl \
+	notewind.4gl actiwind.4gl allocfunc.4gl clntwind.4gl conv_curr.4gl \
+	conv_rate.4gl costwind.4gl disbfunc.4gl disbwind.4gl duedate.4gl \
+	glordfunc.4gl itemwind.4gl jobvarwind.4gl jobwind.4gl lockfunc.4gl \
+	po_add.4gl po_chng.4gl po_dssfunc.4gl po_mod.4gl \
+	poadd_line.4gl pochg_line.4gl podewind.4gl pohdwind.4gl pooswind.4gl \
+	popswind.4gl reqfunc.4gl reqwind.4gl reswind.4gl shipfunc.4gl \
+	showship.4gl shstfunc.4gl sim_ware.4gl tablefunc.4gl trans_num.4gl \
+	vicrwind.4gl vigdwind.4gl vinwind.4gl visuwind.4gl vivowind.4gl \
+	vospwind.4gl vperfunc.4gl wadchwin.4gl wshorwin.4gl \
+	cabchkfunc.4gl stopwind.4gl \
+    pinqwind.42x wordrwin.42x
+
+COMMONx2.4gl= ${COMMONx4.4gl} \
+	poscwind.4gl taxwind.4gl termwind.4gl vendwind.4gl bsbwind.4gl
+
+
+
+#all files in /help, should be named as *.msg, but are not:
+#ap.txt
+#eo.txt
+#gl.txt
+#jm.txt
+#main.txt
+#pos.txt
+#qe.txt
+#ss.txt
+#ar.txt
+#fa.txt
+#in.txt
+#lc.txt
+#pu.txt
+#re.txt
+#wo.txt
+
+FILES.msg 	= ap.txt
+#this needs to generate A_ENG.msg
+
+
+ALLFORMS.currdir = *.per
+ALLFORMS.ENG= ./ENG/*.per
+ALLFORMS.per= $(wildcard *.per) $(wildcard ./ENG/*.per)
+
+
+DBASE     = maindb
+
+#------------------------ EOF ------------------------------

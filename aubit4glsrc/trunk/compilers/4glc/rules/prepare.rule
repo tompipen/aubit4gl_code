@@ -1,0 +1,31 @@
+prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char {
+printc("add_prepare(%s,prepare_sql(%s));\n",$<str>3,$<str>5);
+addmap('P',$<str>3,curr_func,yylineno,infilename);
+printc($<str>1);
+}
+;
+
+var_or_char: variable | CHAR_VALUE;
+
+execute_cmd : EXECUTE stmt_id 
+{ 
+printc("execute_sql(%s,0,0);\n",$<str>2);
+addmap('E',$<str>2,curr_func,yylineno,infilename);
+}
+            | EXECUTE stmt_id USING ibind_var_list
+{ 
+int ni;
+addmap('E',$<str>2,curr_func,yylineno,infilename);
+printc("{\n");
+ni=print_bind('i');
+printcomment("/* printed list */\n");
+printc("execute_sql(%s,%d,ibind);\n}\n",$<str>2,ni);
+}
+;
+
+stmt_id : ident_or_var ;
+
+
+
+
+

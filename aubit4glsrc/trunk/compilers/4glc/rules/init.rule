@@ -1,0 +1,22 @@
+init_cmd : INITIALIZE ibind_var_list {debug("init to\n");} TO KW_NULL
+ {
+  int cnt;
+  printc("{\n");
+  cnt=print_bind('i');
+  printc("set_init(ibind,%d);\n",cnt);
+  printc("}\n");
+ }
+| INITIALIZE ibind_var_list LIKE init_tab_list 
+;
+
+
+init_tab_list : init_tab | init_tab_list COMMA init_tab {sprintf($<str>$,"%s,$s",$<str>1,$<str>3);
+}
+;
+
+init_tab : tab_name DOT column_name {setrecord($<str>$,$<str>1,$<str>3);}
+	| tab_name DOT MULTIPLY {setrecord($<str>$,$<str>1,0);}
+;
+
+
+

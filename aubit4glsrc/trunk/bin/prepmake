@@ -1,0 +1,37 @@
+#!/bin/sh
+############################################################
+#   Aubit 4gl compiler - make system
+#prepmake - utillity script to convert makefiles
+#
+#See manual for information
+#
+############################################################
+
+
+#1. run "prepmake" in directory containing Maximise make file, "makefile".
+#This will create file "makefile.prep" containing instruction needed for
+#dumping program definitions to individual make files (*.mk). Note: this
+#functionallity depends on fact that all Maximise makefiles use command
+#"fgllink" somewhere in each defined prgram target, and list all source
+#files in dependencies. If for any reason this is not true for some makefie
+#you want to process, look at the script, it should be easy to substitute
+#this with some other present command.
+
+INCLCMT='	genmake $(basename $(@F)) $(addsuffix .4gl,$(basename $(^F))) #'
+INCLCMT2="#fgllink"
+COMPOSITE=/tmp/makefile
+
+sed -e "s%cat%$INCLCMT%g" makefile > $COMPOSITE.tmp
+sed -e "s%fgllink%$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
+
+#2. run first "touch *.4gl" (to force all targets ito thinking they need
+#building) and then "make -f makefile.prep". This will create one make
+#file for each program defined in makefile.prep, named as <progname>.mk,
+#using script "genmake". Each .mk files will contain definitions of
+#include headers and footers, and names of source files needed to build
+#that program, and nothing else.
+
+touch *.4gl
+make -f makefile.prep
+
+#-------------------------- EOF -------------------------------

@@ -1,0 +1,150 @@
+#!/bin/sh
+
+#Aubit 4gl
+#Compiles all per files in current directory to objects
+
+#SKIP=$1
+SKIP=skip
+
+. $AUBITDIR/aubitenv
+
+STOPONERROR=0
+ERRORLOG=/tmp/amakeallf.log
+rm $ERRORLOG
+
+
+
+ls *.err > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo Removing .err
+	rm *.err
+fi
+
+ls *.c > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo Removing .c
+	rm *.c
+fi
+
+ls *.ec > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo Removing .ec
+	rm *.ec
+fi
+
+ls *.frm > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo Removing .frm
+	rm *.frm
+fi
+
+####################
+for i in *.per; do
+####################
+X=`basename $i .per`.frm;
+ERR=`basename $i .per`.err;
+
+if [ "x$SKIP" = "xskip" ]
+then
+    #echo "skip is on"
+	if [ -f $MAXDIR/aform/$X ]
+	then
+		echo "$MAXDIR/aform/$X exists - skip is on"
+        continue
+	else
+		#echo fcompile $i;
+		echo Running fcompile $i:;
+		fcompile $i >> $ERRORLOG 2>&1;
+	fi
+else
+    #echo "Skip is OFF"
+	#echo fcompile $i;
+	echo Running fcompile $i:;
+    fcompile $i >> $ERRORLOG 2>&1;
+fi
+
+RET=$?
+
+if test $RET != "0"
+then
+	echo "fcompile failed, return code is $RET"
+	if [ -f $ERR ]
+	then
+	    echo "$ERR was generated."
+		#ls *.err
+        echo "$ERR : ###################################################" >> $ERRORLOG
+        cat $ERR | grep -B 3 \| >> $ERRORLOG
+	else
+        echo "ERR file was NOT generated."
+	fi;
+
+    if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        continue
+	fi
+else
+	echo "fcompile succeded, return code is $RET"
+fi;
+
+if [ -f $X ]
+then
+    mv $X $MAXDIR/aform
+else
+    echo "$X not generated, but fcompile did not return error code."
+	if [ -f $ERR ]
+	then
+	    echo "$ERR was generated."
+		#ls *.err
+	fi;
+
+	if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        continue
+	fi
+
+fi;
+
+if [ -f $ERR ]
+then
+    echo "$ERR was generated, but fcompile did not return error code."
+	ls *.err
+	if test $STOPONERROR = "1"
+    then
+		echo "Stop."
+		exit 1
+    else
+        continue
+	fi
+
+fi;
+
+#####
+done
+#####
+
+ls *.err > /dev/null 2>&1
+RET=$?
+if test $RET = "0"
+then
+	echo All error files:
+	ls *.err
+fi
+
+echo Finished.
+echo "See $ERRORLOG for summary of all errors generated".
+exit 0
+

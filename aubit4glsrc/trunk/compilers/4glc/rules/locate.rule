@@ -1,0 +1,24 @@
+locate_cmd : LOCATE variable IN_MEMORY {
+int vtype;
+vtype=scan_variable($<str>2);
+if (vtype!=11&&vtype!=12) {
+yyerror("Only Byte & Text may be located...");
+YYERROR;
+}
+
+printc("locate_var(&%s,'M',0);\n",$<str>2);
+
+}
+| LOCATE variable IN_FILE file_name {
+int vtype;
+vtype=scan_variable($<str>2);
+if (vtype!=11&&vtype!=12) {
+yyerror("Only Byte & Text may be located...");
+YYERROR;
+}
+
+printc("locate_var(&%s,'F',%s);\n",$<str>2,$<str>4);
+}
+;
+
+

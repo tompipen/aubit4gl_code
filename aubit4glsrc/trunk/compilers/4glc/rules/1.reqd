@@ -1,0 +1,84 @@
+
+%{
+//#include "../libincl/compiler.h"
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include "../../lib/libincl/dbform.h"
+#include "../../lib/libincl/report.h"
+#include "../../lib/libincl/oform.h"
+#include "../../lib/libincl/attributes.h"
+#include "../../lib/libincl/debug.h"
+#include "../../lib/libincl/errors.h"
+//#include "../libincl/screen.h"
+#include "../../lib/libincl/constats.h"
+#include "../../lib/libincl/prompt.h"
+extern int lineno;
+extern int charno;
+int rordcnt;
+char menuhandler[256];
+char *downshift(char *);
+char *convstrsql(char *);
+char last_var [256];
+char larr[4096]="";
+char larr2[4096]="";
+char clobber[64]="";
+int racnt=0;
+int ccode=0;
+int errbomb=0;
+int glob_only=0;
+int inp_flags=0;
+char dtypelist[2048];
+char curr_func[256]="Module";
+struct rep_structure rep_struct;
+struct pdf_rep_structure pdf_rep_struct;
+extern int rep_type;
+char where_having[1024];
+char menu[2048];
+char varstring[100];
+char infilename[132];
+int lcnt;
+int vcnt;
+
+struct form_attr form_attrib;
+
+extern int yylineno;
+int rcnt;
+int lastlineno=0;
+int cnt;
+int mcnt=0;
+int inrec=0;
+int iskey=0;
+int insql=0;
+int menu_cnt=0;
+int chk4var=0;
+int menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int in_sql=0;
+char hdr_dbname[64]="";
+#define INCASE 0
+#define INCONSTRUCT 1
+#define INDISPLAY 2
+#define INFOR 3
+#define INFOREACH 4
+#define ININPUT 5
+#define INMENU 6
+#define INPROMPT 7
+#define INWHILE 8
+#define INIF 9
+#define UPDCOL 0
+#define UPDVAL 1
+#define SELINTO 2
+#define PUTVAL 3
+int continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
+int in_cmd[]={0,0,0,0,0,0,0,0,0,0};
+int fcall_cnt=0;
+%}
+%start module
+%union	  {
+	char	str[2048];
+	  }
+
+
+

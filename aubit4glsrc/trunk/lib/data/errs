@@ -1,0 +1,42 @@
+1|Input form is not the current form!
+2|Pow not implemented
+3|trunc not implemented\n
+4|round not implemented\n
+5|exp not implemented\n
+6|logn not implemented\n
+7|log not implemented\n
+8|length not implemented\n
+9|not implemented\n
+10|Form was not found
+11|Invalid Window info request
+12|Invalid statement info request
+13|Window was not found
+14|Wrong number of arguments
+15|Invalid type called in get_info
+16|Window not found
+17|No current form
+18|Pointer not found %s
+19|Panel not found....
+20|Couldnt open form
+21|Input form is not current
+22|No valid metric....
+23|Number of fields is not the same as the number of variables
+24|Too few variables for the number of fields
+25|Field name not found
+26|after field : field number not found!
+27|before field : field number not found!
+28|No more bindings
+29|Cursor not found
+30|Memory Allocation Error
+31|Can't declate cursor for non-prepared statement
+32|Too many or too few host variables
+33|Could not connect to database
+34|Can't free cursor thats not been defined
+35|Can't close cursor that hasn't been defined
+100|Not connected to database
+37|Statement has not been prepared
+38|Internal Error
+39|Statement could not be found
+174|Wrong number of parameters
+
+

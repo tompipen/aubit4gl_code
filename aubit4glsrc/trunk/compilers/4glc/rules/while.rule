@@ -1,0 +1,11 @@
+while_cmd : WHILE 
+{printc("while (1==1) {\n");push_blockcommand("WHILE");}
+fgl_expr {printc("if (!(pop_bool())) break;\n");}
+            commands
+END_WHILE {
+printc(" /*end while */");
+pop_blockcommand("WHILE");
+}
+;
+
+

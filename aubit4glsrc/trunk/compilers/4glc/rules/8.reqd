@@ -1,0 +1,21 @@
+%left COMMA
+%left OR // lex changes
+%left AND // lex changes
+%left USING MATCHES //lex changes
+%left POWER
+%left LESS_THAN GREATER_THAN EQUAL GREATER_THAN_EQ LESS_THAN_EQ NOT_EQUAL
+%left MINUS PLUS
+%left DIVIDE MULTIPLY MOD
+
+%token NUMBER_VALUE
+%token SQLERROR SQLWARNING
+%token CHAR_VALUE 
+%token INT_VALUE
+%token NAMED_GEN
+//%token COMMENT
+%token CLINE
+%token SQLLINE
+%token KW_CSTART
+%token KW_CEND
+
+

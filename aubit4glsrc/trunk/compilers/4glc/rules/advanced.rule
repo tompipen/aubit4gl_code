@@ -1,0 +1,45 @@
+pause_screen_cmd : SETPMON  {printc("screen_mode(0);");}
+		|  SETPMOFF {printc("screen_mode(1);");}
+;
+
+start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE FOR  remote_func_list
+	{
+		printc("server_run(%s+0x2000000);",$<str>2);
+		printc("%s\n",$<str>5);
+	}
+;
+
+stop_rpc_cmd : STOP_ALL_EXTERNAL 
+	{
+		printc("stop_serving();");
+	}
+;
+
+valid_port : variable {
+		if (scan_variable($<str>1)!=2) {
+		char buff[256];
+			sprintf(buff,"START EXTERNAL ..ON must be an integer");
+			yyerror(buff);
+			YYERROR;
+		}
+	} | INT_VALUE
+;
+
+
+remote_func_list :  remote_func |  remote_func_list COMMA remote_func
+	{
+	sprintf($<str>$,"%s%s",$<str>1,$<str>3);
+	}
+;
+
+remote_func : identifier {
+	printh("int aclfgl_%s(int np);\n",$<str>1);
+	printc("status=0;register_func(\"%s\",aclfgl_%s);if (status<0) chk_err(%d,_module_name);\n",$<str>1,$<str>1,yylineno);
+	sprintf($<str>$,"unregister_func(\"%s\",aclfgl_%s);\n",$<str>1,$<str>1);
+	addmap('E',$<str>1,curr_func,yylineno,infilename);
+	}
+;
+
+
+
+

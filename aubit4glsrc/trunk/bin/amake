@@ -1,0 +1,153 @@
+#!/bin/sh
+#####################################################################
+#           Aubit 4gl make files execution script
+#
+#This script will use specified .mk files as base for building makefile
+#that will be processed by make command, by adding default or specified
+#header makefile (containing program's global make definitions and including
+#rules for building 4gl compiler specific targets) and footer makefile
+#(defining program's targets).
+#
+#.mk files are expected to contain only definitions of source files
+#that make a program, one program per .mk file. See examples in $AUBITDIR/incl
+#and $AUBITDIT/tools/test
+#####################################################################
+
+#`--include-dir=dir'
+#Specifies a directory dir to search for included makefiles. See section 
+#Including Other Makefiles. If several `-I' options are used to specify 
+#several directories, the directories are searched in the order specified.
+
+#defaults:
+LOG="0"
+OVERRIDEINCLUDE="1"
+HEADER="./header.mki"
+FOOTER="./footer.mki"
+MAKE=make
+MK=".mk"
+
+if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "help" ]
+then
+    echo
+	echo Aubit 4gl make tool
+    echo
+	echo ussage: amake progname/makefilename target options
+    echo
+    echo params :
+	echo " -all = process all .mk files in current directory"
+	echo " -log = log make processing to make.log file"
+    echo " -defaultinclude = use inclludes as specified in .mk file, default is"
+    echo "  to use make includes specified in this script"
+    echo " -header xxx = use xxx file for header include, overrides -defaultinclude"
+    echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
+	echo " everything else will be passed to make"
+    echo
+	echo Examples:
+    echo
+    echo "'amake' - build defailt targets of all .mk files in ./"
+	echo "'amake -k -all install' - install all programs, ignore errors"
+    echo "'amake P11 aubit -k' - build aubit target defined in P11.mk, ignore errors"
+    echo "'amake P11 aubit -defaultinclude' - build P11 target for Aubit compiler, use"
+	echo "                 includes defined in P11"
+    echo "'amake P11 -header myhead.mk' - default P11 target, use myhead.mk for header"
+	echo
+	exit 1
+fi
+
+#initialise variables:
+PROGS=
+PARAMS=
+MKFLAGS=
+
+if [ $# -lt 1 ]
+then
+    PROGS=`ls *$MK`
+else
+	###########
+	for a in $@
+    ###########
+	do
+		if [ -f $a$MK ]
+		then
+		    PROGS="$a$MK $PROGS"
+		else
+           ##########
+		   case $a in
+           ##########
+
+		   #################this are parameters to this script:##########
+		   -all) PROGS=`ls *$MK`
+		   ;;
+
+		   -log) LOG="1"
+		   ;;
+
+		   -defaultinclude) OVERRIDEINCLUDE="0"
+		   ;;
+
+		   -header) OVERRIDEINCLUDE="1"
+                #FIXME: HEADER=<next parameter>
+		   ;;
+
+		   -footer) OVERRIDEINCLUDE="1"
+                #FIXME: FOOTER=<next parameter>
+		   ;;
+
+		   #########anything else that starts with "-" is make flag:#####
+		   -*) MKFLAGS="$MKFLAGS $a"
+		   ;;
+
+
+		   ################anything else is make parameter:##############
+		   *)   PARAMS="$a $PARAMS"
+
+
+		  ;;
+		  ####
+		  esac
+          ####
+        fi
+	####
+	done
+    ####
+fi
+
+
+if [ "$PROGS" = "" ]
+then
+    echo "Please specify one or more .mk file names (without .mk extension)"
+    exit 1
+fi
+
+if [ "$LOG" = "1" ]
+then
+	echo "Logging make to make.log"
+fi
+
+	#####################
+	for ONEPROG in $PROGS
+    #####################
+    do
+		if [ "$OVERRIDEINCLUDE" = "1" ]
+        then
+			INCLCMT="#include"
+			COMPOSITE=/tmp/$USER_$ONEPROG
+			sed -e "s%include%$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
+	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
+        else
+            $COMPOSITE=$ONEPROG
+		fi
+
+		if [ "$LOG" = "1" ]
+		then
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS > make.log 2>&1
+        else
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS
+        fi
+
+        #FIXME: stop on error
+    ####
+	done
+    ####
+#------------------------------- EOF ----------------------------------
+

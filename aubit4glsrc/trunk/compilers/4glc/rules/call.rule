@@ -1,0 +1,152 @@
+call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
+;
+
+call_ext :
+    function_callb RETURNING variable { printc("%s pop_var(&%s,%d);\n",$<str>1,$<str>3,scan_variable($<str>3)); }
+   | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING 
+   { printc("{int _retvars;\n");printc("_retvars=fgl_getfldbuf(%s);\n",$<str>3); start_bind('i',0);} ibind_var_list
+   { int cnt;
+   printc("{\n");
+   cnt=print_bind('i');
+   printc("if (_retvars!= %d ) {if (_retvars!=-1) {set_status(-3001);pop_args(_retvars);}\n} else {set_status(0);\n",cnt);
+   printc("pop_params(ibind,%d);}\n",cnt);
+   printc("}\n");
+   printc("}\n"); }
+   | FORM_IS_COMPILED OPEN_BRACKET identifier CLOSE_BRACKET {
+		printc("add_compiled_form(\"%s\",compiled_form_%s);\n",$<str>3,$<str>3);
+		printh("extern char compiled_form_%s[];\n",$<str>3);
+	}
+   | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
+   { printc("push_int(fgl_infield(%s));pop_var(&%s,%d);\n",$<str>3,$<str>6,scan_variable($<str>6)); }
+   | pdf_functions 
+   | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
+   { printc("push_int(fgl_fieldtouched(%s));pop_var(&%s,%d);\n",$<str>3,$<str>6,scan_variable($<str>6)); }
+   | identifier OPEN_BRACKET {new_counter();
+   addmap('C',$<str>1,curr_func,yylineno,infilename);
+   } 
+   opt_func_call_args 
+   {sprintf($<str>$,"%d",get_counter_val());drop_counter();}
+   CLOSE_BRACKET 
+   {
+   printc("%s {int _retvars;set_status(0);\n",$<str>4);
+   printc("_retvars=aclfgl_%s(%s);\n",$<str>1,$<str>5);
+   }
+   opt_return 
+   { int cnt;
+   printc("{\n");
+   cnt=print_bind('i');
+   printc("if (_retvars!= %d ) {pop_args(_retvars);set_status(-3001);}\n",cnt,lastlineno,infilename);
+   printc("else {set_status(0);pop_params(ibind,%d);}\n",cnt);
+   printc("}\n");
+   printc("}\n"); }
+   | SHARED char_or_var IN char_or_var OPEN_BRACKET {
+	set_status(0);
+	new_counter();
+	}
+opt_func_call_args {
+   sprintf($<str>$,"%d",get_counter_val());drop_counter();
+}
+CLOSE_BRACKET opt_return {
+   char buff[256];
+printc("{int _retvars;\n");
+strcpy($<str>$,"");
+printc("%s set_status(0);_retvars=call_4gl_dll(%s,%s,%s);\n",$<str>7,$<str>4,$<str>2,$<str>8);
+   sprintf(buff,"%s:%s",$<str>2,$<str>4);
+	addmap('s',buff,curr_func,yylineno,infilename);
+   	printc("{\n");
+   	cnt=print_bind('i');
+   	printc("if (_retvars!= %d&&status==0) {set_status(-3001);pop_args(_retvars);} else {\n",cnt,lastlineno,infilename);
+   	printc("if (_retvars!=%d) {if (status==0) {set_status(-3001);} pop_args(_retvars);} else \n",cnt,lastlineno,infilename);
+   	printc("pop_params(ibind,%d);}\n",cnt);
+   	printc("}\n");
+   printc("}\n"); 
+}
+   | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET
+   {
+   char buff[256];
+   new_counter();
+   sprintf(buff,"%s:%s(%d)",$<str>2,$<str>4,$<str>6);
+   addmap('e',buff,curr_func,yylineno,infilename);
+   } 
+   opt_func_call_args 
+   {
+   sprintf($<str>$,"%d",get_counter_val());drop_counter();
+   }
+   CLOSE_BRACKET 
+   {
+   printc("%s {int _retvars;\n",$<str>10);
+   }
+   opt_return_remote
+   { int cnt;
+	char fname[64];
+	
+   if (strcmp($<str>14,"WITHOUT WAITING")==0) {	
+	strcpy(fname,"1,");
+	strcat(fname,$<str>4);
+   } else {
+	strcpy(fname,"0,");
+	strcat(fname,$<str>4);
+   }
+	
+   printc("_retvars=remote_func_call(%s,%s,%s,%s);\n",$<str>2,fname,$<str>6,$<str>11);
+   if (strcmp($<str>14,"WITHOUT WAITING")!=0) {	
+   	printc("{\n");
+   	cnt=print_bind('i');
+   	printc("if (_retvars!= %d ) {set_status(-3001);pop_args(_retvars);} else\n",cnt,lastlineno,infilename);
+   	printc("{pop_params(ibind,%d);}\n",cnt);
+   	printc("}\n");
+   }
+   printc("}\n"); 
+  }
+   
+;
+
+opt_return 	: {start_bind('i',0);strcpy($<str>$,"0");} | RETURNING ibind_var_list {strcpy($<str>$,$<str>2);
+}
+;
+
+opt_return_remote 	: {start_bind('i',0);strcpy($<str>$,"0");} 
+                  | RETURNING ibind_var_list {strcpy($<str>$,$<str>2);}
+                  | WITHOUT_WAITING {strcpy($<str>$,"WITHOUT WAITING"); }
+;
+
+
+opt_func_call_args : 
+		/*empty*/ {strcpy($<str>$,"");}
+		| func_call_args 
+;
+
+func_call_args	: func_arg
+		| func_call_args COMMA func_arg {sprintf($<str>$,"%s %s",$<str>1,$<str>3);}
+
+;
+
+rcvd_variables	:	variable {
+printc("pop_var(&%s,%d);\n",$<str>1,scan_variable($<str>1));
+cnt=1;sprintf($<str>$,"%d",cnt);
+}
+		| rcvd_variables COMMA variable {
+printc("pop_var(&%s,%d);\n",$<str>1,scan_variable($<str>1));
+cnt++;sprintf($<str>$,"%d",cnt);
+}
+;
+
+func_arg 	:	fgl_expr_c {
+debug("Function call argument : %s",$<str>1);
+}
+;
+
+remote_host_name : CHAR_VALUE | identifier
+{
+sprintf($<str>$,"\"%s\"",$<str>1);
+}
+;
+
+remote_func_name : identifier 
+{
+sprintf($<str>$,"\"%s\"",$<str>1);
+}
+;
+
+
+
