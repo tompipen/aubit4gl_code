@@ -17,6 +17,7 @@ ESQL/C
 	Fix FETCH (relative/absolute etc)
 	Fix Declare INTO in esql/c LEX
 	Other fixes in ESQL/C output driver
+	
 
 
 FIXME's
@@ -26,6 +27,9 @@ FIXME's
 GTK
 	Make it work
 
+
+UI
+	Implement proper message stack (current way doesn't work properly)
 
 Other unimplemented functions
 	put_insert
@@ -37,6 +41,7 @@ SQL Parser
 	IN (variable,variable)
 	add extend() SQL function into parser
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
+	Bind substrings (also used in displays/inputs)
 
 
 TUI
@@ -47,3 +52,5 @@ TUI
 	clean up construct...
 
 
+
+Ad-Hoc Bug Fixes
