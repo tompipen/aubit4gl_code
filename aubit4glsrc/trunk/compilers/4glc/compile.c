@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.18 2003-04-02 18:52:26 mikeaubury Exp $
+# $Id: compile.c,v 1.19 2003-04-03 22:17:54 mikeaubury Exp $
 #*/
 
 /**
@@ -157,7 +157,7 @@ char extra_ldflags[1024] = "";
   static char output_object[128] = "";
   static struct option long_options[] = {
     {"globals", 0, 0, 'G'},
-    {"namespace", 0, 0, 'N'},
+    {"namespace", 1, 0, 'N'},
     {"stack_trace", 1, 0, 's'},
     {"help", 0, 0, '?'},
     {"silent", 0, 0, 'S'},
@@ -336,6 +336,7 @@ char extra_ldflags[1024] = "";
 
 
 	case 'N': 
+		if (optarg==0) optarg="";
 		printf("Using specified namespace : %s\n",optarg);
 		set_namespace(optarg);
 		break;
