@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.2 2003-01-09 05:40:42 afalout Exp $
+#  $Id: Makefile.in,v 1.3 2003-01-12 09:22:45 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -42,16 +42,26 @@ JS_FILES	= treeview.js
 # =========================================================================
 
 #all: $(CLASS_FILES)
-all:
+all: ant
+
+
+
+ant: /usr/share/java/catalina-ant.jar
 ifneq "${ANT}" "no"
 ifneq "${JAVAC}" "no"
-	${ANT}
+#directory missing on some Tomcar installations, but needed by build.xml:
+	mkdir -p ${TOMCAT_DIR}/shared/lib
+	export CLASSPATH=$CLASSPATH:$^; ${ANT}
 else
 	@echo "Java compiler not found - cannot compile"
 endif
 else
 	@echo "Ant tool not found - cannot compile"
 endif
+
+/usr/share/java/catalina-ant.jar:
+#Tomcat specifc targets for Ant:
+	cp /var/tomcat4/server/lib/catalina-ant.jar /usr/share/java/
 
 $(CLASS_FILES): all
 
@@ -68,6 +78,7 @@ $(CLASS_FILES): all
 # =========================================================================
 
 install: $(CLASS_FILES)
+ifneq "${TOMCAT_DIR}" "no"
 	mkdir -p ${NAV_DIR}
 	mkdir -p ${CLASS_DIR}
 	$(INSTALL) $(CLASS_FILES) $(CLASS_DIR)
@@ -75,6 +86,9 @@ install: $(CLASS_FILES)
 	$(INSTALL) $(IMG_FILES) $(NAV_DIR)
 	$(INSTALL) $(JS_FILES) $(NAV_DIR)
 #and ccs?
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
 
 # =========================================================================
 #                              Deinstall
@@ -95,5 +109,7 @@ endif
 
 clean:
 	$(RM) -f *.class *.jar *.bak
+	rm -rf classes
+	rm -rf build
 
 # =================================== EOF =================================
