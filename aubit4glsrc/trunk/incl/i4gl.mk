@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.6 2003-02-02 01:13:48 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.7 2003-02-04 05:21:40 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -12,6 +12,22 @@
 ###############################################################################
 # Compilers and flags
 ###############################################################################
+
+#fglpc flags:
+#-ansi check all SQL for ANSI SQL compliance
+#-p pathname - put resulting object in 'path'
+#-a To have your compiled program check array bounds at runtime, specify the
+#   -a option. The -a option requires additional processing, so you might prefer
+#   to use this option only for debugging during development.
+#The -globcurs option lets you make the names of cursors and of prepared
+#objects global to the entire program. The compilers still require you to declare
+#the cursor before using it for any other purpose in the module, so this option
+#is seldom useful. This option might help in debugging, however, because the
+#cursor names are not modified. See the section “The -globcurs and -localcurs
+#Options” on page 1-38 for more information about the scope of cursor names.
+#The -localcurs option can override the -globcurs option if that was set in the
+#C4GLFLAGS environment variable, and makes the names of cursors and
+#prepared objects local to the module in which they were declared.
 
 ifndef AMAKE
 	AMAKE=amake
@@ -186,11 +202,19 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #	${I4GL_PL} $*.4go > $@
 #	${RM} $*.4go
 
-.4go.4gi:
-#	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
-	@echo here ${I4GL_PL}
-	${I4GL_PL}123 $*.4go > $@
-#	${RM} $*.4go
+#No need for this rule
+#.4go.4gi:
+##	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
+#	@echo here ${I4GL_PL}
+#	${I4GL_PL} $*.4go > $@
+##	${RM} $*.4go
+
+
+#Make executable from single 4gl file:
+.4gl.4gi:
+	${I4GL_PC} -p $(<D) $<
+	${I4GL_PL} $*.4go > $@
+
 
 
 # ================================= EOF =================================

@@ -72,6 +72,21 @@ define
 #| Too many variables ()
 
 
+
+
+grant connect to "nobody";
+
+
+revoke all on notes from "public";
+
+
+create table whics_payments
+  (
+    create_date_time datetime year to fraction(3)
+  );
+
+
+
 ########################################## (1) /data2/maximise/max_4.01.12/eo/E52e.err :
 
 #                  let pa_line[idx][6,66] = charvar

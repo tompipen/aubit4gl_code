@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.114 2003-02-02 01:13:48 afalout Exp $
+# $Id: Makefile-common.in,v 1.115 2003-02-04 05:21:40 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -699,12 +699,10 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 ## ==================================================================
 
 #Create make file in current directory:
-%mak: Makefile.in
-	cd ${AUBITDIR} && CONFIG_FILES=$(SUBDIR)/Makefile CONFIG_HEADERS= $(SH) ./config.status
-
-## ==================================================================
-##                    Install/deinstall
-## ==================================================================
+#%mak: Makefile.in
+%.mak: Makefile.in
+#	cd ${AUBITDIR} && CONFIG_FILES=$(SUBDIR)/Makefile CONFIG_HEADERS= $(SH) ./config.status
+	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
 
 ## ==================================================================
 ##                    Install Settings

@@ -23,30 +23,22 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2003-01-30 11:54:39 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-02-04 05:21:41 afalout Exp $
 #
 
 ROOT	=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 #Rules for making 4gl stuff:
 include $(wildcard $(ROOT)/incl/?4gl.mk)
-####################
-#Or, you can comment out above stmt, and pick one or more here:
-#include $(ROOT)/incl/i4gl.mk
-#include $(ROOT)/incl/d4gl.mk
-#include $(ROOT)/incl/a4gl.mk
-#include $(ROOT)/incl/q4gl.mk
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-#4GLPCFLAGS		=-verbose -settings
-
+#By default, we will compile only code that _should_ compile, and only with Aubit:
 DEFAULT=regression-test-4gl.ao regression-test-per.afr.xml
 
 ## ==================================================================

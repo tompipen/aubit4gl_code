@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.11 2002-10-01 09:50:30 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.12 2003-02-04 05:21:40 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -218,7 +218,7 @@ make install
 /opt/aubit4gl/incl/a4gl_incl_4gldef.h
 
 /opt/aubit4gl/incl/header.mki
-/opt/aubit4gl/incl/maximise.mki
+#/opt/aubit4gl/incl/maximise.mki
 /opt/aubit4gl/incl/a4gl-rules.mki
 /opt/aubit4gl/incl/footer-c.mki
 /opt/aubit4gl/incl/footer.mki

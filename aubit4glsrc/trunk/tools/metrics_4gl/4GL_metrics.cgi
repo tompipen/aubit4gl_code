@@ -2,16 +2,18 @@
 
 # ---------------------------------------------------
 # Simple metrics to evaluate informix 4GL-code.
-# Analysis : 
+# Analysis :
 #   1. if number of lines > 250 raise a warning
 #   2. if complexity > 10 raise warning
 #
 # AUTHOR : Renaat Van Hee
-#
+# Modified by Andrej Falout
 # ---------------------------------------------------
 # CALL : 4GL_metrics UIT FILE1 FILE2 FILE3 FILE4 ...
 #           UIT = csv = output to delimited file
-#                 ... = output for printer
+#                 prt = output for printer
+#                 sum = outpur summary to stdout
+#                 multisum = output multipel files summary to stdout
 #           FILE? = List of files to evaluate
 # ---------------------------------------------------
 # HISTORY
@@ -20,16 +22,78 @@
 # ---------------------------------------------------
 
 $UIT = shift @ARGV;
+#$DEBUG = "1";
+
+
+$TOT_BLANK=0;
+$TOT_CMNT=0;
+$TOT_CODE=0;
+$TOT_FUNCS=0;
+$TOT_AVG_LINE_FUNC=0;
+$TOT_PRC_BLANK=0;
+$TOT_PRC_CMNT=0;
+$TOT_RISC=0;
+$TOT_COMPLEXITY=0;
+
+
+if ($DEBUG eq "1") { print "DEBUG: start\n"; }
 
 foreach $BESTAND (@ARGV) {
+
+  if ($DEBUG eq "1") { print "DEBUG: process file $BESTAND \n"; }
+
   process();
-  if ($UIT eq "csv") {
-   Dump_csv();
-  }
-  else {
-   Print_Rapport();
-  }
+
+  if ($DEBUG eq "1") { print "DEBUG: returned from process() \n"; }
+
+  
+	if ($UIT eq "csv")
+	{
+	   if ($DEBUG eq "1") { print "DEBUG: outputing CSV\n"; }
+	   Dump_csv();
+	}
+
+	if ($UIT eq "sum") {
+		if ($DEBUG eq "1") { print "DEBUG: outputing summary\n"; }
+		Print_sumRapport();
+	}
+
+	if ($UIT eq "multisum") {
+		if ($DEBUG eq "1") { print "DEBUG: outputing multiple files summary\n"; }
+		Print_multisumRapport();
+	}
+
+	if ($UIT eq "prt") {
+		if ($DEBUG eq "1") { print "DEBUG: outputing report\n"; }
+		Print_Rapport();
+	}
+
 }
+
+
+if ($UIT eq "multisum") {
+
+	print "blank|comment|code|functions|Avg.line/func|%blank|%comment|risk|Avg.complexity\n";
+
+   #$TOT_AVG_LINE_FUNC=int (($TOTAAL3-$RESULTAAT[1]{"totaal"}-$RESULTAAT[2]{"totaal"})/($teller-2));
+	$TOT_AVG_LINE_FUNC=int (($TOT_CODE-$TOT_BLANK-$TOT_CMNT)/($TOT_FUNCS));
+
+   #$TOT_PRC_BLANK=int ($TOTAAL1 / ($TOTAAL3 / 100));
+	$TOT_PRC_BLANK=int ($TOT_BLANK / ($TOT_CODE / 100));
+
+   #$TOT_PRC_CMNT=int ($TOTAAL2 / ($TOTAAL3 / 100));
+   $TOT_PRC_CMNT=int ($TOT_CMNT / ($TOT_CODE / 100));
+
+	#complexity int ($complexity/$TOTAAL3)
+    $TOT_CMPLX=int ($TOT_COMPLEXITY / $TOT_FUNCS);
+	#$TOT_CMPLX=int ($TOT_COMPLEXITY / $TOT_CODE);
+
+   print "$TOT_BLANK|$TOT_CMNT|$TOT_CODE|$TOT_FUNCS|$TOT_AVG_LINE_FUNC|$TOT_PRC_BLANK|$TOT_PRC_CMNT|$TOT_RISC|$TOT_CMPLX\n";
+
+
+}
+
+if ($DEBUG eq "1") { print "DEBUG: exit\n"; }
 
 ### -------------------------------------
 ### de eigenlijke verwerking
@@ -147,7 +211,7 @@ Afsluiten();
 ### ------------------------------------
 sub Print_Rapport {
 
-   # init 
+   # init
    $tijd = localtime;
    $risico = 0;
 
@@ -196,6 +260,66 @@ sub Print_Rapport {
 
    print "4GL metrics \t\t\t Renaat Van Hee \n\n";
 }
+
+
+
+### ------------------------------------
+### summary report
+### ------------------------------------
+sub Print_sumRapport {
+
+   $risico = 0;
+   $complexity = 0;
+
+   for $i (1..$teller) {
+
+
+        $complexity=$complexity+$RESULTAAT[$i]{"control"};
+	   if ($RESULTAAT[$i]{"control"} > 10) {
+	      ++$risico;
+	     }
+   }
+
+	#print "file|blank|comment|code|functions|Avg.line/func|%blank|%comment|risk|Avg.complexity\n";
+
+   print "$BESTAND|$TOTAAL1|$TOTAAL2|$TOTAAL3|$teller-2|",int (($TOTAAL3-$RESULTAAT[1]{"totaal"}-$RESULTAAT[2]{"totaal"})/($teller-2)),"|", int ($TOTAAL1 / ($TOTAAL3 / 100)),"|",int ($TOTAAL2 / ($TOTAAL3 / 100)),"|",$risico,"|",int ($complexity/$TOTAAL3),"\n";
+
+}
+
+
+### ------------------------------------
+### multiple files summary report
+### ------------------------------------
+sub Print_multisumRapport {
+
+   $risico = 0;
+   $complexity = 0;
+
+   for $i (1..$teller) {
+
+        $complexity=$complexity+$RESULTAAT[$i]{"control"};
+	   if ($RESULTAAT[$i]{"control"} > 10) {
+	      ++$risico;
+	     }
+   }
+
+
+   #blank lines ($TOTAAL1)
+   $TOT_BLANK=$TOT_BLANK+$TOTAAL1;
+   #comment lines ($TOTAAL2)
+   $TOT_CMNT=$TOT_CMNT+$TOTAAL2;
+   #code lines ($TOTAAL3)
+   $TOT_CODE=$TOT_CODE+$TOTAAL3;
+   #functions($teller-2)
+   $TOT_FUNCS=$TOT_FUNCS+($teller-2);
+   #rick $risico
+   $TOT_RISC=$TOT_RISC+$risico;
+
+	#complexity int ($complexity/$TOTAAL3)
+    $TOT_COMPLEXITY=$TOT_COMPLEXITY+$complexity;
+
+}
+
 
 ### ----------------------------------------
 ### een csv - bestand aanmaken

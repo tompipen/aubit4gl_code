@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.7 2003-02-02 01:13:48 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.8 2003-02-04 05:21:40 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -120,13 +120,21 @@ D4GL_CLEAN_FLAGS	=$(addprefix *,	$(D4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(D4
 #	${A4GL_CC} $< -c -o ${OBJSTORE}$@
 #	${LIBMVCMD} $@ ${OBJSTORE}
 
+#Compile single 4gl file to executable
 .4gl.42r:
 #	${D4GL_PC} -c $*.4gl
 #	${D4GL_PL} -o $*.42m $*.42r ${D4GL_PL_LDFLAGS}
 #using VPATH:
-	@echo eeeee
-	${D4GL_PC} -c $^
-	${D4GL_PL} -o $^.42m $^.42r ${D4GL_PL_LDFLAGS}
+#	@echo eeeee
+#	${D4GL_PC} -c $^
+#	${D4GL_PL} -o $^.42m $^.42r ${D4GL_PL_LDFLAGS}
+	${D4GL_PC} $<
+#	${D4GL_PC} -o $@ ${$(<F):.4gl=.42m}
+#	${D4GL_PC} -o $@ ${${@F}:.42r=.42m}
+#	${D4GL_PC} -o $@ ${$(notdir $@):.42r=.42m}
+	${D4GL_PC} -o $@ $(subst .42r,.42m,$(notdir $@))
+
+#	fgllink -O -o $@ $*.42m ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
 
 eerr%.42x:
 	@echo $@ $^

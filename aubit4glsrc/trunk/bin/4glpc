@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.93 2003-01-30 11:54:38 afalout Exp $
+# $Id: 4glpc,v 1.94 2003-02-04 05:21:40 afalout Exp $
 #
 
 ########################################################################
@@ -839,10 +839,10 @@ do
 
 				if [ "$err_code" != "0" ]
 				then
-                    #linking will fail anyway, we cannot continue:
+                    #we got error from C compiler
 					showerror
 					echo "error compiling $fname.c. STOP."
-					exit 17
+					exit $err_code
                 else
                     if [ -f "$fname.c.err" ]; then
                         #C compiler did not return error code, but .err file was
