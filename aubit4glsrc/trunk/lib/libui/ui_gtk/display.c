@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: display.c,v 1.3 2002-11-23 06:05:35 afalout Exp $
 #*/
 
 /**
@@ -182,13 +182,13 @@ display_generic (GtkWidget * k, char *s)
 	if (status!=0) return 1;
 	debug("Everything seems ok...");
 
-   	push_variable(&da,0x7); aclfgl_day();
+   	push_variable(&da,0x7); aclfgl_day(0); /* was () */
    	pop_var2(&d,2,0);
 
-   	push_variable(&da,0x7); aclfgl_month();
+   	push_variable(&da,0x7); aclfgl_month(0);  /* was () */
    	pop_var2(&m,2,0);
 
-   	push_variable(&da,0x7); aclfgl_year();
+   	push_variable(&da,0x7); aclfgl_year(0); /* was () */
    	pop_var2(&y,2,0);
 
         gtk_calendar_select_month(GTK_CALENDAR(k),m,y);

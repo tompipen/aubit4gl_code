@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: get_fld_val.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
+# $Id: get_fld_val.c,v 1.3 2002-11-23 06:05:35 afalout Exp $
 #*/
 
 /**
@@ -133,8 +133,8 @@ fld_val_generic (GtkWidget * k)
         push_variable(&m,0x2);
         push_variable(&d,0x2);
         push_variable(&y,0x2);
-/*        aclfgl_mdy(3);      too many arguments to function `aclfgl_mdy' */
-        aclfgl_mdy();
+        aclfgl_mdy(3);
+        /* aclfgl_mdy(); */
 	pop_var2(&buff,0,20);
 	trim(buff);
 	return buff;

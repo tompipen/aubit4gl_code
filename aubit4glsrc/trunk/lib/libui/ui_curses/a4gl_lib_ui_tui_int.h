@@ -6,20 +6,28 @@
 
 	#define WANTCURSES
 
-	#ifndef _NO_FORM_H_
-		#include <form.h>
-	#endif
+    #if HAVE_PDCURSES
+		#define _SKIP_AAAA_ //don't include anything from form.h
+		#include <curses.h>
+		#include <panel.h>
+		#include <D:/cygwin/usr/include/ncurses/form.h>
+    #else
+		#ifndef _NO_FORM_H_
+			#include <form.h>
+		#endif
 
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
-		#ifndef PAN32
-	    	#define PAN32
-			#include <panel32.h>
-	    #endif
-	#else
-        #ifndef _NO_PANEL_H_
-			#include <panel.h>
-	    #endif
-	#endif
+		#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
+			#ifndef PAN32
+		    	#define PAN32
+				#include <panel32.h>
+		    #endif
+		#else
+	        #ifndef _NO_PANEL_H_
+				#include <panel.h>
+		    #endif
+		#endif
+    #endif
+
 
 	typedef struct
 	  {

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.41 2002-11-08 02:02:28 afalout Exp $
+# $Id: Makefile-install.mki,v 1.42 2002-11-23 06:05:35 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -265,6 +265,8 @@ install.aubitbuild.cron:
 	@echo "AUBITDIR=${AUBIT_SRC_ROOT}" >> ${OUT}
 	@echo "LOGFILE=/tmp/cron.log" >> ${OUT}
 	@echo "SH=${SH}" >> ${OUT}
+	@echo "MAILFILE=/tmp/aubitbuild.mail" >> ${OUT}
+	@echo "MAILADDR=afalout@ihug.co.nz" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo ". /etc/bashrc > /dev/null" >> ${OUT}
 	@echo "" >> ${OUT}
@@ -285,7 +287,7 @@ install.aubitbuild.cron:
 	@echo 'echo "Running : $$SH $$AUBITDIR/bin/aubitbuild.sh"  >> $$LOGFILE' >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo "##################################" >> ${OUT}
-	@echo '$$SH $$AUBITDIR/bin/aubitbuild.sh' >> ${OUT}
+	@echo '$$SH $$AUBITDIR/bin/aubitbuild.sh > $$MAILFILE 2>&1' >> ${OUT}
 	@echo "##################################" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo "RET=$?" >> ${OUT}
@@ -293,6 +295,8 @@ install.aubitbuild.cron:
 	@echo "then" >> ${OUT}
 	@echo "	echo Command returned code $RET >> $LOGFILE" >> ${OUT}
 	@echo "fi" >> ${OUT}
+	@echo "" >> ${OUT}
+	@echo "cat $$MAILFILE | ssmtp $$MAILADDR" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo 'date >> $$LOGFILE' >> ${OUT}
 	@echo 'echo "-------------------------------------" >> $$LOGFILE' >> ${OUT}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.5 2002-11-12 21:34:08 afalout Exp $
+# $Id: main.c,v 1.6 2002-11-23 06:05:35 afalout Exp $
 #*/
 
 /**
@@ -334,10 +334,12 @@ write_genout(void)
      of a token, for further debugging info.  */
 
 //YYPRINT (stderr, yychar, yylval)
-aubit_yyprint (stderr, yychar, yylval)
+int
+aubit_yyprint (int xstderr, int xyychar, int xyylval)
 {
-
-    //do your output here
+    
+	//do your output here
+    return 0;
 
 }
 #endif

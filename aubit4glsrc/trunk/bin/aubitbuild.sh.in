@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.8 2002-11-08 07:23:47 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.9 2002-11-23 06:05:34 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -451,6 +451,19 @@ if test "$MAKE" = "1"; then
 			#Unknown command: `update -d'
 			EXEC="$AUTO_CVS update"; runexec
         fi
+		
+		TMP=`echo $PATH | grep MinGW`
+        if test "$TMP" != ""; then
+            #we already have MinGW in the path, but we first need to make CygWin version
+            #for binary tarball:
+            NEWPATH=`echo $PATH | sed -e 's/MinGW/M-i-n-G-W/'g`
+            PATH=$NEWPATH
+            export PATH
+			if test "$VERBOSE" = "1"; then
+				echo "PATH changed to $PATH"
+            fi
+        fi
+
 		STOPONERROR=1
 
 		EXEC="autoconf"; runexec
@@ -482,6 +495,17 @@ if test "$MAKE" = "1"; then
 			echo "See `pwd`/make.log for details."
         fi
 		EXEC="make log"; runexec
+
+		if [ "$COMSPEC" != "" ]; then
+			#Check that what we built is dependent on Cygwin:
+			TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
+	        if test "$TMP" = ""; then
+	            echo "ERROR: libaubit4gl.dll DOES NOT depend on cygwin1.dll"
+	        fi
+            #store libUI_TUI.dll so we can psckage it with cygwin1.dll for native windows port later:
+            cp lib/libUI_TUI.dll /tmp
+		fi
+
 
 		if [ "$WARNINGS" = "1" ]
 		then
@@ -581,7 +605,35 @@ fi
 
 if test "$WINSETUP" = "1"; then
     ################## make Windows installer #######################
-    STOPONERROR=0   #Continue even if next statemets fails
+
+	TMP=`echo $PATH | grep M-i-n-G-W`
+	if test "$TMP" != ""; then
+    	#For Windows setup installer we need Windows native version,
+        #but we so far compiled only Cygwin version
+        NEWPATH=`echo $PATH | sed -e 's/M-i-n-G-W/MinGW/'g`
+        PATH=$NEWPATH
+        export PATH
+		if test "$VERBOSE" = "1"; then
+			echo "PATH changed to $PATH"
+        fi
+
+        #now we need to configure and build it from source code again:
+		STOPONERROR=1
+	    EXEC="cd $AUBITSRCDIR"; runexec
+		EXEC="make clean.all"; runexec
+		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
+		EXEC="make log"; runexec
+
+
+        #Check that what we built is not dependent on Cygwin:
+		TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
+        if test "$TMP" != ""; then
+            echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
+        fi
+
+	fi
+
+	STOPONERROR=0   #Continue even if next statemets fails
 	EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
 	STOPONERROR=1
 
@@ -604,13 +656,6 @@ fi
         WINSETUPEXE_BASENAME_ESC=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\\\\ /'g`
 		WINSETUPEXE="$TMP_WINSETUPEXE"
         WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
-
-
-        #echo "1 $WINSETUPEXE_BASENAME"
-        #echo "2 $WINSETUPEXE_BASENAME_ESC"
-        #echo "3 $WINSETUPEXE"
-        #echo "4 $WINSETUPEXE_ESC"
-
 	fi
 
 
@@ -662,7 +707,6 @@ if test "$GET" = "1"; then
 			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 		fi
 		if test "$WINSETUPEXE" != ""; then
-	        #TEMPLATE_WINSETUPEXE			"$WINSETUPEXE"
 			echo "sed -e '/^$TEMPLATE_WINSETUPEXE/s/$TEMPLATE_WINSETUPEXE/$WINSETUPEXE_BASENAME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
 			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 		fi
@@ -671,12 +715,6 @@ if test "$GET" = "1"; then
         TMP_TIME=`date`
 		echo "sed -e '/^$TIME_TEMPL/s/$TIME_TEMPL/$LABEL $TMP_TIME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
 		echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
-
-        #fixme: add time of last update:
-		#wt-unknown
-		#lt-unknown
-
-
 
 	    EXEC="sh $BINNAMESSCRIPT"; runexec
 

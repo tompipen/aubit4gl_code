@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.7 2002-10-20 12:02:38 afalout Exp $
+# $Id: curslib.c,v 1.8 2002-11-23 06:05:35 afalout Exp $
 #*/
 
 /**
@@ -545,9 +545,10 @@ newbox (textarea * area, int l, int t, int r, int b, int typ)
 void
 aclfgl_fgl_drawbox (int n)
 {
-  int x, y, w, h, c;
-  int xx, yy;
-  void *ptr;
+int x, y, w, h, c;
+int xx, yy;
+void *ptr;
+  
   c = 0;
   if (n == 5)
     c = pop_int ();
@@ -1259,7 +1260,7 @@ puttext (int x1, int y1, int x2, int y2, char *buf)
 void
 A4GLUI_ui_init (int argc, char *argv[])
 {
-  int mcode;
+//  int mcode;
 #define BLANK ' '
 #ifdef DEBUG
   debug ("Initializing curses environment");
@@ -1269,7 +1270,7 @@ A4GLUI_ui_init (int argc, char *argv[])
       initscr ();
       bkgdset (BLANK);
       start_color ();
-      
+
 #ifndef __sun__
 	#ifndef __sparc__
 	  //curses function not available on Solaris (!!!!?????)
@@ -1312,7 +1313,7 @@ A4GLUI_ui_init (int argc, char *argv[])
 	      debug ("Turning Mouse on");
 	#endif
 	#ifdef WIN32
-		#ifndef __CYGWIN__
+		#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
 			#ifdef DEBUG
 			      debug ("Turning WIN32 mouse on\n");
 			#endif
@@ -1324,7 +1325,8 @@ A4GLUI_ui_init (int argc, char *argv[])
 		#ifdef DEBUG
 			  debug ("Turning UNIX mouse on\n");
 		#endif
-		  mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+		int mcode;
+		mcode = mousemask (ALL_MOUSE_EVENTS, 0);
 		#ifdef DEBUG
 			  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
 		#endif
@@ -1484,11 +1486,9 @@ void
 free_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1, *opt2;
-#ifdef DEBUG
-  {
-    debug ("Freeing menu");
-  }
-#endif
+  #ifdef DEBUG
+  	{ debug ("Freeing menu");  }
+  #endif
   opt1 = (ACL_Menu_Opts *) menu->first;
   while (opt1 != 0)
     {
@@ -1496,28 +1496,28 @@ free_menu (ACL_Menu * menu)
       free (opt1);
       opt1 = opt2;
     }
-#ifdef DEBUG
-  debug ("Attempting to delete window : %p", menu->menu_win);
-#endif
+  #ifdef DEBUG
+  	debug ("Attempting to delete window : %p", menu->menu_win);
+  #endif
   clear_menu (menu);
   update_panels ();
   doupdate ();
   zrefresh ();
-#ifdef DEBUG
-  debug ("Menu=%p &Menu=%p", menu, &menu);
-#endif
+  #ifdef DEBUG
+  	debug ("Menu=%p &Menu=%p", menu, &menu);
+  #endif
   gui_rmmenu ((int) menu);
-#ifdef DEBUG
-  debug ("Deleted window");
-#endif
+  #ifdef DEBUG
+	debug ("Deleted window");
+  #endif
 }
 
 /**
- *
+ * 4GLCALL
  * @todo Describe function
  */
 void
-disp_h_menu (ACL_Menu * menu)	// 4GLCALL
+disp_h_menu (ACL_Menu * menu)
 {
   char disp_str[80];
   int disp_cnt;
@@ -1662,29 +1662,29 @@ menu_loop (ACL_Menu * menu)
       /* subwin_gotoxy (menu->menu_win,menu->menu_offset - 1, menu->menu_line+1); */
 
 
-#ifdef DEBUG
+	#ifdef DEBUG
       debug ("Moved cursor for menu to %d %d", menu->menu_offset - 1,
 	     menu->menu_line);
-#endif
+	#endif
 
 
       wmove (menu->menu_win, 0, 0);
 
 
-#ifdef DEBUG
+	#ifdef DEBUG
       debug (">>>> Getting key from menu");
-#endif
+	#endif
 
       a = menu_getkey (menu);
-#ifdef DEBUG
+	#ifdef DEBUG
       debug (">>>> KEY=%d", a);
-#endif
+	#endif
 
       if (a == 23 || a == key_val ("HELP"))
 	{
-#ifdef DEBUG
+	#ifdef DEBUG
 	  debug ("....SHOWHELP....");
-#endif
+	#endif
 	  if (menu->curr_option->help_no)
 	    {
 	      int hlp;
@@ -1776,12 +1776,9 @@ display_menu (ACL_Menu * menu)
 	     opt1->attributes, ACL_MN_HIDE, opt1->attributes & ACL_MN_HIDE);
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
-#ifdef DEBUG
-	  {
-	    debug ("OK to display - Page %d of %d", menu->curr_page,
-		   opt1->page);
-	  }
-#endif
+	#ifdef DEBUG
+	  {debug ("OK to display - Page %d of %d", menu->curr_page,opt1->page);}
+	#endif
 	  if (menu->curr_page == opt1->page)
 	    {
 	      if (have_displayed == 0)
@@ -1828,9 +1825,7 @@ display_menu (ACL_Menu * menu)
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
     }
 #ifdef DEBUG
-  {
-    debug ("Displayed Menu");
-  }
+  {debug ("Displayed Menu"); }
 #endif
   mja_refresh ();
 }
@@ -1843,23 +1838,16 @@ display_menu (ACL_Menu * menu)
 void
 clear_menu (ACL_Menu * menu)
 {
-  PANEL *p;
-  WINDOW *w;
+PANEL *p;
+WINDOW *w;
+  
   p = find_pointer (menu->window_name, PANCODE);
   w = find_pointer (menu->window_name, WINCODE);
 
-#ifdef DEBUG
-  {
-    debug ("Clearing Window..%p", w);
-  }
-#endif
-
-
-#ifdef DEBUG
-  {
-    debug ("Clearing Panel %p", p);
-  }
-#endif
+  #ifdef DEBUG
+  	{debug ("Clearing Window..%p", w);}
+	{debug ("Clearing Panel %p", p);}
+  #endif
 
   del_panel (p);		/* this is causing problems INVESTIGATE */
   delwin (w);
@@ -1874,12 +1862,10 @@ clear_menu (ACL_Menu * menu)
 void
 clear_prompt (struct s_prompt *prmt)
 {
-  PANEL *p;
-#ifdef DEBUG
-  {
-    debug ("Clearing prompt...");
-  }
-#endif
+PANEL *p;
+  #ifdef DEBUG
+  	{debug ("Clearing prompt...");}
+  #endif
   p = prmt->win;
   delwin ((WINDOW *) p);
 }
@@ -2213,11 +2199,12 @@ curs_err (char *str)
 int
 load_form (char *fname2, int fno1, int fno)
 {
-  FILE *formfile;
-  char buffer[133];
-  char fname[32];
-  int currno;
-  char fname3[64];
+FILE *formfile;
+char buffer[133];
+char fname[32];
+int currno;
+char fname3[64];
+  
   strcpy (fname3, fname2);
   strcat (fname3, ".frm");
   formfile = mja_fopen (fname3, "rt");
@@ -2510,7 +2497,7 @@ getkey (void)
   while (1)
     {
       a = getch_win ();
-#ifdef WIN32_BROKEN
+	#ifdef WIN32_BROKEN
       if (a == KEY_MOUSE)
 	{
 	  request_mouse_pos ();
@@ -2519,7 +2506,7 @@ getkey (void)
 	      return 27;
 	    }
 	}
-#endif
+	#endif
       if (a == 18)
 	{
 	  mja_refresh ();

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.18 2002-11-12 21:34:08 afalout Exp $
+# $Id: others.c,v 1.19 2002-11-23 06:05:35 afalout Exp $
 #
 */
 
@@ -518,11 +518,12 @@ get_srec (char *name)
      of a token, for further debugging info.  */
 
 //YYPRINT (stderr, yychar, yylval)
-aubit_yyprint (stderr, yychar, yylval)
+int
+aubit_yyprint (int xstderr, int xyychar, int xyylval)
 {
 
     //do your output here
-
+    return 0;
 }
 #endif
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-10-13 01:40:35 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-11-23 06:05:35 afalout Exp $
 #
 
 LIBROOT=../..
@@ -32,23 +32,24 @@ ROOT=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-CFLAGS		+=-I.. -I. -I${ROOT}/incl -I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile @RPCLIB_INCLUDE@
+#CFLAGS		+=-I.. -I. -I${ROOT}/incl
+#must be BEFORE system paths:
+CFLAGS		:=@CURSES_INC_PATH@ ${CFLAGS} -I.. -I. -I${ROOT}/incl
+#@RPCLIB_INCLUDE@
+#-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
-#ifdef COMSPEC
-#	ifneq "@HAVE_CURSES@" "0"
-#		ALL			+=dlllibUI_TUI
-#    endif
-#else
-	ifneq "@HAVE_CURSES@" "0"
-		ALL			+=${LIBROOT}/libUI_TUI${SO_EXT}
-    endif
-#endif
+ifneq "@HAVE_CURSES@" "0"
+	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
+endif
+
+ifneq "@HAVE_PDCURSES@" "0"
+	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
+endif
 
 ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
@@ -75,36 +76,14 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${LIBROOT}/libUI_TUI${SO_EXT}: ${ALLOBJ}
-#	${LD} ${SO_LDFLAGS} -o $@ $^ -lform -lpanel @CURSES_LIB_NAME@
-	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_NAME@ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
-
-
-## ==================================================================
-##                              Windows Targets
-## ==================================================================
-
-#.PHONY : dlllibUI_TUI
-#dlllibUI_TUI: ${ALLOBJ}
-#	${MAKE} libUI_TUI.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB} -lFORM_XDR @CURSES_LIB_NAME@" DLL_LDFLAGS="-L${LIBROOT} @CURSES_LIB_PATH@"
-## -lPDF_NOPDF
-#	${CP} libUI_TUI.dll ${LIBROOT}
-#	${CP} libUI_TUI${DLL_EXPORTLIB_EXT} ${LIBROOT}
-
-## ==================================================================
-##                              Dependencies
-## ==================================================================
-
-
+	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_NAME@ @CURSES_LIB_PATH@ ${LINKLIBS}
 
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
-${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+#${ROOT}/compilers/fcompile/form_x.h:
+#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 #invalid lvalue in assignment
 curslib.o: curslib.c
@@ -116,7 +95,7 @@ curslib.o: curslib.c
 ## ==================================================================
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak  *.ao *.err *.glb *.dll *.a *.def *.glb *.ao \
-	debug.out *.err core  gmon.out
+	${RM} *.o *${SO_EXT} *.bak *.ao *.err *.a *.def *.glb \
+	debug.out core  gmon.out
 
 #------------------------------- EOF --------------------------------

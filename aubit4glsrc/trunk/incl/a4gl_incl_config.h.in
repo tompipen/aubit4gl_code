@@ -85,4 +85,7 @@
     #define HAVE_RPC_H 0
     #define HAVE_SHARE_H 0
 
+    #define HAVE_PDCURSES 0
+
+
 #endif /* #ifndef CONFIG_H_INCL */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.10 2002-11-19 18:02:46 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.11 2002-11-23 06:05:35 afalout Exp $
 #
 */
 
@@ -507,7 +507,7 @@ return 1;
  * @todo Describe function
  */
 int 
-aclfgl_day(int n)
+aclfgl_day(int n)    /* FIXME: why does this function have a parameter, if it's not going to be used? */
 {
   long d;
   int day,mn,yr;
@@ -522,8 +522,8 @@ aclfgl_day(int n)
  *
  * @todo Describe function
  */
-int 
-aclfgl_month(int n)
+int
+aclfgl_month(int n)  /* FIXME: why does this function have a parameter, if it's not going to be used? */
 {
 	long d;
 	int day,mn,yr;
@@ -538,8 +538,8 @@ aclfgl_month(int n)
  *
  * @todo Describe function
  */
-int 
-aclfgl_weekday(int n)
+int
+aclfgl_weekday(int n) /* FIXME: why does this function have a parameter, if it's not going to be used? */
 {
 	long d;
 	int day,mn,yr;

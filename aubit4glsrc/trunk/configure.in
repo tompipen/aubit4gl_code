@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.131 2002-11-12 21:33:47 afalout Exp $
+dnl # $Id: configure.in,v 1.132 2002-11-23 06:05:25 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -330,6 +330,7 @@ AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(CURSES_INC_PATH)
 AC_SUBST(HAVE_CURSES)
 AC_SUBST(CURSES_LIB_NAME)
+AC_SUBST(HAVE_PDCURSES)
 
 #debug
 AC_SUBST(DEBUG_BISON)
@@ -2373,93 +2374,163 @@ if test "$PERL" != no; then
 fi
 
 ## ==================================================================
-##         Checks for libraries expected in standard locations
+##                       Checks for curses library
 ## ==================================================================
 
-PHP_CONFIGURE_PART(Checking for standard libraries:)
+	#if test "$GCC_MINGW" != "yes"; then
+	if test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
+		HAVE_PDCURSES=0
+		PHP_CONFIGURE_PART(Checking for curses libraries:)
 
-# FIXME: Replace `main' with a function in `-lc':
-AC_CHECK_LIB([c], [main])
+		if test "$GCC_MINGW" = "yes"; then
+			#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
+			case "$host" in
+			*-*-cygwin | *-*-cygwin* )
+				CYG_LFLAGS="-LD:/cygwin/lib"
+				CYG_IFLAGS="-ID:/cygwin/usr/include/ncurses -ID:/cygwin/usr/include"
+				old_LIBS="$LIBS"
+				old_LDFLAGS="$LDFLAGS"
+				old_CFLAGS="$CFLAGS"
+				LDFLAGS="$LDFLAGS $CYG_LFLAGS"
+				CFLAGS="$CFLAGS $CYG_LFLAGS"
 
-# FIXME: Replace `main' with a function in `-lcurses':
-AC_CHECK_LIB([curses], [main])
-
-	if test "$ac_cv_lib_curses_main" = "yes"; then
-		#fixme: check version of curses - how?
-		case $host in
-			*-apple-darwin*)
-				CURSES_LIB_NAME="-lSystem"
 				;;
-			*)
-				CURSES_LIB_NAME="-lcurses -lform -lpanel"
-		        ;;
-		esac
-		AC_DEFINE(HAVE_CURSES)
-        HAVE_CURSES=1
-	    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
-		CURSES_LIB_PATH="-L/lib"
-		AC_DEFINE(HAVE_CURSES_H)
-	else
-		# FIXME: Replace `main' with a function in `-lcurses':
-		AC_CHECK_LIB([ncurses], [main])
+			esac
+        fi
 
-		if test "$ac_cv_lib_ncurses_main" = "yes"; then
-			#fixme: check version of ncurses - how?
+		# FIXME: Replace `main' with a function in `-lcurses':
+		AC_CHECK_LIB([curses], [main])
+		if test "$ac_cv_lib_curses_main" = "yes"; then
+			#fixme: check version of curses - how?
 			case $host in
 				*-apple-darwin*)
 					CURSES_LIB_NAME="-lSystem"
 					;;
 				*)
-					CURSES_LIB_NAME="-lncurses -lform -lpanel"
+					CURSES_LIB_NAME="-lcurses -lform -lpanel"
 			        ;;
 			esac
 			AC_DEFINE(HAVE_CURSES)
 	        HAVE_CURSES=1
 		    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
 			CURSES_LIB_PATH="-L/lib"
-			AC_DEFINE(HAVE_NCURSES_H)
+			AC_DEFINE(HAVE_CURSES_H)
+		else
+			# FIXME: Replace `main' with a function in `-lcurses':
+			AC_CHECK_LIB([ncurses], [main])
 
-        else
-			HAVE_CURSES=0
-			CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
-        fi
+			if test "$ac_cv_lib_ncurses_main" = "yes"; then
+				#fixme: check version of ncurses - how?
+				case $host in
+					*-apple-darwin*)
+						CURSES_LIB_NAME="-lSystem"
+						;;
+					*)
+						CURSES_LIB_NAME="-lncurses -lform -lpanel"
+				        ;;
+				esac
+				AC_DEFINE(HAVE_CURSES)
+		        HAVE_CURSES=1
+			    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+				
+				if test "$CYG_LFLAGS" = ""; then
+					CURSES_LIB_PATH="-L/lib"
+                else
+					CURSES_LIB_PATH="$CYG_LFLAGS"
+					CURSES_INC_PATH="$CYG_IFLAGS"
+
+                fi
+				AC_DEFINE(HAVE_NCURSES_H)
+
+	        else
+				HAVE_CURSES=0
+				CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
+	        fi
+		fi
+
+		#form and panel are part of curses - but not PDcurses
+		#AIX: Both form and panel h files are part of ncurses. Install it.
+		# FIXME: Replace `main' with a function in `-lform':
+		AC_CHECK_LIB([form], [main])
+		# FIXME: Replace `main' with a function in `-lpanel':
+		AC_CHECK_LIB([panel], [main])
+
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+
+	else #$with_pdcurses was specified
+		HAVE_CURSES=0
+		#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go - no forms support -
+        #check again in some time
+		PHP_CONFIGURE_PART(Checking for PDcurses:)
+		AC_ARG_WITH(pdcurses,
+		[  --with-pdcurses[=DIR]      Include PDcurses support. DIR is the PDcurses base
+		                          install directory,
+		                          defaults to /cygdrive/d/pdc25_vc_w32.],
+		[
+		  if test "$withval" = "yes"; then
+		    withval=/cygdrive/d/pdc25_vc_w32
+		  fi
+
+		  if test "$withval" != "no"; then
+
+			CURSES_LIB_PATH="-L$withval"
+			CURSES_INC_PATH="-I$withval"
+			#CURSES_LIB_NAME="-lcurses"
+			CURSES_LIB_NAME="$withval/curses.dll"
+            HAVE_PDCURSES=1
+			AC_DEFINE(HAVE_PDCURSES,1,[ ])
+		    AC_MSG_RESULT(yes)
+		  else
+		    AC_MSG_RESULT(disabled)
+			HAVE_PDCURSES=0
+		  fi
+		],[
+			AC_MSG_RESULT(--with-pdcurses not specified)
+			HAVE_PDCURSES=0
+		])
 	fi
 
-case "$host" in
-*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
-		AC_MSG_CHECKING(libdl)
-		AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
-    ;;
-*)
 
-	# FIXME: Replace `main' with a function in `-ldl' - but don't forget to
-	#clear AC cache for next test!
-	AC_CHECK_LIB([dl], [main])
-
-	if test "$ac_cv_lib_dl_main" != "yes"; then
-		old_LDFLAGS="$LDFLAGS"
-		#/sw/lib/libdl.a
-		#/sw/lib/libdl.dylib
-		LDFLAGS="$LDFLAGS -L/sw/lib"
-		AC_CHECK_LIB([dl], [dlopen])
-		if test "$ac_cv_lib_dl_dlopen" != "yes"; then
-			LDFLAGS="$old_LDFLAGS"
-			AC_MSG_ERROR(No dl lib found - please install it. Stop.)
-		else
-			AC_DEFINE(HAVE_LIB_DL)
-		fi
-    fi
-    ;;
-esac
+## ==================================================================
+##         Checks for libraries expected in standard locations
+## ==================================================================
 
 
+PHP_CONFIGURE_PART(Checking for standard libraries:)
 
-#FIXME form and panel are part of curses?
-#AIX: Both form and panel h files are part of ncurses. Install it.
-# FIXME: Replace `main' with a function in `-lform':
-AC_CHECK_LIB([form], [main])
-# FIXME: Replace `main' with a function in `-lpanel':
-AC_CHECK_LIB([panel], [main])
+		case "$host" in
+		*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
+				AC_MSG_CHECKING(libdl)
+				AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
+		    ;;
+		*)
+
+			# FIXME: Replace `main' with a function in `-ldl' - but don't forget to
+			#clear AC cache for next test!
+			AC_CHECK_LIB([dl], [main])
+
+			if test "$ac_cv_lib_dl_main" != "yes"; then
+				old_LDFLAGS="$LDFLAGS"
+				#/sw/lib/libdl.a
+				#/sw/lib/libdl.dylib
+				LDFLAGS="$LDFLAGS -L/sw/lib"
+				AC_CHECK_LIB([dl], [dlopen])
+				if test "$ac_cv_lib_dl_dlopen" != "yes"; then
+					AC_MSG_ERROR(No dl lib found - please install it. Stop.)
+				else
+					AC_DEFINE(HAVE_LIB_DL)
+				fi
+				LDFLAGS="$old_LDFLAGS"
+		    fi
+		    ;;
+		esac
+
+
+# FIXME: Replace `main' with a function in `-lc':
+AC_CHECK_LIB([c], [main])
+
 
 #unit test sw for C code, used in tools/test/db
 AC_CHECK_LIB([check], [suite_create])
@@ -2810,7 +2881,7 @@ if test "$default_ui" != ""; then
 	#User can force UI driver default with --default-ui=xxxx switch
 	A4GL_UI="$default_ui"
 else
-	if test "$HAVE_CURSES" = "1"; then
+	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
 		A4GL_UI="TUI"
     fi
 
@@ -2886,7 +2957,7 @@ fi
         PLUGIN_NO="$PLUGIN_NO GTK"
 	fi
 
-	if test "$HAVE_CURSES" = "1"; then
+	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
         RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
         PLUGIN_YES="$PLUGIN_YES TUI"
 	else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.16 2002-11-19 18:02:10 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.17 2002-11-23 06:05:35 afalout Exp $
 */
 
 /**
@@ -46,8 +46,9 @@
 #ifndef FGLDEF_INCL
 #define FGLDEF_INCL
 
-#define fglbyte struct fgl_int_loc
-#define fgltext struct fgl_int_loc
+	#define fglbyte struct fgl_int_loc
+	#define fgltext struct fgl_int_loc
+
 	/** Date time defined without typedef. To be deprecated */
 	#define struct_dtime struct A4GLSQL_dtime
 	#define struct_ival struct ival
@@ -172,72 +173,78 @@
 	int     aclfgl_errorlog 	(char *string);
 	int     aclfgl_showhelp 	(int helpnumber);
 	int 	aclfgl_fgl_getenv 	(int nargs);
-	int    aclfgl_mdy			(int nargs);
+	int		aclfgl_mdy			(int nargs);
+
 
 	/* ======================= From buildtin_d.c ====================*/
 
 	int 	aclfgl_date		(int nargs);
-//	void 	aclfgl_fgl_drawbox(int n);
 	int 	aclfgl_day		(int nargs);
 	int 	aclfgl_month	(int nargs);
-	int 	aclfgl_weekday	(int nargs);
 	int 	aclfgl_year		(int nargs);
+	int 	aclfgl_weekday	(int nargs);
 
-	int            aclfgl_hex         	(int nargs);
-	int            aclfgl_abs         	(int nargs);
-	int            aclfgl_root       	(int nargs);
-	int            aclfgl_sqrt        	(int nargs);
+
+	int		aclfgl_hex		(int nargs);
+	int		aclfgl_abs		(int nargs);
+	int		aclfgl_root		(int nargs);
+	int		aclfgl_sqrt		(int nargs);
 
 
 	/* ============= from assist.4gl/.c ======================= */
-	int aclfgl_run_gui (int nargs);
+	int 	aclfgl_run_gui 	(int nargs);
 
     /* ============== from curslib.c =========================== */
-	int aclfgl_fgl_drawbox (int n);
+	//int 	aclfgl_fgl_drawbox (int n);
+	void 	aclfgl_fgl_drawbox (int n);
 
     /* ======================= API_ui.c ===================== */
 
-	int     aclfgl_set_page		(int nargs);
-	int     aclfgl_get_page		(int nargs);
+//does not match actual function definition:
+//	int     aclfgl_set_page		(int nargs);
+//	int     aclfgl_get_page		(int nargs);
+	int     aclfgl_set_page		(void);
+	int     aclfgl_get_page		(void);
+
 
     /* =================== sql.c ============================ */
 
-	int aclfgl_hstmt_get (int np);
+	int 	aclfgl_hstmt_get 	(int np);
 
     /* ====================== extfile.c ===================== */
 
-    int 			aclfgl_fgl_show_help	(int a);
+    int 	aclfgl_fgl_show_help	(int a);
 
     /* ====================== fglwrap.c ====================== */
 
-	int 			aclfgl_get_ui_mode	(int n);
-	int 			aclfgl_num_args		(int n);
-	int 			aclfgl_arg_val		(int n);
+	int 	aclfgl_get_ui_mode	(int n);
+	int 	aclfgl_num_args		(int n);
+	int 	aclfgl_arg_val		(int n);
 
     /* ======================= helper.c ======================= */
 
-	int 		aclfgl_i_rowid_s	(int arg);
-	int 		aclfgl_m_rowid_s	(int arg);
-	int 		aclfgl_r_rowid_s	(int arg);
-	int 		aclfgl_s_rowid_s	(int arg);
-	int 		aclfgl_w_rowid_s	(int arg);
-	int 		aclfgl_fgl_prtscr	(int n);
-	int			aclfgl_get_info		(int np);
+	int 	aclfgl_i_rowid_s	(int arg);
+	int 	aclfgl_m_rowid_s	(int arg);
+	int 	aclfgl_r_rowid_s	(int arg);
+	int 	aclfgl_s_rowid_s	(int arg);
+	int 	aclfgl_w_rowid_s	(int arg);
+	int 	aclfgl_fgl_prtscr	(int n);
+	int		aclfgl_get_info		(int np);
 
     /* ====================== others.c ======================= */
 
-	int 		aclfgl_fgl_lastkey	(int _np);
-	int 		aclfgl_fgl_keyval	(int _np);
-	int 		aclfgl_upshift		(int _np);
-	int 		aclfgl_downshift	(int _np);
+	int 	aclfgl_fgl_lastkey	(int _np);
+	int 	aclfgl_fgl_keyval	(int _np);
+	int 	aclfgl_upshift		(int _np);
+	int 	aclfgl_downshift	(int _np);
 
     /* ======================== datatypes.c ================ */
 
 	int aclfgl_load_datatype (int nargs);
 
 
-#ifndef REP_STRUCTURE
-#define REP_STRUCTURE
+	#ifndef REP_STRUCTURE
+	#define REP_STRUCTURE
         /* report stuff */
         struct rep_structure {
             int top_margin,bottom_margin,left_margin,right_margin;
@@ -258,6 +265,7 @@
                 /* int (*report)(void); */ /* report.c:180: too many arguments to function */
         int (*report)(int a, int b);
         };
+
         struct pdf_rep_structure {
             double top_margin,bottom_margin,left_margin,right_margin;
             double page_length;
@@ -282,7 +290,7 @@
             void *pdf_ptr;
            int font;
         };
-#endif
+	#endif
 
 /*
 to fix the _nm_status error (if status is an int) change
@@ -301,63 +309,24 @@ be used in applications which link to the library).
 
 
     #ifndef _DEFINE_STATUSVARS_  /* set from fglwrap.c --ONLY-- */
-    /* for everything except libaubit4gl: */
+	    /* for everything except libaubit4gl: */
 
-		/** Sqlca variable */
-		// _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-        // that also define sqlca:
 		#ifndef _SQLCA_DEFINED_
-		    #define _SQLCA_DEFINED_
-			extern sqlca_struct sqlca;
+	        /* _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+    	     that also define sqlca: */
+			#define _SQLCA_DEFINED_
+			extern sqlca_struct sqlca; 	/** Sqlca variable */
 	    #endif
 
-		/** 4gl global status variable */
-		//#ifndef DEFINE_STATUS
-			//#define DEFINE_STATUS
-			extern long status;
-		//#endif
-
-		/** 4gl interrupt ocurred global flag */
-		//#ifndef DEFINE_INTFLAG
-		//	#define DEFINE_INTFLAG
-			extern long int_flag;
-		//#endif
-
-
-		/** 4gl quit ocurred global flag */
-		//#ifndef DEFINE_QUITFLAG
-		//	#define DEFINE_QUITFLAG
-			extern int quit_flag;
-		//#endif
+        extern long status; 			/** 4gl global status variable */
+        extern long int_flag;			/** 4gl interrupt ocurred global flag */
+        extern int quit_flag; 			/** 4gl quit ocurred global flag */
     #else
-	/* only in libaubit4gl */
-
-		/** Sqlca variable */
-		//#ifndef _SQLCA_DEFINED_
-		 //   #define _SQLCA_DEFINED_
-			sqlca_struct sqlca;
-	    //#endif
-
-		/** 4gl global status variable */
-		//#ifndef DEFINE_STATUS
-		//	#define DEFINE_STATUS
-			long status;
-		//#endif
-
-		/** 4gl interrupt ocurred global flag */
-		//#ifndef DEFINE_INTFLAG
-		//	#define DEFINE_INTFLAG
-			long int_flag;
-		//#endif
-
-
-		/** 4gl quit ocurred global flag */
-		//#ifndef DEFINE_QUITFLAG
-		//	#define DEFINE_QUITFLAG
-			int quit_flag;
-		//#endif
+		/* only in libaubit4gl */
+        sqlca_struct sqlca; 			/** Sqlca variable */
+		long status; 					/** 4gl global status variable */
+        long int_flag; 					/** 4gl interrupt ocurred global flag */
+        int quit_flag;					/** 4gl quit ocurred global flag */
 	#endif
-
-
 
 #endif /* #ifndef FGLDEF_INCL */
