@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.4 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.5 2003-10-20 12:18:59 mikeaubury Exp $
 #*/
 
 /**
@@ -96,7 +96,7 @@ char *infile = 0;
 char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
-int input_short (char *name, short *val, int ptr, int isarr);
+//int input_short (char *name, short *val, int ptr, int isarr);
 
 /*
 =====================================================================
@@ -159,6 +159,16 @@ input_short (char *name, short *val, int ptr, int isarr)
   A4GL_debug ("Input short %s", name);
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (short), (void *)infile);
   *val = ntohs (*val);
+  return a;
+
+}
+
+int
+input_char (char *name, char *val, int ptr, int isarr)
+{
+  int a;
+  A4GL_debug ("Input short %s", name);
+  a = A4GL_memfile_fread ((char *)val, 1, sizeof (char), (void *)infile);
   return a;
 
 }

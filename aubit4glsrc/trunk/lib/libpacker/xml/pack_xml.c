@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.15 2003-06-06 09:52:37 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.16 2003-10-20 12:19:00 mikeaubury Exp $
 #*/
 
 /**
@@ -268,7 +268,7 @@ A4GL_open_packer (char *basename, char dir)
 	}
       else
 	{
-	  A4GL_exitwith ("Unable to open form");
+	  A4GL_exitwith ("Unable to open");
 	  return 0;
 	  //exit (46);
 	}
@@ -280,7 +280,7 @@ A4GL_open_packer (char *basename, char dir)
       infile = A4GL_open_file_dbpath (buff);
       if (infile == 0)
 	{
-	  A4GL_exitwith ("Unable to open form");
+	  A4GL_exitwith ("Unable to open");
 	  return 0;
 	  //exit (45);
 	}
@@ -364,6 +364,26 @@ output_int (char *name, int val, int ptr, int isarr)
   return 1;
 }
 
+int
+output_short (char *name, short val, int ptr, int isarr)
+{
+  print_level ();
+  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"SHORT\"%s>%d</ATTR>\n", name,
+	   A4GL_pr_elem (isarr, ptr), val);
+  return 1;
+}
+
+
+int
+output_char (char *name, char val, int ptr, int isarr)
+{
+  print_level ();
+  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"CHAR\"%s>%d</ATTR>\n", name,
+	   A4GL_pr_elem (isarr, ptr), val);
+  return 1;
+}
+
+
 /**
  *
  * @todo Describe function
@@ -407,7 +427,21 @@ output_string (char *name, char *val, int ptr, int isarr)
 	   A4GL_pr_elem (isarr, ptr));
   for (a = 0; a < strlen (val); a++)
     {
-      fprintf (outfile, "%02x", val[a]);
+/* Special XML characters :
+	&lt; < less than
+	&gt; > greater than
+	&amp; & ampersand
+	&apos; ' apostrophe
+	&quot; " quotation mark
+*/
+      if (val[a]=='<') { fprintf (outfile, "&lt;"); continue;}
+      if (val[a]=='>') { fprintf (outfile, "&gt;"); continue;}
+      if (val[a]=='&') { fprintf (outfile, "&amp;"); continue;}
+      if (val[a]=='\'') { fprintf (outfile, "&apos;"); continue;}
+      if (val[a]=='"') { fprintf (outfile, "&quot;"); continue;}
+
+
+      fprintf (outfile, "%c", val[a]);
     }
   fprintf (outfile, "</ATTR>\n");
 
@@ -594,6 +628,40 @@ A4GL_debug("input_int : ptr=%d\n",ptr);
   return contentok;
 }
 
+
+int
+input_short (char *name, short *val, int ptr, int isarr)
+{
+  int a;
+  /*   <ATTR NAME=%s TYPE=SHORT%s>%d</ATTR> */
+  chk (val);
+  if (!getaline ())
+    return 0;
+A4GL_debug("input_int : ptr=%d\n",ptr);
+  a = atoi (A4GL_find_contents (ibuff));
+  *val = a;
+
+
+  return contentok;
+}
+
+int
+input_char (char *name, char *val, int ptr, int isarr)
+{
+  int a;
+  /*   <ATTR NAME=%s TYPE=CHAR%s>%d</ATTR> */
+  chk (val);
+  if (!getaline ())
+    return 0;
+A4GL_debug("input_int : ptr=%d\n",ptr);
+  a = atoi (A4GL_find_contents (ibuff));
+  *val = a;
+
+
+  return contentok;
+}
+
+
 /**
  *
  * @todo Describe function
@@ -643,23 +711,44 @@ input_string (char *name, char **val, int ptr, int isarr)
   char c;
   int b;
   int a;
+  int blen;
   /* <ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR> */
  A4GL_debug("input_string : ptr=%d\n",ptr);
   chk (val);
   if (!getaline ())
     return 0;
   buff = A4GL_find_contents (ibuff);
-  pptr = malloc ((strlen (buff) / 2) + 2);
-  memset(pptr,0,(strlen(buff)/2)+1);
+  A4GL_debug("buff=%s",buff);
+  blen=strlen(buff);
+  A4GL_debug("blen=%d",blen);
+  blen=blen/2;
+  blen+=2;
+  pptr = malloc (blen);
+  memset(pptr,0,blen);
   buffer[2] = 0;
   b = 0;
-  for (a = 0; a < strlen (buff); a += 2)
+
+  for (a = 0; a < strlen (buff); a ++)
     {
-      buffer[0] = buff[a];
-      buffer[1] = buff[a + 1];
-      sscanf (buffer, "%02x", &c);
-      pptr[b++] = c;
-      pptr[b] = 0;
+      c=buff[a];
+      if (c=='&') {
+		/* Special XML characters 
+		&lt; < less than 
+		&gt; > greater than
+		&amp; & ampersand
+		&apos; ' apostrophe
+		&quot; " quotation mark */
+
+		if (strncmp(&buff[a],"&lt;",4)==0)   { a+=3;pptr[b++]='<'; pptr[b]=0;continue;  }
+		if (strncmp(&buff[a],"&gt;",4)==0)   { a+=3;pptr[b++]='>'; pptr[b]=0;continue; }
+		if (strncmp(&buff[a],"&amp;",5)==0)  { a+=4;pptr[b++]='&'; pptr[b]=0;continue; }
+		if (strncmp(&buff[a],"&apos;",6)==0) { a+=5;pptr[b++]='\''; pptr[b]=0;continue; }
+		if (strncmp(&buff[a],"&quot;",6)==0) { a+=5;pptr[b++]='"'; pptr[b]=0;continue; }
+
+      } else {
+      		pptr[b++] = c;
+      		pptr[b] = 0;
+      }
     }
   *val = pptr;
   return contentok;

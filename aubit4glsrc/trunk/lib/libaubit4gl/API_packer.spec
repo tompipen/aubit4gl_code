@@ -6,6 +6,8 @@ VARIABLE A4GL_PACKER
 *-- Packer definitions
 output_int char* name,int val,int ptr,int isarr -> int
 output_long char* name,long val,int ptr,int isarr -> int
+output_char char* name,char val,int ptr,int isarr -> int
+output_short char* name,short val,int ptr,int isarr -> int
 output_bool char* name,int val,int ptr,int isarr -> int
 *output_bool char* name,short val,int ptr,int isarr -> int
 output_string char* name,char* val,int ptr,int isarr -> int
@@ -22,6 +24,8 @@ output_start_array char* s,int type,int len -> int
 output_end_array char* s,int type -> int
 input_int char* name,int* val,int ptr,int isarr -> int
 input_long char* name,long* val,int ptr,int isarr -> int
+input_short char* name,short* val,int ptr,int isarr -> int
+input_char char* name,char* val,int ptr,int isarr -> int
 input_bool char* name,int* val,int ptr,int isarr -> int
 *input_string char* name,void* val,int ptr,int isarr -> int
 input_string char* name,char** val,int ptr,int isarr -> int

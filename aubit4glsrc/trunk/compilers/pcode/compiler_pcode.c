@@ -61,7 +61,7 @@ struct label
 
 void *label_tree = 0;
 
-struct function *current_function;
+struct npfunction *current_function;
 
 
 
@@ -150,8 +150,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
 
 
   current_function =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
-					 1];
+    &this_module.functions.functions_val[this_module.functions.functions_len - 1];
 
   current_function->cmds.cmds_len++;
   current_function->cmds.cmds_val =
@@ -245,8 +244,8 @@ new_command (enum cmd_type cmd_type, void *ptr)
 long
 add_call (char *funcname, struct param *params)
 {
-  struct cmd_call *c;
-  c = malloc (sizeof (struct cmd_call));
+  struct npcmd_call *c;
+  c = malloc (sizeof (struct npcmd_call));
   c->func_id = add_id (funcname);
   c->params = params;
   add_called (funcname);
@@ -451,8 +450,8 @@ end_block ()
 long
 add_if (struct param *e, char *true, char *false)
 {
-  struct cmd_if *f;
-  f = malloc (sizeof (struct cmd_if));
+  struct npcmd_if *f;
+  f = malloc (sizeof (struct npcmd_if));
   f->condition = e;
   f->goto_true = (long) true;
   f->goto_false = (long) false;
@@ -464,7 +463,7 @@ long add_chk_err(int n) {
   return new_command (CMD_CHK_ERR, (void *)n);
 }
 
-long add_clr_err(int n) {
+long add_clr_err(void) {
   return new_command (CMD_CLR_ERR, 0);
 }
 
@@ -730,7 +729,7 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 {
 //
   int a;
-  struct function *curr_func;
+  struct npfunction *curr_func;
   //printf ("Processing :%-80.80s\n", function_name); fflush(stdout);
 
   if (labels_cnt)
@@ -745,7 +744,7 @@ add_function (char *function_name, struct define_variables *v, int is_static)
   this_module.functions.functions_len++;
   this_module.functions.functions_val =
     realloc (this_module.functions.functions_val,
-	     sizeof (struct function) * this_module.functions.functions_len);
+	     sizeof (struct npfunction) * this_module.functions.functions_len);
   curr_func =
     &this_module.functions.functions_val[this_module.functions.functions_len -
 					 1];

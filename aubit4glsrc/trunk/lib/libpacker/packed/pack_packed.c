@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.15 2003-08-26 05:27:04 afalout Exp $
+# $Id: pack_packed.c,v 1.16 2003-10-20 12:18:59 mikeaubury Exp $
 #*/
 
 /**
@@ -102,8 +102,8 @@ int is_in_mem = 0;
 char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
-int input_short (char *name, short *val, int ptr, int isarr);
-int output_short (char *name, short val, int ptr, int isarr);
+//int input_short (char *name, short *val, int ptr, int isarr);
+//int output_short (char *name, short val, int ptr, int isarr);
 
 /*
 =====================================================================
@@ -234,6 +234,13 @@ output_short (char *name, short val, int ptr, int isarr)
   A4GL_debug ("Outputing SHORT %s : 0x%x", name, val);
   val = htons (val);
   return fwrite (&val, 1, sizeof (val), outfile);
+}
+
+int
+output_char (char *name, char val, int ptr, int isarr)
+{
+  A4GL_debug ("Outputing CHAR %s : 0x%x", name, val);
+  return fwrite (&val, 1, sizeof (char), outfile);
 }
 
 
@@ -461,6 +468,16 @@ input_long (char *name, long *val, int ptr, int isarr)
   a = fread (val, 1, sizeof (long), infile);
 
   *val = ntohl (*val);
+  return a;
+}
+
+
+int
+input_char (char *name, char *val, int ptr, int isarr)
+{
+  int a;
+  /* long n; */
+  a = fread (val, 1, sizeof (char), infile);
   return a;
 }
 

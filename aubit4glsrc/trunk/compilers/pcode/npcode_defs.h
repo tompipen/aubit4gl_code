@@ -52,9 +52,9 @@ void add_label(char *label);
 long do_end_block (void);
 void set_externs(void);
 int process_xdr (char dir, void *s, char *filename);
-void print_variable(int lvl,struct variable *n);
+void print_variable(int lvl,struct npvariable *n);
 #define GET_ID(x) ((char *)this_module.id_table.id_table_val[x].s)
-void allocate_variable (int module_level, int offset, struct variable *n);
+void allocate_variable (int module_level, int offset, struct npvariable *n);
 int add_id(char *s);
 long call_c_function(char *s,struct param *p,long *r);
 int evaluate_param (struct param *e, int *x);
@@ -81,7 +81,7 @@ void print_module (void);
 void add_default_named_structs(void);
 void execute_start_block(long pc,struct cmd_block *c);
 void execute_end_block(void);
-long call_function (long pc, struct cmd_call *c);
+long call_function (long pc, struct npcmd_call *c);
 void set_var(long pc, struct cmd_set_var *sv);
 void set_var_once(long pc, struct cmd_set_var1 *sv);
 void add_function (char *function_name, struct define_variables *v, int is_static);
@@ -96,3 +96,27 @@ void end_define_module(void);
 
 void init_calls(int argc,char **argv);
 void *resolve_externs(char *name);
+
+
+long end_function ();
+void
+set_master_type (int type);
+long
+add_return (struct param *r);
+long
+add_if (struct param *e, char *true, char *false);
+long add_goto (char *label);
+long add_call (char *funcname, struct param *params);
+long add_push_long(int n);
+long add_push_int(int n);
+long add_push_char(char *s);
+long add_chk_err(int n);
+long add_clr_err(void) ;
+long add_break (int a);
+long add_continue (int a);
+long add_block (void *ptr_c_vars);
+
+void end_define (void);
+void set_master_set (struct param *set);
+long end_block(void);
+void set_type (int a);

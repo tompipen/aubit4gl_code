@@ -81,7 +81,7 @@ get_var_ptr (struct use_variable *use_var)
 }
 
 long
-call_function (long pc, struct cmd_call *c)
+call_function (long pc, struct npcmd_call *c)
 {
   printf ("Shouldn't be calling functions during checking..\n");
   exit (1);

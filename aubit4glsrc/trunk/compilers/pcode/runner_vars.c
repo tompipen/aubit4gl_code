@@ -9,7 +9,7 @@
 #include "npcode_defs.h"
 
 void
-allocate_variable (int module_level, int offset, struct variable *n)
+allocate_variable (int module_level, int offset, struct npvariable *n)
 {
 /* .. */
 }

@@ -25,7 +25,8 @@
         */
 #endif
 
-struct function *current_function;
+struct npfunction *current_function;
+
 
 extern module this_module;
 int created = 0;

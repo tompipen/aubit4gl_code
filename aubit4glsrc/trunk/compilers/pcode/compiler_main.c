@@ -51,6 +51,8 @@ main (int argc, char *argv[])
 	}
     }
 
+  do_compiler_start (argc, argv);
+
   this_module.compiled_time = time (0);
   this_module.file_size = 0;
   this_module.string_table.string_table_len = 0;
@@ -143,7 +145,7 @@ get_var_ptr (struct use_variable *use_var)
 }
 
 long
-call_function (long pc, struct cmd_call *c)
+call_function (long pc, struct npcmd_call *c)
 {
   printf ("Shouldn't be calling functions during compilation..\n");
   exit (1);

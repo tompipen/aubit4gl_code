@@ -115,7 +115,7 @@ print_module_functions ()
   for (func_cnt = 0; func_cnt < this_module.functions.functions_len;
        func_cnt++)
     {
-      struct function *f;
+      struct npfunction *f;
       f = &this_module.functions.functions_val[func_cnt];
       printf ("FUNCTION : %s\n",
 	      GET_ID (this_module.functions.functions_val[func_cnt].
@@ -216,7 +216,7 @@ print_end_block (void *p)
 }
 
 static void
-print_call (struct cmd_call *c)
+print_call (struct npcmd_call *c)
 {
   char *x;
   x = GET_ID (c->func_id);
@@ -226,7 +226,7 @@ print_call (struct cmd_call *c)
 
 
 static void
-print_if (struct cmd_if *i)
+print_if (struct npcmd_if *i)
 {
   print_params (i->condition);
   printf ("    True  : ");
@@ -359,7 +359,7 @@ print_var_element (int lvl, struct variable_element *ve)
 
 
 void
-print_variable (int lvl, struct variable *v)
+print_variable (int lvl, struct npvariable *v)
 {
   printf ("VARIABLE :  ID=%ld CAT=%d BLOCK=%ld ", v->variable_id, v->category,
 	  v->def_block);

@@ -247,7 +247,7 @@ param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_
 	| dtype id_list '['  ']' 		{	struct param *sz;
 								$<define_var>$=$<define_var>1; 
 								$<define_var>$->name_id=add_id($<str>2);
-								$<define_var>$->i_arr_size<0>=-1;
+								$<define_var>$->i_arr_size[0]=-1;
 						}
 ;
 
@@ -436,9 +436,9 @@ func_block :
 ;
 
 
-block : '{' { add_block(); set_pc_vstack_curr(); }
+block : '{' { add_block(0); set_pc_vstack_curr(); }
 	define op_cmds '}' {end_block();}
-	| '{' '}'  {add_block(); set_pc_vstack_curr(); end_block(); }
+	| '{' '}'  {add_block(0); set_pc_vstack_curr(); end_block(); }
 
 ;
 

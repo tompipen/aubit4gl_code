@@ -14,6 +14,9 @@ module this_module;
 static int chk_func_sigs (void);
 extern FILE *logfile;
 
+void nullfunc();
+static void * find_by_dlself(char *s);
+
 char *
 get_string (int a)
 {
@@ -298,7 +301,7 @@ static void *
 find_sig (char *s)
 {
   int a;
-  void *ptr;
+  //void *ptr;
   if (s == 0)
     {
       printf ("Find sig passed null\n");
@@ -321,6 +324,7 @@ find_function_ptr (char *s)
       if (strcmp (s, system_funcs[a].name) == 0)
 	return system_funcs[a].ptr;
     }
+  return find_by_dlself(s) ;
   return 0;
 }
 
@@ -343,7 +347,7 @@ call_c_function (char *s, struct param *p, long *r)
 {
   struct param_list *list;
   char *sig;
-  long pc;
+  //long pc;
   long (*ptr) (void *end_func, struct param * p);
   void *ptr_function;
   long x;
@@ -499,3 +503,103 @@ chk_func_sigs ()
     }
   return ok;
 }
+
+
+#if defined(__hpux__) //HP-UX UNIX OS
+#define USE_SHL 1
+#endif
+
+#ifdef USE_SHL
+#include <dl.h>
+#endif
+
+
+#define CAN_DLOPEN_SELF 1
+#define HAVE_DLFCN_H 1
+//#define NEED_DL_UNDERSCORE
+
+
+
+#ifdef CAN_DLOPEN_SELF
+
+#if HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif
+
+#include <stdio.h>
+
+#ifdef RTLD_GLOBAL
+#  define LT_DLGLOBAL           RTLD_GLOBAL
+#else
+#  ifdef DL_GLOBAL
+#    define LT_DLGLOBAL         DL_GLOBAL
+#  else
+#    define LT_DLGLOBAL         0
+#  endif
+#endif
+
+/* We may have to define LT_DLLAZY_OR_NOW in the command line if we
+   find out it does not work in some platform. */
+#ifndef LT_DLLAZY_OR_NOW
+#  ifdef RTLD_LAZY
+#    define LT_DLLAZY_OR_NOW            RTLD_LAZY
+#  else
+#    ifdef DL_LAZY
+#      define LT_DLLAZY_OR_NOW          DL_LAZY
+#    else
+#      ifdef RTLD_NOW
+#        define LT_DLLAZY_OR_NOW        RTLD_NOW
+#      else
+#        ifdef DL_NOW
+#          define LT_DLLAZY_OR_NOW      DL_NOW
+#        else
+#          define LT_DLLAZY_OR_NOW      0
+#        endif
+#      endif
+#    endif
+#  endif
+#endif
+
+
+int aa() {
+	printf("Hello World\n");
+	return 1;
+}
+
+
+void * find_by_dlself(char *s)
+{
+  static void *self=(void *)-1;
+  void *ptr=0;
+  char buff[255];
+A4GL_debug("Looking at me...\n");
+  if(self==(void *)-1) {
+	A4GL_debug("Trying to open\n");
+	//self = (void *)dlopen (0, LT_DLGLOBAL|LT_DLLAZY_OR_NOW);
+	self = (void *)dlopen ("/home/aubit4gl/sourceforge/aubit4glsrc/lib/libaubit4gl.so", RTLD_LAZY);
+        if (self==0) {
+			A4GL_debug("Error : %s\n",dlerror());
+	}
+	A4GL_debug("Self = %p\n",self);
+  }
+
+  if (self)
+    {
+#ifdef NEED_DL_UNDERSCORE
+	sprintf(buff,"_%s",s);
+#else
+	strcpy(buff,s);
+#endif
+
+A4GL_debug("Looking for %s\n",buff);
+      ptr=dlsym (self,buff);
+    }
+
+    return ptr;
+}
+#else
+
+void *find_by_dlself(char *s) {
+	return 0;
+}
+#endif

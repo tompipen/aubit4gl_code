@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.8 2003-08-26 05:27:04 afalout Exp $
+# $Id: pack_perl.c,v 1.9 2003-10-20 12:18:59 mikeaubury Exp $
 #*/
 
 /**
@@ -238,6 +238,18 @@ output_int (char *name, int val, int ptr, int isarr)
   return 1;
 }
 
+
+int
+output_short (char *name, short val, int ptr, int isarr)
+{
+  A4GL_pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d => %d", isarr, val);
+  else
+    fprintf (outfile, "\"%s\"=>%d", name, val);
+  return 1;
+}
+
 /**
  *
  * @todo Describe function
@@ -282,6 +294,21 @@ output_string (char *name, char *val, int ptr, int isarr)
     fprintf (outfile, "%d=>\'%s\'", isarr, A4GL_escape_str (val, '\'', '\\'));
   else
     fprintf (outfile, "\"%s\"=>\'%s\'", name, A4GL_escape_str (val, '\'', '\\'));
+  return 1;
+}
+
+int
+output_char (char *name, char valc, int ptr, int isarr)
+{
+	char val[255];
+	val[0]=valc;
+	val[1]=0;
+
+  A4GL_pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d=>%d", isarr, valc);
+  else
+    fprintf (outfile, "\"%s\"=>%d", name, valc);
   return 1;
 }
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2003-10-16 17:40:39 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2003-10-20 12:18:59 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -49,19 +49,24 @@ endif
 
 
 
-OBJ_COMMON      =npcode_xdr.o common_io.o common_print.o common_eval.o
+OBJ_COMMON      =npcode_xdr.o  common_print.o common_eval.o
 
 OBJ_RUNNER_COMMON=runner_main.o runner_execute.o runner_vars.o ${OBJ_COMMON}
 
-OBJ_C2PCODE		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
+OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
-				${OBJ_COMMON}
+				${OBJ_COMMON} common_io_c.o
 
-OBJ_CHECKER		=checker_read.o ${OBJ_COMMON}
+OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
+				compiler_pcode.o compiler_variables.o compiler_list.o \
+				${OBJ_COMMON} common_io_fgl.o
 
-OBJ_RUNNER_C	=runner_calls_c.o ${OBJ_RUNNER_COMMON}
+OBJ_CHECKER_C		=checker_read.o ${OBJ_COMMON} common_io_c.o
+OBJ_CHECKER_A4GL		=checker_read.o ${OBJ_COMMON} common_io_fgl.o
 
-OBJ_RUNNER_A4GL	=runner_calls_fgl.o ${OBJ_RUNNER_COMMON}
+OBJ_RUNNER_C	=runner_calls_c.o ${OBJ_RUNNER_COMMON} common_io_c.o
+
+OBJ_RUNNER_A4GL	=runner_calls_fgl.o ${OBJ_RUNNER_COMMON} common_io_fgl.o
 
 #open.c write.c print.c missing from CVS:
 OBJ_OPEN        =npcode_xdr.o open.o write.o print.o
@@ -82,7 +87,7 @@ ifeq "${DBG}" "yes"
 	LINKLIBS    +=-lefence
 endif
 
-ALL             =${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner \
+ALL             =${BINROOT}/c2pcode ${BINROOT}/c2pcode_fgl ${BINROOT}/checker  ${BINROOT}/checker_fgl ${BINROOT}/runner \
 				${BINROOT}/runner_fgl
 #open.c is missing from CVS:
 #${BINROOT}/open_pcode
@@ -120,11 +125,20 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) compiled."
 
-${BINROOT}/checker: $(OBJ_CHECKER) npcode.h
-	$(CC) -g -o $@ $(OBJ_CHECKER) ${LINKLIBS} ${RPCLINKLIBS}
+${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h
+	$(CC) -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS}
 
-${BINROOT}/c2pcode:  $(OBJ_C2PCODE) npcode.h
-	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS} ${RPCLINKLIBS}
+
+${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
+	$(CC) -g -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS} -laubit4gl
+
+
+${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
+	$(CC) -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS}
+
+${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
+	$(CC) -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} -laubit4gl
+
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
 
@@ -140,10 +154,10 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS}
+	$(CC) -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} -ldl
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS}
+	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} -ldl
 
 
 ## ==================================================================
@@ -163,8 +177,11 @@ runner_calls_fgl.o : runner_calls.c calls.h fgl_calls.h
 npcode_xdr.o: npcode_xdr.c
 	$(CC) ${RPC_CFLAGS} -c -o $@ $^
 
-common_io.o: common_io.c
-	$(CC) ${RPC_CFLAGS} -c -o $@ $^
+common_io_c.o: common_io.c
+	$(CC) -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
+
+common_io_fgl.o: common_io.c
+	$(CC) -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $^
 
 compiler_list.o: compiler_list.c
 	$(CC) ${LIST_CFLAGS} -c -o $@ $^

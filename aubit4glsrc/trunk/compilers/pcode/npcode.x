@@ -81,7 +81,7 @@ struct variable_element {
 };
 
 
-struct variable {
+struct npvariable {
 	long variable_id;
         long def_block;
 	enum var_category category;
@@ -124,7 +124,7 @@ struct param_op {
 
 
 struct cmd_block {
-	struct variable c_vars<>;
+	struct npvariable c_vars<>;
 	long mem_for_vars;
 	long mem_to_alloc;
 };
@@ -140,14 +140,14 @@ struct param_c_call {
 };
 */
 
-union param switch (enum param_type param_type) {
+union param switch (int param_type) {
 	case PARAM_TYPE_LITERAL_INT: 		long 			n;
 	case PARAM_TYPE_LITERAL_CHAR: 		char 			c;
 	case PARAM_TYPE_LITERAL_STRING: 	long str_entry;
 	case PARAM_TYPE_LITERAL_DOUBLE:		double 			*d;
 	case PARAM_TYPE_VAR:			string 			v<>;
 	case PARAM_TYPE_VAR_ID: 		int 			vid;
-	case PARAM_TYPE_CALL: 			struct cmd_call 	*c_call; /* We'll use the same */
+	case PARAM_TYPE_CALL: 			struct npcmd_call 	*c_call; /* We'll use the same */
 	case PARAM_TYPE_LIST: 			struct param_list 	*p_list;
 	case PARAM_TYPE_OP: 			struct param_op 	*op;
 	case PARAM_TYPE_USE_VAR: 		struct use_variable 	*uv;
@@ -157,7 +157,7 @@ union param switch (enum param_type param_type) {
 	case PARAM_TYPE_ONKEY: 			string keys<>;
 };
 
-struct cmd_if {
+struct npcmd_if {
 	struct param *condition;
 	long goto_true;
 	long goto_false;
@@ -173,7 +173,7 @@ struct cmd_while {
 
 
 
-struct cmd_call {
+struct npcmd_call {
 	long func_id;
 	/* char is_c; */
 	struct param *params;
@@ -217,11 +217,11 @@ struct cmd_display_at {
 
 
 /* An individual command */
-union cmd switch(enum cmd_type cmd_type) {
+union cmd switch(int  cmd_type) {
 	case CMD_BLOCK: 	struct cmd_block 	*c_block;
 	case CMD_END_BLOCK: 	struct cmd_end_block 	*c_endblock;
-	case CMD_CALL: 		struct cmd_call 	*c_call;
-	case CMD_IF: 		struct cmd_if  		*c_if;
+	case CMD_CALL: 		struct npcmd_call 	*c_call;
+	case CMD_IF: 		struct npcmd_if  		*c_if;
 	case CMD_SET_VAR: 	struct cmd_set_var 	*c_setvar;
 	case CMD_SET_VAR_ONCE: 	struct cmd_set_var1 	*c_setvar1;
 	case CMD_GOTO_LABEL: 	long 			c_goto_str;
@@ -252,7 +252,7 @@ struct call_stack {
 	int pc;
 };
 
-struct function {
+struct npfunction {
 	long 			func_name_id;
 	struct use_variable 	param_vars<>;
 	long 			function_class;
@@ -271,6 +271,6 @@ struct module {
 	struct vstring 		string_table<>;
 	struct vstring 		id_table<>;
 	long  			external_function_table<>;
-	struct function 	functions<>;
+	struct npfunction 	functions<>;
 	struct param		params<>;
 };

@@ -371,9 +371,9 @@ struct param *
 new_param_fcall (char *fname, struct param *plist)
 {
   struct param *pnew;
-  struct cmd_call *pcall;
+  struct npcmd_call *pcall;
   pnew = malloc_clr (sizeof (struct param));
-  pcall = malloc_clr (sizeof (struct cmd_call));
+  pcall = malloc_clr (sizeof (struct npcmd_call));
   pnew->param_type = PARAM_TYPE_CALL;
   pnew->param_u.c_call = pcall;
   pcall->func_id = add_id (fname);

@@ -98,7 +98,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
 
 	  if (b->c_vars.c_vars_val[a].category == CAT_EXTERN)
 	    {
-	      struct variable *n;
+	      struct npvariable *n;
 	      void *ptr;
 	      b->c_vars.c_vars_val[a].category = CAT_ALLOC_EXTERN;
 
@@ -259,7 +259,7 @@ set_var_once (long pc, struct cmd_set_var1 *sv)
 }
 
 long
-call_function (long pc, struct cmd_call *c)
+call_function (long pc, struct npcmd_call *c)
 {
   char *x;
   long npc;
@@ -283,7 +283,7 @@ get_var_ptr (struct use_variable *uv)
 {
   int a;
   int found = -1;
-  struct variable *var;
+  struct npvariable *var;
   struct variable_element *ve_main;
   struct variable_element *ve_sub;
   int call_stack_entry;

@@ -17,6 +17,7 @@ void *resolve_externs (char *name) {
 }
 
 
-void special_cmd(struct cmd *c) {
+int special_cmd(struct cmd *c) {
 	return 0;
 }
+

@@ -632,10 +632,19 @@ union_list: union_element | union_list union_element
 
 uelement : VOID | element
 ;
+
+
 union_element:  CASE case_val COLON  {
 	fprintf(cfo,"case %s:\n",$<str>2);
 	fprintf(cfi,"case %s:\n",$<str>2);
-	}
+	} op_union_element_desc
+
+;
+
+op_union_element_desc: | union_element_desc
+;
+
+union_element_desc:
 	uelement SEMICOLON {
 	fprintf(cfo,"         break;\n");
 	fprintf(cfi,"         break;\n");

@@ -56,6 +56,27 @@ return 1;
 }
 
 
+void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
+
+
+void *A4GL_pcode_get(char *s,void *p,char *e) { 
+void *r;
+	A4GL_debug("A4GL_pcode_get : s=%s p=%p e=%s",s,p,e);
+	r=GET(s,p,e); 
+	A4GL_debug("Returns %p",r);
+
+return r;
+}
+
+void *A4GL_pcode_set(char *s,void *p,char *e,void *v) { 
+	A4GL_debug("A4GL_pcode_set %s %p %s %p",s,p,e,v);
+	return SET(s,p,e,v); 
+}
+
+void *A4GL_pcode_getptr(char *s,void *p,char *e) { 
+	A4GL_debug("A4GL_pcode_getptr : s=%s p=%p e=%s",s,p,e);
+	return GETPTR(s,p,e); 
+}
 
 
 struct call_funcs system_funcs[]={
@@ -82,7 +103,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_pop_var2,			"A4GL_pop_var2",			"4444"},
 	{ &A4GL_push_char,			"A4GL_push_char",			"04"},
 	{ &A4GL_push_int,			"A4GL_push_int",			"02"},
-	{ &A4GL_pop_int,			"A4GL_pop_int",			"4"},
+	{ &A4GL_pop_int,			"A4GL_pop_int",				"4"},
 	{ &A4GL_pop_bool,			"A4GL_pop_bool",			"4"},
 	{ &A4GL_push_long,			"A4GL_push_long",			"04"},
 	{ &A4GL_push_variable,			"A4GL_push_variable",			"044"},
@@ -93,13 +114,14 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_sleep_i,			"A4GL_sleep_i",				"0"},
 	{ &A4GL_start_prompt,			"A4GL_start_prompt",			"444444"},
 	{ &A4GL_new_menu_create,		"A4GL_new_menu_create",			"444444"},
-	{ &A4GL_menu_loop,		"A4GL_menu_loop",			"44"},
+	{ &A4GL_menu_loop,			"A4GL_menu_loop",			"44"},
 	{ &aclfgli_clr_err_flg,			"aclfgli_clr_err_flg",			"0"},
 	{ &aclfgli_get_err_flg,			"aclfgli_get_err_flg",			"4"},
-	{ &A4GL_pcode_ecall,			"ECALL",			"0444"},
+	{ &A4GL_pcode_ecall,			"ECALL",				"0444"},
 	{ &aclfgl_fgl_getenv,			"aclfgl_fgl_getenv",			"44"},
-
-
+	{ &A4GL_pcode_get,			"GET",					"4444"},
+	{ &A4GL_pcode_set,			"SET",					"44444"},
+	{ &A4GL_pcode_getptr,			"GETPTR",				"4444"},
 	{ &printf,				"printf",				0},  // Just for testing
 {0,0,0} 
 };
@@ -130,7 +152,7 @@ void *resolve_externs(char *name) {
 	      if (strcmp (name, "curr_line_no") == 0) { return 0; }
 	      if (strcmp (name, "err_status") == 0) { return 0; }
 	      if (strcmp (name, "aiplib_status") == 0) { return 0; }
-	return -1;
+	return (void *)-1;
 }
 
 

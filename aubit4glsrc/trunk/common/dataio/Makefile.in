@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.18 2003-09-17 11:55:41 afalout Exp $
+# $Id: Makefile.in,v 1.19 2003-10-20 12:18:59 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -45,10 +45,14 @@ CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
 RPC		=${LIBROOT}/libXDRPACKER_struct_form${SO_EXT} \
 		${LIBROOT}/libXDRPACKER_menu_list${SO_EXT} \
-		${LIBROOT}/libXDRPACKER_report${SO_EXT}
+		${LIBROOT}/libXDRPACKER_report${SO_EXT} \
+		${LIBROOT}/libXDRPACKER_module${SO_EXT} 
+
 XGEN	=${LIBROOT}/libDATA_struct_form${SO_EXT} \
 		${LIBROOT}/libDATA_menu_list${SO_EXT} \
-		${LIBROOT}/libDATA_report${SO_EXT}
+		${LIBROOT}/libDATA_report${SO_EXT} \
+		${LIBROOT}/libDATA_module${SO_EXT}
+
 ANY		=${LIBROOT}/libDATA_any${SO_EXT}
 
 ifeq "${TARGET_OS}" "cygwin"
@@ -63,8 +67,9 @@ ALL 	+=${XGEN}
 ifeq "${USE_RPCGEN}" "0"
 	#FIXME: update this:
 	RPCGEN_FORM		=${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
-	RPCGEN_REPORT	=${CP} ${ROOT}/tools/cygwin/report_xdr.c .
+	RPCGEN_REPORT		=${CP} ${ROOT}/tools/cygwin/report_xdr.c .
 	RPCGEN_MENU		=${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c .
+	RPCGEN_PCODE		=${CP} ${ROOT}/tools/cygwin/npcode_xdr.c .
 	#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
     #allowed at link time, and we have no RPCLIB to link with anyway:
 	ifneq "${TARGET_OS}" "cygwin"
@@ -83,9 +88,10 @@ ifeq "${USE_RPCGEN}" "0"
         endif
     endif
 else
-	RPCGEN_FORM		=@RPCGEN@ form_x.x
+	RPCGEN_FORM	=@RPCGEN@ form_x.x
 	RPCGEN_REPORT   =@RPCGEN@ report.x
 	RPCGEN_MENU     =@RPCGEN@ menu_x.x
+	RPCGEN_PCODE    =@RPCGEN@ npcode.x
 	ifneq "${GCC_MINGW}" "yes"
 		#No point in making XDR format libraries with CygWin Sun RPC, usign MinGW GCC - they
         #Would depend on cygwin1.dll, and MinGW GCC would not link it in. We can use XDR libs
@@ -120,6 +126,9 @@ ${LIBROOT}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
 ${LIBROOT}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
+${LIBROOT}/libDATA_module${SO_EXT}: npcode.xi.o npcode.xio.o npcode.xo.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+
 ${LIBROOT}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
@@ -129,8 +138,11 @@ ${LIBROOT}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
 ${LIBROOT}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
+${LIBROOT}/libXDRPACKER_module${SO_EXT}:  		npcode_xdr.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
+
 #FIXME: why not use this, or is it obsolete?
-${LIBROOT}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o
+${LIBROOT}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o npcode.xio.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
@@ -144,11 +156,17 @@ form_x_xdr.c: form_x.x
 menu_x_xdr.c: menu_x.x
 	${RPCGEN_MENU}
 
+npcode_xdr.c: npcode.x
+	${RPCGEN_PCODE}
+
 report_xdr.c: report.x
 	${RPCGEN_REPORT}
 
 form_x.xs.h form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x
 	${XGENEXE} $< struct_form
+
+npcode.xo.c npcode.xi.c npcode.xio.c: npcode.x
+	${XGENEXE} $< module
 
 menu_x.xo.c menu_x.xi.c menu_x.xio.c: menu_x.x
 	${XGENEXE} $< menu_list
@@ -168,6 +186,9 @@ menu_x_xdr.o: menu_x_xdr.c
 
 report_xdr.o: report_xdr.c
 	${CC} ${CFLAGS} -Wno-unused -c report_xdr.c -o report_xdr.o
+
+npcode_xdr.o: npcode_xdr.c
+	${CC} ${CFLAGS} -Wno-unused -c npcode_xdr.c -o npcode_xdr.o
 
 ${XGENEXE}:
 	${MAKE} -C ${ROOT}/compilers/xgen

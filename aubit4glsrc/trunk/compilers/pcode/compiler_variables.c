@@ -9,7 +9,7 @@
 
 
 struct cmd_block *curr_block = 0;
-struct variable *master_variable = 0;
+struct npvariable *master_variable = 0;
 
 int vid = 0;
 int m_type;
@@ -147,10 +147,10 @@ add_variable (int type, struct variable_element *e, char *id,
 	      struct param *set)
 {
 
-  struct variable *v;
+  struct npvariable *v;
   struct cmd_block *base;
 
-  v = malloc (sizeof (struct variable));
+  v = malloc (sizeof (struct npvariable));
   A4GL_debug ("Add variable .. %s type=%d \n", id, type);
 
   master_variable = v;
@@ -183,13 +183,13 @@ add_variable (int type, struct variable_element *e, char *id,
   base->c_vars.c_vars_len++;
   base->c_vars.c_vars_val =
     realloc (base->c_vars.c_vars_val,
-	     base->c_vars.c_vars_len * sizeof (struct variable));
+	     base->c_vars.c_vars_len * sizeof (struct npvariable));
   base->mem_to_alloc += v->var->total_size;
 
   //master_variable->variable_id = base->c_vars.c_vars_len - 1;
 
   memcpy (&base->c_vars.c_vars_val[base->c_vars.c_vars_len - 1],
-	  master_variable, sizeof (struct variable));
+	  master_variable, sizeof (struct npvariable));
 
   master_variable = &base->c_vars.c_vars_val[base->c_vars.c_vars_len - 1];
   // Add it to the module level variables...
@@ -409,7 +409,7 @@ mk_use_variable (struct param *p, struct param *arr, char *id,
 
       if (p->param_u.uv->defined_in_block_pc == -1)
 	{			// Its module level
-	  //printf("Module level variable\n");
+	 //printf("Module level variable\n");
 	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
 	}
       else
@@ -829,7 +829,7 @@ move_define (struct cmd_block *from, struct cmd_block *to)
       to->c_vars.c_vars_len++;
       to->c_vars.c_vars_val =
 	realloc (to->c_vars.c_vars_val,
-		 (to->c_vars.c_vars_len) * sizeof (struct variable));
+		 (to->c_vars.c_vars_len) * sizeof (struct npvariable));
 
 //printf("Copying variable id : %d\n",from->c_vars.c_vars_val[a].variable_id);
 
@@ -863,7 +863,8 @@ move_defines ()
   int a;
   int b;
   int nop = 0;
-  struct function *func;
+  struct npfunction *func;
+
   for (a = 0; a < this_module.functions.functions_len; a++)
     {
       func = &this_module.functions.functions_val[a];
