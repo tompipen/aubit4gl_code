@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.67 2003-11-05 08:14:52 afalout Exp $
+# $Id: Makefile.in,v 1.68 2004-01-06 15:54:45 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -120,6 +120,13 @@ endif
 ifeq "${GCC_MINGW}" "yes"
 	LINKLIBS	+=-liberty
 endif
+
+ifeq "${TARGET_OS}" "linux" 
+	LD_EXE_FLAGS=-rdynamic
+endif
+
+
+
 
 ifeq "something" "blah"
 	LD_EXE_FLAGS=-export-dynamic

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.42 2004-01-03 18:43:43 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.43 2004-01-06 15:54:51 mikeaubury Exp $
 #*/
 
 /**
@@ -760,9 +760,10 @@ process_control_stack (struct s_screenio *sio)
 			  sio->vars[field_no].ptr, sio->vars[field_no].dtype,
 			  sio->vars[field_no].size);
 
-	        A4GL_pop_param (sio->vars[field_no].ptr,
-			     sio->vars[field_no].dtype,
-			     sio->vars[field_no].size);
+	        A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+		if (sio->vars[field_no].dtype==0) {
+			A4GL_debug("sio->vars[field_no].ptr=%s",sio->vars[field_no].ptr);
+		}
 
 		really_ok=1;
 

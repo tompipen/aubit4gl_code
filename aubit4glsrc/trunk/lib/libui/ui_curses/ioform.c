@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.85 2004-01-06 12:22:16 mikeaubury Exp $
+# $Id: ioform.c,v 1.86 2004-01-06 15:54:51 mikeaubury Exp $
 #*/
 
 /**
@@ -4204,6 +4204,7 @@ A4GL_debug("Got fld_data as : %s",fld_data);
 			} else {
 				dsize=fprop->dtype_size;
 			}
+
 		    pprval=A4GL_pop_param (data_area, fprop->datatype, dsize); 
 
 		    if (pprval) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.33 2003-11-12 22:22:45 afalout Exp $
+# $Id: fcompile.c,v 1.34 2004-01-06 15:54:51 mikeaubury Exp $
 #*/
 
 /**
@@ -305,6 +305,7 @@ A4GLF_getdatatype_fcompile (char *col, char *tab)
       return -1;
     }
   A4GL_debug ("%s.%s = %d\n", tab, col, a);
+	if (a==DTYPE_VCHAR) a=DTYPE_CHAR;
   return a;
 }
 
