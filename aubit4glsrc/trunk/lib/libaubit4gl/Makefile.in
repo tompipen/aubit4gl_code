@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-22 00:32:24 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-04-23 07:01:07 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,15 +36,12 @@ override NOINCL=0
 ## ==================================================================
 
 CMODS_PROJECT	=project.c
-#GUI_TUI			=gui_tui.o
-#GUI_GTK			=gui_gtk.o
-#GUI_SRC         =API_ui.c
-#CMODS_DLSQL		=API_sql.c
 
 #In alphabetical order:
 COMMONSRC= \
 	 \
 	API_ui.c API_exreport.c API_sql.c API_rpc.c \
+	API_lex.c API_form.c API_menu.c API_msg.c \
 	builtin.c builtin_d.c \
 	calldll.c conv.c \
 	data_if.c dates.c dmy.c debug.c \
@@ -62,9 +59,6 @@ COMMONSRC= \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-#obsoleted: fields.c \
-
-#CMODS 				=${COMMONSRC} ${CMODS_DLSQL}
 OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o}
 
 ## ==================================================================
@@ -78,26 +72,7 @@ else
     ALL				+=libaubit4gl${SO_EXT}
 endif
 
-#This must NOT be += because it would place affitional parameters AFTER
-#existing parameters already in CFLAGS: we must not do this, because if
-#specific path is needed to RPClib, it MUST be BEFORE other potenitially
-#conflicting paths:
-#CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
-CFLAGS				:=-I../../compilers/fcompile -I../libincl ${CFLAGS}
-
-#cyclical dependency: I need XDR to make libaubit4gl, but I need libaubit4gl to make RPCLIB!
-#ifneq "@HAVE_RPCLIB@" "0"
-#	AUBIT_RPCLIBNAME=-lRPC_XDR
-#else
-	AUBIT_RPCLIBNAME=-lRPC_NORPC
-#endif
-
-## RPC type and XDR are not the same thing. RPC type represents Remote
-#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
-#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
-#are needed by forms and menus functionality, and without it user would not
-#ba able to compile or open forms and menus, since they compiled output
-#file format is outpudte in XDR format for portability:
+CFLAGS				+=-I../../compilers/fcompile -I../libincl
 
 ## ==================================================================
 ##                              Targets
@@ -117,12 +92,8 @@ libaubit4gl.a : $(OBJS)
 #	${LD} -static -rdynamic -o $@ $^ -ldl -lm
 
 libaubit4gl.so : $(OBJS)
-#	-ldl -lm should be linked here, not in 4glpc with executable?
-#IMPORTANT- xdr_ functions are NOT in -lrpcsvc. On Linux, they are in -lc
 	${LD} ${SO_LDFLAGS} -o $@ $^ -ldl -lm
 	${CP} $@ ..
-#	@RPCLIB_NAME@
-#-Map  mapfile
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -147,12 +118,6 @@ dllaubit4gl : $(OBJS)
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
-
-#gui_tui.o: ${GUI_SRC}
-#	${CC} ${CFLAGS} -c $(CFLAGS) $^ -o $@
-
-#gui_gtk.o: ${GUI_SRC}
-#	${CC} ${CFLAGS}-c $(CFLAGS) -DUSE_GTK $^ -o $@
 
 ci: $(CMODS)
 	ci -l  $^

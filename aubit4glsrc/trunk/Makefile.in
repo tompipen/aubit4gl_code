@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.59 2002-04-22 00:32:14 afalout Exp $
+# $Id: Makefile.in,v 1.60 2002-04-23 07:00:38 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -65,7 +65,7 @@ TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO_EXT} \
 			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_CONSOLE${SO_EXT} \
 			$(SOURCE)/lib/libRPC_NORPC${SO_EXT} $(SOURCE)/lib/libFORM_NOFORM${SO_EXT} \
-            $(SOURCE)/lib/libMENU_NOMENU${SO_EXT}
+            $(SOURCE)/lib/libMENU_NOMENU${SO_EXT} $(SOURCE)/lib/libMSG_NATIVE${SO_EXT}
 
 ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_C${SO_EXT} 2> /dev/null)" ""
 	TOLIBCUI		+=$(SOURCE)/lib/libA4GLLEX_C${SO_EXT}

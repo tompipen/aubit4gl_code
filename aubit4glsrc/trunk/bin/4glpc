@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.73 2002-04-22 00:32:23 afalout Exp $
+# $Id: 4glpc,v 1.74 2002-04-23 07:01:02 afalout Exp $
 #
 
 ########################################################################
@@ -940,8 +940,8 @@ then
     fi
 fi
 
-#-lFORM/MENU_xxx is here temporary, untill this lib is dlopen() enabled:
-FGLLIBS_COMMON="-laubit4gl -lFORM_$A4GL_FORMTYPE -lFORM_$A4GL_MENUTYPE"
+#-lFORM/MENU/MSG_xxx is here temporary, untill this lib is dlopen() enabled:
+FGLLIBS_COMMON="-laubit4gl -lFORM_$A4GL_FORMTYPE -lMENU_$A4GL_MENUTYPE -lMSG_$A4GL_MSGTYPE"
 
 if [ "$COMSPEC" = "" ]
 then

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.59 2002-04-22 00:32:17 afalout Exp $
+# $Id: configure.in,v 1.60 2002-04-23 07:00:48 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2140,6 +2140,19 @@ if test "$default_comp" != ""; then
     #fi
 fi
 
+## ==================================================================
+##            Decide on default HELP MESSAGE driver
+## ==================================================================
+
+if test "$default_msg" != ""; then
+	#User can force HELP MESSAGE driver default with --default-msg=xxxx switch
+	A4GL_MSGTYPE="$default_msg"
+#else
+	#if test "$PERLBUILD" != "no"; then
+	#	OUTPUTLANG="PERL"
+    #fi
+fi
+
 
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in
@@ -2165,6 +2178,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libaubit4gl/Makefile
                 lib/libform/form_xdr/Makefile
                 lib/libmenu/menu_xdr/Makefile
+                lib/libmsg/msg_native/Makefile
+                lib/liblex/lex_c/Makefile
+                lib/liblex/lex_perl/Makefile
 				lib/libpdf/Makefile
                 lib/libgui/Makefile
                 lib/libtui/Makefile

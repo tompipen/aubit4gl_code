@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# | Aubit 4gl Language Compiler Version $.0   lib/liblex/lex_c makefile	 |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,130 +24,80 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-04-23 07:01:02 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-04-23 07:01:19 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ../../../incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                   Source files
 ## ==================================================================
 
-ifeq "@YACC@" "no"
-	CFLAGS		+=-I../../tools/no_yacc/cygwin/compilers/4glc
-	Y_TAB_C		=../../tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
-else
-	Y_TAB_C		=rules/generated/y.tab.c
-endif
-
-4GLCAOBJ		= \
-				4glc.o \
-				dim.o \
-				list.o lexer.o \
-				mod.o map.o \
-				rules/generated/states.o \
-				rules/generated/kw.o \
-				rules/generated/y.tab.o
+#FIXME: does compile_c_gtk.o belong here, or in 4GLCAOBJ ?
+4GLCOBJ_C		=compile_c.o compile_c_gtk.o
 
 ## ==================================================================
 ##                    Options
 ## ==================================================================
 
-ALL				=rules.t 4glc
-
-ifneq "@PERLBUILD@" "no"
-    #FIXME: remove 4glp executable, make libA4GLLEX_xx loaded by dlopen()
-    #from 4glc executable depenfing on A4GL_OUTPUTLANG in aubitrc:
-	ALL         +=4glp
-endif
-
-
 ifneq "${COMSPEC}" ""
-	#FIXME: it should be like this: try this again after Mike enables dlopen on libA4GLLEX_
-	#LIB_PERL	=dllA4GLLEX_PERL
-	#LIB_C		=dllA4GLLEX_C
-	#LIB_PERL_L  =-lA4GLLEX_PERL
-	#LIB_C_L     =-lA4GLLEX_C
-	#but it is instead like this:
-	#I cannot compile this as .dll because of problems with automatic exporting of structs. see mod.c
-	#so, we will create monolit 4glc - there is no Perl compiler on Windows at the moment anyway:
-	LIB_C		=
-    4GLCAOBJ	+=${4GLCOBJ_C}
+	ALL         = dllA4GLLEX_C
 else
-	LIB_PERL	=../../lib/libA4GLLEX_PERL${SO_EXT}
-	LIB_C		=../../lib/libA4GLLEX_C${SO_EXT}
-	LIB_PERL_L  =-lA4GLLEX_PERL
-	LIB_C_L     =-lA4GLLEX_C
+	ALL         = libA4GLLEX_C.so
 endif
 
-CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
+CFLAGS			+=-I.. -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
-	@echo "Default targets (${ALL}) successfully compield."
+ALL: ${ALL}
 
-4glc: ${4GLCAOBJ} ${LIB_C}
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
-	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
-
-4glp: ${4GLCAOBJ} ${LIB_PERL}
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
-	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
-
+libA4GLLEX_C.so : ${4GLCOBJ_C}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
 
 ## ==================================================================
 ##                            Windows Targets
 ## ==================================================================
 
-exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
-#	${MAKE} libexportlib4glcomp.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L../../lib"
-#	dlltool --export-all --output-def $@ $^
-#	dlltool --export-all --output-exp libexportlib4glcomp.dll.a $^
-	${CC} -shared -Wl,--output-def=exportlib4glcomp.def -Wl,--out-implib=exportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L../../lib
-#	gcc -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
+.PHONY : dllA4GLLEX_C
+dllA4GLLEX_C: exportlib4glcomp ${4GLCOBJ_C}
+	${MAKE} libA4GLLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L../../lib -L."
+#see mod.c for list of variables that can't be automaticelly exported.
+
+#${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
+# -lPDF_NOPDF
+	${CP} libA4GLLEX_C.dll ../..
+	${CP} libA4GLLEX_C.dll.a ../..
 
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
-rules.t :
-	make -C rules $(MKNAME)
-
-rules/generated/y.tab.o: ${Y_TAB_C}
-	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I../../lib/liblex/lex_c -I.
-
-${Y_TAB_C}:
-#	make -C rules generated/y.tab.c $(MKNAME)
-	make -C rules
-
-../fcompile/form_x.h:
-	make -C ../fcompile rpc
+#../fcompile/form_x.h:
+#	make -C ../fcompile rpc
 
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
 
-rules/generated/kw.c: rules.t
-rules/generated/single_words.rule: rules.t
-rules/generated/y.tab.c: rules.t
-rules/generated/states.c: rules.t
-mod.o: mod.c ${Y_TAB_C}
-rules/generated/y.tab.o: ../fcompile/form_x.h
+#rules/generated/kw.c: rules.t
+#rules/generated/single_words.rule: rules.t
+#rules/generated/y.tab.c: rules.t
+#rules/generated/states.c: rules.t
+#mod.o: mod.c ${Y_TAB_C}
+#rules/generated/y.tab.o: ../fcompile/form_x.h
 
 ## ==================================================================
 ##                            Clean Targets
 ## ==================================================================
 
-clean: clean.rules.generated
+clean:
 	${RM} *.so *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
-
-clean.rules.generated:
-	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
 
 
 #--------------------------------- EOF -----------------------------

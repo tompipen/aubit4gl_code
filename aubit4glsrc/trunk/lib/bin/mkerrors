@@ -1,6 +1,11 @@
 #This script is invoked from lib/libaubit4gl/Makefile
 #It creates lib/generated/tmperrs.h file used by lib/libaubit4gl/error.c
 
+a="*.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c"
+b="../libform/form_xdr/*.c ../libgui/*.c ../libmenu/menu_xdr/*.c ../libmsg/msg_native/*.c"
+c="../libpdf/*.c ../librpc/sun_rpc/*.c ../librpc/xml_rpc/*.c ../libtui/*.c"
+
+SOURCES="$a $b $c"
 
 awk '
 BEGIN {
@@ -42,7 +47,5 @@ END {
 print "{0,0}"
 print "};"
 }
-' *.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c > ../generated/tmperrs.h
-
-
+' $SOURCES > ../generated/tmperrs.h
 

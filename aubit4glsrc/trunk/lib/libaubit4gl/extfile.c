@@ -3,7 +3,7 @@
 FILE *helpfile = 0;
 FILE *langfile = 0;
 char *language_file_contents=0;
-char helpbuff[10000];
+//char helpbuff[10000];
 char disp[24][81];
 int max_width;
 
@@ -66,6 +66,8 @@ aclfgl_fgl_show_help(int a) {
 return 0;
 }
 
+
+/* moved to libmsg/msg_native/readmsg.c
 
 read_help_f (int no,int *maxwidth)
 {
@@ -136,6 +138,8 @@ debug("Buff=%s",tmpbuf);
   return 0;
 
 }
+*/
+
 
 char *get_translated_id (char * no_c)
 {

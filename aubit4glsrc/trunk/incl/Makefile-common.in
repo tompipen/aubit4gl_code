@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.32 2002-04-22 00:32:23 afalout Exp $
+# $Id: Makefile-common.in,v 1.33 2002-04-23 07:01:04 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -578,7 +578,7 @@ GLIB_NAME="@GLIB_NAME@"
 
 MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
-
+DLL_CFLAGS="-shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -Wl,--export-all-symbols"
 
 ## ==================================================================
 ##                      Common rules
@@ -586,7 +586,9 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
 #Rule to make Windows-CyGwin .dll and export library:
 %.dll %.def %.dll.a: $(DLLOBJS)
-	${CC} -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
+#	${CC} -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
+	${CC} ${DLL_CFLAGS} -o $*.dll $(DLLOBJS) $(DLL_LDFLAGS) $(DLL_LDLIBS)
+
 #	cp $*.def $*.def.bak
 
 #make def file:

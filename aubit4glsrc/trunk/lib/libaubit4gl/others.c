@@ -11,6 +11,11 @@
 #include "../libincl/debug.h"
 #include "../libincl/keys.h"
 
+
+//here only to satisfy libMENU_( from compilers/4glc/4glc.c)
+char *outputfilename;
+
+
 int m_lastkey = 0;
 char *strip_quotes (char *s);
 char *replace_sql_var (char *s);

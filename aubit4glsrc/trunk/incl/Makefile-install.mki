@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.19 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile-install.mki,v 1.20 2002-04-23 07:01:04 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -81,7 +81,12 @@ install.links:
 
 install.libs.links: deinstall.libs.links
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+#this is here only because they are not yet dlopen() enabled:
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT} ${LIB_INSTALL_LINK}/libFORM_XDR${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libFORM_NOFORM${SO_EXT} ${LIB_INSTALL_LINK}/libFORM_NOFORM${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libMENU_XDR${SO_EXT} ${LIB_INSTALL_LINK}/libMENU_XDR${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libMENU_NOMENU${SO_EXT} ${LIB_INSTALL_LINK}/libMENU_NOMENU${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libMSG_NATIVE${SO_EXT} ${LIB_INSTALL_LINK}/libMSG_NATIVE${SO_EXT}
 
 ## ==================================================================
 ##                    deinstall.x
@@ -101,6 +106,10 @@ deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libFORM_XDR${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libFORM_NOFORM${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libMENU_XDR${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libMENU_NOMENU${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libMSG_NATIVE${SO_EXT}
 
 #export libraries on Windows:
 #we keep this only in AUBITDIR, since linking is allways done by 4glpc
@@ -151,7 +160,10 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT} \
         $(INSTALL_DIR)/lib/libRPC_XDR${SO_EXT} $(INSTALL_DIR)/lib/libEXREPORT_PDF${SO_EXT} \
         $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libA4GLLEX_C${SO_EXT} \
-		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT}
+		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT} \
+		$(INSTALL_DIR)/lib/libFORM_NOFORM${SO_EXT} $(INSTALL_DIR)/lib/libMENU_NOMENU${SO_EXT} \
+		$(INSTALL_DIR)/lib/libMENU_XDR${SO_EXT} $(INSTALL_DIR)/lib/libRPC_XMLRPC${SO_EXT} \
+		$(INSTALL_DIR)/lib/libMSG_NATIVE${SO_EXT}
 
 #windows dll export libraries:
 ifneq "${COMSPEC}" ""

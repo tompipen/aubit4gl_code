@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.51 2002-04-22 00:32:23 afalout Exp $
+# $Id: Makefile.in,v 1.52 2002-04-23 07:01:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,70 +35,63 @@ override NOINCL=0
 ##                              Source files
 ## ==================================================================
 
+#This make file does not have it's own targets, it only invokes other
+#make files
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
-#libaubit4gl.a
-4GLPC               =../bin/4glpc
-4GLPCFLAGS			=-verbose -nogtk
+ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
+		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
+		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libA4GLLEX_C${SO_EXT}
+
 
 ifeq "$(GTKBUILD)" "yes"
-	ALL += gtkgui
+	ALL += libUI_GTK${SO_EXT}
 endif
 
-ifdef COMSPEC
-	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM dllMENU_NOMENU
+ifneq "@HAVE_RPCLIB@" "0"
+	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT}
+endif
 
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dlllibRPC_XDR dllFORM_XDR dllMENU_XDR
-    endif
-
-	ifneq "@XML_RPC@" "no"
-		ALL			+=dlllibRPC_XMLRPC
-    endif
-
-else
-    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} libMENU_NOMENU${SO_EXT}
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT}
-    endif
-
-	ifneq "@XML_RPC@" "no"
-		ALL			+=libRPC_XMLRPC${SO_EXT}
-    endif
+ifneq "@XML_RPC@" "no"
+	ALL	+=libRPC_XMLRPC${SO_EXT}
 endif
 
 ifneq "@IFMX_ESQLC@" "no"
-	ALL 		+=libSQL_esql${SO_EXT}
+	ALL +=libSQL_esql${SO_EXT}
 endif
 
-
 ifdef COMSPEC
-	ALL			+=libSQL_odbc32${SO_EXT}
-else
-	ifeq "$(HAVE_IODBC)" "yes"
-	    ALL		+=libSQL_iodbc${SO_EXT}
-    endif
+	ALL	+=libSQL_odbc32${SO_EXT}
+endif
 
-	ifeq "$(HAVE_UNIXODBC)" "yes"
-		ALL		+=libSQL_unixodbc${SO_EXT}
-    endif
+ifeq "$(HAVE_IODBC)" "yes"
+    ALL	+=libSQL_iodbc${SO_EXT}
+endif
 
-	ifneq "@HAVE_IFXODBC@" "no"
-	    ALL		+=libSQL_ifxodbc${SO_EXT}
-	endif
+ifeq "$(HAVE_UNIXODBC)" "yes"
+	ALL	+=libSQL_unixodbc${SO_EXT}
+endif
 
-	ifneq "@HAVE_PGODBC@" "no"
-		ALL		+=libSQL_pgodbc${SO_EXT}
-	endif
+ifneq "@HAVE_IFXODBC@" "no"
+	ALL	+=libSQL_ifxodbc${SO_EXT}
+endif
+
+ifneq "@HAVE_PGODBC@" "no"
+	ALL	+=libSQL_pgodbc${SO_EXT}
 endif
 
 ifeq "$(PDFBUILD)" "yes"
-	ALL 			+=libEXREPORT_PDF${SO_EXT}
+	ALL +=libEXREPORT_PDF${SO_EXT}
 endif
+
+ifneq "@PERLBUILD@" "no"
+	ALL +=libA4GLLEX_PERL${SO_EXT}
+endif
+
+
 
 ## ==================================================================
 ##                              Targets
@@ -110,11 +103,8 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-#all_gui: ${ALL_GUI}
-#	@echo "Default GUI targets (${ALL_GUI}) built successfully."
-
 ## ==================================================================
-##                       Windows 32 DLL Targets in sub-makefiles
+##              Windows 32 DLL Targets in sub-makefiles
 ## ==================================================================
 
 libSQL_noodbc.dll:
@@ -126,36 +116,31 @@ libSQL_odbc32.dll:
 libEXREPORT_NOPDF.dll:
 	${MAKE} -C libpdf NOPDF.dll
 
-libgtk4gl.dll:
+libUI_GTK.dll:
 	${MAKE} -C libgui
 
-.PHONY : dllaubit4gl
-dllaubit4gl :
+libaubit4gl.dll :
 	${MAKE} -C libaubit4gl $@
 
-.PHONY : dllFORM_XDR
-dllFORM_XDR :
+libFORM_XDR.dll :
 	${MAKE} -C libform/form_xdr $@
 
-.PHONY : dllFORM_NOFORM
-dllFORM_NOFORM :
-	${MAKE} -C libform/form_xdr $@
+libFORM_NOFORM.dll :
+	${MAKE} -C libform/form_xdr dllFORM_NOFORM
 
-.PHONY : dllMENU_XDR
-dllMENU_XDR :
-	${MAKE} -C libmenu/menu_xdr $@
+libMENU_XDR.dll :
+	${MAKE} -C libmenu/menu_xdr dllMENU_XDR
 
-.PHONY : dllMENU_NOMENU
-dllMENU_NOFORM :
-	${MAKE} -C libmenu/menu_xdr $@
+libMENU_NOFORM.dll :
+	${MAKE} -C libmenu/menu_xdr dllMENU_NOFORM
 
-dlllibRPC_XDR:
+libRPC_XDR.dll:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
 
-dlllibRPC_NORPC:
+libRPC_NORPC.dll:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_NORPC
 
-dlllibRPC_XMLRPC:
+libRPC_XMLRPC.dll:
 	${MAKE} -C librpc/xml_rpc dlllibRPC_XMLRPC
 
 
@@ -163,9 +148,17 @@ dlllibRPC_XMLRPC:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
-gtkgui:
-	$(MAKE) -C libgui
+libA4GLLEX_C.so:
+	${MAKE} -C liblex/lex_c
 
+libA4GLLEX_PERL.so:
+	${MAKE} -C liblex/lex_perl
+
+libMSG_NATIVE.so:
+	${MAKE} -C libmsg/msg_native
+
+libUI_GTK.so:
+	$(MAKE) -C libgui
 
 aubit-config:
 	${MAKE} -C resource
@@ -181,7 +174,6 @@ libFORM_NOFORM.so :
 
 libFORM_XDR.so :
 	${MAKE} -C libform/form_xdr $@
-
 
 libMENU_NOMENU.so :
 	${MAKE} -C libmenu/menu_xdr $@
@@ -214,23 +206,20 @@ libSQL_pgodbc.so:
 	${MAKE} -C libsql/odbc pgodbc
 
 libRPC_XDR.so:
-	${MAKE} -C librpc/sun_rpc libRPC_XDR.so
+	${MAKE} -C librpc/sun_rpc $@
 
 libRPC_NORPC.so:
-	${MAKE} -C librpc/sun_rpc libRPC_NORPC.so
+	${MAKE} -C librpc/sun_rpc $@
 
 libRPC_XMLRPC.so:
-	${MAKE} -C librpc/xml_rpc libRPC_XMLRPC.so
+	${MAKE} -C librpc/xml_rpc $@
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean : clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc clean.other
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c project.c \
-    loadmap loadmap.c loadmap.h core aubit-config *.out *.glb *.so *.a  \
-	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp libaubit4gl.def
-
+	${RM} core *.out *.glb *.so *.a  *.bak *.dll *.stackdump *.err *.base *.exp
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h \
@@ -259,8 +248,11 @@ clean.other:
 	${MAKE} -C libaubit4gl clean
 	${MAKE} -C libform/form_xdr clean
 	${MAKE} -C libmenu/menu_xdr clean
+	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
 	${MAKE} -C ../tools/loadmap clean
+	${MAKE} -C liblex/lex_c clean
+	${MAKE} -C liblex/lex_perl clean
 
 ## ==================================================================
 ##                         Other Targets
@@ -271,8 +263,6 @@ lclint: $(CMODS)
 	@echo "see lclint.log for results"
 
 #----------------------------------- EOF -------------------------------
-
-
 
 
 
