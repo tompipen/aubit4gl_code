@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.64 2004-09-27 17:13:23 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.65 2004-09-28 20:09:08 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.64 2004-09-27 17:13:23 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.65 2004-09-28 20:09:08 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1350,11 +1350,15 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	      a = a4gl_tolower (a);
 	    }
 	  A4GL_debug ("Upshift ?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-	      && isalpha (a))
-	    {
-	      a = a4gl_toupper (a);
-	    }
+	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)) {
+		int x_islower=0;
+		int x_isalpha=0;
+		x_islower=islower(a);
+		x_isalpha=isalpha(a);
+		if ( x_islower && x_isalpha ) {
+	      		a = a4gl_toupper (a);
+	    	}
+	   }
 	}
 
     }
