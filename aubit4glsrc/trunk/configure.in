@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.100 2002-09-25 01:14:38 afalout Exp $
+# $Id: configure.in,v 1.101 2002-09-25 01:27:02 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2406,8 +2406,8 @@ AC_CHECK_LIB([dl], [main])
 		#/sw/lib/libdl.a
 		#/sw/lib/libdl.dylib
 		LDFLAGS="$LDFLAGS -L/sw/lib"
-		AC_CHECK_LIB([dl], [main])
-		if test "$ac_cv_lib_dl_main" != "yes"; then
+		AC_CHECK_LIB([dl], [dlopen])
+		if test "$ac_cv_lib_dl_dlopen" != "yes"; then
 			LDFLAGS="$old_LDFLAGS"
 			AC_MSG_ERROR(No dl lib found - please install it. Stop.)
 		else
