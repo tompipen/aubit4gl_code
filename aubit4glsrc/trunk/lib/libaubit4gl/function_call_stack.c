@@ -12,6 +12,7 @@
  */
 
 #include <stdio.h>
+#include "a4gl_debug.h"
 
 #define MAX_FUNCTION_CALL_STACK 1000
 
@@ -75,7 +76,7 @@ void A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
  */
 void A4GLSTK_pushFunction(const char *functionName)
 {
-  fprintf(stderr,"=====&&&&&&============PUSH %s\n",functionName);
+ debug("=====&&&&&&============PUSH %s\n",functionName);
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallPointer++;
 }
@@ -98,10 +99,10 @@ void A4GLSTK_popFunction()
 char *A4GLSTK_getStackTrace(void)
 {
   static char stackTrace[640];
-  register int i;
+  int i;
 
   strcpy(stackTrace,"4gl function call stack :\n");
-  for ( i = functionCallPointer ; i >= 0 ; i-- )
+  for ( i = functionCallPointer-1 ; i >= 0 ; i-- )
   {
     strcat(stackTrace,"    ");
     if ( functionCallStack[i].moduleName == '\0' )
@@ -114,7 +115,14 @@ char *A4GLSTK_getStackTrace(void)
         functionCallStack[i].functionName,
         functionCallStack[i].lineNumber
       );
-    strcat(stackTrace,"()\n");
+
+    // Don't put the brackets on for a MAIN
+    if (strcmp(functionCallStack[i].functionName,"MAIN")!=0) {
+    	strcat(stackTrace,"()");
+       }
+    strcat(stackTrace,"\n");
+
+
   }
   return stackTrace;
 }
