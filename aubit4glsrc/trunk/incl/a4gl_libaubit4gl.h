@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.34 2003-02-14 10:18:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.35 2003-02-16 11:24:41 mikeaubury Exp $
 #
 */
 
@@ -1036,6 +1036,8 @@
 	void 	set_arr_curr 		(int a);
 	int 	get_count 			(void);
 	void    set_arr_count 		(int a);
+	int aclfgl_dbms_dialect(void);
+	void aclfgli_extend(void) ;
 
 
 	/* ======================= From buildtin_d.c ====================*/
@@ -1185,6 +1187,7 @@
 	int 	stod 				(void *zz, void *aa, int sz_ignore);
 	int 	conv 				(int dtype1, void *p1, int dtype2, void *p2, int size);
 	void    set_convmatrix		(int dtype1,int dtype2,void *ptr);
+	void assertion                  (int a, char *s);
 
 	/* ============================ fglwrap.c ============================== */
 	void 	chk_err				(int lineno,char *fname);
@@ -1474,7 +1477,7 @@
     /* prompt.c */
 
 	void a4gl_usleep(int a);
-
+	void A4GL_pause(char *s);
 
 
 

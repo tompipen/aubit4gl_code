@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.25 2003-02-11 10:44:02 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.26 2003-02-16 11:24:41 mikeaubury Exp $
 */
 
 /**
@@ -258,6 +258,12 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	int     aclfgl_set_page		(int nargs);
 	int     aclfgl_get_page		(int nargs);
 
+    /* ======================= builtin.c  ================== */
+	void aclfgli_current(int a,int b);
+	void push_current(int a, int b); /* stack.c */
+	char *aclfgli_str_to_id(char *name);
+	int aclfgl_ascii(int n);
+	void push_ascii(void); /* stack.c */
 
 	//int     aclfgl_set_page		(void);
 	//int     aclfgl_get_page		(void);
