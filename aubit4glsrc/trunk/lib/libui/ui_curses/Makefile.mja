@@ -1,0 +1,103 @@
+
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libtui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.mja,v 1.1 2003-06-13 18:57:45 mikeaubury Exp $
+#
+
+LIBROOT=../..
+ROOT=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#CFLAGS		+=-I.. -I. -I${ROOT}/incl
+#must be BEFORE system paths:
+CFLAGS		:= ${CFLAGS} -I.. -I. -I${ROOT}/incl
+#-I/usr/local/include -I/usr/local/rpc -I/usr/local
+#-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
+
+ifneq "1" "0"
+	ALL			=${LIBROOT}/libUI_TUI_s${SO_EXT}
+endif
+
+ifneq "0" "0"
+	ALL			=${LIBROOT}/libUI_TUI_s${SO_EXT}
+endif
+
+ifeq "${NON_PEDANTIC_OK}" "1"
+	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
+else
+	CFLAGS_NO_PEDANTIC  =${CFLAGS}
+endif
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+ALLOBJ=curslib.o newpanels.o ioform.o colours.o array.o iarray.o prompt.o
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+#all : ${ALL}
+#	@echo "Default targets (${ALL}) successfully compiled."
+
+
+libUI_TUI_s${SO_EXT}: ${ALLOBJ}
+	ld ${SO_LDFLAGS} -o $@ $^ -L./static_curses -lform -lpanel -lncurses -L/lib ${LINKLIBS}
+
+## ==================================================================
+##                            Sub Targets
+## ==================================================================
+
+#${ROOT}/compilers/fcompile/form_x.h:
+#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+#invalid lvalue in assignment
+curslib.o: curslib.c
+	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
+
+
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
+
+clean:
+	${RM} *.o *${SO_EXT} *.bak *.ao *.err *.a *.def *.glb \
+	debug.out core  gmon.out
+
+#------------------------------- EOF --------------------------------
