@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.5 2004-05-24 14:31:14 mikeaubury Exp $
+# $Id: sql.c,v 1.6 2004-05-24 17:12:49 whaslbeck Exp $
 #
 */
 
@@ -81,6 +81,7 @@ extern int A4GL_nullfunc (void);
 int A4GLSQL_loadConnector (char *name);
 
 void A4GL_global_A4GLSQL_set_sqlcode (int n);
+void A4GLSQL_set_sqlerrm( char *m,char *p);
 /*
 =====================================================================
                     Functions definitions
@@ -98,9 +99,9 @@ void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void
 A4GLSQL_set_status (int a, int sql)
 {
-  A4GL_debug ("A4GLSQL_set_status");
+  A4GL_debug ("A4GLSQL_set_status(%d,%d)",a, sql);
 
-// if ((!aclfgli_get_err_flg ()) || a>=0) {
+ if ((!aclfgli_get_err_flg ()) || a>=0) {
   a4gl_status = a;
 
   if (sql)
@@ -110,18 +111,31 @@ A4GLSQL_set_status (int a, int sql)
     aclfgli_set_err_flg ();
     }
   A4GL_debug ("Status set to %d", a);
-//} else {
+} else {
 	A4GL_debug("Status set to %d and errflg is set - not setting it to %d/%d",a4gl_status,a,sql);
-//}
+}
 }
 
 
 void A4GLSQL_set_sqlerrm( char *m,char *p) {
+        A4GL_debug("A4GLSQL_set_sqlerrm...");
+        if(a4gl_sqlca.sqlcode==100) {
+            A4GL_debug("sqlcode=NOTFOUND workaround");
+            strcpy(a4gl_sqlca.sqlerrm,"NOTFOUND");
+            strcpy(a4gl_sqlca.sqlerrp,"NOTFOUND");
+            return;
+        }
+        A4GL_debug("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
+        if(!m || !p) {
+          A4GL_debug("Nullpointer, doing nothing!");
+          return;
+        }
 	strcpy(a4gl_sqlca.sqlerrm,m);
 	strcpy(a4gl_sqlca.sqlerrp,p);
 }
 void A4GLSQL_set_sqlerrd( int a0, int a1, int a2, int a3, int a4, int a5) {
 
+        A4GL_debug("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4, a5);
 	a4gl_sqlca.sqlerrd[0]=a0;
 	a4gl_sqlca.sqlerrd[1]=a1;
 	a4gl_sqlca.sqlerrd[2]=a2;
@@ -144,7 +158,7 @@ void A4GLSQL_set_sqlerrd( int a0, int a1, int a2, int a3, int a4, int a5) {
 void
 A4GLSQL_xset_status (int a)
 {
-  A4GL_debug ("A4GLSQL_xset_status");
+  A4GL_debug ("A4GLSQL_xset_status(%d)",a);
   A4GLSQL_set_status (a, 0);
 }
 
