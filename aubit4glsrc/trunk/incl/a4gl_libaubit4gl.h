@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.17 2002-09-25 23:59:54 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.18 2002-09-26 00:14:47 afalout Exp $
 #
 */
 
@@ -68,6 +68,14 @@
 		#define bool_t int
 		#define u_int unsigned int
 	#endif
+
+	#if (defined(__MACH__) && defined(__APPLE__))
+		#define bool_t int
+		///usr/include/rpc/auth.h:105: undefined type, found `XDR'
+        #include "rpc/xdr.h"
+		#define	enum_t	int
+
+    #endif
 
     /* ======================= from a4gl_constats.h ================== */
 
@@ -407,7 +415,7 @@
 	#include <unistd.h> 			/* sleep() close() write() */
 	#include <signal.h>             /* SIGINT */
 	/*
-    @-skipposixheaders@
+    skipposixheaders flag:
 	to force LCLint to process <sys/types.h>, since form_x.h will include
     rpc.h that needs fd_set. included via /usr/include/sys/types.h but
 	defined in /usr/include/sys/select.h
