@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.49 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.50 2003-07-16 19:25:55 mikeaubury Exp $
 #*/
 
 /**
@@ -118,7 +118,6 @@ static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
 static int A4GL_field_name_match (FIELD * f, char *s);
 static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
-static int A4GL_get_field_width (FIELD * f);
 static void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static void A4GL_set_init_pop (FIELD * f);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
@@ -1099,6 +1098,8 @@ A4GL_start_form (struct s_form_dets *s)
   A4GL_int_form_driver (s->form, REQ_FIRST_FIELD);
   pos_form_cursor (s->form);
 
+  s->form_details.insmode=0;
+
   if (s->form_details.insmode)
     A4GL_int_form_driver (s->form, REQ_INS_MODE);
   else
@@ -1170,7 +1171,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		//int d1,s1;
 		//char *ptr1;
 
-		if ((fprop->datatype&DTYPE_MASK)==DTYPE_CHAR) return 0;
+		if ((fprop->datatype&DTYPE_MASK)!=DTYPE_CHAR) {
 
 
 
@@ -1193,6 +1194,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		 		set_current_field (mform, form->currentfield);
 		 		return -4;
 		  } 
+		}
 
  		if (A4GL_check_field_for_include
               		(field_buffer (sio->currform->currentfield, 0),
@@ -1619,6 +1621,7 @@ A4GL_set_fields (void *vsio)
   	if (attr != 0) A4GL_set_field_attr_with_attr (field_list[a],attr, FGL_CMD_INPUT);
 
       set_field_status (field_list[a], 0);
+      prop->flags=0;
     }
 
   if (firstfield)
@@ -2029,10 +2032,11 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, 
 	}
 
     }
+/*
   s = va_arg (*ap, char *);
-
   if (s != 0)
     A4GL_debug ("Trailing fields ignored");
+*/
 
 
   *field_list = calloc (cnt + 1, sizeof (FIELD *));
@@ -2307,6 +2311,7 @@ A4GL_debug("In display_field_contents");
 
   field_width=A4GL_get_field_width (field);
   has_format=A4GL_has_str_attribute (f, FA_S_FORMAT);
+  A4GL_debug("Has format");
 
 // 'Format' is valid for a lot of datatypes -
 // but not all...
@@ -2320,6 +2325,9 @@ A4GL_debug("In display_field_contents");
 	case DTYPE_VCHAR: ignore_formatting=1;
   }
 
+   if (has_format&&ignore_formatting) {
+		A4GL_debug("Which I'm going to ignore..");
+   }
 
   if (has_format&&!ignore_formatting) 
     {
@@ -3298,8 +3306,6 @@ A4GL_int_form_driver (FORM * form, int a)
 
   field_pos = A4GL_get_curr_field_col (form);
   f = current_field (form);
-  A4GL_debug ("int_form_driver0..  currentfield=%p status = %d", f,
-	      field_status (f));
 
   if (f)
     {
@@ -3309,14 +3315,11 @@ A4GL_int_form_driver (FORM * form, int a)
     {
       strcpy (buff, "");
     }
-  A4GL_debug ("int_form_driver1..  currentfield=%p status = %d", f,
-	      field_status (f));
 
   A4GL_debug ("MJA Calling form_driver with %d for form %p", a, form);
 
   fd_ok = form_driver (form, a);
-  A4GL_debug ("int_form_driver2..  currentfield=%p status = %d", f,
-	      field_status (f));
+
   if (fd_ok != E_OK)
     {
       A4GL_debug ("Problem in calling form_driver %p %d - returns %d", form,
@@ -3334,8 +3337,6 @@ A4GL_int_form_driver (FORM * form, int a)
 	}
     }
 
-  A4GL_debug ("int_form_driver3..  currentfield=%p status = %d", f,
-	      field_status (f));
   if (f != current_field (form))
     {
       A4GL_debug ("Resetting focus");
@@ -3343,8 +3344,6 @@ A4GL_int_form_driver (FORM * form, int a)
       A4GL_gui_setfocus ((long) f);
     }
 
-  A4GL_debug ("int_form_driver4..  currentfield=%p status = %d", f,
-	      field_status (f));
   if (field_pos != A4GL_get_curr_field_col (form))
     {
       A4GL_debug ("Resetting position");
@@ -3352,8 +3351,6 @@ A4GL_int_form_driver (FORM * form, int a)
       A4GL_gui_setposition (field_pos);
     }
 
-  A4GL_debug ("int_form_driver5..  currentfield=%p status = %d", f,
-	      field_status (f));
   if (f)
     {
       strcpy (buff2, field_buffer (f, 0));
@@ -3363,14 +3360,13 @@ A4GL_int_form_driver (FORM * form, int a)
       strcpy (buff2, "");
     }
 
-  A4GL_debug ("int_form_driver6..  currentfield=%p status = %d", f,
-	      field_status (f));
   if (strcmp (buff, buff2) != 0)
     {
       A4GL_gui_setbuff (f, buff2);
     }
   if (a != REQ_VALIDATION)
     A4GL_int_form_driver (form, REQ_VALIDATION);
+
 
 }
 
@@ -3732,16 +3728,23 @@ A4GL_debug("fgl_fieldtouched");
 void A4GL_clr_fields_ap (int to_defaults, va_list *ap) {
 int a;
 FIELD **field_list;
+struct struct_scr_field *f;
 int c;
 A4GL_debug("clr_Fields_ap");
+
   c = A4GL_gen_field_chars_ap (&field_list, A4GL_get_curr_form(1), ap);
+
   for (a=0;a<=c;a++) {
 	A4GL_mja_set_field_buffer(field_list[a],0,"");
+  	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
+  	if (f) A4GL_default_attributes (field_list[a], f->datatype);
   }
+
   //if (field_list) free(field_list);
   //else {
 	//A4GL_exitwith("no fields found to clear...");
   //}
+
 }
 
 int

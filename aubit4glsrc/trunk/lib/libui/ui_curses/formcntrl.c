@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.16 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.17 2003-07-16 19:25:55 mikeaubury Exp $
 #*/
 
 /**
@@ -324,12 +324,10 @@ process_control_stack (struct s_screenio *sio)
 
   a = sio->fcntrl_cnt - 1;
 
-/* BEFORE_INPUT isn't used yet... */
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
     {
       new_state = 0;
-
-      //rval = -99;
+      rval = -99;
     }
 
   if (sio->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
@@ -384,26 +382,33 @@ process_control_stack (struct s_screenio *sio)
 	  rval = -90;
 	}
 
+
       if (sio->fcntrl[a].state == 50)
 	{
-	  new_state = 0;
+      struct struct_scr_field *fprop;
+
+	  new_state=0;
+
+      			fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 	  A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
-		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255) {
+		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255 && isprint(sio->fcntrl[a].extent)) {
+
+                	if ((fprop->flags & 1)==0)  {
+					switch (sio->vars[sio->curr_attrib].dtype) {
+					case DTYPE_SMINT:
+					case DTYPE_INT:
+					case DTYPE_FLOAT:
+					case DTYPE_SMFLOAT:
+					case DTYPE_DECIMAL:
+					case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
+					}
+			}
+                	fprop->flags|=2; // Set the field status flag
 			A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
 	  		A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
-			//if (field_status(current_field(sio->currentfield))) {
-			if (isprint(sio->fcntrl[a].extent)) {
-				switch (sio->vars[sio->curr_attrib].dtype) {
-				case DTYPE_SMINT:
-				case DTYPE_INT:
-				case DTYPE_FLOAT:
-				case DTYPE_SMFLOAT:
-				case DTYPE_DECIMAL:
-				case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
-				}
-			}
-		}
-	rval=-90;
+		} 
+              	fprop->flags|=1; // Clear the before field flag
+		rval=-90;
 	  //mja_wrefresh(currwin);
 	}
     }
@@ -440,6 +445,7 @@ process_control_stack (struct s_screenio *sio)
       		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
       		A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
       		A4GL_comments (fprop);
+		if ((fprop->flags & 1) ) fprop->flags-=1; // Clear a flag to indicate that we're just starting on this field
       		new_state = 0;
 		A4GL_debug("Setting rval to -1");
 		//rval=-99;
@@ -481,7 +487,6 @@ process_control_stack (struct s_screenio *sio)
 
 		A4GL_debug("Calling A4GL_pop_var2 : %p dtype=%d size=%d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
           	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-	
 		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
       		A4GL_push_long ((long) sio->currentfield);
@@ -611,6 +616,7 @@ A4GL_form_loop (void *vs,int init)
 	s->curr_attrib=0;
 	s->currentfield=0;
 	A4GL_newMovement(s,0);
+	A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
 	}
 
   if (A4GL_has_something_on_control_stack (s))

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.20 2003-07-12 08:02:57 mikeaubury Exp $
+# $Id: keys.c,v 1.21 2003-07-16 19:25:55 mikeaubury Exp $
 #
 */
 
@@ -156,10 +156,13 @@ A4GL_key_val2 (char *str)
 
   if (mja_strcmp ("ACCEPT", str) == 0)
     return std_dbscr.acckey;
+
   if (mja_strcmp ("DELETE", str) == 0)
     return std_dbscr.delkey;
+
   if (mja_strcmp ("INSERT", str) == 0)
     return std_dbscr.inskey;
+
   if (mja_strcmp ("HELP", str) == 0)
    return std_dbscr.helpkey;
 

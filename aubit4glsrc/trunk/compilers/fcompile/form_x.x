@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.5 2003-05-22 21:59:06 mikeaubury Exp $
+# $Id: form_x.x,v 1.6 2003-07-16 19:25:55 mikeaubury Exp $
 #*/
 
 /**
@@ -125,6 +125,8 @@ struct struct_scr_field
     enum FIELD_ATTRIBUTES_BOOL bool_attribs<>;
     enum FA_COLOUR colour;
     struct colours colours<>;
+    int general_ptr;
+    int flags;
   };
 
 struct struct_tables

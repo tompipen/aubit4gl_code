@@ -1278,8 +1278,8 @@ value_expression_complex_ss :
 	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
 {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
-	| EXTEND OPEN_BRACKET extend_qual CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("EXTEND(",$<str>3,")",0);}
+	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
 ;
 
 value_expr_list_ss : 
@@ -1401,10 +1401,10 @@ units_qual:
 	| UNITS_SECOND {strcpy($<str>$,"UNITS SECOND"); }
 ;
 
-extend_qual:
-        CURRENT COMMA s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-        | column_name COMMA s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-        | CURRENT s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+extend_qual_ss:
+        CURRENT COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
+        | var_ident_ibind_ss COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
+        | CURRENT s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2," ",$<str>3," ",$<str>4,0);}
 ;
 
 /* ========================= sql1.rule ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.28 2003-06-20 14:50:32 mikeaubury Exp $
+# $Id: readforms.c,v 1.29 2003-07-16 19:25:55 mikeaubury Exp $
 #*/
 
 /**
@@ -453,7 +453,7 @@ A4GL_check_field_for_include (char *s, char *inc, int dtype)
   if (strlen (inc) == 0)
     return TRUE;
 
-  A4GL_debug ("Checking include");
+  A4GL_debug ("Checking include : %s",inc);
   dtype = dtype & DTYPE_MASK;
   strcpy (buff, inc);
   ptr = strtok (buff, INC_EACH);
@@ -594,8 +594,10 @@ int
 A4GL_has_bool_attribute (void *f, int bool)
 {
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
-  real_has_bool_attribute (f, bool);
+  return real_has_bool_attribute (f, bool);
 }
+
+
 static int
 real_has_bool_attribute (struct struct_scr_field *f, int bool)
 {

@@ -69,6 +69,7 @@ void A4GL_int_form_driver (FORM * form, int a);
 int A4GL_copy_field_data (struct s_form_dets *form);
 void A4GL_iarr_arr_fields (struct s_inp_arr *arr,int attr,int arr_line,int scr_line,int blank);
 int A4GL_get_curr_field_col (FORM * mform);
+int A4GL_get_field_width (FIELD * f);
 void A4GL_default_attributes (FIELD * f, int dtype);
 FIELD *A4GL_make_field (int, int, int, int);
 FIELD *A4GL_make_label (int frow, int fcol, char *label);
