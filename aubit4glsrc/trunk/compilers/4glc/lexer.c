@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.81 2004-01-13 17:34:26 mikeaubury Exp $
+# $Id: lexer.c,v 1.82 2004-01-16 11:37:08 mikeaubury Exp $
 #*/
 
 /**
@@ -162,7 +162,7 @@ char *A4GL_translate (char *s);
 int
 mja_fgetc (FILE * f)
 {
-  int a;
+  int a=0;
 
 
   a = A4GL_memfile_getc (f);
@@ -1159,7 +1159,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   static int last_pc = 0;
 //int r;
 //short *stack_cnt;
-
+  strcpy(buff,"");
 
   //printf("In yylex ... yystate=%d\n", yystate);
   //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
@@ -1332,7 +1332,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     }
 
   //printf("Buff=%s\n",buff);
-  fix_bad_strings (buff);
+  if (strlen(buff)) fix_bad_strings (buff);
   //printf("After Buff=%s\n",buff);
 
   /* call set_str() to send back to the parser the text/value 

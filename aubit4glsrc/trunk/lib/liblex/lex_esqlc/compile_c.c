@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.121 2004-01-09 18:50:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.122 2004-01-16 11:38:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -82,6 +82,7 @@ int is_builtin_func (char *s);
 static void order_by_report_stack(void);
 static void add_to_ordbyfields(int n);
 static void order_by_report_stack();
+extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
 */
 int doing_cs (void);
 /*
@@ -2872,8 +2873,8 @@ print_init (void)
   int cnt;
   printc ("{\n");
 
-  
-  expand_bind (nullbind, 'N', nullbindcnt);
+ //printf("nullbindcnt=%d\n",nullbindcnt); 
+  expand_bind (&nullbind[0], 'N', nullbindcnt);
 
   for (cnt = 0; cnt < nullbindcnt; cnt++)
     {
@@ -2920,7 +2921,7 @@ print_validate ()
   for (a=0;a<z;a++) {
         char buff[256];
 	struct expr_str *p;
-	p=A4GL_get_validate_expr(a);
+	p=(struct expr_str *)A4GL_get_validate_expr(a);
 	if (p==0) continue;
 	printc ("A4GL_push_variable(&%s,0x%x);\n", nullbind[a].varname, nullbind[a].dtype );
         sprintf(buff,"A4GL_push_int(%d);",length_expr(p));

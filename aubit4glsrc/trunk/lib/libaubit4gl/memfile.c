@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.10 2004-01-13 17:34:43 mikeaubury Exp $
+# $Id: memfile.c,v 1.11 2004-01-16 11:36:04 mikeaubury Exp $
 #
 */
 
@@ -89,7 +89,9 @@ A4GL_memfile_fopen (char *f, char *mode)
     {
       fseek (in, 0, SEEK_END);
       buff_len = ftell (in);
-      buff = (char *) malloc (buff_len + 1);
+      buff = (char *) malloc (buff_len + 10);
+      //memset(buff,0,buff_len+10);
+	buff[buff_len]=0;
       rewind (in);
 
       if (fread (buff, buff_len, 1, in) != 1)
@@ -184,10 +186,15 @@ A4GL_memfile_getc (FILE * f)
     }
   else
     {
+      if (pos>buff_len) {
+		printf("XXX");
+		return 0;
+	}
       a = buff[pos];
       pos++;
       return a;
     }
+return 0;
 }
 
 
