@@ -347,8 +347,8 @@ convert_sql() {
 TYPE=$1
 RDBMS=$2
 RESULT=$3
-SQL_DDL=./testdb-ddl.sql
-SQL_DATA=./testdb-data.sql
+SQL_DDL=etc/testdb-ddl.sql
+SQL_DATA=etc/testdb-data.sql
 TMP1=tmp1
 TMP2=tmp2
 

@@ -133,11 +133,7 @@ for a in $FLAGS; do
 		exit $RET
 		;;
    
-    -info)
-	#Show information about the test
-	#allready procesed before - skip it
-		INFO_TEST="1"
-		break
+	-info) 	#Show information about the test; allready procesed before - skip it
         ;;
 
 	-show-config)
@@ -197,7 +193,10 @@ for a in $FLAGS; do
 		;;
 	-ignore-compat)	#Skip testing for test compatibility with no-aubit compilers
 		IGNORE_COMPAT=1
-		;;		
+		;;
+	-ignore-conf-error) #Ignore configuration errors and continue
+		IGNORE_CONF_ERR=1 
+		;;
 	-stop)          #stop on error
 		ERROR_STOP=1
 	    ;;
@@ -240,7 +239,7 @@ for a in $FLAGS; do
 		export SKIP_EC_RUN=1
         ;;
 
-	-silent)        #don't show output of programs execution
+	-silent)        #don't show ANY output of running test
                     #NOTE: this is NOT the same as -noecho
 		SILENT=1
 		SHOW_TIME=0
@@ -252,7 +251,10 @@ for a in $FLAGS; do
 			echo "** "
         fi
 		;;
-
+	-no-test-output) #silence output of running test - same as -silent?
+		NO_TEST_OUTPUT=1
+		;;
+		
 	-short)          #show only short summary
 		SHORT_SUMMARY=1
         ;;
@@ -877,6 +879,7 @@ for a in $FLAGS; do
 		echo " -tuin       use HL_TUIN UI for tests"
 		echo " -hl_tui     use HL_TUI UI for tests (default is TUI)"
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"
+		echo " -ignore-conf-error Ignore configuration errors and continue"
 		echo " -skip-expectfail Skip tests expected to fail"
 		
 		echo ""
@@ -1332,6 +1335,7 @@ do
 	IS_UNKNOWN_TEST=0
 	IS_NO_CRON_TEST=0	
 	TEMPLATE_COMMENT=0
+	NEED_TRANSACTION=0
 	IS_REPORT_TEST=0
 	EXPECT_CODE=0
 	COMPILE_ONLY=0
@@ -1361,7 +1365,7 @@ do
 		TMP=`echo $desc_txt | grep "This is not a test but a Testing template"`
 	
 		if test "$TMP" != ""; then 
-			if test "$INFO_TEST" = "1"; then
+			if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
 				TEMPLATE_COMMENT=1
 			fi
 			desc_txt=""
@@ -1527,8 +1531,8 @@ do
 		
 		
 		###############
-		#Show test info and continue loop
-		if test "$INFO_TEST" = "1"; then
+		#Show test info
+		if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
 
 			#echo "db_test=$db_test"
 			
@@ -1674,7 +1678,9 @@ do
 		fi
 
 		echo ""
-		continue
+		if test "$INFO_TEST" = "1"; then
+			continue
+		fi
 	fi
 
 	if test "$SH_DBG" = "1"; then 
@@ -2013,7 +2019,7 @@ do
 	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`
 
 	cd $CURR_DIR/$TEST_NO
-    if test "$SILENT" = "1"; then
+    if test "$SILENT" = "1" -o "$NO_TEST_OUTPUT" = "1"; then
 		if test "$ERR_WITH_LOG" != "1"; then
 			echo "Test : " $TEST_NO   >> $CURR_DIR/$ERROR_LOG
             ERRLOG="2>$CURR_DIR/$ERROR_LOG"

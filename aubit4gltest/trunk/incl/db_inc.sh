@@ -107,6 +107,9 @@ fi
 #Check and create PostgreSQL database
 
 if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
+	if test "$VERBOSE" = "1"; then 
+		echo "PostgreSQL specified (PSQL=$PSQL)"
+	fi
 	if test "`$PSQL -V 2>/dev/null`" = ""; then
         echo "ERROR: $PSQL not found - no PostgreSQL engine?"
         exit 67
@@ -114,7 +117,8 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
-		PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+		#PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+		PGDATA=`ps -ef | grep postmaster | head -1 | awk '{print $11}'`
 		if test "$PGDATA" = ""; then 
 			echo "WARNING: PostgreSQL not running or started without -D flag"
 			echo "(using PGDATA, but no PGDATA present in environment)"			
@@ -174,6 +178,7 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		TEST=`cat /tmp/tmp.dbaccess | grep "could not connect to server"`
 		if test "$TEST" != ""; then
 			#Try starting local PG engine
+			#FIXME - only on SuSE
 			rcpostgresql start
 		#else
 		#	echo "ERROR: unknown fault (1)"		
@@ -199,7 +204,7 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 	
 	if test "$NEW_PG" = "1" -a "$TEST" = ""; then
 	    echo "Droping PostgreSQL database $TEST_DB"
-		dropdb $TEST_DB > /tmp/dropdbtmp.log
+		$POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
         #returns "DROP DATABASE" string on success
 		RET=$?
         if test "$RET" != "0"; then
@@ -210,14 +215,14 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
         fi
     fi
 
-    if test "$TEST" != "" || test "$NEW_PG" = "1"; then
+    if test "$TEST" != "" -o "$NEW_PG" = "1"; then
         echo "Creating PostgreSQL database $TEST_DB"
 		#createdb is a shell script wrapper around the SQL command
 		#CREATE DATABASE via the PostgreSQL interactive terminal psql.
-		createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+		$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
         RET=$?
         if test "$RET" != "0"; then
-			TMP4=`cat /tmp/credbtmp.log | grep "psql: FATAL:  user"`
+			TMP4=`cat /tmp/credbtmp.log | grep "FATAL:  user"`
 			if test "$TMP4" != ""; then 
 				#need to create user first - FATAL:  user "root" does not exist
 				USERNAME=`whoami`
@@ -226,14 +231,14 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 				echo "create user $USERNAME createdb createuser ;" > $SCRIPT
 			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
 				#we need this for future tests
-				createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				$POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
 				#xxxxx
 				#su postgres
 				#$PSQL -d template1
 				#template1=# create user root createdb createuser ;
 
 				echo "Again: Creating PostgreSQL database $TEST_DB"
-				createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
 				RET=$?
 				if test "$RET" != "0"; then
 					echo "Failed again (code $RET)."
@@ -283,6 +288,13 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
 		echo "datestyle = 'informix, mdy'"
+		#should we do that automatically??
+		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
+		#...and restart pg...?
+		if test "$IGNORE_CONF_ERR" != "1"; then 
+			echo "STOP. (correct or use -ignore-conf-error to ignore)"
+			exit 8
+		fi
 	fi
 	TMP=`echo 'show default_delim;' | $PSQL -d $TEST_DB | grep "\|"`
 	if test "$TMP" = ""; then 
@@ -290,6 +302,17 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		echo "does not contain needed setting:"
 		echo "default_delim = '|'"
 		echo "This must be set *after* you do the initdb"
+		#should we do that automatically??
+		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
+		#...and restart pg...?
+		if test "$IGNORE_CONF_ERR" != "1"; then 
+			echo "STOP. (correct or use -ignore-conf-error to ignore)"
+			exit 8
+		fi
+	fi
+	PG_VERSION=`echo 'show server_version;' | $PSQL -d $TEST_DB | grep "."`
+	if test "$VERBOSE" = "1"; then 
+		echo "INFO: PG server reported version $PG_VERSION"
 	fi
 
 	#> You should also initdb with --locale='C' if you want index's to be used

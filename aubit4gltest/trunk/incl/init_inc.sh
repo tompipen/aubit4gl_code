@@ -186,12 +186,16 @@ CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS -described -nolong -err-with-log -aubitr
 #Apply platform defaults, see if we are to run multiple tests
 FLAGS="$@"
 for a in $FLAGS; do
-
+#echo "FLAGS=$FLAGS"
+#echo "a=$a"
 	if test "$INFO_TEST" = "1"; then 
 		if test -d $a; then
 			RUN_ONE=$a
     		#echo "------ Info for test $RUN_ONE ------------"
 			#exit FOR loop
+			if test "$VERBOSE" = "1"; then 
+				echo "Exit after info"
+			fi
 			break
 		else
             echo ""
@@ -221,6 +225,7 @@ for a in $FLAGS; do
 		echo "Test $a marked as certified."
 		exit
 	fi
+	
    case $a in
    
    		-xxx)
@@ -249,7 +254,8 @@ for a in $FLAGS; do
             #If there is a conflict, USER flags will win
 			FLAGS="$DEFAULT_FLAGS $FLAGS"
             #exit 'for' loop since this flag means we will not be running -alltests
-			break
+			#nnooooooot!
+			#break
             ;;
 		-cert) #Use flags expected to verify certified tests
 			FLAGS="$CERT_DEFAULT_FLAGS $FLAGS"
@@ -351,10 +357,17 @@ for a in $FLAGS; do
 			exit 0
 			;;
 			
-        -info)
-			#Show information about the test
-			INFO_TEST="1"
-            continue
+        -info) #Show information about the test
+			if [ $# -gt 2 ]; then
+				#More flags on cmd line, process everything, but 
+				#also show info
+				RUN_AND_INFO=1
+			else
+				#Only 2 flags on command line, one of which is -info, so
+				#just show the info
+				INFO_TEST="1"
+				continue
+			fi
             ;;
 		-catalogue) 
 			#create catalogue.txt file using -info flag
@@ -479,7 +492,7 @@ for a in $FLAGS; do
             ;;
         *)
 			#This works only if -alltests is before test number:
-			if test "$ALL_TESTS_NONDB" || test "$ALL_TESTS_DB"; then
+			if test "$ALL_TESTS_NONDB" -o "$ALL_TESTS_DB"; then
 				if test -d $a; then
 					RUN_ONE=$a
 		    		echo "Running all tests on test $RUN_ONE only."
