@@ -1591,7 +1591,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.31 2004-03-14 10:40:57 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.32 2004-03-25 09:15:24 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4846,5 +4846,178 @@ Nope - it doesn't care - do you think we should make it ?
 ===================================================================================
 
 
+	From: 	Mike Aubury <mike@aubit.com>
+To: 	Paul Falbe <falbe@cassens.com>, aubit4gl-developers@lists.sourceforge.net
+Subject: 	[Aubit4gl-developers] logical reports
+Date: 	Fri, 19 Mar 2004 10:37:46 +0000	
+First phase is about done now...
 
+I still need some 4GL syntax to run it but heres whats implemented atm
+
+
+
+Set :
+$ export A4GL_REPORT_TRACE=Y
+
+and you're report output will be a meta-data file rather than a real file...
+
+
+Eventually - I'd like to make this switchable to some temporary file and keep 
+the original file as the original report 
+
+
+(Make sure you start report to "filename" or report output to "filename"!)
+
+This meta-data contains all the information it could gather about what was 
+being printed, where on the page, and in what section of the report...
+
+
+The lib/liblogical directory contains all the stuff to handle these meta-data 
+output files...
+
+For reference - the common/a4gl_lle.h describes what information is stored in 
+the meta data file...
+
+
+
+Now - There are 3 things you can do with this meta data....
+
+1) The Report Viewer
+------------------------
+
+This is a GTK2.0 application which displays the contents of the report in a 
+tab'd window (one tab per page) - you can't print or anything, but its useful 
+to see whats been put out in the meta data file and is used as the basis of 
+the next app..
+
+By default - it will only show you the first 10 and last 10 pages  (if your 
+report is only 5 pages long - you'll still only see 5 pages!) - this is 
+basically to limit the impact of a very large report in terms of creating GTK 
+widgets!
+
+You can change this by changing the MAX_PAGE and MIN_PAGE in 
+report_viewer/report_viewer.
+
+Invoke using :
+        $ report_viewer filename
+
+Where filename is the meta data file (ie the START REPORT TO "filename")
+
+You will probably note that you can click on sections of the report and they 
+change colour. These define the printed elements. When you click on an 
+'element' everything that the report considers to be printed in the same 
+place in your 4GL (not based on lines/columns etc) is highlighted..
+
+Also - there is a series of '>' going down the left hand side - these indicate 
+the block in which those elements are printed. Again clicking on one of these 
+highlights all lines printed within that block (i have not done anything 
+about have a print ... ; in an after then have a print in an on every row 
+etc)
+
+There is some debugging stuff which is printed to stdout (ie from the window 
+you ran the application from) which will eventually be removed...
+
+
+
+
+2) The layout editor
+------------------------------
+
+This is another GTK2 application which embeds the report viewer and allows you 
+to edit a logical report output.
+
+ATM - there are only two coded report output types :
+
+        CSV
+and
+        TXT
+
+
+Although all of the code has been abstracted into shared libraries :
+
+        libLOGREP_???.so
+
+You can't edit the TXT layout at all - so you get a 'no configurable options' 
+for that.
+
+For CSV mode - the libLOGREP creates a series of tables - one for each block 
+which has seen something printed in the output...
+(Eg before group/after group/ page header/on every row)
+
+You can then drag&drop information from the report viewer into these tables to 
+generate the report layout. Double clicking a cell removes the contents of 
+that cell..
+
+At the minute you are limited to 10 cells across - this will be changed to use 
+a spin button like the number of lines...
+
+
+You can use the 'Default' menu option to create you a default layout which you 
+can then play with.
+
+Unfortunately - the layout is indicated by using the block and entry ID for 
+the printed output - so you'll see things like "0/1", "1/4" in the layout 
+editor - if you want to see what they represent, a single click will 
+highlight that section on the report viewer...
+
+You can load a layout using the menu option..
+When you're happy - save the file using the menu options...
+
+
+Invocation :
+
+$ layout_engine type filename
+
+Where type is TXT or CSV (more to be added later!) and filename is the 
+original 4GL report output (just like for the report_viewer)
+
+eg
+
+$ layout_engine CSV /tmp/r1.out
+
+You can't change the report you're editing or the type from within the layout 
+engine - you'll need to start it again.
+
+All load/saves within the layout editor refer to the layout file - not the 
+meta data report file!!!
+
+An extension .lrf ( Logical Report Format) is used when it thinks its 
+required...
+
+
+
+3) The report processor
+
+This a text mode application which takes a report meta data file and a report 
+type and renders the report to the required output type with an optional 
+layout file...
+
+This is abstracted behind a shared library just like the report layout but its 
+called libLOGREPPROC_?.so
+
+
+If no layout file is supplied then a default one is generated before the 
+report is processed...
+
+Invocation
+
+        $ process_report type filename 
+or
+        $ process_report type filename layoutfile
+
+
+
+The output is currently stored in a temporary file (the name of which is 
+displayed when the process completes)
+
+
+
+
+
+Tips for CSV layouts
+
+Copy to the same block type - the only exception might be for BEFORE GROUP OF 
+to duplicate these details in an on every row..
+
+========================================================================
 

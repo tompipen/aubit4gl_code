@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.15 2004-03-24 19:03:05 mikeaubury Exp $
+# $Id: makefile,v 1.16 2004-03-25 09:16:04 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -42,7 +42,8 @@ ifeq "${WIN_PATH}" "1"
 	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
     #app (like MingGW) don't know anythign about links! So for now we will add path to
     #there.   -ID:/cygwin/usr/lib/glib-2.0/include
-    ADD_ME		=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
+    ADD_ME		=-I${WIN_CYGPATH}/lib/glib-2.0/include \
+					-I${WIN_CYGPATH}/lib/gtk-2.0/include
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
 	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
@@ -54,7 +55,8 @@ GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 #Need to find better sollution for this:
 GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
-CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
+CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} \
+					${GTK_LIB_PATH}
 
 CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
 GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
@@ -101,9 +103,9 @@ endif
 ## ==================================================================
 
 #must be BEFORE system paths:
-CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl
 #Note: On CygWin term.h is in -I/usr/include/ncurses
-
+CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} \
+					-I.. -I. -I${ROOT}/incl
 
 ifneq "${HAVE_CURSES}" "0"
 	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
@@ -151,13 +153,13 @@ all: ${ALL}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
 
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  ${CURSES_LIB_PATH}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
-	${LD} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
+	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS}
 
 ## ==================================================================
 ##                              Sub-Targets
@@ -208,7 +210,7 @@ ${ROOT}/incl/a4gl_API_%.h :
 ## ==================================================================
 
 testit:  $(OBJS) testit.o API_lowlevel.o
-	${CC} -L${ROOT}/lib $^  -o testit -laubit4gl ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
+	${CC} ${CURSES_LIB_PATH} -L${ROOT}/lib $^  -o testit -laubit4gl ${CURSES_LIB_NAME} 
 
 show:
 	@echo "LINKLIBS=${LINKLIBS}"
