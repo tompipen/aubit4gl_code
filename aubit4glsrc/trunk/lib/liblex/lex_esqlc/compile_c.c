@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.57 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.58 2003-06-27 11:09:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -251,10 +251,16 @@ open_outfile (void)
     }
   else
     {
-      strcat (c, ".c");
+	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
+      		strcat (c, ".csp");
+	} else {
+      		strcat (c, ".c");
+	}
     }
+
   strcat (h, ".h");
   strcat (err, ".err");
+
   outfile = A4GL_mja_fopen (c, "w");
   if (outfile == 0)
     {
@@ -277,15 +283,24 @@ open_outfile (void)
     }
 
 
-  fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+  if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
+      	fprintf(outfile,"#define THIS_MODULE %s\n",outputfilename);
+      	fprintf(outfile,"#include \"cs_header.h\"\n");
+  } else {
+  	fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+  }
+
   if (doing_esql ())
     {
       fprintf (outfile, "#include \"a4gl_esql.h\"\n");
     }
+
   if (strchr (h, '/') != 0)
     fprintf (outfile, "#include \"%s\"\n", strrchr (h, '/') + 1);
   else
     fprintf (outfile, "#include \"%s\"\n", h);
+
+
   /* if (acl_getenv ("GTKGUI"))
      fprintf (outfile, "#include <acl4glgui.h>\n");
 
@@ -293,8 +308,11 @@ open_outfile (void)
      fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
    */
 
-  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
-	   outputfilename);
+  if (doing_cs()) {
+  fprintf (outfile, "static string module_name=\"%s.4gl\";\n", outputfilename);
+  } else {
+  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n", outputfilename);
+  }
 
 
   hfile = A4GL_mja_fopen (h, "w");
@@ -3861,8 +3879,13 @@ printDeclareFunctionStack (char *_functionName)
 #ifdef DEBUG
   A4GL_debug ("Function %s\n", _functionName);
 #endif
-  if (isGenStackInfo ())
-    printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
+  if (isGenStackInfo ()) {
+	if (doing_cs()) {
+    		printc ("\nstring _functionName = \"%s\";\n", _functionName);
+	} else {
+    		printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
+	}
+  }
 }
 
 /**
@@ -3964,9 +3987,15 @@ print_func_end (void)
 void
 print_main_1 (void)
 {
-  printc ("\n\nmain(int argc,char *argv[]) {\n");
-  printc ("char *_paramnames[]={\"\"};");
-  printc ("int nargs=0;");
+  if (doing_cs()) {
+  	printc ("\n\npublic static void Main(string argv[]) {\n");
+  	printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
+  	printc ("int nargs=0;");
+  } else {
+  	printc ("\n\nmain(int argc,char *argv[]) {\n");
+  	printc ("char *_paramnames[]={\"\"};");
+  	printc ("int nargs=0;");
+  }
 }
 
 /**
@@ -3979,7 +4008,8 @@ void
 print_fgllib_start (char *db)
 {
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
-  printc ("\nA4GL_fgl_start(argc,argv);\n");
+  if (doing_cs()) 	{ printc ("\nA4GL_fgl_start(argv.Count(),argv);\n"); }
+  else 			{ printc ("\nA4GL_fgl_start(argc,argv);\n"); }
   if (db[0] != 0)
     {
       print_init_conn (db);
@@ -4163,11 +4193,21 @@ print_declare_associate_2 (char *variable, char *size, char *n)
 void
 print_define_char (char *var, int size, int isstatic_extern)
 {
-  if (isstatic_extern == 1)
-    printc ("static ");
-  if (isstatic_extern == 2)
-    printc ("extern ");
-  printc ("%s [%d+1];\n", var, size);
+char buff[20];
+strcpy(buff,"");
+  if (isstatic_extern == 1) {
+	strcat(buff,"static ");
+  }
+
+  if (isstatic_extern == 2) {
+	strcat(buff,"extern ");
+  }
+
+  if (doing_cs()) {
+  	printc ("%s A4GL_cs_%s;\n", buff,var, size);
+  } else {
+  	printc ("%s %s [%d+1];\n", buff,var, size);
+  }
 }
 
 /**
@@ -4183,13 +4223,17 @@ print_define_char (char *var, int size, int isstatic_extern)
 void
 print_define (char *varstring, int isstatic_extern)
 {
-  if (isstatic_extern == 1)
-    printc ("static ");
+char buff[20];
+strcpy(buff,"");
 
-  if (isstatic_extern == 2)
+  if (isstatic_extern == 1) {
+    strcat (buff,"static ");
+  }
 
-    printc ("extern ");
-  printc ("%s;\n", varstring);
+  if (isstatic_extern == 2) {
+	strcat(buff,"extern ");
+  }
+  printc ("%s %s;\n", buff,varstring);
 }
 
 /**
@@ -4205,8 +4249,8 @@ print_define (char *varstring, int isstatic_extern)
 void
 print_start_record (int isstatic_extern, char *varname)
 {
-  if (isstatic_extern == 1)
-    printc ("static ");
+char buff[20]="";
+  if (isstatic_extern == 1) strcat(buff,"static");
   if (isstatic_extern == 2)
     {
 
@@ -4219,18 +4263,18 @@ print_start_record (int isstatic_extern, char *varname)
 #ifdef __NEED_DLL_IMPORT__
       if (strcmp (varname, "a4gl_sqlca") == 0)
 	{
-	  printc ("dll_import ");
+	strcat(buff,"dll_import ");
 	}
       else
 	{
-	  printc ("extern ");
+	strcat(buff,"extern ");
 	}
 #else
-      printc ("extern ");
+	strcat(buff,"extern ");
 #endif
 
     }
-  printc ("struct {\n");
+  printc ("%s struct {\n",buff);
 }
 
 /**
@@ -4476,6 +4520,10 @@ esql_type ()
 void
 A4GL_lex_parsed_fgl ()
 {
+  if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
+      printc("#include \"cs_trailer.h\"");
+  }
+
   if (outfile)
     fclose (outfile);
   if (hfile)
@@ -4523,4 +4571,8 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
   return buff;
 }
 
+int doing_cs() {
+	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) return 1;
+	return 0;
+}
 /* =========================== EOF ================================ */
