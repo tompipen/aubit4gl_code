@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.23 2004-02-12 19:10:55 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.24 2004-02-13 09:21:09 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -565,16 +565,19 @@ void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
 
 
 if (x==0&&y==0&&h==0&&w==0) {
-	GtkWidget *vbox;
+	GtkWidget *hbox;
 	GtkWidget *bb;
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
         gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+1)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
         gtk_window_set_title (GTK_WINDOW (win), "4GL Application");
         gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
-	vbox=gtk_vbox_new(0,0);
+	hbox=gtk_hbox_new(0,3);
 	//printf("set_name appwindow");
 	fixed = gtk_fixed_new ();
 	bb=gtk_vbutton_box_new();
+	gtk_button_box_set_layout(bb,GTK_BUTTONBOX_START);
+	gtk_widget_show(hbox);
+	gtk_widget_show(bb);
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
@@ -582,11 +585,12 @@ if (x==0&&y==0&&h==0&&w==0) {
 #endif
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
-        gtk_container_add (GTK_CONTAINER (vbox), fixed);
-        gtk_container_add (GTK_CONTAINER (vbox), bb);
-        gtk_container_add (GTK_CONTAINER (win), vbox);
+        gtk_container_add (GTK_CONTAINER (hbox), fixed);
+        gtk_container_add (GTK_CONTAINER (hbox), bb);
+        gtk_container_add (GTK_CONTAINER (win), hbox);
 	win_screen=fixed;
         gtk_widget_set_usize (GTK_WIDGET (fixed), (A4GL_LL_screen_width())*gui_xwidth, (A4GL_LL_screen_height())*gui_yheight);
+        gtk_object_set_data (GTK_OBJECT (win_screen), "BB", bb);
         gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
 	//gtk_widget_show (GTK_WIDGET (win));
         gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (A4GL_delete_event), win);
@@ -2800,9 +2804,27 @@ int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
 
 
 int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
+GtkWidget *bb;
+int nbuttons;
 	if (A4GL_isyes(acl_getenv("TRADMENU"))) {
 	        return 0;
 	}
+
+	bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
+	if (bb==0) return 0;
+
+	nbuttons=gtk_object_get_data(GTK_OBJECT(bb),"NBUTTONS");
+
+	while (nbuttons<menu->num_opts) {
+		GtkWidget *b;
+		b=gtk_button_new_with_label("X");
+		gtk_widget_show(b);
+		gtk_object_set_data(GTK_OBJECT(b),"BUTTON",(void *)nbuttons++);
+		gtk_object_set_data(GTK_OBJECT(b),"OPT",0);
+		gtk_object_set_data(GTK_OBJECT(bb),"NBUTTONS",(void *)nbuttons);
+		gtk_container_add(GTK_CONTAINER(bb),b);
+	}
+
 	return 1;
 }
 
