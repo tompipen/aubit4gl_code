@@ -41,9 +41,6 @@ int main(int argc, char *argv[]){
     int receive;
     int success;
 
-//	if (debug )
-//	fprintf(log,"rrrrReading stdin ...\n");
-
 	fgets(line1,2000,stdin);
 	fgets(line2,2000,stdin);
 	strcat(line1,line2);
@@ -84,14 +81,8 @@ int fgl_4glim(char line1[4001], int timeout, char to[2000], int receive, char *r
 	struct timeval tv;
 	fd_set fds;
 	int sock;
-//	char line[1001],line1[4001],line2[2001];
 	char line[1001];
 	FILE *config;
-//    int receive=1;
-
-
-	//strcpy(rcv_msg,MsgBody);
-	//strcpy(rcv_from,MsgFrom);
 
 	MsgBody=NULL;
 	MsgFrom=NULL;
@@ -212,13 +203,7 @@ int fgl_4glim(char line1[4001], int timeout, char to[2000], int receive, char *r
 }
 
 
-//static
-//void j_send(char line1[4001], static struct mydata net) {
-//void j_send(char line1[4001], struct mydata net) {
 int j_send(char line1[4001], struct mydata net,	char to[2000]) {
-//static void j_send(char *line1) {
-
-	//char line[1001],line1[4001],line2[2001];
 
 	char text[2000];
 	char buf[4000];
@@ -226,11 +211,6 @@ int j_send(char line1[4001], struct mydata net,	char to[2000]) {
 	iks *x,*y;
 	char *p;
 
-
-
-			//strcpy(to,"noshadow@charente.de");
-            //strcpy(to,"andrej@jabber.org");
-			//strcpy(text,"Here goes the text...");
 			x = iks_new("message");
 			iks_insert_attrib(x, "to", to);
 			y = iks_insert(x, "body");
@@ -331,3 +311,4 @@ static void j_on_packet(void *udata, ikspak *pak) {
 }
 
 
+// ----------------------------- EOF -----------------------------

@@ -20,8 +20,11 @@ main
 	###############################################
     #PLEASE! DO NOT FORGET TO CHANGE LOGIN INFO!!!
 	###############################################
+	#Jabber Account this program will use to connect to Jabber server:
 	let IM_USER 	= "andrejipaq3@jabber.org"
-	let IM_PASS 	= "falfa"
+	#...And it's password:
+	let IM_PASS 	= "mysecretpassword"
+	#Jabber account to talk to:
 	call chat("andrej@jabber.org")
 
 end main
