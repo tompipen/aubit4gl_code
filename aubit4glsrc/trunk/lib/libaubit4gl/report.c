@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.24 2003-08-15 18:35:43 mikeaubury Exp $
+# $Id: report.c,v 1.25 2003-08-25 11:30:33 mikeaubury Exp $
 #
 */
 
@@ -489,7 +489,9 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      as the same report cannot be running twice at the same time.....
      Andrej say: yes it can!
    */
+
   sprintf (buff, "create temp table %s (\n", gen_rep_tab_name (b));
+  //sprintf (buff, "create  table %s (\n", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
     {
@@ -524,6 +526,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   char buff[1024];
   int a;
   void *x;
+  A4GL_debug("Add row report table");
   sprintf (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
@@ -537,6 +540,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   x = (void *) A4GLSQL_prepare_glob_sql (buff, n, b);
   A4GL_debug ("x=%p\n", x);
   A4GLSQL_execute_implicit_sql (x);
+  A4GL_debug("a4glsqlca.sqlcode=%d",a4gl_sqlca.sqlcode);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.63 2003-08-24 17:51:34 mikeaubury Exp $
+# $Id: sql.c,v 1.64 2003-08-25 11:30:38 mikeaubury Exp $
 #
 */
 
@@ -2072,9 +2072,14 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 #ifdef DEBUG
   A4GL_debug ("OBIND Binding %d=(%d %d %p)", pos, bind->dtype, bind->size,
 	 bind->ptr);
+
+  //if (bind->dtype==0) {
+		//A4GL_debug("Binding : %s\n",bind->ptr);
+  //}
+
   A4GL_debug
-    ("SQLBindCol(hstmt=%p, pos=%d,\n     conv_4gl_to_c[bind->dtype]=%d, bind->ptr=%p,\n     fgl_size(bind->dtype,bind->size)=%d, SQL_NULL_DATA);",
-     hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype,
+    ("SQLBindCol(hstmt=%p, pos=%d,\n     bind->dtype=%d conv_4gl_to_c[bind->dtype]=%d, bind->ptr=%p,\n     fgl_size(bind->dtype,bind->size)=%d, SQL_NULL_DATA);",
+     hstmt, pos, bind->dtype,conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype,
 								  bind->size),
      SQL_NULL_DATA);
   A4GL_debug ("SQLBindCol");
@@ -2132,6 +2137,9 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 #ifdef DEBUG
   A4GL_debug ("Binding %d=(%d %d %p)", pos, bind->dtype, bind->size, bind->ptr);
+  if (bind->dtype==0) {
+	A4GL_debug(" is a string : %s",bind->ptr);
+  }
 #endif
   if (bind->dtype != 0)
     size = 0;
@@ -2139,6 +2147,9 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     size = bind->size;
 
 #ifdef DEBUG
+  if (bind->dtype==0) {
+  A4GL_debug(" Binding : %s ",bind->ptr);
+  }
   A4GL_debug ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p", hstmt,
 	 pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k,
 	 bind->ptr);
@@ -3360,6 +3371,9 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	  dtype = use_binding[a].dtype;
 	else
 	  dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
+
+
+
 	if (dtype == DTYPE_BYTE || dtype == DTYPE_TEXT)
 	  {
 	    A4GL_push_char ("<byte>");
@@ -3377,7 +3391,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	free (cptr);
       }
     strcat (buffstr, "\n");
-    A4GL_debug ("%s", buffstr);
+    A4GL_debug ("use_nbind=%d - %s", use_nbind,buffstr);
   }
 #endif
 }
