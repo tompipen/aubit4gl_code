@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.11 2003-02-14 13:26:43 mikeaubury Exp $
+# $Id: load.c,v 1.12 2003-02-17 17:10:57 mikeaubury Exp $
 #
 */
 
@@ -270,7 +270,8 @@ int a;
   debug("Calling gen_insert_for_load %s %d\n",tabname,cnt);
   insertstr=gen_insert_for_load(tabname,cnt);
 
-  if  (A4GLSQL_add_prepare("_load",A4GLSQL_prepare_sql(insertstr))!=1) {
+  debug("Adding prepare..");
+  if  (A4GLSQL_add_prepare("load",A4GLSQL_prepare_sql(insertstr))!=1) {
       exitwith("Internal Error : Error generating insert string for load");
       return 0;
   }
@@ -302,12 +303,13 @@ int a;
 	}
 	ibind=malloc(sizeof(struct BINDING)*cnt);
 	for (a=0;a<cnt;a++) {
+		debug("Binding %s @ %d",colptr[a],a);
 		ibind[a].ptr=colptr[a];
 		ibind[a].dtype=0;
 		ibind[a].size=strlen(colptr[a]);
 	}
-
-      A4GLSQL_execute_sql("_load",cnt,ibind);
+	debug("EXECUTE SQL cnt=%d",cnt);
+      A4GLSQL_execute_sql("load",cnt,ibind);
 
       if (status!=0) {
 	   sprintf(buff,"%d",cnt);
