@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -52,11 +52,11 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	endif
 endif
 
-CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules
+CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@
 #override CFLAGS	+=-I../fcompile #-I../mcompile
 
-#uncomment this to get debbuging in function yyparse() and then export YYDEBUG=1 to environment
-#YYDEBUG		=-DYYDEBUG=1
+#debbuging in function yyparse() and then export YYDEBUG=1 to environment
+YYDEBUG			=@YYDEBUG@
 
 ifndef COMSPEC
 	4GLPCFLAGS	+=-ldl
@@ -69,6 +69,12 @@ endif
 #	4GLPCFLAGS	+=-nopdf
 #endif
 
+ifeq "@YACC@" "no"
+	CFLAGS		+=-I../../tools/no_yacc/cygwin/compilers/4glc
+	Y_TAB_C		=../../tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+else
+	Y_TAB_C		=rules/generated/y.tab.c
+endif
 
 
 4GLCAOBJ		=mod.o 4glc.o map.o rules/generated/states.o \
@@ -130,15 +136,15 @@ rules/generated/states.c: rules.t
 rules.t :
 	make -C rules $(MKNAME)
 
-rules/generated/y.tab.o: rules/generated/y.tab.c
-	$(CC) ${YYDEBUG} ${CFLAGS} -c -o rules/generated/y.tab.o rules/generated/y.tab.c
+rules/generated/y.tab.o: ${Y_TAB_C}
+	$(CC) ${YYDEBUG} ${CFLAGS} -c -o rules/generated/y.tab.o ${Y_TAB_C}
 
-mod.o: mod.c  rules/generated/y.tab.c
+mod.o: mod.c ${Y_TAB_C}
 
 4glc.o: 4glc.c
 	${CC} 4glc.c $(CFLAGS) -c -o 4glc.o
 
-rules/generated/y.tab.c:
+${Y_TAB_C}:
 #	make -C rules generated/y.tab.c $(MKNAME)
 	make -C rules $(MKNAME)
 

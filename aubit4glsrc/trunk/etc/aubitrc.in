@@ -179,7 +179,7 @@ ODBC_LIB_DIR=/usr/lib
 ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
 
 #this is used in makefiles and 4glpc:
-RPCLIB_NAME=-l@RPCLIB_NAME@
+RPCLIB_NAME=@RPCLIB_NAME@
 
 ###############################
 #GTK+ 2.0 configuration

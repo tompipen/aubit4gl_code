@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,7 +36,7 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-override CFLAGS+=-I../.. -I../../../compilers/fcompile
+override CFLAGS+=-I../.. -I../../../compilers/fcompile @RPCLIB_INCLUDE@
 
 ifeq "$COMSPEC" ""
     ALL=nosql.so

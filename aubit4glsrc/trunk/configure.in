@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.40 2002-03-14 22:29:42 saferreira Exp $
+# $Id: configure.in,v 1.41 2002-03-16 03:19:18 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -200,6 +200,8 @@ AC_SUBST(RPCGEN)
 AC_SUBST(RPCLIB_INCLUDE)
 AC_SUBST(RPCLIB_LFLAGS)
 AC_SUBST(RPCLIB_NAME)
+AC_SUBST(USE_RPCGEN)
+AC_SUBST(HAVE_RPCLIB)
 
 #PDF
 AC_SUBST(USE_PDF)
@@ -235,6 +237,14 @@ AC_SUBST(target)
 AC_SUBST(target_cpu)
 AC_SUBST(ADD_LD_LIBRARY_PATH)
 AC_SUBST(PIC)
+AC_SUBST(YACC)
+AC_SUBST(LEX)
+AC_SUBST(CURSES_LIB_PATH)
+AC_SUBST(HAVE_CURSES)
+
+#debug
+AC_SUBST(DEBUG_BISON)
+AC_SUBST(YYDEBUG)
 
 ## ==================================================================
 ##                             Defaults
@@ -309,13 +319,16 @@ esac
 
 
 if test "$enable_debug" = "no" ; then
-	#FIXME: where should I implement AUBIT_DEBUG in code:
-    # DEBUG = -g -Wall #-O2
-    # DEBUG=ALL in environment
-    # strip executables
-    #-DDEBUG -DNODEBUG in code
+    # FIXME: strip executables
+    CFLAGS="$CFLAGS -DNODEBUG"
 	AC_MSG_WARN(Debugging disabled)
 	AUBIT_DEBUG=0
+else
+    #FIXME: DEBUG=ALL in environment? aubitrc?
+	DEBUG_BISON="--debug"
+	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
+	YYDEBUG="-DYYDEBUG=1"
+    CLFAGS="$CFLAGS -g -Wall -DDEBUG"
 fi
 
 
@@ -373,10 +386,14 @@ GLIBC_VER=2.2.4
 if test "$AUBIT_SOURCE" = "1" ; then
 	AC_PROG_YACC
 	if test "$YACC" != "bison -y"; then
-	    #AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
-	    AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Bison.)
+		#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
+		YACC=no
+		AC_MSG_WARN(Will use pre-compiled y.tab.c files from tools/no_yacc)
+		AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
+	    #AC_MSG_ERROR(Current Aubit source distribution will not work without Bison. Stop.)
+
 	else
-	    AC_MSG_CHECKING(bison version)
+		AC_MSG_CHECKING(bison version)
 	#   set `bison --version| sed -e 's/^GNU Bison version //' -e 's/\./ /g'`
 		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
 
@@ -386,10 +403,17 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	    AC_MSG_RESULT($1.$2 (ok))
 	fi
 
+	AC_PATH_PROG(MAKE, make, no)
+    if test "$MAKE" = "no" ; then
+		AC_MSG_ERROR(Cannot compile Aubit from source code without 'make' - please install it. Stop.)
+    fi
+
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
+
+
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
 	AC_PATH_PROG(DOXYSEARCH, doxysearch, no)
-    if test "$DOXYSEARCH" != "no" ; then
+	if test "$DOXYSEARCH" != "no" ; then
 		DOXY_BIN_ABSPATH=`dirname $DOXYSEARCH`
     fi
 
@@ -421,12 +445,18 @@ if test "$AUBIT_SOURCE" = "1" ; then
 fi
 
 #This is probably a bug in autoconf, but if we don't test for Lex BEFORE
-#we test for C, all sort of wireds things will happen, so we have to test 
+#we test for C, all sort of wireds things will happen, so we have to test
 #it even in binary distro, where we don't need it:
 AC_PROG_LEX
-if test "$LEX" = "no"; then
+
+if test "$LEX" = ":"; then
+    #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
-		AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Lex.)
+		#AC_MSG_ERROR(Current Aubit source distribution will not work without Lex. Stop.)
+		AC_MSG_WARN(Will use pre-compiled lex.yy.c files from tools/no_yacc)
+		AC_MSG_WARN(You will need lex if you'd want to regenerate Aubit fcompile parsers.)
+
     fi
 fi
 
@@ -631,12 +661,17 @@ WARNING: You specified Informix base install directory that is different
 					dnl Allow override to use static and/or threaded libs
 					IFX_LIBS="$IFX_LIBS"
 				fi
-				CFLAGS="$CFLAGS $IFX_INCLUDE"
-				LDFLAGS="$LDFLAGS $IFX_LFLAGS"
 
-			    if test "`uname -s 2>/dev/null`" = "AIX"; then
-					CFLAGS="$CFLAGS -D__H_LOCALEDEF"
+                old_CFLAGS="$CFLAGS"
+                old_LDFLAGS="$LDFLAGS"
+			    
+				if test "`uname -s 2>/dev/null`" = "AIX"; then
+					IFX_CFLAGS="-D__H_LOCALEDEF"
 				fi
+
+				CFLAGS="$CFLAGS $IFX_INCLUDE $IFX_CFLAGS"
+				LDFLAGS="$LDFLAGS $IFX_LDFLAGS"
+
 				AC_DEFINE(HAVE_IFX)
 				AC_MSG_CHECKING([Informix version])
 				IFX_VERSION=[`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
@@ -649,7 +684,11 @@ WARNING: You specified Informix base install directory that is different
 
 				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
 				AC_MSG_RESULT($IFX_VERSION)
-				IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+
+				CFLAGS="$old_CFLAGS"
+                LDFLAGS="$old_LDFLAGS"
+
             else
 				AC_MSG_RESULT(esql not in path, or no compatible C compiler)
             fi
@@ -1109,7 +1148,6 @@ AC_ARG_WITH(iodbc,
 	AC_MSG_RESULT(--with-iodbc not specified)
 ])
 
-#AC_MSG_ERROR(Manual stop.)
 
 ## ==================================================================
 ##            Checks for unixODBC ODBC manager support
@@ -1590,7 +1628,7 @@ AC_ARG_WITH(rpc,
 
 			if test "$ac_cv_lib_rpcsvc___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpcsvc_svctcp_create_" = "yes" || test "$ac_cv_lib_rpcsvc_xdr_argument_" = "yes"; then
                 echo "Found RPC functions in -lrpcsvc"
-	            RPCLIB_NAME=rpcsvc
+	            RPCLIB_NAME=-lrpcsvc
             else
 				echo "Found -lrpcsvc, but no RPC functions inside."
 				AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
@@ -1603,7 +1641,7 @@ AC_ARG_WITH(rpc,
 			AC_CHECK_LIB(rpclib, svctcp_create ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 			if test "$ac_cv_lib_rpclib___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpclib_svctcp_create_" = "yes" || test "$ac_cv_lib_rpclib_xdr_argument_" = "yes"; then
 				echo "Found RPC functions in -lrpclib"
-		        RPCLIB_NAME=rpclib
+		        RPCLIB_NAME=-lrpclib
 	        else
                 echo "Found -lrpclib, but no RPC functions inside."
 				AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
@@ -1617,15 +1655,34 @@ AC_ARG_WITH(rpc,
 		LDFLAGS="$old_LDFLAGS"
         PATH="$old_PATH"
 
-		if test "$RPCGEN" = "no"; then
+		if test "$RPCGEN" = "no";  then
 		    AC_DEFINE(HAVE_RPCGEN,0,[ ])
-			if test "$cygwin" = "0"; then #we don't need rpcgen on CygWin
-				if test "$AUBIT_SOURCE" = "1"; then #we don't need rpcgen for binary distro
-					AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
-                fi
-		    fi
+
+			if test "$AUBIT_SOURCE" = "1"; then
+
+				case "$host" in
+
+					*-*-cygwin* | *-*-mingw* )
+						#we don't need rpcgen on CygWin
+		                USE_RPCGEN=0
+                        #FIXME: if needed, set this path to appropriate subdir of "no_rpc" depending
+                        #on platform. It is not clear is this files are platform dependent.
+						RPCLIB_INCLUDE="-I$aubitdir/tools/no_rpc/cygwin"
+						;;
+
+		            *)
+            			AC_MSG_ERROR( "rpcgen" not found. Please install Sun RPC or add precompiled RPC files for your platform. Stop.)
+		                ;;
+
+	            esac
+            else
+				#we don't need rpcgen for binary distro
+                USE_RPCGEN=0
+			fi
+
 		else
-		    AC_DEFINE(HAVE_RPCGEN,1,[ ])
+			USE_RPCGEN=1
+			AC_DEFINE(HAVE_RPCGEN,1,[ ])
 		fi
 
 		#if test $ac_cv_lib_rpclib_main = yes; then
@@ -1633,15 +1690,18 @@ AC_ARG_WITH(rpc,
 		    RPCLIB_INCLUDE="$TEST_I_FLAGS"
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
+            HAVE_RPCLIB=0
 		else
 			AC_DEFINE(HAVE_RPCLIB,0,[ ])
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
-				AC_MSG_ERROR( "-lrpclib" or "-lrpcsvc" not found. Please install RPC library. Stop.)
+                #make libRPC_NORPC
+                HAVE_RPCLIB=0
+				#AC_MSG_ERROR( "-lrpclib" or "-lrpcsvc" not found. Please install RPC library. Stop.)
             fi
 		fi
 	else
-		#AC_MSG_RESULT(disbled)
-		AC_MSG_ERROR(RPC support is needed to build Aubit compiler from source code - you cannot disable it)
+		AC_MSG_RESULT(disbled)
+		#AC_MSG_ERROR(RPC support is needed to build Aubit compiler from source code - you cannot disable it)
 	fi
 ],[
 	AC_MSG_RESULT(--with-rpc not specified)
@@ -1715,8 +1775,16 @@ fi
 
 # FIXME: Replace `main' with a function in `-lc':
 AC_CHECK_LIB([c], [main])
+
 # FIXME: Replace `main' with a function in `-lcurses':
 AC_CHECK_LIB([curses], [main])
+
+	if test "$ac_cv_lib_curses_main" = "yes"; then
+		AC_DEFINE(HAVE_CURSES)
+	    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+		CURSES_LIB_PATH="-L/lib"
+	fi
+
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
 # FIXME: Replace `main' with a function in `-lform':
@@ -1732,7 +1800,6 @@ AC_CHECK_LIB([check], [suite_create])
 
 #fixme: check version of curses
 #AIX: Both form and panel h files are part of ncurses. Install it.
-
 
 
 #fixme: stop if we don;t have any of above.

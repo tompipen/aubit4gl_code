@@ -1,8 +1,6 @@
-# When running Aubit programs as CGI in web server, use the environment
-# variable 'NOCURSES=YES' or the command line 'proramname NOCURSES=YES'
-# when running to avoid the normal screen setup
+# When running Aubit programs as CGI in web server, use AUBITGUI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.2 2001-11-21 01:54:07 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.3 2002-03-16 03:19:21 afalout Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:

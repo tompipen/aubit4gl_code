@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2002-02-26 07:54:04 afalout Exp $
+# $Id: Makefile.in,v 1.12 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,16 +37,16 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPCFLAGS		= -make-compile -static -verbose -L../../lib -nogtk
-PROGRAM 		=mcompile mdecompile
+PROGRAM 		=mcompile
 
-ifeq "${USE_RPCGEN}" "no"
+ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 else
 	RPCGEN      =@RPCGEN@ menu_x.x
 endif
 
 
-CFLAGS		   +=-I.
+CFLAGS		   +=-I. @RPCLIB_INCLUDE@
 
 ifdef COMSPEC
 #	4GLPCFLAGS	+=-rdynamic
@@ -57,7 +57,13 @@ ifdef COMSPEC
 #	RPCGEN      = cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 endif
 
+ifeq "@YACC@" "no"
+	Y_TAB_C_DEP=../../tools/no_yacc/cygwin/compilers/menus/y.tab.c
+else
+	Y_TAB_C_DEP=$(SOURCES.yacc) lex.yy.c
+endif
 
+LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
 
 #ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 #	ifeq "$(ODBC)" "no"
@@ -73,8 +79,15 @@ endif
 #	4GLPCFLAGS	+=-nopdf
 #endif
 
+SRC_COMMON      =mcompile.c menuwrite.c
+
 SCRIPT 			=
-SOURCES.c 		= mcompile.c menuwrite.c  menu_x_xdr.c
+ifeq "@HAVE_RPCLIB@" "0"
+	SOURCES.c 		=${SRC_COMMON}
+else
+	SOURCES.c 		=${SRC_COMMON} menu_x_xdr.c
+    ALL             +=mdecompile
+endif
 SOURCES.h 		=
 SOURCES.yacc 	=menu.yacc
 SOURCES.lex 	= menu.lex
@@ -115,11 +128,21 @@ menu_x_xdr.c: menu_x.x
 menu_x.h: menu_x.x
 	${RPCGEN}
 
-y.tab.c: $(SOURCES.yacc) lex.yy.c
-	nice -20 bison -y  -v  $(SOURCES.yacc)
+y.tab.c: ${Y_TAB_C_DEP}
+ifeq "@YACC@" "no"
+	cp ${Y_TAB_C_DEP} .
+else
+	nice -20 ${YACC} -v  $(SOURCES.yacc)
+endif
+
+ y.tab.o: lex.yy.c
 
 lex.yy.c: $(SOURCES.lex)
+ifeq "@LEX@" "no"
+	cp ${LEX_YY_C} .
+else
 	nice -20 flex -i $(SOURCES.lex)
+endif
 
 
 ## ==================================================================

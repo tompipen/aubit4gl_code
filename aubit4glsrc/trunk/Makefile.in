@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.38 2002-03-09 10:45:02 afalout Exp $
+# $Id: Makefile.in,v 1.39 2002-03-16 03:19:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -140,16 +140,6 @@ ifneq "$(ODBC)" "no"
     endif
 endif
 
-#FIXME: what am I doing with all this .so in lib/ ? Some are just links....
-#aclshared-noodbc.so     libaclshared-noodbc.so     libUI_GTK.so
-#aclshared.so            libaclshared.so            libUI_GTK_x.so
-#aclsharedgui-noodbc.so  libaclsharedgui-noodbc.so
-#aclsharedgui.so         libaclsharedgui.so
-
-#and all .a in lib/ ?
-#libaclall-noodbc.a  libaclall.a  libaclallgui-noodbc.a  libaclallgui.a
-
-
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 #$(SOURCE)/lib/libaclsharedgui${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} \
@@ -182,12 +172,6 @@ endif
 ifneq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
 		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
-
-		#FIXME:
-		#cp: /usr/aubit/aubit4glsrc/lib/libUI_GTK-noodbc.so: No such file or directory
-		#ifndef COMSPEC
-		#	TOLIBGTK	+= $(SOURCE)/lib/libUI_GTK-noodbc.so
-	    #endif
 		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
     endif
 endif
@@ -291,8 +275,6 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
         endif
     endif
 
-	#FIXME: where is $(CYSOURCE)/lib/libUI_GTK.so
-	#libUI_GTK is .a only, no .so on CygWin ???
 	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
 	#we still cannot compile this one: $(CYSOURCE)/lib/libUI_GTK_x.so
 	ifneq "$(ODBC)" "no"
@@ -324,7 +306,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 #	LIBCFLAGS 		+= -DWIN32
 
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
-	ifeq "${USE_RPCGEN}" "no"
+	ifeq "${USE_RPCGEN}" "0"
 		#MAKERPC			=cyrpc
 		CYRPC_FLAG:=$(shell ls cyrpc.flg ${NOERR})
 	endif
@@ -700,7 +682,6 @@ install.core: install.tree install.gtk
 	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
 ifneq "${COMSPEC}" ""
 	$(CP) ${TOLIB_EXPORTLIB} $(INSTALL_DIR)/lib
-	$(CP) ${TOLIBGTK_EXPORTLIB} $(INSTALL_DIR)/lib
 endif
 	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
 	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
@@ -711,6 +692,9 @@ endif
 install.gtk:
 ifeq "${GTKBUILD}" "yes"
 	$(CP) $(TOLIBGTK) $(INSTALL_DIR)/lib
+ifneq "${COMSPEC}" ""
+	$(CP) ${TOLIBGTK_EXPORTLIB} $(INSTALL_DIR)/lib
+endif
 endif
 
 install.config:

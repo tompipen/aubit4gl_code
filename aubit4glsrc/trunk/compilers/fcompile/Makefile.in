@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-02-26 07:54:04 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,13 +38,13 @@ override NOINCL=0
 
 4GLPCFLAGS		=-make-compile -static -verbose -nogtk -L../../lib
 CFLAGS 			+=-I../../lib -I.
-ALL		 		= fcompile fdecompile fshow
+ALL		 		= fcompile fshow
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=fdecompile-j
 endif
 
-ifeq "${USE_RPCGEN}" "no"
+ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
 else
 	RPCGEN 		= @RPCGEN@ form_x.x
@@ -60,13 +60,13 @@ ifdef COMSPEC
 #	4GLPCFLAGS	+=-rdynamic
 endif
 
-ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-	ifeq "$(ODBC)" "no"
-		4GLPCFLAGS	+= -noodbc
-	else
-		ALL 	+= fcompile-noodbc
-	endif
-endif
+#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+#	ifeq "$(ODBC)" "no"
+#		4GLPCFLAGS	+= -noodbc
+#	else
+#		ALL 	+= fcompile-noodbc
+#	endif
+#endif
 
 #ifeq "$(PDFBUILD)" "yes"
 #	4GLPCFLAGS	+=-lpdf
@@ -74,8 +74,17 @@ endif
 #	4GLPCFLAGS	+=-nopdf
 #endif
 
+SRC_COMMON      =fcompile.c formwrite2.c where.c
+
 SCRIPT 			=
-SOURCES.c 		= fcompile.c formwrite2.c  form_x_xdr.c where.c
+
+ifeq "@HAVE_RPCLIB@" "0"
+	SOURCES.c 		=${SRC_COMMON}
+else
+	SOURCES.c 		=${SRC_COMMON} form_x_xdr.c
+	ALL            +=fdecompile
+endif
+
 SOURCES.h 		=
 SOURCES.yacc 	=screen.yacc
 SOURCES.lex 	= screen.lex
@@ -87,6 +96,15 @@ TARGETS 		= $(TARGETS.c)
 OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 
+ifeq "@YACC@" "no"
+	Y_TAB_C_DEP	=../../tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
+else
+	Y_TAB_C_DEP	=$(SOURCES.yacc) lex.yy.c
+endif
+
+LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
+
+CFLAGS			+=@RPCLIB_INCLUDE@
 
 ## ==================================================================
 ##                             Targets
@@ -107,11 +125,21 @@ fcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/lib
 	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 	${LN} fcompile-noodbc${EXE} ../../bin/fcompile-noodbc${EXE}
 
-y.tab.c: $(SOURCES.yacc) lex.yy.c
-	nice -20 bison  -y  -v  $(SOURCES.yacc)
+y.tab.c: ${Y_TAB_C_DEP}
+ifeq "@YACC@" "no"
+	cp ${Y_TAB_C_DEP} .
+else
+	nice -20 ${YACC} -v  $(SOURCES.yacc)
+endif
+
+y.tab.o: lex.yy.c
 
 lex.yy.c: $(SOURCES.lex)
+ifeq "@LEX@" "no"
+	cp ${LEX_YY_C} .
+else
 	nice -20 flex -i $(SOURCES.lex)
+endif
 
 fcompile.h: fcompile.c
 	@touch $@
@@ -158,7 +186,12 @@ fdecompile-j : decompile.c form_x_xdr.c dump_java.c
 	cp $@ ../../bin
 
 fdecompile : decompile.c form_x_xdr.c dump.c
+ifeq "@HAVE_RPCLIB@" "0"
+#:rpc_norpc.c: undefined reference to `exitwith'
+	${CC} ${CFLAGS} decompile.c ../../lib/rpc_norpc.o dump.c -o $@ ${CYGWIN_FLAGS}
+else
 	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
+endif
 	cp $@ ../../bin
 
 fshow : fshow.4gl

@@ -25,6 +25,8 @@ in rpc/rpc.h :
 #ifndef _FORM_X_H_RPCGEN
 #define _FORM_X_H_RPCGEN
 
+// this file (form_x.h) should never be included directly, but instead via lib/libincl/formxw.h,
+// and RPC headers should be included from there
 #include <rpc/rpc.h>
 
 #ifdef __cplusplus

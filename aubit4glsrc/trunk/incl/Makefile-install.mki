@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.11 2002-03-07 11:55:00 afalout Exp $
+# $Id: Makefile-install.mki,v 1.12 2002-03-16 03:19:21 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -203,9 +203,9 @@ endif
 test:
 	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
 	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
-	export AUBITGUI=TUI; tools/test/test_build
-	export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
-
+#	export AUBITGUI=TUI; tools/test/test_build
+#	export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
+	export AUBITGUI=CONSOLE; tools/test/test_build
 
 ldconfig:
 ifneq "${LDCONFIG}" "no"

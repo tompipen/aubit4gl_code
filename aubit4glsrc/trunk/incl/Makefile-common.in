@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.21 2002-03-07 06:55:46 afalout Exp $
+# $Id: Makefile-common.in,v 1.22 2002-03-16 03:19:21 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -185,7 +185,8 @@ CC 					=@CC@
 LINK.c				=${CC}
 LN_S 				=ln -s
 AR 					=ar rc
-YACC 				=bison -y
+#YACC 				=bison -y
+YACC                =@YACC@ @DEBUG_BISON@
 INSTALL_USR			=nobody
 INSTALL_GRP 		=nobody
 INSTALL_CMD 		=install
@@ -195,8 +196,9 @@ CPPFLAGS 			=
 LDFLAGS 			=-s
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
-#fixme: set -DDEBUG from configure:
-CFLAGS				+=-O2 -DAUTOBANG -DDEBUG -I/usr/local/include
+#set by autoconf: AUTOCONF_CFLAGS     =-g -O2
+#fixme: set -DDEBUG and -g from configure:
+CFLAGS				+=${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include
 #-I.
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
@@ -206,8 +208,7 @@ MAKINGAUBIT			=1
 
 #for -fPIC
 PIC					=@PIC@
-USE_RPCGEN  		=yes
-
+USE_RPCGEN			=@USE_RPCGEN@
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
@@ -230,7 +231,7 @@ ifdef COMSPEC
 	STATICLIB_INST=no
 	#if USE_RPCGEN is disabled, static files from /tools/cygwin will be used
     #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
-	#USE_RPCGEN  =no
+	#USE_RPCGEN  =0
 else
     #FIXME: add -g from configure
 	CFLAGS      +=-g

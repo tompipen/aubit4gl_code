@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2002-03-07 03:55:45 afalout Exp $
+# $Id: Makefile.in,v 1.30 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,8 +47,9 @@ CMODS_CONFIG	=aubit-config.c
 CMODS_RESOURCE	=resource.c
 
 #FIXME: create libRPC_RPC.so and libRPC_NORPC.so:
-CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c
-
+CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c \
+					../compilers/fcompile/form_x_xdr.c
+CMODS_NORPC		=rpc_norpc.c
 
 COMMONSRC= \
 	array.c \
@@ -59,7 +60,7 @@ COMMONSRC= \
 	calldll.c conv.c colours.c curslib.c \
 	data_if.c dates.c dmy.c \
 	err.c error.c errfile.c \
-	fglwrap.c funcs_d.c fields.c ../compilers/fcompile/form_x_xdr.c \
+	fglwrap.c funcs_d.c fields.c \
 	gtime.c gtrim.c gui_io.c \
 	helper.c \
 	io.c iarray.c interval.c \
@@ -68,14 +69,24 @@ COMMONSRC= \
 	newpanels.c \
 	others.c \
 	pointers.c prompt.c \
-	read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} ${CMODS_RPC} \
+	read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
 #../compilers/fcompile/formwrite2.c
 
 
-CMODSNOSQL 			=${COMMONSRC}
+COMMONSRC_RPC		= ${COMMONSRC} ${CMODS_RPC}
+COMMONSRC_NORPC		= ${COMMONSRC} ${CMODS_NORPC}
+
+ifeq "@HAVE_RPCLIB@" "0"
+	CMODSNOSQL 		=${COMMONSRC_NORPC}
+else
+	CMODSNOSQL 		=${COMMONSRC_RPC}
+endif
+
+
+
 CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
 OBJS_NOSQL			+=${CMODS_NOSQL:.c=.o}
 
@@ -184,6 +195,10 @@ endif
 
 ifeq "$(PDFBUILD)" "yes"
 	ALL 			+=libPDF_PDF${SO_EXT}
+    PDF_LIBNAME     =-lPDF_PDF
+    AUBIT_PDFLIBNAME=-Llibpdf
+else
+    PDF_LIBNAME     =-lPDF_NOPDF
 endif
 
 
@@ -253,19 +268,19 @@ libaclsharedgui.so : $(OBJS) ${GUI_GTK}
 
 #----------------- without ODBC, if ODBC = no (static ODBC) ------------
 
-libaclall-noodbc.a: $(OBJSNOSQL)  ${GUI_TUI}
-	ar rc $@ $^
-	ranlib $@
+#obsolete-libaclall-noodbc.a: $(OBJSNOSQL)  ${GUI_TUI}
+#obsolete-	ar rc $@ $^
+#obsolete-	ranlib $@
 
-libaclallgui-noodbc.a: $(OBJSNOSQL) ${GUI_GTK}
-	ar rc $@ $^
-	ranlib $@
+#obsolete-libaclallgui-noodbc.a: $(OBJSNOSQL) ${GUI_GTK}
+#obsolete-	ar rc $@ $^
+#obsolete-	ranlib $@
 
-libaclshared-noodbc.so:  $(OBJSNOSQL) ${GUI_TUI}
-	ld  $(SO_LDFLAGS) $^ -o $@
+#obsolete-libaclshared-noodbc.so:  $(OBJSNOSQL) ${GUI_TUI}
+#obsolete-	ld  $(SO_LDFLAGS) $^ -o $@
 
-libaclsharedgui-noodbc.so: $(OBJSNOSQL) ${GUI_GTK}
-	ld  $(SO_LDFLAGS) $^ -o $@
+#obsolete-libaclsharedgui-noodbc.so: $(OBJSNOSQL) ${GUI_GTK}
+#obsolete-	ld  $(SO_LDFLAGS) $^ -o $@
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -273,7 +288,7 @@ libaclsharedgui-noodbc.so: $(OBJSNOSQL) ${GUI_GTK}
 
 .PHONY : dllaclshared
 dllaclshared : $(OBJS) ${GUI_TUI}
-	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses -lrpclib -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
+	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 #$RPCLIB_NAME
 
 #when this is linked with -gtk4gl that is linked with -rpclib, linking will fail with duplicated definitions;
@@ -285,14 +300,14 @@ dllaclshared : $(OBJS) ${GUI_TUI}
 #because there can be no unresolved symbols at link time, when making Windows DLL - but,
 #rpclib have no dll, only static .a, so both .dll's end up with full rpclib linked in them statically.
 #(temporary) Solution: create libgtk4gl-norpc.
-.PHONY : dllaclsharedgui
-dllaclsharedgui : libgtk4gl.dll libPDF_NOPDF.dll
-dllaclsharedgui : $(OBJS) ${GUI_GTK}
-	${MAKE} libaclsharedgui.dll DLLOBJS="$^" DLL_LDLIBS="-lgtk4gl -lform -lpanel -lncurses -lrpclib -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf -L."
+#obsolete-.PHONY : dllaclsharedgui
+#obsolete-dllaclsharedgui : libgtk4gl.dll libPDF_NOPDF.dll
+#obsolete-dllaclsharedgui : $(OBJS) ${GUI_GTK}
+#obsolete-	${MAKE} libaclsharedgui.dll DLLOBJS="$^" DLL_LDLIBS="-lgtk4gl -lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf -L."
 #$RPCLIB_NAME
 #overwrite non-rpclib with rpclib linked (runtime) versions:
-	cp libgtk4gl-rpc.dll libgtk4gl.dll
-	cp libgtk4gl-rpc${DLL_EXPORTLIB_EXT} libgtk4gl${DLL_EXPORTLIB_EXT}
+#obsolete-	cp libgtk4gl-rpc.dll libgtk4gl.dll
+#obsolete-	cp libgtk4gl-rpc${DLL_EXPORTLIB_EXT} libgtk4gl${DLL_EXPORTLIB_EXT}
 
 libSQL_noodbc.dll:
 	${MAKE} $(MKNAME) -C libsql/nosql nosql.dll
@@ -306,8 +321,8 @@ libPDF_NOPDF.dll:
 libgtk4gl.dll:
 	${MAKE} $(MKNAME) -C libgui
 
-defaclshared: $(OBJS) ${GUI_TUI}
-	${MAKE} libaclshared.def DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses -lrpclib -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
+#obsolete-defaclshared: $(OBJS) ${GUI_TUI}
+#obsolete-	${MAKE} libaclshared.def DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
 
 
 

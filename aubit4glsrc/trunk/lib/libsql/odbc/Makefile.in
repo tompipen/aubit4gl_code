@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-02-19 09:18:34 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ endif
 
 #override CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
 LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile -I..
-CFLAGS	+=${LOCAL_CFLAGS}
+CFLAGS	+=${LOCAL_CFLAGS} @RPCLIB_INCLUDE@
 
 
 ifdef ODBCLIBDIR

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-01-18 03:09:11 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-03-16 03:19:21 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -82,15 +82,16 @@ html: libpdf-dummy.o
 simple_html:
 #	@rm simple_html
 	@echo '#!/bin/sh' > simple_html
-	@echo 'export NOCURSES=YES' >> simple_html
+#	@echo 'export NOCURSES=YES' >> simple_html
+	@echo 'export AUBITGUI=CONSOLE' >> simple_html
 #	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae NOCURSES=YES $$@' >> simple_html
-	@echo 'simple_html.4ae NOCURSES=YES $$@' >> simple_html
+	@echo 'simple_html.4ae $$@' >> simple_html
 	@echo "simple_html sh script created"
 
 simple_html.sf:
 	@echo '#!/bin/sh' > simple_html
-	@echo 'export NOCURSES=YES' >> simple_html
-	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae NOCURSES=YES $$@' >> simple_html
+	@echo 'export AUBITGUI=CONSOLE' >> simple_html
+	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae $$@' >> simple_html
 	@echo "simple_html sh script created"
 
 
