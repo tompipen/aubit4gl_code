@@ -678,6 +678,10 @@ if (lv_fmode[0]=='f')  {
 	A4GL_debug("OUTPUT fopen(%s,%s)",lv_name,lv_amode);
 	lv_out=(long)fopen(lv_name,lv_amode);
 } else {
+	A4GL_push_char("DISPLAY");
+	A4GL_push_int(-1);
+	A4GL_push_int(-1);
+       	A4GL_display_at(1,0x0);
 	A4GL_debug("OUTPUT popen(%s,%s)",lv_name,lv_amode);
 	lv_out=(long)popen(lv_name,lv_amode);
 }
@@ -692,6 +696,13 @@ let lv_rval=execute_queries(lv_out)
 
 code
 	fclose((FILE *)lv_out);
+	if (lv_fmode[0]=='p') {
+		A4GL_push_char("DISPLAY");
+		A4GL_push_int(1);
+		A4GL_push_int(1);
+        	A4GL_display_at(1,0x0);
+		aclfgl_display_banner(0);
+	}
 endcode
 
 if lv_rval=0 then
@@ -701,7 +712,6 @@ end if
 
 return lv_rval
 	
-
 
 end function
 
