@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.77 2002-08-31 06:19:39 afalout Exp $
+# $Id: mod.c,v 1.78 2002-09-01 10:40:10 afalout Exp $
 #
 */
 
@@ -3404,7 +3404,7 @@ char pklist[1024];
 		if (feof (f))
 			break;
 		trim (line);
-		/* bug fix */
+		/* bug fix - possibly not neded? */
 		if (strcmp (line, "***CONSTANTS***") == 0)
         {
 			debug ("Found ***CONSTANTS***\n");

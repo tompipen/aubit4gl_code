@@ -24,13 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.2 2002-08-31 06:19:59 afalout Exp $
+# $Id: formwrite2.c,v 1.3 2002-09-01 10:40:10 afalout Exp $
 #*/
 
 /**
  * @file
  * Functions called by the compiler to load the information about the form
  * being compiled.
+ *
+ * This form plug-in implemetation uses generic format. (whatver that means...?)
  *
  */
 
@@ -40,7 +42,7 @@
 =====================================================================
 */
 
-#include "a4gl_lib_form_xdr_int.h"
+#include "a4gl_lib_form_generic_int.h"
 
 /*
 =====================================================================
@@ -1089,7 +1091,7 @@ real_add_str_attr (struct struct_scr_field *f, int type, char *str)
  *
  * @param f Pointer to field description
  * @param type The type of the boolean attribute:
- *   
+ *
  */
 void
 add_bool_attr (void *f, int type)
@@ -1199,3 +1201,7 @@ translate_form (void)
 	}
     }
 }
+
+
+/* =============================== EOF ================================= */
+

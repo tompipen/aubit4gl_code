@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.2 2002-08-31 06:19:59 afalout Exp $
+# $Id: readforms.c,v 1.3 2002-09-01 10:40:10 afalout Exp $
 #*/
 
 /**
@@ -42,7 +42,7 @@
 =====================================================================
 */
 
-#include "a4gl_lib_form_xdr_int.h"
+#include "a4gl_lib_form_generic_int.h"
 
 /*
 =====================================================================
@@ -182,11 +182,11 @@ read_form (char *fname, char *formname)
 static struct s_form_dets *
 real_read_form (char *fname, char *formname)
 {
-  FILE *ofile = 0;
+//  FILE *ofile = 0;
   int a;
   struct s_form_dets *formdets;
   char buff[80];
-  char *ptr = 0;
+//  char *ptr = 0;
 
   //XDR xdrp;
 

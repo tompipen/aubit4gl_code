@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.62 2002-08-31 06:19:59 afalout Exp $
+# $Id: Makefile.in,v 1.63 2002-09-01 10:40:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -46,7 +46,7 @@ ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
 		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
 		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
 		libUI_CONSOLE${SO_EXT} libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} \
-		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} \
+		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} libFORM_GENERIC${SO_EXT} \
 		${LIB_OPTIONAL}
 
 ## ==================================================================
@@ -186,6 +186,9 @@ libRPC_XMLRPC.so:
 libEXDTYPE_mpz${SO_EXT}:
 	${MAKE} -C libexdata $@
 
+libFORM_GENERIC${SO_EXT}:
+	${MAKE} -C libform/form_generic
+
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
@@ -228,6 +231,7 @@ clean.other:
 	${MAKE} -C libaubit4gl clean
 	${MAKE} -C libform/form_xdr clean
 	${MAKE} -C libform/noform clean
+	${MAKE} -C libform/form_generic clean
 	${MAKE} -C libmenu/menu_xdr clean
 	${MAKE} -C libmenu/menu_nomenu clean
 	${MAKE} -C libmsg/msg_native clean
