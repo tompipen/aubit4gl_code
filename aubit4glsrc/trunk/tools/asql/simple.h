@@ -16,6 +16,9 @@
 #define KW_INTO 272
 #define KW_TEMP 273
 #define KW_WHERE 274
+#define KW_LOAD 275
+#define KW_UNLOAD 276
+#define KW_DELIMITER 277
 
 
 
@@ -23,6 +26,8 @@ struct element {
 	int lineno;
 	char type;
 	char *stmt;
+	char *delim;
+	char *fname;
 };
 
 

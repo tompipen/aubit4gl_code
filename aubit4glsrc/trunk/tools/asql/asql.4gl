@@ -1,3 +1,31 @@
+# +----------------------------------------------------------------------+
+# | Aubit SQL Acess Program ASQL                                         |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2003 Aubit Computing Ltd                               |
+# +----------------------------------------------------------------------+
+# | Production of this software was sponsered by                         |
+# |                 Cassens Transport Company                            |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
 define mc_version constant "0.1"
 
 define mv_curr_db char(256)
@@ -250,6 +278,8 @@ display middle("(c) 2003 Aubit Computing Ltd") at 9,1
 display middle("http://www.aubit.com") at 10,1
 display middle("Latest version available at:") at 13,1
 display middle("http://aubit4gl.sourceforge.net") at 14,1
+display middle("Development sponsered by Cassens Transport Company") at 16,1
+display middle("http://www.cassens.com") at 17,1
 sleep 4
 clear screen
 end function

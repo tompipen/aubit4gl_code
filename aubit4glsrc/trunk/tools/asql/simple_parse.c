@@ -28,6 +28,7 @@ void clr_stmt(void) {
 
 
 void add_stmt(struct element *e) {
+printf("%c %d '%s' fname='%s' delim='%s'\n",e->type,e->lineno,e->stmt,e->fname,e->delim);
 if (e->type!='W') {
 	list=realloc(list,(list_cnt+1)*sizeof(struct element));
 	memcpy(&list[list_cnt],e,sizeof(struct element));
@@ -73,12 +74,41 @@ char *ptr_new=0;
 struct element *e=0;
 int a;
 int into_temp=0;
+int need_fname=0;
+int need_delim=0;
 
 	while (1) {
 		a=yylex();
 
 		if (a==0) break;
 		/* Eat up comments */
+
+		if (need_fname) {
+			if (a==KW_SPACE||a==NL) continue;
+
+			if (a==IDENTIFIER||a==STRING_LITERAL) {
+				char buff[512];
+				strcpy(buff,yylval.str);
+				strcpy(buff,A4GL_strip_quotes(buff));
+				e->fname=strdup(buff);
+				// We also need to remove the UNLOAD ... bit...
+				printf("Scrapping %s\n",ptr);
+				free(ptr);
+				ptr=0;
+				need_fname=0;
+				continue;
+			}
+			printf("Unknown a when looking for filename %d\n",a);
+		}
+
+                if (need_delim&&a==STRING_LITERAL) {
+                        e->delim=strdup(yylval.str);
+                        free(ptr);
+                        ptr=0;
+                        need_delim=0;
+			continue;
+                }
+
 		if (a==KW_OBRACE) {
 			while (a&&a!=KW_CBRACE) a=yylex();
 			continue;
@@ -86,6 +116,11 @@ int into_temp=0;
 
 		if (a==KW_WHERE) {
 			e->type=tolower(e->type);
+		}
+
+		if (a==KW_DELIMITER) {
+			need_delim=1;
+			continue;
 		}
 
 		if (into_temp==1) {
@@ -121,16 +156,20 @@ int into_temp=0;
 		if (e==0) {
 			e=malloc(sizeof(struct element));
 			e->type='?';
+			e->delim=0;
+			e->fname=0;
 		}
 
 
 		A4GL_assertion(e==0,"No element");
 
 		if (e->type=='?') {
+			if (a==KW_LOAD)   {e->type='L';need_fname=1;}
+			if (a==KW_UNLOAD) {e->type='C';need_fname=1;}
 			if (a==KW_UPDATE) e->type='U';
-			if (a==KW_SELECT) e->type='S';
 			if (a==KW_INSERT) e->type='I';
 			if (a==KW_DELETE) e->type='D';
+			if (a==KW_SELECT) e->type='S';
 			if (e->type=='?') e->type='O';
 			e->lineno=line;
 			into_temp=0;
@@ -149,7 +188,7 @@ int into_temp=0;
 	}
 
 if (e) {
-			e->stmt=ptr;
+	e->stmt=ptr;
 	add_stmt(e);
 	free(e);
 	e=0;

@@ -35,6 +35,9 @@ void count();
 "into"			{ count(); return(KW_INTO); }
 "temp"			{ count(); return(KW_TEMP); }
 "where"			{ count(); return(KW_WHERE); }
+load[ \t\v\f]*from	{ count(); return(KW_LOAD); }
+unload[ \t\v\f]*to	{ count(); return(KW_UNLOAD); }
+"delimiter"		{ count(); return(KW_DELIMITER); }
 {L}({L}|{D})*		{ count(); return(IDENTIFIER); }
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
 0{D}+{IS}?		{ count(); return(CONSTANT); }
