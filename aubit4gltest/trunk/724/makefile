@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Check if a select with * fetch all correct values. \
+	@echo "Check if a select with \* fetch all correct values. \
 		"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
