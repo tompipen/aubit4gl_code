@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.22 2004-10-24 04:21:02 afalout Exp $
+# $Id: io.c,v 1.23 2004-10-29 14:09:20 afalout Exp $
 #
 */
 
@@ -184,17 +184,21 @@ FILE *f;
 		//#else
 		//  sprintf (buff, "%s\\%s", path, name);
 		//#endif
-    }
-  else
-    {
+    } else {
       sprintf (buff, name);
     }
 
 	A4GL_debug ("Opening path '%s'", buff);
-
-  /* Does it exist and can we read it ? */
+	/* Does it exist and can we read it ? */
 	
 	//FIXME: apparently does not wok with relative paths?
+	
+	/*
+    Shuld we open files in binary mode instead?
+		f = fopen (buff, "rb");
+	I was trying this because PACKED packer does not work on Windows, 
+	but XML packer does - did not help (try test #242)
+	*/
 	f = fopen (buff, "r");
 	if (f == 0) {
 		A4GL_debug("Unable to open %s %s (%s)",path,name,buff);
@@ -210,7 +214,7 @@ FILE *f;
 }
 
 /**
- * Open a file from the DBPATH (always for reading...)
+ * Open a file from the DBPATH (always for reading)
  *
  * @param fname The pointer to the filename to be opened.
  * @return The pointer to the file opened. 0 otherwise.
@@ -219,23 +223,28 @@ FILE *
 A4GL_open_file_dbpath (char *fname)
 {
 char *ptr;
-ptr=A4GL_fullpath_dbpath(fname);
-if (ptr==0) return 0;
-return A4GL_try_to_open("",ptr,1);
+	ptr=A4GL_fullpath_dbpath(fname);
+	if (ptr==0) return 0;
+		return A4GL_try_to_open("",ptr,1);
 }
 
-
-char *A4GL_fullpath_dbpath (char *fname) {
+/**
+ * 
+ *
+ * @param fname The pointer to the filename to be
+ * @return 
+ */
+char *
+A4GL_fullpath_dbpath (char *fname) {
 	return A4GL_fullpath_xpath(fname,acl_getenv("DBPATH"));
 }
-
-
+	
 FILE * A4GL_open_file_classpath (char *fname)
 {
 char *ptr;
-ptr=A4GL_fullpath_classpath(fname);
-if (ptr==0) return 0;
-return A4GL_try_to_open("",ptr,1);
+	ptr=A4GL_fullpath_classpath(fname);
+	if (ptr==0) return 0;
+	return A4GL_try_to_open("",ptr,1);
 }
 
 

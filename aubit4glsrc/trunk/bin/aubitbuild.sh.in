@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.44 2004-10-24 04:21:02 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.45 2004-10-29 14:09:19 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -195,8 +195,8 @@ HTTP_FILES_URL="http://aubit4gl.sf.net/files/"
 #####################
 #name of the computer we are on:
 HOSTNAME=`hostname`
-HOSTNAME_EXTRA=aptiva.falout.org
-HOSTNAME_INCREASE_BUILD=aptiva.falout.org
+HOSTNAME_EXTRA="aptiva.falout.org aptiva"
+HOSTNAME_INCREASE_BUILD="aptiva.falout.org aptiva"
 #RedHat:
 RPM_ROOT=/usr/src/redhat
 #Mandrake:
@@ -370,8 +370,8 @@ DOWN_FILE=$2
 		RET=$?
 		if test $RET != "0"; then
 			#echo "Error: /tmp/$UP_FILE and $DOWN_FILE are different"
-			ls -al /tmp/$UP_FILE
-			ls -al $DOWN_FILE
+			ls -al "/tmp/$UP_FILE"
+			ls -al "$DOWN_FILE"
 			if [ "$VERBOSE" = "1" ]; then
 				echo "Failed cmd was: $EXEC"
 			fi
@@ -578,8 +578,14 @@ if test "$MAKE" = "1"; then
 
 		EXEC="cd $AUBITSRCDIR"; runexec
 
-		if ! [ -f "$AUBITSRCDIR/?akefile" ];
-        then
+		if ! [ -f "$AUBITSRCDIR/?akefile" ]; then
+			if ! [ -f "$AUBITSRCDIR/configure" ]; then
+				EXEC="autoconf"; runexec
+				if ! [ -f "$AUBITSRCDIR/configure" ]; then
+					echo "ERROR: autoconf failed to create configure. Stop."
+					exit 74
+				fi
+			fi
 			#pasing parameters to configure from here will only work if aubitconf script is
             #not in the path
 			LOGFILE=$CONFIGLOG
@@ -629,15 +635,28 @@ if test "$MAKE" = "1"; then
 		
 		#increase build number, but doing this on more then one computer will cause
         #problems with "cvs update"
-		if [ "$HOSTNAME" = "$HOSTNAME_INCREASE_BUILD" ] ; then
-			EXEC="make build"; runexec
-        else
-            echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
-		fi
+		for HOST in $HOSTNAME_INCREASE_BUILD; do
+			if [ "$HOSTNAME" = "$HOST" ] ; then
+				EXEC="make build"; runexec
+				break
+			else
+				if test "$VERBOSE" = "1"; then
+            		echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
+				fi
+			fi
+		done
 
 		#configure will use aubitconf if it exists to provide switches:
 		#pasing parameters to configure from here will only work if aubitconf script is
         #not in the path
+		
+		if ! [ -f "$AUBITSRCDIR/configure" ]; then
+			EXEC="autoconf"; runexec
+			if ! [ -f "$AUBITSRCDIR/configure" ]; then
+				echo "ERROR: autoconf failed to create configure. Stop."
+				exit 74
+			fi
+		fi
 		LOGFILE=$CONFIGLOG
 		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
 		#cannot do this, if I do, there won't be a makefile left to do "make tar"
@@ -725,19 +744,22 @@ else
     echo "MAKE disabled ($MAKE)"
 fi
 
-if [ "$HOSTNAME" = "$HOSTNAME_EXTRA" ]; then
-	EXEC="cd $AUBITSRCDIR"; runexec
-	STOPONERROR=0
-	EXEC="make extra"; runexec
-	
-	#FIXME: show result of make extra here
-	
-	STOPONERROR=1
-	#EXEC="cd $AUBITBINDIR"; runexec
-fi
+#If this host in in the list, build extra targets
+for HOST in $HOSTNAME_EXTRA; do
+	if [ "$HOSTNAME" = "$HOST" ]; then
+		EXEC="cd $AUBITSRCDIR"; runexec
+		STOPONERROR=0
+		EXEC="make extra"; runexec
+		#FIXME: show result of make extra here
+		STOPONERROR=1
+		#EXEC="cd $AUBITBINDIR"; runexec
+		break
+	fi
+done
 
 #get file names of created archives:
 if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
+	#WARNING: Must _NOT_ be quoted:
     SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
     SOURCETARBASENAME=`basename $SOURCETARNAME`
 else
@@ -748,6 +770,7 @@ else
 fi
 
 if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
+	#WARNING: Must _NOT_ be quoted:
     TARBALL=`ls $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT`
     TARBALLBASENAME=`basename $TARBALL`
 else
@@ -789,6 +812,7 @@ if ! [ -f $SRPM_PATH/$SHORTNAME*.src.rpm ]; then
 		echo "source RPM not created"
     fi
 else
+	#WARNING: Must _NOT_ be quoted:
 	SOURCERPM=`ls $SRPM_PATH/$SHORTNAME*.src.rpm`
 	SOURCERPMBASENAME=`basename $SOURCERPM`
 fi
@@ -798,6 +822,7 @@ if ! [ -f $RPM_PATH/$SHORTNAME*.rpm ]; then
 		echo "Binary RPM not created."
     fi
 else
+	#WARNING: Must _NOT_ be quoted:
 	BINRPM=`ls $RPM_PATH/$SHORTNAME*.rpm`
 	BINRPMBASENAME=`basename $BINRPM`
 fi
@@ -859,8 +884,17 @@ if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
     LOGFILE=$CLEANLOG
 	EXEC="make clean.tools"; runexec
 
+	
+	if ! [ -f "$AUBITSRCDIR/configure" ]; then
+		EXEC="autoconf"; runexec
+		if ! [ -f "$AUBITSRCDIR/configure" ]; then
+			echo "ERROR: autoconf failed to create configure. Stop."
+			exit 74
+		fi
+	fi
 	LOGFILE=$CONFIGLOG
 	LOGFILE=/tmp/mingw-config.log
+	rm -f $LOGFILE 
     EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
 	STOPONERROR=0	
     EXEC="make log"; runexec
@@ -1111,11 +1145,37 @@ if test "$COMPARE" = "1"; then
 	
 	if test "$COMPARED_OK" != "1"; then
 		echo "ERROR: one or more errors comparing created and downloaded files"
+		echo "Upload commands where:"
+		echo "SRC Tarball: $AUTO_SF_SCP $SOURCETARNAME"
+		echo "BIN Tarball: $AUTO_SF_SCP $TARBALL"
+		echo "SRC RPM: $AUTO_SF_SCP $SOURCERPM"
+		echo "BIN RPM: $AUTO_SF_SCP $BINRPM"
+		echo "WinSetup: $AUTO_SF_SCP $WINSETUPEXE"
 	fi
     cd -
 fi
 
-if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
+if test "$CLEAN_OLD" = "1" ; then
+	#clean stuff we may accumulate over time by not cleaning each time
+	#after errors and in oter sittuations when we do not want to clean
+
+    #Clean created archives and files
+	#EXEC="rm -f $SOURCETARNAME $TARBALL $SOURCERPM $BINRPM"; runexec
+
+	#delete compare files:
+	EXEC="rm -f /tmp/aubit*.tgz"; runexec
+	EXEC="rm -f /tmp/aubit*.exe"; runexec
+	EXEC="rm -f /tmp/aubit*.rpm"; runexec
+
+    #clean directory in /tmp
+    rm -rf /tmp/aubit4glsrc-*
+
+	#clean temprary stuff created by RPM:
+    rm -rf $RPMBUILD_PATH/aubit4gl-*
+   	rm -rf $RPMSRC_PATH/aubit4glsrc-*
+fi
+
+if test "$CLEAN" = "1" -a "$COMPARED_OK" = "1"; then
 
     #Clean created archives and files
 	EXEC="rm -f $DLTMP1 $DLTMP2 $DOWNLOADPAGEBASE"; runexec

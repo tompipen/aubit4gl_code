@@ -21,17 +21,21 @@ date >> /tmp/cron_run.log
 ############################## Settings ##################################
 
 ############################
+#Read global shell profile
+if test -f "/etc/profile"; then
+	. /etc/profile > /dev/null
+fi
+
+############################
 #Read global Bash profile
 if test -f "/etc/bashrc"; then 
 	. /etc/bashrc > /dev/null
 fi
 
-############################
-#Read global shell profile
-if test -f "/etc/profile"; then
-	. /etc/profile >> /dev/null
+if test -f "/etc/bash.bashrc"; then 
+	#CygWin
+	. /etc/bash.bashrc > /dev/null
 fi
-
 ############################
 #Read global aubitrc
 if test -f "/etc/opt/aubit4gl/aubitrc" ; then
@@ -71,9 +75,14 @@ else
 		#we should have got that by reading aubitrc ?!
 		AUBITDIR="/usr/src/aubit/aubit4glsrc"
 	fi
-	SH=/usr/bin/bash	
-	MAILCMD="ssmtp -FCronDaemonIstation $MAILADDR"
-	MAILCMD_TEST="ssmtp -FCronDaemonIstation $MAILADDR"
+	SH=/usr/bin/bash
+	if test -f /usr/sbin/ssmtp ; then 
+		MAILEXEC="/usr/sbin/ssmtp"
+	else
+		MAILEXEC="missing-ssmtp"
+	fi
+	MAILCMD="$MAILEXEC -FCronDaemonIstation $MAILADDR"
+	MAILCMD_TEST="$MAILEXEC -FCronDaemonIstation $MAILADDR"
 	FGLC="4glc.exe"	
 fi
 
@@ -88,6 +97,8 @@ MAILFILE=/tmp/aubitbuild.mail
 ############################
 #Contatins email we compose out of LOGFILE and MAKEFILE and then send
 TMPMAIL=/tmp/aubitbuild-tmp.mail
+
+rm -f $LOGFILE $MAILFILE $TMPMAIL
 
 ############################
 #command to execute to build Aubit
@@ -159,19 +170,27 @@ if test "$DO_BUILD" = "1"; then
 	if [ -f $BUILD_CMD ]; then
 		if test "$DEBUG" = "1"; then 
 			echo "About to invoke '$SH $BUILD_CMD $PARAMS'"
+			echo "- see $MAILFILE for output"
 		fi
 		echo "About to invoke '$SH $BUILD_CMD $PARAMS'"  >> $LOGFILE
+		echo "- see $MAILFILE for output"  >> $LOGFILE
 		###############################
-		$SH $BUILD_CMD $PARAMS >> $MAILFILE 2>&1
-		#$SH $BUILD_CMD
+		if test "1" = "1"; then 
+			eval $SH $BUILD_CMD $PARAMS >> $MAILFILE 2>&1
+		else
+			echo "Did not invoke:" >> $MAILFILE
+			echo "$SH $BUILD_CMD $PARAMS" >> $MAILFILE
+		fi
 		###############################
+echo "After..." >> $LOGFILE
+		#echo "After..." >> /tmp/cron_run.log
 		RET=$?
-		if test "$RET" != "0"; then
-			if test "$DEBUG" = "1"; then
-				echo "Command returned code $RET"
-			fi
-			echo "Command returned code $RET" >> $LOGFILE
-			if test "$RET" = "66"; then
+		echo "Command returned code $RET" >> $LOGFILE
+		if test "$DEBUG" = "1"; then
+			echo "Command returned code $RET"
+		fi
+echo "2After..." >> $LOGFILE		
+		if test "$RET" = "66"; then
 				#54 - error comparing created and uploaded file
 				#1 - help
 				#11 - param not recognized
@@ -184,17 +203,12 @@ if test "$DO_BUILD" = "1"; then
 				#66 'make log' failed
 				#everything else - failed to run command
 				BUILD_FAILED=1
-			fi
-		else
-			if test "$DEBUG" = "1"; then
-				echo "Completed succesfully, see $MAILFILE for details"		
-			fi
-			echo "Completed succesfully, see $MAILFILE for details" >> $LOGFILE	
 		fi
+echo "3After..." >> $LOGFILE		
 	else
 		echo "ERROR: $BUILD_CMD is missing" >> $LOGFILE
 	fi
-	
+echo "4After..." >> $LOGFILE	
 	##################
 	#Finalize log file
 	date >> $LOGFILE
@@ -209,8 +223,6 @@ if test "$DO_BUILD" = "1"; then
 	if test "$COMSPEC" != ""; then
 		#On Windows we cannot specify subject on command line
 		echo "subject: \"$MAIL_SUBJECT\"" > $TMPMAIL
-	else
-		rm -f $TMPMAIL
 	fi
 	if test -f "$LOGFILE"; then 
 		cat $LOGFILE >> $TMPMAIL
@@ -218,6 +230,9 @@ if test "$DO_BUILD" = "1"; then
 		echo "$LOGFILE file was missing" >> $TMPMAIL
 	fi
 	if test -f $MAILFILE; then
+		echo "$MAILFILE closed at:" >> $MAILFILE
+		date >> $MAILFILE
+		echo "-------------------------------------" >> $MAILFILE
 		cat $MAILFILE >> $TMPMAIL
 	else
 		echo "$MAILFILE file was missing" >> $TMPMAIL
@@ -228,9 +243,21 @@ if test "$DO_BUILD" = "1"; then
 	##################
 	#Send the email
 	echo "Sending mail with cmd: cat $TMPMAIL -pipe- $MAILCMD" >> $TMPMAIL
+	#echo "PATH:" >> $TMPMAIL
+	#echo $PATH >> $TMPMAIL
+	#if test "$COMSPEC" != ""; then
+	#	ping aptiva  >> $TMPMAIL 2>&1
+	#fi
 	cat $TMPMAIL | $MAILCMD > /tmp/mailcmd.log 2>&1
-	if test "$DEBUG" = "1"; then
-		echo "Email sent."
+	RET=$?
+echo "after sending mail" >> $TMPMAIL	
+	if test "$RET" != "0"; then
+		 echo "sending mail failed with code $RET" >> $TMPMAIL
+		 echo "see file /tmp/mailcmd.log" >> $TMPMAIL
+	else
+		if test "$DEBUG" = "1"; then
+			echo "Email sent, no error code."
+		fi
 	fi
 	
 	if test "$BUILD_FAILED" = "1"; then

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-10-04 15:40:18 afalout Exp $
+# $Id: makefile,v 1.6 2004-10-29 14:09:21 afalout Exp $
 #
 
 ROOT        =../..
@@ -32,7 +32,7 @@ LIBROOT		=${ROOT}/lib
 
 include 	${ROOT}/incl/Makefile-common
 
-#We can't use Amake here - we cant't use 4glc or 4glpc
+#We can't use Amake here - we cant't use 4glc (for linking) or 4glpc
 #include 	${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
@@ -62,7 +62,7 @@ ${ROOT}/bin/4glpc: 4glpc.ao times.ao readsettings.ao
 	${CC} ${CFLAGS} -c $*.c -o $@
 	
 %.c: %.4gl
-	${ROOT}/bin/4glc -c $<
+	A4GL_LEXTYPE=C; ${ROOT}/bin/4glc -c $<
 
 ## ==================================================================
 ##                              Dependencies

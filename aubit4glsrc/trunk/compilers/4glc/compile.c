@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.67 2004-10-29 02:20:39 afalout Exp $
+# $Id: compile.c,v 1.68 2004-10-29 14:09:19 afalout Exp $
 #*/
 
 /**
@@ -215,11 +215,14 @@ initArguments (int argc, char *argv[])
   char pg_esql[128] = "";  
 
 //Cant use shell scripts on Windows: esql_wrap ecpg_wrap
-	//sprintf (informix_esql, "\"%s/bin/esql\"",acl_getenv ("INFORMIXDIR"));
-	//sprintf (informix_esql, "\"%s\"",acl_getenv ("IFMX_ESQLC"));
-	sprintf (informix_esql, "%s",acl_getenv ("IFMX_ESQLC"));
+//Cant use INFORMIXDIR to locate esqlc because of the CSDK subdir nonsense
+//But if I try to use full path, I get "'e:/Program' is not recognized as an 
+// internal or external command" even tho ther is NO single quotes on command
+//line - I susspect something it translating quotes (maybe esqlc?) 
+//	sprintf (informix_esql, "\"%s\" -n ",acl_getenv ("IFMX_ESQLC"));
+	sprintf (informix_esql, "esql -n ");
 	sprintf (pg_esql, "\"%s/bin/ecpg\"",acl_getenv ("POSTGRESDIR"));  
-  
+
 #ifdef DEBUG
   A4GL_debug ("Parsing the comand line arguments\n");
   A4GL_debug ("Arg 0 set to >%s<", A4GL_getarg0 ());
@@ -494,6 +497,8 @@ initArguments (int argc, char *argv[])
 		#ifdef DEBUG
 		  A4GL_debug ("Turned on verbose mode\n");
 		#endif
+		sprintf (informix_esql, "%s -dcmdl ", informix_esql);
+		//TODO: add -verbose to GCC and ecpg 
 	  break;
 
     /************************/
@@ -728,7 +733,7 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
-			       pg_esql, get_rdynamic() all_objects, output_object, l_path, 
+			       pg_esql, get_rdynamic(), all_objects, output_object, l_path, 
 				   l_libs, pass_options, extra_ldflags);
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
@@ -1150,7 +1155,8 @@ char ext[8];
 					} else {
 						if (verbose) { printf ("PG EC compilation of the object successfull.\n");}
 						need_cc=1;
-						sprintf (incl_path, "%s -I\"%s/include\" -I\"%s/include/postgresql/informix/esql\" -I\"/usr/include/pgsql\"",
+						//WARNING: ORDER IS IMPORTANT! think about /usr/include!
+						sprintf (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"/usr/include/pgsql\" -I\"%s/include\" ",
 							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"));
 						/* FIXME: this can be in different places - see ./configure
 						/opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h

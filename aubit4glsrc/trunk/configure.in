@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.253 2004-10-16 01:32:33 afalout Exp $
+dnl # $Id: configure.in,v 1.254 2004-10-29 14:08:38 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2492,12 +2492,32 @@ if test "$AUBIT_SOURCE" = "1" ; then
 #it even in binary distro, where we don't need it:
 dnl #AC_PROG_LEX
 AM_PROG_LEX
-if test "$LEX" = ":" || test "$LEX" = "" ; then
+if test "$LEX" = ":" -o "$LEX" = "" ; then
     dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
 	LEX="no"
 	if test "$AUBIT_SOURCE" = "1" ; then
         WARN_LEX=1
     fi
+else
+	if test "$LEX" = "flex"; then 
+		#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a.
+		AC_MSG_CHECKING(Flex version)
+		TMP_TMP=`$LEX --version | head -1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
+		TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
+		set `echo $TMP_TMP`
+		AC_MSG_RESULT($1.$2.$3)
+		
+		if test "$1" = "2" -a "$2" -gt "4"; then 
+			#Version is >= 2.5
+			if test "$3" -gt "4"; then 
+				AC_MSG_WARN(Flex introduced incompatible API in post 2.5.4a versions)			
+				AC_MSG_ERROR(Please downgrade to Flex 2.5.4a or earlier. Stop.)
+			fi
+		fi
+	fi
+fi
+if test "$enable_stop_lex" = "yes" ; then
+	exit
 fi
 
 ## ==================================================================
@@ -3309,6 +3329,14 @@ AC_ARG_WITH(informix,
 				echo "IFMX_ESQLC='$IFMX_ESQLC'"
 			fi
 			if test "$IFMX_ESQLC" != "no"; then
+				case "$IFMX_ESQLC" in
+					*cygdrive*)
+						if test "$GCC_MINGW" = "yes"; then
+							#convert Cygwin path mapping back to native
+							IFMX_ESQLC=`echo "$IFMX_ESQLC" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
+						fi
+						;;
+				esac
 				#must quote it in case it contins spaces in the path
 				IFMX_ESQLC="'$IFMX_ESQLC'"
 			fi
@@ -7571,7 +7599,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.253 2004-10-16 01:32:33 afalout Exp $
+| $Id: configure.in,v 1.254 2004-10-29 14:08:38 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
@@ -7608,6 +7636,10 @@ AC_MSG_RESULT([Thank you for using Aubit 4gl compiler.])
 AC_MSG_RESULT([              $AUBIT_PUBLISHER])
 AC_MSG_RESULT([])
 
+
+#not detected on istation:
+#  RPC_XMLRPC EXDTYPE_mpz SQL_pg SQL_c_ecpg UI_GLADE A4GL_glade MENU_XDR A4GL_pop 
+# A4GL_pcre A4GL_sxml ESQL_POSTGRES SQL_esqlPG SQL_esqlSAP ESQL_SAP  IM_JABBER
 
 #------------------------------ EOF --------------------------------
 

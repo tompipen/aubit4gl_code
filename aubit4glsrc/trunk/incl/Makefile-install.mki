@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.83 2004-10-08 02:47:20 afalout Exp $
+# $Id: Makefile-install.mki,v 1.84 2004-10-29 14:09:20 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -227,18 +227,6 @@ tt:
 	(export DEBUG=ALL; cd tools/test; sh aubit 4glc test_build.4gl)
 	(export DEBUG=ALL; cd tools/test; sh aubit 4glc -o test_build.4gl)
 
-	
-######################################
-#Put Aubit nihgtly cron script unser daily cron directory
-install.cron:
-ifdef COMSPEC
-	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
-	chmod a+x /etc/cron.d/*
-else
-	${CP} etc/aubitbuild.cron.sh /etc/cron.daily/
-	chmod a+x /etc/cron.daily/
-endif
-
 #######################################
 #test: tt
 test:
@@ -312,65 +300,24 @@ endif
 endif
 endif
 
-install.aubitbuild.cron: OUT = /etc/cron.d/aubitbuild
-install.aubitbuild.cron: OUT2 = ${HOME}/aubitbuild.cron
-install.aubitbuild.cron:
-#prepare the scrip to run:
-	@echo "#!${SH}" > ${OUT}
-	@echo "" >> ${OUT}
-	@echo ". /etc/profile" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo "AUBITDIR=${AUBIT_SRC_ROOT}" >> ${OUT}
-	@echo "LOGFILE=/tmp/cron.log" >> ${OUT}
-	@echo "SH=${SH}" >> ${OUT}
-	@echo "MAILFILE=/tmp/aubitbuild.mail" >> ${OUT}
-	@echo "MAILADDR=andrej@falout.org" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo ". /etc/bashrc > /dev/null" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo "if [ ! -f $$AUBITDIR/bin/aubitbuild.sh ]; then" >> ${OUT}
-	@echo "   if [ ! -f $AUBITDIR/configure ]; then" >> ${OUT}
-	@echo "      autoconf" >> ${OUT}
-	@echo "   fi" >> ${OUT}
-	@echo "	  cd $$AUBITDIR" >> ${OUT}
-	@echo "   ./configure > /tmp/aubit_configure.log 2>&1" >> ${OUT}
-	@echo "   if [ ! -f $$AUBITDIR/bin/aubitbuild.sh ]; then" >> ${OUT}
-	@echo "       echo 'Failed to run configure. Stop.'" >> ${OUT}
-	@echo "   fi" >> ${OUT}
-	@echo "fi" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo 'echo "-------------------------------------" >> $$LOGFILE' >> ${OUT}
-	@echo 'date >> $$LOGFILE' >> ${OUT}
-	@echo '. /etc/profile >> $$LOGFILE' >> ${OUT}
-	@echo 'echo "Running : $$SH $$AUBITDIR/bin/aubitbuild.sh"  >> $$LOGFILE' >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo "##################################" >> ${OUT}
-	@echo '$$SH $$AUBITDIR/bin/aubitbuild.sh > $$MAILFILE 2>&1' >> ${OUT}
-	@echo "##################################" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo "RET=$?" >> ${OUT}
-	@echo "if test $RET != '0'" >> ${OUT}
-	@echo "then" >> ${OUT}
-	@echo "	echo Command returned code $RET >> $LOGFILE" >> ${OUT}
-	@echo "fi" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo "cat $$MAILFILE | ssmtp $$MAILADDR" >> ${OUT}
-	@echo "" >> ${OUT}
-	@echo 'date >> $$LOGFILE' >> ${OUT}
-	@echo 'echo "-------------------------------------" >> $$LOGFILE' >> ${OUT}
-	@echo 'echo >> $$LOGFILE' >> ${OUT}
-	@echo "" >> ${OUT}
+
+######################################
+#Put Aubit nihgtly cron script unser daily cron directory
+install.cron: OUT2 = ${HOME}/aubitbuild.cron
+install.cron:
+ifdef COMSPEC
+	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
+	chmod a+x /etc/cron.d/*
 #prepare the crontab to install:
 	@echo "" > ${OUT2}
-	@echo "MAILTO=andrej@falout.org" >> ${OUT2}
+	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
 	@echo "SHELL=${SH}" >> ${OUT2}
-	@echo "00 06 * * * ${OUT}" >> ${OUT2}
+	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
 	@echo "" >> ${OUT2}
 	crontab ${OUT2}
+#show whats installed:
 	crontab -l
-	chmod a+x ${OUT}
-	@echo "cron script ${OUT} installed, using ${OUT2}"
-ifneq "${COMSPEC}" ""
+	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"
 #Activate cron daemon as Windows service:
 	cygrunsrv -E cron
 	cygrunsrv -R cron
@@ -389,13 +336,23 @@ ifneq "${COMSPEC}" ""
 #	root=postmaster
 #	mailhub=aptiva
 #	hostname=istation.falout.com
+else
+	${CP} etc/aubitbuild.cron.sh /etc/cron.daily/
+	chmod a+x /etc/cron.daily/
 endif
-	@echo "Done."
+	@echo "aubitbuild cron script installed."
 
-deinstall.aubitbuild.cron:
+####################################
+#Remove aubitbuild from cron
+deinstall.cron:
+ifdef COMSPEC
+	${RM} /etc/cron.d/aubitbuild.cron.sh 
 	crontab -r
 	crontab -l
-	@echo "crontab removed."
+else
+	${RM} /etc/cron.daily/aubitbuild.cron.sh 
+endif
+	@echo "aubitbuild cron script removed."
 
 show.gcc.define:
 	${CC} -E -dM - </dev/null
