@@ -136,7 +136,55 @@ void *w;
 #line 102 "assist.4gl"
 }
 #line 103 "assist.4gl"
-/* End of code */ 
+/* End of code */extern long int_flag;
+#line 109 "assist.4gl"
+extern long quit_flag;
+#line 109 "assist.4gl"
+extern long status;
+#line 109 "assist.4gl"
+extern struct {
+#line 109 "assist.4gl"
+long sqlcode;
+#line 109 "assist.4gl"
+char sqlerrm [72+1];
+#line 109 "assist.4gl"
+char sqlerrp [8+1];
+#line 109 "assist.4gl"
+long sqlerrd[6];
+#line 109 "assist.4gl"
+char sqlawarn [8+1];
+#line 109 "assist.4gl"
+char sqlstate [9+1];
+#line 109 "assist.4gl"
+} sqlca;
+#line 109 "assist.4gl"
+extern fgldate today;
+#line 109 "assist.4gl"
+extern char usr [8+1];
+#line 109 "assist.4gl"
+extern long pageno;
+#line 109 "assist.4gl"
+extern long lineno;
+#line 109 "assist.4gl"
+extern long usrtime;
+#line 109 "assist.4gl"
+extern long curr_hwnd;
+#line 109 "assist.4gl"
+extern long curr_form;
+#line 109 "assist.4gl"
+extern char err_file_name [32+1];
+#line 109 "assist.4gl"
+extern long err_file_no;
+#line 109 "assist.4gl"
+extern char curr_file_name [32+1];
+#line 109 "assist.4gl"
+extern long curr_line_no;
+#line 109 "assist.4gl"
+extern long err_status;
+#line 109 "assist.4gl"
+extern long aiplib_status;
+#line 109 "assist.4gl"
+ 
 #line 109 "assist.4gl"
  
 #line 109 "assist.4gl"
@@ -1048,9 +1096,9 @@ int aclfgl_entry_selection_set (int nargs){
 #line 425 "assist.4gl"
 static char _functionName[] = "entry_selection_set";
 #line 425 "assist.4gl"
-long s;
-#line 429 "assist.4gl"
 long e;
+#line 429 "assist.4gl"
+long s;
 #line 429 "assist.4gl"
 long g;
 #line 429 "assist.4gl"
@@ -1484,9 +1532,9 @@ int aclfgl_list_delete (int nargs){
 #line 569 "assist.4gl"
 static char _functionName[] = "list_delete";
 #line 569 "assist.4gl"
-long s;
-#line 572 "assist.4gl"
 long n;
+#line 572 "assist.4gl"
+long s;
 #line 572 "assist.4gl"
 struct BINDING fbind[]={ /* print_param */
 #line 572 "assist.4gl"
@@ -1528,9 +1576,9 @@ int aclfgl_list_insert (int nargs){
 #line 581 "assist.4gl"
 static char _functionName[] = "list_insert";
 #line 581 "assist.4gl"
-long s;
-#line 585 "assist.4gl"
 long n;
+#line 585 "assist.4gl"
+long s;
 #line 585 "assist.4gl"
 char str [512+1];
 #line 585 "assist.4gl"
@@ -1578,9 +1626,9 @@ int aclfgl_list_selected (int nargs){
 #line 595 "assist.4gl"
 static char _functionName[] = "list_selected";
 #line 595 "assist.4gl"
-long s;
-#line 598 "assist.4gl"
 long n;
+#line 598 "assist.4gl"
+long s;
 #line 598 "assist.4gl"
 struct BINDING fbind[]={ /* print_param */
 #line 598 "assist.4gl"

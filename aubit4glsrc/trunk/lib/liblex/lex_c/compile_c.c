@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.45 2003-01-24 08:36:22 afalout Exp $
+# $Id: compile_c.c,v 1.46 2003-01-29 11:31:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -309,16 +309,16 @@ int a;
 	if (outfile == 0)
 		return;
   }
-    debug("before vsprintf");
-	debug("ap = %p\n",ap);
-	debug("fmt = %p\n",fmt);
+    //debug("before vsprintf");
+	//debug("ap = %p\n",ap);
+	//debug("fmt = %p\n",fmt);
 
 	/* va_start (args, fmt); */
 	vsprintf (buff, fmt, *ap);
 
-	debug("buff in lib=%s\n",buff);
+	//debug("buff in lib=%s\n",buff);
 	strcpy(buff2,fmt);
-	debug("fmt in lib=%s\n",buff2);
+	//debug("fmt in lib=%s\n",buff2);
 
 
   if (isyes(acl_getenv ("INCLINES")))
@@ -2716,11 +2716,15 @@ print_let_manyvars (char *nexprs)
 {
   int from_exprs;
   int to_vars;
+debug("1");
+  debug("In print_let_manyvars\n");
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
+
   if (to_vars != from_exprs)
     {
+	debug("to_Vars = %d from_Exprs = %d\n",to_vars,from_exprs);
       return 0;
     }
   printc ("pop_params(obind,%d);\n", from_exprs);

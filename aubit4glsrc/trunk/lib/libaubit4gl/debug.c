@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.15 2003-01-21 08:25:53 afalout Exp $
+# $Id: debug.c,v 1.16 2003-01-29 11:31:58 mikeaubury Exp $
 #
 */
 
@@ -42,7 +42,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
-
+extern sqlca_struct sqlca;
 
 /*
 =====================================================================

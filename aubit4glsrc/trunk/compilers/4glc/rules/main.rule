@@ -4,16 +4,46 @@
 =====================================================================
 */
 
-module	:	op_code op_import op_code globals_section op_code
-{
-	modlevel=-1;
-	/* read_glob_var = 1; */
-	print_variables();
-	/* read_glob_var = 0; */
-	set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);
-	strcpy(curr_func,"[Module]");
-} define_section op_code {inmod();} func_main_def
+
+
+
+module: op_module_header
+	{
+		if (glob_only==1) {
+       			debug("Read globals section so Im done\n");
+       			YYACCEPT;
+		}
+	
+		set_4gl_vars();
+
+		set_current_variable_scope('g'); print_variables (); set_current_variable_scope('G'); print_variables (); set_current_variable_scope('m'); print_variables ();
+		set_current_variable_scope('m');
+	}
+ 	func_main_def 
+;
+
+
+op_module_header: | module_header {
+	}
+;
+
+module_header	:	module_entry 
+		| 	module_header module_entry
+;
+
+
+
+	
+
+module_entry : 
+module_import 
+| module_code 
+| module_globals_section 
+| module_define_section  
 	;
+
+
+
 
 func_main_def	: /* could be empty file */
                  {strcpy($<str>$,"");}
@@ -35,14 +65,18 @@ func_or_main	:	func_def
 		|	report_def
 		|	pdf_report_def
                 |       menu_def
-		| whenever_cmd 
+		| 	whenever_cmd 
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
 		|	comment_cmd
 		;
 
-op_code : |code_cmd | whenever_cmd  ;
+module_code : code_cmd | whenever_cmd  ;
+
+op_code : | code_cmd | whenever_cmd  ;
+
+module_define_section : define_multiple 
 
 
 ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL_FUNCTION
@@ -76,6 +110,7 @@ define_section
 {
   int c;
   lex_printcomment("/*end of define section */\n");
+	print_variables();
   c=print_param('f');
   printPushFunction();
   print_func_args(c);
@@ -110,6 +145,7 @@ main_def:
   } 
   define_section
   {
+	print_variables();
     printDeclareFunctionStack("MAIN");
     print_fgllib_start(hdr_dbname);
     printInitFunctionStack();
@@ -137,18 +173,7 @@ db_section	:	  DATABASE dbase_name {open_db($<str>2);
 			lastlineno=yylineno;}
 ;
 
-globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
-| actual_globals_section {
-	if (glob_only==1) {
-       	debug("Read globals section so Im done\n");
-       	YYACCEPT;
-	}
-
-  	/* read_glob_var = 1;
-  	 print_variables ();
-  	read_glob_var = 0;
-    */
-	set_mod_level(varcnt);
+module_globals_section : actual_globals_section {
 }
 ;
 
@@ -162,32 +187,28 @@ xglobals_entry : globals_entry | code_cmd |  whenever_cmd  | db_section
 
 globals_entry: GLOBALS {
 strcpy(curr_func,"[Globals]");
-push_blockcommand("GLOBALS");
+set_current_variable_scope('g');
 lex_printcomment("/* start of globals */\n");
 } 
 glob_section 
-{
-pop_blockcommand("GLOBALS");
-}
 ;
 
 glob_section : define_section END_GLOBALS {
-lex_printcomment("/* end of globals */");
-debug("end of globals\n");
-lastlineno=yylineno;
+	lex_printcomment("/* end of globals */");
+	debug("end of globals\n");
+	lastlineno=yylineno;
+	set_current_variable_scope('m');
 }
 | file_name {
 char b[256];
-
 	lastlineno=yylineno;
-
 	strcpy(b,$<str>1);
-
+	set_current_variable_scope('G');
 	tr_glob_fname(b);
-
 	debug("Reading globals file %s\n",b);
 	rm_quote(b);
 	read_glob(b);
+	set_current_variable_scope('m');
 }
 ;
 
@@ -210,6 +231,7 @@ op_param_var_list CLOSE_BRACKET
 }
 define_section
 {
+	print_variables();
   lex_printcomment("/*end of define section */\n");
   print_param('f');
   printPushFunction();

@@ -63,12 +63,18 @@ char buff[256];
 char kp[40000];
 char *ptr1;
 char *ptr2;
+/*
 int v1;
 int v2 = 0;
+*/
 int aa;
 int z = 0,a = 0;
+struct variable *v_r;
+struct variable *v_1;
+struct variable *v_2;
+struct variable *v_loop;
 
- 
+ /*
         strcpy(r1,$<str>1);
         ptr1=strrchr(r1,'.');
         if (ptr1==0) {
@@ -111,10 +117,17 @@ int z = 0,a = 0;
         v2=last_var_found;
         debug("v2=%d",v2);
 
+*/
         strcpy($<str>$,"");
-        for (aa=v1;aa<=v2;aa++) {
+
+
+	split_record($<str>3,&v_r,&v_1,&v_2);
+
+	v_loop=v_1;
+
+	while (1) {
                 strcpy(kp,$<str>$);
-                sprintf(buff,"%s.%s",r1,get_var_name(aa));
+                sprintf(buff,"%s.%s",r1,v_loop->names.name);
 
 		if (scan_variable(buff)!=-1&&(!system_var(buff))) {
 			a=get_bind_cnt('i');
@@ -126,7 +139,7 @@ int z = 0,a = 0;
 			if (strlen($<str>$)) {strcat($<str>$,",");}
          		strcat($<str>$,"?");
 		}
-
+		v_loop=get_next_variable(v_r,v_loop,v_2);
 	}
 }
 

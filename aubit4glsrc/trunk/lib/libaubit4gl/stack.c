@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.30 2003-01-14 13:30:19 mikeaubury Exp $
+# $Id: stack.c,v 1.31 2003-01-29 11:31:58 mikeaubury Exp $
 #
 */
 
@@ -76,6 +76,7 @@
 #define IGN 0xee
 #define UC (unsigned char)
 #define LOCAL_BINDINGS 20
+void process_stack_op_other(int d);
 
 /*
 =====================================================================
@@ -572,8 +573,11 @@ push_param (void *p, int d)
   int ptr2 = 0;
   int dtype_1=-1;
   int dtype_2=-1;
+
+
   size = DECODE_SIZE (d);
   d = d & 0xffff;
+
 
   if (params == 0)
     {
@@ -703,7 +707,8 @@ push_param (void *p, int d)
 	/*
 	Have a look see if this condition
 	is specifically handled
-    */
+    	*/
+
   if (dtype_2==-1) dtype_2=dtype_1;
 
   if (dtype_1!=-1) {
@@ -877,19 +882,28 @@ push_param (void *p, int d)
       char tmpvar[256];
       static int cntsql = 0;
       char cname[256];
+
       struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
       struct BINDING obind[] = { {0, 0, 0} };			/* end of binding */
       struct BINDING *dbind;
-      int n;
-      sprintf (cname, "chkex%d", cntsql++);
+      void *prep;
 
+      int n;
+
+      debug("OP_EXISTS - OP_NOTEXISTS...");
+      sprintf (cname, "chkex%d", cntsql++);
+	debug("Popping binding...");
+
+      dbind = pop_binding (&n);
+      debug("poped dbind - Poping Sql");
       s = char_pop ();
       debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
-      dbind = pop_binding (&n);
-      A4GLSQL_declare_cursor (0,
-			      A4GLSQL_prepare_select (dbind, n, obind, 0, s),
-			      0, cname);
+      debug("Prepare seelct...");
+      prep=A4GLSQL_prepare_select (dbind, n, obind, 0, s);
+      debug("Declare");
+      A4GLSQL_declare_cursor (0,  prep , 0, cname);
+
       if (status != 0)
 	{
 	  push_int (0);
@@ -1300,6 +1314,15 @@ push_time (void)
 void
 pushop (int a)
 {
+  debug("PUSHOP : %d",a);
+	if (
+		a==OP_IN||a==OP_NOTIN
+		||a == OP_IN_SELECT || a == OP_NOTIN_SELECT
+		||a == OP_EXISTS || a == OP_NOTEXISTS) {
+			process_stack_op_other(a);
+		return;
+	}
+
   push_param (0, a);
 }
 
@@ -2166,15 +2189,18 @@ int
 push_binding (void *ptr, int num)
 {
 //int n;
+
   if (local_binding_cnt >= LOCAL_BINDINGS)
     {
       exitwith ("Too many bindings");
       return 0;
     }
   debug ("MJA - Adding binding to %p", ptr);
+
   local_binding[local_binding_cnt] = ptr;
   num_local_binding[local_binding_cnt] = num;
   local_binding_cnt++;
+
   return 0;
 }
 

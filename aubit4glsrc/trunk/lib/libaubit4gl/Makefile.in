@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.44 2003-01-22 10:55:38 afalout Exp $
+# $Id: Makefile.in,v 1.45 2003-01-29 11:31:58 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -50,7 +50,7 @@ COMMONSRC= \
 	data_if.c dates.c dmy.c  datatypes.c \
 	err.c error.c errfile.c extfile.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
-	gtime.c gui_io.c gui.c \
+	gtime.c gui_io.c gui.c compat.c \
 	helper.c \
 	io.c interval.c \
 	keys.c \
@@ -59,7 +59,7 @@ COMMONSRC= \
 	others.c \
 	pointers.c \
 	read_dty.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
-	screen.c sqlconvert.c stack.c string.c \
+	screen.c sqlconvert.c stack_ops.c stack.c string.c \
 	translate.c
 
 CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
@@ -192,6 +192,8 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 builtin.o: builtin.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 stack.o: stack.c
+	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
+stack_ops.o: stack_ops.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 debug.o: debug.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^

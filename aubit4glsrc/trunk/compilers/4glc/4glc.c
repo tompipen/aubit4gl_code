@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.42 2003-01-21 08:25:49 afalout Exp $
+# $Id: 4glc.c,v 1.43 2003-01-29 11:31:21 mikeaubury Exp $
 #
 */
 
@@ -100,6 +100,7 @@ struct str_resource *user_resource = 0;
 		printf ("Exit\n");
     }
 
+	//dump_var_records();
 	debug("Exiting 4glc");
 	exit (x);
 }

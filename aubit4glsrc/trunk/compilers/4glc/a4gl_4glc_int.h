@@ -95,7 +95,7 @@
 	void 	clr_variable		(void);
 	void 	inmod				(void);
 	void 	setinc				(int a);
-	void 	print_variables		(void);
+	//void 	print_variables		(void);
 	void 	push_name 			(char *a, char *n);
 	void 	push_type 			(char *a, char *n, char *as);
 	void 	push_record 		(void);
@@ -106,7 +106,7 @@
 	void 	push_command 		(int mn, int mnopt, char *a, char *b, char *c, char *hlp);
 	int 	getinc				(void);
 	long 	scan_variable 		(char *s);
-	long 	isarrvariable 		(char *s);
+	//long 	isarrvariable 		(char *s);
 	void    add_constant 		(char t, char *ptr, char *name);
 	void 	set_4gl_vars		(void);
 	void 	open_db 			(char *s);
@@ -174,7 +174,7 @@
 	char *	get_upd_using_notpk (void);
 	char *	get_upd_using_queries (void);
 	char *	ispdf 				(void);
-	int 	print_push_rec 		(char *s, char *b);
+	int 	print_push_rec 		(char *s, void **b);
 	void 	expand_obind 		(void);
 	char *subtract_one(char *s);
 	

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.21 2002-08-31 06:20:00 afalout Exp $
+# $Id: nosql.c,v 1.22 2003-01-29 11:31:58 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
 */
 
 #include "a4gl_lib_sql_int.h"
-
+extern sqlca_struct sqlca;
 /*
 =====================================================================
                     Variables definitions

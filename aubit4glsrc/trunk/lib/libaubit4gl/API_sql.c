@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.26 2003-01-17 23:32:52 psterry Exp $
+# $Id: API_sql.c,v 1.27 2003-01-29 11:31:58 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
-
+extern sqlca_struct sqlca;
 /*
 =====================================================================
                     Variables definitions

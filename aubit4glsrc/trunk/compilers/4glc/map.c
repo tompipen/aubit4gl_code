@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.21 2003-01-24 08:36:20 afalout Exp $
+# $Id: map.c,v 1.22 2003-01-29 11:31:21 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@ extern char *outputfilename; 	/* Defined in libaubit4gl */
 extern char infilename[132];
 
 char 		errbuff[1024] = "";
-char 		yytext[] = "";
+char 		yytext[1024] = "";
 int 		globals_only = 0;
 int 		yyin_len;
 
@@ -865,5 +865,9 @@ char buff[456];
 
 }
 
+
+void set_yytext(char *s) {
+	strcpy(yytext,s);
+}
 
 /* ================================ EOF ============================== */

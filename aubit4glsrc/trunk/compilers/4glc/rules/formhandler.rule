@@ -12,6 +12,7 @@ formhandler_def :
 	push_blockcommand("FORMHANDLER");
         }
         define_section  {
+		print_variables();
 		print_getwin();
 	}
 	 op_code

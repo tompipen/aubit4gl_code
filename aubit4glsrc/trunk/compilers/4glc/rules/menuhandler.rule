@@ -4,9 +4,10 @@ menu_def :
                 strcpy(menuhandler,$<str>2);
 	sprintf(curr_func,"%s",$<str>2); 
 	print_gtk_menuhandler_1($<str>2);
+                push_blockcommand("MENUH");
 }
         define_section {
-                push_blockcommand("MENUH");
+		print_variables();
         }
         menu_handler_elements END_MENUHANDLER
                 {

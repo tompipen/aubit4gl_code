@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.94 2003-01-24 08:36:20 afalout Exp $
+# $Id: mod.c,v 1.95 2003-01-29 11:31:21 mikeaubury Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 */
 
 #include "a4gl_4glc_int.h"
-
+#include "variables.h"
 /*
 =====================================================================
                     Constants definitions
@@ -114,22 +114,14 @@ static int 	inc = 0;
 static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int 	upd_using_notpk_cnt = 0;
-static int 	const_cnt = 0;
+//static int 	const_cnt = 0;
 
 int 		rep_type = 0; /** The report type */
-int 		last_var_found = -1;
-int 		var_hdr_finished;
+
+//int 		last_var_found = -1;
+
+//int 		var_hdr_finished;
 int isin_command (char *cmd_type);
-
-
-struct s_constants 			/** Array of constants defined in some scope */
-{
-  char type;     /**< The constant type */
-  void *ptr;     /**< A pointer to the value of the constant */
-  char name[32]; /**< The constant name */
-  char scope;    /**< The scope  g : Global; m : Modular; f : Function*/
-}
-const_arr[MAXCONSTANTS];
 
 
 /**
@@ -191,21 +183,6 @@ int 		nullbindcnt = 0;
 int 		obindcnt = 0;
 int 		fbindcnt = 0;
 
-/** Array of variables found. The level gives us the scope variable */
-struct variables
-{
-  char var_name[65];     /**< The name of the variable */
-  char var_type[20];     /**< The data type of the variable */
-  char var_size[20];     /**< The size in bytes of the variables */
-  char var_arrsize[20];  /**< The number of elements if the variable is array */
-  int alev1;
-  int alev2;
-  int alev3;
-  int level;             /**< _The level. I think the record */
-  char *tabname;         /**< The name of the name if like */
-  char *pklist;
-  char globflg;
-} vars[MAXVARS];
 
 /**
  * Module current scope level for variable declaration.
@@ -236,7 +213,10 @@ extern int 	ccnt;  /* in lexer.c */
 
 
 /** Array index to the last variable filled in the variables array  */
-int 		varcnt = 0;
+
+
+
+
 int 		in_record = 0;
 struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
 
@@ -281,6 +261,8 @@ static char *print (char *z)
 }
 */
 
+
+#ifdef OLD_STUFF
 /**
  * Strip square brackets "[]" from a string.
  * 
@@ -306,6 +288,7 @@ strip_bracket (char *s)
   }
   strcpy (s, buff);
 }
+#endif
 
 /**
  * Strips square brackets "[]" from a string at leaves it just as it was.
@@ -337,60 +320,9 @@ with_strip_bracket (const char *buff)
 void
 a4gl_add_variable (char *name, char *type, char *n)
 {
-
+// MJA - NEWVARIABLE
   debug ("a4gl_add_variable");
-
-  //We core dump on Solaris here, if DEBUG is set:
-
-  debug ("a4gl_add_variable (name = %s type = %s n = %d varcnt = %d)\n",
-	 name, type, n, varcnt);
-
-  vars[varcnt].level = in_record;
-
-
-  if (name != 0)
-    strcpy (vars[varcnt].var_name, name);
-
-  else
-    strcpy (vars[varcnt].var_name, EMPTY);
-
-  if (type != 0)
-
-    strcpy (vars[varcnt].var_type, type);
-
-  else
-    strcpy (vars[varcnt].var_type, EMPTY);
-
-  if (n != 0)
-    {
-
-		/* debug (" global variables: n = %d \n", n); */
-		/* global variables: n = 2563 */
-		/* we core dump here on CygWin: */
-
-      debug ("assigning vars[varcnt].var_size ...\n");
-      strcpy (vars[varcnt].var_size, n);
-      debug ("/* global variables: vars[varcnt].var_size = %d */\n",
-	     vars[varcnt].var_size);
-
-    }
-  else
-    {
-      strcpy (vars[varcnt].var_size, EMPTY);
-    }
-
-  strcpy (vars[varcnt].var_arrsize, EMPTY);
-
-  debug ("added var\n");
-  vars[varcnt].tabname = EMPTY;
-  vars[varcnt].pklist = EMPTY;
-  if (varcnt >= MAXVARS)
-    {
-      exitwith ("Too many variables");
-      yyerror ("Too many variables");
-    }
-  varcnt++;
-
+  variable_action(-1,name,type,n,"a4gl_add_variable");
 }
 
 /**
@@ -399,7 +331,7 @@ a4gl_add_variable (char *name, char *type, char *n)
 void 
 clr_variable (void)
 {
-  varcnt = modlevel;
+	// Does nothing
 }
 
 /**
@@ -408,7 +340,7 @@ clr_variable (void)
 void 
 inmod (void)
 {
-  modlevel = varcnt;
+	// Does nothing
 }
 
 /**
@@ -455,6 +387,7 @@ int isin_command (char *cmd_type)
  *   - G
  * @param vname The record variable name
  */
+#ifdef OLD_STUFF
 static int
 print_record(int z, char ff,char *vname)
 {
@@ -462,6 +395,7 @@ print_record(int z, char ff,char *vname)
   /*  It should be declared here because the two function are tighly coupled */
   static void print_variable(int z, char ff);
 
+	// MJA - NEWVARIABLE
 
   debug("Print record %s\n",vname);
 
@@ -516,6 +450,7 @@ print_record(int z, char ff,char *vname)
   }
   return a;
 }
+#endif
 
 /**
  * Increment the variable inc by a value.
@@ -528,6 +463,9 @@ setinc (int a)
   inc += a;
 }
 
+
+
+#ifdef OLDSTUFF
 /**
  * Print the variable in variables array by is index.
  *
@@ -548,6 +486,7 @@ print_variable (int z, char ff)
   char tmpbuff[80];
 
   debug ("Printing variable %c %s", ff, vars[z].var_name);
+	// MJA - NEWVARIABLE
 
   if (strcmp (vars[z].var_name, "time") == 0)
     return;
@@ -637,7 +576,10 @@ print_variable (int z, char ff)
     }
 
 }
+#endif
 
+
+#ifdef OLDSTUFF
 /**
  * Dumps the global variables to a file named <target_file>.glb
  */
@@ -648,6 +590,7 @@ FILE *f;
 int a;
 char ii[64];
   
+	// MJA - NEWVARIABLE
 	strcpy (ii, outputfilename);
 	strcat (ii, ".glb");
 	f = mja_fopen (ii, "w");
@@ -691,6 +634,7 @@ char ii[64];
 
 	fclose (f);
 }
+#endif
 
 /**
  * Tests if a char pointer is null (char *)0
@@ -710,6 +654,8 @@ ignull (char *ptr)
     return empty;
 }
 
+
+#ifdef OLD_STUFF
 /**
  * Dumps the contents of all of the array variable to a file named dumpvars.out.
  *
@@ -725,6 +671,7 @@ dump_vars (void)
   FILE *f;
 
   int a;
+	// MJA - NEWVARIABLE
   if (acl_getenv ("DUMPVARS") == 0)
     return;
 
@@ -746,7 +693,10 @@ dump_vars (void)
   fclose (f);
 
 }
+#endif
 
+
+#ifdef OLDSTUFF
 /**
  * Print variable declaration for the scope wanted.
  *
@@ -758,61 +708,39 @@ print_variables (void)
 {
 
   int a;
+char scope;
 
-  /* dump_vars (); */
+	// MJA - NEWVARIABLE
 
   debug ("/**********************************************************/\n");
   debug ("/******************* Variable definitions *****************/\n");
   debug ("/**********************************************************/\n");
 
-  if (modlevel > 0)
+
+  scope=get_current_variable_scope();
+  
+
+
+  if (scope=='l')
     {
-      debug ("/* local variables */\n");
-      for (a = modlevel; a < varcnt; a++)
-	{
-
-	  if (vars[a].level == 0)
-	    print_variable (a, 'L');
-
-	}
-
+	    print_local_variables();
     }
 
-  if (modlevel == -1)
+  if (scope=='g')
     {
-      debug ("/* global variables %d */\n", varcnt);
 
-		for (a = 0; a < varcnt; a++)
-		{
-		  if (vars[a].level == 0)
-		    {
-		      if (vars[a].globflg == 'G')
-			print_variable (a, 'G');
-		      else
-			print_variable (a, 'n');
-		    }
-        }
-		dump_gvars ();
-		if (only_doing_globals ())
-			exit (0);
-		/*varcnt=0; */
+	print_global_variables();
+	dump_gvars (); if (only_doing_globals ()) exit (0);
     }
 
-  if (modlevel == 0)
+
+  if (scope=='m')
     {
-      debug ("/* module variables %d */\n", varcnt);
-
-      for (a = 0; a < varcnt; a++)
-	{
-	  if (vars[a].level == 0 && a >= var_hdr_finished)
-	    print_variable (a, 'M');
-	}
-
+	print_module_variables();
     }
-
-  debug ("/**********************************************************/\n");
 
 }
+#endif
 
 /**
  * The parser found a new variable name and inserts it in the variable array.
@@ -847,13 +775,30 @@ push_name (char *a, char *n)
 void 
 push_type (char *a, char *n, char *as)
 {
-  int z;
-
   debug ("push_type : %s %s %s", a, n, as);
+
+  variable_action(-1,a,n,as,"push_type");
+
+	// MJA - NEWVARIABLE
+
+
+/* DELETE THIS WHEN DONE .........FIXME FIXME FIXME...........
+      if (a != 0)
+	{
+	  if (strcmp (a, "_ASSOCIATE") == 0)
+	    {
+	      print_declare_associate_1 (vars[z].var_name, as, n);
+	      continue;
+	    }
+	}
+*/
+
+#ifdef OLDSTUFF
   for (z = varcnt - 1; z >= 0; z--)
     {
       if (strcmp (vars[z].var_type, EMPTY) != 0)
 	break;
+
       if (a != 0)
 	{
 	  if (strcmp (a, "_ASSOCIATE") == 0)
@@ -894,6 +839,7 @@ push_type (char *a, char *n, char *as)
 	}
 
     }
+#endif
 
 }
 
@@ -920,12 +866,12 @@ push_associate (char *a, char *b)
 }
 
 /**
- * Does nothing
+ * pop the associate array description...
  */
 void 
 pop_associate (char *a)
 {
-  /*a4gl_add_variable (0,"_ENDASSOC", 0); */
+  a4gl_add_variable (0,"_ENDASSOC", 0); 
 }
 
 /**
@@ -940,6 +886,14 @@ add_link_to (char *tab, char *pkey)
   char *pk;
   int z;
   debug ("Adding link to %s %s\n", tab, pkey);
+
+  variable_action(-1,tab,pkey,"","add_link_to");
+
+
+	// MJA - NEWVARIABLE
+
+#ifdef OLD_STUFF
+
   pt = strdup (tab);
   pk = strdup (pkey);
   for (z = varcnt; z >= 0; z--)
@@ -952,6 +906,7 @@ add_link_to (char *tab, char *pkey)
 	  break;
 	}
     }
+#endif
 }
 
 /**
@@ -1025,89 +980,6 @@ findex (char *str, char c)
   return 0;
 }
 
-/**
- * Identifies the data type from a string and convert it to numeric with
- * the goal of being more easyli used.
- *
- * @todo organize some defines to the data types.
- *
- * @param s The string where the data type will be scanned
- * @return The data type in numeric code
- */
-static int 
-find_type (char *s)
-{
-  char errbuff[80];
-
-  debug("Looking for type '%s'",s);
-  if (find_datatype_out(s)!=-1) {
-		debug("Found it...");
-		return find_datatype_out(s);
-  }
-
-  debug("Not found - keep looking");
-  debug ("find_type %s\n", s);
-  if (strcmp ("char", s) == 0)
-    return 0;
-
-  if (strcmp ("long", s) == 0)
-    return 2;
-
-  if (strcmp ("integer", s) == 0)
-    return 1;
-
-  if (strcmp ("int", s) == 0)
-    return 1;
-  if (strcmp ("short", s) == 0)
-    return 1;
-
-  if (strcmp ("double", s) == 0)
-    return 3;
-
-  if (strcmp ("float", s) == 0)
-    return 4;
-
-  if (strcmp ("fgldecimal", s) == 0)
-    return 5;
-
-  if (strcmp ("serial", s) == 0)
-    return 6;
-
-  if (strcmp ("fgldate", s) == 0)
-    return 7;
-
-  if (strcmp ("fglmoney", s) == 0)
-    return 8;
-
-  if (strcmp ("struct_dtime ", s) == 0)
-    return 10;
-
-  if (strcmp ("struct_dtime ", s) == 0)
-    return 10;
-
-  if (strcmp ("fglbyte", s) == 0)
-    return 11;
-
-  if (strcmp ("fgltext", s) == 0)
-    return 12;
-
-  if (strcmp ("varchar", s) == 0)
-    return 13;
-
-  if (strcmp ("struct_ival ", s) == 0)
-    return 14;
-
-  if (strcmp ("_RECORD", s) == 0)
-    return -2;
-
-  if (strcmp ("form", s) == 0)
-    return 9;
-
-  debug ("Invalid type : %s\n", s);
-  sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
-  yyerror (errbuff);
-  return 0;
-}
 
 /**
  * Scan a string to find what kind of variable is declared or used inside 
@@ -1131,14 +1003,20 @@ scan_variables (char *s, int mode)
 {
   int a;
   long z;
+  long z_new;
   char buff[256];
   char buff2[256];
   char *ptr;
   int dir;
   int flg;
   int lvl = 0;
-  last_var_found = -1;
+int dtype;
+int size;
+int vval;
 
+  //last_var_found = -1;
+
+	// MJA - NEWVARIABLE
   if (s[0] == '.' && s[1] == '\0')
     return -1;
 
@@ -1149,6 +1027,10 @@ scan_variables (char *s, int mode)
     return -2;			/* This is a variable thru variable.. */
 
   strcpy (buff, s);
+
+
+
+
   if (s[0] == ' ')
     {
       if (strncmp (buff, " ASSOCIATE_", 11) == 0)
@@ -1163,8 +1045,29 @@ scan_variables (char *s, int mode)
 	return -1;
     }
 
-  strip_bracket (buff);
-  /* debug ("Stripped\n"); */
+
+
+
+vval=find_variable(buff,&dtype,&size,0,0);
+
+if (vval==1) {
+	z_new= dtype+ (size << 16);
+	//printf("OK - %x (%d %d)\n",z_new,dtype,size);
+	return z_new;
+}
+
+if (vval==0) {
+	return -1;
+} 
+
+
+	//printf("Find_variable returns %d for %s\n",vval,buff);
+	return vval;
+
+
+
+
+#ifdef OLD_STUFF
 
   strcat (buff, ".");
   ptr = strtok (buff, ".");
@@ -1249,6 +1152,10 @@ scan_variables (char *s, int mode)
 	      /* debug ("Setting last_var_found to %d\n", a); */
 	      last_var_found = a;
 	      /* debug ("Find type returned %x", z); */
+		if (z_new!=z) {
+			printf("Discrepency between z's for %s\n",s);
+			exit(0);
+		}
 	      return z;
 	    }
 	  /* debug ("More levels..."); */
@@ -1261,6 +1168,7 @@ scan_variables (char *s, int mode)
   debug ("Variable not there : %s", s);
 
   return -1;
+#endif
 
 }
 
@@ -1287,6 +1195,9 @@ scan_variable (char *s)
   return a;
 }
 
+
+
+#ifdef OLD_STUFF
 /**
  *
  * @todo Document the possible return values
@@ -1309,6 +1220,7 @@ int flg;
 int dir;
 int lvl = 0;
   
+	// MJA - NEWVARIABLE
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -1398,6 +1310,7 @@ isrecvariable (char *s)
 {
   return isvartype (s, 2);
 }
+#endif
 
 /**
  * This function is not used.
@@ -1413,6 +1326,7 @@ scan_arr_variable (char *s)
   char buff[256];
   char *ptr;
   int lvl = 0;
+	// MJA - NEWVARIABLE
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -1451,36 +1365,6 @@ scan_arr_variable (char *s)
 */
 
 
-/**
- * Adds a new variable to the variable array.
- *
- * Fills the structure whit received parameters.
- * Increment the index that indicates the number of elements in the array
- *
- * @param name The variable name
- * @param type The variable data type
- * @param n The size of the variable (wich one ?)
- * @param as The size of the array if the variable is of that type
- * @param lvl Scope level (Global, Modular or Local)
- */
-static void
-set_variable (char *name, char *type, char *n, char *as, int lvl)
-{
-
-  vars[varcnt].level = lvl;
-  strcpy (vars[varcnt].var_name, name);
-  strcpy (vars[varcnt].var_type, type);
-  strcpy (vars[varcnt].var_size, n);
-  strcpy (vars[varcnt].var_arrsize, as);
-
-  if (varcnt >= MAXVARS)
-    {
-      exitwith ("Too many variables");
-      yyerror ("Too many variables");
-    }
-  varcnt++;
-
-}
 
 /**
  * 
@@ -1495,6 +1379,11 @@ add_constant (char t, char *ptr, char *name)
   int x;
   char buff[256];
   x = 0;
+ buff[1]=0;
+ buff[0]=t;
+  variable_action(-1,name,ptr,buff,"add_constant");
+
+#ifdef OLD_STUFF
   if (x != 0)
     {
       adderr ("'%s' is a reserved word and cannot be used as a constant\n",
@@ -1518,7 +1407,7 @@ add_constant (char t, char *ptr, char *name)
       yyerror ("Duplicate Constant");
     }
 
-  if (isin_command ("FUNC") || isin_command ("REPORT")
+  if (isin_command ("FUNC") || isin_command ("REPORT") || isin_command("MAIN")
       || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
     {
       scope = 'f';
@@ -1533,6 +1422,7 @@ add_constant (char t, char *ptr, char *name)
   const_arr[const_cnt].scope = scope;
   const_arr[const_cnt].ptr = strdup (ptr);
   const_cnt++;
+#endif
 }
 
 /**
@@ -1541,43 +1431,64 @@ add_constant (char t, char *ptr, char *name)
 void 
 set_4gl_vars(void)
 {
+set_current_variable_scope('G');
+variable_action(-1,"int_flag","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"quit_flag","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"status","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
 
-  set_variable ("int_flag", 	"long", 	"0", 		"----", 0);
-  set_variable ("quit_flag", 	"long", 	"0", 		"----", 0);
-  set_variable ("status", 		"long", 	"----", 	"----", 0);
-  set_variable ("sqlca", 		"_RECORD", 	"----", 	"----", 0);
-  set_variable ("sqlcode", 		"long", 	"----", 	"----", 1);
-  set_variable ("sqlerrm", 		"char", 	"71", 		"----", 1);
-  set_variable ("sqlerrp", 		"char", 	"8", 		"----", 1);
-  set_variable ("sqlerrd", 		"long", 	"----", 	"6", 1);
-  set_variable ("sqlawarn", 	"char", 	"8", 		"----", 1);
-  set_variable ("sqlstate", 	"char", 	"9", 		"----", 1);
-  set_variable ("----", 		"_ENDREC", 	"----", 	"----", 0);
+variable_action(-1,"time","","","a4gl_add_variable");
+variable_action(-1,"char","8","","push_type");
 
-  set_variable ("today", 		"fgldate", 	"----", 	"----", 0);
-  set_variable ("user", 		"char", 	"8", 		"----", 0);
-  set_variable ("notfound", 	"long", 	"----", 	"----", 0);
-  set_variable ("pageno", 		"long", 	"----", 	"----", 0);
-  set_variable ("lineno", 		"long", 	"----", 	"----", 0);
-  set_variable ("usrtime", 		"long", 	"----", 	"----", 0);
+variable_action(-1,"sqlca","","","a4gl_add_variable");
+variable_action(-1,"_RECORD","","","push_type");
+variable_action(-1,"sqlcode","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"sqlerrm","","","a4gl_add_variable");
+variable_action(-1,"char","72","","push_type");
+variable_action(-1,"sqlerrp","","","a4gl_add_variable");
+variable_action(-1,"char","8","","push_type");
+variable_action(-1,"sqlerrd","","","a4gl_add_variable");
+variable_action(-1,"","","6","push_type");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"sqlawarn","","","a4gl_add_variable");
+variable_action(-1,"char","8","","push_type");
+variable_action(-1,"sqlstate","","","a4gl_add_variable");
+variable_action(-1,"char","9","","push_type");
+variable_action(-1,"","_ENDREC","","a4gl_add_variable");
+variable_action(-1,"notfound","100","i","add_constant");
+variable_action(-1,"false","0","i","add_constant");
+variable_action(-1,"true","1","i","add_constant");
+variable_action(-1,"today","","","a4gl_add_variable");
+variable_action(-1,"fgldate","","","push_type");
+variable_action(-1,"usr","","","a4gl_add_variable");
+variable_action(-1,"char","8","","push_type");
+variable_action(-1,"pageno","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"lineno","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"usrtime","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"curr_hwnd","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"curr_form","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"err_file_name","","","a4gl_add_variable");
+variable_action(-1,"char","32","","push_type");
+variable_action(-1,"err_file_no","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"curr_file_name","","","a4gl_add_variable");
+variable_action(-1,"char","32","","push_type");
+variable_action(-1,"curr_line_no","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"err_status","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
+variable_action(-1,"aiplib_status","","","a4gl_add_variable");
+variable_action(-1,"long","","","push_type");
 
-/* These are for my personal use! MJA */
-  set_variable ("curr_hwnd", 	"long", 	"----", 	"----", 0);
-  set_variable ("curr_form", 	"long", 	"----", 	"----", 0);
-
-  set_variable ("err_file_name","char", 	"32", 		"----", 0);
-  set_variable ("err_line_no", 	"long", 	"----", 	"----", 0);
-
-  set_variable ("curr_file_name", "char", 	"32", 		"----", 0);
-  set_variable ("curr_line_no", "long", 	"----", 	"----", 0);
-
-  set_variable ("err_status", 	"long", 	"----", 	"----", 0);
-  set_variable ("aiplib_status", "long", 	"----", 	"----", 0);
-
-  set_variable ("time", 		"char", 	"8", 		"----", 0);
-  
-  add_constant ('i', "100", strdup ("notfound"));
-  var_hdr_finished = varcnt;
+set_current_variable_scope('m');
 }
 
 /**
@@ -1614,7 +1525,7 @@ debug("open_db %s", s);
  * @param s A string with the numeric 4gl data type (@see find_type()) 
  * @return The string (static) with the C declaration
  */
-static char *
+char *
 rettype (char *s)
 {
   static char rs[20] = "long";
@@ -2128,6 +2039,7 @@ static yyerrorf (char *fmt, ...)
 }
 */
 
+
 /**
  * Checks if a column is part of primary key
  *
@@ -2162,6 +2074,7 @@ is_pk (char *s)
 }
 
 
+#ifdef OLDSTUFF
 /**
  * @param s
  * @param bindtype
@@ -2188,6 +2101,7 @@ push_bind_rec (char *s, char bindtype)
   /* BUT add_bind is already declared in a4gl+4glc_4glc.h !!! */
 
 
+	// MJA - NEWVARIABLE
   debug ("In push_bind_rec : %s\n", s);
 
   strcpy (endoflist, "");
@@ -2328,6 +2242,10 @@ push_bind_rec (char *s, char bindtype)
     }
   return -1;
 }
+#endif
+
+
+
 
 /**
  * Add a new bind to the specific aray (acording to the type).
@@ -2924,6 +2842,8 @@ matoi (char *s)
   return a;
 }
 
+
+#ifdef OLDSTUFF
 /**
  *
  *
@@ -2947,6 +2867,7 @@ get_variable_dets (char *s, int *type, int *arrsize,
   strcat (buff, ".");
   ptr = strtok (buff, ".");
 
+	// MJA - NEWVARIABLE
   for (a = 0; a < varcnt; a++)
     {
       if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
@@ -2978,7 +2899,7 @@ get_variable_dets (char *s, int *type, int *arrsize,
     }
   return -1;
 }
-
+#endif
 
 
 /**
@@ -3256,6 +3177,8 @@ convstrsql (char *s)
   return buff;
 }
 
+
+#ifdef OLDSTUFF
 /**
  * Compile the 4gl source with -G option to generate the .glb file
  *
@@ -3263,7 +3186,7 @@ convstrsql (char *s)
  *
  * @param s The 4gl file name (without extension).
  */
-static void
+void
 generate_globals_for (char *s)
 {
 char buff[1024];
@@ -3300,9 +3223,10 @@ char nocfile[256];
   setenv ("NOCFILE", nocfile, 1);
 
 }
+#endif
 
 
-
+#ifdef OLDSTUFF
 /**
  * Read the gobals file (.glb).
  * FIXME: there is a function called read_globals() in mod.c - ONE OF THEM IS OBSOLETE
@@ -3318,6 +3242,7 @@ char dbname[64];
 char tname[128];
 char pklist[1024];
 
+	// MJA - NEWVARIABLE
   	strcpy (ii, s);
 	strcat (ii, ".glb");
    	#ifdef DEBUG
@@ -3438,6 +3363,7 @@ char pklist[1024];
 
 	fclose (f);
 }
+#endif
 
 /**
  * Upshift a string.
@@ -3696,6 +3622,8 @@ set_whenever (int c, char *p)
   print_clr_status ();
 }
 
+
+#ifdef OLD_STUFF
 /**
  * Clear all constants.
  */
@@ -3718,7 +3646,10 @@ clr_function_constants (void)
   const_cnt = lcnt + 1;
 
 }
+#endif
 
+
+#ifdef OLD_STUFF
 /**
  *
  *
@@ -3753,6 +3684,7 @@ check_for_constant (char *name, char *buff)
     }
   return 0;
 }
+#endif
 
 
 /**
@@ -3964,6 +3896,8 @@ trans_quote (char *s)
 }
 */
 
+
+#ifdef OLD_STUFF
 /**
  *
  * @param tabname
@@ -3973,6 +3907,7 @@ trans_quote (char *s)
 int
 last_var_is_linked (char *tabname, char *pklist)
 {
+	// MJA - NEWVARIABLE
   strcpy (pklist, "");
   strcpy (tabname, "");
   if (last_var_found >= 0)
@@ -3989,6 +3924,7 @@ last_var_is_linked (char *tabname, char *pklist)
   else
     return 1;
 }
+#endif
 
 /**
  * Split a string into pieces, 
@@ -4116,6 +4052,11 @@ ispdf (void)
     return "pdf_";
 }
 
+
+
+
+
+#ifdef OLDSTUFF
 /**
  *
  *
@@ -4136,6 +4077,7 @@ print_push_rec (char *s, char *b)
   char endoflist[256];
   char save[256];
 
+	// MJA - NEWVARIABLE
   debug ("print_push_rec");
   strcpy (endoflist, "");
 
@@ -4216,6 +4158,8 @@ print_push_rec (char *s, char *b)
     }
   return -1;
 }
+#endif
+
 
 /**
  *
@@ -4251,10 +4195,12 @@ expand_bind (struct binding_comp * bind, int btype, int cnt)
   for (a = 0; a < cnt; a++)
     {
       strcpy (buff, save_bind[a].varname);
+
       if (scan_variable (buff) == -2)
 	{
 	  strcat (buff, ".*");
 	}
+
 
       add_bind (btype, buff);
     }
@@ -4270,6 +4216,8 @@ expand_obind (void)
   expand_bind (obind, 'o', obindcnt);
 }
 
+
+#ifdef OLD_STUFF
 /**
  * Get a variable name at a specified position of  the variable array.
  *
@@ -4279,8 +4227,10 @@ expand_obind (void)
 char *
 get_var_name (int z)
 {
+	// MJA - NEWVARIABLE
   return vars[z].var_name;
 }
+#endif
 
 /**
  *
@@ -4374,7 +4324,7 @@ new_expr (char *value)
   ptr->next = 0;
   ptr->expr = strdup (value);
   debug ("newexpr : %s -> %p\n", value, ptr);
-  dump_expr(ptr);
+  //dump_expr(ptr);
   return ptr;
 }
 
@@ -4402,7 +4352,7 @@ append_expr (struct expr_str *orig_ptr, char *value)
     }
   orig_ptr->next = ptr;
   debug ("Appended expr");
-  dump_expr(start);
+  //dump_expr(start);
   return start;
 }
 
@@ -4424,7 +4374,7 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
       orig_ptr = orig_ptr->next;
   }
   orig_ptr->next = second_ptr;
-  dump_expr(start);
+  //dump_expr(start);
   return start;
 }
 
@@ -4464,7 +4414,7 @@ tr_glob_fname (char *s)
 
 		#ifdef MIKES_WORKAROUND_FOR_FILES_COPY_FROM_WINDOWS
 			s[a] = tolower (s[a]);
-        #endif
+        	#endif
     }
 }
 

@@ -6,8 +6,8 @@
 
 
 
-define_section	:	 {strcpy($<str>$,"");if (modlevel>=0) print_variables();}
-	|	define_multiple {strcpy($<str>$,"");if (modlevel>=0) print_variables();lastlineno=yylineno;};
+define_section	:	 {strcpy($<str>$,"");}
+	|	define_multiple {strcpy($<str>$,"");lastlineno=yylineno;};
 
 	
 define_multiple	:
@@ -15,10 +15,12 @@ define_multiple	:
 ;
 
 define_set :
-	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");}
+	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");} 
 	| dim_section
 	| whenever_cmd
 ;
+
+
 
 def_part : def_part2 |  def_part COMMA def_part2
 ;
@@ -138,7 +140,11 @@ link_to_pk : define_ident
 
 dtype_ident : dtype2 ;
 
-dtype2: {start_state("dtype",1);} dtype {start_state("dtype",0);}
+op_as_static: 
+	| AS_STATIC
+;
+
+dtype2: {start_state("dtype",1);} dtype {start_state("dtype",0);} op_as_static
 ;
 
 dtype	: 

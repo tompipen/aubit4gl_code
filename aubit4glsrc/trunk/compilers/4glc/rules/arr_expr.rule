@@ -8,7 +8,7 @@
 arr_expr :
 OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 | arr_expr arr_next_math arr_expr { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
-| INT_VALUE {sprintf($<str>$,"%s",$<str>1);}
+| INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
 | arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
 | variable {
   int a;

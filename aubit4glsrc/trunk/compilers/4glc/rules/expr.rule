@@ -199,122 +199,86 @@ CHAR_VALUE  {
 	sprintf($<str>$,get_push_literal('L',$<str>1));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
-}
-| variable THRU variable 
-{
-char r1[256];
-char r2[256];
-char buff[256];
-/* char kp[40000]; */
-char *ptr1;
-char *ptr2;
-void *p1;
-int v1;
-int v2 = 0;
-int a;
-
-		debug("Got a thru...");
-        strcpy(r1,$<str>1);
-		debug("r1=%s",r1);
-        ptr1=strrchr(r1,'.');
-	if (ptr1==0) {
-		yyerror("Must have a . in a thru");YYERROR;
-	}
-        *ptr1=0;
-        ptr1++;
- 
-        strcpy(r2,$<str>3);
-	debug("r2=%s",r2);
-
-        ptr2=strrchr(r2,'.');
-	if (ptr2==0) {
-		yyerror("Must have a . in a thru");YYERROR;
-	}
-        *ptr2=0;
- 
-	debug("Checking portions %s %s\n",r1,r2);
-
-        if (strcmp(r1,r2)!=0) {
-                yyerror("Records for thru look different...");YYERROR;
-        }
- 
-	debug("Checking variables");
-        v1=scan_variable($<str>1);
-        if (v2==-1) {
-		debug("Variable not found..");
-                yyerror("Variable not found (first entry in thru)");YYERROR;
-        }
-        v1=last_var_found;
-        debug("v1=%d",v1);
- 
-        v2=scan_variable($<str>3);
-        if (v2==-1) {
-		debug("Variable not found..");
-                yyerror("Variable not found (second entry in thru)");
-        }
-        v2=last_var_found;
-        debug("v2=%d",v2);
- 
-	p1=new_expr("");
-	$<ptr>$=p1;
-        for (a=v1;a<=v2;a++) {
-	char bbz[256];
-                sprintf(buff,"%s.%s",r1,get_var_name(a));
-		sprintf(bbz,"push_variable(%s,0x%x);",buff,(int)scan_variable(buff));
-		append_expr(p1,bbz);
-        }
-}
-| variable  
-{
-   int a;
-   int incvcnt;
-   int flg=0;
-   a=scan_variable($<str>1);
-   if (a>=0) {
-          if (aubit_strcasecmp($<str>1,"today")==0) {
-               flg=1;
-               sprintf($<str>$,"push_today();");
-          }
-
-          if (aubit_strcasecmp($<str>1,"time")==0) {
-               flg=1;
-               sprintf($<str>$,"push_time();");
-          }
-
-          if (aubit_strcasecmp($<str>1,"pageno")==0) {
-               flg=1;
-               sprintf($<str>$,"push_variable(&rep.page_no,2);");
-		  }
-          if (aubit_strcasecmp($<str>1,"lineno")==0) {
-               flg=1;
-               sprintf($<str>$,"push_variable(&rep.line_no,2);");
-          }
-         if (flg==0) {
-         sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1));
-         }
-   inc_counter();
-   }
-
-	if (a==-1) 
-	{ 
-		sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter();
-	}
-
-	if (a==-2) 
-	{
-	        char b[40000];
-	        lex_printcomment("/* print_push_rec... %s */",$<str>1);
-	        incvcnt=print_push_rec($<str>1,b);
-	        inc_counter_by(incvcnt);
-			debug("Copy");
-	        strcpy($<str>$,b);
-	}
-
-
-	$<ptr>$=new_expr($<str>$);
-}
-
+} | variable_entry
 ;
+
+
+variable_entry_2 :
+	variable
+	| variable THRU variable {
+		sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
+	}
+;
+
+variable_entry :
+	variable_entry_2 {
+   		int a;
+   		int incvcnt;
+   		int flg=0;
+		void *p1;
+
+		if (strchr($<str>1,'\n')==0) {
+			//printf("Finding %s",$<str>1);
+   			a=scan_variable($<str>1);
+			//printf(" a=%d\n",a);
+		} else {
+			printf("Its a thru - setting a to -2\n");
+			a=-2;
+		}
+
+   		if (a>=0) {
+          		if (aubit_strcasecmp($<str>1,"today")==0) {
+               		flg=1;
+               		sprintf($<str>$,"push_today();");
+          		}
+		
+          		if (aubit_strcasecmp($<str>1,"time")==0) {
+               		flg=1;
+               		sprintf($<str>$,"push_time();");
+          		}
+		
+          		if (aubit_strcasecmp($<str>1,"pageno")==0) {
+               		flg=1;
+               		sprintf($<str>$,"push_variable(&rep.page_no,2);");
+                  		}
+          		if (aubit_strcasecmp($<str>1,"lineno")==0) {
+               		flg=1;
+               		sprintf($<str>$,"push_variable(&rep.line_no,2);");
+          		}
+
+         		if (flg==0) {
+         				sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1));
+         		}
+      			p1=new_expr($<str>$);
+       			$<ptr>$=p1;
+			inc_counter();
+   		}
+
+
+
+        	if (a==-1)
+        	{
+                	sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter();
+      			p1=new_expr($<str>$);
+       			$<ptr>$=p1;
+			inc_counter();
+        	}
+
+
+        	if (a==-2)
+        	{
+			p1=new_expr("");
+	        	incvcnt=print_push_rec($<str>1,&p1);
+	        	inc_counter_by(incvcnt);
+			$<ptr>$=p1;
+        	}
+
+
+
+
+	}
+;
+
 
 
 report_only_expr:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.22 2003-01-28 23:44:54 saferreira Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.23 2003-01-29 11:31:58 mikeaubury Exp $
 */
 
 /**
@@ -62,6 +62,7 @@
 		void *ptr; /**< A pointer to the variable bounded */
 		int dtype; /**< The data type of the variable bounded */
 		long size; /**< The size in bytes of the variable bounded */
+
 		long start_char_subscript;
 		long end_char_subscript;
 	};
@@ -69,7 +70,7 @@
 
 	/** SQLCA structure definition */
 	typedef struct {
-		int sqlcode;
+		long sqlcode;
 		char sqlerrm[73];
 		char sqlerrp[9];
 		int sqlerrd[6];
@@ -360,18 +361,18 @@ be used in applications which link to the library).
 	        /* _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
     	     that also define sqlca: */
 			#define _SQLCA_DEFINED_
-			extern sqlca_struct sqlca; 	/** Sqlca variable */
+			//extern sqlca_struct sqlca; 	/** Sqlca variable */
 	    #endif
 
         extern long status; 			/** 4gl global status variable */
         extern long int_flag;			/** 4gl interrupt ocurred global flag */
-        extern int quit_flag; 			/** 4gl quit ocurred global flag */
+        extern long quit_flag; 			/** 4gl quit ocurred global flag */
     #else
 		/* only in libaubit4gl */
         sqlca_struct sqlca; 			/** Sqlca variable */
 		long status; 					/** 4gl global status variable */
         long int_flag; 					/** 4gl interrupt ocurred global flag */
-        int quit_flag;					/** 4gl quit ocurred global flag */
+        long quit_flag;					/** 4gl quit ocurred global flag */
 	#endif
 
 #endif /* #ifndef FGLDEF_INCL */

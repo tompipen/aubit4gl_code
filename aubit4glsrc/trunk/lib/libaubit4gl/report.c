@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.10 2002-12-31 02:41:04 psterry Exp $
+# $Id: report.c,v 1.11 2003-01-29 11:31:58 mikeaubury Exp $
 #
 */
 
@@ -93,6 +93,7 @@ void 				rep_file_print		(struct rep_structure *rep,
 										char *fname, int opt_semi);
 
 char *              decode_datatype		(int dtype,int dim);
+extern sqlca_struct sqlca;
 
 
 /*
