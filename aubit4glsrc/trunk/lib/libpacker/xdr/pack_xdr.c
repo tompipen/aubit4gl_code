@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.4 2002-10-07 11:06:31 afalout Exp $
+# $Id: pack_xdr.c,v 1.5 2003-01-21 11:33:20 mikeaubury Exp $
 #*/
 
 /**
@@ -94,7 +94,7 @@ can_pack_all(char* name)
    We don't need to worry about these two functions
    as we're doing the whole thing in one go using xdr
 */
-int open_packer(char *fname,char dir)  { return 0; }
+int open_packer(char *fname,char dir)  { return 1; }
 void close_packer(char dir) { return; }
 
 
@@ -105,6 +105,7 @@ void close_packer(char dir) { return; }
 int
 pack_all(char *name,void *s,char *filename)
 {
+	debug("Pack all ...");
 	return process_xdr('O',name,s,filename);
 }
 
@@ -147,7 +148,11 @@ XDR xdrp;
 	  fxx = (FILE *) open_file_dbpath (filename);
 
 
-  if (fxx==0) return 0;
+  if (fxx==0) {
+		debug("Can't open file %s\n",filename);
+		
+		return 0;
+	}
 
 
 	if (dir=='O')

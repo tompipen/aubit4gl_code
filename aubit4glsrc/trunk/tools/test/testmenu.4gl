@@ -4,7 +4,7 @@
 #
 main
 	
-	show menu mymenu using my_menuhandler from "testmenu"
+	show menu mymenu using my_menuhandler from "testmenu.mnu"
 
 # if you don't have this - your program will exit here!
 	call run_gui()
