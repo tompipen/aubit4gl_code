@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.39 2002-03-16 03:19:18 afalout Exp $
+# $Id: Makefile.in,v 1.40 2002-03-16 11:59:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -110,7 +110,7 @@ ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 #RPMBUILDROOT=/root/redhat
 #redhat 7.2
 RPMBUILDROOT=/usr/src/redhat
-
+                                                       
 #SOURCE 		= $(AUBITDIR)
 SOURCE 		=.
 #installation files
@@ -143,7 +143,17 @@ endif
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 #$(SOURCE)/lib/libaclsharedgui${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} \
-			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_TUI${SO_EXT}
+			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_CONSOLE${SO_EXT} \
+			$(SOURCE)/lib/libRPC_NORPC${SO_EXT}
+
+ifneq "@HAVE_RPCLIB@" "0"
+	TOLIBCUI	+=$(SOURCE)/lib/libRPC_SUNRPC${SO_EXT}
+endif
+
+ifneq "@HAVE_CURSES@" "0"
+	TOLIBCUI	+=$(SOURCE)/lib/libUI_TUI${SO_EXT}
+endif
+
 
 ifneq "${STATICLIB_INST}" "no"
 	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libUI_GTK_x.a

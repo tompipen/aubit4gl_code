@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.41 2002-03-16 03:19:18 afalout Exp $
+# $Id: configure.in,v 1.42 2002-03-16 11:59:57 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -703,9 +703,9 @@ WARNING: You specified Informix base install directory that is different
 ])
 
 
-if test "$xxxcygwin" = "1"; then
+if test "$cygwin" = "1"; then
 
-	AC_MSG_WARN(esql/c support on Windows temporaraly disabled.)
+	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
 
 	IFMX_ESQLC=no
 	IFX_ESQL_FLAGS=
@@ -1550,7 +1550,7 @@ AC_ARG_WITH(pdf,
 
 
 ## ==================================================================
-##                  Check for RPC lib support
+##                  Check for Sun RPC support
 ## ==================================================================
 
 #Note: on Linux, rpclib functions are in libc. On other systems, for
@@ -1631,6 +1631,7 @@ AC_ARG_WITH(rpc,
 	            RPCLIB_NAME=-lrpcsvc
             else
 				echo "Found -lrpcsvc, but no RPC functions inside."
+				#This checks are just to make debugging easier if real one fails, and should be removed in future:
 				AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 				AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 			fi
@@ -1644,6 +1645,7 @@ AC_ARG_WITH(rpc,
 		        RPCLIB_NAME=-lrpclib
 	        else
                 echo "Found -lrpclib, but no RPC functions inside."
+				#This checks are just to make debugging easier if real one fails, and should be removed in future:
 				AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 				AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 
@@ -1671,7 +1673,10 @@ AC_ARG_WITH(rpc,
 						;;
 
 		            *)
-            			AC_MSG_ERROR( "rpcgen" not found. Please install Sun RPC or add precompiled RPC files for your platform. Stop.)
+				        AC_MSG_WARN("rpcgen" not found. Will use pre-compiled RPC files from CygWin port. ---NOT SURE THIS WILL WORK---)
+						#AC_MSG_ERROR( "rpcgen" not found. Please install Sun RPC or ask for precompiled RPC files for your platform to be added to Aubit disrtibution. Stop.)
+						USE_RPCGEN=0
+						RPCLIB_INCLUDE="-I$aubitdir/tools/no_rpc/cygwin"
 		                ;;
 
 	            esac
@@ -1685,33 +1690,38 @@ AC_ARG_WITH(rpc,
 			AC_DEFINE(HAVE_RPCGEN,1,[ ])
 		fi
 
-		#if test $ac_cv_lib_rpclib_main = yes; then
         if test "$RPCLIB_NAME" != ""; then
 		    RPCLIB_INCLUDE="$TEST_I_FLAGS"
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
-            HAVE_RPCLIB=0
+			HAVE_RPCLIB=1
 		else
-			AC_DEFINE(HAVE_RPCLIB,0,[ ])
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
-                #make libRPC_NORPC
-                HAVE_RPCLIB=0
-				#AC_MSG_ERROR( "-lrpclib" or "-lrpcsvc" not found. Please install RPC library. Stop.)
-            fi
+				AC_DEFINE(HAVE_RPCLIB,0,[ ])
+				HAVE_RPCLIB=0
+				#FIXME: put warning here, about reduced functionality
+            else
+				AC_DEFINE(HAVE_RPCLIB,1,[ ])
+				HAVE_RPCLIB=1
+			fi
 		fi
 	else
 		AC_MSG_RESULT(disbled)
-		#AC_MSG_ERROR(RPC support is needed to build Aubit compiler from source code - you cannot disable it)
+		AC_DEFINE(HAVE_RPCLIB,0,[ ])
+		HAVE_RPCLIB=0
+		USE_RPCGEN=0
+		AC_DEFINE(HAVE_RPCGEN,0,[ ])
+
 	fi
 ],[
+	#This shoult never happen:
 	AC_MSG_RESULT(--with-rpc not specified)
 ])
 
 
-#I't probably ok to link it even if we don' tneed it, but if RPC functions
+#I't probably ok to link it even if we don' need it, but if RPC functions
 #are already in standard libraryes (Linux), we really don't need to:
 if test "$RPC_FUNC_INTERNAL" = "1"; then
-	#FIXME: we have "-l" added in aubitrc !!!
 	RPCLIB_NAME=
 fi
 

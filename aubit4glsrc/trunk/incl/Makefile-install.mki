@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.12 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile-install.mki,v 1.13 2002-03-16 12:00:03 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -88,6 +88,10 @@ endif
 ifeq "${PDFBUILD}" "yes"
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
 endif
+ifneq "${HAVE_RPCLIB}" "0"
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
+endif
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} ${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT}
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_NOPDF${SO_EXT}
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT}
 
@@ -98,11 +102,15 @@ endif
 deinstall.libs.links:
 #remove links to libraries:
 	${RM} ${LIB_INSTALL_LINK}/libaclsharedgui${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT}
+#FIXME: make this part of libUI_GTK:
 	${RM} ${LIB_INSTALL_LINK}/libgtk4gl${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libgtk4gl_x${SO_EXT}
+#FIXME: make this dinamically loadable from libaclshared, and stop installing here:
 	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
-	${RM} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
 
 #export libraries on Windows:
 #we keep this only in AUBITDIR, since linking is allways done by 4glpc
@@ -145,7 +153,10 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
         $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl.a \
 		$(INSTALL_DIR)/lib/libSQL_odbc32${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK.a \
 		$(INSTALL_DIR)/lib/libUI_GTK${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x.a \
-		$(INSTALL_DIR)/lib/libUI_GTK_x${SO_EXT} $(INSTALL_DIR)/lib/libUI_TUI${SO_EXT}
+		$(INSTALL_DIR)/lib/libUI_GTK_x${SO_EXT} $(INSTALL_DIR)/lib/libUI_TUI${SO_EXT} \
+		$(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} \
+		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT}
+
 
 #windows dll export libraries:
 
@@ -153,7 +164,10 @@ ifneq "${COMSPEC}" ""
 	${RM} $(INSTALL_DIR)/lib/libaclshared${SOEXP_EXT} $(INSTALL_DIR)/lib/libPDF_NOPDF${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libSQL_nosql${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libaclsharedgui${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl_x${SOEXP_EXT} \
-    $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT}
+    $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK${SOEXP_EXT} \
+	$(INSTALL_DIR)/lib/libUI_TUI${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x${SOEXP_EXT} \
+	$(INSTALL_DIR)/lib/libRPC_NORPC${SOEXP_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SOEXP_EXT} \
+	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT}
 endif
 
 

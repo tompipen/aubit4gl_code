@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.22 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile-common.in,v 1.23 2002-03-16 12:00:03 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -209,6 +209,7 @@ MAKINGAUBIT			=1
 #for -fPIC
 PIC					=@PIC@
 USE_RPCGEN			=@USE_RPCGEN@
+HAVE_RPCLIB			=@HAVE_RPCLIB@
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}

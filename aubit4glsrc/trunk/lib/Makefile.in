@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-03-16 12:00:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -103,13 +103,16 @@ LDFLAGS				=-Map mapfile
 ifdef COMSPEC
 #	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= ${RPCLIB_NAME} -lc
-	ALL				+=dllaclshared
+	ALL				+=dllaclshared dlllibRPC_NORPC
 	ALL_GUI			+=dllaclsharedgui
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 			ALL		+=libaclall-noodbc.a
 	    	ALL_GUI	+=libaclallgui-noodbc.a
 	    endif
+    endif
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=dlllibRPC_SUNRPC
     endif
 else
 	#LOCALCFLAGS		+= -g
@@ -128,14 +131,17 @@ else
 #	ifeq "$(PDFBUID)" "yes"
 #		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
 #    endif
-    ALL				+=libaclshared${SO_EXT}
-    ALL_GUI			+=libaclsharedgui${SO_EXT}
+    ALL				+=libaclshared${SO_EXT} libRPC_NORPC${SO_EXT}
+#    ALL_GUI			+=libaclsharedgui${SO_EXT}
 
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 		    ALL		+=libaclshared-noodbc${SO_EXT} libaclall-noodbc.a
 	    	ALL_GUI	+=libaclsharedgui-noodbc${SO_EXT} libaclallgui-noodbc.a
 	    endif
+    endif
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=libRPC_SUNRPC${SO_EXT}
     endif
 endif
 
@@ -324,6 +330,11 @@ libgtk4gl.dll:
 #obsolete-defaclshared: $(OBJS) ${GUI_TUI}
 #obsolete-	${MAKE} libaclshared.def DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
 
+dlllibRPC_SUNRPC: ${CMODS_RPC}
+	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+
+dlllibRPC_NORPC: ${CMODS_NORPC}
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 
 ## ==================================================================
@@ -332,6 +343,13 @@ libgtk4gl.dll:
 
 libPDF_PDF.so:
 	${MAKE} -C libpdf $(MKNAME) $@
+
+
+libRPC_SUNRPC.so: ${CMODS_RPC}
+	ld ${SO_LDFLAGS} $^ -o $@
+
+libRPC_NORPC.so: ${CMODS_NORPC}
+	ld ${SO_LDFLAGS} $^ -o $@
 
 libPDF_NOPDF.so:
 	${MAKE} -C libpdf $(MKNAME) $@

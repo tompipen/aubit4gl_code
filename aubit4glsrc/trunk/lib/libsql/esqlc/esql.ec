@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.7 2002-03-14 23:48:41 saferreira Exp $
+# $Id: esql.ec,v 1.8 2002-03-16 12:00:04 afalout Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  * Implementation of the direct connection of aubit 4gl to Informix database
  * using esql/c.
  *
- * since on Windows only ESQL/C supported compiler is Visual C++,
+ * since on Windows only ESQL/C supported compiler is Visual C++, or Bordland
  * we must be carefull not to include anything that will conflict with
  * MSVC here, since resulting .c need to be compiled and linked by MSVC
  *
@@ -43,7 +43,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.7 2002-03-14 23:48:41 saferreira Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.8 2002-03-16 12:00:04 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -89,7 +89,7 @@ EXEC SQL include sqlca.h;
     #define _NO_DBFORM_H_
 #endif
 
-/* stack.h will eventually include stdlib.h, which uses getenv(), so 
+/* stack.h will eventually include stdlib.h, which uses getenv(), so
  * we need to set GETENV_OK and only then include debug.h
  */
 #include "libincl/stack.h"

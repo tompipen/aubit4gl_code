@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.22 2002-03-14 22:29:43 saferreira Exp $
+# $Id: sql.c,v 1.23 2002-03-16 12:00:04 afalout Exp $
 #
 */
 
@@ -132,7 +132,8 @@ extern SQLRETURN SQL_API SQLBindParameter (
 	#ifdef IFXODBC
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
-    /** @todo : In debian sqlucode is in /usr/include */
+    // Sergio: this would probably not be Informix file you want, allways l;ook under $INFORMIXDIR: (Andrej)
+	/** @todo : In debian sqlucode is in /usr/include */
 		#include <incl/cli/sqlucode.h>
 	#endif
 
