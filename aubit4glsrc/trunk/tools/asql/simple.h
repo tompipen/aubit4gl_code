@@ -47,4 +47,5 @@ union  {
 
 
 
-
+int asql_unload_data(struct element *e);
+int asql_load_data(struct element *e);

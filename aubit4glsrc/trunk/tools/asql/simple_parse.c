@@ -28,7 +28,7 @@ void clr_stmt(void) {
 
 
 void add_stmt(struct element *e) {
-printf("%c %d '%s' fname='%s' delim='%s'\n",e->type,e->lineno,e->stmt,e->fname,e->delim);
+//printf("%c %d '%s' fname='%s' delim='%s'\n",e->type,e->lineno,e->stmt,e->fname,e->delim);
 if (e->type!='W') {
 	list=realloc(list,(list_cnt+1)*sizeof(struct element));
 	memcpy(&list[list_cnt],e,sizeof(struct element));

@@ -38,6 +38,7 @@ int display_mode;
 int fetchFirst=0;
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
+#define DISPLAY_UNLOAD 3
 
 int display_lines=-1;
 
@@ -71,6 +72,12 @@ char *get_qry_msg(int qry_type,int n);
 extern struct element *list;
 extern int list_cnt;
 
+void display_mode_unload(int a) {
+	if (a) 
+	display_mode=DISPLAY_UNLOAD;
+	else display_mode=0;
+	
+}
 
 endcode
 
@@ -238,7 +245,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
 		p=list[a].stmt;
 
-
+			display_mode_unload(0);
 			qry_type=prepare_query_1(p,list[a].type);
 			if (qry_type==-1) { goto end_query; }
 
@@ -269,12 +276,17 @@ code
 			// Is it a select statement ?
 			// @todo - this needs refining as a select .. into temp would get caught..
 			if (list[a].type!='S'&&list[a].type!='s') {
-				if (!execute_query_1(&raffected)) goto end_query;
+				if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a]);
+				else {
+					if (list[a].type=='L'|| list[a].type=='l') asql_load_data(&list[a]);
+					else {
+						if (!execute_query_1(&raffected)) goto end_query;
+					}
+				}
 			} else {
 				rpaginate=0;
 repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",out);
-
 				if (execute_select_prepare()) {
 
 					if (sqlca.sqlcode<0) goto end_query;

@@ -37,13 +37,17 @@ extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
 
+extern char *delim;
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
+#define DISPLAY_UNLOAD 3
+
 extern char **columnNames;
 extern int *columnWidths;
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
+FILE *unloadFile=0;
 endcode
 
 function get_db_err_msg(lv_code)
@@ -641,6 +645,7 @@ if (indicator!=-1) {
         A4GL_debug("INVALID DATATYPE %d %x @ %d+++",dataType,dataType,idx);
       A4GL_exitwith ("Invalid data type\n");
     }
+	if (strlen(buffer)==0) strcpy(buffer," ");
 } else {
         strcpy(buffer,"");
 }
@@ -654,7 +659,9 @@ if (indicator!=-1) {
                         fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
                 }
                 outlines++;
-        } else {
+        } 
+
+	if (display_mode==DISPLAY_ACROSS) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 
                         A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
@@ -663,6 +670,12 @@ if (indicator!=-1) {
                 else
                         fprintf(exec_out,"%-*s",columnWidths[idx-1],buffer);
         }
+
+	if (display_mode==DISPLAY_UNLOAD) {
+                        fprintf(unloadFile,"%s",buffer);
+                        fprintf(unloadFile,"%s",delim);
+        }
+
 
 
   return 0;
@@ -786,20 +799,32 @@ EXEC SQL open crExec ; cp_sqlca();
         if (sqlca.sqlcode<0) return 0;
 
 
-if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
-        if (field_widths()>A4GL_get_curr_width()) {
-                display_mode=DISPLAY_DOWN;
-        } else {
-                display_mode=DISPLAY_ACROSS;
-        }
-} else {
+if (display_mode != DISPLAY_UNLOAD)
+  {
+    if (get_exec_mode_c () == 0 || get_exec_mode_c () == 2)
+      {
+	if (field_widths () > A4GL_get_curr_width ())
+	  {
+	    display_mode = DISPLAY_DOWN;
+	  }
+	else
+	  {
+	    display_mode = DISPLAY_ACROSS;
+	  }
+      }
+    else
+      {
 
-        if (field_widths()>132) {
-                display_mode=DISPLAY_DOWN;
-        } else {
-                display_mode=DISPLAY_ACROSS;
-        }
-}
+	if (field_widths () > 132)
+	  {
+	    display_mode = DISPLAY_DOWN;
+	  }
+	else
+	  {
+	    display_mode = DISPLAY_ACROSS;
+	  }
+      }
+  }
 }
 
 /******************************************************************************/
@@ -845,6 +870,7 @@ int a;
                 outlines+=2;
                 fetchFirst=0;
         }
+
         for (a=1;a<=numberOfColumns;a++) {
                 if (printField(out,a,"descExec")==1) {
                         A4GL_debug("Break Early %d of %d because I can't print it",a,numberOfColumns);
@@ -866,6 +892,12 @@ int a;
                         fprintf(exec_out,"\n");
                 outlines++;
         }
+
+
+	 if (display_mode==DISPLAY_UNLOAD) {
+                        fprintf(unloadFile,"\n");
+
+	}
 
         if (display_mode==DISPLAY_DOWN) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)

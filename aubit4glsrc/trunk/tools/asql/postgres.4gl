@@ -41,13 +41,15 @@ int need_cursor_free=0;
 
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
+#define DISPLAY_UNLOAD 3
 extern char **columnNames;
 extern int *columnWidths;
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
-
+FILE *unloadFile=0;
 int firstFetchInit=0;
+extern char *delim;// delimiters for load/unload
 
 void cp_sqlca_full() ;
 char mv_errmsg[256]="No Message";
@@ -92,7 +94,13 @@ if (need_cursor_free) {
 
 
 
+
 void set_display_mode() {
+if (display_mode==DISPLAY_UNLOAD) {
+int a;
+a=field_widths();
+return;
+}
 
 if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
         if (field_widths()>A4GL_get_curr_width()) {
@@ -379,6 +387,25 @@ end function
 
 
 code
+
+static void ltrim(char *s) {
+char*ptr;
+char *p2;
+int a;
+p2=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]!=' ') {p2=&s[a];break;}
+}
+
+if (p2==0) { // All spaces
+	strcpy(s,"");
+	return;
+}
+ptr=strdup(p2);
+strcpy(s,ptr);
+free(ptr);
+}
+
 int
 printField (FILE * outputFile, int idx, char *descName)
 {
@@ -417,37 +444,46 @@ A4GL_debug("Getting details for index %d",index);
                  ,OCTET_LENGTH,RETURNED_OCTET_LENGTH,NULLABLE);
 
 
-        if (INDICATOR==-1) sprintf(buffer,"NULL\n");
+        if (INDICATOR==-1) sprintf(buffer,"NULL");
         else switch (TYPE)
         {
           case SQL3_BOOLEAN:
                 exec sql get descriptor descExec value :index :BOOLVAR=data;cp_sqlca();
-                sprintf(buffer,"%s\n",BOOLVAR ? "true":"false");
+		if (display_mode!=DISPLAY_UNLOAD) {
+                sprintf(buffer,"%s",BOOLVAR ? "true":"false");
+		} else {
+		sprintf(buffer,"%d",BOOLVAR);
+		}
                 break;
            case SQL3_NUMERIC:
            case SQL3_DECIMAL:
                 if (SCALE==0)
                 {  exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
                    sprintf(buffer,"%10d",INTVAR);
+  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
                 else
                 {  exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
                    sprintf(buffer,"%.*f",SCALE,FLOATVAR);
+  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
                 break;
            case SQL3_INTEGER:
            case SQL3_SMALLINT:
                 exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
                 sprintf(buffer,"%9d",INTVAR);
+  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
            case SQL3_FLOAT:
            case SQL3_REAL:
                 exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
                 sprintf(buffer,"%.*f",PRECISION,FLOATVAR);
+  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
            case SQL3_DOUBLE_PRECISION:
                 exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
                 sprintf(buffer,"%.*f",PRECISION,DOUBLEVAR);
+  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
            case SQL3_DATE_TIME_TIMESTAMP:
                 exec sql get descriptor descExec value :index
@@ -472,6 +508,10 @@ A4GL_debug("Getting details for index %d",index);
 
 A4GL_debug("BUFFER=%s",buffer);
 
+if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
+	strcpy(buffer," ");
+}
+
         if (display_mode==DISPLAY_DOWN) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
                         fprintf(outputFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
@@ -479,7 +519,13 @@ A4GL_debug("BUFFER=%s",buffer);
                         fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
                 }
                 outlines++;
-        } else {
+        } 
+
+	if (display_mode==DISPLAY_UNLOAD) {
+                        fprintf(unloadFile,"%s%s",buffer,delim);
+	}
+
+	if (display_mode==DISPLAY_ACROSS) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 
                         A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
@@ -629,6 +675,7 @@ int a;
 	if (firstFetchInit) {
 		A4GL_debug("Calcualting how to display");
 		set_display_mode();
+		A4GL_debug("Mode = %d\n",display_mode);
 		firstFetchInit=0;
 	}
 
@@ -667,7 +714,6 @@ int a;
                 outlines+=2;
                 fetchFirst=0;
         }
-
         for (a=1;a<=numberOfColumns ;a++) {
                 if (printField(out,a,"descExec")==1) {
                         A4GL_debug("Break Early %d of %d ",a,numberOfColumns);
@@ -689,6 +735,10 @@ int a;
                         fprintf(exec_out,"\n");
                 outlines++;
         }
+
+        if (display_mode==DISPLAY_UNLOAD) {
+		fprintf(unloadFile,"\n");
+	}
 
         if (display_mode==DISPLAY_DOWN) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
