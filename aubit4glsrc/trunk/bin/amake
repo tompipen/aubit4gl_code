@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.15 2003-02-10 02:08:13 afalout Exp $
+# $Id: amake,v 1.16 2003-02-12 05:53:46 afalout Exp $
 
 #####################################################################
 
@@ -30,6 +30,8 @@ if [ "$AUBITDIR" = "" ]; then
         export AUBITDIR
 	fi
 fi
+
+#echo "hello from amake"
 
 
 #defaults:

@@ -24,15 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.7 2003-01-21 08:25:50 afalout Exp $
+# $Id: mkmess.c,v 1.8 2003-02-12 05:53:53 afalout Exp $
 #*/
 
 /**
  * @file
  * mkmess - message help file compiler, Informix 4gl style formated.
  *
- * Compile a message file (.msg) in ??? format, and generates a help 
- * compiled file
+ * Compile a message file (.msg), and generates a help compiled file
+ * for use in Aubit 4gl programs
  *
  */
 
@@ -42,7 +42,7 @@
 =====================================================================
 */
 
-#include "a4gl_fcompile_int.h"
+#include "a4gl_mkmess_int.h"
 
 /*
 =====================================================================
@@ -54,9 +54,9 @@
 FILE *hlp;
 FILE *msg;
 FILE *tmp;
-char fname_hlp[20];
-char fname_msg[20];
-char fname_tmp[20];
+char fname_hlp[128];
+char fname_msg[128];
+char fname_tmp[128];
 int offset;
 int offset2;
 int flg;
@@ -76,8 +76,11 @@ char tmpnum[6];
  * @param argc The arg count
  * @param argv The arguments values
  */
+int
 main(int argc,char *argv[])
 {
+char pathfilename[128];
+char ext[128];
 
 	setarg0(argv[0]);
 
@@ -89,22 +92,66 @@ main(int argc,char *argv[])
 	build_user_resources();
 
 
-  if (argc!=2)
+  if ( (argc!=2) || (strcmp (argv[1], "--help") == 0) )
   {
-    printf("Usage: mkmess help-file (no .msg extension)\n");
+    printf("Aubit 4GL compiler - help message compiler\n");
+	printf("Usage: mkmess [path]helpfile[.msg]\n");
     exit(0);
   }
-  sprintf(fname_msg,"%s.msg",argv[1]);
-  sprintf(fname_hlp,"%s%s",argv[1],acl_getenv ("A4GL_HLP_EXT"));
-  sprintf(fname_tmp,"%s.tmp",argv[1]);
+
+	bname (argv[1], pathfilename, ext);
+
+    debug("pathfilename=%s",pathfilename);
+    debug("ext=%s",ext);
+
+  if (pathfilename[0] == 0) {
+    //no extension was specified
+	strcpy(pathfilename,argv[1]);
+    ext[0]=0;
+  }
+
+  if (ext[0] == 0) {
+	  sprintf(fname_msg,"%s.msg",pathfilename);
+  } else {
+	  sprintf(fname_msg,"%s.%s",pathfilename,ext);
+  }
+
+  debug("Input file is %s\n",fname_msg);
+
+  sprintf(fname_hlp,"%s%s",pathfilename,acl_getenv ("A4GL_HLP_EXT"));
+  sprintf(fname_tmp,"%s.tmp",pathfilename);
+
+  debug("Input file is %s\n",fname_msg);
+  debug("Output file is %s\n",fname_hlp);
+  debug("TMP file is %s\n",fname_tmp);
+
   msg=fopen(fname_msg,"r");
   if (msg==0)
   {
     printf("Error opening File %s\n",fname_msg);
     exit(0);
+  } else {
+    debug("Opened File %s\n",fname_msg);
   }
+  
   hlp=fopen(fname_hlp,"wb");
+  if (hlp==0)
+  {
+    printf("Error opening File %s\n",fname_hlp);
+    exit(0);
+  } else {
+    debug("Opened File %s\n",fname_hlp);
+  }
+
   tmp=fopen(fname_tmp,"wb");
+  if (tmp==0)
+  {
+    printf("Error opening File %s\n",fname_tmp);
+    exit(0);
+  } else {
+    debug("Opened File %s\n",fname_tmp);
+  }
+
   offset=0;
   while (1)
   {

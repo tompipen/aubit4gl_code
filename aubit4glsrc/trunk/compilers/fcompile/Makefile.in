@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.48 2003-01-15 11:43:33 afalout Exp $
+# $Id: Makefile.in,v 1.49 2003-02-12 05:53:53 afalout Exp $
 #
 
 ROOT        =../..
@@ -111,10 +111,8 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 
 #fshow : clean.fshow ${ROOT}/bin/fshow
 
-${ROOT}/bin/fshow : fshow.4gl clean.fshow
-#ifeq "${FCONVERT}" "yes"
-#	${FCONVERT_CMD} $^
-#endif
+${ROOT}/bin/fshow : fshow.4gl
+#clean.fshow
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<
 	(export DEBUG=ALL; ${ROOT}/bin/4glc -o$@ $<)

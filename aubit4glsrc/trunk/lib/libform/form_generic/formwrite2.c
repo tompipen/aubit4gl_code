@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.10 2003-02-10 12:33:11 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.11 2003-02-12 05:53:53 afalout Exp $
 #*/
 
 /**
@@ -853,17 +853,17 @@ chk_for_wordwrap(void)
 */
 
 /**
- * Write the frm file with the information parsed from the .per to memory
+ * Write the compiled form file with the information parsed from the .per to memory
  */
 void
 write_form (void)
 {
-  char fname[132];
-  char fname2[132];
-  char base[132];
-  char ext[132];
-  int a;
-  struct_form *ptr;
+char fname[132];
+char fname2[132];
+char base[132];
+char ext[132];
+int a;
+struct_form *ptr;
 
   ptr = &the_form;
 
@@ -872,17 +872,17 @@ write_form (void)
   bname (outputfilename, ext, base);
 
 
-  printf("Fname = %s\n",fname);
+  debug("Fname = %s\n",fname);
   if (ext[0] == 0|| strchr(&fname[3],'.')==0)
     {
-      printf("Setting base...");
+      debug("Setting base...");
       strcat (fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
 
 
   translate_form ();
 
-  printf("Writing to %s\n",fname);
+  debug("Writing to %s\n",fname);
   a = write_data_to_file ("struct_form", ptr, fname);
 
   if (!a)

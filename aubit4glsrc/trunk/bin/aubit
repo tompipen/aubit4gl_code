@@ -10,6 +10,8 @@ if [ "$AUBITDIR" = "" ]; then
     exit 3
 fi
 
+#echo "hello from aubit"
+
 PATH=$AUBITDIR/bin:$PATH
 LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
 if [ "$COMSPEC" != "" ]; then

@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 # --norc --noprofile
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.99 2003-02-11 03:42:49 afalout Exp $
+# $Id: 4glpc,v 1.100 2003-02-12 05:53:46 afalout Exp $
 #
 
 ########################################################################
@@ -47,10 +47,15 @@
 	OVERWRITE_CONFIG=0
 #	USE_CONFIGURE=1
 	USE_SHARED="Yes"
+    TIME_IT=0
+	TIME=time
 
 
+#A4GLVERBOSE="yes"
+#A4GLDEBUG="yes"
 if [ "$A4GLDEBUG" = "yes" ]
 then
+	echo "A4GLDEBUG is on - debugging 4glpc script:"
 	A4GLVERBOSE="yes"
 fi
 
@@ -428,12 +433,10 @@ then
 	export MAKE4GLPC="Yes"
 fi
 
-
 LAST=""
 INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
 
 #CC is set via aubitrc config file:
-
 NCC="$CC -O2"
 
 #This may help while compiling, but compiled programs will not run
@@ -448,6 +451,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:.:
 #ADD_LD_LIBRARY_PATH is defined by 'configure' in aubitrc
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADD_LD_LIBRARY_PATH
 
+if [ "$TIMEIT" = "1" ]; then
+	NCC="$TIME $NCC"
+	FGLCEXEC="$TIME $FGLCEXEC"
+fi
+
 counter=0
 
 ############
@@ -458,6 +466,14 @@ do
    ##########
    case $a in
    ##########
+
+   -time)
+		if [ "$TIMEIT" != "1" ]; then
+			TIMEIT=1
+			NCC="$TIME $NCC"
+    	    FGLCEXEC="$TIME $FGLCEXEC"
+        fi
+   ;;
 
    -findfunc)
 		nm -A --defined-only `find $AUBITDIR/lib -name '*.so'` | grep $2
@@ -961,13 +977,20 @@ do
 						#C compiler did not return error code, but .err file was
                         #created, and we know it will only contain C compiler,
                         #warnings, so we don't want to confuse things and people:
-						if [ "$A4GLVERBOSE" = "yes" ]; then
-                            echo "Found $fname.c.err, moving it to $fname.c.warn"
-        		        fi
-						mv "$fname.c.err" "$fname.c.warn"
+
+						#-s is True if file exists and has a size greater than zero.
+						if [ -s "$fname.c.err" ]; then
+							if [ "$A4GLVERBOSE" = "yes" ]; then
+    	                        echo "Found $fname.c.err, moving it to $fname.c.warn"
+        			        fi
+							mv "$fname.c.err" "$fname.c.warn"
+                        else
+                            #file exists, but it's empty
+                            rm "$fname.c.err"
+                        fi
                     else
 						if [ "$A4GLVERBOSE" = "yes" ]; then
-                            echo "Did NOT found $fname.c.err"
+ 							echo "Did NOT found $fname.c.err"
 	       		        fi
 					fi
 				fi
@@ -1251,13 +1274,19 @@ then
         #C compiler did not return error code
 		errfname=`expr "$LAST" : "..\(.*\)"`
         if [ -f $errfname ]; then
-            #this must be warnings, since we got no error code...
-			warnfname=`basename $errfname .err`.c.warn
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
-				echo "Moving $errfname to $warnfname"
+			#-s is True if file exists and has a size greater than zero.
+			if [ -s $errfname ]; then
+				#this must be warnings, since we got no error code...
+				warnfname=`basename $errfname .err`.c.warn
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+					echo "Moving $errfname to $warnfname"
+	            fi
+				mv $errfname $warnfname
+            else
+                #file exists, but it's empty
+				rm $errfname
             fi
-			mv $errfname $warnfname
         fi
    fi
 
@@ -1306,6 +1335,7 @@ else
    fi
 fi
 
+#-s is True if file exists and has a size greater than zero.
 if [ "$ERRFILE" != "" -a ! -s "$ERRFILE" ]
 then
 	if [ -f "$ERRFILE" ]
@@ -1313,6 +1343,18 @@ then
 		rm $ERRFILE
 	fi
 fi
+
+#Remove output file if it's empty
+#errfname=`expr "$LAST" : "..\(.*\)"`
+##-s is True if file exists and has a size greater than zero.
+#if [ "$errfname" != "" -a ! -s "$errfname" ]
+#then
+#	if [ -f "$errfname" ]
+#    then
+#		rm $errfname
+#	fi
+#fi
+
 
 
 if [ "$A4GLVERBOSE" = "yes" ]

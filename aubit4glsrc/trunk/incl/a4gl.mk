@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.24 2003-02-11 03:43:13 afalout Exp $
+#	 $Id: a4gl.mk,v 1.25 2003-02-12 05:53:53 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.24 2003-02-11 03:43:13 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.25 2003-02-12 05:53:53 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -113,27 +113,31 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 #######################
 # Define suffixes which are recognised.
 
+#Executable:
 A4GL_PRG_EXT=.4ae
-#static object
+#static object:
 A4GL_OBJ_EXT=.ao
-#shared object
+#shared object:
 A4GL_SOB_EXT=.aso
-#static library
+#static library:
 A4GL_LIB_EXT=.aox
-#shared library
+#shared library:
 A4GL_SOL_EXT=.asx
+#Compiled form
 #FIXME: reverse => xml.afr
 A4GL_FRM_EXT=.afr.xml
+#Compiler help
 A4GL_HLP_EXT=.hlp
+#Conmpiled menu:
 #FIXME: reverse => xml.mnu
 A4GL_MNU_EXT=.mnu.xml
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
-A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} .err .glb
+A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} ${A4GL_LIB_EXT} .err .glb
 #All files that compiler created, but are not neded at run-time
 A4GL_TMP_SUFFIXES   = ${A4GL_TMP_SUFFIXES_DELETE} .c .h
 #Files that compiler created, needed at run-time
-A4GL_SUFFIXES 		= ${A4GL_PRG_EXT} ${A4GL_FRM_EXT} ${A4GL_HLP_EXT} ${A4GL_MNU_EXT}
+A4GL_SUFFIXES 		= ${A4GL_PRG_EXT} ${A4GL_FRM_EXT} ${A4GL_HLP_EXT} ${A4GL_MNU_EXT} ${A4GL_SOB_EXT} ${A4GL_SOL_EXT}
 
 #FIXME: verify that this declaration is not overriden if foolowed by another one,
 #since we often include all rules files one after the other...
