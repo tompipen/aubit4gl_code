@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.42 2002-01-26 02:27:07 afalout Exp $
+# $Id: 4glpc,v 1.43 2002-01-26 13:00:13 saferreira Exp $
 #
 
 ########################################################################
@@ -1341,6 +1341,11 @@ then
 			FGLLIBS_STATIC="$FGLLIBS_STATIC -lpdf"
         fi
     fi
+	else
+		# I put this here to the compilation work but i am not sure if its the best 
+		# solution. Sergio
+		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
+		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
 fi
 
 if ! [ "$COMSPEC" = "" ]
