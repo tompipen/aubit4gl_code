@@ -90,7 +90,7 @@ find_delims (char delim)
 
   for (a = 0; a < strlen (loadbuff); a++)
     {
-      if (loadbuff[a] == delim || loadbuff[a] == 0)
+      if ((loadbuff[a] == delim && loadbuff[a-1]!='\\') || loadbuff[a] == 0)
         {
           colptr[cnt++] = &loadbuff[a + 1];
         }
@@ -188,6 +188,7 @@ int lineno=0;
 
 static char *safe_quotes(char *s) {
 static char *p=0;
+char *p2=0;
 static int plen=0;
 int a;
 int c=0;
@@ -196,16 +197,58 @@ if(strlen(s)>plen) {
 	plen=strlen(s);
 	p=realloc(p,plen+1000);
 }
-	for(a=0;a<strlen(s);a++) {
-		if (s[a]!='\'') {p[c++]=s[a];continue;}
-		
+
+c=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]!='\\')   {p[c++]=s[a];continue;}
+	continue;
+}
+p[c]=0;
+p2=strdup(p);
+
+c=0;
+// First - escape any quotes
+for(a=0;a<strlen(p2);a++) {
+		if (p2[a]!='\'') {p[c++]=p2[a];continue;}
 		p[c++]='\\';
 		p[c++]='\'';
-	}
-	p[c]=0;
+}
+p[c]=0;
+free(p2);
 return p;
 }
+
+
+
+
+char *escape_delim(char *s) {
+static char*ptr=0;
+int a;
+int c;
+c=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]==delim[0]) c++;
+	if (s[a]=='\\') c++;
+}
+if (c==0) return s;
+
+if (ptr) free(ptr);
+ptr=malloc(sizeof(s)+c+10);
+
+c=0;
+for (a=0;a<strlen(s);a++) {
+if (s[a]==delim[0]||s[a]=='\\') {
+	ptr[c++]='\\';
+}
+ptr[c++]=s[a];
+}
+ptr[c]=0;
+return ptr;
+
+
+
+}
+
+
+
 endcode
-
-
-

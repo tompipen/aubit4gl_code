@@ -689,7 +689,7 @@ if (indicator!=-1) {
         }
 
 	if (display_mode==DISPLAY_UNLOAD) {
-                        fprintf(unloadFile,"%s",buffer);
+                        fprintf(unloadFile,"%s",escape_delim(buffer));
                         fprintf(unloadFile,"%s",delim);
         }
 

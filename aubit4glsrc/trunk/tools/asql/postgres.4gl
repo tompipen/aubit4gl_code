@@ -526,7 +526,7 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
         } 
 
 	if (display_mode==DISPLAY_UNLOAD) {
-                        fprintf(unloadFile,"%s%s",buffer,delim);
+                        fprintf(unloadFile,"%s%s",escape_delim(buffer),delim);
 	}
 
 	if (display_mode==DISPLAY_ACROSS) {

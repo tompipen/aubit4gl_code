@@ -104,7 +104,13 @@ int need_tabname=0;
 
                 if (need_delim&&(a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT)) {
 			//printf("Have delimiter : %s",yylval.str);
-                        e->delim=strdup(yylval.str);
+			if ((a==KW_STRING_LITERAL||a==KW_CONSTANT) &&(yylval.str[0]=='"'||yylval.str[0]=='\'')) {
+                        	e->delim=strdup(&yylval.str[1]);
+                        	e->delim[strlen(e->delim)-1]=0;
+			} else {
+                        	e->delim=strdup(yylval.str);
+			}
+			//printf("Have delimiter : %s (%d) %d %d %d",e->delim,a,KW_IDENTIFIER,KW_STRING_LITERAL,KW_CONSTANT);
                         free(ptr); ptr=0;
                         need_delim=0;
 			continue;
