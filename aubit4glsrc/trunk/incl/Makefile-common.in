@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.14 2002-02-03 22:24:33 afalout Exp $
+# $Id: Makefile-common.in,v 1.15 2002-02-05 06:41:58 afalout Exp $
 #
 
 
@@ -226,6 +226,9 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 #compiling 4gl programs
 MAKINGAUBIT			=1
 
+#for -fPIC
+PIC=@PIC@
+
 ifdef COMSPEC
 	CFLAGS		+=-DWIN32
     EXEEXT		=.exe
@@ -233,13 +236,15 @@ ifdef COMSPEC
 	CPEXE		=cp
     SH			=bash
     LN			=cp
-    SO_LDFLAGS	=-rdynamic -fPIC
+    SO_LDFLAGS	=-rdynamic ${PIC}
+	SO_GCCFLAGS =-Xlinker -rdynamic
 else
     EXEEXT		=
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
-    SO_LDFLAGS	=-fPIC -shared
+    SO_LDFLAGS	=${PIC} -shared
+
 endif
 
 #package names reported by gtk-config or pkg-config:

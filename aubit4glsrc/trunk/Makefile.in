@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.28 2002-01-31 11:33:54 afalout Exp $
+# $Id: Makefile.in,v 1.29 2002-02-05 06:41:56 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -1720,6 +1720,20 @@ find.dup.c.files:
 configure:
 	autoconf --localdir=etc/config
 
+test.install:
+	cd $(INSTALL_DIR)/tools/test
+	${MAKE}
+	./hello
+	cd gui
+	${MAKE}
+	./hello_gui
+
+test.full:
+	${MAKE} clean.all
+	./configure
+	${MAKE}
+	${MAKE} install
+	${MAKE} test.install
 
 
 ## ---------------------------- EOF ----------------------------------

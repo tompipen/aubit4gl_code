@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2002-01-27 07:00:39 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-02-05 06:41:58 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,7 +45,6 @@ ALL 				=libPDF_NOPDF.so aubit-config
 #-DNODEBUG -g
 
 LOCALCFLAGS			=-O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
-# -lrpclib
 LDFLAGS				=-Map mapfile
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
@@ -54,7 +53,7 @@ ifdef COMSPEC
 #	LOCALCFLAGS		+=-DWIN32 -I/usr/src/rpc-4.0
 #default RPC install path on CygWin is /usr/local/include:
 	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
-	LDFLAGS			+= -lrpclib -lc
+	LDFLAGS			+= ${RPCLIB_NAME} -lc
 	ALL				+=libaclall.a libSQL_odbc32.so libaclshared.so
     ALL_GUI			=libaclallgui.a libaclsharedgui.so
 
@@ -256,14 +255,14 @@ libaclallgui-noodbc.a: $(OBJSNOSQL) gui_gtk.o
 libaclshared-noodbc.so:  $(OBJSNOSQL) gui_tui.o
 #	touch libaclshared-noodbc.so
 #	rm libaclshared-noodbc.so
-	ld  -fPIC -shared $(OBJSNOSQL) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
+	ld  $(SO_LDFLAGS) $(OBJSNOSQL) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
 #	ln aclshared-noodbc.so libaclshared-noodbc.so
 
 libaclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
 #	touch libaclsharedgui-noodbc.so
 #	rm libaclsharedgui-noodbc.so
-	ld  -fPIC -shared $(OBJSNOSQL) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
+	ld  $(SO_LDFLAGS) $(OBJSNOSQL) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
 #	ln aclsharedgui-noodbc.so libaclsharedgui-noodbc.so
 
@@ -326,7 +325,7 @@ array.o: array.c ../compilers/fcompile/form_x_xdr.c
 #	echo "std_dbscr @3 DATA" >> acl4gl.def
 
 acl4gl.dll: $(DLL_OBJS) libaclall.a
-	gcc -shared --dll -Wl,--export-dynamic  -Wl,--out-implib=libacl4gl.dll.a -Wl,--enable-auto-image-base  -o acl4gl.dll $(DLL_OBJS) -L. -laclall -lgtk4gl -lgtk -lgdk -lglib  -lrpclib -lodbc32 -lform -lpanel -lcurses
+	gcc -shared --dll -Wl,--export-dynamic  -Wl,--out-implib=libacl4gl.dll.a -Wl,--enable-auto-image-base  -o acl4gl.dll $(DLL_OBJS) -L. -laclall -lgtk4gl -lgtk -lgdk -lglib  ${RPCLIB_NAME} -lodbc32 -lform -lpanel -lcurses
 	dlltool -l libacl4gl_1.a -a -D acl4gl.dll -d windef.def -U
 
 A_DLLNAME=acl4gltest

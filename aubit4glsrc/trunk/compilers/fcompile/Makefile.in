@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2002-01-26 04:18:02 afalout Exp $
+# $Id: Makefile.in,v 1.12 2002-02-05 06:41:58 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,8 +47,8 @@ endif
 
 ifdef COMSPEC
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
-	4GLPCFLAGS	+=-Xlinker -rdynamic
-	CYGWIN_FLAGS=-lrpclib
+	4GLPCFLAGS	+=${SO_GCCFLAGS}
+	CYGWIN_FLAGS=${RPCLIB_NAME}
 else
 	RPCGEN 		= @RPCGEN@ form_x.x
 #	4GLPCFLAGS	+=-rdynamic

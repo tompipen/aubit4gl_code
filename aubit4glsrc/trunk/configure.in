@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.29 2002-02-03 22:24:31 afalout Exp $
+# $Id: configure.in,v 1.30 2002-02-05 06:41:56 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -199,7 +199,7 @@ AC_SUBST(GLIB_NAME)
 AC_SUBST(RPCGEN)
 AC_SUBST(RPCLIB_INCLUDE)
 AC_SUBST(RPCLIB_LFLAGS)
-
+AC_SUBST(RPCLIB_NAME)
 
 #PDF
 AC_SUBST(USE_PDF)
@@ -207,15 +207,6 @@ AC_SUBST(PDFBUILD)
 AC_SUBST(A4GL_PDFTYPE)
 AC_SUBST(PDFLIB_I_FLAGS)
 AC_SUBST(PDFLIB_L_FLAGS)
-
-#other
-AC_SUBST(JABBERBUILD)
-AC_SUBST(PERL)
-AC_SUBST(PERLBUILD)
-AC_SUBST(LDCONFIG)
-AC_SUBST(target)
-AC_SUBST(target_cpu)
-AC_SUBST(ADD_LD_LIBRARY_PATH)
 
 #DoxyGen
 AC_SUBST(DOXYGEN)
@@ -235,6 +226,15 @@ AC_SUBST(WWW_DOCUMENT_ROOT)
 AC_SUBST(RPM)
 AC_SUBST(AUTOSPEC)
 
+#other
+AC_SUBST(JABBERBUILD)
+AC_SUBST(PERL)
+AC_SUBST(PERLBUILD)
+AC_SUBST(LDCONFIG)
+AC_SUBST(target)
+AC_SUBST(target_cpu)
+AC_SUBST(ADD_LD_LIBRARY_PATH)
+AC_SUBST(PIC)
 
 ## ==================================================================
 ##                             Defaults
@@ -262,6 +262,7 @@ HAVE_IODBC=no
 HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
 HAVE_PGODBC=no
+PIC=-fPIC
 
 ODBC_LIB_NAME=noodbc
 A4GL_PDFTYPE=NOPDF
@@ -286,9 +287,17 @@ case $host in
     	ODBCMANAGER=$ODBC;
 		cygwin=1
 		;;
-    *)
+
+	#*-sun-solaris2.7)
+
+	*-ibm-aix*)
+		PIC=
+        ;;
+
+	*)
         AC_MSG_WARN(You are using untested platform)
-		echo "Please report success or failure to compile Aubit on this platform to the mailing list. Thank you."
+		echo "    Please report success or failure to compile Aubit on this"
+		echo "    platform to the mailing list. Thank you."
         ;;
 esac
 
@@ -956,18 +965,14 @@ AC_ARG_WITH(pgodbc,
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-		old_CFLAGS=$CFLAGS
-        old_CPPFLAGS=$CPPFLAGS
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+        old_CPPFLAGS="$CPPFLAGS"
 		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
 		TMP_PGODBC_LFLAGS="-L$withval/lib"
 
-		#CFLAGS="$CFLAGS $TMP_PGODBC_INCLUDE"
-		#CPPFLAGS=\"-DODBC_QNX -DSQLANY_BUG\"
 		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
-		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 		AC_CHECK_LIB([psqlodbc], [main])
 		#also check for headers, since they are not in PG ODBC RPM, they are
@@ -975,18 +980,9 @@ AC_ARG_WITH(pgodbc,
 		#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
 		#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
 		AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
-		#CFLAGS=$old_CFLAGS
-        CPPFLAGS=$old_CPPFLAGS
-
-
-#echo "" > tmp.tmp
-#echo "ac_cv_header_$ac_header" >> tmp.tmp
-#echo "$as_ac_Header" >> tmp.tmp
-#echo "" >> tmp.tmp
-
-#echo xx ac_cv_header_iodbc.h $ac_cv_header_iodbc_h xx
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+        CPPFLAGS="$old_CPPFLAGS"
 
 		if test $ac_cv_lib_psqlodbc_main = yes; then
 
@@ -1022,7 +1018,7 @@ AC_ARG_WITH(pgodbc,
 #FIXME:
 #warn user to run /usr/share/pgsql/odbc.sql script to add aditional
 # PostgreSQL catalog extensions and functions for ODBC compliance
-#do the same for ODBC managers, if you detect PH database installes
+#do the same for ODBC managers, if you detect PG database installed
 
 
 
@@ -1504,7 +1500,7 @@ if test `eval echo '${'$as_ac_var'}'` != yes ; then
 	#This happened on ia64-unknown-linux-gnu
 	case $host in
 	*linux*)
-		AC_MSG_WARN(Ooops-you don't have RPC function in stdlib, but you are on Linux?)
+		AC_MSG_WARN(Ooops-you don't have RPC function in GLIBC, but you are on Linux?)
 		;;
 	esac
 
@@ -1515,29 +1511,13 @@ if test `eval echo '${'$as_ac_var'}'` != yes ; then
 else
 	RPC_FUNC_INTERNAL=1
 
-	if test "$AUBIT_SOURCE" = "1"; then
-		#force this check even if not specified on command line:
+	if test "$AUBIT_SOURCE" = "1"; then #if compiling source code...
+		#...force this check even if not specified on command line:
 		if test "$with_rpc" = ""; then
 			with_rpc=yes
 		fi
     fi
 fi
-
-#if test "$test_rpclib" = "1"; then
-#if "$RPC_FUNC_INTERNAL" = "0"; then
-#	#force this check even if not specified on command line:
-#	if test "$with_rpc" = ""; then
-#		with_rpc=yes
-#	fi
-#else
-#	if test "$with_rpc" = ""; then
-#		if test "$AUBIT_SOURCE" = "0"; then
-#			AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
-#        fi
-#    else #User specified --with-rpc, so whe better try it in any case:
-#		with_rpc=yes
-#	fi
-#fi
 
 AC_ARG_WITH(rpc,
 [  --with-rpc[=DIR]   Include RPC support.  DIR is the RPC base
@@ -1564,9 +1544,39 @@ AC_ARG_WITH(rpc,
 		LDFLAGS="$LDFLAGS $TEST_I_FLAGS $TEST_L_FLAGS"
 		# FIXME: Replace `main' with a function in `-lrpclib':
 		AC_CHECK_LIB([rpclib], [main])
+		AC_CHECK_LIB([rpcsvc], [main])
+
+		if test "$ac_cv_lib_rpcscv_main" = "yes"; then
+			#seems rpc library is rpcsvc on aix and sparc-sun-solaris2.7
+			#which defines a bunch of symbols starting 'xdr_'
+			AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+			AC_CHECK_LIB(rpcsvc, svctcp_create ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+			AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+
+			if test "$ac_cv_lib_rpcsvc___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpcsvc_svctcp_create_" = "yes" || test "$ac_cv_lib_rpcsvc_xdr_argument_" = "yes"; then
+                echo "Found RPC functions in -lrpcsvc"
+	            RPCLIB_NAME=rpcsvc
+            else
+				echo "Found -lrpcsvc, but no RPC functions inside."
+			fi
+        fi
+
+		if test "$ac_cv_lib_rpclib_main" = "yes"; then
+			AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+			AC_CHECK_LIB(rpclib, svctcp_create ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+			AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+
+			if test "$ac_cv_lib_rpclib___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpclib_svctcp_create_" = "yes" || test "$ac_cv_lib_rpclib_xdr_argument_" = "yes"; then
+				echo "Found RPC functions in -lrpclib"
+		        RPCLIB_NAME=rpclib
+	        else
+                echo "Found -lrpclib, but no RPC functions inside."
+			fi
+		fi
+
 		AC_PATH_PROG(RPCGEN, rpcgen, no)
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
         PATH="$old_PATH"
 
 		if test "$RPCGEN" = "no"; then
@@ -1580,18 +1590,20 @@ AC_ARG_WITH(rpc,
 		    AC_DEFINE(HAVE_RPCGEN,1,[ ])
 		fi
 
-		if test $ac_cv_lib_rpclib_main = yes; then
+		#if test $ac_cv_lib_rpclib_main = yes; then
+        if test "$RPCLIB_NAME" != ""; then
 		    RPCLIB_INCLUDE="$TEST_I_FLAGS"
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
 		else
 			AC_DEFINE(HAVE_RPCLIB,0,[ ])
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
-				AC_MSG_ERROR( "-lrpclib" not found. Please install RPC library. Stop.)
+				AC_MSG_ERROR( "-lrpclib" or "-lrpcsvc" not found. Please install RPC library. Stop.)
             fi
 		fi
 	else
-		AC_MSG_RESULT(disbled)
+		#AC_MSG_RESULT(disbled)
+		AC_MSG_ERROR(RPC support is needed to build Aubit compiler from source code - you cannot disable it)
 	fi
 ],[
 	AC_MSG_RESULT(--with-rpc not specified)
@@ -1713,6 +1725,34 @@ fi
 ## ==================================================================
 ##                   Checks for Cygwin specifics
 ## ==================================================================
+
+#<example form hello.x>
+
+AC_LIBTOOL_WIN32_DLL
+
+# ----------------------------------------------------------------------
+# Win32 objects need to tell the header whether they will be linking
+# with a dll or static archive in order that everything is imported
+# to the object in the same way that it was exported from the
+# archive (extern for static, __declspec(dllimport) for dlls)
+# ----------------------------------------------------------------------
+LIBHELLO_DLL_IMPORT=
+LIBGREET_DLL_IMPORT=
+case "$host" in
+*-*-cygwin* | *-*-mingw* )
+  if test X"$enable_shared" = Xyes; then
+	LIBHELLO_DLL_IMPORT=-DLIBHELLO_DLL_IMPORT
+	LIBGREET_DLL_IMPORT=-DLIBGREET_DLL_IMPORT
+dnl    AC_TRY_LINK_FUNC([libhello_is_dll],
+dnl                     [LIBHELLO_DLL_IMPORT=-DLIBHELLO_DLL_IMPORT])
+  fi
+  ;;
+esac
+AC_SUBST(LIBHELLO_DLL_IMPORT)
+AC_SUBST(LIBGREET_DLL_IMPORT)
+
+#</example form hello.x>
+
 
 #this macros are in aclocal.m4 - run aclocal to create it :
 

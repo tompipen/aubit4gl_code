@@ -5,7 +5,7 @@
 #
 #do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.12 2001-12-03 04:55:41 afalout Exp $
+# $Id: footer.mki,v 1.13 2002-02-05 06:41:58 afalout Exp $
 ######################################
 
 ifneq "$(DBASE)" ""
@@ -24,6 +24,7 @@ ifeq "$(PROGTYPE)" ".lib"
         SKIPLINKING=1
 		TARGETCMD=@echo Name dummy.lib was used, final linking skipped.
     else
+		#-fPIC will apparently not work on AIX - we should autoconf this file
 		TARGETCMD=ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
     endif
 

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.13 2002-02-03 22:24:33 afalout Exp $
+# $Id: sql.c,v 1.14 2002-02-05 06:41:59 afalout Exp $
 #
 */
 
@@ -195,13 +195,21 @@ dll_export int status;
 #ifdef __CYGWIN__
 #include <windows.h>
 int WINAPI
-sqldll_init(HANDLE h, DWORD reason, void *foo)
+
+libSQL_odbc32_init(HANDLE h, DWORD reason, void *foo)
 {
   return 1;
 }
 
 #endif
 
+#if (defined(WIN32) || defined(__CYWIN__)) && defined DLL_EXPORT
+char
+libSQL_odbc32_is_dll (void)
+{
+  return 1;
+}
+#endif /* WIN32 && DLL_EXPORT */
 
 
 void

@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 # --norc --noprofile
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.46 2002-02-03 22:24:32 afalout Exp $
+# $Id: 4glpc,v 1.47 2002-02-05 06:41:58 afalout Exp $
 #
 
 ########################################################################
@@ -1290,11 +1290,9 @@ then
 else
     #echo COMSPEC defined: $COMSPEC
     #-L$AUBITDIR/lib -L../../lib
-	#FGLLIBS_SHARED="-laclallgui$ODBCFLAG -lm -lrpclib  -L/lib/w32api"
-	#FGLLIBS_STATIC="-laclallgui$ODBCFLAG -lm -lrpclib -L/lib/w32api"
+	#FGLLIBS_SHARED="-laclallgui$ODBCFLAG -lm $RPCLIB_NAME -L/lib/w32api"
+	#FGLLIBS_STATIC="-laclallgui$ODBCFLAG -lm $RPCLIB_NAME -L/lib/w32api"
 
-    RPCLIB=-lrpclib
-	#RPCLIB=-lrpc
     #-L$AUBITDIR/lib  -L../../lib
 	FGLLIBS_COMMON="-lm $RPCLIB -L/lib/w32api -L/usr/local/lib"
 	FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"

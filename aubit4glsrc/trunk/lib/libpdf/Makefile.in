@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-01-27 07:00:39 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-02-05 06:41:58 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,11 +45,11 @@ override CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAG
 all: libPDF_PDF.so libPDF_NOPDF.so
 
 libPDF_PDF.so: has_pdf.o
-	ld @PDFLIB_L_FLAGS@ -lpdf -fPIC -shared has_pdf.o -o $@
+	ld @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) has_pdf.o -o $@
 	cp $@ ..
 
 libPDF_NOPDF.so: nopdf.o
-	ld  -fPIC -shared nopdf.o -o $@
+	ld  $(SO_LDFLAGS) nopdf.o -o $@
 	cp $@ ..
 
 ## ==================================================================
