@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.116 2005-03-20 12:07:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.116 2005-03-20 12:07:48 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -780,6 +780,11 @@ print_open_cursor (char *xcname, int has_using)
   }
 
   set_suppress_lines();
+
+  if (A4GLSQLCV_check_requirement("CLOSE_CURSOR_BEFORE_OPEN")) {
+      printc ("\nEXEC SQL CLOSE  %s; /* AUTOCLOSE */\n", cname);
+  }
+
   if (has_using) {
       int a;
 	int ni;
