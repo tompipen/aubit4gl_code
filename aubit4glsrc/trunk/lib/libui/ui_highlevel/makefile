@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.23 2004-06-09 06:03:17 mikeaubury Exp $
+# $Id: makefile,v 1.24 2004-06-28 12:33:50 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -103,18 +103,32 @@ endif
 ##                              Curses Options
 ## ==================================================================
 
-#must be BEFORE system paths:
-#Note: On CygWin term.h is in -I/usr/include/ncurses
-CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} \
-					-I.. -I. -I${ROOT}/incl
-
 ifneq "${HAVE_CURSES}" "0"
-	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT} 
+	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+	#CURSES_INC_PATH must be BEFORE system paths:
+	#Note: On CygWin term.h is in -I/usr/include/ncurses
+	CFLAGS		:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS}
 else
 	ifneq "${HAVE_PDCURSES}" "0"
-		ALL			+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+		ALL				+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+		CURSES_LIB_PATH	=${PD_CURSES_LIB_PATH}
+		CURSES_INC_PATH	=${PD_CURSES_INC_PATH}
+		CURSES_LIB_NAME	=${PD_CURSES_LIB_NAME}
+
+		ifeq "${WIN_PATH}" "1"
+			CURSES_LIB_PATH 	:=$(subst -L/cygdrive/d,-Ld:,${CURSES_LIB_PATH})
+			CURSES_INC_PATH 	:=$(subst -I/cygdrive/d,-Id:,${CURSES_INC_PATH})
+			CURSES_LIB_NAME 	:=$(subst /cygdrive/d,d:,${CURSES_LIB_NAME})
+			#CURSES_LIB_NAME 	:=$(subst /cygdrive/d,d:,${CURSES_LIB_NAME}) d:/pdc25_vc_w32/panel.lib
+			#CURSES_LIB_NAME=d:/pdc25_vc_w32/curses.dll d:/pdc25_vc_w32/panel.lib
+		endif
+
+		#CURSES_INC_PATH must be BEFORE system paths:
+		CFLAGS			:=${CURSES_INC_PATH} ${CFLAGS}
 	endif
 endif
+
+CFLAGS		+=-I.. -I. -I${ROOT}/incl
 
 ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
@@ -153,18 +167,19 @@ all: ${ALL}
 #	cp *${SO_EXT} ../..
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
+libUI_HL_TUI${SO_EXT}: ${LIBROOT}/libUI_HL_TUI${SO_EXT}
 ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
 
+libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
-
+libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
 ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_wide.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw -lncursesw
 
-
-
+libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 		
@@ -228,6 +243,15 @@ show:
 	@echo "GTKLIBS=${GTKLIBS}"
 	@echo "CFLAGS_GTK_C=${CFLAGS_GTK_C}"
 	@echo "CFLAGS=${CFLAGS}"
+	@echo "HAVE_CURSES=${HAVE_CURSES}"
+	@echo "CURSES_LIB_PATH=${CURSES_LIB_PATH}"
+	@echo "CURSES_INC_PATH=${CURSES_INC_PATH}"
+	@echo "CURSES_LIB_NAME=${CURSES_LIB_NAME}"
+	@echo "HAVE_PDCURSES=${HAVE_PDCURSES}"	
+	@echo "PD_CURSES_LIB_PATH=${PD_CURSES_LIB_PATH}"
+	@echo "PD_CURSES_INC_PATH=${PD_CURSES_INC_PATH}"
+	@echo "PD_CURSES_LIB_NAME=${PD_CURSES_LIB_NAME}"
+	@echo "WIN_PATH=${WIN_PATH}"
 	
 ## ==================================================================
 ##                              Clean

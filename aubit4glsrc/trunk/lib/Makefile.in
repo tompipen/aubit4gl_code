@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.103 2004-03-25 10:38:58 afalout Exp $
+# $Id: Makefile.in,v 1.104 2004-06-28 12:33:49 afalout Exp $
 #
 
 ROOT    =..
@@ -222,14 +222,17 @@ libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
 libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 	$(MAKE) -C ${LIBUICONSOLE_PATH}
 
-libUI_HLGENERIC${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH}
+#libUI_HLGENERIC${SO_EXT}: ${LIBUIHL_DEPS}
+#	$(MAKE) -C ${LIBUIHL_PATH}
 
 libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH}
+	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUI${SO_EXT}
+
+libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUIN${SO_EXT}
 
 libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH}
+	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_GTK${SO_EXT}
 
 
 ##############

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.227 2004-06-27 03:16:30 afalout Exp $
+dnl # $Id: configure.in,v 1.228 2004-06-28 12:32:59 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -5169,7 +5169,7 @@ fi
 	  if test "$withval" != "no"; then
 		PD_CURSES_LIB_PATH="-L$withval"
 		PD_CURSES_INC_PATH="-I$withval"
-		PD_CURSES_LIB_NAME="$withval/curses.dll"
+		PD_CURSES_LIB_NAME="$withval/curses.dll $withval/panel.lib"
         HAVE_PDCURSES=1
 		AC_DEFINE(HAVE_PDCURSES,1,[ ])
 	    AC_MSG_RESULT(yes)
@@ -5926,11 +5926,18 @@ if test "$default_ui" != ""; then
 	#User can force UI driver default with --default-ui=xxxx switch
 	A4GL_UI="$default_ui"
 else
-	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
-		#A4GL_UI="TUI"
-        A4GL_UI="HL_TUI"
+	if test "$HAVE_CURSES" = "1" ; then
+		A4GL_UI="TUI"
+        #HL_TUI is still not as good as TUI according to Mike
+		#A4GL_UI="HL_TUI"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
-    fi
+	else
+		#we can compile only HL_TUIN with PDcurses
+		if test "$HAVE_PDCURSES" = "1"; then
+			A4GL_UI="HL_TUIN"
+			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
+		fi
+	fi
 
 	if test "$GTKBUILD" != "no"; then
 		A4GL_UI="HL_GTK"
@@ -5999,15 +6006,28 @@ PLUGIN_YES_LINKABLE=
 PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
 
-	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
+	if test "$HAVE_CURSES" = "1" ; then
         PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
 	else
-		if test "$GCC_MINGW" != "yes"; then
-			#Does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN"
-			#Will be on all known Linux installations, but not by default on CygWin
-			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
-        fi
+		if test "$HAVE_PDCURSES" = "1"; then
+			#no curses, but found PDcurses
+			#can make only UI_TUIN with PDcurses
+    	    PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN"
+			if test "$GCC_MINGW" != "yes"; then
+				#Does not exist for MinGW anyway
+				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI"
+				#Will be on all known Linux installations, but not by default on CygWin
+				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+			fi
+		else
+			#no Curses and no PDcurses
+			if test "$GCC_MINGW" != "yes"; then
+				#Does not exist for MinGW anyway
+				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN"
+				#Will be on all known Linux installations, but not by default on CygWin
+				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+			fi
+		fi
 	fi
 
 	if test "$PDFBUILD" != "no"; then
@@ -6640,7 +6660,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.227 2004-06-27 03:16:30 afalout Exp $
+| $Id: configure.in,v 1.228 2004-06-28 12:32:59 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

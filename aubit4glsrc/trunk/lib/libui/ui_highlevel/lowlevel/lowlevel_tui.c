@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.28 2004-06-26 13:00:33 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.29 2004-06-28 12:33:50 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.28 2004-06-26 13:00:33 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.29 2004-06-28 12:33:50 afalout Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1520,7 +1520,11 @@ A4GL_LL_dump_screen (int n)
 
   if (mode == 3)
     {
-      scr_dump (ptr);
+	#if ! defined(__MINGW32__)
+		scr_dump (ptr);
+	#else
+		A4GL_debug ("scr_dump not implemented in PDcurses");
+	#endif
       return 0;
     }
 
@@ -1733,10 +1737,12 @@ A4GL_LL_initialize_display ()
       refresh ();
 #ifndef __sun__
 #ifndef __sparc__
-      //curses function not available on Solaris (!!!!?????)
+#if ! defined(__MINGW32__)
+		A4GL_debug ("use_default_colors not available");
+      //curses function not available on Solaris (!!!!?????) and PDcurses
       use_default_colors ();
       have_default_colors = 1;
-
+#endif
 #endif
 #endif
     }
@@ -2084,7 +2090,20 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   if (a4gl_status != 0)
     return (prompt->mode = 2);
 
-  d = derwin (p, 0, 0, width + 1, 1);
+/*
+	When compiling with PDcurses:
+	lowlevel/lowlevel_tui.c: In function `A4GL_LL_start_prompt':
+	lowlevel/lowlevel_tui.c:2087: warning: dereferencing `void *' pointer
+	lowlevel/lowlevel_tui.c:2087: request for member `_begy' in something not a structure or union
+	lowlevel/lowlevel_tui.c:2087: warning: dereferencing `void *' pointer
+	lowlevel/lowlevel_tui.c:2087: request for member `_begx' in something not a structure or union
+*/
+#if ! defined(__MINGW32__)
+	d = derwin (p, 0, 0, width + 1, 1);
+#else
+	A4GL_debug ("see note in code. Exit.");
+	exit (3);
+#endif
   A4GL_form_set_form_win (f, d);
   A4GL_form_set_form_sub (f, p);
   A4GL_debug ("Set form win");
