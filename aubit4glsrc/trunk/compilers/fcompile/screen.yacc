@@ -221,11 +221,13 @@ some_text: named_or_kw {
 screen_element : 
 some_text {
         //printf("%s %d %d %d %d %d %s\n","_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	if (lineno) {
         A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
+	}
 }
 | field  { ltab=0; }
 | KW_TAB {
@@ -241,42 +243,47 @@ some_text {
 }
 | GRAPH_CH {
 	char buff[256];
+	if (lineno) {
 	sprintf(buff,"\n%s",$<str>1);
 	A4GL_add_field("_label",colno+1,lineno,1,scr,0,$<str>1);
 	colno++;
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
+	}
 } 
 
 | PIPE {
 	char buff[256];
+	if (lineno) {
 	strcpy(buff,$<str>1);
 	A4GL_add_field("_label",colno+1,lineno,1,scr,0,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
+	}
 }
 
 
 | CHAR_VALUE {
+	if (lineno) {
 	     A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
+	}
 } 
 
 | ch_list {
-	//char buff[256];
-	//printf("str1=%s colno=%d\n",$<str>1,colno+1);
+	if (lineno) {
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
-	//printf("colno was %d for '%s'\n",colno,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
+	}
 }  
 | KW_WS {
 	if (ltab==1) colno=8;
