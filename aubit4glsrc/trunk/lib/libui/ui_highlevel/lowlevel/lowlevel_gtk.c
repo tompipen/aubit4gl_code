@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.44 2004-06-09 06:03:18 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.45 2004-06-14 18:13:03 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -601,15 +601,19 @@ void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
 
 
 if (x==0&&y==0&&h==0&&w==0) {
+        int additional;
 	GtkWidget *hbox;
 	GtkWidget *bb;
 	GtkWidget *frame;
+	additional=0;
+	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
+		additional=15;
+ 	}
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-        gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+1)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
+        gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+additional)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
         gtk_window_set_title (GTK_WINDOW (win), "4GL Application");
         gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
 	hbox=gtk_hbox_new(0,3);
-	//printf("set_name appwindow");
 	fixed = gtk_fixed_new ();
 	bb=gtk_vbutton_box_new();
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(bb),GTK_BUTTONBOX_START);
@@ -636,8 +640,13 @@ if (x==0&&y==0&&h==0&&w==0) {
         //gtk_container_add (GTK_CONTAINER (frame), bb);
 
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
-        gtk_container_add (GTK_CONTAINER (hbox), bb);
-	gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
+		GtkWidget *f;
+		f=gtk_frame_new("");
+        	gtk_widget_set_usize (GTK_WIDGET (f), additional*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
+		gtk_widget_show(f);
+        	gtk_container_add (GTK_CONTAINER (f), bb);
+        	gtk_container_add (GTK_CONTAINER (hbox), f);
+		gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
 	}
         gtk_container_add (GTK_CONTAINER (win), hbox);
 	win_screen=fixed;

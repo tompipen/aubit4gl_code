@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.14 2004-05-24 15:43:51 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.15 2004-06-14 18:12:59 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.14 2004-05-24 15:43:51 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.15 2004-06-14 18:12:59 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1594,8 +1594,9 @@ A4GL_comments (struct struct_scr_field *fprop)
 
   A4GL_debug("Comments attr=%x buff=%s",attr,buff);
   attr=attr&0xfffffff0;
-  UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
-  //UILIB_A4GL_display_internal (1, cline, buff, 0, 1);
+  A4GL_debug("And display the comments... %d,%d -'%s'",cline,1,buff);
+  UILIB_A4GL_display_internal (1,cline, buff, attr, 1);
+  A4GL_debug("Done display the comments... %d,%d -'%s'",cline,1,buff);
 
   A4GL_LL_screen_update ();
 

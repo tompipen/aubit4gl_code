@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.9 2004-04-02 09:14:11 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.10 2004-06-14 18:12:59 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -465,7 +465,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
   //char cmd[60] = "";
   char buff[80];
   int a;
-  A4GL_debug ("Getting character for menu from window %p", menu->menu_win);
+  //A4GL_debug ("Getting character for menu from window %p", menu->menu_win);
   a = -1;
   A4GL_set_abort (0);
   while (1)
@@ -483,7 +483,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
       //a = wrapper_wgetch (menu->menu_win);
       a = A4GL_LL_getch_swin (A4GL_get_currwin ());
-      A4GL_debug ("MJA11 a=%d menu->menu_win=%p\n", a, menu->menu_win);
+      //A4GL_debug ("MJA11 a=%d menu->menu_win=%p\n", a, menu->menu_win);
       A4GL_clr_error_nobox ("Menu");
       if (a == -1)
 	{

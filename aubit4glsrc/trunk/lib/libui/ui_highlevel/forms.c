@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.12 2004-06-09 06:03:17 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.13 2004-06-14 18:12:59 mikeaubury Exp $";
 
 #include "hl_forms.h"
 #include "hl_proto.h"
@@ -1283,12 +1283,12 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
   if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
     {
-      attrib = attrib + ' ';
+      attrib = (attrib&0xffffff00) + ' ';
       A4GL_debug ("Set pad char to space");
     }
   A4GL_debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
 
-
+  
 
   A4GL_LL_set_bkg (win, attrib);
 

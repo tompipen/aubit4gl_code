@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.20 2004-05-21 13:34:11 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.21 2004-06-14 18:12:59 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2750,7 +2750,8 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	  if (sl >= 0) {
 	    	buff[sl] = 0;
 	  	buff[1023] = 0;
-		A4GL_wprintw(wot,x,y,(a&0xffffff00),buff);
+		A4GL_debug("wprintw : %s\n",buff);
+		A4GL_wprintw(wot,(a&0xffffff00),x+strlen(s),y,buff);
 		}
 	}
   A4GL_LL_screen_update ();

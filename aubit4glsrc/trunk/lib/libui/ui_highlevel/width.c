@@ -14,10 +14,10 @@ static int wc_char_len(wchar_t *s) ;
 static wchar_t *wc_col_width(wchar_t *s) ;
 static wchar_t *wc_byte_width(wchar_t *s) ;
 static char *wc_to_str(char *s,wchar_t *src,int char_size) ;
-
 void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch);
-
 #endif
+
+
 
 void
 A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
@@ -39,10 +39,8 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
   int len;
   wchar_t *wp; 
   int w;
-
   wp=wc_strdup(buff);
   len=wc_char_len(wp);
-
 
   A4GL_debug("len=%d\n",len);
   if (len==0) return;
@@ -69,7 +67,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 #else
   for (a = 0; a < strlen (buff); a++)
     {
-      A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + attr);
+      A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + (attr&0xffffff00));
       x++;
     }
 #endif

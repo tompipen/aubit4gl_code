@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.24 2004-05-18 16:22:07 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.25 2004-06-14 18:13:03 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -269,7 +269,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
   WINDOW *dswin;
 
 
-  A4GL_debug ("%d %d %d %d %d", h, w, y, x, border);
+  A4GL_debug (" A4GL_LL_create_window %d %d %d %d %d", h, w, y, x, border);
 
   if (border == 0)
     {
@@ -288,12 +288,14 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
   if (border == 1)
     {
+	A4GL_debug("border=1");
       win = newwin (h + 2, w + 2, y - 2, x - 2);
       A4GL_debug ("newwin returns %p", win);
     }
 
   if (border == 2)
     {
+	A4GL_debug("border=2");
       dswin = newwin (h + 4, w + 4, y - 2, x - 2);
       A4GL_debug ("newwin returns %p", win);
       win = newwin (h + 2, w + 2, y - 2, x - 2);
@@ -305,6 +307,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
   if (border == 3)
     {
+	A4GL_debug("border=3");
       dswin = newwin (h + 4, w + 4, y - 1, x - 1);
       A4GL_debug ("newwin returns %p", win);
       win = newwin (h, w, y - 2, x - 2);
@@ -360,7 +363,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
   void *p;
   attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
   ch2 = ch & 0xff;
-  //A4GL_debug ("x=%d y=%d ch2=%d", x, y, ch2);
+  A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p = panel_window (win);
   if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
     {
@@ -1954,7 +1957,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   prompt->win = p;
   buff[width] = 0;
 	A4GL_debug("su");
-  wprintw (p, "%s", buff); A4GL_LL_screen_update();sleep (1);
+  wprintw (p, "%s", buff); A4GL_LL_screen_update();
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
