@@ -1,0 +1,76 @@
+
+
+Please occasionally remove items that are completed from this list.
+
+
+4GL
+	implement extend() 4GL function ** DONE
+	implement datetime() & interval() 4GL functions ** DONE
+	'thru' on display etc ************** DONE
+	initialize array/record containing array ** DONE
+	Allow auto initialize of function variables (As per pcode) ** DONE (And module level too - globals still outstanding)
+	Add globals header file into variable declaration ** DONE
+	Create function names export ** DONE - they are included in the .glb
+
+
+Enhancements
+
+	as a fix for hard-coded DATABASE directive in .4gl and .per files,
+	make an option on the compiler (every compiler that might need to access
+	the database - 4glc, fcompile...). --database=dbname@theserver
+
+
+ESQL/C
+	Fix OPEN USING in esql/c (in lex)                     *** DONE IN LEX
+	Fix FETCH (relative/absolute etc)                     *** DONE
+	Fix Declare SCROLL/WITH HOLD/FOR UPDATE in esql/c LEX *** DONE
+	Fix Declare INTO in esql/c LEX                        *** DONE
+	
+
+
+FIXME's
+
+
+GTK
+
+
+UI
+
+Other unimplemented functions
+	Pause in reports  *** done using prompt...
+
+
+SQL Parser
+	IN (variable,variable) ** DONE
+	add extend() SQL function into parser *********** DONE
+
+
+SQL plugins
+
+ACE
+
+XML-RPC
+
+TUI
+
+PERL
+
+CVS
+
+Build system & make files
+
+
+MANUALS
+
+WEBSITE
+
+PACKAGING
+
+MISC
+
+Windows port
+
+
+Ad-Hoc Bug Fixes
+----------------
+

@@ -3,22 +3,13 @@ Please occasionally remove items that are completed from this list.
 
 
 4GL
-	implement extend() 4GL function ** DONE
-	implement datetime() & interval() 4GL functions ** DONE
-	'thru' on display etc ************** DONE
-	initialize array/record containing array ** DONE
-	Allow auto initialize of function variables (As per pcode) ** DONE (And module level too - globals still outstanding)
-	Add globals header file into variable declaration ** DONE
-	Create function names export ** DONE - they are included in the .glb
 
 	Interval and datetime arithmetic...
 
 	Clean up error handling
+
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different). ** PARTIAL
-
-	allow "exists" to be used as a function name (remove from reserved words) - NO - exists is an Aubit4GL builtin function
-
 
 Enhancements
 
@@ -34,10 +25,6 @@ Enhancements
 
 ESQL/C
 	Fix OPEN USING in esql/c (in sql) 
-	Fix OPEN USING in esql/c (in lex)                     *** DONE IN LEX
-	Fix FETCH (relative/absolute etc)                     *** DONE
-	Fix Declare SCROLL/WITH HOLD/FOR UPDATE in esql/c LEX *** DONE
-	Fix Declare INTO in esql/c LEX                        *** DONE
 	Other fixes in ESQL/C output driver
 	
 
@@ -56,14 +43,11 @@ UI
 
 Other unimplemented functions
 	put_insert
-	Pause in reports  *** done using prompt...
 	INPUT ARRAY
 	ERROR - needs a window...
 
 
 SQL Parser
-	IN (variable,variable) ** DONE
-	add extend() SQL function into parser *********** DONE
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 	implement grant and revoke
