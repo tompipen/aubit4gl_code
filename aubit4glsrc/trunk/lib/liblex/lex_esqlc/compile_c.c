@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.97 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.98 2003-09-15 16:03:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3232,8 +3232,9 @@ print_need_lines (void)
  * Print the C implementation of SKIP <number> LINES statement.
  */
 void
-print_skip_lines (void)
+print_skip_lines (double d)
 {
+  printc("A4GL_push_int(%d);",(int)d);
   printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
@@ -3250,9 +3251,9 @@ print_skip_top (void)
  * Print the C implementation of SKIP BY statement.
  */
 void
-print_skip_by (char *nval)
+print_skip_by (double nval)
 {
-  printc ("A4GL_pdf_skip_by(&rep,%s);\n", nval);
+  printc ("A4GL_pdf_skip_by(&rep,%f);\n", nval);
 }
 
 /**

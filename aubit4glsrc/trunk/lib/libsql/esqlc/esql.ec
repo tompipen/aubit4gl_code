@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.63 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: esql.ec,v 1.64 2003-09-15 16:03:06 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.63 2003-09-15 13:07:25 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.64 2003-09-15 16:03:06 mikeaubury Exp $";
 #endif
 
 
@@ -2058,10 +2058,16 @@ A4GLSQL_fetch_cursor (char *cursor_name,
       return 1;
     }
 
-  if (nobind  || sid->no==0) {
-  	sid->obind = obind;
-  	sid->no = nobind;
+  if (sid->no!=0) {
+	if (nobind==0) {
+		nobind=sid->no;
+		obind=sid->obind;	
+	}
   }
+
+sid->obind = obind;
+sid->no = nobind;
+
 
   /** @todo : Maybe input bind should be cleaned (if exist) */
   if (processPreStatementBinds (sid) == 1)

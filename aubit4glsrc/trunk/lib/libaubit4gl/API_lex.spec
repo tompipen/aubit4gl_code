@@ -326,13 +326,13 @@ print_format_every_row -> void
 print_need_lines -> void
 
 /* void print_skip_lines () */
-print_skip_lines -> void
+print_skip_lines double n -> void
 
 /* void print_skip_top () */
 print_skip_top -> void
 
 /* void print_skip_by (char *nval) */
-print_skip_by char* nval -> void
+print_skip_by double nval -> void
 
 /* void print_skip_to (char *nval)    */
 print_skip_to char* nval -> void

@@ -13,11 +13,16 @@ if_cmd	:
 		lines_printed=lines_printed-lines_printed_true; /* reset it back.. */
 		lines_printed_false=lines_printed;
 	} op_else END_IF {
+		char wt;
 		print_if_end();
 		lines_printed_false=lines_printed-lines_printed_false;
-		if (lines_printed_true!=lines_printed_false) {
-			a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
-			YYERROR;
+	        wt=get_curr_report_stack_whytype();
+		//if (wt=='P'||wt=='p'||wt=='T') {
+		if (wt=='T') {
+			if (lines_printed_true!=lines_printed_false) {
+				a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
+				YYERROR;
+			}
 		}
 	}
 ;
