@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.25 2004-02-13 10:28:20 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.26 2004-02-13 10:55:20 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -578,7 +578,9 @@ if (x==0&&y==0&&h==0&&w==0) {
 	bb=gtk_vbutton_box_new();
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(bb),GTK_BUTTONBOX_START);
 	gtk_widget_show(hbox);
-	gtk_widget_show(bb);
+	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
+		gtk_widget_show(bb);
+	}
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
@@ -594,16 +596,19 @@ if (x==0&&y==0&&h==0&&w==0) {
 
 	frame=gtk_frame_new("");
 	gtk_widget_show(frame);
-	gtk_box_set_child_packing(hbox,bb,1,0,2,GTK_PACK_START);
 
         //gtk_container_add (GTK_CONTAINER (frame), bb);
 
+	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
         gtk_container_add (GTK_CONTAINER (hbox), bb);
+	gtk_box_set_child_packing(hbox,bb,0,0,2,GTK_PACK_START);
+	}
         gtk_container_add (GTK_CONTAINER (win), hbox);
 	win_screen=fixed;
         gtk_widget_set_usize (GTK_WIDGET (fixed), (A4GL_LL_screen_width())*gui_xwidth, (A4GL_LL_screen_height())*gui_yheight);
-        gtk_widget_set_usize (GTK_WIDGET (bb), 180, (A4GL_LL_screen_height())*gui_yheight);
+        //gtk_widget_set_usize (GTK_WIDGET (bb), 180, (A4GL_LL_screen_height())*gui_yheight);
         gtk_object_set_data (GTK_OBJECT (win_screen), "BB", bb);
+
         gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
 	//gtk_widget_show (GTK_WIDGET (win));
         gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (A4GL_delete_event), win);
@@ -2439,7 +2444,7 @@ int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, i
 
   gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (handler_e), win);
   gtk_signal_connect (GTK_OBJECT (win), "destroy", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "focus_in_event", GTK_SIGNAL_FUNC (handler_e), win);
+  //gtk_signal_connect (GTK_OBJECT (win), "focus_in_event", GTK_SIGNAL_FUNC (handler_e), win);
 
   form_dets = A4GL_read_form (formname, "uhmmm");
 
