@@ -41,7 +41,9 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
         |       LEFT {strcpy($<str>$,"left");}
         |       RIGHT {strcpy($<str>$,"right");}     
         |       NEXTPAGE {strcpy($<str>$,"nextpage");}     
+        |       NEXT {strcpy($<str>$,"nextpage");}     
         |       PREVPAGE {strcpy($<str>$,"prevpage");}     
+        |       PREVIOUS {strcpy($<str>$,"prevpage");}     
 	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
 ;
 
