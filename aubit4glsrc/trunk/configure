@@ -7366,7 +7366,7 @@ LIBFILE_16=$LIB_PREFIX/libDATA_report$SO_EXT
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form$SO_EXT
 LIBFILE_18=$LIB_PREFIX/libHELP_std$SO_EXT
 LIBFILE_19=$LIB_PREFIX/libLEX_EC$SO_EXT
-LIBFILE_20=
+LIBFILE_20=$LIB_PREFIX/libPACKER_MEMPACKED$SO_EXT
 LIBFILE_21=
 LIBFILE_22=
 LIBFILE_23=
@@ -20379,7 +20379,7 @@ fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
+	ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/mempacked/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
 
 else
 
@@ -20748,6 +20748,7 @@ do
   "lib/extra_libs/file/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/extra_libs/file/Makefile" ;;
   "lib/extra_libs/string/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/extra_libs/string/Makefile" ;;
   "lib/libpacker/packed/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/packed/Makefile" ;;
+  "lib/libpacker/mempacked/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/mempacked/Makefile" ;;
   "lib/libpacker/perl/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/perl/Makefile" ;;
   "lib/libpacker/xdr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/xdr/Makefile" ;;
   "lib/libpacker/xml/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/xml/Makefile" ;;
@@ -20775,7 +20776,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:20778: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:20779: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -21228,7 +21229,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:21231: creating $ac_file" >&5
+    { echo "$as_me:21232: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -21246,7 +21247,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:21249: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:21250: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -21259,7 +21260,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:21262: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21263: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21320,7 +21321,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:21323: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:21324: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -21331,7 +21332,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:21334: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:21335: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -21344,7 +21345,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:21347: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21348: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21461,7 +21462,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:21464: $ac_file is unchanged" >&5
+      { echo "$as_me:21465: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -21795,13 +21796,13 @@ X
 
 fi
 
-echo "$as_me:21798: result: " >&5
+echo "$as_me:21799: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:21800: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:21801: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:21802: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:21803: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:21804: result: " >&5
+echo "$as_me:21805: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.169 2003-04-10 03:59:43 afalout Exp $
+dnl # $Id: configure.in,v 1.170 2003-04-11 12:44:29 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -602,7 +602,7 @@ LIBFILE_16=$LIB_PREFIX/libDATA_report$SO_EXT
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form$SO_EXT
 LIBFILE_18=$LIB_PREFIX/libHELP_std$SO_EXT
 LIBFILE_19=$LIB_PREFIX/libLEX_EC$SO_EXT
-LIBFILE_20=
+LIBFILE_20=$LIB_PREFIX/libPACKER_MEMPACKED$SO_EXT
 LIBFILE_21=
 LIBFILE_22=
 LIBFILE_23=
@@ -3667,6 +3667,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/extra_libs/file/Makefile
 				lib/extra_libs/string/Makefile
 				lib/libpacker/packed/Makefile
+				lib/libpacker/mempacked/Makefile
 				lib/libpacker/perl/Makefile
 				lib/libpacker/xdr/Makefile
 				lib/libpacker/xml/Makefile

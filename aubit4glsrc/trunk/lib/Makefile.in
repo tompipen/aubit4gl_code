@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.86 2003-04-10 04:01:30 afalout Exp $
+# $Id: Makefile.in,v 1.87 2003-04-11 12:45:46 afalout Exp $
 #
 
 ROOT    =..
@@ -56,6 +56,7 @@ LIBMENUXDR_PATH		=libmenu/menu_xdr
 LIBMENUNOMENU_PATH	=libmenu/menu_nomenu
 LIBMENUGENERIC_PATH	=libmenu/menu_generic
 LIBPACKERPACKED_PATH=libpacker/packed
+LIBPACKERMEMPACKED_PATH=libpacker/mempacked
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
@@ -125,6 +126,10 @@ LIBMENUGENERIC_DEPS	=$(wildcard ${LIBMENUGENERIC_PATH}/*.c) $(wildcard ${LIBMENU
 					$(wildcard ${LIBMENUGENERIC_PATH}/Makefile) ${ALL_H}
 LIBPACKERPACKED_DEPS=$(wildcard ${LIBPACKERPACKED_PATH}/*.c) $(wildcard ${LIBPACKERPACKED_PATH}/*.h) \
 					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile) ${ALL_H}
+
+LIBPACKERMEMPACKED_DEPS=$(wildcard ${LIBPACKERMEMPACKED_PATH}/*.c) $(wildcard ${LIBPACKERMEMPACKED_PATH}/*.h) \
+					$(wildcard ${LIBPACKERMEMPACKED_PATH}/Makefile) ${ALL_H}
+
 LIBPACKERPERL_DEPS	=$(wildcard ${LIBPACKERPERL_PATH}/*.c) $(wildcard ${LIBPACKERPERL_PATH}/*.h) \
 					$(wildcard ${LIBPACKERPERL_PATH}/Makefile) ${ALL_H}
 LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXDR_PATH}/*.h) \
@@ -242,6 +247,9 @@ libEXREPORT_NOPDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
 
 libPACKER_PACKED${SO_EXT}: ${LIBPACKERPACKED_DEPS}
 	${MAKE} -C ${LIBPACKERPACKED_PATH}
+
+libPACKER_MEMPACKED${SO_EXT}: ${LIBPACKERMEMPACKED_DEPS}
+	${MAKE} -C ${LIBPACKERMEMPACKED_PATH}
 
 libPACKER_PERL${SO_EXT}: ${LIBPACKERPERL_DEPS}
 	${MAKE} -C ${LIBPACKERPERL_PATH}
@@ -392,6 +400,7 @@ clean.libform:
 
 clean.libpacker:
 	${MAKE} -C ${LIBPACKERPACKED_PATH} clean
+	${MAKE} -C ${LIBPACKERMEMPACKED_PATH} clean
 	${MAKE} -C ${LIBPACKERPERL_PATH} clean
 	${MAKE} -C ${LIBPACKERXDR_PATH} clean
 	${MAKE} -C ${LIBPACKERXML_PATH} clean
