@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.130 2003-10-09 13:00:17 afalout Exp $
+# $Id: Makefile.in,v 1.131 2003-10-14 11:25:27 afalout Exp $
 #
 
 ## ==================================================================
@@ -102,7 +102,23 @@ ifneq "${GCC_MINGW}" "yes"
 endif
 	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
+	$(MAKE) -C tools/afinderr
+	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
+
+#cd lib/libui/ui_curses
+#sh make_static
+
+#cd lib/libsql/esqlc
+#sh make_static
+#sh make_simple
+
+#cd lib/libesql
+#sh make_static
+#sh make_simple
+
+
+
 
 api.headers:
 	$(MAKE) -C lib/libaubit4gl api.headers

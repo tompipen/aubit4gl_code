@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.24 2003-10-11 09:53:39 afalout Exp $
+# $Id: gtk_4gl.c,v 1.25 2003-10-14 11:26:17 afalout Exp $
 #*/
 
 /**
@@ -58,7 +58,7 @@
 */
 
 #ifdef __MINGW32__
-typedef void *pthread_t;
+	typedef void *pthread_t;
 #endif
 
 
@@ -95,40 +95,10 @@ void A4GL_hide_console (void);
 void A4GL_add_to_console (char *s);
 void A4GL_create_console (void);
 void A4GL_decode_gui_winname (char *name);
-
-#ifdef MOVED_TO_4GLDEF
-GtkWindow *A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
-		      int prompt_line,	/* Ignored */
-		      int menu_line,	/* Ignored */
-		      int border,	/* Ignored */
-		      int comment_line,	/* Ignored */
-		      int message_line, int attrib);
-
-
-//GtkFixed * A4GL_read_form_gtk (char *fname);
-void A4GL_cr_window_form (char *s,
-		     int iswindow,
-		     int form_line,
-		     int error_line,
-		     int prompt_line,
-		     int menu_line,
-		     int border,
-		     int comment_line, int message_line, int attrib);
-#endif
-
-//void A4GL_open_form (char *form_id);
-//int A4GL_disp_form (char *form_id, int a);
-//void A4GL_current_window (char *s);
-//void A4GL_sleep_i (void);
 void A4GL_clear_console (char *s);
-//int A4GL_close_form (char *name);
-/* int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
-//int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
 struct struct_screen_record *A4GL_get_srec_gtk (char *name);
-
 void A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line);
 void A4GL_make_and_display_label(int x,int y,char c,int attr);
-
 
 /*
 =====================================================================
@@ -974,6 +944,9 @@ A4GL_get_curr_win_gtk (void)
 
 
 
+/**
+ * @todo describe function
+ */
 void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
@@ -1037,8 +1010,12 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 }
 
 
+/**
+ * @todo describe function
+ */
 void
-A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line) {
+A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line) 
+{
 int a;
   GtkFixed *cwin;
   GtkLabel *lab;
@@ -1062,8 +1039,12 @@ int a;
 }
 
 
+/**
+ * @todo describe function
+ */
 void
-A4GL_make_and_display_label(int x,int y,char c,int attr) {
+A4GL_make_and_display_label(int x,int y,char c,int attr)
+{
   GtkFixed *cwin;
   GtkLabel *lab;
   char buff[256];
@@ -1078,15 +1059,15 @@ A4GL_make_and_display_label(int x,int y,char c,int attr) {
 		lab = (GtkLabel *) gtk_label_new (cbuff);
 	        gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
 		gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
-                gtk_widget_show (GTK_WIDGET (lab));
-#if GTK_CHECK_VERSION(2,0,0)
- A4GL_ChangeWidgetFont(lab,"FIXED");
-#endif
+        gtk_widget_show (GTK_WIDGET (lab));
+		#if GTK_CHECK_VERSION(2,0,0)
+			A4GL_ChangeWidgetFont(lab,"FIXED");
+		#endif
       } else {
       		gtk_label_set_text (lab, cbuff);
       }
       A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (attr));
-	
+
 }
 
 
@@ -1142,20 +1123,20 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (s))
 	    {
-#if ! GTK_CHECK_VERSION(2,0,0)
-		GtkStyle *style;
-#endif
+			#if ! GTK_CHECK_VERSION(2,0,0)
+				GtkStyle *style;
+			#endif
 	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
 	      		gtk_label_set_text (lab, s);
-#if GTK_CHECK_VERSION(2,0,0)
-    // GTK+ 2.0 and up: structure has no member named `font'
-		A4GL_ChangeWidgetFont(lab,"FIXED");
-#else
+			#if GTK_CHECK_VERSION(2,0,0)
+			    // GTK+ 2.0 and up: structure has no member named `font'
+				A4GL_ChangeWidgetFont(lab,"FIXED");
+			#else
 		    	style = gtk_style_new ();
-			gdk_font_unref (style->font);
+				gdk_font_unref (style->font);
     			style->font = gdk_font_load ("fixed");
     			gtk_widget_set_style (GTK_WIDGET(lab), style);
-#endif
+			#endif
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	  else
@@ -1168,24 +1149,24 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (buff))
 	    {
-#if ! GTK_CHECK_VERSION(2,0,0)
-		GtkStyle *style;
-#endif
+		#if ! GTK_CHECK_VERSION(2,0,0)
+			GtkStyle *style;
+		#endif
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
-#if GTK_CHECK_VERSION(2,0,0)
-    // GTK+ 2.0 and up: structure has no member named `font'
-	 	A4GL_ChangeWidgetFont(lab,"FIXED");
-#else
-		    	style = gtk_style_new ();
+		#if GTK_CHECK_VERSION(2,0,0)
+		    // GTK+ 2.0 and up: structure has no member named `font'
+	 		A4GL_ChangeWidgetFont(lab,"FIXED");
+		#else
+		   	style = gtk_style_new ();
 			gdk_font_unref (style->font);
-    			style->font = gdk_font_load ("fixed");
-    			gtk_widget_set_style (GTK_WIDGET(lab), style);
-#endif
+    		style->font = gdk_font_load ("fixed");
+    		gtk_widget_set_style (GTK_WIDGET(lab), style);
+		#endif
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	}
@@ -1320,7 +1301,7 @@ A4GL_close_form (char *name)
 }
 
 /**
- * @todo 
+ * @todo describe function
  */
 int
 /* A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
@@ -1513,16 +1494,19 @@ A4GL_get_srec_gtk (char *name)
 
 
 
+/**
+ * @todo describe function
+ */
 char *
 A4GL_get_currwin_name ()
 {
   return currwinname;
 }
 
-/* ================================ EOF ================================ */
 
-
-
+/**
+ * @todo describe function
+ */
 void
 A4GL_dump_object (GtkObject * o)
 {
@@ -1539,10 +1523,14 @@ gtk_4gl.c:1296: structure has no member named `klass'
 }
 
 
-
-
-void A4GL_error_nobox(char *s,int attr) {
+/**
+ * @todo describe function
+ */
+void A4GL_error_nobox(char *s,int attr)
+{
 	A4GL_debug("@todo - Add error_nobox");
 	printf(" --> *******************    %s    **********************\n",s);
-	
+
 }
+
+/* ================================ EOF ================================ */

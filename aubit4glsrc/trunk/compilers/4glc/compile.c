@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.42 2003-10-13 18:30:06 mikeaubury Exp $
+# $Id: compile.c,v 1.43 2003-10-14 11:26:16 afalout Exp $
 #*/
 
 /**
@@ -512,7 +512,7 @@ initArguments (int argc, char *argv[])
 
   rm_quotes (chrptr);
   strcat (incl_path, chrptr);
-
+  strcat (incl_path, " ");
 
   strcpy (l_path, "-L");
   strcat (l_path, "\"");
@@ -964,14 +964,14 @@ static int
 compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	     int silent, int verbose, char output_object[128])
 {
-  int x, ret, flength=0;
-  char buff[1028];
-  char single_output_object[128] = "";
-  char c[128];			//The 4gl file
-  char a[128], b[128];
-  char *ptr;
-  static FILE *filep = 0;
-  char ext[8];
+int need_cc=0, x, ret, flength=0;
+char buff[1028];
+char single_output_object[128] = "";
+char c[128];			//The 4gl file
+char a[128], b[128];
+char *ptr;
+static FILE *filep = 0;
+char ext[8];
 
   /* store the directory part of file name, if any, so we can use it for GLOBALS
      file compilation, if nececery */
@@ -1136,10 +1136,64 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		    {
-       			  sprintf (buff, "ecpg_wrap %s.cpc -c -o %s %s %s",
+       			  /*
+				  sprintf (buff, "ecpg_wrap %s.cpc -c -o %s %s %s",
 				   aa, single_output_object, incl_path,
 				   pass_options);
-		    }
+                   */
+                   //	sprintf (buff,"%s/bin/ecpg -C INFORMIX -t %s %s",$POSTGRESDIR,$ecpg_args,$a);
+
+				sprintf (buff, "%s/bin/ecpg -C INFORMIX -t %s.cpc %s %s",
+				   acl_getenv ("POSTGRESDIR"),
+				   aa, incl_path,
+				   pass_options);
+                
+				  if (verbose){
+				      printf ("%s\n", buff);
+				  }
+
+				  #ifndef __MINGW32__
+				  	//this apparently works on NT, but not on W98:
+					sprintf (buff, "%s > %s.cpc.err 2>&1", buff, aa);
+			      #else
+					sprintf (buff, "%s > %s.cpc.err", buff, aa);
+				  #endif
+
+					#ifdef DEBUG
+						A4GL_debug ("Runnung %s", buff);
+					#endif
+				  ret = system (buff);
+				  //see function system_run() in fglwrap.c
+				  if (ret)
+				    {
+				      printf ("Error compiling %s.cpc - check %s.cpc.err\n", aa, aa);
+				      printf ("Failed command was: %s\n", buff);
+				      //fixme: show err file
+				      return ret;
+				    }
+				  else
+                  {
+			    	if (verbose) {
+						printf ("PG EC compilation of the object successfull.\n");
+					}
+					need_cc=1;
+					  strcat (incl_path, "-I");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, acl_getenv ("POSTGRESDIR"));
+					  strcat (incl_path, "/include");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, " ");
+
+                      // /usr/include/pgsql/libpq-fe.h
+					  strcat (incl_path, "-I");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, "/usr/include/pgsql");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, " ");
+
+                  }
+
+			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
             {
 				/* /opt/sapdb/interfaces/precompiler/bin/cpc hello <<- no .cpc extension ! */
@@ -1160,8 +1214,12 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 				   aa, extra_ccflags, single_output_object, incl_path,
 				   pass_options);
 		    }
-	    } else { /* Pure C compiler output */
+	    } 
+		
 
+		if ((strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0) || need_cc)
+        {
+			/* Pure C compiler output or EC compiler that needs separate CC step*/
 		  //FIXME: should we add C compiler flags -g and/or -O2 -DDEBUG here ?
 		  //create A4GL_CFLAGS in resource.c
 
@@ -1180,7 +1238,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	  if (verbose){
 	      printf ("%s\n", buff);
 	  }
-	  
+
 	  #ifndef __MINGW32__
 	  	//this apparently works on NT, but not on W98:
 		sprintf (buff, "%s > %s.c.err 2>&1", buff, aa);
@@ -1203,7 +1261,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	  else
 	    {
     	  if (verbose) {
-			  printf ("C compilation of the object successfull.\n");
+			  printf ("C/EC compilation of the object successfull.\n");
 		  }
 
 	      /* determine the c.err file size */
@@ -1542,7 +1600,7 @@ get_ansi_mode (void)
 }
 
 /**
- * Warn about syntax which is a violation of ANSI 
+ * Warn about syntax which is a violation of ANSI
  *
  * @param s - string containing a description of the warning
  * @param severity - 0 for only a warning  (where the compiler could correct)
@@ -1606,5 +1664,124 @@ get_default_database (void)
 {
   return default_database;
 }
+
+
+/*
+int
+ecpg_wrap(void)
+{
+  char buff[1024];
+
+
+
+SH_DEBUG=0
+
+
+if test "$SH_DEBUG" = "1"; then
+	echo "In ecpg_wrap : $@"
+fi
+
+
+if [ "$POSTGRESDIR" = "" ]
+then
+	export POSTGRESDIR=/usr/local/pgsql
+fi
+
+if [ "$AUBITDIR" = "" ]
+then
+    AUBITDIR=`aubit-config AUBITDIR`
+	if [ "$AUBITDIR" = "" ]
+	then
+        echo "ERROR: AUBITDIR unknown. Stop."
+        exit 5
+    fi
+fi
+
+
+//export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+//export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
+
+//ECPG_EXT=cpc
+
+while [ "$1" != "" ]
+do
+	a=$1
+
+	if [ "$a" = -t ]
+	then
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I" ]
+	then
+		ecpg_args="$ecpg_args $a"
+		shift
+		a=$1
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+	d=`dirname $a`
+	if [ "$d" != "" ]
+	then
+		c=$d/`basename "$a" `
+		b=$d/`basename "$c" ".$ECPG_EXT"`
+	else
+		c=`basename "$a" `
+		b=`basename "$c" ".$ECPG_EXT"`
+	fi
+
+	if [ $b.$ECPG_EXT = $a ]
+
+	then
+		srcs="$srcs $a"
+		shift
+		continue
+	fi
+
+	other_args="$other_args $a"
+
+	shift
+done
+
+if test "$SH_DEBUG" = "1"; then
+	echo "SOURCES : " $srcs
+fi
+
+for a in $srcs
+do
+	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a"
+    #-C INFORMIX_SE
+    echo $ECPG_RUN
+    eval $ECPG_RUN
+    RET=$?
+    if test "$RET" != "0"; then
+        exit $RET
+    fi
+	out=`basename $a ".$ECPG_EXT"`
+	cfiles="$cfiles $out.c"
+done
+
+GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes"
+echo $GCC_RUN
+eval $GCC_RUN
+RET=$?
+exit $RET
+
+
+
+    //"$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a"
+//	sprintf (buff,"%s/bin/ecpg -C INFORMIX -t %s %s",$POSTGRESDIR,$ecpg_args,$a);
+    //#-C INFORMIX_SE
+
+    return 1;
+
+}
+
+*/
+
 
 /* ==================================== EOF =============================== */

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.202 2003-10-09 13:01:05 afalout Exp $
+dnl # $Id: configure.in,v 1.203 2003-10-14 11:25:41 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1130,6 +1130,30 @@ AC_SUBST(ISAMAKEFILE_18)
 AC_SUBST(ISAMAKEFILE_19)
 AC_SUBST(ISAMAKEFILE_20)
 
+#Help files
+AC_SUBST(HELPFILE_1)
+AC_SUBST(HELPFILE_2)
+AC_SUBST(HELPFILE_3)
+AC_SUBST(HELPFILE_4)
+AC_SUBST(HELPFILE_5)
+AC_SUBST(HELPFILE_6)
+AC_SUBST(HELPFILE_7)
+AC_SUBST(HELPFILE_8)
+AC_SUBST(HELPFILE_9)
+AC_SUBST(HELPFILE_10)
+
+AC_SUBST(ISHELPFILE_1)
+AC_SUBST(ISHELPFILE_2)
+AC_SUBST(ISHELPFILE_3)
+AC_SUBST(ISHELPFILE_4)
+AC_SUBST(ISHELPFILE_5)
+AC_SUBST(ISHELPFILE_6)
+AC_SUBST(ISHELPFILE_7)
+AC_SUBST(ISHELPFILE_8)
+AC_SUBST(ISHELPFILE_9)
+AC_SUBST(ISHELPFILE_10)
+
+
 
 ## ==================================================================
 ##                             Defaults
@@ -1573,7 +1597,7 @@ AMAKE_BIN_EXE=aubit-config
 RUNTIME_EXE="loadmap fshow $AMAKE_BIN_EXE"
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm "
+        aace adecompile convertsql aace_4gl aace_perl default_frm afinderr"
 
 PCODE_EXE="c2pcode checker runner runner_fgl"
 
@@ -1590,22 +1614,6 @@ fi
 #	BIN_EXE		+=odbctest-unixODBC${EXE}
 #	BIN_EXE		+=odbctest-iodbc3${EXE}
 #	BIN_EXE		+=odbctest-iodbc2${EXE}
-
-
-#Source: @IS_SOURCE@\bin\aubit-config.exe; DestDir: {app}\bin; CopyMode: normal; Components: compiler
-#Source: @IS_SOURCE@\bin\4glc.exe; DestDir: {app}\bin; DestName: "4glc.exe"; CopyMode: alwaysoverwrite; Components: compiler
-#Source: @IS_SOURCE@\bin\fcompile.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\fdecompile.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\mcompile.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\mdecompile.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\amkmessage.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\unmkmessage.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\fshow.exe; DestDir: {app}\bin; Components: compiler
-#Source: @IS_SOURCE@\bin\loadmap.exe; DestDir: {app}\bin; Components: compiler
-#
-#Source: @IS_SOURCE@\lib\lib4glc.dll; DestDir: {app}\bin; Components: compiler
-
-
 
     COUNTER=0
 	for FILE in $COMP_EXE ; do
@@ -1634,9 +1642,9 @@ AMAKE_SH="amake amakeallo amakeallf genmake prepmake"
 ALL_SH="4glpc aubit ecpg_wrap $AMAKE_SH"
 #abug.sh
 
-#Source: @IS_SOURCE@\bin\4glpc; DestDir: {app}\bin; Components: Shell
 #Source: @IS_SOURCE@\install.sh; DestDir: {app}; Components: Shell
 #Source: @IS_SOURCE@\configure; DestDir: {app}; Components: Shell
+
 #;FIXME: create executables of this two, so we can use Amake without Bash:
 #Source: @IS_SOURCE@\bin\amake; DestDir: {app}\bin; Components: Shell
 #Source: @IS_SOURCE@\bin\aubit; DestDir: {app}\bin; Components: Shell
@@ -1682,24 +1690,6 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 #not needed:
 #a4gl_API_esql.h a4gl_API_lex.h a4gl_API_packer.h
 
-#Source: @IS_SOURCE@\incl\a4gl_incl_4gldef.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_incl_4glhdr.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_4gl_callable.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_exdata.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_exreport.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_form.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_help.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_menu.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_msg.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_rpc.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_sql.h; DestDir: {app}\incl; Components: compiler
-#Source: @IS_SOURCE@\incl\a4gl_API_ui.h; DestDir: {app}\incl; Components: compiler
-#;not needed:
-#;Source: @IS_SOURCE@\incl\a4gl_API_esql.h; DestDir: {app}\incl; Components: compiler
-#;Source: @IS_SOURCE@\incl\a4gl_API_lex.h; DestDir: {app}\incl; Components: compiler
-#;Source: @IS_SOURCE@\incl\a4gl_API_packer.h; DestDir: {app}\incl; Components: compiler
-
-
     COUNTER=0
 	for FILE in $ALL_INC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
@@ -1731,32 +1721,6 @@ fi
 
 ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
 		multi.per radio.per widget.per"
-
-
-#Source: @IS_SOURCE@\tools\test\make.bat; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\testmenu.menu; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\file.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\form.per; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\hello.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\hello_db.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\hello2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\helpfile.msg; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\pdf_report.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\test_build.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\test_select.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\testmenu.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\assoc2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\testmpz.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\calc.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\form-gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\calc.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\hello-gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\multi.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\radio.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-#Source: @IS_SOURCE@\tools\test\gui\widget.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-
 
     COUNTER=0
 	for FILE in $ALL_EXAMP ; do
@@ -1809,6 +1773,20 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 		eval "ISMAKEFILE_$COUNTER='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: Make'"
 	done
 
+## ==================================================================
+##       Define permanent list of help files to build/install
+## ==================================================================
+
+ALL_HELP="help_aubit.iem and help_ecpg.iem"
+
+    COUNTER=0
+	for FILE in $ALL_HELP ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "HELPFILE_$COUNTER='%doc $INST_BASE/help/$FILE'"
+		eval "ISHELPFILE_$COUNTER='Source: $IS_SOURCE\help\\$FILE; DestDir: {app}\help; Components: runtime'"
+	done
+
+#FIXME: add to RPM & ISS scripts
 
 ## ==================================================================
 ##       Define permanent list of documentation files to build/install
@@ -1821,16 +1799,6 @@ if test "$COMSPEC" != ""; then
 fi
 
 ROOT_FILES_DOC="README.txt"
-
-#; Run-time files
-#Source: @IS_SOURCE@\docs\aubit4gl.ico; DestDir: {app}\docs; Components: runtime
-#Source: @IS_SOURCE@\docs\changelog.txt; DestDir: {app}\docs; Components: runtime
-#Source: @IS_SOURCE@\docs\COPYING; DestDir: {app}\docs; Components: runtime
-#Source: @IS_SOURCE@\docs\CREDITS; DestDir: {app}\docs; Components: runtime
-#Source: @IS_SOURCE@\docs\LICENSE; DestDir: {app}\docs; Components: runtime
-
-#Source: @IS_SOURCE@\README.txt; DestDir: {app}; Components: help
-#Source: @IS_SOURCE@\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help
 
     COUNTER=0
 	for FILE in $ALL_DOC ; do
@@ -3118,13 +3086,29 @@ fi
 		    LIBS="$LIBS $PGSQL_LIBS";
 			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR"
 
+			#headers needed to make libSQL_c_ecpg.so (esql_simple_ecpg.c):
+			AC_CHECK_HEADERS([ ecpgtype.h ecpglib.h ecpgerrno.h sqlca.h sql3types.h ])
+
             #reset:
 			unset ac_cv_header_libpq_fe_h
 			#This hader is NOT part of ecpg, it's part of libpq
 			AC_CHECK_HEADERS([ libpq-fe.h ])
 
-			if test "$ac_cv_header_libpq_fe_h" = "yes" ; then
+			if test "$ac_cv_header_libpq_fe_h" = "yes" \
+				&& test "$ac_cv_header_ecpgtype_h" = "yes" \
+				&& test "$ac_cv_header_ecpglib_h" = "yes" \
+				&& test "$ac_cv_header_ecpgerrno_h" = "yes" \
+				&& test "$ac_cv_header_sqlca_h" = "yes" \
+				&& test "$ac_cv_header_sql3types_h" = "yes" \
+				&& test "$ac_cv_header_libpq_fe_h" = "yes";
+			then
 				HAVE_PG_ESQL_HEADERS=yes
+            else
+		        HAVE_PG_ESQL_HEADERS=no
+            fi
+
+
+			if test "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 				ECPG_IFLAGS="$ECPG_IFLAGS -I$PGSQL_INCDIR"
 
 				#FIXME: how do we check for libraries versions?
@@ -3139,13 +3123,11 @@ fi
                     #POSTGRESDIR is really a ecpg installation dir, but...
 					POSTGRESDIR=$withval
                 else
-			        HAVE_PG_ESQL_HEADERS=no
 	                PG_ESQLC_IFXCOMPAT=no
 	                PG_ESQLC=no
 			    	AC_MSG_WARN(Disabled ecpg - no libs)
 				fi
 			else
-		        HAVE_PG_ESQL_HEADERS=no
                 PG_ESQLC_IFXCOMPAT=no
                 PG_ESQLC=no
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
@@ -5718,8 +5700,10 @@ PLUGIN_NO_LINKABLE=
         #an simple PG plug-in with limited functionality (by Mike)
 		PLUGIN_YES="$PLUGIN_YES SQL_pg"
 
-        #ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
-		PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
+		if test "$PG_ESQLC" != "no" ; then
+			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
+			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
+        fi
 
 if test "disabled" = ""; then
 		#"real" one written in CPP - Sergio never finised it... :-(

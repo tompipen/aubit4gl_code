@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.12 2003-10-08 01:36:43 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.13 2003-10-14 11:26:16 afalout Exp $
 ;
 
 
@@ -794,10 +794,20 @@ end;
 { Check if GTK libraries are installed }
 function GetGtkInstalled (): Boolean;
 begin
+  
   Exists := RegQueryStringValue (HKLM, 'Software\GTK\2.0', 'Path', GtkPath);
   if not Exists then begin
     Exists := RegQueryStringValue (HKCU, 'Software\GTK\2.0', 'Path', GtkPath);
   end;
+
+
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKLM, 'Software\GTK+ Development Environment\2.0', 'Path', GtkPath);
+  end;
+  if not Exists then begin
+    Exists := RegQueryStringValue (HKCU, 'Software\GTK+ Development Environment\2.0', 'Path', GtkPath);
+  end;
+
    Result := Exists
 end;
 
@@ -941,6 +951,14 @@ Returns the Index-th command line parameter passed to Setup.
 function ParamCount: Integer;
 Returns the number of command line parameters passed to Setup.
 }
+    Test :=ExpandConstant('{param:help|no}'); 	//Help option ( /help )
+	if Test = 'yes' then begin
+		MsgBox ('/DebugPaths=yes' #13 '''' +
+				'/DebugOptions=yes' #13 '''' +
+				'/help');
+        //FIXME: exit installation here...
+	end;
+
 
 	DebugPaths := False;
     Test :=ExpandConstant('{param:DebugPaths|no}');
