@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.50 2003-09-17 07:59:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.51 2003-09-19 14:44:01 mikeaubury Exp $
 #*/
 
 /**
@@ -666,6 +666,7 @@ process_key_press (struct s_inp_arr *arr, int a)
   FORM *mform;
   int at_first = 0;
   int at_last = 0;
+  int act_as;
 
   form = arr->currform;
   mform = form->form;
@@ -682,22 +683,24 @@ process_key_press (struct s_inp_arr *arr, int a)
 
   A4GL_debug ("In process_key_press : %d", a);
 
-
+  act_as=a;
 
 
   if (a == A4GL_key_val ("ACCEPT"))
     {
-      a = 27;
+      act_as = -99;
     }
 
   if (a == A4GL_key_val ("NEXT"))
     {
-      a = A4GLKEY_PGDN;
+      act_as = A4GLKEY_PGDN;
+	a=act_as;
     }
 
   if (a == A4GL_key_val ("PREV"))
     {
-      a = A4GLKEY_PGUP;
+      act_as = A4GLKEY_PGUP;
+	a=act_as;
     }
 
   if (a == A4GL_key_val ("INSERT"))
@@ -706,7 +709,8 @@ process_key_press (struct s_inp_arr *arr, int a)
 	{
 	  if (arr->no_arr < arr->arr_size)
 	    {
-	      a = A4GLKEY_INS;
+	      act_as = A4GLKEY_INS;
+	a=act_as;
 	    }
 	  else
 	    {
@@ -718,12 +722,14 @@ process_key_press (struct s_inp_arr *arr, int a)
 
   if (a == A4GL_key_val ("DELETE"))
     {
-      if (arr->allow_insert)
-	a = A4GLKEY_DEL;
+      if (arr->allow_insert) {
+		act_as= A4GLKEY_DEL;
+		a=act_as;
+	}
     }
 
 
-  switch (a)
+  switch (act_as)
     {
 
     case 127:
@@ -862,7 +868,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 			arr->curr_attrib);
       break;
 
-    case 27:
+    case -99:
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       break;
 

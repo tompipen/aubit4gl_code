@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.16 2003-09-17 22:13:22 mikeaubury Exp $
+# $Id: array.c,v 1.17 2003-09-19 14:44:01 mikeaubury Exp $
 #*/
 
 /**
@@ -320,6 +320,7 @@ disp_loop (struct s_disp_arr *arr)
   int redisp;
   int acckey;
   FORM *mform;
+  int act_as;
   A4GL_chkwin();
   curr_arr_disp = arr;
   form = arr->currform;
@@ -359,7 +360,7 @@ draw_arr (arr, -1, arr->arr_line);
   else
     {
 	//A4GL_zrefresh();
-
+      A4GL_reset_processed_onkey ();
       a = A4GL_getch_win ();
       A4GL_debug("Got a as %x\n",a);
       m_lastkey = a;
@@ -368,26 +369,29 @@ draw_arr (arr, -1, arr->arr_line);
 
 
   redisp = 0;
+  act_as=a;
 
   if (a==A4GL_key_val ("ACCEPT")) {
-	a=-99;
+	act_as=-99;
   }
 
 
   if (a == A4GL_key_val ("NEXT"))
     {
-      a = A4GLKEY_PGDN;
+      act_as = A4GLKEY_PGDN;
+	a=act_as;
     }
 
   if (a == A4GL_key_val ("PREV"))
     {
-      a = A4GLKEY_PGUP;
+      act_as = A4GLKEY_PGUP;
+	a=act_as;
     }
 
 
 
 
-  switch (a)
+  switch (act_as)
     {
 
     case 18:
@@ -517,8 +521,21 @@ draw_arr (arr, -1, arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
       return -10;
       break;
+
+
     case -99:
-      return 0;			/* ACCEPT */
+		A4GL_debug("Maybe ACCEPT");
+		arr->cntrl=-100;
+		return -90;
+		break;
+
+    case -100:
+	if (!A4GL_has_processed_onkey()) {
+		A4GL_debug("Is accept!");
+      		return 0;			/* ACCEPT */
+	}
+	return -1;
+	break;
 
     case 26:			/* control-z */
       return 0;
