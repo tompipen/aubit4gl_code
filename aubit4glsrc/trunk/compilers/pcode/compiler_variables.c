@@ -205,12 +205,22 @@ void
 add_variable_array (int type, struct variable_element *e, char *id,
 		    long *arrsize, struct param *set)
 {
-
+int as;
   if (arrsize)
     {
       e->i_arr_size[0] = arrsize[0];
       e->i_arr_size[1] = arrsize[1];
       e->i_arr_size[2] = arrsize[2];
+	if (arrsize[0]) as=arrsize[0]; else as=1;
+	if (arrsize[1]) as*=arrsize[1]; 
+	if (arrsize[2]) as*=arrsize[2]; 
+	printf("Arr dim : %d\n",as);
+	printf("%d %d\n",e->total_size,e->unit_size);
+	if (e->unit_size==0) {
+		e->unit_size=e->total_size;
+		e->total_size*=as;
+	}
+	printf("   -> %d %d\n",e->total_size,e->unit_size);
     }
   else
     {
@@ -661,6 +671,7 @@ new_variable_struct (struct define_variables *v)
     {
       n->next.next_val = 0;
     }
+printf("Setting total_size to %d\n",s);
   n->total_size = s;
   return n;
 }

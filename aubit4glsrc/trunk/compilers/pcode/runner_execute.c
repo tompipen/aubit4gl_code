@@ -92,8 +92,8 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	  if (b->c_vars.c_vars_val[a].category == CAT_STATIC)
 	    {
 	      b->c_vars.c_vars_val[a].category = CAT_ALLOC_STATIC;
-	      b->c_vars.c_vars_val[a].var->offset =
-		(long) malloc (b->c_vars.c_vars_val[a].var->total_size);
+	printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
+	      b->c_vars.c_vars_val[a].var->offset = (long) malloc (b->c_vars.c_vars_val[a].var->total_size);
 	    }
 
 	  if (b->c_vars.c_vars_val[a].category == CAT_EXTERN)
@@ -128,6 +128,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
     {
       callstack[callstack_cnt - 1].mem_for_vars =
 	(long) malloc (callstack[callstack_cnt - 1].mem_to_alloc);
+	printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
     }
   else
     {
@@ -191,6 +192,8 @@ set_var (long pc, struct cmd_set_var *sv)
       nsv.variable.sub.sub_len = use_var->sub.sub_len + 1;
       nsv.variable.sub.sub_val =
 	malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
+
+
       memcpy (nsv.variable.sub.sub_val, use_var->sub.sub_val,
 	      sizeof (struct use_variable_sub) * use_var->sub.sub_len);
 
