@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.72 2003-05-15 07:10:19 mikeaubury Exp $
+# $Id: lexer.c,v 1.73 2003-05-22 12:14:14 mikeaubury Exp $
 #*/
 
 /**
@@ -843,7 +843,7 @@ chk_word (FILE * f, char *str)
       return KW_CSTART;
     }
 
-  if (strcmp (p, "sql_code") == 0 && xccode == 0)
+  if (strcmp (p, "a4gl_start_sql_code") == 0 && xccode == 0)
     {
       xccode = 2;
       return KW_CSTART;

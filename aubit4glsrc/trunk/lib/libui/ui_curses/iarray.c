@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.17 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.18 2003-05-22 12:14:46 mikeaubury Exp $
 #*/
 
 /**
@@ -82,14 +82,14 @@ int A4GL_turn_field_on (FIELD * f);
 int A4GL_turn_field_on2 (FIELD * f, int a);
 void A4GL_debug_print_field_opts (FIELD * a);
 static int process_control_stack (struct s_inp_arr *arr);
-int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
+static int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
 
-void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
+static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
 			   char *parameter, int extent);
 
-void A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
+static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		  int attrib);
-void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
+static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 void *A4GL_memdup (void *ptr, int size);
 /*
 =====================================================================
@@ -876,10 +876,10 @@ A4GL_set_fields_inp_arr (void *vsio)
 
   if (nofields != nv - 1)
     {
-      debug
+      A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      exitwith
+      A4GL_exitwith
 	("Number of fields is not the same as the number of variables");
       return 0;
     }
@@ -976,9 +976,7 @@ init_arr_line (struct s_inp_arr *sio, int n)
 * this is read to determine when to call before/after fields etc
 *
 */
-void
-A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
-		      char *parameter, int extent)
+static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f, char *parameter, int extent)
 {
   char *field_name;
   int a;
@@ -1008,7 +1006,7 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
 
 
 /* This function determines if there is something to do on the control stack */
-int
+static int
 A4GL_has_something_on_control_stack (struct s_inp_arr *sio)
 {
   if (sio->fcntrl_cnt)
@@ -1022,7 +1020,7 @@ A4GL_has_something_on_control_stack (struct s_inp_arr *sio)
 /***************************************
 	This function creates the control stack and can also be used for clearing it down (if malloc_data is set to 0)
 ****************************************/
-void
+static void
 A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data)
 {
   int a;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.15 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: data_if.c,v 1.16 2003-05-22 12:14:46 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     int mode;
     void *currform;
     void *currentfield;
+    int curr_attrib;
     void *currentmetrics;
     int novars;
     void *vars;
@@ -99,6 +100,8 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     void *field_list;
     int field_changed;
     int help_no;
+    void *fcntrl;
+    int fcntrl_cnt;
   };
 
   struct s_s_screenio_1 *val;

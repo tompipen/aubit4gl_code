@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.24 2003-05-19 18:06:54 mikeaubury Exp $
+# $Id: ioform.c,v 1.25 2003-05-22 12:14:46 mikeaubury Exp $
 #*/
 
 /**
@@ -85,7 +85,7 @@ int fline;
 int ncol;
 char dbname[64];
 long inp_current_field = 0;
-int do_input_nowrap = 0;
+//int do_input_nowrap = 0;
 
 
 /*
@@ -500,6 +500,7 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   A4GL_debug ("Returning");
 }
 
+#ifdef MOVED_TO_FORMCONTROL
 /**
  *
  * @todo Describe function
@@ -535,6 +536,7 @@ A4GL_req_field_input (struct s_screenio *s, ...)
   free (ptr);
   return 1;
 }
+#endif
 
 /**
  *
@@ -575,6 +577,8 @@ A4GL_req_field_input_array (struct s_inp_arr *s, ...)
   return 1;
 }
 
+
+#ifdef MOVED_TO_FORM_CONTROL
 /**
  * 4GL CALL
  * @todo Describe function
@@ -593,6 +597,7 @@ A4GL_form_loop (void *vs)
   form = s->currform;
   A4GL_set_abort (0);
   A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
+
   if (form != A4GL_get_curr_form ())
     {
       A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form ());
@@ -602,8 +607,6 @@ A4GL_form_loop (void *vs)
 
   mform = form->form;
   A4GL_mja_wrefresh (currwin);
-
-
 
   if (s->mode != MODE_CONSTRUCT)
     a = A4GL_form_field_chk (s, 0);
@@ -617,7 +620,6 @@ A4GL_form_loop (void *vs)
   if (a < 0)
     {
       // Yep...
-
       return a;
     }
 
@@ -686,8 +688,11 @@ A4GL_form_loop (void *vs)
 
 }
 
+#endif
 
 
+
+#ifdef MOVED_TO_FORM_CONTROL
 /**
  *
  * @todo Describe function
@@ -843,6 +848,7 @@ A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
   A4GL_mja_refresh ();
   return a;
 }
+#endif 
 
 /**
  *
@@ -1326,7 +1332,6 @@ A4GL_set_fields (void *vsio)
   int nofields;
   struct s_screenio *sio;
   sio = vsio;
-
 
   wid = 0;
   if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS

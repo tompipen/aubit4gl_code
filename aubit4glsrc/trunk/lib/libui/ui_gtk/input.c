@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.10 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: input.c,v 1.11 2003-05-22 12:14:46 mikeaubury Exp $
 #*/
 
 /**
@@ -157,7 +157,7 @@ colname_for_field (GtkWidget * w)
  *   -
  */
 int
-A4GL_form_loop (void *vs)
+A4GL_form_loop (void *vs,int init)
 {
   int a;
   int action;

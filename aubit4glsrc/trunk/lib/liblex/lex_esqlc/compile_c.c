@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.43 2003-05-20 17:18:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.44 2003-05-22 12:14:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2710,27 +2710,27 @@ void
 print_input_2 (char *s)
 {
 
-  if (strncmp (s, "inp_arr", 7) != 0)
-    {				// Not an input array...
-      printc ("if (_fld_dr== -95) {/* after input */\n");
-      printc ("   break;\n}\n");
-      printc ("if (_fld_dr== -98) {/* before field */\n");
-      printc
-	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
-      printc ("_fld_dr=%s;_forminit=0;\n", s);
-      printc ("if (_fld_dr== -1) {/* after field */\n");
-      printc
-	("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
-      printc ("if (_fld_dr==0) { /* after input 2 */\n");
-      printc ("   _fld_dr= -95;continue;\n}\n");
-      add_continue_blockcommand ("INPUT");
-      printc ("\n}\n");
-      pop_blockcommand ("INPUT");
-      printc ("}\n");
-
-    }
-  else
-    {
+  //if (strncmp (s, "inp_arr", 7) != 0)
+    //{				// Not an input array...
+      //printc ("if (_fld_dr== -95) {/* after input */\n");
+      //printc ("   break;\n}\n");
+      //printc ("if (_fld_dr== -98) {/* before field */\n");
+      //printc
+	//("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+      //printc ("_fld_dr=%s;_forminit=0;\n", s);
+      //printc ("if (_fld_dr== -1) {/* after field */\n");
+      //printc
+	//("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+      //printc ("if (_fld_dr==0) { /* after input 2 */\n");
+      //printc ("   _fld_dr= -95;continue;\n}\n");
+      //add_continue_blockcommand ("INPUT");
+      //printc ("\n}\n");
+      //pop_blockcommand ("INPUT");
+      //printc ("}\n");
+//
+    //}
+  //else
+    //{
       printc ("if (_fld_dr== -95) {/* after input */\n");
       printc ("   break;\n}\n");
       printc ("if (_fld_dr== -197) {/* before field */\n");
@@ -2746,7 +2746,7 @@ print_input_2 (char *s)
       printc ("\n}\n");
       pop_blockcommand ("INPUT");
       printc ("}\n");
-    }
+    //}
 }
 
 
@@ -2874,7 +2874,7 @@ char *
 A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
-    return "A4GL_form_loop(&_inp_io)";
+    return "A4GL_form_loop(&_inp_io,_forminit)";
 
   return "";
 }

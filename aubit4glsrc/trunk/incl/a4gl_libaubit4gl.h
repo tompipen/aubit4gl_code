@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.54 2003-05-20 20:25:50 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.55 2003-05-22 12:14:46 mikeaubury Exp $
 #
 */
 
@@ -1327,6 +1327,7 @@ extern "C"
     int mode;
     struct s_form_dets *currform;
     void *currentfield;
+    int curr_attrib;
     struct s_metrics *currentmetrics;
     int novars;
     struct BINDING *vars;
@@ -1335,9 +1336,8 @@ extern "C"
     void **field_list;
     int field_changed;
     int help_no;
-    //struct        s_formcontrol msgs[10];
-    //int   msg_cnt;
-
+    struct s_formcontrol *fcntrl;
+    int fcntrl_cnt;
   };
 
   struct s_disp_arr
