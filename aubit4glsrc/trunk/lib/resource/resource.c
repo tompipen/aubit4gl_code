@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.55 2003-12-10 20:45:20 mikeaubury Exp $
+# $Id: resource.c,v 1.56 2003-12-18 20:41:46 mikeaubury Exp $
 #
 */
 
@@ -135,6 +135,7 @@ struct str_resource builtin_resource[] = {
   {"ACLCCOMP", "cc"},
   {"ACL_MOUSE", "N"},
   {"AUBIT_Y2K", "70"},
+
   {"MAP4GL", "N"},
   {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
@@ -285,6 +286,7 @@ struct str_resource builtin_resource[] = {
   /* all platforms Compilation options */
   {"A4GL_LINK_LIBS", "-laubit4gl"},
   {"A4GL_C_COMP", "gcc"},
+  {"A4GL_RDYNAMIC", "-rdynamic"},
 
   /* 
      extensions used when invoking C compiler from 4glc

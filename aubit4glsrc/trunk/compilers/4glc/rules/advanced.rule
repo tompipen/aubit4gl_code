@@ -43,7 +43,7 @@ remote_func_list :  remote_func |  remote_func_list COMMA remote_func
 remote_func : identifier {
 	print_remote_func($<str>1);
 	sprintf($<str>$,
-		"unregister_func(\"%s\",%s%s);\n",
+		"A4GL_unregister_func(\"%s\",%s%s);\n",
 			$<str>1,
 			(char *)get_namespace($<str>1),
 			$<str>1

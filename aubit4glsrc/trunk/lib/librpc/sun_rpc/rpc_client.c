@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.13 2003-05-15 07:10:44 mikeaubury Exp $
+# $Id: rpc_client.c,v 1.14 2003-12-18 20:41:46 mikeaubury Exp $
 #*/
 
 /**
@@ -166,10 +166,6 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
   result_1 = A4GL_call_remote_func_1 (call_remote_func_1_arg1, clnt);
 #endif
 
-  A4GL_debug ("Program returns status %d",
-	 result_1->return_values_val[0].single_dtype_u.longval);
-  A4GL_debug ("Number of returned variables=%d", result_1->return_values_len - 1);
-
   A4GL_debug ("After RPC Call");
 
   if (result_1 == NULL)
@@ -177,6 +173,9 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
       A4GL_exitwith ("Call failed");
       return 0;
     }
+
+  A4GL_debug ("Program returns status %d", result_1->return_values_val[0].single_dtype_u.longval);
+  A4GL_debug ("Number of returned variables=%d", result_1->return_values_len - 1);
 
   for (a = 1; a <= result_1->return_values_len - 1; a++)
     {

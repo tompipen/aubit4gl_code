@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.118 2003-12-17 16:02:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.119 2003-12-18 20:41:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1771,8 +1771,8 @@ print_remote_func (char *identifier)
   //printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);
   add_function_to_header (identifier, 1);
   printc
-    ("a4gl_status=0;register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n",
-     identifier, get_namespace (identifier), yylineno);
+    ("a4gl_status=0;A4GL_register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n",
+     identifier, get_namespace (identifier), identifier,yylineno);
 }
 
 
@@ -2004,7 +2004,7 @@ print_call_external (char *host, char *func, char *port, int nargs)
 {
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("_retvars=remote_func_call(%s,%s,%s,%d);\n", host, func,
+  printc ("_retvars=A4GL_remote_func_call(%s,%s,%s,%d);\n", host, func,
 	  port, nargs);
 }
 

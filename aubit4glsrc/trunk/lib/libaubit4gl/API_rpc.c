@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.12 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: API_rpc.c,v 1.13 2003-12-18 20:41:46 mikeaubury Exp $
 #
 */
 
@@ -105,9 +105,35 @@ A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
   A4GL_debug ("remote_func_call - libptr=%p\n");
   if (libptr == 0)
     A4GLRPC_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "remote_func_call");
+  A4GL_func = A4GL_find_func (libptr, "A4GL_remote_func_call");
   return A4GL_func (host, async, funcname, port, np);
+
 }
+
+
+int A4GL_register_func(char *s,void *ptr) {
+  A4GL_debug ("remote_func_call - libptr=%p\n");
+  if (libptr == 0) A4GLRPC_initlib ();
+  A4GL_func = A4GL_find_func (libptr, "A4GL_register_func");
+  return A4GL_func (s,ptr);
+}
+
+
+int A4GL_unregister_func(char *s,void *ptr) {
+  A4GL_debug ("remote_func_call - libptr=%p\n");
+  if (libptr == 0) A4GLRPC_initlib ();
+  A4GL_func = A4GL_find_func (libptr, "A4GL_unregister_func");
+  return A4GL_func (s,ptr);
+}
+
+int A4GL_server_run(long service) {
+  A4GL_debug ("remote_func_call - libptr=%p\n");
+  if (libptr == 0) A4GLRPC_initlib ();
+  A4GL_func = A4GL_find_func (libptr, "A4GL_server_run");
+  return A4GL_func (service);
+}
+
+
 
 
 /* ============================== EOF ================================= */

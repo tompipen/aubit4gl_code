@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.54 2003-11-11 11:33:56 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.55 2003-12-18 20:41:46 mikeaubury Exp $
 #
 */
 
@@ -372,7 +372,13 @@ int rf=0;
     }
   acl_free (s);
   if (a!=2) {
-	if (rf) A4GL_zrefresh ();
+	if (rf) {
+		if (A4GL_screen_mode(-1)) {
+			if (!A4GL_isyes(acl_getenv("NO_REFRESH_AFTER_SYSTEM"))) {
+			 	A4GL_zrefresh ();
+			}
+		}
+	}
   }
 }
 
