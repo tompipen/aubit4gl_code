@@ -360,6 +360,7 @@ repeat_query: ;
 
 					while (1) {
 					int b;
+					int done_once=0;
 					char buff[244];
 						A4GL_debug("Fetching..");
 						b=execute_sql_fetch(&raffected);
@@ -367,7 +368,15 @@ repeat_query: ;
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
 							while (outlines>=display_lines || (outlines && b!=0)) {
+								done_once=1;
 								aclfgl_paginate(0);
+								rpaginate=A4GL_pop_int();
+								if (rpaginate!=0) break;
+								fetchFirst=1;
+							}
+
+							if (outlines && done_once) {
+								aclfgl_paginate_always(0);
 								rpaginate=A4GL_pop_int();
 								if (rpaginate!=0) break;
 								fetchFirst=1;

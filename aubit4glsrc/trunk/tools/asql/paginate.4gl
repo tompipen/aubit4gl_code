@@ -39,6 +39,17 @@ extern int display_lines;
 endcode
 
 FUNCTION paginate() 
+	return paginate_internal(0)
+END FUNCTION
+
+FUNCTION paginate_always() 
+	return paginate_internal(1)
+END FUNCTION
+
+
+
+FUNCTION paginate_internal(lv_always) 
+define lv_always integer
 define buff char(255)
 define lv_cnt integer
 define lv_a integer
@@ -86,7 +97,8 @@ if (lv_cnt==0) outlines=0;
 endcode
 set pause mode off
 code
-	if (lv_cnt>=display_lines) {
+	if (lv_cnt>=display_lines || lv_always) {
+
 		aclfgl_display_menu(0);
 		lv_action=A4GL_pop_int();
 
@@ -138,7 +150,6 @@ END FUNCTION
 
 FUNCTION display_menu()
 define lv_action integer
-#set pause mode off
 		MENU "DISPLAY"
 			COMMAND "Next" "Display next page of information"
 				let lv_action=0 exit menu
