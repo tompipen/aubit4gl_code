@@ -1,0 +1,171 @@
+@(#)fglbld.notes	2.2
+
+Installation notes for fglbld
+=============================
+
+The shell script fglbld expects to find several source files in
+
+        ${FGLBLDDIR}
+
+This value should be adjusted to the directory where the files
+listed below are installed:
+
+        perform.4gl
+        perfaux.4gl
+        perform.msg
+        perform.mk
+		dlist.c
+        dlist.h
+        dlistint.c
+        dliststr.c
+        dlistdbl.c
+        dlistdec.c
+        popstr.c
+		repdest.4gl
+		report.c
+		makefile
+		fglbld.4ge
+		fglbld.alt
+
+The shell script sets up some crucial variables (FGLBLDDIR is
+one, DBPATH another) and then executes the I4GL program
+fglbld.4ge which is the users interface to the I4GL code
+generator.
+
+The program gives a menu which currently has two choices, SPI and
+Exit; this list will be increased in time.  Choosing SPI throws
+up a form.  The user enters a database name, and then a table name
+and a column name.  For the table names, the CONTROL-B key pops up
+a window which allows you to choose the table to work with. 
+The first time the pop-up is used, you are automatically asked to
+specify the search criteria on names or table numbers;
+subsequently, you are offered a menu which gives you the option
+of using the same list as last time or of specifying a new query.
+The choice is indicated by moving the cursor onto the relevant
+row and hitting ESC (it is a display array).  There is a similar
+facility with the column names, except that the list of column
+names is fixed; they possible names are fixed by the current
+choice of table.  The user also needs to specify the menu name
+that will be shown on the SPI and the basename of the files to
+be generated.
+
+The second half of the screen defines the sets of code that
+should be generated.  If users should be allowed to add rows of
+data, the sub-options BEFORE FIELD, AFTER FIELD, CONTROL-B and
+CONTROL-P can be specified; this affects the default code
+inserted into the INPUT statement that is generated.  CONTROL-P
+allows the user to recall the previous value in a field.  At the
+moment, the CONTROL-B code is not effective; it would be used to
+implement pop-up menus.  If users cannot add data, the
+sub-options are not editable.  The other options specify whether
+the user may update or delete data, whether a report should be
+available or not, and whether the shell escape option should be
+implemented.
+
+The program then runs a report which generates a shell script
+which runs fglbld.alt, and this actually generates the source
+code and forms.  The system is currently configured to work using
+two libraries, one called libgeneral.a and one called libdlist.a,
+which are in a directory specified in the fglbld shell script.
+The compiling is done by make; it can be interrupted if required.
+To recompile later, run "make -f basename.mk" where basename is
+what you specified as the command file name.
+
+It creates a default form, a default message file, a makefile 
+and a simplified perform interface for the table.  The main 
+program set some optionis, initialises the system, calls the main
+SPI routine, and then closes the system.  As part of a larger
+program, the open and close would be called once, and the "do"
+would be called possibly several times.
+
+The options provided as standard by this program are:
+
+        Query
+        Next
+        Previous
+        Add
+        Delete
+        Update
+        Report
+        Exit
+
+Some hidden options are provided:
+
+        ! -- shell escape
+        F -- first row
+        L -- last row
+        C -- current row
+		S -- re-execute the enquiry
+		G -- goto the specified selection
+
+The 16N (for 16 rows further on) and 5P (for 5 rows further 
+back) notatations are supported too.
+
+The input routine supports the CONTROL-P for previous value 
+convention.  Help is generally avaiolable using ^W; in an input 
+or update, field level help is available using ^F.  Default help 
+messages are provided.
+
+One important feature of this code is that there is only one 
+INPUT statement; this means that the same validation is applied 
+to all INPUT and UPDATE operations.  One side effect of this is 
+that the defaults specified on the form are ignored; they should 
+be specified using upscol.  The single INPUT statement can be 
+modified to validate the data.
+
+There is one problem not addressed by this program: if any of 
+the character fields are so long that the form generator splits 
+the field over several lines, the program will fail when it is 
+run with an error message about input record and field list 
+counts differ.  The only ways around this are to edit the form 
+to concatenate the split fields, or, if the field will not fit 
+onto a single screen line, you will have to modify the input 
+code inside the input routine.  The shell script does produce a 
+warning that you will have to edit the form file.
+
+The program produced always needs some customisation.
+
+The report produced is a variant on the layout produced by EVERY 
+ROW; the main difference being that  PAGE HEADER, PAGE TRAILER, 
+FIRST PAGE HEADER are specified -- this allows the report to be 
+configured to the screen or the printer at run time.  The form 
+is just a slightly modified default form -- that too will probably
+need editing.
+
+The code does transactions if there is a transaction log on the 
+database.  The add code is designed to loop until the interrupt 
+key (denoted INTR in the message) is hit; all the rows added 
+form a single transaction.  Each update and delete is a 
+singleton transaction (if transactions are used).
+
+This code does not use a SCROLL CURSOR at all; there is no 
+mechanism for changing the data selected via a scroll cursor 
+except by closing and re-opening the cursor.  Instead, the bits 
+of C code provided are used to maintain a doubly-linked list of 
+the items in the current list of data.  There is a different set 
+of routines for each of the four main types of primary key:
+
+        dlistint.c supports SERIAL, INTEGER, SMALLINT and DATE
+        dliststr.c supports CHAR
+        dlistdbl.c supports FLOAT, SMALLFLOAT
+        dlistdec.c supports DECIMAL and MONEY
+		dlist.c    is a set of base routines used by all the above
+
+This version can handle many lists of any one type at a time. 
+
+Warnings:
+
+1.  The source is formatted with tabstops set at 4 (not 8).
+	To print sensibly, use: pr -e4 file.4gl
+
+2.  The code generated usually produces warnings about statements
+	not reached from the C compiler -- I wish ISI had a better
+	code generator.
+
+3.  This code has been tested, but there are bound to be problems
+	I have not thought of which it doesn't handle.  Please report
+	problems as you find them.
+
+Jonathan Leffler
+Sphinx Ltd.
+3rd August 1988

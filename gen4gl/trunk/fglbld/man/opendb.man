@@ -1,0 +1,46 @@
+'\" @(#)$Id: opendb.man,v 1.1.1.1 2002-06-15 05:07:09 afalout Exp $
+'\" @(#)Manual page: General Library -- Open database reliably
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:09 $)
+.TH OPEN_DB 3S "Sphinx Informix Tools"
+.SH NAME
+open_db \(em open a database reliably
+.SH SYNOPSIS
+function \fBopen_db\fP(dbase)
+ define
+  dbase char(10),
+  retval integer
+ ...
+ return retval
+.br
+end function
+.SH DESCRIPTION
+This function is written in I4GL  and has two purposes, one 
+straight-forward, the other somewhat controversial.
+The straight-forward application is to close the current database (if 
+any) and open another.
+Provided it has been called to open all the databases, it will do 
+this conservatively; if you re-open the current database, it does 
+nothing.
+.P
+The controversial side of this is that it also tries to modify the 
+database table \fBSystables\fP, something which can be done if you 
+are a DBA on the database.
+The modification it makes is to insert a name record into the database.
+This is a record with a \fBTabtype\fP of `D', and a \fBTabname\fP the 
+same as the name of the database, and a \fBTabid\fP of 10.
+This \fBTabid\fP is never used for any table by ISQL or I4GL; the 
+\fBTabid\fP for the \fBsyslog\fP entry is 0 (and it is an interesting 
+question how they get that value into what appears to be a serial column).
+The \fBTabtype\fPs in use are `T' for table, `V' for view, and `L' 
+for transaction log.
+The advantage of this is that it gives general-purpose programs a way 
+of detecting which database they are working with.
+.SH FILES
+.SH BUGS
+It is debatable whether the database modification is really acceptable.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

@@ -1,0 +1,25 @@
+'\" @(#)$Id: shell.man,v 1.1.1.1 2002-06-15 05:07:10 afalout Exp $
+'\" @(#)Manual page: General Library -- Run a shell escape
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:10 $)
+.TH SHELL 3S "Sphinx Informix Tools"
+.SH NAME
+shell_escape \(em run a command as a shell escape
+.SH SYNOPSIS
+function shell_escape()
+ ...
+.br
+end function
+.SH DESCRIPTION
+This function is normally called in an \s-2ON KEY\s0 statement.
+It prompts the user for a command (using an `!') and then executes the command, finally waiting for the user
+to hit another key before returning to the calling routine.
+.SH BUGS
+It should return with the exit status of the command that was executed.
+.P
+It should accept another `!' instead of any other character and loop to execute another command.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

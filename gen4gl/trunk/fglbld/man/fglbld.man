@@ -1,0 +1,322 @@
+'\" @(#)fglbld.man	1.2
+'\" @(#)Manual page: FGLBLD
+.ds fC "Version: 1.2 (88/09/26)
+.TH FGLBLD 1S "Sphinx Informix Tools"
+.SH NAME
+fglbld \(em Program Generator for Informix-4GL
+.SH SYNOPSIS
+\fBfglbld\fP
+.SH DESCRIPTION
+\fBFglbld\fP is a program generator for Informix-4GL.
+It generates 4 types of stylised code.
+The main one is the SPI \(em Simplified Perform Interface.
+The others are conditional and unconditional pop-up selections
+and record selection code.
+In addition, there is an interface which allows the user to edit
+any of the files created using \fBfglbld\fP, and to re-build any
+applications and run them.
+.P
+The program itself is written in \s-2I4GL\s0.
+Occasionally, it uses some of the code it generates, but
+it does not do this everywhere it could (or should).
+It makes extensive use of shell scripts to generate the
+code; it needs the facilities provided by tools like \fBsed\fP.
+The general method of operation is to get the user to enter the
+parameters for the code to produced using \s-2I4GL\s0 facilities
+to validate this, and it the produces a one-off shell script to
+run the appropriate code-generator shell script.
+.SH "SPI"
+An SPI is similar to Informix-SQL Perform in appearance and 
+functionality, but lacks the \fBTable\fP, \fBScreen\fP, \fBMaster\fP, 
+\fBDetail\fP, \fBOutput\fP and \fBCurrent\fP options.
+The Perform \fBRemove\fP option is named \fBDelete\fP (but \fBAdd\fP 
+does not become \fBInsert\fP), and there is normally a \fBReport\fP option.
+The \fBAdd\fP, \fBDelete\fP, \fBUpdate\fP and \fBReport\fP options 
+can be included or omitted separately.
+In addition, there are a collection of hidden options for moving the 
+cursor: `F' for the first row in the list, `L' for the last row, and 
+`G' to go to a particular row number.
+The `C' option re-fetches and displays the current row (similar to 
+\fBCurrent\fP in the real Perform), and `S' re-executes the same 
+enquiry as last time.
+There is an optional hidden shell escape invoked by `!'.
+.P
+To generate an SPI, you must specify the name of the database,
+the name of the table, the name of the primary key column
+(there are F5/control-B pop-up windows to help choose the table and
+columns), the title for the menu and the base names for the files
+containing the generated code.
+Additionally, you can configure the options that are included;
+the default configuration is to include them all.
+.P
+The \s-2I4GL\s0 code that is generated comes in 5 files, and the names below
+assume the user specified a basename for the files of `xyz'.
+.sp
+  1. xyzg.4gl \(em globals
+  2. xyzc.4gl \(em \s-2RDSQL\s0 cursor handling
+  3. xyzi.4gl \(em \s-2INPUT\s0 and \s-2DISPLAY\s0 handling
+  4. xyzm.4gl \(em main program plus some standard facilities
+  5. xyzr.4gl \(em report generation facilities
+.P
+There are a number of other files also generated.
+.sp
+  1. xyz.per \(em a default form, slightly modified
+  2. xyz.msg \(em a default list of help messages
+  3. xyz.mk\0 \(em a makefile to build the code
+.P
+There are also a number of standard files which are normally
+created; these should not need changing ever, and may well be
+included in a library somewhere.
+Only one of the files 3a-d is produced for any one SPI.
+.sp
+  1.\0 dlist.h \(em C include file
+  2.\0 dlist.c \(em D-list maintenance routines
+  3a. dlistint.c \(em \s-2I4GL\s0 interface to D-lists for integers
+  3b. dliststr.c \(em \s-2I4GL\s0 interface to D-lists for strings
+  3c. dlistdec.c \(em \s-2I4GL\s0 interface to D-lists for decimals
+  3d. dlistdbl.c \(em \s-2I4GL\s0 interface to D-lists for floats
+  4.\0 perfaux.4gl \(em \s-2I4GL\s0 support code
+.P
+This code does not use a \s-2SCROLL CURSOR\s0 at all; there is no 
+mechanism for changing the data selected via a scroll cursor 
+except by closing and re-opening the cursor.
+Instead, the bits of C code provided are used to maintain a 
+doubly-linked list (D-list) of the items in the current list of data.
+There is a different set of routines for each of the four main types 
+of primary key.
+.SH "GENERAL COMMENTS"
+What follows is a brief guide to what is found in each of the
+files, and how this code might need modifying.
+All the variables and functions include the name of the table;
+this allows several separate SPIs to be incorporated into one
+program without extensive rewriting.
+It does, however, mean that you need a modern linker which
+handles long (significantly more than 8 characters) external names.
+If this is not the case, you will need to do a global edit on the
+generated source.
+Most of the generated routines, and all the global variables, have 
+names in the form xy_table; those names that don't conform to this 
+have a longer prefix before the underscore.
+The prefix is semi-mnemonic, but two letters are not very descriptive.
+.P
+There is one problem not addressed by this program: if any of 
+the character fields are so long that the form generator splits 
+the field over several lines, the program will fail when it is 
+run with an error message about input record and field list 
+counts differ.
+The only ways around this are to edit the form 
+to concatenate the split fields, or, if the field will not fit 
+onto a single screen line, you will have to modify the input 
+code inside the input routine.
+The shell script does produce a 
+warning that you will have to edit the form file.
+.P
+The program produced always needs some customisation.
+.P
+The code does transactions by calling a set of routines which handle 
+transactions correctly regardless of whether there is a transaction 
+log on the database or not.
+(The routines detect whether there is a log on the database:
+if there is a log, they execute the transaction statement;
+if there is no log, they do nothing).
+The add code is designed to loop until the interrupt key
+(denoted \s-2INTR\s0 in the message) is hit;
+all the rows added form a single transaction.
+Each update and delete is a singleton transaction.
+.SH GLOBALS
+This file, xyzg.4gl, contains three records shaped like the table and a
+control record which has a standard structure documenting the
+state of the SPI when it is running.
+You might need to add some extra variables, but you should not
+make any other changes.
+.SH MAIN
+This file, xyzm.4gl, contains the main function which sets some
+options and then invokes the SPI code.
+This often needs to be changed into a function so that it can be
+called from some other menu system.
+It also contains the main SPI menu, which may need an option
+added, or maybe one will need deleting or need its title changed.
+There is a controlling function for each of the add, update and
+remove options, assuming they were all specified:
+.sp
+  1. ins_table \(em handle insert
+  2. upd_table \(em handle update
+  3. del_table \(em handle delete
+.P
+Finally, there is a routine which is used to control the D-lists.
+.sp
+  1. cursor_table \(em handle D-list
+.P
+All these functions make extensive use of routines in the other
+files; there is seldom any need to make any changes to any of them.
+.SH CURSORS
+This file, xyzc.4gl, usually needs to be changed.
+Some routines contained in this file are only present if certain
+options were chosen when the SPI was generated.
+The following routines are always present:
+.sp
+  1. op_table \(em initialise SPI
+  2. cl_table \(em close SPI
+  3. cn_table \(em construct the query
+  4. query_table \(em handle query
+  5. new_table \(em generate data for D-list
+  6. iud_table \(em handle insert/delete/update operations
+  7. get_table \(em fetch row of data
+.P
+In addition, some of the following may be present:
+.sp
+  1. rn_table \(em report construct
+  2. rd_table \(em report driver
+  3. getu_table \(em get for update
+  4. endu_table \(em terminate update
+.P
+Most of these routines contain code that may need changing.
+\fBOp_table\fP contains some cursor declarations that may need to be
+changed; \fBcl_table\fP on the other hand seldom needs changing.
+Typically, the \fBget_table\fP and \fBgetu_table\fP functions will be
+extended to retrieve data from other tables.
+Since it is only possible to do updates on one table, the
+\fBgetu_table\fP function will have to contain two select statements 
+to do the work.
+\fBEndu_table\fP seldom needs changing.
+\fBQuery_table\fP seldom needs changing.
+\fBCn_table\fP frequently needs to be extended to present a better
+interface to the user; you may wish to let it generate the
+criterion on several tables instead of just one.
+\fBNew_table\fP is used to generate the data for the D-list and seldom
+needs changing.
+\fBIud_table\fP may occasionally need changing; it contains the only
+\s-2INSERT\s0, \s-2DELETE\s0 and \s-2UPDATE\s0 statements in the SPI.
+Typical changes might be to apply referential integrity checks to
+delete and update operations.
+If present, the \fBrd_table\fP and \fBrn_table\fP functions seldom need
+changing \(em \fBrn_table\fP uses \fBcn_table\fP to generate the string that
+is to be used to select the data.
+.SH INPUT
+This file, xyzi.4gl, will almost always need changing.
+It contains the only \s-2INPUT\s0 statement in the SPI, and you
+will normally need to provide validation for what the user enters.
+By default,  the SPI has a control-F field-level help facility
+contained in the function \fBhelp_table\fP, and a control-P
+facility which copies the previous value into the current field.
+Additionally, the value in the field is stored on entry to the
+field, and the previous field is recorded on exit from a field.
+This information allows you to write code that restores the value
+if what the user enters fails the validation, and also allows you
+to send the user to the correct next field.
+.P
+The input code is likely to change with the next release of
+\fBfglbld\fP to make it easier to apply the same validation and
+display code to each of the three cases control-P, control-B (F5)
+and \s-2AFTER FIELD\s0.
+.SH REPORTS
+This file, xyzr.4gl, contains the outline \s-2REPORT\s0 function,
+and the code needed to drive it.
+The report produced as standard is approximately equivalent to an
+\s-2EVERY ROW\s0 format section, but it has page headers and
+trailers and a written-out \s-2ON EVERY ROW\s0 block.
+The main reason for this is to ensure that the dynamic report
+configuration code is included correctly.
+The report driver function (included in the file xyzc.4gl to
+ensure that it can access the main enquiry cursor) uses the
+function \fBrl_table\fP to generate a line of data and pass it
+to the report proper for formatting.
+The function \fBrc_table\fP controls which set of data should be
+reported; the option are the data in the current list, repeating
+the main enquiry, generating a new enquiry for just reports,
+repeating the previous report enquiry, and dumping the entire table.
+.SH POP-UPS
+It is possible to generate two different types of pop-up code.
+One is an unconditional lookup for small tables or where some data
+will be passed to the lookup code to restrict the data to a small
+subset of the complete data.
+A conditional lookup allows the user to create a query to specify
+the data that should be shown; if there is a list of data, the
+same data can be shown again or a new query can be generated.
+.P
+This code is not properly integrated with \s-2I4GL\s0 and runs
+two different shell scripts which have reprehensible error
+recovery properties.
+.SH FETCHES
+A fetch routine is very quick and simple to generate; it takes
+the primary key value and collects the row of data from the
+database corresponding to the primary key.
+It has a one-deep memory which means that fetching the same data
+several times only results in database access.
+This obviously assumes that the fetched data does not change.
+.P
+It would be simple to provide an n-deep memory, with n = 2 being
+quite useful as validation code often tries to fetch a row of
+data and it turns out to be wrong and would like to fetch the
+original again.
+The replacement policy (for when the required data is not found)
+is the trickiest part of this code.
+.SH "OTHER FGLBLD OPTIONS"
+The Modify option allows you to specify a program to work with,
+and you can then modify the source, the form, the help file or
+the makefile as required.
+The system is menu driven and gives a sub-menu for modifying the
+source which allows you to edit any of the 5 SPI source files, or
+any other file.
+.P
+The \fBBuild\fP uses make to recompile the program.
+Note that it does not (cannot) use the \s-2I4GL\s0 for compiling source,
+so if there are any mistakes in the compiling, it is up to you to
+work out what needs editing and to look at the errors and so on.
+It is suggested that if a module fails to compile, you use the
+shell escape to run \s-2I4GL\s0 to compile and correct the module.
+.P
+The \fBRun\fP option runs the program that you have (presumably)
+just built.
+.SH INSTALLATION
+There are no guidelines for installing this product as yet.
+It is not really in a releasable form, not least because it makes
+extensive demands on the Sphinx Informix Tools Library,
+and this is not yet in a releasable form.
+.P
+As yet, it does not require any modifications to the \s-2I4GL\s0
+libraries as distributed by ISI.
+Future versions may require one or more patches to the
+\fBlibforms.a\fP library.
+The project change will use the \fBnext_field\fP() function.
+.SH FILES
+Lots and lots of them.
+Distribution list to be supplied later.
+.SH "SEE ALSO"
+Lots of things, especially the Sphinx Informix Tools Library.
+.SH "BUGS IN FGLBLD"
+Many of them.
+Please report any \fIyou\fP find to the author.
+.P
+The code for copying (control-P) the same table/column does not
+always handle the data type correctly.
+.P
+It is not possible to regenerate just one of the program files.
+.SH "BUGS IN GENERATED CODE"
+Sometimes, the cursor is sent via a \s-2NEXT FIELD\s0 into a
+\s-2SERIAL\s0 column field (or some other \s-2NOENTRY\s0 field).
+This locks the program (you have to log in at another terminal to
+kill it).
+It is usually noisy when this happens; the terminal is busy
+beeping away like mad.
+There is an argument for saying that this is a bug in
+\s-2I4GL\s0; if the cursor is sent to a \s-2NOENTRY\s0 field, it
+should move on to the next available \s-2ENTRY\s0 field in the
+list it is working with.
+.P
+It is too easy to get inconsistent validation of data in the
+input code.
+This will be fixed if the \fBnext_field\fP version is used.
+.P
+The source is formatted with tabstops set at 4 (not 8).
+To print sensibly, use: pr -e4 file.4gl
+.P
+The code generated usually produces warnings about statements
+not reached from the C compiler \(em I wish ISI had a better
+code generator.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

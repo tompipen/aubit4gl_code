@@ -1,0 +1,183 @@
+'\" @(#)$Id: dlistint.man,v 1.1.1.1 2002-06-15 05:07:07 afalout Exp $
+'\" @(#)Manual page: DLISTINT -- Double-linked list support routines
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:07 $)
+.TH DLISTINT 3S "Sphinx Informix Tools"
+.SH NAME
+dlistint \(em Doubly-linked list maintenance in I4GL
+(\s-2INTEGER\s0, \s-2SMALLINT\s0 and \s-2DATE\s0)
+.SH SYNOPSIS
+define sc_error integer { Not available in calling code }
+.sp
+function sc_mkint()
+ define index integer
+ ...
+ return index
+.br
+end function
+.sp
+function sc_rmint(index)
+ define index integer
+ ...
+ return sc_error
+.br
+end function
+.sp
+function sc_insint(index, keyval)
+ define index integer
+ define keyval integer
+ ...
+ return sc_error
+.br
+end function
+.sp
+function sc_delint(index)
+.br
+define index integer
+ ...
+ return sc_error
+.br
+end function
+.br
+.sp
+function sc_updint(index, keyval)
+ define index integer
+ define keyval integer
+ ...
+ return sc_error
+.br
+end function
+.sp
+function sc_getint(index, flag, offset)
+ define index integer
+ define flag integer
+ define offset integer
+ ...
+ return sc_error, value
+.br
+end function
+.sp
+function sc_cntint(index)
+ define index integer
+ ...
+ return sc_error
+.br
+end function
+.sp
+function sc_numint(index)
+ define index integer
+ ...
+ return sc_error
+.br
+end function
+.SH DESCRIPTION
+There are 9 routines in this package which provide a fairly
+complete service for handling doubly-linked lists (Dlists)
+of the I4GL \s-2INTEGER\s0, \s-2SMALLINT\s0 or \s-2DATE\s0 data types.
+Lists are created (\fBsc_mkint\fP) and destroyed (\fBsc_rmint\fP).
+Items can be inserted (\fBsc_insint\fP), deleted (\fBsc_delint\fP)
+and changed (\fBsc_updint\fP).
+Items can be retrieved by position in the list (\fBsc_getint\fP),
+and the size of the list can be determined by \fBsc_cntint\fP, and
+the current position discovered by \fBsc_numint\fP.
+Each list has a current position recorded (provided there are any
+items in the list).
+The routines are described in the sections below.
+.SH SC_MKINT
+This routine either returns the index number of a new Dlist (Dlist#)
+or a negative number indicating an error.
+This routine must be called before any of the other routines are used.
+.SH SC_RMINT
+This routine is given a Dlist# and deletes all the records in the
+list and then removes the list.
+Further calls using this Dlist# will fail with EINVARG.
+The Dlist# may be re-used by the Dlist package after another call
+to \fBsc_mkint\fP.
+.SH SC_INSINT
+This routine is given two arguments, a Dlist# and an integer value.
+The value will be inserted into the list after the current position,
+and becomes the current item.
+.SH SC_DELINT
+This routine is given a Dlist# and deletes the current item.
+.SH SC_UPDINT
+This routine expects a Dlist# and an integer value.
+The current item is deleted and the value passed is inserted in
+its place.
+.SH SC_ZAPINT
+This routine is given a Dlist# and deletes all the items in the
+list; the list remains active but is empty.
+.SH SC_GETINT
+This routine is given three arguments; the Dlist#, a flag
+indicating the action and an offset qualifying the action.
+The flag may take any of the following values:
+.sp
+`F' \(em relative position
+.br
+`L' \(em last position
+.br
+`N' \(em next position
+.br
+`P' \(em previous position
+.br
+`C' \(em current position
+.br
+`A' \(em absolute position
+.br
+`R' \(em relative position
+.sp
+The first, last and current options ignore the offset.
+The relative option takes a signed offset and moves forward (if
+positive) or backward (if negative) through the list.
+A zero offset fetches the current item.
+The other options expect a positive offset.
+The next option moves forward by the relevant number of steps,
+the previous option moves back;
+if the offset is zero, the move is by one item.
+The absolute option moves from the start of the list to the
+specified offset.
+If this offset is zero, no row is returned (it returns a null
+value), but no error is indicated either.
+This behaviour is useful when repositioning the current item
+after inserting some data into what was an empty list.
+If the offset would go beyond the end of the list (either
+forwards or backwards), the first or last item is fetched as
+appropriate; no error is signalled unless the list is empty.
+.P
+The routine returns the error status and the value from the list.
+If there is an error status returned, the contents of the value
+variable is indeterminate.
+.SH SC_CNTINT
+This routine expects a Dlist# and returns the number of items on
+the Dlist.
+.SH SC_NUMINT
+This routine expects a Dlist# and returns the number of the
+current item in the list.
+.SH "ERROR RETURN VALUES"
+The error values returned are:
+.sp
+\00 \(em ENOERROR no error
+.br
+\-1 \(em ENOLIST no items in the list
+.br
+\-2 \(em EINVARG invalid argument
+.br
+\-3 \(em ENOMEM no more memory
+.SH FILES
+dlist.h \(em interfaces and constants
+.br
+dlistint.c \(em code
+.br
+dltstint.4gl \(em a verification test program
+.sp
+This code is purely interface code and uses the routine provided
+by the Dlist package (DLIST(3S)) to actually store the data.
+.SH BUGS
+None known.
+.SH DEFICIENCIES
+There is no mechanism for searching by value rather than by
+position in list.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+16th November 1988

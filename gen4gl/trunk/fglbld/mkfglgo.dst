@@ -1,0 +1,48 @@
+:	"@(#)mkfglgo.dst	6.3 89/11/14"
+#
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	@(#)Create Custom I4GL-RDS Runners
+#	Environment setting front-end
+
+arg0=`basename $0 .sh`
+arg0=`basename $0 .dst`
+
+FGLBLDDIR=XXFGLBLDDIR
+export FGLBLDDIR
+
+FGLGOFILES=$FGLBLDDIR/etc/fglgo.files
+
+if [ ! -f $FGLGOFILES ]
+then
+	echo "$arg0: cannot locate file $FGLGOFILES" >&2
+	exit 1
+elif [ ! -r $FGLGOFILES ]
+then
+	echo "$arg0: cannot read file $FGLGOFILES" >&2
+	exit 1
+fi
+
+cat $FGLGOFILES |
+while read file junk
+do
+	case $file in
+	\#*)	continue;;
+	"")		continue;;
+	esac
+	if [ ! -f $FGLBLDDIR/$file ]
+	then
+		echo "$arg0: cannot locate file $FGLBLDDIR/$file" >&2
+		exit 1
+	elif [ ! -r $FGLBLDDIR/$file ]
+	then	
+		echo "$arg0: cannot read file $FGLBLDDIR/$file" >&2
+		exit 1
+	else
+		cp $FGLBLDDIR/$file .
+	fi
+done
+
+if [ $? = 0 ]
+then
+	${MAKE:-make} -f i4glrds.mk
+fi

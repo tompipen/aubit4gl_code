@@ -1,0 +1,23 @@
+'\" @(#)$Id: getenv.man,v 1.1.1.1 2002-06-15 05:07:09 afalout Exp $
+'\" @(#)Manual page: General Library -- Get environment variable
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:09 $)
+.TH GETENVIRON 3S "Sphinx Informix Tools"
+.SH NAME
+getenviron \(em get value of environment variable
+.SH SYNOPSIS
+\fBfunction getenviron(varname)\fP
+.br
+define
+    varname char(80)
+.SH DESCRIPTION
+\fBGetenviron\fP returns the value of the environment variable
+specified by the argument varname.
+It returns \s-2NULL\s0 if there is no such environment variable.
+.SH "SEE ALSO"
+getenv(3)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988

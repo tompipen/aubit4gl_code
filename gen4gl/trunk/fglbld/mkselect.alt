@@ -1,0 +1,161 @@
+:	"@(#)$Id: mkselect.alt,v 1.1.1.1 2002-06-15 05:06:54 afalout Exp $"
+#
+#	@(#)Sphinx Informix Tools
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	@(#)Generate SELECT handling code for Informix 4GL
+#	@(#)Author: Jonathan Leffler, Sphinx Ltd.
+#	@(#)(C) Copyright Sphinx Ltd. 1988
+
+arg0=`basename $0`
+
+# Configuration Section
+FGLBLDDIR=${FGLBLDDIR:-/usr/fglbld}
+#FGLVERSION=I4GL1.00
+FGLVERSION=I4GL1.10
+# CASEFLAG=-i	# System V
+CASEFLAG=-y		# Xenix/V7/BSD
+# Default compiler is fglpc
+case "$FGLBLD_I4GL" in
+c4gl)	C4GL=c4gl;;
+*)		C4GL=fglpc;;
+esac
+# End of configuration section
+
+# Prevent SCCS expanding string
+WHATSTR="%""W""%"" ""%""E""%"
+FGLBLDSTR="FGLBLD Version 6.12 (04/04/1990)"
+
+# Database, table, column, etc
+: ${Xdbase:?"Xdbase is undefined"}
+: ${Xtable:?"Xtable is undefined"}
+: ${xtable:?"xtable is undefined"}
+: ${Xpkey:?"Xpkey is undefined"}
+: ${xpkey:?"xpkey is undefined"}
+: ${Xpktype:?"Xpktype is undefined"}
+: ${program:?"program is undefined"}
+
+# Determine whether PK is rowid
+if [ ${ROWID:-no} = no ]
+then
+	l1="s/^#NOROWID//"
+	l2="/^#ROWID/d"
+	Xtype="LIKE $Xtable.$Xpkey"
+else
+	l1="s/^#ROWID//"
+	l2="/^#NOROWID/d"
+	Xtype="INTEGER"
+fi
+
+# Set up various output file names
+FGL=${program}.4gl
+
+# Function to check for pre-existing files
+trace(){
+	echo "+ $*"
+	"$@"
+}
+checkfile(){
+	for cfile in $*
+	do
+		if [ -f $cfile ]
+		then
+			if [ -f o.$cfile ]
+			then
+				trace rm -f o.$cfile
+			fi
+			trace mv $cfile o.$cfile
+		fi
+	done
+}
+
+echo "Phase 1: Building source file"
+checkfile $FGL
+cat <<! |
+{
+	WHATSTR
+	@(#)Built by: FGLBLDSTR
+	@(#)Select record from Xtable
+}
+
+DATABASE Xdbase
+
+{ Module variables }
+DEFINE
+	sr_xtable	RECORD LIKE Xtable.*,	{ Saved record }
+#ROWID	rr_xtable	INTEGER,				{ Saved ROWID }
+	nr_xtable	RECORD LIKE Xtable.*,	{ Null record }
+	initialised	INTEGER,
+	sccs		CHAR(32)
+
+{ Select record corresponding to primary key of Xtable }
+FUNCTION sel_xtable(xpkey)
+
+	DEFINE
+		xpkey		Xtype,
+		braindamaged	CHAR(110),
+		r_xtable	RECORD LIKE Xtable.*
+
+	IF initialised = FALSE THEN
+		LET sccs = "WHATSTR"
+		INITIALIZE nr_xtable.* TO NULL
+		LET braindamaged =
+#NOROWID			"SELECT Xtable.*",
+#ROWID			"SELECT Xtable.ROWID, Xtable.*",
+			" FROM Xtable",
+			" WHERE Xtable.Xpkey = ?"
+		PREPARE st_select FROM braindamaged
+		DECLARE c_select CURSOR FOR st_select
+		LET initialised = TRUE
+#NOROWID		LET sr_xtable.xpkey = NULL
+#ROWID		LET rr_xtable = NULL
+	END IF
+
+	LET r_xtable.* = nr_xtable.*
+	CASE
+	WHEN xpkey IS NULL
+		{ Do nothing }
+#NOROWID	WHEN xpkey = sr_xtable.xpkey
+#ROWID	WHEN xpkey = rr_xtable
+		LET r_xtable.* = sr_xtable.*
+	OTHERWISE
+		OPEN c_select USING xpkey
+#NOROWID		FETCH c_select INTO r_xtable.*
+#ROWID		FETCH c_select INTO rr_xtable, r_xtable.*
+		IF STATUS = 0 THEN
+			LET sr_xtable.* = r_xtable.*
+		END IF
+		CLOSE c_select
+	END CASE
+
+	RETURN r_xtable.*
+
+END FUNCTION {sel_xtable}
+
+{ Invalidate cached data -- to be used in conjunction with updates }
+FUNCTION inv_xtable()
+
+#NOROWID	LET sr_xtable.xpkey = NULL
+#ROWID	LET rr_xtable = NULL
+
+END FUNCTION {inv_xtable}
+!
+
+sed -e "$l1" -e "$l2"\
+	-e "/^#/d"\
+	-e "s/Xdbase/$Xdbase/g" \
+	-e "s/Xtable/$Xtable/g" \
+	-e "s/xtable/$xtable/g" \
+	-e "s/Xpkey/$Xpkey/g" \
+	-e "s/xpkey/$xpkey/g" \
+	-e "s/Xtype/$Xtype/g" \
+	-e "s~WHATSTR~$WHATSTR~g" \
+	-e "s~FGLBLDSTR~$FGLBLDSTR~g" \
+	>$FGL
+
+echo "Phase 2: Compiling Source"
+echo "	$C4GL -c $FGL"
+$C4GL -c $FGL
+if [ -f ${program}.o ]
+then
+	rm -f ${program}.c ${program}.ec
+fi
