@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.12 2002-06-25 03:22:30 afalout Exp $
+# $Id: conv.c,v 1.13 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -602,6 +602,12 @@ dttodt (void *a, void *b, int size)
 {
   char buff[256];
   debug ("dttodt %p %p %d\n", a, b, size);
+  if (size==-1) {
+	memcpy(b,a,sizeof(struct a4gl_dtime));
+	return 0;
+  }
+
+
   if (dttoc (a, buff, 255))
     {
       return ctodt (buff, b, size);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
+# $Id: datatypes.c,v 1.8 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -101,7 +101,7 @@ Functions allowed :
 */
 
 
-
+void add_default_operations(void);
 struct s_datatype dtypes[MAX_DTYPE];
 
 
@@ -132,7 +132,7 @@ int 		aclfgl_load_datatype 	(int nargs);
 
 /**
  *
- * @todo Describe function
+ * Load a specified datatype into the system
  */
 int
 A4GLEXDATA_initlib (char *f)
@@ -178,16 +178,18 @@ init_datatypes(void)
 
 
 /**
- * Returns 1 on success
+ * Returns function pointer on success
  * return 0 on failure
  *
- * @todo Describe function
+ *  This function gets finds a datatype function for a given datatype ID
  */
 void *
 get_datatype_function_i(int a,char *funcname)
 {
 int n;
+	a=a&DTYPE_MASK;
 	if (!inited) init_datatypes();
+
 	for (n=0;n<dtypes[a].funcs_len;n++) {
 		if (strcmp(dtypes[a].funcs[n]->name,funcname)==0) return dtypes[a].funcs[n]->function;
 	}
@@ -200,7 +202,9 @@ int n;
  * Returns 1 on success
  * return 0 on failure
  *
- * @todo Describe function
+ * This function checks to see if a function is available for
+ * a specified datatype ID
+ *
  */
 int
 has_datatype_function_i(int a,char *funcname)
@@ -443,7 +447,7 @@ add_default_datatypes(void)
 	add_datatype("VARCHAR",   13,0);
 	add_datatype("INTERVAL",  14,0);
 	add_datatype("NCHAR",     15,0);
-
+	add_default_operations();
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.14 2002-06-25 03:22:30 afalout Exp $
+# $Id: fglwrap.c,v 1.15 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -150,6 +150,7 @@ fgl_end(void)
     #endif
 	  gotolinemode();
   }
+  close_database();
   exit (0);
 }
 

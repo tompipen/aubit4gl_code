@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.7 2002-06-25 03:22:29 afalout Exp $
+# $Id: builtin.c,v 1.8 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,7 @@
 	#include "a4gl_runtime_tui.h" 	/* push_int() */
 	#include "a4gl_aubit_lib.h" 	/* trim() etc. */
 	#include "a4gl_debug.h"
+	#include "a4gl_pointers.h"
 
 #else
 
@@ -732,6 +733,12 @@ fgl_fieldtouched(char *fieldname)
 void
 close_database(void)
 {
+  if (has_pointer ("default", SESSCODE))
+    {
+           A4GLSQL_close_session("default");
+           del_pointer("default",SESSCODE);
+    }
+    return;
     return;
 }
 

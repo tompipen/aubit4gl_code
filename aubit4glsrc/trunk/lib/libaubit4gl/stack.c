@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.18 2002-06-25 03:22:30 afalout Exp $
+# $Id: stack.c,v 1.19 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -737,7 +737,7 @@ push_param (void *p, int d)
   debug ("Checking 2nd");
   if (params_cnt > 1)
     {
-      dtype_2=params[params_cnt - 1].dtype;
+      dtype_2=params[params_cnt - 2].dtype;
       if (isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
 	  debug ("MJA2");
@@ -764,17 +764,45 @@ push_param (void *p, int d)
   if (dtype_2==-1) dtype_2=dtype_1;
 
   if (dtype_1!=-1) {
-	void (*function) (void);
+	void (*function) (int);
 	debug("Calling OP function");
 
-	function=find_op_function(dtype_1,dtype_2,d);
+	function=0;
+
+
+/* 
+	First - lets see if we have a OP_MATH function available
+*/
+	switch(d) {
+		case OP_ADD:
+		case OP_SUB:
+		case OP_MULT:
+		case OP_DIV:
+		case OP_POWER:
+		case OP_MOD:
+        	case OP_LESS_THAN:
+        	case OP_GREATER_THAN:
+        	case OP_LESS_THAN_EQ:
+        	case OP_GREATER_THAN_EQ:
+        	case OP_EQUAL:
+        	case OP_NOT_EQUAL:
+			function=find_op_function(dtype_2,dtype_1,OP_MATH);
+	}
+
+
+	if (function==0) {
+	/* Nope - try a specific */
+		function=find_op_function(dtype_2,dtype_1,d);
+	}
 
 
 	if (function) {
+		/* We've got something to play with*/
 		debug("Calling specified function for %d %d, %d",dtype_1&DTYPE_MASK,dtype_2&DTYPE_MASK,d);
-		function();
+		function(d);
 		return;
 	}
+
   }
 
 
@@ -1475,7 +1503,6 @@ debug_print_stack (void)
 {
   int a;
   char *buff;
-return;
   buff = new_string (2000);
 #ifdef DEBUG
   debug ("\n");

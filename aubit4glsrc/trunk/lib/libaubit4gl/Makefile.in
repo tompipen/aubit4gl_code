@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2002-06-25 03:22:29 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-06-25 09:33:51 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -46,7 +46,7 @@ CMODS_API   = \
 COMMONSRC= \
 	builtin.c builtin_d.c \
 	calldll.c conv.c \
-	data_if.c dates.c dmy.c debug.c datatypes.c \
+	data_if.c dates.c dmy.c  datatypes.c \
 	err.c error.c errfile.c extfile.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c \
@@ -54,14 +54,14 @@ COMMONSRC= \
 	io.c interval.c \
 	keys.c \
 	load.c \
-	match.c maths.c \
+	match.c maths.c ops.c \
 	others.c \
 	pointers.c \
 	read_dty.c report.c rexp2.c ../resource/resource.c \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-CMODS               =${COMMONSRC} ../generated/${CMODS_PROJECT} ${CMODS_API}
+CMODS               =${COMMONSRC} ../generated/${CMODS_PROJECT} ${CMODS_API} debug.o
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${CMODS:.c=.o}
 
@@ -224,6 +224,8 @@ API_lex.c: API_lex.spec
 API_%.o: API_%.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
+debug.o: debug.c
+	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
 #----------------------------------- EOF -------------------------------
 

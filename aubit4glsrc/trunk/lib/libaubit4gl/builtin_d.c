@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
+# $Id: builtin_d.c,v 1.8 2002-06-25 09:33:52 mikeaubury Exp $
 #
 */
 
@@ -758,6 +758,8 @@ push_interval(struct ival *p)
         d->ltime=p->ltime;
         memcpy(d->data,p->data,32);
         push_param(ptr,DTYPE_INTERVAL+DTYPE_MALLOCED);
+
+//debug_print_stack();
 } 
 
 /**
