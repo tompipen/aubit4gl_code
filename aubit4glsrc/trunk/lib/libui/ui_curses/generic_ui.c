@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.13 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.14 2004-06-25 18:25:37 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -724,13 +724,14 @@ void
   A4GL_debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
   A4GL_debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
-
+  
   A4GL_debug ("MJAMJA helpno=%d", helpno);
   if (strlen (txt))
     {
       strcpy (opt1->opt_title, " ");
       strcpy (op1, txt);
       A4GL_trim (op1);
+	if (strlen(op1)>77) op1[77]=0;
       strcat (opt1->opt_title, op1);
       strcat (opt1->opt_title, " ");
     }
@@ -744,7 +745,9 @@ void
   A4GL_debug ("MJAMJA helpno=%d", helpno);
   strcpy (opt1->optkey, keys);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
-  strcpy (opt1->shorthelp, desc);
+  strncpy (opt1->shorthelp, desc,80);
+  opt1->shorthelp[79]=0;
+
   A4GL_debug ("MJA setting opt1->help_no = %d", helpno);
   opt1->help_no = helpno;
   opt1->attributes = attr;

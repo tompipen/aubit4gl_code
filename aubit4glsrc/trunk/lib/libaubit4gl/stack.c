@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.92 2004-06-03 07:49:01 mikeaubury Exp $
+# $Id: stack.c,v 1.93 2004-06-25 18:25:25 mikeaubury Exp $
 #
 */
 
@@ -398,7 +398,7 @@ A4GL_pop_var2 (void *p, int d, int s)
 #endif
 	}
       A4GL_debug ("9 Copying string '%s' to p", A4GL_null_as_null(pl));
-      strcpy ((char *) p, pl);
+      strncpy ((char *) p, pl,s);
       pl = (char *) p;
       pl[s] = 0;		/* changed from s+1 to s */
       return z;
@@ -850,22 +850,20 @@ A4GL_debug("51 Have data");
 	  function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
 	}
 
-      A4GL_debug ("7 Looked for GENERIC MATH handing - %d %d %d - got %p\n", dtype_2,
-	     dtype_1, OP_MATH, function);
+      //A4GL_debug ("7 Looked for GENERIC MATH handing - %d %d %d - got %p\n", dtype_2, dtype_1, OP_MATH, function);
 
       if (function == 0)
 	{
 	  /* Nope - try a specific */
 	  function = A4GL_find_op_function (dtype_2, dtype_1, d);
-	  A4GL_debug ("7 Looked for SPECIFIC handing - %d %d %d - got %p\n", dtype_2,
-		 dtype_1, d, function);
+	  //A4GL_debug ("7 Looked for SPECIFIC handing - %d %d %d - got %p\n", dtype_2, dtype_1, d, function);
 	}
 
 
       if (function)
 	{
 	  /* We've got something to play with */
-	  A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
+	  //A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
 	  function (d);
 	  A4GL_debug ("7 Called function returning");
 	  return;

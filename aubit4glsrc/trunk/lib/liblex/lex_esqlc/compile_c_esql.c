@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.81 2004-05-24 20:09:51 whaslbeck Exp $
+# $Id: compile_c_esql.c,v 1.82 2004-06-25 18:25:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.81 2004-05-24 20:09:51 whaslbeck Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.82 2004-06-25 18:25:36 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -260,8 +260,8 @@ print_foreach_next (char *xcursorname, char *using, char *into)
 A4GL_save_sql("FETCH %s", A4GL_strip_quotes (cursorname));
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
 	  cursorname, A4GL_get_into_part (0,no), ni, no);
-  printc("internal_recopy_%s_o_Dir();",cursorname);
   print_copy_status ();
+  printc("internal_recopy_%s_o_Dir();",cursorname);
   print_conversions ('o');
 
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");

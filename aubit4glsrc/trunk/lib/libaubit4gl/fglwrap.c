@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.67 2004-06-15 14:30:42 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.68 2004-06-25 18:25:25 mikeaubury Exp $
 #
 */
 
@@ -327,8 +327,10 @@ char *p;
   A4GL_debug ("Allocating rack loads of space.... saves time later");
 #endif
 
+  if (A4GL_isyes(acl_getenv("START_ALLOC"))) {
   ptr = malloc (1024 * 1024 * 10);
   free (ptr);
+  }
 
 /*endwin(); *//* switch straight back to terminal mode */
 #if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined (__MINGW32__))

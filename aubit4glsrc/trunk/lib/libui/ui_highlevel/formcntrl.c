@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.15 2004-06-14 18:12:59 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.16 2004-06-25 18:25:37 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.15 2004-06-14 18:12:59 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.16 2004-06-25 18:25:37 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1422,7 +1422,7 @@ break;
 
 
     case '\t':
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
     case 13:
     case 10:
     case A4GLKEY_DOWN:

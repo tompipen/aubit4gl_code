@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.34 2004-05-28 13:18:08 mikeaubury Exp $
+# $Id: array.c,v 1.35 2004-06-25 18:25:37 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.34 2004-05-28 13:18:08 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.35 2004-06-25 18:25:37 mikeaubury Exp $";
 
 
 
@@ -515,7 +515,7 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
 	break;
 
 
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
     case 13:
     case '\t':
     case A4GLKEY_RIGHT:

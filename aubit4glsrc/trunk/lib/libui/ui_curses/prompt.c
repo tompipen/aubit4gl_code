@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.43 2004-06-18 16:52:50 mikeaubury Exp $
+# $Id: prompt.c,v 1.44 2004-06-25 18:25:37 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.43 2004-06-18 16:52:50 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.44 2004-06-25 18:25:37 mikeaubury Exp $";
 
 /**
  * @file
@@ -258,7 +258,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 		return 0;
 
 
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
     case 13:
     case 10:
 #ifdef DEBUG

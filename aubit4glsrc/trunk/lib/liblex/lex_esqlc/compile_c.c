@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.168 2004-05-25 17:50:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.169 2004-06-25 18:25:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.168 2004-05-25 17:50:19 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.169 2004-06-25 18:25:36 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2669,14 +2669,17 @@ print_goto (char *label)
 void
 print_gui_do_menuitems (char *list, int mode)
 {
-  if (mode == 'U')
-    printc ("A4GL_uncheck_menuitems(%s,0);\n", list);
-  if (mode == 'C')
-    printc ("A4GL_check_menuitems(%s,0);\n", list);
-  if (mode == 'D')
-    printc ("A4GL_endis_menuitems(0,%s,0);\n", list);
-  if (mode == 'E')
-    printc ("A4GL_endis_menuitems(1,%s,0);\n", list);
+if (A4GL_doing_pcode()) {
+  if (mode == 'U') printc ("@UNCHECK (%s,0)\n", list);
+  if (mode == 'C') printc ("@CHECK (%s,0)\n", list);
+  if (mode == 'D') printc ("@ENDIS (0,%s,0);\n", list);
+  if (mode == 'E') printc ("@ENDIS (1,%s,0);\n", list);
+} else {
+  if (mode == 'U') printc ("A4GL_uncheck_menuitems(%s,0);\n", list);
+  if (mode == 'C') printc ("A4GL_check_menuitems(%s,0);\n", list);
+  if (mode == 'D') printc ("A4GL_endis_menuitems(0,%s,0);\n", list);
+  if (mode == 'E') printc ("A4GL_endis_menuitems(1,%s,0);\n", list);
+}
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.31 2004-05-24 14:31:13 mikeaubury Exp $
+# $Id: helper.c,v 1.32 2004-06-25 18:25:25 mikeaubury Exp $
 #
 */
 
@@ -119,6 +119,9 @@ LIBPRIVATE char *a_get_info_form[] = {
   "Width",
   "Height",
   "Field%",
+  "ScreenName%",
+  "TableName%",
+  "AliasName%",
   0
 };
 
@@ -325,14 +328,48 @@ int_get_info_form (char *ptr, char *info)
     case 10:
       A4GL_push_int (p->fileform->maxline);
       break;
+
     case 11:
       A4GL_push_int (p->fileform->metrics.
 		metrics_val[p->fileform->fields.fields_val[used_value].metric.
 			    metric_val[0]].field);
+
       break;
 
+    case 12:
+	if (used_value<p->fileform->snames.snames_len) 
+      		A4GL_push_char (p->fileform->snames.snames_val[used_value].name);
+	else
+      		A4GL_push_char ("");
+
+	break;
+   
+    case 13:
+	if (used_value<p->fileform->tables.tables_len) 
+      		if (p->fileform->tables.tables_val[used_value].tabname) {
+      			A4GL_push_char (p->fileform->tables.tables_val[used_value].tabname);
+		} else {
+      			A4GL_push_char (" ");
+		}
+	else
+      		A4GL_push_char ("");
+	break;
+
+    case 14:
+	if (used_value<p->fileform->tables.tables_len) 
+		if (p->fileform->tables.tables_val[used_value].alias) {
+      			A4GL_push_char (p->fileform->tables.tables_val[used_value].alias);
+		} else {
+      			A4GL_push_char (" ");
+		}
+	else
+      		A4GL_push_char ("");
+
+
+	break;
+
     case 0:
-      A4GL_exitwith ("Invalid Window info request");
+      A4GL_exitwith ("Invalid Form info request");
       return 0;
     }
   return params;

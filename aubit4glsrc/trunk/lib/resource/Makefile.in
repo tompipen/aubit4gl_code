@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-10-30 01:46:45 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-06-25 18:25:38 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -47,7 +47,7 @@ OBJS      		=${CMODS:.c=.o}
 
 #CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
 #EXE_CFLAGS      +=-I../libincl
-CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl
+CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl -D"CONFIGURED_TARGET=\"${TARGET}\"" -D"CONFIGURED_TARGET_OS=\"${TARGET_OS}\""
 
 ## ==================================================================
 ##                              Targets

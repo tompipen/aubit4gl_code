@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.21 2004-06-14 18:12:59 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.22 2004-06-25 18:25:38 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -790,6 +790,8 @@ UILIB_A4GL_add_menu_option (void *menuv, char *txt, char *keys, char *desc,
       strcpy (opt1->opt_title, " ");
       strcpy (op1, txt);
       A4GL_trim (op1);
+	if (strlen(op1)>77) op1[77]=0;
+	
       strcat (opt1->opt_title, op1);
       strcat (opt1->opt_title, " ");
     }
@@ -803,7 +805,8 @@ UILIB_A4GL_add_menu_option (void *menuv, char *txt, char *keys, char *desc,
   A4GL_debug ("MJAMJA helpno=%d", helpno);
   strcpy (opt1->optkey, keys);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
-  strcpy (opt1->shorthelp, desc);
+  strncpy (opt1->shorthelp, desc,80);
+	opt1->shorthelp[79]=0;
   A4GL_debug ("MJA setting opt1->help_no = %d", helpno);
   opt1->help_no = helpno;
   opt1->attributes = attr;

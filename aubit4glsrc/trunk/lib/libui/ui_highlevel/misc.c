@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.16 2004-04-13 09:05:05 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1231,7 +1231,7 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
 	return 0;
 
 
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
     case 13:
     case 10:
 #ifdef DEBUG

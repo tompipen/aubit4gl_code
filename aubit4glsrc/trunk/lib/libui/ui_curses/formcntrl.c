@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.58 2004-05-28 13:18:08 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.59 2004-06-25 18:25:37 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.58 2004-05-28 13:18:08 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.59 2004-06-25 18:25:37 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1394,7 +1394,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       A4GL_debug_print_field_opts (s->currentfield);
       break;
     case '\t':
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
     case 13:
     case 10:
     case A4GLKEY_DOWN:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.78 2004-06-08 18:21:11 mikeaubury Exp $
+# $Id: conv.c,v 1.79 2004-06-25 18:25:24 mikeaubury Exp $
 #
 */
 
@@ -1800,7 +1800,8 @@ A4GL_dtos (void *aa, void *zz, int size)
 
   z = (char *) zz;
   a = (int *) aa;
-
+  memset(z,0,size-1);
+  z[size-1]=0;
 #ifdef DEBUG
   /* {DEBUG} */
   {

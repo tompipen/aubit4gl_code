@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.16 2004-06-16 16:49:24 mikeaubury Exp $
+# $Id: input_array.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.16 2004-06-16 16:49:24 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.17 2004-06-25 18:25:38 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -891,7 +891,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
     case 10:
     case 13:
     case '\t':
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 			arr->curr_attrib + 1,'R');
 

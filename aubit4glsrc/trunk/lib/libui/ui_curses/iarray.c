@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.81 2004-05-24 14:28:41 mikeaubury Exp $
+# $Id: iarray.c,v 1.82 2004-06-25 18:25:37 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.81 2004-05-24 14:28:41 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.82 2004-06-25 18:25:37 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -881,7 +881,7 @@ process_key_press (struct s_inp_arr *arr, int a)
     case 10:
     case 13:
     case '\t':
-    case A4GLKEY_ENTER:
+    //case A4GLKEY_ENTER:
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 			arr->curr_attrib + 1,'R');
 
