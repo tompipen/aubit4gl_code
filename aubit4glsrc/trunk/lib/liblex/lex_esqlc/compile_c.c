@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.144 2004-03-07 16:29:34 mikeaubury Exp $
+# $Id: compile_c.c,v 1.145 2004-03-09 15:50:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.144 2004-03-07 16:29:34 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.145 2004-03-09 15:50:05 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1498,8 +1498,10 @@ print_field_bind_constr (void)
     {
       if (a > 0)
 	printc (",");
-      if (constr_buff[a].tab[0] != 0)
-	printc ("\"%s.%s\",1", constr_buff[a].tab, constr_buff[a].col);
+      if (constr_buff[a].tab[0] != 0) {
+		//printc ("\"%s.%s\",1", constr_buff[a].tab, constr_buff[a].col);
+		printc ("\"%s\",1",  constr_buff[a].col);
+	}
       else
 	printc ("\"%s\",1", constr_buff[a].col);
     }
