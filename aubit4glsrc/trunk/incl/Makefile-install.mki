@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.78 2004-09-24 06:29:05 afalout Exp $
+# $Id: Makefile-install.mki,v 1.79 2004-09-26 01:47:13 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -742,6 +742,25 @@ PDCURSES_INFO			=http://pdcurses.sourceforge.net/
 PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
 PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
 
+##################
+# 30: PCRE - Perl Compatible Regular Expressions 
+PCRE_INFO				=http://www.pcre.org/
+PCRE_SRC_PATH			=ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre
+PCRE_SRC				=pcre-5.0
+PCRE_SRC_GZ				=${PCRE_SRC}.tar.gz
+#Windows installer (with all dependencies)
+PCRE_WIN_PATH			=http://gnuwin32.sourceforge.net/downlinks/pcre-bin.php
+PCRE_WIN_INSTALLER		=pcre-4.4-bin.exe
+
+
+##################
+# 31: SXML
+SXML_INFO				=http://freshmeat.net/projects/sxml
+SXML_SRC_PATH			=http://scain.firenze.net
+SXML_SRC				=sxml
+SXML_SRC_GZ				=${SXML_SRC}.tar.gz
+
+
 ## ==================================================================
 ##                    Third-party products installation
 ## ==================================================================
@@ -1195,6 +1214,33 @@ endif
 	@echo "CINT installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+##################
+# 30: PCRE - Perl Compatible Regular Expressions 
+ifdef COMSPEC
+install.pcre: ${PCRE_WIN_INSTALLER}
+	${PCRE_WIN_INSTALLER}
+else
+install.pcre: ${PCRE_SRC_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${PCRE_SRC}; ./configure; make; make install
+endif
+	@echo " "
+	@echo "Package info & manuals: ${PCRE_INFO}"
+	@echo " "
+	@echo "PCRE installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+##################
+# 31: SXML  
+install.sxml: ${SXML_SRC_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SXML_SRC}; ./configure; make; make install
+	@echo " "
+	@echo "Package info & manuals: ${SXML_INFO}"
+	@echo " "
+	@echo "SXML installed.  Please re-run 'configure' to detect changes."
+	@echo " "
 
 
 ########################
@@ -1298,6 +1344,12 @@ ${SPOPC_TGZ_SRC}:
 	${WGET} ${SPOPC_PATH}/$@
 ${CINT_TAR_GZ_SRC}:
 	${WGET} ${CINT_PATH}/$@
+${PCRE_WIN_INSTALLER}:
+	${WGET} ${PCRE_WIN_PATH}
+${PCRE_SRC_GZ}:
+	${WGET} ${PCRE_SRC_PATH}/$@
+${SXML_SRC_GZ}:
+	${WGET} ${SXML_SRC_PATH}/$@
 
 #############################################
 #       SQLite tests

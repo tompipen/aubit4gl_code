@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.105 2004-09-24 06:29:05 afalout Exp $
+# $Id: Makefile.in,v 1.106 2004-09-26 01:47:14 afalout Exp $
 #
 
 ROOT    =..
@@ -93,7 +93,8 @@ LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
 LIBPOP_PATH     	=extra_libs/pop
-
+LIBPCRE_PATH     	=extra_libs/pcre
+LIBSXML_PATH     	=extra_libs/sxml
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
 #FIXME: do this for all libraries in this make file
@@ -160,7 +161,8 @@ LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/
 					$(wildcard ${LIBSTRING_PATH}/Makefile) ${ALL_H}
 
 LIBPOP_DEPS			=$(wildcard ${LIBPOP_PATH}/*.4gl) $(wildcard ${LIBPOP_PATH}/Makefile) ${ALL_H}
-
+LIBPCRE_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/makefile) ${ALL_H}
+LIBSXML_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/Makefile) ${ALL_H}
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
 					$(wildcard ${LIBHTML_PATH}/Makefile) ${ALL_H}
 LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PATH}/*.h) \
@@ -460,6 +462,12 @@ libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
 
+libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
+	$(MAKE) -C ${LIBPCRE_PATH}
+
+libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
+	$(MAKE) -C ${LIBSXML_PATH}
+
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 
@@ -547,6 +555,9 @@ clean.other:
 	${MAKE} -C ${LIBFILE_PATH} clean
 	${MAKE} -C ${LIBESQLCHELPER_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean
+	${MAKE} -C ${LIBPOP_PATH} clean
+	${MAKE} -C ${LIBPCRE_PATH} clean
+	${MAKE} -C ${LIBSXML_PATH} clean	
 
 ## ==================================================================
 ##                         Other Targets

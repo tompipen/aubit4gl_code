@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-03-29 14:23:10 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2004-09-26 01:47:14 afalout Exp $
 #
 
 ROOT    =../../..
@@ -71,7 +71,7 @@ sxmllib.c: sxmllib.4gl
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h \
-	*.4ae *.afr.dat *.afr.xml *.afr  ${ALL} *.stackdump
+	*.4ae *.afr.dat *.afr.xml *.afr  ${ALL} *.stackdump *~
 
 
 

@@ -8,7 +8,12 @@ AUTHOR file for the library :
 	patrizio@dada.it
 	scain@firenze.net
 
+http://freshmeat.net/projects/sxml/
 
+SXML is a little library to parse/generate configuration files in a restricted 
+XML format similar to that used by GLADE, Freshmeat, and others.
+
+http://scain.firenze.net/sxml.tar.gz
 
 From the sxml library docs :
 

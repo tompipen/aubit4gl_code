@@ -729,4 +729,3 @@ struct s_kw {
 #define KW_CLASS 1722
 #define EXTENDS 1723
 #define PIPE 1724
-#define FORMHANDLER_INPUT 1725

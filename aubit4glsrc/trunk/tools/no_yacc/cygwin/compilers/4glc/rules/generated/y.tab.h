@@ -29,8 +29,8 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 1727,
-     UMINUS = 1728,
+     NAME = 1726,
+     UMINUS = 1727,
      COMMA = 1628,
      KW_OR = 1668,
      KW_AND = 1623,
@@ -46,6 +46,7 @@
      NOT_EQUAL = 1489,
      PLUS = 1654,
      MINUS = 1641,
+     FINPUT = 1728,
      MULTIPLY = 1547,
      DIVIDE = 1574,
      MOD = 1642,
@@ -767,12 +768,11 @@
      END_CLASS = 1721,
      KW_CLASS = 1722,
      EXTENDS = 1723,
-     PIPE = 1724,
-     FORMHANDLER_INPUT = 1725
+     PIPE = 1724
    };
 #endif
-#define NAME 1727
-#define UMINUS 1728
+#define NAME 1726
+#define UMINUS 1727
 #define COMMA 1628
 #define KW_OR 1668
 #define KW_AND 1623
@@ -788,6 +788,7 @@
 #define NOT_EQUAL 1489
 #define PLUS 1654
 #define MINUS 1641
+#define FINPUT 1728
 #define MULTIPLY 1547
 #define DIVIDE 1574
 #define MOD 1642
@@ -1510,7 +1511,6 @@
 #define KW_CLASS 1722
 #define EXTENDS 1723
 #define PIPE 1724
-#define FORMHANDLER_INPUT 1725
 
 
 

@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.243 2004-09-24 06:28:22 afalout Exp $
+dnl # $Id: configure.in,v 1.244 2004-09-26 01:47:06 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1634,6 +1634,8 @@ if test "$withval" != "no"; then
 	if test "$with_cint" = ""; then          	with_cint=yes 		;fi
 	if test "$with_mpz" = ""; then				with_mpz=yes 		;fi
 	if test "$with_pop" = ""; then          	with_pop=yes 		;fi
+	if test "$with_pcre" = ""; then          	with_pcre=yes 		;fi
+	if test "$with_sxml" = ""; then          	with_sxml=yes 		;fi	
 	if test "$with_ecpg" = ""; then          	with_ecpg=yes 		;fi
 	if test "$with_esqlc" = ""; then            with_esqlc=yes 		;fi
 
@@ -5385,6 +5387,73 @@ AC_ARG_WITH(pop,
 	AC_MSG_RESULT(--with-pop not specified)
 ])
 
+## ==================================================================
+##            Check for PCRE - Perl Compatible Regular Expressions
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for PCRE libraries:)
+AC_ARG_WITH(pcre,
+[  --with-pcre[=DIR]          Include PCRE support.  DIR is the PCRE base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		AC_CHECK_LIB([pcre], [main])
+		if test "$ac_cv_lib_pcre_main" = "yes"; then
+
+			AC_CHECK_HEADERS([ pcre.h ])
+
+			HAVE_PCRELIB=1
+	    fi
+
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-pcre not specified)
+])
+
+## ==================================================================
+##            Check for SXML - 
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for SXML libraries:)
+AC_ARG_WITH(sxml,
+[  --with-sxml[=DIR]          Include SXML support.  DIR is the SXML base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		AC_CHECK_LIB([sxml], [main])
+		if test "$ac_cv_lib_sxml_main" = "yes"; then
+
+			AC_CHECK_HEADERS([ sxml.h ])
+
+			HAVE_SXMLLIB=1
+	    fi
+
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-sxml not specified)
+])
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
@@ -6620,6 +6689,21 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
+	if test "$HAVE_PCRELIB" = "1"; then
+		#NOTE: needs 4glc
+		PLUGIN_YES="$PLUGIN_YES A4GL_pcre"
+    else
+        PLUGIN_NO="$PLUGIN_NO A4GL_pcre"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pcre"
+    fi
+	if test "$HAVE_SXMLLIB" = "1"; then
+		#NOTE: needs 4glc
+		PLUGIN_YES="$PLUGIN_YES A4GL_sxml"
+    else
+        PLUGIN_NO="$PLUGIN_NO A4GL_sxml"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sxml"
+    fi
+	
 	if test "$PG_ESQLC" != "no" && test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_POSTGRES"
 if test "disabled" = ""; then
@@ -7072,7 +7156,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.243 2004-09-24 06:28:22 afalout Exp $
+| $Id: configure.in,v 1.244 2004-09-26 01:47:06 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
