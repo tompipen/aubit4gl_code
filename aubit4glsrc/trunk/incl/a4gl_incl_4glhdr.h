@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.15 2003-02-11 13:24:02 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.16 2003-03-14 07:55:53 afalout Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
  * of compiling 4gl code by 4glc
  *
  * Therefore, this file contains definitions and prototypes that are
- * needed ONLY when running compiled programs, and NOT anywhere else in
+ * needed ONLY when compiling/running compiled programs, and NOT anywhere else in
  * Aubit compiler or libraries code.
  *
  */
@@ -46,6 +46,7 @@
 #define FGLHDR_INCL
 	#include <stdio.h>
 	#include <string.h>
+
 	#include "a4gl_incl_4gldef.h"
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.31 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.32 2003-03-14 07:55:53 afalout Exp $
 */
 
 /**
@@ -386,7 +386,7 @@ be used in applications which link to the library).
 
     #ifdef __NEED_DLL_IMPORT__
 		#define dll_export __declspec(dllexport)
-		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
+		#define dll_import extern __declspec(dllimport) // for complex vars that can't be auto imported
 	#else
 		#define dll_export
 		#define dll_import extern
@@ -404,15 +404,14 @@ be used in applications which link to the library).
 	    #endif
 
         extern long a4gl_status; 			/** 4gl global status variable */
-        extern long int_flag;			/** 4gl interrupt ocurred global flag */
-        extern long quit_flag; 			/** 4gl quit ocurred global flag */
+        extern long int_flag;				/** 4gl interrupt ocurred global flag */
+        extern long quit_flag; 				/** 4gl quit ocurred global flag */
     #else
 		/* only in libaubit4gl */
-		//dll_import sqlca_struct sqlca; 	/** Sqlca variable */
-        dll_export sqlca_struct a4gl_sqlca; 	/** Sqlca variable */
+        dll_export sqlca_struct a4gl_sqlca; /** Sqlca variable -- DEFINED WHERE ??? --*/
 		long a4gl_status; 					/** 4gl global status variable */
-        long int_flag; 					/** 4gl interrupt ocurred global flag */
-        long quit_flag;					/** 4gl quit ocurred global flag */
+        long int_flag; 						/** 4gl interrupt ocurred global flag */
+        long quit_flag;						/** 4gl quit ocurred global flag */
 	#endif
 
 #endif /* #ifndef FGLDEF_INCL */

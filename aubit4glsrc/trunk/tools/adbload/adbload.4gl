@@ -835,8 +835,27 @@ define
 code
         while (1)
                 {
-                if (feof(p_field)) break;
-                fgets(tmpbuf,200,p_field); break;
+/*
+On CygWin, feof is a macro:
+# 162 "/usr/include/stdio.h" 3
+int __attribute__((__cdecl__)) feof (FILE *);
+
+So this will become:
+        r=(((handle)->_flags & 0x0020) != 0);
+line 1631
+
+and cause:
+libfile.c: In function `aclfgl_feof':
+libfile.c:703: invalid type argument of `->'
+*/
+
+				#ifdef __CYGWIN__
+			        printf("FIXME: don't know what to do with feof() on CygWin\n");
+                    break;
+				#else
+					if (feof(p_field)) break;
+                	fgets(tmpbuf,200,p_field); break;
+                #endif
                 }
 
 endcode

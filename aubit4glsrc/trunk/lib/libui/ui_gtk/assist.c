@@ -64,7 +64,7 @@ extern
 long quit_flag;
 extern 
 long a4gl_status;
-extern 
+dll_import 
 struct {
 long sqlcode;
 char sqlerrm [72+1];

@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.104 2003-02-22 01:52:19 afalout Exp $
+# $Id: 4glpc,v 1.105 2003-03-14 07:55:52 afalout Exp $
 #
 
 ########################################################################
@@ -442,6 +442,11 @@ fi
 
 #CC is set via aubitrc config file:
 NCC="$CC " # -O2
+
+#  -save-temps              Do not delete intermediate files
+#  -v                       Display the programs invoked by the compiler
+#  -E                       Preprocess only; do not compile, assemble or link
+
 
 #This may help while compiling, but compiled programs will not run
 #if it's not in his environmnet. So set your environment!

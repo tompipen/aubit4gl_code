@@ -197,8 +197,25 @@ DEFINE r INTEGER
 		RETURN ""
 	END IF
 
+#On CygWin, feof is a macro:
+## 162 "/usr/include/stdio.h" 3
+#int __attribute__((__cdecl__)) feof (FILE *);
+
+#So this will become:
+#        r=(((handle)->_flags & 0x0020) != 0);
+#line 1631
+
+#and cause:
+#libfile.c: In function `aclfgl_feof':
+#libfile.c:703: invalid type argument of `->'
+
+
 code
-	r=feof(handle);
+	#ifdef __CYGWIN__
+        printf("FIXME: don't know what to do with feof() on CygWin\n");
+	#else
+		r=feof(handle);
+    #endif
 endcode
 	
 	RETURN r

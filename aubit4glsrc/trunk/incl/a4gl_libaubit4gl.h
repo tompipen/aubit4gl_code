@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.39 2003-03-10 18:41:54 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.40 2003-03-14 07:55:53 afalout Exp $
 #
 */
 
@@ -68,7 +68,7 @@
 		#define bool_t int
 		#define u_int unsigned int
 
-        #define __NEED_DLL_IMPORT__
+//remove        #define __NEED_DLL_IMPORT__
 
 	#endif
 
@@ -92,7 +92,7 @@
 		/* missing from rpcgen generated form_x.h on CygWin: */
 		#define bool_t int
 
-        #define __NEED_DLL_IMPORT__
+//remove        #define __NEED_DLL_IMPORT__
 
 		/*
 		#define __WIN32__ 1
@@ -117,14 +117,16 @@
 		ridiculous implementation of data symbol exporting. See exaple in libltdl/
 		*/
 
+//remove
+/*
     #ifdef __NEED_DLL_IMPORT__
 		#define dll_export __declspec(dllexport)
-		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
+		#define dll_import extern __declspec(dllimport) // for complex vars that can't be auto imported
 	#else
 		#define dll_export
 		#define dll_import extern
 	#endif
-
+*/
 
 
     /* ======================= from a4gl_constats.h ================== */
@@ -158,42 +160,30 @@
 
     /* ===================== from a4gl_dates.h ======================== */
 
-	#define	THURSDAY			4		/* for reformation */
-	#define	SATURDAY 			6		/* 1 Jan 1 was a Saturday */
-	#define	FIRST_MISSING_DAY 	639787	/* 3 Sep 1752 */
-	#define	NUMBER_MISSING_DAYS 11		/* 11 day correction */
-	#define	MAXDAYS				42		/* max slots in a month array */
-	#define	SPACE				-1		/* used in day array */
-	#define EPOCH 				693608
-
-	/* ============================= from a4gl_formxw.h ================ */
-
-    /*
-	#ifdef MAX
-		#undef MAX
-	#endif
-
-	#ifdef MIN
-		#undef MIN
-	#endif
-    */
+	#define	THURSDAY					4		/* for reformation */
+	#define	SATURDAY 					6		/* 1 Jan 1 was a Saturday */
+	#define	FIRST_MISSING_DAY 			639787	/* 3 Sep 1752 */
+	#define	NUMBER_MISSING_DAYS 		11		/* 11 day correction */
+	#define	MAXDAYS						42		/* max slots in a month array */
+	#define	SPACE						-1		/* used in day array */
+	#define EPOCH 						693608
 
 	/* ======================== from a4gl_aubitcolours.h ========== */
-	#define AUBIT_COLOR_BLACK     0x00000
-	#define AUBIT_COLOR_RED       0x00100
-	#define AUBIT_COLOR_GREEN     0x00200
-	#define AUBIT_COLOR_YELLOW    0x00300
-	#define AUBIT_COLOR_BLUE      0x00400
-	#define AUBIT_COLOR_MAGENTA   0x00500
-	#define AUBIT_COLOR_CYAN      0x00600
-	#define AUBIT_COLOR_WHITE     0x00700
+	#define AUBIT_COLOR_BLACK     		0x00000
+	#define AUBIT_COLOR_RED       		0x00100
+	#define AUBIT_COLOR_GREEN     		0x00200
+	#define AUBIT_COLOR_YELLOW    		0x00300
+	#define AUBIT_COLOR_BLUE      		0x00400
+	#define AUBIT_COLOR_MAGENTA   		0x00500
+	#define AUBIT_COLOR_CYAN      		0x00600
+	#define AUBIT_COLOR_WHITE     		0x00700
 
-	#define AUBIT_ATTR_NORMAL     0x00800
-	#define AUBIT_ATTR_REVERSE    0x01000
-	#define AUBIT_ATTR_UNDERLINE  0x02000
-	#define AUBIT_ATTR_BOLD       0x04000
-	#define AUBIT_ATTR_BLINK      0x08000
-	#define AUBIT_ATTR_DIM        0x10000
+	#define AUBIT_ATTR_NORMAL     		0x00800
+	#define AUBIT_ATTR_REVERSE    		0x01000
+	#define AUBIT_ATTR_UNDERLINE  		0x02000
+	#define AUBIT_ATTR_BOLD       		0x04000
+	#define AUBIT_ATTR_BLINK      		0x08000
+	#define AUBIT_ATTR_DIM        		0x10000
 
     /* ====================== from a4gl_errors.h ================== */
 	#define ERR_BADNOARGS 		1000
@@ -344,10 +334,10 @@
 	#define RES_CURSWINDOW 	3
 	#define RES_ACLFORM 	4
 
-	#define getptr_PANEL(b) (PANEL *)find_pointer(b,RES_PANEL)
-	#define getptr_s_windows(b) (struct s_windows *)find_pointer(b,RES_ACLWINDOW)
-	#define getptr_WINDOW(b) (WINDOW *)find_pointer(b,RES_CURSWINDOW)
-	#define getptr_s_form_dets(b) (struct s_form_dets *)find_pointer(b,RES_ACLFORM)
+	#define getptr_PANEL(b) 		(PANEL *)find_pointer(b,RES_PANEL)
+	#define getptr_s_windows(b) 	(struct s_windows *)find_pointer(b,RES_ACLWINDOW)
+	#define getptr_WINDOW(b) 		(WINDOW *)find_pointer(b,RES_CURSWINDOW)
+	#define getptr_s_form_dets(b) 	(struct s_form_dets *)find_pointer(b,RES_ACLFORM)
 
 	#define pushptr_PANEL(b,p)      	add_pointer(b,RES_PANEL,p)
 	#define pushptr_s_windows(b,p)   	add_pointer(b,RES_ACLWINDOW,p)
@@ -356,7 +346,7 @@
 
 
 	/* available only to this library */
-	#define LIBPRIVATE static
+	#define LIBPRIVATE 		static
 
 	/* available to other files in the library */
 	#define LIBUSEONLY
@@ -364,8 +354,8 @@
 
 	/* available to 4gl */
 	#define LIBINTERFACE
-	#define PANCODE '1'
-	#define WINCODE '2'
+	#define PANCODE 		'1'
+	#define WINCODE 		'2'
 
 
 	/* ========================= from a4gl_ui.h ====================== */
@@ -377,19 +367,19 @@
 
 
     /* ==================== from incl_4glhdr.h =========================*/
-	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
-	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
-	#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
-	#define BEF_DELETE  (_fld_dr==-12)
-	#define AFT_DELETE  (_fld_dr==-13)
-	#define BEF_INSERT  (_fld_dr==-14)
-	#define AFT_INSERT  (_fld_dr==-15)
-	#define BEF_ROW (_fld_dr==-10)
-	#define AFT_ROW  (_fld_dr==-11)
-	#define BEFORE_INP  (_fld_dr==-99)
-	#define AFTER_INP  (_fld_dr==-95)
-	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
-	#define set_status(a) set_status(a,0)
+	#define fglerror(a,b) 			fgl_error(__LINE__,__FILE__,a,b)
+	#define AFT_FIELD_CHK(zzz,xxx) 	(_fld_dr==-98&&strcmp(fldname,zzz)==0)
+	#define BEF_FIELD_CHK(zzz,xxx) 	(_fld_dr==-97&&strcmp(fldname,zzz)==0)
+	#define BEF_DELETE  			(_fld_dr==-12)
+	#define AFT_DELETE  			(_fld_dr==-13)
+	#define BEF_INSERT  			(_fld_dr==-14)
+	#define AFT_INSERT  			(_fld_dr==-15)
+	#define BEF_ROW 				(_fld_dr==-10)
+	#define AFT_ROW  				(_fld_dr==-11)
+	#define BEFORE_INP  			(_fld_dr==-99)
+	#define AFTER_INP  				(_fld_dr==-95)
+	#define ON_KEY(zzz) 			if (_fld_dr==-90&&chk_iskey(zzz))
+	#define set_status(a) 			set_status(a,0)
 
 	/* ========================== from a4gl_dtypes.h ==================== */
 	#define DTYPE_CHAR      0
@@ -425,23 +415,12 @@
 	#endif
 
 	#if defined(WIN32) || defined (__MINGW32__)
-		
-		/*
-		#undef SHORT
-		#undef LONG
-   		#undef BOOL
-		#undef DOUBLE
-		#undef CONST
-		#undef INT
-        */
-
 		#ifndef _NO_WINDOWS_H_
 			#include <windows.h>
 			#define __UCHAR_DEFINED__
 		#endif
-
-	#else
-		#include <pwd.h>    			/* getpwduid() */
+	#else /* UNIX */
+		#include <pwd.h>    		/* getpwduid() */
 		#include <sys/socket.h>
 		#include <netinet/in.h>
 		#include <netdb.h>
@@ -456,9 +435,8 @@
 	#include <stdlib.h> 			/* free() */
 
 	#if HAVE_SEARCH_H
-			#include <search.h> 	/* VISIT-used in pointers.c */
+		#include <search.h> 		/* VISIT-used in pointers.c */
     #else
-
 		/* For tsearch */
 		typedef enum
 		{
@@ -469,17 +447,6 @@
 		}
 		VISIT;
     #endif
-
-
-/*
-	#ifdef HAVE_DLFCN_H
-		#include <dlfcn.h>
-	#endif
-
-	#if HAVE_MACH_O_DYLD_H
-		#include <mach-o/dyld.h>
-    #endif
-*/
 
 	#include <assert.h>             /* assert() */
 	#include <time.h>
@@ -499,12 +466,6 @@
 	/*@-skipposixheaders@*/
 	#include <sys/types.h>
 	/*@=skipposixheaders@*/
-
-	/*
-	#ifdef DMALLOC
-		#include "dmalloc.h"
-	#endif
-    */
 
 	/*
 	   This will prevent ussage of getenv and wgetenv functions:
@@ -566,11 +527,6 @@
 	#include "a4gl_API_sql.h"           /* created manually */
 	#include "a4gl_API_rpc.h"         	/* created manually */
 
-    /******************************************************
-    We really need to remove this - it depends on Sun RPC,
-    and therefore makes ALL Aubit code dependent on it!
-    - no longer true - this one is generated by xgen!
-	*******************************************************/
 	#ifndef _NO_FORM_X_H_
 		#include "../common/dataio/form_x.x.h"   /* struct_form */
     #endif
@@ -584,80 +540,81 @@
 
 	/* ========================= from a4gl_ui.h ====================== */
 
-	typedef struct
-	{
-	  int code;
-	  struct int_list *next_option;
-	} int_list;
+	typedef struct	{
+	  int 		code;
+	  struct 	int_list *next_option;
+	}
+	int_list;
 
-	typedef struct ACL_Menu_Opts
-	  {
-	    char opt_title[80];
-	    char optkey[80];
-	    int optlength;
-	    int opt_no;
-	    int help_no;
-	    int optpos;
-	    int attributes;
-	    char shorthelp[80];
-	    struct ACL_Menu_Opts *next_option;
-	    struct ACL_Menu_Opts *prev_option;
-	    int page;
-	  }
+	typedef struct ACL_Menu_Opts {
+	    char 	opt_title[80];
+	    char 	optkey[80];
+	    int 	optlength;
+	    int 	opt_no;
+	    int 	help_no;
+	    int 	optpos;
+	    int 	attributes;
+	    char 	shorthelp[80];
+	    struct 	ACL_Menu_Opts *next_option;
+	    struct 	ACL_Menu_Opts *prev_option;
+	    int 	page;
+	}
 	ACL_Menu_Opts;
 
-	typedef struct
-	  {
-	    char menu_title[80];
-	    int menu_type;
-	    char window_name[20];
-	    ACL_Menu_Opts *curr_option;
-	    int menu_offset;
-	    int mn_offset;
-	    int x;
-	    int y;
-	    int help_no;
-	    int num_opts;
-	    int abort_pressed;
-	    ACL_Menu_Opts *first;
-	    ACL_Menu_Opts *last;	/* used for wrapping round */
-	    void *menu_win;
-	    int curr_page;
-	    int max_page;
-	    int w;
-	    int menu_line;
-	    int attrib;
-	  }
+	typedef struct {
+	    char 			menu_title[80];
+	    int 			menu_type;
+	    char 			window_name[20];
+	    ACL_Menu_Opts *	curr_option;
+	    int 			menu_offset;
+	    int 			mn_offset;
+	    int 			x;
+	    int 			y;
+	    int 			help_no;
+	    int 			num_opts;
+	    int 			abort_pressed;
+	    ACL_Menu_Opts *	first;
+	    ACL_Menu_Opts *	last;	/* used for wrapping round */
+	    void *			menu_win;
+	    int 			curr_page;
+	    int 			max_page;
+	    int 			w;
+	    int 			menu_line;
+	    int 			attrib;
+	}
 	ACL_Menu;
 
 	typedef struct  {
-		int x,y;
-		int length;
-		struct field_geometry *field_up;
-		struct field_geometry *field_down;
-		struct field_geometry *field_left;
-		struct field_geometry *field_right;
-		struct field_geometry *field_next;
-		struct field_geometry *field_previous;
-		struct gen_field *master;
-	} field_geometry;
+		int 	x,y;
+		int 	length;
+		struct 	field_geometry *field_up;
+		struct 	field_geometry *field_down;
+		struct 	field_geometry *field_left;
+		struct 	field_geometry *field_right;
+		struct 	field_geometry *field_next;
+		struct 	field_geometry *field_previous;
+		struct 	gen_field *master;
+	}
+	field_geometry;
 
 	typedef struct {
-		char colname[19];
-		char tabname[19];
-		int length;
-		int x,y;
-		int data_type;
-		int attributes; 		/*color etc.*/
-		int field_attributes; 	/*autonext etc.*/
-		char tag[19];
-		field_geometry *fields_list;
-	} gen_field;
+		char 				colname[19];
+		char 				tabname[19];
+		int 				length;
+		int 				x,y;
+		int 				data_type;
+		int 				attributes; 		/*color etc.*/
+		int 				field_attributes; 	/*autonext etc.*/
+		char 				tag[19];
+		field_geometry *	fields_list;
+	} 
+	gen_field;
 
 	typedef struct {
-		int x,y,width,height;
-		char form_name[19];
-	} gen_form;
+		int 	x,y,width,height;
+		char 	form_name[19];
+	} 
+	gen_form;
 
 /*
 =====================================================================
@@ -738,27 +695,21 @@
 
 	/* OBJECTMODULE is defined ONLY in keys.c */
 	#ifdef OBJECTMODULE
-		char 	opts[100][80];			/*menu options */
-		int 	abort_pressed;
-		int 	relxedit = 0, relyedit = 0;
-		int 	aborted;
-		long 	time_offset = 0;
-		int 	week_no = -1;
-
-		//#ifdef __CYGWIN__
-		//	dll_export struct s_form_attr std_dbscr;
-		//#else
-			struct s_form_attr std_dbscr;
-		//#endif
+		char 				opts[100][80];			/*menu options */
+		int 				abort_pressed;
+		int 				relxedit = 0, relyedit = 0;
+		int 				aborted;
+		long 				time_offset = 0;
+		int 				week_no = -1;
+		struct 				s_form_attr std_dbscr;
 	#else
-		extern char 	opts[10][80];	/*menu options */
-		extern int 		abort_pressed;
-		extern int 		relxedit, relyedit;
-		extern int 		aborted;
-		extern long 	time_offset;
-		extern int 		week_no;
-
-		dll_import struct s_form_attr std_dbscr;
+		extern char 		opts[10][80];	/*menu options */
+		extern int 			abort_pressed;
+		extern int 			relxedit, relyedit;
+		extern int 			aborted;
+		extern long 		time_offset;
+		extern int 			week_no;
+		dll_import struct 	s_form_attr std_dbscr;
 	#endif
 
 
@@ -772,14 +723,6 @@
     /* in debug.c */
 	void 			setarg0	(const char *argv0);
 	const char * 	getarg0	(void);
-/*
-	struct a4gl_dtime {
-	    int stime;
-	    int ltime;
-	    char data[32];
-	};
-*/
-
 
     /* ========================== from a4gl_dtypes.h ==================== */
 
@@ -816,25 +759,6 @@
 
 	/* not strictly voids - but saves getting into the details */
 	void *	prepare_glob_sql 	(char *s,int ni,void *b);
-
-	/* ------------------ moved from 4gldef.h --------------------- */
-
-
-	/**
-	 * Location definition structure for blobs.
-	 */
-/*
-	struct fgl_int_loc {
-	  char where;
-	  FILE *f;
-	  long memsize;
-	  char filename[256];
-	  void *ptr;
-	};
-*/
-
-    /* ------------- end of moved from 4gldef.h ------------------ */
-
 
 	#define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
@@ -1121,9 +1045,9 @@
 
  	/* ============================ dmy.c ================================== */
  
- 	char *		using_date			(int dn,char *us);
- 	char *		dbdate_to_using		(char *dbdate);
- 	char *		get_dbdate			(void);
+ 	char *		using_date		(int dn,char *us);
+ 	char *		dbdate_to_using	(char *dbdate);
+ 	char *		get_dbdate		(void);
  
 
 	/* =========================== string.c ================================ */
@@ -1264,9 +1188,9 @@
 
 
 	int 	atoport 			(char *service,char *proto);
-#ifndef __MINGW32__
-	int 	get_connection 		(int socket_type,u_short port,int *listener);
-#endif
+	#ifndef __MINGW32__
+		int 	get_connection 		(int socket_type,u_short port,int *listener);
+	#endif
 	int 	sock_read 			(int sockfd, char *buf, size_t count);
 	int 	sock_write 			(int sockfd, char *buf, size_t count);
 	int 	sock_gets 			(int sockfd, char *str, size_t count);
@@ -1325,25 +1249,25 @@
     /* ========================== from a4gl_screen.h ==================== */
 
 
-/* 4gl program controls */
-#define FORMCONTROL_BEFORE_FIELD 	1
-#define FORMCONTROL_AFTER_FIELD 	2
-#define FORMCONTROL_BEFORE_INPUT 	3
-#define FORMCONTROL_AFTER_INPUT 	4
-#define FORMCONTROL_EXIT_INPUT_OK 	5
-#define FORMCONTROL_EXIT_INPUT_ABORT 	6
-#define FORMCONTROL_KEY_PRESS 		7
+	/* 4gl program controls */
+	#define FORMCONTROL_BEFORE_FIELD 		1
+	#define FORMCONTROL_AFTER_FIELD 		2
+	#define FORMCONTROL_BEFORE_INPUT 		3
+	#define FORMCONTROL_AFTER_INPUT 		4
+	#define FORMCONTROL_EXIT_INPUT_OK 		5
+	#define FORMCONTROL_EXIT_INPUT_ABORT 	6
+	#define FORMCONTROL_KEY_PRESS 			7
 
-/* formloop controls */
-#define FORMCONTROL_REQUEST_FIELD       
-#define FORMCONTROL_ENABLE_FIELD
-#define FORMCONTROL_DISABLE_FIELD
-#define FORMCONTROL_HIDE_FIELD
+	/* formloop controls */
+	#define FORMCONTROL_REQUEST_FIELD
+	#define FORMCONTROL_ENABLE_FIELD
+	#define FORMCONTROL_DISABLE_FIELD
+	#define FORMCONTROL_HIDE_FIELD
 
 	struct s_formcontrol {
-		int op;
-		char *parameter;
-		int field_number;
+		int 	op;
+		char *	parameter;
+		int 	field_number;
 	};
 
 	struct s_screenio {
@@ -1358,8 +1282,8 @@
 		void **	field_list;
 		int 	field_changed;
 		int 	help_no;
-		struct s_formcontrol msgs[10];
-		int msg_cnt;
+		struct 	s_formcontrol msgs[10];
+		int 	msg_cnt;
 
 	};
 
@@ -1453,9 +1377,7 @@
 	int 	get_dtype		(char *tabname, char *colname,char *dbname,char *tablist[]);
 
     /* ========================= from a4gl_acl_string.h ============ */
-
-
-	void modify_size(char *z,int a);
+	void 	modify_size		(char *z,int a);
 
     /* ==================== from a4gl_aclform.h =================== */
 

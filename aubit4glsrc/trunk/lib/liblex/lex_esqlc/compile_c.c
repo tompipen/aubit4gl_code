@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.21 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.22 2003-03-14 07:55:54 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4021,8 +4021,25 @@ print_start_record (int isstatic_extern, char *varname)
 {
   if (isstatic_extern == 1)
     printc ("static ");
-  if (isstatic_extern == 2)
-    printc ("extern ");
+  if (isstatic_extern == 2){
+
+    /*
+        On Windows, "complex" variables must be explicitly exported, since they cannot be
+        auto-imported. dll_import macro is defined in a4gl_incl_4gldef.h
+
+
+    */
+	#ifdef __NEED_DLL_IMPORT__
+	if (strcmp(varname,"a4gl_sqlca")==0) {
+		printc ("dll_import ");
+    } else {
+		printc ("extern ");
+    }
+    #else
+		printc ("extern ");
+    #endif
+
+  }
   printc ("struct {\n");
 }
 
@@ -4123,7 +4140,12 @@ void print_cmd_end() {
 	printc("\n/* End command */\n");
 }
 
-char *get_into_part(int no) {
+/**
+ *
+ * @todo Describe function
+ */
+char *get_into_part(int no) 
+{
 	static char buffer[10000];
 	int a;
 	if (doing_esql()) {
@@ -4143,7 +4165,12 @@ char *get_into_part(int no) {
 	return buffer;
 }
 
-char *set_var_sql(int n) {
+/**
+ *
+ * @todo Describe function
+ */
+char *set_var_sql(int n) 
+{
 	int a;
 	static char buff[2000];
 
@@ -4174,16 +4201,24 @@ char *set_var_sql(int n) {
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int doing_esql() {
   if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
 	  return 1;
-  } 
+  }
 
 
   return 0;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int esql_type() {
 
   if (strcmp(acl_getenv("LEXDIALECT"),"INFORMIX")==0) {
@@ -4197,6 +4232,10 @@ int esql_type() {
   return 1; // Assume informix
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void lex_parsed_fgl() {
         if (outfile) fclose(outfile);
         if (hfile) fclose(hfile);

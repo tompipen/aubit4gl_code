@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.117 2003-03-08 04:22:41 afalout Exp $
+# $Id: Makefile.in,v 1.118 2003-03-14 07:54:46 afalout Exp $
 #
 
 ## ==================================================================
@@ -126,7 +126,9 @@ libhtml:
 	$(MAKE) -C tools/html libA4GL_HTML${SO_EXT}
 
 adbaccess:
-	$(MAKE) -C tools/adbaccess use.amake
+#	$(MAKE) -C tools/adbaccess use.amake
+#We have a problem with getopt_long() on CygWin, so use 4glpc for now:
+	$(MAKE) -C tools/adbaccess misql.4ae
 
 odbctest:
 	$(MAKE) -C tools/odbctest
@@ -262,10 +264,10 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	${RM} lib/swig/lib_wrap.doc
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
-	@echo Aubit 4gl compiler source tree is now clean
+	@echo "Aubit 4gl compiler source tree is now clean NOTE: tools tree not cleaned"
 
 
-#user is expected to manually invole this, so we save some time since usually
+#user is expected to manually invoke this, so we save some time since usually
 #we just want to clean compiler:
 clean.tools:
 	$(MAKE) -C tools/test/db clean
