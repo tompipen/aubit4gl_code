@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.32 2003-04-23 16:37:18 mikeaubury Exp $
+# $Id: builtin.c,v 1.33 2003-04-26 12:22:16 afalout Exp $
 #
 */
 
@@ -572,39 +572,6 @@ getuid(void)
 #endif
 
 
-
-/*
-The STARTLOG( ) function opens an error log file.
-
-filename is a quoted string to specify a filename (and optional path name
-and file extension) of the error log file.
-
-Variable is a variable of type CHAR or VARCHAR containing a filename
-(and optional path name and file extension) of the error log file.
-
-The following is a typical sequence to implement error logging:
-
-Call STARTLOG( ) in the MAIN program block to open or create an error log file.
-
-Use a LET statement with ERR_GET(status) to retrieve the error text and
-to assign this value to a program variable.
-
-Use ERRORLOG( ) to make an entry into the error log file.
-
-The last two steps are not needed, if you are satisfied with the error
-records that are automatically produced after STARTLOG( ) has been invoked.
-After you call the STARTLOG( ) function, a record of every subsequent error
-that occurs during the execution of your program is written to the error
-log file, provided that the WHENEVER ERROR CONTINUE statement is not in
-effect.
-
-The error record consists of the date, time, source-module name and
-line number, error number, and error message. You can also write your
-own messages in the error log file by using the ERRORLOG( ).
-*/
-
-
-
 /**
  * fake function for err_get()
  *
@@ -639,6 +606,8 @@ aclfgl_err_print(int statusnumber)
 
 /**
  * fake function for ERR_QUIT( )
+ *
+ * @param statusnumber
  */
 int
 aclfgl_err_quit(int statusnumber)
@@ -651,28 +620,65 @@ aclfgl_err_quit(int statusnumber)
 
 /**
  *
+ * The STARTLOG( ) function opens an error log file.
  *
- * @param
+ * filename is a quoted string to specify a filename (and optional path name
+ * and file extension) of the error log file.
+ *
+ * Variable is a variable of type CHAR or VARCHAR containing a filename
+ * (and optional path name and file extension) of the error log file.
+ *
+ * The following is a typical sequence to implement error logging:
+ *
+ * Call STARTLOG( ) in the MAIN program block to open or create an error log file.
+ *
+ * Use a LET statement with ERR_GET(status) to retrieve the error text and
+ * to assign this value to a program variable.
+ *
+ * Use ERRORLOG( ) to make an entry into the error log file.
+ *
+ * The last two steps are not needed, if you are satisfied with the error
+ * records that are automatically produced after STARTLOG( ) has been invoked.
+ * After you call the STARTLOG( ) function, a record of every subsequent error
+ * that occurs during the execution of your program is written to the error
+ * log file, provided that the WHENEVER ERROR CONTINUE statement is not in
+ * effect.
+ *
+ * The error record consists of the date, time, source-module name and
+ * line number, error number, and error message. You can also write your
+ * own messages in the error log file by using the ERRORLOG( ).
+ *
+ *
+ *
+ * @param fname
+ * @param l
+ * @param n
  */
 int
 A4GL_startlog (char *fname,int l,int n)
 {
-	char *s;
+char *s;
 	s=char_pop();
+
+	trim(fname);
+	trim(s);
 	debug("START LOG (%s Line:%d) to file '%s'\n",fname,l,s);
 	error_log_file=fopen(s,"w");
 
 	if (error_log_file==0) {
 		exitwith("Unable to open Error Log file");
 	}
-	
+
 	free(s);
-	
+
       return 0;
 }
 
-
-int has_errorlog() {
+/**
+ *
+ */
+int has_errorlog(void) 
+{
 	if (error_log_file) return 1;
 	return 0;
 }
@@ -680,6 +686,11 @@ int has_errorlog() {
 
 /**
  * The ERRORLOG( ) function copies its argument into the current error log file.
+ * See documentation for function A4GL_startlog.
+ *
+ * @param fname
+ * @param l
+ * @param n
  */
 int
 A4GL_errorlog (char *fname,int l,int n)
@@ -714,6 +725,8 @@ A4GL_errorlog (char *fname,int l,int n)
 
       return 0;
 }
+
+
 
 void A4GL_close_errorlog_file () {
 		if (error_log_file) {
@@ -790,8 +803,11 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
  * FGL_GETKEY
  * FGL_KEYVAL( )
  * 
- * 
+ *
  * See Informix 7.3 manual
+ *
+ * @param fieldname
+ * @param fieldno
  */
 int
 fgl_fieldtouched(char *fieldname,int fieldno)
@@ -821,19 +837,41 @@ close_database(void)
 
 
 
-void aclfgli_current(int a,int b) {
+/**
+ * @todo Describe function
+ *
+ * @param a
+ * @param b
+ */
+void 
+aclfgli_current(int a,int b)
+{
 	push_current(a,b);
 }
 
-void aclfgli_extend(void) {
-	struct A4GLSQL_dtime c;
-	int n;
+/**
+ * @todo Describe function
+ *
+ */
+void
+aclfgli_extend(void)
+{
+struct A4GLSQL_dtime c;
+int n;
 	n=pop_int();
 	pop_var2(&c,DTYPE_DTIME,n);
 	push_dtime(&c);
 }
 
-void acli_interval(char *s,int n) {
+/**
+ * @todo Describe function
+ *
+ * @param s
+ * @param n
+ */
+void
+acli_interval(char *s,int n)
+{
 struct_ival c;
 char *ptr;
 	debug("acli_interval s=%s n=%d\n",s,n);
@@ -845,7 +883,15 @@ char *ptr;
 
 }
 
-void acli_datetime(char *s,int n) {
+/**
+ * @todo Describe function
+ *
+ * @param s
+ * @param n
+ */
+void 
+acli_datetime(char *s,int n) 
+{
 struct_dtime c;
 char *ptr;
 char buff[255];
@@ -858,7 +904,7 @@ char buff[255];
 	//printf("acli_dtime - pop'd c - n=%x\ndata=%s\n",n,c.data);
 	push_dtime(&c);
 	debug("ADDED DATETIME TO STACK - %d %d",c.stime,c.ltime);
-	
+
 	pop_char(buff,40);
 	//printf("DOUBLE CHECK GIVES : %s\n",buff);
 	push_dtime(&c);
@@ -867,31 +913,199 @@ char buff[255];
 
 
 
-
-char *aclfgli_str_to_id(char *name) 
+/**
+ * @todo Describe function
+ *
+ * @param name
+ */
+char *
+aclfgli_str_to_id(char *name)
 {
 static char buff[1024];
-	
+
 	strcpy(buff,name);
 	trim(buff);
 	return buff;
 }
 
-int aclfgl_ascii(int n) {
+/**
+ * @todo Describe function
+ *
+ * @param n
+ */
+int
+aclfgl_ascii(int n)
+{
 		push_ascii();
 		return 1;
 }
 
 
-
 /**
  * @todo - implement acli_scroll
  *
+ * @param s
+ * @param n
+ *
 **/
-int acli_scroll(void *s,int n) {
+int
+acli_scroll(void *s,int n)
+{
 	exitwith("acli_scroll not implemented");
 	return 0;
 }
+
+
+/* 
+========================================================================
+                         4Js built-in functions emulation
+========================================================================
+*/
+
+
+/**
+ * 4Js specific - Dynamic Data Exchange - MS Windows only
+ * let success = DDEPoke("IEXPLORE","system","www_OpenURL","http://www.fgss.com")
+ * @todo - implement it
+ *
+ * @param s
+ * @param n
+ *
+**/
+int
+aclfgl_ddepoke(char* progname,char* ddemessage,char* ddecommand, char* ddeparam)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+
+//	LET var = DDEFinish( progname, "System" )
+char*
+aclfgl_ddefinish(char* progname,char* ddemessage)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+/**
+ * 4Js specific
+ * if not DDEexecute("WINWORD", "System", str) then
+ * @todo - implement it
+ *
+ * @param progname name of the running program to establist a DDE link to
+ * @param ddemessage message to pass to the program via DDE link
+ *
+ * @return 1 on success, otherwise 0
+ *
+**/
+int
+aclfgl_ddeexecute(char* progname, char* ddemessage, char* ddecommand)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+//      LET p_text = DDEGeterror()
+char *
+aclfgl_ddegeterror(void)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+
+/**
+ * 4Js specific
+ * let success = DDEConnect("IEXPLORE","system")
+ * @todo - implement it
+ *
+ * @param progname name of the running program to establist a DDE link to
+ * @param ddemessage message to pass to the program via DDE link
+ *
+ * @return 1 on success, otherwise 0
+ *
+**/
+int
+aclfgl_ddeconnect(char* progname,char* ddemessage)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+//   CALL DDEFinishAll()
+void
+aclfgl_ddefinishall(void)
+{
+	exitwith("4Js DDE functions not implemented");
+}
+
+
+/**
+ * 4Js specific
+ * let response = DDEPeek("IEXPLORE","system","www_GetWindowInfo")
+ * @todo - implement it
+ *
+ * @param progname name of the running program to establist a DDE link to
+ * @param ddemessage message to pass to the program via DDE link
+ *
+ * @return 1 on success, otherwise 0
+ *
+**/
+char *
+aclfgl_ddepeek(char* progname, char* ddemessage, char* ddecommand)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+/**
+ * call fgl_winmessage("MS Word Start Up Error", "MS Word could not be started.\nMaybe wrong path?", "stop")
+ *
+**/
+void
+aclfgl_fgl_winmessage(char* windowTitle, char* message, char* iconType)
+{
+	exitwith("4Js winmessage function not implemented");
+	//return 0;
+}
+
+
+/**
+ * Strings containing characters such as \ need to be passed through
+ * fgl_strtosend() as this re-formats them so that MS Word will see the
+ * correct sring.
+**/
+char*
+aclfgl_fgl_strtosend(char* str)
+{
+	exitwith("4Js DDE functions not implemented");
+	return 0;
+}
+
+
+//LET success = WinExecWait(exec_string)
+int
+aclfgl_winexecwait(char* exec_string)
+{
+	exitwith("4Js winexecwait function not implemented");
+	return 0;
+}
+
+//LET success = WinExec(exec_string)
+int
+aclfgl_winexec(char* exec_string)
+{
+	exitwith("4Js winexec function not implemented");
+	return 0;
+}
+
+
 
 /* ================================== EOF ============================= */
 

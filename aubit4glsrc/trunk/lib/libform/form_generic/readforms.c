@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.8 2003-04-07 16:26:38 mikeaubury Exp $
+# $Id: readforms.c,v 1.9 2003-04-26 12:22:17 afalout Exp $
 #*/
 
 /**
@@ -75,13 +75,6 @@
 */
 
 
-/*xdr_struct_form is not part of RPC_[NO]RPC
-extern bool_t
-xdr_struct_form(xdrs, objp)
-	XDR *xdrs;
-	struct_form *objp;
-*/
-
 int tab_cnt = 0;
 int srec_cnt = 0;
 extern int errno;
@@ -118,51 +111,16 @@ static void real_dump_srec (struct s_form_dets *fd);
 
 
 #ifndef TRUE
-#define TRUE 1
+	#define TRUE 1
 #endif
 #ifndef FALSE
-#define FALSE 0
+	#define FALSE 0
 #endif
 
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
-*/
-
-/* not used in libFORM_ so moved into libaubit4gl in screen.c
-char *
-find_attribute (struct s_form_dets *f, int field_no)
-{
-  int a;
-
-  for (a = 0; a < f->fileform->attributes.attributes_len; a++)
-    {
-
-      if (f->fileform->attributes.attributes_val[a].field_no == field_no)
-	{
-	  debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
-	  return (char *) &f->fileform->attributes.attributes_val[a];
-	}
-    }
-  debug ("Couldnt find entry for field no %d\n", field_no);
-  return 0;
-}
-*/
-
-/**
- * Not called from anywhere
- */
-/*
-static char *
-ret_string (char *str)
-{
-  static char retword[] = "Not Set";
-  if (str != 0)
-    return str;
-  else
-    return retword;
-}
 */
 
 
@@ -176,16 +134,15 @@ read_form_internal (char *fname, char *formname)
   return real_read_form (fname, formname);
 }
 
+/**
+ *
+ */
 static struct s_form_dets *
 real_read_form (char *fname, char *formname)
 {
-//  FILE *ofile = 0;
-  int a;
-  struct s_form_dets *formdets;
-  char buff[80];
-//  char *ptr = 0;
-
-  //XDR xdrp;
+int a;
+struct s_form_dets *formdets;
+char buff[80];
 
   trim (fname);
   trim (formname);
@@ -194,88 +151,26 @@ real_read_form (char *fname, char *formname)
   strcpy (buff, fname);
   buff[strlen (buff) - 4] = 0;
 
-#ifdef NOLONGERUSED
-  if (has_pointer (buff, COMPILED_FORM))
-    {
-      int chkint;		/* INT4 */
-      ptr = find_pointer (buff, COMPILED_FORM);
 
-      xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
-      xdr_int (&xdrp, &chkint);
+	#ifdef DEBUG
+    	debug ("fname=%s formname=%s", fname, formname);
+	#endif
 
-      if (chkint != FCOMILE_XDR_MAGIC)
-	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
-	  return 0;
-	}
-    }
-  else
-    {
-      int chkint;		/*  INT4 */
-      debug ("Opening file");
-      ofile = (FILE *) open_file_dbpath (fname);
-
-      if (ofile == 0)
-	{
-	  exitwith ("Couldnt open form");
-	  return 0;
-	}
-
-      debug ("Checking magic header");
-
-      xdrstdio_create (&xdrp, ofile, XDR_DECODE);
-      xdr_int (&xdrp, &chkint);
-
-      if (chkint != FCOMILE_XDR_MAGIC)
-	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
-	  return 0;
-	}
-
-      rewind (ofile);
-    }
-
-#endif
-
-   
-
-
-#ifdef DEBUG
-  {
-    debug ("fname=%s formname=%s", fname, formname);
-  }
-#endif
-
-  gui_startform (formname);
-  formdets =
-    (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
+	gui_startform (formname);
+	formdets =
+	    (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
-  formdets->fileform =
-    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
+	formdets->fileform =
+	    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
 
-  memset (formdets->fileform, 0, sizeof (struct_form));
+	memset (formdets->fileform, 0, sizeof (struct_form));
+
+    #ifdef DEBUG
+		debug("Calling read_data_from_file with : struct_form,%p,%s",formdets->fileform,fname);
+    #endif
 
 
-#ifdef NOLONGERUSED
-  if (ptr == 0)
-    {
-      debug ("Reading form from file");
-      xdrstdio_create (&xdrp, ofile, XDR_DECODE);
-    }
-  else
-    {
-      debug ("Reading form from memory");
-      xdrmem_create (&xdrp, find_pointer (buff, COMPILED_FORM), 128 * 1024,
-		     XDR_DECODE);
-    }
-#endif
-
-debug("Calling read_data_from_file with : struct_form,%p,%s",formdets->fileform,fname);
-  a=read_data_from_file("struct_form",formdets->fileform,fname);
-
-  //a = xdr_struct_form (&xdrp, formdets->fileform);
+	a=read_data_from_file("struct_form",formdets->fileform,fname);
 
   if (!a)
     {
@@ -367,6 +262,10 @@ comments (void *fprop)
   debug ("via comments in lib");
   real_comments (fprop);
 }
+
+/**
+ *
+ */
 static void
 real_comments (struct struct_scr_field *fprop)
 {
@@ -381,11 +280,8 @@ real_comments (struct struct_scr_field *fprop)
     }
 }
 
+
 /**
- *
- * looks like this is not used because it has return at the top?
- * but there is a call to it from libUI_TUI that needs to be removed
- * if the is the case - and from API_form.spec too
  *
  */
 void
@@ -393,11 +289,20 @@ dump_srec (void *fd)
 {
   real_dump_srec (fd);
 }
+
+
+/**
+ *
+ * looks like this is not used because it has return at the top?
+ * but there is a call to it from libUI_TUI that needs to be removed
+ * if the is the case - and from API_form.spec too
+ *
+ */
 static void
 real_dump_srec (struct s_form_dets *fd)
 {
-  int a;
-  int b;
+int a;
+int b;
 
   return;
 
@@ -418,39 +323,6 @@ real_dump_srec (struct s_form_dets *fd)
 }
 
 
-/** This should be moved to lib tui
- *
- *
- */
-/* moved to others.c
-struct struct_screen_record *
-get_srec (char *name)
-{
-  int a;
-  struct s_form_dets *form;
-  debug ("Get_srec");
-  form = get_curr_form ();
-  debug ("found form");
-
-  debug ("Got form %p", form);
-
-  if (form == 0)
-    {
-      debug ("No form...");
-      return (struct struct_screen_record *) 0;
-    }
-
-  debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
-
-  a = find_srec (form->fileform, name);
-  debug ("Got %d", a);
-  if (a == -1)
-    return (struct struct_screen_record *) 0;
-  else
-    return (struct struct_screen_record *) &form->fileform->
-      records.records_val[a];
-}
-*/
 
 /**
  * called from lib/libtui/ioform.c so it should be in API_form
@@ -579,29 +451,6 @@ include_range_check (char *ss, char *ptr, int dtype)
 }
 
 
-
-/* moved to others.c, because it is also used by 4glc
-
-char *
-strip_quotes (char *s)
-{
-  static char buff[1024];
-  if (s[0] == '"' || s[0] == '\'')
-    {
-      strcpy (buff, &s[1]);
-      buff[strlen (buff) - 1] = 0;
-    }
-  else
-    {
-      strcpy (buff, s);
-    }
-  debug ("Returning %s", buff);
-  return buff;
-}
-
-
-*/
-
 /**
  *
  */
@@ -626,24 +475,6 @@ real_has_bool_attribute (struct struct_scr_field *f, int boolval)
   return 0;
 }
 
-/**
- * Not called anywhere
- */
-/*
-static int
-set_bool_attribute (struct struct_scr_field * f, int boolval, int value)
-{
-  int a;
-
-  for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
-    {
-      if (f->bool_attribs.bool_attribs_val[a] == boolval)
-	return 1;
-    }
-
-  return 0;
-}
-*/
 
 /**
  *
@@ -696,7 +527,9 @@ do_translate_form (struct_form * the_form)
 
 
 
-void A4GLFORM_initlib() {
+void 
+A4GLFORM_initlib() 
+{
 	// Does nothing...
 }
 

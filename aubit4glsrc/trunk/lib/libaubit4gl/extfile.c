@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.12 2003-04-09 06:54:23 mikeaubury Exp $
+# $Id: extfile.c,v 1.13 2003-04-26 12:22:16 afalout Exp $
 #
 */
 
@@ -48,12 +48,13 @@
 =====================================================================
 */
 
-FILE *helpfile = 0;
-FILE *langfile = 0;
-char *language_file_contents=0;
-char disp[24][81];
-int max_width;
-char *curr_help_filename=0;
+FILE *	helpfile 				= 0;
+FILE *	langfile 				= 0;
+char *	language_file_contents	= 0;
+char 	disp[24][81];
+int 	max_width;
+char *	curr_help_filename		= 0;
+char last_outfile[256]="";
 
 /*
 =====================================================================
@@ -72,23 +73,53 @@ void 			set_lang_file 			(char *fname_orig);
 */
 
 /**
- * Callable from 4GL
+ * Invoked when HELP FILE "filename.iem" is encountered in 4GL code.
+ * Checks id file exists, and sets current help file for later use by
+ * explicit (call SHOWHELP(123)) or implicit (MENU ... COMMAND ... HELP 123)
+ * invocation
  *
- * @todo Describe function
+ * @param fname file name containing compiled help messages
  */
 void
 set_help_file (char *fname)
 {
+char a[128] = "";
+char b[128] = "";
+char c[128] = "";
+
   if (helpfile != 0) fclose (helpfile);
 
   if (curr_help_filename) free(curr_help_filename);
   curr_help_filename=strdup(fname);
 
   helpfile = (FILE *)open_file_dbpath(fname);
+
   if (helpfile==0) {
-        exitwith("Unable to open help file");
+    /* Many 4GL programs out there use fixed extension .iem to specify help file,
+        but because we need to distinguish between help files created by different
+        compilers, im nost cases Aubit compiled help files will have extension .hlp
+        Therefore, if checking for hard-coded file name fails, we need to try to
+        substitire extension, and check again:
+    */
+
+	strcpy (c, fname);
+    bname (c, a, b);
+
+    //if (strcmp (b, "iem") == 0)
+
+    strcat (a,acl_getenv ("A4GL_HLP_EXT"));
+
+	helpfile = (FILE *)open_file_dbpath(a);
+
+
+	if (helpfile==0) {
+    	exitwith("Unable to open help file");
+	}
   }
-debug("Helpfile=%p",helpfile);
+
+  #ifdef DEBUG
+	debug("Helpfile=%p",helpfile);
+  #endif
 }
 
 
@@ -246,18 +277,30 @@ char *get_helpfilename(void)
  * @todo Describe function
  */
 char *
-get_help_disp(int n) 
+get_help_disp(int n)
 {
 	return disp[n];
 }
 
-char last_outfile[256]="";
-void set_last_outfile(char *s) {
+
+/**
+ *
+ * @todo Describe function
+ */
+void 
+set_last_outfile(char *s) 
+{
 	debug("last_outfile=%s",s);
 	strcpy(last_outfile,s);
 }
 
-char *get_last_outfile(void) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+get_last_outfile(void) 
+{
 	debug("Returning last_outfile=%s",last_outfile);
 	return last_outfile;
 }

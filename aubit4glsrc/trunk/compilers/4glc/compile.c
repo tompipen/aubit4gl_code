@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.23 2003-04-13 06:23:29 afalout Exp $
+# $Id: compile.c,v 1.24 2003-04-26 12:21:38 afalout Exp $
 #*/
 
 /**
@@ -53,26 +53,26 @@
 */
 
 /* -------- static --------- */
-static char outputfile[132];	/** The output file name */
+static char outputfile[132];		/** The output file name */
 static int genStackInfo = 1;
 
 
 /* -------- extern --------- */
 //FIXME - move in "a4gl_4glc_int.h"
-extern char *outputfilename;	/* Defined in libaubit4gl */
-extern int globals_only;	/* defined in map.c */
+extern char *outputfilename;		/* Defined in libaubit4gl */
+extern int globals_only;			/* defined in map.c */
 extern char infilename[132];
 extern FILE *yyin;
 extern int glob_only;
-extern long fpos;				/** current file position for direct fseek */
+extern long fpos;					/** current file position for direct fseek */
 extern int yylineno;
 
 /* -------- unknown --------- */
 int compiling_system_4gl=0;
 char gcc_exec[128];
 char pass_options[1024] = "";
-int clean_aftercomp = 0;	/* clean intermediate files after compilation */
-char currinfile_dirname[1024] = "";	//path to 4gl file we are currently compiling - used when compiling global files
+int clean_aftercomp = 0;			/* clean intermediate files after compilation */
+char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compiling - used when compiling global files */
 char errbuff[1024] = "";
 char yytext[1024] = "";
 int globals_only = 0;
@@ -215,6 +215,7 @@ char extra_ldflags[1024] = "";
       printUsage (argv);
       exit (0);
     }
+
 
   while ((i = getopt_long (argc, argv, opt_list,
 			 //  long_options, &option_index)) != -1)
