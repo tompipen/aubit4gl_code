@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.48 2003-03-12 07:33:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.49 2003-03-12 18:10:48 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.48 2003-03-12 07:33:45 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.49 2003-03-12 18:10:48 mikeaubury Exp $";
 #endif
 
 
@@ -201,6 +201,7 @@ static void esqlWarningHandler(void)
  */
 static int isSqlError()
 {
+set_a4gl_sqlca_sqlcode(sqlca.sqlcode);
   if ( SQLSTATE[0] != '0' || (SQLSTATE[1] != '0' &&
        SQLSTATE[1] != '1' && SQLSTATE[1] != '2' ) )
     return 1;
