@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.55 2003-02-17 13:25:07 mikeaubury Exp $
+# $Id: lexer.c,v 1.56 2003-02-19 08:54:32 mikeaubury Exp $
 #*/
 
 /**
@@ -1018,7 +1018,7 @@ int allow;
 
 allow=allow_token_state(yystate,a);
 debug("Allow_token_State = %d\n",allow);
-if (allow==0) a=NAMED_GEN;
+if (allow==0&&isident(buff)) a=NAMED_GEN;
 
 
 #ifdef OLDSTUFF
