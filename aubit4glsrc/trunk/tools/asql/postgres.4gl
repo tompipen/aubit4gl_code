@@ -110,7 +110,7 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
                 display_mode=DISPLAY_ACROSS;
         }
 } else {
-        if (stdin_screen_width==-1) set_stdin_width();
+        if (stdin_screen_width==-1) stdin_screen_width=set_stdin_width();
         if (field_widths () > stdin_screen_width) {
                 display_mode=DISPLAY_DOWN;
         } else {

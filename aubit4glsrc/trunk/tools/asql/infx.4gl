@@ -796,7 +796,7 @@ if (display_mode != DISPLAY_UNLOAD)
     else
       {
 
-	if (stdin_screen_width==-1) set_stdin_width();
+	if (stdin_screen_width==-1) stdin_screen_width=set_stdin_width();
 	if (field_widths () > stdin_screen_width)
 	  {
 	    display_mode = DISPLAY_DOWN;
