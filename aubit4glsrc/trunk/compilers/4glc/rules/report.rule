@@ -199,9 +199,9 @@ strcpy($<str>$,"1");
 
 rep_expr_list : 
 	rep_expr {
-	printc("%s rep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);} 
+	printc("%srep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);} 
 | rep_expr_list COMMA rep_expr {
-         printc("%s rep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);
+         printc("%srep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);
 	
 }
 ;

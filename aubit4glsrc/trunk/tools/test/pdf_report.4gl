@@ -1,7 +1,7 @@
 #This program demonstrates ussage of PDF report capability in Aubit 4gl
 
 
-database stores7
+database maindb
 define mv_logo byte
 
 

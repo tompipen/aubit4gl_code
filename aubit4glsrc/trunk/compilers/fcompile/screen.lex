@@ -39,6 +39,7 @@
 "attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
 "screen"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN);}
 "title"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TITLE);}
+screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
 "type"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TYPE);}
 "record"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(RECORD);}
 "formonly"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(FORMONLY);}
@@ -50,8 +51,7 @@
 [0-9]+|[0-9]*\.[0-9]+  	{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
 
 "\"" { if (in_screen_section==0) REJECT ; strcpy(yylval.str,yytext);  return CH; }
-"\'" { if (in_screen_section==0) REJECT; strcpy(yylval.str,yytext); 
-return CH; }
+"\'" { if (in_screen_section==0) REJECT; strcpy(yylval.str,yytext);   return CH; }
 
 \"[^\"]+\" { if (in_screen_section==1) REJECT; strcpy(yylval.str,yytext); return CHAR_VALUE;}
 \"\" {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}

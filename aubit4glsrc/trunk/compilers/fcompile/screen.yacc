@@ -36,7 +36,7 @@ int add_field (char *s, int x, int y, int wid, int scr, int delim,char *label);
 }
 %token <str> 
 %token CH
-%token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED OPEN_BRACE CLOSE_BRACE TITLE
+%token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
 %token SEMICOLON
@@ -76,30 +76,50 @@ named_or_kw | named_or_kw ATSIGN named_or_kw {sprintf($<str>$,"%s@%s",$<str>1,$<
 screen_section : screens_section | screen_section screens_section ;
 
 screens_section :
-KW_SCREEN {in_screen_section=1;
-the_form.snames.snames_len++;the_form.snames.snames_val=realloc(the_form.snames.snames_val,
-        (the_form.snames.snames_len)*sizeof(struct screen_name));
-} op_title op_size { ignorekw=1; lineno=0; scr++; if (scr>1) newscreen=1; } 
-OPEN_BRACE { lineno=0; } 
-screen_layout 
-CLOSE_BRACE { ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
-op_end 
-;
+	KW_SCREEN {
+	char buff[256];
+	sprintf(buff,"Screen %d", the_form.snames.snames_len);
+		the_form.snames.snames_len++;the_form.snames.snames_val=
+			realloc(the_form.snames.snames_val, 
+				(the_form.snames.snames_len)*
+					sizeof(struct screen_name));
 
-op_title : {
-char buff[256];
-sprintf(buff,"Screen %d", the_form.snames.snames_len);
-the_form.snames.snames_val[the_form.snames.snames_len-1].name =strdup(buff);}
-	| TITLE CHAR_VALUE {
+		the_form.snames.snames_val[the_form.snames.snames_len-1].name=
+				strdup(buff);
+
+		in_screen_section=1; 
+	}  screens_rest;
+| KW_SCREEN_TITLE CHAR_VALUE {
 	char buff[256];
 	char *ptr;
-	sprintf(buff,"%s", $<str>2);
-	ptr=buff;
-	ptr++;
-	ptr[strlen(ptr)-1]=0;
-	
-the_form.snames.snames_val[ the_form.snames.snames_len-1].name =strdup(ptr);}
+	the_form.snames.snames_len++;the_form.snames.snames_val=
+		realloc(the_form.snames.snames_val, 
+			(the_form.snames.snames_len)*
+				sizeof(struct screen_name));
+		sprintf(buff,"%s", $<str>3);
+		ptr=buff;
+		ptr++;
+		ptr[strlen(ptr)-1]=0;
+
+		the_form.snames.snames_val[
+			the_form.snames.snames_len-1].name =strdup(ptr);
+
+	in_screen_section=1; 
+	}  screens_rest
 ;
+
+screens_rest: op_size 
+		{ ignorekw=1; 
+		lineno=0; scr++; if (scr>1) newscreen=1; } 
+	OPEN_BRACE { lineno=0; } 
+	screen_layout 
+	CLOSE_BRACE 
+		{ ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
+	op_end 
+;
+
+
+
 
 op_size : 
 | KW_SIZE NUMBER_VALUE 
@@ -641,6 +661,7 @@ any_kword :
 | KW_NULL
 | KW_PANEL
 | KW_SCREEN
+| KW_SCREEN_TITLE
 | KW_SIZE 
 | KW_TEXT 
 | LEFT

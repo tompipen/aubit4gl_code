@@ -3,9 +3,9 @@ module	:	op_code op_template db_section op_code globals_section op_code
 {
 int a;
 modlevel=-1;
-read_glob_var = 1; 
+//read_glob_var = 1; 
 print_variables(1);
-read_glob_var = 0; 
+//read_glob_var = 0; 
 set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);} define_section op_code {inmod();} func_main_def
 	;
 

@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.12 2001-09-17 21:12:37 mikeaubury Exp $
+* $Id: mod.c,v 1.13 2001-09-18 08:32:23 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.12  2001/09/17 21:12:37  mikeaubury
+*	new and improved...
+*	But still working in it..
+*	
 *	Revision 1.11  2001/09/16 16:19:21  mikeaubury
 *	more updates
 *	
@@ -264,6 +268,7 @@ struct variables
   int level;
   char *tabname;
   char *pklist;
+  char globflg;
 }
 vars[MAXVARS];
 
@@ -417,7 +422,7 @@ print_variables (int z)
 	{
 	  if (vars[a].level == 0)
 	    {
-	      if (read_glob_var)
+	      if (vars[a].globflg=='G')
 		print_variable (a, 'G');
 	      else
 		print_variable (a, 'n');
@@ -3010,6 +3015,7 @@ read_glob (char *s)
 	     vars[varcnt].var_size,
 	     vars[varcnt].var_arrsize,
 	     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
+      vars[varcnt].globflg='G';
 
   if (varcnt>=MAXVARS) { exitwith("Too many variables"); yyerror("Too many variables"); }
       varcnt++;
