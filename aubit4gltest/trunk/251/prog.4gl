@@ -15,5 +15,11 @@ endcode
 
 #Should also test -! end-of-line Aubit specific non-comment
 
+#also should test for 4Js non-comment:
+# --#
+
+#...and Qureix non-comments
+# ???
+
 display a
 end main

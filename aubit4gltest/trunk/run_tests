@@ -6,6 +6,50 @@
 #
 ###########################################################################
 
+######################
+#Tests that currently fail because of the bug in Aubit compiler (with -cert)
+EXPECT_TO_FAIL_TESTS="82 487 488 490 240 670 696 "
+# 82(report),487 (Too many arguments to function `A4GL_acli_scroll'+488),
+#490 (syntax on SCROOL DOWN ... BY) 
+#240 (numeric formating) 670 (syntax errors in generated EC code)
+#696 (Syntax in generated EC)
+
+# NOT expected to fail: 689
+
+#Not (yet) reported
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+
+######################
+#Tests that currently fail with -ecp (but work with -cert)
+EXPECT_TO_FAIL_TESTS_ECP="36 76 98 207 212 227 530 531 534 535"
+#36(close cursor) 76(datetime-ecpg issue) 98 (serial) 207(datetime)
+#212 ??
+#227 (syntax error)
+#530 (syntax+531,534,535)
+
+#Not reported:
+EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
+	536 537 538 539 540 541 543 544 551 552 553 554 555 556 557 558 \
+	559 560 561 562 565 566 567 568 569 570 571 572 573 575 576 577 579 581 \
+	584 587 592 593 597 599 600 602 603 605 606 607 609 610 611 612 613 614 \
+	615 618 619 621 622 623 624 625 626 627 628 629 630 631 632 633 634 635 \
+	636 637 638 639 640 645 646 647 648 649 650 651 652 653 654 655 656 657 \
+	658 659 660 664 665 666 667 668 669 675 676 677 678 679 680 681 682 683 \
+	685 686 687 689 690 691 693 694 697 698 699 700 701 702 703 704 710 711 \
+	712 713 714 715 716 717 718 \
+	"
+
+######################
+#Tests that currently fail because of the errors in the test itself
+INVALID_TESTS="375 377 249 684 105 705 217"
+#105 - missing database schemma
+#705 - It is not possible to convert between the specified types.
+#217 - -as-dll problem with 4glpc
+
+##############################################################################
+#							Functions
+##############################################################################
+
 ##
 # Create a new test.
 # Copy the template of the makefile into the directory and the .cvsignore also
@@ -49,47 +93,6 @@ new_test() {
   fi
   exit
 }
-
-#######s###############
-#Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="1 82 487 488 490 240 670 696 702"
-#1 (money), 82(report),487 (Too many arguments to function `A4GL_acli_scroll'+488),
-#490 (syntax on SCROOL DOWN ... BY) 
-#240 (numeric formating) 670 (syntax errors in generated EC code)
-#696 (Syntax in generated EC)
-#702 too few arguments to function `A4GL_copy_char'
-
-#Not (yet) reported
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 251"
-#251 (Aubit specific non-comment)
-
-######################
-#Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="36 76 98 207 212 227 530 531 534 535"
-#36(close cursor) 76(datetime-ecpg issue) 98 (serial) 207(datetime)
-#212 ??
-#227 (syntax error)
-#530 (syntax+531,534,535)
-
-#Not reported:
-EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
-	536 537 538 539 540 541 543 544 551 552 553 554 555 556 557 558 \
-	559 560 561 562 565 566 567 568 569 570 571 572 573 575 576 577 579 581 \
-	584 587 592 593 597 599 600 602 603 605 606 607 609 610 611 612 613 614 \
-	615 618 619 621 622 623 624 625 626 627 628 629 630 631 632 633 634 635 \
-	636 637 638 639 640 645 646 647 648 649 650 651 652 653 654 655 656 657 \
-	658 659 660 664 665 666 667 668 669 675 676 677 678 679 680 681 682 683 \
-	685 686 687 689 690 691 693 694 697 698 699 700 701 702 703 704 710 711 \
-	712 713 714 715 716 717 718 \
-	"
-
-######################
-#Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 249 684 105 705 217 22"
-#105 - missing database schemma
-#705 - It is not possible to convert between the specified types.
-#217 - -as-dll problem with 4glpc
-#invalid keys.in file - waits for final ESC
 
 ##############################################################################
 #							Describe tests:
@@ -158,7 +161,7 @@ UNKNOWN_TESTS=" \
 #Tests that are certified to run (-eci) If they fail (with -eci), something was 
 #probably broken in current code, or that particular combination of confuguration 
 #options/compiler or run-time settings is not capable of performing all functions it should
-CERT_TESTS="3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 \
+CERT_TESTS="1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 \
 		35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 59 60 61 62 63 64 66 67 \
 		68 69 70 71 72 73 74 75 76 77 78 79 80 84 86 90 96 97 99 202 204 205 \
 		92 93 94 98 101 203 210 206 207 208 209 212 217 218 239"
@@ -643,6 +646,66 @@ for a in $FLAGS; do
    case $a in
    ##########
 
+   -sqlt)
+   
+   	# Parsers:
+		# DBI DBI-MySQL DBI-PostgreSQL DBI-SQLite DBI-Sybase
+		# Excel MySQL Oracle PostgreSQL SQLite Storable Sybase
+		# XML XML-SQLFairy YAML xSV
+    # Producers:
+		# ClassDBI Diagram GraphViz HTML MySQL Oracle POD PostgreSQL
+		# SQLite Storable Sybase TTSchema XML XML-SQLFairy YAML
+      # General Options:
+        # -d|--debug         Print debug info
+        # -v|--validate      Validate the schema
+        # --trace            Print parser trace info
+        # --show-warnings    Print warnings to STDERR
+      # DBI Parser Options:
+        # --dsn              DSN for connecting to database
+        # --db-user          Database user
+        # --db-password      Database password              
+      # DB Producer Options:
+        # --add-drop-table   Add 'DROP TABLE' statements before creates
+        # --no-comments      Don't include comments in SQL output
+      # Diagram Producer Options:
+        # --imap-file        Filename to put image map data
+        # --imap-url         URL to use for image map
+
+		#PG:
+		cat ./testdb.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
+		#psql -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
+		
+		TO=XML
+		OUTFILE=testdb.xml
+		OPTIONS=
+		
+		#can't load GD.pm
+		TO=Diagram
+		OUTFILE=testdb.dia
+		OPTIONS=		
+
+		#Can't locate GraphViz.pm
+		TO=GraphViz
+		OUTFILE=testdb.gv
+		OPTIONS=		
+		
+		TO=SQLite
+		OUTFILE=testdb-$TO.sql
+		OPTIONS=		
+		
+		
+		DOIT="sqlt --from PostgreSQL --to $TO $OPTIONS testdb-tmp.sql > $OUTFILE"
+		echo $DOIT
+		eval $DOIT
+		RET=$?
+		if test "$RET" != "0"; then 
+			echo "ERROR: sqlt failed"
+		else
+			less $OUTFILE
+		fi
+		exit $RET
+		;;
+   
     -info)
 	#Show information about the test
 	#allready procesed before - skip it
