@@ -257,6 +257,7 @@ edit_lle ()
   int entry, block;
   char where_why[256];
   GtkWidget *vbox;
+  GtkWidget *sw;
   char desc[256];
 
 #define DRAG_TARGET_NAME_0 "ReportBlock"
@@ -317,12 +318,30 @@ edit_lle ()
       gtk_notebook_append_page (GTK_NOTEBOOK (notebook), fixed, label);
     }
 
+
+
   vbox = gtk_vbox_new (0, 0);
+
+
+
   gtk_container_add (GTK_CONTAINER (window), vbox);
+
+	
   label = gtk_label_new ("Your Report");
   gtk_container_add (GTK_CONTAINER (vbox), label);
   gtk_box_set_child_packing (GTK_BOX (vbox), label, 0, 0, 0, GTK_PACK_START);
-  gtk_container_add (GTK_CONTAINER (vbox), notebook);
+
+
+
+
+  sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_widget_show (sw);
+  gtk_container_add (GTK_CONTAINER (vbox), sw);
+
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(sw), notebook);
+
+
   label = gtk_label_new ("Status: Nothing selected");
   gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
   gtk_container_add (GTK_CONTAINER (vbox), label);
