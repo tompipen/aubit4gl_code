@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.86 2003-08-20 20:36:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.87 2003-08-21 18:47:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -762,8 +762,8 @@ print_continue_loop (int n, char *cmd_type)
 {
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
+      printc ("if (_fld_dr==95) {A4GL_req_field(&_inp_io,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
       printc ("_fld_dr= -1;\n");
-      printc ("A4GL_req_field(&_inp_io,_inp_io_type,'0',\"0\",0,0);\n");
     }
 
   if (strcmp (cmd_type, "INPUTREQ") == 0 || strcmp (cmd_type, "CONSTRUCTREQ") == 0)
