@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.15 2002-01-11 03:02:12 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-01-11 03:16:19 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -533,7 +533,7 @@ clean.configure: clean.makefiles clean.settings
 	${RM} config.log config.status incl/config.h
 
 clean.settings:
-	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv
+	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
 
 clean.makefiles:
 	${RM} compilers/4glc/Makefile
@@ -541,6 +541,7 @@ clean.makefiles:
 	${RM} compilers/fcompile/Makefile
 	${RM} compilers/helpcompile/Makefile
 	${RM} compilers/menus/Makefile
+	${RM} incl/Makefile-common
 	${RM} lib/Makefile
 	${RM} lib/libgui/Makefile
 	${RM} lib/libpdf/Makefile
@@ -578,7 +579,7 @@ clean.bin:
 	(cd bin;${RM} 4glc fcompile mcompile mkmess 4glc-noodbc fcompile-noodbc \
 	mcompile-noodbc loadmap 4glc.exe fcompile.exe mkmess.exe mcompile.exe \
 	loadmap.exe *.bak ide fcompile-noodbc.exe mcompile-noodbc.exe 4glc-noodbc.exe \
-	4glc_perl mdecompile fdecompile fdecompile-j)
+	4glc_perl mdecompile fdecompile fdecompile-j aubit-config)
 
 clean.etc:
 	${RM} etc/*.bak etc/aubit-auto.spec
