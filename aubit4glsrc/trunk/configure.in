@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.110 2002-09-27 06:25:24 afalout Exp $
+# $Id: configure.in,v 1.111 2002-09-27 06:56:36 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -550,7 +550,7 @@ LIBFILE_30=
 if test "$enable_debug" = "no" ; then
     # FIXME: strip executables
     CFLAGS="$CFLAGS -DNODEBUG"
-	AC_MSG_WARN(Debugging disabled, use --enable_debug to enable it.)
+	AC_MSG_WARN(Debugging disabled, use --enable-debug to enable it.)
 	AUBIT_DEBUG=0
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
@@ -563,14 +563,14 @@ if test "$enable_yy_debug" = "yes" ; then
 	YYDEBUG="-DYYDEBUG=1"
 	echo "YY Debugging enabled, export YYDEBUG=1 to environment to turn it on."
 else
-	echo "YY Debugging disabled, specify --enable_yy_debug to turn it on."
+	echo "YY Debugging disabled, specify --enable-yy-debug to turn it on."
 fi
 
 if test "$enable_yacc_debug" = "yes" ; then
 	DEBUG_BISON="--debug"
 	echo "Yacc Debugging enabled"
 else
-	echo "Yacc Debugging disabled, specify --enable_yacc_debug to turn it on."
+	echo "Yacc Debugging disabled, specify --enable-yacc-debug to turn it on."
 fi
 
 #in libLEX_xxx printc():

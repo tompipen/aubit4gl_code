@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.36 2002-09-27 06:26:51 afalout Exp $
+# $Id: 4glc.c,v 1.37 2002-09-27 06:56:41 afalout Exp $
 #
 */
 
@@ -47,11 +47,13 @@
 =====================================================================
 */
 
+
 #ifdef YYDEBUG
-	extern int yydebug;
+	extern int yydebug; /* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
-	int yydebug;
+	int yydebug; /* if -DYYDEBUG is not set, we need to define it here */
 #endif
+
 extern 		FILE *ferr;
 extern int 	yylineno;
 extern int 	yyleng;
@@ -209,6 +211,10 @@ static struct option long_options[] =
     printf ("Yacc Debugging on\n");
     yydebug = 1;
   }
+  else
+  {
+    yydebug = 0;
+  }
   
   strcpy (c, argv[optind]);
   bname (c, a, b);
@@ -240,11 +246,11 @@ main(int argc, char *argv[])
   int fname_arg_no = 1;
 
   /** @todo : Remove things that are to use */
-#if (defined(__MACH__) && defined(__APPLE__))
-  int useGetopt = 0;
-#else
+//#if (defined(__MACH__) && defined(__APPLE__))
+//  int useGetopt = 0;
+//#else
   int useGetopt = 1;
-#endif
+//#endif
   init_states ();
 
   yydebug = 0;
@@ -299,6 +305,14 @@ main(int argc, char *argv[])
     printf ("Error opening file : %s\n", infilename);
     exit (1);
   }
+
+#if YYDEBUG != 0
+    printf ("YYDEBUG was set while compiling\n");
+#ifdef YYPRINT
+    printf ("YYPRINT was set while compiling\n");
+#endif
+#endif
+
 
   fseek(yyin,0,SEEK_END);
   yyin_len=ftell(yyin);

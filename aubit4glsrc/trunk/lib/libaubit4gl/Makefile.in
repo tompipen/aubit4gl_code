@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.37 2002-09-27 06:25:42 afalout Exp $
+# $Id: Makefile.in,v 1.38 2002-09-27 06:56:41 afalout Exp $
 #
 
 ROOT    	=../..
@@ -157,7 +157,7 @@ ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
 	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
-	${CP} @$ ${INST_PATH}
+	${CP} $@ ${INST_PATH}
 endif
 
 ## ==================================================================
