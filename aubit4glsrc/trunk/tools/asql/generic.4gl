@@ -193,8 +193,11 @@ p=s;
    qry_type=0;
    if (type!='S'&&type!='s') qry_type=255;
 
-   //PREPARE stExec from :p;
-
+	//A4GL_push_char(s);
+	//aclfgl_prepareit(1);
+   //P0REPARE stExec from :p;
+	A4GL_trim(p);
+   A4GLSQL_add_prepare("generic_stexec",(void *)A4GLSQL_prepare_select(0,0,0,0,s));
    cp_sqlca();
 
 
@@ -282,11 +285,16 @@ endcode
 
 
 function sql_fetch()
-
+let sqlca.sqlcode=100;
 end function
 
 function execute_select_free()
           CLOSE crExec
           FREE stExec;
           FREE crExec; 
+end function
+
+function prepareit(p)
+define p char(20000)
+   PREPARE stExec from p
 end function

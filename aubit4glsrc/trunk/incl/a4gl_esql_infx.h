@@ -80,6 +80,7 @@ extern "C"
 
 #endif
 
+#define CONVERTSQL(s) s
 
 
 #define COPY_SQLCA

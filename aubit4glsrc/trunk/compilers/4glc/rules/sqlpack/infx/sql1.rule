@@ -66,7 +66,7 @@ order_by_clause_ss: order_by_clause {
 
 order_by_clause:
 	ORDER BY sort_specification_list
-	{sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
+	{sprintf($<str>$,"ORDER BY %s",$<str>3);}
 ;
 
 sort_specification_list:
@@ -997,34 +997,8 @@ s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"FRACTION(%s)",$<str>3);}
 ;
 
-/*
-dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
-		|       identifier ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
-		|	CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
-;
-*/
 
 
-/*
-cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-;
-
-colident: identifier
-	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT identifier DOT identifier {
-			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$,"%s.%s", $<str>3,$<str>5);
-			} else {
-				if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
-				} else {
-					sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
-				}
-			}
-	}
-;
-	
-*/
 
 
 select_statement_ss_str:
@@ -1034,17 +1008,22 @@ select_statement_ss_str:
 	select_list_ss {A4GL_debug("Got select list...\n");}
         opt_into_sel_ss 
 	table_expression_2_ss
-        sel_p2_ss {
-		char *ptr;
-                $<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
+        sel_p2_ss sel_finish {
+		if (!strstr($<sql_string>9,"INTO TEMP")) {
+                	$<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,$<sql_string>9,0);
+		} else {
+			char *ptr;
+                	ptr=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
+			
+                	$<sql_string>$=A4GLSQLCV_select_into_temp(ptr, $<sql_string>9, last_tmp_name);
+		}
 
-		/*$<sql_string>$=strdup(print_select_all(ptr)); free(ptr); */
 }
 ;
 
 select_statement2_ss:
-	select_statement21_ss {
-		$<sql_string>$=$<sql_string>1;
+	select_statement21_ss  {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
 	 }
 	| char_or_var {
 		$<sql_string>$=strdup($<str>1);
@@ -1055,23 +1034,29 @@ select_statement21_ss:
 	SELECT  op_ad select_list_ss
         opt_into_sel_ss
 	table_expression_2_ss
-        sel_p2_ss {
-	$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
+        sel_p2_ss  {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
 }
 ;
 
 
 sel_p2_ss : { $<sql_string>$=strdup(""); }
 	| UNION op_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup("UNION "),strdup($<str>2),kw_space,$<sql_string>3,0); }
+;
+
+
+
+sel_finish: {$<sql_string>$=strdup("");}
 	| order_by_clause  { $<sql_string>$=strdup($<str>1); }
-	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); } 
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
 	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
+		$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
+		strcpy(last_tmp_name,$<str>3);
 	} else {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
 	}
 }
+	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
 ;
 
 
@@ -1177,7 +1162,8 @@ value_expression_complex_ss :
 	| literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 	| KW_TRUE {$<sql_string>$=make_sql_string_and_free(strdup("1"),0);}
 	| KW_FALSE {$<sql_string>$=make_sql_string_and_free(strdup("0"),0);}
-	| USER {$<sql_string>$=make_sql_string_and_free(strdup("USER"),0);}
+	| USER {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
+	| KW_TODAY {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
 	| MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("*"),0);}
 	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0);}
  	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
@@ -1185,8 +1171,13 @@ value_expression_complex_ss :
 	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
 	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
 	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| YEAR OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("YEAR",$<sql_string>3));}
+	| MONTH OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MONTH",$<sql_string>3));}
+	| DAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DAY",$<sql_string>3));}
+	| KW_DOW OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DOW",$<sql_string>3));}
+	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=
+strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
-	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
 			$<sql_string>$=$<sql_string>3;

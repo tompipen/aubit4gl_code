@@ -14,4 +14,3 @@ REPLACE rowid = oid
 REPLACE today = date(now())
 REPLACE current year to second = now()
 REPLACE unique = distinct
-

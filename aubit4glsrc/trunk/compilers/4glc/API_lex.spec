@@ -17,6 +17,9 @@ VARIABLE A4GL_LEXTYPE
 * Name of the header file to be referenced with #include
 HEADER_FILE "API_lex_int.h"
 
+#ifdef DEBUG
+#undef DEBUG
+#endif
 * ======================================================================
 * Function calls definitions:
 * func-name param-type param-name ... -> returns

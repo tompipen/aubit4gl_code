@@ -1,0 +1,106 @@
+identifier: NAMED
+;
+
+fetch_cursor_name: NAMED
+;
+
+real_number : NUMBER_VALUE 
+	| DOT INT_VALUE { sprintf($<str>$,".%s",$<str>2); }
+;
+
+
+var_ident_qchar : NAMED
+	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+
+;
+
+variable : NOT_USED_1
+;
+
+obind_var_list: NOT_USED_2
+;
+
+fgl_sql_statement: NOT_USED_3
+;
+
+ident_or_var: identifier
+	| QUESTION_MARK
+;
+
+
+sql_statement :
+	individual_sql_statement
+	| sql_statement SEMICOLON individual_sql_statement
+;
+
+
+
+individual_sql_statement : 
+		/* Empty statement */
+	| set_database_cmd 
+	| unload_cmd  
+	| load_cmd  
+	| sql_commands 
+	| select_statement_ss_str  	{print_exec_select($<sql_string>1);}
+	| set_cmd  			
+	| error				{print_unable_to_parse();}
+;
+
+set_cmd : SQLSEOFF 		 { print_exec_sql($<str>1); }
+	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql($<str>$); }
+	| SQLSLMNW		 { print_exec_sql($<str>1); }
+	| SQLSIDR		 { print_exec_sql($<str>1); }
+	| SQLSIRR		 { print_exec_sql($<str>1); }
+	| SQLSICS		 { print_exec_sql($<str>1); }
+	| SQLSICR		 { print_exec_sql($<str>1); }
+;
+
+
+var_ident: identifier
+	| QUESTION_MARK { $<sql_string>$=strdup($<str>1); }
+;
+
+var_ident_ibind_ss :  column_name { $<sql_string>$=strdup($<str>1); } 
+	| QUESTION_MARK { $<sql_string>$=strdup($<str>1); }
+;
+
+
+
+/*
+column_name {
+	$<sql_string>$=strdup($<str>1);
+}
+
+;
+*/
+
+
+
+value_expression_initial_ss :
+        value_expression_complex_ss {
+                        /*
+                        if (strlen(current_upd_table)) {
+                                push_gen(UPDVAL,$<sql_string>1);
+                        }
+                        */
+                $<sql_string>$=$<sql_string>1;
+        }
+        | var_ident_ibind_ss    {
+                $<sql_string>$=$<sql_string>1;
+        }
+        | subquery_ss { $<sql_string>$=$<sql_string>1; }
+        | ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
+        | ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }
+        | SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("SOME "),$<sql_string>2,0); }
+        | ATSIGN identifier {
+                $<sql_string>$=strdup($<str>2);
+        }
+        | ATSIGN identifier DOT identifier {
+                $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0);
+        }
+;
+
+
+op_fgl_expr :  {strcpy($<str>$,0);}
+	| INT_VALUE {strcpy($<str>$,$<str>1);}
+;

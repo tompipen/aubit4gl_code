@@ -1016,6 +1016,9 @@ end if
 if lv_errsize>0 then
 	if p_status=0 then
 		display "Warning : Error file is not empty - but I got no error"
+		if mv_verbose>4 then
+			call head_file(mv_errfile,55)
+		end if
 	end if
 end if
 
@@ -1280,6 +1283,42 @@ if (f!=0) {
 			n--;
 		}
 		a--;
+	}
+	free(ptr);
+}
+}
+endcode
+end function
+
+function head_file(mv_file,n)
+define mv_file char(512)
+define n integer
+define a integer
+code
+{
+FILE *f;
+char *ptr;
+char *lptr;
+A4GL_trim(mv_file);
+f=fopen(mv_file,"r");
+if (f!=0) {
+	int c;
+	fseek(f,0,SEEK_END);
+	a=ftell(f);
+	rewind(f);
+	ptr=malloc(a+1);
+	fread(ptr,a,1,f);
+	fclose(f);
+	lptr=ptr;
+	c=0;
+	while (n && c<a) {
+		if (ptr[c]=='\n') {
+			*ptr=0;
+			printf("%s\n",lptr);
+			lptr=ptr+1;
+			n--;
+		}
+		c++;
 	}
 	free(ptr);
 }

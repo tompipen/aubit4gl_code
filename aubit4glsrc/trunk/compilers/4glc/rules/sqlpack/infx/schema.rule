@@ -21,12 +21,12 @@ create_statement_ss : create_c_1  {$<sql_string>$=strdup($<str>1);}
 ;
 
 create_c_2_ss  : 
-	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>3),kw_space,strdup($<str>4),$<sql_string>6,strdup($<str>7),strdup($<str>8),0);
+	CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,strdup($<str>6),0);
 	} 
 
-	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET opt_cr_table_extra op_no_log {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>3),kw_space,strdup($<str>4),$<sql_string>6,strdup($<str>7), kw_space,strdup($<str>8),strdup($<str>9),0);
+	| CREATE_TEMP_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra op_no_log {
+		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,$<str>6,$<str>7);
 	}
 
 ;

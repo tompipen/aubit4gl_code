@@ -111,8 +111,15 @@ REPLACE NVARCHAR=VARCHAR
 
 OMIT_NO_LOG
 USE_INDICATOR
-REPLACE rowid = oid
-REPLACE today = date(now())
+REPLACE_SQLCONST rowid = oid
+
+# These are only needed for non-patched postgres :
+# REPLACE_SQLCONST today = date(now())
+# REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
+# REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
+# REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
+# REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
+
 REPLACE current year to second = now()
 REPLACE current year to fraction(5) = now()
 REPLACE current year to fraction(3) = now()

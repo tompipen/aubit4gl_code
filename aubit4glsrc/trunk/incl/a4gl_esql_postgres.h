@@ -91,6 +91,13 @@ extern "C"
 #define A4GLSQL_SET_SQLCA_SQLWARN A4GL_copy_sqlca_sqlawarn_string8(sqlca.sqlwarn)
 
 
+// There may be some circumstances where we don't want to do automatic SQL conversions
+#ifndef NO_SQL_TRANSLATION
+#define CONVERTSQL(s) A4GLSQLCV_convert_sql("POSTGRES",s)
+#else
+#define CONVERTSQL(s) s
+#endif
+
 #define copy_sqlca
 
 //#define dtime_t datetime
