@@ -2,6 +2,9 @@
 
 #  =========================================================================
 #
+#  Implements methods in Perl/Tk for a for to allow configuration of
+#  global options.
+#
 #  Implementa métodos em Perl/Tk para um form que permite efectuar as
 #  configurações das opções globais.
 # 
@@ -22,7 +25,12 @@ sub show
 {
   $form = MainWindow->new;
   
-  $form->title("Configuração de opções");
+  if ( 1 ) {
+	  $form->title("Configuration of options");
+    } else {
+	  $form->title("Configuração de opções");
+    }
+
   $height = 500;
   $width = 250;
 	FglDocumenter::Utils::setWindowAtCenter($form,$width,$height);

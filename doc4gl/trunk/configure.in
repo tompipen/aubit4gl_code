@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.2 2003-01-01 06:38:01 afalout Exp $
+dnl # $Id: configure.in,v 1.3 2003-01-02 10:15:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -35,11 +35,6 @@ dnl #This script is used to configure BOTH source code and binary distributions
 
 
 #Run-time:
-#Perl DBI module
-#Perl DBD::Informix module
-#Perl::Tk module
-#Perl::Data module
-#Perl::Getopt module
 #Informix JDBC drivers
 #Informix database server (commercial)
 #JSP enabled web server, for example Jakarta Tomcat
@@ -237,6 +232,8 @@ AC_SUBST(AUTOSPEC)
 #other
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
+AC_SUBST(PERL_VERSION)
+AC_SUBST(PERL_MODULE_DIR)
 AC_SUBST(LDCONFIG)
 AC_SUBST(target)
 AC_SUBST(target_cpu)
@@ -447,6 +444,11 @@ dnl internationalization macros
         fi
     fi
 
+    TMP=`echo $PATH | grep $prefix/bin`
+    if test "$TMP" = ""; then
+		AC_MSG_WARN(Default bin install directory ($prefix/bin) is not in the PATH!)
+    fi
+
 #LIB_PREFIX=$prefix/$SHORTNAME/lib
 
 #List of libraries that we allways make. Here so we don't have to maintain it
@@ -492,6 +494,77 @@ dnl internationalization macros
 #converted to shell variables in "xxxxx_wwwww" format.
 #--disable-xxx are not assigned "yes" by default
 #--with-xxx are assigned "yes" if no value was assigned on command line
+
+
+## ==================================================================
+##                See if we need to create a Doc4GL database
+## ==================================================================
+
+#FIXME: first verify we do have Infoemix db engine and dbaccess
+
+PHP_CONFIGURE_PART(Creating/verifying Doc4GL Database:)
+
+	DOC4GL_DB="p4gl_repository"
+	AC_MSG_CHECKING(Informix database '$DOC4GL_DB')
+	dbaccess $DOC4GL_DB -e > /tmp/tmp.dbaccess 2>&1
+    TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
+
+	if test "$TEST" != ""; then
+		dbaccess - - > /tmp/credbtmp.log 2>&1 <<!
+        create database '$DOC4GL_DB'
+!
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Failed (code $RET). See /tmp/credbtmp.log)
+        else
+			TMP=`cat /tmp/credbtmp.log | grep "Database created"`
+            if test "$TMP" != ""; then
+				AC_MSG_RESULT(Database Created)
+            else
+	        AC_MSG_WARN(Database creation failed. See /tmp/credbtmp.log)
+			fi
+		fi
+
+		#inslib_rep.sql:
+		#Repository structure for scan_fgl / p4gl 4gl documenter
+        #Creates folowing tables:
+		#parametrofuncao cursor global utilglobalcursor sql utilcursor utilglobal
+		#composicao utilizacaotabela funcao contentor tabela modulo areas
+		#erro scan utilfuncao tags
+		#ALSO: adds constraints, creates procedures
+
+		AC_MSG_CHECKING('$DOC4GL_DB' db tables - inslib_rep)
+		dbaccess $DOC4GL_DB -qcr sql/inslib_rep > /tmp/inslib_rep.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Statement returned code $RET. See /tmp/inslib_rep.log)
+        else
+			#Routine created.OOPSDatabase closOOPS
+			AC_MSG_RESULT(Created)
+		fi
+
+		#p4gl_rep.sql:
+		#Repositório de sobre informação de programas de 4gl
+		#Formato p4gl (desenvolvido na Despodata)
+        #Creates folowing tables:
+		#p4gl_package p4gl_program p4gl_module p4gl_module_prog p4gl_function
+		#p4gl_process p4gl_fun_process p4gl_fun_parameter p4gl_fun_return
+		#p4gl_fun_todo p4gl_table_usage p4gl_excel
+
+		AC_MSG_CHECKING('$DOC4GL_DB' db tables - p4gl_rep)
+		dbaccess $DOC4GL_DB -qcr sql/p4gl_rep > /tmp/p4gl_rep.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Statement returned code $RET. See /tmp/p4gl_rep.log)
+        else
+			#TableOOPScreated.OOPSDOOPStabase closed
+			AC_MSG_RESULT(Created)
+		fi
+
+
+    else
+		AC_MSG_RESULT(OK)
+	fi
 
 ## ==================================================================
 ##                              Debugging
@@ -770,7 +843,7 @@ if test "$AWK" = "awk"; then
 		AC_MSG_WARN(doc4gl compiler need gawk, awk will probably fail.)
 fi
 
-AC_PATH_PROG(PERL, perl, no) #doc4gl needs version >= 5.6
+
 AC_PATH_PROG(SWIG, swig, no)
 
 
@@ -799,6 +872,100 @@ AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbi
 if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
 fi
+
+## ==================================================================
+##                  Checks for Perl and Perl components
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for Perl and Perl components:)
+
+AC_PATH_PROG(PERL, perl, no)
+
+if test "$PERL" != "no"; then
+	AC_MSG_CHECKING(Perl version)
+	set `perl -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
+	if test "$4" != ""; then
+		if test "$4" -lt "5"; then
+	        AC_MSG_ERROR(You will need Perl version 5.6 or later (found $4.$5.$6).)
+        else
+			if test "$4" = "5" -a "$5" -lt "6"; then
+		        AC_MSG_ERROR(You will need Perl version 5.6 or later (found $4.$5.$6).)
+            else
+				AC_MSG_RESULT($4.$5.$6 (ok))
+			fi
+		fi
+		PERL_VERSION=$4.$5.$6
+	else
+		AC_MSG_ERROR(Cannot read Perl version.)
+	fi
+else
+	AC_MSG_ERROR(doc4gl needs Perl, version 5.6 or later. Please install it.)
+fi
+
+    #FIXME: we should use site_perl dir to install our stuff
+	AC_MSG_CHECKING(Perl modules directory)
+
+	PERL_MODULE_DIR="/usr/lib/perl5/$PERL_VERSION"
+	PERL_SITE_DIR="/usr/lib/perl5/site_perl/$PERL_VERSION"
+    if test ! -d "$PERL_MODULE_DIR"; then
+		PERL_MODULE_DIR="/usr/local/lib/perl/$PERL_VERSION
+		PERL_SITE_DIR="/usr/local/lib/perl/site_perl/$PERL_VERSION"		"
+	    if test ! -d $PERL_MODULE_DIR; then
+			PERL_MODULE_DIR="/usr/lib/perl6/$PERL_VERSION"
+			PERL_SITE_DIR="/usr/lib/perl6/site_perl/$PERL_VERSION"
+		    if test ! -d "$PERL_MODULE_DIR"; then
+				PERL_MODULE_DIR="/usr/local/lib/perl5/$PERL_VERSION"
+				PERL_SITE_DIR="/usr/local/lib/perl5/site_perl/$PERL_VERSION"
+			    if test ! -d "$PERL_MODULE_DIR"; then
+					AC_MSG_ERROR(Cannot determine where to install Perl modules. Stop.)
+                fi
+            fi
+        fi
+	fi
+	AC_MSG_RESULT($PERL_MODULE_DIR)
+
+	#installation info, with versions can be found:
+	#/usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
+	#/usr/lib/perl5/site_perl/5.6.0/i386-linux/perllocal.pod
+
+    TEST_FOR="Tk"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+    TEST_FOR="Unit"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+
+    TEST_FOR="Informix"
+	AC_MSG_CHECKING(Perl $TEST_FOR module)
+	RESULT=`find $PERL_MODULE_DIR -name $TEST_FOR.pm`
+	if test "$RESULT" = ""; then
+		RESULT=`find $PERL_SITE_DIR -name $TEST_FOR.pm`
+		if test "$RESULT" = ""; then
+			AC_MSG_ERROR(Cannot find Perl $TEST_FOR module. Install it from http://cpan.org. Stop.)
+        fi
+	fi
+	AC_MSG_RESULT($RESULT)
+
+#I thing this is part of standard Perl installation:
+#Perl DBI module     ---  DBD:Informix needs DBI 1.30 or later
+#Perl::Data module
+#Perl::Getopt module
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
@@ -1380,6 +1547,7 @@ if test "$doc4gl_SOURCE" = "1" ; then
 
 	AC_CONFIG_FILES([Makefile
 				parser/Makefile
+                etc/fgldocrc
 				FgldocDefs.mk])
 
 else
@@ -1391,6 +1559,7 @@ fi
 
 PHP_CONFIGURE_PART(Creating files:)
 AC_OUTPUT
+
 
 ## ==================================================================
 ##                Warnings and exit messages

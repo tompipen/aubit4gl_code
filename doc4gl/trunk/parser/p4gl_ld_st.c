@@ -3,11 +3,10 @@
 #
 #  DESPODATA - Lisboa, PORTUGAL
 #                                                        
-#  $Author: afalout $
-#  $Revision: 1.1.1.1 $
-#  $Date: 2001-12-26 07:31:36 $
-#                                                        
-#  Programa      : Parser de 4gl para carregamento de informação sobre os 
+#  $Revision: 1.2 $
+#  $Date: 2003-01-02 10:15:54 $
+#
+#  Programa      : Parser de 4gl para carregamento de informação sobre os
 #   módulos num repositório relacional
 #  ---------------------------------------------------------------------------
 #  DESCRICAO: Carregam a informação dentro de uma estrutura em memória
@@ -160,7 +159,7 @@ char *argv[];
 			case '?':
 				/* Isto não está actualizado */
 		    printf(
-					 "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
+					 "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f filename.4gl\n");
 				printf("   -h : Display this help message\n");
 				printf("   -d : Debug mode\n");
 				printf("   -i : Insert in the repository\n");
@@ -168,8 +167,8 @@ char *argv[];
 				printf("   -w : Warning level (1..10)\n");
 				printf("   -c : Generate documentation\n");
 				printf("   -s : Use standard comments for documentation\n");
-				printf("   -p package : Nome do package\n");
-        exit(0);
+				printf("   -p package : Name of the package\n");
+		        exit(0);
 		  /* Help */
 		  /* case 'E'  :  Only pre-processing */
 		  /* case  L   :  Do NOT load symbol table */
@@ -179,10 +178,11 @@ char *argv[];
 
 		}
 	}
-   
-	if ( ! existe_ficheiro )
-		P4glError(ERROR_EXIT,
-			 "Utilizacao: p4gl [-h] [-d] [-i] [-v] -f ficheiro.4gl\n");
+
+	if ( ! existe_ficheiro ) {
+		printf ("p4gl: nothing to do - try 'p4gl -h' for help\n");
+		exit(0);
+	}
 
 	P4glVerbose("4gl Pre-Processing\n");
 	GetDirectoryFromFile(); 

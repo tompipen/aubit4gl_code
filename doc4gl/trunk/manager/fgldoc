@@ -13,7 +13,7 @@
 #  @todo Testes unitários
 #  @todo Gestão do repositório
 #
-#  $Id: fgldoc,v 1.1.1.1 2001-12-26 07:32:21 afalout Exp $
+#  $Id: fgldoc,v 1.2 2003-01-02 10:15:54 afalout Exp $
 #  $Author: afalout $
 #
 #  =========================================================================
@@ -89,10 +89,19 @@ sub createMenu
   my $f = $mw->Frame(-relief => 'ridge', -borderwidth => 2);
 	$f->pack(-side => 'top', -anchor => 'n', -expand => 1, -fill => 'x');
 
-	push(@menus, $f->Menubutton(-text => "Ficheiro", -underline => 0));
-	push(@menus, $f->Menubutton(-text => "Importar", -underline => 0));
-	push(@menus, $f->Menubutton(-text => "Exportar", -underline => 0));
-	push(@menus, $f->Menubutton(-text => "Opções", -underline => 0));
+	if ( 1 )
+	{
+		push(@menus, $f->Menubutton(-text => "File", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Import", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Export", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Options", -underline => 0));
+	} else {
+		push(@menus, $f->Menubutton(-text => "Ficheiro", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Importar", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Exportar", -underline => 0));
+		push(@menus, $f->Menubutton(-text => "Opções", -underline => 0));
+    }
+
 	push(@menus, $f->Menubutton(-text => "Help", -underline => 0));
 
   $menus[4]->pack(-side => 'right' );
@@ -101,15 +110,28 @@ sub createMenu
   $menus[2]->pack(-side => 'left' );
   $menus[3]->pack(-side => 'left' );
 
-	$menus[0]->AddItems(["command" => "~Open (Options)",
+	if ( 1 )
+	{
+		$menus[0]->AddItems(["command" => "~Open (Options)",
 	                      command => \&openOptionsFile],
-                      ["command" => "S~ave (Options)", 
+                      ["command" => "S~ave (Options)",
 	                      command => \&saveOptionsFile],
-                      ["command" => "~Sair", 
+                      ["command" => "~Exit",
 	                      command => \&exitFgldoc],
-  );
+		  );
+    } else {
+		$menus[0]->AddItems(["command" => "~Open (Options)",
+	                      command => \&openOptionsFile],
+                      ["command" => "S~ave (Options)",
+	                      command => \&saveOptionsFile],
+                      ["command" => "~Sair",
+	                      command => \&exitFgldoc],
+		  );
+    }
 
-	$menus[1]->AddItems(["command" => "~CSV (Tab separated)", 
+
+
+	$menus[1]->AddItems(["command" => "~CSV (Tab separated)",
 	                      command => \&importCSV],
                       ["command" => "Sources ~4gl", 
 	                      command => \&importFgl],

@@ -4,34 +4,35 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.2 2003-01-01 06:38:01 afalout Exp $
+#  $Id: Makefile.in,v 1.3 2003-01-02 10:15:36 afalout Exp $
 #
 #  ==========================================================================
+
+include FgldocDefs.mk
+
+# =========================================================================
+#                           Settings
+# =========================================================================
 
 #All we need for parser is C and ESQL/C compiler. configure would fail if they
 #are missing, and this Makefile would not be created, so we can assume this
 #will work:
 ALL				=parser
-ALL.INSTALL		=install.db install.parser
-
-#for manager we need...
-#ALL			+=manager
-#ALL.INSTALL	+=install.manager
+ALL.INSTALL		=install.parser install.manager
 
 #for browser we need...
 #ALL			+=browser
 #ALL.INSTALL	+=install.browser
 
-include FgldocDefs.mk
-
 .PHONY:all parser manager browser install clean install.parser \
-		install.manager install.browser install.db deinstall
+		install.manager install.browser deinstall
 
+
+# =========================================================================
+#                        	   Targets
+# =========================================================================
 
 all: ${ALL}
-
-install: ${ALL.INSTALL}
-
 
 parser:
 	$(MAKE) -C parser all
@@ -42,6 +43,12 @@ manager:
 browser:
 	$(MAKE) -C browser all
 
+# =========================================================================
+#                           	Install
+# =========================================================================
+
+install: ${ALL.INSTALL}
+
 install.parser:
 	$(MAKE) -C parser install
 
@@ -51,15 +58,49 @@ install.manager:
 install.browser:
 	$(MAKE) -C browser install
 
-install.db:
-
+# =========================================================================
+#                           Deinstall
+# =========================================================================
 deinstall:
 	$(MAKE) -C parser deinstall
 	$(MAKE) -C manager deinstall
 	$(MAKE) -C browser deinstall
 
+# =========================================================================
+#                                Clean
+# =========================================================================
 clean:
 	$(MAKE) -C parser clean
 	$(MAKE) -C manager clean
 	$(MAKE) -C browser clean
 
+# =========================================================================
+#                           Install Perl modules
+# =========================================================================
+
+
+#if you're using ActivePerl on Windows, the PPM (Perl Package Manager) has
+#much of the same functionality as CPAN.pm.
+#manual: http://search.cpan.org/author/JHI/perl-5.8.0/lib/CPAN.pm
+install.tk:
+	perl -MCPAN -e 'install Bundle::Tk'
+
+install.unit:
+	perl -MCPAN -e 'install Test::Unit'
+
+install.dbd-informix:
+#FIXME: set this from configure:
+	(export DBI_DBNAME=p4gl_repository; \
+	export DBD_INFORMIX_DATABASE=p4gl_repository; \
+	export DBD_INFORMIX_USERNAME=root; \
+	export DBD_INFORMIX_PASSWORD=xxxx; \
+	perl -MCPAN -e 'install DBD::Informix')
+
+install.cpan:
+	perl -MCPAN -e 'install Bundle::CPAN'
+
+install.dbi:
+	perl -MCPAN -e 'install Bundle::DBI'
+
+
+# =============================== EOF ======================================

@@ -2,6 +2,9 @@
 
 #  =========================================================================
 #
+#  Implements methods in Perl/Tk for the form to allow configuration of
+#  connection parameters to connect to Informix database.
+#
 #  Implementa métodos em Perl/Tk para um form que permite efectuar as
 #  configurações para estabelecimento de conexões a uma BD Informix
 #
@@ -129,8 +132,13 @@ sub showDbForm
   setPassword($dbConnection->getPassword());
 
   $dbForm = MainWindow->new;
-  
-  $dbForm->title("Configuração acesso a base de dados");
+
+  if ( 1 ) {
+	  $dbForm->title("Database access configuration");
+    } else {
+	  $dbForm->title("Configuração acesso a base de dados");
+    }
+
   $height = 300;
   $width = 200;
 	FglDocumenter::Utils::setWindowAtCenter($dbForm,$width,$height);
@@ -163,7 +171,7 @@ sub showDbForm
 	$txtDatabase = $dbForm->Entry(-width => 20, -textvariable => \$database);
 
 	# Botão para teste da conexão à BD
-	$testButton = $dbForm->Button(-text => "Test", 
+	$testButton = $dbForm->Button(-text => "Test",
 	  -command => \&testDbConnection
   );
 	$lblDatabase->grid($txtDatabase, $testButton);
@@ -191,12 +199,29 @@ sub testDbConnection
 	$dbConn->connect();
 	if ( ! $DBI::err )
 	{
-		$form = $main::mw->Dialog(
-		  -title => "Testar conexão",
-	    -text => "Conexão estabelecida"
-    );
+		if ( 1 ) {
+			$form = $main::mw->Dialog(
+			  -title => "Test connection",
+		    -text => "Connection established"
+		    );
+
+        } else {
+			$form = $main::mw->Dialog(
+			  -title => "Testar conexão",
+		    -text => "Conexão estabelecida"
+		    );
+        }
 	  $form->Show();
-	}
+	} else {
+
+		$form = $main::mw->Dialog(
+		  -title => "Test connection",
+	    -text => "Connection failed"
+		    );
+
+	  $form->Show();
+
+    }
 	$dbConn->disconnect();
 }
 
@@ -234,8 +259,12 @@ sub cancelFormDb
 sub showLoginForm
 {
   $dbForm = MainWindow->new;
-  
-  $dbForm->title("Configuração acesso a base de dados");
+  if ( 1 ) {
+	  $dbForm->title("Database access configuration");
+    } else {
+	  $dbForm->title("Configuração acesso a base de dados");
+    }
+
   $height = 300;
   $width = 200;
 	Utils::setWindowAtCenter($dbForm,$width,$height);

@@ -1,6 +1,6 @@
-/***************************************************************************
+
 /*
- *   p4gl : Parser de sources em Informix 4gl.
+ *   p4gl : 4gl source file parser
  *
  *   Autor : Sergio Ferreira
  *   Main e funcoes de execucao de mais alto nivel.

@@ -1,54 +1,52 @@
-
 #  ==========================================================================
 #  Contains definitions needed to fgldoc to be compiled and instaled
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.2 2003-01-01 06:38:01 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.3 2003-01-02 10:15:36 afalout Exp $
 #
 #  ==========================================================================
 
-
-#
-# To compile the 4gl parser
+# Settings to compile the 4gl parser
 # Warning (in HP/UX) it just works with -g)
 #
-YACC=@YACC@
-YFLAGS=-d
-LEX=@LEX@
-CFLAGS=-g
-#CFLAGS=@CFLAGS@
-ESQL=@IFMX_ESQLC@ -static
+YACC			=@YACC@
+YFLAGS			=-d
+LEX				=@LEX@
+CFLAGS			=-g
+#CFLAGS			=@CFLAGS@
+ESQL			=@IFMX_ESQLC@ -static
 
 
 #  ==========================================================================
 #  The place where the parser (p4gl) executable is to be installed
 #  ==========================================================================
-BINDIR=@prefix@/bin
+BINDIR			=@prefix@/bin
 
 #  ==========================================================================
-#  The directory where to install the perl modules (it should be created
-#  when make executed)
+#  The directory where to install the perl modules (it must exist before
+#  'make install' is executed)
 #  ==========================================================================
-PERL_MODULE_DIR=/usr/local/lib/perl/5.6.0/FglDocumenter
+PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
 
 #  ==========================================================================
 #  Place where tomcat jsp container is installed
 #  ==========================================================================
-TOMCAT_DIR=/usr/local/jakarta-tomcat
+TOMCAT_DIR		=/usr/local/jakarta-tomcat
 
 #  ==========================================================================
 #  Application dir inside tomcat,
 #  The place where the jsp(s) should be installed
 #  ==========================================================================
-NAV_DIR=$(TOMCAT_DIR)/webapps/fgldocumenter
+NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
 
 #  ==========================================================================
 #  Place inside applictation dir where tomcat is configured to find the
 #  class files
 #  ==========================================================================
-CLASS_DIR=$(NAV_DIR)/WEB-INF/classes
+CLASS_DIR		=$(NAV_DIR)/WEB-INF/classes
 
-INSTALL=cp
-RM=rm
+INSTALL			=cp
+RM				=rm
 
+# ============================= EOF ========================================

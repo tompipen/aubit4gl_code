@@ -51,19 +51,24 @@ va_dcl
 
 	va_start(args);
 
-  NmDir = getcwd((char *)0,256);
+	NmDir = getcwd((char *)0,256);
 	tipoErro = va_arg(args,int); /* 1.o argumento para fazer exit ou nao */
 
 	fmt     = va_arg(args,char *);
 	(void)vsprintf(ErroTemporario,fmt,args);
 	va_end(args);
 
-	if ( P4glCb.errorToDb == 1 )
-    RegisterErrorInDb(ErroTemporario);
+	if ( P4glCb.errorToDb == 1 ) {
+    	RegisterErrorInDb(ErroTemporario);
+    }
+	//fprintf(stdout,"Log: %s\n",Log);
 	fprintf(stdout,"p4gl: %s, %s",FicheiroInput,ErroTemporario);
 	/* ??? Devia meter a data */
-	fprintf(Log,"p4gl: Directoria: %s - Ficheiro: %s - %s",
+
+	if (Log) {
+		fprintf(Log,"p4gl: Directory: %s - File: %s - %s",
 			  NmDir,FicheiroInput,ErroTemporario);
+    }
 
 	exit_stat = 1;
 	if ( tipoErro == 0 )
@@ -71,6 +76,8 @@ va_dcl
       CleanP4gl();
 		exit(1);
 	}
+
+    exit(0);
 }
 
 

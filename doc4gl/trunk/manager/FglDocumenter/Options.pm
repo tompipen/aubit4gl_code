@@ -49,8 +49,12 @@ sub loadDefaultOptions
 
 	# Parametros para execucao em CUI
 	# Tipo de acção a executar
-	UI = "GUI";
-	action = "";
+	#UI = "GUI";
+	#action = "";
+	#Andrej: the 2 above stmts cause the following error:
+	#Can't modify constant item in scalar assignment at 
+	#/usr/lib/perl5/5.6.0/FglDocumenter/Options.pm line 52, near ""GUI";"
+    #So I commented them out
 
 	# @todo - Mudar esta mecanica
   $importInformixDir    = $ENV{"INFORMIXDIR"};
