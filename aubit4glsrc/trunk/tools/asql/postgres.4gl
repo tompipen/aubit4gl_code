@@ -56,6 +56,8 @@ int firstFetchInit=0;
 extern char *delim;// delimiters for load/unload
 
 void cp_sqlca_full() ;
+int ec_check_and_report_error();
+
 char mv_errmsg[256]="No Message";
 
 #define cp_sqlca() cp_sqlca_full(__FILE__,__LINE__)
@@ -913,6 +915,7 @@ endcode
 code
 }
 here:
+; /* to make gcc-3.4 happy (avoid label at end of compound statement error) */
 }
 exec sql close c_getdbs;
 endcode

@@ -42,6 +42,8 @@ char delims[256];
 char *delim;
 FILE *loadFile=0;
 
+static char *safe_quotes(char *s);
+
 
 
 

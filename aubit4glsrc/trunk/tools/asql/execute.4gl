@@ -43,6 +43,7 @@ int fetchFirst=0;
 int display_lines=-1;
 
 void open_display_file_c() ;
+void set_outfname();
 
 
 FILE *out=0;
