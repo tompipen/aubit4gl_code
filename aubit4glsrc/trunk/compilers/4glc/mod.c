@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.40 2002-01-20 14:42:12 mikeaubury Exp $
+# $Id: mod.c,v 1.41 2002-01-30 13:41:53 saferreira Exp $
 #
 */
 
@@ -46,12 +46,32 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.40 2002-01-20 14:42:12 mikeaubury Exp $
+* $Id: mod.c,v 1.41 2002-01-30 13:41:53 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.40  2002/01/20 14:42:12  mikeaubury
+*	Error handling fix.
+*	This really needs examining as to what happens with
+*	SQLERROR, ERROR and ANYERROR
+*	I've set it so that WHENEVER ANY ERROR is top
+*	followed by WHENEVER ERROR, then WHENEVER SQLERROR
+*	
+*	This means :
+*	WHENEVER SQLERROR STOP
+*	WHENEVER ERROR CONTINUE
+*	WHENEVER ANYERROR CALL myfunc
+*	
+*	would call myfunc for any SQLERROR, but :
+*	
+*	WHENEVER ERROR CONTINUE
+*	WHENEVER ANYERROR CALL myfunc
+*	WHENEVER SQLERROR STOP
+*	
+*	Would stop (the WHENEVER SQLERROR was after the ANYERROR).
+*	
 *	Revision 1.39  2002/01/13 10:58:57  mikeaubury
 *	Fixed bug #492094
 *	
@@ -1471,6 +1491,11 @@ static long isrecvariable (char *s)
   return isvartype (s, 2);
 }
 
+/**
+ * This function is not used.
+ *
+ * @todo : Undertstand if this function is old code and if so remove-it
+ */
 static int scan_arr_variable (char *s)
 {
 
@@ -1488,33 +1513,25 @@ static int scan_arr_variable (char *s)
   strcat (buff, ".");
   ptr = strtok (buff, ".");
   for (a = 0; a < varcnt; a++)
-    {
-
-      debug ("chk: %d %s %s %d %d\n", a, vars[a].var_name, ptr, vars[a].level,
+  {
+    debug ("chk: %d %s %s %d %d\n", a, vars[a].var_name, ptr, vars[a].level,
 	     lvl);
 
-      if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
-	{
+    if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
+	  {
+	    ptr = strtok (0, ".");
 
-	  ptr = strtok (0, ".");
-
-	  if (ptr == 0)
+	    if (ptr == 0)
 	    {
-
 	      if (atoi (vars[a].var_arrsize) > 0)
-		{
-		  print_range_check (s, vars[a].var_arrsize);
-		}
-
+		    {
+		      print_range_check (s, vars[a].var_arrsize);
+		    }
 	      return find_type (vars[a].var_type);
-
 	    }
-
-	  lvl++;
-
-	}
-
-    }
+	    lvl++;
+	  }
+  }
 
   debug ("/* Warning    Couldnt find %s */\n", s);
 
@@ -1856,6 +1873,15 @@ void push_menu_title (char *s)
   strcpy (mmtitle[menu_cnt], s);
 }
 
+/**
+ * The parser found the begining of a new block command
+ *
+ * Some of the commands are marked in the generated code as a C label.
+ * Others (Main, func, report, globals, etc) are just added to the command 
+ * stack.
+ *
+ * @param cmd_type The type of the command found:
+ */
 void push_blockcommand (char *cmd_type)
 {
 
@@ -1881,6 +1907,12 @@ void push_blockcommand (char *cmd_type)
   ccnt++;
 }
 
+/**
+ * The parser found a CONTINUE statement.
+ *
+ * @param cmd_type The type of continue found (the keyword found after 
+ * the CONTINUE token).
+ */
 void add_continue_blockcommand (char *cmd_type)
 {
   int z;
