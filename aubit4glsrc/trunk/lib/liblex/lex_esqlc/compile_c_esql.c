@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.112 2005-03-09 15:14:45 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.113 2005-03-17 07:56:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.112 2005-03-09 15:14:45 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.113 2005-03-17 07:56:20 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -502,7 +502,7 @@ print_put (char *xcname,char *putvals)
 	return;
   }
 
-  printc ("{\n");
+  printc ("{ /*ins1 */\n");
   n = print_bind_definition ('i');
   print_bind_set_value('i');
   print_conversions ('i');
@@ -549,7 +549,7 @@ print_prepare (char *xstmt, char *sqlvar)
   static char *stmt=0;
   if (stmt) free(stmt);
   stmt=strdup(A4GL_strip_quotes (xstmt));
-  printc ("{\n");
+  printc ("{ /* prep1 */\n");
 	set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*7*/\n");
   printc ("char *_s;\n");
@@ -1286,10 +1286,12 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 
   if (a2[0] == '"')
     {
+	printc("/* ... */");
       start_bind ('i', 0);
       start_bind ('o', 0);
       last_ni = 0;
       last_no = 0;
+	printc("/* .2. */");
       print_conversions ('0');
     }
 
@@ -1442,7 +1444,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 
     }
 
-  printc ("} /* DC 1*/\n");
+  if (last_no||last_ni) printc ("} /* DC 1*/\n");
   clr_suppress_lines ();
 
 }
@@ -1479,7 +1481,7 @@ extern int obindcnt;
 		last_no=no;
                 if (obindcnt) {bt++;}
                 if (ibindcnt) {bt+=2;}
-  		if (bt) printc("{");
+  		if (bt) printc("{ /* cs1 */");
 		if (bt&1) print_bind_definition('o');
 		if (bt&2) print_bind_definition('i');
 		if (bt&1) print_bind_set_value('o');
@@ -1600,12 +1602,12 @@ doing_esql_unload=A4GLSQLCV_check_requirement("ESQL_UNLOAD");
   if (doing_esql_unload) {
 	int ni;
 		printf("UNLOAD1\n");
-		printc("{");
+		printc("{ /* un1 */");
   		ni = print_bind_definition ('i');
 		print_bind_set_value('i');
   		print_conversions ('i');
 			sprintf(filename,":_unlfname"); 
-			printc("{");
+			printc("{ /* un2 */");
 			set_suppress_lines();
 			printc("\nEXEC SQL BEGIN DECLARE SECTION;/*4*/");
 			printc("char _unlfname[512];");
@@ -1633,7 +1635,7 @@ doing_esql_unload=A4GLSQLCV_check_requirement("ESQL_UNLOAD");
 	int a;
 	char *ptr;
 	int isvar=-1;
-        printc("{");
+        printc("{ /* un3 */");
 	ni=print_bind_definition('i');
         print_bind_set_value('i');
 	ptr=strdup(sql);
@@ -1692,7 +1694,7 @@ print_load (char *file, char *delim, char *tab, char *list)
 
   if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD"))
     {
-      printc ("{");
+      printc ("{ /* load1 */");
 	set_suppress_lines();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*5*/");
       printc ("char _loadfname[512];");
@@ -1854,7 +1856,7 @@ print_sql_block_cmd (char *s)
 {
 int ni;
 int no;
-printc("{");
+printc("{ /* sql_block_cmd */");
   ni = print_bind_definition ('i');
   last_ni=ni;
   no = print_bind_definition ('o');
@@ -2054,11 +2056,11 @@ if (type=='F') {
 
 	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
 	obindcnt=fbindcnt;
-	printc("{");
+	printc("{ /* Type F */");
 	printc("struct BINDING *obind;");
 	printc("obind=A4GL_duplicate_binding(_rbind,%d);",fbindcnt);
 	printc ("        while (1) {");
-	printc("{");
+	printc("{ /* Type F 2 */");
 	print_fetch_1();
 
 	//print_fetch_2();
