@@ -931,7 +931,7 @@ colident: identifier
 
 cursor_specification_all:
 	cursor_specification_sel
-	| insert_statement { sprintf($<str>$,"prepare_sql(\"%s\")",$<str>1); }
+	| insert_statement { printc("{\n");sprintf($<str>$,"prepare_sql(\"%s\")",$<str>1); }
 ;
 
 cursor_specification_sel:

@@ -74,7 +74,7 @@ printc("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
 printc("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
 printc("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
 printc("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
-printc("SET(\"s_screenio\",_inp_io,\"mode\",%d\n",MODE_CONSTRUCT);
+printc("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n",MODE_CONSTRUCT);
 printc("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",$<str>6);
 printc("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
 printc("_fld_dr=-99;\n");

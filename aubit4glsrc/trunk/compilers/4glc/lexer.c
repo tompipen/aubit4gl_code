@@ -87,6 +87,9 @@ if (a==2||a==NAMED_GEN) {
 if (a==2) {
 	to_lower_str(buff);
 }
+
+fix_bad_strings(buff);
+
 set_str(buff);
 lastword=buff;
 lastlex=a;
@@ -295,7 +298,11 @@ strcpy(word,"");
 			instrd=1;
 			continue;
 		}
-
+		if (a=='\"'&&instrs==1) {
+			ccat(word,'\\',instrs||instrd);
+			ccat(word,'\"',instrs||instrd);
+			continue;
+		}
 		if (a=='\''&&!escp&&instrd==0) {
 			if (instrs==1) {
 				ccat(word,'"',instrs||instrd);
@@ -547,3 +554,30 @@ return 1;
 }
 
 
+fix_bad_strings(char *s) {
+char buff[10000];
+int c;
+int a;
+if (s[0]!='"') return s;
+
+buff[0]=s[0];
+c=1;
+
+for (a=1;a<strlen(s);a++) {
+	if (s[a]!='\\') {
+		buff[c++]=s[a];continue;
+	}
+
+	if (s[a+1]=='['||s[a+1]==']'||s[a+1]=='^') {
+		buff[c++]=s[a+1];
+		a++;
+		continue;
+	}
+	buff[c++]='\\';
+}
+
+buff[c]=0;
+debug("Fixstring changed %s to %s",s,buff);
+strcpy(s,buff);
+return s;
+}
