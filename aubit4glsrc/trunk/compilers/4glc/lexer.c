@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.79 2003-12-26 11:54:35 mikeaubury Exp $
+# $Id: lexer.c,v 1.80 2003-12-29 20:41:52 mikeaubury Exp $
 #*/
 
 /**
@@ -166,6 +166,7 @@ mja_fgetc (FILE * f)
 
 
   a = A4GL_memfile_getc (f);
+  if (a==0x0c) a=' ';
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); DOS will end it with only 10(LF=\n) */
 

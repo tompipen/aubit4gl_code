@@ -92,6 +92,7 @@ do
 		b=$d/`basename "$c" ".$ECPG_EXT"`
 		bc=$d/`basename "$c" ".c"`
 		bo=$d/`basename "$c" ".o"`
+		b4go=$d/`basename "$c" ".4go"`
 	else
 		c=`basename "$a" `
 		b=`basename "$c" ".$ECPG_EXT"`
@@ -101,6 +102,8 @@ do
 		bc2=./`basename "$c" ".c"`
 		bo=`basename "$c" ".o"`
 		bo2=./`basename "$c" ".o"`
+		b4go=`basename "$c" ".4go"`
+		b4go2=./`basename "$c" ".4go"`
 	fi
 
 	if [ $b.$ECPG_EXT = $a -o $b2.$ECPG_EXT = $a ]
@@ -118,7 +121,7 @@ do
 		continue
 	fi
 
-	if [ $bo.o = $a -o $bo2.o = $a ]
+	if [ $bo.o = $a -o "$bo2.o" = $a -o $b4go = $a -o "$b4go2" = $a ]
 	then
 		ofiles="$ofiles $a"
 		shift
