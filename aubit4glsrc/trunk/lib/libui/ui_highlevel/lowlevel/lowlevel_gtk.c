@@ -5,7 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.15 2004-01-18 12:57:40 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.16 2004-01-18 16:15:08 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -26,6 +26,12 @@ int A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
 int A4GL_destroy_event (GtkWidget * widget, gpointer data);
 int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
 void A4GL_run_gtkrc(void) ;
+
+
+#define KEY_BUFFER_SIZE 256 
+int keybuffer[KEY_BUFFER_SIZE];
+int keybuffer_cnt=0;
+
 
 
 GtkWidget *tooltips = 0;        /** Tooltip widget */
@@ -94,12 +100,39 @@ void A4GL_getxy_coords(int *x,int *y) {
         *y=(*y)*YHEIGHT;
 }
 
+
+
+static int get_keypress_from_buffer() {
+int cp[KEY_BUFFER_SIZE-1];
+int k;
+if (keybuffer_cnt==0) {
+	return -1;
+}
+memcpy(&cp[0],&keybuffer[1],sizeof(cp));
+k=keybuffer[0];
+memcpy(&keybuffer[0],&cp[0],sizeof(cp));
+keybuffer_cnt--;
+//printf("Got k as %d\n",k);
+return k;
+}
+
+
+
+static void add_keypress(int a) {
+if (keybuffer_cnt>=KEY_BUFFER_SIZE) {
+		A4GL_LL_beep();
+		return;
+}
+keybuffer[keybuffer_cnt++]=a;
+}
+
+
+
 int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 
-  A4GL_debug ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state,
-         gdk_keyval_name (event->keyval),widget,user_data);
+  printf ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state, gdk_keyval_name (event->keyval),widget,user_data);
 
   if (event->state & 4)
     {                           /*  Control key held down... */
@@ -113,11 +146,14 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
       keypressed = event->keyval;
     }
 
-  //lastkey = keypressed;
-  //A4GL_set_last_key (lastkey);
-  //A4GL_debug ("setting A4GL_action field=%p key=%x", widget,lastkey);
+
+  add_keypress(keypressed);
   actionfield = widget;
 }
+
+
+
+
 
 void
 A4GL_console_toggle (void)
@@ -638,17 +674,15 @@ int A4GL_LL_getch_swin(void* window_ptr) {
 	A4GL_LL_gui_run_til_no_more();
       return a;
     }
+
 	keypressed=0;
-	while (keypressed==0) {
-      		while (gtk_events_pending ()) {
-			//usleep(100);
-        		gtk_main_iteration ();
-			if (keypressed) break;
-		}
+      	while (1) {
+		a=get_keypress_from_buffer();
+		if (a!=-1) break;
+       		gtk_main_iteration ();
 	}
-	a=keypressed;
 	keypressed=0;
-	A4GL_debug("KEYPRESS : %d (%x)\n",a,A4GL_which_key_aubit(a));
+	//printf("KEYPRESS : %d (%x)\n",a,A4GL_which_key_aubit(a));
 	if (a==3) {
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 		set_intr_win32 (SIGINT);
