@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.135 2004-01-15 05:43:51 afalout Exp $
+# $Id: Makefile.in,v 1.136 2004-01-18 11:11:04 afalout Exp $
 #
 
 ## ==================================================================
@@ -100,9 +100,14 @@ ifneq "${GCC_MINGW}" "yes"
 	#cannot compile current pcode stuff without RPClib - none on Windows/MinGW
 	$(MAKE) -C compilers/pcode
 endif
-	$(MAKE) -C lib loadmap
+#FIXME: enable loadmap when it compiles again - and in configure.in
+#	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
 	$(MAKE) -C tools/afinderr
+	$(MAKE) -C tools/configuration
+	$(MAKE) -C tools/asql
+#	$(MAKE) -C tools/adbaccess
+	$(MAKE) -C tools/aupscol
 	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
 
@@ -291,6 +296,14 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
 	$(MAKE) -C tools/convertsql clean
+	
+	$(MAKE) -C tools/afinderr clean
+	$(MAKE) -C tools/configuration clean
+	$(MAKE) -C tools/asql clean
+	$(MAKE) -C tools/adbaccess clean
+	$(MAKE) -C tools/aupscol clean
+	$(MAKE) -C help clean
+
 	cd tools/test/build_tests; ${SH} run_tests -clean
 	@echo "Aubit 4gl compiler source tree is now clean NOTE: tools tree not cleaned"
 

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.18 2003-10-09 13:02:53 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.19 2004-01-18 11:11:15 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -206,6 +206,16 @@ make install
 @LIBFILE_28@
 @LIBFILE_29@
 @LIBFILE_30@
+@LIBFILE_31@
+@LIBFILE_32@
+@LIBFILE_33@
+@LIBFILE_34@
+@LIBFILE_35@
+@LIBFILE_36@
+@LIBFILE_37@
+@LIBFILE_38@
+@LIBFILE_39@
+@LIBFILE_40@
 
 #executables:
 @EXEFILE_1@
@@ -238,6 +248,27 @@ make install
 @EXEFILE_28@
 @EXEFILE_29@
 @EXEFILE_30@
+@EXEFILE_31@
+@EXEFILE_32@
+@EXEFILE_33@
+@EXEFILE_34@
+@EXEFILE_35@
+@EXEFILE_36@
+@EXEFILE_37@
+@EXEFILE_38@
+@EXEFILE_39@
+@EXEFILE_40@
+@EXEFILE_41@
+@EXEFILE_42@
+@EXEFILE_43@
+@EXEFILE_44@
+@EXEFILE_45@
+@EXEFILE_46@
+@EXEFILE_47@
+@EXEFILE_48@
+@EXEFILE_49@
+@EXEFILE_50@
+
 
 #Shell scripts:
 @SHFILE_1@
@@ -284,7 +315,16 @@ make install
 @INCFILE_18@
 @INCFILE_19@
 @INCFILE_20@
-
+@INCFILE_21@
+@INCFILE_22@
+@INCFILE_23@
+@INCFILE_24@
+@INCFILE_25@
+@INCFILE_26@
+@INCFILE_27@
+@INCFILE_28@
+@INCFILE_29@
+@INCFILE_30@
 
 
 #Examples:
@@ -471,9 +511,30 @@ make install
 #[ ! -f /etc/opt/aubit4gl/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc/opt/aubit4gl/aubitenv
 
 cd /opt/aubit4gl
-#run 'configure', create and install /etc/opt/aubit4gl/aubitrc, install 
+
+echo "PATH=$PATH"
+
+echo "Running 'make' in /opt/aubit4gl..."
+#run 'configure', create and install /etc/opt/aubit4gl/aubitrc, install
 #links to /usr/bin and /usr/lib, run test_build:
-make
+make install
+
+
+echo "Running 'bin/configurator' in /opt/aubit4gl..."
+aubit configurator -firstrun
+
+#TODO: install icons in GNOME and K desktop menu for:
+#configurator
+#asql (ifx/pg)
+#SQLite tool (native Linux? or Java/Wine?)
+#Web browser shortcut to web site
+#readme file
+#install Kate editor's sintax highliting xml files for .4gl and .per
+
+
+
+
+
 
 ##############
 %preun
@@ -481,6 +542,7 @@ make
 ##############
 cd /opt/aubit4gl
 #remove links created by 'make', and debris in tools/test
+echo "Running 'make deinstall' in /opt/aubit4gl..."
 make deinstall
 
 ##############

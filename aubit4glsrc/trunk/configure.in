@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
+dnl # $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -65,9 +65,12 @@ AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourcef
 AM_INIT_AUTOMAKE(Aubit4gl, $AUBIT_VERSION.$AUBIT_BUILD)
 
 aubitdir=`pwd`
+
 a4gl_shtool=$aubitdir/tools/project/shtool
-T_MD=`$a4gl_shtool echo -n -e %B`
-T_ME=`$a4gl_shtool echo -n -e %b`
+if test -f $a4gl_shtool; then
+	T_MD=`$a4gl_shtool echo -n -e %B`
+	T_ME=`$a4gl_shtool echo -n -e %b`
+fi
 
 
 #An example of using --enable-xxx :
@@ -278,16 +281,19 @@ case $host in
 		;;
 esac
 
-AC_PROG_LIBTOOL
 
-#no
-#		echo "****************************************"
-#		echo "is this before command line lenght?   2"
-#		echo "****************************************"
+if test "$AUBIT_SOURCE" = "1" ; then
+	#this would try to make etc/config/ltmain.sh
+	AC_PROG_LIBTOOL
+	#no
+	#		echo "****************************************"
+	#		echo "is this before command line lenght?   2"
+	#		echo "****************************************"
 
+	AM_PROG_LIBTOOL
+	AC_SUBST(LIBTOOL_DEPS)
+fi
 
-AM_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
 
 #not
 
@@ -671,6 +677,16 @@ AC_SUBST(LIBFILE_27)
 AC_SUBST(LIBFILE_28)
 AC_SUBST(LIBFILE_29)
 AC_SUBST(LIBFILE_30)
+AC_SUBST(LIBFILE_31)
+AC_SUBST(LIBFILE_32)
+AC_SUBST(LIBFILE_33)
+AC_SUBST(LIBFILE_34)
+AC_SUBST(LIBFILE_35)
+AC_SUBST(LIBFILE_36)
+AC_SUBST(LIBFILE_37)
+AC_SUBST(LIBFILE_38)
+AC_SUBST(LIBFILE_39)
+AC_SUBST(LIBFILE_40)
 
 
 #List of libraries that we allways make. For Windows installer.
@@ -737,6 +753,26 @@ AC_SUBST(EXEFILE_27)
 AC_SUBST(EXEFILE_28)
 AC_SUBST(EXEFILE_29)
 AC_SUBST(EXEFILE_30)
+AC_SUBST(EXEFILE_31)
+AC_SUBST(EXEFILE_32)
+AC_SUBST(EXEFILE_33)
+AC_SUBST(EXEFILE_34)
+AC_SUBST(EXEFILE_35)
+AC_SUBST(EXEFILE_36)
+AC_SUBST(EXEFILE_37)
+AC_SUBST(EXEFILE_38)
+AC_SUBST(EXEFILE_39)
+AC_SUBST(EXEFILE_40)
+AC_SUBST(EXEFILE_41)
+AC_SUBST(EXEFILE_42)
+AC_SUBST(EXEFILE_43)
+AC_SUBST(EXEFILE_44)
+AC_SUBST(EXEFILE_45)
+AC_SUBST(EXEFILE_46)
+AC_SUBST(EXEFILE_47)
+AC_SUBST(EXEFILE_48)
+AC_SUBST(EXEFILE_49)
+AC_SUBST(EXEFILE_50)
 
 
 #executables (Windows)
@@ -836,6 +872,17 @@ AC_SUBST(INCFILE_17)
 AC_SUBST(INCFILE_18)
 AC_SUBST(INCFILE_19)
 AC_SUBST(INCFILE_20)
+AC_SUBST(INCFILE_21)
+AC_SUBST(INCFILE_22)
+AC_SUBST(INCFILE_23)
+AC_SUBST(INCFILE_24)
+AC_SUBST(INCFILE_25)
+AC_SUBST(INCFILE_26)
+AC_SUBST(INCFILE_27)
+AC_SUBST(INCFILE_28)
+AC_SUBST(INCFILE_29)
+AC_SUBST(INCFILE_30)
+
 
 AC_SUBST(ISINCFILE_1)
 AC_SUBST(ISINCFILE_2)
@@ -1362,7 +1409,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
+# $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1591,9 +1638,11 @@ if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
 fi
 
-ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE UI_HLGENERIC \
+ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA $NEED_4GLC_ALL_libs"
+#UI_HLGENERIC
+
 
 #libaubit4gl should be first, to avoid dependency chase
 LIB_EXPORTLIB=aubit4gl
@@ -1630,11 +1679,17 @@ LIB_EXPORTLIB=aubit4gl
 
 AMAKE_BIN_EXE=aubit-config
 
+RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat qryfrm.afr.dat"
+
 #Executables that are needed even in run-time distibutions:
-RUNTIME_EXE="loadmap fshow $AMAKE_BIN_EXE"
+RUNTIME_EXE="fshow afinderr configurator $AMAKE_BIN_EXE $RUNTIME_RESOURCE"
+#FIXME: add loadmap when it compiles again
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm afinderr"
+        aace adecompile convertsql aace_4gl aace_perl default_frm aupscol asql"
+
+	
+#FIXME: pack files created in $(MAKE) -C help (help_aubit.iem help_ecpg.iem help_sqlite.iem
 
 PCODE_EXE="c2pcode c2pcode_fgl checker checker_fgl runner runner_fgl"
 
@@ -1891,6 +1946,12 @@ ETC_FILES="odbc.ini.example"
 
 ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF" # Makefile
 
+	for FILE in $ROOT_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "CONFFILE_$COUNTER='$INST_BASE/$FILE'"
+	done
+
+
 EXTRAFILE_1=$aubitdir/tools/cygwin/run.exe
 EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
 
@@ -2069,14 +2130,19 @@ if test "$MAKE" = "no" ; then
 		AC_MSG_WARN(It will be much easier if you would install 'make')
     fi
 else
+	
 	AC_MSG_CHECKING(make version)
 	#this creates full set dump on Solaris
-	set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
-	if test "$1" != ""; then
+	set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+	if test "$1" != "" -a "$2" != ""; then
 		if test "$1" = "3" -a "$2" -lt "50"; then
 	        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
         else
-		    AC_MSG_RESULT($1.$2.$3 (ok))
+			if test "$1" = "2" ; then
+		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
+            else
+				AC_MSG_RESULT($1.$2.$3 (ok))
+            fi
         fi
 	else
         #Could not read versionj number
@@ -2128,7 +2194,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
         if test "$BISON" != "no"; then
 			AC_MSG_CHECKING(Bison version)
-			set `$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
+
+
+			set `$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g' -e 's/[a-z]//g'`
 		    AC_MSG_RESULT($1.$2)
 
 			if test "$1" = "1" -a "$2" -lt "875"; then
@@ -3559,7 +3627,7 @@ AC_ARG_WITH(sapodbc,
             fi
 
 			AC_MSG_CHECKING(if we can use SAP ODBC)
-			if test "$HAVE_SAPODBC_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+			if test "$HAVE_SAPODBC_HEADERS" != "yes" && test "$AUBIT_SOURCE" = "1" ; then
             #we need headers only to compile source code
 			    AC_DEFINE(HAVE_SAPODBC,0,[ ])
 				AC_MSG_RESULT(no header files)
@@ -3656,7 +3724,7 @@ AC_ARG_WITH(pgodbc,
 		AC_MSG_CHECKING(PG ODBC connector support)
 		if test $ac_cv_lib_psqlodbc_main = yes || test $ac_cv_lib_odbcpsql_main = yes; then
 
-			if test "$HAVE_PG_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+			if test "$HAVE_PG_HEADERS" != "yes" && test "$AUBIT_SOURCE" = "1" ; then
             #we need headers only to compile source code
 			    AC_DEFINE(HAVE_PGODBC,0,[ ])
 				AC_MSG_RESULT(NO (missing header files))
@@ -4404,12 +4472,14 @@ if test "$FORCE_RPC" = "1"; then
 	else
 		RPC_FUNC_INTERNAL=1
 
-		if test "$AUBIT_SOURCE" = "1"; then #if compiling source code...
+		if test "$AUBIT_SOURCE" = "1" ; then #if compiling source code...
 			#...force this check even if not specified on command line:
 			if test "$with_rpc" = ""  && test "$FORCE_RPC" = "1"; then
 				with_rpc=yes
 			fi
-	    fi
+	    else
+			HAVE_RPCLIB=1
+		fi
 	fi
 
 fi #if test "$FORCE_RPC" = "1"
@@ -4493,7 +4563,7 @@ AC_ARG_WITH(rpc,
 		if test "$RPCGEN" = "no";  then
 		    AC_DEFINE(HAVE_RPCGEN,0,[ ])
 
-			if test "$AUBIT_SOURCE" = "1"; then
+			if test "$AUBIT_SOURCE" = "1" ; then
 
 				case "$host" in
 
@@ -4630,11 +4700,11 @@ AC_ARG_WITH(xmlrpc,
 		AC_MSG_CHECKING(XML-RPC support)
 		AC_MSG_RESULT($XML_RPC)
     else
-		AC_MSG_RESULT(--with-rpc disabled)
+		AC_MSG_RESULT(--with-xmlrpc disabled)
     fi
 
 ],[
-	AC_MSG_RESULT(--with-rpc not specified)
+	AC_MSG_RESULT(--with-xmlrpc not specified)
 ])
 
 
@@ -4683,7 +4753,7 @@ AC_ARG_WITH(mpz,
 		AC_MSG_RESULT(disabled)
     fi
 ],[
-	AC_MSG_RESULT(--with-rpc not specified)
+	AC_MSG_RESULT(--with-mpz not specified)
 ])
 
 
@@ -5029,9 +5099,10 @@ fi
 ##                       Checks for header files
 ## ==================================================================
 
-PHP_CONFIGURE_PART(Checking for header files:)
-
 if test "$AUBIT_SOURCE" = "1" ; then
+	
+	PHP_CONFIGURE_PART(Checking for header files:)
+
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
 	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h \
@@ -5094,7 +5165,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		#if test `eval echo '${'$as_ac_Header'}'` != "yes"; then
         if test "$TMP" != "yes"; then
 			if test "$GCC_MINGW" != "yes"; then
-				AC_MSG_ERROR(No dlfcn.h found, please install dl library. Stop.)
+				AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
             fi
 		else
 
@@ -5124,8 +5195,11 @@ AC_CHECK_SIZEOF(int, 4)
 ##                   Checks for library functions
 ## ==================================================================
 
-PHP_CONFIGURE_PART(Checking for library functions:)
+
 if test "$AUBIT_SOURCE" = "1" ; then
+	
+	PHP_CONFIGURE_PART(Checking for library functions:)
+
 	AC_FUNC_FORK
 	AC_FUNC_MALLOC
 	AC_FUNC_MEMCMP
@@ -5420,7 +5494,13 @@ else
 		A4GL_SQLTYPE=sqlite
     fi
 
-
+	if test "$AUBIT_SOURCE" = "0" && test "$A4GL_SQLTYPE" = "nosql"; then
+		########## SQLite engine staticaly linked with Aubit plug-in #############
+		if test "$SQLITE_LIB" = "1" ; then
+			A4GL_LEXTYPE=C
+			A4GL_SQLTYPE=sqliteS
+    	fi
+    fi
 fi
 
 AC_MSG_RESULT($A4GL_SQLTYPE)
@@ -5554,11 +5634,12 @@ if test "$default_ui" != ""; then
 	A4GL_UI="$default_ui"
 else
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
-		A4GL_UI="TUI"
+		#A4GL_UI="TUI"
+        A4GL_UI="HL_TUI"
     fi
 
 	if test "$GTKBUILD" != "no"; then
-		A4GL_UI="GTK"
+		A4GL_UI="HL_GTK"
     fi
 
 
@@ -6248,7 +6329,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.211 2004-01-15 05:43:53 afalout Exp $
+| $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -5,7 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.13 2004-01-18 09:54:56 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.14 2004-01-18 11:11:15 afalout Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -502,8 +502,10 @@ if (x==0&&y==0&&h==0&&w==0) {
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
-#endif
 
+#else
+	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
+#endif
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
         gtk_container_add (GTK_CONTAINER (win), fixed);
@@ -524,8 +526,11 @@ if (x==0&&y==0&&h==0&&w==0) {
       A4GL_debug ("w=%d h=%d\n", w / XWIDTH, h / YHEIGHT);
 
       win = gtk_fixed_new ();
+
 #if GTK_CHECK_VERSION(2,0,0)
-      gtk_fixed_set_has_window    (GTK_FIXED(win),1);
+	gtk_fixed_set_has_window    (GTK_FIXED(win),1);
+#else
+	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 #endif
 
       gtk_widget_set_usize (GTK_WIDGET (win), w+gui_xwidth, h+gui_yheight);
@@ -577,9 +582,12 @@ if (x==0&&y==0&&h==0&&w==0) {
         }
       else
         {
-#if GTK_CHECK_VERSION(2,0,0)
+	#if GTK_CHECK_VERSION(2,0,0)
 		gtk_fixed_set_has_window    (GTK_FIXED(win),1);
-#endif
+
+	#else
+		A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
+	#endif
           gtk_fixed_put (GTK_FIXED (win_screen), win, x,y);
           gtk_object_set_data (GTK_OBJECT (win), "FIXED", win);
           gtk_object_set_data (GTK_OBJECT (win), "TOP", win);
@@ -1337,8 +1345,12 @@ int
 
   p=gtk_fixed_new();
   gtk_object_set_data(GTK_OBJECT(p),"FIXED",p);
+
+
 #if GTK_CHECK_VERSION(2,0,0)
-		gtk_fixed_set_has_window    (GTK_FIXED(p),1);
+	gtk_fixed_set_has_window    (GTK_FIXED(p),1);
+#else
+	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 #endif
   gtk_widget_show(p);
   gtk_widget_set_usize (GTK_WIDGET (p), width*gui_xwidth, 1*gui_yheight);

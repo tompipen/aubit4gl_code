@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2003-12-10 09:33:14 afalout Exp $
+# $Id: Makefile,v 1.17 2004-01-18 11:11:16 afalout Exp $
 #
 
 ROOT    		=../..
@@ -124,13 +124,15 @@ COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 
 LINKLIBS		=-lUI_TUI
 
+.phony: install
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ################
 #Default target
-all : ${ALL}
+all : ${ALL} install
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Default targets (${ALL}) compiled."
@@ -188,10 +190,15 @@ pg_%.ao: %.4gl
 ## ==================================================================
 
 install:
-	@echo "TODO-asql installed."
+	${CP} ${ALL} ${ROOT}/bin
+#	ln -s ${ROOT}/bin/asql_p.4ae ${ROOT}/bin/asql
+	${RM} ${AUBITDIR}/bin/asql	
+	ln -s ${AUBITDIR}/bin/asql_p.4ae ${AUBITDIR}/bin/asql
+	@echo "asql installed."
 
 deinstall:
-	@echo "TODO-asql de-installed."
+	cd ${ROOT}/bin; ${RM} ${ALL} asql
+	@echo "asql de-installed."
 
 ## ==================================================================
 ##                     Run from current location

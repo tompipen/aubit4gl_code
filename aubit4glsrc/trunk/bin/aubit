@@ -28,7 +28,12 @@ if [ "$COMSPEC" != "" ]; then
 	#dll files are searched for by Windows loader only in PATH
 	PATH=$AUBITDIR/lib:$PATH
 fi
-export AUBITDIR PATH LD_LIBRARY_PATH
+
+
+#set DBPATH for use by some Aubit programs that need form and/or help files, like asql, configurator, etc...
+A4GL_DBPATH=$AUBITDIR/bin:$A4GL_DBPATH
+
+export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH
 
 
 if [ $# -lt 1 -o "$1" = "--help" ]

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.3 2004-01-05 17:46:48 mikeaubury Exp $
+# $Id: makefile,v 1.4 2004-01-18 11:11:16 afalout Exp $
 #
 
 ROOT    =../..
@@ -40,11 +40,13 @@ include ${ROOT}/incl/a4gl.mk
 
 ALL=configurator helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
 
+.phony: install clean all deinstall run
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+all: ${ALL} install
 	@echo "Default targets (${ALL}) compiled sucesfully"
 
 helpfile.msg config.4gl: descriptions mk_config config.4gl.head

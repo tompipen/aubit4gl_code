@@ -17,27 +17,20 @@ define
 		let type=arg_val(5)
 
 		#OPEN SESSION s_ifmx TO DATABASE maxdev as user "informix" password "ifmx"
-        #OPEN SESSION s_ifmx TO DATABASE db as user uid password pwd
+		#OPEN SESSION s_ifmx TO DATABASE db as user uid password pwd
 		#SET SESSION TO s_ifmx
 		database db
-	    display "Connected to the database."
+		display "Connected to the database."
 
-        case type
+		case type
 			when "map"
-	            call load_map()
-            #when "dd"
-            #    call load_dd()
-            #when "ddp"
-            #    call process_dd()
-			#when "cnt"
-			#	call count_data()
+			    call load_map()
 			otherwise
-                display "ERROR: unknown type"
-        end case
+			      display "ERROR: unknown type"
+		end case
 
 		#CLOSE SESSION s_ifmx
-        close database
-
+		close database
 	else
 	   display "Usage:"
 	   display "loadmap file_name uid pwd db [map]"
