@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.1 2003-01-21 08:25:54 afalout Exp $
+# $Id: loadmenu.c,v 1.2 2003-01-21 09:37:00 mikeaubury Exp $
 #*/
 
 /**
@@ -366,26 +366,12 @@ static GtkWidget *
 real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
 struct menu_list the_menus;
-FILE *f;
-//FIXME>>>>>>>>>  XDR xdrp;
 int a=0;
 GtkWidget *w = 0;
-char buff[256];
-
-debug ("FIXIXIXIXIX MEEEEEEE!!!!!");
-return w; //<<<<<<<<<<<<<<<<<<<<<<<<<
-
-  sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_MNU_EXT"));
-  f = open_file_dbpath  (buff);
-
-  if (f == 0)
-    {
-      debug ("Unable to open file %s\n", buff);
-      exit (2);
-    }
+//char buff[256];
   memset (&the_menus, 0, sizeof (menu_list));
-//FIXME>>>>>>>>>  xdrstdio_create (&xdrp, f, XDR_DECODE);
-//FIXME>>>>>>>>>  a = xdr_menu_list (&xdrp, &the_menus);
+
+  a=read_data_from_file("menu_list",&the_menus,fname);
 
   if (!a)
     {
